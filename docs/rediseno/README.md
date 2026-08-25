@@ -33,24 +33,39 @@ Pendientes que (a) dejó abiertos y (b) cierra: lista formal de estados, transic
 recorrido y composición de procesos. **Siguen abiertos por diseño**: disposición física
 del estado, atomicidad multiarchivo, event log y `T25` → (g).
 
-## El mínimo operable está cerrado
+## Qué existe y qué no
 
-Con (a) y (b) aprobadas, el kernel tiene lo necesario para **usarse**. El siguiente
-trabajo **no** es seguir diseñando (c) a (i) en abstracto: es **probar este mínimo en un
+**Existe una especificación mínima aprobada para construir el kernel. No existe todavía
+un kernel.**
+
+```text
+SÍ existe    (a) y (b) aprobadas: catálogo de capacidades, custodia, concurrencia,
+             frenos, recorrido, estados, transiciones y composición de procesos
+NO existe    runtime · dispatcher · estado persistido · tableros · checkpoints
+             kernel/ y packs/ siguen INTACTOS en la versión 1.3.0
+```
+
+`T01-T24` y `T26-T74` son **contratos de conformidad definidos**, no pruebas ejecutadas.
+Ninguna ha corrido nunca, porque no hay nada contra lo que correrlas. `T25` queda además
+explícitamente abierta hasta (g). **Nada de esto autoriza a afirmar que el sistema
+funciona.** Eso requerirá runtime y evidencia ejecutable.
+
+## Siguiente trabajo
+
+**No** es seguir diseñando (c) a (i) en abstracto. Es **usar esta especificación en un
 proyecto real** —gym-wear o PesquerApp— y desarrollar las piezas siguientes como **items
 `SIS` surgidos de esa utilización**.
 
-Es la aplicación a nosotros mismos del freno de racha SIS (a.7): seguir construyendo el
-kernel entero antes de usarlo es exactamente el modo de fallo (b) —autorreferencia sin
-producto— que el propio kernel existe para frenar.
-
-Conformidad acumulada: **T01-T24** de (a) · **T26-T74** de (b) · `T25` abierta hasta (g).
+Es la aplicación a nosotros mismos del freno de racha SIS (a.7): seguir especificando el
+kernel entero antes de construir nada es exactamente el modo de fallo (b) —autorreferencia
+sin producto— que la propia especificación existe para frenar.
 
 ## Regla de proceso
 
 Una sección cada vez, con aprobación explícita del Owner antes de pasar a la
 siguiente. Sin timebox: es trabajo fundacional, no un circuito de producto.
 
-**Al cerrar la sección (b)**, el kernel tiene lo mínimo operable. A partir de ahí el
-trabajo vuelve a los proyectos reales y las secciones (c) en adelante se diseñan como
-items SIS normales dentro de un proyecto, no como bloque previo a arrancar nada.
+**Al cerrar la sección (b)** queda una especificación mínima aprobada, no un kernel
+funcionando. A partir de ahí el trabajo vuelve a los proyectos reales y las secciones (c)
+en adelante se diseñan como items SIS normales dentro de un proyecto, no como bloque
+previo a arrancar nada.

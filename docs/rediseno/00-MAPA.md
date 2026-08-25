@@ -1,6 +1,9 @@
 # PASO 1 — Mapa del kernel 1.3.0 frente al principio gobernante
 
 > **ESTADO tras aprobar (a) y (b) el 2026-08-25.**
+> Lo aprobado es una **especificación**, no un kernel construido. `kernel/` y `packs/`
+> siguen intactos en 1.3.0, y `T01-T74` son contratos de conformidad definidos, nunca
+> ejecutados.
 > Resueltas por (a): G07 · G08 · G11 · G12 · G14 · G15 · G17 · G32 · K0.9.
 > Resueltas por (b): recorrido, estados, transiciones y composición de procesos.
 > **Siguen pendientes** de secciones posteriores, ahora como items SIS dentro de un
