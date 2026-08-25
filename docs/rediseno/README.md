@@ -17,7 +17,7 @@ defecto**, no "la combinación más barata que mantenga la calidad necesaria".
 |---|---|---|
 | — | [Mapa del kernel 1.3.0 frente al principio gobernante](00-MAPA.md) | entregado |
 | a | [Capacidades, equipos, paquetes y estado](a-CAPACIDADES-APROBADA.md) | **APROBADA** 2026-08-25 |
-| b | Recorrido, estados y composición de procesos | **en curso** |
+| b | [Recorrido, estados y composición de procesos](b-RECORRIDO.md) | **propuesta, en revisión** |
 | c | Formato del handoff entre capacidades | no iniciada |
 | d | Puntos de interacción con el Owner | no iniciada |
 | e | La pregunta de la vía rápida | no iniciada |
