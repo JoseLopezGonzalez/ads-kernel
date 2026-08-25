@@ -1,0 +1,15 @@
+kind: esquema
+esquema: veto
+version: 1
+descripcion: los seis campos obligatorios del contrato de veto de la seccion a.5
+obligatorios: [id, capacidad, materia, no_materia, evidencia_minima, efecto, levantamiento, apelacion, colision]
+campos:
+  id: {tipo: texto, patron: '^veto:[a-z0-9-]+$'}
+  capacidad: {tipo: ref, de: capacidad}
+  materia: {tipo: lista, de: texto, min: 1}
+  no_materia: {tipo: lista, de: texto, min: 1}
+  evidencia_minima: {tipo: lista, de: texto, min: 1}
+  efecto: {tipo: texto, min: 20}
+  levantamiento: {tipo: texto, min: 20}
+  apelacion: {tipo: texto, min: 20}
+  colision: {tipo: texto, min: 20}

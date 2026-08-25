@@ -1,0 +1,16 @@
+kind: esquema
+esquema: entrada
+version: 1
+descripcion: una clase de expresion del Owner antes de convertirse (o no) en item
+obligatorios: [id, nombre, que_es, no_es, senales, produce, crea_item, conserva, siguiente]
+campos:
+  id: {tipo: texto, patron: '^entrada:[a-z0-9-]+$'}
+  nombre: {tipo: texto, min: 3}
+  que_es: {tipo: texto, min: 20}
+  no_es: {tipo: texto, min: 15}
+  senales: {tipo: lista, de: texto, min: 1}
+  produce: {tipo: lista, de: texto, min: 1}
+  crea_item: {tipo: enum, valores: [nunca, tras-confirmacion, directamente, condicional]}
+  condicion_de_item: {tipo: texto}
+  conserva: {tipo: lista, de: texto, min: 1}
+  siguiente: {tipo: texto, min: 10}

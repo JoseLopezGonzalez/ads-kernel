@@ -1,0 +1,40 @@
+kind: esquema
+esquema: metodo
+version: 1
+descripcion: procedimiento ejecutable; los diecisiete elementos del contrato de metodo
+obligatorios:
+  [id, nombre, capacidad, disparador, carga, preguntas_iniciales, pasos, artefactos,
+   puntos_owner, consultas, checkpoints, critica, gate, salida, devolucion, bloqueo,
+   cancelacion, aprendizaje, prueba_de_reanudacion]
+campos:
+  id: {tipo: texto, patron: '^([a-z0-9-]+:)?[A-Z]{3}/[A-Za-z0-9-]+$'}
+  nombre: {tipo: texto, min: 3}
+  capacidad: {tipo: ref, de: capacidad}
+  disparador: {tipo: lista, de: texto, min: 1}
+  carga: {tipo: lista, de: texto, min: 1}
+  preguntas_iniciales: {tipo: lista, de: texto, min: 1}
+  pasos:
+    tipo: lista
+    min: 2
+    de: objeto
+    obligatorios: [n, nombre, hace, termina_cuando]
+    campos:
+      n: {tipo: entero, min: 1}
+      nombre: {tipo: texto, min: 3}
+      modo: {tipo: enum, valores: [divergente, convergente, lineal, conversacional]}
+      hace: {tipo: texto, min: 15}
+      produce: {tipo: texto}
+      termina_cuando: {tipo: texto, min: 10}
+      checkpoint: {tipo: booleano}
+  artefactos: {tipo: lista, de: texto, min: 1}
+  puntos_owner: {tipo: lista, de: texto, min: 1}
+  consultas: {tipo: lista, de: texto, min: 1}
+  checkpoints: {tipo: lista, de: texto, min: 1}
+  critica: {tipo: lista, de: texto, min: 1}
+  gate: {tipo: ref, de: gate}
+  salida: {tipo: lista, de: texto, min: 1}
+  devolucion: {tipo: lista, de: texto, min: 1}
+  bloqueo: {tipo: lista, de: texto, min: 1}
+  cancelacion: {tipo: lista, de: texto, min: 1}
+  aprendizaje: {tipo: lista, de: texto, min: 1}
+  prueba_de_reanudacion: {tipo: texto, min: 30}

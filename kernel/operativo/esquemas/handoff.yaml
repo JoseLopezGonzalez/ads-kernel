@@ -1,0 +1,17 @@
+kind: esquema
+esquema: handoff
+version: 1
+descripcion: la entrega concreta de trabajo entre dos capacidades, con lo que se comprueba al recibirlo
+obligatorios: [id, de, a, cuando, entrega, comprueba_al_recibir, rechaza_si, devolucion, evidencia_de_devolucion, owner, checkpoint]
+campos:
+  id: {tipo: texto, patron: '^handoff:[a-z0-9-]+$'}
+  de: {tipo: ref, de: capacidad}
+  a: {tipo: ref, de: capacidad}
+  cuando: {tipo: texto, min: 15}
+  entrega: {tipo: lista, de: texto, min: 1}
+  comprueba_al_recibir: {tipo: lista, de: texto, min: 1}
+  rechaza_si: {tipo: lista, de: texto, min: 1}
+  devolucion: {tipo: texto, min: 15}
+  evidencia_de_devolucion: {tipo: lista, de: texto, min: 1}
+  owner: {tipo: texto, min: 10}
+  checkpoint: {tipo: texto, min: 10}

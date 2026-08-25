@@ -1,0 +1,17 @@
+kind: esquema
+esquema: escenario
+version: 1
+descripcion: prueba de conformidad; declara explicitamente si esta definida, validada, ejecutada o superada
+obligatorios: [id, nombre, cubre, dado, cuando, entonces, falla_si, ejecucion, estado]
+campos:
+  id: {tipo: texto, patron: '^T[0-9]{2,3}(\.[0-9]+)?$'}
+  nombre: {tipo: texto, min: 5}
+  cubre: {tipo: lista, de: texto, min: 1}
+  dado: {tipo: lista, de: texto, min: 1}
+  cuando: {tipo: lista, de: texto, min: 1}
+  entonces: {tipo: lista, de: texto, min: 1}
+  falla_si: {tipo: lista, de: texto, min: 1}
+  ejecucion: {tipo: enum, valores: [validador-estructural, guion-manual, requiere-runtime, requiere-juicio-humano]}
+  validador: {tipo: texto}
+  estado: {tipo: enum, valores: [contrato-definido, validador-implementado, prueba-ejecutada, prueba-superada, prueba-fallida]}
+  evidencia: {tipo: texto}

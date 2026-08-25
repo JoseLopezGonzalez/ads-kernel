@@ -1,0 +1,42 @@
+# Reglas específicas del kernel operativo, más allá del esquema de cada tipo.
+# Las comprueba ads_lint.py tras validar esquemas y referencias.
+reglas:
+  - id: R01-roles-minimos
+    aplica_a: rol
+    minimo: 1
+    mensaje: "el kernel operativo no puede quedarse sin ningún rol declarado"
+
+  - id: R02-todo-rol-tiene-prompt
+    aplica_a: rol
+    campo_no_vacio: prompt
+    mensaje: "todo rol declara la ruta de su prompt operativo: sin prompt no es materializable"
+
+  - id: R03-todo-metodo-reanudable
+    aplica_a: metodo
+    campo_no_vacio: prueba_de_reanudacion
+    mensaje: "todo método declara cómo se comprueba que un agente nuevo puede retomarlo"
+
+  - id: R04-toda-capacidad-declara-retirada
+    aplica_a: capacidad
+    campo_no_vacio: retirada
+    mensaje: "no se materializan equipos permanentes: toda capacidad declara su condición de retirada"
+
+  - id: R05-todo-gate-declara-fallo
+    aplica_a: gate
+    campo_no_vacio: fallo
+    mensaje: "un gate sin consecuencia declarada al fallar no detiene nada"
+
+  - id: R06-toda-rubrica-conserva-juicio
+    aplica_a: rubrica
+    campo_no_vacio: juicio_humano
+    mensaje: "una rúbrica que se reduce a puntuación automática no es una rúbrica de excelencia"
+
+  - id: R07-todo-pack-declara-lo-que-no-toca
+    aplica_a: pack
+    campo_no_vacio: no_toca
+    mensaje: "un pack declara qué contratos universales tiene prohibido redefinir"
+
+  - id: R08-toda-entrada-declara-conservacion
+    aplica_a: entrada
+    campo_no_vacio: conserva
+    mensaje: "toda clase de entrada declara qué se conserva de la expresión original del Owner"

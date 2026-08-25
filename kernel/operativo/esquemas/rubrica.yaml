@@ -1,0 +1,25 @@
+kind: esquema
+esquema: rubrica
+version: 1
+descripcion: criterio de juicio profesional con niveles descritos y evidencia exigida; no reduce el juicio a una nota
+obligatorios: [id, nombre, aplica_a, ejes, evidencia, umbral, juicio_humano, no_automatizable]
+campos:
+  id: {tipo: texto, patron: '^rubrica:[a-z0-9-]+$'}
+  nombre: {tipo: texto, min: 3}
+  aplica_a: {tipo: texto, min: 10}
+  ejes:
+    tipo: lista
+    min: 3
+    de: objeto
+    obligatorios: [id, eje, rechazo, suficiente, excelente, evidencia]
+    campos:
+      id: {tipo: texto, patron: '^[a-z0-9-]+$'}
+      eje: {tipo: texto, min: 5}
+      rechazo: {tipo: texto, min: 15}
+      suficiente: {tipo: texto, min: 15}
+      excelente: {tipo: texto, min: 15}
+      evidencia: {tipo: texto, min: 10}
+  evidencia: {tipo: lista, de: texto, min: 1}
+  umbral: {tipo: texto, min: 20}
+  juicio_humano: {tipo: texto, min: 20}
+  no_automatizable: {tipo: lista, de: texto, min: 1}

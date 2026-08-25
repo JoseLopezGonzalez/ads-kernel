@@ -1,0 +1,26 @@
+kind: esquema
+esquema: pack
+version: 1
+descripcion: declaracion de un pack; que anade al kernel y que tiene prohibido tocar
+obligatorios:
+  [id, nombre, version, clase_de_proyecto, restricciones, capacidades_nuevas,
+   roles_nuevos, extensiones_de_metodo, gates_adicionales, artefactos, herramientas,
+   matriz_entornos, pruebas, antipatrones, no_toca, compatible_con, precedencia]
+campos:
+  id: {tipo: texto, patron: '^[a-z0-9-]+$'}
+  nombre: {tipo: texto, min: 3}
+  version: {tipo: texto, patron: '^[0-9]+\.[0-9]+\.[0-9]+$'}
+  clase_de_proyecto: {tipo: texto, min: 20}
+  restricciones: {tipo: lista, de: texto, min: 3}
+  capacidades_nuevas: {tipo: lista, de: texto}
+  roles_nuevos: {tipo: lista, de: ref}
+  extensiones_de_metodo: {tipo: lista, de: texto, min: 1}
+  gates_adicionales: {tipo: lista, de: ref, min: 1}
+  artefactos: {tipo: lista, de: texto, min: 1}
+  herramientas: {tipo: lista, de: texto, min: 1}
+  matriz_entornos: {tipo: texto, min: 10}
+  pruebas: {tipo: lista, de: texto, min: 1}
+  antipatrones: {tipo: lista, de: texto, min: 2}
+  no_toca: {tipo: lista, de: texto, min: 1}
+  compatible_con: {tipo: lista, de: texto, min: 1}
+  precedencia: {tipo: texto, min: 20}

@@ -1,0 +1,39 @@
+kind: esquema
+esquema: capacidad
+version: 1
+descripcion: los doce campos de la ficha de capacidad de la seccion a.1, en forma canonica
+obligatorios:
+  [id, nombre, clase, mision, capa_de_valor, entrada, salida, gate, resultados,
+   memoria_propia, tablero, metodos, checkpoint, autoridad, owner, roles,
+   deriva_de, materializacion, retirada]
+campos:
+  id: {tipo: texto, patron: '^([a-z0-9-]+:)?[A-Z]{3}$'}
+  nombre: {tipo: texto, min: 3}
+  clase: {tipo: enum, valores: [estacion, servicio, sistema]}
+  mision: {tipo: texto, min: 20}
+  capa_de_valor: {tipo: texto, min: 20}
+  entrada: {tipo: lista, de: texto, min: 1}
+  salida: {tipo: lista, de: texto, min: 1}
+  gate: {tipo: ref, de: gate}
+  resultados: {tipo: lista, de: enum, valores: [capa-anadida, devolucion, bloqueo, cancelacion], min: 1}
+  memoria_propia: {tipo: lista, de: texto, min: 1}
+  tablero: {tipo: texto, min: 5}
+  metodos: {tipo: lista, de: ref, min: 1}
+  checkpoint: {tipo: texto, min: 5}
+  autoridad:
+    tipo: objeto
+    obligatorios: [decide_sola, escala, veta]
+    campos:
+      decide_sola: {tipo: lista, de: texto, min: 1}
+      escala: {tipo: lista, de: texto, min: 1}
+      veta: {tipo: lista, de: texto}
+  owner:
+    tipo: objeto
+    obligatorios: [nivel, criterio]
+    campos:
+      nivel: {tipo: enum, valores: [obligatorio, opcional-acumulada, ninguna, mixto]}
+      criterio: {tipo: texto, min: 20}
+  roles: {tipo: lista, de: ref, min: 1}
+  deriva_de: {tipo: lista, de: texto, min: 1}
+  materializacion: {tipo: texto, min: 20}
+  retirada: {tipo: texto, min: 20}

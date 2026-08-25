@@ -1,0 +1,20 @@
+kind: esquema
+esquema: gate
+version: 1
+descripcion: lista comprobable que un paquete debe cumplir para cambiar de estado y salir de una custodia
+obligatorios: [id, aplica_a, comprobaciones, evidencia, fallo]
+campos:
+  id: {tipo: texto, patron: '^gate:[a-z0-9-]+$'}
+  aplica_a: {tipo: texto, min: 3}
+  comprobaciones:
+    tipo: lista
+    min: 1
+    de: objeto
+    campos:
+      id: {tipo: texto, patron: '^[a-z0-9-]+$'}
+      comprueba: {tipo: texto, min: 10}
+      como: {tipo: texto, min: 10}
+      automatizable: {tipo: enum, valores: [si, no, parcial]}
+    obligatorios: [id, comprueba, como, automatizable]
+  evidencia: {tipo: lista, de: texto, min: 1}
+  fallo: {tipo: texto, min: 15}

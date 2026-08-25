@@ -1,0 +1,23 @@
+kind: esquema
+esquema: forma-conversacion
+version: 1
+descripcion: como el Interlocutor del Owner atiende una clase concreta de expresion
+obligatorios:
+  [id, nombre, reconoce_por, entrada_tipica, resuelve_autonomamente, preguntas,
+   muestra_referencias, brainstorming, consulta_especialista, confirmacion,
+   crea_item, checkpoint, salida, error_tipico]
+campos:
+  id: {tipo: texto, patron: '^forma:[a-z0-9-]+$'}
+  nombre: {tipo: texto, min: 3}
+  reconoce_por: {tipo: lista, de: texto, min: 1}
+  entrada_tipica: {tipo: lista, de: texto, min: 1}
+  resuelve_autonomamente: {tipo: lista, de: texto, min: 1}
+  preguntas: {tipo: lista, de: texto, min: 1}
+  muestra_referencias: {tipo: texto, min: 10}
+  brainstorming: {tipo: texto, min: 10}
+  consulta_especialista: {tipo: texto, min: 10}
+  confirmacion: {tipo: texto, min: 10}
+  crea_item: {tipo: texto, min: 10}
+  checkpoint: {tipo: texto, min: 10}
+  salida: {tipo: lista, de: texto, min: 1}
+  error_tipico: {tipo: texto, min: 20}
