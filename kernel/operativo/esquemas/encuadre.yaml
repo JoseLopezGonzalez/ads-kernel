@@ -52,7 +52,7 @@ campos:
     tipo: objeto
     obligatorios: [naturaleza, tipo_propuesto, motivo]
     campos:
-      naturaleza: {tipo: ref, de: entrada}
+      naturaleza: {tipo: ref, ref_a: entrada}
       tipo_propuesto: {tipo: enum, valores: [FEA, GAP, DEF, INC, INV, DEU, DEP, AUD, DIR, SIS, ninguno]}
       motivo: {tipo: texto, min: 15}
   estado: {tipo: enum, valores: [en-conversacion, listo-para-dsp, entregado, descartado, aparcado-por-owner]}

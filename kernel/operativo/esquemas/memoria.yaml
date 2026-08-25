@@ -6,7 +6,7 @@ obligatorios: [id, nombre, capacidad, capa, fichero, autoridad, contiene, se_act
 campos:
   id: {tipo: texto, patron: '^memoria:[a-z0-9-]+$'}
   nombre: {tipo: texto, min: 3}
-  capacidad: {tipo: ref, de: capacidad}
+  capacidad: {tipo: ref, ref_a: capacidad}
   capa: {tipo: enum, valores: [kernel, pack, profile]}
   fichero: {tipo: texto, min: 5}
   autoridad: {tipo: texto, min: 5}

@@ -169,7 +169,7 @@ class Lint:
         elif tipo == "ref":
             if not isinstance(valor, str):
                 return self.err(ruta, linea, "tipo", f"{camino}: una ref debe ser texto")
-            self.refs.append((valor, spec.get("de"), ruta, linea, camino))
+            self.refs.append((valor, spec.get("ref_a"), ruta, linea, camino))
         elif tipo == "lista":
             if not isinstance(valor, list):
                 return self.err(ruta, linea, "tipo", f"{camino}: se esperaba lista")
@@ -185,8 +185,10 @@ class Lint:
             if not isinstance(valor, dict):
                 return self.err(ruta, linea, "tipo", f"{camino}: se esperaba objeto")
             for req in spec.get("obligatorios", []):
-                if req not in valor or valor[req] in (None, "", []):
-                    self.err(ruta, linea, "obligatorio", f"{camino}.{req}: campo obligatorio ausente o vacío")
+                if req not in valor or valor[req] is None:
+                    self.err(ruta, linea, "obligatorio",
+                             f"{camino}.{req}: campo obligatorio no declarado. "
+                             f"Si la respuesta es «ninguno», decláralo vacío de forma explícita")
             for clave, sub in (spec.get("campos") or {}).items():
                 if clave in valor and valor[clave] is not None:
                     self.validar_valor(valor[clave], sub, ruta, linea, f"{camino}.{clave}", tipo_padre)
@@ -200,9 +202,10 @@ class Lint:
                 self.err(ruta, linea, "esquema", f"no existe esquema para ads:{tipo}")
                 continue
             for req in esquema.get("obligatorios", []):
-                if req not in datos or datos[req] in (None, "", []):
+                if req not in datos or datos[req] is None:
                     self.err(ruta, linea, "obligatorio",
-                             f"ads:{tipo} sin '{req}' (obligatorio en esquemas/{tipo}.yaml)")
+                             f"ads:{tipo} no declara '{req}' (obligatorio en esquemas/{tipo}.yaml). "
+                             f"Si la respuesta es «ninguno», decláralo vacío de forma explícita")
             for clave, spec in (esquema.get("campos") or {}).items():
                 if clave in datos and datos[clave] is not None:
                     self.validar_valor(datos[clave], spec, ruta, linea, clave, tipo)

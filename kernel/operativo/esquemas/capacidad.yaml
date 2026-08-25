@@ -14,11 +14,11 @@ campos:
   capa_de_valor: {tipo: texto, min: 20}
   entrada: {tipo: lista, de: texto, min: 1}
   salida: {tipo: lista, de: texto, min: 1}
-  gate: {tipo: ref, de: gate}
+  gate: {tipo: ref, ref_a: gate}
   resultados: {tipo: lista, de: enum, valores: [capa-anadida, devolucion, bloqueo, cancelacion], min: 1}
   memoria_propia: {tipo: lista, de: texto, min: 1}
   tablero: {tipo: texto, min: 5}
-  metodos: {tipo: lista, de: ref, min: 1}
+  metodos: {tipo: lista, de: ref, ref_a: metodo, min: 1}
   checkpoint: {tipo: texto, min: 5}
   autoridad:
     tipo: objeto
@@ -33,7 +33,7 @@ campos:
     campos:
       nivel: {tipo: enum, valores: [obligatorio, opcional-acumulada, ninguna, mixto]}
       criterio: {tipo: texto, min: 20}
-  roles: {tipo: lista, de: ref, min: 1}
+  roles: {tipo: lista, de: ref, ref_a: rol, min: 1}
   deriva_de: {tipo: lista, de: texto, min: 1}
   materializacion: {tipo: texto, min: 20}
   retirada: {tipo: texto, min: 20}

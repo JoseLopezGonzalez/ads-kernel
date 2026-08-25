@@ -5,8 +5,8 @@ descripcion: la entrega concreta de trabajo entre dos capacidades, con lo que se
 obligatorios: [id, de, a, cuando, entrega, comprueba_al_recibir, rechaza_si, devolucion, evidencia_de_devolucion, owner, checkpoint]
 campos:
   id: {tipo: texto, patron: '^handoff:[a-z0-9-]+$'}
-  de: {tipo: ref, de: capacidad}
-  a: {tipo: ref, de: capacidad}
+  de: {tipo: ref, ref_a: capacidad}
+  a: {tipo: ref, ref_a: capacidad}
   cuando: {tipo: texto, min: 15}
   entrega: {tipo: lista, de: texto, min: 1}
   comprueba_al_recibir: {tipo: lista, de: texto, min: 1}

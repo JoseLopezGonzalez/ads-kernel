@@ -5,7 +5,7 @@ descripcion: que roles se materializan para una clase de trabajo concreta, y cua
 obligatorios: [id, capacidad, clase_de_trabajo, condicion, roles, combinables, independientes, ampliacion, reduccion, retirada]
 campos:
   id: {tipo: texto, patron: '^composicion:[a-z0-9-]+$'}
-  capacidad: {tipo: ref, de: capacidad}
+  capacidad: {tipo: ref, ref_a: capacidad}
   clase_de_trabajo: {tipo: texto, min: 5}
   condicion: {tipo: texto, min: 20}
   roles:
@@ -14,7 +14,7 @@ campos:
     de: objeto
     obligatorios: [rol, obligatorio, agentes]
     campos:
-      rol: {tipo: ref, de: rol}
+      rol: {tipo: ref, ref_a: rol}
       obligatorio: {tipo: booleano}
       agentes: {tipo: texto, min: 1}
       condicion: {tipo: texto}

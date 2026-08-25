@@ -39,12 +39,13 @@ cuando aparece se resuelve **borrando la copia**, nunca sincronizando las dos.
 | forma de cada tipo canónico | `esquemas/<tipo>.yaml` |
 | ficha operativa de una capacidad | `capacidades/<COD>/CAPACIDAD.md` |
 | contrato de un rol | `capacidades/<COD>/roles/<rol>.md` |
+| perfiles de modelo y política de asignación | [`contratos/C2-AGENTES-Y-MODELOS.md`](contratos/C2-AGENTES-Y-MODELOS.md) |
 | procedimiento de un rol | `capacidades/<COD>/metodos/<Metodo>.md` |
 | prompt operativo de un rol | `capacidades/<COD>/prompts/<rol>.md` |
-| entrada del Owner y su circuito | `entrada/` |
+| entrada del Owner y su circuito | [`entrada/00-INDICE.md`](entrada/00-INDICE.md) |
 | excelencia de diseño | `diseno/` |
 | entregas entre capacidades | `circuitos/` |
-| pruebas de conformidad nuevas | `pruebas/` |
+| pruebas de conformidad nuevas | `pruebas/` y los bloques `ads:escenario` de cada documento |
 | estado real de cada prueba | [`pruebas/REGISTRO.md`](pruebas/REGISTRO.md) |
 
 ## Qué hay aquí

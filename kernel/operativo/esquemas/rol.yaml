@@ -11,7 +11,7 @@ obligatorios:
 campos:
   id: {tipo: texto, patron: '^([a-z0-9-]+:)?[A-Z]{3}/[a-z0-9-]+$'}
   nombre: {tipo: texto, min: 3}
-  capacidad: {tipo: ref, de: capacidad}
+  capacidad: {tipo: ref, ref_a: capacidad}
   mision: {tipo: texto, min: 20}
   resultado: {tipo: texto, min: 20}
   responsabilidades: {tipo: lista, de: texto, min: 2}
@@ -25,10 +25,10 @@ campos:
       veta: {tipo: lista, de: texto}
       escala: {tipo: lista, de: texto, min: 1}
   entradas: {tipo: lista, de: texto, min: 1}
-  metodo: {tipo: lista, de: ref, min: 1}
+  metodo: {tipo: lista, de: ref, ref_a: metodo, min: 1}
   herramientas: {tipo: lista, de: texto, min: 1}
   conocimientos: {tipo: lista, de: texto, min: 1}
-  perfil_agente: {tipo: ref, de: perfil-agente}
+  perfil_agente: {tipo: ref, ref_a: perfil-agente}
   memoria_consulta: {tipo: lista, de: texto, min: 1}
   memoria_actualiza: {tipo: lista, de: texto, min: 1}
   interaccion_owner:
@@ -48,7 +48,7 @@ campos:
       motivo: {tipo: texto, min: 15}
   checkpoint: {tipo: lista, de: texto, min: 1}
   salida: {tipo: lista, de: texto, min: 1}
-  gate: {tipo: ref, de: gate}
+  gate: {tipo: ref, ref_a: gate}
   devolucion: {tipo: lista, de: texto, min: 1}
   bloqueo: {tipo: lista, de: texto, min: 1}
   veto: {tipo: texto}

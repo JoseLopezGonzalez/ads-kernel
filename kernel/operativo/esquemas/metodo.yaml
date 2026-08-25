@@ -9,7 +9,7 @@ obligatorios:
 campos:
   id: {tipo: texto, patron: '^([a-z0-9-]+:)?[A-Z]{3}/[A-Za-z0-9-]+$'}
   nombre: {tipo: texto, min: 3}
-  capacidad: {tipo: ref, de: capacidad}
+  capacidad: {tipo: ref, ref_a: capacidad}
   disparador: {tipo: lista, de: texto, min: 1}
   carga: {tipo: lista, de: texto, min: 1}
   preguntas_iniciales: {tipo: lista, de: texto, min: 1}
@@ -31,7 +31,7 @@ campos:
   consultas: {tipo: lista, de: texto, min: 1}
   checkpoints: {tipo: lista, de: texto, min: 1}
   critica: {tipo: lista, de: texto, min: 1}
-  gate: {tipo: ref, de: gate}
+  gate: {tipo: ref, ref_a: gate}
   salida: {tipo: lista, de: texto, min: 1}
   devolucion: {tipo: lista, de: texto, min: 1}
   bloqueo: {tipo: lista, de: texto, min: 1}

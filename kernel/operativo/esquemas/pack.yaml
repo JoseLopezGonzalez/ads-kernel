@@ -13,9 +13,9 @@ campos:
   clase_de_proyecto: {tipo: texto, min: 20}
   restricciones: {tipo: lista, de: texto, min: 3}
   capacidades_nuevas: {tipo: lista, de: texto}
-  roles_nuevos: {tipo: lista, de: ref}
+  roles_nuevos: {tipo: lista, de: ref, ref_a: rol}
   extensiones_de_metodo: {tipo: lista, de: texto, min: 1}
-  gates_adicionales: {tipo: lista, de: ref, min: 1}
+  gates_adicionales: {tipo: lista, de: ref, ref_a: gate, min: 1}
   artefactos: {tipo: lista, de: texto, min: 1}
   herramientas: {tipo: lista, de: texto, min: 1}
   matriz_entornos: {tipo: texto, min: 10}
