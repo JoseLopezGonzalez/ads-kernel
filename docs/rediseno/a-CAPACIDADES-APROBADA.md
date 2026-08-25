@@ -1,8 +1,10 @@
-# SECCIÓN (a) v4 — CAPACIDADES, EQUIPOS, PAQUETES Y ESTADO
+# SECCIÓN (a) — CAPACIDADES, EQUIPOS, PAQUETES Y ESTADO
 
-Rediseño del kernel ADS. Reescritura tras las correcciones del Owner sobre v3
-(C1-C4 y correcciones 1-10). v3 conservada como superada.
-Estado: **pendiente de aprobación**. No pasar a la sección (b) sin ella.
+> **ESTADO: APROBADA** por el Owner el 2026-08-25 (v4 + correcciones finales 1-7).
+> Arquitectura cerrada. Los puntos marcados como pendientes se resuelven en (b) y (g).
+
+Rediseño del kernel ADS. Recorrido: v1 y v2 rechazadas, v3 superada, v4 aprobada con
+correcciones quirúrgicas. Las versiones anteriores se conservan para trazabilidad.
 
 ---
 
@@ -276,6 +278,20 @@ pack        <pack>:<COD>   p. ej.  ml:EVA · hw:LAB · loc:I18N
 profile     local:<COD>
 ```
 
+**Una extensión de PROFILE no es automáticamente un override.** Añadir una capacidad
+propia del proyecto no es, por sí mismo, sobrescribir el kernel:
+
+```text
+EXTENSIÓN LOCAL   añade una capacidad nueva SIN modificar autoridad, veto, semántica ni
+                  comportamiento de una capacidad existente.  → NO requiere K0.7.
+OVERRIDE LOCAL    cambia, sustituye, restringe o amplía autoridad, veto o comportamiento
+                  definido por kernel o pack.  → SÍ requiere K0.7, con justificación,
+                  alcance y condición de revisión.
+```
+
+Una extensión limpia se instala sin ceremonia. Sólo la que provoca **colisión de
+autoridad** cae en override.
+
 Con prefijo obligatorio la colisión es **imposible por construcción**, y una extensión
 **NO PUEDE** sombrear una capacidad del kernel.
 
@@ -376,6 +392,10 @@ Dos paquetes se despachan en paralelo sólo si se cumplen **las seis**:
 
 Si falla cualquiera, DSP **secuencia o exige coordinación explícita**; no paraleliza a
 ciegas. Esto instrumenta G17 en lugar de dejarlo a criterio.
+
+> El aislamiento físico (`escribe_ficheros` disjunto o aislado) es una **condición
+> necesaria**, nunca un criterio completo. En ningún punto del kernel puede volver a
+> usarse por sí solo para autorizar paralelismo.
 
 ### Conflictos entre paquetes
 
@@ -605,7 +625,11 @@ que esa disposición **DEBE** cumplir:
 ```text
 I1  PROPIEDAD INEQUÍVOCA     cada parte del estado tiene una autoridad y un ejecutor
                              de mutación identificados. Sin campos de dueño ambiguo.
-I2  ESCRITORES CONTROLADOS   ningún campo canónico admite dos ejecutores concurrentes.
+I2  ESCRITURA CONTROLADA     autoridad única por campo canónico · ejecutor único de
+                             mutación canónica · propiedad de escritura POR ZONA en
+                             artefactos compartidos · CAS y protocolo de órdenes para
+                             el tablero compartido. NO se afirma "un único escritor
+                             físico por fichero": el tablero tiene dos por diseño.
 I3  PAQUETES FRAGMENTABLES   el estado se divide por unidad de custodia, de modo que
                              trabajos independientes no compitan por el mismo recurso.
 I4  VISTAS COMPLETAS         existen artefactos derivados, persistentes, deterministas
@@ -630,6 +654,24 @@ ACTOR ATRIBUIDO       Owner              a quién se imputa el cambio
 
 Toda mutación conserva, sin excepción: **quién la ordenó · quién la aplicó · sobre qué
 versión · mediante qué evento.**
+
+Cinco conceptos que **NO DEBEN** confundirse — ni en el kernel ni en ninguna prueba de
+conformidad:
+
+```text
+PROPIETARIO DEL CAMPO   de qué parte del estado forma parte
+AUTORIDAD               quién tiene derecho a decidir su valor
+ORDENANTE               quién emitió esta orden concreta
+ESCRITOR DEL COMANDO    quién escribió físicamente el texto de la orden
+EJECUTOR DE MUTACIÓN    quién aplicó el cambio al estado canónico
+```
+
+Un mismo cambio puede tener autoridad Owner, ordenante Owner, escritor del comando un
+agente que transcribió su instrucción en lenguaje natural, y ejecutor DSP.
+
+**Valores por defecto:** DSP **PUEDE** crear `prioridad: normal` sin orden del Owner,
+porque procede de una **regla explícita del kernel**, no de una decisión estratégica
+inventada. Lo que no puede es asignar `urgente`.
 
 | clase de campo | autoridad | ejecutor de mutación |
 |---|---|---|
@@ -724,6 +766,27 @@ separando dos zonas dentro de la misma experiencia:
               el hash de CONTENIDO H0. Si cambió, se descarta y se repite todo.  (req 5)
 ```
 
+**Órdenes explícitas vs. ediciones de la zona derivada.** Una orden escrita en
+`## ÓRDENES`, válida y basada en la revisión vigente, **se aplica sin pedir una segunda
+confirmación al Owner**. La elevación del paso 3 y el `- [?]` de confirmación aplican
+**sólo** a modificaciones hechas dentro de `## COLA`, que nunca se aplican en silencio.
+
+**Cierre numérico del livelock:**
+
+```text
+MAX_CAS_RETRIES = 3 por ciclo de reconciliación.
+
+Si los tres fallan porque el tablero sigue cambiando, DSP:
+  1. deja TODAS las órdenes sin consumir
+  2. NO modifica el estado canónico
+  3. registra `reconciliacion_pendiente`
+  4. informa del conflicto y DEJA DE GIRAR
+  5. reintenta en un ciclo posterior o cuando cese la escritura concurrente
+```
+
+Ninguna intención se pierde y no hay consumo infinito. El valor podrá hacerse
+configurable en (g); **el comportamiento de parada es obligatorio**.
+
 **Recuperación** (req 7): la propia línea de orden es el registro write-ahead. Al
 reiniciar, DSP encuentra cada orden en el estado en que quedó —`- [ ]` sin evento, evento
 registrado con la línea aún sin marcar, o ya `- [x]`— y **converge sin inventar estado**,
@@ -761,6 +824,19 @@ muere a mitad, el estado queda parcialmente aplicado.
 El mecanismo —event sourcing, write-ahead log, manifest transaccional, commits atómicos
 u otro— se decide en **(g)**.
 
+> **La línea de `## ÓRDENES` NO es el WAL universal del sistema.** Sirve como registro
+> write-ahead **de los comandos del Owner**, y nada más. Estado actual, sin ambigüedad:
+>
+> ```text
+> canal de órdenes del Owner        parcialmente resuelto por el protocolo de a.9
+> atomicidad general del runtime    PENDIENTE de (g)
+> event log · manifest · mecanismo
+>   transaccional general           PENDIENTE de diseño
+> ```
+>
+> Las transiciones multiarchivo producidas por agentes, paquetes, rutas e integración
+> **no** están cubiertas por el protocolo del tablero.
+
 ### Prueba de concurrencia
 
 Escrituras sobre unidades de custodia distintas no colisionan por diseño (I3):
@@ -772,8 +848,11 @@ Owner     → zona ÓRDENES del tablero de DIS
 DSP       → zona COLA del mismo tablero, con CAS sobre hash de contenido
 ```
 
-El único fichero con dos escritores físicos es el tablero, y ahí el ciclo de órdenes con
-elevación previa más CAS garantiza que ninguna orden se pierde ni se sobrescribe.
+El tablero tiene **dos escritores físicos por diseño** —el Owner en `## ÓRDENES`, DSP en
+`## COLA` y en el marcado de órdenes consumidas— y es correcto porque hay **propiedad de
+escritura por zona**, CAS y protocolo de consumo. Lo que el kernel afirma no es "un
+escritor físico por fichero", sino: **autoridad única por campo canónico · ejecutor único
+de mutación canónica · propiedad de escritura por zona en artefactos compartidos.**
 
 > **T02 no se declara superada por argumento: se declara superada cuando la prueba pasa**,
 > incluido el caso del Owner editando prioridad mientras DSP regenera ese mismo tablero.
@@ -927,7 +1006,7 @@ devuelve el control a esa capacidad en su paso.
 |---|---|
 | **Derogadas** | `G11` (13 cajas de capacidades) → a.1–a.4 · `G12` (orquestación sin tecnología) → DSP + SIS + sección (g) · `K0.9` (modo de fallo único) → a.7 |
 | **Sustituidas** | `G14` → SIS |
-| **Ajustadas** | `G13` deja de ser proporcional al riesgo: estructura por defecto de VER · `G34` escalado automático → recomposición de ruta trazada · `G52` regla de retirada → se aplica a capacidades materializadas · `G17` deja de ser criterio y pasa a instrumentarse por `escribe` disjunto · **`G08` se ajusta: el estado ejecutivo es una vista derivada del estado canónico, no un informe redactado** · `G32` se concreta en a.9 |
+| **Ajustadas** | `G13` deja de ser proporcional al riesgo: estructura por defecto de VER · `G34` escalado automático → recomposición de ruta trazada · `G52` regla de retirada → se aplica a capacidades materializadas · `G17` se instrumenta mediante la **condición compuesta de paralelismo**: dependencias, aislamiento físico, autoridad sobre decisiones, contratos compartidos, versiones de entrada y estrategia de integración · **`G08` se ajusta: el estado ejecutivo es una vista derivada del estado canónico, no un informe redactado** · `G32` se concreta en a.9 |
 | **PENDIENTES, no derogadas** | **`G26` / JOURNAL** — los tableros son estado vigente, no secuencia de eventos, contexto transversal de sesión, por qué cambió el estado, operaciones fallidas ni recuperación tras escritura parcial. El runtime probablemente necesite un event log que **pueda** sustituirlo, pero eso se decide al diseñar memoria, eventos y recuperación en la sección (g), no ahora por inferencia. |
 | **Previstas** | `G24` · `G34` vía rápida · `G53` → secciones (e), (f), (h) |
 
@@ -1010,7 +1089,31 @@ T19 VETOS            Toda capacidad con veto declara sus seis campos de contrato
 
 T20 APR NO TRÁMITE   Existen items cerrados SIN paquete APR, con `learning_candidate:
                      none` registrado. APR sólo recibe paquete ante señal real. [nueva]
+
+T21 ZONAS            El Owner modifica ÓRDENES mientras DSP regenera COLA. Cada zona
+                     conserva su propiedad; ninguna intención se pierde.        [nueva]
+
+T22 CAS LÍMITE       Tres fallos CAS consecutivos detienen el ciclo, dejan las órdenes
+                     intactas y registran `reconciliacion_pendiente`. No existe un
+                     cuarto giro automático.                                    [nueva]
+
+T23 EXTENSIÓN VS     Una capacidad local sin colisión se instala SIN K0.7.
+    OVERRIDE         Una que altera autoridad del kernel FALLA sin override declarado.
+                                                                                [nueva]
+
+T24 ATRIBUCIÓN       Una orden del Owner aplicada por DSP registra:
+                     autoridad=Owner · ordenante=Owner · ejecutor=DSP · base · evento.
+                     La prueba NO confunde propietario del campo, autoridad, ordenante,
+                     escritor del comando y ejecutor de mutación.               [nueva]
+
+T25 TRANSACCIÓN      La conformidad COMPLETA no puede declararse hasta que (g) demuestre
+    GENERAL          recuperación de transiciones multiarchivo NO originadas en el
+    PENDIENTE        tablero.                                                   [nueva]
 ```
+
+> **Estado de conformidad de (a):** T01-T24 son derivables y ejecutables desde esta
+> sección. **T25 permanece abierta por diseño**: la conformidad completa del sistema
+> operativo depende de (g).
 
 ---
 

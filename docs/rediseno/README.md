@@ -16,8 +16,8 @@ defecto**, no "la combinación más barata que mantenga la calidad necesaria".
 | | sección | estado |
 |---|---|---|
 | — | [Mapa del kernel 1.3.0 frente al principio gobernante](00-MAPA.md) | entregado |
-| a | [Capacidades, equipos, paquetes y estado](a-EQUIPOS-v4.md) | **v4 en revisión** |
-| b | Recorrido del item: estados, transiciones, quién decide el orden | no iniciada |
+| a | [Capacidades, equipos, paquetes y estado](a-CAPACIDADES-APROBADA.md) | **APROBADA** 2026-08-25 |
+| b | Recorrido, estados y composición de procesos | **en curso** |
 | c | Formato del handoff entre capacidades | no iniciada |
 | d | Puntos de interacción con el Owner | no iniciada |
 | e | La pregunta de la vía rápida | no iniciada |
@@ -28,6 +28,9 @@ defecto**, no "la combinación más barata que mantenga la calidad necesaria".
 
 Versiones rechazadas conservadas para trazabilidad:
 [v1](a-EQUIPOS-v1-RECHAZADA.md) · [v2](a-EQUIPOS-v2-RECHAZADA.md) · [v3](a-EQUIPOS-v3-SUPERADA.md).
+
+Pendientes que (a) deja abiertos por diseño: lista formal de estados y transiciones →
+(b) · disposición física del estado, atomicidad multiarchivo, event log y T25 → (g).
 
 ## Regla de proceso
 
