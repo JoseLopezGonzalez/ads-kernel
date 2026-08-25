@@ -16,7 +16,7 @@ defecto**, no "la combinación más barata que mantenga la calidad necesaria".
 | | sección | estado |
 |---|---|---|
 | — | [Mapa del kernel 1.3.0 frente al principio gobernante](00-MAPA.md) | entregado |
-| a | [Capacidades, equipos, paquetes y estado](a-EQUIPOS-v3.md) | **v3 en revisión** |
+| a | [Capacidades, equipos, paquetes y estado](a-EQUIPOS-v4.md) | **v4 en revisión** |
 | b | Recorrido del item: estados, transiciones, quién decide el orden | no iniciada |
 | c | Formato del handoff entre capacidades | no iniciada |
 | d | Puntos de interacción con el Owner | no iniciada |
@@ -27,7 +27,7 @@ defecto**, no "la combinación más barata que mantenga la calidad necesaria".
 | i | Impacto en packs y PROFILE_TEMPLATE | no iniciada |
 
 Versiones rechazadas conservadas para trazabilidad:
-[v1](a-EQUIPOS-v1-RECHAZADA.md) · [v2](a-EQUIPOS-v2-RECHAZADA.md).
+[v1](a-EQUIPOS-v1-RECHAZADA.md) · [v2](a-EQUIPOS-v2-RECHAZADA.md) · [v3](a-EQUIPOS-v3-SUPERADA.md).
 
 ## Regla de proceso
 
