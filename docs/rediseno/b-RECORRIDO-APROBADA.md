@@ -2,8 +2,10 @@
 
 > **ESTADO: APROBADA** por el Owner el 2026-08-25.
 > No se ha modificado `kernel/` ni `packs/`. La sección (a) permanece intacta.
-> Con (a) + (b) el kernel tiene el **mínimo operable**: catálogo de capacidades,
-> custodia, concurrencia, frenos, recorrido, estados y transiciones.
+> Con (a) + (b) queda aprobada una **especificación mínima para construir el kernel**
+> —catálogo de capacidades, custodia, concurrencia, frenos, recorrido, estados y
+> transiciones—, **no un kernel construido**. Las pruebas `T26-T74` son contratos de
+> conformidad definidos, no ejecutados.
 
 Primero el modelo general. Las rutas concretas se **derivan** de él en b.16.
 
