@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 8b9db502028fe3d2 -->
+<!-- source_revision: 57a3cad8726b7f2c -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -13,9 +13,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | CONTRATO DEFINIDO | 11 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 0 |
+| PRUEBA SUPERADA | 7 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **11** |
+| **total** | **18** |
 
 ## Detalle
 
@@ -32,3 +32,10 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T83](T081-T085-reanudacion-ENC.md) | Reanudación de ENC/Orden sin aplicar dos veces el mismo evento | ENC/Orden · gate:orden-emitida · a.9 idempotencia por id | requiere-runtime | **CONTRATO DEFINIDO** | — |
 | [T84](T081-T085-reanudacion-ENC.md) | Reanudación de ENC/Formulacion desde campos parcialmente escritos | ENC/Formulacion · gate:encuadre-listo | guion-manual | **CONTRATO DEFINIDO** | — |
 | [T85](T081-T085-reanudacion-ENC.md) | La crítica no se reanuda si su lectura independiente no se escribió | ENC/Critica · gate:critica-de-encuadre · G13 | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T86](T086-T092-contratos.md) | La autoridad de un rol no excede la de su capacidad | C1 · a.1 AUTORIDAD · autoridad silenciosa | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |
+| [T87](T086-T092-contratos.md) | La independencia gana siempre a la combinación | C4 paso 5 · C2 combinaciones prohibidas · G13 | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |
+| [T88](T086-T092-contratos.md) | Todo rol es materializable porque su prompt existe | C1 campo prompt · regla R02 · C4 prohibiciones | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |
+| [T89](T086-T092-contratos.md) | Ninguna reanudación se declara posible sin prueba que la respalde | C3 regla 7 · regla R03 · a.10 | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |
+| [T90](T086-T092-contratos.md) | Capacidades y roles se referencian mutuamente sin huérfanos | a.1 · C1 · C4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |
+| [T91](T086-T092-contratos.md) | Ningún paso de ningún método dura lo que el agente decida | C3 regla 1 · esquemas/metodo.yaml | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |
+| [T92](T086-T092-contratos.md) | El kernel es portable porque ningún contrato exige una marca | K0.8 · C2 regla de portabilidad | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |

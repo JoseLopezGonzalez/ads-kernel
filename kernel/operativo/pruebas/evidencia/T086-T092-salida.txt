@@ -1,0 +1,9 @@
+T86  SUPERADA  La autoridad de un rol no excede la de su capacidad
+T87  SUPERADA  Ningún rol declarado independiente aparece como combinable
+T88  SUPERADA  Todo rol apunta a un prompt operativo que existe
+T89  SUPERADA  Toda prueba de reanudación cita un escenario que existe
+T90  SUPERADA  Capacidades y roles se referencian mutuamente sin huérfanos
+T91  SUPERADA  Todo paso de todo método declara cuándo termina
+T92  SUPERADA  Ningún contrato del kernel ni de un pack exige una marca concreta
+
+7 superadas · 0 fallidas

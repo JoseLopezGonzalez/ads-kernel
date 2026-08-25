@@ -17,7 +17,7 @@ fuera        runtime · dispatcher · gym-wear · pack ERP · secciones (c)-(i) 
 ```text
 BLOQUE 0   esquemas, validadores e índice          TERMINADO
 BLOQUE 1   circuito Owner → item (paso 1)          TERMINADO, pendiente revisión
-BLOQUE 2   contrato equipo/rol/agente/método       NO INICIADO
+BLOQUE 2   contrato equipo/rol/agente/método       TERMINADO
 BLOQUE 3   sistema de excelencia de Diseño         NO INICIADO
 BLOQUE 4   equipo de Diseño materializado          NO INICIADO
 BLOQUE 5   demás capacidades                       NO INICIADO
@@ -46,6 +46,16 @@ BLOQUE 6   packs web-app · mobile-app · wear-os    NO INICIADO
 - Plantilla de encuadre rellenable — `plantillas/ENCUADRE.md`
 - T75–T85 definidas
 
+**Bloque 2 — paso 2 completo**
+
+- C1 los siete conceptos y los 28 campos del contrato de rol
+- C2 agentes, perfiles y modelos (escrito en el bloque 1)
+- C3 el método ejecutable: 17 elementos y 7 reglas
+- C4 materialización: algoritmo de 7 pasos, ampliación y retirada
+- C5 handoff y devolución, con la distinción rechazo/devolución
+- Plantillas CHECKPOINT, DEVOLUCION, DICTAMEN
+- `comprobar_contratos.py`: T86–T92 **EJECUTADAS Y SUPERADAS**, con salida registrada
+
 ## En revisión
 
 Bloque 1 — revisión adversarial independiente pendiente de lanzar.
@@ -59,13 +69,13 @@ La única con contenido normativo es **C1** (¿`ENC` es capacidad propia o funci
 
 ```text
 T01-T74   contrato-definido, salvo tres parciales en validador-implementado
-T75-T85   contrato-definido (11). Ninguna ejecutada: seis exigen juicio humano o
-          guion manual sobre un proyecto real, y una exige runtime.
-ads_lint  EJECUTADO y en verde sobre 74 bloques canónicos
+T75-T85   contrato-definido (11)
+T86-T92   PRUEBA SUPERADA (7), con evidencia en pruebas/evidencia/
+ads_lint  EJECUTADO y en verde sobre 81 bloques canónicos
 ```
 
 ## Siguiente acción exacta
 
-> Escribir `kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md` (paso 2.1),
-> `C3-METODO-EJECUTABLE.md` (paso 2.3) y `C4-MATERIALIZACION.md` (paso 2.4). `C2`
-> —agentes y modelos— ya está escrito.
+> Escribir `kernel/operativo/diseno/00-SISTEMA-DE-EXCELENCIA.md` con los dos gates
+> independientes (usabilidad y excelencia visual) y sus dos rúbricas, y a continuación
+> `01-MEMORIA-DE-DISENO.md` con el corpus de treinta secciones del paso 3.2.
