@@ -1,7 +1,9 @@
 # SECCIÓN (b) — RECORRIDO, ESTADOS Y COMPOSICIÓN DE PROCESOS
 
-> **ESTADO: propuesta v2.** No se ha modificado `kernel/` ni `packs/`.
-> Depende de la sección (a), aprobada el 2026-08-25 y **no modificada** por esta sección.
+> **ESTADO: APROBADA** por el Owner el 2026-08-25.
+> No se ha modificado `kernel/` ni `packs/`. La sección (a) permanece intacta.
+> Con (a) + (b) el kernel tiene el **mínimo operable**: catálogo de capacidades,
+> custodia, concurrencia, frenos, recorrido, estados y transiciones.
 
 Primero el modelo general. Las rutas concretas se **derivan** de él en b.16.
 
@@ -69,8 +71,8 @@ bloqueado              espera algo que AÚN NO EXISTE y que nadie está producie
 devuelto               emitió DEVOLUCIÓN; espera a que se corrija la capa anterior
 cerrado                gate cumplido, capa depositada
 cancelado              su EJECUCIÓN se detuvo, con motivo escrito.
-                       TERMINAL NO ES SATISFECHO: la obligación a la que servía queda
-                       huérfana salvo retirada aprobada (b.3)
+                       TERMINAL NO ES RESUELTO: la obligación a la que servía queda
+                       huérfana mientras no sea SATISFECHA ni RETIRADA (b.3)
 ```
 
 ### La distinción que hace útil el vocabulario
@@ -128,28 +130,47 @@ Todo proceso declara sus **obligaciones**: los resultados que deben existir para
 intención esté cumplida. Cada paquete de la ruta vigente **sirve** a una o más
 obligaciones.
 
+> **Producir lo que una obligación exigía y decidir que ya no forma parte del alcance son
+> resultados DISTINTOS.** Si se llaman igual, el sistema puede informar de que entregó
+> algo que en realidad se eliminó. Por eso son dos predicados, y sólo uno significa que el
+> resultado existe.
+
 ```text
+obligación_resuelta(o)  ≡  obligación_satisfecha(o)  Ó  obligación_retirada(o)
+
+
 obligación_satisfecha(o) ≡
+     existe una CAPA VIGENTE que produce el resultado exigido
+     Ó existe OTRA capa vigente ENLAZADA que lo cubre explícitamente
+                                              → EL RESULTADO EXISTE
 
-   (1) existe una CAPA VIGENTE que la cubre
-                                 —el trabajo se hizo y su resultado sigue valiendo—
-   Ó (2) una RECOMPOSICIÓN APROBADA la RETIRÓ EXPRESAMENTE, declarando por escrito que:
-            · dejó de ser necesaria para el resultado perseguido, Ó
-            · está satisfecha por otra capa vigente ENLAZADA
+obligación_retirada(o)   ≡
+     una RECOMPOSICIÓN APROBADA declara que la obligación dejó de ser necesaria,
+     IDENTIFICA QUIÉN TUVO AUTORIDAD para retirarla,
+     y EXPLICA CÓMO AFECTA al resultado perseguido
+                                              → EL RESULTADO NO EXISTE, y consta
 ```
 
-**Ninguna otra vía satisface una obligación.** En particular:
+**Reglas obligatorias:**
 
 ```text
-· cancelar el paquete que la servía NO la satisface
-· cerrar todos los paquetes NO satisface nada por sí mismo
-· una capa `invalidada` NO satisface nada
+· cancelar el paquete NO satisface ni retira la obligación
+· una capa `invalidada` NO satisface una obligación
 · una capa `sustituida` satisface sólo a través de la capa que la reemplaza
+· cerrar todos los paquetes NO resuelve nada por sí mismo
+· una RETIRADA conserva siempre la obligación original y su motivo en el histórico
+· el CIERRE exige que todas las obligaciones vigentes estén RESUELTAS (b.10)
+· el INFORME DE CIERRE distingue cuántas quedaron SATISFECHAS y cuántas RETIRADAS
+· una obligación RETIRADA NUNCA puede aparecer como funcionalidad, evidencia
+  o resultado entregado
+· si retirar una obligación CAMBIA MATERIALMENTE el resultado perseguido, se activa
+  la regla de b.1 —cambio de proceso o item nuevo—. NO puede ocultarse como una
+  recomposición rutinaria
 ```
 
-Una obligación con su paquete cancelado y sin retirada aprobada queda
-**`obligación_huérfana`**: la señal de que la ejecución terminó y el resultado no existe.
-La función de estado global (b.4) y el cierre (b.10) la usan como entrada.
+Una obligación **ni satisfecha ni retirada** queda **`obligación_huérfana`**: la señal de
+que la ejecución terminó y el resultado no existe **ni consta que se decidiera
+eliminarlo**. La función de estado global (b.4) y el cierre (b.10) la usan como entrada.
 
 ---
 
@@ -199,14 +220,14 @@ P9   ∃ `esperando-*` · `devuelto` · `propuesto` con
      dependencias abiertas                                → en espera
 P10  TODOS los paquetes terminales (`cerrado`|`cancelado`):
 
-       ∃ obligación_huérfana (b.3):
+       ∃ obligación_huérfana (b.3) — ni satisfecha ni retirada:
           · el trabajo de reemplazo es identificable      → bloqueado
                                               motivo: obligación huérfana sin reemplazo
-          · se espera decisión sobre retirarla o
+          · se espera decisión sobre RETIRARLA o
             abandonar el item                             → en espera
                                               motivo: obligación huérfana sin decisión
 
-       CERO obligaciones huérfanas:
+       TODAS las obligaciones RESUELTAS (satisfechas o retiradas):
           · integración semántica no declarada            → en espera
                                               motivo: integración pendiente
           · declarada, `learning_candidate` sin resolver  → en espera
@@ -232,7 +253,8 @@ vacío. **No existe combinación válida sin resultado, y ninguna produce dos.**
 | cerrados junto a propuestos | `activo` (P7) si las dependencias del propuesto están cerradas y vigentes; `en espera` (P9) si no |
 | cancelados junto a activos | `activo` (P5/P6) — cancelar un paquete no detiene el item |
 | desacuerdo junto a bloqueo | `en desacuerdo` (P4) — hay algo que **resolver**, y domina sobre lo que sólo hay que esperar |
-| **todos terminales, obligación huérfana** | **`bloqueado` o `en espera` (P10). NUNCA `cerrado`** — cancelar todos los paquetes no produce el resultado |
+| **todos terminales, obligación huérfana** | **`bloqueado` o `en espera` (P10). NUNCA `cerrado`** — cancelar todos los paquetes ni produce el resultado ni lo retira del alcance |
+| todos terminales, obligaciones RETIRADAS con justificación | sigue evaluando P10 → puede llegar a `cerrado`, y el informe dirá cuántas fueron retiradas |
 | todos terminales, integración pendiente | `en espera · integración pendiente` (P10) |
 | todos terminales, learning pendiente | `en espera · aprendizaje pendiente` (P10) |
 | aparcado con paquetes bloqueados | `aparcado` (P3). **El bloqueo se sigue reportando**: aparcar oculta el trabajo, no la información |
@@ -438,8 +460,12 @@ Reglas:
    propietaria de esa capa, y hasta que ésta responda la capa sigue `vigente`.
    Si la capacidad propietaria no está materializada, la solicitud escala al Owner.
 2. Los paquetes ya `cerrado` siguen cerrados. Si su capa se invalida, la recomposición
-   **DEBE** crear el trabajo de reemplazo o **retirar expresamente la obligación** con
-   justificación escrita (b.3). Dejar la obligación huérfana bloquea el cierre (b.10).
+   **DEBE** crear el trabajo de reemplazo o **RETIRAR expresamente la obligación** (b.3),
+   identificando quién tuvo autoridad y cómo afecta al resultado perseguido. Dejar la
+   obligación huérfana bloquea el cierre (b.10).
+5. **Una retirada que cambia materialmente el resultado perseguido NO es una recomposición
+   rutinaria**: activa la regla de b.1 —cambio de proceso o item nuevo—. Recomponer no
+   puede ser la vía silenciosa para reducir el alcance.
 3. La ruta pasa a `r_n+1`, con traza de **qué cambió y por qué** (formato de a.6).
 4. Recomponer **no reinicia el trabajo en curso**: un paquete `en curso` que sobrevive en
    la ruta nueva conserva su custodia y su checkpoint.
@@ -496,9 +522,10 @@ Un item cierra cuando se cumplen **todas** estas condiciones:
 [ ] TERMINACIÓN   ningún paquete de la RUTA VIGENTE continúa abierto
                   (abierto = cualquier estado que no sea `cerrado` ni `cancelado`)
 
-[ ] SATISFACCIÓN  todas las OBLIGACIONES VIGENTES del proceso satisfechas según b.3:
-                  cubiertas por capa VIGENTE, o RETIRADAS expresamente por una
-                  recomposición aprobada con justificación
+[ ] RESOLUCIÓN    todas las OBLIGACIONES VIGENTES del proceso RESUELTAS según b.3:
+                    · SATISFECHAS — existe capa vigente que produce el resultado, Ó
+                    · RETIRADAS   — recomposición aprobada, con autoridad identificada
+                                    y efecto sobre el resultado explicado
                   → cero `obligación_huérfana`
 
 [ ] VIGENCIA      ninguna obligación se apoya en una capa `invalidada`
@@ -519,6 +546,19 @@ la recomposición aprobada.
 > Un item con todos sus paquetes cancelados y ninguna retirada aprobada **no puede
 > cerrar**. Su salida legítima es `cancelado`, `bloqueado` o `en espera` según la decisión
 > que quede registrada — **nunca `cerrado`**.
+
+### El informe de cierre distingue lo entregado de lo eliminado
+
+```text
+CIERRE — <ITEM-ID>
+obligaciones SATISFECHAS:  N   ← el resultado existe
+obligaciones RETIRADAS:    M   ← se decidió que dejaban de formar parte del alcance
+                                 cuál · quién tuvo autoridad · cómo afecta al resultado
+```
+
+**Una obligación retirada NUNCA se reporta como funcionalidad, evidencia ni resultado
+entregado.** Un informe que sume `N+M` y lo presente como entregado es un defecto de
+conformidad, no un redondeo.
 
 ---
 
@@ -851,7 +891,7 @@ DSP **no tiene autoridad semántica**. Regla, en orden:
 | **DEU** deuda técnica | ARQ | ARQ · CON · VER | DOM/SEG:condiciones · ENT `C-ENT` · **USO `C-USO`** · APR `C-APR` |
 | **DEP** dependencia | PLT | **SEG:condiciones ⊳ CON** · VER | DOM:condiciones `C-DOM` · ENT `C-ENT` · ARQ si el cambio de versión altera contratos. *SEG antes de construir es obligatorio aquí (G28)* |
 | **AUD** auditoría de proyecto existente | derivado del encargo — ver abajo | INV | DOM `C-DOM` · SEG `C-SEG` · DIS/Reconstrucción `C-DIS` · PRD **sólo si produce una decisión de producto**. *Puede cerrar en APR sin pasar por PRD: su resultado legítimo es conocimiento e items nuevos* |
-| **DIR** cambio de dirección (G51) | según la regla de arriba | ARQ(radio de impacto) · capacidades propietarias de las decisiones afectadas · **OWNER en el punto de decisión** · registro de decisiones sustituidas · criterio de éxito · **creación de los items derivados** | DIS `C-DIS` · `CON:experimental` sólo si hace falta un prototipo PARA DECIDIR · APR `C-APR`. **CON, VER, ENT y USO productivos NO son obligatorios** — ver abajo |
+| **DIR** cambio de dirección (G51) | según la regla de arriba | ARQ(radio de impacto) · capacidades propietarias de las decisiones afectadas · **OWNER en el punto de decisión** · registro de decisiones sustituidas · criterio de éxito · **creación de los items derivados** · **`VER:decisión`** | DIS `C-DIS` · `CON:experimental` sólo si hace falta un prototipo PARA DECIDIR · APR `C-APR`. **CON, VER, ENT y USO productivos NO son obligatorios** — ver abajo |
 | **SIS** evolución del sistema | SIS | SIS · CON · VER | **ENT obligatorio si modifica el runtime** (activación segura y reversible) · APR `C-APR`. Sujeto al freno de racha SIS (a.7) |
 
 ### `AUD` — el propietario global se deriva del encargo
@@ -956,20 +996,74 @@ ser obligatorios**.
 [ ] creación de los ITEMS DERIVADOS necesarios
 ```
 
-**No obligatorio:** Construcción, Verificación, Entrega y Uso real. La ejecución de la
-dirección aprobada se materializa mediante **items enlazados** —FEA, GAP, DEU, SIS o el
-que corresponda— que continúan de forma independiente y **paralelizable**.
+```text
+[ ] VER:decisión                    ← paquete OBLIGATORIO, ver abajo
+```
 
-`CON` sólo entra en un DIR como **`CON:experimental`** (b.16), cuando el propio proceso
-declara que necesita un prototipo **para poder decidir**: produce evidencia, no
-implementación productiva.
+**No obligatorio:** Construcción productiva, Verificación **de implementación**, Entrega y
+Uso real. La ejecución de la dirección aprobada se materializa mediante **items
+enlazados** —FEA, GAP, DEU, SIS o el que corresponda— que continúan de forma independiente
+y **paralelizable**.
+
+`CON` sólo entra en un DIR como **`CON:experimental`**, cuando el propio proceso declara
+que necesita un prototipo **para poder decidir**: produce evidencia, no implementación
+productiva. **Ninguna construcción productiva puede vivir dentro de un DIR.**
+
+#### `VER:decisión` — se verifica la decisión, no su implementación
+
+DIR no implementa, pero **su artefacto de decisión sí necesita comprobación independiente
+antes de cerrar** (G13). `VER:decisión` no aprueba la preferencia del Owner ni verifica una
+implementación que no existe: comprueba que el resultado de DIR es **íntegro, coherente,
+trazable y ejecutable**.
+
+```text
+[ ] el RADIO DE IMPACTO fue analizado
+[ ] están identificadas las DECISIONES SUSTITUIDAS
+[ ] las CAPACIDADES AFECTADAS participaron cuando correspondía
+[ ] la nueva dirección y su CRITERIO DE ÉXITO están escritos SIN AMBIGÜEDAD
+[ ] las CONTRADICCIONES CONOCIDAS están resueltas o registradas
+[ ] cada CONSECUENCIA EJECUTABLE está cubierta por un ITEM DERIVADO
+[ ] NO existen impactos detectados SIN PROPIETARIO
+[ ] los items derivados conservan ENLACES hacia DIR y hacia la decisión que ejecutan
+[ ] NINGUNA implementación productiva quedó escondida dentro de DIR
+```
+
+**Límites de autoridad de `VER:decisión`:**
+
+```text
+NO PUEDE  sustituir la decisión del Owner por su propia preferencia
+NO PUEDE  reabrir la dirección por desacuerdo estético, técnico o de producto
+SÍ DEVUELVE  si el registro está INCOMPLETO, es CONTRADICTORIO, no cubre el impacto
+             conocido, o no puede ejecutarse mediante los items derivados
+```
+
+Las **capacidades propietarias de las decisiones sustituidas** confirman por **gate
+conjunto (⇄)** que su materia está representada correctamente. Eso **no** les da un veto
+general sobre la dirección elegida. Si aparece un **veto no levantable** de los definidos
+en (a), se aplica su contrato normal.
+
+#### Ruta conceptual de DIR
+
+```text
+radio de impacto
+→ participación de las capacidades afectadas
+→ decisión del Owner
+→ registro de sustituciones y criterio de éxito
+→ creación de los items derivados
+→ VER:decisión
+→ cierre de DIR
+```
+
+`CON:experimental` puede existir **antes** de la decisión, cuando haga falta evidencia para
+decidir.
 
 > **DIR no es un macro-item que decide, construye y despliega una transformación
 > completa.** Serlo dificultaría la custodia, la cancelación parcial, el paralelismo y la
 > trazabilidad — las cuatro cosas que este modelo existe para dar.
 
-**DIR cierra** cuando la decisión está tomada, registrada y descompuesta en resultados
-ejecutables. Los items derivados siguen su propio recorrido.
+**DIR cierra** cuando la decisión está tomada, registrada, descompuesta en resultados
+ejecutables **y verificada por `VER:decisión`**. Los items derivados siguen su propio
+recorrido, de forma independiente y paralelizable.
 
 ### Lo que la derivación produce
 
@@ -980,8 +1074,8 @@ INV  activa CON:experimental sin dejar de ser INV, y PUEDE cerrar sin segundo it
 DEU  PUEDE activar USO sin cambiar de proceso
 AUD  no activa CON, y puede cerrar en APR sin pasar por PRD
 INC  es el único con APR obligatorio
-DIR  el propietario global NUNCA lo elige DSP · DECIDE, no implementa: la ejecución
-     va en items enlazados
+DIR  el propietario global NUNCA lo elige DSP · DECIDE, no implementa: la ejecución va
+     en items enlazados · su DECISIÓN sí se verifica, con `VER:decisión`
 AUD  el propietario global se DERIVA del encargo declarado, no se asigna a mano
 SIS  ENT obligatorio si modifica el runtime
 GAP  comparte grafo con FEA y es un proceso distinto por intención, entrada, encuadre,
@@ -1134,9 +1228,46 @@ T62 AUD SE DIVIDE      Una auditoría con conclusiones independientes se divide 
                        la capacidad líder la declara el Owner.                    [nueva]
 
 T63 TOTALIDAD TRAS     La función de estado global sigue siendo TOTAL y DETERMINISTA tras
-    OBLIGACIONES       introducir `obligación_satisfecha`: los diez casos frontera de b.4
+    OBLIGACIONES       introducir `obligación_resuelta`: los once casos frontera de b.4
                        producen exactamente un estado cada uno, y P0 no queda tapado por
-                       las banderas de aparcado ni de cancelado.                  [nueva]
+                       las banderas de aparcado ni de cancelado.              [corregida]
+
+T64 RETIRADA NO ES     Una obligación RETIRADA permite RESOLVER el proceso, pero NO
+    SATISFECHA         aparece como satisfecha en ningún artefacto ni informe.    [nueva]
+
+T65 INFORME DE CIERRE  El cierre informa POR SEPARADO obligaciones satisfechas y
+                       retiradas. Ningún informe suma ambas como entregado.       [nueva]
+
+T66 HUÉRFANA POR       Cancelar un paquete deja su obligación HUÉRFANA mientras no sea
+    CANCELACIÓN        satisfecha ni retirada. El item no cierra.                 [nueva]
+
+T67 RETIRADA           Retirar una obligación que cambia MATERIALMENTE el resultado
+    MATERIAL           perseguido activa b.1 —cambio de proceso o item nuevo—, y no se
+                       tramita como recomposición rutinaria.                      [nueva]
+
+T68 ROLLBACK           Un rollback SATISFACE `ENT(reentrega)` si restaura realmente el
+    SATISFACE          servicio: existe capa vigente que produce el resultado exigido.
+                                                                                  [nueva]
+
+T69 NO REENTREGAR      Decidir NO reentregar exige RETIRAR expresamente esa obligación,
+    ES RETIRADA        con autoridad identificada. No es equivalente a T68.        [nueva]
+
+T70 DIR SIN VER        Un DIR no cierra sin `VER:decisión` cerrado con capa vigente.
+                                                                                  [nueva]
+
+T71 IMPACTO SIN ITEM   `VER:decisión` detecta un impacto conocido SIN item derivado y
+                       devuelve el DIR.                                           [nueva]
+
+T72 VER NO DECIDE      `VER:decisión` NO puede rechazar una dirección sólo porque habría
+                       elegido otra. Un rechazo por preferencia es un defecto de
+                       conformidad.                                               [nueva]
+
+T73 ENLACE DERIVADO    Cada item derivado de un DIR enlaza la DECISIÓN CONCRETA que
+                       ejecuta, y el propio DIR.                                  [nueva]
+
+T74 DIR SIN            Una implementación PRODUCTIVA introducida dentro de un DIR hace
+    CONSTRUCCIÓN       FALLAR la conformidad. Sólo `CON:experimental` es admisible, y
+    PRODUCTIVA         sólo antes de la decisión.                                 [nueva]
 ```
 
 ### Barrido de consistencia
@@ -1144,10 +1275,12 @@ T63 TOTALIDAD TRAS     La función de estado global sigue siendo TOTAL y DETERMI
 Antes de cerrar la sección se verificó que no queda ninguna afirmación que implique:
 
 ```text
-[ ] terminal equivale a satisfecho          → b.2, b.3, b.4 P10, b.10, b.16
-[ ] DSP decide contenido                    → b.5, b.7, b.9, b.15.1, b.16 DIR y AUD
-[ ] todo bloqueo necesita aprobación humana  → b.15.1
-[ ] DIR debe implementar toda la dirección   → b.16 DIR
-[ ] cancelar equivale a invalidar            → b.3, b.7
-[ ] cerrar paquetes equivale a producir el resultado → b.10
+[ ] terminal equivale a satisfecho                    → b.2, b.3, b.4 P10, b.10, b.16
+[ ] DSP decide contenido                              → b.5, b.7, b.9, b.15.1, b.16
+[ ] todo bloqueo necesita aprobación humana           → b.15.1
+[ ] DIR debe implementar toda la dirección            → b.16 DIR
+[ ] cancelar equivale a invalidar                     → b.3, b.7
+[ ] cerrar paquetes equivale a producir el resultado  → b.10
+[ ] RETIRADA equivale a SATISFECHA                    → b.3, b.4 P10, b.9, b.10, b.17
+[ ] DIR cierra sin verificar su propia decisión       → b.16 VER:decisión
 ```

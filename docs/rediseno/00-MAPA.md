@@ -1,5 +1,11 @@
 # PASO 1 — Mapa del kernel 1.3.0 frente al principio gobernante
 
+> **ESTADO tras aprobar (a) y (b) el 2026-08-25.**
+> Resueltas por (a): G07 · G08 · G11 · G12 · G14 · G15 · G17 · G32 · K0.9.
+> Resueltas por (b): recorrido, estados, transiciones y composición de procesos.
+> **Siguen pendientes** de secciones posteriores, ahora como items SIS dentro de un
+> proyecto real: G24 · G26 · G34 vía rápida · G53 · K0.2 · G03 (ejecución desatendida).
+
 Principio gobernante: un work item SE FABRICA EN CADENA. Cada equipo AÑADE UNA CAPA
 DE VALOR, no valida. Implementación es casi la última parada. El uso real reentra
 por el principio. Calidad sólida/profesional/autónoma es la DISPOSICIÓN POR DEFECTO.

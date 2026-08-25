@@ -17,7 +17,7 @@ defecto**, no "la combinación más barata que mantenga la calidad necesaria".
 |---|---|---|
 | — | [Mapa del kernel 1.3.0 frente al principio gobernante](00-MAPA.md) | entregado |
 | a | [Capacidades, equipos, paquetes y estado](a-CAPACIDADES-APROBADA.md) | **APROBADA** 2026-08-25 |
-| b | [Recorrido, estados y composición de procesos](b-RECORRIDO.md) | **propuesta, en revisión** |
+| b | [Recorrido, estados y composición de procesos](b-RECORRIDO-APROBADA.md) | **APROBADA** 2026-08-25 |
 | c | Formato del handoff entre capacidades | no iniciada |
 | d | Puntos de interacción con el Owner | no iniciada |
 | e | La pregunta de la vía rápida | no iniciada |
@@ -29,8 +29,22 @@ defecto**, no "la combinación más barata que mantenga la calidad necesaria".
 Versiones rechazadas conservadas para trazabilidad:
 [v1](a-EQUIPOS-v1-RECHAZADA.md) · [v2](a-EQUIPOS-v2-RECHAZADA.md) · [v3](a-EQUIPOS-v3-SUPERADA.md).
 
-Pendientes que (a) deja abiertos por diseño: lista formal de estados y transiciones →
-(b) · disposición física del estado, atomicidad multiarchivo, event log y T25 → (g).
+Pendientes que (a) dejó abiertos y (b) cierra: lista formal de estados, transiciones,
+recorrido y composición de procesos. **Siguen abiertos por diseño**: disposición física
+del estado, atomicidad multiarchivo, event log y `T25` → (g).
+
+## El mínimo operable está cerrado
+
+Con (a) y (b) aprobadas, el kernel tiene lo necesario para **usarse**. El siguiente
+trabajo **no** es seguir diseñando (c) a (i) en abstracto: es **probar este mínimo en un
+proyecto real** —gym-wear o PesquerApp— y desarrollar las piezas siguientes como **items
+`SIS` surgidos de esa utilización**.
+
+Es la aplicación a nosotros mismos del freno de racha SIS (a.7): seguir construyendo el
+kernel entero antes de usarlo es exactamente el modo de fallo (b) —autorreferencia sin
+producto— que el propio kernel existe para frenar.
+
+Conformidad acumulada: **T01-T24** de (a) · **T26-T74** de (b) · `T25` abierta hasta (g).
 
 ## Regla de proceso
 
