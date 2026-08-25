@@ -251,7 +251,12 @@ desbloquearía**. Un bloqueo sin desbloqueador nombrado es un defecto, no un blo
 
 **DEVOLUCIÓN.** A la capacidad concreta, nombrando qué falta. Sujeta al freno de 2 y a la
 detección de ciclos multiparte (a.7). La capa devuelta **no se borra**: pasa a
-`invalidada` o `sustituida` según b.3.
+`invalidada` o `sustituida` según b.3, y siempre por decisión de su capacidad propietaria.
+
+> **Toda devolución obliga a DSP a crear o reabrir el paquete de corrección en el mismo
+> ciclo.** Un `devuelto` sin paquete de corrección deja al item en `en espera` (P7)
+> cuando en realidad hay trabajo que hacer, y es un defecto de despacho, no un estado
+> legítimo.
 
 **CANCELACIÓN.** Detiene la **ejecución**, no borra el histórico. Si el Owner lo pidió, se
 **propone**, no se ejecuta.
@@ -310,7 +315,11 @@ nueva o dejada de ser viable (b.8).
 
 Reglas:
 
-1. La recomposición **nunca borra capas depositadas**. Puede cambiar su **vigencia** (b.3).
+1. La recomposición **nunca borra capas depositadas**. Puede **provocar** un cambio de
+   vigencia (b.3), pero **DSP no invalida capas por sí mismo**: eso es autoridad
+   semántica, que no tiene (b.5). DSP **solicita** la invalidación a la capacidad
+   propietaria de esa capa, y hasta que ésta responda la capa sigue `vigente`.
+   Si la capacidad propietaria no está materializada, la solicitud escala al Owner.
 2. Los paquetes ya `cerrado` siguen cerrados. Si su capa se invalida, la recomposición
    **DEBE** crear el trabajo de reemplazo o justificar que ya no hace falta.
 3. La ruta pasa a `r_n+1`, con traza de **qué cambió y por qué** (formato de a.6).
