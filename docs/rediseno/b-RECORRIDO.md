@@ -68,7 +68,9 @@ esperando-externo      espera algo fuera del sistema: proveedor, dispositivo, me
 bloqueado              espera algo que AÚN NO EXISTE y que nadie está produciendo
 devuelto               emitió DEVOLUCIÓN; espera a que se corrija la capa anterior
 cerrado                gate cumplido, capa depositada
-cancelado              su EJECUCIÓN se detuvo, con motivo escrito
+cancelado              su EJECUCIÓN se detuvo, con motivo escrito.
+                       TERMINAL NO ES SATISFECHO: la obligación a la que servía queda
+                       huérfana salvo retirada aprobada (b.3)
 ```
 
 ### La distinción que hace útil el vocabulario
@@ -117,56 +119,129 @@ Reglas:
 6. Una recomposición que invalide una capa **DEBE** crear el trabajo necesario para
    reemplazarla, o justificar por escrito que ya no es necesaria (b.9).
 
+### Obligaciones del proceso, y qué significa satisfacerlas
+
+> **Terminar la ejecución no es lo mismo que satisfacer el proceso.** Un paquete
+> `cancelado` es ejecución terminada; no dice nada sobre si el resultado existe.
+
+Todo proceso declara sus **obligaciones**: los resultados que deben existir para que su
+intención esté cumplida. Cada paquete de la ruta vigente **sirve** a una o más
+obligaciones.
+
+```text
+obligación_satisfecha(o) ≡
+
+   (1) existe una CAPA VIGENTE que la cubre
+                                 —el trabajo se hizo y su resultado sigue valiendo—
+   Ó (2) una RECOMPOSICIÓN APROBADA la RETIRÓ EXPRESAMENTE, declarando por escrito que:
+            · dejó de ser necesaria para el resultado perseguido, Ó
+            · está satisfecha por otra capa vigente ENLAZADA
+```
+
+**Ninguna otra vía satisface una obligación.** En particular:
+
+```text
+· cancelar el paquete que la servía NO la satisface
+· cerrar todos los paquetes NO satisface nada por sí mismo
+· una capa `invalidada` NO satisface nada
+· una capa `sustituida` satisface sólo a través de la capa que la reemplaza
+```
+
+Una obligación con su paquete cancelado y sin retirada aprobada queda
+**`obligación_huérfana`**: la señal de que la ejecución terminó y el resultado no existe.
+La función de estado global (b.4) y el cierre (b.10) la usan como entrada.
+
 ---
 
 ## b.4 — El estado global como función total
 
-El estado global es **calculado**, nunca escrito a mano. La función **DEBE** producir
-exactamente un resultado para cualquier combinación válida de paquetes.
+El estado global es **calculado**, nunca escrito a mano.
 
 ```text
 estado_global(item) → (estado, motivo)
 ```
 
-**Precedencia mecánica. Se evalúa en orden; gana la primera que se cumple.**
+**Vocabulario de estados globales:**
 
 ```text
-P0  bandera `cancelado`                                    → cancelado
-P1  bandera `aparcado`                                     → aparcado
-P2  ∃ desacuerdo abierto o freno escalado (a.7)            → en desacuerdo
-P3  ∃ paquete `en curso`                                   → activo
-P4  ∃ paquete `listo`                                      → activo
-P5  ∃ paquete `propuesto` con TODAS sus dependencias cerradas → activo
-                                                             motivo: pendiente de promoción
-P6  ∃ paquete `bloqueado`                                  → bloqueado
-P7  ∃ paquete `esperando-*` · `devuelto` · `propuesto` con
-    dependencias abiertas                                  → en espera
-P8  todos los paquetes en `cerrado` o `cancelado`:
-      integración semántica NO declarada                   → en espera
-                                                             motivo: integración pendiente
-      declarada, `learning_candidate` sin resolver         → en espera
-                                                             motivo: aprendizaje pendiente
-      ambas resueltas                                      → cerrado
-P9  conjunto de paquetes vacío                             → encuadrado
+encuadrado                existe, con ruta compuesta, sin paquetes todavía
+activo                    hay trabajo despachado o despachable
+en espera                 nada despachable, pero nada estructural lo impide
+bloqueado                 falta crear algo que aún no existe
+en desacuerdo             conflicto, veto o freno escalado sin resolver
+aparcado                  el Owner ha retirado la atención. DECLARADO.
+cancelando                cancelación global en curso: aún hay paquetes abiertos
+cancelado                 cancelación global completada. DECLARADO + verificado.
+reconciliacion-pendiente  transición multiarchivo incompleta: el estado NO es fiable
+cerrado                   condiciones de b.10 cumplidas
 ```
 
-**Totalidad:** los once estados de paquete de b.2 quedan cubiertos por P3–P8; P0, P1 y P9
-cubren las banderas y el caso vacío. No existe combinación sin resultado.
+### Precedencia mecánica
 
-**Los siete casos que esta función resuelve explícitamente:**
+Se evalúa en orden. Gana la primera que se cumple.
+
+```text
+P0   `reconciliacion_pendiente` — transición multiarchivo incompleta,
+     INCLUIDA una cancelación a medias                    → reconciliacion-pendiente
+     Mientras esto sea cierto, ningún otro cálculo es fiable. Va PRIMERO.
+
+P1   bandera `cancelado`  Y  ∃ paquete ABIERTO            → cancelando
+P2   bandera `cancelado`  Y  ningún paquete abierto       → cancelado
+P3   bandera `aparcado`                                   → aparcado
+P4   ∃ desacuerdo abierto o freno escalado (a.7)          → en desacuerdo
+P5   ∃ paquete `en curso`                                 → activo
+P6   ∃ paquete `listo`                                    → activo
+P7   ∃ paquete `propuesto` con TODAS sus dependencias
+     cerradas y vigentes                                  → activo
+                                                            motivo: pendiente de promoción
+P8   ∃ paquete `bloqueado`                                → bloqueado
+P9   ∃ `esperando-*` · `devuelto` · `propuesto` con
+     dependencias abiertas                                → en espera
+P10  TODOS los paquetes terminales (`cerrado`|`cancelado`):
+
+       ∃ obligación_huérfana (b.3):
+          · el trabajo de reemplazo es identificable      → bloqueado
+                                              motivo: obligación huérfana sin reemplazo
+          · se espera decisión sobre retirarla o
+            abandonar el item                             → en espera
+                                              motivo: obligación huérfana sin decisión
+
+       CERO obligaciones huérfanas:
+          · integración semántica no declarada            → en espera
+                                              motivo: integración pendiente
+          · declarada, `learning_candidate` sin resolver  → en espera
+                                              motivo: aprendizaje pendiente
+          · ambas resueltas                               → cerrado
+
+P11  conjunto de paquetes vacío                           → encuadrado
+```
+
+**`abierto`** = cualquier estado de paquete que no sea `cerrado` ni `cancelado`.
+
+### Totalidad
+
+Los once estados de paquete de b.2 quedan cubiertos: `en curso` por P5 · `listo` por P6 ·
+`propuesto` por P7 y P9 · `bloqueado` por P8 · los cuatro `esperando-*` y `devuelto` por
+P9 · `cerrado` y `cancelado` por P10. P0–P3 cubren banderas e inconsistencia; P11, el caso
+vacío. **No existe combinación válida sin resultado, y ninguna produce dos.**
+
+### Los casos frontera, resueltos explícitamente
 
 | combinación | resultado |
 |---|---|
-| cerrados junto a propuestos | `activo` si las dependencias del propuesto están cerradas (P5); `en espera` si no (P7) |
-| cancelados junto a activos | `activo` (P3/P4) — cancelar un paquete no detiene el item |
-| desacuerdo junto a bloqueo | `en desacuerdo` (P2) — hay algo que **resolver**, y domina sobre lo que sólo hay que esperar |
-| todos cerrados, integración pendiente | `en espera · integración pendiente` (P8) |
-| todos cerrados, learning pendiente | `en espera · aprendizaje pendiente` (P8) |
-| aparcado con paquetes bloqueados | `aparcado` (P1). **El bloqueo se sigue reportando**: aparcar oculta el trabajo, no la información |
-| cancelado con capas históricas | `cancelado` (P0). Las capas conservan su vigencia y su histórico (b.3) |
+| cerrados junto a propuestos | `activo` (P7) si las dependencias del propuesto están cerradas y vigentes; `en espera` (P9) si no |
+| cancelados junto a activos | `activo` (P5/P6) — cancelar un paquete no detiene el item |
+| desacuerdo junto a bloqueo | `en desacuerdo` (P4) — hay algo que **resolver**, y domina sobre lo que sólo hay que esperar |
+| **todos terminales, obligación huérfana** | **`bloqueado` o `en espera` (P10). NUNCA `cerrado`** — cancelar todos los paquetes no produce el resultado |
+| todos terminales, integración pendiente | `en espera · integración pendiente` (P10) |
+| todos terminales, learning pendiente | `en espera · aprendizaje pendiente` (P10) |
+| aparcado con paquetes bloqueados | `aparcado` (P3). **El bloqueo se sigue reportando**: aparcar oculta el trabajo, no la información |
+| **cancelado con paquetes aún abiertos** | **`cancelando` (P1), nunca `cancelado`** — no existe un `cancelado` estable con trabajo oculto debajo |
+| cancelado con capas históricas | `cancelado` (P2). Las capas conservan vigencia e histórico (b.3) |
+| **cancelación multiarchivo interrumpida** | **`reconciliacion-pendiente` (P0)** — la bandera de cancelación **no** la oculta |
 
-`aparcado` y `cancelado` son **modificadores dominantes**, pero la función sigue siendo
-completa, determinista y comprobable.
+`aparcado` y `cancelado` son modificadores dominantes **salvo frente a P0**: una
+inconsistencia de estado no puede quedar tapada por una bandera.
 
 ---
 
@@ -184,14 +259,16 @@ escribe un evento con su atribución completa (los cinco conceptos de a.9).
 | `en curso` → `devuelto` | la capacidad con custodia | freno de devoluciones no agotado (a.7) |
 | `en curso` → `bloqueado` | la capacidad con custodia | **debe nombrar qué lo desbloquearía** |
 | `en curso` → `esperando-*` | la capacidad con custodia | **checkpoint escrito** (gate de suspensión) |
-| `en curso` → `cancelado` | PRD o DSP si es interno; **propuesta al Owner** si él lo pidió | motivo escrito |
+| `en curso` → `cancelado` | **autoridad** según b.7; **ejecutor** DSP | decisión de cancelación autorizada + motivo escrito |
+| item → `cancelando` | la autoridad de b.7; ejecutor DSP | orden de cancelación global aceptada |
+| `cancelando` → `cancelado` | DSP | ningún paquete abierto; checkpoints y capas conservados |
 | `esperando-*` → `en curso` | DSP | desapareció la espera; se recarga el checkpoint |
 | `esperando-dependencia` → `bloqueado` | DSP | la dependencia dejó de ser viable (b.8) |
 | `bloqueado` → `listo` | DSP | el desbloqueador existe y cerró con capa vigente |
 | capa → `sustituida` / `invalidada` | la capacidad **propietaria de esa capa**, o el Owner en materia suya | motivo escrito + trabajo de reemplazo o justificación (b.3) |
 | cualquiera → `aparcado` | **sólo el Owner** | orden explícita |
 | `aparcado` → estado anterior | **sólo el Owner** | orden explícita. **DSP nunca desaparca** |
-| item → `cerrado` | **el propietario global** declara; DSP verifica | b.10 |
+| item → `cerrado` | **el propietario global** declara la integración; DSP verifica las cinco condiciones | b.10 — **terminación Y satisfacción**, no sólo estados terminales |
 | ruta r_n → r_n+1 | **sólo DSP** | disparador de b.9, con motivo escrito |
 
 **Tres reglas duras:**
@@ -258,8 +335,48 @@ detección de ciclos multiparte (a.7). La capa devuelta **no se borra**: pasa a
 > cuando en realidad hay trabajo que hacer, y es un defecto de despacho, no un estado
 > legítimo.
 
-**CANCELACIÓN.** Detiene la **ejecución**, no borra el histórico. Si el Owner lo pidió, se
-**propone**, no se ejecuta.
+**CANCELACIÓN.** Detiene la **ejecución**; no borra el histórico y **no satisface ninguna
+obligación** (b.3).
+
+#### Autoridad, orden y ejecución son tres cosas distintas
+
+```text
+DSP  PUEDE ser EJECUTOR TÉCNICO de una cancelación.
+DSP  NUNCA posee por sí mismo la AUTORIDAD SEMÁNTICA para decidirla.
+
+LA CAPACIDAD CON CUSTODIA   emite decisión o PROPUESTA de cancelación, conforme a su
+                            gate, su veto y su ámbito de autoridad
+EL PROPIETARIO GLOBAL       decide cómo afecta esa cancelación a la ruta y al
+                            resultado perseguido
+EL OWNER                    interviene cuando la cancelación afecta a materia
+                            reservada, decisión estratégica, un resultado que él pidió
+                            expresamente, o una acción difícilmente reversible
+DSP CANCELA MECÁNICAMENTE   sólo al ejecutar una orden ya autorizada o una
+                            recomposición ya aprobada que retira el paquete de la ruta
+```
+
+#### Cancelación de paquete no es cancelación global del item
+
+```text
+DE PAQUETE   detiene ese paquete. La obligación a la que servía queda HUÉRFANA (b.3)
+             salvo retirada aprobada. No cierra nada por sí misma.
+
+GLOBAL       transición coherente y recuperable, en DOS pasos:
+             `cancelando`  →  se detienen o reconcilian TODOS los paquetes abiertos
+             `cancelado`   →  sólo cuando no queda ninguno abierto
+```
+
+Reglas duras de la cancelación global:
+
+1. **NO** puede quedar un item `cancelado` mientras conserva paquetes ejecutándose en
+   silencio. El estado intermedio es `cancelando`, y es visible.
+2. Se **conservan todos los checkpoints** y **todas las capas históricas** con su
+   vigencia. Cancelar no borra.
+3. Si existe una **operación de contención que no puede detenerse con seguridad** —una
+   recuperación, un rollback en curso—, **DEBE separarse en un item ENLAZADO que sigue
+   activo**. Nunca se esconde trabajo activo debajo de un item globalmente cancelado.
+4. Una inconsistencia durante la cancelación multiarchivo aparece como
+   `reconciliacion_pendiente` (b.4), **no queda oculta** por la bandera de cancelación.
 
 **CIERRE.** Ver b.10.
 
@@ -321,7 +438,8 @@ Reglas:
    propietaria de esa capa, y hasta que ésta responda la capa sigue `vigente`.
    Si la capacidad propietaria no está materializada, la solicitud escala al Owner.
 2. Los paquetes ya `cerrado` siguen cerrados. Si su capa se invalida, la recomposición
-   **DEBE** crear el trabajo de reemplazo o justificar que ya no hace falta.
+   **DEBE** crear el trabajo de reemplazo o **retirar expresamente la obligación** con
+   justificación escrita (b.3). Dejar la obligación huérfana bloquea el cierre (b.10).
 3. La ruta pasa a `r_n+1`, con traza de **qué cambió y por qué** (formato de a.6).
 4. Recomponer **no reinicia el trabajo en curso**: un paquete `en curso` que sobrevive en
    la ruta nueva conserva su custodia y su checkpoint.
@@ -367,21 +485,40 @@ en un sustituto de decidir.
 
 ## b.10 — Cierre del item
 
-Tres condiciones, **todas**:
+> **Cerrar paquetes no es producir el resultado.** Si el cierre sólo exigiera que todos
+> los paquetes estuvieran en estado terminal, cancelarlos todos cerraría un item cuyo
+> resultado nunca existió. Terminación de la ejecución y satisfacción del proceso son
+> condiciones separadas, y hacen falta las dos.
+
+Un item cierra cuando se cumplen **todas** estas condiciones:
 
 ```text
-[ ] todos los paquetes están en `cerrado` o `cancelado`
-[ ] TODAS las capas sobre las que se apoya la integración están `vigente`
-    — ningún cierre puede sostenerse sobre una capa `invalidada`
-[ ] el PROPIETARIO GLOBAL declara la integración semántica completa
-[ ] learning_candidate resuelto:  none | <enlace>
+[ ] TERMINACIÓN   ningún paquete de la RUTA VIGENTE continúa abierto
+                  (abierto = cualquier estado que no sea `cerrado` ni `cancelado`)
+
+[ ] SATISFACCIÓN  todas las OBLIGACIONES VIGENTES del proceso satisfechas según b.3:
+                  cubiertas por capa VIGENTE, o RETIRADAS expresamente por una
+                  recomposición aprobada con justificación
+                  → cero `obligación_huérfana`
+
+[ ] VIGENCIA      ninguna obligación se apoya en una capa `invalidada`
+
+[ ] INTEGRACIÓN   el PROPIETARIO GLOBAL declara la integración semántica completa
+
+[ ] APRENDIZAJE   learning_candidate resuelto:  none | <enlace>
 ```
 
 La última es donde aterriza la corrección de APR: **la comprobación de aprendizaje se
 ejecuta en el cierre, como condición, SIN crear paquete APR.** APR recibe paquete sólo si
 `learning_candidate ≠ none`, o ante incidente, revisión de circuito o promoción.
 
-DSP **verifica**; **no declara** la integración semántica: esa es del propietario global.
+DSP **verifica** las cinco condiciones; **no declara** la integración semántica ni la
+retirada de una obligación: la primera es del propietario global, la segunda pertenece a
+la recomposición aprobada.
+
+> Un item con todos sus paquetes cancelados y ninguna retirada aprobada **no puede
+> cerrar**. Su salida legítima es `cancelado`, `bloqueado` o `en espera` según la decisión
+> que quede registrada — **nunca `cerrado`**.
 
 ---
 
@@ -549,8 +686,9 @@ en un botón de OK.
 
 ```text
 1 ¿hay paquetes BLOQUEADOS?
-     → el trabajo real es CREAR EL DESBLOQUEADOR. DSP lo propone; si implica alcance
-       nuevo, la propuesta va a PRD o al Owner. DSP no la ejecuta.
+     → el trabajo real es CREAR EL DESBLOQUEADOR. Ver b.15.1: dentro del alcance ya
+       autorizado, DSP lo crea y lo despacha SIN preguntar. Sólo escala el que
+       amplía o cambia el alcance.
 2 ¿hay `esperando-owner`?
      → presentar EL LOTE (G36), agrupado y ordenado por coste de set-up.
 3 ¿hay `esperando-externo`?
@@ -571,15 +709,59 @@ en un botón de OK.
 > Inventar una refactorización, una mejora de tooling o una auditoría no pedida cuando la
 > cola está vacía es la forma más común del modo de fallo (b) de a.7.
 
+### b.15.1 — Desbloqueadores: la autonomía es el comportamiento normal
+
+> Que aparezca un paquete adicional **no es motivo para molestar al Owner**. La
+> intervención humana aparece por **autoridad o incertidumbre real**, nunca por
+> aritmética de la ruta.
+
+**DENTRO DEL ALCANCE YA AUTORIZADO — DSP crea y despacha, sin preguntar.**
+
+Si el desbloqueador cumple **las cinco**:
+
+```text
+[ ] es necesario para obtener el resultado YA APROBADO
+[ ] no cambia el producto ni el resultado perseguido
+[ ] no entra en materia reservada (G05)
+[ ] es reversible
+[ ] se deriva MECÁNICAMENTE del bloqueo declarado
+```
+
+DSP **crea automáticamente** el paquete o item desbloqueador, **recompone la ruta**, lo
+**enlaza** y lo **despacha** cuando sea seguro. Todo con la traza de a.6 y b.9.
+
+> DSP **no realiza el trabajo de contenido**: crea y despacha la unidad de trabajo. Quien
+> la ejecuta es la capacidad competente. Eso no es autoridad semántica, es despacho.
+
+**QUE AMPLÍA O CAMBIA EL ALCANCE — DSP prepara y escala.**
+
+Si el desbloqueador cumple **cualquiera** de estas:
+
+```text
+[ ] introduce un resultado NUEVO
+[ ] cambia producto o diseño aprobado
+[ ] afecta a materia reservada
+[ ] implica coste o riesgo difícilmente reversible
+[ ] admite varias soluciones SEMÁNTICAMENTE DIFERENTES
+```
+
+DSP **prepara la propuesta** y la envía a la capacidad con autoridad sobre esa materia, o
+al Owner si es suya. No la crea por su cuenta.
+
 ---
 
 ## b.16 — Derivación de las rutas por tipo de proceso
 
 ### Regla de derivación
 
+Las capacidades marcadas OBLIGATORIAS definen las **obligaciones** del proceso (b.3): los
+resultados que deben existir para que su intención esté cumplida. **Que sus paquetes
+terminen no basta: sus obligaciones tienen que quedar satisfechas** (b.10).
+
 ```text
 1 PROPIETARIO GLOBAL  la capacidad cuya capa DEFINE el resultado perseguido
 2 OBLIGATORIAS        aquellas sin cuya capa el resultado NO EXISTIRÍA
+                      → cada una genera una OBLIGACIÓN del proceso
 3 CONDICIONALES       cada una con su CONDICIÓN DE ACTIVACIÓN escrita y COMPROBABLE.
                       Prohibido "si aplica".
 4 CONDICIÓN DE CIERRE b.10
@@ -668,9 +850,43 @@ DSP **no tiene autoridad semántica**. Regla, en orden:
 | **INV** investigación | INV | INV | **CON:experimental** cuando la evidencia exija construir · PRD o ARQ según destino declarado · APR `C-APR` |
 | **DEU** deuda técnica | ARQ | ARQ · CON · VER | DOM/SEG:condiciones · ENT `C-ENT` · **USO `C-USO`** · APR `C-APR` |
 | **DEP** dependencia | PLT | **SEG:condiciones ⊳ CON** · VER | DOM:condiciones `C-DOM` · ENT `C-ENT` · ARQ si el cambio de versión altera contratos. *SEG antes de construir es obligatorio aquí (G28)* |
-| **AUD** auditoría de proyecto existente | quien declare el encargo | INV | DOM `C-DOM` · SEG `C-SEG` · DIS/Reconstrucción `C-DIS` · PRD **sólo si produce una decisión de producto**. *Puede cerrar en APR sin pasar por PRD: su resultado legítimo es conocimiento e items nuevos* |
-| **DIR** cambio de dirección (G51) | según la regla de arriba | ARQ(radio de impacto) · **OWNER obligatorio** · CON · VER | DIS `C-DIS` · ENT `C-ENT` · USO `C-USO` · APR `C-APR`. *El Owner va DESPUÉS del radio de impacto: decidir sin coste medido es decidir a ciegas* |
+| **AUD** auditoría de proyecto existente | derivado del encargo — ver abajo | INV | DOM `C-DOM` · SEG `C-SEG` · DIS/Reconstrucción `C-DIS` · PRD **sólo si produce una decisión de producto**. *Puede cerrar en APR sin pasar por PRD: su resultado legítimo es conocimiento e items nuevos* |
+| **DIR** cambio de dirección (G51) | según la regla de arriba | ARQ(radio de impacto) · capacidades propietarias de las decisiones afectadas · **OWNER en el punto de decisión** · registro de decisiones sustituidas · criterio de éxito · **creación de los items derivados** | DIS `C-DIS` · `CON:experimental` sólo si hace falta un prototipo PARA DECIDIR · APR `C-APR`. **CON, VER, ENT y USO productivos NO son obligatorios** — ver abajo |
 | **SIS** evolución del sistema | SIS | SIS · CON · VER | **ENT obligatorio si modifica el runtime** (activación segura y reversible) · APR `C-APR`. Sujeto al freno de racha SIS (a.7) |
+
+### `AUD` — el propietario global se deriva del encargo
+
+AUD **no se divide en subtipos**. Lo que se exige es que el **Encuadre declare siete
+cosas** antes de componer ruta:
+
+```text
+[ ] objeto auditado
+[ ] pregunta que debe responder
+[ ] resultado perseguido
+[ ] consumidor de la conclusión
+[ ] materia o decisión sobre la que puede actuar
+[ ] evidencia mínima
+[ ] criterio de cierre
+```
+
+```text
+PROPIETARIO GLOBAL = la capacidad responsable de la CONCLUSIÓN PERSEGUIDA,
+                     o de la DECISIÓN QUE CONSUMIRÁ esa conclusión
+```
+
+Con eso, AUD deja de ser la excepción: sale de la regla general de b.16, como las otras
+nueve rutas.
+
+**INV puede ejecutar gran parte de la auditoría sin ser su propietario global.** Ejecutar
+el trabajo y responder por la conclusión son cosas distintas (a.5).
+
+```text
+Varias conclusiones INDEPENDIENTES con propietarios distintos
+   → se divide en items AUD ENLAZADOS, uno por conclusión
+Conclusiones INSEPARABLES
+   → misma regla que DIR: el OWNER declara el criterio principal y la capacidad líder;
+     las demás participan por gate conjunto (⇄). DSP registra y ejecuta, no decide.
+```
 
 ### `DEF` y Diseño
 
@@ -722,6 +938,39 @@ APRENDIZAJE     sobre el producto                sobre por qué apareció el hue
 **Comparten grafo por defecto y siguen siendo procesos distintos.** No se inventan
 estaciones artificiales para diferenciarlos.
 
+### `DIR` — decidir no es implementar
+
+El resultado perseguido de un DIR es **decidir y registrar una nueva dirección con
+conocimiento de su impacto**. No es implementar todo lo que se deriva de ella. Aplicando
+b.1 —el proceso lo determina el resultado perseguido— `CON` y `VER` **productivos dejan de
+ser obligatorios**.
+
+**Obligatorio en DIR:**
+
+```text
+[ ] análisis del RADIO DE IMPACTO
+[ ] participación de las capacidades PROPIETARIAS DE LAS DECISIONES AFECTADAS
+[ ] el OWNER en el punto de decisión
+[ ] registro de QUÉ DECISIONES ANTERIORES QUEDAN SUSTITUIDAS
+[ ] CRITERIO DE ÉXITO de la nueva dirección
+[ ] creación de los ITEMS DERIVADOS necesarios
+```
+
+**No obligatorio:** Construcción, Verificación, Entrega y Uso real. La ejecución de la
+dirección aprobada se materializa mediante **items enlazados** —FEA, GAP, DEU, SIS o el
+que corresponda— que continúan de forma independiente y **paralelizable**.
+
+`CON` sólo entra en un DIR como **`CON:experimental`** (b.16), cuando el propio proceso
+declara que necesita un prototipo **para poder decidir**: produce evidencia, no
+implementación productiva.
+
+> **DIR no es un macro-item que decide, construye y despliega una transformación
+> completa.** Serlo dificultaría la custodia, la cancelación parcial, el paralelismo y la
+> trazabilidad — las cuatro cosas que este modelo existe para dar.
+
+**DIR cierra** cuando la decisión está tomada, registrada y descompuesta en resultados
+ejecutables. Los items derivados siguen su propio recorrido.
+
 ### Lo que la derivación produce
 
 ```text
@@ -731,7 +980,9 @@ INV  activa CON:experimental sin dejar de ser INV, y PUEDE cerrar sin segundo it
 DEU  PUEDE activar USO sin cambiar de proceso
 AUD  no activa CON, y puede cerrar en APR sin pasar por PRD
 INC  es el único con APR obligatorio
-DIR  el propietario global NUNCA lo elige DSP
+DIR  el propietario global NUNCA lo elige DSP · DECIDE, no implementa: la ejecución
+     va en items enlazados
+AUD  el propietario global se DERIVA del encargo declarado, no se asigna a mano
 SIS  ENT obligatorio si modifica el runtime
 GAP  comparte grafo con FEA y es un proceso distinto por intención, entrada, encuadre,
      evidencia, cierre y aprendizaje
@@ -774,8 +1025,9 @@ T31 BLOQUEO ÚTIL       Todo `bloqueado` nombra su desbloqueador. Ningún `bloqu
 T32 DESPACHO           Mismo estado ⇒ misma selección, desempate por id incluido. Toda
     DETERMINISTA       selección deja escrito qué se eligió y qué se excluyó, y por qué.
 
-T33 CIERRE             Ningún item cerrado sin las condiciones de b.10, incluida la
-                       declaración de integración semántica del propietario global.
+T33 CIERRE             Ningún item cerrado sin las CINCO condiciones de b.10:
+                       terminación, satisfacción, vigencia, integración y aprendizaje.
+                                                                             [corregida]
 
 T34 APARCADO           Ningún item aparcado desaparcado por el sistema. Toda dependencia
     RESPETADO          sobre un item aparcado fue REPORTADA al Owner.
@@ -787,7 +1039,8 @@ T36 CONTINÚA           Desde repo frío, sin conversación previa: DSP reconstr
                        verifica, reporta breve y retoma desde el checkpoint exacto.
 
 T37 COLA VACÍA         Con la cola vacía el sistema NO inventó trabajo: recorrió las ocho
-                       salidas de b.15 en orden.
+                       salidas de b.15 en orden. Los bloqueos rutinarios se resolvieron
+                       por b.15.1 sin molestar al Owner.                     [corregida]
 
 T38 RECOMPOSICIÓN      Ninguna recomposición borró una capa. Ninguna reinició un paquete
                        `en curso` que sobrevivía en la ruta nueva.
@@ -838,4 +1091,63 @@ T50 ESPERA VIVA        Una dependencia cancelada, aparcada indefinidamente o que
 T51 INANICIÓN VISIBLE  Un paquete listo repetidamente postergado aparece con tiempo,
                        postergaciones, quién lo adelantó y qué lo impide — SIN que el
                        sistema haya modificado su prioridad.                      [nueva]
+
+T52 TERMINAL NO ES     Un item con TODOS sus paquetes cancelados y ninguna retirada
+    SATISFECHO         aprobada NO PUEDE cerrar. Su resultado no existe.          [nueva]
+
+T53 OBLIGACIÓN         Un paquete cancelado permite el cierre SÓLO si su obligación fue
+    RETIRADA           retirada justificadamente en una recomposición aprobada, o está
+                       satisfecha por otra capa vigente enlazada.                 [nueva]
+
+T54 CANCELACIÓN SIN    DSP nunca es la autoridad semántica de una cancelación. Toda
+    AUTORIDAD DE DSP   cancelación registra autoridad, ordenante y ejecutor por separado.
+                                                                                  [nueva]
+
+T55 CANCELACIÓN        Una cancelación global no deja paquetes trabajando ocultos: pasa
+    COHERENTE          por `cancelando` y sólo llega a `cancelado` sin paquetes abiertos.
+                       Checkpoints y capas históricas se conservan.               [nueva]
+
+T56 CONTENCIÓN         Una operación de rollback o contención que no puede detenerse con
+    SUPERVIVIENTE      seguridad sobrevive como ITEM ENLAZADO activo, visible, nunca
+                       escondida bajo un item cancelado.                          [nueva]
+
+T57 DESBLOQUEO         Un bloqueo rutinario dentro del alcance aprobado hace que DSP CREE
+    AUTÓNOMO           Y DESPACHE su desbloqueador sin consultar a nadie.          [nueva]
+
+T58 DESBLOQUEO QUE     Un desbloqueador que introduce resultado nuevo, cambia alcance,
+    ESCALA             toca materia reservada, es difícilmente reversible o admite varias
+                       soluciones semánticamente distintas se ESCALA ANTES de crearse.
+                                                                                  [nueva]
+
+T59 DIR DECIDE         Un DIR cierra tras producir la decisión, su registro de sustitución
+                       y sus items derivados, SIN ejecutar esas implementaciones. [nueva]
+
+T60 DIR SE DESCOMPONE  Una transformación decidida en DIR continúa mediante varios items
+                       enlazados, independientes y paralelizables.                [nueva]
+
+T61 AUD DERIVA         Una auditoría obtiene su propietario global de los siete campos del
+    PROPIETARIO        encargo, en particular resultado perseguido y consumidor de la
+                       conclusión. No se asigna a mano.                           [nueva]
+
+T62 AUD SE DIVIDE      Una auditoría con conclusiones independientes se divide en items
+                       AUD enlazados sin generar propiedad ambigua. Si son inseparables,
+                       la capacidad líder la declara el Owner.                    [nueva]
+
+T63 TOTALIDAD TRAS     La función de estado global sigue siendo TOTAL y DETERMINISTA tras
+    OBLIGACIONES       introducir `obligación_satisfecha`: los diez casos frontera de b.4
+                       producen exactamente un estado cada uno, y P0 no queda tapado por
+                       las banderas de aparcado ni de cancelado.                  [nueva]
+```
+
+### Barrido de consistencia
+
+Antes de cerrar la sección se verificó que no queda ninguna afirmación que implique:
+
+```text
+[ ] terminal equivale a satisfecho          → b.2, b.3, b.4 P10, b.10, b.16
+[ ] DSP decide contenido                    → b.5, b.7, b.9, b.15.1, b.16 DIR y AUD
+[ ] todo bloqueo necesita aprobación humana  → b.15.1
+[ ] DIR debe implementar toda la dirección   → b.16 DIR
+[ ] cancelar equivale a invalidar            → b.3, b.7
+[ ] cerrar paquetes equivale a producir el resultado → b.10
 ```
