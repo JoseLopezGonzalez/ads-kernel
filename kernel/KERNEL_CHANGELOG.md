@@ -4,10 +4,11 @@ Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de
 
 ## 2.0.0-alpha.2 — correcciones de la auditoría independiente
 
-Resuelve los 33 hallazgos de
-[`AUDITORIA-INDEPENDIENTE-LOCAL.md`](../docs/rediseno/AUDITORIA-INDEPENDIENTE-LOCAL.md).
-La matriz completa está en
-[`CORRECCIONES-POST-AUDITORIA.md`](../docs/rediseno/CORRECCIONES-POST-AUDITORIA.md).
+Resuelve los 33 hallazgos de una auditoría independiente, ejecutada por un lector que no
+escribió el material. El informe y la matriz de resolución viven en el repositorio del
+kernel, en `docs/rediseno/AUDITORIA-INDEPENDIENTE-LOCAL.md` y
+`docs/rediseno/CORRECCIONES-POST-AUDITORIA.md`. **No viajan con el kernel instalado**: son
+historia del kernel, no especificación que su corpus enlace.
 
 **Normativo.** Enmienda **E1** a la sección (a), aprobada por el Owner: `ENC` es la
 decimoquinta capacidad base, con su frontera con `DSP` y con materialización **bajo

@@ -62,6 +62,9 @@ mkdir -p "$DST"/{kernel,packs,docs/agentic,docs/rediseno,tooling}
 
 # La ESPECIFICACIÓN NORMATIVA viaja con el kernel: el corpus operativo la enlaza, y sin
 # ella un proyecto instalado tiene enlaces rotos y no es conforme.
+# Se envía la ESPECIFICACIÓN, no la historia: (a), (b), sus enmiendas y el registro de
+# decisiones, que son lo que el corpus operativo enlaza. Las auditorías y sus correcciones
+# son historia del repositorio del kernel y viven allí.
 for n in a-CAPACIDADES-APROBADA.md b-RECORRIDO-APROBADA.md a-ENMIENDA-E1-ENC.md \
          DECISIONES-Y-CONTRADICCIONES.md; do
   cp "$SRC/docs/rediseno/$n" "$DST/docs/rediseno/"
