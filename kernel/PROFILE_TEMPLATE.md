@@ -1,6 +1,6 @@
 ---
 kernel:        ^1.0.0
-packs:         []                    # p.ej. [pack-web-app] · [pack-mobile-native]
+packs:         []                    # p.ej. [web-app] · [wear-os, mobile-app]
 project:       <NOMBRE INTERNO>
 owner_success: <una línea: qué gana el Owner>
 target_env:    <qué es el "entorno real" donde se validan los spikes>
@@ -10,10 +10,17 @@ compliance:    <marcos aplicables, o "ninguno declarado">
 timebox_c0:    <presupuesto del Circuito 0>
 ---
 
-# PROFILE — <NOMBRE DEL PROYECTO>
+# PROFILE — <NOMBRE DEL PRODUCTO>
 
 > Hereda `kernel/KERNEL.md` íntegro salvo los overrides declarados en §9.
 > Todo lo que aquí no se declare, se resuelve por el KERNEL.
+
+> **Uno por PRODUCTO, nunca uno por repositorio.** Aunque el producto tenga frontend,
+> backend, móvil e infraestructura en repositorios distintos, hay un solo PROFILE y vive
+> aquí, en el repositorio ADS de control. Fragmentarlo por repositorio crearía varias
+> organizaciones que después habría que sincronizar. Si un componente tiene objetivos,
+> riesgos o restricciones propios, se declaran **dentro** de este documento, nombrando el
+> componente. Qué componentes existen lo dice `SOURCES.toml`, y no se repite aquí.
 
 ---
 

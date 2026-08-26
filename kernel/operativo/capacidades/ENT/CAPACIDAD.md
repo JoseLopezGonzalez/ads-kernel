@@ -99,3 +99,25 @@ fallo: >
 
 Roles, métodos, prompts y composición: [`roles/`](roles/) · [`metodos/`](metodos/) ·
 [`prompts/`](prompts/) · [`composicion.md`](composicion.md).
+
+## Integrar un producto repartido entre varias fuentes
+
+Un cambio lógico puede tener contribuciones de varios repositorios. `ENT` es quien declara
+que convergieron, y quien dice que **no**.
+
+```text
+VERIFICA CONVERGENCIA   que todas las fuentes que el item escribió están integradas
+COMPRUEBA EL CONJUNTO   el Integration Set: revisiones exactas, contratos vigentes,
+                        migraciones que intervienen y evidencia de cada verificación
+COORDINA MIGRACIONES    entre fuentes, cuando el cambio las necesita en cierto orden
+SOLICITA O EJECUTA      la verificación conjunta y el extremo a extremo
+MANEJA LO PARCIAL       si una fuente se fusionó y otra no, el estado es INTEGRACIÓN
+                        PARCIAL. Continuar, compensar o revertir es decisión suya.
+PREPARA LA REVERSIÓN    revertir el producto es volver al Integration Set anterior
+```
+
+> **Fusionar el PR de una fuente NO significa que el producto esté integrado.** Es el error
+> que este apartado existe para impedir: el sistema informaría de un producto que no existe.
+
+Contrato y gate: [`C7`](../../contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md) ·
+`gate:convergencia-de-fuentes` · [`E2.6`](../../../../docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md).

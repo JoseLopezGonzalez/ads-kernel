@@ -2,6 +2,63 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.5 — un producto ADS no es un repositorio
+
+Decisión de arquitectura del Owner, aprobada para implementación. Retira la suposición
+histórica `ADS PROJECT = repositorio de código`, que nunca estuvo escrita en ninguna parte y
+gobernaba todo el arranque, la adopción y el gobierno Git.
+
+**Normativo.** Enmienda **E2** a las secciones (a) y (b), por sustitución explícita:
+
+- `a.9` — «los ficheros del repo» pasa a ser **el repositorio ADS de control**. Los seis
+  invariantes quedan intactos y ganan alcance: `I5` prohíbe ahora copiar PROFILE, estado,
+  items o memoria dentro de una fuente, algo que antes no tenía dónde ocurrir.
+- `a.5` — un paquete declara `lee_fuentes` y `escribe_fuentes`. Leer no autoriza a escribir.
+- `a.10` — el checkpoint referencia revisiones de otras fuentes; nunca copia su contenido.
+- `a.11` — **`G29` pasa de «sobrevive» a REVISADA**: se conserva íntegra y se aplica POR
+  FUENTE; se deroga `un item → una rama → un PR` como relación universal.
+- `b.1` — la identidad de un item es del producto: atravesar tres repositorios no lo parte.
+- `b.10` — un item **no cierra** con una de sus fuentes sin integrar. Eso es integración
+  parcial, y llamarlo terminado hace que el sistema informe de un producto que no existe.
+
+**Dos contratos transversales nuevos**, que pasan de cinco a siete:
+
+- `C6` — producto, fuentes y workspace: qué es cada cosa y dónde vive cada verdad.
+- `C7` — gobierno Git multi-fuente: quién pide, ejecuta, bloquea y verifica **cada**
+  operación. Es la tabla que faltaba desde que la línea 2.0 dejó `G29` sin recoger.
+
+**Tipo canónico nuevo:** `integration-set` — la combinación exacta de revisiones que se
+probó junta. Atomicidad **lógica** de producto, porque Git no ofrece commit físico
+multi-repositorio y ADS no finge uno.
+
+**Maquinaria.**
+
+- `SOURCES.toml` como fuente única de la composición. TOML porque `tomllib` es estándar:
+  leer el manifiesto no añade ninguna dependencia.
+- `tooling/workspace.py` — `check`, `init`, `status`, `--json`. Sólo biblioteca estándar y
+  Git. **Nunca borra, resetea, sobrescribe, cambia un remoto ni sincroniza.**
+- `new-project.sh` crea `<workspace>/ads`, y el workspace **no** es un repositorio Git.
+- `comprobar_fuentes.py` valida el ADS Project **sin tocar el disco**, para que la CI del
+  control repo no necesite credenciales de ningún repositorio privado.
+- La huella cubre ahora `.toml`, y su prueba negativa se actualizó con ella.
+
+**Lo que se corrigió y era falso o estaba obsoleto:**
+
+- `compile-agents.sh` buscaba los packs en `packs/*.md`, la forma plana retirada en la
+  línea 1.3: en todo proyecto real devolvía «ninguno».
+- la adopción documentada copiaba ADS dentro del repositorio de código.
+- `AGENTS_EXAMPLE` enseñaba «una tarea = una rama», que ya no es cierto con varias fuentes.
+- dos pruebas negativas —`N148` y `N152b`— habían dejado de encajar con el texto que
+  mutaban, y una prueba negativa que no se aplica no prueba nada. `N152b` ya no fija las
+  versiones a mano: las lee del árbol.
+
+**Pruebas.** `T159`–`T170`, ejecutadas por tres validadores distintos según lo que cada una
+comprueba, más veintinueve pruebas de workspace con repositorios Git locales temporales:
+sin red y sin GitHub.
+
+La línea histórica `kernel/KERNEL.md` sube a **1.4.0** con esta entrega: `K-1` declara que
+el sujeto de las tres capas es el **producto**, y `G29` queda revisada en su propio texto.
+
 ## 2.0.0-alpha.4 — dos documentos más del Owner, y el defecto que ya es patrón
 
 Tercera vez que material normativo escrito en voz del Owner entra al repositorio y los

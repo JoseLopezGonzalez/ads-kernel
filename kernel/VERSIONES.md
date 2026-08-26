@@ -10,16 +10,16 @@
 
 ```text
 VERSIÓN DEL RELEASE      kernel/VERSION        qué copia del kernel lleva un proyecto
-                         2.0.0-alpha.4         Es la que compara kernel-status.sh y la que
+                         2.0.0-alpha.5         Es la que compara kernel-status.sh y la que
                                                se estampa en el commit de semilla.
 
 LÍNEA HISTÓRICA          kernel/KERNEL.md      la constitución en prosa que sigue
-                         1.3.0                 arrancando proyectos mientras el runtime no
+                         1.4.0                 arrancando proyectos mientras el runtime no
                                                exista. NO se sube al ritmo del release:
                                                sube cuando cambia ella.
 
 VERSIÓN NORMATIVA        docs/rediseno/        las secciones (a) y (b) aprobadas y sus
-                         (a) · (b) · E1        enmiendas. No lleva semver: lleva fecha de
+                         (a) · (b) · E1 · E2   enmiendas. No lleva semver: lleva fecha de
                                                aprobación y número de enmienda.
 
 VERSIÓN DE ESQUEMA       esquemas/<tipo>.yaml  la forma de cada tipo canónico, con su
@@ -33,10 +33,12 @@ VERSIÓN DE ESQUEMA       esquemas/<tipo>.yaml  la forma de cada tipo canónico,
 No es una contradicción: es una **migración declarada**.
 
 ```text
-kernel/KERNEL.md 1.3.0     constitución en prosa. Es el documento de arranque de un
+kernel/KERNEL.md 1.4.0     constitución en prosa. Es el documento de arranque de un
                            proyecto MIENTRAS EL RUNTIME NO EXISTA. La sección a.11 declara
                            qué reglas suyas quedan derogadas, sustituidas, ajustadas o
-                           pendientes.
+                           pendientes. Sube a 1.4.0 con la enmienda E2: K-1 declara que el
+                           sujeto de las tres capas es el PRODUCTO, y G29 queda revisada
+                           para aplicarse por fuente.
 
 kernel/operativo/ 2.0      el contenido operativo que ese runtime consumirá: capacidades,
                            roles, métodos, prompts, gates, circuitos y validadores.

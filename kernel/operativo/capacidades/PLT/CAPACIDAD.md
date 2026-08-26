@@ -86,3 +86,23 @@ fallo: >
 
 Roles, métodos, prompts y composición: [`roles/`](roles/) · [`metodos/`](metodos/) ·
 [`prompts/`](prompts/) · [`composicion.md`](composicion.md).
+
+## El workspace es infraestructura de desarrollo
+
+Materializar y mantener el workspace multi-fuente es de `PLT`. **La semántica del producto
+sigue fuera de PLT**: prepara el terreno, no decide qué se construye en él.
+
+```text
+PREPARA        materializa las fuentes que un paquete necesita, y sólo ésas
+AÍSLA          worktrees, sandboxes y cualquier mecanismo que permita trabajo concurrente
+MANTIENE       cachés, entornos, servicios de desarrollo, CI cruzada, observabilidad
+RETIRA         ramas abandonadas, con su registro, cuando ninguna custodia las reclama
+NO DESTRUYE    ningún cambio local, ningún repositorio, ningún remoto ajeno. Un directorio
+               ocupado por otro repositorio es un ERROR que se informa, nunca uno que se
+               resuelve borrando lo de alguien
+```
+
+La orden concreta es [`tooling/workspace.py`](../../../../tooling/workspace.py); lo que
+puede y lo que nunca hace está en
+[`C6`](../../contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md), y su propiedad operación a
+operación en [`C7`](../../contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md).

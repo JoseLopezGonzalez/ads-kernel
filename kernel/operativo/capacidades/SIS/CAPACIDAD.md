@@ -98,3 +98,22 @@ fallo: >
 
 Roles, métodos, prompts y composición: [`roles/`](roles/) · [`metodos/`](metodos/) ·
 [`prompts/`](prompts/) · [`composicion.md`](composicion.md).
+
+## Qué abstracción consume el runtime futuro
+
+Cuando exista, el runtime consume **tres cosas** y las resuelve hacia el entorno agentic del
+momento:
+
+```text
+ADS PROJECT       qué producto se gobierna, y dónde está su repositorio de control
+SOURCE MANIFEST   qué fuentes y componentes lo forman
+SOURCE SCOPE      qué puede leer y qué puede escribir el trabajo en curso
+```
+
+**Y nada más.** El runtime no codifica el producto en términos de un workspace de una
+herramienta concreta ni de un parámetro de línea de órdenes de un proveedor: eso son
+adaptadores, y viven fuera del kernel. La regla la comprueba `T92`, y `C6` la desarrolla.
+
+El estado durable sigue siendo el del repositorio de control. **Un runtime no sustituye en
+silencio esa verdad**: la regla de autoridad de `C6` lo dice, y es la que impide que
+aparezca una segunda fuente de verdad desconectada.

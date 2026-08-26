@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -299,8 +300,8 @@ def m_composicion_incompatible_silenciosa(raiz):
 
 def m_arranque_con_pack_derogado(raiz):
     _sustituir(raiz, "README.md",
-               "./tooling/new-project.sh mi-web-app web-app",
-               "./tooling/new-project.sh mi-web-app pack-web-app")
+               "./tooling/new-project.sh mi-producto web-app",
+               "./tooling/new-project.sh mi-producto pack-web-app")
 
 
 def m_recuento_a_mano(raiz):
@@ -318,10 +319,21 @@ def m_version_incoherente(raiz):
 
 
 def m_kernel_md_iguala_release(raiz):
-    """A-12 · la línea histórica se sube al ritmo del release, que es otro contador."""
+    """A-12 · la línea histórica se sube al ritmo del release, que es otro contador.
+
+    Ni la línea histórica ni el release se escriben aquí a mano: se leen del árbol. La
+    versión anterior de esta mutación los tenía fijos y dejó de encajar en cuanto uno de
+    los dos cambió — una prueba negativa que no se aplica no prueba nada, y su fallo era
+    silencioso hasta que alguien miraba el recuento.
+    """
+    with open(os.path.join(raiz, "kernel/VERSION"), encoding="utf-8") as fh:
+        release = fh.read().strip()
+    with open(os.path.join(raiz, "kernel/KERNEL.md"), encoding="utf-8") as fh:
+        m = re.search(r"> \*\*Versión del kernel:\*\* (\S+)", fh.read())
+    historica = m.group(1) if m else "1.4.0"
     _sustituir(raiz, "kernel/KERNEL.md",
-               "> **Versión del kernel:** 1.3.0",
-               "> **Versión del kernel:** 2.0.0-alpha.2")
+               f"> **Versión del kernel:** {historica}",
+               f"> **Versión del kernel:** {release}")
 
 
 def m_encuadre_sin_estado_exigido(raiz):

@@ -9,6 +9,7 @@ CHECKPOINT — <ITEM-ID>/<nn> · <CAP>/<rol>
 actualizado: <ISO 8601>
 metodo:      <CAP>/<Metodo> · paso <n> de <N> (<NOMBRE DEL PASO>)
 based_on:    <fuente>@<versión> · <fuente>@<versión>
+             <source-id>@<sha> · <contrato>@<versión>      ← ver «multi-fuente» abajo
 freshness:   vigente | requiere revalidación | obsoleto
 last_meaningful_event: <qué pasó y cuándo>
 resuelto:
@@ -19,6 +20,31 @@ siguiente:   <UNA acción concreta>
 falta_para_cerrar_la_capa:
   · <lo que el gate todavía no tiene>
 ```
+
+## Multi-fuente: un paquete que toca código de varios repositorios
+
+Reanudar un trabajo repartido **no puede depender de «abre la rama»**: hay varias, en
+repositorios distintos, y ninguna sabe de las demás. Lo que lo sabe es esto:
+
+```text
+sources:
+  <source-id>:  rama <ref> · commit <sha> · push <sí|no> · PR <ref|ninguno> · CI <estado>
+  <source-id>:  rama <ref> · commit <sha> · push <sí|no> · PR <ref|ninguno> · CI <estado>
+```
+
+Y `based_on` referencia la revisión exacta de la que se partió:
+
+```text
+based_on:    backend@a1b2c3d
+             api-contract@v4
+```
+
+> **Se REFERENCIA, no se copia.** Volcar en el checkpoint el contenido de otra fuente crea
+> una segunda copia que envejece en silencio. Es la regla 1 de abajo aplicada a través de
+> la frontera del repositorio.
+
+`E2.3` y [`C7`](../contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md) fijan el contrato; su prueba
+es **T170**.
 
 ## Las cuatro cosas que lo estropean
 

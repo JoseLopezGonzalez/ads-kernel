@@ -1,7 +1,7 @@
 # ADS KERNEL — Autonomous Development System
 
 > **Artefacto:** núcleo reusable. Idéntico en todos los proyectos que lo adopten.
-> **Versión del kernel:** 1.3.0
+> **Versión del kernel:** 1.4.0
 > **Compatibilidad:** todo PROFILE declara `kernel: ^1.0.0`
 > **Este fichero NO DEBE contener nada específico de un proyecto.** Si lo contiene, es un defecto: ver K0.10.
 
@@ -17,15 +17,23 @@
 ├─────────────────────────────────────────────────────────────┤
 │ PACK(S)       saber hacer de una CLASE de proyecto          │
 │               reusable entre proyectos del mismo tipo       │
-│               packs/pack-web-app.md, pack-mobile-native.md… │
+│               packs/<clase>/PACK.md                         │
 ├─────────────────────────────────────────────────────────────┤
 │ PROFILE       qué se construye AQUÍ                         │
-│               único e irrepetible por proyecto              │
+│               único e irrepetible por PRODUCTO              │
 │               PROFILE.md                                    │
 └─────────────────────────────────────────────────────────────┘
                               ↓ compilación (K0.2)
                      AGENTS.md  ← lo que el agente lee cada sesión
 ```
+
+> **Las tres capas son de la ORGANIZACIÓN, y su sujeto es el PRODUCTO, no un repositorio.**
+> Un producto puede estar repartido entre varios repositorios Git independientes: el kernel,
+> los packs y el PROFILE viven **una sola vez**, en el repositorio ADS de control, y el
+> código vive en las fuentes que declara `SOURCES.toml`. Copiar cualquiera de las tres capas
+> dentro de un repositorio de código crearía varias organizaciones que después habría que
+> sincronizar. Contrato: `kernel/operativo/contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md`,
+> por la enmienda **E2**.
 
 La capa PACK es la que la v10 no tenía. Existe porque hay conocimiento que **no es universal pero tampoco es de un solo proyecto**: todo proyecto web necesita presupuestos de rendimiento, estrategia de migraciones y entornos de preview; todo proyecto móvil necesita matriz de dispositivos, permisos y política de background. Sin esta capa, ese conocimiento se reescribe en cada PROFILE o contamina el KERNEL.
 
@@ -1005,6 +1013,14 @@ Reglas adicionales:
 
 ### G29 — Git, integración y entrega
 
+> **REVISADA por la enmienda E2.4.** Todo lo que sigue **se conserva y se aplica POR
+> FUENTE**: cada repositorio del producto tiene su `main` protegida, sus ramas, sus PR, su
+> CI y sus tags. Lo que queda **derogado** es la relación implícita `un item → una rama →
+> un PR` como relación universal. Un item produce `0..N` source changes, y su convergencia
+> se declara en un **Integration Set**, no dando por integrado el producto porque se haya
+> fusionado un PR. El contrato completo —quién pide, ejecuta, bloquea y verifica cada
+> operación— está en `kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md`.
+
 > **El humano gobierna objetivos, riesgo, producto y aceptación. La organización de ingeniería gobierna Git dentro de sus límites de autoridad.**
 
 #### Rama principal
@@ -1063,6 +1079,12 @@ Un cambio puede llegar a `main` sin distribuirse. La publicación tiene su propi
 #### Tags y rollback
 
 El sistema **DEBE** poder marcar estados relevantes (Product Baseline, versión interna testeable, release candidate, checkpoint previo a migración) y **DEBE** poder revertir cambios integrados. La reversión es herramienta normal de ingeniería, no fracaso excepcional. El Owner **NO DEBE** tener que diagnosticar técnicamente una regresión para que el sistema recupere un estado bueno conocido.
+
+#### Un producto de varias fuentes
+
+`main` sigue representando el último estado integrado y aceptado **de cada fuente**. El
+estado del PRODUCTO no vive en ninguna rama: se calcula en el repositorio ADS de control, y
+su evidencia es el Integration Set. Ver `C7`.
 
 #### El Owner no es operador Git
 

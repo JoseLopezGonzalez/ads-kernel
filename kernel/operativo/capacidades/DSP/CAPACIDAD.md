@@ -29,13 +29,14 @@ entrada:
   - "un resultado emitido por cualquier capacidad"
 salida:
   - "items con ficha, ruta y paquetes"
+  - "el alcance de fuentes de cada paquete: lee_fuentes y escribe_fuentes (E2.2)"
   - "la traza de activadas y NO activadas con motivo"
   - "el estado global calculado y las vistas derivadas regeneradas"
   - "la explicación de qué se eligió y qué se excluyó, y por qué"
 gate: gate:despacho-coherente
 resultados: [capa-anadida, devolucion, bloqueo, cancelacion]
 memoria_propia:
-  - "el estado persistido completo: items, rutas, paquetes, control y eventos"
+  - "el estado persistido completo: items, rutas, paquetes, control y eventos, en el repositorio ADS de control (E2.1)"
   - "estado/memoria/DSP/composiciones.md — composiciones por defecto y sus recomposiciones"
 tablero: "estado/tableros/ — DSP regenera la zona COLA de todos los tableros"
 metodos: [DSP/Enrutamiento, DSP/Continua, DSP/Supervision]
@@ -44,6 +45,7 @@ autoridad:
   decide_sola:
     - "la composición de la ruta y su recomposición, con traza"
     - "la creación de paquetes y sus dependencias"
+    - "el alcance de fuentes de cada paquete, prefiriendo siempre el mínimo que mantenga el trabajo coherente (E2.2)"
     - "el orden de despacho, aplicando b.12 de forma determinista"
     - "que un freno de a.7 o de b.9 se ha disparado, aplicando el umbral ya aprobado, y detener lo que ese freno detiene"
     - "crear y despachar desbloqueadores dentro del alcance ya autorizado (b.15.1)"
@@ -97,6 +99,14 @@ comprobaciones:
     comprueba: "toda devolución tiene su paquete de corrección creado o reabierto en el mismo ciclo"
     como: "comprobación: ningún paquete devuelto sin paquete de corrección enlazado"
     automatizable: si
+  - id: alcance-de-fuentes
+    comprueba: "todo paquete que toca código declara sus lee_fuentes y escribe_fuentes, y ninguna escritura sobra"
+    como: "la declaración existe y cada fuente de escritura está justificada por el objetivo del paquete"
+    automatizable: parcial
+  - id: fuentes-disponibles
+    comprueba: "las fuentes del alcance están materializadas antes de despachar el paquete"
+    como: "gate:workspace-conforme sobre las fuentes del alcance; si falta una, el paquete queda esperando-dependencia y NO se despacha"
+    automatizable: si
   - id: frenos-evaluados
     comprueba: "antes de despachar se han evaluado los cuatro frenos: devoluciones por par, ciclo multiparte, racha SIS y recomposiciones sin avance material"
     como: "el registro de selección enlaza los contadores vigentes de los cuatro; un despacho sin ellos no es conforme"
@@ -124,3 +134,19 @@ fallo: >
 
 Roles, métodos, prompts y composición: [`roles/`](roles/) · [`metodos/`](metodos/) ·
 [`prompts/`](prompts/) · [`composicion.md`](composicion.md).
+
+## Un solo DSP por producto
+
+```text
+UNO POR ADS PROJECT   no uno por repositorio. DSP razona sobre el PRODUCTO completo.
+LA FUENTE ES UNA      dimensión de EJECUCIÓN, no una frontera de decisión: una ruta puede
+DIMENSIÓN             atravesar varias fuentes sin dejar de ser una ruta.
+ALCANCE MÍNIMO        si un trabajo se puede hacer escribiendo en una sola fuente, no se
+                      autoriza escritura en todo el producto. Y si una unidad coherente
+                      necesita dos, NO se parte artificialmente porque haya dos repos.
+BLOQUEO SELECTIVO     una fuente ausente bloquea SÓLO los paquetes que la requieren. El
+                      resto del producto sigue avanzando.
+```
+
+Contrato: [`C6`](../../contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md) ·
+[`E2.2`](../../../../docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md).
