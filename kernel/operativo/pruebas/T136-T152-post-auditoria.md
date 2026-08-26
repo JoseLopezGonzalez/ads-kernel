@@ -122,3 +122,64 @@ validador: "kernel/operativo/validadores/comprobar_referencias.py"
 estado: prueba-superada
 evidencia: "evidencia/referencias-salida.txt"
 ```
+
+```yaml ads:escenario
+id: T138
+nombre: La escala de novedad es total y sus cinco niveles son alcanzables
+cubre: ["A-07", "03-ESCALA-DE-NOVEDAD", "DIS/Reconstruccion", "DIS/Fundacion"]
+dado:
+  - "los cinco niveles declarados con su condición formal sobre las cinco variables del encuadre de diseño"
+cuando:
+  - "se enumeran las treinta y dos combinaciones posibles y se evalúan los niveles en su orden"
+entonces:
+  - "cada combinación produce exactamente un nivel"
+  - "ningún nivel queda sin combinación que lo alcance"
+  - "un proyecto en blanco da N4 y un proyecto vivo sin memoria fiable da N3"
+falla_si:
+  - "alguna combinación no produce ningún nivel"
+  - "algún nivel es inalcanzable, y con él su método"
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_contratos.py"
+estado: prueba-superada
+evidencia: "evidencia/contratos-salida.txt"
+```
+
+```yaml ads:escenario
+id: T139
+nombre: Ningún nivel de novedad omite un gate obligatorio
+cubre: ["A-08", "03-ESCALA-DE-NOVEDAD", "04-CICLO-DE-CALIDAD", "gate:usabilidad", "gate:excelencia-visual"]
+dado: ["los cinco niveles con sus gates, sus ejes reutilizables y sus estaciones"]
+cuando: ["se comprueba cada nivel contra los dos gates de Diseño y contra la tabla de estaciones"]
+entonces:
+  - "los cinco niveles declaran obligatorios gate:usabilidad y gate:excelencia-visual"
+  - "los nueve ejes de la rúbrica tienen régimen en cada nivel: reutilizable o propio"
+  - "acabado y fidelidad nunca son reutilizables en ningún nivel"
+  - "todo nivel que reutiliza algún eje declara qué evidencia demuestra la vigencia del patrón"
+  - "las estaciones 8 y 9 aparecen en los cinco niveles"
+  - "la tabla de 04-CICLO coincide con los bloques canónicos: una sola fuente"
+falla_si:
+  - "un nivel omite un gate por ser pequeño"
+  - "un eje queda sin régimen declarado"
+  - "dos documentos declaran estaciones distintas para el mismo nivel"
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_contratos.py"
+estado: prueba-superada
+evidencia: "evidencia/contratos-salida.txt"
+```
+
+```yaml ads:escenario
+id: T144
+nombre: El gate de usabilidad tiene portador computable en Construcción
+cubre: ["A-13", "gate:usabilidad", "gate:implementacion-completa", "DIS/validacion-de-uso"]
+dado: ["gate:usabilidad declara aplicarse a las capas de DIS y de CON"]
+cuando: ["se busca qué comprobación de CON activa ese gate sobre lo construido"]
+entonces:
+  - "gate:implementacion-completa comprueba la usabilidad de la superficie construida"
+  - "la comprobación cita gate:usabilidad, de modo que el vínculo es rastreable"
+  - "declara que el dictamen lo emite DIS/validacion-de-uso, no quien produjo la evidencia"
+falla_si: ["el aplica_a menciona CON y ninguna comprobación de CON lo activa"]
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_contratos.py"
+estado: prueba-superada
+evidencia: "evidencia/contratos-salida.txt"
+```

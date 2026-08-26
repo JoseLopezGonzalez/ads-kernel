@@ -1,0 +1,35 @@
+kind: esquema
+esquema: nivel-novedad
+version: 1
+descripcion: >
+  un nivel de la escala de novedad de Diseno, con su condicion FORMAL -evaluable, no
+  interpretable- y los gates que exige. Existe porque la escala escrita en prosa dejo
+  inalcanzable el nivel N3 (hallazgo A-07) y porque dos documentos discrepaban sobre que
+  gate era obligatorio en N0 y N1 (hallazgo A-08). Con esto, ambas cosas se comprueban.
+obligatorios:
+  [id, nombre, orden, metodo, condicion_formal, condicion_legible, exploracion_minima,
+   gates_obligatorios, ejes_reutilizables, ejes_nunca_reutilizables, evidencia_de_vigencia,
+   critica_visual, owner, estaciones]
+campos:
+  id: {tipo: texto, patron: '^N[0-4]$'}
+  nombre: {tipo: texto, min: 3}
+  # Orden de evaluacion: gana el PRIMERO cuya condicion es verdadera. 1 se evalua antes.
+  orden: {tipo: entero, min: 1}
+  metodo: {tipo: ref, ref_a: metodo}
+  # Expresion booleana sobre las variables declaradas en 03-ESCALA-DE-NOVEDAD.md.
+  # Solo admite nombres de variable, and, or, not y parentesis.
+  condicion_formal: {tipo: texto, min: 3}
+  condicion_legible: {tipo: texto, min: 20}
+  exploracion_minima: {tipo: texto, min: 10}
+  # Los gates que un paquete de este nivel DEBE pasar. Ninguno se omite por ser el nivel
+  # pequeno: lo que cambia es que parte de su evidencia puede reutilizarse.
+  gates_obligatorios: {tipo: lista, de: ref, ref_a: gate, min: 1}
+  # Ejes cuya evidencia PUEDE reutilizarse de la del patron vigente que se aplica.
+  ejes_reutilizables: {tipo: lista, de: texto}
+  # Ejes que NUNCA se reutilizan: son propios de esta aplicacion concreta.
+  ejes_nunca_reutilizables: {tipo: lista, de: texto, min: 1}
+  evidencia_de_vigencia: {tipo: lista, de: texto, min: 1}
+  critica_visual: {tipo: enum, valores: [completa, de-reutilizacion]}
+  owner: {tipo: enum, valores: [obligatorio, opcional-acumulada, ninguna]}
+  # Estaciones del ciclo de calidad que se ejecutan en este nivel (04-CICLO-DE-CALIDAD).
+  estaciones: {tipo: lista, de: entero, min: 1}

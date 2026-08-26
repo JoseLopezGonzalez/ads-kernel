@@ -13,7 +13,7 @@ id: DIS/Reconstruccion
 nombre: Reconstruccion
 capacidad: DIS
 disparador:
-  - "la escala de novedad devuelve N3: hay producto construido y no hay dirección escrita"
+  - "la escala de novedad devuelve N3: hay producto o superficie real y la memoria de diseño falta, no es fiable, está obsoleta o no representa lo implementado"
   - "un item AUD de auditoría activa DIS/Reconstruccion por C-DIS"
 carga:
   - "el producto construido, ejecutable"

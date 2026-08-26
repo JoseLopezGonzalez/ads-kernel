@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 7067287efa97c23b -->
+<!-- source_revision: b6100ba4aa7f4b8c -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -13,9 +13,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | CONTRATO DEFINIDO | 50 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 16 |
+| PRUEBA SUPERADA | 19 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **66** |
+| **total** | **69** |
 
 ## Detalle
 
@@ -83,6 +83,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T135](T086-T092-contratos.md) | Ninguna composición rebaja la independencia que exige un contrato | C1 independencia · C4 paso 5 · G13 | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |
 | [T136](T136-T152-post-auditoria.md) | Ningún veto arbitra a otro veto levantable | A-06 · a.5 regla de colisión de vetos · veto:degradacion-de-forma · veto:integridad-de-datos | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
 | [T137](T136-T152-post-auditoria.md) | DSP no declara autoridad semántica sobre ninguna cancelación | A-23 · b.7 autoridad orden y ejecución · T54 | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T138](T136-T152-post-auditoria.md) | La escala de novedad es total y sus cinco niveles son alcanzables | A-07 · 03-ESCALA-DE-NOVEDAD · DIS/Reconstruccion · DIS/Fundacion | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T139](T136-T152-post-auditoria.md) | Ningún nivel de novedad omite un gate obligatorio | A-08 · 03-ESCALA-DE-NOVEDAD · 04-CICLO-DE-CALIDAD · gate:usabilidad · gate:excelencia-visual | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T144](T136-T152-post-auditoria.md) | El gate de usabilidad tiene portador computable en Construcción | A-13 · gate:usabilidad · gate:implementacion-completa · DIS/validacion-de-uso | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
 | [T147](T136-T152-post-auditoria.md) | Todo documento es alcanzable por ruta, y ninguna referencia es ambigua | A-05 · A-28 · sustituye a T134 · a.7 modo de fallo (b) · regla de fuente única | validador-estructural | **PRUEBA SUPERADA** | evidencia/referencias-salida.txt |
 | [T148](T136-T152-post-auditoria.md) | El arranque documentado crea un proyecto conforme con cada pack | A-02 · tooling/new-project.sh · README · START_HERE · K0.14 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
 | [T149](T122-T133-T149-packs.md) | Lo más restrictivo gana entre dos packs, y queda registrado por qué | A-03 · A-25 · packs/COMPOSICION precedencia P1 · composicion_packs.py | validador-estructural | **PRUEBA SUPERADA** | evidencia/packs-salida.txt |

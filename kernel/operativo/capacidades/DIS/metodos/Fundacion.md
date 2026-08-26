@@ -9,7 +9,7 @@ id: DIS/Fundacion
 nombre: Fundacion
 capacidad: DIS
 disparador:
-  - "la escala de novedad devuelve N4: no existe memoria:vision-artistica o está vacía"
+  - "la escala de novedad devuelve N4: no hay superficie construida que preservar y tampoco dirección vigente"
   - "un item DIR aprobado sustituye la dirección visual del producto"
 carga:
   - "el encuadre del item y el criterio de éxito de PRD"

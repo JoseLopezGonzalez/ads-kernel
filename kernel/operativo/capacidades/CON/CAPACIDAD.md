@@ -20,6 +20,7 @@ entrada:
 salida:
   - "el código y sus tests, con el commit identificado"
   - "las diferencias conocidas respecto a la especificación, declaradas ANTES de la revisión"
+  - "la evidencia de usabilidad sobre lo construido, cuando la capa toca una superficie usable: los cinco estados, el recorrido por medio de entrada y las mediciones de respuesta"
   - "la evidencia de imposibilidad cuando devuelve"
 gate: gate:implementacion-completa
 resultados: [capa-anadida, devolucion, bloqueo, cancelacion]
@@ -48,6 +49,7 @@ roles: [CON/implementacion, CON/experimental]
 deriva_de:
   - "a.3 · CON: no redecide capas anteriores; sin autoridad sobre forma ni intención"
   - "b.16 · CON:experimental dentro de INV y de DIR"
+  - "diseno/02-RUBRICAS · gate:usabilidad se aplica también a las capas de CON: CON produce la evidencia, DIS/validacion-de-uso la juzga"
 materializacion: >
   Se materializa en casi todos los items de producto. En AUD y DIR sólo entra como
   CON:experimental, y nunca como construcción productiva (b.16).
@@ -75,6 +77,10 @@ comprobaciones:
   - id: condiciones-de-seguridad
     comprueba: "las condiciones de SEG se cumplen"
     como: "recorrido de las condiciones declaradas por SEG, con su evidencia"
+    automatizable: parcial
+  - id: superficie-usable
+    comprueba: "si la capa produce o modifica una superficie usable, existe sobre LO CONSTRUIDO la evidencia que exige gate:usabilidad: los cinco estados, un recorrido por cada medio de entrada del pack y las mediciones de respuesta"
+    como: "el paquete declara afecta_superficie y enlaza esa evidencia; el dictamen de los seis ejes lo emite DIS/validacion-de-uso, que no la produjo"
     automatizable: parcial
   - id: diferencias-declaradas
     comprueba: "toda diferencia respecto a la especificación de DIS está declarada ANTES de la revisión"

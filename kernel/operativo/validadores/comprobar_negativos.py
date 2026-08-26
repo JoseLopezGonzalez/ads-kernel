@@ -200,8 +200,33 @@ def m_encuadre_sin_estado_exigido(raiz):
 
 
 def m_nivel_sin_gate(raiz):
+    """A-08 · la tabla de estaciones vuelve a saltarse los dos gates en N0."""
     _sustituir(raiz, "kernel/operativo/diseno/04-CICLO-DE-CALIDAD.md",
-               "N0  1 · 9 · 10 · 11", "N0  1 · 10 · 11")
+               "N0  1 · 8 · 9 · 10 · 11 · 13", "N0  1 · 10 · 11")
+
+
+def m_nivel_sin_gate_obligatorio(raiz):
+    """A-08 · un nivel deja de declarar obligatorio el gate visual."""
+    _sustituir(raiz, "kernel/operativo/diseno/03-ESCALA-DE-NOVEDAD.md",
+               "id: N0\nnombre: Extensión de patrón vigente\norden: 5\nmetodo: DIS/Evolucion",
+               "id: N0\nnombre: Extensión de patrón vigente\norden: 5\nmetodo: DIS/Evolucion")
+    _sustituir(raiz, "kernel/operativo/diseno/03-ESCALA-DE-NOVEDAD.md",
+               "gates_obligatorios: [gate:usabilidad, gate:excelencia-visual]\nejes_reutilizables: [personalidad, intencion, jerarquia, sistema, actualidad, respuesta, alma]",
+               "gates_obligatorios: [gate:usabilidad]\nejes_reutilizables: [personalidad, intencion, jerarquia, sistema, actualidad, respuesta, alma]")
+
+
+def m_n3_inalcanzable(raiz):
+    """A-07 · se vuelve a la condición que hacía inalcanzable la Reconstrucción."""
+    _sustituir(raiz, "kernel/operativo/diseno/03-ESCALA-DE-NOVEDAD.md",
+               'condicion_formal: "dir_sustituye or (not superficie_construida and not memoria_vigente)"',
+               'condicion_formal: "dir_sustituye or not memoria_vigente"')
+
+
+def m_escala_no_total(raiz):
+    """A-07 · una condición se estrecha y quedan casos sin ningún nivel."""
+    _sustituir(raiz, "kernel/operativo/diseno/03-ESCALA-DE-NOVEDAD.md",
+               'condicion_formal: "memoria_vigente and patron_cubre"',
+               'condicion_formal: "memoria_vigente and patron_cubre and premium_o_nuevo"')
 
 
 def m_cierre_sin_obligaciones(raiz):
@@ -274,8 +299,17 @@ CATALOGO = [
              "el esquema de encuadre pierde un estado que sus métodos exigen",
              m_encuadre_sin_estado_exigido),
     Mutacion("N139", "A-08", "T139", "comprobar_contratos",
-             "un nivel de novedad vuelve a omitir la estación del gate visual",
+             "la tabla de estaciones vuelve a saltarse los dos gates en N0",
              m_nivel_sin_gate),
+    Mutacion("N139b", "A-08", "T139", "comprobar_contratos",
+             "un nivel deja de declarar obligatorio el gate de excelencia visual",
+             m_nivel_sin_gate_obligatorio),
+    Mutacion("N138", "A-07", "T138", "comprobar_contratos",
+             "se vuelve a la condición que hacía inalcanzable la Reconstrucción (N3)",
+             m_n3_inalcanzable),
+    Mutacion("N138b", "A-07", "T138", "comprobar_contratos",
+             "una condición se estrecha y quedan casos sin ningún nivel",
+             m_escala_no_total),
     Mutacion("N140", "A-09", "T140", "comprobar_contratos",
              "el gate de cierre pierde la comprobación de obligaciones",
              m_cierre_sin_obligaciones),
