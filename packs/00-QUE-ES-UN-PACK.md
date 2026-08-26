@@ -1,6 +1,5 @@
 # Qué es un pack, y qué tiene prohibido hacer
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 Un pack es el **saber hacer de una CLASE de proyecto**. Existe porque hay conocimiento que
 no es universal pero tampoco es de un solo proyecto: toda aplicación web necesita

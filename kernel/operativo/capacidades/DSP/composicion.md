@@ -18,10 +18,19 @@ roles:
   - rol: DSP/estado
     obligatorio: true
     agentes: "el mismo agente que enrutamiento"
+  - rol: DSP/supervision
+    obligatorio: true
+    agentes: "1, distinto del que enruta"
 combinables:
   - roles: [DSP/enrutamiento, DSP/estado]
     motivo: "ambos son mecánicos y deterministas y ninguno juzga contenido: no hay conflicto que separar"
 independientes:
+  - rol: DSP/supervision
+    de: [DSP/enrutamiento]
+    motivo: >
+      quien compone y despacha la ruta es parte interesada en que ninguna de sus
+      recomposiciones cuente como sin avance material: contando las suyas encuentra avance
+      donde hubo renombrado, y el freno de b.9 deja de existir cuando más hace falta
   - rol: DSP/enrutamiento
     de: ["toda capacidad que decida contenido: DSP no ocupa a la vez un rol de contenido y el despacho"]
     motivo: >

@@ -1,6 +1,5 @@
 # C4 — Materialización, ampliación y retirada de equipos
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 > **No se crean equipos permanentes sin trabajo real.** a.4 fija el criterio; C4 lo hace
 > ejecutable: qué roles necesita un paquete concreto, cuántos agentes, cuáles se combinan,

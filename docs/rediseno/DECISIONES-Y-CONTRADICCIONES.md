@@ -1,6 +1,5 @@
 # Decisiones, contradicciones y límites del kernel operativo
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 Registro vivo de la iteración que construye el contenido operativo (pasos 1 a 6) sobre
 las secciones aprobadas (a) y (b). Tres partes: **decisiones tomadas** (reversibles, y por

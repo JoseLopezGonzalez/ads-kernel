@@ -1,6 +1,5 @@
 # El lenguaje canónico del kernel operativo
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 Este fichero explica **cómo se escribe** todo lo demás. Es la única fuente sobre el
 formato; ningún otro documento redefine estas reglas.
@@ -67,12 +66,14 @@ Restricciones disponibles: `patron` (expresión regular completa), `min`, `max`,
 `ads_lint` **rechaza** en cualquier fichero de `kernel/operativo/` y `packs/` las
 expresiones que delegan el criterio sin escribirlo:
 
+<!-- ads-lint-ignore-start: este bloque ENUMERA el vocabulario prohibido; es su definición, no su uso -->
 ```text
 si aplica · si procede · cuando corresponda · según el contexto · según convenga
 el agente decidirá · a criterio del agente · a juicio del agente
 se hará una revisión adecuada · revisión apropiada · lo que sea razonable
 en la medida de lo posible · idealmente · preferiblemente
 ```
+<!-- ads-lint-ignore-end -->
 
 Cuando una variación es real, se escribe como **condición comprobable**:
 

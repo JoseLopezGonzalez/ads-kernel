@@ -1,6 +1,5 @@
 # Composición de packs: qué ocurre cuando un proyecto usa varios
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 Un proyecto puede instalar más de un pack. Es el caso normal en cuanto hay una web y una
 aplicación móvil, o un móvil y un reloj.

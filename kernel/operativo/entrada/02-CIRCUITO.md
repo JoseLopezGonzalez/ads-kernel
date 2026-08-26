@@ -1,6 +1,5 @@
 # El circuito completo: de la expresión del Owner al trabajo distribuido
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 Trece estaciones. **No es una cadena rígida**: casi todas pueden devolver hacia atrás, y
 varias terminan legítimamente sin item.

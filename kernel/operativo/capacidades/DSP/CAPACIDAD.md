@@ -38,13 +38,14 @@ memoria_propia:
   - "el estado persistido completo: items, rutas, paquetes, control y eventos"
   - "estado/memoria/DSP/composiciones.md — composiciones por defecto y sus recomposiciones"
 tablero: "estado/tableros/ — DSP regenera la zona COLA de todos los tableros"
-metodos: [DSP/Enrutamiento, DSP/Continua]
+metodos: [DSP/Enrutamiento, DSP/Continua, DSP/Supervision]
 checkpoint: "no aplica a DSP como capacidad: el estado persistido ES su checkpoint"
 autoridad:
   decide_sola:
     - "la composición de la ruta y su recomposición, con traza"
     - "la creación de paquetes y sus dependencias"
     - "el orden de despacho, aplicando b.12 de forma determinista"
+    - "que un freno de a.7 o de b.9 se ha disparado, aplicando el umbral ya aprobado, y detener lo que ese freno detiene"
     - "crear y despachar desbloqueadores dentro del alcance ya autorizado (b.15.1)"
     - "prioridad normal por defecto, porque procede de una regla del kernel"
   escala:
@@ -60,7 +61,7 @@ owner:
     DSP ejecuta las órdenes del Owner y le reporta; no le pide permiso para despachar. Sólo
     escala cuando un freno se dispara, cuando el desbloqueador amplía el alcance, o cuando
     encuentra una inconsistencia que no puede resolver sin decidir.
-roles: [DSP/enrutamiento, DSP/estado]
+roles: [DSP/enrutamiento, DSP/estado, DSP/supervision]
 deriva_de:
   - "a.3 + enmienda E1.1 · DSP: recepción del encuadre, enrutamiento, estado y supervisión; autoridad sobre orden y ruta, ninguna sobre contenido"
   - "b.5, b.12, b.14, b.15 · transiciones, selección, Continúa y cola vacía"
@@ -95,6 +96,18 @@ comprobaciones:
   - id: devolucion-con-paquete
     comprueba: "toda devolución tiene su paquete de corrección creado o reabierto en el mismo ciclo"
     como: "comprobación: ningún paquete devuelto sin paquete de corrección enlazado"
+    automatizable: si
+  - id: frenos-evaluados
+    comprueba: "antes de despachar se han evaluado los cuatro frenos: devoluciones por par, ciclo multiparte, racha SIS y recomposiciones sin avance material"
+    como: "el registro de selección enlaza los contadores vigentes de los cuatro; un despacho sin ellos no es conforme"
+    automatizable: si
+  - id: freno-disparado-con-dos-posturas
+    comprueba: "todo freno disparado detiene lo que le corresponde y escala con LAS DOS posturas enfrentadas escritas"
+    como: "el registro del freno contiene qué sostiene cada capacidad, con qué evidencia, y a quién se escaló"
+    automatizable: si
+  - id: inanicion-visible-sin-tocar-prioridad
+    comprueba: "todo paquete listo no despachado muestra tiempo, postergaciones, quién lo adelantó y qué lo impide, y ninguna prioridad se ha modificado por el sistema"
+    como: "la tabla de inanición existe y ningún evento de prioridad tiene autoridad distinta del Owner"
     automatizable: si
   - id: cancelacion-con-autoridad-ajena
     comprueba: "ninguna cancelación ejecutada por DSP tiene a DSP como autoridad semántica: ordenante, autoridad y ejecutor son campos distintos y la autoridad NUNCA es DSP"

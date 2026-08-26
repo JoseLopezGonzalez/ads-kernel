@@ -1,6 +1,5 @@
 # El ciclo de calidad de Diseño
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 Trece estaciones. **No es una tubería**: seis de ellas pueden devolver hacia atrás, y una
 devolución no es un fracaso del ciclo, es el ciclo funcionando.

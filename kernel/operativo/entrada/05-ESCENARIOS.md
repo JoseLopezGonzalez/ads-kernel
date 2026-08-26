@@ -1,6 +1,5 @@
 # Escenarios completos del circuito de entrada
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 Recorridos íntegros, con lo que el sistema **hace**, lo que **escribe** y lo que **decide
 no hacer**. No son ilustraciones: son las pruebas T75 a T84, y su estado real está en

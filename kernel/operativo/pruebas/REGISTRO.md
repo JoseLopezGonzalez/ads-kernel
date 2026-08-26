@@ -1,6 +1,5 @@
 # REGISTRO DE CONFORMIDAD — estado real de cada prueba
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 > Este fichero existe para impedir una afirmación concreta: *«el sistema está probado»*
 > cuando lo único que ocurrió es que alguien escribió la prueba.

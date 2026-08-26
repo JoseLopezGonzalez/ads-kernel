@@ -11,5 +11,7 @@ T137  SUPERADA  DSP no declara autoridad semántica sobre ninguna cancelación
 T138  SUPERADA  La escala de novedad es total y sus cinco niveles son alcanzables
 T139  SUPERADA  Ningún nivel de novedad omite un gate: lo que cambia es la evidencia reutilizable
 T144  SUPERADA  El gate de usabilidad tiene portador computable en Construcción
+T140  SUPERADA  Las obligaciones del proceso existen y el cierre las comprueba
+T141  SUPERADA  Los frenos tienen ejecutor operativo, no sólo prosa
 
-13 superadas · 0 fallidas
+15 superadas · 0 fallidas

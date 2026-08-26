@@ -1,6 +1,5 @@
 # C1 — Capacidad, equipo, rol, agente, método, herramientas y autoridad
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 > Amplía el contrato de capacidad de a.1 **sin contradecirlo**. Lo que (a) define no se
 > repite aquí: se enlaza.

@@ -1,6 +1,5 @@
 # La memoria de Diseño
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 > Catálogo. Contiene bloques `ads:memoria`, uno por sección del corpus.
 

@@ -1,6 +1,5 @@
 # C5 — El handoff entre capacidades
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 > El formato de entrega entre equipos es una de las cosas que a.11 declaró **ausentes por
 > completo** en el kernel 1.3.0. Esto lo cierra en su forma operativa.

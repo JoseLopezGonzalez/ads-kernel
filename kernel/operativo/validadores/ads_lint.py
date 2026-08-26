@@ -6,7 +6,7 @@ Comprueba, sobre kernel/operativo/ y packs/:
   2. unicidad de identificadores
   3. resolución de toda referencia (`ref`) a otro artefacto canónico
   4. resolución de todo enlace relativo de Markdown
-  5. ausencia de vocabulario prohibido
+  5. ausencia de vocabulario prohibido, con exenciones ACOTADAS por rango o por línea
   6. las reglas específicas de validadores/reglas.yaml
 
 Uso:
@@ -30,7 +30,18 @@ except ImportError:  # pragma: no cover
 BLOQUE = re.compile(r"^```yaml\s+ads:([a-z-]+)\s*$")
 FIN_BLOQUE = re.compile(r"^```\s*$")
 ENLACE_MD = re.compile(r"\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
-EXENCION = "ads-lint: permitir-vocabulario-prohibido"
+# Exenciones ACOTADAS. La versión anterior era por FICHERO COMPLETO: bastaba un comentario
+# en la cabecera para que todo el documento quedara fuera de la comprobación de
+# vocabulario. Diecinueve de los ciento ochenta y ocho ficheros del corpus estaban exentos
+# —los seis de diseño, cuatro de los cinco contratos, el circuito de entrada—, es decir,
+# justo donde la condición comprobable más importa (hallazgo A-27). Ahora se exime un
+# RANGO, y el rango declara su motivo.
+#
+#   <!-- ads-lint-ignore-next-line: <motivo> -->
+#   <!-- ads-lint-ignore-start: <motivo> -->  …  <!-- ads-lint-ignore-end -->
+INICIO_EXENCION = re.compile(r"<!--\s*ads-lint-ignore-start:\s*(.+?)\s*-->")
+FIN_EXENCION = re.compile(r"<!--\s*ads-lint-ignore-end\s*-->")
+EXENCION_LINEA = re.compile(r"<!--\s*ads-lint-ignore-next-line:\s*(.+?)\s*-->")
 EXENCION_ENLACES = "ads-lint: permitir-enlaces-rotos"
 
 VOCABULARIO_PROHIBIDO = [
@@ -239,14 +250,49 @@ class Lint:
                          f"{campo}: '{ident}' es ads:{tipo_real}, se esperaba ads:{tipo_esperado}")
 
     # ---------------------------------------------------------------- texto
+    def lineas_exentas(self, texto):
+        """Qué líneas quedan fuera, por rango o por marca de línea siguiente.
+
+        Devuelve (exentas, huerfanas): las huérfanas son marcas de fin sin inicio o
+        rangos sin cerrar, que son un defecto por sí mismos: una exención abierta se
+        convierte en una exención de fichero completo por descuido.
+        """
+        exentas, problemas = set(), []
+        abierto_en = None
+        for n, linea in enumerate(texto.splitlines(), 1):
+            if INICIO_EXENCION.search(linea):
+                if abierto_en:
+                    problemas.append((n, "exención abierta dentro de otra ya abierta"))
+                abierto_en = n
+                exentas.add(n)
+                continue
+            if FIN_EXENCION.search(linea):
+                if not abierto_en:
+                    problemas.append((n, "cierre de exención sin inicio"))
+                abierto_en = None
+                exentas.add(n)
+                continue
+            if abierto_en:
+                exentas.add(n)
+            if EXENCION_LINEA.search(linea):
+                exentas.add(n)
+                exentas.add(n + 1)
+        if abierto_en:
+            problemas.append((abierto_en, "exención abierta y nunca cerrada"))
+        return exentas, problemas
+
     def validar_vocabulario(self):
         for ruta in self.ficheros(".md"):
             with open(ruta, encoding="utf-8") as fh:
                 texto = fh.read()
-            if EXENCION in texto:
-                continue
+            exentas, problemas = self.lineas_exentas(texto)
+            for linea_n, motivo in problemas:
+                self.err(ruta, linea_n, "exencion", f"{motivo}: una exención sin cerrar "
+                                                    f"exime el resto del fichero por descuido")
             bajo = texto.lower()
             for linea_n, linea in enumerate(bajo.splitlines(), 1):
+                if linea_n in exentas:
+                    continue
                 for frase in VOCABULARIO_PROHIBIDO:
                     if frase in linea:
                         self.err(ruta, linea_n, "vocabulario",

@@ -1,6 +1,5 @@
 # C3 — El método ejecutable
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 > Un método es lo que impide que cada agente invente su propia metodología. Si un método
 > admite dos ejecuciones razonables con resultados distintos, no es un método: es un tema.

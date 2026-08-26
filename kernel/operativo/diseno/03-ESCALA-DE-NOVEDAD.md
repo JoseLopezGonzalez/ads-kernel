@@ -1,6 +1,5 @@
 # La escala de novedad: cuánta exploración exige cada trabajo
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 `C-DIS` (b.16) decide **si** Diseño se activa. Esta escala decide **qué método ejecuta y
 cuánto explora**. Son dos preguntas distintas y la segunda no puede quedar al criterio del

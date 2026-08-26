@@ -488,12 +488,148 @@ def t144_usabilidad_tiene_portador_en_con(b):
     return r
 
 
+def t140_obligaciones_y_cierre(b):
+    """A-09 · el aparato central de (b) tiene portador operativo.
+
+    Antes de esto, las palabras `obligación_satisfecha`, `obligación_retirada` y
+    `obligación_huérfana` no aparecían una sola vez en el corpus operativo, y no existía
+    ningún gate de cierre: cerrar todos los paquetes de un item cerraba un item cuyo
+    resultado nunca existió, y nada lo impedía.
+    """
+    r = Resultado("T140", "Las obligaciones del proceso existen y el cierre las comprueba")
+    procesos = {d["id"]: d for d, _, _ in b.get("proceso", [])}
+    if len(procesos) != 10:
+        r.fallo(f"se declaran {len(procesos)} procesos y b.16 deriva diez rutas")
+    for pid, proc in sorted(procesos.items()):
+        obligs = proc.get("obligatorias") or []
+        if not obligs:
+            r.fallo(f"{pid}: sin obligaciones. Un proceso sin obligación no puede cerrar mal")
+        vistos = set()
+        for o in obligs:
+            oid = o.get("id")
+            if oid in vistos:
+                r.fallo(f"{pid}: dos obligaciones con el mismo id '{oid}'")
+            vistos.add(oid)
+            autoridad = str(o.get("autoridad_de_retirada", ""))
+            if re.search(r"\bDSP\b", autoridad):
+                r.fallo(f"{pid}/{oid}: declara a DSP como autoridad de retirada. Retirar es "
+                        f"autoridad semántica, y b.5 y b.9 dicen que DSP no la tiene")
+        for c in proc.get("condicionales") or []:
+            cond = str(c.get("condicion", "")).strip().lower()
+            if cond in ("si aplica", "si procede", "cuando corresponda", ""):
+                r.fallo(f"{pid}/{c.get('capacidad')}: condición no comprobable «{cond}»")
+
+    gates = {d["id"]: d for d, _, _ in b.get("gate", [])}
+    cierre = gates.get("gate:cierre-de-item")
+    if not cierre:
+        r.fallo("no existe gate:cierre-de-item: las cinco condiciones de b.10 no las "
+                "comprueba nadie")
+        return r
+    ids = {c.get("id") for c in cierre.get("comprobaciones") or []}
+    for exigida in ("terminacion", "obligaciones-resueltas", "vigencia", "integracion",
+                    "aprendizaje"):
+        if exigida not in ids:
+            r.fallo(f"gate:cierre-de-item no comprueba '{exigida}', que es una de las cinco "
+                    f"condiciones de cierre de b.10")
+    texto = json.dumps(cierre, ensure_ascii=False).lower()
+    for concepto in ("huérfana", "retirada", "satisfecha", "invalidada"):
+        if concepto not in texto:
+            r.fallo(f"gate:cierre-de-item no menciona '{concepto}': el vocabulario de b.3 "
+                    f"tiene que ser el suyo")
+    plantilla = os.path.join(RAIZ, "kernel/operativo/plantillas/CIERRE.md")
+    if not os.path.exists(plantilla):
+        r.fallo("no existe la plantilla de informe de cierre que separa satisfechas de retiradas")
+    else:
+        with open(plantilla, encoding="utf-8") as fh:
+            cuerpo = fh.read().upper()
+        for cifra in ("OBLIGACIONES SATISFECHAS", "OBLIGACIONES RETIRADAS"):
+            if cifra not in cuerpo:
+                r.fallo(f"la plantilla de cierre no reporta '{cifra}' por separado")
+    return r
+
+
+# Los umbrales YA APROBADOS. Esta prueba no los fija: comprueba que el corpus no los
+# reinventa ni los deja a la memoria del agente.
+FRENOS = {
+    "devolucion": ("2", "a.7 · FRENO 1"),
+    "ciclo": ("3", "a.7 · FRENO 2"),
+    "racha": ("2", "a.7 · FRENO 3"),
+    "recomposici": ("3", "b.9 · MAX_RECOMPOSICIONES_SIN_AVANCE"),
+}
+
+
+def t141_frenos_con_ejecutor(b):
+    """A-10 · los frenos de a.7 y b.9 tienen quien los cuente, los detenga y los escale."""
+    r = Resultado("T141", "Los frenos tienen ejecutor operativo, no sólo prosa")
+    caps = {d["id"]: d for d, _, _ in b.get("capacidad", [])}
+    roles = {d["id"]: d for d, _, _ in b.get("rol", [])}
+    metodos = {d["id"]: d for d, _, _ in b.get("metodo", [])}
+    dsp = caps.get("DSP")
+    if not dsp:
+        r.fallo("no existe la ficha de DSP")
+        return r
+    if "DSP/supervision" not in (dsp.get("roles") or []):
+        r.fallo("DSP no declara el rol que ejecuta su cuarta función, la Supervisión de a.3")
+    if "DSP/Supervision" not in (dsp.get("metodos") or []):
+        r.fallo("DSP no declara el método de supervisión: los frenos quedarían en prosa")
+
+    metodo = metodos.get("DSP/Supervision")
+    if not metodo:
+        r.fallo("no existe el método DSP/Supervision")
+    else:
+        cuerpo = json.dumps(metodo, ensure_ascii=False).lower()
+        for freno in FRENOS:
+            if freno not in cuerpo:
+                r.fallo(f"DSP/Supervision no cuenta el freno de {freno}")
+        for paso in metodo.get("pasos", []):
+            if not paso.get("termina_cuando"):
+                r.fallo(f"DSP/Supervision paso {paso.get('n')}: sin condición de salida")
+
+    rol = roles.get("DSP/supervision")
+    if not rol:
+        r.fallo("no existe el contrato del rol DSP/supervision")
+    else:
+        ind = rol.get("independencia") or {}
+        if not ind.get("requiere_independencia"):
+            r.fallo("DSP/supervision no exige independencia de DSP/enrutamiento: quien "
+                    "recompone contaría sus propias recomposiciones")
+        elif "DSP/enrutamiento" not in (ind.get("de_quien") or []):
+            r.fallo("DSP/supervision exige independencia pero no de DSP/enrutamiento")
+        limites = " ".join(rol.get("limites") or []).lower()
+        if "prioridad" not in limites:
+            r.fallo("DSP/supervision no declara que NO toca la prioridad: b.12 lo prohíbe "
+                    "expresamente y es el error más fácil ante una inanición")
+
+    gate = {d["id"]: d for d, _, _ in b.get("gate", [])}.get("gate:despacho-coherente")
+    if not gate:
+        r.fallo("no existe gate:despacho-coherente")
+        return r
+    ids = {c.get("id") for c in gate.get("comprobaciones") or []}
+    for exigida in ("frenos-evaluados", "freno-disparado-con-dos-posturas",
+                    "inanicion-visible-sin-tocar-prioridad"):
+        if exigida not in ids:
+            r.fallo(f"gate:despacho-coherente no comprueba '{exigida}': un despacho podría "
+                    f"cerrar su gate sin haber evaluado un solo freno")
+
+    # los umbrales son los aprobados: no se inventan números nuevos
+    ruta = os.path.join(RAIZ, "kernel/operativo/capacidades/DSP/prompts/supervision.md")
+    if os.path.exists(ruta):
+        with open(ruta, encoding="utf-8") as fh:
+            prompt = fh.read()
+        for freno, (valor, fuente) in FRENOS.items():
+            if not re.search(rf"(?i){freno}[^=≥\n]*[=≥]\s*{valor}\b", prompt):
+                r.fallo(f"el prompt de supervisión no fija el umbral de {freno} en {valor} "
+                        f"({fuente}): un umbral que el agente recuerda de memoria se ajusta solo")
+    return r
+
+
 PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t89_reanudacion_con_prueba, t90_roles_coherentes, t91_metodos_con_gate_y_pasos,
            t92_sin_marca, t135_composicion_respeta_el_contrato,
            t136_vetos_no_se_arbitran, t137_dsp_no_cancela_por_contenido,
            t138_escala_total_y_alcanzable, t139_ningun_nivel_omite_un_gate,
-           t144_usabilidad_tiene_portador_en_con]
+           t144_usabilidad_tiene_portador_en_con,
+           t140_obligaciones_y_cierre, t141_frenos_con_ejecutor]
 
 
 def main():

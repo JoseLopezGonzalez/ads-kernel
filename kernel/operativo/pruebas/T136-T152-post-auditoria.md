@@ -183,3 +183,53 @@ validador: "kernel/operativo/validadores/comprobar_contratos.py"
 estado: prueba-superada
 evidencia: "evidencia/contratos-salida.txt"
 ```
+
+```yaml ads:escenario
+id: T140
+nombre: Las obligaciones del proceso existen y el cierre las comprueba
+cubre: ["A-09", "b.3", "b.4 P10", "b.10", "b.16", "gate:cierre-de-item", "T52", "T53", "T64", "T65", "T66"]
+dado:
+  - "los diez procesos de b.16 en forma canónica, cada uno con sus obligaciones"
+  - "el gate de cierre con las cinco condiciones de b.10"
+cuando: ["se comprueba el vocabulario de obligaciones y el gate que las evalúa"]
+entonces:
+  - "cada proceso declara al menos una obligación, con capa exigida, capacidad productora, criterio de satisfacción y autoridad de retirada"
+  - "ninguna obligación declara a DSP como autoridad de retirada"
+  - "toda capacidad condicional declara una condición comprobable, y ninguna se remite a la fórmula que b.16 prohíbe"
+  - "gate:cierre-de-item comprueba terminación, obligaciones resueltas, vigencia, integración y aprendizaje"
+  - "el gate usa el vocabulario de b.3: satisfecha, retirada, huérfana e invalidada"
+  - "la plantilla de cierre reporta satisfechas y retiradas POR SEPARADO"
+falla_si:
+  - "un item puede cerrar con una obligación huérfana"
+  - "DSP aparece como autoridad de retirada de alguna obligación"
+  - "el informe de cierre puede sumar satisfechas y retiradas"
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_contratos.py"
+estado: prueba-superada
+evidencia: "evidencia/contratos-salida.txt"
+```
+
+```yaml ads:escenario
+id: T141
+nombre: Los frenos tienen ejecutor operativo, no sólo prosa
+cubre: ["A-10", "a.7 los tres frenos", "b.9 avance material", "b.12 inanición", "T06", "T07", "T08", "T41"]
+dado:
+  - "los cuatro frenos aprobados con sus umbrales: 2 devoluciones, ciclo de 3 o más, 2 items SIS, 3 recomposiciones"
+cuando: ["se busca quién los cuenta, quién detiene y quién escala"]
+entonces:
+  - "DSP declara el rol y el método de supervisión, que es su cuarta función en a.3"
+  - "el método cuenta los cuatro frenos y todos sus pasos declaran condición de salida"
+  - "el rol exige independencia de DSP/enrutamiento, que es parte interesada en el avance material"
+  - "el rol declara expresamente que NO toca la prioridad"
+  - "gate:despacho-coherente comprueba que los frenos se evaluaron, que el disparado escaló con las dos posturas, y que la inanición es visible sin haber tocado prioridades"
+  - "el prompt fija los umbrales aprobados, en vez de dejarlos a la memoria del agente"
+falla_si:
+  - "un despacho cierra su gate sin haber evaluado un solo freno"
+  - "quien recompone la ruta es quien cuenta si hubo avance material"
+  - "un freno escala con una sola postura escrita"
+  - "se inventa un umbral distinto de los aprobados"
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_contratos.py"
+estado: prueba-superada
+evidencia: "evidencia/contratos-salida.txt"
+```

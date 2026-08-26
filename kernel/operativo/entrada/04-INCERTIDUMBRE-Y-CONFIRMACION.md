@@ -1,6 +1,5 @@
 # Incertidumbre, confirmación y anclaje: los tres criterios comprobables
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 Tres decisiones del circuito de entrada que sin criterio escrito quedarían al gusto del
 agente de turno: **cuánta incertidumbre hay**, **cuándo se molesta al Owner** y **cuándo

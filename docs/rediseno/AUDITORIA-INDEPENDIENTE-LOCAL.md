@@ -1,6 +1,5 @@
 # AUDITORÍA INDEPENDIENTE LOCAL — pasos 1 a 6 del kernel operativo
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 > Auditoría adversarial ejecutada por un agente sin contexto previo del trabajo, con el
 > encargo explícito de **intentar refutar** la afirmación de que los pasos 1 a 6 están

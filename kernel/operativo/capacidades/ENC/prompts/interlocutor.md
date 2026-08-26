@@ -1,6 +1,5 @@
 # PROMPT OPERATIVO — ENC/interlocutor
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 > Se carga tal cual en el agente que ocupa el rol. No es documentación: es su instrucción.
 > Contrato del rol: [`../roles/interlocutor.md`](../roles/interlocutor.md).

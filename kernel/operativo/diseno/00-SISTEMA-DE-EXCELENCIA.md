@@ -1,6 +1,5 @@
 # El sistema de excelencia de Diseño
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 > **No buscamos interfaces usables. Buscamos productos con personalidad, actuales,
 > expresivos y visualmente excelentes** — interfaces cuya implementación exige verdadero

@@ -1,6 +1,5 @@
 # Las dos rúbricas y sus dos gates
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 Una rúbrica **no es una nota**. Es una lista de ejes, cada uno con tres niveles descritos
 en palabras y con la evidencia que permite situarse en uno de ellos. El resultado de

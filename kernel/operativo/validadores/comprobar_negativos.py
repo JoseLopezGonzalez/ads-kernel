@@ -230,14 +230,48 @@ def m_escala_no_total(raiz):
 
 
 def m_cierre_sin_obligaciones(raiz):
-    _sustituir(raiz, "kernel/operativo/capacidades/DSP/CAPACIDAD.md",
-               "  - id: obligaciones-resueltas", "  - id: obligaciones-resueltas-desactivada")
+    """A-09 · el gate de cierre pierde la comprobación de obligaciones huérfanas."""
+    _sustituir(raiz, "kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md",
+               "  - id: obligaciones-resueltas", "  - id: obligaciones-contadas")
+
+
+def m_dsp_retira_obligacion(raiz):
+    """A-09 · DSP se concede la autoridad de retirar una obligación."""
+    _sustituir(raiz, "kernel/operativo/recorrido/01-PROCESOS.md",
+               "    autoridad_de_retirada: >\n      PRD, y el Owner cuando el alcance retirado es materia suya (a.8)",
+               "    autoridad_de_retirada: >\n      DSP, al recomponer la ruta sin avance material")
+
+
+def m_informe_suma(raiz):
+    """A-09 · la plantilla de cierre deja de separar satisfechas de retiradas."""
+    _sustituir(raiz, "kernel/operativo/plantillas/CIERRE.md",
+               "OBLIGACIONES RETIRADAS     <M>", "OBLIGACIONES TOTALES       <N+M>")
 
 
 def m_freno_sin_ejecutor(raiz):
+    """A-10 · DSP se queda sin el rol que ejecuta los frenos."""
     _sustituir(raiz, "kernel/operativo/capacidades/DSP/CAPACIDAD.md",
                "roles: [DSP/enrutamiento, DSP/estado, DSP/supervision]",
                "roles: [DSP/enrutamiento, DSP/estado]")
+
+
+def m_freno_sin_gate(raiz):
+    """A-10 · el gate de despacho deja de exigir que los frenos se hayan evaluado."""
+    _sustituir(raiz, "kernel/operativo/capacidades/DSP/CAPACIDAD.md",
+               "  - id: frenos-evaluados", "  - id: frenos-mencionados")
+
+
+def m_supervisor_no_independiente(raiz):
+    """A-10 · quien recompone pasa a contar sus propias recomposiciones."""
+    _sustituir(raiz, "kernel/operativo/capacidades/DSP/roles/supervision.md",
+               "independencia:\n  requiere_independencia: true",
+               "independencia:\n  requiere_independencia: false")
+
+
+def m_umbral_inventado(raiz):
+    """A-10 · alguien ajusta un umbral aprobado porque el caso parecía merecerlo."""
+    _sustituir(raiz, "kernel/operativo/capacidades/DSP/prompts/supervision.md",
+               "RACHA SIS    = 2", "RACHA SIS    = 5")
 
 
 CATALOGO = [
@@ -311,11 +345,26 @@ CATALOGO = [
              "una condición se estrecha y quedan casos sin ningún nivel",
              m_escala_no_total),
     Mutacion("N140", "A-09", "T140", "comprobar_contratos",
-             "el gate de cierre pierde la comprobación de obligaciones",
+             "el gate de cierre pierde la comprobación de obligaciones huérfanas",
              m_cierre_sin_obligaciones),
+    Mutacion("N140b", "A-09", "T140", "comprobar_contratos",
+             "DSP se concede la autoridad de retirar una obligación",
+             m_dsp_retira_obligacion),
+    Mutacion("N140c", "A-09", "T140", "comprobar_contratos",
+             "la plantilla de cierre suma satisfechas y retiradas",
+             m_informe_suma),
     Mutacion("N141", "A-10", "T141", "comprobar_contratos",
              "DSP se queda sin el rol que ejecuta los frenos",
              m_freno_sin_ejecutor),
+    Mutacion("N141b", "A-10", "T141", "comprobar_contratos",
+             "el gate de despacho deja de exigir que los frenos se hayan evaluado",
+             m_freno_sin_gate),
+    Mutacion("N141c", "A-10", "T141", "comprobar_contratos",
+             "quien recompone la ruta pasa a contar sus propias recomposiciones",
+             m_supervisor_no_independiente),
+    Mutacion("N141d", "A-10", "T141", "comprobar_contratos",
+             "se ajusta un umbral aprobado porque el caso parecía merecerlo",
+             m_umbral_inventado),
 ]
 
 

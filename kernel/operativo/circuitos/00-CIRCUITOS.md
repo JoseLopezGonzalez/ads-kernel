@@ -1,6 +1,5 @@
 # Circuitos entre equipos
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 b.16 deriva **diez rutas** a partir del resultado perseguido. Este documento las convierte en
 **recorridos concretos**: qué recibe cada equipo, qué comprueba, cómo trabaja, qué deja,

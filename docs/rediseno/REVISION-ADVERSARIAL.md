@@ -1,6 +1,5 @@
 # Revisión adversarial del kernel operativo
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 Revisión del conjunto contra los doce defectos que el encargo pide buscar. **No es un
 informe de que todo está bien**: lo que encontró está corregido y, donde se pudo, convertido
