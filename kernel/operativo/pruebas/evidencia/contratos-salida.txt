@@ -13,5 +13,7 @@ T139  SUPERADA  Ningún nivel de novedad omite un gate: lo que cambia es la evid
 T144  SUPERADA  El gate de usabilidad tiene portador computable en Construcción
 T140  SUPERADA  Las obligaciones del proceso existen y el cierre las comprueba
 T141  SUPERADA  Los frenos tienen ejecutor operativo, no sólo prosa
+T142  SUPERADA  El encuadre expresa todos los estados que sus métodos le exigen
+T145  SUPERADA  La crítica de encuadre exigible no se evapora al bajar la incertidumbre
 
-15 superadas · 0 fallidas
+17 superadas · 0 fallidas

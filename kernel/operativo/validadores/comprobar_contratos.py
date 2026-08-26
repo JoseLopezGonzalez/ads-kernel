@@ -623,13 +623,107 @@ def t141_frenos_con_ejecutor(b):
     return r
 
 
+# Los once estados de paquete de b.2. El corpus no puede usar un vocabulario paralelo.
+ESTADOS_B2 = {"propuesto", "listo", "en-curso", "esperando-capacidad",
+              "esperando-dependencia", "esperando-owner", "esperando-externo",
+              "bloqueado", "devuelto", "cerrado", "cancelado"}
+
+
+def t142_encuadre_expresa_sus_estados(_b):
+    """A-11 · el encuadre puede declarar todo estado que sus propios documentos le exigen.
+
+    `esperando-owner` lo exigían 04-INCERTIDUMBRE y el campo `bloqueo` de ENC/Escucha, y el
+    enum del esquema no podía expresarlo. A la vez tenía `aparcado-por-owner`, que b.2
+    excluye expresamente de los estados de paquete.
+    """
+    import yaml as _yaml
+    r = Resultado("T142", "El encuadre expresa todos los estados que sus métodos le exigen")
+    ruta = os.path.join(RAIZ, "kernel/operativo/esquemas/encuadre.yaml")
+    if not os.path.exists(ruta):
+        r.fallo("no existe esquemas/encuadre.yaml")
+        return r
+    with open(ruta, encoding="utf-8") as fh:
+        esquema = _yaml.safe_load(fh)
+    campos = esquema.get("campos") or {}
+    if "estado_paquete" not in (esquema.get("obligatorios") or []):
+        r.fallo("el encuadre no declara `estado_paquete`: sin él no puede expresar los "
+                "estados de b.2 que sus propios documentos le exigen")
+        return r
+    valores = set((campos.get("estado_paquete") or {}).get("valores") or [])
+    faltan = ESTADOS_B2 - valores
+    if faltan:
+        r.fallo(f"`estado_paquete` no admite {sorted(faltan)}, que son estados de b.2")
+    sobran = valores - ESTADOS_B2
+    if sobran:
+        r.fallo(f"`estado_paquete` admite {sorted(sobran)}, que no son estados de b.2: "
+                f"un vocabulario paralelo sin reconciliar")
+    madurez = set((campos.get("estado") or {}).get("valores") or [])
+    for prohibido in ("aparcado", "aparcado-por-owner"):
+        if prohibido in madurez or prohibido in valores:
+            r.fallo(f"'{prohibido}' figura como estado. b.2 es explícita: aparcado NO es un "
+                    f"estado de paquete, es una bandera global del item")
+
+    # todo estado citado por los documentos de ENC tiene que ser declarable
+    for rel in ("kernel/operativo/entrada/04-INCERTIDUMBRE-Y-CONFIRMACION.md",
+                "kernel/operativo/capacidades/ENC/metodos/Escucha.md"):
+        f = os.path.join(RAIZ, rel)
+        if not os.path.exists(f):
+            continue
+        with open(f, encoding="utf-8") as fh:
+            texto = fh.read()
+        for estado in ESTADOS_B2:
+            if re.search(rf"`?{re.escape(estado)}`?", texto) and estado not in valores:
+                r.fallo(f"{rel} exige el estado `{estado}` y el esquema no lo admite")
+    return r
+
+
+def t145_critica_de_encuadre_no_se_evapora(b):
+    """A-14 · la crítica obligatoria no desaparece porque la conversación baje el grado."""
+    import yaml as _yaml
+    r = Resultado("T145", "La crítica de encuadre exigible no se evapora al bajar la incertidumbre")
+    ruta = os.path.join(RAIZ, "kernel/operativo/esquemas/encuadre.yaml")
+    with open(ruta, encoding="utf-8") as fh:
+        esquema = _yaml.safe_load(fh)
+    inc = ((esquema.get("campos") or {}).get("incertidumbre") or {})
+    if "grado_inicial" not in (inc.get("obligatorios") or []):
+        r.fallo("el encuadre no persiste `grado_inicial`: sin él, una incertidumbre alta que "
+                "baja tras conversar hace desaparecer la crítica que ya era obligatoria")
+
+    gate = {d["id"]: d for d, _, _ in b.get("gate", [])}.get("gate:encuadre-listo")
+    if not gate:
+        r.fallo("no existe gate:encuadre-listo")
+        return r
+    critica = next((c for c in gate.get("comprobaciones") or []
+                    if c.get("id") == "critica-cuando-corresponde"), None)
+    if not critica:
+        r.fallo("gate:encuadre-listo no comprueba la crítica de encuadre")
+        return r
+    texto = (str(critica.get("comprueba", "")) + " " + str(critica.get("como", ""))).lower()
+    if "grado_inicial" not in texto.replace("_inicial", "_INICIAL").lower() and \
+            "inicial" not in texto:
+        r.fallo("la comprobación se apoya en el grado FINAL: un encuadre que empieza alto y "
+                "baja tras conversar pasaría sin el dictamen que su composición exigía")
+    if "materializ" not in texto:
+        r.fallo("la comprobación no mira si la composición materializó ENC/critica-de-encuadre: "
+                "un rol materializado cuyo dictamen no se exige es un rol decorativo")
+
+    comp = next((d for d, _, _ in b.get("composicion", [])
+                 if d.get("id") == "composicion:enc-alta-incertidumbre"), None)
+    if comp and "no se retira" not in (comp.get("reduccion") or "").lower():
+        r.fallo("composicion:enc-alta-incertidumbre no declara que la crítica NO se retira "
+                "al bajar el grado")
+    return r
+
+
 PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t89_reanudacion_con_prueba, t90_roles_coherentes, t91_metodos_con_gate_y_pasos,
            t92_sin_marca, t135_composicion_respeta_el_contrato,
            t136_vetos_no_se_arbitran, t137_dsp_no_cancela_por_contenido,
            t138_escala_total_y_alcanzable, t139_ningun_nivel_omite_un_gate,
            t144_usabilidad_tiene_portador_en_con,
-           t140_obligaciones_y_cierre, t141_frenos_con_ejecutor]
+           t140_obligaciones_y_cierre, t141_frenos_con_ejecutor,
+           t142_encuadre_expresa_sus_estados,
+           t145_critica_de_encuadre_no_se_evapora]
 
 
 def main():

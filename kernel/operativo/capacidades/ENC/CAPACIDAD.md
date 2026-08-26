@@ -139,8 +139,12 @@ comprobaciones:
     como: "lectura del crítico de encuadre"
     automatizable: no
   - id: critica-cuando-corresponde
-    comprueba: "si incertidumbre.grado es alta o nivel_owner es obligatorio, existe dictamen de ENC/critica-de-encuadre"
-    como: "comprobación estructural del enlace al dictamen"
+    comprueba: "si incertidumbre.grado_INICIAL fue alta, o nivel_owner es obligatorio, o la composición materializó ENC/critica-de-encuadre, existe su dictamen enlazado"
+    como: "se comparan las tres condiciones contra el registro de materialización de C4 paso 7; conversar hasta bajar el grado NO retira la crítica ya exigible"
+    automatizable: si
+  - id: estados-separados
+    comprueba: "el encuadre declara su madurez en `estado` y el estado de su paquete en `estado_paquete`, del vocabulario de b.2"
+    como: "comprobación estructural del bloque ads:encuadre"
     automatizable: si
 evidencia:
   - "el bloque ads:encuadre completo"

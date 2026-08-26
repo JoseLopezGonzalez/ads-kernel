@@ -233,3 +233,44 @@ validador: "kernel/operativo/validadores/comprobar_contratos.py"
 estado: prueba-superada
 evidencia: "evidencia/contratos-salida.txt"
 ```
+
+```yaml ads:escenario
+id: T142
+nombre: El encuadre expresa todos los estados que sus métodos le exigen
+cubre: ["A-11", "b.2 los once estados de paquete", "gate:encuadre-listo", "ENC/Escucha"]
+dado:
+  - "el esquema del encuadre, con su madurez y el estado de su paquete en campos distintos"
+cuando: ["se comparan los estados admitidos con los que b.2 define y con los que los documentos de ENC exigen"]
+entonces:
+  - "estado_paquete admite los once estados de b.2, incluido esperando-owner"
+  - "ninguno de los dos campos admite `aparcado`, que en b.2 es bandera global del item"
+  - "todo estado citado por los documentos de ENC es declarable en el esquema"
+falla_si:
+  - "un documento exige un estado que el esquema no puede expresar"
+  - "reaparece un vocabulario de estados paralelo al de b.2"
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_contratos.py"
+estado: prueba-superada
+evidencia: "evidencia/contratos-salida.txt"
+```
+
+```yaml ads:escenario
+id: T145
+nombre: La crítica de encuadre exigible no se evapora al bajar la incertidumbre
+cubre: ["A-14", "gate:encuadre-listo", "composicion:enc-alta-incertidumbre", "C4 un rol independiente no se retira"]
+dado:
+  - "un encuadre que entra con incertidumbre alta y baja a media tras conversar"
+  - "un nivel de Owner que no es obligatorio"
+cuando: ["se comprueba si el gate sigue exigiendo el dictamen de crítica"]
+entonces:
+  - "el encuadre persiste con qué grado entró, en incertidumbre.grado_inicial"
+  - "el gate exige el dictamen por el grado INICIAL, por el nivel de Owner o porque la composición materializó el rol"
+  - "la composición declara que la crítica no se retira al bajar el grado"
+falla_si:
+  - "un encuadre que empezó alto pasa el gate sin dictamen porque la conversación bajó el grado"
+  - "un rol materializado cuyo dictamen nadie exige queda como rol decorativo"
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_contratos.py"
+estado: prueba-superada
+evidencia: "evidencia/contratos-salida.txt"
+```

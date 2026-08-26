@@ -195,8 +195,31 @@ def m_version_incoherente(raiz):
 
 
 def m_encuadre_sin_estado_exigido(raiz):
+    """A-11 · el esquema pierde un estado que sus propios documentos exigen."""
     _sustituir(raiz, "kernel/operativo/esquemas/encuadre.yaml",
-               "esperando-owner, ", "")
+               "              esperando-owner, esperando-externo, bloqueado, devuelto, cerrado, cancelado]",
+               "              esperando-externo, bloqueado, devuelto, cerrado, cancelado]")
+
+
+def m_encuadre_con_aparcado(raiz):
+    """A-11 · vuelve el vocabulario paralelo: aparcado como estado de paquete."""
+    _sustituir(raiz, "kernel/operativo/esquemas/encuadre.yaml",
+               "  estado: {tipo: enum, valores: [en-conversacion, listo-para-dsp, entregado, descartado]}",
+               "  estado: {tipo: enum, valores: [en-conversacion, listo-para-dsp, entregado, descartado, aparcado-por-owner]}")
+
+
+def m_critica_por_grado_final(raiz):
+    """A-14 · la crítica vuelve a activarse por el grado FINAL y puede evaporarse."""
+    _sustituir(raiz, "kernel/operativo/capacidades/ENC/CAPACIDAD.md",
+               'comprueba: "si incertidumbre.grado_INICIAL fue alta, o nivel_owner es obligatorio, o la composición materializó ENC/critica-de-encuadre, existe su dictamen enlazado"',
+               'comprueba: "si incertidumbre.grado es alta o nivel_owner es obligatorio, existe dictamen de ENC/critica-de-encuadre"')
+
+
+def m_sin_grado_inicial(raiz):
+    """A-14 · el encuadre deja de persistir con qué grado entró."""
+    _sustituir(raiz, "kernel/operativo/esquemas/encuadre.yaml",
+               "obligatorios: [grado, grado_inicial, ejes, motivo]",
+               "obligatorios: [grado, ejes, motivo]")
 
 
 def m_nivel_sin_gate(raiz):
@@ -332,6 +355,15 @@ CATALOGO = [
     Mutacion("N142", "A-11", "T142", "comprobar_contratos",
              "el esquema de encuadre pierde un estado que sus métodos exigen",
              m_encuadre_sin_estado_exigido),
+    Mutacion("N142b", "A-11", "T142", "comprobar_contratos",
+             "vuelve `aparcado` como estado propio, contra b.2",
+             m_encuadre_con_aparcado),
+    Mutacion("N145", "A-14", "T145", "comprobar_contratos",
+             "la crítica vuelve a activarse por el grado final y puede evaporarse",
+             m_critica_por_grado_final),
+    Mutacion("N145b", "A-14", "T145", "comprobar_contratos",
+             "el encuadre deja de persistir con qué grado de incertidumbre entró",
+             m_sin_grado_inicial),
     Mutacion("N139", "A-08", "T139", "comprobar_contratos",
              "la tabla de estaciones vuelve a saltarse los dos gates en N0",
              m_nivel_sin_gate),

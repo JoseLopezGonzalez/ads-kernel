@@ -6,7 +6,7 @@ obligatorios:
   [id, expresion_literal, interpretacion, resultado_perseguido, problema_observado,
    motivo, situacion_actual, expectativas, restricciones, referencias, decisiones_previas,
    suposiciones, dudas_abiertas, evidencia_de_cierre, incertidumbre, nivel_owner,
-   vinculos, anclaje, clasificacion, estado]
+   vinculos, anclaje, clasificacion, estado, estado_paquete]
 campos:
   id: {tipo: texto, patron: '^ENC-[0-9]{3,}$'}
   expresion_literal:
@@ -32,9 +32,14 @@ campos:
   evidencia_de_cierre: {tipo: lista, de: texto, min: 1}
   incertidumbre:
     tipo: objeto
-    obligatorios: [grado, ejes, motivo]
+    # `grado_inicial` se persiste porque la CRITICA se activa por el grado con el que la
+    # expresion ENTRO, no por el que tiene al final. Sin el, una incertidumbre alta que
+    # baja a media tras conversar hacia desaparecer la critica que ya era obligatoria
+    # (hallazgo A-14).
+    obligatorios: [grado, grado_inicial, ejes, motivo]
     campos:
       grado: {tipo: enum, valores: [baja, media, alta]}
+      grado_inicial: {tipo: enum, valores: [baja, media, alta]}
       ejes: {tipo: lista, de: texto, min: 1}
       motivo: {tipo: texto, min: 15}
   nivel_owner: {tipo: enum, valores: [obligatorio, opcional-acumulada, ninguna]}
@@ -55,4 +60,20 @@ campos:
       naturaleza: {tipo: ref, ref_a: entrada}
       tipo_propuesto: {tipo: enum, valores: [FEA, GAP, DEF, INC, INV, DEU, DEP, AUD, DIR, SIS, ninguno]}
       motivo: {tipo: texto, min: 15}
-  estado: {tipo: enum, valores: [en-conversacion, listo-para-dsp, entregado, descartado, aparcado-por-owner]}
+  # DOS vocabularios distintos, y no se mezclan (hallazgo A-11):
+  #
+  #   `estado`          la MADUREZ del encuadre como artefacto. Es propio de ENC.
+  #   `estado_paquete`  el estado del PAQUETE de ENC que lo produce, del vocabulario de
+  #                     b.2, comun a todo el sistema. Es el que permite decir
+  #                     `esperando-owner`, que dos documentos exigian y el enum anterior
+  #                     no podia expresar.
+  #
+  # `aparcado` NO figura en ninguno de los dos: b.2 es explicita en que aparcado no es un
+  # estado de paquete, sino una bandera GLOBAL del item que se proyecta sobre todos los
+  # suyos. El enum anterior lo tenia como estado propio, y eso era un vocabulario paralelo
+  # sin reconciliar.
+  estado: {tipo: enum, valores: [en-conversacion, listo-para-dsp, entregado, descartado]}
+  estado_paquete:
+    tipo: enum
+    valores: [propuesto, listo, en-curso, esperando-capacidad, esperando-dependencia,
+              esperando-owner, esperando-externo, bloqueado, devuelto, cerrado, cancelado]

@@ -24,11 +24,28 @@ sola incógnita grave basta para que el encuadre no esté listo.
 
 ```text
 BAJA    ENC formula y entrega. Sin crítica independiente obligatoria.
+
 MEDIA   ENC conversa el eje concreto que está en media, y sólo ése. Formula después.
         Sin crítica independiente obligatoria, salvo que el nivel de Owner sea obligatorio.
-ALTA    PROHIBIDO formular. Se conversa hasta bajar a media, o la expresión va al vivero.
-        Crítica independiente OBLIGATORIA antes de entregar.
+
+ALTA    PROHIBIDO formular y PROHIBIDO entregar mientras siga alta. Se conversa.
+        El grado ALTA queda persistido en `incertidumbre.grado_inicial`, y eso hace la
+        crítica independiente OBLIGATORIA para siempre en este encuadre, aunque la
+        conversación baje el grado. Un desenlace, y sólo uno, según lo que ocurra:
+
+          baja a media o a baja  →  ENC formula y entrega, CON el dictamen de crítica
+          sigue alta tras agotar →  NO se entrega. Dos salidas, ambas sin item:
+          ENC/Maduracion             · VIVERO, si lo que falta es que la idea madure
+                                      · escalado al Owner con las dudas abiertas escritas,
+                                        si lo que falta es una decisión suya
 ```
+
+> **Un encuadre nunca se entrega con `incertidumbre.grado: alta`.** La regla anterior decía
+> a la vez «prohibido formular, va al vivero» y «crítica obligatoria antes de entregar»:
+> dos consecuencias incompatibles para la misma condición, y una rama del gate que no podía
+> alcanzarse (hallazgo **A-19**). Lo que sobrevive de las dos es lo que importa: la alta
+> **activa la crítica** y **detiene la entrega**, y la crítica ya no se puede perder porque
+> se activa por el grado inicial.
 
 > **Declarar incertidumbre alta no es un fallo del interlocutor.** Ocultarla con una
 > redacción firme sí lo es, y es la causa más común de un item que se construye entero y
@@ -47,7 +64,7 @@ Deriva de a.8. Este documento no la redefine: la **operativiza** para la puerta 
 | primera decisión dentro de un área reservada | **sí** | a.8 · G05 |
 | decisión estratégica o difícilmente reversible | **sí** | a.8 · nivel obligatorio |
 | cambio de dirección sobre algo ya decidido | **sí** | a.8 · G51 |
-| incertidumbre global **alta** tras haber conversado | **sí** | el encuadre no puede sostenerse sin su lectura |
+| incertidumbre global **alta** tras haber conversado y agotar la maduración | **sí, y no se entrega**: se le escala con las dudas abiertas escritas, o va al vivero | el encuadre no puede sostenerse sin su lectura, y entregarlo así produce un item mal definido que se paga en todas las capas siguientes |
 | la expresión contradice una decisión suya vigente | **sí**, mostrando ambas | nadie decide en su lugar entre dos criterios suyos |
 | el item extiende un `owner_approved_pattern` dentro de su alcance | **no**, va a la cola de lotes | a.8 · opcional acumulada. **No detiene el item** |
 | el item extiende un `capability_approved_pattern` vigente | **no** | a.8 · ninguna |
@@ -122,10 +139,35 @@ Hay dos cosas que encajan con «el gap»:
 
 ## 4 · Qué hacer cuando el Owner no contesta
 
+El paquete de ENC pasa a `esperando-owner`, que es un estado de **b.2** y vive en
+`estado_paquete`. El `estado` del encuadre —su madurez— sigue siendo `en-conversacion`.
+Son dos cosas distintas y por eso son dos campos:
+
 ```text
-el encuadre queda `esperando-owner`, NO `bloqueado`
-    esperando-owner   se resuelve solo cuando él responda. No genera trabajo.
-    bloqueado         exigiría crear un desbloqueador, y aquí no hay nada que crear.
+estado          = en-conversacion     la madurez del encuadre como artefacto
+estado_paquete  = esperando-owner     el estado del paquete que lo produce (b.2)
+```
+
+Y las cuatro situaciones con las que **no** debe confundirse:
+
+```text
+esperando-owner         espera una decisión, un juicio o una validación del Owner.
+                        Se resuelve SOLO cuando él responda. NO genera trabajo.
+
+bloqueado               espera algo que AÚN NO EXISTE y que nadie está produciendo.
+                        GENERA TRABAJO: hay que crear el desbloqueador. Aquí no hay
+                        nada que crear, y por eso no es bloqueo.
+
+esperando-dependencia   espera el resultado de otro paquete vivo y viable. Tampoco es
+                        esto: no hay otro paquete del que dependa.
+
+aparcado                el Owner ha retirado la atención y ha decidido centrarse en otra
+                        cosa. Es una bandera GLOBAL del item, no un estado de paquete, y
+                        sólo él la pone. Que no conteste NO es aparcar.
+
+checkpoint              el punto exacto del método donde quedó la conversación. Es
+                        ortogonal a todo lo anterior: existe igual esté el paquete
+                        esperando, bloqueado o en curso.
 
 · el encuadre NO se entrega a medias
 · la conversación NO se reinicia cuando vuelva: se retoma por checkpoint

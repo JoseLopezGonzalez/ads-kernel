@@ -178,6 +178,7 @@ evidencia_de_cierre:
   - "la crítica visual independiente emite dictamen conforme sobre esa superficie"
 incertidumbre:
   grado: media
+  grado_inicial: media
   ejes: ["resultado perseguido: baja", "problema: baja", "alcance: media", "restricciones: baja", "criterio de terminado: media"]
   motivo: >
     El alcance sigue en media porque «para todo el producto, empezando por ésta» deja
@@ -201,6 +202,7 @@ clasificacion:
     El resultado perseguido es que EXISTA una dirección visual del producto, que hoy no
     existe. Es capacidad nueva del sistema de diseño, no reparación de una superficie.
 estado: listo-para-dsp
+estado_paquete: listo
 ```
 
 Y el segundo, enlazado:
