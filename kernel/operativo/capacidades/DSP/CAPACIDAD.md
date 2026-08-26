@@ -1,7 +1,10 @@
 # DSP · DESPACHO — orden y ruta, nunca contenido
 
 Su autoridad es **total sobre el orden y la ruta, y ninguna sobre el contenido de ninguna
-capa** (a.3). Es implementación software primero: lo que aquí se describe es el
+capa** (a.3). La [enmienda E1.1](../../../../docs/rediseno/a-ENMIENDA-E1-ENC.md) fija la
+frontera con `ENC`: `DSP` **recibe** el encuadre que `ENC` produce y hace nacer el item; no
+interpreta contenido, no conversa con el Owner en lugar de `ENC`, y **no decide
+semánticamente una cancelación**. Es implementación software primero: lo que aquí se describe es el
 comportamiento que ese runtime tendrá, y lo que un supervisor humano o agente ejecuta
 mientras el runtime no exista.
 
@@ -48,6 +51,8 @@ autoridad:
     - "todo lo que exceda el alcance ya autorizado"
     - "los frenos de a.7 disparados"
     - "una inconsistencia de estado irresoluble sin decidir"
+    - "toda CANCELACIÓN: DSP la propone cuando detecta la condición mecánica y la ejecuta con la orden ya autorizada, pero NUNCA posee la autoridad semántica para decidirla (b.7)"
+    - "todo lo que exija interpretar contenido de producto, de diseño o de dominio: eso es de ENC y de la capacidad competente, no de DSP (enmienda E1.1)"
   veta: []
 owner:
   nivel: mixto
@@ -57,7 +62,7 @@ owner:
     encuentra una inconsistencia que no puede resolver sin decidir.
 roles: [DSP/enrutamiento, DSP/estado]
 deriva_de:
-  - "a.3 · DSP: cuatro funciones, autoridad sobre orden y ruta, ninguna sobre contenido"
+  - "a.3 + enmienda E1.1 · DSP: recepción del encuadre, enrutamiento, estado y supervisión; autoridad sobre orden y ruta, ninguna sobre contenido"
   - "b.5, b.12, b.14, b.15 · transiciones, selección, Continúa y cola vacía"
 materializacion: "DSP se materializa SIEMPRE. Sin ella no hay sistema operativo."
 retirada: "DSP no se retira mientras exista el proyecto."
@@ -90,6 +95,10 @@ comprobaciones:
   - id: devolucion-con-paquete
     comprueba: "toda devolución tiene su paquete de corrección creado o reabierto en el mismo ciclo"
     como: "comprobación: ningún paquete devuelto sin paquete de corrección enlazado"
+    automatizable: si
+  - id: cancelacion-con-autoridad-ajena
+    comprueba: "ninguna cancelación ejecutada por DSP tiene a DSP como autoridad semántica: ordenante, autoridad y ejecutor son campos distintos y la autoridad NUNCA es DSP"
+    como: "lectura del evento de cancelación: autoridad pertenece a la capacidad con custodia, al propietario global o al Owner según materia (b.7)"
     automatizable: si
 evidencia:
   - "la ficha de ruta con su traza"

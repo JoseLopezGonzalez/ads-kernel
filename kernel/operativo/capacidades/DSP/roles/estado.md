@@ -18,6 +18,7 @@ responsabilidades:
   - "regenerar las vistas derivadas de forma determinista"
   - "comprobar la viabilidad de toda espera y convertir en bloqueo la que dejó de serlo"
 limites:
+  - "NO decide semánticamente una cancelación: la propone y la ejecuta sólo con la orden ya autorizada (b.7). Toda cancelación conserva ordenante, autoridad y ejecutor diferenciados"
   - "no inventa estado cuando encuentra una inconsistencia: para y escala"
   - "no desaparca nunca"
   - "no marca prioridad urgente"
@@ -25,10 +26,12 @@ limites:
 autoridad:
   decide:
     - "regenerar las vistas derivadas"
-    - "convertir una espera no viable en bloqueo, recomposición o cancelación justificada"
+    - "convertir una espera no viable en BLOQUEO cuando el resultado sigue haciendo falta y hay que crear otro productor (b.8)"
+    - "convertir una espera no viable en RECOMPOSICIÓN cuando la ruta puede llegar al resultado por otro camino (b.8)"
     - "detener el ciclo tras tres fallos de comparación e intercambio, dejando las órdenes intactas"
   propone:
     - "resolver una inconsistencia concreta, cuando hay más de una lectura posible"
+    - "CANCELAR una espera no viable cuya tercera salida de b.8 sería la cancelación: DSP detecta la condición mecánica y PREPARA la propuesta; NUNCA la aprueba. La autoridad semántica es de la capacidad con custodia, del propietario global o del Owner según materia (b.7)"
   veta: []
   escala:
     - "una inconsistencia irresoluble sin decidir"

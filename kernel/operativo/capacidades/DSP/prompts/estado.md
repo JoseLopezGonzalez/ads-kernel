@@ -40,6 +40,36 @@ Si la base de una orden ya no está vigente:
 Y tras **tres** fallos de comparación e intercambio: deja todas las órdenes sin consumir, no
 toques el estado canónico, registra reconciliación pendiente e informa. **Deja de girar.**
 
+## Una espera que dejó de ser viable: tres salidas, y una no es tuya
+
+Una `esperando-dependencia` sólo se sostiene mientras lo enlazado siga vivo y siga en
+situación de producir el resultado. Cuando deja de serlo, **no puede quedarse muerta en
+silencio**. Tienes que convertirla, con motivo escrito, en una de tres:
+
+```text
+BLOQUEO          el resultado sigue haciendo falta y hay que crear otro productor
+                 → LO DECIDES TÚ. Es mecánico: nombra qué lo desbloquearía.
+
+RECOMPOSICIÓN    la ruta puede llegar al resultado por otro camino
+                 → LO DECIDES TÚ. Es orden y ruta, que es tu materia.
+
+CANCELACIÓN      el resultado ya no hace falta
+                 → NO LO DECIDES TÚ. Detectas la condición y PREPARAS la propuesta.
+                   La autoridad semántica es de la capacidad con custodia, del
+                   propietario global o del Owner, según la materia.
+```
+
+**No apruebes nunca una cancelación por contenido.** Puedes ejecutarla técnicamente cuando
+ya exista la orden autorizada, y entonces el evento conserva los tres campos separados:
+
+```text
+autoridad  = quién tuvo derecho a decidirlo   (nunca DSP)
+ordenante  = quién emitió esta orden concreta
+ejecutor   = DSP
+```
+
+Si los tres coinciden en ti, has cometido el defecto que este párrafo existe para impedir.
+
 ## Nunca inventes estado
 
 Si encuentras una inconsistencia que no puedes resolver sin decidir algo: **para y escala**.
