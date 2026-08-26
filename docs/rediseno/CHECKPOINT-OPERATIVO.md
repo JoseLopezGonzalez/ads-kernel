@@ -18,8 +18,8 @@ fuera        runtime · dispatcher · gym-wear · pack ERP · secciones (c)-(i) 
 BLOQUE 0   esquemas, validadores e índice          TERMINADO
 BLOQUE 1   circuito Owner → item (paso 1)          TERMINADO, pendiente revisión
 BLOQUE 2   contrato equipo/rol/agente/método       TERMINADO
-BLOQUE 3   sistema de excelencia de Diseño         NO INICIADO
-BLOQUE 4   equipo de Diseño materializado          NO INICIADO
+BLOQUE 3   sistema de excelencia de Diseño         TERMINADO
+BLOQUE 4   equipo de Diseño materializado          TERMINADO
 BLOQUE 5   demás capacidades                       NO INICIADO
 BLOQUE 6   packs web-app · mobile-app · wear-os    NO INICIADO
 ```
@@ -56,9 +56,31 @@ BLOQUE 6   packs web-app · mobile-app · wear-os    NO INICIADO
 - Plantillas CHECKPOINT, DEVOLUCION, DICTAMEN
 - `comprobar_contratos.py`: T86–T92 **EJECUTADAS Y SUPERADAS**, con salida registrada
 
+**Bloque 3 — sistema de excelencia de Diseño**
+
+- Dos gates independientes: `gate:usabilidad` y `gate:excelencia-visual`
+- Dos rúbricas: seis ejes de usabilidad, nueve de excelencia, con evidencia por eje
+- Memoria de diseño: doce secciones con autoridad, actualización y qué significa vacía
+- Escala de novedad N0–N4, con exploración mínima y estaciones por nivel
+- Ciclo de calidad de trece estaciones con nueve retornos declarados
+- Fidelidad: ocho cosas que no se simplifican, tres veredictos, camino de imposibilidad
+
+**Bloque 4 — equipo de Diseño materializado**
+
+- Capacidad DIS con doce campos y contrato de veto de seis campos
+- Once roles con los 28 campos del contrato común
+- Seis métodos ejecutables: Fundacion, Reconstruccion, Evolucion, CriticaVisual,
+  RevisionDeFidelidad, ValidacionDeUso
+- Once prompts operativos
+- Diez matrices de composición, con independencia declarada de forma comprobable
+- T93–T99 definidas
+
 ## En revisión
 
-Bloque 1 — revisión adversarial independiente pendiente de lanzar.
+Bloque 1 — la revisión adversarial por agente independiente se lanzó y **terminó sin
+completarse por un límite de gasto de la cuenta**, no por un fallo del material. La
+revisión adversarial se ejecuta al final, sobre el conjunto, dentro del bloque de
+conformidad global.
 
 ## Decisiones pendientes del Owner
 
@@ -71,11 +93,15 @@ La única con contenido normativo es **C1** (¿`ENC` es capacidad propia o funci
 T01-T74   contrato-definido, salvo tres parciales en validador-implementado
 T75-T85   contrato-definido (11)
 T86-T92   PRUEBA SUPERADA (7), con evidencia en pruebas/evidencia/
-ads_lint  EJECUTADO y en verde sobre 81 bloques canónicos
+T93-T99   contrato-definido (7)
+ads_lint  EJECUTADO y en verde sobre 133 bloques canónicos
+comprobar_contratos  EJECUTADO, 7/7 superadas
 ```
 
 ## Siguiente acción exacta
 
-> Escribir `kernel/operativo/diseno/00-SISTEMA-DE-EXCELENCIA.md` con los dos gates
-> independientes (usabilidad y excelencia visual) y sus dos rúbricas, y a continuación
-> `01-MEMORIA-DE-DISENO.md` con el corpus de treinta secciones del paso 3.2.
+> Escribir las trece fichas `ads:capacidad` restantes (PRD, ARQ, DOM, CON, VER, ENT, USO,
+> INV, SEG, PLT, APR, DSP, SIS) en `kernel/operativo/capacidades/<COD>/CAPACIDAD.md`, con
+> sus roles y métodos, y restaurar después
+> `kernel/operativo/circuitos/DIS-handoffs.md` desde el scratchpad de la sesión (está
+> escrito y retenido porque referencia capacidades que aún no existen).

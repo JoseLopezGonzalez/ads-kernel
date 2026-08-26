@@ -79,14 +79,21 @@ def t86_autoridad_subconjunto(b):
 
 
 def t87_independencia_gana(b):
-    r = Resultado("T87", "Ningún rol declarado independiente aparece como combinable")
+    r = Resultado("T87", "Ninguna composición permite combinar dos roles que ella declara independientes")
     for datos, ruta, _ in b.get("composicion", []):
-        combinables = " · ".join(datos.get("combinables") or [])
+        prohibidos = set()
         for indep in datos.get("independientes") or []:
-            roles_indep = re.findall(r"[a-z0-9-]+:[A-Z]{3}/[a-z0-9-]+|[A-Z]{3}/[a-z0-9-]+", indep)
-            for rol in roles_indep:
-                if rol in combinables:
-                    r.fallo(f"{datos['id']}: '{rol}' aparece a la vez en combinables y en independientes")
+            sujeto = indep.get("rol")
+            for objeto in indep.get("de") or []:
+                if isinstance(objeto, str) and re.fullmatch(r"([a-z0-9-]+:)?[A-Z]{3}/[a-z0-9-]+", objeto):
+                    prohibidos.add(frozenset((sujeto, objeto)))
+        for comb in datos.get("combinables") or []:
+            roles = comb.get("roles") or []
+            for i, a in enumerate(roles):
+                for bb in roles[i + 1:]:
+                    if frozenset((a, bb)) in prohibidos:
+                        r.fallo(f"{datos['id']}: combina '{a}' con '{bb}', "
+                                f"y la misma composición los declara independientes")
     return r
 
 

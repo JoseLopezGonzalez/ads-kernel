@@ -19,9 +19,13 @@ roles:
     agentes: "el mismo agente que interlocutor"
     condicion: "el anclaje se cierra con menos de cinco búsquedas"
 combinables:
-  - "ENC/interlocutor y ENC/anclaje en un solo agente"
+  - roles: [ENC/interlocutor, ENC/anclaje]
+    motivo: "con menos de cinco búsquedas, el contexto de la conversación no desplaza al de la búsqueda"
+    condicion: "el anclaje se cierra con menos de cinco búsquedas"
 independientes:
-  - "ninguno: en esta composición no hay crítica porque la incertidumbre es baja y el nivel de Owner no es obligatorio"
+  - rol: ENC/interlocutor
+    de: ["ninguno en esta composición: no hay crítica, porque la incertidumbre es baja y el nivel de Owner no es obligatorio"]
+    motivo: "se declara expresamente que aquí no se exige independencia, para que su ausencia sea una decisión y no un olvido"
 ampliacion: >
   Si el anclaje supera cinco búsquedas o aparece un duplicado dudoso, se separa ENC/anclaje
   en su propio agente y la composición pasa a enc-candidato-completo.
@@ -48,7 +52,9 @@ roles:
     agentes: "1, distinto del interlocutor"
 combinables: []
 independientes:
-  - "ENC/anclaje de ENC/interlocutor: el contexto de la conversación desplaza al de la búsqueda y aparecen falsos «no existe»"
+  - rol: ENC/anclaje
+    de: [ENC/interlocutor]
+    motivo: "el contexto de la conversación desplaza al de la búsqueda y aparecen falsos «no existe»"
 ampliacion: >
   Si al medir la incertidumbre resulta alta, o el nivel de Owner calculado es obligatorio,
   se añade ENC/critica-de-encuadre y la composición pasa a enc-alta-incertidumbre.
@@ -78,8 +84,12 @@ roles:
     agentes: "1, distinto de los otros dos"
 combinables: []
 independientes:
-  - "ENC/critica-de-encuadre de ENC/interlocutor y de ENC/anclaje: quien interpretó no encuentra el hueco de su propia interpretación"
-  - "ENC/anclaje de ENC/interlocutor"
+  - rol: ENC/critica-de-encuadre
+    de: [ENC/interlocutor, ENC/anclaje]
+    motivo: "quien interpretó no encuentra el hueco de su propia interpretación: encuentra los que evitó"
+  - rol: ENC/anclaje
+    de: [ENC/interlocutor]
+    motivo: "el contexto de la conversación desplaza al de la búsqueda y aparecen falsos «no existe»"
 ampliacion: >
   En una idea inmadura que exige explorar dirección de forma, se añade una consulta a DIS
   en modo consulta. La consulta NO añade rol a ENC: DIS conserva su propia custodia.

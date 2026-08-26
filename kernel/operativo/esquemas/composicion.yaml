@@ -18,8 +18,23 @@ campos:
       obligatorio: {tipo: booleano}
       agentes: {tipo: texto, min: 1}
       condicion: {tipo: texto}
-  combinables: {tipo: lista, de: texto}
-  independientes: {tipo: lista, de: texto, min: 1}
+  combinables:
+    tipo: lista
+    de: objeto
+    obligatorios: [roles, motivo]
+    campos:
+      roles: {tipo: lista, de: ref, ref_a: rol, min: 2}
+      motivo: {tipo: texto, min: 15}
+      condicion: {tipo: texto}
+  independientes:
+    tipo: lista
+    min: 1
+    de: objeto
+    obligatorios: [rol, de, motivo]
+    campos:
+      rol: {tipo: ref, ref_a: rol}
+      de: {tipo: lista, de: texto, min: 1}
+      motivo: {tipo: texto, min: 15}
   ampliacion: {tipo: texto, min: 20}
   reduccion: {tipo: texto, min: 20}
   retirada: {tipo: texto, min: 20}

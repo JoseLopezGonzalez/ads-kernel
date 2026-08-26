@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 57a3cad8726b7f2c -->
+<!-- source_revision: 1cff2373bb22680e -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -10,12 +10,12 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 
 | estado | pruebas |
 |---|---|
-| CONTRATO DEFINIDO | 11 |
+| CONTRATO DEFINIDO | 18 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
 | PRUEBA SUPERADA | 7 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **18** |
+| **total** | **25** |
 
 ## Detalle
 
@@ -39,3 +39,10 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T90](T086-T092-contratos.md) | Capacidades y roles se referencian mutuamente sin huérfanos | a.1 · C1 · C4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |
 | [T91](T086-T092-contratos.md) | Ningún paso de ningún método dura lo que el agente decida | C3 regla 1 · esquemas/metodo.yaml | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |
 | [T92](T086-T092-contratos.md) | El kernel es portable porque ningún contrato exige una marca | K0.8 · C2 regla de portabilidad | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |
+| [T93](T093-T098-diseno.md) | Reanudación de DIS/Fundacion sin reproponer lo descartado | DIS/Fundacion · a.10 checkpoint · memoria:decisiones-de-diseno | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T94](T093-T098-diseno.md) | Reanudación de DIS/Reconstruccion sin recapturar | DIS/Reconstruccion · a.10 checkpoint | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T95](T093-T098-diseno.md) | DIS/Evolucion no se reanuda sin rama declarada | DIS/Evolucion · 03-ESCALA-DE-NOVEDAD · a.10 checkpoint | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T96](T093-T098-diseno.md) | La crítica visual no dictamina sin comparación con la categoría | DIS/CriticaVisual · rubrica:excelencia-visual · gate:excelencia-visual | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T97](T093-T098-diseno.md) | Reanudación de la revisión de fidelidad sin recapturar entornos | DIS/RevisionDeFidelidad · 05-FIDELIDAD | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T98](T093-T098-diseno.md) | La validación de uso no reconvoca al Owner por lo ya observado | DIS/ValidacionDeUso · rubrica:usabilidad · G36 | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T99](T093-T098-diseno.md) | Una interfaz usable puede ser rechazada por el gate visual | gate:usabilidad · gate:excelencia-visual · los dos gates independientes | requiere-juicio-humano | **CONTRATO DEFINIDO** | — |
