@@ -1,3 +1,1 @@
-T148  SUPERADA  El arranque documentado crea un proyecto conforme con cada pack
-
-1 superadas · 0 fallidas
+python3: can't open file '/home/jose/ads-kernel/kernel/operativo/validadores/comprobar_arranque': [Errno 2] No such file or directory

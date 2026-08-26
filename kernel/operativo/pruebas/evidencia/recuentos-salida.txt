@@ -1,3 +1,1 @@
-T151  SUPERADA  Ninguna cifra del corpus contradice el recuento derivado
-
-1 superadas · 0 fallidas
+python3: can't open file '/home/jose/ads-kernel/kernel/operativo/validadores/comprobar_recuentos': [Errno 2] No such file or directory
