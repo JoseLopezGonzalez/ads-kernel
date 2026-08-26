@@ -24,6 +24,16 @@ from ads_lint import Lint  # noqa: E402
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
+
+def fijar_raiz(nueva):
+    """Permite ejecutar las pruebas contra una COPIA del corpus.
+
+    Lo usa `comprobar_negativos.py` para introducir una infracción deliberada en un
+    directorio temporal y demostrar que la prueba falla. El corpus real nunca se toca.
+    """
+    global RAIZ
+    RAIZ = os.path.abspath(nueva)
+
 # Marcas comerciales que NO pueden aparecer como requisito en kernel ni packs (K0.8, C2).
 # Expresiones regulares, no subcadenas: «llama» es un verbo corriente en castellano y
 # «cómo llama el Owner a esto» no es una marca. Se exige la forma en que la marca aparece
@@ -35,7 +45,12 @@ MARCAS = [
 ]
 # Ficheros donde nombrar una marca es legítimo: hablan del adaptador o de la prohibición.
 EXENTOS_MARCA = {
+    # Habla del adaptador y de la prohibición: nombrar la marca es su materia.
     "kernel/operativo/contratos/C2-AGENTES-Y-MODELOS.md",
+    # Contiene la INFRACCIÓN DELIBERADA con la que se demuestra que esta misma prueba
+    # falla cuando debe fallar (mutación N92). Sin la marca dentro, el negativo no
+    # existiría, y una prueba que sólo se ha visto pasar no está verificada.
+    "kernel/operativo/validadores/comprobar_negativos.py",
 }
 
 
@@ -62,7 +77,7 @@ def cargar():
 
 
 def t86_autoridad_subconjunto(b):
-    r = Resultado("T86", "La autoridad de un rol no excede la de su capacidad")
+    r = Resultado("T86", "Ningún rol veta lo que su capacidad no veta")
     caps = {d["id"]: d for d, _, _ in b.get("capacidad", [])}
     for datos, ruta, _ in b.get("rol", []):
         cap = caps.get(datos.get("capacidad"))
@@ -141,7 +156,7 @@ def t89_reanudacion_con_prueba(b):
 
 
 def t90_roles_coherentes(b):
-    r = Resultado("T90", "Capacidades y roles se referencian mutuamente sin huérfanos")
+    r = Resultado("T90", "Capacidades, roles y métodos se referencian mutuamente sin huérfanos")
     caps = {d["id"]: d for d, _, _ in b.get("capacidad", [])}
     roles = {d["id"]: d for d, _, _ in b.get("rol", [])}
     for cid, cap in caps.items():
@@ -158,6 +173,25 @@ def t90_roles_coherentes(b):
             continue
         if cid in caps and rid not in caps[cid].get("roles", []):
             r.fallo(f"{rid}: dice pertenecer a {cid}, que no lo lista entre sus roles")
+
+    # A-15: ENC/Critica existía, se usaba y se probaba, y su capacidad no lo declaraba.
+    # Era el único caso del corpus, y nada lo habría vuelto a detectar.
+    metodos = {d["id"]: d for d, _, _ in b.get("metodo", [])}
+    for cid, cap in caps.items():
+        for mid in cap.get("metodos", []):
+            if mid not in metodos:
+                r.fallo(f"{cid}: declara el método {mid}, que no tiene contrato")
+            elif metodos[mid].get("capacidad") != cid:
+                r.fallo(f"{cid}: declara {mid}, que dice pertenecer a "
+                        f"{metodos[mid].get('capacidad')}")
+    for mid, met in metodos.items():
+        cid = met.get("capacidad")
+        if ":" in mid:
+            continue
+        if cid in caps and mid not in caps[cid].get("metodos", []):
+            r.fallo(f"{mid}: dice pertenecer a {cid}, que no lo lista entre sus métodos. "
+                    f"La ficha de la capacidad es la fuente única: un método que no está "
+                    f"en ella no lo encuentra nadie")
     return r
 
 
@@ -173,12 +207,12 @@ def t91_metodos_con_gate_y_pasos(b):
 
 
 def t92_sin_marca(_b):
-    r = Resultado("T92", "Ningún contrato del kernel ni de un pack exige una marca concreta")
+    r = Resultado("T92", "Ni un contrato, ni un esquema, ni un validador exige una marca")
     for ambito in ("kernel/operativo", "packs"):
         for dirpath, dirnames, filenames in os.walk(os.path.join(RAIZ, ambito)):
             dirnames[:] = [d for d in dirnames if not d.startswith("legacy-") and d != "__pycache__"]
             for nombre in filenames:
-                if not nombre.endswith(".md"):
+                if not nombre.endswith((".md", ".yaml", ".yml", ".py")):
                     continue
                 ruta = os.path.join(dirpath, nombre)
                 rel = os.path.relpath(ruta, RAIZ)
@@ -255,17 +289,544 @@ def t135_composicion_respeta_el_contrato(b):
     return r
 
 
+# ---------------------------------------------------------------------------
+# Pruebas añadidas en la corrección post-auditoría. Cada una nombra su hallazgo.
+# ---------------------------------------------------------------------------
+
+CODIGO_CAP = re.compile(r"\b([A-Z]{3})\b")
+
+
+def t136_vetos_no_se_arbitran(b):
+    """A-06 · a.5: dos vetos incompatibles NO se arbitran entre las capacidades.
+
+    Escalan al Owner con ambas materias. La ÚNICA excepción es un veto declarado
+    no levantable por regla dura del kernel (G27). Por tanto:
+      · un veto LEVANTABLE nunca puede aparecer como el que prevalece;
+      · toda cláusula de colisión debe declarar el escalado al Owner.
+    """
+    r = Resultado("T136", "Ningún veto arbitra a otro veto levantable: ambos detienen y escalan")
+    vetos = {d["id"]: d for d, _, _ in b.get("veto", [])}
+    por_capacidad = {d.get("capacidad"): d for d in vetos.values()}
+    for vid, datos in vetos.items():
+        colision = (datos.get("colision") or "")
+        # (a) nadie declara que prevalece un veto levantable
+        for m in re.finditer(r"(?i)\bprevalece[nr]?\s+(?:el\s+veto\s+de\s+)?([A-Z]{3})\b", colision):
+            otro = por_capacidad.get(m.group(1))
+            if otro is None:
+                continue
+            if otro.get("levantable") == "si":
+                r.fallo(f"{vid}: declara que prevalece {m.group(1)}, cuyo veto es LEVANTABLE. "
+                        f"a.5 sólo admite prevalencia de un veto no levantable por regla dura")
+        # (b) el propio veto, si es levantable, no puede reclamar prevalencia para sí
+        if datos.get("levantable") == "si":
+            propio = datos.get("capacidad", "")
+            if re.search(r"(?i)prevalece\s+" + re.escape(propio) + r"\b", colision):
+                r.fallo(f"{vid}: es levantable y se declara prevaleciente sobre otro veto")
+        # (c) toda colisión declara el escalado al Owner
+        if not re.search(r"(?i)escala\w*\s+al\s+owner", colision):
+            r.fallo(f"{vid}: su cláusula de colisión no declara el escalado al Owner (a.5)")
+    return r
+
+
+def t137_dsp_no_cancela_por_contenido(b):
+    """A-23 · b.7: DSP NUNCA posee por sí mismo la autoridad semántica para cancelar."""
+    r = Resultado("T137", "DSP no declara autoridad semántica sobre ninguna cancelación")
+    for datos, ruta, _ in b.get("rol", []) + b.get("capacidad", []):
+        cap = datos.get("capacidad") or datos.get("id")
+        if cap != "DSP":
+            continue
+        aut = datos.get("autoridad", {}) or {}
+        decide = list(aut.get("decide") or []) + list(aut.get("decide_sola") or [])
+        for item in decide:
+            if re.search(r"(?i)cancela", str(item)):
+                r.fallo(f"{datos.get('id')}: DECIDE «{str(item)[:70]}». "
+                        f"b.7: la cancelación se propone y se ejecuta, nunca se decide desde DSP")
+    return r
+
+
+VARIABLES_NOVEDAD = ("superficie_construida", "memoria_vigente", "dir_sustituye",
+                     "patron_cubre", "premium_o_nuevo")
+EJES_VISUALES = ("personalidad", "intencion", "jerarquia", "sistema", "actualidad",
+                 "respuesta", "acabado", "fidelidad", "alma")
+
+
+def _evaluar_condicion(expr, entorno):
+    """Evalúa una condición booleana SIN ejecutar código arbitrario.
+
+    Sólo se admiten nombres de variable declarados, `and`, `or`, `not` y paréntesis. Una
+    condición que no encaje en eso no es comprobable, y por tanto no es una condición.
+    """
+    import ast
+
+    def visitar(nodo):
+        if isinstance(nodo, ast.Expression):
+            return visitar(nodo.body)
+        if isinstance(nodo, ast.BoolOp):
+            valores = [visitar(v) for v in nodo.values]
+            return all(valores) if isinstance(nodo.op, ast.And) else any(valores)
+        if isinstance(nodo, ast.UnaryOp) and isinstance(nodo.op, ast.Not):
+            return not visitar(nodo.operand)
+        if isinstance(nodo, ast.Name):
+            if nodo.id not in entorno:
+                raise ValueError(f"variable no declarada: {nodo.id}")
+            return entorno[nodo.id]
+        if isinstance(nodo, ast.Constant) and isinstance(nodo.value, bool):
+            return nodo.value
+        raise ValueError(f"expresión no admitida: {ast.dump(nodo)[:60]}")
+
+    return visitar(ast.parse(expr, mode="eval"))
+
+
+def t138_escala_total_y_alcanzable(b):
+    """A-07 · la escala de novedad cubre todos los casos y ningún nivel es inalcanzable.
+
+    La versión anterior preguntaba en N4 «¿no existe memoria de diseño?», que es cierto
+    también para un producto construido sin dirección escrita. Como N4 se evaluaba antes,
+    N3 no se alcanzaba nunca y un brownfield recibía el método de fundación.
+    """
+    r = Resultado("T138", "La escala de novedad es total y sus cinco niveles son alcanzables")
+    niveles = sorted((d for d, _, _ in b.get("nivel-novedad", [])),
+                     key=lambda d: d.get("orden", 0))
+    if len(niveles) != 5:
+        r.fallo(f"se declaran {len(niveles)} niveles y la escala tiene cinco")
+        return r
+    ordenes = [n["orden"] for n in niveles]
+    if len(set(ordenes)) != len(ordenes):
+        r.fallo(f"dos niveles comparten orden de evaluación: {ordenes}")
+
+    alcanzados, sin_nivel = {}, []
+    for combo in range(2 ** len(VARIABLES_NOVEDAD)):
+        entorno = {v: bool(combo >> i & 1) for i, v in enumerate(VARIABLES_NOVEDAD)}
+        elegido = None
+        for nivel in niveles:
+            try:
+                cierto = _evaluar_condicion(nivel["condicion_formal"], entorno)
+            except ValueError as exc:
+                r.fallo(f"{nivel['id']}: condición no comprobable — {exc}")
+                return r
+            if cierto:
+                elegido = nivel["id"]
+                break
+        if elegido is None:
+            sin_nivel.append(entorno)
+        else:
+            alcanzados.setdefault(elegido, []).append(entorno)
+
+    if sin_nivel:
+        muestra = ", ".join(k for k, v in sin_nivel[0].items() if v) or "(todas falsas)"
+        r.fallo(f"{len(sin_nivel)} combinaciones no producen NINGÚN nivel. "
+                f"Ejemplo: {muestra}. La escala no es total")
+    for nivel in niveles:
+        if nivel["id"] not in alcanzados:
+            r.fallo(f"{nivel['id']} ({nivel['nombre']}) es INALCANZABLE: ninguna de las "
+                    f"{2 ** len(VARIABLES_NOVEDAD)} combinaciones lo produce. Su método "
+                    f"{nivel['metodo']} no se elige nunca")
+    return r
+
+
+def t139_ningun_nivel_omite_un_gate(b):
+    """A-08 · ningún nivel de novedad omite un gate obligatorio de Diseño."""
+    r = Resultado("T139", "Ningún nivel de novedad omite un gate: lo que cambia es la evidencia reutilizable")
+    niveles = {d["id"]: d for d, _, _ in b.get("nivel-novedad", [])}
+    if not niveles:
+        r.fallo("no hay ningún bloque ads:nivel-novedad declarado")
+        return r
+    for nid, nivel in sorted(niveles.items()):
+        for gate in ("gate:usabilidad", "gate:excelencia-visual"):
+            if gate not in (nivel.get("gates_obligatorios") or []):
+                r.fallo(f"{nid}: no declara {gate} como obligatorio. Un nivel pequeño "
+                        f"explora menos; no verifica menos")
+        reut = set(nivel.get("ejes_reutilizables") or [])
+        nunca = set(nivel.get("ejes_nunca_reutilizables") or [])
+        if reut & nunca:
+            r.fallo(f"{nid}: {sorted(reut & nunca)} está a la vez en reutilizables y en "
+                    f"nunca reutilizables")
+        if reut | nunca != set(EJES_VISUALES):
+            faltan = set(EJES_VISUALES) - (reut | nunca)
+            sobran = (reut | nunca) - set(EJES_VISUALES)
+            if faltan:
+                r.fallo(f"{nid}: los ejes {sorted(faltan)} no se declaran ni reutilizables "
+                        f"ni propios: quedarían sin régimen")
+            if sobran:
+                r.fallo(f"{nid}: declara ejes que la rúbrica no tiene: {sorted(sobran)}")
+        for imprescindible in ("acabado", "fidelidad"):
+            if imprescindible in reut:
+                r.fallo(f"{nid}: declara `{imprescindible}` reutilizable, y depende de esta "
+                        f"aplicación concreta: nunca se hereda de un patrón")
+        if reut and not (nivel.get("evidencia_de_vigencia") or []):
+            r.fallo(f"{nid}: reutiliza ejes y no declara qué evidencia demuestra que el "
+                    f"patrón previo sigue siendo aplicable")
+        # las estaciones de los dos gates son la 8 y la 9 del ciclo de calidad
+        estaciones = set(nivel.get("estaciones") or [])
+        for est, nombre in ((8, "validación de uso · gate:usabilidad"),
+                            (9, "validación visual · gate:excelencia-visual")):
+            if est not in estaciones:
+                r.fallo(f"{nid}: su lista de estaciones omite la {est} ({nombre}), y declara "
+                        f"ese gate obligatorio")
+
+    # la tabla de 04-CICLO se DERIVA de estos bloques: se comprueba que coincide
+    ruta = os.path.join(RAIZ, "kernel/operativo/diseno/04-CICLO-DE-CALIDAD.md")
+    if os.path.exists(ruta):
+        with open(ruta, encoding="utf-8") as fh:
+            texto = fh.read()
+        for nid, nivel in sorted(niveles.items()):
+            m = re.search(rf"^{nid}\s+(.+)$", texto, re.M)
+            if not m:
+                r.fallo(f"04-CICLO-DE-CALIDAD.md no declara las estaciones de {nid}")
+                continue
+            linea = m.group(1)
+            if "las trece" in linea:
+                declaradas = set(range(1, 14))
+            else:
+                declaradas = {int(x) for x in re.findall(r"\b(\d+)\b", linea.split("(")[0])}
+            if declaradas != set(nivel.get("estaciones") or []):
+                r.fallo(f"{nid}: 04-CICLO declara {sorted(declaradas)} y su bloque canónico "
+                        f"declara {sorted(nivel.get('estaciones') or [])}. Dos fuentes para "
+                        f"la misma verdad")
+    return r
+
+
+def t144_usabilidad_tiene_portador_en_con(b):
+    """A-13 · gate:usabilidad dice aplicarse a las capas de CON, y nada lo vinculaba."""
+    r = Resultado("T144", "El gate de usabilidad tiene portador computable en Construcción")
+    gates = {d["id"]: d for d, _, _ in b.get("gate", [])}
+    usab = gates.get("gate:usabilidad")
+    impl = gates.get("gate:implementacion-completa")
+    if not usab or not impl:
+        r.fallo("falta gate:usabilidad o gate:implementacion-completa")
+        return r
+    if "CON" not in (usab.get("aplica_a") or ""):
+        return r      # si deja de aplicarse a CON, no hay nada que vincular
+    ids = {c.get("id") for c in impl.get("comprobaciones") or []}
+    textos = " ".join(str(c.get("comprueba", "")) + str(c.get("como", ""))
+                      for c in impl.get("comprobaciones") or [])
+    if "superficie-usable" not in ids:
+        r.fallo("gate:implementacion-completa no comprueba la usabilidad de lo construido, "
+                "y gate:usabilidad declara aplicarse a las capas de CON")
+    if "gate:usabilidad" not in textos:
+        r.fallo("la comprobación de superficie usable no cita gate:usabilidad: el vínculo "
+                "no es rastreable")
+    if "validacion-de-uso" not in textos:
+        r.fallo("no se declara QUIÉN juzga la evidencia de usabilidad de lo construido: "
+                "sin eso, la juzga quien la produjo")
+    return r
+
+
+def t140_obligaciones_y_cierre(b):
+    """A-09 · el aparato central de (b) tiene portador operativo.
+
+    Antes de esto, las palabras `obligación_satisfecha`, `obligación_retirada` y
+    `obligación_huérfana` no aparecían una sola vez en el corpus operativo, y no existía
+    ningún gate de cierre: cerrar todos los paquetes de un item cerraba un item cuyo
+    resultado nunca existió, y nada lo impedía.
+    """
+    r = Resultado("T140", "Las obligaciones del proceso existen y el cierre las comprueba")
+    procesos = {d["id"]: d for d, _, _ in b.get("proceso", [])}
+    if len(procesos) != 10:
+        r.fallo(f"se declaran {len(procesos)} procesos y b.16 deriva diez rutas")
+    for pid, proc in sorted(procesos.items()):
+        obligs = proc.get("obligatorias") or []
+        if not obligs:
+            r.fallo(f"{pid}: sin obligaciones. Un proceso sin obligación no puede cerrar mal")
+        vistos = set()
+        for o in obligs:
+            oid = o.get("id")
+            if oid in vistos:
+                r.fallo(f"{pid}: dos obligaciones con el mismo id '{oid}'")
+            vistos.add(oid)
+            autoridad = str(o.get("autoridad_de_retirada", ""))
+            if re.search(r"\bDSP\b", autoridad):
+                r.fallo(f"{pid}/{oid}: declara a DSP como autoridad de retirada. Retirar es "
+                        f"autoridad semántica, y b.5 y b.9 dicen que DSP no la tiene")
+        for c in proc.get("condicionales") or []:
+            cond = str(c.get("condicion", "")).strip().lower()
+            if cond in ("si aplica", "si procede", "cuando corresponda", ""):
+                r.fallo(f"{pid}/{c.get('capacidad')}: condición no comprobable «{cond}»")
+
+    gates = {d["id"]: d for d, _, _ in b.get("gate", [])}
+    cierre = gates.get("gate:cierre-de-item")
+    if not cierre:
+        r.fallo("no existe gate:cierre-de-item: las cinco condiciones de b.10 no las "
+                "comprueba nadie")
+        return r
+    ids = {c.get("id") for c in cierre.get("comprobaciones") or []}
+    for exigida in ("terminacion", "obligaciones-resueltas", "vigencia", "integracion",
+                    "aprendizaje"):
+        if exigida not in ids:
+            r.fallo(f"gate:cierre-de-item no comprueba '{exigida}', que es una de las cinco "
+                    f"condiciones de cierre de b.10")
+    texto = json.dumps(cierre, ensure_ascii=False).lower()
+    for concepto in ("huérfana", "retirada", "satisfecha", "invalidada"):
+        if concepto not in texto:
+            r.fallo(f"gate:cierre-de-item no menciona '{concepto}': el vocabulario de b.3 "
+                    f"tiene que ser el suyo")
+    plantilla = os.path.join(RAIZ, "kernel/operativo/plantillas/CIERRE.md")
+    if not os.path.exists(plantilla):
+        r.fallo("no existe la plantilla de informe de cierre que separa satisfechas de retiradas")
+    else:
+        with open(plantilla, encoding="utf-8") as fh:
+            cuerpo = fh.read().upper()
+        for cifra in ("OBLIGACIONES SATISFECHAS", "OBLIGACIONES RETIRADAS"):
+            if cifra not in cuerpo:
+                r.fallo(f"la plantilla de cierre no reporta '{cifra}' por separado")
+    return r
+
+
+# Los umbrales YA APROBADOS. Esta prueba no los fija: comprueba que el corpus no los
+# reinventa ni los deja a la memoria del agente.
+FRENOS = {
+    "devolucion": ("2", "a.7 · FRENO 1"),
+    "ciclo": ("3", "a.7 · FRENO 2"),
+    "racha": ("2", "a.7 · FRENO 3"),
+    "recomposici": ("3", "b.9 · MAX_RECOMPOSICIONES_SIN_AVANCE"),
+}
+
+
+def t141_frenos_con_ejecutor(b):
+    """A-10 · los frenos de a.7 y b.9 tienen quien los cuente, los detenga y los escale."""
+    r = Resultado("T141", "Los frenos tienen ejecutor operativo, no sólo prosa")
+    caps = {d["id"]: d for d, _, _ in b.get("capacidad", [])}
+    roles = {d["id"]: d for d, _, _ in b.get("rol", [])}
+    metodos = {d["id"]: d for d, _, _ in b.get("metodo", [])}
+    dsp = caps.get("DSP")
+    if not dsp:
+        r.fallo("no existe la ficha de DSP")
+        return r
+    if "DSP/supervision" not in (dsp.get("roles") or []):
+        r.fallo("DSP no declara el rol que ejecuta su cuarta función, la Supervisión de a.3")
+    if "DSP/Supervision" not in (dsp.get("metodos") or []):
+        r.fallo("DSP no declara el método de supervisión: los frenos quedarían en prosa")
+
+    metodo = metodos.get("DSP/Supervision")
+    if not metodo:
+        r.fallo("no existe el método DSP/Supervision")
+    else:
+        cuerpo = json.dumps(metodo, ensure_ascii=False).lower()
+        for freno in FRENOS:
+            if freno not in cuerpo:
+                r.fallo(f"DSP/Supervision no cuenta el freno de {freno}")
+        for paso in metodo.get("pasos", []):
+            if not paso.get("termina_cuando"):
+                r.fallo(f"DSP/Supervision paso {paso.get('n')}: sin condición de salida")
+
+    rol = roles.get("DSP/supervision")
+    if not rol:
+        r.fallo("no existe el contrato del rol DSP/supervision")
+    else:
+        ind = rol.get("independencia") or {}
+        if not ind.get("requiere_independencia"):
+            r.fallo("DSP/supervision no exige independencia de DSP/enrutamiento: quien "
+                    "recompone contaría sus propias recomposiciones")
+        elif "DSP/enrutamiento" not in (ind.get("de_quien") or []):
+            r.fallo("DSP/supervision exige independencia pero no de DSP/enrutamiento")
+        limites = " ".join(rol.get("limites") or []).lower()
+        if "prioridad" not in limites:
+            r.fallo("DSP/supervision no declara que NO toca la prioridad: b.12 lo prohíbe "
+                    "expresamente y es el error más fácil ante una inanición")
+
+    gate = {d["id"]: d for d, _, _ in b.get("gate", [])}.get("gate:despacho-coherente")
+    if not gate:
+        r.fallo("no existe gate:despacho-coherente")
+        return r
+    ids = {c.get("id") for c in gate.get("comprobaciones") or []}
+    for exigida in ("frenos-evaluados", "freno-disparado-con-dos-posturas",
+                    "inanicion-visible-sin-tocar-prioridad"):
+        if exigida not in ids:
+            r.fallo(f"gate:despacho-coherente no comprueba '{exigida}': un despacho podría "
+                    f"cerrar su gate sin haber evaluado un solo freno")
+
+    # los umbrales son los aprobados: no se inventan números nuevos
+    ruta = os.path.join(RAIZ, "kernel/operativo/capacidades/DSP/prompts/supervision.md")
+    if os.path.exists(ruta):
+        with open(ruta, encoding="utf-8") as fh:
+            prompt = fh.read()
+        for freno, (valor, fuente) in FRENOS.items():
+            if not re.search(rf"(?i){freno}[^=≥\n]*[=≥]\s*{valor}\b", prompt):
+                r.fallo(f"el prompt de supervisión no fija el umbral de {freno} en {valor} "
+                        f"({fuente}): un umbral que el agente recuerda de memoria se ajusta solo")
+    return r
+
+
+# Los once estados de paquete de b.2. El corpus no puede usar un vocabulario paralelo.
+ESTADOS_B2 = {"propuesto", "listo", "en-curso", "esperando-capacidad",
+              "esperando-dependencia", "esperando-owner", "esperando-externo",
+              "bloqueado", "devuelto", "cerrado", "cancelado"}
+
+
+def t142_encuadre_expresa_sus_estados(_b):
+    """A-11 · el encuadre puede declarar todo estado que sus propios documentos le exigen.
+
+    `esperando-owner` lo exigían 04-INCERTIDUMBRE y el campo `bloqueo` de ENC/Escucha, y el
+    enum del esquema no podía expresarlo. A la vez tenía `aparcado-por-owner`, que b.2
+    excluye expresamente de los estados de paquete.
+    """
+    import yaml as _yaml
+    r = Resultado("T142", "El encuadre expresa todos los estados que sus métodos le exigen")
+    ruta = os.path.join(RAIZ, "kernel/operativo/esquemas/encuadre.yaml")
+    if not os.path.exists(ruta):
+        r.fallo("no existe esquemas/encuadre.yaml")
+        return r
+    with open(ruta, encoding="utf-8") as fh:
+        esquema = _yaml.safe_load(fh)
+    campos = esquema.get("campos") or {}
+    if "estado_paquete" not in (esquema.get("obligatorios") or []):
+        r.fallo("el encuadre no declara `estado_paquete`: sin él no puede expresar los "
+                "estados de b.2 que sus propios documentos le exigen")
+        return r
+    valores = set((campos.get("estado_paquete") or {}).get("valores") or [])
+    faltan = ESTADOS_B2 - valores
+    if faltan:
+        r.fallo(f"`estado_paquete` no admite {sorted(faltan)}, que son estados de b.2")
+    sobran = valores - ESTADOS_B2
+    if sobran:
+        r.fallo(f"`estado_paquete` admite {sorted(sobran)}, que no son estados de b.2: "
+                f"un vocabulario paralelo sin reconciliar")
+    madurez = set((campos.get("estado") or {}).get("valores") or [])
+    for prohibido in ("aparcado", "aparcado-por-owner"):
+        if prohibido in madurez or prohibido in valores:
+            r.fallo(f"'{prohibido}' figura como estado. b.2 es explícita: aparcado NO es un "
+                    f"estado de paquete, es una bandera global del item")
+
+    # todo estado citado por los documentos de ENC tiene que ser declarable
+    for rel in ("kernel/operativo/entrada/04-INCERTIDUMBRE-Y-CONFIRMACION.md",
+                "kernel/operativo/capacidades/ENC/metodos/Escucha.md"):
+        f = os.path.join(RAIZ, rel)
+        if not os.path.exists(f):
+            continue
+        with open(f, encoding="utf-8") as fh:
+            texto = fh.read()
+        for estado in ESTADOS_B2:
+            if re.search(rf"`?{re.escape(estado)}`?", texto) and estado not in valores:
+                r.fallo(f"{rel} exige el estado `{estado}` y el esquema no lo admite")
+    return r
+
+
+def t145_critica_de_encuadre_no_se_evapora(b):
+    """A-14 · la crítica obligatoria no desaparece porque la conversación baje el grado."""
+    import yaml as _yaml
+    r = Resultado("T145", "La crítica de encuadre exigible no se evapora al bajar la incertidumbre")
+    ruta = os.path.join(RAIZ, "kernel/operativo/esquemas/encuadre.yaml")
+    with open(ruta, encoding="utf-8") as fh:
+        esquema = _yaml.safe_load(fh)
+    inc = ((esquema.get("campos") or {}).get("incertidumbre") or {})
+    if "grado_inicial" not in (inc.get("obligatorios") or []):
+        r.fallo("el encuadre no persiste `grado_inicial`: sin él, una incertidumbre alta que "
+                "baja tras conversar hace desaparecer la crítica que ya era obligatoria")
+
+    gate = {d["id"]: d for d, _, _ in b.get("gate", [])}.get("gate:encuadre-listo")
+    if not gate:
+        r.fallo("no existe gate:encuadre-listo")
+        return r
+    critica = next((c for c in gate.get("comprobaciones") or []
+                    if c.get("id") == "critica-cuando-corresponde"), None)
+    if not critica:
+        r.fallo("gate:encuadre-listo no comprueba la crítica de encuadre")
+        return r
+    texto = (str(critica.get("comprueba", "")) + " " + str(critica.get("como", ""))).lower()
+    if "grado_inicial" not in texto.replace("_inicial", "_INICIAL").lower() and \
+            "inicial" not in texto:
+        r.fallo("la comprobación se apoya en el grado FINAL: un encuadre que empieza alto y "
+                "baja tras conversar pasaría sin el dictamen que su composición exigía")
+    if "materializ" not in texto:
+        r.fallo("la comprobación no mira si la composición materializó ENC/critica-de-encuadre: "
+                "un rol materializado cuyo dictamen no se exige es un rol decorativo")
+
+    comp = next((d for d, _, _ in b.get("composicion", [])
+                 if d.get("id") == "composicion:enc-alta-incertidumbre"), None)
+    if comp and "no se retira" not in (comp.get("reduccion") or "").lower():
+        r.fallo("composicion:enc-alta-incertidumbre no declara que la crítica NO se retira "
+                "al bajar el grado")
+    return r
+
+
+VACIAS = set("""el la los las un una unos unas de del al a y o u que se su sus lo en con
+por para sin sobre entre no ni es son ser esta este esa ese cuando donde como cual cada
+todo toda todos todas mas menos ya si segun tras hasta desde le les nos me te""".split())
+
+
+def _palabras(texto):
+    import unicodedata
+    t = unicodedata.normalize("NFD", str(texto).lower())
+    t = "".join(c for c in t if unicodedata.category(c) != "Mn")
+    return {w for w in re.findall(r"[a-z0-9-]{3,}", t) if w not in VACIAS}
+
+
+def _parecido(a, b_):
+    if not a or not b_:
+        return 0.0
+    return len(a & b_) / len(a | b_)
+
+
+def t146_autoridad_de_decision(b):
+    """A-18 · lo que T86 no comprobaba: la autoridad de DECISIÓN de un rol.
+
+    C1 fija tres reglas y sólo la del veto estaba implementada. Ésta cubre las otras dos
+    en lo que es mecánicamente comprobable:
+
+      · un rol NO PUEDE decidir lo que su capacidad ESCALA
+      · un rol NO PUEDE decidir la materia declarada por OTRA capacidad
+      · un rol que decide algo pertenece a una capacidad que decide algo
+
+    LO QUE NO COMPRUEBA, y se dice para no repetir el defecto de T131: la contención
+    SEMÁNTICA fina. Que `DIS/critica-visual` decida «el nivel de cada eje de la rúbrica» y
+    que `DIS` declare «qué dirección visual se elige» son compatibles sin compartir una
+    palabra, y ninguna medida de texto puede decidir eso. Esa lectura es de la revisión
+    humana; aquí se atrapan las tres formas groseras.
+    """
+    r = Resultado("T146", "Ningún rol decide lo que su capacidad escala ni lo que decide otra")
+    caps = {d["id"]: d for d, _, _ in b.get("capacidad", [])}
+    materia_ajena = {}
+    for cid, cap in caps.items():
+        for item in (cap.get("autoridad", {}).get("decide_sola") or []):
+            materia_ajena.setdefault(cid, []).append(_palabras(item))
+
+    for datos, _ruta, _l in b.get("rol", []):
+        cid = datos.get("capacidad")
+        cap = caps.get(cid)
+        if not cap:
+            continue
+        decide = datos.get("autoridad", {}).get("decide") or []
+        if decide and not (cap.get("autoridad", {}).get("decide_sola") or []):
+            r.fallo(f"{datos['id']}: decide {len(decide)} cosas y {cid} no declara "
+                    f"`decide_sola`: un rol no puede decidir donde su capacidad no decide")
+        escala = [_palabras(x) for x in (cap.get("autoridad", {}).get("escala") or [])]
+        for item in decide:
+            w = _palabras(item)
+            for e in escala:
+                if _parecido(w, e) >= 0.6:
+                    r.fallo(f"{datos['id']}: DECIDE «{str(item)[:60]}», y {cid} declara eso "
+                            f"mismo en `escala`. C1: un rol no decide lo que su capacidad escala")
+                    break
+            for otro_id, materias in materia_ajena.items():
+                if otro_id == cid:
+                    continue
+                for m in materias:
+                    if _parecido(w, m) >= 0.6:
+                        r.fallo(f"{datos['id']}: DECIDE «{str(item)[:60]}», que es materia "
+                                f"declarada por {otro_id}. Autoridad de otra capacidad")
+                        break
+    return r
+
+
 PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t89_reanudacion_con_prueba, t90_roles_coherentes, t91_metodos_con_gate_y_pasos,
-           t92_sin_marca, t134_sin_documentos_para_nadie,
-           t135_composicion_respeta_el_contrato]
+           t92_sin_marca, t135_composicion_respeta_el_contrato,
+           t136_vetos_no_se_arbitran, t137_dsp_no_cancela_por_contenido,
+           t138_escala_total_y_alcanzable, t139_ningun_nivel_omite_un_gate,
+           t144_usabilidad_tiene_portador_en_con,
+           t140_obligaciones_y_cierre, t141_frenos_con_ejecutor,
+           t142_encuadre_expresa_sus_estados,
+           t145_critica_de_encuadre_no_se_evapora, t146_autoridad_de_decision]
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--prueba", default=None)
+    ap.add_argument("--raiz", default=None, help="ejecutar contra otra copia del corpus")
     args = ap.parse_args()
+    if args.raiz:
+        fijar_raiz(args.raiz)
     b = cargar()
     resultados = [f(b) for f in PRUEBAS]
     if args.prueba:

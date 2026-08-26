@@ -1,6 +1,5 @@
 # Qué es un pack, y qué tiene prohibido hacer
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 Un pack es el **saber hacer de una CLASE de proyecto**. Existe porque hay conocimiento que
 no es universal pero tampoco es de un solo proyecto: toda aplicación web necesita
@@ -26,7 +25,7 @@ PUEDE     especializar el sistema de excelencia de Diseño para su medio
 NO PUEDE  redefinir un contrato universal del kernel
 NO PUEDE  rebajar un gate del kernel, ni saltárselo
 NO PUEDE  quitar autoridad a un rol del kernel ni dársela a uno suyo
-NO PUEDE  sombrear una capacidad del kernel: los catorce códigos están reservados
+NO PUEDE  sombrear una capacidad del kernel: los quince códigos están reservados
 NO PUEDE  rebajar las exigencias de un perfil de agente del kernel
 ```
 
@@ -53,11 +52,16 @@ del kernel y no se queda con su autoridad: **añade materia, no redistribuye pod
 
 ## Los tres packs de esta versión
 
-| pack | clase de proyecto | fichero |
+| pack | clase de proyecto | dónde vive |
 |---|---|---|
-| `web-app` | aplicación web con navegador como entorno | [`web-app/PACK.md`](web-app/PACK.md) |
-| `mobile-app` | aplicación móvil, sin atarse a una tecnología | [`mobile-app/PACK.md`](mobile-app/PACK.md) |
-| `wear-os` | reloj: pocos segundos, pantalla mínima, batería | [`wear-os/PACK.md`](wear-os/PACK.md) |
+| `web-app` | aplicación web con navegador como entorno | `packs/web-app/PACK.md` |
+| `mobile-app` | aplicación móvil, sin atarse a una tecnología | `packs/mobile-app/PACK.md` |
+| `wear-os` | reloj: pocos segundos, pantalla mínima, batería | `packs/wear-os/PACK.md` |
+
+> **Las rutas no se enlazan aquí a propósito.** En un proyecto instalado existe únicamente
+> el directorio de los packs que ese proyecto instaló; enlazar los tres dejaría enlaces
+> rotos en toda organización que no use los tres. `./tooling/new-project.sh` sin argumentos
+> lista los instalables.
 
 Composición entre ellos, precedencia y detección de conflictos:
 [`COMPOSICION.md`](COMPOSICION.md).

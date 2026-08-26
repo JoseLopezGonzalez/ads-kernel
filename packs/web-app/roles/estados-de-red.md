@@ -101,3 +101,43 @@ original.
 
 Prueba con **red simulada lenta e intermitente**. La red local nunca falla, y por eso no
 prueba nada.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · los cinco estados implementados
+  · evidencia con red simulada
+```
+
+Cierras contra **`gate:web-estados-de-red`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · tras implementar cada estado de red
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a DIS/diseno-interaccion, cuando falta especificar qué se comunica en un estado
+  · a DOM, cuando la reconciliación puede duplicar un efecto de negocio
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · no hay forma de simular red degradada en el entorno
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · la reconciliación puede duplicar un efecto de negocio: consulta obligatoria a DOM
+```

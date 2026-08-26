@@ -74,6 +74,7 @@ evidencia_minima:
   - "qué queda expuesto, a quién y por qué camino"
   - "el aviso publicado, la prueba o el fragmento de código que lo demuestra"
   - "qué mitigación existiría, o la constancia de que no existe"
+levantable: segun-instancia
 efecto: >
   El paquete no pasa a construcción, o no se despliega si el veto llega en la revisión.
   Cuando la exposición ya está en producción, se activa contención inmediata con ENT.
@@ -85,8 +86,11 @@ apelacion: >
   ARQ o CON apelan demostrando que la superficie descrita no existe, o que la mitigación ya
   está. Si SEG lo rechaza y ambos sostienen su postura, DSP escala con las dos posturas.
 colision: >
-  El veto de SEG por regla dura de G27 PREVALECE sobre cualquier otro veto, y el paquete
-  contrario se recompone (a.5). Frente al veto de DOM, ambos detienen y el paquete se
+  El veto de SEG declarado NO LEVANTABLE por regla dura de G27 PREVALECE sobre cualquier
+  otro veto, y el paquete contrario se recompone. Es la EXCEPCIÓN ÚNICA que a.5 admite a la
+  regla de que los vetos no se arbitran entre capacidades, y sólo aplica cuando el veto está
+  expresamente declarado no levantable. Un veto de SEG LEVANTABLE no prevalece sobre nada:
+  ambos detienen y escalan al Owner. Frente al veto de DOM, ambos detienen y el paquete se
   recompone para satisfacer los dos.
 ```
 

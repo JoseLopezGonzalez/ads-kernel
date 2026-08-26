@@ -1,6 +1,7 @@
 # PROMPT OPERATIVO — CON/experimental
 
-> Contrato: [`../roles/experimental.md`](../roles/experimental.md)
+> Contrato: [`../roles/experimental.md`](../roles/experimental.md) ·
+> Método: [`CON/Experimental`](../metodos/Experimental.md)
 
 ---
 
@@ -44,3 +45,44 @@ se ignora indica que la decisión ya estaba tomada, y entonces el experimento er
 No lo integres. **Propón un item nuevo enlazado.** El código experimental que entra en el
 producto por la puerta de atrás no tiene tests, no pasó por diseño y nadie lo verificó — y
 dentro de tres meses nadie recordará que era un spike.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · artefacto experimental aislado e identificado
+  · la evidencia producida
+  · qué está simulado
+```
+
+Cierras contra **`gate:implementacion-completa`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · al declarar el criterio de descarte, antes de construir
+  · tras obtener cada medición
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a INV o al propietario del DIR, cuando la pregunta no permite diseñar un experimento que la conteste
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · no hay entorno aislado donde construir sin tocar el producto
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · la evidencia exigida no se puede obtener con los medios disponibles
+```

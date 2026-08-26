@@ -111,3 +111,42 @@ EL COLOR        no es jerarquía. Si al quitar el color la fila deja de tener or
 
 Si las columnas que el alcance exige no caben sin truncar en el tamaño más estrecho, **eso
 es una decisión de producto**: escala a PRD con las dos opciones y datos reales delante.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · especificación de la superficie densa con sus cinco estados
+```
+
+Cierras contra **`gate:excelencia-visual`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · al resolver el caso del texto más largo
+  · al cerrar los cinco estados
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a PRD, cuando las columnas exigidas no caben sin truncar en el tamaño más estrecho
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · no hay datos reales con los casos extremos
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · las columnas exigidas por el alcance no caben sin truncar: escala a PRD
+```

@@ -1,7 +1,10 @@
 # DSP · DESPACHO — orden y ruta, nunca contenido
 
 Su autoridad es **total sobre el orden y la ruta, y ninguna sobre el contenido de ninguna
-capa** (a.3). Es implementación software primero: lo que aquí se describe es el
+capa** (a.3). La [enmienda E1.1](../../../../docs/rediseno/a-ENMIENDA-E1-ENC.md) fija la
+frontera con `ENC`: `DSP` **recibe** el encuadre que `ENC` produce y hace nacer el item; no
+interpreta contenido, no conversa con el Owner en lugar de `ENC`, y **no decide
+semánticamente una cancelación**. Es implementación software primero: lo que aquí se describe es el
 comportamiento que ese runtime tendrá, y lo que un supervisor humano o agente ejecuta
 mientras el runtime no exista.
 
@@ -35,19 +38,22 @@ memoria_propia:
   - "el estado persistido completo: items, rutas, paquetes, control y eventos"
   - "estado/memoria/DSP/composiciones.md — composiciones por defecto y sus recomposiciones"
 tablero: "estado/tableros/ — DSP regenera la zona COLA de todos los tableros"
-metodos: [DSP/Enrutamiento, DSP/Continua]
+metodos: [DSP/Enrutamiento, DSP/Continua, DSP/Supervision]
 checkpoint: "no aplica a DSP como capacidad: el estado persistido ES su checkpoint"
 autoridad:
   decide_sola:
     - "la composición de la ruta y su recomposición, con traza"
     - "la creación de paquetes y sus dependencias"
     - "el orden de despacho, aplicando b.12 de forma determinista"
+    - "que un freno de a.7 o de b.9 se ha disparado, aplicando el umbral ya aprobado, y detener lo que ese freno detiene"
     - "crear y despachar desbloqueadores dentro del alcance ya autorizado (b.15.1)"
     - "prioridad normal por defecto, porque procede de una regla del kernel"
   escala:
     - "todo lo que exceda el alcance ya autorizado"
     - "los frenos de a.7 disparados"
     - "una inconsistencia de estado irresoluble sin decidir"
+    - "toda CANCELACIÓN: DSP la propone cuando detecta la condición mecánica y la ejecuta con la orden ya autorizada, pero NUNCA posee la autoridad semántica para decidirla (b.7)"
+    - "todo lo que exija interpretar contenido de producto, de diseño o de dominio: eso es de ENC y de la capacidad competente, no de DSP (enmienda E1.1)"
   veta: []
 owner:
   nivel: mixto
@@ -55,9 +61,9 @@ owner:
     DSP ejecuta las órdenes del Owner y le reporta; no le pide permiso para despachar. Sólo
     escala cuando un freno se dispara, cuando el desbloqueador amplía el alcance, o cuando
     encuentra una inconsistencia que no puede resolver sin decidir.
-roles: [DSP/enrutamiento, DSP/estado]
+roles: [DSP/enrutamiento, DSP/estado, DSP/supervision]
 deriva_de:
-  - "a.3 · DSP: cuatro funciones, autoridad sobre orden y ruta, ninguna sobre contenido"
+  - "a.3 + enmienda E1.1 · DSP: recepción del encuadre, enrutamiento, estado y supervisión; autoridad sobre orden y ruta, ninguna sobre contenido"
   - "b.5, b.12, b.14, b.15 · transiciones, selección, Continúa y cola vacía"
 materializacion: "DSP se materializa SIEMPRE. Sin ella no hay sistema operativo."
 retirada: "DSP no se retira mientras exista el proyecto."
@@ -90,6 +96,22 @@ comprobaciones:
   - id: devolucion-con-paquete
     comprueba: "toda devolución tiene su paquete de corrección creado o reabierto en el mismo ciclo"
     como: "comprobación: ningún paquete devuelto sin paquete de corrección enlazado"
+    automatizable: si
+  - id: frenos-evaluados
+    comprueba: "antes de despachar se han evaluado los cuatro frenos: devoluciones por par, ciclo multiparte, racha SIS y recomposiciones sin avance material"
+    como: "el registro de selección enlaza los contadores vigentes de los cuatro; un despacho sin ellos no es conforme"
+    automatizable: si
+  - id: freno-disparado-con-dos-posturas
+    comprueba: "todo freno disparado detiene lo que le corresponde y escala con LAS DOS posturas enfrentadas escritas"
+    como: "el registro del freno contiene qué sostiene cada capacidad, con qué evidencia, y a quién se escaló"
+    automatizable: si
+  - id: inanicion-visible-sin-tocar-prioridad
+    comprueba: "todo paquete listo no despachado muestra tiempo, postergaciones, quién lo adelantó y qué lo impide, y ninguna prioridad se ha modificado por el sistema"
+    como: "la tabla de inanición existe y ningún evento de prioridad tiene autoridad distinta del Owner"
+    automatizable: si
+  - id: cancelacion-con-autoridad-ajena
+    comprueba: "ninguna cancelación ejecutada por DSP tiene a DSP como autoridad semántica: ordenante, autoridad y ejecutor son campos distintos y la autoridad NUNCA es DSP"
+    como: "lectura del evento de cancelación: autoridad pertenece a la capacidad con custodia, al propietario global o al Owner según materia (b.7)"
     automatizable: si
 evidencia:
   - "la ficha de ruta con su traza"

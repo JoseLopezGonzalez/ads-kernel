@@ -1,0 +1,7 @@
+# evidencia de: arranque
+# orden:        python3 kernel/operativo/validadores/comprobar_arranque.py
+# codigo:       0
+# ---------------------------------------------------------------
+T148  SUPERADA  El arranque documentado crea un proyecto conforme, pack a pack y combinado
+
+1 superadas · 0 fallidas

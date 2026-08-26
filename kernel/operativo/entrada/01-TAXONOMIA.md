@@ -271,8 +271,8 @@ que_es: >
   La unidad de trabajo con identidad persistente, encuadre, proceso, ruta y paquetes.
   Es lo único que consume capacidad de los equipos.
 no_es: >
-  No es la meta de toda conversación. La mayoría de las expresiones del Owner terminan
-  legítimamente sin item.
+  No es la meta de toda conversación. Una expresión puede terminar legítimamente sin item
+  cuando todavía no existe una intención suficientemente comprendida o accionable.
 senales:
   - "DSP ha creado su ficha a partir de un encuadre en estado listo-para-dsp"
 produce:

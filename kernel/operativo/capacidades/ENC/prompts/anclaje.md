@@ -56,3 +56,46 @@ el repositorio no está accesible             → bloquea, nombrando exactamente
 
 Actualiza el índice de lo existente con cada hallazgo nuevo, con su ruta y su fecha.
 Entrega el dosier al interlocutor. No hablas con el Owner en ningún caso.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · el objeto anclaje del encuadre, con sus cinco campos
+  · la traza de búsquedas ejecutadas
+  · actualización del índice de lo existente
+```
+
+Cierras contra **`gate:anclaje-completo`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · tras cada bloque de búsquedas, con lo hallado y lo que queda por buscar
+  · antes de declarar que algo no existe
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · devuelve al interlocutor cuando la interpretación es demasiado vaga para buscar nada concreto
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · el repositorio del proyecto no está accesible
+  · existe código relevante que no puede leerse por permisos o por estar fuera del repositorio
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · el repositorio contiene dos soluciones incompatibles de la misma materia
+  · una decisión vigente contradice directamente lo que el Owner acaba de pedir
+```

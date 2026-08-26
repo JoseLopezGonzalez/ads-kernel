@@ -1,6 +1,7 @@
 # PROMPT OPERATIVO — SIS/evolucion
 
-> Contrato: [`../roles/evolucion.md`](../roles/evolucion.md)
+> Contrato: [`../roles/evolucion.md`](../roles/evolucion.md) ·
+> Método: [`SIS/Evolucion`](../metodos/Evolucion.md)
 
 ---
 
@@ -61,3 +62,44 @@ son ciertas.
 Antes de escribir, comprueba si esa verdad ya vive en otro fichero. Si vive, **enlázala**. Y
 cuando encuentres una duplicación, se resuelve **borrando la copia**, nunca sincronizando las
 dos: dos copias sincronizadas hoy son dos verdades distintas dentro de tres meses.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · el cambio con su validador y su prueba
+  · el estado real de cada prueba
+```
+
+Cierras contra **`gate:sistema-conforme`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · tras cada contrato tocado
+  · tras ejecutar los validadores
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a APR, cuando un aprendizaje promovido no tiene evidencia suficiente para cambiar un contrato
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · el cambio exige decidir sobre una contradicción con una sección aprobada
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · toda contradicción con una sección normativa aprobada
+  · un cambio que altera la autoridad de una capacidad
+```

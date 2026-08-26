@@ -1,0 +1,129 @@
+# La lista CANÓNICA de lo que hay en validadores/, y qué se espera de cada cosa.
+#
+# Existe por un defecto real: el procedimiento que archivó la evidencia final construyó el
+# nombre del script SIN la extensión `.py`, redirigió el error del intérprete DENTRO del
+# fichero de evidencia con `2>&1`, y publicó sin comprobar el código de salida. Ocho de
+# diez evidencias quedaron con «python3: can't open file», y el informe siguió afirmando
+# «todos EXIT 0». Nada lo detectó porque la evidencia se escribía a mano.
+#
+# Desde aquí, la evidencia la publica `registrar_evidencia.py` y la comprueba
+# `comprobar_evidencia.py`. Ninguna de las dos acepta un nombre sin `.py`, y ninguna
+# publica una ejecución con código distinto de cero.
+
+# `tipo` decide qué se hace con cada fichero:
+#   validador   se ejecuta, se comprueba su código de salida y se publica su evidencia
+#   generador   se ejecuta para regenerar un artefacto derivado; no produce evidencia
+#   biblioteca  no se ejecuta sola; la importan las demás
+componentes:
+
+  - id: lint
+    script: ads_lint.py
+    tipo: validador
+    evidencia: lint-salida.txt
+    # La salida DEBE casar con esto para que la evidencia se considere compatible con el
+    # éxito. Sin firma, un fichero vacío pasaría por evidencia válida.
+    firma_de_exito: 'errores: 0 · avisos: 0'
+    debe_contener: ['bloques canónicos:']
+
+  - id: contratos
+    script: comprobar_contratos.py
+    tipo: validador
+    evidencia: contratos-salida.txt
+    firma_de_exito: '\d+ superadas · 0 fallidas'
+    debe_contener: ['T86', 'T90', 'T136', 'T140', 'T141', 'T146']
+
+  - id: packs
+    script: comprobar_packs.py
+    tipo: validador
+    evidencia: packs-salida.txt
+    firma_de_exito: '\d+ superadas · 0 fallidas'
+    debe_contener: ['T131', 'T132', 'T149']
+
+  - id: referencias
+    script: comprobar_referencias.py
+    args: ['--exclusiones']
+    tipo: validador
+    evidencia: referencias-salida.txt
+    firma_de_exito: '\d+ superadas · 0 fallidas'
+    debe_contener: ['T147', 'documentos analizados']
+
+  - id: arranque
+    script: comprobar_arranque.py
+    tipo: validador
+    evidencia: arranque-salida.txt
+    firma_de_exito: '\d+ superadas · 0 fallidas'
+    debe_contener: ['T148']
+
+  - id: versiones
+    script: comprobar_versiones.py
+    tipo: validador
+    evidencia: versiones-salida.txt
+    firma_de_exito: '\d+ superadas · 0 fallidas'
+    debe_contener: ['T152']
+
+  - id: recuentos
+    script: comprobar_recuentos.py
+    tipo: validador
+    evidencia: recuentos-salida.txt
+    firma_de_exito: '\d+ superadas · 0 fallidas'
+    debe_contener: ['T151']
+
+  - id: integridad
+    script: comprobar_integridad.py
+    tipo: validador
+    evidencia: integridad-salida.txt
+    firma_de_exito: '\d+ superadas · 0 fallidas'
+    debe_contener: ['T150']
+
+  - id: prompts
+    script: comprobar_prompts.py
+    args: ['--tabla']
+    tipo: validador
+    evidencia: prompts-salida.txt
+    firma_de_exito: '\d+ superadas · 0 fallidas'
+    debe_contener: ['T153', 'unidades de instrucción revisadas']
+
+  - id: negativos
+    script: comprobar_negativos.py
+    tipo: validador
+    evidencia: negativos-salida.txt
+    firma_de_exito: '\d+ infracciones detectadas · 0 NO detectadas'
+    debe_contener: ['N136', 'N147', 'N150']
+    # Su salida contiene por diseño el texto de los fallos que PROVOCA en una copia
+    # temporal. Es la única evidencia donde «FALLIDA» o «NO detectada» pueden aparecer
+    # como cita del resultado interno de un fixture, y por eso se declara aquí.
+    contiene_salida_de_fixture: true
+
+  - id: evidencia
+    script: comprobar_evidencia.py
+    tipo: validador
+    evidencia: evidencia-salida.txt
+    firma_de_exito: '\d+ superadas · 0 fallidas'
+    debe_contener: ['T158']
+    # No se comprueba a sí misma: cuando corre, su propia evidencia es todavía la de la
+    # ejecución anterior. La publica el runner como cualquier otra, y su resultado real es
+    # el código de salida del runner.
+    se_excluye_de_su_propia_comprobacion: true
+
+  - id: registro
+    script: registro_pruebas.py
+    tipo: generador
+    genera: ../pruebas/REGISTRO-generado.md
+
+  - id: recuentos-generados
+    script: comprobar_recuentos.py
+    args: ['--generar']
+    tipo: generador
+    genera: ../pruebas/RECUENTOS-generado.md
+
+  - id: huella
+    script: huella.py
+    tipo: biblioteca
+
+  - id: composicion
+    script: composicion_packs.py
+    tipo: biblioteca
+
+  - id: runner
+    script: registrar_evidencia.py
+    tipo: biblioteca

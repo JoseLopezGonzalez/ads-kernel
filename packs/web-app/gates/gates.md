@@ -76,7 +76,7 @@ fallo: >
 id: gate:web-estados-de-red
 aplica_a: "toda superficie que ejecuta operaciones contra la red"
 comprobaciones:
-  - id: cinco-estados
+  - id: cinco-estados-de-red
     comprueba: "los cinco estados de red están implementados y probados con red simulada"
     como: "una grabación por estado, con la red degradada de la forma correspondiente"
     automatizable: si

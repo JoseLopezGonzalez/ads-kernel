@@ -1,6 +1,7 @@
 # PROMPT OPERATIVO — VER/decision
 
-> Contrato: [`../roles/decision.md`](../roles/decision.md)
+> Contrato: [`../roles/decision.md`](../roles/decision.md) ·
+> Método: [`VER/Decision`](../metodos/Decision.md)
 
 ---
 
@@ -47,3 +48,42 @@ cubrir se enumera, con lo que ese item debería cubrir. «Se hará luego» no es
 **La construcción escondida.** Un DIR decide; no implementa. Comprueba que ningún paquete
 del DIR construyó funcionalidad productiva. Sólo `CON:experimental` es admisible, y sólo
 antes de la decisión, para poder decidir.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · dictamen con las nueve comprobaciones
+  · lista de impactos sin item derivado
+```
+
+Cierras contra **`gate:evidencia-suficiente`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · tras cada una de las nueve comprobaciones
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · al propietario global del DIR, cuando el registro está incompleto, es contradictorio, no cubre el impacto conocido o no es ejecutable
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · el radio de impacto no está analizado y no hay contra qué comprobar la cobertura
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · aparece un veto no levantable de otra capacidad sobre la dirección elegida
+```

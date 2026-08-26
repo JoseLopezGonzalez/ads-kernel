@@ -2,7 +2,55 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.2 — correcciones de la auditoría independiente
+
+Resuelve los 33 hallazgos de una auditoría independiente, ejecutada por un lector que no
+escribió el material. El informe y la matriz de resolución viven en el repositorio del
+kernel, en `docs/rediseno/AUDITORIA-INDEPENDIENTE-LOCAL.md` y
+`docs/rediseno/CORRECCIONES-POST-AUDITORIA.md`. **No viajan con el kernel instalado**: son
+historia del kernel, no especificación que su corpus enlace.
+
+**Normativo.** Enmienda **E1** a la sección (a), aprobada por el Owner: `ENC` es la
+decimoquinta capacidad base, con su frontera con `DSP` y con materialización **bajo
+demanda** — los equipos permanentemente activos siguen siendo dos.
+
+**Lo que faltaba y ahora existe:**
+
+- `recorrido/` — obligaciones del proceso, `gate:cierre-de-item` con las cinco condiciones
+  de b.10, y los diez procesos de b.16 en forma canónica
+- `DSP/supervision` — la cuarta función de DSP, que ejecuta los cuatro frenos
+- `esquemas/nivel-novedad.yaml` — la escala de novedad con condiciones **formales**, que
+  vuelve alcanzable el nivel N3
+- `propiedades_medibles` en los packs — lo que hace computable la precedencia P1
+- `validadores/huella.py` — la integridad cubre ahora a los validadores y al tooling
+- `validadores/comprobar_negativos.py` — **cada prueba nueva falla cuando debe fallar**
+
+**Lo que se corrigió y era falso:**
+
+- el comando de arranque documentado terminaba con código 3
+- un proyecto recién creado tenía once enlaces rotos: no se le enviaba la especificación
+  normativa que su propio corpus enlaza
+- `T131` estaba en `prueba-superada` afirmando un comportamiento que su validador no
+  ejecutaba; `T134` pasaba por coincidencia de nombre de fichero
+- `DIS` y `DOM` se arbitraban un veto que a.5 reserva al Owner
+- `DSP/estado` **decidía** cancelaciones, que b.7 le niega
+- once recuentos en prosa que ya no coinciden con nada porque **se derivan**: los comprueba
+  `comprobar_recuentos.py`
+
+**El corpus, contado desde el corpus** (`pruebas/RECUENTOS-generado.md`):
+
+```text
+15 capacidades · 42 roles · 35 métodos · 36 prompts · 29 gates
+38 composiciones · 16 handoffs · 10 procesos · 18 esquemas
+12 validadores · 73 escenarios de conformidad
+```
+
 ## 2.0.0-alpha.1 — contenido operativo sobre la especificación aprobada
+
+> **Las cifras de esta entrada eran incorrectas** y se corrigen aquí sin reescribir su
+> historia: eran dieciséis esquemas y no diecisiete, treinta y cuatro métodos y no treinta
+> y cinco, veintinueve campos de rol y no veintiocho. Fue el hallazgo A-24, y desde
+> `2.0.0-alpha.2` ninguna cifra del corpus se escribe a mano.
 
 **No es un kernel funcionando: es el contenido que el runtime consumirá.** El runtime y el
 dispatcher siguen sin existir, por decisión del Owner.

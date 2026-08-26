@@ -112,21 +112,28 @@ evidencia_minima:
   - "la especificación aprobada y su versión"
   - "la comparación intención/resultado que muestra la degradación"
   - "la lista de alternativas que DIS ha explorado o propone explorar, con al menos una concreta"
+levantable: si
 efecto: >
   El paquete no pasa el gate de excelencia visual y vuelve a CON con la comparación. El
   trabajo de CON no se borra: la capa queda vigente y se corrige la parte degradada.
 levantamiento: >
-  Lo levanta DIS/direccion-artistica cuando CON aporta la evidencia de imposibilidad que
-  exige 05-FIDELIDAD, o el Owner cuando decide aceptar la deuda. NO es no levantable.
+  LEVANTABLE. Lo levanta DIS/direccion-artistica cuando CON aporta la evidencia de
+  imposibilidad que exige 05-FIDELIDAD. Cuando el conflicto es de DIRECCIÓN y no de
+  viabilidad, sólo el Owner lo levanta, y queda registrado con su alcance y su fecha.
+  NO es no levantable por regla dura, y por tanto NUNCA prevalece sobre otro veto.
 apelacion: >
   CON apela devolviendo con la evidencia de imposibilidad. Si DIS la rechaza y CON insiste,
   se agota el freno de dos devoluciones y DSP escala con las dos posturas escritas: qué
   intención sostiene DIS y qué obstáculo demuestra CON.
 colision: >
-  Frente al veto duro de SEG (G27), prevalece SEG y el paquete se recompone buscando otra
-  forma de conservar la intención. Frente al veto de DOM sobre recuperabilidad, prevalece
-  DOM. Frente al veto de VER por evidencia en rojo, ambos detienen y se resuelven por
-  separado: no se arbitran entre sí.
+  REGLA GENERAL (a.5): dos vetos incompatibles NO se arbitran entre las capacidades. Ambos
+  DETIENEN el tránsito, cada uno conserva su postura, su evidencia, su alcance y su
+  condición de levantamiento, y el conflicto ESCALA AL OWNER con las dos materias escritas.
+  DSP sólo transporta y registra el desacuerdo: no arbitra.
+  EXCEPCIÓN ÚNICA: si uno de los dos está declarado NO LEVANTABLE por regla dura del kernel
+  (G27), ese prevalece y el otro paquete se recompone. Es el caso del veto de SEG por G27.
+  Frente al veto de DOM sobre recuperabilidad, que SÍ es levantable, DIS no cede ni se
+  impone: ambos detienen y escalan. Frente al veto de VER por evidencia en rojo, igual.
 ```
 
 ## Índice del equipo
@@ -136,5 +143,5 @@ colision: >
 | roles | [`roles/`](roles/) — once contratos |
 | métodos | [`metodos/`](metodos/) — seis procedimientos |
 | prompts | [`prompts/`](prompts/) — once instrucciones operativas |
-| composición | [`composicion.md`](composicion.md) — doce matrices de composición |
+| composición | [`composicion.md`](composicion.md) — diez matrices de composición |
 | handoffs | [`../../circuitos/DIS-handoffs.md`](../../circuitos/DIS-handoffs.md) |

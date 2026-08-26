@@ -73,10 +73,12 @@ evidencia_minima:
   - "el invariante concreto que se violaría, citado de INVARIANTES.md"
   - "el caso de datos que lo demuestra, aunque sea construido"
   - "qué información quedaría sin recuperar, y desde cuándo"
+levantable: si
 efecto: >
   El paquete no pasa a construcción, o no se despliega si el veto llega en la revisión
   posterior. Se recompone con un plan que conserve la integridad.
 levantamiento: >
+  LEVANTABLE, y por tanto sin precedencia sobre ningún otro veto.
   Lo levanta DOM cuando el plan incorpora la transición o la copia recuperable que faltaba.
   El Owner puede decidir asumir una pérdida concreta, y entonces queda registrada con su
   alcance y su fecha: DOM no la levanta por él, la ejecuta con su decisión escrita.
@@ -84,9 +86,15 @@ apelacion: >
   ARQ o CON apelan aportando el plan de transición o la prueba de reversión ejecutada. Si
   DOM lo rechaza y ambos sostienen su postura, se agota el freno de dos y DSP escala.
 colision: >
-  Frente al veto duro de SEG (G27) ambos detienen: no se arbitran entre sí, y el paquete se
-  recompone para satisfacer los dos. Frente al veto de DIS por degradación de forma,
-  prevalece DOM: la forma se explora de otra manera, los datos no se recuperan de otra manera.
+  REGLA GENERAL (a.5): dos vetos incompatibles NO se arbitran entre las capacidades. Ambos
+  DETIENEN el tránsito, cada uno conserva su postura, su evidencia, su alcance y su
+  condición de levantamiento, y el conflicto ESCALA AL OWNER con las dos materias escritas.
+  DSP sólo transporta y registra el desacuerdo: no arbitra.
+  Frente al veto duro de SEG (G27) ambos detienen y el paquete se recompone para satisfacer
+  los dos. Frente al veto de DIS por degradación de forma, DOM NO prevalece: el veto de DOM
+  es LEVANTABLE, no está declarado no levantable por regla dura, y por tanto no arbitra
+  sobre otro veto. Ambos detienen y escalan al Owner. Que la recuperabilidad sea un bien
+  mayor que la forma es un argumento, y un argumento no es una regla dura del kernel.
 ```
 
 ```yaml ads:gate

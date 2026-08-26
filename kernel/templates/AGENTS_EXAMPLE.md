@@ -99,7 +99,10 @@ QUICK CHANGE      Owner → cambio → validación mínima → done
 
 STANDARD          Task → rama → implementación → tests → review → PR → merge
 
-SIGNIFICANT       Research → ADR → implementación → assurance → gate Owner si procede
+SIGNIFICANT       Research → ADR → implementación → assurance → gate Owner cuando
+                  la tabla de a.8 lo marca obligatorio: primera dirección de producto,
+                  primera instancia de patrón visual, materia reservada, decisión
+                  estratégica o difícilmente reversible, o cambio de dirección
 ```
 
 **Escalado automático obligatorio.** Si un "cambio pequeño" resulta tocar arquitectura, seguridad, secretos, migración de datos, dependencia nueva, alcance, estrategia de producto, coste externo o algo irreversible → sube de nivel aunque naciera en una sesión de retoques rápidos. Informa; no preguntes qué circuito usar.

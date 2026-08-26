@@ -1,6 +1,5 @@
 # Fidelidad de implementación
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 > **Construcción no puede simplificar en silencio.** Si algo no es viable, devuelve con
 > evidencia. Diseño, a su vez, no puede ignorar una imposibilidad física o técnica

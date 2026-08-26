@@ -41,6 +41,9 @@ cuando aparece se resuelve **borrando la copia**, nunca sincronizando las dos.
 |---|---|
 | catálogo de capacidades, autoridad, veto, frenos, paralelismo, checkpoint | (a) |
 | estados, transiciones, cierre, obligaciones, rutas por tipo, `Continúa` | (b) |
+| obligaciones de cada proceso y condiciones de cierre, en forma canónica | [`recorrido/`](recorrido/00-OBLIGACIONES-Y-CIERRE.md) |
+| niveles de novedad, sus gates y su evidencia reutilizable | [`diseno/03-ESCALA-DE-NOVEDAD.md`](diseno/03-ESCALA-DE-NOVEDAD.md) |
+| propiedades medibles de un pack y su precedencia | [`packs/COMPOSICION.md`](../../packs/COMPOSICION.md) |
 | formato canónico de los artefactos operativos | [`esquemas/00-LENGUAJE.md`](esquemas/00-LENGUAJE.md) |
 | forma de cada tipo canónico | `esquemas/<tipo>.yaml` |
 | ficha operativa de una capacidad | `capacidades/<COD>/CAPACIDAD.md` |
@@ -58,14 +61,15 @@ cuando aparece se resuelve **borrando la copia**, nunca sincronizando las dos.
 
 | directorio | contenido | entrada |
 |---|---|---|
-| `esquemas/` | el lenguaje canónico y los diecisiete tipos | [`00-LENGUAJE.md`](esquemas/00-LENGUAJE.md) |
+| `esquemas/` | el lenguaje canónico y los dieciocho tipos | [`00-LENGUAJE.md`](esquemas/00-LENGUAJE.md) |
 | `contratos/` | los cinco contratos transversales | [`00-INDICE.md`](contratos/00-INDICE.md) |
 | `entrada/` | PASO 1 — de la frase del Owner al item | [`00-INDICE.md`](entrada/00-INDICE.md) |
 | `diseno/` | PASO 3 — el sistema de excelencia | [`00-SISTEMA-DE-EXCELENCIA.md`](diseno/00-SISTEMA-DE-EXCELENCIA.md) |
 | `capacidades/` | PASOS 4 y 5 — las quince capacidades | tabla de abajo |
+| `recorrido/` | obligaciones del proceso, cierre del item y los diez procesos | [`00-OBLIGACIONES-Y-CIERRE.md`](recorrido/00-OBLIGACIONES-Y-CIERRE.md) |
 | `circuitos/` | los circuitos y los handoffs | [`00-CIRCUITOS.md`](circuitos/00-CIRCUITOS.md) |
 | `plantillas/` | artefactos rellenables | tabla de abajo |
-| `validadores/` | `ads_lint.py`, `comprobar_contratos.py`, `comprobar_packs.py` | — |
+| `validadores/` | ocho validadores ejecutables, incluidas las pruebas negativas | [`huella.py`](validadores/huella.py) · [`exclusiones.yaml`](validadores/exclusiones.yaml) |
 | `pruebas/` | escenarios y su registro honesto | [`REGISTRO.md`](pruebas/REGISTRO.md) |
 
 ### Las quince capacidades
@@ -88,12 +92,16 @@ Cada carpeta tiene la misma forma: `CAPACIDAD.md` · `roles/` · `metodos/` · `
 | [`CHECKPOINT.md`](plantillas/CHECKPOINT.md) | el formato de a.10, copiable, con los cuatro errores que lo estropean |
 | [`DEVOLUCION.md`](plantillas/DEVOLUCION.md) | los cuatro campos sin los cuales una devolución no es una devolución |
 | [`DICTAMEN.md`](plantillas/DICTAMEN.md) | la forma común de todo juicio independiente |
+| [`CIERRE.md`](plantillas/CIERRE.md) | el informe que separa obligaciones satisfechas de retiradas |
 
-### Los tres packs
+### Los tres packs del catálogo
 
-[`web-app`](../../packs/web-app/PACK.md) · [`mobile-app`](../../packs/mobile-app/PACK.md) ·
-[`wear-os`](../../packs/wear-os/PACK.md) · su
-[composición](../../packs/COMPOSICION.md) y [qué es un pack](../../packs/00-QUE-ES-UN-PACK.md).
+`web-app` · `mobile-app` · `wear-os`. **En un proyecto instalado sólo existe el directorio
+de los packs que ese proyecto instaló**, y por eso aquí se nombran en vez de enlazarse: un
+enlace a un pack no instalado sería un enlace roto en toda organización que no los use los
+tres. El catálogo completo y sus reglas viajan siempre con `packs/`:
+[qué es un pack](../../packs/00-QUE-ES-UN-PACK.md) ·
+[composición y precedencia](../../packs/COMPOSICION.md).
 
 ## Cómo se usa esto sin haber visto ninguna conversación
 

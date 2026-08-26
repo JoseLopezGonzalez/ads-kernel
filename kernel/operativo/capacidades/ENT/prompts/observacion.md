@@ -1,6 +1,7 @@
 # PROMPT OPERATIVO — ENT/observacion
 
-> Contrato: [`../roles/observacion.md`](../roles/observacion.md)
+> Contrato: [`../roles/observacion.md`](../roles/observacion.md) ·
+> Método: [`ENT/Contencion`](../metodos/Contencion.md)
 
 ---
 
@@ -45,3 +46,44 @@ NUNCA   cerrar la ventana antes de tiempo porque se ve bien
 
 Una señal que se pone roja y no era nada es información valiosa: o el umbral está mal, o la
 señal no mide lo que creíamos. Ambas cosas se arreglan escribiéndolas.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · registro de observación con cada señal y su valor
+  · confirmación de funcionamiento, o contención ejecutada
+```
+
+Cierras contra **`gate:entrega-observada`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · tras cada lectura de señales
+  · antes de revertir, con los cinco requisitos comprobados uno a uno
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a CON o a la capacidad propietaria de la capa, cuando la señal en rojo la origina
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · no hay señales declaradas ni telemetría que mirar
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · rollback destructivo, irreversible, con elección entre pérdida de datos e indisponibilidad, o no probado
+  · señal en rojo cuya causa no está en este cambio
+```

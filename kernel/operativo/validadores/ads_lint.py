@@ -6,7 +6,7 @@ Comprueba, sobre kernel/operativo/ y packs/:
   2. unicidad de identificadores
   3. resolución de toda referencia (`ref`) a otro artefacto canónico
   4. resolución de todo enlace relativo de Markdown
-  5. ausencia de vocabulario prohibido
+  5. ausencia de vocabulario prohibido, con exenciones ACOTADAS por rango o por línea
   6. las reglas específicas de validadores/reglas.yaml
 
 Uso:
@@ -30,7 +30,18 @@ except ImportError:  # pragma: no cover
 BLOQUE = re.compile(r"^```yaml\s+ads:([a-z-]+)\s*$")
 FIN_BLOQUE = re.compile(r"^```\s*$")
 ENLACE_MD = re.compile(r"\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
-EXENCION = "ads-lint: permitir-vocabulario-prohibido"
+# Exenciones ACOTADAS. La versión anterior era por FICHERO COMPLETO: bastaba un comentario
+# en la cabecera para que todo el documento quedara fuera de la comprobación de
+# vocabulario. Diecinueve de los ciento ochenta y ocho ficheros del corpus estaban exentos
+# —los seis de diseño, cuatro de los cinco contratos, el circuito de entrada—, es decir,
+# justo donde la condición comprobable más importa (hallazgo A-27). Ahora se exime un
+# RANGO, y el rango declara su motivo.
+#
+#   <!-- ads-lint-ignore-next-line: <motivo> -->
+#   <!-- ads-lint-ignore-start: <motivo> -->  …  <!-- ads-lint-ignore-end -->
+INICIO_EXENCION = re.compile(r"<!--\s*ads-lint-ignore-start:\s*(.+?)\s*-->")
+FIN_EXENCION = re.compile(r"<!--\s*ads-lint-ignore-end\s*-->")
+EXENCION_LINEA = re.compile(r"<!--\s*ads-lint-ignore-next-line:\s*(.+?)\s*-->")
 EXENCION_ENLACES = "ads-lint: permitir-enlaces-rotos"
 
 VOCABULARIO_PROHIBIDO = [
@@ -60,9 +71,15 @@ class Hallazgo:
 
 
 class Lint:
-    def __init__(self, raiz, ambitos):
+    def __init__(self, raiz, ambitos, ambitos_texto=None):
         self.raiz = os.path.abspath(raiz)
         self.ambitos = ambitos
+        # Ámbito de ENLACES y VOCABULARIO. Por defecto el repositorio entero: la portada,
+        # START_HERE y docs/ quedaban fuera, y por eso el hallazgo A-12 —tres versiones
+        # para el mismo artefacto en el README— no lo veía ningún validador.
+        self.ambitos_texto = ambitos_texto if ambitos_texto is not None else ["."]
+        self.exentos_vocabulario = []
+        self.no_analizados = []
         self.hallazgos = []
         self.esquemas = {}
         self.bloques = []          # (tipo, datos, fichero, linea)
@@ -79,6 +96,38 @@ class Lint:
 
     def rel(self, f):
         return os.path.relpath(f, self.raiz) if os.path.isabs(f) else f
+
+    def cargar_exclusiones(self):
+        ruta = os.path.join(self.raiz, "kernel/operativo/validadores/exclusiones.yaml")
+        if not os.path.exists(ruta):
+            return
+        with open(ruta, encoding="utf-8") as fh:
+            datos = yaml.safe_load(fh) or {}
+        self.exentos_vocabulario = [i["ruta"] for i in (datos.get("vocabulario_exento") or [])
+                                    if isinstance(i, dict) and i.get("ruta")]
+        self.no_analizados = [i["ruta"] for i in (datos.get("no_analizados") or [])
+                              if isinstance(i, dict) and i.get("ruta")]
+
+    def _excluido(self, ruta, lista):
+        rel = os.path.relpath(ruta, self.raiz).replace(os.sep, "/")
+        return any(rel == x or rel.startswith(x.rstrip("/") + "/") for x in lista)
+
+    def ficheros_texto(self, ext):
+        vistos = set()
+        for ambito in self.ambitos_texto:
+            base = os.path.join(self.raiz, ambito)
+            for dirpath, dirnames, filenames in os.walk(base):
+                dirnames[:] = [d for d in dirnames
+                               if d not in (".git", "__pycache__") and not d.startswith("legacy-")]
+                for nombre in sorted(filenames):
+                    if not nombre.endswith(ext):
+                        continue
+                    ruta = os.path.join(dirpath, nombre)
+                    if self._excluido(ruta, self.no_analizados):
+                        continue
+                    if ruta not in vistos:
+                        vistos.add(ruta)
+                        yield ruta
 
     def ficheros(self, ext):
         for ambito in self.ambitos:
@@ -159,6 +208,11 @@ class Lint:
                 return self.err(ruta, linea, "tipo", f"{camino}: se esperaba entero")
             if "min" in spec and valor < spec["min"]:
                 self.err(ruta, linea, "min", f"{camino}: {valor} < {spec['min']}")
+        elif tipo == "numero":
+            if isinstance(valor, bool) or not isinstance(valor, (int, float)):
+                return self.err(ruta, linea, "tipo", f"{camino}: se esperaba número")
+            if "min" in spec and valor < spec["min"]:
+                self.err(ruta, linea, "min", f"{camino}: {valor} < {spec['min']}")
         elif tipo == "booleano":
             if not isinstance(valor, bool):
                 self.err(ruta, linea, "tipo", f"{camino}: se esperaba true/false")
@@ -234,27 +288,72 @@ class Lint:
                          f"{campo}: '{ident}' es ads:{tipo_real}, se esperaba ads:{tipo_esperado}")
 
     # ---------------------------------------------------------------- texto
+    def lineas_exentas(self, texto):
+        """Qué líneas quedan fuera, por rango o por marca de línea siguiente.
+
+        Devuelve (exentas, huerfanas): las huérfanas son marcas de fin sin inicio o
+        rangos sin cerrar, que son un defecto por sí mismos: una exención abierta se
+        convierte en una exención de fichero completo por descuido.
+        """
+        exentas, problemas = set(), []
+        abierto_en = None
+        for n, linea in enumerate(texto.splitlines(), 1):
+            if INICIO_EXENCION.search(linea):
+                if abierto_en:
+                    problemas.append((n, "exención abierta dentro de otra ya abierta"))
+                abierto_en = n
+                exentas.add(n)
+                continue
+            if FIN_EXENCION.search(linea):
+                if not abierto_en:
+                    problemas.append((n, "cierre de exención sin inicio"))
+                abierto_en = None
+                exentas.add(n)
+                continue
+            if abierto_en:
+                exentas.add(n)
+            if EXENCION_LINEA.search(linea):
+                exentas.add(n)
+                exentas.add(n + 1)
+        if abierto_en:
+            problemas.append((abierto_en, "exención abierta y nunca cerrada"))
+        return exentas, problemas
+
     def validar_vocabulario(self):
-        for ruta in self.ficheros(".md"):
+        for ruta in self.ficheros_texto(".md"):
+            if self._excluido(ruta, self.exentos_vocabulario):
+                continue
             with open(ruta, encoding="utf-8") as fh:
                 texto = fh.read()
-            if EXENCION in texto:
-                continue
+            exentas, problemas = self.lineas_exentas(texto)
+            for linea_n, motivo in problemas:
+                self.err(ruta, linea_n, "exencion", f"{motivo}: una exención sin cerrar "
+                                                    f"exime el resto del fichero por descuido")
             bajo = texto.lower()
             for linea_n, linea in enumerate(bajo.splitlines(), 1):
+                if linea_n in exentas:
+                    continue
                 for frase in VOCABULARIO_PROHIBIDO:
                     if frase in linea:
                         self.err(ruta, linea_n, "vocabulario",
                                  f"expresión prohibida «{frase}»: escribe la condición comprobable")
 
     def validar_enlaces(self):
-        for ruta in self.ficheros(".md"):
+        for ruta in self.ficheros_texto(".md"):
             with open(ruta, encoding="utf-8") as fh:
                 texto = fh.read()
             if EXENCION_ENLACES in texto:
                 continue
             base = os.path.dirname(ruta)
+            dentro_de_bloque = False
             for linea_n, linea in enumerate(texto.splitlines(), 1):
+                if linea.lstrip().startswith("```"):
+                    dentro_de_bloque = not dentro_de_bloque
+                    continue
+                # un enlace dentro de un bloque cercado es una ilustración, no una
+                # referencia: se muestra tal cual y no tiene por qué resolver
+                if dentro_de_bloque:
+                    continue
                 for destino in ENLACE_MD.findall(linea):
                     if destino.startswith(("http://", "https://", "#", "mailto:")):
                         continue
@@ -289,6 +388,7 @@ class Lint:
 
     # ---------------------------------------------------------------- ejecución
     def ejecutar(self):
+        self.cargar_exclusiones()
         self.cargar_esquemas()
         self.cargar_bloques()
         self.validar_bloques()
@@ -307,7 +407,9 @@ def main():
                     help="subdirectorio a analizar (repetible). Por defecto kernel/operativo y packs")
     args = ap.parse_args()
     ambitos = args.ambito or ["kernel/operativo", "packs"]
-    lint = Lint(args.raiz, ambitos)
+    # los bloques canónicos viven en kernel/operativo y packs; los ENLACES y el
+    # VOCABULARIO se comprueban en TODO el repositorio (hallazgo A-28)
+    lint = Lint(args.raiz, ambitos, ambitos_texto=(args.ambito or ["."]))
     hallazgos = lint.ejecutar()
     errores = [h for h in hallazgos if h.nivel == "error"]
     avisos = [h for h in hallazgos if h.nivel == "aviso"]

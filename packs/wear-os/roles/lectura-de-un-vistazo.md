@@ -147,3 +147,42 @@ CON EL DEDO puesto: comprueba qué tapa al pulsar, y que lo que confirma no est�
 
 Y siempre hay que sacrificar. **Qué se sacrifica es del Owner** cuando la información
 compite: enséñale las dos versiones **en el reloj**, no descritas.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · especificación de la superficie del reloj, con su ambiental y su duración de uso
+```
+
+Cierras contra **`gate:wear-vistazo`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · al declarar el dato dominante y la acción principal
+  · al resolver el estado ambiental
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a PRD, cuando el alcance exige dos acciones principales en la misma superficie
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · no hay reloj real de la matriz donde validar la legibilidad
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · el alcance exige dos acciones principales en la misma superficie: escala a PRD
+```

@@ -1,6 +1,5 @@
 # Decisiones, contradicciones y límites del kernel operativo
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 Registro vivo de la iteración que construye el contenido operativo (pasos 1 a 6) sobre
 las secciones aprobadas (a) y (b). Tres partes: **decisiones tomadas** (reversibles, y por
@@ -34,9 +33,9 @@ declarado; cambiarlas es una orden, no un rediseño.
 
 | # | decisión | por defecto implementado | qué cambia si el Owner decide otra cosa |
 |---|---|---|---|
-| O1 | ¿`ENC` es capacidad propia o sigue siendo una función de `DSP`? | capacidad propia con código reservado `ENC`, materializada siempre | si el Owner prefiere función de DSP: el contenido no cambia, cambia la carpeta y el propietario del tablero |
+| O1 | ~~¿`ENC` es capacidad propia o sigue siendo una función de `DSP`?~~ **RESUELTA** | El Owner la aprobó como decimoquinta capacidad base el 2026-08-26: [enmienda E1](a-ENMIENDA-E1-ENC.md). Materialización **bajo demanda**, no permanente. | nada: la decisión está tomada y enmendada en (a) |
 | O2 | Convivencia de `KERNEL.md` 1.3.0 con el kernel operativo | conviven; 1.3.0 arranca proyectos, `operativo/` es lo que el runtime consumirá | reescribir `KERNEL.md` como índice delgado sobre `operativo/` es un item `SIS` que aún no existe |
-| O3 | Umbral de anclaje y margen de ambigüedad de b.13 | `umbral 0.60` · `margen 0.15`, declarados en `entrada/03-CLASIFICACION.md` | son parámetros; cambiarlos no toca contratos |
+| O3 | Umbral de anclaje y margen de ambigüedad de b.13 | `umbral 0.60` · `margen 0.15`, declarados en `entrada/04-INCERTIDUMBRE-Y-CONFIRMACION.md` §3, **como provisionales y calibrables por uso real** | son parámetros; cambiarlos no toca contratos |
 | O4 | Presupuesto de exploración de Diseño | `DIS/Fundacion` sin techo de sesiones; `DIS/Evolucion` con exploración proporcional a la novedad, medida por la tabla de novedad | subir o bajar el número mínimo de direcciones exploradas |
 | O5 | Quién puede levantar el veto de excelencia visual | sólo el Owner, y sólo tras ver las alternativas exploradas | delegarlo en `DIS/direccion-artistica` |
 | O6 | Idioma de los artefactos operativos | castellano, como (a) y (b) | traducir es mecánico y no afecta a los identificadores |

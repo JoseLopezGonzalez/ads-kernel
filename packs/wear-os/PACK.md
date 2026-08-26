@@ -7,6 +7,16 @@
 **No se ata a gym-wear.** Este pack describe la clase; gym-wear será un perfil posterior que
 lo consuma.
 
+> **Sobre el identificador `wear-os`.** `00-QUE-ES-UN-PACK` prohíbe que una tecnología
+> concreta viva dentro de un pack, y el identificador de éste nombra una plataforma. Es
+> **deliberado y acotado**: lo que nombra es la CLASE de producto por su ejemplo más
+> reconocible, y el contenido es neutral —`nombre: Reloj`, sin una sola marca, comprobado
+> por T92—. Un reloj de otra plataforma instala este mismo pack sin cambiar nada, porque lo
+> que el pack fija son propiedades del medio: pantalla mínima, uso de segundos, batería
+> escasa y conectividad intermitente. Si algún día hubiera una clase de reloj cuyas
+> restricciones fueran otras, sería otro pack, y entonces el nombre se revisa. Registrado
+> como hallazgo **A-29** de la auditoría independiente.
+
 ```yaml ads:pack
 id: wear-os
 nombre: Reloj
@@ -53,6 +63,34 @@ matriz_entornos: >
   El proyecto declara la matriz de relojes REALES, con al menos un tamaño pequeño y uno
   grande, y la forma de pantalla si el proyecto soporta más de una. El pack exige evidencia
   en reloj físico: ni emulador ni captura escalada la sustituyen.
+propiedades_medibles:
+  - id: objetivo-tactil-minimo
+    nombre: tamaño mínimo del objetivo táctil
+    unidad: dp
+    direccion: minimo
+    valor: 48
+    fija_el_profile: false
+    motivo: >
+      Es propiedad del MEDIO, no del producto: el dedo tapa parte de una pantalla de reloj
+      al pulsar, y la interacción ocurre en movimiento. Ningún proyecto de reloj puede
+      bajarlo sin empeorar a su usuario, y por eso lo fija el pack.
+  - id: duracion-uso-maxima
+    nombre: duración del uso previsto de una superficie
+    unidad: segundos
+    direccion: maximo
+    valor: 10
+    fija_el_profile: false
+    motivo: >
+      El uso de un reloj ocurre levantando la muñeca. Una superficie que exige más de diez
+      segundos está mal planteada para este medio, y eso no depende del producto.
+  - id: contraste-minimo
+    nombre: relación de contraste mínima del texto
+    unidad: ratio
+    direccion: minimo
+    fija_el_profile: true
+    motivo: >
+      El pack exige que sea MÁS estricto que en pantalla grande y que se valide al sol,
+      pero el umbral concreto depende del nivel de accesibilidad que declare el proyecto.
 pruebas: [T128, T129, T130]
 antipatrones:
   - "diseñar el reloj como una reducción de la pantalla del móvil"

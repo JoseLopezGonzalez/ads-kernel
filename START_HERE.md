@@ -12,10 +12,10 @@ Si sólo lees un documento de todo el repositorio, que sea éste.
 |---|---|
 | Git instalado y una cuenta de repositorio remoto | El repositorio existe desde el primer día (G48) |
 | Un entorno agentic (Cursor, Claude Code, Codex o equivalente) | Es la interfaz de trabajo |
-| Saber responder a 4 preguntas (abajo) | Sin ellas el sistema optimiza a ciegas |
+| Saber responder a 5 preguntas (abajo) | Sin ellas el sistema optimiza a ciegas |
 | **Nada más** | No necesitas estructura, ni stack elegido, ni diseño, ni documentación previa |
 
-Las cuatro preguntas. No hace falta que las escribas bien; basta con que sepas responderlas cuando el sistema te las haga:
+Las cinco preguntas. No hace falta que las escribas bien; basta con que sepas responderlas cuando el sistema te las haga:
 
 1. **¿Qué ganas tú con este proyecto?** Ordenado por prioridad, con criterio de fallo. *(Es lo que evita que el sistema optimice hacia "más completo".)*
 2. **¿Dónde se prueba de verdad?** Cuál es el entorno real donde un experimento dice la verdad y no el entorno de desarrollo.
@@ -30,10 +30,14 @@ Las cuatro preguntas. No hace falta que las escribas bien; basta con que sepas r
 ### Paso 1 — Crear el esqueleto
 
 ```bash
-./tooling/new-project.sh mi-proyecto pack-web-app
+./tooling/new-project.sh mi-proyecto web-app
 ```
 
-Packs disponibles: `pack-web-app`, `pack-mobile-native`, `pack-design-led` (este último se combina con uno de plataforma, no lo sustituye). Puedes indicar varios separados por coma, o ninguno si tu proyecto no encaja en ninguna clase existente.
+Packs instalables: **`web-app`** · **`mobile-app`** · **`wear-os`**. Puedes indicar varios separados por coma —`wear-os,mobile-app` es la combinación normal de un producto con reloj— o ninguno, si tu proyecto no encaja en ninguna clase existente.
+
+Si te equivocas de identificador, el comando **no crea nada** y te lista los instalables. Ejecútalo sin argumentos para verlos.
+
+> **Los packs de la línea 1.3.0 ya no se instalan.** `pack-web-app`, `pack-mobile-native` y `pack-design-led` están retirados en `packs/legacy-1.3.0/` y se conservan sólo para trazabilidad. El tercero además **fue derogado**: la excelencia visual dejó de ser propiedad de una clase de proyecto y vive ahora en el kernel, en `kernel/operativo/diseno/`.
 
 Esto te deja:
 
@@ -43,8 +47,11 @@ Esto te deja:
 ├── PROFILE.md          plantilla a rellenar
 ├── BOOTSTRAP_PROMPT.md el texto exacto que le darás al agente
 ├── kernel/             copia congelada, NO se edita
-├── packs/              copias congeladas, NO se editan
-├── docs/               JOURNAL.md y UPSTREAM.md vacíos
+│   └── operativo/      las quince capacidades con sus roles, métodos y prompts
+├── packs/              copias congeladas de los que pediste, NO se editan
+├── docs/
+│   ├── rediseno/       la especificación normativa (a), (b) y sus enmiendas
+│   └── ...             JOURNAL.md y UPSTREAM.md vacíos
 └── tooling/
 ```
 
@@ -52,7 +59,7 @@ Esto te deja:
 
 ```bash
 cd ../mi-proyecto
-git add . && git commit -m "chore: semilla ADS (kernel 1.1.0)"
+# el commit inicial ya lo hace new-project.sh; esto es sólo el remoto
 git remote add origin <tu-repo>
 git push -u origin main
 ```
@@ -121,9 +128,14 @@ Si ya tienes código y quieres adoptar esta organización:
 ```bash
 cd tu-proyecto-existente
 cp -r /ruta/a/ads/kernel .
-cp /ruta/a/ads/packs/pack-<clase>.md packs/
+mkdir -p packs docs/rediseno
+cp -r /ruta/a/ads/packs/<clase> packs/          # un DIRECTORIO: web-app, mobile-app o wear-os
+cp /ruta/a/ads/packs/00-QUE-ES-UN-PACK.md /ruta/a/ads/packs/COMPOSICION.md packs/
+cp /ruta/a/ads/docs/rediseno/{a-CAPACIDADES-APROBADA.md,b-RECORRIDO-APROBADA.md,a-ENMIENDA-E1-ENC.md,DECISIONES-Y-CONTRADICCIONES.md} docs/rediseno/
 cp kernel/PROFILE_TEMPLATE.md PROFILE.md
 ```
+
+Compruébalo antes de seguir: `python3 kernel/operativo/validadores/ads_lint.py` tiene que salir en verde. Si hay enlaces rotos, falta algo por copiar.
 
 Y luego, en tu agente:
 

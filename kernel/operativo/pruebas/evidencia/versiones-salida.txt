@@ -1,0 +1,7 @@
+# evidencia de: versiones
+# orden:        python3 kernel/operativo/validadores/comprobar_versiones.py
+# codigo:       0
+# ---------------------------------------------------------------
+T152  SUPERADA  Los puntos de entrada no se contradicen sobre la versión
+
+1 superadas · 0 fallidas

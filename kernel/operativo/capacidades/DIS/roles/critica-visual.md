@@ -98,6 +98,7 @@ criterios_calidad:
   - "en los ejes no automatizables, la razón es discutible, no una etiqueta"
   - "el dictamen no contiene ninguna propuesta de solución"
   - "el veredicto es conforme o devuelto, sin términos medios"
+  - "todo eje satisfecho con evidencia reutilizada enlaza esa evidencia y su fecha, y cita el nivel que autoriza reutilizarlo"
 antipatrones:
   - "aprobar por complacencia una propuesta correcta y sin carácter"
   - "escribir «es genérica» sin decir qué la hace genérica frente a qué comparable"
@@ -105,8 +106,9 @@ antipatrones:
   - "proponer la alternativa y convertirse en productor"
   - "usar «conforme con reservas», que no existe en esta rúbrica"
 activacion:
-  - "toda fase divergente de nivel N1 o superior, antes de converger"
-  - "todo paquete de DIS antes de cerrar el gate de excelencia visual"
+  - "toda fase divergente de nivel N1 o superior, antes de converger, en modo COMPLETA"
+  - "todo paquete de DIS antes de cerrar el gate de excelencia visual, en los CINCO niveles"
+  - "en N0, en modo DE REUTILIZACIÓN: comprueba la vigencia del patrón aplicado, que la aplicación cae dentro de su alcance, y los ejes acabado y fidelidad, que nunca se heredan"
 retirada:
   - "el dictamen queda emitido, sea cual sea su veredicto"
 prompt: "kernel/operativo/capacidades/DIS/prompts/critica-visual.md"

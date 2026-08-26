@@ -74,6 +74,7 @@ evidencia_minima:
   - "el criterio concreto que no se cumple, citado de la capa de PRD"
   - "la salida, captura o medición que lo demuestra"
   - "la comparación con el estado anterior cuando se alega regresión"
+levantable: si
 efecto: >
   El paquete no pasa a ENT ni se integra. Vuelve a la capacidad propietaria de la capa que
   falla, con la evidencia. El veto se levanta cuando la evidencia deja de estar en rojo.
@@ -85,8 +86,10 @@ apelacion: >
   CON apela demostrando que la evidencia se recogió mal o que el criterio se interpretó
   distinto de como lo escribió PRD. En el segundo caso decide PRD, no VER ni CON.
 colision: >
-  Frente al veto de SEG o de DOM, ambos detienen y se resuelven por separado: no se arbitran
-  entre sí. Frente al veto de DIS por degradación de forma, ambos detienen igual.
+  Regla general de a.5: ambos detienen, conservan sus dos posturas y evidencias, y escalan
+  al Owner. VER no arbitra a nadie y nadie le arbitra a él, salvo un veto declarado NO
+  LEVANTABLE por regla dura del kernel (G27), que prevalece. Frente a SEG, DOM o DIS, ambos
+  detienen y se resuelven por separado.
 ```
 
 ```yaml ads:gate

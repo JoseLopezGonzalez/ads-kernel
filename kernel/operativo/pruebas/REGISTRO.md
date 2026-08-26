@@ -1,6 +1,5 @@
 # REGISTRO DE CONFORMIDAD — estado real de cada prueba
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 > Este fichero existe para impedir una afirmación concreta: *«el sistema está probado»*
 > cuando lo único que ocurrió es que alguien escribió la prueba.
@@ -29,6 +28,20 @@ prueba-fallida           se ejecutó y falló. Es un estado legítimo y se publi
 **Regla dura:** ninguna prueba sube de estado por argumento. Sube porque se ejecutó y su
 salida quedó registrada en la columna `evidencia`.
 
+**Y la evidencia tampoco se escribe a mano.** La publica
+[`validadores/registrar_evidencia.py`](../validadores/registrar_evidencia.py), que descubre
+los validadores del manifiesto canónico, los invoca por su ruta completa terminada en
+`.py`, captura stdout, stderr y código de salida **por separado**, escribe en un temporal y
+publica con reemplazo atómico **sólo si el código fue cero**. Una ejecución que falla deja
+intacta la evidencia anterior.
+
+Que lo publicado demuestre lo que el informe afirma lo comprueba **T158**
+([`comprobar_evidencia.py`](../validadores/comprobar_evidencia.py)). Existe por un defecto
+real: ocho de diez ficheros de evidencia de una entrega anterior contenían
+`python3: can't open file` —el procedimiento construía el nombre del script sin extensión y
+redirigía el error del intérprete dentro del fichero— mientras el informe seguía afirmando
+«todos EXIT 0». Nada lo detectó porque nada comprobaba la evidencia.
+
 ## T01–T74 — heredadas de (a) y (b)
 
 Las setenta y cuatro pruebas de las secciones aprobadas están en estado
@@ -54,3 +67,7 @@ bloque `ads:escenario`; esta tabla es el resumen y **se regenera desde esos bloq
 
 Ver [`REGISTRO-generado.md`](REGISTRO-generado.md) para el estado vigente, producido por
 `validadores/registro_pruebas.py` a partir de los propios escenarios.
+
+Y [`RECUENTOS-generado.md`](RECUENTOS-generado.md) para cuántas capacidades, roles, métodos
+y campos hay realmente. **Ninguna de esas cifras se escribe a mano en ningún documento**:
+se derivan del corpus y `comprobar_recuentos.py` comprueba que nadie afirme otra (T151).

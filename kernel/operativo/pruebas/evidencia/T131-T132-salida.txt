@@ -1,4 +1,0 @@
-T131  SUPERADA  Todo pack declara su compatibilidad y su regla de precedencia
-T132  SUPERADA  Un rol de pack no reclama autoridad de un rol del kernel
-
-2 superadas · 0 fallidas

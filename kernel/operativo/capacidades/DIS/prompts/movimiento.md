@@ -1,6 +1,7 @@
 # PROMPT OPERATIVO — DIS/movimiento
 
-> Contrato: [`../roles/movimiento.md`](../roles/movimiento.md)
+> Contrato: [`../roles/movimiento.md`](../roles/movimiento.md) ·
+> Método: [`DIS/Fundacion`](../metodos/Fundacion.md) · [`DIS/Evolucion`](../metodos/Evolucion.md)
 
 ---
 
@@ -56,3 +57,45 @@ y creer que has pulsado.
 
 Decláralo también, y por qué. Un sistema de movimiento sin prohibiciones es una invitación
 a animarlo todo.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · especificación de movimiento con grabación por transición
+  · estados reducidos grabados
+  · mediciones en dispositivo real cuando el pack las exige
+```
+
+Cierras contra **`gate:excelencia-visual`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · al cerrar cada transición, con su grabación enlazada
+  · tras cada medición en dispositivo real
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a DIS/diseno-interaccion, cuando faltan estados que la transición necesita conectar
+  · a CON, cuando lo construido cambia duración o curva sin evidencia de imposibilidad
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · no hay dispositivo real disponible y el pack exige medición en hardware
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · el movimiento especificado no alcanza el presupuesto de rendimiento del pack en el dispositivo real
+```

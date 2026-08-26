@@ -1,6 +1,5 @@
 # Las dos rúbricas y sus dos gates
 
-<!-- ads-lint: permitir-vocabulario-prohibido -->
 
 Una rúbrica **no es una nota**. Es una lista de ejes, cada uno con tres niveles descritos
 en palabras y con la evidencia que permite situarse en uno de ellos. El resultado de
@@ -202,7 +201,7 @@ no_automatizable:
 
 ```yaml ads:gate
 id: gate:excelencia-visual
-aplica_a: "toda capa que produce o modifica superficie visible, y todo cambio del sistema de diseño"
+aplica_a: "toda capa que produce o modifica superficie visible, y todo cambio del sistema de diseño. Se evalúa en DOS pasadas declaradas: la de DISEÑO en la estación 9 del ciclo, y la de FIDELIDAD en la estación 11, cuando ya existe construcción que comparar"
 comprobaciones:
   - id: dictamen-existe
     comprueba: "existe dictamen de DIS/critica-visual sobre este paquete"
@@ -212,9 +211,21 @@ comprobaciones:
     comprueba: "el agente que emitió el dictamen no ocupó ningún rol productor en este paquete"
     como: "comparación de identificadores de agente en el registro de materialización"
     automatizable: si
-  - id: nueve-ejes
-    comprueba: "los nueve ejes de rubrica:excelencia-visual tienen nivel y evidencia"
-    como: "recorrido de la rúbrica eje por eje"
+  - id: ocho-ejes-en-la-pasada-de-diseno
+    comprueba: "en la pasada de diseño, los ocho ejes distintos de fidelidad tienen nivel y evidencia, y fidelidad está marcado pendiente-de-construccion"
+    como: "recorrido de la rúbrica eje por eje sobre el dictamen de la estación 9"
+    automatizable: si
+  - id: eje-fidelidad-en-la-pasada-de-fidelidad
+    comprueba: "en la pasada de fidelidad, el eje fidelidad tiene nivel y su evidencia es la comparación intención/resultado de 05-FIDELIDAD"
+    como: "el dictamen de la estación 11 enlaza la comparación por superficie afectada"
+    automatizable: si
+  - id: nivel-declarado
+    comprueba: "el paquete declara su nivel de novedad y cita la condición de la escala que resultó verdadera"
+    como: "campo nivel_de_novedad presente en el checkpoint, con la condición citada"
+    automatizable: si
+  - id: reutilizacion-justificada
+    comprueba: "todo eje satisfecho con evidencia reutilizada está en `ejes_reutilizables` de su nivel, y aporta la evidencia de vigencia que ese nivel exige"
+    como: "comparación del dictamen contra el bloque ads:nivel-novedad del nivel declarado"
     automatizable: si
   - id: ninguno-en-rechazo
     comprueba: "ningún eje está en nivel rechazo"
@@ -241,9 +252,11 @@ comprobaciones:
     como: "el dictamen declara expresamente qué se extrajo de cada referencia y qué NO se tomó"
     automatizable: no
 evidencia:
-  - "el dictamen de excelencia visual con sus nueve ejes"
-  - "las capturas y grabaciones que lo sostienen"
+  - "el dictamen de la pasada de diseño, con sus ocho ejes"
+  - "el dictamen de la pasada de fidelidad, con el eje fidelidad y su comparación"
+  - "las capturas y grabaciones que los sostienen"
   - "el diff de la memoria de diseño"
+  - "el nivel de novedad declarado con su condición citada, y la evidencia de vigencia de todo eje reutilizado"
   - "la aprobación del Owner cuando fue exigible"
 fallo: >
   El paquete no pasa. Si el rechazo es de la capa de diseño, el paquete vuelve a DIS con
@@ -254,10 +267,56 @@ fallo: >
 
 ---
 
+## Las dos pasadas del gate visual
+
+El eje `fidelidad` compara **lo aprobado con lo construido**. En la estación 9 del ciclo no
+hay nada construido todavía, de modo que exigir los nueve ejes a la vez hacía imposible que
+un paquete de diseño —`DIS/Fundacion`, por ejemplo— cerrase su gate: era una regla que
+nadie podía cumplir (hallazgo **A-20**). Se declara por tanto lo que ya ocurría de hecho:
+
+```text
+PASADA DE DISEÑO      estación 9 · antes de entregar a Construcción
+                      ocho ejes con nivel y evidencia
+                      `fidelidad` se marca pendiente-de-construccion
+                      un rechazo aquí vuelve a exploración, convergencia o prototipo
+
+PASADA DE FIDELIDAD   estación 11 · con la capa ya construida
+                      el eje `fidelidad`, con la comparación de 05-FIDELIDAD
+                      un rechazo aquí vuelve a CONSTRUCCIÓN, no a diseño
+```
+
+**El gate no cierra definitivamente hasta la segunda pasada.** Lo que la primera autoriza
+es el tránsito a Construcción, no la entrega.
+
+## Quién produce la evidencia de usabilidad de una capa construida
+
+`gate:usabilidad` se aplica a las capas de `DIS` **y de `CON`**, y esa segunda mitad no
+tenía portador: ningún rol ni método de Construcción lo vinculaba, de modo que una capa que
+modificaba una superficie usable cerraba por `gate:implementacion-completa` sin que los seis
+ejes se evaluaran nunca sobre lo construido (hallazgo **A-13**). El reparto es:
+
+```text
+QUÉ PAQUETE LO ACTIVA   todo paquete de CON cuyo objetivo declara `afecta_superficie`
+QUÉ EVIDENCIA NECESITA  los cinco estados capturados sobre lo CONSTRUIDO · un recorrido por
+                        cada medio de entrada que declare el pack · las mediciones de
+                        respuesta frente al presupuesto del pack
+QUIÉN LA PRODUCE        CON, y la declara en su salida antes de la revisión
+QUIÉN LA JUZGA          DIS/validacion-de-uso, que emite el dictamen de los seis ejes.
+                        No la juzga quien la produjo.
+QUÉ OCURRE SI FALLA     un eje en rechazo detiene el tránsito. Si el fallo es de la
+                        implementación de una capa aprobada, vuelve a CON con la evidencia;
+                        si el fallo es de la capa de diseño, vuelve a DIS.
+A QUÉ ETAPA DEVUELVE    estación 10 (construcción) o estación 6 (convergencia), según de
+                        quién sea la capa que falla
+```
+
+Lo comprueba `gate:implementacion-completa` en su comprobación `superficie-usable`, y
+T144 comprueba que ese vínculo existe.
+
 ## Por qué el gate visual no se puede automatizar del todo
 
 ```text
-Los nueve ejes se dividen así:
+Los nueve ejes se dividen así, y la división vale para las dos pasadas:
 
 AUTOMATIZABLE          sistema · acabado(parcial) · fidelidad · respuesta(parcial)
                        → se extraen valores, se comparan capturas, se miden tiempos

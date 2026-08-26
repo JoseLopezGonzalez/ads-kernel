@@ -8,7 +8,7 @@ runtime** para comprobarse. Por eso son las primeras pruebas del sistema que lle
 python3 kernel/operativo/validadores/comprobar_contratos.py
 ```
 
-Salida registrada: [`evidencia/T086-T092-salida.txt`](evidencia/T086-T092-salida.txt).
+Salida registrada: [`evidencia/contratos-salida.txt`](evidencia/contratos-salida.txt).
 
 > **Lo que estas siete pruebas NO demuestran.** Que los contratos son *coherentes*, no que
 > el sistema *funciona*. Un rol puede tener sus veintiocho campos perfectamente declarados
@@ -30,7 +30,7 @@ falla_si:
 ejecucion: validador-estructural
 validador: "kernel/operativo/validadores/comprobar_contratos.py --prueba T86"
 estado: prueba-superada
-evidencia: "evidencia/T086-T092-salida.txt"
+evidencia: "evidencia/contratos-salida.txt"
 ```
 
 ```yaml ads:escenario
@@ -44,7 +44,7 @@ falla_si: ["una composición permite combinar dos roles que ella misma declara i
 ejecucion: validador-estructural
 validador: "kernel/operativo/validadores/comprobar_contratos.py --prueba T87"
 estado: prueba-superada
-evidencia: "evidencia/T086-T092-salida.txt"
+evidencia: "evidencia/contratos-salida.txt"
 ```
 
 ```yaml ads:escenario
@@ -58,7 +58,7 @@ falla_si: ["un rol declara un prompt inexistente, o no declara ninguno"]
 ejecucion: validador-estructural
 validador: "kernel/operativo/validadores/comprobar_contratos.py --prueba T88"
 estado: prueba-superada
-evidencia: "evidencia/T086-T092-salida.txt"
+evidencia: "evidencia/contratos-salida.txt"
 ```
 
 ```yaml ads:escenario
@@ -74,7 +74,7 @@ falla_si:
 ejecucion: validador-estructural
 validador: "kernel/operativo/validadores/comprobar_contratos.py --prueba T89"
 estado: prueba-superada
-evidencia: "evidencia/T086-T092-salida.txt"
+evidencia: "evidencia/contratos-salida.txt"
 ```
 
 ```yaml ads:escenario
@@ -90,7 +90,7 @@ falla_si: ["existe un rol huérfano, o una capacidad que lista un rol inexistent
 ejecucion: validador-estructural
 validador: "kernel/operativo/validadores/comprobar_contratos.py --prueba T90"
 estado: prueba-superada
-evidencia: "evidencia/T086-T092-salida.txt"
+evidencia: "evidencia/contratos-salida.txt"
 ```
 
 ```yaml ads:escenario
@@ -106,7 +106,7 @@ falla_si: ["un paso carece de condición de salida comprobable"]
 ejecucion: validador-estructural
 validador: "kernel/operativo/validadores/comprobar_contratos.py --prueba T91"
 estado: prueba-superada
-evidencia: "evidencia/T086-T092-salida.txt"
+evidencia: "evidencia/contratos-salida.txt"
 ```
 
 ```yaml ads:escenario
@@ -122,7 +122,7 @@ falla_si: ["un rol, método, gate o pack exige un proveedor o modelo concreto"]
 ejecucion: validador-estructural
 validador: "kernel/operativo/validadores/comprobar_contratos.py --prueba T92"
 estado: prueba-superada
-evidencia: "evidencia/T086-T092-salida.txt"
+evidencia: "evidencia/contratos-salida.txt"
 ```
 
 ---
@@ -133,19 +133,13 @@ La revisión adversarial del conjunto encontró **siete documentos que nadie enl
 bloques nadie citaba**: existían para nadie. Se corrigió la navegación, y la comprobación
 quedó como prueba permanente para que el hallazgo no pueda repetirse en silencio.
 
-```yaml ads:escenario
-id: T134
-nombre: Ningún documento del corpus existe para nadie
-cubre: ["a.7 modo de fallo (b)", "SIS/coherencia", "regla de fuente única"]
-dado: ["el corpus completo de kernel/operativo y packs"]
-cuando: ["se busca, por cada documento, si alguien lo enlaza o cita alguno de sus bloques"]
-entonces: ["todo documento tiene al menos una entrada: un enlace, o un identificador citado"]
-falla_si: ["existe un documento sin enlace entrante y sin ningún bloque citado desde fuera"]
-ejecucion: validador-estructural
-validador: "kernel/operativo/validadores/comprobar_contratos.py --prueba T134"
-estado: prueba-superada
-evidencia: "evidencia/T086-T092-salida.txt"
-```
+> **T134 quedó sustituida por T147.** Decidía que un documento tenía enlace entrante
+> buscando su NOMBRE BASE como subcadena en cualquier otro fichero. Como el corpus da a
+> propósito el mismo nombre a los ficheros homólogos de cada capacidad, una sola mención
+> satisfacía a todos: 119 de 188 documentos quedaban exentos sin declararlo (hallazgo
+> **A-05**). Su sustituta construye el grafo por RUTA NORMALIZADA y vive en
+> [`T136-T152-post-auditoria.md`](T136-T152-post-auditoria.md).
+
 
 ---
 
@@ -167,5 +161,5 @@ falla_si: ["una composición permite compartir agente entre un rol y otro del qu
 ejecucion: validador-estructural
 validador: "kernel/operativo/validadores/comprobar_contratos.py --prueba T135"
 estado: prueba-superada
-evidencia: "evidencia/T086-T092-salida.txt"
+evidencia: "evidencia/contratos-salida.txt"
 ```

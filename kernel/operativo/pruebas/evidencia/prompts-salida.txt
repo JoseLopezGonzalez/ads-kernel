@@ -1,0 +1,52 @@
+# evidencia de: prompts
+# orden:        python3 kernel/operativo/validadores/comprobar_prompts.py --tabla
+# codigo:       0
+# ---------------------------------------------------------------
+T153  SUPERADA  Cada unidad de instrucción declara y enlaza las señales estructurales que su contrato exige
+
+42 unidades de instrucción revisadas mecánicamente: 36 prompts con fichero propio · 6 embebidas en roles de packs
+
+OK  prompt   APR/promocion                      kernel/operativo/capacidades/APR/prompts/promocion.md
+OK  prompt   ARQ/diagnostico                    kernel/operativo/capacidades/ARQ/prompts/diagnostico.md
+OK  prompt   ARQ/encaje                         kernel/operativo/capacidades/ARQ/prompts/encaje.md
+OK  prompt   CON/experimental                   kernel/operativo/capacidades/CON/prompts/experimental.md
+OK  prompt   CON/implementacion                 kernel/operativo/capacidades/CON/prompts/implementacion.md
+OK  prompt   DIS/critica-visual                 kernel/operativo/capacidades/DIS/prompts/critica-visual.md
+OK  prompt   DIS/direccion-artistica            kernel/operativo/capacidades/DIS/prompts/direccion-artistica.md
+OK  prompt   DIS/diseno-interaccion             kernel/operativo/capacidades/DIS/prompts/diseno-interaccion.md
+OK  prompt   DIS/diseno-visual                  kernel/operativo/capacidades/DIS/prompts/diseno-visual.md
+OK  prompt   DIS/investigacion-ux               kernel/operativo/capacidades/DIS/prompts/investigacion-ux.md
+OK  prompt   DIS/investigacion-visual           kernel/operativo/capacidades/DIS/prompts/investigacion-visual.md
+OK  prompt   DIS/movimiento                     kernel/operativo/capacidades/DIS/prompts/movimiento.md
+OK  prompt   DIS/prototipado                    kernel/operativo/capacidades/DIS/prompts/prototipado.md
+OK  prompt   DIS/revision-de-fidelidad          kernel/operativo/capacidades/DIS/prompts/revision-de-fidelidad.md
+OK  prompt   DIS/sistema-de-diseno              kernel/operativo/capacidades/DIS/prompts/sistema-de-diseno.md
+OK  prompt   DIS/validacion-de-uso              kernel/operativo/capacidades/DIS/prompts/validacion-de-uso.md
+OK  prompt   DOM/migracion                      kernel/operativo/capacidades/DOM/prompts/migracion.md
+OK  prompt   DOM/modelo                         kernel/operativo/capacidades/DOM/prompts/modelo.md
+OK  prompt   DSP/enrutamiento                   kernel/operativo/capacidades/DSP/prompts/enrutamiento.md
+OK  prompt   DSP/estado                         kernel/operativo/capacidades/DSP/prompts/estado.md
+OK  prompt   DSP/supervision                    kernel/operativo/capacidades/DSP/prompts/supervision.md
+OK  prompt   ENC/anclaje                        kernel/operativo/capacidades/ENC/prompts/anclaje.md
+OK  prompt   ENC/critica-de-encuadre            kernel/operativo/capacidades/ENC/prompts/critica-de-encuadre.md
+OK  prompt   ENC/interlocutor                   kernel/operativo/capacidades/ENC/prompts/interlocutor.md
+OK  prompt   ENT/despliegue                     kernel/operativo/capacidades/ENT/prompts/despliegue.md
+OK  prompt   ENT/observacion                    kernel/operativo/capacidades/ENT/prompts/observacion.md
+OK  prompt   INV/investigacion                  kernel/operativo/capacidades/INV/prompts/investigacion.md
+OK  prompt   PLT/maquinaria                     kernel/operativo/capacidades/PLT/prompts/maquinaria.md
+OK  prompt   PRD/criterio-de-exito              kernel/operativo/capacidades/PRD/prompts/criterio-de-exito.md
+OK  prompt   PRD/definicion                     kernel/operativo/capacidades/PRD/prompts/definicion.md
+OK  prompt   SEG/condiciones                    kernel/operativo/capacidades/SEG/prompts/condiciones.md
+OK  prompt   SIS/coherencia                     kernel/operativo/capacidades/SIS/prompts/coherencia.md
+OK  prompt   SIS/evolucion                      kernel/operativo/capacidades/SIS/prompts/evolucion.md
+OK  prompt   USO/validacion                     kernel/operativo/capacidades/USO/prompts/validacion.md
+OK  prompt   VER/decision                       kernel/operativo/capacidades/VER/prompts/decision.md
+OK  prompt   VER/dosier                         kernel/operativo/capacidades/VER/prompts/dosier.md
+OK  embebida mob:CON/ciclo-de-vida              packs/mobile-app/roles/ciclo-de-vida.md
+OK  embebida mob:DIS/interaccion-tactil         packs/mobile-app/roles/interaccion-tactil.md
+OK  embebida wear:CON/energia-y-estados         packs/wear-os/roles/energia-y-estados.md
+OK  embebida wear:DIS/lectura-de-un-vistazo     packs/wear-os/roles/lectura-de-un-vistazo.md
+OK  embebida web:DIS/densidad-y-tablas          packs/web-app/roles/densidad-y-tablas.md
+OK  embebida web:CON/estados-de-red             packs/web-app/roles/estados-de-red.md
+
+1 superadas · 0 fallidas

@@ -1,0 +1,49 @@
+kind: esquema
+esquema: proceso
+version: 1
+descripcion: >
+  el MOLDE de b.1: que persigue un item de este tipo, que resultados DEBEN existir para
+  que su intencion este cumplida -sus OBLIGACIONES-, que capacidades son condicionales con
+  su condicion comprobable, y cuando se considera cerrado. Es la forma canonica de las diez
+  rutas derivadas en b.16, que vivian solo como prosa y diagramas.
+
+  Cada entrada de `obligatorias` ES la declaracion de una obligacion del proceso: el
+  runtime la instancia por item al componer la ruta, y `gate:cierre-de-item` comprueba su
+  estado. No hay un tipo `obligacion` aparte porque la obligacion NO se inventa por item:
+  se deriva de aqui, y tener dos sitios donde declararla seria tener dos verdades.
+obligatorios:
+  [id, nombre, intencion, condicion_de_entrada, propietario_global, obligatorias,
+   condicionales, evidencia_necesaria, criterio_de_cierre, aprendizaje]
+campos:
+  id: {tipo: texto, patron: '^proceso:[A-Z]{3}$'}
+  nombre: {tipo: texto, min: 3}
+  intencion: {tipo: texto, min: 20}
+  condicion_de_entrada: {tipo: texto, min: 20}
+  # Texto y no ref: en DIR y AUD el propietario se DERIVA, no se asigna (b.16).
+  propietario_global: {tipo: texto, min: 3}
+  obligatorias:
+    tipo: lista
+    min: 1
+    de: objeto
+    obligatorios:
+      [id, capa_exigida, capacidad_productora, criterio_de_satisfaccion,
+       autoridad_de_retirada]
+    campos:
+      id: {tipo: texto, patron: '^[a-z0-9-]+$'}
+      capa_exigida: {tipo: texto, min: 15}
+      capacidad_productora: {tipo: texto, min: 3}
+      # Comprobable por alguien distinto de quien la escribio. No «esta hecho».
+      criterio_de_satisfaccion: {tipo: texto, min: 20}
+      # Quien puede RETIRARLA. NUNCA DSP: retirar es autoridad semantica (b.3, b.5, b.9).
+      autoridad_de_retirada: {tipo: texto, min: 15}
+  condicionales:
+    tipo: lista
+    de: objeto
+    obligatorios: [capacidad, condicion]
+    campos:
+      capacidad: {tipo: texto, min: 3}
+      # Comprobable. Prohibido «si aplica» (b.16 regla de derivacion, punto 3).
+      condicion: {tipo: texto, min: 5}
+  evidencia_necesaria: {tipo: lista, de: texto, min: 1}
+  criterio_de_cierre: {tipo: texto, min: 20}
+  aprendizaje: {tipo: texto, min: 15}

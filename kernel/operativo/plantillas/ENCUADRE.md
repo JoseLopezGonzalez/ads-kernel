@@ -70,6 +70,7 @@ evidencia_de_cierre:
   - "<qué se mira, dónde, y qué resultado cuenta como cierre — comprobable por un tercero>"
 incertidumbre:
   grado: media
+  grado_inicial: media
   ejes: ["resultado perseguido: baja", "problema: baja", "alcance: media", "restricciones: baja", "criterio de terminado: media"]
   motivo: "<por qué ese grado, derivado de los ejes>"
 nivel_owner: opcional-acumulada
@@ -90,6 +91,7 @@ clasificacion:
   tipo_propuesto: FEA
   motivo: "<por qué ese tipo, citando el RESULTADO PERSEGUIDO y no las capacidades previstas>"
 estado: listo-para-dsp
+estado_paquete: listo
 ```
 
 ---

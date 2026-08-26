@@ -114,3 +114,44 @@ REVOCADO    el usuario lo quitó DESPUÉS. La aplicación se entera y se recuper
 Resolver sólo el primero es el antipatrón central de esta materia. Y antes de reanudar una
 operación interrumpida, **pregunta a Dominio si es idempotente**: reanudar un cobro dos
 veces es peor que no reanudarlo.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · ciclo de vida implementado y probado
+  · los tres estados de cada permiso resueltos
+```
+
+Cierras contra **`gate:mob-ciclo-y-permisos`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · tras resolver cada estado del ciclo de vida
+  · tras probar la terminación forzada en dispositivo real
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a DIS/diseno-interaccion, cuando falta qué comunicar en un estado
+  · a DOM, cuando reanudar una operación puede duplicar un efecto de negocio
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · no hay dispositivo real donde forzar la terminación por el sistema
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · una operación en curso no puede reanudarse ni declararse perdida sin efecto de negocio: consulta a DOM
+```

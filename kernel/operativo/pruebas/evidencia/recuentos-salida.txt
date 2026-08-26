@@ -1,0 +1,7 @@
+# evidencia de: recuentos
+# orden:        python3 kernel/operativo/validadores/comprobar_recuentos.py
+# codigo:       0
+# ---------------------------------------------------------------
+T151  SUPERADA  Ninguna cifra del corpus contradice el recuento derivado
+
+1 superadas · 0 fallidas

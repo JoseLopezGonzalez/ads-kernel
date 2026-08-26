@@ -1,6 +1,7 @@
 # PROMPT OPERATIVO — PRD/criterio-de-exito
 
-> Contrato: [`../roles/criterio-de-exito.md`](../roles/criterio-de-exito.md)
+> Contrato: [`../roles/criterio-de-exito.md`](../roles/criterio-de-exito.md) ·
+> Método: [`PRD/Definicion`](../metodos/Definicion.md) · [`PRD/Gap`](../metodos/Gap.md)
 
 ---
 
@@ -50,3 +51,42 @@ ahora, para que entre en la cola de validación por lotes y no al final con pris
 Hay criterios que no son medibles y son legítimos: «que al abrirlo transmita orden». En ese
 caso escribe **qué tendría que ver él para darlo por bueno**, y márcalo como criterio de
 juicio, no de medición. Lo que no vale es disfrazarlo de medición inventando un número.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · criterios de éxito comprobables, con su evidencia
+  · definición de fracaso
+```
+
+Cierras contra **`gate:intencion-definida`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · al cerrar cada criterio, con su evidencia declarada
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a PRD/definicion, cuando el alcance no permite escribir ningún criterio comprobable
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · el criterio exige una medición que el proyecto no puede hacer todavía
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · el criterio de éxito depende de un juicio del Owner que sólo él puede emitir
+```

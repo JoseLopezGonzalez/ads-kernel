@@ -1,0 +1,7 @@
+# evidencia de: integridad
+# orden:        python3 kernel/operativo/validadores/comprobar_integridad.py
+# codigo:       0
+# ---------------------------------------------------------------
+T150  SUPERADA  La huella de integridad cubre a los validadores y detecta su edición
+
+1 superadas · 0 fallidas
