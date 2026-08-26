@@ -150,7 +150,7 @@ corrección la disparó), categoría (`AUDIT_RULE` · `CODEBASE_PATTERN` · `ANT
 Owner; `MEDIUM` = una vez), la regla, dónde se encontró y su seguimiento
 `evidencia` 32 entradas
 `aplicabilidad` universal
-`solapamiento` `ORG_LEARNINGS` y `PROJECT_LEARNINGS` de ADS son plantillas sin campos
+`solapamiento` **corregido en F2 (C-2):** `ORG_LEARNINGS` y `PROJECT_LEARNINGS` **sí** tienen juego completo de campos, incluida `Confianza` en tres grados, y `gate:aprendizaje-fundado` ya exige dos ocurrencias o un incidente. Lo único no cubierto es la lista vinculante de lectores
 `contradiccion` ninguna
 `destino` kernel · `decision` **incorporar** propuesta. El campo de confianza atado a un
 recuento de apariciones convierte «lo aprendido» en algo con umbral, y `G52` ya pide una
@@ -182,9 +182,9 @@ Owner, estado real del código)
 `evidencia` 115 GAP cerrados
 `aplicabilidad` universal
 `solapamiento` es a la vez el `item`, el `paquete` y el `DICTAMEN` de ADS, en un fichero
-`contradiccion` **aparente con `I5`** —sin duplicidad editable—: tres zonas editables en un
-fichero. **Se resuelve como el tablero de `a.9`**, que ya tiene dos escritores por diseño:
-propiedad de escritura **por zona**, no por fichero
+`contradiccion` **corregido en F2 (C-3):** ninguna, ni aparente. `a.9` ya resuelve el caso
+para el tablero, con zonas de autoridad distinta, canal de órdenes, evento antes de mutar y
+compare-and-swap. Lo que falta es aplicarlo al paquete
 `destino` kernel · `decision` **investigar** — el hallazgo fuerte es que las tres zonas
 juntas hacen imposible auditar sin ver el contrato
 

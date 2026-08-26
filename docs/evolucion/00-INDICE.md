@@ -23,6 +23,12 @@ vocabulario, y **sólo de eso**: sus enlaces se comprueban como los de cualquier
 |---|---|
 | [`ADS-NEXT-OWNER-BRIEF.md`](ADS-NEXT-OWNER-BRIEF.md) | la directiva maestra: veintiséis apartados de visión, requisitos y criterios |
 | [`PROMPT-ARRANQUE-ADS-NEXT.md`](PROMPT-ARRANQUE-ADS-NEXT.md) | el prompt de arranque que ordena ejecutarla, y en qué orden |
+| [`ADS-ARQUITECTURA-MULTIREPO-APROBADA.md`](../../ADS-ARQUITECTURA-MULTIREPO-APROBADA.md) | **decisión aprobada para implementación**: un producto ADS son varios repositorios gobernados por un repositorio ADS de control |
+| [`ADS-IDEAS-PENDIENTES-MULTIREPO.md`](../../ADS-IDEAS-PENDIENTES-MULTIREPO.md) | documento de trabajo: ideas consolidadas y cuestiones que el Owner declara abiertas |
+
+> **Los dos últimos se contradicen sobre la misma pregunta**, y la contradicción no se
+> resuelve por lectura. Está registrada, con las dos posturas escritas, en
+> [`07-DECISION-MULTIREPO.md`](07-DECISION-MULTIREPO.md).
 
 ## Lo que la directiva ordena antes de diseñar nada
 
@@ -35,8 +41,9 @@ previos. Éstos son sus artefactos, y su estado:
 | 23.2 | mapa de la directiva contra ADS | [`02-MAPA-DIRECTIVA.md`](02-MAPA-DIRECTIVA.md) | **entregado** |
 | — | decisiones que no se modifican en silencio | [`03-INVARIANTES.md`](03-INVARIANTES.md) | **entregado** |
 | — | plan de investigación y protocolo de minería | [`04-PLAN-DE-INVESTIGACION.md`](04-PLAN-DE-INVESTIGACION.md) | **entregado** |
-| 23.3 | minería de proyectos reales | [`05-CANDIDATOS.md`](05-CANDIDATOS.md) | **primera pasada entregada**: PesquerApp, frontend y backend. Q3 respondida, Q1 con indicios |
-| 23.4 | síntesis | — | no iniciada: Q1 exige un proyecto independiente |
+| 23.3 | minería de proyectos reales | [`05-CANDIDATOS.md`](05-CANDIDATOS.md) | **cerrada**: PesquerApp, frontend y backend, única fuente externa madura de esta fase |
+| — | contraste de cada candidato contra el corpus | [`06-CONTRASTE.md`](06-CONTRASTE.md) | **entregado**: 29 veredictos y seis problemas arquitectónicos registrados |
+| 23.4 | síntesis | — | no iniciada |
 | 23.5 | diseño integrado | — | no iniciada: depende de 23.4 |
 
 El registro reanudable de todo ello es
@@ -62,3 +69,10 @@ entrar en esos mismos proyectos reales antes de instalarles nada. Cuál de los d
 primero está resuelto en [`04-PLAN-DE-INVESTIGACION.md`](04-PLAN-DE-INVESTIGACION.md), y el
 motivo por el que ese trabajo no choca con el freno de racha `SIS` está en
 [`03-INVARIANTES.md`](03-INVARIANTES.md).
+
+## Lo que este trabajo ha corregido de sí mismo
+
+El contraste con el corpus desmintió tres afirmaciones de las fases anteriores. Están
+listadas, con su fuente, en [`06-CONTRASTE.md`](06-CONTRASTE.md) — y corregidas en el
+documento donde se escribieron. La más importante: el gobierno Git no estaba ausente, y el
+hallazgo real es que la línea 2.0 nunca recogió lo que la 1.3.0 ya gobernaba.

@@ -2,6 +2,18 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.4 — dos documentos más del Owner, y el defecto que ya es patrón
+
+Tercera vez que material normativo escrito en voz del Owner entra al repositorio y los
+mismos dos validadores lo rechazan. El remedio vuelve a ser manual, fichero a fichero.
+
+- `validadores/exclusiones.yaml` — `ADS-ARQUITECTURA-MULTIREPO-APROBADA.md` y
+  `ADS-IDEAS-PENDIENTES-MULTIREPO.md`, exentos de **vocabulario** con su motivo escrito.
+
+**No cambia ningún contrato, esquema, rol, método ni gate.** Que la exención siga siendo
+manual queda registrado como problema **P-07** en
+`docs/evolucion/07-DECISION-MULTIREPO.md`.
+
 ## 2.0.0-alpha.3 — un documento en voz del Owner tiene sitio
 
 Cambio mínimo, y lo provocó un defecto real. La directiva **ADS NEXT** entró al repositorio

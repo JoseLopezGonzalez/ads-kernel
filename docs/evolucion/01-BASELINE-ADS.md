@@ -53,7 +53,7 @@ estados de [`REGISTRO.md`](../../kernel/operativo/pruebas/REGISTRO.md) más el u
 | instalación `new-project.sh` | sí | script | sí, por T148 | sí | **no** |
 | runtime y dispatcher | parcial | **no existen** | no | no | no |
 | adaptadores de proveedor | **no existe contrato** | no | no | no | no |
-| gobierno Git del proyecto real | sólo `G29` en prosa 1.3.0 | no | no | no | no |
+| gobierno Git del proyecto real | `G29` y `G30`, sustanciales, en la prosa 1.3.0 | no en la línea 2.0 | no | no | no |
 | adopción de proyecto existente | «Ruta B» de `START_HERE` | copia manual + un prompt | no | no | no |
 | aprendizaje proyecto → ADS | `APR/Promocion` + `docs/UPSTREAM.md` | plantilla vacía | no | no | no |
 | actualización ADS → proyecto instalado | **no existe contrato** | sólo detección de divergencia | — | — | no |
@@ -116,7 +116,6 @@ Ausente significa: **no hay contrato, no hay implementación y no hay prueba**.
 ```text
 runtime · dispatcher · colas · event log · recuperación tras fallo
 adaptadores de proveedor agentic — el kernel es neutral por AUSENCIA, no por diseño
-gobierno Git del proyecto real más allá de una regla en prosa de 1.3.0
 trazabilidad item/paquete ↔ commit ↔ release ↔ despliegue
 circuito de adopción de un proyecto con historia
 circuito de construcción asistida del PROFILE
@@ -140,6 +139,7 @@ No se reabren aquí. Se enumeran porque cualquier arquitectura nueva las hereda.
 | O3–O6 | umbral de anclaje, presupuesto de exploración, veto visual, idioma | ídem · con valor por defecto implementado |
 | — | `compile-agents.sh` apunta a la forma plana de packs, retirada por D3 | este baseline; no estaba registrado |
 | — | el checkpoint de la iniciativa anterior nombra una rama que ya no existe en local | este baseline; es historia de una iniciativa cerrada, no un defecto activo |
+| — | `G29` y `G30` gobiernan Git en 1.3.0 y **ninguna capacidad de la línea 2.0 los ha recogido** | corregido por el contraste: [`06-CONTRASTE`](06-CONTRASTE.md) C-1 · problema **P-04** |
 
 ## La conclusión que condiciona todo lo que sigue
 

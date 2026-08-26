@@ -86,6 +86,7 @@ dueño asignado.
 | `K0.2` | «no leer el kernel, compilar menos de 400 líneas» | sustituido por procedimientos por estación; `compile-agents.sh` todavía lo cita |
 | `T25` | prueba abierta por diseño | disposición física del estado |
 | `O2` | `KERNEL.md` 1.3.0 conviviendo con la línea 2.0 | un item `SIS` que aún no existe |
+| `G29` · `G30` | gobiernan Git en 1.3.0 y ninguna capacidad de la línea 2.0 los recoge | problema **P-04**, registrado sin resolver |
 
 ## La regla operativa de esta iniciativa
 
@@ -104,4 +105,11 @@ dueño asignado.
 
 5  Nada sube de estado de prueba por argumento. Sube porque se ejecutó y su salida quedó
    registrada.
+
+6  NINGUNA CAPA NUEVA SIN EVIDENCIA INDEPENDIENTE. Instrucción del Owner del 2026-08-26 al
+   retirar gym-wear de la minería. K-1 declara tres capas; añadir una cuarta exige demostrar
+   que hace falta, con conocimiento repetido entre proyectos INDEPENDIENTES. PesquerApp no
+   puede demostrarlo: sus dos repositorios son un solo producto. La pregunta queda DEFERIDA
+   —no bloqueada, no pendiente de ejecutar— y registrada como P-05 en 06-CONTRASTE.md.
+   Prohibido diseñarla por intuición o forzar los candidatos para justificarla.
 ```

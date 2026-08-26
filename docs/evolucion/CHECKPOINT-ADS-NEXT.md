@@ -6,52 +6,51 @@
 > **Basta decir «Continúa»**: la siguiente acción exacta está al final.
 
 ```text
-CHECKPOINT — ADS-NEXT/02 · SIS/evolucion
+CHECKPOINT — ADS-NEXT/03 · SIS/evolucion
 actualizado: 2026-08-26
-metodo:      SIS/Evolucion · fase F1 de F6 (MINERÍA) · primera pasada cerrada
+metodo:      SIS/Evolucion · fase F2 de F6 (CONTRASTE) · entregada
 based_on:    docs/evolucion/ADS-NEXT-OWNER-BRIEF.md@b80cde2
              docs/rediseno/a-CAPACIDADES-APROBADA.md@aprobada-2026-08-25
              docs/rediseno/b-RECORRIDO-APROBADA.md@aprobada-2026-08-25
              docs/rediseno/a-ENMIENDA-E1-ENC.md@aprobada-2026-08-26
+             kernel/KERNEL.md@1.3.0 · G29 G30 G52 K0.8 K0.10 K0.11
              kernel/VERSION@2.0.0-alpha.3
-             ~/projects/lapesquerapp-frontend@main (1839 commits, leído 2026-08-26)
-             ~/projects/lapesquerapp-backend@main (2433 commits, leído 2026-08-26)
+             ~/projects/lapesquerapp-frontend@main · -backend@main, leídos 2026-08-26
 freshness:   vigente
-last_meaningful_event: el Owner señala PesquerApp como primer proyecto a minar (2026-08-26)
+last_meaningful_event: el Owner retira gym-wear de la minería por fuente contaminada
+             y ordena continuar con F2 (2026-08-26)
 resuelto:
-  · F0 entregada: baseline con evidencia ejecutada, mapa de los 23 apartados, invariantes
-    y plan con diez preguntas
-  · F1 primera pasada: 29 candidatos con procedencia, tres de ellos evidencia NEGATIVA
-  · Q3 RESPONDIDA con evidencia: una skill es el disparador de un proveedor sobre un
-    método neutral que ya existe. No es un tipo de contenido nuevo
-  · X3 resuelta en la práctica: el proyecto ya construyó núcleo neutral + adaptadores,
-    con degradación explícita y prueba de humo. No hubo que diseñarlo, hubo que encontrarlo
-  · la iniciativa es trabajo SIS legítimo: el freno de racha de a.7 declara su excepción
-  · descartado: proponer arquitectura antes de la síntesis. La directiva lo prohíbe
-  · descartado: enmendar (a) o (b) desde aquí. Se registra la presión, no se resuelve
-  · descartado: concluir Q1 con PesquerApp. Sus dos repositorios son UN producto, y la
-    repetición entre ellos demuestra copia, no reutilización
-owner_captado: "Tu misión es evolucionar ADS hacia esa visión utilizando, en la medida
-             que el propio estado actual lo permita, ADS para trabajar sobre ADS."
-             (2026-08-26)
-pregunta_pendiente: ninguna que bloquee. Para cerrar Q1 hace falta minar un proyecto
-             INDEPENDIENTE de PesquerApp — gym-wear está en ~/dev/gym-wear
-siguiente:   minar gym-wear por las mismas ocho lentes, buscando específicamente qué
-             mecanismos de PesquerApp reaparecen allí sin haberse copiado
+  · F0 y F1 entregadas. F2 entregada: 29 veredictos y seis problemas arquitectónicos
+  · Q1 NO RESPONDIDA ni en positivo ni en negativo, y X1 DEFERIDA — no bloqueada.
+    PesquerApp es la única fuente externa madura, y sus dos repos son un solo producto
+  · Q3 RESPONDIDA: una skill es el disparador de un proveedor sobre un método que ya
+    existe. El contenido vive en el workflow neutral
+  · seis candidatos ya estaban resueltos en ADS, y en cuatro de ellos ADS es MÁS ESTRICTO
+  · el contraste desmintió tres afirmaciones propias, corregidas en su documento:
+    C-1 el gobierno Git no estaba ausente · C-2 los ledgers sí tienen campos ·
+    C-3 el mecanismo de zonas ya existe en a.9
+  · descartado: la nota de 1 a 10 y el veredicto «aprobado con observaciones». ADS los
+    rechaza por diseño, y el contraste confirmó por qué
+  · descartado: diseñar la cuarta capa. Orden expresa del Owner, y ahora regla 6 de
+    03-INVARIANTES
+owner_captado: "No diseñes una cuarta capa por intuición ni fuerces los candidatos de
+             PesquerApp para justificarla." (2026-08-26)
+pregunta_pendiente: ninguna. F3 no depende de nada externo
+siguiente:   F3 síntesis: decidir la FORMA de los dos candidatos de pack y los cuatro de
+             kernel, y llevar los seis problemas a preguntas de arquitectura
 falta_para_cerrar_la_capa:
-  · Q1 sin conclusión, y bloquea la cuarta capa (X1)
   · Q9 y Q10 sin abordar
-  · ningún candidato contrastado todavía contra el corpus, uno a uno (F2)
+  · P-01 a P-06 registrados y sin resolver, por diseño
+  · ninguna decisión arquitectónica tomada, que es donde el Owner ordenó detenerse
 ```
-
 
 ## Estado de las fases
 
 ```text
 F0  BASELINE Y MAPA          ENTREGADA
-F1  MINERÍA                  PesquerApp ENTREGADA · gym-wear pendiente
-F2  CONTRASTE                no iniciada
-F3  SÍNTESIS                 no iniciada
+F1  MINERÍA                  CERRADA — PesquerApp. gym-wear RETIRADO por el Owner
+F2  CONTRASTE                ENTREGADA
+F3  SÍNTESIS                 siguiente
 F4  ARQUITECTURA INTEGRADA   no iniciada
 F5  ENMIENDAS                no iniciada
 F6  DESCOMPOSICIÓN Y EJECUCIÓN  no iniciada
@@ -74,6 +73,13 @@ README.md                                 enlaza la iniciativa
 
 F1
 docs/evolucion/05-CANDIDATOS.md           29 candidatos con procedencia y evidencia
+
+F2
+docs/evolucion/06-CONTRASTE.md            29 veredictos · 6 problemas arquitectónicos
+docs/evolucion/01-BASELINE-ADS.md         corrección C-1 — gobierno Git
+docs/evolucion/02-MAPA-DIRECTIVA.md       corrección C-1 — el apartado 8 pasa a PARCIAL
+docs/evolucion/05-CANDIDATOS.md           correcciones C-2 y C-3
+docs/evolucion/03-INVARIANTES.md          regla 6 — ninguna capa nueva sin evidencia
 docs/evolucion/04-PLAN-DE-INVESTIGACION.md estado de las diez preguntas
 
 NO se ha tocado (a), (b), E1, ningún contrato, esquema, rol, método, gate, prompt,
@@ -91,19 +97,21 @@ git status --short          # vacío: los generados son deterministas
 ## Siguiente acción exacta
 
 ```text
-1  MINAR         ~/dev/gym-wear por las ocho lentes L1..L8 de 04-PLAN.
+1  F3 SÍNTESIS   NO empezar por los seis problemas. Empezar por lo cerrado: los dos
+                 candidatos de MEJORA PACK —captura de fidelidad y gancho con
+                 degradación— son los únicos cuya forma no depende de ninguna pregunta
+                 abierta.
 
-2  QUÉ BUSCAR    NO un inventario nuevo. Buscar CONVERGENCIA: qué mecanismos de los 24
-                 candidatos de PesquerApp reaparecen allí sin haberse copiado. Eso, y
-                 sólo eso, cierra Q1 y decide si la cuarta capa de X1 existe.
+2  LUEGO         los cuatro de MEJORA KERNEL: registro derivado del estado, entrada
+                 mínima para herramienta sin adaptador, prueba de humo de arranque, y
+                 frontera de escritura entre ejecutores. Decidir su FORMA, no todavía su
+                 ubicación: tres de los cuatro tocan P-01.
 
-3  NO INSTALAR   la minería LEE. Nada se escribe en el proyecto minado.
+3  LOS PROBLEMAS van a la síntesis como PREGUNTAS con evidencia. P-05 no se toca.
 
-4  QUÉ VIGILAR   la tentación de dar Q1 por respondida. Con un solo producto minado, la
-                 respuesta honesta sigue siendo «indicios». Si gym-wear no comparte nada,
-                 la conclusión correcta es que la cuarta capa NO está justificada, y hay
-                 que escribirla igual.
+4  QUÉ VIGILAR   la tentación de resolver P-01 creando un tipo canónico «adaptador» sin
+                 haber decidido dónde vive. Dónde vive toca K-1, y K-1 está bajo P-05.
 
-5  QUÉ SE GANA   F2 puede empezar: contrastar los 29 candidatos contra el corpus, uno a
-                 uno, por identificador.
+5  DÓNDE PARAR   antes de cerrar cualquier decisión arquitectónica irreversible y antes
+                 de cualquier implementación amplia. Orden expresa del Owner.
 ```

@@ -10,7 +10,7 @@
 
 ```text
 VERSIÓN DEL RELEASE      kernel/VERSION        qué copia del kernel lleva un proyecto
-                         2.0.0-alpha.3         Es la que compara kernel-status.sh y la que
+                         2.0.0-alpha.4         Es la que compara kernel-status.sh y la que
                                                se estampa en el commit de semilla.
 
 LÍNEA HISTÓRICA          kernel/KERNEL.md      la constitución en prosa que sigue

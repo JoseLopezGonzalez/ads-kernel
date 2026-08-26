@@ -24,38 +24,40 @@ Cada una está abierta porque cerrarla hoy sería inventar. Cada una lleva **qu�
 **Q1 y Q3 son las que bloquean la arquitectura.** Sin ellas, el diseño de capas y el de
 skills serían preferencias, no conclusiones.
 
-**Estado tras la primera pasada de minería** —PesquerApp, frontend y backend, registrada en
-[`05-CANDIDATOS.md`](05-CANDIDATOS.md)—:
+**Estado tras la minería y el contraste** —PesquerApp, registrado en
+[`05-CANDIDATOS.md`](05-CANDIDATOS.md) y [`06-CONTRASTE.md`](06-CONTRASTE.md)—:
 
 ```text
 Q3   RESPONDIDA     una skill es el disparador específico de un proveedor sobre un método
                     que ya existe. El contenido vive en el workflow neutral.
-Q1   INDICIOS       el mismo sistema de memoria está en los dos repositorios, que son de
-                    clase técnica distinta, y ha divergido entre copias. Y los dos
-                    repositorios son UN producto: eso demuestra copia, no reutilización.
-                    Concluir exige un proyecto independiente.
+Q1   NO RESPONDIDA  ni en positivo ni en negativo. NO existe evidencia independiente
+     · DEFERIDA     suficiente para demostrar si hace falta una capa entre PACK y PROFILE.
+                    El Owner retiró gym-wear el 2026-08-26 por fuente contaminada: nació
+                    de una versión primitiva de ADS. PesquerApp es la única fuente externa
+                    madura de esta fase, y sus dos repositorios son un solo producto.
+                    Registrada como problema P-05. NO se diseña ninguna capa.
 Q3bis ABIERTA       una skill de TERCEROS —shadcn, con origen y hash en skills-lock.json—
-                    no es un disparador: es conocimiento ajeno vendorizado. No tiene sitio.
-Q4 Q5 Q6 Q7 Q8      con material abundante y registrado; su lectura se cierra en la síntesis
-Q9 Q10              abiertas
+                    no es un disparador: es conocimiento ajeno vendorizado, y ADS no tiene
+                    posición para él en su precedencia. Registrada como problema P-02.
+Q4 Q6 Q7 Q8         respondidas en el contraste, dentro de los veredictos por candidato.
+Q5                  respondida, y corrigió el mapa: G29 gobierna más de lo que F0 dijo.
+                    Registrada como problema P-04.
+Q9 Q10              abiertas. Entran en la síntesis.
 ```
 
 ## Qué necesita el sistema del Owner
 
-**Esto es lo único que bloquea.** Todo lo demás está hecho o es derivable.
+**Ya no bloquea nada.** La minería está cerrada con la única fuente que el Owner considera
+válida.
 
 ```text
-REQUERIDO   la ruta de lectura de cada repositorio a minar, y su nombre
-            — el brief nombra proyectos del Owner; el kernel ya cita gym-wear y PesquerApp
-
-ÚTIL        para cada uno: qué salió bien, qué salió mal, y qué le haría empezar otra vez
-            de cero. Un minuto de esto ahorra una jornada de arqueología.
-
-NO REQUERIDO  ninguna decisión técnica. La clasificación de los hallazgos es del sistema.
+ENTREGADO      PesquerApp, frontend y backend, minados el 2026-08-26.
+RETIRADO       gym-wear, el 2026-08-26, por decisión del Owner: nació de una versión
+               primitiva de ADS y su evidencia estaría contaminada.
+CONSECUENCIA   Q1 queda sin respuesta posible con el material disponible, y X1 queda
+               DEFERIDA — no bloqueada. Ver P-05 en 06-CONTRASTE.md.
+FUTURO         se reabre si aparece un proyecto independiente y maduro. No antes.
 ```
-
-Sin rutas no hay minería, y sin minería no hay síntesis. El resto del plan está escrito
-para poder ejecutarse en cuanto lleguen.
 
 ## Protocolo de minería
 
@@ -121,10 +123,11 @@ F0  BASELINE Y MAPA          HECHO — 01, 02, 03 y este plan
       ↓ puerta: nada más entra hasta que el Owner entregue las rutas
 
 F1  MINERÍA                  un proyecto cada vez, ocho lentes, fichas con procedencia
-      ↓ puerta: el inventario existe y cada ficha tiene origen comprobable
+      ↓ puerta: el inventario existe y cada ficha tiene origen comprobable   CERRADA
 
 F2  CONTRASTE                cada candidato contra ADS: solapamiento y contradicción
-      ↓ puerta: Q1 y Q3 tienen respuesta con evidencia, no con criterio
+      ↓ puerta ORIGINAL: Q1 y Q3 con respuesta. Q3 la tiene; Q1 NO PUEDE TENERLA con
+        el material disponible, y la puerta se sustituye por su registro como P-05
 
 F3  SÍNTESIS                 ADS actual + directiva + candidatos + evidencia
       ↓ puerta: las contradicciones X1..X5 tienen resolución propuesta
