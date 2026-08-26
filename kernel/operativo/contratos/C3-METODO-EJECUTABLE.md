@@ -4,10 +4,13 @@
 > Un método es lo que impide que cada agente invente su propia metodología. Si un método
 > admite dos ejecuciones razonables con resultados distintos, no es un método: es un tema.
 
-## Los diecisiete elementos
+## Los diecisiete elementos del procedimiento
 
-Todo método declara los diecisiete campos del esquema
-[`esquemas/metodo.yaml`](../esquemas/metodo.yaml).
+Todo método declara los diecinueve campos del esquema
+[`esquemas/metodo.yaml`](../esquemas/metodo.yaml): los diecisiete de abajo más `id`,
+`nombre` y `capacidad`, que son su identidad y no parte del procedimiento. La tabla lista
+diecisiete porque incluye `modo`, que es subcampo de `pasos`, y no incluye los tres de
+identidad. **La cifra la deriva y la comprueba T151**; aquí no se escribe a mano.
 
 | # | elemento | qué responde |
 |---|---|---|

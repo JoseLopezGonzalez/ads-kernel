@@ -71,9 +71,15 @@ class Hallazgo:
 
 
 class Lint:
-    def __init__(self, raiz, ambitos):
+    def __init__(self, raiz, ambitos, ambitos_texto=None):
         self.raiz = os.path.abspath(raiz)
         self.ambitos = ambitos
+        # Ámbito de ENLACES y VOCABULARIO. Por defecto el repositorio entero: la portada,
+        # START_HERE y docs/ quedaban fuera, y por eso el hallazgo A-12 —tres versiones
+        # para el mismo artefacto en el README— no lo veía ningún validador.
+        self.ambitos_texto = ambitos_texto if ambitos_texto is not None else ["."]
+        self.exentos_vocabulario = []
+        self.no_analizados = []
         self.hallazgos = []
         self.esquemas = {}
         self.bloques = []          # (tipo, datos, fichero, linea)
@@ -90,6 +96,38 @@ class Lint:
 
     def rel(self, f):
         return os.path.relpath(f, self.raiz) if os.path.isabs(f) else f
+
+    def cargar_exclusiones(self):
+        ruta = os.path.join(self.raiz, "kernel/operativo/validadores/exclusiones.yaml")
+        if not os.path.exists(ruta):
+            return
+        with open(ruta, encoding="utf-8") as fh:
+            datos = yaml.safe_load(fh) or {}
+        self.exentos_vocabulario = [i["ruta"] for i in (datos.get("vocabulario_exento") or [])
+                                    if isinstance(i, dict) and i.get("ruta")]
+        self.no_analizados = [i["ruta"] for i in (datos.get("no_analizados") or [])
+                              if isinstance(i, dict) and i.get("ruta")]
+
+    def _excluido(self, ruta, lista):
+        rel = os.path.relpath(ruta, self.raiz).replace(os.sep, "/")
+        return any(rel == x or rel.startswith(x.rstrip("/") + "/") for x in lista)
+
+    def ficheros_texto(self, ext):
+        vistos = set()
+        for ambito in self.ambitos_texto:
+            base = os.path.join(self.raiz, ambito)
+            for dirpath, dirnames, filenames in os.walk(base):
+                dirnames[:] = [d for d in dirnames
+                               if d not in (".git", "__pycache__") and not d.startswith("legacy-")]
+                for nombre in sorted(filenames):
+                    if not nombre.endswith(ext):
+                        continue
+                    ruta = os.path.join(dirpath, nombre)
+                    if self._excluido(ruta, self.no_analizados):
+                        continue
+                    if ruta not in vistos:
+                        vistos.add(ruta)
+                        yield ruta
 
     def ficheros(self, ext):
         for ambito in self.ambitos:
@@ -282,7 +320,9 @@ class Lint:
         return exentas, problemas
 
     def validar_vocabulario(self):
-        for ruta in self.ficheros(".md"):
+        for ruta in self.ficheros_texto(".md"):
+            if self._excluido(ruta, self.exentos_vocabulario):
+                continue
             with open(ruta, encoding="utf-8") as fh:
                 texto = fh.read()
             exentas, problemas = self.lineas_exentas(texto)
@@ -299,7 +339,7 @@ class Lint:
                                  f"expresión prohibida «{frase}»: escribe la condición comprobable")
 
     def validar_enlaces(self):
-        for ruta in self.ficheros(".md"):
+        for ruta in self.ficheros_texto(".md"):
             with open(ruta, encoding="utf-8") as fh:
                 texto = fh.read()
             if EXENCION_ENLACES in texto:
@@ -348,6 +388,7 @@ class Lint:
 
     # ---------------------------------------------------------------- ejecución
     def ejecutar(self):
+        self.cargar_exclusiones()
         self.cargar_esquemas()
         self.cargar_bloques()
         self.validar_bloques()
@@ -366,7 +407,9 @@ def main():
                     help="subdirectorio a analizar (repetible). Por defecto kernel/operativo y packs")
     args = ap.parse_args()
     ambitos = args.ambito or ["kernel/operativo", "packs"]
-    lint = Lint(args.raiz, ambitos)
+    # los bloques canónicos viven en kernel/operativo y packs; los ENLACES y el
+    # VOCABULARIO se comprueban en TODO el repositorio (hallazgo A-28)
+    lint = Lint(args.raiz, ambitos, ambitos_texto=(args.ambito or ["."]))
     hallazgos = lint.ejecutar()
     errores = [h for h in hallazgos if h.nivel == "error"]
     avisos = [h for h in hallazgos if h.nivel == "aviso"]

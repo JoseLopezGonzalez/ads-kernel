@@ -46,7 +46,8 @@ La capa intermedia es la que hace que esto escale de verdad. Hay conocimiento qu
 | [`kernel/PROJECT_TEMPLATE.md`](kernel/PROJECT_TEMPLATE.md) | plantilla del binder: qué kernel, qué packs, qué overrides |
 | [`kernel/BOOTSTRAP_PROMPT.md`](kernel/BOOTSTRAP_PROMPT.md) | el texto que se pega en el agente principal para arrancar |
 | [`kernel/templates/`](kernel/templates/) | [ledgers de aprendizaje](kernel/templates/ORG_LEARNINGS.md) (G52) y un [AGENTS.md de ejemplo](kernel/templates/AGENTS_EXAMPLE.md) |
-| [`kernel/KERNEL_CHANGELOG.md`](kernel/KERNEL_CHANGELOG.md) · [`kernel/VERSION`](kernel/VERSION) | versión y su historia |
+| [`kernel/VERSIONES.md`](kernel/VERSIONES.md) | **la política de versiones**: cuatro cosas distintas se versionan aquí y no se mezclan |
+| [`kernel/KERNEL_CHANGELOG.md`](kernel/KERNEL_CHANGELOG.md) · [`kernel/VERSION`](kernel/VERSION) | la versión del release y su historia |
 | [`packs/`](packs/00-QUE-ES-UN-PACK.md) | `web-app` · `mobile-app` · `wear-os`, y [cómo se componen](packs/COMPOSICION.md) |
 | [`docs/rediseno/`](docs/rediseno/README.md) | la especificación normativa (a) y (b), sus enmiendas, y las auditorías |
 | `tooling/` | `new-project.sh` crea el esqueleto · `kernel-status.sh` detecta forks silenciosos · `compile-agents.sh` prepara la recompilación de AGENTS.md |
@@ -89,7 +90,7 @@ Test de contaminación: si al sustituir mentalmente el proyecto por *"una CLI de
 | secciones (a) y (b) | **aprobadas** por el Owner | especificación, no runtime |
 | `kernel/operativo/` | contenido operativo construido | ningún proyecto todavía |
 | `packs/web-app` · `mobile-app` · `wear-os` | 1.0.0 | ningún proyecto todavía |
-| `kernel/KERNEL.md` | 1.3.0, conviviendo | ningún proyecto todavía |
+| `kernel/KERNEL.md` | 1.3.0, conviviendo con la línea 2.0 por [política declarada](kernel/VERSIONES.md) | ningún proyecto todavía |
 | runtime y dispatcher | **no existen** | — |
 
 **Nada de esto ha pasado por un proyecto real.** El estado honesto de cada prueba está en
@@ -97,3 +98,10 @@ Test de contaminación: si al sustituir mentalmente el proyecto por *"una CLI de
 son contratos definidos, y sólo las estructurales están ejecutadas y superadas. La primera
 versión de un kernel siempre está equivocada en algún punto; el bucle de upstream existe
 precisamente para eso.
+
+Lo que sí ha pasado es una **auditoría independiente**, ejecutada por un lector que no
+escribió el material: [`AUDITORIA-INDEPENDIENTE-LOCAL.md`](docs/rediseno/AUDITORIA-INDEPENDIENTE-LOCAL.md),
+33 hallazgos, y sus [correcciones](docs/rediseno/CORRECCIONES-POST-AUDITORIA.md). Dos de
+las once pruebas que entonces figuraban como superadas **no comprobaban lo que su nombre
+afirmaba**. Por eso cada prueba nueva lleva ahora su infracción deliberada: un validador
+que sólo se ha visto pasar no está verificado.

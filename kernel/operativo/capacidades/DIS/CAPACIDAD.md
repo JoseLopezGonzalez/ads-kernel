@@ -143,5 +143,5 @@ colision: >
 | roles | [`roles/`](roles/) — once contratos |
 | métodos | [`metodos/`](metodos/) — seis procedimientos |
 | prompts | [`prompts/`](prompts/) — once instrucciones operativas |
-| composición | [`composicion.md`](composicion.md) — doce matrices de composición |
+| composición | [`composicion.md`](composicion.md) — diez matrices de composición |
 | handoffs | [`../../circuitos/DIS-handoffs.md`](../../circuitos/DIS-handoffs.md) |

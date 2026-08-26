@@ -190,8 +190,25 @@ def m_arranque_con_pack_derogado(raiz):
                "./tooling/new-project.sh mi-web-app pack-web-app")
 
 
+def m_recuento_a_mano(raiz):
+    """A-24 · una cifra de prosa vuelve a divergir del corpus."""
+    _sustituir(raiz, "kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md",
+               "## Contrato común de rol — veintinueve campos",
+               "## Contrato común de rol — veintiocho campos")
+
+
 def m_version_incoherente(raiz):
-    _sustituir(raiz, "kernel/VERSION", "2.0.0", "9.9.9")
+    """A-12 · el release cambia y ningún punto de entrada se entera."""
+    ruta = os.path.join(raiz, "kernel/VERSION")
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write("9.9.9\n")
+
+
+def m_kernel_md_iguala_release(raiz):
+    """A-12 · la línea histórica se sube al ritmo del release, que es otro contador."""
+    _sustituir(raiz, "kernel/KERNEL.md",
+               "> **Versión del kernel:** 1.3.0",
+               "> **Versión del kernel:** 2.0.0-alpha.2")
 
 
 def m_encuadre_sin_estado_exigido(raiz):
@@ -349,9 +366,15 @@ CATALOGO = [
     Mutacion("N148", "A-02", "T148", "comprobar_arranque",
              "la documentación vuelve a citar un pack derogado",
              m_arranque_con_pack_derogado),
-    Mutacion("N151", "A-12", "T151", "comprobar_versiones",
-             "kernel/VERSION deja de concordar con la política de versiones",
+    Mutacion("N152", "A-12", "T152", "comprobar_versiones",
+             "el release cambia y ningún punto de entrada se entera",
              m_version_incoherente),
+    Mutacion("N152b", "A-12", "T152", "comprobar_versiones",
+             "la línea histórica se sube al ritmo del release, que es otro contador",
+             m_kernel_md_iguala_release),
+    Mutacion("N151", "A-24", "T151", "comprobar_recuentos",
+             "un documento vuelve a escribir a mano una cifra que ya no cuadra",
+             m_recuento_a_mano),
     Mutacion("N142", "A-11", "T142", "comprobar_contratos",
              "el esquema de encuadre pierde un estado que sus métodos exigen",
              m_encuadre_sin_estado_exigido),

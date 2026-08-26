@@ -61,7 +61,7 @@ cuando aparece se resuelve **borrando la copia**, nunca sincronizando las dos.
 
 | directorio | contenido | entrada |
 |---|---|---|
-| `esquemas/` | el lenguaje canónico y los diecisiete tipos | [`00-LENGUAJE.md`](esquemas/00-LENGUAJE.md) |
+| `esquemas/` | el lenguaje canónico y los dieciocho tipos | [`00-LENGUAJE.md`](esquemas/00-LENGUAJE.md) |
 | `contratos/` | los cinco contratos transversales | [`00-INDICE.md`](contratos/00-INDICE.md) |
 | `entrada/` | PASO 1 — de la frase del Owner al item | [`00-INDICE.md`](entrada/00-INDICE.md) |
 | `diseno/` | PASO 3 — el sistema de excelencia | [`00-SISTEMA-DE-EXCELENCIA.md`](diseno/00-SISTEMA-DE-EXCELENCIA.md) |

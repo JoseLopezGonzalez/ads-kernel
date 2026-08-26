@@ -53,3 +53,7 @@ bloque `ads:escenario`; esta tabla es el resumen y **se regenera desde esos bloq
 
 Ver [`REGISTRO-generado.md`](REGISTRO-generado.md) para el estado vigente, producido por
 `validadores/registro_pruebas.py` a partir de los propios escenarios.
+
+Y [`RECUENTOS-generado.md`](RECUENTOS-generado.md) para cuántas capacidades, roles, métodos
+y campos hay realmente. **Ninguna de esas cifras se escribe a mano en ningún documento**:
+se derivan del corpus y `comprobar_recuentos.py` comprueba que nadie afirme otra (T151).

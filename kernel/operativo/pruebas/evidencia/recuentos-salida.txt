@@ -1,0 +1,3 @@
+T151  SUPERADA  Ninguna cifra del corpus contradice el recuento derivado
+
+1 superadas · 0 fallidas

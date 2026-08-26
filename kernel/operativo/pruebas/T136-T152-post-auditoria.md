@@ -274,3 +274,44 @@ validador: "kernel/operativo/validadores/comprobar_contratos.py"
 estado: prueba-superada
 evidencia: "evidencia/contratos-salida.txt"
 ```
+
+```yaml ads:escenario
+id: T151
+nombre: Ninguna cifra del corpus contradice el recuento derivado
+cubre: ["A-24", "regla de fuente única", "RECUENTOS-generado.md"]
+dado:
+  - "el corpus, que es la única fuente de cuántas capacidades, roles, métodos o campos hay"
+  - "la tabla explícita de dónde se afirma cada cifra en prosa"
+cuando: ["se derivan los recuentos y se comparan con lo que cada documento afirma"]
+entonces:
+  - "toda cifra escrita coincide con la derivada, en dígitos o en palabra"
+  - "una afirmación que desaparece de un documento hace fallar la prueba, para que la tabla no acumule restos"
+falla_si:
+  - "un documento declara una cifra que el corpus no sostiene"
+  - "una cifra se escribe a mano en un sitio que la tabla no conoce"
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_recuentos.py"
+estado: prueba-superada
+evidencia: "evidencia/recuentos-salida.txt"
+```
+
+```yaml ads:escenario
+id: T152
+nombre: Los puntos de entrada no se contradicen sobre la versión
+cubre: ["A-12", "kernel/VERSIONES.md", "K0.11", "O2"]
+dado:
+  - "la política que distingue release, línea histórica, versión normativa y versión de esquema"
+cuando: ["se comparan las versiones declaradas en VERSION, KERNEL.md, el CHANGELOG, README y START_HERE"]
+entonces:
+  - "la política nombra la versión vigente del release"
+  - "la línea histórica de KERNEL.md es distinta del release: son contadores distintos"
+  - "la entrada más reciente del CHANGELOG coincide con kernel/VERSION"
+  - "ningún punto de entrada declara una versión que la política no reconozca"
+falla_si:
+  - "dos documentos declaran versiones distintas del mismo artefacto"
+  - "el release cambia y ningún punto de entrada se entera"
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_versiones.py"
+estado: prueba-superada
+evidencia: "evidencia/versiones-salida.txt"
+```

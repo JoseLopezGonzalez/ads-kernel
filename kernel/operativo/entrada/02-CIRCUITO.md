@@ -1,7 +1,7 @@
 # El circuito completo: de la expresión del Owner al trabajo distribuido
 
 
-Trece estaciones. **No es una cadena rígida**: casi todas pueden devolver hacia atrás, y
+Catorce estaciones. **No es una cadena rígida**: casi todas pueden devolver hacia atrás, y
 varias terminan legítimamente sin item.
 
 ```text

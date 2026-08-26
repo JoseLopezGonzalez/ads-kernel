@@ -34,9 +34,9 @@ AUTORIDAD     qué puede DECIDIR, PROPONER, VETAR o ESCALAR.
               Sin declararla → autoridad silenciosa: alguien decide sin poder hacerlo.
 ```
 
-## Contrato común de rol — veintiocho campos
+## Contrato común de rol — veintinueve campos
 
-Todo rol, del kernel o de un pack, declara los veintiocho campos del esquema
+Todo rol, del kernel o de un pack, declara los veintinueve campos del esquema
 [`esquemas/rol.yaml`](../esquemas/rol.yaml). **Un rol que declare menos no es
 materializable y el instalador DEBE rechazarlo.**
 
