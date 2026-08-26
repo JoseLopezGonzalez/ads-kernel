@@ -23,20 +23,25 @@ auditoría        docs/rediseno/AUDITORIA-INDEPENDIENTE-LOCAL.md
 
 ### Recuento de commits, derivado de Git
 
+**La cifra no se escribe aquí: se deriva.** La entrega anterior escribió «18 commits» a
+mano mientras la lista adjunta sumaba 19 y GitHub mostraba 19. Lo que se fija es el
+desglose por clase, que sí es invariante, y el comando que da el total en cada momento:
+
 ```bash
-git rev-list --count origin/main..HEAD          # 19  total sobre main
-git log --format='%s' origin/main..HEAD | grep -c '^audit(kernel)'   # 2  cherry-pick
-git rev-list --count HEAD..origin/main          #  0  por detrás
+git rev-list --count origin/main..HEAD                                # total sobre main
+git log --format='%s' origin/main..HEAD | grep -c '^audit(kernel)'    # de auditoría
+git rev-list --count HEAD..origin/main                                # por detrás  → 0
 ```
 
 ```text
- 2  commits de AUDITORÍA incorporados por cherry-pick, con su procedencia escrita
-17  commits posteriores de CORRECCIÓN
-19  commits totales sobre main · 0 por detrás
+2   commits de AUDITORÍA, incorporados por cherry-pick con su procedencia escrita
+     — su prefijo es `audit(kernel)`, y es lo que los distingue
+resto  commits de CORRECCIÓN, posteriores
+0   commits por detrás de main
 ```
 
-> La entrega anterior escribió «18 commits» a mano mientras la lista adjunta sumaba 19 y
-> GitHub mostraba 19. La cifra se deriva ahora del comando, que es la fuente.
+Escribir el total a mano aquí lo dejaría desactualizado en el commit siguiente, que es
+exactamente el defecto que esta entrada corrige.
 
 ## 2 · Decisiones del Owner aplicadas
 
@@ -62,7 +67,7 @@ autoridad, vetos, frenos, paralelismo, checkpoint y las pruebas T01–T25.
 
 ## 3 · Matriz de resolución de los 33 hallazgos
 
-Estado: **corregido** · **no reproducible** · **sustituido** · **abierto**.
+Estado: **corregido** · **aceptado-como-deuda** · **sustituido** · **abierto**.
 
 | id | gravedad | descripción comprobada | causa raíz | corrección realizada | prueba | negativo | estado |
 |---|---|---|---|---|---|---|---|
@@ -372,7 +377,7 @@ PRUEBA FALLIDA           0
 total                   81
 ```
 
-Las 27 superadas se ejecutan en diez validadores, y **41 infracciones deliberadas**
+Las superadas se ejecutan en **once validadores**, y **49 infracciones deliberadas**
 demuestran que cada una falla cuando debe fallar. Las 54 en `contrato-definido` siguen
 siéndolo por la misma razón de siempre: exigen un proyecto real, hardware físico, juicio
 humano o el runtime.
