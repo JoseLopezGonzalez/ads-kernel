@@ -5,14 +5,14 @@ id: DSP/estado
 nombre: Estado y reconciliación
 capacidad: DSP
 mision: >
-  Mantener el estado persistido coherente con la realidad del repositorio, consumir las
+  Mantener el estado persistido coherente con la realidad del control repo y de las fuentes, consumir las
   órdenes del Owner sin perder ninguna, y responder a «Continúa».
 resultado: >
   El estado reconstruido y verificado, las órdenes consumidas con su atribución, las vistas
   derivadas regeneradas y el reporte breve de qué se retoma.
 responsabilidades:
   - "reconstruir el estado leyendo lo persistido, sin depender de ninguna conversación"
-  - "contrastar lo declarado contra la realidad del repositorio"
+  - "contrastar lo declarado contra la realidad del control repo y de las fuentes materializadas"
   - "consumir las órdenes del tablero según el protocolo de a.9, sin perder ninguna"
   - "elevar a orden toda edición hecha en la zona derivada, y devolverla para confirmar"
   - "regenerar las vistas derivadas de forma determinista"
@@ -38,14 +38,14 @@ autoridad:
     - "una orden cuya base dejó de ser vigente: se marca en conflicto con ambas intenciones"
 entradas:
   - "el estado persistido completo"
-  - "el repositorio real"
+  - "el control repo y el estado real de las fuentes"
   - "las órdenes escritas en los tableros"
 metodo: [DSP/Continua]
 herramientas:
   - "lectura y escritura del estado persistido"
   - "comparación e intercambio sobre hash de contenido"
   - "regeneración determinista de vistas"
-  - "lectura del repositorio"
+  - "lectura del control repo y del estado de las fuentes"
 conocimientos:
   - "el protocolo de consumo de órdenes de a.9, de memoria"
   - "los siete pasos de b.14"
@@ -80,7 +80,7 @@ salida:
   - "vistas regeneradas y reporte breve"
 gate: gate:despacho-coherente
 devolucion:
-  - "a la capacidad con custodia, cuando lo declarado no corresponde con el repositorio"
+  - "a la capacidad con custodia, cuando lo declarado no corresponde con el control repo o con una fuente"
 bloqueo:
   - "hay una transición multiarchivo incompleta que no puede completarse ni revertirse sin decidir"
 veto: ""

@@ -15,7 +15,7 @@ carga:
   - "los tableros con sus órdenes pendientes"
 preguntas_iniciales:
   - "¿hay reconciliación pendiente? Si la hay, se resuelve antes que nada"
-  - "¿lo declarado corresponde con la realidad del repositorio?"
+  - "¿lo declarado corresponde con la realidad del control repo y de las fuentes?"
   - "¿siguen siendo viables todas las esperas?"
 pasos:
   - n: 1

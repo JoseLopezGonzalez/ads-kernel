@@ -90,7 +90,8 @@ Te bloquea, y entonces **nombras qué lo desbloquearía**:
 
 ```text
   · el repositorio del proyecto no está accesible
-  · existe código relevante que no puede leerse por permisos o por estar fuera del repositorio
+  · existe código relevante que no puede leerse por permisos, o vive en una fuente no
+    declarada o no materializada
 ```
 
 Escalas, sin decidirlo tú:

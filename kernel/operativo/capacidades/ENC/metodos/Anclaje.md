@@ -6,7 +6,7 @@ nombre: Anclaje
 capacidad: ENC
 disparador:
   - "ENC/Escucha llega a su paso 4 con una expresión candidata a trabajo"
-  - "un item devuelto exige reanclar porque el repositorio cambió desde el encuadre"
+  - "un item devuelto exige reanclar porque el control repo o alguna fuente cambiaron desde el encuadre"
 carga:
   - "estado/memoria/ENC/indice-de-lo-existente.md"
   - "estado/memoria/ENC/lexico-del-owner.md — para traducir el término del Owner al del código"
@@ -29,7 +29,7 @@ pasos:
     nombre: BUSCAR LO IMPLEMENTADO
     modo: divergente
     hace: >
-      Ejecutar las búsquedas sobre el repositorio completo y registrar consulta, ámbito y
+      Ejecutar las búsquedas sobre el control repo y sobre las fuentes materializadas, y registrar consulta, ámbito y
       resultado de cada una. Se busca lo que contradice la interpretación, no sólo lo que
       la confirma.
     produce: "traza de búsquedas y lista de artefactos que tocan la intención"
@@ -87,7 +87,7 @@ artefactos:
 puntos_owner:
   - "ninguno: este método no habla con el Owner"
 consultas:
-  - "ARQ en modo consulta cuando la estructura del repositorio no es legible por búsqueda de texto"
+  - "ARQ en modo consulta cuando la estructura de una fuente no es legible por búsqueda de texto"
 checkpoints:
   - "tras los pasos 2, 3, 5 y 6"
   - "antes de declarar que algo no existe"
@@ -104,8 +104,8 @@ salida:
 devolucion:
   - "al interlocutor, cuando la interpretación es tan vaga que no permite formular términos de búsqueda"
 bloqueo:
-  - "el repositorio no está accesible"
-  - "existe código relevante fuera del repositorio al que no se tiene acceso"
+  - "el control repo no está accesible"
+  - "existe código relevante en una fuente no declarada, no materializada o sin acceso"
 cancelacion:
   - "el interlocutor descarta la expresión antes de terminar el anclaje: se conserva la traza parcial"
 aprendizaje:

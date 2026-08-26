@@ -135,7 +135,7 @@ exige:
   uso_herramientas: maximo
   critica: alto
 contexto: maximo
-herramientas: [lectura del repositorio, búsqueda de código, lectura del estado persistido, lectura de ledgers]
+herramientas: [lectura del control repo y de las fuentes del alcance, búsqueda de código, lectura del estado persistido, lectura de ledgers]
 coste: contenido
 degradacion_permitida: >
   ninguna en uso_herramientas ni en contexto: un anclaje que no puede leer todo el
@@ -344,7 +344,7 @@ exige:
   uso_herramientas: maximo
   critica: maximo
 contexto: maximo
-herramientas: [lectura del repositorio completo, búsqueda de código, medición de dependencias, escritura de ADR]
+herramientas: [lectura del control repo y de las fuentes del alcance, búsqueda de código, medición de dependencias, escritura de ADR]
 coste: alto
 degradacion_permitida: >
   ninguna en contexto ni uso_herramientas: un radio de impacto estimado en vez de medido
@@ -406,7 +406,7 @@ exige:
   uso_herramientas: alto
   critica: maximo
 contexto: amplio
-herramientas: [lectura del repositorio, análisis de dependencias, consulta de avisos publicados, lectura de configuración]
+herramientas: [lectura del control repo y de las fuentes del alcance, análisis de dependencias, consulta de avisos publicados, lectura de configuración]
 coste: sin-techo
 degradacion_permitida: >
   ninguna. Un veto duro no admite ocupación degradada: si no hay modelo que cumpla, el

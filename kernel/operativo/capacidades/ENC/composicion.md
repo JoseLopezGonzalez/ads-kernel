@@ -43,7 +43,7 @@ capacidad: ENC
 clase_de_trabajo: "candidato a trabajo con anclaje largo o incertidumbre media"
 condicion: >
   La expresión es candidato a trabajo Y el anclaje exige recorrer más de cinco búsquedas o
-  varias zonas del repositorio, Y la incertidumbre declarada no es alta.
+  varias zonas del producto, Y la incertidumbre declarada no es alta.
 roles:
   - rol: ENC/interlocutor
     obligatorio: true

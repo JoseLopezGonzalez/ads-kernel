@@ -16,7 +16,7 @@ resultado: >
   El dosier de anclaje con sus cinco campos resueltos y la traza de las búsquedas
   ejecutadas, de modo que otro agente pueda repetirlas y obtener lo mismo.
 responsabilidades:
-  - "recorrer el repositorio buscando lo que toca la intención, no lo que la confirma"
+  - "recorrer el control repo y las fuentes buscando lo que toca la intención, no lo que la confirma"
   - "leer las decisiones y ADR vigentes que gobiernan esa materia"
   - "consultar los ledgers de aprendizaje por si el sistema ya aprendió algo aquí"
   - "comparar contra los items abiertos para detectar duplicación"
@@ -37,16 +37,16 @@ autoridad:
     - "abrir un item de deuda cuando encuentra dos implementaciones paralelas de lo mismo"
   veta: []
   escala:
-    - "el repositorio contiene dos soluciones incompatibles de la misma materia"
+    - "el producto contiene dos soluciones incompatibles de la misma materia, en la misma fuente o en fuentes distintas"
     - "una decisión vigente contradice directamente lo que el Owner acaba de pedir"
 entradas:
   - "la interpretación provisional de ENC/interlocutor"
-  - "el repositorio completo del proyecto"
+  - "el control repo completo y las fuentes materializadas del producto"
   - "el estado persistido: items abiertos, cerrados y aparcados"
   - "decisiones, ADR y ledgers de aprendizaje"
 metodo: [ENC/Anclaje]
 herramientas:
-  - "búsqueda de texto y de código sobre el repositorio completo"
+  - "búsqueda de texto y de código sobre el control repo y sobre las fuentes materializadas"
   - "lectura del estado persistido"
   - "lectura del histórico de control de versiones"
   - "escritura del índice de lo existente"
@@ -68,14 +68,14 @@ interaccion_owner:
   formato: "dosier escrito, sin conversación"
 interaccion_roles:
   - "entrega el dosier a ENC/interlocutor"
-  - "consulta a ARQ en modo consulta cuando la estructura del repositorio no es legible por búsqueda"
+  - "consulta a ARQ en modo consulta cuando la estructura de una fuente no es legible por búsqueda"
   - "avisa a DSP cuando detecta duplicación con un item abierto"
 independencia:
   requiere_independencia: false
   de_quien: []
   motivo: >
     Puede compartir agente con ENC/interlocutor cuando el anclaje se resuelve con menos de
-    cinco búsquedas. Se separa siempre que el dosier exija recorrer el repositorio entero,
+    cinco búsquedas. Se separa siempre que el dosier exija recorrer el producto entero,
     porque el contexto de la conversación desplaza al de la búsqueda y aparecen falsos «no existe».
 checkpoint:
   - "tras cada bloque de búsquedas, con lo hallado y lo que queda por buscar"
@@ -88,14 +88,14 @@ gate: gate:anclaje-completo
 devolucion:
   - "devuelve al interlocutor cuando la interpretación es demasiado vaga para buscar nada concreto"
 bloqueo:
-  - "el repositorio del proyecto no está accesible"
-  - "existe código relevante que no puede leerse por permisos o por estar fuera del repositorio"
+  - "el control repo no está accesible"
+  - "existe código relevante que no puede leerse por permisos, o vive en una fuente no declarada o no materializada"
 veto: ""
 criterios_calidad:
   - "la traza permite a otro agente repetir las búsquedas y obtener el mismo resultado"
   - "el campo no_existe_y_se_creia está resuelto, aunque sea con «nada»"
   - "los duplicados se declaran por resultado perseguido, no por coincidencia de palabras"
-  - "todo hallazgo lleva su ruta exacta en el repositorio"
+  - "todo hallazgo lleva su source id y su ruta exacta dentro de ella"
 antipatrones:
   - "buscar sólo lo que confirma la interpretación"
   - "declarar «no existe» tras una única búsqueda por el nombre que usó el Owner"
@@ -103,7 +103,7 @@ antipatrones:
   - "convertir el dosier en un resumen del proyecto en vez de en lo que toca esta intención"
 activacion:
   - "ENC/interlocutor pide anclaje antes de clasificar como candidato a trabajo"
-  - "un item devuelto exige reanclar porque el repositorio cambió"
+  - "un item devuelto exige reanclar porque el control repo o alguna fuente cambiaron"
 retirada:
   - "el dosier queda entregado y el interlocutor acusa recibo"
 prompt: "kernel/operativo/capacidades/ENC/prompts/anclaje.md"

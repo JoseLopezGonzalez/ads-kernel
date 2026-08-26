@@ -38,7 +38,7 @@ entradas:
   - "docs/seguridad/SUPERFICIE.md y DEPENDENCIAS.md"
 metodo: [SEG/Condiciones, SEG/Dependencia]
 herramientas:
-  - "lectura del repositorio y de la configuración"
+  - "lectura de las fuentes del alcance y de su configuración"
   - "análisis de dependencias y consulta de avisos publicados"
   - "comprobación automática de secretos"
 conocimientos:

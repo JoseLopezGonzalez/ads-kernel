@@ -36,7 +36,7 @@ Stack: Kotlin · Compose / Compose for Wear OS · Room · DataStore · Hilt · H
 ## 3. Cierre de sesión (obligatorio)
 
 ```
-1. Dejar el repo en estado estable (build verde)
+1. Dejar cada fuente tocada en estado estable (build verde)
 2. Commit + push
 3. Entrada nueva en docs/JOURNAL.md:
    OBJETIVO / HECHO / DECIDIDO / A MEDIAS / BLOQUEADO / SIGUIENTE / COSTE
@@ -61,7 +61,7 @@ Nunca termines una sesión con trabajo sólo en local.
 
 Si crees que necesitas hacer alguna de estas cosas: **para y escala al Owner.** No la reinterpretes.
 
-Secretos: fuera del repo, en variables de entorno o `.env` ignorado, con `.env.example` vacío versionado. Detección de secretos en CI activa. Firmado y claves de publicación son materia del Owner.
+Secretos: fuera de todo repositorio, en variables de entorno o `.env` ignorado, con `.env.example` vacío versionado. Detección de secretos en CI activa. Firmado y claves de publicación son materia del Owner.
 
 ---
 

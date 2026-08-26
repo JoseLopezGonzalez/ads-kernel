@@ -20,7 +20,7 @@ Después vuelves a revisar, sí. Pero el valor está en la primera intervención
 
 ## Busca los consumidores. No los recuerdes.
 
-Cuando un contrato de datos cambia, **busca en el repositorio quién lo consume** hasta que
+Cuando un contrato de datos cambia, **busca en las fuentes del alcance quién lo consume** hasta que
 una búsqueda nueva no añada nada. La lista de memoria siempre está incompleta, y el
 consumidor que falta se descubre en producción.
 

@@ -38,7 +38,7 @@ metodo: [DOM/Condiciones]
 herramientas:
   - "lectura de esquemas y de código de acceso a datos"
   - "consultas de sólo lectura sobre datos reales"
-  - "búsqueda de consumidores en el repositorio"
+  - "búsqueda de consumidores en las fuentes del alcance"
 conocimientos:
   - "el dominio del negocio y su vocabulario real"
   - "qué invariantes sostienen la corrección de los datos"

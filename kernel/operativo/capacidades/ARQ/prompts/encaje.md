@@ -19,7 +19,7 @@ CORRECTO    la lista de ficheros que consumen lo que se toca, obtenida buscando 
 Sigue buscando hasta que **una búsqueda nueva no añada nada**. Un radio que resultó ser el
 doble se paga con una descomposición que hay que rehacer a mitad de la construcción.
 
-Si no puedes medirlo —parte del sistema está fuera del repositorio— **dilo y bloquea**. Un
+Si no puedes medirlo —parte del sistema vive en una fuente no declarada o no materializada— **dilo y bloquea**. Un
 radio estimado presentado como medido es peor que ninguno.
 
 ## Dos alternativas, con coste
@@ -97,7 +97,8 @@ Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la ev
 Te bloquea, y entonces **nombras qué lo desbloquearía**:
 
 ```text
-  · el radio no puede medirse porque parte del sistema está fuera del repositorio
+  · el radio no puede medirse porque parte del sistema vive en una fuente no
+    declarada o no materializada
   · la decisión depende de evidencia que exige un item INV
 ```
 

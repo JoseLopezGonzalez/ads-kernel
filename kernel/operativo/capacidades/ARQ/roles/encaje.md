@@ -88,7 +88,7 @@ devolucion:
   - "a PRD, cuando el alcance declarado no es realizable sin cambiar contratos que el alcance excluye"
   - "a DIS, con al menos una alternativa de forma, cuando lo aprobado tiene coste desproporcionado"
 bloqueo:
-  - "el radio no puede medirse porque parte del sistema está fuera del repositorio"
+  - "el radio no puede medirse porque parte del sistema vive en una fuente no declarada o no materializada"
   - "la decisión depende de evidencia que exige un item INV"
 veto: ""
 criterios_calidad:

@@ -42,7 +42,7 @@ entradas:
 metodo: [VER/Decision]
 herramientas:
   - "lectura del estado persistido y del registro de decisiones"
-  - "búsqueda de impactos en el repositorio"
+  - "búsqueda de impactos en las fuentes del alcance"
   - "comprobación de enlaces entre items"
 conocimientos:
   - "las nueve comprobaciones de VER:decision de b.16"

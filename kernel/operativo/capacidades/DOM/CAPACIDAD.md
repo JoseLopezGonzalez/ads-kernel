@@ -111,7 +111,7 @@ comprobaciones:
     automatizable: parcial
   - id: consumidores
     comprueba: "los consumidores de cada contrato de datos que cambia están identificados"
-    como: "lista obtenida buscando en el repositorio, no de memoria"
+    como: "lista obtenida buscando en las fuentes del alcance, no de memoria"
     automatizable: si
   - id: vocabulario
     comprueba: "todo concepto nuevo está en el vocabulario, con qué significa y qué NO"

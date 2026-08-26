@@ -10,7 +10,7 @@ carga:
   - "la capa de PRD: alcance, fuera de alcance y criterios"
   - "la especificación de DIS cuando existe"
   - "docs/arquitectura/MAPA.md, los ADR vigentes y CONVENTIONS.md"
-  - "el repositorio completo"
+  - "el código completo de las fuentes del alcance del item"
 preguntas_iniciales:
   - "¿qué contratos toca esto, y quién los consume hoy?"
   - "¿qué se rompe si me equivoco en la descomposición?"
@@ -20,7 +20,7 @@ pasos:
     nombre: MEDIR EL RADIO
     modo: lineal
     hace: >
-      Buscar en el repositorio quién consume cada elemento que se toca, hasta cerrar la
+      Buscar en las fuentes del alcance quién consume cada elemento que se toca, hasta cerrar la
       lista. Se registra cada búsqueda y su salida.
     produce: "lista de ficheros y contratos afectados, con la traza de búsquedas"
     termina_cuando: "ninguna búsqueda nueva añade elementos a la lista"
@@ -91,7 +91,7 @@ devolucion:
   - "a PRD, cuando el alcance excluye contratos que hay que cambiar para conseguirlo"
   - "a DIS, con alternativas de forma, cuando lo aprobado tiene coste desproporcionado"
 bloqueo:
-  - "parte del sistema está fuera del repositorio y el radio no es medible"
+  - "parte del sistema vive en una fuente no declarada o no materializada, y el radio no es medible"
 cancelacion:
   - "el alcance se retira antes de terminar el plan"
 aprendizaje:

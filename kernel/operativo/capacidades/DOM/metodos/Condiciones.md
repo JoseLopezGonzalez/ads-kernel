@@ -27,7 +27,7 @@ pasos:
     nombre: BUSCAR CONSUMIDORES
     modo: lineal
     hace: >
-      Buscar en el repositorio quién consume cada contrato de datos que cambia. Se busca; no
+      Buscar en las fuentes del alcance quién consume cada contrato de datos que cambia. Se busca; no
       se recuerda.
     produce: "lista de consumidores con su ruta"
     termina_cuando: "ninguna búsqueda nueva añade consumidores"

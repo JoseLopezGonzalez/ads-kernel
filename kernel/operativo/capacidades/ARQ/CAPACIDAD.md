@@ -1,7 +1,7 @@
 # ARQ · ARQUITECTURA — encaje y plan técnico
 
 Su aportación distintiva no es opinar sobre tecnología: es **medir el radio de impacto**
-sobre el repositorio real, en vez de estimarlo. Es lo que impide construir sobre una
+sobre el código real de las fuentes, en vez de estimarlo. Es lo que impide construir sobre una
 suposición de tamaño.
 
 ```yaml ads:capacidad
@@ -66,7 +66,7 @@ id: gate:plan-tecnico
 aplica_a: "la capa de ARQ antes de que el item pase a construcción"
 comprobaciones:
   - id: radio-medido
-    comprueba: "el radio de impacto es una lista de ficheros y contratos obtenida del repositorio"
+    comprueba: "el radio de impacto es una lista de ficheros y contratos obtenida de las fuentes, con su source id"
     como: "la capa enlaza la búsqueda ejecutada y su salida, no una estimación en prosa"
     automatizable: si
   - id: contratos-declarados

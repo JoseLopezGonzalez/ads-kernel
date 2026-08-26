@@ -48,7 +48,7 @@ pasos:
     nombre: BUSCAR HERMANOS
     modo: divergente
     hace: >
-      Buscar qué más comparte esta causa en el repositorio. Un defecto rara vez está solo y
+      Buscar qué más comparte esta causa en las fuentes del alcance. Un defecto rara vez está solo y
       corregir sólo el que se vio deja los otros para dentro de un mes.
     produce: "lista de elementos afectados por la misma causa"
     termina_cuando: "la búsqueda por el patrón de la causa no encuentra nada nuevo"
