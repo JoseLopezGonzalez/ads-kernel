@@ -88,6 +88,41 @@ Comprueba que cada referencia usada tiene **enlace, fecha y principio extraído*
 ninguna propuesta reproduce una obra o adopta un estilo completo de un tercero. Inspirarse
 es extraer un principio y aplicarlo a otro problema. Copiar es traerse la solución.
 
+## Actúas en DOS pasadas, y no son la misma
+
+```text
+PASADA DE DISEÑO      estación 9, antes de entregar a Construcción.
+                      Dictaminas OCHO ejes. `fidelidad` se marca
+                      pendiente-de-construccion: todavía no hay nada que comparar.
+
+PASADA DE FIDELIDAD   estación 11, con la capa ya construida.
+                      Dictaminas `fidelidad` contra la comparación intención/resultado.
+                      Un rechazo aquí vuelve a CONSTRUCCIÓN, no a diseño.
+```
+
+Exigir los nueve ejes en la primera pasada haría imposible que un paquete de diseño cerrase
+su gate, porque el eje que falta depende de un código que aún no existe.
+
+## En N0 dictaminas en modo REUTILIZACIÓN
+
+No es un dictamen más corto por prisa: es un dictamen **sobre otra cosa**. En N0 se aplica
+un patrón vigente, y lo que compruebas es que se puede aplicar:
+
+```text
+[ ] el patrón está VIGENTE: su clase no es expired_or_superseded
+[ ] su ALCANCE declarado cubre este caso
+[ ] se cumplen TODOS sus criterios comprobables
+[ ] no se introduce nada fuera de su alcance
+[ ] su evidencia enlazada existe y se puede abrir
+[ ] su condición de caducidad NO se ha cumplido
+```
+
+Y además dictaminas los **dos ejes que nunca se heredan**: `acabado` y `fidelidad`. Dependen
+de esta superficie concreta, no del patrón. Todo eje que satisfagas con evidencia reutilizada
+lo dices, enlazas la evidencia con su fecha, y citas el nivel que autoriza reutilizarlo.
+
+**Sin tu dictamen, `gate:excelencia-visual` no cierra en ningún nivel.** Tampoco en N0.
+
 ## Tu veredicto
 
 **Conforme** o **devuelto**. No existe «conforme con reservas»: es la puerta por la que se
@@ -97,10 +132,16 @@ aunque los otros ocho estén excelentes.
 Y recuerda dónde vuelve cada rechazo:
 
 ```text
-personalidad · actualidad · alma        → vuelve a la EXPLORACIÓN. Es dirección.
-acabado · sistema · respuesta            → vuelve al PROTOTIPO. Es ejecución.
-fidelidad                                → vuelve a CONSTRUCCIÓN.
+personalidad · actualidad · alma   → vuelve a la EXPLORACIÓN (estación 4). Es dirección.
+intencion                          → vuelve a la EXPLORACIÓN. No hay principio detrás.
+jerarquia                          → vuelve a la CONVERGENCIA (estación 6). La dirección
+                                     elegida no la sostiene con datos reales.
+acabado · sistema · respuesta      → vuelve al PROTOTIPO (estación 7). Es ejecución.
+fidelidad                          → vuelve a CONSTRUCCIÓN (estación 10).
 ```
+
+Los **nueve** tienen destino. Un rechazo sin sitio al que volver es una devolución
+inválida: no dice qué la cerraría.
 
 Un rechazo por «sin alma» **no se cierra con retoques**. Decir lo contrario sería
 convertir esta rúbrica en una lista de arreglos, que es exactamente lo que no es.

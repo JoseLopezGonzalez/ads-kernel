@@ -104,6 +104,19 @@ def m_rol_decide_materia_ajena(raiz):
                '  decide:\n    - "los valores del sistema de diseño: escala, ritmo, roles de color, elevación"')
 
 
+def m_metodo_huerfano(raiz):
+    """A-15 · un método deja de estar declarado por su capacidad, como ENC/Critica."""
+    _sustituir(raiz, "kernel/operativo/capacidades/ENC/CAPACIDAD.md",
+               "metodos: [ENC/Escucha, ENC/Anclaje, ENC/Maduracion, ENC/Critica, ENC/Orden, ENC/Formulacion]",
+               "metodos: [ENC/Escucha, ENC/Anclaje, ENC/Maduracion, ENC/Orden, ENC/Formulacion]")
+
+
+def m_marca_en_esquema(raiz):
+    """T92 · una marca comercial entra por un fichero que antes no se miraba."""
+    _sustituir(raiz, "kernel/operativo/esquemas/perfil-agente.yaml",
+               "  contexto: {tipo: enum,", "  # exige gpt-4 para este perfil\n  contexto: {tipo: enum,")
+
+
 def m_metodo_sin_termina_cuando(raiz):
     _sustituir(raiz, "kernel/operativo/capacidades/INV/metodos/Investigacion.md",
                "    termina_cuando:", "    termina_cuandoX:")
@@ -357,6 +370,12 @@ CATALOGO = [
     Mutacion("N146b", "A-18", "T146", "comprobar_contratos",
              "un rol se concede la materia declarada por otra capacidad",
              m_rol_decide_materia_ajena),
+    Mutacion("N90", "A-15", "T90", "comprobar_contratos",
+             "un método deja de estar declarado por su capacidad, como ENC/Critica",
+             m_metodo_huerfano),
+    Mutacion("N92", "—", "T92", "comprobar_contratos",
+             "una marca comercial entra por un esquema, que antes no se miraba",
+             m_marca_en_esquema),
     Mutacion("N91", "—", "T91", "comprobar_contratos",
              "un paso de método pierde su condición de salida",
              m_metodo_sin_termina_cuando),

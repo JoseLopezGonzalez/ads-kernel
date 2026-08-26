@@ -151,7 +151,7 @@ def t89_reanudacion_con_prueba(b):
 
 
 def t90_roles_coherentes(b):
-    r = Resultado("T90", "Capacidades y roles se referencian mutuamente sin huérfanos")
+    r = Resultado("T90", "Capacidades, roles y métodos se referencian mutuamente sin huérfanos")
     caps = {d["id"]: d for d, _, _ in b.get("capacidad", [])}
     roles = {d["id"]: d for d, _, _ in b.get("rol", [])}
     for cid, cap in caps.items():
@@ -168,6 +168,25 @@ def t90_roles_coherentes(b):
             continue
         if cid in caps and rid not in caps[cid].get("roles", []):
             r.fallo(f"{rid}: dice pertenecer a {cid}, que no lo lista entre sus roles")
+
+    # A-15: ENC/Critica existía, se usaba y se probaba, y su capacidad no lo declaraba.
+    # Era el único caso del corpus, y nada lo habría vuelto a detectar.
+    metodos = {d["id"]: d for d, _, _ in b.get("metodo", [])}
+    for cid, cap in caps.items():
+        for mid in cap.get("metodos", []):
+            if mid not in metodos:
+                r.fallo(f"{cid}: declara el método {mid}, que no tiene contrato")
+            elif metodos[mid].get("capacidad") != cid:
+                r.fallo(f"{cid}: declara {mid}, que dice pertenecer a "
+                        f"{metodos[mid].get('capacidad')}")
+    for mid, met in metodos.items():
+        cid = met.get("capacidad")
+        if ":" in mid:
+            continue
+        if cid in caps and mid not in caps[cid].get("metodos", []):
+            r.fallo(f"{mid}: dice pertenecer a {cid}, que no lo lista entre sus métodos. "
+                    f"La ficha de la capacidad es la fuente única: un método que no está "
+                    f"en ella no lo encuentra nadie")
     return r
 
 
@@ -183,12 +202,12 @@ def t91_metodos_con_gate_y_pasos(b):
 
 
 def t92_sin_marca(_b):
-    r = Resultado("T92", "Ningún contrato del kernel ni de un pack exige una marca concreta")
+    r = Resultado("T92", "Ni un contrato, ni un esquema, ni un validador exige una marca")
     for ambito in ("kernel/operativo", "packs"):
         for dirpath, dirnames, filenames in os.walk(os.path.join(RAIZ, ambito)):
             dirnames[:] = [d for d in dirnames if not d.startswith("legacy-") and d != "__pycache__"]
             for nombre in filenames:
-                if not nombre.endswith(".md"):
+                if not nombre.endswith((".md", ".yaml", ".yml", ".py")):
                     continue
                 ruta = os.path.join(dirpath, nombre)
                 rel = os.path.relpath(ruta, RAIZ)
