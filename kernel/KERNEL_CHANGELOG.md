@@ -2,6 +2,22 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.3 — un documento en voz del Owner tiene sitio
+
+Cambio mínimo, y lo provocó un defecto real. La directiva **ADS NEXT** entró al repositorio
+y dos validadores la rechazaron: `ads_lint` marcó ocho expresiones de su vocabulario, y
+`T147` la declaró inalcanzable —«existe para nadie»—. Ninguno de los dos se equivocaba: el
+kernel **no tenía forma declarada de alojar material normativo escrito en voz del Owner**,
+que no es corpus operativo y no puede reescribirse para cumplir la regla de condición
+comprobable sin reescribir la orden.
+
+- `validadores/exclusiones.yaml` — la directiva y su prompt de arranque quedan exentos de
+  **vocabulario**, con su motivo escrito, por el mecanismo que el kernel ya tenía. Sus
+  enlaces se comprueban como los de cualquier documento.
+
+**No cambia ningún contrato, esquema, rol, método ni gate.** El corpus operativo queda
+intacto, y con él las cifras derivadas.
+
 ## 2.0.0-alpha.2 — correcciones de la auditoría independiente
 
 Resuelve los 33 hallazgos de una auditoría independiente, ejecutada por un lector que no

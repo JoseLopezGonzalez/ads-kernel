@@ -50,6 +50,7 @@ La capa intermedia es la que hace que esto escale de verdad. Hay conocimiento qu
 | [`kernel/KERNEL_CHANGELOG.md`](kernel/KERNEL_CHANGELOG.md) · [`kernel/VERSION`](kernel/VERSION) | la versión del release y su historia |
 | [`packs/`](packs/00-QUE-ES-UN-PACK.md) | `web-app` · `mobile-app` · `wear-os`, y [cómo se componen](packs/COMPOSICION.md) |
 | [`docs/rediseno/`](docs/rediseno/README.md) | la especificación normativa (a) y (b), sus enmiendas, y las auditorías |
+| [`docs/evolucion/`](docs/evolucion/00-INDICE.md) | **ADS NEXT**: la directiva del Owner para la siguiente evolución, el baseline comprobado del sistema y el plan de investigación que precede a cualquier arquitectura nueva |
 | `tooling/` | `new-project.sh` crea el esqueleto · `kernel-status.sh` detecta forks silenciosos · `compile-agents.sh` prepara la recompilación de AGENTS.md |
 
 Un proyecto creado con `new-project.sh` recibe además `PROJECT.md` (binder), `PROFILE.md`

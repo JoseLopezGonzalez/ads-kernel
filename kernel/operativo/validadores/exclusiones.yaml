@@ -76,3 +76,12 @@ vocabulario_exento:
     motivo: "plantilla que el Owner rellena en prosa libre, no contrato operativo"
   - ruta: kernel/BOOTSTRAP_PROMPT.md
     motivo: "texto que se pega en un agente; su redacción es deliberada"
+  - ruta: docs/evolucion/ADS-NEXT-OWNER-BRIEF.md
+    motivo: >
+      Directiva del Owner, escrita en su voz. Es material normativo de primer orden y NO
+      es corpus operativo: corregir su vocabulario para que cumpliera la regla de condición
+      comprobable sería reescribir la orden. Sus ENLACES sí se comprueban.
+  - ruta: docs/evolucion/PROMPT-ARRANQUE-ADS-NEXT.md
+    motivo: >
+      El prompt con el que el Owner ordena ejecutar la directiva. Se conserva literal por el
+      mismo motivo: es la orden, no una descripción de la orden.

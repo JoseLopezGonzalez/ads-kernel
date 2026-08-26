@@ -4,7 +4,7 @@
 # ---------------------------------------------------------------
 T147  SUPERADA  Todo documento es alcanzable por ruta, y ninguna referencia es ambigua
 
-documentos analizados: 217
+documentos analizados: 226
 nombres base repetidos: 45 (resueltos por ruta, nunca por nombre)
 
 FUERA DEL ANÁLISIS
@@ -28,7 +28,7 @@ FUERA DEL ANÁLISIS
         Artefacto generado por registro_pruebas.py. REGISTRO.md lo enlaza, pero se declara aquí para que su ausencia de enlaces entrantes nunca se lea como un descuido.
 
 NOMBRES BASE REPETIDOS
-  00-INDICE.md  ×3
+  00-INDICE.md  ×4
   CAPACIDAD.md  ×15
   Condiciones.md  ×2
   Evolucion.md  ×2
