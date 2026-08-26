@@ -24,6 +24,22 @@ Cada una está abierta porque cerrarla hoy sería inventar. Cada una lleva **qu�
 **Q1 y Q3 son las que bloquean la arquitectura.** Sin ellas, el diseño de capas y el de
 skills serían preferencias, no conclusiones.
 
+**Estado tras la primera pasada de minería** —PesquerApp, frontend y backend, registrada en
+[`05-CANDIDATOS.md`](05-CANDIDATOS.md)—:
+
+```text
+Q3   RESPONDIDA     una skill es el disparador específico de un proveedor sobre un método
+                    que ya existe. El contenido vive en el workflow neutral.
+Q1   INDICIOS       el mismo sistema de memoria está en los dos repositorios, que son de
+                    clase técnica distinta, y ha divergido entre copias. Y los dos
+                    repositorios son UN producto: eso demuestra copia, no reutilización.
+                    Concluir exige un proyecto independiente.
+Q3bis ABIERTA       una skill de TERCEROS —shadcn, con origen y hash en skills-lock.json—
+                    no es un disparador: es conocimiento ajeno vendorizado. No tiene sitio.
+Q4 Q5 Q6 Q7 Q8      con material abundante y registrado; su lectura se cierra en la síntesis
+Q9 Q10              abiertas
+```
+
 ## Qué necesita el sistema del Owner
 
 **Esto es lo único que bloquea.** Todo lo demás está hecho o es derivable.

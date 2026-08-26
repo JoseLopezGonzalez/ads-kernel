@@ -35,8 +35,8 @@ previos. Éstos son sus artefactos, y su estado:
 | 23.2 | mapa de la directiva contra ADS | [`02-MAPA-DIRECTIVA.md`](02-MAPA-DIRECTIVA.md) | **entregado** |
 | — | decisiones que no se modifican en silencio | [`03-INVARIANTES.md`](03-INVARIANTES.md) | **entregado** |
 | — | plan de investigación y protocolo de minería | [`04-PLAN-DE-INVESTIGACION.md`](04-PLAN-DE-INVESTIGACION.md) | **entregado** |
-| 23.3 | minería de proyectos reales | [`05-CANDIDATOS.md`](05-CANDIDATOS.md) | **estructura definida, sin material**: espera los repositorios del Owner |
-| 23.4 | síntesis | — | no iniciada: depende de 23.3 |
+| 23.3 | minería de proyectos reales | [`05-CANDIDATOS.md`](05-CANDIDATOS.md) | **primera pasada entregada**: PesquerApp, frontend y backend. Q3 respondida, Q1 con indicios |
+| 23.4 | síntesis | — | no iniciada: Q1 exige un proyecto independiente |
 | 23.5 | diseño integrado | — | no iniciada: depende de 23.4 |
 
 El registro reanudable de todo ello es
