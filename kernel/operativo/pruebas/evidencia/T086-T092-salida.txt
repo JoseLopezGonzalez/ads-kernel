@@ -1,0 +1,11 @@
+T86  SUPERADA  La autoridad de un rol no excede la de su capacidad
+T87  SUPERADA  Ninguna composición permite combinar dos roles que ella declara independientes
+T88  SUPERADA  Todo rol apunta a un prompt operativo que existe
+T89  SUPERADA  Toda prueba de reanudación cita un escenario que existe
+T90  SUPERADA  Capacidades y roles se referencian mutuamente sin huérfanos
+T91  SUPERADA  Todo paso de todo método declara cuándo termina
+T92  SUPERADA  Ningún contrato del kernel ni de un pack exige una marca concreta
+T134  SUPERADA  Ningún documento del corpus existe para nadie
+T135  SUPERADA  Ninguna composición rebaja la independencia que exige un contrato
+
+9 superadas · 0 fallidas

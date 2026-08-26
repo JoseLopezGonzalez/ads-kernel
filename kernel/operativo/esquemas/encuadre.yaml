@@ -1,0 +1,58 @@
+kind: esquema
+esquema: encuadre
+version: 1
+descripcion: el dosier completo que ENC entrega a DSP para que exista o no un item
+obligatorios:
+  [id, expresion_literal, interpretacion, resultado_perseguido, problema_observado,
+   motivo, situacion_actual, expectativas, restricciones, referencias, decisiones_previas,
+   suposiciones, dudas_abiertas, evidencia_de_cierre, incertidumbre, nivel_owner,
+   vinculos, anclaje, clasificacion, estado]
+campos:
+  id: {tipo: texto, patron: '^ENC-[0-9]{3,}$'}
+  expresion_literal:
+    tipo: lista
+    min: 1
+    de: objeto
+    obligatorios: [fecha, texto]
+    campos:
+      fecha: {tipo: texto, patron: '^[0-9]{4}-[0-9]{2}-[0-9]{2}([T ][0-9:]+)?$'}
+      texto: {tipo: texto, min: 1}
+      canal: {tipo: texto}
+  interpretacion: {tipo: texto, min: 20}
+  resultado_perseguido: {tipo: texto, min: 15}
+  problema_observado: {tipo: texto, min: 15}
+  motivo: {tipo: texto, min: 15}
+  situacion_actual: {tipo: texto, min: 15}
+  expectativas: {tipo: lista, de: texto, min: 1}
+  restricciones: {tipo: lista, de: texto, min: 1}
+  referencias: {tipo: lista, de: texto}
+  decisiones_previas: {tipo: lista, de: texto}
+  suposiciones: {tipo: lista, de: texto}
+  dudas_abiertas: {tipo: lista, de: texto}
+  evidencia_de_cierre: {tipo: lista, de: texto, min: 1}
+  incertidumbre:
+    tipo: objeto
+    obligatorios: [grado, ejes, motivo]
+    campos:
+      grado: {tipo: enum, valores: [baja, media, alta]}
+      ejes: {tipo: lista, de: texto, min: 1}
+      motivo: {tipo: texto, min: 15}
+  nivel_owner: {tipo: enum, valores: [obligatorio, opcional-acumulada, ninguna]}
+  vinculos: {tipo: lista, de: texto}
+  anclaje:
+    tipo: objeto
+    obligatorios: [ya_implementado, decisiones_que_gobiernan, aprendizajes, duplica, no_existe_y_se_creia]
+    campos:
+      ya_implementado: {tipo: lista, de: texto}
+      decisiones_que_gobiernan: {tipo: lista, de: texto}
+      aprendizajes: {tipo: lista, de: texto}
+      duplica: {tipo: lista, de: texto}
+      no_existe_y_se_creia: {tipo: lista, de: texto}
+  clasificacion:
+    tipo: objeto
+    obligatorios: [naturaleza, tipo_propuesto, motivo]
+    campos:
+      naturaleza: {tipo: ref, ref_a: entrada}
+      tipo_propuesto: {tipo: enum, valores: [FEA, GAP, DEF, INC, INV, DEU, DEP, AUD, DIR, SIS, ninguno]}
+      motivo: {tipo: texto, min: 15}
+  estado: {tipo: enum, valores: [en-conversacion, listo-para-dsp, entregado, descartado, aparcado-por-owner]}

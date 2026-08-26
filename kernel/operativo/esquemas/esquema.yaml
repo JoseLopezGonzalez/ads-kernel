@@ -1,0 +1,13 @@
+# Meta-esquema: la forma de un esquema. Se valida contra sí mismo.
+kind: esquema
+esquema: esquema
+version: 1
+descripcion: define la forma de los demás esquemas del kernel operativo
+obligatorios: [kind, esquema, version, descripcion, campos]
+campos:
+  kind: {tipo: enum, valores: [esquema]}
+  esquema: {tipo: texto, patron: '^[a-z-]+$'}
+  version: {tipo: entero, min: 1}
+  descripcion: {tipo: texto, min: 10}
+  obligatorios: {tipo: lista, de: texto}
+  campos: {tipo: objeto}

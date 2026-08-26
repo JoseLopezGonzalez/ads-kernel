@@ -3,9 +3,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 KV=$(cat kernel/VERSION)
-SUM=$(sha256sum kernel/KERNEL.md | cut -c1-16)
+SUM=$(find kernel -name "*.md" -o -name "*.yaml" | sort | xargs sha256sum | sha256sum | cut -c1-16)
 echo "kernel version : $KV"
-echo "hash local     : $SUM"
+echo "hash local     : $SUM   (kernel/ completo, no sólo KERNEL.md)"
 if [ -f kernel/.upstream-hash ]; then
   UP=$(cat kernel/.upstream-hash)
   if [ "$SUM" = "$UP" ]; then echo "estado         : LIMPIO (coincide con el release)"

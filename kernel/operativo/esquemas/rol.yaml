@@ -1,0 +1,59 @@
+kind: esquema
+esquema: rol
+version: 1
+descripcion: contrato comun de rol; ningun rol del kernel ni de un pack puede declarar menos
+obligatorios:
+  [id, nombre, capacidad, mision, resultado, responsabilidades, limites, autoridad,
+   entradas, metodo, herramientas, conocimientos, perfil_agente, memoria_consulta,
+   memoria_actualiza, interaccion_owner, interaccion_roles, independencia, checkpoint,
+   salida, gate, devolucion, bloqueo, veto, criterios_calidad, antipatrones,
+   activacion, retirada, prompt]
+campos:
+  id: {tipo: texto, patron: '^([a-z0-9-]+:)?[A-Z]{3}/[a-z0-9-]+$'}
+  nombre: {tipo: texto, min: 3}
+  capacidad: {tipo: ref, ref_a: capacidad}
+  mision: {tipo: texto, min: 20}
+  resultado: {tipo: texto, min: 20}
+  responsabilidades: {tipo: lista, de: texto, min: 2}
+  limites: {tipo: lista, de: texto, min: 2}
+  autoridad:
+    tipo: objeto
+    obligatorios: [decide, propone, veta, escala]
+    campos:
+      decide: {tipo: lista, de: texto}
+      propone: {tipo: lista, de: texto}
+      veta: {tipo: lista, de: texto}
+      escala: {tipo: lista, de: texto, min: 1}
+  entradas: {tipo: lista, de: texto, min: 1}
+  metodo: {tipo: lista, de: ref, ref_a: metodo, min: 1}
+  herramientas: {tipo: lista, de: texto, min: 1}
+  conocimientos: {tipo: lista, de: texto, min: 1}
+  perfil_agente: {tipo: ref, ref_a: perfil-agente}
+  memoria_consulta: {tipo: lista, de: texto, min: 1}
+  memoria_actualiza: {tipo: lista, de: texto, min: 1}
+  interaccion_owner:
+    tipo: objeto
+    obligatorios: [nivel, cuando, formato]
+    campos:
+      nivel: {tipo: enum, valores: [obligatorio, opcional-acumulada, ninguna, mixto]}
+      cuando: {tipo: lista, de: texto, min: 1}
+      formato: {tipo: texto, min: 10}
+  interaccion_roles: {tipo: lista, de: texto, min: 1}
+  independencia:
+    tipo: objeto
+    obligatorios: [requiere_independencia, de_quien, motivo]
+    campos:
+      requiere_independencia: {tipo: booleano}
+      de_quien: {tipo: lista, de: texto}
+      motivo: {tipo: texto, min: 15}
+  checkpoint: {tipo: lista, de: texto, min: 1}
+  salida: {tipo: lista, de: texto, min: 1}
+  gate: {tipo: ref, ref_a: gate}
+  devolucion: {tipo: lista, de: texto, min: 1}
+  bloqueo: {tipo: lista, de: texto, min: 1}
+  veto: {tipo: texto}
+  criterios_calidad: {tipo: lista, de: texto, min: 2}
+  antipatrones: {tipo: lista, de: texto, min: 2}
+  activacion: {tipo: lista, de: texto, min: 1}
+  retirada: {tipo: lista, de: texto, min: 1}
+  prompt: {tipo: texto, min: 5}

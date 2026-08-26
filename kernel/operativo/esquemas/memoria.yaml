@@ -1,0 +1,17 @@
+kind: esquema
+esquema: memoria
+version: 1
+descripcion: una seccion del corpus persistente de un equipo, con su capa, su autoridad y su ciclo de actualizacion
+obligatorios: [id, nombre, capacidad, capa, fichero, autoridad, contiene, se_actualiza_cuando, se_consulta_en, caducidad, vacio_significa]
+campos:
+  id: {tipo: texto, patron: '^memoria:[a-z0-9-]+$'}
+  nombre: {tipo: texto, min: 3}
+  capacidad: {tipo: ref, ref_a: capacidad}
+  capa: {tipo: enum, valores: [kernel, pack, profile]}
+  fichero: {tipo: texto, min: 5}
+  autoridad: {tipo: texto, min: 5}
+  contiene: {tipo: lista, de: texto, min: 1}
+  se_actualiza_cuando: {tipo: lista, de: texto, min: 1}
+  se_consulta_en: {tipo: lista, de: texto, min: 1}
+  caducidad: {tipo: texto, min: 10}
+  vacio_significa: {tipo: texto, min: 10}

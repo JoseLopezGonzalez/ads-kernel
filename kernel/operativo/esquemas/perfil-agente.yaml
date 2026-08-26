@@ -1,0 +1,23 @@
+kind: esquema
+esquema: perfil-agente
+version: 1
+descripcion: exigencia de capacidades de modelo para ocupar un rol, sin nombrar proveedor ni marca
+obligatorios: [id, exige, contexto, herramientas, coste, degradacion_permitida, prohibido]
+campos:
+  id: {tipo: texto, patron: '^perfil:[a-z0-9-]+$'}
+  exige:
+    tipo: objeto
+    obligatorios: [razonamiento, creatividad, vision, investigacion, programacion, uso_herramientas, critica]
+    campos:
+      razonamiento: {tipo: enum, valores: [bajo, medio, alto, maximo]}
+      creatividad: {tipo: enum, valores: [bajo, medio, alto, maximo]}
+      vision: {tipo: enum, valores: [no, util, requerida]}
+      investigacion: {tipo: enum, valores: [bajo, medio, alto, maximo]}
+      programacion: {tipo: enum, valores: [bajo, medio, alto, maximo]}
+      uso_herramientas: {tipo: enum, valores: [bajo, medio, alto, maximo]}
+      critica: {tipo: enum, valores: [bajo, medio, alto, maximo]}
+  contexto: {tipo: enum, valores: [corto, medio, amplio, maximo]}
+  herramientas: {tipo: lista, de: texto, min: 1}
+  coste: {tipo: enum, valores: [minimo, contenido, alto, sin-techo]}
+  degradacion_permitida: {tipo: texto, min: 20}
+  prohibido: {tipo: lista, de: texto, min: 1}
