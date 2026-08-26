@@ -45,7 +45,12 @@ MARCAS = [
 ]
 # Ficheros donde nombrar una marca es legítimo: hablan del adaptador o de la prohibición.
 EXENTOS_MARCA = {
+    # Habla del adaptador y de la prohibición: nombrar la marca es su materia.
     "kernel/operativo/contratos/C2-AGENTES-Y-MODELOS.md",
+    # Contiene la INFRACCIÓN DELIBERADA con la que se demuestra que esta misma prueba
+    # falla cuando debe fallar (mutación N92). Sin la marca dentro, el negativo no
+    # existiría, y una prueba que sólo se ha visto pasar no está verificada.
+    "kernel/operativo/validadores/comprobar_negativos.py",
 }
 
 

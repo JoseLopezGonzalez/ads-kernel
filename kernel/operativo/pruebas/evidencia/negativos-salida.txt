@@ -23,9 +23,9 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 30f9fff3bb6a5389, calculada c3e6c89bc6170be0. Algún fichero de la huella se 
+                          → detectada: el kernel DIVERGE de su release: almacenada 7494e8f10c21cb4f, calculada aa6a8577097b9673. Algún fichero de la huella se 
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 30f9fff3bb6a5389, calculada 8d95932a8f4c008e. Algún fichero de la huella se 
+                          → detectada: el kernel DIVERGE de su release: almacenada 7494e8f10c21cb4f, calculada 06f673ba2ff0e3a9. Algún fichero de la huella se 
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
                           → detectada: kernel/operativo/validadores/ads_lint.py NO entra en la huella: un fork silencioso de ese fichero sería indetectable
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo

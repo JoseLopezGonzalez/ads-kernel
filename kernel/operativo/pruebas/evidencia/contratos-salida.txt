@@ -4,8 +4,7 @@ T88  SUPERADA  Todo rol apunta a un prompt operativo que existe
 T89  SUPERADA  Toda prueba de reanudación cita un escenario que existe
 T90  SUPERADA  Capacidades, roles y métodos se referencian mutuamente sin huérfanos
 T91  SUPERADA  Todo paso de todo método declara cuándo termina
-T92  FALLIDA   Ni un contrato, ni un esquema, ni un validador exige una marca
-          · kernel/operativo/validadores/comprobar_negativos.py: nombra «gpt-4»; el contrato canónico es neutral de proveedor
+T92  SUPERADA  Ni un contrato, ni un esquema, ni un validador exige una marca
 T135  SUPERADA  Ninguna composición rebaja la independencia que exige un contrato
 T136  SUPERADA  Ningún veto arbitra a otro veto levantable: ambos detienen y escalan
 T137  SUPERADA  DSP no declara autoridad semántica sobre ninguna cancelación
@@ -18,4 +17,4 @@ T142  SUPERADA  El encuadre expresa todos los estados que sus métodos le exigen
 T145  SUPERADA  La crítica de encuadre exigible no se evapora al bajar la incertidumbre
 T146  SUPERADA  Ningún rol decide lo que su capacidad escala ni lo que decide otra
 
-17 superadas · 1 fallidas
+18 superadas · 0 fallidas
