@@ -109,9 +109,14 @@ def t88_prompt_existe(b):
     return r
 
 
+# T01-T74 están definidas en las secciones (a) y (b) aprobadas: son referencias válidas
+# aunque no existan como bloque ads:escenario en este corpus.
+HEREDADAS = {f"T{n:02d}" for n in range(1, 75)}
+
+
 def t89_reanudacion_con_prueba(b):
     r = Resultado("T89", "Toda prueba de reanudación cita un escenario que existe")
-    ids = {d.get("id") for d, _, _ in b.get("escenario", [])}
+    ids = {d.get("id") for d, _, _ in b.get("escenario", [])} | HEREDADAS
     for datos, ruta, _ in b.get("metodo", []):
         texto = datos.get("prueba_de_reanudacion", "")
         citadas = set(re.findall(r"\bT\d{2,3}\b", texto))
@@ -120,7 +125,8 @@ def t89_reanudacion_con_prueba(b):
             continue
         for t in citadas:
             if t not in ids:
-                r.fallo(f"{datos['id']}: cita {t}, que no está declarada como ads:escenario")
+                r.fallo(f"{datos['id']}: cita {t}, que no está declarada como ads:escenario "
+                        f"ni pertenece a T01-T74 de las secciones aprobadas")
     return r
 
 

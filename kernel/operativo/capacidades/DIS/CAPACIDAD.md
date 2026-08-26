@@ -137,4 +137,4 @@ colision: >
 | métodos | [`metodos/`](metodos/) — seis procedimientos |
 | prompts | [`prompts/`](prompts/) — once instrucciones operativas |
 | composición | [`composicion.md`](composicion.md) — doce matrices de composición |
-| handoffs | `../../circuitos/DIS-handoffs.md` — llega con el bloque 5, cuando existen las capacidades receptoras |
+| handoffs | [`../../circuitos/DIS-handoffs.md`](../../circuitos/DIS-handoffs.md) |

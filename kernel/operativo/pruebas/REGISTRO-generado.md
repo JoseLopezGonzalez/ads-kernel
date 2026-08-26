@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 1cff2373bb22680e -->
+<!-- source_revision: e9bf84ba864067cd -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -10,12 +10,12 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 
 | estado | pruebas |
 |---|---|
-| CONTRATO DEFINIDO | 18 |
+| CONTRATO DEFINIDO | 40 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
 | PRUEBA SUPERADA | 7 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **25** |
+| **total** | **47** |
 
 ## Detalle
 
@@ -46,3 +46,25 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T97](T093-T098-diseno.md) | Reanudación de la revisión de fidelidad sin recapturar entornos | DIS/RevisionDeFidelidad · 05-FIDELIDAD | guion-manual | **CONTRATO DEFINIDO** | — |
 | [T98](T093-T098-diseno.md) | La validación de uso no reconvoca al Owner por lo ya observado | DIS/ValidacionDeUso · rubrica:usabilidad · G36 | guion-manual | **CONTRATO DEFINIDO** | — |
 | [T99](T093-T098-diseno.md) | Una interfaz usable puede ser rechazada por el gate visual | gate:usabilidad · gate:excelencia-visual · los dos gates independientes | requiere-juicio-humano | **CONTRATO DEFINIDO** | — |
+| [T100](T100-T121-capacidades.md) | Reanudación de PRD/Definicion sin repreguntar al Owner | PRD/Definicion · a.10 checkpoint | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T101](T100-T121-capacidades.md) | Un GAP registra por qué apareció el hueco | PRD/Gap · b.16 GAP · aprendizaje del hueco | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T102](T100-T121-capacidades.md) | Reanudación de ARQ/Encaje sin repetir el radio | ARQ/Encaje · gate:plan-tecnico | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T103](T100-T121-capacidades.md) | Reanudación de un diagnóstico sin repetir hipótesis descartadas | ARQ/Diagnostico | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T104](T100-T121-capacidades.md) | Las condiciones de dominio llegan antes de construir | DOM/Condiciones · b.16 DOM dos veces | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T105](T100-T121-capacidades.md) | Una migración no se declara reversible sin haber revertido | DOM/Migracion · veto:integridad-de-datos | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T106](T100-T121-capacidades.md) | Construcción devuelve en vez de redecidir | CON/Implementacion · a.3 CON no redecide | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T107](T100-T121-capacidades.md) | Un experimento no se reanuda sin criterio de descarte previo | CON/Experimental · b.16 CON:experimental | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T108](T100-T121-capacidades.md) | Reanudación de un dosier sin repetir mediciones | VER/Dosier · gate:evidencia-suficiente | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T109](T100-T121-capacidades.md) | VER:decision detecta un impacto sin item derivado | VER/Decision · b.16 VER:decision · T71 | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T110](T100-T121-capacidades.md) | Un despliegue no empieza sin reversión comprobada | ENT/Despliegue · gate:entrega-observada | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T111](T100-T121-capacidades.md) | Rollback autónomo sólo con los cinco requisitos | ENT/Contencion · a.3 rollback autónomo | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T112](T100-T121-capacidades.md) | El Owner se convoca por lotes, no por item | USO/Validacion · G36 · b.11 | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T113](T100-T121-capacidades.md) | Un INV cierra sin generar un segundo item | INV/Investigacion · T39 · b.16 INV | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T114](T100-T121-capacidades.md) | Un veto de seguridad sobrevive al cambio de agente | SEG/Condiciones · veto:seguridad | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T115](T100-T121-capacidades.md) | Una dependencia no se incorpora sin veredicto fechado | SEG/Dependencia · G28 | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T116](T100-T121-capacidades.md) | La maquinaria sólo cuenta si se reproduce desde cero | PLT/Maquinaria · gate:maquinaria-disponible | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T117](T100-T121-capacidades.md) | Sin aprendizaje promovible es un resultado legítimo | APR/Promocion · gate:aprendizaje-fundado · T20 | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T118](T100-T121-capacidades.md) | Toda ruta declara lo que no activó y por qué | DSP/Enrutamiento · a.6 traza · T05 | requiere-runtime | **CONTRATO DEFINIDO** | — |
+| [T119](T100-T121-capacidades.md) | Continúa retoma sin pedir permiso ni resumen | DSP/Continua · b.14 · T36 | requiere-runtime | **CONTRATO DEFINIDO** | — |
+| [T120](T100-T121-capacidades.md) | Ningún cambio del sistema entra sin validador ni estado real de prueba | SIS/Evolucion · gate:sistema-conforme | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T121](T100-T121-capacidades.md) | La auditoría de conformidad no escribe contenido ajeno | SIS/Conformidad · a.3 coherencia documental | guion-manual | **CONTRATO DEFINIDO** | — |

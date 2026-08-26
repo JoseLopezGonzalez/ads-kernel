@@ -37,10 +37,7 @@ roles:
   - rol: CON/experimental
     obligatorio: true
     agentes: "1"
-combinables:
-  - roles: [INV/investigacion, CON/experimental]
-    motivo: "en un experimento corto, formular y medir son el mismo trabajo"
-    condicion: "la evidencia NO sostiene una decisión difícilmente reversible"
+combinables: []
 independientes:
   - rol: CON/experimental
     de: [INV/investigacion]
@@ -52,6 +49,37 @@ ampliacion: >
   criterio de comparación escrito antes de empezar.
 reduccion: >
   CON/experimental se retira si al acotar la pregunta resulta que puede contestarse con
-  fuentes.
+  fuentes; entonces la composición vuelve a inv-documental.
 retirada: "al entregar el informe y ejecutar el criterio de descarte del experimento."
+```
+
+```yaml ads:composicion
+id: composicion:inv-experimento-corto
+capacidad: INV
+clase_de_trabajo: "experimento corto cuya evidencia no sostiene una decisión difícilmente reversible"
+condicion: >
+  Contestar exige construir, Y la decisión que consumirá la respuesta es reversible: no toca
+  materia reservada, no compromete al producto a largo plazo y no destruye nada.
+roles:
+  - rol: INV/investigacion
+    obligatorio: true
+    agentes: "1"
+  - rol: CON/experimental
+    obligatorio: true
+    agentes: "el mismo agente que investigacion"
+combinables:
+  - roles: [INV/investigacion, CON/experimental]
+    motivo: "en un experimento corto y reversible, formular y medir son el mismo trabajo y separarlos es ceremonia"
+independientes:
+  - rol: INV/investigacion
+    de: ["ninguno en esta composición: la decisión que consumirá la evidencia es reversible"]
+    motivo: >
+      se declara expresamente que aquí NO se exige independencia, y por qué: el sesgo de
+      confirmación existe igual, pero su consecuencia es revertible y el coste de separar
+      excede al del error
+ampliacion: >
+  Si al trabajar resulta que la decisión NO es reversible, la composición pasa a
+  inv-con-experimento y CON/experimental se separa en otro agente ANTES de medir.
+reduccion: "no admite reducción."
+retirada: "al entregar el informe y ejecutar el criterio de descarte."
 ```

@@ -20,7 +20,7 @@ BLOQUE 1   circuito Owner → item (paso 1)          TERMINADO, pendiente revisi
 BLOQUE 2   contrato equipo/rol/agente/método       TERMINADO
 BLOQUE 3   sistema de excelencia de Diseño         TERMINADO
 BLOQUE 4   equipo de Diseño materializado          TERMINADO
-BLOQUE 5   demás capacidades                       NO INICIADO
+BLOQUE 5   demás capacidades                       TERMINADO
 BLOQUE 6   packs web-app · mobile-app · wear-os    NO INICIADO
 ```
 
@@ -75,6 +75,18 @@ BLOQUE 6   packs web-app · mobile-app · wear-os    NO INICIADO
 - Diez matrices de composición, con independencia declarada de forma comprobable
 - T93–T99 definidas
 
+**Bloque 5 — las trece capacidades restantes**
+
+- PRD ARQ DOM CON VER ENT USO INV SEG PLT APR DSP SIS, cada una con ficha de doce
+  campos, gate propio, roles con los 28 campos, métodos ejecutables, prompts y
+  composiciones
+- Contratos de veto de seis campos en DOM, SEG, VER y DIS
+- Circuitos concretos para las diez rutas de b.16, más los dos que el trabajo real
+  produce y (b) no numera
+- Diecisiete handoffs declarados con qué se comprueba al recibir y qué evidencia
+  acompaña a cada devolución
+- T100–T121 definidas
+
 ## En revisión
 
 Bloque 1 — la revisión adversarial por agente independiente se lanzó y **terminó sin
@@ -94,14 +106,13 @@ T01-T74   contrato-definido, salvo tres parciales en validador-implementado
 T75-T85   contrato-definido (11)
 T86-T92   PRUEBA SUPERADA (7), con evidencia en pruebas/evidencia/
 T93-T99   contrato-definido (7)
-ads_lint  EJECUTADO y en verde sobre 133 bloques canónicos
+T100-T121 contrato-definido (22)
+ads_lint  EJECUTADO y en verde sobre 268 bloques canónicos
 comprobar_contratos  EJECUTADO, 7/7 superadas
 ```
 
 ## Siguiente acción exacta
 
-> Escribir las trece fichas `ads:capacidad` restantes (PRD, ARQ, DOM, CON, VER, ENT, USO,
-> INV, SEG, PLT, APR, DSP, SIS) en `kernel/operativo/capacidades/<COD>/CAPACIDAD.md`, con
-> sus roles y métodos, y restaurar después
-> `kernel/operativo/circuitos/DIS-handoffs.md` desde el scratchpad de la sesión (está
-> escrito y retenido porque referencia capacidades que aún no existen).
+> Escribir `packs/web-app/PACK.md` con su bloque `ads:pack`, sus restricciones de
+> plataforma y sus gates adicionales; después `packs/mobile-app/` y `packs/wear-os/`; y
+> finalmente `packs/COMPOSICION.md` con precedencia y detección de conflictos.
