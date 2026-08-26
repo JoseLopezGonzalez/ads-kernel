@@ -1,2 +1,6 @@
+# evidencia de: lint
+# orden:        python3 kernel/operativo/validadores/ads_lint.py
+# codigo:       0
+# ---------------------------------------------------------------
 
-bloques canónicos: 339 · identificadores: 339 · errores: 0 · avisos: 0
+bloques canónicos: 340 · identificadores: 340 · errores: 0 · avisos: 0

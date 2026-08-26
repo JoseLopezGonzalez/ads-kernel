@@ -1,16 +1,24 @@
 #!/usr/bin/env python3
-"""comprobar_prompts — cada prompt contra su contrato, su método y su capacidad.
+"""comprobar_prompts — las señales ESTRUCTURALES que cada unidad de instrucción declara.
 
-La auditoría independiente sólo pudo revisar a fondo UNO de los prompts, y de ese único
-contraste salieron dos hallazgos (A-08 y A-21). Su conclusión fue explícita: «no es
-prudente suponer que los otros treinta y cuatro estén limpios; es prudente suponer lo
-contrario».
+QUÉ DEMUESTRA Y QUÉ NO. Esta prueba es **estructural y heurística**: comprueba enlaces,
+presencia de señales textuales, y comparaciones APROXIMADAS de autoridad y de idioma. Con
+eso NO se demuestra coherencia semántica: que un prompt enseñe de verdad a hacer el
+trabajo, que su tono no induzca a inventar, o que su ejemplo sea bueno, no lo decide
+ninguna medida de texto. Esa lectura es humana y está documentada, prompt a prompt, en
+`docs/rediseno/CORRECCIONES-POST-AUDITORIA.md` §6 — como revisión humana, no como algo que
+este validador certifique.
 
-Esto comprueba lo que es mecánico. Lo que exige leer —si el prompt enseña a hacer el
-trabajo, si su tono induce a inventar, si el ejemplo es bueno— está en la revisión
-individual de `docs/rediseno/CORRECCIONES-POST-AUDITORIA.md`, con una fila por prompt.
+La auditoría independiente sólo pudo revisar a fondo UNA de las unidades, y de ese único
+contraste salieron dos hallazgos (A-08 y A-21). Lo mecánico se automatiza aquí para que no
+dependa de que alguien se acuerde; lo cualitativo sigue exigiendo un lector.
 
-Qué se comprueba, por prompt:
+VOCABULARIO. Son 42 UNIDADES DE INSTRUCCIÓN: 36 prompts canónicos con fichero propio en
+`capacidades/<COD>/prompts/`, más 6 instrucciones EMBEBIDAS como sección del contrato de un
+rol de pack. El recuento canónico `prompts: 36` cuenta sólo las primeras; llamar «42
+prompts» al conjunto contradecía ese recuento.
+
+Qué se comprueba, por unidad:
 
     1  lo declara EXACTAMENTE un rol, y el rol existe
     2  su cabecera enlaza el contrato del rol y, cuando el rol tiene método, el método
@@ -77,7 +85,7 @@ def prompts_del_corpus(base):
 
 def t153_prompts(raiz=None):
     base = os.path.abspath(raiz or RAIZ)
-    r = Resultado("T153", "Cada prompt es coherente con su contrato, su método y su capacidad")
+    r = Resultado("T153", "Cada unidad de instrucción declara y enlaza las señales estructurales que su contrato exige")
     mapa, por = prompts_del_corpus(base)
     roles = {d["id"]: d for d, _ in por.get("rol", [])}
     caps = {d["id"]: d for d, _ in por.get("capacidad", [])}
@@ -85,6 +93,7 @@ def t153_prompts(raiz=None):
     detalle = {}
 
     # todo fichero de prompts/ tiene que estar declarado por algún rol
+    # (los 36 canónicos; las 6 embebidas viven dentro del contrato de su rol)
     for dirpath, dirnames, filenames in os.walk(os.path.join(base, "kernel/operativo")):
         dirnames[:] = [d for d in dirnames if d != "__pycache__"]
         if os.path.basename(dirpath) != "prompts":
@@ -148,7 +157,7 @@ def t153_prompts(raiz=None):
         if sum(1 for p in PALABRAS_ES if f" {p} " in minusc) < 4:
             problemas.append("no parece estar escrito en español")
 
-        detalle[rel] = {"roles": ids, "problemas": problemas}
+        detalle[rel] = {"roles": ids, "problemas": problemas, "embebida": es_seccion}
         for p in problemas:
             r.fallo(f"{rel}: {p}")
     r.detalle = detalle
@@ -176,10 +185,14 @@ def main():
             print(f"          · {f}")
         if args.tabla:
             det = getattr(x, "detalle", {})
-            print(f"\n{len(det)} prompts revisados mecánicamente\n")
+            propios = sum(1 for d in det.values() if not d["embebida"])
+            print(f"\n{len(det)} unidades de instrucción revisadas mecánicamente: "
+                  f"{propios} prompts con fichero propio · {len(det) - propios} embebidas "
+                  f"en roles de packs\n")
             for rel, d in sorted(det.items()):
                 marca = "OK " if not d["problemas"] else "REV"
-                print(f"{marca} {d['roles'][0]:34} {rel}")
+                clase = "embebida" if d["embebida"] else "prompt  "
+                print(f"{marca} {clase} {d['roles'][0]:34} {rel}")
                 for p in d["problemas"]:
                     print(f"        · {p}")
     fallidas = [x for x in resultados if not x.superada]

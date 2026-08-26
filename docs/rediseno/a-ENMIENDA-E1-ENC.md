@@ -188,7 +188,24 @@ CORPUS        derivan del corpus y se comprueban (ver `validadores/comprobar_rec
 
 ## E1.4 — Trazabilidad
 
-Esta enmienda **no modifica el fichero de la sección (a)** más allá de un bloque de aviso en
-su cabecera que remite aquí. El texto original de (a) permanece legible tal como fue
-aprobado el 2026-08-25, y lo que rige es (a) **leída junto a esta enmienda**. Las enmiendas
-futuras se numeran `E2`, `E3`… y se listan en el aviso de cabecera de (a).
+La sección (a) **conserva su texto normativo original**, salvo dos cosas que no lo
+sustituyen sino que remiten aquí:
+
+```text
+1  un BLOQUE DE AVISO en su cabecera, con la tabla de enmiendas vigentes
+2  siete MARCAS DE REMISIÓN `[E1]` insertadas en línea, en los puntos exactos que esta
+   enmienda sustituye — cinco recuentos y dos párrafos
+```
+
+**El contenido sustitutivo vive aquí**, no en (a). Las marcas no cambian lo que (a) dice:
+señalan dónde hay que leer la enmienda para saber qué rige.
+
+Con exactitud, y comprobable en el diff: **el texto original de cada línea afectada se
+conserva íntegro**, y la marca `[E1]` se añade al final de esa línea —o en una línea nueva
+inmediatamente debajo, cuando no cabía—. Ninguna frase normativa del documento aprobado el
+2026-08-25 se ha reescrito, borrado ni reordenado. Las cinco líneas que el diff cuenta como
+modificadas lo son porque se les ha **añadido** la marca, no porque se les haya quitado
+nada.
+
+Lo que rige es (a) **leída junto a esta enmienda**. Las enmiendas futuras se numeran `E2`,
+`E3`… y se listan en el aviso de cabecera de (a), con la misma mecánica.

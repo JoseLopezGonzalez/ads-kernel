@@ -1,1 +1,77 @@
-python3: can't open file '/home/jose/ads-kernel/kernel/operativo/validadores/comprobar_referencias': [Errno 2] No such file or directory
+# evidencia de: referencias
+# orden:        python3 kernel/operativo/validadores/comprobar_referencias.py --exclusiones
+# codigo:       0
+# ---------------------------------------------------------------
+T147  SUPERADA  Todo documento es alcanzable por ruta, y ninguna referencia es ambigua
+
+documentos analizados: 217
+nombres base repetidos: 45 (resueltos por ruta, nunca por nombre)
+
+FUERA DEL ANÁLISIS
+  [no_analizados] packs/legacy-1.3.0
+        Los tres packs de la línea 1.3.0, retirados por la decisión D3. Se conservan para poder leer qué decía cada uno antes de su retirada. No se instalan y nada del corpus vigente debe enlazarlos.
+  [no_analizados] docs/rediseno/a-EQUIPOS-v1-RECHAZADA.md
+        versión rechazada del rediseño; se conserva para trazabilidad de (a)
+  [no_analizados] docs/rediseno/a-EQUIPOS-v2-RECHAZADA.md
+        versión rechazada del rediseño; se conserva para trazabilidad de (a)
+  [no_analizados] docs/rediseno/a-EQUIPOS-v3-SUPERADA.md
+        versión superada del rediseño; se conserva para trazabilidad de (a)
+  [no_analizados] kernel/operativo/pruebas/fixtures
+        Material de prueba, no corpus. Contiene infracciones y valores deliberados que existen para hacer fallar a un validador; tratarlos como contenido produciría hallazgos falsos. Los consume T149.
+  [puntos_de_entrada] README.md
+        portada del repositorio: es el primer fichero que alguien abre
+  [puntos_de_entrada] START_HERE.md
+        procedimiento de arranque; el README manda leerlo y se copia a cada proyecto
+  [puntos_de_entrada] kernel/BOOTSTRAP_PROMPT.md
+        Se PEGA en un agente, no se enlaza desde el corpus. START_HERE lo nombra en el paso 6 como contenido que el Owner copia.
+  [puntos_de_entrada] kernel/operativo/pruebas/REGISTRO-generado.md
+        Artefacto generado por registro_pruebas.py. REGISTRO.md lo enlaza, pero se declara aquí para que su ausencia de enlaces entrantes nunca se lea como un descuido.
+
+NOMBRES BASE REPETIDOS
+  00-INDICE.md  ×3
+  CAPACIDAD.md  ×15
+  Condiciones.md  ×2
+  Evolucion.md  ×2
+  PACK.md  ×3
+  README.md  ×2
+  anclaje.md  ×2
+  coherencia.md  ×2
+  composicion.md  ×18
+  condiciones.md  ×2
+  criterio-de-exito.md  ×2
+  critica-de-encuadre.md  ×2
+  critica-visual.md  ×2
+  decision.md  ×2
+  definicion.md  ×2
+  despliegue.md  ×2
+  diagnostico.md  ×2
+  direccion-artistica.md  ×2
+  diseno-interaccion.md  ×2
+  diseno-visual.md  ×2
+  dosier.md  ×2
+  encaje.md  ×2
+  enrutamiento.md  ×2
+  especializacion.md  ×3
+  estado.md  ×2
+  evolucion.md  ×2
+  experimental.md  ×2
+  gates.md  ×3
+  implementacion.md  ×2
+  interlocutor.md  ×2
+  investigacion-ux.md  ×2
+  investigacion-visual.md  ×2
+  investigacion.md  ×2
+  maquinaria.md  ×2
+  migracion.md  ×2
+  modelo.md  ×2
+  movimiento.md  ×2
+  observacion.md  ×2
+  promocion.md  ×2
+  prototipado.md  ×2
+  revision-de-fidelidad.md  ×2
+  sistema-de-diseno.md  ×2
+  supervision.md  ×2
+  validacion-de-uso.md  ×2
+  validacion.md  ×2
+
+1 superadas · 0 fallidas

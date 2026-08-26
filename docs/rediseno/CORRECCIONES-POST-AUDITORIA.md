@@ -21,6 +21,23 @@ auditoría        docs/rediseno/AUDITORIA-INDEPENDIENTE-LOCAL.md
                  merge de la rama antigua, ni reset, ni force push.
 ```
 
+### Recuento de commits, derivado de Git
+
+```bash
+git rev-list --count origin/main..HEAD          # 19  total sobre main
+git log --format='%s' origin/main..HEAD | grep -c '^audit(kernel)'   # 2  cherry-pick
+git rev-list --count HEAD..origin/main          #  0  por detrás
+```
+
+```text
+ 2  commits de AUDITORÍA incorporados por cherry-pick, con su procedencia escrita
+17  commits posteriores de CORRECCIÓN
+19  commits totales sobre main · 0 por detrás
+```
+
+> La entrega anterior escribió «18 commits» a mano mientras la lista adjunta sumaba 19 y
+> GitHub mostraba 19. La cifra se deriva ahora del comando, que es la fuente.
+
 ## 2 · Decisiones del Owner aplicadas
 
 | | decisión | cómo se aplicó |
@@ -50,7 +67,7 @@ Estado: **corregido** · **no reproducible** · **sustituido** · **abierto**.
 | id | gravedad | descripción comprobada | causa raíz | corrección realizada | prueba | negativo | estado |
 |---|---|---|---|---|---|---|---|
 | **A-01** | crítico | `ENC` era una 15ª capacidad sin encaje normativo, con el índice de lo existente y un tercer equipo permanente | (a) no la contemplaba y la decisión estaba pendiente | enmienda **E1** aprobada por el Owner; ficha de ENC, C4 y `packs/00-QUE-ES-UN-PACK` alineados | T151 (recuentos) | N151 | **corregido** |
-| **A-02** | crítico | `./tooling/new-project.sh mi-web-app pack-web-app,pack-design-led` terminaba con código 3 | la documentación citaba packs retirados y el script validaba después de crear | script valida antes de crear, descubre packs por disco, lista los instalables al fallar; README y START_HERE corregidos; se envía `docs/rediseno/` con el kernel | **T148** | N148 | **corregido** |
+| **A-02** | crítico | `./tooling/new-project.sh mi-web-app pack-web-app,pack-design-led` terminaba con código 3 | la documentación citaba packs retirados y el script validaba después de crear | script valida antes de crear, descubre packs por disco, lista los instalables al fallar; README y START_HERE corregidos; se envía `docs/rediseno/` con el kernel. **T148 ejecuta los tres packs sueltos y la combinación `wear-os,mobile-app`** que el checkpoint documenta como siguiente comando del piloto | **T148** | N148 | **corregido** |
 | **A-03** | crítico | T131 en `prueba-superada` afirmando un comportamiento que su validador no ejecutaba | se leyó la salida del validador, no su código | T131 pasa al enunciado que sí sostiene; el comportamiento se demuestra en **T149** con fixtures | T131 · **T149** | N149 · N149b · N149c · N149d | **corregido** |
 | **A-04** | grave | `kernel-status.sh` no veía los `.py`: un fork de los validadores era indetectable | la huella se calculaba sobre `.md` y `.yaml` | `huella.py` define la huella una vez: kernel, packs y tooling, con `.md .yaml .py .sh` | **T150** | N150 · N150b · N150c | **corregido** |
 | **A-05** | grave | T134 pasaba por coincidencia de nombre; 119 de 188 ficheros exentos de hecho | la comprobación buscaba el basename como subcadena | `comprobar_referencias.py` construye el grafo por ruta normalizada; exclusiones explícitas con motivo | **T147** *(sustituye a T134)* | N147 · N147b · N147c · N147d | **corregido** |
@@ -78,13 +95,104 @@ Estado: **corregido** · **no reproducible** · **sustituido** · **abierto**.
 | **A-27** | menor | exención de vocabulario por fichero completo: 19 exentos | la exención se diseñó como marca de cabecera | exención por RANGO y por línea, con motivo; al retirar las 19, sólo DOS la necesitaban | ads_lint | — | **corregido** |
 | **A-28** | menor | ads_lint dejaba fuera README, START_HERE, KERNEL.md, plantillas y docs | el ámbito por defecto eran dos directorios | enlaces y vocabulario en los 217 documentos del repositorio; 10 exentos de vocabulario con motivo. **Encontró un caso real**: una fórmula no comprobable en `AGENTS_EXAMPLE` para decidir cuándo interviene el Owner | ads_lint · T147 | — | **corregido** |
 | **A-29** | menor | el pack `wear-os` se identifica por una plataforma concreta | el identificador nombra la clase por su ejemplo más reconocible | **decisión declarada** en el propio PACK.md, con qué la haría revisable | — *(documental)* | — | **corregido** |
-| **A-30** | menor | profundidad muy asimétrica: DIS con 11 roles frente a 1–3 de las demás | DIS se construyó como patrón de calidad, no como plantilla | **no es un defecto y no se corrige**: se registra para que «equipos y métodos de las demás capacidades» no se lea como paridad de profundidad | — | — | **no reproducible** *(registrado como deuda)* |
+| **A-30** | menor | profundidad muy asimétrica: DIS con 11 roles frente a 1–3 de las demás. **La asimetría existe y es real** | DIS se construyó deliberadamente como patrón de calidad, no como plantilla mecánica | **no se corrige en esta fase**, por decisión: la profundidad de las demás capacidades crecerá con el uso real, no antes. Se registra para que «equipos y métodos de las demás capacidades» no se lea como paridad de profundidad | — | — | **aceptado-como-deuda** |
 | **A-31** | menor | el umbral de anclaje cambia de capa entre (b) y el kernel | (b) los sitúa en el runtime, que no existe | declarados PROVISIONALES, con dónde viven mientras no haya runtime y quién los calibra | — *(documental)* | — | **corregido** |
 | **A-32** | medio | `CHECKPOINT-OPERATIVO.md` desactualizado respecto al commit que declaraba terminado | se actualizó antes del último commit, no después | reescrito por completo, con las cifras derivadas y el punto exacto de continuación | T151 | — | **corregido** |
 | **A-33** | menor | la decisión O3 citaba `entrada/03-CLASIFICACION.md`, que no existe | la ruta cambió y la cita no | corregida a `entrada/04-INCERTIDUMBRE-Y-CONFIRMACION.md` §3; O1 marcada RESUELTA por E1 | ads_lint *(ámbito ampliado)* | — | **corregido** |
 
-**Resumen:** 32 corregidos con evidencia · 1 registrado como deuda declarada (**A-30**, que
-el propio corpus documenta como deliberado) · **0 abiertos**.
+**Resumen:**
+
+```text
+32  corregidos con evidencia
+ 1  ACEPTADO COMO DEUDA no bloqueante — A-30, la asimetría de profundidad, que existe y
+    no desaparece: se acepta y se registra, no se cierra
+ 0  hallazgos sin disposición
+ 0  bloqueos abiertos
+```
+
+`aceptado-como-deuda` **no es** «no reproducible». La asimetría es real y comprobable; lo
+que se decide es no corregirla ahora. Presentarla como desaparecida sería exactamente el
+defecto que esta fase existe para no repetir.
+
+## 3.b · Defecto de la propia entrega: la evidencia publicada estaba corrupta
+
+> El Owner contrastó la rama publicada y encontró que **ocho de diez ficheros de evidencia
+> del commit `68b3383` contenían `python3: can't open file`**, mientras el informe afirmaba
+> «todos EXIT 0», «evidencia reproducible» y «27 pruebas superadas». Es el defecto más
+> grave de esta fase, porque no estaba en el corpus: estaba en lo que demostraba el corpus.
+
+**Causa exacta.** El bucle de shell que archivó las salidas construía el nombre del script
+**sin la extensión `.py`**:
+
+```bash
+case $v in contratos) f=comprobar_contratos;; ... esac      # ← falta el .py
+python3 kernel/operativo/validadores/$f > .../$v-salida.txt 2>&1
+```
+
+Tres fallos que se sumaron, y ninguno solo habría bastado:
+
+```text
+1  EL NOMBRE SIN EXTENSIÓN     python3 no encontraba el fichero y abortaba
+2  `2>&1`                      el error del intérprete se escribía DENTRO del fichero de
+                               evidencia, sobrescribiendo evidencia que era válida
+3  SIN COMPROBAR EL CÓDIGO     se publicaba primero y no se comprobaba después: publicar y
+                               verificar eran el mismo gesto, y ninguno verificaba nada
+```
+
+`lint-salida.txt` e `integridad-salida.txt` se salvaron porque se escribieron en
+invocaciones separadas que sí llevaban `.py`. Los otros ocho quedaron con el mensaje de
+error como único contenido.
+
+**Ficheros reparados** —los ocho, republicados por el runner desde una ejecución real:
+
+```text
+arranque-salida.txt · contratos-salida.txt · negativos-salida.txt · packs-salida.txt
+prompts-salida.txt · recuentos-salida.txt · referencias-salida.txt · versiones-salida.txt
+```
+
+**Qué impide que vuelva a ocurrir.** No se han editado los `.txt` a mano: eso habría
+escondido la causa.
+
+```text
+validadores/validadores.yaml        el manifiesto CANÓNICO: qué hay en validadores/, de
+                                    qué tipo, qué evidencia produce, y qué firma de éxito
+                                    y qué identificadores debe contener esa evidencia
+
+validadores/registrar_evidencia.py  el runner ÚNICO. Descubre del manifiesto, invoca por
+                                    ruta completa terminada en .py y comprueba que el
+                                    fichero existe ANTES de ejecutar; captura stdout,
+                                    stderr y código POR SEPARADO; escribe en temporal y
+                                    publica con os.replace (atómico) SÓLO si el código fue
+                                    cero; termina con código no cero si algo falla
+
+validadores/comprobar_evidencia.py  T158. Comprueba lo publicado: que exista, que no
+                                    contenga errores de invocación ni trazas, que lleve
+                                    cabecera de procedencia con su orden y su código, que
+                                    la orden invoque un `.py`, que el código sea cero, que
+                                    contenga la firma de éxito y los identificadores de SU
+                                    validador, que no sea la evidencia de otro, y que todo
+                                    `.py` de validadores/ esté en el manifiesto
+```
+
+Cada evidencia lleva ahora su cabecera, y el `stderr` —cuando lo hay— se conserva
+**identificado**, nunca mezclado con la salida:
+
+```text
+# evidencia de: contratos
+# orden:        python3 kernel/operativo/validadores/comprobar_contratos.py
+# codigo:       0
+```
+
+**Seis infracciones deliberadas** demuestran que T158 falla cuando debe: se archiva una
+invocación sin `.py` (el defecto exacto), una evidencia afirma éxito sin la salida que lo
+respalda, la evidencia de un validador ocupa el fichero de otro, se publica una ejecución
+con código no cero, falta un fichero exigido, y un validador nuevo queda fuera del
+manifiesto.
+
+**Lo que esto cambia en el informe anterior:** los validadores **sí** estaban en verde —lo
+que fallaba era el archivado—, pero **el informe no tenía derecho a afirmarlo**, porque su
+propia evidencia decía lo contrario. La afirmación se sostiene ahora sobre una ejecución
+publicada por el runner y comprobada por T158.
 
 ## 4 · Hallazgos nuevos encontrados durante la corrección
 
@@ -134,29 +242,55 @@ tooling/           new-project.sh valida antes de crear y envía la especificaci
                    kernel-status.sh llama a huella.py en vez de recalcular
 ```
 
-## 6 · Revisión individual de los 42 prompts
+## 6 · Revisión individual de las 42 unidades de instrucción
 
-> La auditoría revisó a fondo **uno** de 35 y de ese único contraste salieron dos
+**Vocabulario, fijado para que no contradiga el recuento canónico:**
+
+```text
+36  PROMPTS CANÓNICOS con fichero propio, en capacidades/<COD>/prompts/
+     ← es lo que cuenta el recuento canónico `prompts: 36`
+ 6  UNIDADES DE INSTRUCCIÓN EMBEBIDAS, como sección del contrato de un rol de pack
+42  UNIDADES DE INSTRUCCIÓN revisadas en total
+```
+
+Llamar «42 prompts» al conjunto contradecía el recuento derivado, que cuenta 36 ficheros de
+prompt y 42 roles. La entrega anterior lo hacía, y se corrige aquí, en el validador, en la
+prueba T153 y en la salida archivada.
+
+> La auditoría revisó a fondo **una** de las unidades y de ese único contraste salieron dos
 > hallazgos. Su advertencia fue explícita: «no es prudente suponer que los otros treinta y
-> cuatro estén limpios». Se han revisado **los 42** —36 con fichero propio más 6 que viven
-> como sección del contrato de un rol de pack—, cada uno contra su contrato, su método, su
-> capacidad y la autoridad normativa.
+> cuatro estén limpios». Se han revisado **las 42**, cada una contra su contrato, su método,
+> su capacidad y la autoridad normativa.
 
-**El hallazgo transversal.** No fue un prompt malo: fue que **casi ninguno nombraba el gate
-contra el que cierra ni cuándo escribir checkpoint**, y muchos no decían qué entregan ni
-cuándo devuelven. Un prompt es lo único que el agente carga: lo que no está en él, no
-ocurre. Los 42 ganan un bloque **«Cómo cierras»** derivado de su propio contrato —salida,
-gate, checkpoint, devolución, bloqueo y escalado, con las palabras del contrato—, y 36
-cabeceras ganan el enlace a su método, que no tenían.
+**El hallazgo transversal.** No fue una unidad mala: fue que **casi ninguna nombraba el gate
+contra el que cierra ni cuándo escribir checkpoint**, y muchas no decían qué entregan ni
+cuándo devuelven. Una unidad de instrucción es lo único que el agente carga: lo que no está
+en ella, no ocurre. Las 42 ganan un bloque **«Cómo cierras»** derivado de su propio contrato
+—salida, gate, checkpoint, devolución, bloqueo y escalado, con las palabras del contrato—, y
+las 36 con fichero propio ganan el enlace a su método, que no tenían.
 
-**La comprobación mecánica** la ejecuta `comprobar_prompts.py` (**T153**) sobre los nueve
-puntos: quién lo declara, enlaces de cabecera, conversación con el Owner sin autoridad,
-gate, salida, devolución, checkpoint, atribución de lo que la capacidad escala, e idioma.
-Salida completa en `pruebas/evidencia/prompts-salida.txt`.
+**La comprobación mecánica** la ejecuta `comprobar_prompts.py` (**T153**) sobre nueve puntos:
+quién la declara, enlaces de cabecera, conversación con el Owner sin autoridad, gate,
+salida, devolución, checkpoint, atribución de lo que la capacidad escala, e idioma. Salida
+completa en `pruebas/evidencia/prompts-salida.txt`.
+
+> **T153 es ESTRUCTURAL Y HEURÍSTICA, y su enunciado se acotó a eso.** Antes afirmaba «cada
+> prompt es coherente con su contrato, su método y su capacidad», que es más de lo que
+> puede demostrar: comprueba enlaces, presencia de señales textuales y comparaciones
+> aproximadas de autoridad y de idioma. Su enunciado es ahora:
+>
+> ```text
+> «Cada unidad de instrucción declara y enlaza las señales estructurales que su
+>  contrato exige»
+> ```
+>
+> La coherencia **semántica** —si enseña de verdad a hacer el trabajo, si su tono induce a
+> inventar— no la decide ninguna medida de texto. Es la tabla de abajo, y es una **revisión
+> humana documentada**, no algo que T153 certifique.
 
 **La lectura individual**, que es lo que ninguna medida de texto puede hacer:
 
-| prompt | qué comprueba su lectura | resultado |
+| unidad | qué comprueba su lectura | resultado |
 |---|---|---|
 | `ENC/interlocutor` | conserva la literal antes de interpretar; persiste antes de preguntar; no crea items | **conforme**; le faltaba el enlace a sus cuatro métodos |
 | `ENC/anclaje` | tres términos antes de decir que algo no existe; busca lo que contradice; no interpreta ni propone | **conforme**, es de los más precisos del corpus |
@@ -197,10 +331,13 @@ Salida completa en `pruebas/evidencia/prompts-salida.txt`.
 | `mob:DIS/interaccion-tactil` · `mob:CON/ciclo-de-vida` | pulgar y alcance; terminación forzada sin perder trabajo | **conforme** |
 | `wear:DIS/lectura-de-un-vistazo` · `wear:CON/energia-y-estados` | un dato, una acción; el ambiental es superficie, no apagado | **conforme** |
 
-**Resultado:** 42 revisados · 39 conformes tras añadirles el bloque de cierre · **2
-corregidos por contenido** (`DSP/estado` y `DIS/critica-visual`) · 1 nuevo
-(`DSP/supervision`). Ninguno se atribuía autoridad ajena, ninguno instruía hablar con el
-Owner sin poder, y ninguno confundía producir evidencia con emitir veredicto.
+**Resultado:** 42 unidades revisadas —36 prompts canónicos y 6 embebidas— · 39 conformes
+tras añadirles el bloque de cierre · **2 corregidas por contenido** (`DSP/estado` y
+`DIS/critica-visual`) · 1 nueva (`DSP/supervision`). Ninguna se atribuía autoridad ajena,
+ninguna instruía hablar con el Owner sin poder, y ninguna confundía producir evidencia con
+emitir veredicto.
+
+Esta tabla es **revisión humana de un solo lector**, y así se declara en las limitaciones.
 
 ## 7 · Reevaluación de las once pruebas que figuraban como superadas
 
@@ -253,28 +390,19 @@ git checkout -b claude/kernel-operativo-correcciones-post-auditoria origin/main
 git cherry-pick -x b7a2ceb 4bc8aee
 git push -u origin claude/kernel-operativo-correcciones-post-auditoria
 
-# validación final, desde cero
-python3 kernel/operativo/validadores/ads_lint.py               # EXIT 0
-python3 kernel/operativo/validadores/comprobar_contratos.py    # EXIT 0 · 18 superadas
-python3 kernel/operativo/validadores/comprobar_packs.py        # EXIT 0 ·  3 superadas
-python3 kernel/operativo/validadores/comprobar_referencias.py  # EXIT 0 ·  1 superada
-python3 kernel/operativo/validadores/comprobar_arranque.py     # EXIT 0 ·  1 superada
-python3 kernel/operativo/validadores/comprobar_versiones.py    # EXIT 0 ·  1 superada
-python3 kernel/operativo/validadores/comprobar_recuentos.py    # EXIT 0 ·  1 superada
-python3 kernel/operativo/validadores/comprobar_integridad.py   # EXIT 0 ·  1 superada
-python3 kernel/operativo/validadores/comprobar_prompts.py      # EXIT 0 ·  1 superada
-python3 kernel/operativo/validadores/comprobar_negativos.py    # EXIT 0 · 41 detectadas
-python3 kernel/operativo/validadores/registro_pruebas.py       # 81 escenarios
-python3 kernel/operativo/validadores/comprobar_recuentos.py --generar
+# validación final: UNA orden, que regenera, ejecuta, comprueba y publica
+python3 kernel/operativo/validadores/registrar_evidencia.py    # EXIT 0
 ./tooling/kernel-status.sh                                     # LIMPIO
 ```
 
-Toda la salida está archivada en `kernel/operativo/pruebas/evidencia/`, un fichero por
-validador. Reproducirla es ejecutar el comando.
+Ya no hay un bucle de shell que archive salidas: **archivar la evidencia es lo que hace el
+runner**, y hacerlo mal es lo que la fase anterior demostró que es fácil. La salida vive en
+`kernel/operativo/pruebas/evidencia/`, un fichero por validador, cada uno con su cabecera de
+procedencia. Reproducirla es ejecutar esa orden.
 
 ## 9 · Pruebas negativas
 
-**41 infracciones deliberadas**, cada una sobre una **copia temporal** del repositorio. El
+**49 infracciones deliberadas**, cada una sobre una **copia temporal** del repositorio. El
 corpus real no se toca en ningún momento: no hay restauración que pueda salir mal porque no
 hay nada que restaurar.
 
@@ -295,8 +423,12 @@ A-15  1   método que su capacidad deja de declarar
 A-18  2   decide lo que su capacidad escala · decide materia ajena
 A-23  1   DSP vuelve a decidir una cancelación
 A-24  1   cifra escrita a mano que ya no cuadra
-—     5   paso sin condición de salida · marca en un esquema · prompt sin gate ·
-          prompt que habla con el Owner sin poder · prompt sin método
+A-13  2   vínculo CON↔gate:usabilidad roto · vínculo sin declarar quién juzga
+T158  6   invocación archivada sin .py · éxito sin salida que lo respalde · evidencia de
+          otro validador · código no cero publicado · evidencia que falta · validador
+          fuera del manifiesto
+—     5   paso sin condición de salida · marca en un esquema · unidad sin gate ·
+          unidad que habla con el Owner sin poder · unidad sin método
 ```
 
 ## 10 · Limitaciones reales
@@ -315,9 +447,17 @@ A-24  1   cifra escrita a mano que ya no cuadra
    su capacidad sin compartir una palabra es lectura humana, y ninguna medida de texto lo
    decide. Es una limitación consciente, no un descuido.
 
-4  LA REVISIÓN DE PROMPTS ES DE UN SOLO LECTOR. Mecánicamente son 42 de 42; la lectura
-   cualitativa la ha hecho quien escribió esta fase. Un segundo lector independiente
-   encontraría cosas, igual que esta auditoría las encontró sobre el trabajo anterior.
+4  LA REVISIÓN DE LAS UNIDADES DE INSTRUCCIÓN ES DE UN SOLO LECTOR. Mecánicamente son 42
+   de 42, y eso lo comprueba T153 — que es ESTRUCTURAL Y HEURÍSTICA y no demuestra
+   coherencia semántica. La lectura cualitativa la ha hecho quien escribió esta fase. Un
+   segundo lector independiente encontraría cosas, igual que la auditoría las encontró
+   sobre el trabajo anterior, y como el propio Owner encontró la corrupción de evidencia
+   que ninguna de las dos vio.
+
+8  LA EVIDENCIA DEMUESTRA QUE LOS VALIDADORES CORRIERON Y EN QUÉ TERMINARON. No demuestra
+   que cada validador compruebe lo que su nombre dice: eso lo demuestran sus 49
+   infracciones deliberadas, y sólo en la medida en que esas infracciones cubran los modos
+   de fallo reales. Es una cobertura, no una garantía.
 
 5  LOS UMBRALES SON PROVISIONALES. 0.60 y 0.15 no están calibrados con uso real, y así se
    declaran. Los frenos —2, 2, 3 y 3— vienen de (a) y (b) y tampoco se han observado.
@@ -348,7 +488,9 @@ A-24  1   cifra escrita a mano que ya no cuadra
 |---|---|
 | queda abierto un hallazgo crítico o grave | **ninguno abierto** |
 | el arranque documentado sigue fallando | **funciona**, con los tres packs, verificado por T148 |
-| una prueba superada sin demostrar su afirmación | **ninguna**: cuatro se renombraron, reforzaron o sustituyeron |
+| una prueba superada sin demostrar su afirmación | **ninguna**: cuatro se renombraron, reforzaron o sustituyeron en la ronda anterior, y **T153 se acotó** en ésta a lo que demuestra mecánicamente |
+| la evidencia publicada no respalda lo que el informe afirma | **T158 lo comprueba**, con seis infracciones deliberadas |
+| algún hallazgo grave sin infracción deliberada | **ninguno**: A-13 era el último y ya tiene N144 y N144b |
 | no se han revisado individualmente los prompts | **42 de 42**, con registro individual |
 | persisten referencias rotas conocidas | **cero**, en los 217 documentos |
 | siguen existiendo recuentos manuales incompatibles | **cero**: se derivan y se comprueban |

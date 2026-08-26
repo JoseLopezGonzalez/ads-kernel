@@ -335,28 +335,66 @@ estado: prueba-superada
 evidencia: "evidencia/contratos-salida.txt"
 ```
 
+> **Lo que T153 NO demuestra.** Es una prueba **estructural y heurística**: enlaces,
+> presencia de señales, y comparaciones aproximadas de autoridad y de idioma. La coherencia
+> SEMÁNTICA de una unidad de instrucción —si enseña de verdad a hacer el trabajo, si su tono
+> induce a inventar— no la decide ninguna medida de texto. Esa lectura es humana y está
+> documentada unidad por unidad en `docs/rediseno/CORRECCIONES-POST-AUDITORIA.md` §6 —del
+> repositorio del kernel, que no viaja con el kernel instalado— como revisión **humana**, no
+> como algo que este validador certifique.
+
 ```yaml ads:escenario
 id: T153
-nombre: Cada prompt es coherente con su contrato, su método y su capacidad
-cubre: ["revisión de los prompts", "C1 contrato común de rol", "00-INDICE la excepción de los prompts"]
+nombre: Cada unidad de instrucción declara y enlaza las señales estructurales que su contrato exige
+cubre: ["revisión de las unidades de instrucción", "C1 contrato común de rol", "00-INDICE la excepción de los prompts"]
 dado:
-  - "un prompt operativo por cada rol del kernel y de los packs"
-  - "el contrato de ese rol, su método y la ficha de su capacidad"
-cuando: ["se cruza cada prompt con las tres fuentes"]
+  - "42 unidades de instrucción: 36 prompts canónicos con fichero propio y 6 embebidas como sección del contrato de un rol de pack"
+  - "el contrato de cada rol, su método y la ficha de su capacidad"
+cuando: ["se cruza cada unidad con las tres fuentes, comprobando SEÑALES ESTRUCTURALES"]
 entonces:
-  - "lo declara exactamente un rol, y todo fichero de prompts está declarado"
+  - "la declara exactamente un rol, y todo fichero de prompts está declarado"
   - "su cabecera enlaza el contrato del rol y al menos uno de sus métodos"
   - "no instruye hablar con el Owner si su rol declara interaccion_owner ninguna"
   - "nombra el gate contra el que cierra, qué entrega, cuándo devuelve y cuándo escala"
   - "menciona el checkpoint cuando su contrato lo exige"
-  - "no se atribuye una decisión que su capacidad escala"
-  - "está escrito en español, que es el idioma canónico del corpus"
+  - "no reproduce, por comparación aproximada, una decisión que su capacidad escala"
+  - "sus marcas de idioma son las del español, que es el idioma canónico del corpus"
 falla_si:
-  - "un prompt cierra sin nombrar contra qué"
-  - "un prompt instruye una conversación con el Owner que su rol no puede tener"
+  - "una unidad cierra sin nombrar contra qué"
+  - "una unidad instruye una conversación con el Owner que su rol no puede tener"
   - "existe un fichero de prompts que ningún rol declara"
 ejecucion: validador-estructural
 validador: "kernel/operativo/validadores/comprobar_prompts.py"
 estado: prueba-superada
 evidencia: "evidencia/prompts-salida.txt"
+```
+
+```yaml ads:escenario
+id: T158
+nombre: La evidencia publicada demuestra lo que el informe afirma
+cubre: ["evidencia reproducible", "REGISTRO.md regla dura", "registrar_evidencia.py", "validadores.yaml"]
+dado:
+  - "el manifiesto canónico de validadores, con la evidencia que cada uno debe producir"
+  - "los ficheros de evidencia publicados"
+cuando: ["se comprueba cada evidencia contra lo que su validador debe haber producido"]
+entonces:
+  - "existe el fichero que el manifiesto exige, y no está vacío"
+  - "no contiene errores de invocación del intérprete ni trazas de excepción"
+  - "lleva cabecera de procedencia: de qué validador es, con qué orden y con qué código"
+  - "su orden invoca un script terminado en .py"
+  - "el código registrado es cero"
+  - "contiene el resumen de éxito y los identificadores que su validador produce"
+  - "no corresponde a un validador distinto del que dice"
+  - "sólo contiene FALLIDA o NO detectada donde el manifiesto declara que su salida incluye el resultado interno de un fixture negativo"
+  - "todo .py de validadores/ está declarado en el manifiesto, y todo lo declarado existe"
+  - "no sobra ninguna evidencia que nadie regenere"
+falla_si:
+  - "una evidencia contiene «can't open file» y el informe sigue afirmando EXIT 0"
+  - "una evidencia afirma un éxito que su salida no respalda"
+  - "se publica una ejecución cuyo código no fue cero"
+  - "un validador nuevo queda fuera del manifiesto y de la evidencia"
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_evidencia.py"
+estado: prueba-superada
+evidencia: "evidencia/evidencia-salida.txt"
 ```

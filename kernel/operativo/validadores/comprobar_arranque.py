@@ -8,7 +8,8 @@ porque los sesenta y un escenarios auditaban el corpus y nadie ejecutaba el tool
 Esto lo ejecuta de verdad, para CADA pack instalable:
 
   1. copia el repositorio a un directorio temporal del sistema
-  2. crea un proyecto con ese pack, con el comando real
+  2. crea un proyecto con ese pack —y con la COMBINACIÓN que el checkpoint documenta como
+     siguiente comando real—, con el comando real
   3. comprueba la estructura resultante, fichero a fichero
   4. comprueba la composición: el pack pedido está, los otros NO, y no hay rastro de legacy
   5. ejecuta los validadores DENTRO del proyecto creado
@@ -74,9 +75,16 @@ def _copiar(raiz, destino):
     shutil.copytree(raiz, destino, ignore=ignorar, symlinks=True)
 
 
+# Combinaciones que la documentación presenta como reales y que por tanto hay que
+# ejecutar EXACTAMENTE. `packs/COMPOSICION.md` prevé tres; el checkpoint documenta
+# `wear-os,mobile-app` como el siguiente comando del piloto, y probar cada pack por
+# separado no demuestra que esa orden funcione.
+COMBINACIONES = ["wear-os,mobile-app"]
+
+
 def t148_arranque(raiz=None):
     raiz = os.path.abspath(raiz or RAIZ)
-    r = Resultado("T148", "El arranque documentado crea un proyecto conforme con cada pack")
+    r = Resultado("T148", "El arranque documentado crea un proyecto conforme, pack a pack y combinado")
     disponibles = packs_instalables(raiz)
     if not disponibles:
         r.fallo("no hay ningún pack instalable: packs/<nombre>/PACK.md no existe")
@@ -103,15 +111,24 @@ def t148_arranque(raiz=None):
                     f"Instalables: {', '.join(disponibles)}")
 
     # --- el flujo real, un pack cada vez -------------------------------------
+    casos = list(disponibles) + [c for c in COMBINACIONES
+                                 if all(p in disponibles for p in c.split(","))]
+    for c in COMBINACIONES:
+        faltan = [p for p in c.split(",") if p not in disponibles]
+        if faltan:
+            r.fallo(f"la combinación documentada '{c}' cita packs no instalables: {faltan}")
+
     tmp = tempfile.mkdtemp(prefix="ads-arranque-")
     try:
-        for pack in disponibles:
-            caja = os.path.join(tmp, pack)
+        for caso in casos:
+            pedidos = caso.split(",")
+            pack = caso                      # etiqueta del caso, suelto o combinado
+            caja = os.path.join(tmp, caso.replace(",", "+"))
             os.makedirs(caja)
             fuente = os.path.join(caja, "ads-kernel")
             _copiar(raiz, fuente)
-            nombre = f"proyecto-{pack}"
-            proc = subprocess.run(["./tooling/new-project.sh", nombre, pack],
+            nombre = "proyecto-" + caso.replace(",", "-")
+            proc = subprocess.run(["./tooling/new-project.sh", nombre, caso],
                                   cwd=fuente, capture_output=True, text=True)
             if proc.returncode != 0:
                 r.fallo(f"[{pack}] new-project.sh terminó con código {proc.returncode}: "
@@ -127,11 +144,12 @@ def t148_arranque(raiz=None):
                 if not os.path.exists(os.path.join(proyecto, rel)):
                     r.fallo(f"[{pack}] falta en el proyecto creado: {rel}")
 
-            # 4 · composición
-            if not os.path.isfile(os.path.join(proyecto, "packs", pack, "PACK.md")):
-                r.fallo(f"[{pack}] el pack pedido no quedó instalado")
+            # 4 · composición: están TODOS los pedidos y NINGUNO de los no pedidos
+            for p in pedidos:
+                if not os.path.isfile(os.path.join(proyecto, "packs", p, "PACK.md")):
+                    r.fallo(f"[{pack}] el pack pedido '{p}' no quedó instalado")
             for otro in disponibles:
-                if otro != pack and os.path.isdir(os.path.join(proyecto, "packs", otro)):
+                if otro not in pedidos and os.path.isdir(os.path.join(proyecto, "packs", otro)):
                     r.fallo(f"[{pack}] se instaló además '{otro}', que no se pidió")
             if os.path.exists(os.path.join(proyecto, "packs", "legacy-1.3.0")):
                 r.fallo(f"[{pack}] el proyecto arrastra packs/legacy-1.3.0")
@@ -140,6 +158,47 @@ def t148_arranque(raiz=None):
                     r.fallo(f"[{pack}] el proyecto arrastra __pycache__")
                     break
                 del fn
+
+            # 4b · con DOS packs: la composición tiene que ser computable, y ningún
+            #      fichero puede haberse sobrescrito en silencio al instalar el segundo
+            if len(pedidos) > 1:
+                comunes = ["packs/00-QUE-ES-UN-PACK.md", "packs/COMPOSICION.md"]
+                for rel in comunes:
+                    if not os.path.isfile(os.path.join(proyecto, rel)):
+                        r.fallo(f"[{pack}] falta {rel}, que la composición necesita")
+                # ningún fichero de un pack pisa al de otro: sus árboles son disjuntos
+                por_pack = {}
+                for p in pedidos:
+                    base_p = os.path.join(proyecto, "packs", p)
+                    por_pack[p] = {os.path.relpath(os.path.join(d, f), base_p)
+                                   for d, _sd, fs in os.walk(base_p) for f in fs}
+                for i, a in enumerate(pedidos):
+                    for b_ in pedidos[i + 1:]:
+                        # comparten NOMBRES relativos por diseño (PACK.md, gates/gates.md);
+                        # lo que no puede ocurrir es que compartan RUTA dentro de packs/
+                        rutas_a = {os.path.join("packs", a, x) for x in por_pack[a]}
+                        rutas_b = {os.path.join("packs", b_, x) for x in por_pack[b_]}
+                        if rutas_a & rutas_b:
+                            r.fallo(f"[{pack}] '{a}' y '{b_}' comparten ruta: "
+                                    f"{sorted(rutas_a & rutas_b)[:3]}")
+                # la resolución de P1 se computa, y declara qué queda para el PROFILE
+                res = subprocess.run(
+                    [sys.executable, "kernel/operativo/validadores/composicion_packs.py"],
+                    cwd=proyecto, capture_output=True, text=True)
+                if res.returncode != 0:
+                    r.fallo(f"[{pack}] la composición no es computable "
+                            f"(exit {res.returncode}): {res.stderr.strip()[:160]}")
+                else:
+                    salida = res.stdout
+                    for p in pedidos:
+                        if p not in salida:
+                            r.fallo(f"[{pack}] la resolución no menciona el pack '{p}'")
+                    if "PENDIENTE DE PROFILE" not in salida:
+                        r.fallo(f"[{pack}] la resolución no declara qué queda pendiente de "
+                                f"que lo fije el PROFILE")
+                    if "gana" not in salida:
+                        r.fallo(f"[{pack}] la resolución no declara qué valor gana ni de "
+                                f"qué pack procede")
 
             # 5 · los validadores, DENTRO del proyecto creado
             for v in VALIDADORES_EN_PROYECTO:

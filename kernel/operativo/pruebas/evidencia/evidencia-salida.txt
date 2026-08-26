@@ -1,0 +1,7 @@
+# evidencia de: evidencia
+# orden:        python3 kernel/operativo/validadores/comprobar_evidencia.py
+# codigo:       0
+# ---------------------------------------------------------------
+T158  SUPERADA  La evidencia publicada demuestra lo que el informe afirma
+
+1 superadas · 0 fallidas

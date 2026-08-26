@@ -66,25 +66,32 @@ runtime · dispatcher · gym-wear · PesquerApp · pack ERP · secciones (c) a (
 
 8  Cada prueba nueva lleva su INFRACCIÓN DELIBERADA. Un validador que sólo se ha visto
    pasar no está verificado: fue el modo de fallo de T131 y T134.
+
+9  La EVIDENCIA la publica un runner, no un bucle de shell, y T158 comprueba que respalda
+   lo que el informe afirma. Ocho de diez evidencias de la entrega anterior estaban
+   corruptas y nada lo detectó.
 ```
 
 ## Cómo se comprueba que todo esto sigue en pie
 
-Diez validadores, todos con `EXIT 0` en el último commit. Desde la raíz del repositorio:
+**Una sola orden**, desde la raíz del repositorio:
 
 ```bash
-for v in ads_lint comprobar_contratos comprobar_packs comprobar_referencias \
-         comprobar_arranque comprobar_versiones comprobar_recuentos \
-         comprobar_integridad comprobar_prompts comprobar_negativos; do
-  python3 kernel/operativo/validadores/$v.py || echo "FALLA $v"
-done
-python3 kernel/operativo/validadores/registro_pruebas.py
-python3 kernel/operativo/validadores/comprobar_recuentos.py --generar
+python3 kernel/operativo/validadores/registrar_evidencia.py
 git status --short          # tiene que quedar vacío: los generados son deterministas
 ```
 
-La salida archivada está en `kernel/operativo/pruebas/evidencia/`, un fichero por
-validador. El estado real de cada prueba, en
+El runner regenera los artefactos derivados, ejecuta los **once validadores** por su ruta
+completa terminada en `.py`, captura stdout, stderr y código por separado, y publica la
+evidencia **sólo** si el código fue cero. Termina con código distinto de cero si algo falla.
+
+> **No archives evidencia a mano.** La entrega anterior lo hizo con un bucle de shell que
+> omitía la extensión `.py` y redirigía el error del intérprete dentro del fichero: ocho de
+> diez evidencias quedaron con «python3: can't open file» mientras el informe afirmaba
+> «todos EXIT 0». Que lo publicado respalde lo que se afirma lo comprueba ahora **T158**.
+
+La salida vive en `kernel/operativo/pruebas/evidencia/`, un fichero por validador con su
+cabecera de procedencia. El estado real de cada prueba, en
 [`REGISTRO.md`](../../kernel/operativo/pruebas/REGISTRO.md) y su tabla generada.
 
 ## Dónde está cada cosa
@@ -113,9 +120,12 @@ propia— quedó **RESUELTA** por la enmienda E1.
 
 ```text
 1  INSTALAR       ./tooling/new-project.sh <nombre> wear-os,mobile-app
-                  (o web-app, según el proyecto). El comando FUNCIONA y está probado por
-                  T148 con los tres packs. Ejecútalo sin argumentos para ver los
-                  instalables.
+                  (o web-app, según el proyecto). T148 ejecuta EXACTAMENTE esa orden
+                  combinada, además de los tres packs por separado, y comprueba que ambos
+                  packs quedan instalados, que no se cuela ninguno más, que ningún fichero
+                  se sobrescribe entre packs, que la composición P1 es computable y que
+                  declara qué queda pendiente del PROFILE. Ejecútalo sin argumentos para
+                  ver los instalables.
 
 2  COMPROBAR      dentro del proyecto creado, ads_lint tiene que salir en verde. Si hay
                   enlaces rotos, falta algo por copiar y es un defecto del tooling.

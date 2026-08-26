@@ -1,1 +1,7 @@
-python3: can't open file '/home/jose/ads-kernel/kernel/operativo/validadores/comprobar_versiones': [Errno 2] No such file or directory
+# evidencia de: versiones
+# orden:        python3 kernel/operativo/validadores/comprobar_versiones.py
+# codigo:       0
+# ---------------------------------------------------------------
+T152  SUPERADA  Los puntos de entrada no se contradicen sobre la versión
+
+1 superadas · 0 fallidas

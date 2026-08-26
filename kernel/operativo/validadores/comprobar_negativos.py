@@ -154,6 +154,79 @@ def m_exclusion_caducada(raiz):
                '    motivo: "resto de una exclusión antigua"')
 
 
+def m_con_sin_usabilidad(raiz):
+    """A-13 · se rompe el vínculo entre CON y gate:usabilidad.
+
+    Era el único hallazgo grave sin infracción deliberada, y por tanto el único cuya
+    prueba nunca se había visto fallar.
+    """
+    _sustituir(raiz, "kernel/operativo/capacidades/CON/CAPACIDAD.md",
+               "  - id: superficie-usable", "  - id: superficie-construida")
+
+
+def m_con_usabilidad_sin_juez(raiz):
+    """A-13 · el vínculo existe pero no dice QUIÉN juzga: lo juzgaría quien la produjo."""
+    _sustituir(raiz, "kernel/operativo/capacidades/CON/CAPACIDAD.md",
+               "el dictamen de los seis ejes lo emite DIS/validacion-de-uso, que no la produjo",
+               "el dictamen de los seis ejes se emite al cerrar")
+
+
+def m_evidencia_sin_py(raiz):
+    """El defecto EXACTO de la entrega anterior: se archiva una invocación sin .py."""
+    ruta = os.path.join(raiz, "kernel/operativo/pruebas/evidencia/contratos-salida.txt")
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write("# evidencia de: contratos\n"
+                 "# orden:        python3 kernel/operativo/validadores/comprobar_contratos\n"
+                 "# codigo:       0\n"
+                 "# ---------------------------------------------------------------\n"
+                 "python3: can't open file "
+                 "'/x/kernel/operativo/validadores/comprobar_contratos': "
+                 "[Errno 2] No such file or directory\n")
+
+
+def m_evidencia_afirma_exito_sin_salida(raiz):
+    """Una evidencia que dice código 0 y no contiene el resumen que su validador produce."""
+    ruta = os.path.join(raiz, "kernel/operativo/pruebas/evidencia/packs-salida.txt")
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write("# evidencia de: packs\n"
+                 "# orden:        python3 kernel/operativo/validadores/comprobar_packs.py\n"
+                 "# codigo:       0\n"
+                 "# ---------------------------------------------------------------\n"
+                 "todo bien\n")
+
+
+def m_evidencia_de_otro_validador(raiz):
+    """La evidencia de un validador ocupa el fichero de otro."""
+    ruta = os.path.join(raiz, "kernel/operativo/pruebas/evidencia/versiones-salida.txt")
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write("# evidencia de: recuentos\n"
+                 "# orden:        python3 kernel/operativo/validadores/comprobar_recuentos.py\n"
+                 "# codigo:       0\n"
+                 "# ---------------------------------------------------------------\n"
+                 "T151  SUPERADA\n\n1 superadas · 0 fallidas\n")
+
+
+def m_evidencia_con_codigo_no_cero(raiz):
+    """Se publica una ejecución que terminó mal."""
+    ruta = os.path.join(raiz, "kernel/operativo/pruebas/evidencia/recuentos-salida.txt")
+    with open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto.replace("# codigo:       0", "# codigo:       1"))
+
+
+def m_evidencia_falta(raiz):
+    """Falta un fichero de evidencia que el manifiesto exige."""
+    os.unlink(os.path.join(raiz, "kernel/operativo/pruebas/evidencia/referencias-salida.txt"))
+
+
+def m_validador_fuera_del_manifiesto(raiz):
+    """Un validador nuevo que nadie registra queda fuera de la evidencia en silencio."""
+    ruta = os.path.join(raiz, VALIDADORES, "comprobar_algo_nuevo.py")
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write("#!/usr/bin/env python3\nraise SystemExit(0)\n")
+
+
 def m_prompt_sin_gate(raiz):
     """Revisión de prompts · un prompt deja de nombrar el gate contra el que cierra."""
     _sustituir(raiz, "kernel/operativo/capacidades/ARQ/prompts/encaje.md",
@@ -412,6 +485,30 @@ CATALOGO = [
     Mutacion("N149d", "A-03", "T149", "comprobar_packs",
              "una composición no comparable se resuelve en silencio en vez de fallar",
              m_composicion_incompatible_silenciosa),
+    Mutacion("N144", "A-13", "T144", "comprobar_contratos",
+             "se rompe el vínculo entre CON y gate:usabilidad",
+             m_con_sin_usabilidad),
+    Mutacion("N144b", "A-13", "T144", "comprobar_contratos",
+             "el vínculo existe pero deja de decir quién juzga la evidencia",
+             m_con_usabilidad_sin_juez),
+    Mutacion("N158", "evidencia", "T158", "comprobar_evidencia",
+             "se archiva una invocación SIN .py — el defecto exacto de la entrega anterior",
+             m_evidencia_sin_py),
+    Mutacion("N158b", "evidencia", "T158", "comprobar_evidencia",
+             "una evidencia afirma éxito sin la salida que lo respalda",
+             m_evidencia_afirma_exito_sin_salida),
+    Mutacion("N158c", "evidencia", "T158", "comprobar_evidencia",
+             "la evidencia de un validador ocupa el fichero de otro",
+             m_evidencia_de_otro_validador),
+    Mutacion("N158d", "evidencia", "T158", "comprobar_evidencia",
+             "se publica una ejecución cuyo código no fue cero",
+             m_evidencia_con_codigo_no_cero),
+    Mutacion("N158e", "evidencia", "T158", "comprobar_evidencia",
+             "falta un fichero de evidencia que el manifiesto exige",
+             m_evidencia_falta),
+    Mutacion("N158f", "evidencia", "T158", "comprobar_evidencia",
+             "un validador nuevo queda fuera del manifiesto y de la evidencia",
+             m_validador_fuera_del_manifiesto),
     Mutacion("N153", "prompts", "T153", "comprobar_prompts",
              "un prompt deja de nombrar el gate contra el que cierra",
              m_prompt_sin_gate),
