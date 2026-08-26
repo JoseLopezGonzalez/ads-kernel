@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: d06b3bd65b891d10 -->
+<!-- source_revision: 121f7e778129f9ce -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -13,9 +13,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | CONTRATO DEFINIDO | 50 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 15 |
+| PRUEBA SUPERADA | 16 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **65** |
+| **total** | **66** |
 
 ## Detalle
 
@@ -86,3 +86,4 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T137](T136-T152-post-auditoria.md) | DSP no declara autoridad semántica sobre ninguna cancelación | A-23 · b.7 autoridad orden y ejecución · T54 | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
 | [T148](T136-T152-post-auditoria.md) | El arranque documentado crea un proyecto conforme con cada pack | A-02 · tooling/new-project.sh · README · START_HERE · K0.14 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
 | [T149](T122-T133-T149-packs.md) | Lo más restrictivo gana entre dos packs, y queda registrado por qué | A-03 · A-25 · packs/COMPOSICION precedencia P1 · composicion_packs.py | validador-estructural | **PRUEBA SUPERADA** | evidencia/packs-salida.txt |
+| [T150](T136-T152-post-auditoria.md) | La huella de integridad cubre a los validadores y detecta su edición | A-04 · K0.11 · tooling/kernel-status.sh · validadores/huella.py | validador-estructural | **PRUEBA SUPERADA** | evidencia/integridad-salida.txt |

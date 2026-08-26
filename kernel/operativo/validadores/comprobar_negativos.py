@@ -130,6 +130,13 @@ def m_tooling_editado(raiz):
         fh.write("\n# fork silencioso introducido por comprobar_negativos\n")
 
 
+def m_huella_estrechada(raiz):
+    """A-04 · alguien «arregla» la integridad estrechando la huella hasta no ver nada."""
+    _sustituir(raiz, VALIDADORES + "/huella.py",
+               'EXTENSIONES = (".md", ".yaml", ".yml", ".py", ".sh")',
+               'EXTENSIONES = (".md", ".yaml")')
+
+
 def m_pack_menos_restrictivo_gana(raiz):
     """A-03 · la resolución deja de tomar lo más restrictivo. T149 tiene que verlo.
 
@@ -220,6 +227,9 @@ CATALOGO = [
     Mutacion("N150b", "A-04", "T150", "comprobar_integridad",
              "un script de tooling se edita localmente",
              m_tooling_editado),
+    Mutacion("N150c", "A-04", "T150", "comprobar_integridad",
+             "la definición de la huella se estrecha hasta dejar fuera a los validadores",
+             m_huella_estrechada),
     Mutacion("N149", "A-03", "T149", "comprobar_packs",
              "la resolución se queda con el valor MENOS restrictivo",
              m_pack_menos_restrictivo_gana),

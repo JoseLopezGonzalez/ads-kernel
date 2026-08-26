@@ -74,3 +74,25 @@ validador: "kernel/operativo/validadores/comprobar_arranque.py"
 estado: prueba-superada
 evidencia: "evidencia/arranque-salida.txt"
 ```
+
+```yaml ads:escenario
+id: T150
+nombre: La huella de integridad cubre a los validadores y detecta su edición
+cubre: ["A-04", "K0.11", "tooling/kernel-status.sh", "validadores/huella.py"]
+dado:
+  - "un kernel vendorizado con su huella de referencia anotada"
+cuando:
+  - "se calcula la huella y se compara con la almacenada"
+  - "se comprueba qué ficheros entran en ella"
+entonces:
+  - "la huella cubre los validadores en Python, los scripts de tooling, los esquemas y los contratos"
+  - "la huella almacenada coincide con la calculada"
+  - "dos cálculos consecutivos producen el mismo valor"
+falla_si:
+  - "un validador o un script de tooling puede editarse sin que el estado deje de ser limpio"
+  - "la definición de la huella se estrecha hasta dejar fuera lo que ejecuta la conformidad"
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_integridad.py"
+estado: prueba-superada
+evidencia: "evidencia/integridad-salida.txt"
+```

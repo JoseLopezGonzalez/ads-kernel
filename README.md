@@ -78,7 +78,7 @@ cd ../mi-web-app
 ## Las tres reglas que sostienen la reutilización
 
 **1. El kernel vendorizado no se edita.**
-Cada proyecto lleva una copia congelada. Si necesitas otro comportamiento, la vía es un **override declarado** en el PROFILE, no editar la copia. `kernel-status.sh` detecta la divergencia. Un kernel editado localmente es un fork silencioso y la reutilización desaparece.
+Cada proyecto lleva una copia congelada. Si necesitas otro comportamiento, la vía es un **override declarado** en el PROFILE, no editar la copia. `kernel-status.sh` detecta la divergencia sobre `kernel/`, `packs/` y `tooling/`, e incluye **los validadores en Python**: sin ellos, editar `ads_lint.py` para relajar una regla sería un fork invisible. Lo que entra en la huella se ve con `python3 kernel/operativo/validadores/huella.py --listar`, y que la detección funcione lo comprueba la prueba T150 con tres infracciones deliberadas.
 
 **2. Ante cada regla, preguntar de qué capa es.**
 ¿Sería igual de cierta en un proyecto de otra clase? → KERNEL. ¿En otro proyecto de la misma clase? → PACK. ¿Sólo aquí? → PROFILE.
