@@ -1,7 +1,8 @@
 # ENC — composición del equipo
 
-`ENC` se materializa siempre, pero **no siempre con tres agentes**. La composición se
-elige por la clase de expresión que entra, no por costumbre.
+`ENC` se materializa **cuando hay trabajo de entrada** (enmienda E1.2), y cuando lo hay **no
+siempre lleva tres agentes**. La composición se elige por la clase de expresión que entra, no
+por costumbre.
 
 ```yaml ads:composicion
 id: composicion:enc-conversacion-simple

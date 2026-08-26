@@ -26,7 +26,7 @@ PUEDE     especializar el sistema de excelencia de Diseño para su medio
 NO PUEDE  redefinir un contrato universal del kernel
 NO PUEDE  rebajar un gate del kernel, ni saltárselo
 NO PUEDE  quitar autoridad a un rol del kernel ni dársela a uno suyo
-NO PUEDE  sombrear una capacidad del kernel: los catorce códigos están reservados
+NO PUEDE  sombrear una capacidad del kernel: los quince códigos están reservados
 NO PUEDE  rebajar las exigencias de un perfil de agente del kernel
 ```
 

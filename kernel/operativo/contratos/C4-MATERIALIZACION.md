@@ -89,17 +89,36 @@ MEMORIA   NUNCA se retira. Las memorias no mueren; los equipos sí (a.4).
 Al desmaterializar se escribe: qué equipo, qué composición tenía, y dónde queda su memoria.
 Rematerializarlo después es cargar esa memoria, no empezar de cero.
 
-## Los dos equipos que no se retiran nunca
+## Tres cosas distintas que no deben confundirse
+
+> Confundirlas produce el defecto que a.4 y T12 existen para impedir: equipos que hay que
+> mantener ocupados, y trabajo fabricado para justificarlos.
+
+```text
+CAPACIDAD DISPONIBLE      está en el catálogo instalado. No consume nada: sin tablero, sin
+                          cola, sin agentes. Las QUINCE lo están siempre.
+
+EQUIPO MATERIALIZADO      tiene tablero, cola, memoria viva y agentes ocupando roles,
+                          PORQUE hay trabajo real que lo necesita. Se materializa por la
+                          señal de a.4 y se retira por la regla de retirada de G52.
+
+EQUIPO PERMANENTEMENTE    se materializa al instalar y no se retira nunca. Son DOS.
+ACTIVO
+```
+
+### Los dos equipos permanentemente activos
 
 ```text
 DSP   sin despacho no hay orden ni ruta
 SIS   sin ingeniería del sistema nadie mantiene la fábrica
-ENC   sin puerta de entrada el Owner vuelve a explicar el contexto cada sesión
 ```
 
-`ENC` se añade a los dos que a.4 declara permanentes, por la razón de C1 del registro de
-contradicciones. Si el Owner decide que `ENC` es función de `DSP`, la permanencia la
-hereda de `DSP` y este párrafo desaparece sin cambiar nada más.
+**`ENC` NO es uno de ellos.** La enmienda [E1.2](../../../docs/rediseno/a-ENMIENDA-E1-ENC.md)
+lo fija expresamente: `ENC` es capacidad disponible siempre y equipo materializado **bajo
+demanda**, y se retira por la regla general. Que no esté materializada no cierra la puerta de
+entrada: la primera expresión del Owner es la señal de materialización de a.4, igual que
+para cualquier otra capacidad. Su memoria persiste y es lo que evita que el Owner repita
+contexto al rematerializarla.
 
 ## Prohibiciones de materialización
 
@@ -120,11 +139,18 @@ PAQUETE           FEA-014/02 · capacidad DIS · modo trabajo propio
                   objetivo: dirección visual del producto
                   nivel de calidad exigido: primera dirección, área diferencial
 
-PASO 2  se recorren las composiciones de DIS en orden.
-        composicion:dis-extension-de-patron   condición falsa (no hay patrón que extender)
-        composicion:dis-caso-nuevo            condición falsa (no hay sistema aún)
-        composicion:dis-fundacion             condición VERDADERA
-                                              → elegida
+PASO 2  se recorren las composiciones de DIS EN EL ORDEN EN QUE ESTÁN ESCRITAS en
+        capacidades/DIS/composicion.md, y se toma la primera cuya condición es verdadera:
+        composicion:dis-bug-visual            falsa (no hay patrón vigente que se incumpla)
+        composicion:dis-extension-de-patron   falsa (no hay patrón que extender)
+        composicion:dis-gap-de-diseno         falsa (no hay dirección aprobada)
+        composicion:dis-caso-nuevo            falsa (no hay sistema aún)
+        composicion:dis-nueva-interaccion     falsa
+        composicion:dis-animacion             falsa
+        composicion:dis-revision-implementacion  falsa (no hay nada construido)
+        composicion:dis-feature-visual        falsa (no hay dirección vigente)
+        composicion:dis-reconstruccion        falsa (no hay producto construido)
+        composicion:dis-proyecto-nuevo        VERDADERA  → elegida
 
 PASO 3  roles obligatorios: direccion-artistica · investigacion-visual · diseno-visual ·
         critica-visual · sistema-de-diseno

@@ -1,11 +1,10 @@
 # ENC · ENCUADRE — la capacidad que atiende al Owner
 
-> **Contradicción registrada.** (a) sitúa *Encuadre* como una de las cuatro funciones de
-> `DSP`. Este kernel operativo la materializa como capacidad propia porque el trabajo
-> conversacional es trabajo de contenido, y (a) afirma que `DSP` no lo tiene. La
-> contradicción, su propuesta de cambio mínima y cómo se ha continuado sin la decisión
-> están en
-> [`DECISIONES-Y-CONTRADICCIONES.md` §C1](../../../../docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md).
+> **Capacidad base aprobada por enmienda.** `ENC` es la **decimoquinta capacidad base** del
+> kernel, con código reservado y sin prefijo de espacio de nombres, por decisión del Owner
+> registrada en la [enmienda **E1** a la sección (a)](../../../../docs/rediseno/a-ENMIENDA-E1-ENC.md).
+> La enmienda fija también la **frontera con `DSP`** (E1.1) y que `ENC` **no es un equipo
+> permanente** (E1.2). Lo que antes figuraba aquí como contradicción abierta está resuelto.
 
 `ENC` es la puerta de entrada. Escucha al Owner, conserva sus palabras, entiende qué
 persigue, comprueba qué existe ya, mide su propia incertidumbre, conversa hasta que la
@@ -51,7 +50,7 @@ memoria_propia:
   - "estado/memoria/ENC/lexico-del-owner.md — cómo llama el Owner a cada cosa"
   - "estado/memoria/ENC/preguntas-resueltas.md — qué se le preguntó ya y qué contestó"
 tablero: "estado/tableros/ENC.md — encuadres en conversación, listos y descartados"
-metodos: [ENC/Escucha, ENC/Anclaje, ENC/Maduracion, ENC/Orden, ENC/Formulacion]
+metodos: [ENC/Escucha, ENC/Anclaje, ENC/Maduracion, ENC/Critica, ENC/Orden, ENC/Formulacion]
 checkpoint: "en el paquete de encuadre, tras cada respuesta del Owner que cambie el entendimiento"
 autoridad:
   decide_sola:
@@ -76,16 +75,25 @@ owner:
     en el informe de creación.
 roles: [ENC/interlocutor, ENC/anclaje, ENC/critica-de-encuadre]
 deriva_de:
-  - "a.3 · DSP/Encuadre — dosier de anclaje e índice de lo existente"
+  - "enmienda E1 · ENC como decimoquinta capacidad base, frontera con DSP y materialización bajo demanda"
+  - "a.3 · dosier de anclaje e índice de lo existente"
   - "a.7 · modo de fallo (a): fragmentación sin sistema"
   - "b.13 · órdenes en lenguaje natural"
   - "b.14 · Continúa"
 materializacion: >
-  ENC se materializa SIEMPRE, junto a DSP y SIS. Sin ella no hay puerta de entrada y el
-  Owner vuelve a explicar el contexto en cada sesión, que es el modo de fallo observado.
+  BAJO DEMANDA, no permanente (enmienda E1.2). ENC es capacidad DISPONIBLE siempre en el
+  catálogo, y su equipo se materializa cuando existe trabajo real de entrada: una expresión
+  del Owner que atender, o un encuadre en conversación. La señal de materialización de a.4
+  se dispara con esa primera expresión, igual que con cualquier otra capacidad. Los equipos
+  permanentemente activos siguen siendo DOS, DSP y SIS.
 retirada: >
-  ENC no se retira mientras el proyecto tenga Owner. Sus roles secundarios sí: ENC/anclaje
-  y ENC/critica-de-encuadre se materializan por encuadre y se retiran al entregarlo.
+  Por la regla general de retirada de a.4: equipo cuyo tablero no ha tenido movimiento
+  durante dos auditorías es candidato a desmaterializarse, y ENC entra en el alcance de T12
+  como cualquier otra capacidad. Sus roles secundarios se retiran antes: ENC/anclaje y
+  ENC/critica-de-encuadre se materializan por encuadre y se retiran al entregarlo. La
+  MEMORIA de ENC no se retira nunca: el indice de lo existente, el lexico del Owner, el
+  vivero y las preguntas resueltas son lo que permite rematerializarla sin que el Owner
+  repita contexto.
 ```
 
 ## Gate de salida
