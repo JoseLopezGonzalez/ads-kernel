@@ -1,7 +1,9 @@
 # Rediseño del kernel ADS — de constitución interpretable a sistema operativo
 
-Trabajo fundacional en curso. **Nada de `kernel/` ni `packs/` se ha modificado
-todavía**: hasta que las secciones estén aprobadas, aquí sólo hay propuesta.
+Trabajo fundacional. Las secciones **(a)** y **(b)** están aprobadas, y sobre ellas se ha
+construido el contenido operativo de [`kernel/operativo/`](../../kernel/operativo/00-INDICE.md).
+Lo que aquí vive es la **especificación normativa** y su historia: qué se aprobó, qué se
+enmendó después y con qué autoridad.
 
 ## Principio gobernante
 
@@ -18,6 +20,7 @@ defecto**, no "la combinación más barata que mantenga la calidad necesaria".
 | — | [Mapa del kernel 1.3.0 frente al principio gobernante](00-MAPA.md) | entregado |
 | a | [Capacidades, equipos, paquetes y estado](a-CAPACIDADES-APROBADA.md) | **APROBADA** 2026-08-25 |
 | b | [Recorrido, estados y composición de procesos](b-RECORRIDO-APROBADA.md) | **APROBADA** 2026-08-25 |
+| E1 | [Enmienda a (a): `ENC` como decimoquinta capacidad base](a-ENMIENDA-E1-ENC.md) | **APROBADA** 2026-08-26 |
 | c | Formato del handoff entre capacidades | no iniciada |
 | d | Puntos de interacción con el Owner | no iniciada |
 | e | La pregunta de la vía rápida | no iniciada |
@@ -59,6 +62,9 @@ consumirá: [`kernel/operativo/`](../../kernel/operativo/00-INDICE.md).
 |---|---|
 | registro reanudable de la iniciativa | [`CHECKPOINT-OPERATIVO.md`](CHECKPOINT-OPERATIVO.md) |
 | decisiones, decisiones del Owner y contradicciones | [`DECISIONES-Y-CONTRADICCIONES.md`](DECISIONES-Y-CONTRADICCIONES.md) |
+| revisión adversarial del propio equipo, con su límite declarado | [`REVISION-ADVERSARIAL.md`](REVISION-ADVERSARIAL.md) |
+| **auditoría independiente** — 33 hallazgos sobre el corpus integrado | [`AUDITORIA-INDEPENDIENTE-LOCAL.md`](AUDITORIA-INDEPENDIENTE-LOCAL.md) |
+| **correcciones** derivadas de esa auditoría, con su matriz | [`CORRECCIONES-POST-AUDITORIA.md`](CORRECCIONES-POST-AUDITORIA.md) |
 | estado real de cada prueba | [`pruebas/REGISTRO.md`](../../kernel/operativo/pruebas/REGISTRO.md) |
 
 **Sigue sin existir un runtime.** Lo construido es lo que ese runtime ejecutará.

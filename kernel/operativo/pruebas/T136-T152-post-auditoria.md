@@ -96,3 +96,29 @@ validador: "kernel/operativo/validadores/comprobar_integridad.py"
 estado: prueba-superada
 evidencia: "evidencia/integridad-salida.txt"
 ```
+
+```yaml ads:escenario
+id: T147
+nombre: Todo documento es alcanzable por ruta, y ninguna referencia es ambigua
+cubre: ["A-05", "A-28", "sustituye a T134", "a.7 modo de fallo (b)", "regla de fuente única"]
+dado:
+  - "el corpus completo del repositorio, con sus nombres base repetidos"
+  - "una lista de exclusiones explícita, con motivo escrito por entrada"
+cuando:
+  - "se construye el grafo de referencias resolviendo cada enlace por RUTA NORMALIZADA"
+entonces:
+  - "todo documento tiene al menos una entrada: enlace por ruta, enlace a su directorio, campo prompt o validador, o cita de un identificador suyo"
+  - "ningún enlace apunta a una ruta que no existe"
+  - "ningún enlace apunta al nombre correcto en la carpeta equivocada"
+  - "los ficheros con el mismo nombre base se resuelven por ruta, nunca por nombre"
+  - "toda exclusión declara su motivo y su objetivo sigue existiendo"
+  - "el informe publica qué quedó fuera del análisis y por qué"
+falla_si:
+  - "un documento huérfano pasa porque otro fichero comparte su nombre base"
+  - "una exclusión no tiene motivo escrito, o su objetivo ya no existe"
+  - "un enlace roto no se distingue de un enlace ambiguo"
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_referencias.py"
+estado: prueba-superada
+evidencia: "evidencia/referencias-salida.txt"
+```

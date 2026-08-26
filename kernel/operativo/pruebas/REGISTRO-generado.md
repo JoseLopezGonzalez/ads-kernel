@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 121f7e778129f9ce -->
+<!-- source_revision: 7067287efa97c23b -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -80,10 +80,10 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T131](T122-T133-T149-packs.md) | La compatibilidad entre packs es simétrica y la precedencia está escrita | packs/COMPOSICION · A-03 · T18 | validador-estructural | **PRUEBA SUPERADA** | evidencia/packs-salida.txt |
 | [T132](T122-T133-T149-packs.md) | Un rol de pack no reclama autoridad de un rol del kernel | packs/00-QUE-ES-UN-PACK · T18 · C1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/packs-salida.txt |
 | [T133](T122-T133-T149-packs.md) | La entrega móvil-reloj admite versiones distintas conviviendo | wear-os · mobile-app · packs/COMPOSICION | guion-manual | **CONTRATO DEFINIDO** | — |
-| [T134](T086-T092-contratos.md) | Ningún documento del corpus existe para nadie | a.7 modo de fallo (b) · SIS/coherencia · regla de fuente única | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |
 | [T135](T086-T092-contratos.md) | Ninguna composición rebaja la independencia que exige un contrato | C1 independencia · C4 paso 5 · G13 | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |
 | [T136](T136-T152-post-auditoria.md) | Ningún veto arbitra a otro veto levantable | A-06 · a.5 regla de colisión de vetos · veto:degradacion-de-forma · veto:integridad-de-datos | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
 | [T137](T136-T152-post-auditoria.md) | DSP no declara autoridad semántica sobre ninguna cancelación | A-23 · b.7 autoridad orden y ejecución · T54 | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T147](T136-T152-post-auditoria.md) | Todo documento es alcanzable por ruta, y ninguna referencia es ambigua | A-05 · A-28 · sustituye a T134 · a.7 modo de fallo (b) · regla de fuente única | validador-estructural | **PRUEBA SUPERADA** | evidencia/referencias-salida.txt |
 | [T148](T136-T152-post-auditoria.md) | El arranque documentado crea un proyecto conforme con cada pack | A-02 · tooling/new-project.sh · README · START_HERE · K0.14 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
 | [T149](T122-T133-T149-packs.md) | Lo más restrictivo gana entre dos packs, y queda registrado por qué | A-03 · A-25 · packs/COMPOSICION precedencia P1 · composicion_packs.py | validador-estructural | **PRUEBA SUPERADA** | evidencia/packs-salida.txt |
 | [T150](T136-T152-post-auditoria.md) | La huella de integridad cubre a los validadores y detecta su edición | A-04 · K0.11 · tooling/kernel-status.sh · validadores/huella.py | validador-estructural | **PRUEBA SUPERADA** | evidencia/integridad-salida.txt |

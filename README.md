@@ -38,29 +38,22 @@ La capa intermedia es la que hace que esto escale de verdad. Hay conocimiento qu
 
 ## Contenido
 
-```text
-kernel/
-├── KERNEL.md              constitución reusable  (1.0.0)
-├── PROFILE_TEMPLATE.md    plantilla a rellenar para un proyecto nuevo
-├── templates/             ledgers de aprendizaje (G52)
-├── KERNEL_CHANGELOG.md
-└── VERSION
+| | qué es |
+|---|---|
+| [`kernel/operativo/`](kernel/operativo/00-INDICE.md) | **el contenido operativo**: quince capacidades con sus roles, métodos, prompts, gates, circuitos y validadores |
+| [`kernel/KERNEL.md`](kernel/KERNEL.md) | la constitución en prosa de la línea 1.3, que sigue arrancando proyectos mientras el runtime no exista |
+| [`kernel/PROFILE_TEMPLATE.md`](kernel/PROFILE_TEMPLATE.md) | plantilla del PROFILE, a rellenar para un proyecto nuevo |
+| [`kernel/PROJECT_TEMPLATE.md`](kernel/PROJECT_TEMPLATE.md) | plantilla del binder: qué kernel, qué packs, qué overrides |
+| [`kernel/BOOTSTRAP_PROMPT.md`](kernel/BOOTSTRAP_PROMPT.md) | el texto que se pega en el agente principal para arrancar |
+| [`kernel/templates/`](kernel/templates/) | [ledgers de aprendizaje](kernel/templates/ORG_LEARNINGS.md) (G52) y un [AGENTS.md de ejemplo](kernel/templates/AGENTS_EXAMPLE.md) |
+| [`kernel/KERNEL_CHANGELOG.md`](kernel/KERNEL_CHANGELOG.md) · [`kernel/VERSION`](kernel/VERSION) | versión y su historia |
+| [`packs/`](packs/00-QUE-ES-UN-PACK.md) | `web-app` · `mobile-app` · `wear-os`, y [cómo se componen](packs/COMPOSICION.md) |
+| [`docs/rediseno/`](docs/rediseno/README.md) | la especificación normativa (a) y (b), sus enmiendas, y las auditorías |
+| `tooling/` | `new-project.sh` crea el esqueleto · `kernel-status.sh` detecta forks silenciosos · `compile-agents.sh` prepara la recompilación de AGENTS.md |
 
-packs/
-├── pack-mobile-native.md  apps móviles y wearables
-├── pack-web-app.md        aplicaciones web
-└── pack-design-led.md     productos donde el diseño ES el diferenciador
-
-tooling/
-├── new-project.sh         crea el esqueleto de un proyecto nuevo
-├── compile-agents.sh      prepara la recompilación de AGENTS.md
-└── kernel-status.sh       detecta forks silenciosos del kernel
-
-PROJECT.md                 binder: qué kernel, qué packs, qué profile
-PROFILE.md                 este proyecto (gym-wear)
-AGENTS.md                  compilado
-docs/UPSTREAM.md           candidatos a promover a kernel o pack
-```
+Un proyecto creado con `new-project.sh` recibe además `PROJECT.md` (binder), `PROFILE.md`
+(qué se construye aquí), `docs/UPSTREAM.md` (candidatos a promover) y una copia congelada
+del kernel, de los packs pedidos y de la especificación normativa.
 
 ## Empezar un proyecto nuevo
 

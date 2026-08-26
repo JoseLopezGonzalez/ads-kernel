@@ -117,6 +117,22 @@ def m_enlace_a_basename_equivocado(raiz):
                "[`00-LENGUAJE.md`](contratos/00-LENGUAJE.md)")
 
 
+def m_exclusion_sin_motivo(raiz):
+    """A-05 · una exclusión sin justificación escrita deja de ser revisable."""
+    _sustituir(raiz, VALIDADORES + "/exclusiones.yaml",
+               '  - ruta: docs/rediseno/a-EQUIPOS-v1-RECHAZADA.md\n'
+               '    motivo: "versión rechazada del rediseño; se conserva para trazabilidad de (a)"',
+               '  - ruta: docs/rediseno/a-EQUIPOS-v1-RECHAZADA.md')
+
+
+def m_exclusion_caducada(raiz):
+    """A-05 · una exclusión cuyo objetivo ya no existe: restos que nadie revisa."""
+    _sustituir(raiz, VALIDADORES + "/exclusiones.yaml",
+               "no_analizados:",
+               'no_analizados:\n  - ruta: packs/pack-que-ya-no-existe.md\n'
+               '    motivo: "resto de una exclusión antigua"')
+
+
 def m_validador_editado(raiz):
     """A-04 · fork silencioso de un validador: kernel-status DEBE verlo."""
     ruta = os.path.join(raiz, VALIDADORES, "ads_lint.py")
@@ -221,6 +237,12 @@ CATALOGO = [
     Mutacion("N147b", "A-05", "T147", "comprobar_referencias",
              "un enlace apunta al nombre correcto en la carpeta equivocada",
              m_enlace_a_basename_equivocado),
+    Mutacion("N147c", "A-05", "T147", "comprobar_referencias",
+             "una exclusión se queda sin motivo escrito",
+             m_exclusion_sin_motivo),
+    Mutacion("N147d", "A-05", "T147", "comprobar_referencias",
+             "una exclusión apunta a algo que ya no existe",
+             m_exclusion_caducada),
     Mutacion("N150", "A-04", "T150", "comprobar_integridad",
              "un validador del kernel se edita localmente",
              m_validador_editado),

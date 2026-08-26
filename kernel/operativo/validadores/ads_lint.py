@@ -259,7 +259,15 @@ class Lint:
             if EXENCION_ENLACES in texto:
                 continue
             base = os.path.dirname(ruta)
+            dentro_de_bloque = False
             for linea_n, linea in enumerate(texto.splitlines(), 1):
+                if linea.lstrip().startswith("```"):
+                    dentro_de_bloque = not dentro_de_bloque
+                    continue
+                # un enlace dentro de un bloque cercado es una ilustración, no una
+                # referencia: se muestra tal cual y no tiene por qué resolver
+                if dentro_de_bloque:
+                    continue
                 for destino in ENLACE_MD.findall(linea):
                     if destino.startswith(("http://", "https://", "#", "mailto:")):
                         continue
