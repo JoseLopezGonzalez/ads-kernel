@@ -44,6 +44,10 @@ class Ejecucion:
     def __init__(self, comp):
         self.id = comp["id"]
         self.script = comp["script"]
+        # `dir` permite registrar un ejecutable que NO vive en validadores/ —las pruebas
+        # de workspace viven en tooling/tests/ porque prueban tooling, no el corpus— sin
+        # que quede fuera de la evidencia por estar en otro sitio.
+        self.dir = comp.get("dir") or DIR_VALIDADORES
         self.args = comp.get("args") or []
         self.tipo = comp["tipo"]
         self.evidencia = comp.get("evidencia")
@@ -53,7 +57,7 @@ class Ejecucion:
 
     @property
     def orden(self):
-        return " ".join([self.script] + self.args)
+        return " ".join([f"{self.dir}/{self.script}"] + self.args)
 
 
 def cargar_manifiesto(base):
@@ -75,9 +79,12 @@ def comprobar_manifiesto(base, componentes, problemas):
             problemas.append(f"manifiesto: '{comp.get('id')}' declara el script '{script}', "
                              f"que no termina en .py")
             continue
-        declarados.add(script)
-        if not os.path.isfile(os.path.join(base, DIR_VALIDADORES, script)):
-            problemas.append(f"manifiesto: '{comp['id']}' declara {script}, que no existe")
+        directorio = comp.get("dir") or DIR_VALIDADORES
+        if directorio == DIR_VALIDADORES:
+            declarados.add(script)
+        if not os.path.isfile(os.path.join(base, directorio, script)):
+            problemas.append(f"manifiesto: '{comp['id']}' declara {directorio}/{script}, "
+                             f"que no existe")
     en_disco = {f for f in os.listdir(os.path.join(base, DIR_VALIDADORES))
                 if f.endswith(".py")}
     for f in sorted(en_disco - declarados):
@@ -86,7 +93,7 @@ def comprobar_manifiesto(base, componentes, problemas):
 
 
 def ejecutar(base, ej, publicar=True):
-    script = os.path.join(base, DIR_VALIDADORES, ej.script)
+    script = os.path.join(base, ej.dir, ej.script)
     if not os.path.isfile(script):
         ej.codigo = -1
         ej.motivo = f"el script no existe: {script}"
@@ -105,7 +112,7 @@ def ejecutar(base, ej, publicar=True):
     # La evidencia lleva SU PROPIA cabecera: qué se ejecutó y con qué código. Sin ella,
     # un fichero de salida no dice de quién es ni si tuvo éxito.
     cabecera = (f"# evidencia de: {ej.id}\n"
-                f"# orden:        python3 {DIR_VALIDADORES}/{ej.orden}\n"
+                f"# orden:        python3 {ej.orden}\n"
                 f"# codigo:       {ej.codigo}\n"
                 f"# ---------------------------------------------------------------\n")
     cuerpo = proc.stdout

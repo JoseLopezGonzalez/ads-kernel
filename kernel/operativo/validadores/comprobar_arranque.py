@@ -10,6 +10,8 @@ Esto lo ejecuta de verdad, para CADA pack instalable:
   1. copia el repositorio a un directorio temporal del sistema
   2. crea un proyecto con ese pack —y con la COMBINACIÓN que el checkpoint documenta como
      siguiente comando real—, con el comando real
+  2b. comprueba la TOPOLOGÍA: <workspace>/ads es el control repo, y el workspace NO es
+     un repositorio Git. Un ADS Project gobierna un producto, no un repositorio (C6)
   3. comprueba la estructura resultante, fichero a fichero
   4. comprueba la composición: el pack pedido está, los otros NO, y no hay rastro de legacy
   5. ejecuta los validadores DENTRO del proyecto creado
@@ -44,6 +46,7 @@ DOCS_DE_ARRANQUE = ["README.md", "START_HERE.md"]
 # Lo que un proyecto recién creado DEBE contener. Si esto cambia, la prueba tiene que
 # cambiar con ello: es el contrato de lo que `new-project.sh` entrega.
 ESTRUCTURA_MINIMA = [
+    "SOURCES.toml",
     "PROFILE.md", "PROJECT.md", "BOOTSTRAP_PROMPT.md", "START_HERE.md",
     "kernel/VERSION", "kernel/KERNEL.md", "kernel/operativo/00-INDICE.md",
     "kernel/operativo/validadores/ads_lint.py",
@@ -53,7 +56,8 @@ ESTRUCTURA_MINIMA = [
     "docs/rediseno/a-CAPACIDADES-APROBADA.md",
     "docs/rediseno/b-RECORRIDO-APROBADA.md",
     "docs/rediseno/a-ENMIENDA-E1-ENC.md",
-    "tooling/new-project.sh", "tooling/kernel-status.sh",
+    "docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md",
+    "tooling/new-project.sh", "tooling/kernel-status.sh", "tooling/workspace.py",
     "packs/00-QUE-ES-UN-PACK.md", "packs/COMPOSICION.md",
 ]
 
@@ -134,10 +138,18 @@ def t148_arranque(raiz=None):
                 r.fallo(f"[{pack}] new-project.sh terminó con código {proc.returncode}: "
                         f"{(proc.stderr or proc.stdout).strip().splitlines()[:1]}")
                 continue
-            proyecto = os.path.join(caja, nombre)
+            workspace = os.path.join(caja, nombre)
+            proyecto = os.path.join(workspace, "ads")
             if not os.path.isdir(proyecto):
-                r.fallo(f"[{pack}] el proyecto no se creó en {proyecto}")
+                r.fallo(f"[{pack}] el control repo no se creó en {proyecto}")
                 continue
+
+            # 2b · topología: el workspace es un contenedor, no un repositorio
+            if os.path.exists(os.path.join(workspace, ".git")):
+                r.fallo(f"[{pack}] el workspace es un repositorio Git. Debe serlo sólo "
+                        f"ads/, o las fuentes quedarían anidadas dentro de otro repo")
+            if not os.path.isdir(os.path.join(proyecto, ".git")):
+                r.fallo(f"[{pack}] el control repo no tiene .git propio")
 
             # 3 · estructura
             for rel in ESTRUCTURA_MINIMA:
@@ -200,6 +212,25 @@ def t148_arranque(raiz=None):
                         r.fallo(f"[{pack}] la resolución no declara qué valor gana ni de "
                                 f"qué pack procede")
 
+            # 4c · el manifiesto del proyecto recién creado valida, y arranca sin fuentes
+            pw = subprocess.run([sys.executable, "tooling/workspace.py", "check", "--json"],
+                                cwd=proyecto, capture_output=True, text=True)
+            if pw.returncode != 0:
+                r.fallo(f"[{pack}] workspace check falla en el proyecto creado "
+                        f"(exit {pw.returncode}): {pw.stdout.strip()[:200]}")
+            else:
+                try:
+                    datos = json.loads(pw.stdout)
+                except json.JSONDecodeError:
+                    r.fallo(f"[{pack}] workspace check --json no devolvió JSON")
+                else:
+                    if datos.get("sources"):
+                        r.fallo(f"[{pack}] el proyecto nuevo arranca con fuentes declaradas; "
+                                f"debe arrancar vacío")
+                    if os.path.normpath(datos.get("workspace_root", "")) != os.path.normpath(workspace):
+                        r.fallo(f"[{pack}] workspace_root mal resuelto: "
+                                f"{datos.get('workspace_root')} != {workspace}")
+
             # 5 · los validadores, DENTRO del proyecto creado
             for v in VALIDADORES_EN_PROYECTO:
                 script = os.path.join(proyecto, "kernel/operativo/validadores", f"{v}.py")
@@ -228,7 +259,7 @@ def t148_arranque(raiz=None):
         if not all(p in salida for p in disponibles):
             r.fallo("el error no lista los packs instalables")
         if os.path.exists(os.path.join(caja, "proyecto-x")):
-            r.fallo("un arranque fallido dejó un proyecto a medio crear")
+            r.fallo("un arranque fallido dejó un workspace a medio crear")
     finally:
         # 6 · sólo el temporal que hemos creado nosotros
         shutil.rmtree(tmp, ignore_errors=True)

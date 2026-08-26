@@ -94,6 +94,13 @@ componentes:
     # como cita del resultado interno de un fixture, y por eso se declara aquí.
     contiene_salida_de_fixture: true
 
+  - id: fuentes
+    script: comprobar_fuentes.py
+    tipo: validador
+    evidencia: fuentes-salida.txt
+    firma_de_exito: '\d+ superadas · 0 fallidas'
+    debe_contener: ['T159', 'T160', 'T161']
+
   - id: evidencia
     script: comprobar_evidencia.py
     tipo: validador
@@ -104,6 +111,16 @@ componentes:
     # ejecución anterior. La publica el runner como cualquier otra, y su resultado real es
     # el código de salida del runner.
     se_excluye_de_su_propia_comprobacion: true
+
+  - id: workspace
+    script: test_workspace.py
+    dir: tooling/tests
+    tipo: validador
+    evidencia: workspace-salida.txt
+    # unittest escribe su resumen en stderr; el runner captura los dos por separado y la
+    # firma se busca en la salida publicada, que los une con su cabecera de procedencia.
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'tests in']
 
   - id: registro
     script: registro_pruebas.py

@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 496cbd59d2b9c74a -->
+<!-- source_revision: 53dddc46b7ea2719 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -10,12 +10,12 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 
 | estado | pruebas |
 |---|---|
-| CONTRATO DEFINIDO | 54 |
+| CONTRATO DEFINIDO | 56 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 28 |
+| PRUEBA SUPERADA | 38 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **82** |
+| **total** | **94** |
 
 ## Detalle
 
@@ -103,3 +103,15 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T156](../entrada/05-ESCENARIOS.md) | Con dirección vigente que el Owner quiere sustituir, la salida es un DIR | forma:cambio-de-direccion · b.16 DIR · G51 · 9.4 | guion-manual | **CONTRATO DEFINIDO** | — |
 | [T157](../entrada/05-ESCENARIOS.md) | Con la intención todavía ambigua, la expresión NO produce ningún item | forma:comentario-subjetivo · 04-INCERTIDUMBRE · a.7 modo de fallo (b) · 9.4 | guion-manual | **CONTRATO DEFINIDO** | — |
 | [T158](T136-T152-post-auditoria.md) | La evidencia publicada demuestra lo que el informe afirma | evidencia reproducible · REGISTRO.md regla dura · registrar_evidencia.py · validadores.yaml | validador-estructural | **PRUEBA SUPERADA** | evidencia/evidencia-salida.txt |
+| [T159](T159-T170-multirepo.md) | La plantilla de SOURCES.toml es válida y arranca sin fuentes | C6 fuente única de la composición · E2.0 | validador-estructural | **PRUEBA SUPERADA** | evidencia/fuentes-salida.txt |
+| [T160](T159-T170-multirepo.md) | El manifiesto de un ADS Project, cuando existe, es válido sin tocar el disco | C6 validación estática frente a disponibilidad · §62 | validador-estructural | **PRUEBA SUPERADA** | evidencia/fuentes-salida.txt |
+| [T161](T159-T170-multirepo.md) | El corpus no conserva la equivalencia proyecto igual a repositorio | E2.0 · E2.1 · E2.4 · 78 qué debe cambiar en el corpus | validador-estructural | **PRUEBA SUPERADA** | evidencia/fuentes-salida.txt |
+| [T162](T159-T170-multirepo.md) | Una fuente ya clonada se reutiliza y no se vuelve a clonar | C6 materialización · §12.1 · CA-3 | validador-estructural | **PRUEBA SUPERADA** | evidencia/workspace-salida.txt |
+| [T163](T159-T170-multirepo.md) | Un directorio ocupado por otro repositorio produce error y no se destruye | C6 lo que la materialización nunca hace · §63 · CA-5 · CA-6 | validador-estructural | **PRUEBA SUPERADA** | evidencia/workspace-salida.txt |
+| [T164](T159-T170-multirepo.md) | Ninguna ruta del manifiesto escapa del workspace | C6 identidad frente a materialización · §11.2 | validador-estructural | **PRUEBA SUPERADA** | evidencia/workspace-salida.txt |
+| [T165](T159-T170-multirepo.md) | La identidad de una fuente no depende de la forma de su URL | C6 identidad · 39 normalización de remotes · N9 | validador-estructural | **PRUEBA SUPERADA** | evidencia/workspace-salida.txt |
+| [T166](T159-T170-multirepo.md) | Un componente puede vivir dentro de una fuente, y dos componentes compartirla | C6 los tres conceptos · §9 · §10 · CA-7 · CA-8 · N7 | validador-estructural | **PRUEBA SUPERADA** | evidencia/workspace-salida.txt |
+| [T167](T159-T170-multirepo.md) | Una fuente ausente no bloquea el trabajo que no la necesita | C6 alcance mínimo · 63 source ausente · E2.2 regla 5 | validador-estructural | **PRUEBA SUPERADA** | evidencia/workspace-salida.txt |
+| [T168](T159-T170-multirepo.md) | El arranque crea un workspace con el control repo dentro, y el workspace no es un repositorio | C6 topología · §45 · §46 · CA-1 · CA-9 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
+| [T169](T159-T170-multirepo.md) | Un item que atraviesa dos fuentes no cierra con una sin integrar | E2.6 · C7 integración parcial · gate:convergencia-de-fuentes · §30 | requiere-runtime | **CONTRATO DEFINIDO** | — |
+| [T170](T159-T170-multirepo.md) | Un agente nuevo reanuda un trabajo multi-fuente sin abrir ningún repositorio para adivinar | E2.3 · C7 recuperación · §34 · §35 · CA-12 | guion-manual | **CONTRATO DEFINIDO** | — |

@@ -17,7 +17,10 @@ Qué entra en la huella, y por qué:
     kernel/**.yaml    los esquemas y las reglas: definen qué es conforme
     kernel/**.py      los VALIDADORES: son quienes ejecutan la conformidad
     kernel/**.sh      cualquier script que el kernel lleve dentro
+    kernel/**.toml    la plantilla del manifiesto de composición del producto
     tooling/*.sh      el arranque y la propia comprobación de integridad
+    tooling/*.py      workspace.py materializa repositorios: editarlo sin que se note
+                      sería la vía silenciosa para clonar donde no se debe
     packs/**          la especialización instalada, sin los packs retirados
 
 Qué NO entra:
@@ -38,7 +41,7 @@ import sys
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
-EXTENSIONES = (".md", ".yaml", ".yml", ".py", ".sh")
+EXTENSIONES = (".md", ".yaml", ".yml", ".py", ".sh", ".toml")
 AMBITOS = ("kernel", "packs", "tooling")
 EXCLUIDOS_DIR = ("__pycache__", ".git", ".pytest_cache")
 EXCLUIDOS_PREFIJO_DIR = ("legacy-",)

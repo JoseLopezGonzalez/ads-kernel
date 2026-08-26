@@ -1,0 +1,75 @@
+# SOURCES.toml — la composición del producto
+#
+# Vive en la RAÍZ del repositorio ADS de control, y es la FUENTE ÚNICA de qué
+# repositorios y componentes forman el producto. Nadie más la declara: ni PROJECT.md,
+# ni PROFILE.md, ni AGENTS.md, ni un pack, ni un prompt. Pueden enlazarla y explicarla.
+# Copiar su contenido semántico es un defecto de conformidad.
+#
+# Contrato: kernel/operativo/contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md
+# Validación estática:     python3 kernel/operativo/validadores/comprobar_fuentes.py
+# Validación operacional:  python3 tooling/workspace.py check
+
+# Versión del formato. Permite evolucionarlo sin interpretación ambigua.
+schema = 1
+
+[workspace]
+# Única disposición soportada: el repositorio de control y las fuentes son HERMANOS
+# dentro del workspace del producto. El workspace NO es un repositorio Git.
+#
+#   <workspace>/
+#   ├── ads/        este repositorio
+#   ├── frontend/
+#   └── backend/
+layout = "siblings"
+
+
+# ---------------------------------------------------------------------------
+# FUENTES — unidades físicas de versionado.
+#
+# Un proyecto nuevo puede no tener ninguna todavía. Un fichero con `schema` y
+# `[workspace]` y sin una sola fuente es VÁLIDO: el Circuito 0 decidirá después la
+# arquitectura física y las añadirá.
+#
+# Por cada fuente:
+#   id      identificador estable dentro de ADS. NO depende del nombre local del repo.
+#   remote  identidad Git remota canónica. Es LA IDENTIDAD de la fuente.
+#           NUNCA lleva credenciales: nada de https://usuario:token@...
+#   path    ruta relativa al workspace donde se materializa. Es DÓNDE ESTÁ, no QUÉ ES.
+#           Prohibidos: rutas absolutas, `..`, rutas repetidas y la ruta `ads`.
+# ---------------------------------------------------------------------------
+
+# [[sources]]
+# id     = "frontend"
+# remote = "https://github.com/organizacion/producto-frontend.git"
+# path   = "frontend"
+
+# [[sources]]
+# id     = "backend"
+# remote = "git@github.com:organizacion/producto-backend.git"
+# path   = "backend"
+
+
+# ---------------------------------------------------------------------------
+# COMPONENTES — unidades lógicas del producto.
+#
+# Un componente NO es un repositorio. Referencia una fuente y una ruta DENTRO de ella,
+# y por eso el mismo modelo cubre multi-repo, monorepo e híbrido sin excepciones:
+#
+#   multi-repo   web → fuente frontend, ruta "."
+#   monorepo     web → fuente app,      ruta "apps/web"
+#                api → fuente app,      ruta "apps/api"
+#
+# `kind` es descriptivo y abierto. No es una taxonomía cerrada ni sustituye a los packs.
+# ---------------------------------------------------------------------------
+
+# [[components]]
+# id     = "web"
+# source = "frontend"
+# path   = "."
+# kind   = "frontend"
+
+# [[components]]
+# id     = "api"
+# source = "backend"
+# path   = "."
+# kind   = "backend"

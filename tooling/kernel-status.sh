@@ -20,7 +20,7 @@ SUM=$(python3 "$HUELLA")
 N=$(python3 "$HUELLA" --listar | tail -1)
 
 echo "kernel version : $KV"
-echo "huella local   : $SUM   ($N: kernel/, packs/ y tooling/ — .md .yaml .py .sh)"
+echo "huella local   : $SUM   ($N: kernel/, packs/ y tooling/ — .md .yaml .py .sh .toml)"
 
 if [ -f kernel/.upstream-hash ]; then
   UP=$(cat kernel/.upstream-hash)

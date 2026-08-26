@@ -52,6 +52,7 @@ id: DIS/direccion-artistica
 | `memoria` | una sección del corpus persistente de un equipo | `esquemas/memoria.yaml` |
 | `escenario` | una prueba de conformidad ejecutable a mano o por script | `esquemas/escenario.yaml` |
 | `pack` | la declaración de un pack | `esquemas/pack.yaml` |
+| `integration-set` | una combinación exacta de revisiones de fuentes, probada conjuntamente | `esquemas/integration-set.yaml` |
 
 ## Tipos de campo
 

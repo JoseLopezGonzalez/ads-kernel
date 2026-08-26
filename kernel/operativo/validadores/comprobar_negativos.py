@@ -262,7 +262,7 @@ def m_tooling_editado(raiz):
 def m_huella_estrechada(raiz):
     """A-04 · alguien «arregla» la integridad estrechando la huella hasta no ver nada."""
     _sustituir(raiz, VALIDADORES + "/huella.py",
-               'EXTENSIONES = (".md", ".yaml", ".yml", ".py", ".sh")',
+               'EXTENSIONES = (".md", ".yaml", ".yml", ".py", ".sh", ".toml")',
                'EXTENSIONES = (".md", ".yaml")')
 
 

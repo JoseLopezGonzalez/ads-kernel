@@ -27,10 +27,10 @@ Las cinco preguntas. No hace falta que las escribas bien; basta con que sepas re
 
 ## Ruta A — Proyecto nuevo desde cero *(la normal)*
 
-### Paso 1 — Crear el esqueleto
+### Paso 1 — Crear el ADS Project
 
 ```bash
-./tooling/new-project.sh mi-proyecto web-app
+./tooling/new-project.sh mi-producto web-app
 ```
 
 Packs instalables: **`web-app`** · **`mobile-app`** · **`wear-os`**. Puedes indicar varios separados por coma —`wear-os,mobile-app` es la combinación normal de un producto con reloj— o ninguno, si tu proyecto no encaja en ninguna clase existente.
@@ -39,34 +39,80 @@ Si te equivocas de identificador, el comando **no crea nada** y te lista los ins
 
 > **Los packs de la línea 1.3.0 ya no se instalan.** `pack-web-app`, `pack-mobile-native` y `pack-design-led` están retirados en `packs/legacy-1.3.0/` y se conservan sólo para trazabilidad. El tercero además **fue derogado**: la excelencia visual dejó de ser propiedad de una clase de proyecto y vive ahora en el kernel, en `kernel/operativo/diseno/`.
 
-Esto te deja:
+Esto te deja un **workspace de producto** con un solo repositorio dentro:
 
 ```text
-../mi-proyecto/
-├── PROJECT.md          plantilla del binder
-├── PROFILE.md          plantilla a rellenar
-├── BOOTSTRAP_PROMPT.md el texto exacto que le darás al agente
-├── kernel/             copia congelada, NO se edita
-│   └── operativo/      las quince capacidades con sus roles, métodos y prompts
-├── packs/              copias congeladas de los que pediste, NO se editan
-├── docs/
-│   ├── rediseno/       la especificación normativa (a), (b) y sus enmiendas
-│   └── ...             JOURNAL.md y UPSTREAM.md vacíos
-└── tooling/
+../mi-producto/                 el WORKSPACE. NO es un repositorio Git.
+└── ads/                        el repositorio de CONTROL. El único que ADS inicializa.
+    ├── .git/
+    ├── SOURCES.toml            la composición del producto — arranca VACÍA
+    ├── PROJECT.md              plantilla del binder
+    ├── PROFILE.md              plantilla a rellenar
+    ├── BOOTSTRAP_PROMPT.md     el texto exacto que le darás al agente
+    ├── kernel/                 copia congelada, NO se edita
+    │   └── operativo/          las quince capacidades con sus roles, métodos y prompts
+    ├── packs/                  copias congeladas de los que pediste, NO se editan
+    ├── docs/
+    │   ├── rediseno/           la especificación normativa (a), (b) y sus enmiendas
+    │   └── ...                 JOURNAL.md y UPSTREAM.md vacíos
+    └── tooling/
 ```
 
-### Paso 2 — Repositorio remoto
+> **Un ADS Project gobierna un PRODUCTO, no un repositorio.** El código no vive aquí. Los repositorios técnicos —frontend, backend, móvil, infraestructura— se declaran en `SOURCES.toml` y aparecen como **hermanos** de `ads/` dentro del workspace. Un producto de un solo repositorio es el caso particular de tener una sola fuente, no un modelo distinto. Contrato: [`C6`](kernel/operativo/contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md).
+
+### Paso 2 — Publicar el repositorio ADS
 
 ```bash
-cd ../mi-proyecto
+cd ../mi-producto/ads
 # el commit inicial ya lo hace new-project.sh; esto es sólo el remoto
-git remote add origin <tu-repo>
+git remote add origin <repo-ADS-del-producto>
 git push -u origin main
 ```
 
 Hazlo **ahora**, no cuando haya código. El sistema necesita poder hacer push desde la primera sesión (G29).
 
-### Paso 3 — El PROFILE
+**El primer repositorio que se publica es el de ADS**, no uno de código. Es el que contiene el gobierno del producto y el que un agente abrirá para trabajar. Un nombre habitual es `<producto>-ads`.
+
+### Paso 3 — Declarar las fuentes
+
+Abre `SOURCES.toml` y declara los repositorios técnicos que forman el producto:
+
+```toml
+[[sources]]
+id     = "frontend"
+remote = "https://github.com/organizacion/mi-producto-frontend.git"
+path   = "frontend"
+
+[[sources]]
+id     = "backend"
+remote = "git@github.com:organizacion/mi-producto-backend.git"
+path   = "backend"
+```
+
+**Puedes saltarte este paso.** Un producto nuevo todavía no tiene código, y un manifiesto sin ninguna fuente es válido: el Circuito 0 decidirá la arquitectura física y las añadirá después.
+
+`id` es el nombre estable dentro de ADS. `remote` es la **identidad** de la fuente —nunca lleva credenciales—. `path` es sólo **dónde se materializa**.
+
+### Paso 4 — Materializar el workspace
+
+```bash
+python3 tooling/workspace.py check     # ¿está bien declarado, y qué hay en disco?
+python3 tooling/workspace.py init      # clona lo que falte; reutiliza lo que ya está
+python3 tooling/workspace.py status    # una línea por fuente
+```
+
+`init` **nunca destruye nada**: si el directorio ya tiene el repositorio correcto lo reutiliza, y si tiene otro distinto se detiene con un error en vez de clonar encima. Tampoco sincroniza: preparar un workspace y actualizar un trabajo son cosas distintas.
+
+El resultado es la disposición normal de un producto:
+
+```text
+mi-producto/
+├── ads/         gobierno: PROFILE, estado, items, decisiones, contratos
+├── frontend/    código, con su historia Git independiente
+└── backend/     código, con su historia Git independiente
+```
+
+### Paso 5 — El PROFILE
 
 Tienes dos opciones, ambas válidas:
 
@@ -78,7 +124,7 @@ Tienes dos opciones, ambas válidas:
 
 Lo que **no** es aceptable es saltarse este paso. Arrancar con el contrato K0 incompleto significa descubrir a mitad de Circuito 1 que nadie sabía qué se estaba optimizando.
 
-### Paso 4 — Aprobar el PROFILE
+### Paso 6 — Aprobar el PROFILE
 
 Léelo entero una vez. Comprueba específicamente:
 
@@ -88,15 +134,15 @@ Léelo entero una vez. Comprueba específicamente:
 - [ ] Las **decisiones fuertes** son cosas que realmente no quieres discutir.
 - [ ] Lo que está en **ABIERTO** es de verdad algo que la implementación no va a forzar.
 
-### Paso 5 — Escribir PROJECT.md
+### Paso 7 — Escribir PROJECT.md
 
 Rellena la tabla de composición: qué versión de kernel, qué packs, qué overrides declarados (normalmente ninguno).
 
-### Paso 6 — Lanzar el Circuito 0
+### Paso 8 — Lanzar el Circuito 0
 
 Pega en tu agente principal el contenido de `BOOTSTRAP_PROMPT.md`. Literalmente eso, sin añadir instrucciones tuyas: si hicieran falta, el fallo estaría en la semilla.
 
-### Paso 7 — Qué esperar
+### Paso 9 — Qué esperar
 
 El Circuito 0 termina cuando existen los 10 entregables de G22, dentro del timebox. Durante ese tiempo el sistema **no** debe escribir código de producto ni elegir stack definitivo.
 
@@ -115,33 +161,103 @@ lista de spikes        priorizada, con hipótesis y criterio de éxito
 
 **Señal de alarma:** si el Circuito 0 lleva más tiempo del previsto y lo que ha producido es más documentación sobre sí mismo, párale. Es el fallo más probable de todo el sistema y G22 existe para prevenirlo.
 
-### Paso 8 — Circuito 1: primero medir
+### Paso 10 — Circuito 1: primero medir
 
 Lo primero que se construye **no** es el producto: es el experimento mínimo que responde a varios spikes a la vez. Un documento de arquitectura bien argumentado sobre supuestos no medidos es deuda, no progreso.
 
 ---
 
-## Ruta B — Proyecto ya empezado
+## Ruta B — Producto que ya existe
 
-Si ya tienes código y quieres adoptar esta organización:
+**La adopción ya no copia ADS dentro de tu repositorio de código.** ADS se instala en su
+propio repositorio y **registra** el tuyo como una fuente. Tu código conserva su historia,
+su CI y su despliegue, y no gana una carpeta `kernel/` que no le pertenece.
+
+### Un solo repositorio
+
+Partiendo de `~/dev/mi-app`, con años de historia:
 
 ```bash
-cd tu-proyecto-existente
-cp -r /ruta/a/ads/kernel .
-mkdir -p packs docs/rediseno
-cp -r /ruta/a/ads/packs/<clase> packs/          # un DIRECTORIO: web-app, mobile-app o wear-os
-cp /ruta/a/ads/packs/00-QUE-ES-UN-PACK.md /ruta/a/ads/packs/COMPOSICION.md packs/
-cp /ruta/a/ads/docs/rediseno/{a-CAPACIDADES-APROBADA.md,b-RECORRIDO-APROBADA.md,a-ENMIENDA-E1-ENC.md,DECISIONES-Y-CONTRADICCIONES.md} docs/rediseno/
-cp kernel/PROFILE_TEMPLATE.md PROFILE.md
+# 1. el ADS Project, en un workspace nuevo
+./tooling/new-project.sh mi-producto web-app --en ~/dev
+
+# 2. lleva tu repositorio al workspace, como hermano de ads/
+mv ~/dev/mi-app ~/dev/mi-producto/app
+#    o clónalo ahí, si prefieres no mover el original todavía:
+#    git clone <tu-repo> ~/dev/mi-producto/app
+
+# 3. decláralo
+cd ~/dev/mi-producto/ads
 ```
 
-Compruébalo antes de seguir: `python3 kernel/operativo/validadores/ads_lint.py` tiene que salir en verde. Si hay enlaces rotos, falta algo por copiar.
+```toml
+[[sources]]
+id     = "app"
+remote = "<el remoto real de tu repositorio>"
+path   = "app"
+```
 
-Y luego, en tu agente:
+```bash
+python3 tooling/workspace.py check     # debe reconocerlo sin volver a clonarlo
+python3 kernel/operativo/validadores/ads_lint.py    # tiene que salir en verde
+```
 
-> Este proyecto ya existe. Lee el código, la documentación y el historial de commits, y rellena `PROFILE.md` con lo que **ya está decidido de hecho**, marcando cada punto como `DECISIÓN FUERTE`, `PROVISIONAL` o `NO REGISTRADA`. Las decisiones no registradas son las importantes: quiero verlas. No cambies nada de código todavía.
+### Varios repositorios
 
-El Circuito 0 en un proyecto existente tiene un entregable extra: **una lista de decisiones que están implementadas pero nunca se registraron.** Suele ser la parte más reveladora del ejercicio.
+Es el mismo procedimiento, repetido. De esto:
+
+```text
+~/dev/
+├── mi-app-front/
+├── mi-app-api/
+└── mi-app-movil/
+```
+
+a esto:
+
+```text
+~/dev/mi-producto/
+├── ads/          ← ADS se instala AQUÍ, y sólo aquí
+├── frontend/
+├── backend/
+└── mobile/
+```
+
+**Nada se mueve ni se renombra automáticamente.** Mover repositorios es tuyo, y si prefieres
+no tocar los originales, clona copias en la topología conforme: `workspace check` las
+reconoce igual, porque la identidad de una fuente es su remoto, no su ruta.
+
+### Y luego, en tu agente
+
+> Este producto ya existe. Estás en su repositorio ADS de control; el código vive en las
+> fuentes declaradas en `SOURCES.toml`. Léelas —código, documentación e historial de
+> commits— y rellena `PROFILE.md` con lo que **ya está decidido de hecho**, marcando cada
+> punto como `DECISIÓN FUERTE`, `PROVISIONAL` o `NO REGISTRADA`. Las decisiones no
+> registradas son las importantes: quiero verlas. No cambies nada de código todavía.
+
+El Circuito 0 en un producto existente tiene un entregable extra: **una lista de decisiones que están implementadas pero nunca se registraron.** Suele ser la parte más reveladora del ejercicio.
+
+### Si vienes de un ADS de un solo repositorio
+
+Los proyectos creados con el modelo anterior tenían el kernel dentro del repositorio de
+código. La migración es la misma idea, en dos movimientos:
+
+```text
+ANTES                          DESPUÉS
+mi-app/                        mi-producto/
+├── kernel/                    ├── ads/     ← kernel, packs, PROFILE, PROJECT, docs, estado
+├── packs/                     └── app/     ← el código, con su historia intacta
+├── PROFILE.md
+├── PROJECT.md
+└── src/  (el código)
+```
+
+1. crea el ADS Project nuevo y copia a `ads/` tu `PROFILE.md`, tu `PROJECT.md` y tu documentación de gobierno;
+2. borra del repositorio de código `kernel/`, `packs/` y los documentos de organización;
+3. declara el repositorio de código como fuente en `SOURCES.toml`.
+
+**No se mantiene compatibilidad con la disposición antigua.** ADS 2.0 está en evolución y
+arrastrarla perpetuaría justo la suposición que esta versión retira.
 
 ---
 
@@ -151,7 +267,7 @@ El Circuito 0 en un proyecto existente tiene un entregable extra: **una lista de
 ./tooling/new-project.sh prueba-ads
 ```
 
-Rellena sólo la sección 1 del PROFILE (definición de éxito) y lanza el bootstrap. En una sesión verás si el modelo operativo te encaja. El coste de abandonarlo es borrar una carpeta.
+Rellena sólo la sección 1 del PROFILE (definición de éxito) y lanza el bootstrap. No hace falta declarar ninguna fuente: un manifiesto vacío es válido. En una sesión verás si el modelo operativo te encaja. El coste de abandonarlo es borrar una carpeta.
 
 ---
 
@@ -197,7 +313,10 @@ Cosas que puedes decir en cualquier momento:
 ## Lista de verificación de arranque
 
 ```text
-[ ] Repositorio creado, con remoto, primer commit hecho
+[ ] Workspace creado, con el repositorio ADS dentro y su remoto publicado
+[ ] El workspace NO es un repositorio Git: sólo lo son ads/ y las fuentes
+[ ] SOURCES.toml declarado — vacío es válido si aún no hay código
+[ ] workspace check en verde
 [ ] kernel/ y packs/ copiados y SIN editar
 [ ] PROFILE.md completo — las 4 preguntas respondidas
 [ ] PROFILE.md leído y aprobado por ti
@@ -207,4 +326,4 @@ Cosas que puedes decir en cualquier momento:
 [ ] Primera entrada de JOURNAL.md existe
 ```
 
-Si los ocho están marcados, el proyecto está arrancado correctamente.
+Si todos están marcados, el proyecto está arrancado correctamente.

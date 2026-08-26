@@ -1,0 +1,40 @@
+kind: esquema
+esquema: integration-set
+version: 1
+descripcion: combinacion exacta de revisiones de fuentes que ha sido candidata o probada conjuntamente; es atomicidad LOGICA de producto, no atomicidad Git
+obligatorios: [id, item, estado, fuentes, verificacion, restaura_a]
+campos:
+  id: {tipo: texto, patron: '^IS-[0-9]{3,}$'}
+  item: {tipo: texto, min: 5}
+  # candidato    la combinacion existe y todavia no se ha verificado entera
+  # verificado   toda la verificacion declarada tiene resultado y evidencia
+  # integrado    todas sus fuentes estan integradas en su rama principal
+  # parcial      una o mas fuentes quedaron sin integrar. NO es terminado
+  # descartado   se abandono; se conserva porque explica por que existe el siguiente
+  estado: {tipo: enum, valores: [candidato, verificado, integrado, parcial, descartado]}
+  fuentes:
+    tipo: lista
+    min: 1
+    de: objeto
+    obligatorios: [source, commit]
+    campos:
+      # el id declarado en SOURCES.toml. NO la ruta local: la ruta no es identidad.
+      source: {tipo: texto, min: 1}
+      # un SHA concreto. Una rama se mueve, y entonces el conjunto deja de ser exacto.
+      commit: {tipo: texto, patron: '^[0-9a-f]{7,40}$'}
+      rama: {tipo: texto}
+      pr: {tipo: texto}
+  contratos: {tipo: lista, de: texto}
+  verificacion:
+    tipo: lista
+    min: 1
+    de: objeto
+    obligatorios: [ambito, resultado, evidencia]
+    campos:
+      ambito: {tipo: texto, min: 3}
+      resultado: {tipo: enum, valores: [pendiente, pasa, falla, no-aplica]}
+      evidencia: {tipo: texto, min: 5}
+  migraciones: {tipo: lista, de: texto}
+  # a que combinacion se vuelve si hay que revertir el producto. Sin esto, revertir es
+  # una arqueologia por varios historiales que nadie hace bajo presion.
+  restaura_a: {tipo: texto, min: 5}

@@ -132,7 +132,11 @@ def t158_evidencia(raiz=None):
     #     Un validador nuevo sin registrar quedaría fuera de la evidencia en silencio,
     #     que es la forma callada del mismo defecto.
     dir_val = os.path.join(base, "kernel/operativo/validadores")
-    declarados = {c.get("script") for c in componentes}
+    # `dir` permite declarar un ejecutable que vive fuera de validadores/ —las pruebas de
+    # workspace prueban tooling, no el corpus—. Sólo los que SÍ viven aquí cuentan para la
+    # comprobación de «nada sobra en el directorio».
+    declarados = {c.get("script") for c in componentes
+                  if not c.get("dir") or c.get("dir") == "kernel/operativo/validadores"}
     for f in sorted(os.listdir(dir_val)):
         if f.endswith(".py") and f not in declarados:
             r.fallo(f"validadores/{f}: existe y el manifiesto no lo declara. Quedaría "
@@ -141,8 +145,11 @@ def t158_evidencia(raiz=None):
         script = c.get("script", "")
         if not script.endswith(".py"):
             r.fallo(f"manifiesto: '{c.get('id')}' declara '{script}', que no termina en .py")
-        elif not os.path.isfile(os.path.join(dir_val, script)):
-            r.fallo(f"manifiesto: '{c.get('id')}' declara {script}, que no existe")
+        else:
+            directorio = c.get("dir") or "kernel/operativo/validadores"
+            if not os.path.isfile(os.path.join(base, directorio, script)):
+                r.fallo(f"manifiesto: '{c.get('id')}' declara {directorio}/{script}, "
+                        f"que no existe")
 
     # 9 · nada sobra en el directorio: una evidencia huérfana es una que nadie regenera
     dir_ev = os.path.join(base, DIR_EVIDENCIA)

@@ -58,6 +58,21 @@ porque la mayoría exige un runtime que todavía no existe.
 | T25 | abierta por diseño | depende de la sección (g) |
 | T26–T74 (sección b) | contrato-definido | requieren runtime |
 
+## T159–T170 — la enmienda E2, un producto no es un repositorio
+
+Viven en [`T159-T170-multirepo.md`](T159-T170-multirepo.md) y las ejecutan **tres**
+validadores distintos, porque comprueban cosas distintas:
+
+```text
+comprobar_fuentes.py             el ADS Project es VÁLIDO, sin tocar el disco
+tooling/tests/test_workspace.py  el workspace se MATERIALIZA, con repos Git locales
+                                 temporales. Sin red y sin GitHub.
+comprobar_arranque.py            el arranque produce la topología correcta
+```
+
+Dos quedan en `contrato-definido` y lo dicen: **T169** —integración parcial— exige runtime,
+y **T170** —reanudación multi-fuente— exige un guion manual con dos repositorios reales.
+
 ## T75 en adelante — nuevas de este kernel operativo
 
 La numeración continúa en **T75**. Cada prueba vive en su fichero de `pruebas/` con un

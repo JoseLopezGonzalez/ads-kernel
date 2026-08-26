@@ -2,17 +2,25 @@
 
 `kernel/operativo/` es la **instanciación ejecutable** de la especificación aprobada en
 [`docs/rediseno/a-CAPACIDADES-APROBADA.md`](../../docs/rediseno/a-CAPACIDADES-APROBADA.md)
-y [`docs/rediseno/b-RECORRIDO-APROBADA.md`](../../docs/rediseno/b-RECORRIDO-APROBADA.md).
+y [`docs/rediseno/b-RECORRIDO-APROBADA.md`](../../docs/rediseno/b-RECORRIDO-APROBADA.md), con
+sus enmiendas [E1](../../docs/rediseno/a-ENMIENDA-E1-ENC.md) y
+[E2](../../docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md).
 
 ```text
-(a) y (b)             ESPECIFICACIÓN NORMATIVA — invariantes, autoridad, estados,
-                      recorrido. Aprobadas. No se modifican desde aquí.
+(a) y (b) + E1 · E2   ESPECIFICACIÓN NORMATIVA — invariantes, autoridad, estados,
+                      recorrido. Aprobadas. No se modifican desde aquí: se enmiendan.
 kernel/operativo/     CONTENIDO OPERATIVO — roles, métodos, gates, prompts, plantillas,
                       circuitos, rúbricas, validadores y pruebas. Es lo que un equipo
                       ejecuta. Deriva de (a) y (b) y las cita; no las repite.
 packs/<clase>/        ESPECIALIZACIÓN POR CLASE DE PROYECTO. Amplía. No sustituye.
-PROFILE.md            UN proyecto concreto.
+PROFILE.md            UN producto concreto. Uno por producto, nunca uno por repositorio.
+SOURCES.toml          QUÉ REPOSITORIOS Y COMPONENTES lo forman. Fuente única.
 ```
+
+> **Un ADS Project gobierna un PRODUCTO, no un repositorio.** El código vive en las fuentes
+> declaradas en `SOURCES.toml` y aparece como repositorios hermanos del de control. Un
+> producto de un solo repositorio es el caso particular de tener una sola fuente.
+> Contrato: [`C6`](contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md).
 
 ## Regla de fuente única
 
@@ -49,6 +57,9 @@ cuando aparece se resuelve **borrando la copia**, nunca sincronizando las dos.
 | ficha operativa de una capacidad | `capacidades/<COD>/CAPACIDAD.md` |
 | contrato de un rol | `capacidades/<COD>/roles/<rol>.md` |
 | perfiles de modelo y política de asignación | [`contratos/C2-AGENTES-Y-MODELOS.md`](contratos/C2-AGENTES-Y-MODELOS.md) |
+| qué es una fuente, un componente y un workspace, y dónde vive cada verdad | [`contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md`](contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md) |
+| gobierno Git del producto y convergencia multi-fuente | [`contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md`](contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md) |
+| la composición del producto: qué repositorios y componentes lo forman | `SOURCES.toml` del ADS Project |
 | procedimiento de un rol | `capacidades/<COD>/metodos/<Metodo>.md` |
 | prompt operativo de un rol | `capacidades/<COD>/prompts/<rol>.md` |
 | entrada del Owner y su circuito | [`entrada/00-INDICE.md`](entrada/00-INDICE.md) |
@@ -61,15 +72,15 @@ cuando aparece se resuelve **borrando la copia**, nunca sincronizando las dos.
 
 | directorio | contenido | entrada |
 |---|---|---|
-| `esquemas/` | el lenguaje canónico y los dieciocho tipos | [`00-LENGUAJE.md`](esquemas/00-LENGUAJE.md) |
-| `contratos/` | los cinco contratos transversales | [`00-INDICE.md`](contratos/00-INDICE.md) |
+| `esquemas/` | el lenguaje canónico y los diecinueve tipos | [`00-LENGUAJE.md`](esquemas/00-LENGUAJE.md) |
+| `contratos/` | los siete contratos transversales | [`00-INDICE.md`](contratos/00-INDICE.md) |
 | `entrada/` | PASO 1 — de la frase del Owner al item | [`00-INDICE.md`](entrada/00-INDICE.md) |
 | `diseno/` | PASO 3 — el sistema de excelencia | [`00-SISTEMA-DE-EXCELENCIA.md`](diseno/00-SISTEMA-DE-EXCELENCIA.md) |
 | `capacidades/` | PASOS 4 y 5 — las quince capacidades | tabla de abajo |
 | `recorrido/` | obligaciones del proceso, cierre del item y los diez procesos | [`00-OBLIGACIONES-Y-CIERRE.md`](recorrido/00-OBLIGACIONES-Y-CIERRE.md) |
 | `circuitos/` | los circuitos y los handoffs | [`00-CIRCUITOS.md`](circuitos/00-CIRCUITOS.md) |
 | `plantillas/` | artefactos rellenables | tabla de abajo |
-| `validadores/` | ocho validadores ejecutables, incluidas las pruebas negativas | [`huella.py`](validadores/huella.py) · [`exclusiones.yaml`](validadores/exclusiones.yaml) |
+| `validadores/` | los validadores ejecutables, incluidas las pruebas negativas; el manifiesto canónico dice cuáles y qué se espera de cada uno | [`validadores.yaml`](validadores/validadores.yaml) · [`huella.py`](validadores/huella.py) · [`exclusiones.yaml`](validadores/exclusiones.yaml) |
 | `pruebas/` | escenarios y su registro honesto | [`REGISTRO.md`](pruebas/REGISTRO.md) |
 
 ### Las quince capacidades
@@ -93,6 +104,8 @@ Cada carpeta tiene la misma forma: `CAPACIDAD.md` · `roles/` · `metodos/` · `
 | [`DEVOLUCION.md`](plantillas/DEVOLUCION.md) | los cuatro campos sin los cuales una devolución no es una devolución |
 | [`DICTAMEN.md`](plantillas/DICTAMEN.md) | la forma común de todo juicio independiente |
 | [`CIERRE.md`](plantillas/CIERRE.md) | el informe que separa obligaciones satisfechas de retiradas |
+| [`SOURCES.toml`](plantillas/SOURCES.toml) | la composición del producto, que arranca vacía |
+| [`INTEGRATION-SET.md`](plantillas/INTEGRATION-SET.md) | la combinación exacta de revisiones que se probó junta |
 
 ### Los tres packs del catálogo
 

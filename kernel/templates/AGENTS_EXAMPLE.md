@@ -111,16 +111,23 @@ Quick Change reduce el proceso, **no** elimina la comprobación: build afectado,
 
 ---
 
-## 8. Git
+## 8. Git — por fuente
 
-- `main` protegida. Nunca trabajar directamente sobre ella.
-- Una tarea = una rama corta (o worktree/sandbox si hay paralelismo).
+Este repositorio es el **control repo**. El código vive en las fuentes declaradas en
+`SOURCES.toml`, y cada una tiene su Git independiente. Todo lo de abajo se aplica **dentro
+de cada fuente**, no al producto entero.
+
+- `main` de cada fuente, protegida. Nunca trabajar directamente sobre ella.
+- Un item o paquete produce **0..N source changes**: uno por cada fuente que toca. No hay una rama global del producto, ni un PR global.
+- Dentro de cada fuente: una rama corta por trabajo (o worktree/sandbox si hay paralelismo). Los nombres **no** tienen que coincidir entre fuentes; la asociación vive en ADS.
 - Commits = checkpoints lógicos revisables. Ni uno por microacción ni un volcado final.
 - Push al alcanzar checkpoint estable, al cerrar sesión, antes de operación de riesgo, antes de handoff y antes de pedir revisión.
 - PR = punto formal donde convergen tarea, diff, CI, tests, revisión, docs afectada, riesgos.
 - Merge según riesgo: `Autonomous` · `Reviewed` · `Owner Acceptance Required` · `Owner Decision Required`.
 - **Merge ≠ release ≠ publicación.** Publicar es del Owner.
-- Rollback es herramienta normal, no fracaso.
+- **Fusionar el PR de una fuente NO significa que el producto esté integrado.** La convergencia se declara en un **Integration Set** con las revisiones exactas. Si una parte se fusionó y otra no, el estado es *integración parcial*, no *terminado*.
+- Rollback es herramienta normal, no fracaso. Se vuelve al Integration Set anterior.
+- Escribe **sólo** en las fuentes que tu paquete declara en `escribe_fuentes`. Leer una fuente no autoriza a modificarla.
 - **El Owner no es operador Git.** No le preguntes cuándo hacer commit, push, merge o qué rama usar.
 
 **Quien implementa no es el único que valida** cuando el riesgo lo justifica. Claude Code implementa → Codex revisa y cuestiona (o la distribución que decida Agentic Engineering).

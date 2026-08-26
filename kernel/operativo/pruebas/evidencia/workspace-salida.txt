@@ -1,0 +1,44 @@
+# evidencia de: workspace
+# orden:        python3 tooling/tests/test_workspace.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+test_adopcion_de_dos_repos_existentes (__main__.TestBootstrapYAdopcion.test_adopcion_de_dos_repos_existentes)
+§87: ads + frontend + backend independientes, reconocidos sin volver a clonar. ... ok
+test_bootstrap_crea_workspace_con_ads_dentro (__main__.TestBootstrapYAdopcion.test_bootstrap_crea_workspace_con_ads_dentro) ... ok
+test_01_manifiesto_vacio_es_valido (__main__.TestManifiesto.test_01_manifiesto_vacio_es_valido)
+Un producto nuevo todavía no tiene código. Eso NO es un error. ... ok
+test_02_una_source_valida (__main__.TestManifiesto.test_02_una_source_valida) ... ok
+test_03_varias_sources_validas (__main__.TestManifiesto.test_03_varias_sources_validas) ... ok
+test_06_path_duplicado (__main__.TestManifiesto.test_06_path_duplicado) ... ok
+test_07_id_duplicado (__main__.TestManifiesto.test_07_id_duplicado) ... ok
+test_08_escape_con_dos_puntos (__main__.TestManifiesto.test_08_escape_con_dos_puntos) ... ok
+test_09_ruta_absoluta (__main__.TestManifiesto.test_09_ruta_absoluta) ... ok
+test_10_ruta_ads_reservada (__main__.TestManifiesto.test_10_ruta_ads_reservada) ... ok
+test_15_componente_con_source_inexistente (__main__.TestManifiesto.test_15_componente_con_source_inexistente) ... ok
+test_16_component_path_fuera_de_source (__main__.TestManifiesto.test_16_component_path_fuera_de_source) ... ok
+test_credenciales_en_remoto (__main__.TestManifiesto.test_credenciales_en_remoto) ... ok
+test_dos_componentes_misma_source (__main__.TestManifiesto.test_dos_componentes_misma_source)
+CA-8: dos componentes pueden apuntar a la misma fuente. Monorepo. ... ok
+test_layout_no_soportado (__main__.TestManifiesto.test_layout_no_soportado) ... ok
+test_schema_no_soportado (__main__.TestManifiesto.test_schema_no_soportado) ... ok
+test_04_clone_de_source_ausente (__main__.TestMaterializacion.test_04_clone_de_source_ausente) ... ok
+test_05_reutilizacion_de_source_existente (__main__.TestMaterializacion.test_05_reutilizacion_de_source_existente) ... ok
+test_11_remote_equivocado (__main__.TestMaterializacion.test_11_remote_equivocado) ... ok
+test_12_directorio_no_git (__main__.TestMaterializacion.test_12_directorio_no_git) ... ok
+test_13_repo_dirty_no_se_destruye (__main__.TestMaterializacion.test_13_repo_dirty_no_se_destruye) ... ok
+test_14_remoto_inexistente (__main__.TestMaterializacion.test_14_remoto_inexistente) ... ok
+test_19_seleccion_de_source_en_init (__main__.TestMaterializacion.test_19_seleccion_de_source_en_init) ... ok
+test_init_de_source_desconocida (__main__.TestMaterializacion.test_init_de_source_desconocida) ... ok
+test_source_ausente_no_bloquea_a_las_demas (__main__.TestMaterializacion.test_source_ausente_no_bloquea_a_las_demas)
+§63: un trabajo de frontend puro continúa aunque falte el backend. ... ok
+test_17_normalizacion_https_ssh (__main__.TestNormalizacionYSalida.test_17_normalizacion_https_ssh) ... ok
+test_18_status_json (__main__.TestNormalizacionYSalida.test_18_status_json) ... ok
+test_20_ejecucion_desde_subdirectorio (__main__.TestNormalizacionYSalida.test_20_ejecucion_desde_subdirectorio) ... ok
+test_sin_manifiesto_falla_con_codigo_2 (__main__.TestNormalizacionYSalida.test_sin_manifiesto_falla_con_codigo_2) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 1.859s
+
+OK
