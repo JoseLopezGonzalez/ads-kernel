@@ -16,6 +16,8 @@ import os
 import re
 import sys
 
+import yaml
+
 sys.path.insert(0, os.path.dirname(__file__))
 from ads_lint import Lint  # noqa: E402
 import comprobar_contratos  # noqa: E402
@@ -29,8 +31,8 @@ def fijar_raiz(nueva):
     global RAIZ
     RAIZ = os.path.abspath(nueva)
     comprobar_contratos.fijar_raiz(nueva)
-CODIGOS_KERNEL = {"PRD", "DIS", "ARQ", "DOM", "CON", "VER", "ENT", "USO", "APR",
-                  "INV", "SEG", "PLT", "DSP", "SIS", "ENC"}
+
+
 PREFIJO = re.compile(r"^([a-z0-9-]+):")
 
 
@@ -86,14 +88,26 @@ def t132_packs_no_reclaman_autoridad(b):
             if cap and not (cap.get("autoridad", {}).get("veta") or []):
                 r.fallo(f"{rid}: reclama veto y su capacidad {cap['id']} no veta nada")
 
-    # 4. Ningún gate de pack repite el identificador de uno del kernel.
-    for gid, (datos, ruta) in gates.items():
+    # 4. Los gates de pack SUMAN: ni repiten el identificador de uno del kernel ni
+    #    rebajan una de sus comprobaciones.
+    #    (La versión anterior de esta comprobación era INALCANZABLE: recorría un dict
+    #     indexado por id preguntando si un id era igual a sí mismo y a la vez estaba en
+    #     otro sitio, lo que no puede ocurrir. Hallazgo A-17.)
+    ids_kernel, ids_pack = {}, {}
+    for datos, ruta, _ in b.get("gate", []):
         rel = os.path.relpath(ruta, RAIZ)
-        if rel.startswith("packs/"):
-            continue
-        for otro_id, (_, otra_ruta) in gates.items():
-            if otro_id == gid and os.path.relpath(otra_ruta, RAIZ).startswith("packs/"):
-                r.fallo(f"{gid}: un gate de pack usa el identificador de uno del kernel")
+        (ids_pack if rel.startswith("packs/") else ids_kernel)[datos["id"]] = (datos, rel)
+    for gid, (datos, rel) in ids_pack.items():
+        if gid in ids_kernel:
+            r.fallo(f"{gid} ({rel}): un gate de pack usa el identificador de uno del kernel")
+        # un gate de pack no puede repetir el id de una comprobación del kernel: si lo
+        # hiciera, la del pack sustituiría a la del kernel en vez de sumarse
+        mias = {c.get("id") for c in datos.get("comprobaciones") or []}
+        for kid, (kdatos, krel) in ids_kernel.items():
+            suyas = {c.get("id") for c in kdatos.get("comprobaciones") or []}
+            for choque in sorted(mias & suyas):
+                r.fallo(f"{gid}: su comprobación '{choque}' repite la de {kid} ({krel}): "
+                        f"un gate de pack SUMA, no sustituye")
 
     # 5. Todo pack declara qué NO toca.
     for datos, ruta, _ in b.get("pack", []):
@@ -103,18 +117,100 @@ def t132_packs_no_reclaman_autoridad(b):
 
 
 def t131_precedencia_declarada(b):
-    r = Resultado("T131", "Todo pack declara su compatibilidad y su regla de precedencia")
-    ids = {d.get("id") for d, _, _ in b.get("pack", [])}
-    for datos, ruta, _ in b.get("pack", []):
+    """Compatibilidad declarada y SIMÉTRICA, más regla de precedencia escrita.
+
+    No se comprueba que el otro pack EXISTA en el corpus: en un proyecto instalado sólo
+    están los packs que ese proyecto instaló, y declarar compatibilidad con uno no
+    instalado es correcto. Lo que sí se comprueba es que, cuando los dos están presentes,
+    se reconozcan MUTUAMENTE: una compatibilidad unilateral es una afirmación que el otro
+    lado no sostiene.
+    """
+    r = Resultado("T131", "La compatibilidad entre packs es simétrica y la precedencia está escrita")
+    presentes = {d["id"]: d for d, _, _ in b.get("pack", [])}
+    for pid, datos in sorted(presentes.items()):
         for otro in datos.get("compatible_con") or []:
-            if otro not in ids:
-                r.fallo(f"{datos['id']}: se declara compatible con '{otro}', que no existe")
+            if otro == pid:
+                r.fallo(f"{pid}: se declara compatible consigo mismo")
+            elif otro in presentes:
+                suyos = presentes[otro].get("compatible_con") or []
+                if pid not in suyos:
+                    r.fallo(f"{pid}: se declara compatible con '{otro}', y '{otro}' no lo "
+                            f"reconoce: la compatibilidad tiene que ser simétrica")
         if not datos.get("precedencia"):
-            r.fallo(f"{datos['id']}: no declara su regla de precedencia")
+            r.fallo(f"{pid}: no declara su regla de precedencia")
+        for prop in datos.get("propiedades_medibles") or []:
+            tiene_valor = prop.get("valor") is not None
+            if tiene_valor and prop.get("fija_el_profile"):
+                r.fallo(f"{pid}/{prop['id']}: declara valor Y delega en el PROFILE. "
+                        f"Son excluyentes: o lo conoce el pack, o lo fija el proyecto")
+            if not tiene_valor and not prop.get("fija_el_profile"):
+                r.fallo(f"{pid}/{prop['id']}: no declara valor y tampoco delega en el "
+                        f"PROFILE: la propiedad queda sin umbral posible")
     return r
 
 
-PRUEBAS = [t131_precedencia_declarada, t132_packs_no_reclaman_autoridad]
+def t149_lo_mas_restrictivo_gana(_b):
+    """A-03 · P1 demostrada como COMPORTAMIENTO, no como campo no vacío.
+
+    La versión anterior de T131 se declaraba superada comprobando que dos campos de YAML
+    no estuvieran vacíos, mientras su enunciado afirmaba que el sistema resuelve conflictos
+    tomando el valor más restrictivo. Esto ejecuta la resolución sobre fixtures.
+    """
+    import composicion_packs as cp
+    r = Resultado("T149", "Lo más restrictivo gana entre dos packs, y queda registrado por qué")
+    ruta = os.path.join(RAIZ, "kernel/operativo/pruebas/fixtures/packs-composicion.yaml")
+    if not os.path.exists(ruta):
+        r.fallo(f"no existe el fixture {ruta}")
+        return r
+    with open(ruta, encoding="utf-8") as fh:
+        casos = yaml.safe_load(fh)
+
+    for nombre, caso in sorted(casos.items()):
+        packs, espera = caso["packs"], caso["espera"]
+        if espera.get("conflicto"):
+            for orden in (packs, list(reversed(packs))):
+                try:
+                    cp.resolver(orden)
+                except cp.ConflictoDeComposicion:
+                    continue
+                r.fallo(f"{nombre}: una composición NO comparable se resolvió en silencio "
+                        f"en vez de fallar explícitamente")
+            continue
+
+        resultados = []
+        for orden in (packs, list(reversed(packs))):
+            try:
+                resultados.append(cp.resolver(orden))
+            except cp.ConflictoDeComposicion as exc:
+                r.fallo(f"{nombre}: conflicto inesperado — {exc}")
+                break
+        if len(resultados) != 2:
+            continue
+        # invertir el orden de entrada no altera el resultado
+        if resultados[0] != resultados[1]:
+            r.fallo(f"{nombre}: el resultado depende del ORDEN de los packs de entrada")
+        obtenido = resultados[0].get(espera["propiedad"])
+        if obtenido is None:
+            r.fallo(f"{nombre}: la propiedad '{espera['propiedad']}' no aparece en la resolución")
+            continue
+        if "estado" in espera and obtenido.get("estado") != espera["estado"]:
+            r.fallo(f"{nombre}: estado {obtenido.get('estado')}, se esperaba {espera['estado']}")
+        if "valor" in espera and obtenido.get("valor") != espera["valor"]:
+            r.fallo(f"{nombre}: gana {obtenido.get('valor')}, y lo más restrictivo era "
+                    f"{espera['valor']}")
+        if "gana" in espera and obtenido.get("gana") != espera["gana"]:
+            r.fallo(f"{nombre}: la restricción vencedora se atribuye a "
+                    f"{obtenido.get('gana')}, y procede de {espera['gana']}")
+        if "perdedores" in espera and obtenido.get("perdedores") != espera["perdedores"]:
+            r.fallo(f"{nombre}: los valores descartados no se registran: "
+                    f"{obtenido.get('perdedores')}")
+        if obtenido.get("estado") != "pendiente-de-profile" and not obtenido.get("motivo"):
+            r.fallo(f"{nombre}: la resolución no registra POR QUÉ gana el valor elegido")
+    return r
+
+
+PRUEBAS = [t131_precedencia_declarada, t132_packs_no_reclaman_autoridad,
+           t149_lo_mas_restrictivo_gana]
 
 
 def main():

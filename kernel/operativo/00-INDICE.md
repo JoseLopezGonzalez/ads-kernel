@@ -89,11 +89,14 @@ Cada carpeta tiene la misma forma: `CAPACIDAD.md` · `roles/` · `metodos/` · `
 | [`DEVOLUCION.md`](plantillas/DEVOLUCION.md) | los cuatro campos sin los cuales una devolución no es una devolución |
 | [`DICTAMEN.md`](plantillas/DICTAMEN.md) | la forma común de todo juicio independiente |
 
-### Los tres packs
+### Los tres packs del catálogo
 
-[`web-app`](../../packs/web-app/PACK.md) · [`mobile-app`](../../packs/mobile-app/PACK.md) ·
-[`wear-os`](../../packs/wear-os/PACK.md) · su
-[composición](../../packs/COMPOSICION.md) y [qué es un pack](../../packs/00-QUE-ES-UN-PACK.md).
+`web-app` · `mobile-app` · `wear-os`. **En un proyecto instalado sólo existe el directorio
+de los packs que ese proyecto instaló**, y por eso aquí se nombran en vez de enlazarse: un
+enlace a un pack no instalado sería un enlace roto en toda organización que no los use los
+tres. El catálogo completo y sus reglas viajan siempre con `packs/`:
+[qué es un pack](../../packs/00-QUE-ES-UN-PACK.md) ·
+[composición y precedencia](../../packs/COMPOSICION.md).
 
 ## Cómo se usa esto sin haber visto ninguna conversación
 

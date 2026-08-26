@@ -53,11 +53,16 @@ del kernel y no se queda con su autoridad: **añade materia, no redistribuye pod
 
 ## Los tres packs de esta versión
 
-| pack | clase de proyecto | fichero |
+| pack | clase de proyecto | dónde vive |
 |---|---|---|
-| `web-app` | aplicación web con navegador como entorno | [`web-app/PACK.md`](web-app/PACK.md) |
-| `mobile-app` | aplicación móvil, sin atarse a una tecnología | [`mobile-app/PACK.md`](mobile-app/PACK.md) |
-| `wear-os` | reloj: pocos segundos, pantalla mínima, batería | [`wear-os/PACK.md`](wear-os/PACK.md) |
+| `web-app` | aplicación web con navegador como entorno | `packs/web-app/PACK.md` |
+| `mobile-app` | aplicación móvil, sin atarse a una tecnología | `packs/mobile-app/PACK.md` |
+| `wear-os` | reloj: pocos segundos, pantalla mínima, batería | `packs/wear-os/PACK.md` |
+
+> **Las rutas no se enlazan aquí a propósito.** En un proyecto instalado existe únicamente
+> el directorio de los packs que ese proyecto instaló; enlazar los tres dejaría enlaces
+> rotos en toda organización que no use los tres. `./tooling/new-project.sh` sin argumentos
+> lista los instalables.
 
 Composición entre ellos, precedencia y detección de conflictos:
 [`COMPOSICION.md`](COMPOSICION.md).

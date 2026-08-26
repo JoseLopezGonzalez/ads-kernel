@@ -5,7 +5,8 @@ descripcion: declaracion de un pack; que anade al kernel y que tiene prohibido t
 obligatorios:
   [id, nombre, version, clase_de_proyecto, restricciones, capacidades_nuevas,
    roles_nuevos, extensiones_de_metodo, gates_adicionales, artefactos, herramientas,
-   matriz_entornos, pruebas, antipatrones, no_toca, compatible_con, precedencia]
+   matriz_entornos, propiedades_medibles, pruebas, antipatrones, no_toca,
+   compatible_con, precedencia]
 campos:
   id: {tipo: texto, patron: '^[a-z0-9-]+$'}
   nombre: {tipo: texto, min: 3}
@@ -19,6 +20,26 @@ campos:
   artefactos: {tipo: lista, de: texto, min: 1}
   herramientas: {tipo: lista, de: texto, min: 1}
   matriz_entornos: {tipo: texto, min: 10}
+  # Lo que hace COMPUTABLE la precedencia P1 de packs/COMPOSICION.md.
+  # `direccion` dice hacia donde esta lo mas restrictivo, que es lo unico que permite
+  # comparar dos valores sin interpretarlos:
+  #   minimo  el valor declarado es un SUELO exigido  -> mas restrictivo = MAYOR
+  #   maximo  el valor declarado es un TECHO exigido  -> mas restrictivo = MENOR
+  # `valor` solo se declara cuando la magnitud es propiedad del MEDIO y el pack puede
+  # conocerla. Cuando depende del producto, se omite y `fija_el_profile` es true
+  # (packs/00-QUE-ES-UN-PACK: un pack no fija un valor que dependa del producto).
+  propiedades_medibles:
+    tipo: lista
+    de: objeto
+    obligatorios: [id, nombre, unidad, direccion, fija_el_profile, motivo]
+    campos:
+      id: {tipo: texto, patron: '^[a-z0-9-]+$'}
+      nombre: {tipo: texto, min: 5}
+      unidad: {tipo: texto, min: 1}
+      direccion: {tipo: enum, valores: [minimo, maximo]}
+      valor: {tipo: numero}
+      fija_el_profile: {tipo: booleano}
+      motivo: {tipo: texto, min: 15}
   pruebas: {tipo: lista, de: texto, min: 1}
   antipatrones: {tipo: lista, de: texto, min: 2}
   no_toca: {tipo: lista, de: texto, min: 1}

@@ -33,8 +33,6 @@ Se evalúa en orden, y gana la primera que aplica:
 
 ```text
 P1  LO MÁS RESTRICTIVO GANA, cuando ambos hablan de la misma propiedad medible.
-    Un tamaño mínimo de objetivo táctil de 48 y otro de 44 → gana 48.
-    Un contraste mínimo de 4.5 y otro de 7 → gana 7.
     Motivo: relajarlo perjudicaría al usuario del medio más exigente.
 
 P2  EL PACK DE LA SUPERFICIE GANA, cuando la propiedad no es comparable.
@@ -47,6 +45,52 @@ P4  SI NINGUNA APLICA, hay CONFLICTO: se registra y lo arbitra el PROFILE.
     Sin arbitraje declarado, la organización NO es conforme (T18).
 ```
 
+### Qué hace computable a P1: la dirección de cada propiedad
+
+«Lo más restrictivo» no es interpretable a ojo. Un suelo y un techo se comparan al revés, y
+sin declararlo no hay forma mecánica de saber cuál de dos valores manda:
+
+```text
+direccion: minimo    el valor declarado es un SUELO exigido   →  más restrictivo = MAYOR
+                     objetivo táctil mínimo 48 dp frente a 44 dp  →  gana 48
+
+direccion: maximo    el valor declarado es un TECHO exigido   →  más restrictivo = MENOR
+                     primera respuesta visible ≤100 ms frente a ≤300 ms  →  gana 100
+```
+
+Por eso **todo pack declara sus `propiedades_medibles`** en su bloque `ads:pack`, y cada
+una lleva `id`, `unidad`, `direccion` y su motivo. La resolución es entonces una función
+pura de esas declaraciones, y la ejecuta
+[`validadores/composicion_packs.py`](../kernel/operativo/validadores/composicion_packs.py):
+
+```text
+MISMA propiedad, MISMA unidad, MISMA dirección   →  P1: gana el más restrictivo, y queda
+                                                     registrado cuál ganó, de qué pack
+                                                     procede y qué valores se descartaron
+EMPATE en el valor                                →  se desempata por identificador de
+                                                     pack, para que invertir el orden de
+                                                     entrada no cambie el resultado
+DIRECCIÓN o UNIDAD distintas                      →  NO son comparables: P1 no aplica, y
+                                                     la composición FALLA de forma
+                                                     explícita → P4, arbitra el PROFILE
+NINGÚN pack declara valor                         →  no hay nada que resolver: el umbral
+                                                     lo fija el PROFILE, y la resolución
+                                                     lo dice en vez de inventarlo
+```
+
+> **Un pack sólo declara `valor` cuando la magnitud es propiedad del MEDIO.** El tamaño
+> mínimo de un objetivo táctil en un reloj lo determina el dedo, no el producto. El nivel
+> de contraste exigible lo determina el proyecto, y entonces el pack declara
+> `fija_el_profile: true` y no inventa un número. Es la regla de
+> [`00-QUE-ES-UN-PACK.md`](00-QUE-ES-UN-PACK.md): el pack fija QUÉ se mide; el PROFILE fija
+> el umbral cuando el pack no puede conocerlo.
+
+Ver la resolución de los packs instalados:
+
+```bash
+python3 kernel/operativo/validadores/composicion_packs.py
+```
+
 ## Detección de conflictos
 
 `SIS/Conformidad` la ejecuta al instalar un pack nuevo y en cada auditoría:
@@ -56,7 +100,8 @@ P4  SI NINGUNA APLICA, hay CONFLICTO: se registra y lo arbitra el PROFILE.
                      Imposible por construcción: cada uno usa su prefijo.
 
 2  MISMA PROPIEDAD   dos packs fijan un valor distinto para la misma propiedad medible
-                     → se aplica P1 y se registra cuál ganó y por qué
+                     → se aplica P1 y se registra cuál ganó, de qué pack procede y qué
+                       valores quedaron descartados. Comprobado por T149.
 
 3  MISMA MATERIA     dos roles de packs distintos reclaman la misma materia sobre la
                      MISMA superficie

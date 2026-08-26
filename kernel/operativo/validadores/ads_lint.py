@@ -159,6 +159,11 @@ class Lint:
                 return self.err(ruta, linea, "tipo", f"{camino}: se esperaba entero")
             if "min" in spec and valor < spec["min"]:
                 self.err(ruta, linea, "min", f"{camino}: {valor} < {spec['min']}")
+        elif tipo == "numero":
+            if isinstance(valor, bool) or not isinstance(valor, (int, float)):
+                return self.err(ruta, linea, "tipo", f"{camino}: se esperaba número")
+            if "min" in spec and valor < spec["min"]:
+                self.err(ruta, linea, "min", f"{camino}: {valor} < {spec['min']}")
         elif tipo == "booleano":
             if not isinstance(valor, bool):
                 self.err(ruta, linea, "tipo", f"{camino}: se esperaba true/false")

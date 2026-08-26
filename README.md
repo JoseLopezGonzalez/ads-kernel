@@ -69,7 +69,7 @@ docs/UPSTREAM.md           candidatos a promover a kernel o pack
 Versión corta:
 
 ```bash
-./tooling/new-project.sh mi-web-app pack-web-app,pack-design-led
+./tooling/new-project.sh mi-web-app web-app
 cd ../mi-web-app
 # rellenar PROFILE.md (a mano o por conversación con el agente)
 # pegar BOOTSTRAP_PROMPT.md en el agente principal

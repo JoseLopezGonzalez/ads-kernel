@@ -1,0 +1,5 @@
+T131  SUPERADA  La compatibilidad entre packs es simétrica y la precedencia está escrita
+T132  SUPERADA  Un rol de pack no reclama autoridad de un rol del kernel
+T149  SUPERADA  Lo más restrictivo gana entre dos packs, y queda registrado por qué
+
+3 superadas · 0 fallidas

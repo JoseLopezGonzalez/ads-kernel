@@ -49,6 +49,24 @@ matriz_entornos: >
   El proyecto declara la matriz de dispositivos REALES: al menos uno de gama baja y uno
   reciente, con sus versiones de sistema. El pack exige que la evidencia se recoja en
   hardware real y que el emulador NO sustituya a la prueba en dispositivo.
+propiedades_medibles:
+  - id: objetivo-tactil-minimo
+    nombre: tamaño mínimo del objetivo táctil
+    unidad: dp
+    direccion: minimo
+    valor: 44
+    fija_el_profile: false
+    motivo: >
+      Es propiedad del medio táctil con pulgar sobre pantalla de teléfono. El proyecto puede
+      exigir más; no puede exigir menos.
+  - id: contraste-minimo
+    nombre: relación de contraste mínima del texto
+    unidad: ratio
+    direccion: minimo
+    fija_el_profile: true
+    motivo: >
+      El umbral depende del nivel de accesibilidad declarado por el proyecto; el pack fija
+      QUÉ se mide y en qué entornos.
 pruebas: [T125, T126, T127]
 antipatrones:
   - "validar en emulador lo que se ejecutará en un dispositivo de gama baja"

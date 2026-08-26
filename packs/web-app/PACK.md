@@ -42,6 +42,25 @@ matriz_entornos: >
   El proyecto declara la matriz: qué navegadores, qué versiones mínimas y qué tamaños. El
   pack exige que existan al menos dos motores distintos y dos tamaños extremos —el más
   estrecho soportado y uno amplio—, y que toda captura de evidencia cubra la matriz entera.
+propiedades_medibles:
+  - id: objetivo-tactil-minimo
+    nombre: tamaño mínimo del objetivo táctil
+    unidad: dp
+    direccion: minimo
+    valor: 24
+    fija_el_profile: false
+    motivo: >
+      Una web puede usarse con puntero preciso, y por eso su suelo es menor que el de un
+      medio exclusivamente táctil. Sigue siendo un suelo: por debajo, el error de pulsación
+      deja de ser accidental y pasa a ser sistemático.
+  - id: contraste-minimo
+    nombre: relación de contraste mínima del texto
+    unidad: ratio
+    direccion: minimo
+    fija_el_profile: true
+    motivo: >
+      Lo fija el nivel de accesibilidad que el proyecto declare exigible; el pack fija que
+      se mide y con qué herramienta.
 pruebas: [T122, T123, T124]
 antipatrones:
   - "diseñar para tres tamaños fijos y llamarlo responsive: el tamaño es continuo"

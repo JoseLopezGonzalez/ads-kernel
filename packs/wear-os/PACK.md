@@ -53,6 +53,34 @@ matriz_entornos: >
   El proyecto declara la matriz de relojes REALES, con al menos un tamaño pequeño y uno
   grande, y la forma de pantalla si el proyecto soporta más de una. El pack exige evidencia
   en reloj físico: ni emulador ni captura escalada la sustituyen.
+propiedades_medibles:
+  - id: objetivo-tactil-minimo
+    nombre: tamaño mínimo del objetivo táctil
+    unidad: dp
+    direccion: minimo
+    valor: 48
+    fija_el_profile: false
+    motivo: >
+      Es propiedad del MEDIO, no del producto: el dedo tapa parte de una pantalla de reloj
+      al pulsar, y la interacción ocurre en movimiento. Ningún proyecto de reloj puede
+      bajarlo sin empeorar a su usuario, y por eso lo fija el pack.
+  - id: duracion-uso-maxima
+    nombre: duración del uso previsto de una superficie
+    unidad: segundos
+    direccion: maximo
+    valor: 10
+    fija_el_profile: false
+    motivo: >
+      El uso de un reloj ocurre levantando la muñeca. Una superficie que exige más de diez
+      segundos está mal planteada para este medio, y eso no depende del producto.
+  - id: contraste-minimo
+    nombre: relación de contraste mínima del texto
+    unidad: ratio
+    direccion: minimo
+    fija_el_profile: true
+    motivo: >
+      El pack exige que sea MÁS estricto que en pantalla grande y que se valide al sol,
+      pero el umbral concreto depende del nivel de accesibilidad que declare el proyecto.
 pruebas: [T128, T129, T130]
 antipatrones:
   - "diseñar el reloj como una reducción de la pantalla del móvil"

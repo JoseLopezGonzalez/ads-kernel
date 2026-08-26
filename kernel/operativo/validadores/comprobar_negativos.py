@@ -131,10 +131,34 @@ def m_tooling_editado(raiz):
 
 
 def m_pack_menos_restrictivo_gana(raiz):
-    """A-03 · si la resolución tomase el valor menos restrictivo, T149 tiene que verlo."""
-    _sustituir(raiz, "packs/wear-os/PACK.md",
-               "    direccion: minimo\n    valor: 48",
-               "    direccion: minimo\n    valor: 40")
+    """A-03 · la resolución deja de tomar lo más restrictivo. T149 tiene que verlo.
+
+    Se invierte la semántica de la dirección en el resolutor: `minimo` pasa a quedarse con
+    el valor menor. Es EXACTAMENTE el defecto que T131 no podía detectar cuando sólo
+    comprobaba que dos campos de YAML no estuvieran vacíos.
+    """
+    _sustituir(raiz, VALIDADORES + "/composicion_packs.py",
+               'if direccion == "minimo":\n        return max(a, b)',
+               'if direccion == "minimo":\n        return min(a, b)')
+
+
+def m_composicion_sin_motivo(raiz):
+    """A-03 · la resolución deja de registrar POR QUÉ gana el valor elegido."""
+    _sustituir(raiz, VALIDADORES + "/composicion_packs.py",
+               '            "motivo": (f"la propiedad es un', '            "motivo": "",\n            "_motivo_desactivado": (f"la propiedad es un')
+
+
+def m_composicion_depende_del_orden(raiz):
+    """A-03 · la resolución deja de ser independiente del orden de entrada."""
+    _sustituir(raiz, VALIDADORES + "/composicion_packs.py",
+               'packs = sorted(packs, key=lambda p: p.get("id", ""))',
+               'packs = list(packs)')
+
+
+def m_composicion_incompatible_silenciosa(raiz):
+    """A-03 · dos packs no comparables dejan de fallar de forma explícita."""
+    _sustituir(raiz, VALIDADORES + "/composicion_packs.py",
+               "        if len(direcciones) > 1:", "        if False:")
 
 
 def m_arranque_con_pack_derogado(raiz):
@@ -197,8 +221,17 @@ CATALOGO = [
              "un script de tooling se edita localmente",
              m_tooling_editado),
     Mutacion("N149", "A-03", "T149", "comprobar_packs",
-             "el pack más restrictivo deja de serlo: la resolución debe cambiar de ganador",
+             "la resolución se queda con el valor MENOS restrictivo",
              m_pack_menos_restrictivo_gana),
+    Mutacion("N149b", "A-03", "T149", "comprobar_packs",
+             "la resolución deja de registrar por qué gana el valor elegido",
+             m_composicion_sin_motivo),
+    Mutacion("N149c", "A-03", "T149", "comprobar_packs",
+             "la resolución pasa a depender del orden de los packs de entrada",
+             m_composicion_depende_del_orden),
+    Mutacion("N149d", "A-03", "T149", "comprobar_packs",
+             "una composición no comparable se resuelve en silencio en vez de fallar",
+             m_composicion_incompatible_silenciosa),
     Mutacion("N148", "A-02", "T148", "comprobar_arranque",
              "la documentación vuelve a citar un pack derogado",
              m_arranque_con_pack_derogado),

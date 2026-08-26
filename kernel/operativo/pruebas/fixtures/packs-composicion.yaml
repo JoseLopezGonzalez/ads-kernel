@@ -1,0 +1,115 @@
+# Fixtures de T149 — composición de packs y precedencia P1.
+#
+# NO son packs instalables: son el material mínimo con el que se comprueba que la
+# resolución de `validadores/composicion_packs.py` hace lo que P1 afirma. Viven aquí, en
+# `pruebas/fixtures/`, y no en `packs/`, precisamente para que ningún proyecto pueda
+# instalarlos por error.
+#
+# Cada caso declara qué debe ocurrir. Los ejecuta `comprobar_packs.py` en T149.
+
+caso_restrictivo_gana:
+  descripcion: >
+    Dos packs fijan valores distintos para la misma propiedad medible, que es un SUELO.
+    Gana el mayor, y la salida dice de qué pack procede.
+  packs:
+    - id: fx-medio-exigente
+      propiedades_medibles:
+        - {id: objetivo-tactil-minimo, nombre: objetivo tactil, unidad: dp,
+           direccion: minimo, valor: 48, fija_el_profile: false, motivo: fixture}
+    - id: fx-medio-laxo
+      propiedades_medibles:
+        - {id: objetivo-tactil-minimo, nombre: objetivo tactil, unidad: dp,
+           direccion: minimo, valor: 44, fija_el_profile: false, motivo: fixture}
+  espera:
+    propiedad: objetivo-tactil-minimo
+    valor: 48
+    gana: fx-medio-exigente
+    perdedores: [{pack: fx-medio-laxo, valor: 44}]
+
+caso_techo_gana_el_menor:
+  descripcion: >
+    La misma regla sobre un TECHO: lo más restrictivo es el valor MENOR. Es el caso que
+    ninguna redacción anterior cubría, y por el que P1 no era computable.
+  packs:
+    - id: fx-rapido
+      propiedades_medibles:
+        - {id: respuesta-maxima, nombre: primera respuesta visible, unidad: ms,
+           direccion: maximo, valor: 100, fija_el_profile: false, motivo: fixture}
+    - id: fx-lento
+      propiedades_medibles:
+        - {id: respuesta-maxima, nombre: primera respuesta visible, unidad: ms,
+           direccion: maximo, valor: 300, fija_el_profile: false, motivo: fixture}
+  espera:
+    propiedad: respuesta-maxima
+    valor: 100
+    gana: fx-rapido
+    perdedores: [{pack: fx-lento, valor: 300}]
+
+caso_incompatible_por_direccion:
+  descripcion: >
+    Dos packs declaran la misma propiedad como suelo y como techo. NO son comparables:
+    P1 no aplica y la composición debe fallar de forma explícita (P4, arbitra el PROFILE).
+  packs:
+    - id: fx-suelo
+      propiedades_medibles:
+        - {id: densidad, nombre: densidad de informacion, unidad: filas,
+           direccion: minimo, valor: 10, fija_el_profile: false, motivo: fixture}
+    - id: fx-techo
+      propiedades_medibles:
+        - {id: densidad, nombre: densidad de informacion, unidad: filas,
+           direccion: maximo, valor: 4, fija_el_profile: false, motivo: fixture}
+  espera:
+    conflicto: true
+
+caso_incompatible_por_unidad:
+  descripcion: >
+    Misma propiedad en unidades distintas. Tampoco son comparables.
+  packs:
+    - id: fx-dp
+      propiedades_medibles:
+        - {id: objetivo-tactil-minimo, nombre: objetivo tactil, unidad: dp,
+           direccion: minimo, valor: 48, fija_el_profile: false, motivo: fixture}
+    - id: fx-mm
+      propiedades_medibles:
+        - {id: objetivo-tactil-minimo, nombre: objetivo tactil, unidad: mm,
+           direccion: minimo, valor: 9, fija_el_profile: false, motivo: fixture}
+  espera:
+    conflicto: true
+
+caso_pendiente_de_profile:
+  descripcion: >
+    Ningún pack puede conocer el umbral. No hay nada que resolver: lo fija el PROFILE, y
+    el resultado tiene que decirlo en vez de inventar un valor.
+  packs:
+    - id: fx-uno
+      propiedades_medibles:
+        - {id: contraste-minimo, nombre: contraste minimo, unidad: ratio,
+           direccion: minimo, fija_el_profile: true, motivo: fixture}
+    - id: fx-dos
+      propiedades_medibles:
+        - {id: contraste-minimo, nombre: contraste minimo, unidad: ratio,
+           direccion: minimo, fija_el_profile: true, motivo: fixture}
+  espera:
+    propiedad: contraste-minimo
+    estado: pendiente-de-profile
+
+caso_empate_determinista:
+  descripcion: >
+    Dos packs declaran el MISMO valor. No hay uno más restrictivo, y sin embargo la
+    resolución tiene que atribuir la restricción a uno solo. Se desempata por identificador
+    de pack, de modo que invertir el orden de entrada no cambia el resultado. Sin ese
+    desempate, la salida dependería de en qué orden se pasaron los packs.
+  packs:
+    - id: fx-zeta
+      propiedades_medibles:
+        - {id: objetivo-tactil-minimo, nombre: objetivo tactil, unidad: dp,
+           direccion: minimo, valor: 48, fija_el_profile: false, motivo: fixture}
+    - id: fx-alfa
+      propiedades_medibles:
+        - {id: objetivo-tactil-minimo, nombre: objetivo tactil, unidad: dp,
+           direccion: minimo, valor: 48, fija_el_profile: false, motivo: fixture}
+  espera:
+    propiedad: objetivo-tactil-minimo
+    valor: 48
+    gana: fx-alfa
+    perdedores: [{pack: fx-zeta, valor: 48}]

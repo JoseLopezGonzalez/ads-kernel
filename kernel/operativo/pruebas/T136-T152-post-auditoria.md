@@ -47,3 +47,30 @@ validador: "kernel/operativo/validadores/comprobar_contratos.py"
 estado: prueba-superada
 evidencia: "evidencia/contratos-salida.txt"
 ```
+
+```yaml ads:escenario
+id: T148
+nombre: El arranque documentado crea un proyecto conforme con cada pack
+cubre: ["A-02", "tooling/new-project.sh", "README", "START_HERE", "K0.14"]
+dado:
+  - "el repositorio con sus packs instalables"
+  - "la documentación de arranque que cita identificadores de pack"
+cuando:
+  - "se ejecuta el comando real de creación, una vez por cada pack instalable, sobre un directorio temporal"
+entonces:
+  - "todo identificador de pack citado en la documentación de arranque existe"
+  - "el comando termina con código cero"
+  - "la estructura resultante contiene el kernel, el pack, las plantillas y la especificación normativa"
+  - "está instalado el pack pedido y NO los demás"
+  - "el proyecto no arrastra packs/legacy-1.3.0 ni ficheros compilados"
+  - "ads_lint, comprobar_contratos y comprobar_packs salen en verde DENTRO del proyecto creado"
+  - "un identificador inexistente falla, nombra lo escrito, lista los instalables y no deja un proyecto a medias"
+falla_si:
+  - "la documentación cita un pack retirado o inexistente"
+  - "el proyecto creado tiene enlaces rotos o un validador en rojo"
+  - "un arranque fallido deja un directorio a medio crear"
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_arranque.py"
+estado: prueba-superada
+evidencia: "evidencia/arranque-salida.txt"
+```
