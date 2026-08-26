@@ -1,4 +1,4 @@
-T86  SUPERADA  La autoridad de un rol no excede la de su capacidad
+T86  SUPERADA  Ningún rol veta lo que su capacidad no veta
 T87  SUPERADA  Ninguna composición permite combinar dos roles que ella declara independientes
 T88  SUPERADA  Todo rol apunta a un prompt operativo que existe
 T89  SUPERADA  Toda prueba de reanudación cita un escenario que existe
@@ -15,5 +15,6 @@ T140  SUPERADA  Las obligaciones del proceso existen y el cierre las comprueba
 T141  SUPERADA  Los frenos tienen ejecutor operativo, no sólo prosa
 T142  SUPERADA  El encuadre expresa todos los estados que sus métodos le exigen
 T145  SUPERADA  La crítica de encuadre exigible no se evapora al bajar la incertidumbre
+T146  SUPERADA  Ningún rol decide lo que su capacidad escala ni lo que decide otra
 
-17 superadas · 0 fallidas
+18 superadas · 0 fallidas

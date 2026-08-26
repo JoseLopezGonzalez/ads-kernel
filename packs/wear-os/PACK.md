@@ -7,6 +7,16 @@
 **No se ata a gym-wear.** Este pack describe la clase; gym-wear será un perfil posterior que
 lo consuma.
 
+> **Sobre el identificador `wear-os`.** `00-QUE-ES-UN-PACK` prohíbe que una tecnología
+> concreta viva dentro de un pack, y el identificador de éste nombra una plataforma. Es
+> **deliberado y acotado**: lo que nombra es la CLASE de producto por su ejemplo más
+> reconocible, y el contenido es neutral —`nombre: Reloj`, sin una sola marca, comprobado
+> por T92—. Un reloj de otra plataforma instala este mismo pack sin cambiar nada, porque lo
+> que el pack fija son propiedades del medio: pantalla mínima, uso de segundos, batería
+> escasa y conectividad intermitente. Si algún día hubiera una clase de reloj cuyas
+> restricciones fueran otras, sería otro pack, y entonces el nombre se revisa. Registrado
+> como hallazgo **A-29** de la auditoría independiente.
+
 ```yaml ads:pack
 id: wear-os
 nombre: Reloj

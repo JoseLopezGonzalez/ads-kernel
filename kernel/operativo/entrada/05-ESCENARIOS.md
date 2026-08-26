@@ -274,6 +274,40 @@ ENC-002 → GAP-015 «La lista de entradas alcanza la dirección aprobada»
 > **No he creado** ninguna tarea de retoque rápido. Cambiar colores y sombras ahora
 > tapa el problema y te costaría el doble después.»
 
+### Las CUATRO salidas de esta frase, y por qué ésta produjo dos items
+
+> **«Se ve básica, plana y sin alma» no produce universalmente dos items.** El recorrido de
+> arriba terminó en dos porque el **anclaje** encontró que no existía dirección de diseño.
+> Con otro anclaje, la misma frase termina en otro sitio, y el sistema no puede tener una
+> respuesta memorizada para ella.
+
+```text
+EXISTE dirección aprobada y la interfaz la INCUMPLE
+   → un GAP. La expectativa está escrita y la superficie no llega a ella.
+     No hace falta decidir nada nuevo: hay que cerrar la distancia.
+     PRUEBA T154
+
+NO EXISTE dirección de diseño
+   → dirección visual (FEA o el proceso que el resultado perseguido determine)
+     MÁS un GAP enlazado para la superficie concreta. Son dos porque son dos
+     resultados distintos: que exista la dirección, y que esta pantalla la alcance.
+     Es el recorrido de arriba. PRUEBA T155
+
+EL OWNER QUIERE SUSTITUIR una dirección vigente
+   → posible DIR, y de él nacen los items derivados. DIR decide; no implementa.
+     PRUEBA T156
+
+LA INTENCIÓN SIGUE SIENDO AMBIGUA
+   → conversación y checkpoint. NINGÚN item todavía, y eso es un resultado
+     correcto: crear uno aquí es fabricar trabajo sobre una intención que no se
+     ha entendido. PRUEBA T157
+```
+
+**Lo que decide cuál de las cuatro es el paso 4**, no el paso 2. Por eso el anclaje va
+antes de formular, y por eso `ENC/anclaje` puede ser un agente distinto del interlocutor:
+la respuesta a «¿existe dirección aprobada para esta superficie?» no se intuye leyendo la
+frase del Owner.
+
 ### Lo que este escenario demuestra
 
 ```text
@@ -522,6 +556,82 @@ falla_si:
   - "se crea un item duplicado"
   - "el sistema desaparca sin orden del Owner"
   - "la comparación se limitó a los items activos"
+ejecucion: guion-manual
+estado: contrato-definido
+```
+
+---
+
+## Las cuatro salidas de la expresión subjetiva, como pruebas
+
+```yaml ads:escenario
+id: T154
+nombre: Con dirección aprobada incumplida, la expresión subjetiva produce un GAP
+cubre: ["forma:comentario-subjetivo", "ENC/Anclaje", "b.16 GAP", "9.4"]
+dado:
+  - "existe memoria de diseño con una dirección aprobada que cubre esta superficie"
+  - "la superficie no cumple uno de sus patrones vigentes"
+cuando: ["el Owner dice que se ve básica, plana y sin alma"]
+entonces:
+  - "el anclaje encuentra la dirección aprobada y el patrón incumplido"
+  - "nace UN item de tipo GAP, con la distancia medida contra el patrón"
+  - "NO se propone una dirección nueva: ya existe y no se discute"
+falla_si:
+  - "se abre una exploración de dirección teniendo una aprobada y vigente"
+  - "nacen dos items donde el resultado perseguido es uno"
+ejecucion: guion-manual
+estado: contrato-definido
+```
+
+```yaml ads:escenario
+id: T155
+nombre: Sin dirección de diseño, la expresión produce dirección más GAP enlazado
+cubre: ["forma:comentario-subjetivo", "ENC/Anclaje", "03-ESCALA-DE-NOVEDAD N4 y N3", "9.4"]
+dado: ["el anclaje devuelve que NO existe memoria de diseño del producto"]
+cuando: ["el Owner dice que se ve básica, plana y sin alma"]
+entonces:
+  - "nacen DOS items enlazados: que exista la dirección, y que esta superficie la alcance"
+  - "el segundo declara depender del primero y no puede cerrar antes"
+  - "el nivel de novedad se calcula con las cinco variables, y sale N4 o N3 según haya superficie construida que preservar"
+falla_si:
+  - "nace un solo item que mezcla fundar la dirección con arreglar la pantalla"
+  - "el nivel se elige en vez de calcularse"
+ejecucion: guion-manual
+estado: contrato-definido
+```
+
+```yaml ads:escenario
+id: T156
+nombre: Con dirección vigente que el Owner quiere sustituir, la salida es un DIR
+cubre: ["forma:cambio-de-direccion", "b.16 DIR", "G51", "9.4"]
+dado: ["existe una dirección visual vigente y aprobada por el Owner"]
+cuando: ["el Owner expresa que quiere que el producto se parezca a otra cosa"]
+entonces:
+  - "el proceso propuesto es DIR, no GAP ni FEA"
+  - "el propietario global es la capacidad propietaria de la decisión que se sustituye, y NUNCA lo elige DSP"
+  - "DIR decide y registra; la ejecución va en items derivados enlazados"
+falla_si:
+  - "se trata como un GAP y se pierde el registro de qué decisión queda sustituida"
+  - "se implementa la nueva dirección dentro del propio DIR"
+ejecucion: guion-manual
+estado: contrato-definido
+```
+
+```yaml ads:escenario
+id: T157
+nombre: Con la intención todavía ambigua, la expresión NO produce ningún item
+cubre: ["forma:comentario-subjetivo", "04-INCERTIDUMBRE", "a.7 modo de fallo (b)", "9.4"]
+dado:
+  - "el Owner no puede señalar qué le chirría ni en qué superficie"
+  - "la incertidumbre en el eje del resultado perseguido sigue alta tras conversar"
+cuando: ["se agota ENC/Maduracion sin bajar el grado"]
+entonces:
+  - "NO nace ningún item"
+  - "la expresión queda en el vivero, o se escala al Owner con las dudas abiertas escritas"
+  - "el checkpoint conserva lo comprendido, de modo que retomarlo no empieza de cero"
+falla_si:
+  - "nace un item sobre una intención que nadie ha entendido"
+  - "el sistema fabrica una tarea de estilos para tener algo que hacer"
 ejecucion: guion-manual
 estado: contrato-definido
 ```

@@ -72,7 +72,7 @@ def cargar():
 
 
 def t86_autoridad_subconjunto(b):
-    r = Resultado("T86", "La autoridad de un rol no excede la de su capacidad")
+    r = Resultado("T86", "Ningún rol veta lo que su capacidad no veta")
     caps = {d["id"]: d for d, _, _ in b.get("capacidad", [])}
     for datos, ruta, _ in b.get("rol", []):
         cap = caps.get(datos.get("capacidad"))
@@ -715,6 +715,75 @@ def t145_critica_de_encuadre_no_se_evapora(b):
     return r
 
 
+VACIAS = set("""el la los las un una unos unas de del al a y o u que se su sus lo en con
+por para sin sobre entre no ni es son ser esta este esa ese cuando donde como cual cada
+todo toda todos todas mas menos ya si segun tras hasta desde le les nos me te""".split())
+
+
+def _palabras(texto):
+    import unicodedata
+    t = unicodedata.normalize("NFD", str(texto).lower())
+    t = "".join(c for c in t if unicodedata.category(c) != "Mn")
+    return {w for w in re.findall(r"[a-z0-9-]{3,}", t) if w not in VACIAS}
+
+
+def _parecido(a, b_):
+    if not a or not b_:
+        return 0.0
+    return len(a & b_) / len(a | b_)
+
+
+def t146_autoridad_de_decision(b):
+    """A-18 · lo que T86 no comprobaba: la autoridad de DECISIÓN de un rol.
+
+    C1 fija tres reglas y sólo la del veto estaba implementada. Ésta cubre las otras dos
+    en lo que es mecánicamente comprobable:
+
+      · un rol NO PUEDE decidir lo que su capacidad ESCALA
+      · un rol NO PUEDE decidir la materia declarada por OTRA capacidad
+      · un rol que decide algo pertenece a una capacidad que decide algo
+
+    LO QUE NO COMPRUEBA, y se dice para no repetir el defecto de T131: la contención
+    SEMÁNTICA fina. Que `DIS/critica-visual` decida «el nivel de cada eje de la rúbrica» y
+    que `DIS` declare «qué dirección visual se elige» son compatibles sin compartir una
+    palabra, y ninguna medida de texto puede decidir eso. Esa lectura es de la revisión
+    humana; aquí se atrapan las tres formas groseras.
+    """
+    r = Resultado("T146", "Ningún rol decide lo que su capacidad escala ni lo que decide otra")
+    caps = {d["id"]: d for d, _, _ in b.get("capacidad", [])}
+    materia_ajena = {}
+    for cid, cap in caps.items():
+        for item in (cap.get("autoridad", {}).get("decide_sola") or []):
+            materia_ajena.setdefault(cid, []).append(_palabras(item))
+
+    for datos, _ruta, _l in b.get("rol", []):
+        cid = datos.get("capacidad")
+        cap = caps.get(cid)
+        if not cap:
+            continue
+        decide = datos.get("autoridad", {}).get("decide") or []
+        if decide and not (cap.get("autoridad", {}).get("decide_sola") or []):
+            r.fallo(f"{datos['id']}: decide {len(decide)} cosas y {cid} no declara "
+                    f"`decide_sola`: un rol no puede decidir donde su capacidad no decide")
+        escala = [_palabras(x) for x in (cap.get("autoridad", {}).get("escala") or [])]
+        for item in decide:
+            w = _palabras(item)
+            for e in escala:
+                if _parecido(w, e) >= 0.6:
+                    r.fallo(f"{datos['id']}: DECIDE «{str(item)[:60]}», y {cid} declara eso "
+                            f"mismo en `escala`. C1: un rol no decide lo que su capacidad escala")
+                    break
+            for otro_id, materias in materia_ajena.items():
+                if otro_id == cid:
+                    continue
+                for m in materias:
+                    if _parecido(w, m) >= 0.6:
+                        r.fallo(f"{datos['id']}: DECIDE «{str(item)[:60]}», que es materia "
+                                f"declarada por {otro_id}. Autoridad de otra capacidad")
+                        break
+    return r
+
+
 PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t89_reanudacion_con_prueba, t90_roles_coherentes, t91_metodos_con_gate_y_pasos,
            t92_sin_marca, t135_composicion_respeta_el_contrato,
@@ -723,7 +792,7 @@ PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t144_usabilidad_tiene_portador_en_con,
            t140_obligaciones_y_cierre, t141_frenos_con_ejecutor,
            t142_encuadre_expresa_sus_estados,
-           t145_critica_de_encuadre_no_se_evapora]
+           t145_critica_de_encuadre_no_se_evapora, t146_autoridad_de_decision]
 
 
 def main():

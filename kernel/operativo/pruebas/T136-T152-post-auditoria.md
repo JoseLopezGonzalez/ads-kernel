@@ -315,3 +315,22 @@ validador: "kernel/operativo/validadores/comprobar_versiones.py"
 estado: prueba-superada
 evidencia: "evidencia/versiones-salida.txt"
 ```
+
+```yaml ads:escenario
+id: T146
+nombre: Ningún rol decide lo que su capacidad escala ni lo que decide otra
+cubre: ["A-18", "C1 autoridad del rol frente a la de la capacidad", "sustituye parte de lo que T86 prometía"]
+dado: ["los contratos de rol y las fichas de capacidad del corpus"]
+cuando: ["se compara cada entrada de `decide` con la autoridad de su capacidad y con la de las demás"]
+entonces:
+  - "ningún rol decide algo que su capacidad declara en `escala`"
+  - "ningún rol decide una materia declarada por otra capacidad"
+  - "ningún rol decide si su capacidad no declara `decide_sola`"
+falla_si:
+  - "un rol se concede lo que su capacidad escala"
+  - "un rol se concede materia de otra capacidad"
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_contratos.py"
+estado: prueba-superada
+evidencia: "evidencia/contratos-salida.txt"
+```

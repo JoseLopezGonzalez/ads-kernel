@@ -172,9 +172,14 @@ checkpoint: "USO lee de ENT: qué se observó ya durante la ventana, para no rep
 
 ```yaml ads:handoff
 id: handoff:cierre-a-apr
-de: USO
+de: DSP
 a: APR
-cuando: "un item cierra con learning_candidate != none, o ha habido un incidente"
+cuando: >
+  el cierre del item resuelve learning_candidate con un enlace, o el item es un INC, o hay
+  una revisión de circuito o una promoción. El emisor es DSP porque la comprobación de
+  aprendizaje se ejecuta EN EL CIERRE (b.10) y quien crea el paquete de APR es quien crea
+  paquetes. NO es USO: USO es condicional, y en un DEF, un DEU o un SIS no se activa,
+  de modo que un handoff emitido por USO dejaba sin emisor a la mayoría de los cierres
 entrega:
   - "el recorrido completo del item con su traza de ruta"
   - "la señal concreta: qué ocurrió y dónde está registrado"
@@ -192,6 +197,39 @@ evidencia_de_devolucion:
   - "qué evidencia falta para poder buscar ocurrencias"
 owner: "cola de validación por lotes cuando la regla afecta a materia suya."
 checkpoint: "APR lee del item: su traza de ruta completa, para localizar dónde nació la señal."
+```
+
+```yaml ads:handoff
+id: handoff:con-a-ver
+de: CON
+a: VER
+cuando: "CON deposita su capa y el paquete continúa hacia verificación"
+entrega:
+  - "el commit identificado y la salida de la suite de tests"
+  - "las DIFERENCIAS conocidas respecto a la especificación, declaradas ANTES de la revisión"
+  - "las consultas de dominio y de seguridad ejecutadas, con su salida"
+  - "la evidencia de usabilidad sobre lo construido, cuando la capa toca una superficie usable"
+comprueba_al_recibir:
+  - "las diferencias declaradas llevan fecha ANTERIOR a la entrega: declararlas después es enterarse, no declarar"
+  - "la suite pasa en el commit entregado, no en otro"
+  - "cada criterio de éxito de PRD tiene comportamiento que lo satisface, o consta por qué no"
+  - "las condiciones de DOM y de SEG que aplicaban están comprobadas, con su salida enlazada"
+rechaza_si:
+  - "las diferencias aparecen fechadas después de la entrega"
+  - "la capa cambia una decisión de PRD, DIS o ARQ sin haberla devuelto"
+  - "falta la evidencia de usabilidad de una superficie que la capa modificó"
+devolucion: >
+  VER devuelve a CON con la evidencia concreta: qué criterio no se cumple, con qué salida o
+  medición se demuestra, y qué lo cerraría. Si lo que falla es una capa anterior y no la
+  construcción, VER devuelve a la capacidad propietaria de esa capa, no a CON.
+evidencia_de_devolucion:
+  - "el criterio concreto que no se cumple, citado de la capa de PRD"
+  - "la salida, captura o medición que lo demuestra"
+  - "la comparación con el estado anterior cuando se alega regresión"
+owner: "ninguna. Entre CON y VER no hay un humano validando el traspaso."
+checkpoint: >
+  VER lee de CON: qué está construido, qué diferencias se declararon y con qué fecha, y qué
+  consultas quedaron ejecutadas. Sin eso no puede recoger evidencia sin volver a preguntar.
 ```
 
 ## La regla que atraviesa todos estos handoffs

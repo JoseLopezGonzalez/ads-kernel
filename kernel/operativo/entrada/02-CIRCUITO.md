@@ -117,7 +117,7 @@ decisión      → pasos 2 y 4, registro en la memoria de la capacidad propietar
 candidato     → recorrido completo hasta el paso 14.
 ```
 
-**La mayoría de las expresiones del Owner terminan sin item, y eso es correcto.** Un
+**Una expresión puede terminar legítimamente sin item**, y con frecuencia es lo correcto: ocurre cuando todavía no existe una intención suficientemente comprendida o accionable. Un
 sistema donde toda frase produce una tarea es el sistema que el Owner pidió no construir.
 
 ## Quién es dueño de qué en este circuito

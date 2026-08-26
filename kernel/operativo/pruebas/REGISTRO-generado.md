@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: cf86396d1b6f1b06 -->
+<!-- source_revision: 39abb84b5323da20 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -10,12 +10,12 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 
 | estado | pruebas |
 |---|---|
-| CONTRATO DEFINIDO | 50 |
+| CONTRATO DEFINIDO | 54 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 25 |
+| PRUEBA SUPERADA | 26 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **75** |
+| **total** | **80** |
 
 ## Detalle
 
@@ -90,9 +90,14 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T142](T136-T152-post-auditoria.md) | El encuadre expresa todos los estados que sus métodos le exigen | A-11 · b.2 los once estados de paquete · gate:encuadre-listo · ENC/Escucha | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
 | [T144](T136-T152-post-auditoria.md) | El gate de usabilidad tiene portador computable en Construcción | A-13 · gate:usabilidad · gate:implementacion-completa · DIS/validacion-de-uso | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
 | [T145](T136-T152-post-auditoria.md) | La crítica de encuadre exigible no se evapora al bajar la incertidumbre | A-14 · gate:encuadre-listo · composicion:enc-alta-incertidumbre · C4 un rol independiente no se retira | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T146](T136-T152-post-auditoria.md) | Ningún rol decide lo que su capacidad escala ni lo que decide otra | A-18 · C1 autoridad del rol frente a la de la capacidad · sustituye parte de lo que T86 prometía | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
 | [T147](T136-T152-post-auditoria.md) | Todo documento es alcanzable por ruta, y ninguna referencia es ambigua | A-05 · A-28 · sustituye a T134 · a.7 modo de fallo (b) · regla de fuente única | validador-estructural | **PRUEBA SUPERADA** | evidencia/referencias-salida.txt |
 | [T148](T136-T152-post-auditoria.md) | El arranque documentado crea un proyecto conforme con cada pack | A-02 · tooling/new-project.sh · README · START_HERE · K0.14 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
 | [T149](T122-T133-T149-packs.md) | Lo más restrictivo gana entre dos packs, y queda registrado por qué | A-03 · A-25 · packs/COMPOSICION precedencia P1 · composicion_packs.py | validador-estructural | **PRUEBA SUPERADA** | evidencia/packs-salida.txt |
 | [T150](T136-T152-post-auditoria.md) | La huella de integridad cubre a los validadores y detecta su edición | A-04 · K0.11 · tooling/kernel-status.sh · validadores/huella.py | validador-estructural | **PRUEBA SUPERADA** | evidencia/integridad-salida.txt |
 | [T151](T136-T152-post-auditoria.md) | Ninguna cifra del corpus contradice el recuento derivado | A-24 · regla de fuente única · RECUENTOS-generado.md | validador-estructural | **PRUEBA SUPERADA** | evidencia/recuentos-salida.txt |
 | [T152](T136-T152-post-auditoria.md) | Los puntos de entrada no se contradicen sobre la versión | A-12 · kernel/VERSIONES.md · K0.11 · O2 | validador-estructural | **PRUEBA SUPERADA** | evidencia/versiones-salida.txt |
+| [T154](../entrada/05-ESCENARIOS.md) | Con dirección aprobada incumplida, la expresión subjetiva produce un GAP | forma:comentario-subjetivo · ENC/Anclaje · b.16 GAP · 9.4 | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T155](../entrada/05-ESCENARIOS.md) | Sin dirección de diseño, la expresión produce dirección más GAP enlazado | forma:comentario-subjetivo · ENC/Anclaje · 03-ESCALA-DE-NOVEDAD N4 y N3 · 9.4 | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T156](../entrada/05-ESCENARIOS.md) | Con dirección vigente que el Owner quiere sustituir, la salida es un DIR | forma:cambio-de-direccion · b.16 DIR · G51 · 9.4 | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T157](../entrada/05-ESCENARIOS.md) | Con la intención todavía ambigua, la expresión NO produce ningún item | forma:comentario-subjetivo · 04-INCERTIDUMBRE · a.7 modo de fallo (b) · 9.4 | guion-manual | **CONTRATO DEFINIDO** | — |

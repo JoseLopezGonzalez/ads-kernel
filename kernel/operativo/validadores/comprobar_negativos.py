@@ -91,9 +91,17 @@ def m_dsp_decide_cancelar(raiz):
 
 
 def m_rol_decide_de_mas(raiz):
+    """A-18 · un rol se concede lo que su capacidad ESCALA."""
     _sustituir(raiz, "kernel/operativo/capacidades/CON/roles/implementacion.md",
                "  decide:",
-               '  decide:\n    - "el alcance de producto que se implementa"')
+               '  decide:\n    - "la implementación exige una decisión de forma, alcance o dominio"')
+
+
+def m_rol_decide_materia_ajena(raiz):
+    """A-18 · un rol se concede la materia declarada por otra capacidad."""
+    _sustituir(raiz, "kernel/operativo/capacidades/CON/roles/implementacion.md",
+               "  decide:",
+               '  decide:\n    - "los valores del sistema de diseño: escala, ritmo, roles de color, elevación"')
 
 
 def m_metodo_sin_termina_cuando(raiz):
@@ -325,8 +333,11 @@ CATALOGO = [
              "DSP/estado vuelve a DECIDIR una cancelación",
              m_dsp_decide_cancelar),
     Mutacion("N146", "A-18", "T146", "comprobar_contratos",
-             "un rol decide algo que su capacidad no tiene en decide_sola",
+             "un rol se concede lo que su capacidad ESCALA",
              m_rol_decide_de_mas),
+    Mutacion("N146b", "A-18", "T146", "comprobar_contratos",
+             "un rol se concede la materia declarada por otra capacidad",
+             m_rol_decide_materia_ajena),
     Mutacion("N91", "—", "T91", "comprobar_contratos",
              "un paso de método pierde su condición de salida",
              m_metodo_sin_termina_cuando),

@@ -112,17 +112,26 @@ agentes distintos obtengan el mismo resultado.
 
 ### Umbral y margen
 
+> **Los dos son PROVISIONALES y calibrables por uso real.** No son verdades universales:
+> son el punto de partida con el que se empieza a medir. Un proyecto con pocos items puede
+> subir el umbral sin tocar ningún contrato, y el primer piloto que produzca
+> desambiguaciones innecesarias o anclajes equivocados es la evidencia con la que se
+> ajustan. Lo que el kernel fija es que **existan**, que estén **escritos** y que la
+> puntuación sea **reproducible** — no cuánto valen.
+
 ```text
-UMBRAL_ANCLAJE = 0.60     por debajo, el mejor candidato no basta: se desambigua
-MARGEN         = 0.15     si el primero y el segundo se diferencian en menos, se desambigua
+UMBRAL_ANCLAJE = 0.60     PROVISIONAL · por debajo, el mejor candidato no basta
+MARGEN         = 0.15     PROVISIONAL · si el primero y el segundo se diferencian en menos
 
 se aplica directamente  si  p(1) >= 0.60  Y  p(1) - p(2) >= 0.15  Y  la orden es reversible
 se desambigua           en cualquier otro caso
 ```
 
-Ambos son **parámetros del PROFILE**, no reglas del kernel: un proyecto con pocos items
-puede subir el umbral sin tocar ningún contrato. Lo que el kernel fija es que existan, que
-estén escritos y que la puntuación sea reproducible.
+**Dónde viven.** b.13 los llama «parámetros del runtime»; mientras el runtime no exista,
+los declara el **PROFILE** del proyecto y este documento fija su valor por defecto. No es
+una discrepancia: es la misma capa en dos momentos, y la migración está registrada como O3
+en [`DECISIONES-Y-CONTRADICCIONES.md`](../../../docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md).
+Los **pesos** de la puntuación sí son del kernel: cambiarlos cambia qué significa anclar.
 
 ### Cómo se desambigua
 

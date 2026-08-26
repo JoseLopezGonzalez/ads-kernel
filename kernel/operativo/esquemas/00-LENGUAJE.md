@@ -1,5 +1,12 @@
 # El lenguaje canónico del kernel operativo
 
+> **El español es el idioma canónico del corpus operativo.** Prosa, campos, criterios y
+> prompts se escriben en español. Se exceptúan los **identificadores técnicos estables**
+> —los códigos de tres letras, los nombres de campo de los esquemas, los ids de gate,
+> rol, método y escenario— que conservan su forma para no romper la compatibilidad de
+> máquina, y los nombres de fichero ya establecidos. Traducir un identificador es cambiar
+> una referencia; traducir prosa no.
+
 
 Este fichero explica **cómo se escribe** todo lo demás. Es la única fuente sobre el
 formato; ningún otro documento redefine estas reglas.

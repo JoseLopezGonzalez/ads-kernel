@@ -20,7 +20,8 @@ roles, seis métodos y tres prompts operativos.
    lado, nunca encima.
 
 2  Ninguna expresión se convierte en trabajo por sí sola. Terminar sin item es un
-   resultado correcto, y el más frecuente.
+   resultado correcto siempre que la intención no esté todavía comprendida ni sea
+   accionable.
 
 3  El Owner no tiene que saber redactar requisitos. El sistema le ayuda a descubrir lo
    que quiere: le enseña alternativas cuando preguntar no funciona.
