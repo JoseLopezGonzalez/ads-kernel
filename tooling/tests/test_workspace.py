@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -414,5 +415,28 @@ class TestBootstrapYAdopcion(unittest.TestCase):
             self.assertTrue(os.path.exists(m), f"{n}: init destruyó trabajo local")
 
 
+class _RunnerDeterminista(unittest.TextTestRunner):
+    """Igual que el corriente, pero sin la duración en el resumen.
+
+    La salida de estas pruebas se PUBLICA como evidencia, y la regla del repositorio es
+    que los artefactos generados sean deterministas: `git status` tiene que quedar vacío
+    tras regenerarlos. «Ran 29 tests in 1.697s» cambia en cada ejecución y ensuciaría el
+    árbol en cada comprobación, hasta que alguien dejara de mirarlo.
+    """
+
+    def run(self, test):
+        import io as _io
+        buffer = _io.StringIO()
+        real, self.stream = self.stream, unittest.runner._WritelnDecorator(buffer)
+        try:
+            resultado = super().run(test)
+        finally:
+            self.stream = real
+        real.write(re.sub(r"Ran (\d+) tests? in [\d.]+s",
+                          r"Ran \1 tests  (duración no registrada: varía por ejecución)",
+                          buffer.getvalue()))
+        return resultado
+
+
 if __name__ == "__main__":
-    unittest.main(verbosity=2)
+    unittest.main(verbosity=2, testRunner=_RunnerDeterminista)

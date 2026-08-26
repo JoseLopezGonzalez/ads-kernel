@@ -120,7 +120,7 @@ componentes:
     # unittest escribe su resumen en stderr; el runner captura los dos por separado y la
     # firma se busca en la salida publicada, que los une con su cabecera de procedencia.
     firma_de_exito: 'OK'
-    debe_contener: ['Ran ', 'tests in']
+    debe_contener: ['Ran ', 'duración no registrada']
 
   - id: registro
     script: registro_pruebas.py

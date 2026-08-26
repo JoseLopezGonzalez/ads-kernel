@@ -39,6 +39,6 @@ test_20_ejecucion_desde_subdirectorio (__main__.TestNormalizacionYSalida.test_20
 test_sin_manifiesto_falla_con_codigo_2 (__main__.TestNormalizacionYSalida.test_sin_manifiesto_falla_con_codigo_2) ... ok
 
 ----------------------------------------------------------------------
-Ran 29 tests in 1.697s
+Ran 29 tests  (duración no registrada: varía por ejecución)
 
 OK
