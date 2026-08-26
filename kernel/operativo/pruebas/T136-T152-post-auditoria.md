@@ -1,0 +1,49 @@
+# T136–T152 — pruebas nacidas de la auditoría independiente
+
+Cada una nombra el hallazgo que la hizo existir. Su estado real está en
+[`REGISTRO-generado.md`](REGISTRO-generado.md), y ninguna sube de estado por argumento:
+sube porque se ejecutó y su salida quedó registrada.
+
+> **Todas llevan prueba negativa.** Un validador que sólo se ha visto pasar no está
+> verificado: puede comprobar menos de lo que su nombre afirma y nadie lo sabría. Cada
+> prueba de aquí tiene al menos una infracción deliberada que la hace fallar, en
+> [`../validadores/comprobar_negativos.py`](../validadores/comprobar_negativos.py). Las
+> infracciones se aplican sobre una COPIA temporal del repositorio; el corpus real no se
+> toca en ningún momento.
+
+```yaml ads:escenario
+id: T136
+nombre: Ningún veto arbitra a otro veto levantable
+cubre: ["A-06", "a.5 regla de colisión de vetos", "veto:degradacion-de-forma", "veto:integridad-de-datos"]
+dado:
+  - "dos capacidades con veto sobre materias distintas, ambas con su contrato de seis campos"
+  - "cada contrato declara su levantabilidad: si, no-por-regla-dura o segun-instancia"
+cuando: ["se comprueba la cláusula de colisión de cada veto del corpus"]
+entonces:
+  - "ningún veto declara que prevalece un veto cuya levantabilidad es si"
+  - "ningún veto levantable se declara prevaleciente sobre otro"
+  - "toda cláusula de colisión declara el escalado al Owner"
+falla_si:
+  - "un veto levantable arbitra a otro"
+  - "una cláusula de colisión resuelve el conflicto sin escalar al Owner"
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_contratos.py"
+estado: prueba-superada
+evidencia: "evidencia/contratos-salida.txt"
+```
+
+```yaml ads:escenario
+id: T137
+nombre: DSP no declara autoridad semántica sobre ninguna cancelación
+cubre: ["A-23", "b.7 autoridad orden y ejecución", "T54"]
+dado: ["la ficha de DSP y los contratos de sus roles"]
+cuando: ["se recorre su autoridad declarada buscando la palabra cancelar"]
+entonces:
+  - "ninguna entrada de decide ni de decide_sola de DSP menciona cancelar"
+  - "la cancelación aparece en propone o en escala, nunca en decide"
+falla_si: ["DSP decide una cancelación, aunque sea la de una espera no viable"]
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_contratos.py"
+estado: prueba-superada
+evidencia: "evidencia/contratos-salida.txt"
+```

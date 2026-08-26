@@ -1,14 +1,20 @@
 kind: esquema
 esquema: veto
 version: 1
-descripcion: los seis campos obligatorios del contrato de veto de la seccion a.5
-obligatorios: [id, capacidad, materia, no_materia, evidencia_minima, efecto, levantamiento, apelacion, colision]
+descripcion: el contrato de veto de a.5 -sus seis campos- mas la levantabilidad declarada, que es lo que decide si un veto puede prevalecer sobre otro
+obligatorios: [id, capacidad, materia, no_materia, evidencia_minima, levantable, efecto, levantamiento, apelacion, colision]
 campos:
   id: {tipo: texto, patron: '^veto:[a-z0-9-]+$'}
   capacidad: {tipo: ref, ref_a: capacidad}
   materia: {tipo: lista, de: texto, min: 1}
   no_materia: {tipo: lista, de: texto, min: 1}
   evidencia_minima: {tipo: lista, de: texto, min: 1}
+  # si                 siempre levantable -> NUNCA prevalece sobre otro veto
+  # no-por-regla-dura   nunca levantable   -> prevalece (excepcion unica de a.5, G27)
+  # segun-instancia     lo declara cada aplicacion concreta del veto; solo prevalece la
+  #                     instancia que se declara no levantable por regla dura
+  # Un veto `si` que declare prevalencia sobre otro veto es un defecto de conformidad.
+  levantable: {tipo: enum, valores: [si, no-por-regla-dura, segun-instancia]}
   efecto: {tipo: texto, min: 20}
   levantamiento: {tipo: texto, min: 20}
   apelacion: {tipo: texto, min: 20}

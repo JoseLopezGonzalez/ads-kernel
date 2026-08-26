@@ -24,6 +24,16 @@ from ads_lint import Lint  # noqa: E402
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
+
+def fijar_raiz(nueva):
+    """Permite ejecutar las pruebas contra una COPIA del corpus.
+
+    Lo usa `comprobar_negativos.py` para introducir una infracción deliberada en un
+    directorio temporal y demostrar que la prueba falla. El corpus real nunca se toca.
+    """
+    global RAIZ
+    RAIZ = os.path.abspath(nueva)
+
 # Marcas comerciales que NO pueden aparecer como requisito en kernel ni packs (K0.8, C2).
 # Expresiones regulares, no subcadenas: «llama» es un verbo corriente en castellano y
 # «cómo llama el Owner a esto» no es una marca. Se exige la forma en que la marca aparece
@@ -255,17 +265,75 @@ def t135_composicion_respeta_el_contrato(b):
     return r
 
 
+# ---------------------------------------------------------------------------
+# Pruebas añadidas en la corrección post-auditoría. Cada una nombra su hallazgo.
+# ---------------------------------------------------------------------------
+
+CODIGO_CAP = re.compile(r"\b([A-Z]{3})\b")
+
+
+def t136_vetos_no_se_arbitran(b):
+    """A-06 · a.5: dos vetos incompatibles NO se arbitran entre las capacidades.
+
+    Escalan al Owner con ambas materias. La ÚNICA excepción es un veto declarado
+    no levantable por regla dura del kernel (G27). Por tanto:
+      · un veto LEVANTABLE nunca puede aparecer como el que prevalece;
+      · toda cláusula de colisión debe declarar el escalado al Owner.
+    """
+    r = Resultado("T136", "Ningún veto arbitra a otro veto levantable: ambos detienen y escalan")
+    vetos = {d["id"]: d for d, _, _ in b.get("veto", [])}
+    por_capacidad = {d.get("capacidad"): d for d in vetos.values()}
+    for vid, datos in vetos.items():
+        colision = (datos.get("colision") or "")
+        # (a) nadie declara que prevalece un veto levantable
+        for m in re.finditer(r"(?i)\bprevalece[nr]?\s+(?:el\s+veto\s+de\s+)?([A-Z]{3})\b", colision):
+            otro = por_capacidad.get(m.group(1))
+            if otro is None:
+                continue
+            if otro.get("levantable") == "si":
+                r.fallo(f"{vid}: declara que prevalece {m.group(1)}, cuyo veto es LEVANTABLE. "
+                        f"a.5 sólo admite prevalencia de un veto no levantable por regla dura")
+        # (b) el propio veto, si es levantable, no puede reclamar prevalencia para sí
+        if datos.get("levantable") == "si":
+            propio = datos.get("capacidad", "")
+            if re.search(r"(?i)prevalece\s+" + re.escape(propio) + r"\b", colision):
+                r.fallo(f"{vid}: es levantable y se declara prevaleciente sobre otro veto")
+        # (c) toda colisión declara el escalado al Owner
+        if not re.search(r"(?i)escala\w*\s+al\s+owner", colision):
+            r.fallo(f"{vid}: su cláusula de colisión no declara el escalado al Owner (a.5)")
+    return r
+
+
+def t137_dsp_no_cancela_por_contenido(b):
+    """A-23 · b.7: DSP NUNCA posee por sí mismo la autoridad semántica para cancelar."""
+    r = Resultado("T137", "DSP no declara autoridad semántica sobre ninguna cancelación")
+    for datos, ruta, _ in b.get("rol", []) + b.get("capacidad", []):
+        cap = datos.get("capacidad") or datos.get("id")
+        if cap != "DSP":
+            continue
+        aut = datos.get("autoridad", {}) or {}
+        decide = list(aut.get("decide") or []) + list(aut.get("decide_sola") or [])
+        for item in decide:
+            if re.search(r"(?i)cancela", str(item)):
+                r.fallo(f"{datos.get('id')}: DECIDE «{str(item)[:70]}». "
+                        f"b.7: la cancelación se propone y se ejecuta, nunca se decide desde DSP")
+    return r
+
+
 PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t89_reanudacion_con_prueba, t90_roles_coherentes, t91_metodos_con_gate_y_pasos,
-           t92_sin_marca, t134_sin_documentos_para_nadie,
-           t135_composicion_respeta_el_contrato]
+           t92_sin_marca, t135_composicion_respeta_el_contrato,
+           t136_vetos_no_se_arbitran, t137_dsp_no_cancela_por_contenido]
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--prueba", default=None)
+    ap.add_argument("--raiz", default=None, help="ejecutar contra otra copia del corpus")
     args = ap.parse_args()
+    if args.raiz:
+        fijar_raiz(args.raiz)
     b = cargar()
     resultados = [f(b) for f in PRUEBAS]
     if args.prueba:

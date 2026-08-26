@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: a63fac1b38e2415d -->
+<!-- source_revision: 3187de551d27d4e3 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -13,9 +13,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | CONTRATO DEFINIDO | 50 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 11 |
+| PRUEBA SUPERADA | 13 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **61** |
+| **total** | **63** |
 
 ## Detalle
 
@@ -82,3 +82,5 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T133](T122-T133-packs.md) | La entrega móvil-reloj admite versiones distintas conviviendo | wear-os · mobile-app · packs/COMPOSICION | guion-manual | **CONTRATO DEFINIDO** | — |
 | [T134](T086-T092-contratos.md) | Ningún documento del corpus existe para nadie | a.7 modo de fallo (b) · SIS/coherencia · regla de fuente única | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |
 | [T135](T086-T092-contratos.md) | Ninguna composición rebaja la independencia que exige un contrato | C1 independencia · C4 paso 5 · G13 | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |
+| [T136](T136-T152-post-auditoria.md) | Ningún veto arbitra a otro veto levantable | A-06 · a.5 regla de colisión de vetos · veto:degradacion-de-forma · veto:integridad-de-datos | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T137](T136-T152-post-auditoria.md) | DSP no declara autoridad semántica sobre ninguna cancelación | A-23 · b.7 autoridad orden y ejecución · T54 | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |

@@ -18,9 +18,17 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 from ads_lint import Lint  # noqa: E402
+import comprobar_contratos  # noqa: E402
 from comprobar_contratos import Resultado, cargar  # noqa: E402
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+
+
+def fijar_raiz(nueva):
+    """Ejecuta contra una COPIA del corpus. Ver comprobar_contratos.fijar_raiz."""
+    global RAIZ
+    RAIZ = os.path.abspath(nueva)
+    comprobar_contratos.fijar_raiz(nueva)
 CODIGOS_KERNEL = {"PRD", "DIS", "ARQ", "DOM", "CON", "VER", "ENT", "USO", "APR",
                   "INV", "SEG", "PLT", "DSP", "SIS", "ENC"}
 PREFIJO = re.compile(r"^([a-z0-9-]+):")
@@ -112,7 +120,10 @@ PRUEBAS = [t131_precedencia_declarada, t132_packs_no_reclaman_autoridad]
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--raiz", default=None, help="ejecutar contra otra copia del corpus")
     args = ap.parse_args()
+    if args.raiz:
+        fijar_raiz(args.raiz)
     b = cargar()
     resultados = [f(b) for f in PRUEBAS]
     if args.json:
