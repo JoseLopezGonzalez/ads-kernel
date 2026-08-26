@@ -124,3 +124,48 @@ validador: "kernel/operativo/validadores/comprobar_contratos.py --prueba T92"
 estado: prueba-superada
 evidencia: "evidencia/T086-T092-salida.txt"
 ```
+
+---
+
+## T134 — añadida por la revisión adversarial
+
+La revisión adversarial del conjunto encontró **siete documentos que nadie enlazaba y cuyos
+bloques nadie citaba**: existían para nadie. Se corrigió la navegación, y la comprobación
+quedó como prueba permanente para que el hallazgo no pueda repetirse en silencio.
+
+```yaml ads:escenario
+id: T134
+nombre: Ningún documento del corpus existe para nadie
+cubre: ["a.7 modo de fallo (b)", "SIS/coherencia", "regla de fuente única"]
+dado: ["el corpus completo de kernel/operativo y packs"]
+cuando: ["se busca, por cada documento, si alguien lo enlaza o cita alguno de sus bloques"]
+entonces: ["todo documento tiene al menos una entrada: un enlace, o un identificador citado"]
+falla_si: ["existe un documento sin enlace entrante y sin ningún bloque citado desde fuera"]
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_contratos.py --prueba T134"
+estado: prueba-superada
+evidencia: "evidencia/T086-T092-salida.txt"
+```
+
+---
+
+## T135 — añadida por la revisión adversarial
+
+La revisión encontró cuatro roles que juzgan trabajo ajeno y cuyo contrato no exige
+independencia, cubiertos en cambio por sus composiciones. Eso es correcto —**el contrato
+fija el mínimo y la composición puede exigir más**— pero nada comprobaba la dirección
+contraria: que ninguna composición **rebajara** lo que un contrato exige. Ahora sí.
+
+```yaml ads:escenario
+id: T135
+nombre: Ninguna composición rebaja la independencia que exige un contrato
+cubre: ["C1 independencia", "C4 paso 5", "G13"]
+dado: ["todos los contratos de rol y todas las composiciones del corpus"]
+cuando: ["se cruza cada pareja declarada combinable con la independencia exigida por cada contrato"]
+entonces: ["ninguna composición combina dos roles que un contrato declara independientes"]
+falla_si: ["una composición permite compartir agente entre un rol y otro del que su contrato exige independencia"]
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_contratos.py --prueba T135"
+estado: prueba-superada
+evidencia: "evidencia/T086-T092-salida.txt"
+```

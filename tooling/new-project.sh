@@ -11,6 +11,7 @@ DST="../$NAME"
 mkdir -p "$DST"/{kernel,packs,docs/agentic,tooling}
 cp "$SRC/kernel/"*.md "$SRC/kernel/VERSION" "$DST/kernel/"
 cp -r "$SRC/kernel/templates" "$DST/kernel/"
+cp -r "$SRC/kernel/operativo" "$DST/kernel/"
 cp "$SRC/kernel/PROFILE_TEMPLATE.md" "$DST/PROFILE.md"
 cp "$SRC/kernel/PROJECT_TEMPLATE.md" "$DST/PROJECT.md"
 cp "$SRC/kernel/BOOTSTRAP_PROMPT.md" "$DST/BOOTSTRAP_PROMPT.md"
@@ -19,9 +20,10 @@ cp "$SRC"/tooling/*.sh "$DST/tooling/"
 
 if [ -n "$PACKS" ]; then
   IFS=',' read -ra P <<< "$PACKS"
+  cp "$SRC/packs/00-QUE-ES-UN-PACK.md" "$SRC/packs/COMPOSICION.md" "$DST/packs/"
   for p in "${P[@]}"; do
-    [ -f "$SRC/packs/$p.md" ] || { echo "Pack no encontrado: $p"; exit 1; }
-    cp "$SRC/packs/$p.md" "$DST/packs/"; echo "  pack añadido: $p"
+    [ -d "$SRC/packs/$p" ] || { echo "Pack no encontrado: $p (los packs son directorios)"; exit 1; }
+    cp -r "$SRC/packs/$p" "$DST/packs/"; echo "  pack añadido: $p"
   done
 else
   echo "  sin packs — el PROFILE deberá cubrir el saber hacer de la clase de proyecto"

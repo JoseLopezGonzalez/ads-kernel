@@ -162,7 +162,7 @@ en móvil, sospecha que sobra en escritorio, y dilo.
 
 | | |
 |---|---|
-| roles especializados | [`roles/`](roles/) |
-| gates adicionales | [`gates/`](gates/) |
-| especialización de Diseño | [`diseno/`](diseno/) |
+| roles especializados | [`densidad-y-tablas`](roles/densidad-y-tablas.md) · [`estados-de-red`](roles/estados-de-red.md) |
+| gates adicionales | [`gates/gates.md`](gates/gates.md) |
+| especialización de Diseño | [`diseno/especializacion.md`](diseno/especializacion.md) |
 | ejemplos de composición | [`composicion.md`](composicion.md) |

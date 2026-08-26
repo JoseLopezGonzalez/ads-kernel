@@ -29,6 +29,12 @@ INCORRECTO  copiar las seis condiciones aquí «para que se lea de un tirón»
 `ads_lint` no detecta toda duplicación semántica. La detecta la revisión adversarial, y
 cuando aparece se resuelve **borrando la copia**, nunca sincronizando las dos.
 
+> **Los prompts son la excepción declarada.** Un prompt se carga solo en un agente que no
+> va a leer nada más, y por tanto **repite operativamente** lo que necesita para trabajar.
+> Eso no es duplicación de fuente: la fuente sigue siendo el contrato o el catálogo, y el
+> prompt enlaza a ella en su cabecera. Cuando la fuente cambia, el prompt se revisa —es una
+> comprobación del gate de SIS— y si divergen, manda la fuente.
+
 ## Mapa de fuente única
 
 | verdad | fuente única |
@@ -44,23 +50,50 @@ cuando aparece se resuelve **borrando la copia**, nunca sincronizando las dos.
 | prompt operativo de un rol | `capacidades/<COD>/prompts/<rol>.md` |
 | entrada del Owner y su circuito | [`entrada/00-INDICE.md`](entrada/00-INDICE.md) |
 | excelencia de diseño | `diseno/` |
-| entregas entre capacidades | `circuitos/` |
+| entregas entre capacidades | [`circuitos/00-CIRCUITOS.md`](circuitos/00-CIRCUITOS.md) |
 | pruebas de conformidad nuevas | `pruebas/` y los bloques `ads:escenario` de cada documento |
 | estado real de cada prueba | [`pruebas/REGISTRO.md`](pruebas/REGISTRO.md) |
 
 ## Qué hay aquí
 
-```text
-esquemas/       el lenguaje canónico y la forma de cada tipo
-contratos/      los contratos transversales: equipo, rol, agente, método, materialización
-entrada/        PASO 1 — de la frase del Owner al item
-capacidades/    PASOS 4 y 5 — una carpeta por capacidad, con roles, métodos y prompts
-diseno/         PASO 3 — el sistema de excelencia de Diseño
-circuitos/      PASO 5 — handoffs concretos entre equipos
-plantillas/     artefactos rellenables: encuadre, checkpoint, paquete, devolución
-validadores/    ads_lint.py y sus reglas
-pruebas/        escenarios de conformidad y su registro honesto de estado
-```
+| directorio | contenido | entrada |
+|---|---|---|
+| `esquemas/` | el lenguaje canónico y los diecisiete tipos | [`00-LENGUAJE.md`](esquemas/00-LENGUAJE.md) |
+| `contratos/` | los cinco contratos transversales | [`00-INDICE.md`](contratos/00-INDICE.md) |
+| `entrada/` | PASO 1 — de la frase del Owner al item | [`00-INDICE.md`](entrada/00-INDICE.md) |
+| `diseno/` | PASO 3 — el sistema de excelencia | [`00-SISTEMA-DE-EXCELENCIA.md`](diseno/00-SISTEMA-DE-EXCELENCIA.md) |
+| `capacidades/` | PASOS 4 y 5 — las quince capacidades | tabla de abajo |
+| `circuitos/` | los circuitos y los handoffs | [`00-CIRCUITOS.md`](circuitos/00-CIRCUITOS.md) |
+| `plantillas/` | artefactos rellenables | tabla de abajo |
+| `validadores/` | `ads_lint.py`, `comprobar_contratos.py`, `comprobar_packs.py` | — |
+| `pruebas/` | escenarios y su registro honesto | [`REGISTRO.md`](pruebas/REGISTRO.md) |
+
+### Las quince capacidades
+
+| | | | |
+|---|---|---|---|
+| [`ENC`](capacidades/ENC/CAPACIDAD.md) Encuadre | [`PRD`](capacidades/PRD/CAPACIDAD.md) Producto | [`DIS`](capacidades/DIS/CAPACIDAD.md) Diseño | [`ARQ`](capacidades/ARQ/CAPACIDAD.md) Arquitectura |
+| [`DOM`](capacidades/DOM/CAPACIDAD.md) Dominio | [`CON`](capacidades/CON/CAPACIDAD.md) Construcción | [`VER`](capacidades/VER/CAPACIDAD.md) Verificación | [`ENT`](capacidades/ENT/CAPACIDAD.md) Entrega |
+| [`USO`](capacidades/USO/CAPACIDAD.md) Uso real | [`INV`](capacidades/INV/CAPACIDAD.md) Investigación | [`SEG`](capacidades/SEG/CAPACIDAD.md) Seguridad | [`PLT`](capacidades/PLT/CAPACIDAD.md) Plataforma |
+| [`APR`](capacidades/APR/CAPACIDAD.md) Aprendizaje | [`DSP`](capacidades/DSP/CAPACIDAD.md) Despacho | [`SIS`](capacidades/SIS/CAPACIDAD.md) Sistema | |
+
+Cada carpeta tiene la misma forma: `CAPACIDAD.md` · `roles/` · `metodos/` · `prompts/` ·
+`composicion.md`.
+
+### Plantillas rellenables
+
+| | |
+|---|---|
+| [`ENCUADRE.md`](plantillas/ENCUADRE.md) | el dosier que ENC entrega a DSP |
+| [`CHECKPOINT.md`](plantillas/CHECKPOINT.md) | el formato de a.10, copiable, con los cuatro errores que lo estropean |
+| [`DEVOLUCION.md`](plantillas/DEVOLUCION.md) | los cuatro campos sin los cuales una devolución no es una devolución |
+| [`DICTAMEN.md`](plantillas/DICTAMEN.md) | la forma común de todo juicio independiente |
+
+### Los tres packs
+
+[`web-app`](../../packs/web-app/PACK.md) · [`mobile-app`](../../packs/mobile-app/PACK.md) ·
+[`wear-os`](../../packs/wear-os/PACK.md) · su
+[composición](../../packs/COMPOSICION.md) y [qué es un pack](../../packs/00-QUE-ES-UN-PACK.md).
 
 ## Cómo se usa esto sin haber visto ninguna conversación
 

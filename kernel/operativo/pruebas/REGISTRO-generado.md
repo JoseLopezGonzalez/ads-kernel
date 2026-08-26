@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: ded638cf3738f070 -->
+<!-- source_revision: a63fac1b38e2415d -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -13,9 +13,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | CONTRATO DEFINIDO | 50 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 9 |
+| PRUEBA SUPERADA | 11 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **59** |
+| **total** | **61** |
 
 ## Detalle
 
@@ -80,3 +80,5 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T131](T122-T133-packs.md) | Lo más restrictivo gana entre dos packs | packs/COMPOSICION · precedencia P1 · T18 | validador-estructural | **PRUEBA SUPERADA** | evidencia/T131-T132-salida.txt |
 | [T132](T122-T133-packs.md) | Un rol de pack no reclama autoridad de un rol del kernel | packs/00-QUE-ES-UN-PACK · T18 · C1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/T131-T132-salida.txt |
 | [T133](T122-T133-packs.md) | La entrega móvil-reloj admite versiones distintas conviviendo | wear-os · mobile-app · packs/COMPOSICION | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T134](T086-T092-contratos.md) | Ningún documento del corpus existe para nadie | a.7 modo de fallo (b) · SIS/coherencia · regla de fuente única | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |
+| [T135](T086-T092-contratos.md) | Ninguna composición rebaja la independencia que exige un contrato | C1 independencia · C4 paso 5 · G13 | validador-estructural | **PRUEBA SUPERADA** | evidencia/T086-T092-salida.txt |

@@ -35,10 +35,11 @@ pasos:
     modo: lineal
     hace: >
       Aplicar la taxonomía de entrada. Para separar idea inmadura de candidato se usa la
-      prueba escrita de tres condiciones, no la intuición. La clase elegida y su motivo
-      quedan escritos.
-    produce: "clasificacion.naturaleza con motivo"
-    termina_cuando: "hay exactamente una clase elegida y su motivo escrito"
+      prueba escrita de tres condiciones, no la intuición. Si la expresión contiene DOS
+      cosas de clases distintas, se PARTE en dos expresiones enlazadas, cada una citando su
+      parte del mismo mensaje. La clase elegida y su motivo quedan escritos.
+    produce: "clasificacion.naturaleza con motivo, y las expresiones resultantes si hubo que partir"
+    termina_cuando: "cada expresión resultante tiene exactamente una clase elegida y su motivo escrito"
     checkpoint: true
   - n: 3
     nombre: ELEGIR FORMA

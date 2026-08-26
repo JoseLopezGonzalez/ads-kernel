@@ -50,6 +50,19 @@ Ninguna ha corrido nunca, porque no hay nada contra lo que correrlas. `T25` qued
 explícitamente abierta hasta (g). **Nada de esto autoriza a afirmar que el sistema
 funciona.** Eso requerirá runtime y evidencia ejecutable.
 
+## Estado de la construcción del kernel operativo
+
+Sobre (a) y (b) aprobadas se ha construido el **contenido operativo** que el runtime
+consumirá: [`kernel/operativo/`](../../kernel/operativo/00-INDICE.md).
+
+| | |
+|---|---|
+| registro reanudable de la iniciativa | [`CHECKPOINT-OPERATIVO.md`](CHECKPOINT-OPERATIVO.md) |
+| decisiones, decisiones del Owner y contradicciones | [`DECISIONES-Y-CONTRADICCIONES.md`](DECISIONES-Y-CONTRADICCIONES.md) |
+| estado real de cada prueba | [`pruebas/REGISTRO.md`](../../kernel/operativo/pruebas/REGISTRO.md) |
+
+**Sigue sin existir un runtime.** Lo construido es lo que ese runtime ejecutará.
+
 ## Siguiente trabajo
 
 **No** es seguir diseñando (c) a (i) en abstracto. Es **usar esta especificación en un

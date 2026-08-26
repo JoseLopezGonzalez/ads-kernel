@@ -5,5 +5,7 @@ T89  SUPERADA  Toda prueba de reanudación cita un escenario que existe
 T90  SUPERADA  Capacidades y roles se referencian mutuamente sin huérfanos
 T91  SUPERADA  Todo paso de todo método declara cuándo termina
 T92  SUPERADA  Ningún contrato del kernel ni de un pack exige una marca concreta
+T134  SUPERADA  Ningún documento del corpus existe para nadie
+T135  SUPERADA  Ninguna composición rebaja la independencia que exige un contrato
 
-7 superadas · 0 fallidas
+9 superadas · 0 fallidas

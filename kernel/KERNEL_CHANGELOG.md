@@ -2,6 +2,29 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.1 — contenido operativo sobre la especificación aprobada
+
+**No es un kernel funcionando: es el contenido que el runtime consumirá.** El runtime y el
+dispatcher siguen sin existir, por decisión del Owner.
+
+Añade `kernel/operativo/`, con:
+
+- lenguaje canónico de doble lectura y diecisiete esquemas
+- quince capacidades con ficha de doce campos, gate propio y contrato de veto donde procede
+- 41 roles con los 28 campos del contrato común, y sus prompts operativos
+- 35 métodos ejecutables, todos con condición de salida por paso y prueba de reanudación
+- los cinco contratos transversales C1 a C5
+- el sistema de excelencia de Diseño: dos gates independientes, dos rúbricas, memoria de
+  doce secciones, escala de novedad y procedimiento de fidelidad
+- el circuito completo de la puerta de entrada, con catorce formas de conversación
+- tres validadores ejecutables y 61 escenarios de conformidad con su estado REAL
+
+Deroga: `pack-design-led` como pack — la excelencia visual pasa al kernel.
+Retira a `packs/legacy-1.3.0/` los tres packs de la versión anterior.
+
+Las secciones (a) y (b) aprobadas NO se han modificado. Las contradicciones encontradas
+están registradas en `docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md`.
+
 ## 1.3.0 — 2026-08-24
 
 MINOR: nueva regla compatible. **Adopción recomendada para cualquier proyecto con un diferenciador cualitativo.**

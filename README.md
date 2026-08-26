@@ -4,6 +4,26 @@ Estructura reutilizable para desarrollar proyectos con una organización autóno
 
 Esto **no** es una plantilla de código. Es la constitución operativa de la organización que escribe el código.
 
+## Dónde está lo que hace funcionar esto
+
+```text
+kernel/operativo/     EL CONTENIDO OPERATIVO. Quince capacidades con sus roles, métodos,
+                      prompts, gates y composiciones. Es lo que un equipo ejecuta.
+                      → empieza por kernel/operativo/00-INDICE.md
+
+docs/rediseno/        LA ESPECIFICACIÓN NORMATIVA aprobada: (a) capacidades, equipos,
+                      paquetes y estado · (b) recorrido, estados y composición.
+
+packs/                web-app · mobile-app · wear-os, y cómo se componen entre sí.
+
+kernel/KERNEL.md      la constitución en prosa de la versión 1.3.0. Sigue siendo el
+                      documento de arranque mientras no exista el runtime.
+```
+
+**Si eres un agente que llega por primera vez**, el camino es:
+[`kernel/operativo/00-INDICE.md`](kernel/operativo/00-INDICE.md) → tu capacidad →
+tu rol → su prompt. No hace falta leer nada más.
+
 ## Las tres capas
 
 ```text
@@ -71,11 +91,16 @@ Test de contaminación: si al sustituir mentalmente el proyecto por *"una CLI de
 
 ## Estado actual
 
-| Artefacto | Versión | Validado en |
+| Artefacto | Estado | Validado en |
 |---|---|---|
-| kernel | 1.3.0 | ningún proyecto todavía |
-| pack-mobile-native | 1.1.0 | ningún proyecto todavía |
-| pack-web-app | 1.1.0 | ningún proyecto todavía |
-| pack-design-led | 1.0.0 | ningún proyecto todavía |
+| secciones (a) y (b) | **aprobadas** por el Owner | especificación, no runtime |
+| `kernel/operativo/` | contenido operativo construido | ningún proyecto todavía |
+| `packs/web-app` · `mobile-app` · `wear-os` | 1.0.0 | ningún proyecto todavía |
+| `kernel/KERNEL.md` | 1.3.0, conviviendo | ningún proyecto todavía |
+| runtime y dispatcher | **no existen** | — |
 
-Ninguna de estas piezas ha pasado aún por un proyecto real. La primera versión de un kernel siempre está equivocada en algún punto; el bucle de upstream existe precisamente para eso. Tras el primer circuito de `gym-wear` habrá candidatos reales que promover.
+**Nada de esto ha pasado por un proyecto real.** El estado honesto de cada prueba está en
+[`kernel/operativo/pruebas/REGISTRO.md`](kernel/operativo/pruebas/REGISTRO.md): la mayoría
+son contratos definidos, y sólo las estructurales están ejecutadas y superadas. La primera
+versión de un kernel siempre está equivocada en algún punto; el bucle de upstream existe
+precisamente para eso.

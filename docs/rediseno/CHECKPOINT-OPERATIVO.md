@@ -15,13 +15,19 @@ fuera        runtime · dispatcher · gym-wear · pack ERP · secciones (c)-(i) 
 ## Bloque actual
 
 ```text
+LOS SEIS PASOS ESTÁN IMPLEMENTADOS. La iniciativa está TERMINADA.
+
 BLOQUE 0   esquemas, validadores e índice          TERMINADO
-BLOQUE 1   circuito Owner → item (paso 1)          TERMINADO, pendiente revisión
+BLOQUE 1   circuito Owner → item (paso 1)          TERMINADO
 BLOQUE 2   contrato equipo/rol/agente/método       TERMINADO
 BLOQUE 3   sistema de excelencia de Diseño         TERMINADO
 BLOQUE 4   equipo de Diseño materializado          TERMINADO
 BLOQUE 5   demás capacidades                       TERMINADO
 BLOQUE 6   packs web-app · mobile-app · wear-os    TERMINADO
+REVISIÓN   adversarial del conjunto                TERMINADA, con limitación declarada
+
+FUERA DE ALCANCE, por instrucción del Owner y sin empezar:
+runtime · dispatcher · gym-wear · pack ERP · secciones (c) a (i) en abstracto
 ```
 
 ## Terminado
@@ -100,10 +106,13 @@ BLOQUE 6   packs web-app · mobile-app · wear-os    TERMINADO
 
 ## En revisión
 
-Bloque 1 — la revisión adversarial por agente independiente se lanzó y **terminó sin
-completarse por un límite de gasto de la cuenta**, no por un fallo del material. La
-revisión adversarial se ejecuta al final, sobre el conjunto, dentro del bloque de
-conformidad global.
+Nada en revisión. La revisión adversarial del conjunto está hecha y sus cinco hallazgos
+corregidos: [`REVISION-ADVERSARIAL.md`](REVISION-ADVERSARIAL.md).
+
+**Deuda declarada:** el agente revisor independiente terminó sin completarse por un límite
+de gasto de la cuenta, y la revisión la ejecutó finalmente quien escribió el material. Una
+lectura verdaderamente independiente sigue pendiente, y es la limitación más importante de
+esta entrega.
 
 ## Decisiones pendientes del Owner
 
@@ -127,5 +136,46 @@ TOTAL     59 escenarios: 50 contrato-definido, 9 PRUEBA SUPERADA
 
 ## Siguiente acción exacta
 
-> Revisión adversarial del conjunto, actualización del índice maestro
-> `kernel/operativo/00-INDICE.md` con todo lo creado, y entrega final al Owner.
+> **La iniciativa está terminada.** La siguiente acción NO es de esta iniciativa: es el
+> piloto de gym-wear, y su punto de partida exacto está más abajo.
+>
+> Si el Owner quiere continuar aquí, las dos únicas cosas pendientes son:
+> 1. una revisión adversarial por un lector independiente que no escribió el material
+> 2. las decisiones agrupadas en `DECISIONES-Y-CONTRADICCIONES.md` §2, ninguna bloqueante
+
+
+---
+
+## Punto exacto desde el que empieza el piloto de gym-wear
+
+```text
+1  INSTALAR       ./tooling/new-project.sh gym-wear wear-os,mobile-app
+                  copia kernel/ con su directorio operativo, y los dos packs con su
+                  fichero de composición
+
+2  PROFILE        rellenar PROFILE.md, y AÑADIR lo que la composición de packs exige:
+                    · matriz de relojes y de dispositivos reales
+                    · el arbitraje de todo conflicto de materia entre wear-os y mobile-app
+                    · los valores que la precedencia P1 resolvió, con cuál ganó
+                    · la decisión de independencia: ¿el reloj es autónomo, acompañante o mixto?
+
+3  PRIMER ITEM    NO empezar por una pantalla. Empezar por una frase del Owner, entrando
+                  por ENC con el prompt de ENC/interlocutor cargado tal cual
+
+4  PRIMER ANCLAJE ENC/anclaje sobre un repositorio vacío devolverá
+                  `no_existe_y_se_creia: no existe memoria de diseño`. Eso es correcto y
+                  significa nivel de novedad N4 → DIS/Fundacion, sin techo de sesiones
+
+5  LO QUE HAY     el escenario A de entrada/05-ESCENARIOS.md es exactamente ese recorrido,
+   QUE VIGILAR    con dos items enlazados. Si el sistema produce en su lugar una tarea de
+                  estilos, el kernel operativo ha fallado en su primer uso real y hay que
+                  registrarlo como aprendizaje, no corregirlo a mano
+
+6  QUÉ SE APRENDE la primera ejecución convertirá varias pruebas de «contrato definido» a
+                  «prueba ejecutada». Ese cambio de estado, con su evidencia, es el
+                  resultado más valioso del piloto — más que la aplicación
+```
+
+**No se empieza el runtime.** El piloto se ejecuta con agentes siguiendo los métodos a mano;
+lo que el runtime tendrá que automatizar se descubre haciéndolo, y ése es el material del
+que nacerán los items `SIS` de la siguiente iteración.

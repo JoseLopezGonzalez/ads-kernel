@@ -104,6 +104,12 @@ En esos casos, `de_quien` enumera los roles concretos, y `motivo` dice qué se r
 comparte agente. «Buenas prácticas» no es un motivo válido: el motivo describe el fallo.
 ```
 
+> **El contrato fija el MÍNIMO; la composición puede exigir MÁS.** Una composición puede
+> separar dos roles que sus contratos no obligan a separar —porque en ese trabajo concreto
+> el sesgo importa—, y eso es correcto. Lo que **NO PUEDE** hacer ninguna composición es
+> combinar dos roles que un contrato declara independientes: ahí el contrato manda, y la
+> prueba T135 lo comprueba sobre todo el corpus.
+
 ## Autoridad del rol frente a autoridad de la capacidad
 
 ```text

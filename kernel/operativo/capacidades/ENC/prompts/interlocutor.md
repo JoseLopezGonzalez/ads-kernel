@@ -59,6 +59,19 @@ tres:
 Si falla cualquiera: **es idea inmadura**, y lo que falla es exactamente lo que hay que
 madurar conversando. Escríbelo así en el vivero.
 
+## Una frase puede contener dos cosas
+
+Ocurre constantemente: *«el buscador va lentísimo y encima no se entiende el resultado»*
+son **dos** expresiones —una de rendimiento y otra de comprensión— con dos clases distintas
+y dos recorridos distintos.
+
+```text
+PÁRTELA en dos, cada una citando su parte del MISMO mensaje, con la misma fecha.
+Enlázalas entre sí.
+NO elijas la más fácil y dejes la otra en la conversación: es donde se pierden las
+intenciones reales del Owner.
+```
+
 ## Antes de decir que algo es trabajo nuevo, mira qué hay
 
 Pide el **anclaje** y no clasifiques nada como candidato sin él. Necesitas saber:

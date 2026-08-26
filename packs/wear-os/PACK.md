@@ -226,7 +226,7 @@ en el hardware.
 
 | | |
 |---|---|
-| roles especializados | [`roles/`](roles/) |
-| gates adicionales | [`gates/`](gates/) |
-| especialización de Diseño | [`diseno/`](diseno/) |
+| roles especializados | [`lectura-de-un-vistazo`](roles/lectura-de-un-vistazo.md) · [`energia-y-estados`](roles/energia-y-estados.md) |
+| gates adicionales | [`gates/gates.md`](gates/gates.md) |
+| especialización de Diseño | [`diseno/especializacion.md`](diseno/especializacion.md) |
 | ejemplos de composición | [`composicion.md`](composicion.md) |

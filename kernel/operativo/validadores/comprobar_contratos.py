@@ -104,8 +104,18 @@ def t88_prompt_existe(b):
         if not prompt:
             r.fallo(f"{datos.get('id')}: sin prompt declarado")
             continue
-        if not os.path.exists(os.path.join(RAIZ, prompt)):
-            r.fallo(f"{datos['id']}: el prompt declarado no existe → {prompt}")
+        # el prompt puede vivir en su propio fichero, o como sección del contrato
+        fichero = prompt.split("#")[0]
+        ancla = prompt.split("#")[1] if "#" in prompt else None
+        ruta_prompt = os.path.join(RAIZ, fichero)
+        if not os.path.exists(ruta_prompt):
+            r.fallo(f"{datos['id']}: el prompt declarado no existe → {fichero}")
+            continue
+        if ancla:
+            with open(ruta_prompt, encoding="utf-8") as fh:
+                cuerpo = fh.read().lower()
+            if f"## {ancla.replace('-', ' ')}" not in cuerpo and f"## {ancla}" not in cuerpo:
+                r.fallo(f"{datos['id']}: el prompt apunta a la sección '#{ancla}', que no existe en {fichero}")
     return r
 
 
@@ -142,6 +152,10 @@ def t90_roles_coherentes(b):
                 r.fallo(f"{cid}: declara {rid}, pero ese rol dice pertenecer a {roles[rid].get('capacidad')}")
     for rid, rol in roles.items():
         cid = rol.get("capacidad")
+        # Los roles de pack se ADJUNTAN a la capacidad al materializar (packs/00-QUE-ES-UN-PACK):
+        # la capacidad del kernel no los conoce y no puede listarlos.
+        if ":" in rid:
+            continue
         if cid in caps and rid not in caps[cid].get("roles", []):
             r.fallo(f"{rid}: dice pertenecer a {cid}, que no lo lista entre sus roles")
     return r
@@ -179,9 +193,72 @@ def t92_sin_marca(_b):
     return r
 
 
+def t134_sin_documentos_para_nadie(b):
+    """Un documento que ningún otro enlaza y cuyos bloques nadie cita existe para nadie.
+
+    Es el hallazgo que la revisión adversarial busca bajo el nombre de
+    «autorreferencia sin producto», y aquí queda comprobado de forma permanente.
+    """
+    r = Resultado("T134", "Ningún documento del corpus existe para nadie")
+    corpus = {}
+    for ambito in ("kernel/operativo", "packs"):
+        for dirpath, dirnames, filenames in os.walk(os.path.join(RAIZ, ambito)):
+            dirnames[:] = [d for d in dirnames
+                           if d not in ("__pycache__",) and not d.startswith("legacy-")]
+            for nombre in filenames:
+                if nombre.endswith((".md", ".py", ".yaml")):
+                    ruta = os.path.join(dirpath, nombre)
+                    with open(ruta, encoding="utf-8") as fh:
+                        corpus[os.path.abspath(ruta)] = fh.read()
+
+    ids_por_fichero = {}
+    for _, datos, ruta, _ in [(t, d, f, l) for t, d, f, l in
+                              [(tt, dd, ff, ll) for tt in b for dd, ff, ll in b[tt]]]:
+        ids_por_fichero.setdefault(os.path.abspath(ruta), []).append(datos.get("id"))
+
+    for ruta, _ in corpus.items():
+        if not ruta.endswith(".md"):
+            continue
+        base = os.path.basename(ruta)
+        otros = {k: v for k, v in corpus.items() if k != ruta}
+        entrante = any(base in txt for txt in otros.values())
+        citado = any(i and any(i in txt for txt in otros.values())
+                     for i in ids_por_fichero.get(ruta, []))
+        if not entrante and not citado:
+            r.fallo(f"{os.path.relpath(ruta, RAIZ)}: nadie lo enlaza y nadie cita sus bloques")
+    return r
+
+
+def t135_composicion_respeta_el_contrato(b):
+    """Ninguna composición combina dos roles que el CONTRATO de uno declara independientes.
+
+    T87 comprueba la coherencia interna de cada composición. Esto comprueba algo distinto
+    y más fuerte: que ninguna composición rebaje lo que el contrato del rol exige.
+    """
+    r = Resultado("T135", "Ninguna composición rebaja la independencia que exige un contrato")
+    roles = {d["id"]: d for d, _, _ in b.get("rol", [])}
+    for datos, ruta, _ in b.get("composicion", []):
+        for comb in datos.get("combinables") or []:
+            pareja = comb.get("roles") or []
+            for i, a in enumerate(pareja):
+                for bb in pareja[i + 1:]:
+                    for uno, otro in ((a, bb), (bb, a)):
+                        rol = roles.get(uno)
+                        if not rol:
+                            continue
+                        ind = rol.get("independencia") or {}
+                        if not ind.get("requiere_independencia"):
+                            continue
+                        if otro in (ind.get("de") or []):
+                            r.fallo(f"{datos['id']}: combina '{uno}' con '{otro}', y el "
+                                    f"contrato de {uno} exige independencia de él")
+    return r
+
+
 PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t89_reanudacion_con_prueba, t90_roles_coherentes, t91_metodos_con_gate_y_pasos,
-           t92_sin_marca]
+           t92_sin_marca, t134_sin_documentos_para_nadie,
+           t135_composicion_respeta_el_contrato]
 
 
 def main():
