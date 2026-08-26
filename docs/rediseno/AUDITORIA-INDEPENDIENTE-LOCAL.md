@@ -985,3 +985,292 @@ un fork silencioso no ve los ficheros que ejecutan la conformidad (A-04)**.
 
 Ninguno de esos seis es un problema de redacción. Cinco son corregibles sin decidir nada; el
 primero es del Owner.
+
+---
+---
+
+# SECCIÓN 2 — Contraste con la revisión anterior
+
+> Añadida **después** de publicar la sección 1 y sólo entonces leer
+> [`REVISION-ADVERSARIAL.md`](REVISION-ADVERSARIAL.md),
+> [`DECISIONES-Y-CONTRADICCIONES.md`](DECISIONES-Y-CONTRADICCIONES.md) y
+> [`CHECKPOINT-OPERATIVO.md`](CHECKPOINT-OPERATIVO.md). Nada de la sección 1 se ha
+> modificado a la luz de estas lecturas: los hallazgos quedan como se formularon a ciegas,
+> y lo que cambia se registra aquí.
+
+## 2.0 · Lo primero que hay que decir
+
+`REVISION-ADVERSARIAL.md` **declara por escrito que la revisión independiente no llegó a
+ejecutarse**: el agente revisor terminó por un límite de gasto y la revisión la hizo quien
+escribió el corpus. Lo llama «la limitación más importante de esta entrega» y lo repite en
+el checkpoint. Eso es honesto y es correcto, y significa que esta auditoría ocupa
+exactamente el hueco que aquella dejó abierto. **La comparación que sigue no es entre dos
+revisiones equivalentes**: es entre una autorrevisión declarada como tal y la primera
+lectura externa.
+
+## 2.1 · Hallazgos coincidentes
+
+| mío | suyo | comentario |
+|---|---|---|
+| **A-01** ENC como capacidad no autorizada | **C1** y **O1** de `DECISIONES` | Coincidimos en el núcleo y en el diagnóstico —trabajo conversacional es trabajo de contenido, y (a) dice que DSP no lo tiene—, y también en que el contenido no depende de la decisión: mover `capacidades/ENC/` bajo `DSP/` no reescribe un rol. **Mi hallazgo es más ancho**: ver 2.3-S5 |
+| **A-30** profundidad asimétrica | defecto 5 «equipos genéricos», resuelto en verde | Coincidimos en que ninguna capacidad comparte método y en que cada una tiene conocimientos y antipatrones propios. Yo lo registro además como deuda de **profundidad**, no de forma |
+| **A-27** exención de vocabulario | defecto 1, «0 apariciones fuera de las exenciones» | Coincide el hecho —hoy nadie abusa de la exención— y lo he verificado por mi cuenta. Discrepo en la cifra: ver 2.3-S1 |
+| tono general del `REGISTRO` | «Lo que esta revisión NO puede afirmar» | Coincidencia completa: el corpus es coherente consigo mismo y no está probado. Ambos lo decimos con las mismas palabras |
+| **A-28** enlaces | H2 «siete documentos que existían para nadie» | Confirmo que el problema que H2 describe fue real y que la corrección funcionó **para esos siete**. Lo que no funciona es la prueba que instalaron para que no vuelva: A-05 |
+
+También coincide, aunque por caminos distintos, la conclusión de **C2** de `DECISIONES`: el
+juicio de excelencia no está escondido dentro del gate, sino materializado en
+`DIS/critica-visual`. Ése es el diseño correcto y lo confirmo. Lo que la revisión anterior
+no siguió es si ese diseño se sostiene a lo largo de los tres documentos que lo describen
+—no se sostiene: A-08, A-20 y A-21.
+
+## 2.2 · Hallazgos que la revisión anterior no detectó
+
+De los 31 de la sección 1, **la revisión anterior registró uno** (A-01, como C1, y con
+alcance menor). Los otros treinta son nuevos. Los que más importan, por qué se le
+escaparon:
+
+```text
+A-02  el comando de arranque documentado falla
+      → NADIE EJECUTÓ EL TOOLING. Los doce defectos buscados son propiedades del corpus;
+        ninguno pregunta «¿funciona lo que la portada manda escribir?». Basta un
+        `new-project.sh` sobre una copia para verlo.
+
+A-03  T131 declarada superada sin comprobar lo que afirma
+A-17  comprobar_packs declara comprobaciones que no ejecuta y tiene una rama muerta
+      → SE LEYÓ LA SALIDA DEL VALIDADOR, NO SU CÓDIGO. La salida dice SUPERADA y el
+        escenario dice prueba-superada; la discrepancia sólo aparece leyendo la función.
+        Es el punto ciego característico de autorrevisarse: se confía en el instrumento
+        que uno mismo escribió.
+
+A-05  T134 se derrota con una colisión de nombre de fichero
+      → MISMO PUNTO CIEGO, y más grave: T134 es la prueba que ESTA MISMA revisión instaló
+        como remedio permanente de su hallazgo H2, y la declara «permanente: ningún
+        documento del corpus puede quedarse sin entrada». Con 43 nombres base repetidos
+        que cubren 119 de 188 ficheros, la afirmación no se sostiene.
+
+A-04  kernel-status.sh no ve los .py
+      → EL TOOLING NO ENTRÓ EN EL ALCANCE, otra vez. Y es el fichero que sostiene la
+        primera de «las tres reglas que sostienen la reutilización» del README.
+
+A-07  la rama N3 de la escala de novedad es inalcanzable
+A-08  N0 y N1 se saltan gates obligatorios, con tres documentos discrepando
+A-19  la incertidumbre ALTA tiene dos consecuencias incompatibles
+A-20  el gate visual exige un eje que en la estación 9 no puede existir
+A-21  dos de los nueve ejes rechazan sin destino declarado
+      → NINGUNO DE LOS DOCE DEFECTOS BUSCADOS ERA «RAMA INALCANZABLE» NI «CONDICIONES QUE
+        SE SOLAPAN». La lista de doce está orientada a lo que un documento DICE, no a
+        recorrer sus bifurcaciones. Estos cinco sólo aparecen simulando entradas.
+
+A-09  obligaciones, huérfanas y cierre sin portador operativo
+A-10  los frenos de a.7 y b.9 sin rol, método ni gate; Supervisión de DSP sin materializar
+      → CRITERIO DE COMPLETITUD BASADO EN INVENTARIO. El checkpoint cuenta fichas, roles,
+        métodos y handoffs, y todos están. Lo que no se hizo fue el recorrido inverso:
+        tomar cada mecanismo de (a) y (b) y preguntar QUIÉN lo ejecuta en el corpus. Es
+        donde aparece que el aparato central de (b) no tiene dónde escribirse.
+
+A-06  DIS y DOM se arbitran un veto que a.5 reserva al Owner
+      → T19 comprueba que los seis campos EXISTEN, no qué dicen. Y «contradicciones con
+        (a)» estaba en el encargo, pero se buscó a nivel de arquitectura, no dentro del
+        texto de un campo.
+
+A-11  el encuadre no puede declarar `esperando-owner`
+A-13  gate:usabilidad se declara aplicable a CON y nada lo vincula
+A-15  ENC/Critica no está en la ficha de su capacidad
+A-16  C4 invoca composicion:dis-fundacion, que no existe
+A-22  handoff mal tipado, y falta el handoff CON→VER
+      → CINCO DEFECTOS DE REFERENCIA CRUZADA que ningún validador cubre: ads_lint resuelve
+        las refs declaradas y los enlaces markdown, pero no la coherencia entre lo que un
+        esquema PERMITE y lo que la prosa EXIGE, ni los identificadores citados dentro de
+        bloques ```text.
+
+A-12  README, START_HERE y KERNEL.md con tres versiones distintas
+A-24  once recuentos incorrectos, en cuatro contratos y en la nota de versión
+      → LO ADMITEN COMO LÍMITE: «La coherencia PROSA↔BLOQUE dentro de un mismo fichero no
+        es comprobable automáticamente — la cubre la revisión adversarial». La revisión
+        adversarial no la cubrió, porque la ejecutó quien había escrito las cifras. Es el
+        límite declarado materializándose exactamente donde se anunció.
+
+A-14  la crítica de encuadre obligatoria puede evaporarse
+A-23  DSP/estado DECIDE una cancelación
+A-25  «lo más restrictivo gana» no es computable
+A-26  la estación 12 no tiene gate en el kernel
+```
+
+### Dos hallazgos nuevos que sólo aparecen al leer estos tres documentos
+
+**A-32 · DEFECTO — `CHECKPOINT-OPERATIVO.md` está desactualizado respecto al commit que
+declara terminado, incumpliendo su propia regla.**
+
+Su cabecera dice: «**Se actualiza antes de cada commit**, no al final». El commit `17e618e`
+(«revisión adversarial, correcciones y cierre») añadió T134 y T135 y no lo actualizó. Cifras
+del checkpoint frente al corpus reejecutado hoy:
+
+| checkpoint dice | es |
+|---|---|
+| «ads_lint … sobre **298** bloques canónicos» | **300** |
+| «**TOTAL 59** escenarios: 50 contrato-definido, **9** PRUEBA SUPERADA» | **61** · 50 · **11** |
+| «comprobar_contratos EJECUTADO, **7/7** superadas» | **9/9** |
+| «T86-T92 PRUEBA SUPERADA (**7**)» | 7, más T134 y T135, que el checkpoint no menciona |
+| «los **diecisiete** esquemas» | **16** |
+
+**Consecuencia práctica.** Es el fichero cuya única función es que un agente nuevo pueda
+decir «Continúa» sin conversación previa, y a.10 regla 3 es explícita: «*Un checkpoint
+desactualizado —siguió trabajando y no lo escribió— es **un defecto del sistema**, no una
+omisión menor*». El kernel incumple aquí su propia regla más citada.
+
+**Un dato a favor, y es relevante:** el checkpoint tiene **bien** dos de las cifras que la
+documentación operativa tiene mal — «**Diez** matrices de composición» (frente a las «doce»
+de `DIS/CAPACIDAD.md`) y «Circuito de **catorce** estaciones» (frente a las «Trece» de
+`02-CIRCUITO.md`). Es decir: en A-24, la fuente correcta es el checkpoint y la incorrecta es
+el documento normativo. Eso acota la corrección y confirma que son erratas de redacción, no
+desacuerdos de fondo.
+
+**A-33 · DEFECTO — `DECISIONES-Y-CONTRADICCIONES.md` §2 O3 apunta a un fichero que no
+existe.**
+
+> «O3 · Umbral de anclaje y margen de ambigüedad de b.13 — por defecto implementado:
+> `umbral 0.60` · `margen 0.15`, declarados en `entrada/03-CLASIFICACION.md`»
+
+No existe `kernel/operativo/entrada/03-CLASIFICACION.md`. Los valores viven en
+`entrada/04-INCERTIDUMBRE-Y-CONFIRMACION.md` §3, y `entrada/03-FORMAS.md` ocupa ese número.
+Es una cita en prosa, no un enlace markdown, así que `ads_lint` no la alcanza —y aunque lo
+fuera, `docs/` está fuera de su ámbito (A-28). **Consecuencia:** el Owner que quiera ejercer
+la decisión O3 no encuentra dónde está el parámetro que se le pide decidir.
+
+## 2.3 · Supuestos de la revisión anterior que considero incorrectos
+
+**S1 · «0 apariciones fuera de las *tres* exenciones declaradas».**
+Las exenciones de vocabulario son **19** ficheros en `kernel/` y `packs/` (21 contando
+`docs/`), no tres: los seis documentos de `diseno/`, cuatro de los cinco contratos,
+`00-LENGUAJE.md`, tres de `entrada/`, `00-CIRCUITOS.md`, `REGISTRO.md` y los dos de `packs/`.
+El resultado —hoy nadie abusa de ellas— lo he verificado y es correcto; el supuesto sobre el
+tamaño de la superficie exenta no lo es, y es lo que hace que la deuda A-27 importe.
+
+**S2 · «35 métodos, 0 fallos» y «los 28 campos» y «diecisiete esquemas».**
+Son 34 métodos, 29 campos y 16 esquemas. El «0 fallos» de T91 es cierto y lo he
+reejecutado; la cifra sobre la que se predica, no. Es el mismo patrón de A-24.
+
+**S3 · «T134, permanente: ningún documento del corpus puede quedarse sin entrada».**
+Demostrado falso con un experimento reproducible (A-05). El supuesto de fondo —que una
+prueba escrita a la vez que el remedio garantiza que el defecto no vuelva— es el que hay que
+revisar: T134 se escribió para cerrar H2 y se validó comprobando que H2 ya no aparecía, no
+comprobando que **detectaría** un H2 nuevo. Una prueba que nunca se ha visto fallar sobre un
+caso construido a propósito no está verificada.
+
+**S4 · «`comprobar_packs.py`: T131 y T132 EJECUTADAS Y SUPERADAS» como cierre del bloque 6.**
+T131 no comprueba su enunciado y T132 comprueba dos de sus tres afirmaciones (A-03, A-17).
+El bloque 6 se cierra apoyado en una prueba que no sostiene lo que declara.
+
+**S5 · «La única [decisión del Owner] con contenido normativo es C1» y «ninguna bloquea».**
+Discrepo en dos puntos. Primero, **C1 registra menos de lo que la decisión implica**: no
+menciona que `ENC` usa un código de tres letras sin el prefijo de espacio de nombres que a.4
+declara obligatorio para toda extensión, ni que `C4` la convierte en un **tercer equipo
+permanente** frente a los dos de a.4, ni que el corpus queda con **tres recuentos
+incompatibles** del catálogo (14 en (a) y en `packs/00-QUE-ES-UN-PACK.md`, 15 en
+`00-INDICE.md` y en `comprobar_packs.py`). Segundo, **hay una segunda contradicción normativa
+sin registrar**: A-06, la prevalencia DOM sobre DIS, que contradice la regla de colisión de
+vetos de a.5 y decide en silencio algo que a.5 escala al Owner.
+
+**S6 · «LOS SEIS PASOS ESTÁN IMPLEMENTADOS. La iniciativa está TERMINADA».**
+Sostengo que el paso 5 está **incompleto en un punto sustantivo, no cosmético**: el
+vocabulario canónico de las obligaciones de proceso (b.3), la función de estado global (b.4)
+y las cinco condiciones de cierre (b.10) no tienen esquema, campo, gate ni plantilla
+(A-09), y los tres frenos de a.7 más el de b.9 no tienen portador (A-10), incluida la cuarta
+función de DSP. Nada de eso requiere runtime: es contenido, que es justo lo que esta
+iniciativa se encargó de producir. El inventario está completo; el recorrido inverso —cada
+mecanismo normativo tiene quien lo ejecute— no.
+
+**S7 · «los packs no mencionan gym-wear» como prueba de que no hay diseño orientado a un
+único proyecto.**
+La afirmación es cierta y la confirmo (T92 reejecutado, y grep propio sobre los tres packs).
+Pero prueba menos de lo que parece: que un pack no nombre el proyecto no significa que su
+frontera esté bien puesta. `packs/00-QUE-ES-UN-PACK.md` prohíbe la tecnología concreta y el
+pack se llama `wear-os` (A-29), y la regla de precedencia P1 no es computable (A-25). Ninguna
+de las dos se detecta buscando el nombre del proyecto.
+
+## 2.4 · Posibles falsos positivos míos
+
+Los declaro yo, porque un informe que no los declara pide que se le crea:
+
+```text
+A-07  N3 INALCANZABLE — lectura literal frente a lectura intencional
+      Mi lectura es literal: N4 pregunta «¿no existe memoria:vision-artistica, o está
+      vacía?», y para un producto construido sin dirección escrita la respuesta es sí.
+      Cabe la lectura de que N4 se refiera implícitamente a proyecto nuevo, apoyada en el
+      nombre del método (Fundacion) y en su segundo disparador (un DIR). Si esa es la
+      intención, el defecto se reduce de «rama inalcanzable» a «condición mal escrita» —
+      pero sigue habiendo que reescribirla, porque la escala se declara comprobable
+      «leyendo la memoria de diseño, no interpretable».
+
+A-20  EL EJE `fidelidad` EN LA ESTACIÓN 9
+      Es posible que la intención sea evaluar gate:excelencia-visual DOS veces —antes y
+      después de construir— y que sólo falte declararlo. Si es así, mi hallazgo es de
+      documentación y no de imposibilidad. Lo mantengo porque hoy no está escrito en
+      ninguna parte y porque DIS/Fundacion cierra contra ese gate sin construcción alguna.
+
+A-23  DSP/estado DECIDE UNA CANCELACIÓN
+      El texto del rol está copiado de b.8, que sí encarga a DSP «convertir la situación»
+      en una de tres. La contradicción con b.7 puede estar ya en (b) y no haberla
+      introducido el kernel operativo. Si es así, la corrección es una frase en (b), no en
+      el rol, y es materia del Owner.
+
+A-13  gate:usabilidad Y LAS CAPAS DE CON
+      Cabe que la intención sea que sobre lo construido la usabilidad la compruebe VER a
+      través de su dosier, y que el `aplica_a` esté simplemente mal redactado. No he
+      encontrado nada que lo diga, pero es una lectura razonable.
+
+A-26  LA ESTACIÓN 12 SIN GATE
+      Es parcial: mobile-app y wear-os SÍ exigen dispositivo real por gate propio. El
+      hueco existe sólo para web-app y para proyectos sin pack. La afirmación de
+      04-CICLO sigue siendo demasiado amplia, pero el riesgo real es menor del que su
+      redacción sugiere.
+
+A-29  EL NOMBRE DEL PACK wear-os
+      Es un juicio, no un defecto comprobable. El contenido del pack es neutral y T92 lo
+      confirma. Si el Owner considera que el identificador de un pack puede nombrar una
+      plataforma sin que eso sea tecnología «dentro» del pack, el hallazgo desaparece.
+
+A-30  PROFUNDIDAD ASIMÉTRICA
+      DIS/CAPACIDAD.md lo declara deliberado («sirve de patrón de calidad para las demás:
+      no de plantilla mecánica»). No es un defecto; lo registro sólo para que «equipos y
+      métodos de las demás capacidades» no se lea como paridad de profundidad.
+
+A-24  LOS RECUENTOS
+      Son ciertos uno por uno, pero su gravedad es de MEDIO discutible: ninguno rompe la
+      ejecución. Los agrupo en un solo hallazgo precisamente para no inflar la lista.
+```
+
+Y una advertencia sobre el conjunto: **el muestreo profundo de prompts es de 1 sobre 35**
+(sección 7). Ese único contraste produjo dos hallazgos (A-08 y A-21). No es prudente suponer
+que los otros treinta y cuatro estén limpios; es prudente suponer lo contrario.
+
+## 2.5 · Conclusión del contraste
+
+La revisión anterior hizo bien lo que podía hacer: buscó los doce defectos del encargo,
+encontró cinco reales, los corrigió, convirtió dos en prueba permanente y **declaró por
+escrito que la independencia le faltaba**. Esa declaración era exacta.
+
+Lo que la lectura externa añade se agrupa en tres clases, y las tres eran previsibles desde
+esa declaración:
+
+```text
+1  LO QUE NO SE EJECUTÓ        el tooling, y el código de los validadores propios
+                               → A-02, A-03, A-04, A-05, A-17
+
+2  LO QUE NO SE RECORRIÓ       las bifurcaciones de las decisiones escritas, en vez de
+   AL REVÉS                    su enunciado; y cada mecanismo de (a)/(b) preguntando
+                               quién lo ejecuta
+                               → A-06 a A-11, A-13, A-14, A-19 a A-23, A-25, A-26
+
+3  LO QUE EL PROPIO AUTOR      la coherencia prosa↔bloque y los recuentos, que
+   NO PUEDE VER                DECISIONES §4 ya anunciaba como no comprobable
+                               automáticamente
+                               → A-12, A-15, A-16, A-24, A-32, A-33
+```
+
+Ninguna de las tres clases contradice el trabajo hecho: lo completa donde el propio equipo
+dijo que estaba incompleto. La deuda que `REVISION-ADVERSARIAL.md` declaró abierta queda,
+con este informe, **saldada en su primera vuelta** — y con 33 hallazgos, de los cuales seis
+son bloqueantes para declarar la iniciativa terminada y uno solo requiere una decisión del
+Owner.
