@@ -130,3 +130,44 @@ encendido porque simplifica el código es consumir batería ajena en silencio.
 
 Pregunta a Dominio si la operación es **idempotente**. Una cola que se vacía dos veces al
 reconectar duplica efectos de negocio, y en un reloj la reconexión ocurre muchas veces al día.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · los estados implementados
+  · mediciones de consumo en reloj real
+```
+
+Cierras contra **`gate:wear-consumo`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · tras implementar cada estado
+  · tras cada medición de consumo
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a wear:DIS/lectura-de-un-vistazo, cuando falta qué se ve en un estado
+  · a DOM, cuando sincronizar una operación encolada puede duplicar un efecto
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · no hay reloj real donde medir consumo
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · el consumo es inherente al alcance: reducir la función es decisión de PRD y del Owner
+```

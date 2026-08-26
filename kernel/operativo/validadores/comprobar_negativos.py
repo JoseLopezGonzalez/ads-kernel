@@ -141,6 +141,25 @@ def m_exclusion_caducada(raiz):
                '    motivo: "resto de una exclusión antigua"')
 
 
+def m_prompt_sin_gate(raiz):
+    """Revisión de prompts · un prompt deja de nombrar el gate contra el que cierra."""
+    _sustituir(raiz, "kernel/operativo/capacidades/ARQ/prompts/encaje.md",
+               "Cierras contra **`gate:plan-tecnico`**", "Cierras cuando lo veas terminado")
+
+
+def m_prompt_habla_con_owner(raiz):
+    """Revisión de prompts · un prompt instruye conversar con el Owner sin autoridad."""
+    _sustituir(raiz, "kernel/operativo/capacidades/CON/prompts/implementacion.md",
+               "## Cómo cierras",
+               "Si dudas del alcance, pregunta al Owner qué prefiere.\n\n## Cómo cierras")
+
+
+def m_prompt_sin_metodo(raiz):
+    """Revisión de prompts · un prompt pierde el enlace a su método."""
+    _sustituir(raiz, "kernel/operativo/capacidades/ARQ/prompts/encaje.md",
+               "> Método: [`ARQ/Encaje`](../metodos/Encaje.md)", "> Método: el que proceda")
+
+
 def m_validador_editado(raiz):
     """A-04 · fork silencioso de un validador: kernel-status DEBE verlo."""
     ruta = os.path.join(raiz, VALIDADORES, "ads_lint.py")
@@ -374,6 +393,15 @@ CATALOGO = [
     Mutacion("N149d", "A-03", "T149", "comprobar_packs",
              "una composición no comparable se resuelve en silencio en vez de fallar",
              m_composicion_incompatible_silenciosa),
+    Mutacion("N153", "prompts", "T153", "comprobar_prompts",
+             "un prompt deja de nombrar el gate contra el que cierra",
+             m_prompt_sin_gate),
+    Mutacion("N153b", "prompts", "T153", "comprobar_prompts",
+             "un prompt instruye hablar con el Owner sin que su rol pueda",
+             m_prompt_habla_con_owner),
+    Mutacion("N153c", "prompts", "T153", "comprobar_prompts",
+             "un prompt pierde el enlace a su método",
+             m_prompt_sin_metodo),
     Mutacion("N148", "A-02", "T148", "comprobar_arranque",
              "la documentación vuelve a citar un pack derogado",
              m_arranque_con_pack_derogado),

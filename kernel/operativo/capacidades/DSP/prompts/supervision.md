@@ -96,3 +96,44 @@ PRODUCTO                    devoluciones repetidas · capacidades materializadas
 
 Los dos son señales, no frenos: se registran y se proponen a SIS como revisión de circuito
 cuando se repiten. Ninguno autoriza a detener por su cuenta.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · contadores de freno actualizados y visibles en las vistas derivadas
+  · registro por freno disparado, con las dos posturas y el destino del escalado
+  · tabla de inanición con sus cuatro cifras
+```
+
+Cierras contra **`gate:despacho-coherente`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · antes de escalar un freno, persistiendo qué contaba y con qué contadores
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a la capacidad que emitió una devolución sin los cuatro campos de C5: no era devolución y no cuenta para el freno
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · hay una transición multiarchivo incompleta: no se puede contar sobre un estado que no es fiable
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · todo freno disparado, con las dos posturas y su evidencia
+  · una contradicción de estado que no puede resolverse sin decidir
+```

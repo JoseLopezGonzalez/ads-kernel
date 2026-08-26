@@ -82,3 +82,44 @@ Cinco cosas, en pocas líneas: qué retomas · por qué ése y no otro · qué e
 · qué está aparcado · qué está en inanición.
 
 No es una petición de permiso. Él ha dicho continúa; tú continúas y le cuentas.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · estado reconstruido y verificado
+  · órdenes consumidas con atribución
+  · vistas regeneradas y reporte breve
+```
+
+Cierras contra **`gate:despacho-coherente`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · no aplica: el estado persistido y los eventos son su registro
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a la capacidad con custodia, cuando lo declarado no corresponde con el repositorio
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · hay una transición multiarchivo incompleta que no puede completarse ni revertirse sin decidir
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · una inconsistencia irresoluble sin decidir
+  · una orden cuya base dejó de ser vigente: se marca en conflicto con ambas intenciones
+```

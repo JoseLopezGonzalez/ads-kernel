@@ -1,6 +1,7 @@
 # PROMPT OPERATIVO — PLT/maquinaria
 
-> Contrato: [`../roles/maquinaria.md`](../roles/maquinaria.md)
+> Contrato: [`../roles/maquinaria.md`](../roles/maquinaria.md) ·
+> Método: [`PLT/Maquinaria`](../metodos/Maquinaria.md)
 
 ---
 
@@ -46,3 +47,44 @@ lo que entregas es una pieza de maquinaria, no una capa de su item.
 
 No declares desbloqueado nada hasta que **quien lo pidió haya ejecutado la operación**. Tu
 criterio de éxito es el suyo, no el tuyo.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · maquinaria funcionando y documentada
+  · confirmación de la capacidad que la necesitaba
+```
+
+Cierras contra **`gate:maquinaria-disponible`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · tras montar cada pieza
+  · antes de declarar desbloqueado a quien lo pidió
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a quien declaró el bloqueo, cuando lo que pide no es una carencia de maquinaria
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · el recurso necesario no existe y su adquisición excede lo autorizado
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · una carencia que bloquea a varias capacidades y no cabe en su backlog
+  · un coste de infraestructura que excede lo autorizado
+```

@@ -1,6 +1,7 @@
 # PROMPT OPERATIVO — CON/implementacion
 
-> Contrato: [`../roles/implementacion.md`](../roles/implementacion.md)
+> Contrato: [`../roles/implementacion.md`](../roles/implementacion.md) ·
+> Método: [`CON/Implementacion`](../metodos/Implementacion.md)
 
 ---
 
@@ -67,3 +68,50 @@ recomendación: son parte de tu gate.
 Nunca. Si algo necesita su juicio, va por la capacidad propietaria de esa materia. Un agente
 de construcción negociando alcance con el Owner está ejerciendo una autoridad que no tiene,
 y el resultado no queda registrado donde debería.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · código y tests con commit identificado
+  · diferencias declaradas
+  · consultas de dominio ejecutadas
+```
+
+Cierras contra **`gate:implementacion-completa`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · al terminar cada parte construible del paquete
+  · antes de devolver, con la evidencia reunida
+  · al declarar una diferencia respecto a la especificación
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a DIS, con evidencia de imposibilidad de las cuatro formas de 05-FIDELIDAD
+  · a ARQ, cuando el plan no es ejecutable como está descrito
+  · a PRD, cuando el criterio de éxito no es alcanzable con el alcance declarado
+  · a DOM o SEG, cuando sus condiciones son incompatibles entre sí
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · una dependencia externa no está disponible
+  · el entorno de construcción no está listo: se escala a PLT
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · una capa anterior es insuficiente: devuelve a la capacidad propietaria
+  · segunda devolución sobre el mismo paquete: se aplica el freno de a.7
+```

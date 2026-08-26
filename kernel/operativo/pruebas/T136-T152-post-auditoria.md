@@ -334,3 +334,29 @@ validador: "kernel/operativo/validadores/comprobar_contratos.py"
 estado: prueba-superada
 evidencia: "evidencia/contratos-salida.txt"
 ```
+
+```yaml ads:escenario
+id: T153
+nombre: Cada prompt es coherente con su contrato, su método y su capacidad
+cubre: ["revisión de los prompts", "C1 contrato común de rol", "00-INDICE la excepción de los prompts"]
+dado:
+  - "un prompt operativo por cada rol del kernel y de los packs"
+  - "el contrato de ese rol, su método y la ficha de su capacidad"
+cuando: ["se cruza cada prompt con las tres fuentes"]
+entonces:
+  - "lo declara exactamente un rol, y todo fichero de prompts está declarado"
+  - "su cabecera enlaza el contrato del rol y al menos uno de sus métodos"
+  - "no instruye hablar con el Owner si su rol declara interaccion_owner ninguna"
+  - "nombra el gate contra el que cierra, qué entrega, cuándo devuelve y cuándo escala"
+  - "menciona el checkpoint cuando su contrato lo exige"
+  - "no se atribuye una decisión que su capacidad escala"
+  - "está escrito en español, que es el idioma canónico del corpus"
+falla_si:
+  - "un prompt cierra sin nombrar contra qué"
+  - "un prompt instruye una conversación con el Owner que su rol no puede tener"
+  - "existe un fichero de prompts que ningún rol declara"
+ejecucion: validador-estructural
+validador: "kernel/operativo/validadores/comprobar_prompts.py"
+estado: prueba-superada
+evidencia: "evidencia/prompts-salida.txt"
+```

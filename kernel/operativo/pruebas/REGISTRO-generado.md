@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 39abb84b5323da20 -->
+<!-- source_revision: db8ab9ac948320e4 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -13,9 +13,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | CONTRATO DEFINIDO | 54 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 26 |
+| PRUEBA SUPERADA | 27 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **80** |
+| **total** | **81** |
 
 ## Detalle
 
@@ -97,6 +97,7 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T150](T136-T152-post-auditoria.md) | La huella de integridad cubre a los validadores y detecta su edición | A-04 · K0.11 · tooling/kernel-status.sh · validadores/huella.py | validador-estructural | **PRUEBA SUPERADA** | evidencia/integridad-salida.txt |
 | [T151](T136-T152-post-auditoria.md) | Ninguna cifra del corpus contradice el recuento derivado | A-24 · regla de fuente única · RECUENTOS-generado.md | validador-estructural | **PRUEBA SUPERADA** | evidencia/recuentos-salida.txt |
 | [T152](T136-T152-post-auditoria.md) | Los puntos de entrada no se contradicen sobre la versión | A-12 · kernel/VERSIONES.md · K0.11 · O2 | validador-estructural | **PRUEBA SUPERADA** | evidencia/versiones-salida.txt |
+| [T153](T136-T152-post-auditoria.md) | Cada prompt es coherente con su contrato, su método y su capacidad | revisión de los prompts · C1 contrato común de rol · 00-INDICE la excepción de los prompts | validador-estructural | **PRUEBA SUPERADA** | evidencia/prompts-salida.txt |
 | [T154](../entrada/05-ESCENARIOS.md) | Con dirección aprobada incumplida, la expresión subjetiva produce un GAP | forma:comentario-subjetivo · ENC/Anclaje · b.16 GAP · 9.4 | guion-manual | **CONTRATO DEFINIDO** | — |
 | [T155](../entrada/05-ESCENARIOS.md) | Sin dirección de diseño, la expresión produce dirección más GAP enlazado | forma:comentario-subjetivo · ENC/Anclaje · 03-ESCALA-DE-NOVEDAD N4 y N3 · 9.4 | guion-manual | **CONTRATO DEFINIDO** | — |
 | [T156](../entrada/05-ESCENARIOS.md) | Con dirección vigente que el Owner quiere sustituir, la salida es un DIR | forma:cambio-de-direccion · b.16 DIR · G51 · 9.4 | guion-manual | **CONTRATO DEFINIDO** | — |

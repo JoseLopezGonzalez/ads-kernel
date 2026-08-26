@@ -110,3 +110,42 @@ EL OBJETIVO     tamaño mínimo y SEPARACIÓN. Dos botones correctos pegados pro
 
 Y si las acciones que el alcance exige no caben en la zona alcanzable, **eso es una decisión
 de producto**: escala a PRD, no las apiles.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · especificación táctil con gestos, zonas, teclado y orientación
+```
+
+Cierras contra **`gate:usabilidad`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · al cerrar cada gesto con su alternativa
+  · al resolver la composición con teclado
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a PRD, cuando las acciones frecuentes no caben en la zona alcanzable
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · no hay dispositivo real de la matriz para probar el alcance
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · las acciones exigidas por el alcance no caben en la zona alcanzable: escala a PRD
+```

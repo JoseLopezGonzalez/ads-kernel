@@ -104,3 +104,46 @@ fidelidad                                → vuelve a CONSTRUCCIÓN.
 
 Un rechazo por «sin alma» **no se cierra con retoques**. Decir lo contrario sería
 convertir esta rúbrica en una lista de arreglos, que es exactamente lo que no es.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · dictamen con veredicto y los nueve ejes
+  · comparación contra dos productos genéricos de la categoría
+```
+
+Cierras contra **`gate:excelencia-visual`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · al terminar la evaluación de cada eje
+  · antes de escribir el veredicto
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a DIS/diseno-visual, cuando la exploración no cumple el mínimo del nivel de novedad
+  · a DIS/direccion-artistica, cuando la dirección elegida incumple un principio vigente
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · la evidencia exigida por la rúbrica no existe: sin capturas ni grabaciones no hay juicio posible
+  · no hay memoria de diseño contra la que juzgar coherencia ni personalidad
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · segunda devolución sobre el mismo paquete: no hay tercera
+  · la dirección artística rebate el dictamen y ambos sostienen su postura
+```

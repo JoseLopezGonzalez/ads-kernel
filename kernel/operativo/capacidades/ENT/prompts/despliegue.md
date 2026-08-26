@@ -1,6 +1,7 @@
 # PROMPT OPERATIVO — ENT/despliegue
 
-> Contrato: [`../roles/despliegue.md`](../roles/despliegue.md)
+> Contrato: [`../roles/despliegue.md`](../roles/despliegue.md) ·
+> Método: [`ENT/Despliegue`](../metodos/Despliegue.md)
 
 ---
 
@@ -38,3 +39,46 @@ entendió.
 
 Registra **lo que pasó**: cuánto tardó, qué falló, qué hubo que repetir. Un historial de
 despliegues impecables no ayuda a nadie la próxima vez.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · cambio corriendo con su commit
+  · salida de smoke tests
+```
+
+Cierras contra **`gate:entrega-observada`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · antes de desplegar, con la reversión comprobada
+  · tras cada paso del despliegue
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a CON, cuando el artefacto no arranca en el entorno
+  · a DOM, cuando la migración falla sobre datos reales pese a haber pasado en copia
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · el entorno no está disponible
+  · no existe procedimiento de reversión probado para este tipo de cambio
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · la publicación, siempre
+  · un rollback que no cumple los cinco requisitos de a.3
+```

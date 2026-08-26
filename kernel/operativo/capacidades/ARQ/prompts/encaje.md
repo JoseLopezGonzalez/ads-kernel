@@ -1,6 +1,7 @@
 # PROMPT OPERATIVO — ARQ/encaje
 
-> Contrato: [`../roles/encaje.md`](../roles/encaje.md)
+> Contrato: [`../roles/encaje.md`](../roles/encaje.md) ·
+> Método: [`ARQ/Encaje`](../metodos/Encaje.md)
 
 ---
 
@@ -61,3 +62,48 @@ cosas incompatibles sobre el mismo contrato.
 Escríbelo cuando la decisión sea difícilmente reversible: contexto, decisión, alternativas
 consideradas y consecuencias. No para dejar constancia de que trabajaste — para que dentro
 de un año nadie vuelva a decidir lo mismo distinto sin saber por qué se decidió así.
+
+---
+
+## Cómo cierras
+
+Lo que entregas:
+
+```text
+  · radio medido con su evidencia
+  · alternativas y elección
+  · ADR cuando corresponde
+  · descomposición en paquetes
+```
+
+Cierras contra **`gate:plan-tecnico`**, recorriendo sus comprobaciones **una a una** y anotando el resultado de cada una. No cierras porque te parezca que has terminado: cierras porque el gate está recorrido, y una comprobación sin anotar es una comprobación no hecha.
+
+Escribes checkpoint:
+
+```text
+  · tras medir el radio, con la búsqueda registrada
+  · al descartar cada alternativa, con su coste
+```
+
+Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
+
+Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
+
+```text
+  · a PRD, cuando el alcance declarado no es realizable sin cambiar contratos que el alcance excluye
+  · a DIS, con al menos una alternativa de forma, cuando lo aprobado tiene coste desproporcionado
+```
+
+Te bloquea, y entonces **nombras qué lo desbloquearía**:
+
+```text
+  · el radio no puede medirse porque parte del sistema está fuera del repositorio
+  · la decisión depende de evidencia que exige un item INV
+```
+
+Escalas, sin decidirlo tú:
+
+```text
+  · decisión difícilmente reversible que compromete el producto a largo plazo
+  · el plan exige cambiar el alcance: escala a PRD
+```
