@@ -6,13 +6,24 @@
 Rediseño del kernel ADS. Recorrido: v1 y v2 rechazadas, v3 superada, v4 aprobada con
 correcciones quirúrgicas. Las versiones anteriores se conservan para trazabilidad.
 
+> ## ENMIENDAS VIGENTES — leer junto a este documento
+>
+> Este texto **no se reescribe**. Lo que rige es esta sección **leída junto a sus
+> enmiendas**, que sustituyen puntos concretos por decisión posterior del Owner.
+>
+> | | enmienda | fecha | qué sustituye |
+> |---|---|---|---|
+> | **E1** | [`a-ENMIENDA-E1-ENC.md`](a-ENMIENDA-E1-ENC.md) — `ENC` como decimoquinta capacidad base | 2026-08-26 | los recuentos de a.0, a.3 y a.4 · la función *Encuadre* de `DSP` en a.3 · la propiedad del *índice de lo existente* |
+>
+> Los puntos afectados llevan la marca `[E1]` en el texto de abajo.
+
 ---
 
 ## a.0 — Tres niveles
 
 ```text
 CATÁLOGO DE CAPACIDADES     qué sabe hacer una organización ADS
-(kernel + packs + profile)  14 base, extensible. No es un recorrido.
+(kernel + packs + profile)  14 base, extensible. No es un recorrido.   [E1 → 15]
           │  materialización — sólo donde hay trabajo real
           ▼
 EQUIPOS VIVOS               capacidad + tablero + cola + memoria + agentes
@@ -75,7 +86,7 @@ instrucción suya). Conserva custodia y todas las capas intactas.
 
 ---
 
-## a.3 — El catálogo · 14 capacidades
+## a.3 — El catálogo · 14 capacidades  `[E1: 15 — ver a-ENMIENDA-E1-ENC.md]`
 
 ### Estaciones — toman custodia de paquetes y añaden capa
 
@@ -205,13 +216,14 @@ tableros y dispatcher, y comprobación mayoritariamente automatizable.*
 Implementación **software/runtime primero** (el dispatcher), propiedad de SIS. Un
 supervisor —agente o el Owner— interviene sólo en excepciones: paquete estancado,
 contradicción de estado, ruta a recomponer, conflicto que el runtime no debe resolver
-solo. Cuatro funciones:
+solo. Cuatro funciones `[E1: Recepción del encuadre · Enrutamiento · Estado · Supervisión —
+el trabajo conversacional del encuadre lo ejecuta ENC]`:
 
 - **Encuadre** — id, enunciado de una línea de lo que de verdad se pide, naturaleza, y
   **dosier de anclaje**: qué sistemas/módulos/agentes ya implementados tocan esto · qué
   decisiones previas lo gobiernan · qué aprendizajes aplican · si duplica un item abierto
   · **qué no existe todavía y se creía que sí**. Se apoya en el **índice de lo existente**,
-  memoria propia de DSP.
+  memoria propia de DSP `[E1: memoria propia de ENC]`.
 - **Enrutamiento** — compone la ruta, crea los paquetes, asigna propietario global,
   escribe la traza (a.6).
 - **Estado** — reconstruye al abrir, contrasta lo declarado contra la realidad del repo,
@@ -246,6 +258,7 @@ El kernel define **capacidades**. El proyecto materializa **equipos**.
   candidato a desmaterializarse (regla de retirada, G52).
   **Su memoria persiste. Las memorias no mueren; los equipos sí.**
 - **DSP y SIS se materializan siempre.** Sin ellas no hay sistema operativo.
+  `[E1 confirma: siguen siendo DOS. ENC NO se añade a esta lista.]`
 
 El kernel proporciona el **criterio** de materialización. **NO DEBE** decidir sin
 auditoría que un proyecto concreto carece de dominio complejo, de superficie de diseño
@@ -269,7 +282,7 @@ Toda capacidad añadida cumple **exactamente el mismo contrato**: los doce campo
 las pruebas de conformidad de a.12, y las reglas de materialización y retirada de arriba.
 Una extensión que no los cumpla **DEBE** ser rechazada por el instalador.
 
-**Colisión de identificador.** El kernel reserva los catorce códigos de tres letras. Toda
+**Colisión de identificador.** El kernel reserva los catorce `[E1: quince]` códigos de tres letras. Toda
 extensión declara su código con prefijo obligatorio de espacio de nombres:
 
 ```text
