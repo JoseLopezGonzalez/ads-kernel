@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: e9bf84ba864067cd -->
+<!-- source_revision: ded638cf3738f070 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -10,12 +10,12 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 
 | estado | pruebas |
 |---|---|
-| CONTRATO DEFINIDO | 40 |
+| CONTRATO DEFINIDO | 50 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 7 |
+| PRUEBA SUPERADA | 9 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **47** |
+| **total** | **59** |
 
 ## Detalle
 
@@ -68,3 +68,15 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T119](T100-T121-capacidades.md) | Continúa retoma sin pedir permiso ni resumen | DSP/Continua · b.14 · T36 | requiere-runtime | **CONTRATO DEFINIDO** | — |
 | [T120](T100-T121-capacidades.md) | Ningún cambio del sistema entra sin validador ni estado real de prueba | SIS/Evolucion · gate:sistema-conforme | guion-manual | **CONTRATO DEFINIDO** | — |
 | [T121](T100-T121-capacidades.md) | La auditoría de conformidad no escribe contenido ajeno | SIS/Conformidad · a.3 coherencia documental | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T122](T122-T133-packs.md) | Toda la matriz de navegadores tiene evidencia | web-app · gate:web-accesibilidad · VER/Dosier | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T123](T122-T133-packs.md) | El recorrido completo se hace con teclado solo | web-app · gate:web-accesibilidad | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T124](T122-T133-packs.md) | Lo escrito sobrevive a un fallo de red | web-app · gate:web-estados-de-red · web:CON/estados-de-red | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T125](T122-T133-packs.md) | El emulador no sustituye al dispositivo real | mobile-app · gate:mob-dispositivo-real | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T126](T122-T133-packs.md) | La terminación forzada no pierde el trabajo del usuario | mobile-app · gate:mob-ciclo-y-permisos · mob:CON/ciclo-de-vida | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T127](T122-T133-packs.md) | Los tres estados de cada permiso están resueltos | mobile-app · gate:mob-ciclo-y-permisos | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T128](T122-T133-packs.md) | La superficie del reloj se entiende en el tiempo declarado | wear-os · gate:wear-vistazo · wear:DIS/lectura-de-un-vistazo | requiere-juicio-humano | **CONTRATO DEFINIDO** | — |
+| [T129](T122-T133-packs.md) | Volver del ambiental no reinicia el trabajo | wear-os · gate:wear-ambiental · wear:CON/energia-y-estados | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T130](T122-T133-packs.md) | El consumo se mide sin cargador y en reloj real | wear-os · gate:wear-consumo | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T131](T122-T133-packs.md) | Lo más restrictivo gana entre dos packs | packs/COMPOSICION · precedencia P1 · T18 | validador-estructural | **PRUEBA SUPERADA** | evidencia/T131-T132-salida.txt |
+| [T132](T122-T133-packs.md) | Un rol de pack no reclama autoridad de un rol del kernel | packs/00-QUE-ES-UN-PACK · T18 · C1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/T131-T132-salida.txt |
+| [T133](T122-T133-packs.md) | La entrega móvil-reloj admite versiones distintas conviviendo | wear-os · mobile-app · packs/COMPOSICION | guion-manual | **CONTRATO DEFINIDO** | — |

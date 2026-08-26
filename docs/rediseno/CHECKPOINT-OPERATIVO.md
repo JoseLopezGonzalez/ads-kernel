@@ -21,7 +21,7 @@ BLOQUE 2   contrato equipo/rol/agente/método       TERMINADO
 BLOQUE 3   sistema de excelencia de Diseño         TERMINADO
 BLOQUE 4   equipo de Diseño materializado          TERMINADO
 BLOQUE 5   demás capacidades                       TERMINADO
-BLOQUE 6   packs web-app · mobile-app · wear-os    NO INICIADO
+BLOQUE 6   packs web-app · mobile-app · wear-os    TERMINADO
 ```
 
 ## Terminado
@@ -87,6 +87,17 @@ BLOQUE 6   packs web-app · mobile-app · wear-os    NO INICIADO
   acompaña a cada devolución
 - T100–T121 definidas
 
+**Bloque 6 — los tres packs**
+
+- `packs/00-QUE-ES-UN-PACK.md`: qué puede y qué NO puede hacer un pack
+- `web-app`, `mobile-app` y `wear-os`, cada uno con su bloque `ads:pack`, sus
+  restricciones, dos roles especializados, tres gates adicionales, matriz de
+  entornos, antipatrones, especialización de Diseño y ejemplos de composición
+- `packs/COMPOSICION.md`: cuatro reglas de precedencia, cinco tipos de conflicto
+  detectables y las tres combinaciones previstas en concreto
+- `comprobar_packs.py`: T131 y T132 **EJECUTADAS Y SUPERADAS**
+- T122–T133 definidas
+
 ## En revisión
 
 Bloque 1 — la revisión adversarial por agente independiente se lanzó y **terminó sin
@@ -107,12 +118,14 @@ T75-T85   contrato-definido (11)
 T86-T92   PRUEBA SUPERADA (7), con evidencia en pruebas/evidencia/
 T93-T99   contrato-definido (7)
 T100-T121 contrato-definido (22)
-ads_lint  EJECUTADO y en verde sobre 268 bloques canónicos
+T122-T133 contrato-definido (10) + PRUEBA SUPERADA (2)
+ads_lint  EJECUTADO y en verde sobre 298 bloques canónicos
 comprobar_contratos  EJECUTADO, 7/7 superadas
+comprobar_packs      EJECUTADO, 2/2 superadas
+TOTAL     59 escenarios: 50 contrato-definido, 9 PRUEBA SUPERADA
 ```
 
 ## Siguiente acción exacta
 
-> Escribir `packs/web-app/PACK.md` con su bloque `ads:pack`, sus restricciones de
-> plataforma y sus gates adicionales; después `packs/mobile-app/` y `packs/wear-os/`; y
-> finalmente `packs/COMPOSICION.md` con precedencia y detección de conflictos.
+> Revisión adversarial del conjunto, actualización del índice maestro
+> `kernel/operativo/00-INDICE.md` con todo lo creado, y entrega final al Owner.
