@@ -95,3 +95,12 @@ vocabulario_exento:
       Documento de trabajo del Owner: ideas consolidadas y cuestiones abiertas. Se conserva
       literal porque su valor está en lo que declara ABIERTO, y reescribirlo cerraría por
       redacción lo que el Owner dejó sin decidir.
+  - ruta: docs/evolucion/ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md
+    motivo: >
+      Documento vivo de trabajo con el Owner: decisiones suyas ya aceptadas, propuestas
+      todavía pendientes y problemas que F3 debe sintetizar. Se conserva literal por el
+      mismo motivo que IDEAS: su valor está en lo que declara ACEPTADO y en lo que declara
+      ABIERTO, y reescribir su vocabulario cerraría por redacción lo que el Owner dejó sin
+      decidir. Sus ENLACES sí se comprueban. Es MATERIAL TEMPORAL de evolución: el gate de
+      higiene del corpus que su propio §26.25 propone alcanza a este fichero, y su
+      exclusión se retira cuando el fichero se retire. Quinta ocurrencia de P-07.

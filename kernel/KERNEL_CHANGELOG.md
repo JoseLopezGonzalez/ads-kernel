@@ -2,6 +2,35 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.7 — un quinto documento del Owner entra sin sitio, y P-07 se mide
+
+Entra `docs/evolucion/ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md`, el documento vivo de
+trabajo con el Owner que recoge qué quedó aceptado, qué sigue propuesto y qué debe
+sintetizarse tras F2. **No es normativa vigente y no autoriza a implementar su contenido.**
+
+Del kernel sólo cambia `validadores/exclusiones.yaml`: una entrada más de
+`vocabulario_exento`, con su motivo escrito, porque el documento está en voz del Owner y
+reescribir su vocabulario cerraría por redacción lo que él dejó abierto. Sus enlaces se
+comprueban como los de cualquier documento, y lo alcanza el índice de la iniciativa.
+
+**Lo que este release deja medido es el problema, no la solución.** Al entrar, el documento
+fue rechazado por los mismos dos validadores que rechazaron a los cuatro anteriores:
+`ads_lint` por dos expresiones de vocabulario, y `T147` por «existe para nadie». El remedio
+vuelve a ser manual, y vuelve a ser una exención por fichero. Con éste son cinco:
+
+```text
+docs/evolucion/ADS-NEXT-OWNER-BRIEF.md
+docs/evolucion/PROMPT-ARRANQUE-ADS-NEXT.md
+ADS-ARQUITECTURA-MULTIREPO-APROBADA.md
+ADS-IDEAS-PENDIENTES-MULTIREPO.md
+docs/evolucion/ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md
+```
+
+`P-07` deja de ser una observación y pasa a tener recuento. Su tratamiento —dónde viven
+estos documentos, qué autoridad tienen y cómo se les aplica la exención por ubicación en vez
+de por fichero— es materia de la síntesis, no de este release.
+
+
 ## 2.0.0-alpha.6 — pasada correctiva: verde no era correcto
 
 Una revisión externa reprodujo defectos que la batería de `2.0.0-alpha.5` no detectaba, con

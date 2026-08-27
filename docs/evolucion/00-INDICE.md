@@ -11,7 +11,7 @@ docs/evolucion/    la DIRECTIVA del Owner y el trabajo previo que ordena: baseli
 kernel/operativo/  el CONTENIDO OPERATIVO construido sobre (a) y (b).
 ```
 
-## Los dos documentos del Owner
+## Los documentos en voz del Owner
 
 Están escritos en **voz del Owner**, no en el lenguaje canónico del corpus. Se conservan
 literales: reescribirlos para que cumplieran el vocabulario del kernel sería reescribir la
@@ -25,9 +25,10 @@ vocabulario, y **sólo de eso**: sus enlaces se comprueban como los de cualquier
 | [`PROMPT-ARRANQUE-ADS-NEXT.md`](PROMPT-ARRANQUE-ADS-NEXT.md) | el prompt de arranque que ordena ejecutarla, y en qué orden |
 | [`ADS-ARQUITECTURA-MULTIREPO-APROBADA.md`](../../ADS-ARQUITECTURA-MULTIREPO-APROBADA.md) | **decisión aprobada para implementación**: un producto ADS son varios repositorios gobernados por un repositorio ADS de control |
 | [`ADS-IDEAS-PENDIENTES-MULTIREPO.md`](../../ADS-IDEAS-PENDIENTES-MULTIREPO.md) | documento de trabajo: ideas consolidadas y cuestiones que el Owner declara abiertas |
+| [`ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md`](ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md) | **material temporal de evolución**: qué quedó aceptado, qué sigue propuesto y qué debe sintetizarse tras F2. No es normativa vigente ni autoriza a implementar su contenido |
 
-> **Los dos últimos se contradicen sobre la misma pregunta**, y la contradicción no se
-> resuelve por lectura. Está registrada, con las dos posturas escritas, en
+> **`ARQUITECTURA` e `IDEAS` se contradicen sobre la misma pregunta**, y la contradicción no
+> se resuelve por lectura. Está registrada, con las dos posturas escritas, en
 > [`07-DECISION-MULTIREPO.md`](07-DECISION-MULTIREPO.md).
 
 ## Lo que la directiva ordena antes de diseñar nada
