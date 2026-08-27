@@ -134,22 +134,45 @@ entera.
 | qué packs y extensiones tiene el producto | `PROJECT.md` | `SIS` | `SIS` |
 | identidad, éxito, riesgos y decisiones fuertes del producto | `PROFILE.md` | Owner | `ENC` transcribe, Owner aprueba |
 | qué repositorios y componentes forman el producto | `SOURCES.toml` | Owner | `PLT` |
-| estado global de un item y su ruta | `estado/items/<ID>/` | `DSP` | runtime |
+| encuadre de un item | `estado/items/<ID>/00-encuadre.md` | `DSP` | runtime |
+| ruta y traza de un item | `estado/items/<ID>/01-ruta.md` | `DSP` | runtime |
+| **prioridad y aparcado de un item** | **`estado/items/<ID>/02-control.md`** | **Owner** | **runtime** |
+| estado global, capas y desacuerdos | `estado/items/<ID>/03-integracion.md` | el propietario global | runtime |
 | capa depositada por una capacidad | el paquete, en `estado/items/<ID>/paq/` | la capacidad con custodia | esa capacidad |
-| prioridad y aparcado | zona de órdenes del tablero | **Owner** | runtime |
+| **órdenes del Owner pendientes de consumo** | **zona `ÓRDENES` del tablero** | **Owner** | **ninguno: no hay mutación hasta consumirla** |
 | qué pasó y por qué | `estado/eventos/` | nadie lo edita: se emite | runtime |
-| agrupación de items con sentido común | `estado/iniciativas/<ID>/` | quien la abre | runtime |
-| nivel de calidad de una parte del producto | `estado/cobertura/` | `SIS` el contrato, la capacidad de la dimensión el juicio | runtime |
+| agrupación de items con sentido común | `estado/iniciativas/<ID>/00-iniciativa.md` | quien la abre | runtime |
+| nivel de calidad de una parte del producto | `estado/cobertura/` | `SIS` el contrato, la capacidad **responsable del aspecto** el juicio | runtime |
 | combinación de revisiones probada junta | `integration-set` | `ENT` | `ENT` |
 | gobierno documental de un documento | bloque `ads:memoria` **dentro** del documento | la capacidad que lo posee | esa capacidad |
 | qué lee y escribe cada entorno agentic | `adaptador` en el control repo | `PLT` | `PLT` |
 | conocimiento externo vendorizado | manifiesto de vendorizado | `SIS` | `PLT` |
 | entradas de cada validador | `validadores.yaml` | `SIS` | `SIS` |
-| tableros, dosieres, vistas, índices | **nadie**: se regeneran | — | runtime |
+| zona `COLA` de un tablero, dosieres, vistas, índices | **nadie**: se regeneran | — | runtime |
+| estado de una iniciativa | **nadie**: se calcula desde sus items (§3.3.1) | — | runtime |
+| nivel alcanzado por un adaptador | **nadie**: se deriva de sus celdas de certificación (§6.5) | — | runtime |
 
-**Regla que cierra la matriz:** una fila con autoridad «nadie» es derivada, y **editarla no es
-una escritura canónica**. Una fila con autoridad Owner puede recibir bytes del Owner, y eso
-**es una orden**, no una mutación — es `a.9` literal.
+**Tres reglas cierran la matriz, y las tres son `a.9` literal.**
+
+```text
+1  UNA FILA CON AUTORIDAD «NADIE» ES DERIVADA, y editarla no es una escritura canónica.
+   El remedio ante una divergencia es REGENERAR, nunca sincronizar.
+
+2  UNA ORDEN NO ES ESTADO. La zona ÓRDENES del tablero es un CANAL DE COMANDOS. Una orden
+   PENDIENTE `- [ ]`, una en CONFLICTO `- [!]` o una que espera confirmación `- [?]` NO
+   son todavía estado del item: `a.9` dice expresamente que ni se aplican ni se borran. El
+   campo canónico de prioridad y aparcado es `02-control.md`, y sólo cambia cuando el
+   protocolo de consumo de `a.9` aplica la orden y emite su evento.
+
+3  EL RUNTIME ES EL ÚNICO EJECUTOR DE LA MUTACIÓN CANÓNICA. El Owner PUEDE escribir bytes
+   en el tablero, y eso es la EMISIÓN DE UNA ORDEN, no una mutación. Así `I2` se mantiene
+   aunque el Owner tenga las manos en el fichero.
+```
+
+> **Por qué el tablero aparece partido en dos filas.** `a.9` le da **dos zonas y dos
+> escritores por diseño**. Declarar el tablero entero derivado —como hacía F4 entregada—
+> autorizaría a regenerar encima de una orden no consumida, que es justo lo que `a.9`
+> prohíbe con todas las letras: *«DSP nunca borra una orden no consumida»*.
 
 ## 1.4 · Cómo encajan los subsistemas
 
@@ -171,7 +194,7 @@ ACTUALIZACIÓN┘   recorridos    └── se cierran con ───────
                                    │
         AUDITORÍA CONTINUA §5 ─────┘   detecta y propone; abre dentro de política O7
                 │
-                └── cobertura (sujeto × dimensión) ──▶ campañas = INICIATIVA §3
+                └── cobertura (sujeto × aspecto) ──▶ campañas = INICIATIVA §3
                                    │
                                    ▼
                             APRENDIZAJE §13 ──▶ release de ADS ──▶ ACTUALIZACIÓN
@@ -220,7 +243,7 @@ al diseñar memoria, eventos y recuperación — no por inferencia. Aquí se dec
 | **A** | sólo ficheros canónicos | **sí** | **no**: Git no convierte N escrituras en transacción; una caída deja estado parcial y nada lo detecta | sí | parcial: no sabe si una transición quedó a medias | excelente | bajo |
 | **B** | SQLite como estado canónico | **no**: binario, ilegible sin herramienta, ilegible en un diff | sí, transacciones reales | sí | sí | **malo**: un blob que conflictúa entero | medio |
 | **C** | event sourcing puro: sólo el log es canónico | **no**: leer el estado exige reproyectar | sí | sí | sí | bueno | alto: toda lectura es una proyección |
-| **D** | **canónico en ficheros + diario de eventos + manifiesto de transacción + derivados** | **sí** | **sí** | sí | **sí** | excelente | medio |
+| **D** | **canónico en ficheros + diario de eventos con transacciones + derivados** | **sí** | **sí** | sí | **sí** | excelente | medio |
 
 **Por qué se descarta B.** Rompe `R1`, que no es una preferencia estética: es el requisito que
 el Owner puso y que `E2.1` reafirmó al precisar *cuál* repositorio contiene esos ficheros. Un
@@ -236,8 +259,10 @@ límite y convierte cada lectura en un cómputo, lo que choca con §12.
 abierta precisamente por `R3`: *«Git no convierte una secuencia de escrituras en una
 transacción: si el proceso muere a mitad, el estado queda parcialmente aplicado»*.
 
-**Decisión: D.** Es A más las dos piezas mínimas que le faltan, y cada una resuelve un
-requisito distinto que hoy nadie cubre.
+**Decisión: D.** Es A más **una** pieza mínima que le falta: un diario de eventos que además
+sostiene las transiciones multiarchivo mediante fases. F4 entregada contaba **dos** piezas
+—diario y manifiesto de transacción— y la segunda no pasaba la prueba de tipo nuevo. Se
+pliega en la primera en §2.5, y el recuento se corrige aquí en vez de arrastrarse.
 
 ## 2.3 · La disposición
 
@@ -263,7 +288,8 @@ ads/                                    el repositorio ADS de control
 │  │  ├─ <EV-ID>.md          APPEND ONLY. Nadie los edita: se emiten
 │  │  ├─ sellados/<seg>.md   compactación de items cerrados
 │  │  └─ INDICE.md           DERIVADO
-│  ├─ tx/<TX-ID>.md          manifiestos de transición EN VUELO. Vacío en reposo
+│  ├─ tx/<TX-ID>.abierta    MARCADOR sin contenido de transacción EN VUELO. Vacío en
+│  │                        reposo, y reconstruible desde el diario (§2.5)
 │  ├─ tableros/<CAP>.md      ÓRDENES (Owner) + COLA (DERIVADO)
 │  └─ memoria/…              memoria de capacidad y ledgers
 ├─ adaptadores/<entorno>/    definición canónica neutral, no la proyección
@@ -289,9 +315,9 @@ OPERACIONAL Y NO VERSIONADO   `.ads/run/`. Lock, cachés e índices compilados. 
 sobrevivir, es durable y va a Git. Si no, es operacional. Un dato que no sobreviva y que nadie
 pueda recalcular **es un defecto de diseño**, no una categoría.
 
-## 2.5 · Instantáneas frente a eventos, y qué es cada cosa
+## 2.5 · Instantáneas, eventos y transacciones — qué es cada cosa
 
-Las dos, con papeles que no se solapan:
+Dos artefactos, con papeles que no se solapan:
 
 ```text
 FICHEROS CANÓNICOS   son el ESTADO. Responden «¿cómo está esto ahora?» sin cómputo.
@@ -300,61 +326,260 @@ FICHEROS CANÓNICOS   son el ESTADO. Responden «¿cómo está esto ahora?» sin
 EVENTOS              son el CAMBIO. Responden «¿por qué está así, quién lo ordenó, sobre
                      qué base y quién lo aplicó?». Es G26, y es lo que a.11 dejó pendiente.
                      NO se reproyectan para leer el estado: el estado ya está escrito.
-
-MANIFIESTO DE TX     es la INTENCIÓN EN VUELO. Responde «¿quedó algo a medias?».
-                     En reposo, `estado/tx/` está VACÍO. Un fichero ahí es una señal.
 ```
 
-**Ninguno de los tres duplica a los otros**, y por eso conviven sin violar `I5`: el estado no
-guarda su historia, la historia no guarda el estado, y el manifiesto no guarda ninguno de los
-dos — guarda lo que se iba a hacer.
-
-**Relación con `G26`.** El diario **es** el `JOURNAL` que `a.11` dejó pendiente, y cubre lo
-cuatro cosas que allí se enumeran como no cubiertas por los tableros: secuencia de eventos,
-contexto transversal de sesión, por qué cambió el estado, y operaciones fallidas y
-recuperación tras escritura parcial. Que esto **resuelva** `G26` es una decisión normativa y
-está declarada como presión para F5 en §16.
-
-## 2.6 · Atomicidad, escritura parcial y recuperación
-
-El mecanismo que `a.9` deja abierto, cerrado aquí:
+**No hay un tercer artefacto, y esto es una corrección.** F4 entregada declaraba un
+**manifiesto de transacción** con identidad propia, ciclo propio —se abría, se marcaba y se
+borraba— y contenido propio. Eso es un tipo, y estaba fuera de la cuenta de tipos sin haber
+pasado la prueba del §3.1. Se le aplica ahora, y no la pasa:
 
 ```text
-UNA TRANSICIÓN MULTIARCHIVO
+PASO 4 DE LA PRUEBA    ¿tiene sujeto propio, autoridad propia y ciclo propio que ningún
+                       existente puede alojar sin mentir?
 
-1  EMITIR EVENTO      se crea `estado/eventos/<EV-ID>.md` con: qué se va a cambiar, quién lo
-                      ordenó, sobre qué base (hash de las entradas), quién lo aplica.
-                      Crear un fichero nuevo es atómico por `rename`: o existe entero o no
-                      existe. NUNCA se reescribe un evento.
+SUJETO      el mismo que el evento: una transición del estado canónico.       NO es propio
+AUTORIDAD   la misma: el ejecutor único de mutaciones (R5).                   NO es propia
+CICLO       parecía propio —cambiaba de fase— y ahí estaba el error de diseño: un
+            artefacto que CAMBIA obliga a reescribirlo, y reescribir en el registro que
+            debe sobrevivir a una caída es exactamente lo que no se puede hacer.
 
-2  ABRIR MANIFIESTO   `estado/tx/<TX-ID>.md` declara: el evento, la lista exacta de ficheros
-                      a tocar, y el hash previo de cada uno.
-
-3  APLICAR            cada fichero se escribe por `escribir temporal + rename`, en el orden
-                      declarado. Un `rename` dentro del mismo sistema de ficheros es atómico:
-                      ningún fichero queda a medias, aunque el conjunto sí pueda.
-
-4  CERRAR             el manifiesto se marca aplicado y se borra.
-
-5  REGENERAR          los derivados afectados, con `source_revision` sobre los canónicos.
-
-AL ARRANCAR, y en el paso 2 de `Continúa`:
-
-  · `estado/tx/` vacío            → nada que hacer
-  · manifiesto con evento aplicado a todos sus ficheros  → se cierra. Idempotente por id
-  · manifiesto con ficheros sin aplicar → se COMPLETA aplicando lo que falta, porque el
-                                          evento declara el resultado exacto
-  · manifiesto cuyo hash previo ya no casa → NO se aplica. Se marca `tx-conflicto` y se
-                                          escala. Nunca se inventa estado (R3, b.14.3)
+VEREDICTO   COMPONER. Una transacción es una SECUENCIA DE EVENTOS INMUTABLES que comparten
+            un identificador `tx` y se distinguen por su campo `fase`. Ningún fichero
+            cambia de estado: cada fase es un fichero NUEVO.
 ```
 
-**Idempotencia.** Aplicar un evento dos veces por id es una no-operación: es la misma regla
-que `a.9` ya fijó para las órdenes del Owner, extendida a toda transición. Lo que `a.9`
-declaraba expresamente **no** cubierto —*«las transiciones multiarchivo producidas por
-agentes, paquetes, rutas e integración no están cubiertas por el protocolo del tablero»*—
-queda cubierto aquí, y por el mismo mecanismo.
+**Qué se gana al plegarlo, y se comprueba propiedad a propiedad:**
 
-## 2.7 · Concurrencia y locks
+| propiedad que tenía el manifiesto | cómo sobrevive dentro de `evento` |
+|---|---|
+| declarar la intención antes de tocar nada | evento con `fase: preparada` |
+| declarar la lista exacta de ficheros y su hash previo | campo `afecta`, con `hash_previo` por fichero |
+| señalar «hay algo en vuelo» | una transacción sin evento terminal. `estado/tx/<TX-ID>.abierta` es un marcador SIN CONTENIDO que lo acelera, y se reconstruye recorriendo el diario si se pierde |
+| decir si la transición se aplicó | evento con `fase: confirmada` |
+| poder cerrarse y desaparecer | **no sobrevive, y es lo correcto**: borrarlo era el defecto. §3.6 dejaba a `evento.tx` apuntando a un artefacto borrado |
+
+**Ninguna propiedad se pierde, y una se retira a propósito.** El estado no guarda su
+historia, y la historia no se reescribe nunca — que es lo que hace que el diario sea una
+historia y no un estado más.
+
+## 2.6 · El protocolo transaccional
+
+Lo que `a.9` deja expresamente abierto, cerrado aquí de forma **ejecutable**: una
+recuperación real tiene que poder llevarse a cabo con los datos que estos registros escriben,
+y nada más.
+
+### 2.6.1 · Los cinco registros, y qué significa cada uno
+
+```text
+fase: preparada    INTENCIÓN PREPARADA. Declara a qué resultado exacto va a llegar cada
+                   fichero. NO afirma que haya ocurrido nada. Es el PUNTO DE COMPROMISO:
+                   una vez es durable, la transacción SE COMPLETA, no se revierte.
+
+fase: confirmada   CAMBIO CONFIRMADO. Todos los ficheros canónicos declarados alcanzaron su
+                   hash posterior esperado. Desde este registro, y no antes, un lector del
+                   estado puede creerse lo que lee.
+
+fase: derivada     los derivados afectados se regeneraron. Es TERMINAL para la transacción.
+
+fase: abortada     ABORTO. No ocurrió, y se ha comprobado que todos los ficheros siguen en
+                   su hash previo. Sólo es alcanzable ANTES de tocar el primer fichero.
+
+fase: conflicto    CONFLICTO. Un fichero no casa ni con su hash previo ni con su hash
+                   posterior esperado: alguien de fuera lo tocó. NO se resuelve solo.
+                   Se escala. Es TERMINAL, y `R3` prohíbe inventar el resto.
+```
+
+**Regla de lectura, y es la que impide que la historia mienta:** un evento **nunca** narra
+en futuro. `preparada` dice «preparada», no «se cambiará». Ningún lector del diario —humano
+o máquina— puede leer una intención como un hecho, porque **la fase está dentro del propio
+registro** y no en su ausencia.
+
+### 2.6.2 · Qué datos permiten reproducir el resultado
+
+El evento `preparada` es la única entrada que necesita la recuperación, y lleva **seis cosas
+y no menos**:
+
+```text
+1  IDENTIDAD DE LA          `tx: TX-<huella>`. La comparten los cinco registros de esa
+   TRANSACCIÓN              transacción y nadie más.
+
+2  HASH PREVIO              por fichero. Qué había antes.
+
+3  HASH POSTERIOR           por fichero. A qué exactamente hay que llegar. ESTE ES EL DATO
+   ESPERADO                 QUE FALTABA: sin él, «no casa con el previo» es ambiguo entre
+                            «ya aplicado» y «lo tocó otro», y los dos casos exigen lo
+                            contrario.
+
+4  CÓMO SE PRODUCE EL       una de tres formas, declarada: `contenido` —el texto completo
+   RESULTADO                preparado—, `parche` —diff aplicable— u `operacion` —una
+                            operación DETERMINISTA sobre el contenido previo—. En las tres,
+                            aplicarla al hash previo tiene que dar el hash posterior, y eso
+                            se comprueba antes de escribir nada.
+
+5  ORDEN EXACTO             `orden: <n>` por fichero, total dentro de la transacción. La
+                            recuperación aplica en el mismo orden, y por eso converge al
+                            mismo resultado que una ejecución sin interrupción (T17).
+
+6  PROCEDENCIA              los cinco conceptos de `a.9` sin confundirlos: ordenante,
+                            autoridad, escritor del comando, ejecutor y actor atribuido.
+```
+
+**Por qué el contenido preparado va dentro del evento y no en un fichero aparte.** Porque
+sólo hay una dirección de recuperación. Una vez el evento `preparada` es durable, **la
+transacción se completa hacia delante**: no se deshace, porque deshacer exigiría conservar
+también el contenido anterior y duplicaría el estado. Es un registro de rehacer, no de
+deshacer, y esa elección se declara aquí en vez de quedar implícita.
+
+### 2.6.3 · La secuencia, con sus puntos de sincronización
+
+```text
+1  PREPARAR       se calcula el resultado completo, se comprueba que cada hash posterior
+                  es alcanzable desde su hash previo, y se escribe el evento `preparada`
+                  por `escribir temporal + fsync + rename + fsync del directorio`.
+                  NADA CANÓNICO SE HA TOCADO TODAVÍA.
+
+                  ─── PUNTO DE COMPROMISO ─── a partir de aquí se completa hacia delante
+
+2  MARCAR         se crea `estado/tx/<TX-ID>.abierta`, marcador sin contenido. Es un
+                  acelerador, no una verdad: si falta, el arranque recorre el diario.
+
+3  APLICAR        cada fichero canónico, en el `orden` declarado, por
+                  `escribir temporal + rename`, y `fsync` del fichero antes del paso 4.
+                  Un `rename` en el mismo sistema de ficheros es atómico: ningún fichero
+                  queda a medias, aunque el CONJUNTO sí pueda.
+
+4  CONFIRMAR      evento `confirmada`, con `fsync + rename + fsync del directorio`.
+                  ─── EL CAMBIO ES VERDAD DESDE ESTE RENAME ───
+
+5  REGENERAR      los derivados afectados, con `source_revision` sobre los canónicos.
+                  Sin `fsync`: un derivado perdido se recalcula.
+
+6  CERRAR         evento `derivada`. Se borra el marcador `.abierta`.
+
+7  PUBLICAR       el commit de Git es un paso SEPARADO, fuera de la transacción, y sólo
+                  ocurre con `estado/tx/` sin marcadores abiertos. Ver 2.6.6.
+```
+
+### 2.6.4 · Cómo clasifica cada fichero durante la recuperación
+
+**Tres cajas, y la tercera nunca se resuelve sola.** Es la corrección central del protocolo.
+
+```text
+CASA CON `hash_previo`               NO APLICADO      → aplicar
+CASA CON `hash_posterior_esperado`   YA APLICADO      → saltar. Idempotente por hash, no
+                                                        por confianza en un contador
+NO CASA CON NINGUNO                  DIVERGENTE       → CONFLICTO. Se escala. NUNCA se
+                                                        sobrescribe: el contenido que hay
+                                                        es de alguien, y aplicar encima
+                                                        destruiría trabajo sin registro
+```
+
+**Un fichero que no existe** se trata como caso declarado, no como excepción: si el evento
+declara `hash_previo: ausente`, no existir es «no aplicado»; si declara un hash concreto, no
+existir es **divergente**.
+
+### 2.6.5 · Todas las ventanas de caída
+
+Se enumeran las once. Una ventana que no está en esta tabla es un defecto de esta tabla.
+
+| # | la caída ocurre… | qué se observa al arrancar | qué se hace |
+|---|---|---|---|
+| W1 | antes de preparar | nada: ni evento ni marcador | nada que hacer. La transacción no existió |
+| W2 | escribiendo el temporal de `preparada` | un temporal huérfano, sin evento | se borra el temporal. La transacción no existió |
+| W3 | después de `preparada`, antes de tocar nada | evento `preparada`, todos los ficheros en previo | **se completa**: aplicar del primero al último |
+| W4 | tras aplicar unos ficheros y no otros | mezcla de previos y posteriores | **se completa**: aplicar sólo los que casan con previo, en orden |
+| W5 | tras aplicar todos, antes de `confirmada` | todos en posterior, sin `confirmada` | se emite `confirmada` y se sigue. No se reescribe nada |
+| W6 | justo después de `confirmada` | `confirmada` presente, derivados sin regenerar | se regeneran los derivados y se emite `derivada` |
+| W7 | durante la regeneración de derivados | derivados divergentes de su `source_revision` | se regeneran ENTEROS. Un derivado es reemplazable por definición |
+| W8 | tras `derivada`, antes de borrar el marcador | transacción terminal con marcador abierto | se borra el marcador. Idempotente |
+| W9 | antes del commit de Git | árbol coherente, Git por detrás | se hace el commit. El remoto estaba atrasado, no roto |
+| W10 | después del commit, antes del push | commit local sin publicar | se hace el push. Ver 2.6.6 |
+| W11 | en cualquier punto, con un fichero divergente | un fichero que no casa con ninguno de los dos hashes | **`conflicto` y se escala**. No se completa y no se revierte |
+
+**Qué se completa, qué se revierte y qué se escala**, dicho en una frase cada uno:
+
+```text
+SE COMPLETA   toda transacción cuyo evento `preparada` es durable y ninguno de sus ficheros
+              es divergente. W3 a W10.
+SE REVIERTE   sólo lo que nunca llegó a comprometerse: un temporal huérfano (W2). No existe
+              «deshacer» después del punto de compromiso, y por eso no se promete.
+SE ESCALA     todo lo divergente (W11), y todo lo que exija decidir. `b.14.3` y `R3`: DSP
+              para y escala, NUNCA inventa estado.
+```
+
+### 2.6.6 · Seis garantías distintas que no son la misma
+
+`a.9` habla de atomicidad y F4 entregada la usó como si fuera durabilidad. No lo es.
+
+```text
+1  ATOMICIDAD DE `rename`      un fichero nunca se lee a medias: o el contenido viejo o el
+                               nuevo. NO garantiza que el nuevo sobreviva a un corte.
+
+2  DURABILIDAD FRENTE A        basta con que el `rename` haya retornado: el contenido está
+   CAÍDA DE PROCESO            en la caché del sistema y cualquier otro proceso lo ve. NO
+                               exige `fsync`.
+
+3  DURABILIDAD FRENTE A        exige `fsync` DEL FICHERO y `fsync` DEL DIRECTORIO. Sin el
+   CAÍDA DE MÁQUINA            segundo, el `rename` puede perderse aunque el contenido esté
+                               en disco. Es el error clásico, y aquí se nombra.
+
+4  COMMIT LOCAL                el estado es recuperable desde `.git` aunque el árbol se
+                               destruya. NO sobrevive a la pérdida del disco.
+
+5  PUSH REMOTO                 sobrevive a la pérdida de la máquina entera.
+
+6  RECONSTRUCCIÓN DESDE        sólo ve lo que se empujó. `.ads/run/` NO existe, y los
+   UN CLON NUEVO               marcadores `.abierta` sí, porque están versionados.
+```
+
+**Dónde es obligatorio `fsync`, y dónde deliberadamente no:**
+
+```text
+OBLIGATORIO   (1) el evento `preparada` y su directorio, ANTES de tocar ningún canónico
+              (2) cada fichero canónico escrito, ANTES de emitir `confirmada`
+              (3) el evento `confirmada` y su directorio
+NO EXIGIDO    los derivados, el marcador `.abierta` y el evento `derivada`: los tres se
+              reconstruyen desde lo canónico, y pagar `fsync` por ellos encarece cada
+              transacción sin comprar ninguna garantía
+```
+
+**La regla de Git, que cierra W9 y W10:** **ADS nunca hace commit de un árbol con una
+transacción abierta.** El commit se hace entre transacciones. Por tanto un árbol publicado
+**nunca contiene una transacción a medias**, y un clon nuevo nunca tiene que completar una
+transacción que no preparó. Si un clon encuentra un marcador `.abierta`, es que se empujó
+un árbol incoherente: eso es un **defecto del runtime**, se declara `conflicto` y se escala.
+
+### 2.6.7 · Tabla adversarial de recuperación
+
+**Convertible en pruebas de F6 sin traducción.** Cada fila declara qué se prepara, dónde se
+interrumpe, qué debe observarse y qué diagnóstico exacto debe emitirse. Una fila que
+termine con una traza cuenta como **NO detectada**, que es la disciplina que `N158*` ya
+impuso al arnés de negativos.
+
+| | escenario adversarial | resultado exigido |
+|---|---|---|
+| `X01` | matar el proceso entre `preparada` y el primer fichero | converge al mismo estado que una ejecución sin interrupción (T17) |
+| `X02` | matar el proceso entre el fichero 2 y el 3 de cinco | los cinco quedan en posterior, en el orden declarado |
+| `X03` | matar el proceso entre el último fichero y `confirmada` | se emite `confirmada`; ningún fichero se reescribe |
+| `X04` | ejecutar la recuperación DOS VECES seguidas | la segunda es una no-operación. Idempotencia por hash |
+| `X05` | modificar a mano un fichero de la transacción entre `preparada` y la recuperación | `conflicto` con el fichero NOMBRADO. No se sobrescribe |
+| `X06` | borrar un fichero cuyo `hash_previo` no es `ausente` | `conflicto`. No se recrea desde el hash |
+| `X07` | corromper un evento `preparada` a medio escribir | se identifica como temporal huérfano y se descarta. La transacción no existió |
+| `X08` | dos ejecutores preparan transacciones que tocan el mismo fichero | el segundo encuentra el marcador `.abierta` y **no arranca**: `R5` es un lock, no un consejo |
+| `X09` | dos ejecutores en máquinas distintas emiten eventos a la vez | ids distintos por contenido. La cadena BIFURCA, y la bifurcación se DETECTA. No se resuelve sola |
+| `X10` | matar el proceso durante la regeneración de derivados | derivados regenerados enteros; ningún canónico tocado |
+| `X11` | editar a mano un derivado y arrancar | se regenera encima. Un derivado no es una fuente (I5) |
+| `X12` | matar el proceso entre `confirmada` y el commit de Git | se hace el commit. El estado ya era verdad |
+| `X13` | perder `.ads/run/` entero | se reconstruye. Ninguna transacción se pierde: el diario es durable |
+| `X14` | borrar el marcador `.abierta` de una transacción en vuelo | el arranque la encuentra recorriendo el diario. El marcador es un acelerador |
+| `X15` | clonar de nuevo un remoto empujado en medio de una transacción | `conflicto` y escalado. Nunca se completa una transacción ajena |
+| `X16` | una operación declarada `operacion` que NO es determinista | el hash posterior no casa al prepararla → la transacción **no llega a preparar** |
+| `X17` | un evento sellado al que apunta un evento vivo | el sellado **no lo retira**. Ver §2.9 |
+
+> **Ninguna se ha ejecutado.** Diecisiete filas escritas es el contrato de lo que F6 debe
+> demostrar, y **no es su demostración**.
+
+## 2.7 · Concurrencia, locks e identidad sin colisión
 
 ```text
 POR DISEÑO NO COLISIONAN   paquetes en unidades de custodia distintas (I3). Es el caso
@@ -371,14 +596,44 @@ DOS AGENTES, UN PAQUETE    prohibido por custodia única. Es un defecto de despa
 EL TABLERO                 dos escritores físicos por diseño: Owner en ÓRDENES, runtime en
                            COLA. Protocolo de a.9 con CAS sobre hash de contenido y tope de
                            tres reintentos. NO se toca.
-
-EL DIARIO                  no necesita lock: un evento es un fichero nuevo con id único.
-                           Dos emisores concurrentes no colisionan jamás.
 ```
 
 **Latido y hora de pared.** El lock lleva hora, y eso es correcto: **no es un artefacto
 derivado**. `R4` prohíbe la hora de pared en los derivados, no en el plano operacional. Un
 lock cuyo dueño murió se detecta por latido vencido y se reclama registrando el evento.
+
+### Identidad de los eventos — corrección
+
+F4 entregada afirmaba que *«el diario no necesita lock: un evento es un fichero nuevo con id
+único. Dos emisores concurrentes no colisionan jamás»*, con ids `EV-<nnnnnn>` **monotónicos**.
+**Las dos afirmaciones son falsas y se retiran.** Un id monotónico se calcula leyendo el
+mayor existente y sumando uno; dos emisores que lo hacen a la vez eligen el mismo número.
+Que el fichero sea nuevo no genera su nombre.
+
+```text
+LA ELECCIÓN, DECLARADA     de las dos vías admisibles —serializar la generación bajo el
+                           ejecutor único, o usar ids NO MONOTÓNICOS resistentes a
+                           colisión— se elige la SEGUNDA.
+
+FORMA                      `EV-<huella del contenido del evento>`. Direccionado por
+                           contenido.
+
+POR QUÉ LA SEGUNDA         · no depende de un lock que sólo existe en una máquina, y `R5`
+                             es un requisito del runtime local, no del producto
+                           · emitir dos veces el MISMO evento produce el MISMO fichero:
+                             la idempotencia deja de necesitar un registro aparte
+                           · sobrevive a dos máquinas sobre el mismo control repo, que es
+                             el caso que `E2.7` dejó abierto
+
+QUÉ SE PIERDE, Y SE DICE   el orden NO se lee del nombre. Se recupera de dos campos:
+                             `orden`       total DENTRO de una transacción
+                             `predecesor`  el evento que este emisor observó como último.
+                                           Forma una cadena verificable
+                           EL ORDEN TOTAL ENTRE MÁQUINAS NO SE AFIRMA. Dos emisores
+                           concurrentes BIFURCAN la cadena; la bifurcación se detecta al
+                           verificarla, y resolverla es runtime distribuido — abierto en
+                           `E2.7` y en §2.11.
+```
 
 ## 2.8 · Identidad, versionado y migración de esquema
 
@@ -386,8 +641,9 @@ lock cuyo dueño murió se detecta por latido vencido y se reclama registrando e
 ITEM        <TIPO>-<nnn>            FEA-021         estable, del PRODUCTO (E2.5)
 PAQUETE     <ITEM>/<nn>             FEA-021/02
 INICIATIVA  INI-<nnn>
-EVENTO      EV-<nnnnnn>             monotónico, nunca reutilizado
-TX          TX-<nnnnnn>
+EVENTO      EV-<huella>             direccionado por contenido, NO monotónico (§2.7)
+TRANSACCIÓN TX-<huella>             comparte forma con el evento. NO es un artefacto: es el
+                                    identificador que agrupa los eventos de una transacción
 COBERTURA   <clase>:<ancla>/<ruta>  pantalla:web/checkout
 INTEGRACIÓN IS-<nnn>                ya normado por `integration-set`
 
@@ -400,7 +656,12 @@ VERSIÓN DE ESQUEMA    cada fichero canónico lleva `esquema_estado: N`. Una mig
                       EXPLÍCITO, nunca una interpretación optimista.
 ```
 
-## 2.9 · Qué se reconstruye, y desde dónde
+**Los identificadores de item y de iniciativa siguen siendo legibles y correlativos** —son
+del producto y los lee el Owner—, y su generación sí se serializa bajo el ejecutor único.
+La diferencia con los eventos es deliberada: un `FEA-021` se pronuncia en una conversación;
+un evento no.
+
+## 2.9 · Qué se reconstruye, desde dónde, y qué significa sellar
 
 **La pregunta honesta no es «¿se puede reconstruir todo?» sino «¿desde dónde, y con qué
 garantía?».**
@@ -410,15 +671,49 @@ garantía?».**
 | tableros, vistas, dosieres, índices | los canónicos | **total y determinista**. `T03` lo comprueba |
 | `.ads/run/` entero | los canónicos | total |
 | un derivado divergente | los canónicos | total, y `Continúa` paso 2 lo regenera |
-| una transición interrumpida | manifiesto de tx + evento | total: se completa o se marca conflicto |
+| el marcador `estado/tx/<TX>.abierta` | el diario: una `tx` sin evento terminal | total. Es un acelerador, no una verdad |
+| una transición interrumpida | el evento `preparada` de su `tx` | total si ningún fichero es divergente; si lo es, `conflicto` declarado |
 | el estado canónico tras una pérdida | Git | total: es su historia |
 | el estado canónico **sin Git** | eventos sellados + eventos posteriores | **parcial y declarada**: sólo desde el último sellado. Antes del primero, no |
 | el contenido de otra fuente | su repositorio, por la revisión referenciada | total mientras la fuente exista. ADS **no lo copia** (`R6`) |
 
-**Sellado y compactación.** Al cerrar un item, sus eventos se compactan en un fichero sellado
-que incluye el estado final de ese item. Eso acota el crecimiento del diario y **es lo que
-hace real la reconstrucción sin Git**: sellado más eventos posteriores. Sin sellado, el diario
-crece sin límite y la reconstrucción exige el primer evento de la historia.
+### Semántica del sellado
+
+Al cerrar un item, sus eventos se **compactan** en un fichero sellado. Qué significa eso,
+con las cuatro preguntas respondidas:
+
+```text
+QUÉ CONSERVA EL SELLADO   · el ESTADO FINAL de los items que sella. Es lo que hace real la
+                            reconstrucción sin Git
+                          · por cada evento sellado: su `id`, su `fase`, su `tx` y la
+                            huella de su contenido. La LISTA ORDENADA, no un resumen
+                          · la cabeza de la cadena `predecesor` al sellar
+                          · qué eventos quedan REFERENCIADOS desde fuera del sellado
+
+QUÉ PUEDE RETIRARSE       únicamente el CUERPO de un evento sellado: su texto largo. Nunca
+                          su id, su huella ni su posición. Retirar un cuerpo es un acto
+                          AUTORIZADO Y REGISTRADO —emite su propio evento—, no una limpieza
+                          automática por antigüedad.
+
+QUÉ NO PUEDE RETIRARSE    · un evento al que apunta cualquier evento VIVO. Es la regla que
+   NUNCA                    impide que un evento apunte a algo que ya no existe
+                          · el evento terminal de cualquier transacción
+                          · el estado final de un item, que es el contenido del sellado
+
+CÓMO SE VERIFICA          recomputar la cadena `predecesor` sobre los ids conservados debe
+INTEGRIDAD Y ORDEN        reproducir la cabeza que el sellado declara. Un cuerpo retirado
+                          sigue siendo verificable: su huella está en el sellado, y por eso
+                          se puede demostrar que se conocía y que se retiró a propósito —
+                          que es distinto de que nunca haya existido.
+
+POR QUÉ SIGUE SIENDO      porque sellar **añade**: escribe un fichero de sellado nuevo y
+APPEND-ONLY               emite el evento que lo registra. NINGÚN evento se edita. Retirar
+                          un cuerpo tampoco edita el evento: lo sustituye por su lápida,
+                          que conserva id, huella y motivo de retirada.
+```
+
+**Sin sellado, el diario crece sin límite y la reconstrucción exige el primer evento de la
+historia.** Con él, la garantía es explícita y acotada: **sellado más eventos posteriores**.
 
 ## 2.10 · Relación con varias fuentes Git
 
@@ -445,6 +740,13 @@ FORMATO DEL DIARIO       bloque canónico `ads:evento` en Markdown. Si el piloto
 LOCK DISTRIBUIDO         dos máquinas sobre el mismo control repo se serializan por Git,
                          no por el lock. Ese caso queda declarado y sin resolver: es
                          runtime distribuido, y E2.7 ya lo dejó expresamente abierto.
+ORDEN TOTAL ENTRE         la cadena `predecesor` da orden total DENTRO de una transacción y
+MÁQUINAS                  orden parcial entre emisores concurrentes. La bifurcación se
+                          DETECTA (§2.7); RESOLVERLA no se decide aquí, y es el mismo caso
+                          distribuido de la línea anterior.
+RETIRADA DE CUERPOS       cuándo se autoriza retirar el cuerpo de un evento sellado, y con
+SELLADOS                  qué política. §2.9 fija que es un acto autorizado y registrado, y
+                          NO fija el umbral: sale del piloto.
 ```
 
 ---
@@ -471,22 +773,28 @@ El §26.5 del documento de pendientes lo exige, y `D11` ya lo aplicó una vez al
 | **`iniciativa`** | **TIPO NUEVO** | ningún artefacto agrupa items. Un item tiene exactamente un proceso (`b.1`) y no puede contener otros; un paquete pertenece a un item. Falta un sujeto con identidad, alcance, gate propio y varios items dentro. `O11` le da nombre |
 | **`adaptador`** | **TIPO NUEVO** | `C2` lo nombra —*«los nombres de marca sólo aparecen en el adaptador del proyecto»*— y no existe en ninguna otra parte: no es uno de los tipos canónicos, ninguna capacidad lo posee, ningún gate lo comprueba, ninguna ruta lo produce. Es `P-01`, y siete candidatos convergen en él |
 | **`cobertura`** | **TIPO NUEVO** | nada persiste el nivel de calidad de una parte del producto ni su caducidad. Los tres registros existentes tienen otro sujeto: los ledgers registran qué se aprendió, el journal qué pasó, las decisiones qué se decidió. Es `P-03` |
-| **`evento`** | **TIPO NUEVO** | `G26` está declarado PENDIENTE en `a.11` justamente porque no existe. Es el diario de §2 |
+| **`evento`** | **TIPO NUEVO** | `G26` está declarado PENDIENTE en `a.11` justamente porque no existe. Es el diario de §2, y **absorbe la transacción multiarchivo** como una `fase` suya |
+| **manifiesto de transacción** | **NO ES UN TIPO** | mismo sujeto y misma autoridad que `evento`. Su «ciclo propio» era que cambiaba de fase, y reescribir el registro que debe sobrevivir a una caída era el defecto, no la propiedad. Se compone: una transacción es una secuencia de eventos inmutables con `tx` común. Ver §2.5 |
 | **sujeto auditable** | **REFERENCIA TIPADA, no tipo** | se identifica con `(clase, ancla, ruta)` y se **declara dentro de la celda de cobertura**. Crear un tipo para el sujeto obligaría a un registro paralelo de pantallas, flujos y formularios que nadie mantendría, y a deformar `SOURCES.toml` — que es lo que `CI-1` prohíbe |
-| **matriz sujeto × dimensión** | **VISTA DERIVADA** | es la proyección de las celdas de cobertura. Persistirla sería una segunda verdad |
+| **matriz sujeto × aspecto** | **VISTA DERIVADA** | es la proyección de las celdas de cobertura. Persistirla sería una segunda verdad |
 | **finding** | **NO ES UN TIPO** | un finding clasificado **es un item**: la tabla del §20.8 mapea uno a uno sobre los diez procesos de `b.16`. Antes de clasificarse vive en la evidencia del `AUD` que lo produjo |
 | **causa raíz** | **CAMPO, no tipo** | agrupa items ya existentes. Es una referencia común, no un sujeto |
 | **campaña de corrección** | **ES UNA `iniciativa`** | varios items, un sentido común, un gate de cierre. Exactamente lo que la iniciativa es |
 | **excepción aceptada** | **ESTADO DE `cobertura`** | con responsable, motivo y caducidad, que la celda ya necesita |
-| **contrato documental** | **COMPOSICIÓN** | `ads:memoria` + `cobertura`. Ver §4 |
-| **instalación / certificación** | **COMPOSICIÓN** | `cobertura` con `clase: instalacion` + un `gate` por nivel + `DICTAMEN` como dosier. Ver §9 |
+| **contrato documental** | **COMPOSICIÓN CON `memoria` GENERALIZADA** | `ads:memoria` —gobierno— + `cobertura` —vigencia—. `memoria` **se generaliza** para admitir cualquier documento gobernado, y eso se declara en vez de hacerse en silencio. Ver §4 |
+| **estado de una `iniciativa`** | **VISTA DERIVADA** | función total sobre el estado global de sus items, que `b.4` ya calcula. Persistirlo en un canónico editable sería una segunda verdad. Ver §3.3.1 |
+| **instalación / certificación** | **COMPOSICIÓN, más un esquema de CLASE** | el ESTADO es `cobertura` con `clase: instalacion` y `aspecto:certificacion/<nivel>`. La NORMA del nivel —pruebas, propietario, crítico, jerarquía, invalidación— no cabe en la celda ni en `gate`: es `nivel-certificacion`, esquema de clase con el precedente de `nivel-novedad`. Ver §9.2 |
 | **política de recurrencia** | **DECISIÓN REGISTRADA** | vive donde viven las decisiones, y sus parámetros como campos de `cobertura` |
+| **aspecto de calidad** | **REFERENCIA TIPADA, no tipo** | `aspecto:<familia>/<nombre>`. No es una capacidad —una capacidad responde de VARIOS aspectos— ni un fichero. Ver §3.5 y §5.2 |
 | **integración multi-fuente** | **REUTILIZA `integration-set`** | ya existe y ya normado |
 | **procedencia de conocimiento externo** | **MANIFIESTO NUEVO, no tipo** | misma clase que `SOURCES.toml`: un lockfile que consume tooling, con su contrato. `K0.11` y `huella.py` ya hacen esto **con el propio kernel**; `CAND-027` lo hace con conocimiento ajeno |
 | **entradas de validadores (`P-08`)** | **EXTENSIÓN** | un bloque `entradas:` en `validadores.yaml`, junto al `vigencia:` que ya existe |
 
-**Cuatro tipos nuevos y ni uno más.** El recuento importa: el §26.5 y `3.7` del brief existen
-para impedir que un diseño se pague en tipos.
+**El recuento se CALCULA, no se fija de antemano.** F4 entregada abría con «cuatro tipos
+nuevos y ni uno más», y esa frase era una **cuota escrita antes de aplicar la prueba**: el
+manifiesto de transacción quedó fuera de la cuenta sin pasarla. El §26.5 y el `3.7` del brief
+existen para impedir que un diseño se pague en tipos, no para fijar un número por adelantado.
+El recuento final está en §3.8, después de los veredictos, que es su sitio.
 
 ## 3.3 · `iniciativa` — qué declara
 
@@ -497,52 +805,145 @@ alcance           qué entra
 fuera_de_alcance  qué NO entra. Sin esto, una iniciativa crece hasta ser el proyecto
 apertura          quién la abrió y por qué señal
 items             referencias. NUNCA copia su estado
+obligaciones      lo que la iniciativa DEBE dejar producido, más allá de que sus items
+                  cierren. Misma forma que las obligaciones de proceso de `b.3`
 gate_de_cierre    ref a un gate
 riesgos · decisiones · contratos_previstos    referencias
-estado            DERIVADO de sus items. Ver abajo
+banderas          `aparcada` · `cancelada`, autoridad del Owner
 ```
 
-**Su estado es derivado, y esto es una decisión.** `b.4` define el estado global como función
-total sobre los paquetes de un item. Dar a la iniciativa un estado editable crearía una
-segunda verdad sobre lo mismo, que es `I5`. Por tanto:
+**Su estado NO es un campo.** `b.4` define el estado global como función total sobre los
+paquetes de un item. Dar a la iniciativa un estado editable crearía una segunda verdad sobre
+lo mismo, que es `I5`.
+
+### 3.3.1 · La función de estado, total y disjunta
+
+F4 entregada listaba cinco estados con definiciones que se solapaban —«abierta: tiene items
+vivos» y «bloqueada: todos sus items vivos están bloqueados» son ciertas a la vez— y dejaba
+sin cubrir la iniciativa sin items, las mezclas, las cancelaciones y las obligaciones
+huérfanas. Se sustituye por una función con **precedencia mecánica**, con la misma forma que
+`b.4`, porque consume su resultado.
 
 ```text
-abierta        tiene items vivos
-esperando      todos sus items vivos están esperando algo
-bloqueada      todos sus items vivos están bloqueados
-lista-cierre   todos sus items están cerrados o cancelados
-cerrada        además, su gate de cierre está cumplido
+estado_iniciativa(INI) → (estado, motivo)
+
+Dominio: el estado global de cada item de la iniciativa, YA CALCULADO por b.4, más las
+banderas de la propia iniciativa y el veredicto de su gate de cierre.
+
+VIVO = estado_global(item) ∉ { cerrado, cancelado }
 ```
 
-Sólo `cerrada` exige un acto: cumplir el gate. Los demás se calculan.
+**Precedencia. Se evalúa en orden y gana la primera que se cumple.**
 
-**Umbral de activación.** `CI` reduce las nueve señales del §16 a una, porque las otras ocho
-la aproximan: **su cierre no puede explicarse con un solo item**. Un bug, una dependencia
-rutinaria o una feature localizada siguen usando item y paquetes.
+```text
+Q0   ∃ item en `reconciliacion-pendiente`              → reconciliacion-pendiente
+     Mientras sea cierto, ningún otro cálculo es fiable. Va PRIMERO, igual que b.4 P0.
+
+Q1   bandera `cancelada`  Y  ∃ item VIVO               → cancelando
+Q2   bandera `cancelada`  Y  ningún item vivo          → cancelada
+Q3   bandera `aparcada`                                → aparcada
+     El bloqueo de sus items SE SIGUE REPORTANDO: aparcar oculta el trabajo, no la
+     información. Es b.4 P3 aplicado aquí.
+
+Q4   conjunto de items VACÍO                           → abierta-sin-items
+     Existe, tiene intención y alcance, y todavía no ha producido ningún item. NO es un
+     error: es el primer instante de toda iniciativa.
+
+Q5   ∃ item `en desacuerdo`                            → en-desacuerdo
+     Hay algo que RESOLVER, y domina sobre lo que sólo hay que esperar (b.4 P4).
+
+Q6   ∃ item `activo`                                   → activa
+     Basta uno. Los bloqueos y esperas de los demás se reportan, no cambian el veredicto.
+
+Q7   ∃ item `bloqueado`                                → bloqueada
+     motivo: el trabajo real es CREAR EL DESBLOQUEADOR (b.15.1)
+
+Q8   ∃ item VIVO — `en espera` · `aparcado` · `encuadrado` · `cancelando`  → esperando
+     motivo: el de la espera dominante, con su clase
+
+Q9   TODOS los items terminales (`cerrado` | `cancelado`):
+
+       ∃ obligación de la INICIATIVA ni satisfecha ni retirada    → bloqueada
+                                       motivo: obligación de iniciativa sin reemplazo
+       gate_de_cierre NO cumplido                                 → lista-cierre
+       gate_de_cierre cumplido                                    → cerrada
+```
+
+**Totalidad, demostrada y no afirmada.** Los diez estados globales de `b.4` quedan cubiertos:
+`reconciliacion-pendiente` por Q0 · `cancelando` y `cancelado` por Q1/Q2/Q8/Q9 · `aparcado`
+por Q3 y Q8 · `en desacuerdo` por Q5 · `activo` por Q6 · `bloqueado` por Q7 · `en espera` y
+`encuadrado` por Q8 · `cerrado` por Q9. El conjunto vacío, por Q4. **No existe combinación
+sin resultado, y ninguna produce dos**, porque gana la primera que se cumple.
+
+**Los casos frontera, resueltos:**
+
+| combinación | resultado |
+|---|---|
+| items activos junto a bloqueados y esperando | `activa` (Q6). El bloqueo se reporta |
+| todos los vivos bloqueados | `bloqueada` (Q7). Ya no colisiona con «abierta» |
+| algunos cerrados, otros esperando | `esperando` (Q8) |
+| todos terminales, obligación de iniciativa huérfana | **`bloqueada` (Q9). NUNCA `cerrada`** — cerrar todos los items ni produce la obligación ni la retira |
+| todos terminales, gate pendiente | `lista-cierre` (Q9). Es un estado ESTABLE: puede durar |
+| todos cancelados sin bandera de iniciativa | Q9: si no hay obligación viva y el gate lo admite, `cerrada`; el informe dirá que se cerró por cancelación |
+| cancelada con items aún vivos | **`cancelando` (Q1), nunca `cancelada`** |
+| aparcada con un item en desacuerdo | `aparcada` (Q3), y el desacuerdo se reporta |
+
+**Sólo `cerrada` exige un acto**: cumplir el gate. Las demás se calculan.
+
+### 3.3.2 · Dónde vive el estado derivado
+
+```text
+NO SE PERSISTE EN UN     `00-iniciativa.md` es canónico y editable. Escribir allí el estado
+FICHERO CANÓNICO         derivado crearía la segunda verdad que la propia decisión evita.
+
+VIVE EN `dosier.md`      que es DERIVADO ENTERO, con su `source_revision` sobre los
+                         canónicos de los que deriva: la iniciativa y sus items.
+
+SI ALGUNA VEZ TUVIERA    sería en una ZONA REGENERABLE Y NO EDITABLE, delimitada y con su
+QUE APARECER EN UN       `source_revision`, con la misma disciplina de dos zonas que `a.9`
+CANÓNICO                 aplica al tablero. Hoy NO hace falta, y por tanto se omite y se
+                         calcula.
+```
 
 **Prohibición.** Una iniciativa **no anida** en otra. Anidar convierte el estado derivado en
 un cálculo sobre un árbol de profundidad arbitraria, y con él la vista del Owner. Si un
 trabajo necesita árbol, es un cambio de dirección y su sitio es `DIR`.
 
+**Umbral de activación.** `CI` reduce las nueve señales del §16 a una, porque las otras ocho
+la aproximan: **su cierre no puede explicarse con un solo item**. Un bug, una dependencia
+rutinaria o una feature localizada siguen usando item y paquetes.
+
 **El dosier es derivado.** Índice y memoria, no copia: `I5` y el §15 del documento de
-pendientes coinciden. Se genera desde la iniciativa, sus items, sus decisiones y su evidencia.
-Un dosier que alguien mantiene a mano es una segunda verdad que envejece.
+pendientes coinciden. Se genera desde la iniciativa, sus items, sus decisiones y su
+evidencia. Un dosier que alguien mantiene a mano es una segunda verdad que envejece.
 
 ## 3.4 · `adaptador` — qué declara
 
 Detallado en §6. Su contrato mínimo:
 
 ```text
-id · entorno · nivel                soportado | compatible | generico | desconocido
+id · entorno
+compatibilidad_declarada            lo que el adaptador AFIRMA soportar. EDITABLE. Es una
+                                    declaración de intención, y NO un logro
+capacidades_del_entorno             subagentes · skills · límites de contexto · permisos.
+                                    EDITABLE. Es una observación del entorno
 lee                                 qué ficheros del control repo consume
 proyecta                            qué ficheros GENERA, y dónde los descubre ese entorno
+puntero_en_fuente                   el único fichero que proyecta DENTRO de una fuente, y
+                                    qué declara. Ver §6.7
 escribe_permitido                   qué puede modificar, con las excepciones NOMBRADAS
 comandos                            qué escribe el Owner y qué activa
-capacidades_del_entorno             subagentes · skills · límites de contexto · permisos
 degradacion                         qué se pierde y cómo, función por función
 prueba_de_humo                      ref al escenario que lo certifica
 huella                              de la definición de la que deriva cada proyección
 ```
+
+**`nivel` NO es un campo, y esto es una corrección.** F4 entregada declaraba
+`nivel: soportado | compatible | generico | desconocido` como campo editable del adaptador, y
+a la vez §6.5 hacía de `soportado` una conclusión derivada de una prueba de humo ejecutada y
+una certificación Integrada. Lo mismo escrito y derivado a la vez es la segunda verdad que
+`I5` prohíbe, y además un campo editable **no caduca** mientras una certificación sí. El
+nivel alcanzado se lee ahora en un solo sitio: §6.5.
 
 ## 3.5 · `cobertura` — qué declara
 
@@ -552,48 +953,121 @@ sujeto      clase   componente | modulo | pantalla | flujo | formulario | patron
                     despliegue | documento | agente | skill | adaptador | instalacion
             ancla   el COMPONENTE de C6 del que cuelga, o `transversal`
             ruta    dentro del ancla
-dimension   ref a capacidad · la dimensión es la capacidad que la posee (§5.2)
+
+aspecto     REFERENCIA TIPADA CON NAMESPACE. Qué propiedad del sujeto se juzga:
+              aspecto:calidad/<nombre>          accesibilidad · responsive · rendimiento ·
+                                               resiliencia · seguridad · dependencias …
+              aspecto:documental/<area>         las doce áreas de O8 (§4.3)
+              aspecto:certificacion/<nivel>     estructural · operativo · integrado ·
+                                               completo (§9)
+            Las tres familias tienen CONTRATO DISTINTO y se validan por separado.
+
+responsables  1..N capacidades, con una declarada `lider`. Una capacidad NO es un aspecto:
+              responde de él (§5.2)
+
+criterio      ref al criterio concreto contra el que se juzga: una rúbrica, un gate, un
+              `nivel-certificacion` o un contrato documental. Sin criterio, `verificado`
+              no significa nada
+
 aplicabilidad   obligatoria | condicional | no-aplicable
 motivo_no_aplicable   obligatorio cuando `no-aplicable`. El §5.18 lo exige: una evaluación
                       registrada, nunca una ausencia
+evidencia_de_inaplicabilidad   obligatoria cuando `no-aplicable`. Un motivo sin evidencia
+                      es una opinión, y una prueba no aplicable NO puede bloquear para
+                      siempre ni desaparecer en silencio (§9.5)
+
 estado      no-auditado | planificado | en-curso | parcial | findings-abiertos |
             corregido-sin-verificar | verificado | excepcion-aceptada | obsoleto | vencido
-ultima_revision_real  no la última edición
-revisiones_examinadas  por fuente, el SHA. Es lo que hace la celda contrastable
+
+verificacion  ultima_real            no la última edición del fichero
+              revisiones_examinadas  por fuente, el SHA. Es lo que hace la celda
+                                     contrastable
+              verificador            quién, y qué independencia declara
 evidencia · findings   referencias a items
 caducidad · triggers   qué la vence y qué la reabre
-responsable · verificador
+responsable_de_corregir
 ```
 
 **`corregido` y `verificado` son estados distintos**, y ésa es la razón de que la lista sea
 larga: fundirlos permitiría cerrar sin verificación independiente, que es `G13`.
 
+**Por qué `aspecto` no puede ser «la capacidad que lo posee».** F4 entregada escribía
+`dimension: ref a capacidad · la dimensión es la capacidad que la posee`, y con eso
+**auditar la accesibilidad de una pantalla y auditar su responsive eran la misma celda**:
+`DIS` posee las dos. No podían registrarse por separado, ni vencer por separado, ni tener
+verificadores distintos. Y las doce áreas documentales y los cuatro niveles de certificación
+—que no son capacidades— entraban en ese mismo campo sin namespace. Tres universos en un
+campo sin tipo es una colisión semántica, no una economía.
+
 ## 3.6 · `evento` — qué declara
 
 ```text
-id            EV-<nnnnnn>
-tipo          orden | transicion | integracion | certificacion | migracion | fallo
-ordenante · autoridad · ejecutor        los cinco conceptos de a.9, sin confundirlos
+id            EV-<huella del contenido>. Direccionado por contenido, NO monotónico (§2.7)
+tipo          orden | transicion | integracion | certificacion | migracion | sellado |
+              retirada-de-cuerpo | fallo
+fase          preparada | confirmada | derivada | abortada | conflicto | — (sin transacción)
+tx            TX-<huella>, cuando el evento forma parte de una transacción multiarchivo.
+              Lo comparten todos los eventos de esa transacción y nadie más
+orden         posición dentro de su transacción. Total dentro de ella
+predecesor    el evento que este emisor observó como último. Forma la cadena verificable
+ordenante · autoridad · escritor_del_comando · ejecutor · actor_atribuido
+              los CINCO conceptos de a.9, sin confundirlos
 base          hash de las entradas sobre las que se decidió
-afecta        lista de ficheros canónicos y su versión previa
-resultado     qué queda escrito
-tx            ref al manifiesto, cuando forma parte de una transición multiarchivo
+afecta        por fichero canónico: `ruta` · `hash_previo` · `hash_posterior_esperado` ·
+              `orden` · una de `contenido` | `parche` | `operacion`
+resultado     qué queda escrito. Presente en `confirmada`, ausente en `preparada`
 ```
 
-**Un evento nunca se edita.** Corregir un evento se hace emitiendo otro que lo rectifica y lo
-enlaza. Es lo que hace que el diario sea una historia y no un estado más.
+**Un evento nunca se edita, y nunca narra en futuro.** Corregir un evento se hace emitiendo
+otro que lo rectifica y lo enlaza. Una intención se registra con `fase: preparada`, que dice
+lo que es. Las dos reglas juntas son lo que hace que el diario sea una historia y no una
+lista de deseos.
 
 ## 3.7 · Extensiones, sin tipo nuevo
 
 ```text
-memoria.yaml          + `estado` y + `ultima_verificacion_real`, y su descripción se
-                      amplía de «sección del corpus de un equipo» a documento gobernante
-                      en general. Ver §4
+memoria.yaml          + `estado` — ciclo NORMATIVO del documento: `vigente | sustituida |
+                      retirada`, la forma de `b.3`. NO es estado de verificación: ése es
+                      de la celda
+                      + `plano` OBLIGATORIO — uno de los cinco planos de §1.2
+                      `capa` pasa a CONDICIONAL: sólo la declara conocimiento que viaja
+                      con un release
+                      y su sujeto SE GENERALIZA de «sección del corpus de un equipo» a
+                      «documento gobernado». Es una GENERALIZACIÓN, y se dice. Ver §4
+                      NO recibe `ultima_verificacion_real`: ésa vive sólo en `cobertura`
 validadores.yaml      + `entradas:` — resuelve P-08. Ver §11
 paquete               ya tiene `lee_fuentes` y `escribe_fuentes` por E2.2, y aloja los
                       source changes por E2.3. No necesita nada más
 checkpoint            sin cambios. E2.3 ya le dio forma multi-fuente
 ```
+
+## 3.8 · El recuento final, calculado
+
+```text
+TIPOS CANÓNICOS DE ESTADO NUEVOS · CUATRO
+    iniciativa · adaptador · cobertura · evento
+    Los cuatro pasan el paso 4 de §3.1: sujeto propio, autoridad propia y ciclo propio.
+
+LO QUE DEJA DE SER TIPO · UNO
+    el manifiesto de transacción. Se pliega en `evento` como una `fase`, y §2.5 comprueba
+    propiedad a propiedad que no se pierde ninguna.
+
+ESQUEMA DE CLASE NUEVO · UNO, Y NO ES UN TIPO DE ESTADO
+    `nivel-certificacion`. Aloja pruebas, propietario, crítico, jerarquía e invalidación de
+    cada nivel. Es NORMA, no estado. Su precedente exacto está en el corpus:
+    `esquemas/nivel-novedad.yaml`. Ver §9.2.
+
+ESQUEMAS AMPLIADOS · DOS
+    `memoria` (generalizado, §4) · `validadores` (bloque `entradas:`, §11)
+
+TOTAL   19 esquemas vigentes + 4 tipos de estado + 1 de clase = 24
+```
+
+**Por qué `nivel-certificacion` no cabe en `gate`.** Un gate declara comprobaciones,
+evidencia y consecuencia al fallar. Un nivel declara además **qué nivel presupone** y **qué
+lo invalida**. Añadir esos dos campos a `gate` se los daría a todos los gates del sistema
+para que sólo los usara la certificación, que es la definición de deformar un tipo — el paso
+1 de §3.1 leído al revés.
 
 ---
 
@@ -605,21 +1079,67 @@ Resuelve `CI-2`, que degradó `H5` de conclusión a candidato.
 
 | | vía | cubre las doce áreas | duplica campos | coste | riesgo |
 |---|---|---|---|---|---|
-| 1 | **generalizar `memoria`** | tras añadir seis campos | no | bajo | convierte un tipo con sujeto claro —la memoria de un equipo— en un cajón con dos sujetos |
+| 1 | **generalizar `memoria`** | tras añadir campos | no | bajo | convierte un tipo con sujeto claro —la memoria de un equipo— en un cajón con dos sujetos |
 | 2 | **metadata documental especializada** | sí | **sí**: `capacidad`, `autoridad`, `fichero`, `caducidad` y `se_actualiza_cuando` volverían a declararse | medio | dos tipos que dicen lo mismo sobre el mismo fichero |
 | 3 | **composición** `memoria` + `cobertura` | sí | no | bajo | exige que las dos piezas existan, y `cobertura` se construye igualmente por §5 |
 
-**Decisión: vía 3.** Y no por eliminación: porque **un documento gobernante es un sujeto
-auditable**, y la lista del Owner lo dice —«documentos» está entre lo que hay que auditar—.
-Las dos preguntas que el §5.19 y el §5.23 mezclan son en realidad dos, con dueños distintos:
+**Decisión: vía 3 sobre una `memoria` GENERALIZADA — y las dos mitades se dicen.**
+
+> **Corrección de F4 entregada.** El documento anterior eligió la vía 3 y a la vez, en §3.7,
+> amplió la descripción de `memoria` *«de sección del corpus de un equipo a documento
+> gobernante en general»*. **Eso es la vía 1**, comparada y declarada descartada doce líneas
+> antes. La composición era real, y la generalización también: se hacía **en silencio** y se
+> describía como si no ocurriera. Aquí se declara. Es `D27`, que **sustituye** a `D20`.
 
 ```text
-¿QUIÉN RESPONDE DE ESTE DOCUMENTO Y CUÁNDO SE TOCA?   → `ads:memoria`, dentro del documento
-¿ESTO SIGUE SIENDO CIERTO, Y CUÁNDO SE COMPROBÓ?      → `cobertura`, con el documento como
-                                                        sujeto y su área como dimensión
+LO QUE SE COMPONE      dos preguntas con dueños distintos, y ninguna de las dos duplica a
+                       la otra:
+                         ¿QUIÉN RESPONDE DE ESTE DOCUMENTO Y CUÁNDO SE TOCA?
+                              → `ads:memoria`, DENTRO del documento
+                         ¿ESTO SIGUE SIENDO CIERTO, Y CUÁNDO SE COMPROBÓ?
+                              → `cobertura`, con el documento como SUJETO y su área como
+                                `aspecto:documental/<area>`
+
+LO QUE SE GENERALIZA   el SUJETO de `memoria`: de «una sección del corpus persistente de un
+                       equipo» a «cualquier documento gobernado». Un documento gobernante
+                       ES un sujeto auditable, y la lista del Owner lo dice: «documentos»
+                       está entre lo que hay que auditar.
+
+POR QUÉ LA VÍA 1 SOLA  porque `memoria` sin `cobertura` no puede responder la segunda
+NO BASTABA             pregunta sin absorber vigencia, evidencia, revisiones examinadas y
+                       findings — y ahí sí se convertiría en el cajón que el riesgo de la
+                       vía 1 describe. Generalizar el SUJETO no es lo mismo que absorber
+                       el SEGUNDO SUJETO, y la diferencia es exactamente §4.2.
 ```
 
+### El campo `capa`, resuelto sin fabricar una cuarta capa
+
+`memoria.capa` es hoy un enum obligatorio de tres valores: `kernel`, `pack`, `profile`. Son
+las tres capas de `K-1`, que clasifican **conocimiento**. Un documento cuyo sujeto es la
+arquitectura **real de este producto** no es ninguno de los tres, y el tipo generalizado no
+validaría. Añadir un cuarto valor fabricaría `X1` por la puerta de atrás, y `X1` sigue
+deferida.
+
+```text
+`capa`   K-1, tres valores, pasa a CONDICIONAL. La declara únicamente un documento que sea
+         CONOCIMIENTO QUE VIAJA CON UN RELEASE. Si el documento no lo es, el campo NO
+         APLICA, y eso se registra como no aplicable, no como ausencia.
+
+`plano`  NUEVO Y OBLIGATORIO. Uno de los cinco planos de §1.2: `distribucion` ·
+         `especializacion` · `estado` · `proyeccion` · `operacional`. Todo documento tiene
+         plano, porque todo documento tiene ciclo de vida.
+```
+
+**Y por qué esto no cruza la línea de `X1`.** §1.2 ya separó las dos clasificaciones: `K-1`
+clasifica conocimiento y los cinco planos clasifican ciclo de vida. `plano` es la segunda, no
+una cuarta capa de la primera. Un documento del producto tiene `plano: especializacion` y
+**no tiene `capa`** — que es precisamente lo que hay que poder decir.
+
 ## 4.2 · Cómo se reparte cada exigencia
+
+**Una sola fuente por exigencia.** F4 entregada colocaba `ultima_verificacion_real` en
+`memoria.yaml` (§3.7) **y** en `cobertura` (§4.2), y proclamaba «cero campos duplicados» tres
+líneas después de la tabla que los duplicaba. Se corrige: vive **sólo en `cobertura`**.
 
 | exigencia del §5.19 / §5.23 | dónde vive | ya existe |
 |---|---|---|
@@ -629,22 +1149,70 @@ Las dos preguntas que el §5.19 y el §5.23 mezclan son en realidad dos, con due
 | qué materia cubre | `memoria.contiene` | **sí** |
 | triggers de actualización | `memoria.se_actualiza_cuando` | **sí** |
 | consumidor operativo | `memoria.se_consulta_en` | **sí** |
-| caducidad | `memoria.caducidad` | **sí** |
-| `no aplicable` con motivo | `memoria.vacio_significa` **y** `cobertura.motivo_no_aplicable` | **sí** el primero |
-| estado del documento | `memoria.estado` | **extensión** |
-| última verificación real | `cobertura.ultima_revision_real` | tipo nuevo |
-| procedencia: fuentes, entornos y **revisiones examinadas** | `cobertura.revisiones_examinadas` | tipo nuevo |
+| plano de ciclo de vida | `memoria.plano` | **extensión** |
+| capa de conocimiento, cuando aplica | `memoria.capa`, condicional | **sí**, con su obligatoriedad corregida |
+| **caducidad NORMATIVA del documento** | `memoria.caducidad` | **sí** |
+| ciclo normativo del documento | `memoria.estado` | **extensión** |
+| qué significa que el documento esté VACÍO | `memoria.vacio_significa` | **sí** |
+| que un ASPECTO no aplique a este documento | `cobertura.motivo_no_aplicable` + su evidencia | tipo nuevo |
+| **vigencia de la última verificación** | `cobertura.caducidad` | tipo nuevo |
+| **última verificación real** | `cobertura.verificacion.ultima_real` | tipo nuevo |
+| procedencia: fuentes, entornos y **revisiones examinadas** | `cobertura.verificacion.revisiones_examinadas` | tipo nuevo |
 | evidencia | `cobertura.evidencia` | tipo nuevo |
 | gaps y contradicciones | `cobertura.findings` → items | tipo nuevo + existente |
 | relaciones con decisiones, items y dosieres | referencias desde ambos | **sí** |
 | aplicabilidad obligatoria/condicional/no aplicable | `cobertura.aplicabilidad` | tipo nuevo |
 
-**Cero campos duplicados.** Es la condición que `CI-2` conserva de `H5`, y la que descarta la
-vía 2.
+### Los dos relojes, que no son el mismo
+
+**Un documento vigente con una verificación caducada es el caso NORMAL**, y F4 entregada no
+podía representarlo porque llamaba «caducidad» a las dos cosas.
+
+```text
+`memoria.caducidad`     NORMATIVA. Cuándo el DOCUMENTO deja de ser exigible o debe
+                        reescribirse. Es propiedad del documento, y la fija su autoridad.
+                        Ejemplo: «caduca cuando cambie la dirección arquitectónica».
+
+`cobertura.caducidad`   VIGENCIA DE UNA VERIFICACIÓN. Cuándo el juicio «esto sigue siendo
+                        cierto» deja de valer. Es propiedad de la CELDA, y la fija el
+                        contrato del aspecto. Ejemplo: «caduca a los seis meses, o antes si
+                        cambia una de las revisiones examinadas».
+```
+
+| documento | verificación | qué significa |
+|---|---|---|
+| vigente | vigente | el caso bueno: se cree lo que dice |
+| vigente | caducada | **el caso normal y el más frecuente**: el documento sigue siendo exigible, y nadie ha comprobado últimamente que sea cierto. La celda pasa a `vencido` y el sistema lo REPORTA |
+| caducado | vigente | el documento debe reescribirse aunque su última comprobación fuese buena: lo que verificó ya no es lo que se exige |
+| caducado | caducada | reescribir y volver a verificar. Es el peor caso, y es visible |
+
+### Las tres duplicaciones que se eliminan
+
+```text
+`ultima_verificacion_real`   ESTABA EN LOS DOS. Se retira de `memoria`. Sólo `cobertura`.
+
+`vacio_significa` FRENTE A   dejan de solaparse porque responden preguntas distintas:
+`motivo_no_aplicable`          `vacio_significa`      el documento EXISTE y está vacío.
+                                                      ¿Eso qué quiere decir?
+                               `motivo_no_aplicable`  este ASPECTO no aplica a este SUJETO.
+                                                      ¿Por qué, y con qué evidencia?
+
+`memoria.estado` FRENTE A    `memoria.estado` es el CICLO NORMATIVO del documento —
+`cobertura.estado`           `vigente | sustituida | retirada`, la forma que `b.3` ya usa
+                             para la vigencia de una capa. NO es estado de verificación.
+                             `cobertura.estado` es el estado del JUICIO sobre él. Un
+                             documento `sustituida` con celda `verificado` es coherente y
+                             se lee sin ambigüedad: era cierto, y ya no se usa.
+```
+
+**Cero campos duplicados**, ahora sí: es la condición que `CI-2` conserva de `H5`, y la que
+descarta la vía 2.
 
 ## 4.3 · Las doce áreas de `O8`, sin doce ficheros
 
-Las doce áreas son **dimensiones**, y una dimensión no es un fichero:
+Las doce áreas son **aspectos de la familia documental**, y un aspecto no es un fichero.
+Cada una es un `aspecto:documental/<area>` con su namespace propio, distinto del de los
+aspectos de calidad y del de los niveles de certificación — que es la corrección de §3.5.
 
 ```text
 identidad y dirección de producto · baseline funcional · dominio y glosario ·
@@ -656,6 +1224,9 @@ COMPACTACIÓN     un documento declara VARIAS áreas en su bloque `memoria.conti
                  producto pequeño, tres documentos pueden cubrir las doce.
 PROFUNDIDAD      la exige `cobertura.aplicabilidad` por área, derivada de tamaño,
                  naturaleza y riesgo declarados en `PROFILE`.
+RESPONSABLE      cada área declara sus `responsables` en el contrato del aspecto, y NO se
+                 infiere de la capacidad: `SIS` responde de conformidad documental, y del
+                 CONTENIDO de un área responde la capacidad de esa materia.
 CONDICIONALES    UX e investigación, dirección visual, sistema de diseño, datos,
                  integraciones, cumplimiento, observabilidad, continuidad,
                  internacionalización. Se activan por aplicabilidad.
@@ -681,7 +1252,7 @@ Autorizado por `O7`, con el sujeto que `CI-1` corrigió.
 sujeto = (clase, ancla, ruta)
 
 ANCLA          un componente declarado en SOURCES.toml, o `transversal`
-CLASE          qué es, y de ella salen las dimensiones que le aplican
+CLASE          qué es, y de ella sale qué ASPECTOS le aplican y con qué obligatoriedad
 RUTA           dentro del ancla; para un transversal, su identificador global
 
 componente:web              ancla, la raíz
@@ -706,27 +1277,84 @@ inventario**. El sistema puede decir qué no ha auditado de lo que conoce; **no 
 que conoce todo el producto**. Cerrar ese hueco exige descubrimiento sobre el código, y eso
 es la adopción (§8.2) y el piloto, no una propiedad del registro.
 
-## 5.2 · Las dimensiones son las capacidades
+## 5.2 · Aspectos y capacidades — que no son lo mismo
 
-`H4` sobrevive a la corrección de `CI-1` en su mitad más útil:
+`H4` sobrevive a la corrección de `CI-1` en su mitad útil: **la capacidad es quien responde
+del juicio**. Lo que no sobrevive es la otra mitad, que F4 entregada escribió como
+*«la dimensión es la capacidad que la posee»*.
 
-| dimensión | capacidad | qué aporta |
-|---|---|---|
-| producto y funcionalidad | `PRD` | criterio de éxito y alcance |
-| UI, UX, diseño visual, sistema de diseño, responsive, accesibilidad | `DIS` | rúbricas y `05-FIDELIDAD` |
-| arquitectura, integraciones, acoplamiento, deuda | `ARQ` | radio de impacto |
-| dominio, reglas y datos | `DOM` | invariantes y migraciones |
-| seguridad, privacidad, cumplimiento | `SEG` | veto con evidencia |
-| pruebas, regresión, evidencia | `VER` | dictamen independiente |
-| CI/CD, despliegue, observabilidad, recuperación | `ENT` | entrega observada |
-| tecnologías, herramientas, entorno | `PLT` | maquinaria disponible |
-| documentación y conformidad ADS | `SIS` | contrato y coherencia |
-| uso real | `USO` | comportamiento observado |
+> **Por qué no se sostiene.** `DIS` responde de UI, UX, diseño visual, sistema de diseño,
+> responsive y accesibilidad. Con la capacidad como dimensión, **auditar la accesibilidad de
+> una pantalla y auditar su responsive son la misma celda**: no se pueden registrar por
+> separado, ni vencer por separado, ni tener verificadores distintos, ni abrir findings
+> distintos. Una capacidad **no sustituye a las dimensiones de las que responde**.
 
-**Dos dimensiones sin propietario evidente, y se dicen:** **rendimiento y resiliencia**, que
-hoy reparten `ARQ` y `ENT` sin que ninguna lo declare; y **dependencias y cadena de
-suministro**, que hoy es el proceso `DEP` y no una dimensión. Asignarlas es materia de F5 o de
-una extensión de ficha, y **no se decide aquí por comodidad**.
+```text
+ASPECTO        QUÉ propiedad del sujeto se juzga.   `aspecto:calidad/accesibilidad`
+CAPACIDAD      QUIÉN responde de ese juicio.        `DIS`
+CRITERIO       CONTRA QUÉ se juzga.                 una rúbrica, un gate, un nivel
+```
+
+**Una capacidad responde de varios aspectos. Un aspecto puede tener varios responsables**,
+y en ese caso uno se declara `lider` — porque «dos responsables» sin líder es «ninguno».
+
+### El reparto, aspecto a aspecto
+
+| aspecto | responsables | líder | qué aporta |
+|---|---|---|---|
+| `calidad/producto` | `PRD` | `PRD` | criterio de éxito y alcance |
+| `calidad/ui` · `calidad/ux` · `calidad/diseno-visual` · `calidad/sistema-de-diseno` · `calidad/responsive` · `calidad/accesibilidad` | `DIS` | `DIS` | rúbricas y `05-FIDELIDAD`. **Seis aspectos, una capacidad** |
+| `calidad/arquitectura` · `calidad/integraciones` · `calidad/acoplamiento` · `calidad/deuda` | `ARQ` | `ARQ` | radio de impacto |
+| `calidad/dominio` · `calidad/reglas` · `calidad/datos` | `DOM` | `DOM` | invariantes y migraciones |
+| `calidad/seguridad` · `calidad/privacidad` · `calidad/cumplimiento` | `SEG` | `SEG` | veto con evidencia |
+| `calidad/pruebas` · `calidad/regresion` · `calidad/evidencia` | `VER` | `VER` | dictamen independiente |
+| `calidad/ci-cd` · `calidad/despliegue` · `calidad/observabilidad` | `ENT` | `ENT` | entrega observada |
+| `calidad/tecnologias` · `calidad/entorno` | `PLT` | `PLT` | maquinaria disponible |
+| `calidad/conformidad-ads` | `SIS` | `SIS` | contrato y coherencia |
+| `calidad/uso-real` | `USO` | `USO` | comportamiento observado |
+| **`calidad/rendimiento`** | **`ARQ` · `ENT`** | **`ENT`** | `ARQ` responde del coste de DISEÑO —algoritmos, contratos, radio—; `ENT` responde del rendimiento OBSERVADO en un entorno real, que es el que decide |
+| **`calidad/resiliencia`** | **`ENT` · `ARQ`** | **`ENT`** | `ENT` ya declara **recuperación** entre su materia; `ARQ` responde de la resiliencia estructural — degradación, contratos, aislamiento de fallos |
+| **`calidad/dependencias`** | **`PLT` · `SEG`** | **`PLT`** | `PLT` es el propietario global del proceso `DEP` de `b.16`; `SEG` participa con **veto**, porque `b.16` ya declara `SEG:condiciones ⊳ CON` OBLIGATORIO en `DEP` por `G28` |
+| `documental/<area>` | ver §4.3 | según el área | las doce áreas de `O8` |
+| `certificacion/<nivel>` | ver §9.2 | `SIS` o `PLT` según el nivel | los cuatro niveles |
+
+### Las dos dimensiones huérfanas, asignadas
+
+F4 entregada declaró **rendimiento y resiliencia** y **dependencias y cadena de suministro**
+*«sin propietario evidente»* y las aparcó. Una arquitectura que se llama **integrada** no
+puede terminar con dos materias sin responsable: la honestidad es decir **quién responde**, o
+**qué norma hay que enmendar para que alguien pueda responder**. Aquí se resuelve lo primero.
+
+```text
+POR QUÉ SE PUEDEN         las cuatro capacidades implicadas EXISTEN y la materia YA está en
+ASIGNAR SIN ENMENDAR      su alcance declarado:
+NADA                        `ENT`   `b.16` le da la entrega y la operación, e incluye
+                                    RECUPERACIÓN entre su materia
+                            `ARQ`   contratos, estructura y radio de impacto
+                            `PLT`   propietario global de `DEP` en `b.16`
+                            `SEG`   `C-SEG` nombra expresamente «dependencias externas»,
+                                    y `G28` hace su consulta OBLIGATORIA antes de construir
+
+QUÉ TRABAJO GENERA        una EXTENSIÓN DE FICHA en F6, nombrada fichero a fichero:
+                            `capacidades/ENT/`   añadir rendimiento observado y resiliencia
+                                                 a su materia declarada
+                            `capacidades/ARQ/`   añadir coste de diseño y resiliencia
+                                                 estructural
+                            `capacidades/PLT/`   añadir cadena de suministro como aspecto,
+                                                 no sólo como proceso
+                            `capacidades/SEG/`   declarar su veto sobre `calidad/dependencias`
+                                                 con los seis campos del contrato de veto de
+                                                 `a.5`
+
+QUÉ NO GENERA             presión normativa. Ninguna de las cuatro fichas es (a), (b), `E1`,
+                          `E2`, `K-1` ni `C4`. Extender una ficha de capacidad con materia
+                          que ya está en su alcance es trabajo de F6.
+
+EL LÍMITE, DECLARADO      si al redactar la extensión F5 o F6 encontrasen que el alcance de
+                          una de las cuatro NO estira hasta el aspecto, entonces SÍ nacería
+                          una presión, y se registraría ese día. Hoy no la hay, y afirmar
+                          que la habrá sería tan poco riguroso como aparcar las dos materias.
+```
 
 ## 5.3 · El ciclo, y quién hace cada paso
 
@@ -741,7 +1369,8 @@ DETECCIÓN           qué nunca se auditó · qué venció · qué invalidó un 
 APERTURA            crea un item AUD. SÓLO dentro de la política O7. Si no hay política
                     vigente, el sistema PROPONE y espera
       ↓
-AUDITORÍA           proceso `AUD`, con la capacidad de la dimensión produciendo la capa
+AUDITORÍA           proceso `AUD`, con la capacidad RESPONSABLE DEL ASPECTO produciendo
+                    la capa. Si hay varias, la declarada `lider` (§5.2)
       ↓
 FINDINGS            en la evidencia del AUD. Todavía no son trabajo
       ↓
@@ -770,7 +1399,7 @@ DENTRO DE LA POLÍTICA           abrir items AUD por evento, riesgo, recurrencia
 FUERA DE LA POLÍTICA            todo lo demás: se propone y espera
 
 LA POLÍTICA ES UNA DECISIÓN REGISTRADA, y declara:
-    alcance          qué clases de sujeto y qué dimensiones
+    alcance          qué clases de sujeto y qué aspectos, por familia
     prioridad        con qué prioridad nacen los items que abre
     presupuesto      cuántos items abiertos simultáneos admite
     umbrales         qué caducidad y qué señales disparan
@@ -792,6 +1421,131 @@ cancela solo: pasa a decisión del Owner, porque cancelar es autoridad semántic
 
 **Ninguna fila levanta un gate existente.** La política decide **si se abre el trabajo**, no
 con qué rigor se cierra.
+
+## 5.6 · Tres celdas completas, sobre el mismo contrato
+
+La prueba de que la separación de §3.5 funciona no es el argumento: es que **tres sujetos
+que no se parecen en nada caben en el mismo contrato sin campos vacíos de conveniencia y sin
+campos que signifiquen cosas distintas en cada uno**.
+
+### Ejemplo 1 · una pantalla auditada en accesibilidad
+
+```text
+sujeto        clase: pantalla · ancla: web · ruta: checkout
+              → pantalla:web/checkout
+aspecto       aspecto:calidad/accesibilidad
+responsables  [DIS]                                        lider: DIS
+criterio      rubrica:accesibilidad-web                    la rúbrica, no una nota
+aplicabilidad obligatoria
+estado        findings-abiertos
+verificacion
+  ultima_real            2026-07-14
+  revisiones_examinadas  frontend@9c1e4a7
+  verificador            VER, que no construyó la pantalla
+evidencia     [DIC-0041]                                   el dictamen
+findings      [DEF-118, DEF-119]                           items, no anotaciones (§3.2)
+caducidad     6 meses, o antes si cambia `frontend` bajo `src/checkout/`
+triggers      cambio en la revisión examinada · cambio de la rúbrica · incidente de uso
+responsable_de_corregir  CON
+```
+
+**Y su celda hermana, que antes no podía existir:**
+
+```text
+sujeto        pantalla:web/checkout                        EL MISMO SUJETO
+aspecto       aspecto:calidad/responsive                   OTRO ASPECTO
+responsables  [DIS]                                        LA MISMA CAPACIDAD
+estado        verificado
+caducidad     12 meses
+```
+
+> Con `dimension: ref a capacidad`, estas dos celdas eran **una sola** y no podían tener
+> estados ni caducidades distintas. Ésa era la colisión, y éste es su remedio.
+
+### Ejemplo 2 · un documento evaluado en una familia documental
+
+```text
+sujeto        clase: documento · ancla: transversal · ruta: arquitectura-actual
+              → documento:transversal/arquitectura-actual
+aspecto       aspecto:documental/arquitectura-actual       una de las doce áreas de O8
+responsables  [ARQ, SIS]                                   lider: ARQ
+              ARQ responde del CONTENIDO; SIS de la conformidad del contrato documental
+criterio      contrato:documental/O8                       las exigencias de §4.2
+aplicabilidad obligatoria
+estado        vencido
+verificacion
+  ultima_real            2026-02-03
+  revisiones_examinadas  backend@4d0c118 · frontend@9c1e4a7
+  verificador            VER
+evidencia     [DIC-0027]
+findings      []
+caducidad     vence cuando cambia cualquiera de las revisiones examinadas.  YA VENCIÓ
+triggers      cambio en una revisión examinada · cambio de dirección arquitectónica
+responsable_de_corregir  ARQ
+```
+
+**Lo que el bloque `ads:memoria` del propio documento dice, y que la celda NO repite:**
+
+```text
+memoria.fichero              docs/arquitectura/ACTUAL.md
+memoria.autoridad            ARQ
+memoria.capacidad            ARQ
+memoria.plano                especializacion                 nuevo, §4.1
+memoria.capa                 NO APLICA: no es conocimiento que viaje con un release
+memoria.contiene             [arquitectura-actual, dominio-y-glosario]   DOS áreas, §4.3
+memoria.se_actualiza_cuando  [cambia un contrato entre componentes, entra una fuente nueva]
+memoria.caducidad            NORMATIVA: caduca si cambia la dirección arquitectónica
+memoria.estado               vigente
+memoria.vacio_significa      «no se ha reconstruido la arquitectura todavía»
+```
+
+**Documento `vigente`, verificación `vencido`.** Es el caso normal de §4.2, y ahora se puede
+escribir: el documento sigue siendo exigible, y nadie ha comprobado últimamente que sea
+cierto.
+
+### Ejemplo 3 · una instalación evaluada para un nivel de certificación
+
+```text
+sujeto        clase: instalacion · ancla: transversal · ruta: pesquerapp
+              → instalacion:transversal/pesquerapp
+aspecto       aspecto:certificacion/integrado
+responsables  [PLT, VER]                                   lider: PLT
+criterio      nivel-certificacion:integrado                LA NORMA, en el kernel (§9.2)
+aplicabilidad obligatoria
+estado        verificado
+verificacion
+  ultima_real            2026-08-11
+  revisiones_examinadas  frontend@9c1e4a7 · backend@4d0c118
+  verificador            VER independiente, que NO participó en la instalación
+evidencia     [DIC-0033]                                   dosier + salidas de las pruebas
+findings      []
+caducidad     no vence por tiempo: vence por TRIGGER
+triggers      cambia SOURCES.toml · cambia CI o permisos · cambia un entorno ·
+              SE AÑADE UNA FUENTE
+responsable_de_corregir  PLT
+```
+
+**Y la celda del nivel que no aplica, que ahora se puede escribir sin bloquear nada:**
+
+```text
+sujeto        instalacion:transversal/producto-de-un-repo
+aspecto       aspecto:certificacion/integrado
+aplicabilidad obligatoria
+estado        verificado
+              ⤷ y DENTRO del criterio, la prueba multi-fuente:
+                prueba                        multi-fuente-verificado-como-conjunto
+                aplicabilidad                 no-aplicable
+                motivo_no_aplicable           el producto declara UNA sola fuente; con una
+                                              fuente no hay conjunto que converger (E2.6)
+                evidencia_de_inaplicabilidad  SOURCES.toml@a71f3c2 declara 1 fuente
+```
+
+**Los tres caben en el mismo contrato.** Ninguno necesita un campo que los otros dos dejen
+vacío por conveniencia, y ningún campo significa una cosa en uno y otra en otro. Eso es lo
+que el campo único `dimension` no podía sostener.
+
+> **Ninguna de las tres celdas existe.** Son ejemplos del contrato, no registros de un
+> producto real. `cobertura` no está construida.
 
 ---
 
@@ -959,7 +1713,8 @@ ESPERANDO-DEPENDENCIA         se resuelve solo. NO genera trabajo. Si deja de se
                               DEBE convertirse en bloqueo: no puede quedar muerta (b.8)
 PAUSA POR PRESUPUESTO         completar unidad segura · verificar · persistir · dejar la
                               siguiente acción exacta · NO declarar terminación (§12)
-CAÍDA A MITAD                 manifiesto de tx: completar o marcar conflicto (§2.6)
+CAÍDA A MITAD                 evento `preparada` de la tx: completar, o `conflicto` si
+                              algún fichero es divergente (§2.6)
 INCONSISTENCIA IRRESOLUBLE    DSP para y escala. NUNCA inventa estado (b.14.3)
 ```
 
@@ -970,7 +1725,7 @@ mira el paso 2**, que hoy no tiene dónde mirar:
 
 ```text
 2 VERIFICAR   · ¿existen los artefactos que los paquetes dicen haber producido?
-              · ¿hay manifiestos en `estado/tx/`?          → completar o marcar conflicto
+              · ¿hay transacciones sin evento terminal?    → completar o marcar conflicto
               · ¿hay `reconciliacion_pendiente`?           → resolverla antes de nada
               · ¿hay derivados divergentes de su source_revision?  → regenerar
               · ¿hay proyecciones con huella rota?         → recompilar (§6.3)
@@ -1166,7 +1921,7 @@ GATES           U3 aprobado antes de U4 · U6 certificación
 CERTIFICACIÓN   el nivel que tuviera antes, revalidado. Una actualización que baja el
                 nivel alcanzado es un fallo, no un resultado
 ROLLBACK        volver a la versión anterior con su estado. Por eso U4 emite eventos
-REANUDACIÓN     por manifiesto de tx si U4 se interrumpe
+REANUDACIÓN     por el evento `preparada` de la tx si U4 se interrumpe
 CIERRE          U6 superado y la versión instalada es la candidata
 ```
 
@@ -1507,12 +2262,12 @@ demostrar que las piezas encajan sin contradecirse. El piloto sigue pendiente.
 |---|---|---|---|---|---|---|---|
 | 1 | **proyecto nuevo** | distribución instalada | `estado/` nace · item de instalación | `PLT` · `SIS` · runtime | N4 Operativa, N7 = `O12` | `workspace check` · prueba de humo · checkpoint recuperado | repetir el paso; antes de N3 no hay estado que perder |
 | 2 | **adopción de PesquerApp** | los dos repositorios enteros, sólo lectura | iniciativa A0 · inventario · baseline · cobertura inicial | `INV` la capa, `SIS` consumidor | A3 baseline, A8 retirada, A10 = `O12` | inventario con procedencia · dictamen de `VER` | dosier de la iniciativa + checkpoint del paquete |
-| 3 | **migración desde ADS anterior** | control repo antiguo y fuentes | estado **traducido**, con esquema nuevo | `PLT` · `SIS` | M3 equivalencia, M5 autorización | equivalencia antes/después de items y checkpoints | manifiesto de tx; M3 es idempotente |
+| 3 | **migración desde ADS anterior** | control repo antiguo y fuentes | estado **traducido**, con esquema nuevo | `PLT` · `SIS` | M3 equivalencia, M5 autorización | equivalencia antes/después de items y checkpoints | el evento `preparada` de la tx; M3 es idempotente |
 | 4 | **actualización de ADS** | distribución candidata e instalada | distribución instalada · proyecciones | `SIS` · `PLT` | U3 plan aprobado, U6 certificación | vista comprensible del cambio | rollback a la versión anterior con su estado |
 | 5 | **feature amplia por iniciativa** | componentes afectados y sus fuentes | iniciativa + N items + paquetes | las capacidades con custodia | gate de cierre de la iniciativa | capas, source changes e integration set | dosier derivado + checkpoints |
 | 6 | **auditoría recurrente → campaña** | los sujetos de las celdas vencidas | cobertura · items `AUD` · iniciativa campaña | runtime dentro de `O7` · `ENC` clasifica | gate de cada `AUD` + cierre de campaña | dictámenes · findings con causa raíz | la celda y su estado; nada se pierde |
 | 7 | **reanudación tras chat agotado** | estado canónico completo | ninguno hasta despachar | runtime | — | el reporte breve de `b.14` paso 5 | es el escenario: `Continúa` |
-| 8 | **caída durante escritura** | `estado/tx/` y `estado/eventos/` | se completa o se marca conflicto | runtime | — | evento y manifiesto | §2.6, sin inventar estado |
+| 8 | **caída durante escritura** | `estado/eventos/` y los marcadores de `estado/tx/` | se completa o se marca conflicto | runtime | — | los eventos de la transacción | §2.6, sin inventar estado |
 | 9 | **dos fuentes y cierre** | `frontend` y `backend` | paquetes con source changes · integration set | capacidades con custodia · `ENT` | `gate:convergencia-de-fuentes` | el integration set, con SHA por fuente | checkpoint con `sources:` |
 | 10 | **de Claude Code a Codex** | definición canónica del adaptador | proyecciones nuevas · cobertura de instalación | `PLT` | prueba de humo | salida de la prueba en sesión nueva | el estado no se toca: es neutral por diseño |
 | 11 | **evidencia caducada** | entradas declaradas del validador | ninguno: se regenera evidencia | el runner | `T158` | la huella que no casa | regenerar, nunca editar |
@@ -1778,7 +2533,7 @@ BLOQUEA             sólo el nivel Completo, y con él «instalación terminada 
 | (a), (b), `E1`, `E2` | **intactas**. F4 no las toca, y sus presiones están en §16 |
 | `K-1` tres capas | **intacta**. §1.2 clasifica ciclo de vida, no conocimiento |
 | `C1`–`C7` | **intactos**. `C2` se amplía en F6 |
-| quince capacidades, roles, métodos, prompts | **intactos**, y son las dimensiones de §5.2 |
+| quince capacidades, roles, métodos, prompts | **intactos**. Son los RESPONSABLES de los aspectos de §5.2, no los aspectos. `+4` extensiones de ficha: `ENT`, `ARQ`, `PLT` y `SEG` |
 | diez procesos de `b.16` | **intactos**. Ningún macrocircuito crea uno nuevo |
 | diecinueve esquemas | **+4**: `iniciativa`, `adaptador`, `cobertura`, `evento`. `memoria` y `validadores.yaml` se amplían |
 | packs | **intactos**, `+2` piezas en `web-app` (`CAND-022`, `CAND-024`) |
@@ -1811,7 +2566,7 @@ atrás es volver a un release. Es lo que ya se hace, y funciona.
                     (puede ir en paralelo con todo lo de abajo)
 
   1 · DISPOSICIÓN FÍSICA DEL ESTADO  §2        ── BLOQUEADA por PN-1 ──
-        │   evento · manifiesto de tx · derivados deterministas
+        │   evento con fases de transacción · derivados deterministas
         ├──────────────┬───────────────┬──────────────────┐
         ▼              ▼               ▼                  ▼
   3 · INICIATIVA   4 · CERTIFICACIÓN   6 · SUJETO       7 · RUNTIME
