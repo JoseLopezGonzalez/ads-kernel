@@ -57,7 +57,7 @@ OK   N158e   evidencia T158  falta un fichero de evidencia que el manifiesto exi
 OK   N158f   evidencia T158  un validador nuevo queda fuera del manifiesto y de la evidencia
                           → detectada: validadores/comprobar_algo_nuevo.py: existe y el manifiesto no lo declara. Quedaría fuera de la evidencia sin que nada l
 OK   N158g   evidencia T158  la cobertura publicada describe un corpus con dos ficheros menos que el vigente
-                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 284 y el corpus vigente da 2
+                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 285 y el corpus vigente da 2
 OK   N158h   evidencia T158  una vigencia declara un recuento que nadie implementa
                           → detectada: manifiesto: la vigencia 'T161-cobertura' de 'fuentes' declara el recuento 'fuentes.recuento_que_nadie_implementa', que n
 OK   N158i   evidencia T158  una entrada de vigencia no declara `patron` — el caso que reventaba con KeyError
