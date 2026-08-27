@@ -56,7 +56,8 @@ previos. Éstos son sus artefactos, y su estado:
 | 23.4 | síntesis | [`09-SINTESIS.md`](09-SINTESIS.md) | **entregada**: seis hallazgos, resolución propuesta para `X1`–`X5`, tres contradicciones nuevas y el destino de cada propuesta |
 | — | crítica independiente de la síntesis, y la puerta correctiva que abre | [`10-CRITICA-INDEPENDIENTE-F3.md`](10-CRITICA-INDEPENDIENTE-F3.md) | **entregada**: seis hallazgos sobre F3, las resoluciones `O7`–`O14` del Owner y el defecto de vigencia de `T158` |
 | 23.5 | diseño integrado | [`11-ARQUITECTURA-INTEGRADA.md`](11-ARQUITECTURA-INTEGRADA.md) | **entregada y después CORREGIDA** por devolución independiente: el modelo integrado, la disposición física del estado, cuatro tipos de estado nuevos, los cuatro macrocircuitos y cuatro presiones normativas vigentes. **NO certificada** |
-| — | crítica independiente de F4, y su aplicación | [`12-CRITICA-INDEPENDIENTE-F4.md`](12-CRITICA-INDEPENDIENTE-F4.md) | **entregada**: nueve bloques de hallazgos sobre F4, las correcciones aplicadas y `D23`–`D33`. **Pendiente de SEGUNDA revisión independiente**: quien aplicó la crítica es quien la recibió |
+| — | crítica independiente de F4, y su aplicación | [`12-CRITICA-INDEPENDIENTE-F4.md`](12-CRITICA-INDEPENDIENTE-F4.md) | **entregada**: nueve bloques de hallazgos sobre F4, las correcciones aplicadas y `D23`–`D33` |
+| — | segunda crítica independiente de F4 | [`13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md`](13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md) | **entregada**: veredicto de INSUFICIENCIA por revisor independiente con contexto limpio — dos hallazgos BLOQUEANTES, seis GRAVES y catorce nuevos. Correcciones aplicadas y `D34`–`D45`. **`F4c` sigue ABIERTA**: exige una TERCERA revisión independiente |
 
 El registro reanudable de todo ello es
 [`CHECKPOINT-ADS-NEXT.md`](CHECKPOINT-ADS-NEXT.md). **Basta decir «Continúa»**: la
