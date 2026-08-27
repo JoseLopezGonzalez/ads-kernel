@@ -2,6 +2,77 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.6 — pasada correctiva: verde no era correcto
+
+Una revisión externa reprodujo defectos que la batería de `2.0.0-alpha.5` no detectaba, con
+los trece validadores en verde y veintinueve pruebas pasando. Las decisiones de arquitectura
+—`E2`, `C6`, `C7`, el `integration-set`, `SOURCES.toml` y la separación producto / fuente /
+componente / workspace— se conservan enteras. Lo que se corrige es la implementación, las
+pruebas, la documentación y **las afirmaciones de evidencia**.
+
+**Los ocho bloqueantes de `tooling/workspace.py`.** Cada uno se reprodujo primero, se cubrió
+con una prueba que falla contra el código anterior, y después se corrigió:
+
+- **escape por enlace simbólico** — `normpath` es textual y no ve un symlink; `init` clonaba
+  fuera del workspace. Todo destino se resuelve de verdad, sin crearlo, contra el `realpath`
+  de su raíz autorizada.
+- **fuentes dentro del control repo** — se rechazaba `path = "ads"` y pasaban `ads/frontend`
+  y `ads/../ads/z`. La ruta reservada no es una cadena: es el sitio donde vive el manifiesto.
+- **colisiones jerárquicas** — `app` y `app/interno` anidaban un repositorio Git dentro de
+  otro, contra `N12`. Y `path = "."` haría del workspace un repositorio, que C6 prohíbe.
+- **manifiesto inválido con efectos laterales** — `init` clonaba las fuentes válidas de un
+  manifiesto roto. Ahora es **todo o nada** frente a cualquier error estático.
+- **secretos en la salida** — un secreto puesto por error salía por texto, JSON, error de
+  identidad y stderr de Git. Todo remoto que se imprime pasa por `redactar`, incluido el
+  que se lee del disco, que no ha pasado por ninguna validación.
+- **SSH válido confundido con credencial** — `ssh://git@github.com/org/repo.git` es una URL
+  admitida por §39 y se rechazaba por llevar `@`.
+- **normalización demasiado agresiva** — igualaba puertos distintos, plegaba la
+  capitalización de la ruta y minusculaba rutas locales. Ahora sólo se pliega el host, se
+  conserva el puerto, y lo ambiguo se devuelve **opaco**: igual sólo a sí mismo.
+- **robustez del TOML** — tipos incorrectos producían traceback, y `schema = true` colaba
+  como `1` porque en Python `True == 1`.
+
+**Arranque.** `new-project.sh` documentaba `git push -u origin main` y `git init` creaba
+`master` con la configuración global vacía. La rama vive en una sola variable, y `T168` la
+comprueba **con `GIT_CONFIG_GLOBAL` a `/dev/null`**, que es donde el defecto aparece.
+
+**Barrido semántico.** `E2` tenía precedencia, pero el corpus activo seguía enseñando el
+modelo anterior en `K0.6`, `K0.8`, `G04`, `G12`, `G26`, `G27`, `G38`, `G39`, los entregables
+del Circuito 0, `G46` y `G48`, y en `ARQ`, `ENC`, `DSP`, `SEG`, `CON`, `C2`, `C5` y
+`C6`. Se clasificó cada aparición: referencia legítima a un repositorio Git concreto, al
+control repo, a una fuente, al conjunto de fuentes necesarias, o resto real. Sólo se tocaron
+los restos. La línea histórica sube a **1.5.0**.
+
+**Pruebas.**
+
+- `T161` deja de buscar tres literales: diez formulaciones con patrón, cada una con un
+  fixture que debe detectar y un contraejemplo que no, y con la **cobertura publicada** —279
+  ficheros—. Por debajo del mínimo es fallo: un validador que pasa por no leer nada es el
+  defecto que esto evita.
+- `T171` nueva: cada criterio de descubrimiento del §100 tiene un sitio declarado donde
+  leerse en el proyecto recién creado. Publica que su alcance es **estructural** y que el
+  descubrimiento real exige piloto.
+- 29 → 57 pruebas de workspace. Entre ellas, la **reconstrucción de un producto de cuatro
+  fuentes**, que antes era un «test mental»: se materializan, se borran las cuatro y el
+  workspace se reconstruye desde el control repo con las mismas revisiones.
+- **Sin red comprobado**: `GIT_ALLOW_PROTOCOL=file`. `https`, `ssh` y `git` mueren con
+  «transport not allowed», y una prueba lo comprueba; otra comprueba que el transporte local
+  sigue funcionando, para que la primera no pase por bloquearlo todo.
+- Nueve pruebas negativas nuevas: `N161`–`N161g`, `N171`, `N171b`.
+
+**Afirmaciones.** El checkpoint decía «CA-1 a CA-17 verificados» y «los diez criterios del
+§100». Ninguna de las dos tenía evidencia detrás. La matriz con el grado real de cada
+criterio —**nueve ejecutados, cinco estructurales, dos contrato y uno estructural
+parcial**— vive en `docs/evolucion/08-EVIDENCIA-MULTIREPO.md`, en el repositorio del
+kernel: es historia de esta entrega y **no se enlaza desde aquí**, porque un proyecto
+instalado no la recibe y el enlace quedaría roto en cada instalación. `T169` y `T170`
+siguen en `contrato-definido` y no se cuentan como demostradas.
+
+**Requisito de entorno, escrito donde se ve.** Leer `SOURCES.toml` exige Python 3.11 o
+superior: `tomllib` es estándar desde ahí. En 3.10 el manifiesto no se lee y tres
+validadores fallan diciéndolo.
+
 ## 2.0.0-alpha.5 — un producto ADS no es un repositorio
 
 Decisión de arquitectura del Owner, aprobada para implementación. Retira la suposición

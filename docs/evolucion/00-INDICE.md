@@ -44,7 +44,8 @@ previos. Éstos son sus artefactos, y su estado:
 | 23.3 | minería de proyectos reales | [`05-CANDIDATOS.md`](05-CANDIDATOS.md) | **cerrada**: PesquerApp, frontend y backend, única fuente externa madura de esta fase |
 | — | contraste de cada candidato contra el corpus | [`06-CONTRASTE.md`](06-CONTRASTE.md) | **entregado**: 29 veredictos y seis problemas arquitectónicos registrados |
 | — | la decisión multi-repo del Owner, y su contradicción | [`07-DECISION-MULTIREPO.md`](07-DECISION-MULTIREPO.md) | **entregado**: registrada, y resuelta por el Owner |
-| — | **mandato multi-repositorio** | `docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md` · `C6` · `C7` | **implementado**: release 2.0.0-alpha.5 |
+| — | **mandato multi-repositorio** | `docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md` · `C6` · `C7` | **implementado**, y después corregido: release 2.0.0-alpha.6 |
+| — | qué está demostrado de la implementación, y qué no | [`08-EVIDENCIA-MULTIREPO.md`](08-EVIDENCIA-MULTIREPO.md) | **entregado**: `CA-1`–`CA-17` y §100, criterio a criterio, con su grado de evidencia |
 | 23.4 | síntesis | — | siguiente: el mandato la interrumpió |
 | 23.5 | diseño integrado | — | no iniciada: depende de 23.4 |
 
