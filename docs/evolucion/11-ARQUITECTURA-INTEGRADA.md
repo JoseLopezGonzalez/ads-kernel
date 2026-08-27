@@ -628,21 +628,115 @@ deshacer, y esa elección se declara aquí en vez de quedar implícita.
 
 ### 2.6.4 · Cómo clasifica cada fichero durante la recuperación
 
-**Tres cajas, y la tercera nunca se resuelve sola.** Es la corrección central del protocolo.
+> **Corregido por la segunda corrección técnica (hallazgo `H2`, GRAVE).** Las tres cajas
+> estaban bien y **`W12a` no las respetaba**: mandaba emitir `conflicto` ante un canónico
+> revertido a su `hash_previo`, que es exactamente la PRIMERA caja —NO APLICADO— y que `W3`
+> y `W4` mandan completar hacia delante. El mismo estado observable recibía **dos
+> clasificaciones incompatibles** según por qué ventana se entrara, y la que ganaba escalaba
+> a una persona un resultado que sigue siendo **determinista**. Es `D56`.
+
+**La clasificación se hace contra la ÚLTIMA FASE DURABLE que gobierna esa ruta**, no contra
+el síntoma ni contra la ventana por la que se llegó. Primero se resuelve **qué intención
+gobierna**, y sólo después se compara:
 
 ```text
-CASA CON `hash_previo`               NO APLICADO      → aplicar
-CASA CON `hash_posterior_esperado`   YA APLICADO      → saltar. Idempotente por hash, no
-                                                        por confianza en un contador
-NO CASA CON NINGUNO                  DIVERGENTE       → CONFLICTO. Se escala. NUNCA se
-                                                        sobrescribe: el contenido que hay
-                                                        es de alguien, y aplicar encima
-                                                        destruiría trabajo sin registro
+INTENCIÓN VIGENTE     la última intención durable que declara esa ruta:
+DE UNA RUTA             · `reconciliacion-preparada`, si la hay para esa ruta
+                        · `preparada`, si no la hay
+                      Es la misma regla que §2.6.6 usa para elegir el hash que gobierna, y
+                      no dos reglas parecidas.
+
+BASE VÁLIDA           `hash_previo`      si gobierna `preparada`
+                      `hash_observado`   si gobierna `reconciliacion-preparada`
+
+RESULTADO PERMITIDO   `hash_posterior_esperado`   si gobierna `preparada`
+                      `hash_final`                si gobierna `reconciliacion-preparada`
+```
+
+**Y entonces, las tres cajas — que siguen siendo tres:**
+
+```text
+CASA CON LA BASE VÁLIDA      NO APLICADO      → aplicar, en el `orden` declarado. Es
+                                                IDEMPOTENTE: reaplicar sobre la base no
+                                                destruye nada, porque la base es
+                                                exactamente lo que la intención durable ya
+                                                se comprometió a sustituir
+CASA CON EL RESULTADO        YA APLICADO      → saltar. Idempotente por hash, no por
+PERMITIDO                                       confianza en un contador
+NO CASA CON NINGUNO          DIVERGENTE       → CONFLICTO. Se escala. NUNCA se
+                                                sobrescribe: el contenido que hay
+                                                es de alguien, y aplicar encima
+                                                destruiría trabajo sin registro
 ```
 
 **Un fichero que no existe** se trata como caso declarado, no como excepción: si el evento
 declara `hash_previo: ausente`, no existir es «no aplicado»; si declara un hash concreto, no
 existir es **divergente**.
+
+#### La función de clasificación, completa — y es UNA
+
+Antes de las tres cajas hay dos preguntas que deciden **si hay transacción**, y sin ellas
+`conflicto` se emite donde no hay transacción que pueda tenerlo como fase:
+
+```text
+0  ¿LA TRANSACCIÓN QUE DECLARA ESA RUTA TIENE `derivada` DURABLE?
+     SÍ → NO HAY FASE POSIBLE. Ninguna transición sale del terminal (§2.6.1).
+          · casa con el resultado que gobernaba  → nada que hacer
+          · no casa                              → evento `deriva`, `causa:
+                                                   posterior-al-cierre` (§2.6.11) · W12b
+
+1  ¿EXISTE UNA TRANSACCIÓN ABIERTA —`preparada` durable y SIN `derivada`— QUE DECLARE
+   ESA RUTA, EN ESTA INSTALACIÓN?
+     NO → NO HAY TRANSACCIÓN, luego NO PUEDE HABER `conflicto`: sería una fase de algo
+          que no existe.
+          · casa con `HEAD`     → nada que hacer
+          · no casa con `HEAD`  → evento `deriva`, `causa: sin-transaccion`
+          · y si además hay un MARCADOR sin su transacción, o el marcador llegó en un
+            árbol publicado, eso es un DEFECTO DE PUBLICACIÓN: evento `fallo`, nunca
+            `conflicto` (§2.6.6)
+
+2  INTENCIÓN VIGENTE, BASE VÁLIDA y RESULTADO PERMITIDO, como arriba.
+
+3  LAS TRES CAJAS. Y `conflicto` sale de la tercera Y SÓLO DE ELLA.
+```
+
+**Las dos consecuencias que esto fija, y que antes se contradecían:**
+
+```text
+UN CANÓNICO REVERTIDO      casa con la BASE de su intención vigente → NO APLICADO → se
+BAJO UNA TRANSACCIÓN       REAPLICA en el `orden` declarado, de forma idempotente. NO es
+ABIERTA                    `conflicto`, porque `conflicto` exige que NO case con NINGUNO
+                           de los dos hashes. El resultado es DETERMINISTA y no necesita
+                           que nadie decida. Es `W12a`.
+
+SI `confirmada` YA ERA      se REAPLICA igual, y después se REEMITE `confirmada`. La
+DURABLE Y UN CANÓNICO      recuperación se hace desde `preparada`, que declara el
+SE PERDIÓ POR              `hash_posterior_esperado` y el mecanismo —`contenido`, `parche`
+DURABILIDAD                u `operacion`— con el que reproducirlo. No hace falta ninguna
+                           entrada nueva, y no se pide ninguna decisión humana.
+```
+
+#### Reemitir una fase NO es una transición
+
+```text
+QUÉ ES UNA REEMISIÓN   un evento NUEVO, con `id` propio, mismo `tx` y MISMA `fase` que uno
+                       anterior, que vuelve a declarar EL MISMO HECHO. `W5` y `W13` ya la
+                       usaban sin nombrarla: «se emite `confirmada` y se sigue».
+
+CUÁNDO ES VÁLIDA       sólo si el hecho que la fase afirma VUELVE A SER CIERTO EN DISCO en
+                       el momento de emitirla. Una `confirmada` reemitida exige que los N
+                       ficheros casen otra vez con su `hash_posterior_esperado`.
+
+POR QUÉ NO ES UNA      porque el par (fase anterior, fase nueva) no cambia de fase. El
+TRANSICIÓN             validador semántico del diario (§3.6, capa B) cuenta FASES
+                       ALCANZADAS para el autómata, y EVENTOS para la cadena `predecesor`.
+                       Es la misma distinción que `D37` fijó al decir que **reemitir no es
+                       idempotente por `id`: la idempotencia vive en `tx`**.
+
+QUÉ NO AUTORIZA        reemitir NO permite volver atrás en el autómata, y NUNCA se reemite
+                       una fase de una transacción con `derivada` durable: eso sería salir
+                       del terminal, y `W12b` manda `deriva`.
+```
 
 ### 2.6.5 · Todas las ventanas de caída
 
@@ -665,9 +759,9 @@ transacción esté abierta o cerrada (§2.6.11).
 | W8 | tras `derivada`, antes de borrar el marcador | transacción CERRADA con marcador abierto | se borra el marcador. Idempotente. **`derivada` es el único terminal**, luego «cerrada» y «terminal» vuelven a coincidir (§2.6.1) |
 | W9 | antes del commit de Git | árbol coherente, Git por detrás | se hace el commit LOCAL. Es recuperación: protege el árbol y no publica (§2.6.10) |
 | W10 | después del commit, antes del push | commit local sin publicar | **NO se empuja automáticamente.** El push es publicación, no recuperación: pasa a la política de §2.6.10 |
-| W11 | en cualquier punto, con la transacción abierta y un fichero divergente | un fichero que no casa con ninguno de los dos hashes | **`conflicto`**, con la copia íntegra de lo divergente. El predicado `reconciliacion_pendiente` **se deriva** de él (§2.6.9): no hay bandera que escribir. No se completa y no se revierte |
-| **W12a** | caída de MÁQUINA tras el `rename` de un canónico, sin `fsync` de su directorio, con la transacción **TODAVÍA ABIERTA** —sin `derivada`— | uno o más canónicos revertidos a su hash previo | `conflicto`, que es una **fase legítima** de una transacción abierta, y la ruta de conflicto la resuelve |
-| **W12b** | lo mismo, con la transacción **YA CERRADA** —`derivada` durable— | ídem | **NO es `conflicto`**: `derivada` es terminal y ninguna transición sale de él. Se emite un evento **`deriva`** con `causa: posterior-al-cierre` (§2.6.11), que referencia la transacción sin reabrirla. Es el fallo silencioso del hallazgo `E`, y el hallazgo `2` corrige a dónde va |
+| W11 | en cualquier punto, con la transacción abierta y un fichero VERDADERAMENTE divergente | un fichero que no casa **ni con la base válida ni con el resultado permitido** de su intención vigente (§2.6.4) | **`conflicto`** —y las dos condiciones son necesarias: transacción abierta Y divergencia real—, con la copia íntegra de lo divergente. El predicado `reconciliacion_pendiente` **se deriva** de él (§2.6.9): no hay bandera que escribir. No se completa y no se revierte |
+| **W12a** | caída de MÁQUINA tras el `rename` de un canónico, sin `fsync` de su directorio, con la transacción **TODAVÍA ABIERTA** —sin `derivada`— | uno o más canónicos revertidos a su hash previo | **NO es `conflicto`.** Casan con la BASE VÁLIDA de su intención vigente, luego son **NO APLICADO** y se **REAPLICAN** en el `orden` declarado, de forma idempotente (§2.6.4) — que es lo mismo que mandan `W3` y `W4` ante el mismo disco. Si `confirmada` ya era durable, se **REEMITE** tras reaplicar, y la reemisión no es una transición. Sólo hay `conflicto` si algún fichero no casa **ni con la base ni con el resultado**. **Corregido** (hallazgo `H2`) |
+| **W12b** | lo mismo, con la transacción **YA CERRADA** —`derivada` durable— | ídem | **NO es `conflicto`**, y por el paso 0 de §2.6.4: `derivada` es terminal y ninguna transición sale de él. Se emite un evento **`deriva`** con `causa: posterior-al-cierre` (§2.6.11), que referencia la transacción sin reabrirla. Es el fallo silencioso del hallazgo `E`, y el hallazgo `2` corrige a dónde va |
 | **W13** | **escribiendo el temporal de `confirmada`** | temporal huérfano, con todos los canónicos ya en posterior | **se reemite `confirmada`.** NO se descarta la transacción: a diferencia de `W2`, aquí los canónicos YA están aplicados |
 | **W14** | **creando el marcador (paso 2)** | `preparada` durable, marcador ausente o vacío | benigno: `W3` lo cubre por resultado. Se recrea el marcador desde el diario (§2.9) |
 | **W15** | **el push es rechazado porque el remoto avanzó** | commit local, remoto divergente | evento `fallo`, tope de tres por §7.3, y se escala. **NUNCA `--force`** (§2.6.10) |
@@ -681,9 +775,15 @@ SE COMPLETA   toda transacción cuyo evento `preparada` es durable y ninguno de 
 SE REVIERTE   sólo lo que nunca llegó a comprometerse: un temporal huérfano de `preparada`
               (W2). No existe «deshacer» después del punto de compromiso, y por eso no se
               promete. W13 NO es una reversión: es una reemisión.
-SE ESCALA     todo lo divergente (W11), el fallo silencioso que la integridad post-terminal
-              destapa (W12a y W12b), el fallo de publicación (W15, W16), y todo lo que exija decidir.
-              `b.14.3` y `R3`: DSP para y escala, NUNCA inventa estado.
+SE ESCALA     todo lo VERDADERAMENTE divergente (W11), la deriva posterior al cierre que la
+              integridad post-terminal destapa (W12b), el fallo de publicación (W15, W16),
+              y todo lo que exija decidir. `b.14.3` y `R3`: DSP para y escala, NUNCA
+              inventa estado.
+              W12a NO ESTÁ AQUÍ, y es la corrección del hallazgo `H2`: un canónico revertido
+              bajo una transacción abierta casa con su base válida, luego SE COMPLETA. Se
+              REPORTA —el runtime nombra la ruta y el hash observado, porque una pérdida de
+              durabilidad es un defecto que hay que ver— pero no se escala una decisión que
+              es determinista.
 ```
 
 ### 2.6.6 · Seis garantías distintas que no son la misma
@@ -710,8 +810,12 @@ SE ESCALA     todo lo divergente (W11), el fallo silencioso que la integridad po
 6  RECONSTRUCCIÓN DESDE        sólo ve lo que se empujó. Y por la regla de Git de abajo,
    UN CLON NUEVO               un árbol publicado NUNCA contiene marcadores. Si un clon ve
                                uno, es EVIDENCIA DIAGNÓSTICA de un defecto del runtime que
-                               publicó un árbol incoherente: se declara `conflicto` y se
-                               escala. **El marcador NUNCA es fuente para un clon.**
+                               publicó un árbol incoherente: se emite un evento **`fallo`**
+                               de publicación, nombrando `tx` y commit, y se escala.
+                               **NO se emite `conflicto`** —el clon no tiene ninguna
+                               transacción abierta propia, y `conflicto` es una FASE de una
+                               transacción (hallazgo `H2`)—.
+                               **El marcador NUNCA es fuente para un clon.**
 ```
 
 **Dónde es obligatorio `fsync`, y dónde deliberadamente no:**
@@ -806,10 +910,20 @@ QUÉ AUTORIDAD        argumento de §2.6.4—. La restauración es **decisión d
 QUÉ HACE SI NO CASA  DEPENDE DE SI LA TRANSACCIÓN SIGUE ABIERTA, y la distinción es de
                      identidad, no de grado (§2.6.11):
 
-                       TRANSACCIÓN ABIERTA    —sin `derivada`— es `conflicto`, una FASE suya,
-                       (W12a)                 y la ruta de conflicto la resuelve. Con ello el
-                                              predicado `reconciliacion_pendiente` de §2.6.9,
-                                              sin escribir en ningún item
+                       TRANSACCIÓN ABIERTA    —sin `derivada`— se CLASIFICA por §2.6.4
+                       (W12a)                 contra su intención vigente, y NO se salta a
+                                              `conflicto`:
+                                                · casa con la BASE     → NO APLICADO → se
+                                                  REAPLICA, y si `confirmada` era durable
+                                                  se REEMITE tras reaplicar
+                                                · casa con el RESULTADO → nada que hacer
+                                                · no casa con ninguno  → **entonces sí**
+                                                  `conflicto`, una FASE suya, y con él el
+                                                  predicado `reconciliacion_pendiente` de
+                                                  §2.6.9, sin escribir en ningún item
+                                              **Corregido** por el hallazgo `H2`: antes
+                                              mandaba `conflicto` para el primer caso, que
+                                              es el que `W3` y `W4` completan
 
                        TRANSACCIÓN CERRADA    —`derivada` durable— **NO** es `conflicto`:
                        (W12b)                 ninguna transición sale del terminal. Es un
@@ -819,14 +933,45 @@ QUÉ HACE SI NO CASA  DEPENDE DE SI LA TRANSACCIÓN SIGUE ABIERTA, y la distinci
 
                      Un canónico que revirtió bajo una `derivada` durable es indistinguible,
                      desde el estado, de uno que alguien tocó — y las dos cosas exigen lo
-                     mismo: parar y escalar. Lo que cambia es DÓNDE se registra
+                     mismo: parar y escalar. Lo que cambia es DÓNDE se registra.
+                     BAJO UNA TRANSACCIÓN ABIERTA no ocurre lo mismo, y ésa es la asimetría
+                     que el hallazgo `H2` corrige: allí SÍ existe una intención durable que
+                     declara a qué resultado hay que llegar y con qué mecanismo, luego el
+                     resultado es determinista y se completa. Después del cierre esa
+                     intención ya se consumió, y no queda nada que completar
 ```
 
 **La regla de Git, que cierra W9 y W10:** **ADS nunca hace commit de un árbol con una
 transacción abierta.** El commit se hace entre transacciones. Por tanto un árbol publicado
 **nunca contiene una transacción a medias**, y un clon nuevo nunca tiene que completar una
 transacción que no preparó. Si un clon encuentra un marcador `.abierta`, es que se empujó
-un árbol incoherente: eso es un **defecto del runtime**, se declara `conflicto` y se escala.
+un árbol incoherente: eso es un **defecto del runtime**, y se registra como tal.
+
+**Qué se emite exactamente ante un marcador que no debería existir**, corregido por el
+hallazgo `H2` — porque `conflicto` exige **una transacción abierta válida Y un fichero
+verdaderamente divergente**, y aquí no hay ni lo uno ni, necesariamente, lo otro:
+
+```text
+MARCADOR EN UN ÁRBOL      DEFECTO DE PUBLICACIÓN. Evento **`fallo`**, con `operacion:
+CLONADO                   publicacion`, el `tx` y el commit culpable nombrados. El clon NO
+                          completa la transacción ajena, NO emite ninguna fase con ese
+                          `tx` —no es suyo— y NO borra el marcador en silencio.
+
+MARCADOR HUÉRFANO         el marcador nombra un `tx` que el diario no tiene. Evento
+—SIN SU `preparada`       **`fallo`** con el mismo diagnóstico: es un defecto de escritura
+EN EL DIARIO—             o de publicación, no un conflicto. Reconstruir desde el diario
+                          (§2.9) da CERO transacciones abiertas, y el marcador se retira
+                          registrando por qué.
+
+CANÓNICO DIVERGENTE       evento **`deriva`** con `causa: sin-transaccion` (§2.6.11). No
+SIN TRANSACCIÓN           hay `preparada` contra la que comparar; el hash esperado es el de
+ABIERTA                   `HEAD`.
+
+`conflicto`               SÓLO con transacción abierta válida EN ESTA INSTALACIÓN y un
+                          fichero que no casa ni con la base ni con el resultado de su
+                          intención vigente. Fuera de eso, emitirlo sería **inventar una
+                          transición**, que es lo que `b.14.3` prohíbe con otras palabras.
+```
 
 > **Corregido por la segunda devolución independiente (hallazgo `F`).** La garantía 6 decía
 > *«los marcadores `.abierta` sí, porque están versionados»*, enunciando como **propiedad
@@ -878,7 +1023,7 @@ impuso al arnés de negativos.
 | `X02` | matar el proceso entre el fichero 2 y el 3 de cinco | los cinco quedan en posterior, en el orden declarado |
 | `X03` | matar el proceso entre el último fichero y `confirmada` | se emite `confirmada`; ningún fichero se reescribe |
 | `X04` | ejecutar la recuperación DOS VECES seguidas | la segunda es una no-operación. Idempotencia por hash |
-| `X05` | modificar a mano un fichero de la transacción entre `preparada` y la recuperación | `conflicto` con el fichero NOMBRADO. No se sobrescribe |
+| `X05` | modificar a mano un fichero de la transacción entre `preparada` y la recuperación, **a un contenido que no es ni su base ni su resultado** | `conflicto` con el fichero NOMBRADO: hay transacción abierta y divergencia real, que son las DOS condiciones. No se sobrescribe |
 | `X06` | borrar un fichero cuyo `hash_previo` no es `ausente` | `conflicto`. No se recrea desde el hash |
 | `X07` | corromper un evento `preparada` a medio escribir | se identifica como temporal huérfano y se descarta. La transacción no existió |
 | `X08` | dos ejecutores preparan transacciones que tocan el mismo fichero | el segundo encuentra el marcador `.abierta` y **no arranca**: `R5` es un lock, no un consejo |
@@ -888,7 +1033,7 @@ impuso al arnés de negativos.
 | `X12` | matar el proceso entre `confirmada` y el commit de Git | se hace el commit. El estado ya era verdad |
 | `X13` | perder `.ads/run/` entero | se reconstruye. Ninguna transacción se pierde: el diario es durable |
 | `X14` | borrar el marcador `.abierta` de una transacción en vuelo | el arranque la encuentra recorriendo el diario. El marcador es un acelerador |
-| `X15` | clonar de nuevo un remoto empujado en medio de una transacción | `conflicto` y escalado. Nunca se completa una transacción ajena |
+| `X15` | clonar de nuevo un remoto empujado en medio de una transacción | evento **`fallo`** de publicación, nombrando `tx` y commit, y escalado. **NUNCA `conflicto`**: el clon no tiene transacción abierta propia, y una fase de una transacción ajena no se emite. Nunca se completa una transacción ajena |
 | `X16` | una operación declarada `operacion` que NO es determinista | el hash posterior no casa al prepararla → la transacción **no llega a preparar** |
 | `X17` | un evento sellado al que apunta un evento vivo | el sellado **no lo retira**. Ver §2.9 |
 | `X18` | suspender el ejecutor con `SIGSTOP` entre el fichero 3 y el 4, y leer los cinco desde fuera | el lector declara «transacción abierta; estas cinco rutas no son fiables», **nombrando las cinco y sin recorrer el diario** (§2.6.8) |
@@ -898,9 +1043,9 @@ impuso al arnés de negativos.
 | `X22` | cambiar el formato de presentación del diario sin cambiar el contenido | **ningún identificador cambia**. Si cambian, §2.11 y §2.8 son incompatibles |
 | `X23` | recorrer todos los caminos del protocolo buscando `fase: abortada` | **ninguno la produce**, y el **esquema estructural** **rechaza** un evento con esa fase: es un valor fuera del enum, y eso se ve en el evento aislado |
 | `X25` | **corte de alimentación forzado** tras el `rename` de `confirmada` | los cinco canónicos casan con su `hash_posterior_esperado`. Es la caída de MÁQUINA, que `X01`–`X03` no cubrían |
-| `X26` | inyectar la reversión de dos canónicos con `confirmada` presente | el arranque **lo detecta y nombra los dos ficheros**, en vez de regenerar derivados encima |
+| `X26` | inyectar la reversión de dos canónicos con `confirmada` presente y **sin `derivada`** | el arranque **lo detecta y nombra los dos ficheros** en vez de regenerar derivados encima, los clasifica como **NO APLICADO** —casan con su `hash_previo`— y los **REAPLICA** desde `preparada`, **REEMITIENDO** después `confirmada`. **No emite `conflicto` y no pide ninguna decisión**: el resultado es determinista |
 | `X27` | recorrer la historia entera del control repo tras N transacciones | **ningún commit** contiene un fichero bajo `estado/tx/` |
-| `X28` | fabricar a mano un commit con marcador abierto, publicarlo y clonar | el clon **escala como defecto del runtime** y **no completa nada**, nombrando `tx` y commit culpable |
+| `X28` | fabricar a mano un commit con marcador abierto, publicarlo y clonar | el clon emite **`fallo`** de publicación, **escala como defecto del runtime** y **no completa nada**, nombrando `tx` y commit culpable. **No emite `conflicto` ni ninguna otra fase** |
 | `X37` | interrumpir una transacción, avanzar el remoto desde otro clon, arrancar la recuperación | se completa, el commit local se hace, el push **no se fuerza**, se emite `fallo` con el diagnóstico «el remoto avanzó» y se escala |
 | `X38` | recuperación con la `main` del control repo protegida | la recuperación **no intenta** empujar sobre ella |
 | `X39` | commit y push de recuperación | dejan evento con **los cinco conceptos de `a.9`** completos; la ausencia de cualquiera es un fallo del validador, no un silencio |
@@ -1201,6 +1346,52 @@ EL BUCLE TIENE TOPE   TRES iteraciones `conflicto → reconciliacion-preparada �
 **Una segunda ejecución converge al mismo resultado en las nueve**, porque la decisión es
 durable desde `R3` y la clasificación por hash es idempotente. Es `T17` aplicado a la ruta de
 conflicto, que era exactamente lo que no se podía afirmar antes.
+
+#### Mismo disco, misma clasificación — las diecisiete ventanas contra UNA sola función
+
+> **Añadido por la segunda corrección técnica (hallazgo `H2`).** Una tabla de ventanas es una
+> lista de casos, y una lista de casos **puede contradecirse consigo misma sin que se note**:
+> es exactamente lo que le pasó a `W12a` frente a `W3` y `W4`. La comprobación que lo impide
+> es proyectar TODAS las ventanas sobre la función de clasificación de §2.6.4 y verificar que
+> **ninguna ventana clasifica, y todas se limitan a describir por dónde se entró**.
+
+```text
+LA REGLA        una ventana NO decide. Decide la función de §2.6.4, sobre el disco. La
+                ventana sólo dice qué se observa al arrancar. Dos ventanas con el mismo
+                disco tienen, por construcción, el mismo desenlace.
+```
+
+| estado observable de una ruta | qué dice la función de §2.6.4 | ventanas que llegan a ese estado |
+|---|---|---|
+| sin `preparada` durable | no hay transacción: nada, o `deriva` `sin-transaccion` | `W1` · `W2` · `R2` |
+| `preparada` durable · fichero en la BASE | NO APLICADO → aplicar | `W3` · `W4` (los que faltan) · **`W12a`** |
+| `preparada` durable · fichero en el RESULTADO | YA APLICADO → saltar | `W4` (los hechos) · `W5` · `W6` · `W13` · `W14` |
+| `preparada` durable · fichero en NINGUNO | DIVERGENTE → `conflicto` | `W11` · `X05` · `X06` |
+| `conflicto` sin `reconciliacion-preparada` durable | el conflicto sigue abierto; **nada se toca** | `R1` · `R2` |
+| `reconciliacion-preparada` durable · fichero en `hash_observado` | NO APLICADO → aplicar | `R3` · `R4` (los que faltan) |
+| `reconciliacion-preparada` durable · fichero en `hash_final` | YA APLICADO → saltar | `R4` (los hechos) · `R5` · `R6` |
+| `reconciliacion-preparada` durable · fichero en NINGUNO | DIVERGENTE → `conflicto`, base nueva, tope de tres | `R9` |
+| `derivada` durable · fichero fuera del resultado que gobernaba | **`deriva`** `posterior-al-cierre`. Ninguna fase | **`W12b`** |
+| derivados divergentes, canónicos intactos | regenerar enteros. No es una caja: un derivado no es fuente | `W7` · `R7` · `X10` · `X11` |
+| transacción cerrada con marcador vivo | borrar el marcador. Idempotente | `W8` · `R8` |
+| árbol coherente, Git por detrás | commit local sí, push no | `W9` · `W10` · `W15` · `W16` |
+| marcador sin transacción propia, o llegado en un clon | **`fallo`** de publicación. Nunca `conflicto` | `X15` · `X28` |
+
+**Las tres invariantes que esta tabla hace comprobables**, y que `X59` no necesita porque se
+leen aquí —la tabla adversarial se queda en **cuarenta y dos filas**:
+
+```text
+1  NINGÚN `conflicto` SIN LAS DOS CONDICIONES: transacción abierta en esta instalación Y
+   fichero que no casa ni con la base ni con el resultado. Cuatro filas lo producen, y las
+   cuatro cumplen las dos.
+
+2  NINGUNA TRANSICIÓN SALE DE `derivada`. La única fila con `derivada` durable produce un
+   evento `deriva`, que no lleva `fase` ni `tx` propio.
+
+3  MISMO ESTADO OBSERVABLE, MISMA CLASIFICACIÓN. `W12a` y `W3` comparten fila, que es lo
+   que antes no ocurría; `W12a` y `W12b` están en filas distintas porque el disco NO es el
+   mismo: en una hay una intención durable pendiente y en la otra ya se consumió.
+```
 
 ### 2.6.10 · Commit y push en recuperación — y el hueco que esto destapa
 
