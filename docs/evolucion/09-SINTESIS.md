@@ -31,6 +31,13 @@ NO HACE   aceptar el documento de pendientes propuesta a propuesta. Aceptar mec�
 
 **Ningún fichero de `kernel/operativo/`, `packs/` ni `docs/rediseno/` cambia en F3.**
 
+> **REVISADA.** Esta síntesis pasó por crítica independiente después de entregarse. `H1`,
+> `H3`, `H4`, `H5`, `X7` y `X8` quedan corregidos, y las nueve preguntas del Owner están
+> resueltas o retiradas. **El texto original se conserva íntegro**: lo que cambia está en el
+> [addendum](#addendum--lo-que-la-crítica-independiente-corrige) del final y en
+> [`10-CRITICA-INDEPENDIENTE-F3.md`](10-CRITICA-INDEPENDIENTE-F3.md). Cada sección afectada
+> lo dice en su primera línea.
+
 ## El material, y con qué autoridad entra
 
 | material | autoridad | qué aporta |
@@ -79,6 +86,11 @@ Son el resultado de la fase. Todo lo demás —las tablas, los veredictos, las p
 deriva de ellos.
 
 ## H1 · Los cuatro macrocircuitos son una composición, no cuatro diseños
+
+> `CI-5` · **CONSERVADO, con condición añadida.** Compartir un motor de composición no
+> aplana las rutas: instalación, adopción, migración y actualización conservan sus
+> disparadores, precondiciones, fases, evidencias, gates, rollback y certificación propios.
+
 
 El documento pide cuatro recorridos: instalación (`N0`–`N7`), adopción (`A0`–`A10`),
 migración desde un ADS anterior (§6) y actualización de un ADS instalado (§7). Añade un
@@ -161,6 +173,10 @@ entregables— colgando de la unidad de custodia de ADS, que es el paquete.
 
 ## H3 · El adaptador es una proyección compilada, no una capa de conocimiento
 
+> `CI-6` · **CONSERVADO, desglosado en cuatro piezas** con dueños y ciclos distintos. Ver
+> el addendum.
+
+
 `X3` quedó registrado en el mapa como *«el mismo hueco de X1, encontrado por otro camino»*:
 un adaptador no es kernel, no es pack y no es PROFILE, luego parecía exigir una capa nueva.
 **Esa lectura ya no se sostiene**, y lo que la desmiente es material posterior a ella.
@@ -208,6 +224,11 @@ control del ADS Project, se genera y no se edita, lleva huella, y su validador c
 
 ## H4 · El sujeto que le faltaba a `P-03` ya existe, y se llama componente
 
+> `CI-1` · **REVISADO.** El componente es raíz o ámbito principal, **no el sujeto único**.
+> La matriz es `sujeto auditable × dimensión`. Lo que sigue abajo describe bien el ámbito
+> principal y se queda corto en todo lo subordinado y transversal.
+
+
 `P-03` quedó registrado con una pregunta abierta escrita con estas palabras: *«si el sujeto
 «área del producto» debe existir en ADS, qué lo posee, y si su nivel es estado o es
 aprendizaje»*. Y [`07-DECISION-MULTIREPO.md`](07-DECISION-MULTIREPO.md) anticipó la
@@ -253,6 +274,11 @@ Y la celda no necesita esquema nuevo: es un `memoria` con dos campos más. Que e
 documento · §31 §33 de la decisión aprobada
 
 ## H5 · El contrato documental es `memoria` con dos campos más
+
+> `CI-2` · **DEGRADADO a reutilización candidata.** El título afirma más de lo que la
+> evidencia sostiene. `memoria` no cubre por sí solo procedencia, revisiones examinadas,
+> relaciones, aplicabilidad, gaps ni contradicciones. F4 elige entre tres vías.
+
 
 El §5.23 pide un contrato verificable que declare familias aplicables, fuente canónica,
 responsable, estado, evidencia, última verificación, triggers de revisión, relaciones y
@@ -461,6 +487,10 @@ resuelve aquí.
 
 ## `X6` · La auditoría autónoma crea trabajo, y ninguna entrada del Owner lo autoriza
 
+> **CERRADA por `O7`**: política revocable de auditoría recurrente. Detectar no crea
+> trabajo; abrir auditorías se autoriza dentro de la política aprobada.
+
+
 ```text
 POSTURA A — el sistema debe planificar solo
   §20.2 nombra el problema con precisión: el recorrido manual convierte al Owner en
@@ -489,6 +519,10 @@ QUÉ SE PROPONE
 
 ## `X7` · El mínimo documental obligatorio contra el control de crecimiento
 
+> `CI-4` · **CERRADA por `O8`**, y corregida en las dos direcciones: no son doce ficheros,
+> y tampoco es «lo necesario para reanudar». Son doce **áreas semánticas**.
+
+
 ```text
 POSTURA A — sin mínimo no hay gobierno
   §5.18 exige doce familias documentales en todo producto, y el §5.9 catorce requisitos
@@ -513,6 +547,10 @@ QUÉ PERTENECE AL OWNER
 ```
 
 ## `X8` · Organización preestructurada contra «no se materializan equipos permanentes»
+
+> `CI-3` · **CERRADA por lectura.** No era una contradicción: `C4` y `E1` ya la respondían.
+> Registrada como `O9`.
+
 
 ```text
 POSTURA A — la instalación no debe volver a diseñar ADS
@@ -819,6 +857,11 @@ clasificación obligatoria antes de retirar.
 
 # Preguntas que necesitan al Owner
 
+> **NINGUNA SIGUE ABIERTA.** Siete quedan resueltas por las resoluciones `O7`–`O14`, y las
+> preguntas 3 y 4 se retiran porque `C4` y `E1` ya las respondían (`CI-3`). La tabla se
+> conserva como quedó escrita; su estado está en el addendum.
+
+
 El §30 del documento enumera treinta y tres asuntos. La mayoría son técnicos y los decide
 F4. **Éstas nueve no**: o son autoridad del Owner, o su respuesta cambia qué se construye.
 
@@ -863,3 +906,225 @@ QUÉ ENTRA EN CADA RELEASE     es F6, y exige items SIS trazables.
 
 **Ninguna decisión de este documento es irreversible.** Ningún fichero de
 `kernel/operativo/`, `packs/` ni `docs/rediseno/` ha cambiado en F3, igual que en F2.
+
+---
+
+# ADDENDUM — lo que la crítica independiente corrige
+
+> Añadido después de entregar F3, tras la revisión de quien no la escribió. **No sustituye
+> nada de lo anterior**: el texto original se conserva íntegro y cada sección afectada lleva
+> su marca. Los hallazgos de la crítica y las resoluciones del Owner están en
+> [`10-CRITICA-INDEPENDIENTE-F3.md`](10-CRITICA-INDEPENDIENTE-F3.md); las decisiones, en
+> [`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md) como
+> `O7`–`O14`.
+
+## `H1` — conservado, y las rutas no se aplanan
+
+La conclusión se sostiene: no hacen falta tipos de proceso nuevos. Lo que la síntesis no
+escribió, y que evita leerla mal:
+
+```text
+UN MOTOR DE COMPOSICIÓN COMPARTIDO NO ES UN RECORRIDO COMPARTIDO
+
+instalación nueva · adopción · migración de un ADS anterior · actualización de un ADS
+instalado conservan cada uno:
+    disparador propio          qué hace que ese recorrido empiece, y no otro
+    precondiciones propias     qué tiene que ser cierto antes de entrar
+    fases propias              N0–N7 y A0–A10 no son la misma secuencia
+    evidencias propias         lo que hay que demostrar difiere por recorrido
+    gates propios              adoptar no se cierra con el gate de instalar
+    rollback propio            deshacer una adopción no es deshacer una actualización
+    certificación propia       qué nivel se exige, y sobre qué
+```
+
+Lo común es **cómo se componen** rutas, items y paquetes. Lo propio es **qué** se compone,
+cuándo y contra qué se cierra.
+
+## `H3` — conservado, y desglosado en cuatro piezas
+
+El modelo es correcto y el título lo comprime demasiado. Son cuatro piezas con dueño y ciclo
+distintos, que F4 diseña por separado aunque compartan contrato:
+
+| | pieza | dónde vive | qué la gobierna |
+|---|---|---|---|
+| 1 | **definición canónica neutral** del adaptador | repositorio de control del ADS Project | es la fuente. Se edita a mano, y es lo único de las cuatro que se edita |
+| 2 | **proyecciones generadas** | las ubicaciones que **cada proveedor descubre por su cuenta** — no las elige ADS, las impone el entorno | `I5`: derivadas, no editables |
+| 3 | **huella y validador de deriva** | con la proyección | hace comprobable que 2 sigue derivando de 1. Es lo que cierra `P-06` |
+| 4 | **prueba de humo en sesión nueva** | contrato del adaptador | demuestra que 2 funciona donde tiene que funcionar. Es `CAND-012`, y es el nivel **Operativo** de la certificación |
+
+La pieza 2 es la que la síntesis trataba de pasada: **la ubicación de una proyección no es una
+decisión de ADS**. Cada entorno agentic descubre sus ficheros donde los descubre, y el
+compilador escribe donde ese entorno mira.
+
+## `H4` — el componente es el ámbito principal, no el sujeto único
+
+**Lo que la síntesis concluyó de más.** `componente × capacidad` describe bien el ámbito
+principal y no llega a lo demás. `C6` define el componente como unidad **lógica** del producto
+—`web`, `api`, `mobile`, `infra`— referenciada por `source` más `path`. El documento del Owner
+exige auditar además:
+
+```text
+módulos · áreas funcionales · pantallas · flujos · formularios · patrones visuales
+APIs · integraciones · entidades · reglas · migraciones
+entornos · pipelines · despliegues
+documentos · agentes · skills · adaptadores
+```
+
+Ninguno de ésos es un componente de `C6`, y declararlos en `SOURCES.toml` deformaría el
+manifiesto del producto, que es fuente única de otra cosa.
+
+**Lo que queda en su lugar.** F4 necesita un **contrato de sujeto auditable**, con:
+
+```text
+RAÍZ O ÁMBITO PRINCIPAL   el componente. Todo sujeto cuelga de uno, o declara por qué es
+                          transversal.
+SUBORDINADOS              referencia dentro de un componente: una pantalla, un formulario,
+                          una migración, un pipeline.
+TRANSVERSALES             atraviesan varios componentes: un patrón visual, una integración,
+                          un adaptador, un documento global.
+ALCANCE TIPADO            qué clase de sujeto es, para saber qué dimensiones le aplican.
+```
+
+**Y la matriz pasa a ser `sujeto auditable × dimensión`**, no `componente × capacidad`.
+
+**Lo que esta corrección NO autoriza.** Crear un tipo canónico nuevo por reflejo. `D11` ya
+rechazó `source` y `component` como tipos *«porque duplicarían SOURCES.toml»*, y la regla del
+§26.5 obliga a comprobar antes si el sujeto puede componerse con lo que existe: referencias
+entre artefactos, alcance tipado y los artefactos que ya declaran superficie. F4 contrasta
+primero y decide después.
+
+**Lo que sí sobrevive de `H4`**: el mapeo de las doce dimensiones sobre capacidades con
+propietario, y la conclusión de que el nivel de un área es **estado**, no aprendizaje.
+
+## `H5` — degradado de conclusión a reutilización candidata
+
+**Lo que la síntesis afirmó de más.** Decir «es `memoria` con dos campos» cierra por
+aritmética una pregunta de diseño. `memoria.yaml` describe *«una sección del corpus persistente
+de un equipo»*, y su `capa` está acotada a `kernel`, `pack` y `profile`. Por sí solo no cubre
+lo que exigen el §5.19 y el §5.23:
+
+```text
+procedencia completa           fuentes, entornos y REVISIONES EXAMINADAS
+relaciones                     con decisiones, items, dosieres y otros documentos
+aplicabilidad por familia       obligatoria · condicional · no aplicable con motivo
+gaps y contradicciones          conocidas y declaradas
+evidencia                       qué sostiene lo que el documento afirma
+```
+
+**Las tres vías, y ninguna está elegida:**
+
+```text
+1  GENERALIZAR memoria       ampliar su alcance y su enum de capa. Barato, y arriesga
+                             convertir un tipo con un sujeto claro en un cajón.
+2  METADATA ESPECIALIZADA    un bloque documental propio. Limpio, y añade un tipo.
+3  COMPOSICIÓN               un contrato común sobre primitivas existentes. Es lo que la
+                             regla del §26.5 pide intentar primero.
+```
+
+**La condición que sí se conserva**, porque vale para las tres: **no se duplican fuentes de
+verdad**. Siete de los campos que el §5.23 pide ya existen con ese significado en
+`memoria.yaml` —`capacidad`, `capa`, `fichero`, `autoridad`, `contiene`,
+`se_actualiza_cuando`, `se_consulta_en`, `caducidad`, `vacio_significa`—, y la vía que se
+escoja tiene que explicar qué hace con ellos en vez de volver a declararlos.
+
+## `X7` — cerrada, y corregida en las dos direcciones
+
+Ni la postura A ni la salida que la síntesis propuso eran correctas.
+
+```text
+NO SON DOCE FICHEROS          leer el §5.18 como doce documentos obligatorios por producto
+                              es la lectura que hace crecer el sistema sin control.
+
+TAMPOCO ES «LO NECESARIO      la salida que propuso la síntesis reducía el mínimo a la
+PARA REANUDAR O PASAR         reanudación. Es demasiado poco: un producto puede reanudarse
+UN GATE»                      y seguir sin tener resuelto su dominio o su seguridad.
+
+ES UN MÍNIMO SEMÁNTICO        las doce áreas del §5.18 son MATERIA que un producto gobernado
+PROFESIONAL EVALUABLE         tiene resuelta. Qué ficheros la contienen es otra pregunta.
+```
+
+Lo que fija `O8`:
+
+```text
+DOCE ÁREAS SEMÁNTICAS       obligatorias como materia, no como ficheros
+COMPACTACIÓN FÍSICA         varias áreas pueden vivir en un documento
+PROFUNDIDAD PROPORCIONAL    a tamaño, naturaleza y riesgo del producto
+ÁREAS CONDICIONALES         se activan por aplicabilidad
+«NO APLICABLE»              evaluación registrada CON MOTIVO, nunca ausencia silenciosa
+REANUDACIÓN Y GATES         son COMPROBACIONES del mínimo, no su definición
+```
+
+`T171` y la prueba de reanudación siguen siendo cómo se comprueba que el mínimo se sostiene.
+Dejan de ser la razón por la que el mínimo existe.
+
+## `X8` — cerrada por lectura, no era contradicción
+
+`C4` ya fijaba las tres cosas que la síntesis planteaba como enfrentadas:
+
+```text
+CATÁLOGO COMPLETO DISPONIBLE      es kernel/operativo/capacidades, y ya viaja
+DSP Y SIS PERMANENTES             lo declara la ficha de SIS: «se materializa SIEMPRE,
+                                  junto a DSP»
+ENC BAJO DEMANDA                  lo declara E1
+```
+
+La distribución trae **catálogo y estructura preconfigurada**; `C4` gobierna la
+materialización. No hay postura B que sostener, y las preguntas 3 y 4 se retiran. Registrado
+como `O9`. Reabrirlo exigiría una enmienda formal a `C4` o a `E1`, y **no se propone ninguna**.
+
+## `X6` — cerrada por `O7`
+
+La separación que la síntesis propuso —detectar es una vista derivada, crear exige autoridad—
+se conserva, y el Owner la autoriza con límites:
+
+```text
+AUTOMÁTICO SIN CREAR TRABAJO   detectar e inventariar
+DENTRO DE LA POLÍTICA          abrir auditorías por evento, riesgo, recurrencia y caducidad
+CAMPAÑAS PREAUTORIZADAS        correcciones mecánicas y locales, con pruebas y VER
+                               independiente
+CONSERVAN SUS GATES            producto, UX, arquitectura, seguridad, datos y comportamiento
+                               crítico
+UNA ÚNICA DECISIÓN             declara alcance, prioridad, presupuesto, umbrales y revocación
+```
+
+`G03` no se levanta en bloque: se levanta lo que esa política declara, y es **revocable**.
+
+## Las nueve preguntas del Owner, resueltas
+
+| | pregunta | estado |
+|---|---|---|
+| 1 | política de recurrencia | **cerrada** · `O7` |
+| 2 | mínimo documental | **cerrada** · `O8` |
+| 3 | catálogo frente a equipo materializado | **retirada**: `C4` ya la respondía (`CI-3`) |
+| 4 | `ENC` en el equipo mínimo | **retirada**: `E1` ya la respondía (`CI-3`) |
+| 5 | dónde viven los documentos del Owner | **cerrada** · `O10`: `docs/owner/` |
+| 6 | nombre de la unidad amplia | **cerrada** · `O11`: **`iniciativa`** |
+| 7 | nivel de certificación para empezar | **cerrada** · `O12`: Integrada + baseline + ningún desconocido crítico sin clasificar |
+| 8 | matriz de entornos agentic | **cerrada** · `O13`: Claude Code y Codex certificados; Cursor y Gemini compatible o genérico; fallback genérico obligatorio |
+| 9 | producto para el piloto | **cerrada** · `O14`: PesquerApp, en clones aislados, **sin ejecutar todavía** |
+
+**Cero preguntas abiertas.** Lo que no desaparece con ellas es el trabajo que ordenan, y que
+sigue sin construirse.
+
+## Un problema nuevo, que no venía de la crítica sino de una ejecución
+
+`P-08` · **la vigencia de la evidencia sólo está garantizada para `T161`.** `T158` daba por
+buena una evidencia intacta y caducada. Está corregido para `T161` con recálculo determinista
+y su regresión; los otros doce validadores siguen sin comprobación de vigencia, y la solución
+general es materia de F4. El detalle está en
+[`10-CRITICA-INDEPENDIENTE-F3.md`](10-CRITICA-INDEPENDIENTE-F3.md).
+
+## Qué NO cambia de la síntesis
+
+```text
+H2                   el estado persistido sigue siendo el cuello de botella, y sigue
+                     decidiéndose primero.
+H6                   la contradicción entre máxima documentación y mínima complejidad
+                     existía, y O8 la resuelve sin negarla.
+X1 · P-05            deferidas. Ninguna corrección de este addendum las toca ni cruza la
+                     línea del blueprint.
+LA TABLA MAESTRA     sus veredictos siguen en pie, salvo donde H4 y H5 los apoyaban: las
+                     filas §5.19, §5.23, §5.24 y §20.4 dependen ahora de una decisión de F4,
+                     no de una conclusión de F3.
+EL ORDEN             la disposición física del estado sigue yendo primero.
+```
