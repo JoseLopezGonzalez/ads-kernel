@@ -26,6 +26,10 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 > POSTERIOR             reconciliación no era recuperable, y la integridad post-terminal
 >                       salía del terminal— y un GRAVE. Correcciones: D52–D54.
 >                       Tampoco es la tercera revisión, y tampoco certifica nada
+> TERCERA COMPROBACIÓN  acotada, sobre `D55`–`D57`: el recuento de fases mezclaba ejes, la
+> TÉCNICA               «reemisión» admitía un `confirmada → confirmada` que §2.8 ya
+>                       prohibía, y la matriz era un cartesiano sin demostrar. Correcciones:
+>                       D58–D59. TAMPOCO es la tercera revisión, y TAMPOCO certifica nada
 > SEGUNDA CORRECCIÓN    TRES GRAVES sobre el texto que la corrección anterior escribió:
 > TÉCNICA               garantías atribuidas a un esquema que no puede comprobarlas, `W12a`
 >                       contra la clasificación por hashes de §2.6.4, y siete valores de
@@ -35,8 +39,9 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 > ```
 >
 > **Dos de los hallazgos de la segunda devolución son defectos que la PRIMERA CORRECCIÓN
-> introdujo o no vio, y los TRES de la segunda corrección técnica están en el texto que la
-> corrección técnica ANTERIOR escribió.** Es el tercer encadenamiento consecutivo, y es la
+> introdujo o no vio, los TRES de la segunda corrección técnica están en el texto que la
+> corrección técnica ANTERIOR escribió, y los DOS de la tercera comprobación están en el
+> texto que la segunda escribió.** Es el CUARTO encadenamiento consecutivo, y es la
 > razón por la que las revisiones se encadenan en vez de darse por buenas. **Quien aplicó
 > todas es quien las recibió**, luego ninguna prueba nada: `F4c` sigue **ABIERTA**,
 > pendiente de una **tercera revisión independiente**.
@@ -586,8 +591,9 @@ lleva **seis cosas y no menos**:
                               · SEIS en la que se detiene y escala en la tercera iteración
                                 sin cerrar: `preparada`, tres `conflicto` y dos
                                 `reconciliacion-preparada`
-                              · MÁS las REEMISIONES, que añaden EVENTOS sin añadir FASES
-                                (§2.6.4)
+                              · y NADA MÁS. Recuperar no añade eventos: una fase de hecho
+                                no se duplica, y restaurar un evento perdido devuelve el
+                                MISMO evento, no uno nuevo (§2.6.4)
                             **Corregido**: decía «cuatro en la de conflicto», que era la
                             cuenta anterior a `D52` y nunca contempló los reintentos.
 
@@ -744,34 +750,89 @@ ABIERTA                    `conflicto`, porque `conflicto` exige que NO case con
                            de los dos hashes. El resultado es DETERMINISTA y no necesita
                            que nadie decida. Es `W12a`.
 
-SI `confirmada` YA ERA      se REAPLICA igual, y después se REEMITE `confirmada`. La
-DURABLE Y UN CANÓNICO      recuperación se hace desde `preparada`, que declara el
-SE PERDIÓ POR              `hash_posterior_esperado` y el mecanismo —`contenido`, `parche`
-DURABILIDAD                u `operacion`— con el que reproducirlo. No hace falta ninguna
-                           entrada nueva, y no se pide ninguna decisión humana.
+SI `confirmada` YA ERA      se REAPLICA igual, y **NO se emite ninguna fase nueva**: el
+DURABLE Y UN CANÓNICO      evento `confirmada` YA EXISTE. La recuperación se hace desde
+SE PERDIÓ POR              `preparada`, que declara el `hash_posterior_esperado` y el
+DURABILIDAD                mecanismo —`contenido`, `parche` u `operacion`— con el que
+                           reproducirlo; después se sigue con los derivados y con
+                           `derivada`. No hace falta ninguna entrada nueva, no se pide
+                           ninguna decisión humana y **no existe `confirmada →
+                           confirmada`**.
 ```
 
-#### Reemitir una fase NO es una transición
+#### Emitir y RESTAURAR no son lo mismo — y no existe `confirmada → confirmada`
+
+> **Corregido por la tercera comprobación técnica (`D58`, que revisa `D56`).** La redacción
+> anterior llamó «reemisión» a *«un evento NUEVO, con `id` propio, mismo `tx` y MISMA
+> `fase`»*, y eso **contradice §2.8 punto 5**, que ya decía lo contrario: *«ANTES DE
+> REEMITIR, el ejecutor busca en el diario un evento con el MISMO `tx` y la MISMA `fase`. Si
+> existe, la operación es una NO-OPERACIÓN»*. Admitir un segundo `confirmada` habría creado
+> una secuencia `confirmada → confirmada` que el autómata de §2.6.1 no tiene y que ninguna
+> transición admite.
+
+**Los dos casos, separados por si el hecho llegó a ser durable:**
 
 ```text
-QUÉ ES UNA REEMISIÓN   un evento NUEVO, con `id` propio, mismo `tx` y MISMA `fase` que uno
-                       anterior, que vuelve a declarar EL MISMO HECHO. `W5` y `W13` ya la
-                       usaban sin nombrarla: «se emite `confirmada` y se sigue».
+CASO A · `confirmada` NO       la última fase durable es `preparada`. Se completan los
+LLEGÓ A SER DURABLE            ficheros que falten, y cuando los N casan con su
+                               `hash_posterior_esperado` se emite `confirmada`
+                               **UNA SOLA VEZ**. Es una EMISIÓN, y es la primera.
+                               Cubre `W5` —nunca se llegó a escribir— y `W13` —se escribió
+                               un temporal que nunca fue durable, luego el evento NO EXISTE—.
 
-CUÁNDO ES VÁLIDA       sólo si el hecho que la fase afirma VUELVE A SER CIERTO EN DISCO en
-                       el momento de emitirla. Una `confirmada` reemitida exige que los N
-                       ficheros casen otra vez con su `hash_posterior_esperado`.
-
-POR QUÉ NO ES UNA      porque el par (fase anterior, fase nueva) no cambia de fase. El
-TRANSICIÓN             validador semántico del diario (§3.6, capa B) cuenta FASES
-                       ALCANZADAS para el autómata, y EVENTOS para la cadena `predecesor`.
-                       Es la misma distinción que `D37` fijó al decir que **reemitir no es
-                       idempotente por `id`: la idempotencia vive en `tx`**.
-
-QUÉ NO AUTORIZA        reemitir NO permite volver atrás en el autómata, y NUNCA se reemite
-                       una fase de una transacción con `derivada` durable: eso sería salir
-                       del terminal, y `W12b` manda `deriva`.
+CASO B · `confirmada` YA ES    **el evento YA EXISTE, y no se añade otro.** La recuperación:
+DURABLE                          1  reaplica los canónicos perdidos desde `preparada`, que
+                                    declara el `hash_posterior_esperado` y el mecanismo
+                                    —`contenido` | `parche` | `operacion`— con el que
+                                    reproducirlos. Es DETERMINISTA
+                                 2  NO emite ninguna fase nueva
+                                 3  continúa con los derivados y con `derivada`
+                               Cubre `W12a` con `confirmada` durable, y `X26`.
 ```
+
+**Y el tercer caso, que es de almacenamiento y no de protocolo:**
+
+```text
+SI EL FICHERO DEL EVENTO       es una RESTAURACIÓN IDEMPOTENTE DEL MISMO EVENTO, no una
+DURABLE SE PERDIÓ              emisión. El evento está direccionado por contenido (§2.8): se
+FÍSICAMENTE                    vuelve a materializar el MISMO `id`, con el MISMO cuerpo y el
+                               MISMO `predecesor`.
+                                 · NO nace un evento nuevo
+                                 · NO cambia la cadena `predecesor`
+                                 · NO cambia el `tx`
+                                 · el diario NO crece
+                               Restaurar un fichero perdido y emitir un evento son
+                               operaciones distintas, y confundirlas es lo que producía el
+                               `confirmada → confirmada`.
+```
+
+**Qué fases pueden repetirse dentro de un `tx`, y cuáles no.** No es una excepción tolerada:
+es parte del contrato, y el validador semántico del diario (§3.6, capa B) lo comprueba:
+
+```text
+EXACTAMENTE UNA VEZ    `preparada`   —el `tx` ES su huella (§2.8): dos serían dos `tx`
+POR `tx`               `confirmada`
+                       `reconciliada`
+                       `derivada`
+                       Una segunda aparición de cualquiera de éstas es un DEFECTO, no una
+                       reemisión. **`confirmada → confirmada` no existe.**
+
+REPETIBLES, Y          `conflicto`                  discriminadas por `iteracion`, que es
+DECLARADAS COMO TAL    `reconciliacion-preparada`   consecutivo y llega HASTA TRES (§2.6.9).
+                       Es la ÚNICA repetición que el contrato define, y la define en
+                       positivo con su discriminador y su tope. Sin discriminador no hay
+                       fase repetible.
+
+LA REGLA, EN UNA       una fase de HECHO —`confirmada`, `reconciliada`, `derivada`— no puede
+FRASE                  duplicarse NUNCA. Una fase de INTENCIÓN sólo se repite si el contrato
+                       la declara repetible y le da un discriminador. No hay más casos.
+```
+
+**Cómo se ejerce en el momento de escribir**, que es §2.8 punto 5 sin cambiar una coma: antes
+de emitir, el ejecutor busca en el diario un evento con el **mismo `tx`** y la **misma
+`fase`**; si existe, la operación es una **NO-OPERACIÓN**. Esa regla, que ya estaba escrita,
+es exactamente lo que impide el segundo `confirmada` — y lo que la redacción anterior había
+dejado de respetar.
 
 ### 2.6.5 · Todas las ventanas de caída
 
@@ -795,9 +856,9 @@ transacción esté abierta o cerrada (§2.6.11).
 | W9 | antes del commit de Git | árbol coherente, Git por detrás | se hace el commit LOCAL. Es recuperación: protege el árbol y no publica (§2.6.10) |
 | W10 | después del commit, antes del push | commit local sin publicar | **NO se empuja automáticamente.** El push es publicación, no recuperación: pasa a la política de §2.6.10 |
 | W11 | en cualquier punto, con la transacción abierta y un fichero VERDADERAMENTE divergente | un fichero que no casa **ni con la base válida ni con el resultado permitido** de su intención vigente (§2.6.4) | **`conflicto`** —y las dos condiciones son necesarias: transacción abierta Y divergencia real—, con la copia íntegra de lo divergente. El predicado `reconciliacion_pendiente` **se deriva** de él (§2.6.9): no hay bandera que escribir. No se completa y no se revierte |
-| **W12a** | caída de MÁQUINA tras el `rename` de un canónico, sin `fsync` de su directorio, con la transacción **TODAVÍA ABIERTA** —sin `derivada`— | uno o más canónicos revertidos a su hash previo | **NO es `conflicto`.** Casan con la BASE VÁLIDA de su intención vigente, luego son **NO APLICADO** y se **REAPLICAN** en el `orden` declarado, de forma idempotente (§2.6.4) — que es lo mismo que mandan `W3` y `W4` ante el mismo disco. Si `confirmada` ya era durable, se **REEMITE** tras reaplicar, y la reemisión no es una transición. Sólo hay `conflicto` si algún fichero no casa **ni con la base ni con el resultado**. **Corregido** (hallazgo `H2`) |
+| **W12a** | caída de MÁQUINA tras el `rename` de un canónico, sin `fsync` de su directorio, con la transacción **TODAVÍA ABIERTA** —sin `derivada`— | uno o más canónicos revertidos a su hash previo | **NO es `conflicto`.** Casan con la BASE VÁLIDA de su intención vigente, luego son **NO APLICADO** y se **REAPLICAN** en el `orden` declarado, de forma idempotente (§2.6.4) — que es lo mismo que mandan `W3` y `W4` ante el mismo disco. Si `confirmada` ya era durable, **no se emite ninguna fase nueva**: el evento ya existe, se sigue con los derivados y con `derivada`, y **no hay `confirmada → confirmada`** (§2.6.4). Sólo hay `conflicto` si algún fichero no casa **ni con la base ni con el resultado**. **Corregido** (hallazgo `H2`) |
 | **W12b** | lo mismo, con la transacción **YA CERRADA** —`derivada` durable— | ídem | **NO es `conflicto`**, y por el paso 0 de §2.6.4: `derivada` es terminal y ninguna transición sale de él. Se emite un evento **`deriva`** con `causa: posterior-al-cierre` (§2.6.11), que referencia la transacción sin reabrirla. Es el fallo silencioso del hallazgo `E`, y el hallazgo `2` corrige a dónde va |
-| **W13** | **escribiendo el temporal de `confirmada`** | temporal huérfano, con todos los canónicos ya en posterior | **se reemite `confirmada`.** NO se descarta la transacción: a diferencia de `W2`, aquí los canónicos YA están aplicados |
+| **W13** | **escribiendo el temporal de `confirmada`** | temporal huérfano, con todos los canónicos ya en posterior | **se emite `confirmada`, y es su PRIMERA emisión durable**: un temporal huérfano NO es un evento, luego `confirmada` no existe todavía (caso A de §2.6.4). NO se descarta la transacción: a diferencia de `W2`, aquí los canónicos YA están aplicados |
 | **W14** | **creando el marcador (paso 2)** | `preparada` durable, marcador ausente o vacío | benigno: `W3` lo cubre por resultado. Se recrea el marcador desde el diario (§2.9) |
 | **W15** | **el push es rechazado porque el remoto avanzó** | commit local, remoto divergente | evento `fallo`, tope de tres por §7.3, y se escala. **NUNCA `--force`** (§2.6.10) |
 | **W16** | **el push se completa parcialmente** | unas referencias publicadas y otras no | evento `fallo` con las referencias nombradas. El estado local no cambia: el push no es una mutación canónica |
@@ -809,7 +870,8 @@ SE COMPLETA   toda transacción cuyo evento `preparada` es durable y ninguno de 
               es divergente. W3 a W9, más W13 y W14.
 SE REVIERTE   sólo lo que nunca llegó a comprometerse: un temporal huérfano de `preparada`
               (W2). No existe «deshacer» después del punto de compromiso, y por eso no se
-              promete. W13 NO es una reversión: es una reemisión.
+              promete. W13 NO es una reversión: es la PRIMERA emisión durable de una
+              `confirmada` que nunca llegó a existir.
 SE ESCALA     todo lo VERDADERAMENTE divergente (W11), la deriva posterior al cierre que la
               integridad post-terminal destapa (W12b), el fallo de publicación (W15, W16),
               y todo lo que exija decidir. `b.14.3` y `R3`: DSP para y escala, NUNCA
@@ -949,8 +1011,9 @@ QUÉ HACE SI NO CASA  DEPENDE DE SI LA TRANSACCIÓN SIGUE ABIERTA, y la distinci
                        (W12a)                 contra su intención vigente, y NO se salta a
                                               `conflicto`:
                                                 · casa con la BASE     → NO APLICADO → se
-                                                  REAPLICA, y si `confirmada` era durable
-                                                  se REEMITE tras reaplicar
+                                                  REAPLICA. Si `confirmada` era durable NO
+                                                  se emite ninguna fase nueva: se sigue con
+                                                  los derivados y con `derivada`
                                                 · casa con el RESULTADO → nada que hacer
                                                 · no casa con ninguno  → **entonces sí**
                                                   `conflicto`, una FASE suya, y con él el
@@ -1074,11 +1137,11 @@ impuso al arnés de negativos.
 | `X18` | suspender el ejecutor con `SIGSTOP` entre el fichero 3 y el 4, y leer los cinco desde fuera | el lector declara «transacción abierta; estas cinco rutas no son fiables», **nombrando las cinco y sin recorrer el diario** (§2.6.8) |
 | `X19` | aplicar 2 de 5, modificar el 4 externamente, recuperar, **reiniciar y ejecutar `Continúa`** | `Continúa` se detiene en `reconciliacion-pendiente` nombrando items y fichero divergente, **antes** de regenerar derivados y **antes** de seleccionar trabajo. Borrar el marcador a mano y repetir: diagnóstico idéntico |
 | `X20` | dar la misma entrada a **dos implementaciones independientes** del serializador, con claves invertidas, `\r\n` y un mapa anidado | ambas producen **el mismo `tx` y el mismo `id`** (§2.8) |
-| `X21` | preparar, matar antes del `rename`, reintentar | existe **un solo `tx`** en el diario, aunque los `id` difieran |
+| `X21` | preparar, matar antes del `rename`, reintentar; y después forzar una recuperación con `confirmada` YA durable | existe **un solo `tx`** en el diario, aunque los `id` difieran; **ninguna secuencia contiene `confirmada → confirmada`**; y restaurar un evento durable perdido devuelve el **mismo `id`, el mismo cuerpo y el mismo `predecesor`**, sin que el diario crezca |
 | `X22` | cambiar el formato de presentación del diario sin cambiar el contenido | **ningún identificador cambia**. Si cambian, §2.11 y §2.8 son incompatibles |
 | `X23` | recorrer todos los caminos del protocolo buscando `fase: abortada` | **ninguno la produce**, y el **esquema estructural** **rechaza** un evento con esa fase: es un valor fuera del enum, y eso se ve en el evento aislado |
 | `X25` | **corte de alimentación forzado** tras el `rename` de `confirmada` | los cinco canónicos casan con su `hash_posterior_esperado`. Es la caída de MÁQUINA, que `X01`–`X03` no cubrían |
-| `X26` | inyectar la reversión de dos canónicos con `confirmada` presente y **sin `derivada`** | el arranque **lo detecta y nombra los dos ficheros** en vez de regenerar derivados encima, los clasifica como **NO APLICADO** —casan con su `hash_previo`— y los **REAPLICA** desde `preparada`, **REEMITIENDO** después `confirmada`. **No emite `conflicto` y no pide ninguna decisión**: el resultado es determinista |
+| `X26` | inyectar la reversión de dos canónicos con `confirmada` presente y **sin `derivada`** | el arranque **lo detecta y nombra los dos ficheros** en vez de regenerar derivados encima, los clasifica como **NO APLICADO** —casan con su `hash_previo`— y los **REAPLICA** desde `preparada` y **NO emite ninguna fase nueva** —`confirmada` ya existe—, siguiendo con los derivados y con `derivada`. **No emite `conflicto`, no duplica `confirmada` y no pide ninguna decisión**: el resultado es determinista |
 | `X27` | recorrer la historia entera del control repo tras N transacciones | **ningún commit** contiene un fichero bajo `estado/tx/` |
 | `X28` | fabricar a mano un commit con marcador abierto, publicarlo y clonar | el clon emite **`fallo`** de publicación, **escala como defecto del runtime** y **no completa nada**, nombrando `tx` y commit culpable. **No emite `conflicto` ni ninguna otra fase** |
 | `X37` | interrumpir una transacción, avanzar el remoto desde otro clon, arrancar la recuperación | se completa, el commit local se hace, el push **no se fuerza**, se emite `fallo` con el diagnóstico «el remoto avanzó» y se escala |
@@ -1777,6 +1840,16 @@ ANTES DE REEMITIR, el ejecutor busca en el diario un evento con el MISMO `tx` y 
 `fase`. Si existe, la operación es una NO-OPERACIÓN.
 ```
 
+> **Qué significa exactamente «reemitir» aquí, precisado por `D58`.** Es el INTENTO de
+> volver a emitir tras una caída, no un permiso para tener dos eventos de la misma fase. La
+> regla de arriba lo convierte en **no-operación** cuando la fase ya existe, y de ahí que
+> **`confirmada → confirmada` no exista** (§2.6.4). Las únicas fases que pueden aparecer más
+> de una vez en un `tx` son `conflicto` y `reconciliacion-preparada`, y no por reemisión sino
+> porque el contrato las declara **repetibles con `iteracion`** como discriminador. Y
+> **restaurar** un fichero de evento perdido no es reemitir: devuelve el MISMO `id`, con el
+> mismo cuerpo y el mismo `predecesor`, luego no cae bajo esta regla y no hace crecer el
+> diario.
+
 **Y una incompatibilidad declarada, que hay que resolver antes de construir.** §2.11 admite
 que el formato del diario **puede cambiar** de Markdown a «un formato de línea» sin que cambie
 el contrato. Pero si la identidad es la huella del contenido, **cambiar el formato cambiaría
@@ -2281,6 +2354,12 @@ base          hash de las entradas sobre las que se decidió
 > **siete de ellos quedaban sin contrato**: nada decía si un `sellado` lleva `fase`, si un
 > `fallo` puede llevar `tx`, ni qué declara un `certificacion` además de su fase. Declarar
 > «ocho formas» con formas válidas sin contrato es un recuento que no cierra. Es `D57`.
+>
+> **Y `D57` se quedó a medias, que es lo que `D59` corrige.** Contó **ocho filas de una
+> tabla como si fueran ocho valores del eje `fase`** —`deriva` y `fallo` son valores de
+> `tipo`—, y dio por obligatoria la transacción de `orden` **sin demostrarla tipo a tipo**.
+> Las fases son **SEIS**; los estados del campo, **SIETE** contando su ausencia; y `orden` es
+> **condicional**. `D57` conserva su texto.
 
 **Son dos ejes, y no se sustituyen:**
 
@@ -2297,37 +2376,133 @@ base          hash de las entradas sobre las que se decidió
 que narra incluye una escritura canónica. Es la misma frontera que la regla 4 de abajo: lo
 que exige intención durable previa es exactamente lo que exige fase.
 
-**La matriz — SIETE tipos transaccionales × SEIS fases, más DOS tipos sin fase:**
+**La prueba, tipo a tipo — y la matriz sale de ella, no al revés.**
 
-| `tipo` | ¿`fase` y `tx`? | qué acontecimiento narra | sujeto que declara ADEMÁS de su fila de fase |
-|---|---|---|---|
-| `orden` | **obligatorios** | el **consumo** de una orden del Owner y su aplicación. Escribir la orden en la zona `ÓRDENES` **no es este evento**: `§1.3` regla 3 dice que emitir una orden no es una mutación, y el estado sólo cambia cuando el protocolo de consumo la aplica | `orden_ref` —la orden consumida— · `item` |
-| `transicion` | **obligatorios** | un item cambia de estado o avanza por su ruta | `item` · `desde` · `hacia` |
-| `integracion` | **obligatorios** | una capa se deposita o se integra en `03-integracion.md` | `item` · `capa` · capacidad con custodia |
-| `certificacion` | **obligatorios** | una celda de `estado/cobertura/` alcanza, conserva o pierde un nivel | `celda` `(sujeto, aspecto)` · `nivel` · qué lo invalida |
-| `migracion` | **obligatorios** | una migración de esquema o de estado (§8.3) escribe el estado migrado | `desde_version` · `hacia_version` · recorrido |
-| `sellado` | **obligatorios** | los eventos de un item se compactan en un fichero sellado (§2.9) | `sellado_ref` · la lista ORDENADA de `id` y huella sellados · la cabeza de la cadena |
-| `retirada-de-cuerpo` | **obligatorios** | el cuerpo de un evento sellado se sustituye por su lápida | `evento_ref` · huella conservada · autoridad · motivo |
-| `deriva` | **PROHIBIDOS los dos** | el estado canónico dejó de sostener lo que el diario afirma, o nadie preparó nada (§2.6.11) | `causa` · `afecta[]` · `items[]` · `autoridad` · `tx_afectada` como REFERENCIA |
-| `fallo` | **PROHIBIDOS los dos** | una operación **no canónica** falló: push, publicación, arranque | `operacion` · `diagnostico` · `intentos` |
+> **Corregido por la tercera comprobación técnica (`D59`, que revisa `D57`).** La primera
+> redacción afirmó *«siete tipos escriben estado canónico y llevan `fase` y `tx`
+> obligatorios»* y derivó de ahí un **producto cartesiano** —`7 × 6 + 2 = 44`— **sin
+> demostrarlo tipo a tipo**. Al demostrarlo, `orden` resulta **CONDICIONAL**: `a.9` describe
+> consumos que **no aplican la orden y no modifican el estado canónico**, y un evento que no
+> escribe nada canónico no tiene nada que proteger con una transacción. La matriz correcta es
+> la **mínima que representa el sistema**, no el cartesiano máximo — y el recuento se
+> **deriva** de ella en vez de encabezarla.
 
-**¿Son los siete ortogonales a las seis fases? SÍ, y en una sola dirección.** Cualquiera de
-los siete puede aparecer en **cualquiera** de las seis fases —una transacción de `sellado`
-puede entrar en conflicto y reconciliarse igual que una de `transicion`, porque las fases
-describen **cómo se escribe**, no **qué se escribe**—. Lo que **no** es libre es la
-ausencia: ninguno de los siete puede aparecer **sin** fase.
+| `tipo` | sujeto | qué HECHO representa | ¿escribe canónicos además del propio evento? | ¿uno o varios ficheros? | ¿necesita `tx`? | ¿puede existir SIN `fase`? | ejemplo dentro de ADS |
+|---|---|---|---|---|---|---|---|
+| `orden` | la orden del Owner, y el item al que apunta | el **consumo** de una orden del canal `ÓRDENES` | **DEPENDE**: sí cuando la aplica; **no** cuando el consumo termina sin aplicarla | varios cuando aplica | **DEPENDE** | **SÍ**, y sólo entonces | aplicar «sube la prioridad de `FEA-021`» escribe `02-control.md` → CON fase. Una orden cuya base ya no existe tras un rebase se marca `- [!]` y **no se aplica** (`a.9`) → SIN fase |
+| `transicion` | un item | el item cambia de estado o avanza por su ruta | **sí** | varios: `01-ruta.md`, `03-integracion.md` y lo que la ruta toque | **sí, siempre** | **no** | `FEA-021` pasa de `en-ruta` a `integrado` |
+| `integracion` | un item y la capa depositada | una capacidad deposita o integra su capa | **sí** | varios: el paquete en `paq/` y `03-integracion.md` | **sí, siempre** | **no** | `DIS` deposita su capa de diseño en `FEA-021/02` |
+| `certificacion` | la celda `(sujeto, aspecto)` | una celda **alcanza, conserva o pierde** un nivel | **sí** | uno o varios de `estado/cobertura/` | **sí, siempre** | **no** | `pantalla:web/checkout` alcanza `aspecto:calidad/accesibilidad` |
+| `migracion` | la instalación | el estado migra de una versión de esquema a otra | **sí** | **muchos**, y ése es su caso peor | **sí, siempre** | **no** | `esquema_estado: 3 → 4` sobre todos los items |
+| `sellado` | los eventos de un item que se compactan | se **AÑADE** un fichero de sellado; ningún evento se edita (§2.9) | **sí**: el fichero de sellado, que es la ÚNICA fuente de reconstrucción sin Git | uno, y es suficiente | **sí, siempre** | **no** | al cerrar `FEA-021`, sus eventos se compactan en su sellado |
+| `retirada-de-cuerpo` | el evento sellado cuyo cuerpo se retira | el cuerpo se sustituye por su **lápida**, conservando id, huella y motivo | **sí**, y es la ÚNICA operación que **modifica** algo ya escrito bajo `estado/` | uno | **sí, siempre** | **no** | retirar el cuerpo largo de un evento sellado, con autoridad y motivo |
+| `deriva` | el canónico que dejó de sostener lo que el diario afirma | **REPORTA**. No repara, no restaura y no completa (§2.6.11) | **no**: sólo se escribe a sí mismo | — | **no** | **SIEMPRE, y es obligatorio** | un canónico revertido bajo una `derivada` durable |
+| `fallo` | una operación **no canónica** | **REPORTA** que esa operación falló. No repara | **no** | — | **no** | **SIEMPRE, y es obligatorio** | el push es rechazado porque el remoto avanzó (`W15`) |
+
+**Los cuatro casos que la prueba obligó a separar, dichos uno a uno:**
 
 ```text
-FORMAS VÁLIDAS DE EVENTO    7 tipos transaccionales × 6 fases   = 42
-                            + `deriva` sin fase                 =  1
-                            + `fallo` sin fase                  =  1
-                                                                ── 44
+`orden`                REGISTRAR NO ES APLICAR. `a.9` da dos consumos que NO mutan: una
+CONDICIONAL            orden cuya base ya no existe tras un rebase «se marca `- [!]` y NO SE
+                       APLICA», y el agotamiento de `MAX_CAS_RETRIES`, donde DSP «deja TODAS
+                       las órdenes sin consumir» y «NO modifica el estado canónico». En los
+                       dos hay un HECHO que el Owner tiene que poder ver —por qué su orden no
+                       se aplicó— y NINGUNA escritura canónica que proteger.
+                       LA CONDICIÓN, EXACTA: `fase` y `tx` si y sólo si el consumo produce al
+                       menos una escritura canónica. No hay tercera opción y no es a gusto
+                       del emisor.
+                       Y MARCAR LA LÍNEA `- [ ]` → `- [x]` o `- [!]` NO ES UNA ESCRITURA
+                       CANÓNICA: la zona `ÓRDENES` no tiene ejecutor de mutación (§1.3), y
+                       `a.9` la declara «el registro write-ahead» que converge sola.
 
-«OCHO FORMAS» ERA EL EJE     seis fases + `deriva` + `fallo`. Es el número de FILAS del
-`fase`, NO EL RECUENTO       contrato condicional, no el de formas válidas de evento.
-DE FORMAS                    Se retira esa lectura, y el contrato de abajo se declara por
-                             lo que es: el contrato del EJE FASE.
+`sellado`              SELLAR AÑADE, NO REESCRIBE (§2.9). El objeto protegido es el FICHERO
+SIN AUTORREFERENCIA    DE SELLADO, no los eventos que lista. Y la regla que cierra la
+                       autorreferencia: **un `sellado` NUNCA incluye en su alcance los
+                       eventos de su propio `tx`**, que además son terminales o vivos, y
+                       §2.9 ya prohíbe retirar los dos.
+
+`retirada-de-cuerpo`   NO HAY DOS EVENTOS. El evento que REGISTRA la retirada **es** una fase
+ES LA TRANSACCIÓN      de la transacción que la EJECUTA: su `preparada` declara `hash_previo`
+                       = el evento íntegro y `hash_posterior_esperado` = la lápida, y su
+                       `confirmada` ES el registro del hecho. Un segundo evento «que registra»
+                       sería una segunda verdad sobre el mismo hecho.
+
+`certificacion`        EL JUICIO lo emite la capacidad responsable del aspecto (§1.3); su
+JUICIO Y ESCRITURA     SEDE CANÓNICA es la celda de cobertura, y el evento narra esa
+                       escritura. No son dos artefactos: el juicio no vive en el evento y el
+                       evento no lo sustituye. Una reverificación que confirma el mismo nivel
+                       TAMBIÉN escribe —`ultima_verificacion_real`—, luego también lleva fase.
+
+`integracion` NO ES    el evento `integracion` narra el depósito de una CAPA en el estado de
+`integration-set`      un item. El `integration-set` es OTRO artefacto: identidad propia
+                       `IS-<nnn>`, ya normado antes de esta fase, con `ENT` como autoridad Y
+                       como ejecutor (§1.3), y es la afirmación de que una combinación de
+                       revisiones se probó junta (§10). **No es una fase de `integracion` y
+                       este enum no lo nombra.**
+
+`deriva` y `fallo`     INFORMATIVOS. No reparan, no restauran y no completan. Reparar exige
+                       una transacción NUEVA (§2.6.11), y por eso no llevan fase: no hay
+                       ninguna escritura canónica suya que proteger.
 ```
+
+#### Escribir el diario NO abre otra transacción — cero recursión
+
+```text
+LO QUE UNA `tx` PROTEGE      las escrituras del ESTADO CANÓNICO: items, cobertura,
+                             iniciativas, ficheros de sellado y lápidas.
+
+LO QUE NO PROTEGE, PORQUE    la escritura de los PROPIOS EVENTOS de esa transacción. Un
+ES SU MECANISMO              `preparada`, un `confirmada` o un `derivada` se escriben con
+                             `temporal → fsync → rename → fsync(directorio)` (§2.6.3), y
+                             eso es lo que los hace durables. **No se abre una transacción
+                             para registrar que se escribió un evento**, ni ese evento
+                             necesita su propio `preparada`.
+
+POR QUÉ NO HAY RECURSIÓN     porque el diario es APPEND-ONLY y cada evento es INMUTABLE: un
+                             append no es una transición multiarchivo, no puede quedar a
+                             medias —el `rename` es atómico— y no hay estado anterior que
+                             conservar. Es el mismo argumento con el que §2.5 retiró el
+                             manifiesto de transacción.
+
+DÓNDE SÍ VUELVE A HABER      cuando la operación MODIFICA o COMPACTA lo ya escrito —
+UNA `tx`                     `sellado` y `retirada-de-cuerpo`—. Ahí el objeto ya no es un
+                             append: es un fichero con contenido previo, y por tanto una
+                             escritura canónica como cualquier otra. La frontera es
+                             AÑADIR frente a MODIFICAR, y no «estar dentro de `estado/`».
+```
+
+**El recuento, DERIVADO de la tabla y separado por ejes.** No es una métrica de calidad ni un
+titular: es la consecuencia de las nueve filas de arriba.
+
+```text
+VALORES DE `tipo`               9   orden · transicion · integracion · certificacion ·
+                                    migracion · sellado · retirada-de-cuerpo · deriva · fallo
+
+FASES TRANSACCIONALES           6   preparada · confirmada · conflicto ·
+                                    reconciliacion-preparada · reconciliada · derivada
+                                    `deriva` y `fallo` NO SON FASES: son valores de `tipo`
+
+ESTADOS DEL CAMPO `fase`        7   las SEIS fases, más la AUSENCIA del campo. La ausencia no
+                                    es un séptimo valor del enum: es que el campo no está
+
+ESPACIO BRUTO                  63   9 × 7, y la mayor parte NO es válida
+
+COMBINACIONES VÁLIDAS          45   6 tipos SIEMPRE transaccionales × 6 fases  = 36
+                                    `orden`, CONDICIONAL: 6 con fase + 1 sin   =  7
+                                    `deriva` sin fase                          =  1
+                                    `fallo` sin fase                           =  1
+
+COMBINACIONES PROHIBIDAS       18   los 6 siempre transaccionales SIN fase      =  6
+                                    `deriva` con cualquiera de las 6 fases      =  6
+                                    `fallo` con cualquiera de las 6 fases       =  6
+                                    45 + 18 = 63, y la partición cierra
+```
+
+> **Lo que se retira, dicho en positivo.** La formulación anterior —«las ocho formas de
+> evento» y su sucesora «`7 × 6 + 2 = 44`»— contaba **mezclando ejes**: la primera metía
+> `deriva` y `fallo` en el eje `fase`, y la segunda daba por obligatoria una transacción para
+> `orden` sin demostrarlo. **Las fases son SEIS.** `deriva` y `fallo` son valores de `tipo`
+> **sin** fase, y contarlos como formas de fase es el error que este recuento cierra.
 
 **Combinaciones prohibidas, y quién las rechaza** (capas de §3.6, más abajo):
 
@@ -2335,7 +2510,11 @@ DE FORMAS                    Se retira esa lectura, y el contrato de abajo se de
 `deriva` o `fallo` CON `fase` o CON `tx`          ESQUEMA ESTRUCTURAL. Es coherencia
                                                   interna: `tipo` y `fase` viven en el
                                                   MISMO evento
-CUALQUIERA DE LOS SIETE SIN `fase` O SIN `tx`     ESQUEMA ESTRUCTURAL, por lo mismo
+CUALQUIERA DE LOS SEIS SIEMPRE                    ESQUEMA ESTRUCTURAL, por lo mismo
+TRANSACCIONALES SIN `fase` O SIN `tx`
+UN `orden` CON `fase` QUE NO DECLARE NINGUNA      ESQUEMA ESTRUCTURAL: si lleva fase, su
+ESCRITURA CANÓNICA, O SIN `fase` DECLARANDO       `preparada` declara `afecta[]`, y si no
+UNA                                               la lleva no puede declarar ninguna
 `fase: abortada`, con cualquier `tipo`            ESQUEMA ESTRUCTURAL: fuera del enum
 `tx_afectada` sin `causa: posterior-al-cierre`    ESQUEMA ESTRUCTURAL
 UN EVENTO CON `fase` CUYO `tx` YA TIENE           VALIDADOR SEMÁNTICO DEL DIARIO: exige
@@ -2350,9 +2529,12 @@ candidatos con sujeto, autoridad y ciclo propios. El recuento de §3.8 **no camb
 
 ### El contrato condicional, fase a fase
 
-> **Qué cubre esta tabla, dicho tras `H3`:** el **eje `fase`**. Un evento válido cumple **su
-> fila de tipo** en la matriz de arriba **y** su fila de fase aquí. Ninguna de las dos basta
-> sola.
+> **Qué cubre esta tabla, y qué NO.** Sus **seis primeras filas son las seis FASES**. Las
+> dos últimas —`deriva` y `fallo`— **no son fases**: son los dos valores de `tipo` que nunca
+> la llevan, y están aquí porque sin ellos el contrato del evento quedaría incompleto. **La
+> tabla tiene ocho filas y el eje `fase` tiene seis valores**, y confundir las dos cosas es
+> lo que `D59` corrige. Un evento válido cumple **su fila de tipo** en la prueba de arriba
+> **y**, si lleva fase, su fila de fase aquí.
 
 > **Añadido por la corrección técnica posterior (hallazgo `3`, GRAVE).** El contrato anterior
 > declaraba un `afecta` genérico —`hash_previo` · `hash_posterior_esperado`— y un `resultado`
@@ -2434,7 +2616,13 @@ Recorriendo **todos los eventos**, y por eso ninguna de estas comprobaciones cab
 · TERMINALIDAD: exactamente un `derivada` por transacción cerrada, y ninguno en las abiertas
 · CORRESPONDENCIA ENTRE INTENCIÓN Y HECHO: que todo `confirmada` tenga su `preparada`, toda
   `reconciliada` su `reconciliacion-preparada`, y que las rutas y hashes coincidan
-· REEMISIONES: que una fase reemitida declare EL MISMO HECHO que la anterior (§2.6.4)
+· CARDINALIDAD DE CADA FASE: `preparada`, `confirmada`, `reconciliada` y `derivada`
+  aparecen EXACTAMENTE UNA VEZ por `tx`. **Ninguna secuencia contiene `confirmada →
+  confirmada`.** Sólo `conflicto` y `reconciliacion-preparada` se repiten, y sólo porque el
+  contrato las declara repetibles con `iteracion` como discriminador (§2.6.4)
+· EMISIÓN FRENTE A RESTAURACIÓN: restaurar un evento durable perdido devuelve el MISMO `id`,
+  el MISMO cuerpo y el MISMO `predecesor`. Un `id` nuevo con el mismo `tx` y la misma fase de
+  HECHO es un defecto, no una reemisión
 · CONSISTENCIA DEL AUTÓMATA COMPLETO: que la secuencia de fases de cada `tx` sea un camino
   admitido de §2.6.1, y no una colección de eventos que por separado validan
 ```
@@ -4957,9 +5145,20 @@ encadenamiento consecutivo. `D16`–`D54` conservan su texto.
 | `D56` | la recuperación clasifica contra la **última fase durable**, y `conflicto` exige transacción abierta **y** divergencia real | `D34` · `D36` · `D35` · `D53` | **GRAVE**: `W12a` mandaba `conflicto` donde §2.6.4, `W3` y `W4` mandan completar. Y la regla del clon emitía `conflicto` sin transacción abierta alguna |
 | `D57` | `tipo` y `fase` son **dos ejes**, con matriz declarada: siete tipos transaccionales × seis fases, más `deriva` y `fallo` sin fase | `D54` · `D23` | **GRAVE**: «las ocho formas de evento» contaba el eje `fase`, y siete de los nueve valores de `tipo` quedaban sin contrato |
 
+### `D58`–`D59` · las decisiones de la TERCERA comprobación técnica
+
+Comprobación acotada sobre `D55`–`D57`. **Cuarto encadenamiento consecutivo**: sus dos
+hallazgos están en texto que la corrección anterior escribió. `D16`–`D57` conservan su texto.
+
+| | decisión | qué revisa | por qué |
+|---|---|---|---|
+| `D58` | emitir y **restaurar** son distintos, y **`confirmada → confirmada` no existe**; cardinalidad de cada fase declarada por `tx` | `D56` · `D37` | «reemisión como evento nuevo» contradecía §2.8 punto 5, que ya la declaraba NO-OPERACIÓN, y creaba una secuencia que el autómata no tiene |
+| `D59` | recuento **separado por ejes** —9 tipos · 6 fases · 7 estados del campo— y matriz **mínima** demostrada tipo a tipo, con `orden` **condicional** | `D57` · `D54` | `D57` contó filas de tabla como valores de `fase` y derivó un cartesiano sin demostrarlo; `a.9` da consumos de orden que no mutan nada |
+
 **Y `O15`**, resolución posterior del Owner que revisa `O14` sin reescribirlo: la adopción de
 PesquerApp es la **primera adopción real, permanente y completa** de ADS. Vive en el registro
-de decisiones, y su lectura arquitectónica en §8.2, §18 y §19.
+de decisiones, y su lectura arquitectónica en §8.2, §18 y §19. **`D58` y `D59` no la tocan**:
+sólo corrigen recuentos y referencias del protocolo.
 
 
 

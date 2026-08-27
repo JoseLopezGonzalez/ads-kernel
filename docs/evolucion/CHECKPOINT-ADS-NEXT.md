@@ -16,8 +16,13 @@
 > Y por una **SEGUNDA corrección técnica**, que encontró **tres GRAVES más** —garantías
 > atribuidas a un esquema que no puede comprobarlas, `W12a` contra la clasificación por
 > hashes, y siete valores de `tipo` sin contrato— **en el texto que la corrección anterior
-> escribió**. Es el TERCER encadenamiento consecutivo en el que una pasada encuentra defectos
-> de la anterior. Tampoco es la tercera revisión, y tampoco certifica nada.
+> escribió**. Tampoco es la tercera revisión, y tampoco certifica nada.
+>
+> Y por una **TERCERA COMPROBACIÓN TÉCNICA acotada**, que encontró **dos defectos más** en el
+> texto que la segunda escribió: el recuento de fases mezclaba `tipo` con `fase`, y la
+> «reemisión» admitía un `confirmada → confirmada` que §2.8 ya prohibía. Es el **CUARTO**
+> encadenamiento consecutivo en el que una pasada encuentra defectos de la anterior. Tampoco
+> es la tercera revisión, y tampoco certifica nada.
 >
 > La segunda revisión la emitió un revisor con contexto limpio que **no escribió F4 ni aplicó
 > la primera crítica**, y su veredicto fue de **INSUFICIENCIA**: dos hallazgos BLOQUEANTES,
@@ -38,7 +43,7 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/14-DEVOLUCION-TECNICA-PREVIA-F4C.md
              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · D16–D22 ·
                                                              D23–D33 · D34–D45 · D46–D51 ·
-                                                             D52–D54 · D55–D57
+                                                             D52–D54 · D55–D57 · D58–D59
              kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
 freshness:   vigente
 last_meaningful_event: la SEGUNDA revisión independiente devuelve F4 con veredicto de
@@ -51,6 +56,31 @@ procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y
              crítica NO equivale a autocertificarse, y NO prueba que esté bien resuelta.
              LA PRUEBA DE QUE ESTO IMPORTA: dos de los hallazgos de la segunda devolución son
              defectos que la PRIMERA CORRECCIÓN introdujo o no vio
+resuelto_en_la_TERCERA_COMPROBACION_TECNICA:
+  # Comprobación técnica ACOTADA sobre D55–D57. NO es la tercera revisión independiente, y NO
+  # certifica F4c. Sus DOS hallazgos están en texto que la corrección ANTERIOR escribió: es el
+  # CUARTO encadenamiento consecutivo.
+  · 1 · RECUENTO DE FASES MEZCLANDO EJES. Se decía «las ocho formas» y luego «7 × 6 + 2 = 44»,
+    metiendo `deriva` y `fallo` —que son valores de `tipo`— en el eje `fase`. Vigente: NUEVE
+    valores de `tipo` · SEIS fases transaccionales · SIETE estados del campo `fase` contando
+    su AUSENCIA · 45 combinaciones válidas y 18 prohibidas sobre un espacio de 63
+  · 2 · `confirmada → confirmada` NO EXISTE. La «reemisión» de D56 —un evento NUEVO con la
+    misma fase— contradecía §2.8 punto 5, que ya declaraba NO-OPERACIÓN emitir una fase que ya
+    existe. Vigente: CASO A, `confirmada` no durable → se emite UNA vez (W5, W13); CASO B, ya
+    durable → se reaplican los canónicos desde `preparada` y NO se emite ninguna fase nueva,
+    siguiendo con derivados y `derivada`. Restaurar un fichero de evento perdido es
+    RESTAURACIÓN IDEMPOTENTE del MISMO evento —mismo id, cuerpo y predecesor—, no una emisión.
+    `preparada`, `confirmada`, `reconciliada` y `derivada`: EXACTAMENTE UNA por tx. Sólo
+    `conflicto` y `reconciliacion-preparada` son repetibles, con `iteracion` y tope de tres
+  · 3 · MATRIZ MÍNIMA, DEMOSTRADA TIPO A TIPO. `orden` es CONDICIONAL: a.9 da consumos que NO
+    aplican y NO modifican el estado canónico —base inexistente tras rebase, agotamiento de
+    MAX_CAS_RETRIES—. Los otros SEIS son siempre transaccionales; `deriva` y `fallo`, nunca.
+    Y se declara CERO RECURSIÓN: escribir los eventos del propio diario NO abre otra
+    transacción — la frontera es AÑADIR frente a MODIFICAR, y por eso `sellado` y
+    `retirada-de-cuerpo` sí la necesitan
+  · O15 NO SE TOCA. Sólo se corrigen recuentos y referencias derivadas
+  · D58–D59 registradas. Tabla adversarial: SIGUE en 42 filas — X21 gana la comprobación
+    explícita de que no existe `confirmada → confirmada`, en su sitio
 resuelto_en_la_SEGUNDA_CORRECCION_TECNICA:
   # Segunda corrección técnica sobre el protocolo transaccional. NO es la tercera revisión
   # independiente, y NO certifica F4c. Sus TRES hallazgos están en texto que la corrección
@@ -68,7 +98,9 @@ resuelto_en_la_SEGUNDA_CORRECCION_TECNICA:
     hacerse contra la ÚLTIMA FASE DURABLE —`preparada`, o `reconciliacion-preparada` para las
     rutas que reconcilió—, con base válida y resultado permitido explícitos. Un canónico
     revertido bajo transacción abierta SE REAPLICA; si `confirmada` era durable SE REEMITE
-    tras reaplicar, y reemitir una fase NO es una transición. `conflicto` exige transacción
+    tras reaplicar, y reemitir una fase NO es una transición.
+    [REVISADO por D58: NO se reemite. El evento `confirmada` ya existe, y §2.8 punto 5 ya
+     declaraba NO-OPERACIÓN emitir una fase que ya está. `confirmada → confirmada` NO EXISTE] `conflicto` exige transacción
     abierta Y divergencia real; el marcador huérfano o clonado es `fallo` de publicación, y
     lo divergente sin transacción es `deriva`. Es D56
   · H3 · GRAVE. SIETE TIPOS SIN CONTRATO. El enum de `tipo` tiene NUEVE valores y el contrato
@@ -77,6 +109,9 @@ resuelto_en_la_SEGUNDA_CORRECCION_TECNICA:
     `fase` y `tx` OBLIGATORIOS y son ortogonales a las seis fases; `deriva` y `fallo` los
     tienen PROHIBIDOS. Cada tipo declara su sujeto. Formas válidas: 7 × 6 + 2 = 44. NO se crea
     ni se fusiona ningún tipo, y el recuento de §3.8 no cambia. Es D57
+    [REVISADO por D59: `orden` es CONDICIONAL, no siempre transaccional, y el recuento se
+     separa por ejes — 9 tipos · 6 fases · 7 estados del campo · 45 válidas · 18 prohibidas.
+     El cartesiano 7 × 6 + 2 se retira: no estaba demostrado tipo a tipo]
   · C4 · RESTOS VIGENTES. `preparada` deja de ser «la única entrada que necesita la
     recuperación» —lo es en la ruta normal—; la cardinalidad de una transacción se declara
     VARIABLE (3 normal · 3+2k en conflicto · 6 si escala sin cerrar · más reemisiones);
@@ -109,10 +144,11 @@ resuelto_en_la_CORRECCION_TECNICA_POSTERIOR:
     por fase para las ocho formas de evento: obligatorios, prohibidos, predecesora admitida,
     hash que gobierna y condición para emitir la siguiente. Más cuatro reglas que un esquema
     derivado debe hacer cumplir. Y los `fsync` obligatorios se extienden a la ruta de conflicto
-    [REVISADO por D57: «las ocho formas» era el eje FASE, no el recuento de formas de evento
-     — el enum de `tipo` tiene NUEVE valores y siete quedaban sin contrato. Y por D55: tres
-     de las cuatro reglas NO las puede comprobar un esquema. Ver el bloque de la segunda
-     corrección técnica]
+    [REVISADO por D57: «las ocho formas» no era el recuento de formas de evento — el enum de
+     `tipo` tiene NUEVE valores y siete quedaban sin contrato. Y por D55: tres de las cuatro
+     reglas NO las puede comprobar un esquema.
+     REVISADO OTRA VEZ por D59: tampoco era «el eje FASE» — las fases son SEIS, y `deriva` y
+     `fallo` son valores de `tipo`. Ver el bloque de la tercera comprobación técnica]
   · CONSISTENCIA · el marcador deja de llamarse «tercera categoría» en §2.6.6 · W11 deja de
     hablar de «su bandera» · X47 comprueba la PROYECCIÓN NORMATIVA VIGENTE y declara sus
     excepciones históricas una a una, en vez de afirmar que todo el corpus tiene una sola
@@ -273,9 +309,9 @@ falta_para_cerrar_la_capa:
     INSUFICIENCIA, y DOS correcciones técnicas más. Las correcciones de todas las aplicó
     QUIEN LAS RECIBIÓ, y eso no prueba que estén bien resueltas. LA EVIDENCIA DE QUE EL
     ENCADENAMIENTO IMPORTA: dos de los hallazgos BLOQUEANTES de la segunda son defectos que
-    la PRIMERA CORRECCIÓN introdujo o no vio, y los TRES de la segunda corrección técnica
-    están en texto que la corrección técnica ANTERIOR escribió. NINGUNA crítica se declara
-    superada. F4c sólo se cierra con un veredicto explícito de SUFICIENCIA emitido por un revisor
+    la PRIMERA CORRECCIÓN introdujo o no vio, los TRES de la segunda corrección técnica están
+    en texto que la corrección técnica ANTERIOR escribió, y los DOS de la tercera comprobación
+    están en texto que la SEGUNDA escribió. NINGUNA crítica se declara superada. F4c sólo se cierra con un veredicto explícito de SUFICIENCIA emitido por un revisor
     independiente sobre el resultado corregido
   · OCHO PRESIONES NORMATIVAS VIGENTES. PN-1 —la sección (g)— BLOQUEA todo el estado
     durable, y ahora decide MÁS: fsync, regla de commit, sellado, identidad y regla de
@@ -346,10 +382,11 @@ F4c CRÍTICA INDEPENDIENTE    TRES devoluciones, EMITIDAS por revisores y audito
                                  sobre el ÁRBOL REMOTO REAL: 3 BLOQUEANTES, 2 GRAVES, 4
                                  MEDIOS, 2 MENORES · 14-DEVOLUCION-TECNICA-PREVIA-F4C.md ·
                                  D46–D51. NO es veredicto de suficiencia
-                             Y DOS CORRECCIONES TÉCNICAS posteriores, ninguna de ellas la
+                             Y TRES PASADAS TÉCNICAS posteriores, ninguna de ellas la
                              tercera revisión: la 1ª con dos BLOQUEANTES y un GRAVE
                              (`D52`–`D54`), la 2ª con tres GRAVES (`D55`–`D57`) sobre el
-                             texto que la 1ª escribió.
+                             texto que la 1ª escribió, y una 3ª comprobación acotada
+                             (`D58`–`D59`) sobre el texto de la 2ª.
                              DOS de los hallazgos de la 2ª devolución, TRES de la 3ª y LOS
                              TRES de la segunda corrección técnica son defectos que las
                              correcciones ANTERIORES introdujeron o no vieron.
@@ -607,6 +644,17 @@ docs/evolucion/14-DEVOLUCION-TECNICA-PREVIA-F4C.md  DOS addenda nuevos y el vere
 docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md  D55–D57 y O15, SIN reescribir D1–D54 ni
                                           O1–O14
 docs/evolucion/CHECKPOINT-ADS-NEXT.md     este bloque, el estado de la fase y O15
+
+F4c TERCERA COMPROBACIÓN TÉCNICA — recuento por ejes, emisión frente a restauración, matriz
+docs/evolucion/11-ARQUITECTURA-INTEGRADA.md  cabecera · §2.6.2 cardinalidad · §2.6.4 emisión
+                                          y restauración idempotente, con la cardinalidad de
+                                          cada fase por `tx` · §2.6.5 W12a y W13 · §2.6.6 ·
+                                          §2.6.7 X21 y X26 · §2.8 qué significa «reemitir» ·
+                                          §3.6 prueba tipo a tipo, cero recursión del diario
+                                          y recuento derivado · §15.8 D58–D59
+docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md  D58–D59, SIN reescribir D1–D57 ni O1–O15
+docs/evolucion/CHECKPOINT-ADS-NEXT.md     su bloque y las marcas [REVISADO] sobre D56 y D57
+O15 NO SE TOCA. (a), (b), E1, E2, K-1, C4 y C7 intactos. Ningún documento numerado nuevo.
 NADA de kernel/operativo/, packs/ ni tooling/ ha cambiado, salvo la evidencia DERIVADA que
 el runner republica. (a), (b), E1, E2, K-1, C4 y C7 intactos. NINGÚN documento `15-*` nuevo:
 la corrección se registra por ADDENDUM sobre los documentos existentes.
