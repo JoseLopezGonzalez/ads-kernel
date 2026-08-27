@@ -710,19 +710,31 @@ SE ESCALA     todo lo divergente (W11), el fallo silencioso que la integridad po
 **Dónde es obligatorio `fsync`, y dónde deliberadamente no:**
 
 ```text
-OBLIGATORIO   (1) el evento `preparada` y SU DIRECTORIO, ANTES de tocar ningún canónico
-              (2) cada fichero canónico escrito **Y SU DIRECTORIO**, ANTES de emitir
-                  `confirmada` — y en el orden del paso 3 de §2.6.3:
+OBLIGATORIO   LAS DOS INTENCIONES, y por el mismo motivo:
+              (1) el evento `preparada` y SU DIRECTORIO, ANTES de tocar ningún canónico
+              (2) el evento `reconciliacion-preparada` y SU DIRECTORIO, ANTES de tocar
+                  ningún canónico. Es el punto de compromiso de la ruta de conflicto, y sin
+                  su durabilidad la reconciliación no es recuperable (hallazgo `1`, §2.6.9)
+
+              CADA ESCRITURA CANÓNICA, venga de la ruta que venga:
+              (3) cada fichero canónico escrito **Y SU DIRECTORIO**, ANTES de emitir
+                  `confirmada` o `reconciliada` — y en el orden del paso 3 de §2.6.3:
                   `fsync(temporal)` ANTES del `rename`, `fsync(directorio)` DESPUÉS
-              (3) el evento `confirmada` y SU DIRECTORIO
+
+              LOS DOS HECHOS:
+              (4) el evento `confirmada` y SU DIRECTORIO
+              (5) el evento `reconciliada` y SU DIRECTORIO
 NO EXIGIDO    los derivados, el marcador y el evento `derivada`: los tres se reconstruyen
               desde lo canónico, y pagar `fsync` por ellos encarece cada transacción sin
               comprar ninguna garantía
 ```
 
-> **Corregido por la segunda devolución independiente (hallazgo `E`, BLOQUEANTE).** F4c exigía
-> en el punto (2) *«cada fichero canónico escrito, ANTES de emitir `confirmada`»* —**sin el
-> directorio**— y §2.6.3 decía *«`fsync` del fichero antes del paso 4»*, es decir **después
+> **Corregido dos veces.** La corrección técnica posterior extendió la lista a la ruta de
+> conflicto: sólo nombraba `preparada`, y sin `fsync` de `reconciliacion-preparada` la
+> reconciliación no sobrevive a una caída de máquina (hallazgo `1`).
+>
+> **Y antes, por la segunda devolución independiente (hallazgo `E`, BLOQUEANTE).** F4c exigía
+> *«cada fichero canónico escrito, ANTES de emitir `confirmada`»* —**sin el directorio**— y §2.6.3 decía *«`fsync` del fichero antes del paso 4»*, es decir **después
 > del `rename`**. Los dos son el mismo error, en el eje del alcance y en el del tiempo, y es
 > **exactamente el que la garantía 3 acababa de nombrar como «el error clásico»**, cometido en
 > el punto donde más importa: los ficheros que **son** el estado.
@@ -1970,14 +1982,16 @@ verificadores distintos. Y las doce áreas documentales y los cuatro niveles de 
 —que no son capacidades— entraban en ese mismo campo sin namespace. Tres universos en un
 campo sin tipo es una colisión semántica, no una economía.
 
-## 3.6 · `evento` — qué declara
+## 3.6 · `evento` — qué declara, y qué exige cada fase
+
+### Campos comunes a todo evento
 
 ```text
 id            EV-<huella del contenido>. Direccionado por contenido, NO monotónico (§2.7)
 tipo          orden | transicion | integracion | certificacion | migracion | sellado |
-              retirada-de-cuerpo | fallo
-fase          preparada | confirmada | conflicto | reconciliada | derivada |
-              — (sin transacción). El autómata y sus transiciones admitidas, en §2.6.1.
+              retirada-de-cuerpo | deriva | fallo
+fase          preparada | confirmada | conflicto | reconciliacion-preparada | reconciliada |
+              derivada | — (sin transacción). El autómata, en §2.6.1.
               `abortada` NO existe: un evento con esa fase es RECHAZADO por el esquema
 tx            TX-<huella>, cuando el evento forma parte de una transacción multiarchivo.
               Lo comparten todos los eventos de esa transacción y nadie más
@@ -1986,15 +2000,50 @@ predecesor    el evento que este emisor observó como último. Forma la cadena v
 ordenante · autoridad · escritor_del_comando · ejecutor · actor_atribuido
               los CINCO conceptos de a.9, sin confundirlos
 base          hash de las entradas sobre las que se decidió
-afecta        por fichero canónico: `ruta` · `hash_previo` · `hash_posterior_esperado` ·
-              `orden` · una de `contenido` | `parche` | `operacion`
-resultado     qué queda escrito. Presente en `confirmada`, ausente en `preparada`
+```
+
+### El contrato condicional, fase a fase
+
+> **Añadido por la corrección técnica posterior (hallazgo `3`, GRAVE).** El contrato anterior
+> declaraba un `afecta` genérico —`hash_previo` · `hash_posterior_esperado`— y un `resultado`
+> descrito sólo para `preparada` y `confirmada`. **No podía representar** el `hash_observado`
+> de un conflicto, ni la copia de lo divergente, ni la decisión de una reconciliación, ni su
+> `hash_final`, ni los derivados pendientes. Un esquema derivado de ese contrato aceptaría un
+> `conflicto` sin copia de lo divergente y una reconciliación sin resultado reproducible —y
+> §2.6 declara que las dos cosas son defectos—. Es `D54`.
+
+| fase | predecesora admitida | campos OBLIGATORIOS | campos PROHIBIDOS | hash que gobierna | condición para emitir la siguiente |
+|---|---|---|---|---|---|
+| `preparada` | ninguna: abre la transacción | `afecta[]` con `ruta`·`hash_previo`·`hash_posterior_esperado`·`orden`· una de `contenido`\|`parche`\|`operacion` · los cinco de `a.9` · `base` | `resultado` · `hash_observado` · `hash_final` · `decision` | `hash_posterior_esperado` | los N ficheros casan con su hash posterior → `confirmada`; alguno diverge → `conflicto` |
+| `confirmada` | `preparada` | `resultado` · `derivados_pendientes[]` | `decision` · `hash_final` · `hash_observado` | `hash_posterior_esperado` | los derivados de `derivados_pendientes` se regeneraron → `derivada` |
+| `conflicto` | `preparada` o `reconciliacion-preparada` | `divergentes[]` con `ruta`·`hash_observado`· **`contenido` íntegro de lo divergente** · `items[]` · `rutas[]` · `autoridad` que debe resolver · `iteracion` | `resultado` · `hash_final` · `decision` | ninguno: declara lo observado, no lo esperado | la autoridad decide y su decisión es durable → `reconciliacion-preparada`; `iteracion` = 3 → se detiene y escala |
+| `reconciliacion-preparada` | `conflicto` | `decision[]` con `ruta`·`hash_observado`·`hash_final`·`orden`· una de `contenido`\|`parche`\|`operacion` · `autoridad` que decidió · `derivados_pendientes[]` · `iteracion` | `resultado` | `hash_final`, que **sustituye** al `hash_posterior_esperado` para esas rutas | los ficheros de `decision` casan con su `hash_final` → `reconciliada`; alguno vuelve a divergir → `conflicto` |
+| `reconciliada` | `reconciliacion-preparada` | `resultado` · `derivados_pendientes[]` | `decision` · `hash_posterior_esperado` para las rutas reconciliadas | `hash_final` | los derivados de `derivados_pendientes` se regeneraron → `derivada` |
+| `derivada` | `confirmada` o `reconciliada` | `derivados_regenerados[]` con su `source_revision` | `afecta` · `decision` · `divergentes` | el que gobernara su ruta | **ninguna. Es terminal**, y el esquema rechaza cualquier evento posterior con ese `tx` |
+| `deriva` | **ninguna: NO tiene `tx` ni `fase`** | `causa` ∈ {`posterior-al-cierre`,`sin-transaccion`} · `afecta[]` con `ruta`·`hash_esperado`·`hash_observado` · `items[]` · `autoridad` · `tx_afectada` sólo si `causa: posterior-al-cierre` | `fase` · `tx` · `decision` · `resultado` | ninguno: **reporta**, no repara | ninguna. La reparación es una transacción NUEVA (§2.6.11) |
+| `fallo` | **ninguna: NO tiene `tx` ni `fase`** | `operacion` · `diagnostico` · `intentos` | `fase` · `afecta` | — | ninguna |
+
+### Las cuatro reglas que un esquema derivado debe hacer cumplir
+
+```text
+1  NINGÚN EVENTO CON `fase` cuya transacción ya tenga `derivada`. Es lo que hace terminal a
+   `derivada`, y sin esta regla el autómata de §2.6.1 es una descripción y no un contrato.
+
+2  NINGÚN `conflicto` SIN `divergentes[].contenido`. Un conflicto que no conserva lo
+   divergente permite destruirlo sin registro, y §2.6.9 declara que eso no puede ocurrir.
+
+3  NINGUNA `reconciliacion-preparada` SIN `decision[]` reproducible y su `hash_final`. Una
+   reconciliación sin resultado reproducible no es recuperable, que es el hallazgo `1`.
+
+4  NINGUNA ESCRITURA CANÓNICA sin una intención durable previa que la declare: `preparada`
+   en la ruta normal, `reconciliacion-preparada` en la de conflicto. Es la regla de la que
+   dependen las dos anteriores.
 ```
 
 **Un evento nunca se edita, y nunca narra en futuro.** Corregir un evento se hace emitiendo
-otro que lo rectifica y lo enlaza. Una intención se registra con `fase: preparada`, que dice
-lo que es. Las dos reglas juntas son lo que hace que el diario sea una historia y no una
-lista de deseos.
+otro que lo rectifica y lo enlaza. Una intención se registra con una fase que dice
+«preparada», y hay dos. Las dos reglas juntas son lo que hace que el diario sea una historia
+y no una lista de deseos.
 
 ## 3.7 · Extensiones, sin tipo nuevo
 
