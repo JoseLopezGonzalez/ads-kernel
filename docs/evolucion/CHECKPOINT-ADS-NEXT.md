@@ -6,64 +6,60 @@
 > **Basta decir «Continúa»**: la siguiente acción exacta está al final.
 
 ```text
-CHECKPOINT — ADS-NEXT/05 · SIS/evolucion
+CHECKPOINT — ADS-NEXT/06 · SIS/evolucion
 actualizado: 2026-08-27
-metodo:      SIS/Evolucion · F3 SÍNTESIS ENTREGADA
-based_on:    docs/evolucion/06-CONTRASTE.md@910d1d3
-             docs/evolucion/ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md@43c627f
-             kernel/VERSION@2.0.0-alpha.7 · kernel/KERNEL.md@1.5.0
+metodo:      SIS/Evolucion · PUERTA CORRECTIVA PRE-F4 CERRADA
+based_on:    docs/evolucion/09-SINTESIS.md@7e450cf + su addendum
+             docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md@515e94c
+             kernel/VERSION@2.0.0-alpha.8 · kernel/KERNEL.md@1.5.0
 freshness:   vigente
-last_meaningful_event: el Owner entrega el documento de pendientes —principios aceptados,
-             propuestas abiertas y problemas por sintetizar— y ordena ejecutar F3 (2026-08-27)
+last_meaningful_event: F3 pasa por CRÍTICA INDEPENDIENTE —que no la escribió quien la
+             escribió—, el Owner resuelve las ocho materias que quedaban suyas, y una
+             ejecución destapa que T158 daba por buena una evidencia caducada (2026-08-27)
 resuelto:
-  · SEIS HALLAZGOS, que son el resultado de la fase:
-    H1 los cuatro macrocircuitos —instalación, adopción, migración, actualización— son UNA
-       composición sobre procesos existentes, no cuatro diseños. Comprobado fase a fase:
-       A2/A3/A6 son `AUD`, y los condicionales que AUD ya declara son la lista de
-       participantes que el documento escribe
-    H2 el ESTADO PERSISTIDO es el cuello de botella: cinco de los seis bloques del documento
-       dependen de él, y a.9 delega su disposición física desde el principio
-    H3 el ADAPTADOR es una PROYECCIÓN COMPILADA, no una capa de conocimiento. Cierra X3,
-       da contenido a P-01 y su huella cierra P-06 — sin tocar K-1
-    H4 el sujeto que le faltaba a P-03 ya existe y es canónico: el COMPONENTE de C6. Las
-       doce dimensiones del §20.3 son capacidades que ya tienen propietario
-    H5 el contrato documental del §5.23 es el esquema `memoria` con DOS campos más
-    H6 el documento se contradice consigo mismo: máxima documentación contra mínima
-       complejidad. Registrado como X7
-  · PUERTA DE F3 SUPERADA: X1 deferida con su línea escrita · X2 resuelta por lectura, y su
-    parte de Owner acotada a una pregunta · X3 RESUELTA · X4 RESUELTA: la minería es un AUD
-    con SIS como consumidor · X5 resuelta en su forma
-  · TRES CONTRADICCIONES NUEVAS, registradas con las dos posturas y sin resolver:
-    X6 la auditoría autónoma crea trabajo y ninguna entrada del Owner lo autoriza
-    X7 el mínimo documental obligatorio contra el control de crecimiento
-    X8 organización preestructurada contra «no se materializan equipos permanentes» (R04)
-  · P-01, P-02, P-03, P-06 y P-07 quedan RESUELTOS EN SU FORMA y entran en F4. P-05 sigue
-    deferido, y ahora comparte condición de reapertura con X4. P-04 está cerrado en
-    arquitectura y abierto en evidencia: exige runtime y piloto
-  · Q9 y Q10 RESPONDIDAS. Q10 devuelve un criterio operable en vez de una lista: no se
-    sustituye lo que tiene CICATRIZ ESCRITA, que es la lente L7 del propio protocolo
-  · siete de los veintinueve candidatos convergen en UNA pieza: el contrato de adaptador
-  · descartado: crear el fichero EVOLUTION.md. KERNEL_CHANGELOG y VERSIONES ya son el
-    ledger, con política escrita y validador. Otro sería la segunda verdad que el §26.24
-    dice querer evitar
-  · descartado: un tipo de proceso nuevo para adopción, migración, actualización, minería
-    o auditoría del propio ADS. Los diez de b.16 los cubren
-  · descartado, por ahora: el esquema `candidato`. Se justifica con la segunda minería
-owner_captado: "material de evolución, no normativa vigente ni autorización para
-             implementar directamente todo su contenido" (2026-08-27)
-pregunta_pendiente: nueve, listadas en 09-SINTESIS. La más cara de aplazar es la novena:
-             qué producto real se usa para el piloto
-siguiente:   F4 ARQUITECTURA INTEGRADA, que NO la certifica quien la escribe
+  · SEIS HALLAZGOS DE LA CRÍTICA, aplicados sin borrar nada de F3:
+    CI-1 H4 REVISADO. El componente de C6 es ámbito principal, NO sujeto único: no puede
+         cargar con pantallas, formularios, migraciones, pipelines, agentes ni adaptadores.
+         La matriz pasa a `sujeto auditable × dimensión`. No autoriza un tipo nuevo
+    CI-2 H5 DEGRADADO a reutilización candidata. `memoria` no cubre procedencia, revisiones
+         examinadas, relaciones, aplicabilidad, gaps ni contradicciones. Tres vías para F4
+    CI-3 X8 CERRADA POR LECTURA: C4 y E1 ya la respondían. Preguntas 3 y 4 retiradas
+    CI-4 X7 CERRADA: doce ÁREAS SEMÁNTICAS, no doce ficheros — y tampoco «lo necesario para
+         reanudar», que era la salida que propuso la síntesis y se quedaba corta
+    CI-5 H1 conservado: compartir motor de composición NO aplana las rutas
+    CI-6 H3 conservado, desglosado en cuatro piezas con dueño distinto
+  · OCHO RESOLUCIONES DEL OWNER, registradas como O7–O14 en DECISIONES-Y-CONTRADICCIONES:
+    política de auditoría revocable · mínimo documental · catálogo frente a equipo ·
+    docs/owner/ · la unidad amplia se llama `iniciativa` · gate de arranque ·
+    matriz agentic · piloto en PesquerApp
+  · CERO preguntas abiertas del conjunto que F3 elevó al Owner: siete resueltas, dos
+    retiradas por lectura
+  · T158 CORREGIDO. Reproducido primero contra el código anterior: corpus 282, evidencia
+    280, cabecera y firma válidas, T158 SUPERADA. Contrato `vigencia` declarativo, con el
+    recorrido IMPORTADO de quien lo define, que falla cerrado y no se acepta a sí mismo.
+    Regresiones N158g y N158h, con la cifra derivada del propio fichero
+  · P-07 cerrado en su ubicación: docs/owner/, y la exención pasa a ser POR UBICACIÓN.
+    Cinco exenciones manuales para la misma clase eran la señal de que faltaba la clase
+owner_captado: "antes debes cerrar una puerta correctiva pre-F4 derivada de la crítica
+             independiente de F3" (2026-08-27)
+pregunta_pendiente: ninguna
+siguiente:   F4 ARQUITECTURA INTEGRADA — autorizable, y NO iniciada
 falta_para_cerrar_la_capa:
-  · la síntesis no ha pasado por crítica independiente. Es la puerta de F4, no de F3
-  · nada de lo resuelto «en su forma» está construido. Cinco problemas resueltos en forma
-    son cinco contratos por escribir, no cinco piezas que funcionen
-  · sigue sin haber piloto. La columna de uso real está vacía desde F0
-  · T169 y T170 en contrato-definido · CA-10 y CA-11 dependen de runtime · el §100 como
-    DESCUBRIMIENTO exige un agente y un producto real
-  · leer el manifiesto exige Python 3.11 o superior: `tomllib` es estándar desde ahí. En
-    3.10 fallan comprobar_fuentes, comprobar_arranque y las pruebas de workspace, diciendo
-    por qué. Es una limitación declarada del entorno, no un defecto del corpus
+  · P-08 NUEVO: la vigencia de la evidencia sólo está garantizada para T161. Los otros doce
+    validadores publican cifras que pueden envejecer igual y nada lo detecta. La solución
+    general exige declarar las ENTRADAS de cada validador: es materia de F4
+  · nada de lo resuelto «en su forma» está construido. O7–O14 fijan dirección y no
+    implementan: la iniciativa, los adaptadores, la certificación y el sistema de auditoría
+    siguen sin una línea
+  · el piloto está SELECCIONADO y no ejecutado. Mientras no se ejecute, T169, T170, CA-10,
+    CA-11 y el §100 como descubrimiento siguen sin demostrarse
+  · ningún adaptador certificado. O13 fija la matriz objetivo; certificar exige prueba de
+    humo, y la prueba de humo exige adaptador
+  · X1 y P-05 siguen deferidas. Nada de esta puerta las toca
+  · la directiva, su prompt y el documento de pendientes siguen fuera de docs/owner/, con
+    su exención propia y su migración declarada pendiente
+  · leer el manifiesto exige Python 3.11 o superior: `tomllib` es estándar desde ahí. Es la
+    limitación de entorno que destapó el defecto de T158
 ```
 
 > **Qué está demostrado y qué no**, criterio a criterio y con el artefacto que lo sostiene:
@@ -79,7 +75,9 @@ F1  MINERÍA                  CERRADA — PesquerApp. gym-wear RETIRADO por el O
 F2  CONTRASTE                ENTREGADA
 M   MANDATO MULTI-REPO       EJECUTADO — interrumpió F3 por orden del Owner
 F3  SÍNTESIS                 ENTREGADA — 09-SINTESIS.md. Puerta X1..X5 superada
-F4  ARQUITECTURA INTEGRADA   siguiente. Su puerta es la CRÍTICA INDEPENDIENTE
+F3c PUERTA CORRECTIVA        CERRADA — crítica independiente aplicada, O7–O14 registradas
+                             y T158 corregido. 10-CRITICA-INDEPENDIENTE-F3.md
+F4  ARQUITECTURA INTEGRADA   AUTORIZABLE, y no iniciada
 F5  ENMIENDAS                no iniciada
 F6  DESCOMPOSICIÓN Y EJECUCIÓN  no iniciada
 ```
@@ -155,6 +153,27 @@ docs/evolucion/00-INDICE.md               23.4 entregada · el documento nuevo e
 docs/evolucion/04-PLAN-DE-INVESTIGACION.md Q9 y Q10 respondidas · puerta de F3 superada ·
                                           la ficha de candidato registra su aplazamiento
 
+PUERTA CORRECTIVA PRE-F4
+docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md  nueva — la crítica, sus seis hallazgos, las
+                                          ocho resoluciones y el defecto de T158
+docs/evolucion/09-SINTESIS.md             addendum + marca en cada sección revisada. El
+                                          texto original se conserva íntegro
+docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md  O7–O14, sin reescribir O1–O6
+kernel/operativo/validadores/
+  comprobar_evidencia.py                  contrato de vigencia: falla cerrado, sin
+                                          circularidad, y va el último para no enmascarar
+                                          el motivo de otras mutaciones
+  comprobar_fuentes.py                    corpus_recorrido() y ficheros_recorridos():
+                                          definición ÚNICA del recorrido de T161
+  comprobar_negativos.py                  N158g y N158h
+  validadores.yaml                        bloque `vigencia` de `fuentes`
+  exclusiones.yaml                        clasificación POR UBICACIÓN: docs/owner/
+kernel/operativo/pruebas/T136-T152-post-auditoria.md  qué no veía T158, y su alcance
+docs/owner/                               nuevo — los dos documentos multi-repo del Owner,
+                                          movidos con git mv y sus referencias al día
+kernel/VERSION · KERNEL_CHANGELOG.md ·    release 2.0.0-alpha.8 con su entrada, y la
+kernel/VERSIONES.md · .upstream-hash      huella reanclada sobre el cambio
+
 (a), (b) y E1 siguen ÍNTEGRAS y sin reescribir: E2 las enmienda por sustitución
 explícita, que es la única vía que admite la regla 1 de 03-INVARIANTES.
 Los documentos del Owner tampoco se han tocado: el de pendientes entra literal.
@@ -202,28 +221,25 @@ prueba ADVERSARIAL que falla contra el código anterior, no el color del resumen
 ## Siguiente acción exacta
 
 ```text
-1  F4 ARQUITECTURA INTEGRADA   una sola propuesta que explique juntos organización, kernel,
-                               packs, profile, adaptadores, estado, runtime, Git,
-                               instalación, adopción, actualización, aprendizaje,
-                               documentación y pruebas. No una colección de subsistemas.
+1  F4 ARQUITECTURA INTEGRADA   ya es autorizable: la puerta correctiva está cerrada y no
+                               queda ninguna pregunta del Owner abierta.
 
-2  EMPEZAR POR                 el ORDEN que la síntesis concluye, y que no es el del BLOQUE G
-                               del documento: la disposición física del estado va primero,
-                               porque la certificación operativa, la unidad amplia y la
-                               matriz de cobertura se apoyan las tres en ella. Construirlas
-                               antes fabricaría tres almacenes paralelos — modo de fallo (a)
-                               de a.7.
+2  EMPEZAR POR                 el orden de la síntesis, que la crítica no cambia: la
+                               disposición física del estado va primero. Y con lo que la
+                               crítica añade: el contrato de SUJETO AUDITABLE (CI-1) y la
+                               vía del contrato documental (CI-2) son ahora decisiones de
+                               F4, no conclusiones heredadas de F3.
 
-3  LLEVAR A LA MESA            las nueve preguntas del Owner de 09-SINTESIS. Cuatro de ellas
-                               —X6, X7, X8 y la ubicación de P-07— cambian qué se construye,
-                               no sólo cuándo.
+3  LO QUE F4 HEREDA RESUELTO   O7–O14. No son propuestas: son dirección fijada. La
+                               `iniciativa` tiene nombre, el gate de arranque tiene nivel,
+                               la matriz agentic tiene primera fila y el piloto tiene
+                               producto.
 
-4  QUÉ VIGILAR                 la tentación de leer «resuelto en su forma» como «hecho».
-                               Cinco problemas salen de F3 con forma propuesta y CERO
-                               líneas construidas. Y la puerta de F4 no la pasa quien la
-                               escribe: la iteración anterior dejó el precedente con
-                               treinta y tres hallazgos de una auditoría independiente.
+4  QUÉ VIGILAR                 P-08. La vigencia de la evidencia está garantizada para T161
+                               y para nada más, y decirlo es la mitad de la corrección. La
+                               tentación es escribir «la evidencia está verificada» y dejar
+                               que se lea como si cubriera los trece validadores.
 
-5  DÓNDE PARAR                 antes de tocar (a), (b), E1 o E2. Eso es F5, y su puerta es
-                               la aprobación explícita del Owner.
+5  DÓNDE PARAR                 antes de tocar (a), (b), E1, E2 o K-1. Eso es F5, y su
+                               puerta es la aprobación explícita del Owner.
 ```

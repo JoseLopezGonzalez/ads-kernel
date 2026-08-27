@@ -2,6 +2,57 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.8 — la evidencia podía caducar sin que nada lo viera
+
+Puerta correctiva anterior a la arquitectura integrada. Del kernel cambian los validadores,
+su manifiesto y sus exclusiones; el contenido normativo no se toca.
+
+**`T158` daba por buena una evidencia intacta y CADUCADA.** Se reprodujo primero, contra el
+código anterior, con la cifra envejecida derivada del propio fichero:
+
+```text
+corpus vigente          : 282 ficheros
+evidencia publicada dice: 280 ficheros
+cabecera de procedencia : presente     codigo: 0
+firma de exito          : presente     debe_contener: completo
+T158 -> prueba-superada  (exit 0)
+```
+
+`T158` nació de una evidencia **corrupta** —ocho de diez ficheros con «can't open file»
+mientras el informe afirmaba EXIT 0— y sus ocho comprobaciones preguntan por **procedencia y
+forma**. Ninguna de esas preguntas se responde distinto cuando la evidencia **envejece**. Es
+el mismo defecto por otra vía.
+
+Cómo apareció: bajo un intérprete sin `tomllib`, `comprobar_fuentes` falla y el runner
+—correctamente— **no sobrescribe su evidencia**. Esa negativa protege la evidencia buena de
+ser pisada por una mala, y **no se toca**. Lo que faltaba era ver el efecto secundario.
+
+**La corrección** es un contrato de `vigencia` declarativo en `validadores.yaml`: un validador
+declara qué cifra de su evidencia es derivable del corpus, y `T158` la **recalcula**.
+`comprobar_fuentes` gana `corpus_recorrido()` y `ficheros_recorridos()` —definición única del
+recorrido de `T161`—, y `T158` la **importa** en vez de copiarla. Falla cerrado ante un
+recuento sin implementación, no se acepta a sí mismo, y va la última de sus comprobaciones
+para no enmascarar el motivo de otras mutaciones. Regresiones `N158g` y `N158h`.
+
+**`P-08`, declarado abierto.** La vigencia cubre la cobertura de `T161` y nada más. Los otros
+doce validadores publican cifras que pueden envejecer igual —«documentos analizados» de
+`T147`, «unidades de instrucción revisadas» de `T153`, «Ran N tests» de workspace— y nada lo
+detecta. La solución general exige declarar las **entradas** de cada validador, y eso es
+arquitectura. **No puede afirmarse que toda la evidencia tenga vigencia garantizada.**
+
+**`docs/owner/` y el final de las exenciones una a una.** La resolución `O10` fija el destino
+canónico del material normativo en voz del Owner. Los dos documentos multi-repo se mueven ahí
+con `git mv`, con todas sus referencias actualizadas, y `exclusiones.yaml` pasa de dos
+entradas por fichero a **una por ubicación**. Cinco documentos del Owner entraron y los mismos
+dos validadores los rechazaron cinco veces con el mismo remedio manual: una excepción que se
+repite cinco veces es una clase que faltaba. La directiva, su prompt y el documento de
+pendientes siguen fuera, con su migración declarada pendiente.
+
+Y `comprobar_arranque` cazó un defecto de este mismo trabajo: dos enlaces nuevos desde
+`docs/rediseno/` hacia `docs/evolucion/` habrían quedado **rotos en toda organización
+instalada**, porque el primero viaja al proyecto y el segundo no.
+
+
 ## 2.0.0-alpha.7 — un quinto documento del Owner entra sin sitio, y P-07 se mide
 
 Entra `docs/evolucion/ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md`, el documento vivo de
