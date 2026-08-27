@@ -204,20 +204,107 @@ def t158_evidencia(raiz=None):
     return r
 
 
+def _entradas_de_vigencia(comp, r):
+    """Valida el contrato `vigencia` ANTES de usarlo, y devuelve las entradas utilizables.
+
+    Un manifiesto mal escrito es un defecto de conformidad, y se dice con un fallo
+    explicativo. Lo que NO puede hacer es reventar: un traceback no dice qué corregir, tumba
+    las comprobaciones que venían detrás, y deja la evidencia sin comprobar sin que nadie
+    declare que quedó sin comprobar. Ocurrió con `patron` ausente y un `KeyError`.
+
+    Cada condición se comprueba por separado y con su mensaje. No hay `except Exception`:
+    convertir un defecto en silencio es el mismo error con otra forma.
+    """
+    entradas = comp.get("vigencia")
+    if entradas is None:
+        return []
+    cid = comp.get("id")
+
+    if not isinstance(entradas, list):
+        r.fallo(f"manifiesto: `vigencia` de '{cid}' es {type(entradas).__name__} y tiene que "
+                f"ser una lista de entradas. Una sola entrada suelta no se lee como lista")
+        return []
+
+    # Quien está exento de su propia comprobación no puede declarar vigencia: estaría
+    # comprobando su evidencia contra sí mismo y aceptándose.
+    if comp.get("se_excluye_de_su_propia_comprobacion"):
+        r.fallo(f"manifiesto: '{cid}' declara `vigencia` y está exento de su propia "
+                f"comprobación. Comprobaría su evidencia contra sí mismo")
+        return []
+
+    if not comp.get("evidencia"):
+        r.fallo(f"manifiesto: '{cid}' declara `vigencia` y no declara fichero de evidencia. "
+                f"No hay dónde leer la cifra que dice comprobar")
+        return []
+
+    utilizables, vistos = [], set()
+    for pos, e in enumerate(entradas):
+        donde = f"`vigencia`[{pos}] de '{cid}'"
+        if not isinstance(e, dict):
+            r.fallo(f"manifiesto: {donde} es {type(e).__name__} y tiene que ser un mapa con "
+                    f"`id`, `patron`, `recuento` y `motivo`")
+            continue
+
+        # campos obligatorios: existen, son texto y no están vacíos
+        faltan = False
+        for campo in ("id", "patron", "recuento", "motivo"):
+            valor = e.get(campo)
+            if valor is None:
+                r.fallo(f"manifiesto: {donde} no declara `{campo}`. Los cuatro campos son "
+                        f"obligatorios: sin ellos no se sabe qué se comprueba ni por qué")
+                faltan = True
+            elif not isinstance(valor, str):
+                r.fallo(f"manifiesto: {donde} declara `{campo}` como "
+                        f"{type(valor).__name__} y tiene que ser texto")
+                faltan = True
+            elif not valor.strip():
+                r.fallo(f"manifiesto: {donde} declara `{campo}` vacío")
+                faltan = True
+        if faltan:
+            continue
+
+        eid = e["id"].strip()
+        if eid in vistos:
+            r.fallo(f"manifiesto: la vigencia '{eid}' está declarada dos veces en '{cid}'. "
+                    f"Dos comprobaciones con el mismo identificador no se distinguen en el "
+                    f"informe, y una tapa a la otra")
+            continue
+        vistos.add(eid)
+
+        # el patrón compila, y ofrece el grupo de captura del que sale la cifra
+        try:
+            patron = re.compile(e["patron"])
+        except re.error as exc:
+            r.fallo(f"manifiesto: la vigencia '{eid}' de '{cid}' no es una expresión regular "
+                    f"válida ({exc}). Nunca casaría, y su comprobación pasaría siempre")
+            continue
+        if patron.groups < 1:
+            r.fallo(f"manifiesto: la vigencia '{eid}' de '{cid}' no declara ningún grupo de "
+                    f"captura. Sin grupo no hay cifra que extraer, y comprobar la presencia "
+                    f"del texto es lo que `debe_contener` ya hace")
+            continue
+
+        calcular = RECUENTOS_DE_VIGENCIA.get(e["recuento"])
+        if calcular is None:
+            r.fallo(f"manifiesto: la vigencia '{eid}' de '{cid}' declara el recuento "
+                    f"'{e['recuento']}', que no está registrado en RECUENTOS_DE_VIGENCIA. Sin "
+                    f"implementación no se comprueba nada, y una comprobación que no existe "
+                    f"no puede darse por superada")
+            continue
+
+        utilizables.append((eid, patron, calcular))
+    return utilizables
+
+
 def _vigencia(base, componentes, r):
     for comp in componentes:
         if comp.get("tipo") != "validador":
             continue
-        entradas = comp.get("vigencia") or []
-        if not entradas:
+        if comp.get("vigencia") is None:
             continue
 
-        # Sin circularidad: quien está exento de su propia comprobación no puede además
-        # declarar vigencia, porque T158 estaría comprobando su propia evidencia contra sí
-        # mismo y aceptándose.
-        if comp.get("se_excluye_de_su_propia_comprobacion"):
-            r.fallo(f"manifiesto: '{comp['id']}' declara `vigencia` y está exento de su "
-                    f"propia comprobación. Comprobaría su evidencia contra sí mismo")
+        entradas = _entradas_de_vigencia(comp, r)
+        if not entradas:
             continue
 
         rel = os.path.join(DIR_EVIDENCIA, comp["evidencia"])
@@ -227,31 +314,24 @@ def _vigencia(base, componentes, r):
         with open(ruta, encoding="utf-8") as fh:
             texto = fh.read()
 
-        for e in entradas:
-            eid = e.get("id") or "(sin id)"
-            if not e.get("motivo"):
-                r.fallo(f"manifiesto: la vigencia '{eid}' de '{comp['id']}' no escribe su "
-                        f"motivo. Una comprobación sin motivo no se puede revisar")
-            calcular = RECUENTOS_DE_VIGENCIA.get(e.get("recuento"))
-            if calcular is None:
-                r.fallo(f"manifiesto: la vigencia '{eid}' de '{comp['id']}' declara el "
-                        f"recuento '{e.get('recuento')}', que no está registrado en "
-                        f"RECUENTOS_DE_VIGENCIA. Sin implementación no se comprueba nada, "
-                        f"y una comprobación que no existe no puede darse por superada")
-                continue
-            m = re.search(e["patron"], texto)
+        for eid, patron, calcular in entradas:
+            m = patron.search(texto)
             if not m:
-                r.fallo(f"{rel}: la vigencia '{eid}' no encuentra su cifra (/{e['patron']}/). "
-                        f"La evidencia dejó de publicar el valor que se comprueba")
+                r.fallo(f"{rel}: la vigencia '{eid}' no encuentra su cifra "
+                        f"(/{patron.pattern}/). La evidencia dejó de publicar el valor que se "
+                        f"comprueba")
                 continue
-            publicado = int(m.group(1))
+            crudo = m.group(1)
+            if crudo is None or not crudo.strip().lstrip("-").isdigit():
+                r.fallo(f"{rel}: la vigencia '{eid}' captura «{crudo}», que no es un entero. "
+                        f"Una vigencia compara recuentos: su grupo tiene que capturar la cifra")
+                continue
+            publicado = int(crudo)
             actual = calcular(base)
             if publicado != actual:
                 r.fallo(f"{rel}: la vigencia '{eid}' publica {publicado} y el corpus vigente "
                         f"da {actual}. La evidencia está CADUCADA: describe un corpus que ya "
                         f"no existe. Regenérala con registrar_evidencia.py — no la edites")
-
-
 PRUEBAS = [t158_evidencia]
 
 

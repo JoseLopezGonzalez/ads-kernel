@@ -37,13 +37,17 @@ VALIDADORES = "kernel/operativo/validadores"
 class Mutacion:
     """Una infracción deliberada, y la prueba que TIENE que detectarla."""
 
-    def __init__(self, mid, hallazgo, prueba, validador, descripcion, aplicar):
+    def __init__(self, mid, hallazgo, prueba, validador, descripcion, aplicar, espera=None):
         self.id = mid
         self.hallazgo = hallazgo
         self.prueba = prueba
         self.validador = validador
         self.descripcion = descripcion
         self.aplicar = aplicar          # f(raiz_copia) -> None
+        # `espera` es el trozo de DIAGNÓSTICO que el validador debe producir. Sin él, una
+        # mutación se da por detectada porque la prueba falló, sin comprobar que falló POR
+        # ESO. Con manifiestos inválidos importa el doble: un traceback también «falla».
+        self.espera = espera
         self.resultado = None           # "detectada" | "NO DETECTADA" | "error: ..."
         self.detalle = ""
 
@@ -243,6 +247,64 @@ def m_evidencia_caducada(raiz):
     envejecida = int(m.group(1)) - 2
     with open(ruta, "w", encoding="utf-8") as fh:
         fh.write(texto[:m.start(1)] + str(envejecida) + texto[m.end(1):])
+
+
+VIG_PATRON = "        patron: '(\\d+) ficheros recorridos'"
+VIG_ID = "      - id: T161-cobertura"
+VIG_BLOQUE = """    vigencia:
+      - id: T161-cobertura
+        patron: '(\\d+) ficheros recorridos'
+        recuento: fuentes.ficheros_recorridos
+        motivo: >"""
+
+
+def m_vigencia_sin_patron(raiz):
+    """El caso REPRODUCIDO: una entrada sin `patron`, y T158 reventaba con KeyError.
+
+    Un manifiesto inválido es un defecto de conformidad y se dice con un fallo. Una traza
+    no dice qué corregir, tumba las comprobaciones que venían detrás, y deja la evidencia
+    sin comprobar sin que nadie declare que quedó sin comprobar.
+    """
+    _sustituir(raiz, "kernel/operativo/validadores/validadores.yaml", VIG_PATRON + "\n", "")
+
+
+def m_vigencia_no_es_lista(raiz):
+    """`vigencia` declarada como mapa suelto en vez de como lista de entradas."""
+    _sustituir(raiz, "kernel/operativo/validadores/validadores.yaml",
+               "    vigencia:\n      - id: T161-cobertura",
+               "    vigencia:\n        id: T161-cobertura")
+
+
+def m_vigencia_entrada_no_es_mapa(raiz):
+    """Una entrada de la lista es una cadena, no un mapa con sus cuatro campos."""
+    _sustituir(raiz, "kernel/operativo/validadores/validadores.yaml",
+               VIG_ID, "      - T161-cobertura\n      - id: T161-otra")
+
+
+def m_vigencia_regex_invalida(raiz):
+    """El patrón no compila: nunca casaría, y su comprobación pasaría siempre."""
+    _sustituir(raiz, "kernel/operativo/validadores/validadores.yaml",
+               VIG_PATRON, "        patron: '(\\d+ ficheros recorridos'")
+
+
+def m_vigencia_sin_grupo_de_captura(raiz):
+    """El patrón compila y no captura nada: sin grupo no hay cifra que comparar."""
+    _sustituir(raiz, "kernel/operativo/validadores/validadores.yaml",
+               VIG_PATRON, "        patron: '\\d+ ficheros recorridos'")
+
+
+def m_vigencia_captura_no_entera(raiz):
+    """El grupo captura texto en vez de la cifra. Una vigencia compara recuentos."""
+    _sustituir(raiz, "kernel/operativo/validadores/validadores.yaml",
+               VIG_PATRON, "        patron: '\\d+ (ficheros) recorridos'")
+
+
+def m_vigencia_id_duplicado(raiz):
+    """Dos entradas con el mismo id: en el informe una tapa a la otra."""
+    _sustituir(raiz, "kernel/operativo/validadores/validadores.yaml",
+               VIG_ID, VIG_ID + "\n        patron: '(\\d+) ficheros recorridos'\n"
+                       "        recuento: fuentes.ficheros_recorridos\n"
+                       "        motivo: duplicada a proposito\n" + VIG_ID)
 
 
 def m_vigencia_sin_implementacion(raiz):
@@ -650,10 +712,40 @@ CATALOGO = [
              m_validador_fuera_del_manifiesto),
     Mutacion("N158g", "evidencia", "T158", "comprobar_evidencia",
              "la cobertura publicada describe un corpus con dos ficheros menos que el vigente",
-             m_evidencia_caducada),
+             m_evidencia_caducada,
+             espera="La evidencia está CADUCADA"),
     Mutacion("N158h", "evidencia", "T158", "comprobar_evidencia",
              "una vigencia declara un recuento que nadie implementa",
-             m_vigencia_sin_implementacion),
+             m_vigencia_sin_implementacion,
+             espera="no está registrado en RECUENTOS_DE_VIGENCIA"),
+    Mutacion("N158i", "evidencia", "T158", "comprobar_evidencia",
+             "una entrada de vigencia no declara `patron` — el caso que reventaba con KeyError",
+             m_vigencia_sin_patron,
+             espera="no declara `patron`"),
+    Mutacion("N158j", "evidencia", "T158", "comprobar_evidencia",
+             "`vigencia` se declara como mapa suelto en vez de como lista",
+             m_vigencia_no_es_lista,
+             espera="tiene que ser una lista de entradas"),
+    Mutacion("N158k", "evidencia", "T158", "comprobar_evidencia",
+             "una entrada de vigencia es una cadena en vez de un mapa",
+             m_vigencia_entrada_no_es_mapa,
+             espera="tiene que ser un mapa"),
+    Mutacion("N158l", "evidencia", "T158", "comprobar_evidencia",
+             "el patrón de una vigencia no es una expresión regular válida",
+             m_vigencia_regex_invalida,
+             espera="no es una expresión regular válida"),
+    Mutacion("N158m", "evidencia", "T158", "comprobar_evidencia",
+             "el patrón de una vigencia no declara grupo de captura",
+             m_vigencia_sin_grupo_de_captura,
+             espera="no declara ningún grupo de captura"),
+    Mutacion("N158n", "evidencia", "T158", "comprobar_evidencia",
+             "el grupo de captura de una vigencia no devuelve un entero",
+             m_vigencia_captura_no_entera,
+             espera="que no es un entero"),
+    Mutacion("N158o", "evidencia", "T158", "comprobar_evidencia",
+             "dos entradas de vigencia comparten identificador",
+             m_vigencia_id_duplicado,
+             espera="está declarada dos veces"),
     Mutacion("N153", "prompts", "T153", "comprobar_prompts",
              "un prompt deja de nombrar el gate contra el que cierra",
              m_prompt_sin_gate),
@@ -758,6 +850,16 @@ def ejecutar(mut, tmp_base):
         return
     proc = subprocess.run([sys.executable, script, "--json", "--raiz", destino],
                           capture_output=True, text=True)
+
+    # Una traza NO es una detección. Un validador que revienta ante una entrada inválida no
+    # dice qué corregir, tumba las comprobaciones que venían detrás y deja sin comprobar lo
+    # que nadie declara sin comprobar. Se mide aparte, y descalifica el caso.
+    if "Traceback (most recent call last)" in proc.stderr:
+        mut.resultado = "NO DETECTADA"
+        traza = [l for l in proc.stderr.strip().splitlines() if l.strip()][-1][:160]
+        mut.detalle = (f"{mut.validador} terminó con TRAZA en vez de con un fallo "
+                       f"explicativo: {traza}")
+        return
     try:
         datos = json.loads(proc.stdout)
     except json.JSONDecodeError:
@@ -768,12 +870,22 @@ def ejecutar(mut, tmp_base):
     if fila is None:
         mut.resultado = "NO DETECTADA"
         mut.detalle = f"{mut.prueba} no aparece en la salida de {mut.validador}"
-    elif fila.get("estado") == "prueba-fallida":
-        mut.resultado = "detectada"
-        mut.detalle = (fila.get("fallos") or ["(sin detalle)"])[0][:120]
-    else:
+        return
+    if fila.get("estado") != "prueba-fallida":
         mut.resultado = "NO DETECTADA"
         mut.detalle = f"{mut.prueba} siguió SUPERADA con la infracción introducida"
+        return
+
+    fallos = fila.get("fallos") or []
+    if mut.espera and not any(mut.espera in f for f in fallos):
+        mut.resultado = "NO DETECTADA"
+        mut.detalle = (f"{mut.prueba} falló, y NO por el motivo esperado. Se buscaba "
+                       f"«{mut.espera}» y se obtuvo: "
+                       f"{(fallos or ['(sin detalle)'])[0][:120]}")
+        return
+    elegido = next((f for f in fallos if mut.espera and mut.espera in f), None)
+    mut.resultado = "detectada"
+    mut.detalle = (elegido or (fallos or ["(sin detalle)"])[0])[:120]
 
 
 def main():

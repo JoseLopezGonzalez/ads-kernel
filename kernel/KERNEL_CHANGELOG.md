@@ -2,6 +2,41 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.9 — el validador de vigencia reventaba ante su propio manifiesto
+
+Cuatro correcciones de la puerta pre-F4. Tres son de redacción y una es de código; el
+contenido normativo no se toca.
+
+**`T158` reventaba con `KeyError` ante un manifiesto inválido.** Reproducido contra
+`8b6727a`: basta quitar `patron` de una entrada `vigencia` para obtener una traza en vez de un
+fallo. Una traza **no es una detección**: no dice qué corregir, tumba las comprobaciones que
+venían detrás, y deja la evidencia sin comprobar sin que nadie declare que quedó sin
+comprobar. El contrato se valida ahora **de forma tipada antes de usarse** —lista, mapas,
+cuatro campos con su tipo, ids no duplicados, fichero de evidencia declarado, regex que
+compila y captura, valor entero y recuento registrado—, condición a condición y con un mensaje
+por condición. **Sin `except Exception`**: convertir un defecto en silencio es el mismo error
+con otra forma.
+
+Y el arnés de `comprobar_negativos` se endureció para poder demostrarlo. Cada mutación declara
+ahora el **diagnóstico que espera**, y una salida con `Traceback` se registra como **NO
+DETECTADA** aunque el proceso termine con código distinto de cero. Sin eso, un validador que
+revienta se habría contado como un validador que detecta. Ocho infracciones nuevas,
+`N158h`–`N158o`.
+
+**Tres afirmaciones que el corpus no podía sostener:**
+
+- `10-CRITICA-INDEPENDIENTE-F3.md` decía «este documento no lo escribe quien escribió la
+  síntesis». Los hallazgos son de un revisor independiente; **el fichero lo escribió el autor
+  de F3**. La independencia real está en el juicio, no en quién teclea, y ahora se dice así.
+- El addendum daba a Claude Code y Codex por **certificados**, contra el checkpoint y contra
+  el resto del corpus: hoy no hay ningún adaptador certificado. `O13` fija un **objetivo**, y
+  fijar el objetivo no es alcanzarlo.
+- Tres documentos hablaban de «enmendar `C4`». `C4` es contrato **derivado** y no recibe
+  enmiendas: la regla vive en `a.4` —«DSP y SIS se materializan siempre»— con `E1`
+  confirmándolo para `ENC`. Cambiar el equipo permanente presiona `a.4`; hacer permanente a
+  `ENC` contradice `E1`. `C4` se rehace después.
+
+
 ## 2.0.0-alpha.8 — la evidencia podía caducar sin que nada lo viera
 
 Puerta correctiva anterior a la arquitectura integrada. Del kernel cambian los validadores,

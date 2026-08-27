@@ -396,6 +396,7 @@ falla_si:
   - "un validador nuevo queda fuera del manifiesto y de la evidencia"
   - "una evidencia intacta y CADUCADA pasa por válida porque su cabecera, su código y su firma siguen siendo correctos"
   - "una vigencia declara un recuento sin implementación registrada y la comprobación se da por superada"
+  - "un contrato de vigencia mal escrito produce una traza en vez de un fallo explicativo"
 ejecucion: validador-estructural
 validador: "kernel/operativo/validadores/comprobar_evidencia.py"
 estado: prueba-superada
@@ -429,6 +430,31 @@ corpus vigente usando la **misma definición** que la produjo —importada de
 `comprobar_fuentes.corpus_recorrido`, nunca copiada—. Sus dos infracciones deliberadas son
 `N158g` y `N158h`, y la primera **deriva la cifra envejecida del propio fichero**: una prueba
 que fijara un número dejaría de comprobar nada en cuanto el corpus creciera.
+
+### El manifiesto inválido se rechaza con un fallo, nunca con una traza
+
+Una entrada de `vigencia` sin `patron` hacía reventar a `T158` con `KeyError`. Una traza **no
+es una detección**: no dice qué corregir, tumba las comprobaciones que venían detrás, y deja
+la evidencia sin comprobar sin que nadie declare que quedó sin comprobar.
+
+El contrato se valida **de forma tipada antes de usarse**, condición a condición y con un
+mensaje por condición — sin `except Exception`, porque convertir un defecto en silencio es el
+mismo error con otra forma:
+
+```text
+vigencia es una lista           ·  cada entrada es un mapa
+id, patron, recuento y motivo   ·  existen, son texto y no están vacíos
+ids no duplicados dentro del validador
+el componente declara fichero de evidencia
+patron compila                  ·  y ofrece grupo de captura
+el valor capturado es entero    ·  recuento registrado en RECUENTOS_DE_VIGENCIA
+```
+
+Sus ocho infracciones deliberadas son `N158h`–`N158o`. Y el arnés de
+[`comprobar_negativos`](../validadores/comprobar_negativos.py) se endureció para poder
+demostrarlo: cada mutación declara ahora el **diagnóstico que espera**, y una salida con
+`Traceback` se registra como **NO DETECTADA** aunque el proceso termine con código distinto de
+cero. Sin eso, un validador que revienta se habría contado como un validador que detecta.
 
 **Alcance declarado, y es la mitad de la corrección.** La vigencia cubre hoy la cobertura de
 `T161`. Los otros doce validadores publican cifras que pueden envejecer igual —«documentos

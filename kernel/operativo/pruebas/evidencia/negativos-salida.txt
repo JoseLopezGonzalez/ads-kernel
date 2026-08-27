@@ -27,9 +27,9 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 5647e7e78b54623b, calculada 1d2a78341884af49. Algún fichero de la huella se 
+                          → detectada: el kernel DIVERGE de su release: almacenada a68d7863492e838b, calculada 773f1a937a13f61e. Algún fichero de la huella se 
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 5647e7e78b54623b, calculada 846d7772d8c72657. Algún fichero de la huella se 
+                          → detectada: el kernel DIVERGE de su release: almacenada a68d7863492e838b, calculada 54ca260d4773aaff. Algún fichero de la huella se 
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
                           → detectada: kernel/operativo/validadores/ads_lint.py NO entra en la huella: un fork silencioso de ese fichero sería indetectable
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
@@ -60,6 +60,20 @@ OK   N158g   evidencia T158  la cobertura publicada describe un corpus con dos f
                           → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 281 y el corpus vigente da 2
 OK   N158h   evidencia T158  una vigencia declara un recuento que nadie implementa
                           → detectada: manifiesto: la vigencia 'T161-cobertura' de 'fuentes' declara el recuento 'fuentes.recuento_que_nadie_implementa', que n
+OK   N158i   evidencia T158  una entrada de vigencia no declara `patron` — el caso que reventaba con KeyError
+                          → detectada: manifiesto: `vigencia`[0] de 'fuentes' no declara `patron`. Los cuatro campos son obligatorios: sin ellos no se sabe qué
+OK   N158j   evidencia T158  `vigencia` se declara como mapa suelto en vez de como lista
+                          → detectada: manifiesto: `vigencia` de 'fuentes' es dict y tiene que ser una lista de entradas. Una sola entrada suelta no se lee com
+OK   N158k   evidencia T158  una entrada de vigencia es una cadena en vez de un mapa
+                          → detectada: manifiesto: `vigencia`[0] de 'fuentes' es str y tiene que ser un mapa con `id`, `patron`, `recuento` y `motivo`
+OK   N158l   evidencia T158  el patrón de una vigencia no es una expresión regular válida
+                          → detectada: manifiesto: la vigencia 'T161-cobertura' de 'fuentes' no es una expresión regular válida (missing ), unterminated subpat
+OK   N158m   evidencia T158  el patrón de una vigencia no declara grupo de captura
+                          → detectada: manifiesto: la vigencia 'T161-cobertura' de 'fuentes' no declara ningún grupo de captura. Sin grupo no hay cifra que ext
+OK   N158n   evidencia T158  el grupo de captura de una vigencia no devuelve un entero
+                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' captura «ficheros», que no es un ent
+OK   N158o   evidencia T158  dos entradas de vigencia comparten identificador
+                          → detectada: manifiesto: la vigencia 'T161-cobertura' está declarada dos veces en 'fuentes'. Dos comprobaciones con el mismo identifi
 OK   N153    prompts T153  un prompt deja de nombrar el gate contra el que cierra
                           → detectada: kernel/operativo/capacidades/ARQ/prompts/encaje.md: no dice nada sobre gate
 OK   N153b   prompts T153  un prompt instruye hablar con el Owner sin que su rol pueda
@@ -71,7 +85,7 @@ OK   N148    A-02  T148  la documentación vuelve a citar un pack derogado
 OK   N152    A-12  T152  el release cambia y ningún punto de entrada se entera
                           → detectada: kernel/VERSIONES.md no nombra la versión vigente del release (9.9.9): la política y el artefacto van por separado
 OK   N152b   A-12  T152  la línea histórica se sube al ritmo del release, que es otro contador
-                          → detectada: KERNEL.md declara 2.0.0-alpha.8, igual que el release. Son contadores distintos: subir uno no sube el otro
+                          → detectada: KERNEL.md declara 2.0.0-alpha.9, igual que el release. Son contadores distintos: subir uno no sube el otro
 OK   N151    A-24  T151  un documento vuelve a escribir a mano una cifra que ya no cuadra
                           → detectada: kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md: declara 28 campos_de_rol y el corpus tiene 29
 OK   N142    A-11  T142  el esquema de encuadre pierde un estado que sus métodos exigen
@@ -123,4 +137,4 @@ OK   N161f   E2    T161  un patrón de T161 se desafila hasta dejar de detectar 
 OK   N161g   E2    T161  el corpus queda fuera del recorrido y T161 pasaría por no mirar
                           → detectada: sólo se recorrieron 16 ficheros, por debajo del mínimo (150). Una exclusión mal escrita deja el corpus fuera y esta prue
 
-60 infracciones detectadas · 0 NO detectadas
+67 infracciones detectadas · 0 NO detectadas
