@@ -26,6 +26,10 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 > POSTERIOR             reconciliación no era recuperable, y la integridad post-terminal
 >                       salía del terminal— y un GRAVE. Correcciones: D52–D54.
 >                       Tampoco es la tercera revisión, y tampoco certifica nada
+> CUARTA COMPROBACIÓN   acotada, sobre `D58`–`D59`: la cardinalidad «exactamente una vez»
+> TÉCNICA               era insatisfacible por ruta, y la frontera de recursión era falsa y
+>                       clasificaba mal `sellado`. Correcciones: D60–D61. TAMPOCO es la
+>                       tercera revisión, y TAMPOCO certifica nada
 > TERCERA COMPROBACIÓN  acotada, sobre `D55`–`D57`: el recuento de fases mezclaba ejes, la
 > TÉCNICA               «reemisión» admitía un `confirmada → confirmada` que §2.8 ya
 >                       prohibía, y la matriz era un cartesiano sin demostrar. Correcciones:
@@ -40,8 +44,9 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 >
 > **Dos de los hallazgos de la segunda devolución son defectos que la PRIMERA CORRECCIÓN
 > introdujo o no vio, los TRES de la segunda corrección técnica están en el texto que la
-> corrección técnica ANTERIOR escribió, y los DOS de la tercera comprobación están en el
-> texto que la segunda escribió.** Es el CUARTO encadenamiento consecutivo, y es la
+> corrección técnica ANTERIOR escribió, los DOS de la tercera comprobación están en el
+> texto que la segunda escribió, y los DOS de la cuarta están en el texto que la tercera
+> escribió.** Es el QUINTO encadenamiento consecutivo, y es la
 > razón por la que las revisiones se encadenan en vez de darse por buenas. **Quien aplicó
 > todas es quien las recibió**, luego ninguna prueba nada: `F4c` sigue **ABIERTA**,
 > pendiente de una **tercera revisión independiente**.
@@ -524,7 +529,7 @@ derivada                  ÚNICO CIERRE TERMINAL. Los derivados afectados se reg
 | `confirmada` | `derivada` | los derivados afectados se regeneraron |
 | `conflicto` | `reconciliacion-preparada` | la autoridad decidió, y su decisión es durable **antes de tocar nada** |
 | `reconciliacion-preparada` | `reconciliada` | los ficheros de la decisión casan con su `hash_final` |
-| `reconciliacion-preparada` | `conflicto` | un fichero **volvió a divergir** durante la aplicación. Tope de TRES iteraciones (§2.6.9) |
+| `reconciliacion-preparada` | `conflicto` | un fichero **volvió a divergir** durante la aplicación. El nuevo `conflicto` incrementa `iteracion`. Con `iteracion: 4` **no se prepara ninguna decisión**: para y escala (§2.6.4, §2.6.9) |
 | `reconciliada` | `derivada` | los derivados afectados se regeneraron **sobre el estado reconciliado** |
 
 ```text
@@ -585,12 +590,11 @@ lleva **seis cosas y no menos**:
                             único fijo es que comparten `tx`:
                               · TRES en la ruta normal — `preparada`, `confirmada`,
                                 `derivada`
-                              · CINCO como MÍNIMO en la de conflicto que cierra a la primera
-                                iteración, y hasta NUEVE con el tope de tres: la fórmula es
-                                `3 + 2k`, con `k` el número de iteraciones (§2.6.9)
-                              · SEIS en la que se detiene y escala en la tercera iteración
-                                sin cerrar: `preparada`, tres `conflicto` y dos
-                                `reconciliacion-preparada`
+                              · `3 + 2k` en la de conflicto que CIERRA, con `k` ∈ {1,2,3}
+                                iteraciones: CINCO, SIETE o NUEVE (§2.6.4)
+                              · OCHO en la que AGOTA el tope y queda abierta: `preparada`,
+                                CUATRO `conflicto` —el cuarto es el marcador de parada— y
+                                TRES `reconciliacion-preparada`
                               · y NADA MÁS. Recuperar no añade eventos: una fase de hecho
                                 no se duplica, y restaurar un evento perdido devuelve el
                                 MISMO evento, no uno nuevo (§2.6.4)
@@ -806,26 +810,131 @@ FÍSICAMENTE                    vuelve a materializar el MISMO `id`, con el MISM
                                `confirmada → confirmada`.
 ```
 
+#### La cardinalidad de cada fase es CONDICIONAL A LA RUTA, y a si la transacción cerró
+
+> **Corregido por la cuarta comprobación técnica (`D60`, que revisa `D58`).** La redacción
+> anterior decía que *«`preparada`, `confirmada`, `reconciliada` y `derivada` aparecen
+> exactamente una vez por `tx`»*, y **eso es imposible en cualquier transacción real**: la
+> ruta normal tiene `confirmada` y **no** `reconciliada`, la de conflicto tiene
+> `reconciliada` y **no** `confirmada`, y una transacción que agotó los reintentos **no tiene
+> `derivada` todavía**. Un invariante que ninguna transacción puede cumplir no es
+> comprobable. Se sustituye por **invariantes condicionales por ruta y por cierre**.
+
+**Primero, qué determina la ruta**, y es observable en el diario sin ambigüedad:
+
+```text
+RUTA NORMAL        #`conflicto` = 0.  Y entonces #`confirmada` = 1 y #`reconciliada` = 0
+RUTA DE CONFLICTO  #`conflicto` ≥ 1.  Y entonces #`confirmada` = 0 y #`reconciliada` ∈ {0,1}
+CERRADA            #`derivada` = 1 · el marcador se retiró
+ABIERTA            #`derivada` = 0 · el marcador sigue vivo
+```
+
+**`confirmada` y `reconciliada` son MUTUAMENTE EXCLUYENTES.** Ninguna transacción tiene las
+dos, y ninguna transacción cerrada tiene cero: cada ruta cierra con la suya.
+
+**Los tres estados terminales o bloqueantes, con su cardinalidad exacta:**
+
+| fase | RUTA NORMAL cerrada | RUTA DE CONFLICTO cerrada | RUTA DE CONFLICTO agotada y ABIERTA |
+|---|---|---|---|
+| `preparada` | **exactamente 1** | **exactamente 1** | **exactamente 1** |
+| `confirmada` | **exactamente 1** | **0** | **0** |
+| `conflicto` | **0** | `k` ∈ {1, 2, 3} | **exactamente 4** |
+| `reconciliacion-preparada` | **0** | `k`, el MISMO que `conflicto` | **exactamente 3** |
+| `reconciliada` | **0** | **exactamente 1** | **0** |
+| `derivada` | **exactamente 1** | **exactamente 1** | **0** |
+| total de eventos | **3** | **3 + 2k** → 5 · 7 · 9 | **8** |
+| marcador | retirado | retirado | **ABIERTO** |
+| estado | cerrado | cerrado | **BLOQUEADO y ESCALADO AL OWNER** |
+
+```text
+EL INVARIANTE QUE LAS       CERRADA POR CONFLICTO   #`conflicto` = #`reconciliacion-preparada`
+DISTINGUE SIN MIRAR         AGOTADA Y ABIERTA       #`conflicto` = #`reconciliacion-preparada` + 1
+NADA MÁS                                            y ese `+1` es el `conflicto` de parada
+```
+
+#### El contador `iteracion`, sin ambigüedad
+
+```text
+QUÉ NUMERA               el INTENTO DE RECONCILIACIÓN. Lo llevan `conflicto` y la
+                         `reconciliacion-preparada` que le responde, **con el MISMO valor**.
+
+LA PRIMERA COLISIÓN      `conflicto` con **`iteracion: 1`**. NUNCA `0`: no existe un intento
+                         cero, y numerar desde cero haría que «tres iteraciones» significara
+                         cuatro.
+
+CUÁNDO SE INCREMENTA     al emitir un `conflicto` NUEVO después de una
+                         `reconciliacion-preparada` que no llegó a `reconciliada`. La
+                         transición `conflicto(i) → reconciliacion-preparada(i)` **NO
+                         incrementa**: es el mismo intento, en su segunda mitad.
+
+EL TOPE                  **MAX_ITERACIONES = 3.** Se prepara una decisión para `iteracion`
+                         1, 2 y 3. **El tercer `conflicto` SÍ permite una tercera decisión**,
+                         y es la última.
+
+QUÉ PASA EN LA CUARTA    la divergencia **SÍ se registra**: la clasificación de §2.6.4 la
+                         produce, y un hecho observado no se calla. Se emite `conflicto` con
+                         **`iteracion: 4`**, que es el **MARCADOR DE PARADA**:
+                           · NO se prepara ninguna decisión
+                           · se ESCALA al Owner
+                           · la transacción queda ABIERTA y BLOQUEADA, con su marcador
+                         **No hay una cuarta ITERACIÓN** —una iteración es conflicto MÁS
+                         decisión, y la cuarta decisión no existe—, pero sí hay un cuarto
+                         `conflicto`, porque callar la observación contradiría §2.6.4.
+
+MÁXIMOS EXACTOS          `conflicto`                  **4**
+                         `reconciliacion-preparada`   **3**
+```
+
+**Las secuencias completas, para que no haya que deducirlas:**
+
+```text
+ÉXITO INMEDIATO          preparada → confirmada → derivada
+(ruta normal)            3 eventos
+
+ÉXITO SIN NUEVAS         preparada → conflicto(1) → reconciliacion-preparada(1)
+DIVERGENCIAS                       → reconciliada → derivada
+(k = 1)                  5 eventos
+
+ÉXITO TRAS 1 NUEVA       preparada → conflicto(1) → reconciliacion-preparada(1)
+DIVERGENCIA                        → conflicto(2) → reconciliacion-preparada(2)
+(k = 2)                            → reconciliada → derivada
+                         7 eventos
+
+ÉXITO TRAS 2 NUEVAS      preparada → conflicto(1) → reconciliacion-preparada(1)
+DIVERGENCIAS                       → conflicto(2) → reconciliacion-preparada(2)
+(k = 3)                            → conflicto(3) → reconciliacion-preparada(3)
+                                   → reconciliada → derivada
+                         9 eventos
+
+AGOTAMIENTO              preparada → conflicto(1) → reconciliacion-preparada(1)
+(3 nuevas divergencias)            → conflicto(2) → reconciliacion-preparada(2)
+                                   → conflicto(3) → reconciliacion-preparada(3)
+                                   → conflicto(4)   ← PARADA. Sin decisión
+                         8 eventos · marcador ABIERTO · escalado al Owner
+```
+
 **Qué fases pueden repetirse dentro de un `tx`, y cuáles no.** No es una excepción tolerada:
 es parte del contrato, y el validador semántico del diario (§3.6, capa B) lo comprueba:
 
 ```text
-EXACTAMENTE UNA VEZ    `preparada`   —el `tx` ES su huella (§2.8): dos serían dos `tx`
-POR `tx`               `confirmada`
-                       `reconciliada`
-                       `derivada`
-                       Una segunda aparición de cualquiera de éstas es un DEFECTO, no una
+COMO MUCHO UNA VEZ     `preparada`     exactamente 1 SIEMPRE —el `tx` ES su huella (§2.8):
+POR `tx`, Y CUÁNTAS                    dos serían dos `tx`
+EXACTAMENTE LO DICE    `confirmada`    1 en la ruta normal · 0 en la de conflicto
+LA TABLA DE ARRIBA     `reconciliada`  0 en la ruta normal · 1 en la de conflicto CERRADA
+                       `derivada`      1 si cerró · 0 si sigue abierta
+                       Una SEGUNDA aparición de cualquiera de éstas es un DEFECTO, no una
                        reemisión. **`confirmada → confirmada` no existe.**
 
-REPETIBLES, Y          `conflicto`                  discriminadas por `iteracion`, que es
-DECLARADAS COMO TAL    `reconciliacion-preparada`   consecutivo y llega HASTA TRES (§2.6.9).
+REPETIBLES, Y          `conflicto`                  discriminadas por `iteracion`, con los
+DECLARADAS COMO TAL    `reconciliacion-preparada`   máximos exactos de arriba: 4 y 3.
                        Es la ÚNICA repetición que el contrato define, y la define en
                        positivo con su discriminador y su tope. Sin discriminador no hay
                        fase repetible.
 
 LA REGLA, EN UNA       una fase de HECHO —`confirmada`, `reconciliada`, `derivada`— no puede
-FRASE                  duplicarse NUNCA. Una fase de INTENCIÓN sólo se repite si el contrato
-                       la declara repetible y le da un discriminador. No hay más casos.
+FRASE                  duplicarse NUNCA, y su presencia o ausencia la fija LA RUTA. Una fase
+                       de INTENCIÓN sólo se repite si el contrato la declara repetible y le
+                       da un discriminador. No hay más casos.
 ```
 
 **Cómo se ejerce en el momento de escribir**, que es §2.8 punto 5 sin cambiar una coma: antes
@@ -1158,7 +1267,7 @@ impuso al arnés de negativos.
 | `X55` | comprobar que **ninguna escritura de reconciliación precede a su intención durable** | para todo canónico tocado por una reconciliación, el `fsync` de `reconciliacion-preparada` y de su directorio **retornó antes** del primer `rename` |
 | `X56` | revertir un canónico de una transacción con `derivada` durable, y arrancar | se emite un evento **`deriva`** con `causa: posterior-al-cierre`. **NO** se emite ninguna fase, la transacción cerrada **no gana ningún evento nuevo con su `tx`**, y nada se restaura solo |
 | `X57` | recorrer el diario buscando cualquier evento con `fase` cuya transacción ya tenga `derivada` | **no existe ninguno**, y el **validador semántico del diario** lo rechaza —la comprobación es de `tx`, no de evento aislado (§3.6)—. Ninguna transición sale del terminal |
-| `X58` | provocar tres veces seguidas que un fichero vuelva a divergir durante la reconciliación | a la tercera **se detiene y se escala al Owner**. No hay una cuarta iteración automática |
+| `X58` | provocar que un fichero diverja y **vuelva a divergir TRES veces más** durante la reconciliación | el diario queda con **CUATRO `conflicto` y TRES `reconciliacion-preparada`**: el cuarto `conflicto` lleva `iteracion: 4`, **no recibe decisión**, **se detiene y se escala al Owner**, y la transacción queda ABIERTA con su marcador. No hay una cuarta iteración automática |
 
 > **Las excepciones históricas de `X47`, declaradas una a una.** Estos textos conservan
 > deliberadamente enumeraciones sustituidas, y `X47` **no los cuenta como incumplimiento**:
@@ -1452,11 +1561,17 @@ NO CASA CON NINGUNO         DIVERGENTE OTRA VEZ → vuelve a `conflicto`, con un
 ```
 
 ```text
-EL BUCLE TIENE TOPE   TRES iteraciones `conflicto → reconciliacion-preparada → conflicto`.
-                      A la tercera se detiene, se escala al OWNER y NO se vuelve a intentar
-                      sin su decisión. Es el precedente numérico que `a.9` ya fijó para el
-                      CAS del tablero —`MAX_CAS_RETRIES = 3`— aplicado aquí: un reintento sin
-                      tope es un livelock, y el corpus ya lo resolvió una vez.
+EL BUCLE TIENE TOPE   **MAX_ITERACIONES = 3**, y una iteración es `conflicto(i)` MÁS su
+                      `reconciliacion-preparada(i)`. Se prepara decisión para `iteracion`
+                      1, 2 y 3 — **el tercer `conflicto` SÍ recibe su decisión, y es la
+                      última**. Si tras `reconciliacion-preparada(3)` un fichero vuelve a
+                      divergir, se emite `conflicto` con **`iteracion: 4`**, que NO recibe
+                      decisión: se detiene, se escala al OWNER y NO se vuelve a intentar sin
+                      ella. Máximos exactos: **CUATRO `conflicto` y TRES
+                      `reconciliacion-preparada`** (§2.6.4).
+                      Es el precedente numérico que `a.9` ya fijó para el CAS del tablero
+                      —`MAX_CAS_RETRIES = 3`— aplicado aquí: un reintento sin tope es un
+                      livelock, y el corpus ya lo resolvió una vez.
 ```
 
 #### Las ventanas de caída de la reconciliación
@@ -1471,7 +1586,7 @@ EL BUCLE TIENE TOPE   TRES iteraciones `conflicto → reconciliacion-preparada �
 | **R6** | justo después de `reconciliada` | la aplicación completa | se regeneran los derivados del punto 7 y se emite `derivada` |
 | **R7** | durante la regeneración posterior a la reconciliación | derivados a medias | se regeneran ENTEROS y se emite `derivada` |
 | **R8** | tras `derivada`, antes de borrar el marcador | transacción cerrada | se borra el marcador. Idempotente |
-| **R9** | en cualquier punto, con un fichero que ya no casa ni con `hash_observado` ni con `hash_final` | la decisión | vuelve a `conflicto` con base nueva, hasta el tope de tres |
+| **R9** | en cualquier punto, con un fichero que ya no casa ni con `hash_observado` ni con `hash_final` | la decisión | vuelve a `conflicto` con base nueva e `iteracion` incrementada. Con `iteracion` 2 o 3 se prepara una decisión nueva; con `iteracion: 4` **no**: para, escala y la transacción queda abierta (§2.6.4) |
 
 **Una segunda ejecución converge al mismo resultado en las nueve**, porque la decisión es
 durable desde `R3` y la clasificación por hash es idempotente. Es `T17` aplicado a la ruta de
@@ -2389,12 +2504,12 @@ que exige intención durable previa es exactamente lo que exige fase.
 
 | `tipo` | sujeto | qué HECHO representa | ¿escribe canónicos además del propio evento? | ¿uno o varios ficheros? | ¿necesita `tx`? | ¿puede existir SIN `fase`? | ejemplo dentro de ADS |
 |---|---|---|---|---|---|---|---|
-| `orden` | la orden del Owner, y el item al que apunta | el **consumo** de una orden del canal `ÓRDENES` | **DEPENDE**: sí cuando la aplica; **no** cuando el consumo termina sin aplicarla | varios cuando aplica | **DEPENDE** | **SÍ**, y sólo entonces | aplicar «sube la prioridad de `FEA-021`» escribe `02-control.md` → CON fase. Una orden cuya base ya no existe tras un rebase se marca `- [!]` y **no se aplica** (`a.9`) → SIN fase |
+| `orden` | la orden del Owner, y el item al que apunta | el **consumo** de una orden del canal `ÓRDENES` | **DEPENDE**: sí cuando la aplica al estado canónico; **no** cuando el consumo termina sin aplicarla — y en los dos casos se **marca la línea**, que es otra cosa (abajo) | varios cuando aplica | **DEPENDE** | **SÍ**, y sólo entonces | aplicar «sube la prioridad de `FEA-021`» escribe `02-control.md` → CON fase. Una orden cuya base ya no existe tras un rebase se marca `- [!]` y **no se aplica** (`a.9`) → SIN fase |
 | `transicion` | un item | el item cambia de estado o avanza por su ruta | **sí** | varios: `01-ruta.md`, `03-integracion.md` y lo que la ruta toque | **sí, siempre** | **no** | `FEA-021` pasa de `en-ruta` a `integrado` |
 | `integracion` | un item y la capa depositada | una capacidad deposita o integra su capa | **sí** | varios: el paquete en `paq/` y `03-integracion.md` | **sí, siempre** | **no** | `DIS` deposita su capa de diseño en `FEA-021/02` |
 | `certificacion` | la celda `(sujeto, aspecto)` | una celda **alcanza, conserva o pierde** un nivel | **sí** | uno o varios de `estado/cobertura/` | **sí, siempre** | **no** | `pantalla:web/checkout` alcanza `aspecto:calidad/accesibilidad` |
 | `migracion` | la instalación | el estado migra de una versión de esquema a otra | **sí** | **muchos**, y ése es su caso peor | **sí, siempre** | **no** | `esquema_estado: 3 → 4` sobre todos los items |
-| `sellado` | los eventos de un item que se compactan | se **AÑADE** un fichero de sellado; ningún evento se edita (§2.9) | **sí**: el fichero de sellado, que es la ÚNICA fuente de reconstrucción sin Git | uno, y es suficiente | **sí, siempre** | **no** | al cerrar `FEA-021`, sus eventos se compactan en su sellado |
+| `sellado` | los eventos de un item que se compactan | se **AÑADE** un fichero de sellado; ningún evento se edita ni se borra (§2.9) | **sí**: el fichero de sellado, que es la única fuente de reconstrucción sin Git | **uno, NUEVO y direccionado por su contenido** | **NO** — cae del lado que no la exige (abajo) | **SÍ, y es obligatorio** | al cerrar `FEA-021`, sus eventos se compactan en `SL-<huella>` |
 | `retirada-de-cuerpo` | el evento sellado cuyo cuerpo se retira | el cuerpo se sustituye por su **lápida**, conservando id, huella y motivo | **sí**, y es la ÚNICA operación que **modifica** algo ya escrito bajo `estado/` | uno | **sí, siempre** | **no** | retirar el cuerpo largo de un evento sellado, con autoridad y motivo |
 | `deriva` | el canónico que dejó de sostener lo que el diario afirma | **REPORTA**. No repara, no restaura y no completa (§2.6.11) | **no**: sólo se escribe a sí mismo | — | **no** | **SIEMPRE, y es obligatorio** | un canónico revertido bajo una `derivada` durable |
 | `fallo` | una operación **no canónica** | **REPORTA** que esa operación falló. No repara | **no** | — | **no** | **SIEMPRE, y es obligatorio** | el push es rechazado porque el remoto avanzó (`W15`) |
@@ -2411,21 +2526,38 @@ CONDICIONAL            orden cuya base ya no existe tras un rebase «se marca `-
                        LA CONDICIÓN, EXACTA: `fase` y `tx` si y sólo si el consumo produce al
                        menos una escritura canónica. No hay tercera opción y no es a gusto
                        del emisor.
-                       Y MARCAR LA LÍNEA `- [ ]` → `- [x]` o `- [!]` NO ES UNA ESCRITURA
-                       CANÓNICA: la zona `ÓRDENES` no tiene ejecutor de mutación (§1.3), y
-                       `a.9` la declara «el registro write-ahead» que converge sola.
+                       Y MARCAR LA LÍNEA, DICHO CON PRECISIÓN — porque «no escribe» sería
+                       falso: marcar `- [ ]` → `- [x]` o `- [!]` **SÍ es una escritura
+                       durable, y modifica físicamente el tablero**. Lo que NO es, es una
+                       MUTACIÓN DEL ESTADO CANÓNICO gobernada por la transacción general:
+                         · la zona `ÓRDENES` no tiene ejecutor de mutación canónica (§1.3),
+                           y su campo canónico correspondiente es `02-control.md`
+                         · se rige por el **protocolo CAS propio de `a.9`** —compare-and-swap
+                           sobre HASH DE CONTENIDO, nunca `mtime`, con `MAX_CAS_RETRIES = 3`
+                           y parada obligatoria—, que es un protocolo DISTINTO del de §2.6
+                         · `a.9` declara la propia línea de orden «el registro write-ahead»,
+                           y por eso el marcado converge sin `preparada`: al reiniciar, DSP
+                           encuentra cada orden en el estado en que quedó y **no inventa
+                           estado**
+                       APLICAR LA ORDEN AL ESTADO CANÓNICO **SÍ usa `tx` y fases**. Son dos
+                       escrituras con dos protocolos, y confundirlas es lo que haría creer
+                       que el tablero se toca sin registro.
 
-`sellado`              SELLAR AÑADE, NO REESCRIBE (§2.9). El objeto protegido es el FICHERO
-SIN AUTORREFERENCIA    DE SELLADO, no los eventos que lista. Y la regla que cierra la
-                       autorreferencia: **un `sellado` NUNCA incluye en su alcance los
-                       eventos de su propio `tx`**, que además son terminales o vivos, y
-                       §2.9 ya prohíbe retirar los dos.
+`sellado`              SELLAR AÑADE, NO REESCRIBE (§2.9): un fichero nuevo, direccionado por
+NO TRANSACCIONAL,      su contenido, y ningún evento editado ni borrado. Por el criterio de
+SIN AUTORREFERENCIA    la frontera —abajo— eso **NO exige `tx`**, y `sellado` es un evento
+                       SIN `fase`. La regla que cierra la autorreferencia sigue en pie y
+                       ahora es más simple: **un `sellado` NUNCA se incluye a sí mismo en su
+                       alcance**, y §2.9 ya prohíbe retirar un evento vivo o el terminal de
+                       cualquier transacción.
 
 `retirada-de-cuerpo`   NO HAY DOS EVENTOS. El evento que REGISTRA la retirada **es** una fase
 ES LA TRANSACCIÓN      de la transacción que la EJECUTA: su `preparada` declara `hash_previo`
                        = el evento íntegro y `hash_posterior_esperado` = la lápida, y su
                        `confirmada` ES el registro del hecho. Un segundo evento «que registra»
-                       sería una segunda verdad sobre el mismo hecho.
+                       sería una segunda verdad sobre el mismo hecho. Y **sí exige `tx`**,
+                       porque SUSTITUYE contenido previo — que es lo que lo separa de
+                       `sellado` aunque los dos toquen el diario y escriban un solo fichero.
 
 `certificacion`        EL JUICIO lo emite la capacidad responsable del aspecto (§1.3); su
 JUICIO Y ESCRITURA     SEDE CANÓNICA es la celda de cobertura, y el evento narra esa
@@ -2445,31 +2577,129 @@ JUICIO Y ESCRITURA     SEDE CANÓNICA es la celda de cobertura, y el evento narr
                        ninguna escritura canónica suya que proteger.
 ```
 
-#### Escribir el diario NO abre otra transacción — cero recursión
+#### La frontera que exige una `tx`, y por qué NO es «añadir frente a modificar»
+
+> **Corregido por la cuarta comprobación técnica (`D61`, que revisa `D59`).** La redacción
+> anterior afirmaba **tres cosas que no pueden ser ciertas a la vez**: que `sellado` *«sólo
+> AÑADE un fichero»*, que la frontera que evita la recursión es *«AÑADIR frente a
+> MODIFICAR»*, y que `sellado` exige `tx` **siempre**. Si la frontera fuera añadir/modificar,
+> `sellado` caería del lado de **no exigirla**, exactamente igual que añadir un `preparada`.
+> La frontera era falsa, y estaba tapando que `sellado` estaba mal clasificado.
+
+**La frontera real, y es UN solo criterio aplicado a todo por igual:**
 
 ```text
-LO QUE UNA `tx` PROTEGE      las escrituras del ESTADO CANÓNICO: items, cobertura,
-                             iniciativas, ficheros de sellado y lápidas.
+UNA ESCRITURA CANÓNICA EXIGE `tx` SI Y SÓLO SI la recuperación NO PUEDE DECIDIR QUÉ HACER
+mirando el fichero y su nombre. Eso ocurre cuando se cumple AL MENOS UNA de dos:
 
-LO QUE NO PROTEGE, PORQUE    la escritura de los PROPIOS EVENTOS de esa transacción. Un
-ES SU MECANISMO              `preparada`, un `confirmada` o un `derivada` se escriben con
-                             `temporal → fsync → rename → fsync(directorio)` (§2.6.3), y
-                             eso es lo que los hace durables. **No se abre una transacción
-                             para registrar que se escribió un evento**, ni ese evento
-                             necesita su propio `preparada`.
+  1  TOCA MÁS DE UN FICHERO CANÓNICO
+     el CONJUNTO puede quedar incoherente aunque cada `rename` sea atómico, y para
+     completarlo hace falta la lista, el `orden` y los hashes. Es `a.9` literal: «Git no
+     convierte una secuencia de escrituras en una transacción».
 
-POR QUÉ NO HAY RECURSIÓN     porque el diario es APPEND-ONLY y cada evento es INMUTABLE: un
-                             append no es una transición multiarchivo, no puede quedar a
-                             medias —el `rename` es atómico— y no hay estado anterior que
-                             conservar. Es el mismo argumento con el que §2.5 retiró el
-                             manifiesto de transacción.
+  2  SUSTITUYE CONTENIDO PREVIO
+     la recuperación necesita `hash_previo` y `hash_posterior_esperado` para distinguir
+     «no aplicado» de «lo tocó otro» (§2.6.4). Sin esos dos hashes, las tres cajas no se
+     pueden formar y sobrescribir destruiría trabajo sin registro.
 
-DÓNDE SÍ VUELVE A HABER      cuando la operación MODIFICA o COMPACTA lo ya escrito —
-UNA `tx`                     `sellado` y `retirada-de-cuerpo`—. Ahí el objeto ya no es un
-                             append: es un fichero con contenido previo, y por tanto una
-                             escritura canónica como cualquier otra. La frontera es
-                             AÑADIR frente a MODIFICAR, y no «estar dentro de `estado/`».
+NO EXIGE `tx` la escritura que sea LAS DOS COSAS A LA VEZ: **UN SOLO FICHERO, NUEVO Y
+DIRECCIONADO POR SU CONTENIDO**. Ahí el NOMBRE ES LA VERIFICACIÓN:
+     · está y su contenido casa con su nombre  → hecho, nada que completar
+     · no está, o es un temporal huérfano      → no ocurrió, y se borra el temporal (`W2`)
+No hay estado anterior que conservar, no hay partner que quede a medias, y no hay nada
+que declarar por adelantado para poder rehacerlo.
 ```
+
+**Aplicado a las cinco cosas que ADS escribe bajo `estado/`** —y «estar bajo `estado/`» no
+es el criterio, porque el diario también está allí:
+
+| qué se escribe | ¿varios ficheros? | ¿sustituye contenido? | ¿exige `tx`? |
+|---|---|---|---|
+| un item, una celda de cobertura, una iniciativa | **sí**, casi siempre | **sí** | **SÍ** |
+| un **evento** del diario (`preparada`, `confirmada`, `derivada`…) | no: uno | no: es nuevo, y su nombre es su huella (§2.8) | **NO** |
+| un **fichero de sellado** | no: uno | no: `sellar AÑADE` (§2.9), y nada se reemplaza | **NO** |
+| la **lápida** de un cuerpo retirado | no: uno | **SÍ**: reemplaza el cuerpo de un fichero que ya existe | **SÍ** |
+| un derivado | — | — | **no**: no es canónico. Se regenera entero (`W7`) |
+
+#### `sellado` — la decisión, y por qué cambia
+
+**Se comprueba una a una lo que `sellado` hace, contra §2.9:**
+
+```text
+¿SÓLO AÑADE UN FICHERO?   SÍ. §2.9: «sellar AÑADE: escribe un fichero de sellado nuevo y
+                          emite el evento que lo registra. NINGÚN evento se edita».
+
+¿MODIFICA O ELIMINA       NO. Los eventos sellados **siguen donde estaban**. Lo único que
+EVENTOS EXISTENTES?       puede retirarse es un CUERPO, y eso es `retirada-de-cuerpo`: un
+                          acto SEPARADO, autorizado y registrado, que §2.9 declara «no una
+                          limpieza automática por antigüedad».
+
+¿ACTUALIZA ÍNDICES O      NO. Los índices, tableros, vistas y dosieres son DERIVADOS (§1.3):
+ESTADO DEL ITEM?          se regeneran, y editarlos no es una escritura canónica. Y el
+                          «estado final del item» que el sellado conserva va DENTRO del
+                          fichero de sellado — no se escribe en el item. Cerrar el item es
+                          un `transicion`, que es otro evento y otra transacción.
+
+¿UNA ESCRITURA DURABLE    **UNA.** Un solo fichero, con la disciplina de §2.6.3
+O UNA MUTACIÓN            —`temporal → fsync → rename → fsync(directorio)`—, que es la
+MULTIARCHIVO?             disciplina de DURABILIDAD y no la de transacción.
+```
+
+**Conclusión: `sellado` NO es transaccional.** No lleva `fase` ni `tx`, exactamente por el
+mismo criterio por el que no lo lleva añadir un `preparada` — y sostener lo contrario exigía
+la frontera falsa que `D61` retira. Con dos condiciones que se declaran aquí porque el
+criterio las necesita:
+
+```text
+EL FICHERO DE SELLADO SE   `SL-<huella>`, como el evento y por el mismo motivo (§2.8): su
+DIRECCIONA POR CONTENIDO   nombre es su verificación. Sin esto, el criterio no se cumple y
+                           `sellado` volvería a exigir `tx`.
+
+NUNCA SE REEMPLAZA         un sellado posterior del mismo item produce un fichero NUEVO. El
+                           anterior no se toca, y cuál es el vigente **se deriva** —cada
+                           sellado declara la cabeza de la cadena `predecesor` al sellar
+                           (§2.9)—, no se escribe en ningún índice. Reemplazarlo sería
+                           «sustituir contenido previo», y entonces sí exigiría `tx`.
+```
+
+#### `retirada-de-cuerpo` — qué modifica, y por qué NO hay recursión
+
+```text
+QUÉ FICHERO EXISTENTE     el del EVENTO SELLADO cuyo cuerpo se retira. Es la ÚNICA
+MODIFICA                  operación de ADS que sustituye contenido ya escrito bajo
+                          `estado/`, y por eso es la única que cae del lado 2 de la
+                          frontera siendo un solo fichero.
+
+CÓMO CONSERVA QUE EL      porque **la HISTORIA no se reescribe: se sustituye un CUERPO por
+DIARIO SEA APPEND-ONLY    su prueba**. La lápida conserva `id`, `fase`, `tx`, la HUELLA del
+                          cuerpo retirado, la autoridad y el motivo. La cadena `predecesor`
+                          sigue resolviendo, el orden sigue siendo verificable, y se puede
+                          demostrar que ese cuerpo existió y que se retiró a propósito —que
+                          es distinto de que nunca haya existido (§2.9).
+                          EL PRECIO, DICHO: el `id` deja de ser recomputable desde el
+                          fichero, porque el fichero ya no contiene el cuerpo. Por eso la
+                          huella va DENTRO de la lápida y también en el sellado: son las dos
+                          copias que hacen la retirada auditable.
+                          Y §2.9 ya acota qué no puede retirarse NUNCA: un evento al que
+                          apunta cualquier evento VIVO, y el evento terminal de cualquier
+                          transacción.
+
+QUÉ EVENTO NUEVO          **ninguno aparte**. Las fases de su PROPIA transacción llevan
+REGISTRA LA RETIRADA      `tipo: retirada-de-cuerpo`, y su `confirmada` ES el registro del
+                          hecho. Un segundo evento «que lo registra» sería una segunda
+                          verdad sobre el mismo hecho.
+
+POR QUÉ NO HAY            porque esas fases son ficheros NUEVOS, uno cada una, direccionados
+RECURSIÓN                 por su contenido: caen del lado que NO exige `tx`. La recursión se
+                          corta **por el criterio general**, no por una excepción escrita
+                          para el diario. Escribir un `preparada` no abre otra transacción
+                          para registrar que se escribió un `preparada`, y lo mismo vale
+                          para el `preparada` de una retirada de cuerpo.
+```
+
+**Y por eso `sellado` y `retirada-de-cuerpo` acaban en lados distintos**, que es lo que la
+frontera falsa impedía ver: los dos tocan el diario, los dos escriben un solo fichero, y sólo
+uno **sustituye contenido previo**.
 
 **El recuento, DERIVADO de la tabla y separado por ejes.** No es una métrica de calidad ni un
 titular: es la consecuencia de las nueve filas de arriba.
@@ -2487,22 +2717,31 @@ ESTADOS DEL CAMPO `fase`        7   las SEIS fases, más la AUSENCIA del campo. 
 
 ESPACIO BRUTO                  63   9 × 7, y la mayor parte NO es válida
 
-COMBINACIONES VÁLIDAS          45   6 tipos SIEMPRE transaccionales × 6 fases  = 36
+LOS TRES REGÍMENES             SIEMPRE TRANSACCIONAL      5   transicion · integracion ·
+                                                              certificacion · migracion ·
+                                                              retirada-de-cuerpo
+                               CONDICIONAL                1   orden
+                               SIEMPRE NO TRANSACCIONAL   3   sellado · deriva · fallo
+
+COMBINACIONES VÁLIDAS          40   5 tipos SIEMPRE transaccionales × 6 fases  = 30
                                     `orden`, CONDICIONAL: 6 con fase + 1 sin   =  7
+                                    `sellado` sin fase                         =  1
                                     `deriva` sin fase                          =  1
                                     `fallo` sin fase                           =  1
 
-COMBINACIONES PROHIBIDAS       18   los 6 siempre transaccionales SIN fase      =  6
+COMBINACIONES PROHIBIDAS       23   los 5 siempre transaccionales SIN fase      =  5
+                                    `sellado` con cualquiera de las 6 fases     =  6
                                     `deriva` con cualquiera de las 6 fases      =  6
                                     `fallo` con cualquiera de las 6 fases       =  6
-                                    45 + 18 = 63, y la partición cierra
+                                    40 + 23 = 63, y la partición cierra
 ```
 
-> **Lo que se retira, dicho en positivo.** La formulación anterior —«las ocho formas de
-> evento» y su sucesora «`7 × 6 + 2 = 44`»— contaba **mezclando ejes**: la primera metía
-> `deriva` y `fallo` en el eje `fase`, y la segunda daba por obligatoria una transacción para
-> `orden` sin demostrarlo. **Las fases son SEIS.** `deriva` y `fallo` son valores de `tipo`
-> **sin** fase, y contarlos como formas de fase es el error que este recuento cierra.
+> **Lo que se retira, dicho en positivo.** «Las ocho formas de evento» contaba **mezclando
+> ejes** —metía `deriva` y `fallo` en el eje `fase`—; «`7 × 6 + 2 = 44`» daba por obligatoria
+> una transacción para `orden` sin demostrarlo; y «`45`» seguía dando por transaccional un
+> `sellado` que sólo añade un fichero. **Las fases son SEIS**, `deriva`, `fallo` y `sellado`
+> son valores de `tipo` **sin** fase, y `orden` es condicional. El recuento vigente es **40 ·
+> 23 · 63**, y se **deriva** de la tabla de arriba: no se conserva ninguno por arrastre.
 
 **Combinaciones prohibidas, y quién las rechaza** (capas de §3.6, más abajo):
 
@@ -2510,8 +2749,12 @@ COMBINACIONES PROHIBIDAS       18   los 6 siempre transaccionales SIN fase      
 `deriva` o `fallo` CON `fase` o CON `tx`          ESQUEMA ESTRUCTURAL. Es coherencia
                                                   interna: `tipo` y `fase` viven en el
                                                   MISMO evento
-CUALQUIERA DE LOS SEIS SIEMPRE                    ESQUEMA ESTRUCTURAL, por lo mismo
+CUALQUIERA DE LOS CINCO SIEMPRE                   ESQUEMA ESTRUCTURAL, por lo mismo
 TRANSACCIONALES SIN `fase` O SIN `tx`
+`sellado` CON `fase` O CON `tx`                   ESQUEMA ESTRUCTURAL: `sellado` es una
+                                                  escritura única de un fichero nuevo
+                                                  direccionado por contenido, y no la
+                                                  exige
 UN `orden` CON `fase` QUE NO DECLARE NINGUNA      ESQUEMA ESTRUCTURAL: si lleva fase, su
 ESCRITURA CANÓNICA, O SIN `fase` DECLARANDO       `preparada` declara `afecta[]`, y si no
 UNA                                               la lleva no puede declarar ninguna
@@ -2519,8 +2762,9 @@ UNA                                               la lleva no puede declarar nin
 `tx_afectada` sin `causa: posterior-al-cierre`    ESQUEMA ESTRUCTURAL
 UN EVENTO CON `fase` CUYO `tx` YA TIENE           VALIDADOR SEMÁNTICO DEL DIARIO: exige
 `derivada`                                        recorrer los demás eventos de ese `tx`
-UNA CUARTA `iteracion`                            VALIDADOR SEMÁNTICO DEL DIARIO: exige
-                                                  contar los `conflicto` de ese `tx`
+UNA `reconciliacion-preparada` CON                VALIDADOR SEMÁNTICO DEL DIARIO: exige
+`iteracion: 4`, O UN `conflicto` CON              contar los `conflicto` de ese `tx`
+`iteracion` MAYOR QUE 4
 ```
 
 **No se crea ningún tipo, y no se fusiona ninguno.** La prueba de §3.1 **no llega a
@@ -2548,7 +2792,7 @@ candidatos con sujeto, autoridad y ciclo propios. El recuento de §3.8 **no camb
 |---|---|---|---|---|---|
 | `preparada` | ninguna: abre la transacción | `afecta[]` con `ruta`·`hash_previo`·`hash_posterior_esperado`·`orden`· una de `contenido`\|`parche`\|`operacion` · los cinco de `a.9` · `base` | `resultado` · `hash_observado` · `hash_final` · `decision` | `hash_posterior_esperado` | los N ficheros casan con su hash posterior → `confirmada`; alguno diverge → `conflicto` |
 | `confirmada` | `preparada` | `resultado` · `derivados_pendientes[]` | `decision` · `hash_final` · `hash_observado` | `hash_posterior_esperado` | los derivados de `derivados_pendientes` se regeneraron → `derivada` |
-| `conflicto` | `preparada` o `reconciliacion-preparada` | `divergentes[]` con `ruta`·`hash_observado`· **`contenido` íntegro de lo divergente** · `items[]` · `rutas[]` · `autoridad` que debe resolver · `iteracion` | `resultado` · `hash_final` · `decision` | ninguno: declara lo observado, no lo esperado | la autoridad decide y su decisión es durable → `reconciliacion-preparada`; `iteracion` = 3 → se detiene y escala |
+| `conflicto` | `preparada` o `reconciliacion-preparada` | `divergentes[]` con `ruta`·`hash_observado`· **`contenido` íntegro de lo divergente** · `items[]` · `rutas[]` · `autoridad` que debe resolver · `iteracion` | `resultado` · `hash_final` · `decision` | ninguno: declara lo observado, no lo esperado | la autoridad decide y su decisión es durable → `reconciliacion-preparada`, **para `iteracion` 1, 2 y 3**; con `iteracion: 4` **no se prepara ninguna decisión**: se detiene, se escala y la transacción queda abierta (§2.6.4) |
 | `reconciliacion-preparada` | `conflicto` | `decision[]` con `ruta`·`hash_observado`·`hash_final`·`orden`· una de `contenido`\|`parche`\|`operacion` · `autoridad` que decidió · `derivados_pendientes[]` · `iteracion` | `resultado` | `hash_final`, que **sustituye** al `hash_posterior_esperado` para esas rutas | los ficheros de `decision` casan con su `hash_final` → `reconciliada`; alguno vuelve a divergir → `conflicto` |
 | `reconciliada` | `reconciliacion-preparada` | `resultado` · `derivados_pendientes[]` | `decision` · `hash_posterior_esperado` para las rutas reconciliadas | `hash_final` | los derivados de `derivados_pendientes` se regeneraron → `derivada` |
 | `derivada` | `confirmada` o `reconciliada` | `derivados_regenerados[]` con su `source_revision` | `afecta` · `decision` · `divergentes` | el que gobernara su ruta | **ninguna. Es terminal**. Que no exista ningún evento posterior con ese `tx` lo comprueba el **validador semántico del diario**, no el esquema |
@@ -2611,15 +2855,20 @@ Recorriendo **todos los eventos**, y por eso ninguna de estas comprobaciones cab
 · CONTINUIDAD DE HASHES entre fases: que el `hash_final` de una `reconciliacion-preparada`
   gobierne desde ahí, y que `derivada` cierre sobre el hash que gobernaba cada ruta
 · NINGUNA FASE POSTERIOR A `derivada` en ese `tx`. **Ésta es la regla 1**, y es de diario
-· NÚMERO DE ITERACIONES: que `iteracion` sea consecutivo y que no exista una CUARTA.
+· NÚMERO DE ITERACIONES: que `iteracion` empiece en 1, sea consecutivo, que `conflicto(i)` y
+  `reconciliacion-preparada(i)` compartan valor, y que **no exista ninguna
+  `reconciliacion-preparada` con `iteracion: 4`** ni ningún `conflicto` con `iteracion` > 4.
   **El cuarto reintento no lo ve un esquema**: exige contar los `conflicto` de ese `tx`
 · TERMINALIDAD: exactamente un `derivada` por transacción cerrada, y ninguno en las abiertas
 · CORRESPONDENCIA ENTRE INTENCIÓN Y HECHO: que todo `confirmada` tenga su `preparada`, toda
   `reconciliada` su `reconciliacion-preparada`, y que las rutas y hashes coincidan
-· CARDINALIDAD DE CADA FASE: `preparada`, `confirmada`, `reconciliada` y `derivada`
-  aparecen EXACTAMENTE UNA VEZ por `tx`. **Ninguna secuencia contiene `confirmada →
-  confirmada`.** Sólo `conflicto` y `reconciliacion-preparada` se repiten, y sólo porque el
-  contrato las declara repetibles con `iteracion` como discriminador (§2.6.4)
+· CARDINALIDAD DE CADA FASE, **CONDICIONAL A LA RUTA** (§2.6.4): `preparada` exactamente 1
+  siempre; `confirmada` y `reconciliada` **mutuamente excluyentes** —1 y 0 en la ruta normal,
+  0 y 1 en la de conflicto cerrada, 0 y 0 en la agotada—; `derivada` 1 si cerró y 0 si sigue
+  abierta. **Ninguna secuencia contiene `confirmada → confirmada`.** Sólo `conflicto` y
+  `reconciliacion-preparada` se repiten, con `iteracion` como discriminador y máximos 4 y 3
+· LA IDENTIDAD DE LA RUTA: #`conflicto` = #`reconciliacion-preparada` en una transacción de
+  conflicto CERRADA, y #`conflicto` = #`reconciliacion-preparada` + 1 en una AGOTADA
 · EMISIÓN FRENTE A RESTAURACIÓN: restaurar un evento durable perdido devuelve el MISMO `id`,
   el MISMO cuerpo y el MISMO `predecesor`. Un `id` nuevo con el mismo `tx` y la misma fase de
   HECHO es un defecto, no una reemisión
@@ -5155,10 +5404,20 @@ hallazgos están en texto que la corrección anterior escribió. `D16`–`D57` c
 | `D58` | emitir y **restaurar** son distintos, y **`confirmada → confirmada` no existe**; cardinalidad de cada fase declarada por `tx` | `D56` · `D37` | «reemisión como evento nuevo» contradecía §2.8 punto 5, que ya la declaraba NO-OPERACIÓN, y creaba una secuencia que el autómata no tiene |
 | `D59` | recuento **separado por ejes** —9 tipos · 6 fases · 7 estados del campo— y matriz **mínima** demostrada tipo a tipo, con `orden` **condicional** | `D57` · `D54` | `D57` contó filas de tabla como valores de `fase` y derivó un cartesiano sin demostrarlo; `a.9` da consumos de orden que no mutan nada |
 
+### `D60`–`D61` · las decisiones de la CUARTA comprobación técnica
+
+Comprobación acotada sobre `D58`–`D59`. **Quinto encadenamiento consecutivo**. `D16`–`D59`
+conservan su texto.
+
+| | decisión | qué revisa | por qué |
+|---|---|---|---|
+| `D60` | la cardinalidad de cada fase es **condicional a la ruta y al cierre**, y el contador `iteracion` queda cerrado: empieza en 1, el tercer `conflicto` recibe decisión, y el cuarto es el **marcador de parada** | `D58` | «las cuatro exactamente una vez» era **insatisfacible**: ninguna transacción tiene `confirmada` Y `reconciliada`, y una agotada no tiene `derivada` |
+| `D61` | la frontera que exige `tx` es **un fichero frente a varios, y nuevo frente a sustituir contenido**; **`sellado` NO es transaccional** y `retirada-de-cuerpo` sí | `D59` · `D57` | «añadir frente a modificar» era falsa: con ella `sellado`, que sólo añade, no exigiría la `tx` que `D59` le imponía |
+
 **Y `O15`**, resolución posterior del Owner que revisa `O14` sin reescribirlo: la adopción de
 PesquerApp es la **primera adopción real, permanente y completa** de ADS. Vive en el registro
-de decisiones, y su lectura arquitectónica en §8.2, §18 y §19. **`D58` y `D59` no la tocan**:
-sólo corrigen recuentos y referencias del protocolo.
+de decisiones, y su lectura arquitectónica en §8.2, §18 y §19. **`D58`–`D61` no la tocan**:
+sólo corrigen recuentos, cardinalidades y fronteras del protocolo.
 
 
 

@@ -24,6 +24,11 @@
 > encadenamiento consecutivo en el que una pasada encuentra defectos de la anterior. Tampoco
 > es la tercera revisión, y tampoco certifica nada.
 >
+> Y por una **CUARTA COMPROBACIÓN TÉCNICA acotada**, que encontró **dos defectos más** en el
+> texto que la tercera escribió: una cardinalidad que **ninguna transacción podía cumplir**, y
+> una frontera de recursión **falsa** que clasificaba mal `sellado`. **Quinto** encadenamiento
+> consecutivo. Tampoco es la tercera revisión, y tampoco certifica nada.
+>
 > La segunda revisión la emitió un revisor con contexto limpio que **no escribió F4 ni aplicó
 > la primera crítica**, y su veredicto fue de **INSUFICIENCIA**: dos hallazgos BLOQUEANTES,
 > siete GRAVES y catorce nuevos. **Dos de ellos eran defectos que la PRIMERA corrección
@@ -43,7 +48,8 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/14-DEVOLUCION-TECNICA-PREVIA-F4C.md
              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · D16–D22 ·
                                                              D23–D33 · D34–D45 · D46–D51 ·
-                                                             D52–D54 · D55–D57 · D58–D59
+                                                             D52–D54 · D55–D57 · D58–D59 ·
+                                                             D60–D61
              kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
 freshness:   vigente
 last_meaningful_event: la SEGUNDA revisión independiente devuelve F4 con veredicto de
@@ -56,6 +62,51 @@ procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y
              crítica NO equivale a autocertificarse, y NO prueba que esté bien resuelta.
              LA PRUEBA DE QUE ESTO IMPORTA: dos de los hallazgos de la segunda devolución son
              defectos que la PRIMERA CORRECCIÓN introdujo o no vio
+resuelto_en_la_CUARTA_COMPROBACION_TECNICA:
+  # Comprobación ESTRICTAMENTE ACOTADA sobre D58–D59. NO es la tercera revisión independiente,
+  # y NO certifica F4c. Sus DOS hallazgos están en texto que la comprobación ANTERIOR
+  # escribió: QUINTO encadenamiento consecutivo.
+  · 1 · CARDINALIDAD INSATISFACIBLE. Se decía «`preparada`, `confirmada`, `reconciliada` y
+    `derivada` exactamente una vez por tx», y NINGUNA transacción real puede cumplirlo: la
+    ruta normal no tiene `reconciliada`, la de conflicto no tiene `confirmada`, y una agotada
+    no tiene `derivada`. Vigente, CONDICIONAL A LA RUTA:
+      RUTA NORMAL CERRADA        preparada 1 · confirmada 1 · conflicto 0 · rec-prep 0 ·
+                                 reconciliada 0 · derivada 1        → 3 eventos
+      CONFLICTO CERRADA          preparada 1 · confirmada 0 · conflicto = rec-prep = k∈{1,2,3}
+                                 reconciliada 1 · derivada 1        → 3+2k = 5, 7 o 9
+      CONFLICTO AGOTADA/ABIERTA  preparada 1 · confirmada 0 · conflicto 4 · rec-prep 3 ·
+                                 reconciliada 0 · derivada 0        → 8 eventos, marcador
+                                 ABIERTO, bloqueada y escalada al Owner
+    `confirmada` y `reconciliada` son MUTUAMENTE EXCLUYENTES. Invariante que distingue cierre
+    de agotamiento: #conflicto = #rec-prep si cerró, #conflicto = #rec-prep + 1 si agotó
+  · 2 · EL CONTADOR `iteracion`, CERRADO. Empieza en 1 —nunca 0—; lo comparten `conflicto(i)`
+    y su `reconciliacion-preparada(i)`; incrementa SÓLO al abrir un `conflicto` nuevo.
+    MAX_ITERACIONES = 3: el TERCER `conflicto` SÍ recibe decisión. El CUARTO `conflicto` se
+    emite —la clasificación de §2.6.4 lo produce y un hecho observado no se calla— y es el
+    MARCADOR DE PARADA: sin decisión, escalado, transacción abierta. Máximos exactos: CUATRO
+    `conflicto` y TRES `reconciliacion-preparada`. Alineados autómata, contrato, R9, X58 y
+    validador semántico
+  · 3 · LA FRONTERA DE RECURSIÓN ERA FALSA. Se decía a la vez que `sellado` sólo AÑADE, que la
+    frontera es AÑADIR frente a MODIFICAR, y que `sellado` exige tx SIEMPRE: las tres no
+    caben juntas. Vigente, UN solo criterio: una escritura canónica exige `tx` si y sólo si
+    toca MÁS DE UN FICHERO o SUSTITUYE CONTENIDO PREVIO. No la exige la que sea UN SOLO
+    FICHERO, NUEVO Y DIRECCIONADO POR SU CONTENIDO — ahí el nombre es la verificación
+  · 4 · `sellado` PASA A NO TRANSACCIONAL. Comprobado contra §2.9: no edita ni borra eventos
+    —retirar un cuerpo es acto SEPARADO—, no escribe índices —derivados— y no toca el item
+    —cerrarlo es un `transicion`—. Añade UN fichero `SL-<huella>` que nunca se reemplaza.
+    `retirada-de-cuerpo` SÍ es transaccional: sustituye el cuerpo por su lápida, que conserva
+    id, fase, tx, huella, autoridad y motivo. Cero recursión POR EL CRITERIO GENERAL
+  · 5 · MARCADO DE ÓRDENES, CLASIFICADO. Marcar `- [x]` o `- [!]` SÍ es una escritura durable
+    que modifica físicamente el tablero; NO es mutación del estado canónico gobernada por la
+    transacción general; se rige por el CAS propio de a.9 sobre hash de contenido con
+    MAX_CAS_RETRIES = 3. Aplicar la orden al estado canónico SÍ usa tx y fases
+  · 6 · RECUENTO RECALCULADO, no arrastrado. Regímenes: 5 SIEMPRE transaccionales
+    (transicion · integracion · certificacion · migracion · retirada-de-cuerpo) · 1
+    CONDICIONAL (orden) · 3 SIEMPRE NO transaccionales (sellado · deriva · fallo).
+    9 tipos · 6 fases · 7 estados del campo · 40 válidas · 23 prohibidas · 63 de espacio
+  · O15 INTACTA. §3.8 no cambia: `sellado` sigue siendo un valor del enum, cambia su régimen
+  · D60–D61 registradas. Tabla adversarial: SIGUE en 42 filas — X58 corrige su escenario en
+    su sitio para que coincida con su resultado
 resuelto_en_la_TERCERA_COMPROBACION_TECNICA:
   # Comprobación técnica ACOTADA sobre D55–D57. NO es la tercera revisión independiente, y NO
   # certifica F4c. Sus DOS hallazgos están en texto que la corrección ANTERIOR escribió: es el
@@ -72,12 +123,19 @@ resuelto_en_la_TERCERA_COMPROBACION_TECNICA:
     RESTAURACIÓN IDEMPOTENTE del MISMO evento —mismo id, cuerpo y predecesor—, no una emisión.
     `preparada`, `confirmada`, `reconciliada` y `derivada`: EXACTAMENTE UNA por tx. Sólo
     `conflicto` y `reconciliacion-preparada` son repetibles, con `iteracion` y tope de tres
+    [REVISADO por D60: «las cuatro exactamente una vez» es INSATISFACIBLE. La cardinalidad es
+     CONDICIONAL A LA RUTA, y `confirmada` y `reconciliada` son mutuamente excluyentes. Ver el
+     bloque de la cuarta comprobación técnica]
   · 3 · MATRIZ MÍNIMA, DEMOSTRADA TIPO A TIPO. `orden` es CONDICIONAL: a.9 da consumos que NO
     aplican y NO modifican el estado canónico —base inexistente tras rebase, agotamiento de
     MAX_CAS_RETRIES—. Los otros SEIS son siempre transaccionales; `deriva` y `fallo`, nunca.
     Y se declara CERO RECURSIÓN: escribir los eventos del propio diario NO abre otra
     transacción — la frontera es AÑADIR frente a MODIFICAR, y por eso `sellado` y
     `retirada-de-cuerpo` sí la necesitan
+    [REVISADO por D61: esa frontera era FALSA — con ella `sellado`, que sólo añade, NO
+     exigiría la tx que aquí se le impone. La frontera real es UN FICHERO frente a VARIOS y
+     NUEVO frente a SUSTITUIR CONTENIDO, y con ella `sellado` pasa a NO TRANSACCIONAL. El
+     recuento 45 se recalcula a 40. Ver el bloque de la cuarta comprobación técnica]
   · O15 NO SE TOCA. Sólo se corrigen recuentos y referencias derivadas
   · D58–D59 registradas. Tabla adversarial: SIGUE en 42 filas — X21 gana la comprobación
     explícita de que no existe `confirmada → confirmada`, en su sitio
@@ -310,8 +368,10 @@ falta_para_cerrar_la_capa:
     QUIEN LAS RECIBIÓ, y eso no prueba que estén bien resueltas. LA EVIDENCIA DE QUE EL
     ENCADENAMIENTO IMPORTA: dos de los hallazgos BLOQUEANTES de la segunda son defectos que
     la PRIMERA CORRECCIÓN introdujo o no vio, los TRES de la segunda corrección técnica están
-    en texto que la corrección técnica ANTERIOR escribió, y los DOS de la tercera comprobación
-    están en texto que la SEGUNDA escribió. NINGUNA crítica se declara superada. F4c sólo se cierra con un veredicto explícito de SUFICIENCIA emitido por un revisor
+    en texto que la corrección técnica ANTERIOR escribió, los DOS de la tercera comprobación
+    están en texto que la SEGUNDA escribió, y los DOS de la CUARTA están en texto que la
+    TERCERA escribió. Cinco pasadas encadenadas, y cada una encontró defectos de la anterior.
+    NINGUNA crítica se declara superada. F4c sólo se cierra con un veredicto explícito de SUFICIENCIA emitido por un revisor
     independiente sobre el resultado corregido
   · OCHO PRESIONES NORMATIVAS VIGENTES. PN-1 —la sección (g)— BLOQUEA todo el estado
     durable, y ahora decide MÁS: fsync, regla de commit, sellado, identidad y regla de
@@ -386,7 +446,8 @@ F4c CRÍTICA INDEPENDIENTE    TRES devoluciones, EMITIDAS por revisores y audito
                              tercera revisión: la 1ª con dos BLOQUEANTES y un GRAVE
                              (`D52`–`D54`), la 2ª con tres GRAVES (`D55`–`D57`) sobre el
                              texto que la 1ª escribió, y una 3ª comprobación acotada
-                             (`D58`–`D59`) sobre el texto de la 2ª.
+                             (`D58`–`D59`) sobre el texto de la 2ª y una 4ª (`D60`–`D61`)
+                             sobre el texto de la 3ª.
                              DOS de los hallazgos de la 2ª devolución, TRES de la 3ª y LOS
                              TRES de la segunda corrección técnica son defectos que las
                              correcciones ANTERIORES introdujeron o no vieron.
@@ -654,6 +715,19 @@ docs/evolucion/11-ARQUITECTURA-INTEGRADA.md  cabecera · §2.6.2 cardinalidad ·
                                           y recuento derivado · §15.8 D58–D59
 docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md  D58–D59, SIN reescribir D1–D57 ni O1–O15
 docs/evolucion/CHECKPOINT-ADS-NEXT.md     su bloque y las marcas [REVISADO] sobre D56 y D57
+
+F4c CUARTA COMPROBACIÓN TÉCNICA — cardinalidad por ruta, tope de iteración y frontera real
+docs/evolucion/11-ARQUITECTURA-INTEGRADA.md  cabecera · §2.6.1 la transición de reintento ·
+                                          §2.6.2 cardinalidad · §2.6.4 cardinalidad
+                                          CONDICIONAL por ruta, contador `iteracion` y las
+                                          cinco secuencias completas · §2.6.9 el tope · R9 ·
+                                          §2.6.7 X58 · §3.6 frontera real de la `tx`,
+                                          `sellado` NO transaccional, marcado de órdenes y
+                                          recuento 40 · 23 · 63 · §15.8 D60–D61
+docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md  D60–D61, SIN reescribir D1–D59 ni O1–O15
+docs/evolucion/CHECKPOINT-ADS-NEXT.md     su bloque
+O15 INTACTA. §3.8 sin cambios. (a), (b), E1, E2, K-1, C4 y C7 intactos. Ningún documento
+numerado nuevo.
 O15 NO SE TOCA. (a), (b), E1, E2, K-1, C4 y C7 intactos. Ningún documento numerado nuevo.
 NADA de kernel/operativo/, packs/ ni tooling/ ha cambiado, salvo la evidencia DERIVADA que
 el runner republica. (a), (b), E1, E2, K-1, C4 y C7 intactos. NINGÚN documento `15-*` nuevo:
