@@ -6,8 +6,8 @@
 > **Basta decir «Continúa»**: la siguiente acción exacta está al final.
 
 > **Estado de la fase, en una línea:**
-> **F4 corregida por SEGUNDA devolución independiente; F4c ABIERTA, pendiente de tercera
-> revisión.**
+> **F4 corregida por segunda devolución independiente y por devolución técnica previa; F4c
+> ABIERTA, pendiente de tercera revisión independiente.**
 >
 > La segunda revisión la emitió un revisor con contexto limpio que **no escribió F4 ni aplicó
 > la primera crítica**, y su veredicto fue de **INSUFICIENCIA**: dos hallazgos BLOQUEANTES,
@@ -18,15 +18,16 @@
 ```text
 CHECKPOINT — ADS-NEXT/10 · SIS/evolucion
 actualizado: 2026-08-27
-metodo:      SIS/Evolucion · F4 CORREGIDA POR SEGUNDA DEVOLUCIÓN INDEPENDIENTE; F4c ABIERTA
-             Y PENDIENTE DE TERCERA REVISIÓN
+metodo:      SIS/Evolucion · F4 CORREGIDA POR SEGUNDA DEVOLUCIÓN INDEPENDIENTE Y POR
+             DEVOLUCIÓN TÉCNICA PREVIA; F4c ABIERTA Y PENDIENTE DE TERCERA REVISIÓN
 based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md@56ea196
              docs/evolucion/11-ARQUITECTURA-INTEGRADA.md   corregida
              docs/evolucion/12-CRITICA-INDEPENDIENTE-F4.md
              docs/evolucion/13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md
+             docs/evolucion/14-DEVOLUCION-TECNICA-PREVIA-F4C.md
              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · D16–D22 · D23–D33 ·
-                                                             D34–D45
+                                                             D34–D45 · D46–D51
              kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
 freshness:   vigente
 last_meaningful_event: la SEGUNDA revisión independiente devuelve F4 con veredicto de
@@ -39,6 +40,31 @@ procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y
              crítica NO equivale a autocertificarse, y NO prueba que esté bien resuelta.
              LA PRUEBA DE QUE ESTO IMPORTA: dos de los hallazgos de la segunda devolución son
              defectos que la PRIMERA CORRECCIÓN introdujo o no vio
+resuelto_en_la_DEVOLUCION_TECNICA_PREVIA:
+  # Auditoría externa de Codex sobre el ÁRBOL REMOTO REAL (7ebdd8a). NO es un veredicto de
+  # suficiencia: es revisión TÉCNICA. Tres de sus bloqueantes están en texto que las DOS
+  # correcciones anteriores escribieron.
+  · 1 · BLOQUEANTE. UN SOLO AUTÓMATA: cinco fases y dos rutas —normal
+    `preparada→confirmada→derivada`, de conflicto `preparada→conflicto→reconciliada→derivada`—
+    con `derivada` como ÚNICO cierre terminal y tabla de transiciones admitidas. Había CINCO
+    formulaciones incompatibles del mismo autómata. `abortada` rechazada por el esquema
+  · 2 · BLOQUEANTE. `tx_abierta` RETIRADO de los canónicos: rompía el
+    `hash_posterior_esperado` que la propia transacción declara, y exigía una segunda
+    escritura multiarchivo que ningún paso describía. La detectabilidad no toca un byte
+  · 3 · BLOQUEANTE. `reconciliacion_pendiente` pasa a PREDICADO DERIVADO. Antes exigía abrir
+    una transacción para registrar el estado que impide abrir transacciones, contra su X08
+  · 4 · `reconciliada` deja de ser terminal: aplica la decisión, declara hashes finales que
+    SUSTITUYEN al esperado, y cierra por `derivada` tras regenerar los derivados
+  · 5 · integridad post-terminal con ventana de commit definida, hash tras reconciliar,
+    comparación real contra HEAD, y DERIVA NO TRANSACCIONAL que se reporta y NO se restaura
+  · 6 · el marcador es OPERACIONAL con excepción de ruta declarada. Dos categorías, no tres
+  · 7 · §3.6, §3.4, §5.6 y §9.2 alineados: `auditor` y `verificador_de_correccion`,
+    `resolucion_del_control_repo` añadido de verdad, y la celda registra sólo desviación
+  · 8 · §9.1 y §9.5 proyectan las CINCO pruebas de `nivel-certificacion:integrado`
+  · 9 · DOS huellas y un artefacto que las contiene, no tres (D47 revisa D31)
+  · 10 · reparto de dominio: certificación SÓLO en `nivel-certificacion`
+  · 11 · restos editoriales; DOS de los cinco señalados NO se reproducen, y se dice
+  · D46–D51 registradas. Tabla adversarial 30 → 37 filas (X47–X53)
 resuelto_en_la_SEGUNDA_devolucion_de_f4:
   · E · BLOQUEANTE. `fsync` DE DIRECTORIO obligatorio también para los canónicos, y en el
     orden correcto: temporal → fsync(temporal) → rename → fsync(directorio). F4c lo exigía
@@ -158,7 +184,7 @@ owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
 pregunta_pendiente: ninguna. Las OCHO presiones normativas vigentes son materia de F5,
              no preguntas
 siguiente:   TERCERA REVISIÓN INDEPENDIENTE de F4, por quien NO la escribió y NO aplicó
-             ninguna de las dos tandas de correcciones. Después F5
+             NINGUNA de las TRES tandas de correcciones. Después F5
 falta_para_cerrar_la_capa:
   · F4c ESTÁ ABIERTA. Dos devoluciones independientes, la segunda con veredicto explícito de
     INSUFICIENCIA. Las correcciones de ambas las aplicó QUIEN LAS RECIBIÓ, y eso no prueba
@@ -176,7 +202,7 @@ falta_para_cerrar_la_capa:
   · NADA CONSTRUIDO: ni kernel, ni runtime, ni tooling, ni esquemas, ni adaptadores, ni
     plantillas, ni packs, ni validadores, ni migraciones. Las correcciones son DISEÑO
     CORREGIDO, no diseño implementado
-  · NADA PROBADO: las 30 filas de la tabla adversarial de §2.6.7, los 11 escenarios
+  · NADA PROBADO: las 37 filas de la tabla adversarial de §2.6.7, los 11 escenarios
     negativos de §11.5 y los 12 escenarios de §14 están ESCRITOS. Ninguno ejecutado
   · DEFECTO DE C7 REGISTRADO Y NO CORREGIDO: su gate exige Integration Set con UNA sola
     fuente y E2.6 exige «varias». Prescripción CERRADA, trazabilidad a E2.6, ejecución F6.
@@ -214,14 +240,18 @@ F3c PUERTA CORRECTIVA        CERRADA y después CORREGIDA — crítica independi
                              10-CRITICA-INDEPENDIENTE-F3.md · release 2.0.0-alpha.9
 F4  ARQUITECTURA INTEGRADA   ENTREGADA, NO CERTIFICADA, y después CORREGIDA por
                              devolución independiente — 11-ARQUITECTURA-INTEGRADA.md
-F4c CRÍTICA INDEPENDIENTE    DOS devoluciones, ambas EMITIDAS por revisores que no
+F4c CRÍTICA INDEPENDIENTE    TRES devoluciones, EMITIDAS por revisores y auditores que no
                              escribieron F4, TRANSCRITAS y APLICADAS por su autor material.
                              1ª  nueve bloques · 12-CRITICA-INDEPENDIENTE-F4.md · D23–D33
                              2ª  VEREDICTO DE INSUFICIENCIA por un revisor que TAMPOCO
                                  aplicó la primera: 2 BLOQUEANTES, 7 GRAVES, 14 nuevos ·
                                  13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md · D34–D45
-                             DOS de los hallazgos de la 2ª son defectos que la 1ª CORRECCIÓN
-                             introdujo o no vio.
+                             3ª  DEVOLUCIÓN TÉCNICA PREVIA — auditoría externa de Codex
+                                 sobre el ÁRBOL REMOTO REAL: 3 BLOQUEANTES, 2 GRAVES, 4
+                                 MEDIOS, 2 MENORES · 14-DEVOLUCION-TECNICA-PREVIA-F4C.md ·
+                                 D46–D51. NO es veredicto de suficiencia
+                             DOS de los hallazgos de la 2ª y TRES de la 3ª son defectos que
+                             las correcciones ANTERIORES introdujeron o no vieron.
                              ABIERTA: sólo la cierra un veredicto explícito de SUFICIENCIA
                              emitido por un revisor independiente sobre el resultado
                              corregido. Ese veredicto NO existe

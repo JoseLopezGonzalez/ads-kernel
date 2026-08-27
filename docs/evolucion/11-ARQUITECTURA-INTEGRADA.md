@@ -18,6 +18,10 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 >                       no escribió F4 NI aplicó la primera crítica: DOS hallazgos
 >                       BLOQUEANTES, siete GRAVES y catorce nuevos, en
 >                       13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md. Correcciones: D34–D45
+> DEVOLUCIÓN TÉCNICA    auditoría externa sobre el ÁRBOL REMOTO REAL: TRES BLOQUEANTES, dos
+> PREVIA                GRAVES, cuatro MEDIOS y dos MENORES, en
+>                       14-DEVOLUCION-TECNICA-PREVIA-F4C.md. Correcciones: D46–D51.
+>                       NO es un veredicto de suficiencia: es revisión técnica
 > ```
 >
 > **Dos de los hallazgos de la segunda devolución son defectos que la PRIMERA CORRECCIÓN
@@ -409,7 +413,7 @@ VEREDICTO   COMPONER. Una transacción es una SECUENCIA DE EVENTOS INMUTABLES qu
 |---|---|
 | declarar la intención antes de tocar nada | evento con `fase: preparada` |
 | declarar la lista exacta de ficheros y su hash previo | campo `afecta`, con `hash_previo` por fichero |
-| señalar «hay algo en vuelo» | una transacción sin evento `derivada` ni `reconciliada`. `estado/tx/<TX-ID>.abierta` la acelera y **lleva el `tx` y las rutas afectadas**, para que la regla de lectura de §2.6.8 sea ejercible sin recorrer el diario. Se reconstruye si se pierde |
+| señalar «hay algo en vuelo» | una transacción **sin evento `derivada`**, que es el único terminal (§2.6.1). `estado/tx/<TX-ID>.abierta` la acelera y **lleva el `tx` y las rutas afectadas**, para que la regla de lectura de §2.6.8 sea ejercible sin recorrer el diario. Se reconstruye si se pierde |
 | decir si la transición se aplicó | evento con `fase: confirmada` |
 | poder cerrarse y desaparecer | **no sobrevive, y es lo correcto**: borrarlo era el defecto. §3.6 dejaba a `evento.tx` apuntando a un artefacto borrado |
 
@@ -1297,7 +1301,7 @@ garantía?».**
 | tableros, vistas, dosieres, índices | los canónicos | **total y determinista**. `T03` lo comprueba |
 | `.ads/run/` entero | los canónicos | total |
 | un derivado divergente | los canónicos | total, y `Continúa` paso 2 lo regenera |
-| el marcador `estado/tx/<TX>.abierta` | el diario: una transacción **sin evento `derivada` ni `reconciliada`** | total. Es un acelerador, no una verdad. **Corregido**: decía «sin evento terminal», y `conflicto` era terminal sin estar cerrada (§2.6.9) |
+| el marcador `estado/tx/<TX>.abierta` | el diario: una transacción **sin evento `derivada`** | total. Es un acelerador, no una verdad. Con `derivada` como único terminal (§2.6.1), la condición es UNA |
 | una transición interrumpida | el evento `preparada` de su `tx` | total si ningún fichero es divergente; si lo es, `conflicto` declarado |
 | el estado canónico tras una pérdida | Git | total: es su historia |
 | el estado canónico **sin Git** | eventos sellados + eventos posteriores | **parcial y declarada**: sólo desde el último sellado. Antes del primero, no |
@@ -2857,7 +2861,8 @@ varias comprobaciones añadidas.
 
 ```text
 2 VERIFICAR   · ¿existen los artefactos que los paquetes dicen haber producido?
-              · ¿hay transacciones sin evento terminal?    → completar o marcar conflicto
+              · ¿hay transacciones sin evento `derivada`?  → completar, o marcar conflicto
+              · ¿hay deriva NO transaccional respecto a `HEAD`? → reportar y escalar (§2.6.6)
               · ¿hay `reconciliacion_pendiente`?           → resolverla antes de nada
               · ¿hay derivados divergentes de su source_revision?  → regenerar
               · ¿hay proyecciones con huella rota?         → recompilar (§6.3)
@@ -4191,6 +4196,21 @@ un veredicto de **INSUFICIENCIA**. `D16`–`D33` conservan su texto; éstas los 
 | `D44` | el documento gobernado tiene ciclo propio de cuatro valores | **sustituye parte de `D27`** | `b.3` dice `invalidada`, no `retirada`, y un documento derogado sin reemplazo no podía escribirse con ningún valor válido |
 | `D45` | los predicados de obligación se definen a nivel de iniciativa | `D29` | `Q9` no era computable: toda obligación de iniciativa era huérfana desde que se escribía, y ninguna iniciativa con obligaciones podía cerrar |
 
+### `D46`–`D51` · las decisiones de la devolución técnica previa
+
+Una **auditoría externa sobre el árbol remoto real** —no un informe— devolvió once hallazgos.
+**No certifica `F4c`**: es revisión técnica previa. `D16`–`D45` conservan su texto.
+
+| | decisión | qué revisa | por qué |
+|---|---|---|---|
+| `D46` | cinco fases, dos rutas, y `derivada` como único terminal | `D38` · `D23` · `D35` | **BLOQUEANTE**: había cinco formulaciones incompatibles del mismo autómata, y hacer terminal a `confirmada` dejaba los derivados sin regenerar |
+| `D47` | dos huellas y un artefacto que las contiene, no tres huellas | `D31` | el artefacto no es una huella. Lo detectó `N-13` y sobrevivió en los resúmenes vigentes |
+| `D48` | la detectabilidad no escribe nada en el contenido canónico | `D39` | **BLOQUEANTE**: `tx_abierta` rompía el `hash_posterior_esperado` que la propia transacción declara |
+| `D49` | `reconciliacion_pendiente` es predicado derivado, no bandera | `D35` | **BLOQUEANTE**: exigía abrir una transacción para registrar lo que impide abrir transacciones |
+| `D50` | el marcador es operacional, con excepción de ruta declarada | `D40` | creaba una tercera categoría informal que §2.4 no tiene |
+| `D51` | reparto de dominio: certificación sólo en `nivel-certificacion` | `D43` · `D26` | dos normas editables para el mismo aspecto |
+
+
 
 ---
 
@@ -4558,7 +4578,7 @@ SE CONFIRMA EL RESTO  1 estado · 2 adaptadores · 3 iniciativa · 4 certificaci
 ```text
 NADA ESTÁ CONSTRUIDO      ni una línea de kernel, runtime, tooling, esquema, adaptador,
                           plantilla, pack ni validador. F4 no lo autoriza
-NADA ESTÁ PROBADO         los doce escenarios de §14, las TREINTA filas de la tabla
+NADA ESTÁ PROBADO         los doce escenarios de §14, las TREINTA Y SIETE filas de la tabla
                           adversarial de §2.6.7 y los ONCE escenarios negativos de §11.5
                           están ESCRITOS. Ninguno se ha ejecutado. Escribir el contrato de
                           una prueba no es la prueba
@@ -4570,17 +4590,13 @@ DEFERIDAS
 OCHO PRESIONES            §16, tras DOS devoluciones independientes: PN-4 retirada, PN-5
 NORMATIVAS VIGENTES       fusionada en PN-3, y PN-6 a PN-10 nuevas. Sólo PN-1 bloquea todo
                           el estado durable, y F5 es su puerta
-F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. DOS críticas independientes la han
-                          devuelto, y la segunda emitió veredicto de INSUFICIENCIA con dos
-                          hallazgos BLOQUEANTES — DOS DE ELLOS DEFECTOS QUE LA PRIMERA
-                          CORRECCIÓN INTRODUJO O NO VIO. Todo está aplicado, y LO APLICÓ
-                          QUIEN LO RECIBIÓ: `F4c` sigue ABIERTA, pendiente de una TERCERA
-                          revisión independiente
-EL SUELO DE `P-08`        si el runner miente, nada dentro del repositorio lo detecta.
-                          Declarado en §11.4, no resuelto
-ORDEN TOTAL ENTRE         la cadena de eventos da orden total POR TRANSACCIÓN y orden
-MÁQUINAS                  parcial entre emisores concurrentes. La bifurcación se detecta;
-                          resolverla es runtime distribuido, abierto en `E2.7` y en §2.11
+F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. DOS críticas independientes y UNA
+                          devolución técnica la han devuelto; la segunda emitió veredicto de
+                          INSUFICIENCIA, y la técnica encontró TRES BLOQUEANTES MÁS en el
+                          texto que las dos correcciones anteriores escribieron. Todo está
+                          aplicado, y LO APLICÓ QUIEN LO RECIBIÓ: `F4c` sigue ABIERTA,
+                          pendiente de una TERCERA REVISIÓN INDEPENDIENTE, que la devolución
+                          técnica NO sustituye
 ```
 
 **La distancia que queda**, dicha como la dijo el baseline: ADS sigue siendo un corpus
