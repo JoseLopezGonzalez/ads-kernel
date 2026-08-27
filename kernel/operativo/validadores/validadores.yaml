@@ -102,6 +102,26 @@ componentes:
     # La cobertura del barrido de T161 se PUBLICA en la evidencia. Sin ella, «el corpus
     # está limpio» sería una afirmación sin alcance declarado.
     debe_contener: ['T159', 'T160', 'T161', 'ficheros recorridos']
+    # VIGENCIA · la evidencia describe el corpus que hay, no el que había.
+    #
+    # T158 comprobaba procedencia y forma: de quién es la evidencia, qué orden la produjo,
+    # con qué código terminó, si su salida respalda el éxito que afirma. Ninguna de esas
+    # preguntas se responde distinto cuando la evidencia ENVEJECE. Ocurrió: bajo un
+    # intérprete sin `tomllib` este validador falla, el runner —correctamente— no sobrescribe
+    # su evidencia, y la cobertura publicada quedó describiendo un corpus anterior. Cabecera,
+    # código 0, firma y `debe_contener` seguían siendo válidos, y T158 pasó.
+    #
+    # `recuento` nombra una función registrada en comprobar_evidencia.py que RECALCULA el
+    # valor sobre el corpus vigente. Un nombre sin implementación registrada es un FALLO, no
+    # un silencio: el mecanismo falla cerrado.
+    vigencia:
+      - id: T161-cobertura
+        patron: '(\d+) ficheros recorridos'
+        recuento: fuentes.ficheros_recorridos
+        motivo: >
+          T161 publica cuántos ficheros recorrió, y sin esa cifra «el corpus está limpio» es
+          una afirmación sin alcance. Si el corpus crece o encoge y la evidencia no se
+          regenera, la cifra describe un corpus que ya no existe.
 
   - id: evidencia
     script: comprobar_evidencia.py

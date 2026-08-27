@@ -27,9 +27,9 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 766df236196de6ba, calculada aeadfd7fb4dd6479. Algún fichero de la huella se 
+                          → detectada: el kernel DIVERGE de su release: almacenada 8fd22a244f8f4ef6, calculada 00440f844beeb4d3. Algún fichero de la huella se 
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 766df236196de6ba, calculada 730bb6fef50c66fc. Algún fichero de la huella se 
+                          → detectada: el kernel DIVERGE de su release: almacenada 8fd22a244f8f4ef6, calculada b3bec8faf3b93934. Algún fichero de la huella se 
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
                           → detectada: kernel/operativo/validadores/ads_lint.py NO entra en la huella: un fork silencioso de ese fichero sería indetectable
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
@@ -56,6 +56,10 @@ OK   N158e   evidencia T158  falta un fichero de evidencia que el manifiesto exi
                           → detectada: kernel/operativo/pruebas/evidencia/referencias-salida.txt: falta la evidencia de 'referencias', que el manifiesto exige
 OK   N158f   evidencia T158  un validador nuevo queda fuera del manifiesto y de la evidencia
                           → detectada: validadores/comprobar_algo_nuevo.py: existe y el manifiesto no lo declara. Quedaría fuera de la evidencia sin que nada l
+OK   N158g   evidencia T158  la cobertura publicada describe un corpus con dos ficheros menos que el vigente
+                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 281 y el corpus vigente da 2
+OK   N158h   evidencia T158  una vigencia declara un recuento que nadie implementa
+                          → detectada: manifiesto: la vigencia 'T161-cobertura' de 'fuentes' declara el recuento 'fuentes.recuento_que_nadie_implementa', que n
 OK   N153    prompts T153  un prompt deja de nombrar el gate contra el que cierra
                           → detectada: kernel/operativo/capacidades/ARQ/prompts/encaje.md: no dice nada sobre gate
 OK   N153b   prompts T153  un prompt instruye hablar con el Owner sin que su rol pueda
@@ -119,4 +123,4 @@ OK   N161f   E2    T161  un patrón de T161 se desafila hasta dejar de detectar 
 OK   N161g   E2    T161  el corpus queda fuera del recorrido y T161 pasaría por no mirar
                           → detectada: sólo se recorrieron 18 ficheros, por debajo del mínimo (150). Una exclusión mal escrita deja el corpus fuera y esta prue
 
-58 infracciones detectadas · 0 NO detectadas
+60 infracciones detectadas · 0 NO detectadas

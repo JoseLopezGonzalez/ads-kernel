@@ -50,10 +50,16 @@ declarado; cambiarlas es una orden, no un rediseño.
 ### `O7`–`O14` · resueltas por el Owner el 2026-08-27, tras la crítica independiente de F3
 
 A diferencia de `O1`–`O6`, éstas **no tenían valor por defecto implementado**: son las
-preguntas que [`09-SINTESIS.md`](../evolucion/09-SINTESIS.md) elevó al Owner y las que la
-[crítica independiente](../evolucion/10-CRITICA-INDEPENDIENTE-F3.md) reformuló. Fijan
-dirección para F4; **ninguna está construida**, y ninguna enmienda (a), (b), `E1`, `E2` ni
-`K-1`.
+preguntas que la síntesis de la iniciativa ADS NEXT elevó al Owner, y que su crítica
+independiente reformuló. Fijan dirección para F4; **ninguna está construida**, y ninguna
+enmienda (a), (b), `E1`, `E2` ni `K-1`.
+
+> **Aquí no se enlaza esa iniciativa, y no es un descuido.** `docs/evolucion/` es historia
+> del repositorio del kernel y **no viaja a un proyecto instalado**; este fichero sí. Un
+> enlace a `09-SINTESIS.md` o a `10-CRITICA-INDEPENDIENTE-F3.md` quedaría roto en toda
+> organización que instale ADS, que es el mismo motivo por el que `C6` no enlaza la decisión
+> del Owner que lo originó y por el que las auditorías tampoco viajan. Quien lea esto dentro
+> del repositorio del kernel los encuentra en `docs/evolucion/`.
 
 | # | decisión | lo resuelto | qué cambia si el Owner decide otra cosa |
 |---|---|---|---|

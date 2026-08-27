@@ -245,13 +245,45 @@ def t160_manifiesto_del_proyecto(raiz=None):
     return r
 
 
-def t161_sin_restos_del_modelo_anterior(raiz=None):
-    base = os.path.abspath(raiz or RAIZ)
-    r = Resultado("T161", "El corpus no conserva la equivalencia proyecto = repositorio")
+def corpus_recorrido(raiz=None):
+    """Genera `(rel, texto)` de cada fichero que T161 recorre.
 
+    **Definición ÚNICA del recorrido.** La reutiliza `comprobar_evidencia` para comprobar
+    que la cobertura publicada describe el corpus vigente y no uno anterior. Dos
+    implementaciones del mismo recorrido derivan, y cuando derivan la que miente es siempre
+    la que nadie mira — que es el hallazgo A-04 aplicado a otra materia.
+
+    Un fichero ilegible NO cuenta: se salta igual aquí que en T161, porque la cifra que se
+    publica es «cuántos se recorrieron de verdad», no «cuántos hay».
+    """
+    base = os.path.abspath(raiz or RAIZ)
     import ads_lint  # noqa: E402
     lint = ads_lint.Lint(base, [])
     lint.cargar_exclusiones()
+    for ruta in lint.ficheros_texto((".md", ".sh", ".py", ".yaml", ".toml")):
+        rel = os.path.relpath(ruta, base).replace(os.sep, "/")
+        if rel.startswith(PREFIJOS_EXENTOS):
+            continue
+        try:
+            with open(ruta, encoding="utf-8") as fh:
+                texto = fh.read()
+        except (OSError, UnicodeDecodeError):
+            continue
+        yield rel, texto
+
+
+def ficheros_recorridos(raiz=None):
+    """Cuántos ficheros recorre T161 sobre el corpus vigente.
+
+    Es el valor que T161 publica en su cobertura, y el que `comprobar_evidencia` recalcula
+    para detectar una evidencia caducada. Determinista: sólo depende del corpus.
+    """
+    return sum(1 for _ in corpus_recorrido(raiz))
+
+
+def t161_sin_restos_del_modelo_anterior(raiz=None):
+    base = os.path.abspath(raiz or RAIZ)
+    r = Resultado("T161", "El corpus no conserva la equivalencia proyecto = repositorio")
 
     entradas = _compilados()
 
@@ -268,18 +300,10 @@ def t161_sin_restos_del_modelo_anterior(raiz=None):
                     f"«{entrada['contraejemplo']}». Un patrón que acusa a lo correcto se "
                     f"desactiva a la primera y deja de proteger")
 
-    # 2 · el recorrido del corpus
+    # 2 · el recorrido del corpus, por su definición única
     exentos_globales = {os.path.normpath(p) for p in CITAN_LO_DEROGADO}
     revisados = 0
-    for ruta in lint.ficheros_texto((".md", ".sh", ".py", ".yaml", ".toml")):
-        rel = os.path.relpath(ruta, base).replace(os.sep, "/")
-        if rel.startswith(PREFIJOS_EXENTOS):
-            continue
-        try:
-            with open(ruta, encoding="utf-8") as fh:
-                texto = fh.read()
-        except (OSError, UnicodeDecodeError):
-            continue
+    for rel, texto in corpus_recorrido(base):
         revisados += 1
         if os.path.normpath(rel) in exentos_globales:
             continue

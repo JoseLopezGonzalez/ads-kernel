@@ -221,6 +221,41 @@ def m_evidencia_falta(raiz):
     os.unlink(os.path.join(raiz, "kernel/operativo/pruebas/evidencia/referencias-salida.txt"))
 
 
+def m_evidencia_caducada(raiz):
+    """El caso REAL: evidencia intacta y CADUCADA, y T158 la daba por buena.
+
+    Reproduce lo que ocurrió: bajo un intérprete sin `tomllib` el validador `fuentes` falla,
+    el runner —correctamente— NO sobrescribe su evidencia, y la cobertura publicada se queda
+    describiendo un corpus anterior. Cabecera de procedencia, código 0, firma de éxito y
+    `debe_contener` siguen siendo VÁLIDOS: ninguna de las comprobaciones anteriores de T158
+    responde distinto cuando la evidencia envejece.
+
+    La cifra envejecida se DERIVA del propio fichero. No hay ningún número del corpus escrito
+    aquí: una prueba que fijara «280» dejaría de comprobar nada en cuanto el corpus creciera.
+    """
+    ruta = os.path.join(raiz, "kernel/operativo/pruebas/evidencia/fuentes-salida.txt")
+    with open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    m = re.search(r"(\d+) ficheros recorridos", texto)
+    if not m:
+        raise RuntimeError("la evidencia de `fuentes` ya no publica su cobertura: sin cifra "
+                           "publicada no hay vigencia que comprobar, y eso es otro defecto")
+    envejecida = int(m.group(1)) - 2
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto[:m.start(1)] + str(envejecida) + texto[m.end(1):])
+
+
+def m_vigencia_sin_implementacion(raiz):
+    """Una `vigencia` declara un recuento que nadie implementa.
+
+    El mecanismo tiene que FALLAR CERRADO: dar por buena una evidencia que no se sabe
+    comprobar es exactamente el defecto que la vigencia existe para corregir.
+    """
+    _sustituir(raiz, "kernel/operativo/validadores/validadores.yaml",
+               "        recuento: fuentes.ficheros_recorridos",
+               "        recuento: fuentes.recuento_que_nadie_implementa")
+
+
 def m_validador_fuera_del_manifiesto(raiz):
     """Un validador nuevo que nadie registra queda fuera de la evidencia en silencio."""
     ruta = os.path.join(raiz, VALIDADORES, "comprobar_algo_nuevo.py")
@@ -613,6 +648,12 @@ CATALOGO = [
     Mutacion("N158f", "evidencia", "T158", "comprobar_evidencia",
              "un validador nuevo queda fuera del manifiesto y de la evidencia",
              m_validador_fuera_del_manifiesto),
+    Mutacion("N158g", "evidencia", "T158", "comprobar_evidencia",
+             "la cobertura publicada describe un corpus con dos ficheros menos que el vigente",
+             m_evidencia_caducada),
+    Mutacion("N158h", "evidencia", "T158", "comprobar_evidencia",
+             "una vigencia declara un recuento que nadie implementa",
+             m_vigencia_sin_implementacion),
     Mutacion("N153", "prompts", "T153", "comprobar_prompts",
              "un prompt deja de nombrar el gate contra el que cierra",
              m_prompt_sin_gate),

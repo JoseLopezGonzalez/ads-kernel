@@ -388,13 +388,53 @@ entonces:
   - "sólo contiene FALLIDA o NO detectada donde el manifiesto declara que su salida incluye el resultado interno de un fixture negativo"
   - "todo .py de validadores/ está declarado en el manifiesto, y todo lo declarado existe"
   - "no sobra ninguna evidencia que nadie regenere"
+  - "toda cifra que el manifiesto declara derivable del corpus sigue describiendo el corpus vigente"
 falla_si:
   - "una evidencia contiene «can't open file» y el informe sigue afirmando EXIT 0"
   - "una evidencia afirma un éxito que su salida no respalda"
   - "se publica una ejecución cuyo código no fue cero"
   - "un validador nuevo queda fuera del manifiesto y de la evidencia"
+  - "una evidencia intacta y CADUCADA pasa por válida porque su cabecera, su código y su firma siguen siendo correctos"
+  - "una vigencia declara un recuento sin implementación registrada y la comprobación se da por superada"
 ejecucion: validador-estructural
 validador: "kernel/operativo/validadores/comprobar_evidencia.py"
 estado: prueba-superada
 evidencia: "evidencia/evidencia-salida.txt"
 ```
+
+### Lo que `T158` no veía, y por qué se añadió la vigencia
+
+`T158` nació de una evidencia **corrupta**: ocho de diez ficheros contenían «can't open file»
+mientras el informe afirmaba «todos EXIT 0». Sus comprobaciones se diseñaron contra ese caso,
+y todas preguntan por la **procedencia y la forma** de la evidencia.
+
+Ninguna de esas preguntas se responde distinto cuando la evidencia **envejece**. El caso real
+que lo destapó:
+
+```text
+1  se añaden documentos al corpus
+2  bajo un intérprete sin `tomllib`, `comprobar_fuentes` falla, y el runner —correctamente—
+   NO sobrescribe su evidencia. Esa negativa protege la evidencia buena, y se conserva
+3  la cobertura publicada por T161 se queda describiendo un corpus anterior
+4  cabecera de procedencia, código 0, firma de éxito y `debe_contener` siguen siendo válidos
+5  T158 pasa
+```
+
+**Es el mismo defecto que creó T158, por otra vía**: allí la evidencia estaba corrupta; aquí
+está intacta y caducada.
+
+La corrección es un contrato de **vigencia** declarado en `validadores.yaml`: un validador
+declara qué cifra de su evidencia es derivable del corpus, y `T158` la **recalcula** sobre el
+corpus vigente usando la **misma definición** que la produjo —importada de
+`comprobar_fuentes.corpus_recorrido`, nunca copiada—. Sus dos infracciones deliberadas son
+`N158g` y `N158h`, y la primera **deriva la cifra envejecida del propio fichero**: una prueba
+que fijara un número dejaría de comprobar nada en cuanto el corpus creciera.
+
+**Alcance declarado, y es la mitad de la corrección.** La vigencia cubre hoy la cobertura de
+`T161`. Los otros doce validadores publican cifras que pueden envejecer igual —«documentos
+analizados» de `T147`, «unidades de instrucción revisadas» de `T153`, «Ran N tests» de las
+pruebas de workspace— y nada lo detecta. La solución general exige declarar las **entradas**
+de cada validador y vincular su evidencia a ellas, y eso toca el manifiesto, los trece
+validadores y el runner: es materia de arquitectura, no de una puerta correctiva. Queda
+registrado como **`P-08`**. **No puede afirmarse que toda la evidencia del repositorio tenga
+vigencia garantizada.**

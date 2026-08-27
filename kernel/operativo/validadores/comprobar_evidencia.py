@@ -14,6 +14,19 @@ T158 falla si:
     · afirma éxito sin una salida compatible con ese éxito
     · la evidencia corresponde a OTRO validador que el que dice
     · la ejecución que la produjo terminó con código distinto de cero
+    · una cifra que el manifiesto declara DERIVABLE del corpus ya no lo describe
+
+La última llegó tarde, y por una ejecución, no por una lectura. Bajo un intérprete sin
+`tomllib` el validador `fuentes` falla, el runner —correctamente— NO sobrescribe su
+evidencia, y la cobertura publicada se quedó describiendo un corpus anterior. Cabecera de
+procedencia, código 0, firma de éxito y `debe_contener` seguían siendo válidos: T158 pasó.
+Es la misma familia del defecto que creó T158, por otra vía — allí la evidencia estaba
+CORRUPTA, aquí está intacta y CADUCADA.
+
+ALCANCE DECLARADO: la vigencia está garantizada para lo que el manifiesto declara en
+`vigencia`, hoy sólo la cobertura de T161. Los demás validadores pueden publicar cifras que
+envejezcan igual, y nada lo detecta. Registrado como P-08; su solución general es materia
+de F4 porque exige declarar las ENTRADAS de cada validador.
 
 Uso:
   python3 kernel/operativo/validadores/comprobar_evidencia.py [--json] [--raiz DIR]
@@ -48,6 +61,29 @@ SENALES_DE_FALLO = [
     (r"\bFALLIDA\b", "una prueba fallida"),
     (r"\bNO detectada\b", "una infracción no detectada"),
 ]
+
+
+# ---------------------------------------------------------------------------
+# VIGENCIA · recuentos que se RECALCULAN sobre el corpus vigente
+#
+# Cada entrada `vigencia` del manifiesto nombra uno de éstos. El nombre se resuelve aquí y
+# NO por importación dinámica de una cadena arbitraria: un manifiesto no ejecuta código que
+# este fichero no haya declarado. Un nombre que no esté en el registro es un FALLO —el
+# mecanismo falla cerrado—, porque dar por buena una evidencia que no se sabe comprobar es
+# exactamente lo que se está corrigiendo.
+#
+# La función NO reimplementa el recorrido: lo importa de quien lo define. Dos
+# implementaciones del mismo recuento derivan, y la que miente es siempre la que nadie mira.
+# ---------------------------------------------------------------------------
+
+def _fuentes_ficheros_recorridos(base):
+    import comprobar_fuentes                                    # noqa: PLC0415
+    return comprobar_fuentes.ficheros_recorridos(base)
+
+
+RECUENTOS_DE_VIGENCIA = {
+    "fuentes.ficheros_recorridos": _fuentes_ficheros_recorridos,
+}
 
 
 def cargar_manifiesto(base):
@@ -158,7 +194,62 @@ def t158_evidencia(raiz=None):
             if f.endswith(".txt") and f not in esperados:
                 r.fallo(f"{DIR_EVIDENCIA}/{f}: no lo declara ningún validador del "
                         f"manifiesto. Nadie lo regenera y nadie responde de él")
+
+    # 10 · VIGENCIA · la evidencia describe el corpus que hay, no el que había.
+    #
+    # Va LA ÚLTIMA a propósito. `comprobar_negativos` publica el PRIMER fallo de cada
+    # mutación como su detalle: si esta comprobación se adelantara, una mutación que además
+    # cambie el tamaño del corpus se registraría con el motivo equivocado.
+    _vigencia(base, componentes, r)
     return r
+
+
+def _vigencia(base, componentes, r):
+    for comp in componentes:
+        if comp.get("tipo") != "validador":
+            continue
+        entradas = comp.get("vigencia") or []
+        if not entradas:
+            continue
+
+        # Sin circularidad: quien está exento de su propia comprobación no puede además
+        # declarar vigencia, porque T158 estaría comprobando su propia evidencia contra sí
+        # mismo y aceptándose.
+        if comp.get("se_excluye_de_su_propia_comprobacion"):
+            r.fallo(f"manifiesto: '{comp['id']}' declara `vigencia` y está exento de su "
+                    f"propia comprobación. Comprobaría su evidencia contra sí mismo")
+            continue
+
+        rel = os.path.join(DIR_EVIDENCIA, comp["evidencia"])
+        ruta = os.path.join(base, rel)
+        if not os.path.isfile(ruta):
+            continue                       # su ausencia ya se ha reportado más arriba
+        with open(ruta, encoding="utf-8") as fh:
+            texto = fh.read()
+
+        for e in entradas:
+            eid = e.get("id") or "(sin id)"
+            if not e.get("motivo"):
+                r.fallo(f"manifiesto: la vigencia '{eid}' de '{comp['id']}' no escribe su "
+                        f"motivo. Una comprobación sin motivo no se puede revisar")
+            calcular = RECUENTOS_DE_VIGENCIA.get(e.get("recuento"))
+            if calcular is None:
+                r.fallo(f"manifiesto: la vigencia '{eid}' de '{comp['id']}' declara el "
+                        f"recuento '{e.get('recuento')}', que no está registrado en "
+                        f"RECUENTOS_DE_VIGENCIA. Sin implementación no se comprueba nada, "
+                        f"y una comprobación que no existe no puede darse por superada")
+                continue
+            m = re.search(e["patron"], texto)
+            if not m:
+                r.fallo(f"{rel}: la vigencia '{eid}' no encuentra su cifra (/{e['patron']}/). "
+                        f"La evidencia dejó de publicar el valor que se comprueba")
+                continue
+            publicado = int(m.group(1))
+            actual = calcular(base)
+            if publicado != actual:
+                r.fallo(f"{rel}: la vigencia '{eid}' publica {publicado} y el corpus vigente "
+                        f"da {actual}. La evidencia está CADUCADA: describe un corpus que ya "
+                        f"no existe. Regenérala con registrar_evidencia.py — no la edites")
 
 
 PRUEBAS = [t158_evidencia]
