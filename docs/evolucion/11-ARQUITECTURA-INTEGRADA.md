@@ -1613,14 +1613,48 @@ ES              el nivel OPERATIVO de la certificación (§9), y `CAND-012` con 
                 sesión, y nadie lo sabía
 ```
 
-## 6.5 · Matriz de soporte
+## 6.5 · Nivel alcanzado — derivado, nunca escrito
 
-| nivel | qué autoriza a afirmar | qué exige |
+F4 entregada tenía **dos verdades sobre lo mismo**: `adaptador.nivel` era un campo editable
+del bloque `ads:adaptador` (§3.4) y a la vez `soportado` era una conclusión que exigía prueba
+de humo ejecutada y certificación Integrada. Editable y derivado a la vez es la segunda
+verdad que `I5` prohíbe — y además un campo editable **no caduca** mientras una certificación
+sí. Se separan tres cosas que no son la misma.
+
+```text
+COMPATIBILIDAD DECLARADA    lo que el adaptador AFIRMA soportar. CAMPO EDITABLE del
+                            adaptador. Es una declaración de INTENCIÓN, y no autoriza a
+                            afirmar nada sobre el entorno real.
+
+CAPACIDADES DEL ENTORNO     lo que el entorno OFRECE técnicamente: subagentes, skills,
+                            límites de contexto, permisos. CAMPO EDITABLE. Es una
+                            OBSERVACIÓN, y puede quedarse obsoleta: se reobserva.
+
+NIVEL ALCANZADO Y VIGENTE   NO ES UN CAMPO. Se DERIVA de las celdas de cobertura cuyo
+                            sujeto es `adaptador:transversal/<entorno>` y cuyo aspecto es
+                            `aspecto:certificacion/<nivel>`. Sale de EVIDENCIA, y CADUCA
+                            por los triggers de §9.3 como cualquier otra celda.
+```
+
+| nivel alcanzado | qué autoriza a afirmar | qué celdas lo sostienen |
 |---|---|---|
-| **soportado** | el entorno ejecuta ADS con sus garantías | adaptador + prueba de humo **ejecutada** + certificación Integrada |
-| **compatible** | hay proyección y funciona lo esencial | adaptador + proyección, sin prueba de humo ejecutada |
-| **genérico** | recibe el contrato y las instrucciones universales | ninguna pieza específica. Es `CAND-011`, ya construido en un proyecto real |
-| **desconocido** | nada | — |
+| **soportado** | el entorno ejecuta ADS con sus garantías | `certificacion/operativo` **verificado** y **vigente**, con la prueba de humo EJECUTADA como evidencia, más `certificacion/integrado` verificado y vigente |
+| **compatible** | hay proyección y funciona lo esencial | `certificacion/estructural` verificado: existe adaptador, existe proyección y su huella casa. Sin prueba de humo ejecutada |
+| **genérico** | recibe el contrato y las instrucciones universales | ninguna celda específica. Es el fallback obligatorio, y es `CAND-011`, ya construido en un proyecto real |
+| **desconocido** | nada | ninguna celda, o todas `no-auditado` |
+
+```text
+LA REGLA, EN UNA FRASE    un adaptador NO PUEDE DECLARARSE `soportado`. Puede DECLARAR que
+                          aspira a serlo —`compatibilidad_declarada`— y el sistema LEE su
+                          nivel alcanzado de las celdas. Las dos frases se distinguen en el
+                          texto, y por eso ya no se confunden en el registro.
+
+QUÉ PASA AL INVALIDARSE   §9.3 dice que cambiar un adaptador, el arranque o la disposición
+                          del estado invalida el nivel Operativo. Con el campo editable, un
+                          adaptador seguía diciendo `soportado` después de eso. Con el nivel
+                          derivado, la celda pasa a `vencido` y el nivel alcanzado BAJA solo,
+                          sin que nadie tenga que acordarse de editar nada.
+```
 
 **Estado hoy, sin adornos:**
 
@@ -1628,7 +1662,8 @@ ES              el nivel OPERATIVO de la certificación (§9), y `CAND-012` con 
 Claude Code · Codex     primer OBJETIVO de soporte y certificación.  NO CERTIFICADOS
 Cursor · Gemini         compatible o genérico hasta pasar su prueba de humo
 cualquier otro          genérico, por el fallback obligatorio
-NINGÚN ADAPTADOR EXISTE HOY. O13 fija el objetivo; fijar el objetivo no es alcanzarlo.
+NINGÚN ADAPTADOR EXISTE HOY, luego NINGUNA CELDA EXISTE y el nivel alcanzado de todos es
+`desconocido`. O13 fija el objetivo; fijar el objetivo no es alcanzarlo.
 ```
 
 ## 6.6 · Cambio de proveedor
@@ -1647,6 +1682,73 @@ NINGÚN ADAPTADOR EXISTE HOY. O13 fija el objetivo; fijar el objetivo no es alca
 producto, cada adaptador declara `escribe_permitido` con sus **excepciones nombradas una a
 una y con su motivo** — que es `CAND-014`, extensión de `I2` de zonas dentro de un artefacto a
 zonas del repositorio entre dos ejecutores.
+
+## 6.7 · Cómo descubre cada entorno su proyección, con el control repo y las fuentes hermanos
+
+`C6` fija la topología: el control repo y las fuentes son **hermanos** dentro del workspace,
+y **prohíbe** clonar las fuentes dentro del control repo. F4 entregada decía que las
+proyecciones van *«donde CADA PROVEEDOR las descubre»* y no dijo qué ocurre cuando el agente
+se abre sobre `frontend/` en vez de sobre `ads/`: allí no hay nada de ADS que descubrir.
+
+**Las dos salidas fáciles están prohibidas, y por eso no se toman:**
+
+```text
+COPIAR LA ORGANIZACIÓN ADS   lo prohíbe `C6`: PROFILE, PROJECT, estado, items, rutas,
+A CADA FUENTE                paquetes, memoria y contratos NO pueden vivir en una fuente.
+                             Copiarlos crearía una organización ADS por repositorio que
+                             después habría que sincronizar — el modo de fallo (a) de `a.7`
+                             a escala de producto, y el `CAND-016` medido: 23 contra 32.
+
+UN FICHERO NO VERSIONADO     no sobrevive a un clon nuevo, y `C6` `N9` dice que la identidad
+                             de una fuente no depende de su ruta local. Un descubrimiento
+                             que depende de `.ads/run/` o de una variable de entorno se
+                             rompe en la nube, en otra máquina y en el segundo clon.
+```
+
+### La solución, en cuatro reglas
+
+```text
+1  LA ENTRADA CANÓNICA ES EL CONTROL REPO
+   `C6` «Entrada por ADS» ya lo fija: se abre `ads/`, y desde ahí ADS determina componentes,
+   fuentes y contexto mínimo. Un entorno abierto DIRECTAMENTE sobre una fuente es TRABAJO
+   FUERA DE ADS, y `C6` es explícito: no se impide, y **ADS no finge** que pasó por sus
+   gates. Ésta es la vía normal, y cubre la mayoría de los casos.
+
+2  PARA LA PARTE INEVITABLE, UN ÚNICO FICHERO PUNTERO
+   Algunos entornos sólo pueden abrirse sobre el repositorio que contiene el código. Para
+   ésos, y sólo para ésos, el adaptador proyecta DENTRO de la fuente **un fichero y nada
+   más**, declarado en su campo `puntero_en_fuente`:
+       VERSIONADO      va al repositorio de la fuente, luego sobrevive a un clon nuevo
+       GENERADO        se compila como cualquier otra proyección, y no se edita a mano
+       CON HUELLA      §6.3 lo cubre igual que a las demás: editado a mano es deriva
+       CON AVISO       dice que es generado y por quién
+
+3  QUÉ CONTIENE, Y QUÉ TIENE PROHIBIDO CONTENER
+   CONTIENE     la IDENTIDAD REMOTA CANÓNICA del control repo · el id del componente que
+                esta fuente materializa · la versión del adaptador · el aviso de generado
+   NO CONTIENE  reglas de trabajo · memoria · estado · items · decisiones · contratos ·
+                catálogo · prompts. NADA de conocimiento. Si lo llevara, sería la
+                organización ADS copiada, y volveríamos a lo que `C6` prohíbe.
+   TAMAÑO       es un puntero. Si crece, es que alguien está copiando el kernel otra vez, y
+                el validador de deriva de §6.3 es quien lo detecta.
+
+4  SE RESUELVE POR IDENTIDAD, NO POR RUTA
+   El puntero NO declara `../ads`. Declara el REMOTO CANÓNICO, que es lo que `C6` `N9`
+   define como identidad. El adaptador localiza el control repo recorriendo los hermanos del
+   workspace y comparando su remoto contra el declarado.
+       LO ENCUENTRA         trabaja con el control repo como contexto principal
+       NO LO ENCUENTRA      lo DICE, con el remoto que buscaba, y NO ADIVINA. Se comporta
+                            como una fuente ausente: bloquea sólo lo que la requiere, que
+                            es la regla de alcance mínimo de `C6`
+       ENCUENTRA DOS        ERROR explícito. Dos control repos para el mismo producto es
+                            exactamente el defecto que el puntero existe para no crear
+```
+
+**Límite declarado, y es el que importa.** Que un entorno concreto **honre** el puntero —que
+lo lea, que abra el directorio hermano y que trabaje con él— **no lo puede afirmar el
+diseño**. Es precisamente lo que mide la **prueba de humo** de §6.4, y hasta que se ejecute,
+el nivel alcanzado de ese adaptador es `desconocido`. Un entorno que no pueda honrarlo
+degrada a `genérico`, y su `degradacion` declara qué se pierde, función por función.
 
 ---
 
@@ -1784,7 +1886,8 @@ FORMA     cada uno es una INICIATIVA con su plantilla de ruta. No un proceso.
 ```text
 DISPARADOR      el Owner quiere gobernar un producto que todavía no existe
 PRECONDICIONES  hay un sitio donde crear el workspace · hay remoto para el control repo
-FASES           N0 crear y publicar control repo y workspace
+FASES           N0 crear y publicar control repo y workspace, CON EL SOPORTE DURABLE
+                   MÍNIMO DE `estado/` y la iniciativa de instalación ya escrita
                 N1 elaborar y aprobar PROFILE
                 N2 elegir topología de fuentes, packs, extensiones y adaptadores
                 N3 C0: especializar y verificar la organización YA MATERIALIZADA
@@ -1796,18 +1899,78 @@ PARTICIPANTES   Owner · PLT (N0,N2,N6) · ENC+PRD (N1,N5) · SIS (N3) · VER (N
                 ARQ DOM DIS SEG según discovery
 LEE             la distribución instalada
 ESCRIBE         control repo entero; las fuentes sólo desde N6
-ESTADO          `estado/` nace en N3. La iniciativa de instalación nace en N0
+ESTADO          `estado/` nace en **N0**, con su soporte durable mínimo. Ver abajo
 EVIDENCIA       `workspace check` · prueba de humo por adaptador · checkpoint recuperado
 GATES           N4 certificación Operativa · N7 = O12
-CERTIFICACIÓN   Operativa en N4 · Integrada en N7
-ROLLBACK        N0–N2 se deshacen borrando el workspace: no hay producto que dañar
-REANUDACIÓN     por checkpoint desde N3; antes, repitiendo el paso, que es barato
+CERTIFICACIÓN   Operativa en N4 · Integrada en N7, con la aplicabilidad de §9.5 —una
+                instalación nueva tiene CERO fuentes, y hay pruebas que no le aplican
+ROLLBACK        ver «Rollback, con el remoto separado de lo local», abajo
+REANUDACIÓN     **por checkpoint desde N0**. Ningún tramo del recorrido depende del chat
 CIERRE          N7 superado y el primer item de producto despachable
 ```
 
 **Lo que cambia respecto a hoy.** `C0` deja de redactar la organización y pasa a
 **especializar y verificar** una que la distribución ya trae. Es `O9` y el §4.11 del documento
 de pendientes: el agente no crea ADS durante C0.
+
+### `estado/` nace en N0, y no en N3
+
+F4 entregada declaraba *«`estado/` nace en N3. La iniciativa de instalación nace en N0»* y
+*«REANUDACIÓN por checkpoint desde N3; antes, repitiendo el paso»*. **Las dos frases juntas
+dicen que entre N0 y N3 la iniciativa no está persistida**: vive en la conversación. Eso es
+exactamente lo que el apartado 19 de la directiva prohíbe, y lo que `b.14` no puede reanudar.
+
+```text
+QUÉ SE CREA EN N0,        estado/
+Y ES EL MÍNIMO              ├─ iniciativas/INI-001/00-iniciativa.md   la instalación misma
+                            ├─ eventos/                               el diario, desde el
+                            │                                         primer acto
+                            └─ items/INI-001-paq/                     el paquete en curso,
+                                                                      con su CHECKPOINT
+
+QUÉ NO SE CREA EN N0      cobertura, integración, tableros de capacidades que no se han
+                          materializado, y todo lo que no tenga contenido todavía. Un
+                          directorio vacío no es soporte durable: es ruido.
+
+POR QUÉ ES BARATO         son tres ficheros. El coste de crearlos es menor que el de
+                          explicar por qué un recorrido de siete fases no se puede reanudar
+                          en sus tres primeras.
+
+QUÉ HACE N3 AHORA        lo que `O9` ya decía que hace: ESPECIALIZAR Y VERIFICAR la
+                          organización que la distribución trae materializada. Deja de
+                          «crear `estado/`», que era lo que lo ponía en contradicción con N0.
+
+QUÉ SE GANA               «Continúa» funciona desde el primer minuto de una instalación. El
+                          recorrido se reanuda desde N0 SIN el chat y SIN el Owner, que es
+                          `R7` y `b.14` aplicados también a la instalación — y no sólo al
+                          trabajo de producto.
+```
+
+### Rollback, con el remoto separado de lo local
+
+F4 entregada decía *«N0–N2 se deshacen borrando el workspace: no hay producto que dañar»*.
+Pero N0 **publica** el control repo. Borrar lo local no revierte lo publicado.
+
+```text
+LOCAL          borrar el workspace deshace lo local, y NADA MÁS.
+
+REMOTO         un control repo YA PUBLICADO sigue existiendo, con su historia y con
+               cualquier clon que alguien haya hecho. NO se revierte borrando el local.
+
+COMMITS        permanecen. Un rollback de instalación NO reescribe historia publicada:
+               reescribirla rompería todo clon existente, y ADS no lo hace.
+
+AUTORIDAD      **NINGUNA ELIMINACIÓN REMOTA AUTOMÁTICA.** Borrar o archivar un remoto es una
+               operación destructiva sobre infraestructura del Owner. ADS **propone** —
+               archivar · marcar abandonado · conservar como histórico · eliminar — y la
+               eliminación la ejecuta **el Owner**, a mano.
+
+LO QUE ADS SÍ  emite el evento de abandono y lo escribe en el control repo, para que un clon
+HACE SOLO      posterior no lea una instalación abandonada como una instalación viva. Es
+               barato, es reversible y no destruye nada.
+
+ANTES DE N0    no hay nada que revertir: no se ha publicado.
+```
 
 ## 8.2 · Adopción profunda de un producto existente
 
@@ -1839,7 +2002,9 @@ EVIDENCIA       inventario con procedencia · baseline aprobado · mapa de conse
 GATES           A3 baseline aprobado por el Owner · A8 autorización de retirada ·
                 A10 = O12
 CERTIFICACIÓN   Integrada en A9
-ROLLBACK        A0–A7 no tocan el producto: revertir es borrar el control repo.
+ROLLBACK        A0–A7 no tocan el producto. Revertir NO es «borrar el control repo»: el
+                control repo de A1 está PUBLICADO, y se le aplica el mismo reparto que a la
+                instalación —local, remoto, commits y autoridad del Owner— descrito en §8.1.
                 A8 exige rollback POR FUENTE y commits revisables por fuente
 REANUDACIÓN     por el dosier de la iniciativa más el checkpoint del paquete en curso
 CIERRE          A10 superado, y el producto entra en SU macrofase real — que puede ser
@@ -1881,20 +2046,60 @@ FASES           M0 identificar versión instalada y disposición
                 M2 migrar PROFILE, PROJECT, decisiones, memoria y documentación global
                 M3 migrar ESTADO PERSISTIDO, con su esquema
                 M4 sustituir mecanismos retirados y resolver overrides y forks locales
-                M5 retirar del repositorio técnico kernel, packs y organización
-                M6 validar y certificar
-PARTICIPANTES   PLT · SIS · VER · Owner en M5
+                M5 CERTIFICAR lo nuevo, con lo viejo TODAVÍA EN PIE
+                M6 RETIRAR del repositorio técnico kernel, packs y organización
+                M7 VERIFICAR que nada dependía de lo retirado
+PARTICIPANTES   PLT · SIS · VER · Owner en M6
 DIFERENCIA      lo que la separa de la adopción: aquí **ya hay estado ADS**. No se
 CON A           reconstruye una realidad: se TRADUCE una que ya estaba escrita. Los items
                 y paquetes en curso tienen que seguir en curso al otro lado
 ESTADO          M3 es el paso peligroso: migración de esquema con su migrador y su prueba
-EVIDENCIA       equivalencia antes/después de items, paquetes y checkpoints
-GATES           M3 no cierra sin equivalencia demostrada · M5 exige autorización del Owner
-CERTIFICACIÓN   Integrada en M6
-ROLLBACK        M5 es el único destructivo, y va después de M6 en el orden real de
-                seguridad: no se retira nada hasta que lo nuevo esté certificado
+EVIDENCIA       equivalencia antes/después de items, paquetes y checkpoints · dictamen de
+                M5 · salidas de build, pruebas, CI y despliegue en M7
+GATES           M3 no cierra sin equivalencia demostrada · M5 certificación Integrada del
+                control repo nuevo · M6 exige autorización EXPLÍCITA del Owner · M7 no
+                cierra sin las cuatro salidas verdes
+CERTIFICACIÓN   Integrada en M5, ANTES de retirar nada. Revalidada en M7
+ROLLBACK        ver «El orden, y por qué certificar y verificar son dos pasos», abajo
 REANUDACIÓN     por checkpoint. M3 es idempotente por diseño (§2.6)
-CIERRE          M6 superado y el producto operando sobre el control repo nuevo
+CIERRE          M7 superado y el producto operando sobre el control repo nuevo
+```
+
+### El orden, y por qué certificar y verificar son dos pasos
+
+F4 entregada declaraba **dos secuencias incompatibles**: la lista de fases ponía `M5 retirar`
+antes de `M6 validar y certificar`, y el rollback afirmaba que *«M5 es el único destructivo,
+y va DESPUÉS de M6 en el orden real de seguridad»*. Un lector no podía saber cuál ejecutar, y
+una de las dos retira material antes de certificar su sustituto. Se fija **una sola**:
+
+```text
+M5 CERTIFICAR    ¿funciona lo nuevo?   Se responde con lo VIEJO TODAVÍA EN PIE, que es lo
+                 que hace la respuesta barata: si falla, no se ha destruido nada.
+
+M6 RETIRAR       único paso destructivo. Exige autorización explícita del Owner, y sigue la
+                 disciplina de RETIRADA SEGURA de §8.2: importar o referenciar → validar →
+                 retirar. Nunca al revés.
+
+M7 VERIFICAR     ¿dependía algo de lo retirado?   Es una pregunta DISTINTA, y sólo se puede
+                 responder DESPUÉS de retirar: build, pruebas, CI, despliegue y
+                 comportamiento agentic, los cinco, sin lo retirado.
+
+LAS DOS SON      M5 no puede responder a M7 —lo viejo sigue ahí y tapa cualquier
+NECESARIAS       dependencia oculta—, y M7 no puede sustituir a M5 —llega tarde—. Fundirlas
+                 es lo que producía la contradicción.
+```
+
+**Rollback, por tramos:**
+
+```text
+M0–M5   revertir es ABANDONAR el control repo nuevo. Nada del producto se ha tocado, y se
+        le aplica el reparto local/remoto/autoridad de §8.1.
+M6      revertir es RESTAURAR lo retirado desde la historia del repositorio técnico. Es un
+        `revert`, no una resurrección: el contenido está en Git y por eso M6 puede hacerse.
+        Retirar algo que NO estuviera en la historia sería irreversible, y M6 lo prohíbe.
+M7      si M7 falla, se revierte M6 y se vuelve a M4. La certificación de M5 NO se pierde:
+        lo que falló es una dependencia oculta, y eso es un item nuevo, no un rollback del
+        recorrido entero.
 ```
 
 ## 8.4 · Actualización de ADS en un proyecto instalado
@@ -1920,9 +2125,56 @@ EVIDENCIA       la vista comprensible del cambio que el §14.2 del brief pide
 GATES           U3 aprobado antes de U4 · U6 certificación
 CERTIFICACIÓN   el nivel que tuviera antes, revalidado. Una actualización que baja el
                 nivel alcanzado es un fallo, no un resultado
-ROLLBACK        volver a la versión anterior con su estado. Por eso U4 emite eventos
+ROLLBACK        ver «Compatibilidad y rollback DEL ESTADO», abajo. NO basta con volver la
+                distribución atrás
 REANUDACIÓN     por el evento `preparada` de la tx si U4 se interrumpe
 CIERRE          U6 superado y la versión instalada es la candidata
+```
+
+### Compatibilidad y rollback DEL ESTADO, no sólo de la distribución
+
+F4 entregada decía *«ROLLBACK: volver a la versión anterior CON SU ESTADO»*. Si U4 ejecutó
+una migración de esquema, **el estado quedó en el esquema nuevo** y devolver la distribución
+atrás produce lo que §2.8 declara ERROR EXPLÍCITO: leer un fichero con `esquema_estado` mayor
+que el soportado. El rollback declarado **no era ejecutable**.
+
+```text
+COMPATIBILIDAD — LA DECIDE U2, Y ES UNA COMPARACIÓN, NO UN JUICIO
+
+  U2 lee el `esquema_estado` de los canónicos instalados y el que exige la candidata.
+
+  IGUALES              no hay migración. U4 NO TOCA `estado/`, y el rollback es trivial.
+
+  CANDIDATA MAYOR      migración HACIA DELANTE. U3 NO SE APRUEBA sin una de estas dos:
+                         · un MIGRADOR INVERSO con su prueba de equivalencia, o
+                         · una INSTANTÁNEA del estado previa a U4, versionada
+                       Sin ninguna de las dos, la actualización es irreversible, y una
+                       actualización irreversible no es una actualización: es una migración,
+                       y su sitio es §8.3.
+
+  CANDIDATA MENOR      la distribución candidata NO SOPORTA el estado instalado. NO se
+                       aplica. Es un downgrade de esquema, y §2.8 ya fija que leer un
+                       esquema mayor que el soportado es error explícito, nunca una
+                       interpretación optimista. Se escala al Owner.
+
+ROLLBACK DEL ESTADO
+
+  SIN MIGRACIÓN        volver a la distribución anterior. `estado/` no se tocó, y la
+                       certificación previa vuelve a ser la vigente.
+
+  CON MIGRACIÓN        volver la distribución atrás NO BASTA. El rollback:
+                         1  ejecuta el MIGRADOR INVERSO, o restaura la INSTANTÁNEA de U3
+                         2  VERIFICA equivalencia con el mismo rigor que el gate de M3:
+                            items, paquetes y checkpoints, antes y después
+                         3  emite su evento, como cualquier transición (§2.6)
+                       Si la verificación de equivalencia falla, se PARA Y SE ESCALA. No se
+                       deja el estado a medio revertir: eso es `reconciliacion-pendiente`, y
+                       `b.4` P0 ya dice que ningún otro cálculo es fiable mientras dure.
+
+  PUNTO DE NO RETORNO  se declara EN U3, por escrito, antes de aprobar: desde qué paso el
+                       rollback deja de ser automático y pasa a ser decisión del Owner. Un
+                       recorrido cuyo punto de no retorno no está escrito no tiene rollback:
+                       tiene una esperanza.
 ```
 
 **Por qué no se funden `M` y `U`.** Comparten fases con el mismo nombre y no el mismo riesgo:
@@ -1943,22 +2195,89 @@ cargara con el aparato de una migración estructural.
 | **Integrado** | fuentes, herramientas, CI, permisos y adaptadores funcionan en el entorno real | que el runtime despache, concurra y recupere | `workspace check` sobre fuentes reales · comandos del producto · CI ejecutable · trabajo multi-fuente mínimo verificado como conjunto | `PLT` | `VER` independiente, con `SEG` si hay superficie sensible | dosier + salidas |
 | **Completo** | runtime, despacho, reanudación, concurrencia, integración y recuperación están demostrados | que el producto sea bueno | los escenarios de §14 ejecutados sobre un producto real | `SIS` | `VER` independiente | dosier + evidencia ejecutada |
 
-**Regla dura:** un nivel **no se declara por argumento ni por haber pasado el anterior**. Es
-la disciplina de [`08-EVIDENCIA-MULTIREPO.md`](08-EVIDENCIA-MULTIREPO.md) aplicada a una
-instalación.
+**La jerarquía, la aplicabilidad y la regla dura de cada nivel están en §9.2 y §9.5**, que
+es donde vive su norma. Esta tabla es su resumen legible.
 
-## 9.2 · Cómo se representa
+## 9.2 · Cómo se representa — estado en la celda, norma en la clase
 
-**No es un tipo nuevo.** Es `cobertura` con `clase: instalacion`, una celda por nivel:
+**El ESTADO sigue siendo `cobertura`**, y en eso `D21` acierta: mismo sujeto, mismo ciclo,
+misma caducidad y los mismos triggers de invalidación que cualquier otra celda. **Lo que
+`D21` no vio es que un nivel es además una NORMA**, y una norma no cabe en la celda del
+sujeto que evalúa.
+
+> **La prueba de tipos, reaplicada.** Un nivel de certificación necesita declarar **qué
+> pruebas exige, quién es su propietario, quién puede ser su crítico, qué nivel presupone y
+> qué lo invalida**. Meter eso en la celda obligaría a repetir las cinco cosas en cada
+> instalación del mundo, y a que dos instalaciones pudieran discrepar sobre qué exige
+> «Integrado». Eso **no es representar la certificación: es deformar `cobertura`**.
 
 ```text
-sujeto        instalacion:transversal/<producto>
-dimension     el nivel
-estado        no-auditado | verificado | vencido | obsoleto
-caducidad     qué lo vence
-triggers      qué lo INVALIDA
-evidencia     el dosier
-verificador   quién, y que no participó en la instalación
+LA CELDA GUARDA ESTADO — una por nivel y por sujeto, con el contrato de §3.5 sin cambios
+
+  sujeto        instalacion:transversal/<producto>
+                o adaptador:transversal/<entorno>, o cualquier otro sujeto certificable
+  aspecto       aspecto:certificacion/<nivel>          namespace propio, §3.5
+  criterio      nivel-certificacion:<nivel>            ref a la NORMA, abajo
+  responsables  las que la norma declara
+  aplicabilidad obligatoria | condicional | no-aplicable      + motivo + evidencia (§9.5)
+  estado        no-auditado | en-curso | parcial | verificado | vencido | obsoleto |
+                excepcion-aceptada
+  verificacion  ultima_real · revisiones_examinadas · verificador y su independencia
+  evidencia     el dosier
+  caducidad · triggers
+
+LA CLASE GUARDA NORMA — `nivel-certificacion`, esquema de CLASE, una vez en el kernel
+
+  id            nivel-certificacion:<nivel>
+  afirma        qué autoriza a afirmar
+  no_afirma     qué NO autoriza a afirmar. Es la mitad que impide leerlo de más
+  pruebas       la lista, cada una con su `aplicabilidad` y su condición (§9.5)
+  propietario   qué capacidad responde del nivel
+  critico       qué capacidad lo verifica, y qué INDEPENDENCIA se le exige
+  presupone     el nivel que hay que tener alcanzado y VIGENTE antes de éste. Es la
+                JERARQUÍA, y es lo que no cabía ni en la celda ni en `gate`
+  invalida_por  los triggers de clase, que la celda hereda (§9.3)
+```
+
+**Por qué no es un `gate`, y por qué no es un tipo de estado.**
+
+```text
+NO ES UN `gate`         un gate declara comprobaciones, evidencia y consecuencia al fallar.
+                        No declara `presupone` ni `invalida_por`. Añadírselos daría a todos
+                        los gates del sistema dos campos que sólo usaría la certificación,
+                        que es deformar un tipo — el paso 1 de §3.1 leído al revés.
+                        Cada nivel SÍ USA gates: son parte de su lista de `pruebas`.
+
+NO ES UN TIPO DE        no tiene instancia por producto: hay CUATRO niveles, los mismos en
+ESTADO                  toda instalación de ADS, y viajan con el release. Es norma, no
+                        estado, y por eso no entra en la cuenta de §3.8 como tipo canónico.
+
+SU PRECEDENTE EXISTE    `esquemas/nivel-novedad.yaml` es exactamente la misma clase de cosa:
+                        una escala normativa declarada una vez, referenciada desde donde se
+                        aplica. Se sigue ese patrón en vez de inventar otro.
+```
+
+### La jerarquía, y qué significa «alcanzado»
+
+```text
+estructural  ◀── operativo  ◀── integrado  ◀── completo
+             presupone      presupone      presupone
+
+NIVEL ALCANZADO   el mayor nivel cuya celda está `verificado` Y VIGENTE, **y** cuyos niveles
+                  presupuestos están todos `verificado` y vigentes.
+
+ES DERIVADO       no se escribe en ninguna parte. Se calcula recorriendo las celdas, igual
+                  que el estado de una iniciativa (§3.3.2). Escribirlo sería una segunda
+                  verdad, y es el mismo defecto que `adaptador.nivel` (§6.5).
+
+CONSECUENCIA      si `operativo` vence, el nivel alcanzado BAJA a `estructural` aunque la
+                  celda de `integrado` siga diciendo `verificado`. Eso es lo correcto: un
+                  integrado que se apoya en un operativo vencido no está sostenido, y con
+                  un campo editable nadie se habría enterado.
+
+REGLA DURA        un nivel **no se declara por argumento ni por haber pasado el anterior**.
+                  Pasar el anterior es NECESARIO y no suficiente. Es la disciplina de
+                  [`08-EVIDENCIA-MULTIREPO.md`](08-EVIDENCIA-MULTIREPO.md).
 ```
 
 ## 9.3 · Qué invalida un nivel
@@ -1986,6 +2305,72 @@ Y CERTIFICADA
 **Consecuencia honesta:** hasta que exista runtime, **ninguna instalación ni adopción puede
 declararse terminada y plenamente certificada**. Puede empezar a programar, que es lo que
 `O12` resuelve.
+
+## 9.5 · Aplicabilidad: una prueba que no aplica no puede bloquear para siempre
+
+F4 entregada exigía para el nivel Integrado *«trabajo multi-fuente mínimo verificado como
+conjunto»*, sin condición. `C6` `N4` dice que un producto tiene **0..N fuentes**, y `O12`
+exige Integrada para empezar a programar. Las tres frases juntas **bloquean para siempre a
+todo producto de un solo repositorio**, por una prueba que no puede satisfacer nunca — y a
+toda instalación recién hecha, que tiene cero.
+
+### La aplicabilidad, por número de fuentes declaradas en `SOURCES.toml`
+
+| pruebas del nivel Integrado | 0 fuentes | 1 fuente | N ≥ 2 fuentes |
+|---|---|---|---|
+| `workspace check` sobre fuentes reales | **no aplica**: no hay fuentes que comprobar | obligatoria | obligatoria |
+| comandos del producto ejecutables | **no aplica**: no hay producto todavía | obligatoria | obligatoria |
+| CI ejecutable | **no aplica** | obligatoria | obligatoria |
+| trabajo multi-fuente verificado como conjunto | **no aplica** | **no aplica**: con una fuente no hay conjunto que converger (`E2.6`) | **obligatoria** |
+| `integration-set` producido | **no aplica** | **no aplica**: `E2.6` exige convergencia ENTRE fuentes, y con una no hay divergencia | **obligatoria** |
+| manifiesto válido y coherente | obligatoria | obligatoria | obligatoria |
+| adaptadores con su proyección y su huella | obligatoria | obligatoria | obligatoria |
+
+```text
+0 FUENTES   una instalación recién hecha, antes de N6. No es un caso raro: es el estado de
+            TODO producto nuevo. Integrada se alcanza con lo que SÍ aplica.
+
+1 FUENTE    un producto de un solo repositorio. Es la mayoría de los productos del mundo, y
+            F4 entregada lo dejaba fuera del sistema sin darse cuenta.
+
+N ≥ 2       el caso para el que se escribió `E2`, y donde la prueba multi-fuente es
+            OBLIGATORIA sin excepción.
+```
+
+### Qué exige registrar una prueba no aplicable
+
+**No se omite, y no bloquea.** Se EVALÚA, y la evaluación se escribe. Es el §5.18 aplicado
+aquí, y usa los campos que `cobertura` ya tiene (§3.5):
+
+```text
+aplicabilidad                 no-aplicable
+motivo_no_aplicable           OBLIGATORIO. En lenguaje comprobable, no «no procede»
+evidencia_de_inaplicabilidad  OBLIGATORIA. El dato que lo demuestra: `SOURCES.toml@<SHA>`
+                              declara N fuentes. Un motivo sin evidencia es una opinión, y
+                              una opinión no cierra un nivel de certificación
+
+UNA AUSENCIA SILENCIOSA ES UN FALLO DEL GATE. Que la prueba no aplique se dice; que nadie la
+mirara, no se puede decir de ninguna manera que se parezca a lo anterior.
+```
+
+### Y la aplicabilidad se REEVALÚA, porque cambia
+
+```text
+§9.3 ya declara que «se añade una fuente» invalida el nivel Integrado. Ahora eso tiene
+consecuencia real y no sólo formal:
+
+  1 FUENTE → 2 FUENTES    la prueba multi-fuente PASA A APLICAR. La celda de `integrado`
+                          vence, y su `aplicabilidad` se recalcula. El producto NO conserva
+                          una Integrada obtenida cuando la prueba no le aplicaba.
+  2 FUENTES → 1 FUENTE    la prueba deja de aplicar, y eso TAMPOCO se hereda en silencio:
+                          la celda vence igual y se reevalúa con la nueva aplicabilidad.
+
+LA APLICABILIDAD ES PARTE DEL VEREDICTO, no una nota al margen. Dos celdas `verificado` con
+aplicabilidades distintas NO afirman lo mismo, y el dosier lo dice.
+```
+
+> **Esto reinterpreta la precondición de `O12`**, que es una resolución del Owner. Por eso
+> queda registrado como presión normativa `PN-6` en §16, y **no se da por aprobado aquí**.
 
 ---
 
