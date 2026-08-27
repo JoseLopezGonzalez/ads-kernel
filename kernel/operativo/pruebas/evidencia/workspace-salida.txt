@@ -70,10 +70,13 @@ test_32_credenciales_http_siguen_siendo_error (__main__.TestSSHFrenteACredencial
 test_27_secreto_del_manifiesto_no_sale_por_ninguna_salida (__main__.TestSecretos.test_27_secreto_del_manifiesto_no_sale_por_ninguna_salida) ... ok
 test_28_secreto_en_el_origen_de_disco_no_sale_por_el_error_de_identidad (__main__.TestSecretos.test_28_secreto_en_el_origen_de_disco_no_sale_por_el_error_de_identidad)
 El manifiesto puede estar limpio y el repositorio de disco no estarlo. ... ok
-test_29_secreto_en_el_error_de_clone_no_sale (__main__.TestSecretos.test_29_secreto_en_el_error_de_clone_no_sale)
-`git clone` cita la URL en su stderr. Aquí el remoto de disco es limpio y el ... ok
+test_29_el_error_de_clone_nunca_reproduce_una_credencial (__main__.TestSecretos.test_29_el_error_de_clone_nunca_reproduce_una_credencial)
+`git clone` cita la URL en su stderr, y esa URL puede llevar el secreto. ... ok
 test_30_redactar_no_toca_un_usuario_ssh_normal (__main__.TestSecretos.test_30_redactar_no_toca_un_usuario_ssh_normal)
 Redactar de más haría el mensaje inútil: `git@` no es un secreto. ... ok
+test_44_git_no_puede_salir_de_la_maquina_en_estas_pruebas (__main__.TestSinRed.test_44_git_no_puede_salir_de_la_maquina_en_estas_pruebas) ... ok
+test_45_y_aun_asi_un_remoto_local_se_clona (__main__.TestSinRed.test_45_y_aun_asi_un_remoto_local_se_clona)
+La contraparte: si el bloqueo dejara fuera también al transporte local, las ... ok
 test_39_ningun_tipo_incorrecto_pasa_ni_revienta (__main__.TestTomlRobusto.test_39_ningun_tipo_incorrecto_pasa_ni_revienta) ... ok
 test_40_kind_es_opcional_porque_el_modelo_aprobado_lo_declara_descriptivo (__main__.TestTomlRobusto.test_40_kind_es_opcional_porque_el_modelo_aprobado_lo_declara_descriptivo)
 `plantillas/SOURCES.toml` dice: «`kind` es descriptivo y abierto». ... ok
@@ -81,6 +84,6 @@ test_41_ids_validos_siguen_siendo_validos (__main__.TestTomlRobusto.test_41_ids_
 La regla de ids no puede rechazar lo que el corpus usa de verdad. ... ok
 
 ----------------------------------------------------------------------
-Ran 55 tests  (duración no registrada: varía por ejecución)
+Ran 57 tests  (duración no registrada: varía por ejecución)
 
 OK

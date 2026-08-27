@@ -52,7 +52,7 @@ componentes:
     tipo: validador
     evidencia: arranque-salida.txt
     firma_de_exito: '\d+ superadas · 0 fallidas'
-    debe_contener: ['T148']
+    debe_contener: ['T148', 'T171', 'cobertura ESTRUCTURAL']
 
   - id: versiones
     script: comprobar_versiones.py
@@ -88,7 +88,7 @@ componentes:
     tipo: validador
     evidencia: negativos-salida.txt
     firma_de_exito: '\d+ infracciones detectadas · 0 NO detectadas'
-    debe_contener: ['N136', 'N147', 'N150', 'N161']
+    debe_contener: ['N136', 'N147', 'N150', 'N161', 'N171']
     # Su salida contiene por diseño el texto de los fallos que PROVOCA en una copia
     # temporal. Es la única evidencia donde «FALLIDA» o «NO detectada» pueden aparecer
     # como cita del resultado interno de un fixture, y por eso se declara aquí.

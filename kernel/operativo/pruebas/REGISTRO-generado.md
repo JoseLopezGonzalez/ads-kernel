@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 19ce075086de4ada -->
+<!-- source_revision: 1a9598ffd2503741 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -13,9 +13,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | CONTRATO DEFINIDO | 56 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 38 |
+| PRUEBA SUPERADA | 39 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **94** |
+| **total** | **95** |
 
 ## Detalle
 
@@ -115,3 +115,4 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T168](T159-T170-multirepo.md) | El arranque crea un workspace con el control repo dentro, en la rama que documenta, y el workspace no es un repositorio | C6 topología · §45 · §46 · CA-1 · CA-9 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
 | [T169](T159-T170-multirepo.md) | Un item que atraviesa dos fuentes no cierra con una sin integrar | E2.6 · C7 integración parcial · gate:convergencia-de-fuentes · §30 | requiere-runtime | **CONTRATO DEFINIDO** | — |
 | [T170](T159-T170-multirepo.md) | Un agente nuevo reanuda un trabajo multi-fuente sin abrir ningún repositorio para adivinar | E2.3 · C7 recuperación · §34 · §35 · CA-12 | guion-manual | **CONTRATO DEFINIDO** | — |
+| [T171](T159-T170-multirepo.md) | El proyecto recién creado declara dónde se lee cada criterio de descubrimiento del 100 | §100 · CA-1 · CA-9 · CA-10 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |

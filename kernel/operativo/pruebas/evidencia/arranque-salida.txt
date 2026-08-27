@@ -3,5 +3,7 @@
 # codigo:       0
 # ---------------------------------------------------------------
 T148  SUPERADA  El arranque documentado crea un proyecto conforme, pack a pack y combinado
+T171  SUPERADA  El proyecto recién creado declara dónde se lee cada criterio del §100
+          alcance: cobertura ESTRUCTURAL de los diez criterios del §100: cada uno tiene un sitio declarado donde leerse en el proyecto recién creado. NO demuestra que un agente lo descubra: eso exige piloto (limitación abierta)
 
-1 superadas · 0 fallidas
+2 superadas · 0 fallidas

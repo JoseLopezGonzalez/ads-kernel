@@ -9,9 +9,14 @@ contratos [`C6`](../contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md) y
 ```text
 comprobar_fuentes.py         T159 · T160 · T161 — el ADS Project es VÁLIDO, sin disco
 tooling/tests/test_workspace.py  T162..T167 — el workspace se MATERIALIZA, con repos
-                             Git locales temporales. Sin red, sin GitHub.
-comprobar_arranque.py        T168 — el arranque produce la topología correcta
+                             Git locales temporales. Sin red: Git sólo tiene permitido el
+                             transporte `file`, y la prueba 44 lo comprueba.
+comprobar_arranque.py        T168 · T171 — el arranque produce la topología correcta, y el
+                             proyecto creado declara dónde se lee cada criterio del §100
 ```
+
+> **El nombre del fichero se conserva aunque ahora llegue hasta T171.** La enmienda `E2`
+> —documento aprobado, que no se reescribe— lo enlaza por esta ruta.
 
 Los que exigen runtime o juicio humano quedan en `contrato-definido`, y lo dicen.
 
@@ -267,4 +272,26 @@ falla_si:
   - "el checkpoint copia contenido de otra fuente en vez de referenciarlo"
 ejecucion: guion-manual
 estado: contrato-definido
+```
+
+```yaml ads:escenario
+id: T171
+nombre: El proyecto recién creado declara dónde se lee cada criterio de descubrimiento del 100
+cubre: ["§100", CA-1, CA-9, CA-10]
+dado:
+  - "un proyecto recién creado con el comando de arranque documentado"
+  - "los diez criterios de descubrimiento del §100, cada uno con dónde debería leerse"
+cuando:
+  - "se comprueba que ese sitio existe en el proyecto creado y lo dice"
+entonces:
+  - "los diez tienen un sitio declarado, presente y con su ancla"
+  - "el alcance se publica: es cobertura ESTRUCTURAL, no la demostración del §100"
+falla_si:
+  - "un criterio se queda sin ningún sitio donde leerse"
+  - "el documento que debía decirlo deja de decirlo"
+  - "se afirma que el §100 está demostrado sin piloto: eso exige un agente y un producto real"
+ejecucion: validador-estructural
+validador: kernel/operativo/validadores/comprobar_arranque.py
+estado: prueba-superada
+evidencia: evidencia/arranque-salida.txt
 ```

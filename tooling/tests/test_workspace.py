@@ -38,6 +38,12 @@ ENTORNO = {
     "GIT_AUTHOR_NAME": "ads-tests", "GIT_AUTHOR_EMAIL": "tests@ads.local",
     "GIT_COMMITTER_NAME": "ads-tests", "GIT_COMMITTER_EMAIL": "tests@ads.local",
     "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_SYSTEM": os.devnull,
+    # SIN RED, y no por costumbre: Git sólo tiene permitido el transporte `file`. Un
+    # `clone` por https o por ssh muere con «transport not allowed» antes de resolver un
+    # nombre. «Estas pruebas no salen de la máquina» deja de ser una promesa del comentario
+    # y pasa a ser una condición que la prueba 44 comprueba.
+    "GIT_ALLOW_PROTOCOL": "file",
+    "GIT_TERMINAL_PROMPT": "0",
 }
 
 
@@ -632,16 +638,34 @@ class TestSecretos(Base):
                            workspace(["status", "--json"], self.ads),
                            workspace(["init"], self.ads))
 
-    def test_29_secreto_en_el_error_de_clone_no_sale(self):
-        """`git clone` cita la URL en su stderr. Aquí el remoto de disco es limpio y el
-        secreto viaja en el remoto DECLARADO de una fuente que no existe."""
-        falso = os.path.join(self.tmp, f"no-existe-{MARCADOR}.git")
+    def test_29_el_error_de_clone_nunca_reproduce_una_credencial(self):
+        """`git clone` cita la URL en su stderr, y esa URL puede llevar el secreto.
+
+        Aquí se comprueban las dos mitades de la defensa:
+
+          1. con credenciales en el manifiesto NO SE LLEGA a clonar. Es un error estático y
+             `init` es todo o nada: el camino que filtraba ni siquiera se recorre;
+          2. y si aun así se recorriera —un remoto de disco, otra orden futura—, el stderr
+             de Git pasa por `redactar` antes de salir.
+        """
         self.manifiesto(self.base_valida() +
-                        f'\n[[sources]]\nid = "f"\nremote = "ssh://usuario:{MARCADOR}'
-                        f'@localhost/no/existe.git"\npath = "f"\n')
-        self._sin_marcador(workspace(["init"], self.ads),
-                           workspace(["init", "--json"], self.ads))
-        del falso
+                        f'\n[[sources]]\nid = "f"\n'
+                        f'remote = "https://usuario:{MARCADOR}@ej.invalid/no/existe.git"\n'
+                        'path = "f"\n')
+        p = workspace(["init"], self.ads)
+        self.assertEqual(p.returncode, 1)
+        self.assertIn("NO ha ejecutado ninguna acción", p.stdout + p.stderr)
+        self.assertFalse(os.path.exists(os.path.join(self.ws, "f")),
+                         "no se intentó ningún clone, luego no se creó nada")
+        self._sin_marcador(p, workspace(["init", "--json"], self.ads))
+
+        sys.path.insert(0, os.path.join(RAIZ, "tooling"))
+        from workspace import redactar  # noqa: E402
+        stderr_de_git = (f"fatal: unable to access "
+                         f"'https://usuario:{MARCADOR}@ej.invalid/no/existe.git/': "
+                         f"Could not resolve host: ej.invalid")
+        self.assertNotIn(MARCADOR, redactar(stderr_de_git))
+        self.assertIn("usuario:***@", redactar(stderr_de_git))
 
     def test_30_redactar_no_toca_un_usuario_ssh_normal(self):
         """Redactar de más haría el mensaje inútil: `git@` no es un secreto."""
@@ -817,6 +841,33 @@ class TestTomlRobusto(Base):
                                 f'\n[[sources]]\nid = "{sid}"\nremote = "{bare}"\npath = "p"\n')
                 cod, d = workspace_json(["check"], self.ads)
                 self.assertEqual(cod, 0, d)
+
+
+class TestSinRed(Base):
+    """CA-16 · «sin red» es una condición comprobada, no una intención del comentario."""
+
+    def test_44_git_no_puede_salir_de_la_maquina_en_estas_pruebas(self):
+        destino = os.path.join(self.tmp, "no-deberia-existir")
+        for url in ("https://github.com/git/git.git",
+                    "ssh://git@github.com/git/git.git",
+                    "git://github.com/git/git.git"):
+            with self.subTest(url=url):
+                p = git(["clone", "-q", url, destino], self.tmp)
+                self.assertNotEqual(p.returncode, 0)
+                self.assertIn("not allowed", p.stderr,
+                              f"el transporte de '{url}' no está bloqueado: estas pruebas "
+                              f"PODRÍAN salir a la red")
+                self.assertFalse(os.path.exists(destino))
+
+    def test_45_y_aun_asi_un_remoto_local_se_clona(self):
+        """La contraparte: si el bloqueo dejara fuera también al transporte local, las
+        pruebas pasarían sin ejercitar nada."""
+        bare = crear_remoto_bare(self.tmp, "local")
+        self.manifiesto(self.base_valida() +
+                        f'\n[[sources]]\nid = "local"\nremote = "{bare}"\npath = "local"\n')
+        cod, d = workspace_json(["init"], self.ads)
+        self.assertEqual(cod, 0, d)
+        self.assertEqual(d["sources"][0]["accion"], "clonada")
 
 
 class TestReconstruccion(Base):

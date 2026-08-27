@@ -440,6 +440,31 @@ def m_umbral_inventado(raiz):
 
 
 
+
+def m_t171_bootstrap_sin_la_regla_de_no_copiar(raiz):
+    """§100.9 · el prompt de arranque deja de decir que ADS no se copia en una fuente."""
+    _sustituir(raiz, "kernel/BOOTSTRAP_PROMPT.md",
+               "  · NO copies el PROFILE, el estado, la memoria, los ADR globales, el kernel "
+               "ni los packs\n    dentro de una fuente. Una verdad vive en un sitio, y ese "
+               "sitio es este repositorio.\n",
+               "")
+
+
+def m_t171_sin_como_materializar(raiz):
+    """§100.6 · el criterio desaparece de LOS DOS sitios donde podía leerse.
+
+    Quitarlo de uno solo no es una infracción: el §100 pide que se pueda descubrir, no que
+    esté escrito en un fichero concreto. La prueba negativa tiene que borrar la respuesta,
+    no moverla — si no, comprobaría una redacción en vez de una propiedad.
+    """
+    _sustituir(raiz, "kernel/BOOTSTRAP_PROMPT.md",
+               "  · para materializar las que falten: python3 tooling/workspace.py init [ids]",
+               "  · si falta alguna, apáñate")
+    _sustituir(raiz, "START_HERE.md",
+               "python3 tooling/workspace.py init      # clona lo que falte; reutiliza lo que ya está",
+               "# apáñate")
+
+
 # --- T161 · las formulaciones semánticas que E2 retiró ----------------------
 # No basta con que T161 pase: hay que demostrar que FALLA cuando alguien devuelve al
 # corpus el modelo anterior escrito con otras palabras.
@@ -655,6 +680,12 @@ CATALOGO = [
              "se ajusta un umbral aprobado porque el caso parecía merecerlo",
              m_umbral_inventado),
     *_mutaciones_e2(),
+    Mutacion("N171", "§100", "T171", "comprobar_arranque",
+             "el prompt de arranque deja de declarar dónde se lee un criterio del §100",
+             m_t171_bootstrap_sin_la_regla_de_no_copiar),
+    Mutacion("N171b", "§100", "T171", "comprobar_arranque",
+             "cómo materializar una fuente ausente deja de estar en ningún sitio",
+             m_t171_sin_como_materializar),
     Mutacion("N161f", "E2", "T161", "comprobar_fuentes",
              "un patrón de T161 se desafila hasta dejar de detectar su propia formulación",
              m_t161_patron_desafilado),

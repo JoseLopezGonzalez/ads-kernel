@@ -58,20 +58,30 @@ porque la mayoría exige un runtime que todavía no existe.
 | T25 | abierta por diseño | depende de la sección (g) |
 | T26–T74 (sección b) | contrato-definido | requieren runtime |
 
-## T159–T170 — la enmienda E2, un producto no es un repositorio
+## T159–T171 — la enmienda E2, un producto no es un repositorio
 
-Viven en [`T159-T170-multirepo.md`](T159-T170-multirepo.md) y las ejecutan **tres**
+Viven en [`T159-T170-multirepo.md`](T159-T170-multirepo.md) —el nombre se conserva porque la
+enmienda `E2`, que no se reescribe, lo enlaza por esa ruta— y las ejecutan **tres**
 validadores distintos, porque comprueban cosas distintas:
 
 ```text
 comprobar_fuentes.py             el ADS Project es VÁLIDO, sin tocar el disco
 tooling/tests/test_workspace.py  el workspace se MATERIALIZA, con repos Git locales
-                                 temporales. Sin red y sin GitHub.
-comprobar_arranque.py            el arranque produce la topología correcta
+                                 temporales. SIN RED: Git sólo tiene permitido el
+                                 transporte `file`, y una prueba lo comprueba.
+comprobar_arranque.py            el arranque produce la topología correcta, en la rama
+                                 documentada, y el proyecto creado declara dónde se lee
+                                 cada criterio de descubrimiento del §100
 ```
 
 Dos quedan en `contrato-definido` y lo dicen: **T169** —integración parcial— exige runtime,
 y **T170** —reanudación multi-fuente— exige un guion manual con dos repositorios reales.
+**Seguirán en `contrato-definido` mientras no exista runtime y un piloto real**, y ningún
+informe puede contarlas como demostradas.
+
+**T171 declara su propio alcance.** Comprueba que cada criterio del §100 tiene un sitio
+donde leerse en el proyecto recién creado. Eso es cobertura ESTRUCTURAL: no demuestra que un
+agente lo descubra, que es lo que el §100 pide de verdad y lo que sigue pendiente de piloto.
 
 ## T75 en adelante — nuevas de este kernel operativo
 

@@ -77,6 +77,8 @@ ENTORNO_GIT_LIMPIO = {
     "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_SYSTEM": os.devnull,
     "GIT_AUTHOR_NAME": "ads-arranque", "GIT_AUTHOR_EMAIL": "arranque@ads.local",
     "GIT_COMMITTER_NAME": "ads-arranque", "GIT_COMMITTER_EMAIL": "arranque@ads.local",
+    # el arranque no necesita red, y aquí no la tiene: Git sólo admite transporte `file`
+    "GIT_ALLOW_PROTOCOL": "file", "GIT_TERMINAL_PROMPT": "0",
 }
 
 # El comando de publicación, tal y como lo documentan el script y la guía de arranque.
@@ -348,7 +350,101 @@ def t148_arranque(raiz=None):
     return r
 
 
-PRUEBAS = [t148_arranque]
+
+# ---------------------------------------------------------------------------
+# T171 — los diez criterios de descubrimiento del §100
+#
+# QUÉ DEMUESTRA ESTO, Y QUÉ NO. El §100 pide que un agente que sólo abra `workspace/ads`
+# pueda DESCUBRIR diez cosas sin información oral adicional. Eso, literalmente, exige un
+# agente y un piloto. Lo que sí puede comprobarse sin ninguno de los dos es la condición
+# NECESARIA: que cada una de las diez tenga un sitio declarado donde leerse, dentro del
+# proyecto recién creado, y que ese sitio exista y lo diga.
+#
+# Es COBERTURA ESTRUCTURAL, no la demostración del §100. La entrega anterior afirmó «los
+# diez criterios del §100 demostrados» sin ninguna de las dos cosas; esta prueba entrega la
+# primera y deja escrito que la segunda sigue pendiente de piloto.
+# ---------------------------------------------------------------------------
+DESCUBRIMIENTO_100 = [
+    {"n": 1, "pregunta": "que está ante un ADS control repo",
+     "en": ["BOOTSTRAP_PROMPT.md", "PROJECT.md"],
+     "anclas": ["repositorio ADS de CONTROL", "control plane versionado"]},
+    {"n": 2, "pregunta": "cuál es el producto",
+     "en": ["PROJECT.md", "PROFILE.md"],
+     "anclas": ["# PROJECT", "# PROFILE"]},
+    {"n": 3, "pregunta": "qué sources existen",
+     "en": ["SOURCES.toml", "BOOTSTRAP_PROMPT.md"],
+     "anclas": ["[[sources]]", "SOURCES.toml"]},
+    {"n": 4, "pregunta": "dónde deberían estar localmente",
+     "en": ["SOURCES.toml", "BOOTSTRAP_PROMPT.md"],
+     "anclas": ["ruta relativa al workspace", "hermanos de éste dentro del workspace"]},
+    {"n": 5, "pregunta": "cómo comprobarlas",
+     "en": ["BOOTSTRAP_PROMPT.md", "PROJECT.md", "START_HERE.md"],
+     "anclas": ["workspace.py status", "workspace.py check"]},
+    {"n": 6, "pregunta": "cómo materializar las ausentes",
+     "en": ["BOOTSTRAP_PROMPT.md", "START_HERE.md"],
+     "anclas": ["workspace.py init"]},
+    {"n": 7, "pregunta": "qué componentes viven en ellas",
+     "en": ["SOURCES.toml"],
+     "anclas": ["[[components]]"]},
+    {"n": 8, "pregunta": "dónde vive la documentación global",
+     "en": ["BOOTSTRAP_PROMPT.md", "PROJECT.md"],
+     "anclas": ["Una verdad vive en un sitio, y ese sitio es este repositorio",
+                "No contiene el código"]},
+    {"n": 9, "pregunta": "que no debe copiar ADS en las sources",
+     "en": ["BOOTSTRAP_PROMPT.md"],
+     "anclas": ["NO copies el PROFILE, el estado, la memoria, los ADR globales, el kernel "
+                "ni los packs\n    dentro de una fuente"]},
+    {"n": 10, "pregunta": "que un cambio puede afectar varias sources",
+     "en": ["BOOTSTRAP_PROMPT.md", "kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md"],
+     "anclas": ["0..N source changes", "por fuente"]},
+]
+
+
+def t171_descubrimiento(raiz=None):
+    raiz = os.path.abspath(raiz or RAIZ)
+    r = Resultado("T171",
+                  "El proyecto recién creado declara dónde se lee cada criterio del §100")
+    disponibles = packs_instalables(raiz)
+    tmp = tempfile.mkdtemp(prefix="ads-descubrimiento-")
+    try:
+        fuente = os.path.join(tmp, "ads-kernel")
+        _copiar(raiz, fuente)
+        pack = disponibles[0] if disponibles else ""
+        orden = ["./tooling/new-project.sh", "descubrimiento"] + ([pack] if pack else [])
+        proc = subprocess.run(orden, cwd=fuente, capture_output=True, text=True,
+                              env=ENTORNO_GIT_LIMPIO)
+        if proc.returncode != 0:
+            r.fallo(f"new-project.sh terminó con código {proc.returncode}")
+            return r
+        proyecto = os.path.join(tmp, "descubrimiento", "ads")
+
+        vistos = set()
+        for criterio in DESCUBRIMIENTO_100:
+            vistos.add(criterio["n"])
+            textos = []
+            for rel in criterio["en"]:
+                ruta = os.path.join(proyecto, rel)
+                if not os.path.isfile(ruta):
+                    r.fallo(f"§100.{criterio['n']} ({criterio['pregunta']}): el proyecto "
+                            f"creado no lleva {rel}, que es donde debería leerse")
+                    continue
+                with open(ruta, encoding="utf-8") as fh:
+                    textos.append(fh.read())
+            if textos and not any(a in t for a in criterio["anclas"] for t in textos):
+                r.fallo(f"§100.{criterio['n']} ({criterio['pregunta']}): ninguno de "
+                        f"{criterio['en']} lo dice. Anclas buscadas: {criterio['anclas']}")
+        faltan = sorted(set(range(1, 11)) - vistos)
+        if faltan:
+            r.fallo(f"la tabla de descubrimiento no cubre los criterios {faltan} del §100")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    r.detalle = ("cobertura ESTRUCTURAL de los diez criterios del §100: cada uno tiene un "
+                 "sitio declarado donde leerse en el proyecto recién creado. NO demuestra "
+                 "que un agente lo descubra: eso exige piloto (limitación abierta)")
+    return r
+
+
+PRUEBAS = [t148_arranque, t171_descubrimiento]
 
 
 def main():
@@ -360,10 +456,13 @@ def main():
     if args.json:
         print(json.dumps([{"id": x.id, "nombre": x.nombre,
                            "estado": "prueba-superada" if x.superada else "prueba-fallida",
+                           "alcance": getattr(x, "detalle", ""),
                            "fallos": x.fallos} for x in resultados], ensure_ascii=False, indent=2))
     else:
         for x in resultados:
             print(f"{x.id}  {'SUPERADA' if x.superada else 'FALLIDA '}  {x.nombre}")
+            if getattr(x, "detalle", ""):
+                print(f"          alcance: {x.detalle}")
             for f in x.fallos:
                 print(f"          · {f}")
         fallidas = [x for x in resultados if not x.superada]
