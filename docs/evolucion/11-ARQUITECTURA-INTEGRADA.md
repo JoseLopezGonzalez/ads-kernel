@@ -249,13 +249,18 @@ al diseñar memoria, eventos y recuperación — no por inferencia. Aquí se dec
 | **A** | sólo ficheros canónicos | **sí** | **no**: Git no convierte N escrituras en transacción; una caída deja estado parcial y nada lo detecta | sí | parcial: no sabe si una transición quedó a medias | excelente | bajo |
 | **B** | SQLite como estado canónico | **no**: binario, ilegible sin herramienta, ilegible en un diff | sí, transacciones reales | sí | sí | **malo**: un blob que conflictúa entero | medio |
 | **C** | event sourcing puro: sólo el log es canónico | **no**: leer el estado exige reproyectar | sí | sí | sí | bueno | alto: toda lectura es una proyección |
-| **D** | **canónico en ficheros + diario de eventos con transacciones + derivados** | **sí** | **sí** | sí | **sí** | excelente | medio |
+| **D** | **canónico en ficheros + diario de eventos con transacciones + derivados** | **sí** | **parcial, y cualificado**: recuperabilidad, idempotencia y **detectabilidad** de la ventana. La atomicidad lógica multiarchivo **NO se afirma** (§2.6.8) | sí | **sí** | excelente | medio |
 
 **Por qué se descarta B.** Rompe `R1`, que no es una preferencia estética: es el requisito que
 el Owner puso y que `E2.1` reafirmó al precisar *cuál* repositorio contiene esos ficheros. Un
 estado en SQLite obliga a un informe intermedio para leerlo, que es exactamente lo que `R1`
 prohíbe. **Se conserva una función para SQLite**: como **índice compilado no canónico** en el
 plano operacional, regenerable y no versionado (§2.7). Ahí no gobierna nada y acelera lecturas.
+
+> **Cualificado por la segunda devolución independiente (hallazgo `A`).** La casilla de `R3`
+> para la opción D decía «sí» sin matiz. Lo que D ofrece es lo que `a.9` pide con esas
+> palabras —*«recuperable e idempotente»*— más la detectabilidad de §2.6.8. **No ofrece
+> aislamiento de lecturas**, y decir «sí» a secas invitaba a leerlo como si lo ofreciera.
 
 **Por qué se descarta C.** Cumple `R3` de forma elegante y rompe `R1` de la forma más cara:
 para saber en qué estado está un paquete habría que reproyectar el log. Además crece sin
@@ -294,8 +299,10 @@ ads/                                    el repositorio ADS de control
 │  │  ├─ <EV-ID>.md          APPEND ONLY. Nadie los edita: se emiten
 │  │  ├─ sellados/<seg>.md   compactación de items cerrados
 │  │  └─ INDICE.md           DERIVADO
-│  ├─ tx/<TX-ID>.abierta    MARCADOR sin contenido de transacción EN VUELO. Vacío en
-│  │                        reposo, y reconstruible desde el diario (§2.5)
+│  ├─ tx/<TX-ID>.abierta    MARCADOR de transacción EN VUELO, con el `tx` y LA LISTA DE
+│  │                        RUTAS AFECTADAS (§2.6.8). Vacío en reposo, reconstruible desde
+│  │                        el diario, y EXCLUIDO DE GIT: vive en el árbol durable y NO
+│  │                        viaja (§2.6.6)
 │  ├─ tableros/<CAP>.md      ÓRDENES (Owner) + COLA (DERIVADO)
 │  └─ memoria/…              memoria de capacidad y ledgers
 ├─ adaptadores/<entorno>/    definición canónica neutral, no la proyección
@@ -360,7 +367,7 @@ VEREDICTO   COMPONER. Una transacción es una SECUENCIA DE EVENTOS INMUTABLES qu
 |---|---|
 | declarar la intención antes de tocar nada | evento con `fase: preparada` |
 | declarar la lista exacta de ficheros y su hash previo | campo `afecta`, con `hash_previo` por fichero |
-| señalar «hay algo en vuelo» | una transacción sin evento terminal. `estado/tx/<TX-ID>.abierta` es un marcador SIN CONTENIDO que lo acelera, y se reconstruye recorriendo el diario si se pierde |
+| señalar «hay algo en vuelo» | una transacción sin evento `derivada` ni `reconciliada`. `estado/tx/<TX-ID>.abierta` la acelera y **lleva el `tx` y las rutas afectadas**, para que la regla de lectura de §2.6.8 sea ejercible sin recorrer el diario. Se reconstruye si se pierde |
 | decir si la transición se aplicó | evento con `fase: confirmada` |
 | poder cerrarse y desaparecer | **no sobrevive, y es lo correcto**: borrarlo era el defecto. §3.6 dejaba a `evento.tx` apuntando a un artefacto borrado |
 
@@ -374,30 +381,61 @@ Lo que `a.9` deja expresamente abierto, cerrado aquí de forma **ejecutable**: u
 recuperación real tiene que poder llevarse a cabo con los datos que estos registros escriben,
 y nada más.
 
-### 2.6.1 · Los cinco registros, y qué significa cada uno
+### 2.6.1 · Los cuatro registros, y qué significa cada uno
+
+> **Corregido por la segunda devolución independiente (hallazgos `B` y `D`).** F4c declaraba
+> **cinco** registros. Uno de ellos, `abortada`, era **operacionalmente inalcanzable**; y
+> `conflicto` era **terminal**, con la consecuencia de que el protocolo dejaba de señalar que
+> había algo que resolver. Las formulaciones anteriores se citan donde se sustituyen.
 
 ```text
-fase: preparada    INTENCIÓN PREPARADA. Declara a qué resultado exacto va a llegar cada
-                   fichero. NO afirma que haya ocurrido nada. Es el PUNTO DE COMPROMISO:
-                   una vez es durable, la transacción SE COMPLETA, no se revierte.
+fase: preparada     INTENCIÓN PREPARADA. Declara a qué resultado exacto va a llegar cada
+                    fichero. NO afirma que haya ocurrido nada. Es el PUNTO DE COMPROMISO:
+                    una vez es durable, la transacción SE COMPLETA, no se revierte.
 
-fase: confirmada   CAMBIO CONFIRMADO. Todos los ficheros canónicos declarados alcanzaron su
-                   hash posterior esperado. Desde este registro, y no antes, un lector del
-                   estado puede creerse lo que lee.
+fase: confirmada    CAMBIO CONFIRMADO. Todos los ficheros canónicos declarados alcanzaron su
+                    hash posterior esperado. Desde este registro, y no antes, un lector del
+                    estado puede creerse lo que lee — SI ADEMÁS respeta la regla de lectura
+                    de §2.6.8, que es lo que convierte esta frase en una garantía y no en
+                    una descripción.
 
-fase: derivada     los derivados afectados se regeneraron. Es TERMINAL para la transacción.
+fase: derivada      los derivados afectados se regeneraron. Es TERMINAL para la transacción.
 
-fase: abortada     ABORTO. No ocurrió, y se ha comprobado que todos los ficheros siguen en
-                   su hash previo. Sólo es alcanzable ANTES de tocar el primer fichero.
+fase: conflicto     CONFLICTO. Un fichero no casa ni con su hash previo ni con su hash
+                    posterior esperado: alguien de fuera lo tocó. NO se resuelve solo.
+                    **NO ES TERMINAL: es ABIERTO Y ABSORBENTE.** Ver §2.6.9.
 
-fase: conflicto    CONFLICTO. Un fichero no casa ni con su hash previo ni con su hash
-                   posterior esperado: alguien de fuera lo tocó. NO se resuelve solo.
-                   Se escala. Es TERMINAL, y `R3` prohíbe inventar el resto.
+fase: reconciliada  CIERRE DE UN CONFLICTO. Único registro que cierra una transacción en
+                    `conflicto`. Lleva autoridad, decisión fichero a fichero y las huellas
+                    de lo conservado. Es TERMINAL.
 ```
 
-**Regla de lectura, y es la que impide que la historia mienta:** un evento **nunca** narra
-en futuro. `preparada` dice «preparada», no «se cambiará». Ningún lector del diario —humano
-o máquina— puede leer una intención como un hecho, porque **la fase está dentro del propio
+**Qué se retira, y por qué se dice en vez de borrarse.**
+
+```text
+`fase: abortada`   RETIRADA. F4c la definía como «ABORTO. No ocurrió (…) Sólo es alcanzable
+                   ANTES de tocar el primer fichero». Esa ventana es exactamente
+                   `[preparada durable, primer fichero tocado)`, que es EXACTAMENTE el
+                   dominio de `W3` — y `W3` manda COMPLETAR. Antes de que `preparada` sea
+                   durable no hay registro que pueda llevar esa fase: `W2` dice «se borra el
+                   temporal. La transacción no existió».
+
+                   NO HAY ABORTO, y la razón es positiva, no una omisión: entre el punto de
+                   compromiso y el primer fichero, el único resultado es completar (`W3`);
+                   antes del punto de compromiso no hay transacción que abortar (`W2`).
+
+                   Se buscó una causa de aborto que sobreviviera y NO LA HAY: el
+                   no-determinismo se detecta AL PREPARAR (`X16`, «la transacción no llega a
+                   preparar»); la divergencia antes de aplicar es `conflicto` por §2.6.4; y
+                   la pérdida del lock devuelve al arranque, que aplica `W3`.
+
+                   Un estado muerto en un enum normativo se paga tres veces: en el esquema,
+                   en la implementación y en las pruebas que F6 escribiría para él. Es `D38`.
+```
+
+**Regla de lectura del diario, y es la que impide que la historia mienta:** un evento **nunca**
+narra en futuro. `preparada` dice «preparada», no «se cambiará». Ningún lector —humano o
+máquina— puede leer una intención como un hecho, porque **la fase está dentro del propio
 registro** y no en su ausencia.
 
 ### 2.6.2 · Qué datos permiten reproducir el resultado
@@ -449,10 +487,20 @@ deshacer, y esa elección se declara aquí en vez de quedar implícita.
 2  MARCAR         se crea `estado/tx/<TX-ID>.abierta`, marcador sin contenido. Es un
                   acelerador, no una verdad: si falta, el arranque recorre el diario.
 
-3  APLICAR        cada fichero canónico, en el `orden` declarado, por
-                  `escribir temporal + rename`, y `fsync` del fichero antes del paso 4.
+3  APLICAR        cada fichero canónico, en el `orden` declarado, con esta secuencia
+                  EXACTA y en este orden:
+                      escribir temporal → fsync(temporal) → rename → fsync(DIRECTORIO)
                   Un `rename` en el mismo sistema de ficheros es atómico: ningún fichero
-                  queda a medias, aunque el CONJUNTO sí pueda.
+                  queda a medias, aunque el CONJUNTO sí pueda. La atomicidad NO es la
+                  durabilidad: sin el `fsync` del DIRECTORIO, el `rename` puede perderse
+                  entero aunque el contenido esté en disco (§2.6.6, garantía 3).
+                  Los directorios afectados pueden ser VARIOS —`estado/items/<ID>/`,
+                  `estado/items/<ID>/paq/`, `estado/cobertura/<clase>/`…— y se sincronizan
+                  TODOS los que reciban una entrada nueva o modificada. Un solo `fsync` de
+                  `estado/` NO basta.
+                  OPTIMIZACIÓN PERMITIDA Y NOMBRADA: agrupar los `fsync` de directorio por
+                  directorio distinto, una sola vez al final del paso 3. Se nombra para que
+                  nadie «optimice» quitando el que hace falta.
 
 4  CONFIRMAR      evento `confirmada`, con `fsync + rename + fsync del directorio`.
                   ─── EL CAMBIO ES VERDAD DESDE ESTE RENAME ───
@@ -486,7 +534,9 @@ existir es **divergente**.
 
 ### 2.6.5 · Todas las ventanas de caída
 
-Se enumeran las once. Una ventana que no está en esta tabla es un defecto de esta tabla.
+Se enumeran las **dieciséis**. Una ventana que no está en esta tabla es un defecto de esta
+tabla — y la segunda devolución independiente ejerció esa invitación: **faltaban cinco**
+(hallazgos `N-12`, `E` y `K`), y las cinco están abajo marcadas como nuevas.
 
 | # | la caída ocurre… | qué se observa al arrancar | qué se hace |
 |---|---|---|---|
@@ -497,20 +547,27 @@ Se enumeran las once. Una ventana que no está en esta tabla es un defecto de es
 | W5 | tras aplicar todos, antes de `confirmada` | todos en posterior, sin `confirmada` | se emite `confirmada` y se sigue. No se reescribe nada |
 | W6 | justo después de `confirmada` | `confirmada` presente, derivados sin regenerar | se regeneran los derivados y se emite `derivada` |
 | W7 | durante la regeneración de derivados | derivados divergentes de su `source_revision` | se regeneran ENTEROS. Un derivado es reemplazable por definición |
-| W8 | tras `derivada`, antes de borrar el marcador | transacción terminal con marcador abierto | se borra el marcador. Idempotente |
-| W9 | antes del commit de Git | árbol coherente, Git por detrás | se hace el commit. El remoto estaba atrasado, no roto |
-| W10 | después del commit, antes del push | commit local sin publicar | se hace el push. Ver 2.6.6 |
-| W11 | en cualquier punto, con un fichero divergente | un fichero que no casa con ninguno de los dos hashes | **`conflicto` y se escala**. No se completa y no se revierte |
+| W8 | tras `derivada`, antes de borrar el marcador | transacción **cerrada** con marcador abierto | se borra el marcador. Idempotente. **Corregida**: F4c decía «terminal», y `conflicto` era terminal sin estar cerrada (§2.6.9) |
+| W9 | antes del commit de Git | árbol coherente, Git por detrás | se hace el commit LOCAL. Es recuperación: protege el árbol y no publica (§2.6.10) |
+| W10 | después del commit, antes del push | commit local sin publicar | **NO se empuja automáticamente.** El push es publicación, no recuperación: pasa a la política de §2.6.10 |
+| W11 | en cualquier punto, con un fichero divergente | un fichero que no casa con ninguno de los dos hashes | **`conflicto`**, con su bandera `reconciliacion_pendiente` y su copia de lo divergente (§2.6.9). No se completa y no se revierte |
+| **W12** | **caída de MÁQUINA tras el `rename` de un canónico, sin `fsync` de su directorio** | `confirmada` durable y uno o más canónicos revertidos a su hash previo | **lo detecta la comprobación de integridad post-terminal** de §2.6.6, y emite `conflicto` nombrando los ficheros. Es el fallo silencioso del hallazgo `E` |
+| **W13** | **escribiendo el temporal de `confirmada`** | temporal huérfano, con todos los canónicos ya en posterior | **se reemite `confirmada`.** NO se descarta la transacción: a diferencia de `W2`, aquí los canónicos YA están aplicados |
+| **W14** | **creando el marcador (paso 2)** | `preparada` durable, marcador ausente o vacío | benigno: `W3` lo cubre por resultado. Se recrea el marcador desde el diario (§2.9) |
+| **W15** | **el push es rechazado porque el remoto avanzó** | commit local, remoto divergente | evento `fallo`, tope de tres por §7.3, y se escala. **NUNCA `--force`** (§2.6.10) |
+| **W16** | **el push se completa parcialmente** | unas referencias publicadas y otras no | evento `fallo` con las referencias nombradas. El estado local no cambia: el push no es una mutación canónica |
 
 **Qué se completa, qué se revierte y qué se escala**, dicho en una frase cada uno:
 
 ```text
 SE COMPLETA   toda transacción cuyo evento `preparada` es durable y ninguno de sus ficheros
-              es divergente. W3 a W10.
-SE REVIERTE   sólo lo que nunca llegó a comprometerse: un temporal huérfano (W2). No existe
-              «deshacer» después del punto de compromiso, y por eso no se promete.
-SE ESCALA     todo lo divergente (W11), y todo lo que exija decidir. `b.14.3` y `R3`: DSP
-              para y escala, NUNCA inventa estado.
+              es divergente. W3 a W9, más W13 y W14.
+SE REVIERTE   sólo lo que nunca llegó a comprometerse: un temporal huérfano de `preparada`
+              (W2). No existe «deshacer» después del punto de compromiso, y por eso no se
+              promete. W13 NO es una reversión: es una reemisión.
+SE ESCALA     todo lo divergente (W11), el fallo silencioso que la integridad post-terminal
+              destapa (W12), el fallo de publicación (W15, W16), y todo lo que exija decidir.
+              `b.14.3` y `R3`: DSP para y escala, NUNCA inventa estado.
 ```
 
 ### 2.6.6 · Seis garantías distintas que no son la misma
@@ -534,19 +591,61 @@ SE ESCALA     todo lo divergente (W11), y todo lo que exija decidir. `b.14.3` y 
 
 5  PUSH REMOTO                 sobrevive a la pérdida de la máquina entera.
 
-6  RECONSTRUCCIÓN DESDE        sólo ve lo que se empujó. `.ads/run/` NO existe, y los
-   UN CLON NUEVO               marcadores `.abierta` sí, porque están versionados.
+6  RECONSTRUCCIÓN DESDE        sólo ve lo que se empujó. Y por la regla de Git de abajo,
+   UN CLON NUEVO               un árbol publicado NUNCA contiene marcadores. Si un clon ve
+                               uno, es EVIDENCIA DIAGNÓSTICA de un defecto del runtime que
+                               publicó un árbol incoherente: se declara `conflicto` y se
+                               escala. **El marcador NUNCA es fuente para un clon.**
 ```
 
 **Dónde es obligatorio `fsync`, y dónde deliberadamente no:**
 
 ```text
-OBLIGATORIO   (1) el evento `preparada` y su directorio, ANTES de tocar ningún canónico
-              (2) cada fichero canónico escrito, ANTES de emitir `confirmada`
-              (3) el evento `confirmada` y su directorio
-NO EXIGIDO    los derivados, el marcador `.abierta` y el evento `derivada`: los tres se
-              reconstruyen desde lo canónico, y pagar `fsync` por ellos encarece cada
-              transacción sin comprar ninguna garantía
+OBLIGATORIO   (1) el evento `preparada` y SU DIRECTORIO, ANTES de tocar ningún canónico
+              (2) cada fichero canónico escrito **Y SU DIRECTORIO**, ANTES de emitir
+                  `confirmada` — y en el orden del paso 3 de §2.6.3:
+                  `fsync(temporal)` ANTES del `rename`, `fsync(directorio)` DESPUÉS
+              (3) el evento `confirmada` y SU DIRECTORIO
+NO EXIGIDO    los derivados, el marcador y el evento `derivada`: los tres se reconstruyen
+              desde lo canónico, y pagar `fsync` por ellos encarece cada transacción sin
+              comprar ninguna garantía
+```
+
+> **Corregido por la segunda devolución independiente (hallazgo `E`, BLOQUEANTE).** F4c exigía
+> en el punto (2) *«cada fichero canónico escrito, ANTES de emitir `confirmada`»* —**sin el
+> directorio**— y §2.6.3 decía *«`fsync` del fichero antes del paso 4»*, es decir **después
+> del `rename`**. Los dos son el mismo error, en el eje del alcance y en el del tiempo, y es
+> **exactamente el que la garantía 3 acababa de nombrar como «el error clásico»**, cometido en
+> el punto donde más importa: los ficheros que **son** el estado.
+>
+> **Y el fallo resultante era SILENCIOSO**, que es lo que lo hacía bloqueante. La recuperación
+> clasifica ficheros en las tres cajas de §2.6.4 **sólo cuando encuentra una transacción sin
+> evento terminal**. Si `confirmada` sobrevivió —y sobrevive: lleva sus dos `fsync`— la
+> transacción es terminal, `W6` sólo regenera derivados y **nadie vuelve a comparar los hashes
+> de los canónicos**. El diario afirmaba un cambio que el disco no tenía, y no había un solo
+> mecanismo que lo desmintiera. **Ninguna de las diecisiete filas de §2.6.7 lo detectaba**:
+> `X01`–`X03` matan el proceso, no la máquina, y ninguna cortaba la corriente. Es `D36`.
+
+### Comprobación de integridad post-terminal
+
+Los cuatro puntos anteriores dependen de que la implementación no tenga defectos. **Ésta es la
+comprobación que convierte un fallo silencioso en un fallo detectado**, y sin ella lo demás es
+una promesa:
+
+```text
+CUÁNDO      al arrancar, y en el paso 2 de `Continúa`
+
+QUÉ         para toda transacción cuyo evento terminal sea `confirmada` o `derivada` DENTRO
+            DE LA ÚLTIMA VENTANA DE COMMIT DE GIT, verificar que cada fichero declarado casa
+            con su `hash_posterior_esperado`
+
+POR QUÉ ES  son las transacciones desde el último commit, no el diario entero. Todo lo
+BARATO      anterior al último commit está respaldado por Git, que es la garantía 4
+
+QUÉ HACE SI  NO completa y NO revierte: emite `conflicto` con los ficheros NOMBRADOS, y con
+NO CASA      ello `reconciliacion-pendiente` por §2.6.9. Un canónico que revirtió bajo una
+             `confirmada` durable es indistinguible, desde el estado, de uno que alguien
+             tocó — y las dos cosas exigen lo mismo: parar y escalar
 ```
 
 **La regla de Git, que cierra W9 y W10:** **ADS nunca hace commit de un árbol con una
@@ -555,10 +654,46 @@ transacción abierta.** El commit se hace entre transacciones. Por tanto un árb
 transacción que no preparó. Si un clon encuentra un marcador `.abierta`, es que se empujó
 un árbol incoherente: eso es un **defecto del runtime**, se declara `conflicto` y se escala.
 
+> **Corregido por la segunda devolución independiente (hallazgo `F`).** La garantía 6 decía
+> *«los marcadores `.abierta` sí, porque están versionados»*, enunciando como **propiedad
+> normal del sistema** un estado que la regla de Git, dos párrafos después, declara
+> **imposible salvo por defecto del runtime**. Si el commit sólo ocurre entre transacciones,
+> el marcador **nace y muere entre dos commits** y por construcción nunca entra en un árbol
+> publicado. `X15` ya trataba el caso como evidencia diagnóstica, que es la lectura correcta;
+> la garantía 6 lo trataba como **fuente**, que es la incorrecta.
+>
+> **Y hay un segundo defecto, más incómodo.** Aplicando el criterio de §2.4 al propio
+> marcador —*¿sobrevive a un clon nuevo?*— la respuesta es **no**: §2.9 lo declara
+> reconstruible y «un acelerador, no una verdad». Por el criterio del propio documento **es
+> operacional**. F4c lo colocaba en `estado/tx/`, dentro de lo que §1.2 y §2.4 declaran
+> «DURABLE Y VERSIONADO: todo `estado/`». El documento violaba su propio criterio de
+> clasificación en la única pieza a la que ese criterio debería aplicarse sin discusión.
+
+**Dónde vive el marcador, resuelto.** Se conserva en `estado/tx/` **y se excluye de Git**:
+
+```text
+POR QUÉ NO SE MUEVE A     porque el hallazgo `A` exige que sea LEGIBLE SIN HERRAMIENTA junto
+`.ads/run/`               al estado que califica. Un aviso de «esto no es fiable» que vive en
+                          un directorio operacional que el lector no tiene por qué mirar no
+                          es un aviso.
+
+CÓMO SE IMPIDE QUE        exclusión explícita en `.gitignore` del control repo. Vive en el
+VIAJE                     árbol durable y **no viaja**, que es una tercera categoría y se
+                          nombra en vez de forzarlo a una de las dos.
+
+QUÉ SIGUE SIENDO CIERTO   se reconstruye desde el diario (§2.9), luego borrarlo no pierde
+                          nada, y sigue sin ganar identidad propia: §3.1 paso 4 sigue dando
+                          COMPONER.
+
+QUÉ LLEGA A GIT, EN       NADA de `estado/tx/`. Declarado en positivo, y `X27` lo comprueba
+POSITIVO                  recorriendo la historia entera.
+
 ### 2.6.7 · Tabla adversarial de recuperación
 
 **Convertible en pruebas de F6 sin traducción.** Cada fila declara qué se prepara, dónde se
-interrumpe, qué debe observarse y qué diagnóstico exacto debe emitirse. Una fila que
+interrumpe, qué debe observarse y qué diagnóstico exacto debe emitirse. **Trece filas se
+añadieron tras la segunda devolución independiente**, que encontró que ninguna de las
+diecisiete originales detectaba una caída de máquina. Una fila que
 termine con una traza cuenta como **NO detectada**, que es la disciplina que `N158*` ya
 impuso al arnés de negativos.
 
@@ -581,9 +716,225 @@ impuso al arnés de negativos.
 | `X15` | clonar de nuevo un remoto empujado en medio de una transacción | `conflicto` y escalado. Nunca se completa una transacción ajena |
 | `X16` | una operación declarada `operacion` que NO es determinista | el hash posterior no casa al prepararla → la transacción **no llega a preparar** |
 | `X17` | un evento sellado al que apunta un evento vivo | el sellado **no lo retira**. Ver §2.9 |
+| `X18` | suspender el ejecutor con `SIGSTOP` entre el fichero 3 y el 4, y leer los cinco desde fuera | el lector declara «transacción abierta; estas cinco rutas no son fiables», **nombrando las cinco y sin recorrer el diario** (§2.6.8) |
+| `X19` | aplicar 2 de 5, modificar el 4 externamente, recuperar, **reiniciar y ejecutar `Continúa`** | `Continúa` se detiene en `reconciliacion-pendiente` nombrando items y fichero divergente, **antes** de regenerar derivados y **antes** de seleccionar trabajo. Borrar el marcador a mano y repetir: diagnóstico idéntico |
+| `X20` | dar la misma entrada a **dos implementaciones independientes** del serializador, con claves invertidas, `\r\n` y un mapa anidado | ambas producen **el mismo `tx` y el mismo `id`** (§2.8) |
+| `X21` | preparar, matar antes del `rename`, reintentar | existe **un solo `tx`** en el diario, aunque los `id` difieran |
+| `X22` | cambiar el formato de presentación del diario sin cambiar el contenido | **ningún identificador cambia**. Si cambian, §2.11 y §2.8 son incompatibles |
+| `X23` | recorrer todos los caminos del protocolo buscando `fase: abortada` | **ninguno la produce**, y el validador de esquema **rechaza** un evento con esa fase |
+| `X25` | **corte de alimentación forzado** tras el `rename` de `confirmada` | los cinco canónicos casan con su `hash_posterior_esperado`. Es la caída de MÁQUINA, que `X01`–`X03` no cubrían |
+| `X26` | inyectar la reversión de dos canónicos con `confirmada` presente | el arranque **lo detecta y nombra los dos ficheros**, en vez de regenerar derivados encima |
+| `X27` | recorrer la historia entera del control repo tras N transacciones | **ningún commit** contiene un fichero bajo `estado/tx/` |
+| `X28` | fabricar a mano un commit con marcador abierto, publicarlo y clonar | el clon **escala como defecto del runtime** y **no completa nada**, nombrando `tx` y commit culpable |
+| `X37` | interrumpir una transacción, avanzar el remoto desde otro clon, arrancar la recuperación | se completa, el commit local se hace, el push **no se fuerza**, se emite `fallo` con el diagnóstico «el remoto avanzó» y se escala |
+| `X38` | recuperación con la `main` del control repo protegida | la recuperación **no intenta** empujar sobre ella |
+| `X39` | commit y push de recuperación | dejan evento con **los cinco conceptos de `a.9`** completos; la ausencia de cualquiera es un fallo del validador, no un silencio |
 
-> **Ninguna se ha ejecutado.** Diecisiete filas escritas es el contrato de lo que F6 debe
-> demostrar, y **no es su demostración**.
+> **Ninguna se ha ejecutado.** Treinta filas escritas es el contrato de lo que F6 debe
+> demostrar, y **no es su demostración**. Trece son nuevas de la segunda devolución
+> independiente, y `X24` no existe porque su hallazgo —`D`— se resolvió retirando el estado
+> en vez de darle un disparador.
+
+
+### 2.6.8 · La regla de lectura — lo que se garantiza es DETECTABILIDAD, no aislamiento
+
+> **Añadida por la segunda devolución independiente (hallazgo `A`, GRAVE).** F4c escribía
+> *«desde este registro, y no antes, un lector del estado puede creerse lo que lee»* y no
+> tenía **ninguna regla dirigida a ningún lector**. Era una descripción del estado del diario,
+> no una barrera. La única entidad que comprobaba era el runtime, en `Continúa` paso 2 — y
+> `R1` existe precisamente para que haya lectores que no son el runtime.
+
+**La ventana existe y es observable.** Entre el primer `rename` del paso 3 y el `confirmada`
+del paso 4, los ficheros canónicos contienen una **mezcla** de estado previo y posterior. No
+se elimina: se **declara**, se **detecta** y se **dice**.
+
+```text
+LO QUE NO SE OFRECE     AISLAMIENTO DE LECTURAS. Ningún lector obtiene una vista consistente
+                        de un instante anterior. Eso exigiría versiones múltiples de cada
+                        canónico, y con ello un almacén que `R1` no admite.
+
+LO QUE SÍ SE OFRECE     DETECTABILIDAD DE LA VENTANA. Ningún lector puede leer una mezcla
+                        SIN SABER que la está leyendo.
+```
+
+**La regla, del mismo rango que la de escritura y dirigida a TODO lector** —humano, agente o
+herramienta, sea o no el runtime:
+
+```text
+1  ANTES DE LEER EL ESTADO CANÓNICO, se comprueba `estado/tx/`.
+2  SI HAY ALGÚN MARCADOR, la lectura de los ficheros que esa transacción declara es
+   **NO FIABLE**, y quien lee DEBE declararlo. No es una recomendación de prudencia: una
+   lectura silenciosa de una ventana abierta es un defecto de quien lee.
+3  LOS DEMÁS FICHEROS se leen con normalidad. Una transacción abierta no invalida el estado
+   entero: invalida exactamente las rutas que declara.
+```
+
+**Tres cosas cambian para que la regla sea ejecutable sin herramienta**, que es lo que `R1`
+exige:
+
+```text
+EL MARCADOR LLEVA        `estado/tx/<TX-ID>.abierta` deja de estar «sin contenido» y declara
+CONTENIDO                el `tx` y LA LISTA DE RUTAS AFECTADAS. F4c obligaba a recorrer
+                         `estado/eventos/` para saber QUÉ ficheros estaban en vuelo — es
+                         decir, a REPROYECTAR EL DIARIO para saber si podía creerse el
+                         estado, que es exactamente el coste con el que §2.2 descarta la
+                         alternativa C. F4 pagaba el coste de C sin haber elegido C.
+                         Sigue siendo RECONSTRUIBLE desde el diario, luego no gana identidad
+                         propia y el paso 4 de §3.1 sigue dando COMPONER.
+
+CADA CANÓNICO AFECTADO   durante la ventana, su cabecera lleva `tx_abierta: TX-<id>`. Lo
+LO DICE EN SU CABECERA   escribe la propia transacción al preparar y lo retira al confirmar,
+                         dentro de la misma transacción. Es la única forma de que «se lee sin
+                         herramienta» y el punto de compromiso convivan: quien abre el
+                         fichero lo ve en la primera línea.
+                         COSTE declarado: una escritura más por fichero.
+
+`R3` SE CUALIFICA        §2.2 marcaba la opción D con «`R3` atomicidad y recuperación: sí».
+EN §2.2                  **La atomicidad lógica multiarchivo NO se afirma.** Se afirma
+                         RECUPERABILIDAD, IDEMPOTENCIA y DETECTABILIDAD, que es lo que `a.9`
+                         pide con esas palabras: «recuperable e idempotente».
+```
+
+**Qué NO cambia, y estaba bien.** `b.14 Continúa` **sí** estaba cubierto y sigue estándolo:
+§7.4 comprueba las transacciones abiertas y los pasos 1–4 son deterministas. La reanudación
+**no** reanuda desde estado parcial, y esa mitad de la objeción no procedía.
+
+### 2.6.9 · `conflicto` — abierto, absorbente, y conectado con `b.4` P0
+
+> **Corregido por la segunda devolución independiente (hallazgo `B`, BLOQUEANTE).** F4c
+> declaraba `conflicto` **TERMINAL**, y `reconciliacion-pendiente` **no aparecía ni una sola
+> vez en todo §2** — cuatro veces en el documento, todas fuera. El protocolo transaccional
+> **nunca emitía el único estado del que depende `b.4` P0**, cuya razón de existir es
+> exactamente este caso.
+>
+> **Las tres consecuencias se seguían mecánicamente del texto:** siendo terminal, la
+> transacción **tenía** evento terminal, luego dejaba de «señalar que hay algo en vuelo» y
+> `W8` **retiraba el marcador**; `Continúa` paso 2 preguntaba «¿hay transacciones sin evento
+> terminal?» y la respuesta era **no**, luego declaraba el arranque limpio; y los ficheros
+> aplicados quedaban aplicados, los no aplicados sin aplicar, con `R3` garantizando que así se
+> quedaran. **El estado era incoherente y nadie lo marcaba.**
+>
+> La primera crítica exigió que la tercera caja «NUNCA se resuelva sola». F4c lo consiguió **a
+> costa de que el sistema dejara de saber que había algo que resolver**. Es `D35`.
+
+```text
+NO ES TERMINAL         `conflicto` es un estado ABIERTO Y ABSORBENTE. No admite `confirmada`
+                       ni `derivada`. Sólo lo cierra un evento `fase: reconciliada`.
+
+EMITE LA BANDERA       al escribir `conflicto`, la transacción marca `reconciliacion_pendiente`
+QUE `b.4` P0 CONSUME   en el `03-integracion.md` de CADA ITEM AFECTADO, y lo hace DENTRO DE
+                       UNA TRANSACCIÓN PROPIA con las mismas garantías. Sin esto, `b.4` P0 es
+                       letra muerta y §3.3.1 `Q0` no tiene fuente.
+
+EL MARCADOR NO SE      mientras la transacción esté en `conflicto`. `W8` se corrige: trataba
+BORRA                  «terminal» como sinónimo de «cerrada», y no lo son.
+
+QUÉ BLOQUEA            todo despacho sobre los items afectados, y toda regeneración de
+                       derivados que dependan de sus canónicos. No bloquea el resto del
+                       producto: el conflicto tiene alcance, y se declara.
+
+QUIÉN LO RESUELVE      el PROPIETARIO GLOBAL del item, si el conflicto afecta a uno solo.
+                       El OWNER, si atraviesa varios items. «Se escala» no nombraba
+                       autoridad, y el resto del corpus siempre la nombra —`a.5` en el veto,
+                       `b.15.1` en los desbloqueadores, `C7` en cada operación Git.
+
+CÓMO SE CONSERVA LO    el evento `conflicto` registra, POR FICHERO DIVERGENTE, su HASH ACTUAL
+DIVERGENTE             OBSERVADO y una COPIA ÍNTEGRA en el cuerpo del evento —§2.6.2 ya
+                       admite `contenido` dentro del evento: es el mismo mecanismo—.
+                       F4c decía «NUNCA se sobrescribe: el contenido que hay es de alguien»,
+                       y ese contenido vivía SÓLO EN EL DISCO, sin huella en ningún evento:
+                       quien resolviera podía destruirlo sin que quedara constancia de qué
+                       había. Con esto, «no se destruye trabajo sin registro» es cierto y no
+                       una intención.
+
+QUÉ EVENTO CIERRA      `fase: reconciliada`, con: la autoridad que lo emite, la decisión
+LA RECONCILIACIÓN      FICHERO A FICHERO —conservar lo divergente, aplicar lo preparado, o
+                       un tercer contenido decidido—, y las huellas de lo conservado. Es
+                       terminal, y es el único que lo es para una transacción en conflicto.
+
+CÓMO SE RECONSTRUYE    §2.9 decía «una `tx` sin evento terminal». Pasa a decir: **una
+EL MARCADOR            transacción sin evento `derivada` NI `reconciliada`**.
+```
+
+
+### 2.6.10 · Commit y push en recuperación — y el hueco que esto destapa
+
+> **Corregido por la segunda devolución independiente (hallazgo `K`, GRAVE).** F4c escribía
+> en `W9` y `W10`, en voz impersonal, *«se hace el commit»* y *«se hace el push»*: sin
+> ordenante, sin autoridad, sin ejecutor atribuido — **ninguno de los cinco conceptos de
+> `a.9`** que §3.6 obliga a registrar en toda mutación. Sin política de rama, pese a que
+> `G29` protege `main` por defecto. Sin ramal de fallo. Y sin encaje real con `C7`.
+
+**La distinción que faltaba, y lo cambia todo:**
+
+```text
+`W9` COMMIT LOCAL     ES RECUPERACIÓN. Protege el árbol frente a su pérdida —garantía 4 de
+                      §2.6.6— y NO publica nada. Va sin preguntar, como el resto de la
+                      recuperación.
+
+`W10` PUSH            NO ES RECUPERACIÓN: ES PUBLICACIÓN. Sube a infraestructura del Owner,
+                      hace el trabajo visible a todo clon, y es irreversible en el sentido
+                      que §8.1 ya declara con todas las letras: «un rollback NO reescribe
+                      historia publicada: reescribirla rompería todo clon existente, y ADS
+                      no lo hace». **NO se ejecuta por el mero hecho de arrancar.**
+```
+
+> **La asimetría que F4c no argumentaba.** Es escrupuloso con la publicación cuando habla de
+> instalación y de rollback —§8.1 prohíbe la eliminación remota automática y reserva la
+> decisión al Owner— y la ejecutaba sin preguntar cuando hablaba de recuperación. Las dos
+> son la misma operación sobre la misma infraestructura.
+
+**Lo que rige, y son cinco reglas:**
+
+```text
+1  EL COMMIT LOCAL SE HACE, y emite su evento con los CINCO conceptos de `a.9`:
+   ordenante · autoridad · escritor_del_comando · ejecutor · actor_atribuido. La ausencia de
+   cualquiera de los cinco es un FALLO DEL VALIDADOR, no un silencio.
+
+2  EL PUSH NO ES AUTOMÁTICO. Pasa a `esperando-owner`, o a la política de publicación que el
+   producto declare. Una recuperación que publica sin decirlo convierte un incidente local en
+   un hecho remoto.
+
+3  LA RAMA SE DECLARA, y no se adivina. `main` del control repo PROTEGIDA por defecto,
+   coherente con `G29` conservada por `E2.4`.
+
+4  PUSH RECHAZADO POR REMOTO AVANZADO → evento `fallo`, tope de TRES reintentos por §7.3, y
+   se escala. **NUNCA `--force`.** Regla dura, heredada literalmente de §8.1:
+   **ADS no reescribe historia publicada del control repo.**
+
+5  «EL REMOTO ESTABA ATRASADO, NO ROTO» era un SUPUESTO, no una comprobación. `E2.7` y §2.11
+   admiten expresamente dos máquinas sobre el mismo control repo, y en ese caso el remoto
+   PUEDE haber avanzado. Se comprueba; no se supone.
+```
+
+### El hueco que esto destapa, y que no se tapa con una remisión
+
+§7.6 afirma que *«`C7` declara quién pide, ejecuta, bloquea y verifica cada una»*. **Es falsa
+exactamente para las dos operaciones que `W9` y `W10` automatizaban**, y el motivo es
+estructural:
+
+```text
+LA TABLA DE PROPIEDAD DE `C7`   gobierna las operaciones Git DE LAS FUENTES: rama, commit,
+                                push, PR, revisión, merge y CI, capacidad a capacidad.
+
+NINGUNA DE SUS FILAS CUBRE      y `W9`/`W10` son commits y pushes DEL CONTROL REPO, porque es
+EL REPOSITORIO DE CONTROL       ahí donde vive `estado/`.
+
+LUEGO EL GOBIERNO GIT DEL       es un HUECO DECLARADO POR OMISIÓN en toda la arquitectura.
+CONTROL REPO NO EXISTE          F4c lo tapaba con una remisión que no resuelve.
+```
+
+**Se declara aquí como hueco, y no se rellena por inferencia.** Rellenarlo es escribir la
+tabla de propiedad del control repo —quién pide, ejecuta, bloquea y verifica su commit, su
+push, su rama y su PR, con qué evidencia—, y su sitio es la reconstrucción de `C7` que §10.2
+registra. Mientras no exista:
+
+```text
+§7.6 SE CORRIGE   deja de afirmar que `C7` cubre TODAS las operaciones. Cubre las de las
+                  FUENTES, y el control repo está pendiente
+LO QUE SE PUEDE   la recuperación local completa, el commit local con su evento, y el push
+HACER HOY         SUSPENDIDO a decisión, que es el comportamiento seguro
+```
 
 ## 2.7 · Concurrencia, locks e identidad sin colisión
 
@@ -626,8 +977,11 @@ FORMA                      `EV-<huella del contenido del evento>`. Direccionado 
 
 POR QUÉ LA SEGUNDA         · no depende de un lock que sólo existe en una máquina, y `R5`
                              es un requisito del runtime local, no del producto
-                           · emitir dos veces el MISMO evento produce el MISMO fichero:
-                             la idempotencia deja de necesitar un registro aparte
+                           · la idempotencia se ejerce sobre `tx` con la regla de
+                             reintento de §2.8 — NO sobre el nombre del fichero.
+                             F4c afirmaba aquí que «emitir dos veces el MISMO evento produce
+                             el MISMO fichero»: es falso bajo `predecesor` distinto, y se
+                             RETIRA (hallazgo `C`)
                            · sobrevive a dos máquinas sobre el mismo control repo, que es
                              el caso que `E2.7` dejó abierto
 
@@ -662,6 +1016,93 @@ VERSIÓN DE ESQUEMA    cada fichero canónico lleva `esquema_estado: N`. Una mig
                       EXPLÍCITO, nunca una interpretación optimista.
 ```
 
+
+### El contrato de identidad — sin circularidad y reproducible
+
+> **Añadido por la segunda devolución independiente (hallazgo `C`, GRAVE).** F4c decía
+> `id: EV-<huella del contenido>` en una lista de campos **cuyo primer campo es `id`**, y
+> `TX-<huella>` con la glosa «comparte forma con el evento» — que dice **cómo se ve**, no
+> **qué se hashea**. Sin serialización canónica, dos implementaciones producen
+> identificadores distintos para la misma entrada. Como estaba escrito, **no era
+> implementable**. Es `D37`.
+
+**1 · Representación canónica.** Normativa e **independiente del formato de presentación**.
+Se publica en F6 como pseudocódigo, no como prosa, y su contrato es:
+
+```text
+claves            ordenadas lexicográficamente, en todo mapa y a toda profundidad
+listas            en su orden declarado, que es significativo y no se reordena
+escalares         codificación fijada; sin representaciones alternativas del mismo valor
+texto             UTF-8, normalización NFC
+saltos de línea   `\n` como ÚNICO terminador. `\r\n` se normaliza antes de hashear
+rutas             relativas a la raíz del control repo, con `/`, sin `./` ni `..`
+espacios          sin espacios finales de línea ni al final del documento
+```
+
+**2 · Campos incluidos y excluidos.** La lista es **cerrada**:
+
+```text
+`id`              EXCLUIDO por construcción. Es lo que se está calculando: incluirlo es la
+                  circularidad que F4c no resolvía
+`tx`              EXCLUIDO del cómputo del propio `tx`; INCLUIDO en el de cada evento
+todo lo demás     INCLUIDO
+UN CAMPO NUEVO    obliga a versionar el algoritmo: `identidad_v: N`, junto a
+                  `esquema_estado`. Sin versión, añadir un campo cambia en silencio todos
+                  los identificadores futuros y ninguno de los pasados
+```
+
+**3 · `tx`, definido.**
+
+```text
+tx = TX-H( representación canónica del cuerpo de `preparada`
+           MENOS los campos `id`, `tx` y `predecesor` )
+```
+
+```text
+POR QUÉ ASÍ   depende SÓLO de la intención declarada —`afecta`, `orden`, hashes,
+              procedencia—, luego es reproducible por dos implementaciones, NO depende del
+              punto de la cadena en que se emita, y SOBREVIVE A UNA REEMISIÓN. F4c no tenía
+              definiendum: un `tx` no tiene contenido propio —§2.5 lo declara— luego no
+              había nada de lo que sacar su huella
+```
+
+**4 · `evento.id`, definido — y la consecuencia, declarada.**
+
+```text
+id = EV-H( representación canónica del evento MENOS `id` )
+```
+
+```text
+`predecesor` VA INCLUIDO      es parte de la historia, y dos eventos con el mismo cuerpo en
+                              puntos distintos de la cadena NO son el mismo evento
+
+Y POR TANTO, DICHO SIN        **REEMITIR NO ES IDEMPOTENTE POR `id`.** Tras una caída, el
+RODEOS                        diario ha crecido y el `predecesor` es otro, luego el id es
+                              otro. F4c afirmaba que «emitir dos veces el MISMO evento
+                              produce el MISMO fichero: la idempotencia deja de necesitar un
+                              registro aparte». **Eso sólo es cierto bajo un `predecesor`
+                              idéntico**, condición que la recuperación no garantiza. La
+                              frase se RETIRA.
+
+DÓNDE VIVE LA IDEMPOTENCIA    sobre `tx`, no sobre `id`. Y se ejerce con una regla, no con
+                              un nombre de fichero.
+```
+
+**5 · Regla de reintento.** Es lo que F4c le pedía al nombre del fichero y el nombre del
+fichero no puede dar:
+
+```text
+ANTES DE REEMITIR, el ejecutor busca en el diario un evento con el MISMO `tx` y la MISMA
+`fase`. Si existe, la operación es una NO-OPERACIÓN.
+```
+
+**Y una incompatibilidad declarada, que hay que resolver antes de construir.** §2.11 admite
+que el formato del diario **puede cambiar** de Markdown a «un formato de línea» sin que cambie
+el contrato. Pero si la identidad es la huella del contenido, **cambiar el formato cambiaría
+todos los identificadores** y `predecesor` dejaría de resolver. La representación canónica de
+arriba es lo que lo resuelve —es independiente de la presentación—, y `X22` es la prueba que
+lo comprueba. Sin esa independencia, §2.8 y §2.11 son incompatibles.
+
 **Los identificadores de item y de iniciativa siguen siendo legibles y correlativos** —son
 del producto y los lee el Owner—, y su generación sí se serializa bajo el ejecutor único.
 La diferencia con los eventos es deliberada: un `FEA-021` se pronuncia en una conversación;
@@ -677,7 +1118,7 @@ garantía?».**
 | tableros, vistas, dosieres, índices | los canónicos | **total y determinista**. `T03` lo comprueba |
 | `.ads/run/` entero | los canónicos | total |
 | un derivado divergente | los canónicos | total, y `Continúa` paso 2 lo regenera |
-| el marcador `estado/tx/<TX>.abierta` | el diario: una `tx` sin evento terminal | total. Es un acelerador, no una verdad |
+| el marcador `estado/tx/<TX>.abierta` | el diario: una transacción **sin evento `derivada` ni `reconciliada`** | total. Es un acelerador, no una verdad. **Corregido**: decía «sin evento terminal», y `conflicto` era terminal sin estar cerrada (§2.6.9) |
 | una transición interrumpida | el evento `preparada` de su `tx` | total si ningún fichero es divergente; si lo es, `conflicto` declarado |
 | el estado canónico tras una pérdida | Git | total: es su historia |
 | el estado canónico **sin Git** | eventos sellados + eventos posteriores | **parcial y declarada**: sólo desde el último sellado. Antes del primero, no |
@@ -1862,8 +2303,11 @@ NO RESPONDE       nada que no esté en el estado. Una vista que sabe más que el
 
 ```text
 CON GIT           el runtime no inventa operaciones: C7 declara quién pide, ejecuta,
-                  bloquea y verifica cada una. El runtime las ORQUESTA y registra su
-                  evidencia en el checkpoint del paquete
+                  bloquea y verifica cada una DE LAS FUENTES. El runtime las ORQUESTA y
+                  registra su evidencia en el checkpoint del paquete.
+                  **EL CONTROL REPO NO ESTÁ CUBIERTO**: ninguna fila de la tabla de
+                  propiedad de C7 lo alcanza, y §2.6.10 declara ese hueco en vez de
+                  taparlo con esta remisión, que es lo que F4c hacía
 CON ADAPTADORES   el runtime no conoce ninguna marca. Entrega al agente el control repo y
                   las rutas de las fuentes necesarias; CÓMO se le entregan es del
                   adaptador. Es C6 literal, y T92 lo comprueba
