@@ -22,6 +22,10 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 > PREVIA                GRAVES, cuatro MEDIOS y dos MENORES, en
 >                       14-DEVOLUCION-TECNICA-PREVIA-F4C.md. Correcciones: D46–D51.
 >                       NO es un veredicto de suficiencia: es revisión técnica
+> CORRECCIÓN TÉCNICA    sobre el protocolo transaccional: DOS BLOQUEANTES más —la
+> POSTERIOR             reconciliación no era recuperable, y la integridad post-terminal
+>                       salía del terminal— y un GRAVE. Correcciones: D52–D54.
+>                       Tampoco es la tercera revisión, y tampoco certifica nada
 > ```
 >
 > **Dos de los hallazgos de la segunda devolución son defectos que la PRIMERA CORRECCIÓN
@@ -4857,8 +4861,9 @@ SE CONFIRMA EL RESTO  1 estado · 2 adaptadores · 3 iniciativa · 4 certificaci
 ```text
 NADA ESTÁ CONSTRUIDO      ni una línea de kernel, runtime, tooling, esquema, adaptador,
                           plantilla, pack ni validador. F4 no lo autoriza
-NADA ESTÁ PROBADO         los doce escenarios de §14, las TREINTA Y SIETE filas de la tabla
-                          adversarial de §2.6.7 y los ONCE escenarios negativos de §11.5
+NADA ESTÁ PROBADO         los doce escenarios de §14, las CUARENTA Y DOS filas de la tabla
+                          adversarial de §2.6.7, las NUEVE ventanas `R1`–`R9` de §2.6.9 y
+                          los ONCE escenarios negativos de §11.5
                           están ESCRITOS. Ninguno se ha ejecutado. Escribir el contrato de
                           una prueba no es la prueba
 EL PILOTO SIGUE PENDIENTE la columna de uso real está vacía desde F0, y esta fase no la
