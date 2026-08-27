@@ -45,6 +45,23 @@ Q5                  respondida, y corrigió el mapa: G29 gobierna más de lo que
 Q9 Q10              abiertas. Entran en la síntesis.
 ```
 
+**Estado tras la síntesis** —[`09-SINTESIS.md`](09-SINTESIS.md)—:
+
+```text
+Q9   RESPONDIDA     la minería es un `AUD` con `SIS` como consumidor declarado. No hace
+                    falta un proceso nuevo: la correspondencia es campo a campo con el
+                    bloque `ads:proceso` de AUD, y la minería ya se ejecutó una vez, así
+                    que no hay que suponer qué forma tendría. El esquema `candidato` se
+                    APLAZA, con su condición escrita: se justifica cuando la minería
+                    ocurra por segunda vez sobre una fuente independiente — la misma
+                    condición que reabre P-05.
+Q10  RESPONDIDA     no con una lista, con una señal: lo que no se sustituye es lo que
+                    tiene CICATRIZ ESCRITA, un mecanismo cuyo motivo está en su propio
+                    comentario y sigue siendo cierto. CAND-012, CAND-014 y CAND-024 lo
+                    demuestran, y la comprobación es que ADS adoptó tres de los cuatro.
+                    Es el criterio operable que le faltaba al 6.5 del brief.
+```
+
 ## Qué necesita el sistema del Owner
 
 **Ya no bloquea nada.** La minería está cerrada con la única fuente que el Owner considera
@@ -94,6 +111,11 @@ existe un esquema `candidato`, y crear un tipo canónico es materia de la sínte
 comodidad de registro. Se escribe como tabla en
 [`05-CANDIDATOS.md`](05-CANDIDATOS.md), un candidato por fila de detalle.
 
+**La síntesis lo resolvió, y lo aplazó.** La ficha es la evidencia de la obligación
+`conclusion-fundada` del `AUD` que representa la minería, y una tabla la sostiene. El esquema
+canónico se justifica cuando la minería ocurra por segunda vez sobre una fuente
+independiente — la misma condición que reabre `P-05`. Ver [`09-SINTESIS.md`](09-SINTESIS.md).
+
 ```text
 id             CAND-nnn
 candidato      qué es, en una línea
@@ -129,8 +151,12 @@ F2  CONTRASTE                cada candidato contra ADS: solapamiento y contradic
       ↓ puerta ORIGINAL: Q1 y Q3 con respuesta. Q3 la tiene; Q1 NO PUEDE TENERLA con
         el material disponible, y la puerta se sustituye por su registro como P-05
 
-F3  SÍNTESIS                 ADS actual + directiva + candidatos + evidencia
-      ↓ puerta: las contradicciones X1..X5 tienen resolución propuesta
+F3  SÍNTESIS                 ADS actual + directiva + candidatos + evidencia   ENTREGADA
+      ↓ puerta SUPERADA: X1 deferida con su línea escrita · X2 resuelta por lectura, con
+        su parte de Owner acotada a una pregunta · X3 resuelta: el adaptador es una
+        proyección compilada, no una capa · X4 resuelta: la minería es AUD · X5 resuelta
+        en su forma, y su ubicación es del Owner. Y tres contradicciones NUEVAS
+        registradas sin resolver: X6, X7 y X8
 
 F4  ARQUITECTURA INTEGRADA   una sola propuesta que explique todos los subsistemas juntos
       ↓ puerta: CRÍTICA INDEPENDIENTE, por quien no la escribió
