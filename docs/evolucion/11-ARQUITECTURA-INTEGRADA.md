@@ -474,10 +474,17 @@ confirmada                CANÓNICOS COHERENTES POR LA RUTA NORMAL. Todos los fi
                           además respeta la regla de lectura de §2.6.8.
                           NO ES TERMINAL: faltan los derivados.
 
-conflicto                 ABIERTO Y ABSORBENTE. Un fichero no casa ni con su hash previo ni
-                          con su hash posterior esperado: alguien de fuera lo tocó. NO admite
-                          `confirmada`. Registra la copia íntegra de lo divergente.
+conflicto                 ABIERTO Y BLOQUEANTE. Un fichero no casa ni con la base válida ni
+                          con el resultado permitido de su intención vigente: alguien de
+                          fuera lo tocó (§2.6.4). NO admite `confirmada`. Registra la copia
+                          íntegra de lo divergente. Bloquea el despacho sobre los items
+                          afectados hasta que una autoridad decide.
                           NO ES TERMINAL. Ver §2.6.9.
+                          **Corregido** (hallazgo `C4`): se le llamaba «absorbente», y no lo
+                          es — tiene salida hacia `reconciliacion-preparada` y puede volver
+                          a recibir un reintento. Un estado absorbente es el que no se
+                          abandona nunca, y éste se abandona en cuanto la decisión es
+                          durable. Lo que sí hace es BLOQUEAR mientras dura.
 
 reconciliacion-preparada  INTENCIÓN DE RECONCILIACIÓN PREPARADA. Declara la decisión, su
                           autoridad, la base observada por fichero, cómo se produce el
@@ -548,13 +555,33 @@ porque **la fase está dentro del propio registro** y no en su ausencia.
 
 ### 2.6.2 · Qué datos permiten reproducir el resultado
 
-El evento `preparada` es la única entrada que necesita la recuperación, y lleva **seis cosas
-y no menos**:
+> **Corregido por la segunda corrección técnica (hallazgo `C4`).** Este párrafo decía que
+> `preparada` *«es la única entrada que necesita la recuperación»*, y dejó de ser cierto en
+> cuanto `D52` hizo recuperable la ruta de conflicto: una reconciliación se recupera desde
+> **`reconciliacion-preparada`**, que declara la base observada y el `hash_final` que
+> SUSTITUYE al esperado. La regla vigente es la de §2.6.4: **la recuperación se hace contra
+> la INTENCIÓN DURABLE VIGENTE de cada ruta**, que son dos y no una.
+
+En la **ruta normal**, el evento `preparada` es la única entrada que necesita la recuperación
+—en la de conflicto se le añade `reconciliacion-preparada`, con sus siete campos (§2.6.9)—, y
+lleva **seis cosas y no menos**:
 
 ```text
 1  IDENTIDAD DE LA          `tx: TX-<huella>`. La comparten TODOS los eventos de esa
-   TRANSACCIÓN              transacción y nadie más — tres en la ruta normal, cuatro en la
-                            de conflicto (§2.6.1).
+   TRANSACCIÓN              transacción y nadie más. **La cardinalidad es VARIABLE**, y lo
+                            único fijo es que comparten `tx`:
+                              · TRES en la ruta normal — `preparada`, `confirmada`,
+                                `derivada`
+                              · CINCO como MÍNIMO en la de conflicto que cierra a la primera
+                                iteración, y hasta NUEVE con el tope de tres: la fórmula es
+                                `3 + 2k`, con `k` el número de iteraciones (§2.6.9)
+                              · SEIS en la que se detiene y escala en la tercera iteración
+                                sin cerrar: `preparada`, tres `conflicto` y dos
+                                `reconciliacion-preparada`
+                              · MÁS las REEMISIONES, que añaden EVENTOS sin añadir FASES
+                                (§2.6.4)
+                            **Corregido**: decía «cuatro en la de conflicto», que era la
+                            cuenta anterior a `D52` y nunca contempló los reintentos.
 
 2  HASH PREVIO              por fichero. Qué había antes.
 
@@ -1080,6 +1107,24 @@ impuso al arnés de negativos.
 > adversariales son MUCHAS, y eliminarlas destruiría la trazabilidad que estos documentos
 > existen para dar. `X47` comprueba la primera y declara las segundas.
 
+> **Cuarenta y dos filas físicas y cuarenta y dos identificadores únicos**, comprobado por
+> conteo sobre el fichero y no por memoria: la tabla empieza en `X01`, salta `X24` con su
+> motivo declarado abajo, y **ninguna fila se repite**. La segunda corrección técnica revisó
+> `X05`, `X15`, `X26` y `X28` **en su sitio**, sin añadir ninguna fila y sin retirar ninguna.
+>
+> **Y dos restos señalados que NO se reproducen, dicho porque corregir lo que no existe sería
+> peor que no corregirlo** —es la misma disciplina del hallazgo `11` de la devolución
+> técnica previa:
+>
+> ```text
+> «dos filas idénticas X28»      NO REPRODUCIDO. `X28` aparece UNA sola vez en el fichero, y
+>                                el conteo da 42 filas de datos con 42 ids distintos. Lo que
+>                                puede haber inducido el recuento a 43 es la fila SEPARADORA
+>                                del Markdown, que no es un escenario
+> «"Un fichero que no existe"    NO REPRODUCIDO. Un barrido literal sobre todo `docs/`
+>  dos veces en §2.6.4»          devuelve UNA sola aparición
+> ```
+>
 > **Ninguna se ha ejecutado.** Cuarenta y dos filas escritas es el contrato de lo que F6 debe
 > demostrar, y **no es su demostración**. Trece son de la segunda devolución independiente,
 > siete de la devolución técnica previa (`X47`–`X53`) y **cinco de la corrección técnica
@@ -1218,10 +1263,15 @@ PERSISTIR LA BANDERA    colisione con el bloqueo — quién la concede, sobre qu
                         NO es esa declaración, y por eso no se conserva.
 ```
 
-#### `conflicto` — abierto y absorbente
+#### `conflicto` — abierto y bloqueante, que NO es absorbente
 
 ```text
-NO ES TERMINAL         no admite `confirmada` ni `derivada`. Sólo avanza a `reconciliada`.
+NO ES TERMINAL         no admite `confirmada` ni `derivada`. Sólo avanza a
+                       `reconciliacion-preparada`, que es el punto de compromiso de esta
+                       ruta; `reconciliada` viene DESPUÉS y nunca directamente desde aquí.
+                       **Corregido** (hallazgo `C4`): decía «sólo avanza a `reconciliada`»,
+                       que era el autómata anterior a `D52` y saltaba la única fase que hace
+                       recuperable la reconciliación.
 
 EL MARCADOR NO SE      mientras la transacción no llegue a `derivada`. `W8` sólo retira el
 BORRA                  marcador de una transacción CERRADA, y `conflicto` y `reconciliada`
@@ -1245,6 +1295,15 @@ DIVERGENTE             OBSERVADO y una COPIA ÍNTEGRA en el cuerpo del evento �
 QUÉ DECLARA ADEMÁS     los ITEMS y las RUTAS afectados. Es lo que hace derivable el predicado
                        de arriba sin escribir en ningún item.
 ```
+
+> **Por qué el término cambia, y qué se conserva.** `D35` y las devoluciones que lo
+> registraron dicen **«abierto y absorbente»**, y ese texto **no se reescribe**: es el
+> registro de lo que se decidió. Pero la palabra describe mal lo vigente. **Absorbente** es,
+> en un autómata, el estado del que no sale ninguna transición — y de `conflicto` sale una
+> (`reconciliacion-preparada`), y además puede volver a entrarse en él hasta tres veces. Lo
+> que el término quería decir es que `conflicto` **no se resuelve solo y detiene el
+> despacho**, y eso es **abierto y bloqueante**. La norma vigente usa ese término; la
+> historia conserva el anterior.
 
 #### `reconciliacion-preparada` — la intención durable, ANTES de tocar nada
 
