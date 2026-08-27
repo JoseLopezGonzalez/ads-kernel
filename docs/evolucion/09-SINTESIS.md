@@ -548,7 +548,8 @@ QUÉ PERTENECE AL OWNER
 
 ## `X8` · Organización preestructurada contra «no se materializan equipos permanentes»
 
-> `CI-3` · **CERRADA por lectura.** No era una contradicción: `C4` y `E1` ya la respondían.
+> `CI-3` · **CERRADA por lectura.** No era una contradicción: `a.4` ya lo aprueba, `E1` lo
+> confirma para `ENC`, y `C4` lo instancia como contrato derivado.
 > Registrada como `O9`.
 
 
@@ -858,7 +859,7 @@ clasificación obligatoria antes de retirar.
 # Preguntas que necesitan al Owner
 
 > **NINGUNA SIGUE ABIERTA.** Siete quedan resueltas por las resoluciones `O7`–`O14`, y las
-> preguntas 3 y 4 se retiran porque `C4` y `E1` ya las respondían (`CI-3`). La tabla se
+> preguntas 3 y 4 se retiran porque `a.4` y `E1` ya las respondían (`CI-3`). La tabla se
 > conserva como quedó escrita; su estado está en el addendum.
 
 
@@ -1060,18 +1061,41 @@ Dejan de ser la razón por la que el mínimo existe.
 
 ## `X8` — cerrada por lectura, no era contradicción
 
-`C4` ya fijaba las tres cosas que la síntesis planteaba como enfrentadas:
+La regla aprobada es `a.4`, y `C4` la instancia. Entre las dos ya fijaban las tres cosas
+que la síntesis planteaba como enfrentadas:
 
 ```text
 CATÁLOGO COMPLETO DISPONIBLE      es kernel/operativo/capacidades, y ya viaja
-DSP Y SIS PERMANENTES             lo declara la ficha de SIS: «se materializa SIEMPRE,
-                                  junto a DSP»
+DSP Y SIS PERMANENTES             lo aprueba a.4: «DSP y SIS se materializan siempre.
+                                  Sin ellas no hay sistema operativo». La ficha de SIS lo
+                                  repite como derivado
 ENC BAJO DEMANDA                  lo declara E1
 ```
 
-La distribución trae **catálogo y estructura preconfigurada**; `C4` gobierna la
-materialización. No hay postura B que sostener, y las preguntas 3 y 4 se retiran. Registrado
-como `O9`. Reabrirlo exigiría una enmienda formal a `C4` o a `E1`, y **no se propone ninguna**.
+La distribución trae **catálogo y estructura preconfigurada**; `a.4` aprueba la regla de
+materialización y `C4` la ejecuta. No hay postura B que sostener, y las preguntas 3 y 4 se retiran. Registrado
+como `O9`. Reabrirlo exige la vía de autoridad correcta, y **no se propone ninguna enmienda
+aquí**:
+
+```text
+DÓNDE VIVE LA REGLA   a.4, aprobada: «DSP y SIS se materializan siempre. Sin ellas no hay
+                      sistema operativo», con la confirmación de E1 anotada al lado —«siguen
+                      siendo DOS. ENC NO se añade a esta lista»—.
+
+QUÉ ES C4             un contrato DERIVADO. Instancia el algoritmo de materialización que
+                      a.4 aprueba; no lo decide, y no recibe enmiendas normativas.
+
+CAMBIAR DSP/SIS       presiona a.4, y exige la vía de enmienda normativa: numerada, aprobada
+                      explícitamente por el Owner, conservando el texto anterior. Es la
+                      regla 1 de 03-INVARIANTES, y E1 es su precedente.
+
+HACER PERMANENTE ENC  contradice E1 en concreto, que lo dejó materializado bajo demanda.
+                      Exige enmendar E1.
+
+C4 DESPUÉS            se actualiza como consecuencia, igual que cualquier derivado. Nunca al
+                      revés, y nunca «enmendando C4»: un derivado no se enmienda, se rehace
+                      desde su fuente.
+```
 
 ## `X6` — cerrada por `O7`
 

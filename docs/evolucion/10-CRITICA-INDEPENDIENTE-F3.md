@@ -96,15 +96,37 @@ significado en `memoria.yaml`, y la vía que se escoja tiene que explicar qué h
 
 ## `CI-3` · `X8` y las preguntas 3 y 4 no estaban abiertas
 
-**Lo que dice la crítica.** `C4` ya fija las tres cosas que `X8` planteaba como
-contradicción: existe un catálogo completo disponible, se materializan permanentemente
-**`DSP` y `SIS`**, y `ENC` se materializa **bajo demanda** por `E1`. No hay contradicción que
+**Lo que dice la crítica.** La regla aprobada `a.4` y su contrato derivado `C4` ya fijan las
+tres cosas que `X8` planteaba como contradicción: existe un catálogo completo disponible, se
+materializan permanentemente **`DSP` y `SIS`** —`a.4`, literal—, y `ENC` se materializa **bajo
+demanda** por `E1`. No hay contradicción que
 resolver: hay una lectura que la síntesis no hizo.
 
 **Qué se corrige.** `X8` se resuelve **por lectura**: la distribución trae catálogo y
-estructura preconfigurada; `C4` gobierna la materialización. Las preguntas 3 y 4 salen del
-conjunto que necesita al Owner. Volverían a abrirse sólo con una enmienda formal a `C4` o a
-`E1`, y **aquí no se propone ninguna**.
+estructura preconfigurada; `a.4` aprueba la regla de materialización y `C4` la ejecuta como
+contrato derivado. Las preguntas 3 y 4 salen del
+conjunto que necesita al Owner. Volverían a abrirse sólo por la vía de autoridad correcta, y
+**aquí no se propone ninguna enmienda**:
+
+```text
+DÓNDE VIVE LA REGLA   a.4, aprobada: «DSP y SIS se materializan siempre. Sin ellas no hay
+                      sistema operativo», con la confirmación de E1 anotada al lado —«siguen
+                      siendo DOS. ENC NO se añade a esta lista»—.
+
+QUÉ ES C4             un contrato DERIVADO. Instancia el algoritmo de materialización que
+                      a.4 aprueba; no lo decide, y no recibe enmiendas normativas.
+
+CAMBIAR DSP/SIS       presiona a.4, y exige la vía de enmienda normativa: numerada, aprobada
+                      explícitamente por el Owner, conservando el texto anterior. Es la
+                      regla 1 de 03-INVARIANTES, y E1 es su precedente.
+
+HACER PERMANENTE ENC  contradice E1 en concreto, que lo dejó materializado bajo demanda.
+                      Exige enmendar E1.
+
+C4 DESPUÉS            se actualiza como consecuencia, igual que cualquier derivado. Nunca al
+                      revés, y nunca «enmendando C4»: un derivado no se enmienda, se rehace
+                      desde su fuente.
+```
 
 **Estado:** `X8` **cerrada**. Preguntas 3 y 4 **retiradas**.
 
