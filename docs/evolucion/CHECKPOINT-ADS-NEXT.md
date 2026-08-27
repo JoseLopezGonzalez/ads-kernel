@@ -6,18 +6,26 @@
 > **Basta decir «Continúa»**: la siguiente acción exacta está al final.
 
 ```text
-CHECKPOINT — ADS-NEXT/06 · SIS/evolucion
+CHECKPOINT — ADS-NEXT/07 · SIS/evolucion
 actualizado: 2026-08-27
-metodo:      SIS/Evolucion · PUERTA CORRECTIVA PRE-F4 CERRADA
-based_on:    docs/evolucion/09-SINTESIS.md@7e450cf + su addendum
-             docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md@515e94c
-             kernel/VERSION@2.0.0-alpha.8 · kernel/KERNEL.md@1.5.0
+metodo:      SIS/Evolucion · PUERTA CORRECTIVA PRE-F4 CERRADA Y CORREGIDA
+based_on:    docs/evolucion/09-SINTESIS.md@56ea196          texto original + addendum,
+                                                            con H1 H3 H4 H5 X7 X8 revisados
+             docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md@56ea196
+             docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md@56ea196   O7–O14, con O9 y O13
+                                                            corregidas
+             validadores y release@8403d23
+             kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
 freshness:   vigente
-last_meaningful_event: F3 pasa por CRÍTICA INDEPENDIENTE —emitida por un revisor que no
-             participó en ella; transcrita y aplicada por el autor de F3, que con ello NO
-             certifica su propio trabajo—, el Owner resuelve las ocho materias que quedaban
-             suyas, y una ejecución destapa que T158 daba por buena una evidencia caducada
-             (2026-08-27)
+last_meaningful_event: la revisión independiente del SHA remoto encuentra cuatro defectos de
+             la propia puerta correctiva —procedencia de la crítica, O13 dando por
+             certificado lo que no lo está, la vía de autoridad de C4, y T158 reventando ante
+             su propio manifiesto— y los cuatro quedan corregidos (2026-08-27)
+procedencia_de_la_critica: los hallazgos y el veredicto los EMITIÓ un revisor independiente
+             que no participó en F3. El fichero que los recoge lo TRANSCRIBIÓ Y APLICÓ el
+             autor de F3, sin reescribirlos para cambiar el veredicto. Aplicar una crítica NO
+             equivale a autocertificarse: quien la aplicó es quien la recibió, y la
+             certificación de F3 no está en ese fichero ni la da él
 resuelto:
   · SEIS HALLAZGOS DE LA CRÍTICA, aplicados sin borrar nada de F3:
     CI-1 H4 REVISADO. El componente de C6 es ámbito principal, NO sujeto único: no puede
@@ -25,7 +33,11 @@ resuelto:
          La matriz pasa a `sujeto auditable × dimensión`. No autoriza un tipo nuevo
     CI-2 H5 DEGRADADO a reutilización candidata. `memoria` no cubre procedencia, revisiones
          examinadas, relaciones, aplicabilidad, gaps ni contradicciones. Tres vías para F4
-    CI-3 X8 CERRADA POR LECTURA: C4 y E1 ya la respondían. Preguntas 3 y 4 retiradas
+    CI-3 X8 CERRADA POR LECTURA, y con la vía de autoridad bien nombrada: a.4 APRUEBA que
+         DSP y SIS se materializan siempre, E1 lo CONCRETA para ENC dejándolo bajo demanda,
+         y C4 es contrato DERIVADO que lo instancia. C4 no se enmienda: cambiar el equipo
+         permanente presiona a.4, y hacer permanente a ENC contradice E1.
+         Preguntas 3 y 4 retiradas
     CI-4 X7 CERRADA: doce ÁREAS SEMÁNTICAS, no doce ficheros — y tampoco «lo necesario para
          reanudar», que era la salida que propuso la síntesis y se quedaba corta
     CI-5 H1 conservado: compartir motor de composición NO aplana las rutas
@@ -36,10 +48,23 @@ resuelto:
     matriz agentic · piloto en PesquerApp
   · CERO preguntas abiertas del conjunto que F3 elevó al Owner: siete resueltas, dos
     retiradas por lectura
-  · T158 CORREGIDO. Reproducido primero contra el código anterior: corpus 282, evidencia
-    280, cabecera y firma válidas, T158 SUPERADA. Contrato `vigencia` declarativo, con el
-    recorrido IMPORTADO de quien lo define, que falla cerrado y no se acepta a sí mismo.
-    Regresiones N158g y N158h, con la cifra derivada del propio fichero
+  · T158 CORREGIDO EN DOS PASADAS, cada una reproducida antes de corregirse:
+    (1) evidencia intacta y CADUCADA dada por válida — corpus 282, evidencia 280, cabecera y
+        firma correctas, T158 SUPERADA. Contrato `vigencia` declarativo, con el recorrido
+        IMPORTADO de quien lo define, que falla cerrado y no se acepta a sí mismo
+    (2) el propio contrato reventaba: quitar `patron` daba KeyError y traza. Ahora se valida
+        de forma TIPADA antes de usarse —lista, mapas, cuatro campos con su tipo y no
+        vacíos, ids sin duplicar, evidencia declarada, regex que compila y captura, valor
+        entero, recuento registrado—, condición a condición y SIN `except Exception`
+    N158g–N158o: nueve infracciones deliberadas, con la cifra derivada del propio fichero y
+    NINGÚN número del corpus escrito en la prueba
+  · EL ARNÉS DE NEGATIVOS, endurecido para poder demostrar lo anterior: cada mutación declara
+    el DIAGNÓSTICO que espera —fallar no basta, hay que fallar POR ESO—, y una salida con
+    `Traceback` se registra como NO DETECTADA aunque el proceso termine con código distinto
+    de cero. Sin esa regla, un validador que revienta se contaba como uno que detecta.
+    67 infracciones detectadas · 0 NO detectadas
+  · O13 CORREGIDA: Claude Code y Codex son el primer OBJETIVO de soporte y certificación.
+    Hoy NO hay ningún adaptador certificado, y fijar el objetivo no es alcanzarlo
   · P-07 cerrado en su ubicación: docs/owner/, y la exención pasa a ser POR UBICACIÓN.
     Cinco exenciones manuales para la misma clase eran la señal de que faltaba la clase
 owner_captado: "antes debes cerrar una puerta correctiva pre-F4 derivada de la crítica
@@ -77,8 +102,10 @@ F1  MINERÍA                  CERRADA — PesquerApp. gym-wear RETIRADO por el O
 F2  CONTRASTE                ENTREGADA
 M   MANDATO MULTI-REPO       EJECUTADO — interrumpió F3 por orden del Owner
 F3  SÍNTESIS                 ENTREGADA — 09-SINTESIS.md. Puerta X1..X5 superada
-F3c PUERTA CORRECTIVA        CERRADA — crítica independiente aplicada, O7–O14 registradas
-                             y T158 corregido. 10-CRITICA-INDEPENDIENTE-F3.md
+F3c PUERTA CORRECTIVA        CERRADA y después CORREGIDA — crítica independiente aplicada,
+                             O7–O14 registradas, T158 corregido en dos pasadas, y los cuatro
+                             defectos que la revisión encontró en la propia puerta resueltos.
+                             10-CRITICA-INDEPENDIENTE-F3.md · release 2.0.0-alpha.9
 F4  ARQUITECTURA INTEGRADA   AUTORIZABLE, y no iniciada
 F5  ENMIENDAS                no iniciada
 F6  DESCOMPOSICIÓN Y EJECUCIÓN  no iniciada
@@ -173,8 +200,25 @@ kernel/operativo/validadores/
 kernel/operativo/pruebas/T136-T152-post-auditoria.md  qué no veía T158, y su alcance
 docs/owner/                               nuevo — los dos documentos multi-repo del Owner,
                                           movidos con git mv y sus referencias al día
-kernel/VERSION · KERNEL_CHANGELOG.md ·    release 2.0.0-alpha.8 con su entrada, y la
-kernel/VERSIONES.md · .upstream-hash      huella reanclada sobre el cambio
+kernel/VERSION · KERNEL_CHANGELOG.md ·    release 2.0.0-alpha.8 — HISTÓRICO. Fue el estado
+kernel/VERSIONES.md · .upstream-hash      final de esta pasada, y NO es la base vigente:
+                                          la corrección de abajo lo sustituye
+
+CORRECCIÓN DE LA PUERTA — cuatro defectos que la revisión independiente encontró en ella
+docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md  procedencia: quién EMITE la crítica y quién
+                                          ESCRIBIÓ el fichero dejan de confundirse
+docs/evolucion/09-SINTESIS.md             O13 deja de dar por certificado lo que no lo está ·
+                                          la vía de autoridad pasa de C4 a a.4
+docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md  O9 y O13 corregidas en su registro canónico
+kernel/operativo/validadores/
+  comprobar_evidencia.py                  validación TIPADA del contrato `vigencia`, sin
+                                          `except Exception`
+  comprobar_negativos.py                  N158i–N158o · el arnés exige el diagnóstico
+                                          esperado y rechaza la traza como detección
+kernel/operativo/pruebas/T136-T152-post-auditoria.md  el manifiesto inválido se rechaza con
+                                          un fallo, nunca con una traza
+kernel/VERSION · KERNEL_CHANGELOG.md ·    release 2.0.0-alpha.9 — ESTADO VIGENTE, con su
+kernel/VERSIONES.md · .upstream-hash      entrada y la huella reanclada sobre el cambio
 
 (a), (b) y E1 siguen ÍNTEGRAS y sin reescribir: E2 las enmienda por sustitución
 explícita, que es la única vía que admite la regla 1 de 03-INVARIANTES.
@@ -201,6 +245,10 @@ git log --oneline 910d1d3..HEAD        # cuáles son
           06a93ba · a224c36. NO tres, y NO seis
 entre     a224c36 y 4cf9b8d, la pasada correctiva de F2
 después   43c627f entra el documento de pendientes; a partir de ahí, F3
+7e450cf   F3 síntesis · f59d9eb su evidencia derivada
+8b6727a   primer cierre de la puerta correctiva — release 2.0.0-alpha.8, HISTÓRICO
+8403d23   corrección de la puerta tras la revisión del SHA remoto — release
+          2.0.0-alpha.9, ESTADO VIGENTE
 ```
 
 Escribir el total a mano aquí lo dejaría mal en la siguiente confirmación. **El historial
@@ -223,8 +271,9 @@ prueba ADVERSARIAL que falla contra el código anterior, no el color del resumen
 ## Siguiente acción exacta
 
 ```text
-1  F4 ARQUITECTURA INTEGRADA   ya es autorizable: la puerta correctiva está cerrada y no
-                               queda ninguna pregunta del Owner abierta.
+1  F4 ARQUITECTURA INTEGRADA   NO INICIADA, y ya autorizable: la puerta correctiva está
+                               cerrada y corregida, y no queda ninguna pregunta del Owner
+                               abierta.
 
 2  EMPEZAR POR                 el orden de la síntesis, que la crítica no cambia: la
                                disposición física del estado va primero. Y con lo que la
@@ -241,6 +290,12 @@ prueba ADVERSARIAL que falla contra el código anterior, no el color del resumen
                                y para nada más, y decirlo es la mitad de la corrección. La
                                tentación es escribir «la evidencia está verificada» y dejar
                                que se lea como si cubriera los trece validadores.
+
+                               Y la lección que dejó corregir T158 dos veces: un validador
+                               que revienta NO es un validador que detecta, y una prueba
+                               negativa que sólo exige «falló» no comprueba que falló por su
+                               motivo. El arnés ya lo exige; escribir la siguiente prueba
+                               sin `espera` volvería a abrir el hueco.
 
 5  DÓNDE PARAR                 antes de tocar (a), (b), E1, E2 o K-1. Eso es F5, y su
                                puerta es la aprobación explícita del Owner.
