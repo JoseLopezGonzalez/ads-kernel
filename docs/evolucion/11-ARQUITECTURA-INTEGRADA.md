@@ -508,8 +508,11 @@ derivada                  ÚNICO CIERRE TERMINAL. Los derivados afectados se reg
 | `reconciliada` | `derivada` | los derivados afectados se regeneraron **sobre el estado reconciliado** |
 
 ```text
-DE `derivada` NO SALE     ninguna. Es terminal, y el validador de esquema RECHAZA cualquier
-NINGUNA                   evento con `tx` de una transacción que ya tiene `derivada`.
+DE `derivada` NO SALE     ninguna. Es terminal, y quien lo hace cumplir es el VALIDADOR
+NINGUNA                   SEMÁNTICO DEL DIARIO —no el esquema del evento—: rechazar un
+                          evento con `tx` de una transacción que ya tiene `derivada` exige
+                          MIRAR LOS DEMÁS EVENTOS de ese `tx`, y un esquema estructural
+                          sólo ve el evento que valida (§3.6, reparto de capas).
                           Lo que se descubre DESPUÉS del cierre NO es una fase de esa
                           transacción: es un evento `tipo: deriva`, con identidad propia y
                           sin `fase`. Ver §2.6.11.
@@ -893,7 +896,7 @@ impuso al arnés de negativos.
 | `X20` | dar la misma entrada a **dos implementaciones independientes** del serializador, con claves invertidas, `\r\n` y un mapa anidado | ambas producen **el mismo `tx` y el mismo `id`** (§2.8) |
 | `X21` | preparar, matar antes del `rename`, reintentar | existe **un solo `tx`** en el diario, aunque los `id` difieran |
 | `X22` | cambiar el formato de presentación del diario sin cambiar el contenido | **ningún identificador cambia**. Si cambian, §2.11 y §2.8 son incompatibles |
-| `X23` | recorrer todos los caminos del protocolo buscando `fase: abortada` | **ninguno la produce**, y el validador de esquema **rechaza** un evento con esa fase |
+| `X23` | recorrer todos los caminos del protocolo buscando `fase: abortada` | **ninguno la produce**, y el **esquema estructural** **rechaza** un evento con esa fase: es un valor fuera del enum, y eso se ve en el evento aislado |
 | `X25` | **corte de alimentación forzado** tras el `rename` de `confirmada` | los cinco canónicos casan con su `hash_posterior_esperado`. Es la caída de MÁQUINA, que `X01`–`X03` no cubrían |
 | `X26` | inyectar la reversión de dos canónicos con `confirmada` presente | el arranque **lo detecta y nombra los dos ficheros**, en vez de regenerar derivados encima |
 | `X27` | recorrer la historia entera del control repo tras N transacciones | **ningún commit** contiene un fichero bajo `estado/tx/` |
@@ -901,7 +904,7 @@ impuso al arnés de negativos.
 | `X37` | interrumpir una transacción, avanzar el remoto desde otro clon, arrancar la recuperación | se completa, el commit local se hace, el push **no se fuerza**, se emite `fallo` con el diagnóstico «el remoto avanzó» y se escala |
 | `X38` | recuperación con la `main` del control repo protegida | la recuperación **no intenta** empujar sobre ella |
 | `X39` | commit y push de recuperación | dejan evento con **los cinco conceptos de `a.9`** completos; la ausencia de cualquiera es un fallo del validador, no un silencio |
-| `X47` | resolver la **proyección normativa VIGENTE** del enum de `evento.fase` aplicando la cadena de sustituciones `D38 → D46 → D52`, y compararla con §2.6.1 y §3.6 | **coinciden**, y un evento con `fase: abortada` es **rechazado por el validador de esquema**. La prueba NO recorre el corpus entero buscando una sola enumeración: los registros de decisión y los documentos de crítica **conservan deliberadamente los enums sustituidos**, y esa historia es lo que hace auditable la cadena. Las excepciones son exactamente ésas, y están declaradas abajo |
+| `X47` | resolver la **proyección normativa VIGENTE** del enum de `evento.fase` aplicando la cadena de sustituciones `D38 → D46 → D52`, y compararla con §2.6.1 y §3.6 | **coinciden**, y un evento con `fase: abortada` es **rechazado por el esquema estructural**, que para un enum basta. La prueba NO recorre el corpus entero buscando una sola enumeración: los registros de decisión y los documentos de crítica **conservan deliberadamente los enums sustituidos**, y esa historia es lo que hace auditable la cadena. Las excepciones son exactamente ésas, y están declaradas abajo |
 | `X48` | aplicar una transacción completa y comparar cada canónico con su `hash_posterior_esperado` | casan **byte a byte**. Ningún mecanismo de detección —marcador, regla de lectura o diario— modifica el contenido canónico |
 | `X49` | provocar un conflicto y evaluar `b.4` P0 sobre los items afectados | devuelve `reconciliacion-pendiente` **sin que se haya escrito un byte en ningún `03-integracion.md`** y sin que exista un segundo marcador |
 | `X50` | reconciliar un conflicto de cinco ficheros | los derivados se regeneran **antes** de `derivada`, el marcador sobrevive hasta `derivada`, y los canónicos casan con los `hash_final` de `reconciliada` |
@@ -911,7 +914,7 @@ impuso al arnés de negativos.
 | `X54` | matar la máquina en cada una de las nueve ventanas `R1`–`R9` de la reconciliación | en `R1` y `R2` la decisión se pierde y el conflicto sigue abierto, **sin un solo canónico tocado**; de `R3` a `R9` la reconciliación **converge al mismo resultado** que una ejecución sin interrupción |
 | `X55` | comprobar que **ninguna escritura de reconciliación precede a su intención durable** | para todo canónico tocado por una reconciliación, el `fsync` de `reconciliacion-preparada` y de su directorio **retornó antes** del primer `rename` |
 | `X56` | revertir un canónico de una transacción con `derivada` durable, y arrancar | se emite un evento **`deriva`** con `causa: posterior-al-cierre`. **NO** se emite ninguna fase, la transacción cerrada **no gana ningún evento nuevo con su `tx`**, y nada se restaura solo |
-| `X57` | recorrer el diario buscando cualquier evento con `fase` cuya transacción ya tenga `derivada` | **no existe ninguno**, y el validador de esquema lo rechaza. Ninguna transición sale del terminal |
+| `X57` | recorrer el diario buscando cualquier evento con `fase` cuya transacción ya tenga `derivada` | **no existe ninguno**, y el **validador semántico del diario** lo rechaza —la comprobación es de `tx`, no de evento aislado (§3.6)—. Ninguna transición sale del terminal |
 | `X58` | provocar tres veces seguidas que un fichero vuelva a divergir durante la reconciliación | a la tercera **se detiene y se escala al Owner**. No hay una cuarta iteración automática |
 
 > **Las excepciones históricas de `X47`, declaradas una a una.** Estos textos conservan
@@ -1328,8 +1331,11 @@ BLOQUEA          el despacho sobre los items afectados, igual que un conflicto �
 
 NO REABRE        la transacción cerrada. Su historia es inmutable, y `derivada` fue su
                  último acto.
-NO AÑADE FASE    a nada. `deriva` no tiene `fase`, y el esquema rechaza un evento con `fase`
-                 cuyo `tx` ya tenga `derivada`.
+NO AÑADE FASE    a nada. Que `deriva` no lleve `fase` ni `tx` lo rechaza el ESQUEMA
+                 ESTRUCTURAL, porque es coherencia interna del propio evento. Que ningún
+                 evento con `fase` pertenezca a un `tx` que ya tiene `derivada` lo rechaza
+                 el VALIDADOR SEMÁNTICO DEL DIARIO, porque exige recorrer ese `tx`
+                 entero (§3.6).
 NO RESTAURA      desde Git, ni desde ningún sitio, **automáticamente**. El contenido que hay
                  en disco es de alguien, y sobrescribirlo sin decisión es destruir trabajo
                  sin registro — el mismo argumento de §2.6.4.
@@ -1996,7 +2002,8 @@ tipo          orden | transicion | integracion | certificacion | migracion | sel
               retirada-de-cuerpo | deriva | fallo
 fase          preparada | confirmada | conflicto | reconciliacion-preparada | reconciliada |
               derivada | — (sin transacción). El autómata, en §2.6.1.
-              `abortada` NO existe: un evento con esa fase es RECHAZADO por el esquema
+              `abortada` NO existe: un evento con esa fase es RECHAZADO por el ESQUEMA
+              ESTRUCTURAL — es un valor fuera del enum, y eso se ve sin salir del evento
 tx            TX-<huella>, cuando el evento forma parte de una transacción multiarchivo.
               Lo comparten todos los eventos de esa transacción y nadie más
 orden         posición dentro de su transacción. Total dentro de ella
@@ -2023,26 +2030,107 @@ base          hash de las entradas sobre las que se decidió
 | `conflicto` | `preparada` o `reconciliacion-preparada` | `divergentes[]` con `ruta`·`hash_observado`· **`contenido` íntegro de lo divergente** · `items[]` · `rutas[]` · `autoridad` que debe resolver · `iteracion` | `resultado` · `hash_final` · `decision` | ninguno: declara lo observado, no lo esperado | la autoridad decide y su decisión es durable → `reconciliacion-preparada`; `iteracion` = 3 → se detiene y escala |
 | `reconciliacion-preparada` | `conflicto` | `decision[]` con `ruta`·`hash_observado`·`hash_final`·`orden`· una de `contenido`\|`parche`\|`operacion` · `autoridad` que decidió · `derivados_pendientes[]` · `iteracion` | `resultado` | `hash_final`, que **sustituye** al `hash_posterior_esperado` para esas rutas | los ficheros de `decision` casan con su `hash_final` → `reconciliada`; alguno vuelve a divergir → `conflicto` |
 | `reconciliada` | `reconciliacion-preparada` | `resultado` · `derivados_pendientes[]` | `decision` · `hash_posterior_esperado` para las rutas reconciliadas | `hash_final` | los derivados de `derivados_pendientes` se regeneraron → `derivada` |
-| `derivada` | `confirmada` o `reconciliada` | `derivados_regenerados[]` con su `source_revision` | `afecta` · `decision` · `divergentes` | el que gobernara su ruta | **ninguna. Es terminal**, y el esquema rechaza cualquier evento posterior con ese `tx` |
+| `derivada` | `confirmada` o `reconciliada` | `derivados_regenerados[]` con su `source_revision` | `afecta` · `decision` · `divergentes` | el que gobernara su ruta | **ninguna. Es terminal**. Que no exista ningún evento posterior con ese `tx` lo comprueba el **validador semántico del diario**, no el esquema |
 | `deriva` | **ninguna: NO tiene `tx` ni `fase`** | `causa` ∈ {`posterior-al-cierre`,`sin-transaccion`} · `afecta[]` con `ruta`·`hash_esperado`·`hash_observado` · `items[]` · `autoridad` · `tx_afectada` sólo si `causa: posterior-al-cierre` | `fase` · `tx` · `decision` · `resultado` | ninguno: **reporta**, no repara | ninguna. La reparación es una transacción NUEVA (§2.6.11) |
 | `fallo` | **ninguna: NO tiene `tx` ni `fase`** | `operacion` · `diagnostico` · `intentos` | `fase` · `afecta` | — | ninguna |
 
-### Las cuatro reglas que un esquema derivado debe hacer cumplir
+### Las cuatro reglas, y QUIÉN puede hacer cumplir cada una — tres capas
+
+> **Corregido por la segunda corrección técnica (hallazgo `H1`, GRAVE).** Las cuatro reglas
+> se enunciaban como *«reglas que un esquema derivado debe hacer cumplir»*, y **tres de las
+> cuatro son incomprobables por un esquema**. Un esquema estructural valida **un evento
+> aislado**: no abre los demás ficheros del diario, no reconstruye el autómata y no observa
+> el orden real de `fsync` y `rename` en el disco. Atribuirle esas garantías no las
+> proporciona: las deja **sin dueño**, que es la forma en la que un contrato falla en
+> silencio. Es `D55`, y revisa `D54`.
+
+**Las tres capas, y qué puede comprobar cada una.** Ninguna promete lo de otra:
 
 ```text
-1  NINGÚN EVENTO CON `fase` cuya transacción ya tenga `derivada`. Es lo que hace terminal a
-   `derivada`, y sin esta regla el autómata de §2.6.1 es una descripción y no un contrato.
+A · ESQUEMA ESTRUCTURAL      valida UN evento aislado, sin abrir ningún otro fichero.
+    DEL EVENTO               Se ejecuta al escribir el evento, antes de publicarlo.
 
-2  NINGÚN `conflicto` SIN `divergentes[].contenido`. Un conflicto que no conserva lo
-   divergente permite destruirlo sin registro, y §2.6.9 declara que eso no puede ocurrir.
+B · VALIDADOR SEMÁNTICO      valida el DIARIO: recorre todos los eventos de un `tx` —y, para
+    DEL DIARIO               lo que lo exige, del diario entero—. Se ejecuta al arrancar, al
+                             recuperar y en cada auditoría de integridad.
 
-3  NINGUNA `reconciliacion-preparada` SIN `decision[]` reproducible y su `hash_final`. Una
-   reconciliación sin resultado reproducible no es recuperable, que es el hallazgo `1`.
-
-4  NINGUNA ESCRITURA CANÓNICA sin una intención durable previa que la declare: `preparada`
-   en la ruta normal, `reconciliacion-preparada` en la de conflicto. Es la regla de la que
-   dependen las dos anteriores.
+C · RUNTIME Y PRUEBAS        garantiza o DEMUESTRA lo FÍSICO: el orden real de las llamadas
+    DE CAÍDA                 al sistema, la durabilidad, los locks y la comparación contra
+                             el disco. No hay validación de texto que lo sustituya: se
+                             prueba matando el proceso y cortando la corriente.
 ```
+
+#### A · Qué comprueba el ESQUEMA ESTRUCTURAL del evento
+
+```text
+· campos OBLIGATORIOS y PROHIBIDOS de la fila que le corresponde en la tabla de arriba
+· ENUMS: `tipo`, `fase`, `causa`, `decision[].tipo`. `abortada` cae aquí: está fuera del enum
+· TIPOS de cada campo, y su cardinalidad
+· FORMA de los hashes —algoritmo declarado y longitud—, del `id`, del `tx` y del `orden`
+· EXCLUSIÓN ENTRE PAYLOADS: exactamente uno de `contenido` | `parche` | `operacion` por ruta
+· COHERENCIA INTERNA del propio evento: que `tipo` y `fase` sean una combinación admitida
+  por la matriz de §3.6; que `deriva` y `fallo` no lleven `fase` ni `tx`; que un `conflicto`
+  lleve `divergentes[].contenido`; que una `reconciliacion-preparada` lleve `decision[]` con
+  su `hash_final`; que `tx_afectada` sólo aparezca con `causa: posterior-al-cierre`
+· UNICIDAD DE `ruta` dentro del array del propio evento, y `orden` total dentro de él
+```
+
+**Lo que NO puede**, y por eso no se le pide: nada que exija otro fichero, otro evento, otro
+momento o el disco.
+
+#### B · Qué comprueba el VALIDADOR SEMÁNTICO DEL DIARIO
+
+Recorriendo **todos los eventos**, y por eso ninguna de estas comprobaciones cabe en A:
+
+```text
+· IDENTIDAD Y UNICIDAD DE `tx`: que el `tx` se calcule como declara §2.8 y que no haya dos
+  transacciones distintas compartiéndolo
+· PREDECESOR: que la cadena `predecesor` cierre, y que una BIFURCACIÓN se DETECTE (`X09`)
+· TRANSICIONES ADMITIDAS: que el par (fase anterior, fase nueva) esté en la tabla de §2.6.1
+· CONTINUIDAD DE HASHES entre fases: que el `hash_final` de una `reconciliacion-preparada`
+  gobierne desde ahí, y que `derivada` cierre sobre el hash que gobernaba cada ruta
+· NINGUNA FASE POSTERIOR A `derivada` en ese `tx`. **Ésta es la regla 1**, y es de diario
+· NÚMERO DE ITERACIONES: que `iteracion` sea consecutivo y que no exista una CUARTA.
+  **El cuarto reintento no lo ve un esquema**: exige contar los `conflicto` de ese `tx`
+· TERMINALIDAD: exactamente un `derivada` por transacción cerrada, y ninguno en las abiertas
+· CORRESPONDENCIA ENTRE INTENCIÓN Y HECHO: que todo `confirmada` tenga su `preparada`, toda
+  `reconciliada` su `reconciliacion-preparada`, y que las rutas y hashes coincidan
+· REEMISIONES: que una fase reemitida declare EL MISMO HECHO que la anterior (§2.6.4)
+· CONSISTENCIA DEL AUTÓMATA COMPLETO: que la secuencia de fases de cada `tx` sea un camino
+  admitido de §2.6.1, y no una colección de eventos que por separado validan
+```
+
+#### C · Qué garantizan o DEMUESTRAN el RUNTIME y las PRUEBAS DE CAÍDA
+
+Nada de esto es observable en el texto de un evento, y por eso **la regla 4 vive aquí**:
+
+```text
+· ORDEN EFECTIVO DE ESCRITURA: `temporal → fsync(temporal) → rename → fsync(directorio)`
+· `fsync` DEL EVENTO Y DE SU DIRECTORIO ANTES DEL PRIMER CANÓNICO. **Ésta es la regla 4**:
+  «ninguna escritura canónica sin intención durable previa» es una afirmación sobre el
+  ORDEN REAL DE DOS LLAMADAS AL SISTEMA, y ningún esquema puede observarla
+· LOCKS: que `R5` sea un lock y no un consejo, y que el segundo ejecutor no arranque
+· COMPARACIÓN CONTRA EL DISCO: la clasificación de §2.6.4 y la integridad post-terminal
+  comparan CONTENIDO REAL, no lo que el diario afirma
+· ROLL-FORWARD IDEMPOTENTE: que dos recuperaciones seguidas converjan al mismo estado
+· QUE NINGUNA ESCRITURA CANÓNICA OCURRA SIN INTENCIÓN DURABLE PREVIA — se DEMUESTRA con
+  `X55` y con las ventanas de caída, no se declara
+```
+
+**Las cuatro reglas, reasignadas a la capa que puede comprobarlas:**
+
+| # | la regla | capa | por qué no puede estar en otra |
+|---|---|---|---|
+| 1 | ningún evento con `fase` cuya transacción ya tenga `derivada` | **B** | exige recorrer los demás eventos de ese `tx` |
+| 2 | ningún `conflicto` sin `divergentes[].contenido` | **A** | es coherencia interna del propio evento |
+| 3 | ninguna `reconciliacion-preparada` sin `decision[]` reproducible y su `hash_final` | **A** la presencia y la forma · **B** que su base observada case con lo que el `conflicto` anterior registró | la presencia es del evento; la correspondencia con el conflicto es del diario |
+| 4 | ninguna escritura canónica sin intención durable previa | **C**, y sólo C | es una propiedad del ORDEN FÍSICO de las escrituras. Ni A ni B ven el disco |
+
+> **La regla que resume el reparto:** **no se le atribuye a JSON/YAML Schema ninguna
+> propiedad histórica o física que no pueda observar.** Un esquema que «rechaza» un cuarto
+> reintento, una transición no admitida o una escritura sin intención durable previa está
+> prometiendo lo que no comprueba — y una promesa así es peor que no tenerla, porque nadie
+> construye después el mecanismo que sí lo haría.
 
 **Un evento nunca se edita, y nunca narra en futuro.** Corregir un evento se hace emitiendo
 otro que lo rectifica y lo enlaza. Una intención se registra con una fase que dice
