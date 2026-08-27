@@ -26,6 +26,11 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 > POSTERIOR             reconciliación no era recuperable, y la integridad post-terminal
 >                       salía del terminal— y un GRAVE. Correcciones: D52–D54.
 >                       Tampoco es la tercera revisión, y tampoco certifica nada
+> SEXTA COMPROBACIÓN    sobre la semántica de sellado y retirada de cuerpo: la lápida
+> TÉCNICA               conservaba un `id` que ya no podía recalcularse, la huella se
+>                       presentaba como prueba de contenido, y «cualquier evento vivo» hacía
+>                       inalcanzable la retirada. Corrección: D63. TAMPOCO es la tercera
+>                       revisión, y TAMPOCO certifica nada
 > QUINTA COMPROBACIÓN   de un solo punto, sobre `D60`: un único campo `iteracion` numeraba
 > TÉCNICA               OBSERVACIONES e INTENTOS a la vez, y valía 4 bajo un máximo de 3. Se
 >                       separan los dos contadores. Corrección: D62. TAMPOCO es la tercera
@@ -50,8 +55,8 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 > introdujo o no vio, los TRES de la segunda corrección técnica están en el texto que la
 > corrección técnica ANTERIOR escribió, los DOS de la tercera comprobación están en el
 > texto que la segunda escribió, los DOS de la cuarta están en el texto que la tercera
-> escribió, y el de la quinta está en el texto que la cuarta escribió.** Es el SEXTO
-> encadenamiento consecutivo, y es la
+> escribió, el de la quinta está en el texto que la cuarta escribió, y el de la sexta está
+> en el texto que la quinta escribió.** Es el SÉPTIMO encadenamiento consecutivo, y es la
 > razón por la que las revisiones se encadenan en vez de darse por buenas. **Quien aplicó
 > todas es quien las recibió**, luego ninguna prueba nada: `F4c` sigue **ABIERTA**,
 > pendiente de una **tercera revisión independiente**.
@@ -1272,6 +1277,7 @@ QUÉ SIGUE SIENDO CIERTO   se reconstruye desde el diario (§2.9), luego borrarl
 
 QUÉ LLEGA A GIT, EN       NADA de `estado/tx/`. Declarado en positivo, y `X27` lo comprueba
 POSITIVO                  recorriendo la historia entera.
+```
 
 ### 2.6.7 · Tabla adversarial de recuperación
 
@@ -2029,6 +2035,58 @@ DÓNDE VIVE LA IDEMPOTENCIA    sobre `tx`, no sobre `id`. Y se ejerce con una re
                               un nombre de fichero.
 ```
 
+**4bis · La EXCEPCIÓN TIPADA: un evento con el cuerpo retirado.**
+
+> **Añadida por la sexta comprobación técnica (`D63`, que revisa `D37` y `D61`).** El
+> contrato decía `id = EV-H(evento MENOS id)` y, a la vez, que `retirada-de-cuerpo`
+> **sustituye el cuerpo por una lápida conservando el mismo `id`**. Las dos cosas juntas
+> tienen una consecuencia que no estaba escrita:
+>
+> ```text
+> 1  después de retirar el cuerpo, el `id` original YA NO PUEDE RECALCULARSE desde el
+>    fichero actual: la preimagen que lo produjo ya no está allí
+> 2  la identidad DIRECCIONADA POR CONTENIDO deja de ser verificable por la REGLA
+>    ORDINARIA. Aplicarla a la lápida da OTRO valor, no el `id` declarado
+> 3  conservar el `id` y una huella **NO equivale a conservar el contenido original**, y
+>    tratarlo como si lo fuera es la afirmación que `D63` retira
+> ```
+>
+> No se corrige debilitando la regla de identidad: se corrige **tipando la excepción**, para
+> que esquema y validador sepan cuál de los dos algoritmos aplicar.
+
+**Los dos casos, y son disjuntos y distinguibles sin ambigüedad:**
+
+```text
+A · EVENTO ÍNTEGRO         · se recalcula su representación canónica
+                           · se deriva su `id` con `EV-H(evento MENOS id)`
+                           · el resultado DEBE coincidir con su nombre y con la identidad
+                             declarada. Si no coincide, es un defecto
+
+B · EVENTO CON CUERPO      · **NO se intenta recalcular el `id` desde la lápida.** Aplicar
+    RETIRADO                 la fórmula ordinaria a una lápida es un ERROR DEL VALIDADOR,
+    (lápida)                  no un fallo del evento
+                           · se valida la ESTRUCTURA de la lápida (§2.9)
+                           · se valida que SELLADO y LÁPIDA vinculen exactamente lo mismo:
+                                 `id_original` · `hash_cuerpo_original` · `fase` · `tx` ·
+                                 posición en la cadena
+                           · SI se aporta el cuerpo original: se recalculan su huella y su
+                             identidad, y **deben coincidir** con lo que lápida y sellado
+                             declaran
+                           · SIN el cuerpo original **no existe verificación completa de su
+                             preimagen**, y el sistema debe decirlo en vez de callarlo
+```
+
+```text
+CÓMO SE DISTINGUEN     el propio evento lo declara: una lápida lleva `cuerpo_retirado: true`
+                       y el bloque de lápida de §2.9. El esquema estructural lo ve sin salir
+                       del fichero, y por eso puede elegir el algoritmo correcto ANTES de
+                       intentar nada.
+
+QUÉ NO SE DEBILITA     la regla de identidad de los eventos íntegros. Sigue siendo
+                       `EV-H(evento MENOS id)`, sin excepciones, y `X20` y `X22` la
+                       comprueban igual que antes.
+```
+
 **5 · Regla de reintento.** Es lo que F4c le pedía al nombre del fichero y el nombre del
 fichero no puede dar:
 
@@ -2084,32 +2142,296 @@ con las cuatro preguntas respondidas:
 ```text
 QUÉ CONSERVA EL SELLADO   · el ESTADO FINAL de los items que sella. Es lo que hace real la
                             reconstrucción sin Git
-                          · por cada evento sellado: su `id`, su `fase`, su `tx` y la
-                            huella de su contenido. La LISTA ORDENADA, no un resumen
+                          · por cada evento sellado: su `id`, su `fase`, su `tx`, su
+                            POSICIÓN y la HUELLA de su contenido. La LISTA ORDENADA, no un
+                            resumen. **La huella, no el cuerpo**
                           · la cabeza de la cadena `predecesor` al sellar
                           · qué eventos quedan REFERENCIADOS desde fuera del sellado
 
 QUÉ PUEDE RETIRARSE       únicamente el CUERPO de un evento sellado: su texto largo. Nunca
                           su id, su huella ni su posición. Retirar un cuerpo es un acto
                           AUTORIZADO Y REGISTRADO —emite su propio evento—, no una limpieza
-                          automática por antigüedad.
+                          automática por antigüedad. Y exige una FUENTE DE RECUPERACIÓN
+                          COMPROBADA de antemano (abajo).
 
-QUÉ NO PUEDE RETIRARSE    · un evento al que apunta cualquier evento VIVO. Es la regla que
-   NUNCA                    impide que un evento apunte a algo que ya no existe
+QUÉ NO PUEDE RETIRARSE    · un evento con una DEPENDENCIA SEMÁNTICA VIVA: alguien que
+   NUNCA                    necesita LEER SU CUERPO, no sólo nombrarlo (abajo). Una
+                            referencia ESTRUCTURAL por `predecesor` **no** bloquea
                           · el evento terminal de cualquier transacción
                           · el estado final de un item, que es el contenido del sellado
+                          · cualquier evento cuya fuente de recuperación no esté comprobada
 
-CÓMO SE VERIFICA          recomputar la cadena `predecesor` sobre los ids conservados debe
-INTEGRIDAD Y ORDEN        reproducir la cabeza que el sellado declara. Un cuerpo retirado
-                          sigue siendo verificable: su huella está en el sellado, y por eso
-                          se puede demostrar que se conocía y que se retiró a propósito —
-                          que es distinto de que nunca haya existido.
+QUÉ SE VERIFICA, Y CON    **TRES NIVELES DISTINTOS, y no son el mismo.** Están abajo, uno a
+QUÉ ALCANCE               uno. Recorrer los ids conservados comprueba ORDEN Y REFERENCIAS,
+                          no CONTENIDO; y una huella sola no dice cuál era el cuerpo.
 
-POR QUÉ SIGUE SIENDO      porque sellar **añade**: escribe un fichero de sellado nuevo y
-APPEND-ONLY               emite el evento que lo registra. NINGÚN evento se edita. Retirar
-                          un cuerpo tampoco edita el evento: lo sustituye por su lápida,
-                          que conserva id, huella y motivo de retirada.
+QUÉ ES EXACTAMENTE        sellar **AÑADE**: escribe un fichero de sellado nuevo y emite el
+APPEND-ONLY, Y QUÉ NO     evento que lo registra. Retirar un cuerpo, en cambio, **SÍ EDITA
+                          FÍSICAMENTE UN FICHERO EXISTENTE**. La formulación correcta está
+                          abajo, y ya no dice «sustituir no es editar».
 ```
+
+#### Los TRES NIVELES de garantía, que el texto anterior mezclaba
+
+> **Corregido por la sexta comprobación técnica (`D63`).** §2.9 decía que *«un cuerpo
+> retirado sigue siendo verificable: su huella está en el sellado, y por eso se puede
+> demostrar que se conocía y que se retiró a propósito»*, y que *«recomputar la cadena
+> `predecesor`»* verificaba integridad y orden. **Las dos frases prometen de más.** Una
+> huella es un COMPROMISO CRIPTOGRÁFICO: sin la preimagen no demuestra qué contenido había
+> ni que se poseyera; y recorrer referencias comprueba el orden, no el contenido. Se separan
+> en tres niveles, cada uno con lo que sí garantiza y lo que no.
+
+```text
+NIVEL 1 · CONTINUIDAD     QUÉ DA   los `id` conservados y los enlaces `predecesor` permiten
+ESTRUCTURAL                        RECORRER EL ORDEN DECLARADO y comprobar que ninguna
+                                   referencia apunta a algo que no existe, hasta el ancla
+                                   que el sellado declara.
+                          QUÉ NO   **no verifica NADA del contenido retirado.** Un orden
+                          DA       correcto sobre cuerpos ausentes sigue siendo un orden
+                                   correcto sobre cuerpos ausentes.
+                          SOBREVIVE a la retirada, y sobrevive a que la fuente externa
+                                   desaparezca.
+
+NIVEL 2 · CONSISTENCIA    QUÉ DA   sellado y lápida contienen EL MISMO COMPROMISO
+DEL COMPROMISO                     CRIPTOGRÁFICO —`hash_cuerpo_original`—, junto con el
+                                   mismo `id_original`, `fase`, `tx` y posición. Se puede
+                                   demostrar que **el repositorio conservó ese compromiso y
+                                   registró la retirada**, con su autoridad y su motivo.
+                          QUÉ NO   **una huella aislada no demuestra por sí sola cuál era el
+                          DA       contenido, ni que alguien lo poseyera.** Demuestra que
+                                   DOS SITIOS DEL REPOSITORIO dicen lo mismo — que es
+                                   consistencia interna, no prueba de preimagen.
+                          SOBREVIVE a la retirada, y sobrevive a que la fuente externa
+                                   desaparezca.
+
+NIVEL 3 · VERIFICACIÓN    QUÉ DA   con el CUERPO ORIGINAL delante: se recalcula el cuerpo,
+COMPLETA                           su huella y su identidad, y las tres deben coincidir con
+                                   lo que lápida y sellado declaran. Es la única que cierra
+                                   la preimagen.
+                          QUÉ      **EXIGE DISPONER DEL CUERPO ORIGINAL.** Puede proceder de
+                          EXIGE    una revisión Git EXACTA o de otro archivo durable
+                                   autorizado (abajo).
+                          NO SOBREVIVE a que la fuente de recuperación desaparezca. Y
+                                   cuando eso ocurre, **el sistema lo declara**: los niveles
+                                   1 y 2 siguen, el 3 no, y no se sigue afirmando integridad
+                                   histórica completa.
+```
+
+```text
+LA FRASE QUE SE RETIRA    «la huella demuestra que el cuerpo existió» · «la huella demuestra
+                          cuál era» · «se recompone la cadena» cuando sólo se comprueban
+                          referencias · «el contenido sigue siendo verificable» sin decir
+                          que el cuerpo original tiene que estar disponible.
+                          Ninguna de las cuatro se usa ya en la norma vigente.
+```
+
+#### La FUENTE DE RECUPERACIÓN, exigida antes de retirar
+
+**La retirada sólo puede autorizarse si, ANTES de sustituir el cuerpo, se cumplen las
+cuatro:**
+
+```text
+1  EL EVENTO ORIGINAL Y SU     confirmados en una REVISIÓN GIT DURABLE del repositorio de
+   SELLADO ESTÁN DURABLES      control, o en un ARCHIVO EXTERNO AUTORIZADO. Sin esto no hay
+                               de dónde recuperar, y la retirada es una pérdida.
+
+2  LA LÁPIDA LLEVA UN          y no sólo una huella. Tres campos, y los tres:
+   LOCALIZADOR VERIFICABLE       · `revision`  el commit exacto, o el identificador del
+                                              archivo externo autorizado
+                                 · `ruta`      la ruta o el `blob` dentro de esa revisión
+                                 · `hash_esperado`  el del cuerpo que debe salir de ahí
+
+3  SE HA COMPROBADO QUE EL     no «se supone que se puede»: se RECUPERA, se calcula su
+   CUERPO SE RECUPERA DE       huella y se compara. Una recuperación no ensayada no es una
+   ESE LOCALIZADOR             garantía, es una expectativa.
+
+4  LA EVIDENCIA DE ESA         queda REGISTRADA, y la lápida la referencia. Es lo que
+   COMPROBACIÓN SE REGISTRA    permite auditar después que la condición 3 se cumplió de
+                               verdad y no se declaró de palabra.
+```
+
+**Y si la fuente externa deja de estar disponible**, que es un caso que hay que nombrar
+porque ocurre:
+
+```text
+SIGUEN VÁLIDOS      el NIVEL 1 —continuidad estructural— y el NIVEL 2 —consistencia del
+                    compromiso—. No dependen de nada externo.
+
+DEJAN DE ESTAR      la RECUPERACIÓN del cuerpo y la VERIFICACIÓN COMPLETA (nivel 3).
+GARANTIZADOS
+
+QUÉ DEBE HACER      **REFLEJAR LA DEGRADACIÓN**, y dejar de afirmar integridad histórica
+EL SISTEMA          completa para ese evento. Un sistema que sigue diciendo «verificado»
+                    cuando ya no puede verificar es peor que uno que no verifica.
+
+LO QUE NO SE        **que Git garantice conservación eterna.** No la garantiza: depende de
+AFIRMA              la POLÍTICA DE RETENCIÓN DE HISTORIA del alojamiento, de que nadie
+                    reescriba o pode esa historia, y de que el remoto siga existiendo. La
+                    dependencia se DECLARA —retención de historia, o archivo externo— en vez
+                    de suponerse.
+```
+
+#### `append-only`, dicho con precisión física
+
+> **Corregido por `D63`.** El texto anterior decía que *«retirar un cuerpo tampoco edita el
+> evento: lo sustituye por su lápida»*. **Sustituir un cuerpo SÍ edita físicamente un fichero
+> existente**, y llamarlo de otra manera no cambia lo que hace el sistema de ficheros.
+
+```text
+LO QUE ES INMUTABLE       los EVENTOS y sus CABECERAS LÓGICAS: `id`, `fase`, `tx`,
+                          `predecesor`, posición y procedencia. Nada de eso cambia nunca.
+
+CÓMO CRECE EL DIARIO      AÑADIENDO eventos nuevos. Es la operación normal, y la única que
+                          el protocolo usa para narrar.
+
+LA ÚNICA MUTACIÓN         **sustituir el CUERPO de un evento SELLADO por su LÁPIDA.** Una,
+FÍSICA AUTORIZADA         y transaccional (§3.6): es la única escritura de ADS que reemplaza
+                          contenido ya escrito bajo `estado/`.
+
+CUALQUIER OTRA            PROHIBIDA. No hay una segunda excepción.
+MODIFICACIÓN
+
+Y POR TANTO, DICHO SIN    **el diario FÍSICO no es estrictamente append-only.** Lo es su
+RODEOS                    semántica —eventos y cabeceras inmutables, historia que no se
+                          reescribe— con UNA excepción física, tipada, autorizada,
+                          transaccional y registrada. Decir «append-only» a secas era
+                          cómodo y no era cierto.
+```
+
+**Qué reduce de verdad esta operación, y qué no:**
+
+```text
+SÍ REDUCE       el CORPUS y el CONTEXTO del checkout vigente: lo que un agente o una persona
+                tiene que leer, y lo que ocupa el árbol de trabajo. Ése es su objeto.
+
+NO ELIMINA      el cuerpo de la HISTORIA DE GIT. El commit que lo contenía sigue
+                conteniéndolo, y por eso mismo la fuente de recuperación funciona.
+
+NO REDUCE       necesariamente el TAMAÑO DEL REPOSITORIO: los objetos históricos siguen
+                ahí. Un clon completo los sigue trayendo.
+
+LIBERAR ESOS    sería OTRA OPERACIÓN, con OTRO GOBIERNO —reescribir o podar historia
+OBJETOS         publicada—, y **no queda autorizada aquí**. Mezclarla con la retirada de
+                cuerpo destruiría además la fuente de recuperación que la retirada exige.
+```
+
+#### Qué referencia BLOQUEA la retirada, y qué referencia NO
+
+> **Corregido por `D63`.** La regla decía *«un evento al que apunta cualquier evento VIVO»*.
+> Como **cada evento apunta al anterior por `predecesor`**, esa regla haría **inalcanzable la
+> propia operación**: casi todo evento sellado tiene un sucesor que lo nombra. Se distingue
+> por el TIPO de referencia.
+
+```text
+REFERENCIA         alguien NOMBRA el `id`, y le basta con el `id`: el enlace `predecesor`,
+ESTRUCTURAL        la lista ordenada del sellado, un `resuelve`, un `tx_afectada`.
+NO BLOQUEA         El `id` SE CONSERVA en la lápida, luego la referencia sigue resolviendo y
+                   el orden sigue recorriéndose. **Por sí sola no impide retirar.**
+
+DEPENDENCIA        alguien necesita LEER EL CUERPO para hacer su trabajo: una reparación que
+SEMÁNTICA VIVA     tiene que reproducir el `contenido` o el `parche` declarado, una
+BLOQUEA            reconciliación abierta que se apoya en la copia de lo divergente, una
+                   transacción sin terminal que declara ese cuerpo como su mecanismo, un
+                   dictamen en curso que lo cita como evidencia.
+                   **Mientras exista, la retirada se rechaza.**
+
+CÓMO SE DISTINGUEN el evento que refiere DECLARA cuál de las dos hace. Una referencia que no
+                   dice que necesita el cuerpo se trata como ESTRUCTURAL; una que lo
+                   necesita lo dice, y por eso bloquea. En la duda, BLOQUEA.
+
+EL SELLADO ES EL   porque conserva `id`, `fase`, `tx`, posición y huella de cada evento
+ANCLA              sellado, y la CABEZA DE LA CADENA al sellar. Con eso, el recorrido
+                   estructural no necesita ningún cuerpo: se apoya en el sellado como
+                   CHECKPOINT y sigue desde ahí.
+
+CÓMO SE RECORRE    · por los `id` conservados y la lista ordenada del sellado, hasta el
+LA CADENA TRAS       ancla. Eso es NIVEL 1, y no toca ningún cuerpo
+LA RETIRADA        · lo que se verifica ASÍ: orden, referencias y que nada apunte al vacío
+                   · lo que EXIGE recuperar los cuerpos originales: cualquier afirmación
+                     sobre QUÉ decía un evento, y toda verificación de NIVEL 3
+```
+
+#### `retirada-de-cuerpo` — el contrato completo, punto por punto
+
+**Sigue siendo TRANSACCIONAL** por el criterio de §3.6 —sustituye contenido previo—, y estos
+son sus once puntos:
+
+```text
+1  FICHERO QUE MODIFICA      el del EVENTO SELLADO cuyo cuerpo se retira, en su ruta actual
+                             bajo `estado/eventos/`. UNO, y ninguno más.
+
+2  CONTENIDO EXACTO DE       `cuerpo_retirado: true`   la marca que tipa la excepción (§2.8)
+   LA LÁPIDA                 `id_original`             el `id` del evento íntegro
+                             `fase` · `tx` · `posicion`  la cabecera lógica, intacta
+                             `predecesor`              intacto: la cadena sigue resolviendo
+                             `hash_cuerpo_original`    el compromiso criptográfico
+                             `localizador`             `revision` · `ruta` · `hash_esperado`
+                             `prueba_de_recuperacion`  referencia a la evidencia registrada
+                             `autoridad` · `motivo`    quién lo decidió y por qué
+                             `sellado_ref`             el sellado que lo ancla
+
+3  IDENTIDAD ORIGINAL        `id_original`, `fase`, `tx` y `posicion`. El `id` NO cambia y
+   QUE CONSERVA              NO se recalcula desde la lápida: es la excepción tipada de
+                             §2.8, punto 4bis.
+
+4  LOCALIZADOR DEL CUERPO    `revision` —commit exacto o archivo externo autorizado—, `ruta`
+   ORIGINAL                  o blob dentro de ella, y `hash_esperado`. Los tres, o no hay
+                             localizador.
+
+5  RELACIÓN CON EL SELLADO   la lápida y el sellado deben vincular EXACTAMENTE lo mismo:
+                             `id_original`, `hash_cuerpo_original`, `fase`, `tx` y posición.
+                             Una discrepancia entre los dos es un fallo de verificación
+                             (`X-D`), no una tolerancia.
+
+6  `hash_previo`             la huella del EVENTO ÍNTEGRO tal como está en disco antes de
+                             tocarlo. Es lo que hace clasificable la recuperación por §2.6.4.
+
+7  `hash_posterior_          la huella de la LÁPIDA completa. Con los dos, una caída a mitad
+   esperado`                 cae en una de las tres cajas y se completa o se escala: la
+                             retirada es recuperable como cualquier otra escritura canónica.
+
+8  PRUEBA DE RECUPERACIÓN    OBLIGATORIA Y PREVIA. Se recupera el cuerpo desde el
+   PREVIA                    localizador, se calcula su huella y se compara con
+                             `hash_cuerpo_original`. Sin esta prueba **la retirada se
+                             rechaza** (`X-G`). No se ensaya después: después ya no hay
+                             cuerpo que recuperar si falla.
+
+9  AUTORIDAD Y MOTIVO        ambos obligatorios, con los cinco conceptos de `a.9`. Retirar
+                             no es una limpieza automática por antigüedad, y sin autoridad
+                             declarada no es un acto: es una pérdida.
+
+10 CÓMO SE REGISTRA          por LAS FASES DE SU PROPIA TRANSACCIÓN, con
+   LA RETIRADA               `tipo: retirada-de-cuerpo`. Su `confirmada` **ES** el registro
+                             del hecho. **NO se crea un segundo evento que la duplique**:
+                             sería una segunda verdad sobre el mismo hecho.
+
+11 POR QUÉ ESAS FASES        porque son ficheros NUEVOS, uno cada una, direccionados por su
+   NO ABREN OTRA             contenido — y por el criterio de §3.6 eso **no exige `tx`**. La
+   TRANSACCIÓN               recursión se corta por el criterio general, no por una
+                             excepción escrita para el diario: escribir el `preparada` de
+                             una retirada no abre otra transacción para registrar que se
+                             escribió ese `preparada`.
+```
+
+#### `X-A`–`X-H` · las ocho comprobaciones de la retirada
+
+**No son filas de la tabla adversarial de §2.6.7**, que sigue en **cuarenta y dos filas y
+cuarenta y dos identificadores `X<nn>`**. Éstas verifican la semántica de lápida e identidad,
+llevan letra en vez de número, y son contrato de prueba igual que aquéllas.
+
+| | escenario | resultado exigido |
+|---|---|---|
+| `X-A` | lápida y sellado coinciden, y **el cuerpo original NO está disponible** | **NIVEL 1 válido** —orden y referencias se recorren hasta el ancla— · **NIVEL 2 válido** —el compromiso coincide en los dos sitios— · **NIVEL 3 NO alcanzable**: identidad y contenido originales **no se verifican completamente**, y el sistema lo DECLARA en vez de afirmar integridad histórica completa |
+| `X-B` | se recupera el cuerpo desde el `localizador` declarado | su huella casa con `hash_cuerpo_original`, `EV-H(evento MENOS id)` sobre el cuerpo recuperado reproduce el `id_original`, y la **verificación completa se supera** |
+| `X-C` | se aporta un cuerpo INCORRECTO | **verificación FALLIDA**, nombrando qué no casa: la huella, el `id` recomputado, o los dos. No se acepta «se parece» |
+| `X-D` | sellado y lápida declaran `hash_cuerpo_original` o `id_original` DISTINTOS | **verificación FALLIDA.** Es inconsistencia interna del repositorio, y se escala: ninguno de los dos puede darse por bueno |
+| `X-E` | un evento posterior mantiene **sólo una referencia estructural** `predecesor` al evento que se quiere retirar | la retirada **PUEDE autorizarse** si se cumplen las demás condiciones. El `id` se conserva en la lápida, la referencia sigue resolviendo y el orden sigue recorriéndose |
+| `X-F` | existe una **dependencia semántica viva** que necesita leer el cuerpo —una reparación que debe reproducir su `contenido`, una reconciliación abierta apoyada en su copia de lo divergente— | **retirada BLOQUEADA**, nombrando quién depende y por qué. En la duda sobre el tipo de referencia, bloquea |
+| `X-G` | se intenta retirar **antes de sellar**, o **sin prueba de recuperación comprobada** | **retirada BLOQUEADA** en los dos casos. Sin sellado no hay ancla; sin prueba de recuperación la retirada es una pérdida disfrazada de operación |
+| `X-H` | pasar el validador sobre un evento con lápida | **NO aplica la fórmula ordinaria de identidad al contenido de la lápida.** Detecta `cuerpo_retirado: true`, cambia al algoritmo B de §2.8 punto 4bis, y valida estructura y vínculo con el sellado. Aplicar `EV-H` a la lápida y reportar «id no coincide» es un **defecto del validador** |
+
+> **Ninguna se ha ejecutado**, como las cuarenta y dos de §2.6.7 y las nueve `R1`–`R9`.
+> Escribir el contrato de una prueba no es la prueba.
 
 **Sin sellado, el diario crece sin límite y la reconstrucción exige el primer evento de la
 historia.** Con él, la garantía es explícita y acotada: **sellado más eventos posteriores**.
@@ -2753,19 +3075,27 @@ MODIFICA                  operación de ADS que sustituye contenido ya escrito b
                           `estado/`, y por eso es la única que cae del lado 2 de la
                           frontera siendo un solo fichero.
 
-CÓMO CONSERVA QUE EL      porque **la HISTORIA no se reescribe: se sustituye un CUERPO por
-DIARIO SEA APPEND-ONLY    su prueba**. La lápida conserva `id`, `fase`, `tx`, la HUELLA del
-                          cuerpo retirado, la autoridad y el motivo. La cadena `predecesor`
-                          sigue resolviendo, el orden sigue siendo verificable, y se puede
-                          demostrar que ese cuerpo existió y que se retiró a propósito —que
-                          es distinto de que nunca haya existido (§2.9).
+QUÉ PARTE DEL DIARIO      **NO es «la historia no se reescribe»**: esta operación EDITA
+SIGUE SIENDO INMUTABLE    físicamente un fichero existente, y el diario FÍSICO no es
+                          estrictamente append-only (§2.9, `D63`). Lo inmutable son los
+                          EVENTOS y sus CABECERAS LÓGICAS: la lápida conserva `id_original`,
+                          `fase`, `tx`, `posicion` y `predecesor`, luego la cadena sigue
+                          RESOLVIENDO y el ORDEN sigue recorriéndose. Eso es el NIVEL 1 de
+                          §2.9, y **no verifica ningún contenido**.
                           EL PRECIO, DICHO: el `id` deja de ser recomputable desde el
-                          fichero, porque el fichero ya no contiene el cuerpo. Por eso la
-                          huella va DENTRO de la lápida y también en el sellado: son las dos
-                          copias que hacen la retirada auditable.
-                          Y §2.9 ya acota qué no puede retirarse NUNCA: un evento al que
-                          apunta cualquier evento VIVO, y el evento terminal de cualquier
-                          transacción.
+                          fichero, y por eso §2.8 punto 4bis TIPA la excepción — sobre una
+                          lápida NO se aplica la fórmula ordinaria de identidad.
+                          Y LO QUE LA HUELLA NO DA: es un COMPROMISO, no una prueba de
+                          contenido. Que esté en la lápida Y en el sellado demuestra que el
+                          repositorio CONSERVÓ ESE COMPROMISO y registró la retirada —NIVEL
+                          2—, no cuál era el cuerpo. Afirmar lo segundo exige tener el
+                          cuerpo original delante: es el NIVEL 3, y depende del
+                          `localizador` comprobado antes de retirar.
+                          QUÉ BLOQUEA LA RETIRADA: una DEPENDENCIA SEMÁNTICA VIVA —alguien
+                          que necesita LEER el cuerpo—, el evento terminal de cualquier
+                          transacción, y la falta de fuente de recuperación comprobada. Una
+                          referencia ESTRUCTURAL por `predecesor` **no** bloquea: si lo
+                          hiciera, la operación sería inalcanzable (§2.9).
 
 QUÉ EVENTO NUEVO          **ninguno aparte**. Las fases de su PROPIA transacción llevan
 REGISTRA LA RETIRADA      `tipo: retirada-de-cuerpo`, y su `confirmada` ES el registro del
@@ -2921,6 +3251,10 @@ C · RUNTIME Y PRUEBAS        garantiza o DEMUESTRA lo FÍSICO: el orden real de
   lleve `divergentes[].contenido`; que una `reconciliacion-preparada` lleve `decision[]` con
   su `hash_final`; que `tx_afectada` sólo aparezca con `causa: posterior-al-cierre`
 · UNICIDAD DE `ruta` dentro del array del propio evento, y `orden` total dentro de él
+· QUÉ ALGORITMO DE IDENTIDAD APLICAR, antes de aplicarlo: si el evento lleva
+  `cuerpo_retirado: true` es una LÁPIDA, y **NO se le aplica `EV-H(evento MENOS id)`** —la
+  preimagen ya no está—; se valida su estructura (§2.9). Sobre un evento íntegro sí se aplica
+  y debe reproducir su `id`. Confundirlos es el defecto que `X-H` comprueba (§2.8, 4bis)
 · LOS DOS CONTADORES DE LA RUTA DE CONFLICTO, en lo que se ve sin salir del evento:
   `observacion` ∈ 1..4 · `intentos_consumidos` ∈ 0..3 · `intentos_consumidos` = `observacion`
   − 1 · `agotado: true` **sólo** con `observacion: 4` · `intento` ∈ 1..3, y **`intento: 4` no
@@ -2959,6 +3293,13 @@ Recorriendo **todos los eventos**, y por eso ninguna de estas comprobaciones cab
   abierta. **Ninguna secuencia contiene `confirmada → confirmada`.** Sólo `conflicto` y
   `reconciliacion-preparada` se repiten, con `observacion` e `intento` como discriminadores
   respectivos y máximos **4 observaciones** y **3 intentos**
+· LÁPIDA Y SELLADO, VINCULADOS: para todo evento con `cuerpo_retirado: true`, el sellado que
+  lo ancla declara el MISMO `id_original`, `hash_cuerpo_original`, `fase`, `tx` y posición.
+  Una discrepancia es un fallo (`X-A`–`X-D`), y comprobarla exige abrir DOS ficheros: por eso
+  es de esta capa y no del esquema
+· QUÉ NIVEL DE GARANTÍA SE ALCANZA, declarado y no supuesto: con lápida y sin cuerpo original
+  disponible, NIVEL 1 y NIVEL 2 sí, **NIVEL 3 no** — y el validador lo REPORTA en vez de
+  afirmar integridad histórica completa (§2.9)
 · LA IDENTIDAD DE LA RUTA: #observaciones = #intentos en una transacción de conflicto
   CERRADA, y #observaciones = #intentos + 1 en una AGOTADA — y en la agotada ese `+1` es
   siempre el `conflicto` con `agotado: true`
@@ -3001,42 +3342,50 @@ Nada de esto es observable en el texto de un evento, y por eso **la regla 4 vive
 > prometiendo lo que no comprueba — y una promesa así es peor que no tenerla, porque nadie
 > construye después el mecanismo que sí lo haría.
 
-**Un evento nunca se edita, y nunca narra en futuro.** Corregir un evento se hace emitiendo
-otro que lo rectifica y lo enlaza.
+**Un evento no se edita para corregirlo, y nunca narra en futuro.** Corregir un evento se
+hace emitiendo otro que lo rectifica y lo enlaza — **nunca** reescribiendo el que ya está.
 
-> **La ÚNICA excepción autorizada, y está acotada: `retirada-de-cuerpo`.** Comprobada punto
-> por punto contra §2.9, porque una excepción a «nunca se edita» que no esté acotada deja de
-> ser una excepción:
+> **La ÚNICA excepción autorizada, y está acotada: `retirada-de-cuerpo`.** El contrato
+> completo, con sus once puntos y sus ocho comprobaciones `X-A`–`X-H`, vive en §2.9. Aquí
+> queda lo que esta sección tiene que decir:
 >
 > ```text
-> QUÉ SE PUEDE TOCAR      SÓLO el CUERPO —el texto largo— de un evento YA SELLADO. Nada más,
->                         y nunca un evento vivo ni el terminal de una transacción.
+> QUÉ SE PUEDE TOCAR      SÓLO el CUERPO —el texto largo— de un evento YA SELLADO, y sólo
+>                         con su fuente de recuperación COMPROBADA de antemano. Nunca un
+>                         evento con dependencia semántica viva, ni el terminal de una
+>                         transacción.
 >
-> CABECERA E IDENTIDAD    SE CONSERVAN. La lápida mantiene `id`, `fase`, `tx` y la posición
->                         en la cadena. `predecesor` sigue resolviendo, y el orden sigue
->                         siendo verificable recomputando la cadena (§2.9).
+> ES UNA EDICIÓN FÍSICA   y se dice: sustituir un cuerpo **SÍ edita un fichero existente**.
+> REAL                    El diario FÍSICO no es estrictamente append-only. Lo inmutable son
+>                         los eventos y sus CABECERAS LÓGICAS; ésta es la ÚNICA mutación
+>                         física autorizada, tipada, transaccional y registrada (§2.9).
 >
-> HASH ORIGINAL           VERIFICABLE. La huella del cuerpo retirado vive en DOS sitios: en
->                         el fichero de sellado y en la propia lápida. Con el cuerpo
->                         delante, cualquiera puede demostrar que es el que estaba.
+> CABECERA E IDENTIDAD    SE CONSERVAN: `id_original`, `fase`, `tx`, `posicion` y
+>                         `predecesor`. La cadena sigue resolviendo, y el recorrido
+>                         estructural no necesita ningún cuerpo.
 >
-> LÁPIDA CON AUTORIDAD    OBLIGATORIAS las dos. Retirar es un acto AUTORIZADO Y REGISTRADO,
-> Y MOTIVO                no una limpieza automática por antigüedad.
+> LA IDENTIDAD NO SE      **es la excepción tipada de §2.8 punto 4bis.** Sobre una lápida NO
+> RECALCULA               se aplica `EV-H(evento MENOS id)`: la preimagen ya no está. Hacerlo
+>                         es un defecto del validador, no un fallo del evento (`X-H`).
 >
-> EL CUERPO ORIGINAL,     **NO se recupera desde el sellado, y se dice en vez de prometerlo.**
-> DICHO CON PRECISIÓN     El sellado guarda la HUELLA, no el cuerpo — si guardara el cuerpo,
->                         retirarlo no liberaría nada y la operación no tendría objeto. Lo
->                         que el sellado da es **prueba de que existió y de cuál era**, no
->                         una copia. Recuperarlo exige una fuente EXTERNA al estado vigente
->                         —la historia de Git, mientras el commit sobreviva—, y esa es una
->                         garantía distinta y más débil, declarada aquí y no supuesta.
+> QUÉ GARANTIZA CADA      NIVEL 1 continuidad estructural · NIVEL 2 consistencia del
+> NIVEL                   compromiso · NIVEL 3 verificación completa, que **exige el cuerpo
+>                         original** desde el `localizador` declarado. Sin él, los niveles 1
+>                         y 2 siguen y el 3 NO, y el sistema lo declara (§2.9).
+>
+> LO QUE NO SE AFIRMA     que la huella demuestre que el cuerpo existió, ni cuál era. Una
+>                         huella es un COMPROMISO: sin preimagen no prueba contenido. Y no
+>                         se afirma que Git conserve eternamente: la dependencia de retención
+>                         de historia, o de archivo externo, queda declarada.
 >
 > CUALQUIER OTRA EDICIÓN  SIGUE PROHIBIDA. No hay una segunda excepción, y añadir una
 >                         exigiría pasar la misma prueba: qué se toca, qué se conserva, cómo
 >                         se verifica, con qué autoridad y con qué registro.
-> ``` Una intención se registra con una fase que dice
-«preparada», y hay dos. Las dos reglas juntas son lo que hace que el diario sea una historia
-y no una lista de deseos.
+> ```
+
+**Y la segunda mitad de la regla:** una intención se registra con una fase que dice
+«preparada», y hay dos. Las dos juntas son lo que hace que el diario sea una historia y no
+una lista de deseos.
 
 ## 3.7 · Extensiones, sin tipo nuevo
 
@@ -5548,10 +5897,19 @@ conservan su texto.
 |---|---|---|---|
 | `D62` | **observación e intento son dos contadores**: `conflicto` lleva `observacion` 1..4, `intentos_consumidos` 0..3 y `agotado`; `reconciliacion-preparada` lleva `intento` 1..3 y `resuelve`. El tope limita **intentos**, no observaciones | `D60` | un solo campo `iteracion` valía 4 bajo un máximo de 3, y con él seis afirmaciones incompatibles a la vez |
 
+### `D63` · la decisión de la SEXTA comprobación técnica
+
+Comprobación acotada sobre la semántica de sellado y retirada de cuerpo. **Séptimo
+encadenamiento consecutivo.** `D16`–`D62` conservan su texto.
+
+| | decisión | qué revisa | por qué |
+|---|---|---|---|
+| `D63` | la **lápida es excepción tipada** al algoritmo de identidad · **tres niveles** de garantía · **fuente de recuperación** comprobada antes de retirar · el diario **físico no es estrictamente append-only** · sólo una **dependencia semántica viva** bloquea la retirada | `D37` · `D61` | tras retirar, el `id` no se recalcula desde el fichero; la huella no prueba contenido; y «cualquier evento vivo» hacía inalcanzable la propia operación |
+
 **Y `O15`**, resolución posterior del Owner que revisa `O14` sin reescribirlo: la adopción de
 PesquerApp es la **primera adopción real, permanente y completa** de ADS. Vive en el registro
-de decisiones, y su lectura arquitectónica en §8.2, §18 y §19. **`D58`–`D62` no la tocan**:
-sólo corrigen recuentos, cardinalidades, fronteras y contadores del protocolo.
+de decisiones, y su lectura arquitectónica en §8.2, §18 y §19. **`D58`–`D63` no la tocan**:
+sólo corrigen recuentos, cardinalidades, fronteras, contadores y la semántica de sellado.
 
 
 

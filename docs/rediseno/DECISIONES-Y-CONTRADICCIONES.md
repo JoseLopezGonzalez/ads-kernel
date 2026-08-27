@@ -202,6 +202,23 @@ certifica `F4c`**. Su hallazgo está, otra vez, en texto que la comprobación an
 |---|---|---|---|---|
 | D62 | **OBSERVACIÓN e INTENTO son dos conceptos con dos contadores, y no uno.** `conflicto` lleva `observacion` ∈ 1..4, `intentos_consumidos` ∈ 0..3 con `intentos_consumidos` = `observacion` − 1, y `agotado: true` **únicamente** en la cuarta observación — y con él **no admite ninguna `reconciliacion-preparada`**. `reconciliacion-preparada` lleva `intento` ∈ 1..3 y `resuelve`, el `id` del `conflicto` que atiende; **nunca existe un `intento: 4`**. **`MAX_CAS_RETRIES = 3` limita INTENTOS, no OBSERVACIONES**, y la cuarta observación registra el **fracaso del tercer intento** sin silenciarlo. Máximos: **4 observaciones · 3 intentos**. Los totales de eventos **no cambian**: 3 · 5 · 7 · 9 · 8 | **D60** | `D60` usó **un solo campo `iteracion`** para numerar dos cosas distintas, y de ahí salieron seis afirmaciones que no pueden ser ciertas a la vez: que empieza en 1, que la comparten `conflicto(i)` y `reconciliacion-preparada(i)`, que incrementa al abrir un conflicto, que el máximo es 3, que la ruta agotada termina en `conflicto(4)`, y que ese cuarto «no es una cuarta iteración». **Un campo que vale 4 bajo un máximo de 3 no es un contador: son dos contadores con un solo nombre.** La alternativa —callar la cuarta observación para que el contador no pase de 3— contradice §2.6.4, que produce `conflicto` ante toda divergencia real, y dejaría el diario afirmando tres intentos sin decir cómo acabó el tercero | volver a un contador único reintroduce las seis afirmaciones incompatibles |
 
+### `D63` · decisión de la SEXTA comprobación técnica
+
+Comprobación acotada sobre la semántica de sellado y retirada de cuerpo. No es la tercera
+revisión independiente, y **no certifica `F4c`**. **Séptimo encadenamiento consecutivo.**
+
+> **`D16`–`D62` no se reescriben. `O15` queda íntegra.**
+
+| # | decisión | qué revisa | por qué, y qué alternativa se descartó | cómo se revierte |
+|---|---|---|---|---|
+| D63 | **La lápida es una EXCEPCIÓN TIPADA al algoritmo de identidad, las garantías son TRES y no una, la retirada exige FUENTE DE RECUPERACIÓN comprobada, el diario físico NO es estrictamente append-only, y sólo una DEPENDENCIA SEMÁNTICA VIVA bloquea la retirada.** Un evento con `cuerpo_retirado: true` no se somete a `EV-H(evento MENOS id)`: se valida su estructura y su vínculo con el sellado. Nivel 1 continuidad estructural · Nivel 2 consistencia del compromiso · Nivel 3 verificación completa, que **exige el cuerpo original** desde un `localizador` —`revision`, `ruta`, `hash_esperado`— cuya recuperación se **comprobó y registró antes** de retirar. Una referencia estructural `predecesor` **no** bloquea; una dependencia que necesita leer el cuerpo **sí** | **`D37`** en la regla de identidad · **`D61`** en la frontera y en el append-only · y la semántica de sellado de `D16`/`D23` | El contrato afirmaba `id = EV-H(evento MENOS id)` **y** que la lápida conserva el mismo `id`: tras retirar, ese `id` **ya no puede recalcularse desde el fichero**, y la identidad por contenido deja de ser verificable por la regla ordinaria. Además prometía de más —«la huella demuestra que el cuerpo existió y cuál era», «recomputar la cadena», «sigue siendo verificable»—: una huella es un COMPROMISO, y sin preimagen no prueba contenido ni posesión. Y la regla «no puede retirarse un evento al que apunte cualquier evento vivo» hacía **inalcanzable la propia operación**, porque cada evento apunta al anterior por `predecesor`. Por último, «sustituir no es editar» era falso: **sustituir un cuerpo edita físicamente un fichero existente**. La alternativa —debilitar la regla de identidad para que la lápida la cumpla— rompería la identidad de todos los eventos íntegros para acomodar el caso excepcional | volver a un algoritmo único de identidad deja la lápida sin forma válida de validarse; volver a «cualquier evento vivo» vuelve a hacer imposible retirar |
+
+**Lo que NO cambia, y se comprueba:** `sellado` sigue siendo **no transaccional** y
+direccionado por contenido; `retirada-de-cuerpo` sigue siendo **transaccional**; la matriz
+sigue en **9 tipos · 6 fases · 40 válidas · 23 prohibidas**; las cardinalidades y los
+contadores de conflicto no cambian; **no aparece ninguna transición nueva**; y el recuento de
+`§3.8` sigue igual. **`O15` permanece intacta.**
+
 ---
 
 ## 2 · Decisiones que pertenecen al Owner

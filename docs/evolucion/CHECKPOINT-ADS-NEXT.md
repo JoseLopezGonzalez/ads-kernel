@@ -34,6 +34,12 @@
 > **Sexto** encadenamiento consecutivo. Tampoco es la tercera revisión, y tampoco certifica
 > nada.
 >
+> Y por una **SEXTA COMPROBACIÓN TÉCNICA** sobre la semántica de sellado y retirada de
+> cuerpo: la lápida conservaba un `id` que **ya no podía recalcularse**, la huella se
+> presentaba como prueba de contenido, y la regla de bloqueo hacía **inalcanzable la propia
+> retirada**. **Séptimo** encadenamiento consecutivo. Tampoco es la tercera revisión, y
+> tampoco certifica nada.
+>
 > La segunda revisión la emitió un revisor con contexto limpio que **no escribió F4 ni aplicó
 > la primera crítica**, y su veredicto fue de **INSUFICIENCIA**: dos hallazgos BLOQUEANTES,
 > siete GRAVES y catorce nuevos. **Dos de ellos eran defectos que la PRIMERA corrección
@@ -54,7 +60,7 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · D16–D22 ·
                                                              D23–D33 · D34–D45 · D46–D51 ·
                                                              D52–D54 · D55–D57 · D58–D59 ·
-                                                             D60–D61 · D62
+                                                             D60–D61 · D62 · D63
              kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
 freshness:   vigente
 last_meaningful_event: la SEGUNDA revisión independiente devuelve F4 con veredicto de
@@ -67,6 +73,63 @@ procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y
              crítica NO equivale a autocertificarse, y NO prueba que esté bien resuelta.
              LA PRUEBA DE QUE ESTO IMPORTA: dos de los hallazgos de la segunda devolución son
              defectos que la PRIMERA CORRECCIÓN introdujo o no vio
+resuelto_en_la_SEXTA_COMPROBACION_TECNICA:
+  # Comprobación ACOTADA sobre la semántica de sellado y retirada de cuerpo. NO es la tercera
+  # revisión independiente, y NO certifica F4c. SÉPTIMO encadenamiento consecutivo.
+  · 1 · CONTRADICCIÓN DE IDENTIDAD. El contrato decía `id = EV-H(evento MENOS id)` Y que la
+    lápida conserva el mismo `id`. Consecuencia no escrita: tras retirar, el `id` YA NO puede
+    recalcularse desde el fichero, la identidad por contenido deja de ser verificable por la
+    regla ordinaria, y conservar id + huella NO equivale a conservar el contenido. Se TIPA la
+    excepción: A evento íntegro → se recalcula y debe coincidir · B lápida → NO se recalcula,
+    se valida su estructura y su vínculo con el sellado (id_original, hash_cuerpo_original,
+    fase, tx, posición); con el cuerpo original delante se recalculan huella e identidad y
+    deben coincidir; SIN él no hay verificación completa de la preimagen
+  · 2 · TRES NIVELES DE GARANTÍA, antes mezclados:
+      NIVEL 1 CONTINUIDAD ESTRUCTURAL   ids y `predecesor` permiten recorrer el orden. NO
+                                        verifica el contenido retirado
+      NIVEL 2 CONSISTENCIA DEL          sellado y lápida llevan el MISMO compromiso, y se
+              COMPROMISO                demuestra que el repositorio lo conservó y registró
+                                        la retirada. Una huella aislada NO demuestra cuál era
+                                        el contenido ni que se poseyera
+      NIVEL 3 VERIFICACIÓN COMPLETA     EXIGE el cuerpo original. Se recalculan cuerpo, huella
+                                        e identidad. El cuerpo viene de una revisión Git
+                                        exacta o de un archivo externo autorizado
+    RETIRADAS las cuatro afirmaciones que prometían de más: «la huella demuestra que el cuerpo
+    existió» · «demuestra cuál era» · «se recompone la cadena» cuando sólo se comprueban
+    referencias · «sigue siendo verificable» sin decir que hace falta el cuerpo
+  · 3 · FUENTE DE RECUPERACIÓN EXIGIDA ANTES DE RETIRAR: evento y sellado confirmados en una
+    revisión Git durable o archivo externo autorizado · la lápida lleva LOCALIZADOR
+    verificable —revision, ruta o blob, hash_esperado—, no sólo una huella · se ha COMPROBADO
+    que el cuerpo se recupera de ahí · la evidencia queda registrada. Si la fuente
+    desaparece: niveles 1 y 2 siguen, el 3 NO, y el sistema REFLEJA la degradación. NO se
+    afirma que Git conserve eternamente: se declara la dependencia de retención de historia
+    o de archivo externo
+  · 4 · APPEND-ONLY, DICHO CON PRECISIÓN. Sustituir un cuerpo SÍ edita físicamente un fichero
+    existente, luego el diario FÍSICO no es estrictamente append-only. Regla real: eventos y
+    cabeceras lógicas INMUTABLES · se añaden eventos nuevos · UNA única mutación física
+    autorizada y transaccional, la lápida · cualquier otra prohibida. Se retira «sustituir no
+    es editar». Y el efecto real: reduce el CORPUS y el CONTEXTO del checkout, NO elimina el
+    cuerpo de la historia Git ni reduce necesariamente el tamaño del repositorio. Liberar
+    objetos históricos sería otra operación, con otro gobierno, y NO queda autorizada
+  · 5 · LA RETIRADA VUELVE A SER ALCANZABLE. «No puede retirarse un evento al que apunte
+    cualquier evento VIVO» la hacía imposible: cada evento apunta al anterior por
+    `predecesor`. Se distingue REFERENCIA ESTRUCTURAL —nombra el id, y el id se conserva: NO
+    bloquea— de DEPENDENCIA SEMÁNTICA VIVA —necesita LEER el cuerpo: SÍ bloquea—. En la duda,
+    bloquea. El SELLADO actúa de ancla y checkpoint: conserva id, fase, tx, posición, huella
+    y la cabeza de la cadena, y con eso el recorrido estructural no toca ningún cuerpo
+  · 6 · `retirada-de-cuerpo` DETALLADA en once puntos, sin crear un segundo evento que
+    duplique su `confirmada`: fichero que modifica · contenido exacto de la lápida ·
+    identidad original conservada · localizador · relación con el sellado · hash_previo del
+    evento íntegro · hash_posterior_esperado de la lápida · prueba de recuperación PREVIA ·
+    autoridad y motivo · registro por las fases de su propia transacción · y por qué esas
+    fases no abren recursivamente otra transacción
+  · X-A a X-H añadidas como comprobaciones de la retirada. NO son filas de la tabla
+    adversarial, que SIGUE en 42 filas y 42 ids `X<nn>`
+  · SIN CAMBIO: `sellado` no transaccional y direccionado por contenido · `retirada-de-cuerpo`
+    transaccional · matriz 9 tipos / 6 fases / 40 válidas / 23 prohibidas · cardinalidades y
+    contadores de conflicto · ninguna transición nueva · §3.8 · O15 INTACTA
+  · Corregido además el cierre Markdown defectuoso junto a la excepción en §3.6
+  · D63 registrada
 resuelto_en_la_QUINTA_COMPROBACION_TECNICA:
   # Comprobación de UN SOLO PUNTO sobre D60. NO es la tercera revisión independiente, y NO
   # certifica F4c. Su hallazgo está en texto que la comprobación ANTERIOR escribió: SEXTO
@@ -412,8 +475,8 @@ falta_para_cerrar_la_capa:
     en texto que la corrección técnica ANTERIOR escribió, los DOS de la tercera comprobación
     están en texto que la SEGUNDA escribió, y los DOS de la CUARTA están en texto que la
     TERCERA escribió, y el de la QUINTA está en texto que la CUARTA escribió. SEIS pasadas
-    encadenadas, y cada una encontró defectos de la anterior. NINGUNA crítica se declara
-    superada. F4c sólo se cierra con un veredicto explícito de SUFICIENCIA emitido por un revisor
+    encadenadas —siete con la sexta comprobación técnica—, y cada una encontró defectos de
+    la anterior. NINGUNA crítica se declara superada. F4c sólo se cierra con un veredicto explícito de SUFICIENCIA emitido por un revisor
     independiente sobre el resultado corregido
   · OCHO PRESIONES NORMATIVAS VIGENTES. PN-1 —la sección (g)— BLOQUEA todo el estado
     durable, y ahora decide MÁS: fsync, regla de commit, sellado, identidad y regla de
@@ -489,7 +552,8 @@ F4c CRÍTICA INDEPENDIENTE    TRES devoluciones, EMITIDAS por revisores y audito
                              (`D52`–`D54`), la 2ª con tres GRAVES (`D55`–`D57`) sobre el
                              texto que la 1ª escribió, y una 3ª comprobación acotada
                              (`D58`–`D59`) sobre el texto de la 2ª y una 4ª (`D60`–`D61`)
-                             sobre el texto de la 3ª y una 5ª (`D62`) sobre el de la 4ª.
+                             sobre el texto de la 3ª, una 5ª (`D62`) sobre el de la 4ª y
+                             una 6ª (`D63`) sobre la semántica de sellado.
                              DOS de los hallazgos de la 2ª devolución, TRES de la 3ª y LOS
                              TRES de la segunda corrección técnica son defectos que las
                              correcciones ANTERIORES introdujeron o no vieron.
@@ -780,6 +844,19 @@ docs/evolucion/11-ARQUITECTURA-INTEGRADA.md  cabecera · §2.6.1 la transición 
                                           §15.8 D62
 docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md  D62, SIN reescribir D1–D61 ni O1–O15
 docs/evolucion/CHECKPOINT-ADS-NEXT.md     su bloque y la marca [REVISADO] sobre D60
+
+F4c SEXTA COMPROBACIÓN TÉCNICA — lápida, identidad, tres niveles y retirada alcanzable
+docs/evolucion/11-ARQUITECTURA-INTEGRADA.md  cabecera · §2.8 punto 4bis, la excepción tipada
+                                          al algoritmo de identidad · §2.9 semántica del
+                                          sellado reescrita, TRES NIVELES, fuente de
+                                          recuperación, append-only con precisión física,
+                                          qué referencia bloquea, contrato de
+                                          `retirada-de-cuerpo` en once puntos y tabla
+                                          `X-A`–`X-H` · §3.6 bloque de la excepción alineado,
+                                          cierre Markdown corregido y validador con el
+                                          algoritmo de identidad por tipo · §15.8 D63
+docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md  D63, SIN reescribir D1–D62 ni O1–O15
+docs/evolucion/CHECKPOINT-ADS-NEXT.md     su bloque
 O15 INTACTA. §3.8 sin cambios. (a), (b), E1, E2, K-1, C4 y C7 intactos. Ningún documento
 numerado nuevo.
 O15 NO SE TOCA. (a), (b), E1, E2, K-1, C4 y C7 intactos. Ningún documento numerado nuevo.
