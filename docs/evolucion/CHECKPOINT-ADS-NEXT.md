@@ -109,8 +109,9 @@ resuelto_en_la_PRIMERA_devolucion_de_f4:
     remoto separado de lo local y SIN eliminación remota automática. Certificación Integrada
     con aplicabilidad para 0, 1 y N fuentes. Actualización con compatibilidad y rollback DEL
     ESTADO, y punto de no retorno declarado en U3
-  · H · P-08 con TRES huellas y clave de caché por CONTENIDO, nunca el SHA de Git. Raíz de
-    confianza declarada sin circularidad, y el suelo que queda abierto, dicho
+  · H · P-08 con DOS huellas —semántica y de entorno— y clave de caché por CONTENIDO, nunca
+    el SHA de Git. El artefacto de salida las CONTIENE; no es una tercera huella (D47). La
+    raíz de confianza, declarada sin circularidad, y el suelo que queda abierto, dicho
   · I · D23–D33 registradas, cada una diciendo qué decisión anterior revisa. D16–D22
     CONSERVAN SU TEXTO. Tipos RECALCULADOS: cuatro de estado, uno de clase, y el manifiesto
     de transacción deja de serlo. Presiones revisadas: PN-4 retirada, PN-5 fusionada en

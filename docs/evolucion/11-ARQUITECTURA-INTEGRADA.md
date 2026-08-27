@@ -511,8 +511,9 @@ El evento `preparada` es la única entrada que necesita la recuperación, y llev
 y no menos**:
 
 ```text
-1  IDENTIDAD DE LA          `tx: TX-<huella>`. La comparten los cinco registros de esa
-   TRANSACCIÓN              transacción y nadie más.
+1  IDENTIDAD DE LA          `tx: TX-<huella>`. La comparten TODOS los eventos de esa
+   TRANSACCIÓN              transacción y nadie más — tres en la ruta normal, cuatro en la
+                            de conflicto (§2.6.1).
 
 2  HASH PREVIO              por fichero. Qué había antes.
 
@@ -826,11 +827,18 @@ impuso al arnés de negativos.
 | `X37` | interrumpir una transacción, avanzar el remoto desde otro clon, arrancar la recuperación | se completa, el commit local se hace, el push **no se fuerza**, se emite `fallo` con el diagnóstico «el remoto avanzó» y se escala |
 | `X38` | recuperación con la `main` del control repo protegida | la recuperación **no intenta** empujar sobre ella |
 | `X39` | commit y push de recuperación | dejan evento con **los cinco conceptos de `a.9`** completos; la ausencia de cualquiera es un fallo del validador, no un silencio |
+| `X47` | recorrer todo el corpus buscando enumeraciones del enum de `evento.fase` | **todas coinciden** con §2.6.1, y un evento con `fase: abortada` es **rechazado por el validador de esquema** |
+| `X48` | aplicar una transacción completa y comparar cada canónico con su `hash_posterior_esperado` | casan **byte a byte**. Ningún mecanismo de detección —marcador, regla de lectura o diario— modifica el contenido canónico |
+| `X49` | provocar un conflicto y evaluar `b.4` P0 sobre los items afectados | devuelve `reconciliacion-pendiente` **sin que se haya escrito un byte en ningún `03-integracion.md`** y sin que exista un segundo marcador |
+| `X50` | reconciliar un conflicto de cinco ficheros | los derivados se regeneran **antes** de `derivada`, el marcador sobrevive hasta `derivada`, y los canónicos casan con los `hash_final` de `reconciliada` |
+| `X51` | editar un canónico fuera del protocolo, sin transacción abierta, y arrancar | se declara **deriva no transaccional**, nombrando ruta, hash observado y hash en `HEAD`. NO se completa, NO se revierte y NO se restaura sola |
+| `X52` | comparar el censo de pruebas de §9.1, §9.5 y `nivel-certificacion` para cada nivel | los tres conjuntos son **idénticos**. Una diferencia de censo es un fallo |
+| `X53` | buscar un `contrato-de-aspecto` de familia `certificacion`, y campos de certificación declarados dos veces | **no existe ninguno**, y ningún campo de certificación tiene dos sedes normativas |
 
-> **Ninguna se ha ejecutado.** Treinta filas escritas es el contrato de lo que F6 debe
-> demostrar, y **no es su demostración**. Trece son nuevas de la segunda devolución
-> independiente, y `X24` no existe porque su hallazgo —`D`— se resolvió retirando el estado
-> en vez de darle un disparador.
+> **Ninguna se ha ejecutado.** Treinta y siete filas escritas es el contrato de lo que F6
+> debe demostrar, y **no es su demostración**. Trece son de la segunda devolución
+> independiente y **siete de la devolución técnica previa** (`X47`–`X53`). `X24` no existe
+> porque su hallazgo —`D`— se resolvió retirando el estado en vez de darle un disparador.
 
 
 ### 2.6.8 · La regla de lectura — lo que se garantiza es DETECTABILIDAD, no aislamiento
@@ -1629,6 +1637,19 @@ lee                                 qué ficheros del control repo consume
 proyecta                            qué ficheros GENERA, y dónde los descubre ese entorno
 puntero_en_fuente                   el único fichero que proyecta DENTRO de una fuente, y
                                     qué declara. Ver §6.7
+resolucion_del_control_repo         CÓMO localiza el control repo desde una fuente. Ver §6.7
+                                      estrategia                `hermanos-del-workspace`
+                                      profundidad_maxima        de ascenso desde el
+                                                                directorio abierto
+                                      normalizacion_del_remoto   sin credenciales · con y sin
+                                                                `.git` · `ssh` y `https`
+                                                                tratados como EQUIVALENTES
+                                      desenlaces                para 0, 1 y ≥2 coincidencias,
+                                                                más «no se pudo comprobar»
+                                    **Añadido** (hallazgo `7`): §6.7 afirmaba que este campo
+                                    se había añadido aquí, y no estaba. Sin él, un adaptador
+                                    conforme podía omitir la resolución entera y seguir
+                                    validando contra su tipo
 escribe_permitido                   qué puede modificar, con las excepciones NOMBRADAS
 comandos                            qué escribe el Owner y qué activa
 degradacion                         qué se pierde y cómo, función por función
@@ -1733,7 +1754,9 @@ campo sin tipo es una colisión semántica, no una economía.
 id            EV-<huella del contenido>. Direccionado por contenido, NO monotónico (§2.7)
 tipo          orden | transicion | integracion | certificacion | migracion | sellado |
               retirada-de-cuerpo | fallo
-fase          preparada | confirmada | derivada | abortada | conflicto | — (sin transacción)
+fase          preparada | confirmada | conflicto | reconciliada | derivada |
+              — (sin transacción). El autómata y sus transiciones admitidas, en §2.6.1.
+              `abortada` NO existe: un evento con esa fase es RECHAZADO por el esquema
 tx            TX-<huella>, cuando el evento forma parte de una transacción multiarchivo.
               Lo comparten todos los eventos de esa transacción y nadie más
 orden         posición dentro de su transacción. Total dentro de ella
@@ -2224,7 +2247,9 @@ estado        findings-abiertos
 verificacion
   ultima_real            2026-07-14
   revisiones_examinadas  frontend@9c1e4a7
-  verificador            VER, que no construyó la pantalla
+  auditor                VER, que no construyó la pantalla
+  verificador_de_correccion  vacío: el estado es `findings-abiertos`, y todavía no hay
+                             corrección que verificar
 evidencia     [DIC-0041]                                   el dictamen
 findings      [DEF-118, DEF-119]                           items, no anotaciones (§3.2)
 caducidad     6 meses, o antes si cambia `frontend` bajo `src/checkout/`
@@ -2259,7 +2284,8 @@ estado        vencido
 verificacion
   ultima_real            2026-02-03
   revisiones_examinadas  backend@4d0c118 · frontend@9c1e4a7
-  verificador            VER
+  auditor                VER
+  verificador_de_correccion  vacío: el estado es `vencido`
 evidencia     [DIC-0027]
 findings      []
 caducidad     vence cuando cambia cualquiera de las revisiones examinadas.  YA VENCIÓ
@@ -2299,7 +2325,9 @@ estado        verificado
 verificacion
   ultima_real            2026-08-11
   revisiones_examinadas  frontend@9c1e4a7 · backend@4d0c118
-  verificador            VER independiente, que NO participó en la instalación
+  auditor                VER independiente, que NO participó en la instalación
+  verificador_de_correccion  VER independiente. El estado es `verificado`, luego este campo
+                             es OBLIGATORIO (§3.5)
 evidencia     [DIC-0033]                                   dosier + salidas de las pruebas
 findings      []
 caducidad     no vence por tiempo: vence por TRIGGER
@@ -2390,7 +2418,7 @@ VEREDICTO   ESQUEMA DE CLASE. Es la misma clase de artefacto que `nivel-certific
 
 ```text
 id                       contrato-de-aspecto:<familia>/<nombre>
-familia                  calidad | documental | certificacion
+familia                  calidad | documental. **NO `certificacion`**: ver abajo
 responsables_por_defecto 1..N capacidades, con una `lider`. Es la NORMA; la celda declara
                          sólo la DESVIACIÓN, con motivo (§3.5)
 criterio_por_defecto     la rúbrica, el gate o la norma contra la que se juzga
@@ -2408,6 +2436,24 @@ EL CONTRATO DECLARA   el reparto POR DEFECTO. Es norma, y viaja con el release.
 LA CELDA DECLARA      la DESVIACIÓN, si la hay, con su motivo. Es estado, y es del producto.
 UNA FUENTE POR        no dos sedes editables para lo mismo. Es exactamente el remedio que
 PREGUNTA              §4.2 aplicó a `memoria.caducidad` frente a `cobertura.caducidad`.
+```
+
+### El reparto con `nivel-certificacion`, para que no haya dos normas editables
+
+> **Corregido por la devolución técnica previa (hallazgo `10`).** `contrato-de-aspecto`
+> declaraba `familia: calidad | documental | certificacion`, y `nivel-certificacion` ya
+> declaraba para certificación pruebas, propietario, crítico, jerarquía, invalidación y
+> criterio. **Dos normas editables para el mismo aspecto**, que es exactamente el defecto que
+> `D43` existía para cerrar en otro sitio.
+
+```text
+`contrato-de-aspecto`   cubre EXCLUSIVAMENTE las familias `calidad` y `documental`
+`nivel-certificacion`   cubre EXCLUSIVAMENTE la familia `certificacion`, y es la ÚNICA sede
+                        de sus pruebas, responsables, crítico, jerarquía, invalidación y
+                        criterio
+NINGÚN CAMPO DE         está declarado en los dos. No hay especialización ni composición
+CERTIFICACIÓN           entre ambos esquemas: hay REPARTO DE DOMINIO, que es más simple y no
+                        deja campos que puedan discrepar
 ```
 
 **Y las tres familias resuelven ahora a algo que existe**, que era la otra mitad del hallazgo:
@@ -3237,11 +3283,21 @@ cargara con el aparato de una migración estructural.
 |---|---|---|---|---|---|---|
 | **Estructural** | los ficheros, contratos y referencias existen y son coherentes | que el sistema arranque | los validadores del manifiesto + `gate:sistema-conforme` | `SIS` | el propio validador | evidencia publicada |
 | **Operativo** | una sesión nueva arranca, interpreta el proyecto y persiste y recupera un checkpoint | que las fuentes, CI y permisos funcionen | prueba de humo por adaptador · `ENC` recibe una expresión mínima · se crea y persiste un item mínimo · `Continúa` reanuda sin pedir resumen | `SIS` | **`VER`, que no participó en la instalación** | dosier `DICTAMEN` |
-| **Integrado** | fuentes, herramientas, CI, permisos y adaptadores funcionan en el entorno real | que el runtime despache, concurra y recupere | `workspace check` sobre fuentes reales · comandos del producto · CI ejecutable · trabajo multi-fuente mínimo verificado como conjunto | `PLT` | `VER` independiente, con `SEG` si hay superficie sensible | dosier + salidas |
+| **Integrado** | fuentes, herramientas, CI, permisos y adaptadores funcionan en el entorno real | que el runtime despache, concurra y recupere | las **cinco** de `nivel-certificacion:integrado`: `workspace check` sobre fuentes reales · comandos del producto · CI ejecutable · trabajo multi-fuente verificado como conjunto · `integration-set` producido | `PLT` | `VER` independiente, con `SEG` si hay superficie sensible | dosier + salidas |
 | **Completo** | runtime, despacho, reanudación, concurrencia, integración y recuperación están demostrados | que el producto sea bueno | los escenarios de §14 ejecutados sobre un producto real | `SIS` | `VER` independiente | dosier + evidencia ejecutada |
 
 **La lista de pruebas de cada nivel vive UNA SOLA VEZ, en su `nivel-certificacion`** (§9.2).
 Esta tabla y la de §9.5 son **proyecciones** de ella, y no censos independientes.
+
+> **Corregido por la devolución técnica previa (hallazgo `8`).** Esta tabla enumeraba
+> **cuatro** pruebas de Integrado y §9.5 enumeraba **cinco**, porque añadía `integration-set
+> producido`. El documento afirmaba que ambas eran proyecciones de una única lista **y no
+> proyectaban el mismo censo**. Ahora las dos proyectan las cinco.
+>
+> **CRITERIO DE CONSISTENCIA, convertible en prueba por F6:** para cada nivel, el conjunto de
+> pruebas de §9.1 y el de §9.5 deben ser **idénticos** al de su `nivel-certificacion`, y
+> ninguna de las dos proyecciones puede fusionar dos pruebas en una fila sin declararlo. Una
+> diferencia de censo es un fallo, no una simplificación editorial. Es `X52`.
 
 > **Corregido por la segunda devolución independiente (hallazgo `N-4`).** F4c enumeraba
 > **cuatro** pruebas para el nivel Integrado en esta tabla y **siete** en §9.5. *«Un "resumen
@@ -3285,7 +3341,9 @@ LA CELDA GUARDA ESTADO — una por nivel y por sujeto, con el contrato de §3.5 
                 o adaptador:transversal/<entorno>, o cualquier otro sujeto certificable
   aspecto       aspecto:certificacion/<nivel>          namespace propio, §3.5
   criterio      nivel-certificacion:<nivel>            ref a la NORMA, abajo
-  responsables  las que la norma declara
+  responsables  SÓLO LA DESVIACIÓN respecto al reparto que la norma del nivel declara, con
+                su motivo. §3.5 fija que el reparto por defecto se HEREDA y la celda registra
+                únicamente lo que se aparta de él
   aplicabilidad obligatoria | condicional | no-aplicable      + motivo + evidencia (§9.5)
   estado        EL ENUM COMPLETO de §3.5, sin recortes. **Corregido** (hallazgo `N-3`):
                 F4c listaba SIETE valores y declaraba «con el contrato de §3.5 sin cambios»,
@@ -3294,7 +3352,9 @@ LA CELDA GUARDA ESTADO — una por nivel y por sujeto, con el contrato de §3.5 
                 §3.5 justifica por `G13`, y son los dos estados en los que una certificación
                 pasa la mayor parte de su vida útil. No hay razón para que la certificación
                 pierda la distinción que `G13` impone al resto
-  verificacion  ultima_real · revisiones_examinadas · verificador y su independencia
+  verificacion  ultima_real · revisiones_examinadas · `auditor` y su independencia ·
+                `verificador_de_correccion` cuando el estado es `corregido-sin-verificar` o
+                `verificado`
   evidencia     el dosier
   caducidad · triggers
 
