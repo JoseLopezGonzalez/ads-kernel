@@ -49,7 +49,8 @@ aparcados**. Un item aparcado que persigue lo mismo es duplicación igual.
 ```text
 dos implementaciones paralelas de lo mismo   → propón un candidato de deuda técnica
 una decisión vigente contradice lo pedido    → escálalo: no lo resuelvas tú
-el repositorio no está accesible             → bloquea, nombrando exactamente eso
+el control repo o una fuente necesaria no     → bloquea, nombrando cuál de los dos
+están accesibles                                y qué fuente
 ```
 
 ## Al terminar
@@ -89,7 +90,9 @@ Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la ev
 Te bloquea, y entonces **nombras qué lo desbloquearía**:
 
 ```text
-  · el repositorio del proyecto no está accesible
+  · el repositorio ADS de control no está accesible
+  · una fuente que el anclaje necesita leer no está materializada: `workspace check`
+    dice cuál, y nombrarla es parte del bloqueo
   · existe código relevante que no puede leerse por permisos, o vive en una fuente no
     declarada o no materializada
 ```
@@ -97,6 +100,7 @@ Te bloquea, y entonces **nombras qué lo desbloquearía**:
 Escalas, sin decidirlo tú:
 
 ```text
-  · el repositorio contiene dos soluciones incompatibles de la misma materia
+  · el producto contiene dos soluciones incompatibles de la misma materia, aunque estén
+    en fuentes distintas: la duplicación no deja de serlo por cruzar un repositorio
   · una decisión vigente contradice directamente lo que el Owner acaba de pedir
 ```

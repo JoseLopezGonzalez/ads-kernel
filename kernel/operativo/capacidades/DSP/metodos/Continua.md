@@ -31,9 +31,12 @@ pasos:
     nombre: VERIFICAR
     modo: lineal
     hace: >
-      Contrastar lo declarado contra el repositorio: ¿existen los artefactos que los paquetes
-      dicen haber producido? ¿hay transiciones multiarchivo incompletas? ¿hay derivados
-      divergentes? ¿siguen viables las esperas?
+      Contrastar lo declarado contra lo que hay: el repositorio de control para el estado,
+      y las fuentes del alcance para los artefactos. ¿Existen los artefactos que los
+      paquetes dicen haber producido, en la fuente donde dicen haberlos producido? ¿Hay
+      transiciones multiarchivo incompletas? ¿Hay derivados divergentes? ¿Siguen viables
+      las esperas? ¿Sigue el workspace conforme —`workspace check`— para las fuentes que
+      los paquetes vivos declaran?
     produce: "lista de inconsistencias, o constancia de que no hay ninguna"
     termina_cuando: "las cuatro comprobaciones están hechas y las inconsistencias resueltas o escaladas"
     checkpoint: true
@@ -99,7 +102,7 @@ gate: gate:despacho-coherente
 salida:
   - "trabajo retomado desde el checkpoint exacto, con reporte breve"
 devolucion:
-  - "a la capacidad con custodia, cuando lo declarado no corresponde con el repositorio"
+  - "a la capacidad con custodia, cuando lo declarado no corresponde con lo que hay en el control repo o en la fuente donde debería estar"
 bloqueo:
   - "hay una transición multiarchivo incompleta que no puede resolverse sin decidir"
 cancelacion:

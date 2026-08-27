@@ -189,8 +189,9 @@ def t148_arranque(raiz=None):
 
             # 2b · topología: el workspace es un contenedor, no un repositorio
             if os.path.exists(os.path.join(workspace, ".git")):
-                r.fallo(f"[{pack}] el workspace es un repositorio Git. Debe serlo sólo "
-                        f"ads/, o las fuentes quedarían anidadas dentro de otro repo")
+                r.fallo(f"[{pack}] se ha inicializado Git en el propio workspace. Sólo "
+                        f"ads/ y las fuentes son repositorios; si no, las fuentes quedarían "
+                        f"anidadas dentro de otro repo")
             if not os.path.isdir(os.path.join(proyecto, ".git")):
                 r.fallo(f"[{pack}] el control repo no tiene .git propio")
             # ...y tampoco lo es ningún antecesor hasta el temporal. Basta un `.git` más

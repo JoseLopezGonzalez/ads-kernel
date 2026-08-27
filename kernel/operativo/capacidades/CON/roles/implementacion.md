@@ -36,7 +36,7 @@ autoridad:
 entradas:
   - "las capas de PRD, DIS y ARQ cuando existen"
   - "las condiciones de DOM y SEG"
-  - "CONVENTIONS.md y el repositorio"
+  - "CONVENTIONS.md, que vive en el control repo, y las fuentes que el paquete declara en lee_fuentes y escribe_fuentes"
 metodo: [CON/Implementacion]
 herramientas:
   - "escritura y ejecución de código"
@@ -44,7 +44,7 @@ herramientas:
   - "control de versiones"
   - "ejecución local en los entornos del pack"
 conocimientos:
-  - "el repositorio y sus convenciones"
+  - "las fuentes en las que trabaja, y las convenciones del producto, que son únicas y viven en el control repo"
   - "las ocho cosas que no se simplifican en silencio"
   - "la evidencia que exige una imposibilidad demostrada"
 perfil_agente: perfil:construccion

@@ -14,7 +14,7 @@ VERSIÓN DEL RELEASE      kernel/VERSION        qué copia del kernel lleva un p
                                                se estampa en el commit de semilla.
 
 LÍNEA HISTÓRICA          kernel/KERNEL.md      la constitución en prosa que sigue
-                         1.4.0                 arrancando proyectos mientras el runtime no
+                         1.5.0                 arrancando proyectos mientras el runtime no
                                                exista. NO se sube al ritmo del release:
                                                sube cuando cambia ella.
 
@@ -33,12 +33,15 @@ VERSIÓN DE ESQUEMA       esquemas/<tipo>.yaml  la forma de cada tipo canónico,
 No es una contradicción: es una **migración declarada**.
 
 ```text
-kernel/KERNEL.md 1.4.0     constitución en prosa. Es el documento de arranque de un
+kernel/KERNEL.md 1.5.0     constitución en prosa. Es el documento de arranque de un
                            proyecto MIENTRAS EL RUNTIME NO EXISTA. La sección a.11 declara
                            qué reglas suyas quedan derogadas, sustituidas, ajustadas o
-                           pendientes. Sube a 1.4.0 con la enmienda E2: K-1 declara que el
+                           pendientes. Subió a 1.4.0 con la enmienda E2 —K-1 declara que el
                            sujeto de las tres capas es el PRODUCTO, y G29 queda revisada
-                           para aplicarse por fuente.
+                           para aplicarse por fuente—, y a 1.5.0 con el barrido semántico
+                           que alcanza a K0.6, K0.8, G04, G12, G26, G27, G38, G39, los
+                           entregables del Circuito 0, G46 y G48: E2 tenía precedencia, pero
+                           esas reglas seguían enseñando el modelo anterior.
 
 kernel/operativo/ 2.0      el contenido operativo que ese runtime consumirá: capacidades,
                            roles, métodos, prompts, gates, circuitos y validadores.

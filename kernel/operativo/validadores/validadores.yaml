@@ -88,7 +88,7 @@ componentes:
     tipo: validador
     evidencia: negativos-salida.txt
     firma_de_exito: '\d+ infracciones detectadas · 0 NO detectadas'
-    debe_contener: ['N136', 'N147', 'N150']
+    debe_contener: ['N136', 'N147', 'N150', 'N161']
     # Su salida contiene por diseño el texto de los fallos que PROVOCA en una copia
     # temporal. Es la única evidencia donde «FALLIDA» o «NO detectada» pueden aparecer
     # como cita del resultado interno de un fixture, y por eso se declara aquí.
@@ -99,7 +99,9 @@ componentes:
     tipo: validador
     evidencia: fuentes-salida.txt
     firma_de_exito: '\d+ superadas · 0 fallidas'
-    debe_contener: ['T159', 'T160', 'T161']
+    # La cobertura del barrido de T161 se PUBLICA en la evidencia. Sin ella, «el corpus
+    # está limpio» sería una afirmación sin alcance declarado.
+    debe_contener: ['T159', 'T160', 'T161', 'ficheros recorridos']
 
   - id: evidencia
     script: comprobar_evidencia.py

@@ -117,7 +117,7 @@ devolucion:
 bloqueo:
   - "el Owner no ha respondido una pregunta cuya respuesta condiciona el resultado perseguido"
   - "una consulta a especialista depende de evidencia que aún no existe"
-  - "el anclaje no puede ejecutarse porque el repositorio del proyecto no está accesible"
+  - "el anclaje no puede ejecutarse porque el repositorio de control, o una fuente que necesita leer, no está accesible"
 veto: ""
 criterios_calidad:
   - "el Owner reconoce su idea en la interpretación, y lo dice"

@@ -67,7 +67,7 @@ devolucion: >
   ARQ devuelve a DIS SÓLO trayendo alternativas de forma, nunca sólo la negativa (a.3).
   La devolución nombra la restricción y propone al menos un camino que conserve la intención.
 evidencia_de_devolucion:
-  - "el radio de impacto MEDIDO sobre el repositorio, no estimado"
+  - "el radio de impacto MEDIDO sobre las fuentes del alcance, no estimado"
   - "al menos una alternativa de forma que ARQ considera viable"
 owner: "ninguna: en este handoff no hay materia de decisión del Owner."
 checkpoint: "ARQ lee de DIS: nivel de novedad, direcciones descartadas y por qué, para no proponer una descartada como alternativa."

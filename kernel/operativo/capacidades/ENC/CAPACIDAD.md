@@ -165,7 +165,7 @@ un encuadre = un paquete de ENC, con custodia, gate y checkpoint normales
 ENC/interlocutor        siempre. Es quien habla con el Owner.
 ENC/anclaje             siempre antes de clasificar como candidato. Puede ser el mismo
                         agente en conversaciones simples; NUNCA cuando el anclaje exige
-                        recorrer el repositorio entero.
+                        recorrer el producto entero: el control repo y sus fuentes.
 ENC/critica-de-encuadre obligatorio cuando incertidumbre alta o nivel_owner obligatorio.
                         Agente distinto del interlocutor, siempre.
 ```

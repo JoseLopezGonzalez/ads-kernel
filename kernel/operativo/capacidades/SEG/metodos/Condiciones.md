@@ -10,7 +10,7 @@ disparador:
 carga:
   - "el plan de ARQ o la especificación"
   - "docs/seguridad/SUPERFICIE.md y CUMPLIMIENTO.md"
-  - "la configuración real y el repositorio"
+  - "la configuración real y las fuentes que exponen la superficie, cada una con su propio despliegue y sus propios secretos"
 preguntas_iniciales:
   - "¿qué expone esto que antes no estaba expuesto?"
   - "¿qué acciones nuevas aparecen, y quién puede ejecutarlas?"

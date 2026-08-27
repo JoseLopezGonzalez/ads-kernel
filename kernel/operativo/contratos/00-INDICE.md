@@ -22,7 +22,7 @@ Lo que vale para **todas** las capacidades. Un pack los amplía; no los sustituy
 [ ] ningún cambio de modelo pierde la identidad ni la memoria de un rol
 [ ] ninguna entrega entre equipos ocurre sin comprobación previa
 [ ] ninguna devolución viaja sin evidencia
-[ ] ningún paquete escribe en un repositorio que no declaró
+[ ] ningún paquete escribe en una fuente que no declaró en escribe_fuentes
 [ ] ningún item se declara cerrado con una de sus fuentes sin integrar
 ```
 

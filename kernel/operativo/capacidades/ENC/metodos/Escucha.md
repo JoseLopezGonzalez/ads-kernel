@@ -155,7 +155,7 @@ devolucion:
   - "a ENC/anclaje, cuando el dosier no resuelve no_existe_y_se_creia"
 bloqueo:
   - "el Owner no responde una pregunta que condiciona el resultado perseguido: el encuadre queda esperando-owner, no bloqueado"
-  - "el repositorio no está accesible y el anclaje no puede ejecutarse: bloqueado, nombrando eso"
+  - "el repositorio de control no está accesible, o falta una fuente que el anclaje necesita leer: bloqueado, nombrando cuál"
 cancelacion:
   - "el Owner declara que retira la expresión"
   - "el anclaje demuestra que lo pedido ya existe y funciona: se descarta con enlace a lo existente"

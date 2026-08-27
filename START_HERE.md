@@ -318,7 +318,7 @@ Cosas que puedes decir en cualquier momento:
 [ ] SOURCES.toml declarado — vacío es válido si aún no hay código
 [ ] workspace check en verde
 [ ] kernel/ y packs/ copiados y SIN editar
-[ ] PROFILE.md completo — las 4 preguntas respondidas
+[ ] PROFILE.md completo — las 5 preguntas respondidas
 [ ] PROFILE.md leído y aprobado por ti
 [ ] PROJECT.md con la composición declarada
 [ ] Timebox del Circuito 0 ajustado a tu ritmo real

@@ -15,6 +15,11 @@ comprobar_arranque.py        T168 — el arranque produce la topología correcta
 
 Los que exigen runtime o juicio humano quedan en `contrato-definido`, y lo dicen.
 
+**Y las pruebas negativas.** `comprobar_negativos.py` reintroduce en una copia temporal cada
+formulación que E2 retiró —y desafila un patrón, y estrecha la cobertura— para demostrar
+que `T161` **falla** cuando debe fallar. Son los casos `N161` a `N161g`. Una prueba que sólo
+se ha visto pasar no está verificada.
+
 ```yaml ads:escenario
 id: T159
 nombre: La plantilla de SOURCES.toml es válida y arranca sin fuentes
@@ -59,15 +64,23 @@ id: T161
 nombre: El corpus no conserva la equivalencia proyecto igual a repositorio
 cubre: [E2.0, E2.1, E2.4, 78 qué debe cambiar en el corpus]
 dado:
-  - "las formulaciones del modelo anterior que la enmienda E2 retira"
+  - "las formulaciones del modelo anterior que la enmienda E2 retira, cada una con su patrón"
+  - "un fixture positivo y un contraejemplo por formulación"
   - "los ficheros donde SÍ pueden citarse, porque declaran su derogación"
 cuando:
-  - "se recorre el repositorio entero buscándolas"
+  - "cada patrón se comprueba contra su propio fixture y su propio contraejemplo"
+  - "se recorre el repositorio entero buscando las formulaciones"
 entonces:
-  - "ninguna aparece fuera de donde se declara que quedó retirada"
+  - "cada patrón detecta su formulación retirada y NO dispara contra la vigente"
+  - "ninguna formulación aparece fuera de donde se declara que quedó retirada"
+  - "la cobertura del recorrido se publica y supera el mínimo declarado"
 falla_si:
   - "un documento sigue enseñando a copiar ADS dentro del repositorio de código"
   - "un documento sigue afirmando que una tarea equivale a una rama"
+  - "un documento vuelve a decir que el repositorio es la memoria del proyecto"
+  - "un documento vuelve a afirmar que un ADS Project es un repositorio, o que el workspace lo es"
+  - "un patrón se desafila hasta dejar de detectar la formulación que declara detectar"
+  - "una exclusión deja el corpus fuera del recorrido y la prueba pasa por no mirar"
 ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_fuentes.py
 estado: prueba-superada

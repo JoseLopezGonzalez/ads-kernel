@@ -1,7 +1,7 @@
 # ADS KERNEL — Autonomous Development System
 
 > **Artefacto:** núcleo reusable. Idéntico en todos los proyectos que lo adopten.
-> **Versión del kernel:** 1.4.0
+> **Versión del kernel:** 1.5.0
 > **Compatibilidad:** todo PROFILE declara `kernel: ^1.0.0`
 > **Este fichero NO DEBE contener nada específico de un proyecto.** Si lo contiene, es un defecto: ver K0.10.
 
@@ -195,7 +195,7 @@ REVISIÓN: tras medir consumo real en sesión de 75 min en hardware objetivo (SP
 
 ### K0.6 — Regla de reutilización
 
-Para iniciar otro proyecto con la misma filosofía: copiar el MASTER, **conservar la Parte I**, reescribir la Parte II, abrir el repositorio y arrancar el Circuito 0.
+Para iniciar otro producto con la misma filosofía: copiar el MASTER, **conservar la Parte I**, reescribir la Parte II, crear su workspace con su repositorio ADS de control —`tooling/new-project.sh`— y arrancar el Circuito 0 desde ese repositorio. Lo que se reutiliza es la organización, y su sujeto es un producto: las fuentes que ese producto acabe teniendo las decide el Circuito 0 y las declara `SOURCES.toml`.
 
 La Parte I evoluciona sólo con mejoras generales del sistema de desarrollo. **NO DEBE** modificarse para acomodar una necesidad que en realidad pertenece a un Project Profile concreto.
 
@@ -207,7 +207,7 @@ Ante una contradicción no resuelta entre capas, el sistema **NO DEBE** adivinar
 
 ### K0.8 — Regla de portabilidad
 
-La conversación de un chat concreto **no** es fuente de verdad. La continuidad debe poder reconstruirse desde el repositorio: MASTER, `AGENTS.md`, documentación, ADRs, task system, `JOURNAL.md`, código y tests.
+La conversación de un chat concreto **no** es fuente de verdad. La continuidad debe poder reconstruirse desde el **repositorio ADS de control** —MASTER, `AGENTS.md`, documentación, ADRs, task system, `JOURNAL.md` y `SOURCES.toml`— y desde las **revisiones de las fuentes** que ese estado referencia. Código y tests viven en las fuentes, y el estado global las **referencia**; no las copia (E2.1, I5).
 
 Esto permite operar desde Cursor, Claude Code, Codex o interfaces futuras sin depender de una conversación concreta.
 
@@ -399,9 +399,9 @@ El paso a niveles B/C es línea futura de investigación. **NO DEBE** introducir
 
 Entorno principal previsto: **Cursor**, con Claude Code como sistema agentic principal y Codex como secundario/revisor. El Owner **PUEDE** usar capacidades cloud o remotas cuando no trabaje desde Cursor.
 
-> **El chat es una interfaz temporal. El repositorio es la memoria del proyecto.**
+> **El chat es una interfaz temporal. El repositorio ADS de control es la memoria del proyecto.**
 
-Un agente que retome el proyecto desde otro entorno **DEBE** poder reconstruir el estado desde `AGENTS.md`, `JOURNAL.md`, el task system, la documentación y el código.
+Un agente que retome el proyecto desde otro entorno **DEBE** poder reconstruir el estado desde `AGENTS.md`, `JOURNAL.md`, el task system y la documentación, **todos ellos en el repositorio de control**, más las revisiones que ese estado referencia de cada fuente. El código no es la memoria: es lo gobernado. Un producto repartido entre varias fuentes se reconstruye igual, porque `SOURCES.toml` dice cuáles son y `workspace check` dice en qué estado están.
 
 ### G05 — Posición y autoridad del Owner
 
@@ -564,7 +564,7 @@ Por encima de las capacidades existe coordinación global, capaz de: interpretar
 
 El **control plane** es el conjunto de reglas que gobiernan cómo trabaja la organización: roles, responsabilidades, permisos, fuentes de verdad, criterios de entrada/salida, workflows, políticas de revisión, gestión de decisiones y tareas, memoria, documentación obligatoria, validaciones, criterios de calidad y mecanismos de escalado.
 
-Objetivo: evitar que múltiples agentes actúen sobre el repositorio sin coordinación. La tecnología concreta de orquestación **no** se decide aquí.
+Objetivo: evitar que múltiples agentes actúen sin coordinación sobre el producto —sobre el repositorio de control y sobre **cada una de sus fuentes**—. Que dos paquetes escriban en repositorios distintos no los hace automáticamente independientes: el aislamiento físico es una de las condiciones de a.5, no la única (E2.2). La tecnología concreta de orquestación **no** se decide aquí.
 
 ### G13 — Separación entre creación y validación *(regla canónica)*
 
@@ -645,7 +645,7 @@ Representan estados predominantes del proyecto, **no** fases rígidas ni irrever
 
 > Construir el sistema que construirá el producto.
 
-Define: organización, capacidades, agentes, roles, reglas, workflows, skills, arquitectura agentic, integración de herramientas, permisos, fuentes de verdad, mecanismos de revisión, memoria, sistema documental y relación con el repositorio.
+Define: organización, capacidades, agentes, roles, reglas, workflows, skills, arquitectura agentic, integración de herramientas, permisos, fuentes de verdad, mecanismos de revisión, memoria, sistema documental y **la composición física del producto**: qué fuentes lo forman, qué componentes lógicos hay y cómo se relacionan. Esa decisión se materializa en `SOURCES.toml`, y puede ser una sola fuente: un producto de un repositorio es el caso particular, no un modelo distinto.
 
 **NO DEBE** implementar funcionalidades de producto.
 
@@ -697,16 +697,16 @@ El Circuito 0 tiene un presupuesto máximo de **3 sesiones de trabajo del Owner 
 
 #### Entregables obligatorios del Circuito 0
 
-El gate se cumple, y sólo se cumple, cuando existen en el repositorio:
+El gate se cumple, y sólo se cumple, cuando existen en el **repositorio ADS de control**:
 
 1. `AGENTS.md` compilado, < 400 líneas, imperativo y comprobable (regla K0.2).
 2. `docs/README.md` — mapa de la documentación y jerarquía de autoridad vigente.
-3. `docs/decisions/` con al menos los ADR de: estructura del repositorio, modelo de ramas e integración, política de seguridad operativa (G27), y estrategia de aislamiento multiagente.
+3. `docs/decisions/` con al menos los ADR de: **composición física del producto** —cuántas fuentes y por qué, la decisión que `SOURCES.toml` materializa—, modelo de ramas e integración por fuente, política de seguridad operativa (G27), y estrategia de aislamiento multiagente.
 4. Task system operativo con al menos las tareas del Circuito 1 cargadas.
 5. `docs/JOURNAL.md` inicializado (G26).
 6. `docs/agentic/` — definición de agentes, skills y workflows vigentes.
 7. `docs/agentic/METRICS.md` inicializado (G25), y ambos ledgers de G52 creados con su techo declarado.
-8. Repositorio Git con remoto, CI mínima que al menos ejecute lint y un test trivial en verde.
+8. Repositorio de control con remoto, y `SOURCES.toml` declarado —vacío es válido mientras no haya código—. CI mínima que al menos ejecute lint y un test trivial en verde en **cada fuente que ya exista**.
 9. Lista priorizada de spikes del Circuito 1, con hipótesis y criterio de éxito medible por spike.
 10. Poda del MASTER: toda sección superada por un documento especializado sustituida por puntero (regla K0.3).
 
@@ -806,7 +806,7 @@ Agentic Engineering **DEBE** ejecutar una auditoría del sistema de agentes al m
 
 ### G26 — Sesiones, journal y continuidad *(nuevo)*
 
-La memoria del proyecto vive en el repositorio (G04). Para que eso funcione en la práctica hace falta un artefacto barato que el task system no cubre: **el estado de la sesión**.
+La memoria del proyecto vive en el repositorio ADS de control (G04). Para que eso funcione en la práctica hace falta un artefacto barato que el task system no cubre: **el estado de la sesión**.
 
 `docs/JOURNAL.md` — append-only, entradas cortas, la más reciente arriba:
 
@@ -964,7 +964,7 @@ Un agente **NUNCA DEBE**:
 1. Ejecutar `git push --force` (ni `--force-with-lease`) sobre `main` o sobre ramas compartidas.
 2. Reescribir historia publicada (`rebase`, `amend`, `filter-branch`, `reset --hard` sobre remoto).
 3. Ejecutar borrados recursivos fuera del workspace del proyecto, ni `rm -rf` con rutas construidas dinámicamente sin comprobación previa.
-4. Escribir secretos, tokens, claves, credenciales o datos personales en el repositorio, en logs, en mensajes de commit, en issues o en documentación.
+4. Escribir secretos, tokens, claves, credenciales o datos personales en **ningún repositorio del producto** —control o fuente—, ni en logs, mensajes de commit, issues, documentación ni en `SOURCES.toml`: el manifiesto declara identidad, nunca secretos.
 5. Enviar código, datos del proyecto o datos personales a servicios externos no autorizados explícitamente por el Owner.
 6. Desactivar, saltar o modificar checks de CI, hooks o reglas de protección de rama para hacer pasar un cambio.
 7. Modificar la configuración de permisos, credenciales o identidad del propio sistema de agentes.
@@ -974,14 +974,14 @@ Cualquiera de estas situaciones **DEBE** producir una parada y un escalado al Ow
 
 #### Secretos y credenciales
 
-- Los secretos viven fuera del repositorio: variables de entorno, gestor de secretos o `.env` ignorado. **DEBE** existir `.env.example` con claves vacías.
-- El repositorio **DEBE** tener detección de secretos en CI desde el Circuito 2.
+- Los secretos viven fuera de todo repositorio del producto: variables de entorno, gestor de secretos o `.env` ignorado. **DEBE** existir `.env.example` con claves vacías.
+- **Cada** repositorio del producto **DEBE** tener detección de secretos en CI desde el Circuito 2. Una fuente sin esa detección es la que acabará filtrando.
 - El firmado de aplicaciones, las claves de publicación y los tokens de plataforma son materia reservada al Owner (G05).
 - Principio de mínimo privilegio: el agente recibe el permiso más estrecho que permita hacer el trabajo, no el más cómodo.
 
 #### Datos reales
 
-Los datos personales o de sensores del Owner usados en desarrollo **NO DEBEN** subirse al repositorio sin anonimizar ni compartirse con servicios externos. Ver P44 para el detalle de este proyecto.
+Los datos personales o de sensores del Owner usados en desarrollo **NO DEBEN** subirse a ningún repositorio del producto sin anonimizar, ni compartirse con servicios externos. Ver P44 para el detalle de este proyecto.
 
 ### G28 — Supply chain de dependencias *(nuevo)*
 
@@ -1440,11 +1440,11 @@ El PACK de cada clase de proyecto concreta cómo se consigue esto (ver W13 en `p
 
 El código favorece: legibilidad, tipado, separación de responsabilidades, testabilidad, bajo acoplamiento, funciones pequeñas cuando resulte natural, nombres claros y dominio explícito. **DEBE** evitarse el exceso de abstracción. La arquitectura está al servicio del producto.
 
-Las convenciones detalladas (naming, paquetes, módulos, formato, commits, ramas, PR, tests, documentación, errores, logging) se definen al crear el repositorio y viven en `docs/CONVENTIONS.md`, no aquí.
+Las convenciones detalladas (naming, paquetes, módulos, formato, commits, ramas, PR, tests, documentación, errores, logging) se definen en el Circuito 0 y viven en `docs/CONVENTIONS.md` **del repositorio de control**, que es donde vive la verdad de la organización. Rigen sobre todas las fuentes; una fuente puede documentar su desviación justificada junto a su código, no una convención global distinta (I5).
 
 ### G39 — Cambios arquitectónicos y trazabilidad
 
-Un agente **NO DEBE** realizar en silencio un cambio que afecte a: stack, persistencia, sincronización, modelo central, estructura del repositorio, permisos, seguridad, backend, IA, integraciones de dispositivo o arquitectura. Estos cambios **DEBEN** dejar traza documental (ADR).
+Un agente **NO DEBE** realizar en silencio un cambio que afecte a: stack, persistencia, sincronización, modelo central, **composición del producto —añadir, partir, fusionar o retirar una fuente o un componente—**, permisos, seguridad, backend, IA, integraciones de dispositivo o arquitectura. Estos cambios **DEBEN** dejar traza documental (ADR).
 
 Todo cambio importante **DEBE** permitir a otro agente entender: qué cambió, por qué, qué alternativas se consideraron, qué documentación queda afectada, qué tests lo validan, qué riesgos introduce y si la decisión es definitiva, provisional o experimental. La profundidad es proporcional a la importancia.
 
@@ -1516,15 +1516,20 @@ Ante una contradicción: comprobar código actual → comprobar ADRs → revisar
 ### G46 — Punto de entrada humano
 
 ```text
-1. Crear carpeta vacía
-2. Guardar dentro PROJECT_MASTER.md
-3. Abrir la carpeta en Cursor
+1. Crear el WORKSPACE del producto con su repositorio ADS de control dentro
+       ./tooling/new-project.sh <producto> [packs]
+   El workspace NO es un repositorio Git: es el contenedor. El único repositorio
+   que el arranque inicializa es <workspace>/ads.
+2. Escribir en él el PROFILE, o dejar que el sistema lo levante por conversación
+3. Abrir <workspace>/ads en Cursor
 4. Iniciar Claude Code
-5. Indicarle que lea el MASTER e inicie el Circuito 0
-6. Permitir que el sistema genere la estructura dentro del mismo repositorio
+5. Indicarle que lea BOOTSTRAP_PROMPT.md e inicie el Circuito 0
+6. Permitir que el sistema genere la estructura dentro del repositorio DE CONTROL
 ```
 
 El Owner **NO DEBE** tener que conocer de antemano la estructura final de carpetas, documentación, agentes o skills. Diseñarla es responsabilidad del Circuito 0.
+
+**Ni la estructura física del producto.** Cuántos repositorios de código habrá, y cuáles, es una decisión del Circuito 0 que se materializa en `SOURCES.toml`. El arranque **no** crea ningún repositorio de código: no sabe todavía cuántos hacen falta, y crear uno «por si acaso» fijaría la arquitectura antes de decidirla.
 
 ### G47 — Prompt de arranque
 
@@ -1543,23 +1548,29 @@ Claude Code y Codex, y registra la evidencia con fecha (G33).
 Al terminar cada sesión: entrada en JOURNAL.md y push.
 ```
 
-### G48 — El repositorio existe desde el primer día
+### G48 — El repositorio de control existe desde el primer día
 
-La carpeta inicial **DEBE** convertirse en repositorio Git en el primer ciclo de trabajo, aunque no haya código.
+El **repositorio ADS de control** existe y está publicado desde el primer ciclo de trabajo, aunque no haya una sola línea de código. `new-project.sh` lo deja creado, en su rama inicial y con su commit semilla; publicarlo es el paso 2 del arranque.
 
 ```text
-SEMILLA (PROJECT_MASTER.md)
+SEMILLA (PROFILE + PROJECT, en <workspace>/ads)
    ↓
-BOOTSTRAP (docs + agents + governance + AGENTS.md)
+BOOTSTRAP (docs + agents + governance + AGENTS.md + SOURCES.toml)
    ↓
-ENGINEERING BOOTSTRAP (tooling + estructura + CI)
+ENGINEERING BOOTSTRAP (fuentes declaradas y materializadas + tooling + CI por fuente)
    ↓
-PRODUCT BUILD (código + tests + documentación)
+PRODUCT BUILD (código + tests + documentación, en las fuentes)
 ```
 
-**NO DEBE** existir migración desde un "repositorio documental" a otro "repositorio real".
+```text
+QUÉ ES REPOSITORIO      <workspace>/ads          desde el día uno
+                        cada fuente declarada    cuando el Circuito 0 decide que existe
+QUÉ NO LO ES NUNCA      <workspace>              es el contenedor del producto (C6)
+```
 
-> **El proyecto no cambia de carpeta de planificación a proyecto real. Es real desde su primera fuente de verdad y su primer commit. Lo que cambia es su grado de madurez.**
+**NO DEBE** existir migración desde un "repositorio documental" a otro "repositorio real". Y **NO DEBE** confundirse «el repositorio existe desde el primer día» con «el producto es un repositorio»: son el mismo requisito de trazabilidad aplicado al repositorio que gobierna, no una afirmación sobre cuántos repositorios tiene el producto (E2.0).
+
+> **El proyecto no cambia de carpeta de planificación a proyecto real. Es real desde su primera fuente de verdad y su primer commit. Lo que cambia es su grado de madurez, y cuántas fuentes tiene.**
 
 ### G49 — Claude Code como autoridad operativa inicial
 

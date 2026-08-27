@@ -114,7 +114,7 @@ Test de contaminación: si al sustituir mentalmente el proyecto por *"una CLI de
 | secciones (a) y (b) | **aprobadas** por el Owner | especificación, no runtime |
 | `kernel/operativo/` | contenido operativo construido | ningún proyecto todavía |
 | `packs/web-app` · `mobile-app` · `wear-os` | 1.0.0 | ningún proyecto todavía |
-| `kernel/KERNEL.md` | 1.4.0, conviviendo con la línea 2.0 por [política declarada](kernel/VERSIONES.md) | ningún proyecto todavía |
+| `kernel/KERNEL.md` | 1.5.0, conviviendo con la línea 2.0 por [política declarada](kernel/VERSIONES.md) | ningún proyecto todavía |
 | runtime y dispatcher | **no existen** | — |
 
 **Nada de esto ha pasado por un proyecto real.** El estado honesto de cada prueba está en

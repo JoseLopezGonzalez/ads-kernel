@@ -27,9 +27,9 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada d6dc4c97d4c55942, calculada 4cbead54a194ea27. Algún fichero de la huella se 
+                          → detectada: el kernel DIVERGE de su release: almacenada 64d5d7766e878730, calculada 63eca378f1e88100. Algún fichero de la huella se 
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada d6dc4c97d4c55942, calculada 8143532a701af572. Algún fichero de la huella se 
+                          → detectada: el kernel DIVERGE de su release: almacenada 64d5d7766e878730, calculada 23efeea83f459a4a. Algún fichero de la huella se 
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
                           → detectada: kernel/operativo/validadores/ads_lint.py NO entra en la huella: un fork silencioso de ese fichero sería indetectable
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
@@ -100,5 +100,19 @@ OK   N141c   A-10  T141  quien recompone la ruta pasa a contar sus propias recom
                           → detectada: DSP/supervision no exige independencia de DSP/enrutamiento: quien recompone contaría sus propias recomposiciones
 OK   N141d   A-10  T141  se ajusta un umbral aprobado porque el caso parecía merecerlo
                           → detectada: el prompt de supervisión no fija el umbral de racha en 2 (a.7 · FRENO 3): un umbral que el agente recuerda de memoria se
+OK   N161    E2    T161  un documento vuelve a decir que el repositorio es la memoria del proyecto
+                          → detectada: kernel/operativo/00-INDICE.md:141: conserva «El repositorio es la memoria del proyecto» [R7-repositorio-es-la-memoria], 
+OK   N161b   E2    T161  un documento vuelve a enseñar «una tarea = una rama»
+                          → detectada: kernel/templates/AGENTS_EXAMPLE.md:369: conserva «Una tarea = una rama» [R3-tarea-igual-rama], retirada por E2.4 — item/
+OK   N161c   E2    T161  la portada vuelve a afirmar que un ADS Project es un repositorio de código
+                          → detectada: README.md:133: conserva «Un ADS Project es un repositorio» [R5-proyecto-es-un-repositorio], retirada por E2.0 — PRODUCTO
+OK   N161d   E2    T161  el arranque vuelve a decir que el workspace es un repositorio Git
+                          → detectada: START_HERE.md:331: conserva «El workspace es un repositorio» [R9-workspace-es-un-repositorio], retirada por C6 topología
+OK   N161e   E2    T161  la adopción vuelve a copiar ADS dentro del repositorio de código
+                          → detectada: START_HERE.md:332: conserva «cd tu-proyecto-existente» [R2-adopcion-dentro-del-codigo], retirada por E2.0 y §49 — la ado
+OK   N161f   E2    T161  un patrón de T161 se desafila hasta dejar de detectar su propia formulación
+                          → detectada: R7-repositorio-es-la-memoria: su patrón ya no detecta su propia formulación retirada. El fixture es «El chat es una inte
+OK   N161g   E2    T161  el corpus queda fuera del recorrido y T161 pasaría por no mirar
+                          → detectada: sólo se recorrieron 18 ficheros, por debajo del mínimo (150). Una exclusión mal escrita deja el corpus fuera y esta prue
 
-49 infracciones detectadas · 0 NO detectadas
+56 infracciones detectadas · 0 NO detectadas

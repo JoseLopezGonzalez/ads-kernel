@@ -439,6 +439,73 @@ def m_umbral_inventado(raiz):
                "RACHA SIS    = 2", "RACHA SIS    = 5")
 
 
+
+# --- T161 · las formulaciones semánticas que E2 retiró ----------------------
+# No basta con que T161 pase: hay que demostrar que FALLA cuando alguien devuelve al
+# corpus el modelo anterior escrito con otras palabras.
+#
+# Los textos NO están aquí. Viven en `pruebas/fixtures/formulaciones-retiradas.yaml`,
+# que `exclusiones.yaml` ya declara como material de prueba. Escribirlos en este fichero
+# obligaría a eximirlo de T161, y una exención es un agujero: el día que alguien escriba
+# aquí una frase de verdad, nadie la vería.
+
+FIXTURES_E2 = "kernel/operativo/pruebas/fixtures/formulaciones-retiradas.yaml"
+
+
+def _casos_e2():
+    import yaml
+    with open(os.path.join(RAIZ, FIXTURES_E2), encoding="utf-8") as fh:
+        return (yaml.safe_load(fh) or {}).get("casos") or []
+
+
+def _caso_e2(mid):
+    caso = next((c for c in _casos_e2() if c.get("id") == mid), None)
+    if caso is None:
+        raise RuntimeError(f"{FIXTURES_E2} no declara el caso '{mid}'")
+    return caso
+
+
+def _mutaciones_e2():
+    """Una mutación por formulación declarada en el fixture. La descripción viene de allí."""
+    return [Mutacion(c["id"], "E2", "T161", "comprobar_fuentes",
+                     c["descripcion"], _reintroducir(c["id"]))
+            for c in _casos_e2()]
+
+
+def _reintroducir(mid):
+    """Devuelve la mutación que añade al final del fichero real su formulación retirada."""
+    def aplicar(raiz):
+        caso = _caso_e2(mid)
+        ruta = os.path.join(raiz, caso["en"])
+        if not os.path.isfile(ruta):
+            raise RuntimeError(f"la mutación no encaja: no existe {caso['en']}")
+        with open(ruta, "a", encoding="utf-8") as fh:
+            fh.write("\n" + caso["texto"].rstrip("\n") + "\n")
+    return aplicar
+
+
+def m_t161_patron_desafilado(raiz):
+    """Alguien 'arregla' un patrón hasta que deja de detectar lo que declara detectar."""
+    _sustituir(raiz, "kernel/operativo/validadores/comprobar_fuentes.py",
+               '"patron": r"[Ee]l repositorio es la memoria del proyecto"',
+               '"patron": r"ESTO-YA-NO-DETECTA-NADA"')
+
+
+def m_t161_cobertura_estrechada(raiz):
+    """El corpus queda fuera del recorrido: T161 pasaría por no mirar."""
+    _sustituir(raiz, "kernel/operativo/validadores/exclusiones.yaml",
+               "no_analizados:",
+               "no_analizados:\n"
+               "  - ruta: kernel/operativo\n"
+               "    motivo: 'estrechamiento deliberado para la prueba negativa N161g'\n"
+               "  - ruta: kernel/operativo/capacidades\n"
+               "    motivo: 'estrechamiento deliberado para la prueba negativa N161g'\n"
+               "  - ruta: docs\n"
+               "    motivo: 'estrechamiento deliberado para la prueba negativa N161g'\n"
+               "  - ruta: packs\n"
+               "    motivo: 'estrechamiento deliberado para la prueba negativa N161g'\n")
+
+
 CATALOGO = [
     Mutacion("N136", "A-06", "T136", "comprobar_contratos",
              "un veto levantable (DOM) se declara prevaleciente sobre otro (DIS)",
@@ -587,6 +654,13 @@ CATALOGO = [
     Mutacion("N141d", "A-10", "T141", "comprobar_contratos",
              "se ajusta un umbral aprobado porque el caso parecía merecerlo",
              m_umbral_inventado),
+    *_mutaciones_e2(),
+    Mutacion("N161f", "E2", "T161", "comprobar_fuentes",
+             "un patrón de T161 se desafila hasta dejar de detectar su propia formulación",
+             m_t161_patron_desafilado),
+    Mutacion("N161g", "E2", "T161", "comprobar_fuentes",
+             "el corpus queda fuera del recorrido y T161 pasaría por no mirar",
+             m_t161_cobertura_estrechada),
 ]
 
 

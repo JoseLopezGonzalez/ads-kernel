@@ -37,7 +37,7 @@ autoridad:
 entradas:
   - "el encuadre del defecto con el caso concreto"
   - "logs, telemetría y evidencia de USO o ENT"
-  - "el repositorio y su historial"
+  - "las fuentes implicadas en el fallo, con su historial. Una causa puede estar en una fuente distinta de aquella donde se ve el síntoma"
 metodo: [ARQ/Diagnostico]
 herramientas:
   - "ejecución local y en el entorno donde se reprodujo"

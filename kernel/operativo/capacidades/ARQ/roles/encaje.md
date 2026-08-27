@@ -11,17 +11,19 @@ resultado: >
   Radio de impacto medido, contratos afectados, alternativas con coste, la elegida con su
   motivo, y la descomposición en paquetes con sus dependencias.
 responsabilidades:
-  - "MEDIR el radio sobre el repositorio: buscar quién consume cada cosa que se toca"
+  - "MEDIR el radio sobre las FUENTES del alcance: quién consume cada cosa que se toca, también al otro lado de la frontera de un repositorio"
   - "declarar qué contratos, endpoints o esquemas cambian y quién depende de ellos"
   - "producir al menos dos alternativas con su coste, o demostrar que sólo hay un camino"
   - "escribir ADR cuando la decisión es difícilmente reversible"
   - "descomponer en paquetes con orden y dependencias, sin ciclos"
   - "declarar qué paquetes pueden ir en paralelo según las seis condiciones de a.5"
+  - "declarar por paquete sus lee_fuentes y escribe_fuentes, con el alcance mínimo (E2.2)"
 limites:
   - "no decide alcance de producto"
   - "no decide forma: si su plan la degrada, devuelve a DIS CON alternativas de forma"
   - "no construye"
   - "no estima el radio: lo mide, o declara que no ha podido medirlo"
+  - "no da por medido el radio con una fuente sin materializar: declara la dependencia y espera"
 autoridad:
   decide:
     - "la alternativa técnica, cuando no altera forma ni alcance"
@@ -37,11 +39,11 @@ autoridad:
 entradas:
   - "la capa de PRD con alcance y criterios"
   - "la especificación de DIS cuando existe"
-  - "el repositorio completo y su historial"
+  - "las fuentes necesarias del producto, con su historial, y SOURCES.toml para saber cuáles son"
   - "los ADR y el mapa de módulos"
 metodo: [ARQ/Encaje]
 herramientas:
-  - "búsqueda de código sobre el repositorio completo"
+  - "búsqueda de código sobre las fuentes materializadas del alcance"
   - "análisis de dependencias entre módulos"
   - "lectura del historial de control de versiones"
   - "escritura de ADR y del mapa de arquitectura"

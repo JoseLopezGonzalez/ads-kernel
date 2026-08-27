@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 02fd7e203a054d55 -->
+<!-- source_revision: 19ce075086de4ada -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).

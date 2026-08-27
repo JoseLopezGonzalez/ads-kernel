@@ -5,5 +5,6 @@
 T159  SUPERADA  La plantilla de SOURCES.toml es válida y arranca sin fuentes
 T160  SUPERADA  El manifiesto del ADS Project, cuando existe, es válido
 T161  SUPERADA  El corpus no conserva la equivalencia proyecto = repositorio
+          cobertura: 10 formulaciones retiradas comprobadas con su fixture y su contraejemplo · 279 ficheros recorridos
 
 3 superadas · 0 fallidas

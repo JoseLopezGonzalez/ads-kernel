@@ -108,7 +108,8 @@ Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el
 Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
 
 ```text
-  · a la capacidad con custodia, cuando lo declarado no corresponde con el repositorio
+  · a la capacidad con custodia, cuando lo declarado no corresponde con lo que hay: ni en
+    el control repo, ni en la fuente donde el paquete dice haberlo dejado
 ```
 
 Te bloquea, y entonces **nombras qué lo desbloquearía**:

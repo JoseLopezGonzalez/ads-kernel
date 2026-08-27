@@ -54,14 +54,27 @@ checkpoint: <qué del checkpoint del emisor debe poder leer el receptor>
 ## Qué NO viaja en un handoff
 
 ```text
-NO VIAJA   una copia del contexto: se enlaza la fuente y su versión (based_on)
+NO VIAJA   una copia del contexto: se enlaza el origen y su versión (based_on)
 NO VIAJA   una decisión tomada por el emisor en materia del receptor
 NO VIAJA   una tarea. Viaja un ARTEFACTO y su evidencia; el trabajo lo compone DSP
 NO VIAJA   una conversación con el Owner. Viaja lo que decidió, citado, con fecha
+NO VIAJA   el contenido de una FUENTE. Viaja su revisión exacta: `<source-id>@<sha>`
 ```
 
 > **Enlaces, no copias.** Es la misma regla del checkpoint de a.10, y por el mismo motivo:
 > una copia envejece en silencio y nadie sabe cuál de las dos manda.
+
+**A través de la frontera de un repositorio, la regla es la misma y aprieta más.** Un
+artefacto que vive en una fuente —código, esquema, contrato de API— se entrega por
+referencia a su revisión, nunca copiándolo al control repo ni a otra fuente: eso crearía la
+segunda copia editable que `I5` prohíbe, y esta vez sin nadie que la vea envejecer. El
+handoff nombra la fuente por su `id` de `SOURCES.toml`, y el receptor la materializa si la
+necesita.
+
+> **Cuidado con la palabra «fuente».** En este corpus significa dos cosas: el *origen* de
+> una información —«la fuente de esta decisión»— y una **FUENTE** de `SOURCES.toml`, que es
+> un repositorio del producto (C6 N5). Cuando el sentido no se deduzca del contexto, se
+> escribe «fuente del manifiesto» o se cita su `id`.
 
 ## Devolución: qué evidencia es obligatoria
 

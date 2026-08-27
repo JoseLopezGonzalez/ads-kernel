@@ -217,7 +217,8 @@ Te bloquea, y entonces **nombras qué lo desbloquearía**:
 ```text
   · el Owner no ha respondido una pregunta cuya respuesta condiciona el resultado perseguido
   · una consulta a especialista depende de evidencia que aún no existe
-  · el anclaje no puede ejecutarse porque el repositorio del proyecto no está accesible
+  · el anclaje no puede ejecutarse porque el control repo, o una fuente que necesita leer,
+    no está accesible
 ```
 
 Escalas, sin decidirlo tú:

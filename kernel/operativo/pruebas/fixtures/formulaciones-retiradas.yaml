@@ -1,0 +1,45 @@
+# Material de PRUEBA, no corpus. Contiene las formulaciones que la enmienda E2 retiró,
+# escritas tal cual, para que `comprobar_negativos.py` pueda reintroducirlas en una copia
+# temporal y demostrar que `T161` falla cuando debe fallar.
+#
+# Vive aquí y no dentro del validador por un motivo concreto: `exclusiones.yaml` ya declara
+# `kernel/operativo/pruebas/fixtures` como material que no se analiza, de modo que estas
+# frases no acusan al corpus de la infracción que existen para detectar. Escribirlas en el
+# código del validador habría exigido una exención nueva, y una exención es un agujero.
+#
+# Cada entrada: el id de la mutación, su descripción, el fichero real de la copia donde se
+# inyecta y el texto exacto que se añade al final.
+#
+# La DESCRIPCIÓN también vive aquí, y no en el validador, por lo mismo: describir una
+# formulación retirada suele exigir citarla, y una cita en el código del validador volvería
+# a acusar al corpus. Aquí es material de prueba y no se analiza.
+
+casos:
+  - id: N161
+    descripcion: "un documento vuelve a decir que el repositorio es la memoria del proyecto"
+    en: kernel/operativo/00-INDICE.md
+    texto: "> El chat es una interfaz temporal. El repositorio es la memoria del proyecto."
+
+  - id: N161b
+    descripcion: "un documento vuelve a enseñar «una tarea = una rama»"
+    en: kernel/templates/AGENTS_EXAMPLE.md
+    texto: "- Una tarea = una rama corta, y un PR por tarea."
+
+  - id: N161c
+    descripcion: "la portada vuelve a afirmar que un ADS Project es un repositorio de código"
+    en: README.md
+    texto: "Un ADS Project es un repositorio de código con el kernel vendorizado dentro."
+
+  - id: N161d
+    descripcion: "el arranque vuelve a decir que el workspace es un repositorio Git"
+    en: START_HERE.md
+    texto: "El workspace es un repositorio Git que contiene ads/ y las fuentes."
+
+  - id: N161e
+    descripcion: "la adopción vuelve a copiar ADS dentro del repositorio de código"
+    en: START_HERE.md
+    texto: |
+      ```bash
+      cd tu-proyecto-existente
+      cp -r ../ads-kernel/kernel .
+      ```

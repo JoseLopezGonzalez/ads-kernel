@@ -10,7 +10,8 @@ una corrección de espaciado.
 ## Las cinco variables del encuadre de diseño
 
 El nivel **no se elige**: se calcula. Y para calcularlo hacen falta cinco cosas que se
-responden **mirando el repositorio y la memoria de diseño**, no interpretando:
+responden **mirando el producto —el control repo y sus fuentes— y la memoria de diseño**,
+no interpretando:
 
 ```text
 superficie_construida     existe producto o superficie REAL, en uso o utilizable, que

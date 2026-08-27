@@ -350,7 +350,7 @@ degradacion_permitida: >
   ninguna en contexto ni uso_herramientas: un radio de impacto estimado en vez de medido
   es precisamente lo que este rol existe para eliminar.
 prohibido:
-  - "estimar el radio de impacto en lugar de medirlo sobre el repositorio"
+  - "estimar el radio de impacto en lugar de medirlo sobre las fuentes del alcance"
   - "devolver a Diseño sin traer al menos una alternativa de forma"
 ```
 
