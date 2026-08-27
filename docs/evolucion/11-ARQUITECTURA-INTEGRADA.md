@@ -26,6 +26,10 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 > POSTERIOR             reconciliación no era recuperable, y la integridad post-terminal
 >                       salía del terminal— y un GRAVE. Correcciones: D52–D54.
 >                       Tampoco es la tercera revisión, y tampoco certifica nada
+> QUINTA COMPROBACIÓN   de un solo punto, sobre `D60`: un único campo `iteracion` numeraba
+> TÉCNICA               OBSERVACIONES e INTENTOS a la vez, y valía 4 bajo un máximo de 3. Se
+>                       separan los dos contadores. Corrección: D62. TAMPOCO es la tercera
+>                       revisión, y TAMPOCO certifica nada
 > CUARTA COMPROBACIÓN   acotada, sobre `D58`–`D59`: la cardinalidad «exactamente una vez»
 > TÉCNICA               era insatisfacible por ruta, y la frontera de recursión era falsa y
 >                       clasificaba mal `sellado`. Correcciones: D60–D61. TAMPOCO es la
@@ -45,8 +49,9 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 > **Dos de los hallazgos de la segunda devolución son defectos que la PRIMERA CORRECCIÓN
 > introdujo o no vio, los TRES de la segunda corrección técnica están en el texto que la
 > corrección técnica ANTERIOR escribió, los DOS de la tercera comprobación están en el
-> texto que la segunda escribió, y los DOS de la cuarta están en el texto que la tercera
-> escribió.** Es el QUINTO encadenamiento consecutivo, y es la
+> texto que la segunda escribió, los DOS de la cuarta están en el texto que la tercera
+> escribió, y el de la quinta está en el texto que la cuarta escribió.** Es el SEXTO
+> encadenamiento consecutivo, y es la
 > razón por la que las revisiones se encadenan en vez de darse por buenas. **Quien aplicó
 > todas es quien las recibió**, luego ninguna prueba nada: `F4c` sigue **ABIERTA**,
 > pendiente de una **tercera revisión independiente**.
@@ -529,7 +534,7 @@ derivada                  ÚNICO CIERRE TERMINAL. Los derivados afectados se reg
 | `confirmada` | `derivada` | los derivados afectados se regeneraron |
 | `conflicto` | `reconciliacion-preparada` | la autoridad decidió, y su decisión es durable **antes de tocar nada** |
 | `reconciliacion-preparada` | `reconciliada` | los ficheros de la decisión casan con su `hash_final` |
-| `reconciliacion-preparada` | `conflicto` | un fichero **volvió a divergir** durante la aplicación. El nuevo `conflicto` incrementa `iteracion`. Con `iteracion: 4` **no se prepara ninguna decisión**: para y escala (§2.6.4, §2.6.9) |
+| `reconciliacion-preparada` | `conflicto` | un fichero **volvió a divergir** durante la aplicación. El nuevo `conflicto` incrementa `observacion` y `intentos_consumidos`. Con `observacion: 4` lleva `agotado: true` y **no admite ninguna `reconciliacion-preparada`**: para y escala (§2.6.4, §2.6.9) |
 | `reconciliada` | `derivada` | los derivados afectados se regeneraron **sobre el estado reconciliado** |
 
 ```text
@@ -593,8 +598,9 @@ lleva **seis cosas y no menos**:
                               · `3 + 2k` en la de conflicto que CIERRA, con `k` ∈ {1,2,3}
                                 iteraciones: CINCO, SIETE o NUEVE (§2.6.4)
                               · OCHO en la que AGOTA el tope y queda abierta: `preparada`,
-                                CUATRO `conflicto` —el cuarto es el marcador de parada— y
-                                TRES `reconciliacion-preparada`
+                                CUATRO `conflicto` —cuatro OBSERVACIONES, la cuarta con
+                                `agotado: true`— y TRES `reconciliacion-preparada` —tres
+                                INTENTOS, que es lo que el tope limita—
                               · y NADA MÁS. Recuperar no añade eventos: una fase de hecho
                                 no se duplica, y restaurar un evento perdido devuelve el
                                 MISMO evento, no uno nuevo (§2.6.4)
@@ -838,8 +844,8 @@ dos, y ninguna transacción cerrada tiene cero: cada ruta cierra con la suya.
 |---|---|---|---|
 | `preparada` | **exactamente 1** | **exactamente 1** | **exactamente 1** |
 | `confirmada` | **exactamente 1** | **0** | **0** |
-| `conflicto` | **0** | `k` ∈ {1, 2, 3} | **exactamente 4** |
-| `reconciliacion-preparada` | **0** | `k`, el MISMO que `conflicto` | **exactamente 3** |
+| `conflicto` | **0** | `k` ∈ {1, 2, 3} **observaciones** | **exactamente 4 observaciones** |
+| `reconciliacion-preparada` | **0** | `k` **intentos**, el MISMO número | **exactamente 3 intentos** |
 | `reconciliada` | **0** | **exactamente 1** | **0** |
 | `derivada` | **exactamente 1** | **exactamente 1** | **0** |
 | total de eventos | **3** | **3 + 2k** → 5 · 7 · 9 | **8** |
@@ -847,42 +853,76 @@ dos, y ninguna transacción cerrada tiene cero: cada ruta cierra con la suya.
 | estado | cerrado | cerrado | **BLOQUEADO y ESCALADO AL OWNER** |
 
 ```text
-EL INVARIANTE QUE LAS       CERRADA POR CONFLICTO   #`conflicto` = #`reconciliacion-preparada`
-DISTINGUE SIN MIRAR         AGOTADA Y ABIERTA       #`conflicto` = #`reconciliacion-preparada` + 1
-NADA MÁS                                            y ese `+1` es el `conflicto` de parada
+EL INVARIANTE QUE LAS       CERRADA POR CONFLICTO   #observaciones = #intentos
+DISTINGUE SIN MIRAR         AGOTADA Y ABIERTA       #observaciones = #intentos + 1
+NADA MÁS                                            y ese `+1` es el `conflicto` con
+                                                    `agotado: true`, que registra el fracaso
+                                                    del tercer intento y no tiene pareja
 ```
 
-#### El contador `iteracion`, sin ambigüedad
+#### DOS contadores, porque son DOS conceptos — observación e intento
+
+> **Corregido por la quinta comprobación técnica (`D62`, que revisa `D60`).** `D60` usó **un
+> solo campo** `iteracion` para numerar dos cosas distintas, y con ello afirmó a la vez que el
+> contador llega a **4** y que el tope es **3**, rematándolo con que *«`conflicto(4)` no es
+> una cuarta iteración»*. **Un campo que vale 4 bajo un máximo de 3 no es un contador: es dos
+> contadores con un solo nombre.** Se separan, y la contradicción desaparece sin cambiar ni
+> un total de eventos.
 
 ```text
-QUÉ NUMERA               el INTENTO DE RECONCILIACIÓN. Lo llevan `conflicto` y la
-                         `reconciliacion-preparada` que le responde, **con el MISMO valor**.
+OBSERVACIÓN DE          cada DIVERGENCIA REAL que se detecta y que DEBE quedar registrada.
+CONFLICTO               Es un HECHO OBSERVADO, y §2.6.4 lo produce siempre que un fichero no
+                        casa ni con la base ni con el resultado. **No se silencia nunca.**
 
-LA PRIMERA COLISIÓN      `conflicto` con **`iteracion: 1`**. NUNCA `0`: no existe un intento
-                         cero, y numerar desde cero haría que «tres iteraciones» significara
-                         cuatro.
+INTENTO DE              cada DECISIÓN DURABLE que se prepara para aplicar. Es un ACTO DE
+RECONCILIACIÓN          AUTORIDAD, y es lo que consume presupuesto.
 
-CUÁNDO SE INCREMENTA     al emitir un `conflicto` NUEVO después de una
-                         `reconciliacion-preparada` que no llegó a `reconciliada`. La
-                         transición `conflicto(i) → reconciliacion-preparada(i)` **NO
-                         incrementa**: es el mismo intento, en su segunda mitad.
+Y LA REGLA QUE LOS      **`MAX_CAS_RETRIES = 3` limita INTENTOS, no OBSERVACIONES.** Un tope
+SEPARA                  sobre lo observado sería un tope sobre la realidad, no sobre el
+                        trabajo — y obligaría a callar la divergencia que agota el último
+                        intento, que es exactamente lo que §2.6.4 prohíbe.
+```
 
-EL TOPE                  **MAX_ITERACIONES = 3.** Se prepara una decisión para `iteracion`
-                         1, 2 y 3. **El tercer `conflicto` SÍ permite una tercera decisión**,
-                         y es la última.
+**Los dos campos, cada uno en su fase:**
 
-QUÉ PASA EN LA CUARTA    la divergencia **SÍ se registra**: la clasificación de §2.6.4 la
-                         produce, y un hecho observado no se calla. Se emite `conflicto` con
-                         **`iteracion: 4`**, que es el **MARCADOR DE PARADA**:
-                           · NO se prepara ninguna decisión
-                           · se ESCALA al Owner
-                           · la transacción queda ABIERTA y BLOQUEADA, con su marcador
-                         **No hay una cuarta ITERACIÓN** —una iteración es conflicto MÁS
-                         decisión, y la cuarta decisión no existe—, pero sí hay un cuarto
-                         `conflicto`, porque callar la observación contradiría §2.6.4.
+```text
+`conflicto` LLEVA       `observacion`           1..4   qué divergencia es ésta
+                        `intentos_consumidos`   0..3   cuántas decisiones se prepararon ANTES
+                        `agotado`               true ÚNICAMENTE en la CUARTA observación
+                        más los hashes y la copia íntegra de lo divergente (§2.6.9)
 
-MÁXIMOS EXACTOS          `conflicto`                  **4**
-                         `reconciliacion-preparada`   **3**
+                        La relación entre los dos es fija y comprobable:
+                            `intentos_consumidos` = `observacion` − 1
+
+                        Con `agotado: true` el evento **NO admite ninguna
+                        `reconciliacion-preparada` posterior**. Es lo que convierte la parada
+                        en una propiedad del registro, y no en una promesa del runtime.
+
+`reconciliacion-        `intento`               1..3   qué intento es éste
+preparada` LLEVA        `resuelve`              el `id` del evento `conflicto` que resuelve
+                        más la decisión y su resultado durable (los siete campos de §2.6.9)
+
+                        **NUNCA existe un `intento: 4`.** No es que no se emita: es que el
+                        contrato no lo admite y el validador lo rechaza.
+```
+
+```text
+LA CORRESPONDENCIA      `reconciliacion-preparada(intento: n)` resuelve el `conflicto` con
+                        `observacion: n`. Los dos números coinciden mientras el intento
+                        existe — y la cuarta observación es precisamente la que ya no tiene
+                        pareja.
+
+QUÉ REGISTRA LA         **el FRACASO DEL TERCER INTENTO.** No es un intento más: es la prueba
+CUARTA OBSERVACIÓN      observada de que el tercero no funcionó. Sin ella el diario diría que
+                        se intentó tres veces y callaría cómo acabó la tercera.
+
+DÓNDE EMPIEZA CADA      `observacion` en **1** —la primera colisión—; `intentos_consumidos`
+CONTADOR                en **0** en esa primera colisión; `intento` en **1**. Ninguno empieza
+                        en cero salvo `intentos_consumidos`, que cuenta hacia atrás lo ya
+                        gastado y por eso empieza vacío.
+
+MÁXIMOS EXACTOS         OBSERVACIONES  `conflicto`                   **4**
+                        INTENTOS       `reconciliacion-preparada`    **3**
 ```
 
 **Las secuencias completas, para que no haya que deducirlas:**
@@ -891,26 +931,43 @@ MÁXIMOS EXACTOS          `conflicto`                  **4**
 ÉXITO INMEDIATO          preparada → confirmada → derivada
 (ruta normal)            3 eventos
 
-ÉXITO SIN NUEVAS         preparada → conflicto(1) → reconciliacion-preparada(1)
-DIVERGENCIAS                       → reconciliada → derivada
-(k = 1)                  5 eventos
+ÉXITO SIN NUEVAS         preparada
+DIVERGENCIAS               → C  observacion 1 · intentos_consumidos 0
+(k = 1)                    → RP intento 1
+                           → reconciliada → derivada
+                         5 eventos
 
-ÉXITO TRAS 1 NUEVA       preparada → conflicto(1) → reconciliacion-preparada(1)
-DIVERGENCIA                        → conflicto(2) → reconciliacion-preparada(2)
-(k = 2)                            → reconciliada → derivada
+ÉXITO TRAS 1 NUEVA       preparada
+DIVERGENCIA                → C  observacion 1 · intentos_consumidos 0
+(k = 2)                    → RP intento 1
+                           → C  observacion 2 · intentos_consumidos 1
+                           → RP intento 2
+                           → reconciliada → derivada
                          7 eventos
 
-ÉXITO TRAS 2 NUEVAS      preparada → conflicto(1) → reconciliacion-preparada(1)
-DIVERGENCIAS                       → conflicto(2) → reconciliacion-preparada(2)
-(k = 3)                            → conflicto(3) → reconciliacion-preparada(3)
-                                   → reconciliada → derivada
+ÉXITO TRAS 2 NUEVAS      preparada
+DIVERGENCIAS               → C  observacion 1 · intentos_consumidos 0
+(k = 3)                    → RP intento 1
+                           → C  observacion 2 · intentos_consumidos 1
+                           → RP intento 2
+                           → C  observacion 3 · intentos_consumidos 2
+                           → RP intento 3
+                           → reconciliada → derivada
                          9 eventos
 
-AGOTAMIENTO              preparada → conflicto(1) → reconciliacion-preparada(1)
-(3 nuevas divergencias)            → conflicto(2) → reconciliacion-preparada(2)
-                                   → conflicto(3) → reconciliacion-preparada(3)
-                                   → conflicto(4)   ← PARADA. Sin decisión
+AGOTAMIENTO              preparada
+(3 nuevas divergencias)    → C  observacion 1 · intentos_consumidos 0
+                           → RP intento 1
+                           → C  observacion 2 · intentos_consumidos 1
+                           → RP intento 2
+                           → C  observacion 3 · intentos_consumidos 2
+                           → RP intento 3
+                           → C  observacion 4 · intentos_consumidos 3 · agotado: true
+                             ← PARADA. NO EXISTE RP4
                          8 eventos · marcador ABIERTO · escalado al Owner
+
+                         `C` = `conflicto` · `RP` = `reconciliacion-preparada`
+                         En las cuatro, `intentos_consumidos` = `observacion` − 1
 ```
 
 **Qué fases pueden repetirse dentro de un `tx`, y cuáles no.** No es una excepción tolerada:
@@ -925,8 +982,9 @@ LA TABLA DE ARRIBA     `reconciliada`  0 en la ruta normal · 1 en la de conflic
                        Una SEGUNDA aparición de cualquiera de éstas es un DEFECTO, no una
                        reemisión. **`confirmada → confirmada` no existe.**
 
-REPETIBLES, Y          `conflicto`                  discriminadas por `iteracion`, con los
-DECLARADAS COMO TAL    `reconciliacion-preparada`   máximos exactos de arriba: 4 y 3.
+REPETIBLES, Y          `conflicto`                  discriminado por `observacion`, máx. 4
+DECLARADAS COMO TAL    `reconciliacion-preparada`   discriminada por `intento`, máx. 3.
+                       Cada una lleva SU contador, y no comparten uno.
                        Es la ÚNICA repetición que el contrato define, y la define en
                        positivo con su discriminador y su tope. Sin discriminador no hay
                        fase repetible.
@@ -1267,7 +1325,7 @@ impuso al arnés de negativos.
 | `X55` | comprobar que **ninguna escritura de reconciliación precede a su intención durable** | para todo canónico tocado por una reconciliación, el `fsync` de `reconciliacion-preparada` y de su directorio **retornó antes** del primer `rename` |
 | `X56` | revertir un canónico de una transacción con `derivada` durable, y arrancar | se emite un evento **`deriva`** con `causa: posterior-al-cierre`. **NO** se emite ninguna fase, la transacción cerrada **no gana ningún evento nuevo con su `tx`**, y nada se restaura solo |
 | `X57` | recorrer el diario buscando cualquier evento con `fase` cuya transacción ya tenga `derivada` | **no existe ninguno**, y el **validador semántico del diario** lo rechaza —la comprobación es de `tx`, no de evento aislado (§3.6)—. Ninguna transición sale del terminal |
-| `X58` | provocar que un fichero diverja y **vuelva a divergir TRES veces más** durante la reconciliación | el diario queda con **CUATRO `conflicto` y TRES `reconciliacion-preparada`**: el cuarto `conflicto` lleva `iteracion: 4`, **no recibe decisión**, **se detiene y se escala al Owner**, y la transacción queda ABIERTA con su marcador. No hay una cuarta iteración automática |
+| `X58` | provocar que un fichero diverja y **vuelva a divergir TRES veces más** durante la reconciliación | el diario queda con **CUATRO observaciones y TRES intentos**: los `conflicto` llevan `observacion` 1..4 con `intentos_consumidos` = `observacion` − 1, el cuarto lleva **`agotado: true`**, y las `reconciliacion-preparada` llevan `intento` 1..3. **NO existe ningún `intento: 4`**, se **detiene y se escala al Owner**, y la transacción queda ABIERTA con su marcador |
 
 > **Las excepciones históricas de `X47`, declaradas una a una.** Estos textos conservan
 > deliberadamente enumeraciones sustituidas, y `X47` **no los cuenta como incumplimiento**:
@@ -1421,6 +1479,21 @@ reconciliacion_pendiente(item) ≡
     cuyo evento `conflicto` NOMBRA ese item
 ```
 
+**El predicado NO distingue si el bucle se agotó, y es deliberado.** Un `conflicto` con
+`agotado: true` sigue siendo un `conflicto` sin `reconciliada` ni `derivada`, luego el
+predicado sigue siendo verdadero y el item sigue bloqueado — que es lo correcto: agotar los
+intentos **no resuelve nada**. Lo que sí cambia es **quién puede desbloquearlo**:
+
+```text
+SIN AGOTAR            la autoridad del conflicto prepara el siguiente intento, dentro de los
+(observaciones 1–3)   tres. El sistema sigue solo.
+
+AGOTADO               **sólo el OWNER**, y con una decisión nueva. El sistema NO prepara un
+(observación 4)       cuarto intento, y `reconciliacion_pendiente` sigue siendo verdadero
+                      hasta que esa decisión llegue. Un predicado que se volviera falso al
+                      agotarse desbloquearía el despacho justo cuando menos debe.
+```
+
 ```text
 POR QUÉ FUNCIONA        el evento `conflicto` YA CONOCE los items y las rutas afectadas: los
                         declara al emitirse. No hace falta escribir nada en ningún item para
@@ -1531,6 +1604,14 @@ QUÉ DECLARA ADEMÁS     los ITEMS y las RUTAS afectados. Es lo que hace derivab
                                 regenerar antes de `derivada`.
 ```
 
+**Y dos campos más de contabilidad**, que `D62` separa de los siete de contenido:
+
+```text
+`intento`     1..3. Qué intento es éste. **NUNCA 4**: el contrato no lo admite.
+`resuelve`    el `id` del evento `conflicto` que esta decisión resuelve — el de
+              `observacion` igual a este `intento`.
+```
+
 **Se escribe con la misma disciplina de durabilidad que `preparada`**: `fsync` del evento y
 de su directorio **antes** de tocar ningún canónico (§2.6.6). Es el **punto de compromiso de
 la ruta de conflicto**: desde que es durable, la reconciliación se completa hacia delante.
@@ -1561,14 +1642,15 @@ NO CASA CON NINGUNO         DIVERGENTE OTRA VEZ → vuelve a `conflicto`, con un
 ```
 
 ```text
-EL BUCLE TIENE TOPE   **MAX_ITERACIONES = 3**, y una iteración es `conflicto(i)` MÁS su
-                      `reconciliacion-preparada(i)`. Se prepara decisión para `iteracion`
-                      1, 2 y 3 — **el tercer `conflicto` SÍ recibe su decisión, y es la
-                      última**. Si tras `reconciliacion-preparada(3)` un fichero vuelve a
-                      divergir, se emite `conflicto` con **`iteracion: 4`**, que NO recibe
-                      decisión: se detiene, se escala al OWNER y NO se vuelve a intentar sin
-                      ella. Máximos exactos: **CUATRO `conflicto` y TRES
-                      `reconciliacion-preparada`** (§2.6.4).
+EL BUCLE TIENE TOPE   **`MAX_CAS_RETRIES = 3` limita INTENTOS, NO OBSERVACIONES** (§2.6.4).
+                      Se prepara decisión para `intento` 1, 2 y 3 — **la tercera observación
+                      SÍ recibe su intento, y es el último**. Si tras el `intento: 3` un
+                      fichero vuelve a divergir, se emite un `conflicto` con
+                      **`observacion: 4`, `intentos_consumidos: 3` y `agotado: true`**, que
+                      **no admite ninguna `reconciliacion-preparada`**: se detiene, se escala
+                      al OWNER y NO se vuelve a intentar sin su decisión. Esa cuarta
+                      observación **registra el fracaso del tercer intento**, y por eso no se
+                      silencia. Máximos exactos: **CUATRO observaciones y TRES intentos**.
                       Es el precedente numérico que `a.9` ya fijó para el CAS del tablero
                       —`MAX_CAS_RETRIES = 3`— aplicado aquí: un reintento sin tope es un
                       livelock, y el corpus ya lo resolvió una vez.
@@ -1586,7 +1668,7 @@ EL BUCLE TIENE TOPE   **MAX_ITERACIONES = 3**, y una iteración es `conflicto(i)
 | **R6** | justo después de `reconciliada` | la aplicación completa | se regeneran los derivados del punto 7 y se emite `derivada` |
 | **R7** | durante la regeneración posterior a la reconciliación | derivados a medias | se regeneran ENTEROS y se emite `derivada` |
 | **R8** | tras `derivada`, antes de borrar el marcador | transacción cerrada | se borra el marcador. Idempotente |
-| **R9** | en cualquier punto, con un fichero que ya no casa ni con `hash_observado` ni con `hash_final` | la decisión | vuelve a `conflicto` con base nueva e `iteracion` incrementada. Con `iteracion` 2 o 3 se prepara una decisión nueva; con `iteracion: 4` **no**: para, escala y la transacción queda abierta (§2.6.4) |
+| **R9** | en cualquier punto, con un fichero que ya no casa ni con `hash_observado` ni con `hash_final` | la decisión | vuelve a `conflicto` con base nueva, `observacion` incrementada e `intentos_consumidos` = `observacion` − 1. Con `observacion` 2 o 3 se prepara un intento nuevo; con `observacion: 4` lleva `agotado: true` y **no se prepara ninguno**: para, escala y la transacción queda abierta (§2.6.4) |
 
 **Una segunda ejecución converge al mismo resultado en las nueve**, porque la decisión es
 durable desde `R3` y la clasificación por hash es idempotente. Es `T17` aplicado a la ruta de
@@ -1960,7 +2042,8 @@ ANTES DE REEMITIR, el ejecutor busca en el diario un evento con el MISMO `tx` y 
 > regla de arriba lo convierte en **no-operación** cuando la fase ya existe, y de ahí que
 > **`confirmada → confirmada` no exista** (§2.6.4). Las únicas fases que pueden aparecer más
 > de una vez en un `tx` son `conflicto` y `reconciliacion-preparada`, y no por reemisión sino
-> porque el contrato las declara **repetibles con `iteracion`** como discriminador. Y
+> porque el contrato las declara **repetibles**, cada una con SU discriminador: `observacion`
+> para `conflicto` —hasta 4— e `intento` para `reconciliacion-preparada` —hasta 3— (§2.6.4). Y
 > **restaurar** un fichero de evento perdido no es reemitir: devuelve el MISMO `id`, con el
 > mismo cuerpo y el mismo `predecesor`, luego no cae bajo esta regla y no hace crecer el
 > diario.
@@ -2762,9 +2845,9 @@ UNA                                               la lleva no puede declarar nin
 `tx_afectada` sin `causa: posterior-al-cierre`    ESQUEMA ESTRUCTURAL
 UN EVENTO CON `fase` CUYO `tx` YA TIENE           VALIDADOR SEMÁNTICO DEL DIARIO: exige
 `derivada`                                        recorrer los demás eventos de ese `tx`
-UNA `reconciliacion-preparada` CON                VALIDADOR SEMÁNTICO DEL DIARIO: exige
-`iteracion: 4`, O UN `conflicto` CON              contar los `conflicto` de ese `tx`
-`iteracion` MAYOR QUE 4
+UN `intento: 4`, O UNA `observacion` MAYOR        VALIDADOR SEMÁNTICO DEL DIARIO: exige
+QUE 4, O UNA `reconciliacion-preparada` QUE       contar los `conflicto` de ese `tx` y
+RESUELVA UN `conflicto` CON `agotado: true`       seguir sus referencias
 ```
 
 **No se crea ningún tipo, y no se fusiona ninguno.** La prueba de §3.1 **no llega a
@@ -2792,8 +2875,8 @@ candidatos con sujeto, autoridad y ciclo propios. El recuento de §3.8 **no camb
 |---|---|---|---|---|---|
 | `preparada` | ninguna: abre la transacción | `afecta[]` con `ruta`·`hash_previo`·`hash_posterior_esperado`·`orden`· una de `contenido`\|`parche`\|`operacion` · los cinco de `a.9` · `base` | `resultado` · `hash_observado` · `hash_final` · `decision` | `hash_posterior_esperado` | los N ficheros casan con su hash posterior → `confirmada`; alguno diverge → `conflicto` |
 | `confirmada` | `preparada` | `resultado` · `derivados_pendientes[]` | `decision` · `hash_final` · `hash_observado` | `hash_posterior_esperado` | los derivados de `derivados_pendientes` se regeneraron → `derivada` |
-| `conflicto` | `preparada` o `reconciliacion-preparada` | `divergentes[]` con `ruta`·`hash_observado`· **`contenido` íntegro de lo divergente** · `items[]` · `rutas[]` · `autoridad` que debe resolver · `iteracion` | `resultado` · `hash_final` · `decision` | ninguno: declara lo observado, no lo esperado | la autoridad decide y su decisión es durable → `reconciliacion-preparada`, **para `iteracion` 1, 2 y 3**; con `iteracion: 4` **no se prepara ninguna decisión**: se detiene, se escala y la transacción queda abierta (§2.6.4) |
-| `reconciliacion-preparada` | `conflicto` | `decision[]` con `ruta`·`hash_observado`·`hash_final`·`orden`· una de `contenido`\|`parche`\|`operacion` · `autoridad` que decidió · `derivados_pendientes[]` · `iteracion` | `resultado` | `hash_final`, que **sustituye** al `hash_posterior_esperado` para esas rutas | los ficheros de `decision` casan con su `hash_final` → `reconciliada`; alguno vuelve a divergir → `conflicto` |
+| `conflicto` | `preparada` o `reconciliacion-preparada` | `divergentes[]` con `ruta`·`hash_observado`· **`contenido` íntegro de lo divergente** · `items[]` · `rutas[]` · `autoridad` que debe resolver · `observacion` ∈ 1..4 · `intentos_consumidos` ∈ 0..3 · `agotado` **sólo `true` con `observacion: 4`** | `resultado` · `hash_final` · `decision` | ninguno: declara lo observado, no lo esperado | la autoridad decide y su decisión es durable → `reconciliacion-preparada` con `intento` = `observacion`, **para las observaciones 1, 2 y 3**; con `agotado: true` **no admite ninguna**: se detiene, se escala y la transacción queda abierta (§2.6.4) |
+| `reconciliacion-preparada` | `conflicto` **sin `agotado: true`** | `decision[]` con `ruta`·`hash_observado`·`hash_final`·`orden`· una de `contenido`\|`parche`\|`operacion` · `autoridad` que decidió · `derivados_pendientes[]` · `intento` ∈ 1..3 · `resuelve` = `id` del `conflicto` que resuelve | `resultado` · `agotado` · `observacion` | `hash_final`, que **sustituye** al `hash_posterior_esperado` para esas rutas | los ficheros de `decision` casan con su `hash_final` → `reconciliada`; alguno vuelve a divergir → `conflicto` |
 | `reconciliada` | `reconciliacion-preparada` | `resultado` · `derivados_pendientes[]` | `decision` · `hash_posterior_esperado` para las rutas reconciliadas | `hash_final` | los derivados de `derivados_pendientes` se regeneraron → `derivada` |
 | `derivada` | `confirmada` o `reconciliada` | `derivados_regenerados[]` con su `source_revision` | `afecta` · `decision` · `divergentes` | el que gobernara su ruta | **ninguna. Es terminal**. Que no exista ningún evento posterior con ese `tx` lo comprueba el **validador semántico del diario**, no el esquema |
 | `deriva` | **ninguna: NO tiene `tx` ni `fase`** | `causa` ∈ {`posterior-al-cierre`,`sin-transaccion`} · `afecta[]` con `ruta`·`hash_esperado`·`hash_observado` · `items[]` · `autoridad` · `tx_afectada` sólo si `causa: posterior-al-cierre` | `fase` · `tx` · `decision` · `resultado` | ninguno: **reporta**, no repara | ninguna. La reparación es una transacción NUEVA (§2.6.11) |
@@ -2838,6 +2921,11 @@ C · RUNTIME Y PRUEBAS        garantiza o DEMUESTRA lo FÍSICO: el orden real de
   lleve `divergentes[].contenido`; que una `reconciliacion-preparada` lleve `decision[]` con
   su `hash_final`; que `tx_afectada` sólo aparezca con `causa: posterior-al-cierre`
 · UNICIDAD DE `ruta` dentro del array del propio evento, y `orden` total dentro de él
+· LOS DOS CONTADORES DE LA RUTA DE CONFLICTO, en lo que se ve sin salir del evento:
+  `observacion` ∈ 1..4 · `intentos_consumidos` ∈ 0..3 · `intentos_consumidos` = `observacion`
+  − 1 · `agotado: true` **sólo** con `observacion: 4` · `intento` ∈ 1..3, y **`intento: 4` no
+  existe**. Lo que NO ve: si esa `observacion` es realmente la siguiente de su `tx` — eso es
+  del validador del diario
 ```
 
 **Lo que NO puede**, y por eso no se le pide: nada que exija otro fichero, otro evento, otro
@@ -2855,9 +2943,12 @@ Recorriendo **todos los eventos**, y por eso ninguna de estas comprobaciones cab
 · CONTINUIDAD DE HASHES entre fases: que el `hash_final` de una `reconciliacion-preparada`
   gobierne desde ahí, y que `derivada` cierre sobre el hash que gobernaba cada ruta
 · NINGUNA FASE POSTERIOR A `derivada` en ese `tx`. **Ésta es la regla 1**, y es de diario
-· NÚMERO DE ITERACIONES: que `iteracion` empiece en 1, sea consecutivo, que `conflicto(i)` y
-  `reconciliacion-preparada(i)` compartan valor, y que **no exista ninguna
-  `reconciliacion-preparada` con `iteracion: 4`** ni ningún `conflicto` con `iteracion` > 4.
+· OBSERVACIONES E INTENTOS, que son DOS cuentas: `observacion` empieza en 1, es consecutiva y
+  no pasa de **4**; `intento` empieza en 1, es consecutivo y no pasa de **3**; en cada
+  `conflicto` se cumple `intentos_consumidos` = `observacion` − 1; `agotado: true` aparece
+  **sólo** con `observacion: 4`; toda `reconciliacion-preparada` tiene `intento` = la
+  `observacion` del `conflicto` que su campo `resuelve` referencia; y **no existe ninguna
+  `reconciliacion-preparada` cuyo `resuelve` apunte a un `conflicto` con `agotado: true`**.
   **El cuarto reintento no lo ve un esquema**: exige contar los `conflicto` de ese `tx`
 · TERMINALIDAD: exactamente un `derivada` por transacción cerrada, y ninguno en las abiertas
 · CORRESPONDENCIA ENTRE INTENCIÓN Y HECHO: que todo `confirmada` tenga su `preparada`, toda
@@ -2866,9 +2957,11 @@ Recorriendo **todos los eventos**, y por eso ninguna de estas comprobaciones cab
   siempre; `confirmada` y `reconciliada` **mutuamente excluyentes** —1 y 0 en la ruta normal,
   0 y 1 en la de conflicto cerrada, 0 y 0 en la agotada—; `derivada` 1 si cerró y 0 si sigue
   abierta. **Ninguna secuencia contiene `confirmada → confirmada`.** Sólo `conflicto` y
-  `reconciliacion-preparada` se repiten, con `iteracion` como discriminador y máximos 4 y 3
-· LA IDENTIDAD DE LA RUTA: #`conflicto` = #`reconciliacion-preparada` en una transacción de
-  conflicto CERRADA, y #`conflicto` = #`reconciliacion-preparada` + 1 en una AGOTADA
+  `reconciliacion-preparada` se repiten, con `observacion` e `intento` como discriminadores
+  respectivos y máximos **4 observaciones** y **3 intentos**
+· LA IDENTIDAD DE LA RUTA: #observaciones = #intentos en una transacción de conflicto
+  CERRADA, y #observaciones = #intentos + 1 en una AGOTADA — y en la agotada ese `+1` es
+  siempre el `conflicto` con `agotado: true`
 · EMISIÓN FRENTE A RESTAURACIÓN: restaurar un evento durable perdido devuelve el MISMO `id`,
   el MISMO cuerpo y el MISMO `predecesor`. Un `id` nuevo con el mismo `tx` y la misma fase de
   HECHO es un defecto, no una reemisión
@@ -2909,7 +3002,39 @@ Nada de esto es observable en el texto de un evento, y por eso **la regla 4 vive
 > construye después el mecanismo que sí lo haría.
 
 **Un evento nunca se edita, y nunca narra en futuro.** Corregir un evento se hace emitiendo
-otro que lo rectifica y lo enlaza. Una intención se registra con una fase que dice
+otro que lo rectifica y lo enlaza.
+
+> **La ÚNICA excepción autorizada, y está acotada: `retirada-de-cuerpo`.** Comprobada punto
+> por punto contra §2.9, porque una excepción a «nunca se edita» que no esté acotada deja de
+> ser una excepción:
+>
+> ```text
+> QUÉ SE PUEDE TOCAR      SÓLO el CUERPO —el texto largo— de un evento YA SELLADO. Nada más,
+>                         y nunca un evento vivo ni el terminal de una transacción.
+>
+> CABECERA E IDENTIDAD    SE CONSERVAN. La lápida mantiene `id`, `fase`, `tx` y la posición
+>                         en la cadena. `predecesor` sigue resolviendo, y el orden sigue
+>                         siendo verificable recomputando la cadena (§2.9).
+>
+> HASH ORIGINAL           VERIFICABLE. La huella del cuerpo retirado vive en DOS sitios: en
+>                         el fichero de sellado y en la propia lápida. Con el cuerpo
+>                         delante, cualquiera puede demostrar que es el que estaba.
+>
+> LÁPIDA CON AUTORIDAD    OBLIGATORIAS las dos. Retirar es un acto AUTORIZADO Y REGISTRADO,
+> Y MOTIVO                no una limpieza automática por antigüedad.
+>
+> EL CUERPO ORIGINAL,     **NO se recupera desde el sellado, y se dice en vez de prometerlo.**
+> DICHO CON PRECISIÓN     El sellado guarda la HUELLA, no el cuerpo — si guardara el cuerpo,
+>                         retirarlo no liberaría nada y la operación no tendría objeto. Lo
+>                         que el sellado da es **prueba de que existió y de cuál era**, no
+>                         una copia. Recuperarlo exige una fuente EXTERNA al estado vigente
+>                         —la historia de Git, mientras el commit sobreviva—, y esa es una
+>                         garantía distinta y más débil, declarada aquí y no supuesta.
+>
+> CUALQUIER OTRA EDICIÓN  SIGUE PROHIBIDA. No hay una segunda excepción, y añadir una
+>                         exigiría pasar la misma prueba: qué se toca, qué se conserva, cómo
+>                         se verifica, con qué autoridad y con qué registro.
+> ``` Una intención se registra con una fase que dice
 «preparada», y hay dos. Las dos reglas juntas son lo que hace que el diario sea una historia
 y no una lista de deseos.
 
@@ -5414,10 +5539,19 @@ conservan su texto.
 | `D60` | la cardinalidad de cada fase es **condicional a la ruta y al cierre**, y el contador `iteracion` queda cerrado: empieza en 1, el tercer `conflicto` recibe decisión, y el cuarto es el **marcador de parada** | `D58` | «las cuatro exactamente una vez» era **insatisfacible**: ninguna transacción tiene `confirmada` Y `reconciliada`, y una agotada no tiene `derivada` |
 | `D61` | la frontera que exige `tx` es **un fichero frente a varios, y nuevo frente a sustituir contenido**; **`sellado` NO es transaccional** y `retirada-de-cuerpo` sí | `D59` · `D57` | «añadir frente a modificar» era falsa: con ella `sellado`, que sólo añade, no exigiría la `tx` que `D59` le imponía |
 
+### `D62` · la decisión de la QUINTA comprobación técnica
+
+Comprobación de un solo punto sobre `D60`. **Sexto encadenamiento consecutivo.** `D16`–`D61`
+conservan su texto.
+
+| | decisión | qué revisa | por qué |
+|---|---|---|---|
+| `D62` | **observación e intento son dos contadores**: `conflicto` lleva `observacion` 1..4, `intentos_consumidos` 0..3 y `agotado`; `reconciliacion-preparada` lleva `intento` 1..3 y `resuelve`. El tope limita **intentos**, no observaciones | `D60` | un solo campo `iteracion` valía 4 bajo un máximo de 3, y con él seis afirmaciones incompatibles a la vez |
+
 **Y `O15`**, resolución posterior del Owner que revisa `O14` sin reescribirlo: la adopción de
 PesquerApp es la **primera adopción real, permanente y completa** de ADS. Vive en el registro
-de decisiones, y su lectura arquitectónica en §8.2, §18 y §19. **`D58`–`D61` no la tocan**:
-sólo corrigen recuentos, cardinalidades y fronteras del protocolo.
+de decisiones, y su lectura arquitectónica en §8.2, §18 y §19. **`D58`–`D62` no la tocan**:
+sólo corrigen recuentos, cardinalidades, fronteras y contadores del protocolo.
 
 
 

@@ -29,6 +29,11 @@
 > una frontera de recursión **falsa** que clasificaba mal `sellado`. **Quinto** encadenamiento
 > consecutivo. Tampoco es la tercera revisión, y tampoco certifica nada.
 >
+> Y por una **QUINTA COMPROBACIÓN TÉCNICA de un solo punto**, que encontró que un único campo
+> `iteracion` numeraba **observaciones e intentos a la vez** y valía 4 bajo un máximo de 3.
+> **Sexto** encadenamiento consecutivo. Tampoco es la tercera revisión, y tampoco certifica
+> nada.
+>
 > La segunda revisión la emitió un revisor con contexto limpio que **no escribió F4 ni aplicó
 > la primera crítica**, y su veredicto fue de **INSUFICIENCIA**: dos hallazgos BLOQUEANTES,
 > siete GRAVES y catorce nuevos. **Dos de ellos eran defectos que la PRIMERA corrección
@@ -49,7 +54,7 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · D16–D22 ·
                                                              D23–D33 · D34–D45 · D46–D51 ·
                                                              D52–D54 · D55–D57 · D58–D59 ·
-                                                             D60–D61
+                                                             D60–D61 · D62
              kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
 freshness:   vigente
 last_meaningful_event: la SEGUNDA revisión independiente devuelve F4 con veredicto de
@@ -62,6 +67,38 @@ procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y
              crítica NO equivale a autocertificarse, y NO prueba que esté bien resuelta.
              LA PRUEBA DE QUE ESTO IMPORTA: dos de los hallazgos de la segunda devolución son
              defectos que la PRIMERA CORRECCIÓN introdujo o no vio
+resuelto_en_la_QUINTA_COMPROBACION_TECNICA:
+  # Comprobación de UN SOLO PUNTO sobre D60. NO es la tercera revisión independiente, y NO
+  # certifica F4c. Su hallazgo está en texto que la comprobación ANTERIOR escribió: SEXTO
+  # encadenamiento consecutivo.
+  · UN CAMPO NUMERABA DOS COSAS. `iteracion` contaba a la vez observaciones e intentos, y de
+    ahí salieron seis afirmaciones incompatibles: empieza en 1 · la comparten conflicto(i) y
+    rec-prep(i) · incrementa al abrir conflicto · el máximo es 3 · la ruta agotada acaba en
+    conflicto(4) · y ese cuarto «no es una cuarta iteración». Un campo que vale 4 bajo un
+    máximo de 3 son DOS contadores con un solo nombre
+  · VIGENTE, DOS CONCEPTOS Y DOS CONTADORES:
+      OBSERVACIÓN DE CONFLICTO   cada divergencia REAL que debe quedar registrada
+      INTENTO DE RECONCILIACIÓN  cada decisión durable que se intenta aplicar
+    `conflicto`  → `observacion` 1..4 · `intentos_consumidos` 0..3, con
+                   intentos_consumidos = observacion − 1 · `agotado: true` SÓLO en la cuarta,
+                   y con él NO admite ninguna `reconciliacion-preparada`
+    `rec-prep`   → `intento` 1..3 · `resuelve` = id del `conflicto` que atiende.
+                   NUNCA existe un `intento: 4`
+    MAX_CAS_RETRIES = 3 limita INTENTOS, NO OBSERVACIONES. La cuarta observación registra el
+    FRACASO DEL TERCER INTENTO y no se silencia
+  · SECUENCIA  C1(obs1,cons0) → RP1(int1) → C2(obs2,cons1) → RP2(int2) → C3(obs3,cons2) →
+               RP3(int3) → C4(obs4,cons3,agotado) · NO EXISTE RP4
+  · TOTALES SIN CAMBIO: normal 3 · conflicto exitoso 5, 7 o 9 · agotamiento 8
+  · EL PREDICADO `reconciliacion_pendiente` NO cambia y sigue siendo VERDADERO al agotarse:
+    agotar no resuelve nada. Lo que cambia es quién desbloquea — con agotado, SÓLO el Owner
+  · `retirada-de-cuerpo` COMPROBADA como ÚNICA excepción autorizada a «un evento nunca se
+    edita»: cabecera e identidad conservadas · hash original verificable en el sellado Y en la
+    lápida · lápida con autoridad y motivo · cualquier otra edición prohibida. Y se dice lo
+    que NO es cierto: el cuerpo original NO se recupera desde el sellado — el sellado guarda
+    la HUELLA, no el cuerpo, y si lo guardara retirarlo no liberaría nada. Recuperarlo exige
+    una fuente EXTERNA, la historia de Git mientras el commit sobreviva
+  · O15 INTACTA. Sin tipos nuevos, §3.8 sin cambios
+  · D62 registrada. Tabla adversarial: SIGUE en 42 filas — X58 se ajusta en su sitio
 resuelto_en_la_CUARTA_COMPROBACION_TECNICA:
   # Comprobación ESTRICTAMENTE ACOTADA sobre D58–D59. NO es la tercera revisión independiente,
   # y NO certifica F4c. Sus DOS hallazgos están en texto que la comprobación ANTERIOR
@@ -79,7 +116,11 @@ resuelto_en_la_CUARTA_COMPROBACION_TECNICA:
                                  ABIERTO, bloqueada y escalada al Owner
     `confirmada` y `reconciliada` son MUTUAMENTE EXCLUYENTES. Invariante que distingue cierre
     de agotamiento: #conflicto = #rec-prep si cerró, #conflicto = #rec-prep + 1 si agotó
-  · 2 · EL CONTADOR `iteracion`, CERRADO. Empieza en 1 —nunca 0—; lo comparten `conflicto(i)`
+  · 2 · EL CONTADOR `iteracion`, CERRADO.
+    [REVISADO por D62: era UN campo numerando DOS conceptos, y valía 4 bajo un máximo de 3.
+     Se separa en `observacion` 1..4 sobre `conflicto` e `intento` 1..3 sobre
+     `reconciliacion-preparada`. Ver el bloque de la quinta comprobación técnica]
+    Empieza en 1 —nunca 0—; lo comparten `conflicto(i)`
     y su `reconciliacion-preparada(i)`; incrementa SÓLO al abrir un `conflicto` nuevo.
     MAX_ITERACIONES = 3: el TERCER `conflicto` SÍ recibe decisión. El CUARTO `conflicto` se
     emite —la clasificación de §2.6.4 lo produce y un hecho observado no se calla— y es el
@@ -370,8 +411,9 @@ falta_para_cerrar_la_capa:
     la PRIMERA CORRECCIÓN introdujo o no vio, los TRES de la segunda corrección técnica están
     en texto que la corrección técnica ANTERIOR escribió, los DOS de la tercera comprobación
     están en texto que la SEGUNDA escribió, y los DOS de la CUARTA están en texto que la
-    TERCERA escribió. Cinco pasadas encadenadas, y cada una encontró defectos de la anterior.
-    NINGUNA crítica se declara superada. F4c sólo se cierra con un veredicto explícito de SUFICIENCIA emitido por un revisor
+    TERCERA escribió, y el de la QUINTA está en texto que la CUARTA escribió. SEIS pasadas
+    encadenadas, y cada una encontró defectos de la anterior. NINGUNA crítica se declara
+    superada. F4c sólo se cierra con un veredicto explícito de SUFICIENCIA emitido por un revisor
     independiente sobre el resultado corregido
   · OCHO PRESIONES NORMATIVAS VIGENTES. PN-1 —la sección (g)— BLOQUEA todo el estado
     durable, y ahora decide MÁS: fsync, regla de commit, sellado, identidad y regla de
@@ -447,7 +489,7 @@ F4c CRÍTICA INDEPENDIENTE    TRES devoluciones, EMITIDAS por revisores y audito
                              (`D52`–`D54`), la 2ª con tres GRAVES (`D55`–`D57`) sobre el
                              texto que la 1ª escribió, y una 3ª comprobación acotada
                              (`D58`–`D59`) sobre el texto de la 2ª y una 4ª (`D60`–`D61`)
-                             sobre el texto de la 3ª.
+                             sobre el texto de la 3ª y una 5ª (`D62`) sobre el de la 4ª.
                              DOS de los hallazgos de la 2ª devolución, TRES de la 3ª y LOS
                              TRES de la segunda corrección técnica son defectos que las
                              correcciones ANTERIORES introdujeron o no vieron.
@@ -726,6 +768,18 @@ docs/evolucion/11-ARQUITECTURA-INTEGRADA.md  cabecera · §2.6.1 la transición 
                                           recuento 40 · 23 · 63 · §15.8 D60–D61
 docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md  D60–D61, SIN reescribir D1–D59 ni O1–O15
 docs/evolucion/CHECKPOINT-ADS-NEXT.md     su bloque
+
+F4c QUINTA COMPROBACIÓN TÉCNICA — observación e intento, dos contadores
+docs/evolucion/11-ARQUITECTURA-INTEGRADA.md  cabecera · §2.6.1 la transición de reintento ·
+                                          §2.6.2 · §2.6.4 los DOS contadores y las cinco
+                                          secuencias con sus valores · §2.6.9 el tope, los
+                                          dos campos de contabilidad, el predicado y R9 ·
+                                          §2.6.7 X58 · §3.6 esquema, contrato de `conflicto`
+                                          y de `reconciliacion-preparada`, validador, y
+                                          `retirada-de-cuerpo` como única excepción ·
+                                          §15.8 D62
+docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md  D62, SIN reescribir D1–D61 ni O1–O15
+docs/evolucion/CHECKPOINT-ADS-NEXT.md     su bloque y la marca [REVISADO] sobre D60
 O15 INTACTA. §3.8 sin cambios. (a), (b), E1, E2, K-1, C4 y C7 intactos. Ningún documento
 numerado nuevo.
 O15 NO SE TOCA. (a), (b), E1, E2, K-1, C4 y C7 intactos. Ningún documento numerado nuevo.

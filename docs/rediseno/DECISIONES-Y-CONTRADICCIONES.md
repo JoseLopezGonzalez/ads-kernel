@@ -190,6 +190,18 @@ vez, en texto que la comprobación ANTERIOR escribió: **quinto encadenamiento c
 deja de ser un valor del enum de `tipo` del artefacto `evento`. Lo que cambia es su régimen
 transaccional, no su existencia como tipo. **`O15` queda intacta.**
 
+### `D62` · decisión de la QUINTA comprobación técnica
+
+Comprobación de **un solo punto** sobre `D60`. No es la tercera revisión independiente, y **no
+certifica `F4c`**. Su hallazgo está, otra vez, en texto que la comprobación anterior escribió:
+**sexto encadenamiento consecutivo**.
+
+> **`D16`–`D61` no se reescriben.**
+
+| # | decisión | qué revisa | por qué, y qué alternativa se descartó | cómo se revierte |
+|---|---|---|---|---|
+| D62 | **OBSERVACIÓN e INTENTO son dos conceptos con dos contadores, y no uno.** `conflicto` lleva `observacion` ∈ 1..4, `intentos_consumidos` ∈ 0..3 con `intentos_consumidos` = `observacion` − 1, y `agotado: true` **únicamente** en la cuarta observación — y con él **no admite ninguna `reconciliacion-preparada`**. `reconciliacion-preparada` lleva `intento` ∈ 1..3 y `resuelve`, el `id` del `conflicto` que atiende; **nunca existe un `intento: 4`**. **`MAX_CAS_RETRIES = 3` limita INTENTOS, no OBSERVACIONES**, y la cuarta observación registra el **fracaso del tercer intento** sin silenciarlo. Máximos: **4 observaciones · 3 intentos**. Los totales de eventos **no cambian**: 3 · 5 · 7 · 9 · 8 | **D60** | `D60` usó **un solo campo `iteracion`** para numerar dos cosas distintas, y de ahí salieron seis afirmaciones que no pueden ser ciertas a la vez: que empieza en 1, que la comparten `conflicto(i)` y `reconciliacion-preparada(i)`, que incrementa al abrir un conflicto, que el máximo es 3, que la ruta agotada termina en `conflicto(4)`, y que ese cuarto «no es una cuarta iteración». **Un campo que vale 4 bajo un máximo de 3 no es un contador: son dos contadores con un solo nombre.** La alternativa —callar la cuarta observación para que el contador no pase de 3— contradice §2.6.4, que produce `conflicto` ante toda divergencia real, y dejaría el diario afirmando tres intentos sin decir cómo acabó el tercero | volver a un contador único reintroduce las seis afirmaciones incompatibles |
+
 ---
 
 ## 2 · Decisiones que pertenecen al Owner
