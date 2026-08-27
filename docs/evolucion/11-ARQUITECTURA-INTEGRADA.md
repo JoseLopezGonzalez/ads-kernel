@@ -9,11 +9,21 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 > superada y uso real es la disciplina central de este repositorio, y esta fase produce
 > **sólo la primera**.
 >
-> **F4 no está certificada, y este texto ya ha sido CORREGIDO una vez.** Un revisor
-> independiente que no la escribió devolvió nueve bloques de hallazgos; están transcritos en
-> [`12-CRITICA-INDEPENDIENTE-F4.md`](12-CRITICA-INDEPENDIENTE-F4.md), y sus correcciones
-> están aplicadas aquí. **Quien las aplicó es quien las recibió**, luego no prueban nada:
-> `F4c` sigue pendiente de una **segunda revisión independiente**.
+> **F4 no está certificada, y este texto ha sido CORREGIDO DOS VECES.**
+>
+> ```text
+> PRIMERA DEVOLUCIÓN    nueve bloques de hallazgos, en
+>                       12-CRITICA-INDEPENDIENTE-F4.md. Correcciones: D23–D33
+> SEGUNDA DEVOLUCIÓN    veredicto de INSUFICIENCIA por un revisor con contexto limpio que
+>                       no escribió F4 NI aplicó la primera crítica: DOS hallazgos
+>                       BLOQUEANTES, seis GRAVES y catorce nuevos, en
+>                       13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md. Correcciones: D34–D45
+> ```
+>
+> **Dos de los hallazgos de la segunda devolución son defectos que la PRIMERA CORRECCIÓN
+> introdujo o no vio.** Es la razón por la que las revisiones se encadenan en vez de darse
+> por buenas. **Quien aplicó ambas es quien las recibió**, luego ninguna prueba nada: `F4c`
+> sigue **ABIERTA**, pendiente de una **tercera revisión independiente**.
 
 ---
 
@@ -42,18 +52,18 @@ Para el Owner, sin vocabulario interno.
    maquinaria y no se mezclan: cada uno tiene su disparador, sus fases, su gate, su rollback y
    su certificación.
 7. Se añaden **cuatro tipos de estado** —`iniciativa`, `adaptador`, `cobertura` y
-   `evento`— y **un esquema de clase**, `nivel-certificacion`. El número **se calcula**
-   aplicando la prueba materia a materia (§3.8); no se fija de antemano. Todo lo demás se
-   compone con lo que ya existe.
+   `evento`— y **dos esquemas de clase**: `nivel-certificacion` y `contrato-de-aspecto`. El
+   número **se calcula** aplicando la prueba materia a materia (§3.8); no se fija de
+   antemano, y por eso ha cambiado dos veces. Todo lo demás se compone con lo que ya existe.
 
 **Qué no se ha decidido, y por qué.**
 
 ```text
 LA CUARTA CAPA           sigue deferida. Hace falta un proyecto independiente que minar.
 EL PILOTO                sigue sin ejecutarse. Nada de aquí está demostrado en un producto.
-LAS ENMIENDAS            este diseño presiona material aprobado en CUATRO puntos, tras
-                         revisar las cinco de la entrega anterior. Se enumeran y NO se
-                         redactan: eso es F5, y su puerta es el Owner.
+LAS ENMIENDAS            este diseño presiona material aprobado en OCHO puntos, tras dos
+                         devoluciones independientes. Se enumeran y NO se redactan: eso es
+                         F5, y su puerta es el Owner.
 ```
 
 **Qué cuesta.** El diseño elige, en cada punto donde había alternativa, la forma que se puede
@@ -3936,6 +3946,27 @@ mismo fichero; aquí queda su resumen y qué revisa cada una.
 | `D32` | la **aplicabilidad de la certificación Integrada** depende del número de fuentes | §9.1 | `C6` `N4` admite 0..N fuentes, y la prueba multi-fuente bloqueaba para siempre a todo producto de un repositorio. Genera `PN-6` |
 | `D33` | secuencia de migración **M5 certifica · M6 retira · M7 verifica** | §8.3 | la lista de fases y el rollback declaraban órdenes incompatibles, y una de las dos retiraba antes de certificar |
 
+### `D34`–`D45` · las decisiones de la SEGUNDA devolución independiente
+
+Un revisor con contexto limpio, que **no escribió F4 y no aplicó la primera crítica**, emitió
+un veredicto de **INSUFICIENCIA**. `D16`–`D33` conservan su texto; éstas los revisan.
+
+| | decisión | qué revisa | por qué |
+|---|---|---|---|
+| `D34` | `fsync` de DIRECTORIO obligatorio también para los canónicos, y en el orden correcto | `D16` · `D23` | **BLOQUEANTE**: F4c cometía, en los ficheros que **son** el estado, el error que su propia garantía 3 nombraba como «el error clásico» — y el fallo era SILENCIOSO |
+| `D35` | `conflicto` deja de ser terminal: abierto, absorbente, y emite `reconciliacion_pendiente` | `D23` | **BLOQUEANTE**: el protocolo nunca emitía el único estado del que depende `b.4` P0, luego una colisión producía un repositorio que el sistema declaraba sano |
+| `D36` | comprobación de integridad post-terminal | `D23` | sin ella, `D34` depende de que la implementación no tenga defectos |
+| `D37` | contrato de identidad completo, y la idempotencia vive en `tx`, no en `id` | `D24` | `D24` eligió ids por contenido y no dijo **qué** contenido: circular, sin serialización canónica, y con una idempotencia que `predecesor` hacía falsa |
+| `D38` | `abortada` se retira. Cuatro registros, no cinco | `D23` | era formalmente definida y **operacionalmente inalcanzable** |
+| `D39` | regla de lectura, marcador con contenido, `tx_abierta` en cabecera. **Detectabilidad, no aislamiento** | `D16` · `D23` | no había ninguna regla dirigida a ningún lector, y el marcador vacío obligaba a reproyectar el diario — el coste con que §2.2 descarta el event sourcing puro |
+| `D40` | el marcador se excluye de Git | `D23` | la garantía 6 enunciaba como normal un estado que la regla de commit declara imposible, y F4c violaba su propio criterio de §2.4 |
+| `D41` | el push deja de ser automático, y se declara que el gobierno Git del control repo **no existe** | `D16` | «se hace el push» convertía una recuperación local en publicación remota, sin autoridad, sin rama y sin ramal de fallo |
+| `D42` | `evaluacion_de_pruebas` en `cobertura`, y `verificador` se parte en dos | `D25` · `D32` | la inaplicabilidad se evalúa prueba a prueba y no cabía en una norma de clase; y un campo significaba dos cosas en dos secciones |
+| `D43` | nace `contrato-de-aspecto`. Recuento **24 → 25** | `D25` · `D26` | se invocaba TRES veces como sede normativa y no existía. Mismo modo de fallo que el manifiesto de transacción, reproducido y no detectado |
+| `D44` | el documento gobernado tiene ciclo propio de cuatro valores | **sustituye parte de `D27`** | `b.3` dice `invalidada`, no `retirada`, y un documento derogado sin reemplazo no podía escribirse con ningún valor válido |
+| `D45` | los predicados de obligación se definen a nivel de iniciativa | `D29` | `Q9` no era computable: toda obligación de iniciativa era huérfana desde que se escribía, y ninguna iniciativa con obligaciones podía cerrar |
+
+
 ---
 
 # 16 · Presiones normativas para F5
@@ -4093,16 +4124,103 @@ BLOQUEA             sólo esa declaración, y con ella el arranque de programaci
                     producto de un solo repositorio
 ```
 
+## `PN-7` · NUEVA · `b.14` paso 2 dice «completar o revertir»
+
+```text
+QUÉ PRESIONA        (b) b.14, paso 2: «¿hay transiciones multiarchivo incompletas? →
+                    completar o REVERTIR (a.9)»
+TEXTO VIGENTE       el de arriba, literal
+QUÉ HA CAMBIADO     §2.6 elige ROLL-FORWARD ONLY y retira el ramal de reversión por
+                    completo. §2.6.2 lo argumenta: deshacer exigiría conservar el contenido
+                    anterior y duplicaría el estado
+POR QUÉ NO BASTA    la disyunción de `a.9` —«terminarla O revertirla»— admite elegir una de
+UN DERIVADO         las dos, y la elección es buena. Pero `b.14` ENUMERA las dos, y §7.4
+                    afirmaba conservar sus siete pasos enteros mientras cambiaba uno
+MATERIA MÍNIMA      una frase en b.14: «completar, o marcar conflicto y escalar»
+SE PUEDE CONSTRUIR  todo §2.6. La desviación está declarada en §7.4 y no espera a nadie
+BLOQUEA             nada que no bloquee ya PN-1. Es coherencia, no capacidad
+ORIGEN              hallazgo `N-9` de la segunda devolución independiente
+```
+
+## `PN-8` · NUEVA · `VER` no está en la ruta `AUD` de `b.16`
+
+```text
+QUÉ PRESIONA        (b) b.16, fila AUD: obligatorias = INV. `VER` no figura, ni siquiera
+                    como condicional
+TEXTO VIGENTE       «AUD auditoría de proyecto existente | derivado del encargo | INV |
+                    DOM C-DOM · SEG C-SEG · DIS/Reconstrucción C-DIS · PRD sólo si…»
+QUÉ HA CAMBIADO     §5.3 declara «VERIFICACIÓN · `VER` independiente», y las tres celdas de
+                    §5.6 citan un DICTAMEN de `VER` como evidencia. **Ninguna ruta de b.16
+                    produce ese dictamen en una auditoría**
+POR QUÉ NO BASTA    b.16 es (b), y la ruta AUD está aprobada con `INV` como única obligatoria
+UN DERIVADO
+MATERIA MÍNIMA      o bien añadir `VER` como condicional de `AUD`, o bien que F4 deje de
+                    exigir dictamen de `VER` en la celda auditada y NOMBRE otro productor.
+                    Son dos salidas, y elegir es del Owner
+SE PUEDE CONSTRUIR  el inventario, la cobertura, la detección y la propuesta. Lo que espera
+                    es que una celda alcance `verificado` CON EVIDENCIA
+BLOQUEA             exactamente eso
+ORIGEN              hallazgo `N-11` de la segunda devolución independiente
+```
+
+## `PN-9` · NUEVA · las obligaciones de iniciativa y los predicados de `b.3`
+
+```text
+QUÉ PRESIONA        (b) b.3, cuyas definiciones de `obligación_satisfecha` y
+                    `obligación_retirada` se apoyan en CAPA VIGENTE y RECOMPOSICIÓN
+                    APROBADA — objetos que una iniciativa no tiene
+TEXTO VIGENTE       «obligación_satisfecha(o) ≡ existe una CAPA VIGENTE que produce el
+                    resultado exigido…» · «obligación_retirada(o) ≡ una RECOMPOSICIÓN
+                    APROBADA declara que la obligación dejó de ser necesaria…»
+QUÉ HA CAMBIADO     §3.3.0 define los dos predicados A NIVEL DE INICIATIVA, consumiendo b.3
+                    sin redefinirla: la iniciativa CITA capas de sus items en vez de
+                    producirlas, y su retirada es una decisión registrada en vez de una
+                    recomposición de ruta
+MATERIA MÍNIMA      **probablemente NINGUNA.** Es exactamente la vía por la que `PN-4` se
+                    retiró: consumir el resultado de (b) no redefine su dominio. Pero
+                    `PN-4` se retiró tras COMPROBARLO, y aquí F5 debe CONFIRMARLO, no darlo
+                    por hecho. Se registra para que la confirmación exista
+SE PUEDE CONSTRUIR  la iniciativa entera. La función Q0–Q9 ya es computable con §3.3.0
+BLOQUEA             nada, salvo que F5 decida que sí toca b.3
+ORIGEN              hallazgo `N-6` de la segunda devolución independiente
+```
+
+## `PN-10` · NUEVA · `O11` dice «estado durable» de la iniciativa
+
+```text
+QUÉ PRESIONA        `O11`, resolución del Owner del 2026-08-27: «`iniciativa`. Tipo o
+                    artefacto canónico de coordinación, con identidad, ESTADO DURABLE,
+                    alcance, gates y dosier vivo derivado»
+QUÉ HA CAMBIADO     §3.3 dice «su estado NO es un campo» y `D29` que «no se persiste en
+                    ningún fichero canónico»
+LA LECTURA BENIGNA  «estado durable» significa que la iniciativa ES estado durable —frente a
+                    vivir en el chat—, no que su ESTADO CALCULADO se persista. Es defendible
+                    y probablemente correcta
+POR QUÉ SE REGISTRA **por simetría con `PN-6`.** F4c registró PN-6 precisamente porque
+IGUAL               reinterpretar la precondición de una resolución del Owner «es materia
+                    suya, no del autor de F4 — aunque la corrección sea obviamente
+                    necesaria, y precisamente por serlo». La misma vara vale aquí. Un
+                    tratamiento asimétrico de las resoluciones del Owner es el defecto
+MATERIA MÍNIMA      una frase que fije cuál de las dos lecturas rige
+SE PUEDE CONSTRUIR  todo §3.3
+BLOQUEA             nada. Es coherencia de método
+ORIGEN              hallazgo `N-14` de la segunda devolución independiente
+```
+
 **Resumen para el Owner, tras revisar las cinco de la entrega anterior:**
 
 ```text
-VIGENTES · CUATRO
-  PN-1   la sección (g). LA ÚNICA QUE BLOQUEA DE VERDAD, y ahora decide más que antes
+VIGENTES · OCHO
+  PN-1   la sección (g). LA ÚNICA QUE BLOQUEA TODO EL ESTADO DURABLE, y ahora decide más
   PN-2   la política de auditoría como tercera vía de creación de trabajo
-  PN-3   G03 y la ejecución desatendida. Es la misma pregunta que PN-2 por otro camino,
-         y absorbe lo que era PN-5
-  PN-6   qué significa «Integrada» para un producto de 0 o 1 fuente. Es UNA FRASE, y sin
-         ella todo producto de un solo repositorio queda bloqueado para empezar
+  PN-3   G03 y la ejecución desatendida. Misma pregunta que PN-2 por otro camino, y
+         absorbe lo que era PN-5
+  PN-6   qué significa «Integrada» para un producto de 0 o 1 fuente
+  PN-7   b.14 paso 2 dice «completar o revertir», y §2.6 sólo completa        NUEVA
+  PN-8   VER no está en la ruta AUD, y §5.6 exige su dictamen                 NUEVA
+  PN-9   los predicados de obligación de b.3 a nivel de iniciativa. Probablemente
+         NINGUNA materia, y F5 debe confirmarlo                               NUEVA
+  PN-10  O11 dice «estado durable» y F4 deriva el estado. Simetría con PN-6   NUEVA
 
 RETIRADA · UNA
   PN-4   con su motivo escrito, y reinstaurable por F5 si el Owner lo prefiere
@@ -4110,8 +4228,18 @@ RETIRADA · UNA
 FUSIONADA · UNA
   PN-5   dentro de PN-3, porque su enmienda es la misma
 
+CUATRO SON UNA FRASE       PN-6, PN-7, PN-9 y PN-10. Y tres de ellas se registran
+CADA UNA                   PRECISAMENTE PORQUE parecen obvias: PN-6 fijó esa vara, y
+                           aplicarla de forma desigual sería el defecto
+
 NO SE RENUMERA NINGUNA. Renumerar rompería la trazabilidad de lo que ya se llevó al Owner.
 ```
+
+> **Lo que NO es presión normativa, y se dice para que nadie lo lleve al Owner.** El defecto
+> de `C7` (§9.5) es material **derivado** de `E2`: su corrección está completamente
+> determinada por `E2.6`, no requiere decisión del Owner, y su sitio es F6. Y las cuatro
+> extensiones de ficha de §5.2 tampoco lo son: extender una ficha con materia que ya está en
+> su alcance es trabajo de F6.
 
 ---
 
@@ -4124,7 +4252,7 @@ NO SE RENUMERA NINGUNA. Renumerar rompería la trazabilidad de lo que ya se llev
 | `C1`–`C7` | **intactos**. `C2` se amplía en F6 |
 | quince capacidades, roles, métodos, prompts | **intactos**. Son los RESPONSABLES de los aspectos de §5.2, no los aspectos. `+4` extensiones de ficha: `ENT`, `ARQ`, `PLT` y `SEG` |
 | diez procesos de `b.16` | **intactos**. Ningún macrocircuito crea uno nuevo |
-| diecinueve esquemas | **+4 de estado**: `iniciativa`, `adaptador`, `cobertura`, `evento`. **+1 de clase**: `nivel-certificacion`, con el precedente de `nivel-novedad`. `memoria` y `validadores.yaml` se amplían. **Total 24** (§3.8) |
+| diecinueve esquemas | **+4 de estado**: `iniciativa`, `adaptador`, `cobertura`, `evento`. **+2 de clase**: `nivel-certificacion` y `contrato-de-aspecto`, con el precedente de `nivel-novedad`. `memoria` y `validadores.yaml` se amplían. **Total 25** (§3.8) |
 | packs | **intactos**, `+2` piezas en `web-app` (`CAND-022`, `CAND-024`) |
 | trece validadores | **intactos**, `+entradas:` por `P-08` |
 | `plantillas/CHECKPOINT.md` | **intacta**: `E2.3` ya le dio forma multi-fuente |
@@ -4205,8 +4333,8 @@ SE CONFIRMA EL RESTO  1 estado · 2 adaptadores · 3 iniciativa · 4 certificaci
 ```text
 NADA ESTÁ CONSTRUIDO      ni una línea de kernel, runtime, tooling, esquema, adaptador,
                           plantilla, pack ni validador. F4 no lo autoriza
-NADA ESTÁ PROBADO         los doce escenarios de §14, las DIECISIETE filas de la tabla
-                          adversarial de §2.6.7 y los DIEZ escenarios negativos de §11.5
+NADA ESTÁ PROBADO         los doce escenarios de §14, las TREINTA filas de la tabla
+                          adversarial de §2.6.7 y los ONCE escenarios negativos de §11.5
                           están ESCRITOS. Ninguno se ha ejecutado. Escribir el contrato de
                           una prueba no es la prueba
 EL PILOTO SIGUE PENDIENTE la columna de uso real está vacía desde F0, y esta fase no la
@@ -4214,14 +4342,15 @@ EL PILOTO SIGUE PENDIENTE la columna de uso real está vacía desde F0, y esta f
 NINGÚN ADAPTADOR EXISTE   y por tanto ninguno está certificado
 X1 Y P-05 SIGUEN          ninguna decisión de aquí cruza la línea del blueprint
 DEFERIDAS
-CUATRO PRESIONES          §16, tras revisar las cinco de la entrega anterior: PN-4 retirada
-NORMATIVAS VIGENTES       y PN-5 fusionada en PN-3, y PN-6 nueva. Sólo PN-1 bloquea de
-                          verdad, y F5 es su puerta
-F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. Una crítica independiente devolvió
-                          nueve bloques de hallazgos y están aplicados aquí — pero LOS
-                          APLICÓ QUIEN LOS RECIBIÓ, y eso no prueba que estén bien
-                          resueltos. `F4c` sigue pendiente de una SEGUNDA revisión
-                          independiente
+OCHO PRESIONES            §16, tras DOS devoluciones independientes: PN-4 retirada, PN-5
+NORMATIVAS VIGENTES       fusionada en PN-3, y PN-6 a PN-10 nuevas. Sólo PN-1 bloquea todo
+                          el estado durable, y F5 es su puerta
+F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. DOS críticas independientes la han
+                          devuelto, y la segunda emitió veredicto de INSUFICIENCIA con dos
+                          hallazgos BLOQUEANTES — DOS DE ELLOS DEFECTOS QUE LA PRIMERA
+                          CORRECCIÓN INTRODUJO O NO VIO. Todo está aplicado, y LO APLICÓ
+                          QUIEN LO RECIBIÓ: `F4c` sigue ABIERTA, pendiente de una TERCERA
+                          revisión independiente
 EL SUELO DE `P-08`        si el runner miente, nada dentro del repositorio lo detecta.
                           Declarado en §11.4, no resuelto
 ORDEN TOTAL ENTRE         la cadena de eventos da orden total POR TRANSACCIÓN y orden

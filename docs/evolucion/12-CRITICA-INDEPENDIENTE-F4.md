@@ -16,6 +16,16 @@
 > F4c NO QUEDA CERRADA           hasta una SEGUNDA REVISIÓN INDEPENDIENTE que compruebe
 >                                estas correcciones. Este fichero no es esa revisión.
 > ```
+>
+> **ESA SEGUNDA REVISIÓN YA SE HA HECHO, y este documento se conserva tal como se escribió.**
+> Su resultado está en
+> [`13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md`](13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md):
+> **veredicto de INSUFICIENCIA**, con dos hallazgos BLOQUEANTES, seis GRAVES y catorce
+> nuevos. **Dos de ellos son defectos que las correcciones de ESTE documento introdujeron o
+> no vieron** — la omisión del `fsync` de directorio en los canónicos, y un `conflicto`
+> terminal que nunca emitía `reconciliacion-pendiente`. El texto de abajo no se retoca: es la
+> prueba de qué se corrigió entonces y con qué argumento, y de que aplicar una crítica no
+> equivale a superarla.
 
 ## Cómo se lee
 
@@ -229,7 +239,8 @@ HUÉRFANAS SE ASIGNAN           resiliencia → `ENT` (líder) + `ARQ` · depend
 
 TRES EJEMPLOS COMPLETOS        una pantalla en accesibilidad, un documento en una familia
                                documental y una instalación en un nivel de certificación,
-                               los tres SOBRE EL MISMO CONTRATO. Está en §5.7.
+                               los tres SOBRE EL MISMO CONTRATO. Está en §5.6.
+                               [errata corregida: decía §5.7]
 ```
 
 ---
@@ -605,8 +616,9 @@ EL SUELO QUE QUEDA         si el runner miente, NADA dentro del sistema lo detec
 ABIERTO, DECLARADO         eso exige un verificador externo al repositorio, y NO se resuelve
                            aquí. Se dice en vez de taparlo.
 
-SEIS ESCENARIOS            los cinco que la crítica exige más la caché servida por clave
-NEGATIVOS                  parcial. Están en §11.5.
+ESCENARIOS NEGATIVOS       los cinco que la crítica exige más la caché servida por clave
+                           parcial. Están en §11.5, que hoy tiene ONCE.
+                           [errata corregida: decía SEIS]
 ```
 
 ---
