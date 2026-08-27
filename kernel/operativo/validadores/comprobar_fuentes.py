@@ -229,9 +229,16 @@ def t160_manifiesto_del_proyecto(raiz=None):
     r = Resultado("T160", "El manifiesto del ADS Project, cuando existe, es válido")
     ruta = os.path.join(base, "SOURCES.toml")
     if not os.path.exists(ruta):
-        # correcto para el repositorio del kernel: es el upstream, no el control repo
-        # de ningún producto. La prueba se supera por ausencia justificada.
+        # Correcto para el repositorio del kernel: es el upstream, no el control repo de
+        # ningún producto. La prueba se supera POR AUSENCIA JUSTIFICADA — y lo dice en la
+        # evidencia, porque una prueba que pasa por no tener nada que comprobar y no lo
+        # declara es indistinguible de una que comprueba algo.
+        # La ruta ABSOLUTA no entra en la evidencia: cambia con la máquina, y la regla del
+        # repositorio es que los artefactos generados sean deterministas.
+        r.detalle = ("ausencia justificada: no hay SOURCES.toml en la raíz analizada, luego "
+                     "no es el control repo de ningún producto. NADA se ha validado aquí")
         return r
+    r.detalle = "validado el SOURCES.toml de la raíz analizada"
     m, errores = _analizar(ruta, base)
     for e in errores:
         r.fallo(f"SOURCES.toml: {e.ambito}: {e.mensaje}")
