@@ -2305,7 +2305,15 @@ que es el corolario que `CAND-016` dejó escrito: *un adaptador apunta, nunca co
 ```text
 QUÉ COMPRUEBA   lo que no puede comprobarse leyendo ficheros: que el agente ARRANCA
 CÓMO            sesión nueva · las skills declaradas están visibles · prompts secos que
-                NO deben modificar nada · comprobación de que el árbol quedó limpio
+                NO deben modificar nada · comprobación de que el árbol quedó limpio ·
+                **SESIÓN NUEVA ABIERTA SOBRE UNA FUENTE: el entorno lee el puntero,
+                localiza el control repo hermano y opera con él como contexto principal**,
+                con sus cuatro desenlaces como resultados EXIGIDOS y distintos —lo
+                encuentra · no lo encuentra · no se pudo comprobar · encuentra dos—
+                **Añadida** (hallazgo `I.2`): §6.7 remitía a esta prueba como la que mide si
+                un entorno honra el puntero, y esta prueba no contenía NINGUNA comprobación
+                que abriera el entorno sobre una fuente. Era una remisión que no llegaba a
+                ninguna parte, y F4 declaraba medido por ella algo que no medía
 ES              el nivel OPERATIVO de la certificación (§9), y `CAND-012` con un caso
                 negativo real detrás: una skill añadida no aparecía hasta reiniciar la
                 sesión, y nadie lo sabía
@@ -2422,25 +2430,120 @@ UN FICHERO NO VERSIONADO     no sobrevive a un clon nuevo, y `C6` `N9` dice que 
        CON AVISO       dice que es generado y por quién
 
 3  QUÉ CONTIENE, Y QUÉ TIENE PROHIBIDO CONTENER
-   CONTIENE     la IDENTIDAD REMOTA CANÓNICA del control repo · el id del componente que
-                esta fuente materializa · la versión del adaptador · el aviso de generado
+   CONTIENE     la IDENTIDAD REMOTA CANÓNICA del control repo · la LISTA COMPLETA de los
+                componentes que esta fuente materializa · la versión del adaptador · el
+                aviso de generado
+                **Corregido** (hallazgo `I.1`): F4c decía «el id del componente», en
+                singular, y `C6` `N7` declara que «componente y fuente NO tienen cardinalidad
+                1:1 obligatoria», con el caso MONOREPO explícito —`web → repo app, ruta
+                apps/web` y `api → repo app, ruta apps/api`—. El campo singular encerraba a
+                ADS en `1 repo = 1 componente`, que es justo lo que §6.6 dice que se evita.
+                La lista se DERIVA de `SOURCES.toml`, no se escribe: un componente nuevo
+                obliga a recompilar el puntero
    NO CONTIENE  reglas de trabajo · memoria · estado · items · decisiones · contratos ·
                 catálogo · prompts. NADA de conocimiento. Si lo llevara, sería la
                 organización ADS copiada, y volveríamos a lo que `C6` prohíbe.
    TAMAÑO       es un puntero. Si crece, es que alguien está copiando el kernel otra vez, y
                 el validador de deriva de §6.3 es quien lo detecta.
 
-4  SE RESUELVE POR IDENTIDAD, NO POR RUTA
+4  SE RESUELVE POR IDENTIDAD, NO POR RUTA — Y LA LÓGICA ES DEL ADAPTADOR, DECLARADA
    El puntero NO declara `../ads`. Declara el REMOTO CANÓNICO, que es lo que `C6` `N9`
-   define como identidad. El adaptador localiza el control repo recorriendo los hermanos del
-   workspace y comparando su remoto contra el declarado.
+   define como identidad. **La lógica de resolución vive en el ADAPTADOR y es un campo de su
+   contrato**, `resolucion_del_control_repo` (§3.4), no una frase de prosa:
+       estrategia            `hermanos-del-workspace`
+       profundidad máxima    de ascenso desde el directorio abierto
+       normalización del     sin credenciales · con y sin `.git` · `ssh` y `https` tratados
+       remoto comparado      como EQUIVALENTES. Sin decirlo, dos formas del mismo remoto no
+                             casan, y el descubrimiento falla por una diferencia de escritura
+       desenlaces            para 0, 1 y ≥2 coincidencias
+   **Corregido** (hallazgo `I.2`): F4c dejaba esta lógica como prosa sin campo en §3.4, luego
+   un adaptador conforme podía **omitirla por completo** y seguir validando contra su tipo.
+   Con el campo, «el puntero no contiene instrucciones» pasa a ser cierto Y comprobable: los
+   datos están en el puntero, la lógica en el adaptador.
        LO ENCUENTRA         trabaja con el control repo como contexto principal
        NO LO ENCUENTRA      lo DICE, con el remoto que buscaba, y NO ADIVINA. Se comporta
                             como una fuente ausente: bloquea sólo lo que la requiere, que
                             es la regla de alcance mínimo de `C6`
+       NO SE PUDO           diagnóstico DISTINTO del anterior, y es el que F4c no tenía. La
+       COMPROBAR            regla 4 asume permiso para ejecutar `git` en directorios
+                            hermanos, y `C6` dice que los permisos los aporta el entorno. Un
+                            entorno con acceso restringido al directorio abierto NO PUEDE
+                            ejercerla, y eso no es «ausencia»: es «impedimento». Confundir
+                            dos causas bajo un mismo diagnóstico es el defecto que §11.2
+                            corrige en `P-08`, y aquí se reintroducía
        ENCUENTRA DOS        ERROR explícito. Dos control repos para el mismo producto es
                             exactamente el defecto que el puntero existe para no crear
 ```
+
+
+### El puntero escribe en repositorios técnicos, y eso hay que gobernarlo
+
+> **Corregido por la segunda devolución independiente (hallazgo `I.3`, GRAVE).** El puntero
+> **es una proyección** —regla 2, literal— y `U5` recompila proyecciones. Luego **`U5` escribe
+> en las fuentes**, y §8.4 declaraba que `U` escribe «la distribución instalada y las
+> proyecciones» **sin decir que algunas viven en repositorios ajenos al control repo**, y sin
+> una sola precondición, gate, evidencia ni rollback por fuente. La contradicción no era sólo
+> con `U0`–`U6`: era **con §8.1 y §8.2, dentro del propio F4**.
+>
+> ```text
+> §8.1 SE AUTOCONTRADECÍA    los adaptadores se eligen en N2 y sus proyecciones se compilan
+>                            antes de N6; pero ESCRIBE dice «las fuentes sólo desde N6»
+> §8.2 SE AUTOCONTRADECÍA    la adopción declara modo NO DESTRUCTIVO y «ESCRIBE NADA en las
+> DE FORMA MÁS SERIA         fuentes hasta A8». La especialización —adaptadores incluidos— es
+>                            A5. Un adaptador con puntero obligaba a commitear en un producto
+>                            ajeno con historia, TRES FASES antes de que existiera
+>                            autorización de escritura. La adopción de un producto ajeno
+>                            empezaba haciendo un commit en su repositorio
+> `C6` RESPONDÍA QUE NO      a su propia pregunta frontera: el puntero NO deja de ser cierto
+> A SU PROPIA FRONTERA       si cambia el código de al lado —depende del control repo—, luego
+>                            por la regla de `C6` su sitio sería el control repo
+> `C7` LO GOBIERNA Y NADIE   un puntero recompilado por `PLT` durante U5 no tenía item, ni
+> LO INVOCABA                paquete, ni custodia, ni checkpoint, ni rama, ni PR — y `main`
+>                            está protegida, luego ni siquiera podía empujarse
+> ```
+
+**Seis reglas, y ninguna copia conocimiento de ADS a las fuentes:**
+
+```text
+1  EXCEPCIÓN DECLARADA A LA FRONTERA DE `C6`
+   El puntero está en la fuente por una necesidad real de descubrimiento, y NO porque la
+   frontera de `C6` lo permita. Se declara como EXCEPCIÓN NOMBRADA, con su motivo escrito.
+   Una excepción declarada es aceptable; una excepción silenciosa reproduce el modo de fallo
+   (a) de `a.7` por goteo.
+
+2  TODA ESCRITURA DE PUNTERO ES UN SOURCE CHANGE GOBERNADO POR `C7`
+   Se materializa como un PAQUETE con `escribe_fuentes: [<fuente>]`, custodia de `PLT`,
+   checkpoint, rama, commit, push, PR y CI por fuente. **No hace falta inventar nada: hace
+   falta USARLO.** Lo que `C7` ya norma para cualquier otra escritura vale aquí.
+
+3  `U5` SE PARTE EN DOS
+   U5a  recompila las proyecciones DEL CONTROL REPO — lo que §8.4 ya cubría
+   U5b  PROPAGA los punteros a las fuentes, con su propio gate, su evidencia POR FUENTE, y
+        su INTEGRATION SET cuando hay más de una — que es el caso normal, y donde el defecto
+        de `C7` de §9.5 deja de ser teórico
+
+4  ROLLBACK DECLARADO PARA `U5b`
+   Por fuente, y con estado INTEGRACIÓN PARCIAL mientras no converjan todas. Un puntero es
+   pequeño; la coordinación multi-fuente no lo es. Sin esto, un producto puede quedarse con
+   punteros de dos versiones distintas y ninguna pieza del sistema saberlo.
+
+5  `N2` Y `A5` NO ESCRIBEN PUNTEROS
+   INSTALACIÓN  el puntero se propaga en **N6**, que es cuando §8.1 autoriza escribir en las
+                fuentes. N2 elige el adaptador y compila lo del control repo; nada más
+   ADOPCIÓN     el puntero se propaga en **A8**, que es cuando el Owner autoriza, y sólo lo
+                que autorice. A0–A7 no tocan el producto, y eso vuelve a ser cierto
+
+6  LÍMITE DE §6.3, DECLARADO
+   la deriva de un puntero **sólo es detectable si su fuente está materializada**. Con una
+   fuente ausente, el validador LO DICE y no asume nada — que es la regla de `NP-9` aplicada
+   aquí, y lo que impide que «huella correcta» se lea como «puntero al día».
+```
+
+**Pruebas adversariales `X32`–`X34`.** Adopción hasta `A7` inclusive: `git status` y `git log`
+en cada fuente no muestran **ni un solo commit ni un fichero nuevo** de ADS · actualización en
+tres fuentes con `main` protegida: la propagación produce tres PR, un Integration Set, y
+estado `INTEGRACIÓN PARCIAL` hasta que las tres se fusionan · fusionar dos de tres y comprobar
+que el sistema **lo dice**, en vez de declarar la actualización cerrada.
 
 **Límite declarado, y es el que importa.** Que un entorno concreto **honre** el puntero —que
 lo lea, que abra el directorio hermano y que trabaje con él— **no lo puede afirmar el
@@ -2610,7 +2713,8 @@ FASES           N0 crear y publicar control repo y workspace, CON EL SOPORTE DUR
 PARTICIPANTES   Owner · PLT (N0,N2,N6) · ENC+PRD (N1,N5) · SIS (N3) · VER (N4,N7) ·
                 ARQ DOM DIS SEG según discovery
 LEE             la distribución instalada
-ESCRIBE         control repo entero; las fuentes sólo desde N6
+ESCRIBE         control repo entero; las fuentes sólo desde N6 — **incluidos los punteros
+                de adaptador**, que N2 NO escribe aunque elija el adaptador (§6.7)
 ESTADO          `estado/` nace en **N0**, con su soporte durable mínimo. Ver abajo
 EVIDENCIA       `workspace check` · prueba de humo por adaptador · checkpoint recuperado
 GATES           N4 certificación Operativa · N7 = O12
@@ -2711,7 +2815,10 @@ PARTICIPANTES   A2/A3 `AUD` con INV produciendo la capa · A6 activa DOM, SEG,
                 DECLARA · A7 ENC · A8 DEU con PLT · A9 SIS+PLT+VER, y SEG si hay superficie
 LEE             TODO: código, docs, historial Git, ramas, PR, CI, entornos, despliegues,
                 agentes, skills, prompts, reglas, workflows, backlog, incidentes
-ESCRIBE         NADA en las fuentes hasta A8, y en A8 sólo lo que el Owner autorice
+ESCRIBE         NADA en las fuentes hasta A8, y en A8 sólo lo que el Owner autorice —
+                **incluidos los punteros de adaptador**, que A5 NO escribe aunque
+                especialice el adaptador. Sin esta corrección, la adopción de un producto
+                ajeno empezaba haciendo un commit en su repositorio (§6.7)
 ESTADO          la iniciativa de adopción nace en A0 y es el hilo entre chats
 EVIDENCIA       inventario con procedencia · baseline aprobado · mapa de conservación
 GATES           A3 baseline aprobado por el Owner · A8 autorización de retirada ·
@@ -2812,9 +2919,52 @@ M0–M5   revertir es ABANDONAR el control repo nuevo. Nada del producto se ha t
 M6      revertir es RESTAURAR lo retirado desde la historia del repositorio técnico. Es un
         `revert`, no una resurrección: el contenido está en Git y por eso M6 puede hacerse.
         Retirar algo que NO estuviera en la historia sería irreversible, y M6 lo prohíbe.
-M7      si M7 falla, se revierte M6 y se vuelve a M4. La certificación de M5 NO se pierde:
-        lo que falló es una dependencia oculta, y eso es un item nuevo, no un rollback del
-        recorrido entero.
+M7      si M7 falla, se revierte M6 y se vuelve a M4. Ver «El alcance de M5, y qué pasa si
+        M7 falla», abajo.
+```
+
+### El alcance de M5, y qué pasa si M7 falla
+
+> **Corregido por la segunda devolución independiente (hallazgo `G`).** El revisor **refuta
+> la premisa** de que el contrato afirmara sin matiz que el sustituto funciona por sí solo:
+> §8.3 dice literalmente lo contrario, y `D33` es sólida en su núcleo. **Lo que sí eran reales
+> son cinco residuos**, y el mayor era la frase *«la certificación de M5 NO se pierde»*, que
+> chocaba con *«Revalidada en M7»* — si fueran la misma afirmación, revalidar no tendría
+> sentido.
+
+```text
+QUÉ ACREDITA M5           «lo nuevo funciona EN COEXISTENCIA». Nada más, y es mucho: si
+                          falla, no se ha destruido nada.
+
+QUÉ PASA AL EJECUTAR M6   M6 CAMBIA la configuración certificada. Por §9.3 —«cambia el
+                          entorno»— la celda de `certificacion/integrado` pasa a `vencido`,
+                          y con ella BAJA el nivel alcanzado. Es el mismo mecanismo que §6.5
+                          celebra para el adaptador —«baja solo, sin que nadie tenga que
+                          acordarse de editar nada»—, y F4c lo suspendía aquí sin decir por
+                          qué. **`O12` deja de estar satisfecho hasta M7.**
+
+ALCANCE RESIDUAL, COMO    la celda de M5 conserva su evidencia y su `verificacion.ultima_real`
+CAMPO Y NO COMO PROSA     y queda en `parcial`, con
+                          `motivo: certificado en coexistencia; pendiente de verificación
+                          independiente tras la retirada`. El vocabulario de `cobertura` ya
+                          lo expresa; F4c no lo usaba.
+
+RESTAURAR M6 OBLIGA A     «revertir es RESTAURAR lo retirado desde la historia» devuelve
+REVALIDAR                 FICHEROS. NO devuelve CI, permisos, entornos ni el árbol exacto — y
+                          §9.3 dice que cambiar CI o permisos invalida Integrado. Tras el
+                          revert **se reejecutan las pruebas de M5** antes de volver a M4.
+                          Un revert no es una máquina del tiempo.
+
+LA DEPENDENCIA OCULTA     no es «un item nuevo» sin tipo. Pasa por `ENC` y por las nueve
+TIENE PROCESO             clases de entrada, como cualquier finding (§5.3). Los tres destinos
+                          plausibles son `DEF` —comportamiento incorrecto—, `DEU`
+                          —acoplamiento— y `DEP` —dependencia externa—, y **lo decide `ENC`**,
+                          no este apartado.
+
+CONDICIÓN PARA            M6 SÓLO se reintenta cuando el item de la dependencia oculta está
+REINTENTAR M6             `cerrado`, su capa `vigente`, y M5 ha sido REEJECUTADA sobre el
+                          árbol resultante. **Sin esta condición el tramo admitía un bucle
+                          M6→M7→M6 indefinido**, y era el hueco más importante de los cinco.
 ```
 
 ## 8.4 · Actualización de ADS en un proyecto instalado
@@ -2830,18 +2980,26 @@ FASES           U0 detectar versión candidata
                    esquemas de estado, trabajo en curso
                 U3 plan de migración, con su rollback
                 U4 aplicar
-                U5 recompilar proyecciones de adaptadores
+                U5a recompilar proyecciones DEL CONTROL REPO
+                U5b propagar los PUNTEROS a las fuentes, como source changes gobernados
+                    por C7, con gate, evidencia por fuente e Integration Set si hay más
+                    de una. Ver §6.7
                 U6 certificar
 PARTICIPANTES   SIS · PLT · VER · Owner si hay incompatibilidad o retirada
 LEE             la distribución nueva y la instalada
-ESCRIBE         la distribución instalada y las proyecciones. **No el estado**, salvo
-                migración de esquema declarada en U3
+ESCRIBE         la distribución instalada y las proyecciones DEL CONTROL REPO en U5a; y
+                LAS FUENTES en U5b, sólo el fichero puntero y bajo `C7`. **No el estado**,
+                salvo migración de esquema declarada en U3
+                **Corregido** (hallazgo `I.3`): F4c decía «la distribución instalada y las
+                proyecciones» sin declarar que algunas proyecciones viven en repositorios
+                ajenos al control repo
 EVIDENCIA       la vista comprensible del cambio que el §14.2 del brief pide
 GATES           U3 aprobado antes de U4 · U6 certificación
 CERTIFICACIÓN   el nivel que tuviera antes, revalidado. Una actualización que baja el
                 nivel alcanzado es un fallo, no un resultado
 ROLLBACK        ver «Compatibilidad y rollback DEL ESTADO», abajo. NO basta con volver la
-                distribución atrás
+                distribución atrás. Y U5b tiene el SUYO, POR FUENTE, con estado INTEGRACIÓN
+                PARCIAL mientras no converjan todas (§6.7)
 REANUDACIÓN     por el evento `preparada` de la tx si U4 se interrumpe
 CIERRE          U6 superado y la versión instalada es la candidata
 ```
@@ -3128,6 +3286,72 @@ aplicabilidades distintas NO afirman lo mismo, y el dosier lo dice.
 > **Esto reinterpreta la precondición de `O12`**, que es una resolución del Owner. Por eso
 > queda registrado como presión normativa `PN-6` en §16, y **no se da por aprobado aquí**.
 
+### El defecto de `C7`, que esto destapa — y que hay que registrar hoy
+
+> **Encontrado por la segunda devolución independiente (hallazgo `H`, GRAVE).** F4c leía bien
+> su fuente y mal el contrato derivado, y **declaraba a la vez que ese contrato entraba sin
+> cambio**. Las tres afirmaciones no pueden ser ciertas juntas.
+
+```text
+LO QUE DICE `E2.6`      «Un item con paquetes que escribieron en VARIAS SOURCES no cierra
+(APROBADO)              mientras su convergencia no esté declarada y evidenciada en un
+                        INTEGRATION SET»
+
+LO QUE DICE `C7` HOY    `gate:convergencia-de-fuentes`
+(DERIVADO)              `aplica_a: "todo item cuyos paquetes escribieron en UNA O MÁS
+                        fuentes"`, con la comprobación `existe-integration-set`
+
+LO QUE DICE `F4` §9.5   el Integration Set NO APLICA con una sola fuente
+
+LO QUE DECÍA `F4` §15.7 `C7` · REUTILIZADO — es decir, «entra sin cambio», por §15.1
+```
+
+**La consecuencia, y es peor que la que `D32` corrigió.** Producto de un solo repositorio.
+`FEA-021`, un paquete, escribe en su única fuente. Al cerrar, el validador evalúa `aplica_a`
+→ **verdadero**; `existe-integration-set` → no hay ninguno, porque §9.5 declaró que no aplica;
+el `fallo` de `C7` dice *«El item no cierra»*. **Un producto de un repositorio no puede cerrar
+ni un solo item.** `D32` bloqueaba la certificación inicial; **esto bloquea cada cierre de
+item, para siempre.**
+
+**Y NO es una presión normativa. Es un defecto de material DERIVADO:**
+
+```text
+`C7` DERIVA DE `E2`     lo declara en su propia cabecera. Su corrección está COMPLETAMENTE
+                        DETERMINADA por `E2.6` y NO requiere decisión del Owner ni enmienda
+                        de material aprobado.
+LA TRAZABILIDAD         `E2.6` (aprobado, dice «varias») → `C7` `gate:convergencia-de-fuentes`
+                        (derivado, dice «una o más», INCORRECTO) → `F4` §9.5 (lee bien la
+                        fuente y mal el derivado)
+SU SITIO ES F6          con prescripción CERRADA. Lo que F4 debe hacer HOY es REGISTRARLO,
+                        porque §15.7 afirmaba lo contrario.
+```
+
+**La prescripción, cerrada:**
+
+```text
+1  `aplica_a`      pasa a "todo item cuyos paquetes escribieron en MÁS DE UNA fuente".
+                   Es la traducción literal de «varias sources»
+2  CON UNA FUENTE  no queda hueco: `b.10` sigue exigiendo obligaciones resueltas y capas
+   ESCRITA         vigentes; el gate de la capa de cada paquete sigue exigiendo su CI; y `C7`
+                   sigue gobernando rama, commit, push, PR y merge POR FUENTE. La evidencia
+                   es su SOURCE CHANGE en el checkpoint, no un Integration Set
+3  ¿UN INTEGRATION SET DE UNA FUENTE ES OPCIONAL, O SIRVE PARA OTRA COSA?
+                   Sirve para otra cosa: `C7` exige que responda «¿qué combinación hay que
+                   restaurar si se revierte el producto?», y `restaura_a` es OBLIGATORIO en
+                   `integration-set.yaml`. Con una fuente esa pregunta sigue teniendo sentido
+                   y sigue sin tener otro sitio donde vivir. Y el esquema ya admite
+                   `resultado: no-aplica`, luego es expresable HOY sin cambiarlo.
+                   → OPCIONAL COMO GATE, RECOMENDADO COMO ANCLA DE RESTAURACIÓN, y
+                     explícitamente NO exigido para cerrar
+4  QUÉ MÁS SE TOCA en `C7`: el `aplica_a`, y la comprobación `sin-integracion-parcial`, que
+                   con una fuente es vacuamente cierta.
+                   en `F4`: §15.7 (hecho), §10.2 (hecho) y esta nota.
+                   en las pruebas: `T159`–`T170` deben incluir el caso de UNA fuente
+5  QUÉ NO SE HACE  NO se edita `C7` en esta pasada: es `kernel/operativo/`, y esta devolución
+   AQUÍ            no autoriza a tocarlo. Queda registrado, con su prescripción y su
+                   trazabilidad, y su ejecución es F6
+```
+
 ---
 
 # 10 · Git y multi-repositorio
@@ -3300,7 +3524,7 @@ la comprobación es un acierto de caché. **Declarado:** si el coste resulta ina
 piloto, la alternativa es comprobar vigencia sólo en el runner y no en cada invocación
 suelta. **El contrato no cambia; cambia cuándo se ejecuta.**
 
-## 11.4 · La raíz de confianza, sin circularidad
+## 11.4 · La raíz de confianza — reducida a un punto declarado, no eliminada
 
 §11.2 de F4 entregada decía que `T158` está exento de comprobarse a sí mismo y que **un
 componente exento no puede declarar vigencia**. Es correcto, y dejaba la pregunta sin
@@ -3310,18 +3534,34 @@ responder: **entonces quién comprueba la vigencia de la evidencia de `T158`.**
 NO LA DECLARA `T158`      comprobaría su evidencia contra sí mismo. Eso es la circularidad,
                           y no se resuelve escribiéndola con más cuidado.
 
-LA RESUELVE EL RUNNER     `registrar_evidencia.py` RECALCULA SIEMPRE la evidencia de `T158`
-                          y NUNCA la lee de caché. No decide si vale: la vuelve a producir.
-                          Recalcular es más barato que razonar sobre si vale, y elimina la
-                          circularidad de raíz en vez de administrarla.
+LA REDUCE EL RUNNER       `registrar_evidencia.py` RECALCULA SIEMPRE la evidencia de `T158`
+A UN PUNTO                y NUNCA la lee de caché. No decide si vale: la vuelve a producir.
+                          Recalcular es más barato que razonar sobre si vale.
+                          **Corregido** (hallazgo `N-10`): F4c decía que esto «elimina la
+                          circularidad de raíz en vez de administrarla», y eso contradecía
+                          su propia conclusión cuatro líneas más abajo. La circularidad
+                          **se REDUCE A UN ÚNICO PUNTO DECLARADO** —el runner—, que es
+                          cierto, es defendible y es lo que la sección concluye.
 
 EL RUNNER NO ES UN        no publica evidencia sobre sí mismo, no se cachea y no aparece en
-VALIDADOR                 la matriz de vigencia. Su corrección la comprueban las PRUEBAS
-                          NEGATIVAS `N158*`, que sí son evidencia de otro validador
-                          —`negativos`— y que ya rechazan la traza como detección.
+VALIDADOR, Y AUN ASÍ      la matriz de vigencia. Su corrección la comprueban las PRUEBAS
+LA CIRCULARIDAD SE        NEGATIVAS `N158*`, que ya rechazan la traza como detección — pero
+DESPLAZA, NO DESAPARECE   **la evidencia de `negativos` LA PUBLICA EL RUNNER**. «La
+                          corrección del runner la comprueban unas pruebas cuya evidencia
+                          publica el runner» es circularidad desplazada un paso. Se dice.
 
 EL ORDEN IMPORTA          `comprobar_evidencia.py` va EL ÚLTIMO, como ya va hoy, para no
                           enmascarar el motivo de otras mutaciones.
+
+Y UN HUECO DE ALCANCE,    §11 gobierna la vigencia de los TRECE VALIDADORES y no dice nada de
+DECLARADO                 los DOS GENERADORES —`registro_pruebas.py` y
+                          `comprobar_recuentos.py --generar`—, cuyos artefactos derivados
+                          padecen EXACTAMENTE el defecto que `P-08` existe para cerrar: una
+                          cifra que describe un corpus que ya no existe. Un artefacto
+                          generado debe llevar su huella semántica igual que una evidencia,
+                          y `NP-11` lo comprueba. **Es un defecto vivo de este repositorio**,
+                          y su prueba está en su propio historial: hay commits cuyo único
+                          contenido es reanclar una cifra al corpus que creció.
 
 EL SUELO QUE QUEDA        **si el runner miente, nada dentro del repositorio lo detecta.**
 ABIERTO, Y SE DICE        Cerrarlo exige un verificador EXTERNO al repositorio, y eso NO se
@@ -3347,6 +3587,7 @@ validador que detecta. Es la disciplina que `N158i`–`N158o` ya impusieron al a
 | `NP-8` | una **entrada declarada que ya no existe** | fallo explicativo, nombrando la ruta que falta |
 | `NP-9` | un validador **sin `entradas:` declaradas** | fallo: no se puede comprobar su vigencia, **y eso se dice**. No se asume vigente |
 | `NP-10` | una huella calculada de forma **no determinista** | dos ejecuciones seguidas difieren → fallo. Es `T03` aplicado a la propia huella |
+| `NP-11` | un **artefacto GENERADO** desincronizado del corpus que describe | se detecta **y se nombra**. Los dos generadores llevan huella semántica igual que las trece evidencias (hallazgo `N-10`) |
 
 **Y las nueve que ya existen para `vigencia`** siguen en pie, sin cambio.
 
@@ -3649,7 +3890,7 @@ PRESIÓN F5     exige enmienda de material aprobado antes de construirse
 | `C4` materialización | REUTILIZADO. `X8` se resolvió leyéndolo |
 | `C5` handoff | REUTILIZADO |
 | `C6` producto, fuentes y workspace | REUTILIZADO. §5.1 se apoya en su componente sin deformarlo |
-| `C7` gobierno Git | REUTILIZADO |
+| `C7` gobierno Git | **REUTILIZADO CON UNA CORRECCIÓN PENDIENTE, NOMBRADA.** Su `gate:convergencia-de-fuentes` dice `aplica_a: "una o más fuentes"` y `E2.6` —su fuente aprobada— dice «varias sources». Con el texto vigente, ningún producto de un repositorio cierra un solo item. Es un defecto de DERIVADO con prescripción cerrada (§9.5); NO es presión normativa; su ejecución es F6. **Y el control repo no está cubierto por su tabla de propiedad** (§2.6.10) |
 
 ```text
 T169 · T170       siguen en contrato-definido. Exigen runtime y dos repos reales
