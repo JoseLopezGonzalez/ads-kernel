@@ -13,6 +13,12 @@
 > **dos bloqueantes más** en el texto que las correcciones anteriores escribieron. Tampoco es
 > la tercera revisión, y tampoco certifica nada.
 >
+> Y por una **SEGUNDA corrección técnica**, que encontró **tres GRAVES más** —garantías
+> atribuidas a un esquema que no puede comprobarlas, `W12a` contra la clasificación por
+> hashes, y siete valores de `tipo` sin contrato— **en el texto que la corrección anterior
+> escribió**. Es el TERCER encadenamiento consecutivo en el que una pasada encuentra defectos
+> de la anterior. Tampoco es la tercera revisión, y tampoco certifica nada.
+>
 > La segunda revisión la emitió un revisor con contexto limpio que **no escribió F4 ni aplicó
 > la primera crítica**, y su veredicto fue de **INSUFICIENCIA**: dos hallazgos BLOQUEANTES,
 > siete GRAVES y catorce nuevos. **Dos de ellos eran defectos que la PRIMERA corrección
@@ -30,8 +36,9 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/12-CRITICA-INDEPENDIENTE-F4.md
              docs/evolucion/13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md
              docs/evolucion/14-DEVOLUCION-TECNICA-PREVIA-F4C.md
-             docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · D16–D22 · D23–D33 ·
-                                                             D34–D45 · D46–D51
+             docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · D16–D22 ·
+                                                             D23–D33 · D34–D45 · D46–D51 ·
+                                                             D52–D54 · D55–D57
              kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
 freshness:   vigente
 last_meaningful_event: la SEGUNDA revisión independiente devuelve F4 con veredicto de
@@ -44,6 +51,43 @@ procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y
              crítica NO equivale a autocertificarse, y NO prueba que esté bien resuelta.
              LA PRUEBA DE QUE ESTO IMPORTA: dos de los hallazgos de la segunda devolución son
              defectos que la PRIMERA CORRECCIÓN introdujo o no vio
+resuelto_en_la_SEGUNDA_CORRECCION_TECNICA:
+  # Segunda corrección técnica sobre el protocolo transaccional. NO es la tercera revisión
+  # independiente, y NO certifica F4c. Sus TRES hallazgos están en texto que la corrección
+  # técnica ANTERIOR escribió: es el TERCER encadenamiento consecutivo.
+  · H1 · GRAVE. GARANTÍAS ATRIBUIDAS A QUIEN NO PUEDE COMPROBARLAS. §3.6 declaraba cuatro
+    reglas «que un esquema derivado debe hacer cumplir», y TRES son incomprobables por un
+    esquema estructural: recorrer los demás eventos de un `tx`, contar iteraciones y observar
+    el orden real de fsync y rename. Se separan TRES CAPAS con dueño — A esquema estructural
+    del evento · B validador semántico del diario · C runtime y pruebas de caída — y cada
+    regla queda asignada a la capa capaz de comprobarla. Es D55, y revisa D54
+  · H2 · GRAVE. W12a CONTRADECÍA LA CLASIFICACIÓN POR HASHES. Mandaba `conflicto` ante un
+    canónico revertido a su `hash_previo`, que es la caja NO APLICADO de §2.6.4 y lo que W3 y
+    W4 completan hacia delante: el mismo disco recibía dos clasificaciones incompatibles, y
+    la que ganaba escalaba a una persona un resultado DETERMINISTA. La clasificación pasa a
+    hacerse contra la ÚLTIMA FASE DURABLE —`preparada`, o `reconciliacion-preparada` para las
+    rutas que reconcilió—, con base válida y resultado permitido explícitos. Un canónico
+    revertido bajo transacción abierta SE REAPLICA; si `confirmada` era durable SE REEMITE
+    tras reaplicar, y reemitir una fase NO es una transición. `conflicto` exige transacción
+    abierta Y divergencia real; el marcador huérfano o clonado es `fallo` de publicación, y
+    lo divergente sin transacción es `deriva`. Es D56
+  · H3 · GRAVE. SIETE TIPOS SIN CONTRATO. El enum de `tipo` tiene NUEVE valores y el contrato
+    condicional cubría sólo el eje `fase`; «las ocho formas de evento» contaba filas del eje
+    equivocado. Se declara la matriz: los SIETE tipos que escriben estado canónico llevan
+    `fase` y `tx` OBLIGATORIOS y son ortogonales a las seis fases; `deriva` y `fallo` los
+    tienen PROHIBIDOS. Cada tipo declara su sujeto. Formas válidas: 7 × 6 + 2 = 44. NO se crea
+    ni se fusiona ningún tipo, y el recuento de §3.8 no cambia. Es D57
+  · C4 · RESTOS VIGENTES. `preparada` deja de ser «la única entrada que necesita la
+    recuperación» —lo es en la ruta normal—; la cardinalidad de una transacción se declara
+    VARIABLE (3 normal · 3+2k en conflicto · 6 si escala sin cerrar · más reemisiones);
+    `conflicto` deja de decir que sólo avanza a `reconciliada`; y «absorbente» pasa a
+    «ABIERTO Y BLOQUEANTE», con la definición de por qué no es absorbente. El término
+    anterior se conserva en D35, en las devoluciones y en este checkpoint como HISTORIA
+  · NO REPRODUCIDOS · dos restos señalados no existen en el árbol publicado, y se dice: `X28`
+    aparece UNA vez —42 filas de datos y 42 ids únicos, y la fila 43 es el separador de
+    Markdown— y «Un fichero que no existe» también aparece UNA vez
+  · D55–D57 registradas, y O15. Tabla adversarial: SIGUE en 42 filas — X05, X15, X26 y X28
+    se corrigen EN SU SITIO, sin añadir ni retirar ninguna
 resuelto_en_la_CORRECCION_TECNICA_POSTERIOR:
   # Corrección técnica sobre el protocolo transaccional. NO es la tercera revisión
   # independiente, y NO certifica F4c. Sus tres hallazgos están en texto que las
@@ -226,10 +270,12 @@ siguiente:   TERCERA REVISIÓN INDEPENDIENTE de F4, por quien NO la escribió y 
              NINGUNA de las TRES tandas de correcciones. Después F5
 falta_para_cerrar_la_capa:
   · F4c ESTÁ ABIERTA. Dos devoluciones independientes, la segunda con veredicto explícito de
-    INSUFICIENCIA. Las correcciones de ambas las aplicó QUIEN LAS RECIBIÓ, y eso no prueba
-    que estén bien resueltas. LA EVIDENCIA DE QUE EL ENCADENAMIENTO IMPORTA: dos de los
-    hallazgos BLOQUEANTES de la segunda son defectos que la PRIMERA CORRECCIÓN introdujo o no
-    vio. F4c sólo se cierra con un veredicto explícito de SUFICIENCIA emitido por un revisor
+    INSUFICIENCIA, y DOS correcciones técnicas más. Las correcciones de todas las aplicó
+    QUIEN LAS RECIBIÓ, y eso no prueba que estén bien resueltas. LA EVIDENCIA DE QUE EL
+    ENCADENAMIENTO IMPORTA: dos de los hallazgos BLOQUEANTES de la segunda son defectos que
+    la PRIMERA CORRECCIÓN introdujo o no vio, y los TRES de la segunda corrección técnica
+    están en texto que la corrección técnica ANTERIOR escribió. NINGUNA crítica se declara
+    superada. F4c sólo se cierra con un veredicto explícito de SUFICIENCIA emitido por un revisor
     independiente sobre el resultado corregido
   · OCHO PRESIONES NORMATIVAS VIGENTES. PN-1 —la sección (g)— BLOQUEA todo el estado
     durable, y ahora decide MÁS: fsync, regla de commit, sellado, identidad y regla de
@@ -300,8 +346,13 @@ F4c CRÍTICA INDEPENDIENTE    TRES devoluciones, EMITIDAS por revisores y audito
                                  sobre el ÁRBOL REMOTO REAL: 3 BLOQUEANTES, 2 GRAVES, 4
                                  MEDIOS, 2 MENORES · 14-DEVOLUCION-TECNICA-PREVIA-F4C.md ·
                                  D46–D51. NO es veredicto de suficiencia
-                             DOS de los hallazgos de la 2ª y TRES de la 3ª son defectos que
-                             las correcciones ANTERIORES introdujeron o no vieron.
+                             Y DOS CORRECCIONES TÉCNICAS posteriores, ninguna de ellas la
+                             tercera revisión: la 1ª con dos BLOQUEANTES y un GRAVE
+                             (`D52`–`D54`), la 2ª con tres GRAVES (`D55`–`D57`) sobre el
+                             texto que la 1ª escribió.
+                             DOS de los hallazgos de la 2ª devolución, TRES de la 3ª y LOS
+                             TRES de la segunda corrección técnica son defectos que las
+                             correcciones ANTERIORES introdujeron o no vieron.
                              ABIERTA: sólo la cierra un veredicto explícito de SUFICIENCIA
                              emitido por un revisor independiente sobre el resultado
                              corregido. Ese veredicto NO existe
@@ -533,6 +584,32 @@ docs/evolucion/00-INDICE.md               la segunda crítica, enlazada
 NADA de kernel/operativo/, packs/ ni tooling/ ha cambiado, salvo la evidencia DERIVADA que
 el runner republica. (a), (b), E1, E2, K-1 y C4 intactos. **C7 TAMPOCO se ha tocado**: su
 defecto queda REGISTRADO con prescripción cerrada, y su ejecución es F6.
+```
+
+## Lo que cambió en el repositorio · segunda corrección técnica
+
+```text
+F4c SEGUNDA CORRECCIÓN TÉCNICA — tres GRAVES, los restos vigentes de §2.6, y O15
+docs/evolucion/11-ARQUITECTURA-INTEGRADA.md  cabecera · §2.6.1 fases y transiciones ·
+                                          §2.6.2 entradas de recuperación y cardinalidad ·
+                                          §2.6.4 REESCRITA: intención vigente, función de
+                                          clasificación completa y reemisión · §2.6.5 W11,
+                                          W12a, W12b y el resumen de escalado · §2.6.6
+                                          garantía 6, regla de Git y qué se emite ante un
+                                          marcador que no debería existir · §2.6.7 X05,
+                                          X15, X26, X28 y el recuento declarado · §2.6.9
+                                          conflicto, término y coherencia W×R NUEVA ·
+                                          §2.6.11 · §3.6 matriz tipo × fase NUEVA y
+                                          reparto en tres capas · §8.2 O15 · §15.4 · §15.8
+                                          D55–D57 · §18 · §19
+docs/evolucion/14-DEVOLUCION-TECNICA-PREVIA-F4C.md  DOS addenda nuevos y el veredicto
+                                          reanclado. Su texto se CONSERVA entero
+docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md  D55–D57 y O15, SIN reescribir D1–D54 ni
+                                          O1–O14
+docs/evolucion/CHECKPOINT-ADS-NEXT.md     este bloque, el estado de la fase y O15
+NADA de kernel/operativo/, packs/ ni tooling/ ha cambiado, salvo la evidencia DERIVADA que
+el runner republica. (a), (b), E1, E2, K-1, C4 y C7 intactos. NINGÚN documento `15-*` nuevo:
+la corrección se registra por ADDENDUM sobre los documentos existentes.
 ```
 
 ## Siguiente acción exacta

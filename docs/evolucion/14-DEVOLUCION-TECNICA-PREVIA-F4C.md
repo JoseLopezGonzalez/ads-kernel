@@ -67,6 +67,15 @@ RUTA DE CONFLICTO preparada → conflicto → reconciliada → derivada
 finales, **pero todavía hay que regenerar derivados** · `derivada` es el **único** terminal de
 ambas rutas · `abortada` retirada y **rechazada por el esquema**.
 
+> **ADDENDUM 2 · dos palabras de esta prescripción quedaron revisadas, y se dicen.** Una
+> SEGUNDA corrección técnica encontró que **«absorbente» describe mal lo vigente** —de
+> `conflicto` sale una transición, hacia `reconciliacion-preparada`, y puede volver a
+> entrarse en él hasta tres veces—, y que **«rechazada por el esquema» sólo es cierto para
+> `abortada`**, que es un valor fuera del enum: las demás reglas que se le atribuyeron al
+> esquema exigen recorrer el diario o mirar el disco. La norma vigente dice **«abierto y
+> bloqueante»** y reparte las garantías en tres capas. Son `D55` y parte de `D57`. El texto
+> de arriba se conserva.
+
 **No se reescribe `D38`.** Se añade `D46`, que la revisa y explica que retirar `abortada` y
 añadir `reconciliada` deja **cinco fases, no cuatro**.
 
@@ -191,6 +200,15 @@ Git: **la del Owner, nunca automática**.
 > identidad: `conflicto` para una transacción abierta, evento **`deriva`** para lo descubierto
 > tras el cierre. Es `D53`, y revisa a `D34` y a `D46`.
 
+> **ADDENDUM 2 · y el reparto entre `conflicto` y lo demás quedó otra vez corto.** La
+> corrección técnica posterior separó por identidad —`conflicto` para la transacción abierta,
+> `deriva` para lo descubierto tras el cierre—, y al hacerlo dejó `W12a` mandando `conflicto`
+> ante un canónico revertido a su `hash_previo`, que es exactamente la caja **NO APLICADO**
+> de §2.6.4 y lo que `W3` y `W4` completan. La segunda corrección técnica lo clasifica contra
+> la **última fase durable**: se reaplica de forma idempotente, y `conflicto` exige
+> **transacción abierta Y divergencia real**. Es `D56`, y revisa a `D34`, `D36`, `D35` y
+> `D53`.
+
 **Prueba futura `X51`.** Working tree divergente respecto a `HEAD` sin transacción abierta: el
 arranque **lo nombra**, no lo completa, no lo revierte y no lo restaura.
 
@@ -280,11 +298,13 @@ ningún campo de certificación está declarado en dos sitios.
 
 # Veredicto
 
-> **Estado de esta devolución tras la corrección técnica posterior.** Dos de sus once
+> **Estado de esta devolución tras DOS correcciones técnicas posteriores.** Dos de sus once
 > prescripciones —el autómata de cinco fases y la integridad post-terminal— resultaron
-> **insuficientes o defectuosas**, y están revisadas por `D52` y `D53`. Se conservan enteras:
-> son el registro de qué se vio entonces, y la prueba de que una devolución que se aplica no
-> queda por ello comprobada.
+> **insuficientes o defectuosas**, y están revisadas por `D52` y `D53`. Una **segunda**
+> corrección técnica revisó además el término «absorbente», la atribución de garantías al
+> esquema y la clasificación de `W12a`: `D55`, `D56` y `D57`. Se conservan enteras: son el
+> registro de qué se vio entonces, y la prueba de que una devolución que se aplica no queda
+> por ello comprobada.
 
 ```text
 ESTA DEVOLUCIÓN NO CERTIFICA `F4c`.

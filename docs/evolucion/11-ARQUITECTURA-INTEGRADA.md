@@ -26,12 +26,20 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 > POSTERIOR             reconciliación no era recuperable, y la integridad post-terminal
 >                       salía del terminal— y un GRAVE. Correcciones: D52–D54.
 >                       Tampoco es la tercera revisión, y tampoco certifica nada
+> SEGUNDA CORRECCIÓN    TRES GRAVES sobre el texto que la corrección anterior escribió:
+> TÉCNICA               garantías atribuidas a un esquema que no puede comprobarlas, `W12a`
+>                       contra la clasificación por hashes de §2.6.4, y siete valores de
+>                       `tipo` sin contrato. Más los restos vigentes de §2.6.
+>                       Correcciones: D55–D57. TAMPOCO es la tercera revisión, y TAMPOCO
+>                       certifica nada
 > ```
 >
 > **Dos de los hallazgos de la segunda devolución son defectos que la PRIMERA CORRECCIÓN
-> introdujo o no vio.** Es la razón por la que las revisiones se encadenan en vez de darse
-> por buenas. **Quien aplicó ambas es quien las recibió**, luego ninguna prueba nada: `F4c`
-> sigue **ABIERTA**, pendiente de una **tercera revisión independiente**.
+> introdujo o no vio, y los TRES de la segunda corrección técnica están en el texto que la
+> corrección técnica ANTERIOR escribió.** Es el tercer encadenamiento consecutivo, y es la
+> razón por la que las revisiones se encadenan en vez de darse por buenas. **Quien aplicó
+> todas es quien las recibió**, luego ninguna prueba nada: `F4c` sigue **ABIERTA**,
+> pendiente de una **tercera revisión independiente**.
 
 ---
 
@@ -4936,6 +4944,22 @@ anteriores escribieron. `D16`–`D51` conservan su texto.
 | `D52` | **seis fases**: la ruta de conflicto gana `reconciliacion-preparada`, su intención durable previa | `D46` · `D35` | **BLOQUEANTE**: la reconciliación no era recuperable — una caída entre decidir y emitir dejaba el diario sin la decisión |
 | `D53` | lo descubierto tras el cierre es un evento `deriva`, no una fase | `D34` · `D46` | **BLOQUEANTE**: la integridad post-terminal emitía `conflicto` sobre una transacción terminal, saliendo del terminal |
 | `D54` | contrato **condicional por fase** para `evento` | `D23` | el contrato genérico no podía representar lo divergente, la decisión ni el `hash_final` |
+
+### `D55`–`D57` · las decisiones de la SEGUNDA corrección técnica
+
+Posterior a `D52`–`D54` y **anterior a la tercera revisión independiente**. Sus tres
+hallazgos están en texto que la corrección técnica ANTERIOR escribió — el tercer
+encadenamiento consecutivo. `D16`–`D54` conservan su texto.
+
+| | decisión | qué revisa | por qué |
+|---|---|---|---|
+| `D55` | las garantías se reparten en **tres capas**: esquema estructural del evento, validador semántico del diario, y runtime con pruebas de caída | `D54` · `D46` · `D23` | **GRAVE**: tres de las cuatro reglas de `D54` son incomprobables por un esquema, que valida un evento aislado. Atribuírselas las dejaba sin dueño |
+| `D56` | la recuperación clasifica contra la **última fase durable**, y `conflicto` exige transacción abierta **y** divergencia real | `D34` · `D36` · `D35` · `D53` | **GRAVE**: `W12a` mandaba `conflicto` donde §2.6.4, `W3` y `W4` mandan completar. Y la regla del clon emitía `conflicto` sin transacción abierta alguna |
+| `D57` | `tipo` y `fase` son **dos ejes**, con matriz declarada: siete tipos transaccionales × seis fases, más `deriva` y `fallo` sin fase | `D54` · `D23` | **GRAVE**: «las ocho formas de evento» contaba el eje `fase`, y siete de los nueve valores de `tipo` quedaban sin contrato |
+
+**Y `O15`**, resolución posterior del Owner que revisa `O14` sin reescribirlo: la adopción de
+PesquerApp es la **primera adopción real, permanente y completa** de ADS. Vive en el registro
+de decisiones, y su lectura arquitectónica en §8.2, §18 y §19.
 
 
 
