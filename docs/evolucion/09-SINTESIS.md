@@ -1101,7 +1101,7 @@ UNA ÚNICA DECISIÓN             declara alcance, prioridad, presupuesto, umbral
 | 5 | dónde viven los documentos del Owner | **cerrada** · `O10`: `docs/owner/` |
 | 6 | nombre de la unidad amplia | **cerrada** · `O11`: **`iniciativa`** |
 | 7 | nivel de certificación para empezar | **cerrada** · `O12`: Integrada + baseline + ningún desconocido crítico sin clasificar |
-| 8 | matriz de entornos agentic | **cerrada** · `O13`: Claude Code y Codex certificados; Cursor y Gemini compatible o genérico; fallback genérico obligatorio |
+| 8 | matriz de entornos agentic | **cerrada** · `O13`: Claude Code y Codex son el primer **objetivo** de soporte y certificación, y **hoy no están certificados**: sólo alcanzan ese estado tras una prueba de humo real. Cursor y Gemini permanecen compatible o genérico hasta superar la suya. Fallback genérico obligatorio |
 | 9 | producto para el piloto | **cerrada** · `O14`: PesquerApp, en clones aislados, **sin ejecutar todavía** |
 
 **Cero preguntas abiertas.** Lo que no desaparece con ellas es el trabajo que ordenan, y que
