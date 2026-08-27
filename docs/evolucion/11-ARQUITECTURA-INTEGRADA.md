@@ -1059,7 +1059,7 @@ impuso al arnés de negativos.
 | `X03` | matar el proceso entre el último fichero y `confirmada` | se emite `confirmada`; ningún fichero se reescribe |
 | `X04` | ejecutar la recuperación DOS VECES seguidas | la segunda es una no-operación. Idempotencia por hash |
 | `X05` | modificar a mano un fichero de la transacción entre `preparada` y la recuperación, **a un contenido que no es ni su base ni su resultado** | `conflicto` con el fichero NOMBRADO: hay transacción abierta y divergencia real, que son las DOS condiciones. No se sobrescribe |
-| `X06` | borrar un fichero cuyo `hash_previo` no es `ausente` | `conflicto`. No se recrea desde el hash |
+| `X06` | borrar un fichero cuyo `hash_previo` no es `ausente`, **con su transacción abierta** | `conflicto`: no existir es DIVERGENTE cuando el evento declara un hash concreto (§2.6.4), y hay transacción abierta. No se recrea desde el hash |
 | `X07` | corromper un evento `preparada` a medio escribir | se identifica como temporal huérfano y se descarta. La transacción no existió |
 | `X08` | dos ejecutores preparan transacciones que tocan el mismo fichero | el segundo encuentra el marcador `.abierta` y **no arranca**: `R5` es un lock, no un consejo |
 | `X09` | dos ejecutores en máquinas distintas emiten eventos a la vez | ids distintos por contenido. La cadena BIFURCA, y la bifurcación se DETECTA. No se resuelve sola |
