@@ -65,6 +65,10 @@ resuelto_en_la_CORRECCION_TECNICA_POSTERIOR:
     por fase para las ocho formas de evento: obligatorios, prohibidos, predecesora admitida,
     hash que gobierna y condición para emitir la siguiente. Más cuatro reglas que un esquema
     derivado debe hacer cumplir. Y los `fsync` obligatorios se extienden a la ruta de conflicto
+    [REVISADO por D57: «las ocho formas» era el eje FASE, no el recuento de formas de evento
+     — el enum de `tipo` tiene NUEVE valores y siete quedaban sin contrato. Y por D55: tres
+     de las cuatro reglas NO las puede comprobar un esquema. Ver el bloque de la segunda
+     corrección técnica]
   · CONSISTENCIA · el marcador deja de llamarse «tercera categoría» en §2.6.6 · W11 deja de
     hablar de «su bandera» · X47 comprueba la PROYECCIÓN NORMATIVA VIGENTE y declara sus
     excepciones históricas una a una, en vez de afirmar que todo el corpus tiene una sola

@@ -2183,16 +2183,18 @@ verificadores distintos. Y las doce áreas documentales y los cuatro niveles de 
 —que no son capacidades— entraban en ese mismo campo sin namespace. Tres universos en un
 campo sin tipo es una colisión semántica, no una economía.
 
-## 3.6 · `evento` — qué declara, y qué exige cada fase
+## 3.6 · `evento` — qué declara, qué exige cada TIPO y qué exige cada FASE
 
 ### Campos comunes a todo evento
 
 ```text
 id            EV-<huella del contenido>. Direccionado por contenido, NO monotónico (§2.7)
 tipo          orden | transicion | integracion | certificacion | migracion | sellado |
-              retirada-de-cuerpo | deriva | fallo
+              retirada-de-cuerpo | deriva | fallo. NUEVE valores, y la matriz de abajo dice
+              cuáles llevan `fase` y cuáles la tienen PROHIBIDA
 fase          preparada | confirmada | conflicto | reconciliacion-preparada | reconciliada |
-              derivada | — (sin transacción). El autómata, en §2.6.1.
+              derivada | — (sin transacción). El autómata, en §2.6.1. **`fase` y `tipo` son
+              DOS EJES**, y el valor `—` sólo lo toman `deriva` y `fallo`.
               `abortada` NO existe: un evento con esa fase es RECHAZADO por el ESQUEMA
               ESTRUCTURAL — es un valor fuera del enum, y eso se ve sin salir del evento
 tx            TX-<huella>, cuando el evento forma parte de una transacción multiarchivo.
@@ -2204,7 +2206,86 @@ ordenante · autoridad · escritor_del_comando · ejecutor · actor_atribuido
 base          hash de las entradas sobre las que se decidió
 ```
 
+### Las DOS dimensiones, y la matriz que las cruza
+
+> **Añadido por la segunda corrección técnica (hallazgo `H3`, GRAVE).** El contrato de
+> abajo cubre el eje `fase` —seis fases más `deriva` y `fallo`, ocho filas— y se resumía
+> como *«las ocho formas de evento»*. Pero el enum de `tipo` tiene **NUEVE** valores, y
+> **siete de ellos quedaban sin contrato**: nada decía si un `sellado` lleva `fase`, si un
+> `fallo` puede llevar `tx`, ni qué declara un `certificacion` además de su fase. Declarar
+> «ocho formas» con formas válidas sin contrato es un recuento que no cierra. Es `D57`.
+
+**Son dos ejes, y no se sustituyen:**
+
+```text
+`tipo`    QUÉ ACONTECIÓ. El significado del acontecimiento: qué parte del producto cambia,
+          quién tiene autoridad sobre ella y qué sujeto nombra el evento.
+
+`fase`    CÓMO PARTICIPA EN UNA TRANSACCIÓN. Si el acontecimiento incluye al menos una
+          ESCRITURA CANÓNICA, participa —y entonces `fase` y `tx` son OBLIGATORIOS—.
+          Si no escribe nada canónico, no participa, y los dos están PROHIBIDOS.
+```
+
+**La regla, en una frase:** un evento lleva `fase` y `tx` **si y sólo si** el acontecimiento
+que narra incluye una escritura canónica. Es la misma frontera que la regla 4 de abajo: lo
+que exige intención durable previa es exactamente lo que exige fase.
+
+**La matriz — SIETE tipos transaccionales × SEIS fases, más DOS tipos sin fase:**
+
+| `tipo` | ¿`fase` y `tx`? | qué acontecimiento narra | sujeto que declara ADEMÁS de su fila de fase |
+|---|---|---|---|
+| `orden` | **obligatorios** | el **consumo** de una orden del Owner y su aplicación. Escribir la orden en la zona `ÓRDENES` **no es este evento**: `§1.3` regla 3 dice que emitir una orden no es una mutación, y el estado sólo cambia cuando el protocolo de consumo la aplica | `orden_ref` —la orden consumida— · `item` |
+| `transicion` | **obligatorios** | un item cambia de estado o avanza por su ruta | `item` · `desde` · `hacia` |
+| `integracion` | **obligatorios** | una capa se deposita o se integra en `03-integracion.md` | `item` · `capa` · capacidad con custodia |
+| `certificacion` | **obligatorios** | una celda de `estado/cobertura/` alcanza, conserva o pierde un nivel | `celda` `(sujeto, aspecto)` · `nivel` · qué lo invalida |
+| `migracion` | **obligatorios** | una migración de esquema o de estado (§8.3) escribe el estado migrado | `desde_version` · `hacia_version` · recorrido |
+| `sellado` | **obligatorios** | los eventos de un item se compactan en un fichero sellado (§2.9) | `sellado_ref` · la lista ORDENADA de `id` y huella sellados · la cabeza de la cadena |
+| `retirada-de-cuerpo` | **obligatorios** | el cuerpo de un evento sellado se sustituye por su lápida | `evento_ref` · huella conservada · autoridad · motivo |
+| `deriva` | **PROHIBIDOS los dos** | el estado canónico dejó de sostener lo que el diario afirma, o nadie preparó nada (§2.6.11) | `causa` · `afecta[]` · `items[]` · `autoridad` · `tx_afectada` como REFERENCIA |
+| `fallo` | **PROHIBIDOS los dos** | una operación **no canónica** falló: push, publicación, arranque | `operacion` · `diagnostico` · `intentos` |
+
+**¿Son los siete ortogonales a las seis fases? SÍ, y en una sola dirección.** Cualquiera de
+los siete puede aparecer en **cualquiera** de las seis fases —una transacción de `sellado`
+puede entrar en conflicto y reconciliarse igual que una de `transicion`, porque las fases
+describen **cómo se escribe**, no **qué se escribe**—. Lo que **no** es libre es la
+ausencia: ninguno de los siete puede aparecer **sin** fase.
+
+```text
+FORMAS VÁLIDAS DE EVENTO    7 tipos transaccionales × 6 fases   = 42
+                            + `deriva` sin fase                 =  1
+                            + `fallo` sin fase                  =  1
+                                                                ── 44
+
+«OCHO FORMAS» ERA EL EJE     seis fases + `deriva` + `fallo`. Es el número de FILAS del
+`fase`, NO EL RECUENTO       contrato condicional, no el de formas válidas de evento.
+DE FORMAS                    Se retira esa lectura, y el contrato de abajo se declara por
+                             lo que es: el contrato del EJE FASE.
+```
+
+**Combinaciones prohibidas, y quién las rechaza** (capas de §3.6, más abajo):
+
+```text
+`deriva` o `fallo` CON `fase` o CON `tx`          ESQUEMA ESTRUCTURAL. Es coherencia
+                                                  interna: `tipo` y `fase` viven en el
+                                                  MISMO evento
+CUALQUIERA DE LOS SIETE SIN `fase` O SIN `tx`     ESQUEMA ESTRUCTURAL, por lo mismo
+`fase: abortada`, con cualquier `tipo`            ESQUEMA ESTRUCTURAL: fuera del enum
+`tx_afectada` sin `causa: posterior-al-cierre`    ESQUEMA ESTRUCTURAL
+UN EVENTO CON `fase` CUYO `tx` YA TIENE           VALIDADOR SEMÁNTICO DEL DIARIO: exige
+`derivada`                                        recorrer los demás eventos de ese `tx`
+UNA CUARTA `iteracion`                            VALIDADOR SEMÁNTICO DEL DIARIO: exige
+                                                  contar los `conflicto` de ese `tx`
+```
+
+**No se crea ningún tipo, y no se fusiona ninguno.** La prueba de §3.1 **no llega a
+plantearse**: los nueve valores son valores de un **enum** dentro del tipo `evento`, no tipos
+candidatos con sujeto, autoridad y ciclo propios. El recuento de §3.8 **no cambia**.
+
 ### El contrato condicional, fase a fase
+
+> **Qué cubre esta tabla, dicho tras `H3`:** el **eje `fase`**. Un evento válido cumple **su
+> fila de tipo** en la matriz de arriba **y** su fila de fase aquí. Ninguna de las dos basta
+> sola.
 
 > **Añadido por la corrección técnica posterior (hallazgo `3`, GRAVE).** El contrato anterior
 > declaraba un `afecta` genérico —`hash_previo` · `hash_posterior_esperado`— y un `resultado`
