@@ -392,6 +392,26 @@ class TestBootstrapYAdopcion(unittest.TestCase):
         self.assertEqual(d["sources"], [], "un proyecto nuevo arranca sin fuentes")
 
     @unittest.skipUnless(os.path.exists(NEW_PROJECT), "falta new-project.sh")
+    def test_bootstrap_nace_en_la_rama_que_documenta(self):
+        """El script documenta `git push -u origin main` y creaba `master`.
+
+        `git init` sin `-b` toma la rama de `init.defaultBranch`. ENTORNO apunta
+        GIT_CONFIG_GLOBAL y GIT_CONFIG_SYSTEM a /dev/null, así que esto se ejecuta con la
+        configuración global VACÍA, que es donde el defecto aparece.
+        """
+        p = subprocess.run(["bash", NEW_PROJECT, "rama", "--en", self.tmp],
+                           capture_output=True, text=True, env=ENTORNO)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        ads = os.path.join(self.tmp, "rama", "ads")
+        rama = git(["rev-parse", "--abbrev-ref", "HEAD"], ads).stdout.strip()
+        self.assertEqual(rama, "main", "el control repo no nació en la rama documentada")
+        # y el comando que el propio script imprime nombra ESA rama, no otra
+        documentado = re.search(r"git push -u origin (\S+)", p.stdout)
+        self.assertIsNotNone(documentado, p.stdout)
+        self.assertEqual(documentado.group(1), rama,
+                         "el comando documentado y la rama creada no son la misma")
+
+    @unittest.skipUnless(os.path.exists(NEW_PROJECT), "falta new-project.sh")
     def test_adopcion_de_dos_repos_existentes(self):
         """§87: ads + frontend + backend independientes, reconocidos sin volver a clonar."""
         p = subprocess.run(["bash", NEW_PROJECT, "prod", "--en", self.tmp],

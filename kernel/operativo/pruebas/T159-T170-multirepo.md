@@ -193,19 +193,25 @@ evidencia: evidencia/workspace-salida.txt
 
 ```yaml ads:escenario
 id: T168
-nombre: El arranque crea un workspace con el control repo dentro, y el workspace no es un repositorio
+nombre: El arranque crea un workspace con el control repo dentro, en la rama que documenta, y el workspace no es un repositorio
 cubre: [C6 topología, "§45", "§46", CA-1, CA-9]
 dado:
   - "el comando de arranque documentado, con cada pack y con la combinación real"
+  - "la configuración global y de sistema de Git VACÍA, que es donde aparece el defecto"
 cuando:
   - "se ejecuta sobre una copia temporal del repositorio"
 entonces:
   - "existe workspace/ads con su propio .git, su SOURCES.toml y el kernel instalado"
-  - "el workspace NO es un repositorio Git"
+  - "el control repo nace en la rama que el propio script y START_HERE.md documentan al publicar"
+  - "esa rama tiene commit inicial, no sólo un HEAD simbólico"
+  - "el workspace NO es un repositorio Git, ni lo es ningún antecesor suyo"
+  - "el workspace contiene el control repo y nada más"
   - "workspace check pasa dentro del proyecto creado y no declara ninguna fuente"
 falla_si:
   - "el workspace se inicializa como repositorio y las fuentes quedarían anidadas"
   - "el proyecto nace con fuentes de ejemplo que nadie declaró"
+  - "se documenta `git push -u origin main` y `git init` deja la rama en `master`"
+  - "la rama creada y la documentada dejan de ser la misma sin que nada lo diga"
 ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_arranque.py
 estado: prueba-superada

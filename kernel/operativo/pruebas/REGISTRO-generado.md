@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 53dddc46b7ea2719 -->
+<!-- source_revision: 02fd7e203a054d55 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -112,6 +112,6 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T165](T159-T170-multirepo.md) | La identidad de una fuente no depende de la forma de su URL | C6 identidad · 39 normalización de remotes · N9 | validador-estructural | **PRUEBA SUPERADA** | evidencia/workspace-salida.txt |
 | [T166](T159-T170-multirepo.md) | Un componente puede vivir dentro de una fuente, y dos componentes compartirla | C6 los tres conceptos · §9 · §10 · CA-7 · CA-8 · N7 | validador-estructural | **PRUEBA SUPERADA** | evidencia/workspace-salida.txt |
 | [T167](T159-T170-multirepo.md) | Una fuente ausente no bloquea el trabajo que no la necesita | C6 alcance mínimo · 63 source ausente · E2.2 regla 5 | validador-estructural | **PRUEBA SUPERADA** | evidencia/workspace-salida.txt |
-| [T168](T159-T170-multirepo.md) | El arranque crea un workspace con el control repo dentro, y el workspace no es un repositorio | C6 topología · §45 · §46 · CA-1 · CA-9 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
+| [T168](T159-T170-multirepo.md) | El arranque crea un workspace con el control repo dentro, en la rama que documenta, y el workspace no es un repositorio | C6 topología · §45 · §46 · CA-1 · CA-9 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
 | [T169](T159-T170-multirepo.md) | Un item que atraviesa dos fuentes no cierra con una sin integrar | E2.6 · C7 integración parcial · gate:convergencia-de-fuentes · §30 | requiere-runtime | **CONTRATO DEFINIDO** | — |
 | [T170](T159-T170-multirepo.md) | Un agente nuevo reanuda un trabajo multi-fuente sin abrir ningún repositorio para adivinar | E2.3 · C7 recuperación · §34 · §35 · CA-12 | guion-manual | **CONTRATO DEFINIDO** | — |

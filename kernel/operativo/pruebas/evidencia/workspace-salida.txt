@@ -7,6 +7,8 @@
 test_adopcion_de_dos_repos_existentes (__main__.TestBootstrapYAdopcion.test_adopcion_de_dos_repos_existentes)
 §87: ads + frontend + backend independientes, reconocidos sin volver a clonar. ... ok
 test_bootstrap_crea_workspace_con_ads_dentro (__main__.TestBootstrapYAdopcion.test_bootstrap_crea_workspace_con_ads_dentro) ... ok
+test_bootstrap_nace_en_la_rama_que_documenta (__main__.TestBootstrapYAdopcion.test_bootstrap_nace_en_la_rama_que_documenta)
+El script documenta `git push -u origin main` y creaba `master`. ... ok
 test_21_escape_por_enlace_simbolico_en_source (__main__.TestEscapeDeRaiz.test_21_escape_por_enlace_simbolico_en_source)
 `normpath` es textual y no ve un symlink: la ruta parece relativa y no lo es. ... ok
 test_22_escape_por_enlace_simbolico_en_componente (__main__.TestEscapeDeRaiz.test_22_escape_por_enlace_simbolico_en_componente)
@@ -79,6 +81,6 @@ test_41_ids_validos_siguen_siendo_validos (__main__.TestTomlRobusto.test_41_ids_
 La regla de ids no puede rechazar lo que el corpus usa de verdad. ... ok
 
 ----------------------------------------------------------------------
-Ran 54 tests  (duración no registrada: varía por ejecución)
+Ran 55 tests  (duración no registrada: varía por ejecución)
 
 OK

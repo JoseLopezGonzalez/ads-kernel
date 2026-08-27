@@ -11,7 +11,12 @@ Esto lo ejecuta de verdad, para CADA pack instalable:
   2. crea un proyecto con ese pack —y con la COMBINACIÓN que el checkpoint documenta como
      siguiente comando real—, con el comando real
   2b. comprueba la TOPOLOGÍA: <workspace>/ads es el control repo, y el workspace NO es
-     un repositorio Git. Un ADS Project gobierna un producto, no un repositorio (C6)
+     un repositorio Git —ni él ni ninguno de sus antecesores hasta el temporal—. Un ADS
+     Project gobierna un producto, no un repositorio (C6)
+  2c. comprueba la RAMA INICIAL y su coherencia con el comando documentado. Se ejecuta con
+     la configuración global de Git VACÍA, que es donde el defecto aparece: `git init` sin
+     `-b` tomaba `master` de `init.defaultBranch` mientras el script y START_HERE.md
+     documentaban `git push -u origin main`
   3. comprueba la estructura resultante, fichero a fichero
   4. comprueba la composición: el pack pedido está, los otros NO, y no hay rastro de legacy
   5. ejecuta los validadores DENTRO del proyecto creado
@@ -62,6 +67,41 @@ ESTRUCTURA_MINIMA = [
 ]
 
 VALIDADORES_EN_PROYECTO = ["ads_lint", "comprobar_contratos", "comprobar_packs"]
+
+# El arranque se ejecuta con la configuración de Git NEUTRALIZADA. No es cosmética: el
+# defecto de la rama inicial sólo aparece cuando `init.defaultBranch` no está puesto, que
+# es el caso de una máquina recién configurada y el de casi toda CI. Con la configuración
+# del que ejecuta las pruebas, la prueba pasaría por casualidad.
+ENTORNO_GIT_LIMPIO = {
+    **os.environ,
+    "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_SYSTEM": os.devnull,
+    "GIT_AUTHOR_NAME": "ads-arranque", "GIT_AUTHOR_EMAIL": "arranque@ads.local",
+    "GIT_COMMITTER_NAME": "ads-arranque", "GIT_COMMITTER_EMAIL": "arranque@ads.local",
+}
+
+# El comando de publicación, tal y como lo documentan el script y la guía de arranque.
+# La rama que nombra tiene que ser la que `new-project.sh` crea de verdad.
+PUSH_DOCUMENTADO = re.compile(r"git push -u origin (\S+)")
+
+
+def _git(args, cwd):
+    return subprocess.run(["git"] + args, cwd=cwd, capture_output=True, text=True,
+                          env=ENTORNO_GIT_LIMPIO)
+
+
+def _ramas_documentadas(raiz, r):
+    """La rama que citan los documentos de arranque. Si citan dos distintas, ya hay fallo."""
+    ramas = set()
+    for doc in DOCS_DE_ARRANQUE:
+        ruta = os.path.join(raiz, doc)
+        if not os.path.exists(ruta):
+            continue
+        with open(ruta, encoding="utf-8") as fh:
+            ramas.update(PUSH_DOCUMENTADO.findall(fh.read()))
+    if len(ramas) > 1:
+        r.fallo(f"la documentación de arranque publica sobre ramas distintas: "
+                f"{sorted(ramas)}. Una sola es la correcta")
+    return ramas
 
 
 def packs_instalables(raiz):
@@ -122,6 +162,8 @@ def t148_arranque(raiz=None):
         if faltan:
             r.fallo(f"la combinación documentada '{c}' cita packs no instalables: {faltan}")
 
+    documentadas = _ramas_documentadas(raiz, r)
+
     tmp = tempfile.mkdtemp(prefix="ads-arranque-")
     try:
         for caso in casos:
@@ -133,7 +175,8 @@ def t148_arranque(raiz=None):
             _copiar(raiz, fuente)
             nombre = "proyecto-" + caso.replace(",", "-")
             proc = subprocess.run(["./tooling/new-project.sh", nombre, caso],
-                                  cwd=fuente, capture_output=True, text=True)
+                                  cwd=fuente, capture_output=True, text=True,
+                                  env=ENTORNO_GIT_LIMPIO)
             if proc.returncode != 0:
                 r.fallo(f"[{pack}] new-project.sh terminó con código {proc.returncode}: "
                         f"{(proc.stderr or proc.stdout).strip().splitlines()[:1]}")
@@ -150,6 +193,43 @@ def t148_arranque(raiz=None):
                         f"ads/, o las fuentes quedarían anidadas dentro de otro repo")
             if not os.path.isdir(os.path.join(proyecto, ".git")):
                 r.fallo(f"[{pack}] el control repo no tiene .git propio")
+            # ...y tampoco lo es ningún antecesor hasta el temporal. Basta un `.git` más
+            # arriba para que las fuentes queden dentro de otro repositorio sin que
+            # `ls <workspace>` lo delate.
+            subida = os.path.dirname(workspace)
+            while subida.startswith(tmp):
+                if os.path.exists(os.path.join(subida, ".git")):
+                    r.fallo(f"[{pack}] hay un repositorio Git en '{subida}', por encima del "
+                            f"workspace: las fuentes quedarían anidadas")
+                    break
+                padre = os.path.dirname(subida)
+                if padre == subida:
+                    break
+                subida = padre
+            # el workspace contiene el control repo y NADA más: un proyecto nuevo no
+            # arranca con fuentes materializadas que nadie declaró
+            if sorted(os.listdir(workspace)) != ["ads"]:
+                r.fallo(f"[{pack}] el workspace no contiene sólo ads/: "
+                        f"{sorted(os.listdir(workspace))}")
+
+            # 2c · la rama inicial, y el comando que la documenta
+            rama = _git(["rev-parse", "--abbrev-ref", "HEAD"], proyecto).stdout.strip()
+            del_script = set(PUSH_DOCUMENTADO.findall(proc.stdout))
+            esperadas = documentadas | del_script
+            if not del_script:
+                r.fallo(f"[{pack}] new-project.sh no imprime el comando de publicación: "
+                        f"quien arranca no sabe sobre qué rama publicar")
+            if not rama:
+                r.fallo(f"[{pack}] el control repo no tiene rama: `git init` no dejó HEAD "
+                        f"apuntando a ninguna")
+            elif len(esperadas) != 1 or rama not in esperadas:
+                r.fallo(f"[{pack}] el control repo nació en la rama '{rama}' y lo "
+                        f"documentado es {sorted(esperadas)}. Se documenta una rama y se "
+                        f"crea otra: `git init` sin `-b` toma `init.defaultBranch`, que "
+                        f"con la configuración global vacía es 'master'")
+            # y esa rama tiene un commit de verdad, no un HEAD simbólico sin nada detrás
+            if _git(["rev-parse", "--verify", "HEAD"], proyecto).returncode != 0:
+                r.fallo(f"[{pack}] el control repo no tiene commit inicial")
 
             # 3 · estructura
             for rel in ESTRUCTURA_MINIMA:
@@ -250,7 +330,8 @@ def t148_arranque(raiz=None):
         fuente = os.path.join(caja, "ads-kernel")
         _copiar(raiz, fuente)
         proc = subprocess.run(["./tooling/new-project.sh", "proyecto-x", "pack-inventado"],
-                              cwd=fuente, capture_output=True, text=True)
+                              cwd=fuente, capture_output=True, text=True,
+                              env=ENTORNO_GIT_LIMPIO)
         salida = (proc.stdout + proc.stderr)
         if proc.returncode == 0:
             r.fallo("un identificador de pack inexistente NO hizo fallar el arranque")

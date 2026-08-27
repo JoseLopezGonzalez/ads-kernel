@@ -58,6 +58,10 @@ BASE="${DONDE:-$(cd "$(dirname "$SRC")" && pwd)}"
 WORKSPACE="$BASE/$NAME"
 ADS="$WORKSPACE/ads"
 
+# Una sola variable para la rama que se CREA y la que se DOCUMENTA. Escribirlas dos veces
+# es lo que permitió que divergieran.
+RAMA_INICIAL="main"
+
 # ---------------------------------------------------------------------------
 # 1. VALIDAR ANTES DE CREAR NADA
 #    Un identificador equivocado no puede dejar a medias un workspace.
@@ -137,7 +141,16 @@ rm -f "$ADS/kernel/.upstream-hash"
 # ---------------------------------------------------------------------------
 # 4. GIT, SÓLO EN EL REPOSITORIO DE CONTROL
 # ---------------------------------------------------------------------------
-( cd "$ADS" && git init -q && git add -A
+# La rama inicial se fija EXPLÍCITAMENTE. `git init` sin más toma su nombre de
+# `init.defaultBranch`, que con una configuración global vacía —o antigua— es `master`,
+# y el comando que este mismo script documenta abajo es `git push -u origin main`.
+# Se documentaba una rama y se creaba otra.
+#   · git >= 2.28 acepta `-b`
+#   · por debajo, `symbolic-ref` sobre un repositorio recién creado y sin commits hace
+#     exactamente lo mismo y no depende de ninguna versión
+( cd "$ADS" && { git init -q -b "$RAMA_INICIAL" 2>/dev/null \
+                 || { git init -q && git symbolic-ref HEAD "refs/heads/$RAMA_INICIAL"; }; } \
+  && git add -A
   if git -c advice.detachedHead=false commit -qm "chore: semilla ADS (kernel $(cat kernel/VERSION))" 2>/dev/null; then
     echo "  commit inicial hecho en ads/"
   else
@@ -153,10 +166,10 @@ Proyecto '$NAME' creado  (kernel $(cat "$SRC/kernel/VERSION"))
                      no es un repositorio Git: es el contenedor del producto
 
   control repo ADS   $ADS
-                     el único repositorio que ADS ha inicializado
+                     el único repositorio que ADS ha inicializado, en la rama $RAMA_INICIAL
 
 Siguiente:
-  1. cd $ADS && git remote add origin <repo-ADS-del-producto> && git push -u origin main
+  1. cd $ADS && git remote add origin <repo-ADS-del-producto> && git push -u origin $RAMA_INICIAL
   2. Rellenar PROFILE.md  — a mano, o por conversación (ver START_HERE.md paso 5)
   3. Completar PROJECT.md
   4. Declarar los repositorios técnicos en SOURCES.toml, y materializarlos:
