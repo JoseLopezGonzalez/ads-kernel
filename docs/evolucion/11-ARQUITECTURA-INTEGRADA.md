@@ -326,16 +326,48 @@ ads/                                    el repositorio ADS de control
 ## 2.4 · Durable frente a operacional, y qué vive en Git
 
 ```text
-DURABLE Y VERSIONADO     todo `estado/`, la especialización, la distribución instalada,
-                         los adaptadores y sus proyecciones. Sobrevive a la máquina.
+DURABLE Y VERSIONADO     `estado/` SALVO la excepción de ruta declarada abajo, la
+                         especialización, la distribución instalada, los adaptadores y sus
+                         proyecciones. Sobrevive a la máquina.
 
-OPERACIONAL Y NO VERSIONADO   `.ads/run/`. Lock, cachés e índices compilados. Se borra
-                         entero sin perder nada: se reconstruye desde lo durable. Si
-                         borrarlo perdiera algo, ese algo estaba en el sitio equivocado.
+OPERACIONAL Y NO VERSIONADO   `.ads/run/` — lock, cachés e índices compilados — Y los
+                         marcadores de transacción de `estado/tx/`, por la excepción de
+                         abajo. Se borra entero sin perder nada: se reconstruye desde lo
+                         durable. Si borrarlo perdiera algo, ese algo estaba en el sitio
+                         equivocado.
+```
+
+### La excepción de ruta, declarada — y son DOS categorías, no tres
+
+> **Corregido por la devolución técnica previa (hallazgo `6`).** El texto anterior decía
+> «DURABLE Y VERSIONADO: **todo** `estado/`», y `D40` colocaba el marcador en `estado/tx/`
+> declarándolo **no versionado**, reconstruible y *«vive en el árbol durable y no viaja»*.
+> Eso es una **tercera categoría informal** entre durable y operacional, y el modelo sólo
+> tiene dos. Se resuelve clasificando, no inventando.
+
+```text
+QUÉ ES EL MARCADOR       **OPERACIONAL.** Su `plano` es `operacional`, y responde «no» a la
+                         pregunta de §2.4: no tiene que sobrevivir a un clon nuevo, porque
+                         se reconstruye desde el diario (§2.9).
+
+POR QUÉ ESTÁ BAJO        por DESCUBRIBILIDAD, y sólo por eso: la regla de lectura de §2.6.8
+`estado/` Y NO BAJO      obliga a comprobarlo ANTES de leer el estado, y un aviso de «esto no
+`.ads/run/`              es fiable» que vive en un directorio que el lector no tiene por qué
+                         mirar no es un aviso. Es una EXCEPCIÓN DE RUTA, no de naturaleza.
+
+QUÉ DEJA DE SER CIERTO   «todo `estado/` es durable y versionado». Se corrige arriba en vez
+                         de sostenerse con una nota al pie.
+
+CÓMO QUEDA ALINEADO      `.gitignore` del control repo excluye `estado/tx/` · la
+                         reconstrucción desde el diario está en §2.9 · un clon nuevo NO
+                         contiene marcadores, y si los contiene es evidencia diagnóstica de
+                         un defecto del runtime (§2.6.6, garantía 6) · `X27` lo comprueba
+                         recorriendo la historia entera.
 ```
 
 **El criterio, en una pregunta:** ¿sobrevive esto a `rm -rf` y a un clon nuevo? Si tiene que
-sobrevivir, es durable y va a Git. Si no, es operacional. Un dato que no sobreviva y que nadie
+sobrevivir, es durable y va a Git. Si no, es operacional — **y dónde esté colocado no cambia
+la respuesta**, que es lo que la excepción de arriba hace explícito. Un dato que no sobreviva y que nadie
 pueda recalcular **es un defecto de diseño**, no una categoría.
 
 ## 2.5 · Instantáneas, eventos y transacciones — qué es cada cosa
@@ -391,62 +423,87 @@ Lo que `a.9` deja expresamente abierto, cerrado aquí de forma **ejecutable**: u
 recuperación real tiene que poder llevarse a cabo con los datos que estos registros escriben,
 y nada más.
 
-### 2.6.1 · Los cuatro registros, y qué significa cada uno
+### 2.6.1 · El autómata de fases — cinco fases, dos rutas, un solo cierre
 
-> **Corregido por la segunda devolución independiente (hallazgos `B` y `D`).** F4c declaraba
-> **cinco** registros. Uno de ellos, `abortada`, era **operacionalmente inalcanzable**; y
-> `conflicto` era **terminal**, con la consecuencia de que el protocolo dejaba de señalar que
-> había algo que resolver. Las formulaciones anteriores se citan donde se sustituyen.
+> **Corregido por la devolución técnica previa (hallazgo `1`, BLOQUEANTE).** El texto
+> anterior titulaba «Los **cuatro** registros» y enumeraba cinco; `D38` decía «cuatro
+> registros, no cinco»; §3.6 conservaba `abortada` y omitía `reconciliada`; §2.6.2 hablaba de
+> «los cinco registros»; y la comprobación post-terminal trataba `confirmada` como terminal
+> mientras el marcador seguía abierto hasta `derivada`. **Cinco formulaciones del mismo
+> autómata, y ninguna coincidía con otra.** Aquí hay una sola, y todo el documento la usa.
 
 ```text
-fase: preparada     INTENCIÓN PREPARADA. Declara a qué resultado exacto va a llegar cada
-                    fichero. NO afirma que haya ocurrido nada. Es el PUNTO DE COMPROMISO:
-                    una vez es durable, la transacción SE COMPLETA, no se revierte.
+RUTA NORMAL         preparada ──▶ confirmada ──▶ derivada
+                                                    ▲
+RUTA DE CONFLICTO   preparada ──▶ conflicto ──▶ reconciliada ──┘
 
-fase: confirmada    CAMBIO CONFIRMADO. Todos los ficheros canónicos declarados alcanzaron su
-                    hash posterior esperado. Desde este registro, y no antes, un lector del
-                    estado puede creerse lo que lee — SI ADEMÁS respeta la regla de lectura
-                    de §2.6.8, que es lo que convierte esta frase en una garantía y no en
-                    una descripción.
-
-fase: derivada      los derivados afectados se regeneraron. Es TERMINAL para la transacción.
-
-fase: conflicto     CONFLICTO. Un fichero no casa ni con su hash previo ni con su hash
-                    posterior esperado: alguien de fuera lo tocó. NO se resuelve solo.
-                    **NO ES TERMINAL: es ABIERTO Y ABSORBENTE.** Ver §2.6.9.
-
-fase: reconciliada  CIERRE DE UN CONFLICTO. Único registro que cierra una transacción en
-                    `conflicto`. Lleva autoridad, decisión fichero a fichero y las huellas
-                    de lo conservado. Es TERMINAL.
+`derivada` es el ÚNICO cierre terminal de las DOS rutas.
 ```
+
+**Las cinco fases, y qué significa cada una:**
+
+```text
+preparada      INTENCIÓN PREPARADA. Declara a qué resultado exacto va a llegar cada fichero.
+               NO afirma que haya ocurrido nada. Es el PUNTO DE COMPROMISO: una vez es
+               durable, la transacción SE COMPLETA por una de las dos rutas, y no se revierte.
+               NO ES TERMINAL.
+
+confirmada     CANÓNICOS COHERENTES POR LA RUTA NORMAL. Todos los ficheros declarados
+               alcanzaron su `hash_posterior_esperado`. Desde este registro un lector puede
+               creerse el contenido de esos ficheros — si además respeta la regla de lectura
+               de §2.6.8, que es lo que convierte esta frase en garantía.
+               NO ES TERMINAL: faltan los derivados.
+
+conflicto      ABIERTO Y ABSORBENTE. Un fichero no casa ni con su hash previo ni con su hash
+               posterior esperado: alguien de fuera lo tocó. NO admite `confirmada`. Sólo
+               avanza a `reconciliada`. NO ES TERMINAL. Ver §2.6.9.
+
+reconciliada   CANÓNICOS COHERENTES POR LA RUTA DE CONFLICTO. La decisión de resolución está
+               APLICADA de forma durable y sus HASHES FINALES quedan declarados. Los
+               derivados todavía NO se han regenerado.
+               NO ES TERMINAL. Ver §2.6.9.
+
+derivada       ÚNICO CIERRE TERMINAL. Los derivados afectados se regeneraron. Sólo entonces
+               se retira el marcador. Cierra tanto la ruta normal como la de conflicto.
+```
+
+**Las transiciones admitidas, y ninguna más:**
+
+| desde | hacia | condición |
+|---|---|---|
+| — | `preparada` | el resultado se calculó y cada hash posterior es alcanzable desde su previo |
+| `preparada` | `confirmada` | los N ficheros casan con su `hash_posterior_esperado` |
+| `preparada` | `conflicto` | **algún** fichero es divergente (§2.6.4) |
+| `confirmada` | `derivada` | los derivados afectados se regeneraron |
+| `conflicto` | `reconciliada` | la autoridad resolvió, la decisión está aplicada y sus hashes finales declarados |
+| `reconciliada` | `derivada` | los derivados afectados se regeneraron **sobre el estado reconciliado** |
+
+**Cualquier otra transición es un defecto**, y el validador de esquema la rechaza. En
+particular: `confirmada` no vuelve a `preparada`, `conflicto` no salta a `derivada` sin
+`reconciliada`, y **ninguna fase salvo `derivada` retira el marcador**.
 
 **Qué se retira, y por qué se dice en vez de borrarse.**
 
 ```text
-`fase: abortada`   RETIRADA. F4c la definía como «ABORTO. No ocurrió (…) Sólo es alcanzable
-                   ANTES de tocar el primer fichero». Esa ventana es exactamente
-                   `[preparada durable, primer fichero tocado)`, que es EXACTAMENTE el
-                   dominio de `W3` — y `W3` manda COMPLETAR. Antes de que `preparada` sea
-                   durable no hay registro que pueda llevar esa fase: `W2` dice «se borra el
-                   temporal. La transacción no existió».
+`fase: abortada`   RETIRADA, y RECHAZADA POR EL ESQUEMA. Un evento con esa fase es inválido.
 
-                   NO HAY ABORTO, y la razón es positiva, no una omisión: entre el punto de
-                   compromiso y el primer fichero, el único resultado es completar (`W3`);
-                   antes del punto de compromiso no hay transacción que abortar (`W2`).
+                   Su ventana de alcanzabilidad era `[preparada durable, primer fichero
+                   tocado)`, que es EXACTAMENTE el dominio de `W3` — y `W3` manda COMPLETAR.
+                   Antes de que `preparada` sea durable no hay registro que pueda llevar esa
+                   fase: `W2` dice «se borra el temporal. La transacción no existió».
 
-                   Se buscó una causa de aborto que sobreviviera y NO LA HAY: el
-                   no-determinismo se detecta AL PREPARAR (`X16`, «la transacción no llega a
-                   preparar»); la divergencia antes de aplicar es `conflicto` por §2.6.4; y
-                   la pérdida del lock devuelve al arranque, que aplica `W3`.
+                   NO HAY ABORTO, y la razón es positiva: entre el punto de compromiso y el
+                   primer fichero, el único resultado es completar (`W3`); antes del punto de
+                   compromiso no hay transacción que abortar (`W2`).
 
-                   Un estado muerto en un enum normativo se paga tres veces: en el esquema,
-                   en la implementación y en las pruebas que F6 escribiría para él. Es `D38`.
+                   Es `D38` — y `D46` la revisa para decir lo que `D38` no dijo: retirar
+                   `abortada` y añadir `reconciliada` deja **CINCO fases, no cuatro**.
 ```
 
-**Regla de lectura del diario, y es la que impide que la historia mienta:** un evento **nunca**
-narra en futuro. `preparada` dice «preparada», no «se cambiará». Ningún lector —humano o
-máquina— puede leer una intención como un hecho, porque **la fase está dentro del propio
-registro** y no en su ausencia.
+**Regla de lectura del diario, y es la que impide que la historia mienta:** un evento
+**nunca** narra en futuro. `preparada` dice «preparada», no «se cambiará». Ningún lector
+—humano o máquina— puede leer una intención como un hecho, porque **la fase está dentro del
+propio registro** y no en su ausencia.
 
 ### 2.6.2 · Qué datos permiten reproducir el resultado
 
@@ -494,8 +551,11 @@ deshacer, y esa elección se declara aquí en vez de quedar implícita.
 
                   ─── PUNTO DE COMPROMISO ─── a partir de aquí se completa hacia delante
 
-2  MARCAR         se crea `estado/tx/<TX-ID>.abierta`, marcador sin contenido. Es un
-                  acelerador, no una verdad: si falta, el arranque recorre el diario.
+2  MARCAR         se crea `estado/tx/<TX-ID>.abierta`, **con el `tx` y la lista de rutas
+                  afectadas** (§2.6.8). Es un acelerador, no una verdad: si falta, el
+                  arranque recorre el diario. **Corregido** (hallazgo `7`): decía «marcador
+                  sin contenido», contra §2.6.8, que le da contenido para que la regla de
+                  lectura sea ejercible sin recorrer el diario.
 
 3  APLICAR        cada fichero canónico, en el `orden` declarado, con esta secuencia
                   EXACTA y en este orden:
@@ -557,7 +617,7 @@ tabla — y la segunda devolución independiente ejerció esa invitación: **fal
 | W5 | tras aplicar todos, antes de `confirmada` | todos en posterior, sin `confirmada` | se emite `confirmada` y se sigue. No se reescribe nada |
 | W6 | justo después de `confirmada` | `confirmada` presente, derivados sin regenerar | se regeneran los derivados y se emite `derivada` |
 | W7 | durante la regeneración de derivados | derivados divergentes de su `source_revision` | se regeneran ENTEROS. Un derivado es reemplazable por definición |
-| W8 | tras `derivada`, antes de borrar el marcador | transacción **cerrada** con marcador abierto | se borra el marcador. Idempotente. **Corregida**: F4c decía «terminal», y `conflicto` era terminal sin estar cerrada (§2.6.9) |
+| W8 | tras `derivada`, antes de borrar el marcador | transacción CERRADA con marcador abierto | se borra el marcador. Idempotente. **`derivada` es el único terminal**, luego «cerrada» y «terminal» vuelven a coincidir (§2.6.1) |
 | W9 | antes del commit de Git | árbol coherente, Git por detrás | se hace el commit LOCAL. Es recuperación: protege el árbol y no publica (§2.6.10) |
 | W10 | después del commit, antes del push | commit local sin publicar | **NO se empuja automáticamente.** El push es publicación, no recuperación: pasa a la política de §2.6.10 |
 | W11 | en cualquier punto, con un fichero divergente | un fichero que no casa con ninguno de los dos hashes | **`conflicto`**, con su bandera `reconciliacion_pendiente` y su copia de lo divergente (§2.6.9). No se completa y no se revierte |
@@ -642,20 +702,47 @@ Los cuatro puntos anteriores dependen de que la implementación no tenga defecto
 comprobación que convierte un fallo silencioso en un fallo detectado**, y sin ella lo demás es
 una promesa:
 
+> **Corregida por la devolución técnica previa (hallazgo `5`, GRAVE).** Decía «toda
+> transacción cuyo evento terminal sea `confirmada` o `derivada`» —y `confirmada` **no es
+> terminal**—, no contemplaba los hashes finales de una reconciliación, y usaba «respaldado
+> por Git» como si equivaliera a «el fichero actual es correcto». **No equivale**: un commit
+> demuestra qué se guardó, no qué hay hoy en el árbol de trabajo.
+
 ```text
-CUÁNDO      al arrancar, y en el paso 2 de `Continúa`
+QUÉ ES UNA VENTANA   el conjunto de transacciones cuyo evento `derivada` NO está incluido
+DE COMMIT            todavía en ningún commit de Git. Se delimita por el último commit que
+                     registró un árbol sin marcadores abiertos — que por la regla de Git de
+                     §2.6.6 es el único que ADS produce.
 
-QUÉ         para toda transacción cuyo evento terminal sea `confirmada` o `derivada` DENTRO
-            DE LA ÚLTIMA VENTANA DE COMMIT DE GIT, verificar que cada fichero declarado casa
-            con su `hash_posterior_esperado`
+QUÉ TRANSACCIONES    TODAS las que tengan `derivada` dentro de esa ventana. `derivada` es el
+SE COMPRUEBAN        único terminal (§2.6.1), luego la condición es UNA y no dos.
 
-POR QUÉ ES  son las transacciones desde el último commit, no el diario entero. Todo lo
-BARATO      anterior al último commit está respaldado por Git, que es la garantía 4
+QUÉ HASH SE USA      · ruta normal:      el `hash_posterior_esperado` de `preparada`
+                     · tras `reconciliada`: el `hash_final` que ella declara, que SUSTITUYE
+                       al anterior para los ficheros que la reconciliación tocó (§2.6.9)
 
-QUÉ HACE SI  NO completa y NO revierte: emite `conflicto` con los ficheros NOMBRADOS, y con
-NO CASA      ello `reconciliacion-pendiente` por §2.6.9. Un canónico que revirtió bajo una
-             `confirmada` durable es indistinguible, desde el estado, de uno que alguien
-             tocó — y las dos cosas exigen lo mismo: parar y escalar
+CÓMO SE VERIFICA     comparando el árbol de trabajo contra `HEAD` **para las rutas canónicas
+QUE LOS CANÓNICOS    de `estado/`**, no para el repositorio entero. Es una comparación
+COINCIDEN CON HEAD   explícita, no una suposición: «respaldado por Git» describe la historia,
+                     no el disco de ahora.
+
+ÁRBOL DIVERGENTE     es DERIVA NO TRANSACCIONAL: alguien editó un canónico fuera del
+SIN TRANSACCIÓN      protocolo. NO es un conflicto —no hay transacción que reconciliar— y no
+ABIERTA              tiene evento `preparada` con el que compararlo.
+                       · se REPORTA, nombrando ruta, hash observado y hash en `HEAD`
+                       · NO se completa, NO se revierte y NO se restaura sola
+                       · se ESCALA, como toda inconsistencia irresoluble sin decidir (b.14.3)
+
+CUÁNDO SE RESTAURA   NUNCA de forma automática. Restaurar desde Git DESTRUYE el contenido
+DESDE GIT, Y CON     que hay en el árbol, y ese contenido es de alguien —es el mismo
+QUÉ AUTORIDAD        argumento de §2.6.4—. La restauración es **decisión del Owner**, y deja
+                     su evento con los cinco conceptos de `a.9`.
+
+QUÉ HACE SI NO CASA  emite `conflicto` con los ficheros NOMBRADOS — y con ello el predicado
+DENTRO DE UNA        `reconciliacion_pendiente` de §2.6.9, sin escribir en ningún item. Un
+TRANSACCIÓN          canónico que revirtió bajo una `derivada` durable es indistinguible,
+                     desde el estado, de uno que alguien tocó, y las dos cosas exigen lo
+                     mismo: parar y escalar
 ```
 
 **La regla de Git, que cierra W9 y W10:** **ADS nunca hace commit de un árbol con una
@@ -792,12 +879,28 @@ CONTENIDO                el `tx` y LA LISTA DE RUTAS AFECTADAS. F4c obligaba a r
                          Sigue siendo RECONSTRUIBLE desde el diario, luego no gana identidad
                          propia y el paso 4 de §3.1 sigue dando COMPONER.
 
-CADA CANÓNICO AFECTADO   durante la ventana, su cabecera lleva `tx_abierta: TX-<id>`. Lo
-LO DICE EN SU CABECERA   escribe la propia transacción al preparar y lo retira al confirmar,
-                         dentro de la misma transacción. Es la única forma de que «se lee sin
-                         herramienta» y el punto de compromiso convivan: quien abre el
-                         fichero lo ve en la primera línea.
-                         COSTE declarado: una escritura más por fichero.
+EL DIARIO ES LA FUENTE   el marcador acelera; el diario RECONSTRUYE. Si el marcador falta,
+DE RECONSTRUCCIÓN        el evento `preparada` de la transacción declara las mismas rutas, y
+                         §2.9 lo dice: una transacción sin evento `derivada`.
+
+NADA SE ESCRIBE EN EL    **corregido por la devolución técnica previa (hallazgo `2`,
+CONTENIDO CANÓNICO       BLOQUEANTE).** El texto anterior exigía escribir `tx_abierta:
+                         TX-<id>` EN LA CABECERA de cada canónico afectado y retirarlo al
+                         confirmar. Rompía seis cosas a la vez:
+
+                           1  el contenido con `tx_abierta` NO CASA con el
+                              `hash_posterior_esperado` que `preparada` declara
+                           2  retirarlo exige una SEGUNDA escritura de todos los ficheros
+                           3  esa retirada es, ella misma, otra TRANSICIÓN MULTIARCHIVO
+                           4  el paso APLICAR describe UNA escritura, no dos
+                           5  CONFIRMAR emite un evento y NO retira cabeceras
+                           6  «lo escribe al preparar» contradice que PREPARAR no toca
+                              ningún canónico
+
+                         **La detectabilidad NO exige contaminar el contenido canónico.** Se
+                         sostiene sobre las tres piezas de arriba —regla de lectura,
+                         marcador con contenido y diario—, y ninguna toca un solo byte de un
+                         fichero canónico. Es `D48`.
 
 `R3` SE CUALIFICA        §2.2 marcaba la opción D con «`R3` atomicidad y recuperación: sí».
 EN §2.2                  **La atomicidad lógica multiarchivo NO se afirma.** Se afirma
@@ -809,39 +912,69 @@ EN §2.2                  **La atomicidad lógica multiarchivo NO se afirma.** S
 §7.4 comprueba las transacciones abiertas y los pasos 1–4 son deterministas. La reanudación
 **no** reanuda desde estado parcial, y esa mitad de la objeción no procedía.
 
-### 2.6.9 · `conflicto` — abierto, absorbente, y conectado con `b.4` P0
+### 2.6.9 · `conflicto` y `reconciliada` — sin transacción recursiva, y con regeneración
 
-> **Corregido por la segunda devolución independiente (hallazgo `B`, BLOQUEANTE).** F4c
-> declaraba `conflicto` **TERMINAL**, y `reconciliacion-pendiente` **no aparecía ni una sola
-> vez en todo §2** — cuatro veces en el documento, todas fuera. El protocolo transaccional
-> **nunca emitía el único estado del que depende `b.4` P0**, cuya razón de existir es
-> exactamente este caso.
+> **Corregido por la devolución técnica previa (hallazgos `3` y `4`, BLOQUEANTE y GRAVE).**
+> El texto anterior tenía dos defectos que se anulaban entre sí:
 >
-> **Las tres consecuencias se seguían mecánicamente del texto:** siendo terminal, la
-> transacción **tenía** evento terminal, luego dejaba de «señalar que hay algo en vuelo» y
-> `W8` **retiraba el marcador**; `Continúa` paso 2 preguntaba «¿hay transacciones sin evento
-> terminal?» y la respuesta era **no**, luego declaraba el arranque limpio; y los ficheros
-> aplicados quedaban aplicados, los no aplicados sin aplicar, con `R3` garantizando que así se
-> quedaran. **El estado era incoherente y nadie lo marcaba.**
+> ```text
+> RECURSIÓN IMPOSIBLE   decía que al escribir `conflicto` la transacción marca
+>                       `reconciliacion_pendiente` en cada `03-integracion.md` «DENTRO DE UNA
+>                       TRANSACCIÓN PROPIA». Pero la transacción original SIGUE ABIERTA y su
+>                       marcador bloquea: `X08` dice que un segundo ejecutor «encuentra el
+>                       marcador y NO ARRANCA: R5 es un lock, no un consejo». **El protocolo
+>                       necesitaba abrir otra transacción para registrar el estado que
+>                       impide abrir otra transacción.**
 >
-> La primera crítica exigió que la tercera caja «NUNCA se resuelva sola». F4c lo consiguió **a
-> costa de que el sistema dejara de saber que había algo que resolver**. Es `D35`.
+> CIERRE PREMATURO      declaraba `reconciliada` «terminal», y a la vez su decisión puede
+>                       conservar lo divergente, aplicar lo preparado o elegir un tercer
+>                       contenido — cualquiera de las cuales CAMBIA los canónicos. Los
+>                       derivados estaban bloqueados durante el conflicto, y **nadie los
+>                       regeneraba nunca**.
+> ```
+
+#### `reconciliacion_pendiente` es un PREDICADO DERIVADO, no una bandera que se escribe
 
 ```text
-NO ES TERMINAL         `conflicto` es un estado ABIERTO Y ABSORBENTE. No admite `confirmada`
-                       ni `derivada`. Sólo lo cierra un evento `fase: reconciliada`.
+reconciliacion_pendiente(item) ≡
+    existe una transacción con evento `conflicto` SIN evento `reconciliada` NI `derivada`,
+    cuyo evento `conflicto` NOMBRA ese item
+```
 
-EMITE LA BANDERA       al escribir `conflicto`, la transacción marca `reconciliacion_pendiente`
-QUE `b.4` P0 CONSUME   en el `03-integracion.md` de CADA ITEM AFECTADO, y lo hace DENTRO DE
-                       UNA TRANSACCIÓN PROPIA con las mismas garantías. Sin esto, `b.4` P0 es
-                       letra muerta y §3.3.1 `Q0` no tiene fuente.
+```text
+POR QUÉ FUNCIONA        el evento `conflicto` YA CONOCE los items y las rutas afectadas: los
+                        declara al emitirse. No hace falta escribir nada en ningún item para
+                        saber que están afectados.
 
-EL MARCADOR NO SE      mientras la transacción esté en `conflicto`. `W8` se corrige: trataba
-BORRA                  «terminal» como sinónimo de «cerrada», y no lo son.
+QUIÉN LO CONSUME        `b.4` P0 y §3.3.1 `Q0`, directamente. Ninguno de los dos necesita una
+                        bandera persistida: necesitan un PREDICADO, y aquí lo tienen.
+
+QUÉ SE EVITA            mutar los items durante un conflicto — que exigiría una transacción,
+                        que está bloqueada por el marcador de la transacción en conflicto.
+                        **Cero transacciones recursivas.**
+
+COSTE                   recorrer los eventos `conflicto` sin terminal. Son los que el
+                        marcador ya señala, luego el coste es el de leer los marcadores
+                        abiertos y sus eventos: acotado y pequeño.
+
+SI ALGUIEN QUISIERA     tendría que declarar una EXCEPCIÓN TRANSACCIONAL COMPLETA que no
+PERSISTIR LA BANDERA    colisione con el bloqueo — quién la concede, sobre qué ficheros, con
+                        qué garantías y cómo se recupera. «Dentro de una transacción propia»
+                        NO es esa declaración, y por eso no se conserva.
+```
+
+#### `conflicto` — abierto y absorbente
+
+```text
+NO ES TERMINAL         no admite `confirmada` ni `derivada`. Sólo avanza a `reconciliada`.
+
+EL MARCADOR NO SE      mientras la transacción no llegue a `derivada`. `W8` sólo retira el
+BORRA                  marcador de una transacción CERRADA, y `conflicto` y `reconciliada`
+                       no lo están.
 
 QUÉ BLOQUEA            todo despacho sobre los items afectados, y toda regeneración de
                        derivados que dependan de sus canónicos. No bloquea el resto del
-                       producto: el conflicto tiene alcance, y se declara.
+                       producto: el conflicto tiene alcance, y su evento lo declara.
 
 QUIÉN LO RESUELVE      el PROPIETARIO GLOBAL del item, si el conflicto afecta a uno solo.
                        El OWNER, si atraviesa varios items. «Se escala» no nombraba
@@ -850,22 +983,50 @@ QUIÉN LO RESUELVE      el PROPIETARIO GLOBAL del item, si el conflicto afecta a
 
 CÓMO SE CONSERVA LO    el evento `conflicto` registra, POR FICHERO DIVERGENTE, su HASH ACTUAL
 DIVERGENTE             OBSERVADO y una COPIA ÍNTEGRA en el cuerpo del evento —§2.6.2 ya
-                       admite `contenido` dentro del evento: es el mismo mecanismo—.
-                       F4c decía «NUNCA se sobrescribe: el contenido que hay es de alguien»,
-                       y ese contenido vivía SÓLO EN EL DISCO, sin huella en ningún evento:
-                       quien resolviera podía destruirlo sin que quedara constancia de qué
-                       había. Con esto, «no se destruye trabajo sin registro» es cierto y no
-                       una intención.
+                       admite `contenido` dentro del evento: es el mismo mecanismo—. Sin
+                       esto, quien resolviera podría destruir ese contenido sin que quedara
+                       constancia de qué había.
 
-QUÉ EVENTO CIERRA      `fase: reconciliada`, con: la autoridad que lo emite, la decisión
-LA RECONCILIACIÓN      FICHERO A FICHERO —conservar lo divergente, aplicar lo preparado, o
-                       un tercer contenido decidido—, y las huellas de lo conservado. Es
-                       terminal, y es el único que lo es para una transacción en conflicto.
-
-CÓMO SE RECONSTRUYE    §2.9 decía «una `tx` sin evento terminal». Pasa a decir: **una
-EL MARCADOR            transacción sin evento `derivada` NI `reconciliada`**.
+QUÉ DECLARA ADEMÁS     los ITEMS y las RUTAS afectados. Es lo que hace derivable el predicado
+                       de arriba sin escribir en ningún item.
 ```
 
+#### `reconciliada` — aplica la decisión y declara los hashes finales
+
+**No es terminal.** Declara cinco cosas, y la quinta la ejecuta `derivada`:
+
+```text
+1  LA DECISIÓN, FICHERO A FICHERO   conservar lo divergente · aplicar lo preparado · un
+                                    tercer contenido decidido. Con la autoridad que la emite.
+
+2  APLICACIÓN DURABLE               la decisión se ESCRIBE en los canónicos con la misma
+                                    disciplina de §2.6.3: temporal → fsync → rename →
+                                    fsync(directorio). Es parte de LA MISMA transacción, con
+                                    el MISMO `tx`, luego NO abre ninguna transacción nueva y
+                                    no colisiona con su propio marcador.
+
+3  HASHES FINALES                   `hash_final` por fichero tocado por la reconciliación.
+                                    **SUSTITUYE al `hash_posterior_esperado`** para esos
+                                    ficheros, y es el que rige en la comprobación de
+                                    integridad post-terminal (§2.6.6).
+
+4  QUÉ DERIVADOS QUEDAN             la lista de los que dependen del estado reconciliado y
+   PENDIENTES                       todavía no se han regenerado.
+
+5  Y NO CIERRA                      el cierre es `derivada`, que regenera esos derivados y
+                                    sólo entonces retira el marcador.
+```
+
+```text
+POR QUÉ NO SE CIERRA AQUÍ   porque la decisión PUEDE cambiar los canónicos respecto a lo que
+                            declaraba `preparada`, y los derivados llevaban bloqueados toda
+                            la duración del conflicto. Cerrar en `reconciliada` dejaría
+                            derivados que describen un estado que ya no existe — que es
+                            exactamente el defecto que `W7` y `X11` existen para impedir.
+
+CÓMO SE RECONSTRUYE         una transacción **sin evento `derivada`**. Ya no hace falta decir
+EL MARCADOR                 «ni `reconciliada`»: con un solo terminal, la condición es una.
+```
 
 ### 2.6.10 · Commit y push en recuperación — y el hueco que esto destapa
 
