@@ -6,8 +6,15 @@ locales `--bare` haciendo de remotos. Nada de lo que aquí se ejecuta sale de la
 
     python3 tooling/tests/test_workspace.py
 
-Cubre los veinte casos que exige el mandato multi-repo, más el arranque de extremo a
-extremo de `new-project.sh` y el fixture de adopción.
+Cubre los veinte casos que exige el mandato multi-repo, el arranque de extremo a extremo
+de `new-project.sh`, el fixture de adopción, la RECONSTRUCCIÓN de un producto de cuatro
+fuentes, y la batería ADVERSARIAL: lo que una revisión externa consiguió hacerle a la
+herramienta y la batería anterior no veía.
+
+La batería adversarial no comprueba que la herramienta funcione. Comprueba que NO hace lo
+que no debe: no escribe fuera del workspace por un enlace simbólico, no clona con un
+manifiesto roto, no imprime un secreto, no iguala dos repositorios distintos y no revienta
+con un tipo que no esperaba.
 """
 from __future__ import annotations
 
@@ -32,6 +39,11 @@ ENTORNO = {
     "GIT_COMMITTER_NAME": "ads-tests", "GIT_COMMITTER_EMAIL": "tests@ads.local",
     "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_SYSTEM": os.devnull,
 }
+
+
+# Marcador que NO puede aparecer en ninguna salida. Si sale, hay una fuga: no se busca
+# «token» ni «password», se busca ESTE literal, que sólo existe en la entrada de la prueba.
+MARCADOR = "ZZ-marcador-secreto-de-prueba-9f3a1c"
 
 
 def git(args, cwd):
@@ -413,6 +425,454 @@ class TestBootstrapYAdopcion(unittest.TestCase):
                         "los repos ya clonados se reutilizan, no se vuelven a clonar")
         for n, m in marcas.items():
             self.assertTrue(os.path.exists(m), f"{n}: init destruyó trabajo local")
+
+
+# ===========================================================================
+# BATERÍA ADVERSARIAL
+#
+# Cada prueba de aquí abajo REPRODUCE un defecto que una revisión externa consiguió
+# provocar sobre la implementación anterior, y que las veintinueve pruebas de arriba no
+# detectaban. Todas fallan contra aquel código y pasan contra éste.
+# ===========================================================================
+class TestEscapeDeRaiz(Base):
+    """Ninguna fuente ni componente sale de su raíz autorizada. Ni por texto, ni por enlace."""
+
+    def test_21_escape_por_enlace_simbolico_en_source(self):
+        """`normpath` es textual y no ve un symlink: la ruta parece relativa y no lo es."""
+        fuera = os.path.join(self.tmp, "FUERA-DEL-WORKSPACE")
+        os.makedirs(fuera)
+        os.symlink(fuera, os.path.join(self.ws, "puente"))
+        bare = crear_remoto_bare(self.tmp, "x")
+        self.manifiesto(self.base_valida() +
+                        f'\n[[sources]]\nid = "x"\nremote = "{bare}"\npath = "puente/dentro"\n')
+        cod, d = workspace_json(["check"], self.ads)
+        self.assertEqual(cod, 1, f"un enlace simbólico no puede sacar una fuente: {d}")
+        self.assertTrue(any("enlaces simbólicos" in h["mensaje"] for h in d["hallazgos"]), d)
+        cod, _ = workspace_json(["init"], self.ads)
+        self.assertEqual(cod, 1)
+        self.assertFalse(os.path.exists(os.path.join(fuera, "dentro")),
+                         "init escribió FUERA del workspace")
+
+    def test_22_escape_por_enlace_simbolico_en_componente(self):
+        """La misma comprobación, con la fuente como raíz autorizada del componente."""
+        bare = crear_remoto_bare(self.tmp, "app")
+        os.makedirs(os.path.join(self.ws, "app"))
+        fuera = os.path.join(self.tmp, "OTRO-REPO")
+        os.makedirs(fuera)
+        os.symlink(fuera, os.path.join(self.ws, "app", "enlace"))
+        self.manifiesto(self.base_valida() +
+                        f'\n[[sources]]\nid = "app"\nremote = "{bare}"\npath = "app"\n'
+                        '\n[[components]]\nid = "web"\nsource = "app"\npath = "enlace/web"\n')
+        cod, d = workspace_json(["check"], self.ads)
+        self.assertEqual(cod, 1, d)
+        self.assertTrue(any("enlaces simbólicos" in h["mensaje"] for h in d["hallazgos"]), d)
+
+    def test_23_source_dentro_del_control_repo(self):
+        """C6: prohibido clonar las fuentes DENTRO del control repo.
+
+        Rechazar exactamente `path = "ads"` no basta: `ads/frontend`, `./ads/sub` y
+        `ads/../ads/z` son la misma prohibición escrita de otra manera.
+        """
+        bare = crear_remoto_bare(self.tmp, "y")
+        for ruta in ("ads/frontend", "./ads/sub", "ads/../ads/z", "ads/"):
+            with self.subTest(ruta=ruta):
+                self.manifiesto(self.base_valida() +
+                                f'\n[[sources]]\nid = "y"\nremote = "{bare}"\npath = "{ruta}"\n')
+                cod, d = workspace_json(["check"], self.ads)
+                self.assertEqual(cod, 1, f"'{ruta}' cae dentro del control repo: {d}")
+
+    def test_24_source_en_la_raiz_del_workspace(self):
+        """`path = "."` haría del workspace un repositorio Git, que es lo que C6 prohíbe."""
+        bare = crear_remoto_bare(self.tmp, "z")
+        for ruta in (".", "./", "app/.."):
+            with self.subTest(ruta=ruta):
+                self.manifiesto(self.base_valida() +
+                                f'\n[[sources]]\nid = "z"\nremote = "{bare}"\npath = "{ruta}"\n')
+                cod, d = workspace_json(["check"], self.ads)
+                self.assertEqual(cod, 1, f"'{ruta}' resuelve a la raíz del workspace: {d}")
+                self.assertTrue(any("raíz" in h["mensaje"] for h in d["hallazgos"]), d)
+
+    def test_25_colision_jerarquica_entre_sources(self):
+        """Dos rutas distintas pueden seguir anidando un repositorio Git dentro de otro."""
+        a = crear_remoto_bare(self.tmp, "a")
+        b = crear_remoto_bare(self.tmp, "b")
+        for p1, p2 in (("app", "app/interno"), ("app/interno", "app"), ("a/b/c", "a/b")):
+            with self.subTest(p1=p1, p2=p2):
+                self.manifiesto(self.base_valida() +
+                                f'\n[[sources]]\nid = "uno"\nremote = "{a}"\npath = "{p1}"\n'
+                                f'\n[[sources]]\nid = "dos"\nremote = "{b}"\npath = "{p2}"\n')
+                cod, d = workspace_json(["check"], self.ads)
+                self.assertEqual(cod, 1, f"'{p1}' y '{p2}' anidan repositorios: {d}")
+                self.assertTrue(any("colisiona" in h["mensaje"] for h in d["hallazgos"]), d)
+
+    def test_25b_rutas_hermanas_con_prefijo_comun_son_validas(self):
+        """`app` y `app-movil` comparten prefijo y NO anidan. Comparar por prefijo de
+        cadena las rechazaría, y sería un falso positivo."""
+        a = crear_remoto_bare(self.tmp, "a")
+        b = crear_remoto_bare(self.tmp, "b")
+        self.manifiesto(self.base_valida() +
+                        f'\n[[sources]]\nid = "uno"\nremote = "{a}"\npath = "app"\n'
+                        f'\n[[sources]]\nid = "dos"\nremote = "{b}"\npath = "app-movil"\n')
+        cod, d = workspace_json(["check"], self.ads)
+        self.assertEqual(cod, 0, d)
+
+
+class TestInitAtomico(Base):
+    """`init` es la única orden que MUTA. Con el manifiesto roto, no toca el disco."""
+
+    MANIFIESTOS_ROTOS = {
+        "layout no soportado": 'layout = "nested"',
+        "layout ausente": None,
+    }
+
+    def _con_fuente_valida(self, cabecera, bare):
+        return cabecera + f'\n[[sources]]\nid = "buena"\nremote = "{bare}"\npath = "buena"\n'
+
+    def test_26_manifiesto_invalido_no_clona_ni_crea_directorios(self):
+        bare = crear_remoto_bare(self.tmp, "buena")
+        casos = {
+            "layout no soportado": 'schema = 1\n\n[workspace]\nlayout = "nested"\n',
+            "schema no soportado": 'schema = 99\n\n[workspace]\nlayout = "siblings"\n',
+            "schema ausente": '[workspace]\nlayout = "siblings"\n',
+            "workspace ausente": 'schema = 1\n',
+            "otra fuente con credenciales": (
+                'schema = 1\n\n[workspace]\nlayout = "siblings"\n'
+                f'\n[[sources]]\nid = "mala"\nremote = "https://u:{MARCADOR}@ej.invalid/r.git"\n'
+                'path = "mala"\n'),
+            "otra fuente con id inválido": (
+                'schema = 1\n\n[workspace]\nlayout = "siblings"\n'
+                '\n[[sources]]\nid = "../fuga"\nremote = "https://ej.invalid/r.git"\n'
+                'path = "mala"\n'),
+            "componente con tipo inválido": (
+                'schema = 1\n\n[workspace]\nlayout = "siblings"\n'
+                '\n[[components]]\nid = "web"\nsource = "buena"\nkind = 7\n'),
+        }
+        for nombre, cabecera in casos.items():
+            with self.subTest(caso=nombre):
+                for sobrante in os.listdir(self.ws):
+                    if sobrante != "ads":
+                        shutil.rmtree(os.path.join(self.ws, sobrante), ignore_errors=True)
+                self.manifiesto(self._con_fuente_valida(cabecera, bare))
+                cod, d = workspace_json(["init"], self.ads)
+                self.assertEqual(cod, 1, d)
+                self.assertEqual(d["sources"], [],
+                                 "init registró acciones con el manifiesto roto")
+                self.assertTrue(any("NO ha ejecutado ninguna acción" in h["mensaje"]
+                                    for h in d["hallazgos"]), d)
+                self.assertEqual(sorted(os.listdir(self.ws)), ["ads"],
+                                 f"[{nombre}] init creó algo en el workspace")
+
+    def test_26b_el_mismo_manifiesto_corregido_si_materializa(self):
+        """La contraparte: sin el error, la fuente válida se clona. Si no, la prueba de
+        arriba pasaría por no hacer nada nunca."""
+        bare = crear_remoto_bare(self.tmp, "buena")
+        self.manifiesto(self._con_fuente_valida(self.base_valida(), bare))
+        cod, d = workspace_json(["init"], self.ads)
+        self.assertEqual(cod, 0, d)
+        self.assertEqual(d["sources"][0]["accion"], "clonada")
+        self.assertTrue(os.path.isdir(os.path.join(self.ws, "buena", ".git")))
+
+
+class TestSecretos(Base):
+    """Ningún secreto sale por texto, por JSON, por un error de identidad ni por stderr."""
+
+    def _sin_marcador(self, *procesos):
+        for p in procesos:
+            self.assertNotIn(MARCADOR, p.stdout, "fuga por stdout")
+            self.assertNotIn(MARCADOR, p.stderr, "fuga por stderr")
+
+    def test_27_secreto_del_manifiesto_no_sale_por_ninguna_salida(self):
+        self.manifiesto(self.base_valida() +
+                        f'\n[[sources]]\nid = "s"\n'
+                        f'remote = "https://usuario:{MARCADOR}@ej.invalid/org/r.git"\n'
+                        'path = "s"\n')
+        for orden in (["check"], ["status"], ["init"]):
+            with self.subTest(orden=orden[0]):
+                self._sin_marcador(workspace(orden, self.ads),
+                                   workspace(orden + ["--json"], self.ads))
+
+    def test_28_secreto_en_el_origen_de_disco_no_sale_por_el_error_de_identidad(self):
+        """El manifiesto puede estar limpio y el repositorio de disco no estarlo.
+
+        Es el caso peor: el error de identidad imprime AMBOS remotos, y el de disco no ha
+        pasado por ninguna validación.
+        """
+        bueno = crear_remoto_bare(self.tmp, "bueno")
+        self.manifiesto(self.base_valida() +
+                        f'\n[[sources]]\nid = "s"\nremote = "{bueno}"\npath = "s"\n')
+        destino = os.path.join(self.ws, "s")
+        git(["clone", "-q", bueno, destino], self.ws)
+        git(["remote", "set-url", "origin",
+             f"https://usuario:{MARCADOR}@ej.invalid/org/otro.git"], destino)
+        p = workspace(["check"], self.ads)
+        self.assertEqual(p.returncode, 1)
+        self.assertIn("identidad remota distinta", p.stdout + p.stderr)
+        self._sin_marcador(p, workspace(["check", "--json"], self.ads),
+                           workspace(["status"], self.ads),
+                           workspace(["status", "--json"], self.ads),
+                           workspace(["init"], self.ads))
+
+    def test_29_secreto_en_el_error_de_clone_no_sale(self):
+        """`git clone` cita la URL en su stderr. Aquí el remoto de disco es limpio y el
+        secreto viaja en el remoto DECLARADO de una fuente que no existe."""
+        falso = os.path.join(self.tmp, f"no-existe-{MARCADOR}.git")
+        self.manifiesto(self.base_valida() +
+                        f'\n[[sources]]\nid = "f"\nremote = "ssh://usuario:{MARCADOR}'
+                        f'@localhost/no/existe.git"\npath = "f"\n')
+        self._sin_marcador(workspace(["init"], self.ads),
+                           workspace(["init", "--json"], self.ads))
+        del falso
+
+    def test_30_redactar_no_toca_un_usuario_ssh_normal(self):
+        """Redactar de más haría el mensaje inútil: `git@` no es un secreto."""
+        sys.path.insert(0, os.path.join(RAIZ, "tooling"))
+        from workspace import redactar  # noqa: E402
+        self.assertEqual(redactar("ssh://git@github.com/org/repo.git"),
+                         "ssh://git@github.com/org/repo.git")
+        self.assertEqual(redactar("git@github.com:org/repo.git"), "git@github.com:org/repo.git")
+        self.assertEqual(redactar("https://usuario:tok@h/r.git"), "https://usuario:***@h/r.git")
+        self.assertEqual(redactar("https://tok@h/r.git"), "https://***@h/r.git")
+        self.assertEqual(redactar("ssh://git:tok@h/r.git"), "ssh://git:***@h/r.git")
+
+
+class TestSSHFrenteACredenciales(Base):
+    def test_31_ssh_explicita_es_una_url_valida(self):
+        """§39 la admite. Confundirla con un token rompe la forma canónica de SSH."""
+        for url in ("ssh://git@github.com/org/repo.git",
+                    "ssh://git@gitlab.ej:2222/org/repo.git",
+                    "git@github.com:org/repo.git"):
+            with self.subTest(url=url):
+                self.manifiesto(self.base_valida() +
+                                f'\n[[sources]]\nid = "s"\nremote = "{url}"\npath = "s"\n')
+                cod, d = workspace_json(["check"], self.ads)
+                self.assertEqual(cod, 0, d)
+                self.assertFalse(any("credenciales" in h["mensaje"] for h in d["hallazgos"]), d)
+
+    def test_32_credenciales_http_siguen_siendo_error(self):
+        for url in ("https://usuario:tok@github.com/org/r.git",
+                    "https://ghp_token@github.com/org/r.git",
+                    "http://u:p@ej.invalid/r.git",
+                    "ssh://git:tok@github.com/org/r.git"):
+            with self.subTest(url=url):
+                self.manifiesto(self.base_valida() +
+                                f'\n[[sources]]\nid = "s"\nremote = "{url}"\npath = "s"\n')
+                cod, d = workspace_json(["check"], self.ads)
+                self.assertEqual(cod, 1, d)
+                self.assertTrue(any("credenciales" in h["mensaje"] for h in d["hallazgos"]), d)
+
+
+class TestNormalizacionConservadora(unittest.TestCase):
+    """Igualar de menos avisa de más. Igualar de más acepta el repositorio equivocado."""
+
+    def setUp(self):
+        sys.path.insert(0, os.path.join(RAIZ, "tooling"))
+        from workspace import normalizar_remoto  # noqa: E402
+        self.n = normalizar_remoto
+
+    def test_33_equivalencia_documentada_de_github(self):
+        """Lo que §39 SÍ declara equivalente tiene que seguir siéndolo."""
+        formas = ["https://github.com/org/repo.git",
+                  "git@github.com:org/repo.git",
+                  "ssh://git@github.com/org/repo.git",
+                  "https://github.com/org/repo",
+                  "https://GitHub.com/org/repo.git",
+                  "https://github.com/org/repo.git/"]
+        self.assertEqual(len({self.n(f) for f in formas}), 1,
+                         f"deberían ser la misma identidad: {[self.n(f) for f in formas]}")
+
+    def test_34_no_iguala_puertos_distintos(self):
+        pares = [("https://h.ej/o/r.git", "https://h.ej:8443/o/r.git"),
+                 ("ssh://git@h.ej:22/o/r.git", "ssh://git@h.ej:2222/o/r.git"),
+                 ("ssh://git@h.ej/o/r.git", "ssh://git@h.ej:22/o/r.git")]
+        for a, b in pares:
+            with self.subTest(a=a, b=b):
+                self.assertNotEqual(self.n(a), self.n(b), "dos puertos son dos servidores")
+
+    def test_35_no_pliega_la_capitalizacion_de_la_ruta(self):
+        self.assertNotEqual(self.n("https://gitlab.ej/Org/Repo.git"),
+                            self.n("https://gitlab.ej/org/repo.git"))
+        # el HOST sí se pliega: el DNS no distingue mayúsculas
+        self.assertEqual(self.n("https://GitLab.EJ/org/repo.git"),
+                         self.n("https://gitlab.ej/org/repo.git"))
+
+    def test_36_no_iguala_rutas_locales_distintas(self):
+        self.assertNotEqual(self.n("/srv/git/Foo.git"), self.n("/srv/git/foo.git"))
+        self.assertNotEqual(self.n("/srv/git/foo.git"), self.n("/srv/git/foo"))
+        self.assertEqual(self.n("/srv/git/foo.git"), self.n("/srv/git/./foo.git"))
+
+    def test_37_lo_ambiguo_solo_es_igual_a_si_mismo(self):
+        raros = ["esquema-raro://h/o/r.git", "no es una url", "://vacio", "h.ej:", "@"]
+        for u in raros:
+            with self.subTest(u=u):
+                self.assertEqual(self.n(u), self.n(u))
+                self.assertNotEqual(self.n(u), self.n(u + "x"))
+        self.assertNotEqual(self.n("esquema-raro://github.com/org/repo.git"),
+                            self.n("https://github.com/org/repo.git"))
+
+    def test_38_repositorios_distintos_siguen_siendo_distintos(self):
+        self.assertNotEqual(self.n("https://github.com/org/repo.git"),
+                            self.n("https://github.com/org/otro.git"))
+        self.assertNotEqual(self.n("https://github.com/org/repo.git"),
+                            self.n("https://gitlab.com/org/repo.git"))
+
+
+class TestTomlRobusto(Base):
+    """Ningún tipo incorrecto produce un traceback, y ninguno pasa por válido."""
+
+    CASOS = {
+        "workspace escalar": 'schema = 1\nworkspace = "siblings"\n',
+        "workspace lista": 'schema = 1\nworkspace = ["siblings"]\n',
+        "sources no es lista": 'schema = 1\nsources = "frontend"\n[workspace]\nlayout = "siblings"\n',
+        "sources con entradas escalares": 'schema = 1\nsources = [1, "x"]\n[workspace]\nlayout = "siblings"\n',
+        "components no es lista": 'schema = 1\ncomponents = 3\n[workspace]\nlayout = "siblings"\n',
+        "components con entradas escalares": 'schema = 1\ncomponents = ["web"]\n[workspace]\nlayout = "siblings"\n',
+        "schema booleano": 'schema = true\n[workspace]\nlayout = "siblings"\n',
+        "schema texto": 'schema = "1"\n[workspace]\nlayout = "siblings"\n',
+        "layout no es texto": 'schema = 1\n[workspace]\nlayout = 3\n',
+        "id ausente": ('schema = 1\n[workspace]\nlayout = "siblings"\n'
+                       '[[sources]]\nremote = "https://e.ej/r.git"\npath = "p"\n'),
+        "id vacío": ('schema = 1\n[workspace]\nlayout = "siblings"\n'
+                     '[[sources]]\nid = "  "\nremote = "https://e.ej/r.git"\npath = "p"\n'),
+        "id peligroso": ('schema = 1\n[workspace]\nlayout = "siblings"\n'
+                         '[[sources]]\nid = "../fuga"\nremote = "https://e.ej/r.git"\npath = "p"\n'),
+        "id con salto de línea": ('schema = 1\n[workspace]\nlayout = "siblings"\n'
+                                  '[[sources]]\nid = "a\\nERROR  falso"\n'
+                                  'remote = "https://e.ej/r.git"\npath = "p"\n'),
+        "id numérico": ('schema = 1\n[workspace]\nlayout = "siblings"\n'
+                        '[[sources]]\nid = 7\nremote = "https://e.ej/r.git"\npath = "p"\n'),
+        "remote ausente": ('schema = 1\n[workspace]\nlayout = "siblings"\n'
+                           '[[sources]]\nid = "s"\npath = "p"\n'),
+        "remote no es texto": ('schema = 1\n[workspace]\nlayout = "siblings"\n'
+                               '[[sources]]\nid = "s"\nremote = 5\npath = "p"\n'),
+        "path ausente": ('schema = 1\n[workspace]\nlayout = "siblings"\n'
+                         '[[sources]]\nid = "s"\nremote = "https://e.ej/r.git"\n'),
+        "path no es texto": ('schema = 1\n[workspace]\nlayout = "siblings"\n'
+                             '[[sources]]\nid = "s"\nremote = "https://e.ej/r.git"\npath = 2\n'),
+        "component sin source": ('schema = 1\n[workspace]\nlayout = "siblings"\n'
+                                 '[[components]]\nid = "web"\npath = "."\n'),
+        "component con source no textual": ('schema = 1\n[workspace]\nlayout = "siblings"\n'
+                                            '[[components]]\nid = "web"\nsource = 3\n'),
+        "component con kind no textual": (
+            'schema = 1\n[workspace]\nlayout = "siblings"\n'
+            '[[sources]]\nid = "s"\nremote = "https://e.ej/r.git"\npath = "p"\n'
+            '[[components]]\nid = "web"\nsource = "s"\npath = "."\nkind = 7\n'),
+        "TOML sintácticamente inválido": 'schema = = 1\n',
+    }
+
+    def test_39_ningun_tipo_incorrecto_pasa_ni_revienta(self):
+        for nombre, texto in self.CASOS.items():
+            with self.subTest(caso=nombre):
+                self.manifiesto(texto)
+                for orden in (["check"], ["status"], ["init"]):
+                    p = workspace(orden + ["--json"], self.ads)
+                    self.assertNotIn("Traceback", p.stderr,
+                                     f"[{nombre}] {orden[0]} lanzó una excepción")
+                    self.assertEqual(p.returncode, 1,
+                                     f"[{nombre}] {orden[0]} no devolvió código 1")
+                    d = json.loads(p.stdout)      # la salida sigue siendo JSON válido
+                    self.assertFalse(d["ok"], f"[{nombre}] se aceptó como válido")
+                    self.assertTrue([h for h in d["hallazgos"] if h["nivel"] == "ERROR"],
+                                    f"[{nombre}] falló sin un hallazgo estructurado")
+
+    def test_40_kind_es_opcional_porque_el_modelo_aprobado_lo_declara_descriptivo(self):
+        """`plantillas/SOURCES.toml` dice: «`kind` es descriptivo y abierto».
+
+        No se inventa una obligación que el modelo aprobado no impone. Lo que sí se
+        rechaza es declararlo mal, y eso lo cubre el caso «component con kind no textual».
+        """
+        bare = crear_remoto_bare(self.tmp, "app")
+        self.manifiesto(self.base_valida() +
+                        f'\n[[sources]]\nid = "app"\nremote = "{bare}"\npath = "app"\n'
+                        '\n[[components]]\nid = "web"\nsource = "app"\npath = "."\n')
+        cod, d = workspace_json(["check"], self.ads)
+        self.assertEqual(cod, 0, d)
+        self.assertIsNone(d["components"][0]["kind"])
+
+    def test_41_ids_validos_siguen_siendo_validos(self):
+        """La regla de ids no puede rechazar lo que el corpus usa de verdad."""
+        bare = crear_remoto_bare(self.tmp, "app")
+        for sid in ("frontend", "api-v2", "app_movil", "web.2", "a", "X9"):
+            with self.subTest(id=sid):
+                self.manifiesto(self.base_valida() +
+                                f'\n[[sources]]\nid = "{sid}"\nremote = "{bare}"\npath = "p"\n')
+                cod, d = workspace_json(["check"], self.ads)
+                self.assertEqual(cod, 0, d)
+
+
+class TestReconstruccion(Base):
+    """CA-3 · el caso que el checkpoint afirmaba como «test mental», ejecutado de verdad.
+
+    Cuatro repositorios Git locales, sin red. Se materializan, se BORRAN los cuatro, y el
+    workspace se reconstruye desde el repositorio ADS de control y su manifiesto.
+    """
+
+    FUENTES = ("frontend", "backend", "movil", "infra")
+
+    def test_42_producto_de_cuatro_fuentes_se_reconstruye_tras_borrarlas(self):
+        bares = {n: crear_remoto_bare(self.tmp, n, fichero=f"{n}.md") for n in self.FUENTES}
+        texto = self.base_valida()
+        for n, bare in bares.items():
+            texto += f'\n[[sources]]\nid = "{n}"\nremote = "{bare}"\npath = "{n}"\n'
+        texto += ('\n[[components]]\nid = "web"\nsource = "frontend"\npath = "."\nkind = "frontend"\n'
+                  '\n[[components]]\nid = "api"\nsource = "backend"\npath = "."\nkind = "backend"\n'
+                  '\n[[components]]\nid = "app"\nsource = "movil"\npath = "."\nkind = "mobile"\n'
+                  '\n[[components]]\nid = "despliegue"\nsource = "infra"\npath = "deploy"\n')
+        self.manifiesto(texto)
+
+        cod, d = workspace_json(["init"], self.ads)
+        self.assertEqual(cod, 0, d)
+        self.assertEqual({s["accion"] for s in d["sources"]}, {"clonada"})
+
+        cod, d = workspace_json(["status"], self.ads)
+        self.assertEqual(cod, 0, d)
+        antes = {s["id"]: s["head"] for s in d["sources"]}
+        self.assertEqual(set(antes), set(self.FUENTES))
+        self.assertTrue(all(antes.values()), antes)
+
+        # se pierde el workspace entero salvo el repositorio de control
+        for n in self.FUENTES:
+            shutil.rmtree(os.path.join(self.ws, n))
+        self.assertEqual(sorted(os.listdir(self.ws)), ["ads"])
+        cod, d = workspace_json(["status"], self.ads)
+        self.assertEqual(cod, 0, "cuatro fuentes ausentes son INFO, no ERROR")
+        self.assertFalse(any(s["present"] for s in d["sources"]))
+
+        # ... y se reconstruye desde el control repo y su manifiesto, sin más entrada
+        cod, d = workspace_json(["init"], self.ads)
+        self.assertEqual(cod, 0, d)
+        self.assertEqual({s["accion"] for s in d["sources"]}, {"clonada"})
+        cod, d = workspace_json(["status"], self.ads)
+        self.assertEqual(cod, 0, d)
+        despues = {s["id"]: s["head"] for s in d["sources"]}
+        self.assertEqual(antes, despues, "la reconstrucción no devolvió las mismas revisiones")
+        self.assertTrue(all(s["present"] and s["is_git"] and s["remote_ok"]
+                            for s in d["sources"]), d)
+        for n in self.FUENTES:
+            self.assertTrue(os.path.isfile(os.path.join(self.ws, n, f"{n}.md")),
+                            f"{n}: el contenido no volvió")
+        self.assertEqual(len(d["components"]), 4)
+
+    def test_43_reconstruccion_parcial_solo_toca_lo_que_falta(self):
+        """Borrar una de las cuatro no vuelve a clonar las otras tres."""
+        bares = {n: crear_remoto_bare(self.tmp, n, fichero=f"{n}.md") for n in self.FUENTES}
+        texto = self.base_valida()
+        for n, bare in bares.items():
+            texto += f'\n[[sources]]\nid = "{n}"\nremote = "{bare}"\npath = "{n}"\n'
+        self.manifiesto(texto)
+        workspace(["init"], self.ads)
+        marcas = {n: os.path.join(self.ws, n, "MARCA-LOCAL.txt") for n in self.FUENTES}
+        for m in marcas.values():
+            with open(m, "w", encoding="utf-8") as fh:
+                fh.write("trabajo local\n")
+        shutil.rmtree(os.path.join(self.ws, "movil"))
+
+        cod, d = workspace_json(["init"], self.ads)
+        self.assertEqual(cod, 0, d)
+        acciones = {s["id"]: s["accion"] for s in d["sources"]}
+        self.assertEqual(acciones["movil"], "clonada")
+        for n in ("frontend", "backend", "infra"):
+            self.assertEqual(acciones[n], "reutilizada")
+            self.assertTrue(os.path.exists(marcas[n]), f"{n}: init destruyó trabajo local")
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):

@@ -32,10 +32,21 @@ layout = "siblings"
 #
 # Por cada fuente:
 #   id      identificador estable dentro de ADS. NO depende del nombre local del repo.
+#           Letras, dígitos, `.`, `-` y `_`, empezando por letra o dígito, hasta 64.
+#           Aparece en mensajes, en claves de JSON y en la salida que lee una persona:
+#           un id con espacios o saltos de línea puede fabricar una línea de error falsa.
 #   remote  identidad Git remota canónica. Es LA IDENTIDAD de la fuente.
 #           NUNCA lleva credenciales: nada de https://usuario:token@...
+#           `ssh://git@host/org/repo.git` y `git@host:org/repo.git` SÍ son válidas: ahí
+#           `git` es un usuario de transporte, no un secreto.
 #   path    ruta relativa al workspace donde se materializa. Es DÓNDE ESTÁ, no QUÉ ES.
-#           Prohibidos: rutas absolutas, `..`, rutas repetidas y la ruta `ads`.
+#           Prohibidos, y comprobados sobre el destino REAL —los enlaces simbólicos se
+#           resuelven, porque `..` no es la única forma de salir de un directorio—:
+#             · rutas absolutas y rutas que escapan del workspace
+#             · la raíz del workspace (`.`): el workspace NO es un repositorio Git
+#             · cualquier ruta dentro del repositorio ADS de control (`ads`, `ads/x`, …)
+#             · rutas repetidas, y rutas que ANIDEN una fuente dentro de otra: Git
+#               permanece independiente por fuente (C6 N12)
 # ---------------------------------------------------------------------------
 
 # [[sources]]
@@ -59,7 +70,12 @@ layout = "siblings"
 #   monorepo     web → fuente app,      ruta "apps/web"
 #                api → fuente app,      ruta "apps/api"
 #
-# `kind` es descriptivo y abierto. No es una taxonomía cerrada ni sustituye a los packs.
+# `id` sigue la misma regla que el de una fuente. `path` se resuelve DENTRO de la fuente
+# —`"."` es el componente que la ocupa entera— y tampoco puede salir de ella.
+#
+# `kind` es descriptivo y abierto. No es una taxonomía cerrada ni sustituye a los packs, y
+# por eso es OPCIONAL: o se omite, o se escribe como texto. Lo que no se admite es
+# declararlo con otro tipo.
 # ---------------------------------------------------------------------------
 
 # [[components]]

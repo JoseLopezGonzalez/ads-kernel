@@ -112,10 +112,44 @@ MATERIALIZACIÓN   la ruta relativa al workspace donde debe aparecer.
                   Es dónde está, no qué es.
 ```
 
-De ahí las prohibiciones del manifiesto, que no son estilo sino consecuencia: rutas
-absolutas, rutas que escapan del workspace con `..`, rutas duplicadas, `ads` como ruta de
-una fuente técnica, e ids duplicados. **Y ninguna credencial**: el manifiesto declara
-identidad, nunca secretos. La autenticación la aporta el entorno.
+De ahí las prohibiciones del manifiesto, que no son estilo sino consecuencia:
+
+```text
+RUTAS      absolutas · que escapan del workspace · duplicadas · la raíz del workspace ·
+           cualquier ruta DENTRO del repositorio de control · rutas que ANIDEN una fuente
+           dentro de otra
+IDS        duplicados · vacíos · con espacios, saltos de línea o forma de ruta
+REMOTOS    con credenciales embebidas
+```
+
+**Se comprueban sobre el destino REAL, no sobre el texto.** `..` no es la única forma de
+salir de un directorio: si un antecesor dentro del workspace es un enlace simbólico, una
+ruta sin un solo punto escribe fuera. Toda ruta se resuelve —sin crearla— antes de
+aceptarse.
+
+**La ruta reservada no es una cadena, es un sitio.** Rechazar exactamente `path = "ads"`
+dejaba pasar `ads/frontend`. Lo que decide es si el destino cae dentro del repositorio de
+control, que es donde vive el manifiesto.
+
+**Y ninguna credencial**: el manifiesto declara identidad, nunca secretos. La autenticación
+la aporta el entorno. `ssh://git@host/org/repo.git` y `git@host:org/repo.git` **no** son
+credenciales: ahí `git` es el usuario de transporte de SSH, y confundirlo con un token
+rechazaría la forma canónica de la mitad de los remotos del mundo.
+
+### Ningún secreto sale por la salida
+
+El manifiesto no debe llevar credenciales, y si las lleva es ERROR. Aun así, un secreto
+puesto por error **no puede además propagarse**: ninguna salida —texto, JSON, error de
+identidad, error de clone o `stderr` de Git— reproduce una credencial. El remoto que hay en
+disco tampoco es de fiar, y se redacta igual. La redacción es la última línea de defensa,
+no la primera.
+
+### `init` es todo o nada
+
+`init` es la única orden que **muta** el disco, y no empieza mientras el manifiesto que le
+dice qué hacer tenga cualquier error estático —schema, layout, credenciales, ids, rutas,
+componentes o tipos—. No crea directorios, no clona y no deja el workspace a medias para
+que el error se lea después, ya sobre el destrozo.
 
 ## Regla de autoridad
 
@@ -242,12 +276,20 @@ comprobaciones:
     como: "workspace check: comprobación de unicidad y de ruta reservada"
     automatizable: si
   - id: sin-escape-de-workspace
-    comprueba: "ninguna ruta de fuente ni de componente sale del workspace"
-    como: "resolución de ruta normalizada contra WORKSPACE_ROOT"
+    comprueba: "ninguna ruta de fuente ni de componente sale del workspace, ni siquiera resolviendo enlaces simbólicos"
+    como: "resolución del destino REAL contra WORKSPACE_ROOT, sin crear la ruta"
+    automatizable: si
+  - id: sin-anidamiento-de-repositorios
+    comprueba: "ninguna fuente cae dentro del control repo, ni contiene a otra fuente, ni ocupa la raíz del workspace"
+    como: "workspace check: comparación por segmentos entre los destinos reales"
     automatizable: si
   - id: sin-credenciales
-    comprueba: "ningún remoto del manifiesto embebe usuario, token o contraseña"
-    como: "inspección de la URL declarada"
+    comprueba: "ningún remoto del manifiesto embebe usuario, token o contraseña, y ninguna salida reproduce una credencial"
+    como: "inspección de la URL declarada, y redacción de todo remoto que se imprime"
+    automatizable: si
+  - id: manifiesto-invalido-no-muta
+    comprueba: "con cualquier error estático de manifiesto, init no crea directorios ni clona"
+    como: "workspace init sobre un manifiesto con error: código 1 y cero acciones"
     automatizable: si
   - id: fuentes-del-alcance-presentes
     comprueba: "las fuentes que el paquete lee o escribe están materializadas y son el repositorio esperado"

@@ -21,6 +21,17 @@ Sin ids, `init` materializa todas las fuentes declaradas.
 Sólo biblioteca estándar y Git por línea de órdenes. `SOURCES.toml` se lee con `tomllib`,
 que es estándar desde Python 3.11: leer el manifiesto NO introduce ninguna dependencia.
 
+TRES REGLAS QUE NO SON ESTILO, SINO SEGURIDAD:
+
+  1. NINGÚN destino se acepta por su aspecto textual. `..` no es la única forma de salir de
+     un directorio: un enlace simbólico en cualquier antecesor lo hace sin escribir un solo
+     punto. Todo destino se resuelve de verdad —sin crearlo— antes de aceptarlo.
+  2. `init` es TODO O NADA frente a los errores estáticos del manifiesto. Un manifiesto con
+     cualquier error no clona, no crea directorios y no toca el disco.
+  3. NINGUNA salida —texto, JSON o error— reproduce una credencial. El manifiesto declara
+     identidad y nunca secretos, y aun así un secreto puesto por error no se propaga a un
+     log, a una captura de pantalla ni a un issue.
+
 Códigos de salida:  0 sin errores · 1 hay errores · 2 no se pudo empezar
 """
 from __future__ import annotations
@@ -42,11 +53,21 @@ SCHEMAS_SOPORTADOS = {1}
 LAYOUTS_SOPORTADOS = {"siblings"}
 RUTA_RESERVADA = "ads"
 
+# Un `id` es un identificador ESTABLE dentro de ADS, y aparece en rutas de mensaje, en
+# claves de JSON y en la salida que lee una persona. Se acota a lo que no puede
+# confundirse con otra cosa: sin espacios, sin saltos de línea que inventen una línea de
+# error falsa, y sin `.` ni `..` que parezcan una ruta.
+ID_VALIDO = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
+
 ERROR, WARN, INFO = "ERROR", "WARN", "INFO"
 
-# Credenciales embebidas en el remoto. El manifiesto declara IDENTIDAD, nunca secretos:
-# la autenticación la aporta el entorno (agente SSH, gestor de credenciales, token).
-CREDENCIAL_EN_URL = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.-]*://[^/@]*@")
+# Esquemas cuya parte de usuario es un LOGIN de transporte, no un secreto:
+# `ssh://git@github.com/org/repo.git` es una URL admitida y corriente.
+ESQUEMAS_SSH = {"ssh", "git+ssh"}
+# Los que esta herramienta sabe interpretar. Cualquier otro se trata como opaco.
+ESQUEMAS_CONOCIDOS = ESQUEMAS_SSH | {"https", "http", "git", "file"}
+
+_USERINFO = re.compile(r"(?P<esquema>[a-zA-Z][a-zA-Z0-9+.-]*)://(?P<userinfo>[^/@\s]*)@")
 
 
 class Hallazgo:
@@ -58,6 +79,50 @@ class Hallazgo:
 
     def a_dict(self):
         return {"nivel": self.nivel, "ambito": self.ambito, "mensaje": self.mensaje}
+
+
+# --------------------------------------------------------------------- secretos
+def redactar(texto):
+    """Devuelve el texto con toda credencial embebida sustituida por `***`.
+
+    Se aplica a TODO lo que sale de aquí: mensajes, JSON, errores de identidad y stderr de
+    Git. El manifiesto no debe llevar credenciales —y si las lleva es ERROR—, pero un
+    secreto puesto por error no puede además acabar en un log, en una captura o en un
+    issue. La redacción es la última línea, no la primera.
+
+    Un usuario SSH normal NO se redacta: `ssh://git@host/...` no contiene ningún secreto,
+    y ocultarlo sólo haría el mensaje ilegible.
+    """
+    if not texto:
+        return texto
+
+    def _sub(m):
+        esquema, userinfo = m.group("esquema"), m.group("userinfo")
+        if esquema.lower() in ESQUEMAS_SSH and ":" not in userinfo:
+            return m.group(0)
+        if ":" in userinfo:
+            return f"{esquema}://{userinfo.split(':', 1)[0]}:***@"
+        return f"{esquema}://***@"
+
+    return _USERINFO.sub(_sub, str(texto))
+
+
+def credencial_embebida(url):
+    """¿La URL lleva usuario y secreto, o sólo un usuario de transporte?
+
+    §39 admite `ssh://git@github.com/org/repo.git`. Rechazarla por llevar `@` confundiría
+    la forma canónica de SSH con un token, que es exactamente lo contrario de lo que este
+    control existe para impedir.
+    """
+    m = _USERINFO.match(url or "")
+    if not m:
+        return False                       # scp-like `git@host:org/repo.git` incluido
+    esquema, userinfo = m.group("esquema").lower(), m.group("userinfo")
+    if ":" in userinfo:
+        return True                        # usuario:secreto — siempre credencial
+    if esquema in ESQUEMAS_SSH:
+        return False                       # usuario SSH normal
+    return bool(userinfo)                  # https://<token>@host/... también lo es
 
 
 # --------------------------------------------------------------------------- Git
@@ -79,38 +144,112 @@ def es_repo_git(ruta):
     return cod == 0 and salida == "true"
 
 
-def normalizar_remoto(url):
-    """Identidad comparable de un remoto Git.
+# ------------------------------------------------------- identidad de un remoto
+def _opaco(u):
+    """No se sabe interpretar: sólo es igual a sí misma, carácter a carácter.
 
-    Reconoce como el MISMO repositorio las tres formas habituales:
+    Es la respuesta SEGURA. Inventar una identidad para lo que no se entiende es lo que
+    hace que dos repositorios distintos pasen por el mismo.
+    """
+    return "opaco:" + u
+
+
+def _local(p):
+    """Ruta del sistema de ficheros.
+
+    NO se pliegan mayúsculas ni se recorta `.git`: en un sistema sensible a mayúsculas
+    `/srv/git/Foo.git` y `/srv/git/foo.git` son dos directorios distintos, y `foo.git` y
+    `foo` también.
+    """
+    return "local:" + os.path.normpath(p).rstrip("/")
+
+
+def _host_y_puerto(autoridad):
+    """Separa host y puerto. Devuelve (None, None) si no es interpretable sin ambigüedad."""
+    if autoridad.startswith("["):                       # literal IPv6
+        cierre = autoridad.find("]")
+        if cierre < 0:
+            return None, None
+        host, resto = autoridad[:cierre + 1], autoridad[cierre + 1:]
+    else:
+        host, sep, puerto = autoridad.partition(":")
+        resto = (sep + puerto) if sep else ""
+    if not host:
+        return None, None
+    if resto:
+        if not re.match(r"^:\d+$", resto):
+            return None, None
+        return host.lower(), resto[1:]
+    return host.lower(), None
+
+
+def _identidad(host, puerto, ruta):
+    """El host se pliega —DNS no distingue mayúsculas—; la RUTA no.
+
+    Un servidor Git puede distinguir `Org/Repo` de `org/repo`, y plegarlo aquí igualaría
+    dos repositorios que no lo son.
+    """
+    ruta = ruta.strip("/")
+    if ruta.endswith(".git"):
+        ruta = ruta[:-4]
+    if not ruta:
+        return _opaco(host if puerto is None else f"{host}:{puerto}")
+    autoridad = host if puerto is None else f"{host}:{puerto}"
+    return f"git:{autoridad}/{ruta}"
+
+
+def normalizar_remoto(url):
+    """Identidad comparable de un remoto Git, con criterio CONSERVADOR.
+
+    Reconoce como el MISMO repositorio las tres formas documentadas en §39:
 
         https://github.com/org/repo.git
         git@github.com:org/repo.git
         ssh://git@github.com/org/repo.git
 
     La comparación textual ingenua diría que son tres repositorios distintos, y el
-    resultado sería que `check` rechaza un workspace correcto por haberlo clonado con
-    SSH en vez de HTTPS. Ante lo que no sabe interpretar, devuelve la cadena tal cual y
-    la comparación falla de forma SEGURA: prefiere avisar de más a aceptar de menos.
+    resultado sería que `check` rechaza un workspace correcto por haberlo clonado con SSH
+    en vez de HTTPS.
+
+    Lo que NO iguala, porque igualarlo sería peor que avisar de más:
+
+        · el mismo host con puertos distintos            — son dos servidores
+        · rutas que sólo difieren en su capitalización   — puede ser significativa
+        · esquemas desconocidos y URLs ambiguas          — se devuelven opacas
+
+    Ante lo que no sabe interpretar la comparación falla de forma SEGURA: prefiere avisar
+    de más a aceptar de menos.
     """
-    if not url:
+    if not isinstance(url, str) or not url.strip():
         return ""
-    u = url.strip().rstrip("/")
-    # scp-like: git@host:org/repo.git
-    m = re.match(r"^(?:([^@/]+)@)?([^:/]+):(?!//)(.+)$", u)
-    if m and "://" not in u:
-        host, ruta = m.group(2), m.group(3)
-    else:
-        m = re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*://(?:[^@/]*@)?([^/:]+)(?::\d+)?/(.+)$", u)
-        if not m:
-            return u.lower()
-        host, ruta = m.group(1), m.group(2)
-    host = host.lower()
-    if host.startswith("www."):
-        host = host[4:]
-    if ruta.endswith(".git"):
-        ruta = ruta[:-4]
-    return f"{host}/{ruta.strip('/').lower()}"
+    u = url.strip()
+
+    m = re.match(r"^(?P<esquema>[a-zA-Z][a-zA-Z0-9+.-]*)://(?P<resto>.*)$", u, re.S)
+    if m:
+        esquema, resto = m.group("esquema").lower(), m.group("resto")
+        if esquema not in ESQUEMAS_CONOCIDOS:
+            return _opaco(u)
+        if esquema == "file":
+            return _local(resto[resto.index("/"):] if "/" in resto else resto)
+        autoridad, sep, ruta = resto.partition("/")
+        if not sep or not ruta:
+            return _opaco(u)
+        _, _, hostport = autoridad.rpartition("@")
+        host, puerto = _host_y_puerto(hostport)
+        if host is None:
+            return _opaco(u)
+        return _identidad(host, puerto, ruta)
+
+    # scp-like `[usuario@]host:ruta`, y SÓLO cuando es inequívoco: o lleva usuario
+    # explícito, o el host tiene un punto. Sin esa condición `C:\repos\x` se leería como
+    # el host «C».
+    m = re.match(r"^(?:(?P<usuario>[^@/\s]+)@)?(?P<host>[A-Za-z0-9._-]+):(?P<ruta>[^\\/].*)$", u)
+    if m and (m.group("usuario") or "." in m.group("host")):
+        return _identidad(m.group("host").lower(), None, m.group("ruta"))
+
+    if u.startswith(("/", "./", "../", "~")) or re.match(r"^[a-zA-Z]:[\\/]", u):
+        return _local(u)
+    return _opaco(u)
 
 
 # --------------------------------------------------------------------------- raíces
@@ -137,7 +276,7 @@ def raices(desde=None):
     return ads_root, os.path.dirname(ads_root)
 
 
-# --------------------------------------------------------------------------- manifiesto
+# --------------------------------------------------------------------- manifiesto
 class Manifiesto:
     def __init__(self):
         self.schema = None
@@ -146,12 +285,39 @@ class Manifiesto:
         self.components = []
 
 
-def _ruta_segura(valor, base, campo, ambito, hallazgos):
-    """Comprueba que `valor` es una ruta relativa que no escapa de `base`.
+def _real_sin_crear(ruta):
+    """`realpath` de una ruta que puede no existir todavía, sin crear nada.
+
+    `os.path.normpath` es TEXTUAL y no ve los enlaces simbólicos: si un antecesor dentro
+    del workspace apunta a otro sitio, una ruta sin un solo `..` escribe fuera. Se resuelve
+    el antecesor que SÍ existe y se le añade el resto.
+    """
+    pendientes = []
+    actual = os.path.abspath(ruta)
+    while True:
+        if os.path.lexists(actual):
+            real = os.path.realpath(actual)
+            return os.path.join(real, *reversed(pendientes)) if pendientes else real
+        padre = os.path.dirname(actual)
+        if padre == actual:
+            return os.path.normpath(actual)
+        pendientes.append(os.path.basename(actual))
+        actual = padre
+
+
+def _dentro(hijo, padre):
+    """¿`hijo` es `padre` o está debajo de él? Comparación por segmentos, no por prefijo."""
+    h, p = os.path.normcase(os.path.normpath(hijo)), os.path.normcase(os.path.normpath(padre))
+    return h == p or h.startswith(p.rstrip(os.sep) + os.sep)
+
+
+def _ruta_segura(valor, base, campo, ambito, hallazgos, permitir_base=False):
+    """Comprueba que `valor` es una ruta relativa cuyo destino REAL no escapa de `base`.
 
     Un manifiesto es contenido versionado que un agente puede modificar. Una ruta
     `../../otro-proyecto` convertiría `init` en una herramienta para escribir fuera del
-    workspace, y eso no puede depender de que nadie la escriba.
+    workspace, y eso no puede depender de que nadie la escriba. Un enlace simbólico hace
+    lo mismo sin escribir un solo punto, y por eso no basta con mirar el texto.
     """
     if not isinstance(valor, str) or not valor.strip():
         hallazgos.append(Hallazgo(ERROR, ambito, f"{campo} vacío o no es texto"))
@@ -159,13 +325,107 @@ def _ruta_segura(valor, base, campo, ambito, hallazgos):
     if os.path.isabs(valor) or re.match(r"^[a-zA-Z]:[\\/]", valor):
         hallazgos.append(Hallazgo(ERROR, ambito, f"{campo} '{valor}' es una ruta absoluta"))
         return None
-    destino = os.path.normpath(os.path.join(base, valor))
-    base_n = os.path.normpath(base)
-    if destino != base_n and not destino.startswith(base_n + os.sep):
-        hallazgos.append(Hallazgo(
-            ERROR, ambito, f"{campo} '{valor}' escapa de {base_n}"))
+
+    base_n = os.path.normpath(os.path.abspath(base))
+    textual = os.path.normpath(os.path.join(base_n, valor))
+    if not _dentro(textual, base_n):
+        hallazgos.append(Hallazgo(ERROR, ambito, f"{campo} '{valor}' escapa de {base_n}"))
         return None
-    return destino
+
+    real_base = _real_sin_crear(base_n)
+    real = _real_sin_crear(textual)
+    if not _dentro(real, real_base):
+        # el texto parecía relativo; el destino no lo es
+        hallazgos.append(Hallazgo(
+            ERROR, ambito,
+            f"{campo} '{valor}' escapa de {base_n} al resolver los enlaces simbólicos: "
+            f"apunta a '{real}'"))
+        return None
+    if not permitir_base and _dentro(real_base, real):
+        hallazgos.append(Hallazgo(
+            ERROR, ambito,
+            f"{campo} '{valor}' resuelve a la propia raíz '{base_n}'. El workspace es el "
+            f"contenedor del producto y NO es un repositorio Git (C6, topología)"))
+        return None
+    return real
+
+
+# ---------------------------------------------------------- lectura tipada del TOML
+def _tabla(datos, clave, ambito, hallazgos, obligatoria=False):
+    """Devuelve `datos[clave]` sólo si es una TABLA. Nunca deja pasar otra cosa a `.get()`."""
+    if clave not in datos:
+        if obligatoria:
+            hallazgos.append(Hallazgo(ERROR, ambito, f"falta la tabla `[{clave}]`"))
+        return {}
+    valor = datos[clave]
+    if not isinstance(valor, dict):
+        hallazgos.append(Hallazgo(
+            ERROR, ambito,
+            f"`{clave}` es {type(valor).__name__}, y tiene que ser una tabla `[{clave}]`"))
+        return {}
+    return valor
+
+
+def _lista_de_tablas(datos, clave, hallazgos):
+    """Devuelve `datos[clave]` como lista de tablas, descartando —con error— lo que no lo sea."""
+    if clave not in datos:
+        return []
+    valor = datos[clave]
+    if not isinstance(valor, list):
+        hallazgos.append(Hallazgo(
+            ERROR, clave,
+            f"`{clave}` es {type(valor).__name__}, y tiene que ser una lista de tablas "
+            f"`[[{clave}]]`"))
+        return []
+    limpias = []
+    for i, entrada in enumerate(valor):
+        if not isinstance(entrada, dict):
+            hallazgos.append(Hallazgo(
+                ERROR, f"{clave}[{i}]",
+                f"la entrada es {type(entrada).__name__}, y tiene que ser una tabla "
+                f"`[[{clave}]]`"))
+            continue
+        limpias.append((i, entrada))
+    return limpias
+
+
+def _entero(valor):
+    """`True` es un `bool`, y en Python `True == 1`. Un `schema = true` NO es `schema = 1`."""
+    return isinstance(valor, int) and not isinstance(valor, bool)
+
+
+def _identificador(tabla, ambito, hallazgos):
+    """Lee y valida un `id`. Devuelve None si no sirve como identificador."""
+    valor = tabla.get("id")
+    if valor is None:
+        hallazgos.append(Hallazgo(ERROR, ambito, "falta `id`"))
+        return None
+    if not isinstance(valor, str):
+        hallazgos.append(Hallazgo(
+            ERROR, ambito, f"`id` es {type(valor).__name__}, y tiene que ser texto"))
+        return None
+    if not ID_VALIDO.match(valor):
+        visible = valor.strip() or "(vacío)"
+        hallazgos.append(Hallazgo(
+            ERROR, ambito,
+            f"`id` {visible!r} no es un identificador válido: se admiten letras, dígitos, "
+            f"`.`, `-` y `_`, empezando por letra o dígito, hasta 64 caracteres"))
+        return None
+    return valor
+
+
+def _texto_opcional(tabla, campo, ambito, hallazgos):
+    """Un campo descriptivo puede faltar; si está, tiene que ser texto no vacío."""
+    if campo not in tabla:
+        return None
+    valor = tabla[campo]
+    if not isinstance(valor, str) or not valor.strip():
+        hallazgos.append(Hallazgo(
+            ERROR, ambito,
+            f"`{campo}` está declarado y no es texto no vacío "
+            f"({type(valor).__name__}). Es opcional: o se omite, o se escribe"))
+        return None
+    return valor
 
 
 def leer_manifiesto(ads_root, workspace_root, hallazgos):
@@ -183,32 +443,46 @@ def leer_manifiesto(ads_root, workspace_root, hallazgos):
     except tomllib.TOMLDecodeError as e:
         hallazgos.append(Hallazgo(ERROR, MANIFIESTO, f"TOML inválido: {e}"))
         return None
+    if not isinstance(datos, dict):                       # tomllib no lo produce; el
+        hallazgos.append(Hallazgo(ERROR, MANIFIESTO,      # contrato se comprueba igual
+                                  "el manifiesto no es una tabla TOML"))
+        return None
 
     m = Manifiesto()
 
     m.schema = datos.get("schema")
     if m.schema is None:
         hallazgos.append(Hallazgo(ERROR, "schema", "falta `schema`: sin él, el formato es ambiguo"))
+    elif not _entero(m.schema):
+        hallazgos.append(Hallazgo(
+            ERROR, "schema",
+            f"`schema` es {type(m.schema).__name__}, y tiene que ser un entero "
+            f"(soportados: {sorted(SCHEMAS_SOPORTADOS)})"))
     elif m.schema not in SCHEMAS_SOPORTADOS:
         hallazgos.append(Hallazgo(
             ERROR, "schema",
             f"schema {m.schema!r} no soportado (soportados: {sorted(SCHEMAS_SOPORTADOS)})"))
 
-    ws = datos.get("workspace") or {}
+    ws = _tabla(datos, "workspace", "workspace", hallazgos, obligatoria=True)
     m.layout = ws.get("layout")
     if m.layout is None:
         hallazgos.append(Hallazgo(ERROR, "workspace", "falta `[workspace] layout`"))
+    elif not isinstance(m.layout, str):
+        hallazgos.append(Hallazgo(
+            ERROR, "workspace",
+            f"`layout` es {type(m.layout).__name__}, y tiene que ser texto "
+            f"(soportados: {sorted(LAYOUTS_SOPORTADOS)})"))
     elif m.layout not in LAYOUTS_SOPORTADOS:
         hallazgos.append(Hallazgo(
             ERROR, "workspace",
             f"layout {m.layout!r} no soportado (soportados: {sorted(LAYOUTS_SOPORTADOS)})"))
 
+    real_ads = _real_sin_crear(ads_root)
     ids_vistos, rutas_vistas = {}, {}
-    for i, s in enumerate(datos.get("sources") or []):
+    for i, s in _lista_de_tablas(datos, "sources", hallazgos):
         ambito = f"sources[{i}]"
-        sid = s.get("id")
-        if not isinstance(sid, str) or not sid.strip():
-            hallazgos.append(Hallazgo(ERROR, ambito, "falta `id`"))
+        sid = _identificador(s, ambito, hallazgos)
+        if sid is None:
             continue
         ambito = f"source:{sid}"
         if sid in ids_vistos:
@@ -220,7 +494,7 @@ def leer_manifiesto(ads_root, workspace_root, hallazgos):
         if not isinstance(remoto, str) or not remoto.strip():
             hallazgos.append(Hallazgo(ERROR, ambito, "falta `remote`: la identidad de una fuente es su remoto"))
             remoto = ""
-        elif CREDENCIAL_EN_URL.match(remoto):
+        elif credencial_embebida(remoto):
             hallazgos.append(Hallazgo(
                 ERROR, ambito,
                 "`remote` embebe credenciales. El manifiesto declara identidad, nunca secretos"))
@@ -229,28 +503,51 @@ def leer_manifiesto(ads_root, workspace_root, hallazgos):
         destino = _ruta_segura(ruta, workspace_root, "path", ambito, hallazgos)
         if destino is None:
             continue
+        # `ads` es la ruta convencional del control repo, y se rechaza por su nombre para
+        # que el motivo sea legible. Pero el control repo es DONDE ESTÁ el manifiesto, no
+        # una cadena: lo que decide es el destino real.
         if os.path.normpath(ruta) == RUTA_RESERVADA:
             hallazgos.append(Hallazgo(
                 ERROR, ambito,
                 f"`path` '{ruta}' está reservado para el repositorio ADS de control"))
             continue
-        clave = os.path.normcase(destino)
-        if clave in rutas_vistas:
+        if _dentro(destino, real_ads):
             hallazgos.append(Hallazgo(
-                ERROR, ambito, f"`path` '{ruta}' colisiona con la fuente '{rutas_vistas[clave]}'"))
+                ERROR, ambito,
+                f"`path` '{ruta}' cae DENTRO del repositorio ADS de control ({real_ads}). "
+                f"C6 prohíbe clonar las fuentes dentro del control repo"))
             continue
-        rutas_vistas[clave] = sid
+        if _dentro(real_ads, destino):
+            hallazgos.append(Hallazgo(
+                ERROR, ambito,
+                f"`path` '{ruta}' CONTIENE al repositorio ADS de control ({real_ads}): "
+                f"el control repo quedaría anidado dentro de una fuente"))
+            continue
+        colision = None
+        for otra, sid_otro in rutas_vistas.items():
+            if _dentro(destino, otra) or _dentro(otra, destino):
+                colision = (otra, sid_otro)
+                break
+        if colision:
+            otra, sid_otro = colision
+            relacion = ("es la misma ruta que" if os.path.normcase(otra) == os.path.normcase(destino)
+                        else "anida repositorios Git con")
+            hallazgos.append(Hallazgo(
+                ERROR, ambito,
+                f"`path` '{ruta}' colisiona con la fuente '{sid_otro}': {relacion} la suya. "
+                f"Git permanece INDEPENDIENTE por fuente (C6 N12)"))
+            continue
+        rutas_vistas[destino] = sid
 
         m.sources.append({"id": sid, "remote": remoto, "path": os.path.normpath(ruta),
                           "abs": destino})
 
     por_id = {s["id"]: s for s in m.sources}
     ids_comp = {}
-    for i, c in enumerate(datos.get("components") or []):
+    for i, c in _lista_de_tablas(datos, "components", hallazgos):
         ambito = f"components[{i}]"
-        cid = c.get("id")
-        if not isinstance(cid, str) or not cid.strip():
-            hallazgos.append(Hallazgo(ERROR, ambito, "falta `id`"))
+        cid = _identificador(c, ambito, hallazgos)
+        if cid is None:
             continue
         ambito = f"component:{cid}"
         if cid in ids_comp:
@@ -259,6 +556,10 @@ def leer_manifiesto(ads_root, workspace_root, hallazgos):
         ids_comp[cid] = i
 
         src = c.get("source")
+        if not isinstance(src, str) or not src.strip():
+            hallazgos.append(Hallazgo(
+                ERROR, ambito, "falta `source`: un componente referencia siempre una fuente"))
+            continue
         if src not in por_id:
             hallazgos.append(Hallazgo(
                 ERROR, ambito,
@@ -266,18 +567,25 @@ def leer_manifiesto(ads_root, workspace_root, hallazgos):
             continue
         cpath = c.get("path", ".")
         # la ruta del componente se resuelve DENTRO de su fuente: un componente que
-        # apunta fuera de su fuente no es un componente, es otra fuente sin declarar
-        if _ruta_segura(cpath, por_id[src]["abs"], "path", ambito, hallazgos) is None:
+        # apunta fuera de su fuente no es un componente, es otra fuente sin declarar.
+        # `path = "."` SÍ es válido: es el componente que ocupa la fuente entera.
+        if _ruta_segura(cpath, por_id[src]["abs"], "path", ambito, hallazgos,
+                        permitir_base=True) is None:
             continue
+        # `kind` es DESCRIPTIVO y abierto (plantilla SOURCES.toml): opcional por el modelo
+        # aprobado. Lo que no se admite es declararlo mal.
+        kind = _texto_opcional(c, "kind", ambito, hallazgos)
         m.components.append({"id": cid, "source": src, "path": os.path.normpath(cpath),
-                             "kind": c.get("kind")})
+                             "kind": kind})
     return m
 
 
 # --------------------------------------------------------------------------- estado
 def estado_de_fuente(s):
     """Fotografía de una fuente en disco. No modifica nada."""
-    e = {"id": s["id"], "path": s["path"], "remote": s["remote"], "present": False,
+    # Los remotos SALEN redactados. El de disco tampoco es de fiar: nada impide que
+    # alguien haya clonado con un token en la URL, y `check` lo imprimiría.
+    e = {"id": s["id"], "path": s["path"], "remote": redactar(s["remote"]), "present": False,
          "is_git": False, "branch": None, "head": None, "dirty": None,
          "remote_actual": None, "remote_ok": None}
     if not os.path.isdir(s["abs"]):
@@ -293,9 +601,10 @@ def estado_de_fuente(s):
     cod, salida, _ = git(["status", "--porcelain"], cwd=s["abs"])
     e["dirty"] = bool(salida) if cod == 0 else None
     cod, salida, _ = git(["remote", "get-url", "origin"], cwd=s["abs"])
-    e["remote_actual"] = salida if cod == 0 else None
-    if e["remote_actual"] and s["remote"]:
-        e["remote_ok"] = normalizar_remoto(e["remote_actual"]) == normalizar_remoto(s["remote"])
+    origen = salida if cod == 0 else None
+    e["remote_actual"] = redactar(origen)
+    if origen and s["remote"]:
+        e["remote_ok"] = normalizar_remoto(origen) == normalizar_remoto(s["remote"])
     elif s["remote"]:
         e["remote_ok"] = False
     return e
@@ -324,8 +633,9 @@ def comprobar_disco(m, hallazgos, solo=None):
         elif e["remote_ok"] is False:
             hallazgos.append(Hallazgo(
                 ERROR, amb,
-                f"identidad remota distinta de la declarada. Declarado '{s['remote']}', "
-                f"encontrado '{e['remote_actual']}'. No se cambia el remoto automáticamente"))
+                f"identidad remota distinta de la declarada. Declarado "
+                f"'{redactar(s['remote'])}', encontrado '{e['remote_actual']}'. "
+                f"No se cambia el remoto automáticamente"))
         if e["dirty"]:
             hallazgos.append(Hallazgo(
                 WARN, amb, "tiene cambios sin confirmar. No es un error, y no se tocan"))
@@ -366,8 +676,9 @@ def orden_init(m, hallazgos, pedidas):
             if e["remote_ok"] is False:
                 hallazgos.append(Hallazgo(
                     ERROR, amb,
-                    f"'{s['path']}' es otro repositorio. Declarado '{s['remote']}', "
-                    f"encontrado '{e['remote_actual']}'. No se cambia el remoto ni se reemplaza"))
+                    f"'{s['path']}' es otro repositorio. Declarado "
+                    f"'{redactar(s['remote'])}', encontrado '{e['remote_actual']}'. "
+                    f"No se cambia el remoto ni se reemplaza"))
                 acciones.append({"id": s["id"], "accion": "error-otra-identidad"})
                 continue
             # Reutilizar es la regla, no una optimización: volver a clonar sobre trabajo
@@ -389,11 +700,13 @@ def orden_init(m, hallazgos, pedidas):
             continue
         cod, _, err = git(["clone", s["remote"], s["abs"]])
         if cod != 0:
-            # el mensaje de git puede contener la URL; el remoto declarado no lleva
-            # credenciales por contrato, y aun así no se vuelca stderr entero
+            # el mensaje de git puede contener la URL. Ni la URL declarada ni el stderr
+            # de git salen en crudo: los dos pasan por `redactar`, y de stderr sólo se
+            # publica su última línea.
+            detalle = redactar(err.splitlines()[-1]) if err else "sin detalle"
             hallazgos.append(Hallazgo(
                 ERROR, amb,
-                f"clone falló desde '{s['remote']}' — {err.splitlines()[-1] if err else 'sin detalle'}"))
+                f"clone falló desde '{redactar(s['remote'])}' — {detalle}"))
             acciones.append({"id": s["id"], "accion": "error-clone"})
             continue
         hallazgos.append(Hallazgo(INFO, amb, f"clonada en '{s['path']}'"))
@@ -447,11 +760,24 @@ def main():
 
     hallazgos = []
     m = leer_manifiesto(ads_root, workspace_root, hallazgos)
+    # TODO O NADA. `init` es la única orden que MUTA el disco, y no puede empezar a
+    # clonar mientras el manifiesto que le dice qué clonar tiene errores. La entrega
+    # anterior clonaba las fuentes válidas de un manifiesto con layout inválido: el
+    # workspace quedaba a medias y el error se leía después, ya sobre el destrozo.
+    estatico_roto = m is None or any(h.nivel == ERROR for h in hallazgos)
 
     if args.orden == "check":
         datos = orden_check(m, hallazgos)
     elif args.orden == "init":
-        datos = orden_init(m, hallazgos, set(args.ids))
+        if estatico_roto:
+            hallazgos.append(Hallazgo(
+                ERROR, MANIFIESTO,
+                "init NO ha ejecutado ninguna acción: el manifiesto tiene errores "
+                "estáticos. No se ha creado ningún directorio ni clonado ninguna fuente. "
+                "Corrígelos y vuelve a ejecutarlo"))
+            datos = {"sources": []}
+        else:
+            datos = orden_init(m, hallazgos, set(args.ids))
     else:
         datos = orden_status(m, hallazgos)
 

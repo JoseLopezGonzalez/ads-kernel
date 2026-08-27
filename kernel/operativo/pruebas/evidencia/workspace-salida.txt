@@ -7,6 +7,21 @@
 test_adopcion_de_dos_repos_existentes (__main__.TestBootstrapYAdopcion.test_adopcion_de_dos_repos_existentes)
 §87: ads + frontend + backend independientes, reconocidos sin volver a clonar. ... ok
 test_bootstrap_crea_workspace_con_ads_dentro (__main__.TestBootstrapYAdopcion.test_bootstrap_crea_workspace_con_ads_dentro) ... ok
+test_21_escape_por_enlace_simbolico_en_source (__main__.TestEscapeDeRaiz.test_21_escape_por_enlace_simbolico_en_source)
+`normpath` es textual y no ve un symlink: la ruta parece relativa y no lo es. ... ok
+test_22_escape_por_enlace_simbolico_en_componente (__main__.TestEscapeDeRaiz.test_22_escape_por_enlace_simbolico_en_componente)
+La misma comprobación, con la fuente como raíz autorizada del componente. ... ok
+test_23_source_dentro_del_control_repo (__main__.TestEscapeDeRaiz.test_23_source_dentro_del_control_repo)
+C6: prohibido clonar las fuentes DENTRO del control repo. ... ok
+test_24_source_en_la_raiz_del_workspace (__main__.TestEscapeDeRaiz.test_24_source_en_la_raiz_del_workspace)
+`path = "."` haría del workspace un repositorio Git, que es lo que C6 prohíbe. ... ok
+test_25_colision_jerarquica_entre_sources (__main__.TestEscapeDeRaiz.test_25_colision_jerarquica_entre_sources)
+Dos rutas distintas pueden seguir anidando un repositorio Git dentro de otro. ... ok
+test_25b_rutas_hermanas_con_prefijo_comun_son_validas (__main__.TestEscapeDeRaiz.test_25b_rutas_hermanas_con_prefijo_comun_son_validas)
+`app` y `app-movil` comparten prefijo y NO anidan. Comparar por prefijo de ... ok
+test_26_manifiesto_invalido_no_clona_ni_crea_directorios (__main__.TestInitAtomico.test_26_manifiesto_invalido_no_clona_ni_crea_directorios) ... ok
+test_26b_el_mismo_manifiesto_corregido_si_materializa (__main__.TestInitAtomico.test_26b_el_mismo_manifiesto_corregido_si_materializa)
+La contraparte: sin el error, la fuente válida se clona. Si no, la prueba de ... ok
 test_01_manifiesto_vacio_es_valido (__main__.TestManifiesto.test_01_manifiesto_vacio_es_valido)
 Un producto nuevo todavía no tiene código. Eso NO es un error. ... ok
 test_02_una_source_valida (__main__.TestManifiesto.test_02_una_source_valida) ... ok
@@ -33,12 +48,37 @@ test_19_seleccion_de_source_en_init (__main__.TestMaterializacion.test_19_selecc
 test_init_de_source_desconocida (__main__.TestMaterializacion.test_init_de_source_desconocida) ... ok
 test_source_ausente_no_bloquea_a_las_demas (__main__.TestMaterializacion.test_source_ausente_no_bloquea_a_las_demas)
 §63: un trabajo de frontend puro continúa aunque falte el backend. ... ok
+test_33_equivalencia_documentada_de_github (__main__.TestNormalizacionConservadora.test_33_equivalencia_documentada_de_github)
+Lo que §39 SÍ declara equivalente tiene que seguir siéndolo. ... ok
+test_34_no_iguala_puertos_distintos (__main__.TestNormalizacionConservadora.test_34_no_iguala_puertos_distintos) ... ok
+test_35_no_pliega_la_capitalizacion_de_la_ruta (__main__.TestNormalizacionConservadora.test_35_no_pliega_la_capitalizacion_de_la_ruta) ... ok
+test_36_no_iguala_rutas_locales_distintas (__main__.TestNormalizacionConservadora.test_36_no_iguala_rutas_locales_distintas) ... ok
+test_37_lo_ambiguo_solo_es_igual_a_si_mismo (__main__.TestNormalizacionConservadora.test_37_lo_ambiguo_solo_es_igual_a_si_mismo) ... ok
+test_38_repositorios_distintos_siguen_siendo_distintos (__main__.TestNormalizacionConservadora.test_38_repositorios_distintos_siguen_siendo_distintos) ... ok
 test_17_normalizacion_https_ssh (__main__.TestNormalizacionYSalida.test_17_normalizacion_https_ssh) ... ok
 test_18_status_json (__main__.TestNormalizacionYSalida.test_18_status_json) ... ok
 test_20_ejecucion_desde_subdirectorio (__main__.TestNormalizacionYSalida.test_20_ejecucion_desde_subdirectorio) ... ok
 test_sin_manifiesto_falla_con_codigo_2 (__main__.TestNormalizacionYSalida.test_sin_manifiesto_falla_con_codigo_2) ... ok
+test_42_producto_de_cuatro_fuentes_se_reconstruye_tras_borrarlas (__main__.TestReconstruccion.test_42_producto_de_cuatro_fuentes_se_reconstruye_tras_borrarlas) ... ok
+test_43_reconstruccion_parcial_solo_toca_lo_que_falta (__main__.TestReconstruccion.test_43_reconstruccion_parcial_solo_toca_lo_que_falta)
+Borrar una de las cuatro no vuelve a clonar las otras tres. ... ok
+test_31_ssh_explicita_es_una_url_valida (__main__.TestSSHFrenteACredenciales.test_31_ssh_explicita_es_una_url_valida)
+§39 la admite. Confundirla con un token rompe la forma canónica de SSH. ... ok
+test_32_credenciales_http_siguen_siendo_error (__main__.TestSSHFrenteACredenciales.test_32_credenciales_http_siguen_siendo_error) ... ok
+test_27_secreto_del_manifiesto_no_sale_por_ninguna_salida (__main__.TestSecretos.test_27_secreto_del_manifiesto_no_sale_por_ninguna_salida) ... ok
+test_28_secreto_en_el_origen_de_disco_no_sale_por_el_error_de_identidad (__main__.TestSecretos.test_28_secreto_en_el_origen_de_disco_no_sale_por_el_error_de_identidad)
+El manifiesto puede estar limpio y el repositorio de disco no estarlo. ... ok
+test_29_secreto_en_el_error_de_clone_no_sale (__main__.TestSecretos.test_29_secreto_en_el_error_de_clone_no_sale)
+`git clone` cita la URL en su stderr. Aquí el remoto de disco es limpio y el ... ok
+test_30_redactar_no_toca_un_usuario_ssh_normal (__main__.TestSecretos.test_30_redactar_no_toca_un_usuario_ssh_normal)
+Redactar de más haría el mensaje inútil: `git@` no es un secreto. ... ok
+test_39_ningun_tipo_incorrecto_pasa_ni_revienta (__main__.TestTomlRobusto.test_39_ningun_tipo_incorrecto_pasa_ni_revienta) ... ok
+test_40_kind_es_opcional_porque_el_modelo_aprobado_lo_declara_descriptivo (__main__.TestTomlRobusto.test_40_kind_es_opcional_porque_el_modelo_aprobado_lo_declara_descriptivo)
+`plantillas/SOURCES.toml` dice: «`kind` es descriptivo y abierto». ... ok
+test_41_ids_validos_siguen_siendo_validos (__main__.TestTomlRobusto.test_41_ids_validos_siguen_siendo_validos)
+La regla de ids no puede rechazar lo que el corpus usa de verdad. ... ok
 
 ----------------------------------------------------------------------
-Ran 29 tests  (duración no registrada: varía por ejecución)
+Ran 54 tests  (duración no registrada: varía por ejecución)
 
 OK
