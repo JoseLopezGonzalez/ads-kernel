@@ -9,6 +9,10 @@
 > **F4 corregida por segunda devolución independiente y por devolución técnica previa; F4c
 > ABIERTA, pendiente de tercera revisión independiente.**
 >
+> Y por una **corrección técnica posterior** sobre el protocolo transaccional, que encontró
+> **dos bloqueantes más** en el texto que las correcciones anteriores escribieron. Tampoco es
+> la tercera revisión, y tampoco certifica nada.
+>
 > La segunda revisión la emitió un revisor con contexto limpio que **no escribió F4 ni aplicó
 > la primera crítica**, y su veredicto fue de **INSUFICIENCIA**: dos hallazgos BLOQUEANTES,
 > siete GRAVES y catorce nuevos. **Dos de ellos eran defectos que la PRIMERA corrección
@@ -40,14 +44,42 @@ procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y
              crítica NO equivale a autocertificarse, y NO prueba que esté bien resuelta.
              LA PRUEBA DE QUE ESTO IMPORTA: dos de los hallazgos de la segunda devolución son
              defectos que la PRIMERA CORRECCIÓN introdujo o no vio
+resuelto_en_la_CORRECCION_TECNICA_POSTERIOR:
+  # Corrección técnica sobre el protocolo transaccional. NO es la tercera revisión
+  # independiente, y NO certifica F4c. Sus tres hallazgos están en texto que las
+  # correcciones ANTERIORES escribieron.
+  · 1 · BLOQUEANTE. LA RECONCILIACIÓN NO ERA RECUPERABLE. `reconciliada` declaraba la
+    decisión Y la daba por aplicada: una caída entre decidir y emitir dejaba el diario sin la
+    decisión, sin su mecanismo y sin el resultado esperado — y el `preparada` original NO
+    sirve de respaldo, porque la decisión puede ser «conservar lo divergente» o «un tercer
+    contenido». Se añade `reconciliacion-preparada`, la intención durable ANTES de tocar
+    nada, con siete campos. **SEIS fases, no cinco**: el número se recalcula, no es cuota.
+    Nueve ventanas R1–R9 y tope de TRES iteraciones, con el precedente de MAX_CAS_RETRIES
+  · 2 · BLOQUEANTE. TRANSICIÓN POSTERIOR AL TERMINAL. La integridad post-terminal emitía
+    `conflicto` sobre una transacción con `derivada` durable, y ninguna transición sale del
+    terminal. Se separa por IDENTIDAD: `conflicto` es fase de una transacción ABIERTA; lo
+    descubierto tras el cierre es un evento `deriva`, sin fase y sin tx propio, que la
+    REFERENCIA sin reabrirla. Reparar exige una transacción NUEVA con su intención durable, y
+    nada se restaura desde Git automáticamente. W12 se parte en W12a y W12b
+  · 3 · GRAVE. El tipo `evento` no representaba el protocolo narrado. Contrato CONDICIONAL
+    por fase para las ocho formas de evento: obligatorios, prohibidos, predecesora admitida,
+    hash que gobierna y condición para emitir la siguiente. Más cuatro reglas que un esquema
+    derivado debe hacer cumplir. Y los `fsync` obligatorios se extienden a la ruta de conflicto
+  · CONSISTENCIA · el marcador deja de llamarse «tercera categoría» en §2.6.6 · W11 deja de
+    hablar de «su bandera» · X47 comprueba la PROYECCIÓN NORMATIVA VIGENTE y declara sus
+    excepciones históricas una a una, en vez de afirmar que todo el corpus tiene una sola
+    enumeración cuando conserva historia a propósito
+  · D52–D54 registradas. Tabla adversarial 37 → 42 filas (X54–X58), más las nueve R1–R9
 resuelto_en_la_DEVOLUCION_TECNICA_PREVIA:
   # Auditoría externa de Codex sobre el ÁRBOL REMOTO REAL (7ebdd8a). NO es un veredicto de
   # suficiencia: es revisión TÉCNICA. Tres de sus bloqueantes están en texto que las DOS
   # correcciones anteriores escribieron.
-  · 1 · BLOQUEANTE. UN SOLO AUTÓMATA: cinco fases y dos rutas —normal
-    `preparada→confirmada→derivada`, de conflicto `preparada→conflicto→reconciliada→derivada`—
-    con `derivada` como ÚNICO cierre terminal y tabla de transiciones admitidas. Había CINCO
-    formulaciones incompatibles del mismo autómata. `abortada` rechazada por el esquema
+  · 1 · BLOQUEANTE. UN SOLO AUTÓMATA: dos rutas —normal
+    `preparada→confirmada→derivada`, de conflicto con su ciclo propio— y `derivada` como
+    ÚNICO cierre terminal, con tabla de transiciones admitidas. Había CINCO formulaciones
+    incompatibles del mismo autómata. `abortada` rechazada por el esquema.
+    [REVISADO por D52: el número de fases pasó de cinco a SEIS al hacer recuperable la
+    reconciliación. Ver el bloque de la corrección técnica posterior]
   · 2 · BLOQUEANTE. `tx_abierta` RETIRADO de los canónicos: rompía el
     `hash_posterior_esperado` que la propia transacción declara, y exigía una segunda
     escritura multiarchivo que ningún paso describía. La detectabilidad no toca un byte
@@ -202,7 +234,8 @@ falta_para_cerrar_la_capa:
   · NADA CONSTRUIDO: ni kernel, ni runtime, ni tooling, ni esquemas, ni adaptadores, ni
     plantillas, ni packs, ni validadores, ni migraciones. Las correcciones son DISEÑO
     CORREGIDO, no diseño implementado
-  · NADA PROBADO: las 37 filas de la tabla adversarial de §2.6.7, los 11 escenarios
+  · NADA PROBADO: las 42 filas de la tabla adversarial de §2.6.7, las 9 ventanas R1–R9 de
+    §2.6.9, los 11 escenarios
     negativos de §11.5 y los 12 escenarios de §14 están ESCRITOS. Ninguno ejecutado
   · DEFECTO DE C7 REGISTRADO Y NO CORREGIDO: su gate exige Integration Set con UNA sola
     fuente y E2.6 exige «varias». Prescripción CERRADA, trazabilidad a E2.6, ejecución F6.

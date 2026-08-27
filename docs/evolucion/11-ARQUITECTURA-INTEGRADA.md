@@ -4477,6 +4477,18 @@ Una **auditoría externa sobre el árbol remoto real** —no un informe— devol
 | `D50` | el marcador es operacional, con excepción de ruta declarada | `D40` | creaba una tercera categoría informal que §2.4 no tiene |
 | `D51` | reparto de dominio: certificación sólo en `nivel-certificacion` | `D43` · `D26` | dos normas editables para el mismo aspecto |
 
+### `D52`–`D54` · las decisiones de la corrección técnica posterior
+
+Posterior a la devolución técnica previa y **anterior a la tercera revisión independiente**.
+Dos de sus tres hallazgos son BLOQUEANTES, y los tres están en texto que las correcciones
+anteriores escribieron. `D16`–`D51` conservan su texto.
+
+| | decisión | qué revisa | por qué |
+|---|---|---|---|
+| `D52` | **seis fases**: la ruta de conflicto gana `reconciliacion-preparada`, su intención durable previa | `D46` · `D35` | **BLOQUEANTE**: la reconciliación no era recuperable — una caída entre decidir y emitir dejaba el diario sin la decisión |
+| `D53` | lo descubierto tras el cierre es un evento `deriva`, no una fase | `D34` · `D46` | **BLOQUEANTE**: la integridad post-terminal emitía `conflicto` sobre una transacción terminal, saliendo del terminal |
+| `D54` | contrato **condicional por fase** para `evento` | `D23` | el contrato genérico no podía representar lo divergente, la decisión ni el `hash_final` |
+
 
 
 ---

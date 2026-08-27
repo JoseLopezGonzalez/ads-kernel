@@ -70,6 +70,14 @@ ambas rutas · `abortada` retirada y **rechazada por el esquema**.
 **No se reescribe `D38`.** Se añade `D46`, que la revisa y explica que retirar `abortada` y
 añadir `reconciliada` deja **cinco fases, no cuatro**.
 
+> **ADDENDUM · esta prescripción quedó CORTA, y se dice.** Una corrección técnica posterior
+> encontró que la ruta de conflicto de este mismo autómata **no era recuperable**:
+> `reconciliada` declaraba la decisión y a la vez la daba por aplicada, luego una caída entre
+> decidir y emitir dejaba el diario sin la decisión, sin su mecanismo y sin el resultado
+> esperado. Se añadió `reconciliacion-preparada`, y el autómata vigente tiene **SEIS fases**.
+> Es `D52`, y revisa a `D46`. El texto de arriba se conserva como lo que era: la prescripción
+> de esta devolución, correcta en lo que vio e insuficiente en lo que no.
+
 **Prueba futura `X47`.** El enum de `evento.fase` es único en todo el corpus, `abortada` es
 rechazada por el validador de esquema, y ninguna sección enumera un conjunto distinto.
 
@@ -174,8 +182,14 @@ divergente sin transacción abierta.
 **Corrección.** Se define con precisión qué es una ventana de commit, qué transacciones se
 comprueban, qué hash rige tras `reconciliada`, cómo se verifica que los canónicos versionados
 coinciden con `HEAD`, qué ocurre ante un working tree divergente **sin** transacción abierta
-—es **deriva no transaccional**, se reporta y se escala, y **nunca se restaura sola**— y con
-qué autoridad se restaura desde Git: **la del Owner, nunca automática**.
+—se reporta y se escala, y **nunca se restaura sola**— y con qué autoridad se restaura desde
+Git: **la del Owner, nunca automática**.
+
+> **ADDENDUM · esta corrección introdujo un defecto propio, y se dice.** Al hacer que la
+> comprobación emitiera `conflicto`, y siendo `derivada` terminal por `D46`, quedó **una
+> transición que sale del terminal**. La corrección técnica posterior lo separó por
+> identidad: `conflicto` para una transacción abierta, evento **`deriva`** para lo descubierto
+> tras el cierre. Es `D53`, y revisa a `D34` y a `D46`.
 
 **Prueba futura `X51`.** Working tree divergente respecto a `HEAD` sin transacción abierta: el
 arranque **lo nombra**, no lo completa, no lo revierte y no lo restaura.
@@ -265,6 +279,12 @@ ningún campo de certificación está declarado en dos sitios.
 ---
 
 # Veredicto
+
+> **Estado de esta devolución tras la corrección técnica posterior.** Dos de sus once
+> prescripciones —el autómata de cinco fases y la integridad post-terminal— resultaron
+> **insuficientes o defectuosas**, y están revisadas por `D52` y `D53`. Se conservan enteras:
+> son el registro de qué se vio entonces, y la prueba de que una devolución que se aplica no
+> queda por ello comprobada.
 
 ```text
 ESTA DEVOLUCIÓN NO CERTIFICA `F4c`.
