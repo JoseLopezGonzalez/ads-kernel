@@ -6,8 +6,15 @@
 > **Basta decir «Continúa»**: la siguiente acción exacta está al final.
 
 > **Estado de la fase, en una línea:**
-> **F4 corregida por segunda devolución independiente y por devolución técnica previa; F4c
-> ABIERTA, pendiente de tercera revisión independiente.**
+> **La TERCERA REVISIÓN INDEPENDIENTE se ha emitido y su veredicto es INSUFICIENTE PARA F5.
+> F4c NO se cierra: sigue ABIERTA.**
+>
+> La emitió un revisor con contexto limpio que **no escribió F4 ni aplicó ninguna de sus
+> correcciones**, sobre el árbol `df05929`: **DOS BLOQUEANTES, ocho GRAVES, cinco MEDIOS y
+> siete MENORES**, más quince hallazgos que intentó y **no pudo reproducir**. Está en
+> [`15-TERCERA-REVISION-INDEPENDIENTE-F4C.md`](15-TERCERA-REVISION-INDEPENDIENTE-F4C.md).
+> **Ninguno de sus hallazgos se ha corregido**: corregirlos en la misma pasada volvería a
+> hacer que quien recibe sea quien aplica.
 >
 > Y por una **corrección técnica posterior** sobre el protocolo transaccional, que encontró
 > **dos bloqueantes más** en el texto que las correcciones anteriores escribieron. Tampoco es
@@ -49,14 +56,15 @@
 ```text
 CHECKPOINT — ADS-NEXT/10 · SIS/evolucion
 actualizado: 2026-08-27
-metodo:      SIS/Evolucion · F4 CORREGIDA POR SEGUNDA DEVOLUCIÓN INDEPENDIENTE Y POR
-             DEVOLUCIÓN TÉCNICA PREVIA; F4c ABIERTA Y PENDIENTE DE TERCERA REVISIÓN
+metodo:      SIS/Evolucion · TERCERA REVISIÓN INDEPENDIENTE EMITIDA · VEREDICTO
+             INSUFICIENTE PARA F5 · F4c ABIERTA
 based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md@56ea196
              docs/evolucion/11-ARQUITECTURA-INTEGRADA.md   corregida
              docs/evolucion/12-CRITICA-INDEPENDIENTE-F4.md
              docs/evolucion/13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md
              docs/evolucion/14-DEVOLUCION-TECNICA-PREVIA-F4C.md
+             docs/evolucion/15-TERCERA-REVISION-INDEPENDIENTE-F4C.md   VEREDICTO
              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · D16–D22 ·
                                                              D23–D33 · D34–D45 · D46–D51 ·
                                                              D52–D54 · D55–D57 · D58–D59 ·
@@ -73,6 +81,52 @@ procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y
              crítica NO equivale a autocertificarse, y NO prueba que esté bien resuelta.
              LA PRUEBA DE QUE ESTO IMPORTA: dos de los hallazgos de la segunda devolución son
              defectos que la PRIMERA CORRECCIÓN introdujo o no vio
+devuelto_por_la_TERCERA_REVISION_INDEPENDIENTE:
+  # NO es una lista de resueltos: es lo que la revisión independiente DEVUELVE SIN RESOLVER.
+  # Emitida por un revisor con contexto limpio sobre df05929. VEREDICTO: INSUFICIENTE PARA F5.
+  # NINGÚN hallazgo se ha corregido en la pasada que la registra.
+  · B1 · BLOQUEANTE. EL CONFLICTO AGOTADO ES UN INTERBLOQUEO TERMINAL SIN SALIDA. Desde
+    `conflicto(observacion: 4, agotado: true)` no existe ninguna transición admisible: no hay
+    `reconciliacion-preparada` —predecesora prohibida—, no hay `derivada` —predecesoras
+    `confirmada`/`reconciliada`, ambas 0 en esa ruta—, `abortada` está retirada, `deriva` no
+    aplica y una transacción nueva la bloquea el marcador. Y como ninguna fase salvo
+    `derivada` retira el marcador, el control repo NO VUELVE A COMMITEAR NUNCA, para todo el
+    producto, por un solo conflicto agotado sobre un solo fichero
+  · B2 · BLOQUEANTE. EL GOBIERNO GIT DEL CONTROL REPO NO EXISTE, y F4 lo rellena por
+    inferencia sobre una regla que `E2.4` acota expresamente a las FUENTES. No se declara qué
+    rama recibe las escrituras del runtime, con `main` protegida
+  · G1 · GRAVE. «Los cinco conceptos de a.9» están MAL CITADOS, y son la lista de campos
+    obligatoria de todo evento
+  · G2 · GRAVE, de PROPORCIONALIDAD. Dos mecanismos para el mismo estado de disco: la ruta de
+    reconciliación puede ser complejidad no justificada —tres fases, dos contadores, una
+    bandera, nueve ventanas y cinco filas adversariales—. La carga de la prueba es de F4
+  · G3 · GRAVE. El contrato de `fallo` no puede representar lo que cuatro pasajes normativos
+    y dos pruebas le exigen
+  · G4 · GRAVE. §8.3 migración no declara qué LEE ni qué ESCRIBE, y su único paso destructivo
+    escribe en las fuentes sin gobierno
+  · G5 · GRAVE. §8.4 actualización no declara su ESTADO persistido
+  · G6 · GRAVE. Tres de los cuatro macrocircuitos no dicen a qué proceso de `b.16` pertenecen
+    sus items
+  · G7 · GRAVE. `N0` crea un paquete que pertenece a una iniciativa, y §3.3.0 acaba de
+    declarar que eso no existe
+  · G8 · GRAVE. Las doce áreas de §4.3 NO son las doce del §5.18 que `O8` resuelve
+  · M1–M5 · MEDIOS. Sede normativa invocada y no definida · referencias colgantes a `X32`–
+    `X34` y `X42` · §15.7 declara `C6` REUTILIZADO mientras §6.7 le añade una excepción ·
+    retirar un adaptador borra ficheros en repositorios ajenos sin gobierno · el tope de
+    reintentos invoca el precedente de `a.9` invirtiendo su cláusula de terminación
+  · m1–m7 · MENORES. El más importante: DOS FRASES VIGENTES vuelven a prometer el append-only
+    físico absoluto que `D63` retira
+  · NO REPRODUCIDOS · quince, y el revisor los registra con su motivo: cardinalidades,
+    cuarto intento, transiciones desde `derivada`, exclusión `confirmada`/`reconciliada`,
+    cobertura de ventanas, tabla adversarial, partición de la matriz, `Q0`–`Q9` total y
+    disjunta, promesas vivas sobre la lápida, contrato de identidad, `P-08`, los ONCE puntos
+    de la adopción, `O13`, los dos relojes documentales, y todos los recuentos del árbol
+  · LAS OCHO PRESIONES NORMATIVAS quedan CONFIRMADAS como bien identificadas, con fuente y
+    contradicción verificadas una a una. FALTA UNA: la de `G8` sobre `O8`. Y hay una
+    candidata que depende de cómo se resuelva `B2`
+  · O15 VERIFICADA FIEL: los seis puntos del Owner están literales, incluido que NO autoriza
+    iniciar la adopción. Pero el revisor concluye que PesquerApp NO PUEDE recibir hoy una
+    adopción permanente y completa, por `B2`, `B1`, `G7`, `G6` y `G4`
 resuelto_en_la_SEXTA_COMPROBACION_TECNICA:
   # Comprobación ACOTADA sobre la semántica de sellado y retirada de cuerpo. NO es la tercera
   # revisión independiente, y NO certifica F4c. SÉPTIMO encadenamiento consecutivo.
@@ -464,11 +518,16 @@ owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
              de control DEFINITIVO. NO autoriza iniciar la adopción" (2026-08-27)
 pregunta_pendiente: ninguna. Las OCHO presiones normativas vigentes son materia de F5,
              no preguntas
-siguiente:   TERCERA REVISIÓN INDEPENDIENTE de F4, por quien NO la escribió y NO aplicó
-             NINGUNA de las TRES tandas de correcciones. Después F5
+siguiente:   CERRAR los DOS BLOQUEANTES y los OCHO GRAVES que la TERCERA REVISIÓN
+             INDEPENDIENTE devuelve, empezando por C1 —la salida del conflicto agotado— y
+             C2 —el gobierno Git del control repo—. Después, una CUARTA revisión
+             independiente sobre el resultado. F5 NO arranca
 falta_para_cerrar_la_capa:
-  · F4c ESTÁ ABIERTA. Dos devoluciones independientes, la segunda con veredicto explícito de
-    INSUFICIENCIA, y DOS correcciones técnicas más. Las correcciones de todas las aplicó
+  · F4c ESTÁ ABIERTA, y ahora con un veredicto INDEPENDIENTE Y EXPLÍCITO de INSUFICIENCIA
+    sobre el resultado corregido: DOS BLOQUEANTES y OCHO GRAVES. Es el juicio que F4c exigía
+    como su única puerta, y NO la cierra.
+    Antes: dos devoluciones independientes, la segunda con veredicto explícito de
+    INSUFICIENCIA, y CUATRO comprobaciones técnicas más. Las correcciones de todas las aplicó
     QUIEN LAS RECIBIÓ, y eso no prueba que estén bien resueltas. LA EVIDENCIA DE QUE EL
     ENCADENAMIENTO IMPORTA: dos de los hallazgos BLOQUEANTES de la segunda son defectos que
     la PRIMERA CORRECCIÓN introdujo o no vio, los TRES de la segunda corrección técnica están
@@ -868,8 +927,14 @@ la corrección se registra por ADDENDUM sobre los documentos existentes.
 ## Siguiente acción exacta
 
 ```text
-1  TERCERA REVISIÓN            por quien NO escribió F4 y NO aplicó NINGUNA de las dos
-   INDEPENDIENTE               tandas de correcciones. La segunda devolución demostró por
+0  LA TERCERA REVISIÓN         YA SE EMITIÓ, y su veredicto es INSUFICIENTE PARA F5.
+   INDEPENDIENTE               Lo siguiente NO es pedir otra revisión: es CERRAR sus DOS
+                               BLOQUEANTES y sus OCHO GRAVES, empezando por C1 y C2, que son
+                               las dos condiciones sin las cuales F4c no puede volver a
+                               revisarse. NINGÚN hallazgo se corrigió al registrarla.
+
+1  POR QUÉ NO SE CORRIGIÓ      por quien NO escribió F4 y NO aplicó NINGUNA de las dos
+   EN LA MISMA PASADA          tandas de correcciones. La segunda devolución demostró por
                                qué esto no es ceremonia: DOS de sus hallazgos BLOQUEANTES
                                eran defectos que la PRIMERA CORRECCIÓN introdujo o no vio.
                                Sin un veredicto explícito de SUFICIENCIA, F4c no cierra y
