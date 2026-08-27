@@ -2446,8 +2446,9 @@ UN FICHERO NO VERSIONADO     no sobrevive a un clon nuevo, y `C6` `N9` dice que 
                 **Corregido** (hallazgo `I.1`): F4c decía «el id del componente», en
                 singular, y `C6` `N7` declara que «componente y fuente NO tienen cardinalidad
                 1:1 obligatoria», con el caso MONOREPO explícito —`web → repo app, ruta
-                apps/web` y `api → repo app, ruta apps/api`—. El campo singular encerraba a
-                ADS en `1 repo = 1 componente`, que es justo lo que §6.6 dice que se evita.
+                apps/web` y `api → repo app, ruta apps/api`—. El campo singular reintroducía
+                por la puerta de atrás la equivalencia que `C6` retira en su primer párrafo
+                sobre los tres conceptos, y que `E2.0` declara formulación RETIRADA.
                 La lista se DERIVA de `SOURCES.toml`, no se escribe: un componente nuevo
                 obliga a recompilar el puntero
    NO CONTIENE  reglas de trabajo · memoria · estado · items · decisiones · contratos ·
@@ -3402,6 +3403,9 @@ CIERRE DEL ITEM            no cierra con una fuente sin integrar. Si una se fusi
 | permisos y credenciales | las aporta el entorno; el manifiesto **nunca** los lleva | — |
 | trabajo fuera de ADS | `C6`: no se impide y **ADS no finge** que pasó por sus gates | — |
 | **ramas abandonadas** | **nada** | `CAND-026` lo midió: diez sin fusionar y nada que las mire. Exige runtime |
+| **Integration Set con UNA sola fuente** | **`C7` lo exige y `E2.6` no** | defecto de material DERIVADO con prescripción cerrada (§9.5). Con el texto vigente de `C7`, ningún producto de un repositorio cierra un item. NO es presión normativa. F6 |
+| **gobierno Git del CONTROL REPO** | **nada: ninguna fila de `C7` lo alcanza** | `C7` gobierna las operaciones de las FUENTES. El commit y el push del control repo —donde vive `estado/`— no tienen tabla de propiedad. Declarado en §2.6.10, y su relleno es F6 |
+| **`T161` no ve una formulación retirada partida por un salto de línea** | **su recorrido es por líneas** | encontrado POR ACCIDENTE al aplicar la corrección de `I.1`. No es un falso negativo grave hoy, y sí es un hueco del recorrido. F6 |
 | Git de las fuentes ↔ Git de `ads-kernel` | regla 6 de la directiva: materias distintas | — |
 
 ## 10.3 · Lo que no se hace

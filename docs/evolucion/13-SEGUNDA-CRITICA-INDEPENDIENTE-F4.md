@@ -338,9 +338,24 @@ una fuente.
 ## `I` · Puntero en las fuentes — **CONFIRMADO en los tres puntos · GRAVE**
 
 **`I.1` cardinalidad.** El campo es singular y `C6` `N7` declara que *«componente y fuente NO
-tienen cardinalidad 1:1 obligatoria»*, con el caso MONOREPO explícito. *«§6.6 declara que el
-propósito de todo esto es no encerrar a ADS en 1 repo = 1 componente, que es exactamente lo
-que el campo singular hace.»* → el campo pasa a **lista derivada de `SOURCES.toml`**.
+tienen cardinalidad 1:1 obligatoria»*, con el caso MONOREPO explícito. El campo singular
+reintroduce la equivalencia que `C6` retira y que `E2.0` declara formulación RETIRADA — que
+es exactamente lo que el campo singular hace. → el campo pasa a **lista derivada de
+`SOURCES.toml`**.
+
+> **Dos precisiones del transcriptor, y las dos van contra el revisor.** (1) El revisor
+> atribuye esa frase a **§6.6**, y §6.6 es «Cambio de proveedor» y no dice nada de eso: la
+> fuente real es `C6`, en su párrafo sobre los tres conceptos. La misattribución es
+> exactamente el defecto que este mismo revisor persigue en `J`, `N-8` y `N-9`, y se corrige
+> en vez de propagarse. (2) Su formulación literal **no puede transcribirse**: `T161` la
+> detecta como formulación retirada por `E2.0`, y el corpus no la conserva ni siquiera para
+> negarla. Se parafrasea, y se dice que se parafrasea.
+>
+> **Y una observación que el hallazgo destapa:** `C6` sí conserva esa formulación —para
+> declararla prohibida— y `T161` **no la detecta**, porque allí queda partida por un salto de
+> línea y el recorrido de `T161` es por líneas. Es un hueco real de `T161`, encontrado por
+> accidente al aplicar esta corrección. No se arregla aquí —es `kernel/operativo/`— y queda
+> registrado para F6.
 
 **`I.2` descubrimiento.** La lógica de recorrer hermanos y comparar remotos *«está declarada,
 pero como prosa, no como contrato»*: no tiene campo en §3.4, luego un adaptador conforme puede
