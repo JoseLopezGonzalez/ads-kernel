@@ -158,7 +158,7 @@ entera.
 | estado de una iniciativa | **nadie**: se calcula desde sus items (§3.3.1) | — | runtime |
 | nivel alcanzado por un adaptador | **nadie**: se deriva de sus celdas de certificación (§6.5) | — | runtime |
 
-**Tres reglas cierran la matriz, y las tres son `a.9` literal.**
+**Tres reglas cierran la matriz. Dos son `a.9` literal; la tercera se deriva de `a.7`.**
 
 ```text
 1  UNA FILA CON AUTORIDAD «NADIE» ES DERIVADA, y editarla no es una escritura canónica.
@@ -1224,7 +1224,7 @@ El §26.5 del documento de pendientes lo exige, y `D11` ya lo aplicó una vez al
 | **manifiesto de transacción** | **NO ES UN TIPO** | mismo sujeto y misma autoridad que `evento`. Su «ciclo propio» era que cambiaba de fase, y reescribir el registro que debe sobrevivir a una caída era el defecto, no la propiedad. Se compone: una transacción es una secuencia de eventos inmutables con `tx` común. Ver §2.5 |
 | **sujeto auditable** | **REFERENCIA TIPADA, no tipo** | se identifica con `(clase, ancla, ruta)` y se **declara dentro de la celda de cobertura**. Crear un tipo para el sujeto obligaría a un registro paralelo de pantallas, flujos y formularios que nadie mantendría, y a deformar `SOURCES.toml` — que es lo que `CI-1` prohíbe |
 | **matriz sujeto × aspecto** | **VISTA DERIVADA** | es la proyección de las celdas de cobertura. Persistirla sería una segunda verdad |
-| **finding** | **NO ES UN TIPO** | un finding clasificado **es un item**: la tabla del §20.8 mapea uno a uno sobre los diez procesos de `b.16`. Antes de clasificarse vive en la evidencia del `AUD` que lo produjo |
+| **finding** | **NO ES UN TIPO** | un finding clasificado por `ENC` a través de las nueve clases de entrada **o bien** produce un item de uno de los diez procesos de `b.16`, **o bien** no produce trabajo: se vincula a uno existente, o se corrige documentalmente. **Ninguna de las dos salidas exige un tipo nuevo**, y el §20.8 nombra las dos. Antes de clasificarse vive en la evidencia del `AUD` que lo produjo. **Corregido** (hallazgo `N-8`): F4c decía que §20.8 «mapea uno a uno sobre los diez procesos», y no lo hace — `SEG` no es un proceso, dos filas no producen item, tres procesos no aparecen y una fila es ambigua entre dos. El veredicto aguanta; el argumento con que se sostenía, no |
 | **causa raíz** | **CAMPO, no tipo** | agrupa items ya existentes. Es una referencia común, no un sujeto |
 | **campaña de corrección** | **ES UNA `iniciativa`** | varios items, un sentido común, un gate de cierre. Exactamente lo que la iniciativa es |
 | **excepción aceptada** | **ESTADO DE `cobertura`** | con responsable, motivo y caducidad, que la celda ya necesita |
@@ -1253,15 +1253,58 @@ fuera_de_alcance  qué NO entra. Sin esto, una iniciativa crece hasta ser el pro
 apertura          quién la abrió y por qué señal
 items             referencias. NUNCA copia su estado
 obligaciones      lo que la iniciativa DEBE dejar producido, más allá de que sus items
-                  cierren. Misma forma que las obligaciones de proceso de `b.3`
+                  cierren. **CONSUME** los predicados de `b.3`; NO los reutiliza. Ver abajo
 gate_de_cierre    ref a un gate
 riesgos · decisiones · contratos_previstos    referencias
-banderas          `aparcada` · `cancelada`, autoridad del Owner
+banderas          `aparcada` · `cancelada`, autoridad del Owner. Su PROPAGACIÓN a los items
+                  está declarada abajo, y no es mecánica
 ```
 
 **Su estado NO es un campo.** `b.4` define el estado global como función total sobre los
 paquetes de un item. Dar a la iniciativa un estado editable crearía una segunda verdad sobre
 lo mismo, que es `I5`.
+
+### 3.3.0 · Los dos predicados de obligación, definidos a nivel de iniciativa
+
+> **Corregido por la segunda devolución independiente (hallazgo `N-6`, GRAVE).** F4c decía
+> «misma forma que las obligaciones de proceso de `b.3`», y los dos predicados de `b.3` están
+> definidos sobre objetos que **una iniciativa no tiene**:
+>
+> ```text
+> obligación_satisfecha   exige una CAPA VIGENTE. Las capas las depositan las capacidades en
+>                         PAQUETES, y `b.1` fija que un paquete pertenece a un ITEM. Una
+>                         iniciativa no tiene paquetes ni capas: sólo `items` como referencias
+> obligación_retirada     exige una RECOMPOSICIÓN APROBADA, que es `b.9`, definida sobre la
+>                         RUTA DE UN ITEM. Una iniciativa no tiene ruta
+> ```
+>
+> **Consecuencia mecánica:** toda obligación de iniciativa era huérfana desde que se escribía,
+> y `Q9` devolvía `bloqueada` **para siempre**. Una iniciativa con obligaciones **nunca podía
+> cerrar**. Es el mismo bloqueo perpetuo que `D32` corrigió para la Integrada, en otro sitio y
+> sin detectar — y hacía que la función «total» de §3.3.1 **no fuera computable en su última
+> rama**.
+
+```text
+obligación_de_iniciativa_satisfecha(o) ≡
+    existe una CAPA VIGENTE **de alguno de sus items** enlazada EXPLÍCITAMENTE a `o`
+
+    La iniciativa NO produce capas: las CITA. Con eso la satisfacción se apoya en `b.3` sin
+    deformarla, y el enlace explícito impide que una capa cualquiera se lea como cumplimiento
+    de una obligación que nadie conectó con ella.
+
+obligación_de_iniciativa_retirada(o) ≡
+    una DECISIÓN REGISTRADA de quien abrió la iniciativa —o del OWNER, según la materia—
+    declara que dejó de ser necesaria, IDENTIFICA LA AUTORIDAD y EXPLICA CÓMO AFECTA al
+    resultado perseguido
+
+    Es el equivalente de la recomposición aprobada de `b.9`, sin inventar una ruta de
+    iniciativa. Conserva los tres requisitos que `b.3` exige de una retirada.
+```
+
+**Se registra como CONSUMO, no como reutilización** — que es exactamente lo que `D29` hizo,
+correctamente, con `b.4`, y lo que el argumento de la retirada de `PN-4` establece. Que la
+definición pertenezca a (g) y no redefina `b.3` es lo que **`PN-9` pide a F5 que confirme**, y
+no se da por hecho aquí.
 
 ### 3.3.1 · La función de estado, total y disjunta
 
@@ -1317,9 +1360,10 @@ Q9   TODOS los items terminales (`cerrado` | `cancelado`):
 ```
 
 **Totalidad, demostrada y no afirmada.** Los diez estados globales de `b.4` quedan cubiertos:
-`reconciliacion-pendiente` por Q0 · `cancelando` y `cancelado` por Q1/Q2/Q8/Q9 · `aparcado`
-por Q3 y Q8 · `en desacuerdo` por Q5 · `activo` por Q6 · `bloqueado` por Q7 · `en espera` y
-`encuadrado` por Q8 · `cerrado` por Q9. El conjunto vacío, por Q4. **No existe combinación
+`reconciliacion-pendiente` por Q0 · `cancelando` **de ITEM** por Q8 y `cancelado` **de ITEM**
+por Q9 —`Q1` y `Q2` se disparan por la BANDERA DE LA INICIATIVA, no por el estado de un item,
+y la glosa anterior los mezclaba— · `aparcado` por Q8 · `en desacuerdo` por Q5 · `activo` por
+Q6 · `bloqueado` por Q7 · `en espera` y `encuadrado` por Q8 · `cerrado` por Q9. El conjunto vacío, por Q4. **No existe combinación
 sin resultado, y ninguna produce dos**, porque gana la primera que se cumple.
 
 **Los casos frontera, resueltos:**
@@ -1336,6 +1380,42 @@ sin resultado, y ninguna produce dos**, porque gana la primera que se cumple.
 | aparcada con un item en desacuerdo | `aparcada` (Q3), y el desacuerdo se reporta |
 
 **Sólo `cerrada` exige un acto**: cumplir el gate. Las demás se calculan.
+
+### 3.3.1.1 · Qué hacen las banderas con los items — la propagación, declarada
+
+> **Corregido por la segunda devolución independiente (hallazgo `N-7`).** F4c definía qué
+> **muestra** la iniciativa cuando lleva bandera y no definía qué **le pasa a sus items**. Las
+> dos consecuencias eran:
+>
+> ```text
+> `aparcada` ERA COSMÉTICA   los items seguían `activo`, `b.12` los seguía seleccionando y
+>                            `Continúa` los seguía despachando. El Owner aparcaba una
+>                            iniciativa y el sistema seguía trabajando en ella
+> `cancelando` NO TENÍA      `Q1` da `cancelando` mientras haya un item VIVO, y nada cancelaba
+> SALIDA                     esos items — por `b.4` P1 un item entra en `cancelando` por SU
+>                            PROPIA bandera. `Q2` era inalcanzable salvo acción manual
+> ```
+
+**La propagación es una PROPUESTA, no una ejecución.** §5.4 ya declara que *«cancelar es
+autoridad semántica»*, y `b.15` fija cómo se presenta lo que espera al Owner:
+
+```text
+AL MARCAR LA INICIATIVA   el sistema PROPONE la misma bandera para todos sus items VIVOS,
+`aparcada` o `cancelada`  agrupados en UN LOTE (`G36`, `b.15` paso 2). No la aplica.
+
+EL OWNER RESUELVE EL      item a item o en bloque. Cada aplicación es una orden por `a.9`,
+LOTE                      con su evento y su atribución.
+
+HASTA QUE LO RESUELVA     la iniciativa muestra su bandera y **sus items siguen su curso**.
+                          La vista lo dice con todas las letras: «aparcada, con N items
+                          todavía activos, pendientes de tu decisión». No sabe menos que el
+                          estado, que es lo que §7.5 exige.
+
+CONDICIÓN DE TERMINACIÓN  `Q1` (`cancelando`) termina cuando el Owner ha resuelto el lote y
+DE `Q1`                   ningún item queda vivo. Si el Owner decide NO cancelar algún item,
+                          la bandera de la iniciativa se retira: no se puede cancelar una
+                          iniciativa cuyos items siguen vivos por decisión suya.
+```
 
 ### 3.3.2 · Dónde vive el estado derivado
 
@@ -1409,12 +1489,34 @@ aspecto     REFERENCIA TIPADA CON NAMESPACE. Qué propiedad del sujeto se juzga:
                                                completo (§9)
             Las tres familias tienen CONTRATO DISTINTO y se validan por separado.
 
-responsables  1..N capacidades, con una declarada `lider`. Una capacidad NO es un aspecto:
-              responde de él (§5.2)
+responsables  la DESVIACIÓN respecto al reparto por defecto, cuando la hay, con su motivo.
+              El reparto POR DEFECTO lo declara el `contrato-de-aspecto` (§5.7), que es
+              norma y viaja con el release. Una capacidad NO es un aspecto: responde de él
+              **Corregido** (hallazgo `N-1`): F4c declaraba `responsables` como campo de la
+              celda Y como contenido del contrato del aspecto — dos sedes editables para la
+              misma verdad, que es el defecto que la primera crítica corrigió en
+              `ultima_verificacion_real` y que aquí se había reintroducido
 
-criterio      ref al criterio concreto contra el que se juzga: una rúbrica, un gate, un
-              `nivel-certificacion` o un contrato documental. Sin criterio, `verificado`
-              no significa nada
+criterio      ref al criterio concreto contra el que se juzga, y **resuelve siempre a un
+              artefacto que existe**:
+                `rubrica:<id>`                        ya existe en el corpus
+                `contrato-de-aspecto:<familia>/<n>`   §5.7
+                `nivel-certificacion:<nivel>`         §9.2
+              Sin criterio, `verificado` no significa nada — y un criterio que no resuelve
+              tampoco significa nada, que era el caso de `contrato:documental/O8`
+
+evaluacion_de_pruebas   por cada prueba que el criterio enumera:
+              prueba                        id de la prueba en la norma de clase
+              aplicabilidad                 obligatoria | condicional | no-aplicable
+              motivo_no_aplicable           obligatorio si `no-aplicable`
+              evidencia_de_inaplicabilidad  obligatoria si `no-aplicable`
+              resultado                     pendiente | pasa | falla | no-aplica
+              **Añadido** (hallazgo `N-2`): la `aplicabilidad` de la celda es del par
+              `(sujeto, aspecto)`, y `D32` y `PN-6` exigen evaluarla PRUEBA A PRUEBA. F4c
+              metía esa evaluación «dentro del criterio», que es una norma de CLASE
+              compartida por todas las instalaciones — y `SOURCES.toml@<SHA>` es un dato de
+              ESTE producto y ESTA revisión. Es la forma que `integration-set.verificacion`
+              ya usa en el corpus, con su `resultado: no-aplica` incluido
 
 aplicabilidad   obligatoria | condicional | no-aplicable
 motivo_no_aplicable   obligatorio cuando `no-aplicable`. El §5.18 lo exige: una evaluación
@@ -1429,7 +1531,15 @@ estado      no-auditado | planificado | en-curso | parcial | findings-abiertos |
 verificacion  ultima_real            no la última edición del fichero
               revisiones_examinadas  por fuente, el SHA. Es lo que hace la celda
                                      contrastable
-              verificador            quién, y qué independencia declara
+              auditor                quién produjo el JUICIO de la celda, y qué
+                                     independencia declara
+              verificador_de_correccion  quién verificó la CORRECCIÓN, cuando el estado lo
+                                     exige. Puede estar vacío: una celda `findings-abiertos`
+                                     todavía no tiene nada que verificar
+              **Corregido** (hallazgo `N-11`): F4c tenía un solo campo `verificador` que
+              significaba el auditor en §5.6 y el verificador de la corrección en §5.3 — el
+              mismo campo con dos sentidos en dos secciones, que es lo que §5.6 promete que
+              no ocurre. Se parte, con la misma disciplina con que `D25` partió `dimension`
 evidencia · findings   referencias a items
 caducidad · triggers   qué la vence y qué la reabre
 responsable_de_corregir
@@ -1473,9 +1583,12 @@ lista de deseos.
 ## 3.7 · Extensiones, sin tipo nuevo
 
 ```text
-memoria.yaml          + `estado` — ciclo NORMATIVO del documento: `vigente | sustituida |
-                      retirada`, la forma de `b.3`. NO es estado de verificación: ése es
-                      de la celda
+memoria.yaml          + `estado` — ciclo NORMATIVO PROPIO del documento, de CUATRO valores.
+                      NO es estado de verificación: ése es de la celda. Ver §4.2
+                      **Corregido** (hallazgo `J`): F4c escribía `vigente | sustituida |
+                      retirada` y lo atribuía a `b.3`. `b.3` dice
+                      `vigente | sustituida | INVALIDADA`, y `retirada` en `b.3` es un
+                      predicado sobre OBLIGACIONES, no sobre capas
                       + `plano` OBLIGATORIO — uno de los cinco planos de §1.2
                       `capa` pasa a CONDICIONAL: sólo la declara conocimiento que viaja
                       con un release
@@ -1499,16 +1612,25 @@ LO QUE DEJA DE SER TIPO · UNO
     el manifiesto de transacción. Se pliega en `evento` como una `fase`, y §2.5 comprueba
     propiedad a propiedad que no se pierde ninguna.
 
-ESQUEMA DE CLASE NUEVO · UNO, Y NO ES UN TIPO DE ESTADO
+ESQUEMAS DE CLASE NUEVOS · DOS, Y NINGUNO ES TIPO DE ESTADO
     `nivel-certificacion`. Aloja pruebas, propietario, crítico, jerarquía e invalidación de
     cada nivel. Es NORMA, no estado. Su precedente exacto está en el corpus:
     `esquemas/nivel-novedad.yaml`. Ver §9.2.
+    `contrato-de-aspecto`. Aloja el reparto de responsables POR DEFECTO, el criterio, las
+    pruebas, la caducidad y los triggers de una FAMILIA de aspectos. Misma clase de
+    artefacto, mismo precedente. **Añadido por la segunda devolución independiente**: F4c
+    lo invocaba TRES VECES como sede normativa y no lo definía, ni lo contaba. Ver §5.7.
 
 ESQUEMAS AMPLIADOS · DOS
     `memoria` (generalizado, §4) · `validadores` (bloque `entradas:`, §11)
 
-TOTAL   19 esquemas vigentes + 4 tipos de estado + 1 de clase = 24
+TOTAL   19 esquemas vigentes + 4 tipos de estado + 2 de clase = **25**
 ```
+
+> **El recuento se recalcula, y por eso cambia.** Pasó de «cuatro y ni uno más» a 24 en la
+> primera devolución, y de 24 a 25 en la segunda. Un recuento que se calcula **se mueve
+> cuando aparece algo que no se había contado**; uno que se fija de antemano, no. Esa
+> diferencia es exactamente lo que §3.1 existe para proteger.
 
 **Por qué `nivel-certificacion` no cabe en `gate`.** Un gate declara comprobaciones,
 evidencia y consecuencia al fallar. Un nivel declara además **qué nivel presupone** y **qué
@@ -1621,9 +1743,10 @@ podía representarlo porque llamaba «caducidad» a las dos cosas.
                         Ejemplo: «caduca cuando cambie la dirección arquitectónica».
 
 `cobertura.caducidad`   VIGENCIA DE UNA VERIFICACIÓN. Cuándo el juicio «esto sigue siendo
-                        cierto» deja de valer. Es propiedad de la CELDA, y la fija el
-                        contrato del aspecto. Ejemplo: «caduca a los seis meses, o antes si
-                        cambia una de las revisiones examinadas».
+                        cierto» deja de valer. Es propiedad de la CELDA, y su valor por
+                        defecto lo fija el `contrato-de-aspecto` de su familia (§5.7).
+                        Ejemplo: «caduca a los seis meses, o antes si cambia una de las
+                        revisiones examinadas».
 ```
 
 | documento | verificación | qué significa |
@@ -1632,6 +1755,47 @@ podía representarlo porque llamaba «caducidad» a las dos cosas.
 | vigente | caducada | **el caso normal y el más frecuente**: el documento sigue siendo exigible, y nadie ha comprobado últimamente que sea cierto. La celda pasa a `vencido` y el sistema lo REPORTA |
 | caducado | vigente | el documento debe reescribirse aunque su última comprobación fuese buena: lo que verificó ya no es lo que se exige |
 | caducado | caducada | reescribir y volver a verificar. Es el peor caso, y es visible |
+
+### El ciclo del documento gobernado — propio, y de cuatro valores
+
+> **Corregido por la segunda devolución independiente (hallazgo `J`).** F4c escribía
+> `vigente | sustituida | retirada` y lo atribuía a `b.3` **dos veces**, en §3.7 y aquí.
+> **`b.3` dice `vigente | sustituida | INVALIDADA`.** Y no era un desliz de nombre:
+> **`retirada` sí existe en `b.3`, aplicado a otro sujeto** — `obligación_retirada`, sobre
+> OBLIGACIONES, no sobre capas. `b.3` advierte con estas palabras: *«Producir lo que una
+> obligación exigía y decidir que ya no forma parte del alcance son resultados DISTINTOS. Si
+> se llaman igual, el sistema puede informar de que entregó algo que en realidad se
+> eliminó.»* F4c tomaba la palabra de un sujeto y la pegaba al ciclo de otro, que es la
+> confusión concreta contra la que `b.3` avisa.
+
+**Y un documento gobernado NO reutiliza la vigencia de `b.3`, por dos razones.** Los tres
+valores de `b.3` describen *si un resultado puede sostener integración y cierre*; un documento
+normativo no sostiene ni integra: **obliga**. Y un documento **retirado del corpus** y uno
+**cuyo contenido se declara falso** son cosas distintas, y las dos ocurren.
+
+```text
+vigente      exigible, y su contenido se cree salvo que su celda diga otra cosa
+
+sustituida   exigible en su ámbito residual, con ENLACE OBLIGATORIO al documento que lo
+             reemplaza. Es el único valor que conserva la forma de `b.3`, y ahí la analogía
+             puede citarse COMO ANALOGÍA
+
+derogada     deja de ser exigible por decisión de su autoridad, SIN REEMPLAZO.
+             Es el caso que F4c no podía escribir con ningún valor válido
+
+refutada     su contenido resultó FALSO. Distinta de `derogada`, porque obliga a revisar
+             todo lo que se apoyó en ella. Es la que corresponde a la intuición de
+             `invalidada` en `b.3`, sin tomarle prestado el nombre
+```
+
+**El cruce con `cobertura.estado`, extendido a los cuatro:**
+
+| documento | celda `verificado` | qué significa |
+|---|---|---|
+| `vigente` | coherente | el caso bueno |
+| `sustituida` | coherente | era cierto, y ya no se usa. Su ámbito residual sigue enlazado |
+| `derogada` | coherente | era cierto cuando se comprobó, y ya no obliga |
+| `refutada` | **INCOHERENTE** | un documento cuyo contenido resultó falso no puede tener una celda que afirme que se verificó y salió bien. La validación cruzada **lo rechaza** |
 
 ### Las tres duplicaciones que se eliminan
 
@@ -1644,12 +1808,11 @@ podía representarlo porque llamaba «caducidad» a las dos cosas.
                                `motivo_no_aplicable`  este ASPECTO no aplica a este SUJETO.
                                                       ¿Por qué, y con qué evidencia?
 
-`memoria.estado` FRENTE A    `memoria.estado` es el CICLO NORMATIVO del documento —
-`cobertura.estado`           `vigente | sustituida | retirada`, la forma que `b.3` ya usa
-                             para la vigencia de una capa. NO es estado de verificación.
-                             `cobertura.estado` es el estado del JUICIO sobre él. Un
-                             documento `sustituida` con celda `verificado` es coherente y
-                             se lee sin ambigüedad: era cierto, y ya no se usa.
+`memoria.estado` FRENTE A    `memoria.estado` es el CICLO NORMATIVO PROPIO del documento.
+`cobertura.estado`           NO es estado de verificación. `cobertura.estado` es el estado
+                             del JUICIO sobre él. Un documento `sustituida` con celda
+                             `verificado` es coherente y se lee sin ambigüedad: era cierto,
+                             y ya no se usa.
 ```
 
 **Cero campos duplicados**, ahora sí: es la condición que `CI-2` conserva de `H5`, y la que
@@ -1671,9 +1834,11 @@ COMPACTACIÓN     un documento declara VARIAS áreas en su bloque `memoria.conti
                  producto pequeño, tres documentos pueden cubrir las doce.
 PROFUNDIDAD      la exige `cobertura.aplicabilidad` por área, derivada de tamaño,
                  naturaleza y riesgo declarados en `PROFILE`.
-RESPONSABLE      cada área declara sus `responsables` en el contrato del aspecto, y NO se
-                 infiere de la capacidad: `SIS` responde de conformidad documental, y del
-                 CONTENIDO de un área responde la capacidad de esa materia.
+RESPONSABLE      cada área declara su reparto POR DEFECTO en su
+                 `contrato-de-aspecto:documental/<area>` (§5.7), y NO se infiere de la
+                 capacidad: `SIS` responde de conformidad documental, y del CONTENIDO de un
+                 área responde la capacidad de esa materia. La celda declara sólo la
+                 desviación, con motivo.
 CONDICIONALES    UX e investigación, dirección visual, sistema de diseño, datos,
                  integraciones, cumplimiento, observabilidad, continuidad,
                  internacionalización. Se activan por aplicabilidad.
@@ -1917,7 +2082,7 @@ sujeto        clase: documento · ancla: transversal · ruta: arquitectura-actua
 aspecto       aspecto:documental/arquitectura-actual       una de las doce áreas de O8
 responsables  [ARQ, SIS]                                   lider: ARQ
               ARQ responde del CONTENIDO; SIS de la conformidad del contrato documental
-criterio      contrato:documental/O8                       las exigencias de §4.2
+criterio      contrato-de-aspecto:documental/arquitectura-actual        §5.7
 aplicabilidad obligatoria
 estado        vencido
 verificacion
@@ -1979,20 +2144,106 @@ sujeto        instalacion:transversal/producto-de-un-repo
 aspecto       aspecto:certificacion/integrado
 aplicabilidad obligatoria
 estado        verificado
-              ⤷ y DENTRO del criterio, la prueba multi-fuente:
-                prueba                        multi-fuente-verificado-como-conjunto
+evaluacion_de_pruebas
+              - prueba                        multi-fuente-verificado-como-conjunto
                 aplicabilidad                 no-aplicable
                 motivo_no_aplicable           el producto declara UNA sola fuente; con una
                                               fuente no hay conjunto que converger (E2.6)
                 evidencia_de_inaplicabilidad  SOURCES.toml@a71f3c2 declara 1 fuente
+                resultado                     no-aplica
+              - prueba                        workspace-check-sobre-fuentes-reales
+                aplicabilidad                 obligatoria
+                resultado                     pasa
 ```
 
 **Los tres caben en el mismo contrato.** Ninguno necesita un campo que los otros dos dejen
 vacío por conveniencia, y ningún campo significa una cosa en uno y otra en otro. Eso es lo
 que el campo único `dimension` no podía sostener.
 
+> **Y la tercera celda NO cabía hasta ahora (hallazgo `N-2`).** F4c colocaba la evaluación de
+> inaplicabilidad «DENTRO del criterio», que es una norma de CLASE compartida por todas las
+> instalaciones — y `SOURCES.toml@a71f3c2` es un dato de ESTE producto y ESTA revisión. El
+> ejemplo 3b era un **contraejemplo de la tesis que este apartado dice demostrar**. Con
+> `evaluacion_de_pruebas` (§3.5) la tesis vuelve a ser cierta, y `X42` la comprueba validando
+> las tres celdas contra el esquema sin campos libres.
+
 > **Ninguna de las tres celdas existe.** Son ejemplos del contrato, no registros de un
 > producto real. `cobertura` no está construida.
+
+## 5.7 · `contrato-de-aspecto` — la norma que F4c invocaba y no definía
+
+> **Añadido por la segunda devolución independiente (hallazgo `N-1`, GRAVE).** F4c invocaba
+> «el contrato del aspecto» **tres veces** como sede normativa —fijaba la caducidad de las
+> celdas (§4.2), declaraba los responsables de cada área documental (§4.3), y se referenciaba
+> desde `criterio` como `contrato:documental/O8` (§5.6)— **y no existía**: sin esquema, sin
+> fichero, sin autoridad, sin ciclo, sin la prueba del §3.1, y **fuera del recuento de §3.8**
+> — en un apartado que abre presumiendo de que *«el recuento se CALCULA, no se fija de
+> antemano»*.
+>
+> **Es el mismo modo de fallo que la primera crítica encontró con el manifiesto de
+> transacción**, reproducido en otra sección y no detectado al corregir. Se le aplica ahora
+> la prueba, por escrito, exactamente como se hizo con aquél.
+
+### La prueba de §3.1, aplicada
+
+```text
+1 ¿lo expresa un tipo existente sin deformarlo?
+     `cobertura` es la CELDA: un sujeto evaluado. El contrato es la NORMA de una familia de
+     aspectos, compartida por todas las instalaciones. Meterlo en la celda obligaría a
+     repetirlo en cada producto y permitiría que dos discreparan sobre qué exige un área.
+     → NO
+
+2 ¿lo expresa la COMBINACIÓN de dos existentes?
+     `rubrica` + `gate` cubren el CRITERIO y las COMPROBACIONES, y no cubren el reparto de
+     responsables por defecto, la caducidad por defecto ni los triggers de familia. → NO
+
+3 ¿le falta un campo a un tipo existente?
+     añadir `responsables_por_defecto`, `caducidad_por_defecto` y `triggers` a `gate` se los
+     daría a TODOS los gates del sistema para que sólo los usara la cobertura. Es el paso 1
+     leído al revés. → NO
+
+4 ¿tiene sujeto propio, autoridad propia y ciclo propio?
+     SUJETO      una FAMILIA DE ASPECTOS, no un sujeto auditado
+     AUTORIDAD   `SIS` para la conformidad del contrato; la capacidad de la materia para su
+                 contenido
+     CICLO       viaja con el release, como `nivel-certificacion`
+     → SÍ
+
+VEREDICTO   ESQUEMA DE CLASE. Es la misma clase de artefacto que `nivel-certificacion` y que
+            el `nivel-novedad.yaml` que ya existe en el corpus. NO es un tipo de estado, y
+            por eso no entra en la cuenta de tipos canónicos — pero SÍ en la de esquemas.
+            El recuento de §3.8 pasa de 24 a **25**.
+```
+
+### Qué declara
+
+```text
+id                       contrato-de-aspecto:<familia>/<nombre>
+familia                  calidad | documental | certificacion
+responsables_por_defecto 1..N capacidades, con una `lider`. Es la NORMA; la celda declara
+                         sólo la DESVIACIÓN, con motivo (§3.5)
+criterio_por_defecto     la rúbrica, el gate o la norma contra la que se juzga
+pruebas                  la lista que la celda evalúa una a una en `evaluacion_de_pruebas`
+caducidad_por_defecto    la que la celda hereda si no declara otra
+triggers                 qué vence y qué reabre, a nivel de familia
+aplicabilidad_por_defecto  y las condiciones que la modifican
+evidencia_minima         sin qué no se puede declarar `verificado`
+```
+
+### La duplicación de `responsables`, resuelta con la disciplina de los dos relojes
+
+```text
+EL CONTRATO DECLARA   el reparto POR DEFECTO. Es norma, y viaja con el release.
+LA CELDA DECLARA      la DESVIACIÓN, si la hay, con su motivo. Es estado, y es del producto.
+UNA FUENTE POR        no dos sedes editables para lo mismo. Es exactamente el remedio que
+PREGUNTA              §4.2 aplicó a `memoria.caducidad` frente a `cobertura.caducidad`.
+```
+
+**Y las tres familias resuelven ahora a algo que existe**, que era la otra mitad del hallazgo:
+`aspecto:calidad/accesibilidad` → `contrato-de-aspecto:calidad/accesibilidad`;
+`aspecto:documental/arquitectura-actual` → `contrato-de-aspecto:documental/arquitectura-actual`;
+`aspecto:certificacion/integrado` → `nivel-certificacion:integrado`, que es su norma propia
+por §9.2. **Ninguna referencia de `criterio` queda sin resolver.**
 
 ---
 
@@ -2269,8 +2520,19 @@ INCONSISTENCIA IRRESOLUBLE    DSP para y escala. NUNCA inventa estado (b.14.3)
 
 ## 7.4 · `Continúa`
 
-Los siete pasos de `b.14` se conservan enteros. Lo que esta arquitectura les añade es **qué
-mira el paso 2**, que hoy no tiene dónde mirar:
+Los siete pasos de `b.14` se conservan, **con una desviación declarada en el paso 2** y
+varias comprobaciones añadidas.
+
+> **Corregido por la segunda devolución independiente (hallazgo `N-9`).** F4c decía que los
+> siete pasos «se conservan enteros» y que sólo se añadía «qué mira el paso 2». **No es
+> exacto: se cambia su disposición.** Donde (b) escribe *«completar o REVERTIR (a.9)»*, esta
+> arquitectura escribe *«completar o marcar conflicto»*, y §2.6 **elimina el ramal de
+> reversión por completo**.
+>
+> La decisión de *roll-forward only* es buena y está argumentada en §2.6.2, y satisface la
+> disyunción de `a.9` —«terminarla **o** revertirla»—. Lo que no era aceptable es hacerlo
+> **declarando que el texto de (b) se conserva entero**. La desviación queda registrada como
+> presión normativa `PN-7` en §16, y no se resuelve aquí.
 
 ```text
 2 VERIFICAR   · ¿existen los artefactos que los paquetes dicen haber producido?
@@ -2352,8 +2614,11 @@ ESCRIBE         control repo entero; las fuentes sólo desde N6
 ESTADO          `estado/` nace en **N0**, con su soporte durable mínimo. Ver abajo
 EVIDENCIA       `workspace check` · prueba de humo por adaptador · checkpoint recuperado
 GATES           N4 certificación Operativa · N7 = O12
-CERTIFICACIÓN   Operativa en N4 · Integrada en N7, con la aplicabilidad de §9.5 —una
-                instalación nueva tiene CERO fuentes, y hay pruebas que no le aplican
+CERTIFICACIÓN   Operativa en N4 · Integrada en N7, con la aplicabilidad de §9.5: en N7 el
+                producto tiene LAS FUENTES QUE N2 DECLARÓ, y la columna que rige es la de
+                ese número. Si son 0, hay pruebas que no le aplican
+                **Corregido** (hallazgo `N-5`): F4c decía «una instalación nueva tiene CERO
+                fuentes», y es falso en N7 — que es donde se invoca
 ROLLBACK        ver «Rollback, con el remoto separado de lo local», abajo
 REANUDACIÓN     **por checkpoint desde N0**. Ningún tramo del recorrido depende del chat
 CIERRE          N7 superado y el primer item de producto despachable
@@ -2645,8 +2910,30 @@ cargara con el aparato de una migración estructural.
 | **Integrado** | fuentes, herramientas, CI, permisos y adaptadores funcionan en el entorno real | que el runtime despache, concurra y recupere | `workspace check` sobre fuentes reales · comandos del producto · CI ejecutable · trabajo multi-fuente mínimo verificado como conjunto | `PLT` | `VER` independiente, con `SEG` si hay superficie sensible | dosier + salidas |
 | **Completo** | runtime, despacho, reanudación, concurrencia, integración y recuperación están demostrados | que el producto sea bueno | los escenarios de §14 ejecutados sobre un producto real | `SIS` | `VER` independiente | dosier + evidencia ejecutada |
 
-**La jerarquía, la aplicabilidad y la regla dura de cada nivel están en §9.2 y §9.5**, que
-es donde vive su norma. Esta tabla es su resumen legible.
+**La lista de pruebas de cada nivel vive UNA SOLA VEZ, en su `nivel-certificacion`** (§9.2).
+Esta tabla y la de §9.5 son **proyecciones** de ella, y no censos independientes.
+
+> **Corregido por la segunda devolución independiente (hallazgo `N-4`).** F4c enumeraba
+> **cuatro** pruebas para el nivel Integrado en esta tabla y **siete** en §9.5. *«Un "resumen
+> legible" que omite tres de siete pruebas no es un resumen: es una segunda lista»* — y `PN-6`
+> fija que «Integrada» significa «todas las pruebas APLICABLES superadas», de las cuales había
+> **dos censos distintos en el mismo documento**.
+>
+> **Y dos de las tres añadidas eran de rango Estructural** —«manifiesto válido y coherente» y
+> «adaptadores con su proyección y su huella»—, que §9.1 asigna al nivel Estructural y que
+> §9.2 declara **presupuesto** por Integrado. Repetirlas creaba dos sitios donde la misma
+> comprobación puede pasar y fallar. **Vuelven a Estructural, que es su sitio.**
+>
+> **La consecuencia con 0 fuentes era una afirmación falsa**, y por eso importa: si las únicas
+> pruebas aplicables de Integrado eran esas dos de rango estructural, una celda
+> `certificacion/integrado: verificado` autorizaba a afirmar que *«fuentes, herramientas, CI,
+> permisos y adaptadores funcionan en el entorno real»* **sin haber comprobado ninguna de las
+> cinco cosas**. §9.5 lo mitigaba con «el dosier lo dice», y `O12` no lee el dosier: **lee el
+> nivel**. De ahí la regla dura de abajo.
+
+**REGLA DURA AÑADIDA, en `nivel-certificacion`:** un nivel **NO se alcanza si TODAS sus
+pruebas propias resultan no aplicables**. Es la condición que impide certificar sobre el
+vacío, y no existía.
 
 ## 9.2 · Cómo se representa — estado en la celda, norma en la clase
 
@@ -2670,8 +2957,13 @@ LA CELDA GUARDA ESTADO — una por nivel y por sujeto, con el contrato de §3.5 
   criterio      nivel-certificacion:<nivel>            ref a la NORMA, abajo
   responsables  las que la norma declara
   aplicabilidad obligatoria | condicional | no-aplicable      + motivo + evidencia (§9.5)
-  estado        no-auditado | en-curso | parcial | verificado | vencido | obsoleto |
-                excepcion-aceptada
+  estado        EL ENUM COMPLETO de §3.5, sin recortes. **Corregido** (hallazgo `N-3`):
+                F4c listaba SIETE valores y declaraba «con el contrato de §3.5 sin cambios»,
+                cuando §3.5 tiene DIEZ. Los tres que faltaban no eran inocuos:
+                `findings-abiertos` y `corregido-sin-verificar` son EXACTAMENTE los dos que
+                §3.5 justifica por `G13`, y son los dos estados en los que una certificación
+                pasa la mayor parte de su vida útil. No hay razón para que la certificación
+                pierda la distinción que `G13` impone al resto
   verificacion  ultima_real · revisiones_examinadas · verificador y su independencia
   evidencia     el dosier
   caducidad · triggers
@@ -2773,12 +3065,26 @@ toda instalación recién hecha, que tiene cero.
 | CI ejecutable | **no aplica** | obligatoria | obligatoria |
 | trabajo multi-fuente verificado como conjunto | **no aplica** | **no aplica**: con una fuente no hay conjunto que converger (`E2.6`) | **obligatoria** |
 | `integration-set` producido | **no aplica** | **no aplica**: `E2.6` exige convergencia ENTRE fuentes, y con una no hay divergencia | **obligatoria** |
-| manifiesto válido y coherente | obligatoria | obligatoria | obligatoria |
-| adaptadores con su proyección y su huella | obligatoria | obligatoria | obligatoria |
+| ~~manifiesto válido y coherente~~ | — | — | — |
+| ~~adaptadores con su proyección y su huella~~ | — | — | — |
+
+> **Las dos filas tachadas se RETIRAN de Integrado** (hallazgo `N-4`): son comprobaciones de
+> rango **Estructural**, y §9.2 declara que Integrado **presupone** Estructural. No
+> desaparecen del sistema: se exigen donde siempre debieron, y dejan de poder pasar y fallar
+> en dos sitios. Se dejan tachadas y no borradas para que se vea qué se movió.
 
 ```text
-0 FUENTES   una instalación recién hecha, antes de N6. No es un caso raro: es el estado de
-            TODO producto nuevo. Integrada se alcanza con lo que SÍ aplica.
+0 FUENTES   un producto que NO HA DECLARADO NINGUNA FUENTE en `SOURCES.toml`. Ocurre
+            cuando un ADS Project gobierna un producto que todavía no tiene repositorio de
+            código: una fase de dirección, de investigación o de diseño previa al primer
+            commit. Integrada se alcanza con lo que SÍ aplica — sujeta a la regla dura de
+            §9.1: un nivel no se alcanza si TODAS sus pruebas propias resultan no aplicables.
+            **Corregido** (hallazgo `N-5`): F4c decía «una instalación recién hecha, antes de
+            N6», y eso es falso en el punto donde se invoca. La aplicabilidad se calcula
+            sobre las fuentes DECLARADAS, y `SOURCES.toml` se rellena en **N2**; la Integrada
+            se certifica en **N7**, después de N2 y de N6. En N7 el producto tiene, por
+            construcción, las fuentes que N2 declaró. El caso de 0 fuentes EXISTE, y no es
+            «toda instalación nueva».
 
 1 FUENTE    un producto de un solo repositorio. Es la mayoría de los productos del mundo, y
             F4 entregada lo dejaba fuera del sistema sin darse cuenta.
@@ -2893,7 +3199,7 @@ VIGENCIA      ¿sigue describiendo el corpus y las entradas que
 Las tres primeras se responden igual aunque la evidencia envejezca. Ésa es exactamente la
 razón por la que una evidencia intacta y caducada pasó por válida.
 
-## 11.2 · Tres huellas que no son la misma
+## 11.2 · Dos huellas separadas, y un artefacto que las lleva
 
 F4 entregada describía **una** huella, calculada sobre *«rutas, extensiones y exclusiones»*
 del corpus. Con eso, cambiar un helper importado cambiaba trece veredictos y **ninguna
