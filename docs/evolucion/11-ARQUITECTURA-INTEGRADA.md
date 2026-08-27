@@ -9,8 +9,11 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 > superada y uso real es la disciplina central de este repositorio, y esta fase produce
 > **sólo la primera**.
 >
-> **F4 no está certificada.** La escribe quien la propone, y el plan exige crítica
-> independiente antes de F5. Este documento no es esa crítica y no la sustituye.
+> **F4 no está certificada, y este texto ya ha sido CORREGIDO una vez.** Un revisor
+> independiente que no la escribió devolvió nueve bloques de hallazgos; están transcritos en
+> [`12-CRITICA-INDEPENDIENTE-F4.md`](12-CRITICA-INDEPENDIENTE-F4.md), y sus correcciones
+> están aplicadas aquí. **Quien las aplicó es quien las recibió**, luego no prueban nada:
+> `F4c` sigue pendiente de una **segunda revisión independiente**.
 
 ---
 
@@ -38,16 +41,19 @@ Para el Owner, sin vocabulario interno.
 6. **Instalar, adoptar, migrar y actualizar son cuatro recorridos distintos** que comparten
    maquinaria y no se mezclan: cada uno tiene su disparador, sus fases, su gate, su rollback y
    su certificación.
-7. Se añaden **cuatro tipos nuevos** al sistema y ni uno más: `iniciativa`, `adaptador`,
-   `cobertura` y `evento`. Todo lo demás se compone con lo que ya existe.
+7. Se añaden **cuatro tipos de estado** —`iniciativa`, `adaptador`, `cobertura` y
+   `evento`— y **un esquema de clase**, `nivel-certificacion`. El número **se calcula**
+   aplicando la prueba materia a materia (§3.8); no se fija de antemano. Todo lo demás se
+   compone con lo que ya existe.
 
 **Qué no se ha decidido, y por qué.**
 
 ```text
 LA CUARTA CAPA           sigue deferida. Hace falta un proyecto independiente que minar.
 EL PILOTO                sigue sin ejecutarse. Nada de aquí está demostrado en un producto.
-LAS ENMIENDAS            este diseño presiona material aprobado en cinco puntos. Se enumeran
-                         y NO se redactan: eso es F5, y su puerta es el Owner.
+LAS ENMIENDAS            este diseño presiona material aprobado en CUATRO puntos, tras
+                         revisar las cinco de la entrega anterior. Se enumeran y NO se
+                         redactan: eso es F5, y su puerta es el Owner.
 ```
 
 **Qué cuesta.** El diseño elige, en cada punto donde había alternativa, la forma que se puede
@@ -2443,7 +2449,47 @@ VIGENCIA      ¿sigue describiendo el corpus y las entradas que
 Las tres primeras se responden igual aunque la evidencia envejezca. Ésa es exactamente la
 razón por la que una evidencia intacta y caducada pasó por válida.
 
-## 11.2 · El mecanismo
+## 11.2 · Tres huellas que no son la misma
+
+F4 entregada describía **una** huella, calculada sobre *«rutas, extensiones y exclusiones»*
+del corpus. Con eso, cambiar un helper importado cambiaba trece veredictos y **ninguna
+huella**. Se separan tres cosas.
+
+```text
+HUELLA SEMÁNTICA      lo que, si cambia, CAMBIA EL VEREDICTO. Seis entradas:
+
+  1  CORPUS                      el CONTENIDO de cada fichero de las entradas declaradas.
+                                 No su `mtime`, no su ruta absoluta, no su orden en disco.
+  2  IMPLEMENTACIÓN DEL          el fichero del propio validador
+     VALIDADOR
+  3  IMPORTS COMPARTIDOS         el CIERRE TRANSITIVO de los módulos DEL REPOSITORIO que
+                                 importa, CALCULADO recorriendo los imports — nunca una
+                                 lista escrita a mano, que es lo que envejece
+  4  MANIFIESTO Y                `validadores.yaml`, `reglas.yaml`, `exclusiones.yaml`. Una
+     CONFIGURACIÓN               exclusión nueva cambia lo que el validador mira
+  5  ARGUMENTOS                  con los que se invocó. `--exclusiones` y sin él no son la
+                                 misma ejecución, y hoy producen la misma evidencia
+  6  ENTRADAS DECLARADAS         el bloque `entradas:` mismo: rutas, extensiones y
+                                 exclusiones, de forma determinista
+
+HUELLA DE ENTORNO     lo que, si cambia, PUEDE cambiar el veredicto sin que cambie nada
+                      semántico. DOS entradas, y ninguna más:
+
+  1  VERSIÓN MAYOR.MENOR         del intérprete
+     DEL INTÉRPRETE
+  2  VERSIÓN DE CADA             biblioteca de terceros que el validador importa
+     DEPENDENCIA EXTERNA
+
+  NI hostname · NI usuario · NI rutas absolutas · NI hora · NI número de ejecución.
+  Eso rompería `R4`, que prohíbe la volatilidad ajena a las entradas.
+
+ARTEFACTO DE SALIDA   la evidencia publicada. Lleva LAS DOS HUELLAS EN CAMPOS SEPARADOS, y
+                      no las mezcla en una sola. Separarlas es lo que permite decir «el
+                      veredicto sigue valiendo, pero se obtuvo con otro intérprete» — que es
+                      un diagnóstico distinto de «el corpus cambió».
+```
+
+### El mecanismo, en cuatro pasos
 
 ```text
 1  CADA VALIDADOR DECLARA SUS ENTRADAS
@@ -2451,49 +2497,108 @@ razón por la que una evidencia intacta y caducada pasó por válida.
    Una entrada es un conjunto de ficheros descrito de forma determinista: rutas,
    extensiones y exclusiones. NO una lista escrita a mano que envejece.
 
-2  LA EVIDENCIA LLEVA LA HUELLA DE SUS ENTRADAS
-   `registrar_evidencia.py` la calcula al publicar y la escribe en la cabecera. Es
-   determinista y no lleva hora de pared.
+2  LA EVIDENCIA LLEVA AMBAS HUELLAS
+   `registrar_evidencia.py` las calcula al publicar y las escribe en la cabecera, en dos
+   campos. Deterministas, y sin hora de pared.
 
-3  T158 RECALCULA Y COMPARA
-   huella distinta → la evidencia está CADUCADA. Mensaje explícito, y el remedio es
-   REGENERAR, nunca editar.
+3  T158 RECALCULA Y COMPARA, Y DISTINGUE DOS DIAGNÓSTICOS
+   huella semántica distinta   → CADUCADA. El veredicto ya no describe lo que validó
+   huella de entorno distinta  → CADUCADA POR ENTORNO. Mensaje propio: lo que cambió no es
+                                 el corpus, y el remedio es el mismo — REGENERAR, nunca
+                                 editar — pero el diagnóstico no miente sobre la causa
 
 4  LO QUE NO CAMBIA
    · el runner sigue SIN sobrescribir evidencia válida cuando una ejecución falla.
      Esa negativa protege la evidencia buena, y es lo que destapó el defecto
    · publicación atómica
    · determinismo: sin timestamps, rutas temporales ni duraciones
-   · T158 sigue exento de comprobarse a sí mismo, y un componente exento NO puede
-     declarar vigencia: comprobaría su evidencia contra sí mismo
 ```
 
-## 11.3 · Coste, y cómo se acota
+## 11.3 · La caché, y por qué su clave no puede ser el SHA de Git
+
+F4 entregada decía que la huella *«se CACHEA en `.ads/run/cache/` por revisión de Git»`*.
+
+> **Un árbol sucio tiene el mismo `HEAD` y contenido distinto.** Con la revisión de Git como
+> clave, la caché sirve un veredicto calculado sobre OTRO contenido. `P-08` existe porque una
+> evidencia intacta y caducada pasó por válida; esa caché reproducía el mismo defecto por
+> otro camino. Y en el trabajo normal —editar y comprobar— el árbol sucio es el caso
+> **permanente**, no el raro: la caché habría estado mintiendo casi siempre.
 
 ```text
-COSTE       recalcular la huella de las entradas de trece validadores en cada comprobación
-ACOTADO POR una huella se calcula leyendo metadatos y contenido de un conjunto acotado, y
-            se CACHEA en `.ads/run/cache/` por revisión de Git. En un árbol limpio y sin
-            cambios, la comprobación es una lectura de caché
-DECLARADO   si el coste resulta inaceptable en el piloto, la alternativa es comprobar
-            vigencia sólo en el runner y no en cada invocación suelta. El CONTRATO no
-            cambia; cambia cuándo se ejecuta
+LA CLAVE       clave = H( huella_semántica ‖ huella_de_entorno )
+               Se calcula sobre el CONTENIDO de las entradas, que es cierto con árbol limpio
+               y con árbol sucio por igual.
+
+EL SHA DE GIT  se conserva en la evidencia como DATO INFORMATIVO —sirve para localizar el
+               commit y para leer la historia— y NO PARTICIPA EN LA CLAVE. Es contexto, no
+               identidad.
+
+UN ACIERTO DE  significa: mismas entradas semánticas, mismo entorno, mismo veredicto. Nada
+CACHÉ          más, y nada menos.
+
+UNA CLAVE      no existe. La clave es el hash de la concatenación de las dos huellas
+PARCIAL        COMPLETAS: no hay forma de acertar con la mitad. Servir por coincidencia
+               parcial es el escenario negativo `NP-6`.
+
+DÓNDE VIVE     `.ads/run/cache/`, plano OPERACIONAL. Borrarla entera no pierde nada: se
+               recalcula. Si perdiera algo, estaría en el sitio equivocado (§2.4).
 ```
 
-## 11.4 · Pruebas negativas que exige
+**Coste, y cómo se acota.** Recalcular la huella semántica de trece validadores exige leer un
+conjunto acotado de ficheros y el cierre de imports, que es pequeño. En un árbol sin cambios
+la comprobación es un acierto de caché. **Declarado:** si el coste resulta inaceptable en el
+piloto, la alternativa es comprobar vigencia sólo en el runner y no en cada invocación
+suelta. **El contrato no cambia; cambia cuándo se ejecuta.**
+
+## 11.4 · La raíz de confianza, sin circularidad
+
+§11.2 de F4 entregada decía que `T158` está exento de comprobarse a sí mismo y que **un
+componente exento no puede declarar vigencia**. Es correcto, y dejaba la pregunta sin
+responder: **entonces quién comprueba la vigencia de la evidencia de `T158`.**
 
 ```text
-· una entrada declarada que ya no existe                  → fallo explicativo
-· una evidencia con huella de entradas que no casa        → CADUCADA
-· un validador sin `entradas:` declaradas                 → fallo: no se puede comprobar
-                                                            su vigencia, y eso se dice
-· una huella calculada de forma no determinista           → dos ejecuciones difieren
-· y las nueve que ya existen para `vigencia`
+NO LA DECLARA `T158`      comprobaría su evidencia contra sí mismo. Eso es la circularidad,
+                          y no se resuelve escribiéndola con más cuidado.
 
-CADA UNA COMPRUEBA EL DIAGNÓSTICO, no sólo que el proceso terminara con código distinto de
-cero. Y una TRAZA se cuenta como NO DETECTADA: un validador que revienta no es un
-validador que detecta.
+LA RESUELVE EL RUNNER     `registrar_evidencia.py` RECALCULA SIEMPRE la evidencia de `T158`
+                          y NUNCA la lee de caché. No decide si vale: la vuelve a producir.
+                          Recalcular es más barato que razonar sobre si vale, y elimina la
+                          circularidad de raíz en vez de administrarla.
+
+EL RUNNER NO ES UN        no publica evidencia sobre sí mismo, no se cachea y no aparece en
+VALIDADOR                 la matriz de vigencia. Su corrección la comprueban las PRUEBAS
+                          NEGATIVAS `N158*`, que sí son evidencia de otro validador
+                          —`negativos`— y que ya rechazan la traza como detección.
+
+EL ORDEN IMPORTA          `comprobar_evidencia.py` va EL ÚLTIMO, como ya va hoy, para no
+                          enmascarar el motivo de otras mutaciones.
+
+EL SUELO QUE QUEDA        **si el runner miente, nada dentro del repositorio lo detecta.**
+ABIERTO, Y SE DICE        Cerrarlo exige un verificador EXTERNO al repositorio, y eso NO se
+                          resuelve aquí. Se declara en vez de taparlo con una capa más de
+                          comprobación interna, que sólo movería la circularidad de sitio.
 ```
+
+## 11.5 · Los escenarios negativos que exige
+
+**Cada uno comprueba EL DIAGNÓSTICO, no sólo que el proceso terminara con código distinto de
+cero.** Y una **traza cuenta como NO DETECTADA**: un validador que revienta no es un
+validador que detecta. Es la disciplina que `N158i`–`N158o` ya impusieron al arnés.
+
+| | escenario | qué debe ocurrir |
+|---|---|---|
+| `NP-1` | **mismo `HEAD`, un fichero de las entradas modificado en el árbol** | huella semántica distinta → **CADUCADA**, nombrando el fichero. Es el escenario que la clave por SHA de Git no detectaba |
+| `NP-2` | cambio en un **helper importado** por el validador, sin tocar el corpus | el cierre transitivo de imports cambia → **CADUCADA**, nombrando el módulo |
+| `NP-3` | el mismo validador invocado **con otros argumentos** | huella semántica distinta → **CADUCADA**, nombrando el argumento |
+| `NP-4` | **cambio de versión** del intérprete o de una dependencia | huella de entorno distinta → **CADUCADA POR ENTORNO**, con diagnóstico PROPIO, distinto del de `NP-1` |
+| `NP-5` | **caché existente con entradas distintas** de las de la invocación | fallo de caché → se recalcula. NUNCA se sirve la entrada vieja |
+| `NP-6` | caché cuya clave **coincide parcialmente** | no existe acierto parcial: la clave es el hash de ambas huellas completas |
+| `NP-7` | **la evidencia de `T158` está caducada** | el runner la RECALCULA, no la lee de caché. Si aun así no casa, FALLO explícito, no silencio |
+| `NP-8` | una **entrada declarada que ya no existe** | fallo explicativo, nombrando la ruta que falta |
+| `NP-9` | un validador **sin `entradas:` declaradas** | fallo: no se puede comprobar su vigencia, **y eso se dice**. No se asume vigente |
+| `NP-10` | una huella calculada de forma **no determinista** | dos ejecuciones seguidas difieren → fallo. Es `T03` aplicado a la propia huella |
+
+**Y las nueve que ya existen para `vigencia`** siguen en pie, sin cambio.
 
 ---
 
@@ -2545,7 +2650,7 @@ que falta es su sucesor.
 |---|---|---|
 | lectura incremental por huella | releer lo que no cambió | sustituir la lectura cuando la decisión es crítica |
 | índices y vistas derivadas | recorrer el corpus | ser fuente de verdad |
-| caché invalidable por revisión | recomputar análisis vigente | sobrevivir a un cambio de sus entradas |
+| caché invalidable por huella de entradas | recomputar análisis vigente | sobrevivir a un cambio de sus entradas, ni al de su entorno (§11.3) |
 | selección de modelo por dificultad | modelo fuerte donde hay juicio | usar un modelo insuficiente para cumplir presupuesto |
 | reutilización de métodos y skills probadas | rehacer lo resuelto | adoptar sin procedencia |
 | skills de terceros con procedencia y hash | reconstruir conocimiento ajeno | entrar sin licencia, origen, integridad y regla de retirada |
@@ -2659,7 +2764,8 @@ demostrar que las piezas encajan sin contradecirse. El piloto sigue pendiente.
 | 12 | **aprendizaje promovido** | evidencia del item de origen | ledger · item `SIS` en `ads-kernel` | `APR` · `SIS` | `gate:aprendizaje-fundado` | dos ocurrencias o un incidente | el ledger conserva la procedencia |
 
 **Lo que los doce demuestran juntos**: que ningún escenario necesita un almacén nuevo, un
-proceso nuevo ni una capa nueva. Los cuatro tipos de §3 aparecen; nada más.
+proceso nuevo ni una capa nueva. Los cuatro tipos de estado de §3 aparecen, y el esquema de
+clase de §9.2; nada más.
 
 **Lo que NO demuestran**: que funcionen. Para eso hace falta el piloto de `O14`.
 
@@ -2818,12 +2924,38 @@ Se registran en la serie existente, en
 | `D21` | la certificación es `cobertura` con `clase: instalacion` | tipo `certificacion` | tiene el mismo sujeto, el mismo ciclo y la misma caducidad |
 | `D22` | el estado de una `iniciativa` es derivado y no anida | estado editable · anidación | un estado editable sobre lo mismo es segunda verdad (`I5`); la anidación convierte la vista del Owner en un cálculo sobre un árbol arbitrario |
 
+### `D23`–`D33` · las decisiones de la devolución independiente
+
+**`D16`–`D22` NO se reescriben.** Están tomadas y son historia. Lo que las corrige son
+decisiones **posteriores**, que declaran qué queda revisado, por qué y cómo se revierte — la
+misma vía por la que `O7`–`O14` entraron sin tocar `O1`–`O6`. Su registro canónico es el
+mismo fichero; aquí queda su resumen y qué revisa cada una.
+
+| | decisión | qué revisa | por qué |
+|---|---|---|---|
+| `D23` | el manifiesto de transacción **deja de ser un artefacto propio**: una transacción es una secuencia de eventos inmutables con `tx` común y campo `fase` | **`D16`** | un artefacto que cambia de fase hay que reescribirlo, y reescribir el registro que debe sobrevivir a una caída era el defecto. Además dejaba a `evento.tx` apuntando a algo borrado (§2.5) |
+| `D24` | los ids de evento son **direccionados por contenido y no monotónicos** | **`D16`** y §2.8 | un id monotónico se calcula leyendo el mayor y sumando uno: dos emisores concurrentes eligen el mismo. La afirmación «no colisionan jamás» era falsa (§2.7) |
+| `D25` | `cobertura` se parte en **`sujeto` · `aspecto` · `responsables` · `criterio`** | **`D18`**, en la forma de `cobertura` | un campo `dimension` que era «la capacidad que la posee» fundía accesibilidad y responsive en una celda, y metía las doce áreas y los cuatro niveles en el mismo campo sin namespace (§3.5) |
+| `D26` | la certificación **sigue siendo `cobertura`** para el ESTADO, **y exige** un esquema de clase `nivel-certificacion` para la NORMA | **`D21`**, confirmada en su conclusión y corregida en su fundamento | pruebas, propietario, crítico, **jerarquía** e invalidación son de la clase, no del sujeto evaluado. En la celda se repetirían en cada instalación y podrían discrepar (§9.2) |
+| `D27` | **`memoria` se generaliza**, y se declara. `capa` pasa a condicional y nace `plano` | **SUSTITUYE a `D20`** | `D20` decía «composición sin generalización» y §3.7 generalizaba `memoria` en silencio. Se hacían las dos cosas y sólo se contaba una (§4.1) |
+| `D28` | `adaptador.nivel` **desaparece**: compatibilidad declarada · capacidades del entorno · **nivel alcanzado, derivado** | **`D18`**, en la forma de `adaptador` | editable y derivado a la vez es segunda verdad, y un campo editable no caduca mientras una certificación sí (§6.5) |
+| `D29` | el estado de iniciativa es **función total con precedencia `Q0`–`Q9`**, y **no se persiste** en ningún canónico | **`D22`**, confirmada y completada | los cinco estados anteriores se solapaban y dejaban huecos, y `D22` no decía DÓNDE aparecía el estado derivado (§3.3.1) |
+| `D30` | **`estado/` nace en N0**, con su soporte durable mínimo | §8.1 | una iniciativa que nace en N0 con soporte desde N3 vive en el chat entre medias, y el apartado 19 de la directiva lo prohíbe |
+| `D31` | la clave de caché de `P-08` es **el contenido**, con tres huellas separadas. **Nunca el SHA de Git** | §11.3 | un árbol sucio tiene el mismo `HEAD` y contenido distinto, y en el trabajo normal ése es el caso permanente |
+| `D32` | la **aplicabilidad de la certificación Integrada** depende del número de fuentes | §9.1 | `C6` `N4` admite 0..N fuentes, y la prueba multi-fuente bloqueaba para siempre a todo producto de un repositorio. Genera `PN-6` |
+| `D33` | secuencia de migración **M5 certifica · M6 retira · M7 verifica** | §8.3 | la lista de fases y el rollback declaraban órdenes incompatibles, y una de las dos retiraba antes de certificar |
+
 ---
 
 # 16 · Presiones normativas para F5
 
 **Aquí no se redacta ninguna enmienda.** Se enumera exactamente qué presiona qué, y qué queda
 bloqueado hasta que el Owner apruebe.
+
+**Las cinco de la entrega anterior se han revisado una a una**, no arrastrado. Cada bloque
+declara su `ESTADO TRAS LA DEVOLUCIÓN`, y los identificadores **no se renumeran**: `PN-4`
+sigue llamándose `PN-4` aunque esté retirada, porque renumerar rompería la trazabilidad de lo
+que ya se llevó al Owner. El resultado son **cuatro vigentes**, una retirada y una fusionada.
 
 ## `PN-1` · La sección (g) no existe, y esta fase la escribe
 
@@ -2840,6 +2972,12 @@ MATERIA MÍNIMA      aprobar §2 como sección (g), o como enmienda que la susti
 SE PUEDE CONSTRUIR  nada del estado durable. Es el primero del orden de construcción, y
                     está bloqueado hasta esta aprobación
 BLOQUEA             §2 · §3 `evento` · §5 cobertura · §7 runtime · §9 nivel Operativo
+ESTADO TRAS LA      VIGENTE Y AMPLIADA. §2 decide ahora, además de las cinco materias de
+DEVOLUCIÓN          (g), cuatro cosas más que la entrega anterior no cerraba: el escalonado
+                    de `fsync` y sus tres puntos obligatorios, la regla de que ADS nunca
+                    hace commit con una transacción abierta, la semántica completa del
+                    sellado, y el esquema de identidad direccionado por contenido. Sigue
+                    siendo LA ÚNICA que bloquea todo el estado durable.
 ```
 
 ## `PN-2` · `O7` crea trabajo por una vía que (b) no contempla
@@ -2858,6 +2996,8 @@ MATERIA MÍNIMA      reconocer la política de recurrencia aprobada como fuente 
 SE PUEDE CONSTRUIR  todo el sistema de §5 salvo la APERTURA automática: inventario,
                     cobertura, detección y propuesta no crean trabajo y no presionan nada
 BLOQUEA             sólo el paso APERTURA de §5.3
+ESTADO TRAS LA      VIGENTE, SIN CAMBIO. Ninguna corrección la toca.
+DEVOLUCIÓN
 ```
 
 ## `PN-3` · `G03` y la ejecución desatendida
@@ -2873,41 +3013,114 @@ MATERIA MÍNIMA      una fila en a.11 que ajuste G03 al alcance exacto que O7 au
                     conservando el resto
 SE PUEDE CONSTRUIR  persistencia, checkpoint, reanudación y vistas: el mapa ya estableció
                     que NO son autonomía temporal
-BLOQUEA             lo mismo que PN-2, y por otro camino
-```
-
-## `PN-4` · La `iniciativa` sobre el estado global de (b)
-
-```text
-QUÉ PRESIONA        (b) b.4, que define el estado global como función total sobre los
-                    paquetes de UN item
-TEXTO VIGENTE       la función de estado global tiene por dominio los paquetes del item
-POR QUÉ NO BASTA    la iniciativa agrupa VARIOS items. §3.3 lo resuelve haciendo su estado
-UN DERIVADO         DERIVADO de los items, precisamente para no tocar b.4
-MATERIA MÍNIMA      **posiblemente ninguna.** Si el estado derivado se acepta como vista,
-                    b.4 no cambia. Se registra porque un lector de b.4 puede leer la
-                    iniciativa como un segundo estado global, y esa lectura hay que
-                    cerrarla explícitamente
-SE PUEDE CONSTRUIR  la iniciativa entera, con su estado derivado
-BLOQUEA             nada, salvo que F5 decida que sí toca b.4
-```
-
-## `PN-5` · La certificación Completa exige lo que `G03` limita
-
-```text
-QUÉ PRESIONA        el nivel Completo de §9 afirma «concurrencia y recuperación
-                    demostradas», y la concurrencia real de varios agentes trabajando
-                    solos cae bajo G03
-TEXTO VIGENTE       el mismo de PN-3
-MATERIA MÍNIMA      la misma de PN-3. No es una presión independiente: es su consecuencia
-SE PUEDE CONSTRUIR  los niveles Estructural, Operativo e Integrado
-BLOQUEA             sólo el nivel Completo, y con él «instalación terminada y plenamente
+BLOQUEA             lo mismo que PN-2, y por otro camino. Y ADEMÁS, por absorción de PN-5,
+                    el nivel COMPLETO de §9: afirma «concurrencia y recuperación
+                    demostradas», y la concurrencia real de varios agentes trabajando solos
+                    cae bajo G03. Con ello bloquea «instalación terminada y plenamente
                     certificada» de O12
+ESTADO TRAS LA      VIGENTE, y ABSORBE a PN-5. La materia mínima es la misma para las dos
+DEVOLUCIÓN          —una fila en a.11 que ajuste G03—, y mantenerlas separadas hacía contar
+                    dos veces la misma enmienda ante el Owner
 ```
 
-**Resumen para el Owner:** de las cinco, **una bloquea de verdad** —`PN-1`, la sección (g)—;
-**dos son la misma** —`PN-2` y `PN-3`, y sólo bloquean que el sistema abra auditorías solo—;
-`PN-4` probablemente no exija nada; `PN-5` es consecuencia de `PN-3`.
+## `PN-4` · RETIRADA · la `iniciativa` sobre el estado global de (b)
+
+```text
+QUÉ PRESIONABA      (b) b.4, que define el estado global como función total sobre los
+                    paquetes de UN item. Un lector de b.4 podía leer la iniciativa como un
+                    SEGUNDO estado global, y esa lectura había que cerrarla
+
+TEXTO VIGENTE       la función de estado global tiene por dominio los paquetes del item
+
+POR QUÉ SE RETIRA   `D29` cierra la lectura en el propio texto, y por dos vías a la vez:
+                      1  el DOMINIO de la función de iniciativa NO son paquetes: es el
+                         estado global de sus items, YA CALCULADO POR b.4. La consume, no
+                         la redefine ni la extiende
+                      2  NO SE PERSISTE. §3.3.2 fija que no se escribe en ningún canónico y
+                         vive sólo en el dosier derivado. Sin registro editable no hay
+                         segunda verdad que un lector pueda confundir con la de b.4
+                      Y su vocabulario es DISTINTO —`abierta-sin-items`, `lista-cierre`—,
+                      de modo que ningún estado de iniciativa se parece a uno de b.4
+
+QUÉ SE PIERDE AL    la frase aclaratoria en b.4 que la entrega anterior sugería. F5 PUEDE
+RETIRARLA           reinstaurarla si el Owner prefiere que b.4 lo diga con todas las letras
+                    en vez de que lo diga (g). El motivo de la retirada queda escrito
+                    precisamente para que esa decisión sea SUYA y no una omisión
+
+ESTADO TRAS LA      RETIRADA. Ya se declaraba «MATERIA MÍNIMA: posiblemente ninguna», y la
+DEVOLUCIÓN          corrección la convierte en ninguna.
+```
+
+## `PN-5` · FUSIONADA en `PN-3` · la certificación Completa frente a `G03`
+
+```text
+QUÉ PRESIONABA      el nivel Completo de §9 afirma «concurrencia y recuperación
+                    demostradas», y la concurrencia real de varios agentes trabajando solos
+                    cae bajo G03
+
+POR QUÉ SE FUSIONA  su MATERIA MÍNIMA es idéntica a la de PN-3 —una fila en a.11 que ajuste
+                    G03—, y el propio texto de la entrega anterior ya lo decía: «no es una
+                    presión independiente: es su consecuencia». Contarla aparte hacía
+                    presentar al Owner dos presiones donde hay una enmienda
+
+DÓNDE VIVE AHORA    en PN-3, como su consecuencia NOMBRADA, con lo que bloquea escrito allí
+
+ESTADO TRAS LA      FUSIONADA. No desaparece: se lee en PN-3.
+DEVOLUCIÓN
+```
+
+## `PN-6` · NUEVA · la aplicabilidad de la Integrada reinterpreta `O12`
+
+```text
+QUÉ PRESIONA        `O12`, resolución del Owner del 2026-08-27: «empezar a programar exige
+                    Integrada + baseline aprobado + ningún desconocido crítico sin
+                    clasificar. Las tres, no dos»
+
+TEXTO VIGENTE       «la certificación Integrada permite empezar a programar»
+
+QUÉ HA CAMBIADO     `D32` declara que la prueba multi-fuente NO APLICA a productos de 0 y de
+                    1 fuente, y que una prueba no aplicable se registra con motivo y
+                    evidencia y NO bloquea (§9.5). Sin esa corrección, `C6` `N4` —que admite
+                    0..N fuentes— y `O12` juntos bloqueaban para siempre a todo producto de
+                    un solo repositorio, que es la mayoría
+
+POR QUÉ NO BASTA    porque cambia QUÉ SIGNIFICA «Integrada» para una clase entera de
+UN DERIVADO         productos, y `O12` es una decisión del Owner sobre cuándo se puede
+                    empezar a programar. Reinterpretar la precondición de una resolución
+                    suya es materia suya, no del autor de F4 — aunque la corrección sea
+                    obviamente necesaria, y precisamente por serlo
+
+MATERIA MÍNIMA      confirmar que «Integrada» significa «todas las pruebas APLICABLES
+                    superadas, con la inaplicabilidad de las demás registrada con motivo y
+                    evidencia», y no «las siete pruebas superadas». Es una frase
+
+SE PUEDE CONSTRUIR  todo §9, incluida la tabla de aplicabilidad: es diseño, y no depende de
+                    la confirmación. Lo que depende de ella es DECLARAR Integrada a un
+                    producto de 0 o 1 fuente
+
+BLOQUEA             sólo esa declaración, y con ella el arranque de programación de un
+                    producto de un solo repositorio
+```
+
+**Resumen para el Owner, tras revisar las cinco de la entrega anterior:**
+
+```text
+VIGENTES · CUATRO
+  PN-1   la sección (g). LA ÚNICA QUE BLOQUEA DE VERDAD, y ahora decide más que antes
+  PN-2   la política de auditoría como tercera vía de creación de trabajo
+  PN-3   G03 y la ejecución desatendida. Es la misma pregunta que PN-2 por otro camino,
+         y absorbe lo que era PN-5
+  PN-6   qué significa «Integrada» para un producto de 0 o 1 fuente. Es UNA FRASE, y sin
+         ella todo producto de un solo repositorio queda bloqueado para empezar
+
+RETIRADA · UNA
+  PN-4   con su motivo escrito, y reinstaurable por F5 si el Owner lo prefiere
+
+FUSIONADA · UNA
+  PN-5   dentro de PN-3, porque su enmienda es la misma
+
+NO SE RENUMERA NINGUNA. Renumerar rompería la trazabilidad de lo que ya se llevó al Owner.
+```
 
 ---
 
@@ -2920,7 +3133,7 @@ BLOQUEA             sólo el nivel Completo, y con él «instalación terminada 
 | `C1`–`C7` | **intactos**. `C2` se amplía en F6 |
 | quince capacidades, roles, métodos, prompts | **intactos**. Son los RESPONSABLES de los aspectos de §5.2, no los aspectos. `+4` extensiones de ficha: `ENT`, `ARQ`, `PLT` y `SEG` |
 | diez procesos de `b.16` | **intactos**. Ningún macrocircuito crea uno nuevo |
-| diecinueve esquemas | **+4**: `iniciativa`, `adaptador`, `cobertura`, `evento`. `memoria` y `validadores.yaml` se amplían |
+| diecinueve esquemas | **+4 de estado**: `iniciativa`, `adaptador`, `cobertura`, `evento`. **+1 de clase**: `nivel-certificacion`, con el precedente de `nivel-novedad`. `memoria` y `validadores.yaml` se amplían. **Total 24** (§3.8) |
 | packs | **intactos**, `+2` piezas en `web-app` (`CAND-022`, `CAND-024`) |
 | trece validadores | **intactos**, `+entradas:` por `P-08` |
 | `plantillas/CHECKPOINT.md` | **intacta**: `E2.3` ya le dio forma multi-fuente |
@@ -2969,6 +3182,11 @@ atrás es volver a un release. Es lo que ya se hace, y funciona.
 
   2 · CONTRATO DE ADAPTADOR Y VALIDADOR DE DERIVA  §6
         independiente del estado ── alimenta 4 (nivel Operativo) y 7
+        incluye el PUNTERO EN FUENTE de §6.7, que es proyección, no estado
+
+  4b · `nivel-certificacion`  §9.2   esquema de CLASE, no de estado
+        NO depende de 1: es norma que viaja con el release, y puede escribirse mientras
+        PN-1 espera. Lo que depende de 1 son las CELDAS que lo referencian
 
   5 · PIEZAS DE PACK  CAND-022 · CAND-024
         independientes de todo. Pueden ir en cualquier momento
@@ -2996,17 +3214,28 @@ SE CONFIRMA EL RESTO  1 estado · 2 adaptadores · 3 iniciativa · 4 certificaci
 ```text
 NADA ESTÁ CONSTRUIDO      ni una línea de kernel, runtime, tooling, esquema, adaptador,
                           plantilla, pack ni validador. F4 no lo autoriza
-NADA ESTÁ PROBADO         los doce escenarios de §14 son recorridos arquitectónicos.
-                          Ninguno se ha ejecutado
+NADA ESTÁ PROBADO         los doce escenarios de §14, las DIECISIETE filas de la tabla
+                          adversarial de §2.6.7 y los DIEZ escenarios negativos de §11.5
+                          están ESCRITOS. Ninguno se ha ejecutado. Escribir el contrato de
+                          una prueba no es la prueba
 EL PILOTO SIGUE PENDIENTE la columna de uso real está vacía desde F0, y esta fase no la
                           llena
 NINGÚN ADAPTADOR EXISTE   y por tanto ninguno está certificado
 X1 Y P-05 SIGUEN          ninguna decisión de aquí cruza la línea del blueprint
 DEFERIDAS
-CINCO PRESIONES           §16. Una bloquea de verdad, y F5 es su puerta
-NORMATIVAS
-F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. El plan exige crítica independiente
-                          por quien no la escribió, y este documento no es esa crítica
+CUATRO PRESIONES          §16, tras revisar las cinco de la entrega anterior: PN-4 retirada
+NORMATIVAS VIGENTES       y PN-5 fusionada en PN-3, y PN-6 nueva. Sólo PN-1 bloquea de
+                          verdad, y F5 es su puerta
+F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. Una crítica independiente devolvió
+                          nueve bloques de hallazgos y están aplicados aquí — pero LOS
+                          APLICÓ QUIEN LOS RECIBIÓ, y eso no prueba que estén bien
+                          resueltos. `F4c` sigue pendiente de una SEGUNDA revisión
+                          independiente
+EL SUELO DE `P-08`        si el runner miente, nada dentro del repositorio lo detecta.
+                          Declarado en §11.4, no resuelto
+ORDEN TOTAL ENTRE         la cadena de eventos da orden total POR TRANSACCIÓN y orden
+MÁQUINAS                  parcial entre emisores concurrentes. La bifurcación se detecta;
+                          resolverla es runtime distribuido, abierto en `E2.7` y en §2.11
 ```
 
 **La distancia que queda**, dicha como la dijo el baseline: ADS sigue siendo un corpus
