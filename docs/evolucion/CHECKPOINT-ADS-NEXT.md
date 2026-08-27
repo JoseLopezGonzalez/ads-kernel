@@ -367,6 +367,19 @@ NADA se ha escrito en los proyectos minados.
 NADA de kernel/operativo/, packs/ ni docs/rediseno/ ha cambiado en F3.
 ```
 
+### Una cifra mal escrita en un mensaje de commit, corregida aquí
+
+El commit `d78a3df` —«N158g reancla su cifra con los dos documentos nuevos»— dice que el
+corpus pasa «de 285 a 287» y la cifra citada «de 283 a 285». **Los valores reales son 286 y
+284**: sólo entró UN documento nuevo en ese punto, no dos. El historial no se reescribe, así
+que la corrección vive aquí, que es donde se buscan las cifras vigentes. Y el recuento sigue
+derivándose, no escribiéndose:
+
+```bash
+grep -o "[0-9]* ficheros recorridos" kernel/operativo/pruebas/evidencia/fuentes-salida.txt
+grep -o "documentos analizados: [0-9]*" kernel/operativo/pruebas/evidencia/referencias-salida.txt
+```
+
 ### El recuento de commits se deriva, no se escribe
 
 Esta sección llegó a decir «MANDATO MULTI-REPOSITORIO — tres commits» y se quedó
