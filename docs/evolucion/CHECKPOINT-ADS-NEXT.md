@@ -13,9 +13,11 @@ based_on:    docs/evolucion/09-SINTESIS.md@7e450cf + su addendum
              docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md@515e94c
              kernel/VERSION@2.0.0-alpha.8 · kernel/KERNEL.md@1.5.0
 freshness:   vigente
-last_meaningful_event: F3 pasa por CRÍTICA INDEPENDIENTE —que no la escribió quien la
-             escribió—, el Owner resuelve las ocho materias que quedaban suyas, y una
-             ejecución destapa que T158 daba por buena una evidencia caducada (2026-08-27)
+last_meaningful_event: F3 pasa por CRÍTICA INDEPENDIENTE —emitida por un revisor que no
+             participó en ella; transcrita y aplicada por el autor de F3, que con ello NO
+             certifica su propio trabajo—, el Owner resuelve las ocho materias que quedaban
+             suyas, y una ejecución destapa que T158 daba por buena una evidencia caducada
+             (2026-08-27)
 resuelto:
   · SEIS HALLAZGOS DE LA CRÍTICA, aplicados sin borrar nada de F3:
     CI-1 H4 REVISADO. El componente de C6 es ámbito principal, NO sujeto único: no puede

@@ -1,31 +1,48 @@
 # CRÍTICA INDEPENDIENTE DE F3, Y LA PUERTA CORRECTIVA PRE-F4
 
-> **Este documento no lo escribe quien escribió la síntesis.** Recoge la revisión
-> independiente que [`09-SINTESIS.md`](09-SINTESIS.md) recibió **después** de entregarse, las
-> resoluciones que el Owner tomó a partir de ella, y qué se ha corregido en el repositorio
-> como consecuencia.
+> **Quién emite esta crítica y quién escribió este fichero no son la misma parte, y conviene
+> decirlo con precisión en vez de con una frase que suene mejor.**
+>
+> ```text
+> LOS HALLAZGOS Y EL VEREDICTO   proceden de un REVISOR INDEPENDIENTE, que no participó en
+>                                F3 y la revisó después de entregarse.
+>
+> ESTE FICHERO                   lo creó, transcribió e integró el AUTOR DE F3. Es trabajo
+>                                material suyo: transcribir no es emitir.
+>
+> LO QUE EL AUTOR DE F3 NO HIZO  no reescribió los hallazgos para cambiar su veredicto, no
+>                                los suavizó, y NO certifica su propia suficiencia. La
+>                                certificación de F3 no está en este fichero ni la da él.
+> ```
 >
 > El plan de investigación exige que **quien propone no certifique su propia suficiencia**, y
 > la iteración anterior dejó el precedente: una auditoría independiente encontró treinta y
 > tres hallazgos, dos de ellos en pruebas que figuraban como superadas sin comprobar lo que
-> su nombre afirmaba. F3 no es una excepción a esa regla.
+> su nombre afirmaba. Esa exigencia recae sobre **el juicio**, no sobre quién teclea el
+> fichero. Confundir las dos cosas convertiría la independencia en una cuestión de autoría
+> material, que es justo lo que no es.
 
 ## Cómo se lee
 
 ```text
-LO QUE DICE LA CRÍTICA     procede del revisor. No se reescribe para que suene mejor ni
-                           para que encaje con lo que la síntesis ya había concluido.
+LO QUE DICE LA CRÍTICA     procede del REVISOR INDEPENDIENTE. Lo transcribe el autor de
+                           F3, y no lo reescribe para que suene mejor ni para que encaje con
+                           lo que la síntesis ya había concluido.
 
-LO QUE SE HA CORREGIDO     es trabajo de este repositorio, y va marcado como tal. Ninguna
-                           corrección borra la conclusión anterior: la síntesis conserva su
-                           texto y gana un addendum que dice qué queda revisado.
+LO QUE SE HA CORREGIDO     es trabajo del autor de F3 sobre este repositorio, y va marcado
+                           como tal. Ninguna corrección borra la conclusión anterior: la
+                           síntesis conserva su texto y gana un addendum.
+
+QUÉ NO ACREDITA ESTO       que F3 esté certificada. Aplicar una crítica no es superarla:
+                           quien la aplicó es quien la recibió.
 
 LO QUE SIGUE ABIERTO       se dice. La puerta pre-F4 se cierra con lo corregido, no con lo
                            prometido.
 ```
 
 **El veredicto de partida del revisor:** F3 es válida como base. Lo que sigue son seis
-correcciones sobre ella, no su sustitución.
+correcciones sobre ella, no su sustitución. **Ese veredicto es suyo, no del autor de F3**, y
+se transcribe sin matizarlo.
 
 ---
 

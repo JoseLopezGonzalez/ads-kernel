@@ -911,9 +911,10 @@ QUÉ ENTRA EN CADA RELEASE     es F6, y exige items SIS trazables.
 
 # ADDENDUM — lo que la crítica independiente corrige
 
-> Añadido después de entregar F3, tras la revisión de quien no la escribió. **No sustituye
-> nada de lo anterior**: el texto original se conserva íntegro y cada sección afectada lleva
-> su marca. Los hallazgos de la crítica y las resoluciones del Owner están en
+> Añadido después de entregar F3. **La revisión la emitió un revisor independiente; este
+> addendum lo escribió el autor de F3 para aplicarla**, sin cambiar el veredicto recibido y
+> sin certificar con ello su propio trabajo. **No sustituye nada de lo anterior**: el texto
+> original se conserva íntegro y cada sección afectada lleva su marca. Los hallazgos de la crítica y las resoluciones del Owner están en
 > [`10-CRITICA-INDEPENDIENTE-F3.md`](10-CRITICA-INDEPENDIENTE-F3.md); las decisiones, en
 > [`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md) como
 > `O7`–`O14`.
