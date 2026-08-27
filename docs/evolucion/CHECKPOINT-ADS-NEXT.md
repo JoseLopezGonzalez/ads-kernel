@@ -6,31 +6,83 @@
 > **Basta decir «Continúa»**: la siguiente acción exacta está al final.
 
 > **Estado de la fase, en una línea:**
-> **F4 corregida por devolución independiente; pendiente de segunda revisión.**
+> **F4 corregida por SEGUNDA devolución independiente; F4c ABIERTA, pendiente de tercera
+> revisión.**
 >
-> Los hallazgos los EMITIÓ un revisor independiente que no escribió F4. Las correcciones
-> las APLICÓ el autor material de F4. **Aplicar una crítica no prueba que esté bien
-> resuelta**, y por eso `F4c` no se declara cerrada aquí.
+> La segunda revisión la emitió un revisor con contexto limpio que **no escribió F4 ni aplicó
+> la primera crítica**, y su veredicto fue de **INSUFICIENCIA**: dos hallazgos BLOQUEANTES,
+> seis GRAVES y catorce nuevos. **Dos de ellos eran defectos que la PRIMERA corrección
+> introdujo o no vio.** Las correcciones las APLICÓ el autor material de F4. **Aplicar una
+> crítica no prueba que esté bien resuelta**, y por eso `F4c` **no se declara cerrada aquí**.
 
 ```text
-CHECKPOINT — ADS-NEXT/09 · SIS/evolucion
+CHECKPOINT — ADS-NEXT/10 · SIS/evolucion
 actualizado: 2026-08-27
-metodo:      SIS/Evolucion · F4 CORREGIDA POR DEVOLUCIÓN INDEPENDIENTE; PENDIENTE DE
-             SEGUNDA REVISIÓN
+metodo:      SIS/Evolucion · F4 CORREGIDA POR SEGUNDA DEVOLUCIÓN INDEPENDIENTE; F4c ABIERTA
+             Y PENDIENTE DE TERCERA REVISIÓN
 based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md@56ea196
              docs/evolucion/11-ARQUITECTURA-INTEGRADA.md   corregida
              docs/evolucion/12-CRITICA-INDEPENDIENTE-F4.md
-             docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · D16–D22 · D23–D33
+             docs/evolucion/13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md
+             docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · D16–D22 · D23–D33 ·
+                                                             D34–D45
              kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
 freshness:   vigente
-last_meaningful_event: un revisor independiente devuelve F4 con nueve bloques de hallazgos,
-             y sus correcciones quedan aplicadas (2026-08-27)
-procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y de F4 los
-             EMITIÓ un revisor independiente que no las escribió. Los ficheros que los
+last_meaningful_event: la SEGUNDA revisión independiente devuelve F4 con veredicto de
+             INSUFICIENCIA —dos BLOQUEANTES, seis GRAVES y catorce hallazgos nuevos— y sus
+             correcciones quedan aplicadas (2026-08-27)
+procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y de las DOS
+             de F4 los EMITIÓ un revisor independiente que no las escribió. La SEGUNDA de F4
+             la emitió además un revisor que TAMPOCO aplicó la primera. Los ficheros que los
              recogen los TRANSCRIBIÓ Y APLICÓ el autor material de esas fases. Aplicar una
-             crítica NO equivale a autocertificarse, y NO prueba que esté bien resuelta
-resuelto_en_la_devolucion_de_f4:
+             crítica NO equivale a autocertificarse, y NO prueba que esté bien resuelta.
+             LA PRUEBA DE QUE ESTO IMPORTA: dos de los hallazgos de la segunda devolución son
+             defectos que la PRIMERA CORRECCIÓN introdujo o no vio
+resuelto_en_la_SEGUNDA_devolucion_de_f4:
+  · E · BLOQUEANTE. `fsync` DE DIRECTORIO obligatorio también para los canónicos, y en el
+    orden correcto: temporal → fsync(temporal) → rename → fsync(directorio). F4c lo exigía
+    para los dos eventos y NO para los ficheros que SON el estado, cometiendo el error que su
+    propia garantía 3 nombraba como «el error clásico». El fallo era SILENCIOSO: con
+    `confirmada` durable nadie volvía a comparar hashes. Nace la COMPROBACIÓN DE INTEGRIDAD
+    POST-TERMINAL, sin la cual todo lo demás depende de que la implementación no falle
+  · B · BLOQUEANTE. `conflicto` deja de ser TERMINAL: es ABIERTO Y ABSORBENTE, emite la
+    bandera que b.4 P0 consume, conserva copia íntegra de lo divergente, declara autoridad y
+    alcance de bloqueo, y sólo lo cierra `fase: reconciliada`. VERIFICADO POR BARRIDO:
+    `reconciliacion-pendiente` aparecía cuatro veces en el documento y NINGUNA dentro de §2,
+    luego el protocolo nunca emitía el único estado del que depende b.4 P0
+  · A · GRAVE. Regla de lectura para TODO lector, marcador CON CONTENIDO, y `tx_abierta` en
+    la cabecera de cada canónico afectado. Lo que se garantiza es DETECTABILIDAD, no
+    aislamiento, y R3 se cualifica en §2.2 en vez de decir «sí» a secas
+  · C · GRAVE. Contrato de identidad completo: representación canónica independiente del
+    formato, campos excluidos con `identidad_v`, `tx` e `id` definidos, regla de reintento.
+    Y la consecuencia declarada: REEMITIR NO ES IDEMPOTENTE POR ID — la idempotencia vive en
+    `tx`. La frase contraria se RETIRA
+  · D · `abortada` se retira: era formalmente definida y OPERACIONALMENTE INALCANZABLE
+  · F · el marcador se excluye de Git. F4c violaba su propio criterio de §2.4
+  · H · GRAVE. Se REGISTRA el defecto de C7: su gate dice «una o más fuentes» y E2.6 dice
+    «varias sources». Con el texto vigente NINGÚN producto de un repositorio cierra un solo
+    item. NO es presión normativa: es defecto de DERIVADO con prescripción cerrada, y su
+    ejecución es F6. C7 NO se edita en esta pasada. §15.7 deja de decir «REUTILIZADO»
+  · I · GRAVE. El puntero: lista de componentes derivada de SOURCES.toml, resolución como
+    campo del adaptador con normalización de remoto y cuarto desenlace, §6.4 gana la
+    comprobación que §6.7 remitía y no existía, y TODA escritura de puntero pasa a ser source
+    change gobernado por C7 — U5 se parte en U5a/U5b, y N2 y A5 dejan de escribir en fuentes
+  · K · GRAVE. El push deja de ser automático: el commit local es recuperación, el push es
+    PUBLICACIÓN. Y se DECLARA que el gobierno Git del control repo NO EXISTE en C7 ni en
+    ninguna parte — §7.6 dejaba de ser cierta para las dos operaciones que automatizaba
+  · N-1 · GRAVE. Nace `contrato-de-aspecto`: se invocaba TRES veces como sede normativa y no
+    existía. Mismo modo de fallo que el manifiesto de transacción, reproducido y no
+    detectado. Recuento 24 → 25
+  · N-6 · GRAVE. Los predicados de obligación se definen a nivel de INICIATIVA: Q9 no era
+    computable y ninguna iniciativa con obligaciones podía cerrar jamás
+  · J · el documento gobernado tiene ciclo PROPIO de cuatro valores. Se deja de atribuir a
+    b.3 un vocabulario que b.3 no contiene
+  · G · la premisa del Owner queda REFUTADA por el revisor y se transcribe así. Los cinco
+    residuos reales sí se corrigen, incluida la condición para reintentar M6
+  · y N-2 · N-3 · N-4 · N-5 · N-7 · N-8 · N-9 · N-10 · N-11 · N-12 · N-13 · N-14
+  · PN-7 a PN-10 registradas. Ocho presiones vigentes. Ninguna redactada
+resuelto_en_la_PRIMERA_devolucion_de_f4:
   · A · EL PROTOCOLO TRANSACCIONAL, reescrito para ser EJECUTABLE. El manifiesto de
     transacción se pliega en `evento` como una `fase`: una transacción es una secuencia de
     eventos INMUTABLES con `tx` común, y ya no hay fichero que se reescriba ni que se borre.
@@ -104,23 +156,32 @@ owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
              arquitectura. NO autoriza F5 ni F6" (2026-08-27)
 pregunta_pendiente: ninguna. Las cuatro presiones normativas vigentes son materia de F5,
              no preguntas
-siguiente:   SEGUNDA REVISIÓN INDEPENDIENTE de F4 corregida, por quien NO la escribió y NO
-             aplicó estas correcciones. Después F5
+siguiente:   TERCERA REVISIÓN INDEPENDIENTE de F4, por quien NO la escribió y NO aplicó
+             ninguna de las dos tandas de correcciones. Después F5
 falta_para_cerrar_la_capa:
-  · F4 CORREGIDA POR DEVOLUCIÓN INDEPENDIENTE; PENDIENTE DE SEGUNDA REVISIÓN. Las
-    correcciones las aplicó QUIEN LAS RECIBIÓ, y eso no prueba que estén bien resueltas.
-    F4c NO está cerrada
-  · CUATRO PRESIONES NORMATIVAS VIGENTES. PN-1 —la sección (g) no existe y §2 la escribe—
-    BLOQUEA todo el estado durable, y ahora decide MÁS que antes: `fsync`, regla de commit
-    de Git, sellado e identidad. PN-2 y PN-3 son la misma y sólo bloquean que el sistema
-    abra auditorías solo; PN-3 absorbe lo que era PN-5. PN-6 es NUEVA: qué significa
-    «Integrada» para un producto de 0 o 1 fuente, y reinterpreta O12. PN-4 queda RETIRADA
-    con su motivo escrito, y F5 puede reinstaurarla
+  · F4c ESTÁ ABIERTA. Dos devoluciones independientes, la segunda con veredicto explícito de
+    INSUFICIENCIA. Las correcciones de ambas las aplicó QUIEN LAS RECIBIÓ, y eso no prueba
+    que estén bien resueltas. LA EVIDENCIA DE QUE EL ENCADENAMIENTO IMPORTA: dos de los
+    hallazgos BLOQUEANTES de la segunda son defectos que la PRIMERA CORRECCIÓN introdujo o no
+    vio. F4c sólo se cierra con un veredicto explícito de SUFICIENCIA emitido por un revisor
+    independiente sobre el resultado corregido
+  · OCHO PRESIONES NORMATIVAS VIGENTES. PN-1 —la sección (g)— BLOQUEA todo el estado
+    durable, y ahora decide MÁS: fsync, regla de commit, sellado, identidad y regla de
+    lectura. PN-2 y PN-3 son la misma y sólo bloquean que el sistema abra auditorías solo.
+    PN-6 reinterpreta O12. PN-7 (b.14 dice «completar o revertir»), PN-8 (VER no está en la
+    ruta AUD), PN-9 (predicados de obligación de b.3 — probablemente ninguna materia, y F5
+    debe CONFIRMARLO) y PN-10 (O11 dice «estado durable») son NUEVAS. PN-4 RETIRADA y PN-5
+    FUSIONADA en PN-3. Ninguna renumerada, y ninguna redactada
   · NADA CONSTRUIDO: ni kernel, ni runtime, ni tooling, ni esquemas, ni adaptadores, ni
     plantillas, ni packs, ni validadores, ni migraciones. Las correcciones son DISEÑO
     CORREGIDO, no diseño implementado
-  · NADA PROBADO: las 17 filas de la tabla adversarial de §2.6.7, los 10 escenarios
+  · NADA PROBADO: las 30 filas de la tabla adversarial de §2.6.7, los 11 escenarios
     negativos de §11.5 y los 12 escenarios de §14 están ESCRITOS. Ninguno ejecutado
+  · DEFECTO DE C7 REGISTRADO Y NO CORREGIDO: su gate exige Integration Set con UNA sola
+    fuente y E2.6 exige «varias». Prescripción CERRADA, trazabilidad a E2.6, ejecución F6.
+    NO es presión normativa. C7 no se ha tocado
+  · EL GOBIERNO GIT DEL CONTROL REPO NO EXISTE: ninguna fila de la tabla de propiedad de C7
+    lo alcanza. Declarado en §2.6.10, y su relleno es F6
   · el piloto O14 sigue seleccionado y NO ejecutado. La columna de uso real, vacía
   · ningún adaptador existe, y por tanto ninguno está certificado
   · X1 y P-05 siguen deferidas. Ninguna decisión de F4 cruza esa línea, y D27 resuelve
@@ -152,13 +213,19 @@ F3c PUERTA CORRECTIVA        CERRADA y después CORREGIDA — crítica independi
                              10-CRITICA-INDEPENDIENTE-F3.md · release 2.0.0-alpha.9
 F4  ARQUITECTURA INTEGRADA   ENTREGADA, NO CERTIFICADA, y después CORREGIDA por
                              devolución independiente — 11-ARQUITECTURA-INTEGRADA.md
-F4c CRÍTICA INDEPENDIENTE    NUEVE bloques de hallazgos EMITIDOS por un revisor que no
-                             escribió F4, TRANSCRITOS y APLICADOS por su autor material.
-                             12-CRITICA-INDEPENDIENTE-F4.md · D23–D33
-                             NO CERRADA: la puerta la pasa una SEGUNDA revisión
-                             independiente que compruebe estas correcciones
-F5  ENMIENDAS                cuatro presiones normativas vigentes, enumeradas y sin
-                             redactar. NO INICIADA
+F4c CRÍTICA INDEPENDIENTE    DOS devoluciones, ambas EMITIDAS por revisores que no
+                             escribieron F4, TRANSCRITAS y APLICADAS por su autor material.
+                             1ª  nueve bloques · 12-CRITICA-INDEPENDIENTE-F4.md · D23–D33
+                             2ª  VEREDICTO DE INSUFICIENCIA por un revisor que TAMPOCO
+                                 aplicó la primera: 2 BLOQUEANTES, 6 GRAVES, 14 nuevos ·
+                                 13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md · D34–D45
+                             DOS de los hallazgos de la 2ª son defectos que la 1ª CORRECCIÓN
+                             introdujo o no vio.
+                             ABIERTA: sólo la cierra un veredicto explícito de SUFICIENCIA
+                             emitido por un revisor independiente sobre el resultado
+                             corregido. Ese veredicto NO existe
+F5  ENMIENDAS                OCHO presiones normativas vigentes, enumeradas y sin redactar.
+                             NO INICIADA
 F6  DESCOMPOSICIÓN Y EJECUCIÓN  no iniciada
 ```
 
@@ -341,40 +408,73 @@ repositorios distintos y tipos de TOML que reventaban— convivieron con los tre
 validadores en verde y con veintinueve pruebas pasando. Lo que cerró cada uno fue una
 prueba ADVERSARIAL que falla contra el código anterior, no el color del resumen.
 
+## Lo que cambió en el repositorio · segunda devolución
+
+```text
+F4c SEGUNDA DEVOLUCIÓN INDEPENDIENTE
+docs/evolucion/13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md  nueva — el juicio, su procedencia,
+                                          los once candidatos adjudicados, catorce hallazgos
+                                          nuevos, cinco rechazados y el veredicto de
+                                          suficiencia
+docs/evolucion/11-ARQUITECTURA-INTEGRADA.md  §2.2 R3 cualificada · §2.3 · §2.5 · §2.6.1
+                                          cuatro registros · §2.6.3 secuencia de fsync ·
+                                          §2.6.5 once→dieciséis ventanas · §2.6.6 fsync y
+                                          comprobación post-terminal · §2.6.7 diecisiete→
+                                          treinta filas · §2.6.8 regla de lectura NUEVA ·
+                                          §2.6.9 conflicto NUEVA · §2.6.10 Git NUEVA · §2.7 ·
+                                          §2.8 contrato de identidad · §2.9 · §3.2 · §3.3 ·
+                                          §3.3.0 NUEVA · §3.3.1 · §3.3.1.1 NUEVA · §3.5 ·
+                                          §3.7 · §3.8 recuento 24→25 · §4.2 · §4.3 · §5.6 ·
+                                          §5.7 NUEVA · §6.4 · §6.7 · §7.4 · §7.6 · §8.1 ·
+                                          §8.2 · §8.3 · §8.4 · §9.1 · §9.2 · §9.5 · §10.2 ·
+                                          §11.2 · §11.4 · §11.5 · §15.7 · §15.8 · §16 ·
+                                          §17 · §19
+docs/evolucion/12-CRITICA-INDEPENDIENTE-F4.md  se CONSERVA tal como se escribió, con un
+                                          aviso de que la segunda revisión ya se hizo y
+                                          encontró defectos en SUS correcciones. Sus dos
+                                          erratas —§5.7 por §5.6, y «SEIS» por diez—
+                                          corregidas donde se escribieron
+docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md  D34–D45, SIN reescribir D1–D33 ni O1–O14
+docs/evolucion/00-INDICE.md               la segunda crítica, enlazada
+NADA de kernel/operativo/, packs/ ni tooling/ ha cambiado, salvo la evidencia DERIVADA que
+el runner republica. (a), (b), E1, E2, K-1 y C4 intactos. **C7 TAMPOCO se ha tocado**: su
+defecto queda REGISTRADO con prescripción cerrada, y su ejecución es F6.
+```
+
 ## Siguiente acción exacta
 
 ```text
-1  SEGUNDA REVISIÓN INDEPENDIENTE  por quien NO escribió F4 y NO aplicó estas
-   DE F4 CORREGIDA                 correcciones. Aplicar una crítica no es superarla:
-                                   quien la aplicó es quien la recibió. Sin esta segunda
-                                   revisión, F4c no se cierra y F5 no arranca.
+1  TERCERA REVISIÓN            por quien NO escribió F4 y NO aplicó NINGUNA de las dos
+   INDEPENDIENTE               tandas de correcciones. La segunda devolución demostró por
+                               qué esto no es ceremonia: DOS de sus hallazgos BLOQUEANTES
+                               eran defectos que la PRIMERA CORRECCIÓN introdujo o no vio.
+                               Sin un veredicto explícito de SUFICIENCIA, F4c no cierra y
+                               F5 no arranca.
 
-2  QUÉ MIRAR PRIMERO             §2.6, el protocolo transaccional. Es lo que la primera
-                                 devolución declaró NO EJECUTABLE, y lo que más ha
-                                 cambiado. La comprobación concreta: coger la tabla
-                                 adversarial de §2.6.7 e intentar ejecutar cada fila
-                                 CONTRA EL TEXTO — si una fila no se puede resolver con
-                                 los datos que §2.6.2 escribe, sigue sin ser ejecutable.
+2  QUÉ MIRAR PRIMERO           §2.6 otra vez, y con el mismo método que funcionó: coger la
+                               tabla adversarial de §2.6.7 —ahora TREINTA filas— e intentar
+                               ejecutar cada una CONTRA EL TEXTO. Las dos que destaparon los
+                               bloqueantes fueron X25 (caída de MÁQUINA, que ninguna fila
+                               cubría) y X19 (Continúa tras un conflicto). Buscar la
+                               siguiente ventana que la tabla no tiene.
 
-3  QUÉ MIRAR DESPUÉS             §3.5 y §5.6: que las tres celdas de ejemplo caben de
-                                 verdad en el mismo contrato, sin campos vacíos de
-                                 conveniencia y sin campos que signifiquen cosas distintas
-                                 en cada una. Y §3.3.1: que la función Q0–Q9 es total y
-                                 disjunta sobre los diez estados de b.4, comprobado
-                                 recorriéndolos, no leyendo la afirmación.
+3  QUÉ MIRAR DESPUÉS           las atribuciones. La segunda devolución encontró CINCO citas
+                               falsas —b.3 dos veces, b.14, §20.8 y «a.9 literal»—
+                               verificándolas una a una contra el fichero original. Ése es
+                               el método: no leer lo que F4 dice que dice un contrato, sino
+                               abrir el contrato.
 
-4  QUÉ LLEVAR AL OWNER           las CUATRO presiones normativas vigentes de §16. Sólo
-                                 PN-1 bloquea de verdad: la sección (g) no existe y §2 la
-                                 escribe. PN-2 y PN-3 son la misma pregunta por dos
-                                 caminos. PN-6 es nueva y es UNA FRASE, pero sin ella todo
-                                 producto de un solo repositorio queda bloqueado para
-                                 empezar a programar.
+4  QUÉ LLEVAR AL OWNER         las OCHO presiones de §16. Sólo PN-1 bloquea todo el estado
+                               durable. Cuatro son UNA FRASE cada una, y tres de ellas se
+                               registran precisamente porque parecen obvias.
 
-5  QUÉ VIGILAR                   la tentación de leer «corregido» como «resuelto». Nueve
-                                 bloques de hallazgos salen de F4c con CERO líneas
-                                 construidas, CERO escenarios ejecutados y CERO
-                                 comprobaciones independientes de las correcciones.
+5  QUÉ VIGILAR                 la tentación de leer «corregido dos veces» como «ya está
+                               bien». Dos devoluciones salen de F4 con CERO líneas
+                               construidas, CERO escenarios ejecutados y CERO comprobaciones
+                               independientes de las correcciones aplicadas.
 
-6  DÓNDE PARAR                   antes de redactar una enmienda. Eso es F5, y su puerta es
-                                 la aprobación explícita del Owner.
+6  DÓNDE PARAR                 antes de redactar una enmienda, y antes de tocar C7. Lo
+                               primero es F5 y su puerta es el Owner; lo segundo es F6 y su
+                               prescripción ya está escrita.
 ```
+
