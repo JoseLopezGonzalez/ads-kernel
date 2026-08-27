@@ -5,62 +5,131 @@
 > [`plantillas/CHECKPOINT.md`](../../kernel/operativo/plantillas/CHECKPOINT.md).
 > **Basta decir «Continúa»**: la siguiente acción exacta está al final.
 
+> **Estado de la fase, en una línea:**
+> **F4 corregida por devolución independiente; pendiente de segunda revisión.**
+>
+> Los hallazgos los EMITIÓ un revisor independiente que no escribió F4. Las correcciones
+> las APLICÓ el autor material de F4. **Aplicar una crítica no prueba que esté bien
+> resuelta**, y por eso `F4c` no se declara cerrada aquí.
+
 ```text
-CHECKPOINT — ADS-NEXT/08 · SIS/evolucion
+CHECKPOINT — ADS-NEXT/09 · SIS/evolucion
 actualizado: 2026-08-27
-metodo:      SIS/Evolucion · F4 ARQUITECTURA INTEGRADA ENTREGADA, NO CERTIFICADA
+metodo:      SIS/Evolucion · F4 CORREGIDA POR DEVOLUCIÓN INDEPENDIENTE; PENDIENTE DE
+             SEGUNDA REVISIÓN
 based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md@56ea196
-             docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 y D16–D22
+             docs/evolucion/11-ARQUITECTURA-INTEGRADA.md   corregida
+             docs/evolucion/12-CRITICA-INDEPENDIENTE-F4.md
+             docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · D16–D22 · D23–D33
              kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
 freshness:   vigente
-last_meaningful_event: se autoriza F4 en exclusiva, y se entrega la arquitectura integrada
-             (2026-08-27)
-procedencia_de_la_critica: los hallazgos y el veredicto de la crítica de F3 los EMITIÓ un
-             revisor independiente que no participó en ella. El fichero que los recoge lo
-             TRANSCRIBIÓ Y APLICÓ el autor de F3. Aplicar una crítica NO equivale a
-             autocertificarse
-resuelto:
+last_meaningful_event: un revisor independiente devuelve F4 con nueve bloques de hallazgos,
+             y sus correcciones quedan aplicadas (2026-08-27)
+procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y de F4 los
+             EMITIÓ un revisor independiente que no las escribió. Los ficheros que los
+             recogen los TRANSCRIBIÓ Y APLICÓ el autor material de esas fases. Aplicar una
+             crítica NO equivale a autocertificarse, y NO prueba que esté bien resuelta
+resuelto_en_la_devolucion_de_f4:
+  · A · EL PROTOCOLO TRANSACCIONAL, reescrito para ser EJECUTABLE. El manifiesto de
+    transacción se pliega en `evento` como una `fase`: una transacción es una secuencia de
+    eventos INMUTABLES con `tx` común, y ya no hay fichero que se reescriba ni que se borre.
+    Hash POSTERIOR esperado por fichero — el dato que faltaba—, tres cajas de clasificación
+    en recuperación, ONCE ventanas de caída, SEIS garantías de durabilidad separadas con sus
+    tres puntos de `fsync` obligatorio, semántica completa del sellado, e ids DIRECCIONADOS
+    POR CONTENIDO. Se RETIRA la afirmación falsa de que dos emisores concurrentes no
+    colisionan jamás. Tabla adversarial de DIECISIETE filas, para convertirse en pruebas F6
+  · B · `cobertura.dimension` se parte en `sujeto` · `aspecto` con namespace tipado ·
+    `responsables` · `criterio`. Una capacidad deja de sustituir a las dimensiones de las
+    que responde: accesibilidad y responsive de una pantalla ya son dos celdas. Rendimiento,
+    resiliencia y cadena de suministro dejan de estar sin dueño, asignadas a capacidades que
+    YA EXISTEN. Tres celdas completas sobre el mismo contrato
+  · C · la matriz de fuentes de verdad, rehecha: prioridad y aparcado en `02-control.md`, la
+    zona ÓRDENES como CANAL DE COMANDOS, y el tablero deja de declararse derivado entero
+  · D · el estado de iniciativa pasa a FUNCIÓN TOTAL con precedencia Q0–Q9, con su totalidad
+    demostrada sobre los diez estados de b.4. No se persiste en ningún canónico
+  · E · `memoria` SE GENERALIZA, y se dice. `ultima_verificacion_real` queda en UNA sola
+    fuente. `capa` pasa a condicional y nace `plano`, sin fabricar la cuarta capa
+  · F · `adaptador.nivel` desaparece como campo: el nivel alcanzado es DERIVADO y caduca.
+    §6.7 resuelve el descubrimiento con control repo y fuentes hermanos, sin copiar la
+    organización ADS y sin depender de nada no versionado
+  · G · migración con secuencia única M5 certifica · M6 retira · M7 verifica. Rollback con
+    remoto separado de lo local y SIN eliminación remota automática. Certificación Integrada
+    con aplicabilidad para 0, 1 y N fuentes. Actualización con compatibilidad y rollback DEL
+    ESTADO, y punto de no retorno declarado en U3
+  · H · P-08 con TRES huellas y clave de caché por CONTENIDO, nunca el SHA de Git. Raíz de
+    confianza declarada sin circularidad, y el suelo que queda abierto, dicho
+  · I · D23–D33 registradas, cada una diciendo qué decisión anterior revisa. D16–D22
+    CONSERVAN SU TEXTO. Tipos RECALCULADOS: cuatro de estado, uno de clase, y el manifiesto
+    de transacción deja de serlo. Presiones revisadas: PN-4 retirada, PN-5 fusionada en
+    PN-3, PN-6 nueva. CUATRO vigentes, sin renumerar ninguna
+resuelto_en_la_entrega_de_f4:
+  # HISTORIA. Es lo que F4 resolvió AL ENTREGARSE. Lo marcado [CORREGIDO] lo revisó la
+  # devolución independiente, y su forma vigente está en el bloque de arriba.
   · LA PRIMERA DECISIÓN, que H2 ordenaba primero: DISPOSICIÓN FÍSICA DEL ESTADO.
-    Ficheros canónicos + DIARIO DE EVENTOS append-only + MANIFIESTO DE TRANSACCIÓN +
-    derivados deterministas. SQLite canónico y event sourcing puro comparados y
-    DESCARTADOS por romper «el estado ES los ficheros, legibles sin informe intermedio»;
-    sólo ficheros, descartado por no cumplir la atomicidad que a.9 exige. SQLite queda
-    como índice compilado NO canónico, en el plano operacional
+    Ficheros canónicos + DIARIO DE EVENTOS append-only + derivados deterministas. SQLite
+    canónico y event sourcing puro comparados y DESCARTADOS por romper «el estado ES los
+    ficheros, legibles sin informe intermedio»; sólo ficheros, descartado por no cumplir
+    la atomicidad que a.9 exige. SQLite queda como índice compilado NO canónico, en el
+    plano operacional
+    [CORREGIDO] la entrega contaba además un MANIFIESTO DE TRANSACCIÓN como pieza aparte.
+    D23 lo pliega en `evento` como una `fase`
   · el diario ES el JOURNAL que a.11 dejó PENDIENTE. Cierra G26
   · DURABLE frente a OPERACIONAL: `estado/` versionado · `.ads/run/` no versionado y
     reconstruible. El criterio, en una pregunta: ¿sobrevive a un clon nuevo?
-  · CUATRO TIPOS NUEVOS Y NI UNO MÁS: `iniciativa` `adaptador` `cobertura` `evento`.
-    Todo lo demás compone, deriva o reutiliza — findings son items, campañas son
-    iniciativas, la certificación es cobertura, la matriz es una vista
+  · [CORREGIDO] la entrega decía «CUATRO TIPOS NUEVOS Y NI UNO MÁS», que era una CUOTA
+    fijada antes de aplicar la prueba. El recuento se CALCULA: cuatro tipos de estado, un
+    esquema de clase, y el manifiesto de transacción deja de ser tipo. §3.8
   · CI-1 aplicado: el sujeto auditable es referencia tipada (clase, ancla, ruta), con el
     componente de C6 como ANCLA. SOURCES.toml no se toca
-  · CI-2 resuelto por COMPOSICIÓN: `memoria` gobierna, `cobertura` da vigencia. Cero
-    campos duplicados. Las tres vías comparadas
+  · CI-2 resuelto por COMPOSICIÓN: `memoria` gobierna, `cobertura` da vigencia
+    [CORREGIDO] la composición era real y la generalización de `memoria` también, y sólo
+    se contaba una. D27 sustituye a D20 y declara las dos. «Cero campos duplicados» no era
+    cierto: `ultima_verificacion_real` estaba en los dos sitios, y ahora está en uno
   · CI-5 aplicado: cuatro macrocircuitos con disparador, fases, gates, rollback,
     reanudación y certificación PROPIOS. El motor es común; las rutas no se aplanan
+    [CORREGIDO] dos de los cuatro declaraban secuencias imposibles. D32 y D33
   · CI-6 aplicado: adaptador en cuatro piezas — definición canónica, proyecciones donde
     cada proveedor las DESCUBRE, huella con validador de deriva, y prueba de humo
+    [CORREGIDO] `adaptador.nivel` era una segunda verdad, y «donde cada proveedor las
+    descubre» no resolvía el caso de control repo y fuentes hermanos. D28 y §6.7
   · P-08 con solución general diseñada: entradas declaradas por validador, huella de
     entradas en la evidencia, y las cuatro preguntas separadas — integridad, procedencia,
     éxito y VIGENCIA
+    [CORREGIDO] la caché se claveaba por revisión de Git y era ciega al árbol sucio. D31
   · doce escenarios extremo a extremo recorridos. NINGUNO EJECUTADO
-  · D16–D22 registradas con su alternativa descartada
-owner_captado: "Queda AUTORIZADA exclusivamente F4 — ARQUITECTURA INTEGRADA" (2026-08-27)
-pregunta_pendiente: ninguna. Las cinco presiones normativas son materia de F5, no preguntas
-siguiente:   CRÍTICA INDEPENDIENTE DE F4, por quien no la escribió. Después F5
+  · D16–D22 registradas con su alternativa descartada. D23–D33 las revisan sin
+    reescribirlas
+owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
+             arquitectura. NO autoriza F5 ni F6" (2026-08-27)
+pregunta_pendiente: ninguna. Las cuatro presiones normativas vigentes son materia de F5,
+             no preguntas
+siguiente:   SEGUNDA REVISIÓN INDEPENDIENTE de F4 corregida, por quien NO la escribió y NO
+             aplicó estas correcciones. Después F5
 falta_para_cerrar_la_capa:
-  · F4 NO ESTÁ CERTIFICADA. La escribe quien la propone, y el plan exige crítica
-    independiente antes de F5. El precedente: 33 hallazgos en la iteración anterior
-  · CINCO PRESIONES NORMATIVAS. PN-1 —la sección (g) no existe y §2 la escribe— BLOQUEA
-    todo el estado durable. PN-2 y PN-3 son la misma y sólo bloquean que el sistema abra
-    auditorías solo. PN-4 probablemente no exija nada. PN-5 es consecuencia de PN-3
-  · NADA CONSTRUIDO: ni kernel, ni runtime, ni tooling, ni esquemas, ni adaptadores
+  · F4 CORREGIDA POR DEVOLUCIÓN INDEPENDIENTE; PENDIENTE DE SEGUNDA REVISIÓN. Las
+    correcciones las aplicó QUIEN LAS RECIBIÓ, y eso no prueba que estén bien resueltas.
+    F4c NO está cerrada
+  · CUATRO PRESIONES NORMATIVAS VIGENTES. PN-1 —la sección (g) no existe y §2 la escribe—
+    BLOQUEA todo el estado durable, y ahora decide MÁS que antes: `fsync`, regla de commit
+    de Git, sellado e identidad. PN-2 y PN-3 son la misma y sólo bloquean que el sistema
+    abra auditorías solo; PN-3 absorbe lo que era PN-5. PN-6 es NUEVA: qué significa
+    «Integrada» para un producto de 0 o 1 fuente, y reinterpreta O12. PN-4 queda RETIRADA
+    con su motivo escrito, y F5 puede reinstaurarla
+  · NADA CONSTRUIDO: ni kernel, ni runtime, ni tooling, ni esquemas, ni adaptadores, ni
+    plantillas, ni packs, ni validadores, ni migraciones. Las correcciones son DISEÑO
+    CORREGIDO, no diseño implementado
+  · NADA PROBADO: las 17 filas de la tabla adversarial de §2.6.7, los 10 escenarios
+    negativos de §11.5 y los 12 escenarios de §14 están ESCRITOS. Ninguno ejecutado
   · el piloto O14 sigue seleccionado y NO ejecutado. La columna de uso real, vacía
   · ningún adaptador existe, y por tanto ninguno está certificado
-  · X1 y P-05 siguen deferidas. Ninguna decisión de F4 cruza esa línea
-  · dos dimensiones de auditoría sin propietario declarado: rendimiento y resiliencia, y
-    dependencias y cadena de suministro. NO se asignan por comodidad
+  · X1 y P-05 siguen deferidas. Ninguna decisión de F4 cruza esa línea, y D27 resuelve
+    `capa` precisamente para no cruzarla
+  · el SUELO DE P-08: si el runner miente, nada dentro del repositorio lo detecta.
+    Declarado en §11.4, no resuelto
+  · ORDEN TOTAL ENTRE MÁQUINAS: la cadena de eventos da orden total por transacción y
+    parcial entre emisores concurrentes. La bifurcación se DETECTA; resolverla es runtime
+    distribuido, y E2.7 ya lo dejó abierto
   · leer el manifiesto exige Python 3.11 o superior
 ```
 
@@ -81,9 +150,15 @@ F3c PUERTA CORRECTIVA        CERRADA y después CORREGIDA — crítica independi
                              O7–O14 registradas, T158 corregido en dos pasadas, y los cuatro
                              defectos que la revisión encontró en la propia puerta resueltos.
                              10-CRITICA-INDEPENDIENTE-F3.md · release 2.0.0-alpha.9
-F4  ARQUITECTURA INTEGRADA   ENTREGADA y NO CERTIFICADA — 11-ARQUITECTURA-INTEGRADA.md
-F4c CRÍTICA INDEPENDIENTE    siguiente. Su puerta la pasa quien NO escribió F4
-F5  ENMIENDAS                cinco presiones normativas enumeradas y sin redactar
+F4  ARQUITECTURA INTEGRADA   ENTREGADA, NO CERTIFICADA, y después CORREGIDA por
+                             devolución independiente — 11-ARQUITECTURA-INTEGRADA.md
+F4c CRÍTICA INDEPENDIENTE    NUEVE bloques de hallazgos EMITIDOS por un revisor que no
+                             escribió F4, TRANSCRITOS y APLICADOS por su autor material.
+                             12-CRITICA-INDEPENDIENTE-F4.md · D23–D33
+                             NO CERRADA: la puerta la pasa una SEGUNDA revisión
+                             independiente que compruebe estas correcciones
+F5  ENMIENDAS                cuatro presiones normativas vigentes, enumeradas y sin
+                             redactar. NO INICIADA
 F6  DESCOMPOSICIÓN Y EJECUCIÓN  no iniciada
 ```
 
@@ -202,6 +277,22 @@ docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md  D16–D22, sin reescribir D1–D1
 docs/evolucion/00-INDICE.md               23.5 entregada
 NADA de kernel/operativo/, packs/ ni tooling/ ha cambiado en F4. Ninguna enmienda.
 
+F4c DEVOLUCIÓN INDEPENDIENTE — nueve bloques de hallazgos, aplicados
+docs/evolucion/12-CRITICA-INDEPENDIENTE-F4.md  nueva — la crítica, su procedencia, los
+                                          nueve bloques y qué se corrigió en cada uno
+docs/evolucion/11-ARQUITECTURA-INTEGRADA.md  §1.3 matriz de fuentes de verdad · §2.5–§2.9
+                                          protocolo transaccional reescrito · §3.2–§3.8
+                                          tipos, contratos y recuento · §4.1–§4.3 contrato
+                                          documental · §5.2 aspectos y §5.6 tres celdas ·
+                                          §6.5 nivel derivado y §6.7 puntero en fuente ·
+                                          §8.1–§8.4 los cuatro recorridos · §9.2 y §9.5
+                                          certificación · §11.2–§11.5 P-08 · §15.8 · §16
+                                          presiones · §17 · §18 · §19
+docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md  D23–D33, SIN reescribir D1–D22 ni O1–O14
+docs/evolucion/00-INDICE.md               la crítica de F4, enlazada
+NADA de kernel/operativo/, packs/ ni tooling/ ha cambiado en F4c, salvo la evidencia
+DERIVADA que el runner republica. Ninguna enmienda. (a), (b), E1, E2, K-1 y C4 intactos.
+
 (a), (b) y E1 siguen ÍNTEGRAS y sin reescribir: E2 las enmienda por sustitución
 explícita, que es la única vía que admite la regla 1 de 03-INVARIANTES.
 Los documentos del Owner tampoco se han tocado: el de pendientes entra literal.
@@ -253,23 +344,37 @@ prueba ADVERSARIAL que falla contra el código anterior, no el color del resumen
 ## Siguiente acción exacta
 
 ```text
-1  CRÍTICA INDEPENDIENTE DE F4   por quien NO la escribió. Es la puerta que el plan fija
-                                 para F4, y F4 no la pasa sola. Sin ella, F5 no arranca.
+1  SEGUNDA REVISIÓN INDEPENDIENTE  por quien NO escribió F4 y NO aplicó estas
+   DE F4 CORREGIDA                 correcciones. Aplicar una crítica no es superarla:
+                                   quien la aplicó es quien la recibió. Sin esta segunda
+                                   revisión, F4c no se cierra y F5 no arranca.
 
-2  QUÉ MIRAR PRIMERO             §2, la disposición física del estado. Es la decisión de
-                                 la que dependen la certificación operativa, la iniciativa
-                                 y la matriz de cobertura, y la única que bloquea el orden
-                                 de construcción entero.
+2  QUÉ MIRAR PRIMERO             §2.6, el protocolo transaccional. Es lo que la primera
+                                 devolución declaró NO EJECUTABLE, y lo que más ha
+                                 cambiado. La comprobación concreta: coger la tabla
+                                 adversarial de §2.6.7 e intentar ejecutar cada fila
+                                 CONTRA EL TEXTO — si una fila no se puede resolver con
+                                 los datos que §2.6.2 escribe, sigue sin ser ejecutable.
 
-3  QUÉ LLEVAR AL OWNER           las cinco presiones normativas de §16. Sólo PN-1 bloquea
-                                 de verdad: la sección (g) no existe y §2 la escribe.
-                                 PN-2 y PN-3 son la misma pregunta por dos caminos.
+3  QUÉ MIRAR DESPUÉS             §3.5 y §5.6: que las tres celdas de ejemplo caben de
+                                 verdad en el mismo contrato, sin campos vacíos de
+                                 conveniencia y sin campos que signifiquen cosas distintas
+                                 en cada una. Y §3.3.1: que la función Q0–Q9 es total y
+                                 disjunta sobre los diez estados de b.4, comprobado
+                                 recorriéndolos, no leyendo la afirmación.
 
-4  QUÉ VIGILAR                   la tentación de leer «diseñado» como «hecho». Cuatro
-                                 tipos nuevos, cuatro macrocircuitos y doce escenarios
-                                 salen de F4 con CERO líneas construidas y CERO
-                                 escenarios ejecutados.
+4  QUÉ LLEVAR AL OWNER           las CUATRO presiones normativas vigentes de §16. Sólo
+                                 PN-1 bloquea de verdad: la sección (g) no existe y §2 la
+                                 escribe. PN-2 y PN-3 son la misma pregunta por dos
+                                 caminos. PN-6 es nueva y es UNA FRASE, pero sin ella todo
+                                 producto de un solo repositorio queda bloqueado para
+                                 empezar a programar.
 
-5  DÓNDE PARAR                   antes de redactar una enmienda. Eso es F5, y su puerta es
+5  QUÉ VIGILAR                   la tentación de leer «corregido» como «resuelto». Nueve
+                                 bloques de hallazgos salen de F4c con CERO líneas
+                                 construidas, CERO escenarios ejecutados y CERO
+                                 comprobaciones independientes de las correcciones.
+
+6  DÓNDE PARAR                   antes de redactar una enmienda. Eso es F5, y su puerta es
                                  la aprobación explícita del Owner.
 ```
