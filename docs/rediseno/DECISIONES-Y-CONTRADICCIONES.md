@@ -47,6 +47,29 @@ declarado; cambiarlas es una orden, no un rediseño.
 | O5 | Quién puede levantar el veto de excelencia visual | sólo el Owner, y sólo tras ver las alternativas exploradas | delegarlo en `DIS/direccion-artistica` |
 | O6 | Idioma de los artefactos operativos | castellano, como (a) y (b) | traducir es mecánico y no afecta a los identificadores |
 
+### `O7`–`O14` · resueltas por el Owner el 2026-08-27, tras la crítica independiente de F3
+
+A diferencia de `O1`–`O6`, éstas **no tenían valor por defecto implementado**: son las
+preguntas que [`09-SINTESIS.md`](../evolucion/09-SINTESIS.md) elevó al Owner y las que la
+[crítica independiente](../evolucion/10-CRITICA-INDEPENDIENTE-F3.md) reformuló. Fijan
+dirección para F4; **ninguna está construida**, y ninguna enmienda (a), (b), `E1`, `E2` ni
+`K-1`.
+
+| # | decisión | lo resuelto | qué cambia si el Owner decide otra cosa |
+|---|---|---|---|
+| O7 | ¿puede el sistema abrir trabajo de auditoría sin petición del Owner? | **política revocable de auditoría recurrente.** Detectar e inventariar es automático y **no crea trabajo**. Abrir auditorías se autoriza por evento, riesgo, recurrencia y caducidad **dentro de la política aprobada**. Las correcciones mecánicas y locales se ejecutan sólo en campañas y umbrales preautorizados, con pruebas y `VER` independiente. Producto, UX, arquitectura, seguridad, datos y comportamiento crítico **conservan sus gates y su autoridad**. Una única decisión declara alcance, prioridad, presupuesto, umbrales y revocación | revocar la política devuelve el sistema a proponer y esperar. `G03` no queda levantado en bloque: sólo lo que la política declara |
+| O8 | ¿dónde cae el mínimo documental de un producto? | **las doce áreas semánticas del §5.18**, obligatorias como MATERIA y no como ficheros. Compactables físicamente, con profundidad proporcional a tamaño, naturaleza y riesgo. Las condicionales se activan por aplicabilidad, y «no aplicable» exige motivo registrado. Reanudación, decisiones seguras y gates son **comprobaciones** del mínimo, no su única razón | subir o bajar el número de áreas obligatorias, o su profundidad exigida por perfil de producto |
+| O9 | ¿trae la distribución catálogo o equipo materializado? | **catálogo completo y estructura preconfigurada.** `C4` gobierna la materialización: `DSP` y `SIS` permanentes, `ENC` y las demás bajo demanda. No es una decisión nueva: es la lectura de `C4` y `E1` que la síntesis no hizo | cambiar el equipo mínimo permanente exigiría enmienda a `C4` o a `E1`, y aquí no se propone ninguna |
+| O10 | ¿dónde vive el material normativo en voz del Owner? | **`docs/owner/`** como destino canónico. La clasificación pasa a ser por **ubicación y metadata de autoridad**, en vez de una exención manual por fichero. El material temporal de evolución **no se retira todavía** | mover el directorio, o volver a la exención por fichero — que es lo que falló cinco veces |
+| O11 | ¿cómo se llama la unidad amplia, y qué es? | **`iniciativa`.** Tipo o artefacto canónico de **coordinación**, con identidad, estado durable, alcance, gates y dosier vivo **derivado**. **No es un proceso nuevo**: compone rutas, items y paquetes existentes | elegir otro nombre es mecánico. Convertirla en proceso sí sería un rediseño, y contradiría `H1` |
+| O12 | ¿qué certificación permite empezar a trabajar? | **Integrada + baseline aprobado + ningún desconocido crítico sin clasificar.** La certificación **Completa** es lo que permite declarar una instalación o adopción terminada y plenamente certificada | exigir Completa para empezar bloquearía todo producto sin runtime; exigir sólo Estructural dejaría entrar sin saber si el sistema arranca |
+| O13 | ¿qué entornos agentic entran en la primera matriz? | **Claude Code y Codex** como objetivo soportado y certificado. **Cursor y Gemini** figuran desde el diseño en nivel compatible o genérico hasta pasar su prueba de humo. **Fallback genérico obligatorio** para proveedores no certificados. **Ningún soporte se declara sin ejecución real** | añadir o quitar entornos de la matriz. Lo que no cambia es la regla: sin prueba de humo ejecutada, no hay nivel certificado |
+| O14 | ¿qué producto se usa para el piloto? | **PesquerApp**, en clones y workspace aislados, **sin modificar ramas productivas**. Debe probar adopción multi-repo de un producto existente, `T169`, `T170`, `CA-10`, `CA-11`, el §100 y los límites de fan-out. **No se ejecuta todavía**: queda seleccionado, con sus condiciones escritas | elegir otro producto exigiría uno con historia real y varios repositorios. `gym-wear` sigue retirado como fuente contaminada, y esa retirada era para la minería, no para el piloto |
+
+**Procedencia:** las ocho llegan de la revisión independiente de F3 y de la respuesta del
+Owner a ella, el 2026-08-27. `O7` cierra `X6`, `O8` cierra `X7` y `O9` cierra `X8`; `O10`
+cierra la ubicación de `P-07`, que era la parte que la síntesis había dejado al Owner.
+
 ---
 
 ## 3 · Contradicciones detectadas contra (a) y (b)
