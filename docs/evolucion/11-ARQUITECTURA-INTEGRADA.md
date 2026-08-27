@@ -16,7 +16,7 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 >                       12-CRITICA-INDEPENDIENTE-F4.md. Correcciones: D23–D33
 > SEGUNDA DEVOLUCIÓN    veredicto de INSUFICIENCIA por un revisor con contexto limpio que
 >                       no escribió F4 NI aplicó la primera crítica: DOS hallazgos
->                       BLOQUEANTES, seis GRAVES y catorce nuevos, en
+>                       BLOQUEANTES, siete GRAVES y catorce nuevos, en
 >                       13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md. Correcciones: D34–D45
 > ```
 >

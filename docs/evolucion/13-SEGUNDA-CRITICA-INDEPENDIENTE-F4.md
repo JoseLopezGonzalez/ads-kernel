@@ -19,7 +19,7 @@
 > ```
 >
 > **`F4c` NO queda cerrada por este documento.** El revisor emitió un veredicto explícito de
-> **INSUFICIENCIA** —dos hallazgos BLOQUEANTES y seis GRAVES—, y las correcciones que siguen
+> **INSUFICIENCIA** —dos hallazgos BLOQUEANTES y siete GRAVES—, y las correcciones que siguen
 > las escribió quien las recibió. Cerrar `F4c` exige que un revisor independiente examine el
 > resultado corregido y emita un veredicto de suficiencia. **Ese veredicto no está aquí.**
 
@@ -86,17 +86,19 @@ corrigen en este documento y en el 12.
 BLOQUEANTES · DOS      E · fsync de directorio omitido en los canónicos
                        B · `conflicto` terminal que nunca emite reconciliación
 
-GRAVES · SEIS          A · no hay regla de lectura durante la ventana
+GRAVES · SIETE         A · no hay regla de lectura durante la ventana
                        C · identidad por contenido circular y sin serialización
                        H · §9.5 contradice el texto vigente de C7
                        I · el puntero escribe en fuentes fuera de todo circuito
                        K · la recuperación local publica en remoto sin autoridad
                        N-1 · «el contrato del aspecto» no existe
+                       N-6 · las obligaciones de iniciativa invocan predicados
+                             que no existen
 
-MEDIOS · OCHO          D · F · G(residuos) · J · N-2 · N-3 · N-4 · N-5 · N-7 · N-8 ·
+MEDIOS · TRECE         D · F · G(residuos) · J · N-2 · N-3 · N-4 · N-5 · N-7 · N-8 ·
                        N-9 · N-10 · N-11
 MENORES · TRES         N-12 · N-13 · N-14
-RECHAZADOS · CINCO     ver §4
+RECHAZADOS · SIETE     ver §4
 ```
 
 ---

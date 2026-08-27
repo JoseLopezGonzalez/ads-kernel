@@ -11,7 +11,7 @@
 >
 > La segunda revisión la emitió un revisor con contexto limpio que **no escribió F4 ni aplicó
 > la primera crítica**, y su veredicto fue de **INSUFICIENCIA**: dos hallazgos BLOQUEANTES,
-> seis GRAVES y catorce nuevos. **Dos de ellos eran defectos que la PRIMERA corrección
+> siete GRAVES y catorce nuevos. **Dos de ellos eran defectos que la PRIMERA corrección
 > introdujo o no vio.** Las correcciones las APLICÓ el autor material de F4. **Aplicar una
 > crítica no prueba que esté bien resuelta**, y por eso `F4c` **no se declara cerrada aquí**.
 
@@ -30,7 +30,7 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
 freshness:   vigente
 last_meaningful_event: la SEGUNDA revisión independiente devuelve F4 con veredicto de
-             INSUFICIENCIA —dos BLOQUEANTES, seis GRAVES y catorce hallazgos nuevos— y sus
+             INSUFICIENCIA —dos BLOQUEANTES, siete GRAVES y catorce hallazgos nuevos— y sus
              correcciones quedan aplicadas (2026-08-27)
 procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y de las DOS
              de F4 los EMITIÓ un revisor independiente que no las escribió. La SEGUNDA de F4
@@ -154,7 +154,7 @@ resuelto_en_la_entrega_de_f4:
     reescribirlas
 owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
              arquitectura. NO autoriza F5 ni F6" (2026-08-27)
-pregunta_pendiente: ninguna. Las cuatro presiones normativas vigentes son materia de F5,
+pregunta_pendiente: ninguna. Las OCHO presiones normativas vigentes son materia de F5,
              no preguntas
 siguiente:   TERCERA REVISIÓN INDEPENDIENTE de F4, por quien NO la escribió y NO aplicó
              ninguna de las dos tandas de correcciones. Después F5
@@ -217,7 +217,7 @@ F4c CRÍTICA INDEPENDIENTE    DOS devoluciones, ambas EMITIDAS por revisores que
                              escribieron F4, TRANSCRITAS y APLICADAS por su autor material.
                              1ª  nueve bloques · 12-CRITICA-INDEPENDIENTE-F4.md · D23–D33
                              2ª  VEREDICTO DE INSUFICIENCIA por un revisor que TAMPOCO
-                                 aplicó la primera: 2 BLOQUEANTES, 6 GRAVES, 14 nuevos ·
+                                 aplicó la primera: 2 BLOQUEANTES, 7 GRAVES, 14 nuevos ·
                                  13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md · D34–D45
                              DOS de los hallazgos de la 2ª son defectos que la 1ª CORRECCIÓN
                              introdujo o no vio.
@@ -427,7 +427,7 @@ prueba ADVERSARIAL que falla contra el código anterior, no el color del resumen
 F4c SEGUNDA DEVOLUCIÓN INDEPENDIENTE
 docs/evolucion/13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md  nueva — el juicio, su procedencia,
                                           los once candidatos adjudicados, catorce hallazgos
-                                          nuevos, cinco rechazados y el veredicto de
+                                          nuevos, siete rechazados y el veredicto de
                                           suficiencia
 docs/evolucion/11-ARQUITECTURA-INTEGRADA.md  §2.2 R3 cualificada · §2.3 · §2.5 · §2.6.1
                                           cuatro registros · §2.6.3 secuencia de fsync ·

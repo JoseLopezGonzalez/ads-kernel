@@ -83,7 +83,7 @@ sustituyen** a las de arriba.
 
 Un revisor independiente con contexto limpio —que **no escribió la arquitectura integrada y
 no aplicó la primera crítica**— emitió un veredicto de **INSUFICIENCIA**: dos hallazgos
-BLOQUEANTES, seis GRAVES y catorce nuevos. `D34`–`D45` son las decisiones que los resuelven.
+BLOQUEANTES, siete GRAVES y catorce nuevos. `D34`–`D45` son las decisiones que los resuelven.
 
 > **`D16`–`D33` no se reescriben**, por el mismo motivo que `D16`–`D22` no se reescribieron
 > al aplicar la primera crítica. Cada fila declara qué queda revisado.

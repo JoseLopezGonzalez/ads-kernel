@@ -20,7 +20,7 @@
 > **ESA SEGUNDA REVISIÓN YA SE HA HECHO, y este documento se conserva tal como se escribió.**
 > Su resultado está en
 > [`13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md`](13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md):
-> **veredicto de INSUFICIENCIA**, con dos hallazgos BLOQUEANTES, seis GRAVES y catorce
+> **veredicto de INSUFICIENCIA**, con dos hallazgos BLOQUEANTES, siete GRAVES y catorce
 > nuevos. **Dos de ellos son defectos que las correcciones de ESTE documento introdujeron o
 > no vieron** — la omisión del `fsync` de directorio en los canónicos, y un `conflicto`
 > terminal que nunca emitía `reconciliacion-pendiente`. El texto de abajo no se retoca: es la
