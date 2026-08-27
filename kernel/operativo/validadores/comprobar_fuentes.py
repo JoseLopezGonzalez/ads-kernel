@@ -64,8 +64,8 @@ PLANTILLA = "kernel/operativo/plantillas/SOURCES.toml"
 CITAN_LO_DEROGADO = [
     # Los dos documentos del Owner: material normativo escrito en su voz, no corpus
     # operativo. Reescribirlos sería reescribir la orden.
-    "ADS-ARQUITECTURA-MULTIREPO-APROBADA.md",
-    "ADS-IDEAS-PENDIENTES-MULTIREPO.md",
+    "docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md",
+    "docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md",
     # La enmienda existe para citar lo que deroga.
     "docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md",
     # (a) y (b) permanecen íntegras: E2 las enmienda por sustitución explícita.

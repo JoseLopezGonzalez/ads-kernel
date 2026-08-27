@@ -43,7 +43,7 @@ NO HACE   aceptar el documento de pendientes propuesta a propuesta. Aceptar mec�
 | material | autoridad | qué aporta |
 |---|---|---|
 | [`ADS-NEXT-OWNER-BRIEF.md`](ADS-NEXT-OWNER-BRIEF.md) | directiva del Owner | los veintiséis apartados y las doce reglas de interpretación |
-| [`ADS-ARQUITECTURA-MULTIREPO-APROBADA.md`](../../ADS-ARQUITECTURA-MULTIREPO-APROBADA.md) | decisión aprobada, ya implementada | `D1`–`D10`, `N1`–`N14`, `I1`–`I10`, `CA-1`–`CA-17` |
+| [`ADS-ARQUITECTURA-MULTIREPO-APROBADA.md`](../owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md) | decisión aprobada, ya implementada | `D1`–`D10`, `N1`–`N14`, `I1`–`I10`, `CA-1`–`CA-17` |
 | [`ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md`](ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md) | **material temporal de evolución** | principios que el Owner declara aceptados, propuestas todavía abiertas y problemas por sintetizar |
 | [`05-CANDIDATOS.md`](05-CANDIDATOS.md) | inventario con procedencia | 29 candidatos de PesquerApp, con evidencia de uso |
 | [`06-CONTRASTE.md`](06-CONTRASTE.md) | veredictos | 29 lecturas contra el corpus, y `P-01`–`P-06` |

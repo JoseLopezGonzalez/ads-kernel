@@ -15,16 +15,22 @@ kernel/operativo/  el CONTENIDO OPERATIVO construido sobre (a) y (b).
 
 Están escritos en **voz del Owner**, no en el lenguaje canónico del corpus. Se conservan
 literales: reescribirlos para que cumplieran el vocabulario del kernel sería reescribir la
-orden. Por eso quedan declarados en
-[`exclusiones.yaml`](../../kernel/operativo/validadores/exclusiones.yaml) como exentos de
-vocabulario, y **sólo de eso**: sus enlaces se comprueban como los de cualquier documento.
+orden. Por eso quedan exentos de vocabulario en
+[`exclusiones.yaml`](../../kernel/operativo/validadores/exclusiones.yaml), y **sólo de eso**:
+sus enlaces se comprueban como los de cualquier documento.
+
+> **`docs/owner/` es su destino canónico**, fijado por la resolución `O10`. La exención pasa a
+> ser **por ubicación** en vez de fichero a fichero, que es el remedio manual que ya había
+> fallado cinco veces. Los dos documentos multi-repo ya viven ahí. La directiva, su prompt y
+> el documento de pendientes siguen en `docs/evolucion/` con su exención propia, y su
+> migración está declarada pendiente en `exclusiones.yaml`.
 
 | | |
 |---|---|
 | [`ADS-NEXT-OWNER-BRIEF.md`](ADS-NEXT-OWNER-BRIEF.md) | la directiva maestra: veintiséis apartados de visión, requisitos y criterios |
 | [`PROMPT-ARRANQUE-ADS-NEXT.md`](PROMPT-ARRANQUE-ADS-NEXT.md) | el prompt de arranque que ordena ejecutarla, y en qué orden |
-| [`ADS-ARQUITECTURA-MULTIREPO-APROBADA.md`](../../ADS-ARQUITECTURA-MULTIREPO-APROBADA.md) | **decisión aprobada para implementación**: un producto ADS son varios repositorios gobernados por un repositorio ADS de control |
-| [`ADS-IDEAS-PENDIENTES-MULTIREPO.md`](../../ADS-IDEAS-PENDIENTES-MULTIREPO.md) | documento de trabajo: ideas consolidadas y cuestiones que el Owner declara abiertas |
+| [`ADS-ARQUITECTURA-MULTIREPO-APROBADA.md`](../owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md) | **decisión aprobada para implementación**: un producto ADS son varios repositorios gobernados por un repositorio ADS de control |
+| [`ADS-IDEAS-PENDIENTES-MULTIREPO.md`](../owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md) | documento de trabajo: ideas consolidadas y cuestiones que el Owner declara abiertas |
 | [`ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md`](ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md) | **material temporal de evolución**: qué quedó aceptado, qué sigue propuesto y qué debe sintetizarse tras F2. No es normativa vigente ni autoriza a implementar su contenido |
 
 > **`ARQUITECTURA` e `IDEAS` se contradicen sobre la misma pregunta**, y la contradicción no

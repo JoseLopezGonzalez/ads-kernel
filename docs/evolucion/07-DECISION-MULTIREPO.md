@@ -9,8 +9,8 @@ efecto sobre el trabajo hecho, y **no elige entre ellos**.
 
 | | estado que se declara a sí mismo | sobre la materialización multi-repo |
 |---|---|---|
-| [`ADS-ARQUITECTURA-MULTIREPO-APROBADA.md`](../../ADS-ARQUITECTURA-MULTIREPO-APROBADA.md) | *«APROBADO PARA IMPLEMENTACIÓN»* · *«La decisión de arquitectura descrita aquí está tomada y debe implementarse»* | la **cierra**: `D1`–`D10`, con repositorio ADS de control, workspace de repos hermanos, `SOURCES.toml`, sin submodules |
-| [`ADS-IDEAS-PENDIENTES-MULTIREPO.md`](../../ADS-IDEAS-PENDIENTES-MULTIREPO.md) | *«documento de trabajo del Owner»* · *«no autoriza a implementar automáticamente»* | la **abre**: §12 *«CUESTIÓN ABIERTA CRÍTICA … NO IMPLEMENTAR TODAVÍA»*, §15 *«ABIERTA — NO IMPLEMENTAR SIN DISEÑO PREVIO»* |
+| [`ADS-ARQUITECTURA-MULTIREPO-APROBADA.md`](../owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md) | *«APROBADO PARA IMPLEMENTACIÓN»* · *«La decisión de arquitectura descrita aquí está tomada y debe implementarse»* | la **cierra**: `D1`–`D10`, con repositorio ADS de control, workspace de repos hermanos, `SOURCES.toml`, sin submodules |
+| [`ADS-IDEAS-PENDIENTES-MULTIREPO.md`](../owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md) | *«documento de trabajo del Owner»* · *«no autoriza a implementar automáticamente»* | la **abre**: §12 *«CUESTIÓN ABIERTA CRÍTICA … NO IMPLEMENTAR TODAVÍA»*, §15 *«ABIERTA — NO IMPLEMENTAR SIN DISEÑO PREVIO»* |
 
 ## La contradicción, con las dos posturas escritas
 
@@ -130,6 +130,11 @@ P-07 · ADS no tiene sitio declarado para material normativo en voz del Owner
 
   NO SE RESUELVE AQUÍ   un tipo canónico para «documento del Owner» es diseño, y el
                         diseño está detenido hasta que se resuelva la contradicción.
+
+  RESUELTO DESPUÉS      el 2026-08-27, por la resolución O10: `docs/owner/` es el destino
+                        canónico, y la exención pasa a ser por UBICACIÓN. Los dos documentos
+                        de la raíz están ya ahí. Lo de arriba se conserva como quedó escrito:
+                        es el registro de por qué hizo falta, no una descripción del estado.
 ```
 
 ## Qué pasa con F3

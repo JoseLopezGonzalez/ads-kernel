@@ -80,21 +80,29 @@ vocabulario_exento:
     motivo: >
       Directiva del Owner, escrita en su voz. Es material normativo de primer orden y NO
       es corpus operativo: corregir su vocabulario para que cumpliera la regla de condición
-      comprobable sería reescribir la orden. Sus ENLACES sí se comprueban.
+      comprobable sería reescribir la orden. Sus ENLACES sí se comprueban. MIGRACIÓN A
+      docs/owner/ PENDIENTE: O10 fija ese destino, y mover la directiva y su prompt toca
+      todos los documentos de la iniciativa. Hasta entonces conserva su entrada.
   - ruta: docs/evolucion/PROMPT-ARRANQUE-ADS-NEXT.md
     motivo: >
       El prompt con el que el Owner ordena ejecutar la directiva. Se conserva literal por el
-      mismo motivo: es la orden, no una descripción de la orden.
-  - ruta: ADS-ARQUITECTURA-MULTIREPO-APROBADA.md
+      mismo motivo: es la orden, no una descripción de la orden. MIGRACIÓN A docs/owner/
+      PENDIENTE, junto con la directiva que ordena ejecutar.
+  # CLASIFICACIÓN POR UBICACIÓN, no por fichero. La resolución O10 del Owner fija
+  # `docs/owner/` como destino canónico del material normativo escrito en su voz. Todo lo
+  # que viva ahí queda exento de vocabulario por DÓNDE VIVE, y sus ENLACES se comprueban
+  # como los de cualquier otro documento.
+  #
+  # Por qué deja de hacerse fichero a fichero: cinco documentos del Owner entraron al
+  # repositorio y los mismos dos validadores los rechazaron cinco veces, con el mismo
+  # remedio manual cada vez. Una excepción que se repite cinco veces no es una excepción:
+  # es una clase que faltaba. Registrado como P-07.
+  - ruta: docs/owner/
     motivo: >
-      Decisión de arquitectura del Owner, aprobada para implementación, escrita en su voz.
-      Es material normativo de primer orden y no corpus operativo. Tercera vez que un
-      documento del Owner entra sin sitio declarado: registrado como problema P-07.
-  - ruta: ADS-IDEAS-PENDIENTES-MULTIREPO.md
-    motivo: >
-      Documento de trabajo del Owner: ideas consolidadas y cuestiones abiertas. Se conserva
-      literal porque su valor está en lo que declara ABIERTO, y reescribirlo cerraría por
-      redacción lo que el Owner dejó sin decidir.
+      Material normativo en voz del Owner: decisiones aprobadas y documentos de trabajo que
+      NO son corpus operativo. Corregir su vocabulario para que cumpliera la regla de
+      condición comprobable sería reescribir la orden, y en los documentos de trabajo
+      cerraría por redacción lo que el Owner dejó ABIERTO. Destino canónico fijado por O10.
   - ruta: docs/evolucion/ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md
     motivo: >
       Documento vivo de trabajo con el Owner: decisiones suyas ya aceptadas, propuestas
@@ -103,4 +111,6 @@ vocabulario_exento:
       ABIERTO, y reescribir su vocabulario cerraría por redacción lo que el Owner dejó sin
       decidir. Sus ENLACES sí se comprueban. Es MATERIAL TEMPORAL de evolución: el gate de
       higiene del corpus que su propio §26.25 propone alcanza a este fichero, y su
-      exclusión se retira cuando el fichero se retire. Quinta ocurrencia de P-07.
+      exclusión se retira cuando el fichero se retire. Quinta ocurrencia de P-07. NO se
+      migra a docs/owner/: O10 ordena no retirar todavía el material temporal de evolución,
+      y este fichero es exactamente eso.
