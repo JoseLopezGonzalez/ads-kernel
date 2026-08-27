@@ -31,6 +31,23 @@ autoridad ni semántica de (a) o (b) — la regla de b.15.1 aplicada a este trab
 | D14 | La huella de integridad cubre ahora `.toml` | `SOURCES.toml` es contenido vendorizado del kernel: sin cubrirlo, editar la plantilla sería un fork invisible, que es el hallazgo A-04 otra vez | quitar la extensión de `huella.py` |
 | D15 | `kernel/KERNEL.md` sube a **1.4.0** en vez de quedar congelada | `K-1` y `G29` cambian de alcance, y un lector que sólo abra la constitución leería el modelo retirado. La política de versiones ya preveía que la línea histórica suba «cuando cambia ella» | revertir el texto y dejar la revisión sólo en `E2` |
 
+### `D16`–`D22` · decisiones de la arquitectura integrada
+
+Tomadas al diseñar cómo encajan todos los subsistemas. **Ninguna está construida**, y ninguna
+enmienda material aprobado: lo que sí presiona queda enumerado, sin redactarse, en la sección
+de presiones normativas de la iniciativa ADS NEXT — que vive en `docs/evolucion/` y **no se
+enlaza desde aquí**, porque este fichero viaja a un proyecto instalado y aquel directorio no.
+
+| # | decisión | por qué, y qué alternativa se descartó | qué cambia si el Owner decide otra cosa |
+|---|---|---|---|
+| D16 | El estado canónico son **ficheros de texto** en el repositorio de control, acompañados de un **diario de eventos** append-only y de un **manifiesto de transacción** para las transiciones multiarchivo | `a.9` exige que el estado operativo SEA los ficheros, legibles sin informe intermedio, y a la vez que toda transición multiarchivo sea recuperable e idempotente. Sólo ficheros no cumple lo segundo —`a.9` lo dice: Git no convierte N escrituras en una transacción—. **SQLite canónico** y **event sourcing puro** cumplen lo segundo y rompen lo primero: uno es ilegible sin herramienta, el otro obliga a reproyectar para leer | volver a sólo ficheros deja la atomicidad sin resolver; ir a base de datos exige enmendar el requisito del Owner en `a.9` |
+| D17 | El diario de eventos **es** el `JOURNAL` que `a.11` dejó pendiente | dos registros de lo que pasó son la duplicidad que `I5` prohíbe. `a.11` ya anticipaba que el runtime «probablemente necesite un event log que PUEDA sustituirlo» | mantener `G26` como pieza aparte obligaría a decir qué guarda cada uno y a sincronizarlos |
+| D18 | Se añaden **cuatro tipos canónicos y ni uno más**: `iniciativa`, `adaptador`, `cobertura`, `evento` | cada uno pasa la prueba de necesidad: ningún tipo existente los aloja sin mentir sobre su sujeto. Todo lo demás —findings, causas raíz, campañas, excepciones, certificación, matriz— se compone, se deriva o reutiliza | añadir tipos es barato de escribir y caro de mantener; quitarlos exige demostrar dónde vive su sujeto |
+| D19 | El **sujeto auditable** es una referencia tipada `(clase, ancla, ruta)` declarada en la celda de cobertura, no un tipo propio | un tipo obligaría a un registro paralelo de pantallas, flujos y formularios que nadie mantendría al día. Declararlo en `SOURCES.toml` deformaría un manifiesto que es fuente única de otra cosa, que es lo que `D11` ya rechazó | un tipo propio permitiría inventario exhaustivo, a cambio de un registro que envejece |
+| D20 | El **contrato documental** se compone de `ads:memoria` —gobierno— más `cobertura` —vigencia—, sin tipo nuevo | siete de sus campos ya existen en `memoria` con ese significado. Una metadata especializada los duplicaría; generalizar `memoria` convertiría un tipo con sujeto claro en un cajón con dos | cualquiera de las otras dos vías obliga a decidir qué pasa con los campos que ya existen |
+| D21 | La **certificación** es `cobertura` con `clase: instalacion`, una celda por nivel | mismo sujeto, mismo ciclo, misma caducidad y los mismos triggers de invalidación que cualquier otra celda | un tipo propio permitiría campos específicos, a cambio de otro registro con su propio ciclo |
+| D22 | El estado de una `iniciativa` es **derivado** de sus items, y una iniciativa **no anida** en otra | un estado editable sobre lo mismo que ya calcula `b.4` es una segunda verdad. La anidación convierte la vista del Owner en un cálculo sobre un árbol de profundidad arbitraria | permitir anidación exige decidir cómo se propaga el estado y cómo se lee sin perderse |
+
 ---
 
 ## 2 · Decisiones que pertenecen al Owner
