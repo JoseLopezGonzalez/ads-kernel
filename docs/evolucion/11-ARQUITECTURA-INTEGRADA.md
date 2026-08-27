@@ -3746,6 +3746,30 @@ CIERRE          A10 superado, y el producto entra en SU macrofase real — que p
                 C2, C3 o C4. ADS no finge que empieza de cero
 ```
 
+> **`O15` · la primera adopción es PERMANENTE, y eso cambia qué es el control repo de A1.**
+> El Owner resolvió, después de `O14`, que **PesquerApp es la primera adopción REAL,
+> PERMANENTE y COMPLETA de ADS**, y que su control repo **nace definitivo**. El recorrido no
+> cambia una fase; lo que cambia es su lectura en tres puntos:
+>
+> ```text
+> A1 CREA UNA INSTALACIÓN   el control repo de la adopción no es un montaje que se tira al
+> DEFINITIVA                terminar. Los clones y worktrees aislados protegen LAS FUENTES y
+>                           las ramas productivas —que es lo que `O14` pedía—, y NO hacen
+>                           desechable el repositorio de control.
+>
+> QUÉ ENTRA ANTES DE A0     la BASE COMPLETA ACORDADA, no un MVP reducido. Lo que sólo se
+>                           puede demostrar contra un producto real se completa DURANTE la
+>                           adopción, y es lo que la columna de uso real existe para llenar.
+>
+> CÓMO ENTRA UN DEFECTO     por §8.3 —migración— o §8.4 —actualización—, sobre la instalación
+> DESCUBIERTO EN LA         permanente. Reconstruir o sustituir el control repo exigiría
+> ADOPCIÓN                  migración explícita, autoridad y evidencia, y **nunca es el
+>                           procedimiento normal**. El `ROLLBACK` de arriba ya lo decía para
+>                           el caso puntual: revertir no es «borrar el control repo».
+> ```
+>
+> **Esto no autoriza iniciar la adopción**, y no levanta ninguna de las condiciones de `O14`.
+
 ### Lo que la adopción tiene que cubrir de verdad
 
 ```text
@@ -4771,7 +4795,8 @@ PRESIÓN F5     exige enmienda de material aprobado antes de construirse
 | `O11` `iniciativa` | §3.3 | NUEVA |
 | `O12` gate de arranque | §9.4 | NUEVA |
 | `O13` matriz agentic | §6.5 | NUEVA |
-| `O14` piloto PesquerApp | §14 escenario 2 | DEFERIDA a F6 |
+| `O14` piloto PesquerApp | §14 escenario 2 · §8.2 | DEFERIDA a F6 |
+| `O15` la adopción de PesquerApp es PERMANENTE | §8.2 · §18 · §19 | NUEVA · revisa `O14` · DEFERIDA a F6 |
 | `P-01` adaptador sin contrato | §6 | NUEVA |
 | `P-02` conocimiento externo | §13.3 | AMPLIADA |
 | `P-03` calidad por área | §5 | NUEVA |
@@ -5243,8 +5268,11 @@ atrás es volver a un release. Es lo que ya se hace, y funciona.
         │              │                  │                  │
         └──────────────┴──────────────────┴──────────────────┤
                                                              ▼
-                                                    8 · PILOTO  O14
+                                                    8 · PRIMERA ADOPCIÓN
+                                                       REAL  O14 · O15
                                                        PesquerApp
+                                                       PERMANENTE, no un
+                                                       montaje desechable
 
   2 · CONTRATO DE ADAPTADOR Y VALIDADOR DE DERIVA  §6
         independiente del estado ── alimenta 4 (nivel Operativo) y 7
@@ -5266,7 +5294,11 @@ SE AÑADE UN PASO 0    las entradas declaradas de validadores (P-08) no dependen
                       después. Construirlas al final significaría producir seis meses de
                       evidencia sin garantía de vigencia
 SE CONFIRMA EL RESTO  1 estado · 2 adaptadores · 3 iniciativa · 4 certificación · 5 pack ·
-                      6 cobertura · 7 runtime · 8 piloto
+                      6 cobertura · 7 runtime · 8 primera adopción real
+EL PASO 8 NO ES UN    `O15`: la adopción de PesquerApp es PERMANENTE y COMPLETA, y su
+ENSAYO                control repo nace definitivo. Por eso el paso 8 exige la BASE COMPLETA
+                      ACORDADA de los pasos 0 a 7, y no un MVP: lo que se instale allí se
+                      queda, y sólo se cambia por migración versionada
 2 NO DEPENDE DE 1     el adaptador se compila desde la especialización, no desde el estado.
                       Puede avanzar mientras PN-1 espera aprobación
 5 NO DEPENDE DE NADA  y por eso es lo que puede entregarse primero si hace falta demostrar
@@ -5285,8 +5317,11 @@ NADA ESTÁ PROBADO         los doce escenarios de §14, las CUARENTA Y DOS filas
                           los ONCE escenarios negativos de §11.5
                           están ESCRITOS. Ninguno se ha ejecutado. Escribir el contrato de
                           una prueba no es la prueba
-EL PILOTO SIGUE PENDIENTE la columna de uso real está vacía desde F0, y esta fase no la
-                          llena
+LA PRIMERA ADOPCIÓN       la columna de uso real está vacía desde F0, y esta fase no la
+REAL SIGUE PENDIENTE      llena. `O15` fija que esa adopción —PesquerApp— será REAL,
+                          PERMANENTE y COMPLETA, con su control repo definitivo, y que
+                          exige la base completa acordada antes de empezar. **`O15` no la
+                          autoriza ni la programa**: dice qué será cuando ocurra
 NINGÚN ADAPTADOR EXISTE   y por tanto ninguno está certificado
 X1 Y P-05 SIGUEN          ninguna decisión de aquí cruza la línea del blueprint
 DEFERIDAS

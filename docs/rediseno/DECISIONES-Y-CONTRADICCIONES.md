@@ -204,6 +204,63 @@ enmienda (a), (b), `E1`, `E2` ni `K-1`.
 Owner a ella, el 2026-08-27. `O7` cierra `X6`, `O8` cierra `X7` y `O9` cierra `X8`; `O10`
 cierra la ubicación de `P-07`, que era la parte que la síntesis había dejado al Owner.
 
+### `O15` · resolución POSTERIOR del Owner sobre `O14` — la adopción de PesquerApp es PERMANENTE
+
+**`O14` no se reescribe.** Su texto queda arriba tal como el Owner lo resolvió el 2026-08-27,
+y sigue siendo cierto en lo que dijo: el producto elegido, las condiciones de aislamiento y
+que no se ejecuta todavía. Lo que `O15` fija es **lo que `O14` no decía**, y que la palabra
+«piloto» dejaba abierto a la lectura contraria.
+
+| # | decisión | qué revisa | lo resuelto |
+|---|---|---|---|
+| O15 | **PesquerApp será la PRIMERA ADOPCIÓN REAL, PERMANENTE y COMPLETA de ADS** | **`O14`**, que la llamaba «piloto» sin decir si el resultado se conserva | ver los nueve puntos de abajo |
+
+```text
+1  PRIMERA ADOPCIÓN REAL      no es un ensayo. Es la primera vez que ADS gobierna un
+   PERMANENTE Y COMPLETA      producto de verdad, y el resultado SE QUEDA.
+
+2  EL REPOSITORIO GLOBAL      el control repo ADS de PesquerApp nace como REPOSITORIO DE
+   ADS NACE DEFINITIVO        CONTROL DEFINITIVO. No se crea para eliminarlo, reemplazarlo
+                              ni rehacerlo después de una prueba.
+
+3  QUÉ PROTEGEN LOS CLONES    los clones, ramas y worktrees aislados de `O14` protegen LAS
+   Y WORKTREES AISLADOS       FUENTES y LAS RAMAS PRODUCTIVAS durante la adopción. Eso es
+                              aislamiento del producto, y **no convierte el repositorio de
+                              control ADS en desechable**. Son dos cosas distintas y `O14`
+                              las dejaba juntas.
+
+4  QUÉ TIENE QUE ESTAR        la BASE COMPLETA ACORDADA, no un MVP reducido. Antes de la
+   ANTES                      adopción se implementa lo acordado, y lo que falte se dice
+                              antes de empezar, no durante.
+
+5  QUÉ SE COMPLETA            las garantías que SÓLO puedan demostrarse contra un producto
+   DURANTE                    real se completan durante la adopción. Es lo que la columna de
+                              uso real existe para llenar, y no hay otra vía.
+
+6  CÓMO ENTRAN LOS            por MIGRACIONES y EVOLUCIÓN VERSIONADA sobre la instalación
+   DEFECTOS Y MEJORAS         permanente. El recorrido de §8.3 y el de §8.4 son la vía; no
+                              se rehace la instalación para incorporar un arreglo.
+
+7  RECONSTRUIR O SUSTITUIR    exigiría una MIGRACIÓN EXPLÍCITA, AUTORIDAD y EVIDENCIA.
+   EL REPOSITORIO DE          **Nunca será el procedimiento normal**, y ningún defecto
+   CONTROL                    encontrado durante la adopción lo autoriza por sí solo.
+
+8  QUÉ SIGNIFICA «PILOTO»     si el término se conserva —y se conserva en `O14`, en §14, en
+   A PARTIR DE AQUÍ           §18 y en el checkpoint, porque no se reescribe historia—,
+                              significa PRIMERA ADOPCIÓN REAL y CASO INICIAL DE
+                              CERTIFICACIÓN. **No significa prueba provisional.**
+
+9  QUÉ NO AUTORIZA ESTO       **NO autoriza iniciar la adopción.** `O15` fija qué será esa
+                              adopción cuando ocurra; no la abre, no la programa y no
+                              levanta ninguna de las condiciones que `O14` escribió ni
+                              ninguna de las ocho presiones normativas vigentes.
+```
+
+**Qué cambia si el Owner decide otra cosa:** volver a una adopción desechable obliga a
+declarar qué se hace con el estado producido —eventos, cobertura, certificación e historia—
+cuando el repositorio de control se tira, y esa pregunta no tiene hoy respuesta escrita. Es
+exactamente el vacío que `O15` cierra.
+
 ---
 
 ## 3 · Contradicciones detectadas contra (a) y (b)

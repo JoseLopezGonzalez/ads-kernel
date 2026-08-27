@@ -217,6 +217,9 @@ resuelto_en_la_entrega_de_f4:
     reescribirlas
 owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
              arquitectura. NO autoriza F5 ni F6" (2026-08-27)
+             + RESOLUCIÓN POSTERIOR O15: "PesquerApp será la primera adopción REAL,
+             PERMANENTE y completa de ADS; su repositorio global ADS nace como repositorio
+             de control DEFINITIVO. NO autoriza iniciar la adopción" (2026-08-27)
 pregunta_pendiente: ninguna. Las OCHO presiones normativas vigentes son materia de F5,
              no preguntas
 siguiente:   TERCERA REVISIÓN INDEPENDIENTE de F4, por quien NO la escribió y NO aplicó
@@ -246,7 +249,17 @@ falta_para_cerrar_la_capa:
     NO es presión normativa. C7 no se ha tocado
   · EL GOBIERNO GIT DEL CONTROL REPO NO EXISTE: ninguna fila de la tabla de propiedad de C7
     lo alcanza. Declarado en §2.6.10, y su relleno es F6
-  · el piloto O14 sigue seleccionado y NO ejecutado. La columna de uso real, vacía
+  · la PRIMERA ADOPCIÓN REAL sigue seleccionada y NO ejecutada. La columna de uso real,
+    vacía. **O15** (resolución posterior del Owner, que revisa O14 sin reescribirlo):
+    PesquerApp será la primera adopción REAL, PERMANENTE y COMPLETA de ADS; su control repo
+    ADS nace DEFINITIVO y no se crea para tirarlo; los clones y worktrees aislados protegen
+    LAS FUENTES y las ramas productivas, no convierten el control repo en desechable; exige
+    la BASE COMPLETA ACORDADA antes de empezar, no un MVP; lo que sólo se demuestra contra un
+    producto real se completa DURANTE la adopción; los defectos entran por MIGRACIÓN y
+    evolución versionada; reconstruir o sustituir el control repo exigiría migración
+    explícita, autoridad y evidencia, y nunca es el procedimiento normal; «piloto», donde el
+    término se conserve, significa PRIMERA ADOPCIÓN REAL y caso inicial de certificación.
+    **O15 NO autoriza iniciar la adopción**
   · ningún adaptador existe, y por tanto ninguno está certificado
   · X1 y P-05 siguen deferidas. Ninguna decisión de F4 cruza esa línea, y D27 resuelve
     `capa` precisamente para no cruzarla
