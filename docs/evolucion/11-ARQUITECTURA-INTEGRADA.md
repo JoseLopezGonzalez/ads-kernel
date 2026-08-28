@@ -9,7 +9,11 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 > superada y uso real es la disciplina central de este repositorio, y esta fase produce
 > **sólo la primera**.
 >
-> **F4 no está certificada, y este texto ha sido CORREGIDO DOS VECES.**
+> **F4 no está certificada, y este texto ha sido CORREGIDO NUEVE VECES**: dos devoluciones
+> independientes, una devolución técnica, cinco comprobaciones técnicas encadenadas, la
+> TERCERA REVISIÓN INDEPENDIENTE —que YA SE EMITIÓ— y el GATE FINAL con su complemento de
+> cobertura. El recuento se deriva de la lista de abajo y de §15.8; **«dos veces» era la
+> cifra de hace siete correcciones**.
 >
 > ```text
 > PRIMERA DEVOLUCIÓN    nueve bloques de hallazgos, en
@@ -58,8 +62,27 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 > escribió, el de la quinta está en el texto que la cuarta escribió, y el de la sexta está
 > en el texto que la quinta escribió.** Es el SÉPTIMO encadenamiento consecutivo, y es la
 > razón por la que las revisiones se encadenan en vez de darse por buenas. **Quien aplicó
-> todas es quien las recibió**, luego ninguna prueba nada: `F4c` sigue **ABIERTA**,
-> pendiente de una **tercera revisión independiente**.
+> todas es quien las recibió**, luego ninguna prueba nada.
+>
+> ```text
+> TERCERA REVISIÓN      **YA EMITIDA**, por un revisor con contexto limpio que no escribió F4
+> INDEPENDIENTE         ni aplicó ninguna corrección: DOS BLOQUEANTES, ocho GRAVES, cinco
+>                       MEDIOS y siete MENORES, en 15-TERCERA-REVISION-INDEPENDIENTE-F4C.md.
+>                       Veredicto: INSUFICIENTE PARA F5. Correcciones: D64–D68
+> GATE FINAL            TRES agentes con contexto limpio —dos revisores y un adjudicador—:
+> INDEPENDIENTE         33 hallazgos verificados uno a uno contra su fichero y su línea, en
+>                       16-GATE-FINAL-INDEPENDIENTE-F4C.md. Veredicto: INSUFICIENTE PARA F5
+> COMPLEMENTO DE        las diecinueve fuentes obligatorias que nadie había abierto, leídas
+> COBERTURA · NIVEL 0   íntegras por otros tres agentes: `C5` NO resuelve `B-2`, doce
+>                       hallazgos nuevos y el recuento fijado en 44 abiertos / 43 distintos,
+>                       en 17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md
+> ESTA TANDA            corrección integrada de los 43. Correcciones: D71 en adelante
+> ```
+>
+> **`F4c` sigue ABIERTA**, y el veredicto vigente sigue siendo **INSUFICIENTE PARA F5**: lo
+> aplicado aquí lo aplicó quien lo recibió, y eso no certifica nada. La tercera revisión
+> **ya no está pendiente**; lo que está pendiente es un juicio independiente sobre ESTA
+> tanda.
 
 ---
 
@@ -4173,16 +4196,47 @@ aspectos de calidad y del de los niveles de certificación — que es la correcc
 > consecuencia era material: cada área es un `contrato-de-aspecto:documental/<area>`, luego
 > F6 habría construido doce contratos para las áreas equivocadas.
 
-**LAS DOCE ÁREAS OBLIGATORIAS, alineadas literalmente con `§5.18`:**
+**LAS DOCE ÁREAS OBLIGATORIAS, alineadas literalmente con `§5.18`, CON SU IDENTIFICADOR:**
+
+> **Añadidos los identificadores por el gate final independiente (`G-4`, GRAVE; es `D77`).**
+> Las doce materias estaban enumeradas y **ninguna tenía identificador declarado**, mientras
+> §5.7 afirma que cada una resuelve a un `contrato-de-aspecto:documental/<area>` y el único
+> ejemplo existente usaba `arquitectura-actual` — la mitad partida que `D68` había retirado.
+> F6 habría tenido que inventarse doce, y dos productos habrían inventado doce distintos.
+>
+> **No se crea ninguna sede nueva.** Los identificadores **se derivan del patrón que ya
+> existe**: `esquemas/memoria.yaml` fija `id: {tipo: texto, patron: '^memoria:[a-z0-9-]+$'}`
+> con `nombre`, `capacidad`, `autoridad`, `caducidad` y `vacio_significa`, y el corpus tiene
+> **doce ejemplares trabajados** de ese patrón. El slug es el mismo: minúsculas, guiones, sin
+> tildes. Lo único nuevo es el prefijo de familia, `documental/`, que §3.5 ya separó.
 
 ```text
- 1  mapa documental                              7  dirección de ingeniería
- 2  identidad y dirección de producto            8  calidad y pruebas
- 3  baseline funcional                           9  seguridad y riesgos
- 4  dominio y glosario                          10  despliegue, entornos y operación
- 5  arquitectura actual y dirección             11  decisiones
-    arquitectónica  ← UNA área, no dos          12  dirección de evolución y gaps
- 6  tecnologías e instrucciones de desarrollo        documentales
+ #  área de `§5.18`                              identificador de aspecto
+ 1  mapa documental                              aspecto:documental/mapa-documental
+ 2  identidad y dirección de producto            aspecto:documental/identidad-de-producto
+ 3  baseline funcional                           aspecto:documental/baseline-funcional
+ 4  dominio y glosario                           aspecto:documental/dominio-y-glosario
+ 5  arquitectura actual y dirección              aspecto:documental/arquitectura
+    arquitectónica  ← UNA área, no dos           ← UN identificador, no dos
+ 6  tecnologías e instrucciones de desarrollo    aspecto:documental/tecnologias-y-desarrollo
+ 7  dirección de ingeniería                      aspecto:documental/direccion-de-ingenieria
+ 8  calidad y pruebas                            aspecto:documental/calidad-y-pruebas
+ 9  seguridad y riesgos                          aspecto:documental/seguridad-y-riesgos
+10  despliegue, entornos y operación             aspecto:documental/despliegue-y-operacion
+11  decisiones                                   aspecto:documental/decisiones
+12  dirección de evolución y gaps documentales   aspecto:documental/evolucion-documental
+
+CADA UNO RESUELVE A       `contrato-de-aspecto:documental/<area>` (§5.7), con el mismo
+                          reparto de campos del patrón `ads:memoria`: responsable POR
+                          DEFECTO, criterio, pruebas, caducidad y triggers. La celda declara
+                          sólo la DESVIACIÓN, con motivo
+
+Y LAS CONDICIONALES NO    las CATORCE condicionales NO reciben identificador aquí. Dos de
+LO RECIBEN AQUÍ           ellas —«dirección visual» y «sistema de diseño»— ya tienen sede
+                          canónica en el sistema de diseño, y darles un
+                          `contrato-de-aspecto` editable crearía la SEGUNDA SEDE que `I5`
+                          prohíbe. Su contrato se DERIVA de la sede que ya las gobierna, y
+                          F6 lo compila; no lo escribe a mano
 ```
 
 ```text
@@ -4492,7 +4546,9 @@ memoria.autoridad            ARQ
 memoria.capacidad            ARQ
 memoria.plano                especializacion                 nuevo, §4.1
 memoria.capa                 NO APLICA: no es conocimiento que viaje con un release
-memoria.contiene             [arquitectura-actual, dominio-y-glosario]   DOS áreas, §4.3
+memoria.contiene             [arquitectura, dominio-y-glosario]           DOS áreas, §4.3
+                             — `arquitectura` es el área 5 UNIFICADA que `D68` restituyó,
+                             no la mitad `arquitectura-actual` que retiró
 memoria.se_actualiza_cuando  [cambia un contrato entre componentes, entra una fuente nueva]
 memoria.caducidad            NORMATIVA: caduca si cambia la dirección arquitectónica
 memoria.estado               vigente
@@ -4649,7 +4705,8 @@ CERTIFICACIÓN           entre ambos esquemas: hay REPARTO DE DOMINIO, que es m�
 
 **Y las tres familias resuelven ahora a algo que existe**, que era la otra mitad del hallazgo:
 `aspecto:calidad/accesibilidad` → `contrato-de-aspecto:calidad/accesibilidad`;
-`aspecto:documental/arquitectura-actual` → `contrato-de-aspecto:documental/arquitectura-actual`;
+`aspecto:documental/arquitectura` → `contrato-de-aspecto:documental/arquitectura` —el área 5
+UNIFICADA, con el identificador que §4.3 declara—;
 `aspecto:certificacion/integrado` → `nivel-certificacion:integrado`, que es su norma propia
 por §9.2. **Ninguna referencia de `criterio` queda sin resolver.**
 
@@ -5286,7 +5343,8 @@ ESCRIBE         control repo entero; las fuentes sólo desde N6 — **incluidos 
                 de adaptador**, que N2 NO escribe aunque elija el adaptador (§6.7)
 ESTADO          `estado/` nace en **N0**, con su soporte durable mínimo. Ver abajo
 EVIDENCIA       `workspace check` · prueba de humo por adaptador · checkpoint recuperado
-GATES           N4 certificación Operativa · N7 = O12
+GATES           N4 certificación Operativa · **N5 baseline aprobado por el Owner** ·
+                N7 = O12, con sus TRES condiciones y su productor nombrado
 CERTIFICACIÓN   Operativa en N4 · Integrada en N7, con la aplicabilidad de §9.5: en N7 el
                 producto tiene LAS FUENTES QUE N2 DECLARÓ, y la columna que rige es la de
                 ese número. Si son 0, hay pruebas que no le aplican
@@ -5297,6 +5355,29 @@ REANUDACIÓN     **por el checkpoint del paquete de `SIS-001`, desde N0**. Ning�
                 recorrido depende del chat
 CIERRE          N7 superado y el primer item de producto despachable
 ```
+
+> **Quién produce las TRES condiciones de `O12`, que `N7` invoca (`G-3`, GRAVE; es `D76`).**
+> §9.4 fija que empezar a programar exige **Integrada + baseline aprobado + ningún
+> desconocido crítico sin clasificar — las tres, no dos**. §8.1 declaraba `N7 = O12` y
+> **ninguna fase producía las dos últimas**: el gate era invocable pero no satisfacible.
+>
+> ```text
+> INTEGRADA                    `N7`, con la aplicabilidad de §9.5. Ya estaba
+> BASELINE APROBADO            **`N5`**, y lo aprueba el **Owner** — exactamente como `A3`
+>                              en la adopción. La simetría no es estética: `N5` es la única
+>                              fase de `N` que produce conocimiento de producto, y el
+>                              baseline funcional es el área 3 de la taxonomía documental
+> DESCONOCIDOS CRÍTICOS        **`N5` también**, y su clasificación es un ENTREGABLE
+> SIN CLASIFICAR               declarado suyo, no un residuo: cada desconocido queda
+>                              clasificado como resuelto, acotado con su portador, o
+>                              deferido con su motivo. Un desconocido sin clasificar es lo
+>                              que `O12` prohíbe, y por eso su ausencia se comprueba en `N7`
+>                              y no se descubre al construir
+> ```
+>
+> **No reinterpreta `O12` y no necesita presión normativa**: `O12` decía qué hace falta, y lo
+> que faltaba era el productor. La alternativa —dejarlo abierto y registrarlo como `PN`—
+> llevaría al Owner una pregunta que su propia resolución de adopción ya responde en `A3`.
 
 **Lo que cambia respecto a hoy.** `C0` deja de redactar la organización y pasa a
 **especializar y verificar** una que la distribución ya trae. Es `O9` y el §4.11 del documento
@@ -6783,6 +6864,25 @@ encadenamiento consecutivo.** `D16`–`D62` conservan su texto.
 |---|---|---|---|
 | `D63` | la **lápida es excepción tipada** al algoritmo de identidad · **tres niveles** de garantía · **fuente de recuperación** comprobada antes de retirar · el diario **físico no es estrictamente append-only** · sólo una **dependencia semántica viva** bloquea la retirada | `D37` · `D61` | tras retirar, el `id` no se recalcula desde el fichero; la huella no prueba contenido; y «cualquier evento vivo» hacía inalcanzable la propia operación |
 
+### `D64`–`D68` · las decisiones de la TERCERA REVISIÓN INDEPENDIENTE
+
+Veredicto de **INSUFICIENCIA** emitido por un revisor con contexto limpio que **no escribió
+F4 ni aplicó ninguna de sus correcciones**: dos BLOQUEANTES, ocho GRAVES, cinco MEDIOS y
+siete MENORES, más quince que intentó y no pudo reproducir. Su juicio se conserva íntegro e
+inmutable en `15-TERCERA-REVISION-INDEPENDIENTE-F4C.md`. `D16`–`D63` conservan su texto.
+
+| | decisión | qué revisa | por qué |
+|---|---|---|---|
+| `D64` | la **ruta de conflicto se COLAPSA**: cinco fases, seis transiciones, **DOS terminales**, y todo terminal retira el marcador. `conflicto` es observación bloqueante con dos salidas, y `abandonada` emite un `deriva` que conserva el bloqueo acotado | `D35` · `D46` · `D52` · `D60` · `D62` | **BLOQUEANTE**: `conflicto(observacion: 4, agotado: true)` no tenía transición admisible, el marcador no se retiraba y el control repo no volvía a commitear **para todo el producto** |
+| `D65` | el **gobierno Git del control repo** se escribe: tabla de propiedad, `main` canónica sin `G29`, publicación optimista, `--force` prohibido salvo procedimiento del Owner, y `adaptador.publicacion_control_repo` como sede real de la política | `D41` | **BLOQUEANTE**: el texto prometía no rellenar el hueco por inferencia y lo rellenaba tres reglas después invocando `G29`, que `E2.4` acota a las fuentes. Ningún commit de `estado/` podía publicarse |
+| `D66` | `a.9` se cita como `a.9` lo escribe —**concepto no es campo**—, y `fallo` recibe **semántica CERRADA** con `tx_afectada` como REFERENCIA | `D23` · `D54` | **GRAVE**: F4 sustituía «propietario del campo» por `actor_atribuido` y lo presentaba como los cinco de `a.9`; y `X15` y `X28` no eran satisfacibles contra el contrato de `fallo` |
+| `D67` | los cuatro macrocircuitos se **MAPEAN a los procesos de `b.16`**, con propietario global tomado y no elegido; §8.3 gana `LEE`, `ESCRIBE`, `AUTORIDAD`, `EJECUTOR` y el gobierno de su retirada; §8.4 gana `ESTADO` | `D30` · `D32` · `D33` · `D45` | **GRAVE**: tres de los cuatro no nombraban proceso, y del proceso se derivan ruta, obligaciones, propietario y gates — F6 habría tenido que elegir |
+| `D68` | la **taxonomía documental se alinea literalmente con las doce áreas del `§5.18`**: se restituye «mapa documental» y «arquitectura» vuelve a ser UNA. El área 1 se declara DERIVADA, y esa precisión es `PN-12` | `D26` · `D43` | **GRAVE**: las doce de F4 no eran las doce de `O8` — conservaban el número y no el conjunto, luego F6 habría construido doce contratos para las áreas equivocadas |
+
+> **`D67` y `D68` fueron REVISADAS por la tanda del gate final.** `D67` en la columna de
+> participantes y en el proceso de `A2`–`A7` (`D74`, `D75`); `D68` en los identificadores de
+> las doce áreas (`D77`). Sus textos se conservan.
+
 ### `D69`–`D70` · las decisiones de la corrección previa al gate
 
 Comprobación adversarial de sólo lectura sobre la tanda anterior. Sus seis defectos eran
@@ -6793,6 +6893,24 @@ Comprobación adversarial de sólo lectura sobre la tanda anterior. Sus seis def
 |---|---|---|---|
 | `D69` | estado **ESTABLE** frente a **ESPECULATIVO**, y `abandonada` como **reversión local verificada** contra la revisión base | `D64` · `D16` · `D23` | `abandonada` retiraba el marcador dejando el conjunto parcial **publicable**, y un conjunto parcial no es consistente porque cada `rename` sea atómico |
 | `D70` | recuperación en **TRES niveles** —exacta local, completa remota si cerró, **reinicio** si sigue abierta—, y la comparación de alternativas corregida: **`R1` no descarta el worktree** | `D65` · `D64` | «otra máquina reanuda clonando el control repo» es imposible con la regla de commit vigente, y el descarte del worktree invocaba `R1` sin fundamento |
+
+### `D71`–`D77` · las decisiones de la TANDA INTEGRADA del GATE FINAL
+
+El **GATE FINAL INDEPENDIENTE** —tres agentes con contexto limpio, 33 hallazgos verificados
+uno a uno contra su fichero y su línea— y su **COMPLEMENTO DE COBERTURA** —otros tres agentes,
+las diecinueve fuentes obligatorias leídas íntegras— dejaron **44 hallazgos abiertos, 43
+distintos**. Los dos juicios se conservan íntegros e inmutables en los documentos 16 y 17.
+`D16`–`D70` conservan su texto.
+
+| | decisión | qué revisa | por qué |
+|---|---|---|---|
+| `D71` | **`abierta(tx)`** es un predicado único, nombrado y con sede: §2.6.1. Las siete sedes remiten | `D46` · `D64` | **BLOQUEANTE** `A2`: tres sedes seguían diciendo «único terminal», luego una `abandonada` satisfacía «sin `derivada`» y el marcador no se retiraba nunca |
+| `D72` | **`deriva.causa`** es enum cerrado de TRES valores con UNA sede, §3.6, y `tx_afectada` condicional a la causa | `D53` · `D64` | **BLOQUEANTE** `A1`: §3.6 declaraba dos valores, luego un esquema derivado de ella habría rechazado el `deriva` que `abandonada` obliga a emitir |
+| `D73` | **§7.4 paso 2 recoge LAS DOS RAMAS** de `a.9` con el predicado de `D71`, y el resumen de §16 se alinea con el cuerpo de `PN-7` | `D69` | **GRAVE** `A3`: «§2.6 elimina el ramal de reversión por completo» dejó de ser cierto con `D69` y sobrevivía en dos sedes vigentes |
+| `D74` | la **COMPOSICIÓN DE RUTA** gana sede canónica en §8.0: items enlazados, **cuatro vías** de entrada, ejecutor y autoridad separados de la ruta, gate de composición y error `composicion-incompleta`. **`C5` no es el vehículo** | `D67` | **BLOQUEANTE** `B-2`: trece participantes declarados no tenían por dónde entrar en el proceso que `D67` les asignó, sobre **cinco** capacidades |
+| `D75` | **`A2`–`A7` es `proceso:AUD`** en items enlazados uno por conclusión, con propietario DERIVADO por item; §18 reescrita con la vía de cada capacidad; `SEG` y `CON` obligatorias en `U5b`; `U6` revalida el nivel vigente | `D67` | **BLOQUEANTE** `B-1`, y con él `G-1`, `G-2`, `M-3` y `m-4`: §8.2 y §18 asignaban procesos incompatibles a las mismas fases |
+| `D76` | **`N5` produce el baseline y la clasificación de desconocidos críticos**, y el Owner lo aprueba — simetría exacta con `A3` | `D67` en los gates de `N` | **GRAVE** `G-3`: `N7 = O12` invocaba tres condiciones y ninguna fase producía dos de ellas: el gate era invocable y no satisfacible |
+| `D77` | las **doce áreas documentales reciben identificador** `aspecto:documental/<area>`, derivado del patrón `ads:memoria` que ya existe. Las catorce condicionales NO lo reciben: dos ya tienen sede canónica, y darles contrato editable crearía la segunda sede que `I5` prohíbe | `D68` | **GRAVE** `G-4`: §5.7 afirmaba que cada área resuelve a un contrato de aspecto, ninguna tenía identificador, y el único ejemplo usaba la mitad partida que `D68` retiró |
 
 **Y `O16`**, resolución posterior del Owner que da sede a `PN-11`: autoridad normativa en la
 sección `(g)`, contrato derivado `C8` en F6, y `C7` limitado a las sources. **No autoriza
@@ -7396,16 +7514,18 @@ REAL SIGUE PENDIENTE      llena. `O15` fija que esa adopción —PesquerApp— s
 NINGÚN ADAPTADOR EXISTE   y por tanto ninguno está certificado
 X1 Y P-05 SIGUEN          ninguna decisión de aquí cruza la línea del blueprint
 DEFERIDAS
-DIEZ PRESIONES            §16, tras DOS devoluciones independientes y la TERCERA REVISIÓN: PN-4 retirada, PN-5
-NORMATIVAS VIGENTES       fusionada en PN-3, y PN-6 a PN-12 nuevas. PN-1 bloquea todo
-                          el estado durable, y F5 es su puerta
-F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. DOS críticas independientes y UNA
-                          devolución técnica la han devuelto; la segunda emitió veredicto de
-                          INSUFICIENCIA, y la técnica encontró TRES BLOQUEANTES MÁS en el
-                          texto que las dos correcciones anteriores escribieron. Todo está
-                          aplicado, y LO APLICÓ QUIEN LO RECIBIÓ: `F4c` sigue ABIERTA,
-                          pendiente de una TERCERA REVISIÓN INDEPENDIENTE, que la devolución
-                          técnica NO sustituye
+ONCE PRESIONES            §16, tras DOS devoluciones independientes, la TERCERA REVISIÓN y
+NORMATIVAS VIGENTES       el GATE FINAL: PN-4 retirada, PN-5 fusionada en PN-3, y PN-6 a
+                          PN-13 nuevas. PN-1 bloquea todo el estado durable, y F5 es su
+                          puerta. **PN-13** es la única que esta tanda añade
+F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. TRES críticas independientes, una
+                          devolución técnica, un GATE FINAL con tres agentes y su
+                          COMPLEMENTO DE COBERTURA la han devuelto. La TERCERA REVISIÓN
+                          INDEPENDIENTE **ya se emitió** —veredicto INSUFICIENTE PARA F5— y
+                          el gate lo **confirmó** por dos razones independientes. Todo está
+                          aplicado, y LO APLICÓ QUIEN LO RECIBIÓ: `F4c` sigue ABIERTA, y lo
+                          que queda pendiente es un juicio independiente sobre la tanda que
+                          cierra los 43 hallazgos, no la tercera revisión
 ```
 
 **La distancia que queda**, dicha como la dijo el baseline: ADS sigue siendo un corpus
