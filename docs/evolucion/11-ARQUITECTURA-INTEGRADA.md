@@ -3855,11 +3855,42 @@ Las doce áreas son **aspectos de la familia documental**, y un aspecto no es un
 Cada una es un `aspecto:documental/<area>` con su namespace propio, distinto del de los
 aspectos de calidad y del de los niveles de certificación — que es la corrección de §3.5.
 
+> **Corregido por la tercera revisión independiente (`G8`; es `D68`).** F4 declaraba doce
+> áreas y **no eran las doce del `§5.18`** que `O8` resuelve: **eliminaba «mapa documental»**
+> —el punto 1 del núcleo obligatorio— y **partía «arquitectura actual y dirección
+> arquitectónica» en dos**. El número doce se conservaba; el conjunto no. Y `grep` sobre todo
+> el repositorio devolvía **una sola aparición** de «mapa documental», en `§5.18`: F4 no lo
+> mencionaba ni para conservarlo, ni para retirarlo, ni para declararlo derivado. La
+> consecuencia era material: cada área es un `contrato-de-aspecto:documental/<area>`, luego
+> F6 habría construido doce contratos para las áreas equivocadas.
+
+**LAS DOCE ÁREAS OBLIGATORIAS, alineadas literalmente con `§5.18`:**
+
 ```text
-identidad y dirección de producto · baseline funcional · dominio y glosario ·
-arquitectura actual · dirección arquitectónica · tecnologías y entorno de desarrollo ·
-dirección de ingeniería · calidad y pruebas · seguridad y riesgos ·
-despliegue, entornos y operación · decisiones · dirección de evolución y gaps
+ 1  mapa documental                              7  dirección de ingeniería
+ 2  identidad y dirección de producto            8  calidad y pruebas
+ 3  baseline funcional                           9  seguridad y riesgos
+ 4  dominio y glosario                          10  despliegue, entornos y operación
+ 5  arquitectura actual y dirección             11  decisiones
+    arquitectónica  ← UNA área, no dos          12  dirección de evolución y gaps
+ 6  tecnologías e instrucciones de desarrollo        documentales
+```
+
+```text
+EL «MAPA DOCUMENTAL»,     es el área 1, y **es obligatoria**. Su materia: qué documentos
+RESTITUIDO                existen, cuál cubre cada área, quién responde de cada uno y cuál
+                          es su vigencia. Es lo que `§5.23` necesita para «detectar
+                          documentos ausentes, duplicados o sin responsable».
+                          **Y se declara DERIVADO**: se regenera desde los bloques
+                          `ads:memoria` de los documentos gobernados y desde las celdas de
+                          `cobertura` de familia documental, luego su fila en §1.3 tiene
+                          autoridad «nadie: se regenera». Ser derivado NO lo saca del
+                          mínimo: sigue siendo una de las doce materias exigibles, y su
+                          ausencia —que no haya de dónde derivarlo— es un fallo del gate.
+
+ARQUITECTURA, UNA         `§5.18` la enumera como UNA área. Partirla daba dos contratos de
+SOLA ÁREA                 aspecto donde `O8` fija uno, con dos responsables y dos
+                          caducidades para una materia que se decide junta.
 
 COMPACTACIÓN     un documento declara VARIAS áreas en su bloque `memoria.contiene`. En un
                  producto pequeño, tres documentos pueden cubrir las doce.
@@ -3870,11 +3901,25 @@ RESPONSABLE      cada área declara su reparto POR DEFECTO en su
                  capacidad: `SIS` responde de conformidad documental, y del CONTENIDO de un
                  área responde la capacidad de esa materia. La celda declara sólo la
                  desviación, con motivo.
-CONDICIONALES    UX e investigación, dirección visual, sistema de diseño, datos,
-                 integraciones, cumplimiento, observabilidad, continuidad,
-                 internacionalización. Se activan por aplicabilidad.
+CONDICIONALES    las CATORCE que `§5.18` enumera, y son las suyas: UX e investigación,
+                 dirección visual, sistema de diseño, arquitectura de datos detallada,
+                 integraciones, cumplimiento regulatorio, modelo de amenazas avanzado,
+                 observabilidad, continuidad, analítica, dispositivos,
+                 internacionalización, gobierno de IA. Se activan por aplicabilidad.
+AMPLIABLE        un producto puede declarar áreas propias, con su contrato de aspecto. Lo
+                 que NO puede es quedarse por debajo de las doce obligatorias.
 NO APLICABLE     con motivo registrado. Una ausencia silenciosa es un fallo del gate.
+SIN DOCE         la taxonomía es de MATERIAS, no de ficheros: `O8` lo dice con esas
+FICHEROS         palabras, y la compactación de arriba es lo que lo hace real.
 ```
+
+**La taxonomía documental, en una tabla:**
+
+| clase | cuántas | quién las fija | se pueden fusionar en un fichero | se pueden omitir |
+|---|---|---|---|---|
+| **obligatorias** | **12**, las de `§5.18` | `O8`, resolución del Owner | **sí** | **no**, y una ausencia silenciosa es fallo de gate |
+| **condicionales** | 14, las de `§5.18` | aplicabilidad declarada en `PROFILE` | sí | sí, con motivo registrado |
+| **ampliaciones** | las que el producto declare | el producto, con su contrato de aspecto | sí | sí: son suyas |
 
 **Y la comprobación, que `CI-4` corrigió:** la reanudación por un agente sin contexto y los
 gates **comprueban** el mínimo; no lo definen. Un producto puede reanudarse y seguir sin tener
