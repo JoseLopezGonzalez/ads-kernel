@@ -8,9 +8,29 @@ from __future__ import annotations
 import io, os, re, subprocess, sys
 from collections import Counter
 
-RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-if not os.path.exists(os.path.join(RAIZ, "docs")):
-    RAIZ = "/home/jose/ads-kernel"
+# La raíz se DERIVA de `__file__` y de nada más.
+#
+# Este fichero vive en `docs/evolucion/verificacion/`, luego la raíz del repositorio está
+# TRES niveles por encima. No se usa el cwd —una batería que dependiera de desde dónde se
+# invoca no sería auditable—, y no se codifica la ruta de ninguna máquina: la versión
+# anterior caía a `/home/jose/ads-kernel` y, en cualquier otro clon o worktree, comprobaba
+# el repositorio del autor en vez del que tenía delante. Eso hacía que la batería diera
+# verde sobre un árbol que nadie estaba mirando.
+RAIZ = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    os.pardir, os.pardir, os.pardir))
+
+_ESPERADOS = ("docs/evolucion", "docs/rediseno", "kernel/operativo")
+_faltan = [d for d in _ESPERADOS if not os.path.isdir(os.path.join(RAIZ, d))]
+if _faltan:
+    sys.stderr.write(
+        f"ESTRUCTURA NO ENCONTRADA bajo la raíz derivada de __file__.\n"
+        f"  raíz derivada : {RAIZ}\n"
+        f"  script        : {os.path.abspath(__file__)}\n"
+        f"  faltan        : {', '.join(_faltan)}\n"
+        f"Esta batería espera vivir en `docs/evolucion/verificacion/` dentro del "
+        f"repositorio ADS. No se adivina otra raíz ni se recurre al cwd: comprobar un "
+        f"árbol que no es el que se pidió comprobar es peor que no comprobar nada.\n")
+    sys.exit(2)
 D11 = os.path.join(RAIZ, "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md")
 DEC = os.path.join(RAIZ, "docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md")
 CHK = os.path.join(RAIZ, "docs/evolucion/CHECKPOINT-ADS-NEXT.md")
@@ -309,19 +329,54 @@ check("G-21", "`O1`-`O16` intactas frente a `7e99388`",
       not difs and len(set(ac)) >= len(set(ob)), "ninguna difiere" if not difs else ", ".join(difs))
 
 # ── G-22 · los documentos 15, 16, 17 y 18 intactos ──────────────
-tocados = subprocess.run(["git", "-C", RAIZ, "diff", "--name-only", "05f71b7", "HEAD"],
+# Se compara la BASE contra el ÁRBOL DE TRABAJO, no contra `HEAD`.
+#
+# Con `05f71b7 HEAD` se comparaban dos commits, y entonces `G-22` y `G-23` no veían nada de
+# lo que hubiera sin confirmar: editar un contrato, una capacidad o cualquier otro validador
+# dejaba la comprobación en verde. Una comprobación que sólo mira commits no protege el árbol
+# que se le pone delante, que es justo lo que se le pide.
+tocados = subprocess.run(["git", "-C", RAIZ, "diff", "--name-only", "05f71b7"],
                           capture_output=True, text=True).stdout.split()
 inmutables = [f for f in tocados if re.search(r"docs/evolucion/1[5-8]-", f)]
 check("G-22", "los documentos 15, 16, 17 y 18 NO se han tocado",
       not inmutables, "intactos" if not inmutables else ", ".join(inmutables))
 
-# ── G-23 · (a) (b) E1 E2 K-1 C4 C7 y el kernel intactos ─────────
-prohibidos = [f for f in tocados if f.startswith("kernel/operativo/")
-              and not f.startswith("kernel/operativo/pruebas/evidencia/")]
-prohibidos += [f for f in tocados if re.search(
-  r"a-CAPACIDADES-APROBADA|b-RECORRIDO-APROBADA|a-ENMIENDA-E1|a-ENMIENDA-E2", f)]
-check("G-23", "(a), (b), `E1`, `E2`, `C4`, `C7` y `kernel/operativo/` intactos",
-      not prohibidos, "intactos" if not prohibidos else ", ".join(prohibidos))
+# ── G-23 · lo normativo intacto, y el kernel con su EXCEPCIÓN NOMBRADA ──
+#
+# La versión anterior afirmaba «`kernel/operativo/` intacto» y excluía en bloque todo
+# `pruebas/evidencia/`. Dejó de ser cierta en `1b588ac`, que corrigió `comprobar_negativos.py`
+# para hacer `N158g` independiente del orden del runner, y reancló `.upstream-hash` porque la
+# huella cubre el código de los validadores.
+#
+# Se sustituye la afirmación falsa por la comprobación EXACTA: lo normativo sigue intacto, el
+# kernel operativo SUSTANTIVO sigue intacto, y la única excepción de código es la que se
+# nombra. Una exclusión amplia volvería a dejar pasar cualquier otro cambio del kernel, que es
+# justo lo que esta comprobación existe para impedir.
+NORMATIVO = (r"a-CAPACIDADES-APROBADA|b-RECORRIDO-APROBADA|"
+             r"a-ENMIENDA-E1|a-ENMIENDA-E2|"
+             r"kernel/operativo/contratos/C4-MATERIALIZACION|"
+             r"kernel/operativo/contratos/C7-GOBIERNO")
+
+# Excepciones AUTORIZADAS, una a una. No hay comodines sobre directorios de código.
+COD_AUTORIZADO = {"kernel/operativo/validadores/comprobar_negativos.py"}
+HUELLA         = {"kernel/.upstream-hash"}
+
+def _kernel_no_autorizado(f):
+    if not f.startswith("kernel/"):
+        return False
+    if f in COD_AUTORIZADO or f in HUELLA:
+        return False
+    # la evidencia derivada SÍ puede cambiar: la publica el runner, no una mano
+    if f.startswith("kernel/operativo/pruebas/evidencia/"):
+        return False
+    return True
+
+prohibidos = [f for f in tocados if _kernel_no_autorizado(f)]
+prohibidos += [f for f in tocados if re.search(NORMATIVO, f)]
+check("G-23", "lo normativo intacto; del kernel sólo cambia la excepción NOMBRADA",
+      not prohibidos,
+      "intacto salvo comprobar_negativos.py, .upstream-hash y evidencia derivada"
+      if not prohibidos else ", ".join(sorted(set(prohibidos))))
 
 # ── G-24 · las catorce fuentes y las quince fichas existen ──────
 fuentes = """kernel/operativo/diseno/00-SISTEMA-DE-EXCELENCIA.md
@@ -338,11 +393,54 @@ kernel/operativo/entrada/04-INCERTIDUMBRE-Y-CONFIRMACION.md
 docs/rediseno/a-ENMIENDA-E1-ENC.md
 docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md
 docs/evolucion/15-TERCERA-REVISION-INDEPENDIENTE-F4C.md""".split("\n")
-faltan = [f for f in fuentes if not os.path.exists(os.path.join(RAIZ, f))]
-fichas = sorted(os.listdir(os.path.join(RAIZ, "kernel/operativo/capacidades")))
-check("G-24", "las CATORCE fuentes y las QUINCE fichas existen y son legibles",
-      not faltan and len(fichas) == 15,
-      f"14 fuentes ok, {len(fichas)} fichas" if not faltan else ", ".join(faltan))
+# «legibles» tiene que significar LEÍDAS, y «quince fichas» tiene que significar ESTAS
+# quince. La versión anterior comprobaba `os.path.exists` y `len(fichas) == 15`: con eso,
+# una ficha sustituida por otra, renombrada o ilegible pasaba en verde, y quince
+# directorios cualesquiera contaban como el catálogo. Aquí se comparan los NOMBRES exactos
+# y se ABRE cada fichero en UTF-8.
+CAPACIDADES = ["APR", "ARQ", "CON", "DIS", "DOM", "DSP", "ENC", "ENT",
+               "INV", "PLT", "PRD", "SEG", "SIS", "USO", "VER"]
+
+def _ilegible(ruta):
+    """Devuelve el motivo si no se puede leer como UTF-8 con contenido; si no, None."""
+    try:
+        with io.open(ruta, encoding="utf-8") as fh:
+            if not fh.read().strip():
+                return "vacío"
+    except FileNotFoundError:
+        return "no existe"
+    except UnicodeDecodeError:
+        return "no es UTF-8"
+    except OSError as e:
+        return f"no se puede abrir: {e.strerror}"
+    return None
+
+problemas = []
+for f in fuentes:
+    motivo = _ilegible(os.path.join(RAIZ, f))
+    if motivo:
+        problemas.append(f"{f}: {motivo}")
+
+_dir_cap = os.path.join(RAIZ, "kernel/operativo/capacidades")
+presentes = sorted(d for d in os.listdir(_dir_cap)
+                   if os.path.isdir(os.path.join(_dir_cap, d)))
+sobran = [d for d in presentes if d not in CAPACIDADES]
+ausentes = [c for c in CAPACIDADES if c not in presentes]
+if ausentes:
+    problemas.append("faltan capacidades: " + ", ".join(ausentes))
+if sobran:
+    problemas.append("capacidades no declaradas: " + ", ".join(sobran))
+
+for c in CAPACIDADES:
+    if c in presentes:
+        motivo = _ilegible(os.path.join(_dir_cap, c, "CAPACIDAD.md"))
+        if motivo:
+            problemas.append(f"{c}/CAPACIDAD.md: {motivo}")
+
+check("G-24", "las CATORCE fuentes y las QUINCE fichas se LEEN, y son EXACTAMENTE ésas",
+      not problemas,
+      f"{len(fuentes)} fuentes leídas · {len(CAPACIDADES)} fichas leídas, "
+      f"nombre a nombre" if not problemas else "; ".join(problemas))
 
 # ── G-25 · CATORCE campos en los cuatro macrocircuitos ─────────
 campos = ["DISPARADOR","PRECONDICIONES","PROCESO","PARTICIPANTES","LEE","ESCRIBE","ESTADO",

@@ -3,7 +3,7 @@
 # codigo:       0
 # ---------------------------------------------------------------
 OK   N136    A-06  T136  un veto levantable (DOM) se declara prevaleciente sobre otro (DIS)
-                          → detectada: veto:integridad-de-datos: declara que prevalece DOM, cuyo veto es LEVANTABLE. a.5 sólo admite prevalencia de un veto no 
+                          → detectada: veto:integridad-de-datos: declara que prevalece DOM, cuyo veto es LEVANTABLE. a.5 sólo admite prevalencia de un veto no
 OK   N136b   A-06  T136  una cláusula de colisión resuelve el conflicto sin escalar al Owner
                           → detectada: veto:evidencia-en-rojo: su cláusula de colisión no declara el escalado al Owner (a.5)
 OK   N137    A-23  T137  DSP/estado vuelve a DECIDIR una cancelación
@@ -11,7 +11,7 @@ OK   N137    A-23  T137  DSP/estado vuelve a DECIDIR una cancelación
 OK   N146    A-18  T146  un rol se concede lo que su capacidad ESCALA
                           → detectada: CON/implementacion: DECIDE «la implementación exige una decisión de forma, alcance o dom», y CON declara eso mismo en `e
 OK   N146b   A-18  T146  un rol se concede la materia declarada por otra capacidad
-                          → detectada: CON/implementacion: DECIDE «los valores del sistema de diseño: escala, ritmo, roles de c», que es materia declarada por 
+                          → detectada: CON/implementacion: DECIDE «los valores del sistema de diseño: escala, ritmo, roles de c», que es materia declarada por
 OK   N90     A-15  T90   un método deja de estar declarado por su capacidad, como ENC/Critica
                           → detectada: ENC/Critica: dice pertenecer a ENC, que no lo lista entre sus métodos. La ficha de la capacidad es la fuente única: un m
 OK   N92     —     T92   una marca comercial entra por un esquema, que antes no se miraba
@@ -27,9 +27,9 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 591de4db801e53a5, calculada b839be09a912cd3b. Algún fichero de la huella se 
+                          → detectada: el kernel DIVERGE de su release: almacenada 3efd17915f75dc93, calculada 87ca454127d610e8. Algún fichero de la huella se
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 591de4db801e53a5, calculada 37e9fabc8c39d0e5. Algún fichero de la huella se 
+                          → detectada: el kernel DIVERGE de su release: almacenada 3efd17915f75dc93, calculada f1e101e5e9b4c5af. Algún fichero de la huella se
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
                           → detectada: kernel/operativo/validadores/ads_lint.py NO entra en la huella: un fork silencioso de ese fichero sería indetectable
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
@@ -119,7 +119,7 @@ OK   N141c   A-10  T141  quien recompone la ruta pasa a contar sus propias recom
 OK   N141d   A-10  T141  se ajusta un umbral aprobado porque el caso parecía merecerlo
                           → detectada: el prompt de supervisión no fija el umbral de racha en 2 (a.7 · FRENO 3): un umbral que el agente recuerda de memoria se
 OK   N161    E2    T161  un documento vuelve a decir que el repositorio es la memoria del proyecto
-                          → detectada: kernel/operativo/00-INDICE.md:141: conserva «El repositorio es la memoria del proyecto» [R7-repositorio-es-la-memoria], 
+                          → detectada: kernel/operativo/00-INDICE.md:141: conserva «El repositorio es la memoria del proyecto» [R7-repositorio-es-la-memoria],
 OK   N161b   E2    T161  un documento vuelve a enseñar «una tarea = una rama»
                           → detectada: kernel/templates/AGENTS_EXAMPLE.md:369: conserva «Una tarea = una rama» [R3-tarea-igual-rama], retirada por E2.4 — item/
 OK   N161c   E2    T161  la portada vuelve a afirmar que un ADS Project es un repositorio de código

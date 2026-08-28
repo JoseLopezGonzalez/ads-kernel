@@ -71,8 +71,8 @@
 > crítica no prueba que esté bien resuelta**, y por eso `F4c` **no se declara cerrada aquí**.
 
 ```text
-CHECKPOINT — ADS-NEXT/10 · SIS/evolucion
-actualizado: 2026-08-27
+CHECKPOINT — ADS-NEXT/11 · SIS/evolucion
+actualizado: 2026-08-28
 metodo:      SIS/Evolucion · GATE FINAL EJECUTADO · NIVEL 0 CERRADO · VEREDICTO
              INSUFICIENTE PARA F5 · F4c ABIERTA · F5 NO AUTORIZADA
 based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
@@ -87,14 +87,22 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
                                                              VEREDICTO FINAL
              docs/evolucion/17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md   D · E · F ·
                                                              NIVEL 0 CERRADO
+             docs/evolucion/18-GATE-DE-CIERRE-INDEPENDIENTE-F4C.md
              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · O16 · D16–D22 ·
                                                              D23–D33 · D34–D45 · D46–D51 ·
                                                              D52–D54 · D55–D57 · D58–D59 ·
                                                              D60–D61 · D62 · D63 · D64–D68 ·
-                                                             D69–D70
+                                                             D69–D70 · D71–D95
              kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
-freshness:   vigente
-last_meaningful_event: la SEGUNDA revisión independiente devuelve F4 con veredicto de
+freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
+             Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
+             queda marcado HISTÓRICO y SUPERADO, y no se borra
+last_meaningful_event: la candidata r2 queda PUBLICADA en 1b588ac y validada con Python
+             3.11.16 —13/13, 57/57, 67 detectadas y 0 NO detectadas, T158 SUPERADA y
+             T161 = 293—, con validación independiente posterior que la confirma; y la
+             batería propia se hace PORTABLE y su G-23 deja de afirmar «kernel intacto»,
+             que dejó de ser cierto en 1b588ac (2026-08-28)
+last_meaningful_event_anterior: la SEGUNDA revisión independiente devuelve F4 con veredicto de
              INSUFICIENCIA —dos BLOQUEANTES, siete GRAVES y catorce hallazgos nuevos— y sus
              correcciones quedan aplicadas (2026-08-27)
 procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y de las DOS
@@ -737,12 +745,20 @@ owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
              de control DEFINITIVO. NO autoriza iniciar la adopción" (2026-08-27)
 pregunta_pendiente: ninguna. Las DIEZ presiones normativas vigentes son materia de F5,
              no preguntas
-siguiente:   LA TANDA DE CORRECCIÓN, que ya puede empezar: el NIVEL 0 está cerrado y F deja
-             sus cuatro condiciones de arranque. Empezar por el NIVEL 1 con sus dos
-             ampliaciones —1.3 toca también el condicional de proceso:AUD y el grafo de
-             00-CIRCUITOS; 1.4 NO se cierra en §8 sino en 01-PROCESOS.md,
-             esquemas/proceso.yaml y circuitos/—. Redimensionar sobre 44 abiertos, no 29.
-             Después, un gate posterior. F5 NO arranca sin un veredicto de SUFICIENCIA
+siguiente:   UN GATE INDEPENDIENTE SOBRE LA CANDIDATA CORREGIDA `r2`, con contexto limpio.
+             **NO otra corrección aplicada por el mismo autor**: quien recibe no puede
+             seguir siendo quien aplica, y esa es la razón por la que las tandas anteriores
+             se encadenaron. La candidata está PUBLICADA en 1b588ac y es auditable: 13/13,
+             57/57, 67/0, T158 SUPERADA y T161 = 293, con validación independiente posterior
+             que lo confirma, y con su batería propia ya PORTABLE —30/30 desde cualquier
+             ruta— y su G-23 comprobando la excepción exacta en vez de afirmar «kernel
+             intacto».
+             Después de ese gate, y sólo si emite SUFICIENCIA, LA TANDA DE CORRECCIÓN: el
+             NIVEL 0 está cerrado y F deja sus cuatro condiciones de arranque; empezar por el
+             NIVEL 1 con sus dos ampliaciones —1.3 toca también el condicional de
+             proceso:AUD y el grafo de 00-CIRCUITOS; 1.4 NO se cierra en §8 sino en
+             01-PROCESOS.md, esquemas/proceso.yaml y circuitos/—. Redimensionar sobre 44
+             abiertos, no 29. **F5 NO arranca sin un veredicto de SUFICIENCIA**
 falta_para_cerrar_la_capa:
   · F4c ESTÁ ABIERTA, y ahora con el GATE FINAL INDEPENDIENTE ejecutado y devuelto:
     **INSUFICIENTE PARA F5**, por adjudicación de un tercer agente sobre dos dictámenes
@@ -1430,26 +1446,73 @@ MECÁNICA PROPIA     resultado del árbol**, no de lo que el texto afirma de sí
                     Vive en `docs/evolucion/verificacion/`, y su alcance y sus límites están
                     declarados abajo.
 
-LÍMITE DEL ENTORNO  la batería canónica se ejecutó con **Python 3.10.12**, que es lo único
-                    disponible en esta máquina —no hay 3.11+ instalable sin `sudo`—.
-                    `comprobar_arranque` (`T148`), `comprobar_fuentes` (`T159`) y las pruebas
-                    de `workspace` fallan por `tomllib`, que exige **3.11+**, y su salida lo
-                    dice con esas palabras: «se requiere Python 3.11 o superior para leer
-                    TOML». **Es `A14`**, que el gate final declaró AJENO a F4, con propietario
-                    `PLT` y fase F6. **No se ha tocado el tooling para sortearlo.**
+LÍMITE DEL ENTORNO  **[HISTÓRICO · SUPERADO, ver ESTADO VIGENTE abajo]** la batería canónica
+[HISTÓRICO]         se ejecutó con **Python 3.10.12**, que era lo único disponible en aquella
+                    máquina —no había 3.11+ instalable sin `sudo`—. `comprobar_arranque`
+                    (`T148`), `comprobar_fuentes` (`T159`) y las pruebas de `workspace`
+                    fallaban por `tomllib`, que exige **3.11+**. **Es `A14`**, que el gate
+                    final declaró AJENO a F4, con propietario `PLT` y fase F6. **No se tocó
+                    el tooling para sortearlo.** Resultado de entonces: **9/13**.
 
-Y UNA CONSECUENCIA  `comprobar_evidencia` (`T158`) pasa a FALLIDA, y **no es un defecto de
-DE ESE LÍMITE,      contenido**: la evidencia publicada de `comprobar_fuentes` declara una
-DECLARADA           cobertura de **291 ficheros** y el corpus vigente da **293**, porque esta
-                    tanda añade dos —la batería de verificación y su README—. La cifra la
-                    publica `T161`, que **SUPERA** por sí sola; lo que impide republicarla es
-                    que `comprobar_fuentes` sale con código 1 **por `T159`**, y
-                    `registrar_evidencia` —correctamente— **no publica una ejecución que
-                    falla**. La evidencia no se edita a mano: su propia salida lo prohíbe con
-                    todas las letras. **En una máquina con Python 3.11+ una sola ejecución de
-                    `registrar_evidencia.py` la reconcilia**, y con ella `T158`.
-                    Se declara aquí para que un gate posterior no lo lea como defecto nuevo:
-                    **es `A14` propagándose**, y su remedio es el de `A14`.
+Y UNA CONSECUENCIA  **[HISTÓRICO · SUPERADO]** `comprobar_evidencia` (`T158`) quedaba
+DE ESE LÍMITE       FALLIDA, y **no era un defecto de contenido**: la evidencia publicada de
+[HISTÓRICO]         `comprobar_fuentes` declaraba **291 ficheros** y el corpus vigente daba
+                    **293**. La cifra la publica `T161`, que SUPERABA por sí sola; lo que
+                    impedía republicarla es que `comprobar_fuentes` salía con código 1 **por
+                    `T159`**, y `registrar_evidencia` —correctamente— no publica una ejecución
+                    que falla. Se anticipó que **en una máquina con Python 3.11+ una sola
+                    ejecución la reconciliaría**. Así fue.
+
+════════════════════ ESTADO VIGENTE ════════════════════
+
+CANDIDATA          `review/f4c-candidate-20260828-r2`, publicada en
+PUBLICADA          **1b588acafb5acf68b11fcc9f544de9fc7e8fddb2**. Deja de ser cierto que
+                   «nada está publicado»: la tanda ESTÁ publicada, y es auditable.
+
+VALIDACIÓN         ejecutada con **Python 3.11.16**, y **repetida después de forma
+CANÓNICA           independiente con el mismo resultado**:
+                     13/13 validadores
+                     57/57 pruebas de workspace
+                     67 infracciones detectadas · 0 NO detectadas
+                     `T158` SUPERADA · `T159` SUPERADA · `T148` SUPERADA
+                     `T161` = **293 ficheros recorridos**
+                   Lo que el bloque histórico anticipaba se cumplió: una sola ejecución
+                   reconcilió la cobertura, y con ella `T158`.
+
+DETERMINISMO       `N158g` derivaba su fixture de la cifra PUBLICADA, luego dependía del
+DE `N158g`         orden del manifiesto —`negativos` corre antes que `fuentes`— y dos
+                   ejecuciones seguidas no coincidían byte a byte. Corregido en `1b588ac`:
+                   la cifra se deriva del **corpus vigente** por la definición canónica
+                   `comprobar_fuentes.ficheros_recorridos`. **Demostrado partiendo de
+                   evidencia inicialmente caducada**: la primera ejecución ya converge y la
+                   segunda es idéntica, sin tercera.
+
+EXCEPCIÓN EXACTA   deja de ser cierto que «`kernel/operativo/` está intacto». Lo que hay es
+DEL KERNEL         una excepción NOMBRADA, y sólo ésta:
+                     kernel/operativo/validadores/comprobar_negativos.py   código
+                     kernel/.upstream-hash                                 huella reanclada
+                     kernel/operativo/pruebas/evidencia/*                  derivada
+                   Lo normativo —(a), (b), `E1`, `E2`, `C4`, `C7`— y el kernel operativo
+                   SUSTANTIVO siguen intactos. `G-23` lo comprueba así, fichero a fichero,
+                   sin exclusiones amplias.
+
+BATERÍA PROPIA     tenía dos defectos que ESTA tanda cierra: calculaba mal la raíz y caía a
+                   una ruta codificada de una máquina —luego en cualquier otro clon o
+                   worktree comprobaba el repositorio del autor, no el que tenía delante—, y
+                   `G-23` afirmaba «kernel intacto», que dejó de ser cierto en `1b588ac`.
+                   Corregidos: raíz derivada de `__file__`, `G-23` con la excepción exacta y
+                   `G-24` leyendo de verdad las catorce fuentes y las quince fichas por
+                   nombre. **30/30 desde la raíz, desde otro cwd y desde un worktree
+                   arbitrario.**
+
+LO QUE NO CAMBIA   **`F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA.** Ninguno de los
+                   hallazgos del gate se ha corregido, y esta tanda no los toca: corrige
+                   auditabilidad y vigencia, no arquitectura.
+
+EL SIGUIENTE PASO  un **gate independiente sobre la candidata corregida**, con contexto
+                   limpio. **No otra corrección aplicada por el mismo autor**: quien recibe
+                   no puede seguir siendo quien aplica.
+
 ```
 
 **La batería de esta tanda, y lo que NO comprueba.** Vive en

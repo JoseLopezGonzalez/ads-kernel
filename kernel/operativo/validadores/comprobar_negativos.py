@@ -908,15 +908,22 @@ def ejecutar(mut, tmp_base):
         return
 
     fallos = fila.get("fallos") or []
+    # El truncado a 120 puede caer justo en un espacio, y entonces la línea publicada
+    # termina en blanco: `git diff --check` lo marca como trailing whitespace en cada
+    # regeneración. Se recorta DESPUÉS de truncar, en los dos diagnósticos —el esperado y
+    # el general—, porque el defecto está en el corte y no en el texto de origen.
+    def _corta(texto):
+        return texto[:120].rstrip()
+
     if mut.espera and not any(mut.espera in f for f in fallos):
         mut.resultado = "NO DETECTADA"
         mut.detalle = (f"{mut.prueba} falló, y NO por el motivo esperado. Se buscaba "
                        f"«{mut.espera}» y se obtuvo: "
-                       f"{(fallos or ['(sin detalle)'])[0][:120]}")
+                       f"{_corta((fallos or ['(sin detalle)'])[0])}")
         return
     elegido = next((f for f in fallos if mut.espera and mut.espera in f), None)
     mut.resultado = "detectada"
-    mut.detalle = (elegido or (fallos or ["(sin detalle)"])[0])[:120]
+    mut.detalle = _corta(elegido or (fallos or ["(sin detalle)"])[0])
 
 
 def main():

@@ -16,6 +16,17 @@ python3 docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py
 
 Sale con código `0` si las treinta están en verde, y con `1` si alguna falla.
 
+> **Portabilidad.** La batería deriva su raíz de `__file__` —tres niveles por encima de
+> `docs/evolucion/verificacion/`— y **de nada más**. No usa el cwd y no codifica la ruta de
+> ninguna máquina. La versión anterior tomaba el directorio del propio script y, al no
+> encontrar `docs` allí, caía a `/home/jose/ads-kernel`: en cualquier otro clon o worktree
+> comprobaba **el repositorio del autor en vez del que tenía delante**, y daba verde sobre un
+> árbol que nadie estaba mirando. Si la estructura esperada no aparece bajo la raíz derivada,
+> **falla con diagnóstico y código 2** en vez de adivinar.
+>
+> Comprobado **30/30 desde la raíz, desde `/tmp` por ruta absoluta y desde un worktree con
+> ruta arbitraria**.
+
 ## Por qué estas treinta, y por qué así
 
 Cada comprobación **DERIVA** su resultado del árbol. Ninguna cifra de este documento ni del
@@ -49,11 +60,27 @@ presiones—, y ninguna se había ejecutado.
 | `G-20` | `D1`–`D95` sin hueco y sin repetir | trazabilidad |
 | `G-21` | `O1`–`O16` intactas frente a `7e99388` | trazabilidad |
 | `G-22` | los documentos **15, 16, 17 y 18** no se han tocado | inmutabilidad |
-| `G-23` | (a), (b), `E1`, `E2`, `C4`, `C7` y `kernel/operativo/` intactos | alcance |
-| `G-24` | las catorce fuentes y las quince fichas existen y son legibles | cobertura |
+| `G-23` | lo normativo intacto; del kernel sólo cambia la **excepción NOMBRADA** | alcance |
+| `G-24` | las catorce fuentes y las quince fichas **se LEEN**, y son **exactamente ésas** | cobertura |
 | `G-25` | los cuatro macrocircuitos declaran sus **catorce** campos | `I-21` |
 | `G-26` | la tabla adversarial tiene tantas filas como ids distintos | higiene |
 | `G-27` | la regla 1 de §2.6.10 usa «los cinco **CAMPOS**» | `A7` |
+
+> **`G-23` y `G-24`, corregidas.** `G-23` afirmaba «`kernel/operativo/` intacto» y excluía en
+> bloque todo `pruebas/evidencia/`. Dejó de ser cierta en `1b588ac`, que corrigió
+> `comprobar_negativos.py` —para hacer `N158g` independiente del orden del runner— y reancló
+> `.upstream-hash`, porque la huella cubre el código de los validadores. Ahora comprueba lo
+> exacto: lo normativo intacto, el kernel operativo **sustantivo** intacto, y como únicas
+> excepciones `comprobar_negativos.py`, `.upstream-hash` y la evidencia derivada. **Sin
+> exclusiones amplias**, y comparando la base contra el **árbol de trabajo** y no contra
+> `HEAD`: comparar dos commits dejaba pasar cualquier edición sin confirmar, y una
+> comprobación que no ve el árbol que se le pone delante no protege nada.
+>
+> `G-24` decía «existen y son legibles» y comprobaba `os.path.exists` más `len(fichas) == 15`.
+> Con eso, una ficha sustituida por otra, renombrada o ilegible pasaba en verde, y quince
+> directorios cualesquiera contaban como el catálogo. Ahora **compara los quince nombres**
+> —`APR ARQ CON DIS DOM DSP ENC ENT INV PLT PRD SEG SIS USO VER`— y **abre en UTF-8** las
+> catorce fuentes y las quince fichas.
 
 ## Lo que esta batería NO comprueba, y se dice
 
@@ -68,7 +95,8 @@ NO SUSTITUYE AL GATE        no juzga si la arquitectura es SUFICIENTE PARA F5. C
                             mucho menos
 
 NO CUBRE EL CORPUS          las catorce fuentes y las quince fichas se comprueban por
-                            EXISTENCIA (`G-24`), no por lectura. Que un gate posterior las
+                            LECTURA de cada fichero en UTF-8 y por comparación de NOMBRES
+                            (`G-24`), no por su contenido. Que un gate posterior los
                             LEA sigue siendo su condición mínima, y ninguna comprobación
                             mecánica la sustituye
 ```
