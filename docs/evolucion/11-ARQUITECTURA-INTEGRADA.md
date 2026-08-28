@@ -397,6 +397,11 @@ ads/                                    el repositorio ADS de control
 │  │                        RUTAS AFECTADAS (§2.6.8). Vacío en reposo, reconstruible desde
 │  │                        el diario, y EXCLUIDO DE GIT: vive en el árbol durable y NO
 │  │                        viaja (§2.6.6)
+│  ├─ deriva/<ID>.abierta   MARCADOR de `deriva` SIN REPARAR, con el `id` del evento, las
+│  │                        RUTAS y los ITEMS que bloquea, y su causa (§2.6.8). Misma
+│  │                        naturaleza y misma disciplina que el anterior: OPERACIONAL, por
+│  │                        la SEGUNDA excepción de ruta de §2.4, reconstruible desde el
+│  │                        diario (§2.9) y EXCLUIDO DE GIT
 │  ├─ tableros/<CAP>.md      ÓRDENES (Owner) + COLA (DERIVADO)
 │  └─ memoria/…              memoria de capacidad y ledgers
 ├─ adaptadores/<entorno>/    definición canónica neutral, no la proyección
@@ -404,24 +409,34 @@ ads/                                    el repositorio ADS de control
 └─ .ads/run/                 OPERACIONAL · NO versionado
    ├─ lock                   un solo ejecutor de mutaciones (R5)
    ├─ indice.sqlite          índice compilado, reconstruible, no canónico
-   └─ cache/                 análisis vigente por huella
+   ├─ cache/                 análisis vigente por huella
+   └─ quarantine/<TX>/       CUARENTENA TEMPORAL de contenido divergente, cuando el Owner la
+                             autoriza para poder abandonar (§2.6.9, desenlace 4b). LOCAL,
+                             ignorada por Git, NO canónica y NO fuente de verdad. Se crea
+                             ANTES de restaurar, se verifica por hash, y se elimina SÓLO
+                             después del terminal, de su verificación y del commit del
+                             incidente
 ```
 
 ## 2.4 · Durable frente a operacional, y qué vive en Git
 
 ```text
-DURABLE Y VERSIONADO     `estado/` SALVO la excepción de ruta declarada abajo, la
+DURABLE Y VERSIONADO     `estado/` SALVO las DOS excepciones de ruta declaradas abajo, la
                          especialización, la distribución instalada, los adaptadores y sus
                          proyecciones. Sobrevive a la máquina.
 
-OPERACIONAL Y NO VERSIONADO   `.ads/run/` — lock, cachés e índices compilados — Y los
-                         marcadores de transacción de `estado/tx/`, por la excepción de
-                         abajo. Se borra entero sin perder nada: se reconstruye desde lo
-                         durable. Si borrarlo perdiera algo, ese algo estaba en el sitio
-                         equivocado.
+OPERACIONAL Y NO VERSIONADO   `.ads/run/` — lock, cachés, índices compilados y la
+                         CUARENTENA de `.ads/run/quarantine/<TX>/` (§2.6.9) — Y los
+                         marcadores de `estado/tx/` y de `estado/deriva/`, por las DOS
+                         excepciones de abajo. Se borra entero sin perder nada: se
+                         reconstruye desde lo durable. Si borrarlo perdiera algo, ese algo
+                         estaba en el sitio equivocado — y por eso la cuarentena **no se
+                         borra hasta después del terminal, de su verificación y del commit
+                         del incidente** (§2.6.9), que es cuando deja de haber algo que
+                         perder.
 ```
 
-### La excepción de ruta, declarada — y son DOS categorías, no tres
+### Las DOS excepciones de ruta, declaradas — y siguen siendo DOS categorías, no tres
 
 > **Corregido por la devolución técnica previa (hallazgo `6`).** El texto anterior decía
 > «DURABLE Y VERSIONADO: **todo** `estado/`», y `D40` colocaba el marcador en `estado/tx/`
@@ -442,16 +457,49 @@ POR QUÉ ESTÁ BAJO        por DESCUBRIBILIDAD, y sólo por eso: la regla de lec
 QUÉ DEJA DE SER CIERTO   «todo `estado/` es durable y versionado». Se corrige arriba en vez
                          de sostenerse con una nota al pie.
 
-CÓMO QUEDA ALINEADO      `.gitignore` del control repo excluye `estado/tx/` · la
-                         reconstrucción desde el diario está en §2.9 · un clon nuevo NO
-                         contiene marcadores, y si los contiene es evidencia diagnóstica de
-                         un defecto del runtime (§2.6.6, garantía 6) · `X27` lo comprueba
-                         recorriendo la historia entera.
+CÓMO QUEDA ALINEADO      `.gitignore` del control repo excluye `estado/tx/` **y
+                         `estado/deriva/`** · la reconstrucción desde el diario está en §2.9,
+                         con una fila para cada uno · un clon nuevo NO contiene marcadores, y
+                         si los contiene es evidencia diagnóstica de un defecto del runtime
+                         (§2.6.6, garantía 6) · `X27` y `X59` lo comprueban recorriendo la
+                         historia entera.
+```
+
+### La SEGUNDA excepción de ruta · `estado/deriva/<ID>.abierta`
+
+> **Completada por el gate de cierre independiente (`I-02`, GRAVE; es `D88`).** `D78` creó el
+> marcador de `deriva` e invocó «la excepción de ruta de §2.4» — que nombraba **sólo**
+> `estado/tx/` y por tanto **no lo cubría**. Por el criterio vigente el marcador viajaba a
+> Git, y un caché versionado que nadie regenera con sede declarada **es** una segunda fuente
+> de verdad, que es lo que `I5` prohíbe. El defecto era de propagación, no de concepción: se
+> completa aquí, con las mismas cinco piezas que sostienen al marcador de transacción.
+
+```text
+QUÉ ES                   **OPERACIONAL**, exactamente igual que el marcador de transacción.
+                         Su `plano` es `operacional`, y responde «no» a la pregunta de §2.4:
+                         no tiene que sobrevivir a un clon nuevo, porque se reconstruye desde
+                         el diario por `bloqueado_por_deriva(item)` (§2.6.9).
+
+POR QUÉ ESTÁ BAJO        por el MISMO motivo, y sólo por ése: la regla de lectura de §2.6.8
+`estado/` Y NO BAJO      obliga a consultarlo ANTES de leer el estado, y un aviso de «esto no
+`.ads/run/`              es fiable» que vive donde el lector no tiene por qué mirar no es un
+                         aviso. Es EXCEPCIÓN DE RUTA, no de naturaleza.
+
+CÓMO SE IMPIDE QUE       exclusión explícita en `.gitignore` del control repo, junto a
+VIAJE                    `estado/tx/`. `X59` lo comprueba recorriendo la historia entera.
+
+DESDE DÓNDE SE           desde el diario, y §2.9 tiene su fila: los `deriva` que satisfacen
+RECONSTRUYE              `bloqueado_por_deriva(item)`. Total y determinista.
+
+QUÉ NO GANA              **ni identidad ni autoridad propias.** No es fuente de verdad de
+                         nada: la verdad es el evento `deriva` del diario, y §1.3 no le da
+                         fila porque §2.4 lo clasifica — igual que a `estado/tx/`. El paso 4
+                         de §3.1 sigue dando COMPONER.
 ```
 
 **El criterio, en una pregunta:** ¿sobrevive esto a `rm -rf` y a un clon nuevo? Si tiene que
 sobrevivir, es durable y va a Git. Si no, es operacional — **y dónde esté colocado no cambia
-la respuesta**, que es lo que la excepción de arriba hace explícito. Un dato que no sobreviva y que nadie
+la respuesta**, que es lo que las dos excepciones de arriba hacen explícito. Un dato que no sobreviva y que nadie
 pueda recalcular **es un defecto de diseño**, no una categoría.
 
 ## 2.5 · Instantáneas, eventos y transacciones — qué es cada cosa
@@ -618,10 +666,24 @@ QUIÉN LO EVALÚA   el VALIDADOR SEMÁNTICO DEL DIARIO (§3.6, capa B): exige re
                   `estado/tx/<TX>.abierta` lo ACELERA y no lo define: es un caché
                   reconstruible, y §2.9 declara desde dónde
 
-DÓNDE SE CITA     §2.5 (marcador) · §2.6.4 (clasificación) · §2.6.6 (garantías y regla de
-                  commit) · §2.6.8 (regla de lectura) · §2.6.9 (`conflicto`) · §2.9
-                  (reconstrucción del marcador) · §7.4 (paso 2 de `Continúa`).
-                  **Las siete REMITEN aquí. Ninguna lo redeclara.**
+DÓNDE SE CITA     **NUEVE sedes vigentes, fuera de aquí**, y el censo se DERIVA con un
+                  barrido del identificador, no se escribe de memoria:
+                    §2.5      la tabla de plegado del manifiesto
+                    §2.6.4    el paso 1 de la clasificación
+                    §2.6.5    `W8`
+                    §2.6.6    la comprobación de integridad post-terminal
+                    §2.6.8    el diario como fuente de reconstrucción
+                    §2.6.11   la distinción entre `conflicto` y `deriva`
+                    §2.9      la fila de reconstrucción del marcador
+                    §3.6      la capa B, que es quien lo EVALÚA
+                    §7.4      el paso 2 de `Continúa`
+                  **Las NUEVE REMITEN aquí. Ninguna lo redeclara.**
+                  **Corregido por el gate de cierre (`I-09`; es `D89`).** El censo anterior
+                  decía SIETE y nombraba §2.6.4 y §2.6.9 —que no lo citaban— omitiendo §2.6.5
+                  y §2.6.11 —que sí—; y su «ninguna lo redeclara» era falso, porque §2.6.4
+                  redeclaraba con la formulación retirada. Ahora §2.6.4 remite, §3.6 entra en
+                  el censo por ser la capa evaluadora, y §2.6.9 sale porque **no lo cita**:
+                  usa el predicado a través de §2.6.4 y de la regla de commit
 ```
 
 **Las CINCO fases, y qué significa cada una:**
@@ -891,8 +953,11 @@ Antes de las tres cajas hay dos preguntas que deciden **si hay transacción**, y
           repara es una transacción NUEVA (§2.6.9). No se emite un `deriva` por arranque:
           el que existe se conserva hasta que la reparación lo resuelve
 
-1  ¿EXISTE UNA TRANSACCIÓN ABIERTA —`preparada` durable y SIN `derivada`— QUE DECLARE
-   ESA RUTA, EN ESTA INSTALACIÓN?
+1  ¿EXISTE UNA TRANSACCIÓN QUE SATISFAGA **`abierta(tx)`** —el predicado de §2.6.1, y no
+   otro— Y QUE DECLARE ESA RUTA, EN ESTA INSTALACIÓN?
+   **Corregido por el gate de cierre (`I-09`; es `D89`)**: decía «`preparada` durable y SIN
+   `derivada`», que es la formulación que `D71` retiró y que el paso 0 hacía inocua sólo por
+   accidente. Aquí se REMITE, como hacen las demás sedes.
      NO → NO HAY TRANSACCIÓN, luego NO PUEDE HABER `conflicto`: sería una fase de algo
           que no existe.
           · casa con `HEAD`     → nada que hacer
@@ -1313,8 +1378,9 @@ QUÉ SIGUE SIENDO CIERTO   se reconstruye desde el diario (§2.9), luego borrarl
                           nada, y sigue sin ganar identidad propia: §3.1 paso 4 sigue dando
                           COMPONER.
 
-QUÉ LLEGA A GIT, EN       NADA de `estado/tx/`. Declarado en positivo, y `X27` lo comprueba
-POSITIVO                  recorriendo la historia entera.
+QUÉ LLEGA A GIT, EN       NADA de `estado/tx/`, **NADA de `estado/deriva/` y NADA de
+POSITIVO                  `.ads/run/`, incluida su `quarantine/`**. Declarado en positivo, y
+                          lo comprueban `X27` y `X59` recorriendo la historia entera.
 ```
 
 ### 2.6.7 · Tabla adversarial de recuperación
@@ -1369,6 +1435,9 @@ impuso al arnés de negativos.
 | `X55` | abandonar una transacción en conflicto y comprobar el estado resultante | `abandonada` es durable, **el marcador se retira**, el control repo **vuelve a commitear**, y un evento `deriva` con `causa: abandono-de-transaccion` mantiene bloqueados **sólo** los items que nombra |
 | `X56` | revertir un canónico de una transacción con `derivada` durable, y arrancar | se emite un evento **`deriva`** con `causa: posterior-al-cierre`. **NO** se emite ninguna fase, la transacción cerrada **no gana ningún evento nuevo con su `tx`**, y nada se restaura solo |
 | `X57` | recorrer el diario buscando cualquier evento con `fase` cuya transacción ya tenga `derivada` | **no existe ninguno**, y el **validador semántico del diario** lo rechaza —la comprobación es de `tx`, no de evento aislado (§3.6)—. Ninguna transición sale del terminal |
+| `X59` | recorrer la historia entera del control repo tras N transacciones y N `deriva` | **ningún commit** contiene un fichero bajo `estado/deriva/` ni bajo `.ads/run/`, incluida `quarantine/`. Es `X27` para la SEGUNDA excepción de ruta de §2.4 |
+| `X60` | emitir un `deriva`, borrar a mano `estado/deriva/<ID>.abierta` y arrancar | el arranque lo **reconstruye desde el diario** por `bloqueado_por_deriva(item)` (§2.9), con las mismas rutas e items. Y un lector que aplique §2.6.8 **no recorre `estado/eventos/`**: consulta los dos marcadores. El marcador es un acelerador, igual que el de transacción |
+| `X61` | abandonar con cuarentena autorizada, y comprobar su ciclo | `.ads/run/quarantine/<TX>/` existe **antes** de restaurar y su contenido **casa por hash** con lo registrado en el `conflicto`; **sigue existiendo** tras `abandonada` y tras la verificación; y **sólo deja de existir después del commit del incidente**. Ningún commit la contiene. Si `SEG` bloquea la publicación y el Owner acepta la pérdida, el incidente conserva **hash, clasificación, autoridad, motivo y alcance**, y el contenido prohibido **no se publica** |
 | `X58` | recorrer el grafo de fases buscando un estado no terminal sin sucesor admisible | **no existe ninguno**: `preparada` sale a dos, `conflicto` sale a dos, `confirmada` sale a uno, y `derivada` y `abandonada` son terminales que **retiran el marcador**. **Y la retención acotada del desenlace `4b` termina por ACTO DE AUTORIDAD del Owner** —cuarentena o declaración de irrecuperable (§2.6.9)—, no por construcción: el grafo no la cierra sola, y decirlo es la corrección de `A9`. Lo que se comprueba aquí es el grafo; que exista autoridad que pueda cerrarla se comprueba en §2.6.9 |
 
 > **Las excepciones históricas de `X47`, declaradas una a una.** Estos textos conservan
@@ -1394,10 +1463,12 @@ impuso al arnés de negativos.
 > adversariales son MUCHAS, y eliminarlas destruiría la trazabilidad que estos documentos
 > existen para dar. `X47` comprueba la primera y declara las segundas.
 
-> **Cuarenta y dos filas físicas y cuarenta y dos identificadores únicos**, comprobado por
-> conteo sobre el fichero y no por memoria: la tabla empieza en `X01` y **tiene huecos de
+> **Cuarenta y cinco filas físicas y cuarenta y cinco identificadores únicos**, comprobado
+> por conteo sobre el fichero y no por memoria: la tabla empieza en `X01` y **tiene huecos de
 > numeración** —`X24`, `X29`–`X36` y `X40`–`X46`—, de filas retiradas o renumeradas en las
-> sucesivas correcciones. `X24` es el único con motivo declarado abajo; los demás son huecos
+> sucesivas correcciones. **`X59`, `X60` y `X61` las añade esta tanda** para las tres piezas
+> que `I-01` e `I-02` completaron: la exclusión de Git del segundo marcador, su
+> reconstrucción, y el ciclo de la cuarentena operacional. `X24` es el único con motivo declarado abajo; los demás son huecos
 > y **ninguna referencia del documento apunta a ellos**, corregido por `M2`, que encontró
 > `X32`–`X34` y `X42` citados sin existir. **Ninguna fila se repite**. La segunda corrección técnica revisó
 > `X05`, `X15`, `X26` y `X28` **en su sitio**, sin añadir ninguna fila y sin retirar ninguna.
@@ -1415,10 +1486,11 @@ impuso al arnés de negativos.
 >  dos veces en §2.6.4»          devuelve UNA sola aparición
 > ```
 >
-> **Ninguna se ha ejecutado.** Cuarenta y dos filas escritas es el contrato de lo que F6 debe
-> demostrar, y **no es su demostración**. Trece son de la segunda devolución independiente,
-> siete de la devolución técnica previa (`X47`–`X53`) y **cinco de la corrección técnica
-> posterior** (`X54`–`X58`). `X24` no existe porque su hallazgo —`D`— se resolvió retirando
+> **Ninguna se ha ejecutado.** Cuarenta y cinco filas escritas es el contrato de lo que F6
+> debe demostrar, y **no es su demostración**. Trece son de la segunda devolución
+> independiente, siete de la devolución técnica previa (`X47`–`X53`), **cinco de la
+> corrección técnica posterior** (`X54`–`X58`) y **tres de la corrección del gate de cierre**
+> (`X59`–`X61`). `X24` no existe porque su hallazgo —`D`— se resolvió retirando
 > el estado en vez de darle un disparador. **Las nueve ventanas `RC-1`–`RC-9` se retiran con
 > la ruta de reconciliación** (`D64`): ya no hay un segundo mecanismo que recuperar.
 
@@ -1447,20 +1519,36 @@ LO QUE SÍ SE OFRECE     DETECTABILIDAD DE LA VENTANA. Ningún lector puede leer
 **La regla, del mismo rango que la de escritura y dirigida a TODO lector** —humano, agente o
 herramienta, sea o no el runtime:
 
+> **Corregida por el gate de cierre independiente (`I-02`; es `D88`).** La norma decía
+> «se comprueban DOS cosas: los marcadores de `estado/tx/` y **los eventos `deriva` SIN
+> REPARAR del diario**», y con ella **la regla que el lector ejecuta seguía mandando recorrer
+> `estado/eventos/` entero** — que es exactamente el coste con el que §2.2 descarta la
+> alternativa C, y exactamente lo que `D78` añadió el marcador para evitar. `D78` escribió la
+> explicación debajo y no cambió la norma de arriba: el marcador existía y nadie estaba
+> obligado a usarlo. **La norma pasa a consultar los DOS marcadores**, y el diario vuelve a
+> ser lo que §2.9 dice que es: la fuente de RECONSTRUCCIÓN, no la de lectura ordinaria.
+
 ```text
-1  ANTES DE LEER EL ESTADO CANÓNICO, se comprueban DOS cosas: los marcadores de
-   `estado/tx/` y **los eventos `deriva` SIN REPARAR** del diario.
-2  SI HAY ALGÚN MARCADOR, la lectura de los ficheros que esa transacción declara es
-   **NO FIABLE**, y quien lee DEBE declararlo. No es una recomendación de prudencia: una
-   lectura silenciosa de una ventana abierta es un defecto de quien lee.
-2bis SI HAY ALGÚN `deriva` SIN REPARAR, las rutas que NOMBRA son igualmente **NO FIABLES**,
-   y por el mismo motivo. **Añadido por `D64`**: al retirar el marcador, un abandono
-   traslada el bloqueo al `deriva`, y una regla que sólo mirase marcadores dejaría de ver
-   exactamente el estado mixto que el abandono declara. Es también el hueco que ya existía
-   para `deriva` `posterior-al-cierre` y `sin-transaccion`, que bloqueaban el despacho sin
-   que ningún lector estuviera obligado a mirarlos.
+1  ANTES DE LEER EL ESTADO CANÓNICO, se consultan LOS DOS MARCADORES, y **sólo ellos**:
+   `estado/tx/` y `estado/deriva/`. Son dos listados de directorio. **NO se recorre
+   `estado/eventos/`**: el diario es la fuente de RECONSTRUCCIÓN de los marcadores (§2.9),
+   no la que un lector ordinario reproyecta para saber si puede creerse el estado.
+2  SI HAY ALGÚN MARCADOR DE `estado/tx/`, la lectura de los ficheros que esa transacción
+   declara es **NO FIABLE**, y quien lee DEBE declararlo. No es una recomendación de
+   prudencia: una lectura silenciosa de una ventana abierta es un defecto de quien lee.
+2bis SI HAY ALGÚN MARCADOR DE `estado/deriva/`, las rutas que NOMBRA son igualmente **NO
+   FIABLES**, y por el mismo motivo. **Añadido por `D64`** —al retirar el marcador de
+   transacción, un abandono traslada el bloqueo al `deriva`— y **hecho ejercible por `D78` y
+   `D88`**: el marcador lleva el `id`, las rutas y los items, luego el paso se resuelve
+   leyendo el marcador y no evaluando `bloqueado_por_deriva(item)` sobre el diario entero.
+   Cubre también el hueco que ya existía para `deriva` `posterior-al-cierre` y
+   `sin-transaccion`, que bloqueaban el despacho sin que ningún lector estuviera obligado a
+   mirarlos.
 3  LOS DEMÁS FICHEROS se leen con normalidad. Ni una transacción abierta ni un `deriva`
    invalidan el estado entero: invalidan exactamente las rutas que declaran.
+4  SI UN MARCADOR FALTA, no se inventa: el arranque lo RECONSTRUYE desde el diario (§2.9),
+   y ésa es la única lectura que lo recorre. Un lector que encuentre `estado/` sin haber
+   arrancado el runtime lee lo que los marcadores digan, y declara esa condición.
 ```
 
 **Tres cosas cambian para que la regla sea ejecutable sin herramienta**, que es lo que `R1`
@@ -1486,15 +1574,19 @@ MARCADOR                 sin reparar antes de creerse el estado — y encontrarl
                          runtime y no por un lector humano, luego no era la regla que §2.6.8
                          declara.
                          `estado/deriva/<ID-DEL-DERIVA>.abierta` declara el `id` del evento,
-                         **las rutas y los items que bloquea**, y su causa. Se crea en el
-                         mismo instante que el evento y **se retira cuando el `deriva` se
-                         resuelve** —cuando una `derivada` lo referencia en
-                         `resuelve_deriva`—, con la misma disciplina con la que un terminal
-                         retira el marcador de transacción.
-                         **No gana identidad propia**: es RECONSTRUIBLE desde el diario por el
-                         mismo predicado, vive en `estado/` fuera de Git por la excepción de
-                         ruta de §2.4, y el paso 4 de §3.1 sigue dando COMPONER. Es un caché
-                         legible, igual que el otro.
+                         **las rutas y los items que bloquea**, y su causa. **Lo crea el paso
+                         E de §2.6.9** —en el mismo acto que el evento— y **lo retira la
+                         TRANSACCIÓN CERRADA que lo resuelve**, cuando su `derivada` lo
+                         referencia en `resuelve_deriva`, con la misma disciplina con la que
+                         un terminal retira el marcador de transacción.
+                         **No gana identidad ni autoridad propias, y NUNCA es fuente de
+                         verdad**: la verdad es el evento `deriva` del diario. Es
+                         RECONSTRUIBLE desde él por `bloqueado_por_deriva(item)`, vive fuera
+                         de Git por la **SEGUNDA excepción de ruta de §2.4** —que ahora lo
+                         nombra—, tiene su fila de reconstrucción en §2.9, su declaración de
+                         `.gitignore` y su fila adversarial `X59`, y el paso 4 de §3.1 sigue
+                         dando COMPONER. Es un caché legible, **con las mismas cinco piezas
+                         de disciplina** que el otro, que es lo que `A8` exigía.
 
 EL DIARIO ES LA FUENTE   el marcador acelera; el diario RECONSTRUYE. Si el marcador falta,
 DE RECONSTRUCCIÓN        el evento `preparada` de la transacción declara las mismas rutas, y
@@ -1690,6 +1782,10 @@ aplicado».**
 ```text
 A · CAPTURAR      · conservar, ANTES de tocar nada, la copia ÍNTEGRA de toda divergencia
                     necesaria — el cuerpo del `conflicto` ya la lleva
+                  · cuando el worktree tenga que restaurarse encima y el Owner lo haya
+                    autorizado, copiar además lo divergente a **`.ads/run/quarantine/<TX>/`**
+                    y **verificarlo POR HASH** contra lo registrado en el `conflicto`. La
+                    cuarentena es OPERACIONAL y TEMPORAL: su contrato está abajo
                   · registrar rutas, hashes observados, autoridad, causa y `revision_base`
                   · asegurar que esa copia formará parte del INCIDENTE que se publicará
                   · **si no puede conservarse, NO SE PUEDE ABANDONAR**: la transacción
@@ -1718,8 +1814,12 @@ D · VERIFICAR     · comparar **BYTE A BYTE** cada fichero restaurado con su co
 E · CERRAR        sólo entonces, y en este orden:
                   · emitir `abandonada`, con la evidencia de la verificación de D
                   · emitir el `deriva` que conserva el bloqueo
-                  · retirar el marcador
+                  · **crear su marcador `estado/deriva/<ID>.abierta`**, en el mismo acto y con
+                    las rutas y los items que el `deriva` nombra (§2.6.8). Es la pieza que
+                    `D78` declaraba y que este paso no creaba
+                  · retirar el marcador de transacción de `estado/tx/`
                   · permitir el COMMIT DEL INCIDENTE
+                  · y **sólo después**, eliminar `.ads/run/quarantine/<TX>/` si se creó
 ```
 
 **Qué contiene exactamente el commit del incidente**, y es lo que cierra el defecto:
@@ -1797,7 +1897,10 @@ CÓMO SE CIERRA     una TRANSACCIÓN DE REPARACIÓN, con `tx` nuevo, cuyo `prepa
                    por ruta `hash_previo` = lo que hay en la base restaurada y
                    `hash_posterior_esperado` = lo que la autoridad decida, y cuya `derivada`
                    lleva **`resuelve_deriva` = el `id` de ese `deriva`**.
-                   Al cerrar, el predicado se vuelve falso y los items se desbloquean.
+                   Al cerrar, el predicado se vuelve falso, **se retira
+                   `estado/deriva/<ID>.abierta`** —lo retira la transacción CERRADA que lo
+                   resuelve, en el mismo acto que su `derivada`, igual que un terminal retira
+                   el marcador de transacción— y los items se desbloquean.
 
 POR QUÉ ESTO NO    porque el `deriva` tiene una forma explícita y comprobable de terminar, y
 REPRODUCE `B1`     el estado sobre el que trabaja la reparación es la BASE CONSISTENTE, no
@@ -1958,12 +2061,14 @@ UNA LÍNEA                terminales consistentes, y se paga a sabiendas.
                               la transacción PERMANECE ABIERTA · marcador VIVO · NO HAY
                               COMMIT · exige intervención en la MISMA MÁQUINA
                               **LO CIERRA UN ACTO DE AUTORIDAD DEL OWNER, y son dos**
-                              (`A9`; es `D79`):
+                              (`A9`; es `D79`, revisado por `D87` en el plano de la
+                              cuarentena):
                                 (i)  AUTORIZAR LA CUARENTENA — copiar lo divergente fuera del
-                                     worktree, a `estado/cuarentena/<TX>/`, con su hash
+                                     worktree, a **`.ads/run/quarantine/<TX>/`**, con su hash
                                      registrado en el `conflicto`. Con eso la preservación
                                      deja de ser imposible y el desenlace 4 se vuelve
-                                     alcanzable por el camino normal
+                                     alcanzable por el camino normal. Es OPERACIONAL, LOCAL y
+                                     TEMPORAL: su contrato completo está abajo
                                 (ii) DECLARAR IRRECUPERABLE el estado especulativo local y
                                      ordenar el cierre: `abandonada` registra el
                                      `estado_observado[]` de TODAS las rutas TAL COMO ESTÁN
@@ -1988,6 +2093,78 @@ UNA LÍNEA                terminales consistentes, y se paga a sabiendas.
                               arranca, avanza y cierra con normalidad, con TX-1 en
                               conflicto. Es la contención en un caso concreto
 ```
+
+#### LA CUARENTENA del acto (i) — operacional, local y temporal
+
+> **Corregido por el gate de cierre independiente (`I-01`, GRAVE; es `D87`, que revisa `D79`
+> sin reescribirla).** `D79` colocó la cuarentena en **`estado/cuarentena/<TX>/`**, y esa ruta
+> no tenía plano en §1.2 ni en §2.4, ni fila en §1.3, ni entrada en el árbol de §2.3, ni
+> declaración de `.gitignore`, ni fila de reconstrucción en §2.9, ni ciclo —nadie decía cuándo
+> se vacía—, ni fila adversarial. Por el criterio vigente de §2.4 quedaba **durable y
+> versionada**, y entonces el acto (i) **publicaba en `main` exactamente el material que
+> existe para preservar cuando `SEG` prohíbe publicarlo**. Y §2.6.10 descarta la alternativa
+> D precisamente porque «crea una tercera ubicación con su ciclo y su plano, que §2.4 no
+> tiene» — objeción que se aplicaba palabra por palabra a la ruta nueva.
+>
+> **Se resuelve sin crear una tercera fuente de verdad**: la ruta `estado/cuarentena/<TX>/`
+> queda **RETIRADA de la arquitectura vigente**, y la preservación temporal vive donde ya
+> existe un plano para ella.
+
+```text
+DÓNDE VIVE            **`.ads/run/quarantine/<TX>/`**, dentro del plano OPERACIONAL que §1.2
+                      y §2.4 ya declaran. NO es una ubicación nueva de estado: es un
+                      directorio más de `.ads/run/`, con el mismo `plano`, el mismo ciclo y
+                      la misma exclusión de Git que el lock, la caché y el índice compilado.
+
+QUÉ ES, Y QUÉ NO ES   · OPERACIONAL · LOCAL · **NO CANÓNICA** · ignorada por Git
+                      · **NO es fuente de verdad de nada.** La verdad de lo divergente es la
+                        copia íntegra que el `conflicto` lleva en su cuerpo (§3.6); la
+                        cuarentena es el soporte físico que hace esa preservación posible
+                        cuando el worktree tiene que restaurarse encima
+                      · **NO gana identidad ni autoridad propias**, y §1.3 no le da fila
+                      · **NO se usa como garantía de reanudación distribuida**: no viaja, y
+                        la garantía `C` de arriba sigue siendo REINICIO SEGURO, no reanudación
+
+CUÁNDO SE CREA        **ANTES de restaurar**, dentro del paso A del procedimiento —conservar
+                      la divergencia antes de tocar nada—. Restaurar sin haberla creado y
+                      verificado es exactamente lo que el paso A prohíbe.
+
+CÓMO SE VERIFICA      **POR HASH.** El hash de cada fichero puesto en cuarentena se registra
+                      en el `conflicto`, y se recalcula sobre la copia antes de continuar. Si
+                      no casa, la preservación NO se ha logrado y el desenlace sigue siendo
+                      el `4b`: la transacción permanece abierta.
+
+CUÁNDO SE ELIMINA     **SÓLO después de las TRES**, y en este orden:
+                        1 el terminal es durable —`abandonada`, con su `deriva`—
+                        2 la verificación del paso D está hecha y registrada
+                        3 el COMMIT DEL INCIDENTE está hecho, y lleva la divergencia dentro
+                      Antes de las tres, borrarla destruiría la única copia de un contenido
+                      que todavía no está publicado. Después, no queda nada que perder: es
+                      el criterio de §2.4 aplicado a su ciclo.
+
+SI EL CONTENIDO NO    es el caso que `SEG` gobierna, y no cambia con la ruta nueva:
+SE PUEDE CONSERVAR      · **`SEG` BLOQUEA LA PUBLICACIÓN** — secretos, material no publicable
+O NO SE PUEDE             (arriba, «SI LO DIVERGENTE NO ES PUBLICABLE»)
+PUBLICAR                · **el Owner PUEDE ACEPTAR EXPRESAMENTE LA PÉRDIDA DE LA PREIMAGEN**,
+                          y esa aceptación es un acto suyo, registrado con su autoridad, su
+                          motivo, su alcance y su fecha. Nadie la toma por él
+                        · el INCIDENTE conserva, en todo caso, **hash · clasificación ·
+                          autoridad · motivo · alcance** de lo que no se conservó
+                        · y **NUNCA se publica el contenido prohibido**: la aceptación de la
+                          pérdida es la alternativa a publicarlo, no una vía para publicarlo
+
+QUÉ LIMITACIÓN SE     la misma que ya estaba aceptada y declarada, y **no mejora**: perder la
+MANTIENE              máquina durante una transacción abierta **puede perder evidencia
+                      operacional no publicada**, y la cuarentena es operacional. Sube la
+                      probabilidad de poder abandonar; **no** convierte lo local en durable.
+```
+
+**Y con eso la alternativa D de §2.6.10 sigue descartada, sin contradicción.** Lo que aquélla
+descarta es la cuarentena **como mecanismo general de aislamiento del estado especulativo**,
+que exigiría una ubicación de ESTADO con su ciclo y su plano propios. Esto es otra cosa: una
+**preservación puntual, bajo autoridad, en el plano operacional que ya existe**, y que se
+vacía en cuanto el incidente está publicado. La objeción de L2103 —«crea una tercera
+ubicación»— deja de aplicarse porque ya no se crea ninguna.
 
 ```text
 NINGÚN ESTADO ALCANZABLE   se comprueba sobre el grafo de cinco fases: `preparada` sale a dos
@@ -2645,6 +2822,8 @@ garantía?».**
 | `.ads/run/` entero | los canónicos | total |
 | un derivado divergente | los canónicos | total, y `Continúa` paso 2 lo regenera |
 | el marcador `estado/tx/<TX>.abierta` | el diario: las transacciones que satisfacen **`abierta(tx)`** (§2.6.1) | total. Es un acelerador, no una verdad. La condición es UNA, y es el predicado: `preparada` durable sin ninguno de los DOS terminales |
+| el marcador `estado/deriva/<ID>.abierta` | el diario: los eventos `deriva` para los que **`bloqueado_por_deriva(item)`** sigue siendo verdadero (§2.6.9) — es decir, sin ninguna `derivada` que los referencie en `resuelve_deriva` | total y determinista. Es un acelerador, no una verdad, exactamente igual que el anterior. `D88` le da esta fila, que `D78` no le había dado |
+| `.ads/run/quarantine/<TX>/` | **NO SE RECONSTRUYE.** Es preservación temporal de contenido que sólo existía localmente (§2.6.9) | **ninguna, y se declara**: si se pierde antes del commit del incidente, lo divergente se pierde con ella, y el desenlace vuelve a ser el `4b`. Es la limitación aceptada de §2.6.9, y la cuarentena no la levanta |
 | una transición interrumpida | el evento `preparada` de su `tx` | total si ningún fichero es divergente; si lo es, `conflicto` declarado |
 | el estado canónico tras una pérdida | Git | total: es su historia |
 | el estado canónico **sin Git** | eventos sellados + eventos posteriores | **parcial y declarada**: sólo desde el último sellado. Antes del primero, no |
@@ -2932,8 +3111,9 @@ son sus once puntos:
 
 #### `X-A`–`X-H` · las ocho comprobaciones de la retirada
 
-**No son filas de la tabla adversarial de §2.6.7**, que sigue en **cuarenta y dos filas y
-cuarenta y dos identificadores `X<nn>`**. Éstas verifican la semántica de lápida e identidad,
+**No son filas de la tabla adversarial de §2.6.7**, que queda en **cuarenta y cinco filas y
+cuarenta y cinco identificadores `X<nn>`**, tras las tres que `I-01` e `I-02` obligaron a
+añadir. Éstas verifican la semántica de lápida e identidad,
 llevan letra en vez de número, y son contrato de prueba igual que aquéllas.
 
 | | escenario | resultado exigido |
@@ -3917,12 +4097,23 @@ Recorriendo **todos los eventos**, y por eso ninguna de estas comprobaciones cab
 · TRANSICIONES ADMITIDAS: que el par (fase anterior, fase nueva) esté en la tabla de §2.6.1
 · CONTINUIDAD DE HASHES entre fases: que `derivada` cierre sobre el `hash_posterior_esperado`
   que su `preparada` declaró, y que ninguna transacción sustituya su intención a mitad
-· NINGUNA FASE POSTERIOR A `derivada` en ese `tx`. **Ésta es la regla 1**, y es de diario
+· NINGUNA FASE POSTERIOR A UN TERMINAL en ese `tx` —`derivada` **o** `abandonada`—.
+  **Ésta es la regla 1**, y es de diario
+· **EL PREDICADO `abierta(tx)` SE EVALÚA AQUÍ, Y NO SE REDECLARA.** Su enunciado tiene UNA
+  sede, §2.6.1, y esta capa lo EJERCE: ninguna regla de esta lista vuelve a escribir la
+  condición con otras palabras. `D71` designó esta capa como evaluadora (§2.6.1); `D89`
+  retira las dos reglas que la contradecían
 · OBSERVACIONES: `observacion` empieza en 1, es consecutiva dentro de su `tx`, y cada
   `conflicto` declara un conjunto de hashes observados **DISTINTO** del anterior — repetir lo
   mismo es una NO-OPERACIÓN (§2.8). No hay tope que comprobar. **Esto no lo ve un esquema**:
   exige comparar los `conflicto` de ese `tx` entre sí
-· TERMINALIDAD: exactamente un `derivada` por transacción cerrada, y ninguno en las abiertas
+· TERMINALIDAD, sobre el ÚNICO PREDICADO de §2.6.1: toda transacción **cerrada** —esto es,
+  `¬abierta(tx)` con `preparada` durable— tiene **exactamente UN terminal, y es `derivada` o
+  `abandonada`**; toda transacción **abierta** no tiene ninguno. **Corregido por el gate de
+  cierre (`I-03`; es `D89`)**: decía «exactamente un `derivada` por transacción cerrada», y
+  una cerrada por `abandonada` tiene **cero** `derivada` — un validador construido de esa
+  frase habría rechazado toda transacción abandonada. Era el residuo exacto de `A2` en la
+  única capa que evalúa el predicado
 · CORRESPONDENCIA ENTRE INTENCIÓN Y HECHO: que todo `confirmada` tenga su `preparada`, toda
   todo `abandonada` su `conflicto`, y que las rutas y hashes coincidan
 · CARDINALIDAD DE CADA FASE, **CONDICIONAL A CÓMO CERRÓ** (§2.6.4): `preparada` exactamente 1
@@ -3942,9 +4133,13 @@ Recorriendo **todos los eventos**, y por eso ninguna de estas comprobaciones cab
 · QUÉ NIVEL DE GARANTÍA SE ALCANZA, declarado y no supuesto: con lápida y sin cuerpo original
   disponible, NIVEL 1 y NIVEL 2 sí, **NIVEL 3 no** — y el validador lo REPORTA en vez de
   afirmar integridad histórica completa (§2.9)
-· LA IDENTIDAD DE LA RUTA: #observaciones = #intentos en una transacción de conflicto
-  CERRADA, y #observaciones = #intentos + 1 en una AGOTADA — y en la agotada ese `+1` es
-  siempre el `conflicto` con `agotado: true`
+· LA IDENTIDAD DE LA RUTA: cada `conflicto` de un `tx` declara un conjunto de hashes
+  observados DISTINTO del anterior, y su `observacion` es consecutiva desde 1. **No hay nada
+  más que contar.** **Corregido por el gate de cierre (`I-03`; es `D89`)**: la regla decía
+  «#observaciones = #intentos» y clasificaba una ruta «AGOTADA» con `agotado: true` — y `D64`
+  retiró `intentos_consumidos`, `intento` y `agotado`, y con ellos la ruta agotada. Era una
+  regla **inconstruible**: exigía contar un campo que el esquema no tiene y clasificar una
+  ruta que el autómata no admite
 · EMISIÓN FRENTE A RESTAURACIÓN: restaurar un evento durable perdido devuelve el MISMO `id`,
   el MISMO cuerpo y el MISMO `predecesor`. Un `id` nuevo con el mismo `tx` y la misma fase de
   HECHO es un defecto, no una reemisión
