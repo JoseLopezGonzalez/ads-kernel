@@ -1292,50 +1292,87 @@ construcciones, no una decisión de diseño pendiente.
   balanceadas · cero párrafos duplicados · cero contradicciones vigentes conocidas
 ```
 
+## GATE DE CIERRE INDEPENDIENTE — emitido, y NO superado
+
+```text
+QUÉ ES              la verificación independiente de si la arquitectura vigente es SUFICIENTE
+                    PARA F5, sobre el rango `7e99388…0a4b3a0` y la resolución declarada de los
+                    43 hallazgos. TRES agentes con contexto limpio: `G` y `H` en paralelo sin
+                    verse, e `I` sobre los dos dictámenes ya cerrados. `I` no resolvió por
+                    mayoría: corrigió a `G` en `A2`, a `H` en `A10` y `F-08`, reubicó cuatro
+                    citas y rechazó un hallazgo entero.
+
+VEREDICTO           **INSUFICIENTE PARA F5.** `F4c` NO se cierra y sigue ABIERTA.
+
+POR QUÉ · RAZÓN 1   LA COBERTURA NO CUMPLE. CATORCE fuentes obligatorias —3 420 líneas, el
+                    10,9 % del corpus— sin lectura sustantiva. DIEZ son de las diecinueve que
+                    el PRIMER gate ya omitió. Y el **documento 15** —la tercera revisión
+                    independiente, donde vive la causa original de `D64`–`D68`— estaba
+                    asignado a los DOS revisores y **no lo abrió ninguno**.
+
+POR QUÉ · RAZÓN 2   DIEZ de las 43 filas son FALLIDAS: `A2` `A4` `A7` `A8` `B-2` `G-3` `M-5`
+                    `M-6` `F-01` `F-02`. Dos de severidad BLOQUEANTE original y dos GRAVES.
+
+HALLAZGOS           **28 consolidados**: 0 BLOQ · 8 GRAVES · 8 MEDIOS · 12 MENORES.
+                    **SEIS los introdujo o los perpetuó la propia tanda de corrección.**
+                    UNO rechazado. DOS son del propio adjudicador.
+
+LO ÚNICO QUE EXIGE  el plano de `estado/cuarentena/<TX>/`, que `D79` autorizó y §2.6.10
+DECIDIR DISEÑO      descarta once líneas después. Son cinco líneas. Todo lo demás se cierra
+                    propagando material que el corpus ya tiene escrito.
+
+QUÉ NO SE TOCÓ      NADA. Ningún hallazgo corregido, `11-ARQUITECTURA-INTEGRADA.md` intacto,
+                    `D1`–`D86` y `O1`–`O16` intactas, documentos 15, 16 y 17 inmutables.
+```
+
+### Matriz de las 43, adjudicada por `I`
+
+```text
+SUPERADAS        32
+FALLIDAS         10   A2 · A4 · A7 · A8 · B-2 · G-3 · M-5 · M-6 · F-01 · F-02
+NO APLICABLE      1   m-3, con causa demostrada
+                 ──
+                 43   La derivación de `I` desde el checkpoint CONFIRMA la cifra publicada:
+                      43 ids distintos, un estado primario cada uno, 31·1·2·8·1 = 43
+```
+
 ## Siguiente acción exacta
 
 ```text
-0  LA TANDA DEL GATE ESTÁ      los 43 hallazgos distintos tienen resultado, y los cuatro
-   APLICADA, Y NO PROBADA      bloqueantes y los seis graves están CORREGIDOS EN F4. Pero
-                               **lo aplicó quien lo recibió**, por novena vez. Lo siguiente
-                               es un JUICIO INDEPENDIENTE SOBRE ESTA TANDA, por quien no
-                               escribió F4 ni aplicó ninguna corrección. Sin veredicto
-                               explícito de SUFICIENCIA, `F4c` no cierra y F5 no arranca.
+0  CUBRIR LAS CATORCE FUENTES     empezando por `15-TERCERA-REVISION-INDEPENDIENTE-F4C.md`
+   QUE NADIE ABRIÓ                (652 líneas), asignada a los DOS revisores y leída por
+                                  ninguno; después las DIEZ de las diecinueve que el primer
+                                  gate ya omitió —`diseno/00` `01` `02` `04` `05`, `C2`,
+                                  `C3`, `entrada/00` `02` `04`—, más `C4`, `E1` y `E2`
+                                  íntegro. **Sin esto no hay gate, hay una muestra.**
 
-1  POR QUÉ ESO NO ES           porque cada vez que se ha comprobado, ha aparecido algo. La
-   CEREMONIA                   segunda devolución encontró que DOS de sus bloqueantes eran
-                               defectos que la PRIMERA corrección introdujo. El gate final
-                               encontró que `D67` asignó procesos sin comprobar que
-                               admitieran a los participantes ya declarados. Y el NIVEL 0
-                               encontró que la cifra de hallazgos del propio gate estaba mal.
-                               **Esta tanda es la novena, y nadie la ha mirado.**
+1  LEER ÍNTEGRAS LAS TRECE        se cubrieron por `grep` sobre cuatro campos. `grep` sobre un
+   FICHAS DE CAPACIDAD            campo no demuestra que otro campo del mismo fichero no lo
+                                  contradiga. O se leen, o se declara por qué la cobertura
+                                  por atributos basta.
 
-2  QUÉ MIRAR PRIMERO           `D74` y `D75`, que son lo más nuevo y lo más estructural: la
-                               sede canónica de composición de ruta y las cuatro vías. La
-                               pregunta exacta: ¿hay algún participante de algún macrocircuito
-                               cuya vía declarada no resista abrir `01-PROCESOS.md` y
-                               comprobarla? Es el método que funcionó las tres veces.
+2  LAS OCHO GRAVES, POR ORDEN     `I-03` retirar de la capa B del validador las dos reglas que
+   DE LO QUE DESBLOQUEAN          `D64` retiró —cierra `A2`, y es la más barata del lote—.
+                                  `I-04` corregir la atribución del EJECUTOR en cinco sedes
+                                  contra `C7:80-92` —cierra `B-2`—. `I-07` llevar el gate de
+                                  `INS-5` a §18 —cierra `G-3`—. `I-06` añadir `DSP` y `ENC` a
+                                  §17 —cierra `M-5` y `M-6`—. `I-05`, `I-01`, `I-02`, `I-08`.
 
-3  QUÉ MIRAR DESPUÉS           `D71` y `D72`. Un predicado y un enum, cada uno con UNA sede y
-                               siete y dos remisiones. Comprobar que **ninguna sede lo
-                               redeclara**, y que ninguna afirmación vieja sobrevive sin
-                               marca de histórica.
+3  LA ÚNICA DECISIÓN DE           el plano de `estado/cuarentena/<TX>/`: clasificación en
+   DISEÑO QUE QUEDA               §2.4, fila en §2.3, ciclo, `.gitignore` y fila adversarial.
+                                  `D79` lo autorizó y §2.6.10 lo descarta once líneas después.
 
-4  QUÉ LLEVAR AL OWNER         las **ONCE** presiones de §16. `PN-1` bloquea todo el estado
-                               durable. `PN-13` es la nueva, y la única que esta tanda
-                               necesitó: `b.16` no da vía a `DOM`, `SEG` ni `DIS` en
-                               `proceso:SIS` ni en `proceso:INV`. Tiene DOS salidas escritas,
-                               y elegir es del Owner.
+4  QUÉ VIGILAR                    que la décima tanda **NO la aplique quien la reciba sin un
+                                  gate posterior**. Ésta es la novena, la segunda que alguien
+                                  mira, y las dos veces ha aparecido algo que la corrección
+                                  introdujo: SEIS de los veintiocho hallazgos son de esa clase.
 
-5  QUÉ VIGILAR                 los OCHO hallazgos EXTERNOS de §19. Tienen propietario y fase,
-                               y **no están corregidos**. `F-01` es el que muerde: §8.2 dice
-                               `DIS` y el kernel sigue diciendo `DIS/Reconstruccion`, luego la
-                               composición de `A2`–`A7` no es verificable mecánicamente contra
-                               la fuente hasta que F6 los reconcilie.
+5  QUÉ LLEVAR AL OWNER            `I-26` primero, pese a ser MENOR: la frase del campo ALCANCE
+                                  de `PN-13` está TRUNCADA, y `PN-13` va al Owner. Y las ONCE
+                                  presiones de §16, con `PN-1` bloqueando todo el estado
+                                  durable.
 
-6  DÓNDE PARAR                 antes de redactar `(g)`, antes de crear `C8` y antes de tocar
-                               `C7` o cualquier fichero de `kernel/operativo/`. Lo primero es
-                               F5 y su puerta es el Owner; lo segundo y lo tercero son F6.
-                               Y antes de iniciar PesquerApp: `O15` dice qué será cuando
-                               ocurra, no que ocurra ahora.
+6  DÓNDE PARAR                    antes de redactar `(g)`, antes de crear `C8`, antes de tocar
+                                  `C7` o `kernel/operativo/`, y antes de iniciar PesquerApp.
+                                  `O15` dice qué será cuando ocurra, no que ocurra ahora.
 ```
