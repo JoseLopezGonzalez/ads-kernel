@@ -646,8 +646,11 @@ cosas y no menos**:
                             recuperación aplica en el mismo orden, y por eso converge al
                             mismo resultado que una ejecución sin interrupción (T17).
 
-6  PROCEDENCIA              los cinco conceptos de `a.9` sin confundirlos: ordenante,
-                            autoridad, escritor del comando, ejecutor y actor atribuido.
+6  PROCEDENCIA              los CINCO CONCEPTOS de `a.9` **citados como `a.9` los escribe**
+                            —propietario del campo · autoridad · ordenante · escritor del
+                            comando · ejecutor de mutación—, más `actor_atribuido`, que
+                            pertenece a OTRA lista de `a.9`. Qué se persiste como campo y qué
+                            se DERIVA está separado en §3.6.
 ```
 
 **Por qué el contenido preparado va dentro del evento y no en un fichero aparte.** Porque
@@ -2974,8 +2977,69 @@ tx            TX-<huella>, cuando el evento forma parte de una transacción mult
 orden         posición dentro de su transacción. Total dentro de ella
 predecesor    el evento que este emisor observó como último. Forma la cadena verificable
 ordenante · autoridad · escritor_del_comando · ejecutor · actor_atribuido
-              los CINCO conceptos de a.9, sin confundirlos
+              ver el bloque de PROCEDENCIA de abajo. **NO son «los cinco conceptos de a.9»
+              a secas**: `a.9` los enumera como PROPIETARIO DEL CAMPO · AUTORIDAD ·
+              ORDENANTE · ESCRITOR DEL COMANDO · EJECUTOR DE MUTACIÓN, y `actor_atribuido`
+              pertenece a otra lista suya. No todos son campos: uno se DERIVA
 base          hash de las entradas sobre las que se decidió
+```
+
+### La PROCEDENCIA: qué es concepto, qué es campo y qué se deriva
+
+> **Corregido por la tercera revisión independiente (`G1`; es `D66`).** F4 llamaba «los cinco
+> conceptos de `a.9`» a un conjunto que **sustituía `propietario del campo` por
+> `actor_atribuido`** —que en `a.9` pertenece a otra lista, la de cuatro elementos— y lo
+> presentaba como los cinco «sin confundirlos», que es literalmente lo que `a.9` advierte que
+> no debe hacerse. Verificado contra `a.9` y contra
+> `kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md`, que lo cita igual. No era una
+> imprecisión de redacción: esa lista era **el conjunto de campos obligatorios de todo
+> evento**, y F6 habría construido el esquema sobre un conjunto que su fuente no respalda.
+
+**Los CINCO CONCEPTOS, citados como `a.9` los escribe:**
+
+```text
+PROPIETARIO DEL CAMPO   de qué parte del estado forma parte
+AUTORIDAD               quién tiene derecho a decidir su valor
+ORDENANTE               quién emitió esta orden concreta
+ESCRITOR DEL COMANDO    quién escribió físicamente el texto de la orden
+EJECUTOR DE MUTACIÓN    quién aplicó el cambio al estado canónico
+```
+
+**Y la distinción que faltaba: concepto no es campo.** `a.9` exige que los cinco **se puedan
+atribuir sin confundirse**; no exige que los cinco se persistan en cada evento:
+
+| concepto | ¿se persiste en el evento? | por qué |
+|---|---|---|
+| **propietario del campo** | **NO: SE DERIVA** | es la fila de la matriz de fuentes de verdad (§1.3) a la que pertenece cada ruta de `afecta[]`. Persistirlo sería una segunda verdad editable sobre lo que §1.3 ya fija, y `I5` lo prohíbe |
+| **autoridad** | **SÍ**, campo `autoridad` | puede desviarse de la que §1.3 declara por defecto, y esa desviación hay que registrarla |
+| **ordenante** | **SÍ**, campo `ordenante` | no es derivable de nada: es quién pidió ESTA mutación |
+| **escritor del comando** | **SÍ**, campo `escritor_del_comando` | idem, y es lo que distingue al Owner que escribe de la capacidad que transcribe |
+| **ejecutor de mutación** | **SÍ**, campo `ejecutor` | `R5` lo hace único hoy, y persistirlo es lo que permite auditar que lo fue |
+
+```text
+Y ADEMÁS, DECLARADO       `actor_atribuido`, campo OBLIGATORIO. **NO es uno de los cinco**:
+APARTE Y CON SU MOTIVO    pertenece a la otra lista de `a.9` —«a quién se imputa el cambio»—
+                          y se conserva porque «quién lo aplicó» y «a quién se le imputa»
+                          pueden diferir, que es justo lo que esa lista existe para separar.
+                          Llamarlo «uno de los cinco» era la cita falsa que `G1` señaló.
+
+CINCO CAMPOS, Y UN        `ordenante` · `autoridad` · `escritor_del_comando` · `ejecutor` ·
+DERIVADO                  `actor_atribuido` son CAMPOS. **Propietario del campo se DERIVA**
+                          de §1.3, y por eso el evento no lo lleva.
+
+QUÉ COMPRUEBA `X39`       que los CINCO CAMPOS estén presentes, y que el propietario del
+                          campo sea DERIVABLE para toda ruta de `afecta[]`. La ausencia de
+                          cualquiera de los cinco campos es un fallo del validador; que una
+                          ruta no tenga fila en §1.3 es un fallo de la matriz, y se reporta
+                          como tal.
+
+QUÉ SÓLO EXISTE PARA      `escritor_del_comando` puede COINCIDIR con `ordenante` fuera del
+LAS ÓRDENES DEL TABLERO   canal de órdenes, y entonces se registra igual: coincidir no es lo
+                          mismo que no existir, y por eso no se omite.
+
+NADA SE DUPLICA, Y LA     el propietario del campo NO se copia en el evento, luego no hay dos
+TRAZABILIDAD NO BAJA      sedes editables para lo mismo. Se DERIVA de una fuente única en vez
+                          de repetirse en cada uno de los miles de eventos del diario.
 ```
 
 ### Las DOS dimensiones, y la matriz que las cruza
@@ -3029,7 +3093,7 @@ que exige intención durable previa es exactamente lo que exige fase.
 | `sellado` | los eventos de un item que se compactan | se **AÑADE** un fichero de sellado; ningún evento se edita ni se borra (§2.9) | **sí**: el fichero de sellado, que es la única fuente de reconstrucción sin Git | **uno, NUEVO y direccionado por su contenido** | **NO** — cae del lado que no la exige (abajo) | **SÍ, y es obligatorio** | al cerrar `FEA-021`, sus eventos se compactan en `SL-<huella>` |
 | `retirada-de-cuerpo` | el evento sellado cuyo cuerpo se retira | el cuerpo se sustituye por su **lápida**, conservando id, huella y motivo | **sí**, y es la ÚNICA operación que **modifica** algo ya escrito bajo `estado/` | uno | **sí, siempre** | **no** | retirar el cuerpo largo de un evento sellado, con autoridad y motivo |
 | `deriva` | el canónico que dejó de sostener lo que el diario afirma | **REPORTA**. No repara, no restaura y no completa (§2.6.11) | **no**: sólo se escribe a sí mismo | — | **no** | **SIEMPRE, y es obligatorio** | un canónico revertido bajo una `derivada` durable |
-| `fallo` | una operación **no canónica** | **REPORTA** que esa operación falló. No repara | **no** | — | **no** | **SIEMPRE, y es obligatorio** | el push es rechazado porque el remoto avanzó (`W15`) |
+| `fallo` | la OPERACIÓN NO CANÓNICA que falló, declarada en `sujeto` y `operacion` | **REPORTA** que esa operación falló, con su causa, su estado observado, si es recuperable y qué autoridad hace falta. **No repara** | **no**: sólo se escribe a sí mismo | — | **no** | **SIEMPRE, y es obligatorio** | el push es rechazado porque el remoto avanzó (`W15`), con `tx_afectada` y `referencias[]` |
 
 **Los cuatro casos que la prueba obligó a separar, dichos uno a uno:**
 
@@ -3323,7 +3387,52 @@ candidatos con sujeto, autoridad y ciclo propios. El recuento de §3.8 **no camb
 | `abandonada` | `conflicto` | `estado_observado[]` con `ruta`·`hash_observado`·`clasificacion` ∈ {previo, posterior, divergente} **para TODAS las rutas del `tx`** · `autoridad` que decidió · `motivo` · `deriva_emitida` = `id` del `deriva` que conserva el bloqueo | `resultado` · `derivados_regenerados` · `decision` | ninguno: la transacción no alcanza ningún resultado | **ninguna. Es TERMINAL**, retira el marcador, y el bloqueo pasa al `deriva` que emite (§2.6.9) |
 | `derivada` | `confirmada` | `derivados_regenerados[]` con su `source_revision` · `resuelve_deriva` sólo si esta transacción repara uno | `afecta` · `decision` · `divergentes` | el `hash_posterior_esperado` de su `preparada` | **ninguna. Es TERMINAL**, y retira el marcador. Que no exista ningún evento posterior con ese `tx` lo comprueba el **validador semántico del diario**, no el esquema |
 | `deriva` | **ninguna: NO tiene `tx` ni `fase`** | `causa` ∈ {`posterior-al-cierre`,`sin-transaccion`} · `afecta[]` con `ruta`·`hash_esperado`·`hash_observado` · `items[]` · `autoridad` · `tx_afectada` sólo si `causa: posterior-al-cierre` | `fase` · `tx` · `decision` · `resultado` | ninguno: **reporta**, no repara | ninguna. La reparación es una transacción NUEVA (§2.6.11) |
-| `fallo` | **ninguna: NO tiene `tx` ni `fase`** | `operacion` · `diagnostico` · `intentos` | `fase` · `afecta` | — | ninguna |
+| `fallo` | **ninguna: NO tiene `tx` ni `fase`** | `sujeto` · `operacion` ∈ {`push`,`publicacion`,`arranque`,`ci`,`proyeccion`} · `causa` · `estado_observado` · `diagnostico` · `intentos` · `recuperable` ∈ {`si`,`no`,`requiere-decision`} · `autoridad_requerida` · `accion_siguiente` · `evidencia` · **`tx_afectada` como REFERENCIA, cuando la operación se refiere a una** · `referencias[]` con `commit`·`rama`·`remoto` cuando la operación es Git | `fase` · `tx` · `afecta` · `decision` | — | ninguna. **Es informativo y NO repara**: si hay que reparar, es una transacción nueva |
+
+### `fallo` — una semántica CERRADA, no un contenedor genérico
+
+> **Corregido por la tercera revisión independiente (`G3`; es `D66`).** El contrato de `fallo`
+> tenía tres campos obligatorios y **prohibía `tx`**, mientras cuatro pasajes normativos y dos
+> filas adversariales le exigían **nombrar un `tx` y un commit**: la garantía 6 de §2.6.6, el
+> paso 1 de §2.6.4, `W16`, `X15` y `X28`. `X15` y `X28` **no eran satisfacibles** contra el
+> contrato vigente. `deriva` había recibido `tx_afectada` justamente para referenciar una
+> transacción sin pertenecer a ella; a `fallo` no se le dio el equivalente.
+
+```text
+SUJETO                 `sujeto`: qué operación concreta falló, nombrada. NO «algo salió mal»
+
+OPERACIÓN              `operacion`, ENUM CERRADO: `push` · `publicacion` · `arranque` · `ci`
+                       · `proyeccion`. Un valor fuera del enum es un evento inválido, y
+                       añadir uno es una decisión, no una improvisación
+
+FASE                   NINGUNA, y `tx` PROHIBIDO. `fallo` no pertenece a ninguna transacción
+
+`tx` RELACIONADA       `tx_afectada`, **REFERENCIA y no pertenencia**, exactamente como en
+                       `deriva`. Presente cuando la operación se refiere a una transacción:
+                       el push que la publicaría, el marcador clonado que la delata
+
+CAUSA Y ESTADO         `causa` y `estado_observado`: por qué falló y qué se vio. Para Git,
+OBSERVADO              `referencias[]` con `commit`, `rama` y `remoto`
+
+RECUPERABILIDAD        `recuperable` ∈ {`si`, `no`, `requiere-decision`}. Es lo que distingue
+                       un reintento legítimo de un escalado
+
+AUTORIDAD Y ACCIÓN     `autoridad_requerida` y `accion_siguiente`. Un fallo que no dice quién
+SIGUIENTE              lo desbloquea ni qué sigue no es un registro: es un lamento
+
+EVIDENCIA              `evidencia`: referencia al artefacto que lo demuestra —salida del
+                       comando, informe de CI, diagnóstico del arranque—
+
+TERMINALIDAD           `fallo` es TERMINAL en sí mismo: no encadena. Repetir el intento emite
+                       OTRO `fallo`, con su `intentos` incrementado
+
+RELACIÓN CON LOS       `conflicto`  divergencia DENTRO de una transacción abierta. Es fase
+DEMÁS                  `deriva`     estado canónico que dejó de sostener el diario. Sin fase
+                       `fallo`      una operación NO CANÓNICA que no se completó. Sin fase
+                       Los tres REPORTAN y ninguno repara. Lo que los separa es QUÉ falló:
+                       un fichero en vuelo, un fichero ya cerrado, o una operación que nunca
+                       tocó el estado canónico. **Ninguno es contenedor de los otros.**
+```
 
 ### Las cuatro reglas, y QUIÉN puede hacer cumplir cada una — tres capas
 
@@ -3362,8 +3471,9 @@ C · RUNTIME Y PRUEBAS        garantiza o DEMUESTRA lo FÍSICO: el orden real de
 · COHERENCIA INTERNA del propio evento: que `tipo` y `fase` sean una combinación admitida
   por la matriz de §3.6; que `deriva`, `fallo` y `sellado` no lleven `fase` ni `tx`; que un
   `conflicto` lleve `divergentes[].contenido`; que una `abandonada` lleve `estado_observado[]`
-  para TODAS las rutas, `autoridad`, `motivo` y `deriva_emitida`; que `tx_afectada` sólo
-  aparezca con `causa: posterior-al-cierre` o `abandono-de-transaccion`
+  para TODAS las rutas, `autoridad`, `motivo` y `deriva_emitida`; que en `deriva` el
+  `tx_afectada` sólo aparezca con `causa: posterior-al-cierre` o `abandono-de-transaccion`;
+  y que un `fallo` con `operacion` ∈ {`push`,`publicacion`} lleve `referencias[]`
 · UNICIDAD DE `ruta` dentro del array del propio evento, y `orden` total dentro de él
 · QUÉ ALGORITMO DE IDENTIDAD APLICAR, antes de aplicarlo: si el evento lleva
   `cuerpo_retirado: true` es una LÁPIDA, y **NO se le aplica `EV-H(evento MENOS id)`** —la
