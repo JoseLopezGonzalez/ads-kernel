@@ -64,6 +64,8 @@ previos. Éstos son sus artefactos, y su estado:
 
 | — | **GATE FINAL INDEPENDIENTE de F4c** | [`16-GATE-FINAL-INDEPENDIENTE-F4C.md`](16-GATE-FINAL-INDEPENDIENTE-F4C.md) | **entregado**: TRES agentes con contexto limpio —revisor A, revisor B y adjudicador C— sobre el árbol `a713590`. C verificó los **33 hallazgos uno a uno contra su fichero y su línea**, sin resolver por mayoría. **Veredicto: INSUFICIENTE PARA F5** por DOS razones independientes: la cobertura del corpus quedó incompleta —**dieciocho fuentes obligatorias sin abrir**— y hay **cuatro BLOQUEANTES y seis GRAVES confirmados**. **`F4c` NO se cierra y sigue ABIERTA; F5 NO queda autorizada.** Ningún hallazgo se corrigió en esa pasada |
 
+| — | **COMPLEMENTO DE COBERTURA del gate · NIVEL 0** | [`17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md`](17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md) | **entregado**: cierra el requisito `0.1` del gate. TRES agentes con contexto limpio —revisores D y E en paralelo, adjudicador F— leen **las diecinueve fuentes obligatorias** que nadie había abierto (**8 310 líneas**). **`C5` NO resuelve `B-2`**, y la razón es estructural. **Ningún hallazgo retirado ni rebajado; ninguna severidad movida.** DOCE hallazgos nuevos, y el recuento real fijado: **32 adjudicados** —no 29— más 12 nuevos = **44 abiertos**. **`F4c` sigue ABIERTA y el veredicto vigente sigue siendo INSUFICIENTE PARA F5** |
+
 El registro reanudable de todo ello es
 [`CHECKPOINT-ADS-NEXT.md`](CHECKPOINT-ADS-NEXT.md). **Basta decir «Continúa»**: la
 siguiente acción exacta está al final de ese fichero.

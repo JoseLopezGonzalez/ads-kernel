@@ -6,8 +6,14 @@
 > **Basta decir «Continúa»**: la siguiente acción exacta está al final.
 
 > **Estado de la fase, en una línea:**
-> **El GATE FINAL INDEPENDIENTE se ha ejecutado y su veredicto es INSUFICIENTE PARA F5.
-> F4c NO se cierra: sigue ABIERTA, y F5 NO queda autorizada.**
+> **El GATE FINAL INDEPENDIENTE devolvió INSUFICIENTE PARA F5, y su NIVEL 0 —la cobertura que
+> faltaba— está CERRADO. F4c sigue ABIERTA, y F5 NO queda autorizada.**
+>
+> El nivel 0 lo cerraron **otros tres agentes con contexto limpio** —revisores `D` y `E` en
+> paralelo, adjudicador `F`— leyendo **las diecinueve fuentes obligatorias** que ningún
+> revisor del gate había abierto: **8 310 líneas**. Está en
+> [`17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md`](17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md).
+> **Ningún hallazgo se retiró ni se rebajó, y ninguna severidad se movió.**
 >
 > Lo emitió un **adjudicador C** con contexto limpio sobre los dictámenes cerrados de **dos
 > revisores independientes**, A y B, que trabajaron en paralelo sin verse. C verificó los
@@ -67,7 +73,7 @@
 ```text
 CHECKPOINT — ADS-NEXT/10 · SIS/evolucion
 actualizado: 2026-08-27
-metodo:      SIS/Evolucion · GATE FINAL INDEPENDIENTE EJECUTADO · VEREDICTO
+metodo:      SIS/Evolucion · GATE FINAL EJECUTADO · NIVEL 0 CERRADO · VEREDICTO
              INSUFICIENTE PARA F5 · F4c ABIERTA · F5 NO AUTORIZADA
 based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md@56ea196
@@ -79,6 +85,8 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
                                                              corregido por D64–D68
              docs/evolucion/16-GATE-FINAL-INDEPENDIENTE-F4C.md    A · B · C ·
                                                              VEREDICTO FINAL
+             docs/evolucion/17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md   D · E · F ·
+                                                             NIVEL 0 CERRADO
              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · O16 · D16–D22 ·
                                                              D23–D33 · D34–D45 · D46–D51 ·
                                                              D52–D54 · D55–D57 · D58–D59 ·
@@ -96,6 +104,63 @@ procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y
              crítica NO equivale a autocertificarse, y NO prueba que esté bien resuelta.
              LA PRUEBA DE QUE ESTO IMPORTA: dos de los hallazgos de la segunda devolución son
              defectos que la PRIMERA CORRECCIÓN introdujo o no vio
+cerrado_en_el_NIVEL_0_DEL_GATE:
+  # NO es una corrección: es la COBERTURA que faltaba. Tres agentes con contexto limpio —D y E
+  # en paralelo, F adjudicando— leen las DIECINUEVE fuentes obligatorias que nadie abrió.
+  # NINGÚN hallazgo corregido, retirado ni rebajado. NINGUNA severidad movida.
+  · COBERTURA · requisito 0.1 SATISFECHO. Diecinueve fuentes, 8 310 líneas, leídas ÍNTEGRAS
+    por dos revisores independientes, con cita de su primera y última sección sustantiva y con
+    `C5-HANDOFF.md` leído ANTES de pronunciarse sobre B-2. Se cubrieron DIECINUEVE porque el
+    requisito dice «dieciocho» y su propia enumeración lista diecinueve. De todas las citas
+    que F abrió, UNA SOLA no estaba donde su dictamen la ponía, y su hallazgo sobrevive con la
+    referencia corregida
+  · LA PREGUNTA DEL GATE, CONTESTADA EN NEGATIVO · **`C5` NO RESUELVE `B-2`**, y la razón es
+    ESTRUCTURAL, no accidental: el sujeto de un handoff son DOS CAPACIDADES —`handoff.yaml`
+    no admite proceso ni fase—, y SIETE de las diecisiete instancias anclan su `cuando` al
+    criterio `C-<CAP>` que el proceso debe declarar. El handoff se dispara PORQUE la capacidad
+    ya está en la ruta; no es lo que la mete. La sospecha de C —«nadie miró ahí»— queda
+    cerrada y NO debe reabrirse
+  · Y AGRAVA `B-2` EN VEZ DE ALIVIARLO · `SIS` y `PLT` —el propietario global y el ejecutor de
+    tres de los cuatro macrocircuitos— NO aparecen en ninguna de las diecisiete instancias, ni
+    siquiera dentro de la ruta que proceso:SIS sí declara: existe `con-a-ver`, no existe
+    `sis-a-con`. Y F corrige a C: el matiz sobre `SEG` NO se sostiene —sólo entra por C-SEG o
+    por item DEP, y en proceso:SIS no ocurre ninguna—, luego el hueco cubre CINCO capacidades
+    y no cuatro: ENC, PRD, ARQ, DIS y SEG. La única salida plausible es DOM
+  · LA DISCREPANCIA MATERIAL, RESUELTA · D abrió `00-CIRCUITOS.md` —fuera de las diecinueve, y
+    lo declaró porque REFUTA SU PROPIO HALLAZGO— y encontró que dice que un par sin handoff
+    declarado «no está prohibido», contra el «Todo handoff se declara» de C5 L36. F resuelve A
+    FAVOR DE D con tres pruebas convergentes: C5 se autolimita dos líneas después («define la
+    forma, no las instancias»); el MAPA DE FUENTE ÚNICA del kernel asigna «entregas entre
+    capacidades» a circuitos/; y NINGÚN validador comprueba cobertura. Consecuencia: la
+    ausencia de instancias NO es defecto de conformidad. F declara que éste es el punto más
+    débil de su adjudicación: no hay regla escrita de precedencia entre contratos/ y el mapa
+  · DOCE HALLAZGOS NUEVOS · F-01 a F-12, tras fundir tres duplicados, reformular dos a la baja
+    y rechazar una extensión. CUATRO medios y OCHO menores. Ninguno bloqueante, ninguno grave.
+    Uno es defecto de F4 (F-03), tres preexistentes del kernel, uno propagado por F4, uno
+    presión normativa, uno implementación ausente y cuatro editoriales
+  · EL RECUENTO, FIJADO CONTANDO IDENTIFICADORES · son **32 hallazgos adjudicados** —4
+    bloqueantes, 6 graves, **16** medios, 6 menores—, **31 distintos** tras la unificación
+    A11≡M-8. **La cifra de 29 es ERRÓNEA**: C contó A5 y A13 como si estuvieran DENTRO de
+    trece, cuando SE SUMAN a catorce. Con los doce nuevos: **44 abiertos, 43 distintos**
+  · SEIS HALLAZGOS CAMBIAN DE ALCANCE, NINGUNO DE SEVERIDAD · B-1, B-2, G-4, M-5, M-6 y M-9.
+    Y dos ganan prueba independiente: G-1 en `handoffs-generales.md` L107 —«siempre en items
+    DEP antes de construir»— y G-2 en la ausencia del único camino de entrada a VER
+  · TRES HALLAZGOS PROTEGIDOS CONTRA UNA SALIDA FALSA · G-1, M-3 y M-4 NO pueden cerrarse
+    invocando autoridad del Owner: la norma APROBADA no menciona la actualización de ADS
+    instalado —grep vacío sobre 3 343 líneas—, y eso vive sólo en el documento de IDEAS
+    PENDIENTES, que dice de sí mismo que no autoriza a implementar
+  · DÓNDE ESTÁ EL TRABAJO, CORREGIDO · el remedio de B-2 **no está en §8 en absoluto**: toca
+    `01-PROCESOS.md` (los condicionales), `esquemas/proceso.yaml` (el vocabulario del campo) y
+    `circuitos/` (el checkpoint que falta). «§18 hace parecer que el trabajo está donde no
+    está», y quien empiece por ahí perderá la tanda
+  · NIVEL 0 CERRADO, LAGUNA DE CORPUS NO · son dos cosas distintas y el doc 16 las mezcló.
+    Siguen sin abrir: packs/ más allá de cabeceras (24 ficheros), quince de los diecinueve
+    esquemas, C4/C6/C7 completos, (a)/(b)/E1/E2 completos, los roles y métodos de las quince
+    capacidades, los validadores línea a línea, test_workspace.py, y §11 y §14
+  · LA TANDA DE CORRECCIÓN NO EXIGE NINGUNA DECISIÓN NUEVA DEL OWNER PARA EMPEZAR. Sólo tres
+    puntos abrirían consulta, y los tres son ELECTIVOS: G-3 si se elige reinterpretar O12,
+    F-09 si se elige elevar a norma un principio que el Owner declaró provisional, y m-3 si
+    alguien quisiera convertir en defecto lo que se dejó declarado como juicio no asumido
 devuelto_por_el_GATE_FINAL_INDEPENDIENTE:
   # NO es una lista de resueltos: es lo que el gate DEVUELVE SIN RESOLVER. Tres agentes con
   # contexto limpio —A, B y C—, ninguno autor de F4. VEREDICTO: INSUFICIENTE PARA F5.
@@ -672,11 +737,12 @@ owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
              de control DEFINITIVO. NO autoriza iniciar la adopción" (2026-08-27)
 pregunta_pendiente: ninguna. Las DIEZ presiones normativas vigentes son materia de F5,
              no preguntas
-siguiente:   CERRAR el NIVEL 0 y el NIVEL 1 de la condición para F5 que el gate deja
-             escrita: cubrir las DIECIOCHO fuentes obligatorias sin abrir —empezando por
-             C5-HANDOFF.md, que puede contener el vehículo de B-2— y los CUATRO
-             BLOQUEANTES. Después, un gate posterior sobre el resultado. F5 NO arranca sin
-             un veredicto de SUFICIENCIA
+siguiente:   LA TANDA DE CORRECCIÓN, que ya puede empezar: el NIVEL 0 está cerrado y F deja
+             sus cuatro condiciones de arranque. Empezar por el NIVEL 1 con sus dos
+             ampliaciones —1.3 toca también el condicional de proceso:AUD y el grafo de
+             00-CIRCUITOS; 1.4 NO se cierra en §8 sino en 01-PROCESOS.md,
+             esquemas/proceso.yaml y circuitos/—. Redimensionar sobre 44 abiertos, no 29.
+             Después, un gate posterior. F5 NO arranca sin un veredicto de SUFICIENCIA
 falta_para_cerrar_la_capa:
   · F4c ESTÁ ABIERTA, y ahora con el GATE FINAL INDEPENDIENTE ejecutado y devuelto:
     **INSUFICIENTE PARA F5**, por adjudicación de un tercer agente sobre dos dictámenes
