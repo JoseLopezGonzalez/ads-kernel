@@ -9,11 +9,14 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 > superada y uso real es la disciplina central de este repositorio, y esta fase produce
 > **sólo la primera**.
 >
-> **F4 no está certificada, y este texto ha sido CORREGIDO NUEVE VECES**: dos devoluciones
-> independientes, una devolución técnica, cinco comprobaciones técnicas encadenadas, la
-> TERCERA REVISIÓN INDEPENDIENTE —que YA SE EMITIÓ— y el GATE FINAL con su complemento de
-> cobertura. El recuento se deriva de la lista de abajo y de §15.8; **«dos veces» era la
-> cifra de hace siete correcciones**.
+> **F4 no está certificada, y este texto ha sido CORREGIDO DOCE VECES.** El recuento se
+> DERIVA de los bloques de corrección de §15.8, y son doce: `D23`–`D33`, `D34`–`D45`,
+> `D46`–`D51`, `D52`–`D54`, `D55`–`D57`, `D58`–`D59`, `D60`–`D61`, `D62`, `D63`, `D64`–`D68`,
+> `D69`–`D70` y `D71`–`D86`. **La decimotercera es ésta**, `D87` en adelante, y por eso la
+> cifra vuelve a moverse. **Corregido por `I-19`**: decía NUEVE, y la aposición que decía
+> derivarla enumeraba diez omitiendo `D69`–`D70` y contando «cinco comprobaciones técnicas»
+> donde §15.8 rotula hasta la SEXTA. Un recuento que se declara derivado se deriva, o se
+> retira la afirmación de que deriva. **«Dos veces» era la cifra de hace diez correcciones.**
 >
 > ```text
 > PRIMERA DEVOLUCIÓN    nueve bloques de hallazgos, en
@@ -1243,10 +1246,15 @@ una promesa:
 > demuestra qué se guardó, no qué hay hoy en el árbol de trabajo.
 
 ```text
-QUÉ ES UNA VENTANA   el conjunto de transacciones cuyo evento `derivada` NO está incluido
-DE COMMIT            todavía en ningún commit de Git. Se delimita por el último commit que
-                     registró un árbol sin marcadores abiertos — que por la regla de Git de
-                     §2.6.6 es el único que ADS produce.
+QUÉ ES UNA VENTANA   el conjunto de transacciones **cuyo TERMINAL —`derivada` o
+DE COMMIT            `abandonada`— NO está incluido todavía en ningún commit de Git**, más
+                     las que siguen abiertas. Se delimita por el último commit que registró
+                     un árbol sin marcadores abiertos — que por la regla de Git de §2.6.6 es
+                     el único que ADS produce.
+                     **Corregido por `I-17`**: la definía sólo sobre `derivada`, y una
+                     transacción cerrada por `abandonada` no tiene ni tendrá ninguno, luego
+                     **nunca salía de la ventana** y la comprobación la recorría
+                     indefinidamente. Era otro residuo de partición binaria sobre `derivada`.
 
 QUÉ TRANSACCIONES    TODAS las de la ventana, ABIERTAS Y CERRADAS. Las abiertas, porque su
 SE COMPRUEBAN        recuperación depende de ello; las cerradas por `derivada`, porque
@@ -2367,10 +2375,26 @@ PUBLICACIÓN            por su cuenta. Un incidente local no se convierte en un 
                        sin que alguien lo decida. La alternativa —publicación automática
                        bajo una política— existe y está definida abajo.
 
-MAIN NUNCA CONTIENE    porque un commit sólo ocurre **sin marcadores abiertos**, y sin
-ESTADO PARCIAL         marcador toda transacción está cerrada por uno de sus dos terminales.
-                       Un abandono deja estado mixto **declarado** en su `abandonada` y en su
-                       `deriva`, no silencioso (§2.6.9).
+MAIN NUNCA CONTIENE    **porque los DOS terminales dejan el árbol consistente ANTES de que
+ESTADO PARCIAL         exista commit**, y no por la inferencia «sin marcador ⇒ cerrada»:
+                       `derivada` cierra sobre canónicos que ya alcanzaron su
+                       `hash_posterior_esperado`, y `abandonada` es INALCANZABLE hasta haber
+                       RESTAURADO todas sus rutas a `revision_base` y haberlo **verificado
+                       byte a byte** (§2.6.9, pasos C y D). El desenlace `4b` no publica.
+                       **Corregido por `I-10`**: el argumento anterior —«sin marcador toda
+                       transacción está cerrada, luego `main` no contiene estado parcial»— es
+                       **exactamente la inferencia que `D69` refutó**, porque antes de `D69`
+                       una transacción cerrada sin restaurar dejaba el conjunto parcial
+                       **publicable**. La conclusión sigue siendo cierta; lo que fallaba era
+                       su razón, y la razón real es la restauración verificada.
+                       Y un abandono **no deja «estado mixto» en las rutas canónicas
+                       publicadas**: en la ruta normal todas quedan clasificadas `previo`. El
+                       enum `{previo, posterior, divergente}` de `estado_observado[]` (§3.6)
+                       sólo alcanza `posterior` y `divergente` en el **acto (ii) del
+                       desenlace `4b`**, donde el Owner declara irrecuperable lo especulativo
+                       y el commit de incidente **EXCLUYE** las rutas divergentes. Decirlo
+                       importa: sin ello F6 construiría el validador sobre un enum cuya
+                       alcanzabilidad depende de un caso que el contrato no nombraba.
 ```
 
 #### Concurrencia entre máquinas, y actualización optimista
@@ -2517,11 +2541,20 @@ causa            **EL ENUM LO DECLARA §3.6, Y ES SU ÚNICA SEDE.** Son TRES val
                                          fuera del protocolo. **NO lleva `tx_afectada`**:
                                          no hay ninguna a la que referirse
                  `abandono-de-           **añadida por `D64`.** Una autoridad cerró la
-                 transaccion`            transacción con `abandonada` sin completarla, y sus
-                                         rutas quedaron en un estado mixto declarado. Lo
-                                         emite el propio acto de abandono, en el mismo
-                                         instante, y es lo que conserva el bloqueo cuando el
-                                         marcador se retira (§2.6.9). LLEVA `tx_afectada`
+                 transaccion`            transacción con `abandonada` sin completarla. **Sus
+                                         rutas canónicas quedaron RESTAURADAS a
+                                         `revision_base` y verificadas byte a byte** —`D69`
+                                         hace `abandonada` inalcanzable sin eso—, y lo que
+                                         queda declarado es el `estado_observado[]` de todas
+                                         ellas: `previo` en la ruta normal, y `posterior` o
+                                         `divergente` **sólo** en el acto (ii) del desenlace
+                                         `4b`, cuyas rutas divergentes el commit de incidente
+                                         excluye. **Corregido por `I-10`**: decía «quedaron en
+                                         un estado mixto declarado», que es la semántica
+                                         anterior a `D69`. Lo emite el propio acto de
+                                         abandono, en el mismo instante, y es lo que conserva
+                                         el bloqueo cuando el marcador se retira (§2.6.9).
+                                         LLEVA `tx_afectada`
 afecta           por fichero: `ruta` · `hash_esperado` —el que gobierna según la transacción
                  cerrada, o el de `HEAD` si no hay transacción— · `hash_observado`
 items            los items cuyos canónicos están afectados
@@ -5433,8 +5466,13 @@ ESPERANDO-DEPENDENCIA         se resuelve solo. NO genera trabajo. Si deja de se
                               DEBE convertirse en bloqueo: no puede quedar muerta (b.8)
 PAUSA POR PRESUPUESTO         completar unidad segura · verificar · persistir · dejar la
                               siguiente acción exacta · NO declarar terminación (§12)
-CAÍDA A MITAD                 evento `preparada` de la tx: completar, o `conflicto` si
-                              algún fichero es divergente (§2.6)
+CAÍDA A MITAD                 evento `preparada` de la tx: **COMPLETAR**, o `conflicto` si
+                              algún fichero es divergente — y `conflicto` **no es un
+                              desenlace: tiene DOS salidas**, completar si la divergencia
+                              cesa, o **REVERTIR** lo especulativo local con `abandonada`
+                              verificada byte a byte contra `revision_base` (§2.6.9).
+                              **Corregido por `I-18`**: era la formulación que `A3` corrigió
+                              en §7.4, sobreviviendo una sección más allá
 INCONSISTENCIA IRRESOLUBLE    DSP para y escala. NUNCA inventa estado (b.14.3)
 ```
 
@@ -5524,11 +5562,23 @@ mal: **compartir motor no aplana las rutas**. Cada uno declara lo suyo.
 ```text
 COMÚN     el motor: ENC → DSP → ruta desde b.16 → C4 → capacidades → gate → estado.
           Ningún macrocircuito crea un tipo de proceso nuevo.
-PROPIO    disparador · precondiciones · fases · participantes · lecturas y escrituras ·
-          estados persistidos · evidencias · gates · certificación · rollback ·
-          reanudación · condición de cierre.
+PROPIO    **CATORCE campos, y son catorce** —corregido por `I-21`, que encontró que el
+          inventario decía doce y omitía dos: `proceso` y `handoffs`—:
+            1 disparador · 2 precondiciones · 3 **proceso de cada tramo** · 4 participantes
+            con su vía · 5 lecturas · 6 escrituras · 7 estados persistidos ·
+            8 **handoffs** · 9 evidencias · 10 gates · 11 rollback · 12 reanudación ·
+            13 certificación · 14 condición de cierre
 FORMA     cada uno es una INICIATIVA con su plantilla de ruta. No un proceso.
 ```
+
+> **Los dos campos que faltaban, y dónde quedan.** `proceso` estaba **implícito** en `N` —lo
+> nombraba dentro de `PARTICIPANTES`— y explícito en los otros tres; ahora `N` lo rotula
+> igual que ellos. Y `handoffs` **no existía en ninguno de los cuatro**: lo que viaja entre
+> capacidades está declarado en el bloque «`SIS` y `PLT`, dicho aparte» de esta misma
+> sección, pero no estaba repartido por macrocircuito. Cada bloque de §8.1–§8.4 gana ahora su
+> fila `HANDOFFS`, que **remite** a ese bloque y a `circuitos/` sin duplicarlo: las
+> instancias las crea F6 (`F-05`), y su ausencia hoy no bloquea la composición — sólo la
+> entrega.
 
 ### La COMPOSICIÓN DE RUTA — sede canónica, y por qué NO hace falta un tipo nuevo
 
@@ -5678,9 +5728,12 @@ entre capacidades—, y ésa es la fuente que manda cuando `C5` parece decir otr
 
 > **Declarado por el gate final independiente (`M-7`, MEDIO; es `D82`).** `a.7` FRENO 3 impide
 > despachar más de **dos items `SIS` completados consecutivamente** si hay un item de producto
-> listo. Los cuatro macrocircuitos son mayoritariamente `proceso:SIS` y componen **más de dos
-> items cada uno**, y §8 no decía ni cuántos ni cómo interactúan con el freno. El tercer item
-> de `N` se habría detenido sin que nadie hubiera previsto por qué.
+> listo. Los cuatro macrocircuitos son mayoritariamente `proceso:SIS` y **dos de ellos —`A` y
+> `U`— componen más de dos items líderes**, y §8 no decía ni cuántos ni cómo interactúan con
+> el freno. El tercer item de `A` se habría detenido sin que nadie hubiera previsto por qué.
+> **Corregido por `I-25`**: la premisa citada decía «más de dos items **cada uno**», y la
+> derivación de diez líneas más abajo da **N 2** y **M 2**. La derivación manda; la premisa
+> se ajusta a ella.
 
 ```text
 CUÁNTOS ITEMS      los ITEMS LÍDERES son las FILAS de la tabla de §18 —una por tramo de fases
@@ -5782,6 +5835,10 @@ FASES           INS-0 crear y publicar control repo y workspace, CON EL SOPORTE 
                 INS-5 discovery de producto, dominio y diseño
                 INS-6 engineering bootstrap con evidencia real
                 INS-7 gate «listo para construir»
+PROCESO         `INS-0`–`INS-5` y `INS-6`–`INS-7` son los DOS tramos, y **los dos son
+DE CADA TRAMO   `proceso:SIS`** — «cambiar la propia fábrica», que es literalmente lo que una
+                instalación hace. §18 tiene la tabla, y manda. **Rotulado por `I-21`**: era
+                el único de los cuatro que lo dejaba implícito dentro de `PARTICIPANTES`
 PARTICIPANTES   **con su VÍA de entrada (§8.0), porque una lista sin vía no es una ruta**
                   `SIS`  vía 1 · propietaria global de `proceso:SIS`, todas las fases
                   `CON`  vía 2 · obligatoria `cambio-construido`
@@ -5814,6 +5871,11 @@ LEE             la distribución instalada
 ESCRIBE         control repo entero; las fuentes sólo desde INS-6 — **incluidos los punteros
                 de adaptador**, que INS-2 NO escribe aunque elija el adaptador (§6.7)
 ESTADO          `estado/` nace en **INS-0**, con su soporte durable mínimo. Ver abajo
+HANDOFFS        de `SIS` a `PLT` la SOLICITUD DE MATERIALIZACIÓN · de `SIS` a `CON` el source
+                change de `INS-6` con su custodia · de `CON` a `ENT` el resultado por fuente ·
+                de `ENT` a `VER` la convergencia declarada. **Su QUÉ está en §8.0; las
+                INSTANCIAS las crea F6 en `circuitos/`** (`F-05`), y su ausencia hoy no
+                bloquea la composición
 EVIDENCIA       `workspace check` · prueba de humo por adaptador · checkpoint recuperado
 GATES           INS-4 certificación Operativa · **INS-5 baseline aprobado por el Owner** ·
                 INS-7 = O12, con sus TRES condiciones y su productor nombrado
@@ -6005,6 +6067,10 @@ ESCRIBE         NADA en las fuentes hasta A8, y en A8 sólo lo que el Owner auto
                 especialice el adaptador. Sin esta corrección, la adopción de un producto
                 ajeno empezaba haciendo un commit en su repositorio (§6.7)
 ESTADO          la iniciativa de adopción nace en A0 y es el hilo entre chats
+HANDOFFS        entre los items `AUD` enlazados de `A2`–`A7` y su consumidor · de `SIS` a
+                `PLT` la solicitud de materialización · de `SIS` a `CON` el source change de
+                `A8` · de `CON` a `ENT` el resultado por fuente · de `ENT` a `VER` la
+                convergencia. **Su QUÉ está en §8.0; las INSTANCIAS las crea F6**
 EVIDENCIA       inventario con procedencia · baseline aprobado · mapa de conservación
 GATES           A3 baseline aprobado por el Owner, contra las CATORCE preguntas del §6.2
                 de la directiva, que son su contrato (abajo) · A8 autorización de retirada ·
@@ -6129,6 +6195,8 @@ FASES           M0 identificar versión instalada y disposición
                    «del repositorio técnico» en singular, que es la formulación que `E2.0`
                    declara RETIRADA
                 M7 VERIFICAR que nada dependía de lo retirado
+PROCESO         `M0`–`M5` es **`proceso:SIS`** y `M6`–`M7` es **`proceso:DEU`**. §18 tiene la
+DE CADA TRAMO   tabla, y manda
 PARTICIPANTES   **con su VÍA de entrada (§8.0)**
                 `M0`–`M5` · `proceso:SIS`
                   `SIS` vía 1 · `CON` vía 2 (`cambio-construido`) · `VER` vía 2
@@ -6185,6 +6253,11 @@ ESTADO          la iniciativa de migración nace en `M0` · el estado migrado y 
                 `esquema_estado` · el evento `migracion` por paso aplicado · el estado
                 `INTEGRACIÓN PARCIAL` por fuente mientras `M6` no converja.
                 M3 es el paso peligroso: migración de esquema con su migrador y su prueba
+HANDOFFS        de `ARQ` a `M5` el `plan-tecnico` con el radio MEDIDO —que es ENTRADA de
+                `M5`— · de `SIS` a `PLT` la solicitud de materialización · de `SIS` a `CON`
+                los source changes de `M6` · de `CON` a `ENT` el resultado por fuente · de
+                `ENT` a `VER` la convergencia para `M7`. **Su QUÉ está en §8.0; las
+                INSTANCIAS las crea F6**
 EVIDENCIA       equivalencia antes/después de items, paquetes y checkpoints · dictamen de
                 M5 · salidas de build, pruebas, CI y despliegue en M7
 GATES           M3 no cierra sin equivalencia demostrada · M5 certificación Integrada del
@@ -6283,7 +6356,9 @@ DISPARADOR      existe una versión de ADS posterior a la instalada. `kernel-sta
                 `.upstream-hash` ya detectan la divergencia: es la mitad que existe
 PRINCIPIO       DETECTAR AUTOMÁTICAMENTE, ACTUALIZAR CONSCIENTEMENTE
                 **PROVISIONAL, y con su procedencia** (`F-09`): lo escribe así
-                `docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md` §15, que es **documento de
+                `docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md` **§3, L79** —donde está el
+                calificativo «principio PROVISIONAL»; su §15, L589, lleva el principio SIN el
+                calificativo, y citar §15 era impreciso (`I-23`)—, que es **documento de
                 trabajo del Owner**, no norma aprobada — y lo llama expresamente «principio
                 PROVISIONAL». `grep` sobre las 3 343 líneas de la arquitectura multirrepo
                 APROBADA no devuelve ningún mandato sobre la actualización de ADS: **`U` no
@@ -6303,6 +6378,9 @@ FASES           U0 detectar versión candidata
                     por C7, con gate, evidencia por fuente e Integration Set si hay más
                     de una. Ver §6.7
                 U6 certificar
+PROCESO         `U0`–`U5a` es **`proceso:SIS`**, `U5b` es **`proceso:DEP`** —la única fase de
+DE CADA TRAMO   los cuatro macrocircuitos donde hay una dependencia externa de verdad— y `U6`
+                vuelve a ser **`proceso:SIS`**. §18 tiene la tabla, y manda
 PARTICIPANTES   **con su VÍA de entrada (§8.0)**
                 `U0`–`U5a` · `proceso:SIS`
                   `SIS` vía 1 · `CON` vía 2 · `VER` vía 2 · `ENT` vía 3 si toca el runtime
@@ -6353,6 +6431,11 @@ ESTADO          **añadido por `G5`.** §8.4 no lo declaraba, y `U` es el circui
                   · `INTEGRACIÓN PARCIAL` por fuente en `U5b`, hasta que todas convergen
                   · `bloqueo` — mientras `U` está en vuelo, ninguna otra actualización
                     arranca, y se declara con el mismo mecanismo de solapamiento de §2.6.9
+HANDOFFS        de `SIS` a `PLT` la solicitud de materialización · de `PLT` a `CON` el
+                paquete de `U5b` con su `escribe_fuentes` · de `SEG` a `CON` las condiciones
+                ANTES de construir · de `CON` a `ENT` el resultado por fuente · de `ENT` a
+                `VER` la convergencia para `U6`. **Su QUÉ está en §8.0; las INSTANCIAS las
+                crea F6**
 EVIDENCIA       la vista comprensible del cambio que el §14.2 del brief pide
 GATES           U3 aprobado antes de U4 · U6 certificación
 CERTIFICACIÓN   el nivel que tuviera antes, revalidado. Una actualización que baja el
