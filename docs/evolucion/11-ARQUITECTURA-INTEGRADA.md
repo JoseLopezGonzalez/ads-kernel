@@ -4780,7 +4780,8 @@ CERTIFICACIÓN   Operativa en N4 · Integrada en N7, con la aplicabilidad de §9
                 **Corregido** (hallazgo `N-5`): F4c decía «una instalación nueva tiene CERO
                 fuentes», y es falso en N7 — que es donde se invoca
 ROLLBACK        ver «Rollback, con el remoto separado de lo local», abajo
-REANUDACIÓN     **por checkpoint desde N0**. Ningún tramo del recorrido depende del chat
+REANUDACIÓN     **por el checkpoint del paquete de `SIS-001`, desde N0**. Ningún tramo del
+                recorrido depende del chat
 CIERRE          N7 superado y el primer item de producto despachable
 ```
 
@@ -4800,16 +4801,33 @@ QUÉ SE CREA EN N0,        estado/
 Y ES EL MÍNIMO              ├─ iniciativas/INI-001/00-iniciativa.md   la instalación misma
                             ├─ eventos/                               el diario, desde el
                             │                                         primer acto
-                            └─ items/INI-001-paq/                     el paquete en curso,
+                            └─ items/SIS-001/                         el ITEM de instalación
+                                 ├─ 00-encuadre.md · 01-ruta.md · 02-control.md
+                                 └─ paq/01-SIS.md                     el paquete en curso,
                                                                       con su CHECKPOINT
+
+                          **Corregido por la tercera revisión independiente (`G7`).** Decía
+                          `items/INI-001-paq/`, y eso violaba tres contratos a la vez: usaba
+                          un id de INICIATIVA como id de ITEM contra §2.8, no era una ruta
+                          válida bajo §2.3 —los paquetes viven en `<ITEM-ID>/paq/`— y
+                          asignaba un paquete a una iniciativa, que `D45` había declarado
+                          imposible catorce páginas antes: «una iniciativa no tiene paquetes
+                          ni capas: sólo `items` como referencias».
+
+EL ITEM REAL QUE `N0`     **`SIS-001`**, item de `proceso:SIS` —«cambiar la propia fábrica»,
+CREA                      que es literalmente lo que una instalación hace (§8.0)—. Su
+                          propietario global es `SIS`. `INI-001` lo REFERENCIA, y nada más:
+                          no copia su estado, que es lo que §3.3 exige.
+                          Con ello `Q4` deja de contradecirse: la iniciativa **no** nace con
+                          el conjunto de items vacío, nace con uno.
 
 QUÉ NO SE CREA EN N0      cobertura, integración, tableros de capacidades que no se han
                           materializado, y todo lo que no tenga contenido todavía. Un
                           directorio vacío no es soporte durable: es ruido.
 
-POR QUÉ ES BARATO         son tres ficheros. El coste de crearlos es menor que el de
-                          explicar por qué un recorrido de siete fases no se puede reanudar
-                          en sus tres primeras.
+POR QUÉ ES BARATO         son cinco ficheros pequeños. El coste de crearlos es menor que el
+                          de explicar por qué un recorrido de siete fases no se puede
+                          reanudar en sus tres primeras.
 
 QUÉ HACE N3 AHORA        lo que `O9` ya decía que hace: ESPECIALIZAR Y VERIFICAR la
                           organización que la distribución trae materializada. Deja de
@@ -4949,13 +4967,46 @@ FASES           M0 identificar versión instalada y disposición
                 M3 migrar ESTADO PERSISTIDO, con su esquema
                 M4 sustituir mecanismos retirados y resolver overrides y forks locales
                 M5 CERTIFICAR lo nuevo, con lo viejo TODAVÍA EN PIE
-                M6 RETIRAR del repositorio técnico kernel, packs y organización
+                M6 RETIRAR de CADA FUENTE AUTORIZADA kernel, packs y organización — no
+                   «del repositorio técnico» en singular, que es la formulación que `E2.0`
+                   declara RETIRADA
                 M7 VERIFICAR que nada dependía de lo retirado
 PARTICIPANTES   PLT · SIS · VER · Owner en M6
+LEE             la instalación ANTERIOR entera: `estado/` con su `esquema_estado`, el
+                catálogo instalado, `PROFILE.md`, `PROJECT.md`, `SOURCES.toml`, los
+                adaptadores, y la organización heredada de CADA fuente.
+                **Añadido por `G4`**: §8.3 no declaraba `LEE` ni `ESCRIBE`, y era el único
+                macrocircuito con un paso DESTRUCTIVO sobre los repositorios del producto
+ESCRIBE         · en el CONTROL REPO desde `M0`: la iniciativa, el estado migrado y sus
+                  eventos. Escritura canónica, por §2.6
+                · en LAS FUENTES **sólo en `M6`**, y sólo lo que el Owner autorice. `M6` es
+                  un conjunto de SOURCE CHANGES gobernados por `C7`: paquete con
+                  `escribe_fuentes`, custodia de `PLT`, checkpoint, rama, commit, push, PR y
+                  CI **POR FUENTE**
+                · NADA en las fuentes antes de `M6`. `M0`–`M5` son de sólo lectura sobre ellas
+AUTORIDAD       `SIS` propone · el **OWNER** autoriza `M6`, y su autorización es **POR
+                FUENTE**, nombrándola · `VER` verifica `M7`
+EJECUTOR        el runtime para el control repo · `PLT` para cada source change, bajo `C7`
+GOBIERNO DE LA  **ninguna retirada es automática.** `M6` sólo se ejecuta sobre una fuente si
+RETIRADA        se cumplen las CUATRO: `M5` certificó la instalación nueva · el Owner
+DESTRUCTIVA     autorizó ESA fuente por su nombre · existe EVIDENCIA de que lo retirado vive
+                en la historia de esa fuente · y su rollback por fuente está declarado.
+                Falta cualquiera y **la retirada no se ejecuta**, aunque las demás fuentes ya
+                hayan convergido. Mientras no converjan todas, el estado es
+                **INTEGRACIÓN PARCIAL**
+CONDICIÓN PARA  que el artefacto heredado esté SUSTITUIDO **y CERTIFICADO**, no sólo
+ELIMINAR        sustituido. Sin sustituto certificado se CONSERVA, y su conservación se
+                registra con su motivo
+QUÉ SE CONSERVA la HISTORIA y el TRABAJO ABIERTO del producto: issues, TODO, ramas vivas,
+SIEMPRE         ideas y deuda registrada. `M6` retira kernel, packs y organización DE ADS;
+                **nunca material del producto**
 DIFERENCIA      lo que la separa de la adopción: aquí **ya hay estado ADS**. No se
 CON A           reconstruye una realidad: se TRADUCE una que ya estaba escrita. Los items
                 y paquetes en curso tienen que seguir en curso al otro lado
-ESTADO          M3 es el paso peligroso: migración de esquema con su migrador y su prueba
+ESTADO          la iniciativa de migración nace en `M0` · el estado migrado y su
+                `esquema_estado` · el evento `migracion` por paso aplicado · el estado
+                `INTEGRACIÓN PARCIAL` por fuente mientras `M6` no converja.
+                M3 es el paso peligroso: migración de esquema con su migrador y su prueba
 EVIDENCIA       equivalencia antes/después de items, paquetes y checkpoints · dictamen de
                 M5 · salidas de build, pruebas, CI y despliegue en M7
 GATES           M3 no cierra sin equivalencia demostrada · M5 certificación Integrada del
@@ -5073,6 +5124,21 @@ ESCRIBE         la distribución instalada y las proyecciones DEL CONTROL REPO e
                 **Corregido** (hallazgo `I.3`): F4c decía «la distribución instalada y las
                 proyecciones» sin declarar que algunas proyecciones viven en repositorios
                 ajenos al control repo
+ESTADO          **añadido por `G5`.** §8.4 no lo declaraba, y `U` es el circuito con más
+                superficie de estado en juego. Lo que nace, dónde y desde qué fase:
+                  · `version_anterior` y `version_objetivo` — en la iniciativa de `U0`
+                  · `migraciones_aplicables[]` con su orden — resuelto en `U2`
+                  · `punto_de_no_retorno` — `U3`, y queda registrado con su fecha y autoridad
+                  · `instantanea_previa` — DURABLE y VERSIONADA, en
+                    `estado/instantaneas/<version>/`, plano DURABLE. Es la alternativa
+                    admitida al migrador inverso, y por eso **no puede ser operacional**: si
+                    no sobreviviera a un clon nuevo no serviría para el rollback que la
+                    justifica. `G5` señaló que no tenía ni ubicación ni plano ni ciclo
+                  · `progreso_por_pasos` — qué paso de `U0`–`U6` se completó, en la
+                    iniciativa, para que la reanudación no dependa del chat
+                  · `INTEGRACIÓN PARCIAL` por fuente en `U5b`, hasta que todas convergen
+                  · `bloqueo` — mientras `U` está en vuelo, ninguna otra actualización
+                    arranca, y se declara con el mismo mecanismo de solapamiento de §2.6.9
 EVIDENCIA       la vista comprensible del cambio que el §14.2 del brief pide
 GATES           U3 aprobado antes de U4 · U6 certificación
 CERTIFICACIÓN   el nivel que tuviera antes, revalidado. Una actualización que baja el
@@ -5080,7 +5146,12 @@ CERTIFICACIÓN   el nivel que tuviera antes, revalidado. Una actualización que 
 ROLLBACK        ver «Compatibilidad y rollback DEL ESTADO», abajo. NO basta con volver la
                 distribución atrás. Y U5b tiene el SUYO, POR FUENTE, con estado INTEGRACIÓN
                 PARCIAL mientras no converjan todas (§6.7)
-REANUDACIÓN     por el evento `preparada` de la tx si U4 se interrumpe
+REANUDACIÓN     **desde el ESTADO, nunca desde el chat.** `U0`–`U3` por el
+                `progreso_por_pasos` de la iniciativa; `U4` por el evento `preparada` de su
+                transacción; `U5b` por el estado `INTEGRACIÓN PARCIAL` de cada fuente; `U6`
+                por las celdas de certificación. Una actualización interrumpida se retoma
+                **en otra sesión y en otra máquina**, que es lo que `D30` exige y `G5`
+                encontró sin soporte declarado
 CIERRE          U6 superado y la versión instalada es la candidata
 ```
 
@@ -6514,6 +6585,48 @@ atrás es volver a un release. Es lo que ya se hace, y funciona.
 
   5 · PIEZAS DE PACK  CAND-022 · CAND-024
         independientes de todo. Pueden ir en cualquier momento
+```
+
+### Los cuatro macrocircuitos, mapeados a los procesos de `b.16`
+
+> **Añadido por la tercera revisión independiente (`G6`; es `D67`).** §8.0 prohíbe crear un
+> proceso nuevo y declara que cada macrocircuito «es una INICIATIVA con su plantilla de
+> ruta». Pero la ruta, las obligaciones, el propietario global y los gates de cada item **se
+> derivan del proceso** (`b.16`), y tres de los cuatro no nombraban ninguno: F6 habría tenido
+> que ELEGIR, y esa elección determina obligaciones y autoridad. Se declara aquí, y **no se
+> crea ningún proceso**: los diez de `b.16` bastan.
+
+| macrocircuito | fase | proceso `b.16` | capacidad LÍDER | participantes | entrada | salida | gate | estado persistido |
+|---|---|---|---|---|---|---|---|---|
+| **N · instalación** | `N0`–`N1` | `proceso:SIS` | `SIS` | `PLT` | decisión del Owner de instalar | control repo con `estado/` | — | `estado/` e `INI-001` desde `N0` |
+| | `N2`–`N5` | `proceso:SIS` | `SIS` | `PLT`, `ENC`, `PRD` | topología creada | especialización y adaptadores | `N3` baseline | items de la iniciativa |
+| | `N6`–`N7` | `proceso:DEP` | `PLT` | `ENT`, `VER` | especialización aprobada | punteros propagados y nivel certificado | `N7` = `O12` | evidencia + celdas de cobertura |
+| **A · adopción** | `A0`–`A1` | `proceso:SIS` | `SIS` | `PLT` | el Owner quiere gobernar un producto con historia | perímetro y topología | modo no destructivo declarado | iniciativa + `estado/` |
+| | `A2`–`A3` | `proceso:INV` | `INV` | `AUD` | acceso de lectura | inventario y baseline | `A3` aprobado por el Owner | capa de inventario, con procedencia |
+| | `A4`–`A7` | `proceso:INV` para reconstruir · `proceso:GAP` para lo que falta | `INV` · `PRD` | `DOM`, `SEG`, `DIS`, `ARQ`, `ENC` | baseline aprobado | producto reconstruido y trabajo vivo clasificado | — | capas por item |
+| | `A8` | `proceso:DEU` | `DEU` | `PLT`, con `C7` | autorización de retirada | copias organizativas retiradas | `A8` autorizado por el Owner | source changes por fuente |
+| | `A9`–`A10` | `proceso:DEP` | `PLT` | `SIS`, `VER`, `SEG` | limpieza cerrada | nivel Integrada | `A10` = `O12` | celdas de certificación |
+| **M · migración** | `M0`–`M4` | `proceso:SIS` | `SIS` | `PLT`, `ARQ` | existe una instalación de una versión anterior | estado migrado y verificado | `M4` migración verificada | `estado/` migrado + evento `migracion` |
+| | `M5`–`M7` | `proceso:DEU` | `DEU` | `PLT` con `C7`, `VER` | migración certificada | heredado retirado y verificado | `M6` autorizado · `M7` verificado | source changes por fuente |
+| **U · actualización** | `U0`–`U3` | `proceso:SIS` | `SIS` | `PLT` | hay una versión nueva de ADS | compatibilidad decidida | `U3` punto de no retorno | instantánea de `U3` |
+| | `U4`–`U6` | `proceso:SIS` · `proceso:DEP` en `U5b` | `SIS` · `PLT` | `ENT`, `VER` | decisión de actualizar | ADS actualizado y recertificado | `U6` = `O12` | migración + `INTEGRACIÓN PARCIAL` por fuente |
+
+```text
+POR QUÉ NINGUNO ES        porque ninguno cambia la fábrica de forma que los diez procesos no
+UN PROCESO NUEVO          puedan representar: instalar, migrar y actualizar SON evolución del
+                          sistema —`proceso:SIS`, cuya intención es literalmente «cambiar la
+                          propia fábrica»—; inventariar y reconstruir son `proceso:INV`;
+                          retirar lo heredado es `proceso:DEU`; propagar y certificar es
+                          `proceso:DEP`. La prueba de §3.1 no llega a plantearse.
+
+QUÉ ES ENTONCES «SU       una COMPOSICIÓN declarada de items de esos procesos, no un
+PLANTILLA DE RUTA»        artefacto. **No es un tipo**, no entra en §3.8 y no tiene esquema:
+                          es esta tabla. Llamarla «plantilla» sugería un artefacto que no
+                          existe, y `G6` lo señaló.
+
+QUÉ NO SE APLANA          que compartan motor NO borra sus diferencias: cada uno conserva su
+                          disparador, sus precondiciones, sus gates, su rollback, su
+                          reanudación y su cierre, que es lo que `CI-5` protege.
 ```
 
 **Lo que cambia respecto al orden propuesto, y por qué:**
