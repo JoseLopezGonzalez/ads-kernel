@@ -223,6 +223,7 @@ entera.
 | nivel de calidad de una parte del producto | `estado/cobertura/` | `SIS` el contrato, la capacidad **responsable del aspecto** el juicio | runtime |
 | combinación de revisiones probada junta | `integration-set` | `ENT` | `ENT` |
 | gobierno documental de un documento | bloque `ads:memoria` **dentro** del documento | la capacidad que lo posee | esa capacidad |
+| **mapa documental: qué documentos existen, qué área cubre cada uno, quién responde y cuál es su vigencia** | **nadie**: se REGENERA desde los bloques `ads:memoria` y las celdas de `cobertura` de familia documental (§4.3) | — | runtime |
 | qué lee y escribe cada entorno agentic | `adaptador` en el control repo | `PLT` | `PLT` |
 | conocimiento externo vendorizado | manifiesto de vendorizado | `SIS` | `PLT` |
 | entradas de cada validador | `validadores.yaml` | `SIS` | `SIS` |
@@ -1190,7 +1191,8 @@ ABIERTA              transacción que reconciliar— y no tiene `preparada` con 
 CUÁNDO SE RESTAURA   NUNCA de forma automática. Restaurar desde Git DESTRUYE el contenido
 DESDE GIT, Y CON     que hay en el árbol, y ese contenido es de alguien —es el mismo
 QUÉ AUTORIDAD        argumento de §2.6.4—. La restauración es **decisión del Owner**, y deja
-                     su evento con los cinco conceptos de `a.9`.
+                     su evento con **los cinco CAMPOS de procedencia** de §3.6 — no «los
+                     cinco conceptos de `a.9`», que incluyen uno derivado.
 
 QUÉ HACE SI NO CASA  DEPENDE DE SI LA TRANSACCIÓN SIGUE ABIERTA, y la distinción es de
                      identidad, no de grado (§2.6.11):
@@ -1335,7 +1337,7 @@ impuso al arnés de negativos.
 | `X28` | fabricar a mano un commit con marcador abierto, publicarlo y clonar | el clon emite **`fallo`** de publicación, **escala como defecto del runtime** y **no completa nada**, nombrando `tx` y commit culpable. **No emite `conflicto` ni ninguna otra fase** |
 | `X37` | interrumpir una transacción, avanzar el remoto desde otro clon, arrancar la recuperación | se completa, el commit local se hace, el push **no se fuerza**, se emite `fallo` con el diagnóstico «el remoto avanzó» y se escala |
 | `X38` | recuperación con la `main` del control repo protegida | la recuperación **no intenta** empujar sobre ella |
-| `X39` | commit y push de recuperación | dejan evento con **los cinco conceptos de `a.9`** completos; la ausencia de cualquiera es un fallo del validador, no un silencio |
+| `X39` | commit y push de recuperación | dejan evento con **los cinco CAMPOS de procedencia** de §3.6 completos —lo comprobable; el `propietario del campo` se DERIVA de §1.3 y no se persiste—; la ausencia de cualquiera es un fallo del validador, no un silencio |
 | `X47` | resolver la **proyección normativa VIGENTE** del enum de `evento.fase` aplicando la cadena de sustituciones `D38 → D46 → D52`, y compararla con §2.6.1 y §3.6 | **coinciden**, y un evento con `fase: abortada` es **rechazado por el esquema estructural**, que para un enum basta. La prueba NO recorre el corpus entero buscando una sola enumeración: los registros de decisión y los documentos de crítica **conservan deliberadamente los enums sustituidos**, y esa historia es lo que hace auditable la cadena. Las excepciones son exactamente ésas, y están declaradas abajo |
 | `X48` | aplicar una transacción completa y comparar cada canónico con su `hash_posterior_esperado` | casan **byte a byte**. Ningún mecanismo de detección —marcador, regla de lectura o diario— modifica el contenido canónico |
 | `X49` | provocar un conflicto y evaluar `b.4` P0 sobre los items afectados | devuelve `reconciliacion-pendiente` **sin que se haya escrito un byte en ningún `03-integracion.md`** y sin que exista un segundo marcador |
@@ -1347,7 +1349,7 @@ impuso al arnés de negativos.
 | `X55` | abandonar una transacción en conflicto y comprobar el estado resultante | `abandonada` es durable, **el marcador se retira**, el control repo **vuelve a commitear**, y un evento `deriva` con `causa: abandono-de-transaccion` mantiene bloqueados **sólo** los items que nombra |
 | `X56` | revertir un canónico de una transacción con `derivada` durable, y arrancar | se emite un evento **`deriva`** con `causa: posterior-al-cierre`. **NO** se emite ninguna fase, la transacción cerrada **no gana ningún evento nuevo con su `tx`**, y nada se restaura solo |
 | `X57` | recorrer el diario buscando cualquier evento con `fase` cuya transacción ya tenga `derivada` | **no existe ninguno**, y el **validador semántico del diario** lo rechaza —la comprobación es de `tx`, no de evento aislado (§3.6)—. Ninguna transición sale del terminal |
-| `X58` | recorrer el grafo de fases buscando un estado no terminal sin sucesor admisible | **no existe ninguno**: `preparada` sale a dos, `conflicto` sale a dos, `confirmada` sale a uno, y `derivada` y `abandonada` son terminales que **retiran el marcador**. Ninguna transacción puede quedar reteniéndolo para siempre |
+| `X58` | recorrer el grafo de fases buscando un estado no terminal sin sucesor admisible | **no existe ninguno**: `preparada` sale a dos, `conflicto` sale a dos, `confirmada` sale a uno, y `derivada` y `abandonada` son terminales que **retiran el marcador**. **Y la retención acotada del desenlace `4b` termina por ACTO DE AUTORIDAD del Owner** —cuarentena o declaración de irrecuperable (§2.6.9)—, no por construcción: el grafo no la cierra sola, y decirlo es la corrección de `A9`. Lo que se comprueba aquí es el grafo; que exista autoridad que pueda cerrarla se comprueba en §2.6.9 |
 
 > **Las excepciones históricas de `X47`, declaradas una a una.** Estos textos conservan
 > deliberadamente enumeraciones sustituidas, y `X47` **no los cuenta como incumplimiento**:
@@ -1453,6 +1455,26 @@ CONTENIDO                el `tx` y LA LISTA DE RUTAS AFECTADAS. F4c obligaba a r
                          alternativa C. F4 pagaba el coste de C sin haber elegido C.
                          Sigue siendo RECONSTRUIBLE desde el diario, luego no gana identidad
                          propia y el paso 4 de §3.1 sigue dando COMPONER.
+
+EL `deriva` SIN REPARAR  **añadido por el gate final independiente (`A8`, MEDIO; es
+TIENE SU PROPIO          `D78`).** El paso `2bis` obliga a TODO lector a mirar los `deriva`
+MARCADOR                 sin reparar antes de creerse el estado — y encontrarlos exigía
+                         recorrer `estado/eventos/` entero y evaluar
+                         `bloqueado_por_deriva(item)` sobre cada uno. **Es exactamente el
+                         coste que el párrafo de arriba acaba de rechazar para el marcador de
+                         transacción**, y por el mismo `R1`. La regla era ejercible por el
+                         runtime y no por un lector humano, luego no era la regla que §2.6.8
+                         declara.
+                         `estado/deriva/<ID-DEL-DERIVA>.abierta` declara el `id` del evento,
+                         **las rutas y los items que bloquea**, y su causa. Se crea en el
+                         mismo instante que el evento y **se retira cuando el `deriva` se
+                         resuelve** —cuando una `derivada` lo referencia en
+                         `resuelve_deriva`—, con la misma disciplina con la que un terminal
+                         retira el marcador de transacción.
+                         **No gana identidad propia**: es RECONSTRUIBLE desde el diario por el
+                         mismo predicado, vive en `estado/` fuera de Git por la excepción de
+                         ruta de §2.4, y el paso 4 de §3.1 sigue dando COMPONER. Es un caché
+                         legible, igual que el otro.
 
 EL DIARIO ES LA FUENTE   el marcador acelera; el diario RECONSTRUYE. Si el marcador falta,
 DE RECONSTRUCCIÓN        el evento `preparada` de la transacción declara las mismas rutas, y
@@ -1690,8 +1712,13 @@ LLEVA    · el estado canónico RESTAURADO A LA BASE — idéntico, byte a byte,
          · el evento `abandonada`, con su verificación
          · el evento `deriva`
 
-NO LLEVA **ningún `hash_posterior_esperado`**. Ni uno. El conjunto publicable es la BASE
-         CONSISTENTE MÁS EL INCIDENTE, nunca la mezcla parcial.
+NO LLEVA **ningún FICHERO CANÓNICO en su `hash_posterior_esperado`**. Ni uno: todos han
+         vuelto a la base, y por eso el conjunto publicable es la BASE CONSISTENTE MÁS EL
+         INCIDENTE, nunca la mezcla parcial.
+         **El evento `preparada` SÍ conserva los suyos**, y debe conservarlos: es historia,
+         está en `estado/eventos/`, y sin él no se sabría a qué resultado se iba ni desde qué
+         base. Confundir «ningún fichero está en su hash posterior» con «ningún hash posterior
+         se conserva» borraría la intención que hace auditable el abandono.
 ```
 
 **Y por eso `abandonada` ES la rama «revertir» de `b.14`**, no un tercer desenlace. La
@@ -1910,6 +1937,23 @@ UNA LÍNEA                terminales consistentes, y se paga a sabiendas.
                               divergencia, o no se puede verificar la restauración]
                               la transacción PERMANECE ABIERTA · marcador VIVO · NO HAY
                               COMMIT · exige intervención en la MISMA MÁQUINA
+                              **LO CIERRA UN ACTO DE AUTORIDAD DEL OWNER, y son dos**
+                              (`A9`; es `D79`):
+                                (i)  AUTORIZAR LA CUARENTENA — copiar lo divergente fuera del
+                                     worktree, a `estado/cuarentena/<TX>/`, con su hash
+                                     registrado en el `conflicto`. Con eso la preservación
+                                     deja de ser imposible y el desenlace 4 se vuelve
+                                     alcanzable por el camino normal
+                                (ii) DECLARAR IRRECUPERABLE el estado especulativo local y
+                                     ordenar el cierre: `abandonada` registra el
+                                     `estado_observado[]` de TODAS las rutas TAL COMO ESTÁN
+                                     —con `clasificacion: divergente` donde lo estén—, el
+                                     `deriva` conserva el bloqueo sobre los items nombrados,
+                                     y el commit de incidente **NO incluye las rutas
+                                     divergentes**, que quedan fuera del conjunto publicable
+                              Ninguna de las dos es automática, ninguna la toma el runtime, y
+                              las dos dejan evento con su autoridad. Lo que NO existe es un
+                              4b que se cierre solo
 
 5 · REPARACIÓN POSTERIOR      TX-2: preparada → confirmada → derivada
                               3 eventos, transacción NUEVA e independiente. Al cerrar,
@@ -1931,10 +1975,14 @@ QUEDA SIN SALIDA           sitios; `conflicto` sale a dos; `confirmada` sale a u
                            `derivada` y `abandonada` son terminales POR DEFINICIÓN y retiran
                            el marcador. **No hay ningún nodo no terminal sin sucesor
                            admisible.**
-                           El desenlace `4b` NO es una excepción: sus salidas son las mismas
-                           y lo que falta es una CONDICIÓN MATERIAL —preservar o restaurar—,
-                           no una transición. Y mientras falta, **el marcador sigue vivo y
-                           no se publica nada**, que es el comportamiento seguro.
+                           El desenlace `4b` NO es una excepción del GRAFO: sus salidas son
+                           las mismas y lo que falta es una CONDICIÓN MATERIAL —preservar o
+                           restaurar—, no una transición. Y mientras falta, **el marcador
+                           sigue vivo y no se publica nada**, que es el comportamiento seguro.
+                           **Pero el bloqueo no lo levanta el autómata: lo levanta el
+                           OWNER**, por uno de los dos actos declarados arriba. Decir «ningún
+                           estado queda sin salida» sin nombrar esa autoridad prometía una
+                           terminación por construcción que el diseño no da.
 ```
 
 ### 2.6.10 · Commit y push en recuperación — y el hueco que esto destapa
@@ -2839,7 +2887,8 @@ son sus once puntos:
                              rechaza** (`X-G`). No se ensaya después: después ya no hay
                              cuerpo que recuperar si falla.
 
-9  AUTORIDAD Y MOTIVO        ambos obligatorios, con los cinco conceptos de `a.9`. Retirar
+9  AUTORIDAD Y MOTIVO        ambos obligatorios, con los cinco CAMPOS de procedencia de
+                             §3.6 — no los cinco conceptos, que incluyen uno derivado. Retirar
                              no es una limpieza automática por antigüedad, y sin autoridad
                              declarada no es un acto: es una pérdida.
 
@@ -3712,7 +3761,7 @@ candidatos con sujeto, autoridad y ciclo propios. El recuento de §3.8 **no camb
 
 | fase | predecesora admitida | campos OBLIGATORIOS | campos PROHIBIDOS | hash que gobierna | condición para emitir la siguiente |
 |---|---|---|---|---|---|
-| `preparada` | ninguna: abre la transacción | `afecta[]` con `ruta`·`hash_previo`·`hash_posterior_esperado`·`orden`· una de `contenido`\|`parche`\|`operacion` · los cinco de `a.9` · `base` | `resultado` · `hash_observado` · `hash_final` · `decision` | `hash_posterior_esperado` | los N ficheros casan con su hash posterior → `confirmada`; alguno diverge → `conflicto` |
+| `preparada` | ninguna: abre la transacción | `afecta[]` con `ruta`·`hash_previo`·`hash_posterior_esperado`·`orden`· una de `contenido`\|`parche`\|`operacion` · **los CINCO CAMPOS de procedencia** —`ordenante`·`autoridad`·`escritor_del_comando`·`ejecutor`·`actor_atribuido`—, **no «los cinco conceptos de `a.9`»**: el quinto concepto, `propietario del campo`, **se DERIVA** de §1.3 y no es campo · `base` | `resultado` · `hash_observado` · `hash_final` · `decision` | `hash_posterior_esperado` | los N ficheros casan con su hash posterior → `confirmada`; alguno diverge → `conflicto` |
 | `confirmada` | `preparada` | `resultado` · `derivados_pendientes[]` | `decision` · `hash_final` · `hash_observado` | `hash_posterior_esperado` | los derivados de `derivados_pendientes` se regeneraron → `derivada` |
 | `conflicto` | `preparada` o `conflicto` | `divergentes[]` con `ruta`·`hash_observado`· **`contenido` íntegro de lo divergente** · `items[]` · `rutas[]` · `autoridad` que debe resolver · `observacion` ≥ 1 | `resultado` · `decision` | ninguno: declara lo observado, no lo esperado | la divergencia CESA y los N ficheros vuelven a casar → `confirmada`; la autoridad decide cerrar → `abandonada`. **Siempre hay una de las dos** |
 | `abandonada` | `conflicto` | `estado_observado[]` con `ruta`·`hash_observado`·`clasificacion` ∈ {previo, posterior, divergente} **para TODAS las rutas del `tx`** · `autoridad` que decidió · `motivo` · `deriva_emitida` = `id` del `deriva` que conserva el bloqueo | `resultado` · `derivados_regenerados` · `decision` | ninguno: la transacción no alcanza ningún resultado | **ninguna. Es TERMINAL**, retira el marcador, y el bloqueo pasa al `deriva` que emite (§2.6.9) |
@@ -4386,7 +4435,9 @@ NADA                        `ENT`   `b.16` le da la entrega y la operación, e i
                             `SEG`   `C-SEG` nombra expresamente «dependencias externas»,
                                     y `G28` hace su consulta OBLIGATORIA antes de construir
 
-QUÉ TRABAJO GENERA        una EXTENSIÓN DE FICHA en F6, nombrada fichero a fichero:
+QUÉ TRABAJO GENERA        una EXTENSIÓN DE FICHA en F6, nombrada fichero a fichero. **Son
+                          SEIS**, no cuatro: las cuatro de las dos dimensiones huérfanas, más
+                          `DSP` y `ENC` que el gate final añadió:
                             `capacidades/ENT/`   añadir rendimiento observado y resiliencia
                                                  a su materia declarada
                             `capacidades/ARQ/`   añadir coste de diseño y resiliencia
@@ -4396,6 +4447,15 @@ QUÉ TRABAJO GENERA        una EXTENSIÓN DE FICHA en F6, nombrada fichero a fic
                             `capacidades/SEG/`   declarar su veto sobre `calidad/dependencias`
                                                  con los seis campos del contrato de veto de
                                                  `a.5`
+                            `capacidades/DSP/`   **añadida por `M-5`**: autorizar la APERTURA
+                                                 mecánica de items `AUD` dentro de una
+                                                 política `O7` vigente. `C1` exige que la
+                                                 ficha lo autorice antes de que ningún rol
+                                                 pueda hacerlo
+                            `capacidades/ENC/`   **añadida por `M-6`**: admitir como ENTRADA
+                                                 un finding de auditoría, cuyo sujeto es una
+                                                 celda de cobertura y no el Owner, y emitir
+                                                 su encuadre sin pasar por el vivero
 
 QUÉ NO GENERA             presión normativa. Ninguna de las cuatro fichas es (a), (b), `E1`,
                           `E2`, `K-1` ni `C4`. Extender una ficha de capacidad con materia
@@ -4417,20 +4477,52 @@ COBERTURA           celdas con su estado y su caducidad. AUTOMÁTICO
 DETECCIÓN           qué nunca se auditó · qué venció · qué invalidó un cambio.
                     Es una VISTA DERIVADA: no crea trabajo. AUTOMÁTICO
       ↓
-APERTURA            crea un item AUD. SÓLO dentro de la política O7. Si no hay política
-                    vigente, el sistema PROPONE y espera
+APERTURA            **`DSP`**, y sólo mecánicamente: crea un item `AUD` cuando la política
+                    `O7` vigente lo determina, con la prioridad que ella fija. Si no hay
+                    política vigente, PROPONE y espera. `DSP` **no decide** si auditar: la
+                    política lo decidió, y `DSP` la aplica — que es la misma disciplina con
+                    la que `b.15.1` le deja crear desbloqueadores «dentro del alcance ya
+                    autorizado» y `b.7` le niega la autoridad semántica de cancelar.
+                    **Y su ficha tiene que autorizarlo**: `C1` fija que la autoridad de un
+                    rol es SUBCONJUNTO de la de su capacidad, luego nombrar a `DSP` aquí
+                    exige una EXTENSIÓN DE FICHA en `capacidades/DSP/`, registrada abajo y
+                    en §17. La mitad NORMATIVA —que una política de recurrencia sea fuente
+                    de trabajo, tercera vía que `b.15.1` no contempla— **ya está registrada
+                    como `PN-2`**, y no se resuelve aquí
       ↓
-AUDITORÍA           proceso `AUD`, con la capacidad RESPONSABLE DEL ASPECTO produciendo
-                    la capa. Si hay varias, la declarada `lider` (§5.2)
+AUDITORÍA           proceso `AUD`, con la capacidad RESPONSABLE DEL ASPECTO como
+                    PROPIETARIA GLOBAL derivada del encargo, e `INV` produciendo la capa
+                    como su única obligatoria (§8.0, vía 1 y vía 2). Si hay varias
+                    responsables, la declarada `lider` (§5.2)
       ↓
 FINDINGS            en la evidencia del AUD. Todavía no son trabajo
       ↓
-CLASIFICACIÓN       `ENC`, con las nueve clases de entrada y los diez procesos de b.16
+CLASIFICACIÓN       `ENC`, con las nueve clases de entrada y los diez procesos de `b.16`.
+                    **Y con una décima clase, que hoy no existe** (`M-6`; es `D80`): todo el
+                    aparato de entrada tiene UN SOLO SUJETO, el Owner —las nueve clases son
+                    sobre su expresión, las catorce formas también, y `03-FORMAS` cierra su
+                    algoritmo con «11 en otro caso → `forma:idea-inmadura`», que **manda al
+                    vivero todo finding producido por un `AUD`**. Un hallazgo con evidencia,
+                    sujeto y aspecto declarados no es una idea inmadura del Owner.
+                    Lo que F6 tiene que construir, ya determinado y sin decidir nada:
+                      CLASE      `entrada:finding-de-auditoria`, décima de la taxonomía
+                      FORMA      `forma:finding`, decimoquinta de `03-FORMAS`
+                      RAMA       una rama del algoritmo ANTES de la cláusula de cierre: si
+                                 la entrada trae `sujeto`, `aspecto` y `evidencia` de una
+                                 celda de cobertura, es un finding y NO cae en el vivero
+                      SUJETO     no el Owner: la celda de cobertura que lo produjo
+                      SALIDA     un encuadre `listo-para-dsp` con su proceso propuesto, o
+                                 un descarte con motivo. Nunca una ficha de vivero
+                    **Y la extensión de ficha de `capacidades/ENC/`** —cuyas cuatro entradas
+                    declaradas están HOY ancladas al Owner— queda registrada abajo y en §17
       ↓
 CAUSAS RAÍZ         agrupación por campo común. Veinte inputs con alturas distintas NO son
                     veinte items si la causa es un componente
       ↓
-CAMPAÑA             una `iniciativa` con su gate
+CAMPAÑA             la abre la **capacidad RESPONSABLE del aspecto** —la `lider` si hay
+                    varias (§5.2)—, porque agrupar findings de su materia es juicio suyo y
+                    no de `DSP`. Es una `iniciativa` de §3.3 con su gate. **`DSP` la compone
+                    y la despacha**, y no decide su contenido (`b.5`, `b.7`)
       ↓
 CORRECCIÓN          `CON`, con el nivel de autorización de §5.5
       ↓
@@ -5265,6 +5357,46 @@ composición no hay entre quiénes; con composición, el handoff sólo añade QU
 `00-CIRCUITOS.md` lo dice con todas las letras —los circuitos son la sede de las entregas
 entre capacidades—, y ésa es la fuente que manda cuando `C5` parece decir otra cosa.
 
+**Cuántos ITEMS compone cada macrocircuito, y cómo le afecta el FRENO 3 de `a.7`.**
+
+> **Declarado por el gate final independiente (`M-7`, MEDIO; es `D82`).** `a.7` FRENO 3 impide
+> despachar más de **dos items `SIS` completados consecutivamente** si hay un item de producto
+> listo. Los cuatro macrocircuitos son mayoritariamente `proceso:SIS` y componen **más de dos
+> items cada uno**, y §8 no decía ni cuántos ni cómo interactúan con el freno. El tercer item
+> de `N` se habría detenido sin que nadie hubiera previsto por qué.
+
+```text
+CUÁNTOS ITEMS      los ITEMS LÍDERES son las FILAS de la tabla de §18 —una por tramo de fases
+COMPONE CADA UNO   con proceso propio—, más los ITEMS ENLAZADOS que la vía 4 exija:
+                     N   2 líderes  (`N0`–`N5` · `N6`–`N7`), sobre el item real `SIS-001`
+                     A   4 líderes  (`A0`–`A1` · `A2`–`A7` · `A8` · `A9`–`A10`), y el
+                         segundo NO es un item: son varios `AUD` enlazados, **uno por
+                         conclusión** — ocho sólo en `A6`
+                     M   2 líderes  (`M0`–`M5` · `M6`–`M7`)
+                     U   4 líderes  (`U0`–`U4` · `U5a` · `U5b` · `U6`)
+                   El recuento se DERIVA de §18 y se mueve con ella. No se escribe aparte
+
+FRENO 3, CIRCUITO  · **`N` · instalación** — el antecedente del freno es FALSO: no existe
+A CIRCUITO           ningún item de producto listo, porque el producto no tiene items en
+                     ADS hasta `N7`. El freno **no llega a evaluarse**. No es excepción
+                   · **`A` · adopción** — igual hasta `A10`, y además sólo dos de sus cuatro
+                     líderes son `SIS`: `A2`–`A7` es `AUD` y `A8` es `DEU`, y el freno cuenta
+                     rachas de items **SIS**. **Nunca alcanza el tercero consecutivo**
+                   · **`M` · migración** y **`U` · actualización** — cae la cláusula literal
+                     de `a.7`: «NO APLICA mientras el objetivo explícito del proyecto sea
+                     construir o migrar el propio kernel/runtime». Una migración o una
+                     actualización de ADS **es** ese objetivo mientras dura, y `U` además
+                     declara `bloqueo` en §8.4: ninguna otra actualización arranca
+                   **Ninguno de los cuatro necesita excepción del Owner, y ninguno necesita
+                   agruparse en menos items.** Lo que hacía falta era comprobarlo y decirlo
+
+QUÉ PASA SI CAMBIA si un producto adoptado tuviera items ADS listos DURANTE su adopción
+                   —caso que hoy no existe porque `A10` es su puerta—, el freno pasaría a
+                   evaluarse y la salida sería la tercera excepción de `a.7`: «trabajo SIS
+                   que desbloquea directamente el item de producto listo», que es exactamente
+                   lo que una adopción es. Queda dicho para que nadie lo redescubra
+```
+
 **Cómo se COMPRUEBA que la composición está completa.** Es mecánico, y F6 lo construye como
 validador; aquí queda declarado el contrato:
 
@@ -5531,7 +5663,8 @@ ESCRIBE         NADA en las fuentes hasta A8, y en A8 sólo lo que el Owner auto
                 ajeno empezaba haciendo un commit en su repositorio (§6.7)
 ESTADO          la iniciativa de adopción nace en A0 y es el hilo entre chats
 EVIDENCIA       inventario con procedencia · baseline aprobado · mapa de conservación
-GATES           A3 baseline aprobado por el Owner · A8 autorización de retirada ·
+GATES           A3 baseline aprobado por el Owner, contra las CATORCE preguntas del §6.2
+                de la directiva, que son su contrato (abajo) · A8 autorización de retirada ·
                 A10 = O12
 CERTIFICACIÓN   Integrada en A9
 ROLLBACK        A0–A7 no tocan el producto. Revertir NO es «borrar el control repo»: el
@@ -5566,6 +5699,46 @@ CIERRE          A10 superado, y el producto entra en SU macrofase real — que p
 > ```
 >
 > **Esto no autoriza iniciar la adopción**, y no levanta ninguna de las condiciones de `O14`.
+
+### El contenido del BASELINE de `A3`, que es el §6.2 de la directiva y no otra cosa
+
+> **Declarado por el gate final independiente (`M-9`, MEDIO; es `D81`).** `A3` era «BASELINE
+> con evidencia» y su gate «baseline aprobado por el Owner», **sin decir de qué**. El §6.2 de
+> la directiva enumera catorce preguntas que el baseline debe responder «con evidencia
+> razonable», y §15.2 trazaba el apartado 6 entero en una sola fila —lo que hacía invisible
+> que 6.2 tenía contenido exigible—. F6 habría inventado el contenido de un gate que el Owner
+> aprueba.
+
+**Las CATORCE preguntas del §6.2 son el contrato de `A3`, literalmente y sin reordenar:**
+
+```text
+ 1 qué existe realmente                    8 qué decisiones están implementadas y nunca
+ 2 qué está terminado                        se documentaron
+ 3 qué está parcialmente implementado      9 qué elementos se contradicen
+ 4 qué está pendiente                     10 qué trabajo pendiente existe
+ 5 qué está roto                          11 qué elementos son duplicados
+ 6 qué está desplegado                    12 qué riesgos y restricciones existen
+ 7 qué decisiones gobiernan actualmente   13 qué conocimiento local debe conservarse
+   el proyecto                            14 qué especialización necesita el proyecto
+```
+
+**Y se responden OBSERVANDO, no interpretando**, con el patrón que el corpus ya usa: las
+cinco variables de `diseno/03-ESCALA-DE-NOVEDAD.md` se evalúan «mirando el producto —el
+control repo y sus fuentes—, no interpretando», y cada una declara qué cuenta como verdadera.
+El baseline hereda esa disciplina:
+
+```text
+CADA RESPUESTA LLEVA      su EVIDENCIA —ruta, revisión y qué se observó—, y su GRADO: OBSERVADO
+                          (se vio), DERIVADO (se calculó de algo observado) o DECLARADO (lo
+                          dijo alguien, y consta quién)
+NINGUNA ES «SE SUPONE»    una pregunta sin respuesta se responde «no se pudo determinar», con
+                          el motivo. El gate `A3` admite esa respuesta; lo que NO admite es
+                          el silencio
+QUIÉN LAS PRODUCE         los items `AUD` enlazados de `A2`–`A3`, cada uno con su propietaria
+                          derivada (§18). La pregunta 14 la produce `SIS`, que responde de la
+                          especialización
+QUIÉN LO APRUEBA          el **Owner**, y su aprobación es el gate. Sin ella `A4` no abre
+```
 
 ### Lo que la adopción tiene que cubrir de verdad
 
@@ -6629,7 +6802,12 @@ PRESIÓN F5     exige enmienda de material aprobado antes de construirse
 | 4.3 | conocimiento nuestro reutilizable | `X1` | **DEFERIDA** |
 | 4.4 | conocimiento del proyecto | §1.2 especialización | AMPLIADA |
 | 5 | minería | `X4`: es un `AUD` | REUTILIZADA |
-| 6 | adopción | §8.2 | NUEVA |
+| 6 | adopción — **desglosado**, porque trazarlo en bloque ocultaba que `6.2` es exigible | §8.2 | NUEVA |
+| 6.1 | fuentes que deben poder analizarse | §8.2 `LEE` · `A2` inventario | NUEVA |
+| 6.2 | **las catorce preguntas del baseline** | §8.2, contrato de `A3` y de su gate | NUEVA |
+| 6.3 | conversión del trabajo existente | §8.2 `A7` trabajo vivo | NUEVA |
+| 6.4 | creación del PROFILE y especialización | §8.2 `A5` | NUEVA |
+| 6.5 | el proyecto trae base sólida propia | §8.2 `A6` reconstrucción, y `A8` no retira material del producto | NUEVA |
 | 7 | proyecto nuevo instalable | §8.1 | NUEVA |
 | 8 | gobierno Git del producto | §10 · `C6` · `C7` | REUTILIZADA |
 | 8.3 | Git como memoria operativa | §10.2: ramas abandonadas siguen sin cubrir | **PARCIAL** |
@@ -6899,7 +7077,7 @@ Comprobación adversarial de sólo lectura sobre la tanda anterior. Sus seis def
 | `D69` | estado **ESTABLE** frente a **ESPECULATIVO**, y `abandonada` como **reversión local verificada** contra la revisión base | `D64` · `D16` · `D23` | `abandonada` retiraba el marcador dejando el conjunto parcial **publicable**, y un conjunto parcial no es consistente porque cada `rename` sea atómico |
 | `D70` | recuperación en **TRES niveles** —exacta local, completa remota si cerró, **reinicio** si sigue abierta—, y la comparación de alternativas corregida: **`R1` no descarta el worktree** | `D65` · `D64` | «otra máquina reanuda clonando el control repo» es imposible con la regla de commit vigente, y el descarte del worktree invocaba `R1` sin fundamento |
 
-### `D71`–`D77` · las decisiones de la TANDA INTEGRADA del GATE FINAL
+### `D71`–`D82` · las decisiones de la TANDA INTEGRADA del GATE FINAL
 
 El **GATE FINAL INDEPENDIENTE** —tres agentes con contexto limpio, 33 hallazgos verificados
 uno a uno contra su fichero y su línea— y su **COMPLEMENTO DE COBERTURA** —otros tres agentes,
@@ -6916,6 +7094,11 @@ distintos**. Los dos juicios se conservan íntegros e inmutables en los document
 | `D75` | **`A2`–`A7` es `proceso:AUD`** en items enlazados uno por conclusión, con propietario DERIVADO por item; §18 reescrita con la vía de cada capacidad; `SEG` y `CON` obligatorias en `U5b`; `U6` revalida el nivel vigente | `D67` | **BLOQUEANTE** `B-1`, y con él `G-1`, `G-2`, `M-3` y `m-4`: §8.2 y §18 asignaban procesos incompatibles a las mismas fases |
 | `D76` | **`N5` produce el baseline y la clasificación de desconocidos críticos**, y el Owner lo aprueba — simetría exacta con `A3` | `D67` en los gates de `N` | **GRAVE** `G-3`: `N7 = O12` invocaba tres condiciones y ninguna fase producía dos de ellas: el gate era invocable y no satisfacible |
 | `D77` | las **doce áreas documentales reciben identificador** `aspecto:documental/<area>`, derivado del patrón `ads:memoria` que ya existe. Las catorce condicionales NO lo reciben: dos ya tienen sede canónica, y darles contrato editable crearía la segunda sede que `I5` prohíbe | `D68` | **GRAVE** `G-4`: §5.7 afirmaba que cada área resuelve a un contrato de aspecto, ninguna tenía identificador, y el único ejemplo usaba la mitad partida que `D68` retiró |
+| `D78` | un **`deriva` sin reparar lleva su propio marcador legible**, `estado/deriva/<ID>.abierta`, con las rutas y los items que bloquea | `D64` | **MEDIO** `A8`: el paso `2bis` obligaba a todo lector a mirarlos, y encontrarlos exigía recorrer el diario entero — el coste que `R1` rechaza |
+| `D79` | el desenlace **`4b` lo cierra un ACTO DE AUTORIDAD del Owner**: cuarentena, o declaración de irrecuperable con cierre por `abandonada` | `D69` · `X58` | **MEDIO** `A9`: `4b` retenía el marcador para siempre sin autoridad que pudiera cerrarlo, mientras `X58` afirmaba lo contrario |
+| `D80` | un **finding del sistema tiene clase, forma y rama propias**, y su sujeto es la celda de cobertura, no el Owner | `D67` | **MEDIO** `M-6`: la cláusula de cierre de `03-FORMAS` mandaba al vivero todo finding de un `AUD` |
+| `D81` | el **contenido del BASELINE de `A3` es el §6.2 de la directiva**, sus catorce preguntas con evidencia y grado; §15.2 desglosa el apartado 6 | `D67` · `m3` | **MEDIO** `M-9`: `A3` era «baseline con evidencia» sin decir de qué, y F6 habría inventado el contenido de un gate del Owner |
+| `D82` | cada macrocircuito declara **cuántos items compone y cómo le afecta el FRENO 3** de `a.7`. Ninguno necesita excepción | `D67` | **MEDIO** `M-7`: el tercer item `SIS` de `N` se habría detenido sin que nadie hubiera previsto por qué |
 
 **Y `O16`**, resolución posterior del Owner que da sede a `PN-11`: autoridad normativa en la
 sección `(g)`, contrato derivado `C8` en F6, y `C7` limitado a las sources. **No autoriza
