@@ -1421,15 +1421,44 @@ MATRIZ DE LOS 43    `requiere_f5` sube de 2 a 3 · `requiere_f6` conserva `F-01`
                     **43 ids distintos, un estado primario cada uno, ningún estado compuesto,
                     y el total DERIVADO de las filas.**
 
+VERIFICACIÓN        una batería propia de **TREINTA comprobaciones que DERIVAN su
+MECÁNICA PROPIA     resultado del árbol**, no de lo que el texto afirma de sí mismo.
+                    **No es un gate y no certifica nada**: la escribió quien aplicó la
+                    corrección. Lo que hace es volver REFUTABLE cada afirmación de la tanda.
+                    Es la lección de la tanda anterior, cuyas «30 comprobaciones, 30 en
+                    verde» incluían CUATRO que no debían estarlo y ninguna se había ejecutado.
+                    Vive en `docs/evolucion/verificacion/`, y su alcance y sus límites están
+                    declarados abajo.
+
 LÍMITE DEL ENTORNO  la batería canónica se ejecutó con **Python 3.10.12**, que es lo único
-                    disponible en esta máquina. `comprobar_arranque` (`T148`),
-                    `comprobar_fuentes` (`T159`) y las pruebas de `workspace` fallan por
-                    `tomllib`, que exige **3.11+** — y su salida lo dice con esas palabras:
-                    «se requiere Python 3.11 o superior para leer TOML». **Es `A14`**, que el
-                    gate final declaró AJENO a F4, con propietario `PLT` y fase F6. **No se
-                    ha tocado el tooling para sortearlo**, y el resultado es **idéntico al de
-                    antes de esta tanda**: 10/13 validadores, 8/57 pruebas de workspace.
+                    disponible en esta máquina —no hay 3.11+ instalable sin `sudo`—.
+                    `comprobar_arranque` (`T148`), `comprobar_fuentes` (`T159`) y las pruebas
+                    de `workspace` fallan por `tomllib`, que exige **3.11+**, y su salida lo
+                    dice con esas palabras: «se requiere Python 3.11 o superior para leer
+                    TOML». **Es `A14`**, que el gate final declaró AJENO a F4, con propietario
+                    `PLT` y fase F6. **No se ha tocado el tooling para sortearlo.**
+
+Y UNA CONSECUENCIA  `comprobar_evidencia` (`T158`) pasa a FALLIDA, y **no es un defecto de
+DE ESE LÍMITE,      contenido**: la evidencia publicada de `comprobar_fuentes` declara una
+DECLARADA           cobertura de **291 ficheros** y el corpus vigente da **293**, porque esta
+                    tanda añade dos —la batería de verificación y su README—. La cifra la
+                    publica `T161`, que **SUPERA** por sí sola; lo que impide republicarla es
+                    que `comprobar_fuentes` sale con código 1 **por `T159`**, y
+                    `registrar_evidencia` —correctamente— **no publica una ejecución que
+                    falla**. La evidencia no se edita a mano: su propia salida lo prohíbe con
+                    todas las letras. **En una máquina con Python 3.11+ una sola ejecución de
+                    `registrar_evidencia.py` la reconcilia**, y con ella `T158`.
+                    Se declara aquí para que un gate posterior no lo lea como defecto nuevo:
+                    **es `A14` propagándose**, y su remedio es el de `A14`.
 ```
+
+**La batería de esta tanda, y lo que NO comprueba.** Vive en
+[`verificacion/README.md`](verificacion/README.md), con el detalle de sus treinta
+comprobaciones y de sus tres límites declarados: **no ejecuta nada del protocolo** —no hay
+runtime, ni esquema de `evento`, ni un fichero bajo `estado/`—, **no sustituye al gate** —no
+juzga suficiencia para F5— y **no cubre el corpus por lectura**: comprueba que las catorce
+fuentes y las quince fichas existen, no que alguien las haya leído. Que un gate posterior las
+LEA sigue siendo su condición mínima, y ninguna comprobación mecánica la sustituye.
 
 ## Siguiente acción exacta
 
