@@ -2221,9 +2221,18 @@ QUEDA SIN SALIDA           sitios; `conflicto` sale a dos; `confirmada` sale a u
 **Lo que rige, y son cinco reglas:**
 
 ```text
-1  EL COMMIT LOCAL SE HACE, y emite su evento con los CINCO conceptos de `a.9`:
-   ordenante · autoridad · escritor_del_comando · ejecutor · actor_atribuido. La ausencia de
-   cualquiera de los cinco es un FALLO DEL VALIDADOR, no un silencio.
+1  EL COMMIT LOCAL SE HACE, y emite su evento con **los CINCO CAMPOS DE PROCEDENCIA** de
+   §3.6 —`ordenante` · `autoridad` · `escritor_del_comando` · `ejecutor` ·
+   `actor_atribuido`—, **no «los cinco conceptos de `a.9`»**: el quinto concepto de `a.9` es
+   el **PROPIETARIO DEL CAMPO**, que **se DERIVA** de §1.3 y no se persiste, y
+   `actor_atribuido` pertenece a **otra** lista de `a.9`. La ausencia de cualquiera de los
+   cinco campos es un FALLO DEL VALIDADOR, no un silencio.
+   **Corregido por el gate de cierre (`A7`, FALLIDA).** Ésta era **la única sede que el gate
+   final nombró y la única que no se tocó**: era byte a byte idéntica al texto base, y L2226
+   la hace condición de validación — que es literalmente el sentido de su condición de cierre.
+   El documento ya lo escribía bien en las otras cinco sedes: `X39`, §2.6.6, §2.9 punto 9,
+   §3.6 fila `preparada` y §3.6 el bloque de PROCEDENCIA. Es `D66` propagado, y `D95` lo
+   registra.
 
 2  EL PUSH NO ES AUTOMÁTICO. Pasa a `esperando-owner`, o a la política declarada en
    `adaptador.publicacion_control_repo` (abajo) — y **ninguna política autoriza publicar una
@@ -7583,7 +7592,7 @@ sólo corrigen recuentos, cardinalidades, fronteras, contadores y la semántica 
 
 
 
-### `D87`–`D94` · las decisiones de la CORRECCIÓN DEL GATE DE CIERRE
+### `D87`–`D95` · las decisiones de la CORRECCIÓN DEL GATE DE CIERRE
 
 El **GATE DE CIERRE INDEPENDIENTE** —dos revisores con contexto limpio en paralelo y un
 adjudicador sobre los dos dictámenes ya cerrados— devolvió **INSUFICIENTE PARA F5** por dos
@@ -7606,6 +7615,7 @@ ahora en `D89`, que es una decisión revisora.
 | `D92` | `<CAP>:revision` tras `VER` se registra como **contrato completo para F6**, en todos los procesos donde el condicional existe. F4 no toca `01-PROCESOS.md` | nada anterior | **GRAVE** `I-08`: (b) lo exige dos veces y hay **cero instancias** en el kernel, justo en los tres tramos que escriben en las fuentes |
 | `D93` | **`F-01` se reclasifica** a presión lista para F5, y nace **`PN-14`**: `DIS/Reconstruccion` está en `b.16` L895 y `a.6` L495, material APROBADO | `D67` en la sede del remedio | `F-01` FALLIDA: el remedio, como estaba escrito, cambiaba el derivado dejando la fuente |
 | `D94` | las condicionales de `§5.18` son **TRECE**, contadas una a una. `D68` y `D77` dicen CATORCE y **no se reescriben**: la corrección vive aquí | `D68` y `D77` en su recuento | **MEDIO** `I-15`: `M-1` era exactamente «catorce frente a trece», y la cuarta sede —escrita de cero en la misma tanda— reintrodujo la cifra en el registro de trazabilidad |
+| `D95` | la regla 1 de §2.6.10 usa **«los cinco CAMPOS de procedencia»** de §3.6, como las otras cinco sedes. Es `D66` propagado | `D66` en su propagación | **MEDIO** `A7`, FALLIDA: era la ÚNICA sede que el gate nombró y la única que no se tocó, byte a byte idéntica al texto base, y **es** condición de validación |
 
 > **El espacio de nombres `INS-0`…`INS-7`, y su excepción histórica declarada (`I-12`).** La
 > proyección **NORMATIVA VIGENTE** de las fases de instalación es **`INS-0`…`INS-7`**, y su
