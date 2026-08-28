@@ -6,12 +6,19 @@
 > **Basta decir «Continúa»**: la siguiente acción exacta está al final.
 
 > **Estado de la fase, en una línea:**
-> **La TERCERA REVISIÓN INDEPENDIENTE devolvió INSUFICIENTE PARA F5, y sus hallazgos
-> reproducibles están CORREGIDOS en una tanda integrada. F4c sigue ABIERTA: quien corrigió es
-> quien recibió, y eso no la cierra.**
+> **El GATE FINAL INDEPENDIENTE se ha ejecutado y su veredicto es INSUFICIENTE PARA F5.
+> F4c NO se cierra: sigue ABIERTA, y F5 NO queda autorizada.**
 >
-> Sólo la cerraría un veredicto de SUFICIENCIA emitido por un revisor independiente **sobre
-> este resultado corregido**. Ese veredicto no existe, y esta pasada **no lo pide**.
+> Lo emitió un **adjudicador C** con contexto limpio sobre los dictámenes cerrados de **dos
+> revisores independientes**, A y B, que trabajaron en paralelo sin verse. C verificó los
+> **33 hallazgos uno a uno contra su fichero y su línea**, **sin resolver por mayoría**, y
+> rechazó piezas de cinco de ellos. Está en
+> [`16-GATE-FINAL-INDEPENDIENTE-F4C.md`](16-GATE-FINAL-INDEPENDIENTE-F4C.md).
+>
+> **DOS razones independientes, y cualquiera bastaría:** la cobertura del corpus obligatorio
+> quedó **incompleta —dieciocho fuentes sin abrir por ninguno de los dos—**, y hay **CUATRO
+> BLOQUEANTES y SEIS GRAVES confirmados**. **Ningún hallazgo se ha corregido**: hacerlo en la
+> misma pasada volvería a que quien recibe sea quien aplica.
 >
 > La emitió un revisor con contexto limpio que **no escribió F4 ni aplicó ninguna de sus
 > correcciones**, sobre el árbol `df05929`: **DOS BLOQUEANTES, ocho GRAVES, cinco MEDIOS y
@@ -60,8 +67,8 @@
 ```text
 CHECKPOINT — ADS-NEXT/10 · SIS/evolucion
 actualizado: 2026-08-27
-metodo:      SIS/Evolucion · TERCERA REVISIÓN INDEPENDIENTE EMITIDA · VEREDICTO
-             INSUFICIENTE PARA F5 · F4c ABIERTA
+metodo:      SIS/Evolucion · GATE FINAL INDEPENDIENTE EJECUTADO · VEREDICTO
+             INSUFICIENTE PARA F5 · F4c ABIERTA · F5 NO AUTORIZADA
 based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md@56ea196
              docs/evolucion/11-ARQUITECTURA-INTEGRADA.md   corregida
@@ -70,6 +77,8 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/14-DEVOLUCION-TECNICA-PREVIA-F4C.md
              docs/evolucion/15-TERCERA-REVISION-INDEPENDIENTE-F4C.md   VEREDICTO,
                                                              corregido por D64–D68
+             docs/evolucion/16-GATE-FINAL-INDEPENDIENTE-F4C.md    A · B · C ·
+                                                             VEREDICTO FINAL
              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · O16 · D16–D22 ·
                                                              D23–D33 · D34–D45 · D46–D51 ·
                                                              D52–D54 · D55–D57 · D58–D59 ·
@@ -87,6 +96,57 @@ procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y
              crítica NO equivale a autocertificarse, y NO prueba que esté bien resuelta.
              LA PRUEBA DE QUE ESTO IMPORTA: dos de los hallazgos de la segunda devolución son
              defectos que la PRIMERA CORRECCIÓN introdujo o no vio
+devuelto_por_el_GATE_FINAL_INDEPENDIENTE:
+  # NO es una lista de resueltos: es lo que el gate DEVUELVE SIN RESOLVER. Tres agentes con
+  # contexto limpio —A, B y C—, ninguno autor de F4. VEREDICTO: INSUFICIENTE PARA F5.
+  # NINGÚN hallazgo se ha corregido en la pasada que lo registra.
+  · COBERTURA · el encargo exige que entre A y B se cubra ÍNTEGRO el corpus obligatorio de
+    121 ficheros. NO se cubrió: DIECIOCHO fuentes obligatorias quedaron sin abrir por ninguno
+    —los dos ficheros de handoffs, los SEIS de diseno/, CUATRO de los siete contratos
+    transversales (C1, C2, C3, C5), los DOS de docs/owner/ y CUATRO de entrada/—. **Basta
+    para bloquear por sí solo**, y el riesgo no es formal: C5-HANDOFF.md es donde podría
+    vivir el vehículo que el bloqueante B-2 no encontró, y nadie miró ahí
+  · BLOQUEANTES CONFIRMADOS · CUATRO:
+      A1  el contrato de `evento` en §3.6 NO puede representar el `deriva` que hace emitible
+          `abandonada`: TRES sedes declaran el enum de `causa` y DOS son incompatibles. Un
+          esquema derivado de §3.6 rechaza el único registro que hace emitible el segundo
+          terminal, y con él la corrección entera de D64
+      A2  el predicado «transacción abierta» sigue siendo «sin `derivada`» en §2.9 y §7.4.
+          Una transacción cerrada por `abandonada` no tiene `derivada`, luego §2.9 RECONSTRUYE
+          su marcador y el control repo deja de commitear para todo el producto,
+          indefinidamente. Es el modo de fallo de B1, reinstaurado
+      B-1 §8.2 y §18 asignan procesos INCOMPATIBLES a las mismas fases de la adopción: §8.2
+          apoya DOM, SEG y DIS/Reconstruccion en los condicionales de proceso:AUD, y §18
+          asigna proceso:INV, cuyos condicionales son otros. Y ambas tablas listan AUD y DEU
+          como capacidades, que la nota al pie de §18 prohíbe expresamente
+      B-2 los participantes declarados de los cuatro macrocircuitos NO tienen vehículo en los
+          condicionales del proceso que D67 les asigna. Es el hueco que D67 existía para
+          cerrar, y F6 tendría que tomar la decisión arquitectónica que D67 dice haber tomado
+  · GRAVES CONFIRMADOS · SEIS: A3 (§7.4 declara retirado el ramal de reversión que D69
+    exige) · A4 (D64–D68 y la tercera revisión NO constan en §15.8 ni en la cabecera) ·
+    G-1 (U5b sin SEG ni CON: obligación con autoridad_de_retirada «nadie», y U6 es
+    inalcanzable) · G-2 (A8 y M6–M7 con propietario ARQ ausente de participantes, y sin CON) ·
+    G-3 (N7 = O12 sin producir dos de sus tres términos) · G-4 (las doce áreas documentales
+    sin identificador declarado, y el único ejemplo usa la mitad que D68 retira)
+  · MEDIOS CONFIRMADOS · TRECE, incluidos A5 y A13 que C RECLASIFICÓ desde otra severidad
+  · MENORES · SEIS, uno con su inferencia rechazada y uno declarado juicio y no defecto
+  · LO QUE C RECHAZÓ · piezas de CINCO hallazgos: la inferencia de m-4, la mecánica concreta
+    de M-7, una generalización de B-2 —DOM y SEG sí tienen vía de consulta abierta—, una
+    referencia de línea de A9, y m-3 como defecto. Y declaró que A14 NO es defecto de F4:
+    es el entorno con Python 3.10 contra un tooling que exige 3.11
+  · UN DEFECTO QUE NINGÚN REVISOR VIO, confirmado por C: §2.6.9 L1458 sigue afirmando
+    «ninguna de las dos rutas revierte nada», tercera sede que contradice a D69
+  · SIN DISCREPANCIAS MATERIALES IRRESOLUBLES entre A y B: todas las aparentes se resolvieron
+    demostrando que miraban sedes distintas. Esa cláusula del encargo NO se disparó
+  · EL DIAGNÓSTICO DE C · el patrón es uno solo y alcanza a los dos ejes: decisiones bien
+    tomadas y APLICADAS A LA MITAD DE LOS SITIOS QUE LAS INVOCAN. D67 asignó procesos sin
+    comprobar sus condicionales; D68 corrigió el recuento obligatorio y reprodujo el fallo en
+    el condicional. **Ninguno de los diez hallazgos de nivel 1 y 2 exige una decisión
+    arquitectónica nueva del Owner**: todos se cierran propagando decisiones ya tomadas bien
+    en otra sede
+  · CONDICIÓN PARA F5 · C la deja en CINCO niveles, del 0 al 4, hallazgo a hallazgo, en la
+    sección 10 del documento 16. Nivel 0: cubrir las dieciocho fuentes, con C5-HANDOFF.md
+    ANTES de cerrar B-2
 corregido_en_la_CORRECCION_PREVIA_AL_GATE:
   # Comprobación adversarial de SÓLO LECTURA sobre la tanda anterior, y su corrección. Sus
   # SEIS defectos eran TODOS propios de esa tanda: ninguno estaba en el juicio de la tercera
@@ -612,15 +672,18 @@ owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
              de control DEFINITIVO. NO autoriza iniciar la adopción" (2026-08-27)
 pregunta_pendiente: ninguna. Las DIEZ presiones normativas vigentes son materia de F5,
              no preguntas
-siguiente:   CUARTA REVISIÓN INDEPENDIENTE sobre el resultado corregido, por quien NO
-             escribió F4 ni aplicó NINGUNA de sus tandas. Los 22 hallazgos reproducibles
-             están corregidos, y eso NO los da por bien resueltos: quien corrigió es quien
-             recibió. F5 NO arranca sin un veredicto de SUFICIENCIA
+siguiente:   CERRAR el NIVEL 0 y el NIVEL 1 de la condición para F5 que el gate deja
+             escrita: cubrir las DIECIOCHO fuentes obligatorias sin abrir —empezando por
+             C5-HANDOFF.md, que puede contener el vehículo de B-2— y los CUATRO
+             BLOQUEANTES. Después, un gate posterior sobre el resultado. F5 NO arranca sin
+             un veredicto de SUFICIENCIA
 falta_para_cerrar_la_capa:
-  · F4c ESTÁ ABIERTA. Hubo un veredicto INDEPENDIENTE Y EXPLÍCITO de INSUFICIENCIA —dos
-    BLOQUEANTES y ocho GRAVES—, sus hallazgos reproducibles están corregidos, y **eso no la
-    cierra**: sólo la cierra un veredicto de SUFICIENCIA sobre el resultado corregido,
-    emitido por quien no lo escribió. Ese veredicto no existe.
+  · F4c ESTÁ ABIERTA, y ahora con el GATE FINAL INDEPENDIENTE ejecutado y devuelto:
+    **INSUFICIENTE PARA F5**, por adjudicación de un tercer agente sobre dos dictámenes
+    independientes. CUATRO BLOQUEANTES, SEIS GRAVES y una COBERTURA DE CORPUS INCOMPLETA,
+    cada una bastante por sí sola. **F5 NO queda autorizada.** Antes: un veredicto de
+    insuficiencia de la tercera revisión, dos devoluciones independientes y CINCO
+    comprobaciones técnicas.
     Antes: dos devoluciones independientes, la segunda con veredicto explícito de
     INSUFICIENCIA, y CUATRO comprobaciones técnicas más. Las correcciones de todas las aplicó
     QUIEN LAS RECIBIÓ, y eso no prueba que estén bien resueltas. LA EVIDENCIA DE QUE EL

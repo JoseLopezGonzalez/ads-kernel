@@ -62,6 +62,8 @@ previos. Éstos son sus artefactos, y su estado:
 
 | — | **TERCERA REVISIÓN INDEPENDIENTE de F4c** | [`15-TERCERA-REVISION-INDEPENDIENTE-F4C.md`](15-TERCERA-REVISION-INDEPENDIENTE-F4C.md) | **entregada**: emitida por un revisor con contexto limpio que no escribió F4 ni aplicó ninguna de sus correcciones, sobre el árbol `df05929`. **Veredicto: INSUFICIENTE PARA F5** — DOS BLOQUEANTES, ocho GRAVES, cinco MEDIOS y siete MENORES, más quince hallazgos que intentó y NO pudo reproducir. **`F4c` NO se cierra y sigue ABIERTA.** Sus 22 hallazgos reproducibles quedan corregidos en una TANDA INTEGRADA posterior —`D64`–`D68`, `PN-11` y `PN-12`—, que **no modifica este documento**: el juicio es histórico e inmutable. Que estén corregidos no los da por bien resueltos |
 
+| — | **GATE FINAL INDEPENDIENTE de F4c** | [`16-GATE-FINAL-INDEPENDIENTE-F4C.md`](16-GATE-FINAL-INDEPENDIENTE-F4C.md) | **entregado**: TRES agentes con contexto limpio —revisor A, revisor B y adjudicador C— sobre el árbol `a713590`. C verificó los **33 hallazgos uno a uno contra su fichero y su línea**, sin resolver por mayoría. **Veredicto: INSUFICIENTE PARA F5** por DOS razones independientes: la cobertura del corpus quedó incompleta —**dieciocho fuentes obligatorias sin abrir**— y hay **cuatro BLOQUEANTES y seis GRAVES confirmados**. **`F4c` NO se cierra y sigue ABIERTA; F5 NO queda autorizada.** Ningún hallazgo se corrigió en esa pasada |
+
 El registro reanudable de todo ello es
 [`CHECKPOINT-ADS-NEXT.md`](CHECKPOINT-ADS-NEXT.md). **Basta decir «Continúa»**: la
 siguiente acción exacta está al final de ese fichero.
