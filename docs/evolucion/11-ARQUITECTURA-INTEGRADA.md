@@ -120,12 +120,13 @@ Para el Owner, sin vocabulario interno.
 ```text
 LA CUARTA CAPA           sigue deferida. Hace falta un proyecto independiente que minar.
 EL PILOTO                sigue sin ejecutarse. Nada de aquí está demostrado en un producto.
-LAS ENMIENDAS            este diseño presiona material aprobado en **ONCE** puntos, tras dos
-                         devoluciones independientes, una tercera revisión y el gate final
-                         con su complemento de cobertura. El recuento se DERIVA de §16 y se
-                         mueve cuando aparece algo no contado: fueron ocho, y `PN-11`,
-                         `PN-12` y `PN-13` lo llevan a once. Se enumeran y NO se redactan:
-                         eso es F5, y su puerta es el Owner.
+LAS ENMIENDAS            este diseño presiona material aprobado en **DOCE** puntos, tras dos
+                         devoluciones independientes, una tercera revisión, el gate final con
+                         su complemento de cobertura y el GATE DE CIERRE INDEPENDIENTE. El
+                         recuento se DERIVA de §16 y se mueve cuando aparece algo no contado:
+                         fueron ocho, `PN-11`, `PN-12` y `PN-13` lo llevaron a once, y
+                         **`PN-14` lo lleva a doce**. Se enumeran y NO se redactan: eso es
+                         F5, y su puerta es el Owner.
 ```
 
 **Qué cuesta.** El diseño elige, en cada punto donde había alternativa, la forma que se puede
@@ -6043,8 +6044,8 @@ CIERRE          A10 superado, y el producto entra en SU macrofase real — que p
 > **Esto no autoriza iniciar la adopción**, y no levanta ninguna de las condiciones de `O14`.
 >
 > **Nota al pie, que NO toca la resolución** (`m-1`): `O15` se escribió cuando el recuento
-> derivado de presiones normativas vigentes era **ocho**. Hoy son **ONCE** (§16), porque
-> `PN-11`, `PN-12` y `PN-13` son posteriores a ella. La cifra que `O15` cita queda como la
+> derivado de presiones normativas vigentes era **ocho**. Hoy son **DOCE** (§16), porque
+> `PN-11`, `PN-12`, `PN-13` y `PN-14` son posteriores a ella. La cifra que `O15` cita queda como la
 > que era el día en que el Owner resolvió —su texto no se reescribe—, y la vigente es
 > siempre la que §16 deriva.
 
@@ -7505,7 +7506,9 @@ sigue llamándose `PN-4` aunque esté retirada, porque renumerar rompería la tr
 que ya se llevó al Owner. De aquellas cinco resultan **TRES vigentes** —`PN-1`, `PN-2`,
 `PN-3`—, una retirada (`PN-4`) y una fusionada (`PN-5`): 3 + 1 + 1 = 5, y la cuenta cierra.
 **Corregido por `m2`**: decía «cuatro vigentes, una retirada y una fusionada» sobre cinco, que
-suma seis. Las demás vigentes —`PN-6` a `PN-12`— son posteriores, y el total está abajo.
+suma seis. Las demás vigentes —**`PN-6` a `PN-14`**— son posteriores, y el total está abajo.
+**Corregido por `I-11`**: decía «`PN-6` a `PN-12`», que con las tres primeras suma DIEZ
+mientras el total decía ONCE, y omitía precisamente `PN-13`, la que va al Owner.
 
 ## `PN-1` · La sección (g) no existe, y esta fase la escribe
 
@@ -7841,8 +7844,14 @@ MATERIA MÍNIMA      añadir `DOM:condiciones C-DOM`, `SEG:condiciones C-SEG` y 
                     condicionales de `proceso:INV`. **O bien** declarar que el discovery de
                     dominio y diseño de un producto nuevo no pertenece a `INS-5` y nombrar
                     dónde pertenece. Son dos salidas, y elegir es del Owner
-ALCANCE             `INS-5` y `A9` de §8. NO alcanza a `A2`–`A7`, que es `proceso:AUD` y sí las
-                    declara; ni a `A8`, `M6`–`M7` ni `U5b`, que son `DEU` y `DEP` y también
+ALCANCE             `INS-5` y `A9` de §8, **y nada más**. NO alcanza a `A2`–`A7`, que es
+                    `proceso:AUD` y sí declara `DOM`, `SEG` y `DIS` como condicionales; ni a
+                    `A8`, `M6`–`M7` ni `U5b`, que son `proceso:DEU` y `proceso:DEP` y también
+                    las declaran —`DOM:condiciones` y `SEG:condiciones`, con `G28` haciendo
+                    irretirable a `SEG` en `DEP`—. **Corregido por `I-26`**: la frase quedaba
+                    cortada a media línea, en la única presión que esta tanda añadía y que va
+                    al Owner. **Y la mitad `PLT` del bloqueante `B-2` ya NO está aquí**: se
+                    cierra contra `C7:80-92` en §8.0 (`I-04`), y nunca fue materia del Owner
 SE PUEDE CONSTRUIR  todo lo demás de §8, y las cuatro composiciones completas salvo esas dos
                     celdas. `INS-0`–`INS-4`, `INS-6`, `INS-7` y los tres macrocircuitos restantes no
                     esperan a nadie
@@ -7858,10 +7867,77 @@ ORIGEN              hallazgo `B-2` del GATE FINAL INDEPENDIENTE, residuo que NO 
                     cuatro que lo exige
 ```
 
+## `PN-14` · NUEVA · `DIS/Reconstruccion` está en material APROBADO, no sólo en el kernel
+
+> **Registrada por el gate de cierre independiente (`F-01`, reclasificado; es `D93`).**
+> `F-01` estaba clasificado como EXTERNO de F6: sustituir `DIS/Reconstruccion` por `DIS` en
+> `01-PROCESOS.md` y en `00-CIRCUITOS.md`. **La sede estaba incompleta**: la misma cadena
+> aparece en material **APROBADO** que §17 declara intocable por F4 **y por F6**. Ejecutado
+> tal como estaba escrito, el kernel diría `DIS` y su fuente normativa seguiría diciendo
+> `DIS/Reconstrucción`: se corregiría el derivado y se dejaría la fuente, que es exactamente
+> el modo de fallo que §15.7 registra para `C7`. Y entonces la verificación mecánica «contra
+> la fuente» que el checkpoint invoca como motivo del remedio **seguiría fallando**.
+
+```text
+QUÉ PRESIONA        (b) `b.16` L895 · `docs/rediseno/b-RECORRIDO-APROBADA.md`
+                    (a) `a.6` L495 · `docs/rediseno/a-CAPACIDADES-APROBADA.md`
+                    Los dos son material APROBADO, y §17 los declara «intactas. F4 no las
+                    toca» — y F6 tampoco puede tocarlos
+
+TEXTO VIGENTE       `b.16` L895: «`DIS/Reconstrucción `C-DIS``»
+                    `a.6` L495: «`AUD  INV ∥ DOM ∥ SEG ∥ DIS/Reconstrucción`»
+
+QUÉ ES EL DEFECTO   `DIS/Reconstruccion` **no es una capacidad ni un participante
+                    asignable**: es uno de los SEIS MÉTODOS de `DIS`
+                    (`capacidades/DIS/CAPACIDAD.md`), y **cuál se ejecuta lo calcula la
+                    ESCALA DE NOVEDAD, no lo elige la ruta** —`diseno/03-ESCALA-DE-NOVEDAD.md`
+                    L251–261 fija que todo paquete de `DIS` declara su `nivel_de_novedad` y
+                    que `gate:excelencia-visual` lo comprueba—. Nombrar el método en la ruta
+                    **PREDETERMINA** lo que la escala prohíbe predeterminar
+
+POR QUÉ NO BASTA    porque el conjunto de participantes es IDÉNTICO bajo las dos lecturas
+UN DERIVADO         —`DIS/Reconstruccion` denota `DIS` operando por uno de sus métodos, y la
+                    condición es `C-DIS` en las dos—, luego la composición de `A2`–`A7` que
+                    §8.0 y §18 declaran es correcta y **la arquitectura no queda inválida**.
+                    Lo que no se puede hacer por derivado es corregir (a) y (b): son
+                    normativos, y `F-01` tal como estaba escrito **no era ejecutable** para
+                    su fin declarado
+
+MATERIA MÍNIMA      sustituir, en los DOS puntos aprobados, `DIS/Reconstruccion` por la
+                    capacidad **`DIS`** con su condición **`C-DIS`**, y declarar
+                    expresamente que **el método concreto lo calcula la escala de novedad**,
+                    no la ruta. **Aquí no se redacta ninguna enmienda**, como en las trece
+                    anteriores
+
+ALCANCE             `b.16` fila `AUD` y `a.6` composición ilustrativa. NO alcanza a §8.2 ni
+                    a §18, que ya dicen `DIS` `C-DIS`; ni a la ficha de `DIS`, donde
+                    `DIS/Reconstruccion` es correcto porque **allí sí es un método**
+
+SE PUEDE CONSTRUIR  todo lo demás. La composición de `A2`–`A7` es correcta hoy bajo las dos
+                    lecturas, y `INS-5` no depende de esto
+
+BLOQUEA             que la composición de `A2`–`A7` sea **verificable mecánicamente contra la
+                    fuente**. Mientras (a), (b) y el kernel no digan lo mismo, la
+                    comprobación cruzada que `F-02` habilita no puede pasar
+
+DESPUÉS DE F5       **F6** actualiza `kernel/operativo/recorrido/01-PROCESOS.md` L434 y
+                    `kernel/operativo/circuitos/00-CIRCUITOS.md` L166, que es el trabajo que
+                    `F-01` ya tenía registrado. El orden importa: primero la fuente, después
+                    el derivado — al revés es el modo de fallo de `C7`
+
+CONDICIÓN DE        si el Owner prefiere no tocar (a) ni (b), la reversión es declarar
+REVERSIÓN           expresamente que `DIS/Reconstruccion` y `DIS` **designan al mismo
+                    participante**, y que lo que F6 corrige es la forma del derivado. Es una
+                    salida legítima y más barata; elegir es del Owner
+
+ORIGEN              hallazgo `F-01` del GATE FINAL, reclasificado por el GATE DE CIERRE
+                    INDEPENDIENTE: su remedio, tal como estaba escrito, no alcanzaba su fin
+```
+
 **Resumen para el Owner, tras revisar las cinco de la entrega anterior:**
 
 ```text
-VIGENTES · ONCE
+VIGENTES · DOCE
   PN-1   la sección (g). LA ÚNICA QUE BLOQUEA TODO EL ESTADO DURABLE, y ahora decide más
   PN-2   la política de auditoría como tercera vía de creación de trabajo
   PN-3   G03 y la ejecución desatendida. Misma pregunta que PN-2 por otro camino, y
@@ -7880,6 +7956,10 @@ VIGENTES · ONCE
          PN-6 y PN-10. No bloquea                                              NUEVA
   PN-13  b.16 no da a proceso:SIS ni a proceso:INV ninguna vía para DOM, SEG
          ni DIS, y INS-5 las necesita antes del gate «listo para construir»        NUEVA
+  PN-14  `DIS/Reconstruccion` —un MÉTODO, no una capacidad— está en b.16 L895 y
+         en a.6 L495, que son material APROBADO. Corregir sólo el kernel
+         cambiaría el derivado dejando la fuente, que es el modo de fallo que
+         §15.7 registra para C7. Sale de reclasificar `F-01`                      NUEVA
 
 RETIRADA · UNA
   PN-4   con su motivo escrito, y reinstaurable por F5 si el Owner lo prefiere
@@ -7890,6 +7970,10 @@ FUSIONADA · UNA
 CUATRO SON UNA FRASE       PN-6, PN-7, PN-9 y PN-10. Y tres de ellas se registran
 CADA UNA                   PRECISAMENTE PORQUE parecen obvias: PN-6 fijó esa vara, y
                            aplicarla de forma desigual sería el defecto
+
+EL TOTAL SE DERIVA         un barrido de las cabeceras `## \`PN-` da CATORCE; menos PN-4
+                           RETIRADA y PN-5 FUSIONADA, quedan DOCE. No se escribe a mano, y
+                           por eso se mueve cuando aparece una nueva
 
 NO SE RENUMERA NINGUNA. Renumerar rompería la trazabilidad de lo que ya se llevó al Owner.
 ```
@@ -8085,10 +8169,13 @@ REAL SIGUE PENDIENTE      llena. `O15` fija que esa adopción —PesquerApp— s
 NINGÚN ADAPTADOR EXISTE   y por tanto ninguno está certificado
 X1 Y P-05 SIGUEN          ninguna decisión de aquí cruza la línea del blueprint
 DEFERIDAS
-ONCE PRESIONES            §16, tras DOS devoluciones independientes, la TERCERA REVISIÓN y
-NORMATIVAS VIGENTES       el GATE FINAL: PN-4 retirada, PN-5 fusionada en PN-3, y PN-6 a
-                          PN-13 nuevas. PN-1 bloquea todo el estado durable, y F5 es su
-                          puerta. **PN-13** es la única que esta tanda añade
+DOCE PRESIONES            §16, tras DOS devoluciones independientes, la TERCERA REVISIÓN, el
+NORMATIVAS VIGENTES       GATE FINAL y el GATE DE CIERRE: `PN-4` retirada, `PN-5` fusionada
+                          en `PN-3`, y `PN-6` a `PN-14` nuevas. `PN-1` bloquea todo el estado
+                          durable, y F5 es su puerta. **`PN-14` es la única que esta tanda
+                          añade**, y sale de reclasificar `F-01`: su remedio, como estaba
+                          escrito, no alcanzaba (a) ni (b). El recuento se DERIVA de las
+                          cabeceras de §16, no se escribe a mano
 F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. TRES críticas independientes, una
                           devolución técnica, un GATE FINAL con tres agentes y su
                           COMPLEMENTO DE COBERTURA la han devuelto. La TERCERA REVISIÓN
@@ -8101,11 +8188,17 @@ F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. TRES críticas independi
 
 ## Lo que esta fase NO puede corregir, con su propietario y su fase
 
-**OCHO de los cuarenta y tres hallazgos del gate tienen su sede FUERA de F4** —en el kernel,
+**SIETE de los cuarenta y tres hallazgos del gate tienen su sede FUERA de F4** —en el kernel,
 en `docs/owner/` o en el propio documento del gate—, y esta fase **no los toca**: modificar
 kernel, esquemas, contratos o pruebas es F6, y modificar material en voz del Owner es suyo.
 Se registran aquí con propietario y fase para que nadie los dé por cerrados, **y no se
 cuentan como «F4 corregida»**.
+
+> **Eran OCHO, y ahora son SIETE.** `F-01` deja de ser externo: el gate de cierre demostró
+> que su sede alcanza a `b.16` L895 y a `a.6` L495 —material APROBADO— y que su remedio, tal
+> como estaba escrito, **no era ejecutable** para su fin declarado. Pasa a
+> `PRESION_LISTA_PARA_F5` con `PN-14`, y **conserva su trabajo de F6** —el kernel—, que se
+> ejecuta DESPUÉS. Sigue figurando en la tabla de abajo porque su mitad de F6 vive aquí.
 
 > **La tabla tiene NUEVE filas y los externos son OCHO, y no es un descuadre.** La novena es
 > `F-05`, que **NO es externo**: sus tres condiciones de cierre se cumplen en esta fase —§15.7
@@ -8116,8 +8209,8 @@ cuentan como «F4 corregida»**.
 
 | hallazgo | qué hay que hacer | dónde | propietario | fase | ¿bloquea la implementabilidad de F4? |
 |---|---|---|---|---|---|
-| `F-01` | sustituir `DIS/Reconstruccion` por `DIS` en el condicional de `proceso:AUD` y en el grafo de circuitos. **El método lo calcula la escala de novedad**, no lo nombra la ruta | `recorrido/01-PROCESOS.md` · `circuitos/00-CIRCUITOS.md` | `SIS` | **F6** | **SÍ, parcialmente.** §8.2 ya dice `DIS` `C-DIS`; el kernel sigue diciendo `DIS/Reconstruccion`. Mientras difieran, la composición de `A2`–`A7` **no es verificable mecánicamente** contra la fuente |
-| `F-02` | fijar el vocabulario del campo `capacidad` y tiparlo, junto con `capacidad_productora`, como `ref_a: capacidad` — hoy son `texto` libre, a diferencia de `handoff.yaml`, que sí usa `ref_a`. Y `OWNER` como `capacidad_productora` no es una capacidad | `esquemas/proceso.yaml` | `SIS` | **F6** | no hoy. Es la RAÍZ de `B-1` y de `F-01`: sin tipar, nada impide que vuelva a entrar un método donde va una capacidad |
+| `F-01` | **RECLASIFICADO por el gate de cierre.** Ya NO es un externo de F6: la cadena `DIS/Reconstruccion` está también en **`b.16` L895 y `a.6` L495**, que son material APROBADO e intocable por F4 **y por F6**. Corregir sólo el kernel cambiaría el derivado dejando la fuente. La presión es **`PN-14`** (§16), y **F5 es su puerta**; después, **F6** actualiza `01-PROCESOS.md` L434 y `00-CIRCUITOS.md` L166 | (a) `a.6` · (b) `b.16` → **F5** · después `recorrido/01-PROCESOS.md` · `circuitos/00-CIRCUITOS.md` → F6 | el **Owner** para (a) y (b) · `SIS` para el kernel | **F5 y F6** | **SÍ, parcialmente.** §8.2 y §18 ya dicen `DIS` `C-DIS`; (a), (b) y el kernel siguen diciendo `DIS/Reconstruccion`. Mientras difieran, la composición de `A2`–`A7` **no es verificable mecánicamente** contra la fuente. **No invalida la arquitectura**: el conjunto de participantes es idéntico bajo las dos lecturas |
+| `F-02` | **el vocabulario ya está escrito, y F6 no tiene que decidirlo.** Lo fijó `E-3` del documento 17, que es corpus inmutable, y esta tanda lo RECOGE aquí porque §19 no lo llevaba (`I-13`): (1) la **capacidad base** es una de las QUINCE, y sólo una de las quince; (2) admite un **sufijo `:<variante>` OPCIONAL y TIPADO**, con la variante declarada —`DOM:condiciones`, `SEG:condiciones`, `SEG:revision`, `CON:experimental`, `ARQ:diagnostico`—, que es la notación que la propia F4 usa en §8.2, §8.3, §8.4 y §18; (3) **`/` NO es válido para variantes** — es lo que hoy admite un MÉTODO donde va una capacidad, y es la raíz de `F-01`/`PN-14`; (4) **`capacidad_productora` usa la MISMA referencia** y el mismo vocabulario; (5) **`OWNER` NO es una capacidad**: se separa como AUTORIDAD, en su propio campo, porque las quince no lo incluyen. Con eso, tipar `capacidad` y `capacidad_productora` como `ref_a: capacidad` **deja de invalidar la notación de la propia F4** | `esquemas/proceso.yaml` — el cambio exacto de esquema: `ref_a: capacidad` con sufijo `:` opcional tipado, y un campo de autoridad separado para `OWNER` · y en `recorrido/01-PROCESOS.md`, sustituir `DIS/Reconstruccion` (tras `PN-14`) y mover `OWNER` a autoridad. **F4 NO modifica el esquema** | `SIS` | **F6** | no hoy. Es la RAÍZ de `B-1` y de `F-01`: sin tipar, nada impide que vuelva a entrar un método donde va una capacidad |
 | `F-04` | `grado_inicial: alta` en el escenario, conservando `grado: media`, y que `T75` compruebe la coincidencia con el grado del paso 5 | `entrada/05-ESCENARIOS.md` · su prueba `T75` | `ENC` con `SIS` | **F6** | no |
 | `F-05` (i) | crear en `circuitos/` las instancias de handoff que faltan, empezando por las de `SIS`, `PLT` y `VER`. **El QUÉ viaja ya está declarado** en §8.0; lo que falta es el bloque | `circuitos/` | `SIS` | **F6** | no. §8.0 declara el contenido, y la composición de ruta no depende de la instancia |
 | `F-06` | anclar el `cuando` de `dis-a-ver` a una estación del ciclo de calidad, y que la entrega nombre de qué pasada procede el dictamen | `circuitos/DIS-handoffs.md` | `DIS` | **F6** | no. Es ambigüedad, no contradicción: el gate de diseño no cierra hasta la segunda pasada, y bajo esa lectura los nueve ejes tienen nivel |
