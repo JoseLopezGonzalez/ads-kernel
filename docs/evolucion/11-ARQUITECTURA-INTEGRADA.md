@@ -6698,28 +6698,40 @@ atrás es volver a un release. Es lo que ya se hace, y funciona.
 > que ELEGIR, y esa elección determina obligaciones y autoridad. Se declara aquí, y **no se
 > crea ningún proceso**: los diez de `b.16` bastan.
 
-| macrocircuito | fase | proceso `b.16` | capacidad LÍDER | participantes | entrada | salida | gate | estado persistido |
+| macrocircuito | fase | proceso `b.16` | propietario global | participantes | entrada | salida | gate | estado persistido |
 |---|---|---|---|---|---|---|---|---|
-| **N · instalación** | `N0`–`N1` | `proceso:SIS` | `SIS` | `PLT` | decisión del Owner de instalar | control repo con `estado/` | — | `estado/` e `INI-001` desde `N0` |
-| | `N2`–`N5` | `proceso:SIS` | `SIS` | `PLT`, `ENC`, `PRD` | topología creada | especialización y adaptadores | `N3` baseline | items de la iniciativa |
-| | `N6`–`N7` | `proceso:DEP` | `PLT` | `ENT`, `VER` | especialización aprobada | punteros propagados y nivel certificado | `N7` = `O12` | evidencia + celdas de cobertura |
-| **A · adopción** | `A0`–`A1` | `proceso:SIS` | `SIS` | `PLT` | el Owner quiere gobernar un producto con historia | perímetro y topología | modo no destructivo declarado | iniciativa + `estado/` |
-| | `A2`–`A3` | `proceso:INV` | `INV` | `AUD` | acceso de lectura | inventario y baseline | `A3` aprobado por el Owner | capa de inventario, con procedencia |
-| | `A4`–`A7` | `proceso:INV` para reconstruir · `proceso:GAP` para lo que falta | `INV` · `PRD` | `DOM`, `SEG`, `DIS`, `ARQ`, `ENC` | baseline aprobado | producto reconstruido y trabajo vivo clasificado | — | capas por item |
-| | `A8` | `proceso:DEU` | `DEU` | `PLT`, con `C7` | autorización de retirada | copias organizativas retiradas | `A8` autorizado por el Owner | source changes por fuente |
-| | `A9`–`A10` | `proceso:DEP` | `PLT` | `SIS`, `VER`, `SEG` | limpieza cerrada | nivel Integrada | `A10` = `O12` | celdas de certificación |
-| **M · migración** | `M0`–`M4` | `proceso:SIS` | `SIS` | `PLT`, `ARQ` | existe una instalación de una versión anterior | estado migrado y verificado | `M4` migración verificada | `estado/` migrado + evento `migracion` |
-| | `M5`–`M7` | `proceso:DEU` | `DEU` | `PLT` con `C7`, `VER` | migración certificada | heredado retirado y verificado | `M6` autorizado · `M7` verificado | source changes por fuente |
-| **U · actualización** | `U0`–`U3` | `proceso:SIS` | `SIS` | `PLT` | hay una versión nueva de ADS | compatibilidad decidida | `U3` punto de no retorno | instantánea de `U3` |
-| | `U4`–`U6` | `proceso:SIS` · `proceso:DEP` en `U5b` | `SIS` · `PLT` | `ENT`, `VER` | decisión de actualizar | ADS actualizado y recertificado | `U6` = `O12` | migración + `INTEGRACIÓN PARCIAL` por fuente |
+| **N · instalación** | `N0`–`N5` | `proceso:SIS` | **`SIS`** | `PLT`, `ENC`, `PRD`, y las de discovery | decisión del Owner de instalar | control repo, topología, especialización y adaptadores | `N4` Operativa | `estado/` e `INI-001` desde `N0`, sobre el item `SIS-001` |
+| | `N6`–`N7` | `proceso:SIS` | **`SIS`** | `PLT` propaga bajo `C7` · `VER` certifica | especialización aprobada | punteros propagados y nivel Integrada | `N7` = `O12` | evidencia + celdas de cobertura |
+| **A · adopción** | `A0`–`A1` | `proceso:SIS` | **`SIS`** | `PLT` | el Owner quiere gobernar un producto con historia | perímetro y topología | modo no destructivo declarado | iniciativa + `estado/` |
+| | `A2`–`A7` | `proceso:INV` | **`INV`** | `AUD` con `DOM`, `SEG`, `DIS`, `ARQ`, `PRD`, `ENC` | acceso de lectura a las fuentes | inventario, baseline, producto reconstruido y trabajo vivo | `A3` baseline aprobado por el Owner | capas por item, con procedencia |
+| | `A8` | `proceso:DEU` | **`ARQ`** | `PLT` ejecuta bajo `C7` | autorización de retirada | copias organizativas y verdades paralelas retiradas | `A8` autorizado por el Owner | source changes por fuente |
+| | `A9`–`A10` | `proceso:SIS` | **`SIS`** | `PLT`, `VER`, `SEG` | limpieza cerrada | nivel Integrada | `A10` = `O12` | celdas de certificación |
+| **M · migración** | `M0`–`M5` | `proceso:SIS` | **`SIS`** | `PLT`, `ARQ`, `VER` | existe una instalación de una versión anterior | estado migrado, verificado y certificado | `M3` equivalencia · `M5` Integrada | `estado/` migrado + evento `migracion` |
+| | `M6`–`M7` | `proceso:DEU` | **`ARQ`** | `PLT` ejecuta bajo `C7` · `VER` verifica | `M5` certificado y autorización POR FUENTE | heredado retirado y verificado | `M6` autorizado · `M7` verificado | source changes + `INTEGRACIÓN PARCIAL` |
+| **U · actualización** | `U0`–`U4` | `proceso:SIS` | **`SIS`** | `PLT` | hay una versión nueva de ADS | compatibilidad decidida y migración aplicada | `U3` punto de no retorno | instantánea de `U3` + progreso por pasos |
+| | `U5`–`U6` | `proceso:SIS` · `proceso:DEP` en `U5b` | **`SIS`** · **`PLT`** en `U5b` | `ENT`, `VER` | migración aplicada | ADS actualizado y recertificado | `U6` = `O12` | `INTEGRACIÓN PARCIAL` por fuente |
+
+> **Los propietarios globales NO se eligen: los fija `b.16`.** `proceso:SIS` → `SIS`,
+> `proceso:INV` → `INV`, `proceso:DEU` → **`ARQ`** y `proceso:DEP` → `PLT`, verificados uno a
+> uno contra `01-PROCESOS.md`. `DEU` y `DEP` son **procesos**, no capacidades: las quince son
+> `APR ARQ CON DIS DOM DSP ENC ENT INV PLT PRD SEG SIS USO VER`, y confundir el nombre de un
+> proceso con el de una capacidad es el mismo modo de fallo que `G1` corrigió con `a.9`.
 
 ```text
 POR QUÉ NINGUNO ES        porque ninguno cambia la fábrica de forma que los diez procesos no
-UN PROCESO NUEVO          puedan representar: instalar, migrar y actualizar SON evolución del
-                          sistema —`proceso:SIS`, cuya intención es literalmente «cambiar la
-                          propia fábrica»—; inventariar y reconstruir son `proceso:INV`;
-                          retirar lo heredado es `proceso:DEU`; propagar y certificar es
-                          `proceso:DEP`. La prueba de §3.1 no llega a plantearse.
+UN PROCESO NUEVO          puedan representar, y sus INTENCIONES lo dicen literalmente:
+                            · instalar, migrar, actualizar y certificar son `proceso:SIS`,
+                              «cambiar la propia fábrica: memoria, plantillas, catálogo,
+                              composiciones o runtime»
+                            · inventariar y reconstruir un producto con historia es
+                              `proceso:INV`, «producir CONOCIMIENTO que permita decidir algo
+                              que hoy no puede decidirse»
+                            · retirar lo heredado es `proceso:DEU`, «reducir riesgo interno o
+                              coste de cambio, sin introducir capacidad de producto»
+                            · y `proceso:DEP` —«incorporar, actualizar o retirar una
+                              DEPENDENCIA EXTERNA»— aparece sólo donde de verdad hay una:
+                              `U5b`, cuando la versión nueva de ADS entra en cada fuente
+                          La prueba de §3.1 no llega a plantearse.
 
 QUÉ ES ENTONCES «SU       una COMPOSICIÓN declarada de items de esos procesos, no un
 PLANTILLA DE RUTA»        artefacto. **No es un tipo**, no entra en §3.8 y no tiene esquema:
