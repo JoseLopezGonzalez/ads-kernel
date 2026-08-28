@@ -70,10 +70,11 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/14-DEVOLUCION-TECNICA-PREVIA-F4C.md
              docs/evolucion/15-TERCERA-REVISION-INDEPENDIENTE-F4C.md   VEREDICTO,
                                                              corregido por D64–D68
-             docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · D16–D22 ·
+             docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · O16 · D16–D22 ·
                                                              D23–D33 · D34–D45 · D46–D51 ·
                                                              D52–D54 · D55–D57 · D58–D59 ·
-                                                             D60–D61 · D62 · D63 · D64–D68
+                                                             D60–D61 · D62 · D63 · D64–D68 ·
+                                                             D69–D70
              kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
 freshness:   vigente
 last_meaningful_event: la SEGUNDA revisión independiente devuelve F4 con veredicto de
@@ -86,6 +87,44 @@ procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y
              crítica NO equivale a autocertificarse, y NO prueba que esté bien resuelta.
              LA PRUEBA DE QUE ESTO IMPORTA: dos de los hallazgos de la segunda devolución son
              defectos que la PRIMERA CORRECCIÓN introdujo o no vio
+corregido_en_la_CORRECCION_PREVIA_AL_GATE:
+  # Comprobación adversarial de SÓLO LECTURA sobre la tanda anterior, y su corrección. Sus
+  # SEIS defectos eran TODOS propios de esa tanda: ninguno estaba en el juicio de la tercera
+  # revisión. Es la novena vez que la corrección introduce el defecto siguiente.
+  · 1 · D69 · ESTADO ESTABLE frente a ESPECULATIVO. Estable es el último commit aceptado de
+    la rama canónica: verdad publicable y NUNCA con una transacción parcialmente aplicada.
+    Especulativo son las escrituras posteriores a `preparada`: NADIE LAS HA VISTO, no entran
+    en ningún commit ordinario, y revertirlas no destruye trabajo de nadie. Arrancar exige
+    worktree limpio, HEAD conocido, sin solape, INTENCIÓN CAUSAL PUBLICADA, revisión base,
+    hashes previos y capacidad comprobada de restaurar
+  · 2 · D69 · `abandonada` ES REVERSIÓN LOCAL VERIFICADA, no «cerrar dejando lo aplicado».
+    Inalcanzable hasta CAPTURAR la divergencia, DETENER, RESTAURAR todos los canónicos a la
+    revisión base —incluidos los que ya alcanzaron su posterior—, VERIFICAR byte a byte, y
+    sólo entonces CERRAR. El commit lleva LA BASE CONSISTENTE MÁS EL INCIDENTE y NINGÚN
+    `hash_posterior_esperado`. Si no se puede preservar o verificar, la transacción PERMANECE
+    ABIERTA y no se publica nada. Con esto `abandonada` es la rama REVERTIR de b.14, y no hay
+    tercer desenlace. «Roll-forward only» deja de ser absoluto: lo PUBLICADO nunca se revierte
+    automáticamente; lo ESPECULATIVO sí, y su contenido anterior está en la revisión base
+  · 3 · D70 · RECUPERACIÓN EN TRES NIVELES, y se retira la promesa de reanudación
+    distribuida: A misma máquina y disco → EXACTA · B otra máquina con la tx CERRADA Y
+    PUBLICADA → completa desde Git, incidente incluido · C otra máquina con la tx ABIERTA →
+    NO HAY reanudación exacta: se REINICIA desde la intención publicada, y se pierde lo que
+    sólo existiera en la máquina perdida. Limitación declarada y NO presentada como capacidad
+    de PesquerApp
+  · 4 · D69 · LA COPIA DIVERGENTE sólo existe localmente mientras la tx está abierta; se
+    preserva ANTES de restaurar; el commit del incidente debe incluirla o incluir un
+    artefacto durable autorizado; y si SEG bloquea su publicación, la tx NO puede declararse
+    abandonada hasta que exista forma autorizada de preservar lo necesario
+  · 5 · D70 · PARALELISMO ACOTADO: un único ejecutor por clon/worktree, ninguna segunda
+    transacción canónica concurrente, otras máquinas serializadas por CAS Git, y el
+    paralelismo por varios worktrees declarado CAPACIDAD FUTURA
+  · 6 · D70 · R1 NO DESCARTA EL WORKTREE TRANSACCIONAL. R1 exige ficheros de texto legibles
+    sin informe intermedio, no que estén en el worktree principal. Se descarta por COSTE Y
+    DUPLICACIÓN de mecanismos, y la comparación gana cuarentena y reinicio desde intención
+  · PN-7 REFORMULADA: b.14 tiene sólo COMPLETAR o REVERTIR, y `abandonada` es la segunda
+  · PN-11 GANA SEDE por O16: autoridad en (g), contrato derivado C8 en F6, C7 intacto
+  · RECUENTO CORREGIDO: DIEZ presiones vigentes. El corpus decía 8, 10 y 11 a la vez
+  · D69, D70 y O16 registradas. D16–D68 y O1–O15 conservan su texto. O15 INTACTA
 corregido_en_la_TANDA_INTEGRADA:
   # Corrección CONJUNTA de los hallazgos reproducibles de la tercera revisión. Los 22 se
   # reprodujeron mecánicamente contra el corpus vigente ANTES de tocar nada. El juicio, en
@@ -131,7 +170,9 @@ corregido_en_la_TANDA_INTEGRADA:
   · CONTRASTE con las fuentes que la revisión no leyó íntegras: detectó un defecto PROPIO de
     esta tanda —el propietario global de A8, M6, N6 y A9 estaba elegido y no derivado de
     b.16— y quedó corregido en su commit
-  · ONCE presiones normativas vigentes. Ninguna renumerada
+  · DIEZ presiones normativas vigentes. Ninguna renumerada. **Corregido**: el titular decía
+    ONCE sobre una lista de DIEZ filas — PN-1, PN-2, PN-3, PN-6, PN-7, PN-8, PN-9, PN-10,
+    PN-11 y PN-12—, con PN-4 retirada y PN-5 fusionada en PN-3
   · D64–D68 registradas. D16–D63 y O1–O15 conservan su texto. O15 INTACTA
 devuelto_por_la_TERCERA_REVISION_INDEPENDIENTE:
   # Lo que la revisión independiente DEVOLVIÓ. Se conserva como registro de lo que encontró.
@@ -173,7 +214,8 @@ devuelto_por_la_TERCERA_REVISION_INDEPENDIENTE:
     cobertura de ventanas, tabla adversarial, partición de la matriz, `Q0`–`Q9` total y
     disjunta, promesas vivas sobre la lápida, contrato de identidad, `P-08`, los ONCE puntos
     de la adopción, `O13`, los dos relojes documentales, y todos los recuentos del árbol
-  · LAS OCHO PRESIONES NORMATIVAS quedan CONFIRMADAS como bien identificadas, con fuente y
+  · LAS OCHO PRESIONES NORMATIVAS DE ENTONCES quedan CONFIRMADAS como bien identificadas
+    —hoy son DIEZ, con PN-11 y PN-12—, con fuente y
     contradicción verificadas una a una. FALTA UNA: la de `G8` sobre `O8`. Y hay una
     candidata que depende de cómo se resuelva `B2`
   · O15 VERIFICADA FIEL: los seis puntos del Owner están literales, incluido que NO autoriza
@@ -568,7 +610,7 @@ owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
              + RESOLUCIÓN POSTERIOR O15: "PesquerApp será la primera adopción REAL,
              PERMANENTE y completa de ADS; su repositorio global ADS nace como repositorio
              de control DEFINITIVO. NO autoriza iniciar la adopción" (2026-08-27)
-pregunta_pendiente: ninguna. Las OCHO presiones normativas vigentes son materia de F5,
+pregunta_pendiente: ninguna. Las DIEZ presiones normativas vigentes son materia de F5,
              no preguntas
 siguiente:   CUARTA REVISIÓN INDEPENDIENTE sobre el resultado corregido, por quien NO
              escribió F4 ni aplicó NINGUNA de sus tandas. Los 22 hallazgos reproducibles
@@ -590,7 +632,8 @@ falta_para_cerrar_la_capa:
     encadenadas —siete con la sexta comprobación técnica—, y cada una encontró defectos de
     la anterior. NINGUNA crítica se declara superada. F4c sólo se cierra con un veredicto explícito de SUFICIENCIA emitido por un revisor
     independiente sobre el resultado corregido
-  · OCHO PRESIONES NORMATIVAS VIGENTES. PN-1 —la sección (g)— BLOQUEA todo el estado
+  · DIEZ PRESIONES NORMATIVAS VIGENTES —PN-1, PN-2, PN-3, PN-6 a PN-12; PN-4 retirada y
+    PN-5 fusionada—. PN-1 —la sección (g)— BLOQUEA todo el estado
     durable, y ahora decide MÁS: fsync, regla de commit, sellado, identidad y regla de
     lectura. PN-2 y PN-3 son la misma y sólo bloquean que el sistema abra auditorías solo.
     PN-6 reinterpreta O12. PN-7 (b.14 dice «completar o revertir»), PN-8 (VER no está en la
@@ -672,7 +715,7 @@ F4c CRÍTICA INDEPENDIENTE    TRES devoluciones, EMITIDAS por revisores y audito
                              ABIERTA: sólo la cierra un veredicto explícito de SUFICIENCIA
                              emitido por un revisor independiente sobre el resultado
                              corregido. Ese veredicto NO existe
-F5  ENMIENDAS                OCHO presiones normativas vigentes, enumeradas y sin redactar.
+F5  ENMIENDAS                DIEZ presiones normativas vigentes, enumeradas y sin redactar.
                              NO INICIADA
 F6  DESCOMPOSICIÓN Y EJECUCIÓN  no iniciada
 ```
@@ -1008,7 +1051,7 @@ la corrección se registra por ADDENDUM sobre los documentos existentes.
                                el método: no leer lo que F4 dice que dice un contrato, sino
                                abrir el contrato.
 
-4  QUÉ LLEVAR AL OWNER         las OCHO presiones de §16. Sólo PN-1 bloquea todo el estado
+4  QUÉ LLEVAR AL OWNER         las DIEZ presiones de §16. PN-1 bloquea todo el estado
                                durable. Cuatro son UNA FRASE cada una, y tres de ellas se
                                registran precisamente porque parecen obvias.
 

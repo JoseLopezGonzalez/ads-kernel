@@ -460,6 +460,56 @@ Lo que `a.9` deja expresamente abierto, cerrado aquí de forma **ejecutable**: u
 recuperación real tiene que poder llevarse a cabo con los datos que estos registros escriben,
 y nada más.
 
+### 2.6.0 · Estado ESTABLE y estado ESPECULATIVO, y qué exige arrancar
+
+> **Añadida por la comprobación adversarial previa al gate (`D69`).** El protocolo hablaba de
+> «estado canónico» sin distinguir **lo publicado** de **lo escrito y aún no publicado**, y de
+> esa confusión salían dos afirmaciones falsas: que un conjunto parcialmente aplicado era
+> consistente porque cada `rename` es atómico, y que revertirlo destruiría trabajo de alguien.
+> **Ninguna escritura de una transacción abierta ha sido publicada nunca**, y eso cambia lo
+> que se puede hacer con ella.
+
+```text
+ESTADO ESTABLE       el ÚLTIMO COMMIT ACEPTADO de la rama canónica del control repo.
+                       · es la VERDAD PUBLICABLE y lo único reconstruible desde otro clon
+                       · **NUNCA contiene una transacción parcialmente aplicada**
+                       · es la REVISIÓN BASE contra la que se clasifica y se restaura
+
+ESTADO ESPECULATIVO  los cambios del worktree producidos DESPUÉS de `preparada` y ANTES del
+                     terminal.
+                       · pueden ser un CONJUNTO PARCIAL de ficheros completamente
+                         reemplazados por `rename`. **Cada fichero está entero; el CONJUNTO
+                         no es consistente**, y la atomicidad del `rename` individual no lo
+                         hace consistente — decirlo era el defecto
+                       · NO son verdad publicada
+                       · sólo se recuperan EXACTAMENTE desde el mismo disco mientras no se
+                         publiquen
+                       · **no pueden entrar en ningún commit ordinario**
+                       · y por eso REVERTIRLOS es local y no destruye trabajo de nadie: nadie
+                         los ha visto nunca
+```
+
+**Qué exige ARRANCAR una transacción.** Las siete, y si falta una **la transacción no
+empieza**:
+
+```text
+1  WORKTREE LIMPIO              sin cambios sin confirmar en `estado/`. Un worktree sucio
+                                hace indistinguible lo especulativo de lo ajeno, y con ello
+                                imposible restaurar contra la base
+2  `HEAD` CONOCIDO              el commit exacto sobre el que se trabaja, registrado
+3  NINGUNA TRANSACCIÓN          por intersección de rutas (§2.6.9). Con solape, no arranca
+   ABIERTA INCOMPATIBLE
+4  INTENCIÓN CAUSAL YA          el item u orden que la motiva, **commiteada y PUBLICADA**
+   PERSISTIDA Y PUBLICADA       antes de tocar nada (§2.6.10). Es lo que permite reiniciar
+                                desde otra máquina
+5  REVISIÓN BASE DECLARADA      `revision_base` en `preparada`: el `HEAD` del punto 2
+6  HASHES PREVIOS DE TODOS      el `hash_previo` por ruta, que ya exigía §2.6.2
+   LOS FICHEROS AFECTADOS
+7  CAPACIDAD DE RESTAURARLOS    comprobada, no supuesta: las N rutas existen en
+   DESDE ESA REVISIÓN           `revision_base` con el hash declarado, o se declaran
+                                `ausente`. Sin esto, `abandonada` sería inalcanzable
+```
+
 ### 2.6.1 · El autómata de fases — seis fases, dos rutas, un solo cierre
 
 > **Corregido dos veces.** La devolución técnica previa unificó cinco formulaciones
@@ -1528,64 +1578,130 @@ QUIÉN          el runtime, sin autoridad humana. Es la salida que `a.9` prevé 
                que la ruta larga había suprimido (`M5`).
 ```
 
-**Salida 2 · LA AUTORIDAD ABANDONA.** Es la salida que `B1` exigía, y lleva ocho cosas:
+**Salida 2 · LA AUTORIDAD ABANDONA — y abandonar es RESTAURAR, no «cerrar dejando lo
+aplicado».**
+
+> **Redefinida por la comprobación adversarial previa al gate (`D69`).** La redacción anterior
+> hacía que `abandonada` retirase el marcador **dejando el conjunto parcial en el worktree**,
+> y con el marcador retirado ese conjunto era **publicable**. «El item queda bloqueado» no lo
+> salvaba: el bloqueo es sobre el despacho, no sobre el commit, y el commit era exactamente
+> lo que el marcador impedía. Un conjunto parcial no es consistente porque cada `rename` sea
+> atómico. **`abandonada` pasa a exigir la restauración verificada contra la revisión base**,
+> y con ello se convierte en la rama **REVERTIR** de `b.14`.
+
+**El procedimiento, y `abandonada` es INALCANZABLE hasta completarlo entero:**
 
 ```text
-1  QUIÉN PUEDE RESOLVER    la AUTORIDAD que el propio `conflicto` declaró: el propietario
-                           global del item, o el Owner si atraviesa varios. Nadie más, y el
-                           validador lo comprueba contra el `conflicto` que cierra.
+A · CAPTURAR      · conservar, ANTES de tocar nada, la copia ÍNTEGRA de toda divergencia
+                    necesaria — el cuerpo del `conflicto` ya la lleva
+                  · registrar rutas, hashes observados, autoridad, causa y `revision_base`
+                  · asegurar que esa copia formará parte del INCIDENTE que se publicará
+                  · **si no puede conservarse, NO SE PUEDE ABANDONAR**: la transacción
+                    permanece abierta (cuarto desenlace, abajo)
 
-2  QUÉ DECISIÓN SE          «esta transacción NO va a alcanzar su resultado». Es una decisión
-   REGISTRA                 de CIERRE, no de contenido: `abandonada` NO decide qué debe
-                            quedar en los ficheros — eso lo decide la reparación.
+B · DETENER       · impedir nuevas escrituras sobre las rutas afectadas
+                  · las operaciones no solapadas siguen **sólo si su mecanismo de commit no
+                    incorpora por accidente las rutas especulativas**. Con un worktree único
+                    eso significa: **no commitean nada mientras haya especulativo vivo**
 
-3  CON QUÉ AUTORIDAD        con los cinco conceptos de `a.9` (§3.6) y el motivo escrito.
+C · RESTAURAR     · restaurar TODOS los canónicos afectados desde la `revision_base` EXACTA
+                  · **incluidos los que ya alcanzaron su `hash_posterior_esperado`**, no sólo
+                    los divergentes
+                  · es restauración LOCAL de estado ESPECULATIVO: **no revierte nada
+                    publicado**, porque nada de esta transacción llegó a publicarse (§2.6.0)
+                  · **NUNCA se restaura automáticamente contenido YA PUBLICADO.** Esa
+                    prohibición de §2.6.6 sigue entera y no la toca `D69`
 
-4  QUÉ INTENCIÓN DURABLE    **ninguna hace falta, y ésa es la clave.** `abandonada` NO ESCRIBE
-   PRECEDE                  NINGÚN CANÓNICO: es un evento del diario y nada más. La regla 4
-                            de §3.6 —ninguna escritura canónica sin intención durable previa—
-                            no se relaja: se cumple trivialmente porque no hay escritura.
+D · VERIFICAR     · comparar **BYTE A BYTE** cada fichero restaurado con su contenido en
+                    `revision_base`
+                  · comprobar que no quedan rutas NUEVAS huérfanas creadas por la transacción
+                  · comprobar que el conjunto canónico vuelve a ser el de la base, entero
+                  · **si una escritura concurrente impide verificarlo, `abandonada` NO puede
+                    emitirse** y la transacción permanece abierta
 
-5  QUÉ REGISTRA DEL         el ESTADO OBSERVADO de **TODAS** las rutas de la transacción, no
-   ESTADO                   sólo de las divergentes: ruta, `hash_observado` y si quedó en su
-                            previo, en su posterior o en ninguno. Es lo que hace reparable el
-                            estado mixto que deja.
-
-6  CÓMO SE RETIRA EL        `abandonada` es TERMINAL, y **todo terminal retira el marcador**.
-   MARCADOR                 Con ello el control repo vuelve a poder commitear: el defecto de
-                            `B1` desaparece en su raíz, no se rodea.
-
-7  QUÉ MANTIENE EL          emite, en el mismo acto, un evento `deriva` con
-   BLOQUEO                  `causa: abandono-de-transaccion` que nombra las rutas y los items
-                            que quedaron incoherentes (§2.6.11). El bloqueo **no se pierde al
-                            retirar el marcador**: cambia de sede, y de alcance global a los
-                            items nombrados.
-
-8  CÓMO SE REPARA           una TRANSACCIÓN NUEVA, con `tx` nuevo, cuyo `preparada` declara
-                            por ruta `hash_previo` = el `hash_observado` que el abandono
-                            registró y `hash_posterior_esperado` = lo que la autoridad decida
-                            —conservar lo divergente, aplicar lo que se preparaba, o un
-                            tercer contenido—. Cierra por `derivada` tras regenerar los
-                            derivados, y al cerrar **resuelve el `deriva`** y desbloquea los
-                            items. Es el mismo mecanismo de §2.6.11, sin ninguna excepción.
+E · CERRAR        sólo entonces, y en este orden:
+                  · emitir `abandonada`, con la evidencia de la verificación de D
+                  · emitir el `deriva` que conserva el bloqueo
+                  · retirar el marcador
+                  · permitir el COMMIT DEL INCIDENTE
 ```
 
+**Qué contiene exactamente el commit del incidente**, y es lo que cierra el defecto:
+
 ```text
-Y SI VUELVE A APARECER     durante la reparación, la transacción NUEVA tiene su propio
-DIVERGENCIA                `conflicto`, con sus mismas dos salidas. No hay recursión ni
-                           anidamiento: cada transacción es independiente y cada una puede
-                           abandonarse. **No existe una espera sin salida**, porque el
-                           abandono siempre está disponible y siempre cierra.
+LLEVA    · el estado canónico RESTAURADO A LA BASE — idéntico, byte a byte, al del commit
+           anterior en todas las rutas de la transacción
+         · el evento `preparada`
+         · los eventos `conflicto`, con la EVIDENCIA DE LA DIVERGENCIA en su cuerpo
+         · el evento `abandonada`, con su verificación
+         · el evento `deriva`
 
-CÓMO SE CONSERVA LA        por hash, como todo en §2.6.4. Abandonar dos veces la misma
-IDEMPOTENCIA               transacción es una NO-OPERACIÓN (§2.8): el terminal ya existe.
-                           Reparar dos veces converge: la segunda pasada encuentra los
-                           ficheros en su `hash_posterior_esperado` y no escribe nada.
+NO LLEVA **ningún `hash_posterior_esperado`**. Ni uno. El conjunto publicable es la BASE
+         CONSISTENTE MÁS EL INCIDENTE, nunca la mezcla parcial.
+```
 
-POR QUÉ NO SE PUEDE        porque `abandonada` no revierte: no deshace ninguna escritura ya
-ABUSAR DEL ABANDONO        aplicada, deja el bloqueo vivo en el `deriva`, y exige autoridad
-                           nombrada y motivo. Abandonar no es una salida barata: es un cierre
-                           que obliga a reparar.
+**Y por eso `abandonada` ES la rama «revertir» de `b.14`**, no un tercer desenlace. La
+disyunción de `a.9` y `b.14` —«completar o revertir»— queda satisfecha por las dos ramas
+reales del autómata, y `PN-7` se reformula en consecuencia (§16).
+
+```text
+QUÉ SE RETIRA DE     la afirmación de «ROLL-FORWARD ONLY» **como absoluto**. Era cierta para
+«ROLL-FORWARD ONLY»  el estado PUBLICADO y se aplicaba también al ESPECULATIVO, que nadie ha
+                     visto. Vigente:
+                       · el estado PUBLICADO nunca se revierte automáticamente. Restaurarlo
+                         es decisión del Owner y una transacción de reparación (§2.6.6)
+                       · el estado ESPECULATIVO **sí se revierte**, y es la única forma de
+                         abandonar sin publicar una mezcla
+                     El argumento de §2.6.2 —«deshacer exigiría conservar el contenido
+                     anterior»— sigue en pie y ahora tiene respuesta: el contenido anterior
+                     **está en la `revision_base`**, que Git ya conserva. No se duplica nada.
+```
+
+#### Los CUATRO desenlaces materiales, y ninguno más
+
+```text
+1 · COMPLETADA            intención durable → aplicación completa → verificación →
+                          `confirmada` → `derivada`
+                          COMMIT PUBLICABLE. Marcador retirado. Nada bloqueado
+
+2 · CONFLICTO QUE CESA    → `conflicto` → nueva clasificación → aplicación completa →
+                          `confirmada` → `derivada`
+                          COMMIT PUBLICABLE. Marcador retirado. Nada bloqueado
+
+3 · ABANDONADA            → `conflicto` → captura de la divergencia → restauración local
+                          completa → verificación byte a byte contra la base →
+                          `abandonada` → `deriva`
+                          COMMIT DE INCIDENTE SOBRE BASE CONSISTENTE. Marcador retirado.
+                          Los items del `deriva`, bloqueados hasta su reparación
+
+4 · TODAVÍA BLOQUEADA     no puede completar, y **no puede preservar la divergencia o
+                          restaurar la base**
+                          PERMANECE ABIERTA · marcador VIVO · **NO HAY COMMIT** · exige
+                          intervención EN LA MISMA MÁQUINA
+                          No es un estado sin salida: sus salidas son las tres de arriba, y
+                          lo que falta es una condición material, no una transición
+
+NINGÚN TERMINAL DEJA ESTADO ESPECULATIVO DENTRO DEL CONJUNTO PUBLICABLE. Los desenlaces 1 y
+2 lo convierten en estable; el 3 lo restaura a la base; el 4 no publica.
+```
+
+#### El predicado que mantiene el bloqueo, y cómo se cierra
+
+```text
+bloqueado_por_deriva(item) ≡
+    existe un evento `deriva` que NOMBRA ese item y para el que NO existe ningún evento
+    `derivada` cuyo campo `resuelve_deriva` apunte a él
+
+CÓMO SE CIERRA     una TRANSACCIÓN DE REPARACIÓN, con `tx` nuevo, cuyo `preparada` declara
+                   por ruta `hash_previo` = lo que hay en la base restaurada y
+                   `hash_posterior_esperado` = lo que la autoridad decida, y cuya `derivada`
+                   lleva **`resuelve_deriva` = el `id` de ese `deriva`**.
+                   Al cerrar, el predicado se vuelve falso y los items se desbloquean.
+
+POR QUÉ ESTO NO    porque el `deriva` tiene una forma explícita y comprobable de terminar, y
+REPRODUCE `B1`     el estado sobre el que trabaja la reparación es la BASE CONSISTENTE, no
+                   una mezcla. `reconciliacion_pendiente` de §2.6.9 consume este predicado
+                   en su segunda rama.
 ```
 
 #### CONTENCIÓN — un conflicto no congela el producto
@@ -1604,13 +1720,25 @@ QUÉ SE BLOQUEA           · el despacho de trabajo sobre esos items
                          · la regeneración de derivados que dependan de esos canónicos
                          · la lectura fiable de esas rutas (§2.6.8)
 
-QUÉ PUEDE CONTINUAR      · toda transacción cuyo conjunto de rutas NO SE SOLAPE con las
-                           bloqueadas
-                         · el despacho sobre items no afectados
-                         · la regeneración de derivados que no dependan de esas rutas
-                         · **el commit del control repo**, en cuanto no queda ningún marcador
-                           abierto. Un `deriva` sin reparar NO impide commitear: impide
-                           despachar los items que nombra
+QUÉ PUEDE CONTINUAR      **con la honestidad de lo que un worktree único sostiene**, que es
+                         menos de lo que la redacción anterior prometía:
+                           · **UN ÚNICO EJECUTOR DE MUTACIÓN por clon/worktree** (`R5`), y
+                             **ninguna segunda transacción canónica concurrente en el mismo
+                             worktree**. El paralelismo de escrituras aisladas mediante
+                             varios worktrees es **capacidad futura, no garantía actual**
+                           · otros agentes pueden continuar ANÁLISIS o trabajo que **no
+                             escriba en este control repo**
+                           · otras máquinas pueden trabajar desde la MISMA BASE, y su
+                             publicación **se serializa por el CAS de Git** (§2.6.10): un
+                             rechazo non-fast-forward obliga a releer y recalcular, y
+                             **nunca a forzar**
+                           · **DESPUÉS de publicar un incidente abandonado**, los items no
+                             cubiertos por el `deriva` continúan con normalidad, y los
+                             cubiertos quedan bloqueados hasta su reparación
+                           · el commit del control repo, en cuanto no queda ningún marcador
+                             abierto **y no hay estado especulativo vivo**. Un `deriva` sin
+                             reparar NO impide commitear: impide despachar los items que
+                             nombra
 
 CÓMO SE DETECTA EL       por INTERSECCIÓN DE CONJUNTOS DE RUTAS, comparando el `afecta[]` de
 SOLAPAMIENTO             la `preparada` que quiere abrirse contra la unión de rutas de todos
@@ -1622,23 +1750,84 @@ SOLAPAMIENTO             la `preparada` que quiere abrirse contra la unión de r
                          `X08` sigue siendo cierto para el caso que describe —dos ejecutores
                          que tocan EL MISMO fichero— y deja de bloquear a los que no.
 
-CÓMO SE PUBLICA EL       el `conflicto`, el `abandonada` y el `deriva` son eventos del
-CHECKPOINT DE CONFLICTO  diario, luego DURABLES y VERSIONADOS. Viajan en el commit del
-                         control repo como cualquier otro evento. El marcador NO viaja
-                         (`D50`), y no hace falta: el bloqueo lo declaran los eventos.
+CÓMO SE PUBLICA EL       **NO se publica mientras la transacción está abierta**, y decir lo
+CHECKPOINT DE            contrario era el defecto. Un `conflicto` pertenece por definición a
+CONFLICTO                una transacción abierta, y la regla de commit prohíbe commitear con
+                         marcador abierto: **es imposible que llegue al servidor antes de que
+                         la transacción cierre**. Lo que se publica es el COMMIT DE INCIDENTE
+                         de la salida 2, con la transacción ya cerrada, la base restaurada y
+                         `preparada`, `conflicto`, evidencia, `abandonada` y `deriva` dentro.
 
-CÓMO REANUDA OTRO        clonando o actualizando el control repo: el diario le da los
-AGENTE O MÁQUINA         `conflicto` sin terminal y los `deriva` sin reparar, y con ellos el
-                         conjunto exacto de rutas bloqueadas. **No necesita el marcador**,
-                         que §2.9 declara reconstruible. Es lo que hace posible que la
-                         resolución la tome alguien que no estaba en la sesión que la abrió.
+CÓMO SE PRESERVA LO      la copia íntegra vive en el cuerpo del `conflicto`, que **mientras la
+DIVERGENTE, Y HASTA      transacción está abierta SÓLO EXISTE LOCALMENTE**. Sus garantías,
+DÓNDE                    dichas sin adornos:
+                           · para abandonar, se PRESERVA ANTES de restaurar (paso A)
+                           · el commit del incidente **debe incluirla**, o incluir un
+                             artefacto durable autorizado que permita recuperarla
+                           · **hasta que ese commit se publica, NO hay garantía frente a la
+                             pérdida total de la máquina**
+                           · después de publicarse, otra máquina puede continuar desde ella
 
-CÓMO SE EVITA QUE UN     porque un commit sólo ocurre **sin marcadores abiertos**, y sin
-COMMIT LLEVE ESTADO      marcador cada transacción está cerrada: completada o abandonada. El
-PARCIAL INCOHERENTE      estado mixto que un abandono deja NO es silencioso: está declarado,
-                         ruta por ruta, en el `abandonada` y en el `deriva`, y la regla de
-                         lectura de §2.6.8 obliga a declararlo NO FIABLE. Es DETECTABILIDAD,
-                         que es lo que §2.6.8 promete, no aislamiento.
+SI LO DIVERGENTE NO      **`SEG` bloquea su publicación** —secretos, material no publicable—.
+ES PUBLICABLE            Entonces se conserva únicamente una REFERENCIA SEGURA o la evidencia
+                         que `SEG` permita, y **la transacción NO puede declararse abandonada
+                         hasta que exista una forma autorizada de preservar lo necesario**.
+                         Sin preservación autorizada, el desenlace es el cuarto: sigue
+                         abierta.
+```
+
+#### RECUPERACIÓN — tres garantías, y ninguna promete más de lo que hay
+
+> **Corregido por la comprobación adversarial previa al gate (`D70`).** El texto afirmaba que
+> otra máquina reanuda «clonando o actualizando el control repo», y **eso es imposible para
+> una transacción abierta**: sus eventos no están commiteados —la regla de commit lo impide—,
+> el marcador no viaja (`D50`) y las escrituras especulativas tampoco. Se sustituye por los
+> tres niveles reales.
+
+```text
+NINGÚN TERMINAL DEJA     **todo terminal retira el marcador**: `derivada` al regenerar los
+EL MARCADOR ABIERTO      derivados, `abandonada` tras verificar la restauración. Y el
+                         desenlace `4b` no es terminal: por eso conserva el marcador vivo, y
+                         por eso no publica.
+```
+
+```text
+A · MISMA MÁQUINA,       recuperación **EXACTA**, desde diario, marcador y worktree.
+    MISMO DISCO            · puede CONTINUAR, RESTAURAR o ABANDONAR
+                           · conserva la copia divergente local
+                         Es la garantía fuerte, y la única que hay para lo abierto.
+
+B · OTRA MÁQUINA,        recuperación **COMPLETA desde Git**.
+    TRANSACCIÓN YA         · si completó, el estado está publicado y no hay nada que hacer
+    CERRADA Y PUBLICADA    · si se abandonó, recibe el INCIDENTE ENTERO: base restaurada,
+                             `preparada`, `conflicto`, divergencia conservada, `abandonada`
+                             y `deriva`
+                           · **puede iniciar la reparación** sin haber estado allí
+
+C · OTRA MÁQUINA,        **NO EXISTE REANUDACIÓN EXACTA.**
+    TRANSACCIÓN ABIERTA    · diario, marcador, copia divergente y escrituras especulativas
+    NO PUBLICADA             **no están en el servidor**
+                           · se REINICIA desde la última INTENCIÓN PUBLICADA y la revisión
+                             base estable
+                           · **se pierde toda observación que sólo existiera en la máquina
+                             desaparecida**, incluida la copia de lo divergente
+                           · esto es **REINICIO SEGURO, no reanudación**, y no se llama de
+                             otra manera
+```
+
+```text
+LIMITACIÓN ACEPTADA,     · la pérdida total de la máquina durante una transacción abierta
+DECLARADA Y NO             **puede perder evidencia no publicada**
+DISIMULADA               · soportar reanudación exacta distribuida exigiría publicar un
+                           checkpoint AISLADO: rama o worktree transaccional, worktree
+                           remoto, o un almacén durable aparte
+                         · **esa capacidad NO se declara construida ni incluida** en la
+                           arquitectura vigente
+                         · **no se presenta como capacidad de PesquerApp** hasta que exista
+
+QUÉ GARANTÍA SE          **la reanudación exacta distribuida de una transacción abierta.** Es
+SACRIFICA, DICHO EN      el precio de un worktree único con publicación sólo de estados
+UNA LÍNEA                terminales consistentes, y se paga a sabiendas.
 ```
 
 #### Las siete secuencias completas, y ninguna termina sin salida
@@ -1656,10 +1845,17 @@ PARCIAL INCOHERENTE      estado mixto que un abandono deja NO es silencioso: est
                               3 + k eventos, k = observaciones DISTINTAS. Sin tope, porque
                               cada `conflicto` registra un estado del mundo, no un intento
 
-4 · ABANDONO AUTORIZADO       preparada → conflicto(1) → abandonada
-                              3 eventos · marcador RETIRADO · el control repo vuelve a
-                              commitear · un `deriva` mantiene bloqueados los items
-                              nombrados
+4 · ABANDONO AUTORIZADO       preparada → conflicto(1) → [capturar · restaurar · verificar]
+                                        → abandonada → deriva
+                              3 eventos de fase más el `deriva` · marcador RETIRADO · los
+                              canónicos RESTAURADOS a la base y verificados byte a byte ·
+                              COMMIT DE INCIDENTE sobre base consistente · un `deriva`
+                              mantiene bloqueados los items nombrados
+
+4b · ABANDONO IMPOSIBLE       preparada → conflicto(1) → [no se puede preservar la
+                              divergencia, o no se puede verificar la restauración]
+                              la transacción PERMANECE ABIERTA · marcador VIVO · NO HAY
+                              COMMIT · exige intervención en la MISMA MÁQUINA
 
 5 · REPARACIÓN POSTERIOR      TX-2: preparada → confirmada → derivada
                               3 eventos, transacción NUEVA e independiente. Al cerrar,
@@ -1680,8 +1876,11 @@ NINGÚN ESTADO ALCANZABLE   se comprueba sobre el grafo de cinco fases: `prepara
 QUEDA SIN SALIDA           sitios; `conflicto` sale a dos; `confirmada` sale a uno;
                            `derivada` y `abandonada` son terminales POR DEFINICIÓN y retiran
                            el marcador. **No hay ningún nodo no terminal sin sucesor
-                           admisible**, y por tanto no hay ningún estado que retenga el
-                           marcador para siempre.
+                           admisible.**
+                           El desenlace `4b` NO es una excepción: sus salidas son las mismas
+                           y lo que falta es una CONDICIÓN MATERIAL —preservar o restaurar—,
+                           no una transición. Y mientras falta, **el marcador sigue vivo y
+                           no se publica nada**, que es el comportamiento seguro.
 ```
 
 ### 2.6.10 · Commit y push en recuperación — y el hueco que esto destapa
@@ -1774,14 +1973,38 @@ de toda `retirada-de-cuerpo` y la permanencia que `O15` exige. Es `D65`.
 
 | | alternativa | qué aporta | qué cuesta | veredicto |
 |---|---|---|---|---|
-| **A** | rama o worktree **por operación o transacción** | aislamiento fuerte; el árbol público nunca ve estado a medias | el estado en vuelo deja de estar en el árbol que `R1` obliga a leer sin herramienta; obliga a merge y a resolver convergencia; **crea un SEGUNDO mecanismo de recuperación** que compite con el diario | **DESCARTADA**: rompe `R1` y duplica la recuperación |
-| **B** | **staging** temporal + commit atómico del árbol | atomicidad de la publicación | no ayuda a los lectores durante la ventana —el estado canónico ES el árbol de trabajo— y no aporta nada que el diario no dé ya para recuperar | **DESCARTADA**: coste sin garantía nueva |
-| **C** | **diario y marcador actuales**, y Git sólo como historia | recuperación completa y legible, ya diseñada y probada contra diecisiete ventanas | por sí sola no dice **quién publica ni contra qué revisión**, que es justo el hueco de `B2` | **INSUFICIENTE SOLA** |
-| **D** | **C para recuperar + gobierno declarado de PUBLICACIÓN** | todas las garantías de C, más durabilidad fuera de la máquina y convergencia entre máquinas, con autoridad nombrada | escribir la tabla de propiedad que falta | **ELEGIDA**: es la mínima que conserva todas las garantías |
+| **A** | **worktree único** sobre la rama canónica | visibilidad directa del estado en vuelo; ningún merge; un solo mecanismo de recuperación | **no aísla el conjunto parcial**, y por eso exige que `abandonada` restaure (§2.6.9); no da reanudación exacta desde otra máquina | **ELEGIDA**, con las dos compensaciones de abajo |
+| **B** | **staging/índice temporal** + commit atómico | atomicidad de la publicación | no ayuda a los lectores durante la ventana —el estado canónico ES el árbol de trabajo— y no aporta nada que el diario no dé ya para recuperar | descartada: coste sin garantía nueva |
+| **C** | **worktree o rama transaccional** | aísla el conjunto parcial; permite publicar un checkpoint aislado y **reanudación exacta distribuida**; permite paralelismo real | **duplica el mecanismo de recuperación** —Git y diario compiten—; obliga a merge y convergencia; sube la complejidad del runtime y del gobierno de ramas | descartada **por coste y duplicación**, no por ilegibilidad. Es la que habría que construir para la reanudación distribuida |
+| **D** | **cuarentena** fuera del estado canónico | aísla lo especulativo sin ramas | crea una tercera ubicación con su ciclo y su plano, que §2.4 no tiene; y lo que aísla es justo lo que `R1` quiere ver | descartada: reintroduce la tercera categoría que `D50` eliminó |
+| **E** | **reinicio desde la intención publicada**, sin conservar estado en vuelo | mínima; ninguna maquinaria | pierde toda observación local | **ADOPTADA COMO GARANTÍA `C`** de recuperación (§2.6.9): no sustituye a A, la complementa cuando la máquina se pierde |
+
+> **`R1` NO descarta el worktree transaccional, y decirlo era una inferencia falsa.** `R1`
+> —`E2.1` sobre `a.9`— exige que *«el estado operativo ES los ficheros del repositorio ADS de
+> control, legibles directamente, sin informe intermedio»*. Exige **ficheros de texto sin
+> informe intermedio**; **no exige que estén en el worktree principal ni en la rama activa**.
+> Un worktree o una rama contienen ficheros de texto directamente legibles y no introducen
+> ninguna base de datos. La razón real del descarte es **coste y duplicación de mecanismos**,
+> y así queda escrita.
+
+**Lo ELEGIDO, con lo que cuesta dicho al lado:**
+
+```text
+SE ELIGE          · WORKTREE ÚNICO
+                  · INTENCIÓN PUBLICADA ANTES de mutar (§2.6.0, y abajo)
+                  · recuperación EXACTA sólo en el mismo disco
+                  · RESTAURACIÓN LOCAL VERIFICADA al abandonar (§2.6.9)
+                  · REINICIO SEGURO desde la intención publicada en otra máquina
+                  · publicación **sólo de estados terminales consistentes**
+
+SE SACRIFICA      la **REANUDACIÓN EXACTA DISTRIBUIDA de una transacción abierta**. Se paga a
+                  sabiendas, se declara en §2.6.9 y **no se presenta como capacidad**.
+```
 
 ```text
 LA REGLA QUE CIERRA LA    **la recuperación es del DIARIO; la publicación es de GIT.** No hay
-DUPLICACIÓN               dos mecanismos para el mismo estado de recuperación:
+DUPLICACIÓN               dos mecanismos para el mismo estado de recuperación —y ésta es la
+                          razón por la que `C` se descarta, no `R1`:
                             · CANÓNICO   el diario y los ficheros de `estado/`
                             · DERIVADO   la historia de Git, que los conserva y los mueve
                                          entre máquinas
@@ -1876,6 +2099,39 @@ RELACIÓN CON LOS       ninguna directa: un `integration-set` afirma que una com
 INTEGRATION SETS       revisiones DE LAS FUENTES se probó junta (`ENT`, §10). El control repo
                        **referencia** esas revisiones y no participa en el set. Publicar el
                        control repo no exige un set, y producir un set no exige publicar.
+```
+
+#### La INTENCIÓN PUBLICADA PREVIA, y qué no es
+
+> **Añadida por `D69`.** Es lo que hace que un clon nuevo pueda **reiniciar** el trabajo sin
+> depender del chat ni de la máquina perdida, y la condición 4 de §2.6.0 la exige antes de
+> mutar nada.
+
+```text
+QUÉ ES            el registro, YA COMMITEADO Y EMPUJADO, de que este trabajo debe hacerse.
+                  Lleva SIETE cosas:
+                    1 ITEM U ORDEN CAUSAL      qué lo motiva, con su id
+                    2 REVISIÓN BASE            el `HEAD` sobre el que se va a trabajar
+                    3 ALCANCE                  las rutas e items que se van a tocar
+                    4 AUTORIDAD                quién puede decidirlo (§1.3)
+                    5 OPERACIÓN SOLICITADA     qué se pide hacer, no cómo
+                    6 IDENTIFICADOR ESTABLE    para que el reinicio la reconozca
+                    7 EVIDENCIA DE SU COMMIT   el commit y el push que la publicaron
+                      Y SU PUSH
+
+CUÁNDO SE          **el runtime NO INICIA la transacción** hasta comprobar que esta intención
+COMPRUEBA          está en el ÚLTIMO ESTADO ACEPTADO del control repo. No basta con que esté
+                   commiteada: tiene que estar PUBLICADA.
+
+QUÉ NO ES          **publicar la INTENCIÓN no es publicar la TRANSACCIÓN ABIERTA.** La
+                   intención dice QUÉ hay que hacer y sobre qué base; la transacción abierta
+                   —su `preparada`, su marcador, sus escrituras especulativas— **no se
+                   publica nunca** (§2.6.9). Confundirlas sería volver a prometer reanudación
+                   distribuida.
+
+PARA QUÉ SIRVE     para la garantía `C`: una máquina nueva lee la intención publicada y la
+                   revisión base, y **reinicia** el trabajo desde ahí. Sin ella, un clon
+                   nuevo no sabría siquiera que ese trabajo existía.
 ```
 
 #### La POLÍTICA DE PUBLICACIÓN, definida — o retirada
@@ -6271,6 +6527,21 @@ encadenamiento consecutivo.** `D16`–`D62` conservan su texto.
 |---|---|---|---|
 | `D63` | la **lápida es excepción tipada** al algoritmo de identidad · **tres niveles** de garantía · **fuente de recuperación** comprobada antes de retirar · el diario **físico no es estrictamente append-only** · sólo una **dependencia semántica viva** bloquea la retirada | `D37` · `D61` | tras retirar, el `id` no se recalcula desde el fichero; la huella no prueba contenido; y «cualquier evento vivo» hacía inalcanzable la propia operación |
 
+### `D69`–`D70` · las decisiones de la corrección previa al gate
+
+Comprobación adversarial de sólo lectura sobre la tanda anterior. Sus seis defectos eran
+**todos propios de esa tanda**, ninguno estaba en el juicio de la tercera revisión.
+`D16`–`D68` conservan su texto.
+
+| | decisión | qué revisa | por qué |
+|---|---|---|---|
+| `D69` | estado **ESTABLE** frente a **ESPECULATIVO**, y `abandonada` como **reversión local verificada** contra la revisión base | `D64` · `D16` · `D23` | `abandonada` retiraba el marcador dejando el conjunto parcial **publicable**, y un conjunto parcial no es consistente porque cada `rename` sea atómico |
+| `D70` | recuperación en **TRES niveles** —exacta local, completa remota si cerró, **reinicio** si sigue abierta—, y la comparación de alternativas corregida: **`R1` no descarta el worktree** | `D65` · `D64` | «otra máquina reanuda clonando el control repo» es imposible con la regla de commit vigente, y el descarte del worktree invocaba `R1` sin fundamento |
+
+**Y `O16`**, resolución posterior del Owner que da sede a `PN-11`: autoridad normativa en la
+sección `(g)`, contrato derivado `C8` en F6, y `C7` limitado a las sources. **No autoriza
+iniciar F5.**
+
 **Y `O15`**, resolución posterior del Owner que revisa `O14` sin reescribirlo: la adopción de
 PesquerApp es la **primera adopción real, permanente y completa** de ADS. Vive en el registro
 de decisiones, y su lectura arquitectónica en §8.2, §18 y §19. **`D58`–`D63` no la tocan**:
@@ -6444,16 +6715,27 @@ BLOQUEA             sólo esa declaración, y con ella el arranque de programaci
 QUÉ PRESIONA        (b) b.14, paso 2: «¿hay transiciones multiarchivo incompletas? →
                     completar o REVERTIR (a.9)»
 TEXTO VIGENTE       el de arriba, literal
-QUÉ HA CAMBIADO     §2.6 elige ROLL-FORWARD ONLY y retira el ramal de reversión por
-                    completo. §2.6.2 lo argumenta: deshacer exigiría conservar el contenido
-                    anterior y duplicaría el estado
-POR QUÉ NO BASTA    la disyunción de `a.9` —«terminarla O revertirla»— admite elegir una de
-UN DERIVADO         las dos, y la elección es buena. Pero `b.14` ENUMERA las dos, y §7.4
-                    afirmaba conservar sus siete pasos enteros mientras cambiaba uno
-MATERIA MÍNIMA      una frase en b.14: «completar, o marcar conflicto y escalar»
-SE PUEDE CONSTRUIR  todo §2.6. La desviación está declarada en §7.4 y no espera a nadie
+QUÉ HA CAMBIADO     **REFORMULADO por `D69`.** §2.6 tenía sólo ROLL-FORWARD y ahí la
+                    disyunción quedaba coja. Ahora tiene **LAS DOS RAMAS**, y ninguna deja
+                    una mezcla parcial:
+                      COMPLETAR   `confirmada` → `derivada`, con todos los ficheros en su
+                                  `hash_posterior_esperado`
+                      REVERTIR    `abandonada`, que **restaura las escrituras ESPECULATIVAS
+                                  LOCALES a la revisión base y lo verifica byte a byte**
+                                  antes de poder emitirse (§2.6.9)
+                    Y en los dos casos el incidente se registra y se publica DESPUÉS de
+                    recuperar la consistencia. **NUNCA se cierra dejando una mezcla parcial**,
+                    y **no hay un tercer desenlace normativo**
+QUÉ QUEDA POR       que `b.14` y `a.9` hablan de revertir sin distinguir estado PUBLICADO de
+DECIDIR             estado ESPECULATIVO. §2.6.0 hace esa distinción, y sólo revierte lo
+                    segundo: lo publicado nunca se restaura automáticamente
+MATERIA MÍNIMA      una frase en b.14 que confirme la lectura: «completar, o revertir las
+                    escrituras especulativas a su revisión base, registrar el incidente y
+                    escalar» — sin autorizar la reversión de estado ya publicado
+SE PUEDE CONSTRUIR  todo §2.6. La lectura está declarada y no espera a nadie
 BLOQUEA             nada que no bloquee ya PN-1. Es coherencia, no capacidad
-ORIGEN              hallazgo `N-9` de la segunda devolución independiente
+ORIGEN              hallazgo `N-9` de la segunda devolución independiente, REFORMULADA por la
+                    comprobación adversarial previa al gate
 ```
 
 ## `PN-8` · NUEVA · `VER` no está en la ruta `AUD` de `b.16`
@@ -6536,9 +6818,14 @@ POR QUÉ NO ES SÓLO  porque `E2.4` **cierra expresamente** la vía de derivarlo
 DEFECTO DE F6       porque la tabla de propiedad de `C7` no tiene ninguna fila que alcance al
                     control repo. F6 no puede rellenarlo sin tomar una decisión normativa
                     NUEVA, y eso es materia del Owner
-MATERIA MÍNIMA      extender `C7` con una tabla de propiedad del control repo, **o** un
-                    contrato nuevo `C8` con ese sujeto. Las dos son enmienda; ninguna se
-                    redacta aquí
+SEDE, YA RESUELTA   **`O16`**, resolución posterior del Owner: la AUTORIDAD NORMATIVA vive en
+POR EL OWNER        la futura sección `(g)` —que `PN-1` ya exige crear, luego no se añade una
+                    norma nueva—, y F6 deriva de ella un contrato independiente **`C8`** que
+                    gobierna ÚNICAMENTE el control repo. **`C7` permanece limitado a las
+                    sources.** `C8` no copia la tabla de `C7`: el sujeto es distinto y hay que
+                    aplicarle la prueba
+MATERIA MÍNIMA      un apartado en `(g)` con la tabla de propiedad del control repo. **F5 la
+                    redacta; F6 materializa y valida `C8`.** Ninguna se redacta aquí
 BLOQUEA             la publicación gobernada del estado, y con ella las garantías 5 y 6 de
                     §2.6.6, la reconstrucción sin árbol de §2.9, la condición previa de toda
                     `retirada-de-cuerpo` y la permanencia que `O15` exige
@@ -6581,7 +6868,7 @@ ORIGEN              hallazgo `G8` de la TERCERA REVISIÓN INDEPENDIENTE, que la 
 **Resumen para el Owner, tras revisar las cinco de la entrega anterior:**
 
 ```text
-VIGENTES · ONCE
+VIGENTES · DIEZ
   PN-1   la sección (g). LA ÚNICA QUE BLOQUEA TODO EL ESTADO DURABLE, y ahora decide más
   PN-2   la política de auditoría como tercera vía de creación de trabajo
   PN-3   G03 y la ejecución desatendida. Misma pregunta que PN-2 por otro camino, y
@@ -6783,7 +7070,7 @@ REAL SIGUE PENDIENTE      llena. `O15` fija que esa adopción —PesquerApp— s
 NINGÚN ADAPTADOR EXISTE   y por tanto ninguno está certificado
 X1 Y P-05 SIGUEN          ninguna decisión de aquí cruza la línea del blueprint
 DEFERIDAS
-ONCE PRESIONES            §16, tras DOS devoluciones independientes y la TERCERA REVISIÓN: PN-4 retirada, PN-5
+DIEZ PRESIONES            §16, tras DOS devoluciones independientes y la TERCERA REVISIÓN: PN-4 retirada, PN-5
 NORMATIVAS VIGENTES       fusionada en PN-3, y PN-6 a PN-12 nuevas. PN-1 bloquea todo
                           el estado durable, y F5 es su puerta
 F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. DOS críticas independientes y UNA
