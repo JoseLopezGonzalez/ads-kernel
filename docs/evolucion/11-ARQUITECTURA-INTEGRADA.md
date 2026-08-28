@@ -4754,7 +4754,22 @@ CAUSAS RAÍZ         agrupación por campo común. Veinte inputs con alturas dis
 CAMPAÑA             la abre la **capacidad RESPONSABLE del aspecto** —la `lider` si hay
                     varias (§5.2)—, porque agrupar findings de su materia es juicio suyo y
                     no de `DSP`. Es una `iniciativa` de §3.3 con su gate. **`DSP` la compone
-                    y la despacha**, y no decide su contenido (`b.5`, `b.7`)
+                    y la despacha**, y no decide su contenido (`b.5`, `b.7`).
+                    **Y su ficha tiene que autorizarlo, igual que la de `DSP`** (`I-14`; es
+                    `D91`): `C1` L118 fija que la autoridad de un rol es SIEMPRE subconjunto
+                    de la de su capacidad, y **ninguna de las quince fichas menciona hoy
+                    `iniciativa` ni `campaña`** —comprobado con un barrido sobre las quince—.
+                    Abrir una iniciativa NO se da por implícito porque la capacidad responda
+                    del aspecto: es una autoridad, y las autoridades se declaran.
+                    **QUÉ TRABAJO GENERA, y es de F6**: una EXTENSIÓN DE FICHA por cada
+                    capacidad que pueda ser LÍDER DE COBERTURA, autorizándole abrir una
+                    `iniciativa` de campaña sobre los aspectos de los que responde.
+                    **EL CONJUNTO NO SE ESCRIBE A MANO**: se DERIVA de los
+                    `contrato-de-aspecto` (§5.7) —la capacidad `lider` de cada aspecto, o la
+                    única responsable cuando hay una sola—, exactamente como el reparto por
+                    defecto vive allí y no aquí. Escribirlo a mano crearía la segunda sede
+                    editable que `I5` prohíbe, y quedaría desactualizado en cuanto un aspecto
+                    cambiara de líder. Registrado en §17 y en §19
       ↓
 CORRECCIÓN          `CON`, con el nivel de autorización de §5.5
       ↓
@@ -7107,14 +7122,14 @@ demostrar que las piezas encajan sin contradecirse. El piloto sigue pendiente.
 
 | | escenario | fuentes que se leen | estado que cambia | quién escribe | gate | evidencia | cómo se recupera |
 |---|---|---|---|---|---|---|---|
-| 1 | **proyecto nuevo** | distribución instalada | `estado/` nace · item de instalación | `PLT` · `SIS` · runtime | INS-4 Operativa, INS-7 = `O12` | `workspace check` · prueba de humo · checkpoint recuperado | repetir el paso; antes de INS-3 no hay estado que perder |
+| 1 | **proyecto nuevo** | distribución instalada | **`estado/` nace en `INS-0`**, con `INI-001` y el item real `SIS-001` | `SIS` propietaria global · `CON` y `VER` · `PLT` materializa (`C7:82`) · runtime | `INS-4` Operativa · **`INS-5` baseline aprobado por el Owner** · `INS-7` = `O12` | `workspace check` · prueba de humo · checkpoint recuperado | **por el checkpoint del paquete de `SIS-001`, desde `INS-0`.** Ningún tramo depende del chat |
 | 2 | **adopción de PesquerApp** | los dos repositorios enteros, sólo lectura | iniciativa A0 · inventario · baseline · cobertura inicial | `INV` la capa, `SIS` consumidor | A3 baseline, A8 retirada, A10 = `O12` | inventario con procedencia · dictamen de `VER` | dosier de la iniciativa + checkpoint del paquete |
-| 3 | **migración desde ADS anterior** | control repo antiguo y fuentes | estado **traducido**, con esquema nuevo | `PLT` · `SIS` | M3 equivalencia, M5 autorización | equivalencia antes/después de items y checkpoints | el evento `preparada` de la tx; M3 es idempotente |
-| 4 | **actualización de ADS** | distribución candidata e instalada | distribución instalada · proyecciones | `SIS` · `PLT` | U3 plan aprobado, U6 certificación | vista comprensible del cambio | rollback a la versión anterior con su estado |
+| 3 | **migración desde ADS anterior** | control repo antiguo y fuentes | estado **traducido**, con esquema nuevo | `SIS` · `ARQ` en `M6`–`M7` · `CON` con custodia de cada source change · `PLT` materializa (`C7:82`) | M3 equivalencia, M5 autorización | equivalencia antes/después de items y checkpoints | el evento `preparada` de la tx; M3 es idempotente |
+| 4 | **actualización de ADS** | distribución candidata e instalada | distribución instalada · proyecciones | `SIS` · `PLT` propietaria global de `U5b` · `CON` con custodia del puntero · `ENT` declara convergencia | U3 plan aprobado, U6 certificación | vista comprensible del cambio | rollback a la versión anterior con su estado |
 | 5 | **feature amplia por iniciativa** | componentes afectados y sus fuentes | iniciativa + N items + paquetes | las capacidades con custodia | gate de cierre de la iniciativa | capas, source changes e integration set | dosier derivado + checkpoints |
-| 6 | **auditoría recurrente → campaña** | los sujetos de las celdas vencidas | cobertura · items `AUD` · iniciativa campaña | runtime dentro de `O7` · `ENC` clasifica | gate de cada `AUD` + cierre de campaña | dictámenes · findings con causa raíz | la celda y su estado; nada se pierde |
+| 6 | **auditoría recurrente → campaña** | los sujetos de las celdas vencidas | cobertura · items `AUD` · iniciativa campaña | **`DSP` abre los items `AUD` dentro de la política `O7` vigente** (§5.3) · la capacidad RESPONSABLE del aspecto —la `lider` si hay varias— abre la campaña · `ENC` clasifica los findings · runtime | gate de cada `AUD` + cierre de campaña | dictámenes · findings con causa raíz | la celda y su estado; nada se pierde |
 | 7 | **reanudación tras chat agotado** | estado canónico completo | ninguno hasta despachar | runtime | — | el reporte breve de `b.14` paso 5 | es el escenario: `Continúa` |
-| 8 | **caída durante escritura** | `estado/eventos/` y los marcadores de `estado/tx/` | se completa o se marca conflicto | runtime | — | los eventos de la transacción | §2.6, sin inventar estado |
+| 8 | **caída durante escritura** | `estado/eventos/` y los marcadores de `estado/tx/` y `estado/deriva/` | **se COMPLETA, o se marca `conflicto` — que NO es un desenlace: tiene DOS salidas, completar si la divergencia cesa o REVERTIR lo especulativo local con `abandonada` verificada byte a byte** (§2.6.9) | runtime | — | los eventos de la transacción | §2.6, sin inventar estado |
 | 9 | **dos fuentes y cierre** | `frontend` y `backend` | paquetes con source changes · integration set | capacidades con custodia · `ENT` | `gate:convergencia-de-fuentes` | el integration set, con SHA por fuente | checkpoint con `sources:` |
 | 10 | **de Claude Code a Codex** | definición canónica del adaptador | proyecciones nuevas · cobertura de instalación | `PLT` | prueba de humo | salida de la prueba en sesión nueva | el estado no se toca: es neutral por diseño |
 | 11 | **evidencia caducada** | entradas declaradas del validador | ninguno: se regenera evidencia | el runner | `T158` | la huella que no casa | regenerar, nunca editar |
@@ -7881,9 +7896,10 @@ NO SE RENUMERA NINGUNA. Renumerar rompería la trazabilidad de lo que ya se llev
 
 > **Lo que NO es presión normativa, y se dice para que nadie lo lleve al Owner.** El defecto
 > de `C7` (§9.5) es material **derivado** de `E2`: su corrección está completamente
-> determinada por `E2.6`, no requiere decisión del Owner, y su sitio es F6. Y las cuatro
-> extensiones de ficha de §5.2 tampoco lo son: extender una ficha con materia que ya está en
-> su alcance es trabajo de F6.
+> determinada por `E2.6`, no requiere decisión del Owner, y su sitio es F6. Y las **SEIS**
+> extensiones de ficha de §5.2 —`ENT`, `ARQ`, `PLT`, `SEG`, `DSP` y `ENC`— tampoco lo son:
+> extender una ficha con materia que ya está en su alcance es trabajo de F6.
+> **Corregido por `I-06`**: decía «cuatro», que era el recuento anterior a `M-5` y `M-6`.
 
 ---
 
@@ -7894,7 +7910,7 @@ NO SE RENUMERA NINGUNA. Renumerar rompería la trazabilidad de lo que ya se llev
 | (a), (b), `E1`, `E2` | **intactas**. F4 no las toca, y sus presiones están en §16 |
 | `K-1` tres capas | **intacta**. §1.2 clasifica ciclo de vida, no conocimiento |
 | `C1`–`C7` | **intactos**. `C2` se amplía en F6 |
-| quince capacidades, roles, métodos, prompts | **intactos**. Son los RESPONSABLES de los aspectos de §5.2, no los aspectos. `+4` extensiones de ficha: `ENT`, `ARQ`, `PLT` y `SEG` |
+| quince capacidades, roles, métodos, prompts | **intactos**. Son los RESPONSABLES de los aspectos de §5.2, no los aspectos. **`+6` extensiones de ficha**: `ENT`, `ARQ`, `PLT`, `SEG`, **`DSP`** (`M-5` · abrir items `AUD` dentro de una política `O7` vigente) y **`ENC`** (`M-6` · admitir un finding de auditoría como entrada, con la celda de cobertura por sujeto). **Corregido por `I-06`**: decía `+4`, y era la mitad literal del cierre de `M-6` —«añadir `capacidades/ENC/` a §5.2 **y a §17**»— que no se había hecho. §5.2, §16 y §17 dicen ahora la misma cifra, y `+1` más si `I-14` obliga a extender las fichas de las capacidades líderes de cobertura |
 | diez procesos de `b.16` | **intactos**. Ningún macrocircuito crea uno nuevo |
 | diecinueve esquemas | **+4 de estado**: `iniciativa`, `adaptador`, `cobertura`, `evento`. **+2 de clase**: `nivel-certificacion` y `contrato-de-aspecto`, con el precedente de `nivel-novedad`. `memoria` y `validadores.yaml` se amplían. **Total 25** (§3.8) |
 | packs | **intactos**, `+2` piezas en `web-app` (`CAND-022`, `CAND-024`) |
@@ -8109,6 +8125,58 @@ cuentan como «F4 corregida»**.
 | `F-08` | nota de vigencia o de sustitución que reconcilie el «NO IMPLEMENTAR SIN DISEÑO PREVIO» de `IDEAS` §15 con lo que `C6`, `C7` y §10 **ya implementan**. Un campo `autoridad:` no retira esa frase: son remedios distintos | `docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md` | el **Owner**: es su documento | **F5** | no |
 | `F-10` | la cabecera deja de afirmar «catorce bloques, **uno por clase de expresión**»: hay catorce formas y **nueve** clases, y la aposición es falsa. La cifra 14 es correcta | `entrada/03-FORMAS.md` | `ENC` | **F6** | no |
 | `F-11` | la cabecera enumera las pruebas que el fichero contiene de verdad —`T75`–`T80` y `T154`–`T157`—, no «`T75` a `T84`»: `T81`–`T85` viven en otro fichero, que existe | `entrada/05-ESCENARIOS.md` | `SIS` | **F6** | no |
+
+### `DOM` y `SEG` participan DOS veces, y ningún proceso instancia la segunda
+
+> **Registrado por el gate de cierre independiente (`I-08`, GRAVE; es `D92`).** `b.16`
+> L834–836 declara que **`DOM` y `SEG` participan dos veces**: `<CAP>:condiciones ⊳ CON`
+> aporta RESTRICCIONES **antes** de construir, y **`<CAP>:revision` tras `VER` REVISA LO
+> CONSTRUIDO**. `a.6` L504–505 lo dice para las dos mitades. Un barrido sobre
+> `kernel/operativo/` devuelve **cero instancias de `:revision`**: los diez procesos
+> instancian sólo `:condiciones`. F4 compone `A8`, `M6`–`M7` y `U5b` con
+> `DOM:condiciones` y `SEG:condiciones` y nada más — **y son los tres tramos que escriben en
+> las fuentes del producto**. El `GATE DE COMPOSICIÓN` de §8.0 comprueba contra los
+> condicionales declarados, no contra `b.16`, luego daría por completa una composición a la
+> que le falta una participación que (b) exige.
+>
+> **NO es una decisión nueva del Owner, y no se registra como presión.** `b.16` ya lo exige
+> con esas palabras: lo que falta es INSTANCIARLO en el kernel derivado, que es trabajo de F6
+> exactamente como `F-01` y `F-02`. **F4 no toca `01-PROCESOS.md`**, y por eso lo que sigue
+> es la edición exacta, su propietario y su prueba.
+
+```text
+QUÉ HAY QUE AÑADIR   por cada proceso donde el condicional `<CAP>:condiciones` YA EXISTE, su
+                     par `<CAP>:revision` con la misma condición y su posición declarada
+                     DESPUÉS de `VER`:
+                       `<CAP>:revision`   condicion: la MISMA que su `:condiciones`
+                                          posicion:  tras `evidencia-suficiente` de `VER`
+                                          produce:   la revisión de lo construido, con lo
+                                                     comprobado y lo NO comprobado
+
+DÓNDE, EXACTAMENTE   `kernel/operativo/recorrido/01-PROCESOS.md`, y **en TODOS los procesos
+                     donde esos condicionales existen — no sólo en `DEU` y `DEP`**. El
+                     conjunto se DERIVA con un barrido de `:condiciones` sobre el fichero, no
+                     se escribe a mano: hoy son las cuatro instancias de `SEG:condiciones` y
+                     las cuatro de `DOM:condiciones`. Y en `kernel/operativo/circuitos/`, la
+                     instancia de handoff que materializa la entrega de vuelta
+
+PROPIETARIO          `SIS`, que es quien posee `recorrido/` y `circuitos/` por el mapa de
+                     fuente única del índice operativo
+
+FASE                 **F6.** No hay nada que decidir: (b) ya lo decidió
+
+SU PRUEBA            una comprobación mecánica que, **para cada `<CAP>:condiciones` de
+                     `01-PROCESOS.md`, exija su `<CAP>:revision` correspondiente en el mismo
+                     proceso** — y que falle si falta alguno. Es del mismo tipo que la prueba
+                     de espacio de nombres de `D83`: una sola regla derivada, no un censo
+                     escrito. Y el `GATE DE COMPOSICIÓN` de §8.0 pasa a comprobar contra
+                     `b.16` y no sólo contra los condicionales declarados
+
+QUÉ NO SE HACE AQUÍ  F4 **no edita `01-PROCESOS.md`**: tocarlo es F6, y esta fase no toca
+                     kernel. Lo que se cierra aquí es que la ausencia quede REGISTRADA con
+                     propietario, fase, edición exacta y prueba, en vez de descubrirse
+                     cuando F6 componga `A8`, `M6`–`M7` o `U5b` sin la revisión
+```
 
 **Y dos más, que no son defectos de F4 y se dicen para que nadie los busque aquí:**
 
