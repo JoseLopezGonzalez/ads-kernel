@@ -19,7 +19,7 @@ OK   N92     —     T92   una marca comercial entra por un esquema, que antes n
 OK   N91     —     T91   un paso de método pierde su condición de salida
                           → detectada: INV/Investigacion paso 1: sin `termina_cuando`
 OK   N147    A-05  T147  documento huérfano cuyo nombre base coincide con otros dieciocho
-                          → detectada: docs/evolucion/verificacion/README.md: no lo alcanza ningún enlace por ruta, ninguna referencia de campo y ninguna cita 
+                          → detectada: kernel/operativo/capacidades/DIS/huerfano/composicion.md: no lo alcanza ningún enlace por ruta, ninguna referencia de ca
 OK   N147b   A-05  T147  un enlace apunta al nombre correcto en la carpeta equivocada
                           → detectada: kernel/operativo/00-INDICE.md:75: 'contratos/00-LENGUAJE.md' no existe, y sí existe ese nombre en kernel/operativo/esque
 OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
