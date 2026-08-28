@@ -97,9 +97,12 @@ Para el Owner, sin vocabulario interno.
 ```text
 LA CUARTA CAPA           sigue deferida. Hace falta un proyecto independiente que minar.
 EL PILOTO                sigue sin ejecutarse. Nada de aquí está demostrado en un producto.
-LAS ENMIENDAS            este diseño presiona material aprobado en OCHO puntos, tras dos
-                         devoluciones independientes. Se enumeran y NO se redactan: eso es
-                         F5, y su puerta es el Owner.
+LAS ENMIENDAS            este diseño presiona material aprobado en **ONCE** puntos, tras dos
+                         devoluciones independientes, una tercera revisión y el gate final
+                         con su complemento de cobertura. El recuento se DERIVA de §16 y se
+                         mueve cuando aparece algo no contado: fueron ocho, y `PN-11`,
+                         `PN-12` y `PN-13` lo llevan a once. Se enumeran y NO se redactan:
+                         eso es F5, y su puerta es el Owner.
 ```
 
 **Qué cuesta.** El diseño elige, en cada punto donde había alternativa, la forma que se puede
@@ -446,7 +449,7 @@ VEREDICTO   COMPONER. Una transacción es una SECUENCIA DE EVENTOS INMUTABLES qu
 |---|---|
 | declarar la intención antes de tocar nada | evento con `fase: preparada` |
 | declarar la lista exacta de ficheros y su hash previo | campo `afecta`, con `hash_previo` por fichero |
-| señalar «hay algo en vuelo» | una transacción **sin evento `derivada`**, que es el único terminal (§2.6.1). `estado/tx/<TX-ID>.abierta` la acelera y **lleva el `tx` y las rutas afectadas**, para que la regla de lectura de §2.6.8 sea ejercible sin recorrer el diario. Se reconstruye si se pierde |
+| señalar «hay algo en vuelo» | una transacción que satisface **`abierta(tx)`**, el predicado único de §2.6.1 —hay `preparada` durable y no hay ninguno de los DOS terminales—. `estado/tx/<TX-ID>.abierta` la acelera y **lleva el `tx` y las rutas afectadas**, para que la regla de lectura de §2.6.8 sea ejercible sin recorrer el diario. Se reconstruye si se pierde |
 | decir si la transición se aplicó | evento con `fase: confirmada` |
 | poder cerrarse y desaparecer | **no sobrevive, y es lo correcto**: borrarlo era el defecto. §3.6 dejaba a `evento.tx` apuntando a un artefacto borrado |
 
@@ -510,7 +513,7 @@ empieza**:
                                 `ausente`. Sin esto, `abandonada` sería inalcanzable
 ```
 
-### 2.6.1 · El autómata de fases — seis fases, dos rutas, un solo cierre
+### 2.6.1 · El autómata de fases — cinco fases, dos rutas, dos cierres
 
 > **Corregido dos veces.** La devolución técnica previa unificó cinco formulaciones
 > incompatibles en un solo autómata de cinco fases (`D46`). Una corrección técnica posterior
@@ -547,6 +550,34 @@ CONFLICTO                  │
 DOS cierres terminales:  `derivada`   la transacción se completó
                          `abandonada` la transacción se cerró SIN completarse
 NINGUNA transición sale de un terminal.
+```
+
+> **`abierta(tx)` · el predicado, declarado UNA VEZ y aquí.**
+>
+> **Corregido por el gate final independiente (`A2`, BLOQUEANTE; es `D71`).** Siete sedes
+> decidían «si esta transacción sigue abierta» y **ninguna citaba a otra**: unas decían «sin
+> evento `derivada`», y tres de ellas añadían que `derivada` es **el único terminal** —que
+> `D64` había dejado de ser cierto al hacer `abandonada` terminal—. Una transacción
+> `abandonada` satisfacía «sin `derivada`», luego **el marcador nunca se retiraba, la regla de
+> lectura de §2.6.8 la seguía declarando en vuelo y la regla de commit de §2.6.10 seguía
+> bloqueando el control repo**. El defecto no era la redacción: era que el predicado **no
+> tenía sede**.
+
+```text
+abierta(tx)  ≡  ∃ `preparada` DURABLE con ese `tx`
+                ∧  ¬∃ evento con ese `tx` y `fase` ∈ { `derivada`, `abandonada` }
+
+cerrada(tx)  ≡  ¬abierta(tx) ∧ ∃ `preparada` durable   — y CERRADA ≡ TERMINAL, por los DOS
+
+QUIÉN LO EVALÚA   el VALIDADOR SEMÁNTICO DEL DIARIO (§3.6, capa B): exige recorrer los demás
+                  eventos de ese `tx`, luego NO es comprobable por el esquema estructural.
+                  `estado/tx/<TX>.abierta` lo ACELERA y no lo define: es un caché
+                  reconstruible, y §2.9 declara desde dónde
+
+DÓNDE SE CITA     §2.5 (marcador) · §2.6.4 (clasificación) · §2.6.6 (garantías y regla de
+                  commit) · §2.6.8 (regla de lectura) · §2.6.9 (`conflicto`) · §2.9
+                  (reconstrucción del marcador) · §7.4 (paso 2 de `Continúa`).
+                  **Las siete REMITEN aquí. Ninguna lo redeclara.**
 ```
 
 **Las CINCO fases, y qué significa cada una:**
@@ -983,7 +1014,7 @@ transacción esté abierta o cerrada (§2.6.11).
 | W5 | tras aplicar todos, antes de `confirmada` | todos en posterior, sin `confirmada` | se emite `confirmada` y se sigue. No se reescribe nada |
 | W6 | justo después de `confirmada` | `confirmada` presente, derivados sin regenerar | se regeneran los derivados y se emite `derivada` |
 | W7 | durante la regeneración de derivados | derivados divergentes de su `source_revision` | se regeneran ENTEROS. Un derivado es reemplazable por definición |
-| W8 | tras `derivada`, antes de borrar el marcador | transacción CERRADA con marcador abierto | se borra el marcador. Idempotente. **`derivada` es el único terminal**, luego «cerrada» y «terminal» vuelven a coincidir (§2.6.1) |
+| W8 | tras `derivada`, antes de borrar el marcador | transacción CERRADA con marcador abierto | se borra el marcador. Idempotente. **`abierta(tx)` deja de cumplirse** en cuanto es durable cualquiera de los DOS terminales, y el marcador se retira por igual tras `derivada` y tras `abandonada` (§2.6.1) |
 | W9 | antes del commit de Git | árbol coherente, Git por detrás | se hace el commit LOCAL. Es recuperación: protege el árbol y no publica (§2.6.10) |
 | W10 | después del commit, antes del push | commit local sin publicar | **NO se empuja automáticamente.** El push es publicación, no recuperación: pasa a la política de §2.6.10 |
 | W11 | en cualquier punto, con la transacción abierta y un fichero VERDADERAMENTE divergente | un fichero que no casa **ni con su `hash_previo` ni con su `hash_posterior_esperado`** (§2.6.4) | **`conflicto`** —y las dos condiciones son necesarias: transacción abierta Y divergencia real—, con la copia íntegra de lo divergente. El predicado `reconciliacion_pendiente` **se deriva** de él (§2.6.9): no hay bandera que escribir. No se completa y no se revierte, y tiene **dos salidas**: si la divergencia cesa se completa hacia delante, y si no, la autoridad **abandona** y el marcador se retira |
@@ -1141,7 +1172,7 @@ QUÉ AUTORIDAD        argumento de §2.6.4—. La restauración es **decisión d
 QUÉ HACE SI NO CASA  DEPENDE DE SI LA TRANSACCIÓN SIGUE ABIERTA, y la distinción es de
                      identidad, no de grado (§2.6.11):
 
-                       TRANSACCIÓN ABIERTA    —sin `derivada`— se CLASIFICA por §2.6.4
+                       TRANSACCIÓN ABIERTA    —`abierta(tx)`, §2.6.1— se CLASIFICA por §2.6.4
                        (W12a)                 contra su intención vigente, y NO se salta a
                                               `conflicto`:
                                                 · casa con la BASE     → NO APLICADO → se
@@ -1402,7 +1433,7 @@ CONTENIDO                el `tx` y LA LISTA DE RUTAS AFECTADAS. F4c obligaba a r
 
 EL DIARIO ES LA FUENTE   el marcador acelera; el diario RECONSTRUYE. Si el marcador falta,
 DE RECONSTRUCCIÓN        el evento `preparada` de la transacción declara las mismas rutas, y
-                         §2.9 lo dice: una transacción sin evento `derivada`.
+                         §2.9 lo dice: las que satisfacen `abierta(tx)` (§2.6.1).
 
 NADA SE ESCRIBE EN EL    **corregido por la devolución técnica previa (hallazgo `2`,
 CONTENIDO CANÓNICO       BLOQUEANTE).** El texto anterior exigía escribir `tx_abierta:
@@ -1455,7 +1486,7 @@ garantía, y **no se pierde ninguna**:
 | decisión por fichero: conservar lo divergente, aplicar lo preparado, o un tercer contenido | **sí** | es el `afecta[]` de esa `preparada`, con `hash_previo` = lo observado |
 | orden total de aplicación | **sí** | el `orden` de esa `preparada` |
 | derivados regenerados antes de cerrar | **sí** | la `derivada` de esa transacción |
-| roll-forward only, sin deshacer | **sí** | ninguna de las dos rutas revierte nada |
+| roll-forward only sobre lo PUBLICADO, sin deshacer | **sí** | ninguna de las dos rutas revierte estado publicado. **`abandonada` sí restaura las escrituras ESPECULATIVAS LOCALES** a `revision_base`, y lo verifica byte a byte (`D69`, §2.6.9): eso no es deshacer historia, es descartar lo que nunca se publicó |
 | el bloqueo persiste hasta que se repara | **sí, y mejor acotado** | pasa del marcador —que bloqueaba el commit de TODO el producto— al `deriva`, que bloquea los items que nombra |
 
 **Qué se pierde, dicho en positivo:** tres fases del enum, tres contadores, una bandera, el
@@ -2175,14 +2206,15 @@ esta pasada**.
 
 > **Añadida por la corrección técnica posterior (hallazgo `2`, BLOQUEANTE).** §2.6.6 y `W12`
 > decían que un canónico revertido bajo una transacción durable *«emite `conflicto`»*, y
-> `conflicto` es una **fase de la transacción**. Con `derivada` como único terminal, eso es
+> `conflicto` es una **fase de la transacción**. Con `derivada` como único terminal —**como
+> lo era ENTONCES**; `D64` hizo terminal también a `abandonada`, y `D71` fijó el predicado—, eso es
 > **una transición que sale del terminal** — que la tabla de §2.6.1 declara defecto. El
 > protocolo se contradecía en el punto donde detecta corrupción silenciosa. Es `D53`.
 
 **La distinción que faltaba, y es de identidad, no de grado:**
 
 ```text
-CONFLICTO      se descubre MIENTRAS la transacción sigue abierta —sin `derivada`—. Es una
+CONFLICTO      se descubre MIENTRAS la transacción sigue abierta —`abierta(tx)`, §2.6.1—. Es una
                FASE suya, tiene su `tx`, y la transacción lo resuelve por su ruta de
                conflicto. El estado incoherente es SUYO y lo arregla ella.
 
@@ -2200,17 +2232,22 @@ tx_afectada      la transacción CERRADA cuyo resultado ya no se sostiene, o la 
                  cuyas rutas quedaron mixtas, si la hay.
                  Es una REFERENCIA, no una pertenencia: no la reabre, no la modifica y no
                  añade ninguna fase a su historia
-causa            `posterior-al-cierre`   el fichero casaba y ya no casa, con `derivada`
+causa            **EL ENUM LO DECLARA §3.6, Y ES SU ÚNICA SEDE.** Son TRES valores. Lo que
+                 sigue es su GLOSA —qué significa cada uno—, no una segunda declaración: si
+                 alguna vez difieren, manda §3.6. Es `D72`, que cierra `A1`.
+
+                 `posterior-al-cierre`   el fichero casaba y ya no casa, con `derivada`
                                          durable. Corrupción silenciosa (garantía 3 de
-                                         §2.6.6)
+                                         §2.6.6). LLEVA `tx_afectada`
                  `sin-transaccion`       nadie preparó nada: alguien editó un canónico
-                                         fuera del protocolo
+                                         fuera del protocolo. **NO lleva `tx_afectada`**:
+                                         no hay ninguna a la que referirse
                  `abandono-de-           **añadida por `D64`.** Una autoridad cerró la
                  transaccion`            transacción con `abandonada` sin completarla, y sus
                                          rutas quedaron en un estado mixto declarado. Lo
                                          emite el propio acto de abandono, en el mismo
                                          instante, y es lo que conserva el bloqueo cuando el
-                                         marcador se retira (§2.6.9)
+                                         marcador se retira (§2.6.9). LLEVA `tx_afectada`
 afecta           por fichero: `ruta` · `hash_esperado` —el que gobierna según la transacción
                  cerrada, o el de `HEAD` si no hay transacción— · `hash_observado`
 items            los items cuyos canónicos están afectados
@@ -2511,7 +2548,7 @@ garantía?».**
 | tableros, vistas, dosieres, índices | los canónicos | **total y determinista**. `T03` lo comprueba |
 | `.ads/run/` entero | los canónicos | total |
 | un derivado divergente | los canónicos | total, y `Continúa` paso 2 lo regenera |
-| el marcador `estado/tx/<TX>.abierta` | el diario: una transacción **sin evento `derivada`** | total. Es un acelerador, no una verdad. Con `derivada` como único terminal (§2.6.1), la condición es UNA |
+| el marcador `estado/tx/<TX>.abierta` | el diario: las transacciones que satisfacen **`abierta(tx)`** (§2.6.1) | total. Es un acelerador, no una verdad. La condición es UNA, y es el predicado: `preparada` durable sin ninguno de los DOS terminales |
 | una transición interrumpida | el evento `preparada` de su `tx` | total si ningún fichero es divergente; si lo es, `conflicto` declarado |
 | el estado canónico tras una pérdida | Git | total: es su historia |
 | el estado canónico **sin Git** | eventos sellados + eventos posteriores | **parcial y declarada**: sólo desde el último sellado. Antes del primero, no |
@@ -3619,7 +3656,8 @@ UN `orden` CON `fase` QUE NO DECLARE NINGUNA      ESQUEMA ESTRUCTURAL: si lleva 
 ESCRITURA CANÓNICA, O SIN `fase` DECLARANDO       `preparada` declara `afecta[]`, y si no
 UNA                                               la lleva no puede declarar ninguna
 `fase: abortada`, con cualquier `tipo`            ESQUEMA ESTRUCTURAL: fuera del enum
-`tx_afectada` sin `causa: posterior-al-cierre`    ESQUEMA ESTRUCTURAL
+`tx_afectada` CON `causa: sin-transaccion`, o SU     ESQUEMA ESTRUCTURAL: el enum de tres
+AUSENCIA con las otras DOS causas                 valores y su condicional viven en §3.6
 UN EVENTO CON `fase` CUYO `tx` YA TIENE           VALIDADOR SEMÁNTICO DEL DIARIO: exige
 `derivada`                                        recorrer los demás eventos de ese `tx`
 DOS `conflicto` CONSECUTIVOS CON EL MISMO         VALIDADOR SEMÁNTICO DEL DIARIO: exige
@@ -3656,7 +3694,7 @@ candidatos con sujeto, autoridad y ciclo propios. El recuento de §3.8 **no camb
 | `conflicto` | `preparada` o `conflicto` | `divergentes[]` con `ruta`·`hash_observado`· **`contenido` íntegro de lo divergente** · `items[]` · `rutas[]` · `autoridad` que debe resolver · `observacion` ≥ 1 | `resultado` · `decision` | ninguno: declara lo observado, no lo esperado | la divergencia CESA y los N ficheros vuelven a casar → `confirmada`; la autoridad decide cerrar → `abandonada`. **Siempre hay una de las dos** |
 | `abandonada` | `conflicto` | `estado_observado[]` con `ruta`·`hash_observado`·`clasificacion` ∈ {previo, posterior, divergente} **para TODAS las rutas del `tx`** · `autoridad` que decidió · `motivo` · `deriva_emitida` = `id` del `deriva` que conserva el bloqueo | `resultado` · `derivados_regenerados` · `decision` | ninguno: la transacción no alcanza ningún resultado | **ninguna. Es TERMINAL**, retira el marcador, y el bloqueo pasa al `deriva` que emite (§2.6.9) |
 | `derivada` | `confirmada` | `derivados_regenerados[]` con su `source_revision` · `resuelve_deriva` sólo si esta transacción repara uno | `afecta` · `decision` · `divergentes` | el `hash_posterior_esperado` de su `preparada` | **ninguna. Es TERMINAL**, y retira el marcador. Que no exista ningún evento posterior con ese `tx` lo comprueba el **validador semántico del diario**, no el esquema |
-| `deriva` | **ninguna: NO tiene `tx` ni `fase`** | `causa` ∈ {`posterior-al-cierre`,`sin-transaccion`} · `afecta[]` con `ruta`·`hash_esperado`·`hash_observado` · `items[]` · `autoridad` · `tx_afectada` sólo si `causa: posterior-al-cierre` | `fase` · `tx` · `decision` · `resultado` | ninguno: **reporta**, no repara | ninguna. La reparación es una transacción NUEVA (§2.6.11) |
+| `deriva` | **ninguna: NO tiene `tx` ni `fase`** | **`causa`, ENUM CERRADO DE TRES VALORES y ÉSTA ES SU ÚNICA SEDE** ∈ {`posterior-al-cierre`,`sin-transaccion`,`abandono-de-transaccion`} · `afecta[]` con `ruta`·`hash_esperado`·`hash_observado` · `items[]` · `autoridad` · `tx_afectada` **obligatorio si `causa` ∈ {`posterior-al-cierre`,`abandono-de-transaccion`} y PROHIBIDO con `sin-transaccion`** | `fase` · `tx` · `decision` · `resultado` | ninguno: **reporta**, no repara | ninguna. La reparación es una transacción NUEVA (§2.6.11) |
 | `fallo` | **ninguna: NO tiene `tx` ni `fase`** | `sujeto` · `operacion` ∈ {`push`,`publicacion`,`arranque`,`ci`,`proyeccion`} · `causa` · `estado_observado` · `diagnostico` · `intentos` · `recuperable` ∈ {`si`,`no`,`requiere-decision`} · `autoridad_requerida` · `accion_siguiente` · `evidencia` · **`tx_afectada` como REFERENCIA, cuando la operación se refiere a una** · `referencias[]` con `commit`·`rama`·`remoto` cuando la operación es Git | `fase` · `tx` · `afecta` · `decision` | — | ninguna. **Es informativo y NO repara**: si hay que reparar, es una transacción nueva |
 
 ### `fallo` — una semántica CERRADA, no un contenedor genérico
@@ -3742,7 +3780,8 @@ C · RUNTIME Y PRUEBAS        garantiza o DEMUESTRA lo FÍSICO: el orden real de
   por la matriz de §3.6; que `deriva`, `fallo` y `sellado` no lleven `fase` ni `tx`; que un
   `conflicto` lleve `divergentes[].contenido`; que una `abandonada` lleve `estado_observado[]`
   para TODAS las rutas, `autoridad`, `motivo` y `deriva_emitida`; que en `deriva` el
-  `tx_afectada` sólo aparezca con `causa: posterior-al-cierre` o `abandono-de-transaccion`;
+  `tx_afectada` aparezca con `causa: posterior-al-cierre` o `abandono-de-transaccion` y NO
+  con `sin-transaccion` —el enum de TRES valores lo declara §3.6, sede única—;
   y que un `fallo` con `operacion` ∈ {`push`,`publicacion`} lleve `referencias[]`
 · UNICIDAD DE `ruta` dentro del array del propio evento, y `orden` total dentro de él
 · QUÉ ALGORITMO DE IDENTIDAD APLICAR, antes de aplicarlo: si el evento lleva
@@ -5002,20 +5041,36 @@ INCONSISTENCIA IRRESOLUBLE    DSP para y escala. NUNCA inventa estado (b.14.3)
 Los siete pasos de `b.14` se conservan, **con una desviación declarada en el paso 2** y
 varias comprobaciones añadidas.
 
-> **Corregido por la segunda devolución independiente (hallazgo `N-9`).** F4c decía que los
-> siete pasos «se conservan enteros» y que sólo se añadía «qué mira el paso 2». **No es
-> exacto: se cambia su disposición.** Donde (b) escribe *«completar o REVERTIR (a.9)»*, esta
-> arquitectura escribe *«completar o marcar conflicto»*, y §2.6 **elimina el ramal de
-> reversión por completo**.
+> **Corregido por la segunda devolución independiente (hallazgo `N-9`), y REESCRITO por el
+> gate final independiente (`A3`, GRAVE; es `D73`).** F4c decía que los siete pasos «se
+> conservan enteros». Después se corrigió a *«se cambia su disposición: donde (b) escribe
+> «completar o REVERTIR», esta arquitectura escribe «completar o marcar conflicto», y §2.6
+> elimina el ramal de reversión por completo»*. **Esa segunda formulación dejó de ser cierta
+> con `D69`**, que dio a `abandonada` una restauración verificada de las escrituras
+> ESPECULATIVAS LOCALES a la revisión base. `PN-7` ya recoge las DOS ramas en su cuerpo; el
+> paso 2 y el resumen de §16 se habían quedado en la formulación vieja, y un lector tenía
+> **dos contratos incompatibles** sobre el mismo paso.
 >
-> La decisión de *roll-forward only* es buena y está argumentada en §2.6.2, y satisface la
-> disyunción de `a.9` —«terminarla **o** revertirla»—. Lo que no era aceptable es hacerlo
-> **declarando que el texto de (b) se conserva entero**. La desviación queda registrada como
-> presión normativa `PN-7` en §16, y no se resuelve aquí.
+> **Lo vigente, y es lo único vigente:** §2.6 tiene **las dos ramas de `a.9`** —completar y
+> revertir—, y la reversión está ACOTADA a lo especulativo local. Lo publicado no se restaura
+> nunca de forma automática (§2.6.0). Sigue siendo una desviación respecto de la LETRA de
+> `b.14`, porque (b) no distingue publicado de especulativo, y por eso `PN-7` sigue vigente:
+> lo que cambia es que ahora presiona por una PRECISIÓN, no por una rama ausente.
 
 ```text
 2 VERIFICAR   · ¿existen los artefactos que los paquetes dicen haber producido?
-              · ¿hay transacciones sin evento `derivada`?  → completar, o marcar conflicto
+              · ¿hay transacciones con `abierta(tx)` (§2.6.1)?  → LAS DOS RAMAS, y no hay
+                una tercera:
+                  COMPLETAR  todos los ficheros casan con su base o su resultado →
+                             aplicar lo que falte en el `orden` declarado, `confirmada` si
+                             no existía, regenerar derivados y `derivada`
+                  MARCAR     algún fichero no casa NI con la base NI con el resultado →
+                             `conflicto`, con la copia íntegra de lo divergente. Su salida
+                             la decide la AUTORIDAD, y son dos: cesa la divergencia →
+                             `confirmada`; la autoridad abandona → `abandonada`, que
+                             RESTAURA lo especulativo local a `revision_base` y lo verifica
+                             byte a byte antes de emitirse (§2.6.9)
+                **Ninguna de las dos cierra dejando una mezcla parcial publicable.**
               · ¿hay deriva NO transaccional respecto a `HEAD`? → reportar y escalar (§2.6.6)
               · ¿hay `reconciliacion_pendiente`?           → resolverla antes de nada
               · ¿hay derivados divergentes de su source_revision?  → regenerar
@@ -5073,6 +5128,127 @@ PROPIO    disparador · precondiciones · fases · participantes · lecturas y e
 FORMA     cada uno es una INICIATIVA con su plantilla de ruta. No un proceso.
 ```
 
+### La COMPOSICIÓN DE RUTA — sede canónica, y por qué NO hace falta un tipo nuevo
+
+> **Añadida por el gate final independiente (`B-1` y `B-2`, BLOQUEANTES, con la conclusión
+> del NIVEL 0 sobre `C5`; es `D74`).** Los cuatro macrocircuitos declaraban una lista de
+> `PARTICIPANTES` y `D67` les asignó un proceso de `b.16`, **sin comprobar que el proceso
+> asignado admitiera a esos participantes**. Trece de ellos no tenían por dónde entrar. El
+> gate lo llamó «participantes sin vehículo», y el NIVEL 0 comprobó además que **`C5` no es
+> ese vehículo**: un handoff ocurre ENTRE capacidades que YA están en la ruta —siete de sus
+> diecisiete instancias disparan sobre el criterio `C-<CAP>` que el proceso declara—, luego
+> `C5` **materializa** una entrega, no **compone** una ruta. Buscar el vehículo en `C5` era
+> buscarlo un piso más arriba de donde vive.
+
+**Dónde vive la composición, y es UNA sede.** No se crea ningún tipo canónico, y la prueba de
+§3.1 no llega a plantearse, porque **la composición ya es expresable con lo que existe**:
+
+```text
+SEDE CANÓNICA          la tabla de §18, «Los cuatro macrocircuitos, mapeados a los procesos
+                       de b.16», fase a fase. Los bloques de §8.1–§8.4 son su LECTURA
+                       narrativa: si alguna vez difieren, MANDA §18
+
+QUÉ ES LA COMPOSICIÓN  un CONJUNTO DE ITEMS ENLAZADOS, agrupados por una `iniciativa` —tipo
+                       que §3.3 ya declara—. NO es un artefacto nuevo, no tiene esquema
+                       propio y no entra en el recuento de §3.8
+
+POR QUÉ NO PUEDE SER   porque `b.1` fija la REGLA DE PROCESO ÚNICO: «un item tiene
+UN SOLO ITEM           EXACTAMENTE UN proceso en cada momento». Una fase que necesita
+                       capacidades de dos rutas necesita DOS ITEMS, no un proceso nuevo
+```
+
+**Cómo entra una capacidad en la ruta. Son CUATRO vías, y no hay una quinta:**
+
+```text
+1 PROPIETARIA GLOBAL   la capacidad cuya capa DEFINE el resultado del item. La fija `b.16`
+                       por proceso, y en `AUD` y `DIR` se DERIVA del encargo — nunca se
+                       asigna a mano (`01-PROCESOS.md` L419)
+
+2 OBLIGATORIA          figura en las `obligatorias` del proceso del item. Entra SIEMPRE, y
+                       su obligación tiene que quedar SATISFECHA para cerrar (`b.3`, `b.10`)
+
+3 CONDICIONAL          figura en las `condicionales` del proceso CON SU CONDICIÓN ESCRITA Y
+                       COMPROBABLE del vocabulario de `b.16` —`C-DIS`, `C-ARQ`, `C-DOM`,
+                       `C-SEG`, `C-ENT`, `C-USO`, `C-APR`— o con una condición propia
+                       redactada. **«Si aplica» está prohibido**, y lo no activado deja
+                       motivo (`a.6`)
+
+4 ITEM PROPIO ENLAZADO la capacidad NO cabe en el proceso de la fase, y entra con SU PROPIO
+                       ITEM, bajo el proceso que sí la declara, enlazado al item líder de la
+                       fase. Es la regla que `b.16` ya escribe DOS VECES: «varias
+                       conclusiones INDEPENDIENTES con propietarios distintos → se divide en
+                       items AUD ENLAZADOS, uno por conclusión», y lo mismo para `DIR`
+```
+
+**Y hay DOS formas de estar presente que NO son participar en la ruta**, y confundirlas con
+la vía 3 es lo que produjo la lista de participantes sin vehículo:
+
+```text
+EJECUTOR      ejecuta el trabajo sin responder de la conclusión. `a.5` los separa
+              expresamente. `PLT` bajo `C7` es el caso constante: custodia la maquinaria y
+              cada source change —rama, commit, push, PR y CI POR FUENTE—, y **no es
+              participante de la ruta por hacerlo**. §8.3 ya tenía la fila `EJECUTOR`
+              separada; los otros tres macrocircuitos no, y de ahí salía el espejismo
+
+AUTORIDAD     autoriza o cierra un gate. El **Owner** en `A8`, `M6` y en toda decisión de
+              retirada, y la autoridad de retirada que cada obligación nombra. Autorizar no
+              es depositar capa
+```
+
+**Cómo se materializan los handoffs DESPUÉS, y por qué es después.** Una vez la ruta está
+compuesta, la entrega concreta entre dos capacidades que ya están en ella se declara en
+`kernel/operativo/circuitos/` con la forma de `C5`: `id`, `de`, `a`, `cuando`,
+`checkpoint`, `comprueba_al_recibir`. **El orden importa y no es reversible**: sin
+composición no hay entre quiénes; con composición, el handoff sólo añade QUÉ viaja y CUÁNDO.
+`00-CIRCUITOS.md` lo dice con todas las letras —los circuitos son la sede de las entregas
+entre capacidades—, y ésa es la fuente que manda cuando `C5` parece decir otra cosa.
+
+**Cómo se COMPRUEBA que la composición está completa.** Es mecánico, y F6 lo construye como
+validador; aquí queda declarado el contrato:
+
+```text
+GATE DE COMPOSICIÓN    ninguna fase de ningún macrocircuito abre hasta que, para CADA
+                       capacidad que la fase declara, consta UNA de las cuatro vías, con su
+                       proceso y —si es la 3— su condición nombrada
+
+ENTRADA Y SALIDA       para cada capacidad de la ruta: la ENTRADA es su vía (1–4); la SALIDA
+                       es la capa que deposita, con su criterio de satisfacción. Una
+                       capacidad sin salida declarada es una capacidad que no tenía por qué
+                       estar
+
+EVIDENCIA              la tabla de §18 resuelta fase a fase, con la vía de cada capacidad, y
+                       el enlace de cada item propio a su item líder
+
+ERROR CUANDO FALTA     `composicion-incompleta`: la fase NO abre, DSP para y escala
+UNA CONEXIÓN           nombrando la capacidad y la fase (`b.14.3`). **No se inventa un
+                       handoff para tapar una capacidad sin vía**, y no se ensancha un
+                       proceso por conveniencia: ensanchar `b.16` es normativo, y su sitio
+                       es una presión, no esta arquitectura
+
+QUIÉN CONSUME LA       `DSP`, que compone y despacha; y el `gate` de la fase, que no cierra
+COMPOSICIÓN            sin las obligaciones satisfechas (`b.10`)
+```
+
+> **`SIS` y `PLT`, dicho aparte porque el NIVEL 0 los aisló.** Ninguna de las diecisiete
+> instancias de handoff declaradas en `circuitos/` nombra a `SIS` ni a `PLT` — ni como
+> emisor ni como receptor—, y los cuatro macrocircuitos son mayoritariamente `proceso:SIS`
+> con `PLT` como ejecutor. **No es un defecto de composición**: `SIS` entra por la vía 1
+> —es la propietaria global de `proceso:SIS`— y `PLT` no entra por ninguna porque **es
+> ejecutor, no participante**. Lo que sí falta es material y queda declarado aquí para que
+> F6 lo materialice sin decidir nada:
+>
+> ```text
+> QUÉ VIAJA DE SIS A PLT    el SOURCE CHANGE: paquete con `escribe_fuentes`, rama, commit,
+>                           push, PR y CI POR FUENTE, bajo `C7`. Es lo que §8.3 `M6`, §8.2
+>                           `A8` y §8.4 `U5b` ya describen
+> QUÉ VIAJA DE SIS A VER    el dosier de certificación: celdas, evidencia y nivel propuesto
+> QUÉ VIAJA DE PLT A VER    el resultado por fuente, con su estado `INTEGRACIÓN PARCIAL`
+>                           mientras no converjan todas
+> DÓNDE SE DECLARAN         `kernel/operativo/circuitos/`, en F6. Son instancias, no norma:
+>                           no requieren decisión del Owner, y su ausencia hoy NO bloquea la
+>                           composición, sólo la entrega
+> ```
+
 ## 8.1 · Instalación en proyecto nuevo
 
 ```text
@@ -5087,8 +5263,24 @@ FASES           N0 crear y publicar control repo y workspace, CON EL SOPORTE DUR
                 N5 discovery de producto, dominio y diseño
                 N6 engineering bootstrap con evidencia real
                 N7 gate «listo para construir»
-PARTICIPANTES   Owner · PLT (N0,N2,N6) · ENC+PRD (N1,N5) · SIS (N3) · VER (N4,N7) ·
-                ARQ DOM DIS SEG según discovery
+PARTICIPANTES   **con su VÍA de entrada (§8.0), porque una lista sin vía no es una ruta**
+                  `SIS`  vía 1 · propietaria global de `proceso:SIS`, todas las fases
+                  `CON`  vía 2 · obligatoria `cambio-construido`
+                  `VER`  vía 2 · obligatoria `evidencia-suficiente`. Cierra `N4` y `N7`
+                  `ENT`  vía 3 · «el cambio modifica el runtime», en `N6`
+                  `APR`  vía 3 · `C-APR`
+                  `PRD` y `ARQ`  vía 4 · items `proceso:INV` ENLAZADOS para el discovery de
+                         `N1` y `N5`, por sus condicionales «el destino declarado es una
+                         decisión de producto» y «…una decisión técnica»
+                  `DOM`, `DIS` y `SEG`  **SIN VÍA en `proceso:INV`. Es `PN-13`**, y hasta
+                         que F5 la resuelva su discovery se encarga como items `proceso:AUD`
+                         SÓLO si el objeto ya existe — que en una instalación NUEVA no es el
+                         caso. §8.0 prohíbe inventarles un handoff
+EJECUTOR        `PLT` en `N0`, `N2` y `N6`: custodia workspace, adaptadores y punteros, y
+                cada source change bajo `C7`. **Ejecuta, no deposita capa** (`a.5`)
+ENCUADRE        `ENC` encuadra `N1` y `N5` ANTES de que haya ruta. No es participante de
+                ninguna: `b.16` no la declara en ningún proceso, y es correcto (§8.0)
+AUTORIDAD       el **Owner**: decisión de instalar, y los gates `N4` y `N7`
 LEE             la distribución instalada
 ESCRIBE         control repo entero; las fuentes sólo desde N6 — **incluidos los punteros
                 de adaptador**, que N2 NO escribe aunque elija el adaptador (§6.7)
@@ -5205,9 +5397,46 @@ FASES           A0  apertura, perímetro y modo no destructivo
                 A8  limpieza: retirar copias organizativas y verdades paralelas
                 A9  certificación
                 A10 preparación y gate
-PARTICIPANTES   A2/A3 `AUD` con INV produciendo la capa · A6 activa DOM, SEG,
-                DIS/Reconstruccion y PRD, que son LOS CONDICIONALES QUE `proceso:AUD` YA
-                DECLARA · A7 ENC · A8 DEU con PLT · A9 SIS+PLT+VER, y SEG si hay superficie
+PROCESO         `A0`–`A1` y `A9`–`A10` son `proceso:SIS`. **`A2`–`A7` es `proceso:AUD`**,
+DE CADA TRAMO   y `A8` es `proceso:DEU`. §18 tiene la tabla, y manda
+PARTICIPANTES   **con su VÍA de entrada (§8.0)**
+                `A0`–`A1` · `proceso:SIS`
+                  `SIS` vía 1 · `CON` y `VER` vía 2
+                `A2`–`A7` · `proceso:AUD`, y **NO es un item: son VARIOS ENLAZADOS**, uno
+                por conclusión independiente, que es lo que `b.16` manda para `AUD` cuando
+                hay «varias conclusiones INDEPENDIENTES con propietarios distintos»
+                  propietario global  **DERIVADO por item**, nunca asignado a mano
+                                      (`01-PROCESOS.md` L419): la capacidad responsable de
+                                      LA CONCLUSIÓN de ese item. `A6` reconstruye producto,
+                                      arquitectura, dominio, datos, UI/UX, sistema de
+                                      diseño, seguridad y operación REALES — ocho
+                                      conclusiones, con `PRD`, `ARQ`, `DOM`, `DIS`, `SEG` y
+                                      `ENT` como propietarias de la suya. **Ésa es su vía 1**
+                  `INV`  vía 2 · única obligatoria de `AUD`: produce la evidencia de CADA
+                         item. Es la capacidad que EJECUTA la auditoría sin responder de la
+                         conclusión, y `b.16` lo dice con esas palabras
+                  `DOM` `C-DOM` · `SEG` `C-SEG` · `DIS` `C-DIS` · `PRD` «produce una
+                         decisión de producto» · `APR` `C-APR`  vía 3, en los items donde no
+                         son propietarias
+EJECUTOR        `PLT` en `A8`: cada source change bajo `C7`, por fuente. **No es
+                participante de la ruta de `A8`**, y por eso no figura arriba (`a.5`)
+ENCUADRE        `ENC` encuadra `A7` —trabajo vivo— antes de que haya ruta. No es
+                participante (§8.0). Su extensión de ficha para clasificar findings del
+                sistema está en §5.2 y §17
+AUTORIDAD       el **Owner**: gate `A3` del baseline, autorización de retirada de `A8` POR
+                FUENTE, y `A10`
+`A8` · `proceso:DEU`
+                  `ARQ` vía 1 · propietaria global, obligatoria `plan-tecnico` con radio de
+                        impacto MEDIDO
+                  `CON` vía 2 · obligatoria **`cambio-construido`**, cuya `capacidad_productora`
+                        es `CON` en `01-PROCESOS.md`. Sin ella `A8` no cierra
+                  `VER` vía 2 · obligatoria `evidencia-suficiente`
+                  `DOM:condiciones` `SEG:condiciones` `ENT` `USO` `APR` vía 3
+`A9`–`A10` · `proceso:SIS`
+                  `SIS` vía 1 · `CON` y `VER` vía 2
+                  `SEG` **SIN VÍA en `proceso:SIS` cuando hay superficie. Es `PN-13`.** Hasta
+                        que F5 la resuelva, su dictamen entra como item `proceso:AUD`
+                        enlazado, con `SEG` de propietaria global derivada
 LEE             TODO: código, docs, historial Git, ramas, PR, CI, entornos, despliegues,
                 agentes, skills, prompts, reglas, workflows, backlog, incidentes
 ESCRIBE         NADA en las fuentes hasta A8, y en A8 sólo lo que el Owner autorice —
@@ -5292,7 +5521,19 @@ FASES           M0 identificar versión instalada y disposición
                    «del repositorio técnico» en singular, que es la formulación que `E2.0`
                    declara RETIRADA
                 M7 VERIFICAR que nada dependía de lo retirado
-PARTICIPANTES   PLT · SIS · VER · Owner en M6
+PARTICIPANTES   **con su VÍA de entrada (§8.0)**
+                `M0`–`M5` · `proceso:SIS`
+                  `SIS` vía 1 · `CON` vía 2 (`cambio-construido`) · `VER` vía 2
+                  `ENT` vía 3 · «el cambio modifica el runtime»
+                `M6`–`M7` · `proceso:DEU`
+                  `ARQ` vía 1 · propietaria global. Su obligatoria `plan-tecnico` —el radio
+                        de impacto MEDIDO de la retirada— **es entrada de `M5`**: sin ella
+                        `M5` no puede certificar lo que `M6` va a retirar. Es la vía por la
+                        que `ARQ` participa en la migración, y §18 la nombra
+                  `CON` vía 2 · obligatoria **`cambio-construido`**, `capacidad_productora`
+                        `CON`. Es quien ejecuta la sustitución de mecanismos de `M4`
+                  `VER` vía 2 · obligatoria `evidencia-suficiente`, y verifica `M7`
+                  `DOM:condiciones` `SEG:condiciones` `ENT` `USO` `APR` vía 3
 LEE             la instalación ANTERIOR entera: `estado/` con su `esquema_estado`, el
                 catálogo instalado, `PROFILE.md`, `PROJECT.md`, `SOURCES.toml`, los
                 adaptadores, y la organización heredada de CADA fuente.
@@ -5437,7 +5678,22 @@ FASES           U0 detectar versión candidata
                     por C7, con gate, evidencia por fuente e Integration Set si hay más
                     de una. Ver §6.7
                 U6 certificar
-PARTICIPANTES   SIS · PLT · VER · Owner si hay incompatibilidad o retirada
+PARTICIPANTES   **con su VÍA de entrada (§8.0)**
+                `U0`–`U5a` · `proceso:SIS`
+                  `SIS` vía 1 · `CON` vía 2 · `VER` vía 2 · `ENT` vía 3 si toca el runtime
+                `U5b` · `proceso:DEP` — **y por eso `SEG` y `CON` son OBLIGATORIAS aquí**
+                  `PLT` vía 1 · propietaria global de `proceso:DEP`
+                  `SEG` vía 2 · obligatoria `condiciones-de-seguridad`, **la capa de SEG
+                        ANTES de construir**. Su `autoridad_de_retirada` es *«nadie: `G28` lo
+                        hace obligatorio en este proceso y no se retira»*. No es una elección
+                  `CON` vía 2 · obligatoria `cambio-construido`
+                  `VER` vía 2 · obligatoria `evidencia-suficiente`
+                  `DOM:condiciones` `C-DOM` · `ARQ` «el cambio de versión altera contratos» ·
+                        `ENT` `C-ENT`  vía 3
+                `U6` · `proceso:SIS` · `VER` vía 2
+EJECUTOR        `PLT` para cada source change de `U5b`, bajo `C7`, POR FUENTE
+AUTORIDAD       el **Owner** si hay incompatibilidad o retirada, y en el punto de no retorno
+                de `U3`
 LEE             la distribución nueva y la instalada
 ESCRIBE         la distribución instalada y las proyecciones DEL CONTROL REPO en U5a; y
                 LAS FUENTES en U5b, sólo el fichero puntero y bajo `C7`. **No el estado**,
@@ -6865,16 +7121,68 @@ ORIGEN              hallazgo `G8` de la TERCERA REVISIÓN INDEPENDIENTE, que la 
                     «la presión normativa omitida»
 ```
 
+## `PN-13` · NUEVA · `proceso:SIS` y `proceso:INV` no admiten `DOM`, `SEG` ni `DIS`
+
+```text
+QUÉ PRESIONA        (b) b.16, filas SIS e INV. SIS: obligatorias SIS·CON·VER, condicionales
+                    ENT y APR. INV: obligatoria INV, condicionales CON:experimental, PRD,
+                    ARQ y APR. **`DOM`, `SEG` y `DIS` no figuran en ninguna de las dos**, ni
+                    como obligatorias ni como condicionales
+TEXTO VIGENTE       «SIS evolución del sistema | SIS | SIS · CON · VER | ENT obligatorio si
+                    modifica el runtime · APR C-APR» y «INV investigación | INV | INV |
+                    CON:experimental… · PRD o ARQ según destino declarado · APR C-APR»
+QUÉ HACE F4         §8.1 declara `N5` «discovery de producto, dominio y diseño» ANTES del
+                    gate `N7` «listo para construir», y §8.0 exige que toda capacidad de la
+                    ruta entre por una de sus cuatro vías. `DOM` y `DIS` no entran por
+                    ninguna: el modelo de dominio y el sistema de diseño de un producto
+                    NUEVO se establecen en `N5`, y sus items sólo pueden ser `SIS` o `INV`.
+                    `AUD` sí las declara, pero `AUD` exige «un objeto YA EXISTENTE», que en
+                    una instalación nueva no hay
+POR QUÉ NO CABE EN  no es `PN-8` —aquélla es `VER` ausente de la ruta `AUD`, otra fila, otra
+LAS DIEZ            capacidad y otro remedio—. No es `PN-2` ni `PN-3`, que preguntan QUIÉN
+                    puede CREAR trabajo, no por dónde entra una capacidad en un trabajo que
+                    ya existe. No es `PN-6`, `PN-10` ni `PN-12`, que interpretan
+                    resoluciones del Owner. **Es la única que toca la derivación de rutas de
+                    b.16 por el lado de las capacidades ausentes en SIS e INV**
+POR QUÉ NO BASTA    porque §8.0 prohíbe expresamente ensanchar un proceso por conveniencia:
+UN DERIVADO         `b.16` es (b), y añadir un condicional a una ruta aprobada es normativo.
+                    La alternativa —inventar un handoff que traiga a `DOM` sin que esté en
+                    la ruta— la cierra el NIVEL 0 del gate: `C5` materializa entregas entre
+                    capacidades que YA participan, y no compone rutas
+MATERIA MÍNIMA      añadir `DOM:condiciones C-DOM`, `SEG:condiciones C-SEG` y `DIS C-DIS`
+                    como CONDICIONALES de `proceso:SIS`, y `DOM`, `SEG` y `DIS` como
+                    condicionales de `proceso:INV`. **O bien** declarar que el discovery de
+                    dominio y diseño de un producto nuevo no pertenece a `N5` y nombrar
+                    dónde pertenece. Son dos salidas, y elegir es del Owner
+ALCANCE             `N5` y `A9` de §8. NO alcanza a `A2`–`A7`, que es `proceso:AUD` y sí las
+                    declara; ni a `A8`, `M6`–`M7` ni `U5b`, que son `DEU` y `DEP` y también
+SE PUEDE CONSTRUIR  todo lo demás de §8, y las cuatro composiciones completas salvo esas dos
+                    celdas. `N0`–`N4`, `N6`, `N7` y los tres macrocircuitos restantes no
+                    esperan a nadie
+BLOQUEA             que `N5` abra con `DOM` y `DIS` en su ruta, y que `A9` incorpore el
+                    dictamen de `SEG` sin pasar por un item `AUD` enlazado
+CONDICIÓN DE        si el Owner prefiere no tocar `b.16`, la reversión es declarar que `N5`
+REVERSIÓN           produce ÚNICAMENTE conocimiento —items `INV` con destino `PRD` o `ARQ`—
+                    y que dominio y diseño se depositan después, en los items de producto
+                    donde `C-DOM` y `C-DIS` ya son condicionales. A costa de que el gate
+                    `N7` «listo para construir» se supere sin modelo de dominio
+ORIGEN              hallazgo `B-2` del GATE FINAL INDEPENDIENTE, residuo que NO se cierra
+                    propagando ninguna decisión ya tomada. Es el ÚNICO de los cuarenta y
+                    cuatro que lo exige
+```
+
 **Resumen para el Owner, tras revisar las cinco de la entrega anterior:**
 
 ```text
-VIGENTES · DIEZ
+VIGENTES · ONCE
   PN-1   la sección (g). LA ÚNICA QUE BLOQUEA TODO EL ESTADO DURABLE, y ahora decide más
   PN-2   la política de auditoría como tercera vía de creación de trabajo
   PN-3   G03 y la ejecución desatendida. Misma pregunta que PN-2 por otro camino, y
          absorbe lo que era PN-5
   PN-6   qué significa «Integrada» para un producto de 0 o 1 fuente
-  PN-7   b.14 paso 2 dice «completar o revertir», y §2.6 sólo completa        NUEVA
+  PN-7   b.14 paso 2 dice «completar o revertir». §2.6 tiene LAS DOS RAMAS, y
+         lo que presiona es la PRECISIÓN: (b) no distingue estado PUBLICADO de
+         estado ESPECULATIVO, y sólo el segundo se revierte                    NUEVA
   PN-8   VER no está en la ruta AUD, y §5.6 exige su dictamen                 NUEVA
   PN-9   los predicados de obligación de b.3 a nivel de iniciativa. Probablemente
          NINGUNA materia, y F5 debe confirmarlo                               NUEVA
@@ -6883,6 +7191,8 @@ VIGENTES · DIEZ
          las fuentes y E2.4 cierra la vía de G29. BLOQUEA la publicación        NUEVA
   PN-12  el «mapa documental» de O8 se satisface DERIVADO. Misma vara que
          PN-6 y PN-10. No bloquea                                              NUEVA
+  PN-13  b.16 no da a proceso:SIS ni a proceso:INV ninguna vía para DOM, SEG
+         ni DIS, y N5 las necesita antes del gate «listo para construir»        NUEVA
 
 RETIRADA · UNA
   PN-4   con su motivo escrito, y reinstaurable por F5 si el Owner lo prefiere
@@ -6985,22 +7295,36 @@ atrás es volver a un release. Es lo que ya se hace, y funciona.
 > que ELEGIR, y esa elección determina obligaciones y autoridad. Se declara aquí, y **no se
 > crea ningún proceso**: los diez de `b.16` bastan.
 
-| macrocircuito | fase | proceso `b.16` | propietario global | participantes | entrada | salida | gate | estado persistido |
-|---|---|---|---|---|---|---|---|---|
-| **N · instalación** | `N0`–`N5` | `proceso:SIS` | **`SIS`** | `PLT`, `ENC`, `PRD`, y las de discovery | decisión del Owner de instalar | control repo, topología, especialización y adaptadores | `N4` Operativa | `estado/` e `INI-001` desde `N0`, sobre el item `SIS-001` |
-| | `N6`–`N7` | `proceso:SIS` | **`SIS`** | `PLT` propaga bajo `C7` · `VER` certifica | especialización aprobada | punteros propagados y nivel Integrada | `N7` = `O12` | evidencia + celdas de cobertura |
-| **A · adopción** | `A0`–`A1` | `proceso:SIS` | **`SIS`** | `PLT` | el Owner quiere gobernar un producto con historia | perímetro y topología | modo no destructivo declarado | iniciativa + `estado/` |
-| | `A2`–`A7` | `proceso:INV` | **`INV`** | `AUD` con `DOM`, `SEG`, `DIS`, `ARQ`, `PRD`, `ENC` | acceso de lectura a las fuentes | inventario, baseline, producto reconstruido y trabajo vivo | `A3` baseline aprobado por el Owner | capas por item, con procedencia |
-| | `A8` | `proceso:DEU` | **`ARQ`** | `PLT` ejecuta bajo `C7` | autorización de retirada | copias organizativas y verdades paralelas retiradas | `A8` autorizado por el Owner | source changes por fuente |
-| | `A9`–`A10` | `proceso:SIS` | **`SIS`** | `PLT`, `VER`, `SEG` | limpieza cerrada | nivel Integrada | `A10` = `O12` | celdas de certificación |
-| **M · migración** | `M0`–`M5` | `proceso:SIS` | **`SIS`** | `PLT`, `ARQ`, `VER` | existe una instalación de una versión anterior | estado migrado, verificado y certificado | `M3` equivalencia · `M5` Integrada | `estado/` migrado + evento `migracion` |
-| | `M6`–`M7` | `proceso:DEU` | **`ARQ`** | `PLT` ejecuta bajo `C7` · `VER` verifica | `M5` certificado y autorización POR FUENTE | heredado retirado y verificado | `M6` autorizado · `M7` verificado | source changes + `INTEGRACIÓN PARCIAL` |
-| **U · actualización** | `U0`–`U4` | `proceso:SIS` | **`SIS`** | `PLT` | hay una versión nueva de ADS | compatibilidad decidida y migración aplicada | `U3` punto de no retorno | instantánea de `U3` + progreso por pasos |
-| | `U5`–`U6` | `proceso:SIS` · `proceso:DEP` en `U5b` | **`SIS`** · **`PLT`** en `U5b` | `ENT`, `VER` | migración aplicada | ADS actualizado y recertificado | `U6` = `O12` | `INTEGRACIÓN PARCIAL` por fuente |
+> **Reescrita por el gate final independiente (`B-1`, `B-2`, `G-1`, `G-2`, `M-3`, `m-4` y
+> `F-01`; es `D75`).** La versión anterior tenía cuatro defectos que se apoyaban entre sí:
+> ponía nombres de PROCESO —`AUD`, `DEU`— en la columna de PARTICIPANTES, que sólo admite
+> CAPACIDADES; asignaba a `A2`–`A7` un proceso que §8.2 desmentía; listaba participantes que
+> el proceso asignado **no admite por ninguna vía**; y confundía ejecutores y autoridades con
+> participantes. **Ahora cada capacidad lleva su vía de §8.0**, y las quince capacidades son
+> `APR ARQ CON DIS DOM DSP ENC ENT INV PLT PRD SEG SIS USO VER` — ni `AUD` ni `DEU` ni `DEP`
+> están entre ellas.
+
+| macrocircuito | fase | proceso `b.16` | propietario global | participantes de la RUTA, con su vía | ejecutor y autoridad | entrada | salida | gate | estado persistido |
+|---|---|---|---|---|---|---|---|---|---|
+| **N · instalación** | `N0`–`N5` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `APR` `C-APR` vía 3 · `PRD` `ARQ` vía 4, items `INV` enlazados de discovery · **`DOM` `DIS` `SEG` sin vía: `PN-13`** | ejecutor `PLT` · autoridad Owner | decisión del Owner de instalar | control repo, topología, especialización y adaptadores | `N4` Operativa | `estado/` e `INI-001` desde `N0`, sobre el item `SIS-001` |
+| | `N6`–`N7` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3, «modifica el runtime» | ejecutor `PLT` propaga bajo `C7` · autoridad Owner | especialización aprobada | punteros propagados y nivel Integrada | `N7` = `O12` | evidencia + celdas de cobertura |
+| **A · adopción** | `A0`–`A1` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 | ejecutor `PLT` · autoridad Owner | el Owner quiere gobernar un producto con historia | perímetro y topología | modo no destructivo declarado | iniciativa + `estado/` |
+| | `A2`–`A7` | **`proceso:AUD`**, en items ENLAZADOS, **uno por conclusión** | **DERIVADO por item** del encargo (`b.16`): la capacidad responsable de esa conclusión — `PRD`, `ARQ`, `DOM`, `DIS`, `SEG` y `ENT` en las ocho de `A6`. **NUNCA a mano** | `INV` vía 2, única obligatoria, ejecuta y no responde de la conclusión · `DOM` `C-DOM` · `SEG` `C-SEG` · `DIS` `C-DIS` · `PRD` «produce una decisión de producto» · `APR` `C-APR`, vía 3 | encuadre `ENC` (previo a la ruta) · autoridad Owner en `A3` | acceso de lectura a las fuentes | inventario, baseline, producto reconstruido y trabajo vivo | `A3` baseline aprobado por el Owner | capas por item, con procedencia |
+| | `A8` | `proceso:DEU` | **`ARQ`** (vía 1) | `CON` vía 2 (`cambio-construido`) · `VER` vía 2 · `DOM:condiciones` `SEG:condiciones` `ENT` `USO` `APR` vía 3 | ejecutor `PLT` bajo `C7` · autoridad Owner, POR FUENTE | autorización de retirada | copias organizativas y verdades paralelas retiradas | `A8` autorizado por el Owner | source changes por fuente |
+| | `A9`–`A10` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · **`SEG` sin vía si hay superficie: `PN-13`**, y entretanto item `AUD` enlazado con `SEG` de propietaria derivada | ejecutor `PLT` · autoridad Owner | limpieza cerrada | nivel Integrada | `A10` = `O12` | celdas de certificación |
+| **M · migración** | `M0`–`M5` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3 | ejecutor `PLT` · autoridad Owner | existe una instalación de una versión anterior | estado migrado, verificado y certificado | `M3` equivalencia · `M5` Integrada | `estado/` migrado + evento `migracion` |
+| | `M6`–`M7` | `proceso:DEU` | **`ARQ`** (vía 1) — su `plan-tecnico` es ENTRADA de `M5` | `CON` vía 2 (`cambio-construido`) · `VER` vía 2, y verifica `M7` · `DOM:condiciones` `SEG:condiciones` `ENT` `USO` `APR` vía 3 | ejecutor `PLT` bajo `C7` · autoridad Owner, POR FUENTE | `M5` certificado y autorización POR FUENTE | heredado retirado y verificado | `M6` autorizado · `M7` verificado | source changes + `INTEGRACIÓN PARCIAL` |
+| **U · actualización** | `U0`–`U4` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3 | ejecutor `PLT` · autoridad Owner en `U3` | hay una versión nueva de ADS | compatibilidad decidida y migración aplicada | `U3` punto de no retorno | instantánea de `U3` + progreso por pasos |
+| | **`U5a`** | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 | ejecutor el runtime del control repo | migración aplicada | proyecciones del control repo recompiladas | ninguno propio: cae en `U6` | huella de proyección (§6.3) |
+| | **`U5b`** | `proceso:DEP` | **`PLT`** (vía 1) | **`SEG` vía 2** (`condiciones-de-seguridad`, ANTES de construir; `G28` la hace irretirable) · **`CON` vía 2** (`cambio-construido`) · `VER` vía 2 · `DOM:condiciones` `ARQ` `ENT` vía 3 | ejecutor `PLT` bajo `C7`, POR FUENTE · autoridad Owner si hay retirada | `U5a` cerrado | punteros propagados a cada fuente | gate por fuente, con Integration Set si hay más de una | `INTEGRACIÓN PARCIAL` por fuente |
+| | **`U6`** | `proceso:SIS` | **`SIS`** (vía 1) | `VER` vía 2 | autoridad Owner si la revalidación baja el nivel | `U5b` convergido | ADS actualizado y recertificado | **revalidación del nivel VIGENTE**, no `O12`: una actualización no arranca programación, y `O12` gobierna ese arranque. Bajar de nivel es un fallo, no un resultado | celdas de certificación |
 
 > **Los propietarios globales NO se eligen: los fija `b.16`.** `proceso:SIS` → `SIS`,
 > `proceso:INV` → `INV`, `proceso:DEU` → **`ARQ`** y `proceso:DEP` → `PLT`, verificados uno a
-> uno contra `01-PROCESOS.md`. `DEU` y `DEP` son **procesos**, no capacidades: las quince son
+> uno contra `01-PROCESOS.md`. **`proceso:AUD` es el único que NO lo fija**: lo DERIVA del
+> encargo, y `01-PROCESOS.md` L419 prohíbe expresamente asignarlo a mano. Por eso `A2`–`A7`
+> no tiene UN propietario: tiene uno POR ITEM, y son varios items porque son varias
+> conclusiones independientes. `DEU` y `DEP` son **procesos**, no capacidades: las quince son
 > `APR ARQ CON DIS DOM DSP ENC ENT INV PLT PRD SEG SIS USO VER`, y confundir el nombre de un
 > proceso con el de una capacidad es el mismo modo de fallo que `G1` corrigió con `a.9`.
 
@@ -7011,8 +7335,10 @@ UN PROCESO NUEVO          puedan representar, y sus INTENCIONES lo dicen literal
                               «cambiar la propia fábrica: memoria, plantillas, catálogo,
                               composiciones o runtime»
                             · inventariar y reconstruir un producto con historia es
-                              `proceso:INV`, «producir CONOCIMIENTO que permita decidir algo
-                              que hoy no puede decidirse»
+                              `proceso:AUD`, «producir una CONCLUSIÓN sobre un objeto ya
+                              existente, para que alguien decida con ella». `INV` es su
+                              única obligatoria, no su proceso: ejecuta la auditoría sin
+                              responder de la conclusión (`a.5`)
                             · retirar lo heredado es `proceso:DEU`, «reducir riesgo interno o
                               coste de cambio, sin introducir capacidad de producto»
                             · y `proceso:DEP` —«incorporar, actualizar o retirar una
