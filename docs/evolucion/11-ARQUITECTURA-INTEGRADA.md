@@ -7514,6 +7514,8 @@ Veredicto de **INSUFICIENCIA** emitido por un revisor con contexto limpio que **
 F4 ni aplicó ninguna de sus correcciones**: dos BLOQUEANTES, ocho GRAVES, cinco MEDIOS y
 siete MENORES, más quince que intentó y no pudo reproducir. Su juicio se conserva íntegro e
 inmutable en `15-TERCERA-REVISION-INDEPENDIENTE-F4C.md`. `D16`–`D63` conservan su texto.
+**Y `D67` conserva el suyo**: la tanda del gate final lo reescribió, y `D87`–`D93` lo
+restauran al de `7e99388`, llevando su corrección a `D89` (`I-16`).
 
 | | decisión | qué revisa | por qué |
 |---|---|---|---|
@@ -7544,7 +7546,12 @@ El **GATE FINAL INDEPENDIENTE** —tres agentes con contexto limpio, 33 hallazgo
 uno a uno contra su fichero y su línea— y su **COMPLEMENTO DE COBERTURA** —otros tres agentes,
 las diecinueve fuentes obligatorias leídas íntegras— dejaron **44 hallazgos abiertos, 43
 distintos**. Los dos juicios se conservan íntegros e inmutables en los documentos 16 y 17.
-`D16`–`D70` conservan su texto.
+
+> **`D16`–`D70` conservan su texto — y esta declaración es cierta desde `D87`, no lo era
+> antes.** El gate de cierre encontró que esta misma tanda **reescribió `D67`** en el commit
+> que declaraba lo contrario, en tres sedes a la vez (`I-16`). `D87`–`D93` **restauran `D67`
+> al texto exacto de `7e99388`** y llevan su corrección a `D89`, que es una decisión revisora.
+> La disciplina que este bloque enuncia vuelve a ser verificable con un `diff`.
 
 | | decisión | qué revisa | por qué |
 |---|---|---|---|
@@ -7575,6 +7582,29 @@ de decisiones, y su lectura arquitectónica en §8.2, §18 y §19. **`D58`–`D6
 sólo corrigen recuentos, cardinalidades, fronteras, contadores y la semántica de sellado.
 
 
+
+### `D87`–`D93` · las decisiones de la CORRECCIÓN DEL GATE DE CIERRE
+
+El **GATE DE CIERRE INDEPENDIENTE** —dos revisores con contexto limpio en paralelo y un
+adjudicador sobre los dos dictámenes ya cerrados— devolvió **INSUFICIENTE PARA F5** por dos
+razones independientes: la **cobertura** —catorce fuentes obligatorias sin lectura
+sustantiva, el documento 15 entre ellas— y el **fondo** —diez de las 43 filas FALLIDAS, con
+28 hallazgos consolidados de los que SEIS los introdujo o los perpetuó la propia
+corrección—. Su juicio se conserva íntegro e inmutable en
+`18-GATE-DE-CIERRE-INDEPENDIENTE-F4C.md`. `D1`–`D86` conservan su texto, **y `D67` se
+RESTAURA al que tenía en `7e99388`**: la tanda anterior la reescribió en el mismo commit en
+que declaraba que `D16`–`D70` no se reescriben (`I-16`), y la corrección que llevaba vive
+ahora en `D89`, que es una decisión revisora.
+
+| | decisión | qué revisa | por qué |
+|---|---|---|---|
+| `D87` | `estado/cuarentena/<TX>/` **RETIRADA**. La cuarentena temporal vive en **`.ads/run/quarantine/<TX>/`**: operacional, local, ignorada por Git y no canónica. Se crea antes de restaurar, se verifica por hash, y se elimina sólo tras el terminal, su verificación y el commit del incidente. `SEG` bloquea la publicación; el Owner puede aceptar expresamente la pérdida de la preimagen; el incidente conserva hash, clasificación, autoridad, motivo y alcance; el contenido prohibido no se publica nunca | `D79`, en el plano de la cuarentena. **`D79` no se reescribe** | **GRAVE** `I-01`: la ruta no tenía plano, ni fila, ni ciclo, ni prueba, y por §2.4 quedaba versionada — el acto (i) publicaba lo que existe para preservar cuando `SEG` prohíbe publicarlo |
+| `D88` | el marcador de `deriva` gana **las cinco piezas**: segunda excepción de ruta en §2.4, fila en §2.3, `.gitignore`, fila de reconstrucción en §2.9 y filas adversariales. Lo crea el paso E de §2.6.9 y lo retira la transacción cerrada que lo resuelve. **La NORMA de §2.6.8 consulta los DOS marcadores**, no el diario | `D78` y `D64` | **GRAVE** `I-02`: la excepción invocada no lo cubría, luego viajaba a Git; y la regla que el lector ejecuta seguía mandando recorrer `estado/eventos/` |
+| `D89` | la **capa B** pierde las dos reglas que `D64` retiró; §2.6.4 **remite** en vez de redeclarar; el censo de sedes se deriva y son **NUEVE**; y se recoge aquí la corrección que la reescritura de `D67` llevaba —`A2`–`A7` es `proceso:AUD`, propagar a las fuentes es `proceso:DEP`— | `D71`, `D64` y `D67` en su resumen | **GRAVE** `I-03` y **MEDIO** `I-09`: la capa que EVALÚA el predicado conservaba la afirmación exacta que causó `A2` |
+| `D90` | **quién ejecuta cada operación Git lo fija `C7`**, y §8 lo cita: `PLT` materializa y retira ramas; la capacidad con custodia hace rama, commit, push y PR; `SEG` bloquea el push; `ENT` hace merge y declara convergencia; CI verifica cada fuente; el Owner conserva su autoridad. `PN-13` conserva sólo el residuo de `INS-5` y `A9` | `D74`, en el dispositivo `EJECUTOR` | **GRAVE** `I-04`: de las siete operaciones atribuidas a `PLT`, `C7` le da dos — y §1.3, §7.2 y §7.6 ya decían lo contrario |
+| `D91` | abrir una `iniciativa` de campaña **no es implícito**: extensión de ficha para F6, con el conjunto **derivado de los `contrato-de-aspecto`** | `D80` y el remedio de `M-5` | **MEDIO** `I-14`: `C1` L118 es taxativa y ninguna de las quince fichas menciona `iniciativa` |
+| `D92` | `<CAP>:revision` tras `VER` se registra como **contrato completo para F6**, en todos los procesos donde el condicional existe. F4 no toca `01-PROCESOS.md` | nada anterior | **GRAVE** `I-08`: (b) lo exige dos veces y hay **cero instancias** en el kernel, justo en los tres tramos que escriben en las fuentes |
+| `D93` | **`F-01` se reclasifica** a presión lista para F5, y nace **`PN-14`**: `DIS/Reconstruccion` está en `b.16` L895 y `a.6` L495, material APROBADO | `D67` en la sede del remedio | `F-01` FALLIDA: el remedio, como estaba escrito, cambiaba el derivado dejando la fuente |
 
 ---
 
