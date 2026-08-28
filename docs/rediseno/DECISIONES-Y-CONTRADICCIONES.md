@@ -219,6 +219,19 @@ sigue en **9 tipos · 6 fases · 40 válidas · 23 prohibidas**; las cardinalida
 contadores de conflicto no cambian; **no aparece ninguna transición nueva**; y el recuento de
 `§3.8` sigue igual. **`O15` permanece intacta.**
 
+### `D64` en adelante · decisiones de la TANDA INTEGRADA que cierra la tercera revisión
+
+La **tercera revisión independiente** devolvió `F4c` con veredicto de **INSUFICIENTE PARA
+F5**: dos BLOQUEANTES, ocho GRAVES, cinco MEDIOS y siete MENORES. Su juicio se conserva
+íntegro e inmutable en `docs/evolucion/15-TERCERA-REVISION-INDEPENDIENTE-F4C.md`. Estas
+decisiones son la **corrección conjunta** de sus hallazgos reproducibles.
+
+> **`D16`–`D63` no se reescriben. `O15` queda intacta.**
+
+| # | decisión | qué revisa | por qué, y qué alternativa se descartó | cómo se revierte |
+|---|---|---|---|---|
+| D64 | **La ruta de conflicto se COLAPSA.** Se retiran `reconciliacion-preparada`, `reconciliada`, los contadores `intento`, `intentos_consumidos` y la bandera `agotado`, y las nueve ventanas `R1`–`R9`. El autómata queda en **CINCO fases** —`preparada`, `confirmada`, `conflicto`, `abandonada`, `derivada`—, **seis transiciones** y **DOS terminales**, y **todo terminal retira el marcador**. `conflicto` es una OBSERVACIÓN bloqueante con **DOS salidas**: si la divergencia cesa, la transacción se completa hacia delante; si no, la autoridad emite `abandonada`, que cierra sin completar, retira el marcador y emite un `deriva` con `causa: abandono-de-transaccion` que **conserva el bloqueo acotado a los items nombrados**. La reparación es una **transacción NUEVA** que, al cerrar, resuelve ese `deriva`. `observacion` se conserva **sin tope**: numera estados divergentes distintos, no reintentos | **`D35`**, `D46`, `D52`, `D60` y `D62`, y con ellas la justificación de `D38` | **`B1`**: desde `conflicto(observacion: 4, agotado: true)` **no existía ninguna transición admisible**, el marcador no se retiraba nunca y, por la regla de commit, el control repo no volvía a commitear jamás **para todo el producto**, por un solo conflicto sobre un solo fichero. **`G2`**: la ruta larga resolvía con tres fases, tres contadores y una bandera el mismo problema que §2.6.11 resuelve con un evento sin fase y una transacción nueva — y su único argumento, que la intención original gobierna, no se sostenía porque el `hash_final` la SUSTITUÍA. Se comprobó garantía a garantía que **no se pierde ninguna**. **`M5`**: el tope tomaba `MAX_CAS_RETRIES` de `a.9` **suprimiendo su quinto paso**, que es una salida; ahora los tres mecanismos de reintento están separados con su nombre, contador, salida y autoridad. La alternativa —añadir una transición de salida al estado agotado— conserva un mecanismo desproporcionado y sólo rodea el defecto | reinstaurar la ruta larga devuelve el estado sin salida y la duplicación de mecanismos |
+
 ---
 
 ## 2 · Decisiones que pertenecen al Owner
