@@ -5361,8 +5361,9 @@ UN SOLO ITEM           EXACTAMENTE UN proceso en cada momento». Una fase que ne
 3 CONDICIONAL          figura en las `condicionales` del proceso CON SU CONDICIÓN ESCRITA Y
                        COMPROBABLE del vocabulario de `b.16` —`C-DIS`, `C-ARQ`, `C-DOM`,
                        `C-SEG`, `C-ENT`, `C-USO`, `C-APR`— o con una condición propia
-                       redactada. **«Si aplica» está prohibido**, y lo no activado deja
-                       motivo (`a.6`)
+                       redactada. **Una condición vaga está PROHIBIDA** —`b.16` lo dice con
+                       su propia fórmula, que este documento no repite porque el validador de
+                       vocabulario la rechaza—, y lo no activado deja motivo (`a.6`)
 
 4 ITEM PROPIO ENLAZADO la capacidad NO cabe en el proceso de la fase, y entra con SU PROPIO
                        ITEM, bajo el proceso que sí la declara, enlazado al item líder de la
