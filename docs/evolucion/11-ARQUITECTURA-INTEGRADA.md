@@ -7776,11 +7776,18 @@ F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. TRES críticas independi
 
 ## Lo que esta fase NO puede corregir, con su propietario y su fase
 
-**Nueve de los cuarenta y tres hallazgos del gate tienen su sede FUERA de F4** —en el kernel,
+**OCHO de los cuarenta y tres hallazgos del gate tienen su sede FUERA de F4** —en el kernel,
 en `docs/owner/` o en el propio documento del gate—, y esta fase **no los toca**: modificar
 kernel, esquemas, contratos o pruebas es F6, y modificar material en voz del Owner es suyo.
 Se registran aquí con propietario y fase para que nadie los dé por cerrados, **y no se
 cuentan como «F4 corregida»**.
+
+> **La tabla tiene NUEVE filas y los externos son OCHO, y no es un descuadre.** La novena es
+> `F-05`, que **NO es externo**: sus tres condiciones de cierre se cumplen en esta fase —§15.7
+> registra la excepción de `C5`, y §8.0 declara qué checkpoint viaja—, y lo que aparece abajo
+> es el residuo OPTATIVO que `00-CIRCUITOS` L238 desactiva expresamente. Figura aquí porque su
+> trabajo residual vive en `circuitos/`, no porque cuente entre los ocho. Su estado primario
+> es `CORREGIDO_EN_F4`, y así consta en la matriz de cierre del checkpoint.
 
 | hallazgo | qué hay que hacer | dónde | propietario | fase | ¿bloquea la implementabilidad de F4? |
 |---|---|---|---|---|---|

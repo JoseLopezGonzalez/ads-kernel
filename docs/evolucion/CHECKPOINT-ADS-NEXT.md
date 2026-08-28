@@ -1163,6 +1163,11 @@ QUÉ NO ES           un veredicto. **Lo aplicó quien lo recibió**, por novena 
                     certifica nada. `F4c` sigue **ABIERTA** y el veredicto vigente sigue
                     siendo **INSUFICIENTE PARA F5**.
 
+RESULTADO           **31 CORREGIDO_EN_F4 · 1 PRESION_LISTA_PARA_F5 · 2
+                    CONTRATO_COMPLETO_PARA_F6 · 8 EXTERNO_CON_PROPIETARIO · 1
+                    HISTORICO_NO_APLICABLE = 43.** Un estado primario por hallazgo, los
+                    cinco mutuamente excluyentes, y el total DERIVADO de las filas.
+
 DECISIONES          `D71`–`D86`. `D16`–`D70` conservan su texto. `O15` y `O16` intactas.
 PRESIONES           **ONCE vigentes**: `PN-1`, `PN-2`, `PN-3`, `PN-6` a `PN-13`. `PN-4`
                     retirada, `PN-5` fusionada en `PN-3`. Sin renumerar.
@@ -1177,69 +1182,100 @@ RENOMBRADOS         `R1`–`R9` (ventanas de reconciliación, retiradas por `D64
 
 ### Matriz de cierre de los 43 hallazgos distintos
 
-| id | severidad | resultado | decisión o sede | cómo se cierra |
-|---|---|---|---|---|
-| `A1` | BLOQUEANTE | CORREGIDO EN F4 | D72 | enum de TRES valores con UNA sede, §3.6; §2.6.11 remite |
-| `A2` | BLOQUEANTE | CORREGIDO EN F4 | D71 | predicado `abierta(tx)` en §2.6.1; las siete sedes remiten |
-| `B-1` | BLOQUEANTE | CORREGIDO EN F4 | D75 | `A2`–`A7` es `proceso:AUD` en items enlazados, propietario derivado por item |
-| `B-2` | BLOQUEANTE | CORREGIDO EN F4 + PRESIÓN LISTA PARA F5 | D74 · PN-13 | sede canónica de composición en §8.0, cuatro vías; el residuo DOM/SEG/DIS en SIS e INV es PN-13 |
-| `G-1` | GRAVE | CORREGIDO EN F4 | D75 | `SEG` y `CON` obligatorias de `proceso:DEP` en `U5b`; `G28` irretirable |
-| `G-2` | GRAVE | CORREGIDO EN F4 | D75 | `ARQ` por el `plan-tecnico` de su item `DEU`; `cambio-construido` producido por `CON` |
-| `G-3` | GRAVE | CORREGIDO EN F4 | D76 | `INS-5` produce baseline y clasificación; el Owner lo aprueba |
-| `G-4` | GRAVE | CORREGIDO EN F4 | D77 | doce identificadores derivados del patrón `ads:memoria` |
-| `A3` | GRAVE | CORREGIDO EN F4 | D73 | §7.4 paso 2 con las dos ramas; resumen de §16 alineado con PN-7 |
-| `A4` | GRAVE | CORREGIDO EN F4 | §15.8 + cabecera | bloques D64–D68 y D71–D86; «nueve veces»; tercera revisión ya no pendiente |
-| `A5` | MEDIO | CORREGIDO EN F4 | D71 (misma tanda) | sujeto corregido: ningún FICHERO en su hash posterior; el evento sí |
-| `A6` | MEDIO | CORREGIDO EN F4 | D85 | 5 fases · 6 estados · 7 filas, recalculados tras D64 |
-| `A7` | MEDIO | CORREGIDO EN F4 | D77 (misma tanda) | «los cinco CAMPOS de procedencia» donde es condición de validación |
-| `A8` | MEDIO | CORREGIDO EN F4 | D78 | `estado/deriva/<ID>.abierta`, legible sin herramienta |
-| `A9` | MEDIO | CORREGIDO EN F4 | D79 | dos actos de autoridad del Owner cierran `4b`; X58 reformulado |
-| `A10` | MEDIO | CORREGIDO EN F4 | §1 y §19 | ONCE puntos de presión, derivados de §16 |
-| `A12` | MENOR | CORREGIDO EN F4 | D84 | el CAS de Git, no «un único escritor» |
-| `A13` | MEDIO | CORREGIDO EN F4 | D77 (misma tanda) | fila `preparada` de §3.6 con los cinco CAMPOS |
-| `M-1` | MEDIO | CORREGIDO EN F4 | §4.3 | TRECE condicionales, en las tres sedes |
-| `M-2` | MEDIO | CORREGIDO EN F4 | §1.3 | fila del mapa documental, autoridad «nadie: se regenera» |
-| `M-3` | MEDIO | CORREGIDO EN F4 | D75 | `U6` revalida el nivel vigente; no es `O12` |
-| `M-4` | MEDIO | CORREGIDO EN F4 | registro D67 | resumen corregido: `proceso:AUD`, y propagar a las fuentes es `proceso:DEP` |
-| `M-5` | MEDIO | CORREGIDO EN F4 + CONTRATO COMPLETO PARA F6 | §5.3 + extensión de ficha | APERTURA es `DSP`, CAMPAÑA la capacidad líder; ficha de `DSP` a extender en F6 |
-| `M-6` | MEDIO | CORREGIDO EN F4 + CONTRATO COMPLETO PARA F6 | D80 | clase, forma y RAMA declaradas; su construcción es F6 |
-| `M-7` | MEDIO | CORREGIDO EN F4 | D82 | items por macrocircuito y FRENO 3 circuito a circuito |
-| `M-8` | MEDIO | CORREGIDO EN F4 | D83 | `RC-1`–`RC-9` renombradas y retiradas del inventario |
-| `M-9` | MEDIO | CORREGIDO EN F4 | D81 | el §6.2 de la directiva es el contrato de `A3`; §15.2 desglosado |
-| `m-1` | MENOR | CORREGIDO EN F4 | nota al pie de O15 | reancla la cifra SIN tocar la resolución |
-| `m-2` | MENOR | CORREGIDO EN F4 | §2 del registro | la nota de procedencia precede a la sección de `O16` |
-| `m-3` | MENOR | HISTÓRICO / NO APLICABLE | §5.2 | hecho confirmado, juicio NO asumido: es preferencia de diseño |
-| `m-4` | MENOR | CORREGIDO EN F4 | D75 | `U5a` y `U5b` rotuladas en §18 |
-| `F-01` | MEDIO | EXTERNO CON PROPIETARIO | `SIS` · F6 | §8.2 ya dice `DIS`; el kernel sigue diciendo `DIS/Reconstruccion` |
-| `F-02` | MEDIO | EXTERNO CON PROPIETARIO | `SIS` · F6 | tipar `capacidad` y `capacidad_productora` como `ref_a: capacidad` |
-| `F-03` | MEDIO | CORREGIDO EN F4 | D83 | fases de instalación renombradas a `INS-0`…`INS-7` |
-| `F-04` | MEDIO | EXTERNO CON PROPIETARIO | `ENC` con `SIS` · F6 | `grado_inicial: alta` y su comprobación en `T75` |
-| `F-05` | MENOR | CORREGIDO EN F4 + EXTERNO CON PROPIETARIO | D86 · `SIS` · F6 | §15.7 registra la excepción; las instancias que faltan son F6 |
-| `F-06` | MENOR | EXTERNO CON PROPIETARIO | `DIS` · F6 | anclar el `cuando` de `dis-a-ver` a una estación del ciclo |
-| `F-07` | MENOR | EXTERNO CON PROPIETARIO | `SIS` con el Owner · F6 | campo `autoridad:` en `docs/owner/`, comprobado por validador |
-| `F-08` | MENOR | EXTERNO CON PROPIETARIO | el **Owner** · F5 | nota de vigencia sobre la materialización multirrepo |
-| `F-09` | MENOR | CORREGIDO EN F4 | §8.4 | «provisional» conservado y procedencia citada |
-| `F-10` | MENOR | EXTERNO CON PROPIETARIO | `ENC` · F6 | la cabecera de `03-FORMAS` deja de afirmar «uno por clase» |
-| `F-11` | MENOR | EXTERNO CON PROPIETARIO | `SIS` · F6 | la cabecera de `05-ESCENARIOS` enumera lo que contiene |
-| `F-12` | MENOR | CORREGIDO EN F4 | índice y checkpoint | los documentos 15, 16 y 17 son inmutables; se reanclan sus proyecciones |
+> **RECONCILIADA.** La primera versión de esta tabla declaraba `34 · 2 · 1 · 8 · 1`, que
+> **suma 46 y no 43**. El defecto era de método, no de contenido: `B-2`, `M-5` y `M-6`
+> llevaban un estado compuesto —«corregido **y** contrato para F6», «corregido **y** presión
+> para F5»— y el resumen contó **las dos mitades de cada uno**, una dentro de los 34 y otra
+> como categoría propia. Tres hallazgos contados dos veces, 43 + 3 = 46. Ahora **cada
+> hallazgo tiene EXACTAMENTE UN estado primario**, los cinco son mutuamente excluyentes, y lo
+> demás son **atributos secundarios que NO entran en el total**.
+
+| id | severidad | estado primario | decisión o sede | arquitectura corregida | requiere F5 | requiere F6 | bloquea F5 | bloquea F6 | cómo se cierra |
+|---|---|---|---|---|---|---|---|---|---|
+| `A1` | BLOQUEANTE | **`CORREGIDO_EN_F4`** | D72 | sí | no | no | no | no | enum de TRES valores con UNA sede, §3.6; §2.6.11 remite |
+| `A2` | BLOQUEANTE | **`CORREGIDO_EN_F4`** | D71 | sí | no | no | no | no | predicado `abierta(tx)` en §2.6.1; las siete sedes remiten |
+| `B-1` | BLOQUEANTE | **`CORREGIDO_EN_F4`** | D75 | sí | no | no | no | no | `A2`–`A7` es `proceso:AUD` en items enlazados, propietario derivado por item |
+| `B-2` | BLOQUEANTE | **`PRESION_LISTA_PARA_F5`** | D74 · PN-13 | sí | PN-13 | componer INS-5 y A9 tras PN-13 | no | sí · acotado a INS-5 y A9 | §8.0 declara la sede de composición y las cuatro vías; el residuo `DOM`/`SEG`/`DIS` en `SIS` e `INV` es materia del Owner |
+| `G-1` | GRAVE | **`CORREGIDO_EN_F4`** | D75 | sí | no | no | no | no | `SEG` y `CON` obligatorias de `proceso:DEP` en `U5b`; `G28` las hace irretirables |
+| `G-2` | GRAVE | **`CORREGIDO_EN_F4`** | D75 | sí | no | no | no | no | `ARQ` por el `plan-tecnico` de su item `DEU`; `cambio-construido` producido por `CON` |
+| `G-3` | GRAVE | **`CORREGIDO_EN_F4`** | D76 | sí | no | no | no | no | `INS-5` produce baseline y clasificación; el Owner lo aprueba |
+| `G-4` | GRAVE | **`CORREGIDO_EN_F4`** | D77 | sí | no | no | no | no | doce identificadores derivados del patrón `ads:memoria` |
+| `A3` | GRAVE | **`CORREGIDO_EN_F4`** | D73 | sí | no | no | no | no | §7.4 paso 2 con las dos ramas; resumen de §16 alineado con `PN-7` |
+| `A4` | GRAVE | **`CORREGIDO_EN_F4`** | §15.8 + cabecera | sí | no | no | no | no | bloques `D64`–`D68` y `D71`–`D86`; «nueve veces»; la tercera revisión ya no consta pendiente |
+| `A5` | MEDIO | **`CORREGIDO_EN_F4`** | §2.6.9 | sí | no | no | no | no | sujeto corregido: ningún FICHERO en su hash posterior; el evento sí lo conserva |
+| `A6` | MEDIO | **`CORREGIDO_EN_F4`** | D85 | sí | no | no | no | no | 5 fases · 6 estados · 7 filas, recalculados tras `D64` |
+| `A7` | MEDIO | **`CORREGIDO_EN_F4`** | §3.6 | sí | no | no | no | no | «los cinco CAMPOS de procedencia» donde es condición de validación |
+| `A8` | MEDIO | **`CORREGIDO_EN_F4`** | D78 | sí | no | no | no | no | `estado/deriva/<ID>.abierta`, legible sin herramienta |
+| `A9` | MEDIO | **`CORREGIDO_EN_F4`** | D79 | sí | no | no | no | no | dos actos de autoridad del Owner cierran `4b`; `X58` reformulado |
+| `A10` | MEDIO | **`CORREGIDO_EN_F4`** | §1 · §16 · §19 | sí | no | no | no | no | ONCE puntos de presión, derivados de §16 |
+| `A12` | MENOR | **`CORREGIDO_EN_F4`** | D84 | sí | no | no | no | no | el CAS de Git, no «un único escritor» |
+| `A13` | MEDIO | **`CORREGIDO_EN_F4`** | §3.6 | sí | no | no | no | no | fila `preparada` de §3.6 con los cinco CAMPOS |
+| `M-1` | MEDIO | **`CORREGIDO_EN_F4`** | §4.3 | sí | no | no | no | no | TRECE condicionales, en las tres sedes |
+| `M-2` | MEDIO | **`CORREGIDO_EN_F4`** | §1.3 | sí | no | no | no | no | fila del mapa documental, autoridad «nadie: se regenera» |
+| `M-3` | MEDIO | **`CORREGIDO_EN_F4`** | D75 | sí | no | no | no | no | `U6` revalida el nivel vigente; no es `O12` |
+| `M-4` | MEDIO | **`CORREGIDO_EN_F4`** | registro de `D67` | sí | no | no | no | no | resumen corregido: `proceso:AUD`, y propagar a las fuentes es `proceso:DEP` |
+| `M-5` | MEDIO | **`CONTRATO_COMPLETO_PARA_F6`** | §5.3 + §5.2 | sí | no | extensión de ficha `capacidades/DSP/` | no | no | F4 nombra el actor —`DSP` en APERTURA, la capacidad líder en CAMPAÑA— y `C1` exige que la ficha lo autorice: esa extensión es de F6 |
+| `M-6` | MEDIO | **`CONTRATO_COMPLETO_PARA_F6`** | D80 | sí | no | clase, forma y rama en `entrada/` + ficha `capacidades/ENC/` | no | no | F4 determina clase, forma, rama, sujeto y salida; construirlas en `entrada/` es de F6 |
+| `M-7` | MEDIO | **`CORREGIDO_EN_F4`** | D82 | sí | no | no | no | no | items por macrocircuito y FRENO 3 circuito a circuito |
+| `M-8` | MEDIO | **`CORREGIDO_EN_F4`** | D83 | sí | no | no | no | no | `RC-1`–`RC-9` renombradas y retiradas del inventario de §19 |
+| `M-9` | MEDIO | **`CORREGIDO_EN_F4`** | D81 | sí | no | no | no | no | el §6.2 de la directiva es el contrato de `A3`; §15.2 desglosado |
+| `m-1` | MENOR | **`CORREGIDO_EN_F4`** | nota al pie de `O15` | sí | no | no | no | no | reancla la cifra SIN tocar la resolución |
+| `m-2` | MENOR | **`CORREGIDO_EN_F4`** | §2 del registro | sí | no | no | no | no | la nota de procedencia precede a la sección de `O16` |
+| `m-3` | MENOR | **`HISTORICO_NO_APLICABLE`** | §5.2 | no | no | no | no | no | hecho confirmado, juicio NO asumido: es preferencia de diseño |
+| `m-4` | MENOR | **`CORREGIDO_EN_F4`** | D75 | sí | no | no | no | no | `U5a` y `U5b` rotuladas en §18 |
+| `F-01` | MEDIO | **`EXTERNO_CON_PROPIETARIO`** | `SIS` · F6 | sí | no | `01-PROCESOS.md` L434 · `00-CIRCUITOS.md` L166 | no | no | §8.2 ya dice `DIS`; el kernel sigue diciendo `DIS/Reconstruccion` |
+| `F-02` | MEDIO | **`EXTERNO_CON_PROPIETARIO`** | `SIS` · F6 | no | no | `esquemas/proceso.yaml`: `ref_a: capacidad` | no | no | tipar `capacidad` y `capacidad_productora` como `ref_a: capacidad` |
+| `F-03` | MEDIO | **`CORREGIDO_EN_F4`** | D83 | sí | no | no | no | no | fases de instalación renombradas a `INS-0`…`INS-7` |
+| `F-04` | MEDIO | **`EXTERNO_CON_PROPIETARIO`** | `ENC` con `SIS` · F6 | no | no | `05-ESCENARIOS.md` L181 y su prueba `T75` | no | no | `grado_inicial: alta` y su comprobación en `T75` |
+| `F-05` | MENOR | **`CORREGIDO_EN_F4`** | D86 | sí | no | instancias en `circuitos/` — OPTATIVO, `00-CIRCUITOS` L238 lo desactiva | no | no | §15.7 registra la excepción de `C5`; §8.0 declara qué checkpoint viaja. Las tres condiciones de cierre, cumplidas |
+| `F-06` | MENOR | **`EXTERNO_CON_PROPIETARIO`** | `DIS` · F6 | no | no | `circuitos/DIS-handoffs.md` L137 | no | no | anclar el `cuando` de `dis-a-ver` a una estación del ciclo |
+| `F-07` | MENOR | **`EXTERNO_CON_PROPIETARIO`** | `SIS` con el Owner · F6 | no | no | `docs/owner/*` + `exclusiones.yaml` | no | no | campo `autoridad:` en `docs/owner/`, comprobado por validador |
+| `F-08` | MENOR | **`EXTERNO_CON_PROPIETARIO`** | el Owner · F5 | no | sí · sin PN | no | no | no | nota de vigencia sobre la materialización multirrepo |
+| `F-09` | MENOR | **`CORREGIDO_EN_F4`** | §8.4 | sí | no | no | no | no | «provisional» conservado y procedencia citada |
+| `F-10` | MENOR | **`EXTERNO_CON_PROPIETARIO`** | `ENC` · F6 | no | no | `entrada/03-FORMAS.md` L3 | no | no | la cabecera de `03-FORMAS` deja de afirmar «uno por clase» |
+| `F-11` | MENOR | **`EXTERNO_CON_PROPIETARIO`** | `SIS` · F6 | no | no | `entrada/05-ESCENARIOS.md` L5 | no | no | la cabecera de `05-ESCENARIOS` enumera lo que contiene |
+| `F-12` | MENOR | **`CORREGIDO_EN_F4`** | índice y checkpoint | sí | no | no | no | no | los documentos 15, 16 y 17 son inmutables; se reanclan sus proyecciones |
 
 ```text
-CORREGIDO EN F4              34   incluidos los 4 BLOQUEANTES y los 6 GRAVES, todos
-CONTRATO COMPLETO PARA F6     2   `M-5` y `M-6`, ADEMÁS de estar corregidos: su elemento sólo
-                                  se construye en F6, y su contrato queda determinado —sede,
-                                  propietario, entradas, salidas, estados, autoridad, pruebas
-                                  y condición de aceptación—. **F6 no elige arquitectura**
-PRESIÓN LISTA PARA F5         1   `PN-13`, el residuo de `B-2`. La enmienda exacta está
-                                  determinada; la norma NO se redacta aquí
-EXTERNO CON PROPIETARIO       8   `F-01` `F-02` `F-04` `F-06` `F-07` `F-08` `F-10` `F-11`,
-                                  con su fichero, su propietario y su fase en §19. **NO se
-                                  cuentan como F4 corregida**, y sólo `F-01` bloquea
-                                  parcialmente la implementabilidad: §8.2 dice `DIS` y el
-                                  kernel sigue diciendo `DIS/Reconstruccion`
-HISTÓRICO / NO APLICABLE      1   `m-3`: el hecho está confirmado y el juicio NO se asume
-                             ───
-                              43  sin ningún id contado dos veces, y sin ninguno omitido
-                                  (`A11` absorbido en `M-8`; `A14` excluido: no es defecto de F4)
+RECUENTO DERIVADO DE LAS 43 FILAS, no al revés
+
+  CORREGIDO_EN_F4             31   la corrección está escrita y no queda nada por decidir
+  PRESION_LISTA_PARA_F5        1   `B-2`. Su arquitectura SÍ está corregida —§8.0, `D74`—;
+                                   lo que queda es la enmienda a `b.16` que sólo el Owner
+                                   puede aprobar, y es `PN-13`
+  CONTRATO_COMPLETO_PARA_F6    2   `M-5` y `M-6`. F4 corrigió la ambigüedad y dejó el
+                                   contrato determinado; el elemento sólo se construye en F6
+  EXTERNO_CON_PROPIETARIO      8   su sede está fuera de F4: kernel, `docs/owner/` o el
+                                   propio documento del gate. Con propietario y fase en §19
+  HISTORICO_NO_APLICABLE       1   `m-3`: el hecho está confirmado y el juicio NO se asume
+                              ───
+  TOTAL                       43   suma exacta de los cinco estados
+
+  A11 no aparece: absorbido en `M-8`, sin condición de cierre propia
+  A14 no aparece: el gate lo declaró AJENO a F4 — limitación aceptada con procedencia
+
+POR SEVERIDAD ORIGINAL, Y QUÉ FUE DE CADA GRUPO
+
+  BLOQUEANTE   4 filas ·  4 distintos   3 CORREGIDO_EN_F4 · 1 PRESION_LISTA_PARA_F5 (`B-2`)
+  GRAVE        6 filas ·  6 distintos   6 CORREGIDO_EN_F4
+  MEDIO       20 filas · 20 distintos  15 CORREGIDO_EN_F4 · 2 CONTRATO_COMPLETO_PARA_F6
+                                        3 EXTERNO_CON_PROPIETARIO
+  MENOR       14 filas · 13 distintos   7 CORREGIDO_EN_F4 · 5 EXTERNO_CON_PROPIETARIO
+                                        1 HISTORICO_NO_APLICABLE  (`A11` absorbido en `M-8`)
+              ── filas 44 · distintos 43
+
+ATRIBUTOS SECUNDARIOS, QUE NO ENTRAN EN NINGÚN TOTAL
+
+  arquitectura corregida    35 sí · 8 no. Los ocho «no» son los EXTERNOS puros y `m-3`
+  requieren F5               2   `B-2` (`PN-13`) y `F-08` (documento del Owner, sin `PN`)
+  requieren F6              11   `B-2` `M-5` `M-6` `F-01` `F-02` `F-04` `F-05` `F-06`
+                                 `F-07` `F-10` `F-11`
+  bloquean F5                0   lo que impide F5 es el VEREDICTO del gate, no un hallazgo
+  bloquean F6                1   `B-2`, y ACOTADO: sólo la composición de `INS-5` y de `A9`
+
+REQUERIR TRABAJO FUTURO NO ES «F4 NO RESOLVIÓ SU ARQUITECTURA». `B-2`, `M-5` y `M-6` tienen
+su arquitectura escrita y cerrada; lo que queda de ellos es una aprobación del Owner y dos
+construcciones, no una decisión de diseño pendiente.
 ```
 
 ### Lo que la tanda comprobó mecánicamente
