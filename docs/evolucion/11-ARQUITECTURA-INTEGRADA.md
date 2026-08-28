@@ -7583,7 +7583,7 @@ sólo corrigen recuentos, cardinalidades, fronteras, contadores y la semántica 
 
 
 
-### `D87`–`D93` · las decisiones de la CORRECCIÓN DEL GATE DE CIERRE
+### `D87`–`D94` · las decisiones de la CORRECCIÓN DEL GATE DE CIERRE
 
 El **GATE DE CIERRE INDEPENDIENTE** —dos revisores con contexto limpio en paralelo y un
 adjudicador sobre los dos dictámenes ya cerrados— devolvió **INSUFICIENTE PARA F5** por dos
@@ -7605,6 +7605,24 @@ ahora en `D89`, que es una decisión revisora.
 | `D91` | abrir una `iniciativa` de campaña **no es implícito**: extensión de ficha para F6, con el conjunto **derivado de los `contrato-de-aspecto`** | `D80` y el remedio de `M-5` | **MEDIO** `I-14`: `C1` L118 es taxativa y ninguna de las quince fichas menciona `iniciativa` |
 | `D92` | `<CAP>:revision` tras `VER` se registra como **contrato completo para F6**, en todos los procesos donde el condicional existe. F4 no toca `01-PROCESOS.md` | nada anterior | **GRAVE** `I-08`: (b) lo exige dos veces y hay **cero instancias** en el kernel, justo en los tres tramos que escriben en las fuentes |
 | `D93` | **`F-01` se reclasifica** a presión lista para F5, y nace **`PN-14`**: `DIS/Reconstruccion` está en `b.16` L895 y `a.6` L495, material APROBADO | `D67` en la sede del remedio | `F-01` FALLIDA: el remedio, como estaba escrito, cambiaba el derivado dejando la fuente |
+| `D94` | las condicionales de `§5.18` son **TRECE**, contadas una a una. `D68` y `D77` dicen CATORCE y **no se reescriben**: la corrección vive aquí | `D68` y `D77` en su recuento | **MEDIO** `I-15`: `M-1` era exactamente «catorce frente a trece», y la cuarta sede —escrita de cero en la misma tanda— reintrodujo la cifra en el registro de trazabilidad |
+
+> **El espacio de nombres `INS-0`…`INS-7`, y su excepción histórica declarada (`I-12`).** La
+> proyección **NORMATIVA VIGENTE** de las fases de instalación es **`INS-0`…`INS-7`**, y su
+> sede es §8.1 y la tabla de §18. `D83` la fijó, y la prueba que declara —«ningún
+> identificador `<PREFIJO><n>` se usa con dos significados distintos»— se comprueba **sobre
+> el corpus vigente**, no sobre el registro de decisiones.
+>
+> **`D32`, `D67`, `D76` y `D82` conservan `N<n>` en su texto, y es deliberado.** El registro
+> es historia: dice qué se decidió y con qué palabras se decidió, y `D16`–`D86` no se
+> reescriben — que es exactamente la disciplina que `I-16` demostró rota y que `D87`–`D93`
+> restauran. Reescribirlos para uniformar la nomenclatura destruiría la trazabilidad que este
+> fichero existe para dar, y sería el mismo gesto que produjo `I-16`.
+>
+> **La regla, en una frase, y es la misma que `X47` aplica al enum de `fase`:** la proyección
+> normativa vigente es UNA —`INS-0`…`INS-7`—, y las citas históricas son MUCHAS y están
+> marcadas como tales. Lo que la prueba de `D83` comprueba es la primera. `C6` `N1`–`N14` y
+> la escala de novedad `N0`–`N4` siguen intactos y siguen siendo los suyos.
 
 ---
 
