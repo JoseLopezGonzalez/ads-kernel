@@ -234,19 +234,50 @@ def m_evidencia_caducada(raiz):
     `debe_contener` siguen siendo VÁLIDOS: ninguna de las comprobaciones anteriores de T158
     responde distinto cuando la evidencia envejece.
 
-    La cifra envejecida se DERIVA del propio fichero. No hay ningún número del corpus escrito
-    aquí: una prueba que fijara «280» dejaría de comprobar nada en cuanto el corpus creciera.
+    La cifra caducada se DERIVA DEL CORPUS VIGENTE, no de la evidencia previa. Es la
+    corrección de un defecto real: derivarla de lo publicado hacía que el fixture dependiera
+    de lo que la ejecución ANTERIOR hubiera dejado escrito, y con ello del ORDEN DEL
+    MANIFIESTO —`negativos` corre antes que `fuentes`—. La primera ejecución leía evidencia
+    vieja, `fuentes` la actualizaba después, y la segunda producía otra salida de negativos:
+    dos ejecuciones seguidas no coincidían byte a byte.
+
+    Lo que la prueba debe representar es «la evidencia publica DOS FICHEROS MENOS QUE EL
+    CORPUS VIGENTE», y no «dos menos que lo que publicaba antes». Por eso el recuento actual
+    se obtiene de la definición canónica —`comprobar_fuentes.ficheros_recorridos`— y no se
+    reimplementa aquí: dos implementaciones del mismo recuento derivan, y la que miente es
+    siempre la que nadie mira.
+
+    El fichero se sigue leyendo, y para dos cosas: comprobar que TODAVÍA publica una cifra
+    —si dejara de publicarla no habría vigencia que comprobar, y eso es otro defecto— y
+    localizar esa cifra para sustituir exactamente una.
+
+    NINGÚN número del corpus queda escrito a mano, y el fixture es INDEPENDIENTE del orden
+    del runner.
     """
     ruta = os.path.join(raiz, "kernel/operativo/pruebas/evidencia/fuentes-salida.txt")
     with open(ruta, encoding="utf-8") as fh:
         texto = fh.read()
-    m = re.search(r"(\d+) ficheros recorridos", texto)
-    if not m:
+    apariciones = list(re.finditer(r"(\d+) ficheros recorridos", texto))
+    if not apariciones:
         raise RuntimeError("la evidencia de `fuentes` ya no publica su cobertura: sin cifra "
                            "publicada no hay vigencia que comprobar, y eso es otro defecto")
-    envejecida = int(m.group(1)) - 2
+    if len(apariciones) != 1:
+        raise RuntimeError(
+            f"la evidencia de `fuentes` publica {len(apariciones)} cifras de cobertura y se "
+            "esperaba exactamente una: el fixture no puede sustituir sin ambigüedad, y "
+            "adivinar cuál mutar produciría una prueba que a veces no prueba nada")
+
+    import comprobar_fuentes                                    # noqa: PLC0415
+    actual = comprobar_fuentes.ficheros_recorridos(raiz)
+    if actual < 3:
+        raise RuntimeError(
+            f"el corpus vigente recorre {actual} ficheros y no permite construir el fixture: "
+            "la mutación exige restar dos y seguir siendo un recuento positivo")
+
+    m = apariciones[0]
+    caducada = actual - 2
     with open(ruta, "w", encoding="utf-8") as fh:
-        fh.write(texto[:m.start(1)] + str(envejecida) + texto[m.end(1):])
+        fh.write(texto[:m.start(1)] + str(caducada) + texto[m.end(1):])
 
 
 VIG_PATRON = "        patron: '(\\d+) ficheros recorridos'"
