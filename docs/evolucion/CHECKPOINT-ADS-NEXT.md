@@ -1193,20 +1193,20 @@ RENOMBRADOS         `R1`–`R9` (ventanas de reconciliación, retiradas por `D64
 | id | severidad | estado primario | decisión o sede | arquitectura corregida | requiere F5 | requiere F6 | bloquea F5 | bloquea F6 | cómo se cierra |
 |---|---|---|---|---|---|---|---|---|---|
 | `A1` | BLOQUEANTE | **`CORREGIDO_EN_F4`** | D72 | sí | no | no | no | no | enum de TRES valores con UNA sede, §3.6; §2.6.11 remite |
-| `A2` | BLOQUEANTE | **`CORREGIDO_EN_F4`** | D71 | sí | no | no | no | no | predicado `abierta(tx)` en §2.6.1; las siete sedes remiten |
+| `A2` | BLOQUEANTE | **`CORREGIDO_EN_F4`** | D71 · D89 | sí | no | no | no | no | predicado `abierta(tx)` en §2.6.1; **NUEVE** sedes vigentes y todas remiten —§2.6.4 dejó de redeclarar—, y la capa B pierde la regla de terminalidad sobre `derivada` que era el residuo exacto de `A2` |
 | `B-1` | BLOQUEANTE | **`CORREGIDO_EN_F4`** | D75 | sí | no | no | no | no | `A2`–`A7` es `proceso:AUD` en items enlazados, propietario derivado por item |
-| `B-2` | BLOQUEANTE | **`PRESION_LISTA_PARA_F5`** | D74 · PN-13 | sí | PN-13 | componer INS-5 y A9 tras PN-13 | no | sí · acotado a INS-5 y A9 | §8.0 declara la sede de composición y las cuatro vías; el residuo `DOM`/`SEG`/`DIS` en `SIS` e `INV` es materia del Owner |
+| `B-2` | BLOQUEANTE | **`PRESION_LISTA_PARA_F5`** | D74 · D90 · PN-13 | sí | PN-13 | componer INS-5 y A9 tras PN-13 | no | sí · acotado a INS-5 y A9 | §8.0 declara la sede de composición y las cuatro vías, y **`D90` cierra la mitad `PLT` contra `C7:80-92`** —nunca fue materia del Owner: el contrato ya decía quién—. El residuo que queda es SÓLO `DOM`/`SEG`/`DIS` en `SIS` e `INV`, y ése sí es del Owner |
 | `G-1` | GRAVE | **`CORREGIDO_EN_F4`** | D75 | sí | no | no | no | no | `SEG` y `CON` obligatorias de `proceso:DEP` en `U5b`; `G28` las hace irretirables |
 | `G-2` | GRAVE | **`CORREGIDO_EN_F4`** | D75 | sí | no | no | no | no | `ARQ` por el `plan-tecnico` de su item `DEU`; `cambio-construido` producido por `CON` |
-| `G-3` | GRAVE | **`CORREGIDO_EN_F4`** | D76 | sí | no | no | no | no | `INS-5` produce baseline y clasificación; el Owner lo aprueba |
+| `G-3` | GRAVE | **`CORREGIDO_EN_F4`** | D76 | sí | no | no | no | no | `INS-5` produce baseline y clasificación; el Owner lo aprueba — **y el gate y la salida están en §18**, que §8.0 declara sede canónica y que antes no los llevaba |
 | `G-4` | GRAVE | **`CORREGIDO_EN_F4`** | D77 | sí | no | no | no | no | doce identificadores derivados del patrón `ads:memoria` |
 | `A3` | GRAVE | **`CORREGIDO_EN_F4`** | D73 | sí | no | no | no | no | §7.4 paso 2 con las dos ramas; resumen de §16 alineado con `PN-7` |
-| `A4` | GRAVE | **`CORREGIDO_EN_F4`** | §15.8 + cabecera | sí | no | no | no | no | bloques `D64`–`D68` y `D71`–`D86`; «nueve veces»; la tercera revisión ya no consta pendiente |
+| `A4` | GRAVE | **`CORREGIDO_EN_F4`** | §15.8 + cabecera | sí | no | no | no | no | bloques `D64`–`D68`, `D71`–`D86` y `D87`–`D95`; la tercera revisión ya no consta pendiente; **y la cifra se DERIVA** de los bloques de §15.8 —son doce, y ésta es la decimotercera— en vez de declararse derivada sin serlo (`I-19`) |
 | `A5` | MEDIO | **`CORREGIDO_EN_F4`** | §2.6.9 | sí | no | no | no | no | sujeto corregido: ningún FICHERO en su hash posterior; el evento sí lo conserva |
 | `A6` | MEDIO | **`CORREGIDO_EN_F4`** | D85 | sí | no | no | no | no | 5 fases · 6 estados · 7 filas, recalculados tras `D64` |
-| `A7` | MEDIO | **`CORREGIDO_EN_F4`** | §3.6 | sí | no | no | no | no | «los cinco CAMPOS de procedencia» donde es condición de validación |
-| `A8` | MEDIO | **`CORREGIDO_EN_F4`** | D78 | sí | no | no | no | no | `estado/deriva/<ID>.abierta`, legible sin herramienta |
-| `A9` | MEDIO | **`CORREGIDO_EN_F4`** | D79 | sí | no | no | no | no | dos actos de autoridad del Owner cierran `4b`; `X58` reformulado |
+| `A7` | MEDIO | **`CORREGIDO_EN_F4`** | §3.6 · D95 | sí | no | no | no | no | «los cinco CAMPOS de procedencia» **en las SEIS sedes**, incluida la regla 1 de §2.6.10 — la única que el gate nombró y la única que no se había tocado |
+| `A8` | MEDIO | **`CORREGIDO_EN_F4`** | D78 · D88 | sí | no | no | no | no | `estado/deriva/<ID>.abierta`, legible sin herramienta **y sujeto a las CINCO piezas de disciplina del marcador de transacción** —§2.4, §2.3, `.gitignore`, §2.9 y fila adversarial—, creado en el paso E y retirado por la transacción que lo resuelve. **Y la NORMA de §2.6.8 consulta los marcadores**, no el diario |
+| `A9` | MEDIO | **`CORREGIDO_EN_F4`** | D79 · D87 | sí | no | no | no | no | dos actos de autoridad del Owner cierran `4b`; `X58` reformulado. **Y la cuarentena del acto (i) tiene plano**: `.ads/run/quarantine/<TX>/`, operacional, con su ciclo y su prueba |
 | `A10` | MEDIO | **`CORREGIDO_EN_F4`** | §1 · §16 · §19 | sí | no | no | no | no | ONCE puntos de presión, derivados de §16 |
 | `A12` | MENOR | **`CORREGIDO_EN_F4`** | D84 | sí | no | no | no | no | el CAS de Git, no «un único escritor» |
 | `A13` | MEDIO | **`CORREGIDO_EN_F4`** | §3.6 | sí | no | no | no | no | fila `preparada` de §3.6 con los cinco CAMPOS |
@@ -1214,8 +1214,8 @@ RENOMBRADOS         `R1`–`R9` (ventanas de reconciliación, retiradas por `D64
 | `M-2` | MEDIO | **`CORREGIDO_EN_F4`** | §1.3 | sí | no | no | no | no | fila del mapa documental, autoridad «nadie: se regenera» |
 | `M-3` | MEDIO | **`CORREGIDO_EN_F4`** | D75 | sí | no | no | no | no | `U6` revalida el nivel vigente; no es `O12` |
 | `M-4` | MEDIO | **`CORREGIDO_EN_F4`** | registro de `D67` | sí | no | no | no | no | resumen corregido: `proceso:AUD`, y propagar a las fuentes es `proceso:DEP` |
-| `M-5` | MEDIO | **`CONTRATO_COMPLETO_PARA_F6`** | §5.3 + §5.2 | sí | no | extensión de ficha `capacidades/DSP/` | no | no | F4 nombra el actor —`DSP` en APERTURA, la capacidad líder en CAMPAÑA— y `C1` exige que la ficha lo autorice: esa extensión es de F6 |
-| `M-6` | MEDIO | **`CONTRATO_COMPLETO_PARA_F6`** | D80 | sí | no | clase, forma y rama en `entrada/` + ficha `capacidades/ENC/` | no | no | F4 determina clase, forma, rama, sujeto y salida; construirlas en `entrada/` es de F6 |
+| `M-5` | MEDIO | **`CONTRATO_COMPLETO_PARA_F6`** | §5.3 + §5.2 + D91 | sí | no | extensión de ficha `capacidades/DSP/` **y de las capacidades LÍDERES DE COBERTURA**, con el conjunto derivado de los `contrato-de-aspecto` | no | no | F4 nombra el actor de las DOS mitades —`DSP` en APERTURA, la capacidad líder en CAMPAÑA— y declara que `C1` exige que la ficha lo autorice **en ambas**. **`DSP` y `ENC` están ya en §17**, que es la sede que F6 lee |
+| `M-6` | MEDIO | **`CONTRATO_COMPLETO_PARA_F6`** | D80 | sí | no | clase, forma y rama en `entrada/` + ficha `capacidades/ENC/` | no | no | F4 determina clase, forma, rama, sujeto y salida; construirlas en `entrada/` es de F6. **`capacidades/ENC/` está ahora en §5.2 Y en §17**, que era la mitad literal de su condición de cierre |
 | `M-7` | MEDIO | **`CORREGIDO_EN_F4`** | D82 | sí | no | no | no | no | items por macrocircuito y FRENO 3 circuito a circuito |
 | `M-8` | MEDIO | **`CORREGIDO_EN_F4`** | D83 | sí | no | no | no | no | `RC-1`–`RC-9` renombradas y retiradas del inventario de §19 |
 | `M-9` | MEDIO | **`CORREGIDO_EN_F4`** | D81 | sí | no | no | no | no | el §6.2 de la directiva es el contrato de `A3`; §15.2 desglosado |
@@ -1223,11 +1223,11 @@ RENOMBRADOS         `R1`–`R9` (ventanas de reconciliación, retiradas por `D64
 | `m-2` | MENOR | **`CORREGIDO_EN_F4`** | §2 del registro | sí | no | no | no | no | la nota de procedencia precede a la sección de `O16` |
 | `m-3` | MENOR | **`HISTORICO_NO_APLICABLE`** | §5.2 | no | no | no | no | no | hecho confirmado, juicio NO asumido: es preferencia de diseño |
 | `m-4` | MENOR | **`CORREGIDO_EN_F4`** | D75 | sí | no | no | no | no | `U5a` y `U5b` rotuladas en §18 |
-| `F-01` | MEDIO | **`EXTERNO_CON_PROPIETARIO`** | `SIS` · F6 | sí | no | `01-PROCESOS.md` L434 · `00-CIRCUITOS.md` L166 | no | no | §8.2 ya dice `DIS`; el kernel sigue diciendo `DIS/Reconstruccion` |
-| `F-02` | MEDIO | **`EXTERNO_CON_PROPIETARIO`** | `SIS` · F6 | no | no | `esquemas/proceso.yaml`: `ref_a: capacidad` | no | no | tipar `capacidad` y `capacidad_productora` como `ref_a: capacidad` |
+| `F-01` | MEDIO | **`PRESION_LISTA_PARA_F5`** | D93 · PN-14 | sí | **PN-14** | `01-PROCESOS.md` L434 · `00-CIRCUITOS.md` L166, DESPUÉS de F5 | no | no | la cadena está también en `b.16` L895 y `a.6` L495, material APROBADO: corregir sólo el kernel cambiaría el derivado dejando la fuente. `PN-14` lleva la sustitución a (a) y (b); F6 ejecuta después |
+| `F-02` | MEDIO | **`EXTERNO_CON_PROPIETARIO`** | `SIS` · F6 | no | no | `esquemas/proceso.yaml`: `ref_a: capacidad` con sufijo `:` opcional tipado, y `OWNER` movido a un campo de AUTORIDAD | no | no | **el vocabulario ya está escrito y §19 lo recoge** (`I-13`): capacidad base de las quince · sufijo `:<variante>` opcional y tipado · `/` NO válido · `capacidad_productora` con la misma referencia · `OWNER` no es capacidad. F6 no decide nada |
 | `F-03` | MEDIO | **`CORREGIDO_EN_F4`** | D83 | sí | no | no | no | no | fases de instalación renombradas a `INS-0`…`INS-7` |
 | `F-04` | MEDIO | **`EXTERNO_CON_PROPIETARIO`** | `ENC` con `SIS` · F6 | no | no | `05-ESCENARIOS.md` L181 y su prueba `T75` | no | no | `grado_inicial: alta` y su comprobación en `T75` |
-| `F-05` | MENOR | **`CORREGIDO_EN_F4`** | D86 | sí | no | instancias en `circuitos/` — OPTATIVO, `00-CIRCUITOS` L238 lo desactiva | no | no | §15.7 registra la excepción de `C5`; §8.0 declara qué checkpoint viaja. Las tres condiciones de cierre, cumplidas |
+| `F-05` | MENOR | **`CORREGIDO_EN_F4`** | D86 | sí | no | instancias en `circuitos/` — OPTATIVO, `00-CIRCUITOS` L238 lo desactiva | no | no | §15.7 registra la excepción de `C5`; **§8.0 declara QUÉ VIAJA** —el source change, el dosier de certificación, el resultado por fuente y la convergencia—, que es cosa distinta del campo `checkpoint:` de esos handoffs (`I-24`: la columna decía «qué checkpoint viaja», y §19 lo dice bien). Las tres condiciones de cierre, cumplidas |
 | `F-06` | MENOR | **`EXTERNO_CON_PROPIETARIO`** | `DIS` · F6 | no | no | `circuitos/DIS-handoffs.md` L137 | no | no | anclar el `cuando` de `dis-a-ver` a una estación del ciclo |
 | `F-07` | MENOR | **`EXTERNO_CON_PROPIETARIO`** | `SIS` con el Owner · F6 | no | no | `docs/owner/*` + `exclusiones.yaml` | no | no | campo `autoridad:` en `docs/owner/`, comprobado por validador |
 | `F-08` | MENOR | **`EXTERNO_CON_PROPIETARIO`** | el Owner · F5 | no | sí · sin PN | no | no | no | nota de vigencia sobre la materialización multirrepo |
@@ -1237,29 +1237,49 @@ RENOMBRADOS         `R1`–`R9` (ventanas de reconciliación, retiradas por `D64
 | `F-12` | MENOR | **`CORREGIDO_EN_F4`** | índice y checkpoint | sí | no | no | no | no | los documentos 15, 16 y 17 son inmutables; se reanclan sus proyecciones |
 
 ```text
-RECUENTO DERIVADO DE LAS 43 FILAS, no al revés
+RECUENTO DERIVADO DE LAS 43 FILAS, no al revés — RECALCULADO tras la corrección del gate
+de cierre. Ninguna de estas cifras se ha copiado: todas salen de extraer los
+identificadores, la severidad y el estado primario de la tabla de arriba y contarlos.
 
   CORREGIDO_EN_F4             31   la corrección está escrita y no queda nada por decidir
-  PRESION_LISTA_PARA_F5        1   `B-2`. Su arquitectura SÍ está corregida —§8.0, `D74`—;
-                                   lo que queda es la enmienda a `b.16` que sólo el Owner
-                                   puede aprobar, y es `PN-13`
+  PRESION_LISTA_PARA_F5        2   `B-2` (`PN-13`) y **`F-01` (`PN-14`)**. Las dos tienen su
+                                   arquitectura corregida; lo que queda es una enmienda que
+                                   sólo el Owner puede aprobar
   CONTRATO_COMPLETO_PARA_F6    2   `M-5` y `M-6`. F4 corrigió la ambigüedad y dejó el
                                    contrato determinado; el elemento sólo se construye en F6
-  EXTERNO_CON_PROPIETARIO      8   su sede está fuera de F4: kernel, `docs/owner/` o el
-                                   propio documento del gate. Con propietario y fase en §19
+  EXTERNO_CON_PROPIETARIO      7   su sede está fuera de F4: kernel, `docs/owner/` o el
+                                   propio documento del gate. Con propietario y fase en §19.
+                                   **Eran OCHO: `F-01` deja de serlo**
   HISTORICO_NO_APLICABLE       1   `m-3`: el hecho está confirmado y el juicio NO se asume
                               ───
   TOTAL                       43   suma exacta de los cinco estados
 
+  UN ESTADO PRIMARIO POR ID, y los cinco mutuamente excluyentes. 43 ids DISTINTOS.
   A11 no aparece: absorbido en `M-8`, sin condición de cierre propia
   A14 no aparece: el gate lo declaró AJENO a F4 — limitación aceptada con procedencia
 
-POR SEVERIDAD ORIGINAL, Y QUÉ FUE DE CADA GRUPO
+QUÉ SE MOVIÓ EN ESTA TANDA, Y POR QUÉ
+
+  `F-01`   EXTERNO_CON_PROPIETARIO → **PRESION_LISTA_PARA_F5**. Su remedio, como estaba
+           escrito, no alcanzaba `b.16` L895 ni `a.6` L495 —material APROBADO—, luego
+           cambiaba el derivado dejando la fuente. Es `PN-14` y `D93`.
+           **Conserva `requiere_f6`**: el kernel se corrige DESPUÉS de F5, no en su lugar
+  `B-2`    sigue siendo PRESION_LISTA_PARA_F5 por `PN-13`, y **su parte arquitectónica queda
+           corregida**: `D90` cierra la mitad `PLT` contra `C7:80-92`, que nunca fue materia
+           del Owner. El residuo es sólo `DOM`/`SEG`/`DIS` en `SIS` e `INV`
+  `M-5` `M-6`  conservan CONTRATO_COMPLETO_PARA_F6, y ahora su contrato está **también en
+           §17**, que es la sede que F6 lee y la mitad literal del cierre de `M-6`
+  `A2` `A4` `A7` `A8` `G-3` `F-02`  eran las otras seis FALLIDAS del gate de cierre.
+           Conservan su estado primario y **su condición de cierre pasa a cumplirse**:
+           `D89`, `I-19`, `D95`, `D88`, §18 e `I-13` respectivamente
+
+POR SEVERIDAD ORIGINAL, Y QUÉ FUE DE CADA GRUPO — derivado por cruce, no escrito
 
   BLOQUEANTE   4 filas ·  4 distintos   3 CORREGIDO_EN_F4 · 1 PRESION_LISTA_PARA_F5 (`B-2`)
   GRAVE        6 filas ·  6 distintos   6 CORREGIDO_EN_F4
   MEDIO       20 filas · 20 distintos  15 CORREGIDO_EN_F4 · 2 CONTRATO_COMPLETO_PARA_F6
-                                        3 EXTERNO_CON_PROPIETARIO
+                                        1 PRESION_LISTA_PARA_F5 (`F-01`)
+                                        2 EXTERNO_CON_PROPIETARIO
   MENOR       14 filas · 13 distintos   7 CORREGIDO_EN_F4 · 5 EXTERNO_CON_PROPIETARIO
                                         1 HISTORICO_NO_APLICABLE  (`A11` absorbido en `M-8`)
               ── filas 44 · distintos 43
@@ -1267,21 +1287,40 @@ POR SEVERIDAD ORIGINAL, Y QUÉ FUE DE CADA GRUPO
 ATRIBUTOS SECUNDARIOS, QUE NO ENTRAN EN NINGÚN TOTAL
 
   arquitectura corregida    35 sí · 8 no. Los ocho «no» son los EXTERNOS puros y `m-3`
-  requieren F5               2   `B-2` (`PN-13`) y `F-08` (documento del Owner, sin `PN`)
-  requieren F6              11   `B-2` `M-5` `M-6` `F-01` `F-02` `F-04` `F-05` `F-06`
-                                 `F-07` `F-10` `F-11`
+  requieren F5               3   `B-2` (`PN-13`) · **`F-01` (`PN-14`)** · `F-08` (documento
+                                 del Owner, sin `PN`). **Sube por `PN-14`**
+  requieren F6              11   `B-2` `M-5` `M-6` **`F-01`** `F-02` `F-04` `F-05` `F-06`
+                                 `F-07` `F-10` `F-11`. **`F-01` NO sale**: su trabajo de
+                                 kernel sigue existiendo, y se ejecuta DESPUÉS de F5
   bloquean F5                0   lo que impide F5 es el VEREDICTO del gate, no un hallazgo
   bloquean F6                1   `B-2`, y ACOTADO: sólo la composición de `INS-5` y de `A9`
 
-REQUERIR TRABAJO FUTURO NO ES «F4 NO RESOLVIÓ SU ARQUITECTURA». `B-2`, `M-5` y `M-6` tienen
-su arquitectura escrita y cerrada; lo que queda de ellos es una aprobación del Owner y dos
-construcciones, no una decisión de diseño pendiente.
+REQUERIR TRABAJO FUTURO NO ES «F4 NO RESOLVIÓ SU ARQUITECTURA». `B-2`, `F-01`, `M-5` y `M-6`
+tienen su arquitectura escrita y cerrada; lo que queda de ellos son dos aprobaciones del
+Owner y tres construcciones, no una decisión de diseño pendiente.
+
+Y LO QUE ESTA MATRIZ NO DICE, Y HAY QUE DECIR: **que las 43 filas estén cerradas NO cierra
+`F4c`.** Esta tanda la aplicó quien la recibió, por décima vez. El veredicto vigente sigue
+siendo el del gate de cierre, y lo que hace falta es un juicio independiente sobre ESTA
+tanda — con la cobertura que al anterior le faltó.
 ```
 
 ### Lo que la tanda comprobó mecánicamente
 
+> **Y lo que el gate de cierre demostró de esta lista, que es lo que importa.** Cuatro de
+> estas treinta comprobaciones **estaban en verde y no debían estarlo**, y son exactamente
+> las que la corrección siguiente tuvo que rehacer: «UN predicado `abierta(tx)`» —el censo
+> era falso en dos de siete entradas y §2.6.4 lo redeclaraba (`I-09`)—, «vía declarada para
+> cada participante» —`b.16` da a `DOM` y a `SEG` una segunda participación que ningún
+> proceso instancia (`I-08`)—, «los cuatro macrocircuitos con sus **doce** campos» —el
+> encargo pedía CATORCE, y faltaban `proceso` y `handoffs` (`I-21`)— y «once presiones
+> derivadas de sus cabeceras», que era cierta entonces y no lo es ahora. **Una comprobación
+> mecánica que se declara en verde sin ejecutarse es peor que no tenerla**, y por eso la
+> batería de la tanda siguiente se ejecuta y se publica.
+
 ```text
-30 COMPROBACIONES, 30 EN VERDE
+30 COMPROBACIONES, 30 EN VERDE — declaradas por la NOVENA tanda, y CUATRO de ellas
+refutadas después por el GATE DE CIERRE. Se conservan como lo que fueron
   cinco estados alcanzables · dos terminales y sólo dos · ningún no terminal sin sucesor ·
   restauración verificada byte a byte ANTES de `abandonada` · ninguna mezcla parcial
   publicable · la intención histórica íntegra · recuperación local y reinicio remoto
@@ -1336,41 +1375,115 @@ NO APLICABLE      1   m-3, con causa demostrada
                       43 ids distintos, un estado primario cada uno, 31·1·2·8·1 = 43
 ```
 
+## TANDA INTEGRADA DE CORRECCIÓN DEL GATE DE CIERRE — cerrada, sin publicar
+
+```text
+QUÉ ES              la corrección de los 28 hallazgos consolidados `I-01`–`I-28` del GATE DE
+                    CIERRE INDEPENDIENTE (documento 18), más la fila `A7` —una de las DIEZ
+                    FALLIDAS, que no lleva número `I-nn` porque es fila de la matriz y no
+                    hallazgo nuevo—. Es la **DÉCIMA** tanda de corrección de `F4c`.
+
+QUÉ NO ES           un veredicto. **Lo aplicó quien lo recibió**, por décima vez, y eso no
+                    certifica nada. `F4c` sigue **ABIERTA** y el veredicto vigente sigue
+                    siendo **INSUFICIENTE PARA F5**.
+
+QUÉ NO SE HA HECHO  no se ha encargado otro gate · no se ha iniciado F5 ni F6 · no se ha
+                    iniciado PesquerApp · **no se ha redactado ninguna enmienda normativa** ·
+                    (a), (b), `E1`, `E2`, `K-1`, `C4` y `C7` **intactos** · los documentos
+                    15, 16, 17 y 18 **intactos** · `D1`–`D86` conservan su texto, con la
+                    ÚNICA excepción de restaurar `D67` al de `7e99388` · `O1`–`O16` intactas
+                    · **NADA de `kernel/operativo/`, `packs/` ni `tooling/`** cambia, salvo
+                    la evidencia DERIVADA que el runner republica.
+
+DECISIONES          **`D87`–`D95`**, todas revisoras. Ninguna reescribe una anterior.
+                      D87  la cuarentena OPERACIONAL, que revisa `D79`
+                      D88  las cinco piezas del marcador de `deriva`, que completan `D78`
+                      D89  la capa B, el censo de `abierta(tx)`, y el resumen de procesos
+                           que la reescritura de `D67` llevaba
+                      D90  el reparto Git de `C7`, citado y no reescrito
+                      D91  la autoridad para abrir campañas, DERIVADA de los aspectos
+                      D92  `<CAP>:revision` como contrato completo para F6
+                      D93  `F-01` reclasificado, y `PN-14`
+                      D94  las TRECE condicionales de `§5.18`
+                      D95  los cinco CAMPOS de procedencia en la sexta sede
+
+PRESIONES           **DOCE vigentes**: `PN-1`, `PN-2`, `PN-3`, `PN-6` a `PN-14`. `PN-4`
+                    retirada, `PN-5` fusionada en `PN-3`. Sin renumerar. El total se DERIVA
+                    de las cabeceras `## \`PN-` menos las dos marcadas.
+                    **`PN-14` es la única que esta tanda añade**, y sale de reclasificar
+                    `F-01`: `DIS/Reconstruccion` está en `b.16` L895 y `a.6` L495, que son
+                    material APROBADO. **No se redacta su enmienda.**
+
+QUÉ CAMBIA EN LA    `F-01` pasa de EXTERNO a PRESIÓN F5 · los externos bajan de OCHO a SIETE ·
+MATRIZ DE LOS 43    `requiere_f5` sube de 2 a 3 · `requiere_f6` conserva `F-01` · `B-2` sigue
+                    siendo presión F5 por `PN-13` **con su parte arquitectónica corregida** ·
+                    `M-5` y `M-6` conservan CONTRATO_COMPLETO_PARA_F6.
+                    **43 ids distintos, un estado primario cada uno, ningún estado compuesto,
+                    y el total DERIVADO de las filas.**
+
+LÍMITE DEL ENTORNO  la batería canónica se ejecutó con **Python 3.10.12**, que es lo único
+                    disponible en esta máquina. `comprobar_arranque` (`T148`),
+                    `comprobar_fuentes` (`T159`) y las pruebas de `workspace` fallan por
+                    `tomllib`, que exige **3.11+** — y su salida lo dice con esas palabras:
+                    «se requiere Python 3.11 o superior para leer TOML». **Es `A14`**, que el
+                    gate final declaró AJENO a F4, con propietario `PLT` y fase F6. **No se
+                    ha tocado el tooling para sortearlo**, y el resultado es **idéntico al de
+                    antes de esta tanda**: 10/13 validadores, 8/57 pruebas de workspace.
+```
+
 ## Siguiente acción exacta
 
 ```text
-0  CUBRIR LAS CATORCE FUENTES     empezando por `15-TERCERA-REVISION-INDEPENDIENTE-F4C.md`
-   QUE NADIE ABRIÓ                (652 líneas), asignada a los DOS revisores y leída por
-                                  ninguno; después las DIEZ de las diecinueve que el primer
-                                  gate ya omitió —`diseno/00` `01` `02` `04` `05`, `C2`,
-                                  `C3`, `entrada/00` `02` `04`—, más `C4`, `E1` y `E2`
-                                  íntegro. **Sin esto no hay gate, hay una muestra.**
+0  UN GATE INDEPENDIENTE SOBRE   **NO lo encarga esta tanda, y no está encargado.** La
+   ESTA DÉCIMA TANDA              corrección la ha aplicado quien la recibió, otra vez, y eso
+                                  no certifica nada. Lo que hace falta es un juicio
+                                  independiente sobre ESTA tanda, y su condición mínima es la
+                                  que al anterior le faltó: **cubrir las CATORCE fuentes
+                                  obligatorias que nadie abrió** —empezando por
+                                  `15-TERCERA-REVISION-INDEPENDIENTE-F4C.md`, asignada a los
+                                  dos revisores y leída por ninguno; después las DIEZ de las
+                                  diecinueve que el primer gate ya omitió: `diseno/00` `01`
+                                  `02` `04` `05`, `C2`, `C3`, `entrada/00` `02` `04`; más
+                                  `C4`, `E1` y `E2` íntegro— y **leer íntegras las TRECE
+                                  fichas de capacidad** que se cubrieron por `grep`, o
+                                  declarar por qué la cobertura por atributos basta.
+                                  **Sin esto no hay gate, hay una muestra.**
 
-1  LEER ÍNTEGRAS LAS TRECE        se cubrieron por `grep` sobre cuatro campos. `grep` sobre un
-   FICHAS DE CAPACIDAD            campo no demuestra que otro campo del mismo fichero no lo
-                                  contradiga. O se leen, o se declara por qué la cobertura
-                                  por atributos basta.
+1  QUÉ HA CORREGIDO ESTA          los 28 hallazgos `I-01`–`I-28`, más `A7`. Las ocho GRAVES,
+   TANDA, Y CONTRA QUÉ            por el orden en que el adjudicador las puso: `I-03` la capa
+                                  B —cierra `A2`—; `I-04` el EJECUTOR contra `C7:80-92`
+                                  —cierra la mitad `PLT` de `B-2`—; `I-07` el gate de `INS-5`
+                                  en §18 —cierra `G-3`—; `I-06` `DSP` y `ENC` en §17 —cierra
+                                  `M-5` y `M-6`—; `I-05` §14; `I-01` la cuarentena; `I-02` el
+                                  marcador de `deriva`; `I-08` la revisión de `DOM`/`SEG`.
+                                  La ÚNICA decisión de diseño que el gate identificó —el
+                                  plano de la cuarentena— se tomó en `D87`: **no crea una
+                                  tercera ubicación**, la retira y usa el plano operacional
+                                  que ya existe.
 
-2  LAS OCHO GRAVES, POR ORDEN     `I-03` retirar de la capa B del validador las dos reglas que
-   DE LO QUE DESBLOQUEAN          `D64` retiró —cierra `A2`, y es la más barata del lote—.
-                                  `I-04` corregir la atribución del EJECUTOR en cinco sedes
-                                  contra `C7:80-92` —cierra `B-2`—. `I-07` llevar el gate de
-                                  `INS-5` a §18 —cierra `G-3`—. `I-06` añadir `DSP` y `ENC` a
-                                  §17 —cierra `M-5` y `M-6`—. `I-05`, `I-01`, `I-02`, `I-08`.
+2  QUÉ VIGILAR                    lo mismo que el gate anterior mandó vigilar, y con más
+                                  motivo: **que la undécima tanda NO la aplique quien la
+                                  reciba sin un gate posterior**. Ésta es la décima, y las
+                                  dos veces que alguien ha mirado ha aparecido algo que la
+                                  corrección introdujo — SEIS de los veintiocho del gate de
+                                  cierre eran de esa clase, y esta tanda ha tocado cinco
+                                  sedes más de §8 y toda la capa B.
 
-3  LA ÚNICA DECISIÓN DE           el plano de `estado/cuarentena/<TX>/`: clasificación en
-   DISEÑO QUE QUEDA               §2.4, fila en §2.3, ciclo, `.gitignore` y fila adversarial.
-                                  `D79` lo autorizó y §2.6.10 lo descarta once líneas después.
+3  QUÉ NO SE HA HECHO, Y NO       no se ha encargado otro gate · no se ha iniciado F5 ni F6 ·
+   DEBE HACERSE SIN DECIDIRLO     no se ha redactado ninguna enmienda de `b.16`, de (a) ni de
+                                  (b) · no se ha tocado `C7` ni nada de `kernel/operativo/` ·
+                                  no se ha iniciado PesquerApp · y **nada se ha publicado**.
 
-4  QUÉ VIGILAR                    que la décima tanda **NO la aplique quien la reciba sin un
-                                  gate posterior**. Ésta es la novena, la segunda que alguien
-                                  mira, y las dos veces ha aparecido algo que la corrección
-                                  introdujo: SEIS de los veintiocho hallazgos son de esa clase.
-
-5  QUÉ LLEVAR AL OWNER            `I-26` primero, pese a ser MENOR: la frase del campo ALCANCE
-                                  de `PN-13` está TRUNCADA, y `PN-13` va al Owner. Y las ONCE
-                                  presiones de §16, con `PN-1` bloqueando todo el estado
-                                  durable.
+5  QUÉ LLEVAR AL OWNER            las **DOCE** presiones de §16, con `PN-1` bloqueando todo el
+                                  estado durable y **`PN-14` como la única que esta tanda
+                                  añade**. `I-26` está corregido: el campo ALCANCE de `PN-13`
+                                  ya no está truncado.
+                                  **Y `F-08`, que es trabajo de F5 y NO es presión normativa**
+                                  —`IDEAS` se declara a sí mismo «no es una especificación
+                                  cerrada»—: su registro vive en §19 y en la matriz, con
+                                  `requiere F5 · sí · sin PN`. **Corregido por `I-28`**: este
+                                  punto decía «las ONCE presiones de §16» y un Owner que
+                                  siguiera sólo esta línea no habría visto `F-08`.
 
 6  DÓNDE PARAR                    antes de redactar `(g)`, antes de crear `C8`, antes de tocar
                                   `C7` o `kernel/operativo/`, y antes de iniciar PesquerApp.
