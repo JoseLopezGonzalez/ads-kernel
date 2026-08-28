@@ -342,7 +342,8 @@ ads/                                    el repositorio ADS de control
 │  ├─ cobertura/<clase>/<sujeto>.md    autoridad SIS el contrato · la capacidad el juicio
 │  ├─ integracion/<IS-ID>.md           autoridad ENT
 │  ├─ eventos/
-│  │  ├─ <EV-ID>.md          APPEND ONLY. Nadie los edita: se emiten
+│  │  ├─ <EV-ID>.md          SE EMITEN, NO SE EDITAN. Con UNA excepción física
+│  │  │                       autorizada: la lápida de `retirada-de-cuerpo` (§2.9)
 │  │  ├─ sellados/<seg>.md   compactación de items cerrados
 │  │  └─ INDICE.md           DERIVADO
 │  ├─ tx/<TX-ID>.abierta    MARCADOR de transacción EN VUELO, con el `tx` y LA LISTA DE
@@ -1258,13 +1259,21 @@ impuso al arnés de negativos.
 > §2.6.1 y §15.8 de este documento  las notas de corrección citan lo que sustituyen
 > ```
 >
+> **Y la lista de arriba NO es exhaustiva**, corregido por `m6`: `CHECKPOINT-ADS-NEXT.md`
+> también cita `abortada` en sus bloques históricos, y lo hará cualquier registro futuro que
+> narre esta cadena. La regla no es un censo de ficheros: es que la PROYECCIÓN NORMATIVA
+> VIGENTE sea una, y que toda otra aparición esté en texto marcado como histórico.
+>
 > **La regla, en una frase:** la proyección normativa vigente es UNA; las citas históricas y
 > adversariales son MUCHAS, y eliminarlas destruiría la trazabilidad que estos documentos
 > existen para dar. `X47` comprueba la primera y declara las segundas.
 
 > **Cuarenta y dos filas físicas y cuarenta y dos identificadores únicos**, comprobado por
-> conteo sobre el fichero y no por memoria: la tabla empieza en `X01`, salta `X24` con su
-> motivo declarado abajo, y **ninguna fila se repite**. La segunda corrección técnica revisó
+> conteo sobre el fichero y no por memoria: la tabla empieza en `X01` y **tiene huecos de
+> numeración** —`X24`, `X29`–`X36` y `X40`–`X46`—, de filas retiradas o renumeradas en las
+> sucesivas correcciones. `X24` es el único con motivo declarado abajo; los demás son huecos
+> y **ninguna referencia del documento apunta a ellos**, corregido por `M2`, que encontró
+> `X32`–`X34` y `X42` citados sin existir. **Ninguna fila se repite**. La segunda corrección técnica revisó
 > `X05`, `X15`, `X26` y `X28` **en su sitio**, sin añadir ninguna fila y sin retirar ninguna.
 >
 > **Y dos restos señalados que NO se reproducen, dicho porque corregir lo que no existe sería
@@ -1726,7 +1735,11 @@ QUEDA SIN SALIDA           sitios; `conflicto` sale a dos; `confirmada` sale a u
    **ADS no reescribe historia publicada del control repo.**
 
 5  «EL REMOTO ESTABA ATRASADO, NO ROTO» era un SUPUESTO, no una comprobación. `E2.7` y §2.11
-   admiten expresamente dos máquinas sobre el mismo control repo, y en ese caso el remoto
+   dejan ABIERTO el runtime distribuido —`E2.7` enumera «runtime distribuido · locks
+   multi-agente · scheduler · colas», **sin nombrar máquinas**—, luego dos máquinas sobre el
+   mismo control repo son un caso POSIBLE y no gobernado. **Corregido por `m5`**: decir que
+   `E2.7` lo admite «expresamente» le atribuía una palabra que no tiene. En ese caso el
+   remoto
    PUEDE haber avanzado. Se comprueba; no se supone.
 ```
 
@@ -2570,7 +2583,8 @@ TAMAÑO DE SELLADO        cada cuántos items o eventos se compacta. Es un pará
                          valor sale del piloto, no de una preferencia escrita hoy.
 FORMATO DEL DIARIO       bloque canónico `ads:evento` en Markdown. Si el piloto demuestra
                          que el volumen lo hace impracticable, la alternativa es un
-                         formato de línea; el CONTRATO —append only, id único, nunca se
+                         formato de línea; el CONTRATO —se añaden y no se editan, con la
+                         única excepción de la lápida (§2.9); id único; nunca se
                          edita— no cambia.
 LOCK DISTRIBUIDO         dos máquinas sobre el mismo control repo se serializan por Git,
                          no por el lock. Ese caso queda declarado y sin resolver: es
@@ -4245,7 +4259,7 @@ que el campo único `dimension` no podía sostener.
 > inaplicabilidad «DENTRO del criterio», que es una norma de CLASE compartida por todas las
 > instalaciones — y `SOURCES.toml@a71f3c2` es un dato de ESTE producto y ESTA revisión. El
 > ejemplo 3b era un **contraejemplo de la tesis que este apartado dice demostrar**. Con
-> `evaluacion_de_pruebas` (§3.5) la tesis vuelve a ser cierta, y `X42` la comprueba validando
+> `evaluacion_de_pruebas` (§3.5) la tesis vuelve a ser cierta, y **`X52`** la comprueba validando
 > las tres celdas contra el esquema sin campos libres.
 
 > **Ninguna de las tres celdas existe.** Son ejemplos del contrato, no registros de un
@@ -4479,7 +4493,12 @@ NINGÚN ADAPTADOR EXISTE HOY, luego NINGUNA CELDA EXISTE y el nivel alcanzado de
 3  prueba de humo en sesión nueva
 4  el estado, la memoria, los items y los checkpoints NO SE TOCAN: son neutrales por
    diseño, y ésa es la propiedad que K0.8 y T92 protegen
-5  el adaptador viejo puede convivir o retirarse. Retirarlo borra su proyección, nunca
+5  el adaptador viejo puede convivir o retirarse. **Retirar su proyección de una fuente es
+   una ESCRITURA, y va por el mismo régimen que propagarla**: source change gobernado por
+   `C7`, con paquete, `escribe_fuentes`, custodia de `PLT`, gate, autorización del Owner,
+   rollback POR FUENTE e `INTEGRACIÓN PARCIAL` si converge en unas y no en otras (§6.7 regla
+   2). **Corregido por `M4`**: la asimetría dejaba la operación DESTRUCTIVA menos gobernada
+   que la constructiva, en repositorios que no son de ADS. Borrar la proyección nunca
    el estado
 ```
 
@@ -4639,7 +4658,8 @@ UN FICHERO NO VERSIONADO     no sobrevive a un clon nuevo, y `C6` `N9` dice que 
    aquí, y lo que impide que «huella correcta» se lea como «puntero al día».
 ```
 
-**Pruebas adversariales `X32`–`X34`.** Adopción hasta `A7` inclusive: `git status` y `git log`
+**Comprobación adversarial, reasignada a `X51`** —corregido por `M2`: `X32`–`X34` se citaban
+y **no existían en la tabla**—. Adopción hasta `A7` inclusive: `git status` y `git log`
 en cada fuente no muestran **ni un solo commit ni un fichero nuevo** de ADS · actualización en
 tres fuentes con `main` protegida: la propagación produce tres PR, un Integration Set, y
 estado `INTEGRACIÓN PARCIAL` hasta que las tres se fusionan · fusionar dos de tres y comprobar
@@ -5989,7 +6009,12 @@ RECHAZADA      no entra, con motivo
 PRESIÓN F5     exige enmienda de material aprobado antes de construirse
 ```
 
-## 15.2 · Los veintiséis apartados de la directiva
+## 15.2 · Los apartados de la directiva que esta fase traza
+
+> **Corregido por `m3`.** El título decía «los veintiséis apartados» y la tabla traza **22 de
+> los 26**: la recorren del 2 al 23. Sin fila quedan el 1, el 24, el 25 y el 26 — y el §24,
+> «Reglas para interpretar esta directiva», **sí se usa**, citado en §10.2 y en §7.1. Trazar
+> 22 es correcto; llamarlos veintiséis, no.
 
 | § | materia | dónde queda | clase |
 |---|---|---|---|
@@ -6103,7 +6128,7 @@ PRESIÓN F5     exige enmienda de material aprobado antes de construirse
 | `C3` método ejecutable | REUTILIZADO |
 | `C4` materialización | REUTILIZADO. `X8` se resolvió leyéndolo |
 | `C5` handoff | REUTILIZADO |
-| `C6` producto, fuentes y workspace | REUTILIZADO. §5.1 se apoya en su componente sin deformarlo |
+| `C6` producto, fuentes y workspace | **REUTILIZADO CON EXCEPCIÓN NOMBRADA**, y su defecto REGISTRADO —igual que se hizo con `C7`—. §5.1 se apoya en su componente sin deformarlo, pero §6.7 declara una **excepción a su frontera**: el puntero vive en la fuente por una necesidad de descubrimiento, y NO porque la frontera de `C6` lo permita — que respondería «su sitio es el control repo». `C6` es material DERIVADO, luego **no es presión normativa**: prescripción cerrada, ejecución F6. **Corregido por `M3`** |
 | `C7` gobierno Git | **REUTILIZADO CON UNA CORRECCIÓN PENDIENTE, NOMBRADA.** Su `gate:convergencia-de-fuentes` dice `aplica_a: "una o más fuentes"` y `E2.6` —su fuente aprobada— dice «varias sources». Con el texto vigente, ningún producto de un repositorio cierra un solo item. Es un defecto de DERIVADO con prescripción cerrada (§9.5); NO es presión normativa; su ejecución es F6. **Y el control repo no está cubierto por su tabla de propiedad** (§2.6.10) |
 
 ```text
@@ -6263,7 +6288,10 @@ bloqueado hasta que el Owner apruebe.
 **Las cinco de la entrega anterior se han revisado una a una**, no arrastrado. Cada bloque
 declara su `ESTADO TRAS LA DEVOLUCIÓN`, y los identificadores **no se renumeran**: `PN-4`
 sigue llamándose `PN-4` aunque esté retirada, porque renumerar rompería la trazabilidad de lo
-que ya se llevó al Owner. El resultado son **cuatro vigentes**, una retirada y una fusionada.
+que ya se llevó al Owner. De aquellas cinco resultan **TRES vigentes** —`PN-1`, `PN-2`,
+`PN-3`—, una retirada (`PN-4`) y una fusionada (`PN-5`): 3 + 1 + 1 = 5, y la cuenta cierra.
+**Corregido por `m2`**: decía «cuatro vigentes, una retirada y una fusionada» sobre cinco, que
+suma seis. Las demás vigentes —`PN-6` a `PN-12`— son posteriores, y el total está abajo.
 
 ## `PN-1` · La sección (g) no existe, y esta fase la escribe
 
@@ -6523,10 +6551,37 @@ REVERSIÓN           control repo fuera del gobierno Git normativo y dejar §2.6
                     verificable por ningún contrato
 ```
 
+## `PN-12` · NUEVA · el «mapa documental» de `O8` como área DERIVADA
+
+```text
+QUÉ PRESIONA        `O8`, resolución del Owner del 2026-08-27: «las doce áreas semánticas del
+                    §5.18, obligatorias como MATERIA y no como ficheros»
+QUÉ HACE F4         restituye las doce **literalmente** como `§5.18` las enumera —`G8` había
+                    encontrado que F4 eliminaba «mapa documental» y partía «arquitectura» en
+                    dos— y, al restituir la primera, la declara **DERIVADA**: se regenera
+                    desde los bloques `ads:memoria` y las celdas de cobertura documental
+POR QUÉ SE REGISTRA porque `O8` dice «obligatorias como MATERIA», y declarar que UNA de esas
+IGUAL               materias no se escribe sino que se DERIVA es una precisión sobre su
+                    resolución. Puede ser obviamente correcta —un mapa escrito a mano
+                    envejece, que es el defecto que `§5.23` existe para detectar— y por eso
+                    mismo se registra: es **la misma vara de `PN-6` y `PN-10`**, y un
+                    tratamiento asimétrico de las resoluciones del Owner es el defecto
+MATERIA MÍNIMA      una frase que confirme que el área 1 se satisface con un mapa DERIVADO, o
+                    que exija uno escrito y mantenido
+BLOQUEA             nada hoy. Con la lectura derivada, F6 puede construir los doce contratos
+                    de aspecto sin esperar
+ALCANCE             sólo el área 1. Las otras once no se tocan, y su alineación con `§5.18`
+                    no es presión: es la corrección de una cita
+CONDICIÓN DE        si el Owner exige un mapa escrito, el área 1 pasa a tener responsable y
+REVERSIÓN           caducidad propios, y su fila en §1.3 deja de tener autoridad «nadie»
+ORIGEN              hallazgo `G8` de la TERCERA REVISIÓN INDEPENDIENTE, que la nombró como
+                    «la presión normativa omitida»
+```
+
 **Resumen para el Owner, tras revisar las cinco de la entrega anterior:**
 
 ```text
-VIGENTES · DIEZ
+VIGENTES · ONCE
   PN-1   la sección (g). LA ÚNICA QUE BLOQUEA TODO EL ESTADO DURABLE, y ahora decide más
   PN-2   la política de auditoría como tercera vía de creación de trabajo
   PN-3   G03 y la ejecución desatendida. Misma pregunta que PN-2 por otro camino, y
@@ -6539,6 +6594,8 @@ VIGENTES · DIEZ
   PN-10  O11 dice «estado durable» y F4 deriva el estado. Simetría con PN-6   NUEVA
   PN-11  el gobierno Git del CONTROL REPO no tiene sede normativa: C7 gobierna
          las fuentes y E2.4 cierra la vía de G29. BLOQUEA la publicación        NUEVA
+  PN-12  el «mapa documental» de O8 se satisface DERIVADO. Misma vara que
+         PN-6 y PN-10. No bloquea                                              NUEVA
 
 RETIRADA · UNA
   PN-4   con su motivo escrito, y reinstaurable por F5 si el Owner lo prefiere
@@ -6702,7 +6759,8 @@ NADA ESTÁ CONSTRUIDO      ni una línea de kernel, runtime, tooling, esquema, a
                           plantilla, pack ni validador. F4 no lo autoriza
 NADA ESTÁ PROBADO         los doce escenarios de §14, las CUARENTA Y DOS filas de la tabla
                           adversarial de §2.6.7, las NUEVE ventanas `R1`–`R9` de §2.6.9 y
-                          los ONCE escenarios negativos de §11.5
+                          los ONCE escenarios negativos de §11.5 y las OCHO comprobaciones
+                          `X-A`–`X-H` de §2.9
                           están ESCRITOS. Ninguno se ha ejecutado. Escribir el contrato de
                           una prueba no es la prueba
 LA PRIMERA ADOPCIÓN       la columna de uso real está vacía desde F0, y esta fase no la
@@ -6713,8 +6771,8 @@ REAL SIGUE PENDIENTE      llena. `O15` fija que esa adopción —PesquerApp— s
 NINGÚN ADAPTADOR EXISTE   y por tanto ninguno está certificado
 X1 Y P-05 SIGUEN          ninguna decisión de aquí cruza la línea del blueprint
 DEFERIDAS
-DIEZ PRESIONES            §16, tras DOS devoluciones independientes y la TERCERA REVISIÓN: PN-4 retirada, PN-5
-NORMATIVAS VIGENTES       fusionada en PN-3, y PN-6 a PN-11 nuevas. PN-1 bloquea todo
+ONCE PRESIONES            §16, tras DOS devoluciones independientes y la TERCERA REVISIÓN: PN-4 retirada, PN-5
+NORMATIVAS VIGENTES       fusionada en PN-3, y PN-6 a PN-12 nuevas. PN-1 bloquea todo
                           el estado durable, y F5 es su puerta
 F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. DOS críticas independientes y UNA
                           devolución técnica la han devuelto; la segunda emitió veredicto de
