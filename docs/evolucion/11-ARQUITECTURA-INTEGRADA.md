@@ -5567,25 +5567,93 @@ UN SOLO ITEM           EXACTAMENTE UN proceso en cada momento». Una fase que ne
                        items AUD ENLAZADOS, uno por conclusión», y lo mismo para `DIR`
 ```
 
-**Y hay DOS formas de estar presente que NO son participar en la ruta**, y confundirlas con
-la vía 3 es lo que produjo la lista de participantes sin vehículo:
+**Y hay TRES formas de estar presente que NO son participar en la ruta**, y confundirlas con
+la vía 3 es lo que produjo la lista de participantes sin vehículo. **Corregido por el gate de
+cierre (`I-20`)**: el texto decía DOS y los macrocircuitos usaban tres — el registro de `D74`
+sí las declaraba las tres.
 
 ```text
 EJECUTOR      ejecuta el trabajo sin responder de la conclusión. `a.5` los separa
-              expresamente. `PLT` bajo `C7` es el caso constante: custodia la maquinaria y
-              cada source change —rama, commit, push, PR y CI POR FUENTE—, y **no es
-              participante de la ruta por hacerlo**. §8.3 ya tenía la fila `EJECUTOR`
-              separada; los otros tres macrocircuitos no, y de ahí salía el espejismo
+              expresamente. **Quién ejecuta qué en Git lo fija `C7`, operación a operación**,
+              y el reparto está abajo. `PLT` es ejecutor donde `C7` lo dice —materializar una
+              fuente y retirar una rama abandonada—, y **no es participante de la ruta por
+              hacerlo**
 
 AUTORIDAD     autoriza o cierra un gate. El **Owner** en `A8`, `M6` y en toda decisión de
               retirada, y la autoridad de retirada que cada obligación nombra. Autorizar no
               es depositar capa
+
+ENCUADRE      `ENC` produce el encuadre ANTES de que haya ruta, y `b.16` no la declara en
+              ningún proceso. Encuadrar no es depositar capa, y por eso `ENC` no figura entre
+              los participantes de ninguna fase
+```
+
+#### QUIÉN EJECUTA CADA OPERACIÓN GIT — el reparto es de `C7`, y se cita, no se reescribe
+
+> **Corregido por el gate de cierre independiente (`I-04`, GRAVE; es `D90`).** Este párrafo
+> decía que **`PLT` bajo `C7` custodia «cada source change —rama, commit, push, PR y CI POR
+> FUENTE»**, y `C7:83-86` da esas cuatro operaciones a **la capacidad con custodia, ella
+> misma**. De las siete operaciones que se le atribuían, `C7` le da **dos**. Y no era sólo
+> divergencia con el contrato: **F4 se desmentía a sí misma** —§1.3 asigna el
+> `integration-set` a `ENT` como autoridad y ejecutor, §7.2 escribe «`ENT` declara
+> convergencia con un INTEGRATION SET» y §7.6 remite a `C7` «de las fuentes»—. La fila
+> `EJECUTOR` existía ya en §8.3; **esta tanda la generalizó a §8.0, §8.1, §8.2, §8.4 y a §18,
+> y la promovió a dispositivo de cierre de un BLOQUEANTE**, que es lo que lo hacía grave.
+
+**El reparto vigente, literal contra `C7:82-92`, y sin repetir la tabla que `C7` ya tiene:**
+
+```text
+MATERIALIZAR UNA FUENTE   la solicita `DSP` al despachar · **la ejecuta `PLT`** · la verifica
+                          `gate:workspace-conforme`                              `C7:82`
+
+CREAR RAMA O WORKTREE     la solicita y **la ejecuta LA CAPACIDAD CON CUSTODIA, ella misma**
+COMMIT · PUSH · ABRIR PR  `PLT` puede bloquear si el aislamiento no basta   `C7:83`–`C7:86`
+                          En los tramos de §8 que escriben en fuentes esa capacidad es
+                          **`CON`**, obligatoria por `cambio-construido` en `proceso:SIS`,
+                          `proceso:DEU` y `proceso:DEP`
+
+`SEG` PUEDE BLOQUEAR      **el push, ante secreto detectado**                        `C7:85`
+                          Y en `U5b` además participa por vía 2, con `G28` haciéndola
+                          irretirable — que es otra cosa y no se confunde con ésta
+
+MERGE Y CONVERGENCIA      **`ENT` las solicita y las ejecuta.** `declarar convergencia` pasa
+                          por `gate:convergencia-de-fuentes` y produce el Integration Set
+                                                                        `C7:88`–`C7:89`
+CI                        **verifica CADA FUENTE**, y es quien verifica push y PR. No la
+                          ejecuta ninguna capacidad de la ruta
+
+RETIRAR RAMA ABANDONADA   la solicita y la ejecuta **`PLT`**, y la capacidad con custodia
+                          puede bloquearla si la reclama                             `C7:92`
+
+EL OWNER                  conserva su autoridad **donde `C7` la exige**: materia reservada en
+                          el merge, el release, y el rollback irreversible. Y en §8, además,
+                          la autorización de retirada POR FUENTE de `A8` y `M6`
+```
+
+```text
+QUÉ NO CAMBIA CON ESTO    **`PLT` NO se convierte en participante de la ruta** por ejecutar la
+                          materialización: sigue siendo EJECUTOR, con su propio gate
+                          (`gate:workspace-conforme`) y fuera de las cuatro vías. Lo que
+                          cambia es el ALCANCE que se le atribuía, no su naturaleza.
+                          En `U5b` `PLT` **sí** participa, pero por la **vía 1** —es la
+                          propietaria global de `proceso:DEP`—, no por ser ejecutor.
+
+QUÉ RESIDUO DEJA EN       `PN-13` conserva ÚNICAMENTE lo que de verdad le quedaba: la
+`B-2`                     composición de **`INS-5`** y de **`A9`**, donde `proceso:SIS` y
+                          `proceso:INV` no dan vía a `DOM`, `SEG` ni `DIS`. **La mitad `PLT`
+                          del bloqueante se cierra aquí, contra `C7`, y no era materia del
+                          Owner**: `C7:80-92` ya decía quién.
 ```
 
 **Cómo se materializan los handoffs DESPUÉS, y por qué es después.** Una vez la ruta está
 compuesta, la entrega concreta entre dos capacidades que ya están en ella se declara en
-`kernel/operativo/circuitos/` con la forma de `C5`: `id`, `de`, `a`, `cuando`,
-`checkpoint`, `comprueba_al_recibir`. **El orden importa y no es reversible**: sin
+`kernel/operativo/circuitos/` con la forma de `C5`. De sus **once campos obligatorios** —`id`,
+`de`, `a`, `cuando`, `entrega`, `comprueba_al_recibir`, `rechaza_si`, `devolucion`,
+`evidencia_de_devolucion`, `owner` y `checkpoint`, según `esquemas/handoff.yaml`—, los que
+esta sección necesita nombrar son **seis**: `id`, `de`, `a`, `cuando`, `checkpoint` y
+`comprueba_al_recibir`. **Es un SUBCONJUNTO declarado, no la lista completa** —corregido por
+`I-22`—: los otros cinco los exige el esquema igual, y su sede es `C5`, no ésta.
+**El orden importa y no es reversible**: sin
 composición no hay entre quiénes; con composición, el handoff sólo añade QUÉ viaja y CUÁNDO.
 `00-CIRCUITOS.md` lo dice con todas las letras —los circuitos son la sede de las entregas
 entre capacidades—, y ésa es la fuente que manda cuando `C5` parece decir otra cosa.
@@ -5665,12 +5733,20 @@ COMPOSICIÓN            sin las obligaciones satisfechas (`b.10`)
 > F6 lo materialice sin decidir nada:
 >
 > ```text
-> QUÉ VIAJA DE SIS A PLT    el SOURCE CHANGE: paquete con `escribe_fuentes`, rama, commit,
->                           push, PR y CI POR FUENTE, bajo `C7`. Es lo que §8.3 `M6`, §8.2
->                           `A8` y §8.4 `U5b` ya describen
+> QUÉ VIAJA DE SIS A PLT    la SOLICITUD DE MATERIALIZACIÓN de las fuentes del alcance, que
+>                           es lo que `C7:82` le da a `PLT`. **No el source change entero**:
+>                           rama, commit, push y PR los hace la capacidad con custodia
+>                           (`C7:83`–`C7:86`). **Corregido por `I-04`**
+> QUÉ VIAJA DE SIS A CON    el SOURCE CHANGE: paquete con `escribe_fuentes`, y con él la
+>                           custodia de rama, commit, push, PR y CI POR FUENTE bajo `C7`. Es
+>                           lo que §8.3 `M6`, §8.2 `A8` y §8.4 `U5b` describen
 > QUÉ VIAJA DE SIS A VER    el dosier de certificación: celdas, evidencia y nivel propuesto
-> QUÉ VIAJA DE PLT A VER    el resultado por fuente, con su estado `INTEGRACIÓN PARCIAL`
->                           mientras no converjan todas
+> QUÉ VIAJA DE CON A ENT    el resultado POR FUENTE. **`ENT` declara la convergencia y emite
+>                           el Integration Set** (`C7:88`–`C7:89`), y es quien sostiene el
+>                           estado `INTEGRACIÓN PARCIAL` mientras no converjan todas —§1.3
+>                           L224, §7.2 y `C7` coinciden—. **Corregido por `I-04`**: esta
+>                           entrega salía de `PLT`, y la convergencia nunca fue suya
+> QUÉ VIAJA DE ENT A VER    la convergencia declarada, con su Integration Set, para el gate
 > DÓNDE SE DECLARAN         `kernel/operativo/circuitos/`, en F6. Son instancias, no norma:
 >                           no requieren decisión del Owner, y su ausencia hoy NO bloquea la
 >                           composición, sólo la entrega
@@ -5703,8 +5779,18 @@ PARTICIPANTES   **con su VÍA de entrada (§8.0), porque una lista sin vía no e
                          que F5 la resuelva su discovery se encarga como items `proceso:AUD`
                          SÓLO si el objeto ya existe — que en una instalación NUEVA no es el
                          caso. §8.0 prohíbe inventarles un handoff
-EJECUTOR        `PLT` en `INS-0`, `INS-2` y `INS-6`: custodia workspace, adaptadores y punteros, y
-                cada source change bajo `C7`. **Ejecuta, no deposita capa** (`a.5`)
+EJECUTOR        **el reparto es de `C7`, y §8.0 lo cita operación a operación.**
+                  `PLT`  en `INS-0`, `INS-2` y `INS-6`: MATERIALIZA las fuentes (`C7:82`) y
+                         retira ramas abandonadas (`C7:92`). Custodia workspace, adaptadores
+                         y la maquinaria. **Ejecuta, no deposita capa** (`a.5`)
+                  `CON`  rama, commit, push y PR de cada source change de `INS-6` — es la
+                         capacidad CON CUSTODIA por su obligatoria `cambio-construido`, y
+                         `C7:83`–`C7:86` se los da a ella misma
+                  `SEG`  puede BLOQUEAR el push ante secreto detectado (`C7:85`)
+                  `ENT`  merge y declaración de convergencia (`C7:88`–`C7:89`)
+                  CI     verifica cada fuente
+                **Corregido por `I-04`**: decía «`PLT` … cada source change», que `C7:83-86`
+                desmiente
 ENCUADRE        `ENC` encuadra `INS-1` y `INS-5` ANTES de que haya ruta. No es participante de
                 ninguna: `b.16` no la declara en ningún proceso, y es correcto (§8.0)
 AUTORIDAD       el **Owner**: decisión de instalar, y los gates `INS-4` y `INS-7`
@@ -5869,8 +5955,16 @@ PARTICIPANTES   **con su VÍA de entrada (§8.0)**
                   `DOM` `C-DOM` · `SEG` `C-SEG` · `DIS` `C-DIS` · `PRD` «produce una
                          decisión de producto» · `APR` `C-APR`  vía 3, en los items donde no
                          son propietarias
-EJECUTOR        `PLT` en `A8`: cada source change bajo `C7`, por fuente. **No es
-                participante de la ruta de `A8`**, y por eso no figura arriba (`a.5`)
+EJECUTOR        **el reparto es de `C7`** (§8.0). En `A8`:
+                  `PLT`  MATERIALIZA las fuentes (`C7:82`) y retira ramas abandonadas
+                         (`C7:92`). **No es participante de la ruta de `A8`**, y por eso no
+                         figura arriba (`a.5`)
+                  `CON`  rama, commit, push y PR POR FUENTE — capacidad CON CUSTODIA por su
+                         obligatoria `cambio-construido` (`C7:83`–`C7:86`)
+                  `SEG`  puede BLOQUEAR el push ante secreto detectado (`C7:85`)
+                  `ENT`  merge y convergencia, con su Integration Set (`C7:88`–`C7:89`)
+                  CI     verifica cada fuente
+                **Corregido por `I-04`**
 ENCUADRE        `ENC` encuadra `A7` —trabajo vivo— antes de que haya ruta. No es
                 participante (§8.0). Su extensión de ficha para clasificar findings del
                 sistema está en §5.2 y §17
@@ -6046,7 +6140,15 @@ ESCRIBE         · en el CONTROL REPO desde `M0`: la iniciativa, el estado migra
                 · NADA en las fuentes antes de `M6`. `M0`–`M5` son de sólo lectura sobre ellas
 AUTORIDAD       `SIS` propone · el **OWNER** autoriza `M6`, y su autorización es **POR
                 FUENTE**, nombrándola · `VER` verifica `M7`
-EJECUTOR        el runtime para el control repo · `PLT` para cada source change, bajo `C7`
+EJECUTOR        el runtime para el control repo. Para las fuentes, **el reparto es de `C7`**
+                (§8.0): `PLT` MATERIALIZA (`C7:82`) y retira ramas abandonadas (`C7:92`);
+                `CON` —capacidad CON CUSTODIA por `cambio-construido`— hace rama, commit,
+                push y PR POR FUENTE (`C7:83`–`C7:86`); `SEG` puede bloquear el push
+                (`C7:85`); `ENT` hace merge y declara convergencia (`C7:88`–`C7:89`); y CI
+                verifica cada fuente.
+                **Corregido por `I-04`**: ésta era la fila HEREDADA que decía «`PLT` para
+                cada source change», y de la que esta tanda generalizó el error a las otras
+                cuatro sedes y a §18
 GOBIERNO DE LA  **ninguna retirada es automática.** `M6` sólo se ejecuta sobre una fuente si
 RETIRADA        se cumplen las CUATRO: `M5` certificó la instalación nueva · el Owner
 DESTRUCTIVA     autorizó ESA fuente por su nombre · existe EVIDENCIA de que lo retirado vive
@@ -6198,7 +6300,19 @@ PARTICIPANTES   **con su VÍA de entrada (§8.0)**
                   `DOM:condiciones` `C-DOM` · `ARQ` «el cambio de versión altera contratos» ·
                         `ENT` `C-ENT`  vía 3
                 `U6` · `proceso:SIS` · `VER` vía 2
-EJECUTOR        `PLT` para cada source change de `U5b`, bajo `C7`, POR FUENTE
+EJECUTOR        **el reparto es de `C7`** (§8.0). En `U5b`, POR FUENTE:
+                  `PLT`  MATERIALIZA las fuentes (`C7:82`) y retira ramas abandonadas
+                         (`C7:92`). Aquí `PLT` además **participa por la vía 1** —es la
+                         propietaria global de `proceso:DEP`—, que es cosa distinta de ser
+                         ejecutor y no se confunde con ella
+                  `CON`  rama, commit, push y PR — capacidad CON CUSTODIA por su obligatoria
+                         `cambio-construido` (`C7:83`–`C7:86`)
+                  `SEG`  puede BLOQUEAR el push ante secreto detectado (`C7:85`), además de
+                         participar por vía 2 con `G28` haciéndola irretirable
+                  `ENT`  merge y convergencia, con Integration Set si hay más de una fuente
+                         (`C7:88`–`C7:89`)
+                  CI     verifica cada fuente
+                **Corregido por `I-04`**
 AUTORIDAD       el **Owner** si hay incompatibilidad o retirada, y en el punto de no retorno
                 de `U3`
 LEE             la distribución nueva y la instalada
@@ -7864,17 +7978,17 @@ atrás es volver a un release. Es lo que ya se hace, y funciona.
 
 | macrocircuito | fase | proceso `b.16` | propietario global | participantes de la RUTA, con su vía | ejecutor y autoridad | entrada | salida | gate | estado persistido |
 |---|---|---|---|---|---|---|---|---|---|
-| **N · instalación** | `INS-0`–`INS-5` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `APR` `C-APR` vía 3 · `PRD` `ARQ` vía 4, items `INV` enlazados de discovery · **`DOM` `DIS` `SEG` sin vía: `PN-13`** | ejecutor `PLT` · autoridad Owner | decisión del Owner de instalar | control repo, topología, especialización y adaptadores | `INS-4` Operativa | `estado/` e `INI-001` desde `INS-0`, sobre el item `SIS-001` |
-| | `INS-6`–`INS-7` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3, «modifica el runtime» | ejecutor `PLT` propaga bajo `C7` · autoridad Owner | especialización aprobada | punteros propagados y nivel Integrada | `INS-7` = `O12` | evidencia + celdas de cobertura |
-| **A · adopción** | `A0`–`A1` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 | ejecutor `PLT` · autoridad Owner | el Owner quiere gobernar un producto con historia | perímetro y topología | modo no destructivo declarado | iniciativa + `estado/` |
+| **N · instalación** | `INS-0`–`INS-5` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `APR` `C-APR` vía 3 · `PRD` `ARQ` vía 4, items `INV` enlazados de discovery · **`DOM` `DIS` `SEG` sin vía: `PN-13`** | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner | decisión del Owner de instalar | control repo, topología, especialización y adaptadores · **el BASELINE de producto, dominio y diseño de `INS-5`** · **la CLASIFICACIÓN DE DESCONOCIDOS CRÍTICOS**, cada uno resuelto, acotado con su portador o deferido con su motivo | `INS-4` certificación Operativa · **`INS-5` BASELINE APROBADO POR EL OWNER** —la misma disposición que `A3` en la adopción— | `estado/` e `INI-001` desde `INS-0`, sobre el item `SIS-001` |
+| | `INS-6`–`INS-7` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3, «modifica el runtime» | `PLT` MATERIALIZA (`C7:82`) · **`CON` con custodia hace rama, commit, push y PR** del puntero (`C7:83`–`C7:86`) · `SEG` puede bloquear el push · `ENT` merge y convergencia (`C7:88`–`C7:89`) · autoridad Owner | **especialización aprobada Y baseline de `INS-5` aprobado por el Owner** | punteros propagados y nivel Integrada | `INS-7` = `O12`, **con sus TRES condiciones y el productor de cada una**: Integrada la produce `INS-7` con la aplicabilidad de §9.5 · el BASELINE APROBADO lo produce `INS-5` y lo aprueba el Owner · la CLASIFICACIÓN DE DESCONOCIDOS CRÍTICOS la produce `INS-5` como entregable propio. Ninguna queda sin productor identificable | evidencia + celdas de cobertura |
+| **A · adopción** | `A0`–`A1` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner | el Owner quiere gobernar un producto con historia | perímetro y topología | modo no destructivo declarado | iniciativa + `estado/` |
 | | `A2`–`A7` | **`proceso:AUD`**, en items ENLAZADOS, **uno por conclusión** | **DERIVADO por item** del encargo (`b.16`): la capacidad responsable de esa conclusión — `PRD`, `ARQ`, `DOM`, `DIS`, `SEG` y `ENT` en las ocho de `A6`. **NUNCA a mano** | `INV` vía 2, única obligatoria, ejecuta y no responde de la conclusión · `DOM` `C-DOM` · `SEG` `C-SEG` · `DIS` `C-DIS` · `PRD` «produce una decisión de producto» · `APR` `C-APR`, vía 3 | encuadre `ENC` (previo a la ruta) · autoridad Owner en `A3` | acceso de lectura a las fuentes | inventario, baseline, producto reconstruido y trabajo vivo | `A3` baseline aprobado por el Owner | capas por item, con procedencia |
-| | `A8` | `proceso:DEU` | **`ARQ`** (vía 1) | `CON` vía 2 (`cambio-construido`) · `VER` vía 2 · `DOM:condiciones` `SEG:condiciones` `ENT` `USO` `APR` vía 3 | ejecutor `PLT` bajo `C7` · autoridad Owner, POR FUENTE | autorización de retirada | copias organizativas y verdades paralelas retiradas | `A8` autorizado por el Owner | source changes por fuente |
-| | `A9`–`A10` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · **`SEG` sin vía si hay superficie: `PN-13`**, y entretanto item `AUD` enlazado con `SEG` de propietaria derivada | ejecutor `PLT` · autoridad Owner | limpieza cerrada | nivel Integrada | `A10` = `O12` | celdas de certificación |
-| **M · migración** | `M0`–`M5` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3 | ejecutor `PLT` · autoridad Owner | existe una instalación de una versión anterior | estado migrado, verificado y certificado | `M3` equivalencia · `M5` Integrada | `estado/` migrado + evento `migracion` |
-| | `M6`–`M7` | `proceso:DEU` | **`ARQ`** (vía 1) — su `plan-tecnico` es ENTRADA de `M5` | `CON` vía 2 (`cambio-construido`) · `VER` vía 2, y verifica `M7` · `DOM:condiciones` `SEG:condiciones` `ENT` `USO` `APR` vía 3 | ejecutor `PLT` bajo `C7` · autoridad Owner, POR FUENTE | `M5` certificado y autorización POR FUENTE | heredado retirado y verificado | `M6` autorizado · `M7` verificado | source changes + `INTEGRACIÓN PARCIAL` |
-| **U · actualización** | `U0`–`U4` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3 | ejecutor `PLT` · autoridad Owner en `U3` | hay una versión nueva de ADS | compatibilidad decidida y migración aplicada | `U3` punto de no retorno | instantánea de `U3` + progreso por pasos |
+| | `A8` | `proceso:DEU` | **`ARQ`** (vía 1) | `CON` vía 2 (`cambio-construido`) · `VER` vía 2 · `DOM:condiciones` `SEG:condiciones` `ENT` `USO` `APR` vía 3 | `PLT` MATERIALIZA (`C7:82`) · **`CON` con custodia hace rama, commit, push y PR** (`C7:83`–`C7:86`) · `SEG` puede bloquear el push · `ENT` merge y convergencia (`C7:88`–`C7:89`) · autoridad Owner, POR FUENTE | autorización de retirada | copias organizativas y verdades paralelas retiradas | `A8` autorizado por el Owner | source changes por fuente |
+| | `A9`–`A10` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · **`SEG` sin vía si hay superficie: `PN-13`**, y entretanto item `AUD` enlazado con `SEG` de propietaria derivada | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner | limpieza cerrada | nivel Integrada | `A10` = `O12` | celdas de certificación |
+| **M · migración** | `M0`–`M5` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3 | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner | existe una instalación de una versión anterior | estado migrado, verificado y certificado | `M3` equivalencia · `M5` Integrada | `estado/` migrado + evento `migracion` |
+| | `M6`–`M7` | `proceso:DEU` | **`ARQ`** (vía 1) — su `plan-tecnico` es ENTRADA de `M5` | `CON` vía 2 (`cambio-construido`) · `VER` vía 2, y verifica `M7` · `DOM:condiciones` `SEG:condiciones` `ENT` `USO` `APR` vía 3 | `PLT` MATERIALIZA (`C7:82`) · **`CON` con custodia hace rama, commit, push y PR** (`C7:83`–`C7:86`) · `SEG` puede bloquear el push · `ENT` merge y convergencia (`C7:88`–`C7:89`) · autoridad Owner, POR FUENTE | `M5` certificado y autorización POR FUENTE | heredado retirado y verificado | `M6` autorizado · `M7` verificado | source changes + `INTEGRACIÓN PARCIAL` |
+| **U · actualización** | `U0`–`U4` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3 | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner en `U3` | hay una versión nueva de ADS | compatibilidad decidida y migración aplicada | `U3` punto de no retorno | instantánea de `U3` + progreso por pasos |
 | | **`U5a`** | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 | ejecutor el runtime del control repo | migración aplicada | proyecciones del control repo recompiladas | ninguno propio: cae en `U6` | huella de proyección (§6.3) |
-| | **`U5b`** | `proceso:DEP` | **`PLT`** (vía 1) | **`SEG` vía 2** (`condiciones-de-seguridad`, ANTES de construir; `G28` la hace irretirable) · **`CON` vía 2** (`cambio-construido`) · `VER` vía 2 · `DOM:condiciones` `ARQ` `ENT` vía 3 | ejecutor `PLT` bajo `C7`, POR FUENTE · autoridad Owner si hay retirada | `U5a` cerrado | punteros propagados a cada fuente | gate por fuente, con Integration Set si hay más de una | `INTEGRACIÓN PARCIAL` por fuente |
+| | **`U5b`** | `proceso:DEP` | **`PLT`** (vía 1) | **`SEG` vía 2** (`condiciones-de-seguridad`, ANTES de construir; `G28` la hace irretirable) · **`CON` vía 2** (`cambio-construido`) · `VER` vía 2 · `DOM:condiciones` `ARQ` `ENT` vía 3 | `PLT` MATERIALIZA (`C7:82`) y participa por **vía 1** · **`CON` con custodia hace rama, commit, push y PR** (`C7:83`–`C7:86`) · `SEG` puede bloquear el push · `ENT` merge y convergencia (`C7:88`–`C7:89`) · autoridad Owner si hay retirada | `U5a` cerrado | punteros propagados a cada fuente | gate por fuente, con Integration Set si hay más de una | `INTEGRACIÓN PARCIAL` por fuente |
 | | **`U6`** | `proceso:SIS` | **`SIS`** (vía 1) | `VER` vía 2 | autoridad Owner si la revalidación baja el nivel | `U5b` convergido | ADS actualizado y recertificado | **revalidación del nivel VIGENTE**, no `O12`: una actualización no arranca programación, y `O12` gobierna ese arranque. Bajar de nivel es un fallo, no un resultado | celdas de certificación |
 
 > **Los propietarios globales NO se eligen: los fija `b.16`.** `proceso:SIS` → `SIS`,
