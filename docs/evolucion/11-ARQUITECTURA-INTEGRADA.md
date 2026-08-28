@@ -1706,12 +1706,17 @@ QUEDA SIN SALIDA           sitios; `conflicto` sale a dos; `confirmada` sale a u
    ordenante · autoridad · escritor_del_comando · ejecutor · actor_atribuido. La ausencia de
    cualquiera de los cinco es un FALLO DEL VALIDADOR, no un silencio.
 
-2  EL PUSH NO ES AUTOMÁTICO. Pasa a `esperando-owner`, o a la política de publicación que el
-   producto declare. Una recuperación que publica sin decirlo convierte un incidente local en
+2  EL PUSH NO ES AUTOMÁTICO. Pasa a `esperando-owner`, o a la política declarada en
+   `adaptador.publicacion_control_repo` (abajo) — y **ninguna política autoriza publicar una
+   RECUPERACIÓN**. Una recuperación que publica sin decirlo convierte un incidente local en
    un hecho remoto.
 
-3  LA RAMA SE DECLARA, y no se adivina. `main` del control repo PROTEGIDA por defecto,
-   coherente con `G29` conservada por `E2.4`.
+3  LA RAMA SE DECLARA, y no se adivina: **`main` del control repo**, que NO recibe la
+   protección `G29` de las fuentes. `E2.4` conserva `G29` **por source**, y el control repo
+   no es una source. **Corregido por `B2`**: invocarla aquí rellenaba por inferencia lo que
+   dos párrafos antes se prometía no rellenar, y dejaba el estado sin camino a publicarse.
+   Lo que protege esta rama es otra cosa: un único escritor, commits sólo entre transacciones
+   y push bajo autoridad (abajo).
 
 4  PUSH RECHAZADO POR REMOTO AVANZADO → evento `fallo`, tope de TRES reintentos por §7.3, y
    se escala. **NUNCA `--force`.** Regla dura, heredada literalmente de §8.1:
@@ -1739,18 +1744,160 @@ LUEGO EL GOBIERNO GIT DEL       es un HUECO DECLARADO POR OMISIÓN en toda la ar
 CONTROL REPO NO EXISTE          F4c lo tapaba con una remisión que no resuelve.
 ```
 
-**Se declara aquí como hueco, y no se rellena por inferencia.** Rellenarlo es escribir la
-tabla de propiedad del control repo —quién pide, ejecuta, bloquea y verifica su commit, su
-push, su rama y su PR, con qué evidencia—, y su sitio es la reconstrucción de `C7` que §10.2
-registra. Mientras no exista:
+**Ya no se declara como hueco: se escribe.** La tercera revisión independiente (`B2`)
+encontró que el texto anterior prometía no rellenarlo por inferencia y, tres reglas más
+abajo, lo rellenaba invocando `G29` para el control repo — cuando `E2.4` conserva `G29`
+**por source**, con todas las letras. Y que sin gobierno declarado, `main` protegida y sin
+rama de trabajo, **ningún commit de `estado/` podía llegar jamás a publicarse**, con lo que
+caían las garantías 5 y 6 de §2.6.6, la reconstrucción sin árbol de §2.9, la condición previa
+de toda `retirada-de-cuerpo` y la permanencia que `O15` exige. Es `D65`.
+
+### El gobierno Git del REPOSITORIO DE CONTROL
+
+#### Primero, qué papel juega Git aquí — y las cuatro alternativas, comparadas
+
+| | alternativa | qué aporta | qué cuesta | veredicto |
+|---|---|---|---|---|
+| **A** | rama o worktree **por operación o transacción** | aislamiento fuerte; el árbol público nunca ve estado a medias | el estado en vuelo deja de estar en el árbol que `R1` obliga a leer sin herramienta; obliga a merge y a resolver convergencia; **crea un SEGUNDO mecanismo de recuperación** que compite con el diario | **DESCARTADA**: rompe `R1` y duplica la recuperación |
+| **B** | **staging** temporal + commit atómico del árbol | atomicidad de la publicación | no ayuda a los lectores durante la ventana —el estado canónico ES el árbol de trabajo— y no aporta nada que el diario no dé ya para recuperar | **DESCARTADA**: coste sin garantía nueva |
+| **C** | **diario y marcador actuales**, y Git sólo como historia | recuperación completa y legible, ya diseñada y probada contra diecisiete ventanas | por sí sola no dice **quién publica ni contra qué revisión**, que es justo el hueco de `B2` | **INSUFICIENTE SOLA** |
+| **D** | **C para recuperar + gobierno declarado de PUBLICACIÓN** | todas las garantías de C, más durabilidad fuera de la máquina y convergencia entre máquinas, con autoridad nombrada | escribir la tabla de propiedad que falta | **ELEGIDA**: es la mínima que conserva todas las garantías |
 
 ```text
-§7.6 SE CORRIGE   deja de afirmar que `C7` cubre TODAS las operaciones. Cubre las de las
-                  FUENTES, y el control repo está pendiente
-LO QUE SE PUEDE   la recuperación local completa, el commit local con su evento, y el push
-HACER HOY         SUSPENDIDO a decisión, que es el comportamiento seguro
+LA REGLA QUE CIERRA LA    **la recuperación es del DIARIO; la publicación es de GIT.** No hay
+DUPLICACIÓN               dos mecanismos para el mismo estado de recuperación:
+                            · CANÓNICO   el diario y los ficheros de `estado/`
+                            · DERIVADO   la historia de Git, que los conserva y los mueve
+                                         entre máquinas
+                            · OPERACIONAL el marcador, reconstruible desde el diario (`D50`)
+                          Git NO decide qué se recupera ni cómo: sólo dónde sobrevive.
 ```
 
+#### La tabla de propiedad del control repo, que `C7` no cubre
+
+| operación | quién la PIDE | quién la EJECUTA | quién puede BLOQUEARLA | quién VERIFICA | evidencia |
+|---|---|---|---|---|---|
+| crear el control repo | `PLT` en `N1`/`A1` | `PLT` | Owner | `VER` en el gate del circuito | commit inicial + evento `migracion`/`transicion` |
+| **commit** de `estado/` | el runtime, al cerrar transacciones | el runtime (ejecutor único, `R5`) | un marcador abierto lo impide por §2.6.6 | el propio validador de integridad | commit + los eventos que incluye |
+| **push** | el runtime lo PROPONE | **nadie automáticamente** | el Owner, por defecto | `VER` si la política lo exige | evento `fallo` si se rechaza; evento de publicación si se autoriza |
+| **rama de trabajo** | no existe: el runtime escribe en la rama canónica | — | — | — | — |
+| **PR / merge** | **no se usan para el estado** (abajo) | — | — | — | — |
+| CI | `PLT` la configura | el proveedor | `PLT` | `VER` | informe de CI referenciado |
+| rollback de publicación | Owner | `PLT` | Owner | `VER` | commit de reversión, **nunca** reescritura |
+| retirada de rama abandonada | `PLT` | `PLT` | Owner | — | evento con su motivo |
+
+#### Las decisiones que la tabla presupone, dichas una a una
+
+```text
+RAMA CANÓNICA          **`main` del control repo**, y es la ÚNICA que contiene estado
+                       publicado. Su significado es INEQUÍVOCO y distinto del de las
+                       fuentes: en una source, `main` es código revisado; aquí es **estado
+                       emitido por el ejecutor único**.
+
+PROTECCIÓN DE LA RAMA  **NO se le aplica `G29`**, y esto corrige la inferencia que `B2`
+                       señaló: `E2.4` conserva `G29` **por source**, y el control repo no es
+                       una source. Aplicarle la protección de una rama de código a una rama
+                       de estado bloquearía toda escritura del runtime, que es lo que hacía
+                       el texto anterior sin advertirlo.
+                       Lo que SÍ la protege es otra cosa: **un único escritor** (`R5`),
+                       **commits sólo entre transacciones** (§2.6.6) y **push bajo
+                       autoridad**.
+
+UNIDAD AISLADA DE      **la transacción, no la rama.** El aislamiento lo da el marcador y la
+TRABAJO                regla de solapamiento de rutas (§2.6.9), no un worktree: el estado
+                       tiene que ser legible en el árbol mientras se trabaja (`R1`).
+                       Worktrees y ramas se usan **en las fuentes**, gobernados por `C7`, y
+                       para aislar la ADOPCIÓN de un producto (`O15`) — no para aislar
+                       transacciones del control repo.
+
+PR Y MERGE             **no se usan para el estado.** Un PR es una puerta de revisión humana
+                       sobre contenido escrito por humanos; `estado/` lo emite el ejecutor
+                       único y ya pasó por los gates de su ruta. Exigir PR duplicaría el
+                       gate y dejaría el estado sin publicar mientras nadie lo abre.
+                       SÍ se usan para lo que sí es material revisable del control repo
+                       —`PROFILE.md`, `PROJECT.md`, `SOURCES.toml`, adaptadores—, y ahí el
+                       proponente es una capacidad y el aprobador el Owner.
+
+AUTORIDAD DE           **el Owner por defecto**, y ADS **nunca publica una recuperación**
+PUBLICACIÓN            por su cuenta. Un incidente local no se convierte en un hecho remoto
+                       sin que alguien lo decida. La alternativa —publicación automática
+                       bajo una política— existe y está definida abajo.
+
+MAIN NUNCA CONTIENE    porque un commit sólo ocurre **sin marcadores abiertos**, y sin
+ESTADO PARCIAL         marcador toda transacción está cerrada por uno de sus dos terminales.
+                       Un abandono deja estado mixto **declarado** en su `abandonada` y en su
+                       `deriva`, no silencioso (§2.6.9).
+```
+
+#### Concurrencia entre máquinas, y actualización optimista
+
+```text
+CONTRA QUÉ REVISIÓN    el runtime registra el `HEAD` del control repo que leyó al arrancar —
+SE TRABAJA             la REVISIÓN CONOCIDA— y la lleva en el evento de publicación.
+
+ANTES DE PUBLICAR      `fetch` y comprobación de que la publicación es **fast-forward** sobre
+                       la revisión conocida. Es un compare-and-swap sobre revisión, el mismo
+                       patrón que `a.9` usa sobre hash de contenido — **y con su contador
+                       propio**, que no es el de `a.9` ni el de §2.6.9.
+
+SI EL REMOTO AVANZÓ    **rechazo non-fast-forward**: evento `fallo` con `operacion: push`,
+                       la revisión conocida, la revisión remota y el diagnóstico; tope de
+                       tres reintentos por §7.3; y se escala. El estado LOCAL no cambia: un
+                       push rechazado no es una mutación canónica (`W15`, `W16`).
+
+CÓMO CONVERGEN DOS     por el diario: los eventos son inmutables y direccionados por
+MÁQUINAS               contenido, luego una fusión de historias produce la UNIÓN de eventos y
+                       la bifurcación se DETECTA (`X09`). Resolverla es runtime distribuido,
+                       que `E2.7` y §2.11 dejan abierto — y el comportamiento seguro
+                       entretanto es que la segunda máquina **no publique** y escale.
+
+`--force`              **PROHIBIDO.** Sin excepción automática. Sólo un PROCEDIMIENTO
+                       EXTRAORDINARIO DEL OWNER, con decisión registrada, motivo, alcance y
+                       evidencia previa de que la historia que se descarta está respaldada.
+                       Ninguna recuperación, ningún reintento y ninguna política lo autorizan.
+
+RELACIÓN CON LOS       ninguna directa: un `integration-set` afirma que una combinación de
+INTEGRATION SETS       revisiones DE LAS FUENTES se probó junta (`ENT`, §10). El control repo
+                       **referencia** esas revisiones y no participa en el set. Publicar el
+                       control repo no exige un set, y producir un set no exige publicar.
+```
+
+#### La POLÍTICA DE PUBLICACIÓN, definida — o retirada
+
+> **Corregido por `M1`.** El texto anterior ofrecía «la política de publicación que el
+> producto declare» como alternativa a `esperando-owner`, y esa sede **no existía en ninguna
+> parte del corpus**: sin esquema, sin fichero, sin autoridad, sin ciclo y fuera del recuento
+> de §3.8. Es el modo de fallo que `D43` corrigió para `contrato-de-aspecto`.
+
+**No se crea un tipo nuevo.** La política es un **campo del `adaptador` del control repo**,
+que ya es el artefacto donde vive la configuración de plataforma del producto (§6):
+
+```text
+DÓNDE VIVE        `adaptador.publicacion_control_repo`, en el control repo. NO es un tipo
+                  nuevo, y §3.8 no cambia.
+
+QUÉ VALORES       `esperando-owner`   POR DEFECTO. Todo push lo autoriza el Owner
+                  `automatica`        el runtime publica al cerrar, sin preguntar
+                  `programada`        el runtime publica en la ventana declarada
+
+QUÉ DECLARA       autoridad que la aprobó · fecha · alcance · condición de revocación. Es
+ADEMÁS            una decisión revocable, como la política de auditoría de `O7`.
+
+QUÉ NO PUEDE      **ninguna política autoriza publicar una RECUPERACIÓN.** Un push que sigue
+HACER NUNCA       a una recuperación pasa siempre por el Owner, sea cual sea el valor. Y
+                  ninguna autoriza `--force`.
+
+SI NO ESTÁ        vale `esperando-owner`. La ausencia nunca significa «publica».
+DECLARADA
+```
+
+#### Qué queda para F5, y se registra como presión normativa
+
+**Este gobierno NO está en `(a)`, `(b)`, `E1`, `E2`, `C6` ni `C7`**, y `E2.4` cierra
+expresamente la vía de derivarlo de `G29`. Escribirlo aquí lo hace implementable, pero su
+**sede normativa definitiva no existe**: `C7` gobierna las fuentes, y extenderlo al control
+repo es material del Owner. Queda registrado como **`PN-11`** en §16, y **`C7` no se toca en
+esta pasada**.
 
 ### 2.6.11 · `deriva` — lo que se descubre DESPUÉS del cierre no es una fase
 
@@ -6120,10 +6267,40 @@ BLOQUEA             nada. Es coherencia de método
 ORIGEN              hallazgo `N-14` de la segunda devolución independiente
 ```
 
+## `PN-11` · NUEVA · el gobierno Git del CONTROL REPO no tiene sede normativa
+
+```text
+QUÉ PRESIONA        `C7`, contrato derivado que gobierna las operaciones Git **de las
+                    fuentes**, y `E2.4`, que conserva `G29` **por source** con todas las
+                    letras
+QUÉ FALTA           **ninguna norma gobierna el Git del REPOSITORIO DE CONTROL**: ni su rama
+                    canónica, ni su protección, ni la autoridad de su push, ni su
+                    concurrencia entre máquinas, ni el procedimiento extraordinario de
+                    `--force`. §2.6.10 lo escribe para que sea implementable, pero lo escribe
+                    la ARQUITECTURA, no una norma
+POR QUÉ NO ES SÓLO  porque `E2.4` **cierra expresamente** la vía de derivarlo de `G29`, y
+DEFECTO DE F6       porque la tabla de propiedad de `C7` no tiene ninguna fila que alcance al
+                    control repo. F6 no puede rellenarlo sin tomar una decisión normativa
+                    NUEVA, y eso es materia del Owner
+MATERIA MÍNIMA      extender `C7` con una tabla de propiedad del control repo, **o** un
+                    contrato nuevo `C8` con ese sujeto. Las dos son enmienda; ninguna se
+                    redacta aquí
+BLOQUEA             la publicación gobernada del estado, y con ella las garantías 5 y 6 de
+                    §2.6.6, la reconstrucción sin árbol de §2.9, la condición previa de toda
+                    `retirada-de-cuerpo` y la permanencia que `O15` exige
+LO QUE NO BLOQUEA   la recuperación local, el commit local y todo lo que no salga de la
+                    máquina. El comportamiento seguro entretanto está declarado en §2.6.10
+ORIGEN              hallazgo `B2` de la TERCERA REVISIÓN INDEPENDIENTE
+CONDICIÓN DE        si el Owner prefiere que `C7` no crezca, la reversión es declarar el
+REVERSIÓN           control repo fuera del gobierno Git normativo y dejar §2.6.10 como
+                    prescripción de arquitectura — a costa de que su cumplimiento no sea
+                    verificable por ningún contrato
+```
+
 **Resumen para el Owner, tras revisar las cinco de la entrega anterior:**
 
 ```text
-VIGENTES · OCHO
+VIGENTES · DIEZ
   PN-1   la sección (g). LA ÚNICA QUE BLOQUEA TODO EL ESTADO DURABLE, y ahora decide más
   PN-2   la política de auditoría como tercera vía de creación de trabajo
   PN-3   G03 y la ejecución desatendida. Misma pregunta que PN-2 por otro camino, y
@@ -6134,6 +6311,8 @@ VIGENTES · OCHO
   PN-9   los predicados de obligación de b.3 a nivel de iniciativa. Probablemente
          NINGUNA materia, y F5 debe confirmarlo                               NUEVA
   PN-10  O11 dice «estado durable» y F4 deriva el estado. Simetría con PN-6   NUEVA
+  PN-11  el gobierno Git del CONTROL REPO no tiene sede normativa: C7 gobierna
+         las fuentes y E2.4 cierra la vía de G29. BLOQUEA la publicación        NUEVA
 
 RETIRADA · UNA
   PN-4   con su motivo escrito, y reinstaurable por F5 si el Owner lo prefiere
@@ -6266,8 +6445,8 @@ REAL SIGUE PENDIENTE      llena. `O15` fija que esa adopción —PesquerApp— s
 NINGÚN ADAPTADOR EXISTE   y por tanto ninguno está certificado
 X1 Y P-05 SIGUEN          ninguna decisión de aquí cruza la línea del blueprint
 DEFERIDAS
-OCHO PRESIONES            §16, tras DOS devoluciones independientes: PN-4 retirada, PN-5
-NORMATIVAS VIGENTES       fusionada en PN-3, y PN-6 a PN-10 nuevas. Sólo PN-1 bloquea todo
+DIEZ PRESIONES            §16, tras DOS devoluciones independientes y la TERCERA REVISIÓN: PN-4 retirada, PN-5
+NORMATIVAS VIGENTES       fusionada en PN-3, y PN-6 a PN-11 nuevas. PN-1 bloquea todo
                           el estado durable, y F5 es su puerta
 F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. DOS críticas independientes y UNA
                           devolución técnica la han devuelto; la segunda emitió veredicto de
