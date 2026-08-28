@@ -4520,10 +4520,15 @@ caducidad     12 meses
 ```text
 sujeto        clase: documento · ancla: transversal · ruta: arquitectura-actual
               → documento:transversal/arquitectura-actual
-aspecto       aspecto:documental/arquitectura-actual       una de las doce áreas de O8
+aspecto       aspecto:documental/arquitectura              el área 5 de `O8`, UNIFICADA
+                                                          (§4.3). El SUJETO se llama
+                                                          `arquitectura-actual` porque es la
+                                                          RUTA de un documento; el ASPECTO
+                                                          es el área. Dos espacios de
+                                                          nombres distintos, y §3.5 los separa
 responsables  [ARQ, SIS]                                   lider: ARQ
               ARQ responde del CONTENIDO; SIS de la conformidad del contrato documental
-criterio      contrato-de-aspecto:documental/arquitectura-actual        §5.7
+criterio      contrato-de-aspecto:documental/arquitectura               §5.7
 aplicabilidad obligatoria
 estado        vencido
 verificacion
