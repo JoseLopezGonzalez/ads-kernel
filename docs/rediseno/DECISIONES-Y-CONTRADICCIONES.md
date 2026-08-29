@@ -360,6 +360,35 @@ a fila de la adjudicación y no de ningún total escrito a mano.
 
 ---
 
+### `D103` · decisión de la CORRECCIÓN TÉCNICA sobre la derivación de `<CAP>:revision`
+
+Corrección **estrictamente acotada** sobre la candidata publicada
+`review/f4c-post-gate-candidate-20260829`. No es un gate, no es una revisión general y no
+abre fase: corrige un defecto de la corrección anterior. **`D98` NO se reescribe**: su texto
+queda como lo escribió la tanda del gate definitivo, y lo que cambia es la regla que
+entregaba a F6.
+
+| # | decisión | qué revisa | por qué, y qué alternativa se descartó | cómo se revierte |
+|---|---|---|---|---|
+| D103 | **La derivación de `<CAP>:revision` se hace SÓLO sobre campos ESTRUCTURADOS, y en DOS NIVELES que no se suman.** (i) **El segundo barrido léxico queda retirado**: la capacidad base se normaliza desde `condicionales[].capacidad`, `obligatorias[].capacidad_productora` y `propietario_global` resuelto para el item —tomando el segmento anterior a `:` y a `/`—, y **`capa_exigida` y `condicion` NO se analizan buscando palabras**. La norma de `a.6` y `b.16` se aplica a **toda participación efectiva** de `DOM` o `SEG`, sea cual sea su vía —propietaria, obligatoria, condicional o item enlazado—, y la revisión hereda **activación, obligatoriedad y `autoridad_de_retirada`** de la participación de origen. (ii) **NIVEL A · derivación estática del catálogo**: `FEA`, `GAP`, `INC`, `DEU` y `DEP` → **CINCO procesos y NUEVE pares**, incluido expresamente **`DEP → SEG`** por la obligatoria `condiciones-de-seguridad`. (iii) **NIVEL B · derivación por item**: `proceso:AUD` **no tiene cardinalidad estática**; por cada item se resuelve su propietario efectivo y se exige `DOM:revision` si es `DOM`, `SEG:revision` si es `SEG`, y **ninguna de las dos** si es cualquier otra capacidad. **Un item aporta CERO O UN par, nunca los dos**, y varios items `AUD` se evalúan independientemente. **`{DOM, SEG}` es el espacio de variantes, no un total simultáneo ni un décimo par fijo** | **`D98`**, en su algoritmo y en su cardinalidad. `D98` decidió bien el CRITERIO —participación por cualquier vía— y lo contradijo en su propio algoritmo. `D98` **no se reescribe** | Dos defectos, y el segundo es de la misma clase que el primero. **(1) El barrido léxico volvía por la puerta de atrás:** `D98` lo retiraba del criterio y el paso 3 de su algoritmo lo reintroducía, marcando una participación como condicionante si su `capa_exigida` o su `condicion` **contenía en texto libre** «ANTES de construir», o «aporta condiciones», o «propietaria de una conclusión que restringe». Es inferencia por cadenas: una redacción distinta la deja ciega, que es exactamente lo que `K-02` demostró que ocurre. **(2) La cardinalidad publicada era insatisfacible:** `D98` decía «**seis procesos, diez pares exigidos, diez ausentes**». Derivado de los campos estructurados, el catálogo da **cinco procesos y nueve pares**; el décimo salía de contar `proceso:AUD` como si aportara uno FIJO. No lo aporta: su `propietario_global` está declarado «DERIVADO del encargo» y `01-PROCESOS.md` L419 **prohíbe expresamente asignarlo a mano**, luego el par depende de quién resulte propietario del item concreto y puede no existir. Publicar diez obliga a que exista SIEMPRE un par de `AUD`, cuando lo correcto es que existan tantos como items `AUD` con propietario `DOM` o `SEG` haya — cero, uno o muchos. **Y `G-15` pasaba en verde sobre las dos cosas**, porque comprobaba la presencia de palabras en el documento y no ejecutaba la derivación. **La alternativa descartada: contar `AUD` como un par fijo y dejar el total en diez.** Se descarta porque mezcla un catálogo estático con una regla dinámica por item: ninguna de las dos lecturas resultantes es comprobable, y F6 tendría que **decidir** cuál vale — que es justo lo que `K-02` cerró | volver a inferir por texto libre devuelve la ceguera que `K-02` demostró; volver a un total de diez devuelve una cardinalidad que ningún árbol puede satisfacer |
+
+> **Y `G-15` se corrige con ella.** Deja de buscar palabras y pasa a **ejecutar la
+> derivación**: parsea los diez bloques `ads:proceso`, normaliza `DOM`/`SEG` desde los campos
+> estructurados, deriva el conjunto estático **sin lista manual**, comprueba que la proyección
+> publicada coincide con lo derivado, verifica que `(DEP, SEG)` está, verifica que `AUD` está
+> declarado como regla **dinámica por item** y no incluido en un total estático, y corre
+> **tres fixtures** —propietario `DOM` → `{DOM}`, propietario `SEG` → `{SEG}`, propietario
+> `PRD` → `∅`—. **El nueve no está escrito en la prueba: se deriva y se compara con la cifra
+> publicada.** La batería sigue teniendo **30 comprobaciones**: `G-15` se corrige en su sitio.
+
+> **Qué NO hace esta corrección.** No toca `01-PROCESOS.md` ni ningún fichero del kernel. No
+> implementa F6. No modifica `D98`, `PN-15`, `O16` ni los dictámenes de los documentos 15–19.
+> No crea documento 20, no abre gate y no inicia F5, F6 ni PesquerApp. **Las correcciones
+> siguen APLICADAS y NO certificadas**, `F4c` sigue **ABIERTA**, **F5 sigue NO autorizada** y
+> **`C-L.5` sigue pendiente** del gate independiente que vendrá después.
+
+---
+
 ## 2 · Decisiones que pertenecen al Owner
 
 **Ninguna bloquea el trabajo.** Todas tienen un valor por defecto ya implementado y

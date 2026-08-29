@@ -30,10 +30,33 @@
 > Derivado: **25 hallazgos planteados · 1 RECHAZADO (`J-09`) · 24 consolidados —
 > BLOQUEANTE 1 · GRAVE 6 · MEDIO 10 · MENOR 7**.
 >
-> **Ningún hallazgo se corrigió DURANTE el gate**, y era deliberado. **Todos están corregidos
-> AHORA**, en la tanda posterior: `D96`–`D102`, `PN-15`, la procedencia de `O16` y este
-> mismo fichero. **Salvo `C-L.5`, la cobertura**, que sólo puede cerrar un gate nuevo
-> leyendo de verdad lo que nadie abrió. **Aplicar no es certificar.**
+> **Ningún hallazgo se corrigió DURANTE el gate**, y era deliberado. Lo que vino después
+> **no es «todo corregido»**, y decirlo así sería presentar un registro como una
+> implementación. Las trece condiciones quedan en **cuatro estados distintos**, y sólo el
+> primero significa que el trabajo esté hecho:
+>
+> ```text
+> CORREGIDAS EN F4c        `C-L.1` `C-L.3` `C-L.4` `C-L.6` `C-L.7` `C-L.8` `C-L.9` `C-L.11`
+>   ocho                   y los cinco residuos de `C-L.13`. El cambio está ESCRITO en su
+>                          sede y es comprobable hoy
+>
+> REGISTRADAS PARA F5      `C-L.2` · `PN-15`: `G20`–`G23` PRESIONADAS, y **la decisión sigue
+>   dos                    sin tomar** — es del Owner, y F4 no puede tomarla
+>                          `C-L.12` · los dos restos de (b), como checklist verificable
+>                          **Registrar NO es corregir**: el texto de (b) sigue como estaba
+>
+> CONTRATADAS PARA F6      `C-L.10` —censo `AFIRMACIONES` derivado, `T152` sobre toda sede
+>   dos                    que publique versión— y `J-11` —la guardia de intérprete—.
+>                          **Contratar NO es implementar**: no existe ni una línea de código
+>                          de las tres, y `T151` y `T152` siguen pasando en verde sobre las
+>                          sedes que el corpus desmiente
+>
+> ABIERTA POR COBERTURA    `C-L.5`. **No la cierra esta tanda ni puede cerrarla**: aplicar
+>   una                    correcciones no es leer lo que no se leyó. Sólo la cierra el gate
+>                          siguiente, con revisores de contexto limpio y lectura real
+> ```
+>
+> **Aplicar no es certificar**, y **registrar o contratar no es corregir**.
 >
 > **Y consta:** los tres coinciden en que es la candidata más sólida de la cadena. Las diez
 > filas FALLIDAS del gate anterior están cerradas, verificadas una a una. **Nada de lo que
@@ -108,8 +131,9 @@
 CHECKPOINT — ADS-NEXT/12 · SIS/evolucion
 actualizado: 2026-08-29
 metodo:      SIS/Evolucion · TANDA DE CORRECCIÓN DEL GATE DEFINITIVO APLICADA · D96–D102 ·
-             PN-15 · procedencia de O16 registrada · DOCE de las TRECE condiciones C-L
-             cerradas o registradas · C-L.5 ABIERTA · APLICADA, NO CERTIFICADA ·
+             y CORRECCIÓN TÉCNICA ACOTADA sobre ella · D103 · las TRECE condiciones C-L en
+             CUATRO estados: 8 CORREGIDAS EN F4c · 2 REGISTRADAS PARA F5 · 2 CONTRATADAS
+             PARA F6 · 1 ABIERTA POR COBERTURA (C-L.5) · APLICADA, NO CERTIFICADA ·
              F4c ABIERTA · F5 NO AUTORIZADA
 metodo_anterior: SIS/Evolucion · GATE DEFINITIVO INDEPENDIENTE EJECUTADO SOBRE r4=0ea0451 ·
              VEREDICTO INSUFICIENTE PARA F5 · F4c ABIERTA · F5 NO AUTORIZADA
@@ -132,7 +156,8 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
                                                              D23–D33 · D34–D45 · D46–D51 ·
                                                              D52–D54 · D55–D57 · D58–D59 ·
                                                              D60–D61 · D62 · D63 · D64–D68 ·
-                                                             D69–D70 · D71–D95 · D96–D102
+                                                             D69–D70 · D71–D95 · D96–D102 ·
+                                                             D103
              kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
 rama_de_trabajo: fix/f4c-post-gate-definitivo-20260829, creada en 652ab8e —el commit del
              gate definitivo, publicado en review/f4c-gate-definitivo-20260829—. Sin
@@ -142,7 +167,21 @@ rama_de_trabajo: fix/f4c-post-gate-definitivo-20260829, creada en 652ab8e —el 
 freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
              Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
              queda marcado HISTÓRICO y SUPERADO, y no se borra
-last_meaningful_event: se APLICA la TANDA DE CORRECCIÓN del gate definitivo. D96–D102, todas
+last_meaningful_event: CORRECCIÓN TÉCNICA ACOTADA sobre la candidata publicada, y es D103.
+             D98 había retirado el barrido léxico de su CRITERIO y lo reintroducía en su
+             ALGORITMO —marcaba una participación como condicionante buscando «ANTES de
+             construir» en TEXTO LIBRE—, y publicaba «seis procesos, diez pares exigidos»,
+             cardinalidad que ningún árbol puede satisfacer. Derivado de campos
+             ESTRUCTURADOS, el catálogo da CINCO procesos y NUEVE pares, con (DEP, SEG) por
+             la obligatoria; y proceso:AUD NO tiene cardinalidad estática: su propietario es
+             DERIVADO por item, luego cada item exige DOM:revision, SEG:revision o NINGUNA —
+             cero o un par, NUNCA los dos—. D103 separa los dos niveles y no los suma.
+             G-15 pasaba en VERDE sobre las dos cosas porque buscaba palabras en vez de
+             derivar: ahora EJECUTA la derivación, contrasta la proyección con lo derivado
+             sin escribir el nueve en la prueba, y corre tres fixtures de item AUD.
+             D98 NO se reescribe. Y el checkpoint deja de decir «todos corregidos»: las
+             trece condiciones quedan en CUATRO estados separados (2026-08-29)
+last_meaningful_event_anterior: se APLICA la TANDA DE CORRECCIÓN del gate definitivo. D96–D102, todas
              revisoras y ninguna reescribe D1–D95. PN-15 registra que G20–G23 de KERNEL.md
              están PRESIONADAS y pendientes de F5, NO derogadas. O16 gana procedencia real
              —fecha, formulación presentada y respuesta literal del Owner— sin crear O17.
@@ -818,22 +857,34 @@ pregunta_pendiente: ninguna. Las TRECE presiones normativas vigentes —derivada
              cabeceras `## \`PN-` de §16: QUINCE menos PN-4 RETIRADA y PN-5 FUSIONADA— son
              materia de F5, no preguntas. PN-15 es la que esta tanda añade, por K-06
 siguiente:   OTRO GATE INDEPENDIENTE, con revisores de contexto limpio que NO sean quien
-             aplicó esta tanda. La TANDA DE CORRECCIÓN DEL GATE DEFINITIVO está APLICADA —
-             doce de las trece condiciones cerradas o registradas, y la decimotercera,
-             C-L.5, sólo la puede cerrar ese gate futuro. **APLICADA NO ES CERTIFICADA.**
+             aplicó esta tanda. La TANDA DE CORRECCIÓN DEL GATE DEFINITIVO está APLICADA,
+             y después una CORRECCIÓN TÉCNICA ACOTADA (D103) sobre ella.
+             **APLICADA NO ES CERTIFICADA**, y REGISTRAR o CONTRATAR no es CORREGIR.
 
-             CÓMO QUEDA CADA CONDICIÓN — derivado de lo hecho, no copiado:
+             CÓMO QUEDA CADA CONDICIÓN, en CUATRO estados que no se mezclan:
+               CORREGIDAS EN F4c     8   C-L.1 C-L.3 C-L.4 C-L.6 C-L.7 C-L.8 C-L.9 C-L.11
+                                         + los cinco residuos de C-L.13
+               REGISTRADAS PARA F5   2   C-L.2 (PN-15, decide el Owner) · C-L.12
+               CONTRATADAS PARA F6   2   C-L.10 · J-11 — CERO líneas de código escritas
+               ABIERTA POR COBERTURA 1   C-L.5
                C-L.1  CERRADA · D96: `revision_base` OBLIGATORIO de `preparada` en §3.6,
                       registrable en `conflicto` y `abandonada`, y ENTRA en el cómputo de
                       `tx`. Cierra J-01 (BLOQUEANTE) y J-02 a la vez, sin nonce ni timestamp
-               C-L.2  REGISTRADA · D97 crea PN-15: G20–G23 PRESIONADAS y pendientes de F5,
-                      NO derogadas por F4, con fila propia para kernel/KERNEL.md en §17.
-                      La decisión sigue siendo del Owner; F4 no la toma
-               C-L.3  CERRADA · D98 reformula la regla de D92 sobre PARTICIPACIÓN SEMÁNTICA
-                      y retira el barrido léxico. Alcanza SEG en DEP por la obligatoria, y
-                      AUD sin sufijo. Contrato F6 completo: entradas, algoritmo, salida,
-                      positivos, contraejemplos, `composicion-incompleta` y la prueba que
-                      hoy TIENE que fallar nombrando proceso:DEP → SEG:revision AUSENTE
+               C-L.2  REGISTRADA PARA F5 · D97 crea PN-15: G20–G23 PRESIONADAS y pendientes
+                      de F5, NO derogadas por F4, con fila propia para kernel/KERNEL.md en
+                      §17. **La decisión sigue SIN TOMAR**: es del Owner, y F4 no puede
+                      tomarla. Registrar NO es corregir
+               C-L.3  CERRADA · D98 reformuló la regla de D92 sobre PARTICIPACIÓN, y
+                      **D103 la corrigió después**: D98 retiraba el barrido léxico del
+                      criterio y lo reintroducía en su algoritmo —marcaba «condicionante»
+                      buscando «ANTES de construir» en texto libre—, y publicaba «seis
+                      procesos, diez pares», cardinalidad que ningún árbol puede satisfacer.
+                      D103 deriva SÓLO de campos estructurados —`capacidad`,
+                      `capacidad_productora`, `propietario_global`— y separa DOS NIVELES:
+                      CATÁLOGO ESTÁTICO = 5 procesos y 9 pares, con (DEP, SEG) por la
+                      obligatoria; y POR ITEM para AUD, que exige DOM:revision, SEG:revision
+                      o NINGUNA según su propietario derivado — cero o un par, nunca dos.
+                      Contrato F6 completo, y G-15 pasa a EJECUTAR la derivación
                C-L.4  CERRADA · procedencia de O16 registrada con fecha, formulación
                       presentada y respuesta literal del Owner. No se creó O17
                C-L.5  ABIERTA, Y NO LA CIERRA ESTA TANDA · es condición del gate siguiente,
@@ -853,17 +904,18 @@ siguiente:   OTRO GATE INDEPENDIENTE, con revisores de contexto limpio que NO se
                C-L.9  CERRADA · 42→46 derivado en las seis sedes, reconciliación de externos
                       corregida a 9 = 7 + F-01 + F-05, y G-26 ampliada a cuatro
                       comprobaciones sin ninguna cifra constante
-               C-L.10 REGISTRADA · D102: tres contratos F6 completos —censo AFIRMACIONES
-                      derivado, T152 sobre toda sede que publique versión, y la guardia de
-                      intérprete con exit 2— y ocho casos de regresión obligatorios.
-                      NO IMPLEMENTADO, y así se dice
+               C-L.10 CONTRATADA PARA F6 · D102: tres contratos completos —censo
+                      AFIRMACIONES derivado, T152 sobre toda sede que publique versión, y la
+                      guardia de intérprete con exit 2— y ocho casos de regresión.
+                      **CERO líneas implementadas.** T151 y T152 siguen pasando en verde
+                      sobre las sedes que el corpus desmiente. Contratar NO es implementar
                C-L.11 CERRADA · D101: §6.7 recibe fila propia X62. X51 conserva su escenario
-               C-L.12 REGISTRADA · los dos restos de (b) —«(P7)» donde aplica P9 en L358, y
-                      la numeración 1,2,5,3,4 de L462–472— quedan como checklist verificable
-                      de F5, con ruta, ubicación, corrección exacta y prueba. Sin PN nueva:
-                      el contenido no cambia
+               C-L.12 REGISTRADA PARA F5 · los dos restos de (b) —«(P7)» donde aplica P9 en
+                      L358, y la numeración 1,2,5,3,4 de L462–472— quedan como checklist
+                      verificable, con ruta, ubicación, corrección exacta y prueba. Sin PN
+                      nueva: el contenido no cambia. **El texto de (b) sigue como estaba**
                C-L.13 CERRADA los cinco primeros —K-05, K-09, K-10, K-08, L-03—; J-11
-                      REGISTRADO como contrato F6 en D102
+                      CONTRATADO PARA F6 en D102, sin implementar
 
              F5 NO arranca sin un veredicto explícito de SUFICIENCIA.
 falta_para_cerrar_la_capa:

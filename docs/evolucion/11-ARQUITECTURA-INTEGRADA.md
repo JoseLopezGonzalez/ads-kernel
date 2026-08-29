@@ -8655,6 +8655,26 @@ sólo F5 puede tocar.
 > L834–836 lo repite. La regla se reformula en consecuencia. **El barrido léxico de
 > `:condiciones` queda RETIRADO como criterio de derivación.**
 
+> **CORREGIDO OTRA VEZ, y es `D103`. `D98` no se reescribe.** La reformulación de `D98`
+> retiraba el barrido léxico en su criterio —«participación por cualquier vía»— **y lo
+> reintroducía en su algoritmo**: el paso 3 marcaba una participación como condicionante
+> buscando en TEXTO LIBRE expresiones como «ANTES de construir» o «propietaria de una
+> conclusión que restringe». Eso vuelve a ser inferencia por cadenas, y queda ciega en
+> cuanto cambia la redacción de un `capa_exigida`. **`D103` lo retira del algoritmo también:
+> la capacidad base se normaliza desde TRES campos estructurados —`capacidad`,
+> `capacidad_productora` y `propietario_global`— y `capa_exigida` y `condicion` no se
+> analizan.**
+>
+> **Y corrige una cardinalidad que ningún árbol podía satisfacer.** `D98` publicaba «seis
+> procesos, diez pares exigidos, diez ausentes». El derivado real del catálogo son **CINCO
+> procesos y NUEVE pares** —`FEA`, `GAP`, `INC`, `DEU` y `DEP`—, y el décimo par salía de
+> contar `proceso:AUD` como si aportara uno FIJO. No lo aporta: su `propietario_global` está
+> declarado «DERIVADO del encargo» y `01-PROCESOS.md` **prohíbe asignarlo a mano**, luego un
+> item `AUD` exige `DOM:revision`, o `SEG:revision`, o **ninguna de las dos**, según quién
+> resulte propietario — y **nunca las dos a la vez, porque un item tiene un propietario y no
+> dos**. `{DOM, SEG}` es el espacio de variantes, no un total simultáneo. Los dos niveles se
+> separan abajo y **no se suman**.
+
 ```text
 LA REGLA, SOBRE      **si `DOM` o `SEG` PARTICIPAN en un proceso por CUALQUIER VÍA
 PARTICIPACIÓN        —propietaria, obligatoria, condicional, o item enlazado con
@@ -8676,71 +8696,126 @@ QUÉ HAY QUE AÑADIR   por cada participación así detectada, su par `<CAP>:rev
                                           produce:   la revisión de lo construido, con lo
                                                      comprobado y lo NO comprobado
 
-QUÉ TIENE QUE        derivado hoy sobre `01-PROCESOS.md`, la regla alcanza **seis procesos**,
-ALCANZAR             y los tres últimos son los que el barrido léxico NO veía:
-                       `FEA` `GAP` `DEU`   `DOM:condiciones` y/o `SEG:condiciones`
-                                           condicionales  → los CUATRO+CUATRO ya contados
-                       `INC`               `SEG:condiciones` condicional
-                       **`DEP`**           **`DOM:condiciones` condicional Y `SEG` por la
-                                           OBLIGATORIA `condiciones-de-seguridad`** → exige
-                                           `DOM:revision` **y `SEG:revision`**, y ésta última
-                                           IRRETIRABLE, porque `G28` hace irretirable la
-                                           participación de la que deriva. **`U5b` es
-                                           `proceso:DEP`**
-                       **`AUD`**           **`DOM` y `SEG` SIN SUFIJO TIPADO**, condicionales
-                                           `C-DOM` y `C-SEG` → exige el par cuando `DOM` o
-                                           `SEG` sean **propietarios de la conclusión**, que
-                                           es cuando su aportación restringe lo que se
-                                           construirá después
+QUÉ TIENE QUE        **DOS NIVELES, y no se suman en un total** (`D103`):
+ALCANZAR
+
+  A · DERIVACIÓN      del CATÁLOGO de procesos. Nueve pares `(proceso, capacidad)`, derivados
+      ESTÁTICA        de campos estructurados y de nada más:
+                        `FEA`   `DOM` condicional · `SEG` condicional
+                        `GAP`   `DOM` condicional · `SEG` condicional
+                        `INC`   `SEG` condicional
+                        `DEU`   `DOM` condicional · `SEG` condicional
+                        **`DEP`**  `DOM` condicional · **`SEG` por la OBLIGATORIA
+                                `condiciones-de-seguridad`, `capacidad_productora: "SEG"`** →
+                                `SEG:revision` es OBLIGATORIA e IRRETIRABLE, porque hereda la
+                                `autoridad_de_retirada: nadie` que `G28` impone a la
+                                participación de origen. **`U5b` es `proceso:DEP`**, y éste
+                                es el par que el barrido léxico NO veía
+                      **CINCO procesos · NUEVE pares.** `AUD` **NO entra aquí**
+
+  B · DERIVACIÓN      **`proceso:AUD` NO tiene cardinalidad estática**, porque su
+      POR ITEM        `propietario_global` no está fijado: `01-PROCESOS.md` lo declara
+                      «DERIVADO del encargo» y **prohíbe expresamente asignarlo a mano**.
+                      La regla se resuelve POR ITEM, sobre el propietario efectivo:
+                        propietario `DOM`     → exige **`DOM:revision`**, y sólo ésa
+                        propietario `SEG`     → exige **`SEG:revision`**, y sólo ésa
+                        propietario cualquier → **no exige ninguna de las dos**
+                        otra capacidad
+                      **Un item `AUD` aporta CERO O UN par. Nunca los dos a la vez**, porque
+                      tiene un propietario y no dos. Una iniciativa con varios items `AUD` se
+                      evalúa **item a item**, y cada uno da su propio resultado.
+                      El conjunto POTENCIAL de variantes es `{DOM, SEG}` — y eso es un
+                      espacio de posibilidades, **no un total simultáneo ni un décimo par
+                      fijo**
+
+  POR QUÉ IMPORTA     mezclar los dos niveles produce una cardinalidad que ningún árbol puede
+  LA SEPARACIÓN       satisfacer: publicar «diez pares» obliga a que exista SIEMPRE un par de
+                      `AUD`, cuando lo correcto es que existan tantos como items `AUD` con
+                      propietario `DOM` o `SEG` haya — que pueden ser cero, uno o muchos
 
 DATOS DE ENTRADA     `kernel/operativo/recorrido/01-PROCESOS.md`, sus bloques
-DEL DERIVADO         ```yaml ads:proceso```: los campos `propietario_global`, `obligatorias[]`
-                     —con `capacidad_productora` y `capa_exigida`— y `condicionales[]` —con
-                     `capacidad` y `condicion`—. **Y NADA MÁS**: ninguna lista escrita a mano
+DEL DERIVADO         ```yaml ads:proceso```. **SÓLO campos ESTRUCTURADOS**, tres y nada más:
+                       `condicionales[].capacidad`
+                       `obligatorias[].capacidad_productora`
+                       `propietario_global`, resuelto para el item
+                     **NO se analizan `capa_exigida` ni `condicion` buscando palabras.** Es la
+                     corrección de `D103`: el algoritmo anterior marcaba una participación
+                     como condicionante buscando en TEXTO LIBRE expresiones como «ANTES de
+                     construir» o «propietaria de una conclusión que restringe», que es
+                     inferencia por cadenas otra vez — la misma clase de defecto que `D98`
+                     había retirado en su primera mitad, reintroducida en la segunda. Una
+                     redacción distinta la dejaba ciega
 
 ALGORITMO DE         1 · parsear los diez bloques `ads:proceso`
-DERIVACIÓN           2 · por proceso, construir el conjunto de PARTICIPACIONES de `DOM` y
-                         `SEG`, normalizando la capacidad: `SEG`, `SEG:condiciones` y
-                         `capacidad_productora: "SEG"` normalizan todos a `SEG`
-                     3 · marcar la participación como CONDICIONANTE si su `capa_exigida` o su
-                         `condicion` la sitúa ANTES de construir o de modificar fuentes —hoy,
-                         literalmente: contiene «ANTES de construir», o la capacidad aporta
-                         `condiciones`, o es propietaria de una conclusión que restringe
-                     4 · para cada participación CONDICIONANTE, EXIGIR en el mismo proceso
-                         una participación `<CAP>:revision` posterior a `VER`
-                     5 · heredar obligatoriedad y `autoridad_de_retirada` de la previa
+DERIVACIÓN           2 · NORMALIZAR la capacidad BASE de cada participación estructurada:
+                         `SEG`, `SEG:condiciones` y `capacidad_productora: "SEG"` normalizan
+                         todos a `SEG`; `DIS/Reconstruccion` normaliza a `DIS`. Se toma el
+                         segmento anterior a `:` y a `/`
+                     3 · **NIVEL A** — para cada proceso con `propietario_global` FIJADO,
+                         emitir un par `(proceso, capacidad)` por cada participación
+                         estructurada de `DOM` o `SEG`. **Sin mirar `capa_exigida` ni
+                         `condicion`**: la norma de `a.6` y `b.16` se aplica a toda
+                         participación de la capacidad base, sea cual sea su vía
+                     4 · **NIVEL B** — para cada proceso cuyo `propietario_global` sea
+                         DERIVADO, NO emitir par estático. Emitir la REGLA POR ITEM: resolver
+                         el propietario efectivo del item y exigir su `<CAP>:revision` si y
+                         sólo si ese propietario es `DOM` o `SEG`
+                     5 · para cada par exigido, EXIGIR la participación `<CAP>:revision`
+                         posterior a `VER` en el mismo proceso
+                     6 · HEREDAR de la participación de origen: activación —la misma
+                         condición—, obligatoriedad y `autoridad_de_retirada`
 
-SALIDA ESPERADA      la lista de pares (proceso, capacidad) que exigen `<CAP>:revision`, y
-                     para cada uno si está PRESENTE o AUSENTE. Hoy: **seis procesos, diez
-                     pares exigidos, DIEZ AUSENTES** —hay cero instancias de `:revision` en
-                     todo `kernel/operativo/`—
+SALIDA ESPERADA      **DOS salidas, no una cifra** (`D103`):
+                       A · el conjunto ESTÁTICO de pares del catálogo, y para cada uno si
+                           está PRESENTE o AUSENTE. Hoy: **CINCO procesos, NUEVE pares, los
+                           NUEVE AUSENTES** —hay cero instancias de `:revision` en todo
+                           `kernel/operativo/`—
+                       B · por cada item `AUD` evaluado, **cero o un par**, según su
+                           propietario derivado. **No se agrega al total de A**, y publicar
+                           una suma de los dos niveles es un error de cardinalidad
 
-CASOS POSITIVOS      · `DEP` con `SEG:revision` obligatoria e irretirable tras `VER` → PASA
+CASOS POSITIVOS      NIVEL A · catálogo
+                     · `DEP` con `SEG:revision` obligatoria e irretirable tras `VER` → PASA
                      · `DEU` con `DOM:revision` y `SEG:revision` condicionales tras `VER` →
                        PASA
-                     · `AUD` con `DOM:revision` cuando `DOM` es propietaria de la conclusión
-                       → PASA
-                     · `INV`, `DIR`, `SIS`, `DEF` sin `DOM` ni `SEG` condicionantes → PASAN
-                       VACÍOS, y eso NO es un fallo
+                     · `INV`, `DIR`, `SIS`, `DEF` sin participación de `DOM` ni de `SEG` →
+                       PASAN VACÍOS, y eso NO es un fallo
+                     NIVEL B · items `AUD`, tres fixtures mínimos
+                     · item `AUD` con propietario resuelto **`DOM`** → exige `{DOM}` → PASA
+                       si lleva `DOM:revision`, y **no** exige `SEG:revision`
+                     · item `AUD` con propietario resuelto **`SEG`** → exige `{SEG}` → PASA
+                       si lleva `SEG:revision`, y **no** exige `DOM:revision`
+                     · item `AUD` con propietario resuelto **`PRD`** —o cualquier otra— →
+                       exige **conjunto VACÍO** → PASA sin ninguna de las dos, y exigirle
+                       alguna sería el error simétrico
 
 CONTRAEJEMPLOS       · `DEP` **sin** `SEG:revision`, con `SEG` sólo en `obligatorias` → FALLA.
                        **Éste es exactamente el caso que el barrido léxico dejaba pasar en
                        verde, y es el contraejemplo que la prueba tiene que suspender**
-                     · `AUD` con `DOM` y `SEG` sin sufijo y sin ningún `:revision` → FALLA
+                     · una proyección que publique **un total fijo de DIEZ** para el conjunto
+                       actual → FALLA: el derivado del catálogo son NUEVE, y el décimo sólo
+                       existiría si un item `AUD` concreto tuviera propietario `DOM` o `SEG`
+                     · una proyección que siga publicando `(DEP, SEG)` después de que el
+                       catálogo deje de declarar esa obligatoria → FALLA: la proyección tiene
+                       que seguir al derivado, no al revés
+                     · un item `AUD` al que se le exijan **`DOM:revision` y `SEG:revision` a
+                       la vez** → FALLA: un item tiene UN propietario, no dos
                      · un proceso con `<CAP>:revision` colocado ANTES de `VER` → FALLA: la
                        posición es parte del contrato, no un detalle
                      · un proceso con `SEG:revision` RETIRABLE en `DEP` → FALLA: no hereda
                        la irretirabilidad que `G28` impone a la participación de origen
 
 ERROR               **`composicion-incompleta`**, con el proceso, la capacidad, la vía por la
-                     que participa —propietaria · obligatoria · condicional · tipada— y la
-                     participación `<CAP>:revision` que falta. **No es un aviso: impide el
-                     cierre del gate de composición**
+                     que participa —propietaria · obligatoria · condicional · tipada—, el
+                     NIVEL en que se detectó —catálogo o item— y la participación
+                     `<CAP>:revision` que falta. **No es un aviso: impide el cierre del gate
+                     de composición**
 
 PRUEBA QUE FALLARÍA  sobre el árbol de HOY, la prueba tiene que devolver **FALLIDA nombrando
 SI FALTA `SEG` EN    `proceso:DEP` → `SEG:revision` AUSENTE**, y tiene que seguir fallando si
-`DEP`                alguien añade `SEG:revision` a los otros cinco procesos y no a `DEP`.
-                     Una prueba que hoy pase en verde está mal construida por definición
+`DEP`                alguien añade `SEG:revision` a los otros cuatro procesos del catálogo y
+                     no a `DEP`. Una prueba que hoy pase en verde está mal construida por
+                     definición
 
 DÓNDE, EXACTAMENTE   `kernel/operativo/recorrido/01-PROCESOS.md`. Y en
                      `kernel/operativo/circuitos/`, la instancia de handoff que materializa

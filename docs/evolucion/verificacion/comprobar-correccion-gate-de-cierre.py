@@ -290,57 +290,175 @@ ok = (m and m.group(2) == "PRESION_LISTA_PARA_F5"
 check("G-14", "`F-01` reclasificado a `PRESION_LISTA_PARA_F5`, con requiere_f5 y requiere_f6",
       ok, f"estado={m.group(2) if m else '?'} f5={cols[2] if cols else '?'} f6={'sí' if cols and cols[3]!='no' else '?'}")
 
-# ── G-15 · el contrato de `<CAP>:revision` para F6, REFORMULADO ──────
+# ── G-15 · el contrato de `<CAP>:revision`, DERIVADO Y EJECUTADO ─────
 #
-# Reescrita por la corrección del gate definitivo (`K-02`, GRAVE; `C-L.3`). La versión
-# anterior comprobaba que el contrato dijera «no sólo en `DEU` y `DEP`» y nombrara «SU
-# PRUEBA» — es decir, comprobaba el texto de `D92`, cuya regla de derivación era un
-# BARRIDO LÉXICO de `:condiciones` que **no alcanzaba `proceso:DEP`**, donde `SEG`
-# participa como OBLIGATORIA. Pasaba en verde sobre el defecto que existía para cazar.
+# Reescrita por la corrección técnica posterior (`D103`). La versión anterior comprobaba
+# que el DOCUMENTO contuviera ciertas palabras y que `SEG` fuera obligatoria en `DEP`.
+# **No ejecutaba la derivación**, y por eso pasaba en verde mientras el documento publicaba
+# «seis procesos, diez pares exigidos» — cuando el catálogo da CINCO procesos y NUEVE
+# pares, y `AUD` no aporta un par fijo sino cero o uno POR ITEM.
 #
-# Ahora comprueba lo que `D98` exige: que la regla opere sobre PARTICIPACIÓN SEMÁNTICA,
-# que el barrido léxico esté RETIRADO como criterio, que el contrato alcance
-# explícitamente a `DEP` y a `AUD`, y que traiga las siete piezas que hacen que F6
-# materialice sin decidir. Y una comprobación CONTRA EL KERNEL, no contra la prosa:
-# que `proceso:DEP` siga haciendo participar a `SEG` por la vía obligatoria — porque el
-# día que eso cambie, el contrato habla de un árbol que ya no existe.
-need = ["`<CAP>:revision`", "DESPUÉS de `VER`", "PARTICIPACIÓN",
-        "obligatoria", "condicional", "01-PROCESOS.md",
-        "DATOS DE ENTRADA", "ALGORITMO DE", "SALIDA ESPERADA",
-        "CASOS POSITIVOS", "CONTRAEJEMPLOS", "composicion-incompleta",
-        "PROPIETARIO", "F6", "`DEP`", "`AUD`"]
+# Ahora comprueba COMPORTAMIENTO: parsea los bloques `ads:proceso`, normaliza `DOM`/`SEG`
+# desde campos ESTRUCTURADOS, deriva el conjunto estático y lo compara con la proyección
+# publicada. **El nueve no está escrito aquí**: se deriva y se contrasta con la cifra que
+# el documento publica. Si el catálogo cambia, esta comprobación se mueve sola.
+
+_PROC = leer(os.path.join(RAIZ, "kernel/operativo/recorrido/01-PROCESOS.md"))
+_BASE_VIGILADAS = ("DOM", "SEG")
+
+def _base(valor):
+    """Capacidad BASE de una participación, desde el campo estructurado y nada más.
+
+    `SEG`, `SEG:condiciones` y `capacidad_productora: "SEG"` normalizan todas a `SEG`;
+    `DIS/Reconstruccion` normaliza a `DIS`. No se mira `capa_exigida` ni `condicion`:
+    inferir por texto libre es lo que `D103` retira.
+    """
+    return valor.strip().strip('"').strip("'").split(":")[0].split("/")[0].strip()
+
+def _bloques_proceso(texto):
+    return re.findall(r"```yaml ads:proceso\n(.*?)```", texto, re.S)
+
+def _participaciones(bloque):
+    """{capacidad_base: via} de DOM/SEG en un bloque, SÓLO desde campos estructurados."""
+    out = {}
+    ic = bloque.find("condicionales:")
+    io_ = bloque.find("obligatorias:")
+    fin_obl = ic if ic > io_ >= 0 else len(bloque)
+    for v in re.findall(r"^\s*capacidad_productora:\s*(.+)$",
+                        bloque[io_:fin_obl] if io_ >= 0 else "", re.M):
+        b = _base(v)
+        if b in _BASE_VIGILADAS:
+            out[b] = "obligatoria"
+    for v in re.findall(r"^\s*-\s*capacidad:\s*(.+)$",
+                        bloque[ic:] if ic >= 0 else "", re.M):
+        b = _base(v)
+        if b in _BASE_VIGILADAS:
+            out.setdefault(b, "condicional")
+    return out
+
+def _derivar_catalogo(texto):
+    """NIVEL A · pares estáticos. Excluye los procesos de propietario DERIVADO."""
+    estaticos, dinamicos = set(), set()
+    for b in _bloques_proceso(texto):
+        m = re.search(r"^id:\s*proceso:(\w+)", b, re.M)
+        pg = re.search(r"^propietario_global:\s*(.*)$", b, re.M)
+        if not m or not pg:
+            continue
+        pid = m.group(1)
+        if "DERIVADO" in pg.group(1).upper():
+            dinamicos.add(pid)                     # NIVEL B: cardinalidad por item
+            continue
+        for cap in _participaciones(b):
+            estaticos.add((pid, cap))
+    return estaticos, dinamicos
+
+def _exige_por_item(propietario):
+    """NIVEL B · qué exige UN item cuyo propietario efectivo es `propietario`.
+
+    Cero o UN par. Nunca los dos: un item tiene un propietario, no dos.
+    """
+    b = _base(propietario)
+    return {b} if b in _BASE_VIGILADAS else set()
+
+_g15 = []
+_est, _din = _derivar_catalogo(_PROC)
+_procs_est = sorted({p for p, _ in _est})
+_n_est = len(_est)
+
+# 1 · el contrato tiene que traer sus piezas, y nombrar los DOS niveles
 i19 = t11.index("### `DOM` y `SEG` participan DOS veces")
 b19 = t11[i19:t11.index("**Y dos más, que no son defectos de F4", i19)]
-falta = [x for x in need if x not in b19 and x.replace("`", "") not in b19]
-noeditado = "F4 **no edita `01-PROCESOS.md`**" in b19 or "F4 no toca `01-PROCESOS.md`" in b19
-# el barrido léxico tiene que estar RETIRADO como criterio, no simplemente no mencionado
-retirado = "barrido léxico de\n> `:condiciones` queda RETIRADO" in b19 or \
-           re.search(r"barrido léxico[^.]{0,80}RETIRADO", b19, re.S) is not None
-# y la prueba prescrita tiene que exigir que HOY falle nombrando DEP.
-# Se busca sobre el bloque con los espacios NORMALIZADOS: en este corpus las frases se
-# parten por saltos de línea con sangría, y un patrón que exija la frase en una sola
-# línea la pierde. Es la misma lección que `T161` dejó escrita.
 b19n = re.sub(r"\s+", " ", b19)
-prueba_dep = re.search(
-    r"FALLIDA nombrando.{0,80}?`proceso:DEP` → `SEG:revision` AUSENTE", b19n) is not None
-# contra el KERNEL: SEG sigue participando en DEP por la vía obligatoria
-_proc = leer(os.path.join(RAIZ, "kernel/operativo/recorrido/01-PROCESOS.md"))
-_dep = _proc[_proc.index("id: proceso:DEP"):]
-_dep = _dep[:_dep.index("id: proceso:AUD")]
-seg_obligatoria_en_dep = re.search(r"obligatorias:(.|\n)*?capacidad_productora: \"SEG\"", _dep) \
-    is not None and "SEG:condiciones" not in _dep
-_g15 = list(falta)
-if not noeditado: _g15.append("no declara que F4 NO edita 01-PROCESOS.md")
-if not retirado:  _g15.append("no declara RETIRADO el barrido léxico de `:condiciones`")
-if not prueba_dep: _g15.append("su prueba no exige fallar HOY nombrando `proceso:DEP`")
-if not seg_obligatoria_en_dep:
-    _g15.append("el kernel ya no casa con el contrato: `SEG` en `DEP` no es obligatoria "
-                "sin `SEG:condiciones`")
-check("G-15", "el contrato de `<CAP>:revision` opera sobre PARTICIPACIÓN, alcanza `DEP` y `AUD`, y su prueba falla hoy",
+# Y una variante SIN marcas de énfasis ni comillas de código: en este corpus una misma
+# frase aparece con `**` y con backticks en posiciones distintas según dónde caiga el
+# salto de línea, y un patrón que los presuponga falla sobre texto que SÍ está. Es la
+# cuarta vez que esta batería tropieza con lo mismo; se normaliza de una vez.
+b19p = re.sub(r"[`*]", "", b19n)
+for pieza in ("DATOS DE ENTRADA", "ALGORITMO DE", "SALIDA ESPERADA", "CASOS POSITIVOS",
+              "CONTRAEJEMPLOS", "composicion-incompleta", "PROPIETARIO", "F6",
+              "DERIVACIÓN", "POR ITEM"):
+    if pieza not in b19:
+        _g15.append(f"el contrato no trae «{pieza}»")
+if not ("F4 **no edita `01-PROCESOS.md`**" in b19 or "F4 no toca `01-PROCESOS.md`" in b19):
+    _g15.append("no declara que F4 NO edita 01-PROCESOS.md")
+
+# 2 · los DOS barridos léxicos, retirados: el del criterio y el del algoritmo
+if not re.search(r"barrido léxico[^.]{0,120}RETIRADO", b19p):
+    _g15.append("no declara RETIRADO el barrido léxico de `:condiciones`")
+if "NO se analizan capa_exigida ni condicion buscando palabras" not in b19p:
+    _g15.append("no declara que `capa_exigida` y `condicion` NO se analizan por palabras")
+
+# 3 · la proyección publicada tiene que COINCIDIR con lo derivado. El número NO se
+#     escribe aquí: se deriva y se compara con la cifra que el documento publica.
+_m_proc = re.search(r"([A-ZÁÉÍÓÚa-z]+) procesos · ([A-ZÁÉÍÓÚa-z]+) pares", b19p)
+if not _m_proc:
+    _g15.append("la proyección no publica «<n> procesos · <n> pares» de forma legible")
+else:
+    _p, _q = _num(_m_proc.group(1)), _num(_m_proc.group(2))
+    if _p != len(_procs_est):
+        _g15.append(f"publica {_m_proc.group(1)} procesos y el catálogo deriva {len(_procs_est)}")
+    if _q != _n_est:
+        _g15.append(f"publica {_m_proc.group(2)} pares y el catálogo deriva {_n_est}")
+
+# 4 · `(DEP, SEG)` presente, y por la vía OBLIGATORIA
+if ("DEP", "SEG") not in _est:
+    _g15.append("el par (DEP, SEG) NO se deriva del catálogo")
+else:
+    _bd = next((b for b in _bloques_proceso(_PROC) if "id: proceso:DEP" in b), "")
+    if _participaciones(_bd).get("SEG") != "obligatoria":
+        _g15.append("(DEP, SEG) no procede de la vía OBLIGATORIA")
+
+# 5 · `AUD` es regla DINÁMICA por item, y NO entra en ningún total estático
+if "AUD" not in _din:
+    _g15.append("`AUD` no se detecta como proceso de propietario DERIVADO")
+if any(p == "AUD" for p, _ in _est):
+    _g15.append("`AUD` está contado dentro del conjunto ESTÁTICO, y no debe estarlo")
+if "proceso:AUD NO tiene cardinalidad estática" not in b19p:
+    _g15.append("el contrato no declara que `AUD` carece de cardinalidad estática")
+if "no un total simultáneo ni un décimo par fijo" not in b19p:
+    _g15.append("el contrato no declara que {DOM, SEG} NO es un total simultáneo")
+
+# 6 · TRES FIXTURES mínimos del nivel B
+for prop, esperado in (("DOM", {"DOM"}), ("SEG", {"SEG"}), ("PRD", set())):
+    obtenido = _exige_por_item(prop)
+    if obtenido != esperado:
+        _g15.append(f"fixture AUD propietario {prop}: esperado {esperado or '∅'}, "
+                    f"obtenido {obtenido or '∅'}")
+# y un item NUNCA exige las dos a la vez
+if any(len(_exige_por_item(x)) > 1 for x in ("DOM", "SEG", "PRD", "ARQ")):
+    _g15.append("un item AUD llega a exigir DOM y SEG simultáneamente")
+
+# 7 · FIXTURE NEGATIVO · si el catálogo deja de declarar la obligatoria SEG de DEP,
+#     el par tiene que DESAPARECER, y una proyección que aún lo publique tiene que fallar
+_sin_seg = re.sub(
+    r"  - id: condiciones-de-seguridad\n(?:    .*\n|      .*\n)*", "",
+    _PROC[_PROC.index("id: proceso:DEP"):_PROC.index("id: proceso:AUD")])
+_fix = _PROC[:_PROC.index("id: proceso:DEP")] + _sin_seg + _PROC[_PROC.index("id: proceso:AUD"):]
+_est_fix, _ = _derivar_catalogo(_fix)
+if ("DEP", "SEG") in _est_fix:
+    _g15.append("fixture negativo: quitar la obligatoria SEG de DEP NO retira el par (DEP, SEG)")
+if len(_est_fix) >= _n_est:
+    _g15.append("fixture negativo: el conjunto derivado no decrece al quitar la participación")
+
+# 8 · FIXTURE NEGATIVO · una proyección que publique un total FIJO de diez tiene que fallar
+_proy_falsa = b19p.replace(f"{_m_proc.group(1)} procesos · {_m_proc.group(2)} pares",
+                           "SEIS procesos · DIEZ pares") if _m_proc else ""
+_m_falsa = re.search(r"([A-ZÁÉÍÓÚa-z]+) procesos · ([A-ZÁÉÍÓÚa-z]+) pares", _proy_falsa)
+if not (_m_falsa and (_num(_m_falsa.group(1)) != len(_procs_est)
+                      or _num(_m_falsa.group(2)) != _n_est)):
+    _g15.append("la comprobación NO detectaría una proyección con el total fijo de diez")
+
+# 9 · el contrato exige que la prueba prescrita falle HOY nombrando DEP
+if not re.search(r"FALLIDA nombrando.{0,80}?proceso:DEP → SEG:revision AUSENTE", b19p):
+    _g15.append("su prueba no exige fallar HOY nombrando `proceso:DEP`")
+
+check("G-15",
+      "el contrato de `<CAP>:revision` se DERIVA de campos estructurados: catálogo estático = proyección, `AUD` dinámico por item",
       not _g15,
       "; ".join(_g15) or
-      "participación semántica · barrido léxico retirado · DEP y AUD alcanzados · "
-      "entradas, algoritmo, salida, positivos, contraejemplos, error y prueba · kernel intacto")
+      f"catálogo derivado {len(_procs_est)} procesos {sorted(_procs_est)} · {_n_est} pares · "
+      f"(DEP,SEG) por obligatoria · AUD dinámico ({sorted(_din)}) · "
+      f"fixtures DOM→{{DOM}} SEG→{{SEG}} PRD→∅ · negativos detectados")
 
 # ── G-16 · 43 estados primarios, sin duplicados ─────────────────────
 filas = re.findall(r"^\| `([A-Za-z0-9-]+)` \| (BLOQUEANTE|GRAVE|MEDIO|MENOR) \| \*\*`([A-Z_0-9]+)`\*\* \|(.*)$",
