@@ -39,6 +39,30 @@ IDX = os.path.join(RAIZ, "docs/evolucion/00-INDICE.md")
 def leer(p): return io.open(p, encoding="utf-8").read()
 def lineas(p): return leer(p).split("\n")
 
+# ── lexicón de numerales, compartido por varias comprobaciones ───────────
+_PALABRA = {
+    "cero": 0, "una": 1, "uno": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5,
+    "seis": 6, "siete": 7, "ocho": 8, "nueve": 9, "diez": 10, "once": 11, "doce": 12,
+    "trece": 13, "catorce": 14, "quince": 15, "dieciseis": 16, "diecisiete": 17,
+    "dieciocho": 18, "diecinueve": 19, "veinte": 20, "treinta": 30, "cuarenta": 40,
+    "cincuenta": 50, "sesenta": 60,
+}
+_ACENTOS = str.maketrans("áéíóúÁÉÍÓÚ", "aeiouAEIOU")
+
+def _num(txt):
+    """Convierte a entero un numeral en dígitos o en letra, con decenas compuestas."""
+    t = txt.translate(_ACENTOS).lower().strip()
+    if t.isdigit():
+        return int(t)
+    partes = [w for w in re.split(r"\s+y\s+|\s+", t) if w]
+    if len(partes) == 1:
+        return _PALABRA.get(partes[0])
+    if len(partes) == 2 and partes[0] in _PALABRA and partes[1] in _PALABRA:
+        d, u = _PALABRA[partes[0]], _PALABRA[partes[1]]
+        if d >= 20 and u < 10:
+            return d + u
+    return None
+
 RES = []
 def check(id_, titulo, ok, detalle=""):
     RES.append((id_, titulo, bool(ok), detalle))
@@ -229,12 +253,33 @@ check("G-12", "`PN-14` presente, con sus campos, y SIN enmienda redactada",
       tiene and sin_enmienda and not falta,
       "; ".join(falta) if falta else ("presente y sin redactar" if sin_enmienda else "falta la declaracion"))
 
-# ── G-13 · doce presiones vigentes, DERIVADAS ────────────────────────
+# ── G-13 · el censo de presiones es COHERENTE, y su tope se DERIVA ───
+#
+# La versión anterior exigía literalmente 14 cabeceras y 12 vigentes: dos cifras escritas
+# a mano en la comprobación que existe para que las cifras no se escriban a mano. Fallaba
+# en rojo el día que nacía `PN-15`, que es exactamente lo que §16 existe para permitir.
+# Lo comprobable es la COHERENCIA: la serie es continua, las excluidas están marcadas una
+# a una, y el resumen de §16 declara lo mismo que derivan las cabeceras.
 cab = re.findall(r"^## `PN-(\d+)` ·(.*)$", t11, re.M)
+_nums = sorted(int(n) for n, _ in cab)
 vigentes = [n for n, resto in cab if "RETIRADA" not in resto and "FUSIONADA" not in resto]
-check("G-13", "DOCE presiones normativas vigentes, derivadas de sus cabeceras",
-      len(cab) == 14 and len(vigentes) == 12,
-      f"{len(cab)} cabeceras - 2 marcadas = {len(vigentes)} vigentes")
+_excluidas = [f"PN-{n}" for n, resto in cab if "RETIRADA" in resto or "FUSIONADA" in resto]
+_g13 = []
+if _nums != list(range(1, (_nums[-1] if _nums else 0) + 1)):
+    _g13.append(f"la serie PN no es continua: {_nums}")
+if len(_nums) != len(set(_nums)):
+    _g13.append("hay cabeceras PN repetidas")
+# el resumen de §16 tiene que declarar lo MISMO que derivan las cabeceras
+_m = re.search(r"^VIGENTES · ([A-ZÁÉÍÓÚa-z]+)$", t11, re.M)
+if not _m:
+    _g13.append("el resumen de §16 no declara «VIGENTES · <n>»")
+elif _num(_m.group(1)) != len(vigentes):
+    _g13.append(f"el resumen dice {_m.group(1)} y las cabeceras derivan {len(vigentes)}")
+check("G-13", "el censo de presiones es coherente: serie continua, excluidas marcadas, resumen = derivado",
+      not _g13,
+      "; ".join(_g13) or
+      f"{len(cab)} cabeceras - {len(_excluidas)} marcadas ({', '.join(_excluidas)}) "
+      f"= {len(vigentes)} vigentes, y el resumen de §16 dice lo mismo")
 
 # ── G-14 · F-01 reclasificado ────────────────────────────────────────
 tchk = leer(CHK)
@@ -245,15 +290,57 @@ ok = (m and m.group(2) == "PRESION_LISTA_PARA_F5"
 check("G-14", "`F-01` reclasificado a `PRESION_LISTA_PARA_F5`, con requiere_f5 y requiere_f6",
       ok, f"estado={m.group(2) if m else '?'} f5={cols[2] if cols else '?'} f6={'sí' if cols and cols[3]!='no' else '?'}")
 
-# ── G-15 · DOM/SEG condiciones + revision declarados para F6 ─────────
-need = ["`<CAP>:revision`", "DESPUÉS de `VER`", "no sólo en `DEU` y `DEP`",
-        "01-PROCESOS.md", "SU PRUEBA", "PROPIETARIO", "F6"]
+# ── G-15 · el contrato de `<CAP>:revision` para F6, REFORMULADO ──────
+#
+# Reescrita por la corrección del gate definitivo (`K-02`, GRAVE; `C-L.3`). La versión
+# anterior comprobaba que el contrato dijera «no sólo en `DEU` y `DEP`» y nombrara «SU
+# PRUEBA» — es decir, comprobaba el texto de `D92`, cuya regla de derivación era un
+# BARRIDO LÉXICO de `:condiciones` que **no alcanzaba `proceso:DEP`**, donde `SEG`
+# participa como OBLIGATORIA. Pasaba en verde sobre el defecto que existía para cazar.
+#
+# Ahora comprueba lo que `D98` exige: que la regla opere sobre PARTICIPACIÓN SEMÁNTICA,
+# que el barrido léxico esté RETIRADO como criterio, que el contrato alcance
+# explícitamente a `DEP` y a `AUD`, y que traiga las siete piezas que hacen que F6
+# materialice sin decidir. Y una comprobación CONTRA EL KERNEL, no contra la prosa:
+# que `proceso:DEP` siga haciendo participar a `SEG` por la vía obligatoria — porque el
+# día que eso cambie, el contrato habla de un árbol que ya no existe.
+need = ["`<CAP>:revision`", "DESPUÉS de `VER`", "PARTICIPACIÓN",
+        "obligatoria", "condicional", "01-PROCESOS.md",
+        "DATOS DE ENTRADA", "ALGORITMO DE", "SALIDA ESPERADA",
+        "CASOS POSITIVOS", "CONTRAEJEMPLOS", "composicion-incompleta",
+        "PROPIETARIO", "F6", "`DEP`", "`AUD`"]
 i19 = t11.index("### `DOM` y `SEG` participan DOS veces")
 b19 = t11[i19:t11.index("**Y dos más, que no son defectos de F4", i19)]
-falta = [x for x in need if x not in b19 and x.replace("`","") not in b19]
+falta = [x for x in need if x not in b19 and x.replace("`", "") not in b19]
 noeditado = "F4 **no edita `01-PROCESOS.md`**" in b19 or "F4 no toca `01-PROCESOS.md`" in b19
-check("G-15", "`<CAP>:revision` declarado para F6 con edicion, propietario y prueba, sin tocar el kernel",
-      not falta and noeditado, "; ".join(falta) or "edicion, propietario, fase y prueba; kernel intacto")
+# el barrido léxico tiene que estar RETIRADO como criterio, no simplemente no mencionado
+retirado = "barrido léxico de\n> `:condiciones` queda RETIRADO" in b19 or \
+           re.search(r"barrido léxico[^.]{0,80}RETIRADO", b19, re.S) is not None
+# y la prueba prescrita tiene que exigir que HOY falle nombrando DEP.
+# Se busca sobre el bloque con los espacios NORMALIZADOS: en este corpus las frases se
+# parten por saltos de línea con sangría, y un patrón que exija la frase en una sola
+# línea la pierde. Es la misma lección que `T161` dejó escrita.
+b19n = re.sub(r"\s+", " ", b19)
+prueba_dep = re.search(
+    r"FALLIDA nombrando.{0,80}?`proceso:DEP` → `SEG:revision` AUSENTE", b19n) is not None
+# contra el KERNEL: SEG sigue participando en DEP por la vía obligatoria
+_proc = leer(os.path.join(RAIZ, "kernel/operativo/recorrido/01-PROCESOS.md"))
+_dep = _proc[_proc.index("id: proceso:DEP"):]
+_dep = _dep[:_dep.index("id: proceso:AUD")]
+seg_obligatoria_en_dep = re.search(r"obligatorias:(.|\n)*?capacidad_productora: \"SEG\"", _dep) \
+    is not None and "SEG:condiciones" not in _dep
+_g15 = list(falta)
+if not noeditado: _g15.append("no declara que F4 NO edita 01-PROCESOS.md")
+if not retirado:  _g15.append("no declara RETIRADO el barrido léxico de `:condiciones`")
+if not prueba_dep: _g15.append("su prueba no exige fallar HOY nombrando `proceso:DEP`")
+if not seg_obligatoria_en_dep:
+    _g15.append("el kernel ya no casa con el contrato: `SEG` en `DEP` no es obligatoria "
+                "sin `SEG:condiciones`")
+check("G-15", "el contrato de `<CAP>:revision` opera sobre PARTICIPACIÓN, alcanza `DEP` y `AUD`, y su prueba falla hoy",
+      not _g15,
+      "; ".join(_g15) or
+      "participación semántica · barrido léxico retirado · DEP y AUD alcanzados · "
+      "entradas, algoritmo, salida, positivos, contraejemplos, error y prueba · kernel intacto")
 
 # ── G-16 · 43 estados primarios, sin duplicados ─────────────────────
 filas = re.findall(r"^\| `([A-Za-z0-9-]+)` \| (BLOQUEANTE|GRAVE|MEDIO|MENOR) \| \*\*`([A-Z_0-9]+)`\*\* \|(.*)$",
@@ -312,10 +399,19 @@ malos = {k: v for k, v in dups.items() if v}
 check("G-19", "cero parrafos largos duplicados en los cuatro ficheros",
       not malos, "; ".join(f"{k}: {v}" for k, v in malos.items()) or "ninguno")
 
-# ── G-20 · D1-D95 sin hueco ──────────────────────────────────────
+# ── G-20 · el registro D sin hueco y sin repetir ─────────────────
+#
+# El tope se DERIVA de la última fila del registro, no se escribe: la versión anterior
+# exigía literalmente `D1`-`D95` y fallaba en rojo el día que nacía `D96`, que es
+# precisamente lo que el registro existe para permitir. Lo que hay que comprobar es que
+# la serie sea CONTINUA y SIN REPETIR, no que se detenga en un número concreto.
 ns = sorted(int(x) for x in re.findall(r"^\| D(\d+) ", leer(DEC), re.M))
-check("G-20", "`D1`-`D95` sin hueco y sin repetir",
-      ns == list(range(1, 96)), f"D1-D{ns[-1]}, {len(ns)} filas, huecos {[i for i in range(1,ns[-1]+1) if i not in ns]}")
+_huecos = [i for i in range(1, ns[-1] + 1) if i not in ns] if ns else []
+_reps = sorted(k for k, v in Counter(
+    int(x) for x in re.findall(r"^\| D(\d+) ", leer(DEC), re.M)).items() if v > 1)
+check("G-20", "el registro `D` es una serie CONTINUA desde `D1`, sin huecos y sin repetir",
+      bool(ns) and not _huecos and not _reps,
+      f"D1-D{ns[-1] if ns else '?'}, {len(ns)} filas, huecos {_huecos}, repetidas {_reps}")
 
 # ── G-21 · O1-O16 intactas ───────────────────────────────────────
 ob = re.findall(r"^\| O(\d+) \|", "\n".join(base), re.M)
@@ -358,13 +454,20 @@ NORMATIVO = (r"a-CAPACIDADES-APROBADA|b-RECORRIDO-APROBADA|"
              r"kernel/operativo/contratos/C7-GOBIERNO")
 
 # Excepciones AUTORIZADAS, una a una. No hay comodines sobre directorios de código.
+#
+# `entrada/02-CIRCUITO.md` entra por la corrección del gate definitivo (`K-09`, MENOR):
+# su L54 citaba `04-CONFIRMACION.md`, que NO existe — el fichero es
+# `04-INCERTIDUMBRE-Y-CONFIRMACION.md`. Es un enlace colgante y su remedio es de una línea.
+# Se nombra AQUÍ, fichero a fichero, y no se abre ningún comodín sobre `entrada/`: la
+# comprobación tiene que seguir cazando cualquier otro cambio del kernel.
 COD_AUTORIZADO = {"kernel/operativo/validadores/comprobar_negativos.py"}
+DOC_AUTORIZADO = {"kernel/operativo/entrada/02-CIRCUITO.md"}
 HUELLA         = {"kernel/.upstream-hash"}
 
 def _kernel_no_autorizado(f):
     if not f.startswith("kernel/"):
         return False
-    if f in COD_AUTORIZADO or f in HUELLA:
+    if f in COD_AUTORIZADO or f in DOC_AUTORIZADO or f in HUELLA:
         return False
     # la evidencia derivada SÍ puede cambiar: la publica el runner, no una mano
     if f.startswith("kernel/operativo/pruebas/evidencia/"):
@@ -375,7 +478,8 @@ prohibidos = [f for f in tocados if _kernel_no_autorizado(f)]
 prohibidos += [f for f in tocados if re.search(NORMATIVO, f)]
 check("G-23", "lo normativo intacto; del kernel sólo cambia la excepción NOMBRADA",
       not prohibidos,
-      "intacto salvo comprobar_negativos.py, .upstream-hash y evidencia derivada"
+      "intacto salvo comprobar_negativos.py, entrada/02-CIRCUITO.md (K-09), "
+      ".upstream-hash y evidencia derivada"
       if not prohibidos else ", ".join(sorted(set(prohibidos))))
 
 # ── G-24 · las catorce fuentes y las quince fichas existen ──────
@@ -453,11 +557,160 @@ for k in ("8.1","8.2","8.3","8.4"):
 check("G-25", "los cuatro macrocircuitos declaran sus CATORCE campos, handoffs incluidos",
       not falt, "; ".join(falt) or "14/14 en los cuatro")
 
-# ── G-26 · tabla adversarial: filas = ids distintos ────────────
+# ── G-26 · recuentos DERIVADOS, en cuatro planos ───────────────
+#
+# Ampliada por la corrección del gate definitivo (`J-07` + `K-04`; `C-L.9`). La versión
+# anterior comparaba filas contra ids Y contra un 45 ESCRITO A MANO — que es exactamente
+# el defecto que esta comprobación existe para cazar, y por eso no vio que cuatro sedes
+# de prosa decían «cuarenta y dos» mientras la tabla tenía cuarenta y cinco filas.
+#
+# **Aquí no hay ni una cifra constante.** Todo se deriva del árbol: la tabla se cuenta, la
+# prosa se lee, y se comparan. Si mañana nace una fila nueva, esta comprobación se mueve
+# sola; si nace una sede de prosa nueva con la cifra vieja, la caza sin tocar el validador.
+#
+# Y distingue SEDE VIGENTE de CITA HISTÓRICA, que es la misma disciplina que `X47` aplica
+# al enum de `fase`: la proyección normativa vigente es UNA y las citas históricas son
+# MUCHAS y están marcadas. Una cifra entre comillas angulares, o en una línea que la
+# corrige, o en un bloque marcado HISTÓRICO, es una cita — no una afirmación viva.
+
+# numeral: dígitos, o una/dos palabras unidas por «y», con negritas opcionales
+_NUM = r"\*{0,2}((?:[0-9]{1,3})|(?:[A-Za-zÁÉÍÓÚáéíóú]+(?:\s+y\s+[A-Za-zÁÉÍÓÚáéíóú]+)?))\*{0,2}"
+
+# Una cifra es CITA HISTÓRICA, y no afirmación viva, en tres casos y sólo en tres.
+# La distinción se hace sobre LA OCURRENCIA CONCRETA del numeral, no sobre la línea
+# entera: si bastara que la línea contuviera «corregido», la propia prosa que corrige
+# una cifra desactivaría la comprobación de la cifra que acaba de escribir — que es el
+# modo de fallo exacto que esta batería existe para no repetir.
+_CITA_ENTRE_COMILLAS = re.compile(r"«[^»]*»")
+_VERBO_DE_CITA = re.compile(
+    r"(?:decía|decían|dijo|habiendo|frente a|en vez de|se escribió cuando"
+    r"|NO REPRODUCIDO|reanclad[ao]|conteo a)\s*$", re.I)
+_BLOQUE_HISTORICO = re.compile(r"\[HISTÓRICO|\bHISTÓRICO\b|\bcaducad|\bregresión\b")
+
+def _es_cita(linea, ini_rel, fin_rel):
+    """¿La ocurrencia [ini_rel:fin_rel] de esta línea es una cita y no una afirmación?"""
+    if _BLOQUE_HISTORICO.search(linea):
+        return True
+    for c in _CITA_ENTRE_COMILLAS.finditer(linea):
+        if c.start() <= ini_rel and fin_rel <= c.end():
+            return True                     # el numeral está DENTRO de «…»
+    return bool(_VERBO_DE_CITA.search(linea[:ini_rel]))
+
+def _sedes(patron, texto=None, contexto=None, ventana=6):
+    """[(línea, valor)] de cada sede VIVA que afirma una cifra.
+
+    `contexto` es un patrón que debe aparecer en la VENTANA de líneas alrededor para
+    que la afirmación se considere sobre ESE objeto: sin él, «la tabla tiene siete
+    filas» de §3.6 se compararía con la tabla adversarial, que es otra tabla. La
+    ventana existe porque una afirmación y el nombre de su objeto rara vez caben en
+    la misma línea de un bloque de texto justificado.
+    """
+    texto = t11 if texto is None else texto
+    ls = texto.split("\n")
+    out = []
+    for m in re.finditer(patron, texto, re.I):
+        n = _num(m.group(1))
+        if n is None:
+            continue
+        ini = texto.rfind("\n", 0, m.start()) + 1
+        fin = texto.find("\n", m.end())
+        linea = texto[ini: fin if fin > 0 else len(texto)]
+        if _es_cita(linea, m.start() - ini, m.end() - ini):
+            continue
+        if contexto:
+            nl = texto.count("\n", 0, m.start())
+            bloque = "\n".join(ls[max(0, nl - ventana): nl + ventana + 1])
+            if not re.search(contexto, bloque, re.I):
+                continue
+        out.append((texto.count("\n", 0, m.start()) + 1, n))
+    return out
+
+_fallos_26 = []
+
+# ── 26.a · filas FÍSICAS frente a IDS ÚNICOS ──────────────────────────────
 xs = re.findall(r"^\| \*{0,2}`(X[0-9]+)`\*{0,2} \|", t11, re.M)
-check("G-26", "la tabla adversarial tiene tantas filas como ids distintos",
-      len(xs) == len(set(xs)) and len(xs) == 45,
-      f"{len(xs)} filas / {len(set(xs))} ids")
+n_x = len(xs)
+if n_x == 0:
+    _fallos_26.append("a) la tabla adversarial no se encontró: el patrón de fila no casa")
+elif n_x != len(set(xs)):
+    dup = sorted(k for k, v in Counter(xs).items() if v > 1)
+    _fallos_26.append(f"a) {n_x} filas frente a {len(set(xs))} ids únicos; duplicados: {dup}")
+
+# ── 26.b · PROSA VIGENTE frente al valor DERIVADO ─────────────────────────
+# Sólo sedes que hablan de LA TABLA ADVERSARIAL: la línea tiene que nombrarla.
+_CTX_X = r"adversarial|§2\.6\.7|\bX[0-9]{2}\b"
+for pat, que in (
+    (_NUM + r"\s+filas\s+(?:físicas|de datos|escritas)", "filas"),
+    (_NUM + r"\s+identificadores", "ids"),
+    (r"(?:las|como las)\s+" + _NUM + r"\s+de\s+§2\.6\.7", "filas"),
+    (_NUM + r"\s+filas\s+de\s+la\s+tabla\s+adversarial", "filas"),
+):
+    for ln, val in _sedes(pat, contexto=_CTX_X):
+        if val != n_x:
+            _fallos_26.append(f"b) L{ln}: la prosa dice {val} {que} y el conteo da {n_x}")
+
+# ── 26.c · AGREGADOS frente a sus MIEMBROS ────────────────────────────────
+# c1 · presiones normativas: cabeceras de §16 menos RETIRADA y FUSIONADA
+_pn = re.findall(r"^## `(PN-[0-9]+)`([^\n]*)$", t11, re.M)
+n_pn = sum(1 for _, resto in _pn if "RETIRADA" not in resto and "FUSIONADA" not in resto)
+if not _pn:
+    _fallos_26.append("c1) no se encontró ninguna cabecera `## `PN-` en §16")
+# El contexto exigido distingue una AFIRMACIÓN DE CENSO —«N presiones vigentes»— de un
+# uso incidental del sustantivo, como «presentar al Owner dos presiones donde hay una
+# enmienda», que no cuenta nada. Las dos formas específicas de abajo no necesitan
+# contexto: ya son inequívocas por sí mismas.
+_CTX_PN = r"vigente|VIGENTES|§16"
+for pat, ctx in (
+    (_NUM + r"\s+(?:presiones|PRESIONES|puntos de presión)", _CTX_PN),
+    (r"VIGENTES\s*·\s*" + _NUM, None),
+    (r"presiona material aprobado en\s+" + _NUM + r"\s+puntos", None),
+):
+    for ln, val in _sedes(pat, contexto=ctx):
+        if val != n_pn:
+            _fallos_26.append(f"c1) L{ln}: dice {val} y las cabeceras de §16 derivan {n_pn}")
+
+# c2 · externos de §19: la tabla frente a la prosa que la reconcilia
+_i19 = t11.find("## Lo que esta fase NO puede corregir")
+if _i19 < 0:
+    _fallos_26.append("c2) no se encontró la sección de externos de §19")
+else:
+    _seg = t11[_i19:_i19 + 12000]
+    _off = t11.count("\n", 0, _i19)
+    _filas_f = re.findall(r"^\| `(F-[0-9]+)`", _seg, re.M)
+    # miembros que la propia reconciliación declara NO externos
+    _no_ext = set(re.findall(
+        r"`(F-[0-9]+)`[^\n]{0,120}?(?:deja de ser externo|NO es externo|nunca lo fue)", _seg))
+    n_ext = len(_filas_f) - len(_no_ext)
+    for pat, que in ((r"los externos son\s+" + _NUM, "externos"),
+                     (_NUM + r"\s+de los cuarenta y tres hallazgos", "externos")):
+        for ln, val in _sedes(pat, _seg, contexto=r"externo"):
+            if val != n_ext:
+                _fallos_26.append(
+                    f"c2) L{_off+ln}: «{val} externos» y la tabla deriva {n_ext} "
+                    f"({len(_filas_f)} filas − {len(_no_ext)} declaradas no externas)")
+    for ln, val in _sedes(r"La tabla tiene\s+" + _NUM + r"\s+filas", _seg, contexto=r"externo"):
+        if val != len(_filas_f):
+            _fallos_26.append(f"c2) L{_off+ln}: «la tabla tiene {val} filas» y tiene {len(_filas_f)}")
+
+# ── 26.d · TOTALES INCOMPATIBLES entre sedes VIVAS ────────────────────────
+# Dos sedes vivas que afirmen cifras distintas del MISMO objeto es un fallo aunque
+# ninguna difiera del derivado por el patrón que la caza.
+for etiqueta, sedes in (
+    ("filas adversariales",
+     _sedes(_NUM + r"\s+filas\s+(?:físicas|de datos|escritas)", contexto=_CTX_X)),
+    ("presiones vigentes",
+     _sedes(_NUM + r"\s+(?:presiones|PRESIONES)", contexto=_CTX_PN)),
+):
+    vals = sorted({v for _, v in sedes})
+    if len(vals) > 1:
+        _fallos_26.append(f"d) sedes vivas incompatibles para «{etiqueta}»: {vals}")
+
+check("G-26",
+      "recuentos DERIVADOS: filas/ids · prosa/derivado · agregados/miembros · sin totales incompatibles",
+      not _fallos_26,
+      "; ".join(_fallos_26) or
+      f"{n_x} filas = {len(set(xs))} ids · {n_pn} presiones derivadas de §16 · "
+      f"prosa viva y agregados coinciden")
 
 # ── G-27 · A7 · los cinco CAMPOS en la regla 1 de §2.6.10 ─────
 r1 = re.search(r"1  EL COMMIT LOCAL SE HACE[^\n]*\n(?:[^\n]*\n){0,3}", t11)

@@ -6,8 +6,9 @@
 > **Basta decir «Continúa»**: la siguiente acción exacta está al final.
 
 > **Estado de la fase, en una línea:**
-> **El GATE DEFINITIVO INDEPENDIENTE devolvió INSUFICIENTE PARA F5 sobre `r4`=`0ea0451`.
-> `F4c` sigue ABIERTA y `F5` NO queda autorizada.**
+> **El GATE DEFINITIVO INDEPENDIENTE devolvió INSUFICIENTE PARA F5 sobre `r4`=`0ea0451`, y
+> sus TRECE condiciones de cierre están APLICADAS — NO CERTIFICADAS. `F4c` sigue ABIERTA y
+> `F5` NO queda autorizada: falta un gate independiente NUEVO sobre el resultado corregido.**
 >
 > Lo emitió un **adjudicador `L`** con contexto limpio sobre los dictámenes cerrados de dos
 > revisores independientes, `J` y `K`, que trabajaron en paralelo sin verse. `L` verificó
@@ -18,15 +19,26 @@
 > **SEIS razones independientes, y cualquiera bastaría:** cobertura incompleta —~8 700 líneas
 > de fuentes centrales que **ningún** revisor abrió—; **un BLOQUEANTE** (`J-01`:
 > `revision_base` sostiene la condición 5 de arranque, el ancla de la restauración y la
-> alcanzabilidad de `abandonada`, y **no está declarado en §3.6 ni en ninguna capa**); cinco
-> GRAVES (`J-02`, `K-01`, `K-02`, `K-03`, `K-06`, `L-02`); un contrato F6 que aún exige
-> decidir arquitectura; una contradicción con `G20`–`G23` sin presión F5; y un checkpoint no
-> vigente. **Ningún hallazgo se ha corregido**: hacerlo en la misma pasada volvería a que
-> quien recibe sea quien aplica.
+> alcanzabilidad de `abandonada`, y **no estaba declarado en §3.6 ni en ninguna capa**);
+> **SEIS GRAVES** (`J-02`, `K-01`, `K-02`, `K-03`, `K-06`, `L-02`); un contrato F6 que aún
+> exigía decidir arquitectura; una contradicción con `G20`–`G23` sin presión F5; y un
+> checkpoint no vigente.
+>
+> **La cifra es SEIS y está derivada de las filas adjudicadas por `L`.** El texto literal del
+> documento 19 dice «cinco graves» y **enumera seis identificadores**: su dictamen se
+> conserva intacto y la corrección va en un **corrigendum externo** del propio documento 19.
+> Derivado: **25 hallazgos planteados · 1 RECHAZADO (`J-09`) · 24 consolidados —
+> BLOQUEANTE 1 · GRAVE 6 · MEDIO 10 · MENOR 7**.
+>
+> **Ningún hallazgo se corrigió DURANTE el gate**, y era deliberado. **Todos están corregidos
+> AHORA**, en la tanda posterior: `D96`–`D102`, `PN-15`, la procedencia de `O16` y este
+> mismo fichero. **Salvo `C-L.5`, la cobertura**, que sólo puede cerrar un gate nuevo
+> leyendo de verdad lo que nadie abrió. **Aplicar no es certificar.**
 >
 > **Y consta:** los tres coinciden en que es la candidata más sólida de la cadena. Las diez
 > filas FALLIDAS del gate anterior están cerradas, verificadas una a una. **Nada de lo que
-> impide el paso exige inventar arquitectura: el bloqueante son cinco líneas en §3.6.**
+> impedía el paso exigía inventar arquitectura: el bloqueante eran cinco líneas en §3.6, y
+> están escritas.**
 
 > **El GATE FINAL INDEPENDIENTE devolvió INSUFICIENTE PARA F5, y su NIVEL 0 —la cobertura que
 > faltaba— está CERRADO. F4c sigue ABIERTA, y F5 NO queda autorizada.**
@@ -95,10 +107,12 @@
 ```text
 CHECKPOINT — ADS-NEXT/12 · SIS/evolucion
 actualizado: 2026-08-29
-metodo:      SIS/Evolucion · GATE DEFINITIVO INDEPENDIENTE EJECUTADO SOBRE r4=0ea0451 ·
+metodo:      SIS/Evolucion · TANDA DE CORRECCIÓN DEL GATE DEFINITIVO APLICADA · D96–D102 ·
+             PN-15 · procedencia de O16 registrada · DOCE de las TRECE condiciones C-L
+             cerradas o registradas · C-L.5 ABIERTA · APLICADA, NO CERTIFICADA ·
+             F4c ABIERTA · F5 NO AUTORIZADA
+metodo_anterior: SIS/Evolucion · GATE DEFINITIVO INDEPENDIENTE EJECUTADO SOBRE r4=0ea0451 ·
              VEREDICTO INSUFICIENTE PARA F5 · F4c ABIERTA · F5 NO AUTORIZADA
-metodo_anterior: SIS/Evolucion · GATE FINAL EJECUTADO · NIVEL 0 CERRADO · VEREDICTO
-             INSUFICIENTE PARA F5 · F4c ABIERTA · F5 NO AUTORIZADA
 based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md@56ea196
              docs/evolucion/11-ARQUITECTURA-INTEGRADA.md   corregida
@@ -118,16 +132,29 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
                                                              D23–D33 · D34–D45 · D46–D51 ·
                                                              D52–D54 · D55–D57 · D58–D59 ·
                                                              D60–D61 · D62 · D63 · D64–D68 ·
-                                                             D69–D70 · D71–D95
+                                                             D69–D70 · D71–D95 · D96–D102
              kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
+rama_de_trabajo: fix/f4c-post-gate-definitivo-20260829, creada en 652ab8e —el commit del
+             gate definitivo, publicado en review/f4c-gate-definitivo-20260829—. Sin
+             upstream. El SHA del árbol vigente se DERIVA de Git y no se escribe aquí:
+             `git rev-parse HEAD` sobre esa rama, y su base con
+             `git rev-parse 652ab8e011c3ae567592e7f12add9f69880f6a5b`
 freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
              Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
              queda marcado HISTÓRICO y SUPERADO, y no se borra
-last_meaningful_event: el GATE DEFINITIVO INDEPENDIENTE —J y K en paralelo, adjudicados por
-             L con contexto limpio— devuelve INSUFICIENTE PARA F5 sobre r4=0ea0451, por SEIS
-             razones independientes. NINGÚN hallazgo se ha corregido en esa pasada, y eso
-             INCLUYE los que caen sobre este mismo fichero: K-01, J-10 y L-01 señalan
-             recuentos y bloques caducados aquí dentro, y se dejan INTACTOS a propósito —
+last_meaningful_event: se APLICA la TANDA DE CORRECCIÓN del gate definitivo. D96–D102, todas
+             revisoras y ninguna reescribe D1–D95. PN-15 registra que G20–G23 de KERNEL.md
+             están PRESIONADAS y pendientes de F5, NO derogadas. O16 gana procedencia real
+             —fecha, formulación presentada y respuesta literal del Owner— sin crear O17.
+             X62 da a §6.7 fila propia. Doce de las trece condiciones C-L quedan cerradas o
+             registradas; C-L.5, la COBERTURA, sigue ABIERTA y sólo la cierra un gate nuevo
+             mediante lectura real. **APLICADA NO ES CERTIFICADA**: F4c sigue ABIERTA y F5
+             sigue NO autorizada (2026-08-29)
+last_meaningful_event_anterior: el GATE DEFINITIVO INDEPENDIENTE —J y K en paralelo, adjudicados
+             por L con contexto limpio— devuelve INSUFICIENTE PARA F5 sobre r4=0ea0451, por
+             SEIS razones independientes. NINGÚN hallazgo se corrigió en esa pasada, y eso
+             INCLUYÓ los que caen sobre este mismo fichero: K-01, J-10 y L-01 señalaban
+             recuentos y bloques caducados aquí dentro, y se dejaron INTACTOS a propósito —
              corregirlos durante el gate sería volver a que quien recibe sea quien aplica
              (2026-08-29)
 last_meaningful_event_anterior: se publican DOS snapshots —r2@1b588ac, con la tanda y el arreglo de
@@ -777,46 +804,96 @@ owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
              + RESOLUCIÓN POSTERIOR O15: "PesquerApp será la primera adopción REAL,
              PERMANENTE y completa de ADS; su repositorio global ADS nace como repositorio
              de control DEFINITIVO. NO autoriza iniciar la adopción" (2026-08-27)
-pregunta_pendiente: ninguna. Las DIEZ presiones normativas vigentes son materia de F5,
-             no preguntas
-siguiente:   LA TANDA DE CORRECCIÓN DEL GATE DEFINITIVO, con sus TRECE condiciones de
-             cierre `C-L.1`–`C-L.13`, que el documento 19 deja escritas y ordenadas por lo
-             que realmente bloquea.
+             + RESOLUCIÓN POSTERIOR O16 (2026-08-29). Se le presentó esta formulación,
+             REDACTADA POR EL SISTEMA: "El gobierno Git del repositorio global de control
+             de ADS tendrá su autoridad normativa en la sección (g); F6 derivará de ella un
+             contrato independiente C8; C7 seguirá gobernando únicamente los repositorios
+             fuente del producto." Respuesta LITERAL del Owner: "ok, confirmamos".
+             El párrafo largo NO es cita suya: lo literal es la confirmación, y lo que
+             confirma es la formulación presentada. NO autoriza iniciar F5, no autoriza
+             redactar (g) y no autoriza crear C8. Registrado por L-02, que demostró que O16
+             era la ÚNICA de las dieciséis resoluciones sin fecha, sin cita y sin entrada
+             aquí — y es la que da sede a PN-11, nacida del BLOQUEANTE B2
+pregunta_pendiente: ninguna. Las TRECE presiones normativas vigentes —derivadas de las
+             cabeceras `## \`PN-` de §16: QUINCE menos PN-4 RETIRADA y PN-5 FUSIONADA— son
+             materia de F5, no preguntas. PN-15 es la que esta tanda añade, por K-06
+siguiente:   OTRO GATE INDEPENDIENTE, con revisores de contexto limpio que NO sean quien
+             aplicó esta tanda. La TANDA DE CORRECCIÓN DEL GATE DEFINITIVO está APLICADA —
+             doce de las trece condiciones cerradas o registradas, y la decimotercera,
+             C-L.5, sólo la puede cerrar ese gate futuro. **APLICADA NO ES CERTIFICADA.**
 
-             BLOQUEAN EL PASO A F5 — cinco:
-               C-L.1  J-01+J-02 · declarar `revision_base` OBLIGATORIO de `preparada` en
-                      §3.6, registrable en `conflicto` y `abandonada`, y decir si entra en
-                      el cómputo de `tx`. CINCO LÍNEAS, y no hay nada que decidir
-               C-L.2  K-06 · resolver G20–G23: una fila en a.11 —material APROBADO, luego
-                      una PN nueva— o una fila en §17 para kernel/KERNEL.md. NO es electivo
-               C-L.3  K-02 · reformular la regla de D92 para que opere sobre la
-                      PARTICIPACIÓN de DOM/SEG por cualquier vía, no sobre `:condiciones`.
-                      Extender su prueba en el mismo sentido
-               C-L.4  L-02 · registrar la procedencia de O16 con la disciplina de O7–O15, o
-                      retirarla y devolver PN-11 a las presiones sin sede
-               C-L.5  COBERTURA · un gate cuyos revisores lean ÍNTEGRO lo que nadie abrió:
-                      ADS-PENDIENTES completo con sus BLOQUES B y C, y los documentos 16,
-                      17 y 18 completos. Y que NO lo aplique quien lo reciba
+             CÓMO QUEDA CADA CONDICIÓN — derivado de lo hecho, no copiado:
+               C-L.1  CERRADA · D96: `revision_base` OBLIGATORIO de `preparada` en §3.6,
+                      registrable en `conflicto` y `abandonada`, y ENTRA en el cómputo de
+                      `tx`. Cierra J-01 (BLOQUEANTE) y J-02 a la vez, sin nonce ni timestamp
+               C-L.2  REGISTRADA · D97 crea PN-15: G20–G23 PRESIONADAS y pendientes de F5,
+                      NO derogadas por F4, con fila propia para kernel/KERNEL.md en §17.
+                      La decisión sigue siendo del Owner; F4 no la toma
+               C-L.3  CERRADA · D98 reformula la regla de D92 sobre PARTICIPACIÓN SEMÁNTICA
+                      y retira el barrido léxico. Alcanza SEG en DEP por la obligatoria, y
+                      AUD sin sufijo. Contrato F6 completo: entradas, algoritmo, salida,
+                      positivos, contraejemplos, `composicion-incompleta` y la prueba que
+                      hoy TIENE que fallar nombrando proceso:DEP → SEG:revision AUSENTE
+               C-L.4  CERRADA · procedencia de O16 registrada con fecha, formulación
+                      presentada y respuesta literal del Owner. No se creó O17
+               C-L.5  ABIERTA, Y NO LA CIERRA ESTA TANDA · es condición del gate siguiente,
+                      escrita al final de §19 con sus requisitos exactos: lectura ÍNTEGRA de
+                      ADS-PENDIENTES con sus BLOQUES B y C y de los documentos 16, 17 y 18;
+                      manifiesto con ruta, líneas, SHA-256 y primera y última sección
+                      sustantiva; declaración de cobertura REALMENTE LEÍDA; cualquier fuente
+                      asignada y no leída impide la suficiencia; y el adjudicador no corrige
+                      los hallazgos que encuentre
+               C-L.6  CERRADA · D99: las CINCO salidas verdes de M7, alineadas en las tres
+                      sedes de §8.3
+               C-L.7  CERRADA · este fichero. Estado de las fases, pregunta_pendiente,
+                      RESULTADO de la matriz, presiones y siguiente acción, reescritos
+               C-L.8  CERRADA · D100: el `hash_previo` de la reparación es el
+                      `hash_observado` del `deriva`, PARA LAS TRES CAUSAS. El ancla de la
+                      restauración es `revision_base`, y es un dato distinto
+               C-L.9  CERRADA · 42→46 derivado en las seis sedes, reconciliación de externos
+                      corregida a 9 = 7 + F-01 + F-05, y G-26 ampliada a cuatro
+                      comprobaciones sin ninguna cifra constante
+               C-L.10 REGISTRADA · D102: tres contratos F6 completos —censo AFIRMACIONES
+                      derivado, T152 sobre toda sede que publique versión, y la guardia de
+                      intérprete con exit 2— y ocho casos de regresión obligatorios.
+                      NO IMPLEMENTADO, y así se dice
+               C-L.11 CERRADA · D101: §6.7 recibe fila propia X62. X51 conserva su escenario
+               C-L.12 REGISTRADA · los dos restos de (b) —«(P7)» donde aplica P9 en L358, y
+                      la numeración 1,2,5,3,4 de L462–472— quedan como checklist verificable
+                      de F5, con ruta, ubicación, corrección exacta y prueba. Sin PN nueva:
+                      el contenido no cambia
+               C-L.13 CERRADA los cinco primeros —K-05, K-09, K-10, K-08, L-03—; J-11
+                      REGISTRADO como contrato F6 en D102
 
-             NO BLOQUEAN, y deben quedar cerradas o registradas — ocho: C-L.6 a C-L.13.
-
-             DESPUÉS de esa tanda, OTRO GATE INDEPENDIENTE. F5 NO arranca sin un veredicto
-             de SUFICIENCIA.
+             F5 NO arranca sin un veredicto explícito de SUFICIENCIA.
 falta_para_cerrar_la_capa:
-  · F4c ESTÁ ABIERTA, y ahora con el GATE DEFINITIVO INDEPENDIENTE ejecutado y devuelto:
-    **INSUFICIENTE PARA F5**, adjudicado por L sobre los dictámenes cerrados de J y K.
-    UN BLOQUEANTE (J-01), CINCO GRAVES (J-02, K-01, K-02, K-03, K-06, L-02), un contrato F6
-    que aún exige decidir arquitectura, una contradicción con G20–G23 sin presión F5, un
-    checkpoint no vigente, y COBERTURA INCOMPLETA: ~8 700 líneas de fuentes centrales que
-    NINGÚN revisor abrió. **F5 NO queda autorizada.**
-  · NINGÚN HALLAZGO DEL GATE DEFINITIVO SE HA CORREGIDO, y es deliberado. Incluye los que
-    caen sobre este mismo fichero —K-01, J-10, L-01: recuentos y bloques caducados aquí
-    dentro—, que se dejan INTACTOS. El encargo del gate prohíbe corregir durante el gate, y
-    corregirlos habría vuelto a hacer que quien recibe sea quien aplica.
-  · LA COBERTURA ES AHORA UNA CONDICIÓN EXPLÍCITA (C-L.5). Tres gates consecutivos han
-    declarado lectura parcial del mismo material: ADS-PENDIENTES bloques B y C, y los
-    documentos 16, 17 y 18. Mientras nadie los abra, ningún gate puede certificar que no
-    contengan algo que refute o agrave lo escrito — y L demostró con dos ejemplos que lo hay.
+  · F4c ESTÁ ABIERTA. El GATE DEFINITIVO INDEPENDIENTE devolvió **INSUFICIENTE PARA F5**,
+    adjudicado por L sobre los dictámenes cerrados de J y K, y **sus correcciones están
+    ahora APLICADAS — NO CERTIFICADAS**. Veinticinco hallazgos planteados, uno RECHAZADO
+    (J-09) y **VEINTICUATRO consolidados**, derivados fila a fila de la adjudicación:
+    **BLOQUEANTE 1 · GRAVE 6 · MEDIO 10 · MENOR 7**. Las seis razones del veredicto fueron
+    cobertura incompleta, el BLOQUEANTE J-01, los SEIS graves, un contrato F6 que aún exigía
+    decidir arquitectura (K-02), la contradicción con G20–G23 sin presión F5 (K-06) y un
+    checkpoint no vigente. **F5 SIGUE NO AUTORIZADA**: aplicar una corrección no es superarla,
+    y hace falta un gate independiente nuevo sobre el resultado corregido.
+  · ERRATA DEL PROPIO GATE, CORREGIDA FUERA DE SU TEXTO LITERAL: el documento 19 dice
+    «cinco graves» y enumera SEIS identificadores —J-02, K-01, K-02, K-03, K-06, L-02—.
+    El texto de L **se conserva intacto** y la corrección va en un corrigendum externo del
+    propio documento 19. La cifra vigente, DERIVADA de las filas adjudicadas, es **SEIS**.
+  · LOS TRES HALLAZGOS QUE CAÍAN SOBRE ESTE FICHERO —K-01, J-10, L-01— **se dejaron
+    intactos DURANTE el gate**, deliberadamente, porque corregirlos allí habría vuelto a
+    hacer que quien recibe sea quien aplica. **Se corrigen en esta tanda**, que es la que
+    corresponde, y por eso este bloque ya no dice DIEZ presiones ni se detiene en D63.
+  · LA COBERTURA SIGUE SIENDO UNA CONDICIÓN ABIERTA (C-L.5), y **esta tanda no la cierra ni
+    puede cerrarla**: aplicar correcciones no es leer lo que no se leyó, y quien aplica no
+    certifica su propia cobertura. Tres gates consecutivos han declarado lectura parcial del
+    mismo material —ADS-PENDIENTES bloques B y C, y los documentos 16, 17 y 18—. Mientras
+    nadie los abra, ningún gate puede certificar que no contengan algo que refute o agrave lo
+    escrito, y **L lo demostró con dos ejemplos en direcciones opuestas**: §12 reforzó K-06, y
+    la cabecera L3–L6 le obligó a tumbar la base externa de K-03 y a retirar su propio
+    agravamiento de K-11. **Sólo la cierra el gate siguiente, mediante lectura real.**
+  · NO SE HA INICIADO F5, ni F6, ni PesquerApp. Ninguna enmienda normativa está redactada,
+    C8 no existe y C7 no se ha tocado.
 
   · F4c ESTÁ ABIERTA, y ahora con el GATE FINAL INDEPENDIENTE ejecutado y devuelto:
     **INSUFICIENTE PARA F5**, por adjudicación de un tercer agente sobre dos dictámenes
@@ -835,20 +912,26 @@ falta_para_cerrar_la_capa:
     encadenadas —siete con la sexta comprobación técnica—, y cada una encontró defectos de
     la anterior. NINGUNA crítica se declara superada. F4c sólo se cierra con un veredicto explícito de SUFICIENCIA emitido por un revisor
     independiente sobre el resultado corregido
-  · DIEZ PRESIONES NORMATIVAS VIGENTES —PN-1, PN-2, PN-3, PN-6 a PN-12; PN-4 retirada y
-    PN-5 fusionada—. PN-1 —la sección (g)— BLOQUEA todo el estado
-    durable, y ahora decide MÁS: fsync, regla de commit, sellado, identidad y regla de
-    lectura. PN-2 y PN-3 son la misma y sólo bloquean que el sistema abra auditorías solo.
-    PN-6 reinterpreta O12. PN-7 (b.14 dice «completar o revertir»), PN-8 (VER no está en la
-    ruta AUD), PN-9 (predicados de obligación de b.3 — probablemente ninguna materia, y F5
-    debe CONFIRMARLO) y PN-10 (O11 dice «estado durable») son NUEVAS. PN-4 RETIRADA y PN-5
-    FUSIONADA en PN-3. Ninguna renumerada, y ninguna redactada
+  · TRECE PRESIONES NORMATIVAS VIGENTES —PN-1, PN-2, PN-3, PN-6 a PN-15—. El total se
+    DERIVA de las cabeceras `## \`PN-` de §16: QUINCE menos PN-4 RETIRADA y PN-5 FUSIONADA
+    en PN-3. Ninguna renumerada, y ninguna redactada. PN-1 —la sección (g)— BLOQUEA todo el
+    estado durable, y decide además fsync, regla de commit, sellado, identidad y regla de
+    lectura. PN-2 y PN-3 son la misma pregunta por dos caminos. PN-6 reinterpreta O12.
+    PN-7 (b.14 dice «completar o revertir»), PN-8 (VER no está en la ruta AUD), PN-9
+    (predicados de obligación de b.3 — probablemente ninguna materia, y F5 debe
+    CONFIRMARLO), PN-10 (O11 dice «estado durable»), PN-11 (gobierno Git del control repo,
+    con sede en O16 y su procedencia ya registrada), PN-12 (mapa documental de O8),
+    PN-13 (proceso:SIS y proceso:INV sin vía para DOM, SEG ni DIS) y PN-14
+    (DIS/Reconstruccion en material aprobado). **PN-15 la añade esta tanda** por K-06:
+    G20–G23 de KERNEL.md 1.5.0 están PRESIONADAS y pendientes de F5, **NO derogadas por
+    F4**, y hasta que F5 decida regla a regla SIGUEN VIGENTES
   · NADA CONSTRUIDO: ni kernel, ni runtime, ni tooling, ni esquemas, ni adaptadores, ni
     plantillas, ni packs, ni validadores, ni migraciones. Las correcciones son DISEÑO
     CORREGIDO, no diseño implementado
-  · NADA PROBADO: las 42 filas de la tabla adversarial de §2.6.7, las 9 ventanas R1–R9 de
-    §2.6.9, los 11 escenarios
-    negativos de §11.5 y los 12 escenarios de §14 están ESCRITOS. Ninguno ejecutado
+  · NADA PROBADO: las **46** filas de la tabla adversarial de §2.6.7 —derivadas por conteo,
+    no escritas a mano; X62 la añade esta tanda por J-03—, las 9 ventanas RC-1–RC-9 de
+    §2.6.9, los 11 escenarios negativos de §11.5 y los 12 escenarios de §14 están ESCRITOS.
+    Ninguno ejecutado
   · DEFECTO DE C7 REGISTRADO Y NO CORREGIDO: su gate exige Integration Set con UNA sola
     fuente y E2.6 exige «varias». Prescripción CERRADA, trazabilidad a E2.6, ejecución F6.
     NO es presión normativa. C7 no se ha tocado
@@ -895,8 +978,9 @@ F3c PUERTA CORRECTIVA        CERRADA y después CORREGIDA — crítica independi
                              10-CRITICA-INDEPENDIENTE-F3.md · release 2.0.0-alpha.9
 F4  ARQUITECTURA INTEGRADA   ENTREGADA, NO CERTIFICADA, y después CORREGIDA por
                              devolución independiente — 11-ARQUITECTURA-INTEGRADA.md
-F4c CRÍTICA INDEPENDIENTE    TRES devoluciones, EMITIDAS por revisores y auditores que no
-                             escribieron F4, TRANSCRITAS y APLICADAS por su autor material.
+F4c CRÍTICA INDEPENDIENTE    ABIERTA. La cadena completa, EMITIDA por revisores y auditores
+                             que no escribieron F4, TRANSCRITA y APLICADA por su autor
+                             material — **y aplicar no es superar**.
                              1ª  nueve bloques · 12-CRITICA-INDEPENDIENTE-F4.md · D23–D33
                              2ª  VEREDICTO DE INSUFICIENCIA por un revisor que TAMPOCO
                                  aplicó la primera: 2 BLOQUEANTES, 7 GRAVES, 14 nuevos ·
@@ -905,21 +989,40 @@ F4c CRÍTICA INDEPENDIENTE    TRES devoluciones, EMITIDAS por revisores y audito
                                  sobre el ÁRBOL REMOTO REAL: 3 BLOQUEANTES, 2 GRAVES, 4
                                  MEDIOS, 2 MENORES · 14-DEVOLUCION-TECNICA-PREVIA-F4C.md ·
                                  D46–D51. NO es veredicto de suficiencia
-                             Y TRES PASADAS TÉCNICAS posteriores, ninguna de ellas la
-                             tercera revisión: la 1ª con dos BLOQUEANTES y un GRAVE
-                             (`D52`–`D54`), la 2ª con tres GRAVES (`D55`–`D57`) sobre el
-                             texto que la 1ª escribió, y una 3ª comprobación acotada
-                             (`D58`–`D59`) sobre el texto de la 2ª y una 4ª (`D60`–`D61`)
-                             sobre el texto de la 3ª, una 5ª (`D62`) sobre el de la 4ª y
-                             una 6ª (`D63`) sobre la semántica de sellado.
-                             DOS de los hallazgos de la 2ª devolución, TRES de la 3ª y LOS
-                             TRES de la segunda corrección técnica son defectos que las
-                             correcciones ANTERIORES introdujeron o no vieron.
-                             ABIERTA: sólo la cierra un veredicto explícito de SUFICIENCIA
-                             emitido por un revisor independiente sobre el resultado
-                             corregido. Ese veredicto NO existe
-F5  ENMIENDAS                DIEZ presiones normativas vigentes, enumeradas y sin redactar.
-                             NO INICIADA
+                             SEIS PASADAS TÉCNICAS encadenadas, ninguna de ellas la tercera
+                             revisión: D52–D54, D55–D57, D58–D59, D60–D61, D62 y D63. Cada
+                             una sobre el texto que escribió la anterior
+                             4ª  TERCERA REVISIÓN INDEPENDIENTE — VEREDICTO DE
+                                 INSUFICIENCIA · 15-TERCERA-REVISION-INDEPENDIENTE-F4C.md ·
+                                 D64–D70
+                             5ª  GATE FINAL INDEPENDIENTE (A·B·C) + su COMPLEMENTO DE
+                                 COBERTURA — INSUFICIENTE PARA F5: 4 BLOQUEANTES, 6 GRAVES
+                                 y cobertura incompleta · documentos 16 y 17 · D71–D86
+                             6ª  GATE DE CIERRE INDEPENDIENTE (G·H, adjudica I) —
+                                 INSUFICIENTE PARA F5: cobertura incompleta y DIEZ de las
+                                 43 filas FALLIDAS · documento 18 · D87–D95
+                             7ª  GATE DEFINITIVO INDEPENDIENTE (J·K, adjudica L) —
+                                 **INSUFICIENTE PARA F5** sobre r4=0ea0451, por SEIS razones
+                                 independientes. 25 hallazgos planteados, J-09 RECHAZADO,
+                                 **24 consolidados: BLOQUEANTE 1 · GRAVE 6 · MEDIO 10 ·
+                                 MENOR 7**, derivado de las filas adjudicadas ·
+                                 19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md · **D96–D102**
+                             SUS TRECE CONDICIONES C-L.1–C-L.13 están APLICADAS —doce
+                             cerradas o registradas—, salvo C-L.5, la COBERTURA, que sólo
+                             puede cerrar el gate siguiente mediante lectura real.
+                             **APLICADAS NO ES CERTIFICADAS.**
+                             DOS de los hallazgos de la 2ª devolución, TRES de la 3ª, LOS
+                             TRES de la segunda corrección técnica, y K-02 del gate
+                             definitivo —cuya causa es D75, una corrección anterior— son
+                             defectos que las correcciones ANTERIORES introdujeron o no
+                             vieron.
+                             SIGUE ABIERTA: sólo la cierra un veredicto explícito de
+                             SUFICIENCIA emitido por revisores independientes de contexto
+                             limpio sobre el resultado corregido, y que NO sean quien lo
+                             aplicó. Ese veredicto NO existe
+F5  ENMIENDAS                TRECE presiones normativas vigentes —derivadas de §16: quince
+                             cabeceras menos PN-4 retirada y PN-5 fusionada—, enumeradas y
+                             sin redactar. **NO INICIADA, y NO AUTORIZADA**
 F6  DESCOMPOSICIÓN Y EJECUCIÓN  no iniciada
 ```
 
@@ -1237,22 +1340,56 @@ QUÉ NO ES           un veredicto. **Lo aplicó quien lo recibió**, por novena 
                     certifica nada. `F4c` sigue **ABIERTA** y el veredicto vigente sigue
                     siendo **INSUFICIENTE PARA F5**.
 
-RESULTADO           **31 CORREGIDO_EN_F4 · 1 PRESION_LISTA_PARA_F5 · 2
-                    CONTRATO_COMPLETO_PARA_F6 · 8 EXTERNO_CON_PROPIETARIO · 1
-                    HISTORICO_NO_APLICABLE = 43.** Un estado primario por hallazgo, los
-                    cinco mutuamente excluyentes, y el total DERIVADO de las filas.
+RESULTADO           **[HISTÓRICO · lo que esta tanda dejó]** `31 CORREGIDO_EN_F4 · 1
+DE ESTA TANDA       PRESION_LISTA_PARA_F5 · 2 CONTRATO_COMPLETO_PARA_F6 · 8
+                    EXTERNO_CON_PROPIETARIO · 1 HISTORICO_NO_APLICABLE = 43`. Un estado
+                    primario por hallazgo, los cinco mutuamente excluyentes.
 
 DECISIONES          `D71`–`D86`. `D16`–`D70` conservan su texto. `O15` y `O16` intactas.
-PRESIONES           **ONCE vigentes**: `PN-1`, `PN-2`, `PN-3`, `PN-6` a `PN-13`. `PN-4`
-                    retirada, `PN-5` fusionada en `PN-3`. Sin renumerar.
-                    **`PN-13` es la única que esta tanda añade**, y la única de los cuarenta
-                    y cuatro hallazgos que exige una: `proceso:SIS` y `proceso:INV` no dan
-                    vía a `DOM`, `SEG` ni `DIS`, y `INS-5` las necesita antes de su gate.
+PRESIONES           **[HISTÓRICO]** ONCE vigentes en el momento de esta tanda: `PN-1`,
+                    `PN-2`, `PN-3`, `PN-6` a `PN-13`. `PN-4` retirada, `PN-5` fusionada en
+                    `PN-3`. Sin renumerar. **`PN-13` es la única que esta tanda añadió**:
+                    `proceso:SIS` y `proceso:INV` no dan vía a `DOM`, `SEG` ni `DIS`, y
+                    `INS-5` las necesita antes de su gate.
 
 RENOMBRADOS         `R1`–`R9` (ventanas de reconciliación, retiradas por `D64`) → `RC-1`–`RC-9`
                     `N0`–`N7` (fases de instalación) → `INS-0`…`INS-7`
                     `C6` `N1`–`N14` y la escala de novedad `N0`–`N4` NO se tocan.
 ```
+
+> **Dónde acaba lo histórico y dónde empieza lo vigente** — corregido por `L-01`, MEDIO. El
+> bloque de arriba es el **registro de la tanda del gate final** y sus cifras son **las de
+> aquel momento**; la tabla de abajo es **VIVA** y ha seguido corrigiéndose en las tandas
+> posteriores. Que un bloque histórico introdujera una tabla viva **sin marca que
+> distinguiera una cosa de otra** es lo que `L-01` señaló: `RESULTADO` decía `31 · 1 · 2 · 8
+> · 1` mientras la tabla, veintisiete líneas más abajo, daba `31 · 2 · 2 · 7 · 1`; y
+> `PRESIONES` decía ONCE donde hoy son TRECE. **Los dos bloques quedan marcados, y ninguno
+> se borra.**
+>
+> **CIFRAS VIGENTES, DERIVADAS de la tabla de abajo y no copiadas de ningún resumen:**
+>
+> ```text
+> ESTADO PRIMARIO      31 CORREGIDO_EN_F4 · 2 PRESION_LISTA_PARA_F5 —B-2 y F-01— ·
+> DE LOS 43            2 CONTRATO_COMPLETO_PARA_F6 —M-5 y M-6— · 7 EXTERNO_CON_PROPIETARIO
+>                      —F-02 F-04 F-06 F-07 F-08 F-10 F-11— · 1 HISTORICO_NO_APLICABLE —m-3—
+>                      = 43. Adjudicadas por `L`: 42 SUPERADAS · 0 FALLIDAS · 1 NO APLICABLE
+>
+> PRESIONES VIGENTES   TRECE. Derivado: quince cabeceras `## \`PN-` en §16, menos `PN-4`
+>                      RETIRADA y `PN-5` FUSIONADA. `PN-15` la añade la tanda del gate
+>                      definitivo, por `K-06`
+>
+> HALLAZGOS DEL GATE   25 planteados · 1 RECHAZADO (`J-09`) · **24 consolidados**:
+> DEFINITIVO           BLOQUEANTE 1 · GRAVE 6 · MEDIO 10 · MENOR 7. Derivado de las filas
+>                      adjudicadas por `L`, no de ningún total escrito
+>
+> FILAS ADVERSARIALES  46 filas físicas · 46 ids únicos en §2.6.7. `X62` la añade la tanda
+>                      del gate definitivo, por `J-03`
+> ```
+>
+> **Las condiciones de cierre que aparezcan en las filas de abajo citando cifras de su
+> momento** —por ejemplo, «once puntos de presión» en la fila `A10`— **son el texto con que
+> aquella fila se cerró**, y no se reescriben: la cifra vigente es siempre la derivada de
+> arriba. Es la misma disciplina que la nota al pie de `O15`.
 
 ### Matriz de cierre de los 43 hallazgos distintos
 

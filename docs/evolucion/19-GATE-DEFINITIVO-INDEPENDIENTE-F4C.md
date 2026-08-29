@@ -1008,10 +1008,7 @@ Las diez filas que el gate anterior declaró FALLIDAS **están cerradas, y compr
 
 Pero son un bloqueante y cinco graves, están sin resolver, la cobertura del corpus obligatorio está incompleta, el checkpoint no está vigente y una resolución del Owner no es atribuible. **El criterio que se me dio es explícito en que cualquiera de esas cosas impide el paso.**
 
-`F4c` sigue **ABIERTA**. **F5 NO queda autorizada.**agentId: a4b90d871ad130e4b (use SendMessage with to: 'a4b90d871ad130e4b', summary: '<5-10 word recap>' to continue this agent)
-<usage>subagent_tokens: 307764
-tool_uses: 142
-duration_ms: 1776290</usage>
+`F4c` sigue **ABIERTA**. **F5 NO queda autorizada.**
 ---
 
 ## 8 · Hallazgos nuevos, discrepancias y resolución
@@ -1047,8 +1044,109 @@ POR QUÉ                 todo eso está CORRECTAMENTE DECLARADO, con propietario
 
 **`F4c` sigue ABIERTA. `F5` NO queda autorizada.**
 
-Emitido por el adjudicador `L` tras verificar cada afirmación material contra su fichero y su línea, sin resolver por mayoría y rechazando lo que no se sostuvo. Falla por **seis razones independientes**, cualquiera de las cuales bastaría: cobertura incompleta · un bloqueante arquitectónico abierto (`J-01`) · cinco graves arquitectónicos abiertos · un contrato F6 que todavía exige decidir arquitectura (`K-02`) · una contradicción con material normativo sin presión F5 (`K-06`) · y un checkpoint no vigente.
+Emitido por el adjudicador `L` tras verificar cada afirmación material contra su fichero y su línea, sin resolver por mayoría y rechazando lo que no se sostuvo. Falla por **seis razones independientes**, cualquiera de las cuales bastaría: cobertura incompleta · un bloqueante arquitectónico abierto (`J-01`) · **SEIS** graves arquitectónicos abiertos —ver el corrigendum de §12— · un contrato F6 que todavía exige decidir arquitectura (`K-02`) · una contradicción con material normativo sin presión F5 (`K-06`) · y un checkpoint no vigente.
 
 **Ningún hallazgo se ha corregido en esta pasada.** Corregirlos aquí volvería a hacer que quien recibe sea quien aplica, que es la razón por la que once tandas se han encadenado.
 
 **Y consta, porque un gate que sólo publica lo que falla tampoco es una medida:** los tres revisores coinciden en que ésta es, con diferencia, la candidata más sólida de la cadena. Las diez filas que el gate anterior declaró FALLIDAS están cerradas, verificadas una a una contra su sede. `D67` está restaurada byte a byte. `D87`–`D95` son todas revisoras y ninguna reescribe una decisión anterior. La batería da 30/30 desde dos ubicaciones y declara por sí misma que no certifica nada. **Nada de lo que impide el paso exige inventar arquitectura para cerrarse:** el bloqueante son cinco líneas en §3.6.
+
+---
+
+## 12 · CORRIGENDUM · recuentos derivados, y una errata del propio gate
+
+> **Añadido por la TANDA DE CORRECCIÓN posterior, FUERA de toda transcripción.** Los
+> dictámenes literales de `J`, `K` y `L` de §3, §4 y §5 **no se han tocado**: conservan cada
+> palabra, incluida la que este apartado corrige. Un gate se conserva como se emitió; lo que
+> se reancla es la cifra vigente, y se hace aquí, donde se ve que es una corrección y de
+> quién.
+
+### 12.1 · La errata: «cinco graves» junto a SEIS identificadores
+
+El dictamen de `L` dice, en dos sedes de su texto literal —§5.10, «Y lo que quiero que
+conste»— «**los cinco graves**» y «**un bloqueante y cinco graves**». Y en su razón 3 del
+veredicto enumera:
+
+```text
+J-02 · K-02 · K-03 · K-06 · K-01 · L-02        →  SEIS identificadores
+```
+
+**Son seis, no cinco.** El error es de recuento en la prosa, no de adjudicación: las seis
+filas están adjudicadas GRAVE una a una en §5.3, y ninguna de las seis está en duda.
+
+### 12.2 · Las severidades, DERIVADAS de las filas adjudicadas
+
+Ningún total de este bloque se copia de la prosa de nadie. Se deriva recorriendo las filas de
+adjudicación de `L` en §5.3 y leyendo la severidad que cada una lleva escrita:
+
+```text
+J-01  BLOQUEANTE   (L lo SUBE desde el GRAVE que J proponía)
+J-02  GRAVE          K-01  GRAVE   (L lo sube desde MENOR de J-10 y lo agrava)
+J-03  MEDIO          K-02  GRAVE   (agravado por L)
+J-04  MEDIO          K-03  GRAVE   (mantenido, con su base externa CORREGIDA por L)
+J-05  MEDIO          K-04  MEDIO
+J-06  MENOR          K-05  MEDIO
+J-07  MEDIO          K-06  GRAVE   (L lo SUBE desde el MEDIO que K proponía)
+J-08  MENOR          K-07  MEDIO
+J-09  RECHAZADO      K-08  MENOR         L-01  MEDIO
+J-10  MEDIO          K-09  MENOR         L-02  GRAVE
+J-11  MEDIO          K-10  MENOR         L-03  MENOR
+                     K-11  MENOR   (L RETIRA su propio agravamiento)
+
+PLANTEADOS                     25     11 de J · 11 de K · 3 de L
+RECHAZADOS                      1     J-09
+CONSOLIDADOS                   24     = 25 − 1
+
+BLOQUEANTE                      1     J-01
+GRAVE                           6     J-02 · K-01 · K-02 · K-03 · K-06 · L-02
+MEDIO                          10     J-03 J-04 J-05 J-07 J-10 J-11 K-04 K-05 K-07 L-01
+MENOR                           7     J-06 J-08 K-08 K-09 K-10 K-11 L-03
+                             ────
+                               24     COINCIDE con los consolidados
+```
+
+### 12.3 · Tres cosas distintas que no hay que confundir
+
+```text
+HALLAZGOS CONSOLIDADOS      24. Todo lo que sobrevivió a la adjudicación, con
+                            independencia de si bloquea
+
+HALLAZGOS QUE EL VEREDICTO   5. `J-01` (BLOQUEANTE), y los graves `J-02`, `K-02`, `K-06` y
+USA COMO BLOQUEANTES DEL     `L-02`. Son exactamente los que sostienen `C-L.1`–`C-L.4`.
+PASO                         **`K-01` y `K-03` son GRAVES y NO bloquean**: sus condiciones
+                             —`C-L.7` y `C-L.6`— están en el grupo que `L` titula «no
+                             bloquean F5, pero deben quedar cerradas o registradas».
+                             Ser GRAVE y bloquear el paso no son lo mismo, y `L` las separa
+                             **La sexta razón que bloquea NO es un hallazgo: es la
+                             COBERTURA** (`C-L.5`)
+
+CONDICIONES DE CIERRE       13. `C-L.1`–`C-L.13`. **Cinco bloquean** —`C-L.1` a `C-L.5`— y
+                            **ocho no** —`C-L.6` a `C-L.13`—. No hay correspondencia uno a
+                            uno con los hallazgos: `C-L.1` cierra dos (`J-01`+`J-02`),
+                            `C-L.7` cierra tres (`K-01`+`J-10`+`L-01`), `C-L.13` cierra seis
+```
+
+### 12.4 · Dónde se ha propagado la cifra derivada
+
+`SEIS GRAVES` queda escrito en las **sedes de estado vigentes** —la línea de estado y
+`falta_para_cerrar_la_capa` del checkpoint, y la fila del índice de `docs/evolucion/`—, y
+`CINCO GRAVES` **se conserva intacto donde `L` lo escribió**. La regla es la misma que la
+nota al pie de `O15`, y la misma que este corpus aplica a los enums sustituidos: **la
+proyección vigente es una, las citas históricas son muchas, y están marcadas como tales.**
+
+### 12.5 · Un residuo de transcripción, retirado
+
+La transcripción del dictamen de `L` arrastraba, pegadas a su última línea, cuatro líneas de
+**metadatos de la herramienta** que lo ejecutó —un identificador de agente y un bloque
+`<usage>` con contadores de tokens, llamadas y milisegundos—. **No eran texto de `L`**: eran
+exhaust del arnés, adheridos al transcribir. **Se retiran**, y con ello la última línea del
+dictamen vuelve a ser exactamente la que `L` escribió: «`F4c` sigue ABIERTA. F5 NO queda
+autorizada.» Retirarlos **restituye** la literalidad en vez de alterarla, y consta aquí
+porque el defecto lo introdujo el coordinador al transcribir, no el adjudicador al juzgar.
+
+### 12.6 · Y qué NO cambia este corrigendum
+
+**El veredicto no cambia, y no podía cambiar.** `INSUFICIENTE PARA F5` se sostiene sobre
+**seis razones independientes, cualquiera de las cuales bastaría**, y la primera —la
+cobertura— no depende de ningún recuento. Que los graves sean seis y no cinco **agrava** el
+cuadro; no lo alivia. Ninguna adjudicación de `L` se toca, ningún hallazgo se reclasifica y
+ninguna de las trece condiciones de cierre se retira.

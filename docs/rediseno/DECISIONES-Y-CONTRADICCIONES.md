@@ -314,6 +314,52 @@ de sus 28 hallazgos consolidados.
 
 ---
 
+### `D96`–`D102` · las decisiones de la CORRECCIÓN DEL GATE DEFINITIVO INDEPENDIENTE
+
+El **GATE DEFINITIVO INDEPENDIENTE** —dos revisores con contexto limpio, `J` y `K`, en
+paralelo y sin verse, y un adjudicador `L` que recibió los dos dictámenes ya cerrados—
+emitió **INSUFICIENTE PARA F5** por **seis** razones independientes: cobertura incompleta
+—~8 700 líneas de fuentes centrales que ningún revisor abrió—, un BLOQUEANTE arquitectónico
+(`J-01`), **SEIS** GRAVES abiertos, un contrato F6 que aún exigía decidir arquitectura
+(`K-02`), una contradicción con `G20`–`G23` sin presión F5 (`K-06`) y un checkpoint no
+vigente. `L` verificó cada afirmación material contra su fichero y su línea, **sin resolver
+por mayoría**, y **rechazó** `J-09`, la base externa de `K-03` y su propio agravamiento de
+`K-11`. Su juicio se conserva íntegro e inmutable en
+`docs/evolucion/19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md`. Estas decisiones son la corrección
+de sus **24 hallazgos consolidados** —25 planteados menos `J-09`, rechazado—, derivados fila
+a fila de la adjudicación y no de ningún total escrito a mano.
+
+> **`D1`–`D95` conservan su texto ÍNTEGRO, y `O1`–`O16` quedan intactas.** Esta tanda **no
+> toca ni una fila preexistente del registro**. A `O16` se le AÑADE su procedencia —que es lo
+> que `L-02` exigía— **sin modificar su texto resolutivo ni crear una `O17`**: registrar de
+> dónde viene una resolución no es reescribirla.
+
+> **Y una parte de `C-L.7` se dejó SIN CORREGIR deliberadamente durante el gate**, y consta:
+> `K-01`, `J-10` y `L-01` caen sobre el propio checkpoint, que estaba entre los ficheros que
+> el gate podía tocar. Sus recuentos caducados se dejaron intactos y se escribió por qué —
+> corregirlos durante el gate habría vuelto a hacer que quien recibe sea quien aplica. **Se
+> corrigen ahora**, que es la tanda que corresponde.
+
+| # | decisión | qué revisa | por qué, y qué alternativa se descartó | cómo se revierte |
+|---|---|---|---|---|
+| D96 | **`revision_base` es campo OBLIGATORIO de `preparada` en §3.6, se registra o referencia de forma comprobable en `conflicto` y en `abandonada`, y ENTRA en el cómputo de `tx` de §2.8.** Identifica la **revisión publicada y consistente** desde la que parte la transacción, y **NO es `base`**: `base` es la huella de las ENTRADAS sobre las que se decidió, `revision_base` es el PUNTO DEL HISTORIAL contra el que se restaura y se verifica byte a byte. Y con ello queda cerrada la colisión de identidad: la transacción original parte de la revisión ANTERIOR al incidente; el incidente cerrado SE PUBLICA, produciendo revisión nueva; la reparación parte de ESA revisión; luego su `revision_base`, y con él su `tx`, son **distintos**. La idempotencia de una misma intención sobre la MISMA base se conserva intacta | **`D69`**, en su propagación. `D69` introdujo `revision_base` y decidió bien; lo que faltaba era llevarlo a §3.6 y a §2.8. `D69` **no se reescribe** | `J-01`, **BLOQUEANTE**, y `J-02`, GRAVE. `revision_base` era condición 5 de arranque (§2.5), ancla exacta de la restauración (§2.6.9), lo que hace ALCANZABLE `abandonada` —«INALCANZABLE hasta haber RESTAURADO todas sus rutas a `revision_base` y haberlo verificado byte a byte»— y el sostén de «`main` nunca contiene estado parcial» y de la rama REVERTIR de `PN-7`. Y tenía **cero apariciones en §3.6** (L3589–4269): un esquema derivado literalmente de esa sección **aceptaba un `preparada` sin él**. Es la clase exacta de `A1` —que el gate final graduó BLOQUEANTE— invertida. **La alternativa descartada: introducir un nonce, un timestamp o cualquier aleatoriedad** para distinguir las dos transacciones. Se descarta porque destruiría la propiedad por la que `tx` se definió así — ser reproducible por dos implementaciones — y porque el dato que hacía falta **ya era necesario** por §2.5, §2.6.9 y §2.6.11: sólo faltaba declararlo | retirar `revision_base` de §3.6 devuelve un contrato de evento que no puede representar el dato del que dependen su segundo terminal y su garantía de no publicar mezclas parciales |
+| D97 | **`PN-15`: `G20`, `G21`, `G22` y `G23` de `kernel/KERNEL.md` 1.5.0 quedan registradas como PRESIONADAS y pendientes de F5, NO derogadas por F4.** §17 gana una **fila propia para `kernel/KERNEL.md`** que lo declara, y la fila de `START_HERE.md` gana la reserva correspondiente. **Hasta que F5 decida regla a regla qué se conserva, ajusta o sustituye, las cuatro SIGUEN VIGENTES**, y §17 deja de poder leerse como si el Circuito 0 de §8.1 fuera una sustitución normativa ya consumada | **nada anterior.** No revisa ninguna decisión: registra una presión que faltaba. **No renumera ninguna `PN`** | `K-06`, GRAVE (agravado por `L` desde MEDIO, y una de las seis razones del veredicto). `G20`, `G21` y `G23` tienen **cero** apariciones en el documento 11, en (a), en (b) y en `E2`; `G22` tiene UNA, como cita de apoyo. `a.11` —«la ÚNICA lista que deroga o ajusta reglas», según `PN-3`— **no las nombra en ninguna de sus cinco filas**, y `E2.4` demuestra que **lo no nombrado sobrevive**. Mientras tanto §17 declara las rutas A y B de `START_HERE` «sustituidas por §8.1 y §8.2», y §8.1 define un gate distinto **sin timebox, sin los diez entregables y sin las cuatro prohibiciones** de `G22` — cuyo texto dice de sí mismo que **NO es negociable por el sistema**. **La alternativa descartada: decidir aquí qué reglas sobreviven.** Se descarta por dos motivos: `a.11` es material APROBADO y F4 no lo toca, y `G21` reserva expresamente esa decisión a la constitución **y no al sistema** — resolverlo F4 por su cuenta sería incurrir justo en el conflicto de interés que esa regla nombra | si el Owner decide que `G20`–`G23` se conservan intactas, §8.1 se subordina a `G22` y `INS-0`…`INS-7` pasa a instrumentar ese gate en vez de sustituirlo. No exige rediseñar §8 |
+| D98 | **La regla que `D92` entrega a F6 se REFORMULA sobre PARTICIPACIÓN SEMÁNTICA, y el barrido léxico de `:condiciones` queda RETIRADO como criterio de derivación.** Si `DOM` o `SEG` participan en un proceso **por cualquier vía** —propietaria, obligatoria, condicional o item enlazado con `capacidad_productora` tipada— **y** su aportación establece condiciones o restricciones **antes de construir o antes de modificar fuentes**, ese proceso necesita su `<CAP>:revision` después de `VER`. La revisión **hereda la obligatoriedad y la `autoridad_de_retirada`** de la participación de la que deriva. §19 fija ahora datos de entrada, algoritmo de derivación paso a paso, salida esperada, casos positivos, contraejemplos, el error `composicion-incompleta` y la prueba que **tiene que fallar hoy** nombrando `proceso:DEP → SEG:revision AUSENTE` | **`D92`**, que decidió bien el QUÉ y mal el CÓMO. `D92` **no se reescribe**: su texto queda como lo escribió el gate de cierre, y lo que cambia es la regla de derivación que entregaba a F6 | `K-02`, GRAVE (agravado por `L`, y la cuarta razón del veredicto). El barrido de `:condiciones` es correcto en su cuenta —4 `DOM:condiciones` + 4 `SEG:condiciones`— **y no alcanza a `proceso:DEP`**, donde `SEG` participa por la OBLIGATORIA `condiciones-de-seguridad` (`capacidad_productora: "SEG"`, `autoridad_de_retirada: nadie` por `G28`), luego la cadena `SEG:condiciones` **no aparece en `DEP`**; ni a `proceso:AUD`, cuya notación no está tipada. Y **`U5b` ES `proceso:DEP`**, uno de los tres tramos que `D92` nombra como «los tres que escriben en las fuentes del producto»: **la regla no llegaba al tramo que ella misma señalaba**. La prueba prescrita reproducía el punto ciego — pasaría en verde sobre un árbol sin `SEG:revision` en `DEP`. **Y su causa es una corrección anterior:** `D75` cerró `G-1` moviendo `SEG` a obligatorias en `DEP`, eliminando sin verlo la cadena de la que `D92` dependería después. La norma aprobada está escrita sobre el HECHO y no sobre la notación: `a.6`:502–503, «DOM y SEG aportan condiciones antes de construir y revisan después». **La alternativa descartada: añadir `DEP` y `AUD` a mano a la lista del barrido.** Se descarta porque es exactamente el censo escrito a mano que `D102` retira, y porque dejaría el mismo agujero abierto para el siguiente proceso que participe por una vía nueva | volver al barrido léxico devuelve una regla que no alcanza el tramo más expuesto, y una prueba que pasa en verde sobre el árbol defectuoso |
+| D99 | **El gate de `M7` exige las CINCO salidas verdes: build, pruebas, CI, despliegue y COMPORTAMIENTO AGENTIC.** Se alinean las tres sedes de §8.3 —`EVIDENCIA`, `GATES` y `M7 VERIFICAR`— y se escribe por qué la quinta no es optativa | **nada anterior en el registro.** Alinea §8.3 consigo misma | `K-03`, GRAVE. Contradicción **interna** del documento 11, verificada en cuatro sedes: §8.2 L6186 dice cinco, `EVIDENCIA` decía cuatro, `GATES` decía «las cuatro salidas verdes» y `M7 VERIFICAR` decía «los cinco». **`M6` es el único paso destructivo** y retira de cada fuente el kernel, los packs y la organización de ADS: build, pruebas, CI y despliegue pasarían **igualmente** en una fuente a la que le han quitado su organización ADS, luego **la única de las cinco que interroga precisamente lo que `M6` retira era la que el gate omitía**. `L` **corrigió la base que `K` le dio**: `K` la anclaba en «la directiva del Owner, `ADS-PENDIENTES` §5.6», y ese documento se autodeclara «no es todavía especificación normativa» (L3–L6). El hallazgo sobrevive entero como contradicción interna; **no** activa la regla de contradicción contra fuente normativa, y así se registra. **La alternativa descartada: bajar las otras dos sedes a cuatro.** Se descarta porque dejaría el único paso destructivo con un gate que no cubre su propio riesgo | volver a cuatro reabre el hallazgo en su forma exacta |
+| D100 | **El `hash_previo` de la transacción de reparación es el `hash_observado` que el evento `deriva` registró, para las TRES causas del enum** —`posterior-al-cierre`, `sin-transaccion` y `abandono-de-transaccion`—, sin excepción. Y **el ancla de la restauración NO es `hash_previo`: es `revision_base`**, que es un dato distinto y lleva nombre distinto | **nada anterior.** Unifica dos formulaciones que convivían en §2.6.9 y §2.6.11 | `J-04`, MEDIO. §2.6.9 decía «`hash_previo` = lo que hay en la base restaurada» y §2.6.11 «= el `hash_observado` que la deriva registró». **Coinciden sólo para `abandono-de-transaccion`**: para `sin-transaccion` y `posterior-al-cierre` **no hay base restaurada**, y divergen. La formulación general correcta es la de §2.6.11. Cae dentro de §2, que es lo que `PN-1` propone aprobar como sección (g). **La alternativa descartada: conservar las dos y decir que se eligen por causa.** Se descarta porque usar el mismo nombre para dos conceptos es precisamente lo que produjo la ambigüedad, y porque el segundo concepto **ya tiene nombre propio** desde `D96` | volver a dos formulaciones deja el contrato de la reparación sin definiendum único para dos de sus tres causas |
+| D101 | **§6.7 recibe FILA ADVERSARIAL PROPIA, `X62`**, y deja de reasignar su comprobación a `X51`. Cubre que la adopción **no escriba en ninguna fuente antes de `A8`, incluidos los punteros de adaptador**, más la propagación a tres fuentes con `main` protegida y el caso de fusionar dos de tres. El recuento de la tabla pasa a **cuarenta y seis filas y cuarenta y seis identificadores**, derivado y propagado a las seis sedes que lo publican | **nada anterior.** `X51` conserva su escenario intacto | `J-03`, MEDIO. `X51` es «editar un canónico fuera del protocolo, sin transacción abierta, y arrancar → se declara deriva no transaccional», y no tiene nada que ver con las tres comprobaciones de §6.7. `M2` había señalado que `X32`–`X34` se citaban y **no existían**, y el remedio de entonces las reasignó a una fila **existente pero ajena** — que es peor que la referencia rota, porque pasa desapercibida. **Se elige fila propia (salida A) y NO contrato de prueba F6 (salida B)** porque el escenario se expresa entero con el contrato de hoy —`git status`, `git log` y la ausencia de puntero sobre tres fuentes— y **no exige ningún runtime que no exija ya cualquier otra de las cuarenta y seis** | retirar `X62` devuelve §6.7 a una comprobación que su fila no cubre |
+| D102 | **Los censos escritos a mano se DERIVAN, y queda el contrato F6 completo para hacerlo.** Tres contratos con entradas, algoritmo, salida, propietario, fase, condición de cierre y pruebas positiva y negativa: (1) derivar el censo `AFIRMACIONES` de `comprobar_recuentos.py`, que hoy es una lista literal de sedes; (2) ampliar `T152` a **toda sede que publique versión**, descubierta por barrido y no enumerada, con **remedios distintos por sede** —F6 para el kernel derivado, F5 para el título de `a.11` que es material aprobado, y **nota sin reescritura** para `O2`, que es del Owner—; (3) la **guardia de versión de intérprete** en el punto de entrada del runner y en los tres validadores que importan `tomllib`, con exit code **2** reservado a «no se pudo ejecutar». **Ocho defectos quedan como casos de regresión obligatorios**: `J-05`, `J-06`, `J-07`, `K-01`, `K-04`, `K-07`, `K-10` y `K-11`. **Aquí no se implementa ninguno de los tres** | **nada anterior.** Es el registro de una causa raíz que doce hallazgos comparten | `J-05` + `J-06` + `K-07`, y detrás de ellos `J-07`, `K-01`, `K-04`, `K-10`, `K-11` y `L-01`. Los tres revisores, **sin verse**, aislaron la misma causa desde mitades opuestas del corpus, y `L` la contó: `A6`, `A10`, `M-1`, `m-1`, `F-10`, `E-10` y los suyos son la misma clase, repetida. `T151` sale SUPERADA mientras dos sedes vivas dicen «veintiocho campos» donde `rol.yaml` tiene 29; `T152` sale SUPERADA porque **sólo recorre `README.md` y `START_HERE.md`**. Es lo que el propio corpus condena en `comprobar_fuentes.py`: «nunca una lista escrita a mano, que es lo que envejece» — **y no se lo había aplicado a sí mismo**. Y sobre la guardia, dicho sin rodeos: **evidencia verde generada bajo 3.11 NO demuestra que el runner sea ejecutable bajo 3.10** — bajo 3.10.12 da 10/13 con exit 1, y los tres validadores que fallan dejan intacta la evidencia anterior, por lo que `T158` sale SUPERADA **en un entorno donde nada se reprodujo**. **La alternativa descartada: añadir a mano las sedes que faltan a `AFIRMACIONES` y a `T152`.** Se descarta porque cierra ocho hallazgos y deja abierta la causa que los produjo: la sede número nueve nacerá sin cobertura, igual que las ocho anteriores | volver a censos enumerados devuelve la clase de defecto que doce tandas han producido |
+
+> **Lo que esta tanda NO hizo, y consta.** No cerró `C-L.5` —la condición de cobertura del
+> próximo gate—, porque aplicar correcciones no es leer lo que no se leyó y quien aplica no
+> puede certificar su propia cobertura. No redactó ninguna enmienda normativa. No creó `C8`.
+> No tocó `C7`, ni (a), ni (b), ni `E1`, ni `E2`, ni `K-1`, ni `C4`. No implementó runtime,
+> adaptadores, migraciones, packs ni PesquerApp. Y **no emitió ningún juicio de suficiencia**:
+> las correcciones están **APLICADAS, no certificadas**, `F4c` sigue **ABIERTA** y **F5 sigue
+> NO autorizada**.
+
+---
+
 ## 2 · Decisiones que pertenecen al Owner
 
 **Ninguna bloquea el trabajo.** Todas tienen un valor por defecto ya implementado y
@@ -387,6 +433,52 @@ reescribir `O1`–`O15` y sin autorizar todavía su redacción:
 6  QUÉ NO AUTORIZA          **no autoriza iniciar F5.** Fija la sede para cuando F5 arranque,
                             y nada más. `C8` NO se crea ahora y `C7` NO se modifica
 ```
+
+**Procedencia** — registrada por la corrección del GATE DEFINITIVO INDEPENDIENTE (`L-02`,
+GRAVE). `O16` era **la única de las dieciséis resoluciones del Owner sin fecha, sin cita y
+sin entrada en `owner_captado`**, mientras el corpus demuestra exactamente eso para las
+quince restantes y en el mismo fichero. Se registra ahora, y se registra **honestamente**:
+
+```text
+FECHA                    2026-08-29
+
+QUÉ SE LE EXPLICÓ        se le presentó al Owner esta formulación, redactada por el sistema:
+AL OWNER
+                         «El gobierno Git del repositorio global de control de ADS tendrá su
+                         autoridad normativa en la sección (g); F6 derivará de ella un
+                         contrato independiente C8; C7 seguirá gobernando únicamente los
+                         repositorios fuente del producto.»
+
+RESPUESTA DEL OWNER      «ok, confirmamos»
+— Y ESTO SÍ ES CITA
+LITERAL SUYA
+
+QUÉ RELACIÓN HAY         **el párrafo largo NO es cita del Owner: lo redactó el sistema y se
+ENTRE LAS DOS COSAS      lo presentó para que decidiera.** Lo literal del Owner son esas dos
+                         palabras, y lo que confirman es la formulación presentada. Se dice
+                         así, y no al revés, porque atribuirle al Owner como cita textual un
+                         párrafo que no escribió sería exactamente el defecto que `L-02`
+                         señala — una resolución que el corpus no puede atribuir
+
+QUÉ ALCANZA LA           la CONFIRMACIÓN alcanza a los tres extremos de la formulación
+CONFIRMACIÓN             presentada: sede en (g) · `C8` derivado en F6 · `C7` intacto y
+                         acotado a las fuentes. Los seis puntos desarrollados arriba son la
+                         ELABORACIÓN de esos tres por el sistema, no seis decisiones
+                         separadas del Owner
+
+QUÉ NO ALCANZA           **no autoriza iniciar F5**, no autoriza redactar (g) y no autoriza
+                         crear `C8`. Sigue diciendo lo mismo que decía
+```
+
+> **Por qué esto cierra `L-02` y no lo maquilla.** El hallazgo no era que la decisión
+> estuviera inventada: era que **el corpus no podía demostrar que el Owner la tomara**,
+> mientras lo demostraba para las quince restantes. `O16` es lo que da sede a `PN-11`, que
+> nació del BLOQUEANTE `B2` de la tercera revisión, y una resolución no atribuible no puede
+> cerrar una presión de ese origen. Lo que faltaba era el registro, y es lo que se añade —
+> **sin tocar el texto resolutivo de `O16` y sin crear una `O17`**: registrar de dónde viene
+> una resolución no es reescribirla. La alternativa que `L` dejaba abierta —retirar `O16` y
+> devolver `PN-11` a la lista de presiones sin sede— **no se toma**, porque la resolución
+> existe y ahora es atribuible.
 
 ### `O15` · resolución POSTERIOR del Owner sobre `O14` — la adopción de PesquerApp es PERMANENTE
 

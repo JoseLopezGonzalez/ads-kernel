@@ -51,7 +51,7 @@ varias terminan legítimamente sin item.
                                            ▼
                        ┌──────────────────────────────────────────────┐
                        │  9  CONFIRMACIÓN — SÓLO CUANDO CORRESPONDE   │
-                       │     según la tabla de 04-CONFIRMACION.md      │
+                       │    según 04-INCERTIDUMBRE-Y-CONFIRMACION.md  │
                        └───────────────────┬──────────────────────────┘
                                            ▼
         ══════════════════════ frontera: aquí ENC entrega y DSP toma ══════════════

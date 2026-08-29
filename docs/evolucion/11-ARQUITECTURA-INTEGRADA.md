@@ -123,13 +123,14 @@ Para el Owner, sin vocabulario interno.
 ```text
 LA CUARTA CAPA           sigue deferida. Hace falta un proyecto independiente que minar.
 EL PILOTO                sigue sin ejecutarse. Nada de aquí está demostrado en un producto.
-LAS ENMIENDAS            este diseño presiona material aprobado en **DOCE** puntos, tras dos
+LAS ENMIENDAS            este diseño presiona material aprobado en **TRECE** puntos, tras dos
                          devoluciones independientes, una tercera revisión, el gate final con
-                         su complemento de cobertura y el GATE DE CIERRE INDEPENDIENTE. El
-                         recuento se DERIVA de §16 y se mueve cuando aparece algo no contado:
-                         fueron ocho, `PN-11`, `PN-12` y `PN-13` lo llevaron a once, y
-                         **`PN-14` lo lleva a doce**. Se enumeran y NO se redactan: eso es
-                         F5, y su puerta es el Owner.
+                         su complemento de cobertura, el GATE DE CIERRE INDEPENDIENTE y el
+                         GATE DEFINITIVO INDEPENDIENTE. El recuento se DERIVA de §16 y se
+                         mueve cuando aparece algo no contado: fueron ocho, `PN-11`, `PN-12`
+                         y `PN-13` lo llevaron a once, `PN-14` a doce, y **`PN-15` lo lleva a
+                         trece**. Se enumeran y NO se redactan: eso es F5, y su puerta es el
+                         Owner.
 ```
 
 **Qué cuesta.** El diseño elige, en cada punto donde había alternativa, la forma que se puede
@@ -1448,6 +1449,7 @@ impuso al arnés de negativos.
 | `X60` | emitir un `deriva`, borrar a mano `estado/deriva/<ID>.abierta` y arrancar | el arranque lo **reconstruye desde el diario** por `bloqueado_por_deriva(item)` (§2.9), con las mismas rutas e items. Y un lector que aplique §2.6.8 **no recorre `estado/eventos/`**: consulta los dos marcadores. El marcador es un acelerador, igual que el de transacción |
 | `X61` | abandonar con cuarentena autorizada, y comprobar su ciclo | `.ads/run/quarantine/<TX>/` existe **antes** de restaurar y su contenido **casa por hash** con lo registrado en el `conflicto`; **sigue existiendo** tras `abandonada` y tras la verificación; y **sólo deja de existir después del commit del incidente**. Ningún commit la contiene. Si `SEG` bloquea la publicación y el Owner acepta la pérdida, el incidente conserva **hash, clasificación, autoridad, motivo y alcance**, y el contenido prohibido **no se publica** |
 | `X58` | recorrer el grafo de fases buscando un estado no terminal sin sucesor admisible | **no existe ninguno**: `preparada` sale a dos, `conflicto` sale a dos, `confirmada` sale a uno, y `derivada` y `abandonada` son terminales que **retiran el marcador**. **Y la retención acotada del desenlace `4b` termina por ACTO DE AUTORIDAD del Owner** —cuarentena o declaración de irrecuperable (§2.6.9)—, no por construcción: el grafo no la cierra sola, y decirlo es la corrección de `A9`. Lo que se comprueba aquí es el grafo; que exista autoridad que pueda cerrarla se comprueba en §2.6.9 |
+| `X62` | **adopción hasta `A7` inclusive sobre tres fuentes reales**: recorrer `A0`–`A7` completo y después ejecutar `git status --porcelain` y `git log` en CADA fuente, **incluida la comprobación de que NO se ha escrito ningún puntero de adaptador** | **ni un solo commit, ni un fichero nuevo, ni una línea modificada de ADS en ninguna de las tres** — el inventario, el baseline y la cobertura inicial de `A0`–`A7` son LECTURA, y el estado que producen vive en el control repo. **El puntero de adaptador NO es excepción**: `A8` es el primer tramo que escribe en las fuentes, y un puntero escrito antes es un fallo, no un preparativo. Cubre además, en la misma corrida, la propagación a tres fuentes con `main` protegida —tres PR, un Integration Set y estado `INTEGRACIÓN PARCIAL`— y el caso de fusionar dos de tres, donde el sistema **lo dice** en vez de declarar la actualización cerrada |
 
 > **Las excepciones históricas de `X47`, declaradas una a una.** Estos textos conservan
 > deliberadamente enumeraciones sustituidas, y `X47` **no los cuenta como incumplimiento**:
@@ -1472,12 +1474,14 @@ impuso al arnés de negativos.
 > adversariales son MUCHAS, y eliminarlas destruiría la trazabilidad que estos documentos
 > existen para dar. `X47` comprueba la primera y declara las segundas.
 
-> **Cuarenta y cinco filas físicas y cuarenta y cinco identificadores únicos**, comprobado
+> **Cuarenta y seis filas físicas y cuarenta y seis identificadores únicos**, comprobado
 > por conteo sobre el fichero y no por memoria: la tabla empieza en `X01` y **tiene huecos de
 > numeración** —`X24`, `X29`–`X36` y `X40`–`X46`—, de filas retiradas o renumeradas en las
-> sucesivas correcciones. **`X59`, `X60` y `X61` las añade esta tanda** para las tres piezas
-> que `I-01` e `I-02` completaron: la exclusión de Git del segundo marcador, su
-> reconstrucción, y el ciclo de la cuarentena operacional. `X24` es el único con motivo declarado abajo; los demás son huecos
+> sucesivas correcciones. `X59`, `X60` y `X61` las añadió la tanda del gate de cierre para
+> las tres piezas que `I-01` e `I-02` completaron: la exclusión de Git del segundo marcador,
+> su reconstrucción, y el ciclo de la cuarentena operacional. **`X62` la añade esta tanda**,
+> por `J-03`: la comprobación propia de §6.7, que estaba reasignada a `X51` —una fila
+> existente pero ajena—. `X24` es el único con motivo declarado abajo; los demás son huecos
 > y **ninguna referencia del documento apunta a ellos**, corregido por `M2`, que encontró
 > `X32`–`X34` y `X42` citados sin existir. **Ninguna fila se repite**. La segunda corrección técnica revisó
 > `X05`, `X15`, `X26` y `X28` **en su sitio**, sin añadir ninguna fila y sin retirar ninguna.
@@ -1488,18 +1492,21 @@ impuso al arnés de negativos.
 >
 > ```text
 > «dos filas idénticas X28»      NO REPRODUCIDO. `X28` aparece UNA sola vez en el fichero, y
->                                el conteo da 42 filas de datos con 42 ids distintos. Lo que
->                                puede haber inducido el recuento a 43 es la fila SEPARADORA
->                                del Markdown, que no es un escenario
+>                                el conteo da **46 filas de datos con 46 ids distintos** —la
+>                                cifra vigente, derivada; cuando esta comprobación se hizo el
+>                                conjunto tenía 42 y la cifra no se reancló al crecer:
+>                                corregido por `J-07`—. Lo que pudo inducir un recuento de
+>                                más es la fila SEPARADORA del Markdown, que no es un
+>                                escenario
 > «"Un fichero que no existe"    NO REPRODUCIDO. Un barrido literal sobre todo `docs/`
 >  dos veces en §2.6.4»          devuelve UNA sola aparición
 > ```
 >
-> **Ninguna se ha ejecutado.** Cuarenta y cinco filas escritas es el contrato de lo que F6
+> **Ninguna se ha ejecutado.** Cuarenta y seis filas escritas es el contrato de lo que F6
 > debe demostrar, y **no es su demostración**. Trece son de la segunda devolución
 > independiente, siete de la devolución técnica previa (`X47`–`X53`), **cinco de la
-> corrección técnica posterior** (`X54`–`X58`) y **tres de la corrección del gate de cierre**
-> (`X59`–`X61`). `X24` no existe porque su hallazgo —`D`— se resolvió retirando
+> corrección técnica posterior** (`X54`–`X58`), **tres de la corrección del gate de cierre**
+> (`X59`–`X61`) y **una de la corrección del gate definitivo** (`X62`). `X24` no existe porque su hallazgo —`D`— se resolvió retirando
 > el estado en vez de darle un disparador. **Las nueve ventanas `RC-1`–`RC-9` se retiran con
 > la ruta de reconciliación** (`D64`): ya no hay un segundo mecanismo que recuperar.
 
@@ -1903,9 +1910,17 @@ bloqueado_por_deriva(item) ≡
     `derivada` cuyo campo `resuelve_deriva` apunte a él
 
 CÓMO SE CIERRA     una TRANSACCIÓN DE REPARACIÓN, con `tx` nuevo, cuyo `preparada` declara
-                   por ruta `hash_previo` = lo que hay en la base restaurada y
+                   por ruta **`hash_previo` = el `hash_observado` que el evento `deriva`
+                   registró para esa ruta** —**para las TRES causas**, sin excepción— y
                    `hash_posterior_esperado` = lo que la autoridad decida, y cuya `derivada`
                    lleva **`resuelve_deriva` = el `id` de ese `deriva`**.
+                   **`revision_base` de la reparación es la revisión PUBLICADA que ya
+                   contiene el incidente cerrado**, no la anterior a él: por eso su `tx` es
+                   distinto del de la transacción abandonada (§2.8, `D96`).
+                   **Y el ancla de la restauración NO es `hash_previo`**: es
+                   `revision_base`, que es un dato DISTINTO y con nombre distinto. Confundir
+                   los dos era lo que producía las dos formulaciones incompatibles que el
+                   gate definitivo señaló (`J-04`; es `D100`).
                    Al cerrar, el predicado se vuelve falso, **se retira
                    `estado/deriva/<ID>.abierta`** —lo retira la transacción CERRADA que lo
                    resuelve, en el mismo acto que su `derivada`, igual que un terminal retira
@@ -2607,8 +2622,10 @@ POR QUÉ ESTO CIERRA      porque el bloqueo pasa a tener una forma explícita de
 
 ```text
 REQUIERE UNA OPERACIÓN RECUPERABLE, con su INTENCIÓN DURABLE PREVIA — es decir, su propio
-`preparada`, con `hash_previo` = el `hash_observado` que la deriva registró, y
-`hash_posterior_esperado` = lo que la autoridad decida.
+`preparada`, con `hash_previo` = el `hash_observado` que la deriva registró —**ÚNICA
+FORMULACIÓN, y vale para las TRES causas del enum**: `posterior-al-cierre`,
+`sin-transaccion` y `abandono-de-transaccion`—, `revision_base` = la revisión publicada que
+ya contiene el incidente cerrado, y `hash_posterior_esperado` = lo que la autoridad decida.
 
 NO es una fase de la transacción vieja. Es una transacción NUEVA, con `tx` nuevo, que
 REFERENCIA el evento `deriva` que la motivó. Con eso la reparación tiene las mismas
@@ -2744,10 +2761,48 @@ tx = TX-H( representación canónica del cuerpo de `preparada`
 
 ```text
 POR QUÉ ASÍ   depende SÓLO de la intención declarada —`afecta`, `orden`, hashes,
-              procedencia—, luego es reproducible por dos implementaciones, NO depende del
-              punto de la cadena en que se emita, y SOBREVIVE A UNA REEMISIÓN. F4c no tenía
-              definiendum: un `tx` no tiene contenido propio —§2.5 lo declara— luego no
-              había nada de lo que sacar su huella
+              procedencia, `base` y **`revision_base`**—, luego es reproducible por dos
+              implementaciones, NO depende del punto de la cadena en que se emita, y
+              SOBREVIVE A UNA REEMISIÓN. F4c no tenía definiendum: un `tx` no tiene
+              contenido propio —§2.5 lo declara— luego no había nada de lo que sacar su
+              huella
+
+QUÉ ENTRA,    entra **todo el cuerpo de `preparada` menos `id`, `tx` y `predecesor`**, y
+DICHO SIN     `revision_base` es parte de ese cuerpo desde `D96`, luego **entra**. Se dice
+AMBIGÜEDAD    expresamente porque de ello depende que una reparación posterior no colisione
+              con la transacción que repara
+```
+
+**Y por qué una REPARACIÓN posterior no colisiona con la transacción ABANDONADA** —cerrado
+por el gate definitivo independiente (`J-02`, GRAVE; es `D96`):
+
+```text
+EL PROBLEMA   tras un abandono, `C · RESTAURAR` devuelve todas las rutas a `revision_base`.
+QUE HABÍA     La reparación natural declara el MISMO `afecta[]`, los MISMOS hashes, el
+              MISMO `orden` y la MISMA procedencia. Con `id` y `predecesor` excluidos del
+              cómputo, su `tx` era EL MISMO: la regla de reintento la volvía NO-OPERACIÓN,
+              la capa B la rechazaba por posterior a un terminal, y `bloqueado_por_deriva`
+              no se cerraba por su camino natural
+
+POR QUÉ AHORA 1 · la transacción original parte de la revisión ANTERIOR al incidente
+NO OCURRE     2 · el incidente cerrado —`abandonada` y su `deriva`— SE PUBLICA, y publicarlo
+              produce una revisión NUEVA
+              3 · la reparación parte de ESA nueva revisión publicada
+              4 · luego su `revision_base` es DISTINTO, y con él su `tx`
+
+              No hay nada que añadir al evento para conseguirlo: el dato ya era necesario
+              por §2.5, §2.6.9 y §2.6.11, y lo único que faltaba era declararlo en §3.6 y
+              decir que entra aquí
+
+QUÉ NO SE     **ni nonce, ni timestamp, ni aleatoriedad.** Un `tx` que dependiera de
+INTRODUCE     cualquiera de las tres dejaría de ser reproducible por dos implementaciones,
+              que es exactamente la propiedad por la que se definió así
+
+QUÉ SE        la IDEMPOTENCIA de una misma intención sobre la MISMA base. Dos emisiones de
+CONSERVA      la misma intención desde el mismo `revision_base` siguen computando el mismo
+              `tx`, y la regla de reintento las sigue colapsando en una. Lo que se rompe es
+              sólo la falsa igualdad entre dos intenciones que parten de revisiones
+              distintas — que no son la misma transacción y nunca debieron compartir `tx`
 ```
 
 **4 · `evento.id`, definido — y la consecuencia, declarada.**
@@ -3154,9 +3209,9 @@ son sus once puntos:
 
 #### `X-A`–`X-H` · las ocho comprobaciones de la retirada
 
-**No son filas de la tabla adversarial de §2.6.7**, que queda en **cuarenta y cinco filas y
-cuarenta y cinco identificadores `X<nn>`**, tras las tres que `I-01` e `I-02` obligaron a
-añadir. Éstas verifican la semántica de lápida e identidad,
+**No son filas de la tabla adversarial de §2.6.7**, que queda en **cuarenta y seis filas y
+cuarenta y seis identificadores `X<nn>`**, tras las tres que `I-01` e `I-02` obligaron a
+añadir y la que `J-03` obliga a añadir ahora (`X62`). Éstas verifican la semántica de lápida e identidad,
 llevan letra en vez de número, y son contrato de prueba igual que aquéllas.
 
 | | escenario | resultado exigido |
@@ -3170,7 +3225,7 @@ llevan letra en vez de número, y son contrato de prueba igual que aquéllas.
 | `X-G` | se intenta retirar **antes de sellar**, o **sin prueba de recuperación comprobada** | **retirada BLOQUEADA** en los dos casos. Sin sellado no hay ancla; sin prueba de recuperación la retirada es una pérdida disfrazada de operación |
 | `X-H` | pasar el validador sobre un evento con lápida | **NO aplica la fórmula ordinaria de identidad al contenido de la lápida.** Detecta `cuerpo_retirado: true`, cambia al algoritmo B de §2.8 punto 4bis, y valida estructura y vínculo con el sellado. Aplicar `EV-H` a la lápida y reportar «id no coincide» es un **defecto del validador** |
 
-> **Ninguna se ha ejecutado**, como las cuarenta y dos de §2.6.7. Las nueve `RC-1`–`RC-9`
+> **Ninguna se ha ejecutado**, como las cuarenta y seis de §2.6.7. Las nueve `RC-1`–`RC-9`
 > **ya no existen**: `D64` las retiró con la ruta de reconciliación, y contarlas entre lo
 > escrito y no ejecutado era contar dos veces algo que ya no está.
 > Escribir el contrato de una prueba no es la prueba.
@@ -3611,7 +3666,27 @@ ordenante · autoridad · escritor_del_comando · ejecutor · actor_atribuido
               ORDENANTE · ESCRITOR DEL COMANDO · EJECUTOR DE MUTACIÓN, y `actor_atribuido`
               pertenece a otra lista suya. No todos son campos: uno se DERIVA
 base          hash de las entradas sobre las que se decidió
+revision_base la REVISIÓN PUBLICADA Y CONSISTENTE desde la que parte la transacción: el
+              `HEAD` del punto 2 de la condición de arranque 5 (§2.5). **OBLIGATORIO en
+              `preparada`**; se registra o se referencia de forma comprobable en
+              `conflicto` y en `abandonada`. **NO es `base`**: `base` es la huella de las
+              ENTRADAS sobre las que se decidió —qué se leyó para decidir—, y
+              `revision_base` es el PUNTO DEL HISTORIAL contra el que se restaura y se
+              verifica byte a byte. Un mismo `revision_base` admite muchas `base`
+              distintas, y una misma `base` puede evaluarse desde dos revisiones. **Entra
+              en el cómputo de `tx`** (§2.8). Es `D96`
 ```
+
+> **Añadido por el gate definitivo independiente (`J-01`, BLOQUEANTE; es `D96`).**
+> `revision_base` era **condición 5 de arranque** (§2.5), **ancla exacta de la
+> restauración** (§2.6.9), **lo que hace alcanzable `abandonada`** —«INALCANZABLE hasta
+> haber RESTAURADO todas sus rutas a `revision_base` y haberlo verificado byte a byte»— y
+> el sostén de «`main` nunca contiene estado parcial» y de la rama REVERTIR de `PN-7`. Y
+> **no aparecía ni una vez en §3.6**, que es el contrato del evento: un esquema derivado
+> literalmente de esta sección **aceptaba un `preparada` sin él**. Lo introdujo `D69` sin
+> propagarlo aquí. Es la clase exacta de `A1` —un esquema derivado de §3.6 que no casa con
+> lo que §2 exige—, invertida: allí RECHAZABA lo que debía aceptar, aquí ACEPTABA lo que
+> debía rechazar.
 
 ### La PROCEDENCIA: qué es concepto, qué es campo y qué se deriva
 
@@ -4021,10 +4096,10 @@ candidatos con sujeto, autoridad y ciclo propios. El recuento de §3.8 **no camb
 
 | fase | predecesora admitida | campos OBLIGATORIOS | campos PROHIBIDOS | hash que gobierna | condición para emitir la siguiente |
 |---|---|---|---|---|---|
-| `preparada` | ninguna: abre la transacción | `afecta[]` con `ruta`·`hash_previo`·`hash_posterior_esperado`·`orden`· una de `contenido`\|`parche`\|`operacion` · **los CINCO CAMPOS de procedencia** —`ordenante`·`autoridad`·`escritor_del_comando`·`ejecutor`·`actor_atribuido`—, **no «los cinco conceptos de `a.9`»**: el quinto concepto, `propietario del campo`, **se DERIVA** de §1.3 y no es campo · `base` | `resultado` · `hash_observado` · `hash_final` · `decision` | `hash_posterior_esperado` | los N ficheros casan con su hash posterior → `confirmada`; alguno diverge → `conflicto` |
+| `preparada` | ninguna: abre la transacción | `afecta[]` con `ruta`·`hash_previo`·`hash_posterior_esperado`·`orden`· una de `contenido`\|`parche`\|`operacion` · **los CINCO CAMPOS de procedencia** —`ordenante`·`autoridad`·`escritor_del_comando`·`ejecutor`·`actor_atribuido`—, **no «los cinco conceptos de `a.9`»**: el quinto concepto, `propietario del campo`, **se DERIVA** de §1.3 y no es campo · `base` · **`revision_base`** —la revisión publicada y consistente desde la que parte la transacción; su ausencia hace el evento INVÁLIDO, y es lo que hace verificable la restauración de §2.6.9 y alcanzable `abandonada` (`D96`)— | `resultado` · `hash_observado` · `hash_final` · `decision` | `hash_posterior_esperado` | los N ficheros casan con su hash posterior → `confirmada`; alguno diverge → `conflicto` |
 | `confirmada` | `preparada` | `resultado` · `derivados_pendientes[]` | `decision` · `hash_final` · `hash_observado` | `hash_posterior_esperado` | los derivados de `derivados_pendientes` se regeneraron → `derivada` |
-| `conflicto` | `preparada` o `conflicto` | `divergentes[]` con `ruta`·`hash_observado`· **`contenido` íntegro de lo divergente** · `items[]` · `rutas[]` · `autoridad` que debe resolver · `observacion` ≥ 1 | `resultado` · `decision` | ninguno: declara lo observado, no lo esperado | la divergencia CESA y los N ficheros vuelven a casar → `confirmada`; la autoridad decide cerrar → `abandonada`. **Siempre hay una de las dos** |
-| `abandonada` | `conflicto` | `estado_observado[]` con `ruta`·`hash_observado`·`clasificacion` ∈ {previo, posterior, divergente} **para TODAS las rutas del `tx`** · `autoridad` que decidió · `motivo` · `deriva_emitida` = `id` del `deriva` que conserva el bloqueo | `resultado` · `derivados_regenerados` · `decision` | ninguno: la transacción no alcanza ningún resultado | **ninguna. Es TERMINAL**, retira el marcador, y el bloqueo pasa al `deriva` que emite (§2.6.9) |
+| `conflicto` | `preparada` o `conflicto` | `divergentes[]` con `ruta`·`hash_observado`· **`contenido` íntegro de lo divergente** · `items[]` · `rutas[]` · `autoridad` que debe resolver · `observacion` ≥ 1 · **`revision_base`, registrado o referenciado al `preparada` de su `tx`** (`D96`) | `resultado` · `decision` | ninguno: declara lo observado, no lo esperado | la divergencia CESA y los N ficheros vuelven a casar → `confirmada`; la autoridad decide cerrar → `abandonada`. **Siempre hay una de las dos** |
+| `abandonada` | `conflicto` | `estado_observado[]` con `ruta`·`hash_observado`·`clasificacion` ∈ {previo, posterior, divergente} **para TODAS las rutas del `tx`** · `autoridad` que decidió · `motivo` · `deriva_emitida` = `id` del `deriva` que conserva el bloqueo · **`revision_base`, registrado o referenciado al `preparada` de su `tx`: es la revisión CONTRA LA QUE se verificó byte a byte la restauración, y sin ella la restauración no es comprobable** (`D96`) | `resultado` · `derivados_regenerados` · `decision` | ninguno: la transacción no alcanza ningún resultado | **ninguna. Es TERMINAL**, retira el marcador, y el bloqueo pasa al `deriva` que emite (§2.6.9) |
 | `derivada` | `confirmada` | `derivados_regenerados[]` con su `source_revision` · `resuelve_deriva` sólo si esta transacción repara uno | `afecta` · `decision` · `divergentes` | el `hash_posterior_esperado` de su `preparada` | **ninguna. Es TERMINAL**, y retira el marcador. Que no exista ningún evento posterior con ese `tx` lo comprueba el **validador semántico del diario**, no el esquema |
 | `deriva` | **ninguna: NO tiene `tx` ni `fase`** | **`causa`, ENUM CERRADO DE TRES VALORES y ÉSTA ES SU ÚNICA SEDE** ∈ {`posterior-al-cierre`,`sin-transaccion`,`abandono-de-transaccion`} · `afecta[]` con `ruta`·`hash_esperado`·`hash_observado` · `items[]` · `autoridad` · `tx_afectada` **obligatorio si `causa` ∈ {`posterior-al-cierre`,`abandono-de-transaccion`} y PROHIBIDO con `sin-transaccion`** | `fase` · `tx` · `decision` · `resultado` | ninguno: **reporta**, no repara | ninguna. La reparación es una transacción NUEVA (§2.6.11) |
 | `fallo` | **ninguna: NO tiene `tx` ni `fase`** | `sujeto` · `operacion` ∈ {`push`,`publicacion`,`arranque`,`ci`,`proyeccion`} · `causa` · `estado_observado` · `diagnostico` · `intentos` · `recuperable` ∈ {`si`,`no`,`requiere-decision`} · `autoridad_requerida` · `accion_siguiente` · `evidencia` · **`tx_afectada` como REFERENCIA, cuando la operación se refiere a una** · `referencias[]` con `commit`·`rama`·`remoto` cuando la operación es Git | `fase` · `tx` · `afecta` · `decision` | — | ninguna. **Es informativo y NO repara**: si hay que reparar, es una transacción nueva |
@@ -5397,12 +5472,23 @@ UN FICHERO NO VERSIONADO     no sobrevive a un clon nuevo, y `C6` `N9` dice que 
    aquí, y lo que impide que «huella correcta» se lea como «puntero al día».
 ```
 
-**Comprobación adversarial, reasignada a `X51`** —corregido por `M2`: `X32`–`X34` se citaban
-y **no existían en la tabla**—. Adopción hasta `A7` inclusive: `git status` y `git log`
-en cada fuente no muestran **ni un solo commit ni un fichero nuevo** de ADS · actualización en
-tres fuentes con `main` protegida: la propagación produce tres PR, un Integration Set, y
-estado `INTEGRACIÓN PARCIAL` hasta que las tres se fusionan · fusionar dos de tres y comprobar
-que el sistema **lo dice**, en vez de declarar la actualización cerrada.
+**Comprobación adversarial: `X62`, fila PROPIA.** Adopción hasta `A7` inclusive: `git status`
+y `git log` en cada fuente no muestran **ni un solo commit ni un fichero nuevo** de ADS,
+**incluidos los punteros de adaptador** · actualización en tres fuentes con `main` protegida:
+la propagación produce tres PR, un Integration Set, y estado `INTEGRACIÓN PARCIAL` hasta que
+las tres se fusionan · fusionar dos de tres y comprobar que el sistema **lo dice**, en vez de
+declarar la actualización cerrada.
+
+> **Corregido por el GATE DEFINITIVO INDEPENDIENTE (`J-03`, MEDIO; es `D101`).** Estas tres
+> comprobaciones estaban **reasignadas a `X51`**, que cubre otro escenario: `X51` es «editar
+> un canónico fuera del protocolo, sin transacción abierta, y arrancar → se declara deriva no
+> transaccional», y no tiene nada que ver con que la adopción no escriba en las fuentes antes
+> de `A8`. `M2` había señalado que `X32`–`X34` se citaban y **no existían en la tabla**, y el
+> remedio de entonces las reasignó a una fila **existente pero ajena** — que es peor que la
+> referencia rota, porque pasa desapercibida. **Se elige fila propia y no contrato de prueba
+> F6** porque el escenario se expresa entero con el contrato de hoy —`git status`, `git log` y
+> la ausencia de puntero, sobre tres fuentes— y **no exige ningún runtime que no exija ya
+> cualquier otra de las cuarenta y seis**. `X51` conserva su escenario intacto.
 
 **Límite declarado, y es el que importa.** Que un entorno concreto **honre** el puntero —que
 lo lea, que abra el directorio hermano y que trabaje con él— **no lo puede afirmar el
@@ -5761,11 +5847,19 @@ A CIRCUITO           ningún item de producto listo, porque el producto no tiene
                    · **`A` · adopción** — igual hasta `A10`, y además sólo dos de sus cuatro
                      líderes son `SIS`: `A2`–`A7` es `AUD` y `A8` es `DEU`, y el freno cuenta
                      rachas de items **SIS**. **Nunca alcanza el tercero consecutivo**
-                   · **`M` · migración** y **`U` · actualización** — cae la cláusula literal
-                     de `a.7`: «NO APLICA mientras el objetivo explícito del proyecto sea
-                     construir o migrar el propio kernel/runtime». Una migración o una
-                     actualización de ADS **es** ese objetivo mientras dura, y `U` además
-                     declara `bloqueo` en §8.4: ninguna otra actualización arranca
+                   · **`M` · migración** y **`U` · actualización** — **la aritmética propia
+                     basta, y con ella se resuelve**: derivado de §18, `M` = `M0`–`M5` `SIS`
+                     + `M6`–`M7` `DEU`, y `U` = `U0`–`U4` `SIS` + `U5a` `SIS` + `U5b` `DEP`
+                     + `U6` `SIS`. El FRENO 3 de `a.7` exige **más de dos** items `SIS`
+                     CONSECUTIVOS: `M` tiene uno y `U` tiene dos antes de que `DEP` rompa la
+                     racha. **El freno no llega a evaluarse, igual que en `N` y en `A`.**
+                     La cláusula literal de excepción de `a.7` —«NO APLICA mientras el
+                     objetivo explícito del proyecto sea construir o migrar el propio
+                     kernel/runtime»— **también los cubriría**, y se deja dicho como
+                     observación, no como fundamento: invocarla era una dependencia
+                     innecesaria sobre material aprobado donde la cuenta propia ya cerraba.
+                     Corregido por `K-08`. `U` además declara `bloqueo` en §8.4: ninguna
+                     otra actualización arranca
                    **Ninguno de los cuatro necesita excepción del Owner, y ninguno necesita
                    agruparse en menos items.** Lo que hacía falta era comprobarlo y decirlo
 
@@ -6119,8 +6213,8 @@ CIERRE          A10 superado, y el producto entra en SU macrofase real — que p
 > **Esto no autoriza iniciar la adopción**, y no levanta ninguna de las condiciones de `O14`.
 >
 > **Nota al pie, que NO toca la resolución** (`m-1`): `O15` se escribió cuando el recuento
-> derivado de presiones normativas vigentes era **ocho**. Hoy son **DOCE** (§16), porque
-> `PN-11`, `PN-12`, `PN-13` y `PN-14` son posteriores a ella. La cifra que `O15` cita queda como la
+> derivado de presiones normativas vigentes era **ocho**. Hoy son **TRECE** (§16), porque
+> `PN-11`, `PN-12`, `PN-13`, `PN-14` y `PN-15` son posteriores a ella. La cifra que `O15` cita queda como la
 > que era el día en que el Owner resolvió —su texto no se reescribe—, y la vigente es
 > siempre la que §16 deriva.
 
@@ -6268,10 +6362,12 @@ HANDOFFS        de `ARQ` a `M5` el `plan-tecnico` con el radio MEDIDO —que es 
                 `ENT` a `VER` la convergencia para `M7`. **Su QUÉ está en §8.0; las
                 INSTANCIAS las crea F6**
 EVIDENCIA       equivalencia antes/después de items, paquetes y checkpoints · dictamen de
-                M5 · salidas de build, pruebas, CI y despliegue en M7
+                M5 · salidas de build, pruebas, CI, despliegue y COMPORTAMIENTO AGENTIC en
+                M7 — **las CINCO**
 GATES           M3 no cierra sin equivalencia demostrada · M5 certificación Integrada del
-                control repo nuevo · M6 exige autorización EXPLÍCITA del Owner · M7 no
-                cierra sin las cuatro salidas verdes
+                control repo nuevo · M6 exige autorización EXPLÍCITA del Owner · **M7 no
+                cierra sin las CINCO salidas verdes: build, pruebas, CI, despliegue y
+                comportamiento agentic**
 CERTIFICACIÓN   Integrada en M5, ANTES de retirar nada. Revalidada en M7
 ROLLBACK        ver «El orden, y por qué certificar y verificar son dos pasos», abajo
 REANUDACIÓN     por checkpoint. M3 es idempotente por diseño (§2.6)
@@ -6300,6 +6396,13 @@ M7 VERIFICAR     ¿dependía algo de lo retirado?   Es una pregunta DISTINTA, y 
 LAS DOS SON      M5 no puede responder a M7 —lo viejo sigue ahí y tapa cualquier
 NECESARIAS       dependencia oculta—, y M7 no puede sustituir a M5 —llega tarde—. Fundirlas
                  es lo que producía la contradicción.
+
+POR QUÉ LA       **`M6` retira de cada fuente el kernel, los packs y la organización de ADS.**
+QUINTA NO ES     Build, pruebas, CI y despliegue pasarían IGUALMENTE en una fuente a la que
+OPTATIVA         le han quitado su organización ADS: son verdes sobre el producto, no sobre
+                 lo retirado. **La única de las cinco que interroga precisamente lo que `M6`
+                 retira es el comportamiento agentic**, y por eso es la que el gate no puede
+                 omitir. Es `D99`.
 ```
 
 **Rollback, por tramos:**
@@ -7217,7 +7320,7 @@ demostrar que las piezas encajan sin contradecirse. El piloto sigue pendiente.
 |---|---|---|---|---|---|---|---|
 | 1 | **proyecto nuevo** | distribución instalada | **`estado/` nace en `INS-0`**, con `INI-001` y el item real `SIS-001` | `SIS` propietaria global · `CON` y `VER` · `PLT` materializa (`C7:82`) · runtime | `INS-4` Operativa · **`INS-5` baseline aprobado por el Owner** · `INS-7` = `O12` | `workspace check` · prueba de humo · checkpoint recuperado | **por el checkpoint del paquete de `SIS-001`, desde `INS-0`.** Ningún tramo depende del chat |
 | 2 | **adopción de PesquerApp** | los dos repositorios enteros, sólo lectura | iniciativa A0 · inventario · baseline · cobertura inicial | `INV` la capa, `SIS` consumidor | A3 baseline, A8 retirada, A10 = `O12` | inventario con procedencia · dictamen de `VER` | dosier de la iniciativa + checkpoint del paquete |
-| 3 | **migración desde ADS anterior** | control repo antiguo y fuentes | estado **traducido**, con esquema nuevo | `SIS` · `ARQ` en `M6`–`M7` · `CON` con custodia de cada source change · `PLT` materializa (`C7:82`) | M3 equivalencia, M5 autorización | equivalencia antes/después de items y checkpoints | el evento `preparada` de la tx; M3 es idempotente |
+| 3 | **migración desde ADS anterior** | control repo antiguo y fuentes | estado **traducido**, con esquema nuevo | `SIS` · `ARQ` en `M6`–`M7` · `CON` con custodia de cada source change · `PLT` materializa (`C7:82`) | M3 equivalencia · M5 certificación Integrada · **`M6` autorización EXPLÍCITA del Owner** · M7 las cinco salidas verdes | equivalencia antes/después de items y checkpoints | el evento `preparada` de la tx; M3 es idempotente |
 | 4 | **actualización de ADS** | distribución candidata e instalada | distribución instalada · proyecciones | `SIS` · `PLT` propietaria global de `U5b` · `CON` con custodia del puntero · `ENT` declara convergencia | U3 plan aprobado, U6 certificación | vista comprensible del cambio | rollback a la versión anterior con su estado |
 | 5 | **feature amplia por iniciativa** | componentes afectados y sus fuentes | iniciativa + N items + paquetes | las capacidades con custodia | gate de cierre de la iniciativa | capas, source changes e integration set | dosier derivado + checkpoints |
 | 6 | **auditoría recurrente → campaña** | los sujetos de las celdas vencidas | cobertura · items `AUD` · iniciativa campaña | **`DSP` abre los items `AUD` dentro de la política `O7` vigente** (§5.3) · la capacidad RESPONSABLE del aspecto —la `lider` si hay varias— abre la campaña · `ENC` clasifica los findings · runtime | gate de cada `AUD` + cierre de campaña | dictámenes · findings con causa raíz | la celda y su estado; nada se pierde |
@@ -7583,7 +7686,10 @@ distintos**. Los dos juicios se conservan íntegros e inmutables en los document
 
 **Y `O16`**, resolución posterior del Owner que da sede a `PN-11`: autoridad normativa en la
 sección `(g)`, contrato derivado `C8` en F6, y `C7` limitado a las sources. **No autoriza
-iniciar F5.**
+iniciar F5.** **Su procedencia quedó registrada por `L-02`** en el registro de decisiones:
+fecha **2026-08-29**, la formulación que se le presentó —redactada por el sistema— y su
+respuesta literal, «ok, confirmamos». El párrafo presentado **no es cita del Owner**; lo
+literal suyo es la confirmación, y así consta.
 
 **Y `O15`**, resolución posterior del Owner que revisa `O14` sin reescribirlo: la adopción de
 PesquerApp es la **primera adopción real, permanente y completa** de ADS. Vive en el registro
@@ -7910,7 +8016,13 @@ POR EL OWNER        la futura sección `(g)` —que `PN-1` ya exige crear, luego
                     norma nueva—, y F6 deriva de ella un contrato independiente **`C8`** que
                     gobierna ÚNICAMENTE el control repo. **`C7` permanece limitado a las
                     sources.** `C8` no copia la tabla de `C7`: el sujeto es distinto y hay que
-                    aplicarle la prueba
+                    aplicarle la prueba.
+                    **Procedencia de `O16`, registrada por `L-02`:** 2026-08-29, formulación
+                    presentada por el sistema y respuesta literal del Owner «ok,
+                    confirmamos». Está en el registro de decisiones y en `owner_captado`.
+                    Antes de eso, `O16` era la única de las dieciséis resoluciones del Owner
+                    **sin fecha, sin cita y sin entrada en `owner_captado`** — y es la que
+                    cierra la sede de esta presión, nacida del BLOQUEANTE `B2`
 MATERIA MÍNIMA      un apartado en `(g)` con la tabla de propiedad del control repo. **F5 la
                     redacta; F6 materializa y valida `C8`.** Ninguna se redacta aquí
 BLOQUEA             la publicación gobernada del estado, y con ella las garantías 5 y 6 de
@@ -7986,10 +8098,17 @@ MATERIA MÍNIMA      añadir `DOM:condiciones C-DOM`, `SEG:condiciones C-SEG` y 
                     dominio y diseño de un producto nuevo no pertenece a `INS-5` y nombrar
                     dónde pertenece. Son dos salidas, y elegir es del Owner
 ALCANCE             `INS-5` y `A9` de §8, **y nada más**. NO alcanza a `A2`–`A7`, que es
-                    `proceso:AUD` y sí declara `DOM`, `SEG` y `DIS` como condicionales; ni a
-                    `A8`, `M6`–`M7` ni `U5b`, que son `proceso:DEU` y `proceso:DEP` y también
-                    las declaran —`DOM:condiciones` y `SEG:condiciones`, con `G28` haciendo
-                    irretirable a `SEG` en `DEP`—. **Corregido por `I-26`**: la frase quedaba
+                    `proceso:AUD` y sí hace participar a `DOM`, `SEG` y `DIS` como
+                    condicionales; ni a `A8`, `M6`–`M7` ni `U5b`, que son `proceso:DEU` y
+                    `proceso:DEP` y **también hacen participar a las dos, aunque por VÍAS
+                    DISTINTAS**: `DEU` declara `DOM:condiciones` y `SEG:condiciones` como
+                    condicionales, mientras `DEP` declara `DOM:condiciones` como condicional
+                    y **`SEG` como OBLIGATORIA** —el item `condiciones-de-seguridad`, con
+                    `capacidad_productora: "SEG"`, que `G28` hace irretirable—. **Corregido
+                    por `L-03`**: el texto anterior atribuía `SEG:condiciones` a `DEP`, que
+                    es precisamente la conflación de vías que rompía `D92` (`K-02`, cerrada
+                    por `D98`). La conclusión no cambia —el alcance sigue sin llegar a
+                    `U5b`—; el motivo escrito sí. **Corregido por `I-26`**: la frase quedaba
                     cortada a media línea, en la única presión que esta tanda añadía y que va
                     al Owner. **Y la mitad `PLT` del bloqueante `B-2` ya NO está aquí**: se
                     cierra contra `C7:80-92` en §8.0 (`I-04`), y nunca fue materia del Owner
@@ -8075,10 +8194,110 @@ ORIGEN              hallazgo `F-01` del GATE FINAL, reclasificado por el GATE DE
                     INDEPENDIENTE: su remedio, tal como estaba escrito, no alcanzaba su fin
 ```
 
+## `PN-15` · NUEVA · `KERNEL.md` `G20`–`G23` y el gate del Circuito 0, presionados por §8
+
+> **Registrado por el GATE DEFINITIVO INDEPENDIENTE (`K-06`, GRAVE; es `D97`).** §8 sustituye
+> la ruta de arranque cuyo gate de salida la constitución declara **no negociable por el
+> sistema**, por un gate distinto **definido por el propio sistema** — y ni `a.11` lo deroga
+> ni §16 lo registraba. `PN-3` demuestra que presionar UNA regla de `KERNEL.md` exige una
+> `PN`; aquí son cuatro. **Esta presión NO deroga nada y NO redacta ninguna enmienda: fija
+> que la decisión es de F5 y que hasta entonces `G20`–`G23` SIGUEN VIGENTES.**
+
+```text
+QUÉ PRESIONA        `kernel/KERNEL.md` 1.5.0 · `G20` (Macrocircuitos) · `G21` (Gates entre
+                    circuitos) · `G22` (gate fijo del Circuito 0) · `G23` (Product Baseline)
+                    Es material APROBADO. F4 no lo toca, y F6 tampoco puede tocarlo
+
+TEXTO VIGENTE       `KERNEL.md`:690 (`G21`) — «El gate de salida del Circuito 0 lo fija este
+                    documento y NO es negociable por el sistema (G22), porque un sistema no
+                    puede definir sin conflicto de interés los criterios que aprueban su
+                    propia existencia»
+                    `KERNEL.md`:687 — «C0 →[gate fijo, ver G22]→ C1 →[gate]→ C2 →[gate]→
+                    C3 →[baseline, ver G23]→ C4»
+                    `KERNEL.md`:694–712 (`G22`) — timebox de 3 sesiones del Owner o 2
+                    semanas · parada obligatoria con `Owner Decision` · DIEZ entregables
+                    obligatorios nombrados uno a uno · cuatro prohibiciones
+                    `START_HERE.md`:141–147 — ruta A: «Lanzar el Circuito 0… termina cuando
+                    existen los 10 entregables de G22, dentro del timebox»
+
+QUÉ ES EL DEFECTO   §17 declara «`START_HERE.md` rutas A y B → **sustituidas** por §8.1 y
+                    §8.2», y §8.1 define `INS-0`…`INS-7` con `INS-3` = «C0: especializar y
+                    verificar la organización YA MATERIALIZADA» y gates `INS-4` / `INS-7`.
+                    Un barrido del documento 11 devuelve **cero** apariciones de «timebox»,
+                    «presupuesto máximo», «Owner Decision» y «entregables obligatorios»; y
+                    `G20`, `G21` y `G23` tienen **cero** apariciones en el documento 11, en
+                    (a), en (b) y en `E2`, mientras `G22` tiene UNA, como cita de apoyo.
+                    `a.11` —«la ÚNICA lista que deroga o ajusta reglas», según `PN-3`— **no
+                    nombra ninguna de las cuatro** en ninguna de sus cinco filas, y `E2.4`
+                    demuestra la regla de lectura: `G29` figuraba entre las que SOBREVIVEN
+                    intactas y hubo que ENMENDAR (a) para reclasificarla. **Lo no nombrado
+                    sobrevive.** Y §17 **no tenía fila para `kernel/KERNEL.md`**
+
+POR QUÉ NO BASTA    porque el conflicto no es de forma: `G22` fija un gate CON CONTENIDO
+UN DERIVADO         —timebox, diez entregables, cuatro prohibiciones— y §8.1 fija otro
+                    distinto SIN ellos. No hay lectura bajo la cual los dos sean el mismo
+                    gate. Y `G21` declara expresamente que quien lo fija es la constitución
+                    y **no el sistema**, luego F4 no puede resolverlo por su cuenta sin
+                    incurrir justo en el conflicto de interés que esa regla nombra
+
+MATERIA MÍNIMA      que F5 decida, regla a regla y de forma EXPRESA, qué se CONSERVA, qué se
+                    AJUSTA y qué se SUSTITUYE de `G20`, `G21`, `G22` y `G23` frente al
+                    Circuito 0 de §8.1, y lo registre en `a.11` —que es material APROBADO y
+                    por eso exige enmienda, como `PN-3` para `G03`—. **Aquí no se redacta
+                    ninguna enmienda**, como en las catorce anteriores.
+                    Cuatro preguntas concretas, y ninguna la puede contestar F4:
+                      1 · ¿el gate de salida del Circuito 0 sigue siendo el de `G22`, o pasa
+                          a ser `INS-4`/`INS-7`? Si pasa, ¿quién lo fija, dado que `G21`
+                          dice que no puede fijarlo el sistema?
+                      2 · ¿el timebox de 3 sesiones o 2 semanas sobrevive, se ajusta o se
+                          retira?
+                      3 · ¿los DIEZ entregables obligatorios de `G22` sobreviven, y cómo se
+                          corresponden con las salidas de `INS-0`…`INS-7`?
+                      4 · ¿`G20` y `G23` —macrocircuitos y Product Baseline— quedan
+                          intactos, ajustados o sustituidos por §8?
+
+ALCANCE             `G20`, `G21`, `G22` y `G23` de `KERNEL.md` 1.5.0, y la fila de `a.11`
+                    que haya que añadir. NO alcanza al resto del kernel, ni a §8, que
+                    describe lo que F4 diseñó y no pretende derogar nada
+
+SE PUEDE CONSTRUIR  todo §8 **como diseño**. Lo que NO se puede es instalar por §8.1 dando
+                    por derogado el gate de `G22`: **hasta que F5 decida, `G20`–`G23` SIGUEN
+                    VIGENTES**, y una instalación real tiene que satisfacer las dos cosas o
+                    esperar a la enmienda
+
+BLOQUEA             la ejecución real del Circuito 0 por la ruta de §8.1 sin resolver antes
+                    qué le pasa a `G22`. **No bloquea F6 en lo que no toca el arranque**
+
+DESPUÉS DE F5       **F6** actualiza `START_HERE.md` y el resto de derivados. El orden
+                    importa: primero la fuente —`a.11` y la enmienda—, después el derivado.
+                    Al revés es el modo de fallo que §15.7 registra para `C7`
+
+CONDICIÓN DE        si el Owner decide que `G20`–`G23` se conservan intactas, la reversión
+REVERSIÓN           es que **§8.1 se subordine a `G22`**: el Circuito 0 mantiene su timebox,
+                    sus diez entregables y sus cuatro prohibiciones, y `INS-0`…`INS-7` pasa
+                    a ser la instrumentación de ese gate y no su sustituto. Es una salida
+                    legítima y no exige rediseñar §8; elegir es del Owner
+
+PROPIETARIO         el **Owner**, porque es material aprobado y porque `G21` reserva
+                    expresamente esta decisión a la constitución y no al sistema.
+                    Redacta **F5**; materializa **F6**
+
+PRUEBA POSTERIOR    una comprobación mecánica que, para cada una de `G20`, `G21`, `G22` y
+                    `G23`, exija **o** una fila en `a.11` que la nombre —derogada,
+                    sustituida, ajustada, pendiente o conservada— **o** una fila en §17 para
+                    `kernel/KERNEL.md` que declare qué le pasa. Falla en verde hoy sería
+                    imposible: hoy no existe ninguna de las dos para ninguna de las cuatro.
+                    Propietario `SIS`, fase F6
+
+ORIGEN              hallazgo `K-06` del GATE DEFINITIVO INDEPENDIENTE, agravado a GRAVE por
+                    el adjudicador `L` y elevado por él a una de las seis razones del
+                    veredicto INSUFICIENTE PARA F5
+```
+
 **Resumen para el Owner, tras revisar las cinco de la entrega anterior:**
 
 ```text
-VIGENTES · DOCE
+VIGENTES · TRECE
   PN-1   la sección (g). LA ÚNICA QUE BLOQUEA TODO EL ESTADO DURABLE, y ahora decide más
   PN-2   la política de auditoría como tercera vía de creación de trabajo
   PN-3   G03 y la ejecución desatendida. Misma pregunta que PN-2 por otro camino, y
@@ -8101,6 +8320,10 @@ VIGENTES · DOCE
          en a.6 L495, que son material APROBADO. Corregir sólo el kernel
          cambiaría el derivado dejando la fuente, que es el modo de fallo que
          §15.7 registra para C7. Sale de reclasificar `F-01`                      NUEVA
+  PN-15  KERNEL.md 1.5.0 G20–G23: §8 sustituye la ruta cuyo gate de salida G21
+         declara NO NEGOCIABLE POR EL SISTEMA, y ni a.11 lo deroga ni §17 tenía
+         fila para KERNEL.md. Hasta que F5 decida, las cuatro SIGUEN VIGENTES.
+         Sale de K-06                                                             NUEVA
 
 RETIRADA · UNA
   PN-4   con su motivo escrito, y reinstaurable por F5 si el Owner lo prefiere
@@ -8112,9 +8335,10 @@ CUATRO SON UNA FRASE       PN-6, PN-7, PN-9 y PN-10. Y tres de ellas se registra
 CADA UNA                   PRECISAMENTE PORQUE parecen obvias: PN-6 fijó esa vara, y
                            aplicarla de forma desigual sería el defecto
 
-EL TOTAL SE DERIVA         un barrido de las cabeceras `## \`PN-` da CATORCE; menos PN-4
-                           RETIRADA y PN-5 FUSIONADA, quedan DOCE. No se escribe a mano, y
-                           por eso se mueve cuando aparece una nueva
+EL TOTAL SE DERIVA         un barrido de las cabeceras `## \`PN-` da QUINCE; menos PN-4
+                           RETIRADA y PN-5 FUSIONADA, quedan TRECE. No se escribe a mano, y
+                           por eso se mueve cuando aparece una nueva — y acaba de moverse
+                           con `PN-15`
 
 NO SE RENUMERA NINGUNA. Renumerar rompería la trazabilidad de lo que ya se llevó al Owner.
 ```
@@ -8135,7 +8359,7 @@ NO SE RENUMERA NINGUNA. Renumerar rompería la trazabilidad de lo que ya se llev
 | (a), (b), `E1`, `E2` | **intactas**. F4 no las toca, y sus presiones están en §16 |
 | `K-1` tres capas | **intacta**. §1.2 clasifica ciclo de vida, no conocimiento |
 | `C1`–`C7` | **intactos**. `C2` se amplía en F6 |
-| quince capacidades, roles, métodos, prompts | **intactos**. Son los RESPONSABLES de los aspectos de §5.2, no los aspectos. **`+6` extensiones de ficha**: `ENT`, `ARQ`, `PLT`, `SEG`, **`DSP`** (`M-5` · abrir items `AUD` dentro de una política `O7` vigente) y **`ENC`** (`M-6` · admitir un finding de auditoría como entrada, con la celda de cobertura por sujeto). **Corregido por `I-06`**: decía `+4`, y era la mitad literal del cierre de `M-6` —«añadir `capacidades/ENC/` a §5.2 **y a §17**»— que no se había hecho. §5.2, §16 y §17 dicen ahora la misma cifra, y `+1` más si `I-14` obliga a extender las fichas de las capacidades líderes de cobertura |
+| quince capacidades, roles, métodos, prompts | **intactos**. Son los RESPONSABLES de los aspectos de §5.2, no los aspectos. **`+6` extensiones de ficha**: `ENT`, `ARQ`, `PLT`, `SEG`, **`DSP`** (`M-5` · abrir items `AUD` dentro de una política `O7` vigente) y **`ENC`** (`M-6` · admitir un finding de auditoría como entrada, con la celda de cobertura por sujeto). **Corregido por `I-06`**: decía `+4`, y era la mitad literal del cierre de `M-6` —«añadir `capacidades/ENC/` a §5.2 **y a §17**»— que no se había hecho. §5.2, §16 y §17 dicen ahora la misma cifra. **Y las fichas de las capacidades LÍDERES de cobertura se extienden también** —no es un `+1` condicional: `D91` ya lo decidió y fija que **el conjunto se DERIVA de los `contrato-de-aspecto`, no se escribe a mano**, luego es un conjunto derivado ya resuelto y no un incremento pendiente de una condición. Corregido por `K-10` |
 | diez procesos de `b.16` | **intactos**. Ningún macrocircuito crea uno nuevo |
 | diecinueve esquemas | **+4 de estado**: `iniciativa`, `adaptador`, `cobertura`, `evento`. **+2 de clase**: `nivel-certificacion` y `contrato-de-aspecto`, con el precedente de `nivel-novedad`. `memoria` y `validadores.yaml` se amplían. **Total 25** (§3.8) |
 | packs | **intactos**, `+2` piezas en `web-app` (`CAND-022`, `CAND-024`) |
@@ -8143,7 +8367,8 @@ NO SE RENUMERA NINGUNA. Renumerar rompería la trazabilidad de lo que ya se llev
 | `plantillas/CHECKPOINT.md` | **intacta**: `E2.3` ya le dio forma multi-fuente |
 | `tooling/workspace.py` | **intacto** |
 | `tooling/compile-agents.sh` | **sustituido** por el compilador de §6.2. Hoy no compila |
-| `START_HERE.md` rutas A y B | **sustituidas** por §8.1 y §8.2, que son sus versiones con estado y gates |
+| `kernel/KERNEL.md` `G20`–`G23` | **PRESIONADAS y pendientes de F5. NO derogadas por F4, y NO sustituidas por §8.** `G21` declara que el gate de salida del Circuito 0 lo fija la constitución y **no es negociable por el sistema**; `G22` fija su timebox, sus diez entregables y sus cuatro prohibiciones. `a.11` —«la única lista que deroga o ajusta reglas», `PN-3`— **no las nombra**, y `E2.4` demuestra que lo no nombrado sobrevive. **Hasta que F5 decida regla a regla, las cuatro SIGUEN VIGENTES**, y §8.1 no las deroga: es un diseño que las presiona. La decisión y su enmienda son `PN-15` (`D97`), registrada por `K-06` |
+| `START_HERE.md` rutas A y B | **sustituidas** por §8.1 y §8.2, que son sus versiones con estado y gates — **con la reserva de `PN-15`**: la ruta A termina hoy «cuando existen los 10 entregables de `G22`, dentro del timebox», y esa condición pertenece a `KERNEL.md`, no a `START_HERE.md`. Mientras `PN-15` no se resuelva, la sustitución alcanza a la ruta como TEXTO DE ENTRADA y **no** al gate constitucional que invoca |
 | `docs/evolucion/` | **temporal**. Se retira tras F6, y no antes: F5 y F6 necesitan su trazabilidad |
 
 **Convivencia sin dos verdades.** Regla de orden: una pieza nueva **no entra hasta que la que
@@ -8295,7 +8520,7 @@ ENSAYO                control repo nace definitivo. Por eso el paso 8 exige la B
 ```text
 NADA ESTÁ CONSTRUIDO      ni una línea de kernel, runtime, tooling, esquema, adaptador,
                           plantilla, pack ni validador. F4 no lo autoriza
-NADA ESTÁ PROBADO         los doce escenarios de §14, las CUARENTA Y DOS filas de la tabla
+NADA ESTÁ PROBADO         los doce escenarios de §14, las CUARENTA Y SEIS filas de la tabla
                           adversarial de §2.6.7, los ONCE escenarios negativos de §11.5 y
                           las OCHO comprobaciones `X-A`–`X-H` de §2.9. **Las nueve ventanas
                           de reconciliación NO se cuentan: `D64` las retiró**, y §2.6.9 lo
@@ -8310,13 +8535,14 @@ REAL SIGUE PENDIENTE      llena. `O15` fija que esa adopción —PesquerApp— s
 NINGÚN ADAPTADOR EXISTE   y por tanto ninguno está certificado
 X1 Y P-05 SIGUEN          ninguna decisión de aquí cruza la línea del blueprint
 DEFERIDAS
-DOCE PRESIONES            §16, tras DOS devoluciones independientes, la TERCERA REVISIÓN, el
-NORMATIVAS VIGENTES       GATE FINAL y el GATE DE CIERRE: `PN-4` retirada, `PN-5` fusionada
-                          en `PN-3`, y `PN-6` a `PN-14` nuevas. `PN-1` bloquea todo el estado
-                          durable, y F5 es su puerta. **`PN-14` es la única que esta tanda
-                          añade**, y sale de reclasificar `F-01`: su remedio, como estaba
-                          escrito, no alcanzaba (a) ni (b). El recuento se DERIVA de las
-                          cabeceras de §16, no se escribe a mano
+TRECE PRESIONES           §16, tras DOS devoluciones independientes, la TERCERA REVISIÓN, el
+NORMATIVAS VIGENTES       GATE FINAL, el GATE DE CIERRE y el GATE DEFINITIVO: `PN-4`
+                          retirada, `PN-5` fusionada en `PN-3`, y `PN-6` a `PN-15` nuevas.
+                          `PN-1` bloquea todo el estado durable, y F5 es su puerta.
+                          **`PN-15` es la única que esta tanda añade**, y sale de `K-06`:
+                          `G20`–`G23` de `KERNEL.md` están PRESIONADAS y pendientes de F5,
+                          **no derogadas por F4**. El recuento se DERIVA de las cabeceras de
+                          §16, no se escribe a mano
 F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. TRES críticas independientes, una
                           devolución técnica, un GATE FINAL con tres agentes y su
                           COMPLEMENTO DE COBERTURA la han devuelto. La TERCERA REVISIÓN
@@ -8341,12 +8567,22 @@ cuentan como «F4 corregida»**.
 > `PRESION_LISTA_PARA_F5` con `PN-14`, y **conserva su trabajo de F6** —el kernel—, que se
 > ejecuta DESPUÉS. Sigue figurando en la tabla de abajo porque su mitad de F6 vive aquí.
 
-> **La tabla tiene NUEVE filas y los externos son OCHO, y no es un descuadre.** La novena es
-> `F-05`, que **NO es externo**: sus tres condiciones de cierre se cumplen en esta fase —§15.7
-> registra la excepción de `C5`, y §8.0 declara qué checkpoint viaja—, y lo que aparece abajo
-> es el residuo OPTATIVO que `00-CIRCUITOS` L238 desactiva expresamente. Figura aquí porque su
-> trabajo residual vive en `circuitos/`, no porque cuente entre los ocho. Su estado primario
-> es `CORREGIDO_EN_F4`, y así consta en la matriz de cierre del checkpoint.
+> **La tabla tiene NUEVE filas y los externos son SIETE, y no es un descuadre** —corregido
+> por `K-04`, que demostró que la reconciliación anterior decía «los externos son OCHO» seis
+> líneas después de declarar que `F-01` había dejado de serlo, y así contaba a `F-01` en los
+> dos lados—. **Las dos filas que NO son externas:**
+>
+> - **`F-01`**, que acaba de dejar de serlo en el párrafo anterior: pasa a
+>   `PRESION_LISTA_PARA_F5` con `PN-14`, y figura abajo porque **conserva su trabajo de F6**.
+> - **`F-05`**, que **nunca lo fue**: sus tres condiciones de cierre se cumplen en esta fase
+>   —§15.7 registra la excepción de `C5`, y §8.0 declara qué checkpoint viaja—, y lo que
+>   aparece abajo es el residuo OPTATIVO que `00-CIRCUITOS` L238 desactiva expresamente.
+>   Figura aquí porque su trabajo residual vive en `circuitos/`. Su estado primario es
+>   `CORREGIDO_EN_F4`.
+>
+> **La aritmética, entera: 9 filas = 7 externos + `F-01` + `F-05`.** Los siete
+> `EXTERNO_CON_PROPIETARIO` de la matriz son `F-02`, `F-04`, `F-06`, `F-07`, `F-08`, `F-10` y
+> `F-11`, y coinciden con el estado primario que la matriz de cierre les asigna.
 
 | hallazgo | qué hay que hacer | dónde | propietario | fase | ¿bloquea la implementabilidad de F4? |
 |---|---|---|---|---|---|
@@ -8359,6 +8595,29 @@ cuentan como «F4 corregida»**.
 | `F-08` | nota de vigencia o de sustitución que reconcilie el «NO IMPLEMENTAR SIN DISEÑO PREVIO» de `IDEAS` §15 con lo que `C6`, `C7` y §10 **ya implementan**. Un campo `autoridad:` no retira esa frase: son remedios distintos | `docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md` | el **Owner**: es su documento | **F5** | no |
 | `F-10` | la cabecera deja de afirmar «catorce bloques, **uno por clase de expresión**»: hay catorce formas y **nueve** clases, y la aposición es falsa. La cifra 14 es correcta | `entrada/03-FORMAS.md` | `ENC` | **F6** | no |
 | `F-11` | la cabecera enumera las pruebas que el fichero contiene de verdad —`T75`–`T80` y `T154`–`T157`—, no «`T75` a `T84`»: `T81`–`T85` viven en otro fichero, que existe | `entrada/05-ESCENARIOS.md` | `SIS` | **F6** | no |
+
+### Correcciones EDITORIALES obligatorias de F5 sobre material APROBADO
+
+> **Registrado por el GATE DEFINITIVO INDEPENDIENTE (`J-08`, MENOR; sin decisión nueva).**
+> Dos restos en (b) que **no cambian ninguna norma ni ninguna composición**: son una cita
+> equivocada y una numeración desordenada. **No son cambio arquitectónico y no se registran
+> como presión normativa**, precisamente porque el contenido no cambia — crear una `PN` para
+> esto sería inflar el censo que F5 lleva al Owner. Se registran aquí como **checklist
+> verificable de F5**, que es la fase con autoridad para editar material aprobado.
+
+| # | ruta | ubicación | texto vigente | corrección exacta | prueba posterior |
+|---|---|---|---|---|---|
+| `E5-1` | `docs/rediseno/b-RECORRIDO-APROBADA.md` | **L358**, en la nota «Toda devolución obliga a DSP a crear o reabrir el paquete de corrección» | «deja al item en `en espera` **(P7)**» | «deja al item en `en espera` **(P9)**» | `b`:217–218 fija `P7 → activo` con motivo «pendiente de promoción», y `b`:221–222 fija `P9 → en espera` para `esperando-*`, `devuelto` y `propuesto` con dependencias abiertas. **`devuelto` es exactamente `P9`**, y `b`:255 ya lo usa bien. La prueba: que toda cita de un predicado `Pn` en (b) case con el predicado que ese número define |
+| `E5-2` | `docs/rediseno/b-RECORRIDO-APROBADA.md` | **L462–472**, lista de reglas de recomposición | la numeración va **1, 2, 5, 3, 4** | renumerar a **1, 2, 3, 4, 5** conservando el texto de cada regla **sin tocar una palabra**, y comprobando que ninguna otra sede cita esas reglas por su número | que la secuencia de una lista numerada de (b) sea estrictamente creciente. Antes de renumerar, un barrido de «regla 3 de b.» y equivalentes que confirme que ninguna referencia externa se rompe |
+
+**Qué NO se hace aquí, y por qué.** F4 **no edita (b)**: §17 la declara intacta y esta fase no
+toca material aprobado. Y **no se crea una `PN`**: una presión normativa registra que el
+diseño presiona una NORMA, y aquí no hay norma presionada — `P7` y `P9` siguen significando lo
+que siempre significaron, y las cinco reglas de recomposición siguen diciendo lo mismo en
+cualquier orden. Lo que hay es una cita mal puesta y una lista mal numerada, en un fichero que
+sólo F5 puede tocar.
+
+---
 
 ### `DOM` y `SEG` participan DOS veces, y ningún proceso instancia la segunda
 
@@ -8378,38 +8637,276 @@ cuentan como «F4 corregida»**.
 > exactamente como `F-01` y `F-02`. **F4 no toca `01-PROCESOS.md`**, y por eso lo que sigue
 > es la edición exacta, su propietario y su prueba.
 
+> **REFORMULADO por el GATE DEFINITIVO INDEPENDIENTE (`K-02`, GRAVE; es `D98`).** La regla
+> que `D92` entregaba a F6 derivaba el conjunto con **un barrido léxico de la cadena
+> `:condiciones`**. Ese barrido es correcto en su cuenta —cuatro `DOM:condiciones` y cuatro
+> `SEG:condiciones`— **y no alcanza al tramo que `D92` señala como el más expuesto**:
+> `proceso:DEP` hace participar a `SEG` por la OBLIGATORIA `condiciones-de-seguridad`
+> (`capacidad_productora: "SEG"`, `autoridad_de_retirada: nadie`), luego la cadena
+> `SEG:condiciones` **no aparece en `DEP`** y el barrido no la ve. Y `U5b` **es**
+> `proceso:DEP`, uno de los tres tramos que `D92` nombra. `proceso:AUD` queda igualmente
+> fuera: hace participar a `DOM` y a `SEG` con la notación **sin tipar**. La prueba prescrita
+> reproducía el punto ciego: pasaría en verde sobre un árbol sin `SEG:revision` en `DEP`.
+> **Y su causa es una corrección anterior:** `D75` cerró `G-1` moviendo `SEG` a obligatorias
+> en `DEP`, eliminando sin verlo la cadena de la que `D92` dependería después.
+>
+> **La norma aprobada está escrita sobre el HECHO, no sobre la notación:** `a.6` L502–503 —
+> «**`DOM` y `SEG` aportan condiciones antes de construir y revisan después**»— y `b.16`
+> L834–836 lo repite. La regla se reformula en consecuencia. **El barrido léxico de
+> `:condiciones` queda RETIRADO como criterio de derivación.**
+
 ```text
-QUÉ HAY QUE AÑADIR   por cada proceso donde el condicional `<CAP>:condiciones` YA EXISTE, su
-                     par `<CAP>:revision` con la misma condición y su posición declarada
-                     DESPUÉS de `VER`:
-                       `<CAP>:revision`   condicion: la MISMA que su `:condiciones`
+LA REGLA, SOBRE      **si `DOM` o `SEG` PARTICIPAN en un proceso por CUALQUIER VÍA
+PARTICIPACIÓN        —propietaria, obligatoria, condicional, o item enlazado con
+SEMÁNTICA            `capacidad_productora` tipada— Y su aportación ESTABLECE CONDICIONES O
+                     RESTRICCIONES antes de construir o antes de modificar fuentes, ENTONCES
+                     ese proceso necesita su `<CAP>:revision` correspondiente DESPUÉS de
+                     `VER`.**
+                     El criterio es la PARTICIPACIÓN y su MOMENTO, no la cadena de
+                     caracteres con que se escribe
+
+QUÉ HAY QUE AÑADIR   por cada participación así detectada, su par `<CAP>:revision` con la
+                     misma condición —o incondicional, si la participación previa lo era— y
+                     su posición declarada DESPUÉS de `VER`:
+                       `<CAP>:revision`   condicion: la MISMA que su participación previa; si
+                                          la previa era OBLIGATORIA, la revisión es
+                                          OBLIGATORIA también, y su `autoridad_de_retirada`
+                                          hereda la de aquélla —en `DEP`, `nadie`, por `G28`
                                           posicion:  tras `evidencia-suficiente` de `VER`
                                           produce:   la revisión de lo construido, con lo
                                                      comprobado y lo NO comprobado
 
-DÓNDE, EXACTAMENTE   `kernel/operativo/recorrido/01-PROCESOS.md`, y **en TODOS los procesos
-                     donde esos condicionales existen — no sólo en `DEU` y `DEP`**. El
-                     conjunto se DERIVA con un barrido de `:condiciones` sobre el fichero, no
-                     se escribe a mano: hoy son las cuatro instancias de `SEG:condiciones` y
-                     las cuatro de `DOM:condiciones`. Y en `kernel/operativo/circuitos/`, la
-                     instancia de handoff que materializa la entrega de vuelta
+QUÉ TIENE QUE        derivado hoy sobre `01-PROCESOS.md`, la regla alcanza **seis procesos**,
+ALCANZAR             y los tres últimos son los que el barrido léxico NO veía:
+                       `FEA` `GAP` `DEU`   `DOM:condiciones` y/o `SEG:condiciones`
+                                           condicionales  → los CUATRO+CUATRO ya contados
+                       `INC`               `SEG:condiciones` condicional
+                       **`DEP`**           **`DOM:condiciones` condicional Y `SEG` por la
+                                           OBLIGATORIA `condiciones-de-seguridad`** → exige
+                                           `DOM:revision` **y `SEG:revision`**, y ésta última
+                                           IRRETIRABLE, porque `G28` hace irretirable la
+                                           participación de la que deriva. **`U5b` es
+                                           `proceso:DEP`**
+                       **`AUD`**           **`DOM` y `SEG` SIN SUFIJO TIPADO**, condicionales
+                                           `C-DOM` y `C-SEG` → exige el par cuando `DOM` o
+                                           `SEG` sean **propietarios de la conclusión**, que
+                                           es cuando su aportación restringe lo que se
+                                           construirá después
+
+DATOS DE ENTRADA     `kernel/operativo/recorrido/01-PROCESOS.md`, sus bloques
+DEL DERIVADO         ```yaml ads:proceso```: los campos `propietario_global`, `obligatorias[]`
+                     —con `capacidad_productora` y `capa_exigida`— y `condicionales[]` —con
+                     `capacidad` y `condicion`—. **Y NADA MÁS**: ninguna lista escrita a mano
+
+ALGORITMO DE         1 · parsear los diez bloques `ads:proceso`
+DERIVACIÓN           2 · por proceso, construir el conjunto de PARTICIPACIONES de `DOM` y
+                         `SEG`, normalizando la capacidad: `SEG`, `SEG:condiciones` y
+                         `capacidad_productora: "SEG"` normalizan todos a `SEG`
+                     3 · marcar la participación como CONDICIONANTE si su `capa_exigida` o su
+                         `condicion` la sitúa ANTES de construir o de modificar fuentes —hoy,
+                         literalmente: contiene «ANTES de construir», o la capacidad aporta
+                         `condiciones`, o es propietaria de una conclusión que restringe
+                     4 · para cada participación CONDICIONANTE, EXIGIR en el mismo proceso
+                         una participación `<CAP>:revision` posterior a `VER`
+                     5 · heredar obligatoriedad y `autoridad_de_retirada` de la previa
+
+SALIDA ESPERADA      la lista de pares (proceso, capacidad) que exigen `<CAP>:revision`, y
+                     para cada uno si está PRESENTE o AUSENTE. Hoy: **seis procesos, diez
+                     pares exigidos, DIEZ AUSENTES** —hay cero instancias de `:revision` en
+                     todo `kernel/operativo/`—
+
+CASOS POSITIVOS      · `DEP` con `SEG:revision` obligatoria e irretirable tras `VER` → PASA
+                     · `DEU` con `DOM:revision` y `SEG:revision` condicionales tras `VER` →
+                       PASA
+                     · `AUD` con `DOM:revision` cuando `DOM` es propietaria de la conclusión
+                       → PASA
+                     · `INV`, `DIR`, `SIS`, `DEF` sin `DOM` ni `SEG` condicionantes → PASAN
+                       VACÍOS, y eso NO es un fallo
+
+CONTRAEJEMPLOS       · `DEP` **sin** `SEG:revision`, con `SEG` sólo en `obligatorias` → FALLA.
+                       **Éste es exactamente el caso que el barrido léxico dejaba pasar en
+                       verde, y es el contraejemplo que la prueba tiene que suspender**
+                     · `AUD` con `DOM` y `SEG` sin sufijo y sin ningún `:revision` → FALLA
+                     · un proceso con `<CAP>:revision` colocado ANTES de `VER` → FALLA: la
+                       posición es parte del contrato, no un detalle
+                     · un proceso con `SEG:revision` RETIRABLE en `DEP` → FALLA: no hereda
+                       la irretirabilidad que `G28` impone a la participación de origen
+
+ERROR               **`composicion-incompleta`**, con el proceso, la capacidad, la vía por la
+                     que participa —propietaria · obligatoria · condicional · tipada— y la
+                     participación `<CAP>:revision` que falta. **No es un aviso: impide el
+                     cierre del gate de composición**
+
+PRUEBA QUE FALLARÍA  sobre el árbol de HOY, la prueba tiene que devolver **FALLIDA nombrando
+SI FALTA `SEG` EN    `proceso:DEP` → `SEG:revision` AUSENTE**, y tiene que seguir fallando si
+`DEP`                alguien añade `SEG:revision` a los otros cinco procesos y no a `DEP`.
+                     Una prueba que hoy pase en verde está mal construida por definición
+
+DÓNDE, EXACTAMENTE   `kernel/operativo/recorrido/01-PROCESOS.md`. Y en
+                     `kernel/operativo/circuitos/`, la instancia de handoff que materializa
+                     la entrega de vuelta
 
 PROPIETARIO          `SIS`, que es quien posee `recorrido/` y `circuitos/` por el mapa de
                      fuente única del índice operativo
 
-FASE                 **F6.** No hay nada que decidir: (b) ya lo decidió
+FASE                 **F6.** Y ahora sí sin nada que decidir: `D98` fija el criterio, el
+                     algoritmo, la herencia de obligatoriedad, la salida, los casos y el
+                     error. **F6 MATERIALIZA; no elige la forma.** Ésa era exactamente la
+                     premisa que `K-02` rompía
 
-SU PRUEBA            una comprobación mecánica que, **para cada `<CAP>:condiciones` de
-                     `01-PROCESOS.md`, exija su `<CAP>:revision` correspondiente en el mismo
-                     proceso** — y que falle si falta alguno. Es del mismo tipo que la prueba
-                     de espacio de nombres de `D83`: una sola regla derivada, no un censo
-                     escrito. Y el `GATE DE COMPOSICIÓN` de §8.0 pasa a comprobar contra
-                     `b.16` y no sólo contra los condicionales declarados
+Y EL GATE DE         el `GATE DE COMPOSICIÓN` de §8.0 pasa a comprobar contra `b.16` **por
+COMPOSICIÓN          participación semántica**, no contra los condicionales declarados ni
+                     contra la cadena `:condiciones`
 
 QUÉ NO SE HACE AQUÍ  F4 **no edita `01-PROCESOS.md`**: tocarlo es F6, y esta fase no toca
                      kernel. Lo que se cierra aquí es que la ausencia quede REGISTRADA con
-                     propietario, fase, edición exacta y prueba, en vez de descubrirse
-                     cuando F6 componga `A8`, `M6`–`M7` o `U5b` sin la revisión
+                     propietario, fase, edición exacta, algoritmo y prueba, en vez de
+                     descubrirse cuando F6 componga `A8`, `M6`–`M7` o `U5b` sin la revisión
+```
+
+### Los censos escritos a mano, derivados — el contrato F6 que cierra nueve hallazgos
+
+> **Registrado por el GATE DEFINITIVO INDEPENDIENTE (`J-05` + `J-06` + `K-07`, y es `D102`).**
+> Los tres revisores, sin verse, aislaron la MISMA causa raíz desde mitades opuestas del
+> corpus, y `L` la cuantificó: **`A6`, `A10`, `M-1`, `m-1`, `F-10`, `E-10`, `K-01`, `K-03`,
+> `K-04`, `K-10`, `J-07` y `L-01` son la misma clase** — cifras y censos escritos a mano cuya
+> cobertura no deriva de nada. El corpus **ya sabe cómo se arregla**: `comprobar_fuentes.py`
+> lo escribe con estas palabras — «nunca una lista escrita a mano, que es lo que envejece» —
+> **y no se lo había aplicado a sí mismo**. Es, según `L`, la corrección más barata del
+> entregable. **Aquí NO se implementa nada: se deja el contrato completo.**
+
+```text
+QUÉ FALLA HOY, Y     · `comprobar_recuentos.py` L107–156: `AFIRMACIONES` es un CENSO ESCRITO
+DÓNDE, VERIFICADO      A MANO de dónde vive cada cifra. Cubre `C1` y NO cubre
+                       `contratos/00-INDICE.md`:7 ni `pruebas/T086-T092-contratos.md`:14, que
+                       siguen diciendo «veintiocho campos» donde `esquemas/rol.yaml` tiene
+                       **29** y `C1`:37 ya dice «veintinueve». **`T151` sale SUPERADA** con
+                       dos sedes vigentes afirmando lo que el corpus desmiente
+                     · `comprobar_versiones.py` L87: `T152` recorre **sólo `README.md` y
+                       `START_HERE.md`**. Por eso pasa en verde mientras
+                       `kernel/operativo/00-INDICE.md`:132,134 declara `KERNEL.md` «1.3.0»
+                       y `KERNEL.md`:4 dice **1.5.0**
+
+--- CONTRATO 1 · DERIVAR EL CENSO `AFIRMACIONES` ---
+
+ENTRADAS             el árbol de ficheros versionados, y **para cada cifra publicada, la
+                     FUENTE de la que deriva** declarada como una regla `(patrón de sede,
+                     derivación)` — no una lista de rutas. Ejemplos de derivación:
+                     «obligatorios de `esquemas/rol.yaml`» · «cabeceras `## \`PN-` de §16
+                     menos las RETIRADAS y FUSIONADAS» · «filas `| \`X<nn>\` |` de §2.6.7»
+
+ALGORITMO            1 · barrer TODO el corpus buscando afirmaciones numéricas sobre objetos
+                         censables, en dígitos **y en letra** —«veintiocho», «DOCE»—
+                     2 · para cada una, resolver su derivación y calcular el valor real
+                     3 · comparar, y reportar cada divergencia con ruta, línea, valor escrito
+                         y valor derivado
+                     **La cobertura de sedes NO se enumera: se descubre barriendo.** Una sede
+                     nueva queda cubierta el día que nace, sin tocar el validador
+
+SALIDA               lista de `(ruta, línea, cifra escrita, cifra derivada)` divergentes.
+                     Vacía = `T151` SUPERADA
+
+PROPIETARIO          `PLT`, que posee el tooling de validación
+
+FASE                 **F6**
+
+CONDICIÓN DE CIERRE  que `AFIRMACIONES` **deje de existir como lista literal** y que la
+                     cobertura del validador sea derivada. Mientras exista la lista, la
+                     condición NO está cerrada, aunque `T151` salga verde
+
+PRUEBA POSITIVA      sobre el árbol de hoy, el validador tiene que **FALLAR** nombrando
+                     `contratos/00-INDICE.md`:7 y `pruebas/T086-T092-contratos.md`:14 con
+                     «escrito 28 · derivado 29». Un validador que hoy pase en verde está mal
+                     construido
+
+PRUEBA NEGATIVA      introducir en un fichero NUEVO —que ninguna lista podría contener— una
+                     afirmación falsa sobre un objeto censable, y comprobar que la detecta
+                     **sin haber tocado el validador**. Es la prueba de que la cobertura
+                     deriva y no se enumera
+
+--- CONTRATO 2 · AMPLIAR `T152` A TODA SEDE QUE PUBLIQUE VERSIÓN ---
+
+ENTRADAS             **toda sede que publique una versión**, descubierta por barrido: hoy,
+                     como mínimo, `README.md`, `START_HERE.md`,
+                     `kernel/operativo/00-INDICE.md`, los títulos de `a.11`, `O2`, `PN-3` y
+                     `kernel/VERSIONES.md`. **La lista anterior es un EJEMPLO de lo que el
+                     barrido encuentra hoy, no la definición del alcance**
+
+ALGORITMO            1 · barrer el corpus buscando patrones de versión —`X.Y.Z`— y el objeto
+                         del que se predican
+                     2 · resolver la versión vigente de ese objeto en `kernel/VERSIONES.md`,
+                         que es su sede única (regla 5: prohibido declarar versiones fuera de
+                         su tabla)
+                     3 · comparar y reportar
+
+SALIDA               lista de sedes cuya versión publicada NO casa con `VERSIONES.md`
+
+PROPIETARIO          `PLT`.   FASE **F6**
+
+REMEDIOS DISTINTOS   no todas las sedes se corrigen igual, y el validador lo REPORTA sin
+POR SEDE             decidirlo: `kernel/operativo/00-INDICE.md` es F6 · el título de `a.11`
+                     es **material APROBADO, luego F5** · `O2` pide **nota, no reescritura**,
+                     porque es resolución del Owner
+
+CONDICIÓN DE CIERRE  que ninguna sede VIVA publique una versión o un recuento obsoleto, y que
+                     el alcance de `T152` sea derivado
+
+PRUEBA POSITIVA      hoy tiene que FALLAR nombrando `kernel/operativo/00-INDICE.md`:132,134
+                     con «escrito 1.3.0 · vigente 1.5.0»
+
+PRUEBA NEGATIVA      crear una sede nueva con una versión falsa y comprobar que la detecta sin
+                     modificar el validador
+
+--- CONTRATO 3 · LA GUARDIA DE VERSIÓN DE INTÉRPRETE (`J-11`) ---
+
+> **Y se dice sin rodeos:** evidencia en verde generada bajo Python 3.11 **NO demuestra que
+> el runner sea ejecutable bajo 3.10**. Bajo 3.10.12, `registrar_evidencia.py` da **10/13 con
+> exit 1**, `T148` y `T159` salen FALLIDAS y la suite de workspace falla — causa única,
+> `tomllib` no existe antes de 3.11. Y los tres validadores que fallan **dejan intacta la
+> evidencia anterior**, por lo que `comprobar_evidencia.py` (`T158`) sale **SUPERADA en un
+> entorno donde nada se reprodujo**. Eso es lo que la guardia impide.
+
+ENTRADAS             `sys.version_info` y el `python_requires` declarado del tooling
+
+UBICACIÓN            el **punto de entrada del runner**, `registrar_evidencia.py`, ANTES de
+                     invocar ningún validador; y el mismo prólogo en los tres validadores que
+                     importan `tomllib`, para que ejecutarlos sueltos no eluda la guardia
+
+MENSAJE              nombrar la versión exigida, la encontrada y la causa:
+                     `ADS exige Python >= 3.11 (tomllib). Encontrado 3.10.12. La evidencia NO
+                     se regenera y la anterior NO se da por válida.`
+
+EXIT CODE            **2** — reservado a «no se pudo ejecutar», distinto del **1** de «se
+                     ejecutó y falló». La distinción importa: hoy los dos casos son
+                     indistinguibles desde fuera
+
+PRUEBAS              positiva: bajo 3.11+, la guardia no dispara y el runner da 13/13
+                     negativa: bajo 3.10, la guardia dispara con exit 2, **no se reescribe
+                     ninguna evidencia**, y `T158` **NO** puede salir SUPERADA sobre evidencia
+                     que no se ha regenerado en esta corrida
+
+PROPIETARIO          `PLT`.   FASE **F6**, y ya tenía sede: es `A14`
+
+--- CASOS DE REGRESIÓN OBLIGATORIOS DE LOS TRES CONTRATOS ---
+
+                     Cada uno de estos defectos, YA CORREGIDO en su sede, tiene que volver a
+                     ser DETECTADO por el validador derivado si alguien lo reintroduce:
+                       `J-05`  «veintiocho campos» con 29 obligatorios en `rol.yaml`
+                       `J-06`  `00-INDICE.md` diciendo `KERNEL.md` 1.3.0 siendo 1.5.0
+                       `J-07`  «cuarenta y dos» filas adversariales habiendo 46
+                       `K-01`  el checkpoint diciendo DIEZ presiones habiendo trece
+                       `K-04`  «los externos son OCHO» con siete en la matriz
+                       `K-07`  `a.11`, `O2` y `PN-3` anclados a una versión que no existe
+                       `K-10`  §17 presentando como condicional lo que `D91` deriva
+                       `K-11`  un censo de sedes que omite una sede viva
+                     **Ocho casos, y ninguno se cierra escribiéndolo en una lista: se cierran
+                     haciendo que la cobertura del validador derive.**
+
+QUÉ NO SE HACE AQUÍ  **F4 no implementa ninguno de los tres.** No se toca
+                     `comprobar_recuentos.py`, ni `comprobar_versiones.py`, ni
+                     `registrar_evidencia.py`. Lo que se cierra aquí es el contrato: entradas,
+                     algoritmo, salida, propietario, fase, condición de cierre y sus pruebas
+                     positiva y negativa
 ```
 
 **Y dos más, que no son defectos de F4 y se dicen para que nadie los busque aquí:**
@@ -8435,3 +8932,52 @@ QUÉ NO SE HACE AQUÍ  F4 **no edita `01-PROCESOS.md`**: tocarlo es F6, y esta f
 **La distancia que queda**, dicha como la dijo el baseline: ADS sigue siendo un corpus
 verificado contra sí mismo y **cero veces contra la realidad**. Esta arquitectura dice cómo
 cerrar esa distancia. No la cierra.
+
+---
+
+## `C-L.5` · La condición de COBERTURA del próximo gate — abierta, y no la cierra esta tanda
+
+> **Registrada por el GATE DEFINITIVO INDEPENDIENTE (`C-L.5`, una de las cinco que bloquean
+> el paso a F5).** El gate definitivo dio `INSUFICIENTE PARA F5` por **seis razones
+> independientes**, y la primera fue la cobertura: **~8 700 líneas de fuentes centrales
+> obligatorias que NINGÚN revisor abrió**. `L` no lo trató como formalismo — sondeó la región
+> muerta y produjo **dos cambios de adjudicación en direcciones opuestas**: `ADS-PENDIENTES`
+> §12 reforzó `K-06`, y su cabecera L3–L6 le obligó a **corregir la base externa de `K-03` y
+> a retirar su propio agravamiento de `K-11`**. Las líneas que nadie abrió no eran relleno.
+
+**Esta tanda NO cierra `C-L.5`, y no puede cerrarla.** Aplicar las correcciones no es leer lo
+que no se leyó, y quien las aplica no puede certificar su propia cobertura. Queda escrita aquí
+como **condición del siguiente gate**, con sus requisitos exactos:
+
+```text
+QUIÉN                revisores NUEVOS con contexto limpio. **El autor de esa lectura tiene
+                     que ser distinto de quien aplicó ESTA tanda de corrección.** Ésa es la
+                     razón por la que doce tandas se han encadenado, y no se rompe sola
+
+QUÉ HAY QUE LEER     ÍNTEGRO, no asignado:
+ÍNTEGRO                · `ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md` COMPLETO,
+                         **incluidos el BLOQUE B (§8–§12, certificación por niveles) y el
+                         BLOQUE C (§13–§15, iniciativa y dosier vivo)** — las fuentes de
+                         `P4`, `P9` y `P10`, que ningún revisor contrastó
+                       · `16-GATE-FINAL-INDEPENDIENTE-F4C.md` COMPLETO
+                       · `17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md` COMPLETO
+                       · `18-GATE-DE-CIERRE-INDEPENDIENTE-F4C.md` COMPLETO
+
+MANIFIESTO DE        por cada fuente asignada: **ruta · número de líneas · SHA-256 · primera
+LECTURA              y última sección SUSTANTIVA efectivamente leídas**. El manifiesto se
+                     genera ANTES de leer y se contrasta DESPUÉS
+
+DECLARACIÓN DE       cada revisor declara, contra su propio interés, **qué leyó íntegro y qué
+COBERTURA REAL       no**. `J`, `K` y `L` lo hicieron y por eso el veredicto es utilizable
+
+REGLA DE CIERRE      **cualquier fuente ASIGNADA pero NO LEÍDA impide la suficiencia**, con
+                     independencia de los hallazgos. Cobertura asignada del 100 % NO es
+                     cobertura leída, y `sin_cubrir.txt` vacío sólo dice que todo fichero
+                     tenía un lector
+
+EL ADJUDICADOR       **no corrige los hallazgos que encuentre.** Adjudica y devuelve. Corregir
+                     en la misma pasada vuelve a hacer que quien recibe sea quien aplica
+```
+
+**Estado: ABIERTA.** No se inicia aquí ningún gate, y esta sección no es su convocatoria: es
+la condición que ese gate tendrá que satisfacer cuando el Owner lo autorice.
