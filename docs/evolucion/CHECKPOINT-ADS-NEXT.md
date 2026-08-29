@@ -6,6 +6,136 @@
 > **Basta decir «Continúa»**: la siguiente acción exacta está al final.
 
 > **Estado de la fase, en una línea:**
+> **El GATE INDEPENDIENTE DE CIERRE CON MANIFIESTOS VERIFICABLES devolvió INSUFICIENTE PARA
+> F5 sobre la candidata `7764cca`, y NO por cobertura. `F4c` sigue ABIERTA, `F5` NO queda
+> autorizada, y NINGÚN hallazgo se ha corregido en esta pasada.**
+>
+> Está en
+> [`21-GATE-INDEPENDIENTE-DE-CIERRE-F4C.md`](21-GATE-INDEPENDIENTE-DE-CIERRE-F4C.md).
+> Lo emitió un **adjudicador `R`** con contexto limpio sobre los dictámenes **ya cerrados**
+> de dos revisores independientes, `P` y `Q`, que trabajaron en paralelo sin verse. Ninguno
+> de los tres escribió F4, aplicó `D16`–`D106`, es autor de las correcciones ni fue revisor
+> `A`–`O`.
+>
+> **`C-L.5` QUEDA CERTIFICADA, Y ES LA PRIMERA VEZ.** Es lo que `D106` contrató y lo que el
+> gate anterior declaró NO CERTIFICABLE (`O-04`):
+>
+> ```text
+> MANIFIESTO PREVIO DE ASIGNACIÓN   commiteado SOLO, ANTES de que existiera ningún revisor
+>                                   18cbfb5 · 140 líneas · 1 fichero · 140 inserciones
+>                                   SHA-256 c843b0c341183859b7f0f07db78cc67eade7ef98c4a96a…
+>                                   43 fuentes · 59 asignaciones · 31 888 líneas
+>                                   `P` verificó con `git log` que es anterior al reparto
+>
+> MANIFIESTOS DE LECTURA            uno por revisor, dentro de su dictamen, con SHA-256
+>                                   recalculado y DOS anclas de regiones separadas por fuente
+>
+>                    ASIGNADAS   LEÍDAS ÍNTEGRAS   PARCIALES   NO ABIERTAS   A − L
+>   REVISOR P            20            20              0            0          ∅
+>   REVISOR Q            31            31              0            0          ∅
+>   ADJUDICADOR R         9             9              0            0          ∅
+>
+> `R` NO se quedó en las suyas: recalculó `wc -l` y `sha256sum` de las CUARENTA Y TRES filas
+> del manifiesto contra el árbol. 43 de 43 coinciden. 0 ficheros ausentes.
+> `R`: «No la presumo en ninguna de las dos direcciones: la calculé.»
+> ```
+>
+> **Y aun así, INSUFICIENTE. Fallan DOS de las siete condiciones, y ninguna es la cobertura:**
+>
+> ```text
+> 1  asignadas − leídas = ∅                                          SE CUMPLE
+> 2  C-L.5 certificada                                               SE CUMPLE · 1ª vez
+> 3  D104–D106 superan el intento adversarial                        NO SE CUMPLE
+> 4  los cuatro bloqueantes del gate anterior superados              SE CUMPLE
+> 5  ningún pendiente de F5/F6 exige inventar arquitectura           SE CUMPLE
+> 6  ninguna contradicción material vigente sin registrar            NO SE CUMPLE
+> 7  la batería no ofrece falsos verdes en R1–R4                     SE CUMPLE
+> ```
+>
+> **La 3 falla por `D104`, y NO por su arquitectura**, que resistió: las cuatro vías operan,
+> la propietaria hace **fallar** `G-15`, el discriminante es estructural, las cuatro
+> combinaciones de `AUD` se derivan, `DIR` entra sin excepción escrita y no hay décimo par.
+> Lo que falla son **dos de sus cuatro pilares declarados**, falsados contra el árbol y **en
+> verde los dos**: el pilar (ii) —«los campos de prosa NO se leen»— es falso del troceado
+> real, que es un `re.findall` sobre un segmento de texto y no un parseo YAML (`Q-05`); y el
+> pilar (iv) —el ancla de posición— **no normaliza**, contra la declaración del propio `D104`
+> de que la normalización «ES TODA LA INFERENCIA QUE HAY» (`Q-02`).
+>
+> **La 6 falla por SIETE contradicciones materiales vigentes y sin registrar**, y **tres son
+> la segunda o tercera recurrencia de la misma frase**: `X54` dice diecisiete donde se
+> derivan dieciocho ventanas y ninguna fila adversarial alcanza `W17` (`P-01`≡`Q-13`) · la
+> capa B conserva el verbo que `D105` invirtió, y §2.6.9 la invoca por su nombre para una
+> regla que ella no escribe (`P-02`≡`Q-06` + `R-03`) · este fichero cuenta en L1142 las nueve
+> ventanas `RC-1`–`RC-9` que L1641 declara retiradas (`P-04`) · **la sección «Siguiente acción
+> exacta» —la que la cabecera designa como punto de entrada— lleva dos tandas de retraso, sin
+> marca de histórica, con CINCO afirmaciones falsas a la vez, y una de ellas reproduce `M-06`
+> en la misma tanda que lo declara corregido** (`P-05`≡`Q-08` + `R-02`) · el bloque de
+> evidencia de `PN-15` se autofalsifica (`P-06`) · §16 L7887 enumera doce presiones donde hay
+> trece, omitiendo justo la que va al Owner (`Q-07`) · y `C-L.3` se describe aquí con la regla
+> de `D103` que `M-01` refutó, sin que `D104` aparezca en ninguna de sus seis sedes (`Q-14`).
+>
+> **24 hallazgos distintos —`P` 8 · `Q` 15 · `R` 4 propios · 3 solapes—:
+> BLOQUEANTE 0 · GRAVE 1 · MEDIO 12 · MENOR 11.** Ninguno exige decidir arquitectura, y `R`
+> los tasa uno a uno: una palabra, un verbo, cinco caracteres en un `if`, marcar un bloque
+> como histórico.
+>
+> **`R` no resolvió por mayoría, y lo demuestra rechazando.** **RECHAZÓ la primera razón de
+> veredicto de `P`** —`P-03`, la tesis de que `D105` deja el terminal inconstruible—: abrió
+> las cinco sedes y **cuatro de las cinco afirmaciones son falsas**. `predecesor =
+> id(abandonada)` está en TRES sedes de §2.6.9, la regla de unicidad que `P` daba por ausente
+> está escrita en L4406, **dos arranques no pueden emitir dos `deriva` porque el paso 0
+> comprueba la existencia por `abandonada_id` ANTES de emitir**, y `predecesor` es campo común
+> a todo evento. Y declaró **FALSA la premisa de hecho de `P-08`**: el documento 15 **sí** se
+> leyó íntegro, por `N`, en el gate anterior. De ahí una resolución de criterio que queda
+> fijada: **una lectura íntegra hecha en un gate anterior SATISFACE `C-0.1`; no hay que
+> rehacerla.**
+>
+> **Cómo quedan los 21 hallazgos del gate de cobertura, adjudicados por `R`:**
+>
+> ```text
+> SUPERADOS            17   M-01 M-02 M-03 M-05 M-06 M-07 M-08 M-10 M-11 M-12
+>                           N-01 N-02 N-05 · O-01 O-02 O-03 O-04
+>                           **Los cuatro bloqueantes anteriores —M-01 M-02 M-03 N-01— entre
+>                           ellos**, verificados uno a uno y con mecanismo, no con prosa
+> FALLIDO               1   M-04. Sus cuatro refutaciones nombradas están cerradas —`R` las
+>                           reprodujo—, pero M-04 es la PROPOSICIÓN «se puede construir un
+>                           árbol defectuoso que pase 30/30 en verde», y sigue siendo cierta:
+>                           con una copia íntegra del catálogo de procesos y un contrato que
+>                           declara por escrito contradecir a C4, la batería da 30/30 EN VERDE
+> REGISTRADOS PARA F5   2   M-09 · N-03
+> CONTRATADO PARA F6    1   N-04
+>                          ──
+>                          21
+> ```
+>
+> **Las cuatro refutaciones prescritas fallan las cuatro**, reproducidas por `R` en copias de
+> `/tmp`: `R1` 28/30 · `R2` 29/30 · `R3` 29/30 · `R4` 26/30, y en `R2` y `R3` **falla la
+> comprobación responsable SOLA**. Lo que la condición 7 no cubre son **tres falsos verdes
+> nuevos**: `Q-01` —`G-11b` declara intactas las ochenta y seis filas con tres reescritas y es
+> el único dependiente de Git que no falla cerrado—, `Q-04` y `Q-05`.
+>
+> **Y consta, porque no es cortesía:** `D105` **resistió el ataque más duro que se le hizo** y
+> `R` la llama «la mejor decisión que este expediente ha producido» · `D106` supera su intento
+> y la prueba de `PN-15` **falla hoy**, como debe · `Q` derivó `<CAP>:revision` **a ciegas
+> antes de leer lo publicado y coincidió exactamente** —cinco procesos, nueve pares, ningún
+> décimo—, intentó refutar `D104` por nueve caminos y concluyó «la cuarta formulación es la
+> buena» · `git diff --numstat 652ab8e..HEAD` sobre el registro da **169 inserciones y CERO
+> supresiones**: `D1`–`D103` conservan su texto y `O1`–`O16` están intactas · los documentos
+> 15–20 sin tocar · `P` y `Q` **publicaron sus derrotas**, y `R` deja escrito que eso es lo que
+> le permitió reconstruir por qué la séptima de `P` tampoco se sostiene.
+>
+> `R`: «Ésta es, con distancia, la candidata más sólida que este corpus ha producido. No falla
+> por concepción, no falla por cobertura y no falla por lo que decidió. Falla, otra vez, en la
+> mitad de los sitios donde sus decisiones tenían que llegar — y esta vez la mitad que falta
+> incluye la página que un agente lee cuando escribe «Continúa».»
+>
+> **NINGÚN HALLAZGO SE HA CORREGIDO, Y ES DELIBERADO.** Eso incluye los que caen sobre este
+> mismo fichero —`P-04`, `P-05`≡`Q-08`, `R-02`, `Q-14`—: **la sección «Siguiente acción
+> exacta» del final NO se ha tocado, y sigue diciendo lo que el gate le reprocha.** Corregirla
+> en esta misma pasada sería, otra vez, que quien recibe sea quien aplica. El coordinador de
+> este gate sólo ha transcrito y registrado: **no emite suficiencia.**
+
+> **[ESTADO ANTERIOR · GATE DE COBERTURA Y CIERRE, documento 20]**
 > **El GATE INDEPENDIENTE DE COBERTURA Y CIERRE devolvió INSUFICIENTE PARA F5 sobre
 > `r2`=`c3d6465`, y sus 21 hallazgos están APLICADOS — NO CERTIFICADOS. `F4c` sigue
 > ABIERTA y `F5` NO queda autorizada.**
