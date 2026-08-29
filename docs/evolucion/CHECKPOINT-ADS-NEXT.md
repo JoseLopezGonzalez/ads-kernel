@@ -1909,20 +1909,37 @@ DE `N158g`         orden del manifiesto —`negativos` corre antes que `fuentes`
                    segunda es idéntica, sin tercera.
 
 EXCEPCIÓN EXACTA   deja de ser cierto que «`kernel/operativo/` está intacto». Lo que hay es
-DEL KERNEL         un conjunto NOMBRADO, **y son CUATRO rutas más la evidencia derivada**
-                   —corregido por `M-06`, que demostró que este párrafo decía «y sólo ésta»
-                   y nombraba TRES, omitiendo la cuarta, que además es kernel operativo
-                   SUSTANTIVO:
-                     kernel/operativo/validadores/comprobar_negativos.py   código
-                     kernel/operativo/entrada/02-CIRCUITO.md               enlace colgante de
-                                                                          K-09, en d868bcb
-                     kernel/.upstream-hash                                 huella reanclada
-                     kernel/operativo/pruebas/evidencia/*                  derivada, 3 ficheros
+DEL KERNEL         un conjunto NOMBRADO y COMPLETO. **Derivado de Git, no escrito:**
+                   `git diff --name-only 05f71b7..HEAD -- kernel/` devuelve **SEIS ficheros**,
+                   y se clasifican así:
+
+                     TRES FICHEROS DIRECTOS, no derivados:
+                       kernel/operativo/validadores/comprobar_negativos.py   codigo, en 1b588ac
+                       kernel/operativo/entrada/02-CIRCUITO.md               enlace colgante de
+                                                                            K-09, en d868bcb
+                       kernel/.upstream-hash                                 huella reanclada
+
+                     TRES FICHEROS DE EVIDENCIA DERIVADA, que publica el runner:
+                       kernel/operativo/pruebas/evidencia/fuentes-salida.txt
+                       kernel/operativo/pruebas/evidencia/negativos-salida.txt
+                       kernel/operativo/pruebas/evidencia/referencias-salida.txt
+
+                     TOTAL 6 = 3 directos + 3 de evidencia derivada
+
+                   **CORREGIDO OTRA VEZ, por la verificación previa a publicación.** La
+                   formulación anterior decía «**CUATRO rutas más la evidencia derivada**» y
+                   enumeraba cuatro entradas **de las cuales la cuarta ERA la evidencia**
+                   (`pruebas/evidencia/*`): contaba lo derivado dentro de las cuatro **y otra
+                   vez fuera**, y llamaba «ruta» a una categoría junto a tres ficheros. Antes
+                   de eso decía «y sólo ésta» sobre una lista de TRES que omitía
+                   `entrada/02-CIRCUITO.md`. **Ahora no hay categorías en el recuento: hay
+                   seis ficheros, enumerados uno a uno, y la cifra la deriva `G-23`.**
+
                    Lo normativo —(a), (b), `E1`, `E2`, `C4`, `C7`— sigue intacto, y del kernel
-                   operativo lo único tocado es ese enlace. **`G-23` sí las nombraba las
-                   cuatro** —`DOC_AUTORIZADO` lleva `entrada/02-CIRCUITO.md` con su motivo—:
-                   se corrigió el código y no este párrafo, que es la sede que lee un agente
-                   sin contexto. Era `L-01` reproducido por la tanda que venía a cerrarlo.
+                   operativo lo único SUSTANTIVO tocado es el enlace de
+                   `entrada/02-CIRCUITO.md`. `G-23` autoriza los tres directos fichero a
+                   fichero —`COD_AUTORIZADO`, `DOC_AUTORIZADO` y `HUELLA`— y **contrasta esta
+                   lista contra lo que Git deriva**, para que no vuelva a envejecer.
 
 BATERÍA PROPIA     tenía dos defectos que ESTA tanda cierra: calculaba mal la raíz y caía a
                    una ruta codificada de una máquina —luego en cualquier otro clon o

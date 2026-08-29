@@ -796,12 +796,69 @@ def _kernel_no_autorizado(f):
 
 prohibidos = [f for f in tocados if _kernel_no_autorizado(f)]
 prohibidos += [f for f in tocados if re.search(NORMATIVO, f)]
+# ── y la PROSA del checkpoint contrastada contra lo que Git deriva ────────
+#
+# Añadido por la verificación previa a publicación. El bloque «EXCEPCIÓN EXACTA DEL
+# KERNEL» del checkpoint enumeraba la lista A MANO, y envejeció dos veces: primero
+# decía «y sólo ésta» sobre TRES ficheros omitiendo `entrada/02-CIRCUITO.md` (`M-06`),
+# y su corrección dijo «CUATRO rutas más la evidencia derivada» enumerando cuatro
+# entradas de las cuales la cuarta ERA la evidencia — contándola dentro y fuera, y
+# llamando «ruta» a una categoría junto a tres ficheros.
+#
+# Ahora la lista se CONTRASTA contra `git diff -- kernel/`: si el conjunto cambia y la
+# prosa no, esto se pone en rojo. No hay ninguna cifra escrita aquí.
+_kern = sorted(f for f in tocados if f.startswith("kernel/"))
+_kern_ev = [f for f in _kern if "/pruebas/evidencia/" in f]
+_kern_dir = [f for f in _kern if f not in _kern_ev]
+_i_exc = tchk.find("EXCEPCIÓN EXACTA")
+if _i_exc < 0:
+    prohibidos.append("el checkpoint no declara la excepción exacta del kernel")
+elif _tocados_raw is not None:
+    # el bloque llega hasta la SIGUIENTE etiqueta de campo en columna 0, no hasta la
+    # primera línea en blanco: el bloque tiene líneas en blanco dentro
+    # la etiqueta del campo ocupa DOS líneas —«EXCEPCIÓN EXACTA / DEL KERNEL»—, luego se
+    # busca la siguiente a partir de 200 caracteres, y no desde el principio
+    _m_fin = re.search(r"^[A-ZÁÉÍÓÚ][A-ZÁÉÍÓÚ ]{4,}\s{2,}\S", tchk[_i_exc + 200:], re.M)
+    _blq_exc = tchk[_i_exc: _i_exc + 200 + (_m_fin.start() if _m_fin else 4000)]
+    # sólo se consideran RUTAS DE FICHERO: el último segmento tiene extensión. Una
+    # mención en prosa a un directorio —«`kernel/operativo/` está intacto»— no es una
+    # entrada del recuento y no debe contarse como sobrante.
+    _listados = {f for f in re.findall(r"kernel/[A-Za-z0-9_./-]+", _blq_exc)
+                 if "." in f.rsplit("/", 1)[-1]}
+    _faltan_exc = [f for f in _kern if f not in _listados]
+    _sobran_exc = [f for f in _listados if f not in _kern]
+    if _faltan_exc:
+        prohibidos.append(f"el checkpoint NO enumera ficheros del kernel tocados: {_faltan_exc}")
+    if _sobran_exc:
+        prohibidos.append(f"el checkpoint enumera ficheros que no se han tocado: {_sobran_exc}")
+    # los recuentos publicados, contrastados contra lo derivado
+    for _pat, _real, _que in (
+        (r"TOTAL (\d+) = (\d+) directos \+ (\d+) de evidencia derivada",
+         (len(_kern), len(_kern_dir), len(_kern_ev)), "total/directos/evidencia"),):
+        _m = re.search(_pat, _blq_exc)
+        if not _m:
+            prohibidos.append("el checkpoint no publica el recuento «TOTAL n = n directos + n de evidencia derivada»")
+        elif tuple(int(g) for g in _m.groups()) != _real:
+            prohibidos.append(f"el checkpoint publica {_m.groups()} y Git deriva {_real} ({_que})")
+    # ninguna categoría contada como fichero. Una CITA de la formulación vieja —entre
+    # comillas angulares, para decir que era incorrecta— no es una afirmación viva: es la
+    # misma distinción que `G-26` hace entre sede vigente y cita histórica.
+    for _m_cat in re.finditer(r"(?:CUATRO|CINCO|SEIS|TRES) rutas más la evidencia", _blq_exc):
+        _lin_ini = _blq_exc.rfind("\n", 0, _m_cat.start()) + 1
+        _lin_fin = _blq_exc.find("\n", _m_cat.end())
+        _lin = _blq_exc[_lin_ini: _lin_fin if _lin_fin > 0 else len(_blq_exc)]
+        _dentro = any(c.start() <= _m_cat.start() - _lin_ini <= c.end()
+                      for c in re.finditer(r"«[^»]*»", _lin))
+        if not _dentro:
+            prohibidos.append("el checkpoint cuenta la evidencia dentro de las rutas "
+                              "Y otra vez fuera")
+
 if _tocados_raw is None:
     prohibidos.append("GIT NO RESPONDE: no se puede saber qué se tocó")
-check("G-23", "lo normativo intacto; del kernel sólo la excepción NOMBRADA (y falla CERRADO si git no responde)",
+check("G-23", "lo normativo intacto; la excepción del kernel DERIVADA y contrastada contra la prosa del checkpoint (y falla CERRADO sin git)",
       _tocados_raw is not None and not prohibidos,
-      "intacto salvo comprobar_negativos.py, entrada/02-CIRCUITO.md (K-09), "
-      ".upstream-hash y evidencia derivada"
+      f"{len(_kern)} ficheros de kernel = {len(_kern_dir)} directos + {len(_kern_ev)} de "
+      f"evidencia derivada, todos enumerados en el checkpoint"
       if (_tocados_raw is not None and not prohibidos) else ", ".join(sorted(set(prohibidos))))
 
 # ── G-24 · las catorce fuentes y las quince fichas existen ──────
