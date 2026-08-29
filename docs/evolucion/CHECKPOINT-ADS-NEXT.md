@@ -6,6 +6,28 @@
 > **Basta decir «Continúa»**: la siguiente acción exacta está al final.
 
 > **Estado de la fase, en una línea:**
+> **El GATE DEFINITIVO INDEPENDIENTE devolvió INSUFICIENTE PARA F5 sobre `r4`=`0ea0451`.
+> `F4c` sigue ABIERTA y `F5` NO queda autorizada.**
+>
+> Lo emitió un **adjudicador `L`** con contexto limpio sobre los dictámenes cerrados de dos
+> revisores independientes, `J` y `K`, que trabajaron en paralelo sin verse. `L` verificó
+> cada afirmación material contra su fichero y su línea, **sin resolver por mayoría**, y
+> **rechazó** `J-09`, la base externa de `K-03` y su propio agravamiento de `K-11`. Está en
+> [`19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md`](19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md).
+>
+> **SEIS razones independientes, y cualquiera bastaría:** cobertura incompleta —~8 700 líneas
+> de fuentes centrales que **ningún** revisor abrió—; **un BLOQUEANTE** (`J-01`:
+> `revision_base` sostiene la condición 5 de arranque, el ancla de la restauración y la
+> alcanzabilidad de `abandonada`, y **no está declarado en §3.6 ni en ninguna capa**); cinco
+> GRAVES (`J-02`, `K-01`, `K-02`, `K-03`, `K-06`, `L-02`); un contrato F6 que aún exige
+> decidir arquitectura; una contradicción con `G20`–`G23` sin presión F5; y un checkpoint no
+> vigente. **Ningún hallazgo se ha corregido**: hacerlo en la misma pasada volvería a que
+> quien recibe sea quien aplica.
+>
+> **Y consta:** los tres coinciden en que es la candidata más sólida de la cadena. Las diez
+> filas FALLIDAS del gate anterior están cerradas, verificadas una a una. **Nada de lo que
+> impide el paso exige inventar arquitectura: el bloqueante son cinco líneas en §3.6.**
+
 > **El GATE FINAL INDEPENDIENTE devolvió INSUFICIENTE PARA F5, y su NIVEL 0 —la cobertura que
 > faltaba— está CERRADO. F4c sigue ABIERTA, y F5 NO queda autorizada.**
 >
@@ -71,9 +93,11 @@
 > crítica no prueba que esté bien resuelta**, y por eso `F4c` **no se declara cerrada aquí**.
 
 ```text
-CHECKPOINT — ADS-NEXT/11 · SIS/evolucion
-actualizado: 2026-08-28
-metodo:      SIS/Evolucion · GATE FINAL EJECUTADO · NIVEL 0 CERRADO · VEREDICTO
+CHECKPOINT — ADS-NEXT/12 · SIS/evolucion
+actualizado: 2026-08-29
+metodo:      SIS/Evolucion · GATE DEFINITIVO INDEPENDIENTE EJECUTADO SOBRE r4=0ea0451 ·
+             VEREDICTO INSUFICIENTE PARA F5 · F4c ABIERTA · F5 NO AUTORIZADA
+metodo_anterior: SIS/Evolucion · GATE FINAL EJECUTADO · NIVEL 0 CERRADO · VEREDICTO
              INSUFICIENTE PARA F5 · F4c ABIERTA · F5 NO AUTORIZADA
 based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md@56ea196
@@ -88,6 +112,8 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md   D · E · F ·
                                                              NIVEL 0 CERRADO
              docs/evolucion/18-GATE-DE-CIERRE-INDEPENDIENTE-F4C.md
+             docs/evolucion/19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md   J · K · L ·
+                                                             VEREDICTO INSUFICIENTE
              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · O16 · D16–D22 ·
                                                              D23–D33 · D34–D45 · D46–D51 ·
                                                              D52–D54 · D55–D57 · D58–D59 ·
@@ -97,7 +123,14 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
 freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
              Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
              queda marcado HISTÓRICO y SUPERADO, y no se borra
-last_meaningful_event: se publican DOS snapshots —r2@1b588ac, con la tanda y el arreglo de
+last_meaningful_event: el GATE DEFINITIVO INDEPENDIENTE —J y K en paralelo, adjudicados por
+             L con contexto limpio— devuelve INSUFICIENTE PARA F5 sobre r4=0ea0451, por SEIS
+             razones independientes. NINGÚN hallazgo se ha corregido en esa pasada, y eso
+             INCLUYE los que caen sobre este mismo fichero: K-01, J-10 y L-01 señalan
+             recuentos y bloques caducados aquí dentro, y se dejan INTACTOS a propósito —
+             corregirlos durante el gate sería volver a que quien recibe sea quien aplica
+             (2026-08-29)
+last_meaningful_event_anterior: se publican DOS snapshots —r2@1b588ac, con la tanda y el arreglo de
              N158g; y r3@65cab54, con la batería ya PORTABLE, G-23 comprobando la excepción
              exacta en vez de afirmar «kernel intacto», y G-24 leyendo de verdad—. El árbol
              VIGENTE es posterior a ambos, y su SHA se deriva de Git, no se escribe aquí.
@@ -746,24 +779,45 @@ owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
              de control DEFINITIVO. NO autoriza iniciar la adopción" (2026-08-27)
 pregunta_pendiente: ninguna. Las DIEZ presiones normativas vigentes son materia de F5,
              no preguntas
-siguiente:   UN GATE INDEPENDIENTE SOBRE EL ÁRBOL VIGENTE, con contexto limpio. **No sobre
-             `r2`**: su árbol es anterior a las correcciones de portabilidad y de `G-23`. El
-             SHA a auditar se deriva con `git rev-parse HEAD` y `git ls-remote`.
-             **NO otra corrección aplicada por el mismo autor**: quien recibe no puede
-             seguir siendo quien aplica, y esa es la razón por la que las tandas anteriores
-             se encadenaron. Hay snapshots PUBLICADOS y preservados —r2@1b588ac y
-             r3@65cab54— y el árbol vigente es auditable: 13/13,
-             57/57, 67/0, T158 SUPERADA y T161 = 293, con validación independiente posterior
-             que lo confirma, y con su batería propia ya PORTABLE —30/30 desde cualquier
-             ruta— y su G-23 comprobando la excepción exacta en vez de afirmar «kernel
-             intacto».
-             Después de ese gate, y sólo si emite SUFICIENCIA, LA TANDA DE CORRECCIÓN: el
-             NIVEL 0 está cerrado y F deja sus cuatro condiciones de arranque; empezar por el
-             NIVEL 1 con sus dos ampliaciones —1.3 toca también el condicional de
-             proceso:AUD y el grafo de 00-CIRCUITOS; 1.4 NO se cierra en §8 sino en
-             01-PROCESOS.md, esquemas/proceso.yaml y circuitos/—. Redimensionar sobre 44
-             abiertos, no 29. **F5 NO arranca sin un veredicto de SUFICIENCIA**
+siguiente:   LA TANDA DE CORRECCIÓN DEL GATE DEFINITIVO, con sus TRECE condiciones de
+             cierre `C-L.1`–`C-L.13`, que el documento 19 deja escritas y ordenadas por lo
+             que realmente bloquea.
+
+             BLOQUEAN EL PASO A F5 — cinco:
+               C-L.1  J-01+J-02 · declarar `revision_base` OBLIGATORIO de `preparada` en
+                      §3.6, registrable en `conflicto` y `abandonada`, y decir si entra en
+                      el cómputo de `tx`. CINCO LÍNEAS, y no hay nada que decidir
+               C-L.2  K-06 · resolver G20–G23: una fila en a.11 —material APROBADO, luego
+                      una PN nueva— o una fila en §17 para kernel/KERNEL.md. NO es electivo
+               C-L.3  K-02 · reformular la regla de D92 para que opere sobre la
+                      PARTICIPACIÓN de DOM/SEG por cualquier vía, no sobre `:condiciones`.
+                      Extender su prueba en el mismo sentido
+               C-L.4  L-02 · registrar la procedencia de O16 con la disciplina de O7–O15, o
+                      retirarla y devolver PN-11 a las presiones sin sede
+               C-L.5  COBERTURA · un gate cuyos revisores lean ÍNTEGRO lo que nadie abrió:
+                      ADS-PENDIENTES completo con sus BLOQUES B y C, y los documentos 16,
+                      17 y 18 completos. Y que NO lo aplique quien lo reciba
+
+             NO BLOQUEAN, y deben quedar cerradas o registradas — ocho: C-L.6 a C-L.13.
+
+             DESPUÉS de esa tanda, OTRO GATE INDEPENDIENTE. F5 NO arranca sin un veredicto
+             de SUFICIENCIA.
 falta_para_cerrar_la_capa:
+  · F4c ESTÁ ABIERTA, y ahora con el GATE DEFINITIVO INDEPENDIENTE ejecutado y devuelto:
+    **INSUFICIENTE PARA F5**, adjudicado por L sobre los dictámenes cerrados de J y K.
+    UN BLOQUEANTE (J-01), CINCO GRAVES (J-02, K-01, K-02, K-03, K-06, L-02), un contrato F6
+    que aún exige decidir arquitectura, una contradicción con G20–G23 sin presión F5, un
+    checkpoint no vigente, y COBERTURA INCOMPLETA: ~8 700 líneas de fuentes centrales que
+    NINGÚN revisor abrió. **F5 NO queda autorizada.**
+  · NINGÚN HALLAZGO DEL GATE DEFINITIVO SE HA CORREGIDO, y es deliberado. Incluye los que
+    caen sobre este mismo fichero —K-01, J-10, L-01: recuentos y bloques caducados aquí
+    dentro—, que se dejan INTACTOS. El encargo del gate prohíbe corregir durante el gate, y
+    corregirlos habría vuelto a hacer que quien recibe sea quien aplica.
+  · LA COBERTURA ES AHORA UNA CONDICIÓN EXPLÍCITA (C-L.5). Tres gates consecutivos han
+    declarado lectura parcial del mismo material: ADS-PENDIENTES bloques B y C, y los
+    documentos 16, 17 y 18. Mientras nadie los abra, ningún gate puede certificar que no
+    contengan algo que refute o agrave lo escrito — y L demostró con dos ejemplos que lo hay.
+
   · F4c ESTÁ ABIERTA, y ahora con el GATE FINAL INDEPENDIENTE ejecutado y devuelto:
     **INSUFICIENTE PARA F5**, por adjudicación de un tercer agente sobre dos dictámenes
     independientes. CUATRO BLOQUEANTES, SEIS GRAVES y una COBERTURA DE CORPUS INCOMPLETA,
