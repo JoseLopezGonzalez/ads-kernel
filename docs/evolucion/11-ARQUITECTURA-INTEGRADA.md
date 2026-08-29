@@ -8802,8 +8802,10 @@ sólo F5 puede tocar.
 > **`D104` sustituye el algoritmo entero.** Deriva sobre campos estructurados y sobre
 > pertenencia a conjuntos, **sin buscar una sola palabra en texto libre**, cubre las cuatro
 > vías, y define un ancla de posición aplicable a cualquier ruta real. La cifra estática **no
-> se escribe: se deriva, y sigue dando los mismos cinco procesos y nueve pares** — que es la
-> comprobación de que la corrección no rompió lo que ya funcionaba.
+> se escribe: se deriva, y sigue dando el mismo conjunto que antes de la corrección** — que
+> es la comprobación de que la corrección no rompió lo que ya funcionaba. **La cifra se
+> publica UNA sola vez, en `SALIDA ESPERADA`, y `G-15` comprueba que sea única**: una segunda
+> proyección en el mismo bloque es el contraejemplo de `M-04`, y la comprobación la suspende.
 
 ```text
 LAS CUATRO VÍAS,     una participación de `DOM` o `SEG` en un proceso existe por UNA de estas

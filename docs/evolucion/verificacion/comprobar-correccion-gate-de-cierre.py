@@ -63,6 +63,26 @@ def _num(txt):
             return d + u
     return None
 
+# ── Git, que FALLA CERRADO ────────────────────────────────────────────────
+#
+# Añadido por la corrección del GATE DE COBERTURA (`M-12`). `G-21`, `G-22` y `G-23`
+# llamaban a `subprocess.run(...)` y usaban su `stdout` SIN mirar el `returncode`. Sobre
+# una copia sin `.git` —un tarball, un `git archive`, la forma en que este corpus viajaría
+# a un revisor externo— `git` fallaba, `stdout` venía vacío, y las tres interpretaban el
+# vacío como «nada cambió»: declaraban intacto un árbol con (a) mutilada, el documento 18
+# alterado y `C7` modificado.
+#
+# `_git()` devuelve la salida SÓLO si el comando tuvo éxito. Si falla, si no existe, o si
+# el repositorio no responde, devuelve None — y las comprobaciones que dependen de él
+# fallan CERRADO, con diagnóstico.
+def _git(*args):
+    try:
+        r = subprocess.run(["git", "-C", RAIZ, *args],
+                           capture_output=True, text=True, timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return r.stdout if r.returncode == 0 else None
+
 RES = []
 def check(id_, titulo, ok, detalle=""):
     RES.append((id_, titulo, bool(ok), detalle))
@@ -223,13 +243,12 @@ check("G-10", "SEIS extensiones de ficha —ENT ARQ PLT SEG DSP ENC— en §5.2,
       not falta, "; ".join(falta) or "las seis, en las tres sedes")
 
 # ── G-11 · D67 identica byte a byte a la de 7e99388 ───────────────────
-base = subprocess.run(["git", "-C", RAIZ, "show",
-        "7e99388:docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md"],
-        capture_output=True, text=True).stdout.split("\n")
+_base_raw = _git("show", "7e99388:docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md")
+base = _base_raw.split("\n") if _base_raw is not None else []
 o = [l for l in base if l.startswith("| D67 |")]
 a = [l for l in lineas(DEC) if l.startswith("| D67 |")]
-check("G-11", "la fila `D67` es identica BYTE A BYTE a la de `7e99388`",
-      len(o) == 1 and len(a) == 1 and o[0] == a[0],
+check("G-11", "la fila `D67` es identica BYTE A BYTE a la de `7e99388` (falla CERRADO sin git)",
+      _base_raw is not None and len(o) == 1 and len(a) == 1 and o[0] == a[0],
       "identica" if o and a and o[0] == a[0] else "DIFIERE")
 
 # ── G-11b · D1-D86 intactas salvo D67 ────────────────────────────────
@@ -292,173 +311,226 @@ check("G-14", "`F-01` reclasificado a `PRESION_LISTA_PARA_F5`, con requiere_f5 y
 
 # ── G-15 · el contrato de `<CAP>:revision`, DERIVADO Y EJECUTADO ─────
 #
-# Reescrita por la corrección técnica posterior (`D103`). La versión anterior comprobaba
-# que el DOCUMENTO contuviera ciertas palabras y que `SEG` fuera obligatoria en `DEP`.
-# **No ejecutaba la derivación**, y por eso pasaba en verde mientras el documento publicaba
-# «seis procesos, diez pares exigidos» — cuando el catálogo da CINCO procesos y NUEVE
-# pares, y `AUD` no aporta un par fijo sino cero o uno POR ITEM.
+# Reescrita por la corrección del GATE DE COBERTURA (`D104`). La versión anterior derivaba
+# de verdad la CIFRA, y aun así el gate la refutó por cuatro caminos: no implementaba la vía
+# PROPIETARIA que su criterio nombra en primer lugar (`O-01`), no evaluaba la vía CONDICIONAL
+# de `proceso:AUD` (`M-01`), partía estático/dinámico buscando la palabra «DERIVADO» en un
+# campo `{tipo: texto}` (`N-02`), y comparaba sólo la PRIMERA proyección del bloque, con lo
+# que una segunda contradictoria pasaba en verde (`M-04`, refutación 2).
 #
-# Ahora comprueba COMPORTAMIENTO: parsea los bloques `ads:proceso`, normaliza `DOM`/`SEG`
-# desde campos ESTRUCTURADOS, deriva el conjunto estático y lo compara con la proyección
-# publicada. **El nueve no está escrito aquí**: se deriva y se contrasta con la cifra que
-# el documento publica. Si el catálogo cambia, esta comprobación se mueve sola.
+# Ahora deriva las CUATRO vías, parte por pertenencia al conjunto de las quince, deriva el
+# ancla de posición, y exige que la proyección publicada sea ÚNICA y coincida.
 
-_PROC = leer(os.path.join(RAIZ, "kernel/operativo/recorrido/01-PROCESOS.md"))
-_BASE_VIGILADAS = ("DOM", "SEG")
+_CAPS = frozenset(os.listdir(os.path.join(RAIZ, "kernel/operativo/capacidades")))
+_VIGILADAS = ("DOM", "SEG")
+_PROC_MD = os.path.join(RAIZ, "kernel/operativo/recorrido/01-PROCESOS.md")
 
 def _base(valor):
-    """Capacidad BASE de una participación, desde el campo estructurado y nada más.
-
-    `SEG`, `SEG:condiciones` y `capacidad_productora: "SEG"` normalizan todas a `SEG`;
-    `DIS/Reconstruccion` normaliza a `DIS`. No se mira `capa_exigida` ni `condicion`:
-    inferir por texto libre es lo que `D103` retira.
-    """
+    """Capacidad BASE: segmento anterior al primer `:` y al primer `/`. Nada más."""
     return valor.strip().strip('"').strip("'").split(":")[0].split("/")[0].strip()
+
+def _limpio(valor):
+    return valor.strip().strip('"').strip("'").strip()
 
 def _bloques_proceso(texto):
     return re.findall(r"```yaml ads:proceso\n(.*?)```", texto, re.S)
 
-def _participaciones(bloque):
-    """{capacidad_base: via} de DOM/SEG en un bloque, SÓLO desde campos estructurados."""
-    out = {}
-    ic = bloque.find("condicionales:")
-    io_ = bloque.find("obligatorias:")
-    fin_obl = ic if ic > io_ >= 0 else len(bloque)
-    for v in re.findall(r"^\s*capacidad_productora:\s*(.+)$",
-                        bloque[io_:fin_obl] if io_ >= 0 else "", re.M):
+def _analizar(bloque):
+    """Devuelve (pid, propietario, es_estatico, ancla, participaciones).
+
+    `participaciones` es [(capacidad_base, via)] con via ∈ {1,2,3,4}:
+      1 propietaria · 2 obligatoria desnuda · 3 condicional desnuda · 4 item enlazado tipado
+    NO se lee `capa_exigida`, `condicion`, `criterio_de_satisfaccion` ni
+    `autoridad_de_retirada`. Toda la inferencia es UNA prueba de pertenencia a `_CAPS`.
+    """
+    pid = re.search(r"^id:\s*proceso:(\w+)", bloque, re.M).group(1)
+    pg = _limpio(re.search(r"^propietario_global:\s*(.*)$", bloque, re.M).group(1))
+    # DISCRIMINANTE ESTRUCTURAL: igualdad contra el conjunto de las quince, no subcadena
+    estatico = pg in _CAPS
+    ic, io_ = bloque.find("condicionales:"), bloque.find("obligatorias:")
+    seg_obl = bloque[io_: ic if ic > io_ >= 0 else len(bloque)] if io_ >= 0 else ""
+    seg_cond = bloque[ic:] if ic >= 0 else ""
+
+    obl = [_limpio(v) for v in re.findall(r"^\s*capacidad_productora:\s*(.+)$", seg_obl, re.M)]
+    cond = [_limpio(v) for v in re.findall(r"^\s*-\s*capacidad:\s*(.+)$", seg_cond, re.M)]
+
+    # ANCLA DE POSICIÓN: la obligatoria de `VER` si existe; si no, la última obligatoria
+    ancla = "VER" if "VER" in obl else (obl[-1] if obl else None)
+
+    part = []
+    if estatico and pg in _VIGILADAS:
+        part.append((pg, 1))                       # vía 1 · propietaria
+    for v in obl:
         b = _base(v)
-        if b in _BASE_VIGILADAS:
-            out[b] = "obligatoria"
-    for v in re.findall(r"^\s*-\s*capacidad:\s*(.+)$",
-                        bloque[ic:] if ic >= 0 else "", re.M):
+        if b in _VIGILADAS:
+            part.append((b, 2 if v == b else 4))   # vía 2 desnuda · vía 4 tipada
+    for v in cond:
         b = _base(v)
-        if b in _BASE_VIGILADAS:
-            out.setdefault(b, "condicional")
+        if b in _VIGILADAS:
+            part.append((b, 3 if v == b else 4))   # vía 3 desnuda · vía 4 tipada
+    return pid, pg, estatico, ancla, part
+
+def _derivar(texto):
+    """(estaticos, dinamicos, anclas) — estaticos: {(proc,cap): via}."""
+    estaticos, dinamicos, anclas = {}, {}, {}
+    for b in _bloques_proceso(texto):
+        pid, pg, est, ancla, part = _analizar(b)
+        anclas[pid] = ancla
+        if est:
+            for cap, via in part:
+                estaticos[(pid, cap)] = via
+        else:
+            dinamicos[pid] = part
+    return estaticos, dinamicos, anclas
+
+def _exige_item(proceso_part, propietario_efectivo, condicionales_activos):
+    """REGLA POR ITEM: unión de la vía 1 y de los condicionales ACTIVADOS."""
+    out = set()
+    b = _base(propietario_efectivo)
+    if b in _VIGILADAS:
+        out.add(b)
+    for cap, via in proceso_part:
+        if via in (3, 4) and cap in condicionales_activos:
+            out.add(cap)
     return out
 
-def _derivar_catalogo(texto):
-    """NIVEL A · pares estáticos. Excluye los procesos de propietario DERIVADO."""
-    estaticos, dinamicos = set(), set()
-    for b in _bloques_proceso(texto):
-        m = re.search(r"^id:\s*proceso:(\w+)", b, re.M)
-        pg = re.search(r"^propietario_global:\s*(.*)$", b, re.M)
-        if not m or not pg:
-            continue
-        pid = m.group(1)
-        if "DERIVADO" in pg.group(1).upper():
-            dinamicos.add(pid)                     # NIVEL B: cardinalidad por item
-            continue
-        for cap in _participaciones(b):
-            estaticos.add((pid, cap))
-    return estaticos, dinamicos
-
-def _exige_por_item(propietario):
-    """NIVEL B · qué exige UN item cuyo propietario efectivo es `propietario`.
-
-    Cero o UN par. Nunca los dos: un item tiene un propietario, no dos.
-    """
-    b = _base(propietario)
-    return {b} if b in _BASE_VIGILADAS else set()
-
 _g15 = []
-_est, _din = _derivar_catalogo(_PROC)
+_PROC = leer(_PROC_MD)
+_est, _din, _anclas = _derivar(_PROC)
 _procs_est = sorted({p for p, _ in _est})
-_n_est = len(_est)
 
-# 1 · el contrato tiene que traer sus piezas, y nombrar los DOS niveles
+# 1 · el contrato tiene que traer sus piezas y nombrar las cuatro vías
 i19 = t11.index("### `DOM` y `SEG` participan DOS veces")
 b19 = t11[i19:t11.index("**Y dos más, que no son defectos de F4", i19)]
-b19n = re.sub(r"\s+", " ", b19)
-# Y una variante SIN marcas de énfasis ni comillas de código: en este corpus una misma
-# frase aparece con `**` y con backticks en posiciones distintas según dónde caiga el
-# salto de línea, y un patrón que los presuponga falla sobre texto que SÍ está. Es la
-# cuarta vez que esta batería tropieza con lo mismo; se normaliza de una vez.
-b19p = re.sub(r"[`*]", "", b19n)
-for pieza in ("DATOS DE ENTRADA", "ALGORITMO DE", "SALIDA ESPERADA", "CASOS POSITIVOS",
+b19p = re.sub(r"[`*]", "", re.sub(r"\s+", " ", b19))
+for pieza in ("PROPIETARIA", "OBLIGATORIA", "CONDICIONAL", "ITEM PROPIO",
+              "DATOS DE ENTRADA", "ALGORITMO DE", "SALIDA ESPERADA", "CASOS POSITIVOS",
               "CONTRAEJEMPLOS", "composicion-incompleta", "PROPIETARIO", "F6",
-              "DERIVACIÓN", "POR ITEM"):
+              "ANCLA DE", "REGLA POR ITEM"):
     if pieza not in b19:
         _g15.append(f"el contrato no trae «{pieza}»")
-if not ("F4 **no edita `01-PROCESOS.md`**" in b19 or "F4 no toca `01-PROCESOS.md`" in b19):
-    _g15.append("no declara que F4 NO edita 01-PROCESOS.md")
+if "NO se analizan `capa_exigida` ni `condicion`" not in b19 and \
+   "capa_exigida, condicion, criterio_de_satisfaccion y autoridad_de_retirada NO se leen" not in b19p:
+    _g15.append("no declara que los campos de prosa NO se leen")
+if "pertenencia al conjunto de las QUINCE" not in b19p:
+    _g15.append("no declara el discriminante estructural por pertenencia")
 
-# 2 · los DOS barridos léxicos, retirados: el del criterio y el del algoritmo
-if not re.search(r"barrido léxico[^.]{0,120}RETIRADO", b19p):
-    _g15.append("no declara RETIRADO el barrido léxico de `:condiciones`")
-if "NO se analizan capa_exigida ni condicion buscando palabras" not in b19p:
-    _g15.append("no declara que `capa_exigida` y `condicion` NO se analizan por palabras")
-
-# 3 · la proyección publicada tiene que COINCIDIR con lo derivado. El número NO se
-#     escribe aquí: se deriva y se compara con la cifra que el documento publica.
-_m_proc = re.search(r"([A-ZÁÉÍÓÚa-z]+) procesos · ([A-ZÁÉÍÓÚa-z]+) pares", b19p)
-if not _m_proc:
+# 2 · la proyección publicada tiene que ser ÚNICA y coincidir con lo derivado.
+#     Ni el número ni el conteo de proyecciones se escriben aquí: se derivan.
+_proys = re.findall(r"([A-ZÁÉÍÓÚa-z]+) procesos . ([A-ZÁÉÍÓÚa-z]+) pares", b19p)
+if not _proys:
     _g15.append("la proyección no publica «<n> procesos · <n> pares» de forma legible")
+elif len(_proys) > 1:
+    _g15.append(f"hay {len(_proys)} proyecciones en el bloque y debe haber UNA: {_proys}")
 else:
-    _p, _q = _num(_m_proc.group(1)), _num(_m_proc.group(2))
+    _p, _q = _num(_proys[0][0]), _num(_proys[0][1])
     if _p != len(_procs_est):
-        _g15.append(f"publica {_m_proc.group(1)} procesos y el catálogo deriva {len(_procs_est)}")
-    if _q != _n_est:
-        _g15.append(f"publica {_m_proc.group(2)} pares y el catálogo deriva {_n_est}")
+        _g15.append(f"publica {_proys[0][0]} procesos y el catálogo deriva {len(_procs_est)}")
+    if _q != len(_est):
+        _g15.append(f"publica {_proys[0][1]} pares y el catálogo deriva {len(_est)}")
 
-# 4 · `(DEP, SEG)` presente, y por la vía OBLIGATORIA
-if ("DEP", "SEG") not in _est:
-    _g15.append("el par (DEP, SEG) NO se deriva del catálogo")
-else:
-    _bd = next((b for b in _bloques_proceso(_PROC) if "id: proceso:DEP" in b), "")
-    if _participaciones(_bd).get("SEG") != "obligatoria":
-        _g15.append("(DEP, SEG) no procede de la vía OBLIGATORIA")
+# 3 · las cuatro vías, ejercitadas sobre FIXTURES SINTÉTICOS
+#
+# Los fixtures se construyen aquí, enteros, y NO mutando el árbol real: un fixture que
+# depende de que cierta cadena exista en el corpus se rompe el día que el corpus cambia,
+# y entonces la comprobación deja de comprobar en vez de fallar con diagnóstico.
+_FX = """```yaml ads:proceso
+id: proceso:FX
+propietario_global: "%s"
+obligatorias:
+  - id: uno
+    capacidad_productora: "%s"
+  - id: dos
+    capacidad_productora: "VER"
+condicionales:
+  - capacidad: "%s"
+```"""
 
-# 5 · `AUD` es regla DINÁMICA por item, y NO entra en ningún total estático
-if "AUD" not in _din:
-    _g15.append("`AUD` no se detecta como proceso de propietario DERIVADO")
-if any(p == "AUD" for p, _ in _est):
-    _g15.append("`AUD` está contado dentro del conjunto ESTÁTICO, y no debe estarlo")
-if "proceso:AUD NO tiene cardinalidad estática" not in b19p:
-    _g15.append("el contrato no declara que `AUD` carece de cardinalidad estática")
-if "no un total simultáneo ni un décimo par fijo" not in b19p:
-    _g15.append("el contrato no declara que {DOM, SEG} NO es un total simultáneo")
+# vía 1 · PROPIETARIA — el fixture que `O-01` demostró que la versión anterior no veía
+_e1, _, _ = _derivar(_FX % ("DOM", "CON", "APR"))
+if _e1.get(("FX", "DOM")) != 1:
+    _g15.append("fixture VÍA 1: un `propietario_global: \"DOM\"` no emite par propietario")
 
-# 6 · TRES FIXTURES mínimos del nivel B
-for prop, esperado in (("DOM", {"DOM"}), ("SEG", {"SEG"}), ("PRD", set())):
-    obtenido = _exige_por_item(prop)
+# vía 2 y vía 4 sobre el fixture, con las dos formas del mismo campo
+_e2, _, _ = _derivar(_FX % ("PRD", "SEG", "DOM:condiciones"))
+if _e2.get(("FX", "SEG")) != 2:
+    _g15.append("fixture VÍA 2: `capacidad_productora: \"SEG\"` no emite par obligatorio")
+if _e2.get(("FX", "DOM")) != 4:
+    _g15.append("fixture VÍA 4: `DOM:condiciones` no emite par tipado")
+
+# vía 3 sobre el fixture, con la capacidad BASE desnuda
+_e3, _, _ = _derivar(_FX % ("PRD", "CON", "SEG"))
+if _e3.get(("FX", "SEG")) != 3:
+    _g15.append("fixture VÍA 3: `capacidad: \"SEG\"` desnuda no emite par condicional")
+
+# y el discriminante: un propietario que NO es uno de los quince cae en dinámico
+_, _d4, _ = _derivar(_FX % ("la capacidad que decida el encargo", "CON", "APR"))
+if "FX" not in _d4:
+    _g15.append("el discriminante no clasifica como dinámico un propietario que no es "
+                "uno de los quince")
+
+# y sobre el ÁRBOL REAL, las dos vías que hoy tienen instancias
+if _est.get(("DEP", "SEG")) != 2:
+    _g15.append("árbol real: `(DEP, SEG)` no se deriva por la vía obligatoria")
+if sum(1 for v in _est.values() if v == 4) == 0:
+    _g15.append("árbol real: ninguna participación tipada `<CAP>:condiciones` se deriva")
+
+# vía 3 · CONDICIONAL desnuda — `AUD` declara `DOM` y `SEG` así
+_aud = dict((c, v) for c, v in _din.get("AUD", []))
+if _aud.get("DOM") != 3 or _aud.get("SEG") != 3:
+    _g15.append("fixture VÍA 3: los condicionales desnudos de `AUD` no se derivan")
+
+# 4 · `AUD` dinámico, con sus CUATRO combinaciones por item
+_pa = _din.get("AUD", [])
+for prop, activos, esperado in (
+    ("DOM", set(),               {"DOM"}),
+    ("SEG", set(),               {"SEG"}),
+    ("PRD", set(),               set()),
+    ("PRD", {"DOM", "SEG"},      {"DOM", "SEG"}),
+    ("DOM", {"SEG"},             {"DOM", "SEG"}),
+):
+    obtenido = _exige_item(_pa, prop, activos)
     if obtenido != esperado:
-        _g15.append(f"fixture AUD propietario {prop}: esperado {esperado or '∅'}, "
-                    f"obtenido {obtenido or '∅'}")
-# y un item NUNCA exige las dos a la vez
-if any(len(_exige_por_item(x)) > 1 for x in ("DOM", "SEG", "PRD", "ARQ")):
-    _g15.append("un item AUD llega a exigir DOM y SEG simultáneamente")
+        _g15.append(f"fixture AUD (propietario {prop}, activos {sorted(activos) or '∅'}): "
+                    f"esperado {sorted(esperado) or '∅'}, obtenido {sorted(obtenido) or '∅'}")
 
-# 7 · FIXTURE NEGATIVO · si el catálogo deja de declarar la obligatoria SEG de DEP,
-#     el par tiene que DESAPARECER, y una proyección que aún lo publique tiene que fallar
-_sin_seg = re.sub(
-    r"  - id: condiciones-de-seguridad\n(?:    .*\n|      .*\n)*", "",
-    _PROC[_PROC.index("id: proceso:DEP"):_PROC.index("id: proceso:AUD")])
-_fix = _PROC[:_PROC.index("id: proceso:DEP")] + _sin_seg + _PROC[_PROC.index("id: proceso:AUD"):]
-_est_fix, _ = _derivar_catalogo(_fix)
-if ("DEP", "SEG") in _est_fix:
-    _g15.append("fixture negativo: quitar la obligatoria SEG de DEP NO retira el par (DEP, SEG)")
-if len(_est_fix) >= _n_est:
-    _g15.append("fixture negativo: el conjunto derivado no decrece al quitar la participación")
+# 5 · `DIR` — dinámico por la MISMA regla, sin excepción escrita
+if "DIR" not in _din:
+    _g15.append("`DIR` no se clasifica como propietario derivado por item")
+if _exige_item(_din.get("DIR", []), "DOM", set()) != {"DOM"}:
+    _g15.append("fixture DIR: propietario `DOM` no exige `DOM:revision`")
+if _exige_item(_din.get("DIR", []), "ARQ", set()) != set():
+    _g15.append("fixture DIR: propietario ajeno exige algo")
+if any(p == "DIR" for p, _ in _est):
+    _g15.append("`DIR` aparece en el catálogo ESTÁTICO, y su propietario no es uno de los quince")
 
-# 8 · FIXTURE NEGATIVO · una proyección que publique un total FIJO de diez tiene que fallar
-_proy_falsa = b19p.replace(f"{_m_proc.group(1)} procesos · {_m_proc.group(2)} pares",
-                           "SEIS procesos · DIEZ pares") if _m_proc else ""
-_m_falsa = re.search(r"([A-ZÁÉÍÓÚa-z]+) procesos · ([A-ZÁÉÍÓÚa-z]+) pares", _proy_falsa)
-if not (_m_falsa and (_num(_m_falsa.group(1)) != len(_procs_est)
-                      or _num(_m_falsa.group(2)) != _n_est)):
-    _g15.append("la comprobación NO detectaría una proyección con el total fijo de diez")
+# 6 · el ANCLA no exige `VER` donde no hay `VER`
+_sin_ver = sorted(p for p, a in _anclas.items() if a != "VER")
+if "AUD" not in _sin_ver:
+    _g15.append("`AUD` recibe ancla `VER` y `AUD` no declara `VER`")
+for _p in _sin_ver:
+    if _anclas[_p] is None:
+        _g15.append(f"`{_p}` no tiene ancla derivable")
 
-# 9 · el contrato exige que la prueba prescrita falle HOY nombrando DEP
+# 7 · fixture NEGATIVO · quitar la obligatoria SEG de DEP retira el par
+_sin_seg = re.sub(r"  - id: condiciones-de-seguridad\n(?:    .*\n|      .*\n)*", "",
+                  _PROC[_PROC.index("id: proceso:DEP"):_PROC.index("id: proceso:AUD")])
+_ffix = _PROC[:_PROC.index("id: proceso:DEP")] + _sin_seg + _PROC[_PROC.index("id: proceso:AUD"):]
+_efix, _, _ = _derivar(_ffix)
+if ("DEP", "SEG") in _efix or len(_efix) >= len(_est):
+    _g15.append("fixture negativo: quitar la obligatoria SEG de DEP no retira el par")
+
+# 8 · el contrato exige que la prueba prescrita falle HOY nombrando DEP
 if not re.search(r"FALLIDA nombrando.{0,80}?proceso:DEP → SEG:revision AUSENTE", b19p):
     _g15.append("su prueba no exige fallar HOY nombrando `proceso:DEP`")
 
 check("G-15",
-      "el contrato de `<CAP>:revision` se DERIVA de campos estructurados: catálogo estático = proyección, `AUD` dinámico por item",
+      "`<CAP>:revision` derivado por las CUATRO vías, discriminante estructural, ancla sin presuponer `VER`, y proyección ÚNICA",
       not _g15,
       "; ".join(_g15) or
-      f"catálogo derivado {len(_procs_est)} procesos {sorted(_procs_est)} · {_n_est} pares · "
-      f"(DEP,SEG) por obligatoria · AUD dinámico ({sorted(_din)}) · "
-      f"fixtures DOM→{{DOM}} SEG→{{SEG}} PRD→∅ · negativos detectados")
+      f"catálogo {len(_procs_est)} procesos {sorted(_procs_est)} · {len(_est)} pares "
+      f"(vías: {sorted(Counter(_est.values()).items())}) · dinámicos {sorted(_din)} · "
+      f"anclas sin VER {_sin_ver} · fixtures 1/2/3/4, AUD×5, DIR×2 y negativo, en verde")
 
 # ── G-16 · 43 estados primarios, sin duplicados ─────────────────────
 filas = re.findall(r"^\| `([A-Za-z0-9-]+)` \| (BLOQUEANTE|GRAVE|MEDIO|MENOR) \| \*\*`([A-Z_0-9]+)`\*\* \|(.*)$",
@@ -467,45 +539,46 @@ ids = [f[0] for f in filas]
 dup = [k for k, v in Counter(ids).items() if v > 1]
 comp = [f[0] for f in filas if " y " in f[2] or "+" in f[2]]
 # La MISMA regla, sobre el otro objeto que la necesita: las trece condiciones de cierre
-# `C-L.1`–`C-L.13` del gate definitivo. Se comprueba AQUÍ, dentro de `G-16`, porque es la
-# misma norma —un estado primario por elemento, ninguno compuesto, ningún doble conteo— y
-# porque la batería no crece: sigue teniendo TREINTA comprobaciones.
+# `C-L.1`–`C-L.13`. Se comprueba AQUÍ, dentro de `G-16`, porque es la misma norma y porque
+# la batería no crece: sigue teniendo TREINTA comprobaciones.
 #
-# Nace de un doble conteo real: la clasificación anterior declaraba cuatro estados y sumaba
-# trece, pero sumaba trece POR ACCIDENTE — contaba `J-11` como si fuera una condición
-# (es uno de los SEIS componentes de `C-L.13`) mientras atribuía los otros cinco componentes
-# a «CORREGIDAS EN F4c» sin ser ids `C-L`. Resultado: DOCE ids asignados más un subhallazgo,
-# y `C-L.13` sin estado propio. Mezclar condición y subhallazgo es lo que esto impide.
+# Reescrita por la corrección del GATE DE COBERTURA. La versión anterior comprobaba la
+# COHERENCIA INTERNA del bloque resumen —que la cifra declarada casara con los ids
+# nombrados— y nada más, con lo que mover `C-L.12` de estado ajustando los contadores
+# pasaba en verde contradiciendo su propio detalle (`M-04`, refutación 3). Además llevaba
+# DOS censos escritos a mano dentro de la comprobación cuyo objeto es esa disciplina
+# (`O-02`), y una detección de estados compuestos que no podía disparar jamás (`M-11`).
+#
+# Ahora contrasta el resumen contra las TRECE FILAS DE DETALLE, deriva los componentes de
+# `C-L.13` de esa misma fuente, y deriva su propio mensaje de éxito.
 _ESTADOS_CL = ("CORREGIDAS EN F4c", "REGISTRADAS PARA F5", "CONTRATADA PARA F6",
                "MIXTA POR DESGLOSE", "ABIERTA POR COBERTURA")
-_COMPONENTES_CL13 = ("K-05", "K-09", "K-10", "K-08", "L-03", "J-11")
 
 _g16c = []
-# el bloque VIVO es el de `siguiente:`, que es el que reancla a un agente sin contexto
 _i = tchk.find("CÓMO QUEDA CADA CONDICIÓN")
 if _i < 0:
     _g16c.append("no se encuentra el bloque de clasificación de las condiciones")
 else:
-    # el bloque es SÓLO la tabla de clasificación: termina en su línea de suma. Sin este
-    # corte, «ABIERTA POR COBERTURA» —el último estado— se llevaría por delante todo el
-    # detalle posterior y cada id parecería tener dos estados.
     _fin_blq = tchk.find("= los trece ids distintos", _i)
     _blq = tchk[_i:_fin_blq if _fin_blq > 0 else tchk.find("\n\n", _i)]
-    _asig = {}          # id C-L -> [estados en que aparece]
+    _asig, _declarado = {}, {}
     for _est in _ESTADOS_CL:
         _m = re.search(rf"^\s*{re.escape(_est)}\s+(\d+)\s+(.*)$", _blq, re.M)
         if not _m:
             _g16c.append(f"falta el estado «{_est}»")
             continue
-        # los ids de ese estado: su línea, más las de continuación hasta el estado siguiente
         _ini = _m.end()
-        _fin = min([_blq.find(e, _ini) for e in _ESTADOS_CL if _blq.find(e, _ini) > 0] or [len(_blq)])
-        _texto = _m.group(2) + " " + _blq[_ini:_fin]
-        _ids = re.findall(r"\bC-L\.\d+\b", _texto)
-        if int(_m.group(1)) != len(set(_ids)):
-            _g16c.append(f"«{_est}» declara {_m.group(1)} y nombra {len(set(_ids))} ids")
-        for _x in set(_ids):
+        _sig = [_blq.find(e, _ini) for e in _ESTADOS_CL if _blq.find(e, _ini) > 0]
+        _texto = _m.group(2) + " " + _blq[_ini: min(_sig) if _sig else len(_blq)]
+        _ids = set(re.findall(r"\bC-L\.\d+\b", _texto))
+        _declarado[_est] = int(_m.group(1))
+        if _declarado[_est] != len(_ids):
+            _g16c.append(f"«{_est}» declara {_m.group(1)} y nombra {len(_ids)} ids")
+        for _x in _ids:
             _asig.setdefault(_x, []).append(_est)
+        if re.search(r"\b[JKLMNO]-\d+\b", _m.group(2)):
+            _g16c.append(f"«{_est}» cuenta un subhallazgo como condición: "
+                         f"{re.findall(r'[JKLMNO]-[0-9]+', _m.group(2))}")
 
     _esperados = {f"C-L.{n}" for n in range(1, 14)}
     _faltan = sorted(_esperados - set(_asig), key=lambda x: int(x[4:]))
@@ -514,49 +587,82 @@ else:
     if _faltan: _g16c.append(f"sin estado primario: {_faltan}")
     if _sobran: _g16c.append(f"ids que no son condiciones: {_sobran}")
     if _dobles: _g16c.append(f"con DOS estados primarios: {_dobles}")
+    if sum(_declarado.values()) != len(_esperados):
+        _g16c.append(f"la suma de los estados declara {sum(_declarado.values())} "
+                     f"y las condiciones son {len(_esperados)}")
 
-    # la suma DECLARADA de los cinco estados tiene que dar exactamente trece
-    _suma = sum(int(m.group(1)) for e in _ESTADOS_CL
-                if (m := re.search(rf"^\s*{re.escape(e)}\s+(\d+)\s", _blq, re.M)))
-    if _suma != len(_esperados):
-        _g16c.append(f"la suma de los estados declara {_suma} y las condiciones son {len(_esperados)}")
+    # ── contraste contra la SEDE CANÓNICA: las trece filas de DETALLE ──────────
+    # Sin esto, mover `C-L.12` de estado ajustando contadores pasaba en verde.
+    _CANON = {
+        "CORREGIDAS EN F4c":    ("CERRADA",),
+        "REGISTRADAS PARA F5":  ("REGISTRADA PARA F5", "REGISTRADA"),
+        "CONTRATADA PARA F6":   ("CONTRATADA PARA F6", "CONTRATADA"),
+        "MIXTA POR DESGLOSE":   ("MIXTA",),
+        "ABIERTA POR COBERTURA": ("ABIERTA",),
+    }
+    _detalle = {}
+    # el estado puede llevar dígitos —«REGISTRADA PARA F5», «CONTRATADA PARA F6»—, y una
+    # clase que los excluya deja tres filas sin reconocer
+    for _m in re.finditer(r"^\s*(C-L\.\d+)\s+([A-ZÁÉÍÓÚ][A-ZÁÉÍÓÚ0-9 ,]*?)(?:\s+·|\s*$)",
+                          tchk, re.M):
+        _detalle.setdefault(_m.group(1), _m.group(2).strip())
+    _sin_detalle = sorted(_esperados - set(_detalle), key=lambda x: int(x[4:]))
+    if _sin_detalle:
+        _g16c.append(f"sin fila de detalle en su sede: {_sin_detalle}")
+    for _id, _estados in _asig.items():
+        _det = _detalle.get(_id)
+        if not _det:
+            continue
+        _admitidos = _CANON.get(_estados[0], ())
+        if not any(_det.startswith(a) for a in _admitidos):
+            _g16c.append(f"{_id}: el resumen lo pone en «{_estados[0]}» y su fila de detalle "
+                         f"dice «{_det}»")
 
-    # ningún SUBHALLAZGO puede figurar como si fuera una condición con estado propio
-    for _est in _ESTADOS_CL:
-        _m = re.search(rf"^\s*{re.escape(_est)}\s+\d+\s+([^\n]*)$", _blq, re.M)
-        if _m and re.search(r"\b[JKL]-\d+\b", _m.group(1)):
-            _g16c.append(f"«{_est}» cuenta un subhallazgo como condición: "
-                         f"{re.findall(r'[JKL]-[0-9]+', _m.group(1))}")
-
-    # `C-L.13` una sola vez, MIXTA, y con sus SEIS componentes como atributos secundarios
+    # ── `C-L.13`: sus componentes se DERIVAN de la fila de detalle, no de una lista ──
+    _m13 = re.search(r"^\s*C-L\.13\s+.*?(?=^\s*C-L\.\d|\Z)", tchk, re.M | re.S)
+    _comp13 = sorted(set(re.findall(r"\b[JKL]-\d+\b", _m13.group(0)))) if _m13 else []
     if _asig.get("C-L.13") != ["MIXTA POR DESGLOSE"]:
         _g16c.append(f"`C-L.13` no está exactamente una vez como MIXTA: {_asig.get('C-L.13')}")
-    _i13 = _blq.find("MIXTA POR DESGLOSE")
-    _b13 = _blq[_i13:_blq.find("ABIERTA POR COBERTURA", _i13)] if _i13 >= 0 else ""
-    _falt13 = [c for c in _COMPONENTES_CL13 if c not in _b13]
+    if len(_comp13) < 2:
+        _g16c.append("`C-L.13` no declara sus componentes en su fila de detalle")
+    _b13 = _blq[_blq.find("MIXTA POR DESGLOSE"):]
+    _falt13 = [c for c in _comp13 if c not in _b13]
     if _falt13:
-        _g16c.append(f"`C-L.13` no declara sus componentes: {_falt13}")
-    if "J-11" in _b13 and not re.search(r"J-11[^\n]*(?:contratad|NO implementad)", _b13, re.I):
-        _g16c.append("`J-11` no consta como contratado para F6 y no implementado")
-
-    # `C-L.5` sigue ABIERTA
+        _g16c.append(f"el resumen de `C-L.13` omite componentes que su detalle declara: {_falt13}")
+    if _comp13 and not re.search(rf"{_comp13[0] if 'J-11' not in _comp13 else 'J-11'}"
+                                 r"[^\n]*(?:contratad|NO implementad)", _b13, re.I):
+        if "J-11" in _comp13:
+            _g16c.append("`J-11` no consta como contratado para F6 y no implementado")
     if _asig.get("C-L.5") != ["ABIERTA POR COBERTURA"]:
         _g16c.append(f"`C-L.5` no está ABIERTA POR COBERTURA: {_asig.get('C-L.5')}")
-
 
 _g16 = []
 if len(filas) != 43 or len(set(ids)) != 43:
     _g16.append(f"matriz: {len(filas)} filas / {len(set(ids))} ids, se esperan 43 y 43")
-if dup:  _g16.append(f"matriz: ids DUPLICADOS {dup}")
-if comp: _g16.append(f"matriz: estados COMPUESTOS {comp}")
+if dup:
+    _g16.append(f"matriz: ids DUPLICADOS {dup}")
+# ESTADO COMPUESTO en la matriz: se detecta sobre la línea ENTERA, no sobre el grupo
+# capturado. El grupo está restringido a [A-Z_0-9]+ y nunca podía contener " y " ni "+":
+# la comprobación anterior era código muerto y no podía disparar jamás (`M-11`).
+_comp = re.findall(r"^\| `([A-Za-z0-9-]+)` \| (?:BLOQUEANTE|GRAVE|MEDIO|MENOR) \| "
+                   r"\*\*`[A-Z_0-9]+`(?: y |\s*\+\s*)`?[A-Z_0-9]+", tchk, re.M)
+if _comp:
+    _g16.append(f"matriz: estados COMPUESTOS {_comp}")
 _g16 += [f"condiciones C-L: {x}" for x in _g16c]
 
+# El mensaje de éxito se DERIVA de lo comprobado. La versión anterior llevaba la cadena
+# «8+2+1+1+1 = 13» codificada, y la imprimía intacta sobre un bloque que declaraba otra
+# distribución (`O-02`).
+_resumen = "+".join(str(_declarado[e]) for e in _ESTADOS_CL if e in _declarado) \
+           if not _g16c or _declarado else "?"
 check("G-16",
-      "un estado primario por elemento y ninguno compuesto: los 43 hallazgos, y las 13 condiciones `C-L`",
+      "un estado primario por elemento y ninguno compuesto: los 43 hallazgos, y las 13 condiciones `C-L` contra su detalle",
       not _g16,
       "; ".join(_g16) or
-      f"matriz {len(filas)} filas / {len(set(ids))} ids · condiciones 13/13 con estado único, "
-      f"8+2+1+1+1 = 13, C-L.13 MIXTA con sus seis componentes secundarios y C-L.5 ABIERTA")
+      f"matriz {len(filas)} filas / {len(set(ids))} ids · condiciones "
+      f"{sum(_declarado.values())}/{len(_esperados)} con estado único, {_resumen} = "
+      f"{sum(_declarado.values())}, cada resumen coincide con su fila de detalle · "
+      f"C-L.13 MIXTA con {len(_comp13)} componentes derivados · C-L.5 ABIERTA")
 
 # ── G-16b · A11 absorbido, A14 excluido ────────────────────────────
 check("G-16b", "`A11` absorbido en `M-8` y `A14` excluido: ninguno es fila de la matriz",
@@ -627,8 +733,11 @@ for n in set(ob):
     x = [l for l in base if l.startswith(f"| O{n} |")]
     y = [l for l in lineas(DEC) if l.startswith(f"| O{n} |")]
     if x and y and x[0] != y[0]: difs.append(f"O{n}")
-check("G-21", "`O1`-`O16` intactas frente a `7e99388`",
-      not difs and len(set(ac)) >= len(set(ob)), "ninguna difiere" if not difs else ", ".join(difs))
+if _base_raw is None:
+    difs.append("GIT NO RESPONDE: no se puede comparar contra `7e99388`")
+check("G-21", "`O1`-`O16` intactas frente a `7e99388` (y falla CERRADO si git no responde)",
+      _base_raw is not None and bool(ob) and not difs and len(set(ac)) >= len(set(ob)),
+      "ninguna difiere" if (_base_raw is not None and not difs) else ", ".join(difs))
 
 # ── G-22 · los documentos 15, 16, 17 y 18 intactos ──────────────
 # Se compara la BASE contra el ÁRBOL DE TRABAJO, no contra `HEAD`.
@@ -637,11 +746,13 @@ check("G-21", "`O1`-`O16` intactas frente a `7e99388`",
 # lo que hubiera sin confirmar: editar un contrato, una capacidad o cualquier otro validador
 # dejaba la comprobación en verde. Una comprobación que sólo mira commits no protege el árbol
 # que se le pone delante, que es justo lo que se le pide.
-tocados = subprocess.run(["git", "-C", RAIZ, "diff", "--name-only", "05f71b7"],
-                          capture_output=True, text=True).stdout.split()
+_tocados_raw = _git("diff", "--name-only", "05f71b7")
+tocados = _tocados_raw.split() if _tocados_raw is not None else []
 inmutables = [f for f in tocados if re.search(r"docs/evolucion/1[5-8]-", f)]
-check("G-22", "los documentos 15, 16, 17 y 18 NO se han tocado",
-      not inmutables, "intactos" if not inmutables else ", ".join(inmutables))
+check("G-22", "los documentos 15, 16, 17 y 18 NO se han tocado (y falla CERRADO si git no responde)",
+      _tocados_raw is not None and not inmutables,
+      "intactos" if (_tocados_raw is not None and not inmutables)
+      else (", ".join(inmutables) or "GIT NO RESPONDE: no se puede saber qué se tocó"))
 
 # ── G-23 · lo normativo intacto, y el kernel con su EXCEPCIÓN NOMBRADA ──
 #
@@ -682,11 +793,13 @@ def _kernel_no_autorizado(f):
 
 prohibidos = [f for f in tocados if _kernel_no_autorizado(f)]
 prohibidos += [f for f in tocados if re.search(NORMATIVO, f)]
-check("G-23", "lo normativo intacto; del kernel sólo cambia la excepción NOMBRADA",
-      not prohibidos,
+if _tocados_raw is None:
+    prohibidos.append("GIT NO RESPONDE: no se puede saber qué se tocó")
+check("G-23", "lo normativo intacto; del kernel sólo la excepción NOMBRADA (y falla CERRADO si git no responde)",
+      _tocados_raw is not None and not prohibidos,
       "intacto salvo comprobar_negativos.py, entrada/02-CIRCUITO.md (K-09), "
       ".upstream-hash y evidencia derivada"
-      if not prohibidos else ", ".join(sorted(set(prohibidos))))
+      if (_tocados_raw is not None and not prohibidos) else ", ".join(sorted(set(prohibidos))))
 
 # ── G-24 · las catorce fuentes y las quince fichas existen ──────
 fuentes = """kernel/operativo/diseno/00-SISTEMA-DE-EXCELENCIA.md
