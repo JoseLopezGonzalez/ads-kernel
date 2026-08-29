@@ -6,9 +6,43 @@
 > **Basta decir «Continúa»**: la siguiente acción exacta está al final.
 
 > **Estado de la fase, en una línea:**
-> **El GATE DEFINITIVO INDEPENDIENTE devolvió INSUFICIENTE PARA F5 sobre `r4`=`0ea0451`, y
-> sus TRECE condiciones de cierre están APLICADAS — NO CERTIFICADAS. `F4c` sigue ABIERTA y
-> `F5` NO queda autorizada: falta un gate independiente NUEVO sobre el resultado corregido.**
+> **El GATE INDEPENDIENTE DE COBERTURA Y CIERRE devolvió INSUFICIENTE PARA F5 sobre
+> `r2`=`c3d6465`. `F4c` NO se cierra: sigue ABIERTA, y `F5` NO queda autorizada.**
+>
+> Lo emitió un **adjudicador `O`** con contexto limpio sobre los dictámenes cerrados de dos
+> revisores independientes, `M` y `N`, que trabajaron en paralelo sin verse. Está en
+> [`20-GATE-INDEPENDIENTE-DE-COBERTURA-Y-CIERRE-F4C.md`](20-GATE-INDEPENDIENTE-DE-COBERTURA-Y-CIERRE-F4C.md).
+>
+> **LA COBERTURA SE CERRÓ, Y ES LA PRIMERA VEZ.** Las cuatro fuentes que `C-L.5` nombra
+> —`ADS-PENDIENTES` con sus BLOQUES B y C, y los documentos 16, 17 y 18: 8 735 líneas— se
+> leyeron **ÍNTEGRAS por los tres, de forma independiente**. `N` cerró además las catorce
+> fuentes y las quince fichas que tres gates dejaron sin abrir, **incluido el documento 15**,
+> y contestó las dos preguntas que el adjudicador `I` declaró irresolubles. **Los BLOQUES B y
+> C CONFIRMAN a F4; `b.3` y `b.5` NO refutan `I-08`.** Esas vías de escape quedan cerradas.
+>
+> **Y aun así, INSUFICIENTE. SEIS razones, cualquiera bastaría:** `C-L.3` **no cerrada** por
+> TRES causas independientes —la vía propietaria no implementada (`O-01`), la vía condicional
+> perdida en `proceso:AUD` (`M-01`), y la posición «tras `VER`» exigida en el único proceso
+> que no tiene `VER`, con `proceso:DIR` excluido sin motivo derivable (`N-01`)—; **un defecto
+> arquitectónico NUEVO que hace INEMITIBLE el terminal `abandonada`** —`id(abandonada)`
+> depende de `id(deriva)` y viceversa, y ninguna sede lo resuelve (`M-02`)—; **una laguna de
+> durabilidad con fallo silencioso** que deja el diario permanentemente inválido (`M-03` +
+> `O-03`); **la batería REFUTADA** —dos árboles defectuosos distintos pasan **30/30 en verde**,
+> uno con el contraejemplo exacto que `G-15` dice detectar (`M-04`)—; **tres sedes vigentes
+> que el árbol desmiente** (`M-05`, `M-06`, `M-07`); y la regla de cierre de `C-L.5` no
+> certificable (`O-04`).
+>
+> **21 hallazgos consolidados, CERO rechazados: GRAVE 5 · MEDIO 6 · MENOR 10.** Derivado de
+> las filas adjudicadas. **NINGUNO se ha corregido**, y eso incluye los que caen sobre este
+> mismo fichero y sobre la batería.
+>
+> **Y consta:** `D96`–`D103` **no reescribieron ni una línea** —121 inserciones, cero
+> supresiones, verificado con `git`—; `D67` idéntica byte a byte; los documentos 15–18
+> intactos; la aritmética resiste entera; la **cardinalidad de `D103` es correcta** y acertó
+> en lo más difícil, negarse a publicar un décimo par fijo; **ninguna de las trece condiciones
+> está mal clasificada**; y `J-11` y `C-L.10` declaran cero implementación **y la tienen de
+> verdad**. `O`: «no falla por concepción; falla porque una decisión bien tomada llega a la
+> mitad de los sitios que la invocan».
 >
 > Lo emitió un **adjudicador `L`** con contexto limpio sobre los dictámenes cerrados de dos
 > revisores independientes, `J` y `K`, que trabajaron en paralelo sin verse. `L` verificó
@@ -149,12 +183,13 @@
 ```text
 CHECKPOINT — ADS-NEXT/12 · SIS/evolucion
 actualizado: 2026-08-29
-metodo:      SIS/Evolucion · TANDA DE CORRECCIÓN DEL GATE DEFINITIVO APLICADA · D96–D102 ·
-             y CORRECCIÓN TÉCNICA ACOTADA sobre ella · D103 · las TRECE condiciones C-L en
-             CINCO estados primarios mutuamente excluyentes, un id cada uno: 8 CORREGIDAS EN
-             F4c · 2 REGISTRADAS PARA F5 · 1 CONTRATADA PARA F6 · 1 MIXTA POR DESGLOSE
-             (C-L.13) · 1 ABIERTA POR COBERTURA (C-L.5) = 13 · APLICADA, NO CERTIFICADA ·
-             F4c ABIERTA · F5 NO AUTORIZADA
+metodo:      SIS/Evolucion · GATE INDEPENDIENTE DE COBERTURA Y CIERRE EJECUTADO SOBRE
+             r2=c3d6465 · M y N en paralelo, adjudica O · VEREDICTO INSUFICIENTE PARA F5 ·
+             la COBERTURA de C-L.5 se cerró en su núcleo, por triplicado, y aun así el gate
+             falla POR EL FONDO · 21 hallazgos consolidados, 0 rechazados, GRAVE 5 · MEDIO 6
+             · MENOR 10 · NINGUNO CORREGIDO · F4c ABIERTA · F5 NO AUTORIZADA
+metodo_anterior: SIS/Evolucion · TANDA DE CORRECCIÓN DEL GATE DEFINITIVO APLICADA · D96–D102 ·
+             y CORRECCIÓN TÉCNICA ACOTADA sobre ella · D103 · APLICADA, NO CERTIFICADA
 metodo_anterior: SIS/Evolucion · GATE DEFINITIVO INDEPENDIENTE EJECUTADO SOBRE r4=0ea0451 ·
              VEREDICTO INSUFICIENTE PARA F5 · F4c ABIERTA · F5 NO AUTORIZADA
 based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
@@ -172,6 +207,9 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/18-GATE-DE-CIERRE-INDEPENDIENTE-F4C.md
              docs/evolucion/19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md   J · K · L ·
                                                              VEREDICTO INSUFICIENTE
+             docs/evolucion/20-GATE-INDEPENDIENTE-DE-COBERTURA-Y-CIERRE-F4C.md
+                                                             M · N · O · VEREDICTO
+                                                             INSUFICIENTE · cobertura cerrada
              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · O16 · D16–D22 ·
                                                              D23–D33 · D34–D45 · D46–D51 ·
                                                              D52–D54 · D55–D57 · D58–D59 ·
@@ -187,7 +225,24 @@ rama_de_trabajo: fix/f4c-post-gate-definitivo-20260829, creada en 652ab8e —el 
 freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
              Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
              queda marcado HISTÓRICO y SUPERADO, y no se borra
-last_meaningful_event: CORRECCIÓN TÉCNICA ACOTADA sobre la candidata publicada, y es D103.
+last_meaningful_event: el GATE INDEPENDIENTE DE COBERTURA Y CIERRE —M y N en paralelo,
+             adjudicados por O con contexto limpio— devuelve INSUFICIENTE PARA F5 sobre
+             r2=c3d6465. Es la PRIMERA pasada que lee ÍNTEGRAS las cuatro fuentes que C-L.5
+             nombra, y las lee POR TRIPLICADO; N cierra además las catorce fuentes y las
+             quince fichas que tres gates dejaron sin abrir, incluido el documento 15, y
+             contesta las dos preguntas que el adjudicador I declaró irresolubles: los
+             BLOQUES B y C CONFIRMAN a F4, y b.3 y b.5 NO refutan I-08.
+             Y aun con la cobertura cerrada en su núcleo, el gate falla POR EL FONDO:
+             C-L.3 no cerrada por TRES causas independientes; un defecto arquitectónico
+             NUEVO que hace INEMITIBLE el terminal `abandonada`; una laguna de durabilidad
+             con fallo silencioso que deja el diario irreparable; la batería REFUTADA —dos
+             árboles defectuosos pasan 30/30 en verde—; tres sedes vigentes que el árbol
+             desmiente; y la regla de cierre de C-L.5 no certificable.
+             21 hallazgos consolidados, CERO rechazados: GRAVE 5 · MEDIO 6 · MENOR 10.
+             NINGUNO SE HA CORREGIDO, y eso incluye los que caen sobre este mismo fichero
+             (M-06) y sobre la batería (M-04, M-11, M-12, O-01, O-02): corregirlos durante
+             el gate volvería a hacer que quien recibe sea quien aplica (2026-08-29)
+last_meaningful_event_anterior: CORRECCIÓN TÉCNICA ACOTADA sobre la candidata publicada, y es D103.
              D98 había retirado el barrido léxico de su CRITERIO y lo reintroducía en su
              ALGORITMO —marcaba una participación como condicionante buscando «ANTES de
              construir» en TEXTO LIBRE—, y publicaba «seis procesos, diez pares exigidos»,
@@ -947,6 +1002,28 @@ siguiente:   OTRO GATE INDEPENDIENTE, con revisores de contexto limpio que NO se
                       CONTRATO COMPLETO PARA F6 en D102, NO implementado
 
              F5 NO arranca sin un veredicto explícito de SUFICIENCIA.
+
+             ESTADO TRAS EL GATE INDEPENDIENTE DE COBERTURA Y CIERRE (documento 20), que
+             adjudica las trece una a una y NO corrige ninguna:
+               CERRADAS                              7   C-L.1 C-L.6 C-L.7 C-L.8 C-L.9
+                                                         C-L.11 C-L.13
+               REGISTRADAS PARA F5                   2   C-L.2 (con M-05 en su cuerpo) · C-L.12
+               CONTRATADA PARA F6                    1   C-L.10 — cero líneas, verificado
+               CERRADA EN LA FORMA, NO EN EL FONDO   1   C-L.4  (M-07: las fechas no cuadran)
+               NO CERRADA                            1   C-L.3  ← una de las cinco que bloquean
+               ABIERTA                               1   C-L.5  (núcleo satisfecho; regla de
+                                                         cierre no certificable, O-04)
+                                                    ──
+                                                    13   cada id exactamente una vez
+
+             LO QUE EL GATE DEJA ABIERTO, sin corregir y por orden expresa:
+               M-01 M-02 M-03 M-04 N-01                    GRAVES · cuatro bloquean el paso
+               M-05 M-06 M-07 N-02 O-01 O-03                MEDIOS
+               M-08 M-09 M-10 M-11 M-12 N-03 N-04 N-05      MENORES
+               O-02 O-04
+
+             Y consta que el gate NO falla por cobertura: O lo dice expresamente —«habría
+             fallado igual con C-L.5 cerrada»—. Falla por el fondo.
 falta_para_cerrar_la_capa:
   · F4c ESTÁ ABIERTA. El GATE DEFINITIVO INDEPENDIENTE devolvió **INSUFICIENTE PARA F5**,
     adjudicado por L sobre los dictámenes cerrados de J y K, y **sus correcciones están
