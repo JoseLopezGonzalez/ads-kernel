@@ -537,7 +537,10 @@ filas = re.findall(r"^\| `([A-Za-z0-9-]+)` \| (BLOQUEANTE|GRAVE|MEDIO|MENOR) \| 
                    tchk, re.M)
 ids = [f[0] for f in filas]
 dup = [k for k, v in Counter(ids).items() if v > 1]
-comp = [f[0] for f in filas if " y " in f[2] or "+" in f[2]]
+# `comp = [... if " y " in f[2] or "+" in f[2]]` vivía aquí y se RETIRA: el grupo 3 está
+# restringido a `[A-Z_0-9]+` y nunca podía contener un espacio ni un `+`, luego la
+# comprobación de estados compuestos no podía disparar jamás. Es `M-11`. La sustituye la
+# detección sobre la LÍNEA ENTERA, más abajo.
 # La MISMA regla, sobre el otro objeto que la necesita: las trece condiciones de cierre
 # `C-L.1`–`C-L.13`. Se comprueba AQUÍ, dentro de `G-16`, porque es la misma norma y porque
 # la batería no crece: sigue teniendo TREINTA comprobaciones.
