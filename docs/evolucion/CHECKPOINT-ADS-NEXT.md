@@ -7,7 +7,30 @@
 
 > **Estado de la fase, en una línea:**
 > **El GATE INDEPENDIENTE DE COBERTURA Y CIERRE devolvió INSUFICIENTE PARA F5 sobre
-> `r2`=`c3d6465`. `F4c` NO se cierra: sigue ABIERTA, y `F5` NO queda autorizada.**
+> `r2`=`c3d6465`, y sus 21 hallazgos están APLICADOS — NO CERTIFICADOS. `F4c` sigue
+> ABIERTA y `F5` NO queda autorizada.**
+>
+> **Cómo quedan los 21, en los cuatro estados que no se mezclan:**
+>
+> ```text
+> CORREGIDOS EN F4c            17   M-01 M-02 M-03 M-04 M-05 M-06 M-07 M-08 M-10 M-11
+>                                   M-12 · N-01 N-02 N-05 · O-01 O-02 O-03
+> REGISTRADOS PARA F5           2   M-09 (grafía `revisión`/`revision`) · N-03 (marcas de
+>                                   `E1`). Los dos caen en material APROBADO que F4c no
+>                                   puede editar, y van a la checklist `E5-3` y `E5-4`
+> CONTRATADO PARA F6            1   N-04 (los perfiles de agente, que ningún censo cuenta).
+>                                   **La cifra vigente queda reanclada a 21 aquí; DERIVARLA
+>                                   es F6, y encaja en `C-L.10`. Cero líneas escritas**
+> ABIERTO PARA EL SIGUIENTE     1   O-04. El contrato de los DOS manifiestos —asignación y
+> GATE                              lectura— queda preparado, y **`C-L.5` NO se declara
+>                                   cerrada**: la cierra el gate que los publique
+>                                  ──
+>                                  21
+> ```
+>
+> **Registrar no es corregir. Contratar no es implementar. Y aplicar no es certificar:**
+> quien ha escrito `D104` es el mismo que escribió `D98` y `D103`, las dos que este gate
+> acaba de declarar insuficientes.
 >
 > Lo emitió un **adjudicador `O`** con contexto limpio sobre los dictámenes cerrados de dos
 > revisores independientes, `M` y `N`, que trabajaron en paralelo sin verse. Está en
@@ -183,11 +206,13 @@
 ```text
 CHECKPOINT — ADS-NEXT/12 · SIS/evolucion
 actualizado: 2026-08-29
-metodo:      SIS/Evolucion · GATE INDEPENDIENTE DE COBERTURA Y CIERRE EJECUTADO SOBRE
-             r2=c3d6465 · M y N en paralelo, adjudica O · VEREDICTO INSUFICIENTE PARA F5 ·
-             la COBERTURA de C-L.5 se cerró en su núcleo, por triplicado, y aun así el gate
-             falla POR EL FONDO · 21 hallazgos consolidados, 0 rechazados, GRAVE 5 · MEDIO 6
-             · MENOR 10 · NINGUNO CORREGIDO · F4c ABIERTA · F5 NO AUTORIZADA
+metodo:      SIS/Evolucion · TANDA DE CORRECCIÓN DEL GATE DE COBERTURA APLICADA ·
+             D104 D105 D106 · los 21 hallazgos en CUATRO estados: 17 CORREGIDOS EN F4c ·
+             2 REGISTRADOS PARA F5 · 1 CONTRATADO PARA F6 · 1 ABIERTO PARA EL SIGUIENTE
+             GATE (O-04) · W17 nueva · APLICADA, NO CERTIFICADA · C-L.5 sigue ABIERTA ·
+             F4c ABIERTA · F5 NO AUTORIZADA
+metodo_anterior: SIS/Evolucion · GATE INDEPENDIENTE DE COBERTURA Y CIERRE EJECUTADO SOBRE
+             r2=c3d6465 · M y N en paralelo, adjudica O · VEREDICTO INSUFICIENTE PARA F5
 metodo_anterior: SIS/Evolucion · TANDA DE CORRECCIÓN DEL GATE DEFINITIVO APLICADA · D96–D102 ·
              y CORRECCIÓN TÉCNICA ACOTADA sobre ella · D103 · APLICADA, NO CERTIFICADA
 metodo_anterior: SIS/Evolucion · GATE DEFINITIVO INDEPENDIENTE EJECUTADO SOBRE r4=0ea0451 ·
@@ -210,6 +235,7 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/20-GATE-INDEPENDIENTE-DE-COBERTURA-Y-CIERRE-F4C.md
                                                              M · N · O · VEREDICTO
                                                              INSUFICIENTE · cobertura cerrada
+             docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   D104 · D105 · D106
              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · O16 · D16–D22 ·
                                                              D23–D33 · D34–D45 · D46–D51 ·
                                                              D52–D54 · D55–D57 · D58–D59 ·
@@ -225,7 +251,29 @@ rama_de_trabajo: fix/f4c-post-gate-definitivo-20260829, creada en 652ab8e —el 
 freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
              Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
              queda marcado HISTÓRICO y SUPERADO, y no se borra
-last_meaningful_event: el GATE INDEPENDIENTE DE COBERTURA Y CIERRE —M y N en paralelo,
+last_meaningful_event: se APLICA la TANDA DE CORRECCIÓN del gate de cobertura. D104, D105 y
+             D106, todas revisoras; D1–D103 conservan su texto y O1–O16 quedan intactas,
+             con O16 ganando sólo un ADDENDUM DE CRONOLOGÍA que fija desde cuándo está
+             respaldada, sin reescribirla y sin inventar ninguna cita.
+             D104 · la derivación de <CAP>:revision pasa a CUATRO VÍAS TIPADAS con un
+             discriminante ESTRUCTURAL —pertenencia al conjunto de las quince, no búsqueda
+             de la palabra «DERIVADO» en un campo {tipo: texto}— y un ANCLA que ya no
+             presupone VER. La cifra se deriva y sigue dando cinco procesos y nueve pares.
+             D105 · la referencia entre abandonada y su deriva se INVIERTE: el que llega
+             después nombra al que ya existe, con lo que el segundo terminal vuelve a ser
+             emitible. El deriva gana fsync de fichero y directorio, el marcador de
+             transacción se MANTIENE hasta que es durable, el arranque COMPLETA el deriva
+             ausente de forma idempotente, y nace la ventana W17. El recuento pasa a
+             DIECIOCHO y se deriva de las filas.
+             D106 · la prueba de PN-15 deja de ser una disyunción que su propia decisión
+             satisfacía; C-L.5 pasa a exigir DOS manifiestos publicados, de ASIGNACIÓN y de
+             LECTURA; y O16 gana su addendum de cronología.
+             LA BATERÍA, REFUTADA POR EL GATE, queda corregida: las cuatro refutaciones se
+             demostraron ANTES y DESPUÉS, y las cuatro fallan ahora con diagnóstico.
+             Los 21 hallazgos quedan en CUATRO estados: 17 CORREGIDOS EN F4c, 2 REGISTRADOS
+             PARA F5, 1 CONTRATADO PARA F6, 1 ABIERTO PARA EL SIGUIENTE GATE.
+             **APLICADA NO ES CERTIFICADA**, y C-L.5 sigue ABIERTA (2026-08-29)
+last_meaningful_event_anterior: el GATE INDEPENDIENTE DE COBERTURA Y CIERRE —M y N en paralelo,
              adjudicados por O con contexto limpio— devuelve INSUFICIENTE PARA F5 sobre
              r2=c3d6465. Es la PRIMERA pasada que lee ÍNTEGRAS las cuatro fuentes que C-L.5
              nombra, y las lee POR TRIPLICADO; N cierra además las catorce fuentes y las
@@ -931,8 +979,12 @@ owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
 pregunta_pendiente: ninguna. Las TRECE presiones normativas vigentes —derivadas de las
              cabeceras `## \`PN-` de §16: QUINCE menos PN-4 RETIRADA y PN-5 FUSIONADA— son
              materia de F5, no preguntas. PN-15 es la que esta tanda añade, por K-06
-siguiente:   OTRO GATE INDEPENDIENTE, con revisores de contexto limpio que NO sean quien
-             aplicó esta tanda. La TANDA DE CORRECCIÓN DEL GATE DEFINITIVO está APLICADA,
+siguiente:   PUBLICAR UNA CANDIDATA NUEVA y someterla a OTRO GATE INDEPENDIENTE, con
+             revisores de contexto limpio que NO sean quien aplicó esta tanda — y **que
+             publique los DOS manifiestos que D106 exige**: el de ASIGNACIÓN antes de
+             repartir y el de LECTURA por revisor. Sin los dos, su adjudicador tendrá que
+             declarar la regla de cierre de C-L.5 NO CERTIFICABLE, como hizo O.
+             Antes de eso: La TANDA DE CORRECCIÓN DEL GATE DEFINITIVO está APLICADA,
              y después una CORRECCIÓN TÉCNICA ACOTADA (D103) sobre ella.
              **APLICADA NO ES CERTIFICADA**, y REGISTRAR o CONTRATAR no es CORREGIR.
 
@@ -1857,13 +1909,20 @@ DE `N158g`         orden del manifiesto —`negativos` corre antes que `fuentes`
                    segunda es idéntica, sin tercera.
 
 EXCEPCIÓN EXACTA   deja de ser cierto que «`kernel/operativo/` está intacto». Lo que hay es
-DEL KERNEL         una excepción NOMBRADA, y sólo ésta:
+DEL KERNEL         un conjunto NOMBRADO, **y son CUATRO rutas más la evidencia derivada**
+                   —corregido por `M-06`, que demostró que este párrafo decía «y sólo ésta»
+                   y nombraba TRES, omitiendo la cuarta, que además es kernel operativo
+                   SUSTANTIVO:
                      kernel/operativo/validadores/comprobar_negativos.py   código
+                     kernel/operativo/entrada/02-CIRCUITO.md               enlace colgante de
+                                                                          K-09, en d868bcb
                      kernel/.upstream-hash                                 huella reanclada
-                     kernel/operativo/pruebas/evidencia/*                  derivada
-                   Lo normativo —(a), (b), `E1`, `E2`, `C4`, `C7`— y el kernel operativo
-                   SUSTANTIVO siguen intactos. `G-23` lo comprueba así, fichero a fichero,
-                   sin exclusiones amplias.
+                     kernel/operativo/pruebas/evidencia/*                  derivada, 3 ficheros
+                   Lo normativo —(a), (b), `E1`, `E2`, `C4`, `C7`— sigue intacto, y del kernel
+                   operativo lo único tocado es ese enlace. **`G-23` sí las nombraba las
+                   cuatro** —`DOC_AUTORIZADO` lleva `entrada/02-CIRCUITO.md` con su motivo—:
+                   se corrigió el código y no este párrafo, que es la sede que lee un agente
+                   sin contexto. Era `L-01` reproducido por la tanda que venía a cerrarlo.
 
 BATERÍA PROPIA     tenía dos defectos que ESTA tanda cierra: calculaba mal la raíz y caía a
                    una ruta codificada de una máquina —luego en cualquier otro clon o

@@ -1480,10 +1480,10 @@ impuso al arnés de negativos.
 | `X55` | abandonar una transacción en conflicto y comprobar el estado resultante | `abandonada` es durable, **el marcador se retira**, el control repo **vuelve a commitear**, y un evento `deriva` con `causa: abandono-de-transaccion` mantiene bloqueados **sólo** los items que nombra |
 | `X56` | revertir un canónico de una transacción con `derivada` durable, y arrancar | se emite un evento **`deriva`** con `causa: posterior-al-cierre`. **NO** se emite ninguna fase, la transacción cerrada **no gana ningún evento nuevo con su `tx`**, y nada se restaura solo |
 | `X57` | recorrer el diario buscando cualquier evento con `fase` cuya transacción ya tenga `derivada` | **no existe ninguno**, y el **validador semántico del diario** lo rechaza —la comprobación es de `tx`, no de evento aislado (§3.6)—. Ninguna transición sale del terminal |
+| `X58` | recorrer el grafo de fases buscando un estado no terminal sin sucesor admisible | **no existe ninguno**: `preparada` sale a dos, `conflicto` sale a dos, `confirmada` sale a uno, y `derivada` y `abandonada` son terminales que **retiran el marcador**. **Y la retención acotada del desenlace `4b` termina por ACTO DE AUTORIDAD del Owner** —cuarentena o declaración de irrecuperable (§2.6.9)—, no por construcción: el grafo no la cierra sola, y decirlo es la corrección de `A9`. Lo que se comprueba aquí es el grafo; que exista autoridad que pueda cerrarla se comprueba en §2.6.9 |
 | `X59` | recorrer la historia entera del control repo tras N transacciones y N `deriva` | **ningún commit** contiene un fichero bajo `estado/deriva/` ni bajo `.ads/run/`, incluida `quarantine/`. Es `X27` para la SEGUNDA excepción de ruta de §2.4 |
 | `X60` | emitir un `deriva`, borrar a mano `estado/deriva/<ID>.abierta` y arrancar | el arranque lo **reconstruye desde el diario** por `bloqueado_por_deriva(item)` (§2.9), con las mismas rutas e items. Y un lector que aplique §2.6.8 **no recorre `estado/eventos/`**: consulta los dos marcadores. El marcador es un acelerador, igual que el de transacción |
 | `X61` | abandonar con cuarentena autorizada, y comprobar su ciclo | `.ads/run/quarantine/<TX>/` existe **antes** de restaurar y su contenido **casa por hash** con lo registrado en el `conflicto`; **sigue existiendo** tras `abandonada` y tras la verificación; y **sólo deja de existir después del commit del incidente**. Ningún commit la contiene. Si `SEG` bloquea la publicación y el Owner acepta la pérdida, el incidente conserva **hash, clasificación, autoridad, motivo y alcance**, y el contenido prohibido **no se publica** |
-| `X58` | recorrer el grafo de fases buscando un estado no terminal sin sucesor admisible | **no existe ninguno**: `preparada` sale a dos, `conflicto` sale a dos, `confirmada` sale a uno, y `derivada` y `abandonada` son terminales que **retiran el marcador**. **Y la retención acotada del desenlace `4b` termina por ACTO DE AUTORIDAD del Owner** —cuarentena o declaración de irrecuperable (§2.6.9)—, no por construcción: el grafo no la cierra sola, y decirlo es la corrección de `A9`. Lo que se comprueba aquí es el grafo; que exista autoridad que pueda cerrarla se comprueba en §2.6.9 |
 | `X62` | **adopción hasta `A7` inclusive sobre tres fuentes reales**: recorrer `A0`–`A7` completo y después ejecutar `git status --porcelain` y `git log` en CADA fuente, **incluida la comprobación de que NO se ha escrito ningún puntero de adaptador** | **ni un solo commit, ni un fichero nuevo, ni una línea modificada de ADS en ninguna de las tres** — el inventario, el baseline y la cobertura inicial de `A0`–`A7` son LECTURA, y el estado que producen vive en el control repo. **El puntero de adaptador NO es excepción**: `A8` es el primer tramo que escribe en las fuentes, y un puntero escrito antes es un fallo, no un preparativo. Cubre además, en la misma corrida, la propagación a tres fuentes con `main` protegida —tres PR, un Integration Set y estado `INTEGRACIÓN PARCIAL`— y el caso de fusionar dos de tres, donde el sistema **lo dice** en vez de declarar la actualización cerrada |
 
 > **Las excepciones históricas de `X47`, declaradas una a una.** Estos textos conservan
@@ -6679,6 +6679,22 @@ REANUDACIÓN     **desde el ESTADO, nunca desde el chat.** `U0`–`U3` por el
 CIERRE          U6 superado y la versión instalada es la candidata
 ```
 
+> **Y una segunda sede del Owner, registrada por `N-05`.** El mismo principio aparece en
+> `docs/evolucion/ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md` **L914–916**, §7, con la
+> **misma frase literal** y bajo el rótulo «**Principio aceptado**». La afirmación de arriba
+> —«lo escribe así»— es exacta para la fuente que cita e **incompleta para el corpus**.
+> **Qué relación hay entre los dos rótulos, dicho sin tocar ninguno de los dos documentos:**
+> los dos son **material de trabajo del Owner y ninguno es normativo** —`ADS-PENDIENTES`
+> L3–L6 se autodeclara «no es todavía especificación normativa»—, luego **ninguno de los dos
+> calificativos tiene fuerza de norma**, y la diferencia entre ellos no cambia ninguna
+> obligación. Lo que decide el estatus del principio no es el adjetivo que uno u otro
+> documento le ponga, sino **si existe norma APROBADA que lo imponga — y no existe**:
+> `grep` sobre las 3 343 líneas de `ADS-ARQUITECTURA-MULTIREPO-APROBADA.md` no devuelve
+> mandato sobre actualizar ADS instalado. **Por eso `F-09` sigue siendo correcta en su
+> sustancia** —§8.4 clasifica el principio como PROVISIONAL y no registra presión—, y lo
+> único que faltaba era decir que el Owner lo ha escrito dos veces con dos adjetivos
+> distintos. **Queda dicho. No se modifica ninguno de los dos documentos del Owner.**
+
 ### Compatibilidad y rollback DEL ESTADO, no sólo de la distribución
 
 F4 entregada decía *«ROLLBACK: volver a la versión anterior CON SU ESTADO»*. Si U4 ejecutó
@@ -8397,12 +8413,28 @@ PROPIETARIO         el **Owner**, porque es material aprobado y porque `G21` res
                     expresamente esta decisión a la constitución y no al sistema.
                     Redacta **F5**; materializa **F6**
 
-PRUEBA POSTERIOR    una comprobación mecánica que, para cada una de `G20`, `G21`, `G22` y
-                    `G23`, exija **o** una fila en `a.11` que la nombre —derogada,
-                    sustituida, ajustada, pendiente o conservada— **o** una fila en §17 para
-                    `kernel/KERNEL.md` que declare qué le pasa. Falla en verde hoy sería
-                    imposible: hoy no existe ninguna de las dos para ninguna de las cuatro.
-                    Propietario `SIS`, fase F6
+PRUEBA POSTERIOR    **CORREGIDA por `M-05`.** La formulación anterior era una DISYUNCIÓN
+                    —una fila en `a.11` **o** una fila en §17— y afirmaba que pasar en verde
+                    hoy sería imposible «porque no existe ninguna de las dos». **La fila de
+                    §17 la escribió `D97`, en el mismo commit que esta presión**, y con ella
+                    el segundo disyunto quedaba satisfecho para las cuatro reglas: la prueba
+                    pasaba en verde el día que nacía. El propio cuerpo de esta presión lo
+                    dice en pasado —«§17 **no tenía** fila para `kernel/KERNEL.md`»— y aun
+                    así declaraba su prueba infalible.
+                    **La disyunción se retira. La prueba exige UNA sola cosa:**
+                      · para cada una de `G20`, `G21`, `G22` y `G23`, **una fila en `a.11`**
+                        —o en la enmienda que F5 escriba sobre `a.11`— **que la nombre y
+                        declare su disposición**: derogada, sustituida, ajustada, conservada
+                        o pendiente con plazo.
+                    **La fila de §17 NO la satisface, y no puede satisfacerla**: §17 es la
+                    tabla de trazabilidad de F4, y lo que registra es que la presión existe.
+                    **Registrar una presión no es resolverla.** `a.11` es material APROBADO y
+                    sólo F5 puede escribir en él, luego **esta prueba sólo pasa cuando F5 haya
+                    tomado y materializado la decisión normativa real**, que es lo que una
+                    prueba posterior debe medir.
+                    **Hoy FALLA, y tiene que fallar**: `grep 'G2[0-3]'` sobre (a) devuelve una
+                    sola línea, y es la ficha de `INV`, no una fila derogatoria.
+                    Propietario `SIS`, fase F6 —la comprobación—; la decisión, F5
 
 ORIGEN              hallazgo `K-06` del GATE DEFINITIVO INDEPENDIENTE, agravado a GRAVE por
                     el adjudicador `L` y elevado por él a una de las seis razones del
@@ -8724,6 +8756,8 @@ cuentan como «F4 corregida»**.
 |---|---|---|---|---|---|
 | `E5-1` | `docs/rediseno/b-RECORRIDO-APROBADA.md` | **L358**, en la nota «Toda devolución obliga a DSP a crear o reabrir el paquete de corrección» | «deja al item en `en espera` **(P7)**» | «deja al item en `en espera` **(P9)**» | `b`:217–218 fija `P7 → activo` con motivo «pendiente de promoción», y `b`:221–222 fija `P9 → en espera` para `esperando-*`, `devuelto` y `propuesto` con dependencias abiertas. **`devuelto` es exactamente `P9`**, y `b`:255 ya lo usa bien. La prueba: que toda cita de un predicado `Pn` en (b) case con el predicado que ese número define |
 | `E5-2` | `docs/rediseno/b-RECORRIDO-APROBADA.md` | **L462–472**, lista de reglas de recomposición | la numeración va **1, 2, 5, 3, 4** | renumerar a **1, 2, 3, 4, 5** conservando el texto de cada regla **sin tocar una palabra**, y comprobando que ninguna otra sede cita esas reglas por su número | que la secuencia de una lista numerada de (b) sea estrictamente creciente. Antes de renumerar, un barrido de «regla 3 de b.» y equivalentes que confirme que ninguna referencia externa se rompe |
+| `E5-3` | `docs/rediseno/b-RECORRIDO-APROBADA.md` | **L836**, la única aparición normativa de la variante | (b) escribe **`<CAP>:revisión`, con tilde**; todo el aparato de F4 —§19, `D92`, `D98`, `D103`, `D104`—, la prueba prescrita y el mensaje de error escriben **`revision`, sin tilde**, y `E-3` la lista sin tilde en el vocabulario de `F-02` | **declarar cuál es la grafía CANÓNICA** y alinear la otra sede. Si la canónica es la de (b), F6 corrige el derivado; si es la sin tilde, F5 enmienda (b). **F4 no elige: sólo registra que las dos existen y que nadie ha dicho cuál manda** | un barrido que exija UNA sola grafía para la variante en todo el corpus vigente, con las citas históricas marcadas como tales. Hermano exacto de `F-01`/`PN-14`, que sí se registró como presión sobre la misma clase de discrepancia entre fuente aprobada y derivado. Registrado por `M-09` |
+| `E5-4` | `docs/rediseno/a-ENMIENDA-E1-ENC.md` y `docs/rediseno/a-CAPACIDADES-APROBADA.md` | `E1` **L196–197**, y en (a) **L269** y **L276** | `E1.4` declara «**siete** MARCAS DE REMISIÓN `[E1]` … cinco recuentos y dos párrafos», y en (a) hay **SEIS** —L26, L89, L219, L226, L261 y L285, y una de ellas es de confirmación, no de sustitución—. **Dos recuentos de «las 14» quedan sin marcar**: L269 «Las **14** son el catálogo base» y L276. La cifra se repite en `CORRECCIONES-POST-AUDITORIA.md` L53 y L218 | reanclar la cifra de `E1.4` a lo que (a) lleva realmente, y **marcar los dos recuentos sin marca** — o declarar por qué no los lleva. **No cambia ninguna norma**: `E1.0` sustituye los recuentos con independencia de las marcas. Lo que falla es la TRAZABILIDAD, en el apartado cuya única función es darla | que el número de marcas `[E1]` que `E1.4` declara **coincida con las que (a) lleva**, derivado por barrido y no escrito. Y que ningún recuento de capacidades en (a) quede sin marca. Registrado por `N-03` |
 
 **Qué NO se hace aquí, y por qué.** F4 **no edita (b)**: §17 la declara intacta y esta fase no
 toca material aprobado. Y **no se crea una `PN`**: una presión normativa registra que el
@@ -8739,7 +8773,7 @@ sólo F5 puede tocar.
 > **Registrado por el gate de cierre independiente (`I-08`, GRAVE; es `D92`).** `b.16`
 > L834–836 declara que **`DOM` y `SEG` participan dos veces**: `<CAP>:condiciones ⊳ CON`
 > aporta RESTRICCIONES **antes** de construir, y **`<CAP>:revision` tras `VER` REVISA LO
-> CONSTRUIDO**. `a.6` L504–505 lo dice para las dos mitades. Un barrido sobre
+> CONSTRUIDO**. `a.6` **L502–503** lo dice para las dos mitades —**corregido por `M-08`**: `D92` y este párrafo citaban `L504–505`, que dice otra cosa; la frase «`DOM` y `SEG` aportan condiciones antes de construir y revisan después» está en L502–503, y `D98` ya la citaba bien. Las dos citas convivían a veintiséis líneas—. Un barrido sobre
 > `kernel/operativo/` devuelve **cero instancias de `:revision`**: los diez procesos
 > instancian sólo `:condiciones`. F4 compone `A8`, `M6`–`M7` y `U5b` con
 > `DOM:condiciones` y `SEG:condiciones` y nada más — **y son los tres tramos que escriben en
@@ -9039,6 +9073,32 @@ PRUEBA NEGATIVA      introducir en un fichero NUEVO —que ninguna lista podría
                      **sin haber tocado el validador**. Es la prueba de que la cobertura
                      deriva y no se enumera
 
+--- CONTRATO 1bis · LOS PERFILES DE AGENTE, QUE NADIE CENSA (`N-04`) ---
+
+REANCLAJE, AQUÍ     `kernel/operativo/contratos/C2-AGENTES-Y-MODELOS.md` declara
+Y EN SEDE VIGENTE   **VEINTIÚN** bloques `ads:perfil-agente`. Derivado por conteo sobre el
+                    fichero —`grep -c '^id: perfil:'`— hoy y sobre `7c7856c`, que es el árbol
+                    sobre el que se escribió el documento 17.
+                    **El documento 17 publica DOS cifras distintas para el mismo objeto**: su
+                    tabla del revisor `D` dice **22** y la del revisor `E` dice **21**, y su
+                    adjudicador declaró el requisito `0.1` SATISFECHO sin detectarlo. **El
+                    documento 17 es HISTÓRICO e INMUTABLE y no se corrige**: lo que se
+                    reancla es la cifra VIGENTE, y queda aquí. **Son 21.**
+
+POR QUÉ NADIE LO    `RECUENTOS-generado.md` **no cuenta los perfiles de agente**, pese a
+DETECTÓ             contar roles, métodos, prompts, composiciones, gates, rúbricas, vetos,
+                    formas, niveles de novedad y clases de entrada — todos ellos bloques
+                    tipados como éste. Ninguna comprobación mecánica podía cazarlo
+
+ENTRADA · ALGORITMO los bloques ```yaml ads:perfil-agente``` de `C2`, contados por barrido.
+· SALIDA            Salida: la cifra, publicada en `RECUENTOS-generado.md` junto a las demás
+
+PROPIETARIO `PLT` · FASE **F6** · **encaja dentro de `C-L.10`**, y su coste es una línea:
+`perfiles_de_agente: n("perfil-agente")`
+
+CONDICIÓN DE CIERRE que la cifra deje de existir sólo en prosa. **Prueba**: introducir un
+                    perfil nuevo en `C2` y comprobar que el recuento se mueve solo
+
 --- CONTRATO 2 · AMPLIAR `T152` A TODA SEDE QUE PUBLIQUE VERSIÓN ---
 
 ENTRADAS             **toda sede que publique una versión**, descubierta por barrido: hoy,
@@ -9178,9 +9238,31 @@ QUÉ HAY QUE LEER     ÍNTEGRO, no asignado:
                        · `17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md` COMPLETO
                        · `18-GATE-DE-CIERRE-INDEPENDIENTE-F4C.md` COMPLETO
 
-MANIFIESTO DE        por cada fuente asignada: **ruta · número de líneas · SHA-256 · primera
-LECTURA              y última sección SUSTANTIVA efectivamente leídas**. El manifiesto se
-                     genera ANTES de leer y se contrasta DESPUÉS
+DOS MANIFIESTOS,     **corregido por `O-04`.** La regla de cierre de abajo dice «cualquier
+Y NO UNO             fuente **ASIGNADA** pero NO LEÍDA impide la suficiencia», y para
+                     evaluarla hace falta saber **qué se asignó** — dato que ningún dictamen
+                     entregaba. Los tres revisores del gate de cobertura declararon con
+                     honestidad qué leyeron y qué no, y **ninguno declaró qué se le había
+                     asignado**, con lo que su propio adjudicador no pudo certificar la
+                     cláusula más dura de esta condición. Desde ahora son **DOS documentos
+                     separados, y los dos se PUBLICAN**:
+
+  1 · MANIFIESTO DE   lo emite **el coordinador ANTES de repartir**, y se publica tal cual.
+      ASIGNACIÓN      Por cada fuente: **ruta · líneas · SHA-256 · a qué revisor se asigna**.
+                      Y el total, derivado: fuentes obligatorias, asignadas y sin asignar.
+                      **Es inmutable una vez repartido**: si hace falta reasignar, se publica
+                      un manifiesto nuevo con su motivo, no se edita el anterior
+
+  2 · MANIFIESTO DE   lo emite **cada revisor DESPUÉS de leer**, dentro de su dictamen. Por
+      LECTURA         cada fuente que se le asignó: **ruta · líneas · SHA-256 recalculado por
+                      él · `LEÍDO ÍNTEGRO` o los tramos exactos que NO abrió · primera y
+                      última sección sustantiva · dos anclas de regiones separadas**
+
+  CÓMO SE EVALÚA      el adjudicador cruza los dos: **asignado menos leído = pendiente**. Si
+  LA REGLA DE         ese conjunto no está vacío, la suficiencia queda excluida, y ahora la
+  CIERRE              exclusión **se puede comprobar** en vez de presumirse en una u otra
+                      dirección. Sin los dos manifiestos, el adjudicador **debe declarar la
+                      regla NO CERTIFICABLE**, que es exactamente lo que `O` hizo
 
 DECLARACIÓN DE       cada revisor declara, contra su propio interés, **qué leyó íntegro y qué
 COBERTURA REAL       no**. `J`, `K` y `L` lo hicieron y por eso el veredicto es utilizable
