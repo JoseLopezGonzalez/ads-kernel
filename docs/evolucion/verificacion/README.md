@@ -48,22 +48,22 @@ presiones—, y ninguna se había ejecutado.
 | `G-08` | §8.0, §8.1, §8.2, §8.3, §8.4 y §18 citan `C7` operación a operación | `I-04` |
 | `G-09` | §18 lleva el gate de `INS-5`, su salida y los tres productores de `O12` | `I-07` |
 | `G-10` | **seis** extensiones de ficha en §5.2, §16 y §17, con las seis capacidades | `I-06` |
-| `G-11` · `G-11b` | `D67` **idéntica byte a byte** a la de `7e99388`, y `D1`–`D86` intactas | `I-16` |
+| `G-11` · `G-11b` | `D67` **idéntica byte a byte** a la de `7e99388`, y `D1`–`D86` intactas. **Las dos fallan CERRADO sin Git** (`Q-01`) | `I-16` · `Q-01` |
 | `G-12` | `PN-14` presente, con sus campos, **y sin enmienda redactada** | `F-01` |
-| `G-13` | **doce** presiones vigentes, derivadas de sus cabeceras menos las marcadas | `I-11` |
+| `G-13` | el censo de presiones, derivado de sus cabeceras menos las marcadas, **y el barrido de `PN-15` sobre el material APROBADO** —(a), (b) y `E2`—, derivado fichero a fichero | `I-11` · `P-06` |
 | `G-14` | `F-01` reclasificado, con `requiere_f5` y `requiere_f6` | `F-01` |
-| `G-15` | `<CAP>:revision` declarado para F6 con edición, propietario y prueba, **sin tocar el kernel** | `I-08` |
-| `G-16` · `G-16b` | 43 filas, 43 ids distintos, un estado primario cada uno, ninguno compuesto; `A11` absorbido y `A14` excluido | matriz |
-| `G-17` · `G-17b` | el recuento publicado **coincide con el derivado**, y los atributos secundarios también | matriz |
+| `G-15` | `<CAP>:revision` derivado por las CUATRO vías con un **lector estructurado** —indentación y escalares, no expresiones regulares sobre prosa—, **procedencia conservada**, **ancla normalizada**, conjunto vigilado **derivado de las fichas**, y reparto por vía, anclas y censo de fixtures contrastados contra la proyección publicada | `I-08` · `Q-02` · `Q-03` · `Q-05` · `Q-09` · `Q-10` · `Q-11` · `Q-12` |
+| `G-16` · `G-16b` | 43 filas, 43 ids distintos, un estado primario cada uno, ninguno compuesto; `A11` absorbido y `A14` excluido. Las trece condiciones `C-L` se contrastan **dentro del bloque VIGENTE**, que está delimitado, y `C-L.3` tiene que nombrar `D104` | matriz · `Q-14` |
+| `G-17` · `G-17b` | el recuento publicado **coincide con el derivado**, los atributos secundarios también, y **la matriz de los 24 hallazgos del documento 21** trae sus ids una sola vez, con severidad adjudicada y sin declarar SUPERADO ninguno | matriz |
 | `G-18` | vallas Markdown balanceadas en los cuatro ficheros tocados | higiene |
 | `G-19` | cero párrafos largos duplicados | higiene |
 | `G-20` | `D1`–`D95` sin hueco y sin repetir | trazabilidad |
 | `G-21` | `O1`–`O16` intactas frente a `7e99388` | trazabilidad |
 | `G-22` | los documentos **15, 16, 17 y 18** no se han tocado | inmutabilidad |
-| `G-23` | lo normativo intacto; del kernel sólo cambia la **excepción NOMBRADA** | alcance |
+| `G-23` | lo normativo intacto; del kernel sólo cambia la **excepción NOMBRADA**; el **conjunto de ficheros del kernel** se compara contra la revisión base —rastreados o no— y el catálogo de procesos ocupa **UNA sede**; y el punto de entrada del checkpoint **remite** en vez de copiar | alcance · `Q-04` · `M-04` · `R-02` |
 | `G-24` | las catorce fuentes y las quince fichas **se LEEN**, y son **exactamente ésas** | cobertura |
 | `G-25` | los cuatro macrocircuitos declaran sus **catorce** campos | `I-21` |
-| `G-26` | la tabla adversarial tiene tantas filas como ids distintos | higiene |
+| `G-26` | la tabla adversarial tiene tantas filas como ids distintos; la fila que barre **todas** las ventanas cubre las derivadas y nombra la última; los **RANGOS** de presiones terminan en la última vigente; y el censo de presiones se contrasta **también sobre el checkpoint** | higiene · `P-01` · `Q-07` · `P-05` |
 | `G-27` | la regla 1 de §2.6.10 usa «los cinco **CAMPOS**» | `A7` |
 
 > **`G-23` y `G-24`, corregidas.** `G-23` afirmaba «`kernel/operativo/` intacto» y excluía en
@@ -100,3 +100,25 @@ NO CUBRE EL CORPUS          las catorce fuentes y las quince fichas se comprueba
                             LEA sigue siendo su condición mínima, y ninguna comprobación
                             mecánica la sustituye
 ```
+
+## Lo que la corrección posterior al GATE DE CIERRE CON MANIFIESTOS añadió
+
+El gate del documento 21 **refutó tres veces esta batería**, y las tres refutaciones están
+reproducidas y cerradas:
+
+```text
+Q-01  sin `.git` y con D12, D40 y D80 reescritas, `G-11b` decía «ninguna difiere» sobre
+      ochenta y seis filas que no había mirado. Hoy falla CERRADO
+Q-04  un árbol con `01-PROCESOS-BIS.md` —copia íntegra del catálogo— y un
+      `C8-SEGUNDA-SEDE.md` que declara por escrito contradecir a `C4` daba **30/30 EN
+      VERDE**: `git diff --name-only` no ve ficheros nuevos sin rastrear. Hoy `G-23`
+      compara el CONJUNTO del kernel contra la revisión base y falla nombrando las dos
+      causas
+Q-05  una línea con aspecto de campo dentro de la prosa de un `criterio_de_satisfaccion`
+      entraba en la derivación. Hoy el troceado lee INDENTACIÓN y ESCALARES DE BLOQUE, y
+      el fallo NOMBRA el campo que la contiene en vez de acusar a la proyección
+```
+
+Y siguen fallando, como deben, las cuatro refutaciones prescritas `R1`–`R4`. **Nada de
+esto certifica la batería**: la escribió quien aplicó la corrección, y eso es exactamente
+lo que este expediente no acepta como prueba.

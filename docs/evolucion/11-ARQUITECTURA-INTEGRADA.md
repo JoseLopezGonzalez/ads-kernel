@@ -9085,6 +9085,23 @@ SALIDA ESPERADA      **DOS salidas, y NO se suman en un total** (`D104`):
                            la desnuda deja el nueve intacto y cambia el contrato—, luego
                            **publicar sólo el total no basta**
 
+                           **EL CONJUNTO VIGILADO SE DERIVA, y no se escribe** (`Q-09`):
+                           son las capacidades cuya FICHA declara la doble participación de
+                           `b.16` — hoy `DOM` y `SEG`, cada una en su propio
+                           `CAPACIDAD.md`. Si `b.16` se la diera a una tercera o se la
+                           quitara a una de las dos, el catálogo se movería solo; una lista
+                           escrita aquí seguiría en verde sobre un catálogo que ya no es el
+                           suyo. `G-15` contrasta el conjunto que usa contra lo que declaran
+                           las quince fichas
+
+                           **LA VÍA Y LA PROCEDENCIA DE CADA PAR SON DERIVABLES, y las dos
+                           se conservan** (`Q-10`): la vía dice CÓMO se declaró la
+                           participación —1, 2, 3 o 4— y la procedencia dice DE DÓNDE
+                           —propietaria, `obligatorias` o `condicionales`—. **No son lo
+                           mismo desde que la vía 4 puede venir de las dos secciones**: una
+                           participación de `obligatorias` se exige SIEMPRE, también tipada;
+                           una de `condicionales`, sólo con su condición activa
+
                            **ANCLA DERIVADA HOY, proceso a proceso** —y `G-15` la contrasta
                            contra el catálogo, que es lo que `Q-11` pidió—:
                            `AUD → INV` · `DEF → VER` · `DEP → VER` · `DEU → VER` ·
