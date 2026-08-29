@@ -953,10 +953,25 @@ Antes de las tres cajas hay dos preguntas que deciden **si hay transacción**, y
           · casa con el resultado que gobernaba  → nada que hacer
           · no casa                              → evento `deriva`, `causa:
                                                    posterior-al-cierre` (§2.6.11) · W12b
-     SÍ, `abandonada`  → tampoco. El `deriva` con `causa: abandono-de-transaccion` que el
-          abandono emitió YA declara el estado observado de todas sus rutas, y quien lo
-          repara es una transacción NUEVA (§2.6.9). No se emite un `deriva` por arranque:
-          el que existe se conserva hasta que la reparación lo resuelve
+     SÍ, `abandonada`  → **ninguna FASE es posible** —el terminal no admite transiciones— pero
+          **hay que comprobar que su `deriva` existe** (`D105`, cierra `M-03` y `O-03`):
+            · existe un `deriva` con `abandonada_id` = ese `abandonada`
+                              → nada que hacer. **NO se emite otro**: el que existe se
+                                conserva hasta que la reparación lo resuelve
+            · NO existe       → **se COMPLETA, y es idempotente** · `W17`. El `abandonada`
+                                durable lleva `estado_observado[]` de TODAS las rutas,
+                                `autoridad`, `motivo` y `revision_base`: **el cuerpo del
+                                `deriva` es una FUNCIÓN de él**, luego dos arranques
+                                producen el MISMO evento direccionado por contenido, y
+                                emitirlo dos veces no crea dos. Se emite, se hacen sus dos
+                                `fsync`, se crea su marcador, y **sólo entonces** se retira
+                                el marcador de transacción
+          **Esto sustituye la prohibición anterior**, que decía «no se emite un `deriva` por
+          arranque» mientras §3.6 y la capa B exigían que existiera. Las dos cosas no podían
+          ser ciertas a la vez, y el resultado era un diario permanentemente inválido por su
+          propio validador sin ruta de reparación declarada — que es `O-03`. **La prohibición
+          se conserva donde sí valía: no se INVENTAN derivas nuevas por arranque; se COMPLETA
+          el que un `abandonada` durable ya exige**
 
 1  ¿EXISTE UNA TRANSACCIÓN QUE SATISFAGA **`abierta(tx)`** —el predicado de §2.6.1, y no
    otro— Y QUE DECLARE ESA RUTA, EN ESTA INSTALACIÓN?
@@ -1110,14 +1125,21 @@ FRASE                  duplica NUNCA, y su presencia la fija cómo cerró la tra
 
 ### 2.6.5 · Todas las ventanas de caída
 
-Se enumeran las **diecisiete**, y **son todas**: las nueve `RC-1`–`RC-9` de la reconciliación se
-retiran con la ruta larga (`D64`), porque el mecanismo que recuperaban ya no existe — la única
-escritura que un abandono produce es un evento del diario, cubierto por la disciplina de
-§2.6.3, y una reparación es una transacción normal con estas mismas diecisiete ventanas. Una
-ventana que no esté en esta tabla es un defecto de esa tabla — y las dos devoluciones
-posteriores ejercieron esa invitación: la segunda añadió cinco, y la corrección técnica
-posterior partió `W12` en dos, porque el mismo síntoma exige registros distintos según la
-transacción esté abierta o cerrada (§2.6.11).
+Se enumeran las **DIECIOCHO**, y el recuento **se deriva de las filas de la tabla, no se
+escribe**: las nueve `RC-1`–`RC-9` de la reconciliación se retiran con la ruta larga (`D64`),
+porque el mecanismo que recuperaban ya no existe. Una ventana que no esté en esta tabla es un
+defecto de esa tabla — y las devoluciones posteriores han ejercido esa invitación tres veces:
+la segunda añadió cinco, la corrección técnica posterior partió `W12` en dos, y el **gate de
+cobertura obligó a añadir `W17`**.
+
+> **CORREGIDA la justificación de exhaustividad, y es `D105`.** Este párrafo decía que las
+> ventanas eran todas porque «**la única escritura que un abandono produce es un evento del
+> diario**». Eso era cierto antes de `D78` y `D88`, y **dejó de serlo sin que nadie lo
+> propagara**: el paso E de §2.6.9 produce hoy **dos eventos, un marcador nuevo, la retirada
+> de otro y el borrado de la cuarentena**. Cinco efectos, no uno. Sobre esa premisa falsa
+> faltaba la ventana entre el `abandonada` durable y el `deriva` durable, que es `M-03`.
+> **La justificación se retira y se sustituye por la tabla misma: la exhaustividad la sostiene
+> el recorrido del protocolo, no una frase sobre él.**
 
 | # | la caída ocurre… | qué se observa al arrancar | qué se hace |
 |---|---|---|---|
@@ -1128,7 +1150,7 @@ transacción esté abierta o cerrada (§2.6.11).
 | W5 | tras aplicar todos, antes de `confirmada` | todos en posterior, sin `confirmada` | se emite `confirmada` y se sigue. No se reescribe nada |
 | W6 | justo después de `confirmada` | `confirmada` presente, derivados sin regenerar | se regeneran los derivados y se emite `derivada` |
 | W7 | durante la regeneración de derivados | derivados divergentes de su `source_revision` | se regeneran ENTEROS. Un derivado es reemplazable por definición |
-| W8 | tras `derivada`, antes de borrar el marcador | transacción CERRADA con marcador abierto | se borra el marcador. Idempotente. **`abierta(tx)` deja de cumplirse** en cuanto es durable cualquiera de los DOS terminales, y el marcador se retira por igual tras `derivada` y tras `abandonada` (§2.6.1) |
+| W8 | tras `derivada`, antes de borrar el marcador | transacción CERRADA con marcador abierto | se borra el marcador. Idempotente. **`abierta(tx)` deja de cumplirse** en cuanto es durable cualquiera de los DOS terminales. **Pero la RETIRADA del marcador no es simétrica** (`D105`): tras `derivada` se retira sin más; tras `abandonada` se retira **sólo cuando el `deriva` y su marcador son durables** (§2.6.9 paso E), porque hasta entonces retirarlo dejaría el commit desbloqueado y el bloqueo de los items perdido. Si se cayó antes de eso, la ventana es `W17` y el arranque lo completa |
 | W9 | antes del commit de Git | árbol coherente, Git por detrás | se hace el commit LOCAL. Es recuperación: protege el árbol y no publica (§2.6.10) |
 | W10 | después del commit, antes del push | commit local sin publicar | **NO se empuja automáticamente.** El push es publicación, no recuperación: pasa a la política de §2.6.10 |
 | W11 | en cualquier punto, con la transacción abierta y un fichero VERDADERAMENTE divergente | un fichero que no casa **ni con su `hash_previo` ni con su `hash_posterior_esperado`** (§2.6.4) | **`conflicto`** —y las dos condiciones son necesarias: transacción abierta Y divergencia real—, con la copia íntegra de lo divergente. El predicado `reconciliacion_pendiente` **se deriva** de él (§2.6.9): no hay bandera que escribir. No se completa y no se revierte, y tiene **dos salidas**: si la divergencia cesa se completa hacia delante, y si no, la autoridad **abandona** y el marcador se retira |
@@ -1138,12 +1160,15 @@ transacción esté abierta o cerrada (§2.6.11).
 | **W14** | **creando el marcador (paso 2)** | `preparada` durable, marcador ausente o vacío | benigno: `W3` lo cubre por resultado. Se recrea el marcador desde el diario (§2.9) |
 | **W15** | **el push es rechazado porque el remoto avanzó** | commit local, remoto divergente | evento `fallo`, tope de tres por §7.3, y se escala. **NUNCA `--force`** (§2.6.10) |
 | **W16** | **el push se completa parcialmente** | unas referencias publicadas y otras no | evento `fallo` con las referencias nombradas. El estado local no cambia: el push no es una mutación canónica |
+| **W17** | **caída de MÁQUINA entre el `abandonada` durable y el `deriva` durable** —o entre el `deriva` y su marcador— | terminal `abandonada` presente **sin ningún `deriva` que lo referencie por `abandonada_id`**, y el marcador de transacción **todavía puesto** | **se COMPLETA, y es idempotente** (paso 0 de §2.6.4): el cuerpo del `deriva` es una función del `abandonada` durable —que lleva `estado_observado[]` de todas las rutas, `autoridad`, `motivo` y `revision_base`—, luego dos arranques emiten el MISMO evento direccionado por contenido. Se emite, se hacen sus dos `fsync`, se crea su marcador, y **sólo entonces** se retira el marcador de transacción. **Añadida por `D105`** (`M-03`, `O-03`): el `abandonada` llevaba `fsync` obligatorio y el `deriva` no, el marcador se retiraba antes de que el `deriva` fuera durable, el arranque tenía PROHIBIDO emitirlo y la capa B exigía que existiera. El resultado era un bloqueo perdido en silencio y un diario permanentemente inválido sin ruta de reparación |
 
 **Qué se completa, qué se revierte y qué se escala**, dicho en una frase cada uno:
 
 ```text
 SE COMPLETA   toda transacción cuyo evento `preparada` es durable y ninguno de sus ficheros
-              es divergente. W3 a W9, más W13 y W14.
+              es divergente. W3 a W9, más W13 y W14. **Y `W17`**, que no completa una
+              transacción sino su CIERRE: emite el `deriva` que el `abandonada` durable ya
+              exige, de forma idempotente (`D105`).
 SE REVIERTE   sólo lo que nunca llegó a comprometerse: un temporal huérfano de `preparada`
               (W2). No existe «deshacer» después del punto de compromiso, y por eso no se
               promete. W13 NO es una reversión: es la PRIMERA emisión durable de una
@@ -1205,10 +1230,20 @@ OBLIGATORIO   LA INTENCIÓN — y con `D64` es UNA, no dos:
 
               LOS DOS CIERRES QUE AFIRMAN ALGO SOBRE EL DISCO:
               (3) el evento `confirmada` y SU DIRECTORIO
-              (4) el evento `abandonada` y SU DIRECTORIO — porque **retira el marcador y
-                  desbloquea el commit**, y perderlo dejaría el bloqueo global vivo sin
-                  registro de que se decidió cerrarlo
-NO EXIGIDO    los derivados, el marcador, el evento `derivada` y el evento `conflicto`:
+              (4) el evento `abandonada` y SU DIRECTORIO — porque es el terminal que decide
+                  cerrar, y perderlo dejaría el bloqueo global vivo sin registro de que se
+                  decidió cerrarlo
+
+              **Y LA PIEZA QUE CONSERVA EL BLOQUEO** — añadida por `D105`, y era la laguna
+              de `M-03`:
+              (5) **el evento `deriva` con `causa: abandono-de-transaccion` Y SU DIRECTORIO**,
+                  ANTES de retirar el marcador de transacción. Es lo único que conserva el
+                  bloqueo de los items cuando la transacción se cierra sin resultado:
+                  perderlo deja el commit desbloqueado y los items libres **sin que nadie lo
+                  sepa**. El `abandonada` llevaba `fsync` y el `deriva` no, y entre los dos
+                  cabía una caída de máquina sin ventana que la cubriera
+NO EXIGIDO    los derivados, el marcador de transacción, el evento `derivada` y el evento
+              `conflicto`:
               los cuatro se reconstruyen desde lo canónico o desde la comparación de hashes,
               y pagar `fsync` por ellos encarece cada transacción sin comprar ninguna
               garantía. **Corregido por `D64`**: la lista nombraba dos intenciones y dos
@@ -1827,13 +1862,90 @@ D · VERIFICAR     · comparar **BYTE A BYTE** cada fichero restaurado con su co
                   · **si una escritura concurrente impide verificarlo, `abandonada` NO puede
                     emitirse** y la transacción permanece abierta
 
-E · CERRAR        sólo entonces, y en este orden:
-                  · emitir `abandonada`, con la evidencia de la verificación de D
-                  · emitir el `deriva` que conserva el bloqueo
-                  · **crear su marcador `estado/deriva/<ID>.abierta`**, en el mismo acto y con
-                    las rutas y los items que el `deriva` nombra (§2.6.8). Es la pieza que
-                    `D78` declaraba y que este paso no creaba
-                  · retirar el marcador de transacción de `estado/tx/`
+E · CERRAR        sólo entonces, y **en este orden, que ahora es EXACTO y DURABLE paso a
+                  paso** (`D105`):
+                  1 · emitir `abandonada`, con la evidencia de la verificación de D.
+                      **NO lleva `deriva_emitida`: ese campo queda PROHIBIDO en esta fase**
+                  2 · `fsync` del fichero de `abandonada` **y de su directorio**
+                  3 · emitir el `deriva` con `causa: abandono-de-transaccion`, que **REFERENCIA
+                      UNILATERALMENTE** al `abandonada` por su campo `abandonada_id`, y a la
+                      transacción por `tx_afectada`
+                  4 · **`fsync` del fichero del `deriva` Y DE SU DIRECTORIO** — obligatorio
+                      desde `D105`, y era la laguna de `M-03`
+                  5 · **crear su marcador `estado/deriva/<ID>.abierta`** con las rutas y los
+                      items que el `deriva` nombra (§2.6.8)
+                  6 · **sólo ahora, y no antes, retirar el marcador de transacción de
+                      `estado/tx/`.** Mientras el paso 4 no sea durable, el marcador se
+                      MANTIENE: es lo que impide que el commit avance dejando el bloqueo
+                      perdido
+
+                  **Por qué el `abandonada` ya no nombra a su `deriva`.** Lo nombraba, y era
+                  circular: `id(abandonada)` incluía `deriva_emitida` = `id(deriva)`, y
+                  `id(deriva)` incluye su `predecesor`, que es el `abandonada`. Ninguna sede
+                  lo resolvía, y el segundo terminal del protocolo **no se podía emitir**. Es
+                  `M-02`, y lo cierra `D105` invirtiendo la referencia: **el que llega
+                  después nombra al que ya existe**
+```
+
+**Las tres alternativas, comparadas antes de elegir** (`D105`, cierra `M-02`):
+
+| alternativa | ¿identidad construible? | ¿cadena verificable? | ¿bloqueo persistente? | veredicto |
+|---|---|---|---|---|
+| **A · `abandonada` conoce el `id` del `deriva`** —lo que había— | **NO.** `id(abandonada)` necesita `id(deriva)`, que necesita `predecesor` = `id(abandonada)`. Circular | sí, por puntero directo | sí | **DESCARTADA.** Es el defecto. Sólo funcionaría emitiendo el `deriva` ANTES, y entonces su `predecesor` no sería el terminal que lo motiva |
+| **B · el `deriva` referencia unilateralmente al `abandonada`** | **SÍ.** El `abandonada` se calcula y se hace durable primero; el `deriva` nace después y nombra un `id` que ya existe | sí, **recorriendo** el diario en busca del `deriva` que apunta. Es lo que la capa B ya hace para otras reglas | sí: el bloqueo vive en el `deriva` y en su marcador | **ELEGIDA.** Es la mínima: **no añade ningún evento, ningún tipo y ningún campo al `abandonada`** — sólo mueve una referencia de sitio y le da `fsync` |
+| **C · una intención o identidad separada previa** —un tercer evento que reserve el par de ids— | sí | sí | sí | **DESCARTADA.** Crea un evento más en el camino crítico del único desenlace que revierte, y con él una ventana de caída más y una regla de validación más. **Compra lo mismo que B a un coste mayor**, y `D64` ya retiró maquinaria por este motivo exacto |
+
+**Los ocho puntos que quedan definidos**, y ninguno queda a criterio de F6:
+
+```text
+1 ORDEN EXACTO        abandonada → fsync(fichero) → fsync(directorio) → deriva →
+                      fsync(fichero) → fsync(directorio) → marcador del deriva →
+                      retirada del marcador de transacción. Seis pasos, en este orden
+
+2 CAMPOS              `abandonada`  OBLIGA `estado_observado[]` de TODAS las rutas ·
+                      `autoridad` · `motivo` · `revision_base`
+                                    PROHÍBE `deriva_emitida` · `resultado` ·
+                      `derivados_regenerados` · `decision`
+                      `deriva`      OBLIGA `causa: abandono-de-transaccion` · `afecta[]` ·
+                      `items[]` · `autoridad` · `tx_afectada` · **`abandonada_id`**
+                                    PROHÍBE `fase` · `tx` · `decision` · `resultado`
+
+3 QUIÉN REFERENCIA    **el `deriva` al `abandonada`, y nunca al revés.** El que llega después
+  A QUIÉN             nombra al que ya existe y ya es durable
+
+4 CÓMO SE CALCULA     `id(abandonada) = EV-H(su cuerpo MENOS `id`)`, y su cuerpo **ya no
+  CADA `id`           contiene ninguna referencia hacia adelante**
+                      `id(deriva) = EV-H(su cuerpo MENOS `id`)`, con `predecesor` =
+                      `id(abandonada)` y `abandonada_id` = `id(abandonada)`, los dos
+                      calculables porque ese evento existe
+
+5 EL MARCADOR         el de TRANSACCIÓN se MANTIENE hasta que el `deriva` y su propio
+                      marcador son durables. El del `deriva` se crea en el paso 5
+
+6 CUÁNDO SE PUEDE     **sólo después del paso 6.** Mientras el marcador de transacción esté
+  HACER COMMIT        puesto, el commit está bloqueado (§2.6.10): es exactamente lo que
+                      impide publicar un cierre cuyo bloqueo no es durable
+
+7 CÓMO RECUPERA EL    caída antes del paso 1 → la transacción sigue abierta: `W11` y sus dos
+  ARRANQUE            salidas · caída entre 1 y 5 → **`W17`**: se completa el `deriva`,
+                      idempotente · caída entre 5 y 6 → se retira el marcador de transacción,
+                      idempotente, que es `W8` · caída después de 6 → nada que hacer
+
+8 `abandonada` DURABLE **se COMPLETA.** El cuerpo del `deriva` es una FUNCIÓN del
+  Y `deriva` AUSENTE   `abandonada`, luego dos arranques emiten el MISMO evento
+                       direccionado por contenido y emitirlo dos veces no crea dos. **No es
+                       un estado ilegal ni irreparable: es la ventana `W17`**, y el paso 0 de
+                       §2.6.4 la resuelve
+
+EL VALIDADOR Y LAS    describen el MISMO protocolo, y eso es comprobable: la capa B exige
+VENTANAS, ALINEADOS   «exactamente un `deriva` que referencie por `abandonada_id`», `W17`
+                      describe la caída que lo deja ausente, y el paso 0 dice cómo se
+                      completa. Antes, la capa B exigía que existiera y el paso 0 prohibía
+                      emitirlo: **las dos afirmaciones no podían ser ciertas a la vez**, y
+                      esa contradicción era `O-03`
+```
+
+```text
                   · permitir el COMMIT DEL INCIDENTE
                   · y **sólo después**, eliminar `.ads/run/quarantine/<TX>/` si se creó
 ```
@@ -4069,8 +4181,10 @@ UN EVENTO CON `fase` CUYO `tx` YA TIENE           VALIDADOR SEMÁNTICO DEL DIARI
 `derivada`                                        recorrer los demás eventos de ese `tx`
 DOS `conflicto` CONSECUTIVOS CON EL MISMO         VALIDADOR SEMÁNTICO DEL DIARIO: exige
 CONJUNTO DE HASHES OBSERVADOS · UNA               comparar los `conflicto` de ese `tx`
-`observacion` NO CONSECUTIVA · UN `abandonada`    entre sí y seguir sus referencias
-CUYO `deriva_emitida` NO EXISTE
+`observacion` NO CONSECUTIVA · UN `abandonada`    entre sí, y RECORRER el diario buscando
+AL QUE NINGÚN `deriva` REFERENCIA POR              el `deriva` que apunta al `abandonada`
+`abandonada_id`                                    (`D105`: la referencia va del `deriva` al
+                                                   `abandonada`, no al revés)
 ```
 
 **No se crea ningún tipo, y no se fusiona ninguno.** La prueba de §3.1 **no llega a
@@ -4099,9 +4213,9 @@ candidatos con sujeto, autoridad y ciclo propios. El recuento de §3.8 **no camb
 | `preparada` | ninguna: abre la transacción | `afecta[]` con `ruta`·`hash_previo`·`hash_posterior_esperado`·`orden`· una de `contenido`\|`parche`\|`operacion` · **los CINCO CAMPOS de procedencia** —`ordenante`·`autoridad`·`escritor_del_comando`·`ejecutor`·`actor_atribuido`—, **no «los cinco conceptos de `a.9`»**: el quinto concepto, `propietario del campo`, **se DERIVA** de §1.3 y no es campo · `base` · **`revision_base`** —la revisión publicada y consistente desde la que parte la transacción; su ausencia hace el evento INVÁLIDO, y es lo que hace verificable la restauración de §2.6.9 y alcanzable `abandonada` (`D96`)— | `resultado` · `hash_observado` · `hash_final` · `decision` | `hash_posterior_esperado` | los N ficheros casan con su hash posterior → `confirmada`; alguno diverge → `conflicto` |
 | `confirmada` | `preparada` | `resultado` · `derivados_pendientes[]` | `decision` · `hash_final` · `hash_observado` | `hash_posterior_esperado` | los derivados de `derivados_pendientes` se regeneraron → `derivada` |
 | `conflicto` | `preparada` o `conflicto` | `divergentes[]` con `ruta`·`hash_observado`· **`contenido` íntegro de lo divergente** · `items[]` · `rutas[]` · `autoridad` que debe resolver · `observacion` ≥ 1 · **`revision_base`, registrado o referenciado al `preparada` de su `tx`** (`D96`) | `resultado` · `decision` | ninguno: declara lo observado, no lo esperado | la divergencia CESA y los N ficheros vuelven a casar → `confirmada`; la autoridad decide cerrar → `abandonada`. **Siempre hay una de las dos** |
-| `abandonada` | `conflicto` | `estado_observado[]` con `ruta`·`hash_observado`·`clasificacion` ∈ {previo, posterior, divergente} **para TODAS las rutas del `tx`** · `autoridad` que decidió · `motivo` · `deriva_emitida` = `id` del `deriva` que conserva el bloqueo · **`revision_base`, registrado o referenciado al `preparada` de su `tx`: es la revisión CONTRA LA QUE se verificó byte a byte la restauración, y sin ella la restauración no es comprobable** (`D96`) | `resultado` · `derivados_regenerados` · `decision` | ninguno: la transacción no alcanza ningún resultado | **ninguna. Es TERMINAL**, retira el marcador, y el bloqueo pasa al `deriva` que emite (§2.6.9) |
+| `abandonada` | `conflicto` | `estado_observado[]` con `ruta`·`hash_observado`·`clasificacion` ∈ {previo, posterior, divergente} **para TODAS las rutas del `tx`** · `autoridad` que decidió · `motivo` · **`revision_base`, registrado o referenciado al `preparada` de su `tx`: es la revisión CONTRA LA QUE se verificó byte a byte la restauración, y sin ella la restauración no es comprobable** (`D96`) | `resultado` · `derivados_regenerados` · `decision` · **`deriva_emitida`, PROHIBIDO desde `D105`: era la referencia circular de `M-02`, y ahora el `deriva` referencia al `abandonada` y no al revés** | ninguno: la transacción no alcanza ningún resultado | **ninguna. Es TERMINAL.** El marcador de transacción **NO se retira aquí**: se retira cuando el `deriva` y su marcador son durables (§2.6.9 paso E). El bloqueo pasa al `deriva` que la referencia por `abandonada_id` |
 | `derivada` | `confirmada` | `derivados_regenerados[]` con su `source_revision` · `resuelve_deriva` sólo si esta transacción repara uno | `afecta` · `decision` · `divergentes` | el `hash_posterior_esperado` de su `preparada` | **ninguna. Es TERMINAL**, y retira el marcador. Que no exista ningún evento posterior con ese `tx` lo comprueba el **validador semántico del diario**, no el esquema |
-| `deriva` | **ninguna: NO tiene `tx` ni `fase`** | **`causa`, ENUM CERRADO DE TRES VALORES y ÉSTA ES SU ÚNICA SEDE** ∈ {`posterior-al-cierre`,`sin-transaccion`,`abandono-de-transaccion`} · `afecta[]` con `ruta`·`hash_esperado`·`hash_observado` · `items[]` · `autoridad` · `tx_afectada` **obligatorio si `causa` ∈ {`posterior-al-cierre`,`abandono-de-transaccion`} y PROHIBIDO con `sin-transaccion`** | `fase` · `tx` · `decision` · `resultado` | ninguno: **reporta**, no repara | ninguna. La reparación es una transacción NUEVA (§2.6.11) |
+| `deriva` | **ninguna: NO tiene `tx` ni `fase`** | **`causa`, ENUM CERRADO DE TRES VALORES y ÉSTA ES SU ÚNICA SEDE** ∈ {`posterior-al-cierre`,`sin-transaccion`,`abandono-de-transaccion`} · `afecta[]` con `ruta`·`hash_esperado`·`hash_observado` · `items[]` · `autoridad` · `tx_afectada` **obligatorio si `causa` ∈ {`posterior-al-cierre`,`abandono-de-transaccion`} y PROHIBIDO con `sin-transaccion`** · **`abandonada_id` = `id` del evento `abandonada` del que deriva, OBLIGATORIO con `causa: abandono-de-transaccion` y PROHIBIDO con las otras dos. Es la referencia UNILATERAL de `D105`: apunta a un evento que YA existe y es durable, luego su `id` es calculable** | `fase` · `tx` · `decision` · `resultado` | ninguno: **reporta**, no repara | ninguna. La reparación es una transacción NUEVA (§2.6.11) |
 | `fallo` | **ninguna: NO tiene `tx` ni `fase`** | `sujeto` · `operacion` ∈ {`push`,`publicacion`,`arranque`,`ci`,`proyeccion`} · `causa` · `estado_observado` · `diagnostico` · `intentos` · `recuperable` ∈ {`si`,`no`,`requiere-decision`} · `autoridad_requerida` · `accion_siguiente` · `evidencia` · **`tx_afectada` como REFERENCIA, cuando la operación se refiere a una** · `referencias[]` con `commit`·`rama`·`remoto` cuando la operación es Git | `fase` · `tx` · `afecta` · `decision` | — | ninguna. **Es informativo y NO repara**: si hay que reparar, es una transacción nueva |
 
 ### `fallo` — una semántica CERRADA, no un contenedor genérico
@@ -4186,9 +4300,10 @@ C · RUNTIME Y PRUEBAS        garantiza o DEMUESTRA lo FÍSICO: el orden real de
 · COHERENCIA INTERNA del propio evento: que `tipo` y `fase` sean una combinación admitida
   por la matriz de §3.6; que `deriva`, `fallo` y `sellado` no lleven `fase` ni `tx`; que un
   `conflicto` lleve `divergentes[].contenido`; que una `abandonada` lleve `estado_observado[]`
-  para TODAS las rutas, `autoridad`, `motivo` y `deriva_emitida`; que en `deriva` el
-  `tx_afectada` aparezca con `causa: posterior-al-cierre` o `abandono-de-transaccion` y NO
-  con `sin-transaccion` —el enum de TRES valores lo declara §3.6, sede única—;
+  para TODAS las rutas, `autoridad` y `motivo` —**y NO `deriva_emitida`, que `D105` prohíbe
+  en esta fase**—; que en `deriva` el `tx_afectada` aparezca con `causa: posterior-al-cierre`
+  o `abandono-de-transaccion` y NO con `sin-transaccion`, y que **`abandonada_id` aparezca
+  con `abandono-de-transaccion` y NO con las otras dos** —el enum de TRES valores lo declara §3.6, sede única—;
   y que un `fallo` con `operacion` ∈ {`push`,`publicacion`} lleve `referencias[]`
 · UNICIDAD DE `ruta` dentro del array del propio evento, y `orden` total dentro de él
 · QUÉ ALGORITMO DE IDENTIDAD APLICAR, antes de aplicarlo: si el evento lleva
@@ -4288,7 +4403,7 @@ Nada de esto es observable en el texto de un evento, y por eso **la regla 4 vive
 |---|---|---|---|
 | 1 | ningún evento con `fase` cuya transacción ya tenga `derivada` | **B** | exige recorrer los demás eventos de ese `tx` |
 | 2 | ningún `conflicto` sin `divergentes[].contenido` | **A** | es coherencia interna del propio evento |
-| 3 | ninguna `abandonada` sin `estado_observado[]` de TODAS las rutas y sin su `deriva_emitida` | **A** la presencia y la forma · **B** que ese `deriva` exista y nombre las mismas rutas | la presencia es del evento; la correspondencia con el `deriva` es del diario |
+| 3 | ninguna `abandonada` sin `estado_observado[]` de TODAS las rutas · y **ninguna `abandonada` sin EXACTAMENTE UN `deriva` que la referencie por `abandonada_id`** | **A** la presencia y la forma del `estado_observado[]` · **B** que exista uno y sólo un `deriva` con ese `abandonada_id`, y que nombre las mismas rutas | la presencia es del evento; la correspondencia se comprueba **recorriendo el diario en busca del `deriva` que apunta**, no siguiendo un puntero desde el `abandonada`. **Invertido por `D105`**: el sentido anterior exigía al `abandonada` un campo cuyo valor no podía existir cuando se calculaba su propio `id` |
 | 4 | ninguna escritura canónica sin intención durable previa | **C**, y sólo C | es una propiedad del ORDEN FÍSICO de las escrituras. Ni A ni B ven el disco |
 
 > **La regla que resume el reparto:** **no se le atribuye a JSON/YAML Schema ninguna
