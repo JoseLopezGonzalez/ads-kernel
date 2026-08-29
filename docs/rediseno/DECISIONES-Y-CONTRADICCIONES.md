@@ -389,6 +389,29 @@ entregaba a F6.
 
 ---
 
+### `D104`–`D109` · las decisiones de la CORRECCIÓN DEL GATE DE COBERTURA Y CIERRE
+
+El **GATE INDEPENDIENTE DE COBERTURA Y CIERRE** —dos revisores con contexto limpio, `M` y `N`,
+en paralelo y sin verse, y un adjudicador `O` que recibió los dos dictámenes ya cerrados—
+emitió **INSUFICIENTE PARA F5** por seis razones, con **21 hallazgos consolidados y CERO
+rechazados**: GRAVE 5 · MEDIO 6 · MENOR 10. Fue **la primera pasada que leyó íntegras las
+cuatro fuentes que `C-L.5` nombra**, y las leyó por triplicado. Su juicio se conserva íntegro
+e inmutable en `docs/evolucion/20-GATE-INDEPENDIENTE-DE-COBERTURA-Y-CIERRE-F4C.md`.
+
+> **`D1`–`D103` conservan su texto ÍNTEGRO, y `O1`–`O16` quedan intactas.** Esta tanda no toca
+> ni una fila preexistente. `O16` recibe un **addendum de cronología** —no una reescritura y no
+> una cita nueva—, que es lo que `M-07` exigía.
+
+> **Y lo que esta tanda NO puede hacer, dicho por delante: certificar.** Quien aplica estas
+> correcciones es el mismo que escribió `D98` y `D103`, las dos que el gate acaba de declarar
+> insuficientes. **Que `D104` alcance esta vez sólo lo puede decir un gate independiente.**
+
+| # | decisión | qué revisa | por qué, y qué alternativa se descartó | cómo se revierte |
+|---|---|---|---|---|
+| D104 | **La derivación de `<CAP>:revision` se hace sobre CUATRO VÍAS TIPADAS y un discriminante ESTRUCTURAL, sin leer una sola palabra de texto libre.** (i) **Las cuatro vías**, determinadas por el CAMPO y la FORMA del valor: **1 · PROPIETARIA** (`propietario_global` resuelve a `DOM`/`SEG`), **2 · OBLIGATORIA** (`obligatorias[].capacidad_productora` desnuda), **3 · CONDICIONAL** (`condicionales[].capacidad` desnuda), **4 · ITEM PROPIO ENLAZADO TIPADO** (referencia `<CAP>:<aspecto>` o `<CAP>/<metodo>`). (ii) **Toda la inferencia que queda es UNA prueba de pertenencia**: se normaliza la base tomando el segmento anterior al primer `:` y al primer `/`, y se comprueba si pertenece al conjunto de las QUINCE, derivado de los directorios de `capacidades/`. **`capa_exigida`, `condicion`, `criterio_de_satisfaccion` y `autoridad_de_retirada` NO se leen.** (iii) **El discriminante estático/dinámico es estructural**: un proceso tiene propietario ESTÁTICO si y sólo si su `propietario_global` **es exactamente uno de los quince identificadores**, por igualdad de cadena contra un conjunto derivado del árbol. Derivado hoy: estáticos `FEA` `GAP` `INC` `INV` `DEU` `DEP` `SIS`; por item `DEF` `AUD` `DIR`, **los tres por la misma regla y sin excepción escrita para ninguno**. (iv) **El ANCLA DE POSICIÓN** es la obligatoria de `VER` si el proceso la declara, y su ÚLTIMA obligatoria si no: **ya no se exige `VER` donde no hay `VER`**. (v) **La regla por item suma DOS aportaciones**: el propietario efectivo (vía 1) **y** los condicionales de `DOM`/`SEG` que el item activa (vías 3 y 4). Para `proceso:AUD` eso significa que un item puede exigir `∅`, `{DOM}`, `{SEG}` **o `{DOM, SEG}`**. (vi) **La cifra estática no se escribe: se deriva**, y ejecutada hoy sigue dando **CINCO procesos y NUEVE pares**, con `(DEP, SEG)` por la vía 2 y los otros ocho por la vía 4 | **`D103`**, en su algoritmo, en su discriminante, en su ancla y en su regla por item. `D103` acertó al separar los dos niveles y al negarse a publicar un décimo par fijo, y eso se conserva. `D103` **no se reescribe** | **Cuatro defectos concurrentes del gate de cobertura, los cuatro reproducidos.** **`O-01`**: el criterio nombraba cuatro vías y el algoritmo derivaba dos — **la participación PROPIETARIA no estaba implementada en ningún nivel**, demostrado con fixture en verde. **`M-01`**: la **participación CONDICIONAL se perdía en `proceso:AUD`**, que declara `DOM` y `SEG` como condicionales —`b.16` L895, material APROBADO— y que `D98` había nombrado como hueco; el nivel A lo excluía entero y el nivel B sólo miraba el propietario. **`N-02`**: `propietario_global` es `{tipo: texto}` en `esquemas/proceso.yaml` L23 y en tres de los diez procesos contiene una frase — **el barrido léxico no se había retirado, había migrado de `capa_exigida` a `propietario_global`**, y la partición se decidía buscando la palabra «DERIVADO». **`N-01`**: el nivel B exigía la revisión «posterior a `VER`» en `AUD`, que **junto a `INV` es uno de los dos únicos procesos sin `VER`**, y excluía `DIR` —que sí lo tiene y también deriva su propietario— con una afirmación no derivable. **La alternativa descartada: parchear el discriminante añadiendo `DIR` y `DEF` a mano a la lista de dinámicos.** Se descarta porque es el censo enumerado que `D102` contrata para retirar, y porque dejaría el mismo agujero abierto para el proceso once | volver a un discriminante por palabra devuelve la ceguera que `K-02`, `D98` y `D103` produjeron tres veces; volver a exigir «tras `VER`» devuelve una prescripción imposible en `AUD` |
+
+---
+
 ## 2 · Decisiones que pertenecen al Owner
 
 **Ninguna bloquea el trabajo.** Todas tienen un valor por defecto ya implementado y
