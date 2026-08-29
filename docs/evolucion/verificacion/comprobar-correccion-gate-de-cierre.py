@@ -466,9 +466,97 @@ filas = re.findall(r"^\| `([A-Za-z0-9-]+)` \| (BLOQUEANTE|GRAVE|MEDIO|MENOR) \| 
 ids = [f[0] for f in filas]
 dup = [k for k, v in Counter(ids).items() if v > 1]
 comp = [f[0] for f in filas if " y " in f[2] or "+" in f[2]]
-check("G-16", "43 filas, 43 ids DISTINTOS, un estado primario por id y ninguno compuesto",
-      len(filas) == 43 and len(set(ids)) == 43 and not dup and not comp,
-      f"{len(filas)} filas / {len(set(ids))} ids" + (f" DUPLICADOS {dup}" if dup else ""))
+# La MISMA regla, sobre el otro objeto que la necesita: las trece condiciones de cierre
+# `C-L.1`–`C-L.13` del gate definitivo. Se comprueba AQUÍ, dentro de `G-16`, porque es la
+# misma norma —un estado primario por elemento, ninguno compuesto, ningún doble conteo— y
+# porque la batería no crece: sigue teniendo TREINTA comprobaciones.
+#
+# Nace de un doble conteo real: la clasificación anterior declaraba cuatro estados y sumaba
+# trece, pero sumaba trece POR ACCIDENTE — contaba `J-11` como si fuera una condición
+# (es uno de los SEIS componentes de `C-L.13`) mientras atribuía los otros cinco componentes
+# a «CORREGIDAS EN F4c» sin ser ids `C-L`. Resultado: DOCE ids asignados más un subhallazgo,
+# y `C-L.13` sin estado propio. Mezclar condición y subhallazgo es lo que esto impide.
+_ESTADOS_CL = ("CORREGIDAS EN F4c", "REGISTRADAS PARA F5", "CONTRATADA PARA F6",
+               "MIXTA POR DESGLOSE", "ABIERTA POR COBERTURA")
+_COMPONENTES_CL13 = ("K-05", "K-09", "K-10", "K-08", "L-03", "J-11")
+
+_g16c = []
+# el bloque VIVO es el de `siguiente:`, que es el que reancla a un agente sin contexto
+_i = tchk.find("CÓMO QUEDA CADA CONDICIÓN")
+if _i < 0:
+    _g16c.append("no se encuentra el bloque de clasificación de las condiciones")
+else:
+    # el bloque es SÓLO la tabla de clasificación: termina en su línea de suma. Sin este
+    # corte, «ABIERTA POR COBERTURA» —el último estado— se llevaría por delante todo el
+    # detalle posterior y cada id parecería tener dos estados.
+    _fin_blq = tchk.find("= los trece ids distintos", _i)
+    _blq = tchk[_i:_fin_blq if _fin_blq > 0 else tchk.find("\n\n", _i)]
+    _asig = {}          # id C-L -> [estados en que aparece]
+    for _est in _ESTADOS_CL:
+        _m = re.search(rf"^\s*{re.escape(_est)}\s+(\d+)\s+(.*)$", _blq, re.M)
+        if not _m:
+            _g16c.append(f"falta el estado «{_est}»")
+            continue
+        # los ids de ese estado: su línea, más las de continuación hasta el estado siguiente
+        _ini = _m.end()
+        _fin = min([_blq.find(e, _ini) for e in _ESTADOS_CL if _blq.find(e, _ini) > 0] or [len(_blq)])
+        _texto = _m.group(2) + " " + _blq[_ini:_fin]
+        _ids = re.findall(r"\bC-L\.\d+\b", _texto)
+        if int(_m.group(1)) != len(set(_ids)):
+            _g16c.append(f"«{_est}» declara {_m.group(1)} y nombra {len(set(_ids))} ids")
+        for _x in set(_ids):
+            _asig.setdefault(_x, []).append(_est)
+
+    _esperados = {f"C-L.{n}" for n in range(1, 14)}
+    _faltan = sorted(_esperados - set(_asig), key=lambda x: int(x[4:]))
+    _sobran = sorted(set(_asig) - _esperados)
+    _dobles = sorted((k for k, v in _asig.items() if len(v) > 1), key=lambda x: int(x[4:]))
+    if _faltan: _g16c.append(f"sin estado primario: {_faltan}")
+    if _sobran: _g16c.append(f"ids que no son condiciones: {_sobran}")
+    if _dobles: _g16c.append(f"con DOS estados primarios: {_dobles}")
+
+    # la suma DECLARADA de los cinco estados tiene que dar exactamente trece
+    _suma = sum(int(m.group(1)) for e in _ESTADOS_CL
+                if (m := re.search(rf"^\s*{re.escape(e)}\s+(\d+)\s", _blq, re.M)))
+    if _suma != len(_esperados):
+        _g16c.append(f"la suma de los estados declara {_suma} y las condiciones son {len(_esperados)}")
+
+    # ningún SUBHALLAZGO puede figurar como si fuera una condición con estado propio
+    for _est in _ESTADOS_CL:
+        _m = re.search(rf"^\s*{re.escape(_est)}\s+\d+\s+([^\n]*)$", _blq, re.M)
+        if _m and re.search(r"\b[JKL]-\d+\b", _m.group(1)):
+            _g16c.append(f"«{_est}» cuenta un subhallazgo como condición: "
+                         f"{re.findall(r'[JKL]-[0-9]+', _m.group(1))}")
+
+    # `C-L.13` una sola vez, MIXTA, y con sus SEIS componentes como atributos secundarios
+    if _asig.get("C-L.13") != ["MIXTA POR DESGLOSE"]:
+        _g16c.append(f"`C-L.13` no está exactamente una vez como MIXTA: {_asig.get('C-L.13')}")
+    _i13 = _blq.find("MIXTA POR DESGLOSE")
+    _b13 = _blq[_i13:_blq.find("ABIERTA POR COBERTURA", _i13)] if _i13 >= 0 else ""
+    _falt13 = [c for c in _COMPONENTES_CL13 if c not in _b13]
+    if _falt13:
+        _g16c.append(f"`C-L.13` no declara sus componentes: {_falt13}")
+    if "J-11" in _b13 and not re.search(r"J-11[^\n]*(?:contratad|NO implementad)", _b13, re.I):
+        _g16c.append("`J-11` no consta como contratado para F6 y no implementado")
+
+    # `C-L.5` sigue ABIERTA
+    if _asig.get("C-L.5") != ["ABIERTA POR COBERTURA"]:
+        _g16c.append(f"`C-L.5` no está ABIERTA POR COBERTURA: {_asig.get('C-L.5')}")
+
+
+_g16 = []
+if len(filas) != 43 or len(set(ids)) != 43:
+    _g16.append(f"matriz: {len(filas)} filas / {len(set(ids))} ids, se esperan 43 y 43")
+if dup:  _g16.append(f"matriz: ids DUPLICADOS {dup}")
+if comp: _g16.append(f"matriz: estados COMPUESTOS {comp}")
+_g16 += [f"condiciones C-L: {x}" for x in _g16c]
+
+check("G-16",
+      "un estado primario por elemento y ninguno compuesto: los 43 hallazgos, y las 13 condiciones `C-L`",
+      not _g16,
+      "; ".join(_g16) or
+      f"matriz {len(filas)} filas / {len(set(ids))} ids · condiciones 13/13 con estado único, "
+      f"8+2+1+1+1 = 13, C-L.13 MIXTA con sus seis componentes secundarios y C-L.5 ABIERTA")
 
 # ── G-16b · A11 absorbido, A14 excluido ────────────────────────────
 check("G-16b", "`A11` absorbido en `M-8` y `A14` excluido: ninguno es fila de la matriz",

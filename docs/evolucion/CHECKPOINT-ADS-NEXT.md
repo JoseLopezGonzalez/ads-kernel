@@ -32,31 +32,50 @@
 >
 > **Ningún hallazgo se corrigió DURANTE el gate**, y era deliberado. Lo que vino después
 > **no es «todo corregido»**, y decirlo así sería presentar un registro como una
-> implementación. Las trece condiciones quedan en **cuatro estados distintos**, y sólo el
-> primero significa que el trabajo esté hecho:
+> implementación. Las trece condiciones quedan en **CINCO estados primarios mutuamente
+> excluyentes**, y sólo el primero significa que el trabajo esté hecho. **Cada id
+> `C-L.1`–`C-L.13` recibe EXACTAMENTE UN estado, y ningún subhallazgo cuenta como
+> condición:**
 >
 > ```text
 > CORREGIDAS EN F4c        `C-L.1` `C-L.3` `C-L.4` `C-L.6` `C-L.7` `C-L.8` `C-L.9` `C-L.11`
->   ocho                   y los cinco residuos de `C-L.13`. El cambio está ESCRITO en su
->                          sede y es comprobable hoy
+>   ocho                   El cambio está ESCRITO en su sede y es comprobable hoy
 >
 > REGISTRADAS PARA F5      `C-L.2` · `PN-15`: `G20`–`G23` PRESIONADAS, y **la decisión sigue
 >   dos                    sin tomar** — es del Owner, y F4 no puede tomarla
 >                          `C-L.12` · los dos restos de (b), como checklist verificable
 >                          **Registrar NO es corregir**: el texto de (b) sigue como estaba
 >
-> CONTRATADAS PARA F6      `C-L.10` —censo `AFIRMACIONES` derivado, `T152` sobre toda sede
->   dos                    que publique versión— y `J-11` —la guardia de intérprete—.
->                          **Contratar NO es implementar**: no existe ni una línea de código
->                          de las tres, y `T151` y `T152` siguen pasando en verde sobre las
->                          sedes que el corpus desmiente
+> CONTRATADA PARA F6       `C-L.10` — censo `AFIRMACIONES` derivado y `T152` sobre toda sede
+>   una                    que publique versión. **Contratar NO es implementar**: no existe
+>                          ni una línea de código, y `T151` y `T152` siguen pasando en verde
+>                          sobre las sedes que el corpus desmiente
+>
+> MIXTA, SATISFECHA POR    `C-L.13`. Es la única con estado COMPUESTO, y por eso se declara
+> DESGLOSE                 aparte en vez de repartir sus piezas entre los demás estados.
+>   una                    Sus SEIS componentes, como ATRIBUTOS SECUNDARIOS que **NO cuentan
+>                          como condiciones**:
+>                            `K-05` `K-09` `K-10` `K-08` `L-03`   CORREGIDOS AHORA
+>                            `J-11`                               CONTRATO COMPLETO PARA F6,
+>                                                                 NO IMPLEMENTADO
 >
 > ABIERTA POR COBERTURA    `C-L.5`. **No la cierra esta tanda ni puede cerrarla**: aplicar
 >   una                    correcciones no es leer lo que no se leyó. Sólo la cierra el gate
 >                          siguiente, con revisores de contexto limpio y lectura real
+>
+> SUMA                     8 + 2 + 1 + 1 + 1 = 13, y son los TRECE ids distintos
 > ```
 >
 > **Aplicar no es certificar**, y **registrar o contratar no es corregir**.
+>
+> **Corregido aquí un doble conteo.** La clasificación anterior declaraba cuatro estados y
+> sumaba trece, **pero sumaba trece por accidente**: contaba `J-11` como si fuera una
+> condición —y no lo es: es uno de los seis componentes de `C-L.13`— mientras atribuía los
+> otros cinco componentes a «CORREGIDAS EN F4c» sin ser ids `C-L`. El resultado era **doce
+> ids `C-L` asignados más un subhallazgo**, con **`C-L.13` sin estado primario propio**.
+> Mezclar condición y subhallazgo en un mismo recuento es la clase de defecto que la matriz
+> de los 43 ya cerró una vez con la regla de **un estado primario por hallazgo**; aquí se
+> aplica la misma regla a las condiciones de cierre.
 >
 > **Y consta:** los tres coinciden en que es la candidata más sólida de la cadena. Las diez
 > filas FALLIDAS del gate anterior están cerradas, verificadas una a una. **Nada de lo que
@@ -132,8 +151,9 @@ CHECKPOINT — ADS-NEXT/12 · SIS/evolucion
 actualizado: 2026-08-29
 metodo:      SIS/Evolucion · TANDA DE CORRECCIÓN DEL GATE DEFINITIVO APLICADA · D96–D102 ·
              y CORRECCIÓN TÉCNICA ACOTADA sobre ella · D103 · las TRECE condiciones C-L en
-             CUATRO estados: 8 CORREGIDAS EN F4c · 2 REGISTRADAS PARA F5 · 2 CONTRATADAS
-             PARA F6 · 1 ABIERTA POR COBERTURA (C-L.5) · APLICADA, NO CERTIFICADA ·
+             CINCO estados primarios mutuamente excluyentes, un id cada uno: 8 CORREGIDAS EN
+             F4c · 2 REGISTRADAS PARA F5 · 1 CONTRATADA PARA F6 · 1 MIXTA POR DESGLOSE
+             (C-L.13) · 1 ABIERTA POR COBERTURA (C-L.5) = 13 · APLICADA, NO CERTIFICADA ·
              F4c ABIERTA · F5 NO AUTORIZADA
 metodo_anterior: SIS/Evolucion · GATE DEFINITIVO INDEPENDIENTE EJECUTADO SOBRE r4=0ea0451 ·
              VEREDICTO INSUFICIENTE PARA F5 · F4c ABIERTA · F5 NO AUTORIZADA
@@ -861,12 +881,19 @@ siguiente:   OTRO GATE INDEPENDIENTE, con revisores de contexto limpio que NO se
              y después una CORRECCIÓN TÉCNICA ACOTADA (D103) sobre ella.
              **APLICADA NO ES CERTIFICADA**, y REGISTRAR o CONTRATAR no es CORREGIR.
 
-             CÓMO QUEDA CADA CONDICIÓN, en CUATRO estados que no se mezclan:
+             CÓMO QUEDA CADA CONDICIÓN, en CINCO estados primarios MUTUAMENTE
+             EXCLUYENTES. Un estado por id, los trece ids exactamente una vez, y NINGÚN
+             subhallazgo contado como condición:
                CORREGIDAS EN F4c     8   C-L.1 C-L.3 C-L.4 C-L.6 C-L.7 C-L.8 C-L.9 C-L.11
-                                         + los cinco residuos de C-L.13
                REGISTRADAS PARA F5   2   C-L.2 (PN-15, decide el Owner) · C-L.12
-               CONTRATADAS PARA F6   2   C-L.10 · J-11 — CERO líneas de código escritas
+               CONTRATADA PARA F6    1   C-L.10 — CERO líneas de código escritas
+               MIXTA POR DESGLOSE    1   C-L.13 — sus SEIS componentes son atributos
+                                         SECUNDARIOS y no cuentan como condiciones:
+                                         K-05 K-09 K-10 K-08 L-03 corregidos ahora ·
+                                         J-11 contratado para F6, NO implementado
                ABIERTA POR COBERTURA 1   C-L.5
+                                    ──
+                                    13   = los trece ids distintos, sin doble conteo
                C-L.1  CERRADA · D96: `revision_base` OBLIGATORIO de `preparada` en §3.6,
                       registrable en `conflicto` y `abandonada`, y ENTRA en el cómputo de
                       `tx`. Cierra J-01 (BLOQUEANTE) y J-02 a la vez, sin nonce ni timestamp
@@ -904,7 +931,7 @@ siguiente:   OTRO GATE INDEPENDIENTE, con revisores de contexto limpio que NO se
                C-L.9  CERRADA · 42→46 derivado en las seis sedes, reconciliación de externos
                       corregida a 9 = 7 + F-01 + F-05, y G-26 ampliada a cuatro
                       comprobaciones sin ninguna cifra constante
-               C-L.10 CONTRATADA PARA F6 · D102: tres contratos completos —censo
+               C-L.10 CONTRATADA PARA F6 · única en este estado. D102: tres contratos —censo
                       AFIRMACIONES derivado, T152 sobre toda sede que publique versión, y la
                       guardia de intérprete con exit 2— y ocho casos de regresión.
                       **CERO líneas implementadas.** T151 y T152 siguen pasando en verde
@@ -914,8 +941,10 @@ siguiente:   OTRO GATE INDEPENDIENTE, con revisores de contexto limpio que NO se
                       L358, y la numeración 1,2,5,3,4 de L462–472— quedan como checklist
                       verificable, con ruta, ubicación, corrección exacta y prueba. Sin PN
                       nueva: el contenido no cambia. **El texto de (b) sigue como estaba**
-               C-L.13 CERRADA los cinco primeros —K-05, K-09, K-10, K-08, L-03—; J-11
-                      CONTRATADO PARA F6 en D102, sin implementar
+               C-L.13 MIXTA, SATISFECHA POR DESGLOSE · es la ÚNICA con estado compuesto,
+                      y sus seis componentes son atributos SECUNDARIOS que no cuentan como
+                      condiciones: K-05, K-09, K-10, K-08 y L-03 CORREGIDOS ahora; J-11
+                      CONTRATO COMPLETO PARA F6 en D102, NO implementado
 
              F5 NO arranca sin un veredicto explícito de SUFICIENCIA.
 falta_para_cerrar_la_capa:
