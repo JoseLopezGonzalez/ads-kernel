@@ -1352,6 +1352,32 @@ else:
         if val != len(_filas_f):
             _fallos_26.append(f"c2) L{_off+ln}: «la tabla tiene {val} filas» y tiene {len(_filas_f)}")
 
+# ── 26.e · la fila que BARRE TODAS LAS VENTANAS, contra las filas W ───────
+#
+# `P-01`≡`Q-13`. `X54` decía «las diecisiete ventanas» mientras §2.6.5 deriva DIECIOCHO de
+# sus filas, y ninguna de las 46 filas adversariales nombraba `W17` — la ventana que `D105`
+# creó para cerrar `M-03` y `O-03`. La tabla se declara convertible en pruebas de F6 «sin
+# traducción»: lo que no tiene fila, no se prueba. Aquí el censo se DERIVA de las filas `W`
+# y se contrasta contra el numeral de la fila que dice barrerlas todas.
+_ws = re.findall(r"^\| \*{0,2}(W[0-9]+[ab]?)\*{0,2} \|", t11, re.M)
+if not _ws:
+    _fallos_26.append("e) no se encontró la tabla de ventanas de §2.6.5")
+else:
+    _x_barre = [l for l in t11.split("\n")
+                if re.match(r"^\| `X[0-9]+` \|", l) and "ventanas" in l and "cada una" in l]
+    if not _x_barre:
+        _fallos_26.append("e) ninguna fila adversarial dice barrer todas las ventanas")
+    for _l in _x_barre:
+        _m = re.search(_NUM + r"\s+ventanas", _l)
+        _v = _num(_m.group(1)) if _m else None
+        _id = re.match(r"^\| `(X[0-9]+)`", _l).group(1)
+        if _v != len(_ws):
+            _fallos_26.append(f"e) `{_id}` dice {_m.group(1) if _m else '?'} ventanas y "
+                              f"§2.6.5 deriva {len(_ws)} filas")
+        if _ws[-1] not in _l:
+            _fallos_26.append(f"e) `{_id}` barre todas las ventanas y no nombra `{_ws[-1]}`, "
+                              f"que es la última que la tabla declara")
+
 # ── 26.d · TOTALES INCOMPATIBLES entre sedes VIVAS ────────────────────────
 # Dos sedes vivas que afirmen cifras distintas del MISMO objeto es un fallo aunque
 # ninguna difiera del derivado por el patrón que la caza.

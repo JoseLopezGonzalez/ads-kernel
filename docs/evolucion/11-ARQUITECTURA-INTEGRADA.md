@@ -962,10 +962,19 @@ Antes de las tres cajas hay dos preguntas que deciden **si hay transacción**, y
                                 durable lleva `estado_observado[]` de TODAS las rutas,
                                 `autoridad`, `motivo` y `revision_base`: **el cuerpo del
                                 `deriva` es una FUNCIÓN de él**, luego dos arranques
-                                producen el MISMO evento direccionado por contenido, y
-                                emitirlo dos veces no crea dos. Se emite, se hacen sus dos
+                                construyen el MISMO cuerpo. Se emite, se hacen sus dos
                                 `fsync`, se crea su marcador, y **sólo entonces** se retira
-                                el marcador de transacción
+                                el marcador de transacción.
+                                **DÓNDE VIVE LA IDEMPOTENCIA DE `W17`, dicho sin rodeos**
+                                (`R-01`): en **esta guarda de existencia por `abandonada_id`**
+                                y en la regla de unicidad de la capa B, **no** en que el `id`
+                                del evento coincida. §2.8 RETIRÓ expresamente el razonamiento
+                                por contenido —«REEMITIR NO ES IDEMPOTENTE POR `id`»,
+                                porque `predecesor` va en el `id` y la recuperación no lo
+                                garantiza—, y este párrafo se apoyaba en él para una
+                                propiedad que la guarda ya asegura. **Dos arranques no pueden
+                                emitir dos `deriva` porque el segundo lo encuentra**, con
+                                cualquier `predecesor`
           **Esto sustituye la prohibición anterior**, que decía «no se emite un `deriva` por
           arranque» mientras §3.6 y la capa B exigían que existiera. Las dos cosas no podían
           ser ciertas a la vez, y el resultado era un diario permanentemente inválido por su
@@ -1160,7 +1169,7 @@ cobertura obligó a añadir `W17`**.
 | **W14** | **creando el marcador (paso 2)** | `preparada` durable, marcador ausente o vacío | benigno: `W3` lo cubre por resultado. Se recrea el marcador desde el diario (§2.9) |
 | **W15** | **el push es rechazado porque el remoto avanzó** | commit local, remoto divergente | evento `fallo`, tope de tres por §7.3, y se escala. **NUNCA `--force`** (§2.6.10) |
 | **W16** | **el push se completa parcialmente** | unas referencias publicadas y otras no | evento `fallo` con las referencias nombradas. El estado local no cambia: el push no es una mutación canónica |
-| **W17** | **caída de MÁQUINA entre el `abandonada` durable y el `deriva` durable** —o entre el `deriva` y su marcador— | terminal `abandonada` presente **sin ningún `deriva` que lo referencie por `abandonada_id`**, y el marcador de transacción **todavía puesto** | **se COMPLETA, y es idempotente** (paso 0 de §2.6.4): el cuerpo del `deriva` es una función del `abandonada` durable —que lleva `estado_observado[]` de todas las rutas, `autoridad`, `motivo` y `revision_base`—, luego dos arranques emiten el MISMO evento direccionado por contenido. Se emite, se hacen sus dos `fsync`, se crea su marcador, y **sólo entonces** se retira el marcador de transacción. **Añadida por `D105`** (`M-03`, `O-03`): el `abandonada` llevaba `fsync` obligatorio y el `deriva` no, el marcador se retiraba antes de que el `deriva` fuera durable, el arranque tenía PROHIBIDO emitirlo y la capa B exigía que existiera. El resultado era un bloqueo perdido en silencio y un diario permanentemente inválido sin ruta de reparación |
+| **W17** | **caída de MÁQUINA entre el `abandonada` durable y el `deriva` durable** —y **sólo** ese tramo: la caída POSTERIOR al `deriva`, con su marcador aún sin retirar, la cubre `W8` con §2.9 y la fila `X60`, y así lo reparte el punto 7 de §2.6.9 (`R-04`) | terminal `abandonada` presente **sin ningún `deriva` que lo referencie por `abandonada_id`**, y el marcador de transacción **todavía puesto** | **se COMPLETA, y es idempotente** (paso 0 de §2.6.4): el arranque comprueba **si ya existe un `deriva` con ese `abandonada_id` ANTES de emitir**, y ahí vive la idempotencia — no en la igualdad del `id`, que §2.8 retiró como prueba (`R-01`). El cuerpo del `deriva` es una función del `abandonada` durable —que lleva `estado_observado[]` de todas las rutas, `autoridad`, `motivo` y `revision_base`—, luego los dos arranques construyen el mismo cuerpo. Se emite, se hacen sus dos `fsync`, se crea su marcador, y **sólo entonces** se retira el marcador de transacción. **Añadida por `D105`** (`M-03`, `O-03`): el `abandonada` llevaba `fsync` obligatorio y el `deriva` no, el marcador se retiraba antes de que el `deriva` fuera durable, el arranque tenía PROHIBIDO emitirlo y la capa B exigía que existiera. El resultado era un bloqueo perdido en silencio y un diario permanentemente inválido sin ruta de reparación |
 
 **Qué se completa, qué se revierte y qué se escala**, dicho en una frase cada uno:
 
@@ -1476,7 +1485,7 @@ impuso al arnés de negativos.
 | `X51` | editar un canónico fuera del protocolo, sin transacción abierta, y arrancar | se declara **deriva no transaccional**, nombrando ruta, hash observado y hash en `HEAD`. NO se completa, NO se revierte y NO se restaura sola |
 | `X52` | comparar el censo de pruebas de §9.1, §9.5 y `nivel-certificacion` para cada nivel | los tres conjuntos son **idénticos**. Una diferencia de censo es un fallo |
 | `X53` | buscar un `contrato-de-aspecto` de familia `certificacion`, y campos de certificación declarados dos veces | **no existe ninguno**, y ningún campo de certificación tiene dos sedes normativas |
-| `X54` | matar la máquina en cada una de las diecisiete ventanas con un `conflicto` vivo | el `conflicto` sobrevive o se reconstruye desde el diario, **ningún canónico se toca**, y la transacción sigue teniendo sus DOS salidas disponibles tras el arranque |
+| `X54` | matar la máquina en cada una de las **DIECIOCHO** ventanas de §2.6.5 —`W1`–`W11`, `W12a`, `W12b`, `W13`–`W16` y **`W17`**— con un `conflicto` vivo. **`W17` incluida expresamente** (`P-01`≡`Q-13`): esta fila decía «las diecisiete», que era el censo anterior a `D105`, y dejaba fuera del único escenario que las barre todas justamente la ventana que `D105` creó para cerrar `M-03` y `O-03`. El número no vuelve a caducar solo: `G-26` deriva las filas `W` de la tabla y exige que esta fila las cubra y nombre `W17` | el `conflicto` sobrevive o se reconstruye desde el diario, **ningún canónico se toca**, y la transacción sigue teniendo sus DOS salidas disponibles tras el arranque |
 | `X55` | abandonar una transacción en conflicto y comprobar el estado resultante | `abandonada` es durable, **el marcador se retira**, el control repo **vuelve a commitear**, y un evento `deriva` con `causa: abandono-de-transaccion` mantiene bloqueados **sólo** los items que nombra |
 | `X56` | revertir un canónico de una transacción con `derivada` durable, y arrancar | se emite un evento **`deriva`** con `causa: posterior-al-cierre`. **NO** se emite ninguna fase, la transacción cerrada **no gana ningún evento nuevo con su `tx`**, y nada se restaura solo |
 | `X57` | recorrer el diario buscando cualquier evento con `fase` cuya transacción ya tenga `derivada` | **no existe ninguno**, y el **validador semántico del diario** lo rechaza —la comprobación es de `tx`, no de evento aislado (§3.6)—. Ninguna transición sale del terminal |
@@ -1932,17 +1941,32 @@ E · CERRAR        sólo entonces, y **en este orden, que ahora es EXACTO y DURA
                       idempotente, que es `W8` · caída después de 6 → nada que hacer
 
 8 `abandonada` DURABLE **se COMPLETA.** El cuerpo del `deriva` es una FUNCIÓN del
-  Y `deriva` AUSENTE   `abandonada`, luego dos arranques emiten el MISMO evento
-                       direccionado por contenido y emitirlo dos veces no crea dos. **No es
-                       un estado ilegal ni irreparable: es la ventana `W17`**, y el paso 0 de
-                       §2.6.4 la resuelve
+  Y `deriva` AUSENTE   `abandonada`, luego los dos arranques construyen el mismo cuerpo; y
+                       **emitirlo dos veces es imposible porque el paso 0 comprueba antes si
+                       ya existe un `deriva` con ese `abandonada_id`**. Ahí vive la
+                       idempotencia, y **no** en la igualdad del `id`: §2.8 retiró ese
+                       razonamiento —`predecesor` entra en el `id` y la recuperación no lo
+                       garantiza— y esta sede se apoyaba en él (`R-01`). **No es un estado
+                       ilegal ni irreparable: es la ventana `W17`**, y el paso 0 de §2.6.4
+                       la resuelve
 
-EL VALIDADOR Y LAS    describen el MISMO protocolo, y eso es comprobable: la capa B exige
-VENTANAS, ALINEADOS   «exactamente un `deriva` que referencie por `abandonada_id`», `W17`
-                      describe la caída que lo deja ausente, y el paso 0 dice cómo se
-                      completa. Antes, la capa B exigía que existiera y el paso 0 prohibía
-                      emitirlo: **las dos afirmaciones no podían ser ciertas a la vez**, y
-                      esa contradicción era `O-03`
+EL VALIDADOR Y LAS    describen el MISMO protocolo, y eso es comprobable. **Quién dice qué,
+VENTANAS, ALINEADOS   para que no vuelva a haber dos direcciones** (`R-03`):
+                        · **§3.6 FIJA LA FORMA**: `deriva` lleva `abandonada_id`;
+                          `abandonada` tiene PROHIBIDO `deriva_emitida`. Es la sede del
+                          contrato del evento, y nadie más la redefine
+                        · **la capa B la VALIDA y remite**: exige «exactamente un `deriva`
+                          que referencie por `abandonada_id`» —lo dicen su LISTA de reglas y
+                          la tabla de las cuatro, con el mismo verbo—, y no inventa otra
+                          dirección
+                        · **§2.6.5 describe la caída** que lo deja ausente, que es `W17`
+                        · **el paso 0 de §2.6.4 dice cómo se completa**, y comprueba la
+                          existencia por `abandonada_id` ANTES de emitir
+                      Antes, la capa B exigía que existiera y el paso 0 prohibía emitirlo:
+                      **las dos afirmaciones no podían ser ciertas a la vez**, y esa
+                      contradicción era `O-03`. Después, esta sede invocaba «la capa B» por
+                      su nombre para una regla que su lista **no escribía** —vivía sólo en la
+                      tabla de las cuatro—, y era `R-03`
 ```
 
 ```text
@@ -4347,7 +4371,7 @@ Recorriendo **todos los eventos**, y por eso ninguna de estas comprobaciones cab
   una cerrada por `abandonada` tiene **cero** `derivada` — un validador construido de esa
   frase habría rechazado toda transacción abandonada. Era el residuo exacto de `A2` en la
   única capa que evalúa el predicado
-· CORRESPONDENCIA ENTRE INTENCIÓN Y HECHO: que todo `confirmada` tenga su `preparada`, toda
+· CORRESPONDENCIA ENTRE INTENCIÓN Y HECHO: que todo `confirmada` tenga su `preparada`, y
   todo `abandonada` su `conflicto`, y que las rutas y hashes coincidan
 · CARDINALIDAD DE CADA FASE, **CONDICIONAL A CÓMO CERRÓ** (§2.6.4): `preparada` exactamente 1
   siempre; `derivada` y `abandonada` **mutuamente excluyentes**, y toda transacción cerrada
@@ -4357,8 +4381,17 @@ Recorriendo **todos los eventos**, y por eso ninguna de estas comprobaciones cab
 · TODO ESTADO NO TERMINAL TIENE SUCESOR ADMISIBLE: ninguna transacción con `preparada` durable
   puede quedar sin terminal alcanzable. Es la comprobación que `B1` exigía, y vive aquí
   porque exige recorrer el `tx` entero
-· TODO `abandonada` DECLARA SU `deriva`, y ese `deriva` existe en el diario y nombra las
-  mismas rutas e items
+· TODO `abandonada` TIENE **EXACTAMENTE UN** `deriva` QUE LO REFERENCIA POR
+  `abandonada_id`, y ese `deriva` existe en el diario y nombra las mismas rutas e items.
+  **La referencia es UNILATERAL y va del `deriva` al `abandonada`** (`D105`): el `abandonada`
+  **NO declara `deriva_emitida`** —está PROHIBIDO en §3.6—, y la forma del evento la fija
+  §3.6, que es su sede; esta capa la VALIDA y no la redefine. La unicidad se comprueba por
+  `abandonada_id` **antes de emitir**, en el paso 0 de §2.6.4.
+  **Corregido por `P-02`≡`Q-06`**: esta regla conservaba el verbo anterior a `D105` —«TODO
+  `abandonada` DECLARA SU `deriva`»— en la lista que `D89` acababa de barrer, mientras la
+  tabla de las cuatro reglas y §3.6 ya decían lo contrario. Quien construyera la capa B desde
+  esta lista implementaba el puntero desde el `abandonada`, que es exactamente lo que hacía
+  inemitible el segundo terminal
 · LÁPIDA Y SELLADO, VINCULADOS: para todo evento con `cuerpo_retirado: true`, el sellado que
   lo ancla declara el MISMO `id_original`, `hash_cuerpo_original`, `fase`, `tx` y posición.
   Una discrepancia es un fallo (`X-A`–`X-D`), y comprobarla exige abrir DOS ficheros: por eso
