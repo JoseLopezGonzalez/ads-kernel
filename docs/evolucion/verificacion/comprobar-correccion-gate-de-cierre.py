@@ -252,13 +252,24 @@ check("G-11", "la fila `D67` es identica BYTE A BYTE a la de `7e99388` (falla CE
       "identica" if o and a and o[0] == a[0] else "DIFIERE")
 
 # ── G-11b · D1-D86 intactas salvo D67 ────────────────────────────────
+#
+# FALLA CERRADO desde `Q-01`. Era la ÚNICA comprobación dependiente de Git que no lo hacía:
+# sin `.git`, `_base_raw` es `None`, `base` queda vacía, el bucle no encuentra ni una fila
+# con la que comparar y `difs` sale vacío — con lo que declaraba «ninguna difiere» sobre
+# OCHENTA Y SEIS filas que no había mirado. Es el defecto que `M-12` cerró en `G-21`, `G-22`
+# y `G-23`, sobreviviendo en la de mayor alcance de las cuatro.
 difs = []
 for n in range(1, 87):
     ob = [l for l in base if l.startswith(f"| D{n} |")]
     ac = [l for l in lineas(DEC) if l.startswith(f"| D{n} |")]
     if ob and ac and ob[0] != ac[0]: difs.append(f"D{n}")
-check("G-11b", "`D1`-`D86` conservan su texto (D67 restaurada al de 7e99388)",
-      not difs, "ninguna difiere" if not difs else "DIFIEREN: " + ", ".join(difs))
+if _base_raw is None:
+    difs.append("GIT NO RESPONDE: no se puede comparar contra `7e99388`")
+elif not base:
+    difs.append("la base de `7e99388` viene VACÍA: no hay nada contra lo que comparar")
+check("G-11b", "`D1`-`D86` conservan su texto (D67 restaurada al de 7e99388; falla CERRADO sin git)",
+      _base_raw is not None and not difs,
+      "ninguna difiere" if (_base_raw is not None and not difs) else "DIFIEREN: " + ", ".join(difs))
 
 # ── G-12 · PN-14 presente y SIN enmienda redactada ───────────────────
 tiene = "## `PN-14`" in t11
@@ -321,9 +332,30 @@ check("G-14", "`F-01` reclasificado a `PRESION_LISTA_PARA_F5`, con requiere_f5 y
 # Ahora deriva las CUATRO vías, parte por pertenencia al conjunto de las quince, deriva el
 # ancla de posición, y exige que la proyección publicada sea ÚNICA y coincida.
 
-_CAPS = frozenset(os.listdir(os.path.join(RAIZ, "kernel/operativo/capacidades")))
-_VIGILADAS = ("DOM", "SEG")
+_DIR_CAPS = os.path.join(RAIZ, "kernel/operativo/capacidades")
+_CAPS = frozenset(os.listdir(_DIR_CAPS))
 _PROC_MD = os.path.join(RAIZ, "kernel/operativo/recorrido/01-PROCESOS.md")
+
+# El conjunto VIGILADO se DERIVA de las fichas, y no se escribe.
+#
+# `Q-09`. La versión anterior traía `_VIGILADAS = ("DOM", "SEG")` como literal, que es la
+# misma clase de censo escrito a mano que esta batería existe para cazar: si mañana `b.16`
+# diera la doble participación a una tercera capacidad, o se la quitara a una de las dos, la
+# comprobación seguiría verde sobre un catálogo que ya no es el suyo. La sede canónica es la
+# ficha de cada capacidad, que lo declara en su propio atributo — hoy `DOM` y `SEG`, cada una
+# en su L51. Aquí se lee esa declaración y el código de la capacidad es el NOMBRE DE SU
+# DIRECTORIO, no una cadena buscada dentro del texto.
+def _derivar_vigiladas():
+    out = []
+    for cap in sorted(_CAPS):
+        ficha = os.path.join(_DIR_CAPS, cap, "CAPACIDAD.md")
+        if not os.path.isfile(ficha):
+            continue
+        if re.search(r"participa dos veces", leer(ficha)):
+            out.append(cap)
+    return tuple(out)
+
+_VIGILADAS = _derivar_vigiladas()
 
 def _base(valor):
     """Capacidad BASE: segmento anterior al primer `:` y al primer `/`. Nada más."""
@@ -335,69 +367,148 @@ def _limpio(valor):
 def _bloques_proceso(texto):
     return re.findall(r"```yaml ads:proceso\n(.*?)```", texto, re.S)
 
-def _analizar(bloque):
-    """Devuelve (pid, propietario, es_estatico, ancla, participaciones).
+def _campos(bloque):
+    """Los campos REALES del bloque, leyendo INDENTACIÓN y ESCALARES DE BLOQUE.
 
-    `participaciones` es [(capacidad_base, via)] con via ∈ {1,2,3,4}:
-      1 propietaria · 2 obligatoria desnuda · 3 condicional desnuda · 4 item enlazado tipado
-    NO se lee `capa_exigida`, `condicion`, `criterio_de_satisfaccion` ni
-    `autoridad_de_retirada`. Toda la inferencia es UNA prueba de pertenencia a `_CAPS`.
+    Devuelve `(campos, prosa_sospechosa)`. `campos` es [(seccion, clave, valor, sangria)].
+
+    `Q-05`. La versión anterior troceaba el bloque con `find("obligatorias:")` /
+    `find("condicionales:")` y sacaba las participaciones con un `re.findall` sobre esos
+    SEGMENTOS DE TEXTO. Eso no es leer YAML: es buscar una cadena. Una línea escrita dentro
+    del escalar de prosa de un `criterio_de_satisfaccion` —o de `capa_exigida`, `condicion`
+    o `autoridad_de_retirada`— entraba en la derivación como si fuera un campo, y `G-15`
+    seguía en verde. El contrato de `D104` declara que esos cuatro campos NO se leen, y el
+    mecanismo no lo sostenía.
+
+    Aquí una línea sólo es campo si vive al nivel de sangría de su sección y NO está dentro
+    de un escalar `>` o `|`. Lo que aparece dentro de un escalar es PROSA, siempre — y si esa
+    prosa tiene aspecto de campo de participación, se devuelve en `prosa_sospechosa` para
+    poder fallar NOMBRANDO el campo que la contiene, en vez de acusar a la proyección.
     """
-    pid = re.search(r"^id:\s*proceso:(\w+)", bloque, re.M).group(1)
-    pg = _limpio(re.search(r"^propietario_global:\s*(.*)$", bloque, re.M).group(1))
+    campos, prosa = [], []
+    seccion = None
+    esc_ind = esc_clave = None
+    for linea in bloque.split("\n"):
+        if not linea.strip():
+            continue
+        ind = len(linea) - len(linea.lstrip(" "))
+        if esc_ind is not None:
+            if ind > esc_ind:
+                if re.match(r"\s*(?:capacidad_productora|capacidad)\s*:", linea):
+                    prosa.append((seccion, esc_clave, linea.strip()))
+                continue
+            esc_ind = esc_clave = None
+        cuerpo = linea.strip()
+        if cuerpo.startswith("- "):
+            cuerpo, ind = cuerpo[2:].strip(), ind + 2
+        m = re.match(r"([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$", cuerpo)
+        if not m:
+            continue
+        clave, valor = m.group(1), m.group(2).strip()
+        if ind == 0:
+            seccion = clave if clave in ("obligatorias", "condicionales") else None
+        if valor in (">", "|", ">-", "|-", ">+", "|+"):
+            esc_ind, esc_clave = ind, clave
+            valor = ""
+        campos.append((seccion, clave, valor, ind))
+    return campos, prosa
+
+def _analizar(bloque):
+    """(pid, propietario, es_estatico, ancla, participaciones, prosa_sospechosa).
+
+    `participaciones` es [(capacidad_base, via, seccion)] con via ∈ {1,2,3,4}:
+      1 propietaria · 2 obligatoria desnuda · 3 condicional desnuda · 4 item enlazado tipado
+    y `seccion` ∈ {propietaria, obligatorias, condicionales}. **La PROCEDENCIA se conserva**
+    (`Q-03`, `Q-10`): una obligatoria se exige SIEMPRE —también tipada por la vía 4— y una
+    condicional sólo cuando su condición está activa, luego la vía por sí sola ya no basta
+    para saber qué exige un item.
+
+    `capa_exigida`, `condicion`, `criterio_de_satisfaccion` y `autoridad_de_retirada` NO se
+    leen, y ahora el mecanismo lo garantiza: sus escalares se saltan como prosa (`_campos`).
+    Toda la inferencia sigue siendo UNA prueba de pertenencia a `_CAPS`.
+    """
+    campos, prosa = _campos(bloque)
+    pid = next(_limpio(v) for sec, k, v, i in campos if k == "id" and i == 0).split(":", 1)[1]
+    pg = next(_limpio(v) for sec, k, v, i in campos if k == "propietario_global" and i == 0)
+    obl = [_limpio(v) for sec, k, v, i in campos
+           if sec == "obligatorias" and k == "capacidad_productora"]
+    cond = [_limpio(v) for sec, k, v, i in campos
+            if sec == "condicionales" and k == "capacidad"]
+
     # DISCRIMINANTE ESTRUCTURAL: igualdad contra el conjunto de las quince, no subcadena
     estatico = pg in _CAPS
-    ic, io_ = bloque.find("condicionales:"), bloque.find("obligatorias:")
-    seg_obl = bloque[io_: ic if ic > io_ >= 0 else len(bloque)] if io_ >= 0 else ""
-    seg_cond = bloque[ic:] if ic >= 0 else ""
 
-    obl = [_limpio(v) for v in re.findall(r"^\s*capacidad_productora:\s*(.+)$", seg_obl, re.M)]
-    cond = [_limpio(v) for v in re.findall(r"^\s*-\s*capacidad:\s*(.+)$", seg_cond, re.M)]
-
-    # ANCLA DE POSICIÓN: la obligatoria de `VER` si existe; si no, la última obligatoria
-    ancla = "VER" if "VER" in obl else (obl[-1] if obl else None)
+    # ANCLA DE POSICIÓN: la obligatoria de `VER` si existe; si no, la última obligatoria.
+    # Se compara sobre la capacidad BASE (`Q-02`): antes se comparaba la cadena CRUDA, y un
+    # `capacidad_productora: "VER:dosier"` —referencia tipada LEGÍTIMA por el propio
+    # contrato— dejaba de ser `VER`, desplazaba el ancla del proceso en silencio y `G-15`
+    # imprimía verde. `D104` declara que normalizar a la capacidad base ES TODA LA
+    # INFERENCIA QUE HAY: el ancla no puede ser la excepción.
+    obl_base = [_base(v) for v in obl]
+    ancla = "VER" if "VER" in obl_base else (obl_base[-1] if obl_base else None)
 
     part = []
-    if estatico and pg in _VIGILADAS:
-        part.append((pg, 1))                       # vía 1 · propietaria
+    if estatico and _base(pg) in _VIGILADAS:
+        part.append((_base(pg), 1, "propietaria"))     # vía 1 · propietaria
     for v in obl:
         b = _base(v)
         if b in _VIGILADAS:
-            part.append((b, 2 if v == b else 4))   # vía 2 desnuda · vía 4 tipada
+            part.append((b, 2 if v == b else 4, "obligatorias"))
     for v in cond:
         b = _base(v)
         if b in _VIGILADAS:
-            part.append((b, 3 if v == b else 4))   # vía 3 desnuda · vía 4 tipada
-    return pid, pg, estatico, ancla, part
+            part.append((b, 3 if v == b else 4, "condicionales"))
+    return pid, pg, estatico, ancla, part, prosa
 
 def _derivar(texto):
-    """(estaticos, dinamicos, anclas) — estaticos: {(proc,cap): via}."""
-    estaticos, dinamicos, anclas = {}, {}, {}
+    """(estaticos, dinamicos, anclas, prosa) — estaticos: {(proc,cap): (via, seccion)}."""
+    estaticos, dinamicos, anclas, prosa = {}, {}, {}, []
     for b in _bloques_proceso(texto):
-        pid, pg, est, ancla, part = _analizar(b)
+        pid, pg, est, ancla, part, pr = _analizar(b)
         anclas[pid] = ancla
+        prosa += [(pid, sec, clave, linea) for sec, clave, linea in pr]
         if est:
-            for cap, via in part:
-                estaticos[(pid, cap)] = via
+            for cap, via, sec in part:
+                estaticos[(pid, cap)] = (via, sec)
         else:
             dinamicos[pid] = part
-    return estaticos, dinamicos, anclas
+    return estaticos, dinamicos, anclas, prosa
 
 def _exige_item(proceso_part, propietario_efectivo, condicionales_activos):
-    """REGLA POR ITEM: unión de la vía 1 y de los condicionales ACTIVADOS."""
+    """REGLA POR ITEM: propietario del item ∪ obligatorias ∪ condicionales ACTIVADAS.
+
+    Manda la PROCEDENCIA, no la vía (`Q-10`). La versión anterior escribía
+    `if via in (3, 4)`, con lo que una participación tipada de la sección `obligatorias`
+    —vía 4 legítima— se trataba como condicional y dejaba de exigirse cuando su condición
+    no estaba activa. Hoy ninguna vía 4 procede de `obligatorias` en el árbol real, así que
+    el defecto era LATENTE: se corrige antes de que tenga instancias, y el fixture de abajo
+    lo mantiene cerrado.
+    """
     out = set()
     b = _base(propietario_efectivo)
     if b in _VIGILADAS:
         out.add(b)
-    for cap, via in proceso_part:
-        if via in (3, 4) and cap in condicionales_activos:
+    for cap, via, seccion in proceso_part:
+        if seccion == "obligatorias":
+            out.add(cap)
+        elif seccion == "condicionales" and cap in condicionales_activos:
             out.add(cap)
     return out
 
 _g15 = []
 _PROC = leer(_PROC_MD)
-_est, _din, _anclas = _derivar(_PROC)
+_est, _din, _anclas, _prosa = _derivar(_PROC)
 _procs_est = sorted({p for p, _ in _est})
+_FIXTURES = []          # censo de fixtures EJECUTADOS, derivado y contrastado (`Q-12`)
+
+# 0 · ninguna PROSA se cuela como participación (`Q-05`)
+#
+# Falla NOMBRANDO el campo que contiene la línea, que es lo que el gate pidió: acusar a la
+# proyección publicada de no cuadrar cuando el defecto está en un escalar de prosa mandaría
+# a corregir la sede equivocada.
+for _pid, _sec, _clave, _linea in _prosa:
+    _g15.append(f"prosa con aspecto de campo en `proceso:{_pid}` → `{_clave}` "
+                f"(sección {_sec}): «{_linea}». Un escalar de prosa NO declara participación")
 
 # 1 · el contrato tiene que traer sus piezas y nombrar las cuatro vías
 i19 = t11.index("### `DOM` y `SEG` participan DOS veces")
@@ -429,6 +540,40 @@ else:
     if _q != len(_est):
         _g15.append(f"publica {_proys[0][1]} pares y el catálogo deriva {len(_est)}")
 
+# 2bis · el REPARTO EXACTO POR VÍA, no sólo el total (`Q-03`)
+#
+# Un total de nueve pares admite repartos semánticamente distintos: mover `DOM` y `SEG` de
+# `FEA` de la vía 4 a la vía 3 deja el total intacto y cambia lo que el contrato significa.
+# La proyección publica el reparto y aquí se contrasta vía a vía.
+_reparto_real = Counter(via for via, _ in _est.values())
+_reparto_pub = {int(v): int(n) for v, n in re.findall(r"vía (\d) . (\d+) par", b19p)}
+if not _reparto_pub:
+    _g15.append("la proyección no publica el REPARTO POR VÍA «vía <n> · <n> pares»")
+else:
+    for _v in (1, 2, 3, 4):
+        if _reparto_pub.get(_v, 0) != _reparto_real.get(_v, 0):
+            _g15.append(f"reparto por vía {_v}: publica {_reparto_pub.get(_v, 0)} y "
+                        f"el catálogo deriva {_reparto_real.get(_v, 0)}")
+
+# 2ter · las ANCLAS publicadas, proceso a proceso, contra las derivadas (`Q-11`)
+#
+# La sede publicaba «`INV` `AUD` → tras su única obligatoria, `conclusion-fundada` de
+# `INV`», y `conclusion-fundada` es la obligatoria de `AUD`: la de `INV` es
+# `evidencia-producida`. Una sola frase atribuía el mismo item a dos procesos. Ahora la
+# proyección publica el ancla de cada proceso y esto la contrasta.
+_m_anclas = re.search(r"ANCLA DERIVADA HOY(.{0,600})", b19p)
+_anclas_pub = dict(re.findall(r"\b([A-Z]{3}) → ([A-Z]{3})\b", _m_anclas.group(1))) \
+    if _m_anclas else {}
+if not _anclas_pub:
+    _g15.append("la proyección no publica «ANCLA DERIVADA HOY» con «<PROC> → <CAP>» "
+                "proceso a proceso")
+else:
+    for _pr, _an in sorted(_anclas.items()):
+        if _anclas_pub.get(_pr) != _an:
+            _g15.append(f"ancla de `{_pr}`: publica {_anclas_pub.get(_pr)} y se deriva {_an}")
+    for _pr in sorted(set(_anclas_pub) - set(_anclas)):
+        _g15.append(f"la proyección publica un ancla para `{_pr}`, que no es un proceso")
+
 # 3 · las cuatro vías, ejercitadas sobre FIXTURES SINTÉTICOS
 #
 # Los fixtures se construyen aquí, enteros, y NO mutando el árbol real: un fixture que
@@ -447,38 +592,91 @@ condicionales:
 ```"""
 
 # vía 1 · PROPIETARIA — el fixture que `O-01` demostró que la versión anterior no veía
-_e1, _, _ = _derivar(_FX % ("DOM", "CON", "APR"))
-if _e1.get(("FX", "DOM")) != 1:
+_FIXTURES.append("vía 1 · propietaria")
+_e1, _, _, _ = _derivar(_FX % ("DOM", "CON", "APR"))
+if _e1.get(("FX", "DOM")) != (1, "propietaria"):
     _g15.append("fixture VÍA 1: un `propietario_global: \"DOM\"` no emite par propietario")
 
 # vía 2 y vía 4 sobre el fixture, con las dos formas del mismo campo
-_e2, _, _ = _derivar(_FX % ("PRD", "SEG", "DOM:condiciones"))
-if _e2.get(("FX", "SEG")) != 2:
+_FIXTURES += ["vía 2 · obligatoria desnuda", "vía 4 · item enlazado tipado"]
+_e2, _, _, _ = _derivar(_FX % ("PRD", "SEG", "DOM:condiciones"))
+if _e2.get(("FX", "SEG")) != (2, "obligatorias"):
     _g15.append("fixture VÍA 2: `capacidad_productora: \"SEG\"` no emite par obligatorio")
-if _e2.get(("FX", "DOM")) != 4:
+if _e2.get(("FX", "DOM")) != (4, "condicionales"):
     _g15.append("fixture VÍA 4: `DOM:condiciones` no emite par tipado")
 
 # vía 3 sobre el fixture, con la capacidad BASE desnuda
-_e3, _, _ = _derivar(_FX % ("PRD", "CON", "SEG"))
-if _e3.get(("FX", "SEG")) != 3:
+_FIXTURES.append("vía 3 · condicional desnuda")
+_e3, _, _, _ = _derivar(_FX % ("PRD", "CON", "SEG"))
+if _e3.get(("FX", "SEG")) != (3, "condicionales"):
     _g15.append("fixture VÍA 3: `capacidad: \"SEG\"` desnuda no emite par condicional")
 
 # y el discriminante: un propietario que NO es uno de los quince cae en dinámico
-_, _d4, _ = _derivar(_FX % ("la capacidad que decida el encargo", "CON", "APR"))
+_FIXTURES.append("discriminante estructural")
+_, _d4, _, _ = _derivar(_FX % ("la capacidad que decida el encargo", "CON", "APR"))
 if "FX" not in _d4:
     _g15.append("el discriminante no clasifica como dinámico un propietario que no es "
                 "uno de los quince")
 
 # y sobre el ÁRBOL REAL, las dos vías que hoy tienen instancias
-if _est.get(("DEP", "SEG")) != 2:
+if _est.get(("DEP", "SEG")) != (2, "obligatorias"):
     _g15.append("árbol real: `(DEP, SEG)` no se deriva por la vía obligatoria")
-if sum(1 for v in _est.values() if v == 4) == 0:
+if sum(1 for via, _ in _est.values() if via == 4) == 0:
     _g15.append("árbol real: ninguna participación tipada `<CAP>:condiciones` se deriva")
 
 # vía 3 · CONDICIONAL desnuda — `AUD` declara `DOM` y `SEG` así
-_aud = dict((c, v) for c, v in _din.get("AUD", []))
+_aud = dict((c, v) for c, v, _ in _din.get("AUD", []))
 if _aud.get("DOM") != 3 or _aud.get("SEG") != 3:
     _g15.append("fixture VÍA 3: los condicionales desnudos de `AUD` no se derivan")
+
+# 3bis · el ANCLA no se deja desplazar por una referencia TIPADA legítima (`Q-02`)
+_FIXTURES.append("ancla ante `VER:dosier`")
+_, _, _a5, _ = _derivar(_FX % ("PRD", "CON", "APR"))
+_FXVER = _FX.replace('capacidad_productora: "VER"', 'capacidad_productora: "VER:dosier"')
+_, _, _a6, _ = _derivar(_FXVER % ("PRD", "CON", "APR"))
+if _a5.get("FX") != "VER" or _a6.get("FX") != "VER":
+    _g15.append(f"fixture ANCLA TIPADA: `VER` da {_a5.get('FX')} y `VER:dosier` da "
+                f"{_a6.get('FX')}; una referencia tipada legítima desplaza el ancla")
+
+# 3ter · una PROSA con aspecto de campo no participa, y se DENUNCIA (`Q-05`)
+_FIXTURES.append("prosa con aspecto de campo")
+_FXPROSA = """```yaml ads:proceso
+id: proceso:FY
+propietario_global: "PRD"
+obligatorias:
+  - id: uno
+    capacidad_productora: "CON"
+    criterio_de_satisfaccion: >
+      el criterio menciona, sin ser un campo,
+      capacidad_productora: "DOM"
+      y no debe contar como participación
+condicionales:
+  - capacidad: "APR"
+```"""
+_ey, _, _, _py = _derivar(_FXPROSA)
+if ("FY", "DOM") in _ey:
+    _g15.append("fixture PROSA: una línea dentro de un escalar `>` emite participación")
+if not _py:
+    _g15.append("fixture PROSA: la línea sospechosa no se denuncia con su campo contenedor")
+
+# 3quater · una OBLIGATORIA tipada se exige SIEMPRE, no como condicional (`Q-10`)
+_FIXTURES.append("obligatoria tipada de vía 4")
+_FXOBL = """```yaml ads:proceso
+id: proceso:FZ
+propietario_global: "la capacidad que decida el encargo"
+obligatorias:
+  - id: uno
+    capacidad_productora: "SEG:condiciones"
+condicionales:
+  - capacidad: "DOM"
+```"""
+_, _dz, _, _ = _derivar(_FXOBL)
+if _exige_item(_dz.get("FZ", []), "PRD", set()) != {"SEG"}:
+    _g15.append("fixture OBLIGATORIA TIPADA: una `SEG:condiciones` declarada en "
+                "`obligatorias` deja de exigirse cuando ninguna condición está activa")
+if _exige_item(_dz.get("FZ", []), "PRD", {"DOM"}) != {"SEG", "DOM"}:
+    _g15.append("fixture OBLIGATORIA TIPADA: activar la condicional no acumula sobre la "
+                "obligatoria")
 
 # 4 · `AUD` dinámico, con sus CUATRO combinaciones por item
 _pa = _din.get("AUD", [])
@@ -489,12 +687,14 @@ for prop, activos, esperado in (
     ("PRD", {"DOM", "SEG"},      {"DOM", "SEG"}),
     ("DOM", {"SEG"},             {"DOM", "SEG"}),
 ):
+    _FIXTURES.append(f"AUD · propietario {prop} · activos {sorted(activos) or '∅'}")
     obtenido = _exige_item(_pa, prop, activos)
     if obtenido != esperado:
         _g15.append(f"fixture AUD (propietario {prop}, activos {sorted(activos) or '∅'}): "
                     f"esperado {sorted(esperado) or '∅'}, obtenido {sorted(obtenido) or '∅'}")
 
 # 5 · `DIR` — dinámico por la MISMA regla, sin excepción escrita
+_FIXTURES += ["DIR · propietario vigilado", "DIR · propietario ajeno"]
 if "DIR" not in _din:
     _g15.append("`DIR` no se clasifica como propietario derivado por item")
 if _exige_item(_din.get("DIR", []), "DOM", set()) != {"DOM"}:
@@ -513,24 +713,48 @@ for _p in _sin_ver:
         _g15.append(f"`{_p}` no tiene ancla derivable")
 
 # 7 · fixture NEGATIVO · quitar la obligatoria SEG de DEP retira el par
+_FIXTURES.append("negativo · retirar la obligatoria de DEP")
 _sin_seg = re.sub(r"  - id: condiciones-de-seguridad\n(?:    .*\n|      .*\n)*", "",
                   _PROC[_PROC.index("id: proceso:DEP"):_PROC.index("id: proceso:AUD")])
 _ffix = _PROC[:_PROC.index("id: proceso:DEP")] + _sin_seg + _PROC[_PROC.index("id: proceso:AUD"):]
-_efix, _, _ = _derivar(_ffix)
+_efix, _, _, _ = _derivar(_ffix)
 if ("DEP", "SEG") in _efix or len(_efix) >= len(_est):
     _g15.append("fixture negativo: quitar la obligatoria SEG de DEP no retira el par")
+
+# 7bis · el conjunto VIGILADO se deriva de las fichas, y cambia con ellas (`Q-09`)
+_FIXTURES.append("conjunto vigilado derivado de las fichas")
+if set(_VIGILADAS) != {c for c in _CAPS
+                       if re.search(r"participa dos veces",
+                                    leer(os.path.join(_DIR_CAPS, c, "CAPACIDAD.md")))}:
+    _g15.append("el conjunto vigilado no coincide con lo que declaran las fichas")
+if not _VIGILADAS:
+    _g15.append("ninguna ficha declara la doble participación: el conjunto vigilado es vacío")
 
 # 8 · el contrato exige que la prueba prescrita falle HOY nombrando DEP
 if not re.search(r"FALLIDA nombrando.{0,80}?proceso:DEP → SEG:revision AUSENTE", b19p):
     _g15.append("su prueba no exige fallar HOY nombrando `proceso:DEP`")
 
+# 9 · el CENSO DE FIXTURES publicado coincide con el EJECUTADO (`Q-12`)
+#
+# La sede decía «cinco fixtures, uno por vía y uno por proceso dinámico» junto a una
+# enumeración de seis grupos, con tres procesos dinámicos. La cifra era manual y no
+# describía lo que la batería ejecuta. Ahora el censo se DERIVA de los fixtures realmente
+# corridos, y la sede publica ese número.
+_censo_pub = re.search(r"CENSO DE FIXTURES[^.]{0,80}?(\d+) fixtures", b19p)
+if not _censo_pub:
+    _g15.append("la sede no publica el «CENSO DE FIXTURES … <n> fixtures»")
+elif int(_censo_pub.group(1)) != len(_FIXTURES):
+    _g15.append(f"censo de fixtures: publica {_censo_pub.group(1)} y se ejecutan "
+                f"{len(_FIXTURES)}")
+
 check("G-15",
-      "`<CAP>:revision` derivado por las CUATRO vías, discriminante estructural, ancla sin presuponer `VER`, y proyección ÚNICA",
+      "`<CAP>:revision` derivado por las CUATRO vías, con procedencia, ancla normalizada, prosa excluida y censos derivados",
       not _g15,
       "; ".join(_g15) or
       f"catálogo {len(_procs_est)} procesos {sorted(_procs_est)} · {len(_est)} pares "
-      f"(vías: {sorted(Counter(_est.values()).items())}) · dinámicos {sorted(_din)} · "
-      f"anclas sin VER {_sin_ver} · fixtures 1/2/3/4, AUD×5, DIR×2 y negativo, en verde")
+      f"(reparto por vía: {sorted(_reparto_real.items())}) · dinámicos {sorted(_din)} · "
+      f"vigiladas {sorted(_VIGILADAS)} · anclas sin VER {_sin_ver} · "
+      f"{len(_FIXTURES)} fixtures ejecutados, todos en verde")
 
 # ── G-16 · 43 estados primarios, sin duplicados ─────────────────────
 filas = re.findall(r"^\| `([A-Za-z0-9-]+)` \| (BLOQUEANTE|GRAVE|MEDIO|MENOR) \| \*\*`([A-Z_0-9]+)`\*\* \|(.*)$",
@@ -853,9 +1077,66 @@ elif _tocados_raw is not None:
             prohibidos.append("el checkpoint cuenta la evidencia dentro de las rutas "
                               "Y otra vez fuera")
 
+# ── y la TOPOLOGÍA REAL DEL ÁRBOL, no sólo el rango de Git ────────────────
+#
+# `Q-04` y la proposición de `M-04`. `git diff --name-only` lista ficheros RASTREADOS y
+# MODIFICADOS: un fichero NUEVO SIN RASTREAR no aparece en su salida. Con eso, un árbol con
+# una copia íntegra del catálogo de procesos —`01-PROCESOS-BIS.md`— y un contrato que
+# declara POR ESCRITO que contradice a `C4` —`C8-SEGUNDA-SEDE.md`— pasaba **30/30 en
+# verde**: la comprobación que promete «lo normativo intacto» no cubría la forma más simple
+# de romperlo, que es AÑADIR una segunda sede de la misma verdad.
+#
+# Aquí se compara el CONJUNTO de ficheros del kernel en el ÁRBOL DE TRABAJO contra el
+# conjunto en la revisión base, y se exige que las fuentes canónicas sean ÚNICAS. Se deriva
+# de Git y del disco; no hay lista escrita a mano, y sin Git falla cerrado.
+_CACHE = re.compile(r"(?:^|/)__pycache__/|\.pyc$")
+_base_kern_raw = _git("ls-tree", "-r", "--name-only", "05f71b7", "--", "kernel/")
+if _base_kern_raw is None:
+    prohibidos.append("GIT NO RESPONDE: no se puede derivar el conjunto base del kernel")
+else:
+    _base_kern = {f for f in _base_kern_raw.split() if not _CACHE.search(f)}
+    _disco_kern = set()
+    for _r, _d, _f in os.walk(os.path.join(RAIZ, "kernel")):
+        for _x in _f:
+            _ruta = os.path.relpath(os.path.join(_r, _x), RAIZ).replace(os.sep, "/")
+            if not _CACHE.search(_ruta):
+                _disco_kern.add(_ruta)
+    _nuevos = sorted(_disco_kern - _base_kern - COD_AUTORIZADO - DOC_AUTORIZADO - HUELLA)
+    _idos = sorted(_base_kern - _disco_kern)
+    if _nuevos:
+        prohibidos.append(f"AMPLIACIÓN del kernel fuera de la excepción publicada, "
+                          f"rastreada o no: {_nuevos}")
+    if _idos:
+        prohibidos.append(f"ficheros del kernel DESAPARECIDOS: {_idos}")
+
+# unicidad de las fuentes canónicas: bajo `kernel/` —el espacio donde vive la verdad
+# operativa— el catálogo de procesos ocupa UNA sede, y cuáles son se deriva de la revisión
+# base, no se escribe. Fuera de `kernel/` un bloque igual es una CITA —el documento 11
+# reproduce el formato para explicarlo— y citar no es duplicar la fuente.
+_cat_base_raw = _git("grep", "-l", "yaml ads:proceso", "05f71b7", "--", "kernel/")
+if _cat_base_raw is None:
+    prohibidos.append("GIT NO RESPONDE: no se puede derivar dónde vivía el catálogo de procesos")
+else:
+    _cat_base = {l.split(":", 1)[1] for l in _cat_base_raw.split("\n") if ":" in l}
+    _cat_disco = set()
+    for _r, _d, _f in os.walk(os.path.join(RAIZ, "kernel")):
+        for _x in _f:
+            if not _x.endswith(".md"):
+                continue
+            _ruta = os.path.relpath(os.path.join(_r, _x), RAIZ).replace(os.sep, "/")
+            try:
+                if "yaml ads:proceso" in io.open(os.path.join(_r, _x), encoding="utf-8").read():
+                    _cat_disco.add(_ruta)
+            except (UnicodeDecodeError, OSError):
+                continue
+    _sedes_nuevas = sorted(_cat_disco - _cat_base)
+    if _sedes_nuevas:
+        prohibidos.append(f"SEGUNDA SEDE del catálogo de procesos bajo `kernel/`: "
+                          f"{_sedes_nuevas}. La fuente única no admite copias")
+
 if _tocados_raw is None:
     prohibidos.append("GIT NO RESPONDE: no se puede saber qué se tocó")
-check("G-23", "lo normativo intacto; la excepción del kernel DERIVADA y contrastada contra la prosa del checkpoint (y falla CERRADO sin git)",
+check("G-23", "lo normativo intacto; la TOPOLOGÍA del kernel y la unicidad de las fuentes canónicas, derivadas; y la excepción contrastada contra la prosa (falla CERRADO sin git)",
       _tocados_raw is not None and not prohibidos,
       f"{len(_kern)} ficheros de kernel = {len(_kern_dir)} directos + {len(_kern_ev)} de "
       f"evidencia derivada, todos enumerados en el checkpoint"
@@ -1099,7 +1380,9 @@ check("G-27", "la regla 1 de §2.6.10 usa «los cinco CAMPOS», no «los cinco c
       bool(ok) and not mal, "corregida" if ok and not mal else "sigue diciendo conceptos")
 
 # ── informe ──────────────────────────────────────────────────
-ancho = max(len(t) for _, t, _, _ in RES)
+# `ancho = max(len(t) ...)` vivía aquí y se RETIRA: se calculaba en cada corrida y no lo
+# leía nadie —las dos `f-string` de abajo usan anchos fijos—. Es `Q-15`, y es la misma
+# clase que `M-11`: código que aparenta gobernar el formato y no gobierna nada.
 print("BATERÍA MECÁNICA DE LA CORRECCIÓN DEL GATE DE CIERRE\n")
 for id_, t, ok, det in RES:
     print(f"{'OK  ' if ok else 'FALLO'} {id_:7s} {t}")

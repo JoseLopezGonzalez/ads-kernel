@@ -8877,8 +8877,16 @@ POSICIÓN, APLICABLE  si el proceso la declara; y si NO la declara, después de 
 A CUALQUIER RUTA     participación obligatoria**. Dos ramas, las dos derivables del propio
 REAL                 bloque, y ninguna presupone que `VER` exista.
                      Derivado hoy: `FEA` `GAP` `DEF` `INC` `DEU` `DEP` `DIR` `SIS` → tras `VER`
-                                   `INV` `AUD` → tras su única obligatoria, `conclusion-fundada`
-                                                 de `INV`
+                                   `AUD` → tras su ÚNICA obligatoria, `conclusion-fundada`,
+                                           **que produce la capacidad `INV`**
+                                   `INV` → tras su ÚNICA obligatoria, `evidencia-producida`,
+                                           **que produce también `INV`**
+                     **Corregido por `Q-11`**: esta sede decía «`INV` `AUD` → tras su única
+                     obligatoria, `conclusion-fundada` de `INV`», y atribuía a los dos
+                     procesos el MISMO item. `conclusion-fundada` es la obligatoria de `AUD`;
+                     la de `INV` es `evidencia-producida`. Los dos anclan en la capacidad
+                     `INV` y **en items distintos**, y `G-15` contrasta hoy el ancla publicada
+                     contra la derivada, proceso a proceso.
                      **Ya no se exige `VER` donde no hay `VER`.** Que `AUD` carezca de `VER`
                      es un hecho de `b.16` registrado como `PN-8`, y esta regla lo respeta en
                      vez de tropezar con él: **la revisión de `AUD` va tras la conclusión que
@@ -8939,6 +8947,19 @@ SALIDA ESPERADA      **DOS salidas, y NO se suman en un total** (`D104`):
                            **CINCO procesos y NUEVE pares, los NUEVE AUSENTES** —hay cero
                            instancias de `:revision` en todo `kernel/operativo/`—, con
                            `(DEP, SEG)` por la vía 2 y los otros ocho por la vía 4
+
+                           **REPARTO POR VÍA, y `G-15` lo contrasta vía a vía** (`Q-03`):
+                           **vía 1 · 0 pares · vía 2 · 1 par · vía 3 · 0 pares · vía 4 ·
+                           8 pares**. Un total de nueve admite repartos que significan cosas
+                           distintas —mover los condicionales de `FEA` de la forma tipada a
+                           la desnuda deja el nueve intacto y cambia el contrato—, luego
+                           **publicar sólo el total no basta**
+
+                           **ANCLA DERIVADA HOY, proceso a proceso** —y `G-15` la contrasta
+                           contra el catálogo, que es lo que `Q-11` pidió—:
+                           `AUD → INV` · `DEF → VER` · `DEP → VER` · `DEU → VER` ·
+                           `DIR → VER` · `FEA → VER` · `GAP → VER` · `INC → VER` ·
+                           `INV → INV` · `SIS → VER`
                        B · por cada item de un proceso de propietario POR ITEM, el conjunto
                            exigido por la unión de propietario efectivo y condicionales
                            activados. **No se agrega al total de A**
@@ -8982,10 +9003,19 @@ SI FALTA `SEG` EN    `proceso:DEP` → `SEG:revision` AUSENTE**, y tiene que seg
                      no a `DEP`. Una prueba que hoy pase en verde está mal construida por
                      definición
 
-QUÉ TIENE QUE        cinco fixtures, uno por vía y uno por proceso dinámico, **y `G-15` los
-DEMOSTRAR LA         ejecuta en cada corrida**: propietaria · obligatoria · condicional
-COMPROBACIÓN         desnuda · item enlazado tipado · `AUD` con sus cuatro combinaciones ·
-                     `DIR` con propietario `DOM` y con propietario ajeno
+QUÉ TIENE QUE        un fixture por VÍA, uno por cada combinación de un proceso de
+DEMOSTRAR LA         propietario POR ITEM, y uno por cada modo de fallo cerrado, **y `G-15`
+COMPROBACIÓN         los ejecuta en cada corrida**: propietaria · obligatoria desnuda ·
+                     condicional desnuda · item enlazado tipado · discriminante estructural ·
+                     ancla ante una referencia tipada `VER:dosier` · prosa con aspecto de
+                     campo · obligatoria tipada de vía 4 · `AUD` con sus cinco casos · `DIR`
+                     con propietario vigilado y con propietario ajeno · negativo de `DEP` ·
+                     conjunto vigilado derivado de las fichas.
+                     **CENSO DE FIXTURES, derivado de los que se ejecutan y no escrito a
+                     mano: 17 fixtures** (`Q-12`). La sede decía «cinco» junto a una
+                     enumeración de seis grupos, con tres procesos dinámicos en el árbol: la
+                     cifra no describía nada de lo que la batería corre. Ahora `G-15` cuenta
+                     los fixtures que ejecuta y **falla si esta cifra no es la suya**
 
 DÓNDE, EXACTAMENTE   `kernel/operativo/recorrido/01-PROCESOS.md`. Y en
                      `kernel/operativo/circuitos/`, la instancia de handoff que materializa
