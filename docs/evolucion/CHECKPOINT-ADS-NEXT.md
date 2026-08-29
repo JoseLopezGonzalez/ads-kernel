@@ -97,11 +97,12 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
 freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
              Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
              queda marcado HISTÓRICO y SUPERADO, y no se borra
-last_meaningful_event: la candidata r2 queda PUBLICADA en 1b588ac y validada con Python
-             3.11.16 —13/13, 57/57, 67 detectadas y 0 NO detectadas, T158 SUPERADA y
-             T161 = 293—, con validación independiente posterior que la confirma; y la
-             batería propia se hace PORTABLE y su G-23 deja de afirmar «kernel intacto»,
-             que dejó de ser cierto en 1b588ac (2026-08-28)
+last_meaningful_event: se publican DOS snapshots —r2@1b588ac, con la tanda y el arreglo de
+             N158g; y r3@65cab54, con la batería ya PORTABLE, G-23 comprobando la excepción
+             exacta en vez de afirmar «kernel intacto», y G-24 leyendo de verdad—. El árbol
+             VIGENTE es posterior a ambos, y su SHA se deriva de Git, no se escribe aquí.
+             Validación con Python 3.11.16, confirmada de forma independiente: 13/13, 57/57,
+             67 detectadas y 0 NO detectadas, T158 SUPERADA y T161 = 293 (2026-08-29)
 last_meaningful_event_anterior: la SEGUNDA revisión independiente devuelve F4 con veredicto de
              INSUFICIENCIA —dos BLOQUEANTES, siete GRAVES y catorce hallazgos nuevos— y sus
              correcciones quedan aplicadas (2026-08-27)
@@ -745,10 +746,13 @@ owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
              de control DEFINITIVO. NO autoriza iniciar la adopción" (2026-08-27)
 pregunta_pendiente: ninguna. Las DIEZ presiones normativas vigentes son materia de F5,
              no preguntas
-siguiente:   UN GATE INDEPENDIENTE SOBRE LA CANDIDATA CORREGIDA `r2`, con contexto limpio.
+siguiente:   UN GATE INDEPENDIENTE SOBRE EL ÁRBOL VIGENTE, con contexto limpio. **No sobre
+             `r2`**: su árbol es anterior a las correcciones de portabilidad y de `G-23`. El
+             SHA a auditar se deriva con `git rev-parse HEAD` y `git ls-remote`.
              **NO otra corrección aplicada por el mismo autor**: quien recibe no puede
              seguir siendo quien aplica, y esa es la razón por la que las tandas anteriores
-             se encadenaron. La candidata está PUBLICADA en 1b588ac y es auditable: 13/13,
+             se encadenaron. Hay snapshots PUBLICADOS y preservados —r2@1b588ac y
+             r3@65cab54— y el árbol vigente es auditable: 13/13,
              57/57, 67/0, T158 SUPERADA y T161 = 293, con validación independiente posterior
              que lo confirma, y con su batería propia ya PORTABLE —30/30 desde cualquier
              ruta— y su G-23 comprobando la excepción exacta en vez de afirmar «kernel
@@ -1465,9 +1469,25 @@ DE ESE LÍMITE       FALLIDA, y **no era un defecto de contenido**: la evidencia
 
 ════════════════════ ESTADO VIGENTE ════════════════════
 
-CANDIDATA          `review/f4c-candidate-20260828-r2`, publicada en
-PUBLICADA          **1b588acafb5acf68b11fcc9f544de9fc7e8fddb2**. Deja de ser cierto que
-                   «nada está publicado»: la tanda ESTÁ publicada, y es auditable.
+SNAPSHOTS          publicados y PRESERVADOS. Son fotografías de un momento, no «la
+PUBLICADOS         candidata actual»:
+                     r2 · 1b588acafb5acf68b11fcc9f544de9fc7e8fddb2
+                          publicación de la tanda y arreglo de `N158g`
+                     r3 · 65cab5415e002f5dc5f66dbab5b6ae5f3f77bebd
+                          portabilidad de la batería, `G-23`, `G-24` y vigencia del
+                          checkpoint
+                   Deja de ser cierto que «nada está publicado». Y **`r2` NO es la candidata
+                   vigente**: su árbol no contiene las correcciones que `r3` incorpora.
+
+ÁRBOL VIGENTE      **el árbol que contiene ESTE checkpoint**, que incorpora las correcciones
+                   posteriores a los snapshots de arriba.
+                   Su SHA y su rama remota **NO se escriben aquí**: se DERIVAN de Git, y
+                   escribirlos crearía una segunda fuente de verdad que además envejece a
+                   cada commit —y un checkpoint que registrase el SHA de su propio commit
+                   necesitaría otro commit para corregirlo, y así sin fin.
+                   Antes del gate se comprueban con:
+                     git rev-parse HEAD
+                     git ls-remote origin
 
 VALIDACIÓN         ejecutada con **Python 3.11.16**, y **repetida después de forma
 CANÓNICA           independiente con el mismo resultado**:
@@ -1505,9 +1525,16 @@ BATERÍA PROPIA     tenía dos defectos que ESTA tanda cierra: calculaba mal la 
                    nombre. **30/30 desde la raíz, desde otro cwd y desde un worktree
                    arbitrario.**
 
-LO QUE NO CAMBIA   **`F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA.** Ninguno de los
-                   hallazgos del gate se ha corregido, y esta tanda no los toca: corrige
-                   auditabilidad y vigencia, no arquitectura.
+QUÉ PASA CON LOS   los hallazgos `I-01`–`I-28` y la fila `A7` tienen sus **correcciones
+HALLAZGOS DEL      arquitectónicas APLICADAS**, en la tanda anterior. La corrección posterior
+GATE               —`N158g`, portabilidad de la batería, `G-23`, `G-24` y este checkpoint—
+                   **NO modifica ninguna de esas decisiones arquitectónicas**: toca
+                   auditabilidad y vigencia, y nada más.
+                   **Aplicar las correcciones NO las certifica.** Las aplicó quien las
+                   recibió, y eso es lo que un gate independiente existe para juzgar.
+
+LO QUE NO CAMBIA   **`F4c` sigue ABIERTA hasta el gate independiente, y `F5` sigue NO
+                   AUTORIZADA.**
 
 EL SIGUIENTE PASO  un **gate independiente sobre la candidata corregida**, con contexto
                    limpio. **No otra corrección aplicada por el mismo autor**: quien recibe
@@ -1561,10 +1588,20 @@ LEA sigue siendo su condición mínima, y ninguna comprobación mecánica la sus
                                   cierre eran de esa clase, y esta tanda ha tocado cinco
                                   sedes más de §8 y toda la capa B.
 
-3  QUÉ NO SE HA HECHO, Y NO       no se ha encargado otro gate · no se ha iniciado F5 ni F6 ·
-   DEBE HACERSE SIN DECIDIRLO     no se ha redactado ninguna enmienda de `b.16`, de (a) ni de
-                                  (b) · no se ha tocado `C7` ni nada de `kernel/operativo/` ·
-                                  no se ha iniciado PesquerApp · y **nada se ha publicado**.
+3  QUÉ NO SE HA HECHO, Y NO       no se ha encargado el gate independiente · no se ha
+   DEBE HACERSE SIN DECIDIRLO     iniciado F5, F6 ni PesquerApp · no se ha redactado ninguna
+                                  enmienda de `b.16`, de (a) ni de (b) · no se ha tocado
+                                  `C7` · **no se ha hecho merge en `redesign/kernel-2.0`**.
+
+   Y LO QUE SÍ SE HA HECHO,       **hay candidatas PUBLICADAS y preservadas** —`r2` y `r3`—,
+   PARA QUE NO SE LEA DE MENOS    luego «nada se ha publicado» ya NO es cierto.
+                                  **El kernel operativo SUSTANTIVO no se ha tocado**, y la
+                                  excepción es exacta y se nombra:
+                                    kernel/operativo/validadores/comprobar_negativos.py
+                                    kernel/.upstream-hash
+                                    kernel/operativo/pruebas/evidencia/*
+                                  Decir «no se ha tocado nada de `kernel/operativo/`» sería
+                                  falso desde `1b588ac`.
 
 5  QUÉ LLEVAR AL OWNER            las **DOCE** presiones de §16, con `PN-1` bloqueando todo el
                                   estado durable y **`PN-14` como la única que esta tanda
@@ -1577,7 +1614,13 @@ LEA sigue siendo su condición mínima, y ninguna comprobación mecánica la sus
                                   punto decía «las ONCE presiones de §16» y un Owner que
                                   siguiera sólo esta línea no habría visto `F-08`.
 
+4  EL SIGUIENTE PASO              **el GATE INDEPENDIENTE sobre el ÁRBOL VIGENTE** —no sobre
+                                  `r2`, cuyo árbol es anterior a las correcciones de
+                                  portabilidad—. Su SHA se deriva con `git rev-parse HEAD` y
+                                  `git ls-remote`, no de una cifra escrita aquí.
+
 6  DÓNDE PARAR                    antes de redactar `(g)`, antes de crear `C8`, antes de tocar
-                                  `C7` o `kernel/operativo/`, y antes de iniciar PesquerApp.
+                                  `C7` o el kernel operativo SUSTANTIVO, y antes de iniciar
+                                  PesquerApp.
                                   `O15` dice qué será cuando ocurra, no que ocurra ahora.
 ```
