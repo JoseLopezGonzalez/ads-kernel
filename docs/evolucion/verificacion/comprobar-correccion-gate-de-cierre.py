@@ -305,7 +305,31 @@ if not _m:
     _g13.append("el resumen de §16 no declara «VIGENTES · <n>»")
 elif _num(_m.group(1)) != len(vigentes):
     _g13.append(f"el resumen dice {_m.group(1)} y las cabeceras derivan {len(vigentes)}")
-check("G-13", "el censo de presiones es coherente: serie continua, excluidas marcadas, resumen = derivado",
+# y el BARRIDO de `PN-15` sobre el material APROBADO, derivado fichero a fichero (`P-06`)
+#
+# El bloque de evidencia declaraba «cero apariciones de `G20`, `G21` y `G23` en el documento
+# 11, en (a), en (b) y en `E2`», y era falso del documento 11 —donde hay decenas, casi todas
+# introducidas por el propio bloque que lo negaba: la evidencia se destruía al registrarla—.
+# La tesis que sí se sostiene, y la única que la presión necesita, es que **el material
+# APROBADO no contiene una derogación válida**. Aquí se deriva ese barrido y se contrasta
+# contra las tres cifras publicadas. El documento 11 queda fuera a propósito: sus
+# apariciones son documentales y contarlas no probaría nada.
+_APROBADO = {"(a)": "docs/rediseno/a-CAPACIDADES-APROBADA.md",
+             "(b)": "docs/rediseno/b-RECORRIDO-APROBADA.md",
+             "E2":  "docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md"}
+_m_bar = re.search(r"\(a\) (\d+) · \(b\) (\d+) · E2 (\d+)", t11)
+if not _m_bar:
+    _g13.append("el bloque de `PN-15` no publica el barrido «(a) n · (b) n · E2 n»")
+else:
+    _pub = dict(zip(("(a)", "(b)", "E2"), (int(g) for g in _m_bar.groups())))
+    for _k, _ruta in _APROBADO.items():
+        _real = sum(1 for l in lineas(os.path.join(RAIZ, _ruta))
+                    if re.search(r"\bG2[0-3]\b", l))
+        if _pub[_k] != _real:
+            _g13.append(f"barrido de `PN-15`: publica {_pub[_k]} en {_k} y el fichero "
+                        f"deriva {_real}")
+
+check("G-13", "el censo de presiones es coherente y el barrido de `PN-15` sobre el material APROBADO, derivado",
       not _g13,
       "; ".join(_g13) or
       f"{len(cab)} cabeceras - {len(_excluidas)} marcadas ({', '.join(_excluidas)}) "
@@ -779,16 +803,29 @@ dup = [k for k, v in Counter(ids).items() if v > 1]
 # Ahora contrasta el resumen contra las TRECE FILAS DE DETALLE, deriva los componentes de
 # `C-L.13` de esa misma fuente, y deriva su propio mensaje de éxito.
 _ESTADOS_CL = ("CORREGIDAS EN F4c", "REGISTRADAS PARA F5", "CONTRATADA PARA F6",
-               "MIXTA POR DESGLOSE", "ABIERTA POR COBERTURA")
+               "MIXTA POR DESGLOSE", "CERTIFICADA POR")
 
 _g16c = []
+_asig, _declarado = {}, {}
+# La clasificación VIGENTE está delimitada, y su detalle se lee DENTRO de ella (`Q-14`).
+#
+# Antes, las filas de detalle se buscaban en TODO el checkpoint y se tomaba la primera
+# aparición de cada `C-L.n`: una fila de un bloque HISTÓRICO satisfacía el contraste de la
+# clasificación vigente. Es la puerta por la que `C-L.3` podía estar descrita a la vez como
+# CERRADA por la regla de `D103` —que `M-01` refutó— y como NO CERRADA, sin que nada lo
+# viera. Ahora el bloque vigente se abre con «CÓMO QUEDA CADA CONDICIÓN», se cierra con
+# «FIN DE LA CLASIFICACIÓN VIGENTE», y **todo lo que se contrasta sale de ahí dentro**.
 _i = tchk.find("CÓMO QUEDA CADA CONDICIÓN")
+_fin_vig = tchk.find("FIN DE LA CLASIFICACIÓN VIGENTE", _i) if _i >= 0 else -1
 if _i < 0:
-    _g16c.append("no se encuentra el bloque de clasificación de las condiciones")
+    _g16c.append("no se encuentra el bloque de clasificación VIGENTE de las condiciones")
+elif _fin_vig < 0:
+    _g16c.append("el bloque de clasificación vigente no se cierra con «FIN DE LA "
+                 "CLASIFICACIÓN VIGENTE»: su alcance no es determinable")
 else:
+    _vigente = tchk[_i:_fin_vig]
     _fin_blq = tchk.find("= los trece ids distintos", _i)
-    _blq = tchk[_i:_fin_blq if _fin_blq > 0 else tchk.find("\n\n", _i)]
-    _asig, _declarado = {}, {}
+    _blq = tchk[_i:_fin_blq if 0 < _fin_blq < _fin_vig else _fin_vig]
     for _est in _ESTADOS_CL:
         _m = re.search(rf"^\s*{re.escape(_est)}\s+(\d+)\s+(.*)$", _blq, re.M)
         if not _m:
@@ -825,13 +862,13 @@ else:
         "REGISTRADAS PARA F5":  ("REGISTRADA PARA F5", "REGISTRADA"),
         "CONTRATADA PARA F6":   ("CONTRATADA PARA F6", "CONTRATADA"),
         "MIXTA POR DESGLOSE":   ("MIXTA",),
-        "ABIERTA POR COBERTURA": ("ABIERTA",),
+        "CERTIFICADA POR":      ("CERTIFICADA",),
     }
     _detalle = {}
     # el estado puede llevar dígitos —«REGISTRADA PARA F5», «CONTRATADA PARA F6»—, y una
     # clase que los excluya deja tres filas sin reconocer
     for _m in re.finditer(r"^\s*(C-L\.\d+)\s+([A-ZÁÉÍÓÚ][A-ZÁÉÍÓÚ0-9 ,]*?)(?:\s+·|\s*$)",
-                          tchk, re.M):
+                          _vigente, re.M):
         _detalle.setdefault(_m.group(1), _m.group(2).strip())
     _sin_detalle = sorted(_esperados - set(_detalle), key=lambda x: int(x[4:]))
     if _sin_detalle:
@@ -846,7 +883,7 @@ else:
                          f"dice «{_det}»")
 
     # ── `C-L.13`: sus componentes se DERIVAN de la fila de detalle, no de una lista ──
-    _m13 = re.search(r"^\s*C-L\.13\s+.*?(?=^\s*C-L\.\d|\Z)", tchk, re.M | re.S)
+    _m13 = re.search(r"^\s*C-L\.13\s+.*?(?=^\s*C-L\.\d|\Z)", _vigente, re.M | re.S)
     _comp13 = sorted(set(re.findall(r"\b[JKL]-\d+\b", _m13.group(0)))) if _m13 else []
     if _asig.get("C-L.13") != ["MIXTA POR DESGLOSE"]:
         _g16c.append(f"`C-L.13` no está exactamente una vez como MIXTA: {_asig.get('C-L.13')}")
@@ -860,8 +897,14 @@ else:
                                  r"[^\n]*(?:contratad|NO implementad)", _b13, re.I):
         if "J-11" in _comp13:
             _g16c.append("`J-11` no consta como contratado para F6 y no implementado")
-    if _asig.get("C-L.5") != ["ABIERTA POR COBERTURA"]:
-        _g16c.append(f"`C-L.5` no está ABIERTA POR COBERTURA: {_asig.get('C-L.5')}")
+    if _asig.get("C-L.5") != ["CERTIFICADA POR"]:
+        _g16c.append(f"`C-L.5` no está CERTIFICADA POR COBERTURA: {_asig.get('C-L.5')}")
+    # `C-L.3` tiene que estar descrita por `D104` y NO por la regla que `M-01` refutó
+    _m3 = re.search(r"^\s*C-L\.3\s+.*?(?=^\s*C-L\.\d|\Z)", _vigente, re.M | re.S)
+    if not _m3 or "D104" not in _m3.group(0):
+        _g16c.append("`C-L.3` vigente no nombra `D104`")
+    if _m3 and re.search(r"cero o un par, nunca dos", _m3.group(0)):
+        _g16c.append("`C-L.3` vigente conserva la regla de `D103` que `M-01` refutó")
 
 _g16 = []
 if len(filas) != 43 or len(set(ids)) != 43:
@@ -889,7 +932,7 @@ check("G-16",
       f"matriz {len(filas)} filas / {len(set(ids))} ids · condiciones "
       f"{sum(_declarado.values())}/{len(_esperados)} con estado único, {_resumen} = "
       f"{sum(_declarado.values())}, cada resumen coincide con su fila de detalle · "
-      f"C-L.13 MIXTA con {len(_comp13)} componentes derivados · C-L.5 ABIERTA")
+      f"C-L.13 MIXTA con {len(_comp13)} componentes derivados · C-L.5 CERTIFICADA")
 
 # ── G-16b · A11 absorbido, A14 excluido ────────────────────────────
 check("G-16b", "`A11` absorbido en `M-8` y `A14` excluido: ninguno es fila de la matriz",
@@ -908,9 +951,44 @@ pubv = [int(x) for x in pub.groups()] if pub else []
 derv = [est["CORREGIDO_EN_F4"], est["PRESION_LISTA_PARA_F5"],
         est["CONTRATO_COMPLETO_PARA_F6"], est["EXTERNO_CON_PROPIETARIO"],
         est["HISTORICO_NO_APLICABLE"]]
-check("G-17", "el recuento publicado coincide con el DERIVADO de las filas",
-      pubv == derv and sum(derv) == 43,
-      f"derivado {derv} suma {sum(derv)} · publicado {pubv}")
+# y la MATRIZ DE LOS 24 del gate del documento 21, con la misma disciplina: un id por
+# fila, cada uno exactamente una vez, la severidad ADJUDICADA, y el recuento DERIVADO de
+# las filas —no copiado— coincidiendo con el publicado. Ninguno puede declararse SUPERADO:
+# corregido por quien lo recibió no es superado por revisión independiente.
+_g17 = []
+_m24 = re.findall(r"^\| \d+ \| `([A-Z]-\d+(?:≡[A-Z]-\d+)?)` \| \*\*(BLOQUEANTE|GRAVE|MEDIO|MENOR)\*\* \|(.*)$",
+                  tchk, re.M)
+if not _m24:
+    _g17.append("no se encuentra la matriz de trazabilidad de los 24 hallazgos")
+else:
+    _ids24 = [a for a, _, _ in _m24]
+    _dup24 = sorted(k for k, v in Counter(_ids24).items() if v > 1)
+    if _dup24:
+        _g17.append(f"matriz de los 24: ids duplicados {_dup24}")
+    if len(_ids24) != 24:
+        _g17.append(f"matriz de los 24: {len(_ids24)} filas y deben ser 24")
+    _sev24 = Counter(b for _, b, _ in _m24)
+    _der24 = [_sev24["BLOQUEANTE"], _sev24["GRAVE"], _sev24["MEDIO"], _sev24["MENOR"]]
+    _pub24 = re.search(r"BLOQUEANTE\s+(\d+).*?GRAVE\s+(\d+).*?MEDIO\s+(\d+).*?MENOR\s+(\d+)",
+                       tchk, re.S)
+    if not _pub24:
+        _g17.append("la matriz de los 24 no publica su recuento por severidad")
+    elif [int(x) for x in _pub24.groups()] != _der24:
+        _g17.append(f"matriz de los 24: publica {[int(x) for x in _pub24.groups()]} "
+                    f"y las filas derivan {_der24}")
+    _superados = [a for a, _, resto in _m24 if "SUPERAD" in resto.upper()]
+    if _superados:
+        _g17.append(f"matriz de los 24: se declaran SUPERADOS {_superados}, y quien aplica "
+                    f"no certifica")
+    _sin_estado = [a for a, _, resto in _m24 if "APLICADA, NO CERTIFICADA" not in resto]
+    if _sin_estado:
+        _g17.append(f"matriz de los 24: sin «APLICADA, NO CERTIFICADA» {_sin_estado}")
+
+check("G-17", "los recuentos publicados coinciden con lo DERIVADO: las 43 filas y los 24 hallazgos del documento 21",
+      pubv == derv and sum(derv) == 43 and not _g17,
+      "; ".join(_g17) or
+      f"derivado {derv} suma {sum(derv)} · publicado {pubv} · matriz de los 24: "
+      f"{len(_m24)} ids únicos, severidades {_der24} = {sum(_der24)}")
 
 # ── G-17b · atributos secundarios derivados ───────────────────────
 f5 = [f[0] for f in filas if [c.strip() for c in f[3].split(" | ")][2] != "no"]
@@ -1134,6 +1212,27 @@ else:
         prohibidos.append(f"SEGUNDA SEDE del catálogo de procesos bajo `kernel/`: "
                           f"{_sedes_nuevas}. La fuente única no admite copias")
 
+# ── y el PUNTO DE ENTRADA no reproduce la excepción: REMITE ───────────────
+#
+# `R-02`. La sección «Siguiente acción exacta» —la que la cabecera del checkpoint designa
+# como punto de entrada de un agente sin contexto— llevaba su PROPIA copia de la excepción
+# del kernel, con TRES ficheros, mientras la sede derivada enumeraba SEIS. Es `M-06`
+# reproducido en la misma tanda que lo declaraba corregido. Una lista copiada envejece sola:
+# aquí se exige que esa sección REMITA a la sede derivada en vez de copiarla.
+_i_sig = tchk.find("## Siguiente acción exacta")
+if _i_sig < 0:
+    prohibidos.append("el checkpoint no tiene sección «Siguiente acción exacta»")
+else:
+    _sig = tchk[_i_sig:]
+    _rutas_sig = {f for f in re.findall(r"kernel/[A-Za-z0-9_./-]+", _sig)
+                  if "." in f.rsplit("/", 1)[-1]}
+    if _rutas_sig:
+        prohibidos.append(f"«Siguiente acción exacta» copia rutas del kernel en vez de "
+                          f"remitir a la sede derivada: {sorted(_rutas_sig)}")
+    if "EXCEPCIÓN EXACTA" not in _sig:
+        prohibidos.append("«Siguiente acción exacta» no remite al campo «EXCEPCIÓN EXACTA "
+                          "DEL KERNEL», que es la sede derivada")
+
 if _tocados_raw is None:
     prohibidos.append("GIT NO RESPONDE: no se puede saber qué se tocó")
 check("G-23", "lo normativo intacto; la TOPOLOGÍA del kernel y la unicidad de las fuentes canónicas, derivadas; y la excepción contrastada contra la prosa (falla CERRADO sin git)",
@@ -1256,7 +1355,7 @@ def _es_cita(linea, ini_rel, fin_rel):
             return True                     # el numeral está DENTRO de «…»
     return bool(_VERBO_DE_CITA.search(linea[:ini_rel]))
 
-def _sedes(patron, texto=None, contexto=None, ventana=6):
+def _sedes(patron, texto=None, contexto=None, ventana=6, por_bloque=False):
     """[(línea, valor)] de cada sede VIVA que afirma una cifra.
 
     `contexto` es un patrón que debe aparecer en la VENTANA de líneas alrededor para
@@ -1277,6 +1376,16 @@ def _sedes(patron, texto=None, contexto=None, ventana=6):
         linea = texto[ini: fin if fin > 0 else len(texto)]
         if _es_cita(linea, m.start() - ini, m.end() - ini):
             continue
+        # `§16 · presiones` no afirma «dieciséis presiones»: el numeral es el número de
+        # sección. Una referencia a una sede no es un censo.
+        if m.start() > ini and texto[m.start() - 1] == "§":
+            continue
+        if por_bloque:
+            # la marca de histórico va en la primera línea de un campo de varias: se busca
+            # en el BLOQUE, como hace `G-01` con la cuarentena
+            _bi = texto.rfind("\n\n", 0, m.start()) + 2
+            if _BLOQUE_HISTORICO.search(texto[_bi: fin if fin > 0 else len(texto)]):
+                continue
         if contexto:
             nl = texto.count("\n", 0, m.start())
             bloque = "\n".join(ls[max(0, nl - ventana): nl + ventana + 1])
@@ -1329,6 +1438,18 @@ for pat, ctx in (
         if val != n_pn:
             _fallos_26.append(f"c1) L{ln}: dice {val} y las cabeceras de §16 derivan {n_pn}")
 
+# y el MISMO censo sobre el CHECKPOINT, que es el fichero que un agente lee al reanudar.
+#
+# `P-05`≡`Q-08`. La sección «Siguiente acción exacta» mandaba al Owner DOCE presiones donde
+# el derivado daba TRECE, por SEGUNDA vez seguida sobre la misma línea —la corrección
+# anterior, `I-28`, estaba escrita dos renglones más abajo—. Estos patrones sólo barrían el
+# documento 11: la sede que va al Owner quedaba fuera del control que existe para ella.
+for ln, val in _sedes(_NUM + r"\s+(?:presiones|PRESIONES)", tchk,
+                      contexto=r"§16|vigente|VIGENTES|Owner", por_bloque=True):
+    if val != n_pn:
+        _fallos_26.append(f"c1) checkpoint L{ln}: dice {val} presiones y las cabeceras "
+                          f"de §16 derivan {n_pn}")
+
 # c2 · externos de §19: la tabla frente a la prosa que la reconcilia
 _i19 = t11.find("## Lo que esta fase NO puede corregir")
 if _i19 < 0:
@@ -1377,6 +1498,35 @@ else:
         if _ws[-1] not in _l:
             _fallos_26.append(f"e) `{_id}` barre todas las ventanas y no nombra `{_ws[-1]}`, "
                               f"que es la última que la tabla declara")
+
+# ── 26.f · los RANGOS de presiones, no sólo los numerales ─────────────────
+#
+# `Q-07`. §16 decía «`PN-6` a `PN-14`» cuando ya existía `PN-15`, y omitía precisamente la
+# que va al Owner. Es la TERCERA vez que esa frase caduca —`m2` y luego `I-11` la
+# corrigieron—, y las dos veces anteriores se corrigió el numeral: un RANGO no es un
+# numeral, y por eso `G-13` y `G-26` no lo veían. Aquí se deriva el último vigente de las
+# cabeceras y se exige que todo rango VIVO termine en él.
+_pn_vig = [int(n) for n, resto in re.findall(r"^## `PN-(\d+)` ·(.*)$", t11, re.M)
+           if "RETIRADA" not in resto and "FUSIONADA" not in resto]
+_ultimo = max(_pn_vig) if _pn_vig else None
+for _txt, _quien in ((t11, "11"), (tchk, "checkpoint")):
+    for _m in re.finditer(r"`PN-(\d+)`\s*a\s*`PN-(\d+)`", _txt):
+        _ini = _txt.rfind("\n", 0, _m.start()) + 1
+        _fin = _txt.find("\n", _m.end())
+        _lin = _txt[_ini: _fin if _fin > 0 else len(_txt)]
+        # la marca de histórico se busca POR BLOQUE y no por línea: un campo del registro
+        # ocupa varias líneas y su etiqueta `[HISTÓRICO]` va en la primera, exactamente
+        # como `G-01` hace con la cuarentena
+        _bl_ini = _txt.rfind("\n\n", 0, _m.start()) + 2
+        _bloque = _txt[_bl_ini:_fin if _fin > 0 else len(_txt)]
+        if _es_cita(_lin, _m.start() - _ini, _m.end() - _ini) or \
+           _BLOQUE_HISTORICO.search(_bloque):
+            continue
+        if int(_m.group(2)) != _ultimo:
+            _fallos_26.append(
+                f"f) {_quien} L{_txt.count(chr(10), 0, _m.start()) + 1}: el rango vivo "
+                f"«PN-{_m.group(1)} a PN-{_m.group(2)}» no termina en la última vigente, "
+                f"que es PN-{_ultimo}")
 
 # ── 26.d · TOTALES INCOMPATIBLES entre sedes VIVAS ────────────────────────
 # Dos sedes vivas que afirmen cifras distintas del MISMO objeto es un fallo aunque

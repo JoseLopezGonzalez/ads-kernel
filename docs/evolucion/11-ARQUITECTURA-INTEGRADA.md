@@ -123,7 +123,7 @@ Para el Owner, sin vocabulario interno.
 ```text
 LA CUARTA CAPA           sigue deferida. Hace falta un proyecto independiente que minar.
 EL PILOTO                sigue sin ejecutarse. Nada de aquí está demostrado en un producto.
-LAS ENMIENDAS            este diseño presiona material aprobado en **TRECE** puntos, tras dos
+LAS ENMIENDAS            este diseño presiona material aprobado en **CATORCE** puntos, tras dos
                          devoluciones independientes, una tercera revisión, el gate final con
                          su complemento de cobertura, el GATE DE CIERRE INDEPENDIENTE y el
                          GATE DEFINITIVO INDEPENDIENTE. El recuento se DERIVA de §16 y se
@@ -7917,9 +7917,13 @@ sigue llamándose `PN-4` aunque esté retirada, porque renumerar rompería la tr
 que ya se llevó al Owner. De aquellas cinco resultan **TRES vigentes** —`PN-1`, `PN-2`,
 `PN-3`—, una retirada (`PN-4`) y una fusionada (`PN-5`): 3 + 1 + 1 = 5, y la cuenta cierra.
 **Corregido por `m2`**: decía «cuatro vigentes, una retirada y una fusionada» sobre cinco, que
-suma seis. Las demás vigentes —**`PN-6` a `PN-14`**— son posteriores, y el total está abajo.
+suma seis. Las demás vigentes —**`PN-6` a `PN-16`**— son posteriores, y el total está abajo.
 **Corregido por `I-11`**: decía «`PN-6` a `PN-12`», que con las tres primeras suma DIEZ
 mientras el total decía ONCE, y omitía precisamente `PN-13`, la que va al Owner.
+**Corregido otra vez por `Q-07`**: decía «`PN-6` a `PN-14`» cuando ya existía `PN-15`, y
+volvía a omitir justo la que va al Owner. Es la TERCERA vez que esta frase caduca, y por eso
+`G-26` deja de mirar sólo numerales sueltos y **deriva también los RANGOS**: un `PN-a` a
+`PN-b` vivo tiene que terminar en la última cabecera vigente y contener tantas como el censo.
 
 ## `PN-1` · La sección (g) no existe, y esta fase la escribe
 
@@ -8387,10 +8391,18 @@ TEXTO VIGENTE       `KERNEL.md`:690 (`G21`) — «El gate de salida del Circuito
 QUÉ ES EL DEFECTO   §17 declara «`START_HERE.md` rutas A y B → **sustituidas** por §8.1 y
                     §8.2», y §8.1 define `INS-0`…`INS-7` con `INS-3` = «C0: especializar y
                     verificar la organización YA MATERIALIZADA» y gates `INS-4` / `INS-7`.
-                    Un barrido del documento 11 devuelve **cero** apariciones de «timebox»,
-                    «presupuesto máximo», «Owner Decision» y «entregables obligatorios»; y
-                    `G20`, `G21` y `G23` tienen **cero** apariciones en el documento 11, en
-                    (a), en (b) y en `E2`, mientras `G22` tiene UNA, como cita de apoyo.
+                    **BARRIDO DERIVADO, y acotado a lo que puede DEROGAR** (`P-06`): en
+                    el material APROBADO —(a), (b) y `E2`— las cuatro reglas aparecen
+                    **(a) 1 · (b) 0 · E2 0**, y esa única aparición de (a) es una cita de
+                    apoyo en la ficha de `INV`, **no una fila derogatoria de `a.11`**.
+                    Lo que se prueba es esto y sólo esto: **el material aprobado no contiene
+                    ninguna derogación válida de `G20`–`G23`**.
+                    **Esta sede decía «cero apariciones en el documento 11», y era falsa**:
+                    el documento 11 las nombra muchas veces, y la mayoría de esas
+                    apariciones las introdujo ESTE MISMO bloque al registrar la presión. Son
+                    apariciones DOCUMENTALES —explican la presión— y contarlas probaría sólo
+                    que la presión está escrita. `G-13` deriva el censo del material
+                    aprobado y lo contrasta contra estas tres cifras.
                     `a.11` —«la ÚNICA lista que deroga o ajusta reglas», según `PN-3`— **no
                     nombra ninguna de las cuatro** en ninguna de sus cinco filas, y `E2.4`
                     demuestra la regla de lectura: `G29` figuraba entre las que SOBREVIVEN
@@ -8474,10 +8486,77 @@ ORIGEN              hallazgo `K-06` del GATE DEFINITIVO INDEPENDIENTE, agravado 
                     veredicto INSUFICIENTE PARA F5
 ```
 
+## `PN-16` · NUEVA · la grafía canónica de `<CAP>:revisión` vive en material APROBADO
+
+> **Registrada por `P-07` del GATE INDEPENDIENTE DE CIERRE CON MANIFIESTOS.** El bloque `E5`
+> justificaba no crear presión con «aquí **no hay norma presionada** … lo que hay es una cita
+> mal puesta y una lista mal numerada». Eso es exacto para `E5-1` y `E5-2`. **No lo es para
+> `E5-3`**, cuya propia fila dice «si es la sin tilde, **F5 enmienda (b)**» y se declara
+> «hermano exacto de `F-01`/`PN-14`, que SÍ se registró como presión». El único de los cuatro
+> que puede exigir enmendar material aprobado era el único que no llegaba al Owner.
+> **Esta presión NO elige la grafía y NO redacta ninguna enmienda: registra que hay que
+> elegir, y que la elección es del Owner.**
+
+```text
+QUÉ PRESIONA        `docs/rediseno/b-RECORRIDO-APROBADA.md` · `b.16` **L836**, la ÚNICA
+                    aparición normativa de la variante. Es material APROBADO: F4 no lo toca
+                    y F6 tampoco puede tocarlo
+
+TEXTO VIGENTE       (b) L836 — «`<CAP>:**revisión**`  tras VER  revisan lo construido»,
+                    **con tilde**
+
+QUÉ ES EL DEFECTO   todo el aparato derivado de F4 escribe la variante **sin tilde**:
+                    §19, `D92`, `D98`, `D103`, `D104`, la prueba prescrita, el mensaje de
+                    error `composicion-incompleta` y el vocabulario de `F-02` en `E-3`.
+                    **Dos grafías para el mismo identificador normativo, y ninguna sede dice
+                    cuál manda.** Es la misma clase que `F-01`: una discrepancia entre fuente
+                    APROBADA y derivado, que no se cierra corrigiendo sólo el derivado
+
+POR QUÉ NO BASTA    porque si la canónica es la de (b), lo que hay que corregir es todo el
+UN DERIVADO         derivado de F4 —trabajo de F6—; y si es la sin tilde, **hay que enmendar
+                    (b)**, que sólo F5 puede hacer. **Las dos salidas son incompatibles y
+                    F4 no puede elegir entre ellas**: elegir sería decidir sobre material
+                    aprobado sin el Owner
+
+MATERIA MÍNIMA      que F5 declare **cuál de las dos grafías es la CANÓNICA** para el
+                    identificador de la segunda participación, y en consecuencia si se
+                    enmienda (b) o se alinea el derivado
+
+ALCANCE             `b.16` L836 y todas las sedes derivadas que nombran la variante. **No
+                    alcanza a ninguna otra regla**: no cambia qué exige la participación, ni
+                    su ancla, ni su cardinalidad — sólo cómo se escribe su nombre
+
+SE PUEDE CONSTRUIR  todo `<CAP>:revision` **como contrato** (§19 y `D104`), que es lo que
+                    está escrito. Lo que NO se puede es materializar el identificador en el
+                    kernel eligiendo una grafía por cuenta propia
+
+BLOQUEA             la materialización de F6, que tendría que escribir el identificador; y
+                    la comprobación de grafía única, que hoy no puede exigir nada
+
+DESPUÉS DE F5       **F6** alinea la sede que quede desalineada, y la comprobación pasa a
+                    exigir UNA sola grafía en todo el corpus vigente
+
+CONDICIÓN DE        si el Owner decide que manda la grafía de (b), esta presión se cierra sin
+REVERSIÓN           enmendar (b): se corrige el derivado, y `PN-16` queda RESUELTA en vez de
+                    retirada
+
+PROPIETARIO         el **Owner**, porque (b) es material aprobado
+
+PRUEBA POSTERIOR    un barrido que exija **UNA sola grafía** para la variante en todo el
+                    corpus vigente, con las citas históricas marcadas como tales. **FALLA
+                    HOY, y tiene que fallar**: hoy conviven las dos y nadie ha dicho cuál
+                    manda. Sólo pasa cuando F5 haya decidido y F6 haya alineado
+
+ORIGEN              hallazgo `M-09` del GATE DE COBERTURA —registrado para F5 y llevado a la
+                    checklist `E5-3`— y hallazgo `P-07` del GATE INDEPENDIENTE DE CIERRE CON
+                    MANIFIESTOS, que demostró que la justificación del bloque `E5` no cubre
+                    esa fila
+```
+
 **Resumen para el Owner, tras revisar las cinco de la entrega anterior:**
 
 ```text
-VIGENTES · TRECE
+VIGENTES · CATORCE
   PN-1   la sección (g). LA ÚNICA QUE BLOQUEA TODO EL ESTADO DURABLE, y ahora decide más
   PN-2   la política de auditoría como tercera vía de creación de trabajo
   PN-3   G03 y la ejecución desatendida. Misma pregunta que PN-2 por otro camino, y
@@ -8503,7 +8582,10 @@ VIGENTES · TRECE
   PN-15  KERNEL.md 1.5.0 G20–G23: §8 sustituye la ruta cuyo gate de salida G21
          declara NO NEGOCIABLE POR EL SISTEMA, y ni a.11 lo deroga ni §17 tenía
          fila para KERNEL.md. Hasta que F5 decida, las cuatro SIGUEN VIGENTES.
-         Sale de K-06                                                             NUEVA
+         Sale de K-06
+  PN-16  la GRAFÍA CANÓNICA de <CAP>:revisión. (b) L836 la escribe CON TILDE y
+         todo el derivado de F4 SIN TILDE. Si manda (b), corrige F6; si manda la
+         sin tilde, F5 ENMIENDA (b). F4 no elige. Sale de P-07                    NUEVA
 
 RETIRADA · UNA
   PN-4   con su motivo escrito, y reinstaurable por F5 si el Owner lo prefiere
@@ -8515,10 +8597,10 @@ CUATRO SON UNA FRASE       PN-6, PN-7, PN-9 y PN-10. Y tres de ellas se registra
 CADA UNA                   PRECISAMENTE PORQUE parecen obvias: PN-6 fijó esa vara, y
                            aplicarla de forma desigual sería el defecto
 
-EL TOTAL SE DERIVA         un barrido de las cabeceras `## \`PN-` da QUINCE; menos PN-4
-                           RETIRADA y PN-5 FUSIONADA, quedan TRECE. No se escribe a mano, y
+EL TOTAL SE DERIVA         un barrido de las cabeceras `## \`PN-` da DIECISÉIS; menos PN-4
+                           RETIRADA y PN-5 FUSIONADA, quedan CATORCE. No se escribe a mano, y
                            por eso se mueve cuando aparece una nueva — y acaba de moverse
-                           con `PN-15`
+                           con `PN-16`
 
 NO SE RENUMERA NINGUNA. Renumerar rompería la trazabilidad de lo que ya se llevó al Owner.
 ```
@@ -8715,14 +8797,15 @@ REAL SIGUE PENDIENTE      llena. `O15` fija que esa adopción —PesquerApp— s
 NINGÚN ADAPTADOR EXISTE   y por tanto ninguno está certificado
 X1 Y P-05 SIGUEN          ninguna decisión de aquí cruza la línea del blueprint
 DEFERIDAS
-TRECE PRESIONES           §16, tras DOS devoluciones independientes, la TERCERA REVISIÓN, el
-NORMATIVAS VIGENTES       GATE FINAL, el GATE DE CIERRE y el GATE DEFINITIVO: `PN-4`
-                          retirada, `PN-5` fusionada en `PN-3`, y `PN-6` a `PN-15` nuevas.
+CATORCE PRESIONES         §16, tras DOS devoluciones independientes, la TERCERA REVISIÓN, el
+NORMATIVAS VIGENTES       GATE FINAL, el GATE DE CIERRE, el GATE DEFINITIVO, el GATE DE
+                          COBERTURA y el GATE DE CIERRE CON MANIFIESTOS: `PN-4` retirada,
+                          `PN-5` fusionada en `PN-3`, y `PN-6` a `PN-16` nuevas.
                           `PN-1` bloquea todo el estado durable, y F5 es su puerta.
-                          **`PN-15` es la única que esta tanda añade**, y sale de `K-06`:
-                          `G20`–`G23` de `KERNEL.md` están PRESIONADAS y pendientes de F5,
-                          **no derogadas por F4**. El recuento se DERIVA de las cabeceras de
-                          §16, no se escribe a mano
+                          **`PN-16` es la única que esta tanda añade**, y sale de `P-07`: la
+                          grafía canónica de `<CAP>:revisión` vive en (b), que es material
+                          APROBADO, y F4 no puede elegirla. El recuento se DERIVA de las
+                          cabeceras de §16, no se escribe a mano
 F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. TRES críticas independientes, una
                           devolución técnica, un GATE FINAL con tres agentes y su
                           COMPLEMENTO DE COBERTURA la han devuelto. La TERCERA REVISIÓN
@@ -8789,15 +8872,29 @@ cuentan como «F4 corregida»**.
 |---|---|---|---|---|---|
 | `E5-1` | `docs/rediseno/b-RECORRIDO-APROBADA.md` | **L358**, en la nota «Toda devolución obliga a DSP a crear o reabrir el paquete de corrección» | «deja al item en `en espera` **(P7)**» | «deja al item en `en espera` **(P9)**» | `b`:217–218 fija `P7 → activo` con motivo «pendiente de promoción», y `b`:221–222 fija `P9 → en espera` para `esperando-*`, `devuelto` y `propuesto` con dependencias abiertas. **`devuelto` es exactamente `P9`**, y `b`:255 ya lo usa bien. La prueba: que toda cita de un predicado `Pn` en (b) case con el predicado que ese número define |
 | `E5-2` | `docs/rediseno/b-RECORRIDO-APROBADA.md` | **L462–472**, lista de reglas de recomposición | la numeración va **1, 2, 5, 3, 4** | renumerar a **1, 2, 3, 4, 5** conservando el texto de cada regla **sin tocar una palabra**, y comprobando que ninguna otra sede cita esas reglas por su número | que la secuencia de una lista numerada de (b) sea estrictamente creciente. Antes de renumerar, un barrido de «regla 3 de b.» y equivalentes que confirme que ninguna referencia externa se rompe |
-| `E5-3` | `docs/rediseno/b-RECORRIDO-APROBADA.md` | **L836**, la única aparición normativa de la variante | (b) escribe **`<CAP>:revisión`, con tilde**; todo el aparato de F4 —§19, `D92`, `D98`, `D103`, `D104`—, la prueba prescrita y el mensaje de error escriben **`revision`, sin tilde**, y `E-3` la lista sin tilde en el vocabulario de `F-02` | **declarar cuál es la grafía CANÓNICA** y alinear la otra sede. Si la canónica es la de (b), F6 corrige el derivado; si es la sin tilde, F5 enmienda (b). **F4 no elige: sólo registra que las dos existen y que nadie ha dicho cuál manda** | un barrido que exija UNA sola grafía para la variante en todo el corpus vigente, con las citas históricas marcadas como tales. Hermano exacto de `F-01`/`PN-14`, que sí se registró como presión sobre la misma clase de discrepancia entre fuente aprobada y derivado. Registrado por `M-09` |
+| `E5-3` | `docs/rediseno/b-RECORRIDO-APROBADA.md` | **L836**, la única aparición normativa de la variante | (b) escribe **`<CAP>:revisión`, con tilde**; todo el aparato de F4 —§19, `D92`, `D98`, `D103`, `D104`—, la prueba prescrita y el mensaje de error escriben **`revision`, sin tilde**, y `E-3` la lista sin tilde en el vocabulario de `F-02` | **declarar cuál es la grafía CANÓNICA** y alinear la otra sede. Si la canónica es la de (b), F6 corrige el derivado; si es la sin tilde, F5 enmienda (b). **F4 no elige: sólo registra que las dos existen y que nadie ha dicho cuál manda** | un barrido que exija UNA sola grafía para la variante en todo el corpus vigente, con las citas históricas marcadas como tales. Hermano exacto de `F-01`/`PN-14`, que sí se registró como presión sobre la misma clase de discrepancia entre fuente aprobada y derivado. Registrado por `M-09`, y **elevado a presión `PN-16` por `P-07`**: la justificación del bloque `E5` —«no hay norma presionada»— no cubría esta fila, y era el único de los cuatro restos que puede exigir que F5 enmiende (b) |
 | `E5-4` | `docs/rediseno/a-ENMIENDA-E1-ENC.md` y `docs/rediseno/a-CAPACIDADES-APROBADA.md` | `E1` **L196–197**, y en (a) **L269** y **L276** | `E1.4` declara «**siete** MARCAS DE REMISIÓN `[E1]` … cinco recuentos y dos párrafos», y en (a) hay **SEIS** —L26, L89, L219, L226, L261 y L285, y una de ellas es de confirmación, no de sustitución—. **Dos recuentos de «las 14» quedan sin marcar**: L269 «Las **14** son el catálogo base» y L276. La cifra se repite en `CORRECCIONES-POST-AUDITORIA.md` L53 y L218 | reanclar la cifra de `E1.4` a lo que (a) lleva realmente, y **marcar los dos recuentos sin marca** — o declarar por qué no los lleva. **No cambia ninguna norma**: `E1.0` sustituye los recuentos con independencia de las marcas. Lo que falla es la TRAZABILIDAD, en el apartado cuya única función es darla | que el número de marcas `[E1]` que `E1.4` declara **coincida con las que (a) lleva**, derivado por barrido y no escrito. Y que ningún recuento de capacidades en (a) quede sin marca. Registrado por `N-03` |
 
-**Qué NO se hace aquí, y por qué.** F4 **no edita (b)**: §17 la declara intacta y esta fase no
-toca material aprobado. Y **no se crea una `PN`**: una presión normativa registra que el
-diseño presiona una NORMA, y aquí no hay norma presionada — `P7` y `P9` siguen significando lo
-que siempre significaron, y las cinco reglas de recomposición siguen diciendo lo mismo en
-cualquier orden. Lo que hay es una cita mal puesta y una lista mal numerada, en un fichero que
-sólo F5 puede tocar.
+**Qué NO se hace aquí, y por qué. Y para cuál de las cuatro filas vale ese porqué**
+(`P-07`). F4 **no edita (b)** en ninguna de las cuatro: §17 la declara intacta y esta fase no
+toca material aprobado. Lo que **no** vale para las cuatro es el motivo de no crear presión:
+
+```text
+E5-1 y E5-2   NO se crea `PN`, y el motivo se sostiene: **no hay norma presionada**. `P7` y
+              `P9` siguen significando lo que siempre significaron, y las cinco reglas de
+              recomposición dicen lo mismo en cualquier orden. Lo que hay es una cita mal
+              puesta y una lista mal numerada, en un fichero que sólo F5 puede tocar
+
+E5-4          NO se crea `PN`: lo que falla es la TRAZABILIDAD de un recuento, y `E1.0`
+              sustituye los recuentos con independencia de las marcas. Registrado por `N-03`
+
+E5-3          **SÍ se crea presión, y es `PN-16`.** Su propia fila decía «si es la sin tilde,
+              **F5 enmienda (b)**» y se declaraba «hermano exacto de `F-01`/`PN-14`, que SÍ
+              se registró como presión». Una fila que puede exigir enmendar material APROBADO
+              **tiene norma presionada por definición**, y cubrirla con el motivo de las
+              erratas dejaba fuera del Owner al único de los cuatro que le corresponde.
+              **F4 sigue sin elegir la grafía**: `PN-16` registra que hay que elegir
+```
 
 ---
 
@@ -9316,6 +9413,33 @@ Y NO UNO             fuente **ASIGNADA** pero NO LEÍDA impide la suficiencia»,
                       **Es inmutable una vez repartido**: si hace falta reasignar, se publica
                       un manifiesto nuevo con su motivo, no se edita el anterior
 
+  1bis · DE DÓNDE     **corregido por `P-08`.** El manifiesto anterior declaró «FUENTES SIN
+     SALE «FUENTE     ASIGNAR **0**» sobre un universo **ELEGIDO**, no derivado: la regla
+     OBLIGATORIA»     decía «el total, derivado» y no decía **de qué sede**, con lo que el
+                      cero era verdadero por construcción — se cumplía escogiendo sólo lo que
+                      ya se había asignado. **Son DOS restas distintas y las dos hay que
+                      publicarlas**:
+
+                        · `OBLIGATORIO − ASIGNADO`  el universo obligatorio es la UNIÓN, sin
+                          quitar nada, de: (i) las cuatro fuentes que nombra el apartado
+                          «QUÉ HAY QUE LEER ÍNTEGRO» de arriba; (ii) las **catorce fuentes y
+                          quince fichas** de la condición `C-0.1` del documento 18; (iii) el
+                          documento 11, el registro de decisiones y el checkpoint; (iv) todo
+                          dictamen de gate anterior aún no leído íntegro por nadie; y (v) el
+                          objeto que el gate juzgue —batería, kernel o lo que sea— según su
+                          encargo. **El manifiesto publica la REGLA y el COMANDO auditable
+                          con que la materializa**, de modo que cualquiera pueda reejecutarlo
+                          y obtener el mismo universo
+                        · `ASIGNADO − LEÍDO`  la de siempre, y la que EXCLUYE la suficiencia
+
+                      **Una lectura íntegra CERTIFICADA en un gate anterior sigue siendo
+                      evidencia válida** y no se declara ausente: agota la parte de `C-0.1`
+                      que cubrió, y el manifiesto la cita con el gate y la línea donde consta.
+                      Es la resolución que el adjudicador `R` fijó al rechazar la premisa de
+                      hecho de `P-08`: **`C-0.1` es condición de ESTADO DEL CORPUS —«fuentes
+                      que nadie abrió»— y se agota cuando alguien independiente las abre**,
+                      no una obligación de releer 31 517 líneas por pasada
+
   2 · MANIFIESTO DE   lo emite **cada revisor DESPUÉS de leer**, dentro de su dictamen. Por
       LECTURA         cada fuente que se le asignó: **ruta · líneas · SHA-256 recalculado por
                       él · `LEÍDO ÍNTEGRO` o los tramos exactos que NO abrió · primera y
@@ -9339,5 +9463,15 @@ EL ADJUDICADOR       **no corrige los hallazgos que encuentre.** Adjudica y devu
                      en la misma pasada vuelve a hacer que quien recibe sea quien aplica
 ```
 
-**Estado: ABIERTA.** No se inicia aquí ningún gate, y esta sección no es su convocatoria: es
-la condición que ese gate tendrá que satisfacer cuando el Owner lo autorice.
+**Estado: CERTIFICADA por el GATE INDEPENDIENTE DE CIERRE CON MANIFIESTOS VERIFICABLES**
+—documento 21—, y es la primera vez. El manifiesto previo de asignación se commiteó **solo y
+antes de que existiera ningún revisor**; los tres publicaron su manifiesto de lectura; y el
+adjudicador `R` recalculó las **43 filas** del manifiesto contra el árbol —43 de 43
+coincidiendo en líneas y en SHA-256— y **calculó la resta en vez de presumirla**:
+`asignado − leído = ∅` en `P` (20/20), en `Q` (31/31) y en él mismo (9/9). Los tres declararon
+expresamente que su veredicto **NO se funda en la cobertura**.
+
+**Que esta condición esté certificada no cierra `F4c` ni autoriza `F5`**: el mismo gate
+devolvió `INSUFICIENTE PARA F5` por otras dos condiciones. Y el requisito de arriba **sigue
+vigente para todo gate posterior**, con el añadido de `1bis`: lo que se corrige aquí es la
+regla, no el manifiesto ya emitido, que es inmutable.
