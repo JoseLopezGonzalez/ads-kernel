@@ -8,6 +8,65 @@
 > anterior al documento 22; **no describe el estado vigente**.
 
 > **Estado de la fase, en una línea:**
+> **El SEGUNDO GATE INDEPENDIENTE DE CERTIFICACIÓN devolvió `INSUFICIENTE PARA F5` sobre la
+> candidata `e316396`. `F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA. Y esta vez el gate trae
+> algo que ningún gate anterior había traído: LA RAÍZ, y una decisión que sólo puede tomar el
+> Owner.**
+>
+> Está en
+> [`23-SEGUNDO-GATE-DE-CERTIFICACION-F4C.md`](23-SEGUNDO-GATE-DE-CERTIFICACION-F4C.md), con los
+> tres dictámenes íntegros. Lo emitieron **ocho agentes de contexto limpio** —revisor `S` como
+> cadena `S1`–`S4`, revisor `T` como `T1`·`T2`·`T3`, en paralelo y sin verse, y el adjudicador
+> `U`—, ninguno de los cuales participó en ningún gate anterior. **Ningún hallazgo se corrigió
+> en esa pasada, y es deliberado.**
+>
+> ```text
+> 49 HALLAZGOS DISTINTOS    0 bloqueantes · 17 graves · 19 medios · 13 menores
+> CLASIFICACIÓN             A · corregible en F4c sin decidir arquitectura     48
+>                           B · DECISIÓN EXCLUSIVA DEL OWNER                    1   ← LA RAÍZ
+>                           C · trabajo futuro ya contratado                     0
+> ```
+>
+> **LA RAÍZ, y por qué el trabajo se detiene aquí en vez de abrir una cuarta ronda.**
+> `M-04` —«se puede construir un árbol defectuoso que pase la batería en verde»— ha fallado
+> **tres gates consecutivos**. La tanda anterior respondió con QUINCE protecciones sistémicas;
+> el adjudicador las midió una a una: **tres generalizan, tres son parciales y nueve siguen
+> cerrando sólo su perímetro**, y **el coste marginal de encontrar la puerta siguiente no está
+> subiendo**. Entonces encontró la causa, escrita en **§11.4 de este mismo corpus** y nunca
+> llevada al Owner por ningún gate:
+>
+> ```text
+> EL SUELO QUE QUEDA    si el runner miente, nada dentro del repositorio lo detecta.
+> ABIERTO, Y SE DICE    Cerrarlo exige un verificador EXTERNO al repositorio, y eso NO se
+>                       resuelve aquí. Se declara en vez de taparlo con una capa más de
+>                       comprobación interna, que sólo movería la circularidad de sitio.
+> ```
+>
+> **`M-04` no es satisfacible desde dentro de F4.** La batería vive dentro del repositorio que
+> audita y decide si algo está «intacto» contra referencias que también viven ahí: `HEAD`, la
+> revisión base, `kernel/.upstream-hash` y su propio README. **Quien puede escribir el
+> repositorio puede escribir la referencia, y puede amputar la batería.** Tres gates han fallado
+> contra un criterio que el corpus **había probado inalcanzable y dejado abierto**.
+> **La pregunta al Owner, con sus tres alternativas y el coste de cada una, está en §13 de la
+> adjudicación de `U`, dentro del documento 23.** El adjudicador recomienda expresamente cerrar
+> los 48 de clase A y **NO escribir una decimosexta protección**.
+>
+> **Las otras razones del veredicto**, todas de clase A: la **FASE 0** que `O17` ordena **no es
+> ejecutable** —su ENTRADA exige el identificador de una iniciativa que su propio GATE prohíbe
+> abrir, y su SALIDA se escribe donde `estado/` aún no existe—; la **Operativa** sigue con un
+> eslabón sin productor que nadie declara en la migración; y **§18 excede a `O17`** dando a
+> `SEG` una vía que la misma tabla niega dos filas más abajo.
+>
+> **Y lo que SÍ quedó cerrado.** **`C-L.5` CERTIFICADA por tercera vez consecutiva**, sobre
+> universo derivado, con `OBLIGATORIO − ASIGNADO = ∅`, `ASIGNADO − LEÍDO = ∅` y los **52
+> agotamientos** pasando las dos reglas. **`R-04` CERRADO CON MECANISMO** tras dos gates sin
+> lograrlo. La propagación de `O17` es, en palabras del dictamen de `S`, **«la más disciplinada
+> del expediente»**: 9 de las 12 reglas sin reserva, sede única y cuatro invocaciones
+> byte-idénticas. **`D107` NO excede a `O17`.** `PN-17` y `PN-18` **registran sin elegir**.
+> `D1`–`D106` y `O1`–`O16` intactas, y el material APROBADO protegido por refutación.
+
+> **[ESTADO ANTERIOR · antes del SEGUNDO GATE DE CERTIFICACIÓN, documento 23]**
+
 > **El GATE INDEPENDIENTE DE CERTIFICACIÓN devolvió `INSUFICIENTE PARA F5` sobre la candidata
 > `4d231ee`. EL OWNER YA RESPONDIÓ la única decisión de clase `B`: es `O17`, eligió la
 > alternativa (b), y con eso la clase `B` queda RESUELTA y YA NO BLOQUEA. Esta tanda está
