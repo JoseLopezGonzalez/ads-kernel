@@ -503,6 +503,7 @@ hallazgos—, y está registrada en §2 de este mismo fichero.
 | # | decisión | qué revisa | por qué, y qué alternativa se descartó | cómo se revierte |
 |---|---|---|---|---|
 | D107 | **PROPAGACIÓN DE `O17`. No es una elección de F4c: es la materialización de una resolución del Owner, y se declara DERIVADA.** Los cuatro macrocircuitos —instalación §8.1, adopción §8.2, migración §8.3 y actualización §8.4— ganan una **FASE 0 de CERTIFICACIÓN ESTRUCTURAL** como precondición propia, anterior a toda mutación canónica y a todo intento de elevarse. La fase invoca **un único contrato compartido**, `gate:sistema-conforme`, que deja de tener una sola aparición definitoria y pasa a tener **productor, sujeto, evidencia, vigencia y condición de invalidación**. `SIS` es propietario y productor; `VER` produce el dosier; `PLT` ejecuta la maquinaria cuando el contrato se la atribuya; `SEG` conserva su bloqueo. El **sujeto** lleva los seis identificadores de la regla 7 de `O17`, y su **huella** es lo que permite la reutilización de evidencia de la regla 8 —idéntica en todas sus entradas— sin que ninguna ejecución deje de emitir su propia declaración (reglas 9 y 10). La cadena de §9.2 se conserva íntegra y su regla dura deja de ser inaplicable | **`O17`**, que es su única fuente. No revisa ninguna decisión de F4c y **no renumera nada**: `D1`–`D106` y `O1`–`O16` intactas | **`P-06`** del documento 22, GRAVE nº 2, verificado por el adjudicador `R` barriendo §8.1, §8.2, §8.3 y §8.4: `gate:sistema-conforme` aparecía UNA vez en todo el documento 11, y era su definición. **La alternativa descartada NO la descartó F4**: la descartó el Owner, y son (a) y (c) de `O17`. Lo que F4 aporta aquí es **exclusivamente el reparto de la elección (b) por las sedes vigentes**, y por eso esta fila se declara derivada | revertir `O17` deja otra vez `O12` insatisfacible por cualquier recorrido, que es el estado que el gate del documento 22 declaró GRAVE |
+| D108 | **PROPAGACIÓN DE `O18`. No es una elección de F4c: es la materialización de una resolución del Owner, y se declara DERIVADA. No sustituye a `O18`.** (i) **El SOBRE DE ANCLA** pasa a ser requisito de todo gate de `F4c`: el coordinador lo emite y lo entrega **a cada revisor dentro de su encargo, por un canal externo al repositorio, ANTES de que empiece a leer**, con repositorio, referencia remota de la candidata, SHA del commit, SHA del árbol, referencia del gate, commit del manifiesto previo, ruta y SHA-256 del manifiesto, SHA-256 del derivador, digest del universo derivado, número de fuentes y de asignaciones, fecha y hora, identidad del emisor, la mención de `O18` y la declaración de entrega previa. **No se obtiene leyendo el repositorio que se audita.** (ii) **Cada revisor**, antes de leer contenido semántico, transcribe literalmente el sobre, resuelve la referencia con `git ls-remote`, comprueba commit y árbol, recalcula el SHA-256 del manifiesto y del derivador, rederiva el universo, **compara todo contra el sobre, falla CERRADO ante cualquier diferencia** e incluye el resultado en su manifiesto de lectura. (iii) **El adjudicador** recibe los sobres que los revisores declaran, comprueba que sean idénticos, verifica los cálculos por su cuenta, **declara INVÁLIDO el gate ante cualquier diferencia**, y **no acepta ni un sobre reconstruido a posteriori desde el árbol ni un sobre cambiado después de crear revisores**. (iv) El sobre **NO sustituye** el manifiesto previo —que se sigue commiteando solo y antes de crear revisores—, ni los manifiestos de lectura, ni las dos restas, ni la revisión independiente, ni la adjudicación contra las fuentes: **es su raíz documental externa**. (v) Se registra el **CONTRATO DEL VERIFICADOR EXTERNO DEL CONTROL REPO** para `F6`, completo y sin implementar, con propietario, ejecutor, autoridad, fase, pruebas y condición de cierre | **`O18`**, que es su única fuente. No revisa ninguna decisión de F4c y **no renumera nada**: `D1`–`D107` y `O1`–`O17` intactas | la raíz que el segundo gate identificó y que **§11.4 del documento 11 ya había declarado**: la verificación se anclaba en referencias internas al árbol auditado. `U` reprodujo **seis árboles defectuosos en verde**, dos de ellos puertas nuevas, y midió que **el coste marginal de encontrar la siguiente no estaba subiendo**. **Las alternativas NO las descartó F4**: las ponderó el Owner, y son (a) —rechazada— y (c) —diferida a `F6` con condición dura—. Lo que F4 aporta aquí es **exclusivamente el reparto de la elección por las sedes vigentes** | retirar el sobre devuelve la verificación a una raíz que el propio árbol puede redefinir, que es el estado que tres gates consecutivos declararon insuficiente |
 
 ---
 
@@ -812,6 +813,92 @@ las fases siguientes**, y su contrato queda escrito para que lo sea.
 **Qué cambia si el Owner decide otra cosa:** volver a (a) reabre el hueco de revalidación —una
 instalación vieja corriendo sobre un kernel nuevo—; ir a (c) obliga a reescribir §9.2 y a
 redefinir `O12`, que es materia suya.
+
+
+---
+
+### `O18` · resolución del Owner sobre LA RAÍZ DE CONFIANZA DE LA VERIFICACIÓN — 2026-08-30
+
+**Procedencia: respuesta expresa del Owner del 2026-08-30**, a la consulta que el SEGUNDO GATE
+DE CERTIFICACIÓN —documento 23— formuló como su única clase `B`, y que **no era un hallazgo:
+era la raíz** de las tres insuficiencias consecutivas. La pregunta y sus tres alternativas están
+en §13 de la adjudicación de `U`, dentro de ese documento. **Nada de esto lo eligió F4.**
+
+**El vacío que resuelve.** La batería vive **dentro** del repositorio que audita y decide si algo
+está «intacto» comparándolo contra referencias que **también viven ahí** —`HEAD`, la revisión
+base, `kernel/.upstream-hash` y su propio README—. Quien puede escribir el repositorio puede
+escribir la referencia, y puede amputar la batería. **El propio corpus lo había declarado en
+§11.4 del documento 11** —«*si el runner miente, nada dentro del repositorio lo detecta*»— y lo
+había dejado abierto; ningún gate lo había llevado al Owner.
+
+| # | decisión | qué revisa | lo resuelto |
+|---|---|---|---|
+| O18 | **RESOLUCIÓN ESCALONADA: (b) ANCLA DOCUMENTAL EXTERNA PARA CERRAR `F4c`, Y (c) VERIFICADOR EXTERNO REAL COMO CONDICIÓN OBLIGATORIA DE `F6`. La alternativa (a) queda EXPRESAMENTE RECHAZADA** | **nada anterior se reescribe.** `O1`–`O17` conservan íntegramente su texto. Da raíz de confianza a un mecanismo que no la tenía, y fija la fase de cada garantía | las tres alternativas, el rechazo, la adopción, la obligación y la razón de secuenciación, abajo |
+
+**Las TRES alternativas que se presentaron, conservadas literalmente:**
+
+```text
+(a) DECLARAR EL LÍMITE Y DEJAR DE MEDIRLO
+    `M-04` deja de ser criterio de aceptación de `F4c` y pasa a limitación declarada con
+    propietario y fase. La batería retira toda promesa de «intacto»
+    A FAVOR    es gratis, es honesto, y desbloquea `F5` hoy
+    EN CONTRA  el corpus queda sin ninguna defensa contra una alteración deliberada
+    ── RECHAZADA EXPRESAMENTE POR EL OWNER ──────────────────────────────────────────────
+    «No acepto retirar la garantía ni asumir como solución definitiva que una alteración
+    deliberada sea indetectable.»
+
+(b) DARLE UN ANCLA FUERA DEL ÁRBOL, DENTRO DE LO QUE F4 ALCANZA
+    el ENCARGO de cada revisor le entrega el commit y las huellas por un canal que el
+    repositorio no reescribe. El revisor verifica contra lo que RECIBIÓ, no contra el árbol
+    A FAVOR    barato, documental, y cierra la mayor parte del ataque
+    EN CONTRA  el ancla pasa a ser el Owner, y no hay forma mecánica de comprobarla
+    ── ADOPTADA PARA CERRAR `F4c`, Y DECLARADA TRANSITORIA ──────────────────────────────
+
+(c) UN VERIFICADOR EXTERNO DE VERDAD
+    commits firmados, refs protegidas y ejecución de la batería fuera del repositorio, con
+    identidad propia, cuyo resultado no se escribe en el árbol
+    A FAVOR    es lo único que cierra la clase
+    EN CONTRA  es infraestructura y credenciales, toca `C7`, y es trabajo de `F6`
+    ── OBLIGATORIA EN `F6`, Y CONDICIÓN PREVIA A PesquerApp ─────────────────────────────
+```
+
+**LA RAZÓN DE SECUENCIACIÓN, y el bloqueo circular que evita.** Exigir que la infraestructura de
+(c) exista antes de cerrar `F4c` produce una dependencia circular que el Owner declara
+inaceptable:
+
+```text
+`F4c` bloquea `F5`  ·  `F5` precede a `F6`  ·  `F6` construiría el verificador
+pero `F4c` permanecería abierta hasta que `F6` lo construyera
+```
+
+**Por tanto, y en este orden:** `F4c` puede certificarse mediante el ancla documental de (b);
+la limitación residual **se declara expresamente**; `F6` **debe sustituir** esa confianza
+documental por verificación externa mecánica; y **PesquerApp no puede iniciar su adopción
+permanente mientras esa sustitución no exista y esté probada**.
+
+**(b) ES UNA GARANTÍA TRANSITORIA Y EXPLÍCITAMENTE LIMITADA.** No se presenta como otra cosa.
+
+```text
+LO QUE (b) AÑADE      · una referencia que el árbol NO puede redefinir unilateralmente
+                        durante el gate
+                      · detección de que el árbol auditado no coincide con el encargado
+                      · detección de que el manifiesto fue sustituido después del reparto
+
+LO QUE (b) NO         · compromiso del canal del Owner
+PROTEGE, Y SE DICE    · compromiso simultáneo del repositorio y del coordinador
+                      · robo de credenciales
+                      · reescritura autorizada de ramas remotas
+                      · manipulación del ejecutor externo
+                      · falsificación de identidad
+                      ESOS RIESGOS PERTENECEN AL VERIFICADOR EXTERNO DE `F6`
+```
+
+**Qué NO autoriza `O18`.** **No autoriza iniciar `F5`, ni `F6`, ni PesquerApp.** No cierra `F4c`
+por sí misma —eso lo hace un gate independiente— y no deroga ninguna presión vigente.
+
+**Qué cambia si el Owner decide otra cosa:** volver a (a) retira una garantía que el Owner ha
+rechazado retirar; exigir (c) dentro de `F4c` reinstala el bloqueo circular que esta resolución
+existe para evitar.
 
 
 ---
