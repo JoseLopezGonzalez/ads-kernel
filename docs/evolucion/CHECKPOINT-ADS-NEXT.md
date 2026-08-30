@@ -12,6 +12,76 @@
 > vigente, que es siempre la primera.
 
 > **Estado de la fase, en una línea:**
+> **EL OWNER HA RESUELTO LA ÚNICA CLASE `B` DEL SEGUNDO GATE DE CERTIFICACIÓN —la que NO era
+> un hallazgo, sino LA RAÍZ—. Su respuesta es `O18`, del 2026-08-30, es una RESOLUCIÓN
+> ESCALONADA, y con ella esa clase `B` queda RESUELTA y YA NO BLOQUEA. Esta tanda la está
+> PROPAGANDO como `D108`, declarada DERIVADA. `F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA,
+> porque APLICAR NO ES CERTIFICAR.**
+>
+> `O18` está registrada íntegra —con sus tres alternativas conservadas literalmente— en §2 de
+> [`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md), y su
+> propagación es **`D108`**, en §1 de ese mismo fichero. **Ninguna de las dos se reescribe ni
+> se copia aquí: se leen allí, que es su sede.** `O1`–`O18` y `D1`–`D108` conservan su texto
+> resolutivo; lo que reciben son punteros.
+>
+> **QUÉ ELIGIÓ EL OWNER, Y EN QUÉ ORDEN. La resolución es ESCALONADA: no eligió una de tres,
+> dispuso las tres.**
+>
+> ```text
+> (a) DECLARAR EL LÍMITE Y DEJAR      RECHAZADA EXPRESAMENTE. El Owner no retira la garantía
+>     DE MEDIRLO                      ni acepta como solución que una alteración deliberada
+>                                     sea indetectable
+>
+> (b) SOBRE DE ANCLA · raíz           ADOPTADA PARA CERRAR `F4c`, y declarada TRANSITORIA y
+>     documental EXTERNA al árbol     EXPLÍCITAMENTE LIMITADA. Se entrega a cada revisor,
+>     auditado                        dentro de su encargo, por un canal externo al
+>                                     repositorio y ANTES de que empiece a leer
+>
+> (c) VERIFICADOR EXTERNO REAL        OBLIGATORIA EN `F6`, y CONDICIÓN PREVIA a la adopción
+>                                     permanente de PesquerApp, a declarar ADS operativo y a
+>                                     certificar adaptadores
+> ```
+>
+> **POR QUÉ EN ESE ORDEN, Y NO EXIGIENDO (c) YA.** Exigir la infraestructura de (c) dentro de
+> `F4c` produce un **bloqueo circular** que el Owner declara inaceptable: `F4c` bloquea `F5`,
+> `F5` precede a `F6`, `F6` construiría el verificador, y `F4c` seguiría abierta esperando a
+> que `F6` lo construyese. La cadena, escrita literal, está en `O18`.
+>
+> **QUÉ AÑADE EL SOBRE.** Una referencia que el árbol **no puede redefinir unilateralmente
+> durante el gate**, la detección de que el árbol auditado no sea el encargado, y la detección
+> de que el manifiesto se sustituyera después del reparto. El sobre **no sustituye** el
+> manifiesto previo, ni los manifiestos de lectura, ni las dos restas, ni la revisión
+> independiente, ni la adjudicación contra las fuentes: **es su raíz documental externa**.
+>
+> **QUÉ NO PROTEGE EL SOBRE, Y SE DICE. No se le atribuye más de lo que hace:**
+>
+> ```text
+> compromiso del canal del Owner            robo de credenciales
+> compromiso simultáneo del repositorio     reescritura autorizada de ramas remotas
+>   y del coordinador                       manipulación del ejecutor externo
+>                                           falsificación de identidad
+>
+> ESOS RIESGOS PERTENECEN AL VERIFICADOR EXTERNO DE `F6`, y siguen ABIERTOS hasta que exista
+> ```
+>
+> **`M-04` NO SE DECLARA SUPERADA, y no puede declararlo esta tanda.** `O18` le da raíz de
+> confianza a un mecanismo que no la tenía y fija la fase de cada garantía; no vuelve falsa la
+> proposición «se puede construir un árbol defectuoso que pase la batería en verde». Quien
+> puede decir si sigue habiendo uno es **un gate independiente con revisores que no hayan
+> aplicado esta tanda**, y ese gate todavía no existe. **Ningún hallazgo del documento 23 se
+> declara SUPERADO aquí.**
+>
+> **QUÉ NO AUTORIZA `O18`. No autoriza iniciar `F5`, ni `F6`, ni PesquerApp.** No cierra `F4c`
+> por sí misma —eso lo hace un gate independiente—, no levanta ninguna condición `C-L` abierta
+> y no deroga ninguna presión vigente. El criterio con el que ese gate tendrá que juzgar —las
+> TRES afirmaciones `A`, `B` y `C`— tiene sede propia en **«El criterio del gate siguiente»**,
+> justo antes de «Siguiente acción exacta».
+
+> **[ESTADO ANTERIOR · antes de la resolución `O18` del Owner. Se conserva ENTERO para
+> trazabilidad y NO describe el estado vigente: declara la clase `B` PENDIENTE DEL OWNER y
+> manda parar a esperarla, y hoy está RESUELTA.]**
+
+> **Estado de la fase, en una línea:**
 > **El SEGUNDO GATE INDEPENDIENTE DE CERTIFICACIÓN devolvió `INSUFICIENTE PARA F5` sobre la
 > candidata `e316396`. `F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA. Y esta vez el gate trae
 > algo que ningún gate anterior había traído: LA RAÍZ, y una decisión que sólo puede tomar el
@@ -1760,6 +1830,17 @@ F4c CRÍTICA INDEPENDIENTE    ABIERTA. La cadena completa, EMITIDA por revisores
                                  RESOLVIÓ EL OWNER: es **O17**, alternativa (b), y su
                                  propagación es **D107**. Los 68 de clase A se están
                                  aplicando. **NINGUNO se declara SUPERADO.**
+                             10ª SEGUNDO GATE INDEPENDIENTE DE CERTIFICACIÓN (cadenas
+                                 `S1`–`S4` y `T1`·`T2`·`T3`, adjudica `U`) —
+                                 **INSUFICIENTE PARA F5** · documento 23. El reparto por
+                                 severidad y por clase NO se copia aquí: lo publican §12 y
+                                 §13 de la adjudicación de `U`, que es su sede.
+                                 SU CLASE B —LA RAÍZ DE CONFIANZA DE LA VERIFICACIÓN, que
+                                 no era un hallazgo— la RESOLVIÓ EL OWNER: es **O18**,
+                                 ESCALONADA —(a) rechazada · (b) sobre de ancla para cerrar
+                                 F4c · (c) verificador externo obligatorio en F6—, y su
+                                 propagación es **D108**. Los de clase A se están
+                                 aplicando. **NINGUNO se declara SUPERADO, y M-04 tampoco.**
                              CUÁNTAS PASADAS SON NO SE ESCRIBE AQUÍ: se DERIVA de los
                              ficheros `1?-*.md` y `2?-*.md` de este directorio y de las
                              filas de 00-INDICE.md. Esta proyección enumeraba hasta la 7ª
@@ -1781,7 +1862,14 @@ F5  ENMIENDAS                las presiones normativas vigentes que §16 del docu
                                grep '^## `PN-' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md \
                                  | grep -vc 'RETIRADA\|FUSIONADA'
                              **NO INICIADA, y NO AUTORIZADA**
-F6  DESCOMPOSICIÓN Y EJECUCIÓN  no iniciada
+F6  DESCOMPOSICIÓN Y EJECUCIÓN  NO INICIADA, y NO AUTORIZADA — y ya tiene un CONTRATO
+                             OBLIGATORIO esperándola: el **VERIFICADOR EXTERNO DEL CONTROL
+                             REPO** que `O18` impone y que `D108`(v) registra COMPLETO y
+                             SIN IMPLEMENTAR, con propietario, ejecutor, autoridad, fase,
+                             pruebas y condición de cierre. Es **CONDICIÓN PREVIA** a la
+                             adopción permanente de PesquerApp, a declarar ADS operativo y
+                             a certificar adaptadores. **`O18` lo contrata; no autoriza
+                             construirlo hoy ni iniciar F6**
 ```
 
 ## Lo que cambió en el repositorio
@@ -2640,7 +2728,216 @@ del kernel y la unicidad del catálogo, derivados del árbol— y contra `Q-01` 
 contraejemplos que conoce: **sólo un gate posterior, con revisores que no hayan aplicado esto,
 puede decir si sigue habiendo un árbol defectuoso en verde.** `M-04` queda FALLIDA.
 
+## El criterio del gate siguiente · las TRES afirmaciones que hay que distinguir
+
+> **Está escrito aquí, y no dentro del encargo de un gate concreto, porque es lo que decide
+> si `F4c` puede cerrarse.** Tres gates consecutivos fallaron por la misma causa, y la causa
+> era que una sola pregunta —«¿está intacto?»— mezclaba tres afirmaciones con evidencia
+> distinta y con **FASE distinta**. `O18` las separa y le pone fase a cada una. **El mecanismo
+> del sobre no se reproduce aquí**: sus campos, el deber del revisor y el del adjudicador son
+> `D108` en §1 de
+> [`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md), y la
+> resolución que lo ordena es `O18`, en §2 de ese mismo fichero.
+
+```text
+A · COHERENCIA INTERNA          la batería comprueba el corpus contra sus contratos
+                                DEMOSTRABLE HOY — es lo que la batería hace, y su censo de
+                                comprobaciones no se copia aquí: lo publica ella misma
+
+B · IDENTIDAD DE LA CANDIDATA   el sobre demuestra que se analizó EXACTAMENTE el commit, el
+                                árbol, el manifiesto y el universo ENCARGADOS
+                                DEMOSTRABLE HOY por la alternativa (b) de `O18`, y sólo si
+                                el sobre se entregó por canal EXTERNO al repositorio ANTES
+                                de que el revisor empezara a leer
+
+C · RESISTENCIA A UN ACTOR      NO IMPLEMENTADA. Contrato OBLIGATORIO de `F6`, y CONDICIÓN
+    PRIVILEGIADO                PREVIA a PesquerApp. Se declara como LÍMITE; no se presenta
+                                como capacidad existente
+
+
+`F4c` PUEDE CONSIDERARSE SUFICIENTE SI, Y SÓLO SI:
+
+   A   está DEMOSTRADA
+   B   está DEMOSTRADA
+   C   está DECLARADA como límite · CONTRATADA COMPLETAMENTE · ASIGNADA a `F6` ·
+       ESTABLECIDA como condición previa a PesquerApp · y NO presentada como capacidad
+       existente
+
+Suficiente NO es cerrada: quien cierra `F4c` es el veredicto explícito de ese gate, y
+NINGÚN hallazgo se declara SUPERADO antes de que lo emita.
+
+
+LAS DOS ADVERTENCIAS, Y SON DEL OWNER:
+
+   1   el gate **NO puede volver a exigir `C` como implementación YA CONSTRUIDA dentro de
+       `F4c`**. `O18` resuelve expresamente su FASE, y exigirla aquí reinstala el bloqueo
+       circular que esa resolución existe para evitar: `F4c` bloquea `F5`, `F5` precede a
+       `F6`, y `F6` es quien construye el verificador
+
+   2   el gate **NO puede dar por satisfecha `B` sólo porque el repositorio AFIRME que el
+       sobre existió**. Los revisores tienen que registrar lo RECIBIDO EXTERNAMENTE, y
+       registrarlo ANTES de leer: un sobre reconstruido a posteriori desde el árbol vuelve
+       a anclar la verificación en el árbol, que es exactamente lo que `O18` cierra
+```
+
 ## Siguiente acción exacta
+
+> **POR QUÉ ESTA SECCIÓN ESTÁ ESCRITA ASÍ, y es una garantía HEREDADA, no un adorno.** Ha
+> caducado **tres veces consecutivas** —`K-01`/`J-10`/`L-01` en el gate del documento 19;
+> `P-05`≡`Q-08`, el único GRAVE de aquel gate, y `R-02` en el del documento 21; y
+> `S-17`≡`S3-05` en el del documento 23—, siempre por la misma causa: **copiaba lo que otra
+> sede deriva**. La regla que la tanda anterior le escribió **sigue vigente y se respeta**:
+> **nada que otra sede pueda derivar se copia dentro de ella.** Remiten, y no se escriben:
+> los SHA (a `git rev-parse` y `git ls-remote`) · el recuento de comprobaciones de la batería
+> (a la batería) · el censo de presiones vigentes (a §16 del documento 11, con su comando) ·
+> la excepción del kernel (al campo **EXCEPCIÓN EXACTA DEL KERNEL** de este mismo fichero) ·
+> el ordinal de la tanda (a las cabeceras `###` de §15.8 del documento 11) · el reparto por
+> severidad de los hallazgos (a §12 y §13 de la adjudicación de `U`, dentro del documento 23)
+> · el texto de `O18` y los campos del sobre (a §2 y §1 de
+> [`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md)) · lo que
+> el sobre NO protege (a la cabecera de este mismo fichero, y a `O18`) · el criterio `A`/`B`/`C`
+> del gate siguiente (a «El criterio del gate siguiente», justo encima) · y la lista de
+> manifiestos publicados (a la tabla de `00-INDICE.md`). Lo que quede escrito aquí es lo que
+> **no tiene otra sede**: qué pasó, qué se está haciendo y dónde hay que parar.
+
+```text
+0  DÓNDE ESTAMOS, EXACTO         **el Owner ya respondió.** La única clase `B` del SEGUNDO
+                                 GATE INDEPENDIENTE DE CERTIFICACIÓN —documento 23— no era
+                                 un hallazgo: era LA RAÍZ. Su respuesta es **`O18`**, del
+                                 2026-08-30, y está **REGISTRADA** en §2 de
+                                 `docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md`; su
+                                 propagación es **`D108`**, en §1 del mismo fichero,
+                                 declarada DERIVADA. **La clase `B` queda RESUELTA y YA NO
+                                 BLOQUEA.**
+                                 **Los SHA no se copian aquí**: se derivan con
+                                   git rev-parse HEAD
+                                   git ls-remote origin
+                                 [ESTADO ANTERIOR · la versión de esta sección que ahora va
+                                  rotulada HISTÓRICA mandaba PARAR y esperar respuesta del
+                                  Owner, y no encargar ningún gate hasta tenerla. **La
+                                  respuesta llegó**: ese paso está cumplido y esa condición
+                                  de parada queda levantada.]
+
+1  QUÉ RESOLVIÓ `O18`            una **RESOLUCIÓN ESCALONADA**, y sus tres partes son
+                                 inseparables: **(a) RECHAZADA EXPRESAMENTE** —no se retira
+                                 la garantía ni se acepta que una alteración deliberada sea
+                                 indetectable—; **(b) ADOPTADA PARA CERRAR `F4c`**, el
+                                 SOBRE DE ANCLA, transitoria y explícitamente limitada;
+                                 **(c) OBLIGATORIA EN `F6`**, el verificador externo real.
+                                 El motivo del orden es el **bloqueo circular** que el Owner
+                                 no acepta. **El texto no se copia aquí**: es `O18`.
+
+2  QUÉ ES REQUISITO DESDE HOY    **el SOBRE DE ANCLA es requisito de TODO gate de `F4c`**, y
+                                 no de uno solo. El coordinador lo emite y lo entrega dentro
+                                 del encargo de cada revisor, **por un canal externo al
+                                 repositorio y ANTES de que lea**; el revisor lo transcribe,
+                                 lo comprueba contra el remoto y **falla CERRADO ante
+                                 cualquier diferencia**; el adjudicador contrasta los sobres
+                                 y **declara INVÁLIDO el gate** si difieren, sin aceptar uno
+                                 reconstruido a posteriori ni cambiado después de crear
+                                 revisores. **Los campos del sobre y los tres deberes no se
+                                 copian aquí**: son `D108`, apartados (i), (ii) y (iii).
+                                 **El sobre NO sustituye** el manifiesto previo, ni los
+                                 manifiestos de lectura, ni las dos restas, ni la revisión
+                                 independiente, ni la adjudicación contra las fuentes.
+
+3  QUÉ QUEDA CONTRATADO PARA     el **VERIFICADOR EXTERNO DEL CONTROL REPO**, registrado
+   `F6`, Y NO PARA HOY           COMPLETO y **SIN IMPLEMENTAR** en `D108`(v), con
+                                 propietario, ejecutor, autoridad, fase, pruebas y condición
+                                 de cierre. Es **CONDICIÓN PREVIA a PesquerApp**: su
+                                 adopción permanente no puede iniciarse mientras esa
+                                 sustitución no exista y esté probada.
+                                 **`O18` lo contrata; NO autoriza construirlo hoy ni
+                                 iniciar `F6`.**
+
+4  QUÉ SE ESTÁ HACIENDO AHORA    propagar `O18` como `D108` por las sedes vigentes, y cerrar
+                                 los hallazgos de clase `A` del documento 23, agrupados POR
+                                 CAUSA y no por línea. **El reparto por severidad y por
+                                 clase no se copia aquí**: §12 y §13 de la adjudicación de
+                                 `U`. **Y expresamente NO se escribe una protección
+                                 sistémica más**: el adjudicador midió las de la tanda
+                                 anterior y sólo tres generalizan. `O18` no añade otra
+                                 comprobación interna —eso movería la circularidad de
+                                 sitio—: **cambia la raíz de confianza**, que es lo que
+                                 §11.4 del documento 11 decía que hacía falta.
+
+5  EL PASO SIGUIENTE, EXACTO     (i)   **publicar el árbol vigente como candidata nueva**;
+                                 (ii)  **encargar OTRO GATE INDEPENDIENTE** sobre ella, con
+                                       revisores de contexto limpio que no sean quien aplicó
+                                       esta tanda **y que RECIBAN EL SOBRE DE ANCLA, por
+                                       canal externo, ANTES de empezar a leer**;
+                                 (iii) que ese gate juzgue con **las TRES afirmaciones `A`,
+                                       `B` y `C`** — su sede es «El criterio del gate
+                                       siguiente», la sección inmediatamente anterior a
+                                       ésta, y **no se reproduce aquí**.
+                                 El «parar y esperar al Owner» del paso anterior **está
+                                 levantado**, porque la respuesta ya existe y está registrada.
+
+6  QUÉ LLEVAR AL OWNER           las presiones normativas vigentes de §16 — **el total NO se
+                                 copia aquí**: se deriva con
+                                   grep '^## `PN-' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md \
+                                     | grep -vc 'RETIRADA\|FUSIONADA'
+                                 Registrar es F4; elegir es F5. **Ninguna decisión nueva de
+                                 clase `B` queda pendiente hoy**: la que había es `O18`, y
+                                 está respondida.
+
+7  EL KERNEL SUSTANTIVO          no se ha tocado, y la excepción **no se reproduce aquí**:
+                                 vive en el campo `EXCEPCIÓN EXACTA DEL KERNEL` de este
+                                 mismo fichero, derivada de Git y contrastada por `G-23`.
+                                 **Se remite, no se copia**: una lista copiada envejece sola.
+
+8  LO QUE EL PRÓXIMO GATE        dos cosas, y ninguna es opcional:
+   TIENE QUE CUMPLIR SIN         (i)  **el sobre**, en los términos del paso 2 y de `D108`,
+   EXCUSA                             con la advertencia 2 del criterio: `B` no se da por
+                                      satisfecha porque el repositorio afirme que el sobre
+                                      existió;
+                                 (ii) **la regla de publicación**: todo documento que
+                                      `C-L.5` obligue a publicar —manifiesto de asignación,
+                                      manifiestos de lectura, addenda y corrigenda— **se
+                                      enlaza desde la tabla de `00-INDICE.md` en el MISMO
+                                      commit que lo crea**. No vale añadirlo a
+                                      `exclusiones.yaml`: una exclusión APAGA `T147` en vez
+                                      de cumplirlo. La regla, la tabla y el comando que
+                                      deriva los huérfanos están en `00-INDICE.md`, bajo
+                                      «Lo que cada gate tiene que publicar, y desde dónde se
+                                      enlaza».
+
+9  ESTADO, SIN ADORNO            **`F4c` sigue ABIERTA. `F5` sigue NO AUTORIZADA.** `O18`
+                                 resuelve una decisión que sólo el Owner podía tomar; no
+                                 cierra `F4c`, no autoriza `F5`, no autoriza `F6`, no
+                                 autoriza PesquerApp, no levanta ninguna condición `C-L` y
+                                 no deroga ninguna presión vigente. Ninguna enmienda
+                                 normativa está redactada, `C8` no existe y `C7` no se ha
+                                 tocado. **No se ha hecho merge en `redesign/kernel-2.0`.**
+                                 **APLICAR NO ES CERTIFICAR**, y esta tanda la aplica quien
+                                 la recibió: **NINGÚN hallazgo del documento 23 se declara
+                                 SUPERADO**, **`M-04` NO se declara superada**, y sólo un
+                                 gate independiente posterior podría declararlo.
+
+10 LO QUE EL SOBRE NO PROTEGE    hay seis riesgos que la alternativa (b) **NO cubre**, y
+                                 están enumerados uno a uno en la cabecera de este fichero y
+                                 en `O18`. **No se reproducen aquí**, y tampoco se disimulan:
+                                 pertenecen al **verificador externo de `F6`** y siguen
+                                 ABIERTOS hasta que exista. Presentar el sobre como si los
+                                 cerrara es exactamente la afirmación que `O18` prohíbe.
+
+11 DÓNDE PARAR                   antes de redactar `(g)`, antes de crear `C8`, antes de
+                                 tocar `C7` o el kernel operativo SUSTANTIVO, antes de
+                                 iniciar `F5`, antes de iniciar `F6` —el verificador externo
+                                 está CONTRATADO, no autorizado— y antes de iniciar
+                                 PesquerApp. `O15` dice qué será la adopción cuando ocurra,
+                                 no que ocurra ahora; `O17` dice qué se certificará al
+                                 arrancar cada macrocircuito, no que se construya hoy; y
+                                 `O18` dice con qué raíz se verifica y quién cierra la clase
+                                 que queda, no que `F4c` esté cerrada.
+```
+
+> **[HISTÓRICO · «Siguiente acción exacta» anterior a la resolución `O18` del Owner. Se
+> conserva ENTERA para trazabilidad y NO describe el estado vigente: su paso 4 declara que el
+> trabajo PARA y espera al Owner, su paso 5 manda LLEVARLE la clase `B`, y su paso 9 manda no
+> encargar ningún gate hasta que responda. **El Owner ya respondió: es `O18`.**]**
+
+## Siguiente acción exacta — HISTÓRICA, anterior a `O18`
 
 > **POR QUÉ ESTA SECCIÓN ESTÁ ESCRITA ASÍ, y es una garantía y no un adorno.** Ha caducado
 > **tres veces consecutivas**: `K-01`/`J-10`/`L-01` en el gate del documento 19; `P-05`≡`Q-08`
@@ -2657,6 +2954,13 @@ puede decir si sigue habiendo un árbol defectuoso en verde.** `M-04` queda FALL
 > aquí es lo que **no tiene otra sede**: qué pasó, qué se está haciendo y dónde hay que parar.
 
 ```text
+[HISTÓRICO · todo lo que sigue hasta el final de esta sección es el texto ANTERIOR a la
+ resolución `O18` del Owner. Describe la clase `B` como ABIERTA y PENDIENTE, y manda parar
+ a esperarla: hoy está RESUELTA y el trabajo ha seguido. NO describe el estado vigente, que
+ está en «Siguiente acción exacta», arriba. Su regla de redacción —nada que otra sede pueda
+ derivar se copia dentro de ella— NO es histórica: sigue vigente y la sección de arriba la
+ hereda.]
+
 0  DÓNDE ESTAMOS, EXACTO         el **SEGUNDO GATE INDEPENDIENTE DE CERTIFICACIÓN** ya corrió
                                  y **su veredicto ya está publicado**: `INSUFICIENTE PARA F5`,
                                  en el documento 23. Corrió sobre la candidata que la tanda
