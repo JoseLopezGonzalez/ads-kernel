@@ -293,7 +293,14 @@ def sede_del_owner(commit, papel):
 # asignaciones como revisores nombra, `V+X` cuenta dos. La tabla se localiza por su CABECERA
 # —la que tiene una celda `revisor`—, no por el número de sección: los manifiestos no
 # numeran igual sus secciones, y un número escrito caduca.
-_MARCAS = re.compile(r"^[A-Z][0-9]?$")
+#
+# La marca admite UNA o DOS letras porque **el alfabeto de una letra se agotó**: los gates de
+# `F4c` han consumido de `A` a `Z` entre revisores y adjudicadores, y el adjudicador del
+# cuarto gate es `AA`. Aceptar dos letras NO ablanda nada —sigue exigiendo mayúsculas, sigue
+# rechazando minúsculas, dígito inicial, espacios y texto libre, y sigue haciendo que el
+# emisor se niegue a adivinar a quién se asignó una fuente—: sólo reconoce la continuación
+# natural de una serie que se quedó sin símbolos.
+_MARCAS = re.compile(r"^[A-Z]{1,2}[0-9]?$")
 
 
 def _celdas(linea):
