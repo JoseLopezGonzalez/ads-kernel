@@ -22,8 +22,11 @@
 **Lo que dice el árbol**, derivado sobre el cuerpo de §4 y §5 de ese documento:
 
 ```text
-SHA-256 completos en §4 y §5      0
-apariciones de «LEÍDO ÍNTEGRO»    0
+COMANDO (desde docs/evolucion/)                                          RESULTADO
+awk '/^## 4 · Dictamen literal del REVISOR M/,/^## 6 /' \
+    20-GATE-INDEPENDIENTE-DE-COBERTURA-Y-CIERRE-F4C.md | grep -cE '[0-9a-f]{64}'      0
+awk '/^## 4 · Dictamen literal del REVISOR M/,/^## 6 /' \
+    20-GATE-INDEPENDIENTE-DE-COBERTURA-Y-CIERRE-F4C.md | grep -c 'LEÍDO ÍNTEGRO'      0
 ```
 
 **Qué se sigue.** El documento 20 declara su cobertura **en AGREGADO** —y lo hace con
@@ -48,7 +51,13 @@ adjudicador `O` declara en **L651** la regla de cierre «NO CERTIFICABLE POR MÍ
 revisor `N` diciendo que el total declarado por `M` «sólo cuadra incluyéndolo».
 
 **Lo que dice la aritmética**, con las nueve partidas que el propio documento enumera en
-L76–L85:
+L76–L85. **La suma no se escribe: se deriva**, y éste es el comando, desde `docs/evolucion/`:
+
+```bash
+sed -n '77,85p' 20-GATE-INDEPENDIENTE-DE-COBERTURA-Y-CIERRE-F4C.md \
+  | cut -c1-37 | grep -oE '[0-9]+ *$' | tr -d ' ' | paste -sd+ | bc      # → 26392
+grep -o 'LOTE DE M · [0-9  ]*líneas' 20-GATE-INDEPENDIENTE-DE-COBERTURA-Y-CIERRE-F4C.md
+```
 
 ```text
        9058
@@ -76,10 +85,15 @@ del revisor `N`, en cambio, **sí cuadra exacto** y se ha verificado.
 **Sede:** `19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md` **L310** y **L898–L899**, que lo definen
 como **§13–§15**.
 
-**Lo que dice el árbol**, derivado de las cabeceras de `ADS-PENDIENTES`:
+**Lo que dice el árbol**, derivado de las cabeceras de `ADS-PENDIENTES`, con su comando:
+
+```bash
+awk '/^# BLOQUE C /{f=1} /^# BLOQUE D /{f=0} f && /^## [0-9]+\./' \
+    docs/evolucion/ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md | tail -1
+```
 
 ```text
-última sección antes de `# BLOQUE D`   §17
+última sección antes de `# BLOQUE D`   ## 17. Decisiones pendientes sobre esta unidad
 luego el BLOQUE C es                   §13–§17
 ```
 
@@ -112,7 +126,12 @@ que afirma que las doce fuentes que siguen AGOTADAS tienen en el documento 21 «
 líneas y **su SHA-256**».
 
 **Lo que dice el árbol.** Tres de las doce publican en el documento 21 **sólo los primeros
-hexadecimales**, no el digest completo:
+hexadecimales**, no el digest completo. El largo se deriva, no se cuenta a ojo:
+
+```bash
+sed -n '1056,1058p' docs/evolucion/21-GATE-INDEPENDIENTE-DE-CIERRE-F4C.md \
+  | grep -oE '`[0-9a-f]+`' | awk '{print length($0)-2}'          # → 16, 16, 16
+```
 
 ```text
 00-INDICE.md                                         doc 21 L1056   16 hex publicados de 64  prefijo correcto: sí
@@ -179,7 +198,129 @@ YA REMEDIADO en la fuente: el derivador publica el total en cada ejecución. Cop
 propio (`T-10`) y el adjudicador `U` lo confirmó y lo agravó, porque la contradicción es
 interna al mismo bloque.
 
-## 7 · Regla general que este documento deja escrita
+## 7 · Manifiesto del SEGUNDO GATE DE CERTIFICACIÓN · declara un árbol contra el que su fila 8 no casa
+
+> **Lo levanta `W2-05` del tercer gate de certificación (documento 24).** La entrada §6 de
+> este mismo corrigendum ya acotó el TITULAR de líneas de ese manifiesto **y no acotó la
+> fila**, ni dijo contra qué árbol casa la tabla. Eso es lo que se completa aquí.
+
+**Sede:** `verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-2-20260830.md` **L79**
+—«*Todo derivado del árbol `2451141c40e1bba7823528edd2df073af92a4037`, nada copiado*»— y la
+**fila 8** de esa misma tabla, que declara `derivar-universo-obligatorio.py` con **410
+líneas** y SHA-256 `6753a245…`.
+
+**Lo que dice el árbol.** Las 64 filas se contrastan una a una contra los dos commits en
+juego —el de la CANDIDATA, cuyo árbol el manifiesto declara, y el del propio MANIFIESTO—:
+
+```text
+COMANDO                                                                RESULTADO
+git rev-parse e3163967^{tree}                                          2451141c40e1bba7…
+git show e3163967:docs/evolucion/verificacion/derivar-universo-obligatorio.py | wc -l    402
+git show e3163967:…/derivar-universo-obligatorio.py | sha256sum        fa245924cbe33e1c…
+git show c36d2ba:…/derivar-universo-obligatorio.py  | wc -l            410
+git show c36d2ba:…/derivar-universo-obligatorio.py  | sha256sum        6753a245103dcc5a…
+
+filas del manifiesto que NO casan contra `e3163967` (árbol DECLARADO)      1  — la fila 8
+filas del manifiesto que NO casan contra `c36d2ba`  (commit del MANIFIESTO) 0
+```
+
+**Qué se sigue.**
+
+```text
+NO SE PUEDE  leer «todo derivado del árbol 2451141c…» al pie de la letra: la tabla entera
+             deriva del árbol del COMMIT DEL MANIFIESTO, `c36d2ba`, y contra el árbol que
+             declara falla exactamente en una fila — la del propio derivador
+SÍ SE PUEDE  usar las 64 filas: son correctas, y lo son contra `c36d2ba`. Hay que decir
+             contra qué árbol se contrastan, que es lo que el manifiesto no dice
+POR QUÉ PASA no es descuido: **el derivador es fila de su propio universo**, y el commit
+             que publica el manifiesto lo toca. Mientras el gate escriba el derivador
+             después de publicar la candidata, los dos árboles no pueden coincidir en esa
+             fila, y el manifiesto tiene que publicar los DOS o el gate no tocar el
+             derivador. El emisor del sobre ya publica los dos
+NO CAMBIA    ningún veredicto ni ninguna cobertura: `U` recalculó las 64 filas contra el
+             árbol del gate sin una discrepancia, y ahí está el 0 de arriba
+```
+
+## 8 · Manifiesto del TERCER GATE DE CERTIFICACIÓN · lo mismo, un gate después, en la misma fila
+
+> **Lo levantan `V-23` y `X-06` del documento 24, y `X` lo eleva expresamente por
+> REINCIDENCIA: mismo fichero, misma fila 8, un gate después de que `U-02`/`T-10` lo
+> adjudicara.** La entrada §6 de este corrigendum acotó entonces el titular y no la fila; si
+> lo hubiera acotado, esta entrada no haría falta.
+
+**Sede:** `verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-3-20260830.md` **L70**
+—«*Todo derivado del árbol `b498f3b8ae8a70510b68feefe592f502cf8e1a86`, nada copiado*»— y la
+**fila 8**, que declara `derivar-universo-obligatorio.py` con **496 líneas** y SHA-256
+`6f8c98a2…`.
+
+**Lo que dice el árbol:**
+
+```text
+COMANDO                                                                RESULTADO
+git rev-parse 21f1ccb^{tree}                                           b498f3b8ae8a7051…
+git show 21f1ccb:…/derivar-universo-obligatorio.py | wc -l             492
+git show 21f1ccb:…/derivar-universo-obligatorio.py | sha256sum         db9c8b69ed9070e8…
+git show f2e4d58:…/derivar-universo-obligatorio.py | wc -l             496
+git show f2e4d58:…/derivar-universo-obligatorio.py | sha256sum         6f8c98a29edf0c31…
+
+filas del manifiesto que NO casan contra `21f1ccb` (árbol DECLARADO)       1  — la fila 8
+filas del manifiesto que NO casan contra `f2e4d58` (commit del MANIFIESTO) 0
+suma de la columna «líneas» de sus 13 filas de §4                     23 491
+suma de la columna «líneas» de sus 54 filas de §5                     30 281
+                                                                    ────────
+titular publicado en su §2 y en su §6                                 53 772
+```
+
+**La aritmética confirma de qué árbol habla la tabla.** El titular **53 772 SÍ cuadra** con
+sus dos subsumas —a diferencia del manifiesto anterior, donde no cuadraba—, y cuadra
+**porque las 67 filas son las del árbol del gate**. Contra el árbol declarado, `b498f3b8`,
+las cifras serían **53 768** y **23 487**: cuatro líneas menos, que son exactamente las
+cuatro que el commit del manifiesto añadió al derivador.
+
+**Qué se sigue.**
+
+```text
+NO SE PUEDE  citar «todo derivado del árbol b498f3b8…» como que las 67 filas describan la
+             CANDIDATA. Describen el árbol del gate, `826e6ede` (commit `f2e4d58`), que el
+             manifiesto no nombra en ningún sitio
+SÍ SE PUEDE  usar las 67 filas y sus dos restas: son correctas contra el árbol del gate, y
+             el adjudicador `X` las recalculó sin una discrepancia
+REINCIDENCIA es `U-02`/`T-10` otra vez, en el mismo fichero y en la misma fila, un gate
+             después. Lo que faltó no fue detectarlo: fue ACOTAR LA FILA cuando se detectó
+YA REMEDIADO en la fuente, y no en el texto: `emitir-sobre-de-ancla.py` publica desde esta
+             tanda LOS DOS ÁRBOLES con su derivador, sus fuentes, sus líneas y su digest
+             derivados cada uno de SU commit, **y la lista de rutas en que difieren**; y
+             obliga al revisor, dentro del propio sobre, a contrastar cada fila contra el
+             árbol que ESA fila declara
+```
+
+## 9 · Este corrigendum incumplía su propia cabecera en cuatro de sus seis entradas
+
+> **Lo levanta `W2-08` del documento 24.** La cabecera promete que «*toda cifra de este
+> documento se DERIVA del árbol en el momento de escribirla, y se dice con qué comando*».
+
+**Lo que decía el árbol antes de esta tanda:**
+
+```text
+ENTRADA  publica cifras   publica el COMANDO
+  §1         sí                 NO
+  §2         sí                 NO
+  §3         sí                 NO
+  §4         sí                 sí   (`grep -n 'ERRATA CONFIRMADA' …`, `sed -n '628p'`)
+  §5         sí                 NO
+  §6         sí                 sí   (columna COMANDO con `python3 …` y `git show …`)
+                                ────
+                       CUATRO de SEIS sin comando
+```
+
+**Qué se sigue, y qué se ha hecho.** No es un error de hecho —las cifras de las cuatro
+entradas se han vuelto a derivar y **ninguna cambia**—: es que el lector no podía
+reejecutarlas, que es justamente lo que la cabecera prometía. **Las cuatro entradas llevan
+ya su comando**, añadido en esta tanda y verificado ejecutándolo. Es la misma disciplina que
+`P-08` impuso al universo obligatorio: una cifra sin comando es una cifra escrita a mano,
+aunque quien la escribió la hubiera derivado.
+
+## 10 · Regla general que este documento deja escrita
 
 ```text
 UN DICTAMEN NO SE EDITA. Si contiene un error de hecho, se registra en este corrigendum con
@@ -188,4 +329,12 @@ ningún veredicto y NO reabre ninguna adjudicación.
 
 UNA FRASE DE UN DICTAMEN CON ENTRADA EN ESTE CORRIGENDUM NO PUEDE CITARSE como fundamento
 de otra afirmación sin citar también la entrada que la acota.
+
+CUANDO SE ACOTA UN TITULAR DERIVADO DE UNA TABLA, SE ACOTA TAMBIÉN LA FILA de la que viene
+la diferencia. La entrada §6 acotó el titular de líneas del manifiesto del segundo gate y no
+la fila del derivador; el manifiesto siguiente repitió el defecto en esa misma fila, y hubo
+que escribir dos entradas más —§7 y §8— para decir lo que una sola habría dicho.
+
+TODA CIFRA DE ESTE DOCUMENTO VA CON SU COMANDO, sin excepción. Cuatro de las seis primeras
+entradas no lo llevaban (§9), y una cifra sin comando no es refutable.
 ```

@@ -495,10 +495,39 @@ hallazgos—, y está registrada en §2 de este mismo fichero.
 > documento 23. **§15.8 del documento 11 ya le daba bloque propio; la sede histórica no.**
 > **La fila se mueve ENTERA y VERBATIM, byte a byte: no se reescribe ni una letra de ella.**
 
-> **`D1`–`D106` conservan su texto ÍNTEGRO y `O1`–`O17` quedan intactas**, que es lo que la
-> propia fila declara. **Y nada de esto lo eligió F4**: el Owner decide en `O17` y `D107` sólo
-> propaga, declarándose DERIVADA. **Aplicar no es certificar**: quien propaga es quien recibió
-> el documento 22, y **ningún hallazgo se declara SUPERADO aquí**.
+> **`D1`–`D106` conservan su texto RESOLUTIVO y `O1`–`O17` quedan intactas: sólo reciben
+> punteros, encabezados y notas de alcance.** **Y nada de esto lo eligió F4**: el Owner decide
+> en `O17` y `D107` sólo propaga, declarándose DERIVADA. **Aplicar no es certificar**: quien
+> propaga es quien recibió el documento 22, y **ningún hallazgo se declara SUPERADO aquí**.
+
+> **RECONCILIACIÓN DE ESTE PREÁMBULO CON LO QUE DE VERDAD SE HIZO — `V3-02`+`V3-03`
+> fusionados y rebajados a MEDIO por el adjudicador `X` del documento 24. Se DECLARA, no se
+> retira y no se reescribe ninguna decisión.** Este preámbulo decía «**conservan su texto
+> ÍNTEGRO**», y **esa fórmula era falsa en el commit mismo que la escribió**. Lo que se hizo,
+> commit a commit, verificado con `git blame` sobre este fichero:
+>
+> ```text
+> celda de `D97`   commit `8c3afe7` «retirar las cifras que caducaron y remitir donde antes
+>                  se copiaba» — EL MISMO COMMIT que escribió esta declaración. Recibe el
+>                  marcador «▲ ESTA FRASE DE EVIDENCIA ESTÁ ACOTADA…», que es un PUNTERO al
+>                  addendum que la acota. Remedio de `S-20` del documento 23
+>
+> celda de `D92`   commit `78ec1cc` «registrar O17 del Owner, su propagacion D107 y acotar
+>                  D97» — corrige una CITA que era falsa EN ORIGEN (`a.6` L504-505 → L502-503)
+>                  y añade una glosa. **El cambio va ANUNCIADO en el mensaje de su propio
+>                  commit**: no hubo ocultación, y el adjudicador lo hace constar
+> ```
+>
+> **Ninguna resolución se tocó.** Las dos ediciones son **un puntero y una corrección de
+> cita**; el texto **resolutivo** de `D92` y de `D97` está intacto, comprobado con
+> `git diff --word-diff` por el revisor `V`. La fórmula correcta —la que `00-INDICE` L87 y L88
+> ya usaban en este mismo árbol— es «**conservan su texto RESOLUTIVO: sólo reciben punteros,
+> encabezados y notas de alcance**», y es la que queda escrita arriba. **La declaración de
+> integridad de este registro pasa a ser verdadera; el defecto no era un cambio oculto, sino
+> una fórmula que decía más de lo que se cumplía.** Y consta, porque el adjudicador lo hace
+> constar contra el propio interés de `F4`: **este defecto lo creó el remedio de `S-20`** —
+> cerrar un hallazgo abrió otro, que es el patrón que tres gates llevan nombrando. **Ningún
+> hallazgo se declara SUPERADO por esta reconciliación.**
 
 | # | decisión | qué revisa | por qué, y qué alternativa se descartó | cómo se revierte |
 |---|---|---|---|---|
@@ -824,6 +853,29 @@ DE CERTIFICACIÓN —documento 23— formuló como su única clase `B`, y que **
 era la raíz** de las tres insuficiencias consecutivas. La pregunta y sus tres alternativas están
 en §13 de la adjudicación de `U`, dentro de ese documento. **Nada de esto lo eligió F4.**
 
+> **NOTA DE TRAZABILIDAD SOBRE ESTA RESOLUCIÓN — `X-02` del documento 24, GRAVE. Se
+> DECLARA, no se retira y no se sustituye.** Las tres alternativas de abajo **sí** son
+> verbatim de §13 de la adjudicación de `U`, dentro del documento 23, y ahí se cotejan
+> palabra por palabra. **Lo que el Owner RESPONDIÓ no está en §13 y no puede estarlo**: §13
+> contiene la PREGUNTA, redactada antes de que hubiera respuesta. **De dónde viene:** de la
+> **respuesta expresa del Owner del 2026-08-30**, recogida al registrarla aquí — el rechazo
+> literal de `(a)`, la adopción de `(b)` para cerrar `F4c` y la condición con que `(c)` queda
+> obligada en `F6`. **Y no hay otra sede en el árbol donde viva esa respuesta en su propia
+> mano:** `docs/owner/` contiene **DOS** documentos y **ninguna** de las resoluciones
+> `O15`–`O18`; el checkpoint, `00-INDICE` y §11.8 del documento 11 la parafrasean citándola
+> de aquí y **no son sede independiente**. Por tanto: **no se afirma que sea falsa — se
+> declara INVERIFICABLE**, porque **ningún gate puede contrastarla contra nada**.
+>
+> `O17` recibió esta misma declaración como remedio de `S-26`, y el documento 23 la cerró
+> «con honradez». **`O18` —la resolución que existe precisamente porque el corpus descubrió
+> que no puede verificarse a sí mismo— no la llevaba**, y el TERCER GATE DE CERTIFICACIÓN lo
+> registró como `X-02`: una regresión del remedio de `S-26` aplicada a la resolución
+> siguiente. **Queda escrita aquí, y NO depende de lo que el Owner ratifique**: el
+> adjudicador `X` resolvió expresamente que ésta es la única parte que `F4` sí puede hacer
+> por sí misma, diga lo que diga el Owner. `O18`(b) ancla commit, árbol, manifiesto,
+> derivador y universo, **y no ancla ninguna resolución del Owner** — eso es `X-03`, y es
+> clase `B`.
+
 **El vacío que resuelve.** La batería vive **dentro** del repositorio que audita y decide si algo
 está «intacto» comparándolo contra referencias que **también viven ahí** —`HEAD`, la revisión
 base, `kernel/.upstream-hash` y su propio README—. Quien puede escribir el repositorio puede
@@ -875,6 +927,57 @@ pero `F4c` permanecería abierta hasta que `F6` lo construyera
 la limitación residual **se declara expresamente**; `F6` **debe sustituir** esa confianza
 documental por verificación externa mecánica; y **PesquerApp no puede iniciar su adopción
 permanente mientras esa sustitución no exista y esté probada**.
+
+> **DISPUTA REGISTRADA Y NO RESUELTA — el alcance de la condición previa de `(c)`.
+> `X-02`/§6 del documento 24. NO se resuelve aquí, y `F4` no la resuelve.** Se registran
+> **los hechos que el gate estableció y que nadie discute**, sin retirar nada de la
+> propagación y sin escribir ni una palabra dentro de esta resolución:
+>
+> ```text
+> 1  ESTA SEDE dice UNA condición previa · las SEDES QUE PROPAGAN dicen TRES
+>    `O18` en su entrada de §2 escribe de `(c)`: «OBLIGATORIA EN `F6`, Y CONDICIÓN PREVIA
+>    A PesquerApp». Barrido del fichero entero: CERO apariciones de «ADS operativo»,
+>    CERO de «certificar adaptadores», CERO reparto `SIS`/`PLT`/`VER`/`SEG`.
+>    SEIS sedes del corpus escriben TRES: «…a la adopción permanente de PesquerApp, a
+>    declarar ADS operativo y a certificar adaptadores».
+>    Y §11.8 del documento 11 rotula «EL REPARTO, LITERAL DE `O18`» un reparto de
+>    capacidades que esta entrada NO contiene. El adjudicador RECHAZA ESE RÓTULO,
+>    y NO rechaza el contenido
+>
+> 2  HAY CORROBORACIÓN PARCIAL, CONTEMPORÁNEA, E INDEPENDIENTE DE §11.8
+>    el mensaje del commit que TRANSCRIBE `O18` —`bcee159`, primero de la tanda, cuyo
+>    único trabajo declarado es registrar la resolución— YA ESCRIBE LAS TRES CONDICIONES:
+>    «(c) OBLIGATORIA en `F6`: … condicion previa a la adopcion permanente de PesquerApp,
+>     a declarar ADS operativo y a certificar adaptadores.»
+>    Es UN COMMIT ANTERIOR a la propagación, que es `8e70d94`
+>
+> 3  HAY UNA ANOMALÍA DE FORMA, Y APUNTA EN SENTIDO CONTRARIO PARA EL REPARTO
+>    la entrada de `O17` SÍ registra DENTRO de su propia entrada de §2 la sección
+>    «El REPARTO DE RESPONSABILIDADES que el Owner decide». Ésa es la forma que el corpus
+>    estableció, y la entrada de `O18` NO la tiene.
+>    Y el reparto rotulado «LITERAL DE `O18`» NO aparece en `bcee159`: NACE en `8e70d94`,
+>    el commit de propagación. Tiene, por tanto, un estatus probatorio DISTINTO del de
+>    las dos condiciones: para el reparto el adjudicador declara INDETERMINADO
+>
+> 4  NO EXISTE SEDE DEL OWNER EN SU PROPIA MANO
+>    `docs/owner/` contiene DOS documentos y ninguna de las resoluciones `O15`–`O18`.
+>    El sobre de ancla de `O18`(b) no ancla ninguna resolución del Owner (`X-03`)
+> ```
+>
+> **POR QUÉ NO SE CORRIGE AQUÍ.** El adjudicador `X` resolvió que la disputa es
+> **INDECIDIBLE desde el árbol** y que **NINGUNA de las dos vías de remedio es ejecutable
+> por `F4`**: recortar la propagación sería que `F4` **borrase contenido que el coordinador
+> afirma del Owner**; completar esta entrada sería que `F4` **escribiese palabras dentro de
+> una resolución del Owner**, y eso es `G21` de `KERNEL.md`. Por eso **la propagación NO se
+> recorta y esta entrada NO se completa**, y consta que ninguna de las dos posturas queda
+> declarada vencedora.
+>
+> **QUEDA PENDIENTE DEL OWNER, COMO RATIFICACIÓN Y NO COMO ELECCIÓN DE DISEÑO.** La pregunta
+> exacta, con sus tres alternativas —ratificar el texto AMPLIO, ratificar el texto ESTRICTO,
+> o ratificar Y DAR SEDE en `docs/owner/`—, está en **§13 de la adjudicación de `X`, dentro
+> del documento 24**, `docs/evolucion/24-TERCER-GATE-DE-CERTIFICACION-F4C.md`. **Mientras no
+> haya ratificación, esta disputa sigue ABIERTA**, y **ningún hallazgo se declara SUPERADO
+> por haberla registrado**: registrar no es corregir.
 
 **(b) ES UNA GARANTÍA TRANSITORIA Y EXPLÍCITAMENTE LIMITADA.** No se presenta como otra cosa.
 

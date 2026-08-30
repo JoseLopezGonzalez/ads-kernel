@@ -48,10 +48,20 @@ FALLA CERRADO
 Si una sede no se puede leer, si un recuento derivado no coincide con el que su sede
 declara, o si una ruta derivada no existe en el árbol, **sale con código 2 y diagnóstico**.
 Nunca adivina y nunca reduce el universo en silencio: un universo que encoge sin decirlo es
-exactamente el defecto que `P-08` describió. **Y eso se EJECUTA, no se promete**: toda ruta
-que un manifiesto INMUTABLE declaró obligatoria tiene que seguir saliendo de algún
-componente —el cliquet de `universos_publicados()`—, y un documento numerado que el
-componente (iv) no sepa clasificar para el derivador entero en vez de caerse del universo.
+exactamente el defecto que `P-08` describió. **Y eso se EJECUTA, no se promete**, en cuatro
+puntos:
+
+  · toda ruta que un manifiesto INMUTABLE declaró obligatoria tiene que seguir saliendo de
+    algún componente — el cliquet de `universos_publicados()`;
+  · **cada manifiesto tiene que aportar filas a ese cliquet** (`W2-03`): el lector exigía
+    columna ordinal y el manifiesto del gate del documento 21 no la tiene, con lo que uno de
+    los cinco manifiestos inmutables aportaba CERO filas y sus 30 rutas no estaban
+    protegidas. La guarda de entonces sólo miraba el total y no podía disparar;
+  · un documento numerado que el componente (iv) no sepa clasificar para el derivador entero
+    en vez de caerse del universo;
+  · y **un documento numerado cuyo NOMBRE dice dictamen no se excluye por su H1** (`W2-06`):
+    retitularlo lo sacaba del universo con `exit 0`. Además, las exclusiones del componente
+    (iv) se PUBLICAN con su H1 en la salida de tabla: lo que queda fuera se ve.
 
 USO
 ---
@@ -269,9 +279,35 @@ VOCES_DE_NO_DICTAMEN = ("ÍNDICE", "INDICE", "BASELINE", "MAPA", "INVARIANTES",
                         "SINTESIS", "ARQUITECTURA")
 
 
+# `W2-06`. La clasificación total cerró el caso «no casa con NINGUNA lista» y dejó abierto el
+# contrario, que es el que encoge: **un documento numerado cuyo H1 case con una voz de
+# NO-DICTAMEN sale del universo con `exit 0` y sin que nadie se entere**. Retitular
+# `23-SEGUNDO-GATE-…` como «# ÍNDICE DE …» lo saca del componente (iv) en silencio.
+#
+# El cliquet lo caza si algún manifiesto INMUTABLE declaró esa ruta; no lo caza para un
+# dictamen NUEVO, que es justamente el que nadie ha leído. La guarda que sí lo cierra no
+# necesita sede nueva: **el NOMBRE del fichero es la otra sede, y ya está en el árbol.** Un
+# documento cuyo NOMBRE dice dictamen no puede excluirse por su H1. Al revés no se exige,
+# porque hay nombres que no clasifican —`05-CANDIDATOS.md`, `08-EVIDENCIA-MULTIREPO.md`— y
+# la regla sólo tiene que ser cerrada en la dirección que encoge.
+#
+# Y las exclusiones dejan de ser invisibles: `EXCLUIDOS_IV` las publica con su H1, y la
+# salida de tabla las imprime. Un universo que encoge lo dice.
+EXCLUIDOS_IV = []
+
+
+def _voz(texto):
+    if any(v in texto for v in VOCES_DE_DICTAMEN):
+        return "dictamen"
+    if any(v in texto for v in VOCES_DE_NO_DICTAMEN):
+        return "no-dictamen"
+    return None
+
+
 def componente_iv():
     dir_ev = os.path.join(RAIZ, "docs/evolucion")
-    salida, sin_clasificar = [], []
+    salida, sin_clasificar, discrepan = [], [], []
+    del EXCLUIDOS_IV[:]
     for nombre in sorted(os.listdir(dir_ev)):
         if not re.match(r"^\d\d-.*\.md$", nombre):
             continue
@@ -281,10 +317,26 @@ def componente_iv():
             if linea.startswith("# "):
                 cabecera = linea.upper()
                 break
-        if any(v in cabecera for v in VOCES_DE_DICTAMEN):
+        titulo = " ".join(cabecera.split())[:90]
+        por_h1 = _voz(cabecera)
+        por_nombre = _voz(nombre.upper().replace("-", " ").replace(".", " "))
+        if por_h1 == "dictamen":
             salida.append(rel)
-        elif not any(v in cabecera for v in VOCES_DE_NO_DICTAMEN):
-            sin_clasificar.append((rel, " ".join(cabecera.split())[:90]))
+        elif por_nombre == "dictamen":
+            discrepan.append((rel, titulo))
+        elif por_h1 == "no-dictamen":
+            EXCLUIDOS_IV.append((rel, titulo))
+        else:
+            sin_clasificar.append((rel, titulo))
+    if discrepan:
+        raise SedeIlegible(
+            "el componente (iv) iba a EXCLUIR del universo %d documento(s) cuyo NOMBRE dice "
+            "que son dictamen y cuyo H1 ya no lo dice: %r. Un dictamen que se cae del "
+            "universo porque le han cambiado el título es el encogimiento silencioso que "
+            "`1bis` prohíbe, y el cliquet sólo lo caza si algún manifiesto INMUTABLE lo "
+            "declaró — para el dictamen NUEVO, que es el que nadie ha leído, no hay red. "
+            "Córrijase el H1, o renómbrese el fichero: las dos cosas las firma alguien"
+            % (len(discrepan), discrepan))
     if sin_clasificar:
         raise SedeIlegible(
             "el componente (iv) NO sabe clasificar %d documento(s) numerado(s): %r. Un "
@@ -403,8 +455,16 @@ COMPONENTES = [
 # sin que alguien lo diga: si desaparece, o el derivador encogió o el árbol perdió la
 # fuente, y las dos cosas son código 2.
 MANIFIESTOS = "docs/evolucion/verificacion/manifiestos"
+# `W2-03`. El patrón exigía COLUMNA ORDINAL —`| 7 | \`ruta\` |`— y el manifiesto del gate
+# del documento 21 no la tiene: su tabla empieza por la ruta. Resultado medido sobre el
+# árbol, sin que nadie atacara nada: **de los cinco manifiestos INMUTABLES, uno aportaba
+# CERO filas al cliquet**, y las 30 rutas que aquel gate declaró obligatorias no estaban
+# protegidas contra el encogimiento. La guarda que existía —«ningún manifiesto publica
+# filas»— sólo miraba el total, y con cuatro manifiestos aportando filas nunca disparaba.
+# Ahora la ruta puede ir en la primera o en la segunda celda, y **cada manifiesto tiene que
+# aportar filas**: uno que no aporte ninguna es código 2 con su nombre.
 _FILA_MANIFIESTO = re.compile(
-    r"^\|\s*\d+\s*\|\s*`([A-Za-z0-9][-A-Za-z0-9_./]*\.(?:md|py|ya?ml|txt))`\s*\|", re.M)
+    r"^\|\s*(?:\d+\s*\|\s*)?`([A-Za-z0-9][-A-Za-z0-9_./]*\.(?:md|py|ya?ml|txt))`\s*\|", re.M)
 
 
 def universos_publicados():
@@ -413,19 +473,26 @@ def universos_publicados():
     if not os.path.isdir(dir_man):
         raise SedeIlegible("no existe %s: sin manifiestos publicados no hay nada contra lo "
                            "que comprobar que el universo no ha encogido" % MANIFIESTOS)
-    publicadas, con_filas = {}, []
+    publicadas, con_filas, sin_filas = {}, [], []
     for nombre in sorted(os.listdir(dir_man)):
         if not nombre.endswith(".md"):
             continue
         rutas = set(_FILA_MANIFIESTO.findall(_leer(MANIFIESTOS + "/" + nombre)))
-        if rutas:
-            con_filas.append(nombre)
+        (con_filas if rutas else sin_filas).append(nombre)
         for r in rutas:
             publicadas.setdefault(r, []).append(nombre)
     if not con_filas:
         raise SedeIlegible("ningún manifiesto de %s publica filas de fuente con ruta: el "
                            "cliquet que impide que el universo encoja se quedaría sin sede, "
                            "y una guarda sin sede es un verde por omisión" % MANIFIESTOS)
+    if sin_filas:
+        raise SedeIlegible(
+            "%d manifiesto(s) INMUTABLE(s) de %s no aportan NI UNA fila al cliquet: %r. Un "
+            "manifiesto es la sede que declaró qué fuentes eran obligatorias en su gate; si "
+            "el lector no las ve, esas rutas pueden desaparecer del universo sin que nada lo "
+            "diga, y la guarda del total no lo nota mientras los demás manifiestos aporten "
+            "filas. O la tabla ha cambiado de forma, o el fichero no es un manifiesto: las "
+            "dos cosas se responden, no se callan" % (len(sin_filas), MANIFIESTOS, sin_filas))
     return publicadas
 
 
@@ -489,6 +556,12 @@ def main():
     for clave, titulo, fn in COMPONENTES:
         n = sum(1 for r in universo if clave in procedencia[r])
         sys.stdout.write("  (%-3s) %3d   %s\n" % (clave, n, titulo))
+    # `W2-06`. Lo que el componente (iv) DEJA FUERA se publica: un universo que encoge lo
+    # dice, y quien lee la tabla ve por qué cada documento numerado no está.
+    sys.stdout.write("\n  (iv) EXCLUIDOS por voz de NO-DICTAMEN en su H1: %d\n"
+                     % len(EXCLUIDOS_IV))
+    for rel, titulo in EXCLUIDOS_IV:
+        sys.stdout.write("        %-46s %s\n" % (rel.split("/")[-1], titulo))
     return 0
 
 

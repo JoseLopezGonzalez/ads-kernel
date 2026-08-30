@@ -716,7 +716,72 @@
 ```text
 CHECKPOINT — ADS-NEXT/12 · SIS/evolucion
 actualizado: 2026-08-30
-metodo:      SIS/Evolucion · RESOLUCIÓN O17 DEL OWNER RECIBIDA Y EN PROPAGACIÓN, y TANDA
+regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histórico: describe el
+             árbol VIGENTE. Fue a la vez el defecto X-04 del documento 24 —GRAVE— y la CUARTA
+             recurrencia consecutiva de la clase «el checkpoint no reancla»: K-01/J-10/L-01 ·
+             P-05≡Q-08/R-02 · S-17≡S3-05 · X-04. Iba DOS eventos atrasado bajo
+             `actualizado: 2026-08-30`, nombrando O17 y el documento 22 como vigentes cuando
+             ya existían el documento 23, O18, D108 y el documento 24.
+             LA GARANTÍA GENERAL, escrita AQUÍ DENTRO para que no dependa de que alguien se
+             acuerde, y en la forma que S-16 y S-17 ya establecieron para este fichero:
+               1  NADA QUE OTRA SEDE PUEDA DERIVAR SE COPIA DENTRO DE ESTE BLOQUE. Ni
+                  recuentos de hallazgos, ni severidades, ni clasificación A/B/C, ni número
+                  del último documento, ni rama, ni base: se REMITE a su sede, o se DERIVA
+                  con el comando que la deriva. Copiar es lo que caduca
+               2  EL ÚLTIMO GATE Y SU DOCUMENTO NO SE ESCRIBEN A MANO. Se derivan con
+                       ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
+                  y su VEREDICTO y su RECUENTO viven EN ESE documento, que es inmutable y es
+                  su única sede
+               3  LA ÚLTIMA RESOLUCIÓN DEL OWNER Y LA ÚLTIMA DECISIÓN TAMPOCO. Se derivan con
+                       grep -o '^### `O[0-9]*`' docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md | tail -1
+                       grep -o '^| D[0-9]* |' docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md | tail -1
+               4  TODO EVENTO NUEVO —un gate devuelto, una resolución del Owner, una tanda
+                  aplicada— REANCLA `metodo`, `last_meaningful_event` y `based_on` EN EL MISMO
+                  COMMIT QUE LO REGISTRA. Un evento escrito en la cabecera de este fichero y
+                  no aquí es EXACTAMENTE el defecto de X-04, y no cuenta como registrado
+               5  LO ANTERIOR NO SE BORRA: baja a `metodo_anterior` y a
+                  `last_meaningful_event_anterior`, que es donde vive lo histórico
+               6  NINGÚN HALLAZGO SE DECLARA SUPERADO POR ESTE REANCLAJE. Reanclar no es
+                  certificar, y sólo un gate independiente posterior puede cerrar X-04
+metodo:      SIS/Evolucion · TERCER GATE DE CERTIFICACIÓN DEVUELTO —gate VÁLIDO, VEREDICTO
+             INSUFICIENTE PARA F5 sobre la candidata 21f1ccb— y TANDA DE CORRECCIÓN DE SUS
+             HALLAZGOS EN APLICACIÓN. Es el PRIMER gate que recibe su ancla por un canal
+             EXTERNO al repositorio, como O18 ordena, y el sobre se entregó a cada revisor
+             dentro de su encargo antes de leer.
+             El documento es el que deriva la regla 2 de `regla_de_reanclaje`. El recuento de
+             hallazgos, sus severidades y la clasificación A/B/C NO SE COPIAN AQUÍ: su sede es
+             §12 y §13 de la adjudicación de X, dentro de ese documento.
+             Falla por A —coherencia interna— y por B —identidad de la candidata—, y
+             EXPRESAMENTE NO por cobertura y NO por C: C-L.5 queda CERTIFICADA por CUARTA vez
+             consecutiva y las dos restas son ∅.
+             LA RAÍZ es la misma de los gates 21, 22 y 23 y esta vez es PEOR, porque éste era
+             el gate que venía a curarla: O18 es correcta —cambia la raíz de confianza en vez
+             de añadir otra comprobación interna— pero su implementación puso la nueva raíz
+             DENTRO del mismo árbol. La circularidad no se cerró: se MOVIÓ, de HEAD a
+             `emitir-sobre-de-ancla.py`. O18 NO está refutada: lo externo es la ENTREGA, lo
+             interno es la PRODUCCIÓN. Y queda ordenado EXPRESAMENTE que NO se escriba una
+             decimonovena protección interna.
+             LO ÚNICO QUE VUELVE AL OWNER es una RATIFICACIÓN, no una elección: O18 registra
+             UNA condición previa y seis sedes escriben TRES. La disputa queda REGISTRADA Y NO
+             RESUELTA dentro de la propia entrada de O18 —con sus tres hechos, la corroboración
+             de `bcee159` y la anomalía de forma frente a O17—, la propagación NO se recorta y
+             O18 NO se completa, porque ninguna de las dos vías es ejecutable por F4 (G21).
+             La pregunta exacta está en §13 de la adjudicación de X.
+             Y LO QUE F4 SÍ HACE diga lo que diga el Owner: O18 recibe la declaración de
+             INVERIFICABILIDAD que O17 ya tenía — X-02, cerrado en su sede.
+             C-L.7 pasa de CERRADA a NO CERRADA por X-04, y este bloque es el reanclaje.
+             APLICADA, NO CERTIFICADA · F4c ABIERTA · F5 NO AUTORIZADA
+metodo_anterior: SIS/Evolucion · RESOLUCIÓN O18 DEL OWNER RECIBIDA Y PROPAGADA COMO D108,
+             DERIVADA y no elegida por F4 —SOBRE DE ANCLA como requisito de todo gate de F4c,
+             y CONTRATO DEL VERIFICADOR EXTERNO DEL CONTROL REPO registrado para F6 sin
+             implementar—, y TANDA DE CORRECCIÓN DEL SEGUNDO GATE DE CERTIFICACIÓN
+             (documento 23) APLICADA. La clase B de ese gate —LA RAÍZ— queda RESUELTA y YA NO
+             BLOQUEA. O1–O17 y D1–D107 conservan su texto resolutivo · APLICADA, NO CERTIFICADA
+metodo_anterior: SIS/Evolucion · SEGUNDO GATE DE CERTIFICACIÓN EJECUTADO SOBRE e316396 —ocho
+             agentes de contexto limpio: cadena S1–S4, cadena T1·T2·T3 en paralelo y sin
+             verse, adjudicador U— · VEREDICTO INSUFICIENTE PARA F5 · su ÚNICA clase B era LA
+             RAÍZ y se elevó al Owner, que la respondió con O18 · documento 23
+metodo_anterior: SIS/Evolucion · RESOLUCIÓN O17 DEL OWNER RECIBIDA Y EN PROPAGACIÓN, y TANDA
              DE CORRECCIÓN DEL GATE DE CERTIFICACIÓN (documento 22) EN APLICACIÓN.
              El Owner eligió la alternativa (b): el nivel ESTRUCTURAL lo produce CADA
              MACROCIRCUITO AL ARRANCAR, como precondición propia. Motivo suyo: robustez y
@@ -744,7 +809,13 @@ metodo_anterior: SIS/Evolucion · TANDA DE CORRECCIÓN DEL GATE DEFINITIVO APLIC
              y CORRECCIÓN TÉCNICA ACOTADA sobre ella · D103 · APLICADA, NO CERTIFICADA
 metodo_anterior: SIS/Evolucion · GATE DEFINITIVO INDEPENDIENTE EJECUTADO SOBRE r4=0ea0451 ·
              VEREDICTO INSUFICIENTE PARA F5 · F4c ABIERTA · F5 NO AUTORIZADA
-based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
+based_on:    LA LISTA DE DOCUMENTOS NUMERADOS NO ES SEDE Y ES DERIVABLE — regla 2 de
+             `regla_de_reanclaje`: `ls docs/evolucion/[0-9][0-9]-*.md | sort`. Son INMUTABLES,
+             y el VEREDICTO y el RECUENTO de cada gate viven EN CADA DOCUMENTO, no aquí. La
+             enumeración de abajo se conserva por comodidad de lectura; las anotaciones que
+             COPIAN recuentos son ANTERIORES a esa regla y se conservan sin ampliarse, y las
+             entradas nuevas REMITEN en vez de copiar.
+             docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
              docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md@56ea196
              docs/evolucion/11-ARQUITECTURA-INTEGRADA.md   corregida
              docs/evolucion/12-CRITICA-INDEPENDIENTE-F4.md
@@ -770,9 +841,32 @@ based_on:    docs/evolucion/09-SINTESIS.md@56ea196 + su addendum
                                                              adjudica R · VEREDICTO
                                                              INSUFICIENTE · universo derivado ·
                                                              69 hallazgos, A 68 · B 1 · C 0
+             docs/evolucion/23-SEGUNDO-GATE-DE-CERTIFICACION-F4C.md
+                                                             cadenas S1–S4 y T1·T2·T3,
+                                                             adjudica U · VEREDICTO
+                                                             INSUFICIENTE · su única clase B
+                                                             es LA RAÍZ, y es la que O18
+                                                             responde · recuento EN EL PROPIO
+                                                             DOCUMENTO
+             docs/evolucion/24-TERCER-GATE-DE-CERTIFICACION-F4C.md
+                                                             dictámenes V y W, adjudica X ·
+                                                             gate VÁLIDO · VEREDICTO
+                                                             INSUFICIENTE · PRIMER gate con
+                                                             SOBRE DE ANCLA entregado por
+                                                             canal externo · C-L.5 CERTIFICADA
+                                                             por cuarta vez · recuento y
+                                                             clasificación A/B/C EN EL PROPIO
+                                                             DOCUMENTO, §12 y §13 de X · y la
+                                                             RATIFICACIÓN de O18 que queda
+                                                             PENDIENTE DEL OWNER, en su §13
              docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md
                                                              errores de hecho señalados SIN
                                                              tocar los dictámenes
+             docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O18 · D108, y en la entrada
+                                                             de O18: su declaración de
+                                                             INVERIFICABILIDAD (X-02) y la
+                                                             DISPUTA REGISTRADA Y NO RESUELTA
+                                                             sobre el alcance de (c)
              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O17 · D107
              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   D104 · D105 · D106
              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · O16 · D16–D22 ·
@@ -797,7 +891,57 @@ rama_de_trabajo: NO SE ESCRIBE AQUÍ, Y ES DELIBERADO. Este campo nombró durant
 freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
              Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
              queda marcado HISTÓRICO y SUPERADO, y no se borra
-last_meaningful_event: EL OWNER RESPONDE la única decisión de clase B del documento 22, y su
+last_meaningful_event: EL TERCER GATE DE CERTIFICACIÓN DEVUELVE INSUFICIENTE PARA F5 sobre
+             la candidata 21f1ccb, y el gate es VÁLIDO. Su documento es el que deriva la regla
+             2 de `regla_de_reanclaje`; su recuento, sus severidades y su clasificación A/B/C
+             NO se copian aquí y viven en §12 y §13 de la adjudicación de X.
+             Es el PRIMER gate cuyo ancla llega por un canal EXTERNO al repositorio, como O18
+             ordena, y esa parte FUNCIONÓ: el sobre se entregó dentro del encargo, idéntico a
+             los dos revisores, antes de leer, y es reconstruible. Lo que falla es la
+             PRODUCCIÓN del sobre, no su ENTREGA: el emisor vive dentro del árbol que ancla,
+             lee del directorio de trabajo y no comprueba `git status`, y con eso produce un
+             sobre idéntico al honesto sobre un corpus corrupto sin commitear nada. La
+             circularidad no se cerró: se MOVIÓ. O18 NO queda refutada, y el adjudicador
+             recomienda que el trabajo SIGA y que NO se escriba una decimonovena protección
+             interna.
+             NO falla por cobertura: C-L.5 queda CERTIFICADA por CUARTA vez consecutiva, las
+             dos restas son ∅ y los agotamientos pasan las dos reglas. Y NO falla por C.
+             LO QUE ESTA TANDA HACE EN EL REGISTRO, sin resolver lo que no le toca: O18 recibe
+             la declaración de INVERIFICABILIDAD que O17 ya tenía (X-02, GRAVE) y que el
+             adjudicador declara ejecutable por F4 diga lo que diga el Owner; la DISPUTA sobre
+             el alcance de la condición previa de O18(c) queda REGISTRADA Y NO RESUELTA en la
+             propia entrada de O18 —UNA condición en su sede frente a TRES en seis sedes, la
+             corroboración contemporánea del mensaje de `bcee159`, la anomalía de forma frente
+             a O17 cuyo reparto nace en `8e70d94`, y la inexistencia de sede del Owner en su
+             propia mano—, SIN recortar la propagación y SIN completar O18, porque ninguna de
+             las dos vías es ejecutable por F4 (G21 de KERNEL.md); el preámbulo de D107 deja de
+             decir «texto ÍNTEGRO» y dice «texto RESOLUTIVO», con la reconciliación de lo que
+             de verdad se editó —celda de D97 en `8c3afe7` y celda de D92 en `78ec1cc`, un
+             puntero y una corrección de cita, ninguna resolución tocada—; y este bloque de
+             estado se REANCLA, con la regla que lo obliga a reanclarse escrita dentro.
+             C-L.7 pasa de CERRADA a NO CERRADA. LA RATIFICACIÓN DE O18 QUEDA PENDIENTE DEL
+             OWNER. APLICADA NO ES CERTIFICADA: F4c sigue ABIERTA y F5 sigue NO AUTORIZADA
+             (2026-08-30)
+last_meaningful_event_anterior: EL OWNER RESPONDE la única decisión de clase B del documento
+             23 —LA RAÍZ, la que ningún gate anterior había llevado a nadie—, y su respuesta se
+             registra como O18, RESOLUCIÓN ESCALONADA: RECHAZA expresamente (a) —retirar la
+             garantía—, ADOPTA (b) —ancla documental externa, declarada TRANSITORIA y
+             explícitamente limitada— para cerrar F4c, y hace (c) —verificador externo real—
+             OBLIGATORIA EN F6. Con ella esa clase B queda RESUELTA y YA NO BLOQUEA. Se propaga
+             como D108, DERIVADA y no elegida por F4: el SOBRE DE ANCLA pasa a ser requisito de
+             todo gate de F4c, con sus obligaciones para coordinador, revisores y adjudicador, y
+             el CONTRATO DEL VERIFICADOR EXTERNO DEL CONTROL REPO queda registrado para F6, sin
+             una línea implementada. Se aplican los hallazgos de clase A del documento 23.
+             O1–O17 y D1–D107 conservan su texto resolutivo; nada se renumera; NINGÚN hallazgo
+             se declara SUPERADO. APLICADA NO ES CERTIFICADA (2026-08-30)
+last_meaningful_event_anterior: el SEGUNDO GATE DE CERTIFICACIÓN —ocho agentes de contexto
+             limpio sobre e316396, cadenas S y T en paralelo y sin verse, adjudica U— devuelve
+             INSUFICIENTE PARA F5, y trae algo que ningún gate anterior había traído: LA RAÍZ.
+             M-04 no es satisfacible desde dentro de F4, como §11.4 del documento 11 ya había
+             declarado, y la pregunta con sus tres alternativas se eleva al Owner en §13 de la
+             adjudicación de U. Ningún hallazgo se corrigió en esa pasada, y fue deliberado
+             (2026-08-30)
+last_meaningful_event_anterior: EL OWNER RESPONDE la única decisión de clase B del documento 22, y su
              respuesta se registra como O17. Elige la alternativa (b): el nivel ESTRUCTURAL
              lo produce CADA MACROCIRCUITO AL ARRANCAR, como precondición propia de esa
              ejecución. Su motivo, en sus palabras, es robustez y revalidación permanente
@@ -1562,7 +1706,19 @@ pregunta_pendiente: NINGUNA. La única que había —la clase B del documento 22
                  | grep -vc 'RETIRADA\|FUSIONADA'
              que es cabeceras `## `PN-` menos las marcadas RETIRADA o FUSIONADA. Las que
              ESTA tanda añade son PN-17 y PN-18; ninguna anterior se renumera.
-siguiente:   PUBLICAR UNA CANDIDATA NUEVA y someterla a OTRO GATE INDEPENDIENTE, con
+siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanclaje`. Este
+             campo copiaba lo que la sección **«Siguiente acción exacta»** de este mismo
+             fichero deriva, y por eso caducó con la tanda de O17/D107: nombraba el documento
+             22 cuando ya existían el 23, O18, D108 y el 24. Su sede única es la PRIMERA
+             sección titulada «Siguiente acción exacta», que se localiza con
+                 grep -n '^## Siguiente acci[óo]n exacta' docs/evolucion/CHECKPOINT-ADS-NEXT.md | head -1
+             y las que le siguen van rotuladas HISTÓRICA. Lo único que este campo afirma, y
+             que no caduca: **APLICADA NO ES CERTIFICADA**, y REGISTRAR o CONTRATAR no es
+             CORREGIR. F4c sigue ABIERTA y F5 sigue NO AUTORIZADA, y la RATIFICACIÓN de O18
+             está PENDIENTE DEL OWNER.
+             **[HISTÓRICO · lo que este campo copiaba en la tanda de O17/D107. Se conserva y
+             NO describe el estado vigente.]**
+             PUBLICAR UNA CANDIDATA NUEVA y someterla a OTRO GATE INDEPENDIENTE, con
              revisores de contexto limpio que NO sean quien aplicó esta tanda — y **que
              publique los DOS manifiestos que D106 exige**: el de ASIGNACIÓN antes de
              repartir y el de LECTURA por revisor, ENLAZADOS desde 00-INDICE.md en el mismo
@@ -1571,8 +1727,6 @@ siguiente:   PUBLICAR UNA CANDIDATA NUEVA y someterla a OTRO GATE INDEPENDIENTE,
              de C-L.5 NO CERTIFICABLE, como hizo O.
              Antes de eso: O17 está RECIBIDA y en propagación (D107), y los 68 hallazgos de
              clase A del documento 22 se están aplicando.
-             **APLICADA NO ES CERTIFICADA**, y REGISTRAR o CONTRATAR no es CORREGIR.
-             F4c sigue ABIERTA y F5 sigue NO AUTORIZADA.
 
              **[HISTÓRICO · el estado que dejó la tanda de D96–D103. La clasificación
              VIGENTE está más abajo, tras el gate del documento 21.]**
@@ -1661,10 +1815,13 @@ siguiente:   PUBLICAR UNA CANDIDATA NUEVA y someterla a OTRO GATE INDEPENDIENTE,
                                                     13   cada id exactamente una vez
 
              CÓMO QUEDA CADA CONDICIÓN — **CLASIFICACIÓN VIGENTE**, tras el GATE
-             INDEPENDIENTE DE CIERRE CON MANIFIESTOS (documento 21) y la tanda que lo
-             sigue. CINCO estados primarios MUTUAMENTE EXCLUYENTES, un estado por id, los
-             trece ids exactamente una vez, y NINGÚN subhallazgo contado como condición:
-               CORREGIDAS EN F4c     8   C-L.1 C-L.3 C-L.4 C-L.6 C-L.7 C-L.8 C-L.9 C-L.11
+             INDEPENDIENTE DE CIERRE CON MANIFIESTOS (documento 21), la tanda que lo sigue
+             y **la ACTUALIZACIÓN que impone el TERCER GATE DE CERTIFICACIÓN (documento 24)
+             sobre C-L.7**. SEIS estados primarios MUTUAMENTE EXCLUYENTES —eran CINCO hasta
+             X-04—, un estado por id, los trece ids exactamente una vez, y NINGÚN
+             subhallazgo contado como condición:
+               CORREGIDAS EN F4c     7   C-L.1 C-L.3 C-L.4 C-L.6 C-L.8 C-L.9 C-L.11
+               NO CERRADA            1   C-L.7 — la MUEVE aquí el documento 24, por X-04
                REGISTRADAS PARA F5   2   C-L.2 (PN-15, decide el Owner) · C-L.12
                CONTRATADA PARA F6    1   C-L.10 — CERO líneas de código escritas
                MIXTA POR DESGLOSE    1   C-L.13 — sus SEIS componentes son atributos
@@ -1672,9 +1829,13 @@ siguiente:   PUBLICAR UNA CANDIDATA NUEVA y someterla a OTRO GATE INDEPENDIENTE,
                                          K-05 K-09 K-10 K-08 L-03 corregidos ·
                                          J-11 contratado para F6, NO implementado
                CERTIFICADA POR       1   C-L.5 — la CERTIFICÓ el adjudicador R del documento
-               COBERTURA                 21, y es la primera vez
+               COBERTURA                 21, y el documento 24 la CERTIFICA por cuarta vez
+                                         consecutiva
                                     ──
                                     13   = los trece ids distintos, sin doble conteo
+               **[HISTÓRICO · hasta el documento 24 esta clasificación contaba OCHO
+               CORREGIDAS EN F4c, con C-L.7 entre ellas, y CINCO estados. El texto anterior
+               NO se borra: queda dicho aquí que era eso, y por qué dejó de serlo.]**
 
              LAS TRECE FILAS DE DETALLE, que son la sede canónica de esta clasificación:
                C-L.1  CERRADA · D96: revision_base OBLIGATORIO en §3.6 y participante en tx
@@ -1695,7 +1856,35 @@ siguiente:   PUBLICAR UNA CANDIDATA NUEVA y someterla a OTRO GATE INDEPENDIENTE,
                       los tres. R recalculó las 43 filas contra el árbol y las 43 coinciden.
                       **Certificar la cobertura no cierra F4c ni autoriza F5**
                C-L.6  CERRADA · las CINCO salidas del gate de M7 en §8.3
-               C-L.7  CERRADA · el checkpoint reancla su estado en cada tanda
+               C-L.7  NO CERRADA · **la MUEVE aquí el TERCER GATE DE CERTIFICACIÓN,
+                      documento 24, hallazgo X-04, GRAVE, y es la CUARTA RECURRENCIA
+                      CONSECUTIVA de la clase** (K-01/J-10/L-01 · P-05≡Q-08/R-02 ·
+                      S-17≡S3-05 · X-04). El enunciado —«el checkpoint reancla su estado en
+                      cada tanda»— quedó FALSADO sobre el árbol que ese gate juzgó: el
+                      BLOQUE DE ESTADO ESTRUCTURADO de este fichero, el del formato de a.10,
+                      iba DOS eventos atrasado —sin el documento 23, sin O18, sin D108, y
+                      luego tampoco el documento 24— NO estaba dentro de ningún [HISTÓRICO]
+                      ni [ESTADO ANTERIOR], y llevaba `actualizado: 2026-08-30`.
+                      **[HISTÓRICO] Su estado anterior era CERRADA**, y lo estuvo desde la
+                      tanda de D96–D103; deja de estarlo aquí.
+                      QUÉ SE HA HECHO EN ESTA TANDA: el bloque queda REANCLADO —metodo,
+                      metodo_anterior, based_on, last_meaningful_event y siguiente— y
+                      recibe un campo nuevo, `regla_de_reanclaje`, que escribe DENTRO del
+                      propio bloque la garantía general de la clase: nada que otra sede
+                      pueda derivar se copia aquí, el último documento y la última
+                      resolución se DERIVAN con su comando, y todo evento nuevo reancla el
+                      bloque EN EL MISMO COMMIT que lo registra.
+                      **NO se declara SUPERADO**: reanclar no es certificar, y sólo un gate
+                      independiente posterior puede cerrar X-04 y devolver C-L.7 a CERRADA.
+                      CONSECUENCIA DECLARADA, y no se tapa: el evaluador `G-16` de la
+                      batería tiene escritos CINCO estados primarios y NO conoce
+                      «NO CERRADA», de modo que mientras no lo aprenda saldrá en ROJO sobre
+                      esta clasificación. **Ese rojo es VERDADERO**: dice que el checker
+                      sigue describiendo la clasificación ANTERIOR, la que este gate falsó.
+                      El remedio es de dos líneas —`NO CERRADA` en `_ESTADOS_CL` y en
+                      `_CANON`— y vive en `docs/evolucion/verificacion/`, que este registro
+                      NO escribe. **No se escribe «CERRADA» aquí para poner la batería en
+                      verde**: eso sería exactamente el mutante que `Q-06` cerró
                C-L.8  CERRADA · el hash_previo de la reparación, unificado para las tres causas
                C-L.9  CERRADA · X62 da fila propia a §6.7, y G-26 deriva los recuentos
                C-L.10 CONTRATADA PARA F6 · censo AFIRMACIONES derivado y T152 sobre toda sede
@@ -2839,6 +3028,72 @@ LAS DOS ADVERTENCIAS, Y SON DEL OWNER:
 ```
 
 ## Siguiente acción exacta
+
+```text
+0  DÓNDE ESTAMOS               el TERCER GATE DE CERTIFICACIÓN devolvió `INSUFICIENTE PARA
+                               F5` sobre la candidata `21f1ccb`, y **el gate es VÁLIDO**.
+                               Su documento es el **24** y está publicado. Los SHA vigentes
+                               se derivan con `git rev-parse HEAD` y `git ls-remote`: no se
+                               copian aquí, y ésa es la regla de esta sección.
+
+1  QUÉ DIJO, EN UNA LÍNEA      falla por `A` —coherencia interna— y por `B` —identidad de la
+                               candidata—, y **expresamente NO por `C`**. `C-L.5` queda
+                               CERTIFICADA por cuarta vez consecutiva: **no falla por
+                               cobertura**, y el adjudicador lo dice con todas las letras.
+
+2  LO QUE ESTA TANDA HA HECHO  reparar el mecanismo que el gate rompió, sin añadir ninguna
+                               comprobación nueva —el censo sigue en el número que la sede
+                               declara y `G-34` lo contrasta—. El emisor del sobre lee del
+                               COMMIT y no del árbol de trabajo, **se niega a emitir con el
+                               árbol sucio**, publica LOS DOS ÁRBOLES con las rutas en que
+                               difieren, y su receta reproduce los digest byte a byte. El
+                               emisor y el derivador entran en el inventario de integridad.
+                               `O18` recibe su **declaración de INVERIFICABILIDAD**, que es
+                               lo único de la disputa que `F4` sí puede hacer.
+
+3  LO QUE NO SE HA HECHO,      **la disputa sobre el texto de `O18` NO se ha resuelto**, y
+   Y ES DELIBERADO             es deliberado: ni se recortó la propagación ni se completó la
+                               resolución. Está REGISTRADA dentro de `O18` con sus cuatro
+                               hechos, y **la ratificación es del Owner**. `G21` de
+                               `KERNEL.md` L690: un sistema no puede definir sin conflicto
+                               de interés los criterios que aprueban su propia existencia.
+
+4  LO ÚNICO QUE VUELVE         una **RATIFICACIÓN**, no una elección. `O18` registra UNA
+   AL OWNER                    condición previa para el verificador externo y seis sedes
+                               escriben TRES. La pregunta, con sus tres alternativas y el
+                               coste de cada una, está redactada palabra por palabra en
+                               **§13 de la adjudicación de `X`**, dentro del documento 24.
+
+5  QUÉ VIENE DESPUÉS DE        publicar candidata y encargar otro gate independiente con
+   LA RESPUESTA                revisores nuevos, que reciban el sobre —ya reparado— antes de
+                               leer. Y **NO escribir una protección interna más**: el
+                               adjudicador lo ordena, y su razón es que el gate siguiente
+                               encontraría la puerta que venga detrás y tendría razón.
+
+6  LO QUE SIGUE ABIERTO        `M-04` **NO se declara superada**: sólo un gate independiente
+                               puede hacerlo, y lleva cuatro sin poder. `C-L.7` pasa a **NO
+                               CERRADA** por el hallazgo `X-04`. Los hallazgos de clase `C`
+                               siguen vivos, declarados y contratados para `F6`.
+
+7  ESTADO, SIN ADORNO          `F4c` sigue **ABIERTA**. `F5` sigue **NO AUTORIZADA**. No se
+                               ha iniciado F5, ni F6, ni PesquerApp. No se ha hecho merge en
+                               `redesign/kernel-2.0`. **Aplicar no es certificar.**
+
+8  DÓNDE PARAR                 antes de elegir por el Owner en el punto 4. Y sigue vigente
+                               parar antes de redactar `(g)`, antes de crear `C8`, antes de
+                               tocar `C7` o el kernel operativo SUSTANTIVO, y antes de
+                               iniciar PesquerApp.
+```
+
+> **La regla de redacción de esta sección, que NO es histórica y se conserva:** nada que otra
+> sede pueda derivar se copia aquí. Los SHA, los censos, el recuento de la batería y el
+> ordinal de la tanda se derivan con su comando. Esta sección ha caducado cuatro veces por
+> copiar lo que otra sede ya decía.
+
+> **[HISTÓRICA · «Siguiente acción exacta» anterior al documento 24. Se conserva para
+> trazabilidad y NO describe el estado vigente.]**
+
+## Siguiente acción exacta — HISTÓRICA, anterior al documento 24
 
 > **POR QUÉ ESTA SECCIÓN ESTÁ ESCRITA ASÍ, y es una garantía HEREDADA, no un adorno.** Ha
 > caducado **tres veces consecutivas** —`K-01`/`J-10`/`L-01` en el gate del documento 19;

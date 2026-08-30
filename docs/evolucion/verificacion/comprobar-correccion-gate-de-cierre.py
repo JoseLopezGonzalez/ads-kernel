@@ -153,6 +153,21 @@ def check(id_, titulo, ok, detalle=""):
 # viera— y lo dice en el README.
 _ID_CHECK = re.compile(r"`(G-\d+[a-z]?)`")
 _README_REL = "docs/evolucion/verificacion/README.md"
+_DIR_INSTRUMENTAL = "docs/evolucion/verificacion"
+# La sede de la declaración de instrumental EN CORRECCIÓN es una sección del README con este
+# título exacto. No hay lista escrita en la batería: quien corrige un instrumento lo declara
+# donde el revisor lo lee.
+_SEC_EN_CORRECCION = "## Instrumental EN CORRECCIÓN en esta tanda"
+
+
+def _instrumental_en_correccion(texto):
+    """Rutas que el README declara EN CORRECCIÓN. Conjunto vacío si no hay sección."""
+    m = re.search(r"^%s(.*?)(?=^## |\Z)" % re.escape(_SEC_EN_CORRECCION),
+                  texto, re.S | re.M)
+    if not m:
+        return set()
+    return set(re.findall(r"`(%s/[A-Za-z0-9_.-]+)`" % re.escape(_DIR_INSTRUMENTAL),
+                          m.group(1)))
 
 def _censo_de_comprobaciones(ejecutadas):
     """Fallos del censo de comprobaciones contra su sede. Lista vacía si cuadra."""
@@ -190,22 +205,79 @@ def _censo_de_comprobaciones(ejecutadas):
     repetidas = sorted({i for i in ejecutadas if ejecutadas.count(i) > 1})
     if repetidas:
         fallos.append(f"identificadores de comprobación REPETIDOS: {repetidas}")
-    # y el inventario: la batería y su README, enumerados y publicados
+    # ── el INVENTARIO DE INTEGRIDAD del instrumental ─────────────────────────────
+    #
+    # `X-01` / `A5` / `A6`, y es el punto 3 del remedio que el adjudicador `X` deja
+    # determinado: «el emisor y el derivador entran en el inventario de integridad».
+    # El inventario cubría DOS ficheros —esta batería y su README— y sólo en dos
+    # dimensiones: enumerado y publicado. Fuera quedaban `emitir-sobre-de-ancla.py` y
+    # `derivar-universo-obligatorio.py`, **que son los que producen el ANCLA**: `G-22` cubre
+    # documentos numerados y manifiestos, `G-34` cubría la batería y su README, `G-29` cubre
+    # topología y duplicados, y ninguno cubría `verificacion/*.py`. Con eso `X` puso tres
+    # líneas de puerta trasera en el emisor —SIN COMMITEAR— y obtuvo un sobre idéntico al
+    # honesto sobre un corpus corrupto, con la batería en 38/38; y una puerta trasera en el
+    # derivador que devolvía `{}` en `universos_publicados()` desarmaba el cliquet entero,
+    # también en 38/38.
+    #
+    # Esto NO es una comprobación nueva: es el mismo inventario, con el mismo id, en la
+    # misma sede —el README—, con el perímetro DERIVADO del directorio en vez de escrito, y
+    # con una tercera dimensión: **IDÉNTICO A `HEAD`, o DECLARADO EN CORRECCIÓN**.
+    #
+    # La declaración se lee del README y **caduca sola**: declarar en corrección un fichero
+    # que YA coincide con `HEAD` es rojo. Una exención que sobrevive a la tanda que la
+    # justificaba es una puerta abierta, y ésa es la clase de defecto que este corpus lleva
+    # cuatro gates persiguiendo.
     rel_bat = os.path.relpath(os.path.abspath(__file__), RAIZ).replace(os.sep, "/")
+    _dir_inst = os.path.join(RAIZ, _DIR_INSTRUMENTAL)
+    try:
+        inventario = sorted(_DIR_INSTRUMENTAL + "/" + n for n in os.listdir(_dir_inst)
+                            if os.path.isfile(os.path.join(_dir_inst, n))
+                            and not n.startswith("."))
+    except OSError as e:
+        return fallos + [f"no se puede derivar el inventario de `{_DIR_INSTRUMENTAL}` "
+                         f"({e.strerror}): sin inventario no hay integridad que comprobar"]
     for f in (rel_bat, _README_REL):
+        if f not in inventario:
+            fallos.append(f"{f} no sale del barrido de `{_DIR_INSTRUMENTAL}`: el inventario "
+                          f"no ve ni los dos ficheros que ya cubría, y un inventario que no "
+                          f"se ve a sí mismo no cubre nada")
+    for f in inventario:
         if "`%s`" % f not in texto:
             fallos.append(f"{f} no está ENUMERADO en el README, que es el inventario de "
                           f"este instrumental: un fichero que no está en ningún inventario "
                           f"no lo echa de menos nadie")
     try:
-        publicados = _head_arbol
+        publicados, modificados = _head_arbol, _mod_head
     except NameError:
-        publicados = None
-    if publicados:
-        for f in (rel_bat, _README_REL):
+        publicados, modificados = None, None
+    if publicados is None:
+        fallos.append("GIT NO RESPONDE: el instrumental no se puede contrastar con su "
+                      "versión publicada, y un instrumento sin contraste es el que `X-01` "
+                      "modificó sin que nadie lo viera")
+    else:
+        declarados = _instrumental_en_correccion(texto)
+        for f in inventario:
             if f not in publicados:
-                fallos.append(f"{f} NO está publicado en `HEAD`: una batería sin versión "
+                fallos.append(f"{f} NO está publicado en `HEAD`: un instrumento sin versión "
                               f"publicada no se puede contrastar con nada")
+                continue
+            if f in modificados and f not in declarados:
+                fallos.append(
+                    f"{f}: MODIFICADO respecto de `HEAD` y NO DECLARADO en corrección. "
+                    f"Éste es el inventario de integridad del instrumental que produce el "
+                    f"ANCLA, y una modificación que nadie declara es exactamente la puerta "
+                    f"de `X-01`: tres líneas sin commitear bastaban para emitir un sobre "
+                    f"idéntico al honesto sobre un corpus corrupto")
+        for f in sorted(declarados - set(inventario)):
+            fallos.append(f"{f}: DECLARADO en corrección en el README y no existe en "
+                          f"`{_DIR_INSTRUMENTAL}`")
+        for f in sorted(declarados & set(inventario)):
+            if f in publicados and f not in modificados:
+                fallos.append(
+                    f"{f}: DECLARADO en corrección y sin embargo IDÉNTICO a `HEAD`. La "
+                    f"declaración ha caducado: se retira del README en el mismo commit que "
+                    f"confirma el cambio. Una exención que sobrevive a la tanda que la "
+                    f"justificaba es una puerta abierta")
     return fallos
 
 # ── el INFORME se emite SIEMPRE, también si la batería aborta (`Q-24`) ────
@@ -534,11 +606,31 @@ check("G-11", "la fila `D67` es identica BYTE A BYTE a la de `7e99388` (falla CE
 # con la que comparar y `difs` sale vacío — con lo que declaraba «ninguna difiere» sobre
 # OCHENTA Y SEIS filas que no había mirado. Es el defecto que `M-12` cerró en `G-21`, `G-22`
 # y `G-23`, sobreviviendo en la de mayor alcance de las cuatro.
-difs = []
-for n in range(1, 87):
-    ob = [l for l in base if l.startswith(f"| D{n} |")]
-    ac = [l for l in lineas(DEC) if l.startswith(f"| D{n} |")]
-    if ob and ac and ob[0] != ac[0]: difs.append(f"D{n}")
+#
+# `A1` del documento 24, y es la MISMA guarda en las DOS comprobaciones que contrastan
+# filas del registro contra la base: `if ob and ac and ob[0] != ac[0]` **no compara lo que
+# no está**. Borrar una fila entera la hacía invisible, y el informe imprimía «ninguna
+# difiere». El contraste se deriva una sola vez, aquí, y lo usan `G-11b` y `G-21`: una fila
+# que estaba en la base y ya no está es una DESAPARICIÓN, y se nombra.
+def _filas_contra_base(ids, letra):
+    """Filas `| <letra><n> |` de la base que ya no están, están duplicadas o han cambiado."""
+    salida, vigentes = [], lineas(DEC)
+    for n in ids:
+        ob = [l for l in base if l.startswith(f"| {letra}{n} |")]
+        ac = [l for l in vigentes if l.startswith(f"| {letra}{n} |")]
+        if not ob:
+            continue                       # no estaba en la base: no hay nada que conservar
+        if not ac:
+            salida.append(f"{letra}{n}: DESAPARECIDA — estaba en `7e99388` y ya no está en "
+                          f"el registro vigente. Una fila borrada no «difiere»: deja de "
+                          f"existir, y eso es lo que la guarda no miraba")
+        elif len(ac) > 1:
+            salida.append(f"{letra}{n}: DUPLICADA {len(ac)} veces en el registro vigente")
+        elif ob[0] != ac[0]:
+            salida.append(f"{letra}{n}: DIFIERE de la de `7e99388`")
+    return salida
+
+difs = _filas_contra_base(range(1, 87), "D")
 if _base_raw is None:
     difs.append("GIT NO RESPONDE: no se puede comparar contra `7e99388`")
 elif not _base_raw.strip():
@@ -1291,8 +1383,15 @@ dup = [k for k, v in Counter(ids).items() if v > 1]
 #
 # Ahora contrasta el resumen contra las TRECE FILAS DE DETALLE, deriva los componentes de
 # `C-L.13` de esa misma fuente, y deriva su propio mensaje de éxito.
-_ESTADOS_CL = ("CORREGIDAS EN F4c", "REGISTRADAS PARA F5", "CONTRATADA PARA F6",
-               "MIXTA POR DESGLOSE", "CERTIFICADA POR")
+# `X-04` del documento 24 falsó `C-L.7` sobre el árbol que se juzgaba —el bloque de estado
+# del checkpoint iba dos eventos atrasado bajo `actualizado: 2026-08-30`— y la clasificación
+# vigente la mueve a **NO CERRADA**. El canon de estados tenía CINCO escritos y ése no
+# estaba, de modo que `G-16` daba ROJO **con razón**: no reconocía el estado. Lo que se
+# corrige es el CANON, no el contraste — que sigue siendo por IGUALDAD EXACTA, `Q-06`—:
+# una condición puede volver a abrirse, y el instrumento tiene que saber decirlo. Escribir
+# «CERRADA» para poner la comprobación en verde habría sido el mutante de `Q-06`.
+_ESTADOS_CL = ("CORREGIDAS EN F4c", "NO CERRADA", "REGISTRADAS PARA F5",
+               "CONTRATADA PARA F6", "MIXTA POR DESGLOSE", "CERTIFICADA POR")
 
 _g16c = []
 _asig, _declarado = {}, {}
@@ -1318,7 +1417,13 @@ else:
     for _est in _ESTADOS_CL:
         _m = re.search(rf"^\s*{re.escape(_est)}\s+(\d+)\s+(.*)$", _blq, re.M)
         if not _m:
-            _g16c.append(f"falta el estado «{_est}»")
+            # `_ESTADOS_CL` es el VOCABULARIO ADMITIDO, no una lista de presencia
+            # obligatoria: una clasificación no tiene por qué usar los seis estados, y
+            # exigirlo ponía en ROJO cualquier árbol en el que ninguna condición estuviera
+            # —por ejemplo— NO CERRADA. Lo obligatorio se comprueba igual y más abajo: que
+            # TODA condición tenga estado, que ninguna tenga dos, que la suma dé trece, que
+            # cada resumen coincida por IGUALDAD con su fila de detalle, y que ningún estado
+            # que la sede canónica USE falte del resumen.
             continue
         _ini = _m.end()
         _sig = [_blq.find(e, _ini) for e in _ESTADOS_CL if _blq.find(e, _ini) > 0]
@@ -1348,6 +1453,7 @@ else:
     # Sin esto, mover `C-L.12` de estado ajustando contadores pasaba en verde.
     _CANON = {
         "CORREGIDAS EN F4c":    ("CERRADA",),
+        "NO CERRADA":           ("NO CERRADA",),
         "REGISTRADAS PARA F5":  ("REGISTRADA PARA F5", "REGISTRADA"),
         "CONTRATADA PARA F6":   ("CONTRATADA PARA F6", "CONTRATADA"),
         "MIXTA POR DESGLOSE":   ("MIXTA",),
@@ -1362,6 +1468,16 @@ else:
     _sin_detalle = sorted(_esperados - set(_detalle), key=lambda x: int(x[4:]))
     if _sin_detalle:
         _g16c.append(f"sin fila de detalle en su sede: {_sin_detalle}")
+    # y la dirección contraria: un estado que la SEDE CANÓNICA usa y que el resumen no
+    # cuenta. Es la forma que tiene una condición de desaparecer del recuento sin
+    # desaparecer del fichero.
+    _INVERSO = {_d: _e for _e, _ds in _CANON.items() for _d in _ds}
+    for _id, _det in sorted(_detalle.items()):
+        _esp = _INVERSO.get(_det)
+        if _id in _esperados and _esp and _esp not in _declarado:
+            _g16c.append(f"{_id}: su fila de detalle dice «{_det}» y el resumen NO tiene "
+                         f"línea «{_esp}»: un estado que la sede canónica usa y que el "
+                         f"resumen no cuenta es una condición que no cuenta nadie")
     # `Q-06` · protección 3 del adjudicador. El contraste era `_det.startswith(a)`, y un
     # PREFIJO no es un estado: la fila de detalle vigente de `C-L.1` reescrita como
     # «CERRADA SOLO EN PARTE, SIGUE ABIERTA Y BLOQUEA F5 · D96 no cierra nada» seguía
@@ -1549,18 +1665,25 @@ check("G-20", "el registro `D` es una serie CONTINUA desde `D1`, sin huecos y si
       f"D1-D{ns[-1] if ns else '?'}, {len(ns)} filas, huecos {_huecos}, repetidas {_reps}")
 
 # ── G-21 · O1-O16 intactas ───────────────────────────────────────
+#
+# `A1`. El cardinal que hacía de red —`len(set(ac)) >= len(set(ob))`— tampoco veía la
+# desaparición, porque **el registro CRECE**: con dieciocho resoluciones vigentes y
+# dieciséis en la base, borrar la fila `| O5 |` seguía cumpliendo `17 >= 16`. Se conserva,
+# porque sigue cazando una amputación masiva, pero quien detecta el borrado de UNA fila es
+# el contraste de arriba, que ahora sí mira lo que no está.
 ob = re.findall(r"^\| O(\d+) \|", "\n".join(base), re.M)
 ac = re.findall(r"^\| O(\d+) \|", leer(DEC), re.M)
-difs = []
-for n in set(ob):
-    x = [l for l in base if l.startswith(f"| O{n} |")]
-    y = [l for l in lineas(DEC) if l.startswith(f"| O{n} |")]
-    if x and y and x[0] != y[0]: difs.append(f"O{n}")
+difs = _filas_contra_base(sorted(set(ob), key=int), "O")
 if _base_raw is None:
     difs.append("GIT NO RESPONDE: no se puede comparar contra `7e99388`")
-check("G-21", "`O1`-`O16` intactas frente a `7e99388` (y falla CERRADO si git no responde)",
+elif not ob:
+    difs.append("la base de `7e99388` no contiene ni una fila `| O`: lo que se ha traído no "
+                "es el registro de resoluciones del Owner, y comparar contra nada da verde "
+                "siempre")
+check("G-21", "las resoluciones del Owner de `7e99388` siguen en el registro, con su texto y sin duplicar (falla CERRADO sin git)",
       _base_raw is not None and bool(ob) and not difs and len(set(ac)) >= len(set(ob)),
-      "ninguna difiere" if (_base_raw is not None and not difs) else ", ".join(difs))
+      f"{len(set(ob))} resoluciones de la base presentes y con su texto; {len(set(ac))} "
+      f"vigentes" if (_base_raw is not None and bool(ob) and not difs) else "; ".join(difs))
 
 # ── el CORPUS GOBERNADO y su reparto, derivados una sola vez ─────────────
 #
@@ -1901,9 +2024,28 @@ check("G-25", "los macrocircuitos DERIVADOS de §8 declaran sus CATORCE campos, 
 # una cifra desactivaría la comprobación de la cifra que acaba de escribir — que es el
 # modo de fallo exacto que esta batería existe para no repetir.
 _CITA_ENTRE_COMILLAS = re.compile(r"«[^»]*»")
-_VERBO_DE_CITA = re.compile(
-    r"(?:decía|decían|dijo|habiendo|frente a|en vez de|se escribió cuando"
-    r"|NO REPRODUCIDO|reanclad[ao]|conteo a)\s*$", re.I)
+
+# `A3` del documento 24. Aquí vivía `_VERBO_DE_CITA`, una tercera rama de `_es_cita` que
+# eximía la cifra cuando el texto que la precedía terminaba en uno de estos verbos. Era **un
+# interruptor léxico**, exactamente lo que el corpus tiene escrito que ninguna comprobación
+# puede ser: escribir «decía » delante de una cifra viva falsa apagaba `G-26` y la batería
+# volvía a 38/38. `W` lo encontró y `X` lo reprodujo con tres de los verbos, y midió además
+# que `G-31` —la comprobación que existe para cazar interruptores léxicos— **no probaba ni
+# uno de ellos**: su lista de palabras gatillo eran las de `T-06` y ninguna de éstas.
+#
+# La rama SE RETIRA, y no se sustituye por otra: el corpus ya tiene DOS formas
+# ESTRUCTURALES de citar una cifra pasada —las comillas angulares «…», que delimitan la
+# ocurrencia, y la etiqueta de región histórica, que delimita el bloque— y ninguna de las
+# dos depende de que aparezca una palabra. Se comprobó antes de retirarla: sobre el árbol
+# vivo y sobre `HEAD`, **ninguna sede del corpus dependía de esta rama**; la batería queda
+# en 38/38 con ella retirada.
+#
+# La lista NO se borra: se conserva como SEDE DE LOS FIXTURES de `G-31`, que ahora prueba
+# uno a uno que ninguno de estos verbos apaga nada. Una lista de interruptores retirados es
+# el mejor corpus de prueba que hay para que no vuelvan.
+_VERBOS_QUE_YA_NO_APAGAN = ("decía", "decían", "dijo", "habiendo", "frente a", "en vez de",
+                            "se escribió cuando", "NO REPRODUCIDO", "reanclado",
+                            "reanclada", "conteo a")
 
 # ── la MARCA de bloque histórico es ESTRUCTURAL, no una palabra suelta ────
 #
@@ -1965,14 +2107,32 @@ def _regiones_historicas(texto):
 
       · un ENCABEZADO Markdown, como antes,
       · la VALLA de un bloque de código, que abre y cierra contenedor,
-      · la LÍNEA EN BLANCO que separa un bloque del siguiente —fuera de una valla, donde una
-        línea en blanco no separa nada—,
+      · la LÍNEA EN BLANCO que separa un bloque del siguiente, **también dentro de una
+        valla**,
       · y la SALIDA DE LA CITA: si la marca se escribió dentro de un `>`, la región muere
         donde muere la cita. Lo que no está en la cita no lo declara histórico una etiqueta
         que sí lo está.
 
+    `A4` del documento 24, y es `T-06` OTRA VEZ, un piso más abajo. La frontera cuádruple
+    llevaba escrita la excepción `not en_valla`: **dentro de un bloque de código una línea
+    en blanco no cerraba nada**, y dentro de un bloque de código tampoco hay encabezados ni
+    se sale de ninguna cita. Es decir: una etiqueta escrita dentro de una valla eximía **de
+    la etiqueta hasta el cierre de la valla**, cientos de líneas después, y las etiquetas
+    siguientes no cerraban la anterior sino que quedaban dentro de ella. No hacía falta
+    atacar nada: en el checkpoint del árbol juzgado, **1 899 de 3 562 líneas (53 %) estaban
+    exentas de todo control de cifra**, entre ellas el bloque VIVO de «Siguiente acción
+    exacta» entero, a partir de la etiqueta de la L3053. `X` lo reprodujo plantando una
+    cifra falsa seis líneas más abajo de esa etiqueta: **38/38 verde**.
+
+    La excepción se retira: una línea en blanco separa bloques también dentro de una valla
+    —en el corpus las vallas son tablas de campos, y una línea en blanco es justo lo que
+    separa un campo del siguiente—, y una marca nueva cierra la anterior. Con eso la
+    exención del checkpoint baja de 1 899 líneas a 1 229, y ninguna de las que pierde estaba
+    marcada por nadie.
+
     Marcar histórico un bloque entero sigue siendo posible y sigue siendo legítimo —es lo
-    que el README declara—: lo que ya no se puede es marcarlo **desde fuera de él**.
+    que el README declara—: lo que ya no se puede es marcarlo **desde fuera de él**, ni
+    dejar la marca abierta hasta el final de la valla.
     """
     regiones, abierta, clase, en_cita, en_valla = [], None, None, False, False
     pos = 0
@@ -1996,15 +2156,20 @@ def _regiones_historicas(texto):
             if abierta is None:
                 abierta, clase = ini, abre
                 en_cita = bool(_LINEA_DE_CITA.match(linea))
-            elif clase == "tanda" and abre == "tanda":
-                regiones.append((abierta, ini))     # una clave cierra la anterior
-                abierta, clase, en_cita = ini, abre, False
+            else:
+                # `A4`. Una marca nueva CIERRA la anterior, sea de la clase que sea. Antes
+                # sólo lo hacía una clave de tanda sobre otra clave de tanda, y con eso el
+                # primer `[HISTÓRICO]` de un bloque se tragaba los que venían detrás y todo
+                # lo que hubiera entre ellos.
+                regiones.append((abierta, ini))
+                abierta, clase = ini, abre
+                en_cita = bool(_LINEA_DE_CITA.match(linea))
             continue
         if abierta is None:
             continue
         if (_CIERRA_REGION.match(linea)
                 or (clase == "tanda" and _ABRE_CLAVE.match(linea))
-                or (not linea.strip() and not en_valla and clase != "tanda")
+                or (not linea.strip() and clase != "tanda")
                 or (en_cita and not _LINEA_DE_CITA.match(linea))):
             regiones.append((abierta, ini))
             abierta, clase, en_cita = None, None, False
@@ -2023,14 +2188,17 @@ def _en_region_historica(texto, pos):
 def _es_cita(linea, ini_rel, fin_rel):
     """¿La ocurrencia [ini_rel:fin_rel] de esta línea es una cita y no una afirmación?
 
-    Las DOS ramas se evalúan sobre la OCURRENCIA o sobre el principio de la línea; ninguna
-    sobre la línea entera. Es la disciplina que el corpus escribió y que esta función no
-    aplicaba en su tercera rama, que ahora vive en `_en_region_historica` y es estructural.
+    UNA rama, y es ESTRUCTURAL: el numeral está entre comillas angulares, que delimitan la
+    ocurrencia y se ven al leer. La otra forma legítima de citar —marcar el bloque como
+    histórico— es también estructural y vive en `_en_region_historica`.
+
+    `A3`. La tercera rama, la de los VERBOS, se retiró: era un interruptor léxico, y ninguna
+    comprobación de esta batería puede depender de que una palabra aparezca en una línea.
     """
     for c in _CITA_ENTRE_COMILLAS.finditer(linea):
         if c.start() <= ini_rel and fin_rel <= c.end():
             return True                     # el numeral está DENTRO de «…»
-    return bool(_VERBO_DE_CITA.search(linea[:ini_rel]))
+    return False
 
 def _sedes(patron, texto=None, contexto=None, ventana=6):
     """[(línea, valor)] de cada sede VIVA que afirma una cifra.
@@ -2332,40 +2500,36 @@ check("G-28",
 # RAÍZ** —`README.md`, `START_HERE.md`—, **`docs/owner/`** —que ya existe en el árbol y
 # guarda material APROBADO—, **`packs/`** y **`tooling/`**. Sobre esas cuatro zonas `U`
 # plantó segundas sedes normativas íntegras con cabecera «PREVALECE SOBRE TODO» y la
-# batería dio **37/37 en verde**. Aquí el corpus gobernado es el corpus entero, y la cadena
-# vacía es la zona RAÍZ: sus ficheros propios, sin recorrer sus directorios, que ya son
-# zonas por sí mismos.
-_ZONA_RAIZ = ""
-_ZONAS = (_ZONA_RAIZ, "kernel", "docs/owner", "docs/rediseno", "docs/evolucion",
-          "packs", "tooling")
-_IGNORA = re.compile(r"(?:^|/)(?:__pycache__|\.git)(?:/|$)|\.pyc$")
+# batería dio **37/37 en verde**.
+#
+# `A2` del documento 24, y es la TERCERA vez que el mismo defecto sale por el mismo sitio.
+# Aquella corrección volvió a escribir una LISTA —siete zonas—, y una lista escrita caduca:
+# `X` puso copias **byte a byte** del material APROBADO y del registro de decisiones en
+# `docs/normativa/` —un directorio que no existía— y en la raíz de `docs/`, y la batería dio
+# **38/38 verde**; el MISMO gemelo dentro de una zona listada daba **37/38 · FALLO G-29**.
+# Defecto de PERÍMETRO, no de idea, exactamente como `Q-04` y `T-03` antes.
+#
+# Aquí el perímetro DEJA DE ESCRIBIRSE. **El corpus gobernado es el repositorio entero**,
+# menos lo que se excluye con nombre y con motivo: el propio `.git`, que no es corpus sino
+# el almacén contra el que se compara, y los artefactos de bytecode, que no son fuente. Un
+# directorio nuevo —`docs/normativa/`, o el que venga— entra SOLO, sin tocar una línea de
+# esto; y quien quiera sacar algo del perímetro tiene que escribirlo aquí y responder de
+# ello. Una lista de lo que se excluye no puede caducar por omisión: lo que olvide nombrar
+# se queda DENTRO.
+_EXCLUIDO = re.compile(r"(?:^|/)(?:\.git|__pycache__)(?:/|$)|\.pyc$")
 
 def _en_zona(rel):
-    """¿`rel` cae dentro del corpus gobernado? La RAÍZ son sus ficheros propios."""
-    if _IGNORA.search(rel):
-        return False
-    if "/" not in rel:
-        return _ZONA_RAIZ in _ZONAS
-    return any(rel.startswith(z + "/") for z in _ZONAS if z)
+    """¿`rel` cae dentro del corpus gobernado? Todo, salvo lo excluido con motivo."""
+    return not _EXCLUIDO.search(rel)
 
 def _ficheros_zona():
     salida = set()
-    for zona in _ZONAS:
-        raiz_zona = os.path.join(RAIZ, zona) if zona else RAIZ
-        if not os.path.isdir(raiz_zona):
-            continue
-        if zona == _ZONA_RAIZ:
-            for nombre in sorted(os.listdir(raiz_zona)):
-                rel = nombre
-                if os.path.isfile(os.path.join(raiz_zona, nombre)) and _en_zona(rel):
-                    salida.add(rel)
-            continue
-        for base, dirs, ficheros in os.walk(raiz_zona):
-            dirs[:] = [d for d in dirs if d not in ("__pycache__", ".git")]
-            for nombre in ficheros:
-                rel = _rel(os.path.join(base, nombre))
-                if _en_zona(rel):
-                    salida.add(rel)
+    for base, dirs, ficheros in os.walk(RAIZ):
+        dirs[:] = [d for d in dirs if not _EXCLUIDO.search(d + "/")]
+        for nombre in ficheros:
+            rel = _rel(os.path.join(base, nombre))
+            if _en_zona(rel):
+                salida.add(rel)
     return salida
 
 _g29 = []
@@ -2461,13 +2625,15 @@ else:
     # ── unicidad 2 · los marcadores de bloque canónico no ganan sedes ─────
     # Los marcadores se DERIVAN del árbol —`ads:proceso`, `ads:memoria`, los que haya— y
     # no se escribe ninguno: si mañana nace `ads:certificacion`, entra solo.
-    # Se aplica a `kernel/` y `docs/rediseno/`, donde vive la verdad normativa. En
-    # `docs/evolucion/` el mismo bloque es una CITA —el documento 11 reproduce el formato
-    # para explicarlo— y citar no es duplicar la fuente.
-    _NORM_ZONAS = ("kernel/", "docs/rediseno/", "docs/owner/")
+    # `A2`, y por la misma razón que arriba: la zona normativa tampoco se escribe. La
+    # EXCEPCIÓN sí, porque tiene motivo — en `docs/evolucion/` el mismo bloque es una CITA
+    # —el documento 11 reproduce el formato para explicarlo— y citar no es duplicar la
+    # fuente. Todo lo demás del corpus es zona normativa: `kernel/`, `docs/rediseno/`,
+    # `docs/owner/`, `packs/`, `tooling/`, la raíz, y el directorio que nazca mañana.
+    _CITA_NO_SEDE = ("docs/evolucion/",)
     _sedes_disco, _marcadores = {}, set()
     for rel in sorted(_disco):
-        if not rel.endswith(".md") or not rel.startswith(_NORM_ZONAS):
+        if not rel.endswith(".md") or rel.startswith(_CITA_NO_SEDE):
             continue
         try:
             cuerpo = leer(os.path.join(RAIZ, rel))
@@ -2477,8 +2643,8 @@ else:
             _marcadores.add(marca)
             _sedes_disco.setdefault(marca, set()).add(rel)
     for marca in sorted(_marcadores):
-        publicado_marca = _git("grep", "-l", "```yaml " + marca, "HEAD", "--",
-                               *[z.rstrip("/") for z in _NORM_ZONAS])
+        publicado_marca = _git("grep", "-l", "```yaml " + marca, "HEAD", "--", ".",
+                               *[":(exclude)%s" % z.rstrip("/") for z in _CITA_NO_SEDE])
         if publicado_marca is None:
             _g29.append(f"GIT NO RESPONDE: no se puede derivar dónde vivía `{marca}`")
             continue
@@ -2492,7 +2658,8 @@ check("G-29",
       "topología y unicidad de TODO el corpus gobernado: sin ampliaciones sin clasificar, sin gemelos y sin segundas sedes (falla CERRADO sin git)",
       not _g29,
       "; ".join(sorted(set(_g29))) or
-      f"{len(_disco)} ficheros en {len(_ZONAS)} zonas, todos publicados o clasificados · "
+      f"{len(_disco)} ficheros —el repositorio ENTERO menos `.git` y el bytecode, no una "
+      f"lista de zonas—, todos publicados o clasificados · "
       f"cero duplicados byte a byte · {len(_marcadores)} marcadores canónicos derivados "
       f"({', '.join(sorted(_marcadores))}), cada uno en sus sedes publicadas")
 
@@ -2712,8 +2879,15 @@ check("G-30",
 # le pone delante el mismo dato con cada una de las palabras gatillo pegadas, y **se exige
 # que el veredicto NO cambie**. Si mañana alguien vuelve a introducir un interruptor léxico,
 # estos fixtures se ponen rojos aunque el contraejemplo no exista todavía.
+# `A3`. Esta lista eran las palabras de `T-06` y de `Q-04`, y **ninguna de las que apagaban
+# de verdad**: `X` apagó `G-26` con «decía », «en vez de » y «reanclado », y ninguna de las
+# tres estaba aquí. La comprobación que existe para cazar interruptores léxicos no probaba
+# el interruptor léxico que había. Los verbos retirados entran, y su sede es la constante
+# `_VERBOS_QUE_YA_NO_APAGAN`: si mañana alguien reinstala uno, este fixture lo caza sin
+# esperar a que exista el contraejemplo.
 _PALABRAS_GATILLO = ("histórico", "HISTÓRICO", "[HISTÓRICO]", "regresión", "sin regresión",
-                     "retirada", "RETIRADA", "sustituida", "caducado", "superado")
+                     "retirada", "RETIRADA", "sustituida", "caducado", "superado") \
+    + _VERBOS_QUE_YA_NO_APAGAN
 _g31 = []
 
 # a · el control de RECUENTOS no se apaga: la cifra falsa se sigue viendo
@@ -2786,6 +2960,28 @@ if not any(a <= _FIX_BLOQUE.index("ONCE") < b
            for a, b in _regiones_historicas(_FIX_BLOQUE)):
     _g31.append("región histórica: una etiqueta no exime ni su propio bloque, y entonces "
                 "marcar historia dejaría de ser posible")
+# e · los VERBOS RETIRADOS, puestos DELANTE de la cifra, que es exactamente donde apagaban.
+# El sufijo de `a` los pega DETRÁS, y detrás nunca apagaron nada: `_VERBO_DE_CITA` anclaba
+# al final del texto que PRECEDE a la ocurrencia. Sin este fixture, `A3` volvería a pasar.
+for _v in _VERBOS_QUE_YA_NO_APAGAN:
+    _txt = ("## Siguiente acción exacta\n\n"
+            "5  QUÉ LLEVAR AL OWNER   %s ONCE presiones de §16 vigentes\n" % _v)
+    _hallado = [v for _, v in _sedes(_NUM + r"\s+(?:presiones|PRESIONES)", _txt,
+                                     contexto=r"§16|vigente|VIGENTES|Owner")]
+    if _hallado != [11]:
+        _g31.append(f"recuentos: escribir «{_v} » DELANTE de la cifra la hace invisible — "
+                    f"esperado [11], obtenido {_hallado}. Es `A3`: un verbo en prosa no "
+                    f"puede desactivar una comprobación")
+# y la mitad contraria, que impide que esto sea un «siempre visible»: la cita ESTRUCTURAL
+# —comillas angulares— sí exime, porque delimita la ocurrencia y se ve al leer
+_TXT_COMILLAS = ("## Siguiente acción exacta\n\n"
+                 "5  QUÉ LLEVAR AL OWNER   la línea de la tanda anterior «ONCE presiones "
+                 "de §16 vigentes» quedó atrás\n")
+if _sedes(_NUM + r"\s+(?:presiones|PRESIONES)", _TXT_COMILLAS,
+          contexto=r"§16|vigente|VIGENTES|Owner"):
+    _g31.append("citas: una cifra DENTRO de «…» se cuenta como afirmación viva, y entonces "
+                "no queda ninguna forma de citar una cifra pasada en una línea")
+
 check("G-31",
       "ninguna comprobación se desactiva escribiendo una palabra: recuentos, polaridad, estado y marca histórica, con el mismo dato y las palabras gatillo pegadas",
       not _g31,
@@ -3032,20 +3228,48 @@ elif len(_IDENT) != _n_suj_pub:
 # Ahora cada prueba negativa se REGISTRA con sus dos mitades —el CONTROL, que tiene que
 # pasar, y el MUTANTE, que tiene que caer—, las dos se verifican, y **el censo no se
 # escribe**: sale de las registradas. Un fixture que no pueda fallar deja de contar.
+#
+# `W2` del documento 24, comprobado por mí y CONFIRMADO: de las cinco pruebas negativas que
+# esta comprobación publicaba, **CUATRO no tocan el árbol**. La primera sí —toma el texto
+# real del macrocircuito de §8 y le quita la FASE 0—, pero las otras cuatro evalúan
+# funciones puras sobre diccionarios sintéticos, y sus dos aserciones se cumplen **para toda
+# cadena y todo conjunto de identificadores no vacíos**: se verificó por barrido exhaustivo
+# sobre cadenas de 1 a 8 niveles en cualquier orden. Es decir: **ningún árbol las pone en
+# rojo**. Contarlas junto a la primera, bajo el rótulo «pruebas negativas ejecutadas», decía
+# de ellas algo que no es cierto.
+#
+# NO SE RETIRAN, porque no son inútiles: cazan una amputación del EVALUADOR —si alguien
+# vacía `_nivel_alcanzado` o `_reutilizacion`, se ponen rojas—. Lo que se retira es la
+# CLASIFICACIÓN FALSA. Se registran aparte, como FIXTURES DEL EVALUADOR, y el informe
+# publica los dos censos separados diciendo cuál toca el árbol y cuál no. El README dice lo
+# mismo. Ninguna comprobación nueva: la misma, contando lo que de verdad tiene.
 _NEGATIVAS = []
+_FIXTURES_EVAL = []
 
-def _negativa(nombre, proteccion, control_pasa, mutante_denunciado):
-    """Registra una prueba negativa con sus DOS mitades y devuelve sus fallos."""
-    _NEGATIVAS.append((nombre, proteccion))
+def _registrar(registro, nombre, proteccion, control_pasa, mutante_denunciado, clase):
+    """Registra un par CONTROL/MUTANTE en `registro` y devuelve sus fallos."""
+    registro.append((nombre, proteccion))
     fallos = []
     if not control_pasa:
-        fallos.append(f"PRUEBA NEGATIVA «{nombre}» (protección {proteccion}): su CONTROL "
-                      f"—el caso SANO— no pasa, luego sería un rojo permanente que nadie "
-                      f"puede cerrar y no prueba nada")
+        fallos.append(f"{clase} «{nombre}» (protección {proteccion}): su CONTROL —el caso "
+                      f"SANO— no pasa, luego sería un rojo permanente que nadie puede "
+                      f"cerrar y no prueba nada")
     if not mutante_denunciado:
-        fallos.append(f"PRUEBA NEGATIVA «{nombre}» (protección {proteccion}): el caso "
-                      f"MUTADO NO se denuncia, luego el evaluador no comprueba nada")
+        fallos.append(f"{clase} «{nombre}» (protección {proteccion}): el caso MUTADO NO se "
+                      f"denuncia, luego el evaluador no comprueba nada")
     return fallos
+
+
+def _negativa(nombre, proteccion, control_pasa, mutante_denunciado):
+    """Prueba negativa ANCLADA EN EL ÁRBOL: su mutante sale del texto del corpus."""
+    return _registrar(_NEGATIVAS, nombre, proteccion, control_pasa, mutante_denunciado,
+                      "PRUEBA NEGATIVA")
+
+
+def _fixture_evaluador(nombre, proteccion, control_pasa, mutante_denunciado):
+    """Fixture del EVALUADOR: sintético, NO toca el árbol, y ningún árbol lo pone rojo."""
+    return _registrar(_FIXTURES_EVAL, nombre, proteccion, control_pasa, mutante_denunciado,
+                      "FIXTURE DEL EVALUADOR")
 
 _b_real = "\n".join(l for i, l in enumerate(L11, 1) if sec_de(i) == (_MACROS[0] if _MACROS else "8.1"))
 _b_mutilado = "\n".join(l for l in _b_real.split("\n")
@@ -3081,10 +3305,10 @@ _CLAVES = tuple(_IDENT) if _IDENT else ("1", "2", "3", "4", "5", "6")
 _sujeto_a = {k: "v%d" % i for i, k in enumerate(_CLAVES)}
 _sujeto_b = dict(_sujeto_a)
 _sujeto_b[_CLAVES[-1]] = "OTRA-HUELLA"
-_g33 += _negativa("reutilización con UNA huella de entrada distinta", 14,
+_g33 += _fixture_evaluador("reutilización con UNA huella de entrada distinta", 14,
                   _reutilizacion(_sujeto_a, _sujeto_a, _CLAVES)[0] is True,
                   not _reutilizacion(_sujeto_a, _sujeto_b, _CLAVES)[0])
-_g33 += _negativa("reutilización sin declaración propia, y copia de la anterior", 14,
+_g33 += _fixture_evaluador("reutilización sin declaración propia, y copia de la anterior", 14,
                   _declaracion_valida(True, True, False)[0] is True,
                   not _declaracion_valida(True, False, False)[0]
                   and not _declaracion_valida(True, True, True)[0])
@@ -3107,10 +3331,10 @@ if _CADENA:
     _sin_estructural = dict(_todo_ok)
     _sin_estructural[_CADENA[0]] = "vencido"
     _solo_superiores = {n: "verificado-vigente" for n in _CADENA[1:]}
-    _g33 += _negativa("Operativa e Integrada sin Estructural vigente de esta ejecución", 15,
+    _g33 += _fixture_evaluador("Operativa e Integrada sin Estructural vigente de esta ejecución", 15,
                       _nivel_alcanzado(_todo_ok, _CADENA) == _CADENA[-1],
                       _nivel_alcanzado(_sin_estructural, _CADENA) is None)
-    _g33 += _negativa("un nivel superior verificado que pretende revalidar el inferior", 15,
+    _g33 += _fixture_evaluador("un nivel superior verificado que pretende revalidar el inferior", 15,
                       _nivel_alcanzado(_todo_ok, _CADENA) == _CADENA[-1],
                       _nivel_alcanzado(_solo_superiores, _CADENA) is None)
 else:
@@ -3119,21 +3343,29 @@ else:
 # el CENSO de las pruebas negativas, contrastado: ni se escribe en el título ni se imprime
 # sin comprobar. Cada una tiene protección declarada y las protecciones cubiertas se
 # contrastan contra las que el bloque de reglas de `O17` sostiene.
-_prot_cubiertas = sorted({p for _, p in _NEGATIVAS})
+_TODOS_PARES = _NEGATIVAS + _FIXTURES_EVAL
+_prot_cubiertas = sorted({p for _, p in _TODOS_PARES})
+_prot_arbol = sorted({p for _, p in _NEGATIVAS})
 if not _NEGATIVAS:
-    _g33.append("CERO pruebas negativas registradas: el censo que esta comprobación publica "
-                "saldría de una lista vacía")
-elif len({n for n, _ in _NEGATIVAS}) != len(_NEGATIVAS):
-    _g33.append(f"dos pruebas negativas comparten nombre: {[n for n, _ in _NEGATIVAS]}")
+    _g33.append("CERO pruebas negativas ANCLADAS EN EL ÁRBOL registradas: el censo que esta "
+                "comprobación publica saldría de una lista de fixtures sintéticos, y ningún "
+                "árbol podría ponerla en rojo")
+if len({n for n, _ in _TODOS_PARES}) != len(_TODOS_PARES):
+    _g33.append(f"dos pares control/mutante comparten nombre: "
+                f"{[n for n, _ in _TODOS_PARES]}")
 check("G-33",
-      "los macrocircuitos DERIVADOS producen su Estructural en FASE 0, y sus pruebas negativas —cada una con su CONTROL y su MUTANTE, y el censo derivado— dan ROJO",
+      "los macrocircuitos DERIVADOS producen su Estructural en FASE 0; sus pruebas negativas ANCLADAS EN EL ÁRBOL y sus fixtures del evaluador se cuentan POR SEPARADO, cada par con su CONTROL y su MUTANTE",
       not _g33,
       "; ".join(_g33) or
       f"{len(_MACROS)} macrocircuitos derivados de §8 ({', '.join('§' + m for m in _MACROS)}), "
       f"cada uno con FASE 0 `gate:sistema-conforme` anterior a toda mutación · §18 mapea "
       f"{_n18} · sujeto de {len(_IDENT)} identificadores derivados de §9.6 · "
-      f"{len(_NEGATIVAS)} pruebas negativas ejecutadas —{len(_prot_cubiertas)} "
-      f"protecciones cubiertas: {_prot_cubiertas}—, cada una con su control en verde y su "
-      f"mutante en rojo: " + " · ".join(n for n, _ in _NEGATIVAS))
+      f"{len(_NEGATIVAS)} prueba(s) negativa(s) ANCLADAS EN EL ÁRBOL —su mutante sale del "
+      f"texto del corpus y un corpus distinto las mueve— protección(es) {_prot_arbol}: "
+      + " · ".join(n for n, _ in _NEGATIVAS) +
+      f" · y {len(_FIXTURES_EVAL)} FIXTURES DEL EVALUADOR —sintéticos, protección(es) "
+      f"{sorted({p for _, p in _FIXTURES_EVAL})}—, que cazan una amputación del evaluador y "
+      f"NO tocan el árbol: NINGÚN árbol los pone en rojo, y por eso se cuentan aparte "
+      f"(`W2`): " + " · ".join(n for n, _ in _FIXTURES_EVAL))
 
 sys.exit(_informe())
