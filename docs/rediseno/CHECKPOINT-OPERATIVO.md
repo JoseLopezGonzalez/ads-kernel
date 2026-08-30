@@ -81,9 +81,35 @@ python3 kernel/operativo/validadores/registrar_evidencia.py
 git status --short          # tiene que quedar vacío: los generados son deterministas
 ```
 
-El runner regenera los artefactos derivados, ejecuta los **once validadores** por su ruta
-completa terminada en `.py`, captura stdout, stderr y código por separado, y publica la
-evidencia **sólo** si el código fue cero. Termina con código distinto de cero si algo falla.
+El runner regenera los artefactos derivados, ejecuta **todos los componentes declarados
+`tipo: validador`** en su manifiesto —[`validadores.yaml`](../../kernel/operativo/validadores/validadores.yaml),
+que es su única sede— por su ruta completa terminada en `.py`, captura stdout, stderr y
+código por separado, y publica la evidencia **sólo** si el código fue cero. Termina con
+código distinto de cero si algo falla.
+
+> **CUÁNTOS SON NO SE ESCRIBE AQUÍ, y es la regla 7 de arriba aplicada a este documento.**
+> Esta línea decía «los **once** validadores» cuando el manifiesto ya declaraba más, en el
+> fichero cuya cabecera promete que ninguna cifra se escribe a mano: es `Q-15` del
+> documento 22. El censo se DERIVA, y éste es el comando:
+>
+> ```bash
+> grep -c 'tipo: validador' kernel/operativo/validadores/validadores.yaml
+> ```
+>
+> El resumen que el propio runner imprime al terminar —`N/M validadores en verde`— es la
+> otra sede derivada, y manda sobre cualquier prosa. **Una cifra copiada envejece sola; una
+> remisión no.**
+
+> **Y una advertencia que el gate del documento 22 obliga a dejar escrita** (`P-27`≡`Q-08`).
+> `git status --short` queda vacío **sólo si la evidencia derivada se republica en el MISMO
+> commit que cambia el corpus**. Añadir o quitar un documento mueve los recuentos que
+> `fuentes-salida.txt` y `negativos-salida.txt` publican, y el árbol queda sucio hasta que se
+> vuelve a correr el runner. Y `T147` falla mientras exista un documento al que no llegue
+> ningún enlace por ruta: **todo lo que `C-L.5` obliga a publicar —manifiestos de gate,
+> addenda y corrigenda— se enlaza desde
+> [`docs/evolucion/00-INDICE.md`](../evolucion/00-INDICE.md) en el mismo commit que lo crea.**
+> No se arregla con `exclusiones.yaml`: una exclusión apaga la comprobación en vez de
+> cumplirla.
 
 > **No archives evidencia a mano.** La entrega anterior lo hizo con un bucle de shell que
 > omitía la extensión `.py` y redirigía el error del intérprete dentro del fichero: ocho de
@@ -108,9 +134,18 @@ cabecera de procedencia. El estado real de cada prueba, en
 
 ## Decisiones pendientes del Owner
 
-**Ninguna bloquea.** Las de `DECISIONES-Y-CONTRADICCIONES.md` §2 siguen con su valor por
-defecto implementado. La única con contenido normativo —**O1**, si `ENC` era capacidad
-propia— quedó **RESUELTA** por la enmienda E1.
+**Ninguna bloquea a ESTA iniciativa.** Las de `DECISIONES-Y-CONTRADICCIONES.md` §2 siguen
+con su valor por defecto implementado. La única con contenido normativo —**O1**, si `ENC` era
+capacidad propia— quedó **RESUELTA** por la enmienda E1.
+
+> **Las resoluciones posteriores del Owner NO se listan aquí: se REMITEN.** `O7` en adelante
+> —incluida **`O17`**, del 2026-08-30, que fija que el nivel ESTRUCTURAL lo produce cada
+> macrocircuito al arrancar— pertenecen a la iniciativa **ADS NEXT**, viven en §2 de
+> [`DECISIONES-Y-CONTRADICCIONES.md`](DECISIONES-Y-CONTRADICCIONES.md) y su registro
+> reanudable es [`docs/evolucion/CHECKPOINT-ADS-NEXT.md`](../evolucion/CHECKPOINT-ADS-NEXT.md).
+> **Cuántas son se deriva de sus FILAS, no de una lista copiada aquí**, con
+> `grep -cE '^\| *\*{0,2}`?O[0-9]+`?\*{0,2} *\|' docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md`. Ninguna de ellas autoriza
+> iniciar `F5`, `F6` ni la adopción de PesquerApp.
 
 ## Siguiente acción exacta
 
