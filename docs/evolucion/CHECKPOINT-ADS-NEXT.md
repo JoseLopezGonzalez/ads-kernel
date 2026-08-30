@@ -12,6 +12,64 @@
 > vigente, que es siempre la primera.
 
 > **Estado de la fase, en una línea:**
+> **El TERCER GATE DE CERTIFICACIÓN devolvió `INSUFICIENTE PARA F5` sobre la candidata
+> `21f1ccb`, y el gate es VÁLIDO. `F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA.**
+>
+> Está en
+> [`24-TERCER-GATE-DE-CERTIFICACION-F4C.md`](24-TERCER-GATE-DE-CERTIFICACION-F4C.md), con los
+> tres dictámenes íntegros. **Es el primer gate que recibe su ancla por un canal EXTERNO al
+> repositorio**, como `O18` ordena.
+>
+> ```text
+> 43 HALLAZGOS DISTINTOS    0 bloqueantes · 15 graves · 16 medios · 12 menores
+> CLASIFICACIÓN de `O18`    A · coherencia interna          27   NO SE SOSTIENE
+>                           B · identidad de la candidata   12   NO DEMOSTRADA
+>                           C · actor privilegiado           0   correctamente declarada
+>                           DECISIÓN DEL OWNER               4   ratificación de `O18`
+> ```
+>
+> **`C-L.5` CERTIFICADA por CUARTA vez consecutiva**: las dos restas son ∅, las 67 filas del
+> manifiesto no tienen una discrepancia y los **54 agotamientos** pasan las dos reglas uno a
+> uno. **El gate NO falla por cobertura**, y el adjudicador lo dice expresamente.
+>
+> **Falla por `A` y por `B`. Y expresamente NO por `C`:** el Owner resolvió su fase, el
+> contrato del verificador externo está completo, y el adjudicador **no encontró ni una sede
+> que presente `(b)` como `(c)`**. Los dos hallazgos de clase `C` siguen vivos y **no se
+> cuentan**.
+>
+> **LA RAÍZ, dicha en dos mitades, porque las dos son ciertas:**
+>
+> ```text
+> LA MALA    es la misma causa de los gates 21, 22 y 23, y esta vez es PEOR, porque éste era
+>            el gate que venía a curarla. `O18` es correcta —cambia la raíz de confianza en
+>            vez de añadir otra comprobación interna—, pero su implementación puso la nueva
+>            raíz DENTRO del mismo repositorio: con tres líneas de puerta trasera y sin
+>            commitear, el emisor produce un sobre IDÉNTICO al honesto sobre un corpus
+>            corrupto, y la batería da 38/38.
+>            La circularidad no se cerró: se MOVIÓ, de `HEAD` a `emitir-sobre-de-ancla.py`
+>
+> LA BUENA   `O18` NO está refutada. Describe un CANAL, y ese canal SÍ es externo: el sobre
+>            llegó a los ocho dentro del encargo, no leyéndolo del árbol, y los dos revisores
+>            recibieron el mismo. **Lo externo es la ENTREGA. Lo interno es la PRODUCCIÓN.**
+>            Es la distinción que ningún gate anterior podía aportar
+> ```
+>
+> **Por eso el adjudicador recomienda que el trabajo SIGA**, y distingue esta situación de la
+> del gate anterior: aquél pidió parar porque nadie había preguntado al Owner. Hoy se ha
+> preguntado, la respuesta existe y **es la palanca correcta**. Lo que falla es la palanca, y
+> el remedio está determinado en tres puntos. **Y ordena expresamente que NO se escriba una
+> decimonovena protección interna.**
+>
+> **Lo único que vuelve al Owner es una RATIFICACIÓN**, no una elección: `O18` registra UNA
+> condición previa para el verificador externo y seis sedes escriben TRES. La pregunta, con
+> sus tres alternativas, está en §13 de la adjudicación de `X`, dentro del documento 24.
+>
+> **Y algo que `F4` sí puede hacer diga lo que diga el Owner:** `O17` declara su propia
+> inverificabilidad con todas las letras y **`O18` no lo declara**. Esa declaración debe
+> escribirse.
+
+> **[ESTADO ANTERIOR · antes del TERCER GATE DE CERTIFICACIÓN, documento 24]**
+
 > **EL OWNER HA RESUELTO LA ÚNICA CLASE `B` DEL SEGUNDO GATE DE CERTIFICACIÓN —la que NO era
 > un hallazgo, sino LA RAÍZ—. Su respuesta es `O18`, del 2026-08-30, es una RESOLUCIÓN
 > ESCALONADA, y con ella esa clase `B` queda RESUELTA y YA NO BLOQUEA. Esta tanda la está
