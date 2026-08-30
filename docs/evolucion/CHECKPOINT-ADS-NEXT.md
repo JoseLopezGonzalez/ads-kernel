@@ -3,9 +3,13 @@
 > Registro persistente y reanudable de la iniciativa. Formato de
 > [`a.10`](../rediseno/a-CAPACIDADES-APROBADA.md), copiable desde
 > [`plantillas/CHECKPOINT.md`](../../kernel/operativo/plantillas/CHECKPOINT.md).
-> **Basta decir «Continúa»**: la siguiente acción exacta está al final, en la sección
-> **«Siguiente acción exacta»** — la que le sigue va rotulada **HISTÓRICA** y es el texto
-> anterior al documento 22; **no describe el estado vigente**.
+> **Basta decir «Continúa»**: la siguiente acción exacta está al final, en la **PRIMERA**
+> sección titulada **«Siguiente acción exacta»**. Las que le siguen van rotuladas
+> **HISTÓRICA**, conservan el texto anterior a cada gate y **no describen el estado vigente**.
+> **Cuántas versiones históricas hay NO se escribe aquí** —esta cabecera ya caducó una vez por
+> decir «la que le sigue» cuando ya eran dos—: se deriva con
+> `grep -c '^## Siguiente acci[óo]n exacta' docs/evolucion/CHECKPOINT-ADS-NEXT.md`, menos la
+> vigente, que es siempre la primera.
 
 > **Estado de la fase, en una línea:**
 > **El SEGUNDO GATE INDEPENDIENTE DE CERTIFICACIÓN devolvió `INSUFICIENTE PARA F5` sobre la
@@ -50,6 +54,13 @@
 > **La pregunta al Owner, con sus tres alternativas y el coste de cada una, está en §13 de la
 > adjudicación de `U`, dentro del documento 23.** El adjudicador recomienda expresamente cerrar
 > los 48 de clase A y **NO escribir una decimosexta protección**.
+>
+> **ESTADO DE ESA CLASE `B`, HOY: PENDIENTE DEL OWNER, Y NADIE MÁS PUEDE MOVERLA.** No está
+> resuelta, no está diferida y no tiene valor por defecto. `G21` de `KERNEL.md` L690 —«un
+> sistema no puede definir sin conflicto de interés los criterios que aprueban su propia
+> existencia»— es exactamente este caso, y por eso **F4 no elige ninguna de las tres y lo
+> dice**. Mientras no haya respuesta, **`M-04` seguirá fallando el gate siguiente igual que
+> ha fallado los tres anteriores**, y cerrar los 48 de clase `A` no lo cambia.
 >
 > **Las otras razones del veredicto**, todas de clase A: la **FASE 0** que `O17` ordena **no es
 > ejecutable** —su ENTRADA exige el identificador de una iniciativa que su propio GATE prohíbe
@@ -913,7 +924,8 @@ corregido_en_la_CORRECCION_PREVIA_AL_GATE:
     DUPLICACIÓN de mecanismos, y la comparación gana cuarentena y reinicio desde intención
   · PN-7 REFORMULADA: b.14 tiene sólo COMPLETAR o REVERTIR, y `abandonada` es la segunda
   · PN-11 GANA SEDE por O16: autoridad en (g), contrato derivado C8 en F6, C7 intacto
-  · RECUENTO CORREGIDO: DIEZ presiones vigentes. El corpus decía 8, 10 y 11 a la vez
+  · RECUENTO CORREGIDO ENTONCES a «DIEZ presiones vigentes». El corpus decía 8, 10 y 11
+    a la vez. [CIFRA DE AQUEL MOMENTO: el censo vigente lo deriva §16 del documento 11]
   · D69, D70 y O16 registradas. D16–D68 y O1–O15 conservan su texto. O15 INTACTA
 corregido_en_la_TANDA_INTEGRADA:
   # Corrección CONJUNTA de los hallazgos reproducibles de la tercera revisión. Los 22 se
@@ -960,7 +972,8 @@ corregido_en_la_TANDA_INTEGRADA:
   · CONTRASTE con las fuentes que la revisión no leyó íntegras: detectó un defecto PROPIO de
     esta tanda —el propietario global de A8, M6, N6 y A9 estaba elegido y no derivado de
     b.16— y quedó corregido en su commit
-  · DIEZ presiones normativas vigentes. Ninguna renumerada. **Corregido**: el titular decía
+  · «DIEZ presiones normativas vigentes» ENTONCES. Ninguna renumerada. **Corregido**: el
+    titular decía
     ONCE sobre una lista de DIEZ filas — PN-1, PN-2, PN-3, PN-6, PN-7, PN-8, PN-9, PN-10,
     PN-11 y PN-12—, con PN-4 retirada y PN-5 fusionada en PN-3
   · D64–D68 registradas. D16–D63 y O1–O15 conservan su texto. O15 INTACTA
@@ -1004,7 +1017,7 @@ devuelto_por_la_TERCERA_REVISION_INDEPENDIENTE:
     cobertura de ventanas, tabla adversarial, partición de la matriz, `Q0`–`Q9` total y
     disjunta, promesas vivas sobre la lápida, contrato de identidad, `P-08`, los ONCE puntos
     de la adopción, `O13`, los dos relojes documentales, y todos los recuentos del árbol
-  · LAS OCHO PRESIONES NORMATIVAS DE ENTONCES quedan CONFIRMADAS como bien identificadas
+  · LAS «OCHO PRESIONES NORMATIVAS» DE ENTONCES quedan CONFIRMADAS como bien identificadas
     —hoy son DIEZ, con PN-11 y PN-12—, con fuente y
     contradicción verificadas una a una. FALTA UNA: la de `G8` sobre `O8`. Y hay una
     candidata que depende de cómo se resuelva `B2`
@@ -1323,7 +1336,7 @@ resuelto_en_la_SEGUNDA_devolucion_de_f4:
   · G · la premisa del Owner queda REFUTADA por el revisor y se transcribe así. Los cinco
     residuos reales sí se corrigen, incluida la condición para reintentar M6
   · y N-2 · N-3 · N-4 · N-5 · N-7 · N-8 · N-9 · N-10 · N-11 · N-12 · N-13 · N-14
-  · PN-7 a PN-10 registradas. Ocho presiones vigentes. Ninguna redactada
+  · PN-7 a PN-10 registradas. «Ocho presiones vigentes» ENTONCES. Ninguna redactada
 resuelto_en_la_PRIMERA_devolucion_de_f4:
   · A · EL PROTOCOLO TRANSACCIONAL, reescrito para ser EJECUTABLE. El manifiesto de
     transacción se pliega en `evento` como una `fase`: una transacción es una secuencia de
@@ -2523,8 +2536,23 @@ BATERÍA PROPIA     tenía dos defectos que ESTA tanda cierra: calculaba mal la 
                    `G-23` afirmaba «kernel intacto», que dejó de ser cierto en `1b588ac`.
                    Corregidos: raíz derivada de `__file__`, `G-23` con la excepción exacta y
                    `G-24` leyendo de verdad las catorce fuentes y las quince fichas por
-                   nombre. **30/30 desde la raíz, desde otro cwd y desde un worktree
+                   nombre. **En verde desde la raíz, desde otro cwd y desde un worktree
                    arbitrario.**
+                   CUÁNTAS COMPROBACIONES SON **NO SE ESCRIBE AQUÍ**, por la misma razón por
+                   la que no se escriben los SHA ni la excepción del kernel: se DERIVA, y su
+                   única sede es la batería misma, que lo imprime en su última línea —
+                     python3 docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py \
+                       | tail -1
+                   —, y su censo de identificadores se deriva de su README con
+                     grep -o 'G-[0-9]\+[a-z]*' docs/evolucion/verificacion/README.md \
+                       | sort -u | wc -l
+                   [ESTADO ANTERIOR · esta línea decía **30/30**. Era cierta cuando se
+                    escribió; las QUINCE protecciones sistémicas de la tanda de `O17`
+                    llevaron la batería a 37 comprobaciones y nadie reancló la cifra, que se
+                    quedó **bajo el rótulo ESTADO VIGENTE afirmando en presente algo falso**.
+                    Es `S-16`≡`S3-06` del documento 23. No se sustituye 30 por 37: se retira
+                    el número y se remite al comando, que es lo que este bloque ya hace con
+                    el árbol vigente y con la excepción del kernel.]
 
 QUÉ PASA CON LOS   los hallazgos `I-01`–`I-28` y la fila `A7` tienen sus **correcciones
 HALLAZGOS DEL      arquitectónicas APLICADAS**, en la tanda anterior. La corrección posterior
@@ -2544,8 +2572,11 @@ EL SIGUIENTE PASO  un **gate independiente sobre la candidata corregida**, con c
 ```
 
 **La batería de esta tanda, y lo que NO comprueba.** Vive en
-[`verificacion/README.md`](verificacion/README.md), con el detalle de sus treinta
-comprobaciones y de sus tres límites declarados: **no ejecuta nada del protocolo** —no hay
+[`verificacion/README.md`](verificacion/README.md), con el detalle de sus comprobaciones
+—**cuántas son no se copia aquí**: las deriva el propio README con
+``grep -o 'G-[0-9]\+[a-z]*' docs/evolucion/verificacion/README.md | sort -u | wc -l`` y la
+batería las publica al ejecutarse; decía «treinta» cuando ya eran más, y es `S-16` del
+documento 23— y de sus tres límites declarados: **no ejecuta nada del protocolo** —no hay
 runtime, ni esquema de `evento`, ni un fichero bajo `estado/`—, **no sustituye al gate** —no
 juzga suficiencia para F5— y **no cubre el corpus por lectura**: comprueba que las catorce
 fuentes y las quince fichas existen, no que alguien las haya leído. Que un gate posterior las
@@ -2611,7 +2642,152 @@ puede decir si sigue habiendo un árbol defectuoso en verde.** `M-04` queda FALL
 
 ## Siguiente acción exacta
 
+> **POR QUÉ ESTA SECCIÓN ESTÁ ESCRITA ASÍ, y es una garantía y no un adorno.** Ha caducado
+> **tres veces consecutivas**: `K-01`/`J-10`/`L-01` en el gate del documento 19; `P-05`≡`Q-08`
+> —el único GRAVE de aquel gate— y `R-02` en el del documento 21; y `S-17`≡`S3-05` en el del
+> documento 23. Siempre por la misma causa: **copiaba lo que otra sede deriva**.
+> Regla de esta sección, desde aquí:
+> **nada que otra sede pueda derivar se copia dentro de ella.** Remiten, y no se escriben:
+> los SHA (a `git rev-parse` y `git ls-remote`) · el recuento de comprobaciones de la batería
+> (a la batería) · el censo de presiones vigentes (a §16 del documento 11, con su comando) ·
+> la excepción del kernel (al campo **EXCEPCIÓN EXACTA DEL KERNEL** de este mismo fichero) ·
+> el ordinal de la tanda (a las cabeceras `###` de §15.8 del documento 11) · el reparto por
+> severidad de los hallazgos (a §12 y §13 de la adjudicación de `U`, dentro del documento 23)
+> · y la lista de manifiestos publicados (a la tabla de `00-INDICE.md`). Lo que quede escrito
+> aquí es lo que **no tiene otra sede**: qué pasó, qué se está haciendo y dónde hay que parar.
+
 ```text
+0  DÓNDE ESTAMOS, EXACTO         el **SEGUNDO GATE INDEPENDIENTE DE CERTIFICACIÓN** ya corrió
+                                 y **su veredicto ya está publicado**: `INSUFICIENTE PARA F5`,
+                                 en el documento 23. Corrió sobre la candidata que la tanda
+                                 anterior publicó —rama `review/f4c-o17-candidate-20260830`—
+                                 y el veredicto vive en la rama
+                                 `review/f4c-gate-certificacion-2-20260830`.
+                                 Ocho agentes de contexto limpio: revisor `S` como cadena
+                                 `S1`–`S4`, revisor `T` como `T1`·`T2`·`T3` en paralelo y sin
+                                 verse, y el adjudicador `U`. **Ninguno participó en ningún
+                                 gate anterior**, y **ningún hallazgo se corrigió en esa
+                                 pasada**: es deliberado, porque quien recibe no aplica.
+                                 **Los SHA no se copian aquí**: se derivan con
+                                   git rev-parse HEAD
+                                   git ls-remote origin
+                                 [ESTADO ANTERIOR · el paso 7 de la versión de esta sección
+                                  que ahora va rotulada HISTÓRICA mandaba «publicar la
+                                  candidata nueva y encargar otro gate». **Las dos cosas
+                                  están hechas**: la candidata se publicó y el gate emitió su
+                                  veredicto. Quien dijera «Continúa» recibía una instrucción
+                                  ya cumplida — `S-17` del documento 23, y la TERCERA
+                                  recurrencia consecutiva sobre esta misma sección.]
+
+1  QUÉ DEVOLVIÓ, SIN ADORNO      **INSUFICIENTE PARA F5**, con **49 hallazgos distintos**.
+                                 El reparto por severidad y por clase **no se copia aquí**:
+                                 lo publica el bloque de cabecera de este fichero y, como
+                                 sede primaria, §12 y §13 de la adjudicación de `U` dentro
+                                 del documento 23. Lo único que hace falta para actuar:
+                                 **48 de los 49 son de clase `A`** —remedio determinado, sin
+                                 decidir arquitectura— **y se están cerrando en la tanda en
+                                 curso**, agrupados POR CAUSA y no por línea.
+                                 **Y consta lo que quedó cerrado**: `C-L.5` CERTIFICADA por
+                                 tercera vez consecutiva sobre universo derivado, y `R-04`
+                                 CERRADO CON MECANISMO tras dos gates sin lograrlo.
+
+2  LA ÚNICA CLASE `B`,           **NO es un hallazgo: es LA RAÍZ, y está ABIERTA.** `M-04`
+   Y ES LA RAÍZ                  —«se puede construir un árbol defectuoso que pase la batería
+                                 en verde»— **no es satisfacible desde dentro de F4**. La
+                                 batería vive dentro del repositorio que audita y decide si
+                                 algo está intacto contra referencias que también viven ahí:
+                                 quien puede escribir el repositorio puede escribir la
+                                 referencia, y puede amputar la batería.
+                                 **No lo dice primero el gate: lo declaró el propio corpus en
+                                 §11.4 del documento 11** —«si el runner miente, nada dentro
+                                 del repositorio lo detecta; cerrarlo exige un verificador
+                                 EXTERNO al repositorio, y eso NO se resuelve aquí»—, y
+                                 **ningún gate lo había llevado al Owner**.
+                                 **LA PREGUNTA AL OWNER, con sus TRES alternativas y el coste
+                                 de cada una, está redactada palabra por palabra en §13 de la
+                                 adjudicación de `U`, dentro del documento 23.** No se copia
+                                 aquí: se lee allí, que es su sede.
+
+3  QUÉ SE ESTÁ HACIENDO AHORA    cerrar los **48 de clase `A`**, agrupados POR CAUSA:
+                                 propagación de decisiones ya tomadas en el documento 11 ·
+                                 batería, validadores y derivador · documentación, recuentos
+                                 y trazabilidad. El agrupamiento por remedio lo publica §13
+                                 de la adjudicación de `U`; **no se reproduce aquí**.
+                                 **Y expresamente NO se escribe una decimosexta protección
+                                 sistémica**: el adjudicador midió las quince de la tanda
+                                 anterior y sólo tres generalizan. Añadir una más movería la
+                                 circularidad de sitio, que es lo que §11.4 predijo.
+
+4  DÓNDE SE DETIENE EL TRABAJO   **aquí, y no se abre una cuarta ronda.** Tres gates
+                                 consecutivos han fallado por la MISMA causa, y esa causa es
+                                 una decisión que F4 tiene prohibido tomar: `G21` de
+                                 `KERNEL.md` L690 dice que un sistema no puede definir sin
+                                 conflicto de interés los criterios que aprueban su propia
+                                 existencia. **Después de cerrar los 48 de clase `A`, el
+                                 trabajo PARA y espera respuesta del Owner.** Encargar un
+                                 cuarto gate antes de esa respuesta es gastar ocho agentes
+                                 para volver a leer el mismo veredicto.
+
+5  QUÉ LLEVAR AL OWNER           dos cosas, y en este orden:
+                                 (i) **LA CLASE `B`**: la pregunta de §13 de la adjudicación
+                                     de `U`, con sus tres alternativas —declarar el límite y
+                                     dejar de medirlo · dar un ancla fuera del árbol dentro
+                                     de lo que F4 alcanza · un verificador externo de verdad—
+                                     y el coste de cada una. **F4 no elige, y lo dice.**
+                                 (ii) las presiones normativas vigentes de §16 — **el total
+                                     NO se copia aquí**: se deriva con
+                                       grep '^## `PN-' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md \
+                                         | grep -vc 'RETIRADA\|FUSIONADA'
+                                     Registrar es F4; elegir es F5.
+
+6  EL KERNEL SUSTANTIVO          no se ha tocado, y la excepción **no se reproduce aquí**:
+                                 vive en el campo `EXCEPCIÓN EXACTA DEL KERNEL` de este mismo
+                                 fichero, derivada de Git y contrastada por `G-23`.
+                                 **Se remite, no se copia**: una lista copiada envejece sola.
+
+7  LO QUE EL PRÓXIMO GATE        **la regla que este corpus escribió y que el segundo gate
+   TIENE QUE CUMPLIR SIN         incumplió**: todo documento que `C-L.5` obligue a publicar
+   EXCUSA                        —manifiesto de asignación, manifiestos de lectura, addenda y
+                                 corrigenda— **se enlaza desde la tabla de `00-INDICE.md` en
+                                 el MISMO commit que lo crea**. No vale añadirlo a
+                                 `exclusiones.yaml`: una exclusión APAGA `T147` en vez de
+                                 cumplirlo. La regla y la tabla están en `00-INDICE.md`, bajo
+                                 «Lo que cada gate tiene que publicar, y desde dónde se
+                                 enlaza», con el comando que deriva los huérfanos.
+
+8  ESTADO, SIN ADORNO            **`F4c` sigue ABIERTA. `F5` sigue NO AUTORIZADA.** El
+                                 segundo gate no cierra `F4c`, no autoriza `F5`, no levanta
+                                 ninguna condición `C-L` y no deroga ninguna presión vigente.
+                                 Ninguna enmienda normativa está redactada, `C8` no existe y
+                                 `C7` no se ha tocado. **No se ha hecho merge en
+                                 `redesign/kernel-2.0`.** **APLICAR NO ES CERTIFICAR**, y
+                                 esta tanda la aplica quien la recibió: **NINGÚN hallazgo del
+                                 documento 23 se declara SUPERADO**, y sólo un gate
+                                 independiente posterior podría declararlo.
+
+9  DÓNDE PARAR                   después de cerrar los 48 de clase `A` y **antes** de
+                                 encargar ningún gate nuevo, mientras la clase `B` siga sin
+                                 respuesta del Owner. Sigue vigente además parar antes de
+                                 redactar `(g)`, antes de crear `C8`, antes de tocar `C7` o
+                                 el kernel operativo SUSTANTIVO, y antes de iniciar
+                                 PesquerApp. `O15` dice qué será la adopción cuando ocurra,
+                                 no que ocurra ahora; `O17` dice qué se certificará al
+                                 arrancar cada macrocircuito, no que se construya hoy.
+```
+
+> **[HISTÓRICO · «Siguiente acción exacta» anterior al SEGUNDO GATE DE CERTIFICACIÓN,
+> documento 23. Se conserva ENTERA para trazabilidad y NO describe el estado vigente: su
+> paso 7 manda publicar una candidata que YA está publicada y encargar un gate que YA emitió
+> su veredicto. Es `S-17` del documento 23.]**
+
+## Siguiente acción exacta — HISTÓRICA, anterior al documento 23
+
+```text
+[HISTÓRICO · todo lo que sigue hasta el final de esta sección es el texto ANTERIOR al
+ SEGUNDO GATE DE CERTIFICACIÓN del documento 23. Sus cifras son las de aquel momento y
+ varias han caducado —los 68 de clase `A` son los del documento 22, no los 48 de hoy—;
+ NO describe el estado vigente, que está en «Siguiente acción exacta», arriba.]
+
 0  DÓNDE ESTAMOS, EXACTO         la candidata `4d231ee` está publicada en
                                  `review/f4c-post-gate-manifiestos-candidate-20260830`.
                                  Sobre ella se ejecutó el **GATE INDEPENDIENTE DE
@@ -2795,6 +2971,8 @@ puede decir si sigue habiendo un árbol defectuoso en verde.** `M-04` queda FALL
                                  documento 11 y de las filas de `00-INDICE.md`, que es donde
                                  se registran, y de ninguna otra parte.
 
+   [HISTÓRICO · las cifras de este paso son las de aquel momento y han caducado; el censo
+    vigente lo deriva §16 del documento 11 con el comando que la sección vigente publica]
 5  QUÉ LLEVAR AL OWNER           las **CATORCE** presiones de §16 —el recuento se DERIVA de
                                  las cabeceras `## \`PN-`, y `G-26` lo contrasta también
                                  contra ESTE fichero desde `P-05`—, con `PN-1` bloqueando
