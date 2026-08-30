@@ -1006,6 +1006,87 @@ existe para evitar.
 
 ---
 
+### `O19` · RATIFICACIÓN DEL TEXTO AMPLIO DE `O18` Y SEDE CANÓNICA — 2026-08-30
+
+> **ESTA ENTRADA ES UNA PROYECCIÓN DERIVADA. LA AUTORIDAD CANÓNICA ESTÁ EN
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md).**
+> Desde `O19`, ninguna resolución del Owner nace en este fichero: nace en la sede canónica y
+> aquí se proyecta. **Una paráfrasis nunca puede ampliar la autoridad del texto canónico**, y
+> ésta no lo intenta: para el texto completo, la sede.
+
+**Procedencia: respuesta expresa del Owner del 2026-08-30**, a la **RATIFICACIÓN** que el
+TERCER GATE DE CERTIFICACIÓN —documento 24, §13 de la adjudicación de `X`— le formuló. **No
+era una elección de diseño**: el gate demostró que el corpus había perdido la capacidad de
+comprobar qué había dicho el Owner, y sólo él podía ratificarlo.
+
+| # | decisión | qué revisa | lo resuelto |
+|---|---|---|---|
+| O19 | **RATIFICA EL TEXTO AMPLIO DE `O18` Y ORDENA DARLE SEDE CANÓNICA EN `docs/owner/`.** «*La omisión está en la transcripción del coordinador, no en mi resolución original*» | **la PROYECCIÓN INCOMPLETA de `O18`. NO revisa su contenido ni su diseño.** `O1`–`O18` conservan sus textos históricos: la corrección vive en `O19` y en la sede canónica | las TRES condiciones obligatorias, el reparto, y el traslado de la autoridad, abajo |
+
+**Lo que `O19` declara, y son las palabras del Owner:**
+
+```text
+· `O18` fue transcrita de forma INCOMPLETA
+· el Owner RATIFICA ahora su contenido amplio
+· las dos condiciones omitidas y el reparto PERTENECÍAN a la resolución original
+· `O19` revisa la PROYECCIÓN incompleta de `O18`
+· la autoridad canónica deja de ser la paráfrasis del coordinador
+· la autoridad canónica pasa al documento de resoluciones del Owner
+· las sedes derivadas deben citar `O19` y la sede canónica
+· la entrada corta de `O18` se conserva como REGISTRO HISTÓRICO de la transcripción
+  incompleta
+· esta corrección NO cambia el diseño: corrige su PROCEDENCIA y AUTORIDAD
+· `O19` tampoco autoriza iniciar `F5`
+```
+
+**LAS TRES CONDICIONES OBLIGATORIAS del verificador externo de `F6`, ratificadas:**
+
+```text
+1  debe existir antes de la primera adopción permanente de PesquerApp
+2  debe existir antes de declarar ADS operativo
+3  debe existir antes de certificar cualquier adaptador
+```
+
+**EL REPARTO, ratificado. Y consta que su sede es la CANÓNICA, no `O18` ni `D108`:**
+
+```text
+· SIS define el contrato de conformidad
+· PLT construye y opera la maquinaria externa
+· VER produce el dosier independiente
+· SEG gobierna credenciales, bloqueo y fallos de confianza
+· el Owner conserva la autoridad de aceptar o rechazar la raíz externa
+· el ejecutor externo no puede compartir la identidad de escritura del runtime ADS
+```
+
+**Qué pasa con las seis sedes que ya lo contenían.** **Ninguna se retira: su contenido es
+correcto**, y el Owner lo dice expresamente. Lo que se corrige es **el rótulo que decía
+«LITERAL DE `O18`»** cuando la fila corta de `O18` no lo contenía: **a partir de ahora es
+literal de la SEDE CANÓNICA**, ratificado por `O19`.
+
+**Qué pasa con la entrada corta de `O18`.** **Se conserva, y no se edita.** Es el registro
+histórico de una transcripción incompleta, y borrarla sería reescribir la historia. Su
+«DISPUTA REGISTRADA Y NO RESUELTA» queda **RESUELTA por `O19`**, y así se anota sin tocar el
+texto.
+
+**La regla que `O19` fija para todas las resoluciones futuras** —el texto íntegro está en la
+sede canónica—: ninguna nace sólo aquí · primero se materializa en `docs/owner/` · después se
+proyecta · la proyección **enlaza** a la canónica · el texto canónico entra en el sobre
+externo del gate siguiente · los revisores reciben su SHA-256 **antes de leer** · el
+adjudicador compara sede, proyección y sobre · **cualquier diferencia falla cerrado** · una
+paráfrasis nunca amplía la autoridad · una resolución posterior revisa pero no borra.
+
+**Y lo que deja de valer como evidencia primaria, por orden del Owner:** mensajes de commit ·
+paráfrasis del coordinador · una fila derivada de este registro · afirmaciones internas de
+que el Owner dijo algo. **La sede canónica y el sobre recibido externamente son las dos
+piezas que deben coincidir.**
+
+**Qué cambia si el Owner decide otra cosa:** volver a la autoridad de la paráfrasis reabre
+exactamente el hallazgo `X-03` del documento 24 —el sobre no ancla ninguna resolución del
+Owner— y devuelve al corpus a un estado en que ningún gate puede resolver qué se resolvió.
+
+
+---
+
 ## 3 · Contradicciones detectadas contra (a) y (b)
 
 Se registran; **no se modifican (a) ni (b)**. Cada una lleva una propuesta de cambio

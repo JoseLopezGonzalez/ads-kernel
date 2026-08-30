@@ -7907,6 +7907,15 @@ diseñada y **no implementada**.
 > de `F4c`), **§11.7** (el alcance honesto: qué queda demostrado y qué no) y **§11.8** (el
 > contrato del VERIFICADOR EXTERNO, obligatorio en `F6` y **no implementado**). **Todas ellas
 > son DERIVADAS de `O18`, y ninguna la eligió F4.**
+>
+> **Y una TERCERA procedencia, posterior: `O19`.** El Owner **RATIFICÓ el texto amplio de
+> `O18`** y ordenó darle **SEDE CANÓNICA** en
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md). `O19` revisa
+> **la PROYECCIÓN INCOMPLETA de `O18`, no su contenido ni su diseño**: nada de §11.6, §11.7 o
+> §11.8 se retira, y lo que cambia es **de dónde viene su autoridad**. De ahí sale **§11.9**
+> —la sede de la regla de procedencia— y la ampliación del sobre de §11.6 con la huella de la
+> sede del Owner. **Todo ello es DERIVADO de `O19` y de la sede canónica, y ninguna lo eligió
+> F4.**
 
 ## 11.1 · Las cuatro preguntas, que hoy se confunden
 
@@ -8106,10 +8115,21 @@ validador que detecta. Es la disciplina que `N158i`–`N158o` ya impusieron al a
 > era la raíz** de tres insuficiencias consecutivas. **El Owner rechazó expresamente la (a)**
 > —retirar la garantía y aceptar que una alteración deliberada sea indetectable—, **adoptó la
 > (b) para cerrar `F4c` declarándola TRANSITORIA y EXPLÍCITAMENTE LIMITADA**, y **fijó la (c)
-> —verificador externo real— como OBLIGATORIA en `F6`**. `O18` está íntegra en
-> [`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md) §2, y su
-> propagación es `D108`, §1. **Lo único que F4 aporta aquí es el reparto de la elección (b)
-> por las sedes vigentes**, y por eso esta sección se declara derivada y no decidida.
+> —verificador externo real— como OBLIGATORIA en `F6`**. **Lo único que F4 aporta aquí es el
+> reparto de la elección (b) por las sedes vigentes**, y por eso esta sección se declara
+> derivada y no decidida.
+>
+> **DE DÓNDE VIENE LA AUTORIDAD, corregido por `O19`.** El contenido de esta sección está
+> **RATIFICADO POR EL OWNER**. Su **SEDE CANÓNICA** es
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md), donde `O17`,
+> `O18` y `O19` viven con su texto íntegro. **`O19` es la resolución revisora**: revisa **la
+> PROYECCIÓN INCOMPLETA de `O18`**, no su contenido ni su diseño. La entrada de `O18` y la
+> fila `D108` en
+> [`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md) son
+> **PROYECCIÓN DERIVADA, y no fuente de autoridad**: `D108` propaga, no decide, y **una
+> paráfrasis nunca amplía la autoridad del texto canónico**. Nada de esta sección se retira
+> —su contenido es correcto, y el Owner lo dice expresamente—: lo que `O19` corrige es **su
+> PROCEDENCIA y su AUTORIDAD**. La regla completa de procedencia tiene sede en **§11.9**.
 >
 > **El vacío que cierra, y quién lo había declarado ya:** §11.4 escribió «*si el runner
 > miente, nada dentro del repositorio lo detecta*» y lo dejó abierto. La verificación se
@@ -8180,14 +8200,49 @@ un sobre incompleto: no es un sobre**, y el gate que lo acepte es inválido por 
    DE EMISIÓN           creación de los revisores
 14 IDENTIDAD DEL        quién lo emite, nombrado. El ancla de (b) **es esa identidad**, y
    COORDINADOR          `O18` lo dice sin adorno: no hay forma mecánica de comprobarla
+15 RUTA DE LA SEDE      la ruta exacta de la SEDE CANÓNICA de resoluciones del Owner,
+   CANÓNICA DEL OWNER   `docs/owner/ADS-OWNER-RESOLUCIONES.md`, escrita entera
+16 SHA-256 DE LA SEDE   la huella de esa sede, **OBTENIDA DEL COMMIT AUDITADO** y no de una
+   CANÓNICA             copia de trabajo, para que el revisor la recalcule contra el mismo
+                        commit del campo 3 y no contra lo que el árbol le enseñe hoy
+17 IDENTIFICADORES DE   `O17`, `O18` y `O19`, nombrados uno a uno: el revisor tiene que saber
+   LAS RESOLUCIONES     qué resoluciones se le anclan, y no deducirlo del contenido
+18 DIGEST DEL TEXTO     un digest **por resolución**, sobre su texto canónico en esa sede. La
+   CANÓNICO DE CADA     huella del fichero entero no basta: dice que la sede no cambió, no
+   RESOLUCIÓN           que una resolución concreta sigue diciendo lo que decía
 
 Y LAS DECLARACIONES que acompañan a los campos, sin las cuales el sobre no vale:
 
  · IDENTIFICACIÓN DE   el sobre NOMBRA `O18` como su fuente, para que el revisor sepa bajo
    `O18`               qué resolución se le entrega y con qué alcance —§11.7—
+ · LA RELACIÓN ENTRE   el sobre declara, con estas palabras, que **«`O19` revisa la
+   `O18` Y `O19`       proyección incompleta de `O18`»**. Sin la relación, los tres
+                       identificadores del campo 17 son una lista y no una cadena de
+                       autoridad, y el revisor no sabe cuál gobierna a cuál
+ · RATIFICACIÓN DEL    el sobre declara **EXTERNAMENTE** que ésa es **la resolución ratificada
+   OWNER               por el Owner**. Es una declaración que viaja por el canal externo, no
+                       una afirmación interna del árbol de que el Owner dijo algo
  · ENTREGA PREVIA      el sobre DECLARA que fue entregado **antes de comenzar la lectura**.
                        Es la declaración que el adjudicador contrasta contra el orden de los
                        hechos, y la que un sobre reconstruido a posteriori no puede sostener
+```
+
+**LO QUE CADA REVISOR RECIBE EXTERNAMENTE, y es la lista entera.** No es un resumen del sobre:
+es lo que tiene que llegarle **por el canal externo al repositorio** antes de abrir nada.
+**Derivado de `O19` y de la sede canónica.**
+
+```text
+· el TEXTO de la ratificación del Owner
+· el SHA del COMMIT CANDIDATO
+· el TREE SHA
+· el SHA del MANIFIESTO
+· el SHA del DERIVADOR
+· el SHA DE LA SEDE DEL OWNER
+
+Y con todo ello **debe COMPROBAR LA RECETA SIN EJECUTAR EL EMISOR**: reproducir por su cuenta
+lo que el sobre afirma, con sus propias herramientas. Un revisor que comprueba el sobre
+ejecutando el programa que lo emitió no comprueba nada: repite el cálculo de quien se juzga,
+que es la circularidad un piso más arriba
 ```
 
 **LAS OBLIGACIONES DEL REVISOR, EN ORDEN, Y TODAS ANTES DE LEER CONTENIDO SEMÁNTICO.** No es
@@ -8207,6 +8262,11 @@ comprobar después produce un dictamen sobre un árbol que nadie sabía cuál er
 5 RECALCULAR       el **SHA-256 del manifiesto previo** de la ruta del campo 7, y contrastarlo
                    con el campo 8
 6 RECALCULAR       el **SHA-256 del derivador**, y contrastarlo con el campo 9
+6bis RECALCULAR    el **SHA-256 de la SEDE CANÓNICA del Owner** de la ruta del campo 15,
+  LA SEDE          **leída del commit auditado**, y contrastarlo con el campo 16; y los
+                   digests del texto canónico de `O17`, `O18` y `O19` contra el campo 18.
+                   **Si la sede no coincide con la huella recibida externamente, el gate
+                   FALLA CERRADO**: es la comprobación que `O19` añade, y no se pondera
 7 REDERIVAR        el **universo obligatorio**, ejecutando el derivador cuya huella acaba de
                    comprobar, y obtener su digest, su número de fuentes y su número de
                    asignaciones
@@ -8233,9 +8293,15 @@ SEAN IDÉNTICOS     no leyeron el mismo encargo**, y eso invalida el gate aunque
 VERIFICAR POR SU   resolver la referencia, comprobar commit y árbol, recalcular las dos
 CUENTA             huellas y rederivar el universo **él mismo**. Aceptar los cálculos de los
                    revisores es adjudicar sobre la palabra de quien se juzga
-DECLARAR INVÁLIDO  **ante CUALQUIER diferencia**: entre sobres, entre sobre y árbol, o entre
-EL GATE            sobre y rederivación. **INVÁLIDO no es «insuficiente»**: un gate inválido
-                   no produce veredicto, ni a favor ni en contra
+COMPARAR SEDE,     recalcular **él mismo** la huella de la SEDE CANÓNICA del Owner desde el
+PROYECCIÓN Y       commit auditado, y contrastar **las tres piezas**: la sede canónica, la
+SOBRE              proyección del registro de decisiones y el sobre recibido externamente.
+                   **Cualquier diferencia entre las tres FALLA CERRADO** — derivado de `O19`
+                   y de la sede canónica
+DECLARAR INVÁLIDO  **ante CUALQUIER diferencia**: entre sobres, entre sobre y árbol, entre
+EL GATE            sobre y rederivación, o **entre la sede canónica del Owner y la huella
+                   recibida externamente**. **INVÁLIDO no es «insuficiente»**: un gate
+                   inválido no produce veredicto, ni a favor ni en contra
 NO ACEPTAR UN      un sobre que se reconstruye **desde el propio árbol auditado** no ancla
 SOBRE RECONSTRUIDO nada: repite lo que el árbol dice de sí mismo, que es exactamente la raíz
 A POSTERIORI       que `O18` existe para cambiar
@@ -8259,6 +8325,26 @@ QUÉ ES ENTONCES    **su RAÍZ DOCUMENTAL EXTERNA, no su reemplazo.** Todo lo an
                    se hizo era el encargado
 ```
 
+**LO QUE DEJA DE VALER COMO EVIDENCIA PRIMARIA, por orden del Owner.** **Derivado de `O19` y
+de la sede canónica**, y vale para todo gate, todo encargo y todo dictamen posterior.
+
+```text
+YA NO ES EVIDENCIA · un MENSAJE DE COMMIT. Lo prohíbe el Owner expresamente: un mensaje de
+PRIMARIA             commit es lo que su autor escribió sobre lo que hizo, no la cosa
+                   · una PARÁFRASIS DEL COORDINADOR
+                   · una FILA DERIVADA del registro de decisiones —`D108` incluida—
+                   · una AFIRMACIÓN INTERNA de que el Owner dijo algo
+
+QUÉ SÍ VALE, Y SON **LA SEDE CANÓNICA Y EL SOBRE RECIBIDO EXTERNAMENTE**, y la prueba es que
+DOS PIEZAS QUE     **COINCIDAN**. Una sola de las dos no basta: la sede sin el sobre es otra
+DEBEN COINCIDIR    referencia interna al árbol auditado, y el sobre sin la huella de la sede
+                   no ancla ninguna resolución del Owner
+
+QUÉ NO SE AÑADE    **ninguna protección interna nueva.** El Owner lo ordena con esas
+AQUÍ, Y ES         palabras: la solución de esta amenaza es la SEDE EXTERNA, y escribir otra
+DELIBERADO         comprobación dentro del árbol movería la circularidad de sitio
+```
+
 ### Tabla adversarial del SOBRE DE ANCLA
 
 **No son filas de la tabla adversarial de §2.6.7, ni de las `X-A`–`X-H` de §2.9, ni de las
@@ -8277,6 +8363,11 @@ prueba no es la prueba.
 | `X-O6` | el sobre **omite un campo** —típicamente el SHA-256 del derivador o el digest del universo— y el gate se celebra igual | **FALLA.** Sin la huella del derivador, rederivar comprueba la salida de un programa que pudo cambiar; sin el digest, no hay contra qué comparar la rederivación. Un sobre incompleto no es un sobre |
 | `X-O7` | el adjudicador **da por buenos los cálculos de los revisores** en vez de repetirlos | **FALLA.** Adjudicar sobre la palabra de quien se juzga es la circularidad que `O18` viene a cambiar de raíz, movida un escalón arriba |
 | `X-O8` | se presenta el sobre como prueba de que **el corpus no fue alterado por quien tiene credenciales** | **FALLA por §11.7**, que es la sede del alcance: el sobre demuestra IDENTIDAD DE LA CANDIDATA, no resistencia a un actor privilegiado. Afirmar más de lo que protege es el defecto que tres gates consecutivos han castigado |
+| `X-O9` | la **SEDE CANÓNICA del Owner en el commit auditado NO COINCIDE** con la huella que el revisor recibió externamente —un digest de resolución distinto, un fichero editado después del reparto— y el gate continúa porque «el texto dice lo mismo» | **FALLA CERRADO, y el gate es INVÁLIDO.** Es la comprobación que `O19` añade y su regla es la misma que la de cualquier otro campo: se NOMBRA la resolución cuyo digest difiere y **no se emite dictamen de contenido**. «Dice lo mismo» es una lectura, y lo que se compara son huellas |
+| `X-O10` | el sobre se emite **SIN la ruta ni la huella de la sede canónica** —lleva commit, árbol, manifiesto y derivador, y nada más— y el gate se celebra igual | **FALLA. Un sobre sin la huella de la sede no es un sobre**, por la misma regla que `X-O6`: ancla el árbol y **no ancla ninguna resolución del Owner**, que es exactamente el hueco que `O19` viene a cerrar. Sin ella, qué resolvió el Owner vuelve a comprobarse dentro del árbol que se audita |
+| `X-O11` | un revisor, un encargo o un dictamen **usa como autoridad la PARÁFRASIS del coordinador** —o la fila `D108`, o una afirmación interna de que el Owner dijo algo— en vez de la sede canónica | **FALLA.** La proyección **enlaza** a la sede canónica y no la sustituye, y **una paráfrasis nunca amplía la autoridad del texto canónico**. Un dictamen fundado en la paráfrasis está fundado en algo que ningún gate puede contrastar, que es el defecto que el documento 24 adjudicó |
+| `X-O12` | se aporta el **MENSAJE DE UN COMMIT** como prueba primaria de qué resolvió el Owner —«el commit que la transcribe ya escribía las tres condiciones»— | **FALLA.** El Owner lo prohíbe expresamente: un mensaje de commit no es evidencia primaria. Puede constar como registro histórico de un acto, **nunca como la fuente de lo que el Owner resolvió**, y ninguna sede de este documento puede depender únicamente de él |
+| `X-O13` | una **PROYECCIÓN AMPLÍA el texto canónico** —añade una condición, un reparto o un alcance que la sede del Owner no contiene— y las sedes derivadas la citan como si fuera del Owner | **FALLA CERRADO.** El adjudicador compara **sede, proyección y sobre**, y cualquier diferencia invalida. Y el remedio no es borrar: la sede canónica se ratifica o se revisa **por el Owner**, y una resolución posterior **revisa sin borrar** la anterior |
 
 ### Trabajo futuro que el SOBRE DE ANCLA no puede hacer desde aquí, con propietario, fase y prueba
 
@@ -8345,10 +8436,13 @@ C · RESISTENCIA A UN   QUÉ AFIRMARÍA  que una alteración deliberada hecha po
     ACTOR PRIVILEGIADO                privilegio sobre el repositorio es DETECTABLE
                        ESTADO         **NO IMPLEMENTADA.** No la entrega (b), no la entrega
                                       la batería y no la entrega esta fase
-                       DÓNDE VIVE     **CONTRATO OBLIGATORIO DE `F6`**, §11.8, y `O18` lo
-                                      hace **condición previa** a la adopción permanente de
-                                      PesquerApp, a declarar ADS operativo y a certificar
-                                      cualquier adaptador
+                       DÓNDE VIVE     **CONTRATO OBLIGATORIO DE `F6`**, §11.8, con las TRES
+                                      condiciones previas —adopción permanente de PesquerApp,
+                                      declarar ADS operativo y certificar cualquier
+                                      adaptador—. **CONTENIDO RATIFICADO POR EL OWNER**, con
+                                      SEDE CANÓNICA en `docs/owner/ADS-OWNER-RESOLUCIONES.md`
+                                      y **`O19`** como resolución revisora. `D108` lo
+                                      PROYECTA; no es su fuente de autoridad
 ```
 
 **LO QUE (b) NO PROTEGE, ENUMERADO — literal de `O18`, y no se recorta.**
@@ -8411,7 +8505,21 @@ REALMENTE ENTREGADA    tan dura como las otras: un cierre que se apoye en una pr
 > propia:** exigir la infraestructura de (c) antes de cerrar `F4c` produce un **bloqueo
 > circular** que el Owner declara inaceptable — `F4c` bloquea `F5`, `F5` precede a `F6`, `F6`
 > construiría el verificador, y `F4c` quedaría abierta hasta que `F6` lo construyera.
-> **`O18` no autoriza iniciar `F5`, ni `F6`, ni PesquerApp**, y esta sede tampoco.
+> **`O18` no autoriza iniciar `F5`, ni `F6`, ni PesquerApp**, y esta sede tampoco. **`O19`
+> tampoco autoriza iniciar `F5`.**
+>
+> **DE DÓNDE VIENE LA AUTORIDAD DE ESTE CONTRATO, corregido por `O19`.** Las **TRES
+> condiciones obligatorias** y el **reparto** de abajo son **CONTENIDO RATIFICADO POR EL
+> OWNER**, y su **SEDE CANÓNICA** es
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md). **`O19` es la
+> resolución revisora**, y revisa **la PROYECCIÓN INCOMPLETA de `O18`, no su contenido ni su
+> diseño**: el Owner declara que «*la omisión está en la transcripción del coordinador, no en
+> mi resolución original*». **Nada de esta sección se retira: su contenido es correcto.**
+> `D108` y la entrada de `O18` en el registro de decisiones son **PROYECCIÓN, no fuente de
+> autoridad**, y **el reparto NO surgió autónomamente de `D108`**: pertenecía a la resolución
+> del Owner y hoy consta en su sede. **Ningún mensaje de commit sostiene nada de esto**, y
+> §11.6 declara que dejó de valer como evidencia primaria. La regla de procedencia entera
+> tiene sede en **§11.9**.
 
 ```text
 CONTRATO             `verificador-externo-del-control-repo`
@@ -8467,7 +8575,12 @@ DE MANIPULACIÓN      en rojo: corpus alterado tras la atestación · referencia
                      sigue produciendo veredictos. **Una prueba que no distinga el control
                      del mutante no prueba nada**
 
---- EL REPARTO, LITERAL DE `O18` ---
+--- EL REPARTO, LITERAL DE LA SEDE CANÓNICA DEL OWNER, RATIFICADO MEDIANTE `O19` ---
+
+    Rótulo CORREGIDO por `O19`. Antes decía «LITERAL DE `O18`», y la fila corta de `O18`
+    no lo contenía: el adjudicador `X` del documento 24 rechazó ese rótulo —y NO su
+    contenido—. Su sede es hoy `docs/owner/ADS-OWNER-RESOLUCIONES.md`, y **no `O18` ni
+    `D108`**. `D108` lo PROYECTA; **no lo originó**
 
 `SIS`                **define el CONTRATO de conformidad**
 `PLT`                **construye y opera la maquinaria externa**
@@ -8482,9 +8595,15 @@ DE IDENTIDAD         escritura del runtime ADS.** Compartirla devuelve el poder 
 
 --- LAS CONDICIONES DURAS, QUE NO SON RECOMENDACIONES ---
 
+    LAS TRES PRIMERAS son las TRES CONDICIONES OBLIGATORIAS del verificador externo de
+    `F6`: **contenido RATIFICADO POR EL OWNER**, con sede canónica en
+    `docs/owner/ADS-OWNER-RESOLUCIONES.md` y **`O19`** como resolución revisora. **No se
+    retiran, y no derivan su autoridad de `D108`**, que sólo las proyecta
+
 ANTES DE PesquerApp  construido **y PROBADO** antes de la **adopción permanente** de
                      PesquerApp. `O15` fija que esa adopción será REAL, PERMANENTE y
-                     COMPLETA; `O18` le añade esta precondición, y **no la deroga**
+                     COMPLETA; la resolución ratificada le añade esta precondición, y **no la
+                     deroga**
 ANTES DE DECLARAR    antes de declarar **ADS operativo**
 ADS OPERATIVO
 ANTES DE CERTIFICAR  antes de certificar **cualquier adaptador**
@@ -8526,6 +8645,64 @@ reversión. **`PN-11` no la cubre y no se reescribe ni se renumera**: aquélla p
 sede gobierna** el Git del control repo —y `O16` ya la respondió: `(g)` y un `C8` derivado—,
 y ésta pregunta **qué tiene que decir esa norma** para que exista un verificador que el
 repositorio no pueda escribir.
+
+## 11.9 · LA SEDE CANÓNICA DE LAS RESOLUCIONES DEL OWNER, Y LA REGLA DE PROCEDENCIA
+
+> **DERIVADO DE `O19` Y DE LA SEDE CANÓNICA. No lo eligió F4, y F4 no lo decide.** La
+> pregunta la formuló el **TERCER GATE DE CERTIFICACIÓN** —documento 24, §C, la adjudicación
+> de `X`— **como RATIFICACIÓN y no como elección de diseño**: el gate midió que el corpus
+> había perdido la capacidad de comprobar qué había dicho el Owner —una resolución suya sólo
+> constaba porque el coordinador la transcribía—, y sólo el Owner podía ratificarla. El Owner
+> ratificó, y ordenó crear la sede.
+>
+> **Esta sección NO cambia el diseño**: `O17` y `O18` deciden lo que decidieron y su
+> contenido se conserva íntegro. Lo que se fija aquí es **de dónde viene la autoridad** de
+> una resolución del Owner y **en qué orden nace**. **Y no escribe ninguna protección interna
+> nueva**: el Owner prohíbe expresamente responder con otra comprobación dentro del árbol a
+> una amenaza cuya solución es **la sede externa**.
+
+**LA SEDE CANÓNICA.** Las resoluciones del Owner viven en
+[`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md). Es
+**APPEND-ONLY**, contiene el texto **íntegro** de cada resolución y no un resumen, y **es la
+AUTORIDAD**. La entrada correspondiente en
+[`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md) §2 es una
+**PROYECCIÓN DERIVADA**, y las filas `D` de §1 que la propagan —`D107`, `D108`— son
+**propagación por las sedes vigentes, no fuente de autoridad**. **El texto íntegro de la
+regla está en la sede canónica**; esto es su sede en este documento, y remite.
+
+```text
+1  ninguna resolución del Owner NACE únicamente en el registro de decisiones
+2  primero se materializa en la SEDE CANÓNICA, con su texto completo
+3  después se PROYECTA al registro de decisiones
+4  la proyección debe ENLAZAR a la resolución canónica
+5  el texto canónico entra en el SOBRE EXTERNO del gate siguiente —§11.6, campos 15 a 18—
+6  los revisores reciben su SHA-256 **ANTES de leer**
+7  el adjudicador compara **la sede canónica, la proyección y el sobre**
+8  cualquier diferencia **FALLA CERRADO**
+9  una PARÁFRASIS nunca puede ampliar la autoridad del texto canónico
+10 una resolución posterior **REVISA, pero NO BORRA**, la anterior
+```
+
+**QUÉ NO ESTÁ EN LA SEDE CANÓNICA, Y ES ORDEN LITERAL DEL OWNER.** **`O1`–`O16` NO se
+registran allí.** **No se reconstruyen y no se inventan sus textos**: se conservan en su
+registro histórico actual —`DECISIONES-Y-CONTRADICCIONES.md`, sección 2— **hasta que exista
+una ratificación expresa o una fuente primaria verificable**. Escribirlas en la sede canónica
+sin ratificación sería exactamente el defecto que `O19` corrige, un piso más abajo: fabricar
+autoridad a partir de una transcripción. **Y §15.4 sigue llevando una fila por resolución**,
+las conservadas incluidas.
+
+**CÓMO SE APLICA ESTO A LO QUE YA ESTÁ ESCRITO.** **Ninguna sede se retira.** Las que ya
+contenían las tres condiciones obligatorias o el reparto **tienen el contenido correcto, y el
+Owner lo dice expresamente**; lo que se corrige es **el rótulo y la procedencia**. La entrada
+corta de `O18` **se conserva y no se edita**: es el registro histórico de una transcripción
+incompleta, y borrarla sería reescribir la historia — que es lo que la cláusula 10 prohíbe.
+**Aquí no se declara SUPERADO ningún hallazgo**: el estado de cada uno lo fija el gate
+independiente que lo juzgue, y esta sede no juzga su propio trabajo.
+
+**QUÉ PASA SI ESTO SE RETIRA.** Volver a la autoridad de la paráfrasis reabre el hallazgo
+`X-03` del documento 24 —el sobre de ancla no ancla ninguna resolución del Owner— y devuelve
+al corpus al estado en que ningún gate puede resolver qué se resolvió. **`O19` no autoriza
+iniciar `F5`**, y esta sede tampoco.
 
 ---
 
@@ -8800,7 +8977,8 @@ PRESIÓN F5     exige enmienda de material aprobado antes de construirse
 | `O15` la adopción de PesquerApp es PERMANENTE | §8.2 · §18 · §19 | NUEVA · revisa `O14` · DEFERIDA a F6 |
 | `O16` la sede del gobierno Git del control repo | §16 `PN-11` · §10 | NUEVA · **PRESIÓN F5** · con el ADDENDUM DE CRONOLOGÍA de `D106`(iii). **Fila añadida por `P-26`** |
 | `O17` el nivel ESTRUCTURAL y su productor | **§9.6** · §9.2 · §9.4 · §8.1 · §8.2 · §8.3 · §8.4 · §18 | NUEVA · **hace satisfacible `O12`** · propagada por `D107`, **derivada y no elegida por F4** |
-| `O18` la raíz de confianza de la verificación | **§11.6** · **§11.7** · **§11.8** · §11.4 · `C-L.5` · §16 `PN-19` | NUEVA · (a) **RECHAZADA** por el Owner · (b) ADOPTADA y **TRANSITORIA** para `F4c` · (c) **OBLIGATORIA en `F6`** y previa a PesquerApp · propagada por `D108`, **derivada y no elegida por F4** |
+| `O18` la raíz de confianza de la verificación | **§11.6** · **§11.7** · **§11.8** · §11.4 · `C-L.5` · §16 `PN-19` | NUEVA · (a) **RECHAZADA** por el Owner · (b) ADOPTADA y **TRANSITORIA** para `F4c` · (c) **OBLIGATORIA en `F6`**, con las **TRES condiciones** previas · propagada por `D108`, **derivada y no elegida por F4** · **su TEXTO AMPLIO está RATIFICADO y su sede canónica es `docs/owner/`**; su entrada corta del registro se conserva como REGISTRO HISTÓRICO · **REVISADA POR `O19`** en su PROYECCIÓN, no en su contenido |
+| `O19` la ratificación del texto amplio de `O18` y la SEDE CANÓNICA | **§11.9** · **§11.6** · §11.7 · §11.8 · §11 (cabecera) · §16 `PN-19` · `C-L.5` | NUEVA · **RATIFICACIÓN, no elección de diseño** · revisa **la PROYECCIÓN incompleta de `O18`**, y **no revisa su contenido ni su diseño** · crea la sede canónica [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md) · **`O1`–`O16` NO se registran en ella**, y se conservan en su registro histórico · **derivada y no elegida por F4** · **NO autoriza iniciar `F5`** |
 | `P-01` adaptador sin contrato | §6 | NUEVA |
 | `P-02` conocimiento externo | §13.3 | AMPLIADA |
 | `P-03` calidad por área | §5 | NUEVA |
@@ -9183,6 +9361,24 @@ queda registrado completo y sin implementar —**sede §11.8**—, con la presi�
 material aprobado en `PN-19`. **F4 no eligió ninguna de las tres alternativas y no amplía
 ninguna**: aporta el reparto por las sedes vigentes. `D1`–`D107` y `O1`–`O17` conservan íntegro
 su texto, **nada se renumera**, y **ningún hallazgo se declara SUPERADO aquí**.
+
+> **ADDENDUM DE PROCEDENCIA, por `O19`, y NO es una decisión nueva.** El **TERCER GATE DE
+> CERTIFICACIÓN** —documento 24, §C— adjudicó que la propagación afirmaba **TRES** condiciones
+> obligatorias y un **reparto** que la entrada corta de `O18` no registraba, y rechazó el
+> rótulo «LITERAL DE `O18`» **sin rechazar el contenido**. La disputa era **indecidible desde
+> el árbol**, y por eso subió al Owner **como RATIFICACIÓN**. El Owner ratificó el **texto
+> amplio** y ordenó crear la **SEDE CANÓNICA**
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md), donde `O17`,
+> `O18` y `O19` viven con su texto íntegro. **`O19` revisa la PROYECCIÓN INCOMPLETA de `O18`,
+> no su contenido ni su diseño**, y por eso **`D108` no se reescribe, no se renumera y no se
+> retira**: **queda declarada PROYECCIÓN, y deja de ser fuente de autoridad**. Su sede en este
+> documento es **§11.9**, y §11.6 lleva la ampliación del sobre con la huella de la sede.
+> **Ninguna sede del documento 11 se retira** —su contenido es correcto, y el Owner lo dice
+> expresamente—: lo corregido es **el rótulo y la procedencia**. **Ningún hallazgo se declara
+> SUPERADO aquí**, `D1`–`D108` y `O1`–`O18` conservan íntegro su texto, y **`O1`–`O16` NO se
+> registran en la sede canónica**: se conservan en su registro histórico hasta que exista
+> ratificación expresa o fuente primaria verificable. **Ninguna de estas líneas se apoya en el
+> mensaje de un commit.**
 
 ---
 
@@ -10051,6 +10247,13 @@ ORIGEN              hallazgo `P3-03` de la cadena `P`, elevado y graduado GRAVE 
 > únicamente **qué material aprobado presiona**, sin redactar ninguna enmienda.
 >
 > **Esta presión NO elige la enmienda, y no renumera ni reescribe ninguna anterior.**
+>
+> **PROCEDENCIA CORREGIDA POR `O19`.** El contenido que esta presión invoca —las TRES
+> condiciones obligatorias y el reparto— está **RATIFICADO POR EL OWNER**, y su **SEDE
+> CANÓNICA** es [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md).
+> **`O19` revisa la PROYECCIÓN INCOMPLETA de `O18`**, no su contenido ni su diseño. `D108` es
+> **PROYECCIÓN y no fuente de autoridad**, y **`PN-19` no se retira, no se renumera y no
+> cambia de materia**: cambia de dónde cita.
 
 ```text
 FUENTES             `C7`, contrato derivado que gobierna las operaciones Git **de las
@@ -10104,20 +10307,25 @@ MATERIA MÍNIMA      que el Owner **admita, en la sede que él elija**, (i) una 
                     ampliar `C7`, escribirlo en `(g)`/`C8` o crear sede nueva
 
 PROPIETARIO         el **Owner**, porque `C7` es contrato aprobado y `(a)`, `(b)`, `E2` y
-                    `KERNEL.md` son material aprobado. El reparto de ejecución, ya fijado por
-                    `O18`, está en §11.8: `SIS` define · `PLT` construye y opera · `VER`
+                    `KERNEL.md` son material aprobado. El reparto de ejecución **está
+                    RATIFICADO POR EL OWNER** —sede canónica
+                    `docs/owner/ADS-OWNER-RESOLUCIONES.md`, resolución revisora **`O19`**— y
+                    se cita desde §11.8: `SIS` define · `PLT` construye y opera · `VER`
                     produce el dosier · `SEG` gobierna credenciales, bloqueo y fallos de
                     confianza · **el Owner conserva la autoridad de aceptar o rechazar la
-                    raíz externa**
+                    raíz externa**. **No lo originó `D108`**, que sólo lo proyecta
 
-FASE                **F5** decide · **F6** construye, y en `F6` es **OBLIGATORIO**: `O18` lo
-                    hace condición previa a la adopción permanente de PesquerApp, a declarar
-                    ADS operativo y a certificar cualquier adaptador
+FASE                **F5** decide · **F6** construye, y en `F6` es **OBLIGATORIO**: la
+                    resolución **RATIFICADA POR EL OWNER** —sede canónica, revisada por
+                    `O19`— lo hace condición previa a la adopción permanente de PesquerApp, a
+                    declarar ADS operativo y a certificar cualquier adaptador. **Son las TRES
+                    condiciones obligatorias**, y §11.8 es su sede en este documento
 
 BLOQUEA             **la afirmación `C` de §11.7** —resistencia a un actor privilegiado—, que
-REALMENTE           seguirá NO IMPLEMENTADA mientras esto no exista; y con ella, por `O18`,
-                    la **adopción permanente de PesquerApp**, la declaración de **ADS
-                    operativo** y la **certificación de cualquier adaptador**
+REALMENTE           seguirá NO IMPLEMENTADA mientras esto no exista; y con ella, por la
+                    resolución ratificada en la sede canónica del Owner, la **adopción
+                    permanente de PesquerApp**, la declaración de **ADS operativo** y la
+                    **certificación de cualquier adaptador**
 
 QUÉ NO BLOQUEA      **no bloquea el cierre de `F4c`**: `O18` adopta (b) precisamente para que
                     no lo bloquee, y exigir (c) dentro de `F4c` reinstala el bloqueo circular
@@ -10143,7 +10351,11 @@ PRUEBA POSTERIOR    un barrido que exija que **exista una sede normativa vigente
 
 ORIGEN              la clase `B` del SEGUNDO GATE DE CERTIFICACIÓN —documento 23—, resuelta
                     por el Owner en **`O18`** y propagada por **`D108`**. **No es un hallazgo
-                    de F4 ni una elección de F4**
+                    de F4 ni una elección de F4**. **AUTORIDAD, corregida por `O19`**: la
+                    SEDE CANÓNICA `docs/owner/ADS-OWNER-RESOLUCIONES.md`, con **`O19`** como
+                    resolución revisora. **`D108` proyecta; no es la fuente**, y **ningún
+                    mensaje de commit sostiene esta presión** —§11.6 declara que dejó de
+                    valer como evidencia primaria—
 ```
 
 **Resumen para el Owner, tras revisar las cinco de la entrega anterior:**
@@ -11151,6 +11363,10 @@ EL ADJUDICADOR       **no corrige los hallazgos que encuentre.** Adjudica y devu
 
 **Y a todo gate posterior se le añade el SOBRE DE ANCLA, que NO forma parte de esta
 condición certificada y NO la altera.** Es requisito propio, **derivado de `O18` vía `D108`**
+—y con la **AUTORIDAD** de la **SEDE CANÓNICA**
+[`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md), **revisada por
+`O19`**, que es lo que añade al sobre la ruta y la huella de esa sede; `D108` **proyecta y no
+es la fuente**—
 y **no elegido por F4**, y su sede única es **§11.6**: el coordinador lo emite y lo entrega a
 cada revisor **dentro de su encargo, por un canal externo al repositorio y antes de que
 empiece a leer**; el revisor lo verifica **antes de leer contenido semántico** y **falla

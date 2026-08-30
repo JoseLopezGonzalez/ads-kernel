@@ -1680,10 +1680,86 @@ elif not ob:
     difs.append("la base de `7e99388` no contiene ni una fila `| O`: lo que se ha traído no "
                 "es el registro de resoluciones del Owner, y comparar contra nada da verde "
                 "siempre")
-check("G-21", "las resoluciones del Owner de `7e99388` siguen en el registro, con su texto y sin duplicar (falla CERRADO sin git)",
+# ── y la SEDE CANÓNICA del Owner, con su PROYECCIÓN, DESDE `O19` ─────────
+#
+# `X-03`, resuelto por el Owner en `O19`: la autoridad canónica deja de ser la paráfrasis
+# del coordinador y pasa a `docs/owner/ADS-OWNER-RESOLUCIONES.md`. El registro de decisiones
+# queda declarado **PROYECCIÓN DERIVADA**, y `O19` fija dos reglas que se pueden comprobar
+# sin interpretar nada: **la proyección ENLAZA a la resolución canónica**, y **una paráfrasis
+# nunca puede ampliar el texto canónico**.
+#
+# Esto NO es una comprobación nueva ni una protección de clase nueva: es `G-21` —la que ya
+# custodia las resoluciones del Owner en el registro— mirando la sede que `O19` puso por
+# encima del registro. Nada de aquí se escribe a mano:
+#
+#   · las resoluciones se DERIVAN de los encabezados `# `Onn`` de la sede
+#   · desde qué resolución rige la regla se DERIVA de la propia sede —«esta sede nace por
+#     `Onn`»—, no de un número escrito aquí: cuando nazca `O20` la regla la alcanza sola
+#   · «no ampliar» se mide sobre las VALLAS de la proyección, que son la forma en que este
+#     registro cita texto resolutivo: cada bloque tiene que estar LITERALMENTE en la sede
+#
+# Lo que NO mide, y se dice en el README: la prosa de la proyección no se compara palabra a
+# palabra con la sede. Lo que se cierra es que una valla de la proyección diga algo que el
+# texto canónico no dice, que es exactamente de lo que nació `O19`.
+_REL_SEDE_OWNER = "docs/owner/ADS-OWNER-RESOLUCIONES.md"
+_ENLACE_SEDE = "../owner/ADS-OWNER-RESOLUCIONES.md"
+try:
+    _t_sede = leer(os.path.join(RAIZ, _REL_SEDE_OWNER))
+except SedeIlegible as _e:
+    _t_sede = None
+    difs.append(f"LA SEDE CANÓNICA `{_REL_SEDE_OWNER}` NO SE PUEDE LEER ({_e}). Desde `O19` "
+                f"la autoridad de las resoluciones del Owner vive ahí y el registro es una "
+                f"PROYECCIÓN DERIVADA: sin sede no hay nada contra lo que contrastar la "
+                f"proyección, y darla por buena sería creer a la paráfrasis, que es "
+                f"exactamente lo que `O19` retira")
+if _t_sede is not None:
+    _res_sede = re.findall(r"^# `(O\d+)`", _t_sede, re.M)
+    _nace = re.findall(r"[Ee]sta sede nace por `(O(\d+))`", _t_sede)
+    if not _res_sede:
+        difs.append(f"la SEDE CANÓNICA no publica NI UN bloque `# `Onn``: una sede sin "
+                    f"texto canónico no es autoridad de nada, y el sobre de ancla no "
+                    f"tendría digest que anclar")
+    _reps_sede = sorted(k for k, v in Counter(_res_sede).items() if v > 1)
+    if _reps_sede:
+        difs.append(f"la SEDE CANÓNICA declara DOS VECES {_reps_sede}: dos bloques con el "
+                    f"mismo identificador son dos textos canónicos, y entonces no hay uno")
+    if not _nace:
+        difs.append("la SEDE CANÓNICA no declara POR QUÉ RESOLUCIÓN nace —«esta sede nace "
+                    "por `Onn`»—, y ése es el dato del que se deriva desde cuándo rige la "
+                    "regla de enlace. Sin él habría que escribir el número aquí, y un "
+                    "número escrito caduca")
+    _desde = int(_nace[0][1]) if _nace else None
+    for _id in sorted(set(_res_sede), key=lambda s: int(s[1:])):
+        _m_pro = re.search(r"^### `%s`(.*?)(?=^#{2,3} |\Z)" % _id, leer(DEC), re.S | re.M)
+        if not _m_pro:
+            difs.append(f"`{_id}` vive en la SEDE CANÓNICA y NO tiene proyección `### "
+                        f"`{_id}`` en el registro de decisiones. `O19` ordena que toda "
+                        f"resolución se materialice en la sede y DESPUÉS se proyecte: una "
+                        f"resolución sin proyección no la lee nadie donde se trabaja")
+            continue
+        _pro = _m_pro.group(1)
+        if _desde is not None and int(_id[1:]) >= _desde:
+            if _ENLACE_SEDE not in _pro:
+                difs.append(f"la proyección de `{_id}` NO ENLAZA a la sede canónica "
+                            f"(`{_ENLACE_SEDE}`). Es la regla 4 de `O19`, y sin el enlace "
+                            f"el lector del registro no tiene cómo llegar al texto que "
+                            f"manda: vuelve a creer a la paráfrasis")
+            for _valla in re.findall(r"^```[a-z]*\n(.*?)^```", _pro, re.S | re.M):
+                if _valla not in _t_sede:
+                    difs.append(
+                        f"la proyección de `{_id}` cita en una VALLA un texto que NO está "
+                        f"en la sede canónica: «{_valla.strip().splitlines()[0][:70]}…». "
+                        f"UNA PARÁFRASIS NUNCA PUEDE AMPLIAR EL TEXTO CANÓNICO, y `O19` "
+                        f"nació precisamente de una proyección que decía menos de lo que "
+                        f"el Owner había resuelto")
+check("G-21", "las resoluciones del Owner de `7e99388` siguen en el registro, y la SEDE CANÓNICA de `O19` manda sobre su proyección (falla CERRADO sin git y sin sede)",
       _base_raw is not None and bool(ob) and not difs and len(set(ac)) >= len(set(ob)),
       f"{len(set(ob))} resoluciones de la base presentes y con su texto; {len(set(ac))} "
-      f"vigentes" if (_base_raw is not None and bool(ob) and not difs) else "; ".join(difs))
+      f"vigentes; sede canónica con {len(set(_res_sede))} resoluciones "
+      f"({' · '.join(sorted(set(_res_sede), key=lambda s: int(s[1:])))}), cada una con "
+      f"proyección, y las nacidas desde `O{_desde}` enlazan a la sede y no amplían su texto "
+      f"en ninguna valla"
+      if (_base_raw is not None and bool(ob) and not difs) else "; ".join(difs))
 
 # ── el CORPUS GOBERNADO y su reparto, derivados una sola vez ─────────────
 #
@@ -1737,6 +1813,25 @@ def _inmutables():
     if os.path.isdir(dir_man):
         for nombre in sorted(os.listdir(dir_man)):
             salida.append("docs/evolucion/verificacion/manifiestos/" + nombre)
+    # `O19`. **`docs/owner/` entra en ESTE inventario**, que es el que ya existe: mismo id,
+    # mismo doble contraste contra `HEAD` y contra la revisión base, mismo perímetro DERIVADO
+    # del árbol. NO se escribe una protección nueva —el Owner lo prohíbe expresamente— sino
+    # que se extiende el inventario de integridad a la zona que su resolución convierte en
+    # AUTORIDAD CANÓNICA: material del Owner, que **no puede alterarse en silencio**. Hasta
+    # aquí ninguna comprobación miraba el contenido de `docs/owner/`: `G-29` veía si nacía o
+    # desaparecía un fichero, y editar el texto de una resolución suya no lo veía nadie.
+    # Se barre el DIRECTORIO ENTERO y no `*.md`: un fichero de otra extensión que naciera
+    # ahí quedaría fuera sin que nada lo dijera, que es la clase de perímetro escrito que
+    # este corpus lleva cuatro gates persiguiendo.
+    dir_own = os.path.join(RAIZ, "docs/owner")
+    for base, dirs, ficheros in os.walk(dir_own):
+        dirs[:] = [d for d in dirs if d != "__pycache__" and not d.startswith(".")]
+        for nombre in sorted(ficheros):
+            if nombre.startswith("."):
+                continue
+            rel = _rel(os.path.join(base, nombre))
+            if rel not in _EN_CORRECCION:
+                salida.append(rel)
     return salida
 
 _INMUTABLES = _inmutables()
@@ -1769,6 +1864,10 @@ else:
                     "un rango vacío por no mirar es un verde por omisión")
     if not any(f.startswith("docs/evolucion/verificacion/manifiestos/") for f in _INMUTABLES):
         _g22.append("ningún manifiesto de gate entra en el inventario de inmutables")
+    if not any(f.startswith("docs/owner/") for f in _INMUTABLES):
+        _g22.append("NINGÚN fichero de `docs/owner/` entra en el inventario de inmutables: "
+                    "desde `O19` esa zona es la SEDE CANÓNICA de las resoluciones del Owner, "
+                    "y un inventario que no la ve deja que su texto se altere en silencio")
     for rel in _INMUTABLES:
         if rel not in _head_arbol:
             _sin_base.append(rel)          # documento en curso, todavía sin confirmar
@@ -1789,7 +1888,9 @@ check("G-22",
       not _g22,
       "; ".join(_g22) or
       f"{len(_INMUTABLES)} inmutables derivados —{len([f for f in _INMUTABLES if '/manifiestos/' in f])} "
-      f"manifiestos y {len(_INMUTABLES) - len([f for f in _INMUTABLES if '/manifiestos/' in f])} "
+      f"manifiestos, {len([f for f in _INMUTABLES if f.startswith('docs/owner/')])} de la "
+      f"SEDE DEL OWNER y "
+      f"{len([f for f in _INMUTABLES if '/manifiestos/' not in f and not f.startswith('docs/owner/')])} "
       f"documentos numerados— intactos frente a `HEAD` y a `05f71b7`" +
       (f" · {len(_sin_base)} todavía sin confirmar y por tanto sin línea base: "
        f"{_sin_base}" if _sin_base else "") +
@@ -2556,6 +2657,10 @@ except SedeIlegible as _e:
                 f"un documento numerado nuevo esté enlazado, y admitirlo sin ella es el "
                 f"`return True` en blanco que `T-03` explotó")
 _ENLAZADOS_INDICE = set(re.findall(r"\]\(([A-Za-z0-9][-A-Za-z0-9_.]*\.md)\)", _t_idx))
+# La misma sede, para la otra zona: `00-INDICE.md` enlaza `docs/owner/` con ruta relativa
+# `../owner/`, que el patrón de arriba no puede recoger porque empieza por punto.
+_ENLAZADOS_INDICE_OWNER = set(re.findall(
+    r"\]\(\.\./owner/([A-Za-z0-9][-A-Za-z0-9_.]*\.md)\)", _t_idx))
 _ORDINALES_PUBLICADOS = {m.group(1) for m in
                          (re.match(r"^docs/evolucion/(\d\d)-.*\.md$", f)
                           for f in _publicado) if m}
@@ -2567,6 +2672,16 @@ def _ampliacion_admitida(rel):
             or rel.startswith("kernel/operativo/pruebas/evidencia/")
     if rel.startswith("docs/rediseno/"):
         return False
+    if rel.startswith("docs/owner/"):
+        # `O19`. `docs/owner/` no admitía NINGUNA ampliación, y el Owner ordenó crear ahí la
+        # SEDE CANÓNICA de sus resoluciones: la zona tenía que admitir el fichero que su
+        # propia resolución manda publicar, o la batería habría bloqueado el remedio. Se
+        # admite CLASIFICADA y con la MISMA condición que un documento numerado nuevo —la
+        # regla que el propio índice escribió: **enlazado desde `00-INDICE.md`**, y en el
+        # mismo commit que lo crea—, de modo que una segunda sede plantada en `docs/owner/`
+        # sin enlazar sigue siendo ROJA. Y una vez confirmado, su contenido queda bajo el
+        # inventario de inmutables de `G-22`, que ahora alcanza esta zona.
+        return rel.split("/")[-1] in _ENLAZADOS_INDICE_OWNER
     if rel.startswith("docs/evolucion/verificacion/manifiestos/"):
         return False
     if rel.startswith("docs/evolucion/verificacion/"):

@@ -404,6 +404,15 @@ ENCARGO = [
     ("docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md", "material APROBADO E2"),
     ("docs/rediseno/CHECKPOINT-OPERATIVO.md",
      "la batería del kernel, el runner y las trece evidencias"),
+    # `O19`. La SEDE CANÓNICA de las resoluciones del Owner entra en el OBJETO del gate el
+    # mismo día que nace. El sobre de ancla publica su huella y el digest de cada
+    # resolución, y el Owner ordena que cada revisor reciba ese SHA **antes de leer**: si la
+    # sede no estuviera en el universo obligatorio, el manifiesto no se la asignaría a
+    # nadie, **el sobre anclaría un texto que ningún revisor está obligado a abrir**, y la
+    # autoridad que `O19` traslada no la comprobaría nadie.
+    ("docs/owner/ADS-OWNER-RESOLUCIONES.md",
+     "O19 · la SEDE CANÓNICA de las resoluciones del Owner, que el sobre de ancla ancla y "
+     "cuya huella el revisor recibe FUERA del árbol antes de leer"),
 ]
 
 

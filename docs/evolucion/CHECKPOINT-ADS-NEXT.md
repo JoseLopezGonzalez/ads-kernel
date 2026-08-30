@@ -12,6 +12,46 @@
 > vigente, que es siempre la primera.
 
 > **Estado de la fase, en una línea:**
+> **El Owner ha RATIFICADO el texto amplio de `O18` y ha ordenado una SEDE CANÓNICA para sus
+> resoluciones: es `O19`. `F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA.**
+>
+> Su texto íntegro vive en
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md), que es
+> **la SEDE CANÓNICA**, y **no se copia aquí**. Desde `O19`, la sección 2 de
+> [`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md) es una
+> **PROYECCIÓN DERIVADA** de esa sede, y **una paráfrasis nunca puede ampliar el texto
+> canónico**.
+>
+> ```text
+> QUÉ RATIFICA        el texto AMPLIO de `O18`. Las condiciones omitidas y el reparto
+>                     PERTENECÍAN a la resolución original: «la omisión está en la
+>                     transcripción del coordinador, no en mi resolución original»
+> QUÉ REVISA          la PROYECCIÓN INCOMPLETA de `O18` — NO su contenido y NO su diseño.
+>                     `O18` no vuelve a someterse a elección
+> QUÉ TRASLADA        la AUTORIDAD CANÓNICA, de la paráfrasis del coordinador a
+>                     `docs/owner/`. La entrada corta de `O18` se conserva, sin editar,
+>                     como REGISTRO HISTÓRICO de una transcripción incompleta
+> QUÉ NO AUTORIZA     iniciar `F5`. Tampoco `F6` ni PesquerApp
+> ```
+>
+> **Lo que esta tanda hace, y no es más que eso.** El sobre de ancla publica la sede —ruta,
+> SHA-256 **leído del commit auditado**, identificadores DERIVADOS de ella y digest del texto
+> canónico de cada resolución, cada uno con la receta que lo reproduce— y **se niega a emitir
+> si la sede no está en el commit auditado, si falta un identificador exigido o si un digest
+> no se deriva**. El inventario de integridad **que ya existía** se extiende a `docs/owner/`,
+> y el registro ENLAZA a la sede sin ampliarla. **Ninguna protección interna nueva**, que es
+> lo que el adjudicador del documento 24 ordenó expresamente.
+>
+> **Lo que NO cambia, y se dice.** `O19` corrige la PROCEDENCIA y la AUTORIDAD, **no el
+> diseño**. Ningún hallazgo se declara SUPERADO, `M-04` no se cierra, y la limitación que
+> `O18` declara de sí misma **sigue VIGENTE**: la sede traslada la autoridad, pero **no la
+> hace mecánicamente verificable contra una fuente externa al sistema**. Eso es el
+> verificador externo real de `F6`, y `O19` tampoco lo adelanta.
+
+> **[ESTADO ANTERIOR · antes de la resolución `O19` del Owner. Se conserva ENTERO y NO
+> describe el estado vigente.]**
+
+> **Estado de la fase, en una línea:**
 > **El TERCER GATE DE CERTIFICACIÓN devolvió `INSUFICIENTE PARA F5` sobre la candidata
 > `21f1ccb`, y el gate es VÁLIDO. `F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA.**
 >
@@ -743,7 +783,35 @@ regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histór
                   `last_meaningful_event_anterior`, que es donde vive lo histórico
                6  NINGÚN HALLAZGO SE DECLARA SUPERADO POR ESTE REANCLAJE. Reanclar no es
                   certificar, y sólo un gate independiente posterior puede cerrar X-04
-metodo:      SIS/Evolucion · TERCER GATE DE CERTIFICACIÓN DEVUELTO —gate VÁLIDO, VEREDICTO
+metodo:      SIS/Evolucion · RESOLUCIÓN O19 DEL OWNER RECIBIDA —RATIFICACIÓN DEL TEXTO AMPLIO
+             DE O18 Y CREACIÓN DE SU SEDE CANÓNICA EN docs/owner/— y TANDA DE APLICACIÓN EN
+             CURSO. O19 revisa la PROYECCIÓN INCOMPLETA de O18, NO su contenido ni su diseño, y
+             traslada la AUTORIDAD CANÓNICA de la paráfrasis del coordinador a docs/owner/: el
+             registro de decisiones queda declarado PROYECCIÓN DERIVADA, y una paráfrasis nunca
+             puede ampliar el texto canónico.
+             EL TEXTO NO SE COPIA AQUÍ —regla 1 de regla_de_reanclaje—: su sede es
+             docs/owner/ADS-OWNER-RESOLUCIONES.md, y qué resoluciones publica se deriva con
+                 grep -o '^# `O[0-9]*`' docs/owner/ADS-OWNER-RESOLUCIONES.md
+             LO QUE LA TANDA APLICA, y no es más que esto: el SOBRE DE ANCLA publica la ruta de
+             la sede, su SHA-256 LEÍDO DEL COMMIT AUDITADO, los identificadores DERIVADOS de
+             ella, el digest del texto canónico de cada resolución con su receta reproducible,
+             la relación «O19 revisa la proyección incompleta de O18» y la declaración externa
+             de ratificación, y FALLA CERRADO si la sede falta, si falta un identificador
+             exigido o si un digest no se deriva; el INVENTARIO DE INTEGRIDAD QUE YA EXISTÍA se
+             extiende a docs/owner/, con el mismo id, el mismo doble contraste y el perímetro
+             derivado del árbol; la ampliación de esa zona se CLASIFICA con la regla de enlace
+             desde 00-INDICE.md que el propio índice escribió; y la proyección tiene que
+             ENLAZAR a la sede sin AMPLIAR su texto en ninguna valla.
+             NINGUNA COMPROBACIÓN NUEVA Y NINGUNA PROTECCIÓN INTERNA NUEVA: el censo no se
+             mueve —su sede es la tabla del README de verificacion/, y G-34 lo contrasta—, y
+             tanto el adjudicador del documento 24 como el Owner lo prohibieron expresamente.
+             LO QUE NO CAMBIA: O19 corrige PROCEDENCIA y AUTORIDAD, no DISEÑO. Ningún hallazgo
+             se declara SUPERADO, M-04 no se cierra, C-L.7 sigue NO CERRADA, y la limitación
+             que O18 declara de sí misma SIGUE VIGENTE — la sede traslada la autoridad y NO la
+             hace mecánicamente verificable contra una fuente externa al sistema, que es el
+             verificador externo real de F6.
+             RATIFICADA, NO CERTIFICADA · F4c ABIERTA · F5 NO AUTORIZADA
+metodo_anterior: SIS/Evolucion · TERCER GATE DE CERTIFICACIÓN DEVUELTO —gate VÁLIDO, VEREDICTO
              INSUFICIENTE PARA F5 sobre la candidata 21f1ccb— y TANDA DE CORRECCIÓN DE SUS
              HALLAZGOS EN APLICACIÓN. Es el PRIMER gate que recibe su ancla por un canal
              EXTERNO al repositorio, como O18 ordena, y el sobre se entregó a cada revisor
@@ -809,7 +877,13 @@ metodo_anterior: SIS/Evolucion · TANDA DE CORRECCIÓN DEL GATE DEFINITIVO APLIC
              y CORRECCIÓN TÉCNICA ACOTADA sobre ella · D103 · APLICADA, NO CERTIFICADA
 metodo_anterior: SIS/Evolucion · GATE DEFINITIVO INDEPENDIENTE EJECUTADO SOBRE r4=0ea0451 ·
              VEREDICTO INSUFICIENTE PARA F5 · F4c ABIERTA · F5 NO AUTORIZADA
-based_on:    LA LISTA DE DOCUMENTOS NUMERADOS NO ES SEDE Y ES DERIVABLE — regla 2 de
+based_on:    LA SEDE CANÓNICA DE LAS RESOLUCIONES DEL OWNER —docs/owner/ADS-OWNER-RESOLUCIONES.md,
+             creada por O19— ES FUENTE DE AUTORIDAD, y NO se deriva de la lista de abajo: esa
+             lista enumera documentos numerados de docs/evolucion/, y la sede no es uno. Su
+             contenido no se copia aquí; se remite. Es APPEND-ONLY, el índice la enlaza y el
+             inventario de inmutables la custodia. Desde O19, toda sede derivada que cite una
+             resolución del Owner cita DE AHÍ, y no de una paráfrasis.
+             LA LISTA DE DOCUMENTOS NUMERADOS NO ES SEDE Y ES DERIVABLE — regla 2 de
              `regla_de_reanclaje`: `ls docs/evolucion/[0-9][0-9]-*.md | sort`. Son INMUTABLES,
              y el VEREDICTO y el RECUENTO de cada gate viven EN CADA DOCUMENTO, no aquí. La
              enumeración de abajo se conserva por comodidad de lectura; las anotaciones que
@@ -891,7 +965,30 @@ rama_de_trabajo: NO SE ESCRIBE AQUÍ, Y ES DELIBERADO. Este campo nombró durant
 freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
              Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
              queda marcado HISTÓRICO y SUPERADO, y no se borra
-last_meaningful_event: EL TERCER GATE DE CERTIFICACIÓN DEVUELVE INSUFICIENTE PARA F5 sobre
+last_meaningful_event: EL OWNER RESPONDE LA RATIFICACIÓN que el TERCER GATE DE CERTIFICACIÓN
+             le elevó como la única decisión que le tocaba a él, y su respuesta es O19: RATIFICA
+             EL TEXTO AMPLIO DE O18 Y ORDENA DARLE SEDE CANÓNICA EN docs/owner/. Sus palabras:
+             «la omisión está en la transcripción del coordinador, no en mi resolución
+             original».
+             O19 REVISA LA PROYECCIÓN INCOMPLETA de O18, no su contenido ni su diseño; la
+             entrada corta de O18 se CONSERVA sin editar como registro histórico de esa
+             transcripción; y la DISPUTA REGISTRADA Y NO RESUELTA que aquella entrada declaraba
+             queda RESUELTA por O19 sin tocar su texto. Las condiciones omitidas y el reparto
+             PERTENECÍAN a la resolución original, y lo que seis sedes rotulaban «literal de
+             O18» pasa a ser literal DE LA SEDE CANÓNICA.
+             NACE docs/owner/ADS-OWNER-RESOLUCIONES.md, APPEND-ONLY, con el texto íntegro de
+             O17, de O18 —versión amplia ratificada— y de O19. O1-O16 NO se reconstruyen ahí y
+             conservan su registro histórico, por orden expresa del Owner en esta misma
+             ratificación: no se inventa lo que no consta.
+             LO QUE ESTA TANDA REGISTRA EN EL APARATO: el sobre de ancla ancla la sede y no se
+             emite sin ella; el inventario de inmutables alcanza docs/owner/; el registro
+             ENLAZA a la sede y no la amplía; y el índice enlaza la sede EN EL MISMO COMMIT QUE
+             LA CREA. Sin escribir una protección interna nueva, que es lo que el Owner y el
+             adjudicador prohibieron.
+             RATIFICAR NO ES CERTIFICAR y APLICAR NO ES CERTIFICAR: ningún hallazgo se declara
+             SUPERADO, F4c sigue ABIERTA y F5 sigue NO AUTORIZADA, y O19 lo dice con todas las
+             letras (2026-08-30)
+last_meaningful_event_anterior: EL TERCER GATE DE CERTIFICACIÓN DEVUELVE INSUFICIENTE PARA F5 sobre
              la candidata 21f1ccb, y el gate es VÁLIDO. Su documento es el que deriva la regla
              2 de `regla_de_reanclaje`; su recuento, sus severidades y su clasificación A/B/C
              NO se copian aquí y viven en §12 y §13 de la adjudicación de X.
@@ -1680,7 +1777,22 @@ resuelto_en_la_entrega_de_f4:
   · doce escenarios extremo a extremo recorridos. NINGUNO EJECUTADO
   · D16–D22 registradas con su alternativa descartada. D23–D33 las revisan sin
     reescribirlas
-owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
+owner_captado: LA AUTORIDAD CANÓNICA DE LO QUE EL OWNER HA RESUELTO NO ES ESTE CAMPO, Y DESDE
+             O19 NO ES NINGUNA PARÁFRASIS DEL COORDINADOR: es
+             docs/owner/ADS-OWNER-RESOLUCIONES.md, donde viven O17, O18 —texto amplio
+             RATIFICADO— y O19 con su texto íntegro. Este campo NO los transcribe: remite.
+             LO QUE ESTE CAMPO CONSERVA DE O15 Y O16 ES TRANSCRIPCIÓN DEL COORDINADOR, se
+             declara como tal y NO ES AUTORIDAD CANÓNICA. No se borra ni se reescribe: el Owner
+             ordenó expresamente que O1-O16 NO se reconstruyan en la sede y conserven su
+             registro histórico hasta que exista una ratificación expresa o una fuente primaria
+             verificable. Y es exactamente la clase de defecto que O19 corrige: una resolución
+             que sólo constaba porque el coordinador la transcribía, sin nada contra lo que
+             contrastarla.
+             O17, O18 Y O19 NO SE TRANSCRIBEN AQUÍ. Su sede es la canónica; su proyección, la
+             sección 2 de docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md, que ENLAZA a ella.
+             NINGUNA de las tres autoriza iniciar F5, F6 ni PesquerApp.
+             [TRANSCRIPCIÓN DEL COORDINADOR · NO ES SEDE CANÓNICA · se conserva sin editar]
+             "Autoriza aplicar la crítica independiente de F4 y corregir su
              arquitectura. NO autoriza F5 ni F6" (2026-08-27)
              + RESOLUCIÓN POSTERIOR O15: "PesquerApp será la primera adopción REAL,
              PERMANENTE y completa de ADS; su repositorio global ADS nace como repositorio
@@ -1695,9 +1807,13 @@ owner_captado: "Autoriza aplicar la crítica independiente de F4 y corregir su
              redactar (g) y no autoriza crear C8. Registrado por L-02, que demostró que O16
              era la ÚNICA de las dieciséis resoluciones sin fecha, sin cita y sin entrada
              aquí — y es la que da sede a PN-11, nacida del BLOQUEANTE B2
-pregunta_pendiente: NINGUNA. La única que había —la clase B del documento 22, el nivel
-             ESTRUCTURAL y su productor— la RESPONDIÓ el Owner, y es O17: eligió la
-             alternativa (b). Ya no bloquea.
+pregunta_pendiente: NINGUNA. La última que había —la RATIFICACIÓN que el TERCER GATE DE
+             CERTIFICACIÓN elevó, y que no era una elección de diseño— la RESPONDIÓ el Owner, y
+             es O19: ratifica el texto amplio de O18 y ordena su sede canónica. LA RATIFICACIÓN
+             QUEDA CERRADA y O18 no vuelve a someterse a elección. Antes de ella, la clase B del
+             documento 22 —el nivel ESTRUCTURAL y su productor— la respondió O17 con la
+             alternativa (b). Ninguna de las dos bloquea ya, y NINGUNA autoriza iniciar F5.
+             Su texto no se copia aquí: la sede es docs/owner/ADS-OWNER-RESOLUCIONES.md.
              Las presiones normativas vigentes son materia de F5, no preguntas, y SU CENSO
              NO SE ESCRIBE AQUÍ. Este campo publicó una cifra a mano tres tandas seguidas y
              las tres caducaron —Q-12 y Q-13 del documento 22—, así que REMITE: la única
@@ -1714,8 +1830,9 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
                  grep -n '^## Siguiente acci[óo]n exacta' docs/evolucion/CHECKPOINT-ADS-NEXT.md | head -1
              y las que le siguen van rotuladas HISTÓRICA. Lo único que este campo afirma, y
              que no caduca: **APLICADA NO ES CERTIFICADA**, y REGISTRAR o CONTRATAR no es
-             CORREGIR. F4c sigue ABIERTA y F5 sigue NO AUTORIZADA, y la RATIFICACIÓN de O18
-             está PENDIENTE DEL OWNER.
+             CORREGIR. F4c sigue ABIERTA y F5 sigue NO AUTORIZADA. La RATIFICACIÓN de O18
+             YA NO ESTÁ PENDIENTE: la dio el Owner en O19, y RATIFICAR TAMPOCO ES CERTIFICAR —
+             O19 revisa la PROYECCIÓN, no el contenido, y no autoriza iniciar F5.
              **[HISTÓRICO · lo que este campo copiaba en la tanda de O17/D107. Se conserva y
              NO describe el estado vigente.]**
              PUBLICAR UNA CANDIDATA NUEVA y someterla a OTRO GATE INDEPENDIENTE, con
@@ -3030,6 +3147,74 @@ LAS DOS ADVERTENCIAS, Y SON DEL OWNER:
 ## Siguiente acción exacta
 
 ```text
+0  DÓNDE ESTAMOS               el Owner ha resuelto la RATIFICACIÓN que el TERCER GATE DE
+                               CERTIFICACIÓN le elevó como su única decisión suya. Es
+                               `O19`, y su texto íntegro está en la SEDE CANÓNICA
+                               `docs/owner/ADS-OWNER-RESOLUCIONES.md`. El último documento
+                               numerado y los SHA vigentes NO se copian aquí: se derivan
+                               con `ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1`,
+                               `git rev-parse HEAD` y `git ls-remote`.
+
+1  QUÉ RESOLVIÓ, EN UNA LÍNEA  RATIFICA el texto amplio de `O18` y le da SEDE CANÓNICA en
+                               `docs/owner/`. Revisa la PROYECCIÓN incompleta, **no el
+                               contenido ni el diseño**, y la autoridad deja de ser la
+                               paráfrasis del coordinador. La sede es su única sede.
+
+2  LO QUE ESTA TANDA HA HECHO  el sobre de ancla ancla la sede: ruta, SHA-256 del COMMIT
+                               AUDITADO, identificadores DERIVADOS de ella, digest del texto
+                               canónico de cada resolución con su receta, la relación entre
+                               `O18` y `O19`, y la declaración externa de ratificación.
+                               **Sin la sede no hay sobre.** Y el inventario de inmutables
+                               que ya existía alcanza ahora `docs/owner/`, con la misma
+                               comprobación y el mismo perímetro derivado del árbol.
+
+3  LO QUE NO SE HA HECHO,      no se declara SUPERADO ningún hallazgo, no se cierra `M-04`,
+   Y ES DELIBERADO             no se edita la entrada corta de `O18` —es el registro
+                               histórico de la transcripción incompleta y borrarla sería
+                               reescribir la historia— y **no se escribe ni una protección
+                               interna nueva**: el remedio del Owner es una sede EXTERNA a
+                               la paráfrasis, no una comprobación más dentro del árbol.
+
+4  QUÉ VUELVE AL OWNER         NADA. La ratificación queda CERRADA por él mismo: versión
+                               amplia, condiciones obligatorias y reparto, y `O18` no vuelve
+                               a someterse a elección.
+
+5  QUÉ VIENE AHORA             publicar candidata y encargar otro gate independiente con
+                               revisores de contexto limpio que NO sean quien aplicó esta
+                               tanda. Cada uno recibe FUERA del árbol el SHA de la sede del
+                               Owner junto al resto del sobre, y **comprueba la receta sin
+                               ejecutar el emisor**. Y los DOS manifiestos que `D106` exige,
+                               ENLAZADOS desde `00-INDICE.md` en el mismo commit que los
+                               crea, que es la regla que dos gates han castigado incumplir.
+
+6  LO QUE SIGUE ABIERTO        `M-04` **NO se declara superada**. `C-L.7` sigue **NO
+                               CERRADA**. Y la limitación que `O18` declara de sí misma
+                               sigue VIGENTE: la sede canónica traslada la AUTORIDAD y **no
+                               la hace mecánicamente verificable contra una fuente externa
+                               al sistema**. Eso es el verificador externo de `F6`.
+
+7  ESTADO, SIN ADORNO          `F4c` sigue **ABIERTA**. `F5` sigue **NO AUTORIZADA**, y
+                               `O19` lo dice con todas las letras. No se ha iniciado F5, ni
+                               F6, ni PesquerApp. No se ha hecho merge en
+                               `redesign/kernel-2.0`. **RATIFICAR no es CERTIFICAR.**
+
+8  DÓNDE PARAR                 antes de dar por cerrado lo que sólo un gate independiente
+                               puede cerrar. Y sigue vigente parar antes de redactar `(g)`,
+                               antes de crear `C8`, antes de tocar `C7` o el kernel
+                               operativo SUSTANTIVO, y antes de iniciar PesquerApp.
+```
+
+> **La regla de redacción de esta sección, que NO es histórica y se conserva:** nada que otra
+> sede pueda derivar se copia aquí. Los SHA, los censos, el recuento de la batería y el
+> ordinal de la tanda se derivan con su comando. Esta sección ha caducado cuatro veces por
+> copiar lo que otra sede ya decía.
+
+> **[HISTÓRICA · «Siguiente acción exacta» anterior a la resolución `O19` del Owner. Se
+> conserva para trazabilidad y NO describe el estado vigente.]**
+
+## Siguiente acción exacta — HISTÓRICA, anterior a `O19`
+
+```text
 0  DÓNDE ESTAMOS               el TERCER GATE DE CERTIFICACIÓN devolvió `INSUFICIENTE PARA
                                F5` sobre la candidata `21f1ccb`, y **el gate es VÁLIDO**.
                                Su documento es el **24** y está publicado. Los SHA vigentes
@@ -3084,11 +3269,6 @@ LAS DOS ADVERTENCIAS, Y SON DEL OWNER:
                                tocar `C7` o el kernel operativo SUSTANTIVO, y antes de
                                iniciar PesquerApp.
 ```
-
-> **La regla de redacción de esta sección, que NO es histórica y se conserva:** nada que otra
-> sede pueda derivar se copia aquí. Los SHA, los censos, el recuento de la batería y el
-> ordinal de la tanda se derivan con su comando. Esta sección ha caducado cuatro veces por
-> copiar lo que otra sede ya decía.
 
 > **[HISTÓRICA · «Siguiente acción exacta» anterior al documento 24. Se conserva para
 > trazabilidad y NO describe el estado vigente.]**

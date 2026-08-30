@@ -21,7 +21,8 @@ sus enlaces se comprueban como los de cualquier documento.
 
 > **`docs/owner/` es su destino canónico**, fijado por la resolución `O10`. La exención pasa a
 > ser **por ubicación** en vez de fichero a fichero, que es el remedio manual que ya había
-> fallado cinco veces. Los dos documentos multi-repo ya viven ahí. La directiva, su prompt y
+> fallado cinco veces. Los dos documentos multi-repo ya viven ahí, y desde `O19` también la
+> **SEDE CANÓNICA de las resoluciones del Owner**, que esa resolución ordenó crear. La directiva, su prompt y
 > el documento de pendientes siguen en `docs/evolucion/` con su exención propia, y su
 > migración está declarada pendiente en `exclusiones.yaml`.
 
@@ -31,6 +32,7 @@ sus enlaces se comprueban como los de cualquier documento.
 | [`PROMPT-ARRANQUE-ADS-NEXT.md`](PROMPT-ARRANQUE-ADS-NEXT.md) | el prompt de arranque que ordena ejecutarla, y en qué orden |
 | [`ADS-ARQUITECTURA-MULTIREPO-APROBADA.md`](../owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md) | **decisión aprobada para implementación**: un producto ADS son varios repositorios gobernados por un repositorio ADS de control |
 | [`ADS-IDEAS-PENDIENTES-MULTIREPO.md`](../owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md) | documento de trabajo: ideas consolidadas y cuestiones que el Owner declara abiertas |
+| [`ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md) | **LA SEDE CANÓNICA de las resoluciones del Owner**, creada por `O19`. Contiene `O17`, `O18` —texto amplio RATIFICADO— y `O19`, con su texto íntegro y no en resumen. **Es la AUTORIDAD**: desde `O19`, la sección 2 de [`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md) es una **PROYECCIÓN DERIVADA**, y una paráfrasis nunca amplía el texto canónico. Es APPEND-ONLY, entra en el inventario de inmutables de `G-22` y su huella viaja en el **SOBRE DE ANCLA** de cada gate |
 | [`ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md`](ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md) | **material temporal de evolución**: qué quedó aceptado, qué sigue propuesto y qué debe sintetizarse tras F2. No es normativa vigente ni autoriza a implementar su contenido |
 
 > **`ARQUITECTURA` e `IDEAS` se contradicen sobre la misma pregunta**, y la contradicción no
@@ -102,6 +104,13 @@ llega ningún enlace por ruta es un huérfano y la comprobación falla.
 publica al menos un documento nuevo, y ninguno tenía sede desde la que enlazarse, de modo que
 `T147` se rompía **una vez más en cada gate**. Lo levantaron `P-27`≡`Q-08` del documento 22.
 
+> **Y LA REGLA VALE TAMBIÉN PARA `docs/owner/`, desde `O19`.** La sede canónica se enlazó
+> desde la fila de arriba **en el mismo commit que la crea**, que es la regla escrita abajo
+> para el aparato de verificación y que dos gates han castigado incumplir. La batería la
+> exige: `G-29` sólo admite una ampliación de `docs/owner/` **si este índice la enlaza**, y
+> una vez confirmada, `G-22` la custodia contra `HEAD` y contra la revisión base como a los
+> documentos inmutables y a los manifiestos.
+
 > **LA REGLA, y es de cumplimiento obligatorio para el gate siguiente.** Todo documento que
 > `C-L.5` obligue a publicar —manifiesto de asignación, manifiestos de lectura, addenda y
 > corrigenda— **se enlaza desde la lista de abajo en el MISMO commit que lo crea**. No se
@@ -115,7 +124,7 @@ publica al menos un documento nuevo, y ninguno tenía sede desde la que enlazars
 | [`verificacion/README.md`](verificacion/README.md) | qué comprueba la batería de corrección, y qué NO comprueba |
 | [`verificacion/comprobar-correccion-gate-de-cierre.py`](verificacion/comprobar-correccion-gate-de-cierre.py) | la batería adversarial de la tanda de corrección |
 | [`verificacion/derivar-universo-obligatorio.py`](verificacion/derivar-universo-obligatorio.py) | deriva el universo obligatorio de lectura de un gate, en vez de elegirlo a mano |
-| [`verificacion/emitir-sobre-de-ancla.py`](verificacion/emitir-sobre-de-ancla.py) | emite el **SOBRE DE ANCLA** que `O18` adopta y `D108` propaga: la raíz documental EXTERNA que el coordinador entrega a cada revisor, por canal externo al repositorio y **antes de leer**. **No es un verificador externo**, y no se publica en el árbol para que el revisor lo lea de ahí |
+| [`verificacion/emitir-sobre-de-ancla.py`](verificacion/emitir-sobre-de-ancla.py) | emite el **SOBRE DE ANCLA** que `O18` adopta y `D108` propaga: la raíz documental EXTERNA que el coordinador entrega a cada revisor, por canal externo al repositorio y **antes de leer**. Desde `O19` ancla además **la SEDE CANÓNICA del Owner** —ruta, SHA-256 leído del commit auditado, identificadores derivados y digest del texto de cada resolución, con su receta— y **falla CERRADO si la sede falta**. **No es un verificador externo**, y no se publica en el árbol para que el revisor lo lea de ahí |
 | [`verificacion/manifiestos/F4C-ASIGNACION-GATE-CIERRE-20260829.md`](verificacion/manifiestos/F4C-ASIGNACION-GATE-CIERRE-20260829.md) | manifiesto de asignación del gate del documento 21 |
 | [`verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-20260830.md`](verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-20260830.md) | manifiesto de asignación del gate del documento 22, sobre universo derivado |
 | [`verificacion/manifiestos/F4C-ADDENDUM-1-GATE-CERTIFICACION-20260830.md`](verificacion/manifiestos/F4C-ADDENDUM-1-GATE-CERTIFICACION-20260830.md) | el addendum que devolvió a lectura íntegra las 21 fuentes mal agotadas. **El manifiesto NO se editó**: es inmutable |

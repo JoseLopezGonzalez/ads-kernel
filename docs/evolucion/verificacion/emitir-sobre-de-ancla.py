@@ -49,6 +49,25 @@ emitía, y los tres primeros son del fichero:
      de la columna `revisor` del reparto de lectura del manifiesto, leído del commit del
      gate; si además se pasa `--asignaciones`, tiene que coincidir o no hay sobre.
 
+QUÉ AÑADIÓ `O19`, Y POR QUÉ UN SOBRE SIN ELLO NO SE EMITE
+---------------------------------------------------------
+El adjudicador `X` midió un sexto defecto, `X-03`: **el sobre no anclaba NINGUNA resolución
+del Owner**. Anclaba el árbol, el manifiesto y el derivador —el continente— y nada del
+contenido normativo que el gate juzga. El Owner lo resolvió en `O19`: ratificó el texto
+amplio de `O18`, **trasladó la autoridad canónica de la paráfrasis del coordinador a
+`docs/owner/`** —«la omisión está en la transcripción del coordinador, no en mi resolución
+original»— y ordenó que el sobre publique la ruta de esa sede, **su SHA-256 leído DEL COMMIT
+AUDITADO**, los identificadores, **el digest del texto canónico de cada resolución**, la
+relación «`O19` revisa la proyección incompleta de `O18`» y una declaración externa de que
+ésa es la resolución ratificada.
+
+El bloque de cada resolución se **DERIVA** de la sede —desde su encabezado `# `Onn`` hasta
+el encabezado de nivel 1 siguiente— y se publica con la receta que lo reproduce byte a byte,
+igual que los digest de árbol. Ninguna lista de resoluciones se escribe aquí: se publican
+**todas** las que la sede contenga, y se EXIGEN al menos `O17`, `O18` y `O19`, que son las
+que `O19` nombra. **Si la sede no está en el commit auditado, si falta un identificador
+exigido o si un digest no se puede derivar, NO HAY SOBRE.**
+
 Y el quinto defecto, `X-01`, no se cierra aquí sino en la batería: este fichero **no estaba
 en ningún inventario de integridad**, y con tres líneas de puerta trasera —sin commitear—
 producía un sobre idéntico al honesto sobre un corpus corrupto. `G-34` cubre ahora el
@@ -79,8 +98,10 @@ FALLA CERRADO
 -------------
 Si el árbol de trabajo está sucio, si una referencia no resuelve, si el commit no existe, si
 el manifiesto no está en el commit que se declara, si el reparto de lectura no se puede leer,
-si las asignaciones declaradas no cuadran con las derivadas, o si un universo no deriva, sale
-con código 2 y diagnóstico. Un sobre incompleto es peor que ningún sobre: promete una
+si las asignaciones declaradas no cuadran con las derivadas, si un universo no deriva, **si
+la SEDE CANÓNICA del Owner no está en el commit auditado, si un identificador exigido no
+aparece en ella o si un digest de resolución no se puede derivar**, sale con código 2 y
+diagnóstico. Un sobre incompleto es peor que ningún sobre: promete una
 garantía que no da.
 """
 
@@ -97,6 +118,11 @@ import tempfile
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                     os.pardir, os.pardir, os.pardir))
 DERIVADOR = "docs/evolucion/verificacion/derivar-universo-obligatorio.py"
+# `O19`. La SEDE CANÓNICA de las resoluciones del Owner, y las que `O19` NOMBRA como
+# exigidas. No es un censo: es el mínimo que el Owner ordenó anclar. Lo que el sobre
+# PUBLICA son todas las que la sede contenga, derivadas de ella.
+SEDE_OWNER = "docs/owner/ADS-OWNER-RESOLUCIONES.md"
+RESOLUCIONES_EXIGIDAS = ("O17", "O18", "O19")
 
 
 class NoEmitible(Exception):
@@ -204,6 +230,62 @@ def universo_de(commit):
     return digest, len(rutas), lineas, huellas
 
 
+# ── la SEDE CANÓNICA DEL OWNER, DERIVADA DEL COMMIT AUDITADO ─────────────────────
+#
+# `X-03`, resuelto por `O19`. El bloque canónico de cada resolución va **desde su
+# encabezado `# `Onn`` hasta el encabezado de nivel 1 siguiente**, sin recortar ni
+# normalizar nada: los bytes tal cual están en el commit. Esa definición es la que reproduce
+# el `awk` de la receta, y por eso el revisor puede recalcular cada digest sin ejecutar este
+# emisor. La lista de resoluciones **no se escribe**: sale de la sede.
+_ENCABEZADO_RES = re.compile(rb"^# `(O\d+)`")
+
+
+def sede_del_owner(commit, papel):
+    """(sha256 del fichero, [(id, digest, líneas)]) de la SEDE CANÓNICA en `commit`."""
+    crudo = _blob(commit, SEDE_OWNER)          # falla CERRADO si no está en el commit
+    if not crudo.endswith(b"\n"):
+        raise NoEmitible(
+            "la SEDE CANÓNICA `%s` del %s (`%s`) no termina en salto de línea, y entonces la "
+            "receta publicada NO reproduciría el último digest byte a byte: es exactamente "
+            "`W-12`, y un sobre cuya receta falla sobre todo árbol no es una garantía"
+            % (SEDE_OWNER, papel, commit[:7]))
+    lineas = crudo.splitlines(keepends=True)
+    cortes = [i for i, l in enumerate(lineas) if l.startswith(b"# ")]
+    bloques, orden = {}, []
+    for n, i in enumerate(cortes):
+        m = _ENCABEZADO_RES.match(lineas[i])
+        if not m:
+            continue
+        ident = m.group(1).decode("ascii")
+        fin = cortes[n + 1] if n + 1 < len(cortes) else len(lineas)
+        cuerpo = b"".join(lineas[i:fin])
+        if ident in bloques:
+            raise NoEmitible(
+                "la SEDE CANÓNICA del %s (`%s`) declara `%s` DOS VECES: dos bloques con el "
+                "mismo identificador son dos textos canónicos, y el sobre no puede publicar "
+                "el digest de un texto que no es único" % (papel, commit[:7], ident))
+        bloques[ident] = cuerpo
+        orden.append(ident)
+    if not orden:
+        raise NoEmitible(
+            "de la SEDE CANÓNICA `%s` del %s (`%s`) NO SE DERIVA NI UN BLOQUE `# `Onn``: sin "
+            "texto canónico no hay digest que anclar, y un sobre que anunciara la sede sin "
+            "publicar su contenido prometería una garantía que no da"
+            % (SEDE_OWNER, papel, commit[:7]))
+    faltan = [i for i in RESOLUCIONES_EXIGIDAS if i not in bloques]
+    if faltan:
+        raise NoEmitible(
+            "la SEDE CANÓNICA del %s (`%s`) NO CONTIENE %s. `O19` ordena que el sobre ancle "
+            "%s, y un sobre que callara la que falta anclaría un corpus del que el Owner no "
+            "responde" % (papel, commit[:7], " ni ".join("`%s`" % f for f in faltan),
+                          " · ".join("`%s`" % r for r in RESOLUCIONES_EXIGIDAS)))
+    filas = []
+    for ident in orden:
+        cuerpo = bloques[ident]
+        filas.append((ident, hashlib.sha256(cuerpo).hexdigest(), cuerpo.count(b"\n")))
+    return hashlib.sha256(crudo).hexdigest(), filas
+
+
 # ── ASIGNACIONES, DERIVADAS del manifiesto ───────────────────────────────────────
 #
 # `X-05`. Era el único campo del sobre que nada contrastaba, y era el único falso. Se deriva
@@ -277,6 +359,13 @@ RECETA = """  C=%s
   rm -rf "$d\""""
 
 
+# La receta de un bloque de la sede. `awk` enciende la impresión en el encabezado del
+# bloque pedido y la apaga en el encabezado de nivel 1 siguiente, que es EXACTAMENTE el
+# corte que `sede_del_owner()` aplica sobre los mismos bytes del mismo commit.
+RECETA_SEDE = """  git show %s:%s |
+    awk '/^# /{p = ($0 ~ /^# `%s`/)} p' | sha256sum"""
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--candidata", required=True)
@@ -307,6 +396,8 @@ def main():
         sha_der_g, _ = _sha256_en(commit_g, DERIVADOR)
         dig_c, nf_c, nl_c, hue_c = universo_de(commit_c)
         dig_g, nf_g, nl_g, hue_g = universo_de(commit_g)
+        sede_c, res_c = sede_del_owner(commit_c, "COMMIT AUDITADO (candidata)")
+        sede_g, res_g = sede_del_owner(commit_g, "commit del gate")
     except NoEmitible as e:
         sys.stderr.write("NO EMITIBLE · %s\n" % e)
         return 2
@@ -356,6 +447,54 @@ def main():
         W("  RUTAS EN QUE LOS DOS UNIVERSOS DIFIEREN: NINGUNA. Los dos digest coinciden y\n")
         W("  el gate no ha tocado el universo después de publicar la candidata\n")
     W("=" * 78 + "\n")
+    W("LA SEDE CANONICA DE LAS RESOLUCIONES DEL OWNER, QUE `O19` ORDENA ANCLAR AQUI.\n")
+    W("`O19` traslada la AUTORIDAD CANONICA de la parafrasis del coordinador a esta sede:\n")
+    W("el registro de decisiones pasa a ser una PROYECCION DERIVADA de ella. Todo lo de\n")
+    W("abajo se lee DEL COMMIT, no del arbol de trabajo de quien emite.\n")
+    W("\n")
+    W("  RUTA DE LA SEDE         %s\n" % SEDE_OWNER)
+    W("  RESOLUCIONES ANCLADAS   %d, DERIVADAS de la sede y no escritas: %s\n"
+      % (len(res_c), " · ".join("%s (%d lineas)" % (i, n) for i, _, n in res_c)))
+    W("  EXIGIDAS POR `O19`      %s   sin una sola de ellas NO HAY SOBRE\n"
+      % " · ".join(RESOLUCIONES_EXIGIDAS))
+    W("\n")
+    W(_f % ("", "CANDIDATA (COMMIT AUDITADO)", "GATE"))
+    W(_f % ("SHA-256 DE LA SEDE", sede_c, sede_g))
+    _dig_g = {i: d for i, d, _ in res_g}
+    for ident, dig, _nl in res_c:
+        W(_f % ("DIGEST DE `%s`" % ident, dig,
+                _dig_g.get(ident, "AUSENTE EN EL COMMIT DEL GATE")))
+    for ident, dig, _n in res_g:
+        if ident not in {i for i, _, _ in res_c}:
+            W(_f % ("DIGEST DE `%s`" % ident, "AUSENTE EN EL COMMIT AUDITADO", dig))
+    W("\n")
+    if sede_c == sede_g:
+        W("  LOS DOS COMMITS PUBLICAN LA MISMA SEDE, byte a byte.\n")
+    else:
+        W("  ATENCION: LA SEDE DIFIERE ENTRE LOS DOS COMMITS. El texto canonico que la\n")
+        W("  candidata publica NO es el que publica el arbol del gate, y el revisor tiene\n")
+        W("  que decir DE CUAL habla antes de afirmar nada sobre una resolucion del Owner.\n")
+    W("\n")
+    W("  RELACION ENTRE RESOLUCIONES, dicha por el Owner y no derivada por el emisor:\n")
+    W("    `O19` REVISA LA PROYECCION INCOMPLETA DE `O18`. NO revisa su contenido ni su\n")
+    W("    diseño: `O18` NO vuelve a someterse a eleccion. La entrada corta de `O18` en el\n")
+    W("    registro de decisiones se conserva como REGISTRO HISTORICO de una transcripcion\n")
+    W("    incompleta, y la proyeccion ENLAZA a la sede.\n")
+    W("\n")
+    W("  DECLARACION EXTERNA, que es la razon de que esto viaje en el sobre y no se lea\n")
+    W("  del arbol: EL TEXTO ANCLADO ARRIBA ES LA RESOLUCION RATIFICADA POR EL OWNER.\n")
+    W("  `O19` ratifica el texto AMPLIO de `O18` —sus tres condiciones obligatorias y su\n")
+    W("  reparto— y declara que «la omision esta en la transcripcion del coordinador, no en\n")
+    W("  mi resolucion original». A partir de `O19`, lo que una sede derivada rotule como\n")
+    W("  literal lo es DE LA SEDE CANONICA, no de la parafrasis.\n")
+    W("\n")
+    W("  COMO SE RECALCULA CADA DIGEST DE RESOLUCION, sobre el COMMIT AUDITADO:\n")
+    for ident, dig, _n in res_c:
+        W("\n  ── `%s` → %s\n" % (ident, dig))
+        W(RECETA_SEDE % (commit_c, SEDE_OWNER, ident) + "\n")
+    W("\n  ── LA SEDE ENTERA → %s\n" % sede_c)
+    W("  git show %s:%s | sha256sum\n" % (commit_c, SEDE_OWNER))
+    W("=" * 78 + "\n")
     W("  EMITIDO                 %s\n" % ahora)
     W("  EMISOR                  %s\n" % a.emisor)
     W("  DECISION QUE LO EXIGE   O18 · alternativa (b) · propagada por D108\n")
@@ -383,6 +522,10 @@ def main():
     W("    manifiesto afirme sobre ellas tiene que decir DE QUE ARBOL habla.\n")
     W("  5 SI EL ARBOL DE TRABAJO DE QUIEN EMITIO ESTABA SUCIO NO HAY SOBRE: este emisor se\n")
     W("    niega a emitirlo. Un sobre existente es, por construcción, un sobre limpio.\n")
+    W("  6 RECALCULE LOS DIGEST DE LA SEDE CANONICA DEL OWNER y contrastelos con toda sede\n")
+    W("    derivada que cite una resolucion suya. La AUTORIDAD es la sede; el registro de\n")
+    W("    decisiones es una PROYECCION. Una parafrasis que AMPLIE el texto canonico es un\n")
+    W("    hallazgo, y `O19` nacio exactamente de uno.\n")
     W("=" * 78 + "\n")
     W("LO QUE ESTE SOBRE **NO** GARANTIZA, y `O18` lo declara:\n")
     W("  compromiso del canal del Owner · compromiso simultaneo del repositorio y del\n")
@@ -390,8 +533,14 @@ def main():
     W("  manipulacion del ejecutor externo · falsificacion de identidad.\n")
     W("  Esos riesgos son del VERIFICADOR EXTERNO que `O18` contrata para `F6`, y que es\n")
     W("  condicion previa a la adopcion permanente de PesquerApp.\n")
-    W("  Y NO ANCLA NINGUNA RESOLUCION DEL OWNER: `X-03`. `docs/owner/` no contiene\n")
-    W("  `O15`-`O18`, y mientras no exista esa sede el sobre no puede cubrirlas.\n")
+    W("  Y LA SEDE CANONICA DEL OWNER NO ES MECANICAMENTE VERIFICABLE CONTRA UNA FUENTE\n")
+    W("  EXTERNA AL SISTEMA, y lo declara el propio Owner. `O19` TRASLADA LA AUTORIDAD de\n")
+    W("  la parafrasis del coordinador a `docs/owner/` y este sobre publica su huella, pero\n")
+    W("  quien pueda escribir el repositorio puede escribir la sede: lo que el sobre prueba\n")
+    W("  es que el texto no ha cambiado entre el commit auditado y lo que el revisor\n")
+    W("  recibio FUERA del arbol, NO que sea el que el Owner emitio. Es la limitacion que\n")
+    W("  `O18` declara de si misma —garantia TRANSITORIA y LIMITADA— y SIGUE VIGENTE hasta\n")
+    W("  el verificador externo real de `F6`.\n")
     return 0
 
 
