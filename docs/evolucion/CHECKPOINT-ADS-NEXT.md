@@ -6,6 +6,79 @@
 > **Basta decir «Continúa»**: la siguiente acción exacta está al final.
 
 > **Estado de la fase, en una línea:**
+> **El GATE INDEPENDIENTE DE CERTIFICACIÓN devolvió `INSUFICIENTE PARA F5` sobre la candidata
+> `4d231ee`. `F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA. La tanda siguiente NO puede
+> empezar sola: hay UNA decisión que sólo puede tomar el Owner.**
+>
+> Está en
+> [`22-GATE-INDEPENDIENTE-DE-CERTIFICACION-F4C.md`](22-GATE-INDEPENDIENTE-DE-CERTIFICACION-F4C.md),
+> con los tres dictámenes transcritos íntegros. Lo emitieron **diez agentes con contexto
+> limpio** —revisor `P` como cadena `P1`–`P4`, revisor `Q` como cadena `Q1`·`Q2`·`Q3`·`Q5`·`Q4`,
+> en paralelo y sin verse, y el adjudicador `R`—. Ninguno escribió F4, aplicó `D16`–`D106`, es
+> autor de ninguna corrección ni fue revisor `A`–`R`. **Ningún hallazgo se corrigió en esa
+> pasada, y es deliberado.**
+>
+> ```text
+> 69 HALLAZGOS DISTINTOS    0 bloqueantes · 8 graves · 34 medios · 27 menores
+>                           27 de `P` · 42 de `Q` · 3 propios de `R` · menos 3 solapes
+>
+> CLASIFICACIÓN             A · corregible en F4c sin decidir arquitectura      68
+>                           B · DECISIÓN EXCLUSIVA DEL OWNER                     1   ← BLOQUEA
+>                           C · trabajo futuro ya contratado                     0
+>
+> LOS 24 DEL DOCUMENTO 21   20 SUPERADOS · 4 NO SUPERADOS: `P-06` `Q-04` `Q-05` `R-04`
+> ```
+>
+> **LA ÚNICA DECISIÓN QUE BLOQUEA, Y ES DEL OWNER: el nivel ESTRUCTURAL y su productor.**
+> §9.2 fija la cadena `estructural ◀── operativo ◀── integrado ◀── completo` y una regla dura:
+> «un nivel no se declara por argumento ni por haber pasado el anterior». Pero
+> `gate:sistema-conforme` **tiene una sola aparición en todo el documento 11, y es su propia
+> definición**: ninguna fase de ninguno de los cuatro macrocircuitos lo produce. Sin celda de
+> Estructural verificada, ni la Operativa ni la Integrada son alcanzables, y **`O12` —una
+> resolución del Owner— no es satisfacible por ningún recorrido**. Elegir dónde se produce no
+> es propagar: es decidir un recorrido nuevo. **La pregunta exacta, con sus tres alternativas
+> y el coste de cada una, está en §13 de la adjudicación de `R`, dentro del documento 22.**
+> **F4 no elige, y lo dice.**
+>
+> **Por qué INSUFICIENTE, en seis razones y ninguna es la cobertura:**
+>
+> ```text
+> 1  `M-04` sigue FALLIDA y HOY ES MÁS ANCHA. `R` construyó y ejecutó OCHO árboles
+>    defectuosos que pasan la batería 30/30 EN VERDE. El peor es suyo: volteó los veredictos
+>    de los documentos 19, 20 y 21 a `SUFICIENTE PARA F5` y la batería no se enteró, porque
+>    su rango inmutable dice `1[5-8]`
+> 2  las CINCO correcciones de la batería funcionan en el PERÍMETRO EXACTO de su
+>    contraejemplo y en ninguna otra parte. `G-26` se desactiva escribiendo «regresión» en la
+>    línea, y con eso se reinstala el único GRAVE del gate anterior
+> 3  `R-04` NO está superado: está AGRAVADO. El punto 7 de §2.6.9 es byte-idéntico a
+>    `7764cca`, y la fila de `W17` afirma que reparte algo que no reparte
+> 4  DOS GRAVES nuevos sobre garantías publicadas de material APROBADO: el nivel ESTRUCTURAL
+>    sin productor —el B de arriba— y `reconciliacion_pendiente` sin productor, que deja
+>    `T22` de (a) insatisfacible sin que ninguna presión lo registre
+> 5  la regla del ordinal NO EJECUTA: §15.8 no tiene bloque para `D96`–`D106`, y
+>    `00-INDICE` se contradice dentro de una sola tabla
+> 6  la razón de método: la mayoría de los 69 los introdujo o los dejó pasar esta misma
+>    tanda, y cuatro son la reinstalación de defectos ya adjudicados
+> ```
+>
+> **Y lo que SÍ quedó cerrado, porque también es información.** **`C-L.5` sigue CERTIFICADA**,
+> por segunda vez consecutiva y **ahora sobre un universo DERIVADO**: `P-08` está cerrado de
+> verdad —el comando existe, se publicó en un commit propio antes que el manifiesto, y `R`
+> recalculó las dos restas, **`OBLIGATORIO − ASIGNADO = ∅` y `ASIGNADO − LEÍDO = ∅`**—.
+> **VEINTE de los veinticuatro** hallazgos del documento 21 están genuinamente superados,
+> **el único GRAVE de aquel gate entre ellos**. Las **cinco vías nombradas** de la batería
+> están cerradas con control positivo. **`Q-14` y `C-L.3`, cerrados.** Los **22** hallazgos
+> del documento 15 y los documentos **10, 12, 13 y 14** —leídos íntegros por primera vez en
+> el expediente— **no producen ni un hallazgo vivo**. `D1`–`D106` y `O1`–`O16` intactas.
+>
+> **El coordinador del gate se equivocó y lo dice.** Su manifiesto agotó 21 fuentes con una
+> cita del documento 20 que no nombra ninguna ruta. Lo encontró su propio relevo `Q3` antes de
+> cualquier adjudicación. El manifiesto **no se editó** —`1bis` lo declara inmutable—: se
+> publicó el `ADDENDUM 1`, se creó el relevo `Q5` después de commitearlo, y `Q5` leyó las 21.
+> `R` juzgó esa conducta expresamente y la declaró correcta, con tres reproches.
+
+> **[ESTADO ANTERIOR · antes del GATE DE CERTIFICACIÓN, documento 22]**
+
 > **Los 24 hallazgos del GATE INDEPENDIENTE DE CIERRE CON MANIFIESTOS están APLICADOS — NO
 > CERTIFICADOS. `F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA.**
 >
@@ -2291,6 +2364,88 @@ del kernel y la unicidad del catálogo, derivados del árbol— y contra `Q-01` 
 contraejemplos que conoce: **sólo un gate posterior, con revisores que no hayan aplicado esto,
 puede decir si sigue habiendo un árbol defectuoso en verde.** `M-04` queda FALLIDA.
 ## Siguiente acción exacta
+
+```text
+0  DÓNDE ESTAMOS, EXACTO         la candidata `4d231ee` está publicada en
+                                 `review/f4c-post-gate-manifiestos-candidate-20260830`.
+                                 Sobre ella se ejecutó el **GATE INDEPENDIENTE DE
+                                 CERTIFICACIÓN CON UNIVERSO DERIVADO** —diez agentes de
+                                 contexto limpio: cadenas `P1`–`P4` y `Q1`·`Q2`·`Q3`·`Q5`·`Q4`
+                                 en paralelo sin verse, y el adjudicador `R`—, y su documento
+                                 es el 22.
+                                 **Su veredicto fue INSUFICIENTE PARA F5, y NO por cobertura.**
+                                 Los SHA de este árbol se derivan con `git rev-parse HEAD` y
+                                 `git ls-remote`. Los que aparecen escritos son snapshots
+                                 históricos publicados, y por eso se nombran.
+
+1  POR QUÉ EL TRABAJO SE PARÓ    **porque apareció UNA decisión de clase B**, y sólo la puede
+   AQUÍ, Y NO SIGUIÓ SOLO        tomar el Owner. De los 69 hallazgos, **68 son clase A** —
+                                 remedio determinado, sin decidir arquitectura— y **uno es B**.
+                                 La regla es que si existe algún B no se elige por cuenta
+                                 propia: se agrupa y se pregunta. Sólo hay uno, y va abajo.
+                                 **CERO hallazgos de clase C.**
+
+2  LA PREGUNTA AL OWNER          **el nivel ESTRUCTURAL y su productor.** §9.2 encadena
+                                 `estructural ◀── operativo ◀── integrado ◀── completo` con una
+                                 regla dura: un nivel no se declara por haber pasado el
+                                 anterior, **alguien tiene que producirlo**. Hoy
+                                 `gate:sistema-conforme` sólo aparece una vez en el documento
+                                 11 —su propia definición— y **ninguna fase de ninguno de los
+                                 cuatro macrocircuitos lo produce**, con lo que `O12` no es
+                                 satisfacible por ningún recorrido.
+                                 Las TRES alternativas, con su coste, están redactadas palabra
+                                 por palabra en **§13 de la adjudicación de `R`**, dentro del
+                                 documento 22. **F4 no elige ninguna, y lo dice.**
+
+3  QUÉ HAY QUE HACER DESPUÉS     con la respuesta del Owner, abrir una rama de corrección desde
+   DE LA RESPUESTA               el commit final del gate y aplicar **los 68 de clase A**,
+                                 agrupados POR CAUSA y no por línea, con las protecciones
+                                 sistémicas que `R` nombra: extender el rango inmutable de
+                                 `G-22` a los documentos 19, 20, 21 y a los manifiestos;
+                                 evaluar el bloque histórico sobre la OCURRENCIA y no sobre la
+                                 línea; contrastar `G-16` por igualdad de estado y no por
+                                 prefijo; exigir polaridad en `G-01`; extender la comparación
+                                 de CONJUNTOS más allá de `kernel/`; y fijar la excepción del
+                                 kernel por CONTENIDO y no sólo por ruta.
+                                 **Ninguna de las seis es una sustitución manual más: las seis
+                                 son la generalización de un perímetro que no generalizaba.**
+
+4  QUÉ NO HAY QUE HACER          no corregir nada antes de la respuesta del Owner al punto 2:
+                                 el B toca `O12`, que es materia suya. No reabrir `C-L.5`, que
+                                 sigue CERTIFICADA. No tocar (a), (b), `E1`, `E2`, `KERNEL.md`
+                                 ni `C1`–`C7`. No hacer merge en `redesign/kernel-2.0`.
+
+5  QUÉ LLEVAR AL OWNER           la pregunta del punto 2, y las **CATORCE** presiones de §16
+                                 —el recuento se DERIVA de las cabeceras `## \`PN-`—, con
+                                 `PN-1` bloqueando todo el estado durable y `PN-16` como la
+                                 última añadida. `R` pide además registrar sendas
+                                 anotaciones `PN` nuevas por lo que este gate descubrió:
+                                 `reconciliacion_pendiente` frente a `T22`, y la grafía
+                                 `VER:decisión` / `VER:decision`, que **ya conviven dentro
+                                 del kernel construido**.
+                                 Registrar es F4; elegir es F5.
+
+6  EL KERNEL SUSTANTIVO          no se ha tocado, y la excepción **no se reproduce aquí**: vive
+                                 en el campo `EXCEPCIÓN EXACTA DEL KERNEL` de este mismo
+                                 fichero, derivada de Git y contrastada por `G-23`.
+                                 **Se remite, no se copia**: una lista copiada envejece sola.
+
+7  ESTADO, SIN ADORNO            `F4c` sigue **ABIERTA**. `F5` sigue **NO AUTORIZADA**. No se
+                                 ha iniciado F5, ni F6, ni PesquerApp. Ninguna enmienda
+                                 normativa está redactada, `C8` no existe y `C7` no se ha
+                                 tocado. **No se ha hecho merge en `redesign/kernel-2.0`.**
+                                 **Ningún hallazgo del documento 22 está corregido.**
+
+8  DÓNDE PARAR                   ya se ha parado, y en el sitio correcto: antes de elegir por
+                                 el Owner. También sigue vigente parar antes de redactar `(g)`,
+                                 antes de crear `C8`, antes de tocar `C7` o el kernel operativo
+                                 SUSTANTIVO, y antes de iniciar PesquerApp.
+```
+
+> **[HISTÓRICO · «Siguiente acción exacta» anterior al GATE DE CERTIFICACIÓN, documento 22.
+> Se conserva para trazabilidad y NO describe el estado vigente.]**
+
+## Siguiente acción exacta — HISTÓRICA, anterior al documento 22
 
 ```text
 0  DÓNDE ESTAMOS, EXACTO         la candidata `7764cca` **está publicada** en
