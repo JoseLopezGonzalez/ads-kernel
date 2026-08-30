@@ -11,7 +11,7 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 >
 > **F4 no está certificada, y este texto ha sido CORREGIDO MUCHAS VECES: exactamente TANTAS
 > COMO BLOQUES DE CORRECCIÓN TIENE §15.8, y ésa es la única sede que lo dice.** El recuento
-> **se DERIVA de las cabeceras `###` de §15.8** —hoy diecisiete, de `D23`–`D33` a `D107`— y
+> **se DERIVA de las cabeceras `###` de §15.8** —hoy dieciocho, de `D23`–`D33` a `D108`— y
 > **este párrafo NO las enumera**: remite. **Corregido por `I-19`**, que encontró aquí NUEVE
 > con una aposición que enumeraba diez. **Y corregido otra vez por `P-03` del documento 22**,
 > que encontró DOCE con la enumeración copiada entera y **§15.8 sin bloque para `D96`–`D107`
@@ -7900,6 +7900,14 @@ NO se declara integrado un producto porque un PR se fusionara.
 Hoy la vigencia está garantizada para `T161` y **para nada más**. Ésta es la solución general,
 diseñada y **no implementada**.
 
+> **Y este capítulo tiene desde ahora una SEGUNDA procedencia, que no es `P-08`.** §11.4
+> declaró que la vigencia se comprueba contra referencias que viven **dentro del árbol
+> auditado**, y dejó ese suelo abierto. El Owner lo resolvió en **`O18`**, y su propagación
+> —**`D108`**— añade aquí **§11.6** (el SOBRE DE ANCLA, raíz documental externa de todo gate
+> de `F4c`), **§11.7** (el alcance honesto: qué queda demostrado y qué no) y **§11.8** (el
+> contrato del VERIFICADOR EXTERNO, obligatorio en `F6` y **no implementado**). **Todas ellas
+> son DERIVADAS de `O18`, y ninguna la eligió F4.**
+
 ## 11.1 · Las cuatro preguntas, que hoy se confunden
 
 ```text
@@ -8059,6 +8067,15 @@ ABIERTO, Y SE DICE        Cerrarlo exige un verificador EXTERNO al repositorio, 
                           comprobación interna, que sólo movería la circularidad de sitio.
 ```
 
+**Y ese suelo ya tiene resolución del Owner, que NO la eligió F4.** El SEGUNDO GATE DE
+CERTIFICACIÓN —documento 23— llevó esta frase al Owner como su única clase `B`, y `O18`
+respondió en dos tramos: **(b) el SOBRE DE ANCLA**, raíz documental externa para cerrar
+`F4c`, cuya sede es **§11.6**; y **(c) el VERIFICADOR EXTERNO REAL**, obligatorio en `F6`,
+cuyo contrato queda registrado en **§11.8**. **Este párrafo no declara superado nada de lo de
+arriba**: la circularidad sigue reducida a un punto declarado, y **§11.7 dice exactamente qué
+queda demostrado y qué no**. Lo que cambia es que el suelo deja de estar sólo declarado y pasa
+a tener fase, propietario y prueba.
+
 ## 11.5 · Los escenarios negativos que exige
 
 **Cada uno comprueba EL DIAGNÓSTICO, no sólo que el proceso terminara con código distinto de
@@ -8080,6 +8097,435 @@ validador que detecta. Es la disciplina que `N158i`–`N158o` ya impusieron al a
 | `NP-11` | un **artefacto GENERADO** desincronizado del corpus que describe | se detecta **y se nombra**. Los dos generadores llevan huella semántica igual que las trece evidencias (hallazgo `N-10`) |
 
 **Y las nueve que ya existen para `vigencia`** siguen en pie, sin cambio.
+
+## 11.6 · EL SOBRE DE ANCLA — la raíz documental externa de todo gate de `F4c`
+
+> **TODO LO DE ESTA SECCIÓN ES DERIVADO DE `O18`, VÍA `D108`. Nada de ello lo eligió F4.**
+> La pregunta la formuló el **SEGUNDO GATE DE CERTIFICACIÓN** —documento 23— como su única
+> clase `B`, con tres alternativas redactadas palabra por palabra, y **no era un hallazgo:
+> era la raíz** de tres insuficiencias consecutivas. **El Owner rechazó expresamente la (a)**
+> —retirar la garantía y aceptar que una alteración deliberada sea indetectable—, **adoptó la
+> (b) para cerrar `F4c` declarándola TRANSITORIA y EXPLÍCITAMENTE LIMITADA**, y **fijó la (c)
+> —verificador externo real— como OBLIGATORIA en `F6`**. `O18` está íntegra en
+> [`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md) §2, y su
+> propagación es `D108`, §1. **Lo único que F4 aporta aquí es el reparto de la elección (b)
+> por las sedes vigentes**, y por eso esta sección se declara derivada y no decidida.
+>
+> **El vacío que cierra, y quién lo había declarado ya:** §11.4 escribió «*si el runner
+> miente, nada dentro del repositorio lo detecta*» y lo dejó abierto. La verificación se
+> anclaba en referencias que viven **dentro del árbol que audita** —`HEAD`, la revisión base,
+> `kernel/.upstream-hash`, el propio README de la batería—, y quien puede escribir el árbol
+> puede escribir la referencia. **La razón de que se resuelva por CAMBIO DE RAÍZ y no por otra
+> comprobación interna es de `O18`**: una capa más de comprobación dentro del mismo árbol
+> mueve la circularidad de sitio y no la reduce. **Por eso esta sede NO añade ninguna
+> protección interna nueva.**
+>
+> **Y no declara SUPERADO nada.** `M-04` no se cierra aquí: §11.7 dice, sin adorno, qué queda
+> demostrado y qué no, y §11.8 registra lo que falta y en qué fase vive.
+
+**SEDE ÚNICA.** Ésta es la sede del SOBRE DE ANCLA: `C-L.5` —la condición de cobertura,
+certificada y vigente para todo gate posterior— **lo invoca y no lo reescribe**, y cualquier
+encargo de gate **remite aquí** en vez de copiarlo. El sobre es **requisito de TODO gate de
+`F4c`**, no de uno.
+
+```text
+QUÉ ES             un documento que el coordinador emite y entrega **a cada revisor DENTRO
+                   DE SU ENCARGO**, con la identidad exacta del árbol que se le manda
+                   analizar y con las huellas contra las que tiene que comprobarlo
+QUIÉN LO EMITE     el **COORDINADOR** del gate, y responde de él con su identidad
+CUÁNDO             **ANTES de que el revisor empiece a leer**, y **DESPUÉS** de que el
+                   manifiesto previo de asignación esté commiteado. El orden no es
+                   decorativo: un sobre emitido después de que el revisor empiece no ancla
+                   nada, porque ya no puede distinguir lo encargado de lo leído
+POR QUÉ CANAL      **por un canal EXTERNO al repositorio que se audita.** Viaja en el
+                   encargo, no en el árbol. **No se obtiene leyendo el repositorio**, y un
+                   sobre que se pueda reconstruir desde el árbol auditado no es un sobre:
+                   es una copia de lo que el árbol dice de sí mismo
+QUÉ AÑADE          una referencia que **el árbol NO puede redefinir unilateralmente durante
+                   el gate**; la detección de que el árbol auditado no es el encargado; y la
+                   detección de que el manifiesto fue sustituido después del reparto
+QUÉ NO ES          **no es una comprobación más de la batería** —vive fuera de ella—, no es
+                   una firma, no es una prueba de identidad y no es un verificador externo.
+                   El verificador externo es §11.8 y es `F6`
+```
+
+**LOS CAMPOS DEL SOBRE.** El bloque los enumera uno a uno y **su cardinal no se escribe en
+ningún titular de esta sección**: se DERIVA contando las entradas numeradas de abajo —regla
+de §0 sobre titulares de enumeración—. **Un sobre al que le falte cualquiera de ellos no es
+un sobre incompleto: no es un sobre**, y el gate que lo acepte es inválido por §11.6.
+
+```text
+ 1 REPOSITORIO          el repositorio auditado, por su identificador remoto completo
+ 2 REFERENCIA REMOTA    la referencia remota bajo la que vive el árbol que se encarga
+   DE LA CANDIDATA      —rama o etiqueta—, escrita entera y sin abreviar
+ 3 SHA DEL COMMIT       el SHA **COMPLETO** del commit candidato. Nunca abreviado: un
+   CANDIDATO            prefijo no identifica un commit, lo sugiere
+ 4 SHA DEL ÁRBOL GIT    el `tree` SHA de ese commit. Es lo que distingue «el mismo contenido»
+                        de «el mismo commit», y son preguntas distintas
+ 5 REFERENCIA REMOTA    la referencia remota bajo la que se publica el gate
+   DEL GATE
+ 6 SHA DEL COMMIT DEL   el SHA del commit que CONTIENE el manifiesto previo de asignación, que
+   MANIFIESTO PREVIO    se commitea **solo y antes de que exista ningún revisor** (`C-L.5`)
+ 7 RUTA DEL MANIFIESTO  la ruta exacta del manifiesto previo dentro de ese commit
+ 8 SHA-256 DEL          la huella del fichero del manifiesto, para que el revisor pueda
+   MANIFIESTO           recalcularla y no tenga que creerse la que el árbol le enseñe
+ 9 SHA-256 DEL          la huella del programa que DERIVA el universo obligatorio. Sin ella,
+   DERIVADOR            rederivar comprueba el resultado de un derivador que pudo cambiar
+10 DIGEST DEL UNIVERSO  el digest del universo obligatorio YA DERIVADO, con el que se compara
+   OBLIGATORIO          la rederivación del revisor
+11 NÚMERO DE FUENTES    cuántas fuentes componen ese universo obligatorio
+12 NÚMERO DE            cuántas asignaciones publica el manifiesto previo
+   ASIGNACIONES
+13 FECHA Y HORA         de EMISIÓN del sobre, que es lo que permite ordenarlo respecto de la
+   DE EMISIÓN           creación de los revisores
+14 IDENTIDAD DEL        quién lo emite, nombrado. El ancla de (b) **es esa identidad**, y
+   COORDINADOR          `O18` lo dice sin adorno: no hay forma mecánica de comprobarla
+
+Y LAS DECLARACIONES que acompañan a los campos, sin las cuales el sobre no vale:
+
+ · IDENTIFICACIÓN DE   el sobre NOMBRA `O18` como su fuente, para que el revisor sepa bajo
+   `O18`               qué resolución se le entrega y con qué alcance —§11.7—
+ · ENTREGA PREVIA      el sobre DECLARA que fue entregado **antes de comenzar la lectura**.
+                       Es la declaración que el adjudicador contrasta contra el orden de los
+                       hechos, y la que un sobre reconstruido a posteriori no puede sostener
+```
+
+**LAS OBLIGACIONES DEL REVISOR, EN ORDEN, Y TODAS ANTES DE LEER CONTENIDO SEMÁNTICO.** No es
+un preámbulo recomendado: es la condición de que su lectura signifique algo. Leer primero y
+comprobar después produce un dictamen sobre un árbol que nadie sabía cuál era.
+
+```text
+1 TRANSCRIBIR      **literalmente**, dentro de su dictamen, el sobre que RECIBIÓ. Literalmente
+                   significa campo a campo y sin normalizar: un sobre resumido ya no permite
+                   contrastarlo con el de los demás revisores
+2 RESOLVER         la referencia remota con **`git ls-remote`**, contra el repositorio del
+                   campo 1 — no contra su clon local, que es parte de lo que se comprueba
+3 COMPROBAR EL     que el SHA que la referencia resuelve es **el del campo 3**, completo
+  COMMIT
+4 COMPROBAR EL     que el `tree` SHA del commit es **el del campo 4**
+  ÁRBOL
+5 RECALCULAR       el **SHA-256 del manifiesto previo** de la ruta del campo 7, y contrastarlo
+                   con el campo 8
+6 RECALCULAR       el **SHA-256 del derivador**, y contrastarlo con el campo 9
+7 REDERIVAR        el **universo obligatorio**, ejecutando el derivador cuya huella acaba de
+                   comprobar, y obtener su digest, su número de fuentes y su número de
+                   asignaciones
+8 COMPARAR         **TODO** lo recalculado contra el sobre, campo a campo, y publicar la
+                   comparación — no su conclusión
+9 FALLAR CERRADO   **ante CUALQUIER diferencia**, por pequeña que sea y aunque el contenido
+                   parezca el mismo: se detiene, se NOMBRA el campo que difiere y **no se
+                   emite dictamen de contenido**. Una diferencia no explicada no se resuelve
+                   leyendo más
+10 INCLUIR         el resultado **dentro de su MANIFIESTO DE LECTURA**, que es donde el
+                   adjudicador lo encuentra. Un revisor que comprueba y no lo declara deja al
+                   adjudicador sin nada que cruzar
+```
+
+**LAS OBLIGACIONES DEL ADJUDICADOR.** El adjudicador no hereda la comprobación de los
+revisores: la repite.
+
+```text
+RECIBIR            los sobres que **CADA revisor declara** haber recibido, transcritos en su
+                   manifiesto de lectura
+COMPROBAR QUE      entre sí, campo a campo. **Sobres distintos entre revisores significan que
+SEAN IDÉNTICOS     no leyeron el mismo encargo**, y eso invalida el gate aunque los dos
+                   árboles existan y los dos dictámenes coincidan
+VERIFICAR POR SU   resolver la referencia, comprobar commit y árbol, recalcular las dos
+CUENTA             huellas y rederivar el universo **él mismo**. Aceptar los cálculos de los
+                   revisores es adjudicar sobre la palabra de quien se juzga
+DECLARAR INVÁLIDO  **ante CUALQUIER diferencia**: entre sobres, entre sobre y árbol, o entre
+EL GATE            sobre y rederivación. **INVÁLIDO no es «insuficiente»**: un gate inválido
+                   no produce veredicto, ni a favor ni en contra
+NO ACEPTAR UN      un sobre que se reconstruye **desde el propio árbol auditado** no ancla
+SOBRE RECONSTRUIDO nada: repite lo que el árbol dice de sí mismo, que es exactamente la raíz
+A POSTERIORI       que `O18` existe para cambiar
+NO ACEPTAR QUE EL  un sobre emitido o modificado **después de crear los revisores** no puede
+COORDINADOR LO     distinguir lo encargado de lo encontrado. Si hubo que reemitirlo, **se
+CAMBIE DESPUÉS DE  emite uno NUEVO con su motivo y se REPARTE otra vez desde el principio**,
+CREAR REVISORES    igual que `C-L.5` exige para reasignar: no se edita el anterior
+```
+
+**LO QUE EL SOBRE NO SUSTITUYE, y se dice para que nadie lo presente como sustituto.**
+
+```text
+NO SUSTITUYE       el **MANIFIESTO PREVIO DE ASIGNACIÓN**, que se sigue commiteando **solo y
+                   antes de crear ningún revisor** (`C-L.5`)
+NO SUSTITUYE       los **MANIFIESTOS DE LECTURA** de cada revisor
+NO SUSTITUYE       la resta **`OBLIGATORIO − ASIGNADO`**, con su regla y su comando auditable
+NO SUSTITUYE       la resta **`ASIGNADO − LEÍDO`**, que es la que excluye la suficiencia
+NO SUSTITUYE       la **REVISIÓN INDEPENDIENTE** ni la **ADJUDICACIÓN CONTRA LAS FUENTES**
+QUÉ ES ENTONCES    **su RAÍZ DOCUMENTAL EXTERNA, no su reemplazo.** Todo lo anterior sigue
+                   entero; lo que cambia es contra qué se comprueba que el árbol sobre el que
+                   se hizo era el encargado
+```
+
+### Tabla adversarial del SOBRE DE ANCLA
+
+**No son filas de la tabla adversarial de §2.6.7, ni de las `X-A`–`X-H` de §2.9, ni de las
+`X-S` de la FASE 0 de §9.6**: llevan familia propia, `X-O`, por la resolución de la que
+derivan. Son **contrato de prueba** igual que aquéllas, **ninguna se ha ejecutado**, y su
+cardinal lo deriva esta tabla y no lo escribe ningún titular. Escribir el contrato de una
+prueba no es la prueba.
+
+| | escenario adversarial | resultado exigido |
+|---|---|---|
+| `X-O1` | el coordinador **RECONSTRUYE el sobre a posteriori desde el propio árbol auditado** y se lo entrega al adjudicador como si lo hubiera emitido antes | **FALLA, y el gate es INVÁLIDO.** Un sobre derivado del árbol que se audita no es una raíz externa: repite lo que el árbol afirma de sí mismo. `O18` lo prohíbe expresamente, y el adjudicador tiene la obligación de no aceptarlo |
+| `X-O2` | el coordinador **CAMBIA el sobre después de haber creado los revisores** —corrige un campo, actualiza el commit, reemite «la versión buena»— | **FALLA, y el gate es INVÁLIDO.** El sobre posterior a la creación de revisores no distingue lo encargado de lo encontrado. La única salida es emitir uno NUEVO con su motivo y **repartir otra vez desde el principio** |
+| `X-O3` | **dos revisores transcriben sobres DISTINTOS** —distinto commit, distinto `tree`, distinto SHA-256 del manifiesto o distinto digest del universo— | **FALLA, y el gate es INVÁLIDO**, nombrando el campo que difiere. No leyeron el mismo encargo, y que sus dictámenes coincidan no lo repara: coincidir sobre objetos distintos no es acuerdo |
+| `X-O4` | un revisor **empieza a leer contenido semántico antes de verificar el sobre**, y verifica al final «porque igualmente coincidió» | **FALLA.** La verificación es PRECONDICIÓN, no un trámite de cierre: un dictamen escrito sobre un árbol cuya identidad no estaba comprobada no se rehabilita comprobándola después |
+| `X-O5` | un revisor encuentra **UNA diferencia** —un campo, un dígito— y continúa el gate anotándola como observación menor | **FALLA CERRADO.** Cualquier diferencia detiene la lectura y se NOMBRA; no se pondera, no se promedia y no se compensa con el resto de campos coincidentes |
+| `X-O6` | el sobre **omite un campo** —típicamente el SHA-256 del derivador o el digest del universo— y el gate se celebra igual | **FALLA.** Sin la huella del derivador, rederivar comprueba la salida de un programa que pudo cambiar; sin el digest, no hay contra qué comparar la rederivación. Un sobre incompleto no es un sobre |
+| `X-O7` | el adjudicador **da por buenos los cálculos de los revisores** en vez de repetirlos | **FALLA.** Adjudicar sobre la palabra de quien se juzga es la circularidad que `O18` viene a cambiar de raíz, movida un escalón arriba |
+| `X-O8` | se presenta el sobre como prueba de que **el corpus no fue alterado por quien tiene credenciales** | **FALLA por §11.7**, que es la sede del alcance: el sobre demuestra IDENTIDAD DE LA CANDIDATA, no resistencia a un actor privilegiado. Afirmar más de lo que protege es el defecto que tres gates consecutivos han castigado |
+
+### Trabajo futuro que el SOBRE DE ANCLA no puede hacer desde aquí, con propietario, fase y prueba
+
+**`O18` se propaga aquí como DOCUMENTO, que es lo que F4 alcanza.** Lo que exige tocar
+instrumental o `kernel/` **no se aplica**: se registra, con propietario, fase y prueba.
+
+```text
+EL EMISOR DEL SOBRE,  PROPIETARIO **`PLT`**, que posee el tooling · FASE **ya, para el
+MATERIALIZADO         PRÓXIMO gate de `F4c`**, porque sin emisor no hay sobre y sin sobre el
+                      gate no cumple `O18`. Su sede es el instrumental de
+                      `docs/evolucion/verificacion/`, y **sólo entra en el corpus gobernado
+                      si el README de ese directorio lo ENUMERA** —regla vigente, que `G-29`
+                      comprueba: un instrumento sin declarar es una ampliación sin
+                      clasificar—. **F4 no lo escribe.** PRUEBA POSTERIOR: emitir un sobre y
+                      que un revisor reproduzca commit, árbol, las dos huellas y el digest
+                      del universo **sin leer del árbol auditado ningún campo del sobre**
+
+EL SOBRE COMO PARTE   PROPIETARIO **`SIS`** · FASE **F6** · hoy el sobre vive en este
+DEL CONTRATO DE GATE  documento y en los encargos; **`kernel/` no declara ningún contrato de
+EN EL KERNEL          gate documental que lo exija**, y **F4 no toca `kernel/`** —§19—.
+                      PRUEBA POSTERIOR: un barrido que exija que **todo encargo de gate
+                      publicado lleve sobre**, con sus campos completos, y que **FALLA HOY**
+
+LA SUSTITUCIÓN DE     PROPIETARIO **`SIS`** define y **`PLT`** construye · FASE **F6**,
+(b) POR (c)           obligatoria · §11.8 tiene el contrato. **Mientras no exista, el ancla
+                      es la identidad del coordinador**, y §11.7 lo dice sin adorno.
+                      PRUEBA POSTERIOR: que un gate posterior a la existencia del verificador
+                      externo **no se apoye ya** en esa identidad para afirmar la identidad de
+                      la candidata, y que su atestación venga vinculada al commit y al `tree`
+                      SHA **desde fuera del árbol**. **FALLA HOY, y tiene que fallar**
+
+LO QUE NO SE HACE     **ninguna protección interna nueva.** `O18` resuelve que lo que faltaba
+AQUÍ, Y ES            es un CAMBIO DE RAÍZ DE CONFIANZA, no otra comprobación dentro del
+DELIBERADO            árbol: añadirla movería la circularidad de sitio, que es exactamente lo
+                      que §11.4 lleva declarando desde que se escribió
+```
+
+## 11.7 · EL ALCANCE HONESTO — las afirmaciones que NO son la misma, y que el gate siguiente tiene que poder distinguir
+
+> **DERIVADO DE `O18`, VÍA `D108`. No lo eligió F4.** `O18` adopta (b) **declarándola
+> TRANSITORIA Y EXPLÍCITAMENTE LIMITADA** y ordena que la limitación residual **se declare
+> expresamente**. Esta sección es esa declaración, y **está escrita sin adorno a propósito**:
+> el corpus lleva tres gates consecutivos castigando exactamente el defecto contrario —una
+> garantía presentada como más fuerte de lo que es—, y esta sede existe para no repetirlo.
+
+**Son afirmaciones DISTINTAS** —`A`, `B` y `C`, cada una con su sujeto, su prueba y su
+estado—, y el defecto histórico es que se leían como una sola. **El cardinal no se escribe
+aquí**: lo deriva el bloque de abajo, que es quien las enumera —regla de §0—.
+
+```text
+A · COHERENCIA         QUÉ AFIRMA  que el corpus es coherente con sus propios contratos
+    INTERNA            QUIÉN LO    la batería interna, ejecutada dentro del árbol auditado
+                       DEMUESTRA
+                       ESTADO      **implementada**, y con su límite dicho en §11.4: quien
+                                   puede escribir el árbol puede escribir sus referencias
+
+B · IDENTIDAD DE       QUÉ AFIRMA  que lo analizado fue **exactamente** el commit, el árbol,
+    LA CANDIDATA                   el manifiesto y el universo **encargados**, y no otros
+                       QUIÉN LO    el SOBRE DE ANCLA de §11.6, entregado por un canal externo
+                       DEMUESTRA   al repositorio antes de empezar a leer
+                       ESTADO      **implementada por (b) de `O18`**, y **transitoria**: su
+                                   ancla es la identidad del coordinador, y no hay forma
+                                   mecánica de comprobarla. `O18` lo dice con esas palabras
+
+C · RESISTENCIA A UN   QUÉ AFIRMARÍA  que una alteración deliberada hecha por quien tiene
+    ACTOR PRIVILEGIADO                privilegio sobre el repositorio es DETECTABLE
+                       ESTADO         **NO IMPLEMENTADA.** No la entrega (b), no la entrega
+                                      la batería y no la entrega esta fase
+                       DÓNDE VIVE     **CONTRATO OBLIGATORIO DE `F6`**, §11.8, y `O18` lo
+                                      hace **condición previa** a la adopción permanente de
+                                      PesquerApp, a declarar ADS operativo y a certificar
+                                      cualquier adaptador
+```
+
+**LO QUE (b) NO PROTEGE, ENUMERADO — literal de `O18`, y no se recorta.**
+
+```text
+· compromiso del CANAL DEL OWNER
+· compromiso SIMULTÁNEO del repositorio y del coordinador
+· ROBO DE CREDENCIALES
+· REESCRITURA AUTORIZADA de ramas remotas
+· MANIPULACIÓN del ejecutor externo
+· FALSIFICACIÓN DE IDENTIDAD
+
+ESOS RIESGOS PERTENECEN AL VERIFICADOR EXTERNO DE `F6` —§11.8—, y ninguno se cierra
+escribiendo otra comprobación dentro del árbol auditado. `O18` resuelve que lo que falta es
+un **cambio de raíz de confianza**, no una protección interna más
+```
+
+**PROHIBIDO AFIRMAR MÁS DE LO QUE SE PROTEGE.** Ninguna sede de este documento, ningún
+encargo de gate y ningún dictamen puede presentar (b) como resistencia a un actor
+privilegiado, como firma, como prueba de identidad ni como verificación externa. **Un texto
+que lo haga es el defecto**, y `X-O8` de §11.6 es su prueba adversarial.
+
+### La condición bajo la que `M-04` PUEDE cerrarse **para el alcance de `F4c`**
+
+**No se declara cerrado aquí, y esta sede no puede cerrarlo**: quien aplica una corrección no
+certifica su propio alcance, y el estado de `M-04` lo fija el gate independiente que lo juzgue.
+Lo que se escribe aquí es **la condición**, entera, para que ese gate tenga contra qué medirla.
+
+```text
+BATERÍA INTERNA        la batería interna, ejecutada, **coherente** y sin comprobación
+COHERENTE              amputada — afirmación `A`, con el límite de §11.4 dicho y no tapado
+SOBRE EXTERNO          un SOBRE DE ANCLA emitido por el coordinador y **recibido por cada
+RECIBIDO ANTES DE      revisor ANTES de empezar a leer**, con los campos que §11.6 enumera
+LEER
+TODAS SUS HUELLAS      commit, árbol, SHA-256 del manifiesto, SHA-256 del derivador y digest
+COINCIDENTES           del universo: **todas**, recalculadas por el revisor y repetidas por
+                       el adjudicador. Una sola diferencia lo impide
+REFERENCIAS REMOTAS    las referencias remotas de la candidata y del gate, **intactas** entre
+INTACTAS               la emisión del sobre y la adjudicación
+COBERTURA COMPLETA     la de `C-L.5`, con sus dos manifiestos y sus dos restas, sin merma:
+                       el sobre **no la sustituye**
+NINGUNA PROMESA        que ni el dictamen, ni la batería, ni este documento afirmen una
+SUPERIOR A LA          seguridad **superior a la realmente entregada**. Esta condición es
+REALMENTE ENTREGADA    tan dura como las otras: un cierre que se apoye en una promesa inflada
+                       no es un cierre, y (c) sigue siendo obligatoria en `F6` con
+                       independencia de que `F4c` cierre
+```
+
+## 11.8 · EL CONTRATO DEL VERIFICADOR EXTERNO DEL CONTROL REPO — registrado COMPLETO para `F6`, y **NO implementado**
+
+> **DERIVADO DE `O18`, VÍA `D108`. No lo eligió F4, y F4 no lo construye.** `O18` fija (c)
+> —«commits firmados, refs protegidas y ejecución de la batería fuera del repositorio, con
+> identidad propia, cuyo resultado no se escribe en el árbol»— como **OBLIGATORIA en `F6`** y
+> como **CONDICIÓN PREVIA** a la adopción permanente de PesquerApp. Aquí queda **registrado
+> con la forma que este documento usa para los contratos de fase futura**: entradas,
+> mecanismo, reparto, condiciones duras, pruebas y condición de cierre. **Nada de esto está
+> construido, y escribir el contrato de una prueba no es la prueba.**
+>
+> **Por qué se difiere y no se exige dentro de `F4c`, con la razón del Owner y no con una
+> propia:** exigir la infraestructura de (c) antes de cerrar `F4c` produce un **bloqueo
+> circular** que el Owner declara inaceptable — `F4c` bloquea `F5`, `F5` precede a `F6`, `F6`
+> construiría el verificador, y `F4c` quedaría abierta hasta que `F6` lo construyera.
+> **`O18` no autoriza iniciar `F5`, ni `F6`, ni PesquerApp**, y esta sede tampoco.
+
+```text
+CONTRATO             `verificador-externo-del-control-repo`
+QUÉ AFIRMARÍA        que la batería y las huellas del corpus se ejecutaron y comprobaron
+                     **desde fuera del árbol auditado**, por una identidad que no es la que
+                     escribe ese árbol, sobre un commit nombrado por su SHA
+QUÉ SUSTITUYE        la confianza DOCUMENTAL de (b) —§11.6— por verificación **mecánica**
+                     externa. Mientras no exista, (b) es la raíz, y §11.7 dice su alcance
+
+--- LO QUE EL CONTRATO EXIGE, COMO MÍNIMO ---
+
+EJECUCIÓN FUERA      la batería corre **en un entorno que el repositorio auditado no
+DEL REPOSITORIO      controla**, y no como un paso publicado dentro de él
+AUDITADO
+IDENTIDAD TÉCNICA    el verificador tiene **identidad propia**, distinta de la de cualquier
+PROPIA               agente que escriba el corpus
+CREDENCIALES         sus credenciales son **separadas**, con alcance mínimo y sin permiso de
+SEPARADAS            escritura sobre lo que verifica
+COMMITS FIRMADOS     los commits del corpus llevan **firma verificable**, o un mecanismo
+O EQUIVALENTE        equivalente y **comprobable por un tercero** — no una afirmación de
+VERIFICABLE          autoría escrita en el propio commit
+PROTECCIÓN DE RAMAS  las referencias de la candidata y del gate quedan **protegidas**, y su
+Y REFERENCIAS        historial de movimiento es consultable
+`FORCE PUSH`         **prohibido** sobre las referencias protegidas, y **DETECTADO** cuando
+PROHIBIDO Y          ocurra: prohibir sin detectar es una política, no un control
+DETECTADO
+ANCESTRY Y           el commit verificado es **descendiente** del verificado anteriormente, y
+FAST-FORWARD         el avance de la referencia es **fast-forward**. Un salto lateral no es
+                     una actualización: es otra historia
+DESCARGA POR SHA     el verificador obtiene el commit **por su SHA**, no por el nombre de una
+                     rama que alguien puede mover mientras él trabaja
+ENTORNO EXTERNO      la batería se ejecuta desde un **entorno limpio**, construido de nuevo,
+LIMPIO               sin estado heredado de ejecuciones anteriores ni de la máquina del autor
+VERIFICACIÓN DE      **kernel, contratos, validadores y manifiestos**, cada uno por su huella,
+HASHES               recalculada en ese entorno externo y no leída del árbol
+RESULTADO Y          el veredicto y sus evidencias se almacenan **FUERA del árbol auditado**.
+EVIDENCIAS FUERA     Un resultado escrito dentro de lo que verifica vuelve a ponerlo al
+DEL ÁRBOL            alcance de quien puede escribir el árbol, que es la raíz que (c) cambia
+ATESTACIÓN           la atestación queda **vinculada al SHA del commit y al `tree` SHA**, y
+VINCULADA            no a un nombre de rama, a una fecha ni a un número de ejecución
+REVOCACIÓN Y         política escrita de **revocación y rotación de credenciales**, con quién
+ROTACIÓN             la ejecuta y en cuánto tiempo
+SEPARACIÓN DE        **ningún actor puede modificar a la vez el CORPUS, la BATERÍA y el
+PODERES              RESULTADO.** Es el requisito que da sentido a todos los anteriores: sin
+                     él, cada uno se elude por el mismo camino
+RECUPERACIÓN         procedimiento escrito para **qué se hace cuando el verificador falla, se
+                     pierde o queda comprometido**, sin que la ausencia de veredicto se lea
+                     como veredicto favorable
+PRUEBAS NEGATIVAS    contra **manipulación**, y cada una con su control en verde y su mutante
+DE MANIPULACIÓN      en rojo: corpus alterado tras la atestación · referencia reescrita con
+                     `force` · batería amputada en el entorno externo · resultado editado
+                     dentro del árbol · commit sin firma válida · credencial revocada que
+                     sigue produciendo veredictos. **Una prueba que no distinga el control
+                     del mutante no prueba nada**
+
+--- EL REPARTO, LITERAL DE `O18` ---
+
+`SIS`                **define el CONTRATO de conformidad**
+`PLT`                **construye y opera la maquinaria externa**
+`VER`                **produce el dosier independiente**
+`SEG`                **gobierna credenciales, bloqueo y fallos de confianza**
+EL OWNER             **conserva la AUTORIDAD de aceptar o rechazar la raíz externa.** No la
+                     delega en `SIS`, ni en `PLT`, ni en `VER`, ni en `SEG`
+Y UNA PROHIBICIÓN    **CI o el ejecutor externo NO puede compartir la misma identidad de
+DE IDENTIDAD         escritura del runtime ADS.** Compartirla devuelve el poder de escribir
+                     corpus y resultado al mismo actor, y con eso el verificador externo
+                     deja de serlo aunque corra en otra máquina
+
+--- LAS CONDICIONES DURAS, QUE NO SON RECOMENDACIONES ---
+
+ANTES DE PesquerApp  construido **y PROBADO** antes de la **adopción permanente** de
+                     PesquerApp. `O15` fija que esa adopción será REAL, PERMANENTE y
+                     COMPLETA; `O18` le añade esta precondición, y **no la deroga**
+ANTES DE DECLARAR    antes de declarar **ADS operativo**
+ADS OPERATIVO
+ANTES DE CERTIFICAR  antes de certificar **cualquier adaptador**
+UN ADAPTADOR
+NO SUSTITUIBLE POR   **no puede sustituirse por un script alojado ÚNICAMENTE dentro del mismo
+UN SCRIPT INTERNO    repositorio.** Un verificador que vive donde vive lo verificado no es
+                     externo, por muy bien escrito que esté
+NO PUEDE GUARDAR SU  **no puede guardar su ÚNICA evidencia dentro del árbol que verifica.**
+ÚNICA EVIDENCIA      Publicar una copia dentro es admisible; que la copia de dentro sea la
+DENTRO               única no lo es
+
+--- PROPIETARIO, EJECUTOR, AUTORIDAD, FASE Y CIERRE ---
+
+PROPIETARIO          **`SIS`**, que define el contrato de conformidad
+EJECUTOR             **`PLT`**, que construye y opera la maquinaria externa, con **`VER`**
+                     produciendo el dosier independiente y **`SEG`** gobernando credenciales,
+                     bloqueo y fallos de confianza
+AUTORIDAD            **el Owner**: acepta o rechaza la raíz externa, y esa autoridad no se
+                     delega
+FASE                 **`F6`**, y **OBLIGATORIA**: no es una mejora opcional del plan
+CONDICIÓN DE CIERRE  que un commit del control repo pueda ser verificado **por una identidad
+                     que no puede escribirlo**, con su atestación vinculada al commit y al
+                     `tree` SHA, con su evidencia **fuera** del árbol, y con las pruebas
+                     negativas de manipulación **ejecutadas** y en rojo sobre sus mutantes.
+                     Mientras eso no exista, la afirmación `C` de §11.7 sigue **NO
+                     IMPLEMENTADA**, y decirlo es parte del contrato
+QUÉ NO SE HACE AQUÍ  **F4 no construye nada de esto**: no toca `kernel/`, no crea
+                     credenciales, no configura protección de referencias y no escribe el
+                     ejecutor. Lo que se cierra aquí es el **contrato**, y lo que se declara
+                     es que **hoy no existe**
+```
+
+**LA PRESIÓN QUE ESTO LEVANTA, REGISTRADA Y NO RESUELTA.** El contrato exige, sobre material
+**APROBADO**, una identidad de escritura separada y una evidencia que vive fuera del árbol, y
+**ninguna sede aprobada las contempla**. **F4 no elige la enmienda**: queda registrada como
+**`PN-19`** en §16, con sus fuentes enfrentadas, su texto vigente, su materia mínima, su
+propietario, su fase, su prueba posterior, qué bloquea, qué no bloquea y su condición de
+reversión. **`PN-11` no la cubre y no se reescribe ni se renumera**: aquélla pregunta **qué
+sede gobierna** el Git del control repo —y `O16` ya la respondió: `(g)` y un `C8` derivado—,
+y ésta pregunta **qué tiene que decir esa norma** para que exista un verificador que el
+repositorio no pueda escribir.
 
 ---
 
@@ -8354,6 +8800,7 @@ PRESIÓN F5     exige enmienda de material aprobado antes de construirse
 | `O15` la adopción de PesquerApp es PERMANENTE | §8.2 · §18 · §19 | NUEVA · revisa `O14` · DEFERIDA a F6 |
 | `O16` la sede del gobierno Git del control repo | §16 `PN-11` · §10 | NUEVA · **PRESIÓN F5** · con el ADDENDUM DE CRONOLOGÍA de `D106`(iii). **Fila añadida por `P-26`** |
 | `O17` el nivel ESTRUCTURAL y su productor | **§9.6** · §9.2 · §9.4 · §8.1 · §8.2 · §8.3 · §8.4 · §18 | NUEVA · **hace satisfacible `O12`** · propagada por `D107`, **derivada y no elegida por F4** |
+| `O18` la raíz de confianza de la verificación | **§11.6** · **§11.7** · **§11.8** · §11.4 · `C-L.5` · §16 `PN-19` | NUEVA · (a) **RECHAZADA** por el Owner · (b) ADOPTADA y **TRANSITORIA** para `F4c` · (c) **OBLIGATORIA en `F6`** y previa a PesquerApp · propagada por `D108`, **derivada y no elegida por F4** |
 | `P-01` adaptador sin contrato | §6 | NUEVA |
 | `P-02` conocimiento externo | §13.3 | AMPLIADA |
 | `P-03` calidad por área | §5 | NUEVA |
@@ -8719,6 +9166,24 @@ invalidación. **La sede de todo ello es §9.6**, y §8.1–§8.4, §9.2, §9.4 
 alternativas (a) y (c) **las descartó el Owner**, no F4. `D1`–`D106` y `O1`–`O16` conservan
 íntegro su texto, y **nada se renumera**.
 
+### `D108` · la propagación de `O18` — DERIVADA de una resolución del Owner, NO elegida por F4
+
+El **SEGUNDO GATE DE CERTIFICACIÓN** —documento 23— devolvió su única clase `B`, que **no era
+un hallazgo: era la raíz** de tres insuficiencias consecutivas —la verificación se anclaba en
+referencias internas al árbol auditado, que §11.4 ya había declarado—. El Owner resolvió, y su
+resolución es **`O18`**, íntegra en la sección 2 del registro: **(a) RECHAZADA expresamente**,
+**(b) ANCLA DOCUMENTAL EXTERNA adoptada para cerrar `F4c` y declarada TRANSITORIA**, **(c)
+VERIFICADOR EXTERNO REAL obligatorio en `F6`** y previo a la adopción permanente de
+PesquerApp. `D108` es **su propagación, y se declara DERIVADA**: el **SOBRE DE ANCLA** pasa a
+ser requisito de todo gate de `F4c` —**sede §11.6**, con las obligaciones del revisor, las del
+adjudicador y lo que el sobre NO sustituye—; el **alcance honesto** distingue coherencia
+interna, identidad de la candidata y resistencia a un actor privilegiado —**sede §11.7**, con
+lo que (b) no protege, enumerado—; y el **CONTRATO DEL VERIFICADOR EXTERNO DEL CONTROL REPO**
+queda registrado completo y sin implementar —**sede §11.8**—, con la presión que levanta sobre
+material aprobado en `PN-19`. **F4 no eligió ninguna de las tres alternativas y no amplía
+ninguna**: aporta el reparto por las sedes vigentes. `D1`–`D107` y `O1`–`O17` conservan íntegro
+su texto, **nada se renumera**, y **ningún hallazgo se declara SUPERADO aquí**.
+
 ---
 
 # 16 · Presiones normativas para F5
@@ -8732,7 +9197,7 @@ sigue llamándose `PN-4` aunque esté retirada, porque renumerar rompería la tr
 que ya se llevó al Owner. De aquellas cinco resultan **TRES vigentes** —`PN-1`, `PN-2`,
 `PN-3`—, una retirada (`PN-4`) y una fusionada (`PN-5`): 3 + 1 + 1 = 5, y la cuenta cierra.
 **Corregido por `m2`**: decía «cuatro vigentes, una retirada y una fusionada» sobre cinco, que
-suma seis. Las demás vigentes —**`PN-6` a `PN-18`**— son posteriores, y el total está abajo.
+suma seis. Las demás vigentes —**`PN-6` a `PN-19`**— son posteriores, y el total está abajo.
 **Corregido por `I-11`**: decía «`PN-6` a `PN-12`», que con las tres primeras suma DIEZ
 mientras el total decía ONCE, y omitía precisamente `PN-13`, la que va al Owner.
 **Corregido otra vez por `Q-07`**: decía «`PN-6` a `PN-14`» cuando ya existía `PN-15`, y
@@ -8740,7 +9205,10 @@ volvía a omitir justo la que va al Owner. Es la TERCERA vez que esta frase cadu
 `G-26` deja de mirar sólo numerales sueltos y **deriva también los RANGOS**: un `PN-a` a
 `PN-b` vivo tiene que terminar en la última cabecera vigente y contener tantas como el censo.
 **Y CUARTA vez, con `PN-17` y `PN-18`** (`P-07` y `P-08` del documento 22): decía «`PN-6` a
-`PN-16`». **La garantía, escrita una vez y para siempre, y es la que hay que leer antes que
+`PN-16`». **Y con `PN-19` el rango vuelve a moverse, esta vez SIN caducar**: lo mueve la misma
+tanda que registra la presión —la propagación de `O18` (`D108`)—, que es lo que la garantía de
+abajo exige y lo que `G-26` comprueba derivando el extremo superior de las cabeceras.
+**La garantía, escrita una vez y para siempre, y es la que hay que leer antes que
 cualquier cifra de este documento:** *ningún rango ni ningún total de presiones de este
 fichero se escribe a mano. **TODOS se DERIVAN del barrido de las cabeceras `## \`PN-`**, y el
 extremo superior de todo rango vivo es **la ÚLTIMA cabecera vigente, sea cual sea**.* Una
@@ -9573,10 +10041,115 @@ ORIGEN              hallazgo `P3-03` de la cadena `P`, elevado y graduado GRAVE 
                     ya conviven dentro del kernel construido»
 ```
 
+## `PN-19` · NUEVA · el VERIFICADOR EXTERNO que `O18` hace OBLIGATORIO en `F6` exige una identidad de escritura SEPARADA y evidencia FUERA del árbol, y ninguna sede aprobada las contempla
+
+> **Registrada por la propagación de `O18` (`D108`), y NO elegida por F4.** `O18` fija la
+> alternativa (c) —«commits firmados, refs protegidas y ejecución de la batería fuera del
+> repositorio, con identidad propia, cuyo resultado no se escribe en el árbol»— como
+> **OBLIGATORIA en `F6`** y **previa a la adopción permanente de PesquerApp**, y dice con sus
+> palabras que **«toca `C7`»**. El contrato completo está en **§11.8**; aquí se registra
+> únicamente **qué material aprobado presiona**, sin redactar ninguna enmienda.
+>
+> **Esta presión NO elige la enmienda, y no renumera ni reescribe ninguna anterior.**
+
+```text
+FUENTES             `C7`, contrato derivado que gobierna las operaciones Git **de las
+ENFRENTADAS         fuentes**, cuya tabla de propiedad **no tiene fila que alcance a un
+                    ejecutor externo** ni a una identidad que verifique sin poder escribir
+                      · contra `E2.4`, que conserva `G29` **por source** y **cierra
+                        expresamente** la vía de derivar de él el gobierno del control repo
+                      · contra `KERNEL.md` `G20`–`G23`, donde **los gates y su evidencia son
+                        del sistema y viven en su propio árbol** —`G21` fija la cadena de
+                        gates entre circuitos y `G22` declara el del Circuito 0 **no
+                        negociable por el sistema**—: ninguna regla prevé un veredicto
+                        **producido por una identidad ajena y almacenado FUERA** del árbol
+                      · contra (a), cuyas capacidades son capacidades **DEL SISTEMA**:
+                        ninguna es una identidad externa que **no pueda escribir el corpus**,
+                        y `OWNER` es autoridad, no capacidad
+                      · contra (b), cuyo recorrido no tiene proceso cuyo **ejecutor esté
+                        fuera del sistema** ni handoff que salga de él y vuelva con un
+                        veredicto vinculante
+
+TEXTO VIGENTE       `C7` gobierna las operaciones Git **de las fuentes**; `E2.4` conserva
+                    `G29` **por source**; `KERNEL.md` `G20`–`G23` fijan los gates **del
+                    sistema**, con el del Circuito 0 **no negociable por el sistema**. **Nada
+                    de eso se cita para derogarlo**: se cita porque **ninguno contempla** una
+                    identidad de escritura separada, una atestación externa vinculada al
+                    commit y al `tree` SHA, ni evidencia que viva fuera del árbol verificado
+
+QUÉ ES EL DEFECTO   `O18` hace OBLIGATORIO en `F6` algo que **hoy no tiene norma que lo
+                    autorice ni sede que lo gobierne**, y que además **prohíbe** lo que el
+                    corpus hace hoy por defecto: que el mismo actor pueda escribir corpus,
+                    batería y resultado. Construirlo sin norma es que `F6` decida por el
+                    Owner; no construirlo es incumplir `O18`
+
+POR QUÉ NO LA       `PN-11` pregunta **QUÉ SEDE gobierna** el Git del control repo, y `O16` ya
+CUBRE `PN-11`       la respondió: la autoridad normativa vive en `(g)` y `F6` deriva un `C8`
+                    que gobierna **únicamente el control repo**. Ésta pregunta otra cosa:
+                    **QUÉ TIENE QUE DECIR esa norma** para que exista un verificador **que el
+                    repositorio no pueda escribir** — identidad separada, credenciales
+                    propias, firmas verificables, protección y detección sobre las
+                    referencias, y evidencia fuera del árbol. `PN-11` puede cerrarse entera
+                    sin que nada de eso exista. **`PN-11` no se reescribe, no se renumera y
+                    no se retira**, y lo mismo vale para `PN-15`, que presiona `G20`–`G23`
+                    **por la ruta de §8** y no por la raíz de confianza
+
+MATERIA MÍNIMA      que el Owner **admita, en la sede que él elija**, (i) una **identidad
+                    técnica de verificación separada**, sin permiso de escritura sobre lo que
+                    verifica y **distinta de la identidad de escritura del runtime ADS**;
+                    (ii) que la **evidencia y la atestación** de esa verificación **vivan
+                    fuera del árbol verificado**; y (iii) que las **referencias remotas** del
+                    control repo queden protegidas, con `force push` prohibido **y
+                    detectado**. **Ninguna de las tres se redacta aquí**, y F4 no elige entre
+                    ampliar `C7`, escribirlo en `(g)`/`C8` o crear sede nueva
+
+PROPIETARIO         el **Owner**, porque `C7` es contrato aprobado y `(a)`, `(b)`, `E2` y
+                    `KERNEL.md` son material aprobado. El reparto de ejecución, ya fijado por
+                    `O18`, está en §11.8: `SIS` define · `PLT` construye y opera · `VER`
+                    produce el dosier · `SEG` gobierna credenciales, bloqueo y fallos de
+                    confianza · **el Owner conserva la autoridad de aceptar o rechazar la
+                    raíz externa**
+
+FASE                **F5** decide · **F6** construye, y en `F6` es **OBLIGATORIO**: `O18` lo
+                    hace condición previa a la adopción permanente de PesquerApp, a declarar
+                    ADS operativo y a certificar cualquier adaptador
+
+BLOQUEA             **la afirmación `C` de §11.7** —resistencia a un actor privilegiado—, que
+REALMENTE           seguirá NO IMPLEMENTADA mientras esto no exista; y con ella, por `O18`,
+                    la **adopción permanente de PesquerApp**, la declaración de **ADS
+                    operativo** y la **certificación de cualquier adaptador**
+
+QUÉ NO BLOQUEA      **no bloquea el cierre de `F4c`**: `O18` adopta (b) precisamente para que
+                    no lo bloquee, y exigir (c) dentro de `F4c` reinstala el bloqueo circular
+                    que la resolución existe para evitar. **No bloquea la batería interna**,
+                    que sigue siendo la afirmación `A`. **No bloquea el SOBRE DE ANCLA**, que
+                    es documental y ya es requisito de todo gate (§11.6). **No bloquea
+                    `PN-11` ni `PN-15`**, que siguen vigentes y separadas
+
+CONDICIÓN DE        si el Owner decide que el gobierno del verificador externo cabe entero en
+REVERSIÓN           `(g)` y en el `C8` que `O16` ya ordenó —sin tocar `C7`, `E2` ni
+                    `KERNEL.md`—, esta presión queda **RESUELTA en vez de retirada**, y su
+                    materia pasa a ser trabajo de `F6` bajo `C8`. La simétrica también vale:
+                    si decide ampliar `C7`, entonces sí hay enmienda de material aprobado.
+                    Lo que **no** es reversible es la obligación: retirar (c) es volver a la
+                    alternativa (a), que **el Owner rechazó expresamente**
+
+PRUEBA POSTERIOR    un barrido que exija que **exista una sede normativa vigente** que
+                    declare la identidad de verificación separada, la evidencia fuera del
+                    árbol y la protección de referencias con detección de `force push`; y una
+                    prueba negativa que **falsee un veredicto desde dentro del árbol** y
+                    exija que la atestación externa lo detecte. **FALLA HOY, y tiene que
+                    fallar**: hoy no hay sede que lo declare ni verificador que lo detecte
+
+ORIGEN              la clase `B` del SEGUNDO GATE DE CERTIFICACIÓN —documento 23—, resuelta
+                    por el Owner en **`O18`** y propagada por **`D108`**. **No es un hallazgo
+                    de F4 ni una elección de F4**
+```
+
 **Resumen para el Owner, tras revisar las cinco de la entrega anterior:**
 
 ```text
-VIGENTES · DIECISÉIS
+VIGENTES · DIECISIETE
   PN-1   la sección (g). LA ÚNICA QUE BLOQUEA TODO EL ESTADO DURABLE, y ahora decide más
   PN-2   la política de auditoría como tercera vía de creación de trabajo
   PN-3   G03 y la ejecución desatendida. Misma pregunta que PN-2 por otro camino, y
@@ -9615,6 +10188,12 @@ VIGENTES · DIECISÉIS
          variantes DENTRO del kernel: 12 con tilde en (b), 3 con tilde y 14 sin
          tilde en kernel/ y packs/. PN-16 no la cubre: se acota a <CAP>:revisión,
          que tiene CERO instancias. Sale de P-08 del doc 22                          NUEVA
+  PN-19  el VERIFICADOR EXTERNO que O18 hace OBLIGATORIO en F6 exige identidad de
+         escritura SEPARADA y evidencia FUERA del árbol verificado, y ninguna sede
+         aprobada las contempla: C7 gobierna las fuentes, E2.4 cierra la vía de G29,
+         G20–G23 fijan gates DEL SISTEMA y (a)/(b) no tienen ejecutor externo.
+         PN-11 no la cubre —aquélla es QUÉ SEDE, ésta es QUÉ DICE—. F4 no elige la
+         enmienda. Sale de O18, propagada por D108                                   NUEVA
 
 RETIRADA · UNA
   PN-4   con su motivo escrito, y reinstaurable por F5 si el Owner lo prefiere
@@ -9626,10 +10205,10 @@ CUATRO SON UNA FRASE       PN-6, PN-7, PN-9 y PN-10. Y tres de ellas se registra
 CADA UNA                   PRECISAMENTE PORQUE parecen obvias: PN-6 fijó esa vara, y
                            aplicarla de forma desigual sería el defecto
 
-EL TOTAL SE DERIVA         un barrido de las cabeceras `## \`PN-` da DIECIOCHO; menos PN-4
-                           RETIRADA y PN-5 FUSIONADA, quedan DIECISÉIS. No se escribe a mano,
+EL TOTAL SE DERIVA         un barrido de las cabeceras `## \`PN-` da DIECINUEVE; menos PN-4
+                           RETIRADA y PN-5 FUSIONADA, quedan DIECISIETE. No se escribe a mano,
                            y por eso se mueve cuando aparece una nueva — y acaba de moverse
-                           con `PN-17` y `PN-18`.
+                           con `PN-19`, que registra la propagación de `O18` (`D108`).
                            **Y ES LA ÚNICA SEDE QUE PUEDE PUBLICARLO.** Toda otra sede de
                            este documento que necesite el total o el rango **REMITE aquí**
                            en vez de copiarlo: una lista copiada envejece sola, una remisión
@@ -9822,14 +10401,18 @@ NADA ESTÁ CONSTRUIDO      ni una línea de kernel, runtime, tooling, esquema, a
                           plantilla, pack ni validador. F4 no lo autoriza
 NADA ESTÁ PROBADO         los doce escenarios de §14, las CUARENTA Y SEIS filas de la tabla
                           adversarial de §2.6.7, los ONCE escenarios negativos de §11.5, las
-                          OCHO comprobaciones `X-A`–`X-H` de §2.9 y **las NUEVE
-                          `X-S1`–`X-S9` de la FASE 0 de §9.6**, que esta tanda añade con la
-                          propagación de `O17` (`D107`). **Las nueve ventanas de
+                          OCHO comprobaciones `X-A`–`X-H` de §2.9, **las filas `X-S` de la
+                          FASE 0 de §9.6** —que añadió la propagación de `O17` (`D107`)— y
+                          **las filas `X-O` del SOBRE DE ANCLA de §11.6**, que añade la
+                          propagación de `O18` (`D108`). **Las nueve ventanas de
                           reconciliación NO se cuentan: `D64` las retiró**, y §2.6.9 lo
                           dice — contarlas era inflar el inventario con algo inexistente.
                           **Cada familia lleva su cifra en SU sede y aquí se remite**:
-                          §2.6.7 sigue en cuarenta y seis y no se toca, §2.9 en ocho, y §9.6
-                          es la sede de la familia `X-S`
+                          §2.6.7 sigue en cuarenta y seis y no se toca, §2.9 en ocho, §9.6
+                          es la sede de la familia `X-S` y §11.6 la de la familia `X-O`.
+                          **Y el cardinal de `X-S` deja de escribirse aquí**: este bloque
+                          decía «las NUEVE `X-S1`–`X-S9`» y la tabla de §9.6 lleva más, que
+                          es el titular caducado que la regla de §0 prohíbe
                           están ESCRITOS. Ninguno se ha ejecutado. Escribir el contrato de
                           una prueba no es la prueba
 LA PRIMERA ADOPCIÓN       la columna de uso real está vacía desde F0, y esta fase no la
@@ -9845,15 +10428,19 @@ NORMATIVAS VIGENTES       `## \`PN-`, menos las marcadas RETIRADA o FUSIONADA, y
                           ÚNICA sede que lo publica.** Tras DOS devoluciones independientes,
                           la TERCERA REVISIÓN, el GATE FINAL, el GATE DE CIERRE, el GATE
                           DEFINITIVO, el GATE DE COBERTURA, el GATE DE CIERRE CON MANIFIESTOS
-                          y el GATE INDEPENDIENTE DE CERTIFICACIÓN: `PN-4` retirada, `PN-5`
-                          fusionada en `PN-3`, y `PN-6` a `PN-18` nuevas.
+                          el GATE INDEPENDIENTE DE CERTIFICACIÓN y el SEGUNDO GATE DE
+                          CERTIFICACIÓN: `PN-4` retirada, `PN-5` fusionada en `PN-3`, y
+                          `PN-6` a `PN-19` nuevas.
                           `PN-1` bloquea todo el estado durable, y F5 es su puerta.
-                          **Las DOS que esta tanda añade son `PN-17` y `PN-18`**, y salen de
-                          `P-07` y `P-08` del documento 22: `reconciliacion_pendiente` del
-                          canal de órdenes sin productor —con `T22` no satisfacible— y la
-                          grafía de `VER:decisión`, que ya está construida con DOS variantes
-                          dentro del kernel. Las dos viven en material APROBADO, y F4 no
-                          puede elegir por el Owner en ninguna de las dos.
+                          **Las que añadió la tanda del documento 22 son `PN-17` y `PN-18`**,
+                          de `P-07` y `P-08`: `reconciliacion_pendiente` del canal de órdenes
+                          sin productor —con `T22` no satisfacible— y la grafía de
+                          `VER:decisión`, que ya está construida con DOS variantes dentro del
+                          kernel. **Y la que añade la propagación de `O18` (`D108`) es
+                          `PN-19`**: el verificador externo que `O18` hace OBLIGATORIO en F6
+                          exige identidad de escritura separada y evidencia fuera del árbol,
+                          y ninguna sede aprobada las contempla. Todas viven en material
+                          APROBADO, y F4 no puede elegir por el Owner en ninguna.
                           **Corregido por `P-04`**: este bloque llevaba el titular CATORCE y
                           el rango `PN-6`–`PN-16` escritos a mano
 F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. TRES críticas independientes, una
@@ -10561,6 +11148,19 @@ REGLA DE CIERRE      **cualquier fuente ASIGNADA pero NO LEÍDA impide la sufici
 EL ADJUDICADOR       **no corrige los hallazgos que encuentre.** Adjudica y devuelve. Corregir
                      en la misma pasada vuelve a hacer que quien recibe sea quien aplica
 ```
+
+**Y a todo gate posterior se le añade el SOBRE DE ANCLA, que NO forma parte de esta
+condición certificada y NO la altera.** Es requisito propio, **derivado de `O18` vía `D108`**
+y **no elegido por F4**, y su sede única es **§11.6**: el coordinador lo emite y lo entrega a
+cada revisor **dentro de su encargo, por un canal externo al repositorio y antes de que
+empiece a leer**; el revisor lo verifica **antes de leer contenido semántico** y **falla
+CERRADO** ante cualquier diferencia; el adjudicador lo repite por su cuenta y declara
+**INVÁLIDO** el gate si los sobres difieren. **El sobre NO sustituye nada de lo de arriba**:
+ni el manifiesto previo —que se sigue commiteando **solo y antes de crear revisores**—, ni los
+manifiestos de lectura, ni la resta `OBLIGATORIO − ASIGNADO`, ni la resta `ASIGNADO − LEÍDO`,
+ni la revisión independiente, ni la adjudicación contra las fuentes. **Es su raíz documental
+externa, y su alcance está escrito sin adorno en §11.7.** Esta sección **lo invoca y no lo
+reescribe**.
 
 **Estado: CERTIFICADA por el GATE INDEPENDIENTE DE CIERRE CON MANIFIESTOS VERIFICABLES**
 —documento 21—, y es la primera vez. El manifiesto previo de asignación se commiteó **solo y
