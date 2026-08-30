@@ -126,7 +126,9 @@ Para el Owner, sin vocabulario interno.
 ```text
 LA CUARTA CAPA           sigue deferida. Hace falta un proyecto independiente que minar.
 EL PILOTO                sigue sin ejecutarse. Nada de aquí está demostrado en un producto.
-LAS ENMIENDAS            este diseño presiona material aprobado en **DIECISÉIS** puntos, tras
+LAS ENMIENDAS            este diseño presiona material aprobado en **los puntos que §16
+                         enumera y que sólo §16 cuenta** —el cardinal NO se escribe aquí, por
+                         la regla de titulares de abajo—, tras
                          dos devoluciones independientes, una tercera revisión, el gate final
                          con su complemento de cobertura, el GATE DE CIERRE INDEPENDIENTE, el
                          GATE DEFINITIVO INDEPENDIENTE y el GATE INDEPENDIENTE DE
@@ -138,6 +140,50 @@ LAS ENMIENDAS            este diseño presiona material aprobado en **DIECISÉIS
                          junto a una cadena que decía derivarlo y terminaba en TRECE
                          omitiendo `PN-16`. Una cadena copiada caduca sola; una remisión no.
                          Se enumeran y NO se redactan: eso es F5, y su puerta es el Owner.
+```
+
+### La regla que cierra los titulares caducados, y vale para TODO este documento
+
+**No es una regla nueva: el corpus ya se la había aplicado dos veces en local.** §2.6.6, cuando
+`P-09` la pilló, escribió «*y el remate deja de ser un cardinal: «todos ellos», para que añadir
+una pieza no vuelva a dejar una cifra caduca detrás*»; y §3.6 escribió «*el recuento se
+**deriva** de ella en vez de encabezarla*». **Se extiende aquí a todo titular sobre
+enumeración, sin excepción, porque el titular numérico que su propia lista desmiente es el
+defecto más repetido del expediente y cada tanda ha vuelto a producirlo — incluida la que
+introdujo la FASE 0.**
+
+```text
+LA REGLA          **ningún titular, rótulo, remate ni frase introductoria de este documento
+                  escribe el CARDINAL de la enumeración que lo sigue o que lo precede.** O
+                  REMITE —«las secuencias de abajo», «todos ellos», «las que la enumeración
+                  nombra fichero a fichero»— o DERIVA, diciendo de dónde y con qué barrido.
+                  **Nunca copia un número junto a la lista que ese número describe**
+
+POR QUÉ           una cifra escrita junto a su enumeración **caduca en silencio**: quien añade
+                  el elemento no está obligado a pasar por la frase que lo cuenta, y el
+                  documento pasa a afirmar dos cosas incompatibles a dos líneas de distancia.
+                  Una remisión no caduca nunca; una derivación se mueve sola con su fuente
+
+QUÉ SÍ PUEDE      · un cardinal cuya enumeración NO está al lado y que se publica **con el
+LLEVAR CARDINAL     comando que lo deriva**, en la sede única que lo publica —así está §16—
+                  · un cardinal que **una comprobación de la batería contrasta** contra la
+                    enumeración y contra sus otras sedes, y que da ROJO si alguna regresa —así
+                    están las extensiones de ficha de §5.2, §16 y §17, por `G-10`—. Lo que la
+                    regla persigue no es el número: es el número **que nadie está obligado a
+                    volver a mirar**
+                  · un cardinal **HISTÓRICO** dentro de una nota de corrección: es registro de
+                    lo que se vio entonces, va marcado, y **no se reescribe**
+                  · un cardinal que es parte del CONTENIDO normado y no un recuento de la
+                    lista —«más de dos items `SIS` consecutivos» es el umbral de `a.7`, no un
+                    titular sobre una enumeración
+
+CÓMO SE COMPRUEBA **contrato de prueba para F6, y NO se ha ejecutado**, como todas las de este
+                  documento: por cada titular que contenga un cardinal, o la enumeración
+                  adyacente tiene exactamente ese número de elementos, o el titular remite.
+                  Escribir el contrato de una prueba no es la prueba
+
+QUÉ NO ES         no es «prohibir los números». Es **prohibir que un número y su enumeración
+                  vivan en dos sitios que nadie está obligado a sincronizar**
 ```
 
 **Qué cuesta.** El diseño elige, en cada punto donde había alternativa, la forma que se puede
@@ -324,6 +370,29 @@ Requisitos, con su fuente. No son preferencias:
 >
 > **La prueba es UNA y cubre los dos**: ningún identificador de la forma `<PREFIJO><n>` se
 > usa con dos significados distintos en el corpus. F6 la construye una vez.
+
+**LA FAMILIA `X`, QUE EL CENSO DE `D83` NO ALCANZÓ — declarada aquí, y no tapada.** `D83`
+censó `R<n>` y `N<n>`. **El prefijo `X` lo usan hoy CUATRO poblaciones de este documento**, y
+se nombran para que nadie tenga que descubrirlo:
+
+```text
+X1–X8       las INCÓGNITAS de §0. Sin relleno de ceros
+X01–X62     las filas de la TABLA ADVERSARIAL de §2.6.7. Con relleno de DOS dígitos
+X-A–X-H     las filas adversariales de §2.9. Con guion y letra
+X-S1–X-S9   las filas adversariales de la FASE 0, §9.6. Con guion, letra y número
+```
+
+**El invariante de `D83` NO está literalmente violado, y eso se dice antes que nada:** `X1` y
+`X01` son **cadenas distintas**, el relleno se aplica de forma consistente y no hay ni una
+cita ambigua en el documento. **Lo que sí queda, y es lo que se declara:** las dos primeras
+poblaciones se separan **sólo por un cero de relleno**, y la prueba que `D83` contrata para F6
+—«ningún identificador de la forma `<PREFIJO><n>`…»— **falla o pasa según normalice o no el
+relleno**, cosa que su enunciado no fija. **La condición, escrita para que la prueba no dependa
+de una interpretación:** *la comparación es entre CADENAS LITERALES, sin normalizar ceros a la
+izquierda ni separadores; y ninguna población nueva de prefijo `X` puede introducirse sin
+añadir su renglón a la lista de arriba.* Renombrar cualquiera de las cuatro **no se hace aquí**:
+`X01`–`X62` y `X-A`–`X-H` son contratos de prueba ya citados por número desde otras sedes, y
+moverlos rompería citas vivas por un riesgo que hoy no se ha materializado.
 
 ```text
 R1  el estado operativo ES los ficheros del repositorio ADS de control, legibles
@@ -1300,7 +1369,8 @@ NO EXIGIDO    los derivados, el marcador de transacción, **el marcador del `der
 
 ### Comprobación de integridad post-terminal
 
-Los cuatro puntos anteriores dependen de que la implementación no tenga defectos. **Ésta es la
+**Todos los puntos OBLIGATORIOS de arriba** —los que la lista enumera, sin cardinal delante—
+dependen de que la implementación no tenga defectos. **Ésta es la
 comprobación que convierte un fallo silencioso en un fallo detectado**, y sin ella lo demás es
 una promesa:
 
@@ -2109,8 +2179,13 @@ QUÉ ES `4b`, Y POR QUÉ NO ES UN QUINTO DESENLACE — **añadido por `P-16` del
   fila de reconstrucción de §2.9—, y quien viniera aquí a resolver `4b` **no lo encontraba**:
   es el espacio de identificadores con dos significados que `D83` declara cerrado.
   **La regla, y vale para todo el documento:** *los desenlaces se numeran `1`–`4` y no hay
-  ninguno más; las SECUENCIAS llevan letra tras el número y viven en su propio bloque.* Las
-  seis sedes dicen ahora «secuencia `4b`», y `D79` —«el desenlace `4b` lo cierra un ACTO DE
+  ninguno más; las SECUENCIAS llevan letra tras el número y viven en su propio bloque.*
+  **[HISTÓRICO] El cardinal «Seis sedes» es lo que se contó entonces y no se reescribe.**
+  **CÓMO SE COMPRUEBA HOY, que es lo que faltaba:** el barrido **no publica cardinal** — la
+  condición es *`grep -n 'desenlace .4b.'` sobre este documento devuelve SÓLO líneas que estén
+  dentro de una nota de corrección o de un registro de decisión*, y toda mención VIVA dice
+  «secuencia `4b`». Un cardinal escrito aquí volvería a caducar el día que se añada una sede;
+  la condición, no. Y `D79` —«el desenlace `4b` lo cierra un ACTO DE
   AUTORIDAD del Owner»— **no se reescribe**: es registro de decisión, y lo que cierra la
   autoridad es la retención de esa secuencia dentro del desenlace 4
 ```
@@ -2228,7 +2303,8 @@ ES PUBLICABLE            Entonces se conserva únicamente una REFERENCIA SEGURA 
 ```text
 NINGÚN TERMINAL DEJA     **todo terminal retira el marcador**: `derivada` al regenerar los
 EL MARCADOR ABIERTO      derivados, `abandonada` tras verificar la restauración. Y el
-                         secuencia `4b` no es terminal: por eso conserva el marcador vivo, y
+                         **la** secuencia `4b` no es terminal: por eso conserva el marcador
+                         vivo, y
                          por eso no publica.
 ```
 
@@ -2271,7 +2347,7 @@ SACRIFICA, DICHO EN      el precio de un worktree único con publicación sólo 
 UNA LÍNEA                terminales consistentes, y se paga a sabiendas.
 ```
 
-#### Las siete secuencias completas, y ninguna termina sin salida
+#### Las secuencias completas, una por rótulo del bloque de abajo, y ninguna termina sin salida
 
 ```text
 1 · ÉXITO NORMAL              preparada → confirmada → derivada
@@ -2368,8 +2444,10 @@ CUÁNDO SE CREA        **ANTES de restaurar**, dentro del paso A del procedimien
 
 CÓMO SE VERIFICA      **POR HASH.** El hash de cada fichero puesto en cuarentena se registra
                       en el `conflicto`, y se recalcula sobre la copia antes de continuar. Si
-                      no casa, la preservación NO se ha logrado y el desenlace sigue siendo
-                      el `4b`: la transacción permanece abierta.
+                      no casa, la preservación NO se ha logrado y **se permanece en la
+                      SECUENCIA `4b`**, cuyo desenlace es el **4 · TODAVÍA BLOQUEADA**: la
+                      transacción permanece abierta. **Convertido aquí**, que era una de las
+                      dos sedes vivas que el barrido de `P-16` no alcanzó.
 
 CUÁNDO SE ELIMINA     **SÓLO después de las TRES**, y en este orden:
                         1 el terminal es durable —`abandonada`, con su `deriva`—
@@ -2793,8 +2871,10 @@ causa            **EL ENUM LO DECLARA §3.6, Y ES SU ÚNICA SEDE.** Son TRES val
                                          hace `abandonada` inalcanzable sin eso—, y lo que
                                          queda declarado es el `estado_observado[]` de todas
                                          ellas: `previo` en la ruta normal, y `posterior` o
-                                         `divergente` **sólo** en el acto (ii) del desenlace
-                                         `4b`, cuyas rutas divergentes el commit de incidente
+                                         `divergente` **sólo** en el acto (ii) de la
+                                         **SECUENCIA** `4b` —convertido aquí; era la otra sede
+                                         viva que el barrido de `P-16` no alcanzó—, cuyas
+                                         rutas divergentes el commit de incidente
                                          excluye. **Corregido por `I-10`**: decía «quedaron en
                                          un estado mixto declarado», que es la semántica
                                          anterior a `D69`. Lo emite el propio acto de
@@ -3881,8 +3961,16 @@ tipo          orden | transicion | integracion | certificacion | migracion | sel
               retirada-de-cuerpo | deriva | fallo. NUEVE valores, y la matriz de abajo dice
               cuáles llevan `fase` y cuáles la tienen PROHIBIDA
 fase          preparada | confirmada | conflicto | abandonada | derivada | — (sin
-              transacción). CINCO fases; el autómata, en §2.6.1. **`fase` y `tipo` son DOS
-              EJES**, y el valor `—` lo toman `sellado`, `deriva` y `fallo`.
+              transacción). El autómata, en §2.6.1. **`fase` y `tipo` son DOS EJES**, y
+              **QUIÉN toma el valor `—` lo dice LA MATRIZ DE ABAJO, columna «¿puede existir
+              SIN `fase`?», que es su sede: esta línea REMITE a ella y no la enumera aparte**
+              —regla de titulares de §0—. Enumerarla aquí es lo que hacía que un esquema
+              derivado LITERALMENTE de esta línea **rechazase un `orden` sin `fase`**, que es
+              el caso que `D59` declaró legítimo y que la matriz declara «SÍ, y sólo
+              entonces»; y es la misma clase que `J-01`/`D96`, invertida. Lo que sí se dice
+              aquí, porque es la forma de la regla y no su censo: `sellado`, `deriva` y
+              `fallo` lo toman **SIEMPRE**; `orden` lo toma **CUANDO Y SÓLO CUANDO** su
+              consumo no produce ninguna escritura canónica; los demás **nunca**.
               `reconciliacion-preparada` y `reconciliada` NO existen: `D64` las retira.
               `abortada` NO existe: un evento con esa fase es RECHAZADO por el ESQUEMA
               ESTRUCTURAL — es un valor fuera del enum, y eso se ve sin salir del evento
@@ -4039,7 +4127,8 @@ que exige intención durable previa es exactamente lo que exige fase.
 | `deriva` | el canónico que dejó de sostener lo que el diario afirma | **REPORTA**. No repara, no restaura y no completa (§2.6.11) | **no**: sólo se escribe a sí mismo | — | **no** | **SIEMPRE, y es obligatorio** | un canónico revertido bajo una `derivada` durable |
 | `fallo` | la OPERACIÓN NO CANÓNICA que falló, declarada en `sujeto` y `operacion` | **REPORTA** que esa operación falló, con su causa, su estado observado, si es recuperable y qué autoridad hace falta. **No repara** | **no**: sólo se escribe a sí mismo | — | **no** | **SIEMPRE, y es obligatorio** | el push es rechazado porque el remoto avanzó (`W15`), con `tx_afectada` y `referencias[]` |
 
-**Los cuatro casos que la prueba obligó a separar, dichos uno a uno:**
+**Los casos que la prueba obligó a separar, dichos uno a uno — todos los que el bloque de abajo
+rotula, y el cardinal no se escribe:**
 
 ```text
 `orden`                REGISTRAR NO ES APLICAR. `a.9` da dos consumos que NO mutan: una
@@ -5029,7 +5118,12 @@ NADA                        `ENT`   `b.16` le da la entrega y la operación, e i
 
 QUÉ TRABAJO GENERA        una EXTENSIÓN DE FICHA en F6, nombrada fichero a fichero. **Son
                           SEIS**, no cuatro: las cuatro de las dos dimensiones huérfanas, más
-                          `DSP` y `ENC` que el gate final añadió:
+                          `DSP` y `ENC` que el gate final añadió. **Este cardinal SÍ se
+                          escribe, por la única razón que la regla de titulares de §0 admite:
+                          `G-10` de la batería lo CONTRASTA contra las tres sedes —§5.2, §16 y
+                          §17— y contra los seis nombres, y da ROJO si alguna regresa. Un
+                          cardinal con comprobación que lo derive no caduca en silencio; sin
+                          ella, el titular remite.** Son:
                             `capacidades/ENT/`   añadir rendimiento observado y resiliencia
                                                  a su materia declarada
                             `capacidades/ARQ/`   añadir coste de diseño y resiliencia
@@ -5049,14 +5143,57 @@ QUÉ TRABAJO GENERA        una EXTENSIÓN DE FICHA en F6, nombrada fichero a fic
                                                  celda de cobertura y no el Owner, y emitir
                                                  su encuadre sin pasar por el vivero
 
-QUÉ NO GENERA             presión normativa. Ninguna de las cuatro fichas es (a), (b), `E1`,
-                          `E2`, `K-1` ni `C4`. Extender una ficha de capacidad con materia
-                          que ya está en su alcance es trabajo de F6.
+QUÉ NO GENERA             presión normativa, **y se dice ficha a ficha en vez de en bloque,
+                          porque en bloque es como se quedaron dos sin declaración**:
+                            `ENT` `ARQ` `PLT` `SEG`   **NO la generan.** Ninguna es (a), (b),
+                                                      `E1`, `E2`, `K-1` ni `C4`, y la materia
+                                                      ya está en su alcance declarado —lo
+                                                      dice el bloque de arriba, capacidad a
+                                                      capacidad—. Extender una ficha con
+                                                      materia que ya está en su alcance es
+                                                      trabajo de F6
+                            `DSP`                     **NO la genera, y la razón se escribe:**
+                                                      `C1` YA EXIGE que la ficha autorice la
+                                                      apertura mecánica antes de que ningún
+                                                      rol pueda hacerla, y §5.3 y §14 ya
+                                                      norman esa apertura dentro de una
+                                                      política `O7` vigente. Extender la ficha
+                                                      **EJECUTA** `C1`, no lo enmienda. Lo que
+                                                      F4 NO puede hacer es tocar `C1` ni la
+                                                      ficha: las dos son kernel (§19)
+                            `ENC`                     **NO SE DECLARA AQUÍ, Y ESO ES LO QUE SE
+                                                      DECLARA.** Su extensión —admitir como
+                                                      ENTRADA un finding de auditoría, cuyo
+                                                      sujeto es una celda de cobertura y no el
+                                                      Owner, y emitir su encuadre sin pasar
+                                                      por el vivero— **cae del lado de `E1`**,
+                                                      que es la enmienda de `ENC` y habla de
+                                                      «trabajo real de entrada … una expresión
+                                                      del Owner». Decidir si la extensión cabe
+                                                      dentro del alcance de `E1` o lo estira
+                                                      **exige leer `E1` COMO NORMA y
+                                                      resolverlo, y esta sede no lo hace**:
+                                                      queda abajo como trabajo futuro, con
+                                                      propietario, fase y prueba. **Afirmar
+                                                      que no hay presión sin haberlo
+                                                      comprobado es exactamente el defecto que
+                                                      esta corrección repara**
 
 EL LÍMITE, DECLARADO      si al redactar la extensión F5 o F6 encontrasen que el alcance de
-                          una de las cuatro NO estira hasta el aspecto, entonces SÍ nacería
-                          una presión, y se registraría ese día. Hoy no la hay, y afirmar
-                          que la habrá sería tan poco riguroso como aparcar las dos materias.
+                          alguna de las fichas de arriba NO estira hasta el aspecto, entonces
+                          SÍ nacería una presión, y se registraría ese día. Para `ENT`, `ARQ`,
+                          `PLT`, `SEG` y `DSP` hoy no la hay, y afirmar que la habrá sería tan
+                          poco riguroso como aparcar las dos materias. **Para `ENC` no se
+                          afirma ni lo uno ni lo otro: se declara sin comprobar.**
+
+TRABAJO FUTURO,           **`ENC` Y `E1`** · PROPIETARIO **el Owner** · FASE **F5** ·
+CON PROPIETARIO,          contrastar la extensión de la ficha de `ENC` contra `E1` y decidir
+FASE Y PRUEBA             si cabe en su alcance o lo estira. Si lo estira, nace una presión
+                          normativa y se registra en §16 ese día. **F4 no lee `E1` como norma
+                          ni la enmienda** (§19). PRUEBA POSTERIOR: que un finding de
+                          auditoría entregado a `ENC` produzca un encuadre que supere
+                          `gate:encuadre-listo` **sin `expresion_literal[]` del Owner**, o que
+                          el gate lo rechace y quede escrito por qué. **FALLA HOY**
 ```
 
 ## 5.3 · El ciclo, y quién hace cada paso
@@ -5965,7 +6102,15 @@ FORMA     cada uno es una INICIATIVA con su plantilla de ruta. No un proceso.
 ```text
 SEDE CANÓNICA          la tabla de §18, «Los cuatro macrocircuitos, mapeados a los procesos
                        de b.16», fase a fase. Los bloques de §8.1–§8.4 son su LECTURA
-                       narrativa: si alguna vez difieren, MANDA §18
+                       narrativa: si alguna vez difieren, MANDA §18.
+                       **JERARQUÍA CON §9.6, la misma frase que allí, para que se lea desde
+                       las dos puntas:** §18 manda sobre el **MAPEO** —qué fase, qué proceso
+                       de `b.16`, qué participantes y por qué vía, qué entra y qué sale de
+                       cada tramo—; **§9.6 manda sobre el CONTENIDO DEL CONTRATO
+                       `gate:sistema-conforme`** —qué afirma, quién lo produce, qué exige su
+                       entrada, dónde se persiste su salida, qué lo bloquea y qué lo cierra—.
+                       Lo que no es contrato es mapeo, y no hay tercera cosa. Sin esta
+                       jerarquía las dos reglas de desempate se solapaban sobre la FASE 0
 
 QUÉ ES LA COMPOSICIÓN  un CONJUNTO DE ITEMS ENLAZADOS, agrupados por una `iniciativa` —tipo
                        que §3.3 ya declara—. NO es un artefacto nuevo, no tiene esquema
@@ -6098,42 +6243,68 @@ entre capacidades—, y ésa es la fuente que manda cuando `C5` parece decir otr
 > listo. Los cuatro macrocircuitos son mayoritariamente `proceso:SIS` y **dos de ellos —`A` y
 > `U`— componen más de dos items líderes**, y §8 no decía ni cuántos ni cómo interactúan con
 > el freno. El tercer item de `A` se habría detenido sin que nadie hubiera previsto por qué.
-> **Corregido por `I-25`**: la premisa citada decía «más de dos items **cada uno**», y la
-> derivación de diez líneas más abajo da **N 2** y **M 2**. La derivación manda; la premisa
-> se ajusta a ella.
+> **[HISTÓRICO] Corregido por `I-25`**: la premisa citada decía «más de dos items **cada
+> uno**», y la derivación de entonces daba **N 2** y **M 2**. La derivación manda; la premisa
+> se ajusta a ella. **Aquellas cifras son de antes de `D107`, no se reescriben, y el bloque de
+> abajo ya no las copia: se re-deriva de §18 con la `FASE 0` dentro de la racha.**
 
 ```text
 CUÁNTOS ITEMS      los ITEMS LÍDERES son las FILAS de la tabla de §18 —una por tramo de fases
-COMPONE CADA UNO   con proceso propio—, más los ITEMS ENLAZADOS que la vía 4 exija:
-                     N   2 líderes  (`INS-0`–`INS-5` · `INS-6`–`INS-7`), sobre el item real `SIS-001`
-                     A   4 líderes  (`A0`–`A1` · `A2`–`A7` · `A8` · `A9`–`A10`), y el
-                         segundo NO es un item: son varios `AUD` enlazados, **uno por
-                         conclusión** — ocho sólo en `A6`
-                     M   2 líderes  (`M0`–`M5` · `M6`–`M7`)
-                     U   4 líderes  (`U0`–`U4` · `U5a` · `U5b` · `U6`)
-                   El recuento se DERIVA de §18 y se mueve con ella. No se escribe aparte
+COMPONE CADA UNO   con proceso propio—, más los ITEMS ENLAZADOS que la vía 4 exija.
+                   **El recuento se DERIVA de §18 y NO SE ESCRIBE AQUÍ**, que es lo que esta
+                   misma casilla ya prometía y lo que copiar el cardinal incumplía. Lo que sí
+                   se escribe es la **SECUENCIA DE PROCESOS**, porque es lo único que el
+                   FRENO 3 necesita y porque se lee fila a fila de §18 en su orden:
+                     N   `SIS` `SIS` `SIS`
+                     A   `SIS` `SIS` `AUD` `DEU` `SIS`
+                     M   `SIS` `SIS` `DEU`
+                     U   `SIS` `SIS` `SIS` `DEP` `SIS`
+                   **Cada uno empieza por su `FASE 0`, que §18 declara `proceso:SIS` con
+                   estado persistido propio** —`O17` vía `D107`, no elección de F4—. En `A`,
+                   el tramo `AUD` NO es un item: son varios `AUD` enlazados, **uno por
+                   conclusión** — ocho sólo en `A6`. Si §18 cambia, esta secuencia cambia con
+                   ella, y **no queda ningún cardinal escrito aparte que pueda caducar en
+                   silencio**
 
-FRENO 3, CIRCUITO  · **`N` · instalación** — el antecedente del freno es FALSO: no existe
-A CIRCUITO           ningún item de producto listo, porque el producto no tiene items en
-                     ADS hasta `INS-7`. El freno **no llega a evaluarse**. No es excepción
-                   · **`A` · adopción** — igual hasta `A10`, y además sólo dos de sus cuatro
-                     líderes son `SIS`: `A2`–`A7` es `AUD` y `A8` es `DEU`, y el freno cuenta
-                     rachas de items **SIS**. **Nunca alcanza el tercero consecutivo**
-                   · **`M` · migración** y **`U` · actualización** — **la aritmética propia
-                     basta, y con ella se resuelve**: derivado de §18, `M` = `M0`–`M5` `SIS`
-                     + `M6`–`M7` `DEU`, y `U` = `U0`–`U4` `SIS` + `U5a` `SIS` + `U5b` `DEP`
-                     + `U6` `SIS`. El FRENO 3 de `a.7` exige **más de dos** items `SIS`
-                     CONSECUTIVOS: `M` tiene uno y `U` tiene dos antes de que `DEP` rompa la
-                     racha. **El freno no llega a evaluarse, igual que en `N` y en `A`.**
-                     La cláusula literal de excepción de `a.7` —«NO APLICA mientras el
-                     objetivo explícito del proyecto sea construir o migrar el propio
-                     kernel/runtime»— **también los cubriría**, y se deja dicho como
-                     observación, no como fundamento: invocarla era una dependencia
-                     innecesaria sobre material aprobado donde la cuenta propia ya cerraba.
-                     Corregido por `K-08`. `U` además declara `bloqueo` en §8.4: ninguna
-                     otra actualización arranca
-                   **Ninguno de los cuatro necesita excepción del Owner, y ninguno necesita
-                   agruparse en menos items.** Lo que hacía falta era comprobarlo y decirlo
+FRENO 3, CIRCUITO  **RE-DERIVADO sobre la secuencia de arriba, CON la `FASE 0` dentro de la
+A CIRCUITO         racha.** El FRENO 3 de `a.7` exige **más de dos items `SIS` COMPLETADOS
+                   CONSECUTIVAMENTE**, y su antecedente es que **haya un item de producto
+                   listo**. Las dos condiciones, no una.
+                   · **`N` · instalación** — racha `SIS` máxima **TRES** (`FASE 0` · `INS-0`–
+                     `INS-5` · `INS-6`–`INS-7`), pero el **antecedente es FALSO**: no existe
+                     ningún item de producto listo, porque el producto no tiene items en ADS
+                     hasta `INS-7`. **El freno no llega a evaluarse.** No es excepción
+                   · **`A` · adopción** — racha `SIS` máxima **DOS** (`FASE 0` · `A0`–`A1`),
+                     y ahí `AUD` rompe: el freno cuenta rachas de items **`SIS`**. **Nunca
+                     alcanza el tercero consecutivo**, y además el antecedente es falso hasta
+                     `A10`, que es su puerta
+                   · **`M` · migración** — racha `SIS` máxima **DOS** (`FASE 0` · `M0`–`M5`),
+                     y `M6`–`M7` es `DEU`. **Nunca alcanza el tercero consecutivo**
+                   · **`U` · actualización — AQUÍ SÍ LLEGA A EVALUARSE, Y SE DICE.** La racha
+                     es `FASE 0` · `U0`–`U4` · `U5a`: **TRES `SIS` consecutivos** antes de que
+                     `DEP` rompa en `U5b`, y tres es «más de dos». Y `U` es **el único de los
+                     cuatro donde el antecedente es plausiblemente VERDADERO**, porque corre
+                     sobre un producto ya instalado y operando. **Luego la conclusión anterior
+                     —«`U` tiene dos», y con ella «ninguno de los cuatro necesita excepción del
+                     Owner»— DEJA DE ESTAR DERIVADA para `U`**, y lo que la caducó fue meter
+                     la `FASE 0` en la racha, que es `O17` vía `D107` y no una elección de F4.
+                     **Lo que sostiene hoy a `U` es la cláusula LITERAL de excepción de `a.7`**
+                     —«NO APLICA mientras el objetivo explícito del proyecto sea construir o
+                     migrar el propio kernel/runtime»—, que en `U` es literalmente el caso:
+                     `U` actualiza el propio ADS. **Para `U`, y SÓLO para `U`, esa cláusula
+                     pasa de OBSERVACIÓN a FUNDAMENTO**, porque la cuenta propia ya no cierra.
+                     **Si el Owner no la considerase aplicable a una actualización, `U`
+                     necesitaría excepción del Owner — y eso NO se decide aquí**: queda
+                     registrado en §9.6 como trabajo futuro, con propietario, fase y prueba.
+                     `U` además declara `bloqueo` en §8.4: ninguna otra actualización arranca
+                   **[HISTÓRICO]** la redacción anterior decía «`M` tiene uno y `U` tiene dos»
+                   y dejaba la cláusula de `a.7` «como observación, no como fundamento»
+                   (`K-08`): era cierto ANTES de que `D107` añadiera la `FASE 0` a cada racha,
+                   y **no se reescribe**.
+                   **`N`, `A` y `M` no necesitan excepción del Owner, y la cuenta propia lo
+                   demuestra tramo a tramo. `U` sí depende hoy de la cláusula literal de
+                   `a.7`, y por eso está registrado.** Lo que hacía falta era comprobarlo y
+                   decirlo — también, y sobre todo, cuando el resultado cambia
 
 QUÉ PASA SI CAMBIA si un producto adoptado tuviera items ADS listos DURANTE su adopción
                    —caso que hoy no existe porque `A10` es su puerta—, el freno pasaría a
@@ -7128,7 +7299,16 @@ ESTRUCTURAL       **el nivel Estructural TIENE PRODUCTOR**, que es lo que le fal
                                  **Su contrato entero está en §9.6**, que es su sede única
                     operativo    `INS-4`
                     integrado    `A9` · `M5` · `INS-7` · revalidado en `M7` y en `U6`
-                    completo     los escenarios de §14 ejecutados sobre un producto real
+                    completo     **SIN PRODUCTOR DECLARADO, y se dice en vez de taparlo.** Lo
+                                 que esta casilla contenía —«los escenarios de §14 ejecutados
+                                 sobre un producto real»— es EVIDENCIA, no una fase que lo
+                                 produzca, y la regla 12 de `O17` exige PRODUCTOR propio a
+                                 cada nivel. `O17` da productor al Estructural **y a ningún
+                                 otro**, luego resolverlo aquí sería ampliar una resolución
+                                 del Owner: **no se amplía**, y queda como trabajo futuro con
+                                 propietario, fase y prueba en §9.6. Que §9.4 declare el nivel
+                                 HOY inalcanzable explica que no se ALCANCE, no que no tenga
+                                 productor DECLARADO
                   **Cada nivel conserva PRODUCTOR, EVIDENCIA, SUJETO, VIGENCIA y CONDICIÓN DE
                   INVALIDACIÓN propios** —regla 12 de `O17`—, y **un nivel superior NO implica
                   por sí mismo que Estructural siga vigente** —regla 4—: es lo que «NIVEL
@@ -7342,7 +7522,20 @@ SU SITIO ES F6          con prescripción CERRADA. Lo que F4 debe hacer HOY es R
 **UN SOLO CONTRATO, INVOCADO CUATRO VECES.** Es la regla 6 de `O17`: los cuatro macrocircuitos
 invocan **el MISMO contrato y el MISMO mecanismo compartido**, y **no se crean cuatro
 implementaciones divergentes**. Ésta es su sede única: §8.1, §8.2, §8.3 y §8.4 **la invocan y
-no la reescriben**, y §18 la mapea fase a fase. Si alguna vez difieren, **manda ésta**.
+no la reescriben**, y §18 la mapea fase a fase.
+
+**JERARQUÍA CON §8.0, declarada aquí porque había DOS reglas de desempate solapadas y de
+sentido contrario.** §8.0 dice «SEDE CANÓNICA la tabla de §18 … si alguna vez difieren, MANDA
+§18»; esta sede decía «si alguna vez difieren, manda ésta». Las dos se solapaban justo sobre la
+FASE 0. **Se jerarquizan así, y el reparto no deja zona muerta: §18 manda sobre el MAPEO —qué
+fase, qué proceso de `b.16`, qué participantes y por qué vía, qué entra y qué sale de cada
+tramo—; ESTA SEDE manda sobre el CONTENIDO DEL CONTRATO `gate:sistema-conforme` —qué afirma,
+quién lo produce, qué exige su entrada, dónde se persiste su salida, qué lo bloquea y qué lo
+cierra—. Lo que no es contrato es mapeo, y no hay tercera cosa.** Y la primera divergencia real
+que el solapamiento produjo —la vía de `SEG` en las cuatro filas `FASE 0` de §18— se resuelve
+por esta jerarquía **a favor de esta sede**, porque la vía de participación de una capacidad en
+el contrato compartido es contenido del contrato y no mapeo de tramos. §8.0 lleva la misma
+frase, para que la jerarquía se lea desde las dos puntas.
 
 ```text
 CONTRATO           `gate:sistema-conforme`
@@ -7370,9 +7563,22 @@ CADA MACROCIRCUITO antes de continuar. En `N`, `A`, `M` y los tramos `SIS` de `U
 ```text
 1 PRODUCTO O          qué se certifica: `instalacion:transversal/<producto>` o el sujeto
   INSTALACIÓN         certificable que corresponda (§9.2)
-2 EJECUCIÓN DEL       **CUÁL** de las ejecuciones: la iniciativa del macrocircuito, por su
-  MACROCIRCUITO       identificador. Es lo que hace que la certificación sea de ESTA
-                      ejecución y no de otra, y sin él las reglas 1, 3 y 9 no son evaluables
+2 EJECUCIÓN DEL       **CUÁL** de las ejecuciones, **por el identificador de la EJECUCIÓN y
+  MACROCIRCUITO       NO por el de la iniciativa** — que durante la FASE 0 todavía no existe y
+                      NO PUEDE existir: la regla 5 y `X-S5` fijan que «una iniciativa abierta
+                      ya es estado». Es lo que hace que la certificación sea de ESTA ejecución
+                      y no de otra, y sin él las reglas 1, 3 y 9 no son evaluables.
+                      **DÓNDE NACE — dicho aquí porque sin decirlo la fase NO ES EJECUTABLE, y
+                      derivado de `O17` vía `D107`, no elegido por F4:** lo ACUÑA la propia
+                      FASE 0, y es la **HUELLA de su disparador junto con los otros cinco
+                      identificadores de este sujeto**. Direccionado por CONTENIDO y no
+                      monotónico, como todo identificador de este documento (§2.7): **no
+                      consume contador, no abre iniciativa, no escribe canónico** — luego no
+                      muta estado y la regla 2 se conserva entera. No es de la forma
+                      `<PREFIJO><n>` y por eso no entra en el censo de espacios de nombres de
+                      `D83`. La iniciativa, cuando la abren `INS-0`, `A0`, `M0` o `U0`, **lo
+                      ADOPTA por referencia y no lo re-acuña**; y si el disparador cambia, la
+                      huella cambia, que es exactamente lo que la regla 8 quiere
 3 REVISIÓN DEL        qué kernel se comprueba, por su revisión
   KERNEL
 4 REVISIÓN DE         qué esquemas y qué contratos APLICABLES, por su revisión. No «los del
@@ -7445,10 +7651,40 @@ SALIDA             **la declaración Estructural DE ESTA EJECUCIÓN**, con su su
                    `aspecto:certificacion/estructural` del sujeto, con el contrato de §3.5 y
                    con `responsables` **sólo si hay desviación del reparto por defecto, y con
                    su motivo**
+DÓNDE SE PERSISTE  **Dicho aquí porque sin decirlo la fase NO ES EJECUTABLE, e IGUAL EN LOS
+LA SALIDA          CUATRO** — derivado de `O17` vía `D107`, y no elegido por F4. `estado/`
+                   nace en `INS-0` (§8.1, `D30`), y su equivalente en `A0`, `M0` y `U0`: la
+                   FASE 0 es ANTERIOR a los cuatro, luego **no puede escribir en `estado/`, y
+                   no escribe**. Escribe en el **SOPORTE DURABLE DE LA FASE 0**: soporte
+                   propio, anterior al `estado/` del macrocircuito, que contiene **la
+                   declaración, su dosier y su celda, y NADA del macrocircuito**. Y entonces:
+                     · la PRIMERA fase que crea `estado/` —`INS-0`, `A0`, `M0`, `U0`—
+                       **INCORPORA** la declaración a `estado/cobertura/` (§2.4) como su
+                       primer acto, **sin reemitirla y sin volver a certificar**. Incorporar
+                       NO es certificar: si la huella incorporada no es idéntica a la emitida
+                       es OTRO sujeto, y la regla 8 lo rechaza
+                     · **la celda existe desde la FASE 0.** Lo que cambia al entrar en
+                       `INS-0`/`A0`/`M0`/`U0` es DÓNDE reside, no quién la produjo ni cuándo
+                     · si el gate BLOQUEA, **no hay nada que incorporar y nada que deshacer**:
+                       el soporte de la FASE 0 no es estado canónico del macrocircuito, y ésa
+                       es la razón exacta de que la regla 2 siga siendo cierta con la salida
+                       ya escrita. La frontera no es «no escribir nada»: es **no escribir
+                       nada DEL MACROCIRCUITO**
+                   **Materializar este soporte es kernel, y F4 no toca `kernel/`**: queda
+                   abajo como trabajo futuro, con propietario, fase y prueba
+QUÉ PASA SI EL     **la FASE 0 NO SE REANUDA: se REPITE ENTERA.** No tiene mutación canónica
+CHAT SE AGOTA      que preservar, y tanto su identificador de ejecución como su declaración
+DENTRO DE ELLA     son derivados por contenido: repetirla sobre el mismo disparador produce
+                   **la MISMA** declaración, no una segunda, con lo que la regla 1 —«ni cero
+                   ni dos»— se conserva. Por eso «REANUDACIÓN … desde `INS-0`» de §8.1 sigue
+                   siendo cierta y **no se contradice con esta fase**
 GATE               `gate:sistema-conforme`. **Si FALLA, el macrocircuito se BLOQUEA ANTES DE
-                   MUTAR ESTADO** (regla 5): no se abre la iniciativa, no se escribe ningún
-                   canónico y no se toca ninguna fuente. Bloquear después de abrir la
-                   iniciativa YA es haber mutado estado
+                   MUTAR ESTADO** (regla 5): no se abre la iniciativa, **no se escribe ningún
+                   canónico DEL MACROCIRCUITO** —ni `estado/`, ni item, ni celda suya— y no se
+                   toca ninguna fuente. Bloquear después de abrir la iniciativa YA es haber
+                   mutado estado. **La declaración propia de la FASE 0 no es una excepción a
+                   esto: vive en su soporte propio, arriba, y por eso un bloqueo no deja nada
+                   que deshacer**
 CONDICIÓN DE       la declaración emitida, y su celda `verificado` y vigente para ESTA
 CIERRE DE FASE 0   ejecución. **Sin ella la fase siguiente no abre**, y ningún nivel superior
                    es alcanzable por la definición de §9.2
@@ -7476,6 +7712,8 @@ demás. Escribir el contrato de una prueba no es la prueba.
 | `X-S7` | el propietario del macrocircuito **emite él mismo** la declaración en vez de `SIS`, o **continúa sin exigirla** | **FALLA en los DOS casos.** No puede sustituir a `SIS` y debe exigirla: son las dos mitades del mismo reparto, y satisfacer una no dispensa de la otra |
 | `X-S8` | `SEG` bloquea por incumplimiento de seguridad de la estructura y la FASE 0 se declara superada igualmente | **FALLA.** El veto de `SEG` no lo levantan `SIS`, `VER`, `PLT` ni el propietario del macrocircuito |
 | `X-S9` | emitir la declaración con un SUJETO al que le falta uno de los identificadores obligatorios de la regla 7 | **FALLA**, nombrando el que falta. La regla 7 es un mínimo, y omitir la huella de la evidencia convierte cualquier reutilización posterior en una presunción |
+| `X-S10` | la FASE 0 **abre la iniciativa** —o consume un contador de iniciativa— para poder resolver el identificador nº 2 de su sujeto | **FALLA**, y es la prueba de que el identificador de la EJECUCIÓN no es el de la iniciativa. El identificador nº 2 lo ACUÑA la FASE 0 por HUELLA de su disparador y de los otros cinco: **sin abrir nada y sin consumir contador**. Abrirla es mutar estado (regla 2, `X-S5`) |
+| `X-S11` | la FASE 0 **escribe su celda dentro de `estado/`** —o el macrocircuito abre `INS-0`/`A0`/`M0`/`U0` **sin INCORPORAR** la declaración ya emitida, o la incorpora con **otra huella** | **FALLA en los TRES casos.** `estado/` nace después de la FASE 0: escribir ahí antes es imposible y pretenderlo oculta que la fase no tenía soporte. No incorporarla deja el nivel Estructural sin sede canónica. Incorporarla con otra huella es OTRO sujeto, y la regla 8 lo rechaza |
 
 ### LO QUE ESTO HACE SATISFACIBLE — `O12`, y por qué recorrido
 
@@ -7497,15 +7735,38 @@ POR QUÉ LO ES HOY  porque **cada ejecución produce su Estructural en FASE 0**.
                      `A`  FASE 0 Estructural → `A9` Integrada → `A3` el baseline aprobado
                           por el Owner → `A10` = `O12`. **Con la salvedad de abajo**
                      `M`  FASE 0 Estructural → `M5` Integrada con lo viejo TODAVÍA EN PIE →
-                          `M7` revalidada tras retirar. `M` no arranca programación
+                          `M7` revalidada tras retirar. `M` no arranca programación.
+                          **Con la salvedad de abajo, que es la MISMA que la de `A`**
                      `U`  FASE 0 Estructural → `U6` revalida el nivel que tuviera antes. `U`
                           **no invoca `O12`** y §18 lo dice: una actualización no arranca
                           programación
-LA SALVEDAD, DICHA **la adopción sigue sin fase que produzca su OPERATIVA con nombre propio**,
-Y NO TAPADA        y `A9` la presupone por la cadena de §9.2. **`O17` da productor al nivel
-                   Estructural y a NINGÚN otro**, luego resolverlo aquí sería ampliar una
-                   resolución del Owner. **No se amplía.** Queda registrado abajo como
-                   trabajo futuro, con propietario, fase y prueba
+LAS SALVEDADES,    **enumeradas aquí, TODAS las que hay; el cardinal no se escribe** —regla de
+DICHAS Y NO        §0 sobre titulares de enumeración—. Son las de la cadena de niveles, no las
+TAPADAS            de la FASE 0:
+                     · **ADOPCIÓN.** `A` sigue sin fase que produzca su OPERATIVA con nombre
+                       propio, y `A9` la presupone por la cadena de §9.2
+                     · **MIGRACIÓN — EL MISMO HUECO, Y SE DICE CON LAS MISMAS LETRAS.** `M3`
+                       migra el ESTADO PERSISTIDO «con su esquema» (§8.3), y §9.3 declara que
+                       «cambia la disposición del estado» INVALIDA el nivel Operativo. La
+                       única Operativa que un producto migrado traía es la que produjo `INS-4`
+                       en su instalación original, y **`M3` la vence**. **Ninguna fase
+                       `M0`–`M7` la reproduce** y §8.3 no la nombra: su fila CERTIFICACIÓN va
+                       de Estructural en FASE 0 a Integrada en `M5` sin pasar por ella. Luego
+                       **`M5` certifica Integrada sobre un presupuesto VENCIDO**, que es el
+                       modo de fallo que §9.2 describe en «CONSECUENCIA» y el que `O17` cerró
+                       un piso más abajo. **Declararlo es para lo que esta sede existe;
+                       callarlo mientras se declaraba el de `A`, cuatro líneas más arriba, era
+                       el defecto — y el lector infería que los otros recorridos estaban
+                       completos**
+                     · **`N` y `U` NO lo tienen, y consta, porque una enumeración de huecos
+                       que sólo nombra los rotos no dice nada del resto:** `INS-4` produce la
+                       Operativa de `N` con nombre propio, y `U6` REVALIDA el nivel VIGENTE
+                       sin invocar `O12` —§18 lo dice—, luego `U` no arrastra el hueco de
+                       ningún otro
+                   **`O17` da productor al nivel Estructural y a NINGÚN otro**, luego resolver
+                   cualquiera de los dos huecos aquí sería ampliar una resolución del Owner.
+                   **No se amplía.** Quedan registrados abajo como trabajo futuro, con
+                   propietario, fase y prueba
 ```
 
 ### Trabajo futuro que esta sede NO puede hacer, con propietario, fase y prueba
@@ -7528,6 +7789,46 @@ ADOPCIÓN             Operativa presupuesta no la produce ninguna fase de §8.2.
                      POSTERIOR: que `A9` no pueda cerrar sin una celda
                      `aspecto:certificacion/operativo` `verificado` y vigente **de esa misma
                      ejecución**. **FALLA HOY**
+
+EL SOPORTE DURABLE   PROPIETARIO **`SIS`** · FASE **F6** · el bloque «DÓNDE SE PERSISTE LA
+DE LA FASE 0,        SALIDA» de arriba dice QUÉ es y QUÉ contiene, y ésa era la pieza que
+MATERIALIZADO EN     faltaba para que la fase fuese ejecutable. **Materializarlo —su ruta, su
+EL KERNEL            formato y el acto de INCORPORACIÓN que ejecutan `INS-0`, `A0`, `M0` y
+                     `U0`— es kernel, y §19 prohíbe a F4 tocar `kernel/`.** PRUEBA POSTERIOR:
+                     ejecutar una FASE 0 que BLOQUEA y exigir que **no exista ni un byte bajo
+                     `estado/`** al terminar; y ejecutar una que SUPERA y exigir que la celda
+                     `aspecto:certificacion/estructural` aparezca en `estado/cobertura/` con
+                     **la huella idéntica** a la emitida antes de `INS-0`. **FALLA HOY, y
+                     tiene que fallar**
+
+EL PRODUCTOR DE LA   PROPIETARIO **el Owner** · FASE **F5** · el hueco es el MISMO que el de la
+OPERATIVA EN LA      adopción y está declarado arriba con las mismas letras: `M3` invalida la
+MIGRACIÓN            Operativa heredada por el trigger literal de §9.3 y ninguna fase
+                     `M0`–`M7` la reproduce, con lo que `M5` certifica Integrada sobre un
+                     presupuesto vencido. **No se resuelve aquí ni se registra como presión
+                     nueva**, por la misma razón que en la adopción: `O17` resuelve el
+                     productor del Estructural y de ningún otro. PRUEBA POSTERIOR: que `M5` no
+                     pueda cerrar sin una celda `aspecto:certificacion/operativo` `verificado`
+                     y vigente **posterior a `M3` y de esa misma ejecución**. **FALLA HOY**
+
+EL PRODUCTOR DEL     PROPIETARIO **el Owner** · FASE **F5** · §9.2 deja la casilla del nivel
+NIVEL `completo`     `completo` sin fase que lo produzca, y la regla 12 de `O17` exige
+                     PRODUCTOR propio a cada nivel. Lo que hay hoy en esa casilla es
+                     EVIDENCIA —los escenarios de §14—, no un productor. Es la misma clase que
+                     los dos huecos de arriba y se resuelve por la misma puerta.
+                     PRUEBA POSTERIOR: que ninguna celda pueda alcanzar `completo` sin una
+                     fase nombrada que la produzca, con su sujeto, su evidencia, su vigencia y
+                     su condición de invalidación. **FALLA HOY**
+
+`U` Y EL FRENO 3     PROPIETARIO **el Owner** · FASE **F5** · con la `FASE 0` dentro de la
+DE `a.7`             racha, `U` presenta TRES items `SIS` consecutivos y el FRENO 3 **sí llega
+                     a evaluarse** (§8.0, re-derivado). Lo que sostiene hoy a `U` es la
+                     cláusula LITERAL de excepción de `a.7`, no la cuenta propia. **Si el
+                     Owner no considerase que una actualización de ADS es «construir o migrar
+                     el propio kernel/runtime», `U` necesitaría excepción del Owner — y eso no
+                     se decide aquí.** PRUEBA POSTERIOR: un barrido que derive de §18 la racha
+                     `SIS` máxima de cada macrocircuito y **falle si alguna supera dos sin una
+                     excepción escrita con su fundamento**
 
 AÑADIR EL SUJETO A   PROPIETARIO **`SIS`** · FASE **F6** · §9.3 enumera los triggers de
 LOS TRIGGERS DE      invalidación por nivel y no menciona el sujeto, que esta sección añade
@@ -7930,10 +8231,10 @@ demostrar que las piezas encajan sin contradecirse. El piloto sigue pendiente.
 
 | | escenario | fuentes que se leen | estado que cambia | quién escribe | gate | evidencia | cómo se recupera |
 |---|---|---|---|---|---|---|---|
-| 1 | **proyecto nuevo** | distribución instalada | **`estado/` nace en `INS-0`**, con `INI-001` y el item real `SIS-001` | `SIS` propietaria global · `CON` y `VER` · `PLT` materializa (`C7:82`) · runtime | `INS-4` Operativa · **`INS-5` baseline aprobado por el Owner** · `INS-7` = `O12` | `workspace check` · prueba de humo · checkpoint recuperado | **por el checkpoint del paquete de `SIS-001`, desde `INS-0`.** Ningún tramo depende del chat |
-| 2 | **adopción de PesquerApp** | los dos repositorios enteros, sólo lectura | iniciativa A0 · inventario · baseline · cobertura inicial | `INV` la capa, `SIS` consumidor | A3 baseline, A8 retirada, A10 = `O12` | inventario con procedencia · dictamen de `VER` | dosier de la iniciativa + checkpoint del paquete |
-| 3 | **migración desde ADS anterior** | control repo antiguo y fuentes | estado **traducido**, con esquema nuevo | `SIS` · `ARQ` en `M6`–`M7` · `CON` con custodia de cada source change · `PLT` materializa (`C7:82`) | M3 equivalencia · M5 certificación Integrada · **`M6` autorización EXPLÍCITA del Owner** · M7 las cinco salidas verdes | equivalencia antes/después de items y checkpoints | el evento `preparada` de la tx; M3 es idempotente |
-| 4 | **actualización de ADS** | distribución candidata e instalada | distribución instalada · proyecciones | `SIS` · `PLT` propietaria global de `U5b` · `CON` con custodia del puntero · `ENT` declara convergencia | U3 plan aprobado, U6 certificación | vista comprensible del cambio | rollback a la versión anterior con su estado |
+| 1 | **proyecto nuevo** | distribución instalada | **`estado/` nace en `INS-0`**, con `INI-001` y el item real `SIS-001` | `SIS` propietaria global · `CON` y `VER` · `PLT` materializa (`C7:82`) · runtime | **`FASE 0` `gate:sistema-conforme`, ANTES de toda mutación canónica (§9.6; `O17` vía `D107`)** · `INS-4` Operativa · **`INS-5` baseline aprobado por el Owner** · `INS-7` = `O12` | `workspace check` · prueba de humo · checkpoint recuperado | **por el checkpoint del paquete de `SIS-001`, desde `INS-0`.** Ningún tramo depende del chat. **La `FASE 0` no se reanuda: se REPITE ENTERA y produce la MISMA declaración, porque no muta nada y su identificador es derivado por contenido (§9.6)** |
+| 2 | **adopción de PesquerApp** | los dos repositorios enteros, sólo lectura | iniciativa A0 · inventario · baseline · cobertura inicial | `INV` la capa, `SIS` consumidor | **`FASE 0` `gate:sistema-conforme`, ANTES de toda mutación canónica (§9.6; `O17` vía `D107`)** · A3 baseline, A8 retirada, A10 = `O12`. **`A9` presupone una Operativa que ninguna fase de `A` produce: salvedad declarada en §9.6** | inventario con procedencia · dictamen de `VER` | dosier de la iniciativa + checkpoint del paquete |
+| 3 | **migración desde ADS anterior** | control repo antiguo y fuentes | estado **traducido**, con esquema nuevo | `SIS` · `ARQ` en `M6`–`M7` · `CON` con custodia de cada source change · `PLT` materializa (`C7:82`) | **`FASE 0` `gate:sistema-conforme`, ANTES de toda mutación canónica (§9.6; `O17` vía `D107`)** · M3 equivalencia · M5 certificación Integrada · **`M6` autorización EXPLÍCITA del Owner** · M7 las cinco salidas verdes. **`M3` invalida la Operativa heredada (§9.3) y ninguna fase `M` la reproduce: salvedad declarada en §9.6** | equivalencia antes/después de items y checkpoints | el evento `preparada` de la tx; M3 es idempotente |
+| 4 | **actualización de ADS** | distribución candidata e instalada | distribución instalada · proyecciones | `SIS` · `PLT` propietaria global de `U5b` · `CON` con custodia del puntero · `ENT` declara convergencia | **`FASE 0` `gate:sistema-conforme`, ANTES de toda mutación canónica (§9.6; `O17` vía `D107`)** · U3 plan aprobado, U6 certificación (**revalida el nivel vigente; `U` no invoca `O12`**) | vista comprensible del cambio | rollback a la versión anterior con su estado |
 | 5 | **feature amplia por iniciativa** | componentes afectados y sus fuentes | iniciativa + N items + paquetes | las capacidades con custodia | gate de cierre de la iniciativa | capas, source changes e integration set | dosier derivado + checkpoints |
 | 6 | **auditoría recurrente → campaña** | los sujetos de las celdas vencidas | cobertura · items `AUD` · iniciativa campaña | **`DSP` abre los items `AUD` dentro de la política `O7` vigente** (§5.3) · la capacidad RESPONSABLE del aspecto —la `lider` si hay varias— abre la campaña · `ENC` clasifica los findings · runtime | gate de cada `AUD` + cierre de campaña | dictámenes · findings con causa raíz | la celda y su estado; nada se pierde |
 | 7 | **reanudación tras chat agotado** | estado canónico completo | ninguno hasta despachar | runtime | — | el reporte breve de `b.14` paso 5 | es el escenario: `Continúa` |
@@ -7943,7 +8244,7 @@ demostrar que las piezas encajan sin contradecirse. El piloto sigue pendiente.
 | 11 | **evidencia caducada** | entradas declaradas del validador | ninguno: se regenera evidencia | el runner | `T158` | la huella que no casa | regenerar, nunca editar |
 | 12 | **aprendizaje promovido** | evidencia del item de origen | ledger · item `SIS` en `ads-kernel` | `APR` · `SIS` | `gate:aprendizaje-fundado` | dos ocurrencias o un incidente | el ledger conserva la procedencia |
 
-**Lo que los doce demuestran juntos**: que ningún escenario necesita un almacén nuevo, un
+**Lo que los escenarios de arriba demuestran juntos** —todos ellos; el cardinal no se escribe—: que ningún escenario necesita un almacén nuevo, un
 proceso nuevo ni una capa nueva. Los cuatro tipos de estado de §3 aparecen, y el esquema de
 clase de §9.2; nada más.
 
@@ -9439,18 +9740,18 @@ atrás es volver a un release. Es lo que ya se hace, y funciona.
 
 | macrocircuito | fase | proceso `b.16` | propietario global | participantes de la RUTA, con su vía | ejecutor y autoridad | entrada | salida | gate | estado persistido |
 |---|---|---|---|---|---|---|---|---|---|
-| **N · instalación** | **`FASE 0`** · CERTIFICACIÓN ESTRUCTURAL | `proceso:SIS` | **`SIS`** (vía 1), **productor y propietario de la declaración** (`O17` vía `D107`) | `VER` vía 2, produce el DOSIER y **no se apropia de la decisión** · `SEG` vía 3 cuando hay superficie, y **conserva su bloqueo** | ejecutor `PLT` cuando el contrato vigente le atribuya la maquinaria técnica · autoridad `SIS`, con el veto de `SEG` · **el propietario de `N` no puede sustituir a `SIS`, y DEBE exigirla** | el disparador de `N`, **con CERO mutaciones canónicas hechas**, y el SUJETO de los seis identificadores de §9.6 resuelto | **la declaración Estructural de ESTA ejecución**, con su sujeto, su evidencia y su huella. Una por ejecución, y ninguna heredada | **`gate:sistema-conforme` (§9.6)** — el MISMO contrato para los cuatro. Si falla, **BLOQUEA antes de mutar estado** | celda `aspecto:certificacion/estructural` del sujeto, con su vigencia y su condición de invalidación |
+| **N · instalación** | **`FASE 0`** · CERTIFICACIÓN ESTRUCTURAL | `proceso:SIS` | **`SIS`** (vía 1), **productor y propietario de la declaración** (`O17` vía `D107`) | `VER` vía 2, produce el DOSIER y **no se apropia de la decisión** · **`SEG` sin vía: `PN-13`** — y **conserva su bloqueo**, que es lo ÚNICO que `O17` le da y lo único que §9.6 recoge. Corregido contra §9.6 por la jerarquía de precedencia declarada allí | ejecutor `PLT` cuando el contrato vigente le atribuya la maquinaria técnica · autoridad `SIS`, con el veto de `SEG` · **el propietario de `N` no puede sustituir a `SIS`, y DEBE exigirla** | el disparador de `N`, **con CERO mutaciones canónicas hechas**, y el SUJETO de los seis identificadores de §9.6 resuelto | **la declaración Estructural de ESTA ejecución**, con su sujeto, su evidencia y su huella. Una por ejecución, y ninguna heredada | **`gate:sistema-conforme` (§9.6)** — el MISMO contrato para los cuatro. Si falla, **BLOQUEA antes de mutar estado** | celda `aspecto:certificacion/estructural` del sujeto, con su vigencia y su condición de invalidación, **en el SOPORTE DURABLE DE LA FASE 0 —anterior al `estado/` del macrocircuito—, que la primera fase que crea `estado/` INCORPORA sin reemitirla (§9.6)** |
 | | `INS-0`–`INS-5` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `APR` `C-APR` vía 3 · `PRD` `ARQ` vía 4, items `INV` enlazados de discovery · **`DOM` `DIS` `SEG` sin vía: `PN-13`** | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner | decisión del Owner de instalar | control repo, topología, especialización y adaptadores · **el BASELINE de producto, dominio y diseño de `INS-5`** · **la CLASIFICACIÓN DE DESCONOCIDOS CRÍTICOS**, cada uno resuelto, acotado con su portador o deferido con su motivo | `INS-4` certificación Operativa · **`INS-5` BASELINE APROBADO POR EL OWNER** —la misma disposición que `A3` en la adopción— | `estado/` e `INI-001` desde `INS-0`, sobre el item `SIS-001` |
 | | `INS-6`–`INS-7` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3, «modifica el runtime» | `PLT` MATERIALIZA (`C7:82`) · **`CON` con custodia hace rama, commit, push y PR** del puntero (`C7:83`–`C7:86`) · `SEG` puede bloquear el push · `ENT` merge y convergencia (`C7:88`–`C7:89`) · autoridad Owner | **especialización aprobada Y baseline de `INS-5` aprobado por el Owner** | punteros propagados y nivel Integrada | `INS-7` = `O12`, **con sus TRES condiciones y el productor de cada una**: Integrada la produce `INS-7` con la aplicabilidad de §9.5 · el BASELINE APROBADO lo produce `INS-5` y lo aprueba el Owner · la CLASIFICACIÓN DE DESCONOCIDOS CRÍTICOS la produce `INS-5` como entregable propio. Ninguna queda sin productor identificable | evidencia + celdas de cobertura |
-| **A · adopción** | **`FASE 0`** · CERTIFICACIÓN ESTRUCTURAL | `proceso:SIS` | **`SIS`** (vía 1), **productor y propietario de la declaración** (`O17` vía `D107`) | `VER` vía 2, produce el DOSIER y **no se apropia de la decisión** · `SEG` vía 3 cuando hay superficie, y **conserva su bloqueo** | ejecutor `PLT` cuando el contrato vigente le atribuya la maquinaria técnica · autoridad `SIS`, con el veto de `SEG` · **el propietario de `A` no puede sustituir a `SIS`, y DEBE exigirla** | el disparador de `A`, **con CERO mutaciones canónicas hechas**, y el SUJETO de los seis identificadores de §9.6 resuelto | **la declaración Estructural de ESTA ejecución**, con su sujeto, su evidencia y su huella. Una por ejecución, y ninguna heredada | **`gate:sistema-conforme` (§9.6)** — el MISMO contrato para los cuatro. Si falla, **BLOQUEA antes de mutar estado** | celda `aspecto:certificacion/estructural` del sujeto, con su vigencia y su condición de invalidación |
+| **A · adopción** | **`FASE 0`** · CERTIFICACIÓN ESTRUCTURAL | `proceso:SIS` | **`SIS`** (vía 1), **productor y propietario de la declaración** (`O17` vía `D107`) | `VER` vía 2, produce el DOSIER y **no se apropia de la decisión** · **`SEG` sin vía: `PN-13`** — y **conserva su bloqueo**, que es lo ÚNICO que `O17` le da y lo único que §9.6 recoge. Corregido contra §9.6 por la jerarquía de precedencia declarada allí | ejecutor `PLT` cuando el contrato vigente le atribuya la maquinaria técnica · autoridad `SIS`, con el veto de `SEG` · **el propietario de `A` no puede sustituir a `SIS`, y DEBE exigirla** | el disparador de `A`, **con CERO mutaciones canónicas hechas**, y el SUJETO de los seis identificadores de §9.6 resuelto | **la declaración Estructural de ESTA ejecución**, con su sujeto, su evidencia y su huella. Una por ejecución, y ninguna heredada | **`gate:sistema-conforme` (§9.6)** — el MISMO contrato para los cuatro. Si falla, **BLOQUEA antes de mutar estado** | celda `aspecto:certificacion/estructural` del sujeto, con su vigencia y su condición de invalidación, **en el SOPORTE DURABLE DE LA FASE 0 —anterior al `estado/` del macrocircuito—, que la primera fase que crea `estado/` INCORPORA sin reemitirla (§9.6)** |
 | | `A0`–`A1` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner | el Owner quiere gobernar un producto con historia | perímetro y topología | modo no destructivo declarado | iniciativa + `estado/` |
 | | `A2`–`A7` | **`proceso:AUD`**, en items ENLAZADOS, **uno por conclusión** | **DERIVADO por item** del encargo (`b.16`): la capacidad responsable de esa conclusión — `PRD`, `ARQ`, `DOM`, `DIS`, `SEG` y `ENT` en las ocho de `A6`. **NUNCA a mano** | `INV` vía 2, única obligatoria, ejecuta y no responde de la conclusión · `DOM` `C-DOM` · `SEG` `C-SEG` · `DIS` `C-DIS` · `PRD` «produce una decisión de producto» · `APR` `C-APR`, vía 3 | encuadre `ENC` (previo a la ruta) · autoridad Owner en `A3` | acceso de lectura a las fuentes | inventario, baseline, producto reconstruido y trabajo vivo | `A3` baseline aprobado por el Owner | capas por item, con procedencia |
 | | `A8` | `proceso:DEU` | **`ARQ`** (vía 1) | `CON` vía 2 (`cambio-construido`) · `VER` vía 2 · `DOM:condiciones` `SEG:condiciones` `ENT` `USO` `APR` vía 3 | `PLT` MATERIALIZA (`C7:82`) · **`CON` con custodia hace rama, commit, push y PR** (`C7:83`–`C7:86`) · `SEG` puede bloquear el push · `ENT` merge y convergencia (`C7:88`–`C7:89`) · autoridad Owner, POR FUENTE | autorización de retirada | copias organizativas y verdades paralelas retiradas | `A8` autorizado por el Owner | source changes por fuente |
 | | `A9`–`A10` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · **`SEG` sin vía si hay superficie: `PN-13`**, y entretanto item `AUD` enlazado con `SEG` de propietaria derivada | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner | limpieza cerrada | nivel Integrada | `A10` = `O12` | celdas de certificación |
-| **M · migración** | **`FASE 0`** · CERTIFICACIÓN ESTRUCTURAL | `proceso:SIS` | **`SIS`** (vía 1), **productor y propietario de la declaración** (`O17` vía `D107`) | `VER` vía 2, produce el DOSIER y **no se apropia de la decisión** · `SEG` vía 3 cuando hay superficie, y **conserva su bloqueo** | ejecutor `PLT` cuando el contrato vigente le atribuya la maquinaria técnica · autoridad `SIS`, con el veto de `SEG` · **el propietario de `M` no puede sustituir a `SIS`, y DEBE exigirla** | el disparador de `M`, **con CERO mutaciones canónicas hechas**, y el SUJETO de los seis identificadores de §9.6 resuelto | **la declaración Estructural de ESTA ejecución**, con su sujeto, su evidencia y su huella. Una por ejecución, y ninguna heredada | **`gate:sistema-conforme` (§9.6)** — el MISMO contrato para los cuatro. Si falla, **BLOQUEA antes de mutar estado** | celda `aspecto:certificacion/estructural` del sujeto, con su vigencia y su condición de invalidación |
+| **M · migración** | **`FASE 0`** · CERTIFICACIÓN ESTRUCTURAL | `proceso:SIS` | **`SIS`** (vía 1), **productor y propietario de la declaración** (`O17` vía `D107`) | `VER` vía 2, produce el DOSIER y **no se apropia de la decisión** · **`SEG` sin vía: `PN-13`** — y **conserva su bloqueo**, que es lo ÚNICO que `O17` le da y lo único que §9.6 recoge. Corregido contra §9.6 por la jerarquía de precedencia declarada allí | ejecutor `PLT` cuando el contrato vigente le atribuya la maquinaria técnica · autoridad `SIS`, con el veto de `SEG` · **el propietario de `M` no puede sustituir a `SIS`, y DEBE exigirla** | el disparador de `M`, **con CERO mutaciones canónicas hechas**, y el SUJETO de los seis identificadores de §9.6 resuelto | **la declaración Estructural de ESTA ejecución**, con su sujeto, su evidencia y su huella. Una por ejecución, y ninguna heredada | **`gate:sistema-conforme` (§9.6)** — el MISMO contrato para los cuatro. Si falla, **BLOQUEA antes de mutar estado** | celda `aspecto:certificacion/estructural` del sujeto, con su vigencia y su condición de invalidación, **en el SOPORTE DURABLE DE LA FASE 0 —anterior al `estado/` del macrocircuito—, que la primera fase que crea `estado/` INCORPORA sin reemitirla (§9.6)** |
 | | `M0`–`M5` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3 | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner | existe una instalación de una versión anterior | estado migrado, verificado y certificado | `M3` equivalencia · `M5` Integrada | `estado/` migrado + evento `migracion` |
 | | `M6`–`M7` | `proceso:DEU` | **`ARQ`** (vía 1) — su `plan-tecnico` es ENTRADA de `M5` | `CON` vía 2 (`cambio-construido`) · `VER` vía 2, y verifica `M7` · `DOM:condiciones` `SEG:condiciones` `ENT` `USO` `APR` vía 3 | `PLT` MATERIALIZA (`C7:82`) · **`CON` con custodia hace rama, commit, push y PR** (`C7:83`–`C7:86`) · `SEG` puede bloquear el push · `ENT` merge y convergencia (`C7:88`–`C7:89`) · autoridad Owner, POR FUENTE | `M5` certificado y autorización POR FUENTE | heredado retirado y verificado | `M6` autorizado · `M7` verificado | source changes + `INTEGRACIÓN PARCIAL` |
-| **U · actualización** | **`FASE 0`** · CERTIFICACIÓN ESTRUCTURAL | `proceso:SIS` | **`SIS`** (vía 1), **productor y propietario de la declaración** (`O17` vía `D107`) | `VER` vía 2, produce el DOSIER y **no se apropia de la decisión** · `SEG` vía 3 cuando hay superficie, y **conserva su bloqueo** | ejecutor `PLT` cuando el contrato vigente le atribuya la maquinaria técnica · autoridad `SIS`, con el veto de `SEG` · **el propietario de `U` no puede sustituir a `SIS`, y DEBE exigirla** | el disparador de `U`, **con CERO mutaciones canónicas hechas**, y el SUJETO de los seis identificadores de §9.6 resuelto | **la declaración Estructural de ESTA ejecución**, con su sujeto, su evidencia y su huella. Una por ejecución, y ninguna heredada | **`gate:sistema-conforme` (§9.6)** — el MISMO contrato para los cuatro. Si falla, **BLOQUEA antes de mutar estado** | celda `aspecto:certificacion/estructural` del sujeto, con su vigencia y su condición de invalidación |
+| **U · actualización** | **`FASE 0`** · CERTIFICACIÓN ESTRUCTURAL | `proceso:SIS` | **`SIS`** (vía 1), **productor y propietario de la declaración** (`O17` vía `D107`) | `VER` vía 2, produce el DOSIER y **no se apropia de la decisión** · **`SEG` sin vía: `PN-13`** — y **conserva su bloqueo**, que es lo ÚNICO que `O17` le da y lo único que §9.6 recoge. Corregido contra §9.6 por la jerarquía de precedencia declarada allí | ejecutor `PLT` cuando el contrato vigente le atribuya la maquinaria técnica · autoridad `SIS`, con el veto de `SEG` · **el propietario de `U` no puede sustituir a `SIS`, y DEBE exigirla** | el disparador de `U`, **con CERO mutaciones canónicas hechas**, y el SUJETO de los seis identificadores de §9.6 resuelto | **la declaración Estructural de ESTA ejecución**, con su sujeto, su evidencia y su huella. Una por ejecución, y ninguna heredada | **`gate:sistema-conforme` (§9.6)** — el MISMO contrato para los cuatro. Si falla, **BLOQUEA antes de mutar estado** | celda `aspecto:certificacion/estructural` del sujeto, con su vigencia y su condición de invalidación, **en el SOPORTE DURABLE DE LA FASE 0 —anterior al `estado/` del macrocircuito—, que la primera fase que crea `estado/` INCORPORA sin reemitirla (§9.6)** |
 | | `U0`–`U4` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3 | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner en `U3` | hay una versión nueva de ADS | compatibilidad decidida y migración aplicada | `U3` punto de no retorno | instantánea de `U3` + progreso por pasos |
 | | **`U5a`** | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 | ejecutor el runtime del control repo | migración aplicada | proyecciones del control repo recompiladas | ninguno propio: cae en `U6` | huella de proyección (§6.3) |
 | | **`U5b`** | `proceso:DEP` | **`PLT`** (vía 1) | **`SEG` vía 2** (`condiciones-de-seguridad`, ANTES de construir; `G28` la hace irretirable) · **`CON` vía 2** (`cambio-construido`) · `VER` vía 2 · `DOM:condiciones` `ARQ` `ENT` vía 3 | `PLT` MATERIALIZA (`C7:82`) y participa por **vía 1** · **`CON` con custodia hace rama, commit, push y PR** (`C7:83`–`C7:86`) · `SEG` puede bloquear el push · `ENT` merge y convergencia (`C7:88`–`C7:89`) · autoridad Owner si hay retirada | `U5a` cerrado | punteros propagados a cada fuente | gate por fuente, con Integration Set si hay más de una | `INTEGRACIÓN PARCIAL` por fuente |
@@ -10190,7 +10491,7 @@ QUIÉN                revisores NUEVOS con contexto limpio. **El autor de esa le
 QUÉ HAY QUE LEER     ÍNTEGRO, no asignado:
 ÍNTEGRO                · `ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md` COMPLETO,
                          **incluidos el BLOQUE B (§8–§12, certificación por niveles) y el
-                         BLOQUE C (§13–§15, iniciativa y dosier vivo)** — las fuentes de
+                         BLOQUE C (§13–§17, iniciativa y dosier vivo)** — las fuentes de
                          `P4`, `P9` y `P10`, que ningún revisor contrastó
                        · `16-GATE-FINAL-INDEPENDIENTE-F4C.md` COMPLETO
                        · `17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md` COMPLETO
