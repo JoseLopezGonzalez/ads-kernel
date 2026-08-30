@@ -22,20 +22,26 @@ QUÉ DERIVA, Y DE QUÉ SEDE
 El universo obligatorio es la UNIÓN, sin quitar nada, de los cinco componentes que `1bis`
 enumera. Cada uno se lee de su SEDE NORMATIVA, no de una copia:
 
-  (i)   las cuatro fuentes del apartado «QUÉ HAY QUE LEER ÍNTEGRO» de `C-L.5`
+  (i)   las fuentes del apartado «QUÉ HAY QUE LEER ÍNTEGRO» de `C-L.5`
         SEDE: `11-ARQUITECTURA-INTEGRADA.md`, la propia sección `C-L.5`
-  (ii)  las CATORCE fuentes y las QUINCE fichas de la condición `C-0.1` del documento 18
+        CARDINAL: leído de `1bis`, no escrito aquí
+  (ii)  las fuentes y las fichas de la condición `C-0.1` del documento 18
         SEDE: el bloque `G-24` de `comprobar-correccion-gate-de-cierre.py`, que es la única
         sede del árbol que las enumera nombre a nombre y que las contrasta contra el árbol
         en cada ejecución de la batería. Leerlas de aquí evita crear una SEGUNDA sede del
         mismo catálogo, que es justo la clase de defecto que `Q-04` castigó
+        CARDINALES: leídos de `1bis`, y se exige además que las fuentes sean DISTINTAS —una
+        entrada repetida dejaba el recuento en pie y el universo con una fuente menos
   (iii) el documento 11, el registro de decisiones y el checkpoint
+        GUARDA: `1bis` tiene que seguir nombrando las TRES piezas, y las tres rutas tienen
+        que existir y ser distintas. Antes eran tres constantes sin comprobar nada
   (iv)  todo dictamen de gate anterior aún no leído íntegro por nadie
         SEDE: barrido de `docs/evolucion/NN-*.md` por el TÍTULO de su H1
   (v)   el objeto que el gate juzga, según SU encargo
         SEDE: el bloque `ENCARGO` de abajo, con la cláusula del encargo que justifica cada
         entrada. Es lo único que cambia de un gate a otro, y por eso está declarado y
         anotado en vez de inferido
+        GUARDA: ninguna fila sin cláusula, ninguna ruta repetida y ninguna inexistente
 
 FALLA CERRADO
 -------------
@@ -70,6 +76,26 @@ DECISIONES = "docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md"
 CHECKPOINT = "docs/evolucion/CHECKPOINT-ADS-NEXT.md"
 
 
+# ── numerales, y los CARDINALES que `1bis` publica ───────────────────────────────
+#
+# Los cardinales de los componentes (i) y (ii) —CUATRO fuentes, CATORCE fuentes y QUINCE
+# fichas— estaban ESCRITOS en este fichero, que existe precisamente porque una formulación
+# manual ya había caducado una vez. Ahora se LEEN de `1bis`, que es su sede, y si la sede
+# cambia el derivador se mueve con ella; si la sede no los publica, falla cerrado.
+_PALABRA = {
+    "cero": 0, "una": 1, "uno": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5,
+    "seis": 6, "siete": 7, "ocho": 8, "nueve": 9, "diez": 10, "once": 11, "doce": 12,
+    "trece": 13, "catorce": 14, "quince": 15, "dieciseis": 16, "diecisiete": 17,
+    "dieciocho": 18, "diecinueve": 19, "veinte": 20,
+}
+_ACENTOS = str.maketrans("áéíóúÁÉÍÓÚ", "aeiouAEIOU")
+
+
+def _num(txt):
+    t = txt.translate(_ACENTOS).lower().strip()
+    return int(t) if t.isdigit() else _PALABRA.get(t)
+
+
 class SedeIlegible(Exception):
     """Una sede normativa no se puede leer, o no dice lo que la regla dice que dice."""
 
@@ -95,8 +121,8 @@ def _resolver(nombre):
     return encontrados[0].replace(os.sep, "/")
 
 
-# ── (i) · las cuatro fuentes de «QUÉ HAY QUE LEER ÍNTEGRO» ───────────────────────
-def componente_i():
+# ── la sede `1bis`, de donde salen la REGLA y sus CARDINALES ─────────────────────
+def _bloque_1bis():
     texto = _leer(ARQ)
     m = re.search(r"^## `C-L\.5`.*?$", texto, re.M)
     if not m:
@@ -105,6 +131,36 @@ def componente_i():
     fin = re.search(r"^## ", seccion[3:], re.M)
     if fin:
         seccion = seccion[:fin.start() + 3]
+    i = seccion.find("1bis")
+    if i < 0:
+        raise SedeIlegible("`C-L.5` no contiene la regla `1bis`, que es la sede del "
+                           "universo obligatorio")
+    return seccion, seccion[i:]
+
+
+def cardinales():
+    """(n_fuentes_i, n_fuentes_ii, n_fichas_ii), LEÍDOS de `1bis`."""
+    _, b = _bloque_1bis()
+    plano = re.sub(r"\s+", " ", re.sub(r"[`*]", "", b))
+    mi = re.search(r"\(i\)\s+las\s+([a-zA-Záéíóú]+|\d+)\s+fuentes", plano)
+    mii = re.search(r"\(ii\)\s+las\s+([a-zA-Záéíóú]+|\d+)\s+fuentes\s+y\s+"
+                    r"([a-zA-Záéíóú]+|\d+)\s+fichas", plano)
+    if not mi:
+        raise SedeIlegible("`1bis` no publica el cardinal del componente (i): "
+                           "«(i) las <n> fuentes …»")
+    if not mii:
+        raise SedeIlegible("`1bis` no publica los cardinales del componente (ii): "
+                           "«(ii) las <n> fuentes y <n> fichas …»")
+    valores = (_num(mi.group(1)), _num(mii.group(1)), _num(mii.group(2)))
+    if any(v is None for v in valores):
+        raise SedeIlegible("`1bis` publica cardinales que no son numerales legibles: %r"
+                           % (mi.group(1), mii.group(1), mii.group(2)))
+    return valores
+
+
+# ── (i) · las fuentes de «QUÉ HAY QUE LEER ÍNTEGRO», con su cardinal leído ───────
+def componente_i():
+    seccion, _ = _bloque_1bis()
     b = re.search(r"QUÉ HAY QUE LEER\s*\n?.*?ÍNTEGRO(.*?)\n\s*DOS MANIFIESTOS",
                   seccion, re.S)
     if not b:
@@ -115,9 +171,10 @@ def componente_i():
         if n not in vistos:
             vistos.add(n)
             orden.append(n)
-    if len(orden) != 4:
-        raise SedeIlegible("«QUÉ HAY QUE LEER ÍNTEGRO» debe nombrar CUATRO fuentes; "
-                           "derivadas %d: %r" % (len(orden), orden))
+    esperado = cardinales()[0]
+    if len(orden) != esperado:
+        raise SedeIlegible("`1bis` declara %d fuentes en su componente (i) y «QUÉ HAY QUE "
+                           "LEER ÍNTEGRO» nombra %d: %r" % (esperado, len(orden), orden))
     return [_resolver(n) for n in orden]
 
 
@@ -128,22 +185,56 @@ def componente_ii():
     if not mf:
         raise SedeIlegible("no aparece el catálogo `fuentes` de `G-24` en %s" % BATERIA)
     fuentes = [l.strip() for l in mf.group(1).split("\n") if l.strip()]
-    if len(fuentes) != 14:
-        raise SedeIlegible("`C-0.1` declara CATORCE fuentes; `G-24` enumera %d"
-                           % len(fuentes))
+    n_fuentes, n_fichas = cardinales()[1], cardinales()[2]
+    if len(fuentes) != n_fuentes:
+        raise SedeIlegible("`1bis` declara %d fuentes en `C-0.1` y `G-24` enumera %d"
+                           % (n_fuentes, len(fuentes)))
+    # La UNICIDAD, que no se comprobaba: dos entradas iguales dejaban el recuento en pie y
+    # el universo con una fuente menos de las que dice. Es la misma clase de defecto que
+    # `P-08` describió — un cero verdadero por construcción — un piso más abajo.
+    if len(set(fuentes)) != n_fuentes:
+        repetidas = sorted(f for f in set(fuentes) if fuentes.count(f) > 1)
+        raise SedeIlegible("`G-24` enumera %d fuentes pero sólo %d DISTINTAS; repetidas: %r"
+                           % (len(fuentes), len(set(fuentes)), repetidas))
     mc = re.search(r"^CAPACIDADES\s*=\s*\[(.*?)\]", texto, re.S | re.M)
     if not mc:
         raise SedeIlegible("no aparece `CAPACIDADES` de `G-24` en %s" % BATERIA)
     fichas = re.findall(r'"([A-Z]{3})"', mc.group(1))
-    if len(fichas) != 15 or len(set(fichas)) != 15:
-        raise SedeIlegible("`C-0.2` declara QUINCE fichas; `G-24` enumera %d (%d distintas)"
-                           % (len(fichas), len(set(fichas))))
+    if len(fichas) != n_fichas or len(set(fichas)) != n_fichas:
+        raise SedeIlegible("`1bis` declara %d fichas y `G-24` enumera %d (%d distintas)"
+                           % (n_fichas, len(fichas), len(set(fichas))))
     return fuentes + ["kernel/operativo/capacidades/%s/CAPACIDAD.md" % c for c in fichas]
 
 
 # ── (iii) · documento 11, registro de decisiones y checkpoint ────────────────────
 def componente_iii():
-    return [ARQ, DECISIONES, CHECKPOINT]
+    """El documento 11, el registro de decisiones y el checkpoint — CON GUARDA.
+
+    Este componente devolvía tres constantes y no comprobaba nada: si una de las tres rutas
+    cambiaba de sitio, el universo encogía en silencio, que es exactamente lo que `P-08`
+    denunció. Ahora se exige que `1bis` siga nombrando las TRES piezas, que las tres rutas
+    existan y que ninguna esté repetida.
+    """
+    _, b = _bloque_1bis()
+    plano = re.sub(r"\s+", " ", re.sub(r"[`*]", "", b))
+    m = re.search(r"\(iii\)(.*?)\(iv\)", plano, re.S)
+    if not m:
+        raise SedeIlegible("`1bis` no publica el componente (iii)")
+    piezas = {"documento 11": r"documento 11",
+              "registro de decisiones": r"registro de decisiones",
+              "checkpoint": r"checkpoint"}
+    faltan = [k for k, pat in piezas.items() if not re.search(pat, m.group(1), re.I)]
+    if faltan:
+        raise SedeIlegible("`1bis` (iii) ya no nombra: %r; el componente devolvía tres "
+                           "constantes que su sede ha dejado de respaldar" % faltan)
+    rutas = [ARQ, DECISIONES, CHECKPOINT]
+    if len(set(rutas)) != len(piezas):
+        raise SedeIlegible("el componente (iii) resuelve %d rutas distintas para %d piezas"
+                           % (len(set(rutas)), len(piezas)))
+    for rel in rutas:
+        if not os.path.isfile(os.path.join(RAIZ, rel)):
+            raise SedeIlegible("el componente (iii) nombra %s y no existe en el árbol" % rel)
+    return rutas
 
 
 # ── (iv) · todo dictamen de gate anterior ────────────────────────────────────────
@@ -219,12 +310,34 @@ ENCARGO = [
 
 
 def componente_v():
-    return [r for r, _ in ENCARGO]
+    """El objeto que ESTE gate juzga — CON GUARDA sobre su propia declaración.
+
+    `ENCARGO` es lo único escrito a mano de todo el derivador, y por eso es lo único que
+    hay que vigilar aquí: una fila sin cláusula no dice por qué está, y una ruta repetida
+    infla el universo sin ampliarlo. Ninguna de las dos se detectaba.
+    """
+    if not ENCARGO:
+        raise SedeIlegible("el componente (v) está VACÍO: un gate sin objeto declarado no "
+                           "tiene universo, y un universo que encoge por omisión es el "
+                           "defecto de `P-08`")
+    sin_clausula = [r for r, c in ENCARGO if not (c or "").strip()]
+    if sin_clausula:
+        raise SedeIlegible("el componente (v) trae filas sin cláusula del encargo: %r. Sin "
+                           "cláusula no entra: la cláusula es lo que se lee en el informe"
+                           % sin_clausula)
+    rutas = [r for r, _ in ENCARGO]
+    repetidas = sorted({r for r in rutas if rutas.count(r) > 1})
+    if repetidas:
+        raise SedeIlegible("el componente (v) repite rutas: %r" % repetidas)
+    for rel in rutas:
+        if not os.path.isfile(os.path.join(RAIZ, rel)):
+            raise SedeIlegible("el componente (v) nombra %s y no existe en el árbol" % rel)
+    return rutas
 
 
 COMPONENTES = [
-    ("i", "las CUATRO fuentes de «QUÉ HAY QUE LEER ÍNTEGRO» de `C-L.5`", componente_i),
-    ("ii", "las CATORCE fuentes y las QUINCE fichas de `C-0.1` / `C-0.2`", componente_ii),
+    ("i", "las fuentes de «QUÉ HAY QUE LEER ÍNTEGRO» de `C-L.5`", componente_i),
+    ("ii", "las fuentes y las fichas de `C-0.1` / `C-0.2`", componente_ii),
     ("iii", "documento 11 · registro de decisiones · checkpoint", componente_iii),
     ("iv", "todo dictamen de gate anterior", componente_iv),
     ("v", "el objeto que ESTE gate juzga, según su encargo", componente_v),
