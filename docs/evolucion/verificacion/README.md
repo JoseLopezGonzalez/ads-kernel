@@ -13,8 +13,15 @@ python3 docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py
 ```
 
 Sale con `0` si todas las comprobaciones están en verde, con `1` si alguna falla y con `2`
-si la batería no pudo completar su ejecución. **El número de comprobaciones no se escribe
-en ningún sitio**: la batería lo publica al final, derivado de las que ejecuta.
+si la batería no pudo completar su ejecución. El número de comprobaciones **se deriva de las
+que se ejecutan y se CONTRASTA contra la tabla de abajo**, que es su sede: `G-34` compara los
+dos conjuntos en las dos direcciones, de modo que **amputar una llamada `check()` da ROJO y
+la que falta aparece nombrada**.
+
+> Antes esto decía, como virtud, que «el número de comprobaciones no se escribe en ningún
+> sitio». Era falso como virtud: el segundo gate de certificación amputó la llamada de
+> `G-31` y la batería imprimió **`36/36 comprobaciones en verde`** sin que la que faltaba
+> apareciera en el informe (`T-20`). Un censo que sale de lo que quedó no es un censo.
 
 > **Portabilidad.** La batería deriva su raíz de `__file__` —tres niveles por encima de
 > `docs/evolucion/verificacion/`— y **de nada más**. No usa el cwd y no codifica la ruta de
@@ -53,10 +60,10 @@ por esta vía: los fija `G-22`.
 | `G-05` | cero reglas de `#intentos` / `agotado` **vigentes** en la capa B | `I-03` |
 | `G-06` | la capa B declara **dos** terminales, no uno | `I-03` |
 | `G-07` | cero atribuciones «`PLT` para cada source change» | `I-04` |
-| `G-08` | §8.0–§8.4 y §18 citan `C7` operación a operación | `I-04` |
+| `G-08` | las sedes de §8 —**derivadas de las subsecciones del documento 11**, no escritas— y §18 citan `C7` operación a operación | `I-04` · `T-17` |
 | `G-09` | §18 lleva el gate de `INS-5`, su salida y los tres productores de `O12` | `I-07` |
 | `G-10` | **seis** extensiones de ficha en §5.2, §16 y §17 | `I-06` |
-| `G-11` · `G-11b` | `D67` idéntica byte a byte a la de `7e99388`, y `D1`–`D86` intactas. **Las dos fallan CERRADO sin Git**, y la guarda de base vacía se evalúa sobre el texto crudo, no sobre `split("\n")`, que nunca podía dispararla | `I-16` · `Q-01` · `Q-22` |
+| `G-11` · `G-11b` | `D67` idéntica byte a byte a la de `7e99388`, y `D1`–`D86` intactas. **Las dos fallan CERRADO sin Git**, y la guarda de base vacía se evalúa sobre el texto crudo, no sobre `split("\n")`, que nunca podía dispararla. **Esa guarda ya no es sólo suya**: `G-22` y `G-28` la comparten | `I-16` · `Q-01` · `Q-22` · `T-05` |
 | `G-12` | `PN-14` presente, con sus campos, y **sin enmienda redactada** | `F-01` |
 | `G-13` | el censo de presiones, derivado de sus cabeceras menos las marcadas, y el barrido de `PN-15` sobre el material APROBADO | `I-11` · `P-06` |
 | `G-14` | `F-01` reclasificado, con `requiere_f5` y `requiere_f6` | `F-01` |
@@ -67,18 +74,19 @@ por esta vía: los fija `G-22`.
 | `G-19` | cero párrafos largos duplicados en esos cuatro | higiene |
 | `G-20` | el registro `D` es una serie **continua desde `D1`, sin huecos y sin repetir**. El tope se **deriva de la última fila**: no se exige ningún `Dnn` concreto | trazabilidad · `Q-25` |
 | `G-21` | `O1`–`O16` intactas frente a `7e99388`, y falla CERRADO sin Git | trazabilidad |
-| `G-22` | **el inventario de inmutables se DERIVA del árbol** —todo documento numerado de `docs/evolucion/` más todos los manifiestos, menos los cuatro ficheros en corrección— y cada uno se contrasta contra `HEAD` **y** contra la revisión base. No hay ningún rango escrito, y el documento 23 nace protegido | `Q-23` · `Q-26` · protecciones 1 y 7 |
+| `G-22` | **el inventario de inmutables se DERIVA del árbol** —todo documento numerado de `docs/evolucion/` más todos los manifiestos, menos los cuatro ficheros en corrección— y cada uno se contrasta contra `HEAD` **y** contra la revisión base. No hay ningún rango escrito. Un documento numerado nuevo **nace ADMITIDO por `G-29` y queda protegido aquí en cuanto se confirma**; y una salida de `git ls-tree HEAD` **vacía con éxito** ya no se interpreta como «nada cambió»: falla CERRADO. El detalle dice cuántos inmutables nacieron después de la revisión base y por tanto se contrastan sólo contra `HEAD` | `Q-23` · `Q-26` · `T-05` · protecciones 1 y 7 |
 | `G-23` | lo normativo intacto y la excepción del kernel **contrastada contra la prosa del checkpoint**, que ya no enumera nada a mano; y el punto de entrada **remite** en vez de copiar | alcance · `M-06` · `R-02` |
-| `G-24` | las fuentes y las fichas de `C-0.1`/`C-0.2` **se LEEN** en UTF-8 y son exactamente ésas, con el catálogo de capacidades derivado **una sola vez** y compartido con `G-15` | cobertura · `Q-27` |
+| `G-24` | las fuentes y las fichas de `C-0.1`/`C-0.2` **se LEEN** en UTF-8 y son exactamente ésas, con el catálogo de capacidades derivado **una sola vez** —`_CAPS_DIRS`— y compartido con `G-15`: `G-24` lo recomputaba por su cuenta y ahora lo consume | cobertura · `Q-27` · `T-16` |
 | `G-25` | los cuatro macrocircuitos declaran sus **catorce** campos | `I-21` |
-| `G-26` | recuentos derivados en cuatro planos, con las citas históricas reconocidas por **etiqueta estructural de región** y no por una palabra en la línea | higiene · `P-01` · `Q-04` · `Q-07` · `P-05` · protección 2 |
+| `G-26` | recuentos derivados en cuatro planos, con las citas históricas reconocidas por **etiqueta estructural de región** y no por una palabra en la línea; y la región **cierra al terminar el bloque que la etiqueta encabeza** —encabezado, valla de código, línea en blanco, o salida de la cita en la que se escribió—, de modo que una etiqueta ya no exime lo que queda **fuera de su bloque** | higiene · `P-01` · `Q-04` · `Q-07` · `P-05` · `T-06` · protección 2 |
 | `G-27` | la regla 1 de §2.6.10 usa «los cinco **CAMPOS**» | `A7` |
-| `G-28` | **ningún documento de gate cambia de VEREDICTO, POLARIDAD o ESTADO en silencio**: el censo de las tres familias se deriva del documento y se contrasta contra su versión publicada | protección 8 |
-| `G-29` | **topología y unicidad de TODO el corpus gobernado** —`kernel/`, `docs/rediseno/`, `docs/evolucion/`—: ninguna ampliación sin clasificar, ningún gemelo byte a byte, y ningún marcador de bloque canónico —derivado, no escrito— con sedes nuevas | `Q-02` · `M-04` · protecciones 5 y 9 |
-| `G-30` | **la excepción del kernel por CONTENIDO y CLASIFICACIÓN**: cada excepción tiene clase, ningún fichero del kernel difiere de lo publicado, no queda comodín sobre el directorio de evidencia, y **la huella se RECALCULA** aquí en vez de creerse la del árbol | `Q-05` · protección 6 |
-| `G-31` | **ninguna comprobación se apaga escribiendo una palabra**: las palabras gatillo se pegan al mismo dato y se exige que recuentos, polaridad, comparación de estado y marca histórica no cambien de veredicto | protección 10 |
-| `G-32` | **todos** los niveles de certificación —derivados de la tabla de §9.1— tienen PRODUCTOR declarado en §9.1 y en §9.2, y la cadena de §9.2 se deriva de su propia línea | `O17` regla 12 · protección 11 |
-| `G-33` | los macrocircuitos se **derivan de §8** y cada uno produce su Estructural en **FASE 0** antes de toda mutación; con **tres pruebas negativas ejecutadas**: omitir Estructural, reutilizar evidencia con una huella distinta, y elevarse sin Estructural vigente de esa ejecución | `O17` · `D107` · protecciones 12 a 15 |
+| `G-28` | **ningún documento de gate cambia de VEREDICTO, POLARIDAD o ESTADO en el árbol de trabajo sin que se diga**: el censo de las tres familias se deriva del documento y se contrasta **contra su versión en `HEAD`**. Una salida de `git ls-tree HEAD` vacía con éxito, o CERO documentos contrastados, dan ROJO en vez de `OK`. **Lo que NO ve, y se dice: un cambio ya CONFIRMADO**, porque su referencia es `HEAD` y `HEAD` la escribe quien confirma | protección 8 · `T-05` |
+| `G-29` | **topología y unicidad de TODO el corpus gobernado** —**la RAÍZ, `kernel/`, `docs/owner/`, `docs/rediseno/`, `docs/evolucion/`, `packs/` y `tooling/`**—: ninguna ampliación sin clasificar, ningún gemelo byte a byte, y ningún marcador de bloque canónico —derivado, no escrito— con sedes nuevas. Un documento numerado nuevo **ya no se admite en blanco**: tiene que estar **enlazado desde `00-INDICE.md`** —la regla que el propio índice escribió— y **no repetir ordinal** | `Q-02` · `M-04` · `T-03` · protecciones 5 y 9 |
+| `G-30` | **la excepción del kernel por CONTENIDO y CLASIFICACIÓN**: cada excepción tiene clase, y **cada clase impone una regla sobre el contenido que no es «ser igual a `HEAD`»** —un CÓDIGO DE VALIDADOR tiene que definir mutaciones y **cuadrar con la EVIDENCIA que él mismo publica**, una EVIDENCIA DERIVADA tiene que declarar la orden que la produce, y una HUELLA tiene que ser una huella—. La huella **se RECALCULA** aquí, y **reanclarla ya no lava una mutilación**: el vaciado se ve en el contenido | `Q-05` · `T-01` · protección 6 |
+| `G-31` | **ninguna comprobación se apaga escribiendo una palabra ni una etiqueta fuera de sitio**: las palabras gatillo se pegan al mismo dato y se exige que recuentos, polaridad, comparación de estado y marca histórica no cambien de veredicto; y dos fixtures nuevos exigen que una etiqueta **no exima una línea que está fuera de su cita ni el bloque siguiente al suyo** | protección 10 · `T-06` |
+| `G-32` | **todos** los niveles de certificación —derivados de la tabla de §9.1— tienen PRODUCTOR declarado en §9.1 y en §9.2, y la cadena de §9.2 se deriva de su propia línea. **Y la fila `O17` se LEE**: si deja de resolver que el Estructural se produce al inicio de cada macrocircuito, o si su regla 12 deja de decir lo que aquí se comprueba, esto es ROJO | `O17` regla 12 · `T-08` · protección 11 |
+| `G-34` | **el CENSO de comprobaciones cuadra con su SEDE**: los identificadores que esta tabla publica y los que la batería ejecuta se contrastan en las **dos direcciones**, de modo que **amputar una llamada `check()` da ROJO** y la que falta aparece nombrada en el informe; y la batería y este README tienen que estar **enumerados aquí y publicados en `HEAD`** | `T-20` |
+| `G-33` | los macrocircuitos se **derivan de §8** y cada uno produce su Estructural en **FASE 0** antes de toda mutación; con las pruebas negativas que **el informe enumera y cuenta** —el censo se deriva de las registradas y no se escribe en ningún título—, y **cada una con su CONTROL en verde y su MUTANTE en rojo**, para que ninguna pueda ser un fixture que no falle. **Y `O17` y su propagación se LEEN**: las doce reglas, con su cardinal derivado de la frase que las anuncia, y la fila del registro que declara a `O17` su única fuente, buscada **por lo que dice y no por su número** | `O17` · `D107` · `T-08` · `T-09` · protecciones 12 a 15 |
 
 ## Lo que esta batería NO comprueba, y se dice
 
@@ -100,12 +108,38 @@ LAS PRUEBAS NEGATIVAS DE    `X-S1`–`X-S9` son contrato de prueba y **no se han
                             sobre fixtures sintéticos: que el evaluador sepa decir que no.
                             Escribir el contrato de una prueba no es la prueba
 
-NO PROTEGE CONTRA UNA       `G-29` admite un documento numerado nuevo en `docs/evolucion/`,
-MARCA HISTÓRICA FALSA       porque publicarlo es el producto legítimo de un gate; y
-                            `_regiones_historicas` cree a una etiqueta `[HISTÓRICO]` puesta
-                            al principio de un bloque. Lo que se ha cerrado es que **una
-                            palabra suelta dentro de una frase** apague un control; declarar
-                            histórico un bloque entero sigue siendo posible, y es visible
+NO PROTEGE CONTRA UNA       `G-29` admite un documento numerado nuevo en `docs/evolucion/`
+MARCA HISTÓRICA FALSA       —enlazado desde `00-INDICE.md` y con ordinal libre—, porque
+DENTRO DE SU PROPIO         publicarlo es el producto legítimo de un gate; y
+BLOQUE                      `_regiones_historicas` cree a una etiqueta `[HISTÓRICO]` puesta
+                            al principio de un bloque. Lo cerrado son DOS cosas: que una
+                            **palabra suelta dentro de una frase** apague un control, y que
+                            una **etiqueta alcance fuera de su bloque o fuera de su cita**.
+                            Lo que sigue siendo posible es declarar histórico **el bloque
+                            que la etiqueta encabeza**, y eso es visible al leer
+
+NO VE UN CAMBIO YA          `G-22`, `G-28` y `G-30` contrastan contra `HEAD` y contra la
+CONFIRMADO EN LO QUE        revisión base `05f71b7`. Un documento nacido DESPUÉS de esa base
+NACIÓ DESPUÉS DE LA         sólo tiene a `HEAD` como referencia, y `HEAD` lo escribe quien
+REVISIÓN BASE               confirma. `G-22` publica cuántos están en ese caso; cerrarlo del
+                            todo es `M-04` y no se resuelve aquí
+
+NO PUEDE CERRAR `M-04`,     esta batería vive DENTRO del repositorio que audita y compara
+Y NO LO PRETENDE            contra referencias que también viven ahí. §11.4 del documento 11
+                            lo declaró antes que ningún gate: «*si el runner miente, nada
+                            dentro del repositorio lo detecta*». `G-34` cierra una puerta
+                            concreta —que amputar una comprobación no se viera— y **no
+                            cierra la clase**: quien pueda escribir el árbol puede editar la
+                            batería y su README a la vez. El segundo gate de certificación
+                            llevó la decisión al Owner y está pendiente. **Esta tanda no ha
+                            escrito ninguna protección nueva, a propósito**
+
+EL CAMPO `espera` DE LAS    `G-30` DERIVA y PUBLICA cuántas mutaciones de
+MUTACIONES DEL KERNEL       `comprobar_negativos.py` carecen del campo `espera` y son por
+NO ES SUYO                  tanto vacuas en potencia (`T-13`): una mutación sin `espera` se
+                            da por detectada porque la prueba falló, sin comprobar que falló
+                            POR ESO. **El remedio vive en `kernel/`, que esta batería no
+                            escribe**: se publica para que sea refutable, no se arregla aquí
 ```
 
 ## Cómo se demuestra que una corrección corrige
@@ -131,3 +165,23 @@ escritos aquí; exige que las fuentes de `C-0.1` sean **distintas** y no sólo t
 componentes (iii) y (v) llevan guarda: que la sede siga nombrando sus tres piezas, y que
 ninguna fila del encargo esté sin cláusula, repetida o apuntando a una ruta que no existe.
 **Falla cerrado con código 2** ante cualquiera de esas cosas.
+
+Y su cabecera promete que **«nunca reduce el universo en silencio»**, que hasta ahora era una
+frase y ahora es código:
+
+```text
+EL CLIQUET DE LOS       toda ruta que un manifiesto INMUTABLE declaró obligatoria tiene que
+MANIFIESTOS             seguir saliendo de algún componente. Borrar una fila del `ENCARGO`
+                        reducía el universo con `exit 0` y sin un aviso; hoy es código 2 y
+                        dice qué ruta y qué manifiesto la declaró
+
+CLASIFICACIÓN TOTAL     todo documento numerado de `docs/evolucion/` tiene que caer en
+DEL COMPONENTE (iv)     `VOCES_DE_DICTAMEN` o en `VOCES_DE_NO_DICTAMEN`. El que no case con
+                        ninguna **para el derivador**, en vez de caerse del universo sin que
+                        nadie se entere — que es lo que pasaba con un `DICTAMEN` nuevo
+
+LA RAMA QUE EXISTE      el diagnóstico de «cardinales que no son numerales legibles» tenía un
+PARA FALLAR CERRADO     `%r` con una tupla de tres y reventaba con `TypeError`, traza y
+FALLA CERRADO           código **1**, sin la línea `FALLA CERRADO ·` que el manifiesto enseña
+                        a buscar. Hoy sale con **2** y con su diagnóstico
+```

@@ -66,13 +66,18 @@ def _motivo_ilegible(ruta):
         return "no se puede abrir: %s" % (e.strerror or e)
     return None
 
+# `T-18`. La rama «vacío» de `_motivo_ilegible` era INALCANZABLE: `leer()` sólo la
+# consultaba desde su `except (OSError, UnicodeDecodeError)`, y abrir un fichero vacío no
+# lanza ninguna de las dos. Vaciar el registro de decisiones daba `OK G-00` y la batería
+# seguía adelante sobre sedes sin contenido. Ahora `leer()` PREGUNTA por el motivo SIEMPRE,
+# y una sede vacía es una sede ilegible: falla CERRADO con su nombre.
 def leer(p):
-    try:
-        with io.open(p, encoding="utf-8") as fh:
-            return fh.read()
-    except (OSError, UnicodeDecodeError):
+    motivo = _motivo_ilegible(p)
+    if motivo:
         rel = os.path.relpath(p, RAIZ) if p.startswith(RAIZ) else p
-        raise SedeIlegible("%s: %s" % (rel, _motivo_ilegible(p) or "ilegible"))
+        raise SedeIlegible("%s: %s" % (rel, motivo))
+    with io.open(p, encoding="utf-8") as fh:
+        return fh.read()
 
 def lineas(p): return leer(p).split("\n")
 
@@ -127,6 +132,82 @@ RES = []
 def check(id_, titulo, ok, detalle=""):
     RES.append((id_, titulo, bool(ok), detalle))
 
+# ── el CENSO de comprobaciones, contrastado contra su SEDE (`T-20`) ───────
+#
+# `T-20`, elevado a GRAVE por el adjudicador **porque lo reprodujo**: amputó la llamada
+# `check("G-31")` y obtuvo `36/36 comprobaciones en verde`, `EXIT=0`, **sin que la que
+# faltaba apareciera en el informe**. Y el README lo declaraba como virtud: «*el número de
+# comprobaciones no se escribe en ningún sitio*» — que es justamente lo que impedía notar
+# una amputación. Un censo que sale de lo que se ejecuta y no se contrasta con nada no es
+# un censo: es un recuento de lo que quedó.
+#
+# La SEDE contra la que se contrasta es la tabla «Qué comprueba cada una» del README, que
+# es donde este directorio declara qué comprobaciones existen y de qué hallazgo sale cada
+# una. El contraste es en las DOS direcciones: una comprobación publicada que no se ejecuta
+# es una AMPUTACIÓN, y una que se ejecuta sin estar publicada es una comprobación SIN
+# DECLARAR. Y la batería y su README entran, por fin, en un inventario: el README tiene que
+# ENUMERARSE a sí mismo y enumerar la batería, y las dos tienen que estar PUBLICADAS.
+#
+# Esto NO cierra `M-04` y no lo pretende: quien pueda escribir el repositorio puede editar
+# las dos sedes a la vez. Cierra lo que estaba abierto —que amputar una comprobación no se
+# viera— y lo dice en el README.
+_ID_CHECK = re.compile(r"`(G-\d+[a-z]?)`")
+_README_REL = "docs/evolucion/verificacion/README.md"
+
+def _censo_de_comprobaciones(ejecutadas):
+    """Fallos del censo de comprobaciones contra su sede. Lista vacía si cuadra."""
+    fallos = []
+    try:
+        texto = leer(os.path.join(RAIZ, _README_REL))
+    except SedeIlegible as e:
+        return [f"la sede del censo no se puede leer ({e}): sin ella el número de "
+                f"comprobaciones no se contrasta con nada, y amputar una `check()` vuelve "
+                f"a imprimir «N/N en verde» sin que la que falta aparezca"]
+    m = re.search(r"^## Qué comprueba cada una(.*?)(?=^## |\Z)", texto, re.S | re.M)
+    if not m:
+        return ["el README no publica su tabla «Qué comprueba cada una», que es la sede "
+                "donde este directorio declara qué comprobaciones existen"]
+    publicadas = []
+    for linea in m.group(1).split("\n"):
+        if not linea.startswith("|"):
+            continue
+        for i in _ID_CHECK.findall(linea.strip("|").split("|")[0]):
+            if i not in publicadas:
+                publicadas.append(i)
+    if not publicadas:
+        return ["la tabla del README no publica ni un identificador `G-nn`: un censo "
+                "vacío no puede detectar ninguna amputación"]
+    amputadas = [i for i in publicadas if i not in ejecutadas]
+    sin_declarar = [i for i in ejecutadas if i not in publicadas]
+    if amputadas:
+        fallos.append(f"COMPROBACIONES AMPUTADAS: el README publica {amputadas} y esta "
+                      f"ejecución NO las ha ejecutado. Quien borre una llamada `check()` "
+                      f"responde de ello: el informe ya no puede callar la que falta")
+    if sin_declarar:
+        fallos.append(f"COMPROBACIONES SIN DECLARAR: se ejecutan {sin_declarar} y el README "
+                      f"no las publica. Una comprobación que nadie declara no la puede "
+                      f"refutar nadie")
+    repetidas = sorted({i for i in ejecutadas if ejecutadas.count(i) > 1})
+    if repetidas:
+        fallos.append(f"identificadores de comprobación REPETIDOS: {repetidas}")
+    # y el inventario: la batería y su README, enumerados y publicados
+    rel_bat = os.path.relpath(os.path.abspath(__file__), RAIZ).replace(os.sep, "/")
+    for f in (rel_bat, _README_REL):
+        if "`%s`" % f not in texto:
+            fallos.append(f"{f} no está ENUMERADO en el README, que es el inventario de "
+                          f"este instrumental: un fichero que no está en ningún inventario "
+                          f"no lo echa de menos nadie")
+    try:
+        publicados = _head_arbol
+    except NameError:
+        publicados = None
+    if publicados:
+        for f in (rel_bat, _README_REL):
+            if f not in publicados:
+                fallos.append(f"{f} NO está publicado en `HEAD`: una batería sin versión "
+                              f"publicada no se puede contrastar con nada")
+    return fallos
+
 # ── el INFORME se emite SIEMPRE, también si la batería aborta (`Q-24`) ────
 #
 # El informe vivía al final del fichero, en código de nivel superior: cualquier excepción
@@ -147,6 +228,21 @@ def _informe(codigo_normal=None):
     else:
         RES.insert(0, ("G-00", "la batería COMPLETA su ejecución y emite informe", True,
                        "ninguna sede tumbó la ejecución"))
+    if _ABORTO:
+        RES.append(("G-34", "el CENSO de comprobaciones cuadra con su sede, y amputar una "
+                            "da ROJO", False,
+                    "la ejecución abortó antes de terminar: el censo no se puede contrastar "
+                    "sobre una corrida incompleta, y darlo por bueno sería el verde por "
+                    "omisión que `G-00` acaba de denunciar"))
+    else:
+        # `G-34` se cuenta a sí misma: se emite siempre y está publicada como las demás
+        _censo = _censo_de_comprobaciones([r[0] for r in RES] + ["G-34"])
+        RES.append(("G-34", "el CENSO de comprobaciones cuadra con su sede, y amputar una "
+                            "da ROJO", not _censo,
+                    "; ".join(_censo) or
+                    "%d comprobaciones ejecutadas y las mismas %d publicadas en el "
+                    "README, una a una; la batería y su README, enumerados y publicados"
+                    % (len(RES) + 1, len(RES) + 1)))
     print("BATERÍA MECÁNICA DE LA CORRECCIÓN DEL GATE DE CIERRE\n")
     for id_, t, ok, det in RES:
         print(f"{'OK  ' if ok else 'FALLO'} {id_:7s} {t}")
@@ -370,23 +466,36 @@ for i, l in enumerate(L11, 1):
 check("G-07", "cero atribuciones «`PLT` para cada source change» vigentes",
       not mal, "" if not mal else f"lineas {mal}")
 
-# ── G-08 · las cinco sedes usan C7 correctamente ──────────────────────
-sedes = {"§8.0": None, "§8.1": None, "§8.2": None, "§8.4": None, "§18": None}
-bloques = {
- "§8.0": "\n".join(l for i, l in enumerate(L11, 1) if sec_de(i) == "8.0"),
- "§8.1": "\n".join(l for i, l in enumerate(L11, 1) if sec_de(i) == "8.1"),
- "§8.2": "\n".join(l for i, l in enumerate(L11, 1) if sec_de(i) == "8.2"),
- "§8.3": "\n".join(l for i, l in enumerate(L11, 1) if sec_de(i) == "8.3"),
- "§8.4": "\n".join(l for i, l in enumerate(L11, 1) if sec_de(i) == "8.4"),
- "§18":  "\n".join(l for i, l in enumerate(L11, 1) if sec_de(i) == "18"),
-}
+# ── G-08 · las sedes de §8 y §18 usan C7 correctamente ────────────────
+#
+# `T-17`. Aquí vivía `sedes = {"§8.0": None, …}`: un diccionario que se ASIGNABA y que **no
+# leía nadie**, y que además OMITÍA `§8.3` mientras el título prometía «las SEIS sedes».
+# Era código muerto de la clase `M-11`/`Q-15`/`Q-22` que esta tanda declara purgada, y el
+# hueco de `§8.3` en él habría pasado por bueno el día que alguien lo hubiera puesto a
+# funcionar. Las sedes se DERIVAN ahora de §8 —todas sus subsecciones, encuadre incluido—
+# más §18, se usan para construir los bloques, y el cardinal del título se deriva de ellas.
+# `§8` a secas es el encabezado de encuadre del capítulo y no tiene cuerpo propio: las
+# sedes son sus SUBSECCIONES —`§8.0` incluida, que sí es texto— más `§18`.
+_SEDES_C7 = tuple(sorted({s for _, s in S11 if re.match(r"^8\.\d+$", s)},
+                         key=lambda s: [int(x) for x in s.split(".")])) + ("18",)
+bloques = {"§" + s: "\n".join(l for i, l in enumerate(L11, 1) if sec_de(i) == s)
+           for s in _SEDES_C7}
 faltan = []
-for nombre, b in bloques.items():
+if len(_SEDES_C7) < 2:
+    faltan.append("cero sedes de §8 derivadas del documento 11: sin objeto, esta "
+                  "comprobación sería un verde por omisión")
+for nombre in ("§" + s for s in _SEDES_C7):
+    b = bloques[nombre]
+    if not b.strip():
+        faltan.append(f"{nombre} se deriva VACÍA: no hay texto que citara `C7`")
+        continue
     if "C7:82" not in b: faltan.append(f"{nombre} sin `C7:82` (PLT materializa)")
     if nombre != "§18" and "C7:83" not in b: faltan.append(f"{nombre} sin `C7:83`-`C7:86` (custodia)")
     if "C7:88" not in b: faltan.append(f"{nombre} sin `C7:88`-`C7:89` (ENT convergencia)")
-check("G-08", "las SEIS sedes de §8 y §18 citan `C7` operacion a operacion",
-      not faltan, "; ".join(faltan) or "§8.0 §8.1 §8.2 §8.3 §8.4 §18")
+check("G-08", "las sedes DERIVADAS de §8 y §18 citan `C7` operacion a operacion",
+      not faltan,
+      "; ".join(faltan) or "%d sedes derivadas: %s" % (
+          len(_SEDES_C7), " ".join("§" + s for s in _SEDES_C7)))
 
 # ── G-09 · INS-5 completo en §18 ──────────────────────────────────────
 s18 = bloques["§18"]
@@ -1508,10 +1617,30 @@ def _inmutables():
     return salida
 
 _INMUTABLES = _inmutables()
+# `T-05`. La guarda de BASE VACÍA que `G-11b` ya tenía escrita, y que faltaba aquí.
+# `_git()` devuelve `None` sólo si el comando FALLA; un `git ls-tree HEAD` que sale con
+# ÉXITO y sin stdout devuelve la cadena vacía, `_head_arbol` queda vacío, y el bucle se
+# salta con `continue` los veintiséis inmutables uno a uno **listándolos en el detalle**
+# mientras imprime `OK`. Es `M-12` —«interpretaban el vacío como “nada cambió”»—
+# sobreviviendo en la comprobación cuyo título dice «falla CERRADO sin git».
+def _base_vacia(bruto, comando, para_que):
+    """El diagnóstico si `bruto` vino VACÍO CON ÉXITO, o None. `G-11b`, generalizada."""
+    if bruto is not None and not bruto.strip():
+        return (f"`{comando}` responde con ÉXITO y VACÍO: {para_que}. Comparar contra nada "
+                f"da verde siempre, y eso no es comparar")
+    return None
+
 _g22, _sin_base = [], []
 if _tocados_raw is None or _mod_head_raw is None or _head_arbol_raw is None:
     _g22.append("GIT NO RESPONDE: no se puede saber qué documentos históricos se han tocado")
 else:
+    for _b, _c, _q in ((_head_arbol_raw, "git ls-tree -r --name-only HEAD",
+                        "no hay árbol publicado con el que contrastar los inmutables"),
+                       (_base_arbol_raw, "git ls-tree -r --name-only 05f71b7",
+                        "no hay revisión base con la que contrastar los inmutables")):
+        _d = _base_vacia(_b, _c, _q)
+        if _d:
+            _g22.append(_d)
     if not _INMUTABLES:
         _g22.append("el inventario de inmutables sale VACÍO: el barrido no ve el corpus, y "
                     "un rango vacío por no mirar es un verde por omisión")
@@ -1528,6 +1657,10 @@ else:
         if rel in _base_arbol and rel in tocados:
             _g22.append(f"{rel}: MODIFICADO respecto de la revisión base `05f71b7`, y ya "
                         f"existía en ella")
+    # y el segundo brazo se DECLARA: `T-02` mostró que ocho de los inmutables no existen en
+    # `05f71b7`, con lo que su contraste contra la base no se ejecuta para ellos. Eso no es
+    # un defecto —nacieron después— pero callarlo sí lo era: el detalle lo dice.
+    _sin_base_rev = [f for f in _INMUTABLES if f in _head_arbol and f not in _base_arbol]
 check("G-22",
       "los documentos históricos y los manifiestos de gate, DERIVADOS del árbol, están intactos (falla CERRADO sin git)",
       not _g22,
@@ -1536,7 +1669,9 @@ check("G-22",
       f"manifiestos y {len(_INMUTABLES) - len([f for f in _INMUTABLES if '/manifiestos/' in f])} "
       f"documentos numerados— intactos frente a `HEAD` y a `05f71b7`" +
       (f" · {len(_sin_base)} todavía sin confirmar y por tanto sin línea base: "
-       f"{_sin_base}" if _sin_base else ""))
+       f"{_sin_base}" if _sin_base else "") +
+      (f" · {len(_sin_base_rev)} nacidos DESPUÉS de `05f71b7` y contrastados sólo contra "
+       f"`HEAD`" if _g22 == [] and _sin_base_rev else ""))
 
 # ── G-23 · lo normativo intacto, y el kernel con su EXCEPCIÓN NOMBRADA ──
 #
@@ -1693,29 +1828,20 @@ docs/evolucion/15-TERCERA-REVISION-INDEPENDIENTE-F4C.md""".split("\n")
 CAPACIDADES = ["APR", "ARQ", "CON", "DIS", "DOM", "DSP", "ENC", "ENT",
                "INV", "PLT", "PRD", "SEG", "SIS", "USO", "VER"]
 
-def _ilegible(ruta):
-    """Devuelve el motivo si no se puede leer como UTF-8 con contenido; si no, None."""
-    try:
-        with io.open(ruta, encoding="utf-8") as fh:
-            if not fh.read().strip():
-                return "vacío"
-    except FileNotFoundError:
-        return "no existe"
-    except UnicodeDecodeError:
-        return "no es UTF-8"
-    except OSError as e:
-        return f"no se puede abrir: {e.strerror}"
-    return None
-
+# `T-19`. Aquí vivía `_ilegible()`, que era `_motivo_ilegible()` escrita por segunda vez y
+# DIVERGENTE —no capturaba `IsADirectoryError`—: una segunda sede de la misma derivación
+# dentro de la batería que persigue las segundas sedes. Se usa la única que hay.
 problemas = []
 for f in fuentes:
-    motivo = _ilegible(os.path.join(RAIZ, f))
+    motivo = _motivo_ilegible(os.path.join(RAIZ, f))
     if motivo:
         problemas.append(f"{f}: {motivo}")
 
-_dir_cap = os.path.join(RAIZ, "kernel/operativo/capacidades")
-presentes = sorted(d for d in os.listdir(_dir_cap)
-                   if os.path.isdir(os.path.join(_dir_cap, d)))
+# `T-16`. `Q-27` prometió derivar el catálogo de capacidades UNA SOLA VEZ y compartirlo
+# entre `G-15` y `G-24`, y el README lo daba por corregido; `G-24` seguía recomputándolo
+# sobre su propia constante `_dir_cap`. Dos sedes de la misma derivación. Se usa la única.
+_dir_cap = _DIR_CAPS
+presentes = list(_CAPS_DIRS)
 sobran = [d for d in presentes if d not in CAPACIDADES]
 ausentes = [c for c in CAPACIDADES if c not in presentes]
 if ausentes:
@@ -1725,7 +1851,7 @@ if sobran:
 
 for c in CAPACIDADES:
     if c in presentes:
-        motivo = _ilegible(os.path.join(_dir_cap, c, "CAPACIDAD.md"))
+        motivo = _motivo_ilegible(os.path.join(_dir_cap, c, "CAPACIDAD.md"))
         if motivo:
             problemas.append(f"{c}/CAPACIDAD.md: {motivo}")
 
@@ -1807,38 +1933,81 @@ _ETIQUETA_HISTORICA = re.compile(r"^[\s>|*_·-]*" + _TAG)
 _CAMPO_HISTORICO = re.compile(
     r"^[A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ0-9 ]{2,}\s{2,}[\s>|*_·-]*" + _TAG)
 _CIERRA_REGION = re.compile(r"^#{1,6} ")
+_LINEA_DE_CITA = re.compile(r"^\s*>")
+_VALLA = re.compile(r"^\s*```")
+# La OTRA forma de marcar historia que el corpus ya usa y que no es una etiqueta: una CLAVE
+# en columna 0 que NOMBRA LA TANDA PASADA cuyo registro abre —`corregido_en_la_TANDA_…`,
+# `devuelto_por_la_TERCERA_REVISION_…`, `resuelto_en_la_SEGUNDA_devolucion_…`—. Es
+# estructural, está en columna 0, nombra el hecho pasado y se ve al leer, exactamente como
+# la etiqueta; y su alcance es SU campo, que termina donde empieza la clave siguiente.
+_CAMPO_DE_TANDA_PASADA = re.compile(
+    r"^[a-z]+(?:ado|ada|ido|ida|to|cho)_(?:en|por|para)_(?:la|el)_[A-Za-z0-9_]+:\s*$")
+_ABRE_CLAVE = re.compile(r"^\S")
 
 def _regiones_historicas(texto):
-    """Los tramos [ini, fin) que una ETIQUETA ESTRUCTURAL declara históricos.
+    """Los tramos [ini, fin) que una marca ESTRUCTURAL declara históricos.
 
     Una región ABRE en una línea que EMPIEZA por la etiqueta —admitiendo la decoración de
     cita, viñeta o negrita que el corpus usa: `> **[ESTADO ANTERIOR · …]**`, `· **[HISTÓRICO
-    · …]**`, `[HISTÓRICO]`— y CIERRA en el siguiente ENCABEZADO Markdown, que es la única
-    frontera estructural que el corpus tiene por debajo del fichero.
+    · …]**`, `[HISTÓRICO]`— o en una CLAVE que nombra una tanda pasada, y CIERRA **al
+    terminar el bloque que esa marca encabeza**.
 
-    Nada de esto se puede escribir por accidente y nada de esto es una palabra suelta: para
-    apagar un control hay que **declarar histórica una región entera y visible**, que es lo
-    que un lector ve y lo que un gate posterior puede refutar. Escribir «regresión» al final
-    de una línea, que es lo que el adjudicador hizo, ya no apaga nada.
+    `T-06`. La protección 2 sustituyó el interruptor de PALABRA por uno de ETIQUETA, y eso
+    se cerró bien; pero la región que la etiqueta abría cerraba SÓLO en `^#{1,6} `, un
+    encabezado en columna 0 **que dentro de una cita `>` no llega nunca**. Con eso, UNA
+    línea `> **[ESTADO ANTERIOR · …]**` eximía todo lo que viniera detrás hasta el siguiente
+    encabezado: el adjudicador plantó una cifra viva falsa en el documento 11, `G-26` la
+    cazó —36/37—, le puso encima esa única línea y la batería volvió a **37/37**. Y no era
+    un caso de laboratorio: en el checkpoint, la marca de la L509 eximía de todo control de
+    cifra **el bloque VIVO entero** que empieza en la L577, mil cien líneas más abajo.
+
+    La frontera es ahora CUÁDRUPLE, y las cuatro son visibles al leer:
+
+      · un ENCABEZADO Markdown, como antes,
+      · la VALLA de un bloque de código, que abre y cierra contenedor,
+      · la LÍNEA EN BLANCO que separa un bloque del siguiente —fuera de una valla, donde una
+        línea en blanco no separa nada—,
+      · y la SALIDA DE LA CITA: si la marca se escribió dentro de un `>`, la región muere
+        donde muere la cita. Lo que no está en la cita no lo declara histórico una etiqueta
+        que sí lo está.
+
+    Marcar histórico un bloque entero sigue siendo posible y sigue siendo legítimo —es lo
+    que el README declara—: lo que ya no se puede es marcarlo **desde fuera de él**.
     """
-    regiones, abierta, clase = [], None, None
+    regiones, abierta, clase, en_cita, en_valla = [], None, None, False, False
     pos = 0
     for linea in texto.split("\n"):
         ini = pos
         pos += len(linea) + 1
+        if _VALLA.match(linea):
+            if abierta is not None:
+                regiones.append((abierta, ini))
+                abierta, clase, en_cita = None, None, False
+            en_valla = not en_valla
+            continue
+        abre = None
         if _ETIQUETA_HISTORICA.match(linea):
-            if abierta is None:
-                abierta, clase = ini, "seccion"
+            abre = "seccion"
         elif _CAMPO_HISTORICO.match(linea):
+            abre = "campo"
+        elif _CAMPO_DE_TANDA_PASADA.match(linea):
+            abre = "tanda"
+        if abre is not None:
             if abierta is None:
-                abierta, clase = ini, "campo"
-        elif abierta is not None and (_CIERRA_REGION.match(linea)
-                                      or (clase == "campo" and not linea.strip())):
-            # un campo histórico marca SU campo, que termina donde termina el bloque; una
-            # sección histórica marca hasta el siguiente encabezado. Ninguna de las dos se
-            # extiende sola: la etiqueta declara alcance y el alcance es visible
+                abierta, clase = ini, abre
+                en_cita = bool(_LINEA_DE_CITA.match(linea))
+            elif clase == "tanda" and abre == "tanda":
+                regiones.append((abierta, ini))     # una clave cierra la anterior
+                abierta, clase, en_cita = ini, abre, False
+            continue
+        if abierta is None:
+            continue
+        if (_CIERRA_REGION.match(linea)
+                or (clase == "tanda" and _ABRE_CLAVE.match(linea))
+                or (not linea.strip() and not en_valla and clase != "tanda")
+                or (en_cita and not _LINEA_DE_CITA.match(linea))):
             regiones.append((abierta, ini))
-            abierta = clase = None
+            abierta, clase, en_cita = None, None, False
     if abierta is not None:
         regiones.append((abierta, len(texto)))
     return regiones
@@ -2088,9 +2257,17 @@ def _censo_polaridad(texto):
 
 _g28, _revisados = [], 0
 _docs_gate = [f for f in _INMUTABLES if f.endswith(".md")]
+_vacia28 = _base_vacia(_head_arbol_raw, "git ls-tree -r --name-only HEAD",
+                       "no hay ningún documento publicado contra el que contrastar un "
+                       "veredicto")
 if _mod_head_raw is None or _head_arbol_raw is None:
     _g28.append("GIT NO RESPONDE: no se puede contrastar ningún veredicto contra su "
                 "versión publicada")
+elif _vacia28:
+    # `T-05`, la misma guarda que `G-11b` ya tenía y que faltaba aquí: con `_head_arbol`
+    # vacío el bucle se salta con `continue` los veintiséis documentos y esta comprobación
+    # daba `OK` sobre CERO documentos revisados.
+    _g28.append(_vacia28)
 elif not _docs_gate:
     _g28.append("cero documentos de gate derivados: sin objeto, esta comprobación sería "
                 "un verde por omisión")
@@ -2117,6 +2294,10 @@ else:
                     f"positivo {antes[nombre][1]}) y en el árbol (negativo "
                     f"{ahora[nombre][0]}, positivo {ahora[nombre][1]}). Un veredicto "
                     f"emitido no se reescribe: lo revisa otro gate, con su documento")
+    if not _revisados:
+        _g28.append(f"CERO documentos de gate contrastados de los {len(_docs_gate)} "
+                    f"derivados: ninguno tiene versión publicada contra la que comparar, y "
+                    f"un `OK` sobre cero documentos es un verde por omisión")
 check("G-28",
       "ningún documento de gate cambia de VEREDICTO, POLARIDAD o ESTADO en silencio (falla CERRADO sin git)",
       not _g28,
@@ -2146,28 +2327,50 @@ check("G-28",
 # Y sobre todo el corpus, dos controles de UNICIDAD que no dependen de ninguna lista:
 # ningún fichero puede tener un gemelo byte a byte, y ningún marcador de bloque canónico
 # —derivados del árbol, no escritos— puede ganar sedes nuevas.
-_ZONAS = ("kernel", "docs/rediseno", "docs/evolucion")
+# `T-03` y el vector que el adjudicador `U` ejecutó y nadie había ejecutado. `_ZONAS` eran
+# TRES directorios, y el README prometía «TODO el corpus gobernado». Fuera quedaban **la
+# RAÍZ** —`README.md`, `START_HERE.md`—, **`docs/owner/`** —que ya existe en el árbol y
+# guarda material APROBADO—, **`packs/`** y **`tooling/`**. Sobre esas cuatro zonas `U`
+# plantó segundas sedes normativas íntegras con cabecera «PREVALECE SOBRE TODO» y la
+# batería dio **37/37 en verde**. Aquí el corpus gobernado es el corpus entero, y la cadena
+# vacía es la zona RAÍZ: sus ficheros propios, sin recorrer sus directorios, que ya son
+# zonas por sí mismos.
+_ZONA_RAIZ = ""
+_ZONAS = (_ZONA_RAIZ, "kernel", "docs/owner", "docs/rediseno", "docs/evolucion",
+          "packs", "tooling")
 _IGNORA = re.compile(r"(?:^|/)(?:__pycache__|\.git)(?:/|$)|\.pyc$")
+
+def _en_zona(rel):
+    """¿`rel` cae dentro del corpus gobernado? La RAÍZ son sus ficheros propios."""
+    if _IGNORA.search(rel):
+        return False
+    if "/" not in rel:
+        return _ZONA_RAIZ in _ZONAS
+    return any(rel.startswith(z + "/") for z in _ZONAS if z)
 
 def _ficheros_zona():
     salida = set()
     for zona in _ZONAS:
-        raiz_zona = os.path.join(RAIZ, zona)
+        raiz_zona = os.path.join(RAIZ, zona) if zona else RAIZ
         if not os.path.isdir(raiz_zona):
+            continue
+        if zona == _ZONA_RAIZ:
+            for nombre in sorted(os.listdir(raiz_zona)):
+                rel = nombre
+                if os.path.isfile(os.path.join(raiz_zona, nombre)) and _en_zona(rel):
+                    salida.add(rel)
             continue
         for base, dirs, ficheros in os.walk(raiz_zona):
             dirs[:] = [d for d in dirs if d not in ("__pycache__", ".git")]
             for nombre in ficheros:
                 rel = _rel(os.path.join(base, nombre))
-                if not _IGNORA.search(rel):
+                if _en_zona(rel):
                     salida.add(rel)
     return salida
 
 _g29 = []
 _disco = _ficheros_zona()
-_publicado = {f for f in _head_arbol
-              if any(f == z or f.startswith(z + "/") for z in _ZONAS)
-              and not _IGNORA.search(f)}
+_publicado = {f for f in _head_arbol if _en_zona(f)}
 
 # el instrumental de `verificacion/` se declara en su README, y esa declaración se lee
 _README = os.path.join(RAIZ, "docs/evolucion/verificacion/README.md")
@@ -2180,6 +2383,19 @@ except SedeIlegible as e:
                 f"ampliación sin declarar")
 _INSTRUMENTAL = set(re.findall(r"`(docs/evolucion/verificacion/[A-Za-z0-9_.-]+)`", _t_readme))
 
+# las dos sedes que CLASIFICAN un documento numerado nuevo, derivadas y no escritas
+try:
+    _t_idx = leer(IDX)
+except SedeIlegible as _e:
+    _t_idx = ""
+    _g29.append(f"`00-INDICE.md` no se puede leer ({_e}): sin él no hay sede desde la que "
+                f"un documento numerado nuevo esté enlazado, y admitirlo sin ella es el "
+                f"`return True` en blanco que `T-03` explotó")
+_ENLAZADOS_INDICE = set(re.findall(r"\]\(([A-Za-z0-9][-A-Za-z0-9_.]*\.md)\)", _t_idx))
+_ORDINALES_PUBLICADOS = {m.group(1) for m in
+                         (re.match(r"^docs/evolucion/(\d\d)-.*\.md$", f)
+                          for f in _publicado) if m}
+
 def _ampliacion_admitida(rel):
     """¿La aparición de `rel`, que no está publicada, está CLASIFICADA y admitida?"""
     if rel.startswith("kernel/"):
@@ -2191,8 +2407,26 @@ def _ampliacion_admitida(rel):
         return False
     if rel.startswith("docs/evolucion/verificacion/"):
         return rel in _INSTRUMENTAL
-    if re.match(r"^docs/evolucion/\d\d-.*\.md$", rel):
-        return True                     # el documento que un gate nuevo publica
+    m_ord = re.match(r"^docs/evolucion/(\d\d)-.*\.md$", rel)
+    if m_ord:
+        # `T-03`. Aquí había un `return True` EN BLANCO —«el documento que un gate nuevo
+        # publica»— que admitía CUALQUIER fichero numerado sin mirar su contenido ni su
+        # procedencia: `U` publicó con él una `23-SEGUNDA-SEDE-NORMATIVA.md` que declara
+        # contradecir a `C4` y a `C7` y prevalecer sobre los dos, y `G-22` y `G-29` la
+        # NOMBRARON en su detalle mientras imprimían `OK`.
+        #
+        # Publicar un documento numerado sigue siendo el producto legítimo de un gate, pero
+        # deja de ser gratis: se admite CLASIFICADO, con las dos condiciones que el propio
+        # corpus ya tiene escritas —`00-INDICE.md` L102-108: «todo documento que `C-L.5`
+        # obligue a publicar se enlaza desde la lista de abajo EN EL MISMO COMMIT que lo
+        # crea»— y con el ordinal libre, porque dos documentos con el mismo número son dos
+        # sedes con la misma identidad.
+        nombre = rel.split("/")[-1]
+        if nombre not in _ENLAZADOS_INDICE:
+            return False
+        if m_ord.group(1) in _ORDINALES_PUBLICADOS:
+            return False
+        return True
     return False
 
 if _head_arbol_raw is None:
@@ -2230,7 +2464,7 @@ else:
     # Se aplica a `kernel/` y `docs/rediseno/`, donde vive la verdad normativa. En
     # `docs/evolucion/` el mismo bloque es una CITA —el documento 11 reproduce el formato
     # para explicarlo— y citar no es duplicar la fuente.
-    _NORM_ZONAS = ("kernel/", "docs/rediseno/")
+    _NORM_ZONAS = ("kernel/", "docs/rediseno/", "docs/owner/")
     _sedes_disco, _marcadores = {}, set()
     for rel in sorted(_disco):
         if not rel.endswith(".md") or not rel.startswith(_NORM_ZONAS):
@@ -2359,6 +2593,85 @@ else:
     if not any(v == "EVIDENCIA DERIVADA" for v in _CLASES.values()):
         _g30.append("cero ficheros de evidencia derivada enumerados: el comodín de "
                     "directorio se retiró y no lo sustituye ninguna enumeración")
+    # 2bis · CONTENIDO · cada clase impone una REGLA SOBRE EL CONTENIDO, y no «ser igual
+    #        a `HEAD`», que deja de decir nada en cuanto el cambio se confirma.
+    #
+    # `T-01`. El adjudicador vació el validador a `import sys; sys.exit(0)`, falsificó sus
+    # tres evidencias, reancló la huella **con el valor que esta misma batería publica al
+    # fallar**, hizo `git commit` — y obtuvo `37/37 en verde` con el porcelain vacío. Lo
+    # reprodujimos igual. La causa es que las dos referencias —`HEAD` y `.upstream-hash`—
+    # las escribe quien edita, de modo que confirmar el ataque lo volvía invisible.
+    #
+    # Aquí la clase CÓDIGO DE VALIDADOR se fija por lo que el fichero TIENE QUE SER, y se
+    # contrasta contra la EVIDENCIA que él mismo produce, que es otro fichero y otra clase:
+    # un validador vaciado no puede a la vez declarar cero mutaciones y publicar una
+    # evidencia que reporta sesenta y siete. **La huella deja de ser el conjunto libre por
+    # el que se lavaba la mutilación**: ya no basta con reanclarla, porque la mutilación se
+    # ve en el contenido y no en la huella.
+    _EV_KERNEL = "kernel/operativo/pruebas/evidencia/"
+    for _f, _clase in sorted(_CLASES.items()):
+        try:
+            _cuerpo = leer(os.path.join(RAIZ, _f))
+        except SedeIlegible as _e:
+            _g30.append(f"{_f} [{_clase}]: {_e}")
+            continue
+        if _clase == "CÓDIGO DE VALIDADOR":
+            _ids_cod = re.findall(r'Mutacion\(\s*"([A-Za-z0-9_]+)"', _cuerpo)
+            if not _ids_cod:
+                _g30.append(f"{_f} [CÓDIGO DE VALIDADOR]: no define NI UNA mutación. Un "
+                            f"validador de pruebas negativas sin mutaciones no prueba "
+                            f"nada, y la autorización era para un arreglo NOMBRADO, no "
+                            f"para vaciarlo")
+                continue
+            _base_ev = os.path.basename(_f).replace("comprobar_", "").replace(".py", "")
+            _ruta_ev = _EV_KERNEL + _base_ev + "-salida.txt"
+            if _ruta_ev not in _CLASES:
+                _g30.append(f"{_f} [CÓDIGO DE VALIDADOR]: no hay evidencia derivada "
+                            f"`{_ruta_ev}` con la que contrastar su contenido")
+                continue
+            try:
+                _tev = leer(os.path.join(RAIZ, _ruta_ev))
+            except SedeIlegible as _e:
+                _g30.append(f"{_ruta_ev}: {_e}")
+                continue
+            _ids_ev = re.findall(r"^(?:OK|FALLO)\s+(\S+)\s", _tev, re.M)
+            _huerfanas = sorted(set(_ids_cod) - set(_ids_ev))
+            if _huerfanas:
+                _g30.append(f"{_f}: define mutaciones que su evidencia NO reporta: "
+                            f"{_huerfanas}. O el validador cambió sin volver a pasarlo, o "
+                            f"la evidencia describe otro código")
+            _m_cola = re.search(r"(\d+) infracciones detectadas · (\d+) NO detectadas",
+                                _tev)
+            if not _m_cola:
+                _g30.append(f"{_ruta_ev}: no publica su cola «N infracciones detectadas · "
+                            f"M NO detectadas», que es lo único que dice si la suite corrió")
+            else:
+                _n_det, _n_no = int(_m_cola.group(1)), int(_m_cola.group(2))
+                if _n_det != len(_ids_ev):
+                    _g30.append(f"{_ruta_ev}: su cola dice {_n_det} detectadas y el cuerpo "
+                                f"enumera {len(_ids_ev)}")
+                if _n_no:
+                    _g30.append(f"{_ruta_ev}: {_n_no} mutaciones NO detectadas")
+                if _n_det < len(_ids_cod):
+                    _g30.append(f"{_ruta_ev}: reporta {_n_det} y el código define "
+                                f"{len(_ids_cod)} mutaciones explícitas")
+            # y el censo del campo `espera`, DERIVADO y publicado: sin él una mutación se
+            # da por detectada porque la prueba falló, sin comprobar que falló POR ESO
+            # (`T-13`). Se publica aquí porque el remedio vive en `kernel/`, fuera del
+            # perímetro de escritura de esta tanda, y una carencia publicada es refutable
+            _sin_espera = len(_ids_cod) - len(re.findall(r"espera\s*=", _cuerpo))
+        elif _clase == "EVIDENCIA DERIVADA":
+            if not re.search(r"^#\s*orden:\s*\S", _cuerpo, re.M):
+                _g30.append(f"{_f} [EVIDENCIA DERIVADA]: no declara la ORDEN que la "
+                            f"produce, luego no se puede volver a derivar ni refutar")
+            _m_ord = re.search(r"^#\s*orden:.*?(kernel/[A-Za-z0-9_./-]+\.py)",
+                               _cuerpo, re.M)
+            if _m_ord and not os.path.isfile(os.path.join(RAIZ, _m_ord.group(1))):
+                _g30.append(f"{_f}: dice derivarse de `{_m_ord.group(1)}`, que no existe")
+        elif _clase == "HUELLA DE INTEGRIDAD":
+            if not re.fullmatch(r"[0-9a-f]{8,64}", _cuerpo.strip()):
+                _g30.append(f"{_f} [HUELLA DE INTEGRIDAD]: su contenido no es una huella "
+                            f"hexadecimal: «{_cuerpo.strip()[:40]}»")
     # 3 · HUELLA · recalculada por esta batería, contra la que el árbol publica
     try:
         _huella_calc, _n_huella = _recalcular_huella()
@@ -2378,8 +2691,13 @@ check("G-30",
       not _g30,
       "; ".join(_g30) or
       f"{len(_CLASES)} ficheros del kernel con clase declarada "
-      f"({len(set(_CLASES.values()))} clases) · ninguno difiere de `HEAD` · huella "
-      f"recalculada sobre {_n_huella} ficheros = `{_huella_pub}`")
+      f"({len(set(_CLASES.values()))} clases) · ninguno difiere de `HEAD` · el validador "
+      f"autorizado define {len(_ids_cod)} mutaciones y su evidencia reporta "
+      f"{len(_ids_ev)}, sin una NO detectada · huella recalculada sobre {_n_huella} "
+      f"ficheros = `{_huella_pub}`" +
+      (f" · LIMITACIÓN DECLARADA: {_sin_espera} de esas {len(_ids_cod)} mutaciones no "
+       f"llevan campo `espera` y son VACUAS EN POTENCIA (`T-13`); el remedio vive en "
+       f"`kernel/`, que esta batería no escribe" if _sin_espera > 0 else ""))
 
 
 # ── G-31 · ninguna comprobación se apaga con una PALABRA ────────────────
@@ -2446,12 +2764,35 @@ if not _regiones_historicas("**[HISTÓRICO · lo que aquella tanda validó]**\nc
                 "hay forma legítima de marcar un bloque histórico")
 if not _regiones_historicas("PRESIONES           **[HISTÓRICO]** ONCE vigentes entonces\n"):
     _g31.append("región histórica: la forma de CAMPO con etiqueta no abre región")
+# y la mitad que `T-06` explotó: una etiqueta NO exime lo que queda FUERA de su bloque
+_FIX_FUGA = ("> **[ESTADO ANTERIOR · lo que aquella tanda validó]**\n"
+             "ONCE presiones vigentes de §16\n")
+_regs_fuga = _regiones_historicas(_FIX_FUGA)
+if not _regs_fuga:
+    _g31.append("región histórica: una etiqueta dentro de una cita no abre región, y "
+                "entonces no hay forma legítima de marcar histórico un bloque citado")
+if any(a <= _FIX_FUGA.index("ONCE") < b for a, b in _regs_fuga):
+    _g31.append("región histórica: una etiqueta escrita DENTRO de una cita exime una línea "
+                "que está FUERA de la cita. Es el vector de `T-06`: una sola línea devolvía "
+                "la batería a verde sobre una cifra viva falsa")
+_FIX_BLOQUE = ("**[HISTÓRICO · el censo de entonces]**\nONCE presiones vigentes\n\n"
+               "DIECISÉIS presiones vigentes de §16\n")
+if any(a <= _FIX_BLOQUE.index("DIECISÉIS") < b
+       for a, b in _regiones_historicas(_FIX_BLOQUE)):
+    _g31.append("región histórica: una etiqueta exime el bloque SIGUIENTE al suyo, separado "
+                "por una línea en blanco. La marca declara alcance, y su alcance es su "
+                "bloque")
+if not any(a <= _FIX_BLOQUE.index("ONCE") < b
+           for a, b in _regiones_historicas(_FIX_BLOQUE)):
+    _g31.append("región histórica: una etiqueta no exime ni su propio bloque, y entonces "
+                "marcar historia dejaría de ser posible")
 check("G-31",
       "ninguna comprobación se desactiva escribiendo una palabra: recuentos, polaridad, estado y marca histórica, con el mismo dato y las palabras gatillo pegadas",
       not _g31,
       "; ".join(_g31) or
       f"{len(_PALABRAS_GATILLO)} palabras gatillo × 4 evaluadores, y ninguno cambia de "
-      f"veredicto; y las tres formas legítimas de marcar historia siguen funcionando")
+      f"veredicto; las formas legítimas de marcar historia siguen funcionando, y una "
+      f"etiqueta no exime lo que queda fuera de su bloque ni fuera de su cita")
 
 # ── G-32 · PRODUCTOR declarado para TODOS los niveles de certificación ──
 #
@@ -2461,9 +2802,100 @@ check("G-31",
 # satisfacible por ningún recorrido. Aquí los niveles se DERIVAN de la tabla de §9.1 —no se
 # escriben «cuatro» ni sus nombres— y se exige productor para cada uno en las DOS sedes que
 # lo declaran: la tabla de §9.1 y el bloque «PRODUCTOR DE CADA NIVEL» de §9.2.
+# ── `O17` y `D107`, LEÍDAS de verdad ────────────────────────────────────
+#
+# `T-08`. `G-32` y `G-33` llevan escrito en su comentario que sus reglas «derivan de `O17`
+# y de su propagación `D107`», y **ninguna línea de código leía la fila `| O17 |`**:
+# `grep -n 'O17'` daba cinco golpes y los cinco eran comentario o diagnóstico. `G-21`
+# protege `O1`-`O16` y se detiene justo antes. El adjudicador **sustituyó la fila `O17` por
+# su negación exacta y borró la fila `D107`** —que no deja hueco en `G-20`, por ser la
+# última— y la batería siguió en `37/37`. Lo reprodujimos igual. La resolución del Owner
+# que ESTE gate existe para certificar podía negarse entera sin que nada se moviera.
+#
+# Aquí se leen las dos: la FILA de `O17`, sus DOCE reglas —cuyo cardinal se deriva de la
+# frase que las anuncia y se contrasta con las que enumera—, y la fila de PROPAGACIÓN que
+# declara a `O17` su única fuente. Cada regla que esta batería aplica se exige PRESENTE en
+# su sede: si `O17` deja de decirlo, lo que la batería comprueba deja de derivar de nada, y
+# eso es rojo, no verde.
+# cada hallazgo se anota con la comprobación que lo tiene que publicar: `"32"`, `"33"` o
+# `"ambas"` — la sede de `O17` sostiene a las dos y ninguna puede callarla
+_o17 = []
+_fila_o17 = [l for l in _tdec.split("\n") if re.match(r"^\|\s*`?O17`?\s*\|", l)]
+if not _fila_o17:
+    _o17.append(("ambas",
+                 "la fila `| O17 |` NO aparece en el registro de decisiones: la resolución "
+                 "del Owner de la que estas comprobaciones dicen derivar no está"))
+else:
+    _celda_o17 = _fila_o17[0].strip("|").split("|")[1]
+    if not re.search(r"NIVEL\s+ESTRUCTURAL\s+SE\s+PRODUCE\s+AL\s+INICIO\s+DE\s+CADA\s+"
+                     r"MACROCIRCUITO", _celda_o17, re.I):
+        _o17.append(("ambas",
+                     f"la fila `O17` ya NO resuelve que el nivel Estructural se produce al "
+                    f"inicio de CADA macrocircuito; su celda dice «"
+                    f"{' '.join(_celda_o17.split())[:120]}…». `G-32` y `G-33` comprueban "
+                     f"una resolución que su sede ha dejado de contener"))
+# las DOCE reglas, con su cardinal DERIVADO de la frase que las anuncia
+_m_n_reglas = re.search(r"[Ll]as\s+" + _NUM + r"\s+reglas obligatorias que\s+`?O17`?\s+fija",
+                        _tdec)
+_m_blq_reglas = re.search(r"reglas obligatorias que\s+`?O17`?\s+fija.*?```text\n(.*?)```",
+                          _tdec, re.S)
+_REGLAS_O17 = {}
+if not _m_n_reglas or not _m_blq_reglas:
+    _o17.append(("ambas", "`O17` no publica su bloque «las <n> reglas obligatorias»: sin "
+                 "él, las reglas que `G-32` y `G-33` aplican no tienen sede"))
+else:
+    for _mr in re.finditer(r"^\s*(\d{1,2})\s{2,}(.*(?:\n(?!\s*\d{1,2}\s{2,}).*)*)",
+                           _m_blq_reglas.group(1), re.M):
+        _REGLAS_O17[int(_mr.group(1))] = " ".join(_mr.group(2).split())
+    _n_pub = _num(_m_n_reglas.group(1))
+    if _n_pub is not None and _n_pub != len(_REGLAS_O17):
+        _o17.append(("ambas", f"`O17` anuncia {_n_pub} reglas obligatorias y su bloque "
+                     f"enumera {len(_REGLAS_O17)}"))
+# y cada regla que ESTA batería aplica, exigida PRESENTE en la regla que la sostiene
+_APLICADAS = (
+    (1,  r"EXACTAMENTE UNA certificaci[óo]n Estructural",      "`G-33` FASE 0 propia"),
+    (2,  r"ANTES de cualquier mutaci[óo]n can[óo]nica",         "`G-33` `_fase0_conforme`"),
+    (4,  r"nivel superior NO implica",                          "`G-33` prueba negativa 3"),
+    (5,  r"se BLOQUEA",                                         "`G-33` `_fase0_conforme`"),
+    (7,  r"SUJETO de la certificaci[óo]n identifica",           "`G-33` sujeto de §9.6"),
+    (8,  r"todas sus entradas y huellas siguen ID[ÉE]NTICAS",   "`G-33` prueba negativa 2"),
+    (9,  r"cada ejecuci[óo]n produce SU PROPIA declaraci[óo]n", "`G-33` prueba negativa 2"),
+    (10, r"copiar una certificaci[óo]n anterior",               "`G-33` prueba negativa 2"),
+    (12, r"PRODUCTOR, EVIDENCIA, SUJETO, VIGENCIA y CONDICI[ÓO]N DE INVALIDACI[ÓO]N",
+         "`G-32` productor de cada nivel"),
+)
+for _nr, _pat, _quien in _APLICADAS:
+    _dest = "32" if _quien.startswith("`G-32`") else "33"
+    _txt_r = _REGLAS_O17.get(_nr, "")
+    if not _txt_r:
+        _o17.append((_dest,
+                     f"`O17` no publica su regla {_nr}, y {_quien} dice derivar de ella"))
+    elif not re.search(_pat, _txt_r):
+        _o17.append((_dest, f"la regla {_nr} de `O17` ya no dice lo que {_quien} "
+                     f"comprueba: «{_txt_r[:100]}…»"))
+# la PROPAGACIÓN: la fila del registro que declara a `O17` su única fuente
+_filas_prop = [l for l in _tdec.split("\n")
+               if re.match(r"^\|\s*D\d+\s*\|", l) and re.search(r"`O17`[^|]*[úu]nica fuente", l)]
+if not _filas_prop:
+    _o17.append(("33",
+                 "ninguna fila `D` del registro declara a `O17` su ÚNICA FUENTE: la "
+                 "propagación que `G-33` dice comprobar no está registrada. Borrarla no "
+                 "deja hueco en `G-20` si era la última, y por eso se busca por lo que "
+                 "dice y no por su número"))
+else:
+    _prop = _filas_prop[0]
+    _id_prop = re.match(r"^\|\s*(D\d+)\s*\|", _prop).group(1)
+    _macros_prop = sorted(set(re.findall(r"§(8\.\d+)", _prop)))
+    if _macros_prop != sorted(_MACROS):
+        _o17.append(("33", f"`{_id_prop}` propaga `O17` a {_macros_prop} y §8 deriva "
+                     f"{sorted(_MACROS)}"))
+    if "gate:sistema-conforme" not in _prop:
+        _o17.append(("33", f"`{_id_prop}` no nombra el contrato compartido "
+                     f"`gate:sistema-conforme`, que es lo que la propagación instala"))
+
 _b91 = bloques.get("§9.1", "\n".join(l for i, l in enumerate(L11, 1) if sec_de(i) == "9.1"))
 _b92 = "\n".join(l for i, l in enumerate(L11, 1) if sec_de(i) == "9.2")
-_g32 = []
+_g32 = [m for d, m in _o17 if d in ("32", "ambas")]
 _cab91 = [l for l in _b91.split("\n") if l.startswith("| nivel |")]
 _niveles = {}
 if not _cab91:
@@ -2524,7 +2956,7 @@ check("G-32",
 # día que naciera un quinto recorrido, la comprobación seguiría verde sobre un mapa que ya
 # no es el suyo.
 _b96 = "\n".join(l for i, l in enumerate(L11, 1) if sec_de(i) == "9.6")
-_g33 = []
+_g33 = [m for d, m in _o17 if d in ("33", "ambas")]
 if not _MACROS:
     _g33.append("cero macrocircuitos derivados de §8: sin objeto, esto sería un verde por "
                 "omisión")
@@ -2590,14 +3022,37 @@ elif len(_IDENT) != _n_suj_pub:
 # Se toma el texto real del primer macrocircuito, se le quitan las líneas de FASE 0, y se
 # exige que `_fase0_conforme` lo DENUNCIE. Un evaluador que no sepa decir que no está es un
 # evaluador que no comprueba nada.
+# `T-09`. `_NEGATIVAS` era una lista que se llenaba y **no se contrastaba con nada**: su
+# largo se imprimía —«4 pruebas negativas ejecutadas»— mientras el título de la comprobación
+# publicaba «las TRES pruebas negativas», y el desajuste 3/4 salía en la propia salida del
+# baseline, en la batería cuya tesis es que los censos no se escriben a mano. Y tres de las
+# cuatro no llevaban CONTROL: se comprobaba que el mutante cae, y no que el caso sano pasa,
+# con lo que un evaluador que dijera «no» a todo habría pasado por bueno.
+#
+# Ahora cada prueba negativa se REGISTRA con sus dos mitades —el CONTROL, que tiene que
+# pasar, y el MUTANTE, que tiene que caer—, las dos se verifican, y **el censo no se
+# escribe**: sale de las registradas. Un fixture que no pueda fallar deja de contar.
 _NEGATIVAS = []
+
+def _negativa(nombre, proteccion, control_pasa, mutante_denunciado):
+    """Registra una prueba negativa con sus DOS mitades y devuelve sus fallos."""
+    _NEGATIVAS.append((nombre, proteccion))
+    fallos = []
+    if not control_pasa:
+        fallos.append(f"PRUEBA NEGATIVA «{nombre}» (protección {proteccion}): su CONTROL "
+                      f"—el caso SANO— no pasa, luego sería un rojo permanente que nadie "
+                      f"puede cerrar y no prueba nada")
+    if not mutante_denunciado:
+        fallos.append(f"PRUEBA NEGATIVA «{nombre}» (protección {proteccion}): el caso "
+                      f"MUTADO NO se denuncia, luego el evaluador no comprueba nada")
+    return fallos
+
 _b_real = "\n".join(l for i, l in enumerate(L11, 1) if sec_de(i) == (_MACROS[0] if _MACROS else "8.1"))
 _b_mutilado = "\n".join(l for l in _b_real.split("\n")
                         if "FASE 0" not in l and "gate:sistema-conforme" not in l)
-_NEGATIVAS.append("macrocircuito que OMITE la FASE 0 Estructural")
-if not _fase0_conforme(_b_mutilado):
-    _g33.append("PRUEBA NEGATIVA 1 (protección 13): un macrocircuito sin FASE 0 ni "
-                "`gate:sistema-conforme` NO se denuncia, luego `G-33` no comprueba nada")
+_g33 += _negativa("macrocircuito que OMITE la FASE 0 Estructural", 13,
+                  not _fase0_conforme(_b_real),
+                  bool(_fase0_conforme(_b_mutilado)))
 
 # ── PRUEBA NEGATIVA 2 (protección 14) · reutilizar con OTRA huella ────────
 #
@@ -2626,18 +3081,13 @@ _CLAVES = tuple(_IDENT) if _IDENT else ("1", "2", "3", "4", "5", "6")
 _sujeto_a = {k: "v%d" % i for i, k in enumerate(_CLAVES)}
 _sujeto_b = dict(_sujeto_a)
 _sujeto_b[_CLAVES[-1]] = "OTRA-HUELLA"
-_NEGATIVAS.append("reutilización con UNA huella de entrada distinta")
-if _reutilizacion(_sujeto_a, _sujeto_a, _CLAVES)[0] is not True:
-    _g33.append("PRUEBA NEGATIVA 2: con todas las entradas idénticas la reutilización se "
-                "declara inadmisible, luego la regla 8 sería inaplicable siempre")
-_ok2, _motivo2 = _reutilizacion(_sujeto_a, _sujeto_b, _CLAVES)
-if _ok2:
-    _g33.append("PRUEBA NEGATIVA 2 (protección 14): reutilizar evidencia con UNA huella de "
-                "entrada distinta se admite, y la regla 8 exige que TODAS sigan idénticas")
-_NEGATIVAS.append("reutilización sin declaración propia, y copia de la anterior")
-if _declaracion_valida(True, False, False)[0] or _declaracion_valida(True, True, True)[0]:
-    _g33.append("PRUEBA NEGATIVA 2 (reglas 9 y 10): reutilizar sin emitir declaración "
-                "propia, o copiando la anterior, se admite")
+_g33 += _negativa("reutilización con UNA huella de entrada distinta", 14,
+                  _reutilizacion(_sujeto_a, _sujeto_a, _CLAVES)[0] is True,
+                  not _reutilizacion(_sujeto_a, _sujeto_b, _CLAVES)[0])
+_g33 += _negativa("reutilización sin declaración propia, y copia de la anterior", 14,
+                  _declaracion_valida(True, True, False)[0] is True,
+                  not _declaracion_valida(True, False, False)[0]
+                  and not _declaracion_valida(True, True, True)[0])
 
 # ── PRUEBA NEGATIVA 3 (protección 15) · elevarse sin Estructural vigente ──
 #
@@ -2652,34 +3102,38 @@ def _nivel_alcanzado(celdas, cadena):
         alcanzado = nivel
     return alcanzado
 
-_NEGATIVAS.append("Operativa e Integrada sin Estructural vigente de esta ejecución")
 if _CADENA:
     _todo_ok = {n: "verificado-vigente" for n in _CADENA}
-    if _nivel_alcanzado(_todo_ok, _CADENA) != _CADENA[-1]:
-        _g33.append("PRUEBA NEGATIVA 3: con toda la cadena verificada y vigente no se "
-                    "alcanza el último nivel, luego la regla sería un rojo permanente")
     _sin_estructural = dict(_todo_ok)
     _sin_estructural[_CADENA[0]] = "vencido"
-    _alc = _nivel_alcanzado(_sin_estructural, _CADENA)
-    if _alc is not None:
-        _g33.append(f"PRUEBA NEGATIVA 3 (protección 15): con «{_CADENA[0]}» NO vigente se "
-                    f"alcanza «{_alc}», y §9.2 exige que los niveles presupuestos estén "
-                    f"todos verificados y vigentes")
-    # y la regla 4: un nivel superior verificado no revalida el inferior
     _solo_superiores = {n: "verificado-vigente" for n in _CADENA[1:]}
-    if _nivel_alcanzado(_solo_superiores, _CADENA) is not None:
-        _g33.append("PRUEBA NEGATIVA 3 (regla 4): un nivel superior verificado basta por sí "
-                    "mismo para alcanzar nivel, sin Estructural vigente")
+    _g33 += _negativa("Operativa e Integrada sin Estructural vigente de esta ejecución", 15,
+                      _nivel_alcanzado(_todo_ok, _CADENA) == _CADENA[-1],
+                      _nivel_alcanzado(_sin_estructural, _CADENA) is None)
+    _g33 += _negativa("un nivel superior verificado que pretende revalidar el inferior", 15,
+                      _nivel_alcanzado(_todo_ok, _CADENA) == _CADENA[-1],
+                      _nivel_alcanzado(_solo_superiores, _CADENA) is None)
 else:
     _g33.append("sin cadena derivada de §9.2 no se puede evaluar la alcanzabilidad de "
                 "ningún nivel")
+# el CENSO de las pruebas negativas, contrastado: ni se escribe en el título ni se imprime
+# sin comprobar. Cada una tiene protección declarada y las protecciones cubiertas se
+# contrastan contra las que el bloque de reglas de `O17` sostiene.
+_prot_cubiertas = sorted({p for _, p in _NEGATIVAS})
+if not _NEGATIVAS:
+    _g33.append("CERO pruebas negativas registradas: el censo que esta comprobación publica "
+                "saldría de una lista vacía")
+elif len({n for n, _ in _NEGATIVAS}) != len(_NEGATIVAS):
+    _g33.append(f"dos pruebas negativas comparten nombre: {[n for n, _ in _NEGATIVAS]}")
 check("G-33",
-      "los macrocircuitos DERIVADOS producen su Estructural en FASE 0, y las tres pruebas negativas —omitir Estructural, reutilizar con otra huella, elevarse sin Estructural vigente— dan ROJO",
+      "los macrocircuitos DERIVADOS producen su Estructural en FASE 0, y sus pruebas negativas —cada una con su CONTROL y su MUTANTE, y el censo derivado— dan ROJO",
       not _g33,
       "; ".join(_g33) or
       f"{len(_MACROS)} macrocircuitos derivados de §8 ({', '.join('§' + m for m in _MACROS)}), "
       f"cada uno con FASE 0 `gate:sistema-conforme` anterior a toda mutación · §18 mapea "
       f"{_n18} · sujeto de {len(_IDENT)} identificadores derivados de §9.6 · "
-      f"{len(_NEGATIVAS)} pruebas negativas ejecutadas, todas en rojo como deben")
+      f"{len(_NEGATIVAS)} pruebas negativas ejecutadas —{len(_prot_cubiertas)} "
+      f"protecciones cubiertas: {_prot_cubiertas}—, cada una con su control en verde y su "
+      f"mutante en rojo: " + " · ".join(n for n, _ in _NEGATIVAS))
 
 sys.exit(_informe())

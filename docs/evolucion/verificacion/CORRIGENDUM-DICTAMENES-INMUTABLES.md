@@ -90,8 +90,15 @@ este rango**: se deriva con `derivar-universo-obligatorio.py`, que toma el fiche
 
 ## 4 · Documento 13 · una «ERRATA CONFIRMADA» que hoy está superada
 
-**Sede:** `13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md` **L42** y **L618**, que fijan
+**Sede:** `13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md` **L46** y **L628**, que fijan
 «ERRATA CONFIRMADA · DIEZ» sobre una cifra que el documento 12 hoy da como **ONCE**.
+
+> **Localización corregida.** Esta entrada citaba **L42** y **L618**. Las líneas reales son
+> **L46** y **L628**, derivadas con
+> `grep -n 'ERRATA CONFIRMADA' 13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md` y con
+> `sed -n '628p'`. Lo levantó `T2-06` del segundo gate de certificación (`T-21`). **La
+> sustancia de la entrada no cambia**; lo que estaba mal era dónde mirar, en un documento
+> cuya cabecera promete que ninguna cifra se copia.
 
 **Qué se sigue.** La verificación del documento 13 fue correcta **cuando se hizo**, y quedó
 superada por una corrección posterior sin que nada lo marcara. No se corrige el dictamen: se
@@ -119,7 +126,60 @@ de la candidata, verificado arriba, y el adjudicador `R` recalculó los doce con
 Lo que falla es **la descripción que el addendum hace de su propia evidencia**, no la
 evidencia. Lo encontró el dictaminador `Q4`. El addendum **no se edita**: se corrige aquí.
 
-## 6 · Regla general que este documento deja escrita
+## 6 · Manifiesto del SEGUNDO GATE DE CERTIFICACIÓN · su titular de líneas se contradice con sus propias dos subsumas
+
+**Sede:** `verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-2-20260830.md`
+**L36** —«`UNIVERSO DERIVADO   64 fuentes · 47 728 líneas`»— y **L173** —«`LÍNEAS
+OBLIGATORIAS     47 728`»—, dentro del bloque §6 que publica «las DOS restas de `1bis`».
+
+**Lo que dice el árbol.** Las tres cifras se derivan, y **dos de ellas están en el propio
+manifiesto**:
+
+```text
+COMANDO                                                       RESULTADO
+python3 …/derivar-universo-obligatorio.py    (árbol c36d2ba)  64 fuentes · 48 138 líneas
+suma de la columna «líneas» de las 12 filas de su §4                     21 530
+suma de la columna «líneas» de las 52 filas de su §5                     26 608
+                                                                       ────────
+21 530 + 26 608                                                          48 138
+titular publicado en su §2 (L36) y en su §6 (L173)                       47 728
+                                                                       ────────
+DIFERENCIA                                                                  410
+git show c36d2ba:…/derivar-universo-obligatorio.py | wc -l                  410
+```
+
+**El manifiesto se contradice DENTRO de su propia §6**: sus dos subsumas —las que él mismo
+publica, fila a fila— suman **48 138**, y su titular dice **47 728**, dos renglones más
+arriba. Las 64 filas están bien y los dos subtotales están bien; **lo que no deriva de nada
+es el titular**.
+
+**De dónde salen las 410 líneas de diferencia.** Son exactamente el recuento de
+`derivar-universo-obligatorio.py`, que es la fuente que el commit `6b5d3e6` añadió al
+`ENCARGO` **y que el propio §2 del manifiesto presenta como novedad**: «*el propio
+derivador, que pasa a juzgarse a sí mismo*». **El titular es una copia de una ejecución
+anterior a esa ampliación, no una derivación**, en el documento cuya tesis es que «el
+universo no se escribe: se deriva».
+
+**Qué se sigue.**
+
+```text
+NO SE PUEDE  citar «47 728 líneas» de este manifiesto como el tamaño del universo
+             obligatorio de ese gate. La cifra derivada es 48 138, y el propio manifiesto
+             la contiene desagregada
+SÍ SE PUEDE  citar sus 64 filas, sus dos subtotales y sus dos restas: ninguna cambia. El
+             adjudicador `U` recalculó las 64 filas contra el árbol sin una discrepancia
+NO CAMBIA    ningún veredicto, ninguna asignación y ninguna cobertura: la resta
+             `OBLIGATORIO − ASIGNADO = ∅` se calcula sobre FUENTES, no sobre líneas
+YA REMEDIADO en la fuente: el derivador publica el total en cada ejecución. Copiarlo a un
+             titular es lo que lo hizo caducar, y por eso este corrigendum recomienda **no
+             publicar el titular**, no corregirlo
+```
+
+**El manifiesto es INMUTABLE y no se edita**: se acota aquí. Lo levantó `T3` como hallazgo
+propio (`T-10`) y el adjudicador `U` lo confirmó y lo agravó, porque la contradicción es
+interna al mismo bloque.
+
+## 7 · Regla general que este documento deja escrita
 
 ```text
 UN DICTAMEN NO SE EDITA. Si contiene un error de hecho, se registra en este corrigendum con

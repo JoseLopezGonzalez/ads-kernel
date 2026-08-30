@@ -48,7 +48,10 @@ FALLA CERRADO
 Si una sede no se puede leer, si un recuento derivado no coincide con el que su sede
 declara, o si una ruta derivada no existe en el árbol, **sale con código 2 y diagnóstico**.
 Nunca adivina y nunca reduce el universo en silencio: un universo que encoge sin decirlo es
-exactamente el defecto que `P-08` describió.
+exactamente el defecto que `P-08` describió. **Y eso se EJECUTA, no se promete**: toda ruta
+que un manifiesto INMUTABLE declaró obligatoria tiene que seguir saliendo de algún
+componente —el cliquet de `universos_publicados()`—, y un documento numerado que el
+componente (iv) no sepa clasificar para el derivador entero en vez de caerse del universo.
 
 USO
 ---
@@ -151,10 +154,15 @@ def cardinales():
     if not mii:
         raise SedeIlegible("`1bis` no publica los cardinales del componente (ii): "
                            "«(ii) las <n> fuentes y <n> fichas …»")
-    valores = (_num(mi.group(1)), _num(mii.group(1)), _num(mii.group(2)))
+    crudos = (mi.group(1), mii.group(1), mii.group(2))
+    valores = tuple(_num(c) for c in crudos)
     if any(v is None for v in valores):
+        # `T-22`. Aquí había `"… %r" % (a, b, c)`: un `%r` con una tupla de TRES es
+        # `TypeError`. **La única rama del derivador que existe para fallar cerrado era la
+        # única que no fallaba cerrado**: reventaba con traza y código 1 —no 2— y sin la
+        # línea `FALLA CERRADO ·` que el manifiesto enseña a buscar. La tupla va envuelta.
         raise SedeIlegible("`1bis` publica cardinales que no son numerales legibles: %r"
-                           % (mi.group(1), mii.group(1), mii.group(2)))
+                           % (crudos,))
     return valores
 
 
@@ -240,13 +248,30 @@ def componente_iii():
 # ── (iv) · todo dictamen de gate anterior ────────────────────────────────────────
 # Se derivan del TÍTULO de su H1 y no de una lista: una lista escrita a mano deja fuera el
 # dictamen que se publique después, y ése es precisamente el que nadie ha leído.
+# `T-15`. La lista era SÓLO positiva, y lo que no casaba con ella se caía del universo **en
+# silencio**: un `23-DICTAMEN-…` cuyo H1 no usara una de estas ocho voces no entraba, y nadie
+# se enteraba — que es palabra por palabra lo que `1bis` dice que hay que impedir. Faltaban
+# además las voces obvias: `DICTAMEN`, `AUDITORÍA`, `CERTIFICACIÓN`, `ADJUDICACIÓN`.
+#
+# Ahora la clasificación es TOTAL y falla CERRADO: cada documento numerado tiene que caer en
+# una de las dos listas, y **el que no case con ninguna para el derivador entero**. Una lista
+# positiva puede olvidarse de un dictamen nuevo; una clasificación total, no: el olvido se
+# convierte en código 2 con el nombre del documento, y se cierra añadiéndolo a la lista que
+# le corresponda, que es una decisión que alguien toma y firma.
 VOCES_DE_DICTAMEN = ("GATE", "CRÍTICA", "CRITICA", "REVISIÓN", "REVISION",
-                     "DEVOLUCIÓN", "DEVOLUCION", "COMPLEMENTO")
+                     "DEVOLUCIÓN", "DEVOLUCION", "COMPLEMENTO", "DICTAMEN",
+                     "AUDITORÍA", "AUDITORIA", "CERTIFICACIÓN", "CERTIFICACION",
+                     "ADJUDICACIÓN", "ADJUDICACION", "VEREDICTO")
+
+VOCES_DE_NO_DICTAMEN = ("ÍNDICE", "INDICE", "BASELINE", "MAPA", "INVARIANTES",
+                        "PLAN DE INVESTIGACIÓN", "PLAN DE INVESTIGACION", "INVENTARIO",
+                        "CONTRASTE", "DECISIÓN", "DECISION", "DEMOSTRADO", "SÍNTESIS",
+                        "SINTESIS", "ARQUITECTURA")
 
 
 def componente_iv():
     dir_ev = os.path.join(RAIZ, "docs/evolucion")
-    salida = []
+    salida, sin_clasificar = [], []
     for nombre in sorted(os.listdir(dir_ev)):
         if not re.match(r"^\d\d-.*\.md$", nombre):
             continue
@@ -258,6 +283,15 @@ def componente_iv():
                 break
         if any(v in cabecera for v in VOCES_DE_DICTAMEN):
             salida.append(rel)
+        elif not any(v in cabecera for v in VOCES_DE_NO_DICTAMEN):
+            sin_clasificar.append((rel, " ".join(cabecera.split())[:90]))
+    if sin_clasificar:
+        raise SedeIlegible(
+            "el componente (iv) NO sabe clasificar %d documento(s) numerado(s): %r. Un "
+            "documento que no case con ninguna de las dos listas de voces se caía del "
+            "universo EN SILENCIO, que es exactamente lo que `1bis` prohíbe. Dígase si es "
+            "dictamen —`VOCES_DE_DICTAMEN`— o no lo es —`VOCES_DE_NO_DICTAMEN`—: el "
+            "derivador no lo adivina" % (len(sin_clasificar), sin_clasificar))
     if not salida:
         raise SedeIlegible("cero dictámenes derivados de docs/evolucion: el barrido no ve "
                            "el corpus, y un universo vacío por no mirar es el defecto que "
@@ -352,6 +386,45 @@ COMPONENTES = [
 ]
 
 
+# ── la promesa de la cabecera, EJECUTADA: «nunca reduce el universo en silencio» ─────
+#
+# `T-15`. La promesa cubría la MANIPULACIÓN y no la OMISIÓN: **borrar una fila del `ENCARGO`
+# reducía el universo en uno con `exit 0` y sin un solo aviso** —lo reprodujimos: de 65 a
+# 64—, y el adjudicador lo reprodujo antes de 64 a 63. Una promesa que el código no ejecuta
+# es una afirmación falsa en el fichero cuya tesis es que el universo no se escribe.
+#
+# El universo obligatorio de un gate es un CLIQUET: cada manifiesto publicado declaró, con
+# fila propia, ruta y SHA-256, las fuentes que aquel gate estaba obligado a cubrir, y esos
+# manifiestos son INMUTABLES. Ninguna de esas rutas puede desaparecer del universo derivado
+# sin que alguien lo diga: si desaparece, o el derivador encogió o el árbol perdió la
+# fuente, y las dos cosas son código 2.
+MANIFIESTOS = "docs/evolucion/verificacion/manifiestos"
+_FILA_MANIFIESTO = re.compile(
+    r"^\|\s*\d+\s*\|\s*`([A-Za-z0-9][-A-Za-z0-9_./]*\.(?:md|py|ya?ml|txt))`\s*\|", re.M)
+
+
+def universos_publicados():
+    """{ruta: [manifiestos que la declararon obligatoria]}, de las sedes INMUTABLES."""
+    dir_man = os.path.join(RAIZ, MANIFIESTOS)
+    if not os.path.isdir(dir_man):
+        raise SedeIlegible("no existe %s: sin manifiestos publicados no hay nada contra lo "
+                           "que comprobar que el universo no ha encogido" % MANIFIESTOS)
+    publicadas, con_filas = {}, []
+    for nombre in sorted(os.listdir(dir_man)):
+        if not nombre.endswith(".md"):
+            continue
+        rutas = set(_FILA_MANIFIESTO.findall(_leer(MANIFIESTOS + "/" + nombre)))
+        if rutas:
+            con_filas.append(nombre)
+        for r in rutas:
+            publicadas.setdefault(r, []).append(nombre)
+    if not con_filas:
+        raise SedeIlegible("ningún manifiesto de %s publica filas de fuente con ruta: el "
+                           "cliquet que impide que el universo encoja se quedaría sin sede, "
+                           "y una guarda sin sede es un verde por omisión" % MANIFIESTOS)
+    return publicadas
+
+
 def derivar():
     """Devuelve (universo_ordenado, procedencia) o lanza SedeIlegible."""
     procedencia = {}
@@ -361,6 +434,15 @@ def derivar():
     faltan = [r for r in procedencia if not os.path.isfile(os.path.join(RAIZ, r))]
     if faltan:
         raise SedeIlegible("rutas derivadas que NO existen en el árbol: %r" % sorted(faltan))
+    perdidas = sorted((r, m) for r, m in universos_publicados().items()
+                      if r not in procedencia)
+    if perdidas:
+        raise SedeIlegible(
+            "EL UNIVERSO HA ENCOGIDO, y esto es lo que la cabecera promete no hacer en "
+            "silencio: %d ruta(s) que un manifiesto INMUTABLE declaró obligatoria(s) ya no "
+            "salen de ningún componente: %r. O una fila del `ENCARGO` se ha borrado, o una "
+            "sede ha dejado de nombrarla. Quien la quite responde de ello, y lo dice aquí"
+            % (len(perdidas), perdidas))
     return sorted(procedencia), procedencia
 
 
