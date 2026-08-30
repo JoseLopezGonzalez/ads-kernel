@@ -9,14 +9,17 @@ unidos por documentación — que es lo que el 23.5 rechaza con esas palabras.
 > superada y uso real es la disciplina central de este repositorio, y esta fase produce
 > **sólo la primera**.
 >
-> **F4 no está certificada, y este texto ha sido CORREGIDO DOCE VECES.** El recuento se
-> DERIVA de los bloques de corrección de §15.8, y son doce: `D23`–`D33`, `D34`–`D45`,
-> `D46`–`D51`, `D52`–`D54`, `D55`–`D57`, `D58`–`D59`, `D60`–`D61`, `D62`, `D63`, `D64`–`D68`,
-> `D69`–`D70` y `D71`–`D86`. **La decimotercera es ésta**, `D87` en adelante, y por eso la
-> cifra vuelve a moverse. **Corregido por `I-19`**: decía NUEVE, y la aposición que decía
-> derivarla enumeraba diez omitiendo `D69`–`D70` y contando «cinco comprobaciones técnicas»
-> donde §15.8 rotula hasta la SEXTA. Un recuento que se declara derivado se deriva, o se
-> retira la afirmación de que deriva. **«Dos veces» era la cifra de hace diez correcciones.**
+> **F4 no está certificada, y este texto ha sido CORREGIDO MUCHAS VECES: exactamente TANTAS
+> COMO BLOQUES DE CORRECCIÓN TIENE §15.8, y ésa es la única sede que lo dice.** El recuento
+> **se DERIVA de las cabeceras `###` de §15.8** —hoy diecisiete, de `D23`–`D33` a `D107`— y
+> **este párrafo NO las enumera**: remite. **Corregido por `I-19`**, que encontró aquí NUEVE
+> con una aposición que enumeraba diez. **Y corregido otra vez por `P-03` del documento 22**,
+> que encontró DOCE con la enumeración copiada entera y **§15.8 sin bloque para `D96`–`D107`
+> —once decisiones vigentes—**: la sede de la que la cifra decía derivarse estaba incompleta
+> en dos tandas, luego la cifra no derivaba de nada. Ahora §15.8 tiene su bloque por tanda y
+> **abrirlo es parte de escribir la tanda**. Un recuento que se declara derivado se deriva, o
+> se retira la afirmación de que deriva; **y una enumeración copiada envejece sola, mientras
+> una remisión no**. «Dos veces» era la cifra de hace quince correcciones.
 >
 > ```text
 > PRIMERA DEVOLUCIÓN    nueve bloques de hallazgos, en
@@ -123,14 +126,18 @@ Para el Owner, sin vocabulario interno.
 ```text
 LA CUARTA CAPA           sigue deferida. Hace falta un proyecto independiente que minar.
 EL PILOTO                sigue sin ejecutarse. Nada de aquí está demostrado en un producto.
-LAS ENMIENDAS            este diseño presiona material aprobado en **CATORCE** puntos, tras dos
-                         devoluciones independientes, una tercera revisión, el gate final con
-                         su complemento de cobertura, el GATE DE CIERRE INDEPENDIENTE y el
-                         GATE DEFINITIVO INDEPENDIENTE. El recuento se DERIVA de §16 y se
-                         mueve cuando aparece algo no contado: fueron ocho, `PN-11`, `PN-12`
-                         y `PN-13` lo llevaron a once, `PN-14` a doce, y **`PN-15` lo lleva a
-                         trece**. Se enumeran y NO se redactan: eso es F5, y su puerta es el
-                         Owner.
+LAS ENMIENDAS            este diseño presiona material aprobado en **DIECISÉIS** puntos, tras
+                         dos devoluciones independientes, una tercera revisión, el gate final
+                         con su complemento de cobertura, el GATE DE CIERRE INDEPENDIENTE, el
+                         GATE DEFINITIVO INDEPENDIENTE y el GATE INDEPENDIENTE DE
+                         CERTIFICACIÓN. **La cifra NO se escribe aquí ni se enumera aquí: se
+                         DERIVA del barrido de las cabeceras `## \`PN-` de §16, menos las
+                         marcadas RETIRADA o FUSIONADA, y §16 es la ÚNICA sede que la
+                         publica.** Este párrafo REMITE a ella y no la copia — **corregido
+                         por `P-04` del documento 22**, que encontró aquí el titular CATORCE
+                         junto a una cadena que decía derivarlo y terminaba en TRECE
+                         omitiendo `PN-16`. Una cadena copiada caduca sola; una remisión no.
+                         Se enumeran y NO se redactan: eso es F5, y su puerta es el Owner.
 ```
 
 **Qué cuesta.** El diseño elige, en cada punto donde había alternativa, la forma que se puede
@@ -416,7 +423,7 @@ ads/                                    el repositorio ADS de control
    ├─ indice.sqlite          índice compilado, reconstruible, no canónico
    ├─ cache/                 análisis vigente por huella
    └─ quarantine/<TX>/       CUARENTENA TEMPORAL de contenido divergente, cuando el Owner la
-                             autoriza para poder abandonar (§2.6.9, desenlace 4b). LOCAL,
+                             autoriza para poder abandonar (§2.6.9, **secuencia** `4b`, cuyo desenlace es el 4). LOCAL,
                              ignorada por Git, NO canónica y NO fuente de verdad. Se crea
                              ANTES de restaurar, se verifica por hash, y se elimina SÓLO
                              después del terminal, de su verificación y del commit del
@@ -1159,7 +1166,7 @@ cobertura obligó a añadir `W17`**.
 | W5 | tras aplicar todos, antes de `confirmada` | todos en posterior, sin `confirmada` | se emite `confirmada` y se sigue. No se reescribe nada |
 | W6 | justo después de `confirmada` | `confirmada` presente, derivados sin regenerar | se regeneran los derivados y se emite `derivada` |
 | W7 | durante la regeneración de derivados | derivados divergentes de su `source_revision` | se regeneran ENTEROS. Un derivado es reemplazable por definición |
-| W8 | tras `derivada`, antes de borrar el marcador | transacción CERRADA con marcador abierto | se borra el marcador. Idempotente. **`abierta(tx)` deja de cumplirse** en cuanto es durable cualquiera de los DOS terminales. **Pero la RETIRADA del marcador no es simétrica** (`D105`): tras `derivada` se retira sin más; tras `abandonada` se retira **sólo cuando el `deriva` y su marcador son durables** (§2.6.9 paso E), porque hasta entonces retirarlo dejaría el commit desbloqueado y el bloqueo de los items perdido. Si se cayó antes de eso, la ventana es `W17` y el arranque lo completa |
+| W8 | tras `derivada`, antes de borrar el marcador | transacción CERRADA con marcador abierto | se borra el marcador. Idempotente. **`abierta(tx)` deja de cumplirse** en cuanto es durable cualquiera de los DOS terminales. **Pero la RETIRADA del marcador no es simétrica** (`D105`): tras `derivada` se retira sin más; tras `abandonada` se retira **sólo cuando el `deriva` es DURABLE y su marcador existe** (§2.6.9 paso E), porque hasta entonces retirarlo dejaría el commit desbloqueado y el bloqueo de los items perdido. **Y `W8` cubre los DOS tramos posteriores al `deriva` durable —`[paso 4, paso 5)` y `[paso 5, paso 6)`—**: crea el marcador del `deriva` si falta —reconstruible desde el diario (§2.9), y por eso no lleva `fsync`, que es la fila `X60`— y **sólo entonces** retira el de transacción, todo idempotente. **Si el `deriva` NO es durable todavía, la ventana es `W17`; si no hay `abandonada` durable, es `W11`.** **Corregido por `P-01`**: esta celda mandaba a `W17` todo lo anterior a que «el `deriva` **y su marcador**» fueran durables, y con ello reclamaba para `W17` el tramo `[4, 5)` que la propia fila de `W17` expulsa por su condición de detección. **Las tres sedes dicen ahora lo mismo, y el punto 7 de §2.6.9 es la que manda** |
 | W9 | antes del commit de Git | árbol coherente, Git por detrás | se hace el commit LOCAL. Es recuperación: protege el árbol y no publica (§2.6.10) |
 | W10 | después del commit, antes del push | commit local sin publicar | **NO se empuja automáticamente.** El push es publicación, no recuperación: pasa a la política de §2.6.10 |
 | W11 | en cualquier punto, con la transacción abierta y un fichero VERDADERAMENTE divergente | un fichero que no casa **ni con su `hash_previo` ni con su `hash_posterior_esperado`** (§2.6.4) | **`conflicto`** —y las dos condiciones son necesarias: transacción abierta Y divergencia real—, con la copia íntegra de lo divergente. El predicado `reconciliacion_pendiente` **se deriva** de él (§2.6.9): no hay bandera que escribir. No se completa y no se revierte, y tiene **dos salidas**: si la divergencia cesa se completa hacia delante, y si no, la autoridad **abandona** y el marcador se retira |
@@ -1169,7 +1176,7 @@ cobertura obligó a añadir `W17`**.
 | **W14** | **creando el marcador (paso 2)** | `preparada` durable, marcador ausente o vacío | benigno: `W3` lo cubre por resultado. Se recrea el marcador desde el diario (§2.9) |
 | **W15** | **el push es rechazado porque el remoto avanzó** | commit local, remoto divergente | evento `fallo`, tope de tres por §7.3, y se escala. **NUNCA `--force`** (§2.6.10) |
 | **W16** | **el push se completa parcialmente** | unas referencias publicadas y otras no | evento `fallo` con las referencias nombradas. El estado local no cambia: el push no es una mutación canónica |
-| **W17** | **caída de MÁQUINA entre el `abandonada` durable y el `deriva` durable** —y **sólo** ese tramo: la caída POSTERIOR al `deriva`, con su marcador aún sin retirar, la cubre `W8` con §2.9 y la fila `X60`, y así lo reparte el punto 7 de §2.6.9 (`R-04`) | terminal `abandonada` presente **sin ningún `deriva` que lo referencie por `abandonada_id`**, y el marcador de transacción **todavía puesto** | **se COMPLETA, y es idempotente** (paso 0 de §2.6.4): el arranque comprueba **si ya existe un `deriva` con ese `abandonada_id` ANTES de emitir**, y ahí vive la idempotencia — no en la igualdad del `id`, que §2.8 retiró como prueba (`R-01`). El cuerpo del `deriva` es una función del `abandonada` durable —que lleva `estado_observado[]` de todas las rutas, `autoridad`, `motivo` y `revision_base`—, luego los dos arranques construyen el mismo cuerpo. Se emite, se hacen sus dos `fsync`, se crea su marcador, y **sólo entonces** se retira el marcador de transacción. **Añadida por `D105`** (`M-03`, `O-03`): el `abandonada` llevaba `fsync` obligatorio y el `deriva` no, el marcador se retiraba antes de que el `deriva` fuera durable, el arranque tenía PROHIBIDO emitirlo y la capa B exigía que existiera. El resultado era un bloqueo perdido en silencio y un diario permanentemente inválido sin ruta de reparación |
+| **W17** | **`abandonada` DURABLE y `deriva` AUSENTE o todavía no durable** — el tramo **`[paso 2, paso 4)`** de §2.6.9, y **sólo** ése: si NO hay `abandonada` durable la transacción sigue abierta y es `W11`, que cubre `[paso 1, paso 2)`; si el `deriva` YA es durable, con su marcador o el de transacción aún sin resolver, **la cubre `W8`** con §2.9 y la fila `X60`. **El punto 7 de §2.6.9 reparte exactamente así, y esta fila no afirma nada que aquella sede no escriba.** **Corregido por `P-01` y `P-02`** (`R-04` **no** quedó cerrado con la tanda anterior): esta fila decía «entre el `abandonada` durable y el `deriva` durable» y atribuía al punto 7 un reparto que el punto 7 no hacía, mientras el punto 7 le asignaba `[1, 2)` y dejaba `[4, 5)` sin dueño | terminal `abandonada` presente **sin ningún `deriva` que lo referencie por `abandonada_id`**, y el marcador de transacción **todavía puesto** | **se COMPLETA, y es idempotente** (paso 0 de §2.6.4): el arranque comprueba **si ya existe un `deriva` con ese `abandonada_id` ANTES de emitir**, y ahí vive la idempotencia — no en la igualdad del `id`, que §2.8 retiró como prueba (`R-01`). El cuerpo del `deriva` es una función del `abandonada` durable —que lleva `estado_observado[]` de todas las rutas, `autoridad`, `motivo` y `revision_base`—, luego los dos arranques construyen el mismo cuerpo. Se emite, se hacen sus dos `fsync`, se crea su marcador, y **sólo entonces** se retira el marcador de transacción. **Añadida por `D105`** (`M-03`, `O-03`): el `abandonada` llevaba `fsync` obligatorio y el `deriva` no, el marcador se retiraba antes de que el `deriva` fuera durable, el arranque tenía PROHIBIDO emitirlo y la capa B exigía que existiera. El resultado era un bloqueo perdido en silencio y un diario permanentemente inválido sin ruta de reparación |
 
 **Qué se completa, qué se revierte y qué se escala**, dicho en una frase cada uno:
 
@@ -1251,12 +1258,25 @@ OBLIGATORIO   LA INTENCIÓN — y con `D64` es UNA, no dos:
                   perderlo deja el commit desbloqueado y los items libres **sin que nadie lo
                   sepa**. El `abandonada` llevaba `fsync` y el `deriva` no, y entre los dos
                   cabía una caída de máquina sin ventana que la cubriera
-NO EXIGIDO    los derivados, el marcador de transacción, el evento `derivada` y el evento
-              `conflicto`:
-              los cuatro se reconstruyen desde lo canónico o desde la comparación de hashes,
-              y pagar `fsync` por ellos encarece cada transacción sin comprar ninguna
+NO EXIGIDO    los derivados, el marcador de transacción, **el marcador del `deriva`**, el
+              evento `derivada` y el evento `conflicto`:
+              **todos ellos** se reconstruyen desde lo canónico o desde la comparación de
+              hashes, y pagar `fsync` por ellos encarece cada transacción sin comprar ninguna
               garantía. **Corregido por `D64`**: la lista nombraba dos intenciones y dos
-              hechos de una ruta que ya no existe
+              hechos de una ruta que ya no existe.
+              **Y corregido por `P-09` del documento 22**: `D105` creó el marcador del
+              `deriva` y **no lo clasificó en ninguna de las dos listas de esta sede**, que es
+              LA que reparte `fsync`, mientras la lista se cerraba con «los cuatro»,
+              enumeración cerrada que dejaba fuera un quinto. Va a NO EXIGIDO **con su razón
+              escrita**: §2.9 le da fila propia de reconstrucción —«los eventos `deriva` para
+              los que `bloqueado_por_deriva(item)` sigue siendo verdadero — total y
+              determinista»— y la fila adversarial `X60` la comprueba. **Y el remate deja de
+              ser un cardinal**: «todos ellos», para que añadir una pieza no vuelva a dejar
+              una cifra caduca detrás.
+              **CRITERIO GENERAL, que es lo que evita la próxima recurrencia:** *toda pieza
+              nueva del protocolo entra en UNA de estas dos listas en el mismo acto que la
+              crea. No estar en ninguna no es «no exigido»: es una laguna.* Es `M-03` leído
+              como regla en vez de como incidente
 ```
 
 > **Corregido tres veces.** `D64` la devuelve a una sola intención al colapsar la ruta de
@@ -1489,7 +1509,7 @@ impuso al arnés de negativos.
 | `X55` | abandonar una transacción en conflicto y comprobar el estado resultante | `abandonada` es durable, **el marcador se retira**, el control repo **vuelve a commitear**, y un evento `deriva` con `causa: abandono-de-transaccion` mantiene bloqueados **sólo** los items que nombra |
 | `X56` | revertir un canónico de una transacción con `derivada` durable, y arrancar | se emite un evento **`deriva`** con `causa: posterior-al-cierre`. **NO** se emite ninguna fase, la transacción cerrada **no gana ningún evento nuevo con su `tx`**, y nada se restaura solo |
 | `X57` | recorrer el diario buscando cualquier evento con `fase` cuya transacción ya tenga `derivada` | **no existe ninguno**, y el **validador semántico del diario** lo rechaza —la comprobación es de `tx`, no de evento aislado (§3.6)—. Ninguna transición sale del terminal |
-| `X58` | recorrer el grafo de fases buscando un estado no terminal sin sucesor admisible | **no existe ninguno**: `preparada` sale a dos, `conflicto` sale a dos, `confirmada` sale a uno, y `derivada` y `abandonada` son terminales que **retiran el marcador**. **Y la retención acotada del desenlace `4b` termina por ACTO DE AUTORIDAD del Owner** —cuarentena o declaración de irrecuperable (§2.6.9)—, no por construcción: el grafo no la cierra sola, y decirlo es la corrección de `A9`. Lo que se comprueba aquí es el grafo; que exista autoridad que pueda cerrarla se comprueba en §2.6.9 |
+| `X58` | recorrer el grafo de fases buscando un estado no terminal sin sucesor admisible | **no existe ninguno**: `preparada` sale a dos, `conflicto` sale a dos, `confirmada` sale a uno, y `derivada` y `abandonada` son terminales que **retiran el marcador**. **Y la retención acotada de la secuencia `4b` —desenlace 4, `TODAVÍA BLOQUEADA`— termina por ACTO DE AUTORIDAD del Owner** —cuarentena o declaración de irrecuperable (§2.6.9)—, no por construcción: el grafo no la cierra sola, y decirlo es la corrección de `A9`. Lo que se comprueba aquí es el grafo; que exista autoridad que pueda cerrarla se comprueba en §2.6.9 |
 | `X59` | recorrer la historia entera del control repo tras N transacciones y N `deriva` | **ningún commit** contiene un fichero bajo `estado/deriva/` ni bajo `.ads/run/`, incluida `quarantine/`. Es `X27` para la SEGUNDA excepción de ruta de §2.4 |
 | `X60` | emitir un `deriva`, borrar a mano `estado/deriva/<ID>.abierta` y arrancar | el arranque lo **reconstruye desde el diario** por `bloqueado_por_deriva(item)` (§2.9), con las mismas rutas e items. Y un lector que aplique §2.6.8 **no recorre `estado/eventos/`**: consulta los dos marcadores. El marcador es un acelerador, igual que el de transacción |
 | `X61` | abandonar con cuarentena autorizada, y comprobar su ciclo | `.ads/run/quarantine/<TX>/` existe **antes** de restaurar y su contenido **casa por hash** con lo registrado en el `conflicto`; **sigue existiendo** tras `abandonada` y tras la verificación; y **sólo deja de existir después del commit del incidente**. Ningún commit la contiene. Si `SEG` bloquea la publicación y el Owner acepta la pérdida, el incidente conserva **hash, clasificación, autoridad, motivo y alcance**, y el contenido prohibido **no se publica** |
@@ -1928,17 +1948,47 @@ E · CERRAR        sólo entonces, y **en este orden, que ahora es EXACTO y DURA
                       `id(abandonada)` y `abandonada_id` = `id(abandonada)`, los dos
                       calculables porque ese evento existe
 
-5 EL MARCADOR         el de TRANSACCIÓN se MANTIENE hasta que el `deriva` y su propio
-                      marcador son durables. El del `deriva` se crea en el paso 5
+5 EL MARCADOR         el de TRANSACCIÓN se MANTIENE hasta que **el `deriva` es DURABLE
+                      —paso 4— y su propio marcador EXISTE** —paso 5—. El del `deriva` se
+                      crea en el paso 5.
+                      **Precisado por `P-09`**: esta sede decía «y su propio marcador son
+                      durables», y §2.6.6 **no concede `fsync` al marcador del `deriva`**:
+                      lo clasifica como NO EXIGIDO porque §2.9 lo reconstruye. «Durable»
+                      significa en §2.6.6 `fsync` de fichero y de directorio, y usarlo aquí
+                      exigía una garantía que la sede que reparte `fsync` no da. Lo exigible
+                      es que **exista**, y que su ausencia se repare desde el diario
 
 6 CUÁNDO SE PUEDE     **sólo después del paso 6.** Mientras el marcador de transacción esté
   HACER COMMIT        puesto, el commit está bloqueado (§2.6.10): es exactamente lo que
                       impide publicar un cierre cuyo bloqueo no es durable
 
-7 CÓMO RECUPERA EL    caída antes del paso 1 → la transacción sigue abierta: `W11` y sus dos
-  ARRANQUE            salidas · caída entre 1 y 5 → **`W17`**: se completa el `deriva`,
-                      idempotente · caída entre 5 y 6 → se retira el marcador de transacción,
-                      idempotente, que es `W8` · caída después de 6 → nada que hacer
+7 CÓMO RECUPERA EL    **el arranque no adivina CUÁNDO se cayó: CLASIFICA POR LO QUE OBSERVA**,
+  ARRANQUE            que es lo único durable. **Reescrito por `P-01` y `P-02` del documento
+                      22 —los dos GRAVES—**, que demostraron que este punto era byte a byte
+                      el de `7764cca`: repartía por TRAMOS DE TIEMPO, dejaba `[paso 4,
+                      paso 5)` **sin dueño** y metía `[paso 1, paso 2)` en `W17`, donde el
+                      `abandonada` puede no ser durable. **`D105` no se reescribe: se propaga
+                      bien.** El reparto, y es el mismo que escriben la fila de `W17` y la de
+                      `W8`:
+                        · **NO hay `abandonada` durable** —no se emitió, o se perdió por no
+                          haber pasado el paso 2— → la transacción **SIGUE ABIERTA**: es
+                          `W11` y sus dos salidas. **Cubre todo `[paso 1, paso 2)`**, porque
+                          hasta el `fsync` del paso 2 ese evento puede no existir, y la
+                          garantía 3 de §2.6.6 lo dice con esas palabras
+                        · **hay `abandonada` durable y NO hay `deriva` durable** → **`W17`**:
+                          se completa el `deriva`, con sus dos `fsync`, su marcador y, sólo
+                          entonces, la retirada del marcador de transacción. Idempotente por
+                          el paso 0 de §2.6.4. Es **`[paso 2, paso 4)`**
+                        · **hay `abandonada` y `deriva` durables, y el marcador de
+                          transacción TODAVÍA PUESTO** → **`W8`**: crea el marcador del
+                          `deriva` si falta —reconstruible desde el diario (§2.9) y por la
+                          fila `X60`, y por eso no lleva `fsync`— y **sólo entonces** retira
+                          el de transacción. Idempotente. Es **`[paso 4, paso 6)`, LOS DOS
+                          TRAMOS**, y ahí vive el `[4, 5)` que antes no reclamaba nadie
+                        · **marcador de transacción ya retirado** → nada que hacer
+                      **Este punto, la fila de `W17` y la fila de `W8` dicen LO MISMO, y
+                      ninguna cita a otra como fuente de un reparto que esa otra no escriba**
+                      — que era el defecto exacto de `P-01`
 
 8 `abandonada` DURABLE **se COMPLETA.** El cuerpo del `deriva` es una FUNCIÓN del
   Y `deriva` AUSENTE   `abandonada`, luego los dos arranques construyen el mismo cuerpo; y
@@ -1969,7 +2019,21 @@ VENTANAS, ALINEADOS   para que no vuelva a haber dos direcciones** (`R-03`):
                       tabla de las cuatro—, y era `R-03`
 ```
 
+> **Bloque reanclado por `P-23` del documento 22.** Estas dos viñetas son **la COLA del paso
+> `F` del procedimiento de abandono**, cuya cabeza está más arriba en esta misma §2.6.9.
+> Entre una y otra se insertaron la nota de `M-02`, la tabla de alternativas y los ocho
+> puntos de `D105`, y quedaron a 83 líneas de su frase introductoria: sin rótulo, sin sujeto
+> y con la sangría de los pasos de `E`, de modo que quien leyera el paso `E` como lista
+> cerrada de seis pasos **no implementaba el orden que §2.3 y esta misma sección declaran
+> crítico**. No se mueven de sitio —moverlas rompería las referencias a esta región—: se les
+> devuelve la cabeza que les falta.
+
+**LA COLA DEL PROCEDIMIENTO DE ABANDONO — qué queda por hacer DESPUÉS de cerrar la
+transacción**, y el orden **no** es negociable:
+
 ```text
+CUANDO LA TRANSACCIÓN YA ESTÁ CERRADA Y SU MARCADOR RETIRADO (paso 6 de `E`), y sólo
+entonces:
                   · permitir el COMMIT DEL INCIDENTE
                   · y **sólo después**, eliminar `.ads/run/quarantine/<TX>/` si se creó
 ```
@@ -2036,6 +2100,19 @@ QUÉ SE RETIRA DE     la afirmación de «ROLL-FORWARD ONLY» **como absoluto**.
 
 NINGÚN TERMINAL DEJA ESTADO ESPECULATIVO DENTRO DEL CONJUNTO PUBLICABLE. Los desenlaces 1 y
 2 lo convierten en estable; el 3 lo restaura a la base; el 4 no publica.
+
+QUÉ ES `4b`, Y POR QUÉ NO ES UN QUINTO DESENLACE — **añadido por `P-16` del documento 22**
+  `4b` es el rótulo de una **SECUENCIA** —`4b · ABANDONO IMPOSIBLE`, más abajo en esta misma
+  §2.6.9—, **no de un desenlace**. Su desenlace ES el **4 · TODAVÍA BLOQUEADA**, y por eso
+  conserva el marcador vivo y no publica. Seis sedes de este documento la citaban como
+  «desenlace `4b`» —incluida `X58`, que es contrato de prueba que F6 debe construir, y la
+  fila de reconstrucción de §2.9—, y quien viniera aquí a resolver `4b` **no lo encontraba**:
+  es el espacio de identificadores con dos significados que `D83` declara cerrado.
+  **La regla, y vale para todo el documento:** *los desenlaces se numeran `1`–`4` y no hay
+  ninguno más; las SECUENCIAS llevan letra tras el número y viven en su propio bloque.* Las
+  seis sedes dicen ahora «secuencia `4b`», y `D79` —«el desenlace `4b` lo cierra un ACTO DE
+  AUTORIDAD del Owner»— **no se reescribe**: es registro de decisión, y lo que cierra la
+  autoridad es la retención de esa secuencia dentro del desenlace 4
 ```
 
 #### El predicado que mantiene el bloqueo, y cómo se cierra
@@ -2151,7 +2228,7 @@ ES PUBLICABLE            Entonces se conserva únicamente una REFERENCIA SEGURA 
 ```text
 NINGÚN TERMINAL DEJA     **todo terminal retira el marcador**: `derivada` al regenerar los
 EL MARCADOR ABIERTO      derivados, `abandonada` tras verificar la restauración. Y el
-                         desenlace `4b` no es terminal: por eso conserva el marcador vivo, y
+                         secuencia `4b` no es terminal: por eso conserva el marcador vivo, y
                          por eso no publica.
 ```
 
@@ -2323,8 +2400,15 @@ MANTIENE              máquina durante una transacción abierta **puede perder e
 descarta es la cuarentena **como mecanismo general de aislamiento del estado especulativo**,
 que exigiría una ubicación de ESTADO con su ciclo y su plano propios. Esto es otra cosa: una
 **preservación puntual, bajo autoridad, en el plano operacional que ya existe**, y que se
-vacía en cuanto el incidente está publicado. La objeción de L2103 —«crea una tercera
-ubicación»— deja de aplicarse porque ya no se crea ninguna.
+vacía en cuanto el incidente está publicado. **La objeción de la tabla de alternativas de
+esta misma §2.6.9 —la que descarta preservar lo divergente en una ubicación nueva porque
+«crea una tercera ubicación»—** deja de aplicarse porque ya no se crea ninguna.
+**Corregido por `P-24` del documento 22**: esta frase citaba «L2103», un número de línea
+absoluto que el propio documento había desplazado —la cita vive hoy 346 líneas más abajo—, y
+la sustitución NO es otro número: **es una referencia a la SEDE, que no caduca**. La regla,
+para todo el documento: *una autorreferencia se hace por sección y por lo que la sede DICE,
+nunca por número de línea; un número de línea sólo vale para citar OTRO fichero, y con su
+revisión.*
 
 ```text
 NINGÚN ESTADO ALCANZABLE   se comprueba sobre el grafo de cinco fases: `preparada` sale a dos
@@ -2332,7 +2416,7 @@ QUEDA SIN SALIDA           sitios; `conflicto` sale a dos; `confirmada` sale a u
                            `derivada` y `abandonada` son terminales POR DEFINICIÓN y retiran
                            el marcador. **No hay ningún nodo no terminal sin sucesor
                            admisible.**
-                           El desenlace `4b` NO es una excepción del GRAFO: sus salidas son
+                           La secuencia `4b` NO es una excepción del GRAFO: sus salidas son
                            las mismas y lo que falta es una CONDICIÓN MATERIAL —preservar o
                            restaurar—, no una transición. Y mientras falta, **el marcador
                            sigue vivo y no se publica nada**, que es el comportamiento seguro.
@@ -2379,8 +2463,10 @@ QUEDA SIN SALIDA           sitios; `conflicto` sale a dos; `confirmada` sale a u
    `actor_atribuido` pertenece a **otra** lista de `a.9`. La ausencia de cualquiera de los
    cinco campos es un FALLO DEL VALIDADOR, no un silencio.
    **Corregido por el gate de cierre (`A7`, FALLIDA).** Ésta era **la única sede que el gate
-   final nombró y la única que no se tocó**: era byte a byte idéntica al texto base, y L2226
-   la hace condición de validación — que es literalmente el sentido de su condición de cierre.
+   final nombró y la única que no se tocó**: era byte a byte idéntica al texto base, y **la
+   secuencia `4b` de §2.6.9, en su acto (i)**, la hace condición de validación — que es
+   literalmente el sentido de su condición de cierre. **Corregido por `P-24`**: decía «L2226»,
+   número de línea absoluto ya desplazado, y se sustituye por la sede, que no caduca.
    El documento ya lo escribía bien en las otras cinco sedes: `X39`, §2.6.6, §2.9 punto 9,
    §3.6 fila `preparada` y §3.6 el bloque de PROCEDENCIA. Es `D66` propagado, y `D95` lo
    registra.
@@ -2540,7 +2626,7 @@ ESTADO PARCIAL         exista commit**, y no por la inferencia «sin marcador �
                        `derivada` cierra sobre canónicos que ya alcanzaron su
                        `hash_posterior_esperado`, y `abandonada` es INALCANZABLE hasta haber
                        RESTAURADO todas sus rutas a `revision_base` y haberlo **verificado
-                       byte a byte** (§2.6.9, pasos C y D). El desenlace `4b` no publica.
+                       byte a byte** (§2.6.9, pasos C y D). La secuencia `4b` no publica.
                        **Corregido por `I-10`**: el argumento anterior —«sin marcador toda
                        transacción está cerrada, luego `main` no contiene estado parcial»— es
                        **exactamente la inferencia que `D69` refutó**, porque antes de `D69`
@@ -2551,7 +2637,7 @@ ESTADO PARCIAL         exista commit**, y no por la inferencia «sin marcador �
                        publicadas**: en la ruta normal todas quedan clasificadas `previo`. El
                        enum `{previo, posterior, divergente}` de `estado_observado[]` (§3.6)
                        sólo alcanza `posterior` y `divergente` en el **acto (ii) del
-                       desenlace `4b`**, donde el Owner declara irrecuperable lo especulativo
+                       secuencia `4b`**, donde el Owner declara irrecuperable lo especulativo
                        y el commit de incidente **EXCLUYE** las rutas divergentes. Decirlo
                        importa: sin ello F6 construiría el validador sobre un enum cuya
                        alcanzabilidad depende de un caso que el contrato no nombraba.
@@ -3057,7 +3143,7 @@ garantía?».**
 | un derivado divergente | los canónicos | total, y `Continúa` paso 2 lo regenera |
 | el marcador `estado/tx/<TX>.abierta` | el diario: las transacciones que satisfacen **`abierta(tx)`** (§2.6.1) | total. Es un acelerador, no una verdad. La condición es UNA, y es el predicado: `preparada` durable sin ninguno de los DOS terminales |
 | el marcador `estado/deriva/<ID>.abierta` | el diario: los eventos `deriva` para los que **`bloqueado_por_deriva(item)`** sigue siendo verdadero (§2.6.9) — es decir, sin ninguna `derivada` que los referencie en `resuelve_deriva` | total y determinista. Es un acelerador, no una verdad, exactamente igual que el anterior. `D88` le da esta fila, que `D78` no le había dado |
-| `.ads/run/quarantine/<TX>/` | **NO SE RECONSTRUYE.** Es preservación temporal de contenido que sólo existía localmente (§2.6.9) | **ninguna, y se declara**: si se pierde antes del commit del incidente, lo divergente se pierde con ella, y el desenlace vuelve a ser el `4b`. Es la limitación aceptada de §2.6.9, y la cuarentena no la levanta |
+| `.ads/run/quarantine/<TX>/` | **NO SE RECONSTRUYE.** Es preservación temporal de contenido que sólo existía localmente (§2.6.9) | **ninguna, y se declara**: si se pierde antes del commit del incidente, lo divergente se pierde con ella, y la secuencia vuelve a ser la `4b` —desenlace 4—. Es la limitación aceptada de §2.6.9, y la cuarentena no la levanta |
 | una transición interrumpida | el evento `preparada` de su `tx` | total si ningún fichero es divergente; si lo es, `conflicto` declarado |
 | el estado canónico tras una pérdida | Git | total: es su historia |
 | el estado canónico **sin Git** | eventos sellados + eventos posteriores | **parcial y declarada**: sólo desde el último sellado. Antes del primero, no |
@@ -3259,10 +3345,18 @@ NO BLOQUEA         El `id` SE CONSERVA en la lápida, luego la referencia sigue 
 
 DEPENDENCIA        alguien necesita LEER EL CUERPO para hacer su trabajo: una reparación que
 SEMÁNTICA VIVA     tiene que reproducir el `contenido` o el `parche` declarado, una
-BLOQUEA            reconciliación abierta que se apoya en la copia de lo divergente, una
-                   transacción sin terminal que declara ese cuerpo como su mecanismo, un
-                   dictamen en curso que lo cita como evidencia.
+BLOQUEA            transacción sin terminal que declara ese cuerpo como su mecanismo, un
+                   dictamen en curso que lo cita como evidencia, **o un `deriva` sin reparar
+                   que se apoya en la copia de lo divergente de su `conflicto`**.
                    **Mientras exista, la retirada se rechaza.**
+                   **Corregido por `P-25` del documento 22.** Este disparador decía «una
+                   **reconciliación abierta** que se apoya en la copia de lo divergente», y
+                   **`D64` retiró esa ruta**: `reconciliacion-preparada` y `reconciliada` no
+                   existen, y `X47` exige que toda mención de lo retirado esté marcada.
+                   `[HISTÓRICO]` — *«una reconciliación abierta que se apoya en la copia de
+                   lo divergente»*, redacción anterior a `D64`, conservada aquí como lo que
+                   fue y **no vigente**. El disparador vigente es el `deriva` sin reparar,
+                   que es la pieza que heredó ese papel
 
 CÓMO SE DISTINGUEN el evento que refiere DECLARA cuál de las dos hace. Una referencia que no
                    dice que necesita el cuerpo se trata como ESTRUCTURAL; una que lo
@@ -3357,7 +3451,7 @@ llevan letra en vez de número, y son contrato de prueba igual que aquéllas.
 | `X-C` | se aporta un cuerpo INCORRECTO | **verificación FALLIDA**, nombrando qué no casa: la huella, el `id` recomputado, o los dos. No se acepta «se parece» |
 | `X-D` | sellado y lápida declaran `hash_cuerpo_original` o `id_original` DISTINTOS | **verificación FALLIDA.** Es inconsistencia interna del repositorio, y se escala: ninguno de los dos puede darse por bueno |
 | `X-E` | un evento posterior mantiene **sólo una referencia estructural** `predecesor` al evento que se quiere retirar | la retirada **PUEDE autorizarse** si se cumplen las demás condiciones. El `id` se conserva en la lápida, la referencia sigue resolviendo y el orden sigue recorriéndose |
-| `X-F` | existe una **dependencia semántica viva** que necesita leer el cuerpo —una reparación que debe reproducir su `contenido`, una reconciliación abierta apoyada en su copia de lo divergente— | **retirada BLOQUEADA**, nombrando quién depende y por qué. En la duda sobre el tipo de referencia, bloquea |
+| `X-F` | existe una **dependencia semántica viva** que necesita leer el cuerpo —una reparación que debe reproducir su `contenido`, **un `deriva` sin reparar apoyado en la copia de lo divergente de su `conflicto`**— · **`[HISTÓRICO]`** decía «una reconciliación abierta apoyada en su copia de lo divergente», y `D64` retiró esa ruta: corregido por `P-25`, y esta fila es contrato de prueba que F6 debe construir, luego enumeraba un disparador inalcanzable | **retirada BLOQUEADA**, nombrando quién depende y por qué. En la duda sobre el tipo de referencia, bloquea |
 | `X-G` | se intenta retirar **antes de sellar**, o **sin prueba de recuperación comprobada** | **retirada BLOQUEADA** en los dos casos. Sin sellado no hay ancla; sin prueba de recuperación la retirada es una pérdida disfrazada de operación |
 | `X-H` | pasar el validador sobre un evento con lápida | **NO aplica la fórmula ordinaria de identidad al contenido de la lápida.** Detecta `cuerpo_retirado: true`, cambia al algoritmo B de §2.8 punto 4bis, y valida estructura y vínculo con el sellado. Aplicar `EV-H` a la lápida y reportar «id no coincide» es un **defecto del validador** |
 
@@ -4237,7 +4331,7 @@ candidatos con sujeto, autoridad y ciclo propios. El recuento de §3.8 **no camb
 | `preparada` | ninguna: abre la transacción | `afecta[]` con `ruta`·`hash_previo`·`hash_posterior_esperado`·`orden`· una de `contenido`\|`parche`\|`operacion` · **los CINCO CAMPOS de procedencia** —`ordenante`·`autoridad`·`escritor_del_comando`·`ejecutor`·`actor_atribuido`—, **no «los cinco conceptos de `a.9`»**: el quinto concepto, `propietario del campo`, **se DERIVA** de §1.3 y no es campo · `base` · **`revision_base`** —la revisión publicada y consistente desde la que parte la transacción; su ausencia hace el evento INVÁLIDO, y es lo que hace verificable la restauración de §2.6.9 y alcanzable `abandonada` (`D96`)— | `resultado` · `hash_observado` · `hash_final` · `decision` | `hash_posterior_esperado` | los N ficheros casan con su hash posterior → `confirmada`; alguno diverge → `conflicto` |
 | `confirmada` | `preparada` | `resultado` · `derivados_pendientes[]` | `decision` · `hash_final` · `hash_observado` | `hash_posterior_esperado` | los derivados de `derivados_pendientes` se regeneraron → `derivada` |
 | `conflicto` | `preparada` o `conflicto` | `divergentes[]` con `ruta`·`hash_observado`· **`contenido` íntegro de lo divergente** · `items[]` · `rutas[]` · `autoridad` que debe resolver · `observacion` ≥ 1 · **`revision_base`, registrado o referenciado al `preparada` de su `tx`** (`D96`) | `resultado` · `decision` | ninguno: declara lo observado, no lo esperado | la divergencia CESA y los N ficheros vuelven a casar → `confirmada`; la autoridad decide cerrar → `abandonada`. **Siempre hay una de las dos** |
-| `abandonada` | `conflicto` | `estado_observado[]` con `ruta`·`hash_observado`·`clasificacion` ∈ {previo, posterior, divergente} **para TODAS las rutas del `tx`** · `autoridad` que decidió · `motivo` · **`revision_base`, registrado o referenciado al `preparada` de su `tx`: es la revisión CONTRA LA QUE se verificó byte a byte la restauración, y sin ella la restauración no es comprobable** (`D96`) | `resultado` · `derivados_regenerados` · `decision` · **`deriva_emitida`, PROHIBIDO desde `D105`: era la referencia circular de `M-02`, y ahora el `deriva` referencia al `abandonada` y no al revés** | ninguno: la transacción no alcanza ningún resultado | **ninguna. Es TERMINAL.** El marcador de transacción **NO se retira aquí**: se retira cuando el `deriva` y su marcador son durables (§2.6.9 paso E). El bloqueo pasa al `deriva` que la referencia por `abandonada_id` |
+| `abandonada` | `conflicto` | `estado_observado[]` con `ruta`·`hash_observado`·`clasificacion` ∈ {previo, posterior, divergente} **para TODAS las rutas del `tx`** · `autoridad` que decidió · `motivo` · **`revision_base`, registrado o referenciado al `preparada` de su `tx`: es la revisión CONTRA LA QUE se verificó byte a byte la restauración, y sin ella la restauración no es comprobable** (`D96`) | `resultado` · `derivados_regenerados` · `decision` · **`deriva_emitida`, PROHIBIDO desde `D105`: era la referencia circular de `M-02`, y ahora el `deriva` referencia al `abandonada` y no al revés** | ninguno: la transacción no alcanza ningún resultado | **ninguna. Es TERMINAL.** El marcador de transacción **NO se retira aquí**: se retira cuando el `deriva` es DURABLE y su marcador EXISTE (§2.6.9 paso E) — **precisado por `P-09`**, que el marcador del `deriva` es NO EXIGIDO en §2.6.6 y se reconstruye desde el diario (§2.9, `X60`). El bloqueo pasa al `deriva` que la referencia por `abandonada_id` |
 | `derivada` | `confirmada` | `derivados_regenerados[]` con su `source_revision` · `resuelve_deriva` sólo si esta transacción repara uno | `afecta` · `decision` · `divergentes` | el `hash_posterior_esperado` de su `preparada` | **ninguna. Es TERMINAL**, y retira el marcador. Que no exista ningún evento posterior con ese `tx` lo comprueba el **validador semántico del diario**, no el esquema |
 | `deriva` | **ninguna: NO tiene `tx` ni `fase`** | **`causa`, ENUM CERRADO DE TRES VALORES y ÉSTA ES SU ÚNICA SEDE** ∈ {`posterior-al-cierre`,`sin-transaccion`,`abandono-de-transaccion`} · `afecta[]` con `ruta`·`hash_esperado`·`hash_observado` · `items[]` · `autoridad` · `tx_afectada` **obligatorio si `causa` ∈ {`posterior-al-cierre`,`abandono-de-transaccion`} y PROHIBIDO con `sin-transaccion`** · **`abandonada_id` = `id` del evento `abandonada` del que deriva, OBLIGATORIO con `causa: abandono-de-transaccion` y PROHIBIDO con las otras dos. Es la referencia UNILATERAL de `D105`: apunta a un evento que YA existe y es durable, luego su `id` es calculable** | `fase` · `tx` · `decision` · `resultado` | ninguno: **reporta**, no repara | ninguna. La reparación es una transacción NUEVA (§2.6.11) |
 | `fallo` | **ninguna: NO tiene `tx` ni `fase`** | `sujeto` · `operacion` ∈ {`push`,`publicacion`,`arranque`,`ci`,`proyeccion`} · `causa` · `estado_observado` · `diagnostico` · `intentos` · `recuperable` ∈ {`si`,`no`,`requiere-decision`} · `autoridad_requerida` · `accion_siguiente` · `evidencia` · **`tx_afectada` como REFERENCIA, cuando la operación se refiere a una** · `referencias[]` con `commit`·`rama`·`remoto` cuando la operación es Git | `fase` · `tx` · `afecta` · `decision` | — | ninguna. **Es informativo y NO repara**: si hay que reparar, es una transacción nueva |
@@ -5084,13 +5178,39 @@ La prueba de que la separación de §3.5 funciona no es el argumento: es que **t
 que no se parecen en nada caben en el mismo contrato sin campos vacíos de conveniencia y sin
 campos que signifiquen cosas distintas en cada uno**.
 
+> **`responsables` NO APARECE EN NINGUNA DE LAS TRES CELDAS DE ABAJO, y es a propósito.**
+> **Corregido por `P-20` del documento 22.** Las tres lo escribían —`[DIS]`, `[ARQ, SIS]`,
+> `[PLT, VER]`—, y **los tres valores eran exactamente el reparto POR DEFECTO**, sin `motivo`.
+> Contra el contrato que estas celdas existen para demostrar: §3.5 —«`responsables` **la
+> DESVIACIÓN** respecto al reparto por defecto, **cuando la hay**, **con su motivo**»—, §5.7
+> —«es la NORMA; la celda declara sólo la DESVIACIÓN, con motivo»— y §9.2 —«SÓLO LA
+> DESVIACIÓN … con su motivo»—. Con el esquema tal como §3.5 lo define, **`X52` tendría que
+> RECHAZAR las tres**, y §5.6 es precisamente la sección que existe para probar que el
+> contrato funciona «sin campos vacíos de conveniencia».
+>
+> **LA REGLA, escrita una vez para que no haya que revisar celda a celda:** *un ejemplo de
+> celda de este documento **no escribe `responsables` salvo que esté ilustrando una
+> DESVIACIÓN, y entonces la escribe CON SU MOTIVO**. El reparto por defecto vive en el
+> `contrato-de-aspecto` (§5.7) y en la norma del nivel (§9.2), y una celda que lo copie es una
+> segunda verdad.*
+>
+> **`[HISTÓRICO]`** — lo que las tres celdas decían antes de esta corrección, conservado
+> porque `X47` exige que lo retirado esté marcado y no borrado: ejemplo 1 y su hermana
+> `responsables [DIS] lider: DIS`; ejemplo 2 `responsables [ARQ, SIS] lider: ARQ`, con la
+> glosa «ARQ responde del CONTENIDO; SIS de la conformidad del contrato documental»; ejemplo
+> 3 `responsables [PLT, VER] lider: PLT`. **Los tres coincidían con el defecto de su
+> contrato**, y por eso ninguno debía llevar el campo. La glosa del ejemplo 2 **no se pierde**:
+> es el reparto por defecto del `contrato-de-aspecto:documental/arquitectura`, y su sitio es
+> §5.7, no la celda.
+
 ### Ejemplo 1 · una pantalla auditada en accesibilidad
 
 ```text
 sujeto        clase: pantalla · ancla: web · ruta: checkout
               → pantalla:web/checkout
 aspecto       aspecto:calidad/accesibilidad
-responsables  [DIS]                                        lider: DIS
+              — SIN `responsables`: el reparto es el POR DEFECTO del contrato, y §3.5 sólo
+                admite el campo para declarar una DESVIACIÓN con su motivo (`P-20`)
 criterio      rubrica:accesibilidad-web                    la rúbrica, no una nota
 aplicabilidad obligatoria
 estado        findings-abiertos
@@ -5112,7 +5232,8 @@ responsable_de_corregir  CON
 ```text
 sujeto        pantalla:web/checkout                        EL MISMO SUJETO
 aspecto       aspecto:calidad/responsive                   OTRO ASPECTO
-responsables  [DIS]                                        LA MISMA CAPACIDAD
+              — SIN `responsables`, por lo mismo: la capacidad responsable es la del reparto
+                por defecto, y copiarla aquí sería una segunda verdad (`P-20`)
 estado        verificado
 caducidad     12 meses
 ```
@@ -5131,8 +5252,9 @@ aspecto       aspecto:documental/arquitectura              el área 5 de `O8`, U
                                                           RUTA de un documento; el ASPECTO
                                                           es el área. Dos espacios de
                                                           nombres distintos, y §3.5 los separa
-responsables  [ARQ, SIS]                                   lider: ARQ
-              ARQ responde del CONTENIDO; SIS de la conformidad del contrato documental
+              — SIN `responsables`: `[ARQ, SIS]` con `lider: ARQ` **ES** el reparto por
+                defecto de este `contrato-de-aspecto`, y §5.7 lo declara allí. La celda sólo
+                escribe la DESVIACIÓN, con motivo (`P-20`)
 criterio      contrato-de-aspecto:documental/arquitectura               §5.7
 aplicabilidad obligatoria
 estado        vencido
@@ -5175,7 +5297,9 @@ cierto.
 sujeto        clase: instalacion · ancla: transversal · ruta: pesquerapp
               → instalacion:transversal/pesquerapp
 aspecto       aspecto:certificacion/integrado
-responsables  [PLT, VER]                                   lider: PLT
+              — SIN `responsables`: `[PLT, VER]` con `lider: PLT` es lo que la NORMA del
+                nivel declara (§9.1 y §9.2), y §9.2 admite el campo **sólo** para la
+                desviación, con motivo (`P-20`)
 criterio      nivel-certificacion:integrado                LA NORMA, en el kernel (§9.2)
 aplicabilidad obligatoria
 estado        verificado
@@ -6076,8 +6200,15 @@ COMPOSICIÓN            sin las obligaciones satisfechas (`b.10`)
 
 ```text
 DISPARADOR      el Owner quiere gobernar un producto que todavía no existe
-PRECONDICIONES  hay un sitio donde crear el workspace · hay remoto para el control repo
-FASES           INS-0 crear y publicar control repo y workspace, CON EL SOPORTE DURABLE
+PRECONDICIONES  hay un sitio donde crear el workspace · hay remoto para el control repo ·
+                **FASE 0 superada**: certificación Estructural DE ESTA EJECUCIÓN, verificada
+                y vigente (§9.6). **Derivado de `O17` vía `D107`; no lo elige F4**
+FASES           **FASE 0 · CERTIFICACIÓN ESTRUCTURAL** — precondición PROPIA de esta
+                   ejecución, ANTERIOR a toda mutación canónica y a todo intento de
+                   elevarse. Invoca **el contrato compartido `gate:sistema-conforme`** de
+                   §9.6, que es el MISMO que invocan §8.2, §8.3 y §8.4. Si falla, la
+                   instalación se BLOQUEA antes de mutar estado
+                INS-0 crear y publicar control repo y workspace, CON EL SOPORTE DURABLE
                    MÍNIMO DE `estado/` y la iniciativa de instalación ya escrita
                 INS-1 elaborar y aprobar PROFILE
                 INS-2 elegir topología de fuentes, packs, extensiones y adaptadores
@@ -6091,6 +6222,13 @@ DE CADA TRAMO   `proceso:SIS`** — «cambiar la propia fábrica», que es liter
                 instalación hace. §18 tiene la tabla, y manda. **Rotulado por `I-21`**: era
                 el único de los cuatro que lo dejaba implícito dentro de `PARTICIPANTES`
 PARTICIPANTES   **con su VÍA de entrada (§8.0), porque una lista sin vía no es una ruta**
+                  **FASE 0** · participantes y reparto en §9.6, que es la sede ÚNICA y
+                         la misma para los cuatro: `SIS` productor y propietario de la
+                         declaración · `VER` el dosier verificador, sin apropiarse de la
+                         decisión · `PLT` la maquinaria técnica cuando el contrato vigente
+                         se la atribuya · `SEG` su bloqueo por seguridad. **El propietario
+                         de este macrocircuito no puede sustituir a `SIS`, y DEBE exigir la
+                         certificación antes de continuar** (`O17` vía `D107`)
                   `SIS`  vía 1 · propietaria global de `proceso:SIS`, todas las fases
                   `CON`  vía 2 · obligatoria `cambio-construido`
                   `VER`  vía 2 · obligatoria `evidencia-suficiente`. Cierra `INS-4` y `INS-7`
@@ -6127,10 +6265,13 @@ HANDOFFS        de `SIS` a `PLT` la SOLICITUD DE MATERIALIZACIÓN · de `SIS` a 
                 de `ENT` a `VER` la convergencia declarada. **Su QUÉ está en §8.0; las
                 INSTANCIAS las crea F6 en `circuitos/`** (`F-05`), y su ausencia hoy no
                 bloquea la composición
-EVIDENCIA       `workspace check` · prueba de humo por adaptador · checkpoint recuperado
-GATES           INS-4 certificación Operativa · **INS-5 baseline aprobado por el Owner** ·
-                INS-7 = O12, con sus TRES condiciones y su productor nombrado
-CERTIFICACIÓN   Operativa en INS-4 · Integrada en INS-7, con la aplicabilidad de §9.5: en INS-7 el
+EVIDENCIA       **el dosier de FASE 0 que `VER` produce, con la huella de su sujeto (§9.6)** ·
+                `workspace check` · prueba de humo por adaptador · checkpoint recuperado
+GATES           **FASE 0 `gate:sistema-conforme`, antes de INS-0 y de cualquier mutación
+                canónica (§9.6)** · INS-4 certificación Operativa · **INS-5 baseline aprobado
+                por el Owner** · INS-7 = O12, con sus TRES condiciones y su productor nombrado
+CERTIFICACIÓN   **Estructural en FASE 0**, propia de ESTA ejecución y NO heredada de ninguna
+                anterior (§9.6) · Operativa en INS-4 · Integrada en INS-7, con la aplicabilidad de §9.5: en INS-7 el
                 producto tiene LAS FUENTES QUE INS-2 DECLARÓ, y la columna que rige es la de
                 ese número. Si son 0, hay pruebas que no le aplican
                 **Corregido** (hallazgo `N-5`): F4c decía «una instalación nueva tiene CERO
@@ -6250,8 +6391,14 @@ El más largo, y el que `CI-5` protege de ser aplanado contra la instalación.
 
 ```text
 DISPARADOR      el Owner quiere gobernar un producto CON HISTORIA
-PRECONDICIONES  acceso de lectura a todas sus fuentes · modo NO DESTRUCTIVO declarado
-FASES           A0  apertura, perímetro y modo no destructivo
+PRECONDICIONES  acceso de lectura a todas sus fuentes · modo NO DESTRUCTIVO declarado ·
+                **FASE 0 superada**: certificación Estructural DE ESTA EJECUCIÓN, verificada
+                y vigente (§9.6). **Derivado de `O17` vía `D107`; no lo elige F4**
+FASES           **FASE 0 · CERTIFICACIÓN ESTRUCTURAL** — precondición PROPIA de esta
+                    ejecución, ANTERIOR a toda mutación canónica y a todo intento de
+                    elevarse. Invoca **el MISMO contrato compartido `gate:sistema-conforme`**
+                    de §9.6. Si falla, la adopción se BLOQUEA antes de mutar estado
+                A0  apertura, perímetro y modo no destructivo
                 A1  topología: control repo, fuentes, identidad, remotos y permisos
                 A2  INVENTARIO
                 A3  BASELINE con evidencia
@@ -6266,6 +6413,13 @@ FASES           A0  apertura, perímetro y modo no destructivo
 PROCESO         `A0`–`A1` y `A9`–`A10` son `proceso:SIS`. **`A2`–`A7` es `proceso:AUD`**,
 DE CADA TRAMO   y `A8` es `proceso:DEU`. §18 tiene la tabla, y manda
 PARTICIPANTES   **con su VÍA de entrada (§8.0)**
+                  **FASE 0** · participantes y reparto en §9.6, que es la sede ÚNICA y
+                         la misma para los cuatro: `SIS` productor y propietario de la
+                         declaración · `VER` el dosier verificador, sin apropiarse de la
+                         decisión · `PLT` la maquinaria técnica cuando el contrato vigente
+                         se la atribuya · `SEG` su bloqueo por seguridad. **El propietario
+                         de este macrocircuito no puede sustituir a `SIS`, y DEBE exigir la
+                         certificación antes de continuar** (`O17` vía `D107`)
                 `A0`–`A1` · `proceso:SIS`
                   `SIS` vía 1 · `CON` y `VER` vía 2
                 `A2`–`A7` · `proceso:AUD`, y **NO es un item: son VARIOS ENLAZADOS**, uno
@@ -6322,11 +6476,14 @@ HANDOFFS        entre los items `AUD` enlazados de `A2`–`A7` y su consumidor �
                 `PLT` la solicitud de materialización · de `SIS` a `CON` el source change de
                 `A8` · de `CON` a `ENT` el resultado por fuente · de `ENT` a `VER` la
                 convergencia. **Su QUÉ está en §8.0; las INSTANCIAS las crea F6**
-EVIDENCIA       inventario con procedencia · baseline aprobado · mapa de conservación
-GATES           A3 baseline aprobado por el Owner, contra las CATORCE preguntas del §6.2
-                de la directiva, que son su contrato (abajo) · A8 autorización de retirada ·
-                A10 = O12
-CERTIFICACIÓN   Integrada en A9
+EVIDENCIA       **el dosier de FASE 0 que `VER` produce, con la huella de su sujeto (§9.6)** ·
+                inventario con procedencia · baseline aprobado · mapa de conservación
+GATES           **FASE 0 `gate:sistema-conforme`, antes de A0 y de cualquier mutación
+                canónica (§9.6)** · A3 baseline aprobado por el Owner, contra las CATORCE
+                preguntas del §6.2 de la directiva, que son su contrato (abajo) · A8
+                autorización de retirada · A10 = O12
+CERTIFICACIÓN   **Estructural en FASE 0**, propia de ESTA ejecución y NO heredada (§9.6) ·
+                Integrada en A9
 ROLLBACK        A0–A7 no tocan el producto. Revertir NO es «borrar el control repo»: el
                 control repo de A1 está PUBLICADO, y se le aplica el mismo reparto que a la
                 instalación —local, remoto, commits y autoridad del Owner— descrito en §8.1.
@@ -6361,10 +6518,13 @@ CIERRE          A10 superado, y el producto entra en SU macrofase real — que p
 > **Esto no autoriza iniciar la adopción**, y no levanta ninguna de las condiciones de `O14`.
 >
 > **Nota al pie, que NO toca la resolución** (`m-1`): `O15` se escribió cuando el recuento
-> derivado de presiones normativas vigentes era **ocho**. Hoy son **TRECE** (§16), porque
-> `PN-11`, `PN-12`, `PN-13`, `PN-14` y `PN-15` son posteriores a ella. La cifra que `O15` cita queda como la
-> que era el día en que el Owner resolvió —su texto no se reescribe—, y la vigente es
-> siempre la que §16 deriva.
+> derivado de presiones normativas vigentes era **ocho**. **Hoy son MÁS, y esta nota no dice
+> cuántas: la cifra vigente es SIEMPRE la que §16 deriva de sus cabeceras, y §16 es la única
+> sede que la publica.** La que `O15` cita queda como la que era el día en que el Owner
+> resolvió —su texto no se reescribe—. **Corregido por `P-21` del documento 22**: esta nota
+> decía «Hoy son TRECE» y enumeraba hasta `PN-15` cuando ya existía `PN-16`. Se retira la
+> cifra en vez de reescribirla, porque escrita aquí vuelve a caducar con la próxima presión —
+> y ya ha caducado dos veces.
 
 ### El contenido del BASELINE de `A3`, que es el §6.2 de la directiva y no otra cosa
 
@@ -6435,8 +6595,15 @@ DOCUMENTACIÓN       la frontera es la pregunta que `C6` ya tiene escrita: ¿est
 
 ```text
 DISPARADOR      existe un producto con ADS instalado en disposición antigua
-PRECONDICIONES  se conoce la versión instalada · el árbol está limpio
-FASES           M0 identificar versión instalada y disposición
+PRECONDICIONES  se conoce la versión instalada · el árbol está limpio ·
+                **FASE 0 superada**: certificación Estructural DE ESTA EJECUCIÓN, verificada
+                y vigente (§9.6). **Derivado de `O17` vía `D107`; no lo elige F4**
+FASES           **FASE 0 · CERTIFICACIÓN ESTRUCTURAL** — precondición PROPIA de esta
+                   ejecución, ANTERIOR a toda mutación canónica y a todo intento de
+                   elevarse. Invoca **el MISMO contrato compartido `gate:sistema-conforme`**
+                   de §9.6. Si falla, la migración se BLOQUEA antes de mutar estado — y
+                   antes, por tanto, de tocar nada de las fuentes
+                M0 identificar versión instalada y disposición
                 M1 crear control repo separado y declarar las fuentes
                 M2 migrar PROFILE, PROJECT, decisiones, memoria y documentación global
                 M3 migrar ESTADO PERSISTIDO, con su esquema
@@ -6449,6 +6616,13 @@ FASES           M0 identificar versión instalada y disposición
 PROCESO         `M0`–`M5` es **`proceso:SIS`** y `M6`–`M7` es **`proceso:DEU`**. §18 tiene la
 DE CADA TRAMO   tabla, y manda
 PARTICIPANTES   **con su VÍA de entrada (§8.0)**
+                  **FASE 0** · participantes y reparto en §9.6, que es la sede ÚNICA y
+                         la misma para los cuatro: `SIS` productor y propietario de la
+                         declaración · `VER` el dosier verificador, sin apropiarse de la
+                         decisión · `PLT` la maquinaria técnica cuando el contrato vigente
+                         se la atribuya · `SEG` su bloqueo por seguridad. **El propietario
+                         de este macrocircuito no puede sustituir a `SIS`, y DEBE exigir la
+                         certificación antes de continuar** (`O17` vía `D107`)
                 `M0`–`M5` · `proceso:SIS`
                   `SIS` vía 1 · `CON` vía 2 (`cambio-construido`) · `VER` vía 2
                   `ENT` vía 3 · «el cambio modifica el runtime»
@@ -6509,14 +6683,19 @@ HANDOFFS        de `ARQ` a `M5` el `plan-tecnico` con el radio MEDIDO —que es 
                 los source changes de `M6` · de `CON` a `ENT` el resultado por fuente · de
                 `ENT` a `VER` la convergencia para `M7`. **Su QUÉ está en §8.0; las
                 INSTANCIAS las crea F6**
-EVIDENCIA       equivalencia antes/después de items, paquetes y checkpoints · dictamen de
+EVIDENCIA       **el dosier de FASE 0 que `VER` produce, con la huella de su sujeto (§9.6)** ·
+                equivalencia antes/después de items, paquetes y checkpoints · dictamen de
                 M5 · salidas de build, pruebas, CI, despliegue y COMPORTAMIENTO AGENTIC en
                 M7 — **las CINCO**
-GATES           M3 no cierra sin equivalencia demostrada · M5 certificación Integrada del
+GATES           **FASE 0 `gate:sistema-conforme`, antes de M0 y de cualquier mutación
+                canónica (§9.6)** ·
+                M3 no cierra sin equivalencia demostrada · M5 certificación Integrada del
                 control repo nuevo · M6 exige autorización EXPLÍCITA del Owner · **M7 no
                 cierra sin las CINCO salidas verdes: build, pruebas, CI, despliegue y
                 comportamiento agentic**
-CERTIFICACIÓN   Integrada en M5, ANTES de retirar nada. Revalidada en M7
+CERTIFICACIÓN   **Estructural en FASE 0**, propia de ESTA ejecución y NO heredada de la
+                instalación que se migra (§9.6) · Integrada en M5, ANTES de retirar nada.
+                Revalidada en M7
 ROLLBACK        ver «El orden, y por qué certificar y verificar son dos pasos», abajo
 REANUDACIÓN     por checkpoint. M3 es idempotente por diseño (§2.6)
 CIERRE          M7 superado y el producto operando sobre el control repo nuevo
@@ -6626,8 +6805,16 @@ PRINCIPIO       DETECTAR AUTOMÁTICAMENTE, ACTUALIZAR CONSCIENTEMENTE
                 convertía en norma por transcripción. Que esa ausencia se eleve a materia
                 normativa es electivo, y por eso NO se registra como presión: el principio se
                 usa, marcado como lo que es
-PRECONDICIONES  árbol limpio · sin transiciones en vuelo · certificación vigente
-FASES           U0 detectar versión candidata
+PRECONDICIONES  árbol limpio · sin transiciones en vuelo · certificación vigente ·
+                **FASE 0 superada**: certificación Estructural DE ESTA EJECUCIÓN, verificada
+                y vigente (§9.6). **Y «certificación vigente» a secas NO la satisface**: la
+                regla 4 de `O17` prohíbe deducir Estructural de un nivel superior.
+                **Derivado de `O17` vía `D107`; no lo elige F4**
+FASES           **FASE 0 · CERTIFICACIÓN ESTRUCTURAL** — precondición PROPIA de esta
+                   ejecución, ANTERIOR a toda mutación canónica y a todo intento de
+                   elevarse. Invoca **el MISMO contrato compartido `gate:sistema-conforme`**
+                   de §9.6. Si falla, la actualización se BLOQUEA antes de mutar estado
+                U0 detectar versión candidata
                 U1 comparar: qué añade, cambia, retira y migra
                 U2 impacto EN ESTE PRODUCTO: overrides, personalizaciones, adaptadores,
                    esquemas de estado, trabajo en curso
@@ -6642,6 +6829,13 @@ PROCESO         `U0`–`U5a` es **`proceso:SIS`**, `U5b` es **`proceso:DEP`** �
 DE CADA TRAMO   los cuatro macrocircuitos donde hay una dependencia externa de verdad— y `U6`
                 vuelve a ser **`proceso:SIS`**. §18 tiene la tabla, y manda
 PARTICIPANTES   **con su VÍA de entrada (§8.0)**
+                  **FASE 0** · participantes y reparto en §9.6, que es la sede ÚNICA y
+                         la misma para los cuatro: `SIS` productor y propietario de la
+                         declaración · `VER` el dosier verificador, sin apropiarse de la
+                         decisión · `PLT` la maquinaria técnica cuando el contrato vigente
+                         se la atribuya · `SEG` su bloqueo por seguridad. **El propietario
+                         de este macrocircuito no puede sustituir a `SIS`, y DEBE exigir la
+                         certificación antes de continuar** (`O17` vía `D107`)
                 `U0`–`U5a` · `proceso:SIS`
                   `SIS` vía 1 · `CON` vía 2 · `VER` vía 2 · `ENT` vía 3 si toca el runtime
                 `U5b` · `proceso:DEP` — **y por eso `SEG` y `CON` son OBLIGATORIAS aquí**
@@ -6696,9 +6890,12 @@ HANDOFFS        de `SIS` a `PLT` la solicitud de materialización · de `PLT` a 
                 ANTES de construir · de `CON` a `ENT` el resultado por fuente · de `ENT` a
                 `VER` la convergencia para `U6`. **Su QUÉ está en §8.0; las INSTANCIAS las
                 crea F6**
-EVIDENCIA       la vista comprensible del cambio que el §14.2 del brief pide
-GATES           U3 aprobado antes de U4 · U6 certificación
-CERTIFICACIÓN   el nivel que tuviera antes, revalidado. Una actualización que baja el
+EVIDENCIA       **el dosier de FASE 0 que `VER` produce, con la huella de su sujeto (§9.6)** ·
+                la vista comprensible del cambio que el §14.2 del brief pide
+GATES           **FASE 0 `gate:sistema-conforme`, antes de U0 y de cualquier mutación
+                canónica (§9.6)** · U3 aprobado antes de U4 · U6 certificación
+CERTIFICACIÓN   **Estructural en FASE 0**, propia de ESTA ejecución y NO heredada de la
+                versión instalada (§9.6) · y después, el nivel que tuviera antes, revalidado. Una actualización que baja el
                 nivel alcanzado es un fallo, no un resultado
 ROLLBACK        ver «Compatibilidad y rollback DEL ESTADO», abajo. NO basta con volver la
                 distribución atrás. Y U5b tiene el SUYO, POR FUENTE, con estado INTEGRACIÓN
@@ -6794,6 +6991,10 @@ cargara con el aparato de una migración estructural.
 
 **La lista de pruebas de cada nivel vive UNA SOLA VEZ, en su `nivel-certificacion`** (§9.2).
 Esta tabla y la de §9.5 son **proyecciones** de ella, y no censos independientes.
+
+**Y `gate:sistema-conforme` —la prueba del nivel Estructural— tiene desde hoy PRODUCTOR,
+SUJETO, EVIDENCIA, VIGENCIA y CONDICIÓN DE INVALIDACIÓN, en §9.6.** Esta fila deja de ser su
+única aparición en el documento. **Derivado de `O17` vía `D107`, y no elegido por F4.**
 
 > **Corregido por la devolución técnica previa (hallazgo `8`).** Esta tabla enumeraba
 > **cuatro** pruebas de Integrado y §9.5 enumeraba **cinco**, porque añadía `integration-set
@@ -6916,6 +7117,23 @@ CONSECUENCIA      si `operativo` vence, el nivel alcanzado BAJA a `estructural` 
 REGLA DURA        un nivel **no se declara por argumento ni por haber pasado el anterior**.
                   Pasar el anterior es NECESARIO y no suficiente. Es la disciplina de
                   [`08-EVIDENCIA-MULTIREPO.md`](08-EVIDENCIA-MULTIREPO.md).
+
+PRODUCTOR DE CADA **la cadena de arriba y su REGLA DURA se conservan ÍNTEGRAS.** Lo que se
+NIVEL, Y EL DEL   añade —**derivado de `O17` vía `D107`, y no elegido por F4**— es que
+ESTRUCTURAL       **el nivel Estructural TIENE PRODUCTOR**, que es lo que le faltaba y lo que
+                  hacía inaplicable la regla dura:
+                    estructural  **la FASE 0 de CADA UNO de los cuatro macrocircuitos**, con
+                                 `SIS` como productor y propietario de la declaración,
+                                 invocando el contrato compartido `gate:sistema-conforme`.
+                                 **Su contrato entero está en §9.6**, que es su sede única
+                    operativo    `INS-4`
+                    integrado    `A9` · `M5` · `INS-7` · revalidado en `M7` y en `U6`
+                    completo     los escenarios de §14 ejecutados sobre un producto real
+                  **Cada nivel conserva PRODUCTOR, EVIDENCIA, SUJETO, VIGENCIA y CONDICIÓN DE
+                  INVALIDACIÓN propios** —regla 12 de `O17`—, y **un nivel superior NO implica
+                  por sí mismo que Estructural siga vigente** —regla 4—: es lo que «NIVEL
+                  ALCANZADO» ya dice arriba, y `O17` lo hace explícito para que nadie lo
+                  deduzca al revés
 ```
 
 ## 9.3 · Qué invalida un nivel
@@ -6943,6 +7161,18 @@ Y CERTIFICADA
 **Consecuencia honesta:** hasta que exista runtime, **ninguna instalación ni adopción puede
 declararse terminada y plenamente certificada**. Puede empezar a programar, que es lo que
 `O12` resuelve.
+
+> **`O12` ES HOY SATISFACIBLE, y por qué recorrido. Derivado de `O17` vía `D107`.** Hasta
+> `O17`, no lo era **por ningún recorrido**: «NIVEL ALCANZADO» (§9.2) exige que todos los
+> niveles presupuestos estén `verificado` y vigentes, Integrado presupone Operativo y
+> Operativo presupone Estructural, **y ninguna fase de ninguno de los cuatro macrocircuitos
+> producía el Estructural** — `gate:sistema-conforme` tenía una sola aparición en todo este
+> documento y era su propia definición. Es el GRAVE nº 2 del documento 22 (`P-06`).
+> **Con la FASE 0 de §9.6, cada ejecución produce su Estructural**, y el recorrido completo
+> queda escrito en §9.6, bajo «LO QUE ESTO HACE SATISFACIBLE». **Lo que sigue sin productor
+> nombrado —la Operativa de la adopción— queda registrado allí como trabajo futuro con
+> propietario, fase y prueba, y NO se resuelve aquí: `O17` da productor al nivel Estructural
+> y a ninguno más, y ampliarla sería reinterpretarla.**
 
 ## 9.5 · Aplicabilidad: una prueba que no aplica no puede bloquear para siempre
 
@@ -7088,6 +7318,224 @@ SU SITIO ES F6          con prescripción CERRADA. Lo que F4 debe hacer HOY es R
 5  QUÉ NO SE HACE  NO se edita `C7` en esta pasada: es `kernel/operativo/`, y esta devolución
    AQUÍ            no autoriza a tocarlo. Queda registrado, con su prescripción y su
                    trazabilidad, y su ejecución es F6
+```
+
+
+## 9.6 · `gate:sistema-conforme` — el contrato del nivel Estructural y su FASE 0
+
+> **TODO LO DE ESTA SECCIÓN ES DERIVADO DE `O17`, VÍA `D107`. Nada de ello lo eligió F4.**
+> La pregunta la formuló el GATE INDEPENDIENTE DE CERTIFICACIÓN —documento 22— como su única
+> clase `B`, con tres alternativas redactadas palabra por palabra. **El Owner eligió la (b)**
+> —que lo produzca cada macrocircuito al arrancar, como precondición propia— y **aceptó
+> expresamente su coste**: un gate más en los cuatro recorridos, y migración y actualización
+> más caras. `O17` está íntegra en `docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md` §2, y su
+> propagación es `D107`, §1. **Lo único que F4 aporta aquí es el reparto de la elección (b)
+> por las sedes vigentes**, y por eso esta sección se declara derivada y no decidida.
+>
+> **El vacío que cierra** —`P-06` del documento 22, GRAVE nº 2—: `gate:sistema-conforme`
+> tenía **una sola aparición en todo el documento 11, y era su propia definición** en §9.1.
+> Ninguna fase de §8.1, §8.2, §8.3 ni §8.4 lo producía ni lo invocaba. Sin celda de
+> Estructural `verificado` y vigente, la definición de «NIVEL ALCANZADO» de §9.2 impedía
+> elevar nada, **y `O12` no era satisfacible por ningún recorrido**. **La cadena de §9.2 y su
+> REGLA DURA no se reescriben**: se conservan enteras, y dejan de ser inaplicables.
+
+**UN SOLO CONTRATO, INVOCADO CUATRO VECES.** Es la regla 6 de `O17`: los cuatro macrocircuitos
+invocan **el MISMO contrato y el MISMO mecanismo compartido**, y **no se crean cuatro
+implementaciones divergentes**. Ésta es su sede única: §8.1, §8.2, §8.3 y §8.4 **la invocan y
+no la reescriben**, y §18 la mapea fase a fase. Si alguna vez difieren, **manda ésta**.
+
+```text
+CONTRATO           `gate:sistema-conforme`
+QUÉ AFIRMA         lo que §9.1 ya atribuye al nivel Estructural: los ficheros, contratos y
+                   referencias existen y son coherentes. **NO afirma que el sistema arranque**
+PRODUCTOR Y        **`SIS`.** Emite la declaración Estructural y responde de ella. §9.1 ya le
+PROPIETARIO        daba el nivel; lo que faltaba era la fase que lo produce
+DOSIER Y           **`VER`**, que produce el dosier o evidencia verificadora **SIN apropiarse
+EVIDENCIA          de la decisión final**: verifica, y no certifica
+MAQUINARIA         **`PLT`**, que ejecuta la maquinaria técnica **cuando el contrato vigente
+TÉCNICA            se la atribuya** — no por defecto, y nunca en lugar de `SIS`
+BLOQUEO POR        **`SEG`** conserva íntegra su capacidad de BLOQUEO cuando la estructura
+SEGURIDAD          incumpla seguridad. Su veto no lo levanta ninguna de las otras tres, ni el
+                   propietario del macrocircuito
+EL PROPIETARIO DE  **NO puede sustituir a `SIS`** en la certificación, y **DEBE EXIGIRLA**
+CADA MACROCIRCUITO antes de continuar. En `N`, `A`, `M` y los tramos `SIS` de `U` ese
+                   propietario ES `SIS` por otra vía —la vía 1 del proceso—, y **eso no lo
+                   dispensa de nada**: certifica como productor de esta sección, con su
+                   sujeto, su evidencia y su huella, no por ser el dueño del recorrido. En
+                   `U5b` el propietario global es `PLT`, y **`PLT` no certifica: exige**
+```
+
+### El SUJETO — los SEIS identificadores de la regla 7, y son un MÍNIMO
+
+```text
+1 PRODUCTO O          qué se certifica: `instalacion:transversal/<producto>` o el sujeto
+  INSTALACIÓN         certificable que corresponda (§9.2)
+2 EJECUCIÓN DEL       **CUÁL** de las ejecuciones: la iniciativa del macrocircuito, por su
+  MACROCIRCUITO       identificador. Es lo que hace que la certificación sea de ESTA
+                      ejecución y no de otra, y sin él las reglas 1, 3 y 9 no son evaluables
+3 REVISIÓN DEL        qué kernel se comprueba, por su revisión
+  KERNEL
+4 REVISIÓN DE         qué esquemas y qué contratos APLICABLES, por su revisión. No «los del
+  SCHEMAS Y           kernel» en bloque: los aplicables a ESTE sujeto
+  CONTRATOS
+5 CONFIGURACIÓN Y     `PROFILE`, `PROJECT`, `SOURCES.toml`, packs, adaptadores y overrides
+  FUENTES             relevantes, cada uno por su revisión
+  RELEVANTES
+6 HUELLA DE LA        la huella del conjunto de evidencia. **Es el campo que decide la
+  EVIDENCIA           reutilización de abajo**: sin él, reutilizar es presumir
+
+MÍNIMO, NO CENSO      la regla 7 dice «como mínimo». Un sujeto puede llevar más
+                      identificadores; **no puede llevar menos**, y omitir uno es un fallo
+                      del gate, no una simplificación
+```
+
+### VIGENCIA e INVALIDACIÓN
+
+```text
+VIGENCIA          una declaración Estructural es vigente mientras (i) su celda esté
+                  `verificado`, (ii) no haya vencido por caducidad y (iii) **ninguno de los
+                  SEIS identificadores de su sujeto haya cambiado**
+INVALIDACIÓN      los triggers de §9.3 para Estructural —cambia el corpus instalado · cambia
+                  un esquema · falla un validador— **MÁS el cambio de cualquiera de los
+                  seis**. §9.3 no se reescribe: se le añade que el sujeto es parte de lo que
+                  se compara, y los tres triggers que ya tenía son casos suyos
+NO HEREDA         **regla 3:** superar una ejecución anterior NO certifica la actual. Una
+                  declaración pertenece a la ejecución que la produjo, y a ninguna otra
+NO SE DEDUCE      **regla 4:** un nivel superior verificado NO implica por sí mismo que
+DESDE ARRIBA      Estructural siga vigente. §9.2 ya lo dice con «NIVEL ALCANZADO»; aquí queda
+                  explícito, porque era exactamente la deducción que `U` hacía al pedir sólo
+                  «certificación vigente»
+```
+
+### REUTILIZACIÓN DE EVIDENCIA — reglas 8, 9 y 10, y las tres a la vez
+
+```text
+QUÉ SE PUEDE       la EVIDENCIA MATERIAL anterior —salidas de los validadores, dosier de
+REUTILIZAR         `VER`— **ÚNICAMENTE si se DEMUESTRA que TODAS sus entradas y TODAS sus
+                   huellas siguen IDÉNTICAS** (regla 8). Demostrar no es afirmar: se compara
+                   huella a huella contra los seis identificadores del sujeto
+QUÉ EMITE CADA     **SU PROPIA declaración Estructural, vinculada a ESA ejecución** (regla 9),
+EJECUCIÓN          también cuando toda la evidencia se reutilizó. Reutilizar evidencia y
+                   emitir declaración son cosas DISTINTAS: lo primero es un ahorro de
+                   ejecución, lo segundo es la certificación
+QUÉ NO SE PUEDE    **copiar una certificación anterior**, y **presumirla vigente**. Las dos
+HACER NUNCA        están prohibidas por la regla 10, y **ninguna condición las habilita**: ni
+                   que las huellas coincidan, ni que el nivel superior siga verde
+SI UNA SOLA        no hay reutilización: la evidencia se REPRODUCE. Una huella distinta es
+HUELLA DIFIERE     una entrada distinta, y una entrada distinta es otro sujeto
+```
+
+### La FASE 0, IGUAL EN LOS CUATRO — entrada, salida, gate y cierre
+
+```text
+CUÁNDO             **ANTES de cualquier mutación canónica del macrocircuito** y **ANTES de
+                   todo intento de elevarse** a Operativa, Integrada o Completa (regla 2).
+                   En `N` va antes de `INS-0` —que ya publica—, en `A` antes de `A0`, en `M`
+                   antes de `M0` y en `U` antes de `U0`
+CUÁNTAS VECES      **EXACTAMENTE UNA por ejecución** (regla 1). Ni cero ni dos
+ENTRADA            el disparador del macrocircuito, con CERO mutaciones hechas · el SUJETO de
+                   los seis identificadores, resuelto · la evidencia anterior con sus
+                   huellas, si la hay y sólo para el contraste de la regla 8
+PARTICIPANTES      `SIS` productor y propietario · `VER` el dosier · `PLT` la maquinaria
+DERIVADOS          cuando el contrato se la atribuya · `SEG` el bloqueo. **`ENC` no
+                   participa**: la FASE 0 es anterior a que haya ruta, y §8.0 ya fija que
+                   encuadrar no es depositar capa
+SALIDA             **la declaración Estructural DE ESTA EJECUCIÓN**, con su sujeto, su
+                   evidencia, su huella y su vigencia · la celda
+                   `aspecto:certificacion/estructural` del sujeto, con el contrato de §3.5 y
+                   con `responsables` **sólo si hay desviación del reparto por defecto, y con
+                   su motivo**
+GATE               `gate:sistema-conforme`. **Si FALLA, el macrocircuito se BLOQUEA ANTES DE
+                   MUTAR ESTADO** (regla 5): no se abre la iniciativa, no se escribe ningún
+                   canónico y no se toca ninguna fuente. Bloquear después de abrir la
+                   iniciativa YA es haber mutado estado
+CONDICIÓN DE       la declaración emitida, y su celda `verificado` y vigente para ESTA
+CIERRE DE FASE 0   ejecución. **Sin ella la fase siguiente no abre**, y ningún nivel superior
+                   es alcanzable por la definición de §9.2
+QUÉ NO HACE        no sustituye a `INS-3`, que especializa y verifica la organización ya
+FASE 0             materializada; no sustituye a `A0`, que fija perímetro y modo no
+                   destructivo; y **no certifica ningún nivel superior**
+```
+
+### Tabla adversarial de la FASE 0
+
+**No son filas de la tabla adversarial de §2.6.7**, que sigue en **cuarenta y seis filas y
+cuarenta y seis identificadores `X<nn>`**, ni de las **OCHO** `X-A`–`X-H` de §2.9. Llevan
+familia propia, `X-S`, y son contrato de prueba igual que aquéllas: cada una declara qué se
+prepara, qué se intenta y qué resultado es exigible. **Ninguna se ha ejecutado**, como las
+demás. Escribir el contrato de una prueba no es la prueba.
+
+| | escenario adversarial | resultado exigido |
+|---|---|---|
+| `X-S1` | ejecutar un macrocircuito **OMITIENDO la FASE 0** y mutar estado canónico | **FALLA**, nombrando el macrocircuito y la mutación intentada. La certificación Estructural es PRECONDICIÓN, no un paso recomendado: sin ella la primera mutación está prohibida (regla 2 de `O17`) |
+| `X-S2` | presentar como Estructural de esta ejecución una **certificación de una ejecución anterior, copiada** | **FALLA.** La regla 10 prohíbe copiar una certificación anterior y prohíbe presumirla vigente. Se exige la declaración propia de ESTA ejecución (regla 9), aunque toda la evidencia material se haya reutilizado |
+| `X-S3` | **reutilizar evidencia con UNA SOLA HUELLA DISTINTA** en cualquiera de los identificadores de su sujeto —los de la regla 7, enumerados arriba— | **FALLA**, nombrando el identificador que difiere. La regla 8 exige que TODAS las entradas y huellas sigan idénticas: **una basta para invalidar la reutilización**, y entonces la evidencia se reproduce |
+| `X-S4` | **elevarse a Operativa, Integrada o Completa sin Estructural vigente DE ESA EJECUCIÓN** | **FALLA** por la definición de «NIVEL ALCANZADO» de §9.2, y el gate lo dice con esas palabras. Un nivel superior ya `verificado` **NO** vale como prueba de que Estructural siga vigente (regla 4) |
+| `X-S5` | la FASE 0 **falla** y el macrocircuito continúa hasta abrir su iniciativa | **FALLA.** La regla 5 exige BLOQUEAR **antes** de mutar estado, y **una iniciativa abierta ya es estado**: es la frontera exacta, no «antes de tocar las fuentes» |
+| `X-S6` | emitir **DOS** declaraciones Estructurales en una misma ejecución | **FALLA.** La regla 1 fija exactamente una por ejecución: dos son dos verdades sobre el mismo hecho, que es lo que §2.9 y §3.3 prohíben en todo el documento |
+| `X-S7` | el propietario del macrocircuito **emite él mismo** la declaración en vez de `SIS`, o **continúa sin exigirla** | **FALLA en los DOS casos.** No puede sustituir a `SIS` y debe exigirla: son las dos mitades del mismo reparto, y satisfacer una no dispensa de la otra |
+| `X-S8` | `SEG` bloquea por incumplimiento de seguridad de la estructura y la FASE 0 se declara superada igualmente | **FALLA.** El veto de `SEG` no lo levantan `SIS`, `VER`, `PLT` ni el propietario del macrocircuito |
+| `X-S9` | emitir la declaración con un SUJETO al que le falta uno de los identificadores obligatorios de la regla 7 | **FALLA**, nombrando el que falta. La regla 7 es un mínimo, y omitir la huella de la evidencia convierte cualquier reutilización posterior en una presunción |
+
+### LO QUE ESTO HACE SATISFACIBLE — `O12`, y por qué recorrido
+
+```text
+`O12` EXIGE        Integrada + baseline aprobado + ningún desconocido crítico sin clasificar
+                   (§9.4). Las tres, no dos
+POR QUÉ NO ERA     porque «NIVEL ALCANZADO» exige que **los niveles presupuestos estén todos
+SATISFACIBLE       `verificado` y vigentes**; Integrado presupone Operativo, Operativo
+                   presupone Estructural, **y Estructural no lo producía nadie**. Ninguno de
+                   los cuatro recorridos podía elevarse, y `O12` era invocable y no
+                   alcanzable — el mismo modo de fallo que `G-3`/`D76` cerró un piso más abajo
+POR QUÉ LO ES HOY  porque **cada ejecución produce su Estructural en FASE 0**. El recorrido,
+                   entero y por macrocircuito:
+                     `N`  FASE 0 Estructural → `INS-4` Operativa → `INS-7` Integrada.
+                          `INS-5` produce el BASELINE, que aprueba el Owner, y la
+                          CLASIFICACIÓN DE DESCONOCIDOS CRÍTICOS como entregable propio.
+                          `INS-7` = `O12`, con las tres condiciones y **un productor cada
+                          una** (§8.1). **Éste es el recorrido completo, sin hueco**
+                     `A`  FASE 0 Estructural → `A9` Integrada → `A3` el baseline aprobado
+                          por el Owner → `A10` = `O12`. **Con la salvedad de abajo**
+                     `M`  FASE 0 Estructural → `M5` Integrada con lo viejo TODAVÍA EN PIE →
+                          `M7` revalidada tras retirar. `M` no arranca programación
+                     `U`  FASE 0 Estructural → `U6` revalida el nivel que tuviera antes. `U`
+                          **no invoca `O12`** y §18 lo dice: una actualización no arranca
+                          programación
+LA SALVEDAD, DICHA **la adopción sigue sin fase que produzca su OPERATIVA con nombre propio**,
+Y NO TAPADA        y `A9` la presupone por la cadena de §9.2. **`O17` da productor al nivel
+                   Estructural y a NINGÚN otro**, luego resolverlo aquí sería ampliar una
+                   resolución del Owner. **No se amplía.** Queda registrado abajo como
+                   trabajo futuro, con propietario, fase y prueba
+```
+
+### Trabajo futuro que esta sede NO puede hacer, con propietario, fase y prueba
+
+```text
+MATERIALIZAR EL      PROPIETARIO **`SIS`** · FASE **F6** · el contrato `gate:sistema-conforme`
+CONTRATO EN EL       vive hoy sólo en este documento: `kernel/` no lo declara con productor,
+KERNEL               sujeto, vigencia ni invalidación, y **F4 no toca `kernel/`** — lo dice
+                     §19 y lo repite §8.0. PRUEBA POSTERIOR: un barrido que exija que
+                     `gate:sistema-conforme` esté declarado en el kernel con **los seis
+                     identificadores de sujeto**, su productor, su vigencia y su condición de
+                     invalidación, y que **FALLA HOY, y tiene que fallar**
+
+EL PRODUCTOR DE LA   PROPIETARIO **el Owner** · FASE **F5** · `O17` resuelve el productor del
+OPERATIVA EN LA      nivel Estructural **y de ninguno más**; `A9` certifica Integrada y su
+ADOPCIÓN             Operativa presupuesta no la produce ninguna fase de §8.2. **No se
+                     resuelve aquí ni se registra como presión nueva**: el hueco lo levantó
+                     `P-06` del documento 22 dentro de la misma clase `B` que el Owner acaba
+                     de responder, y ampliar su respuesta sería reinterpretarla. PRUEBA
+                     POSTERIOR: que `A9` no pueda cerrar sin una celda
+                     `aspecto:certificacion/operativo` `verificado` y vigente **de esa misma
+                     ejecución**. **FALLA HOY**
+
+AÑADIR EL SUJETO A   PROPIETARIO **`SIS`** · FASE **F6** · §9.3 enumera los triggers de
+LOS TRIGGERS DE      invalidación por nivel y no menciona el sujeto, que esta sección añade
+`nivel-certificacion` para Estructural. La NORMA vive en el esquema de clase
+                     `nivel-certificacion` (§9.2), que es kernel. PRUEBA POSTERIOR: que un
+                     cambio en cualquiera de los seis identificadores **venza** la celda
+                     Estructural del sujeto sin que nadie tenga que acordarse de editarla,
+                     que es el mismo mecanismo que §6.5 celebra para el adaptador
 ```
 
 ---
@@ -7581,7 +8029,16 @@ PRESIÓN F5     exige enmienda de material aprobado antes de construirse
 | `CI-5` | no aplanar rutas | §8.0 y §8.4 |
 | `CI-6` | cuatro piezas del adaptador | §6.1–§6.4 |
 
-## 15.4 · `O7`–`O14` y `P-01`–`P-08`
+## 15.4 · Las resoluciones del Owner y `P-01`–`P-08` — **dónde queda cada una**
+
+> **Corregido por `P-26` del documento 22.** Esta cabecera publicaba el rango `O7`–`O14`
+> mientras la tabla llegaba a `O15`, y **`O16` no tenía fila** — en la tabla cuyo objeto es
+> declarar «dónde queda cada resolución del Owner». **La cabecera deja de llevar rango**: un
+> rango escrito a mano en el título de una tabla que crece caduca en cuanto crece, y ya lo
+> hizo. **La regla: esta tabla contiene UNA FILA POR RESOLUCIÓN del Owner, derivada de las
+> cabeceras `### \`O` de la sección 2 de
+> [`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md), y no
+> declara ningún total en su título.** Una resolución sin fila aquí es el defecto.
 
 | | dónde queda | clase |
 |---|---|---|
@@ -7594,6 +8051,8 @@ PRESIÓN F5     exige enmienda de material aprobado antes de construirse
 | `O13` matriz agentic | §6.5 | NUEVA |
 | `O14` piloto PesquerApp | §14 escenario 2 · §8.2 | DEFERIDA a F6 |
 | `O15` la adopción de PesquerApp es PERMANENTE | §8.2 · §18 · §19 | NUEVA · revisa `O14` · DEFERIDA a F6 |
+| `O16` la sede del gobierno Git del control repo | §16 `PN-11` · §10 | NUEVA · **PRESIÓN F5** · con el ADDENDUM DE CRONOLOGÍA de `D106`(iii). **Fila añadida por `P-26`** |
+| `O17` el nivel ESTRUCTURAL y su productor | **§9.6** · §9.2 · §9.4 · §8.1 · §8.2 · §8.3 · §8.4 · §18 | NUEVA · **hace satisfacible `O12`** · propagada por `D107`, **derivada y no elegida por F4** |
 | `P-01` adaptador sin contrato | §6 | NUEVA |
 | `P-02` conocimiento externo | §13.3 | AMPLIADA |
 | `P-03` calidad por área | §5 | NUEVA |
@@ -7656,6 +8115,19 @@ NINGUNO SUBE DE ESTADO POR ESTAR DISEÑADO.
 Se registran en la serie existente, en
 [`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md), como
 `D16`–`D22`. Aquí su resumen y la alternativa descartada:
+
+> **LAS DOS REGLAS DE ESTA SEDE, escritas una vez.** **Añadidas por `P-03` del documento 22**,
+> que encontró §0 declarando derivar de aquí un recuento que aquí ya no se sostenía: **once
+> decisiones vigentes no tenían bloque**, y la sede de la que la cifra decía derivarse estaba
+> incompleta en dos tandas enteras.
+>
+> 1. **EL TEXTO AUTORITATIVO DE TODA DECISIÓN ES EL REGISTRO**, no esta sección. Aquí vive
+>    **una tanda por bloque**, con el gate que la devolvió y el tramo que abarca; el contenido
+>    de cada `D` **se remite** y no se copia, porque una copia envejece sola y ya lo hizo.
+> 2. **EL RECUENTO DE CORRECCIONES SE DERIVA DE LOS BLOQUES `###` DE ESTA SECCIÓN**, contados
+>    tal como están, y **§0 REMITE aquí en vez de enumerarlos**. Toda tanda nueva **abre su
+>    bloque en el mismo acto en que escribe sus decisiones**: no abrirlo es lo que rompió la
+>    derivación dos veces.
 
 | | decisión | alternativa descartada | por qué |
 |---|---|---|---|
@@ -7904,6 +8376,48 @@ ahora en `D89`, que es una decisión revisora.
 > marcadas como tales. Lo que la prueba de `D83` comprueba es la primera. `C6` `N1`–`N14` y
 > la escala de novedad `N0`–`N4` siguen intactos y siguen siendo los suyos.
 
+### `D96`–`D102` · las decisiones de la CORRECCIÓN DEL GATE DEFINITIVO INDEPENDIENTE
+
+El **GATE DEFINITIVO INDEPENDIENTE** —dos revisores con contexto limpio, `J` y `K`, en
+paralelo y sin verse, y un adjudicador `L` sobre los dos dictámenes ya cerrados— devolvió
+**INSUFICIENTE PARA F5** por **seis** razones independientes: cobertura incompleta, un
+BLOQUEANTE arquitectónico, seis GRAVES abiertos, un contrato F6 que aún exigía decidir
+arquitectura, una contradicción con `G20`–`G23` sin presión F5, y un checkpoint no vigente.
+Su juicio se conserva íntegro e inmutable en
+[`19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md`](19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md).
+**El texto de `D96`–`D102` vive en el registro y NO se copia aquí** (regla 1 de arriba): allí
+está cada decisión con lo que revisa y su alternativa descartada. `D1`–`D95` conservan su
+texto.
+
+### `D103` · la decisión de la CORRECCIÓN TÉCNICA sobre la derivación de `<CAP>:revision`
+
+Corrección técnica acotada sobre el algoritmo que `D98` había reformulado: retiró del
+ALGORITMO el barrido léxico que su propio criterio ya había retirado, y corrigió una
+cardinalidad insatisfacible. **`D98` no se reescribe.** Su texto vive en el registro.
+
+### `D104`–`D106` · las decisiones de la CORRECCIÓN DEL GATE DE COBERTURA Y CIERRE
+
+El **GATE INDEPENDIENTE DE COBERTURA Y CIERRE** y el **GATE INDEPENDIENTE DE CIERRE CON
+MANIFIESTOS VERIFICABLES** —documentos 20 y 21— devolvieron **INSUFICIENTE PARA F5**.
+`D104` sustituye entero el algoritmo de derivación de `<CAP>:revision` por cuatro defectos
+concurrentes; `D105` fija el orden EXACTO y DURABLE del cierre por abandono —los seis pasos
+del paso `E` de §2.6.9, la ventana `W17` y el `fsync` del `deriva`—; `D106` recoge tres
+correcciones documentales que cambian lo que alguien tiene que hacer. **`D103` no se
+reescribe.** Sus textos viven en el registro.
+
+### `D107` · la propagación de `O17` — DERIVADA de una resolución del Owner, NO elegida por F4
+
+El **GATE INDEPENDIENTE DE CERTIFICACIÓN** —documento 22— devolvió **INSUFICIENTE PARA F5**
+con 69 hallazgos, de los que **uno solo** era decisión exclusiva del Owner: **el nivel
+Estructural y su productor**. El Owner resolvió, y su resolución es **`O17`**, íntegra en la
+sección 2 del registro. `D107` es **su propagación, y se declara DERIVADA**: los cuatro
+macrocircuitos ganan una **FASE 0 de CERTIFICACIÓN ESTRUCTURAL** como precondición propia, y
+`gate:sistema-conforme` gana productor, sujeto, evidencia, vigencia y condición de
+invalidación. **La sede de todo ello es §9.6**, y §8.1–§8.4, §9.2, §9.4 y §18 la invocan.
+**Lo único que F4 aporta es el reparto de la alternativa (b) por las sedes vigentes**: las
+alternativas (a) y (c) **las descartó el Owner**, no F4. `D1`–`D106` y `O1`–`O16` conservan
+íntegro su texto, y **nada se renumera**.
+
 ---
 
 # 16 · Presiones normativas para F5
@@ -7917,13 +8431,19 @@ sigue llamándose `PN-4` aunque esté retirada, porque renumerar rompería la tr
 que ya se llevó al Owner. De aquellas cinco resultan **TRES vigentes** —`PN-1`, `PN-2`,
 `PN-3`—, una retirada (`PN-4`) y una fusionada (`PN-5`): 3 + 1 + 1 = 5, y la cuenta cierra.
 **Corregido por `m2`**: decía «cuatro vigentes, una retirada y una fusionada» sobre cinco, que
-suma seis. Las demás vigentes —**`PN-6` a `PN-16`**— son posteriores, y el total está abajo.
+suma seis. Las demás vigentes —**`PN-6` a `PN-18`**— son posteriores, y el total está abajo.
 **Corregido por `I-11`**: decía «`PN-6` a `PN-12`», que con las tres primeras suma DIEZ
 mientras el total decía ONCE, y omitía precisamente `PN-13`, la que va al Owner.
 **Corregido otra vez por `Q-07`**: decía «`PN-6` a `PN-14`» cuando ya existía `PN-15`, y
 volvía a omitir justo la que va al Owner. Es la TERCERA vez que esta frase caduca, y por eso
 `G-26` deja de mirar sólo numerales sueltos y **deriva también los RANGOS**: un `PN-a` a
 `PN-b` vivo tiene que terminar en la última cabecera vigente y contener tantas como el censo.
+**Y CUARTA vez, con `PN-17` y `PN-18`** (`P-07` y `P-08` del documento 22): decía «`PN-6` a
+`PN-16`». **La garantía, escrita una vez y para siempre, y es la que hay que leer antes que
+cualquier cifra de este documento:** *ningún rango ni ningún total de presiones de este
+fichero se escribe a mano. **TODOS se DERIVAN del barrido de las cabeceras `## \`PN-`**, y el
+extremo superior de todo rango vivo es **la ÚLTIMA cabecera vigente, sea cual sea**.* Una
+cifra que aquí aparezca y no coincida con ese barrido **es el defecto, no el barrido**.
 
 ## `PN-1` · La sección (g) no existe, y esta fase la escribe
 
@@ -8188,9 +8708,14 @@ POR EL OWNER        la futura sección `(g)` —que `PN-1` ya exige crear, luego
                     **Procedencia de `O16`, registrada por `L-02`:** 2026-08-29, formulación
                     presentada por el sistema y respuesta literal del Owner «ok,
                     confirmamos». Está en el registro de decisiones y en `owner_captado`.
-                    Antes de eso, `O16` era la única de las dieciséis resoluciones del Owner
-                    **sin fecha, sin cita y sin entrada en `owner_captado`** — y es la que
-                    cierra la sede de esta presión, nacida del BLOQUEANTE `B2`
+                    Antes de eso, `O16` era **la única resolución del Owner sin fecha, sin
+                    cita y sin entrada en `owner_captado`** — y es la que cierra la sede de
+                    esta presión, nacida del BLOQUEANTE `B2`.
+                    **El TOTAL de resoluciones del Owner no se escribe aquí**: se deriva de
+                    las cabeceras `### \`O` de la sección 2 de
+                    `docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md`, y §15.4 lo traza.
+                    **Corregido por la propagación de `O17`** (`D107`): esta línea decía
+                    «dieciséis», y la cifra caducó el día en que el Owner resolvió una más
 MATERIA MÍNIMA      un apartado en `(g)` con la tabla de propiedad del control repo. **F5 la
                     redacta; F6 materializa y valida `C8`.** Ninguna se redacta aquí
 BLOQUEA             la publicación gobernada del estado, y con ella las garantías 5 y 6 de
@@ -8553,10 +9078,204 @@ ORIGEN              hallazgo `M-09` del GATE DE COBERTURA —registrado para F5 
                     esa fila
 ```
 
+## `PN-17` · NUEVA · `reconciliacion_pendiente` del canal de órdenes no tiene productor, y `T22` no es satisfacible
+
+> **Registrada por `P-07` del GATE INDEPENDIENTE DE CERTIFICACIÓN —documento 22, GRAVE.**
+> Reproducida contra las cinco sedes antes de escribirla. **Esta presión NO elige la solución
+> normativa y NO redacta ninguna enmienda: registra que hay que elegir, y que la elección es
+> del Owner** — porque el identificador y su semántica de ESCRITURA los fija material
+> APROBADO, `a.9` y `T22`, que F4 no toca y F6 tampoco puede tocar.
+
+```text
+FUENTES             `docs/rediseno/a-CAPACIDADES-APROBADA.md` **L793–797** (`a.9`, el
+ENFRENTADAS         mecanismo CAS) y **L1109–1111** (`T22`, prueba de conformidad APROBADA)
+                    · `docs/rediseno/b-RECORRIDO-APROBADA.md` **L614–615** (`b.12`, freno 4)
+                    · este documento, §2.6.11 **el mecanismo `A`** contra §2.6.9 **el
+                    predicado derivado**, veintiséis líneas más abajo
+
+TEXTO VIGENTE       (a) `T22` — «Tres fallos CAS consecutivos detienen el ciclo, dejan las
+                    órdenes intactas y **registran `reconciliacion_pendiente`**. No existe un
+                    cuarto giro automático»
+                    (a) `a.9` — el agotamiento «1. deja TODAS las órdenes sin consumir ·
+                    **2. NO modifica el estado canónico** · 3. registra
+                    `reconciliacion_pendiente`»
+                    (b) `b.12` paso 4 — «FRENOS · racha SIS · devoluciones agotadas · ciclo
+                    detectado · recomposiciones sin avance · **`reconciliacion_pendiente`
+                    (a.9)** → si hay, se atiende ANTES de despachar»
+                    §2.6.9 de este documento, la definición vigente y ÚNICA del predicado —
+                    «`reconciliacion_pendiente(item) ≡` existe una transacción con evento
+                    `conflicto` SIN terminal … **O BIEN** existe un evento `deriva` SIN
+                    reparar que nombra ese item»
+
+QUÉ ES EL DEFECTO   el predicado tiene **exactamente DOS disyuntos, y los dos son sobre el
+                    DIARIO DE TRANSACCIONES**. El agotamiento de `MAX_CAS_RETRIES` **no emite
+                    ningún evento de diario**: el propio §2.6.11 lo declara «NO es de §2.6» y
+                    manda «NO modifica el estado canónico». Luego, tras tres fallos CAS, el
+                    predicado es **FALSO**. Consecuencia mecánica y triple: **`T22` no es
+                    satisfacible por esta arquitectura**, **el freno 4 de `b.12` nunca
+                    dispara** para este caso, y **`reconciliacion_pendiente` no tiene
+                    PRODUCTOR** por la vía que (a) le manda tener uno. Y `b.4` `P0` no lo
+                    salva: está acotado a «transición multiarchivo incompleta», que es
+                    precisamente lo que este caso NO es
+                    **Agrava** que §2.6.11 escribe «registra reconciliación pendiente» en la
+                    SALIDA del mecanismo `A`, veintiséis líneas antes de que §2.6.9 titule
+                    que el predicado **se DERIVA** y que «no hay bandera que escribir»
+
+POR QUÉ NO BASTA    porque las salidas posibles son INCOMPATIBLES entre sí y **cada una toca
+UN DERIVADO         una sede distinta**: (i) dar al agotamiento CAS un tercer disyunto en el
+                    predicado obliga a que algo durable lo sostenga, y `a.9` prohíbe
+                    expresamente modificar el estado canónico; (ii) admitir una bandera
+                    persistida reabre exactamente lo que `D49` cerró —«exigía abrir una
+                    transacción para registrar lo que impide abrir transacciones»—; (iii)
+                    acotar `T22` a otra semántica de «registrar» **enmienda material
+                    APROBADO**. **F4 no puede elegir entre ellas**: elegir sería decidir
+                    sobre (a) sin el Owner
+
+MATERIA MÍNIMA      que F5 declare **qué significa «registra `reconciliacion_pendiente`» en
+                    `a.9` y en `T22` cuando se agota `MAX_CAS_RETRIES`**, y en consecuencia
+                    quién es su productor: si un tercer disyunto del predicado derivado, si
+                    un registro que no es estado canónico, o si `T22` se enmienda
+
+ALCANCE             `a.9` L793–797, `T22` L1109–1111, el freno 4 de `b.12` y las sedes
+                    derivadas que citan el predicado. **No alcanza a la definición de §2.6.9
+                    para el resto de sus casos**: las dos ramas del diario siguen siendo
+                    correctas para `conflicto` y para `deriva`, y `D49` sigue en pie
+
+SE PUEDE CONSTRUIR  todo lo demás de §2.6.9 y de §2.6.11, que está escrito y no depende de
+                    esta elección. Lo que NO se puede es **materializar un productor para el
+                    caso CAS eligiendo por cuenta propia** cuál de las tres salidas es la
+                    buena
+
+BLOQUEA             **la conformidad con `T22`**, que hoy no es satisfacible por ninguna ruta
+REALMENTE           de esta arquitectura, y **el freno 4 de `b.12` para el caso del canal de
+                    órdenes**: sin productor, el despacho no se detiene ante un agotamiento
+                    CAS. Bloquea también cualquier prueba de F6 que pretenda verificar `T22`
+                    en verde
+
+QUÉ NO BLOQUEA      **no bloquea `§2.6` ni el diario de transacciones**: `conflicto` y
+                    `deriva` siguen produciendo el predicado por sus dos ramas, y `b.4` `P0`
+                    sigue disparando para la transición multiarchivo incompleta. **No bloquea
+                    el mecanismo CAS**, que sigue deteniendo el ciclo y dejando las órdenes
+                    intactas — lo que no hace es dejar rastro que el predicado vea. **No
+                    bloquea `PN-1`** ni depende de ella
+
+CONDICIÓN DE        si el Owner decide que «registrar» en `a.9` significa exactamente lo que
+REVERSIÓN           §2.6.9 ya deriva —y que el caso CAS queda fuera del predicado a
+                    propósito—, esta presión se cierra **sin enmendar (a)**: lo que se corrige
+                    es la redacción de la SALIDA del mecanismo `A` en §2.6.11, que es
+                    derivado, y `PN-17` queda RESUELTA en vez de retirada
+
+PROPIETARIO         el **Owner**, porque (a) —`a.9` y `T22`— es material aprobado
+
+FASE                **F5** decide · **F6** materializa el productor que se decida y construye
+                    la prueba
+
+PRUEBA POSTERIOR    ejecutar `T22` tal como (a) la escribe: agotar `MAX_CAS_RETRIES` y exigir
+                    que `reconciliacion_pendiente` sea **VERDADERO** para el item afectado y
+                    que el freno 4 de `b.12` **detenga el despacho**. **FALLA HOY, y tiene
+                    que fallar**: con el predicado vigente el resultado es FALSO. Sólo pasa
+                    cuando F5 haya decidido y F6 haya materializado el productor
+
+ORIGEN              hallazgo `P3-02` de la cadena `P`, elevado y graduado GRAVE por `P` como
+                    `P-07` del documento 22, y clasificado por el adjudicador `R` en su
+                    clase `A` —«una PN nueva para `reconciliacion_pendiente`/`T22`»—:
+                    **registrar es F4, elegir es F5**
+```
+
+## `PN-18` · NUEVA · `VER:decisión` frente a `VER:decision`: la grafía YA materializada, con DOS variantes dentro del kernel construido
+
+> **Registrada por `P-08` del GATE INDEPENDIENTE DE CERTIFICACIÓN —documento 22, GRAVE.**
+> `PN-16` se acota literalmente a «la grafía canónica de `<CAP>:revisión`» y a `b.16` L836.
+> Esa variante **no tiene ni una sola instancia construida**, mientras la que **YA está
+> materializada** —`VER:decisión`— convive en el kernel **con las DOS grafías a la vez**. Se
+> registró la presión por el caso hipotético y se dejó pasar el real, que además ya es
+> incoherente consigo mismo. **`PN-16` no se reescribe, no se renumera y no se retira**: ésta
+> es una presión distinta sobre un identificador distinto, y las dos van al Owner.
+>
+> **Esta presión NO elige la grafía y NO redacta ninguna enmienda.**
+
+```text
+FUENTES             `docs/rediseno/b-RECORRIDO-APROBADA.md` — **DOCE apariciones de
+ENFRENTADAS         `VER:decisión`, todas CON TILDE, y CERO sin tilde**
+                    contra el kernel construido, que usa **LAS DOS**:
+                      CON TILDE   `kernel/operativo/recorrido/01-PROCESOS.md` — **3**
+                      SIN TILDE   `kernel/operativo/capacidades/VER/` (`CAPACIDAD.md`,
+                                  `composicion.md`, `metodos/Decision.md`, `roles/decision.md`),
+                                  `kernel/operativo/circuitos/00-CIRCUITOS.md`,
+                                  `kernel/operativo/pruebas/` y `packs/wear-os/composicion.md`
+                                  — **14**
+                    **LOS RECUENTOS SE DERIVAN, no se escriben**: son el resultado de
+                    `grep -c 'VER:decisión' docs/rediseno/b-RECORRIDO-APROBADA.md`,
+                    `grep -rn 'VER:decisión' kernel/ | wc -l` y
+                    `grep -rn 'VER:decision' kernel/ packs/ | wc -l` sobre el árbol de hoy.
+                    Si el árbol se mueve, se vuelven a derivar
+
+TEXTO VIGENTE       (b) escribe `VER:**decisión**` en sus doce apariciones normativas, todas
+                    con tilde. **Es material APROBADO: F4 no lo toca y F6 tampoco**
+
+QUÉ ES EL DEFECTO   **el mismo identificador normativo con DOS grafías DENTRO DEL MISMO
+                    KERNEL CONSTRUIDO**, y ninguna sede dice cuál manda. No es una
+                    discrepancia fuente/derivado como `PN-16`: es una discrepancia **dentro
+                    del derivado**, que además discrepa de la fuente en catorce de sus
+                    diecisiete apariciones. Un barrido de grafía única falla hoy contra el
+                    kernel sin necesidad de mirar (b)
+
+POR QUÉ NO LA       porque `PN-16` está acotada **por su propio texto** a `<CAP>:revisión` y a
+CUBRE `PN-16`       `b.16` L836, y `<CAP>:revisión` tiene **CERO instancias construidas** en
+                    `kernel/` — verificado con `grep -rn ':revisión' kernel/` y
+                    `grep -rn ':revision' kernel/`, que devuelven **cero las dos**. Ampliar
+                    `PN-16` para que la cubra sería reescribir una presión ya llevada al
+                    Owner, que es exactamente lo que §16 prohíbe hacer
+
+MATERIA MÍNIMA      que F5 declare **cuál de las dos grafías es la CANÓNICA** para
+                    `VER:decisión`, y en consecuencia si se enmienda (b) o se alinea el
+                    kernel construido
+
+ALCANCE             las doce apariciones de (b) y las diecisiete del kernel y los packs. **No
+                    alcanza a ninguna otra regla**: no cambia qué es la decisión de `VER`, ni
+                    quién la produce, ni su posición en el recorrido — sólo cómo se escribe
+                    su nombre
+
+SE PUEDE CONSTRUIR  nada nuevo hace falta: el identificador YA está construido. Lo que **no**
+                    se puede es alinear las diecisiete apariciones eligiendo una grafía por
+                    cuenta propia, porque la canónica vive en (b)
+
+BLOQUEA             **la comprobación de grafía única sobre el corpus vigente**, que hoy no
+REALMENTE           puede exigir nada, y **cualquier resolución automática de
+                    `VER:decision(¿?)` por igualdad de cadena**: un contraste por igualdad
+                    falla contra tres sedes o contra catorce, según cuál se tome por buena.
+                    Bloquea también la alineación de F6, que tendría que elegir
+
+QUÉ NO BLOQUEA      **no bloquea el recorrido**: las dos grafías resuelven hoy a la misma
+                    participación para cualquier lector humano, y ninguna ruta queda sin
+                    vehículo por esto. **No bloquea `PN-16`**, que sigue vigente y separada.
+                    **No bloquea F6 en lo demás**: sólo en el acto de escribir el nombre
+
+CONDICIÓN DE        si el Owner decide que manda la grafía de (b) —con tilde—, esta presión
+REVERSIÓN           se cierra **sin enmendar (b)**: se alinean las catorce apariciones sin
+                    tilde del kernel y de los packs, y `PN-18` queda RESUELTA en vez de
+                    retirada. La simétrica también vale, y entonces sí enmienda (b)
+
+PROPIETARIO         el **Owner**, porque (b) es material aprobado
+
+FASE                **F5** decide · **F6** alinea el kernel construido
+
+PRUEBA POSTERIOR    un barrido que exija **UNA SOLA GRAFÍA** de `VER:decisión` en todo el
+                    corpus vigente —(b), `kernel/` y `packs/`—, con las citas históricas
+                    marcadas como tales. **FALLA HOY, y tiene que fallar**: hoy conviven las
+                    dos DENTRO del kernel, y nadie ha dicho cuál manda. Sólo pasa cuando F5
+                    haya decidido y F6 haya alineado
+
+ORIGEN              hallazgo `P3-03` de la cadena `P`, elevado y graduado GRAVE por `P` como
+                    `P-08` del documento 22, y clasificado por el adjudicador `R` en su
+                    clase `A` —«otra [PN] … para `VER:decisión` frente a `VER:decision`, que
+                    ya conviven dentro del kernel construido»
+```
+
 **Resumen para el Owner, tras revisar las cinco de la entrega anterior:**
 
 ```text
-VIGENTES · CATORCE
+VIGENTES · DIECISÉIS
   PN-1   la sección (g). LA ÚNICA QUE BLOQUEA TODO EL ESTADO DURABLE, y ahora decide más
   PN-2   la política de auditoría como tercera vía de creación de trabajo
   PN-3   G03 y la ejecución desatendida. Misma pregunta que PN-2 por otro camino, y
@@ -8586,6 +9305,15 @@ VIGENTES · CATORCE
   PN-16  la GRAFÍA CANÓNICA de <CAP>:revisión. (b) L836 la escribe CON TILDE y
          todo el derivado de F4 SIN TILDE. Si manda (b), corrige F6; si manda la
          sin tilde, F5 ENMIENDA (b). F4 no elige. Sale de P-07                    NUEVA
+  PN-17  `reconciliacion_pendiente` del canal de órdenes NO TIENE PRODUCTOR: el
+         agotamiento de MAX_CAS_RETRIES declara que NO modifica el estado canónico
+         y el predicado de §2.6.9 sólo mira el diario, luego T22 —prueba de
+         conformidad APROBADA— no es satisfacible y el freno 4 de b.12 nunca
+         dispara. Sale de P-07 del doc 22                                            NUEVA
+  PN-18  la GRAFÍA de `VER:decisión`, que YA ESTÁ CONSTRUIDA y convive con DOS
+         variantes DENTRO del kernel: 12 con tilde en (b), 3 con tilde y 14 sin
+         tilde en kernel/ y packs/. PN-16 no la cubre: se acota a <CAP>:revisión,
+         que tiene CERO instancias. Sale de P-08 del doc 22                          NUEVA
 
 RETIRADA · UNA
   PN-4   con su motivo escrito, y reinstaurable por F5 si el Owner lo prefiere
@@ -8597,10 +9325,15 @@ CUATRO SON UNA FRASE       PN-6, PN-7, PN-9 y PN-10. Y tres de ellas se registra
 CADA UNA                   PRECISAMENTE PORQUE parecen obvias: PN-6 fijó esa vara, y
                            aplicarla de forma desigual sería el defecto
 
-EL TOTAL SE DERIVA         un barrido de las cabeceras `## \`PN-` da DIECISÉIS; menos PN-4
-                           RETIRADA y PN-5 FUSIONADA, quedan CATORCE. No se escribe a mano, y
-                           por eso se mueve cuando aparece una nueva — y acaba de moverse
-                           con `PN-16`
+EL TOTAL SE DERIVA         un barrido de las cabeceras `## \`PN-` da DIECIOCHO; menos PN-4
+                           RETIRADA y PN-5 FUSIONADA, quedan DIECISÉIS. No se escribe a mano,
+                           y por eso se mueve cuando aparece una nueva — y acaba de moverse
+                           con `PN-17` y `PN-18`.
+                           **Y ES LA ÚNICA SEDE QUE PUEDE PUBLICARLO.** Toda otra sede de
+                           este documento que necesite el total o el rango **REMITE aquí**
+                           en vez de copiarlo: una lista copiada envejece sola, una remisión
+                           no. Es la garantía que la cabecera de §16 declara, y la razón de
+                           que §0, §8.2 y §19 hayan caducado ya
 
 NO SE RENUMERA NINGUNA. Renumerar rompería la trazabilidad de lo que ya se llevó al Owner.
 ```
@@ -8620,9 +9353,9 @@ NO SE RENUMERA NINGUNA. Renumerar rompería la trazabilidad de lo que ya se llev
 |---|---|
 | (a), (b), `E1`, `E2` | **intactas**. F4 no las toca, y sus presiones están en §16 |
 | `K-1` tres capas | **intacta**. §1.2 clasifica ciclo de vida, no conocimiento |
-| `C1`–`C7` | **intactos**. `C2` se amplía en F6 |
+| `C1`–`C7` | **NO todos intactos, y esta columna es la lista de trabajo de F6, luego se lee como exhaustiva.** `C2` se amplía en F6. **`C7` se reutiliza CON UNA CORRECCIÓN PENDIENTE, NOMBRADA**: su `gate:convergencia-de-fuentes` dice `aplica_a: "una o más fuentes"` y `E2.6` dice «varias sources», con lo que **con el texto vigente ningún producto de un repositorio cierra un solo item** — §15.7 y §9.5 lo declaran, §9.5 lleva la prescripción cerrada, y el contrato **sigue diciendo «una o más»**. **`C5` y `C6` se reutilizan CON EXCEPCIÓN NOMBRADA** (§15.7, §9.5). **Corregido por `P-14` del documento 22**, que reprodujo el `aplica_a` contra el contrato mismo. **La lista de qué le pasa a cada contrato NO se copia aquí: la sede que la deriva es §15.7, y esta fila REMITE a ella** — una lista copiada en la lista de trabajo de F6 envejece sola |
 | quince capacidades, roles, métodos, prompts | **intactos**. Son los RESPONSABLES de los aspectos de §5.2, no los aspectos. **`+6` extensiones de ficha**: `ENT`, `ARQ`, `PLT`, `SEG`, **`DSP`** (`M-5` · abrir items `AUD` dentro de una política `O7` vigente) y **`ENC`** (`M-6` · admitir un finding de auditoría como entrada, con la celda de cobertura por sujeto). **Corregido por `I-06`**: decía `+4`, y era la mitad literal del cierre de `M-6` —«añadir `capacidades/ENC/` a §5.2 **y a §17**»— que no se había hecho. §5.2, §16 y §17 dicen ahora la misma cifra. **Y las fichas de las capacidades LÍDERES de cobertura se extienden también** —no es un `+1` condicional: `D91` ya lo decidió y fija que **el conjunto se DERIVA de los `contrato-de-aspecto`, no se escribe a mano**, luego es un conjunto derivado ya resuelto y no un incremento pendiente de una condición. Corregido por `K-10` |
-| diez procesos de `b.16` | **intactos**. Ningún macrocircuito crea uno nuevo |
+| diez procesos de `b.16` | **el NÚMERO es intacto: siguen siendo DIEZ y ningún macrocircuito crea uno nuevo. Los PROCESOS no lo son.** §19 (`D104`) contrata que **F6 instancie nueve pares `<CAP>:revision` repartidos en CINCO de los diez**, con su error `composicion-incompleta`, y que edite `kernel/operativo/recorrido/01-PROCESOS.md`. **La distinción es la misma que la fila vecina hace con las quince capacidades** —«intactos … **`+6` extensiones de ficha**»—, y esta fila no la hacía: **corregido por `P-15` del documento 22**. **El reparto exacto no se copia aquí: lo deriva §19**, que es su sede, y a ella remite esta fila |
 | diecinueve esquemas | **+4 de estado**: `iniciativa`, `adaptador`, `cobertura`, `evento`. **+2 de clase**: `nivel-certificacion` y `contrato-de-aspecto`, con el precedente de `nivel-novedad`. `memoria` y `validadores.yaml` se amplían. **Total 25** (§3.8) |
 | packs | **intactos**, `+2` piezas en `web-app` (`CAND-022`, `CAND-024`) |
 | trece validadores | **intactos**, `+entradas:` por `P-08` |
@@ -8706,15 +9439,19 @@ atrás es volver a un release. Es lo que ya se hace, y funciona.
 
 | macrocircuito | fase | proceso `b.16` | propietario global | participantes de la RUTA, con su vía | ejecutor y autoridad | entrada | salida | gate | estado persistido |
 |---|---|---|---|---|---|---|---|---|---|
-| **N · instalación** | `INS-0`–`INS-5` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `APR` `C-APR` vía 3 · `PRD` `ARQ` vía 4, items `INV` enlazados de discovery · **`DOM` `DIS` `SEG` sin vía: `PN-13`** | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner | decisión del Owner de instalar | control repo, topología, especialización y adaptadores · **el BASELINE de producto, dominio y diseño de `INS-5`** · **la CLASIFICACIÓN DE DESCONOCIDOS CRÍTICOS**, cada uno resuelto, acotado con su portador o deferido con su motivo | `INS-4` certificación Operativa · **`INS-5` BASELINE APROBADO POR EL OWNER** —la misma disposición que `A3` en la adopción— | `estado/` e `INI-001` desde `INS-0`, sobre el item `SIS-001` |
+| **N · instalación** | **`FASE 0`** · CERTIFICACIÓN ESTRUCTURAL | `proceso:SIS` | **`SIS`** (vía 1), **productor y propietario de la declaración** (`O17` vía `D107`) | `VER` vía 2, produce el DOSIER y **no se apropia de la decisión** · `SEG` vía 3 cuando hay superficie, y **conserva su bloqueo** | ejecutor `PLT` cuando el contrato vigente le atribuya la maquinaria técnica · autoridad `SIS`, con el veto de `SEG` · **el propietario de `N` no puede sustituir a `SIS`, y DEBE exigirla** | el disparador de `N`, **con CERO mutaciones canónicas hechas**, y el SUJETO de los seis identificadores de §9.6 resuelto | **la declaración Estructural de ESTA ejecución**, con su sujeto, su evidencia y su huella. Una por ejecución, y ninguna heredada | **`gate:sistema-conforme` (§9.6)** — el MISMO contrato para los cuatro. Si falla, **BLOQUEA antes de mutar estado** | celda `aspecto:certificacion/estructural` del sujeto, con su vigencia y su condición de invalidación |
+| | `INS-0`–`INS-5` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `APR` `C-APR` vía 3 · `PRD` `ARQ` vía 4, items `INV` enlazados de discovery · **`DOM` `DIS` `SEG` sin vía: `PN-13`** | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner | decisión del Owner de instalar | control repo, topología, especialización y adaptadores · **el BASELINE de producto, dominio y diseño de `INS-5`** · **la CLASIFICACIÓN DE DESCONOCIDOS CRÍTICOS**, cada uno resuelto, acotado con su portador o deferido con su motivo | `INS-4` certificación Operativa · **`INS-5` BASELINE APROBADO POR EL OWNER** —la misma disposición que `A3` en la adopción— | `estado/` e `INI-001` desde `INS-0`, sobre el item `SIS-001` |
 | | `INS-6`–`INS-7` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3, «modifica el runtime» | `PLT` MATERIALIZA (`C7:82`) · **`CON` con custodia hace rama, commit, push y PR** del puntero (`C7:83`–`C7:86`) · `SEG` puede bloquear el push · `ENT` merge y convergencia (`C7:88`–`C7:89`) · autoridad Owner | **especialización aprobada Y baseline de `INS-5` aprobado por el Owner** | punteros propagados y nivel Integrada | `INS-7` = `O12`, **con sus TRES condiciones y el productor de cada una**: Integrada la produce `INS-7` con la aplicabilidad de §9.5 · el BASELINE APROBADO lo produce `INS-5` y lo aprueba el Owner · la CLASIFICACIÓN DE DESCONOCIDOS CRÍTICOS la produce `INS-5` como entregable propio. Ninguna queda sin productor identificable | evidencia + celdas de cobertura |
-| **A · adopción** | `A0`–`A1` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner | el Owner quiere gobernar un producto con historia | perímetro y topología | modo no destructivo declarado | iniciativa + `estado/` |
+| **A · adopción** | **`FASE 0`** · CERTIFICACIÓN ESTRUCTURAL | `proceso:SIS` | **`SIS`** (vía 1), **productor y propietario de la declaración** (`O17` vía `D107`) | `VER` vía 2, produce el DOSIER y **no se apropia de la decisión** · `SEG` vía 3 cuando hay superficie, y **conserva su bloqueo** | ejecutor `PLT` cuando el contrato vigente le atribuya la maquinaria técnica · autoridad `SIS`, con el veto de `SEG` · **el propietario de `A` no puede sustituir a `SIS`, y DEBE exigirla** | el disparador de `A`, **con CERO mutaciones canónicas hechas**, y el SUJETO de los seis identificadores de §9.6 resuelto | **la declaración Estructural de ESTA ejecución**, con su sujeto, su evidencia y su huella. Una por ejecución, y ninguna heredada | **`gate:sistema-conforme` (§9.6)** — el MISMO contrato para los cuatro. Si falla, **BLOQUEA antes de mutar estado** | celda `aspecto:certificacion/estructural` del sujeto, con su vigencia y su condición de invalidación |
+| | `A0`–`A1` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner | el Owner quiere gobernar un producto con historia | perímetro y topología | modo no destructivo declarado | iniciativa + `estado/` |
 | | `A2`–`A7` | **`proceso:AUD`**, en items ENLAZADOS, **uno por conclusión** | **DERIVADO por item** del encargo (`b.16`): la capacidad responsable de esa conclusión — `PRD`, `ARQ`, `DOM`, `DIS`, `SEG` y `ENT` en las ocho de `A6`. **NUNCA a mano** | `INV` vía 2, única obligatoria, ejecuta y no responde de la conclusión · `DOM` `C-DOM` · `SEG` `C-SEG` · `DIS` `C-DIS` · `PRD` «produce una decisión de producto» · `APR` `C-APR`, vía 3 | encuadre `ENC` (previo a la ruta) · autoridad Owner en `A3` | acceso de lectura a las fuentes | inventario, baseline, producto reconstruido y trabajo vivo | `A3` baseline aprobado por el Owner | capas por item, con procedencia |
 | | `A8` | `proceso:DEU` | **`ARQ`** (vía 1) | `CON` vía 2 (`cambio-construido`) · `VER` vía 2 · `DOM:condiciones` `SEG:condiciones` `ENT` `USO` `APR` vía 3 | `PLT` MATERIALIZA (`C7:82`) · **`CON` con custodia hace rama, commit, push y PR** (`C7:83`–`C7:86`) · `SEG` puede bloquear el push · `ENT` merge y convergencia (`C7:88`–`C7:89`) · autoridad Owner, POR FUENTE | autorización de retirada | copias organizativas y verdades paralelas retiradas | `A8` autorizado por el Owner | source changes por fuente |
 | | `A9`–`A10` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · **`SEG` sin vía si hay superficie: `PN-13`**, y entretanto item `AUD` enlazado con `SEG` de propietaria derivada | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner | limpieza cerrada | nivel Integrada | `A10` = `O12` | celdas de certificación |
-| **M · migración** | `M0`–`M5` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3 | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner | existe una instalación de una versión anterior | estado migrado, verificado y certificado | `M3` equivalencia · `M5` Integrada | `estado/` migrado + evento `migracion` |
+| **M · migración** | **`FASE 0`** · CERTIFICACIÓN ESTRUCTURAL | `proceso:SIS` | **`SIS`** (vía 1), **productor y propietario de la declaración** (`O17` vía `D107`) | `VER` vía 2, produce el DOSIER y **no se apropia de la decisión** · `SEG` vía 3 cuando hay superficie, y **conserva su bloqueo** | ejecutor `PLT` cuando el contrato vigente le atribuya la maquinaria técnica · autoridad `SIS`, con el veto de `SEG` · **el propietario de `M` no puede sustituir a `SIS`, y DEBE exigirla** | el disparador de `M`, **con CERO mutaciones canónicas hechas**, y el SUJETO de los seis identificadores de §9.6 resuelto | **la declaración Estructural de ESTA ejecución**, con su sujeto, su evidencia y su huella. Una por ejecución, y ninguna heredada | **`gate:sistema-conforme` (§9.6)** — el MISMO contrato para los cuatro. Si falla, **BLOQUEA antes de mutar estado** | celda `aspecto:certificacion/estructural` del sujeto, con su vigencia y su condición de invalidación |
+| | `M0`–`M5` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3 | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner | existe una instalación de una versión anterior | estado migrado, verificado y certificado | `M3` equivalencia · `M5` Integrada | `estado/` migrado + evento `migracion` |
 | | `M6`–`M7` | `proceso:DEU` | **`ARQ`** (vía 1) — su `plan-tecnico` es ENTRADA de `M5` | `CON` vía 2 (`cambio-construido`) · `VER` vía 2, y verifica `M7` · `DOM:condiciones` `SEG:condiciones` `ENT` `USO` `APR` vía 3 | `PLT` MATERIALIZA (`C7:82`) · **`CON` con custodia hace rama, commit, push y PR** (`C7:83`–`C7:86`) · `SEG` puede bloquear el push · `ENT` merge y convergencia (`C7:88`–`C7:89`) · autoridad Owner, POR FUENTE | `M5` certificado y autorización POR FUENTE | heredado retirado y verificado | `M6` autorizado · `M7` verificado | source changes + `INTEGRACIÓN PARCIAL` |
-| **U · actualización** | `U0`–`U4` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3 | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner en `U3` | hay una versión nueva de ADS | compatibilidad decidida y migración aplicada | `U3` punto de no retorno | instantánea de `U3` + progreso por pasos |
+| **U · actualización** | **`FASE 0`** · CERTIFICACIÓN ESTRUCTURAL | `proceso:SIS` | **`SIS`** (vía 1), **productor y propietario de la declaración** (`O17` vía `D107`) | `VER` vía 2, produce el DOSIER y **no se apropia de la decisión** · `SEG` vía 3 cuando hay superficie, y **conserva su bloqueo** | ejecutor `PLT` cuando el contrato vigente le atribuya la maquinaria técnica · autoridad `SIS`, con el veto de `SEG` · **el propietario de `U` no puede sustituir a `SIS`, y DEBE exigirla** | el disparador de `U`, **con CERO mutaciones canónicas hechas**, y el SUJETO de los seis identificadores de §9.6 resuelto | **la declaración Estructural de ESTA ejecución**, con su sujeto, su evidencia y su huella. Una por ejecución, y ninguna heredada | **`gate:sistema-conforme` (§9.6)** — el MISMO contrato para los cuatro. Si falla, **BLOQUEA antes de mutar estado** | celda `aspecto:certificacion/estructural` del sujeto, con su vigencia y su condición de invalidación |
+| | `U0`–`U4` | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 · `ENT` vía 3 | ejecutor `PLT` MATERIALIZA (`C7:82`) · autoridad Owner en `U3` | hay una versión nueva de ADS | compatibilidad decidida y migración aplicada | `U3` punto de no retorno | instantánea de `U3` + progreso por pasos |
 | | **`U5a`** | `proceso:SIS` | **`SIS`** (vía 1) | `CON` `VER` vía 2 | ejecutor el runtime del control repo | migración aplicada | proyecciones del control repo recompiladas | ninguno propio: cae en `U6` | huella de proyección (§6.3) |
 | | **`U5b`** | `proceso:DEP` | **`PLT`** (vía 1) | **`SEG` vía 2** (`condiciones-de-seguridad`, ANTES de construir; `G28` la hace irretirable) · **`CON` vía 2** (`cambio-construido`) · `VER` vía 2 · `DOM:condiciones` `ARQ` `ENT` vía 3 | `PLT` MATERIALIZA (`C7:82`) y participa por **vía 1** · **`CON` con custodia hace rama, commit, push y PR** (`C7:83`–`C7:86`) · `SEG` puede bloquear el push · `ENT` merge y convergencia (`C7:88`–`C7:89`) · autoridad Owner si hay retirada | `U5a` cerrado | punteros propagados a cada fuente | gate por fuente, con Integration Set si hay más de una | `INTEGRACIÓN PARCIAL` por fuente |
 | | **`U6`** | `proceso:SIS` | **`SIS`** (vía 1) | `VER` vía 2 | autoridad Owner si la revalidación baja el nivel | `U5b` convergido | ADS actualizado y recertificado | **revalidación del nivel VIGENTE**, no `O12`: una actualización no arranca programación, y `O12` gobierna ese arranque. Bajar de nivel es un fallo, no un resultado | celdas de certificación |
@@ -8783,10 +9520,15 @@ ENSAYO                control repo nace definitivo. Por eso el paso 8 exige la B
 NADA ESTÁ CONSTRUIDO      ni una línea de kernel, runtime, tooling, esquema, adaptador,
                           plantilla, pack ni validador. F4 no lo autoriza
 NADA ESTÁ PROBADO         los doce escenarios de §14, las CUARENTA Y SEIS filas de la tabla
-                          adversarial de §2.6.7, los ONCE escenarios negativos de §11.5 y
-                          las OCHO comprobaciones `X-A`–`X-H` de §2.9. **Las nueve ventanas
-                          de reconciliación NO se cuentan: `D64` las retiró**, y §2.6.9 lo
-                          dice — contarlas era inflar el inventario con algo inexistente
+                          adversarial de §2.6.7, los ONCE escenarios negativos de §11.5, las
+                          OCHO comprobaciones `X-A`–`X-H` de §2.9 y **las NUEVE
+                          `X-S1`–`X-S9` de la FASE 0 de §9.6**, que esta tanda añade con la
+                          propagación de `O17` (`D107`). **Las nueve ventanas de
+                          reconciliación NO se cuentan: `D64` las retiró**, y §2.6.9 lo
+                          dice — contarlas era inflar el inventario con algo inexistente.
+                          **Cada familia lleva su cifra en SU sede y aquí se remite**:
+                          §2.6.7 sigue en cuarenta y seis y no se toca, §2.9 en ocho, y §9.6
+                          es la sede de la familia `X-S`
                           están ESCRITOS. Ninguno se ha ejecutado. Escribir el contrato de
                           una prueba no es la prueba
 LA PRIMERA ADOPCIÓN       la columna de uso real está vacía desde F0, y esta fase no la
@@ -8797,15 +9539,22 @@ REAL SIGUE PENDIENTE      llena. `O15` fija que esa adopción —PesquerApp— s
 NINGÚN ADAPTADOR EXISTE   y por tanto ninguno está certificado
 X1 Y P-05 SIGUEN          ninguna decisión de aquí cruza la línea del blueprint
 DEFERIDAS
-CATORCE PRESIONES         §16, tras DOS devoluciones independientes, la TERCERA REVISIÓN, el
-NORMATIVAS VIGENTES       GATE FINAL, el GATE DE CIERRE, el GATE DEFINITIVO, el GATE DE
-                          COBERTURA y el GATE DE CIERRE CON MANIFIESTOS: `PN-4` retirada,
-                          `PN-5` fusionada en `PN-3`, y `PN-6` a `PN-16` nuevas.
+LAS PRESIONES             **§16, y su total NO se copia aquí: se DERIVA allí de las cabeceras
+NORMATIVAS VIGENTES       `## \`PN-`, menos las marcadas RETIRADA o FUSIONADA, y §16 es la
+                          ÚNICA sede que lo publica.** Tras DOS devoluciones independientes,
+                          la TERCERA REVISIÓN, el GATE FINAL, el GATE DE CIERRE, el GATE
+                          DEFINITIVO, el GATE DE COBERTURA, el GATE DE CIERRE CON MANIFIESTOS
+                          y el GATE INDEPENDIENTE DE CERTIFICACIÓN: `PN-4` retirada, `PN-5`
+                          fusionada en `PN-3`, y `PN-6` a `PN-18` nuevas.
                           `PN-1` bloquea todo el estado durable, y F5 es su puerta.
-                          **`PN-16` es la única que esta tanda añade**, y sale de `P-07`: la
-                          grafía canónica de `<CAP>:revisión` vive en (b), que es material
-                          APROBADO, y F4 no puede elegirla. El recuento se DERIVA de las
-                          cabeceras de §16, no se escribe a mano
+                          **Las DOS que esta tanda añade son `PN-17` y `PN-18`**, y salen de
+                          `P-07` y `P-08` del documento 22: `reconciliacion_pendiente` del
+                          canal de órdenes sin productor —con `T22` no satisfacible— y la
+                          grafía de `VER:decisión`, que ya está construida con DOS variantes
+                          dentro del kernel. Las dos viven en material APROBADO, y F4 no
+                          puede elegir por el Owner en ninguna de las dos.
+                          **Corregido por `P-04`**: este bloque llevaba el titular CATORCE y
+                          el rango `PN-6`–`PN-16` escritos a mano
 F4 NO ESTÁ CERTIFICADA    la escribe quien la propone. TRES críticas independientes, una
                           devolución técnica, un GATE FINAL con tres agentes y su
                           COMPLEMENTO DE COBERTURA la han devuelto. La TERCERA REVISIÓN
@@ -9102,6 +9851,19 @@ SALIDA ESPERADA      **DOS salidas, y NO se suman en un total** (`D104`):
                            participación de `obligatorias` se exige SIEMPRE, también tipada;
                            una de `condicionales`, sólo con su condición activa
 
+                           **REPARTO POR PROCEDENCIA, PUBLICADO — y `G-15` lo contrasta
+                           procedencia a procedencia** (`Q-28`): **propietaria · 0 pares ·
+                           `obligatorias` · 1 par —`(DEP, SEG)`— · `condicionales` · 8
+                           pares**. **Se conservaba en la derivación y no se publicaba en
+                           ninguna sede**, con lo que era el único de los tres desgloses que
+                           **no se contrastaba contra nada**: `G-15` publicaba el reparto por
+                           VÍA y nadie el de procedencia. Es exactamente el defecto que
+                           `M-04` describe —una magnitud derivada sin proyección única contra
+                           la que compararse—, y por eso esta sede la publica **una sola vez**,
+                           aquí, como las otras dos. **La cifra se DERIVA; si el árbol se
+                           mueve, se mueve con él, y `G-15` falla si esta proyección no es la
+                           suya**
+
                            **ANCLA DERIVADA HOY, proceso a proceso** —y `G-15` la contrasta
                            contra el catálogo, que es lo que `Q-11` pidió—:
                            `AUD → INV` · `DEF → VER` · `DEP → VER` · `DEU → VER` ·
@@ -9158,11 +9920,15 @@ COMPROBACIÓN         los ejecuta en cada corrida**: propietaria · obligatoria 
                      campo · obligatoria tipada de vía 4 · `AUD` con sus cinco casos · `DIR`
                      con propietario vigilado y con propietario ajeno · negativo de `DEP` ·
                      conjunto vigilado derivado de las fichas.
-                     **CENSO DE FIXTURES, derivado de los que se ejecutan y no escrito a
-                     mano: 17 fixtures** (`Q-12`). La sede decía «cinco» junto a una
-                     enumeración de seis grupos, con tres procesos dinámicos en el árbol: la
-                     cifra no describía nada de lo que la batería corre. Ahora `G-15` cuenta
-                     los fixtures que ejecuta y **falla si esta cifra no es la suya**
+                     **CENSO DE FIXTURES, contrastado contra los que se ejecutan y no
+                     escrito a mano: 20 fixtures** (`Q-12`, y `Q-10` lo subió a veinte al
+                     retirar el fixture tautológico y poner tres reales en su lugar). La sede
+                     decía «cinco» junto a una enumeración de seis grupos, con tres procesos
+                     dinámicos en el árbol: la cifra no describía nada de lo que la batería
+                     corre. Ahora `G-15` **cuenta los fixtures que ejecuta y falla si esta
+                     cifra no es la suya**, nombrando sede, responsable y remedio. Esta cifra
+                     vive aquí porque un documento no puede contarlos, pero **no puede
+                     caducar en silencio**: la única forma de que envejezca es en ROJO
 
 DÓNDE, EXACTAMENTE   `kernel/operativo/recorrido/01-PROCESOS.md`. Y en
                      `kernel/operativo/circuitos/`, la instancia de handoff que materializa
@@ -9387,7 +10153,7 @@ cerrar esa distancia. No la cierra.
 
 ---
 
-## `C-L.5` · La condición de COBERTURA del próximo gate — abierta, y no la cierra esta tanda
+## `C-L.5` · La condición de COBERTURA del próximo gate — **CERTIFICADA por el documento 21**, y vigente para todo gate posterior
 
 > **Registrada por el GATE DEFINITIVO INDEPENDIENTE (`C-L.5`, una de las cinco que bloquean
 > el paso a F5).** El gate definitivo dio `INSUFICIENTE PARA F5` por **seis razones
@@ -9397,9 +10163,24 @@ cerrar esa distancia. No la cierra.
 > §12 reforzó `K-06`, y su cabecera L3–L6 le obligó a **corregir la base externa de `K-03` y
 > a retirar su propio agravamiento de `K-11`**. Las líneas que nadie abrió no eran relleno.
 
-**Esta tanda NO cierra `C-L.5`, y no puede cerrarla.** Aplicar las correcciones no es leer lo
-que no se leyó, y quien las aplica no puede certificar su propia cobertura. Queda escrita aquí
-como **condición del siguiente gate**, con sus requisitos exactos:
+> **ESTADO ÚNICO, y está abajo. Corregido por `P-22` ≡ `Q-37` del documento 22.** Esta
+> sección llevaba **dos estados dentro de sí misma**: su cabecera y su primer párrafo decían
+> «**abierta, y no la cierra esta tanda**», y sesenta líneas después el cierre declaraba
+> «**CERTIFICADA**». **El estado vigente de `C-L.5` es UNO y es el del cierre**, y la cabecera
+> lo dice ahora — que es además lo que se proyecta al índice. Lo anterior queda marcado como
+> histórico y **no se borra**, que es lo que `X47` exige.
+>
+> **`[HISTÓRICO]` — el estado que esta sección declaraba mientras se escribía, y que un gate
+> POSTERIOR superó:** *«La condición de COBERTURA del próximo gate — abierta, y no la cierra
+> esta tanda. **Esta tanda NO cierra `C-L.5`, y no puede cerrarla.** Aplicar las correcciones
+> no es leer lo que no se leyó, y quien las aplica no puede certificar su propia cobertura.»*
+> **Era verdad SOBRE LA TANDA** —la tanda no la cerró—, y dejó de describir el estado de la
+> condición en cuanto el documento 21 la certificó. **Certificarla no la deroga**: el
+> requisito de abajo **sigue vigente para todo gate posterior**, y eso también lo dice el
+> cierre.
+
+Queda escrita aquí como **condición permanente de todo gate siguiente**, con sus requisitos
+exactos:
 
 ```text
 QUIÉN                revisores NUEVOS con contexto limpio. **El autor de esa lectura tiene
