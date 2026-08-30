@@ -33,6 +33,7 @@ la que falta aparece nombrada**.
 ```text
 comprobar-correccion-gate-de-cierre.py   la batería
 derivar-universo-obligatorio.py          el derivador del universo obligatorio de un gate
+emitir-sobre-de-ancla.py                 el emisor del SOBRE DE ANCLA de un gate (`O18`)
 README.md                                esto
 CORRIGENDUM-DICTAMENES-INMUTABLES.md     correcciones sobre dictámenes que no se editan
 manifiestos/                             los manifiestos de asignación de cada gate
@@ -43,10 +44,39 @@ ficheros del corpus contra los publicados y **sólo admite una ampliación de
 `verificacion/` si este README la enumera**. Las rutas que cuentan para esa comparación son
 `docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py`,
 `docs/evolucion/verificacion/derivar-universo-obligatorio.py`,
+`docs/evolucion/verificacion/emitir-sobre-de-ancla.py`,
 `docs/evolucion/verificacion/README.md` y
 `docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md`.
 Los manifiestos y todo lo que cuelgue de `manifiestos/` son **inmutables** y no se amplían
 por esta vía: los fija `G-22`.
+
+> **`emitir-sobre-de-ancla.py` y por qué su salida NO vive aquí.** Lo exige `O18`, que adoptó
+> la alternativa (b) —**un ancla documental EXTERNA al árbol auditado**— para poder cerrar
+> `F4c` sin el bloqueo circular de esperar al verificador externo de `F6`. El emisor deriva
+> los campos del sobre de Git y del manifiesto, y **falla cerrado con código 2** si una
+> referencia no resuelve o si el manifiesto no está en el commit que declara.
+>
+> **Su salida no se publica como fichero de este directorio, y es deliberado**: el
+> coordinador la copia dentro del ENCARGO de cada revisor, por un canal que el repositorio
+> no reescribe. **Un sobre que el revisor leyera del árbol dejaría de ser externo y no
+> valdría para nada** — sería la misma circularidad que `§11.4` del documento 11 describe,
+> movida de sitio. Por eso el adjudicador tiene prohibido aceptar un sobre reconstruido a
+> posteriori desde el árbol.
+>
+> **Y lo que el sobre NO garantiza va escrito DENTRO del propio sobre**, no en una nota
+> aparte: compromiso del canal del Owner · compromiso simultáneo del repositorio y del
+> coordinador · robo de credenciales · reescritura autorizada de ramas remotas ·
+> manipulación del ejecutor externo · falsificación de identidad. Esos riesgos son del
+> **verificador externo que `O18` contrata para `F6`**, y que es condición previa a la
+> adopción permanente de PesquerApp.
+
+> **Lo que esta batería NO puede cerrar, y `O18` lo resuelve por otra vía.** `M-04` —«se
+> puede construir un árbol defectuoso que pase en verde»— **no es satisfacible desde dentro
+> del árbol**, y el corpus lo había declarado en `§11.4` del documento 11 antes de que
+> ningún gate lo dijera: *«si el runner miente, nada dentro del repositorio lo detecta».*
+> **Ninguna comprobación nueva de este fichero cierra esa clase**, y añadir una más «sólo
+> movería la circularidad de sitio». Por eso esta tanda **NO escribe ninguna protección
+> interna nueva**: la respuesta de `O18` es el cambio de raíz de confianza, no `G-39`.
 
 ## Qué comprueba cada una
 
