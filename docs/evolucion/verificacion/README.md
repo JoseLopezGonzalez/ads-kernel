@@ -74,6 +74,7 @@ Ningún fichero de `verificacion/` difiere de `HEAD`.
 | ruta | por qué difiere de `HEAD` |
 |---|---|
 
+
 > **`emitir-sobre-de-ancla.py` y por qué su salida NO vive aquí.** Lo exige `O18`, que adoptó
 > la alternativa (b) —**un ancla documental EXTERNA al árbol auditado**— para poder cerrar
 > `F4c` sin el bloqueo circular de esperar al verificador externo de `F6`.

@@ -372,6 +372,8 @@ ENCARGO = [
      "C-L.5 · el addendum que reasignó 21 fuentes mal agotadas, inmutable"),
     ("docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md",
      "las entradas que acotan dictámenes que no se editan"),
+    ("docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-3-20260830.md",
+     "C-L.5 · el manifiesto previo del gate del documento 24, inmutable"),
     ("docs/evolucion/verificacion/emitir-sobre-de-ancla.py",
      "O18 · el emisor del SOBRE DE ANCLA, que este gate estrena y debe refutar"),
     ("docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-2-20260830.md",
