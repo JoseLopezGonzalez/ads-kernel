@@ -47,8 +47,14 @@
 >
 > **`PN-16` es la única presión que esta tanda añade**, y sale de `P-07`: la grafía canónica
 > de `<CAP>:revisión` vive en (b) L836, que es **material APROBADO**, y F4 no puede elegirla.
-> Con ella, las presiones vigentes derivadas de §16 pasan a **CATORCE**. `PN-1`–`PN-15`
-> conservan su texto.
+> Con ella, las presiones vigentes derivadas de §16 pasan a **CATORCE**, y `PN-16` es la
+> **única** presión nueva. `PN-1`–`PN-14` conservan su texto. **De `PN-15` cambió UNA sola
+> cosa, y hay que decirlo con precisión**: su párrafo de evidencia, que era falso —declaraba
+> «cero apariciones» de `G20`/`G21`/`G23` en el documento 11, donde las hay— y que `P-06`
+> obligó a acotar al material **APROBADO**, que es el único que puede derogarlas: **(a) una
+> aparición pertinente, (b) cero, `E2` cero**. Todos los demás campos de `PN-15` —lo que
+> presiona, su texto vigente, la materia mínima, el alcance, lo que bloquea, la condición de
+> reversión, el propietario, la prueba posterior y el origen— **permanecen intactos**.
 >
 > **NO se ha añadido `D107` y no se ha reescrito ninguna decisión**: el gate declaró que
 > ninguno de los 24 exigía decidir arquitectura, y **ninguno lo exigió**. `D1`–`D106` y
