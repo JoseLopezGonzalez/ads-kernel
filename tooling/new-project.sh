@@ -92,7 +92,7 @@ fi
 #    fuera, los repositorios técnicos quedarían anidados dentro de otro repositorio
 #    y su historia dejaría de ser independiente.
 # ---------------------------------------------------------------------------
-mkdir -p "$ADS"/{kernel,packs,docs/agentic,docs/rediseno,tooling}
+mkdir -p "$ADS"/{kernel,packs,docs/agentic,docs/rediseno,docs/owner,tooling}
 
 # La ESPECIFICACIÓN NORMATIVA viaja con el kernel: el corpus operativo la enlaza, y sin
 # ella un proyecto instalado tiene enlaces rotos y no es conforme.
@@ -103,6 +103,11 @@ for n in a-CAPACIDADES-APROBADA.md b-RECORRIDO-APROBADA.md a-ENMIENDA-E1-ENC.md 
          a-ENMIENDA-E2-MULTIREPO.md DECISIONES-Y-CONTRADICCIONES.md; do
   cp "$SRC/docs/rediseno/$n" "$ADS/docs/rediseno/"
 done
+# La SEDE CANÓNICA DE RESOLUCIONES DEL OWNER viaja por la misma razón, y desde `O19` es
+# quien manda: el registro de decisiones pasó a ser una PROYECCIÓN DERIVADA que ENLAZA a
+# esta sede. Sin ella, el proyecto instalado tiene el enlace roto y no es conforme —lo
+# detectó `T148` en cuanto la sede existió—. Es especificación normativa, no historia.
+cp "$SRC/docs/owner/ADS-OWNER-RESOLUCIONES.md" "$ADS/docs/owner/"
 cp "$SRC/kernel/"*.md "$SRC/kernel/VERSION" "$ADS/kernel/"
 cp -r "$SRC/kernel/templates" "$ADS/kernel/"
 cp -r "$SRC/kernel/operativo" "$ADS/kernel/"
