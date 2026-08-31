@@ -187,11 +187,22 @@ POR QUÉ           una cifra escrita junto a su enumeración **caduca en silenci
 
 QUÉ SÍ PUEDE      · un cardinal cuya enumeración NO está al lado y que se publica **con el
 LLEVAR CARDINAL     comando que lo deriva**, en la sede única que lo publica —así está §16—
-                  · un cardinal que **una comprobación de la batería contrasta** contra la
-                    enumeración y contra sus otras sedes, y que da ROJO si alguna regresa —así
-                    están las extensiones de ficha de §5.2, §16 y §17, por `G-10`—. Lo que la
-                    regla persigue no es el número: es el número **que nadie está obligado a
-                    volver a mirar**
+                  · un cardinal que **una comprobación de la batería DERIVA** de la
+                    enumeración y contrasta contra sus otras sedes, dando ROJO si alguna
+                    regresa —así están las extensiones de ficha de §5.2, §16 y §17, por
+                    `G-10`—. Lo que la regla persigue no es el número: es el número **que
+                    nadie está obligado a volver a mirar**
+                    **PRECISADO por `DD-12` del QUINTO GATE, y la excepción estuvo mal
+                    fundada hasta hoy.** Esta viñeta decía «una comprobación que lo
+                    CONTRASTA», y `G-10` **no derivaba nada**: comparaba tres substrings
+                    literales y seis nombres escritos a mano dentro de la propia batería.
+                    Una SÉPTIMA extensión de ficha dejaba «Son SEIS» caducado **con `G-10`
+                    en verde** — el modo de fallo que esta misma regla existe para impedir,
+                    amparado por su única excepción. Hoy `G-10` **deriva el censo de la
+                    enumeración `capacidades/<CAP>/` de §5.2** y de ahí saca el cardinal en
+                    letra, el cardinal en cifra y los nombres; el control positivo está
+                    ejecutado, y una séptima ficha pone en rojo las tres sedes a la vez.
+                    **La excepción sólo vale mientras el guardián derive**
                   · un cardinal **HISTÓRICO** dentro de una nota de corrección: es registro de
                     lo que se vio entonces, va marcado, y **no se reescribe**
                   · un cardinal que es parte del CONTENIDO normado y no un recuento de la
@@ -393,15 +404,41 @@ Requisitos, con su fuente. No son preferencias:
 > usa con dos significados distintos en el corpus. F6 la construye una vez.
 
 **LA FAMILIA `X`, QUE EL CENSO DE `D83` NO ALCANZÓ — declarada aquí, y no tapada.** `D83`
-censó `R<n>` y `N<n>`. **El prefijo `X` lo usan hoy CUATRO poblaciones de este documento**, y
-se nombran para que nadie tenga que descubrirlo:
+censó `R<n>` y `N<n>`. **El prefijo `X` lo usan VARIAS poblaciones de este documento, y
+ni su número ni sus rangos se escriben aquí: se DERIVAN.** Se nombran para que nadie
+tenga que descubrirlas, y **cada renglón remite a su sede, que es quien la fija**:
 
 ```text
-X1–X8       las INCÓGNITAS de §0. Sin relleno de ceros
-X01–X62     las filas de la TABLA ADVERSARIAL de §2.6.7. Con relleno de DOS dígitos
-X-A–X-H     las filas adversariales de §2.9. Con guion y letra
-X-S1–X-S9   las filas adversariales de la FASE 0, §9.6. Con guion, letra y número
+X<n>        las INCÓGNITAS de §0. Sin relleno de ceros. Sede: §0
+X<nn>       las filas de la TABLA ADVERSARIAL de §2.6.7. Con relleno de DOS dígitos.
+            Sede: §2.6.7
+X-<L>       las filas adversariales de §2.9. Con guion y letra. Sede: §2.9
+X-S<n>      las filas adversariales de la FASE 0. Con guion, letra y número. Sede: §9.6
+X-O<n>      las filas adversariales del SOBRE DE ANCLA. Con guion, letra y número.
+            Sede: §11.6
 ```
+
+> **CORREGIDO por `DD-10` y `DD-13` del QUINTO GATE, y las dos cosas que fallaban aquí
+> eran la MISMA.** Este bloque decía «**CUATRO** poblaciones» —hoy son **cinco**: falta
+> `X-O1`–`X-O13`, que §11.6 introdujo y que **este mismo documento reconoce en §19**— y
+> escribía «`X-S1`–`X-S9`» cuando §9.6 lleva **once**. Y lo más elocuente: §19 **ya había
+> dictaminado** que ese cardinal «deja de escribirse», lo retiró **allí** y lo dejó
+> intacto **aquí**, que es la sede definitoria y la que gobierna la prueba de `D83`
+> contratada para `F6`. Un `F6` que construyera la prueba desde este bloque habría
+> comparado contra una población que no existe.
+>
+> **El remedio no es corregir los rangos: es dejar de escribirlos.** Un rango escrito
+> caduca cada vez que alguien añade una fila, y quien la añade no pasa por la frase que
+> la cuenta —regla de titulares de §0—. **Los cardinales y los rangos se derivan del
+> árbol**, y quien necesite la cifra la obtiene:
+>
+> ```bash
+> # las poblaciones vivas del prefijo `X`, y el cardinal de cada una
+> grep -oE 'X-?[SO]?[0-9]+|X-[A-H]\b' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md |
+>   sed -E 's/[0-9]+/<n>/' | sort | uniq -c
+> # el censo exacto de una sede, p. ej. la FASE 0 de §9.6
+> grep -cE '^\| `X-S[0-9]+`' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+> ```
 
 **El invariante de `D83` NO está literalmente violado, y eso se dice antes que nada:** `X1` y
 `X01` son **cadenas distintas**, el relleno se aplica de forma consistente y no hay ni una
@@ -411,7 +448,9 @@ poblaciones se separan **sólo por un cero de relleno**, y la prueba que `D83` c
 relleno**, cosa que su enunciado no fija. **La condición, escrita para que la prueba no dependa
 de una interpretación:** *la comparación es entre CADENAS LITERALES, sin normalizar ceros a la
 izquierda ni separadores; y ninguna población nueva de prefijo `X` puede introducirse sin
-añadir su renglón a la lista de arriba.* Renombrar cualquiera de las cuatro **no se hace aquí**:
+añadir su renglón a la lista de arriba.* **Y la lista de arriba nombra FORMAS, no rangos:
+añadir una población es añadir un renglón, no reescribir un cardinal** (`DD-10`).
+Renombrar cualquiera de ellas **no se hace aquí**:
 `X01`–`X62` y `X-A`–`X-H` son contratos de prueba ya citados por número desde otras sedes, y
 moverlos rompería citas vivas por un riesgo que hoy no se ha materializado.
 
@@ -871,6 +910,10 @@ NINGUNA OTRA              pasar por `confirmada` · de `preparada` a `abandonada
                           abandonar: `W3` manda completar.
                           **Ninguna fase salvo un TERMINAL retira el marcador**, y por eso
                           ya no existe ningún estado que lo retenga para siempre.
+                          **Que un terminal lo retire NO significa que lo retire AL
+                          EMITIRSE**: `abandonada` lo conserva hasta que su `deriva` es
+                          durable (`D105`). El instante lo fija §2.6.9, paso 6 del
+                          bloque `E`, y no esta línea.
 ```
 
 **Qué se retira, y por qué se dice en vez de borrarse.**
@@ -1196,9 +1239,21 @@ SIN CONFLICTO   #`conflicto` = 0
 CON CONFLICTO   #`conflicto` ≥ 1 — y NO es otra ruta: es la misma, con una observación de
                 divergencia por medio
 CERRADA         existe un TERMINAL: `derivada` o `abandonada`, y nunca los dos
-COMPLETADA      el terminal es `derivada`   · marcador retirado · nada bloqueado
-ABANDONADA      el terminal es `abandonada` · marcador retirado · queda un `deriva`
+COMPLETADA      el terminal es `derivada`   · marcador retirado al regenerar los
+                derivados · nada bloqueado
+ABANDONADA      el terminal es `abandonada` · **el marcador SOBREVIVE al terminal**, y
+                sólo se retira cuando el `deriva` es durable (`D105`) · queda un `deriva`
 ABIERTA         no hay terminal · el marcador sigue vivo
+
+                **EL MARCADOR NO DISCRIMINA `ABIERTA` DE `ABANDONADA`, y por eso NO se
+                usa aquí para separarlas.** Lo que discrimina es **el TERMINAL**:
+                `ABIERTA` es la AUSENCIA de terminal, no la presencia de marcador. En la
+                ventana `W17` —`abandonada` durable, `deriva` aún no durable— la
+                transacción es ABANDONADA **con el marcador puesto**, y un discriminador
+                que mirase el marcador daría la respuesta contraria.
+                **Corregido por `DD-09` del QUINTO GATE**: estas tres líneas conservaban
+                la forma previa a `D105` **quince líneas por encima de la nota que la
+                corrige**, y son un discriminador de arranque, no una glosa
 ```
 
 **`derivada` y `abandonada` son MUTUAMENTE EXCLUYENTES.** Ninguna transacción tiene las dos, y
@@ -1212,7 +1267,7 @@ ninguna transacción cerrada tiene cero.
 | `abandonada` | **0** | **0** | **exactamente 1** |
 | `derivada` | **exactamente 1** | **exactamente 1** | **0** |
 | total de eventos | **3** | **3 + k** | **2 + k** |
-| marcador | retirado | retirado | **retirado** |
+| marcador | retirado al regenerar los derivados | retirado al regenerar los derivados | **SOBREVIVE al terminal**; se retira cuando el `deriva` es durable (`D105`) |
 | bloqueo que queda | ninguno | ninguno | un `deriva` sobre los items nombrados |
 
 ```text
@@ -1257,8 +1312,9 @@ FRASE                  duplica NUNCA, y su presencia la fija cómo cerró la tra
 
 ### 2.6.5 · Todas las ventanas de caída
 
-Se enumeran las **DIECIOCHO**, y el recuento **se deriva de las filas de la tabla, no se
-escribe**: las nueve `RC-1`–`RC-9` de la reconciliación se retiran con la ruta larga (`D64`),
+Se enumeran **TODAS**, y el recuento **se deriva de las filas de la tabla, no se
+escribe** —quien lo necesite lo obtiene con
+`grep -coE '^\| \*{0,2}`?W[0-9]+[ab]?' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md`—: las nueve `RC-1`–`RC-9` de la reconciliación se retiran con la ruta larga (`D64`),
 porque el mecanismo que recuperaban ya no existe. Una ventana que no esté en esta tabla es un
 defecto de esa tabla — y las devoluciones posteriores han ejercido esa invitación tres veces:
 la segunda añadió cinco, la corrección técnica posterior partió `W12` en dos, y el **gate de
@@ -1635,6 +1691,7 @@ impuso al arnés de negativos.
 | `X60` | emitir un `deriva`, borrar a mano `estado/deriva/<ID>.abierta` y arrancar | el arranque lo **reconstruye desde el diario** por `bloqueado_por_deriva(item)` (§2.9), con las mismas rutas e items. Y un lector que aplique §2.6.8 **no recorre `estado/eventos/`**: consulta los dos marcadores. El marcador es un acelerador, igual que el de transacción |
 | `X61` | abandonar con cuarentena autorizada, y comprobar su ciclo | `.ads/run/quarantine/<TX>/` existe **antes** de restaurar y su contenido **casa por hash** con lo registrado en el `conflicto`; **sigue existiendo** tras `abandonada` y tras la verificación; y **sólo deja de existir después del commit del incidente**. Ningún commit la contiene. Si `SEG` bloquea la publicación y el Owner acepta la pérdida, el incidente conserva **hash, clasificación, autoridad, motivo y alcance**, y el contenido prohibido **no se publica** |
 | `X62` | **adopción hasta `A7` inclusive sobre tres fuentes reales**: recorrer `A0`–`A7` completo y después ejecutar `git status --porcelain` y `git log` en CADA fuente, **incluida la comprobación de que NO se ha escrito ningún puntero de adaptador** | **ni un solo commit, ni un fichero nuevo, ni una línea modificada de ADS en ninguna de las tres** — el inventario, el baseline y la cobertura inicial de `A0`–`A7` son LECTURA, y el estado que producen vive en el control repo. **El puntero de adaptador NO es excepción**: `A8` es el primer tramo que escribe en las fuentes, y un puntero escrito antes es un fallo, no un preparativo. Cubre además, en la misma corrida, la propagación a tres fuentes con `main` protegida —tres PR, un Integration Set y estado `INTEGRACIÓN PARCIAL`— y el caso de fusionar dos de tres, donde el sistema **lo dice** en vez de declarar la actualización cerrada |
+| `X63` | **validar las tres celdas de cobertura de §5.6 contra el esquema de §3.5**, sin campos libres y sin `responsables` por defecto | las tres se aceptan **con** `evaluacion_de_pruebas` y las tres se RECHAZAN si alguna escribe `responsables` sin ser una DESVIACIÓN con su motivo. **Contratada por `DD-13` del QUINTO GATE**: §5.6 atribuía esta validación a `X52` —una fila existente pero AJENA, que compara censos de pruebas—, y era reincidencia literal de `J-03`. La tesis central de §5.6 estaba sin contrato de prueba |
 
 > **Las excepciones históricas de `X47`, declaradas una a una.** Estos textos conservan
 > deliberadamente enumeraciones sustituidas, y `X47` **no los cuenta como incumplimiento**:
@@ -1659,8 +1716,11 @@ impuso al arnés de negativos.
 > adversariales son MUCHAS, y eliminarlas destruiría la trazabilidad que estos documentos
 > existen para dar. `X47` comprueba la primera y declara las segundas.
 
-> **Cuarenta y seis filas físicas y cuarenta y seis identificadores únicos**, comprobado
-> por conteo sobre el fichero y no por memoria: la tabla empieza en `X01` y **tiene huecos de
+> **Tantas filas físicas como identificadores únicos, y el cardinal NO se escribe aquí: se
+> DERIVA** —`grep -cE '^\| `X[0-9]{2}` \|' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md`—,
+> comprobado por conteo sobre el fichero y no por memoria. **Corregido por `DD-13` del
+> QUINTO GATE**: esta frase escribía «cuarenta y seis», y `X63` la dejó caducada en el acto.
+> La tabla empieza en `X01` y **tiene huecos de
 > numeración** —`X24`, `X29`–`X36` y `X40`–`X46`—, de filas retiradas o renumeradas en las
 > sucesivas correcciones. `X59`, `X60` y `X61` las añadió la tanda del gate de cierre para
 > las tres piezas que `I-01` e `I-02` completaron: la exclusión de Git del segundo marcador,
@@ -1677,10 +1737,13 @@ impuso al arnés de negativos.
 >
 > ```text
 > «dos filas idénticas X28»      NO REPRODUCIDO. `X28` aparece UNA sola vez en el fichero, y
->                                el conteo da **46 filas de datos con 46 ids distintos** —la
->                                cifra vigente, derivada; cuando esta comprobación se hizo el
->                                conjunto tenía 42 y la cifra no se reancló al crecer:
->                                corregido por `J-07`—. Lo que pudo inducir un recuento de
+>                                el conteo da **tantas filas de datos como ids distintos**
+>                                —la cifra NO se escribe aquí: se deriva en la sede de
+>                                §2.6.7. Cuando esta comprobación se hizo el conjunto
+>                                tenía 42 y la cifra no se reancló al crecer: corregido
+>                                por `J-07`, y **vuelto a caducar en 46 hasta que `DD-13`
+>                                retiró el cardinal en vez de reanclarlo por tercera
+>                                vez**—. Lo que pudo inducir un recuento de
 >                                más es la fila SEPARADORA del Markdown, que no es un
 >                                escenario
 > «"Un fichero que no existe"    NO REPRODUCIDO **en §2.6.4**, que es lo que la objeción
@@ -1761,8 +1824,15 @@ herramienta, sea o no el runtime:
    arrancado el runtime lee lo que los marcadores digan, y declara esa condición.
 ```
 
-**Tres cosas cambian para que la regla sea ejecutable sin herramienta**, que es lo que `R1`
-exige:
+**Lo que cambia para que la regla sea ejecutable sin herramienta**, que es lo que `R1`
+exige, **es lo que va enumerado debajo, y el titular NO lo cuenta** (regla de titulares
+de §0):
+
+> **Corregido por `DD-13` del QUINTO GATE.** Decía «**Tres** cosas cambian» y debajo hay
+> **cinco** rótulos: `D78` y `D88` añadieron uno y nadie volvió a la frase que los cuenta,
+> que es exactamente el modo de fallo que §0 describe. **Y el defecto sobrevivió a tres
+> gates porque los barridos fueron sobre cabeceras `#` y éste es una frase en negrita** —la
+> observación de método de `BB1`, que `DD` valora por encima de los hallazgos.
 
 ```text
 EL MARCADOR LLEVA        `estado/tx/<TX-ID>.abierta` deja de estar «sin contenido» y declara
@@ -1788,7 +1858,10 @@ MARCADOR                 sin reparar antes de creerse el estado — y encontrarl
                          E de §2.6.9** —en el mismo acto que el evento— y **lo retira la
                          TRANSACCIÓN CERRADA que lo resuelve**, cuando su `derivada` lo
                          referencia en `resuelve_deriva`, con la misma disciplina con la que
-                         un terminal retira el marcador de transacción.
+                         **una `derivada`** retira el marcador de transacción.
+                         **Precisado por el barrido de clase de `DD-09`**: la analogía decía
+                         «un terminal», y `abandonada` también lo es y NO lo retira al
+                         emitirse. La analogía exacta es con `derivada`
                          **No gana identidad ni autoridad propias, y NUNCA es fuente de
                          verdad**: la verdad es el evento `deriva` del diario. Es
                          RECONSTRUIBLE desde él por `bloqueado_por_deriva(item)`, vive fuera
@@ -1817,8 +1890,10 @@ CONTENIDO CANÓNICO       BLOQUEANTE).** El texto anterior exigía escribir `tx_
                               ningún canónico
 
                          **La detectabilidad NO exige contaminar el contenido canónico.** Se
-                         sostiene sobre las tres piezas de arriba —regla de lectura,
-                         marcador con contenido y diario—, y ninguna toca un solo byte de un
+                         sostiene sobre las piezas que nombra —regla de lectura,
+                         marcador con contenido y diario; `DD-13`: el titular decía «las
+                         tres piezas de arriba» y contaba un conjunto DISTINTO del que
+                         enumera el bloque—, y ninguna toca un solo byte de un
                          fichero canónico. Es `D48`.
 
 `R3` SE CUALIFICA        §2.2 marcaba la opción D con «`R3` atomicidad y recuperación: sí».
@@ -2054,7 +2129,15 @@ E · CERRAR        sólo entonces, y **en este orden, que ahora es EXACTO y DURA
 | **B · el `deriva` referencia unilateralmente al `abandonada`** | **SÍ.** El `abandonada` se calcula y se hace durable primero; el `deriva` nace después y nombra un `id` que ya existe | sí, **recorriendo** el diario en busca del `deriva` que apunta. Es lo que la capa B ya hace para otras reglas | sí: el bloqueo vive en el `deriva` y en su marcador | **ELEGIDA.** Es la mínima: **no añade ningún evento, ningún tipo y ningún campo al `abandonada`** — sólo mueve una referencia de sitio y le da `fsync` |
 | **C · una intención o identidad separada previa** —un tercer evento que reserve el par de ids— | sí | sí | sí | **DESCARTADA.** Crea un evento más en el camino crítico del único desenlace que revierte, y con él una ventana de caída más y una regla de validación más. **Compra lo mismo que B a un coste mayor**, y `D64` ya retiró maquinaria por este motivo exacto |
 
-**Los ocho puntos que quedan definidos**, y ninguno queda a criterio de F6:
+**Lo que queda definido está enumerado debajo, y ninguno de sus puntos queda a criterio de
+F6.** El titular NO los cuenta: regla de titulares de §0.
+
+> **Corregido por el barrido de clase de `DD-13`.** Decía «**Los ocho puntos**» y bajo él
+> hay ocho numerados **más un noveno rótulo a la misma sangría y sin número** —`EL
+> VALIDADOR Y LAS VENTANAS, ALINEADOS`—, que es normativo y no glosa. Lo señaló `BB1` como
+> `BB1-10`. La ironía la escribe el propio bloque: su **punto 1** declara que «el titular
+> NO cuenta ni los pasos ni las operaciones: remite», mientras el titular que lo encabeza
+> sí contaba.
 
 ```text
 1 ORDEN EXACTO        abandonada → fsync(fichero) → fsync(directorio) → deriva →
@@ -2284,8 +2367,9 @@ CÓMO SE CIERRA     una TRANSACCIÓN DE REPARACIÓN, con `tx` nuevo, cuyo `prepa
                    gate definitivo señaló (`J-04`; es `D100`).
                    Al cerrar, el predicado se vuelve falso, **se retira
                    `estado/deriva/<ID>.abierta`** —lo retira la transacción CERRADA que lo
-                   resuelve, en el mismo acto que su `derivada`, igual que un terminal retira
-                   el marcador de transacción— y los items se desbloquean.
+                   resuelve, en el mismo acto que su `derivada`, igual que **una `derivada`**
+                   retira el marcador de transacción (`DD-09`: no «un terminal», porque
+                   `abandonada` no lo retira al emitirse)— y los items se desbloquean.
 
 POR QUÉ ESTO NO    porque el `deriva` tiene una forma explícita y comprobable de terminar, y
 REPRODUCE `B1`     el estado sobre el que trabaja la reparación es la BASE CONSISTENTE, no
@@ -2569,9 +2653,17 @@ revisión.*
 ```text
 NINGÚN ESTADO ALCANZABLE   se comprueba sobre el grafo de cinco fases: `preparada` sale a dos
 QUEDA SIN SALIDA           sitios; `conflicto` sale a dos; `confirmada` sale a uno;
-                           `derivada` y `abandonada` son terminales POR DEFINICIÓN y retiran
-                           el marcador. **No hay ningún nodo no terminal sin sucesor
+                           `derivada` y `abandonada` son terminales POR DEFINICIÓN, y los
+                           dos acaban retirando el marcador **pero NO en el mismo
+                           instante**: `derivada` al regenerar sus derivados;
+                           `abandonada` **NO al emitirse**, y su marcador SOBREVIVE
+                           hasta que el `deriva` es durable (`D105`, paso 6 del bloque
+                           `E`). **No hay ningún nodo no terminal sin sucesor
                            admisible.**
+                           **Corregido por `DD-09` del QUINTO GATE**: esta sede es la
+                           del ORDEN y conservaba la forma previa a `D105`, mientras su
+                           gemela `X58` —contrato de prueba de `F6`— sí había sido
+                           corregida. La tanda arregló el contrato y no volvió a la norma
                            La secuencia `4b` NO es una excepción del GRAFO: sus salidas son
                            las mismas y lo que falta es una CONDICIÓN MATERIAL —preservar o
                            restaurar—, no una transición. Y mientras falta, **el marcador
@@ -3598,9 +3690,9 @@ son sus once puntos:
 
 #### `X-A`–`X-H` · las ocho comprobaciones de la retirada
 
-**No son filas de la tabla adversarial de §2.6.7**, que queda en **cuarenta y seis filas y
-cuarenta y seis identificadores `X<nn>`**, tras las tres que `I-01` e `I-02` obligaron a
-añadir y la que `J-03` obliga a añadir ahora (`X62`). Éstas verifican la semántica de lápida e identidad,
+**No son filas de la tabla adversarial de §2.6.7**, cuyo censo **vive en su propia sede y se
+deriva** (`DD-13`), tras las tres que `I-01` e `I-02` obligaron a añadir, la que `J-03`
+obligó a añadir (`X62`) y la que `DD-13` contrata ahora (`X63`). Éstas verifican la semántica de lápida e identidad,
 llevan letra en vez de número, y son contrato de prueba igual que aquéllas.
 
 | | escenario | resultado exigido |
@@ -3614,7 +3706,7 @@ llevan letra en vez de número, y son contrato de prueba igual que aquéllas.
 | `X-G` | se intenta retirar **antes de sellar**, o **sin prueba de recuperación comprobada** | **retirada BLOQUEADA** en los dos casos. Sin sellado no hay ancla; sin prueba de recuperación la retirada es una pérdida disfrazada de operación |
 | `X-H` | pasar el validador sobre un evento con lápida | **NO aplica la fórmula ordinaria de identidad al contenido de la lápida.** Detecta `cuerpo_retirado: true`, cambia al algoritmo B de §2.8 punto 4bis, y valida estructura y vínculo con el sellado. Aplicar `EV-H` a la lápida y reportar «id no coincide» es un **defecto del validador** |
 
-> **Ninguna se ha ejecutado**, como las cuarenta y seis de §2.6.7. Las nueve `RC-1`–`RC-9`
+> **Ninguna se ha ejecutado**, como ninguna de las de §2.6.7. Las nueve `RC-1`–`RC-9`
 > **ya no existen**: `D64` las retiró con la ruta de reconciliación, y contarlas entre lo
 > escrito y no ejecutado era contar dos veces algo que ya no está.
 > Escribir el contrato de una prueba no es la prueba.
@@ -5400,8 +5492,9 @@ campos que signifiquen cosas distintas en cada uno**.
 > Contra el contrato que estas celdas existen para demostrar: §3.5 —«`responsables` **la
 > DESVIACIÓN** respecto al reparto por defecto, **cuando la hay**, **con su motivo**»—, §5.7
 > —«es la NORMA; la celda declara sólo la DESVIACIÓN, con motivo»— y §9.2 —«SÓLO LA
-> DESVIACIÓN … con su motivo»—. Con el esquema tal como §3.5 lo define, **`X52` tendría que
-> RECHAZAR las tres**, y §5.6 es precisamente la sección que existe para probar que el
+> DESVIACIÓN … con su motivo»—. Con el esquema tal como §3.5 lo define, **una validación de
+> estas celdas contra el esquema tendría que RECHAZAR las tres** —y esa validación es
+> `X63`, no `X52`—, y §5.6 es precisamente la sección que existe para probar que el
 > contrato funciona «sin campos vacíos de conveniencia».
 >
 > **LA REGLA, escrita una vez para que no haya que revisar celda a celda:** *un ejemplo de
@@ -5560,8 +5653,21 @@ que el campo único `dimension` no podía sostener.
 > inaplicabilidad «DENTRO del criterio», que es una norma de CLASE compartida por todas las
 > instalaciones — y `SOURCES.toml@a71f3c2` es un dato de ESTE producto y ESTA revisión. El
 > ejemplo 3b era un **contraejemplo de la tesis que este apartado dice demostrar**. Con
-> `evaluacion_de_pruebas` (§3.5) la tesis vuelve a ser cierta, y **`X52`** la comprueba validando
-> las tres celdas contra el esquema sin campos libres.
+> `evaluacion_de_pruebas` (§3.5) la tesis vuelve a ser cierta, y **`X63`** la comprueba
+> validando las tres celdas contra el esquema sin campos libres.
+>
+> **CORREGIDO por `DD-13` del QUINTO GATE, y es REINCIDENCIA LITERAL de `J-03`.** Estas dos
+> sedes atribuían la validación a **`X52`**, que es **una fila existente pero AJENA**:
+> `X52` compara el censo de pruebas de §9.1, §9.5 y `nivel-certificacion`, y **ninguna fila
+> de §2.6.7 validaba celdas de cobertura contra su esquema**. `J-03` era exactamente esto
+> —«reasignada a `X51`, una fila existente pero ajena»— y se cerró **añadiendo `X62` para
+> el caso de §6.7 sin barrer el resto de referencias `X<nn>`**. La tesis central de §5.6
+> se quedaba así **sin ningún contrato de prueba que la respaldase**, y un `F6` que
+> construyera `X52` desde §2.6.7 no habría comprobado nada de esto.
+>
+> **Se contrata la fila que faltaba, `X63` en §2.6.7.** No es una protección interna
+> nueva —las tres adjudicaciones y el Owner las prohíben—: es un **contrato de prueba de
+> `F6`**, que es lo que §2.6.7 contiene, y no se ejecuta aquí.
 
 > **Ninguna de las tres celdas existe.** Son ejemplos del contrato, no registros de un
 > producto real. `cobertura` no está construida.
@@ -5976,7 +6082,7 @@ declarar la actualización cerrada.
 > referencia rota, porque pasa desapercibida. **Se elige fila propia y no contrato de prueba
 > F6** porque el escenario se expresa entero con el contrato de hoy —`git status`, `git log` y
 > la ausencia de puntero, sobre tres fuentes— y **no exige ningún runtime que no exija ya
-> cualquier otra de las cuarenta y seis**. `X51` conserva su escenario intacto.
+> cualquier otra de la tabla de §2.6.7**. `X51` conserva su escenario intacto.
 
 **Límite declarado, y es el que importa.** Que un entorno concreto **honre** el puntero —que
 lo lea, que abra el directorio hermano y que trabaje con él— **no lo puede afirmar el
@@ -7779,8 +7885,8 @@ FASE 0             materializada; no sustituye a `A0`, que fija perímetro y mod
 
 ### Tabla adversarial de la FASE 0
 
-**No son filas de la tabla adversarial de §2.6.7**, que sigue en **cuarenta y seis filas y
-cuarenta y seis identificadores `X<nn>`**, ni de las **OCHO** `X-A`–`X-H` de §2.9. Llevan
+**No son filas de la tabla adversarial de §2.6.7**, cuyo censo **se deriva en su sede**
+(`DD-13`), ni de las `X-A`–`X-H` de §2.9, cuyo censo se deriva en la suya. Llevan
 familia propia, `X-S`, y son contrato de prueba igual que aquéllas: cada una declara qué se
 prepara, qué se intenta y qué resultado es exigible. **Ninguna se ha ejecutado**, como las
 demás. Escribir el contrato de una prueba no es la prueba.
@@ -8529,7 +8635,16 @@ C · RESISTENCIA A UN   QUÉ AFIRMARÍA  que una alteración deliberada hecha po
                                       PROYECTA; no es su fuente de autoridad
 ```
 
-**LO QUE (b) NO PROTEGE, ENUMERADO — literal de `O18`, y no se recorta.**
+**LO QUE (b) NO PROTEGE, ENUMERADO — LITERAL DE LA SEDE CANÓNICA DEL OWNER, RATIFICADO
+MEDIANTE `O19`, y no se recorta.**
+
+> **Rótulo CORREGIDO por `DD-14` del QUINTO GATE, y es la MISMA corrección que `O19` ordenó
+> y que §11.8 ya había recibido.** Decía «literal de `O18`», y `V-03` la había ordenado para
+> §11.8 sin barrer el par: la corrección se aplicó a un lado y sobrevivió en el otro, a 142
+> líneas. La sede de esta enumeración es
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md), bloque
+> «Alcance de la garantía documental, dicho por el Owner», renglón `NO SE AFIRMA QUE PROTEJA
+> FRENTE A`; **`O18` no la contenía y `D108` la PROYECTA, no la originó**.
 
 ```text
 · compromiso del CANAL DEL OWNER
@@ -8678,15 +8793,32 @@ DE MANIPULACIÓN      en rojo: corpus alterado tras la atestación · referencia
     contenido—. Su sede es hoy `docs/owner/ADS-OWNER-RESOLUCIONES.md`, y **no `O18` ni
     `D108`**. `D108` lo PROYECTA; **no lo originó**
 
-`SIS`                **define el CONTRATO de conformidad**
-`PLT`                **construye y opera la maquinaria externa**
-`VER`                **produce el dosier independiente**
-`SEG`                **gobierna credenciales, bloqueo y fallos de confianza**
-EL OWNER             **conserva la AUTORIDAD de aceptar o rechazar la raíz externa.** No la
-                     delega en `SIS`, ni en `PLT`, ni en `VER`, ni en `SEG`
-Y UNA PROHIBICIÓN    **CI o el ejecutor externo NO puede compartir la misma identidad de
-DE IDENTIDAD         escritura del runtime ADS.** Compartirla devuelve el poder de escribir
-                     corpus y resultado al mismo actor, y con eso el verificador externo
+    **Corregido por `DD-05` del QUINTO GATE, y es REINCIDENCIA LITERAL de `Y-09`.** Este
+    bloque escribía «`CI` o el ejecutor externo» —`CI` no aparece en la sede— y añadía dos
+    glosas que la sede no tiene. **Un bloque rotulado LITERAL es la sede, cláusula a
+    cláusula, y nada más**; lo que este documento aporta va DEBAJO, con su propio rótulo.
+    El literal NO se contrasta de memoria: se deriva con
+    `sed -n '/^· SIS define el contrato/,/^· el ejecutor externo/p'
+    docs/owner/ADS-OWNER-RESOLUCIONES.md`
+
+`SIS`                define el contrato de conformidad
+`PLT`                construye y opera la maquinaria externa
+`VER`                produce el dosier independiente
+`SEG`                gobierna credenciales, bloqueo y fallos de confianza
+EL OWNER             conserva la autoridad de aceptar o rechazar la raíz externa
+Y UNA PROHIBICIÓN    el ejecutor externo no puede compartir la identidad de escritura del
+DE IDENTIDAD         runtime ADS
+
+--- LECTURA DEL COORDINADOR SOBRE ESE REPARTO — NO ES LITERAL DE LA SEDE ---
+
+    Aportación de este documento, SACADA del bloque literal por `DD-05`. **No tiene
+    autoridad de sede**: si difiere de `docs/owner/ADS-OWNER-RESOLUCIONES.md`, manda la
+    sede, y una paráfrasis nunca amplía el texto canónico —cláusula 9 de §11.9—
+
+EL OWNER             que la autoridad la conserve él significa que no la delega en `SIS`,
+                     ni en `PLT`, ni en `VER`, ni en `SEG`
+LA PROHIBICIÓN       compartir la identidad de escritura devuelve el poder de escribir
+DE IDENTIDAD         corpus y resultado al mismo actor, y con eso el verificador externo
                      deja de serlo aunque corra en otra máquina
 
 --- LAS CONDICIONES DURAS, QUE NO SON RECOMENDACIONES ---
@@ -8784,8 +8916,16 @@ registran allí.** **No se reconstruyen y no se inventan sus textos**: se conser
 registro histórico actual —`DECISIONES-Y-CONTRADICCIONES.md`, sección 2— **hasta que exista
 una ratificación expresa o una fuente primaria verificable**. Escribirlas en la sede canónica
 sin ratificación sería exactamente el defecto que `O19` corrige, un piso más abajo: fabricar
-autoridad a partir de una transcripción. **Y §15.4 sigue llevando una fila por resolución**,
-las conservadas incluidas.
+autoridad a partir de una transcripción. **Y §15.4 sigue llevando una fila por cada
+resolución REGISTRADA en ella**, que hoy son las de `O7` en adelante.
+
+> **Precisado por `DD-13` del QUINTO GATE.** Decía «una fila por resolución, **las
+> conservadas incluidas**», y era **falso**: `O1`–`O6` son resoluciones conservadas y **no
+> tienen fila** —§15.4 va de `O7` a `O19`—, mientras la propia §15.4 declara que «una
+> resolución sin fila aquí es el defecto». **No se reconstruyen `O1`–`O6`**, que es
+> justamente lo que `O19` ordena no hacer; lo que se corrige es la afirmación que las daba
+> por presentes. El censo se deriva:
+> `grep -cE '^\| `?O[0-9]+' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md`
 
 **CÓMO SE APLICA ESTO A LO QUE YA ESTÁ ESCRITO.** **Ninguna sede se retira.** Las que ya
 contenían las tres condiciones obligatorias o el reparto **tienen el contenido correcto, y el
@@ -10723,17 +10863,24 @@ ENSAYO                control repo nace definitivo. Por eso el paso 8 exige la B
 ```text
 NADA ESTÁ CONSTRUIDO      ni una línea de kernel, runtime, tooling, esquema, adaptador,
                           plantilla, pack ni validador. F4 no lo autoriza
-NADA ESTÁ PROBADO         los doce escenarios de §14, las CUARENTA Y SEIS filas de la tabla
-                          adversarial de §2.6.7, los ONCE escenarios negativos de §11.5, las
-                          OCHO comprobaciones `X-A`–`X-H` de §2.9, **las filas `X-S` de la
+NADA ESTÁ PROBADO         los escenarios de §14, las filas de la tabla adversarial de
+                          §2.6.7, los escenarios negativos de §11.5, las comprobaciones
+                          `X-A`–`X-H` de §2.9, **las filas `X-S` de la
                           FASE 0 de §9.6** —que añadió la propagación de `O17` (`D107`)— y
                           **las filas `X-O` del SOBRE DE ANCLA de §11.6**, que añade la
                           propagación de `O18` (`D108`). **Las nueve ventanas de
                           reconciliación NO se cuentan: `D64` las retiró**, y §2.6.9 lo
                           dice — contarlas era inflar el inventario con algo inexistente.
-                          **Cada familia lleva su cifra en SU sede y aquí se remite**:
-                          §2.6.7 sigue en cuarenta y seis y no se toca, §2.9 en ocho, §9.6
-                          es la sede de la familia `X-S` y §11.6 la de la familia `X-O`.
+                          **Cada familia lleva su cifra en SU sede y aquí se remite**, y
+                          esta vez se remite de verdad: la sede de `X<nn>` es §2.6.7, la
+                          de `X-<L>` es §2.9, la de `X-S<n>` es §9.6 y la de `X-O<n>` es
+                          §11.6. **Ninguna cifra se escribe aquí**; quien la necesite la
+                          deriva con `grep -cE '^\| `?X…' sobre la sede.
+                          **Corregido por `DD-13` del QUINTO GATE**: este mismo bloque
+                          declaraba remitir y a continuación COPIABA cuatro cardinales
+                          —«cuarenta y seis», «ocho»— en la misma frase. Eran ciertos el
+                          día que se escribieron, que es precisamente lo que hace que
+                          caduquen sin que nadie lo note
                           **Y el cardinal de `X-S` deja de escribirse aquí**: este bloque
                           decía «las NUEVE `X-S1`–`X-S9`» y la tabla de §9.6 lleva más, que
                           es el titular caducado que la regla de §0 prohíbe
@@ -11365,7 +11512,30 @@ cerrar esa distancia. No la cierra.
 
 ---
 
-## `C-L.5` · La condición de COBERTURA del próximo gate — **CERTIFICADA por el documento 21**, y vigente para todo gate posterior
+## `C-L.5` · La condición de COBERTURA del próximo gate — **el estado NO se escribe aquí: se remite**
+
+> **CORREGIDO por `DD-07` del QUINTO GATE, y es la SEGUNDA vez que esta cabecera
+> caduca.** Decía «**CERTIFICADA por el documento 21**, y vigente para todo gate
+> posterior», y era **falso**: el cuarto gate la pasó a **ABIERTA** por
+> `ASIGNADO − LEÍDO = 1`, y así lo dicen hoy el `CHECKPOINT`, el `00-INDICE` y el
+> manifiesto del quinto gate. **La sede que discrepaba era la que este mismo
+> documento designa como sede de la condición.**
+>
+> `P-22` ≡ `Q-37` ya había corregido esta sección **retirando uno de sus dos
+> estados y conservando el otro escrito**. Ése es el remedio que vuelve a caducar,
+> porque un estado escrito caduca cada vez que un gate lo mueve. **Esta corrección
+> es distinta: NO escribe ningún estado, ni el correcto.** Remite.
+>
+> **EL ESTADO VIGENTE DE `C-L.5` TIENE UNA SOLA SEDE**, y es la clasificación
+> vigente de las condiciones `C-L` de
+> [`CHECKPOINT-ADS-NEXT.md`](CHECKPOINT-ADS-NEXT.md). Se lee, no se copia:
+>
+> ```bash
+> grep -n 'C-L\.5' docs/evolucion/CHECKPOINT-ADS-NEXT.md
+> ```
+>
+> Lo que esta sección conserva —y es lo único suyo— es **el REQUISITO**, que es
+> permanente y no depende de qué gate lo haya certificado o reabierto.
 
 > **Registrada por el GATE DEFINITIVO INDEPENDIENTE (`C-L.5`, una de las cinco que bloquean
 > el paso a F5).** El gate definitivo dio `INSUFICIENTE PARA F5` por **seis razones
@@ -11490,7 +11660,15 @@ ni la revisión independiente, ni la adjudicación contra las fuentes. **Es su r
 externa, y su alcance está escrito sin adorno en §11.7.** Esta sección **lo invoca y no lo
 reescribe**.
 
-**Estado: CERTIFICADA por el GATE INDEPENDIENTE DE CIERRE CON MANIFIESTOS VERIFICABLES**
+**Estado:** `[HISTÓRICO]` **— y el vigente NO se escribe aquí. Retirado por `DD-07`
+del QUINTO GATE.** El estado vigente vive en la clasificación de las condiciones
+`C-L` del [`CHECKPOINT-ADS-NEXT.md`](CHECKPOINT-ADS-NEXT.md), que es su **única**
+sede. Lo que sigue es **el registro histórico de la primera certificación**, que no
+se borra porque `X47` lo exige, y que **describía la tanda que lo escribió, no el
+estado de hoy**:
+
+> `[HISTÓRICO]` **Estado: CERTIFICADA por el GATE INDEPENDIENTE DE CIERRE CON
+> MANIFIESTOS VERIFICABLES**
 —documento 21—, y es la primera vez. El manifiesto previo de asignación se commiteó **solo y
 antes de que existiera ningún revisor**; los tres publicaron su manifiesto de lectura; y el
 adjudicador `R` recalculó las **43 filas** del manifiesto contra el árbol —43 de 43

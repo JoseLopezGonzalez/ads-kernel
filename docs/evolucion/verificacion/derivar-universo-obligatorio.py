@@ -139,18 +139,93 @@ def _leer(rel):
 
 # `Z1-03`≡`Z-05`. Se excluía `__pycache__` POR SU NOMBRE DE DIRECTORIO, con lo que una copia
 # de una sede dentro de él era invisible para el resolutor y la resolución seguía siendo
-# «única» con dos ficheros iguales en el árbol. Se excluye por lo que un fichero ES: `.git`,
-# que no es corpus, y el bytecode, por su extensión.
-_EXCLUIDO = re.compile(r"(?:^|/)\.git(?:/|$)|\.py[co]$")
+# «única» con dos ficheros iguales en el árbol. Se excluyó entonces por lo que un fichero
+# ES: `.git`, que no es corpus, y el bytecode, por su extensión.
+#
+# `DD-01` · **EL OCTAVO ÁRBOL, y «por su extensión» NO ES «por lo que ES».** El adjudicador
+# del QUINTO GATE lo midió: un documento que declara `F4c` cerrada y `F5` autorizada,
+# nombrado `<algo>.pyc` bajo `docs/owner/`, **alcanza el commit**, deja `git status` vacío,
+# pasa 38/38 y 13/13, **no entra en el universo, no recibe fila ni revisor, no aparece en
+# `EXCLUIDOS_IV` y produce el digest del sobre BIT A BIT IDÉNTICO**. Y `.git` se excluía
+# **por nombre y a cualquier profundidad**, evaluando la poda sobre el NOMBRE DESNUDO del
+# directorio: un `docs/.git/` cualquiera desaparecía del corpus sin decirlo.
+#
+# **El perímetro pasa a ser DOS predicados, y los dos son por NATURALEZA:**
+#
+#   · `.git` **ANCLADO A LA RAÍZ de la ruta relativa** —`^\.git(/|$)`—, y la poda se
+#     evalúa **sobre la RUTA COMPLETA**, nunca sobre el nombre desnudo. Es el almacén
+#     contra el que se compara, y sólo lo es el de la raíz.
+#   · el bytecode, **POR SU CONTENIDO**: cabecera de CPython y no-texto. El SUFIJO ya no
+#     excluye nada, de modo que `sentencia.pyc` con un H1 dentro es corpus, entra en el
+#     universo, recibe fila y revisor, y `G-29` lo ve.
+#
+# **Y mientras algo quede fuera, se PUBLICA con su ruta**: `EXCLUIDOS_PERIMETRO` lo emite
+# por todos los modos, como `EXCLUIDOS_IV` hace con el componente (iv). Una exclusión
+# silenciosa es la puerta; una exclusión publicada es una línea que el revisor lee.
+_EXCLUIDO_RAIZ = re.compile(r"^\.git(?:/|$)")
+
+# Los excluidos por PERÍMETRO, con su ruta y su motivo. Se publica, no se supone.
+EXCLUIDOS_PERIMETRO = []
+
+
+def _es_bytecode(ruta_abs):
+    """¿El fichero ES bytecode de CPython? Se decide por el CONTENIDO, no por el sufijo.
+
+    La cabecera de un `.pyc` son cuatro bytes: un magic de dos bytes cuyo byte alto es
+    pequeño, y `\r\n`. Y un `.pyc` **no es texto UTF-8**. Se exigen las TRES cosas, de
+    modo que ningún documento puede parecerlo por accidente —ni fabricarse para parecerlo
+    sin dejar de ser ilegible como texto, que es justamente no ser un documento—.
+    """
+    try:
+        with io.open(ruta_abs, "rb") as fh:
+            cabecera = fh.read(4)
+            resto = fh.read(65536)
+    except OSError:
+        return False
+    if len(cabecera) < 4 or cabecera[2:4] != b"\r\n" or cabecera[1] > 0x1F:
+        return False
+    try:
+        (cabecera + resto).decode("utf-8")
+    except UnicodeDecodeError:
+        return True
+    return False
+
+
+def _excluido(rel):
+    """¿`rel` queda FUERA del perímetro? Por NATURALEZA, y registrando por qué."""
+    if _EXCLUIDO_RAIZ.match(rel):
+        motivo = "`.git` de la RAÍZ: almacén, no corpus"
+    elif _es_bytecode(os.path.join(RAIZ, rel)):
+        motivo = "bytecode de CPython, por CONTENIDO"
+    else:
+        return False
+    if (rel, motivo) not in EXCLUIDOS_PERIMETRO:
+        EXCLUIDOS_PERIMETRO.append((rel, motivo))
+    return True
+
+
+def _podar(base, dirs):
+    """Poda de `os.walk` evaluada sobre la RUTA COMPLETA, no sobre el nombre desnudo."""
+    vivos = []
+    for d in dirs:
+        rel = os.path.relpath(os.path.join(base, d), RAIZ).replace(os.sep, "/")
+        if _EXCLUIDO_RAIZ.match(rel):
+            if (rel + "/", "`.git` de la RAÍZ: almacén, no corpus") not in EXCLUIDOS_PERIMETRO:
+                EXCLUIDOS_PERIMETRO.append((rel + "/", "`.git` de la RAÍZ: almacén, no corpus"))
+            continue
+        vivos.append(d)
+    dirs[:] = vivos
 
 
 def _resolver(nombre):
     """Un nombre de fichero suelto a su ruta única en el árbol. Falla si no es única."""
     encontrados = []
     for base, dirs, ficheros in os.walk(RAIZ):
-        dirs[:] = [d for d in dirs if not _EXCLUIDO.search(d + "/")]
-        if nombre in ficheros and not _EXCLUIDO.search(nombre):
-            encontrados.append(os.path.relpath(os.path.join(base, nombre), RAIZ))
+        _podar(base, dirs)
+        if nombre in ficheros:
+            rel = os.path.relpath(os.path.join(base, nombre), RAIZ).replace(os.sep, "/")
+            if not _excluido(rel):
+                encontrados.append(rel)
     if len(encontrados) != 1:
         raise SedeIlegible("«%s» no resuelve a UNA ruta: %r" % (nombre, encontrados))
     return encontrados[0].replace(os.sep, "/")
@@ -468,10 +543,10 @@ def _barrer(zona):
             "que `1bis` prohíbe" % zona)
     rutas = []
     for base, dirs, ficheros in os.walk(raiz_zona):
-        dirs[:] = [d for d in dirs if not _EXCLUIDO.search(d + "/")]
+        _podar(base, dirs)
         for nombre in sorted(ficheros):
             rel = os.path.relpath(os.path.join(base, nombre), RAIZ).replace(os.sep, "/")
-            if not _EXCLUIDO.search(rel):
+            if not _excluido(rel):
                 rutas.append(rel)
     return sorted(rutas)
 
@@ -648,11 +723,20 @@ def metricas(rel):
 
 
 def _excluidos(destino):
-    """Publica lo que el componente (iv) deja fuera. Se emite por TODOS los modos."""
+    """Publica lo que queda FUERA. Se emite por TODOS los modos.
+
+    Dos listas, y las dos con su RUTA: la del componente (iv) —voz de NO-DICTAMEN en el
+    H1— y la del PERÍMETRO —`DD-01`—. Mientras algo se excluya, se dice cuál y por qué:
+    una exclusión silenciosa es el octavo árbol.
+    """
     destino.write("\n  (iv) EXCLUIDOS por voz de NO-DICTAMEN en su H1: %d\n"
                   % len(EXCLUIDOS_IV))
     for rel, titulo in EXCLUIDOS_IV:
         destino.write("        %-46s %s\n" % (rel.split("/")[-1], titulo))
+    destino.write("\n  EXCLUIDOS por PERÍMETRO, con su RUTA COMPLETA: %d\n"
+                  % len(EXCLUIDOS_PERIMETRO))
+    for rel, motivo in sorted(EXCLUIDOS_PERIMETRO):
+        destino.write("        %-60s %s\n" % (rel, motivo))
 
 
 def main():

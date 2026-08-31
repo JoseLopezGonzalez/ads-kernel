@@ -308,7 +308,7 @@ def _informe(codigo_normal=None):
                        "ninguna sede tumbó la ejecución"))
     if _ABORTO:
         RES.append(("G-34", "el CENSO de comprobaciones cuadra con su sede, y amputar una "
-                            "da ROJO", False,
+                            "da ROJO (falla CERRADO sin git)", False,
                     "la ejecución abortó antes de terminar: el censo no se puede contrastar "
                     "sobre una corrida incompleta, y darlo por bueno sería el verde por "
                     "omisión que `G-00` acaba de denunciar"))
@@ -316,7 +316,7 @@ def _informe(codigo_normal=None):
         # `G-34` se cuenta a sí misma: se emite siempre y está publicada como las demás
         _censo = _censo_de_comprobaciones([r[0] for r in RES] + ["G-34"])
         RES.append(("G-34", "el CENSO de comprobaciones cuadra con su sede, y amputar una "
-                            "da ROJO", not _censo,
+                            "da ROJO (falla CERRADO sin git)", not _censo,
                     "; ".join(_censo) or
                     "%d comprobaciones ejecutadas y las mismas %d publicadas en el "
                     "README, una a una; la batería y su README, enumerados y publicados"
@@ -326,7 +326,22 @@ def _informe(codigo_normal=None):
         print(f"{'OK  ' if ok else 'FALLO'} {id_:7s} {t}")
         if det: print(f"{'':13s}└─ {det}")
     verde = sum(1 for _, _, ok, _ in RES if ok)
+    # `DD-21` · **QUÉ CERTIFICA ESTE «N/N», Y QUÉ NO.** Nueve de las comprobaciones no son
+    # propiedades del COMMIT sino de **un repositorio CON HISTORIA**: contrastan contra
+    # `HEAD` y contra la revisión base con `git`. Sobre la materialización que la RECETA
+    # del sobre prescribe —árbol desplegado SIN `.git`— esas nueve fallan CERRADO, que es
+    # lo correcto, y la batería da menos que su total. **No es un defecto: era que ninguna
+    # sede lo acotaba**, y quien leyera «N/N en verde» podía creer que certificaba el
+    # commit desnudo. El censo NO se escribe: se DERIVA de los títulos, que son los que lo
+    # declaran, y quien quiera la lista ejecuta la batería y filtra por «sin git».
+    _con_git = [i for i, t, _, _ in RES if "sin git" in t]
     print(f"\n{verde}/{len(RES)} comprobaciones en verde")
+    print(f"ALCANCE (`DD-21`): {len(_con_git)} de las {len(RES)} exigen un repositorio CON "
+          f"HISTORIA y fallan CERRADO sin `.git` — {', '.join(_con_git)}. "
+          f"Las otras {len(RES) - len(_con_git)} son propiedades del ÁRBOL DESNUDO. "
+          f"Un «{len(RES)}/{len(RES)}» certifica el commit CON su historia; sobre la "
+          f"materialización sin `.git` que prescribe la receta del sobre, el máximo "
+          f"alcanzable es {len(RES) - len(_con_git)}.")
     if _ABORTO:
         return 2
     return 0 if verde == len(RES) else 1
@@ -583,18 +598,74 @@ falta = [x for x in need if x not in s18]
 check("G-09", "§18 lleva el gate de `INS-5`, su salida y los tres productores de `O12`",
       not falta, "; ".join(falta) or "gate, salida y productores")
 
-# ── G-10 · SEIS extensiones de ficha, en las tres sedes ───────────────
-seis = {
-  "§5.2": "**Son\n                          SEIS**" in t11 or "**Son SEIS**" in t11 or "Son\n                          SEIS" in t11,
-  "§16":  "las **SEIS**\n> extensiones de ficha" in t11 or "**SEIS**\n> extensiones" in t11,
-  "§17":  "**`+6` extensiones de ficha**" in t11,
-}
-caps = ["ENT", "ARQ", "PLT", "SEG", "DSP", "ENC"]
-i17 = t11.index("`+6` extensiones de ficha")
-fila17 = t11[i17:t11.index("\n", i17)]
-falta = [k for k, v in seis.items() if not v] + [c for c in caps if f"`{c}`" not in fila17]
-check("G-10", "SEIS extensiones de ficha —ENT ARQ PLT SEG DSP ENC— en §5.2, §16 y §17",
-      not falta, "; ".join(falta) or "las seis, en las tres sedes")
+# ── G-10 · las extensiones de ficha, DERIVADAS y contrastadas en tres sedes ───
+#
+# `DD-12` · **ESTA COMPROBACIÓN NO DERIVABA NADA, y era el aval con el que §0 se permite
+# escribir uno de los pocos cardinales que el documento se permite.** Comprobaba TRES
+# substrings literales —«Son SEIS», «las SEIS extensiones», «`+6` extensiones»— y SEIS
+# nombres escritos a mano en esta misma línea. Una SÉPTIMA extensión añadida a la
+# enumeración de §5.2 dejaba «Son SEIS» caducado **con `G-10` en verde**, que es exactamente
+# el modo de fallo que la regla de titulares de §0 persigue — y §0 nombra a `G-10` como su
+# excepción. El guardián no guardaba.
+#
+# **Ahora el censo se DERIVA de la enumeración de §5.2** —las fichas que el bloque «QUÉ
+# TRABAJO GENERA» nombra, `capacidades/<CAP>/`— y de ahí sale TODO: el cardinal en letra,
+# el cardinal en cifra y la lista de nombres que las tres sedes tienen que publicar. Nada
+# se escribe aquí: añadir una séptima ficha a §5.2 pone en ROJO las tres sedes que sigan
+# diciendo SEIS.
+_CARD_LETRA = {1: "UNA", 2: "DOS", 3: "TRES", 4: "CUATRO", 5: "CINCO", 6: "SEIS",
+               7: "SIETE", 8: "OCHO", 9: "NUEVE", 10: "DIEZ", 11: "ONCE", 12: "DOCE"}
+_i52 = t11.find("QUÉ TRABAJO GENERA")
+_b52 = t11[_i52:t11.find("\n```", _i52)] if _i52 >= 0 else ""
+_EXT_FICHA = []
+for _c in re.findall(r"`capacidades/([A-Z]{3})/`", _b52):
+    if _c not in _EXT_FICHA:
+        _EXT_FICHA.append(_c)
+falta = []
+if _i52 < 0 or not _EXT_FICHA:
+    falta.append("§5.2 no publica la ENUMERACIÓN `capacidades/<CAP>/` de las extensiones de "
+                 "ficha bajo «QUÉ TRABAJO GENERA»: sin enumeración no hay censo que derivar, "
+                 "y el cardinal de las tres sedes no se contrasta contra nada")
+else:
+    _n = len(_EXT_FICHA)
+    _letra = _CARD_LETRA.get(_n)
+    if not _letra:
+        falta.append(f"el censo derivado de §5.2 da {_n} y esta comprobación no sabe "
+                     f"escribirlo en letra: se amplía `_CARD_LETRA` antes de seguir")
+    else:
+        # §5.2 · el cardinal en letra, junto a su enumeración, en cualquier plegado
+        if not re.search(r"\*\*Son\s+" + _letra + r"\*\*|Son\s+\**\s*" + _letra,
+                         _b52.replace("\n", " ")):
+            falta.append(f"§5.2: su enumeración da {_n} fichas ({', '.join(_EXT_FICHA)}) y "
+                         f"su titular no dice «Son {_letra}»")
+        # §16 · el cardinal en letra Y los nombres
+        _i16 = t11.find("extensiones de ficha de §5.2 —")
+        _b16 = t11[max(0, _i16 - 300):_i16 + 400] if _i16 >= 0 else ""
+        if _i16 < 0:
+            falta.append("§16 no publica la sede de las extensiones de ficha")
+        else:
+            if _letra not in _b16.replace("\n> ", " ").replace("\n", " "):
+                falta.append(f"§16: no dice «{_letra}» sobre un censo derivado de {_n}")
+            falta += [f"§16: no nombra `{c}`" for c in _EXT_FICHA if f"`{c}`" not in _b16]
+        # §17 · el cardinal en CIFRA Y los nombres
+        _i17 = t11.find("extensiones de ficha**: `")
+        if _i17 < 0:
+            falta.append("§17 no publica la fila `+N extensiones de ficha` con sus nombres")
+        else:
+            _fila17 = t11[t11.rfind("\n", 0, _i17) + 1:t11.find("\n", _i17)]
+            _m17 = re.search(r"\+(\d+)`? extensiones de ficha", _fila17)
+            if not _m17:
+                falta.append("§17: su fila no publica el cardinal en la forma `+N`")
+            elif int(_m17.group(1)) != _n:
+                falta.append(f"§17: escribe `+{_m17.group(1)}` y el censo derivado de §5.2 "
+                             f"da {_n}")
+            falta += [f"§17: no nombra `{c}`" for c in _EXT_FICHA if f"`{c}`" not in _fila17]
+check("G-10",
+      "las extensiones de ficha se DERIVAN de la enumeración de §5.2, y su cardinal y sus nombres se contrastan en §5.2, §16 y §17",
+      not falta, "; ".join(falta) or
+      f"censo DERIVADO de §5.2: {len(_EXT_FICHA)} extensiones ({', '.join(_EXT_FICHA)}), "
+      f"y las tres sedes publican ese cardinal y esos nombres. Ninguno escrito aquí "
+      f"(`DD-12`)")
 
 # ── G-11 · D67 identica byte a byte a la de 7e99388 ───────────────────
 _base_raw = _git("show", "7e99388:docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md")
@@ -1592,8 +1663,19 @@ _g16 += [f"condiciones C-L: {x}" for x in _g16c]
 # El mensaje de éxito se DERIVA de lo comprobado. La versión anterior llevaba la cadena
 # «8+2+1+1+1 = 13» codificada, y la imprimía intacta sobre un bloque que declaraba otra
 # distribución (`O-02`).
+#
+# `BT-02` · **Y ARRASTRABA UN ESTADO ESCRITO A MANO EN LA MISMA LÍNEA**: el mensaje
+# terminaba en el literal «C-L.5 CERTIFICADA», y `C-L.5` está ABIERTA desde el CUARTO GATE.
+# La batería IMPRIMÍA en verde una afirmación FALSA sobre la condición que el gate acababa
+# de reabrir, dentro de la comprobación cuyo objeto es que nadie copie estados. Es
+# exactamente el defecto que el comentario de `C-L.5` de más arriba dice haber cerrado
+# —allí se retiró la GUARDA escrita a mano y se dejó intacto el MENSAJE—: instancia
+# corregida, clase abierta. Lo encontró el BARRIDO TRANSVERSAL de la tanda del quinto gate,
+# y no lo señaló ninguno de los ocho participantes. **Ahora el estado se DERIVA de la sede
+# canónica, como todo lo demás de esta línea.**
 _resumen = "+".join(str(_declarado[e]) for e in _ESTADOS_CL if e in _declarado) \
            if not _g16c or _declarado else "?"
+_cl5 = (_asig.get("C-L.5") or ["SIN ESTADO"])[0]
 check("G-16",
       "un estado primario por elemento y ninguno compuesto: la matriz de hallazgos con el cardinal de su cabecera, y las condiciones `C-L` contra su detalle",
       not _g16,
@@ -1601,7 +1683,8 @@ check("G-16",
       f"matriz {len(filas)} filas / {len(set(ids))} ids · condiciones "
       f"{sum(_declarado.values())}/{len(_esperados)} con estado único, {_resumen} = "
       f"{sum(_declarado.values())}, cada resumen coincide con su fila de detalle · "
-      f"C-L.13 MIXTA con {len(_comp13)} componentes derivados · C-L.5 CERTIFICADA")
+      f"C-L.13 MIXTA con {len(_comp13)} componentes derivados · "
+      f"C-L.5 {_cl5}, DERIVADA de la sede y no escrita aquí")
 
 # ── G-16b · A11 absorbido, A14 excluido ────────────────────────────
 check("G-16b", "`A11` absorbido en `M-8` y `A14` excluido: ninguno es fila de la matriz",
@@ -1833,14 +1916,83 @@ def _rel(p):
 # que esta línea incumplía: «una lista de lo que se excluye no puede caducar por omisión: lo
 # que olvide nombrar se queda DENTRO».
 #
-# Ahora se excluye por NATURALEZA y nada más: **el bytecode, por su extensión**, y `.git`,
-# que no es corpus sino el almacén contra el que se compara. Un `.md` dentro de
-# `__pycache__` es corpus, y `G-29` lo ve como lo que es: una ampliación sin clasificar.
-_EXCLUIDO = re.compile(r"(?:^|/)\.git(?:/|$)|\.py[co]$")
+# Se excluyó entonces por NATURALEZA: **el bytecode, por su extensión**, y `.git`, que no
+# es corpus sino el almacén contra el que se compara. Un `.md` dentro de `__pycache__` es
+# corpus, y `G-29` lo ve como lo que es: una ampliación sin clasificar.
+#
+# `DD-01` · **Y «POR SU EXTENSIÓN» NO ES «POR NATURALEZA», que era el argumento entero.**
+# El adjudicador del QUINTO GATE plantó el octavo árbol: un documento que declara `F4c`
+# cerrada y `F5` autorizada, nombrado `<algo>.pyc` bajo `docs/owner/`, **alcanzaba el
+# commit**, dejaba `git status` vacío, pasaba **38/38** y **13/13**, no entraba en el
+# universo, no recibía fila ni revisor, no aparecía en `EXCLUIDOS_IV` y **producía el
+# digest del sobre bit a bit idéntico**. Y `.git` se excluía **por nombre y a cualquier
+# profundidad**, con la poda evaluada sobre el NOMBRE DESNUDO del directorio.
+#
+# **Hoy los dos predicados son de verdad por naturaleza**, y son los mismos que el
+# derivador aplica —una sola regla en los dos instrumentos, que es lo que `CC3` pidió:
+#
+#   · `.git` **ANCLADO A LA RAÍZ** de la ruta relativa, y la poda de `os.walk` evaluada
+#     **sobre la RUTA COMPLETA**, no sobre el nombre desnudo, en TODAS sus sedes.
+#   · el bytecode, **POR SU CONTENIDO**: cabecera de CPython y no-texto. El SUFIJO ya no
+#     excluye nada.
+#
+# **Y lo que quede fuera se PUBLICA con su ruta**, en `EXCLUIDOS_PERIMETRO`, que `G-29`
+# emite en su detalle. Una exclusión silenciosa es la puerta por la que entró el octavo
+# árbol; una exclusión publicada es una línea que el revisor lee.
+_EXCLUIDO_RAIZ = re.compile(r"^\.git(?:/|$)")
+
+# Lo que queda fuera del perímetro, con su ruta y su motivo. Se publica, no se supone.
+EXCLUIDOS_PERIMETRO = []
+
+
+def _es_bytecode(ruta_abs):
+    """¿El fichero ES bytecode de CPython? Por CONTENIDO, no por sufijo (`DD-01`).
+
+    La cabecera de un `.pyc` son cuatro bytes: un magic de dos bytes cuyo byte alto es
+    pequeño, y `\r\n`. Y un `.pyc` **no es texto UTF-8**. Se exigen las TRES cosas: un
+    documento no puede parecerlo por accidente, y no puede fabricarse para parecerlo sin
+    dejar de ser legible como texto — que es, exactamente, dejar de ser un documento.
+    """
+    try:
+        with io.open(ruta_abs, "rb") as fh:
+            cabecera = fh.read(4)
+            resto = fh.read(65536)
+    except OSError:
+        return False
+    if len(cabecera) < 4 or cabecera[2:4] != b"\r\n" or cabecera[1] > 0x1F:
+        return False
+    try:
+        (cabecera + resto).decode("utf-8")
+    except UnicodeDecodeError:
+        return True
+    return False
+
 
 def _en_zona(rel):
-    """¿`rel` cae dentro del corpus gobernado? Todo, salvo lo excluido con motivo."""
-    return not _EXCLUIDO.search(rel)
+    """¿`rel` cae dentro del corpus gobernado? Todo, salvo lo excluido CON MOTIVO y CON RUTA."""
+    if _EXCLUIDO_RAIZ.match(rel):
+        motivo = "`.git` de la RAÍZ: almacén, no corpus"
+    elif _es_bytecode(os.path.join(RAIZ, rel)):
+        motivo = "bytecode de CPython, por CONTENIDO"
+    else:
+        return True
+    if (rel, motivo) not in EXCLUIDOS_PERIMETRO:
+        EXCLUIDOS_PERIMETRO.append((rel, motivo))
+    return False
+
+
+def _podar(base, dirs):
+    """Poda de `os.walk` sobre la RUTA COMPLETA, nunca sobre el nombre desnudo (`DD-01`)."""
+    vivos = []
+    for d in dirs:
+        rel = _rel(os.path.join(base, d))
+        if _EXCLUIDO_RAIZ.match(rel):
+            par = (rel + "/", "`.git` de la RAÍZ: almacén, no corpus")
+            if par not in EXCLUIDOS_PERIMETRO:
+                EXCLUIDOS_PERIMETRO.append(par)
+            continue
+        vivos.append(d)
+    dirs[:] = vivos
 
 # Los ficheros EN CORRECCIÓN son los que esta batería declara como objeto de la tanda, y
 # ya los declaraba: son los mismos cuatro que `G-18` y `G-19` recorren. No se escribe una
@@ -1892,7 +2044,7 @@ def _inmutables():
     # fuera del inventario sin que nada lo dijera. Se excluye por lo mismo que en todas las
     # demás sedes de esta batería, `_EXCLUIDO`: bytecode y `.git`, y nada más.
     for base, dirs, ficheros in os.walk(dir_own):
-        dirs[:] = [d for d in dirs if not _EXCLUIDO.search(d + "/")]
+        _podar(base, dirs)
         for nombre in sorted(ficheros):
             rel = _rel(os.path.join(base, nombre))
             if _en_zona(rel) and rel not in _EN_CORRECCION:
@@ -1983,10 +2135,45 @@ check("G-22",
 # kernel operativo SUSTANTIVO sigue intacto, y la única excepción de código es la que se
 # nombra. Una exclusión amplia volvería a dejar pasar cualquier otro cambio del kernel, que es
 # justo lo que esta comprobación existe para impedir.
-NORMATIVO = (r"a-CAPACIDADES-APROBADA|b-RECORRIDO-APROBADA|"
-             r"a-ENMIENDA-E1|a-ENMIENDA-E2|"
-             r"kernel/operativo/contratos/C4-MATERIALIZACION|"
+# `DD-04` · **«LO NORMATIVO INTACTO» SOBRE UN PERÍMETRO ENUMERADO, y era falso.**
+# Aquí vivía un regex de SEIS patrones escritos a mano que cubría **4 de los 14 ficheros
+# de `docs/rediseno/`**, la zona que el `00-INDICE` declara ESPECIFICACIÓN NORMATIVA
+# VIGENTE. El adjudicador del quinto gate lo midió con su control positivo: `00-MAPA.md`
+# reescrito **declarando que prevalece sobre el material APROBADO y que deja `O17`, `O18`
+# y `O19` sin efecto** daba **38/38 VERDE**; el mismo texto en `a-CAPACIDADES-APROBADA.md`
+# daba `37/38 FALLO G-23`. Diez ficheros normativos sin guardia, y la comprobación
+# imprimiendo «lo normativo intacto».
+#
+# **Se DERIVA, como `G-23` ya hace con el kernel:** la zona entera es normativa, y las
+# excepciones se NOMBRAN una a una con su motivo. Lo que queda enumerado no es el
+# perímetro —que es el conjunto de ficheros del árbol— sino su EXCEPCIÓN, que es lo único
+# que una lista puede decir sin caducar por omisión. Un fichero nuevo en `docs/rediseno/`
+# nace protegido; con el regex nacía libre.
+_ZONA_NORMATIVA = "docs/rediseno/"
+DOC_REDISENO_AUTORIZADO = {"docs/rediseno/CHECKPOINT-OPERATIVO.md"}
+NORMATIVO = (r"kernel/operativo/contratos/C4-MATERIALIZACION|"
              r"kernel/operativo/contratos/C7-GOBIERNO")
+
+
+def _normativo_no_autorizado(f):
+    """¿`f` es material normativo tocado sin autorización? Zona DERIVADA, excepción NOMBRADA."""
+    if re.search(NORMATIVO, f):
+        return True
+    if not f.startswith(_ZONA_NORMATIVA):
+        return False
+    # Las excepciones, NOMBRADAS una a una y con su motivo, exactamente como `G-23` las
+    # nombra para el kernel. Lo que NO se enumera es el perímetro: ése se deriva del árbol.
+    #
+    #   · el registro de decisiones — objeto declarado de esta tanda, ya en
+    #     `_EN_CORRECCION`, y que `G-18`, `G-19` y `G-22` recorren y nombran. No se
+    #     escribe aquí una segunda vez: sería una segunda sede.
+    #   · `CHECKPOINT-OPERATIVO.md` — es el checkpoint DERIVADO del kernel operativo, no
+    #     material APROBADO: lo tocó `Q-15` del documento 22 para que el censo de
+    #     validadores dejara de escribirse a mano, en `55d8ce1`. Se nombra con su motivo,
+    #     que es lo que una excepción tiene que llevar para no ser un comodín.
+    if f in _EN_CORRECCION or f in DOC_REDISENO_AUTORIZADO:
+        return False
+    return True
 
 # Excepciones AUTORIZADAS, una a una. No hay comodines sobre directorios de código.
 #
@@ -2010,7 +2197,15 @@ def _kernel_no_autorizado(f):
     return True
 
 prohibidos = [f for f in tocados if _kernel_no_autorizado(f)]
-prohibidos += [f for f in tocados if re.search(NORMATIVO, f)]
+prohibidos += [f for f in tocados if _normativo_no_autorizado(f)]
+# El censo de la zona normativa se DERIVA del árbol y se publica: quien lea el detalle ve
+# cuántos ficheros protege esta comprobación, y no tiene que creerse un cardinal escrito.
+_ZONA_NORM_ARBOL = sorted(f for f in _head_arbol if f.startswith(_ZONA_NORMATIVA)) \
+    if _head_arbol_raw is not None else []
+if _head_arbol_raw is not None and not _ZONA_NORM_ARBOL:
+    prohibidos.append("`git ls-tree -r HEAD docs/rediseno/` no devuelve ningún fichero: la "
+                      "ESPECIFICACIÓN NORMATIVA no está en el commit, y un perímetro vacío "
+                      "se satisface por omisión")
 # ── y la PROSA del checkpoint contrastada contra lo que Git deriva ────────
 #
 # Añadido por la verificación previa a publicación. El bloque «EXCEPCIÓN EXACTA DEL
@@ -2101,7 +2296,12 @@ if _tocados_raw is None:
 check("G-23", "lo normativo intacto y la excepción del kernel contrastada contra la prosa del checkpoint (falla CERRADO sin git)",
       _tocados_raw is not None and not prohibidos,
       f"{len(_kern)} ficheros de kernel = {len(_kern_dir)} directos + {len(_kern_ev)} de "
-      f"evidencia derivada, todos enumerados en el checkpoint"
+      f"evidencia derivada, todos enumerados en el checkpoint · ZONA NORMATIVA DERIVADA "
+      f"(`DD-04`): {len(_ZONA_NORM_ARBOL)} ficheros de `docs/rediseno/` en `HEAD`, la zona "
+      f"ENTERA protegida y no un regex de seis patrones, con "
+      f"{len([f for f in _EN_CORRECCION if f.startswith(_ZONA_NORMATIVA)]) + len(DOC_REDISENO_AUTORIZADO)} "
+      f"excepción(es) NOMBRADA(S) con su motivo: "
+      f"{sorted(set(f for f in _EN_CORRECCION if f.startswith(_ZONA_NORMATIVA)) | DOC_REDISENO_AUTORIZADO)}"
       if (_tocados_raw is not None and not prohibidos) else ", ".join(sorted(set(prohibidos))))
 
 # ── G-24 · las catorce fuentes y las quince fichas existen ──────
@@ -2284,7 +2484,11 @@ def _regiones_historicas(texto):
       · un ENCABEZADO Markdown, como antes,
       · la VALLA de un bloque de código, que abre y cierra contenedor,
       · la LÍNEA EN BLANCO que separa un bloque del siguiente, **también dentro de una
-        valla**,
+        valla** — y **NO para la clase `tanda`**, cuya clave abarca su bloque entero,
+        blancos incluidos, y cierra en la siguiente línea que empieza en COLUMNA 0
+        (`_ABRE_CLAVE`). `DD-15`: esta enumeración y la del README declaraban la línea en
+        blanco sin esa excepción, y el código nunca la aplicó a `tanda`. La región de
+        clase `tanda` **está acotada** —no es de longitud libre—, pero por OTRA frontera,
       · y la SALIDA DE LA CITA: si la marca se escribió dentro de un `>`, la región muere
         donde muere la cita. Lo que no está en la cita no lo declara histórico una etiqueta
         que sí lo está.
@@ -2715,7 +2919,7 @@ check("G-28",
 def _ficheros_zona():
     salida = set()
     for base, dirs, ficheros in os.walk(RAIZ):
-        dirs[:] = [d for d in dirs if not _EXCLUIDO.search(d + "/")]
+        _podar(base, dirs)
         for nombre in ficheros:
             rel = _rel(os.path.join(base, nombre))
             if _en_zona(rel):
@@ -2839,6 +3043,33 @@ else:
     for f in _idos:
         _g29.append(f"fichero del corpus DESAPARECIDO: {f}")
 
+    # ── `DD-02` · LA ADMISIÓN SE EVALÚA SOBRE EL CONTENIDO DEL COMMIT ─────
+    #
+    # **La guarda de arriba era INERTE sobre todo fichero ya en `HEAD`**, y el adjudicador
+    # del quinto gate lo midió: la misma segunda sede plantada en `docs/owner/` daba
+    # `37/38 FALLO G-29` **sin commitear** y **`38/38` commiteada**. `_nuevos` se calcula
+    # sobre `_disco - _publicado`, de modo que confirmar el fichero lo sacaba para siempre
+    # del alcance de la única condición que la zona impone. **Y el objeto que un gate
+    # audita es un COMMIT**, no un árbol de trabajo: la promesa del README —«*una segunda
+    # sede plantada en esa zona sin ese enlace es ROJA*»— era falsa para todo commit.
+    #
+    # El remedio es una llamada, y es la que `DD` determinó: la zona se contrasta contra
+    # **`git ls-tree -r HEAD docs/owner/`**, y cada ruta publicada tiene que estar
+    # enlazada desde `00-INDICE.md`. La condición no cambia; cambia el CONJUNTO sobre el
+    # que se evalúa, que pasa a ser el commit entero y no sólo lo que aún no está en él.
+    _owner_publicado = sorted(f for f in _publicado if f.startswith("docs/owner/"))
+    if not _owner_publicado:
+        _g29.append("`git ls-tree -r HEAD docs/owner/` no devuelve ningún fichero: la SEDE "
+                    "CANÓNICA del Owner no está en el commit, y una zona vacía satisface "
+                    "por omisión cualquier condición que se le imponga")
+    for f in _owner_publicado:
+        if f not in _ENLAZADOS_INDICE_OWNER:
+            _g29.append(f"SEGUNDA SEDE EN `docs/owner/`, YA CONFIRMADA EN `HEAD` y SIN "
+                        f"ENLACE desde `00-INDICE.md`: {f}. La condición de admisión de "
+                        f"esta zona se evalúa sobre el CONTENIDO DEL COMMIT —`DD-02`—, y "
+                        f"no sólo sobre lo que todavía no está en él: confirmar un fichero "
+                        f"no lo exime de la única regla que la zona tiene")
+
     # ── unicidad 1 · ningún fichero tiene un gemelo byte a byte ───────────
     _por_huella = {}
     for rel in sorted(_disco):
@@ -2892,7 +3123,12 @@ check("G-29",
       f"{len(_disco)} ficheros —el repositorio ENTERO menos `.git` y el bytecode, no una "
       f"lista de zonas—, todos publicados o clasificados · "
       f"cero duplicados byte a byte · {len(_marcadores)} marcadores canónicos derivados "
-      f"({', '.join(sorted(_marcadores))}), cada uno en sus sedes publicadas")
+      f"({', '.join(sorted(_marcadores))}), cada uno en sus sedes publicadas · "
+      f"{len(_owner_publicado)} ficheros de `docs/owner/` YA EN `HEAD`, cada uno enlazado "
+      f"desde `00-INDICE.md` (`DD-02`: la admisión se evalúa sobre el CONTENIDO DEL "
+      f"COMMIT) · PERÍMETRO: {len(EXCLUIDOS_PERIMETRO)} exclusiones, publicadas con su "
+      f"RUTA COMPLETA y su motivo (`DD-01`) — "
+      f"{'; '.join(f'{r} · {m}' for r, m in sorted(EXCLUIDOS_PERIMETRO))}")
 
 
 # ── G-30 · la excepción del kernel, por CONTENIDO y por CLASIFICACIÓN ───
@@ -3521,12 +3757,28 @@ def _fixture_evaluador(nombre, proteccion, control_pasa, mutante_denunciado):
     return _registrar(_FIXTURES_EVAL, nombre, proteccion, control_pasa, mutante_denunciado,
                       "FIXTURE DEL EVALUADOR")
 
+# `DD-11` · **LA MITAD MUTANTE ERA TAUTOLÓGICA, y era la ÚNICA prueba negativa anclada.**
+# El mutante borraba **LAS DOS** cadenas gatillo —`FASE 0` y `gate:sistema-conforme`—, con
+# lo que `_fase0_conforme()` tenía garantizado devolver al menos dos faltas **sea cual sea
+# el corpus**. El adjudicador lo verificó estructuralmente y con **200 000 textos
+# aleatorios: CERO contraejemplos**. El README promete «*su mutante sale del texto del
+# corpus y **un corpus distinto la mueve**»*, y ningún corpus podía moverla: era un fixture
+# sintético disfrazado de prueba anclada, contado en la única casilla que el instrumento no
+# puede fabricar.
+#
+# **Hoy se muta UNA SOLA de las dos cadenas** —la del contrato compartido— **y se exige que
+# la denuncia sea EXACTAMENTE la que corresponde a esa cadena y ninguna otra.** Con eso la
+# aserción vuelve a depender del texto: un §8.1 que escribiera `gate:sistema-conforme` en
+# la MISMA línea que su `FASE 0` haría caer también la primera falta, la denuncia dejaría
+# de ser exacta y **esta prueba se pondría en rojo sin que nadie la ataque**. Eso es lo que
+# significa estar anclada en el árbol.
 _b_real = "\n".join(l for i, l in enumerate(L11, 1) if sec_de(i) == (_MACROS[0] if _MACROS else "8.1"))
+_FALTA_CONTRATO = "no invoca el contrato compartido `gate:sistema-conforme`"
 _b_mutilado = "\n".join(l for l in _b_real.split("\n")
-                        if "FASE 0" not in l and "gate:sistema-conforme" not in l)
-_g33 += _negativa("macrocircuito que OMITE la FASE 0 Estructural", 13,
+                        if "gate:sistema-conforme" not in l)
+_g33 += _negativa("macrocircuito que OMITE el contrato compartido de la FASE 0", 13,
                   not _fase0_conforme(_b_real),
-                  bool(_fase0_conforme(_b_mutilado)))
+                  _fase0_conforme(_b_mutilado) == [_FALTA_CONTRATO])
 
 # ── PRUEBA NEGATIVA 2 (protección 14) · reutilizar con OTRA huella ────────
 #

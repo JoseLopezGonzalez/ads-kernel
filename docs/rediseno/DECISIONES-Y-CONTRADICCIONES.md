@@ -745,6 +745,29 @@ INDEPENDIENTE DE CERTIFICACIÓN —documento 22— formuló como su única clase
 sus tres alternativas están redactadas palabra por palabra en §13 de la adjudicación de `R`,
 dentro de ese documento. **Nada de esto lo eligió F4.**
 
+> **ESTA ENTRADA ES PROYECCIÓN, Y SU SEDE CANÓNICA ES
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md), `O17`** —que
+> `O19` ordenó crear y el Owner ratificó—. **Si algo de aquí difiere de la sede, manda la
+> sede**, y una paráfrasis nunca amplía el texto canónico.
+>
+> **AÑADIDO por `DD-14` del QUINTO GATE, y es ASIMETRÍA DE PROCEDENCIA.** La proyección de
+> `O19` sí enlazaba a la sede que la designa como proyección; la de `O17` **no la nombraba
+> una sola vez** —`grep -c owner` sobre esta entrada devolvía **0**—, de modo que quien
+> llegara aquí primero no tenía forma de saber que estaba leyendo una proyección. **El par
+> se corrige entero, no uno de sus lados**, que es exactamente lo que `DD-14` castiga en su
+> otra mitad: la misma corrección se aplicó a §11.8 del documento 11 y no a §11.7, a 142
+> líneas de distancia. El censo de proyecciones que enlazan a su sede se deriva:
+>
+> ```bash
+> awk '/^### `O[0-9]+`/{id=$2; n[id]=0; orden[++k]=id}
+>      /owner\/ADS-OWNER-RESOLUCIONES/{if (id) n[id]++}
+>      END{for (i=1; i<=k; i++) printf "%s -> %d\n", orden[i], n[orden[i]]}' \
+>   docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
+> ```
+>
+> Hoy las tres proyecciones vivas —`O17`, `O18` y `O19`— enlazan a su sede; antes de esta
+> corrección `O17` daba **cero**. **Ningún cardinal se escribe aquí: lo da el comando.**
+
 **El vacío que resuelve.** §9.2 encadena `estructural ◀── operativo ◀── integrado ◀── completo`
 y fija una REGLA DURA: *un nivel no se declara por argumento ni por haber pasado el anterior*.
 Pero `gate:sistema-conforme` tenía **una sola aparición en todo el documento 11, y era su
@@ -776,25 +799,63 @@ con ellas **`O12` no era satisfacible por ningún recorrido**. Es el GRAVE nº 2
                **cambia el contenido de `O12`**, que es resolución del propio Owner
 ```
 
-**MOTIVO DE LA ELECCIÓN, en las palabras del Owner:** *robustez y revalidación permanente por
-encima del ahorro operativo*. «No elijo la alternativa barata de certificarlo sólo durante la
-instalación. Quiero que instalación, adopción, migración y actualización comprueben la
-estructura vigente antes de continuar. La prioridad es una base sólida y permanente, aunque
-suponga más comprobaciones y consumo de recursos.»
+**MOTIVO DE LA ELECCIÓN — LO QUE EL OWNER ESCRIBIÓ, que es lo único que va entre comillas:**
+«No elijo la alternativa barata de certificarlo sólo durante la instalación. Quiero que
+instalación, adopción, migración y actualización comprueben la estructura vigente antes de
+continuar. La prioridad es una base sólida y permanente, aunque suponga más comprobaciones y
+consumo de recursos.»
 
-> **NOTA DE TRAZABILIDAD SOBRE ESTE MOTIVO — `S-26` del documento 23. Se DECLARA, no
-> se retira y no se sustituye.** Las tres alternativas de arriba **sí** son verbatim de
-> §13 de la adjudicación de `R`, dentro del documento 22, y ahí se cotejan palabra por
-> palabra. **La cita del motivo NO está en §13 y no puede estarlo**: §13 contiene la
-> PREGUNTA, redactada antes de que hubiera respuesta. **De dónde viene:** de la respuesta
-> expresa del Owner del **2026-08-30**, recogida al registrarla aquí. **Y no hay otra
-> sede:** `grep -rn 'No elijo la alternativa barata' docs/ kernel/` devuelve **una sola
-> línea, ésta**; el checkpoint y `00-INDICE` la parafrasean citándola de aquí y **no son
-> sede independiente**. Por tanto: **no se afirma que sea falsa — se declara
-> INVERIFICABLE**, porque ningún gate puede contrastarla contra nada. `O16` recibió un
-> ADDENDUM DE CRONOLOGÍA por `M-07`/`L-02` exactamente para dar atribuibilidad
-> demostrable; `O17` declara procedencia y fecha, y lo que le falta —trazabilidad de la
-> respuesta— queda dicho aquí en vez de presumirse resuelto.
+**Y su SEDE es hoy [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md),
+`O17` · Texto** —creada por `O19`—, no este registro. El literal no se contrasta de memoria:
+
+```bash
+sed -n '/^No elijo la alternativa barata/,/^recursos\.$/p' docs/owner/ADS-OWNER-RESOLUCIONES.md
+```
+
+**RESUMEN DE ESTE REGISTRO, QUE NO ES DEL OWNER:** *robustez y revalidación permanente por
+encima del ahorro operativo*.
+
+> **CORREGIDO por `DD-06` del QUINTO GATE, y es REINCIDENCIA de `Y-05`.** Este renglón
+> rotulaba esa frase «**en las palabras del Owner**», y la frase **no es suya**:
+> `grep -c 'robustez' docs/owner/ADS-OWNER-RESOLUCIONES.md` devuelve **0**. `Y-05` ya había
+> castigado la clase, y el remedio de entonces se aplicó **a las comillas** —se sacó la
+> frase del entrecomillado— **y no al ACTO de atribuir**, de modo que sobrevivió en
+> cursiva. Lo que se corrige aquí es el acto: **el resumen queda, rotulado como resumen de
+> este registro**, y el literal queda separado, con su sede y su comando.
+
+> **NOTA DE TRAZABILIDAD SOBRE ESTE MOTIVO — `S-26` del documento 23, y REANCLADA por
+> `O19`. Se DECLARA, no se retira y no se sustituye.** Las tres alternativas de arriba
+> **sí** son verbatim de §13 de la adjudicación de `R`, dentro del documento 22, y ahí se
+> cotejan palabra por palabra. **La cita del motivo NO está en §13 y no puede estarlo**:
+> §13 contiene la PREGUNTA, redactada antes de que hubiera respuesta. **De dónde viene:**
+> de la respuesta expresa del Owner del **2026-08-30**.
+>
+> **DÓNDE VIVE HOY, y es lo que ha cambiado:** en la **SEDE CANÓNICA**,
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md), `O17` ·
+> Texto — que `O19` creó y el Owner ratificó. **Este registro es PROYECCIÓN, no sede.**
+> El censo de sedes no se escribe: se deriva.
+>
+> ```bash
+> grep -rn 'No elijo la alternativa barata' docs/ kernel/
+> ```
+>
+> **CORREGIDO por `BT-01`, defecto que ningún revisor del quinto gate señaló y que
+> encontró el BARRIDO TRANSVERSAL de esta tanda** —el que `DD-06` ordena hacer por el ACTO
+> y no por la tipografía—. Este párrafo decía: *«**Y no hay otra sede:** … devuelve **una
+> sola línea, ésta** … Por tanto: **no se afirma que sea falsa — se declara
+> INVERIFICABLE**, porque ningún gate puede contrastarla contra nada.»* **El comando que
+> la propia nota publica la desmiente**: hoy devuelve **más de una línea**, y una de ellas
+> es la SEDE CANÓNICA. El texto del Owner **ya no es inverificable**: se contrasta contra
+> `docs/owner/`, que es exactamente lo que `O19` existe para permitir. **La afirmación
+> caducó en el commit que creó la sede, y sobrevivió a dos gates dentro de una nota que
+> llevaba su propio refutador escrito al lado.** Es la clase que `DD-13` nombra —una cifra
+> escrita junto al comando que la deriva— aplicada a un cardinal en letra.
+>
+> **Lo que sigue siendo cierto, y no se retira:** `O16` recibió un ADDENDUM DE CRONOLOGÍA
+> por `M-07`/`L-02` para dar atribuibilidad demostrable; `O17` declara procedencia y fecha,
+> y **la trazabilidad de la RESPUESTA —qué canal, qué mensaje— sigue sin fuente primaria
+> verificable**. Lo que se cierra es la parte que la sede canónica sí resuelve: **dónde
+> manda el texto**. Lo que queda abierto queda dicho, y no se presume resuelto.
 
 **Las DOCE reglas obligatorias que `O17` fija:**
 

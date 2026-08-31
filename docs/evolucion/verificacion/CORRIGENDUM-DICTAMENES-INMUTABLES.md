@@ -457,7 +457,77 @@ como un veredicto de un gate válido, ni citar su invalidez para retirarle fuerz
 hallazgo suyo por separado: están reproducidos con salida y con controles. La entrada existe
 para que ninguna sede derivada escoja la mitad que le convenga.
 
-## 14 · Regla general que este documento deja escrita
+## 14 · Manifiesto del QUINTO GATE · rotula «sobre el árbol del GATE» dos cifras que son de la CANDIDATA — `DD-18`
+
+**Sede:** `verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-5-20260831.md` **§2**
+—«`UNIVERSO DERIVADO 74 fuentes · 66 747 líneas —sobre el árbol del GATE—`»— y su **§6**,
+que repite las dos cifras en la resta de totales.
+
+**Lo que dice el árbol.** Las dos cifras se derivan sobre los DOS árboles con el mismo
+derivador, materializando cada commit como prescribe la RECETA DEL SOBRE. **Ninguna se
+copia:**
+
+```bash
+for C in 8c9ca9c $(git rev-parse gate/f4c-certificacion-5-20260831); do
+  D=$(mktemp -d)
+  GIT_INDEX_FILE=$D.idx git read-tree "$C"
+  GIT_INDEX_FILE=$D.idx git checkout-index -a -f --prefix="$D/"
+  ( cd "$D" && python3 docs/evolucion/verificacion/derivar-universo-obligatorio.py \
+      | grep 'fuentes obligatorias' )
+done
+```
+
+```text
+ÁRBOL DE LA CANDIDATA   8c9ca9c   74 fuentes · 66 747 líneas   ← lo que el manifiesto PUBLICA
+ÁRBOL DEL GATE          5ed7a3b   75 fuentes · 66 940 líneas   ← lo que el manifiesto ROTULA
+DIFERENCIA                        +1 fuente · +193 líneas
+LA FUENTE QUE FALTA               el propio manifiesto en curso, que entró en el universo
+                                  cuando `AA-01` convirtió `manifiestos/` en ZONA BARRIDA
+```
+
+**Qué se sigue.** Las cifras **son correctas del árbol de la CANDIDATA**, que es el objeto
+que el gate juzga; lo falso es el rótulo. **NO SE PUEDE** citar §2 ni §6 de ese manifiesto
+para afirmar nada del árbol del GATE. **SÍ SE PUEDE** citarlas para el árbol candidato, que
+es de lo que hablan. **El manifiesto no se edita**, y por eso esto vive aquí: es la vía que
+la regla §14 de este documento prescribe, y que la clase de §6, §7 y §8 —dos manifiestos
+anteriores, mismo defecto, misma fila— hizo necesaria.
+
+**Y consta la agravante:** es la **TERCERA instancia** de la clase `U-02`→`X-06`, que el
+adjudicador `AA` declaró **ROTA** un gate antes, **en el campo que el sobre manda mirar
+PRIMERO**. La corrección de una instancia no cerró la clase.
+
+## 15 · Manifiesto del QUINTO GATE · `OBLIGATORIO − ASIGNADO = 0` sobre el árbol del gate es INALCANZABLE, y lo será en todos los siguientes — `DD-19`
+
+**Sede:** el mismo manifiesto, **§6**, renglón `OBLIGATORIO menos ASIGNADO   0`.
+
+**Lo que dice el árbol.** El remedio de `AA-01` —convertir `manifiestos/` en ZONA BARRIDA—
+metió **el manifiesto en curso dentro de su propio universo**, y §5.4 obliga a que cada fila
+publique el SHA-256 de su fuente. Un manifiesto no puede contener su propia huella: fijarla
+la cambia. Por tanto, **sobre el árbol del GATE la resta no puede dar cero**, y no por un
+descuido de esta tanda:
+
+```text
+SOBRE EL ÁRBOL DE LA CANDIDATA   OBLIGATORIO − ASIGNADO = 0     ALCANZABLE, y es lo medido
+SOBRE EL ÁRBOL DEL GATE          OBLIGATORIO − ASIGNADO = 1     INALCANZABLE por construcción
+                                 la fuente que sobra es el manifiesto en curso
+```
+
+**Qué se sigue.** **NO SE PUEDE** leer «`OBLIGATORIO − ASIGNADO = 0`» como una propiedad del
+árbol del gate: es una propiedad del árbol de la CANDIDATA, y sólo ahí es satisfacible.
+**SÍ SE PUEDE** exigirla del árbol candidato, que es el objeto del reparto.
+
+**LO QUE SE CORRIGE HACIA ADELANTE, y es la primera de las tres vías que `DD` ofrece —«la
+primera cuesta una palabra»:** desde el gate siguiente **todo manifiesto ROTULA EXPLÍCITAMENTE
+DE QUÉ ÁRBOL habla cada cifra**, y **publica LAS DOS aritméticas** —la del árbol candidato y
+la del árbol del gate— en vez de una sola sin rótulo. La regla vive en «El criterio del gate
+siguiente» del `CHECKPOINT-ADS-NEXT.md`, que es su sede, y **este corrigendum no la crea: la
+registra**.
+
+**No se toca el derivador para que se excluya a sí mismo**, que era la tercera vía: un
+instrumento que se saca del universo que deriva es exactamente la clase de perímetro escrito
+que `DD-01` acaba de cerrar un piso más abajo.
+
+## 16 · Regla general que este documento deja escrita
 
 ```text
 UN DICTAMEN NO SE EDITA. Si contiene un error de hecho, se registra en este corrigendum con
@@ -475,6 +545,15 @@ que escribir dos entradas más —§7 y §8— para decir lo que una sola habrí
 TODA CIFRA DE ESTE DOCUMENTO VA CON SU COMANDO, sin excepción. Cuatro de las seis primeras
 entradas no lo llevaban (§9), y la cifra sustantiva de §4 tampoco (§12, por `Z2-11`); las
 dos cosas están corregidas. Una cifra sin comando no es refutable.
+
+NINGUNA HUELLA SE ABREVIA A MANO, EN NINGÚN INFORME —`DD-22` del QUINTO GATE—. `CC2`
+tecleó `91fe62d3691521…` por `91fe62d369152f…` en la columna abreviada de una fila cuya
+columna «recalculado» llevaba el valor completo y correcto: no era transcripción del sobre
+—`CC2` lo embebe entero byte a byte 197 líneas más arriba— pero **es la clase exacta que
+mató al CUARTO GATE**, donde ocho campos transcritos a mano difirieron entre cinco relevos.
+Si una huella se abrevia, se DERIVA: `cut -c1-N`, `git rev-parse --short`, o el propio
+comando que la produce. Una mano entre el dato y el informe es la única puerta que el sobre
+de ancla no puede cerrar por construcción.
 
 UNA REGLA NO SE ESCRIBE EN TIEMPO DE HECHO MEDIDO. «Los dictámenes no se editan» es lo que
 este corpus EXIGE, no lo que su historial dice: el documento 19 se editó después de
