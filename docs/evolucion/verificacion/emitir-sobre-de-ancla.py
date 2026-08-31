@@ -77,6 +77,11 @@ exige que el emisor sea el publicado.
 
 QUÉ NO ES, Y SE DICE
 --------------------
+**ANCLAR UNA RAMA EJECUTA CÓDIGO DE ESA RAMA** (`Z-16`): el derivador es fila de su propio
+universo, de modo que `universo_de()` ejecuta **el derivador del commit que se ancla** en la
+máquina de quien emite. Es necesario y no se puede evitar sin dejar de anclar lo que se
+ancla; se declara aquí porque no estaba declarado.
+
 No es un verificador externo. No protege frente al compromiso del canal del Owner, al
 compromiso simultáneo del repositorio y del coordinador, al robo de credenciales, a la
 reescritura autorizada de ramas remotas, a la manipulación del ejecutor externo ni a la
@@ -118,6 +123,7 @@ import tempfile
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                     os.pardir, os.pardir, os.pardir))
 DERIVADOR = "docs/evolucion/verificacion/derivar-universo-obligatorio.py"
+EMISOR = "docs/evolucion/verificacion/emitir-sobre-de-ancla.py"
 # `O19`. La SEDE CANÓNICA de las resoluciones del Owner, y las que `O19` NOMBRA como
 # exigidas. No es un censo: es el mínimo que el Owner ordenó anclar. Lo que el sobre
 # PUBLICA son todas las que la sede contenga, derivadas de ella.
@@ -140,9 +146,25 @@ def _arbol_limpio():
     """`X` punto 1: UN SOBRE SUCIO NO SE EMITE.
 
     Todo lo que el sobre publica se lee de commits, de modo que un fichero sucio ya no puede
-    cambiar un digest. Lo que la limpieza garantiza es lo otro: que **el emisor y el
-    derivador que están corriendo son los publicados**, y no una copia modificada en el
-    árbol de trabajo. Ésa es la puerta que `X-01` abrió con tres líneas sin commitear.
+    cambiar un digest.
+
+    `Z2-01`≡`Z-11`. AQUÍ DECÍA que la limpieza garantiza «que **el emisor y el derivador que
+    están corriendo son los publicados**», y **eso es falso**, por dos motivos que se dicen
+    enteros porque los midió un revisor:
+
+      · `git status --porcelain` compara contra el `HEAD` **LOCAL**, que este emisor no
+        contrasta contra `commit_c` ni contra `commit_g`: un `HEAD` local distinto del
+        commit del gate deja el árbol «limpio» sobre otro código;
+      · `git update-index --skip-worktree` vacía la salida con el fichero **modificado en
+        disco**, y el emisor imprime «ARBOL DE TRABAJO LIMPIO» junto a su propia cadena
+        falsificada.
+
+    Lo que esta guarda garantiza, y es todo lo que garantiza: **que no hay modificaciones
+    VISIBLES para `git status` en el momento de emitir**. Lo que sí permite comprobar el
+    contraste es el campo que el sobre publica hoy y antes no publicaba: el **SHA-256 del
+    EMISOR en los dos commits y el del fichero que ha corrido**. El ataque del
+    `--skip-worktree` es de clase `C` —exige control del índice de Git de quien emite— y
+    `O18` lo contrata para `F6`; lo que NO era de clase `C` era esta afirmación, y se retira.
     """
     sucio = subprocess.run(["git", "-C", RAIZ, "status", "--porcelain"],
                            capture_output=True, text=True)
@@ -183,6 +205,39 @@ def _sha256_en(commit, ruta):
     return hashlib.sha256(crudo).hexdigest(), crudo.count(b"\n")
 
 
+# ── el ÁRBOL DE UN COMMIT, materializado SIN atributos ───────────────────────────
+#
+# `Z2-03`≡`Z-04`. Esto era `git archive <commit> | tar -x`, y **`git archive` HONRA
+# `export-ignore`**: un `.gitattributes` confirmado en el propio commit retiraba un dictamen
+# nuevo del árbol desplegado, el derivador daba una fuente menos, el sobre publicaba ese
+# universo encogido con `rc=0` **y, como la RECETA publicada usaba el mismo camino, el
+# digest que el revisor recalculaba COINCIDÍA**. Nada delataba la pérdida. Medido: 72 rutas
+# derivando del árbol del commit, 71 pasando por el archive.
+#
+# El remedio es de RESTA: se deja de usar el camino que lee atributos. `git read-tree` sobre
+# un índice temporal FUERA del repositorio y `git checkout-index -a --prefix` materializan
+# **el árbol del commit y nada más** —no consultan `.gitattributes` y no pueden honrar
+# `export-ignore`—, no tocan el índice ni el árbol de trabajo de quien emite, y la RECETA
+# publicada usa exactamente los mismos dos comandos. No hay guarda nueva que añadir: se ha
+# quitado el paso que mentía.
+def _desplegar(commit, destino):
+    """Materializa el árbol de `commit` bajo `destino`, sin honrar `export-ignore`."""
+    idx = os.path.join(destino, ".indice-temporal")
+    entorno = dict(os.environ, GIT_INDEX_FILE=idx)
+    for orden in (["read-tree", commit],
+                  ["checkout-index", "-a", "--prefix=%s/" % os.path.join(destino, "t")]):
+        p = subprocess.run(["git", "-C", RAIZ] + orden, capture_output=True, env=entorno)
+        if p.returncode != 0:
+            raise NoEmitible(
+                "no se pudo materializar el árbol de `%s` con `git %s`: %s. El despliegue "
+                "NO usa `git archive` a propósito: honra `export-ignore` y un "
+                "`.gitattributes` del propio commit retiraba fuentes del universo con el "
+                "digest cuadrando (`Z-04`)"
+                % (commit[:7], orden[0], p.stderr.decode("utf-8", "replace").strip()))
+    os.remove(idx)
+    return os.path.join(destino, "t")
+
+
 # ── el universo, DERIVADO DE UN COMMIT y de nada más ─────────────────────────────
 #
 # `X` punto 1. El árbol se materializa con `git archive` fuera del repositorio, el derivador
@@ -194,28 +249,23 @@ def universo_de(commit):
     """(digest, n_fuentes, n_lineas, {ruta: sha256}) del universo obligatorio de `commit`."""
     tmp = tempfile.mkdtemp(prefix="sobre-de-ancla-")
     try:
-        tar = subprocess.run(["git", "-C", RAIZ, "archive", commit],
-                             capture_output=True)
-        if tar.returncode != 0:
-            raise NoEmitible("`git archive %s` falló: %s"
-                             % (commit[:7], tar.stderr.decode("utf-8", "replace").strip()))
-        ex = subprocess.run(["tar", "-x", "-C", tmp], input=tar.stdout,
-                            capture_output=True)
-        if ex.returncode != 0:
-            raise NoEmitible("no se pudo desplegar el árbol de `%s`: %s"
-                             % (commit[:7], ex.stderr.decode("utf-8", "replace").strip()))
-        deriv = os.path.join(tmp, DERIVADOR)
+        arbol = _desplegar(commit, tmp)
+        deriv = os.path.join(arbol, DERIVADOR)
         if not os.path.isfile(deriv):
             raise NoEmitible("el commit `%s` no contiene `%s`: sin derivador no hay universo "
                              "que anclar" % (commit[:7], DERIVADOR))
         p = subprocess.run([sys.executable, deriv, "--rutas"], capture_output=True,
-                           text=True, cwd=tmp)
+                           text=True, cwd=arbol)
         if p.returncode != 0:
             raise NoEmitible("el derivador DEL COMMIT `%s` no completó: código %d · %s"
                              % (commit[:7], p.returncode, p.stderr.strip()))
         rutas = [r for r in p.stdout.split("\n") if r.strip()]
         if not rutas:
             raise NoEmitible("el derivador de `%s` no devolvió ninguna fuente" % commit[:7])
+        # lo que el componente (iv) DEJA FUERA viaja en el sobre. El derivador lo publica
+        # hoy también por `--rutas`, que es el camino que se audita: un universo que encoge
+        # lo dice, y el revisor lo lee en el ancla y no en una tabla que nadie ejecuta.
+        excluidos = [l.rstrip() for l in p.stderr.split("\n") if l.strip()]
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -227,7 +277,7 @@ def universo_de(commit):
         huellas[rel] = h
         filas.append("%s %s" % (rel, h))
     digest = hashlib.sha256("\n".join(filas).encode("utf-8")).hexdigest()
-    return digest, len(rutas), lineas, huellas
+    return digest, len(rutas), lineas, huellas, excluidos
 
 
 # ── la SEDE CANÓNICA DEL OWNER, DERIVADA DEL COMMIT AUDITADO ─────────────────────
@@ -357,10 +407,15 @@ def asignaciones_de(texto_manifiesto, ruta):
 # emite el separador ANTES de cada fila menos la primera, de modo que la corriente termina
 # sin salto, igual que el `join`. `LC_ALL=C` fija la colación de `sort` a la del `sorted()`
 # de Python. Y todo se lee del COMMIT: `git archive` para derivar las rutas con el derivador
-# de ese commit, `git show` para cada byte.
+# de ese commit, `git show` para cada byte. Y el árbol se materializa con `read-tree` +
+# `checkout-index` y NO con `git archive`: `git archive` honra `export-ignore` y un
+# `.gitattributes` del propio commit retiraba fuentes del universo **con este digest
+# cuadrando** (`Z-04`). Los dos comandos son los mismos que ejecuta el emisor.
 RECETA = """  C=%s
-  d=$(mktemp -d) && git archive "$C" | tar -x -C "$d"
-  python3 "$d/%s" --rutas | LC_ALL=C sort |
+  d=$(mktemp -d)
+  GIT_INDEX_FILE="$d/idx" git read-tree "$C"
+  GIT_INDEX_FILE="$d/idx" git checkout-index -a --prefix="$d/t/"
+  python3 "$d/t/%s" --rutas 2>/dev/null | LC_ALL=C sort |
     while read -r r; do echo "$r $(git show "$C:$r" | sha256sum | cut -d' ' -f1)"; done |
     awk 'NR>1{printf "\\n"}{printf "%%s",$0}' | sha256sum
   rm -rf "$d\""""
@@ -373,6 +428,36 @@ RECETA_SEDE = """  git show %s:%s |
     awk '/^# /{p = ($0 ~ /^# `%s`/)} p' | sha256sum"""
 
 
+# ── el campo 14 · LA IDENTIDAD, que es el ancla de `O18(b)` ──────────────────────
+#
+# `AA-05`. `O18` dice sin adorno que no hay forma mecánica de comprobar esta identidad, y
+# eso sigue siendo verdad: lo único que se puede hacer mecánicamente es **negarse a emitir
+# sin ella y negarse a aceptar un ROL en su lugar**, que es lo que el sobre emitido hacía.
+# No se comprueba quién es: se comprueba que se haya NOMBRADO a alguien.
+_ROLES = ("coordinador", "orquestador", "revisor", "adjudicador", "dictaminador",
+          "relevo", "agente", "owner", "ejecutor", "gate")
+
+
+def _identidad(emisor):
+    txt = (emisor or "").strip()
+    if not txt:
+        raise NoEmitible(
+            "el campo 14 —IDENTIDAD DEL EMISOR— viene VACÍO. §11.6 lo declara obligatorio y "
+            "dice que **el ancla de `O18(b)` ES ESA IDENTIDAD** mientras no exista `(c)`: un "
+            "sobre sin ella no ancla nada")
+    plano = re.sub(r"[^a-záéíóúñ ]", " ", txt.lower())
+    palabras = [w for w in plano.split() if w]
+    if not palabras:
+        raise NoEmitible("el campo 14 no contiene ni una palabra: %r" % txt)
+    if all(w in _ROLES or len(w) <= 3 or w.isdigit() for w in palabras):
+        raise NoEmitible(
+            "el campo 14 declara un ROL y no una IDENTIDAD: %r. §11.6 pide «quién lo emite, "
+            "NOMBRADO», y «coordinador del gate» no nombra a nadie. El sobre del cuarto gate "
+            "publicó `coordinador orquestador del gate 4 de F4c` y `AA` lo midió como el "
+            "campo 14 fallando **en el sobre EMITIDO**. Nómbrese a quien lo emite" % txt)
+    return txt
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--candidata", required=True)
@@ -381,10 +466,20 @@ def main():
     ap.add_argument("--asignaciones", type=int, default=None,
                     help="OPCIONAL. Se DERIVA del manifiesto; si se pasa, tiene que "
                          "coincidir con lo derivado o no se emite sobre")
-    ap.add_argument("--emisor", default="coordinador del gate")
+    # `AA-05`. Esto era `default="coordinador del gate"`: texto libre, NO `required`, sin
+    # validación **y con un ROL como valor por defecto**. §11.6 campo 14 pide «quién lo
+    # emite, NOMBRADO» y dice que «el ancla de (b) ES ESA IDENTIDAD» mientras no exista
+    # `(c)`. El sobre emitido publicaba `EMISOR  coordinador orquestador del gate 4 de F4c`
+    # —un rol— y **el campo 14 fallaba en el sobre EMITIDO, no sólo en el entregado**.
+    # Ahora es OBLIGATORIO, no tiene valor por defecto, y se rechaza lo que es un ROL y no
+    # un nombre. Un sobre sin identidad no se emite.
+    ap.add_argument("--emisor", required=True,
+                    help="OBLIGATORIO. La IDENTIDAD NOMBRADA de quien emite (§11.6, campo "
+                         "14). Un ROL no es una identidad y se rechaza")
     a = ap.parse_args()
 
     try:
+        _identidad(a.emisor)
         _arbol_limpio()
         commit_c = _remota(a.candidata)
         arbol_c = _git("rev-parse", commit_c + "^{tree}")
@@ -401,8 +496,16 @@ def main():
                 "ése fue `X-05`" % (a.asignaciones, asig, filas_reparto))
         sha_der_c, _ = _sha256_en(commit_c, DERIVADOR)
         sha_der_g, _ = _sha256_en(commit_g, DERIVADOR)
-        dig_c, nf_c, nl_c, hue_c = universo_de(commit_c)
-        dig_g, nf_g, nl_g, hue_g = universo_de(commit_g)
+        # `Z2-01`≡`Z-11`. El sobre publicaba el SHA del DERIVADOR dos veces y **nunca el
+        # suyo propio**, que es lo único con lo que el revisor puede contrastar que el
+        # emisor que corrió es el publicado. Se publica, de los DOS commits, y con la orden
+        # de contrastarlo contra el fichero que corre.
+        sha_emi_c, _ = _sha256_en(commit_c, EMISOR)
+        sha_emi_g, _ = _sha256_en(commit_g, EMISOR)
+        with open(os.path.abspath(__file__), "rb") as _fh:
+            sha_emi_corriendo = hashlib.sha256(_fh.read()).hexdigest()
+        dig_c, nf_c, nl_c, hue_c, exc_c = universo_de(commit_c)
+        dig_g, nf_g, nl_g, hue_g, exc_g = universo_de(commit_g)
         sede_c, res_c = sede_del_owner(commit_c, "COMMIT AUDITADO (candidata)")
         sede_g, res_g = sede_del_owner(commit_g, "commit del gate")
     except NoEmitible as e:
@@ -416,7 +519,9 @@ def main():
     W("SOBRE DE ANCLA · emitido por el coordinador ANTES de crear a ningún revisor\n")
     W("=" * 78 + "\n")
     W("  REPOSITORIO             %s\n" % _git("remote", "get-url", "origin"))
-    W("  ARBOL DE TRABAJO        LIMPIO · `git status --porcelain` vacío al emitir\n")
+    W("  ARBOL DE TRABAJO        `git status --porcelain` VACÍO al emitir, y eso es todo lo\n")
+    W("                          que prueba: no había modificaciones VISIBLES para `git\n")
+    W("                          status`. Ver la obligación 5 y los SHA-256 del emisor\n")
     W("  TODO LO DE ABAJO SE LEE DE COMMITS con `git show <commit>:<ruta>`. Ni un byte\n")
     W("  del directorio de trabajo de quien emite\n")
     W("-" * 78 + "\n")
@@ -441,9 +546,21 @@ def main():
     W(_f % ("", "CANDIDATA", "GATE"))
     W(_f % ("COMMIT", commit_c, commit_g))
     W(_f % ("SHA-256 DEL DERIVADOR", sha_der_c, sha_der_g))
+    W(_f % ("SHA-256 DEL EMISOR", sha_emi_c, sha_emi_g))
     W(_f % ("FUENTES OBLIGATORIAS", nf_c, nf_g))
     W(_f % ("LINEAS OBLIGATORIAS", nl_c, nl_g))
     W(_f % ("DIGEST DEL UNIVERSO", dig_c, dig_g))
+    W("\n")
+    W("\n")
+    W("  SHA-256 DEL EMISOR QUE HA CORRIDO ESTE SOBRE: %s\n" % sha_emi_corriendo)
+    if sha_emi_corriendo == sha_emi_g:
+        W("  COINCIDE con el del commit del gate. El revisor puede rehacer este contraste:\n")
+    else:
+        W("  **NO COINCIDE** con el del commit del gate (%s). El fichero que ha emitido este\n"
+          % sha_emi_g)
+        W("  sobre NO es el que el commit del gate publica, y eso se dice aquí en vez de\n")
+        W("  callarse. El revisor rehace el contraste:\n")
+    W("    git show %s:%s | sha256sum\n" % (commit_g, EMISOR))
     W("\n")
     if difieren:
         W("  RUTAS EN QUE LOS DOS UNIVERSOS DIFIEREN: %d\n" % len(difieren))
@@ -453,6 +570,15 @@ def main():
     else:
         W("  RUTAS EN QUE LOS DOS UNIVERSOS DIFIEREN: NINGUNA. Los dos digest coinciden y\n")
         W("  el gate no ha tocado el universo después de publicar la candidata\n")
+    W("\n")
+    W("LO QUE EL COMPONENTE (iv) DEL DERIVADOR DEJA FUERA DEL UNIVERSO, con su H1, tal como\n")
+    W("el derivador de cada commit lo publica. Un universo que encoge lo dice, y lo dice\n")
+    W("aqui: un dictamen nuevo cuyo H1 lleve una voz de NO-DICTAMEN sale del universo con\n")
+    W("`rc=0`, y el revisor tiene que poder verlo sin ejecutar nada (`Z-08`, `Z-13`).\n")
+    for _papel, _exc in (("CANDIDATA", exc_c), ("GATE", exc_g)):
+        W("\n  ── %s\n" % _papel)
+        for _l in _exc:
+            W("  %s\n" % _l)
     W("=" * 78 + "\n")
     W("LA SEDE CANONICA DE LAS RESOLUCIONES DEL OWNER, QUE `O19` ORDENA ANCLAR AQUI.\n")
     W("`O19` traslada la AUTORIDAD CANONICA de la parafrasis del coordinador a esta sede:\n")
@@ -527,8 +653,15 @@ def main():
     W("  4 LAS RUTAS EN QUE LOS DOS UNIVERSOS DIFIEREN, listadas arriba, son la superficie\n")
     W("    exacta en que la candidata y el gate no son el mismo objeto. Todo lo que el\n")
     W("    manifiesto afirme sobre ellas tiene que decir DE QUE ARBOL habla.\n")
-    W("  5 SI EL ARBOL DE TRABAJO DE QUIEN EMITIO ESTABA SUCIO NO HAY SOBRE: este emisor se\n")
-    W("    niega a emitirlo. Un sobre existente es, por construcción, un sobre limpio.\n")
+    W("  5 ESTE EMISOR SE NIEGA A EMITIR SI `git status --porcelain` NO VIENE VACIO, y eso\n")
+    W("    es TODO lo que esa negativa prueba: que no habia modificaciones VISIBLES para\n")
+    W("    `git status` al emitir. NO prueba que el emisor y el derivador que corrieron sean\n")
+    W("    los publicados —`git status` compara contra el HEAD LOCAL, y\n")
+    W("    `git update-index --skip-worktree` lo vacia con el fichero modificado en disco—.\n")
+    W("    LO QUE SI PUEDE COMPROBAR USTED es el SHA-256 DEL EMISOR y el DEL DERIVADOR que\n")
+    W("    este sobre publica de los DOS commits: recalculelos con `git show <commit>:<ruta>`\n")
+    W("    y contrastelos. `Z-11` midio que la frase anterior —«un sobre existente es, por\n")
+    W("    construccion, un sobre limpio»— era falsa, y se retira.\n")
     W("  6 RECALCULE LOS DIGEST DE LA SEDE CANONICA DEL OWNER y contrastelos con toda sede\n")
     W("    derivada que cite una resolucion suya. La AUTORIDAD es la sede; el registro de\n")
     W("    decisiones es una PROYECCION. Una parafrasis que AMPLIE el texto canonico es un\n")

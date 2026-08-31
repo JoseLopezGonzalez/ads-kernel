@@ -230,9 +230,15 @@ def _censo_de_comprobaciones(ejecutadas):
     rel_bat = os.path.relpath(os.path.abspath(__file__), RAIZ).replace(os.sep, "/")
     _dir_inst = os.path.join(RAIZ, _DIR_INSTRUMENTAL)
     try:
+        # `Z1-07`. Aquí decía `and not n.startswith(".")`: el inventario de integridad del
+        # instrumental que produce el ANCLA **se saltaba todo fichero cuyo nombre empezara
+        # por punto**, sin motivo escrito y sin que nada lo dijera. Un
+        # `.emitir-sobre-de-ancla.py` vivía en el directorio, fuera del inventario, fuera
+        # del README y fuera del contraste contra `HEAD`. Se excluye por lo mismo que en el
+        # resto de la batería —`_EXCLUIDO`: bytecode y `.git`— y por nada más.
         inventario = sorted(_DIR_INSTRUMENTAL + "/" + n for n in os.listdir(_dir_inst)
                             if os.path.isfile(os.path.join(_dir_inst, n))
-                            and not n.startswith("."))
+                            and _en_zona(_DIR_INSTRUMENTAL + "/" + n))
     except OSError as e:
         return fallos + [f"no se puede derivar el inventario de `{_DIR_INSTRUMENTAL}` "
                          f"({e.strerror}): sin inventario no hay integridad que comprobar"]
@@ -1390,8 +1396,35 @@ dup = [k for k, v in Counter(ids).items() if v > 1]
 # corrige es el CANON, no el contraste — que sigue siendo por IGUALDAD EXACTA, `Q-06`—:
 # una condición puede volver a abrirse, y el instrumento tiene que saber decirlo. Escribir
 # «CERRADA» para poner la comprobación en verde habría sido el mutante de `Q-06`.
-_ESTADOS_CL = ("CORREGIDAS EN F4c", "NO CERRADA", "REGISTRADAS PARA F5",
+# `AA` / CUARTO GATE. El canon vuelve a quedarse corto, y por la MISMA razón que la vez
+# anterior: el cuarto gate midió `ASIGNADO − LEÍDO = 1` y la regla de cierre de `C-L.5`
+# excluye la suficiencia, con lo que la clasificación vigente la mueve a **ABIERTA** — la
+# primera vez en cuatro gates que deja de estar certificada. El canon tenía SEIS estados
+# escritos y ése no estaba, de modo que `G-16` daba ROJO **con razón**: no reconocía el
+# estado. **Lo que se corrige es el CANON, no el contraste**, que sigue siendo por IGUALDAD
+# EXACTA (`Q-06`): una condición puede volver a abrirse y el instrumento tiene que saber
+# decirlo. Escribir «CERTIFICADA» en el checkpoint para poner esto en verde habría sido el
+# mutante que esta comprobación existe para cazar.
+_ESTADOS_CL = ("CORREGIDAS EN F4c", "NO CERRADA", "ABIERTA", "REGISTRADAS PARA F5",
                "CONTRATADA PARA F6", "MIXTA POR DESGLOSE", "CERTIFICADA POR")
+
+# `Z1-04`≡`Z-06`. El contraste de ESTADO era una expresión escrita EN LÍNEA dentro de
+# `G-16c` —`if _det not in _admitidos`—, y por eso el bloque `c` de `G-31`, que existe para
+# probar que ese contraste no se apaga con una palabra, no tenía a quién llamar: se escribió
+# como `if f"CERRADA {_w}" in ("CERRADA",)`, **dos condiciones insatisfacibles por
+# construcción** que no invocaban nada. Medido: se revirtió `G-16c` de igualdad exacta a
+# `startswith` —la regresión que ese bloque existe para cazar— y `G-31` siguió en `OK`.
+#
+# El evaluador se extrae aquí, con UNA sede, y las dos lo llaman: `G-16c` para juzgar el
+# árbol y `G-31c` para ejercitarlo con las palabras gatillo pegadas. No es una comprobación
+# nueva: es la que ya estaba, invocando por fin lo que decía probar.
+def _estado_casa(detalle, admitidos):
+    """¿La fila de detalle declara EXACTAMENTE uno de los estados admitidos? (`Q-06`)
+
+    Por IGUALDAD, que es la única comparación que ninguna calificación posterior puede
+    invertir: «CERRADA SOLO EN PARTE, SIGUE ABIERTA Y BLOQUEA F5» no es «CERRADA».
+    """
+    return detalle in admitidos
 
 _g16c = []
 _asig, _declarado = {}, {}
@@ -1454,6 +1487,7 @@ else:
     _CANON = {
         "CORREGIDAS EN F4c":    ("CERRADA",),
         "NO CERRADA":           ("NO CERRADA",),
+        "ABIERTA":              ("ABIERTA",),
         "REGISTRADAS PARA F5":  ("REGISTRADA PARA F5", "REGISTRADA"),
         "CONTRATADA PARA F6":   ("CONTRATADA PARA F6", "CONTRATADA"),
         "MIXTA POR DESGLOSE":   ("MIXTA",),
@@ -1491,7 +1525,7 @@ else:
         if not _det:
             continue
         _admitidos = _CANON.get(_estados[0], ())
-        if _det not in _admitidos:
+        if not _estado_casa(_det, _admitidos):
             _g16c.append(f"{_id}: el resumen lo pone en «{_estados[0]}» y su fila de detalle "
                          f"dice «{_det}», que NO es ninguno de los estados admitidos "
                          f"{list(_admitidos)}. El contraste es por IGUALDAD, no por prefijo: "
@@ -1512,8 +1546,17 @@ else:
                                  r"[^\n]*(?:contratad|NO implementad)", _b13, re.I):
         if "J-11" in _comp13:
             _g16c.append("`J-11` no consta como contratado para F6 y no implementado")
-    if _asig.get("C-L.5") != ["CERTIFICADA POR"]:
-        _g16c.append(f"`C-L.5` no está CERTIFICADA POR COBERTURA: {_asig.get('C-L.5')}")
+    # Aquí había `if _asig.get("C-L.5") != ["CERTIFICADA POR"]`, y **se RETIRA**: era un
+    # ESTADO ESCRITO A MANO dentro de la comprobación cuyo objeto es esa disciplina —la
+    # clase `O-02`—, y ha caducado en cuanto el CUARTO GATE reabrió `C-L.5`. No aportaba
+    # nada que no estuviera ya ejecutado dos bloques más arriba y de forma general: que
+    # TODA condición tenga estado, que ninguna tenga DOS, que la suma dé trece, y que
+    # **cada resumen coincida por IGUALDAD EXACTA con su fila de detalle**. Lo único que
+    # añadía era exigir que el estado fuera uno concreto, que es justo lo que el instrumento
+    # no puede decidir: la sede canónica de la clasificación es el checkpoint, no esto.
+    # NO SE ABLANDA NADA: un estado fuera del canon, un prefijo del tipo «CERRADA SOLO EN
+    # PARTE» y el borrado de la línea de resumen siguen dando ROJO los tres, por las tres
+    # guardas generales de arriba.
     # `C-L.3` tiene que estar descrita por `D104` y NO por la regla que `M-01` refutó
     _m3 = re.search(r"^\s*C-L\.3\s+.*?(?=^\s*C-L\.\d|\Z)", _vigente, re.M | re.S)
     if not _m3 or "D104" not in _m3.group(0):
@@ -1779,6 +1822,26 @@ _head_arbol = set(_head_arbol_raw.split()) if _head_arbol_raw is not None else s
 def _rel(p):
     return os.path.relpath(p, RAIZ).replace(os.sep, "/")
 
+# ── el PERÍMETRO DE EXCLUSIÓN, y se excluye por lo que un fichero ES ─────
+#
+# `Z1-03`≡`Z-05`. Esto decía `(?:^|/)(?:\.git|__pycache__)(?:/|$)|\.pyc$`: excluía un
+# DIRECTORIO POR SU NOMBRE, con el motivo escrito «los artefactos de bytecode, que no son
+# fuente». Un directorio no es un artefacto de bytecode: admite cualquier cosa. El revisor
+# `Z` puso dentro de `__pycache__` una copia **byte a byte** del material APROBADO, una
+# segunda sede con su propio bloque `ads:proceso` y una copia del EMISOR DEL SOBRE, y la
+# batería dio **38/38** —también con `git add -f`—. El comentario de `G-29` escribe la regla
+# que esta línea incumplía: «una lista de lo que se excluye no puede caducar por omisión: lo
+# que olvide nombrar se queda DENTRO».
+#
+# Ahora se excluye por NATURALEZA y nada más: **el bytecode, por su extensión**, y `.git`,
+# que no es corpus sino el almacén contra el que se compara. Un `.md` dentro de
+# `__pycache__` es corpus, y `G-29` lo ve como lo que es: una ampliación sin clasificar.
+_EXCLUIDO = re.compile(r"(?:^|/)\.git(?:/|$)|\.py[co]$")
+
+def _en_zona(rel):
+    """¿`rel` cae dentro del corpus gobernado? Todo, salvo lo excluido con motivo."""
+    return not _EXCLUIDO.search(rel)
+
 # Los ficheros EN CORRECCIÓN son los que esta batería declara como objeto de la tanda, y
 # ya los declaraba: son los mismos cuatro que `G-18` y `G-19` recorren. No se escribe una
 # segunda lista.
@@ -1824,13 +1887,15 @@ def _inmutables():
     # ahí quedaría fuera sin que nada lo dijera, que es la clase de perímetro escrito que
     # este corpus lleva cuatro gates persiguiendo.
     dir_own = os.path.join(RAIZ, "docs/owner")
+    # `Z1-07`. Este barrido saltaba los nombres que empiezan por punto —directorios y
+    # ficheros— y volvía a ser un perímetro escrito: `docs/owner/.RESOLUCIONES.md` quedaba
+    # fuera del inventario sin que nada lo dijera. Se excluye por lo mismo que en todas las
+    # demás sedes de esta batería, `_EXCLUIDO`: bytecode y `.git`, y nada más.
     for base, dirs, ficheros in os.walk(dir_own):
-        dirs[:] = [d for d in dirs if d != "__pycache__" and not d.startswith(".")]
+        dirs[:] = [d for d in dirs if not _EXCLUIDO.search(d + "/")]
         for nombre in sorted(ficheros):
-            if nombre.startswith("."):
-                continue
             rel = _rel(os.path.join(base, nombre))
-            if rel not in _EN_CORRECCION:
+            if _en_zona(rel) and rel not in _EN_CORRECCION:
                 salida.append(rel)
     return salida
 
@@ -1892,6 +1957,16 @@ check("G-22",
       f"SEDE DEL OWNER y "
       f"{len([f for f in _INMUTABLES if '/manifiestos/' not in f and not f.startswith('docs/owner/')])} "
       f"documentos numerados— intactos frente a `HEAD` y a `05f71b7`" +
+      # `AA-03`. La exención de los cuatro ficheros EN CORRECCIÓN no se decía en ninguna
+      # parte, y `00-INDICE.md` es uno de ellos: es **la sede que gobierna qué se admite en
+      # `docs/owner/` y qué documento numerado nuevo se admite**, y editarla sola daba
+      # `38/38`. La exención es legítima —son el objeto de la tanda, y `G-18` y `G-19` los
+      # recorren— pero callarla no lo era. Se NOMBRA, para que quien lea el informe sepa
+      # qué NO se ha contrastado. Que además CADUQUE, como caduca la de `G-34`, es una
+      # decisión de la tanda que la declara y no del instrumento.
+      f" · {len(_EN_CORRECCION)} EXENTOS y NOMBRADOS, por ser el objeto declarado de esta "
+      f"tanda —`00-INDICE.md` entre ellos, que es la sede que gobierna la ADMISIÓN—: "
+      f"{sorted(_EN_CORRECCION)}" +
       (f" · {len(_sin_base)} todavía sin confirmar y por tanto sin línea base: "
        f"{_sin_base}" if _sin_base else "") +
       (f" · {len(_sin_base_rev)} nacidos DESPUÉS de `05f71b7` y contrastados sólo contra "
@@ -2483,12 +2558,28 @@ for etiqueta, sedes in (
     if len(vals) > 1:
         _fallos_26.append(f"d) sedes vivas incompatibles para «{etiqueta}»: {vals}")
 
+# `Z1-07`. El README publicaba «1 899 de 3 562 líneas del checkpoint (53 %) exentas …
+# retirada, bajan a 1 229»: DOS cifras escritas a mano, medidas sobre un árbol que ya no
+# existe y que **ninguna comprobación contrastaba**. `Z3` volvió a medirlas y le dieron
+# 1 240 de 3 817. Una cifra publicada que nadie deriva es exactamente lo que `P-01` castiga,
+# en el fichero que declara la disciplina. Aquí se DERIVA, sobre el árbol que se tiene
+# delante, y el README deja de escribirla: la lee de este detalle.
+_pos_chk, _exentas_chk = 0, 0
+for _l_chk in tchk.split("\n"):
+    if _en_region_historica(tchk, _pos_chk):
+        _exentas_chk += 1
+    _pos_chk += len(_l_chk) + 1
+_tot_chk = len(tchk.split("\n"))
+
 check("G-26",
       "recuentos DERIVADOS: filas/ids · prosa/derivado · agregados/miembros · sin totales incompatibles",
       not _fallos_26,
       "; ".join(_fallos_26) or
       f"{n_x} filas = {len(set(xs))} ids · {n_pn} presiones derivadas de §16 · "
-      f"prosa viva y agregados coinciden")
+      f"prosa viva y agregados coinciden · EXENCIÓN VIGENTE POR REGIÓN HISTÓRICA, DERIVADA "
+      f"del árbol que se tiene delante: {_exentas_chk} de {_tot_chk} líneas del checkpoint "
+      f"({100.0 * _exentas_chk / _tot_chk:.1f} %), y ninguna cifra de este renglón se "
+      f"escribe a mano")
 
 # ── G-27 · A7 · los cinco CAMPOS en la regla 1 de §2.6.10 ─────
 r1 = re.search(r"1  EL COMMIT LOCAL SE HACE[^\n]*\n(?:[^\n]*\n){0,3}", t11)
@@ -2617,11 +2708,9 @@ check("G-28",
 # esto; y quien quiera sacar algo del perímetro tiene que escribirlo aquí y responder de
 # ello. Una lista de lo que se excluye no puede caducar por omisión: lo que olvide nombrar
 # se queda DENTRO.
-_EXCLUIDO = re.compile(r"(?:^|/)(?:\.git|__pycache__)(?:/|$)|\.pyc$")
-
-def _en_zona(rel):
-    """¿`rel` cae dentro del corpus gobernado? Todo, salvo lo excluido con motivo."""
-    return not _EXCLUIDO.search(rel)
+# `Z1-03`≡`Z-05`. La definición vive ARRIBA, junto a `_rel()`, porque el inventario de
+# inmutables la necesita antes que `G-29`: escribirla dos veces era crear la segunda sede.
+# Aquí sólo se usa.
 
 def _ficheros_zona():
     salida = set()
@@ -2656,11 +2745,25 @@ except SedeIlegible as _e:
     _g29.append(f"`00-INDICE.md` no se puede leer ({_e}): sin él no hay sede desde la que "
                 f"un documento numerado nuevo esté enlazado, y admitirlo sin ella es el "
                 f"`return True` en blanco que `T-03` explotó")
-_ENLAZADOS_INDICE = set(re.findall(r"\]\(([A-Za-z0-9][-A-Za-z0-9_.]*\.md)\)", _t_idx))
+# `Z1-01`≡`W-04`≡`Z-02`, y `AA-E1`/`AA-E3`. Los dos conjuntos guardaban NOMBRES DE FICHERO
+# y la admisión comparaba `rel.split("/")[-1]`, de modo que un enlace a
+# `../owner/ADS-OWNER-RESOLUCIONES.md` admitía ese nombre **a cualquier profundidad**:
+# `docs/owner/vigente/…` y `docs/owner/x/y/z/…` pasaban en 38/38 declarando PREVALECER
+# sobre la sede canónica, y `G-22` los NOMBRABA en su detalle mientras imprimía `OK`. La
+# línea nació en `1d3b5d4`, el commit que implementa `O19`.
+#
+# Aquí se guardan RUTAS COMPLETAS, resueltas contra el directorio del índice: un enlace
+# admite **una ruta**, no un nombre. Es el mismo defecto de perímetro que `G-29` cierra un
+# piso más arriba —derivar en vez de enumerar—, aplicado al discriminante.
+_ENLAZADOS_INDICE = {"docs/evolucion/" + n for n in
+                     re.findall(r"\]\(([A-Za-z0-9][-A-Za-z0-9_.]*\.md)\)", _t_idx)}
 # La misma sede, para la otra zona: `00-INDICE.md` enlaza `docs/owner/` con ruta relativa
-# `../owner/`, que el patrón de arriba no puede recoger porque empieza por punto.
-_ENLAZADOS_INDICE_OWNER = set(re.findall(
-    r"\]\(\.\./owner/([A-Za-z0-9][-A-Za-z0-9_.]*\.md)\)", _t_idx))
+# `../owner/`, que el patrón de arriba no puede recoger porque empieza por punto. El
+# subcamino se conserva ENTERO: `../owner/vigente/X.md` admite `docs/owner/vigente/X.md` y
+# NO admite `docs/owner/X.md`, ni al revés.
+_ENLAZADOS_INDICE_OWNER = {"docs/owner/" + n for n in re.findall(
+    r"\]\(\.\./owner/((?:[A-Za-z0-9][-A-Za-z0-9_.]*/)*[A-Za-z0-9][-A-Za-z0-9_.]*\.md)\)",
+    _t_idx)}
 _ORDINALES_PUBLICADOS = {m.group(1) for m in
                          (re.match(r"^docs/evolucion/(\d\d)-.*\.md$", f)
                           for f in _publicado) if m}
@@ -2676,12 +2779,20 @@ def _ampliacion_admitida(rel):
         # `O19`. `docs/owner/` no admitía NINGUNA ampliación, y el Owner ordenó crear ahí la
         # SEDE CANÓNICA de sus resoluciones: la zona tenía que admitir el fichero que su
         # propia resolución manda publicar, o la batería habría bloqueado el remedio. Se
-        # admite CLASIFICADA y con la MISMA condición que un documento numerado nuevo —la
-        # regla que el propio índice escribió: **enlazado desde `00-INDICE.md`**, y en el
-        # mismo commit que lo crea—, de modo que una segunda sede plantada en `docs/owner/`
-        # sin enlazar sigue siendo ROJA. Y una vez confirmado, su contenido queda bajo el
-        # inventario de inmutables de `G-22`, que ahora alcanza esta zona.
-        return rel.split("/")[-1] in _ENLAZADOS_INDICE_OWNER
+        # admite CLASIFICADA y con UNA condición, que es la que el código ejecuta y toda la
+        # que ejecuta: **la RUTA COMPLETA está enlazada desde `00-INDICE.md`**. Una segunda
+        # sede plantada en `docs/owner/` —al lado, o en un subdirectorio— sin ese enlace es
+        # ROJA. Y una vez confirmada, su contenido queda bajo el inventario de inmutables de
+        # `G-22`, que alcanza esta zona.
+        #
+        # `AA-03`. Aquí decía además «**y en el mismo commit que lo crea**». **Esa condición
+        # no estaba implementada, ni podía estarlo en este punto**: la función sólo se
+        # consulta para ficheros que NO están en `HEAD`, y el commit que los crea todavía no
+        # existe. Una condición que el comentario declara y el código no ejecuta es una
+        # afirmación falsa del instrumento —la clase `V-04`—, y se retira en vez de
+        # adornarse. Queda dicho lo que falta, y no se presume cubierto: quien confirme el
+        # fichero y su enlace en commits distintos no encuentra aquí quien se lo diga.
+        return rel in _ENLAZADOS_INDICE_OWNER
     if rel.startswith("docs/evolucion/verificacion/manifiestos/"):
         return False
     if rel.startswith("docs/evolucion/verificacion/"):
@@ -2695,13 +2806,18 @@ def _ampliacion_admitida(rel):
         # NOMBRARON en su detalle mientras imprimían `OK`.
         #
         # Publicar un documento numerado sigue siendo el producto legítimo de un gate, pero
-        # deja de ser gratis: se admite CLASIFICADO, con las dos condiciones que el propio
-        # corpus ya tiene escritas —`00-INDICE.md` L102-108: «todo documento que `C-L.5`
-        # obligue a publicar se enlaza desde la lista de abajo EN EL MISMO COMMIT que lo
-        # crea»— y con el ordinal libre, porque dos documentos con el mismo número son dos
-        # sedes con la misma identidad.
-        nombre = rel.split("/")[-1]
-        if nombre not in _ENLAZADOS_INDICE:
+        # deja de ser gratis: se admite CLASIFICADO, con DOS condiciones, que son las dos
+        # que el código ejecuta —**la RUTA COMPLETA enlazada desde `00-INDICE.md`** y **el
+        # ordinal libre**, porque dos documentos con el mismo número son dos sedes con la
+        # misma identidad—.
+        #
+        # `AA-03`. El índice escribe una TERCERA —«se enlaza desde la lista de abajo EN EL
+        # MISMO COMMIT que lo crea», `00-INDICE.md` L102-108— y este comentario la declaraba
+        # como si aquí se comprobara. **No se comprueba, y no se puede comprobar aquí**: esta
+        # rama sólo se consulta para lo que todavía no está en `HEAD`. La declaración se
+        # retira; la regla del índice sigue siendo la regla del índice, y quien la incumpla
+        # no encuentra en esta batería quien se lo diga.
+        if rel not in _ENLAZADOS_INDICE:
             return False
         if m_ord.group(1) in _ORDINALES_PUBLICADOS:
             return False
@@ -3004,6 +3120,10 @@ _PALABRAS_GATILLO = ("histórico", "HISTÓRICO", "[HISTÓRICO]", "regresión", "
                      "retirada", "RETIRADA", "sustituida", "caducado", "superado") \
     + _VERBOS_QUE_YA_NO_APAGAN
 _g31 = []
+# `Z1-04`≡`Z-06`. El detalle publicaba «21 palabras gatillo × **4 evaluadores**» mientras el
+# bloque `c` no invocaba ninguno: se ejercitaban TRES y el número estaba escrito a mano.
+# Aquí cada bloque REGISTRA el evaluador que llama, y el detalle publica lo que se ejecutó.
+_ejercitados_g31 = set()
 
 # a · el control de RECUENTOS no se apaga: la cifra falsa se sigue viendo
 _PLANTILLA_SEDE = (
@@ -3014,6 +3134,7 @@ for _w in ("",) + _PALABRAS_GATILLO:
     _txt = _PLANTILLA_SEDE % _sufijo
     _hallado = _sedes(_NUM + r"\s+(?:presiones|PRESIONES)", _txt,
                       contexto=r"§16|vigente|VIGENTES|Owner")
+    _ejercitados_g31.add(_sedes.__name__)
     if [v for _, v in _hallado] != [11]:
         _g31.append(f"recuentos: añadir «{_w or '∅'}» a la línea del Owner cambia lo que la "
                     f"comprobación ve — esperado [11], obtenido {[v for _, v in _hallado]}")
@@ -3024,6 +3145,7 @@ _PLANTILLA_POL = ("NORMA VIGENTE REINSTAURADA: el estado en cuarentena vive en "
                   "para todo el sistema.%s")
 for _w in ("",) + _PALABRAS_GATILLO:
     _sufijo = "" if not _w else f" La nota que hablaba de una {_w} queda SIN EFECTO."
+    _ejercitados_g31.add(_polaridad.__name__)
     if _polaridad(_PLANTILLA_POL % _sufijo) != "VIGENTE":
         _g31.append(f"polaridad: añadir «{_w or '∅'}» convierte en RETIRADO un párrafo que "
                     f"declara la ruta CANÓNICA y fuente de verdad")
@@ -3037,15 +3159,27 @@ if _polaridad("aquí se menciona `estado/cuarentena/` y no se dice nada más") \
     _g31.append("polaridad: el silencio no se clasifica como INDETERMINADO, luego un "
                 "párrafo que no se pronuncia pasaría por bueno")
 
-# c · el contraste de ESTADO no se apaga: una calificación añadida no lo conserva
-for _w in _PALABRAS_GATILLO:
-    if f"CERRADA {_w}" in ("CERRADA",):
-        _g31.append("estado: la comparación admite calificaciones añadidas")
+# c · el contraste de ESTADO no se apaga: una calificación añadida no lo conserva.
+# `Z1-04`≡`Z-06`. Esto eran DOS `if` sobre f-strings comparadas con un literal
+# —`if f"CERRADA {_w}" in ("CERRADA",)`—, **insatisfacibles por construcción y sin invocar
+# ningún evaluador de esta batería**: un fixture que no puede fallar dentro de la
+# comprobación cuya tesis es que ninguno puede serlo. Ahora llama a `_estado_casa`, que es
+# el mismo que `G-16c` usa para juzgar el árbol: revertirlo a `startswith` pone esto en rojo.
+_ADMITIDOS_G31 = ("CERRADA",)
 for _sufijo in ("SOLO EN PARTE, SIGUE ABIERTA Y BLOQUEA F5",) + _PALABRAS_GATILLO:
-    if f"CERRADA {_sufijo}" == "CERRADA":
-        _g31.append(f"estado: «CERRADA {_sufijo}» se considera igual a «CERRADA»")
+    _ejercitados_g31.add(_estado_casa.__name__)
+    if _estado_casa(f"CERRADA {_sufijo}", _ADMITIDOS_G31):
+        _g31.append(f"estado: «CERRADA {_sufijo}» se considera igual a «CERRADA». El "
+                    f"contraste de `G-16c` ha dejado de ser por IGUALDAD, y una "
+                    f"calificación añadida detrás vuelve a cambiar el estado (`Q-06`)")
+# y la mitad contraria, que es lo que impide que esto sea un «siempre falso» —que es
+# exactamente lo que era—: el estado limpio SÍ tiene que casar
+if not _estado_casa("CERRADA", _ADMITIDOS_G31):
+    _g31.append("estado: el estado limpio «CERRADA» deja de casar con el estado admitido, y "
+                "entonces ninguna condición podría declararse cerrada nunca")
 
 # d · la MARCA histórica es estructural: una palabra suelta no abre región, una etiqueta sí
+_ejercitados_g31.add(_regiones_historicas.__name__)
 if _regiones_historicas("una línea que habla de una regresión y de algo histórico\n"):
     _g31.append("región histórica: una palabra suelta en la línea abre una región histórica")
 if not _regiones_historicas("**[HISTÓRICO · lo que aquella tanda validó]**\ncifra vieja\n"):
@@ -3101,7 +3235,8 @@ check("G-31",
       "ninguna comprobación se desactiva escribiendo una palabra: recuentos, polaridad, estado y marca histórica, con el mismo dato y las palabras gatillo pegadas",
       not _g31,
       "; ".join(_g31) or
-      f"{len(_PALABRAS_GATILLO)} palabras gatillo × 4 evaluadores, y ninguno cambia de "
+      f"{len(_PALABRAS_GATILLO)} palabras gatillo × {len(_ejercitados_g31)} evaluadores "
+      f"REALMENTE INVOCADOS ({', '.join(sorted(_ejercitados_g31))}), y ninguno cambia de "
       f"veredicto; las formas legítimas de marcar historia siguen funcionando, y una "
       f"etiqueta no exime lo que queda fuera de su bloque ni fuera de su cita")
 

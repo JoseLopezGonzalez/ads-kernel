@@ -114,6 +114,22 @@ este rango**: se deriva con `derivar-universo-obligatorio.py`, que toma el fiche
 > sustancia de la entrada no cambia**; lo que estaba mal era dónde mirar, en un documento
 > cuya cabecera promete que ninguna cifra se copia.
 
+**La cifra vigente, DERIVADA, con su comando** —`Z2-11`: esta entrada publicaba «hoy da
+**ONCE**» sin decir de dónde, en un documento cuya cabecera promete que toda cifra va con su
+comando. La sede real de los escenarios es §11.5 del documento 11, que es lo que el documento
+13 estaba contando:
+
+```bash
+awk '/^## 11\.5 /{f=1;next} /^## 11\.6 /{f=0} f' \
+    docs/evolucion/11-ARQUITECTURA-INTEGRADA.md | grep -cE '^\| `NP-[0-9]+`'   # → 11
+```
+
+```text
+escenarios negativos vigentes en §11.5   11   (`NP-1` … `NP-11`)
+lo que el documento 13 confirmó como errata   DIEZ
+lo que el documento 12 decía cuando se escribió la errata   SEIS
+```
+
 **Qué se sigue.** La verificación del documento 13 fue correcta **cuando se hizo**, y quedó
 superada por una corrección posterior sin que nada lo marcara. No se corrige el dictamen: se
 marca aquí que **su cifra describe un estado anterior del corpus**, y que la vigente es la del
@@ -320,7 +336,128 @@ ya su comando**, añadido en esta tanda y verificado ejecutándolo. Es la misma 
 `P-08` impuso al universo obligatorio: una cifra sin comando es una cifra escrita a mano,
 aunque quien la escribió la hubiera derivado.
 
-## 10 · Regla general que este documento deja escrita
+## 10 · Manifiesto del CUARTO GATE (4B) · «cada fila declara el árbol» es falso para su §4
+
+**Sede:** `verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-4B-20260830.md`
+**L78–L79**: «*Todo derivado del árbol del gate, nada copiado. **Cada fila declara el árbol
+contra el que se contrasta**, y el sobre publica las rutas en que los dos árboles difieren*».
+
+**Lo que dice el árbol**, derivado de las CABECERAS de las dos tablas, con su comando:
+
+```bash
+M=docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-4B-20260830.md
+sed -n '81p'  "$M" | tr '|' '\n' | sed 's/^ *//;s/ *$//' | grep -n .   # cabecera de §4
+sed -n '113p' "$M" | tr '|' '\n' | sed 's/^ *//;s/ *$//' | grep -n .   # cabecera de §5
+sed -n '81p'  "$M" | grep -ciE 'árbol|arbol|tree'                       # → 0
+```
+
+```text
+COLUMNAS DE §4   #  ·  ruta  ·  líneas  ·  SHA-256  ·  `1bis`  ·  revisor  ·  relevo
+                 columnas que NOMBRAN un árbol:  0
+COLUMNAS DE §5   #  ·  ruta  ·  líneas  ·  SHA-256  ·  `1bis`  ·  lectura íntegra certificada en
+                 y ESA última columna sí lo nombra, fila a fila: «documento **22**, L1583 ·
+                 árbol `4d231ee`»
+```
+
+**Qué se sigue.** El TITULAR de §2 del manifiesto —«70 fuentes · 58 796 líneas **—sobre el
+árbol del GATE—**»— **es honesto y el adjudicador `AA` verificó las 70 filas contra ese
+árbol**: la reincidencia `U-02`→`X-06` está rota y eso no se toca aquí. Lo que no se sostiene
+es la promesa **POR FILA** para la §4: sus filas no declaran árbol porque no tienen columna
+donde hacerlo. **NO SE PUEDE** citar L78–L79 para sostener que una fila de la §4 dice de qué
+árbol habla; **SÍ SE PUEDE** citarla para la §5, que sí lo hace. Lo levantó `Z2-09`≡`Z-12`.
+Es la regla de §14 —acotar el titular **y** la fila— aplicada al revés que en §6: aquí el
+titular está bien y la promesa por fila no se cumple.
+
+## 11 · Manifiesto del CUARTO GATE (4B) · 52 de sus 54 agotamientos citan documentos que su §4 no asigna a nadie
+
+**Sede:** el mismo manifiesto, **§5**, sus 54 filas, columna «lectura íntegra certificada en».
+
+**Lo que dice el árbol**, derivado de las dos tablas del propio manifiesto:
+
+```bash
+M=docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-4B-20260830.md
+sed -n '115,200p' "$M" | awk -F'|' '/^\|/{print $7}' \
+  | grep -oE 'documento \*\*[0-9]+\*\*' | sort | uniq -c        # 11 → 21 · 41 → 22 · 2 → 23
+sed -n '83,112p' "$M" \
+  | grep -cE '21-GATE-INDEPENDIENTE-DE-CIERRE|22-GATE-INDEPENDIENTE-DE-CERTIFICACION'   # → 0
+```
+
+```text
+DOCUMENTOS QUE CITAN LAS 54 FILAS DE §5     documento 21   11
+                                            documento 22   41
+                                            documento 23    2
+                                                          ────
+                                                            54
+RUTAS DE §4 (reparto para LECTURA ÍNTEGRA)  documentos 21 y 22 asignados a alguien:  0
+                                            (§4 asigna 23 y 24, no 21 ni 22)
+```
+
+**Qué se sigue.** La **regla 1** del agotamiento —«fila propia con `LEÍDO ÍNTEGRO` … se cita
+con documento y línea»— exige **abrir la línea citada** para comprobarla. En este gate nadie
+tenía asignados los documentos 21 ni 22, de modo que **52 de los 54 agotamientos no eran
+verificables por ningún revisor de este gate desde dentro de su lote**. No se sigue que sean
+falsos —el adjudicador `AA` los verificó uno a uno contra los tres árboles que citan y los dio
+**54/54 PLENOS**—: se sigue que **el manifiesto no puede citarse como prueba de que el gate
+los verificó**, sino de que un adjudicador lo hizo. Lo levantó `Z-10`, y `AA` lo adjudicó
+rechazando su formulación y aceptando su fondo. Es la cuarta repetición de `C-2`→`T-11`→`W-17`.
+
+## 12 · Este corrigendum · su cabecera afirma una INMUTABILIDAD que el árbol desmiente
+
+**Sede:** la cabecera de este mismo documento: «*Los dictámenes de gate y los manifiestos de
+reparto son **INMUTABLES**: una vez publicados **no se editan**…*».
+
+**Lo que dice el árbol**, con su comando:
+
+```bash
+git log --oneline -- docs/evolucion/19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md
+```
+
+```text
+d868bcb  fix(f4c): aplicar la tanda de correccion del gate definitivo — D96–D102, PN-15, …
+652ab8e  docs(f4c): gate definitivo independiente
+                                                    → DOS commits: el documento 19 SE EDITÓ
+                                                      después de publicarse
+docs/evolucion/20-…-F4C.md   1 commit
+docs/evolucion/21-…-F4C.md   1 commit
+```
+
+**Qué se sigue.** «No se editan» está escrito como si fuera un HECHO MEDIDO del árbol, y **no
+lo es: es una REGLA**, y el documento 19 la incumple en el propio historial. La regla sigue en
+pie y `G-22` la EJECUTA hoy —contrasta cada dictamen contra `HEAD` y contra la revisión base,
+y editar uno da ROJO—, pero `G-22` nació después del documento 19. **Lo que se acota es el
+tiempo verbal**: la inmutabilidad es lo que este corpus EXIGE desde que existe el inventario
+de `G-22`, no lo que puede afirmar de todo su pasado. Quien cite la cabecera para sostener que
+ningún dictamen ha cambiado nunca, cita mal. Lo levantó `Z2-12`.
+
+## 13 · Documento 25 · el gate que lo publica está DECLARADO INVÁLIDO por su propio adjudicador, y eso se cita entero o no se cita
+
+**Sede:** `25-CUARTO-GATE-DE-CERTIFICACION-F4C.md`, §2 de la adjudicación de `AA` y su §15.
+
+**Lo que dice el árbol**, con su comando:
+
+```bash
+grep -c 'INSUFICIENTE PARA F5' docs/evolucion/25-CUARTO-GATE-DE-CERTIFICACION-F4C.md   # → 10
+grep -n 'el GATE ES INVÁLIDO\|este gate es además INVÁLIDO' \
+     docs/evolucion/25-CUARTO-GATE-DE-CERTIFICACION-F4C.md | head -3
+```
+
+```text
+VEREDICTO EMITIDO      INSUFICIENTE PARA F5   ·  la cadena aparece 10 veces en el
+                       documento: los TRES titulares —`Y4`, `Z3` y `AA`— y sus recapitulaciones
+VALIDEZ DEL GATE       DECLARADA INVÁLIDA por el adjudicador `AA`, §2: los cinco sobres
+                       ENTREGADOS difieren en los campos 1, 3, 6, 7, 9, 12, 13 y 14
+LO QUE `AA` DICE DE SU PROPIO VEREDICTO   «las razones 2, 3 y 4 son independientes de la
+                       invalidez y bastan cada una por sí sola»
+```
+
+**Qué se sigue.** El documento 25 es a la vez un veredicto y la declaración de que el
+procedimiento que lo produjo no fue válido. **NO SE PUEDE** citar su `INSUFICIENTE PARA F5`
+como un veredicto de un gate válido, ni citar su invalidez para retirarle fuerza a las razones
+2, 3 y 4, que su propio adjudicador declara independientes. **SÍ SE PUEDE** citar cada
+hallazgo suyo por separado: están reproducidos con salida y con controles. La entrada existe
+para que ninguna sede derivada escoja la mitad que le convenga.
+
+## 14 · Regla general que este documento deja escrita
 
 ```text
 UN DICTAMEN NO SE EDITA. Si contiene un error de hecho, se registra en este corrigendum con
@@ -336,5 +473,11 @@ la fila del derivador; el manifiesto siguiente repitió el defecto en esa misma 
 que escribir dos entradas más —§7 y §8— para decir lo que una sola habría dicho.
 
 TODA CIFRA DE ESTE DOCUMENTO VA CON SU COMANDO, sin excepción. Cuatro de las seis primeras
-entradas no lo llevaban (§9), y una cifra sin comando no es refutable.
+entradas no lo llevaban (§9), y la cifra sustantiva de §4 tampoco (§12, por `Z2-11`); las
+dos cosas están corregidas. Una cifra sin comando no es refutable.
+
+UNA REGLA NO SE ESCRIBE EN TIEMPO DE HECHO MEDIDO. «Los dictámenes no se editan» es lo que
+este corpus EXIGE, no lo que su historial dice: el documento 19 se editó después de
+publicarse (§12). Lo que se afirme del árbol se deriva del árbol; lo que se exija, se escribe
+como exigencia y se dice qué lo ejecuta — aquí, `G-22`.
 ```

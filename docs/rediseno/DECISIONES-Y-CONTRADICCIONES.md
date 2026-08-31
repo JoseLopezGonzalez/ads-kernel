@@ -860,11 +860,28 @@ en §13 de la adjudicación de `U`, dentro de ese documento. **Nada de esto lo e
 > contiene la PREGUNTA, redactada antes de que hubiera respuesta. **De dónde viene:** de la
 > **respuesta expresa del Owner del 2026-08-30**, recogida al registrarla aquí — el rechazo
 > literal de `(a)`, la adopción de `(b)` para cerrar `F4c` y la condición con que `(c)` queda
-> obligada en `F6`. **Y no hay otra sede en el árbol donde viva esa respuesta en su propia
-> mano:** `docs/owner/` contiene **DOS** documentos y **ninguna** de las resoluciones
-> `O15`–`O18`; el checkpoint, `00-INDICE` y §11.8 del documento 11 la parafrasean citándola
+> obligada en `F6`. **Y no había otra sede en el árbol donde viviera esa respuesta en su propia
+> mano:** el checkpoint, `00-INDICE` y §11.8 del documento 11 la parafrasean citándola
 > de aquí y **no son sede independiente**. Por tanto: **no se afirma que sea falsa — se
-> declara INVERIFICABLE**, porque **ningún gate puede contrastarla contra nada**.
+> declara INVERIFICABLE**, porque **ningún gate podía contrastarla contra nada**.
+>
+> **QUÉ CONTIENE `docs/owner/`: NO SE ESCRIBE AQUÍ, SE DERIVA** —`AA` del documento 25, y
+> es la corrección de esta nota—:
+>
+> ```text
+> ls -1 docs/owner/
+> grep -o '^# `O[0-9]*`' docs/owner/ADS-OWNER-RESOLUCIONES.md
+> ```
+>
+> **[HISTÓRICO · lo que esta nota afirmaba, y que el CUARTO GATE falsificó]** *«`docs/owner/`
+> contiene **DOS** documentos y **ninguna** de las resoluciones `O15`–`O18`»*. Era cierto
+> cuando se escribió y dejó de serlo con `O19`, que creó
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md) — la SEDE
+> CANÓNICA, donde `O17`, `O18` en su texto AMPLIO y `O19` sí viven en su propia mano—. La
+> frase quedó escrita en presente y sobrevivió al gate que la desmintió. **La declaración de
+> INVERIFICABILIDAD de arriba NO se retira y NO se declara superada**: sólo un gate
+> independiente puede cerrarla, y su alcance vigente lo acota la nota de alcance del final
+> de esta entrada.
 >
 > `O17` recibió esta misma declaración como remedio de `S-26`, y el documento 23 la cerró
 > «con honradez». **`O18` —la resolución que existe precisamente porque el corpus descubrió
@@ -962,6 +979,9 @@ permanente mientras esa sustitución no exista y esté probada**.
 > 4  NO EXISTE SEDE DEL OWNER EN SU PROPIA MANO
 >    `docs/owner/` contiene DOS documentos y ninguna de las resoluciones `O15`–`O18`.
 >    El sobre de ancla de `O18`(b) no ancla ninguna resolución del Owner (`X-03`)
+>    [HISTÓRICO · hecho establecido por el documento 24 sobre el árbol que juzgó. Es
+>     el ÚNICO de los cuatro que O19 dejó atrás: hoy la sede existe y el sobre la ancla.
+>     Qué contiene docs/owner/ se DERIVA, y no se escribe: `ls -1 docs/owner/`]
 > ```
 >
 > **POR QUÉ NO SE CORRIGE AQUÍ.** El adjudicador `X` resolvió que la disputa es
@@ -978,6 +998,50 @@ permanente mientras esa sustitución no exista y esté probada**.
 > del documento 24**, `docs/evolucion/24-TERCER-GATE-DE-CERTIFICACION-F4C.md`. **Mientras no
 > haya ratificación, esta disputa sigue ABIERTA**, y **ningún hallazgo se declara SUPERADO
 > por haberla registrado**: registrar no es corregir.
+
+> ### NOTA DE ALCANCE SOBRE ESTA ENTRADA — LA ANOTACIÓN QUE `O19` DIJO HABER HECHO, HECHA
+>
+> **`Y3-01` ≡ `Y-06` del documento 25, GRAVE, confirmado y agravado por el adjudicador `AA`.
+> Esto es una NOTA DE ALCANCE. NO edita ni una palabra del texto resolutivo de `O18`, ni de
+> la disputa de arriba, ni de la nota de trazabilidad: todo eso se conserva tal cual.**
+>
+> **QUÉ PASÓ.** La proyección de `O19` —más abajo en este mismo fichero— escribe que la
+> «DISPUTA REGISTRADA Y NO RESUELTA» de arriba *«queda **RESUELTA por `O19`**, y así se anota
+> sin tocar el texto»*. **No se anotó.** El commit que registra `O19` toca **un solo hunk**,
+> al final del fichero, y la sección de `O18` recibió **cero líneas**: comprobado con
+> `git show 1d3b5d4 -- docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md`, que devuelve
+> `@@ -1004 +1004,87 @@` y nada más. Quien leyera esta entrada salía creyendo que el Owner
+> **no había respondido**. La anotación se hace **aquí y ahora**, y es lo único que se añade.
+>
+> **LA ANOTACIÓN, y su alcance exacto:**
+>
+> ```text
+> LO QUE EL OWNER RESOLVIÓ   `O19`, del 2026-08-30: RATIFICA el TEXTO AMPLIO de `O18` y le
+>                            da SEDE CANÓNICA. La ratificación que la disputa de arriba
+>                            dejaba «PENDIENTE DEL OWNER» está DADA
+>
+> DÓNDE VIVE SU TEXTO        en la SEDE CANÓNICA, y sólo ahí:
+>                            docs/owner/ADS-OWNER-RESOLUCIONES.md
+>                            La entrada de `O19` de este fichero es una PROYECCIÓN DERIVADA
+>                            que ENLAZA a ella y NO la sustituye
+>
+> QUÉ TOCA DE ESTA ENTRADA   NADA de su texto. `O19` revisa la PROYECCIÓN INCOMPLETA de
+>                            `O18`, **no su contenido ni su diseño**, y ordena que esta
+>                            entrada corta se CONSERVE sin editar como registro histórico
+>                            de una transcripción incompleta
+>
+> QUÉ NO SE DECLARA          NADA se declara SUPERADO. `RATIFICAR NO ES CERTIFICAR`, y esta
+>                            nota no cierra ningún hallazgo: `Y-06` sigue vivo hasta que un
+>                            gate independiente lo cierre
+> ```
+>
+> **CÓMO LEER LOS RÓTULOS DE ARRIBA A PARTIR DE AQUÍ.** El rótulo «DISPUTA REGISTRADA Y NO
+> RESUELTA» y la frase «*mientras no haya ratificación, esta disputa sigue ABIERTA*»
+> **describen el estado en que se escribieron y NO se editan** — borrarlos sería reescribir
+> la historia, que es exactamente lo que `O19` prohíbe—. **La condición que ambos enuncian
+> —«mientras no haya ratificación»— se cumplió**: la ratificación llegó, es `O19`, y su
+> texto está en la sede canónica. Quien lea esta sección debe leerla **junto con esta nota**
+> y con la entrada de `O19` de más abajo, y contrastar las dos contra la sede.
 
 **(b) ES UNA GARANTÍA TRANSITORIA Y EXPLÍCITAMENTE LIMITADA.** No se presenta como otra cosa.
 

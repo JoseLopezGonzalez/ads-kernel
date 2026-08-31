@@ -38,10 +38,16 @@ enumera. Cada uno se lee de su SEDE NORMATIVA, no de una copia:
   (iv)  todo dictamen de gate anterior aún no leído íntegro por nadie
         SEDE: barrido de `docs/evolucion/NN-*.md` por el TÍTULO de su H1
   (v)   el objeto que el gate juzga, según SU encargo
-        SEDE: el bloque `ENCARGO` de abajo, con la cláusula del encargo que justifica cada
-        entrada. Es lo único que cambia de un gate a otro, y por eso está declarado y
-        anotado en vez de inferido
-        GUARDA: ninguna fila sin cláusula, ninguna ruta repetida y ninguna inexistente
+        SEDE: el bloque `ENCARGO` de abajo —ruta a ruta— **y `ZONAS_DEL_ENCARGO`, que mete
+        DIRECTORIOS ENTEROS y los BARRE del árbol**, cada uno con su cláusula. Es lo único
+        que cambia de un gate a otro, y por eso está declarado y anotado en vez de inferido
+        GUARDA: ninguna fila sin cláusula, ninguna ruta repetida y ninguna inexistente; y
+        ninguna zona vacía ni sin sus anclas
+        `AA-01`. `docs/owner/` entraba como UNA RUTA LITERAL. Un SEGUNDO documento del
+        Owner, añadido por la vía que el corpus sanciona —enlazado desde `00-INDICE.md`—,
+        que declara `F4c` cerrada y `F5` autorizada, quedaba fuera del universo, del
+        manifiesto y del sobre, en `38/38` verde. **El perímetro se DERIVA, no se enumera**:
+        `docs/owner/` y `manifiestos/` entran ENTEROS
 
 FALLA CERRADO
 -------------
@@ -60,8 +66,16 @@ puntos:
   · un documento numerado que el componente (iv) no sepa clasificar para el derivador entero
     en vez de caerse del universo;
   · y **un documento numerado cuyo NOMBRE dice dictamen no se excluye por su H1** (`W2-06`):
-    retitularlo lo sacaba del universo con `exit 0`. Además, las exclusiones del componente
-    (iv) se PUBLICAN con su H1 en la salida de tabla: lo que queda fuera se ve.
+    retitularlo lo sacaba del universo con `exit 0`.
+
+**Y LO QUE ESTE FICHERO NO CIERRA, DICHO AQUÍ Y NO CALLADO** (`Z-08`): un documento numerado
+NUEVO cuyo H1 lleve una voz de NO-DICTAMEN y cuyo NOMBRE no diga dictamen —
+`25-SÍNTESIS-DEL-CIERRE.md` con un veredicto dentro— **sale del universo con `rc=0`**. La
+guarda de `W2-06` cierra el caso en que el NOMBRE lo delata, y no éste. Lo que sí se ha
+cerrado es que **deje de ser silencioso**: `EXCLUIDOS_IV` se publica con su H1 en TODOS los
+modos —también en `--rutas`, que es el único que invocan el emisor y la RECETA, y donde
+antes `main()` retornaba antes de imprimirlo (`Z-13`)—, y el SOBRE DE ANCLA lo copia. Un
+universo que encoge lo dice, y lo dice por el camino que se audita.
 
 USO
 ---
@@ -87,6 +101,7 @@ ARQ = "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md"
 BATERIA = "docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py"
 DECISIONES = "docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md"
 CHECKPOINT = "docs/evolucion/CHECKPOINT-ADS-NEXT.md"
+MANIFIESTOS = "docs/evolucion/verificacion/manifiestos"
 
 
 # ── numerales, y los CARDINALES que `1bis` publica ───────────────────────────────
@@ -122,12 +137,19 @@ def _leer(rel):
         raise SedeIlegible("sede %s ilegible: %s" % (rel, e))
 
 
+# `Z1-03`≡`Z-05`. Se excluía `__pycache__` POR SU NOMBRE DE DIRECTORIO, con lo que una copia
+# de una sede dentro de él era invisible para el resolutor y la resolución seguía siendo
+# «única» con dos ficheros iguales en el árbol. Se excluye por lo que un fichero ES: `.git`,
+# que no es corpus, y el bytecode, por su extensión.
+_EXCLUIDO = re.compile(r"(?:^|/)\.git(?:/|$)|\.py[co]$")
+
+
 def _resolver(nombre):
     """Un nombre de fichero suelto a su ruta única en el árbol. Falla si no es única."""
     encontrados = []
     for base, dirs, ficheros in os.walk(RAIZ):
-        dirs[:] = [d for d in dirs if d not in (".git", "__pycache__")]
-        if nombre in ficheros:
+        dirs[:] = [d for d in dirs if not _EXCLUIDO.search(d + "/")]
+        if nombre in ficheros and not _EXCLUIDO.search(nombre):
             encontrados.append(os.path.relpath(os.path.join(base, nombre), RAIZ))
     if len(encontrados) != 1:
         raise SedeIlegible("«%s» no resuelve a UNA ruta: %r" % (nombre, encontrados))
@@ -364,20 +386,10 @@ ENCARGO = [
      "lo que la batería declara de sí misma, frente a lo que hace"),
     ("docs/evolucion/verificacion/derivar-universo-obligatorio.py",
      "C-L.5 1bis · el comando auditable que deriva ESTE universo, juzgándose a sí mismo"),
-    ("docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CIERRE-20260829.md",
-     "C-L.5 · el manifiesto previo del gate del documento 21, inmutable"),
-    ("docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-20260830.md",
-     "C-L.5 · el manifiesto previo del gate del documento 22, inmutable"),
-    ("docs/evolucion/verificacion/manifiestos/F4C-ADDENDUM-1-GATE-CERTIFICACION-20260830.md",
-     "C-L.5 · el addendum que reasignó 21 fuentes mal agotadas, inmutable"),
     ("docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md",
      "las entradas que acotan dictámenes que no se editan"),
-    ("docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-3-20260830.md",
-     "C-L.5 · el manifiesto previo del gate del documento 24, inmutable"),
     ("docs/evolucion/verificacion/emitir-sobre-de-ancla.py",
      "O18 · el emisor del SOBRE DE ANCLA, que este gate estrena y debe refutar"),
-    ("docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-2-20260830.md",
-     "C-L.5 · el manifiesto previo del gate del documento 23, inmutable"),
     ("docs/evolucion/00-INDICE.md",
      "catálogo y contratos duplicados · trazabilidad de las tandas"),
     ("kernel/KERNEL.md",
@@ -406,24 +418,101 @@ ENCARGO = [
     ("docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md", "material APROBADO E2"),
     ("docs/rediseno/CHECKPOINT-OPERATIVO.md",
      "la batería del kernel, el runner y las trece evidencias"),
-    # `O19`. La SEDE CANÓNICA de las resoluciones del Owner entra en el OBJETO del gate el
-    # mismo día que nace. El sobre de ancla publica su huella y el digest de cada
-    # resolución, y el Owner ordena que cada revisor reciba ese SHA **antes de leer**: si la
-    # sede no estuviera en el universo obligatorio, el manifiesto no se la asignaría a
-    # nadie, **el sobre anclaría un texto que ningún revisor está obligado a abrir**, y la
-    # autoridad que `O19` traslada no la comprobaría nadie.
-    ("docs/owner/ADS-OWNER-RESOLUCIONES.md",
-     "O19 · la SEDE CANÓNICA de las resoluciones del Owner, que el sobre de ancla ancla y "
-     "cuya huella el revisor recibe FUERA del árbol antes de leer"),
 ]
+
+# ── las ZONAS que el encargo mete ENTERAS, y se BARREN ───────────────────────────
+#
+# `AA-01`. `docs/owner/` estaba en el `ENCARGO` como **una ruta literal escrita a mano**
+# —`("docs/owner/ADS-OWNER-RESOLUCIONES.md", …)`—, y el adjudicador midió la consecuencia:
+# un SEGUNDO documento del Owner, añadido **por la vía que el corpus sanciona** —enlazado
+# desde `00-INDICE.md`—, que declara `F4c` cerrada y `F5` autorizada, pasa la batería en
+# `38/38` commiteado y sin commitear y queda **fuera del universo obligatorio, sin fila de
+# manifiesto, sin revisor asignado y sin huella en el sobre**. No explota ningún defecto:
+# `G-29` admite en esa zona un conjunto ABIERTO —porque `O19` obligó a abrirla— y el
+# derivador enumeraba un conjunto CERRADO de UNO. El aparato que `O19` creó para que la
+# autoridad del Owner fuera comprobable anclaba UN NOMBRE DE FICHERO.
+#
+# `Z2-02`≡`Z-03`, la otra mitad: los manifiestos también estaban escritos fila a fila, y el
+# del propio gate en curso **no estaba en ninguna**. Borrar un manifiesto y su fila del
+# `ENCARGO` sacaba del universo la sede canónica del Owner con `rc=0`.
+#
+# **El perímetro se DERIVA, no se enumera.** Cada zona declara su directorio y su cláusula;
+# el contenido sale del árbol. Un documento nuevo del Owner entra SOLO el día que se
+# publica, y no hay fila que borrar. Se exigen las ANCLAS: una zona vacía, o una zona que
+# haya perdido el fichero que su cláusula nombra, es código 2 — un universo que encoge lo
+# dice, y aquí lo dice con el nombre delante.
+ZONAS_DEL_ENCARGO = [
+    ("docs/owner",
+     ("docs/owner/ADS-OWNER-RESOLUCIONES.md",),
+     "O19 · la ZONA del Owner ENTERA, barrida y no enumerada: la SEDE CANÓNICA de sus "
+     "resoluciones, que el sobre de ancla ancla y cuya huella el revisor recibe FUERA del "
+     "árbol antes de leer, y todo documento que el Owner publique junto a ella. `AA-01`: "
+     "anclar la ruta literal de la sede dejaba fuera del universo, del manifiesto y del "
+     "sobre a cualquier segundo documento del Owner añadido por la vía sancionada"),
+    (MANIFIESTOS,
+     (),
+     "C-L.5 · los manifiestos de asignación INMUTABLES, barridos y no enumerados. Son la "
+     "sede del cliquet que impide que el universo encoja, y el del gate EN CURSO no estaba "
+     "en ninguna fila escrita: `Z2-02` borró un manifiesto y su fila y la sede canónica del "
+     "Owner desapareció del universo con `rc=0`"),
+]
+
+
+def _barrer(zona):
+    """Las rutas del corpus bajo `zona`, ordenadas. Excluye por NATURALEZA, no por sitio."""
+    raiz_zona = os.path.join(RAIZ, zona)
+    if not os.path.isdir(raiz_zona):
+        raise SedeIlegible(
+            "la zona `%s` que el `ENCARGO` mete ENTERA en el universo no existe en el "
+            "árbol: un universo que encoge porque una zona desapareció es exactamente lo "
+            "que `1bis` prohíbe" % zona)
+    rutas = []
+    for base, dirs, ficheros in os.walk(raiz_zona):
+        dirs[:] = [d for d in dirs if not _EXCLUIDO.search(d + "/")]
+        for nombre in sorted(ficheros):
+            rel = os.path.relpath(os.path.join(base, nombre), RAIZ).replace(os.sep, "/")
+            if not _EXCLUIDO.search(rel):
+                rutas.append(rel)
+    return sorted(rutas)
+
+
+def zonas_del_encargo():
+    """Las rutas de las zonas que el encargo mete enteras, con sus anclas EXIGIDAS."""
+    salida = []
+    for zona, anclas, clausula in ZONAS_DEL_ENCARGO:
+        if not (clausula or "").strip():
+            raise SedeIlegible("la zona `%s` entra sin cláusula del encargo: sin cláusula "
+                               "no entra" % zona)
+        rutas = _barrer(zona)
+        if not rutas:
+            raise SedeIlegible(
+                "la zona `%s` del `ENCARGO` sale VACÍA del barrido: un universo vacío por "
+                "no mirar es el defecto que `P-08` describió, y aquí lo sería sobre la zona "
+                "que el gate está obligado a cubrir" % zona)
+        faltan = [a for a in anclas if a not in rutas]
+        if faltan:
+            raise SedeIlegible(
+                "la zona `%s` ya no contiene %r, que su cláusula del `ENCARGO` nombra como "
+                "ancla. O la ruta se movió, o el árbol la ha perdido, y las dos cosas se "
+                "responden aquí en vez de callarse" % (zona, faltan))
+        salida.extend(rutas)
+    return salida
 
 
 def componente_v():
     """El objeto que ESTE gate juzga — CON GUARDA sobre su propia declaración.
 
-    `ENCARGO` es lo único escrito a mano de todo el derivador, y por eso es lo único que
-    hay que vigilar aquí: una fila sin cláusula no dice por qué está, y una ruta repetida
-    infla el universo sin ampliarlo. Ninguna de las dos se detectaba.
+    `Z2-07`≡`Z-14`. Aquí decía «`ENCARGO` es **lo único** escrito a mano de todo el
+    derivador», y era falso: `VOCES_DE_DICTAMEN` (16) y `VOCES_DE_NO_DICTAMEN` (15) son
+    listas escritas **de las que depende la pertenencia al componente (iv)** —un dictamen
+    nuevo entra o sale del universo por ellas—, y `ARQ`, `BATERIA`, `DECISIONES`,
+    `CHECKPOINT` y `MANIFIESTOS` son cinco rutas fijas. **Lo escrito a mano en este fichero
+    es, dicho entero: `ENCARGO`, `ZONAS_DEL_ENCARGO`, las dos listas de voces y esas cinco
+    rutas.** Todo lo demás se lee de una sede o se barre del árbol.
+
+    Lo que se vigila aquí: una fila sin cláusula no dice por qué está, una ruta repetida
+    infla el universo sin ampliarlo, y una ruta que no existe encoge el universo en
+    silencio. Ninguna de las tres se detectaba.
     """
     if not ENCARGO:
         raise SedeIlegible("el componente (v) está VACÍO: un gate sin objeto declarado no "
@@ -435,12 +524,17 @@ def componente_v():
                            "cláusula no entra: la cláusula es lo que se lee en el informe"
                            % sin_clausula)
     rutas = [r for r, _ in ENCARGO]
-    repetidas = sorted({r for r in rutas if rutas.count(r) > 1})
-    if repetidas:
-        raise SedeIlegible("el componente (v) repite rutas: %r" % repetidas)
     for rel in rutas:
         if not os.path.isfile(os.path.join(RAIZ, rel)):
             raise SedeIlegible("el componente (v) nombra %s y no existe en el árbol" % rel)
+    # y las ZONAS que el encargo mete ENTERAS, DERIVADAS del árbol y no enumeradas
+    rutas = rutas + zonas_del_encargo()
+    repetidas = sorted({r for r in rutas if rutas.count(r) > 1})
+    if repetidas:
+        raise SedeIlegible(
+            "el componente (v) repite rutas: %r. Una ruta escrita a mano en `ENCARGO` que "
+            "ya sale del barrido de una zona infla el universo sin ampliarlo, y esconde que "
+            "la zona ya la cubre: se borra la fila, no se duplica" % repetidas)
     return rutas
 
 
@@ -465,7 +559,22 @@ COMPONENTES = [
 # manifiestos son INMUTABLES. Ninguna de esas rutas puede desaparecer del universo derivado
 # sin que alguien lo diga: si desaparece, o el derivador encogió o el árbol perdió la
 # fuente, y las dos cosas son código 2.
-MANIFIESTOS = "docs/evolucion/verificacion/manifiestos"
+#
+# `Z2-02`≡`Z-03`, Y SE ACOTA LO QUE ESTA GUARDA PRUEBA, porque la promesa era más ancha que
+# el mecanismo. **El cliquet protege las rutas que un manifiesto PRESENTE declara.** Su sede
+# es un directorio, y un directorio del que se borra un fichero no recuerda que lo tuvo:
+# borrar un manifiesto se lleva por delante las filas que ese manifiesto aportaba. Dos cosas
+# lo acotan, y son las que hay:
+#
+#   · el directorio entero es hoy una ZONA DEL ENCARGO y se BARRE: no queda fila que borrar,
+#     y el manifiesto del gate EN CURSO —que no estaba en ninguna fila escrita— entra solo;
+#   · **quien caza el borrado del fichero es la BATERÍA, no esto**: `G-22` contrasta el
+#     inventario de inmutables contra `HEAD` y contra la revisión base, y `G-29` da ROJO por
+#     «fichero del corpus DESAPARECIDO». Este derivador **no puede** hacerlo: se ejecuta
+#     también sobre un árbol desplegado FUERA del repositorio, sin `.git`, que es como lo
+#     invocan el emisor del sobre y la RECETA publicada.
+#
+# Se dice aquí para que nadie vuelva a leer en esta guarda una garantía que no da.
 # `W2-03`. El patrón exigía COLUMNA ORDINAL —`| 7 | \`ruta\` |`— y el manifiesto del gate
 # del documento 21 no la tiene: su tabla empieza por la ruta. Resultado medido sobre el
 # árbol, sin que nadie atacara nada: **de los cinco manifiestos INMUTABLES, uno aportaba
@@ -538,6 +647,14 @@ def metricas(rel):
     return lineas, hashlib.sha256(crudo).hexdigest()
 
 
+def _excluidos(destino):
+    """Publica lo que el componente (iv) deja fuera. Se emite por TODOS los modos."""
+    destino.write("\n  (iv) EXCLUIDOS por voz de NO-DICTAMEN en su H1: %d\n"
+                  % len(EXCLUIDOS_IV))
+    for rel, titulo in EXCLUIDOS_IV:
+        destino.write("        %-46s %s\n" % (rel.split("/")[-1], titulo))
+
+
 def main():
     modo = sys.argv[1] if len(sys.argv) > 1 else "--tabla"
     try:
@@ -549,6 +666,15 @@ def main():
     if modo == "--rutas":
         for rel in universo:
             sys.stdout.write(rel + "\n")
+        # `Z2-...`≡`Z-13`, y es la tercera vía por la que el universo encogía en silencio.
+        # `EXCLUIDOS_IV` sólo se imprimía en `--tabla` y en `--md`, y **`--rutas` es el
+        # único modo que invocan el emisor del sobre y la RECETA publicada**: lo que el
+        # componente (iv) excluye era invisible por el camino que se audita. Un dictamen
+        # NUEVO cuyo H1 lleve una voz de NO-DICTAMEN —`25-SÍNTESIS-DEL-CIERRE.md` con
+        # veredicto invertido— salía del universo con `rc=0` y sin que nada lo dijera.
+        # Ahora lo dice **por el camino que se audita**, en `stderr` para no contaminar la
+        # lista de rutas, y el emisor lo copia al SOBRE.
+        _excluidos(sys.stderr)
         return 0
 
     filas = [(rel, ) + metricas(rel) + ("+".join(procedencia[rel]), ) for rel in universo]
@@ -569,10 +695,7 @@ def main():
         sys.stdout.write("  (%-3s) %3d   %s\n" % (clave, n, titulo))
     # `W2-06`. Lo que el componente (iv) DEJA FUERA se publica: un universo que encoge lo
     # dice, y quien lee la tabla ve por qué cada documento numerado no está.
-    sys.stdout.write("\n  (iv) EXCLUIDOS por voz de NO-DICTAMEN en su H1: %d\n"
-                     % len(EXCLUIDOS_IV))
-    for rel, titulo in EXCLUIDOS_IV:
-        sys.stdout.write("        %-46s %s\n" % (rel.split("/")[-1], titulo))
+    _excluidos(sys.stdout)
     return 0
 
 

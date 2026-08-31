@@ -130,6 +130,8 @@ publica al menos un documento nuevo, y ninguno tenía sede desde la que enlazars
 | [`verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-20260830.md`](verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-20260830.md) | manifiesto de asignación del gate del documento 22, sobre universo derivado |
 | [`verificacion/manifiestos/F4C-ADDENDUM-1-GATE-CERTIFICACION-20260830.md`](verificacion/manifiestos/F4C-ADDENDUM-1-GATE-CERTIFICACION-20260830.md) | el addendum que devolvió a lectura íntegra las 21 fuentes mal agotadas. **El manifiesto NO se editó**: es inmutable |
 | [`verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-2-20260830.md`](verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-2-20260830.md) | manifiesto de asignación del **SEGUNDO** gate de certificación, el del documento 23, sobre universo derivado de 64 fuentes. **Faltaba en esta lista**: se publicó en `c36d2ba` sin enlazarse, dos commits después de que esta misma regla se escribiera, y dejó `T147` en rojo por el aparato del propio gate. Es `S-18`≡`T-14` del documento 23 |
+| [`verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-3-20260830.md`](verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-3-20260830.md) | manifiesto de asignación del **TERCER** gate de certificación, el del documento 24 |
+| [`verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-4B-20260830.md`](verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-4B-20260830.md) | manifiesto de asignación del **CUARTO** gate de certificación, el del documento 25 —el que fue declarado INVÁLIDO—. **Faltaba en ESTA lista**: sólo estaba enlazado desde la fila del gate, y el árbol que ese gate juzgó lo tenía huérfano, con `T147` en rojo por cuarta vez. Es `Y-03`≡`Z-09` del documento 25, TERCERA recurrencia de `S-18`≡`T-14` |
 | [`verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md`](verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md) | los errores de hecho de dictámenes y manifiestos ya publicados, señalados **sin tocarlos** |
 
 **Cuántos son no se escribe aquí**: la lista se deriva con
@@ -152,11 +154,28 @@ ruta que ese comando devuelva y no aparezca arriba es un huérfano que `T147` de
 >          | sed 's|^|docs/evolucion/|' | sort -u)
 > ```
 >
-> Con la fila de arriba, la lista cubre hoy los **tres manifiestos de asignación**, el
-> **addendum** y el **corrigendum**, y `python3 kernel/operativo/validadores/comprobar_referencias.py --exclusiones`
-> da `T147` en verde. **La regla vale para el gate siguiente igual que para éste**, y el
-> checkpoint la repite en el paso 7 de «Siguiente acción exacta», que es la sede que lee
-> quien encarga el gate.
+> **CUÁNTOS MANIFIESTOS CUBRE LA LISTA NO SE ESCRIBE AQUÍ, y ése era el defecto:** lo dice
+> el `diff` de arriba, que sale VACÍO cuando la lista cubre el directorio entero —manifiestos
+> de asignación, addendum y corrigendum incluidos—, y el censo por familia se deriva con
+> `ls docs/evolucion/verificacion/manifiestos/`. **[HISTÓRICO] Este renglón decía «la lista
+> cubre hoy los tres manifiestos de asignación»**, y era falso: el árbol tenía más, y la
+> cifra caducó exactamente como la regla de titulares del documento 11 predice. Es `Y-12` del
+> documento 25.
+> **Y TAMPOCO SE AFIRMA AQUÍ EL RESULTADO DE `T147`**, que es lo que hace falsa una sede en
+> cuanto el árbol se mueve: se publica el comando, y quien lo necesite lo ejecuta.
+>
+> ```text
+> python3 kernel/operativo/validadores/comprobar_referencias.py --exclusiones
+> ```
+>
+> **[HISTÓRICO] Este renglón afirmaba que ese comando «da `T147` en verde».** Lo daba cuando
+> se escribió y **NO lo daba sobre el árbol del CUARTO gate**, porque el manifiesto de ese
+> gate se publicó sin enlazarse desde aquí: es `Y-03`, TERCERA recurrencia de la misma clase.
+> Una sede que copia el resultado de un validador envejece con el primer fichero nuevo; el
+> comando, no.
+> **La regla vale para el gate siguiente igual que para éste**, y el
+> checkpoint la repite en el punto «QUÉ VIENE AHORA» de su sección «Siguiente acción exacta»,
+> que es la sede que lee quien encarga el gate.
 
 ## Lo que este directorio NO es
 

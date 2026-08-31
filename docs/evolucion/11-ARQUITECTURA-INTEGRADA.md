@@ -152,6 +152,27 @@ enumeración, sin excepción, porque el titular numérico que su propia lista de
 defecto más repetido del expediente y cada tanda ha vuelto a producirlo — incluida la que
 introdujo la FASE 0.**
 
+> **LO QUE ESTA REGLA NO TIENE, Y SE DECLARA AQUÍ EN VEZ DE DEJARLO IMPLÍCITO (`Y-07`).**
+> **No tiene GUARDIÁN.** La batería de corrección no la comprueba, y **el cardinal de esta
+> afirmación tampoco se escribe: se DERIVA**, con
+>
+> ```text
+> grep -cniE 'titular|regla de titulares' \
+>   docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py
+> ```
+>
+> **mientras ese comando devuelva 0, esta regla no tiene ni una comprobación mecánica**, y su
+> único cumplimiento es el contrato de prueba de abajo —**que NO se ha ejecutado**— y la
+> lectura humana. Por eso sobrevivieron a tres gates cuatro titulares que su propia
+> enumeración desmentía —`Y-07` del documento 25, y `V-09`…`V-13` y `V-19` del 24—: la
+> batería sólo cuenta objetos NOMBRADOS, no cardinales escritos en prosa.
+> **Y la regla TIENE EXCEPCIONES, que no son «ninguna»:** las declara, una a una, el bloque
+> **QUÉ SÍ PUEDE LLEVAR CARDINAL** de aquí abajo, y son las únicas. El «**sin excepción**»
+> de arriba se lee contra ese bloque y no contra el vacío. **El remedio de un guardián
+> mecánico vive en `docs/evolucion/verificacion/`, que este documento no escribe, y esta
+> tanda NO lo escribe: el adjudicador `AA` ordenó expresamente que no se añada ninguna
+> protección interna nueva.**
+
 ```text
 LA REGLA          **ningún titular, rótulo, remate ni frase introductoria de este documento
                   escribe el CARDINAL de la enumeración que lo sigue o que lo precede.** O
@@ -696,8 +717,14 @@ empieza**:
 > original no sirve, porque la decisión puede ser «conservar lo divergente» o «un tercer
 > contenido». **Se añade la fase que faltaba.** Es `D52`.
 >
-> **El número de fases no es una cuota.** Fue cuatro, luego cinco, y ahora seis, porque cada
-> vez se recalculó contra lo que el protocolo tiene que garantizar. Una cuota es lo que hizo
+> **El número de fases no es una cuota.** Ha subido y ha bajado, y cada vez se recalculó
+> contra lo que el protocolo tiene que garantizar, no contra un cupo. **El censo VIGENTE no
+> se escribe aquí**: su sede es el bloque «Las CINCO fases, y qué significa cada una» de
+> §2.6.1, y se deriva con `grep -c` sobre los rótulos de ese bloque.
+> **[HISTÓRICO · lo que esta nota escribió al registrar `D52`, y no se reescribe]** *«Fue
+> cuatro, luego cinco, y ahora seis»* — la cadena quedó caduca el día que `D64` colapsó la
+> ruta de conflicto y devolvió el autómata a CINCO fases, y sobrevivió a tres gates sin
+> marca. Es `Y-07`. Una cuota es lo que hizo
 > que `D38` dijera «cuatro registros, no cinco» sin contar `reconciliada`.
 
 > **CORREGIDO POR LA TERCERA REVISIÓN INDEPENDIENTE (`B1`, `G2` y `M5`; es `D64`).** El
@@ -758,7 +785,13 @@ DÓNDE SE CITA     **NUEVE sedes vigentes, fuera de aquí**, y el censo se DERIV
                     §2.9      la fila de reconstrucción del marcador
                     §3.6      la capa B, que es quien lo EVALÚA
                     §7.4      el paso 2 de `Continúa`
-                  **Las NUEVE REMITEN aquí. Ninguna lo redeclara.**
+                  **Todas REMITEN aquí, y NINGUNA declara el predicado en otra sede.**
+                  **Pero algunas lo PARAFRASEAN al lado de la remisión** —§2.6.5 (`W8`),
+                  §2.9 y §3.6—, y decir «ninguna lo redeclara» era falso: verificado
+                  releyendo las tres. Las paráfrasis **coinciden hoy** con el enunciado de
+                  arriba —«`preparada` durable sin ninguno de los DOS terminales»—, y por
+                  eso no se retiran; pero **es exactamente la forma en que nació `A2`**, y
+                  queda dicho aquí en vez de negado. Es `Y-10` del documento 25
                   **Corregido por el gate de cierre (`I-09`; es `D89`).** El censo anterior
                   decía SIETE y nombraba §2.6.4 y §2.6.9 —que no lo citaban— omitiendo §2.6.5
                   y §2.6.11 —que sí—; y su «ninguna lo redeclara» era falso, porque §2.6.4
@@ -792,12 +825,20 @@ conflicto                 OBSERVACIÓN DE DIVERGENCIA, ABIERTA Y BLOQUEANTE. Un 
                           §2.6.9.
 
 abandonada                CIERRE TERMINAL SIN COMPLETAR. La autoridad declara que esta
-                          transacción no va a alcanzar su resultado, registra el estado
-                          observado de TODAS sus rutas, y **retira el marcador**. No
+                          transacción no va a alcanzar su resultado y registra el estado
+                          observado de TODAS sus rutas. **NO retira el marcador aquí**
+                          (`D105`): emite el evento `deriva` que mantiene bloqueados los
+                          items hasta que una transacción de reparación los devuelva a un
+                          estado coherente, y el marcador de transacción **SOBREVIVE hasta
+                          que ese `deriva` es DURABLE y su marcador existe** — el paso 6 del
+                          bloque `E` de §2.6.9, que es la sede del orden. No
                           revierte nada: lo aplicado sigue aplicado, y lo divergente sigue
-                          divergente. Emite además el evento `deriva` que mantiene
-                          bloqueados los items hasta que una transacción de reparación los
-                          devuelva a un estado coherente. Ver §2.6.9.
+                          divergente. Ver §2.6.9.
+                          **Corregido por la propagación de `D105` (`Y-02`).** Esta celda
+                          decía «y **retira el marcador**», que es la asimetría que `W8`,
+                          `W17` y el paso `E` desmienten, y era la sede DEFINITORIA: un
+                          implementador que la leyera reconstruía `M-03`, el bloqueo perdido
+                          en silencio
 
 derivada                  CIERRE TERMINAL COMPLETO. Los derivados afectados se regeneraron.
                           Sólo entonces se retira el marcador.
@@ -1176,9 +1217,15 @@ ninguna transacción cerrada tiene cero.
 
 ```text
 EL INVARIANTE QUE CIERRA   toda transacción con `preparada` durable acaba en EXACTAMENTE UN
-EL ESPACIO DE ESTADOS      terminal, y todo terminal retira el marcador. **No existe ninguna
+EL ESPACIO DE ESTADOS      terminal, y **todo terminal acaba retirando el marcador, pero NO
+                           en el mismo instante**: `derivada` lo retira al regenerar sus
+                           derivados; `abandonada` **NO**, y su marcador SOBREVIVE hasta que
+                           el `deriva` es durable y su marcador existe (`D105`, paso 6 del
+                           bloque `E` de §2.6.9). **No existe ninguna
                            combinación de cardinalidades sin salida**, que es lo que `B1`
-                           encontró y `D64` elimina en su raíz.
+                           encontró y `D64` elimina en su raíz. **Precisado por la
+                           propagación de `D105` (`Y-02`)**: la forma anterior —«todo
+                           terminal retira el marcador»— era la del censo previo a `D105`.
 
 `k` NO TIENE TOPE          y no lo necesita: cada `conflicto` registra un estado divergente
                            DISTINTO observado, producido por el mundo y no por un reintento
@@ -1238,7 +1285,7 @@ cobertura obligó a añadir `W17`**.
 | W8 | tras `derivada`, antes de borrar el marcador | transacción CERRADA con marcador abierto | se borra el marcador. Idempotente. **`abierta(tx)` deja de cumplirse** en cuanto es durable cualquiera de los DOS terminales. **Pero la RETIRADA del marcador no es simétrica** (`D105`): tras `derivada` se retira sin más; tras `abandonada` se retira **sólo cuando el `deriva` es DURABLE y su marcador existe** (§2.6.9 paso E), porque hasta entonces retirarlo dejaría el commit desbloqueado y el bloqueo de los items perdido. **Y `W8` cubre los DOS tramos posteriores al `deriva` durable —`[paso 4, paso 5)` y `[paso 5, paso 6)`—**: crea el marcador del `deriva` si falta —reconstruible desde el diario (§2.9), y por eso no lleva `fsync`, que es la fila `X60`— y **sólo entonces** retira el de transacción, todo idempotente. **Si el `deriva` NO es durable todavía, la ventana es `W17`; si no hay `abandonada` durable, es `W11`.** **Corregido por `P-01`**: esta celda mandaba a `W17` todo lo anterior a que «el `deriva` **y su marcador**» fueran durables, y con ello reclamaba para `W17` el tramo `[4, 5)` que la propia fila de `W17` expulsa por su condición de detección. **Las tres sedes dicen ahora lo mismo, y el punto 7 de §2.6.9 es la que manda** |
 | W9 | antes del commit de Git | árbol coherente, Git por detrás | se hace el commit LOCAL. Es recuperación: protege el árbol y no publica (§2.6.10) |
 | W10 | después del commit, antes del push | commit local sin publicar | **NO se empuja automáticamente.** El push es publicación, no recuperación: pasa a la política de §2.6.10 |
-| W11 | en cualquier punto, con la transacción abierta y un fichero VERDADERAMENTE divergente | un fichero que no casa **ni con su `hash_previo` ni con su `hash_posterior_esperado`** (§2.6.4) | **`conflicto`** —y las dos condiciones son necesarias: transacción abierta Y divergencia real—, con la copia íntegra de lo divergente. El predicado `reconciliacion_pendiente` **se deriva** de él (§2.6.9): no hay bandera que escribir. No se completa y no se revierte, y tiene **dos salidas**: si la divergencia cesa se completa hacia delante, y si no, la autoridad **abandona** y el marcador se retira |
+| W11 | en cualquier punto, con la transacción abierta y un fichero VERDADERAMENTE divergente | un fichero que no casa **ni con su `hash_previo` ni con su `hash_posterior_esperado`** (§2.6.4) | **`conflicto`** —y las dos condiciones son necesarias: transacción abierta Y divergencia real—, con la copia íntegra de lo divergente. El predicado `reconciliacion_pendiente` **se deriva** de él (§2.6.9): no hay bandera que escribir. No se completa y no se revierte, y tiene **dos salidas**: si la divergencia cesa se completa hacia delante, y si no, la autoridad **abandona** — y el marcador **NO se retira ahí**: sobrevive hasta que el `deriva` del abandono es DURABLE y su marcador existe (`D105`, paso 6 del bloque `E` de §2.6.9). **Corregido por la propagación de `D105` (`Y-02`)**: esta celda decía «y el marcador se retira», y la propagación anterior tocó `W17` y `X54` y no esta fila |
 | **W12a** | caída de MÁQUINA tras el `rename` de un canónico, sin `fsync` de su directorio, con la transacción **TODAVÍA ABIERTA** —sin `derivada`— | uno o más canónicos revertidos a su hash previo | **NO es `conflicto`.** Casan con la BASE VÁLIDA de su intención vigente, luego son **NO APLICADO** y se **REAPLICAN** en el `orden` declarado, de forma idempotente (§2.6.4) — que es lo mismo que mandan `W3` y `W4` ante el mismo disco. Si `confirmada` ya era durable, **no se emite ninguna fase nueva**: el evento ya existe, se sigue con los derivados y con `derivada`, y **no hay `confirmada → confirmada`** (§2.6.4). Sólo hay `conflicto` si algún fichero no casa **ni con la base ni con el resultado**. **Corregido** (hallazgo `H2`) |
 | **W12b** | lo mismo, con la transacción **YA CERRADA** —`derivada` durable— | ídem | **NO es `conflicto`**, y por el paso 0 de §2.6.4: `derivada` es terminal y ninguna transición sale de él. Se emite un evento **`deriva`** con `causa: posterior-al-cierre` (§2.6.11), que referencia la transacción sin reabrirla. Es el fallo silencioso del hallazgo `E`, y el hallazgo `2` corrige a dónde va |
 | **W13** | **escribiendo el temporal de `confirmada`** | temporal huérfano, con todos los canónicos ya en posterior | **se emite `confirmada`, y es su PRIMERA emisión durable**: un temporal huérfano NO es un evento, luego `confirmada` no existe todavía (caso A de §2.6.4). NO se descarta la transacción: a diferencia de `W2`, aquí los canónicos YA están aplicados |
@@ -1349,7 +1396,11 @@ NO EXIGIDO    los derivados, el marcador de transacción, **el marcador del `der
 ```
 
 > **Corregido tres veces.** `D64` la devuelve a una sola intención al colapsar la ruta de
-> conflicto, y añade `abandonada` porque es el evento que retira el marcador. Antes, la
+> conflicto, y añade `abandonada` porque es el terminal que cierra la ruta de conflicto.
+> **[HISTÓRICO · lo que se escribió al registrar `D64`] «porque es el evento que retira el
+> marcador»**: `D105` lo desmintió después —el `abandonada` NO retira el marcador, y el
+> marcador sobrevive hasta que su `deriva` es durable (paso 6 del bloque `E` de §2.6.9)—, y
+> la frase se conserva marcada en vez de reescribirse. Es `Y-02`. Antes, la
 > corrección técnica posterior la había extendido a `reconciliacion-preparada`, que ya no
 > existe.
 >
@@ -1576,10 +1627,10 @@ impuso al arnés de negativos.
 | `X52` | comparar el censo de pruebas de §9.1, §9.5 y `nivel-certificacion` para cada nivel | los tres conjuntos son **idénticos**. Una diferencia de censo es un fallo |
 | `X53` | buscar un `contrato-de-aspecto` de familia `certificacion`, y campos de certificación declarados dos veces | **no existe ninguno**, y ningún campo de certificación tiene dos sedes normativas |
 | `X54` | matar la máquina en cada una de las **DIECIOCHO** ventanas de §2.6.5 —`W1`–`W11`, `W12a`, `W12b`, `W13`–`W16` y **`W17`**— con un `conflicto` vivo. **`W17` incluida expresamente** (`P-01`≡`Q-13`): esta fila decía «las diecisiete», que era el censo anterior a `D105`, y dejaba fuera del único escenario que las barre todas justamente la ventana que `D105` creó para cerrar `M-03` y `O-03`. El número no vuelve a caducar solo: `G-26` deriva las filas `W` de la tabla y exige que esta fila las cubra y nombre `W17` | el `conflicto` sobrevive o se reconstruye desde el diario, **ningún canónico se toca**, y la transacción sigue teniendo sus DOS salidas disponibles tras el arranque |
-| `X55` | abandonar una transacción en conflicto y comprobar el estado resultante | `abandonada` es durable, **el marcador se retira**, el control repo **vuelve a commitear**, y un evento `deriva` con `causa: abandono-de-transaccion` mantiene bloqueados **sólo** los items que nombra |
+| `X55` | abandonar una transacción en conflicto y comprobar el estado resultante, **matando la máquina entre el `abandonada` durable y el `deriva` durable** —que es la ventana `W17`— | `abandonada` es durable y **el marcador de transacción SIGUE PUESTO mientras el `deriva` no sea durable** (`D105`, paso 6 del bloque `E` de §2.6.9): el control repo **NO vuelve a commitear** hasta entonces. Sólo cuando el `deriva` con `causa: abandono-de-transaccion` es durable y su marcador existe se retira el de transacción, el control repo vuelve a commitear, y el `deriva` mantiene bloqueados **sólo** los items que nombra. **Corregido por la propagación de `D105` (`Y-02`), y es lo que más importaba de las siete sedes**: esta fila es CONTRATO DE PRUEBA de `F6` y, tal como estaba escrita —«el marcador se retira»—, **una implementación con el defecto `M-03` la PASABA** |
 | `X56` | revertir un canónico de una transacción con `derivada` durable, y arrancar | se emite un evento **`deriva`** con `causa: posterior-al-cierre`. **NO** se emite ninguna fase, la transacción cerrada **no gana ningún evento nuevo con su `tx`**, y nada se restaura solo |
 | `X57` | recorrer el diario buscando cualquier evento con `fase` cuya transacción ya tenga `derivada` | **no existe ninguno**, y el **validador semántico del diario** lo rechaza —la comprobación es de `tx`, no de evento aislado (§3.6)—. Ninguna transición sale del terminal |
-| `X58` | recorrer el grafo de fases buscando un estado no terminal sin sucesor admisible | **no existe ninguno**: `preparada` sale a dos, `conflicto` sale a dos, `confirmada` sale a uno, y `derivada` y `abandonada` son terminales que **retiran el marcador**. **Y la retención acotada de la secuencia `4b` —desenlace 4, `TODAVÍA BLOQUEADA`— termina por ACTO DE AUTORIDAD del Owner** —cuarentena o declaración de irrecuperable (§2.6.9)—, no por construcción: el grafo no la cierra sola, y decirlo es la corrección de `A9`. Lo que se comprueba aquí es el grafo; que exista autoridad que pueda cerrarla se comprueba en §2.6.9 |
+| `X58` | recorrer el grafo de fases buscando un estado no terminal sin sucesor admisible | **no existe ninguno**: `preparada` sale a dos, `conflicto` sale a dos, `confirmada` sale a uno, y `derivada` y `abandonada` son terminales — **`derivada` retira el marcador; `abandonada` NO lo retira en su emisión**, y el marcador sobrevive hasta que su `deriva` es durable y su marcador existe (`D105`, paso 6 del bloque `E` de §2.6.9). **Corregido por la propagación de `D105` (`Y-02`)**: esta celda decía «terminales que retiran el marcador», y es contrato de prueba de `F6`. **Y la retención acotada de la secuencia `4b` —desenlace 4, `TODAVÍA BLOQUEADA`— termina por ACTO DE AUTORIDAD del Owner** —cuarentena o declaración de irrecuperable (§2.6.9)—, no por construcción: el grafo no la cierra sola, y decirlo es la corrección de `A9`. Lo que se comprueba aquí es el grafo; que exista autoridad que pueda cerrarla se comprueba en §2.6.9 |
 | `X59` | recorrer la historia entera del control repo tras N transacciones y N `deriva` | **ningún commit** contiene un fichero bajo `estado/deriva/` ni bajo `.ads/run/`, incluida `quarantine/`. Es `X27` para la SEGUNDA excepción de ruta de §2.4 |
 | `X60` | emitir un `deriva`, borrar a mano `estado/deriva/<ID>.abierta` y arrancar | el arranque lo **reconstruye desde el diario** por `bloqueado_por_deriva(item)` (§2.9), con las mismas rutas e items. Y un lector que aplique §2.6.8 **no recorre `estado/eventos/`**: consulta los dos marcadores. El marcador es un acelerador, igual que el de transacción |
 | `X61` | abandonar con cuarentena autorizada, y comprobar su ciclo | `.ads/run/quarantine/<TX>/` existe **antes** de restaurar y su contenido **casa por hash** con lo registrado en el `conflicto`; **sigue existiendo** tras `abandonada` y tras la verificación; y **sólo deja de existir después del commit del incidente**. Ningún commit la contiene. Si `SEG` bloquea la publicación y el Owner acepta la pérdida, el incidente conserva **hash, clasificación, autoridad, motivo y alcance**, y el contenido prohibido **no se publica** |
@@ -1632,8 +1683,17 @@ impuso al arnés de negativos.
 >                                corregido por `J-07`—. Lo que pudo inducir un recuento de
 >                                más es la fila SEPARADORA del Markdown, que no es un
 >                                escenario
-> «"Un fichero que no existe"    NO REPRODUCIDO. Un barrido literal sobre todo `docs/`
->  dos veces en §2.6.4»          devuelve UNA sola aparición
+> «"Un fichero que no existe"    NO REPRODUCIDO **en §2.6.4**, que es lo que la objeción
+>  dos veces en §2.6.4»          afirmaba: la expresión aparece ahí **una sola vez**, y el
+>                                barrido acotado a esa sección lo comprueba.
+>                                **[HISTÓRICO] Esta celda decía «un barrido literal sobre
+>                                todo `docs/` devuelve UNA sola aparición».** Hoy es falso
+>                                y no se reescribe el registro: el barrido `grep -rn 'Un
+>                                fichero que no existe' docs/` devuelve VARIAS, en varios
+>                                ficheros, **y una de ellas es esta misma celda** — la
+>                                objeción se citó al refutarla, y con ella creció su propio
+>                                censo. Es `Y-16`. El alcance correcto de la refutación es
+>                                §2.6.4, no `docs/`, y así queda escrito
 > ```
 >
 > **Ninguna se ha ejecutado.** Cuarenta y seis filas escritas es el contrato de lo que F6
@@ -1999,7 +2059,14 @@ E · CERRAR        sólo entonces, y **en este orden, que ahora es EXACTO y DURA
 ```text
 1 ORDEN EXACTO        abandonada → fsync(fichero) → fsync(directorio) → deriva →
                       fsync(fichero) → fsync(directorio) → marcador del deriva →
-                      retirada del marcador de transacción. Seis pasos, en este orden
+                      retirada del marcador de transacción. **En ESTE orden, y es la
+                      expansión operación a operación de los pasos numerados del bloque
+                      `E` de arriba, que es su sede.** El titular NO cuenta ni los pasos
+                      ni las operaciones: remite (regla de titulares de §0).
+                      **[HISTÓRICO] Decía «Seis pasos, en este orden»** — seis son los
+                      renglones numerados de `E`, y la cadena de esta misma línea enumera
+                      OCHO operaciones: un cardinal escrito al lado de la enumeración que
+                      lo desmiente. Es `Y-07`
 
 2 CAMPOS              `abandonada`  OBLIGA `estado_observado[]` de TODAS las rutas ·
                       `autoridad` · `motivo` · `revision_base`
@@ -2182,10 +2249,16 @@ QUÉ ES `4b`, Y POR QUÉ NO ES UN QUINTO DESENLACE — **añadido por `P-16` del
   ninguno más; las SECUENCIAS llevan letra tras el número y viven en su propio bloque.*
   **[HISTÓRICO] El cardinal «Seis sedes» es lo que se contó entonces y no se reescribe.**
   **CÓMO SE COMPRUEBA HOY, que es lo que faltaba:** el barrido **no publica cardinal** — la
-  condición es *`grep -n 'desenlace .4b.'` sobre este documento devuelve SÓLO líneas que estén
-  dentro de una nota de corrección o de un registro de decisión*, y toda mención VIVA dice
-  «secuencia `4b`». Un cardinal escrito aquí volvería a caducar el día que se añada una sede;
-  la condición, no. Y `D79` —«el desenlace `4b` lo cierra un ACTO DE
+  condición es *`grep -nE 'desenlace[^A-Za-z0-9]{0,4}4b' <este documento>` devuelve SÓLO
+  líneas que estén dentro de una nota de corrección o de un registro de decisión*, y toda
+  mención VIVA dice «secuencia `4b`». Un cardinal escrito aquí volvería a caducar el día que
+  se añada una sede; la condición, no.
+  **Corregido por `Y-15` del documento 25, y el defecto era del propio barrido:** la forma
+  publicada era `grep -n 'desenlace .4b.'`, cuyo `.` casa **un solo carácter**, mientras la
+  tipografía dominante de este documento escribe ``**`4b`**`` —tres antes del `4b`—. El
+  barrido **se evadía a sí mismo**: dejaba fuera la fila de `D79` del catálogo de decisiones,
+  que sí dice «el desenlace **`4b`**». La forma tolerante de arriba la incluye, y las líneas
+  que devuelve siguen siendo todas notas de corrección o registros de decisión. Y `D79` —«el desenlace `4b` lo cierra un ACTO DE
   AUTORIDAD del Owner»— **no se reescribe**: es registro de decisión, y lo que cierra la
   autoridad es la retención de esa secuencia dentro del desenlace 4
 ```
@@ -2301,11 +2374,16 @@ ES PUBLICABLE            Entonces se conserva únicamente una REFERENCIA SEGURA 
 > tres niveles reales.
 
 ```text
-NINGÚN TERMINAL DEJA     **todo terminal retira el marcador**: `derivada` al regenerar los
-EL MARCADOR ABIERTO      derivados, `abandonada` tras verificar la restauración. Y el
-                         **la** secuencia `4b` no es terminal: por eso conserva el marcador
-                         vivo, y
-                         por eso no publica.
+NINGÚN TERMINAL DEJA     **ningún terminal deja el marcador abierto para siempre, y NO lo
+EL MARCADOR ABIERTO      retiran en el mismo instante**: `derivada` lo retira al regenerar
+                         los derivados; `abandonada` **NO lo retira al emitirse** —lo retira
+                         el paso 6 del bloque `E` de §2.6.9, cuando el `deriva` del abandono
+                         es DURABLE y su marcador existe (`D105`)—. **Corregido por la
+                         propagación de `D105` (`Y-02`)**: la forma anterior escribía «todo
+                         terminal retira el marcador» y ponía la retirada del `abandonada`
+                         «tras verificar la restauración», que es el paso `D`, dos pasos
+                         antes de donde ocurre. Y la secuencia `4b` no es terminal: por eso
+                         conserva el marcador vivo, y por eso no publica.
 ```
 
 ```text
@@ -2603,7 +2681,7 @@ de toda `retirada-de-cuerpo` y la permanencia que `O15` exige. Es `D65`.
 
 ### El gobierno Git del REPOSITORIO DE CONTROL
 
-#### Primero, qué papel juega Git aquí — y las cuatro alternativas, comparadas
+#### Primero, qué papel juega Git aquí — y las alternativas de la tabla, comparadas una a una
 
 | | alternativa | qué aporta | qué cuesta | veredicto |
 |---|---|---|---|---|
@@ -2714,7 +2792,7 @@ ESTADO PARCIAL         exista commit**, y no por la inferencia «sin marcador �
                        Y un abandono **no deja «estado mixto» en las rutas canónicas
                        publicadas**: en la ruta normal todas quedan clasificadas `previo`. El
                        enum `{previo, posterior, divergente}` de `estado_observado[]` (§3.6)
-                       sólo alcanza `posterior` y `divergente` en el **acto (ii) del
+                       sólo alcanza `posterior` y `divergente` en el **acto (ii) de la
                        secuencia `4b`**, donde el Owner declara irrecuperable lo especulativo
                        y el commit de incidente **EXCLUYE** las rutas divergentes. Decirlo
                        importa: sin ello F6 construiría el validador sobre un enum cuya
@@ -3232,7 +3310,8 @@ garantía?».**
 ### Semántica del sellado
 
 Al cerrar un item, sus eventos se **compactan** en un fichero sellado. Qué significa eso,
-con las cuatro preguntas respondidas:
+con las preguntas del bloque de abajo respondidas una a una — **son las que el bloque
+rotula, y el titular no las cuenta** (regla de titulares de §0):
 
 ```text
 QUÉ CONSERVA EL SELLADO   · el ESTADO FINAL de los items que sella. Es lo que hace real la
@@ -7508,8 +7587,13 @@ SU SITIO ES F6          con prescripción CERRADA. Lo que F4 debe hacer HOY es R
 > clase `B`, con tres alternativas redactadas palabra por palabra. **El Owner eligió la (b)**
 > —que lo produzca cada macrocircuito al arrancar, como precondición propia— y **aceptó
 > expresamente su coste**: un gate más en los cuatro recorridos, y migración y actualización
-> más caras. `O17` está íntegra en `docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md` §2, y su
-> propagación es `D107`, §1. **Lo único que F4 aporta aquí es el reparto de la elección (b)
+> más caras. **El texto íntegro de `O17` está en la SEDE CANÓNICA
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md)**; la §2 de
+> `docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md` es su **PROYECCIÓN DERIVADA**, que enlaza
+> a ella y no la sustituye, y su propagación es `D107`, §1. **Corregido por `Y-08` del
+> documento 25**: esta línea decía «`O17` está íntegra en `DECISIONES…` §2», señalando la
+> proyección como autoridad, contra la cláusula AUTORIDAD de la sede y contra `X-O11`. La
+> corrección de procedencia de `O19` se aplicó al lado `O18` y no al lado `O17`. **Lo único que F4 aporta aquí es el reparto de la elección (b)
 > por las sedes vigentes**, y por eso esta sección se declara derivada y no decidida.
 >
 > **El vacío que cierra** —`P-06` del documento 22, GRAVE nº 2—: `gate:sistema-conforme`
@@ -8493,10 +8577,22 @@ REALMENTE ENTREGADA    tan dura como las otras: un cierre que se apoye en una pr
 
 ## 11.8 · EL CONTRATO DEL VERIFICADOR EXTERNO DEL CONTROL REPO — registrado COMPLETO para `F6`, y **NO implementado**
 
-> **DERIVADO DE `O18`, VÍA `D108`. No lo eligió F4, y F4 no lo construye.** `O18` fija (c)
-> —«commits firmados, refs protegidas y ejecución de la batería fuera del repositorio, con
-> identidad propia, cuyo resultado no se escribe en el árbol»— como **OBLIGATORIA en `F6`** y
-> como **CONDICIÓN PREVIA** a la adopción permanente de PesquerApp. Aquí queda **registrado
+> **DERIVADO DE `O18`, VÍA `D108`. No lo eligió F4, y F4 no lo construye.** `O18` fija la
+> alternativa **(c)** como **OBLIGATORIA en `F6`** y como **CONDICIÓN PREVIA** a la adopción
+> permanente de PesquerApp — así consta en la SEDE CANÓNICA
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md), que es la
+> única sede de las palabras del Owner.
+> **PROCEDENCIA DEL ENUNCIADO DE `(c)`, corregida por `Y-05` del documento 25.** El texto
+> «*commits firmados, refs protegidas y ejecución de la batería fuera del repositorio, con
+> identidad propia, cuyo resultado no se escribe en el árbol*» **NO son palabras del Owner y
+> no están en la sede canónica** —barrido literal sobre ella: «commits firmados» 0, «refs
+> protegidas» 0, «fuera del repositorio» 0, «identidad propia» 0—. Es el enunciado con que
+> la alternativa `(c)` **se le PRESENTÓ**, y su sede real es el bloque «*Las TRES
+> alternativas que se presentaron*» de
+> [`docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md),
+> renglón «(c) UN VERIFICADOR EXTERNO DE VERDAD». **Es la PREGUNTA del coordinador, no la
+> respuesta del Owner**, y aquí se cita como tal. Lo que el Owner resolvió sobre `(c)` está
+> en la sede, y es su obligatoriedad en `F6` con sus TRES condiciones previas. Era `X-O13`. Aquí queda **registrado
 > con la forma que este documento usa para los contratos de fase futura**: entradas,
 > mecanismo, reparto, condiciones duras, pruebas y condición de cierre. **Nada de esto está
 > construido, y escribir el contrato de una prueba no es la prueba.**
@@ -9193,7 +9289,7 @@ restauran al de `7e99388`, llevando su corrección a `D89` (`I-16`).
 
 | | decisión | qué revisa | por qué |
 |---|---|---|---|
-| `D64` | la **ruta de conflicto se COLAPSA**: cinco fases, seis transiciones, **DOS terminales**, y todo terminal retira el marcador. `conflicto` es observación bloqueante con dos salidas, y `abandonada` emite un `deriva` que conserva el bloqueo acotado | `D35` · `D46` · `D52` · `D60` · `D62` | **BLOQUEANTE**: `conflicto(observacion: 4, agotado: true)` no tenía transición admisible, el marcador no se retiraba y el control repo no volvía a commitear **para todo el producto** |
+| `D64` | la **ruta de conflicto se COLAPSA**: cinco fases, seis transiciones, **DOS terminales**, y todo terminal retira el marcador — **precisado después por `D105`**, que separa el instante: `derivada` lo retira; `abandonada` no, y su marcador sobrevive hasta que el `deriva` es durable (§2.6.9 paso `E`). `conflicto` es observación bloqueante con dos salidas, y `abandonada` emite un `deriva` que conserva el bloqueo acotado | `D35` · `D46` · `D52` · `D60` · `D62` | **BLOQUEANTE**: `conflicto(observacion: 4, agotado: true)` no tenía transición admisible, el marcador no se retiraba y el control repo no volvía a commitear **para todo el producto** |
 | `D65` | el **gobierno Git del control repo** se escribe: tabla de propiedad, `main` canónica sin `G29`, publicación optimista, `--force` prohibido salvo procedimiento del Owner, y `adaptador.publicacion_control_repo` como sede real de la política | `D41` | **BLOQUEANTE**: el texto prometía no rellenar el hueco por inferencia y lo rellenaba tres reglas después invocando `G29`, que `E2.4` acota a las fuentes. Ningún commit de `estado/` podía publicarse |
 | `D66` | `a.9` se cita como `a.9` lo escribe —**concepto no es campo**—, y `fallo` recibe **semántica CERRADA** con `tx_afectada` como REFERENCIA | `D23` · `D54` | **GRAVE**: F4 sustituía «propietario del campo» por `actor_atribuido` y lo presentaba como los cinco de `a.9`; y `X15` y `X28` no eran satisfacibles contra el contrato de `fallo` |
 | `D67` | los cuatro macrocircuitos se **MAPEAN a los procesos de `b.16`**, con propietario global tomado y no elegido; §8.3 gana `LEE`, `ESCRIBE`, `AUTORIDAD`, `EJECUTOR` y el gobierno de su retirada; §8.4 gana `ESTADO` | `D30` · `D32` · `D33` · `D45` | **GRAVE**: tres de los cuatro no nombraban proceso, y del proceso se derivan ruta, obligaciones, propietario y gates — F6 habría tenido que elegir |
@@ -9335,8 +9431,10 @@ reescribe.** Sus textos viven en el registro.
 
 El **GATE INDEPENDIENTE DE CERTIFICACIÓN** —documento 22— devolvió **INSUFICIENTE PARA F5**
 con 69 hallazgos, de los que **uno solo** era decisión exclusiva del Owner: **el nivel
-Estructural y su productor**. El Owner resolvió, y su resolución es **`O17`**, íntegra en la
-sección 2 del registro. `D107` es **su propagación, y se declara DERIVADA**: los cuatro
+Estructural y su productor**. El Owner resolvió, y su resolución es **`O17`**, cuyo texto
+íntegro vive en la **SEDE CANÓNICA**
+[`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md) — la sección 2
+del registro es su PROYECCIÓN DERIVADA, que enlaza a ella y no la sustituye (`Y-08`). `D107` es **su propagación, y se declara DERIVADA**: los cuatro
 macrocircuitos ganan una **FASE 0 de CERTIFICACIÓN ESTRUCTURAL** como precondición propia, y
 `gate:sistema-conforme` gana productor, sujeto, evidencia, vigencia y condición de
 invalidación. **La sede de todo ello es §9.6**, y §8.1–§8.4, §9.2, §9.4 y §18 la invocan.
@@ -9349,7 +9447,11 @@ alternativas (a) y (c) **las descartó el Owner**, no F4. `D1`–`D106` y `O1`�
 El **SEGUNDO GATE DE CERTIFICACIÓN** —documento 23— devolvió su única clase `B`, que **no era
 un hallazgo: era la raíz** de tres insuficiencias consecutivas —la verificación se anclaba en
 referencias internas al árbol auditado, que §11.4 ya había declarado—. El Owner resolvió, y su
-resolución es **`O18`**, íntegra en la sección 2 del registro: **(a) RECHAZADA expresamente**,
+resolución es **`O18`**, cuyo texto íntegro —el AMPLIO, ratificado por `O19`— vive en la
+**SEDE CANÓNICA** [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md),
+y la sección 2 del registro es su PROYECCIÓN DERIVADA, que enlaza a ella y no la sustituye
+(`Y-08`); la entrada corta de `O18` que ahí consta es el registro histórico de una
+transcripción incompleta: **(a) RECHAZADA expresamente**,
 **(b) ANCLA DOCUMENTAL EXTERNA adoptada para cerrar `F4c` y declarada TRANSITORIA**, **(c)
 VERIFICADOR EXTERNO REAL obligatorio en `F6`** y previo a la adopción permanente de
 PesquerApp. `D108` es **su propagación, y se declara DERIVADA**: el **SOBRE DE ANCLA** pasa a
@@ -10240,10 +10342,20 @@ ORIGEN              hallazgo `P3-03` de la cadena `P`, elevado y graduado GRAVE 
 ## `PN-19` · NUEVA · el VERIFICADOR EXTERNO que `O18` hace OBLIGATORIO en `F6` exige una identidad de escritura SEPARADA y evidencia FUERA del árbol, y ninguna sede aprobada las contempla
 
 > **Registrada por la propagación de `O18` (`D108`), y NO elegida por F4.** `O18` fija la
-> alternativa (c) —«commits firmados, refs protegidas y ejecución de la batería fuera del
-> repositorio, con identidad propia, cuyo resultado no se escribe en el árbol»— como
-> **OBLIGATORIA en `F6`** y **previa a la adopción permanente de PesquerApp**, y dice con sus
-> palabras que **«toca `C7`»**. El contrato completo está en **§11.8**; aquí se registra
+> alternativa **(c)** como **OBLIGATORIA en `F6`** y **previa a la adopción permanente de
+> PesquerApp**, según la SEDE CANÓNICA
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md).
+> **PROCEDENCIA, corregida por `Y-05` del documento 25.** El enunciado de `(c)` —«*commits
+> firmados, refs protegidas y ejecución de la batería fuera del repositorio, con identidad
+> propia, cuyo resultado no se escribe en el árbol*»— es el texto con que la alternativa
+> **se PRESENTÓ** al Owner, y su sede es el bloque de las TRES alternativas de
+> [`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md); **no es
+> cita del Owner y no aparece en la sede canónica**. Y **se RETIRA la atribución «dice con
+> sus palabras que «toca `C7`»»**: esa expresión vive en la línea **EN CONTRA** de esa misma
+> pregunta —el argumento que se le puso delante—, y `grep -c 'C7'` sobre la sede canónica da
+> **0**. Que este verificador externo presione sobre `C7` **lo afirma F4 y se registra como
+> presión**, no como palabra del Owner. Era `X-O13`, en la sede que va al Owner por `PN-19`.
+> El contrato completo está en **§11.8**; aquí se registra
 > únicamente **qué material aprobado presiona**, sin redactar ninguna enmienda.
 >
 > **Esta presión NO elige la enmienda, y no renumera ni reescribe ninguna anterior.**
