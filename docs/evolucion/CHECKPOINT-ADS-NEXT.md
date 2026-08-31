@@ -12,6 +12,54 @@
 > vigente, que es siempre la primera.
 
 > **Estado de la fase, en una línea:**
+> **El CUARTO GATE DE CERTIFICACIÓN devolvió `INSUFICIENTE PARA F5` y, además, EL PROPIO
+> ADJUDICADOR LO DECLARÓ INVÁLIDO. `F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA. Y
+> `C-L.5` pasa de CERTIFICADA a ABIERTA, por primera vez en cuatro gates.**
+>
+> Está en
+> [`25-CUARTO-GATE-DE-CERTIFICACION-F4C.md`](25-CUARTO-GATE-DE-CERTIFICACION-F4C.md), con los
+> tres dictámenes íntegros.
+>
+> **POR QUÉ ES INVÁLIDO, Y LA CULPA ES DEL COORDINADOR.** `O18` adoptó el SOBRE DE ANCLA como
+> raíz de confianza externa y `O19` le añadió la huella de la sede canónica. **El emisor lo
+> produjo bien**: `AA` verificó que todos sus campos reproducen byte a byte. **Lo que falló
+> fue la ENTREGA**: el coordinador transcribió el sobre A MANO en cada encargo, y las cinco
+> transcripciones **difieren en OCHO campos** —entre ellos el SHA-256 del derivador, que el
+> propio Owner ordena entregar en la sede canónica—. La obligación del adjudicador
+> **pre-rechaza con sus palabras exactas** la defensa que los dos dictaminadores ensayaron, y
+> `AA` resolvió **contra los dos**.
+>
+> ```text
+> 36 HALLAZGOS DISTINTOS    0 bloqueantes · 12 graves · 13 medios · 11 menores
+> CLASIFICACIÓN             A · coherencia interna      23
+>                           B · identidad               5      A+B  8
+>                           C · actor privilegiado       0
+>                           DECISIÓN DEL OWNER           0   ← no hay ninguna pendiente
+> COBERTURA                 OBLIGATORIO − ASIGNADO = ∅ · **ASIGNADO − LEÍDO = 1**
+>                           la regla de cierre excluye la suficiencia POR SÍ SOLA
+> ```
+>
+> **LA CAUSA RAÍZ, y por primera vez hay una buena mitad.** `AA` dictamina que **NO es la
+> misma causa que en los gates 21, 22, 23 y 24**: aquéllos fallaron porque la verificación
+> estaba anclada dentro del objeto verificado, y **éste no** — los tres remedios del documento
+> 24 **están aplicados y funcionan**, verificados uno a uno, y la sede real, el emisor y el
+> derivador están protegidos. **Lo que falla es la ENTREGA, no la producción**, que es la
+> mitad que nadie había podido medir hasta que el mecanismo existió.
+> **Sí es la misma causa en el MÉTODO**: el perímetro se cerró y el `basename` se abrió **en
+> el commit del propio remedio de `O19`**, quinta vez consecutiva.
+>
+> **`AA` dictamina que EL TRABAJO DEBE SEGUIR**, y expresamente **sin escribir una protección
+> interna nueva**: «lo que falta es de resta y de disciplina». **No hay ninguna decisión
+> pendiente del Owner**: los treinta y seis tienen remedio determinado dentro de `F4c`.
+>
+> **Y lo que SÍ quedó cerrado:** los tres remedios del documento 24 · los 54 agotamientos
+> pasando las dos reglas · la reincidencia `U-02`/`X-06` **ROTA** —70 filas, cero
+> discrepancias— · la **SEDE CANÓNICA cumple**, con `O1`–`O16` no reconstruidos, el diseño
+> intacto en siete cotejos y **cero amplificación** en la proyección · `X-01` CERRADO Y
+> GENERALIZA · y la exención histórica del checkpoint baja del 56 % al 32,5 %.
+
+> **[ESTADO ANTERIOR · antes del CUARTO GATE DE CERTIFICACIÓN, documento 25]**
+
 > **El Owner ha RATIFICADO el texto amplio de `O18` y ha ordenado una SEDE CANÓNICA para sus
 > resoluciones: es `O19`. `F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA.**
 >
