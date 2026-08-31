@@ -173,6 +173,20 @@ def _leer(rel):
 # **Y mientras algo quede fuera, se PUBLICA con su ruta**: `EXCLUIDOS_PERIMETRO` lo emite
 # por todos los modos, como `EXCLUIDOS_IV` hace con el componente (iv). Una exclusión
 # silenciosa es la puerta; una exclusión publicada es una línea que el revisor lee.
+#
+# `S1-04` · **Y AQUÍ SE DICE EL ALCANCE EXACTO DE ESA PROMESA, porque decirla entera era
+# falso.** Este predicado se evalúa **donde el derivador RECORRE el árbol** —el resolutor
+# de nombres y el barrido de las zonas del `ENCARGO`—, y el derivador **no recorre el árbol
+# entero**: recorre lo que su `1bis` le manda mirar. Por tanto `EXCLUIDOS_PERIMETRO`
+# publica **todo lo que este derivador excluye de su universo**, y NO «todo lo que hay
+# fuera del universo»: un fichero que el `1bis` nunca alcanza no está excluido por el
+# perímetro — está fuera del encargo, que es otra cosa y la dice el propio `1bis`.
+# **Quien quiera la diferencia entre el árbol y el universo no la busca aquí**: la da
+#     comm -13 <(python3 …/derivar-universo-obligatorio.py --rutas | sort) \
+#              <(git ls-tree -r --name-only HEAD | sort)
+# El séptimo gate midió que la promesa anterior —«todo lo excluido»— era más ancha que el
+# código, y es la sexta condición de `O18`: ninguna promesa de garantía superior a la
+# entregada. Se acota la promesa en vez de fingir que el derivador barre lo que no barre.
 _EXCLUIDO_RAIZ = re.compile(r"^\.git(?:/|$)")
 
 # Los excluidos por PERÍMETRO, con su ruta y su motivo. Se publica, no se supone.
@@ -180,12 +194,20 @@ EXCLUIDOS_PERIMETRO = []
 
 
 def _es_bytecode(ruta_abs):
-    """¿El fichero ES bytecode de CPython? Se decide por el CONTENIDO, no por el sufijo.
+    """¿El fichero cumple el PREDICADO DE BYTECODE? Por CONTENIDO, no por sufijo.
 
-    La cabecera de un `.pyc` son cuatro bytes: un magic de dos bytes cuyo byte alto es
-    pequeño, y `\r\n`. Y un `.pyc` **no es texto UTF-8**. Se exigen las TRES cosas, de
-    modo que ningún documento puede parecerlo por accidente —ni fabricarse para parecerlo
-    sin dejar de ser ilegible como texto, que es justamente no ser un documento—.
+    EL PREDICADO, dicho como se ejecuta y sin prometer nada más (`S1-05`):
+      · los bytes 3 y 4 son `\r\n`
+      · el byte 2 es menor que `0x20`
+      · el contenido **no decodifica como UTF-8**
+
+    `S1-05`. La versión anterior añadía que ningún documento «puede fabricarse para
+    parecerlo sin dejar de ser ilegible como texto», y **eso es falso y está medido**: un
+    documento legible en Latin-1 —o en cualquier codificación de un solo byte— satisface
+    las tres condiciones y sigue siendo perfectamente legible para una persona. La
+    imposibilidad se retira; el predicado se queda, porque para lo que existe —que el
+    SUFIJO no decida— sirve, y el motivo publicado dice ahora lo que se comprobó y no lo
+    que se supone.
     """
     try:
         with io.open(ruta_abs, "rb") as fh:
@@ -207,7 +229,9 @@ def _excluido(rel):
     if _EXCLUIDO_RAIZ.match(rel):
         motivo = "`.git` de la RAÍZ: almacén, no corpus"
     elif _es_bytecode(os.path.join(RAIZ, rel)):
-        motivo = "bytecode de CPython, por CONTENIDO"
+        motivo = ("cumple el PREDICADO DE BYTECODE por CONTENIDO —cabecera `\\r\\n`, byte "
+                  "alto pequeño y no-UTF-8—; NO se afirma que sea bytecode de CPython, que "
+                  "es lo que el predicado no puede decidir (`S1-05`)")
     else:
         return False
     if (rel, motivo) not in EXCLUIDOS_PERIMETRO:
@@ -723,14 +747,25 @@ def derivar():
     return sorted(procedencia), procedencia
 
 
+def lineas_de_blob(crudo):
+    """Líneas de un blob. **ESTA ES LA ÚNICA SEDE DE LA FÓRMULA** (`S1-08`).
+
+    Un fichero vacío tiene CERO líneas. El emisor del sobre la IMPORTA de aquí en vez de
+    escribir la suya: `EE-16` cerró la divergencia escribiendo una tercera copia y
+    afirmando «se usa UNA», y el séptimo gate lo midió. Quien necesite este recuento la
+    importa; quien no pueda importarla, no publica cifras de líneas.
+    """
+    n = crudo.count(b"\n")
+    if crudo and not crudo.endswith(b"\n"):
+        n += 1
+    return n
+
+
 def metricas(rel):
     ruta = os.path.join(RAIZ, rel)
     with io.open(ruta, "rb") as fh:
         crudo = fh.read()
-    lineas = crudo.count(b"\n")
-    if crudo and not crudo.endswith(b"\n"):
-        lineas += 1
-    return lineas, hashlib.sha256(crudo).hexdigest()
+    return lineas_de_blob(crudo), hashlib.sha256(crudo).hexdigest()
 
 
 def _excluidos(destino):

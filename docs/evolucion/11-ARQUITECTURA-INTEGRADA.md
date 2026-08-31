@@ -1779,8 +1779,17 @@ impuso al arnés de negativos.
 >                                §2.6.4, no `docs/`, y así queda escrito
 > ```
 >
-> **Ninguna se ha ejecutado.** Cuarenta y seis filas escritas es el contrato de lo que F6
-> debe demostrar, y **no es su demostración**. Trece son de la segunda devolución
+> **Ninguna se ha ejecutado.** Las filas escritas son el contrato de lo que F6
+> debe demostrar, y **no son su demostración**. **CORREGIDO por `S1-07` del SÉPTIMO GATE, y
+> es la CUARTA sede del mismo cardinal — la única a la que nadie volvió.** Este renglón
+> decía «**Cuarenta y seis** filas», `DD-13` retiró ese cardinal del titular de §2.6.7,
+> `EE-07` y `EE-12` lo retiraron de sus dos sedes del checkpoint, **y aquí siguió vivo, en
+> la sede DEFINITORIA del contrato de prueba de `F6`**, dentro del mismo bloque cuyo
+> comando lo desmiente. No se sustituye por otro: se retira y se remite. El censo se
+> deriva:
+> `grep -cE '^\| `?X[0-9]' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md`.
+> El desglose por procedencia que sigue **es histórico y no un censo**: dice de qué tanda
+> vino cada bloque de filas, no cuántas hay hoy. Trece son de la segunda devolución
 > independiente, siete de la devolución técnica previa (`X47`–`X53`), **cinco de la
 > corrección técnica posterior** (`X54`–`X58`), **tres de la corrección del gate de cierre**
 > (`X59`–`X61`) y **una de la corrección del gate definitivo** (`X62`). `X24` no existe porque su hallazgo —`D`— se resolvió retirando

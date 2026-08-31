@@ -182,6 +182,22 @@ def _instrumental_en_correccion(texto):
     return set(re.findall(r"`(%s/[A-Za-z0-9_.-]+)`" % re.escape(_DIR_INSTRUMENTAL),
                           m.group(1)))
 
+
+def _declarado_en_correccion(texto):
+    """TODA ruta que el README declara EN CORRECCIÓN, no sólo la del instrumental.
+
+    `S1-02`. La guarda de mutación necesita una sede donde una tanda declare qué rutas
+    GOBERNADAS está tocando fuera de su objeto documental. Es la MISMA sede que ya existe
+    para el instrumental, con el mismo comportamiento: **caduca sola**, porque declarar una
+    ruta idéntica a `HEAD` es también ROJO. No se crea una segunda sede.
+    """
+    m = re.search(r"^%s(.*?)(?=^## |\Z)" % re.escape(_SEC_EN_CORRECCION),
+                  texto, re.S | re.M)
+    if not m:
+        return set()
+    return set(re.findall(r"`((?:docs|kernel|tooling|packs)/[A-Za-z0-9_./-]+"
+                          r"|[A-Za-z0-9_.-]+\.(?:md|py|sh|toml|yaml|yml))`", m.group(1)))
+
 def _censo_de_comprobaciones(ejecutadas):
     """Fallos del censo de comprobaciones contra su sede. Lista vacía si cuadra."""
     fallos = []
@@ -317,8 +333,27 @@ def _informe(codigo_normal=None):
         RES.insert(0, ("G-00", "la batería COMPLETA su ejecución y emite informe", False,
                        _ABORTO[0]))
     else:
-        RES.insert(0, ("G-00", "la batería COMPLETA su ejecución y emite informe", True,
-                       "ninguna sede tumbó la ejecución"))
+        # `S1-01`. `G-00` deja de significar sólo «no hubo excepción» y pasa a significar
+        # «la batería pudo LEER lo que tenía que leer». Una lista de rutas truncada, mal
+        # decodificada o citada por `core.quotePath` es un universo encogido en silencio, y
+        # antes no lo denunciaba nadie: la comprobación NOMBRABA el fichero en su detalle y
+        # seguía imprimiendo verde. Aquí se juntan las dos mitades del remedio: la lectura
+        # única falla cerrado, y el BARRIDO comprueba que no haya quedado otra vía.
+        # `S1-06`. El desajuste del ALCANCE se IMPRIMÍA y el comentario de `EE-17` decía
+        # «es ROJO»: una afirmación falsa del instrumento sobre sí mismo, en el remedio que
+        # `EE-17` acababa de escribir. Ahora **es rojo de verdad**, y sin añadir ninguna
+        # comprobación al censo: entra en `G-00`, que ya es la fila de «la batería pudo
+        # hacer su trabajo». Un alcance que no cuadra con lo que se ejecuta no es fiable, y
+        # publicarlo como si lo fuera es la sexta condición de `O18`.
+        _lect = list(_LECTURAS_ROTAS) + _lecturas_seguras()
+        RES.insert(0, ("G-00", "la batería COMPLETA su ejecución, LEE sin ambigüedad toda "
+                               "lista de rutas de git, y emite informe",
+                       not _lect,
+                       "; ".join(_lect) or
+                       "ninguna sede tumbó la ejecución · todas las listas de rutas se leen "
+                       "por `NUL` con `core.quotePath=false`, decodificación estricta y "
+                       "control de truncamiento, y el barrido no encuentra ninguna lectura "
+                       "partida por blancos (`S1-01`)"))
     if _ABORTO:
         RES.append(("G-34", "el CENSO de comprobaciones cuadra con su sede, y amputar una "
                             "da ROJO (falla CERRADO sin git)", False,
@@ -334,6 +369,23 @@ def _informe(codigo_normal=None):
                     "%d comprobaciones ejecutadas y las mismas %d publicadas en el "
                     "README, una a una; la batería y su README, enumerados y publicados"
                     % (len(RES) + 1, len(RES) + 1)))
+    # `S1-06`. El desajuste del ALCANCE se calcula **con `G-34` ya en la lista**, y se
+    # PLIEGA sobre la fila de `G-00`, que es la que dice si la batería pudo hacer su
+    # trabajo. Antes se IMPRIMÍA mientras el comentario de `EE-17` decía «es ROJO»: una
+    # afirmación falsa del instrumento sobre sí mismo, dentro del remedio que la escribía.
+    # Ahora es ROJO de verdad y **sin añadir ninguna comprobación al censo**.
+    _ids_g0 = {i for i, _, _, _ in RES}
+    _titulan_g0 = {i for i, t, _, _ in RES if "sin git" in t}
+    _desaj_g0 = sorted((_titulan_g0 ^ (_EXIGEN_HISTORIA & _ids_g0))
+                       | (_EXIGEN_HISTORIA - _ids_g0))
+    if _desaj_g0 and RES and RES[0][0] == "G-00":
+        _id0, _t0, _ok0, _d0 = RES[0]
+        RES[0] = (_id0, _t0, False,
+                  (_d0 + "; " if not _ok0 else "") +
+                  f"ALCANCE DESAJUSTADO (`EE-17`/`S1-06`): {_desaj_g0} — el TÍTULO de una "
+                  f"comprobación y la PROPIEDAD declarada en `_EXIGEN_HISTORIA` no "
+                  f"coinciden, o se declara una comprobación que no se ejecuta. El alcance "
+                  f"que el informe publica no es fiable hasta que cuadren")
     print("BATERÍA MECÁNICA DE LA CORRECCIÓN DEL GATE DE CIERRE\n")
     for id_, t, ok, det in RES:
         print(f"{'OK  ' if ok else 'FALLO'} {id_:7s} {t}")
@@ -356,10 +408,6 @@ def _informe(codigo_normal=None):
     _titulan = {i for i, t, _, _ in RES if "sin git" in t}
     _desajuste = sorted(_titulan ^ set(_con_git)) + sorted(_EXIGEN_HISTORIA - set(_ids))
     print(f"\n{verde}/{len(RES)} comprobaciones en verde")
-    if _desajuste:
-        print(f"ALCANCE · DESAJUSTE (`EE-17`): {_desajuste} — el TÍTULO y la PROPIEDAD "
-              f"declarada no coinciden, o se declara una comprobación que no se ejecuta. "
-              f"El alcance publicado no es fiable hasta que cuadren.")
     print(f"ALCANCE (`DD-21`): {len(_con_git)} de las {len(RES)} exigen un repositorio CON "
           f"HISTORIA y fallan CERRADO sin `.git` — {', '.join(_con_git)}. "
           f"Las otras {len(RES) - len(_con_git)} son propiedades del ÁRBOL DESNUDO. "
@@ -1917,23 +1965,86 @@ check("G-21", "las resoluciones del Owner de `7e99388` siguen en el registro, y 
 # derivaba a su manera: qué ficheros gobierna esta batería, cuáles de ellos son INMUTABLES
 # y cuáles están EN CORRECCIÓN. Escribirlo dos veces es crear la segunda sede que este
 # corpus lleva doce tandas persiguiendo.
-_tocados_raw = _git("diff", "--name-only", "05f71b7")
-tocados = _tocados_raw.split() if _tocados_raw is not None else []
-# `EE-11` · **LA SALIDA DE GIT NO SE PARTE POR BLANCOS.** Esto hacía `.split()` sobre
-# `git ls-tree --name-only` y sobre `git diff --name-only`, y las dos cosas fallaban a la
-# vez: una ruta CON ESPACIO se troceaba en dos «ficheros» inexistentes —y el trozo que
-# quedaba producía el diagnóstico FALSO «fichero del corpus DESAPARECIDO»—, y una ruta
-# NO-ASCII salía CITADA por `core.quotePath`, con lo que no casaba con la del disco y el
-# bucle de admisión no la veía. Con `-z` y `\0` desaparecen los dos: no hay troceo y no hay
-# citado. Es la misma familia que `T-05`: la comprobación NOMBRA el fichero en su detalle y
-# sigue imprimiendo verde.
-def _rutas_z(*args):
-    """Rutas de un comando de git con `-z`. `None` si git no responde."""
-    bruto = _git(*args, "-z")
-    if bruto is None:
-        return None
-    return set(x for x in bruto.split("\0") if x)
+# ── `S1-01` · TODA LECTURA DE UNA LISTA DE RUTAS PASA POR AQUÍ, Y NO HAY OTRA VÍA ──────
+#
+# `EE-11` puso `-z` en TRES de las CUATRO lecturas de la batería y dejó `_tocados_raw` —de
+# la que salen `tocados`, los `prohibidos` de `G-23`, `_kern`/`_kern_dir`/`_kern_ev` y el
+# contraste de prosa del checkpoint— partiéndose por BLANCOS. El séptimo gate lo midió: un
+# fichero con una letra castellana en su ruta llegaba al commit con **38/38** y `G-23`
+# publicaba «6 ficheros … todos enumerados» sobre SIETE. **Instancia cerrada, clase
+# abierta**, dentro del propio remedio que la cerraba.
+#
+# **Aquí se cierra la CLASE, y la forma de cerrarla es que no quede una segunda vía.**
+# `_rutas_z()` es la ÚNICA lectura de listas de rutas de este fichero, y falla CERRADO ante
+# todo lo que puede corromper una lista:
+#
+#   · SEPARACIÓN POR `NUL`, que ninguna ruta puede contener — inmune a espacios, saltos de
+#     línea, tabuladores y a cualquier nombre adversarial
+#   · `core.quotePath=false` FORZADO en la propia invocación, para que la salida no venga
+#     citada y case byte a byte con la del disco. `git` cita por defecto lo no-ASCII, y esa
+#     configuración es del ENTORNO de quien ejecuta: fijarla aquí es lo único que hace la
+#     lectura independiente del `.gitconfig` del que corre
+#   · DECODIFICACIÓN EXPLÍCITA en UTF-8 con `errors="strict"`: una ruta que no decodifique
+#     no se interpreta a medias, se DENUNCIA
+#   · ESTRUCTURA: si la salida no termina en `NUL` teniendo contenido, está TRUNCADA, y una
+#     lista truncada es un universo encogido en silencio — que es la clase que este corpus
+#     lleva cinco gates persiguiendo
+#
+# Cualquiera de esas condiciones deja constancia en `_LECTURAS_ROTAS`, y `G-00` la publica
+# en ROJO. **Ninguna comprobación puede volver a partir por blancos la salida de git**: el
+# control positivo `_lecturas_seguras()` de más abajo lo demuestra sobre este mismo fichero.
+_LECTURAS_ROTAS = []
 
+
+def _rutas_z(*args):
+    """La ÚNICA lectura de una lista de rutas de git. Falla CERRADO (`S1-01`)."""
+    try:
+        r = subprocess.run(["git", "-C", RAIZ, "-c", "core.quotePath=false", *args, "-z"],
+                           capture_output=True, timeout=60)
+    except (OSError, subprocess.SubprocessError) as e:
+        _LECTURAS_ROTAS.append(f"`git {' '.join(args)} -z` no se pudo ejecutar ({e})")
+        return None
+    if r.returncode != 0:
+        return None
+    crudo = r.stdout
+    if crudo and not crudo.endswith(b"\0"):
+        _LECTURAS_ROTAS.append(
+            f"`git {' '.join(args)} -z` devuelve una lista TRUNCADA: no termina en NUL. "
+            f"Una lista truncada es un universo que encoge en silencio, y se falla cerrado")
+        return None
+    try:
+        texto = crudo.decode("utf-8", errors="strict")
+    except UnicodeDecodeError as e:
+        _LECTURAS_ROTAS.append(
+            f"`git {' '.join(args)} -z` devuelve una ruta que NO decodifica como UTF-8 "
+            f"({e}). Una ruta que no se puede leer no se interpreta a medias: se denuncia")
+        return None
+    return set(x for x in texto.split("\0") if x)
+
+
+def _lecturas_seguras():
+    """¿Queda alguna lectura de git partida por blancos en este fichero? (`S1-01`)
+
+    Se comprueba sobre el TEXTO de la propia batería: cualquier `_git(` cuya salida se
+    parta con `.split()` es una lectura de la clase que el séptimo gate falsó. La única
+    forma admitida de leer una lista de rutas es `_rutas_z()`.
+    """
+    try:
+        yo = leer(os.path.abspath(__file__))
+    except SedeIlegible as e:
+        return [f"la batería no puede leerse a sí misma ({e}): sin eso, el barrido de "
+                f"`S1-01` no se puede ejecutar y se falla cerrado"]
+    malas = []
+    for n, linea in enumerate(yo.split("\n"), 1):
+        if re.search(r"_git\([^)]*\)\s*\.split\(\)", linea) or \
+           re.search(r"_raw\s*\.split\(\)", linea):
+            malas.append(f"L{n}: {linea.strip()[:90]}")
+    return [f"lectura de git PARTIDA POR BLANCOS, que es la clase de `S1-01`: {m}"
+            for m in malas]
+
+
+_tocados_raw = _git("diff", "--name-only", "05f71b7")
+tocados = sorted(_rutas_z("diff", "--name-only", "05f71b7") or [])
 _mod_head_raw = _git("diff", "--name-only", "HEAD")
 _mod_head = _rutas_z("diff", "--name-only", "HEAD") or set()
 _base_arbol_raw = _git("ls-tree", "-r", "--name-only", "05f71b7")
@@ -1985,12 +2096,16 @@ EXCLUIDOS_PERIMETRO = []
 
 
 def _es_bytecode(ruta_abs):
-    """¿El fichero ES bytecode de CPython? Por CONTENIDO, no por sufijo (`DD-01`).
+    """¿El fichero cumple el PREDICADO DE BYTECODE? Por CONTENIDO, no por sufijo (`DD-01`).
 
-    La cabecera de un `.pyc` son cuatro bytes: un magic de dos bytes cuyo byte alto es
-    pequeño, y `\r\n`. Y un `.pyc` **no es texto UTF-8**. Se exigen las TRES cosas: un
-    documento no puede parecerlo por accidente, y no puede fabricarse para parecerlo sin
-    dejar de ser legible como texto — que es, exactamente, dejar de ser un documento.
+    EL PREDICADO, dicho como se ejecuta: bytes 3 y 4 iguales a `\r\n`, byte 2 menor que
+    `0x20`, y contenido que **no decodifica como UTF-8**. `S1-05`: la versión anterior
+    prometía además que un documento «no puede fabricarse para parecerlo sin dejar de ser
+    legible», y es FALSO Y MEDIDO —un documento en Latin-1 lo satisface y se lee sin
+    problema—. La imposibilidad se retira. **Ésta es una GEMELA de la del derivador y se
+    conserva a propósito**: los dos instrumentos tienen que poder juzgar el perímetro sin
+    importarse el uno al otro, que es lo que `O18` pide de una raíz externa. Lo que NO se
+    admite es que divergan, y por eso las dos publican el mismo predicado escrito igual.
     """
     try:
         with io.open(ruta_abs, "rb") as fh:
@@ -2012,7 +2127,8 @@ def _en_zona(rel):
     if _EXCLUIDO_RAIZ.match(rel):
         motivo = "`.git` de la RAÍZ: almacén, no corpus"
     elif _es_bytecode(os.path.join(RAIZ, rel)):
-        motivo = "bytecode de CPython, por CONTENIDO"
+        motivo = ("cumple el PREDICADO DE BYTECODE por CONTENIDO; NO se afirma que sea "
+                  "bytecode de CPython (`S1-05`)")
     else:
         return True
     if (rel, motivo) not in EXCLUIDOS_PERIMETRO:
@@ -2190,6 +2306,18 @@ check("G-22",
 # nace protegido; con el regex nacía libre.
 _ZONA_NORMATIVA = "docs/rediseno/"
 DOC_REDISENO_AUTORIZADO = {"docs/rediseno/CHECKPOINT-OPERATIVO.md"}
+# `S1-02`. La guarda de MUTACIÓN alcanza el corpus entero, y con ella apareció una
+# mutación legítima que hasta hoy **no estaba guardada por nadie**: `G-23` sólo mira
+# `kernel/`, y `tooling/` quedaba fuera de toda comprobación de contenido. Se NOMBRA con su
+# motivo, como todas las demás excepciones, y no se abre ningún comodín sobre `tooling/`:
+#
+#   `tooling/new-project.sh` — la tanda de `O19` (`dc9be3f`) le añadió la copia de
+#   `docs/owner/ADS-OWNER-RESOLUCIONES.md` al proyecto que crea. Es propagación DERIVADA
+#   de `O19`: desde esa resolución la sede canónica es especificación normativa, el
+#   registro de decisiones ENLAZA a ella, y sin copiarla el proyecto instalado queda con un
+#   enlace roto — lo detectó `T148` en cuanto la sede existió. No es una decisión de una
+#   tanda: es la resolución del Owner propagada al instalador.
+TOOLING_AUTORIZADO = {"tooling/new-project.sh"}
 NORMATIVO = (r"kernel/operativo/contratos/C4-MATERIALIZACION|"
              r"kernel/operativo/contratos/C7-GOBIERNO")
 
@@ -3113,10 +3241,115 @@ else:
     # confirmar deja de ser una forma de admitirse: quien añade una sede tiene que
     # satisfacer la condición de su zona **esté o no commiteada**, y la condición de cada
     # zona sigue siendo la que su sede escribe, no una lista nueva.
+    # ── `S1-02` · LA GUARDA DERIVA SU **PROPIEDAD**, NO SÓLO SU CONJUNTO ──────
+    #
+    # `EE-01` derivó QUÉ CONJUNTO se examina —lo que existe hoy y no existía en la revisión
+    # base— y con eso cerró las cinco variantes del noveno árbol. **Pero derivó el conjunto
+    # y no la PROPIEDAD**: un fichero que YA EXISTÍA en la base no es una ampliación, luego
+    # **MODIFICARLO no quedaba sometido a ninguna condición**. El adjudicador del séptimo
+    # gate derivó y midió la clase entera: **OCHO rutas** —`.gitignore`, `README.md`,
+    # `START_HERE.md`, la directiva del Owner, el prompt de arranque y las TRES evidencias
+    # reejecutadas— en las que una sentencia de cierre de `F4c` daba **38/38**, `EXIT=0`,
+    # `porcelain` vacío y **el digest del sobre bit a bit el anclado**. Y **no crea ningún
+    # fichero**, de modo que los cinco controles positivos de la tanda anterior no lo
+    # tocaban.
+    #
+    # **La guarda pasa a evaluar la MUTACIÓN y no la EXISTENCIA.** Se deriva la diferencia
+    # semántica entre la REVISIÓN BASE y la candidata —`git diff --name-status`, con `-z`—
+    # y **toda mutación de una ruta gobernada** tiene que estar admitida, sea cual sea su
+    # naturaleza:
+    #
+    #   AÑADIDA (`A`)        la condición de su zona, como hasta ahora
+    #   MODIFICADA (`M`)     **NUEVO**: existir en la base ya no exime. Si la ruta no está
+    #                        declarada como objeto de la tanda ni autorizada por su zona,
+    #                        es ROJO — y `.gitignore`, `README.md`, `START_HERE.md` y la
+    #                        directiva del Owner no lo están
+    #   BORRADA (`D`)        una sede del corpus no desaparece en silencio
+    #   RENOMBRADA (`R`)     se juzgan LAS DOS puntas: el destino como añadido y el origen
+    #                        como borrado. Un renombrado es la forma más barata de mover
+    #                        una sede fuera del alcance de su zona
+    #   COPIADA (`C`)        el destino, como añadido
+    #   TIPO (`T`)           un fichero que pasa a enlace simbólico cambia de naturaleza
+    #                        sin cambiar de nombre, y eso es exactamente lo que la regla
+    #                        persigue
+    #
+    # **Y se evalúa sobre el CONTENIDO DEL COMMIT y sobre el disco a la vez**, de modo que
+    # confirmar no exime: la diferencia se toma contra `HEAD` y contra el árbol de trabajo,
+    # y se unen. Ninguna de las dos vías puede quedar ciega.
     _base_gobernada = {f for f in _base_arbol if _en_zona(f)}
     _universo_gobernado = (_disco | _publicado)
-    _ampliaciones = sorted(f for f in _universo_gobernado - _base_gobernada
-                           if not _ampliacion_admitida(f))
+
+    def _mutaciones_desde_base():
+        """Ruta → letras de mutación entre la REVISIÓN BASE y la candidata (`S1-02`).
+
+        Se derivan las DOS diferencias —contra `HEAD` y contra el árbol de trabajo— y se
+        unen: confirmar un cambio no puede sacarlo del alcance de la guarda.
+        """
+        fuera = {}
+        for extremo in ("HEAD", None):
+            orden = ["diff", "--name-status", "-M", "-C", "05f71b7"]
+            if extremo:
+                orden.append(extremo)
+            bruto = _git(*orden, "-z")
+            if bruto is None:
+                _g29.append(f"GIT NO RESPONDE a `git diff --name-status 05f71b7 "
+                            f"{extremo or '<árbol de trabajo>'}`: sin la diferencia contra "
+                            f"la revisión base NO se puede saber qué ha mutado, y una "
+                            f"guarda que no sabe qué mutó no guarda nada")
+                continue
+            campos = [c for c in bruto.split("\0") if c]
+            i = 0
+            while i < len(campos):
+                est = campos[i]
+                if est[:1] in ("R", "C"):
+                    if i + 2 >= len(campos):
+                        break
+                    origen, destino = campos[i + 1], campos[i + 2]
+                    fuera.setdefault(origen, set()).add("D")
+                    fuera.setdefault(destino, set()).add("A")
+                    i += 3
+                else:
+                    if i + 1 >= len(campos):
+                        break
+                    fuera.setdefault(campos[i + 1], set()).add(est[:1])
+                    i += 2
+        return fuera
+
+    # Lo que SÍ puede mutar, y cada cosa con la comprobación que la gobierna. No hay
+    # ninguna lista nueva: las cinco fuentes ya existían y cada una tiene su dueño.
+    _MUT_DECLARADA = _declarado_en_correccion(_t_readme)
+
+    def _mutacion_admitida(rel):
+        """¿Está esta MUTACIÓN de una ruta preexistente autorizada, y por quién? (`S1-02`)"""
+        if rel in _EN_CORRECCION:
+            return True                       # objeto documental de la tanda · `G-22` la nombra
+        if rel in _MUT_DECLARADA:
+            return True                       # declarada en el README · `G-34`, y caduca sola
+        if rel.startswith("kernel/operativo/pruebas/evidencia/"):
+            return True                       # evidencia derivada · `G-30` la contrasta
+        if rel in COD_AUTORIZADO or rel in DOC_AUTORIZADO or rel in HUELLA:
+            return True                       # excepción NOMBRADA del kernel · `G-23`
+        if rel in DOC_REDISENO_AUTORIZADO or rel in TOOLING_AUTORIZADO:
+            return True                       # excepción NOMBRADA, con su motivo escrito
+        return False
+
+    _MUT = {"A": "AÑADIDA", "M": "MODIFICADA", "D": "BORRADA", "T": "CAMBIA DE TIPO"}
+    _mutaciones = _mutaciones_desde_base()
+    _ampliaciones, _mutadas = [], []
+    for _f, _letras in sorted(_mutaciones.items()):
+        if not _en_zona(_f):
+            continue
+        if _ampliacion_admitida(_f):
+            continue
+        if "D" in _letras and _f not in _universo_gobernado:
+            _mutadas.append((_f, "BORRADA"))
+            continue
+        if _f in _base_gobernada:
+            if _mutacion_admitida(_f):
+                continue
+            _mutadas.append((_f, " y ".join(sorted(_MUT.get(l, l) for l in _letras))))
+        else:
+            _ampliaciones.append(_f)
     _idos = sorted(_publicado - _disco)
     for f in _ampliaciones:
         _g29.append(f"AMPLIACIÓN NO CLASIFICADA del corpus gobernado, CONFIRMADA O NO: {f}. "
@@ -3124,6 +3357,53 @@ else:
                     f"no la autoriza ninguna zona. El alcance de esta guarda se DERIVA "
                     f"contra la REVISIÓN BASE y no contra `HEAD` (`EE-01`): confirmar un "
                     f"fichero NO lo exime de la condición de su zona")
+    # ── `S1-02`, CUARTA CARA · LA SEDE DEL OWNER ES APPEND-ONLY, Y ESO SE COMPRUEBA ──
+    #
+    # El banco adversarial de esta tanda encontró el residuo: **modificar
+    # `docs/owner/ADS-OWNER-RESOLUCIONES.md` daba 38/38 una vez commiteado.** La sede nació
+    # DESPUÉS de la revisión base, de modo que no es una mutación contra ella —el `diff`
+    # base→candidata la ve como una ADICIÓN—, y `G-22` la contrasta contra `HEAD`, que
+    # confirmar vuelve idéntico. Es la misma inercia-tras-confirmar, en la zona que `O19`
+    # convierte en AUTORIDAD CANÓNICA.
+    #
+    # **`O19` declara esa zona APPEND-ONLY, y eso es una propiedad comprobable sin `HEAD`:**
+    # el contenido de hoy tiene que EMPEZAR POR el contenido de la versión que la creó, que
+    # se deriva de la historia con `--diff-filter=A`. Añadir una resolución es legítimo;
+    # tocar una letra de lo ya publicado, no. **Ningún commit posterior puede volver
+    # legítima una alteración**, porque la referencia no es `HEAD`: es el nacimiento.
+    for _f in sorted(f for f in _universo_gobernado if f.startswith("docs/owner/")):
+        _nac = _git("log", "--diff-filter=A", "--format=%H", "--", _f)
+        if _nac is None or not _nac.strip():
+            _g29.append(f"{_f}: no se puede derivar el commit que lo CREÓ, y sin él no hay "
+                        f"contra qué comprobar que la sede del Owner es APPEND-ONLY. Se "
+                        f"falla cerrado")
+            continue
+        _primero = _nac.strip().split("\n")[-1]
+        _orig = _git("show", f"{_primero}:{_f}")
+        if _orig is None:
+            _g29.append(f"{_f}: su primera versión (`{_primero[:8]}`) no se puede leer")
+            continue
+        try:
+            _hoy = leer(os.path.join(RAIZ, _f))
+        except SedeIlegible as _e:
+            _g29.append(f"{_f}: ilegible ({_e})")
+            continue
+        if not _hoy.startswith(_orig):
+            _g29.append(
+                f"LA SEDE CANÓNICA DEL OWNER NO ES APPEND-ONLY: {_f} — su contenido de hoy "
+                f"NO empieza por el de la versión que la creó (`{_primero[:8]}`). `O19` "
+                f"declara esta zona APPEND-ONLY: se añaden resoluciones, no se altera una "
+                f"letra de las publicadas. **Se contrasta contra el NACIMIENTO y no contra "
+                f"`HEAD` (`S1-02`), de modo que confirmar la alteración no la vuelve "
+                f"legítima**")
+
+    for f, _que in _mutadas:
+        _g29.append(f"MUTACIÓN NO CLASIFICADA de una ruta que YA EXISTÍA en la revisión "
+                    f"base: {f} — {_que}. **Existir en la base NO exime a una mutación** "
+                    f"(`S1-02`): la guarda deriva su PROPIEDAD y no sólo su conjunto, y "
+                    f"esta ruta no está declarada como objeto de la tanda ni autorizada por "
+                    f"su zona. Es la superficie por la que una sentencia de cierre de `F4c` "
+                    f"entraba con la batería en verde SIN CREAR NINGÚN FICHERO")
     for f in _idos:
         _g29.append(f"fichero del corpus DESAPARECIDO: {f}")
 
@@ -3188,18 +3468,28 @@ else:
         for marca in set(re.findall(r"```yaml\s+(ads:[a-z0-9_-]+)", cuerpo)):
             _marcadores.add(marca)
             _sedes_disco.setdefault(marca, set()).add(rel)
+    # `S1-03`. Esta SEGUNDA guarda derivaba `base_marca` contra **`HEAD`**, de modo que
+    # **confirmar una segunda sede de un bloque canónico la volvía legítima**: 37/38 sin
+    # commitear, 38/38 commiteada. Es la inercia-tras-confirmar que `DD-02` cerró para
+    # `docs/owner/` y `EE-01` para las ampliaciones — **en la sub-guarda de al lado, bajo
+    # un título que esta misma tanda ensanchó a «CONFIRMADO O NO»**. La fila `EE-01` del
+    # README llegó a nombrar el rango `L3107-3118`: el remedio se aplicó a UNA de las DOS
+    # sedes. Aquí se deriva contra la **REVISIÓN BASE**, como la primera.
     for marca in sorted(_marcadores):
-        publicado_marca = _git("grep", "-l", "```yaml " + marca, "HEAD", "--", ".",
+        publicado_marca = _git("grep", "-l", "```yaml " + marca, "05f71b7", "--", ".",
                                *[":(exclude)%s" % z.rstrip("/") for z in _CITA_NO_SEDE])
         if publicado_marca is None:
-            _g29.append(f"GIT NO RESPONDE: no se puede derivar dónde vivía `{marca}`")
+            _g29.append(f"GIT NO RESPONDE: no se puede derivar dónde vivía `{marca}` en la "
+                        f"REVISIÓN BASE, y sin base no hay contraste")
             continue
         base_marca = {l.split(":", 1)[1] for l in publicado_marca.split("\n") if ":" in l}
         nuevas = sorted(_sedes_disco[marca] - base_marca)
         if nuevas:
-            _g29.append(f"SEGUNDA SEDE del bloque canónico `{marca}`: {nuevas}. La fuente "
-                        f"única no admite copias, y esto vale en cualquier zona normativa, "
-                        f"no sólo bajo `kernel/`")
+            _g29.append(f"SEGUNDA SEDE del bloque canónico `{marca}`, CONFIRMADA O NO: "
+                        f"{nuevas}. La fuente única no admite copias, y esto vale en "
+                        f"cualquier zona normativa, no sólo bajo `kernel/`. Se deriva "
+                        f"contra la REVISIÓN BASE (`S1-03`): confirmar una segunda sede NO "
+                        f"la vuelve legítima")
 check("G-29",
       "topología y unicidad de TODO el corpus gobernado, CONFIRMADO O NO: ninguna ampliación sin clasificar respecto de la REVISIÓN BASE, ningún gemelo byte a byte y ninguna segunda sede de un bloque canónico (falla CERRADO sin git)",
       not _g29,
@@ -3289,11 +3579,77 @@ if os.path.isdir(_dir_ev_kernel):
         if os.path.isfile(os.path.join(RAIZ, _r)):
             _CLASES[_r] = "EVIDENCIA DERIVADA"
 
+# ── `S1-02`, TERCERA SEDE · LA EVIDENCIA DERIVADA NO SE JUZGA CONTRA `HEAD` ──────
+#
+# La regla «EVIDENCIA DERIVADA idéntica a lo publicado» se evalúa contra `HEAD`, y por eso
+# **confirmar una evidencia manipulada la volvía legítima**: el séptimo gate midió que una
+# sentencia de cierre añadida a `fuentes-salida.txt` daba `38/38` una vez commiteada. Es la
+# misma inercia-tras-confirmar de `S1-02`, en la tercera sede.
+#
+# **La evidencia no puede compararse contra la base** —cambia legítimamente en cada tanda—
+# ni la batería puede ejecutar el runner. Lo que SÍ puede hacer es exigir la **FORMA que su
+# PRODUCTOR garantiza**, que es una propiedad del fichero y no de ningún commit:
+#
+#   · la CABECERA son las CUATRO líneas exactas que `registrar_evidencia.py` escribe, con
+#     `# evidencia de:`, `# orden:`, `# codigo:` y el separador
+#   · el `# codigo:` tiene que ser **0**: el runner publica SÓLO si el código fue cero, de
+#     modo que una evidencia publicada con código distinto no la escribió él
+#   · la última línea no vacía es el CIERRE que su validador emite —«N superadas · M
+#     fallidas», «N infracciones detectadas · M NO detectadas», el resumen del linter o el
+#     `OK` de `unittest`—. **Nada puede venir después del cierre de su productor**: eso es
+#     texto que el runner no escribió, y es exactamente por donde entraba la sentencia
+#
+# Es de RESTA: no añade ninguna comprobación al censo, vive dentro de `G-30`, y cierra la
+# tercera cara de la clase que `S1-02` nombra.
+_CIERRE_EVIDENCIA = re.compile(
+    r"^(?:\d+ superadas · \d+ fallidas"
+    r"|\d+ infracciones detectadas · \d+ NO detectadas"
+    r"|OK"
+    r"|FAILED \(.*\)"
+    r"|bloques canónicos: .*errores: \d+.*"
+    r"|\d+/\d+ .*)$")
+
+
+def _forma_de_evidencia(rel):
+    """Los defectos de FORMA de una evidencia derivada, o lista vacía (`S1-02`)."""
+    try:
+        cuerpo = leer(os.path.join(RAIZ, rel))
+    except SedeIlegible as e:
+        return [f"{rel} [EVIDENCIA DERIVADA]: ilegible ({e})"]
+    lineas = cuerpo.split("\n")
+    if len(lineas) < 5:
+        return [f"{rel} [EVIDENCIA DERIVADA]: no tiene la cabecera de cuatro líneas que su "
+                f"productor escribe"]
+    fallos = []
+    if not lineas[0].startswith("# evidencia de: ") \
+       or not lineas[1].startswith("# orden:") \
+       or not lineas[2].startswith("# codigo:") \
+       or not lineas[3].startswith("# ----"):
+        fallos.append(f"{rel} [EVIDENCIA DERIVADA]: su cabecera no es la que "
+                      f"`registrar_evidencia.py` escribe. Una evidencia sin la cabecera de "
+                      f"su productor no dice de quién es")
+    _m_cod = re.match(r"# codigo:\s+(\d+)", lineas[2])
+    if not _m_cod or _m_cod.group(1) != "0":
+        fallos.append(f"{rel} [EVIDENCIA DERIVADA]: su cabecera declara un código distinto "
+                      f"de 0, y el runner PUBLICA SÓLO si el código fue cero: esta "
+                      f"evidencia no la escribió él")
+    _vivas = [l for l in lineas if l.strip()]
+    if _vivas and not _CIERRE_EVIDENCIA.match(_vivas[-1].strip()):
+        fallos.append(f"{rel} [EVIDENCIA DERIVADA]: TEXTO DESPUÉS DEL CIERRE de su "
+                      f"productor — «{_vivas[-1].strip()[:70]}». El runner no escribe nada "
+                      f"tras el resumen de su validador, luego esto lo escribió una mano. "
+                      f"La evidencia se juzga por la FORMA QUE SU PRODUCTOR GARANTIZA y no "
+                      f"contra `HEAD`, porque contra `HEAD` bastaba confirmarla (`S1-02`)")
+    return fallos
+
+
 _g30 = []
 if _mod_head_raw is None or _head_arbol_raw is None:
     _g30.append("GIT NO RESPONDE: no se puede fijar el contenido publicado de ninguna "
                 "excepción del kernel")
 else:
+    for _ev in sorted(f for f in _CLASES if _CLASES[f] == "EVIDENCIA DERIVADA"):
+        _g30 += _forma_de_evidencia(_ev)
     _kernel_disco = sorted(f for f in _disco if f.startswith("kernel/"))
     # 1 · CONTENIDO · ningún fichero del kernel difiere de lo publicado, excepción incluida
     for _f in sorted(f for f in _mod_head if f.startswith("kernel/")):

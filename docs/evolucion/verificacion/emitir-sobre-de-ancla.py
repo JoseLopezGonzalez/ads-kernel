@@ -122,6 +122,18 @@ import tempfile
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                     os.pardir, os.pardir, os.pardir))
+# `S1-08` · LA FÓRMULA DE LÍNEAS TIENE UNA SOLA SEDE, Y ES EL DERIVADOR.
+# Se IMPORTA, no se copia. Si la importación falla, este emisor no puede publicar cifras
+# de líneas con una fórmula propia y **no emite**: un sobre cuyas métricas no salgan de la
+# sede canónica no vale para lo que el sobre existe.
+import importlib.util as _ilu
+_spec_der = _ilu.spec_from_file_location(
+    "_ads_derivador",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                 "derivar-universo-obligatorio.py"))
+_DERIVADOR_MOD = _ilu.module_from_spec(_spec_der)
+_spec_der.loader.exec_module(_DERIVADOR_MOD)
+
 DERIVADOR = "docs/evolucion/verificacion/derivar-universo-obligatorio.py"
 EMISOR = "docs/evolucion/verificacion/emitir-sobre-de-ancla.py"
 # `O19`. La SEDE CANÓNICA de las resoluciones del Owner, y las que `O19` NOMBRA como
@@ -232,14 +244,8 @@ def _sha256_en(commit, ruta):
 # `.gitattributes` que declarara uno las separaría, y el sobre lo publicaría sin decirlo.
 # Queda dicho aquí en vez de presumirse imposible.
 def _lineas_de(crudo):
-    """Líneas de un blob, con la MISMA fórmula que el derivador (`EE-16`).
-
-    Un fichero vacío tiene CERO líneas. La forma anterior de este emisor le daba una.
-    """
-    n = crudo.count(b"\n")
-    if crudo and not crudo.endswith(b"\n"):
-        n += 1
-    return n
+    """Líneas de un blob. **Importada del DERIVADOR**, que es su única sede (`S1-08`)."""
+    return _DERIVADOR_MOD.lineas_de_blob(crudo)
 
 
 def _desplegar(commit, destino):
@@ -293,10 +299,13 @@ def universo_de(commit):
 
     # `EE-16`. Esta suma escribía su propia fórmula —`count("\n") + (0 if endswith("\n")
     # else 1)`— y el derivador escribía la suya, con una divergencia REAL en el único caso
-    # en que difieren: un fichero VACÍO daba **1** aquí y **0** allí. Hoy no hay ninguno,
-    # pero dos implementaciones de la misma derivación acaban divergiendo, que es lo que
-    # este corpus persigue en todas partes. Se usa UNA, y es la del derivador, que es la
-    # sede de las métricas del universo.
+    # en que difieren: un fichero VACÍO daba **1** aquí y **0** allí.
+    #
+    # `S1-08`. El remedio de `EE-16` **escribió una TERCERA copia de la fórmula y dijo «se
+    # usa UNA»**: la divergencia quedó cerrada y la afirmación no. Hoy la sede es UNA de
+    # verdad — `metricas_de_lineas()` se IMPORTA del derivador, que es quien publica las
+    # métricas del universo—, y si esa importación falla el sobre **NO SE EMITE**: un
+    # emisor que no puede usar la fórmula canónica no publica cifras con una suya.
     filas, lineas, huellas = [], 0, {}
     for rel in sorted(rutas):
         crudo = _blob(commit, rel)

@@ -212,7 +212,7 @@ puerta abierta.
 
 | | qué comprueba | de qué hallazgo sale |
 |---|---|---|
-| `G-00` | que la batería **complete su ejecución y emita informe**. Cualquier sede ilegible o excepción no prevista se convierte en esta fila en ROJO, con el fichero y el motivo, en vez de un `traceback` sin informe | `Q-24` |
+| `G-00` | que la batería **complete su ejecución, LEA SIN AMBIGÜEDAD toda lista de rutas de git, y emita informe** — `S1-01`. Toda lectura de listas pasa por **una sola función** que fuerza `core.quotePath=false`, separa por `NUL`, decodifica en estricto y **detecta el truncamiento**; cualquiera de las tres condiciones deja la fila en ROJO. Y un **BARRIDO sobre el texto de la propia batería** impide que nazca otra vía: `EE-11` puso `-z` en tres de las cuatro y la cuarta dejaba pasar una ruta con una letra castellana con `38/38`. **Y `S1-06`**: el desajuste entre el ALCANCE declarado y el ejecutado se pliega aquí, de modo que es ROJO de verdad y no una línea impresa. Además, Cualquier sede ilegible o excepción no prevista se convierte en esta fila en ROJO, con el fichero y el motivo, en vez de un `traceback` sin informe | `Q-24` |
 | `G-01` | cero `estado/cuarentena/` **vigente**, juzgado por **POLARIDAD** —un párrafo que reinstala la ruta manda sobre uno que la retira, y el silencio es INDETERMINADO y falla— y anclado en la fila `D87` del registro, que es su sede canónica | `I-01` · protección 4 |
 | `G-02` | `.ads/run/quarantine/` clasificado en §2.4, listado en §2.3, con su ciclo, el bloqueo de `SEG` y la aceptación de pérdida del Owner | `I-01` |
 | `G-03` | `estado/deriva/` con sus **siete** piezas | `I-02` |

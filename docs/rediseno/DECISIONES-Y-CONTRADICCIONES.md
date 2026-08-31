@@ -1049,9 +1049,14 @@ permanente mientras esa sustitución no exista y esté probada**.
 > 4  NO EXISTE SEDE DEL OWNER EN SU PROPIA MANO
 >    `docs/owner/` contiene DOS documentos y ninguna de las resoluciones `O15`–`O18`.
 >    El sobre de ancla de `O18`(b) no ancla ninguna resolución del Owner (`X-03`)
->    [HISTÓRICO · hecho establecido por el documento 24 sobre el árbol que juzgó. Es
->     el ÚNICO de los cuatro que O19 dejó atrás: hoy la sede existe y el sobre la ancla.
->     Qué contiene docs/owner/ se DERIVA, y no se escribe: `ls -1 docs/owner/`]
+>    [HISTÓRICO · hecho establecido por el documento 24 sobre el árbol que juzgó. `O19` lo
+>     dejó atrás: hoy la sede existe y el sobre la ancla. Qué contiene `docs/owner/` se
+>     DERIVA, y no se escribe: `ls -1 docs/owner/`.
+>     **`S2-05` del SÉPTIMO GATE: este corchete decía «Es el ÚNICO de los cuatro que O19
+>     dejó atrás», y no lo es.** El hecho 1 también quedó atrás —su barrido se acotó a la
+>     entrada de `O18` y dejó de ser «el fichero entero», que es `BT-01`—, de modo que la
+>     exclusividad era falsa una viñeta más allá de la que `BT-01` corrigió. **Cuántos de
+>     los cuatro siguen en pie no se escribe: cada uno lo dice en su propio corchete.**]
 > ```
 >
 > **POR QUÉ NO SE CORRIGE AQUÍ.** El adjudicador `X` resolvió que la disputa es
