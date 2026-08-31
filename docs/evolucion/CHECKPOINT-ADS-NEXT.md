@@ -12,6 +12,42 @@
 > vigente, que es siempre la primera.
 
 > **Estado de la fase, en una línea:**
+> **El SEXTO GATE DE CERTIFICACIÓN devolvió `INSUFICIENTE PARA F5`, y ES VÁLIDO por segunda
+> vez consecutiva. `F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA.**
+>
+> Está en
+> [`27-SEXTO-GATE-DE-CERTIFICACION-F4C.md`](27-SEXTO-GATE-DE-CERTIFICACION-F4C.md), con los
+> tres dictámenes íntegros y sus SHA-256. **El recuento y la clasificación NO se copian
+> aquí**: viven en su §5.
+>
+> **EL NOVENO ÁRBOL, y no estaba en el perímetro: estaba en el REMEDIO DEL GATE ANTERIOR.**
+> `DD-02` hizo que la guarda de admisión se evaluara sobre el CONTENIDO DEL COMMIT **para
+> `docs/owner/` y sólo para esa zona**; en todo el resto del corpus gobernado seguía mirando
+> únicamente lo que aún no estaba en `HEAD`. Con eso, `git add -A && git commit` **sin un
+> solo flag** añadía una segunda sede normativa que declaraba `F4c` cerrada y `F5`
+> autorizada, dejaba `git status` vacío, pasaba **38/38**, no entraba en el universo y
+> **producía el digest anclado bit a bit**. Lo encontró un revisor y **lo reprodujo el
+> adjudicador por su cuenta, dos veces, en un clon desechable**.
+>
+> **LA CIRCULARIDAD SE HA MOVIDO POR QUINTA VEZ** —`HEAD`, emisor, entrega, perímetro, y hoy
+> la guarda de admisión—, y `EE` la nombra sin cerrarla: *«cada remedio cerró el punto donde
+> la circularidad estaba y no la propiedad que la produce: que la definición de QUÉ se
+> verifica y de QUÉ se admite sean objetos del árbol verificado»*. Esa propiedad es lo que
+> `O18` contrata para `F6` como `C`; **su manifestación de hoy es `A`**, y por eso cuenta.
+>
+> **NINGUNA DECISIÓN VUELVE AL OWNER**, por tercera vez consecutiva: cuatro candidatos a
+> clase `B` examinados y los cuatro caen. Ninguno de los diecinueve exige arquitectura nueva.
+>
+> **Y consta a favor, porque es verdad:** `DD-17` quedó **ROTO por primera vez en seis
+> gates** —el commit del manifiesto deja el árbol en 13/13 con `T147` SUPERADA y cero
+> evidencia sucia, en los dos árboles—; `DD-01` **cerró su clase** y resistió cinco
+> variantes; las dos restas de cobertura cierran a **∅** y `EE` lo dice primero; `X63` no se
+> presenta como prueba ejecutada en ninguna de sus ocho sedes; y `EE` declara expresamente
+> que **el veredicto NO falla por la tanda: el defecto está en el ALCANCE de un remedio, no
+> en su ejecución**.
+
+> **[ESTADO ANTERIOR · antes del SEXTO GATE DE CERTIFICACIÓN, documento 27. Se conserva
+> y NO describe el estado vigente.]**
 > **El QUINTO GATE DE CERTIFICACIÓN devolvió `INSUFICIENTE PARA F5`, y —al revés que el
 > cuarto— EL GATE ES VÁLIDO. `F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA.**
 >
@@ -847,7 +883,7 @@
 
 ```text
 CHECKPOINT — ADS-NEXT/12 · SIS/evolucion
-actualizado: 2026-08-31
+actualizado: 2026-08-31   · reanclado por `EE-04` del SEXTO GATE
 regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histórico: describe el
              árbol VIGENTE. Fue a la vez el defecto X-04 del documento 24 —GRAVE— y la CUARTA
              recurrencia consecutiva de la clase «el checkpoint no reancla»: K-01/J-10/L-01 ·
@@ -875,7 +911,21 @@ regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histór
                   `last_meaningful_event_anterior`, que es donde vive lo histórico
                6  NINGÚN HALLAZGO SE DECLARA SUPERADO POR ESTE REANCLAJE. Reanclar no es
                   certificar, y sólo un gate independiente posterior puede cerrar X-04
-metodo:      SIS/Evolucion · CUARTO GATE DE CERTIFICACIÓN DEVUELTO —VEREDICTO INSUFICIENTE
+metodo:      SIS/Evolucion · SEXTO GATE DE CERTIFICACIÓN DEVUELTO —VEREDICTO
+             INSUFICIENTE PARA F5, y EL GATE DECLARADO VÁLIDO POR SU ADJUDICADOR— y TANDA
+             CONSOLIDADA DE APLICACIÓN DE SUS HALLAZGOS EN CURSO. Su documento NO se
+             escribe aquí —regla 2—: se deriva con
+                 ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
+             y su veredicto, su recuento y su clasificación viven DENTRO de él, que es su
+             única sede e inmutable. Lo que este bloque sí dice, porque es el estado y no
+             una cifra: F4c sigue ABIERTA, F5 sigue NO AUTORIZADA, M-04 NO superada,
+             C-L.5 ABIERTA —el adjudicador NO emitió la palabra CERTIFICADA— y C-L.7 NO
+             CERRADA. APLICAR NO ES CERTIFICAR.
+             REANCLADO por EE-04 del SEXTO GATE, que es la QUINTA recurrencia consecutiva
+             de esta clase y la PRIMERA contra la regla 4 escrita DENTRO de este bloque
+             para impedirla: el bloque nombraba el CUARTO gate mientras el árbol iba por el
+             SEXTO, dos eventos atrasado, exactamente como X-04.
+metodo_anterior: SIS/Evolucion · CUARTO GATE DE CERTIFICACIÓN DEVUELTO —VEREDICTO INSUFICIENTE
              PARA F5, y **EL GATE DECLARADO INVÁLIDO POR SU PROPIO ADJUDICADOR**— y TANDA DE
              APLICACIÓN DE SUS HALLAZGOS EN CURSO. Es el PRIMER gate inválido del expediente,
              y lo produce el COORDINADOR: transcribió el SOBRE DE ANCLA a mano en el encargo
@@ -998,7 +1048,11 @@ metodo_anterior: SIS/Evolucion · TANDA DE CORRECCIÓN DEL GATE DEFINITIVO APLIC
              y CORRECCIÓN TÉCNICA ACOTADA sobre ella · D103 · APLICADA, NO CERTIFICADA
 metodo_anterior: SIS/Evolucion · GATE DEFINITIVO INDEPENDIENTE EJECUTADO SOBRE r4=0ea0451 ·
              VEREDICTO INSUFICIENTE PARA F5 · F4c ABIERTA · F5 NO AUTORIZADA
-based_on:    LA SEDE CANÓNICA DE LAS RESOLUCIONES DEL OWNER —docs/owner/ADS-OWNER-RESOLUCIONES.md,
+based_on:    REANCLADO por `EE-04` del SEXTO GATE, que lo encontró describiendo el árbol
+             del CUARTO. LA BASE VIGENTE es la candidata que el manifiesto del SEXTO GATE
+             nombra, más la tanda consolidada que aplica sus hallazgos; su SHA no se
+             escribe —regla 1—: `git rev-parse HEAD`. Y por encima de ella, y sin cambiar:
+             LA SEDE CANÓNICA DE LAS RESOLUCIONES DEL OWNER —docs/owner/ADS-OWNER-RESOLUCIONES.md,
              creada por O19— ES FUENTE DE AUTORIDAD, y NO se deriva de la lista de abajo: esa
              lista enumera documentos numerados de docs/evolucion/, y la sede no es uno. Su
              contenido no se copia aquí; se remite. Es APPEND-ONLY, el índice la enlaza y el
@@ -1098,7 +1152,21 @@ rama_de_trabajo: NO SE ESCRIBE AQUÍ, Y ES DELIBERADO. Este campo nombró durant
 freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
              Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
              queda marcado HISTÓRICO y SUPERADO, y no se borra
-last_meaningful_event: EL CUARTO GATE DE CERTIFICACIÓN DEVUELVE INSUFICIENTE PARA F5 **Y SU
+last_meaningful_event: EL SEXTO GATE DE CERTIFICACIÓN DEVUELVE INSUFICIENTE PARA F5 Y
+             DECLARA EL GATE VÁLIDO, sobre la candidata que su manifiesto nombra. Lo
+             decisivo es del adjudicador y no de los revisores: EL NOVENO ÁRBOL. La guarda
+             de admisión de G-29 sólo miraba lo que aún NO estaba en HEAD salvo en
+             docs/owner/, de modo que un commit ordinario —git add -A y git commit, sin un
+             solo flag— añadía una segunda sede normativa declarando F4c cerrada y F5
+             autorizada, dejaba git status vacío, pasaba la batería entera, no entraba en
+             el universo y producía el digest anclado bit a bit. DD-02 lo había cerrado
+             para UNA zona: instancia cerrada, clase abierta. La circularidad se ha movido
+             por QUINTA vez —HEAD, emisor, entrega, perímetro, y hoy la guarda de admisión,
+             que es el remedio del gate anterior—. NINGUNA decisión vuelve al Owner, por
+             TERCERA vez consecutiva. Y consta a favor: DD-17 quedó ROTO por primera vez en
+             seis gates. El recuento, las severidades y la clasificación NO se copian aquí
+             —regla 1—: viven en el documento del gate.
+last_meaningful_event_anterior: EL CUARTO GATE DE CERTIFICACIÓN DEVUELVE INSUFICIENTE PARA F5 **Y SU
              PROPIO ADJUDICADOR LO DECLARA INVÁLIDO**, sobre la candidata dc9be3f. Es el
              PRIMER gate inválido del expediente y **la causa es el COORDINADOR**: las cinco
              transcripciones del SOBRE DE ANCLA a los encargos difieren en ocho campos —entre
@@ -2171,14 +2239,19 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
                           grep -c '"ABIERTA"' \
                             docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py
                           python3 docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py | grep G-16
-                      **MIENTRAS el primero devuelva 0, `G-16` dará ROJO sobre esta
-                      clasificación, y ese rojo es VERDADERO**: dice que el vocabulario de
-                      estados primarios del instrumento no conoce «ABIERTA» y sigue
-                      describiendo la clasificación anterior, la que este gate falsó.
-                      El remedio —«ABIERTA» en `_ESTADOS_CL` y en `_CANON`— vive en
-                      `docs/evolucion/verificacion/`, **que este registro NO escribe**; en
-                      cuanto ese fichero lo incorpore, el primer comando deja de dar 0 y el
-                      segundo se pone en verde **sin que haya que tocar este renglón**.
+                      **[HISTÓRICO · `EE-05` del SEXTO GATE, y es `AA-02` VIVO en la fila
+                      gemela de aquella que lo declaró cerrado.]** Este renglón decía:
+                      *«MIENTRAS el primero devuelva 0, `G-16` dará ROJO sobre esta
+                      clasificación, y ese rojo es VERDADERO … el remedio vive en
+                      `docs/evolucion/verificacion/`, que este registro NO escribe»*. **El
+                      antecedente es FALSO desde `8c9ca9c`**: el instrumento ya conoce
+                      «ABIERTA», el primer comando NO devuelve 0 y `G-16` está en VERDE.
+                      Es la misma clase que `AA-02` castigó en la fila `C-L.7` —una
+                      afirmación rancia redactada en forma de autocrítica, que cobra crédito
+                      de quien la lee—, y sobrevivió **en la fila de al lado**.
+                      **LO QUE ES VERDAD HOY, y NO se escribe: se publica el comando que lo
+                      decide, para que no pueda volver a caducar.**
+                          python3 docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py | grep G-16
                       **No se escribe «CERTIFICADA» aquí para poner la batería en verde**:
                       eso sería el mutante que `Q-06` cerró
                       **LO QUE EL QUINTO GATE MIDIÓ, Y POR QUÉ ESTE RENGLÓN NO SE MUEVE.**
@@ -2240,9 +2313,14 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
                       **LO QUE ES VERDAD HOY, ejecutado sobre este árbol y no supuesto:**
                       `_ESTADOS_CL` de la batería **YA contiene «NO CERRADA»**, su `_CANON`
                       también, y `G-16` pasa en VERDE sobre el estado NO CERRADA de esta
-                      condición. Lo que hoy la pone en rojo es OTRA cosa, y es la fila de
-                      `C-L.5`: el vocabulario no conoce «ABIERTA». Ahí está declarado, con
-                      su medición.
+                      condición.
+                      **[HISTÓRICO · `EE-05` del SEXTO GATE.]** Aquí seguía: *«Lo que hoy la
+                      pone en rojo es OTRA cosa, y es la fila de `C-L.5`: el vocabulario no
+                      conoce ABIERTA»*. **Ya no la pone en rojo NADA**: el vocabulario
+                      conoce «ABIERTA» desde `8c9ca9c` y `G-16` está en verde. Esta fila
+                      remitía a una aserción de la fila gemela que había caducado, de modo
+                      que el defecto se sostenía a sí mismo entre las dos. **Se retiran las
+                      dos**, y lo que decide se ejecuta: el comando de la fila `C-L.5`.
                       **No se escribe «CERRADA» aquí para poner la batería en verde**: eso
                       sería exactamente el mutante que `Q-06` cerró
                       **SIGUE NO CERRADA TRAS EL QUINTO GATE, y con una recurrencia más.**
@@ -2341,11 +2419,16 @@ falta_para_cerrar_la_capa:
   · NADA CONSTRUIDO: ni kernel, ni runtime, ni tooling, ni esquemas, ni adaptadores, ni
     plantillas, ni packs, ni validadores, ni migraciones. Las correcciones son DISEÑO
     CORREGIDO, no diseño implementado
-  · NADA PROBADO: las **46** filas de la tabla adversarial de §2.6.7 —derivadas por conteo,
-    no escritas a mano; X62 la añade esta tanda por J-03—, las **18** ventanas de caída
-    `W1`–`W17` de §2.6.5 —también derivadas de sus filas—, las **8** comprobaciones `X-A`–
-    `X-H`, los 11 escenarios negativos de §11.5 y los 12 escenarios de §14 están ESCRITOS.
-    Ninguno ejecutado.
+  · NADA PROBADO: las filas de la tabla adversarial de §2.6.7, las ventanas de caída
+    `W1`–`W17` de §2.6.5, las comprobaciones `X-A`–`X-H` de §2.9, los escenarios negativos
+    de §11.5 y los escenarios de §14 están ESCRITOS. Ninguno ejecutado.
+    **NINGÚN CARDINAL SE ESCRIBE AQUÍ, y es `EE-07` del SEXTO GATE.** Este renglón decía
+    «las **46** filas … derivadas por conteo» y hoy son **más**: `X63` la añadió la tanda
+    del quinto gate, y el cardinal —que `DD-13` retiró del documento 11 EN ESA MISMA
+    TANDA— sobrevivió aquí, una sede más allá de la corregida. **No se sustituye por otro**,
+    que es lo que este corpus prohíbe desde `J-07` y lo que ya falló tres veces: se retira
+    y se remite. Cada familia lleva su cifra en SU sede, y quien la necesite la deriva:
+        grep -cE '^\| `?X[0-9]' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
     **Corregido por `P-04`**: esta línea contaba «las 9 ventanas `RC-1`–`RC-9` de §2.6.9»,
     que `D64` RETIRÓ y que `D83` renombró precisamente para sacarlas del inventario — la
     corrección que este mismo fichero declara aplicada en `M-8`, quinientas líneas más abajo.
@@ -2923,8 +3006,14 @@ RENOMBRADOS         `R1`–`R9` (ventanas de reconciliación, retiradas por `D64
 > DEFINITIVO           BLOQUEANTE 1 · GRAVE 6 · MEDIO 10 · MENOR 7. Derivado de las filas
 >                      adjudicadas por `L`, no de ningún total escrito
 >
-> FILAS ADVERSARIALES  46 filas físicas · 46 ids únicos en §2.6.7. `X62` la añade la tanda
->                      del gate definitivo, por `J-03`
+> FILAS ADVERSARIALES  **[HISTÓRICO · `EE-12` del SEXTO GATE. El renglón decía «46 filas
+>                      físicas · 46 ids únicos en §2.6.7», dentro de un bloque rotulado
+>                      CIFRAS VIGENTES, DERIVADAS, y hoy son más: `X63` la añadió la tanda
+>                      del quinto gate. Era cierto el día en que se escribió, que es
+>                      exactamente lo que hace que caduque sin que nadie lo note. NO se
+>                      sustituye por el vigente: se retira y se remite.]**
+>                      La cifra vigente vive en §2.6.7 y se deriva con
+>                      `grep -cE '^\| `?X[0-9]' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md`
 > ```
 >
 > **Las condiciones de cierre que aparezcan en las filas de abajo citando cifras de su
@@ -3510,6 +3599,22 @@ LO YA PUBLICADO           el manifiesto del QUINTO GATE es INMUTABLE y NO se edi
                           rótulo queda acotado en las entradas §14 y §15 del
                           `CORRIGENDUM-DICTAMENES-INMUTABLES.md`, con las dos cifras
                           derivadas y su comando
+
+LA REGLA SE ENDURECE      **`EE-02` del SEXTO GATE, y el primer manifiesto que aplicó la
+POR `EE-02`, PORQUE       regla de arriba la incumplió en su PRIMER USO.** El `6B` publicó
+FALLÓ EN SU PRIMER USO    `OBLIGATORIO − ASIGNADO = 1` sobre el árbol del gate y son **2**:
+                          razonó bien la exención del manifiesto EN CURSO —que es punto
+                          fijo— y la extendió sin decirlo al manifiesto que sustituía, que
+                          NO lo es. Desde el gate siguiente:
+                            · el §6 **DERIVA las dos aritméticas con su comando** en vez de
+                              copiarlas. Un cardinal escrito en un manifiesto es un
+                              cardinal que nadie vuelve a mirar
+                            · **toda fuente que quede sin fila lleva su razón derivada y
+                              publicada, UNA A UNA**. La exención de punto fijo cubre al
+                              manifiesto EN CURSO y a **ningún otro fichero**
+                            · y el preámbulo del §5 **describe la regla que se ejecuta** —
+                              bytes idénticos al árbol que ESE gate leyó— y no una más
+                              estricta que sus propias filas no pueden satisfacer (`EE-08`)
 ```
 
 ## PARTE DE LA TANDA POSTERIOR AL QUINTO GATE — un renglón por hallazgo, y el recuento se DERIVA
@@ -3524,10 +3629,27 @@ LO YA PUBLICADO           el manifiesto del QUINTO GATE es INMUTABLE y NO se edi
 > **CÓMO SE CUENTA, y es la única sede del recuento:**
 >
 > ```bash
-> awk '/^\| `(DD|BT)-[0-9]/{n++} END{print n}' docs/evolucion/CHECKPOINT-ADS-NEXT.md
-> awk '/^\| `DD-[0-9]/{n++} END{print "DD:", n}' docs/evolucion/CHECKPOINT-ADS-NEXT.md
-> awk '/^\| `BT-[0-9]/{n++} END{print "BT:", n}' docs/evolucion/CHECKPOINT-ADS-NEXT.md
+> # `EE-10` · cuenta IDENTIFICADORES DISTINTOS, no filas: dos filas con el mismo id serían
+> # un doble conteo, y contar filas no lo vería. Y acota la selección a ESTA tabla.
+> awk '/^### Lo aplicado, un renglón por identificador/{t=1} t' \
+>   docs/evolucion/CHECKPOINT-ADS-NEXT.md |
+>   grep -oE '^\| `(DD|BT)-[0-9]+`' | sort -u | wc -l
+>
+> # y el desglose, por el mismo camino
+> awk '/^### Lo aplicado, un renglón por identificador/{t=1} t' \
+>   docs/evolucion/CHECKPOINT-ADS-NEXT.md |
+>   grep -oE '^\| `(DD|BT)-[0-9]+`' | sort -u | cut -c4-5 | sort | uniq -c
 > ```
+>
+> > **PRECISADO por `EE-10` del SEXTO GATE.** El comando anterior contaba **filas de
+> > cualquier tabla del fichero** con `awk '/^\| `(DD|BT)-[0-9]/{n++}'`, y la frase lo
+> > presentaba como «el recuento». Dos defectos: **contaba filas y no identificadores
+> > distintos** —un id repetido en dos filas se habría contado dos veces— y **no acotaba la
+> > tabla**, de modo que cualquier renglón futuro con esa forma en otra sección habría
+> > entrado en el censo. La CONCLUSIÓN no cambia y se conserva: **el cardinal se retira y se
+> > publica la enumeración**. Lo que se corrige es que el comando mida lo que la frase dice
+> > que mide, que es la exigencia de `J-07` aplicada al propio instrumento de la
+> > reconciliación.
 >
 > **APLICAR NO ES CERTIFICAR.** Ningún hallazgo de esta tabla se declara SUPERADO: eso lo
 > hace un gate independiente y nadie más. Lo que la tabla afirma es que el remedio está
@@ -3619,7 +3741,182 @@ NADA DE GIT MÁS ALLÁ DE      no se ha hecho merge, no se ha movido `redesign/k
 LA RAMA DE TRABAJO           no se ha reescrito ninguna referencia
 ```
 
+## PARTE DE LA TANDA POSTERIOR AL SEXTO GATE — un renglón por hallazgo, y el recuento se DERIVA
+
+> **Misma disciplina que el parte anterior, y por la misma razón:** aquí no hay ninguna suma
+> escrita. Hay **una fila por identificador**, y quien quiera el número lo saca del árbol.
+>
+> ```bash
+> # los IDENTIFICADORES que la tanda aplica — incluidos los que comparten fila
+> awk '/^### Lo aplicado por la tanda del SEXTO GATE/{t=1} t' \
+>   docs/evolucion/CHECKPOINT-ADS-NEXT.md |
+>   grep -oE '`EE-[0-9]+`' | sort -u | wc -l
+>
+> # y la cobertura contra el gate, que es lo que hay que comprobar: sale VACÍO
+> comm -23 <(grep -oE '^\| [0-9]+ \| \*\*`EE-[0-9]+`' \
+>              docs/evolucion/27-SEXTO-GATE-DE-CERTIFICACION-F4C.md \
+>            | grep -oE 'EE-[0-9]+' | sort -u) \
+>          <(awk '/^### Lo aplicado por la tanda del SEXTO GATE/{t=1} t' \
+>              docs/evolucion/CHECKPOINT-ADS-NEXT.md \
+>            | grep -oE 'EE-[0-9]+' | sort -u)
+> ```
+>
+> **Hay MENOS filas que identificadores, y es deliberado:** `EE-07` y `EE-12` son el mismo
+> defecto en dos sedes y comparten fila, como el adjudicador los agrupó en su remedio. Por
+> eso el comando cuenta IDENTIFICADORES y no filas — `EE-10`, aplicado a este mismo parte.
+>
+> **APLICAR NO ES CERTIFICAR.** Ningún hallazgo de esta tabla se declara SUPERADO.
+
+**LO QUE ESTA TANDA ES, EN UNA LÍNEA.** El adjudicador `EE` dictaminó que el defecto **no
+está en la ejecución de la tanda anterior sino en el ALCANCE de un remedio**: `DD-02` cerró
+la guarda de admisión **para una zona**, y la clase quedó abierta. Esta tanda **deriva el
+alcance** en vez de ampliarlo zona a zona, que es la única forma de que la corrección no
+tenga que repetirse en el gate siguiente.
+
+### Lo aplicado por la tanda del SEXTO GATE
+
+| id | sede del remedio | qué se hizo, y con qué prueba |
+|---|---|---|
+| `EE-01` | batería · README de `verificacion/` | **EL NOVENO ÁRBOL, cerrado por CLASE.** La guarda de admisión **se evalúa contra la REVISIÓN BASE y no contra `HEAD`**: es AMPLIACIÓN todo lo que existe hoy y no existía en la base, **esté commiteado o no**. Confirmar deja de ser una forma de admitirse. Y las zonas que no tenían condición la reciben: los manifiestos, **enlazados desde la LISTA de `00-INDICE.md`**, que es lo que `C-L.5` ya exigía; y el ordinal de un documento numerado deja de exigirse LIBRE y pasa a **prohibir la COLISIÓN**, que es lo que la regla quería decir. **CONTROL POSITIVO EJECUTADO, y con las CINCO variantes COMMITEADAS** —`docs/normativa/`, la RAÍZ, `docs/`, un documento numerado con ordinal libre sin enlace, y un manifiesto sin enlace—: **las cinco dan ROJO hoy**, y las cinco daban `38/38` antes. Y el título de `G-29` y la fila del README **dicen lo que el código hace**, que es la sexta condición de `O18` |
+| `EE-02` | `CORRIGENDUM` §16 · «El criterio del gate siguiente» | El manifiesto `6B` publica `OBLIGATORIO − ASIGNADO = 1` sobre el árbol del gate y son **2**: razonó bien la exención de punto fijo del manifiesto EN CURSO y **la extendió sin decirlo al que sustituía**, que no lo es — 278 líneas obligatorias sin asignar. Un manifiesto es INMUTABLE: la vía es el corrigendum, con las dos cifras derivadas y su comando. **Y la regla de `DD-19` se endurece donde falló**: el §6 DERIVA las dos aritméticas y **toda fuente sin fila lleva su razón, una a una** |
+| `EE-03` | `00-INDICE.md` | **CUARTA recurrencia de `S-18`≡`T-14`.** Los manifiestos del quinto y del sexto gate estaban enlazados **desde su fila y no desde la LISTA**, que es lo que la regla exige. Se añaden los tres. **Y el comando que la sede publica para autocomprobarse se ACOTA A LA LISTA**: barría el índice ENTERO, de modo que un enlace en una fila histórica ya lo satisfacía y **el instrumento que existe para detectarlo pasaba en verde**. Verificado: el `diff` sale vacío |
+| `EE-04` | `CHECKPOINT`, bloque de estado | **QUINTA recurrencia de la clase `C-L.7`, y la PRIMERA contra la regla escrita DENTRO del propio bloque para impedirla.** `metodo`, `last_meaningful_event` y `based_on` nombraban el CUARTO gate con el árbol en el SEXTO. Los tres **REANCLADOS**, y lo anterior baja a sus campos `_anterior` como la regla 5 ordena. **Reanclar no es certificar**: `C-L.7` sigue NO CERRADA |
+| `EE-05` | `CHECKPOINT`, filas `C-L.5` y `C-L.7` | **`AA-02` VIVO en la fila gemela de la que lo declaró cerrado.** `C-L.5` conservaba «*mientras el primero devuelva 0, `G-16` dará ROJO*» con el antecedente **falso desde `8c9ca9c`**, y `C-L.7` **remitía a esa aserción** como si el rojo siguiera vivo: el defecto se sostenía entre las dos. **Se retiran las dos y se publica el comando que lo decide** |
+| `EE-06` | `11-ARQ` §0 | **La sede se falsaba con el comando que ella misma publica**, y lo rompió **el remedio de `DD-12`, en el mismo commit y doce líneas más abajo**. Se retira la afirmación caducada y se dice **lo que hay y lo que no**: `G-10` deriva UNA instancia y la guarda; **no existe comprobación GENERAL de la regla**, que sigue siendo la deuda que `DD-13` declaró |
+| `EE-07` · `EE-12` | `CHECKPOINT`, dos sedes | Los dos cardinales `46` de la tabla adversarial —uno en un renglón vivo, otro dentro de un bloque rotulado «CIFRAS VIGENTES, DERIVADAS»— **se RETIRAN y se REMITEN**, nunca se sustituyen por el vigente. Es el cardinal que `DD-13` retiró del documento 11 **en la tanda anterior**, superviviente dos sedes más allá |
+| `EE-08` | `CORRIGENDUM` §17 · «El criterio del gate siguiente» | El preámbulo del §5 del manifiesto describía una regla **más estricta** que la que aplica, y **dos de sus sesenta filas no pueden satisfacerla** porque el gate que las certificó no publicó SHA-256 para ellas. El agotamiento **no queda en duda** —el adjudicador verificó las 76 filas sin discrepancia—: lo que falla es la descripción |
+| `EE-09` | derivador, `_leer` | **Falla CERRADO también ante una sede ilegible por CODIFICACIÓN.** El `except` sólo capturaba `OSError`; un fichero que abre y **no decodifica** mataba el proceso con traza y `rc=1` **sin el diagnóstico `FALLA CERRADO`**, y la receta del sobre —que canaliza con `2>/dev/null`— entregaba **una lista VACÍA en silencio**. Misma clase que `T-22`, en el fichero de al lado |
+| `EE-10` | `CHECKPOINT`, la reconciliación | El comando **contaba filas de cualquier tabla del fichero**, no identificadores distintos de ESTA. Hoy cuenta **identificadores únicos** y **acota la tabla**. La conclusión —retirar el cardinal— **se conserva**: lo que se corrige es que el comando mida lo que la frase dice medir |
+| `EE-11` | batería | **La salida de git deja de partirse por blancos.** `.split()` sobre `ls-tree`/`diff` fallaba de dos maneras a la vez: una ruta **con espacio** se troceaba y producía el diagnóstico FALSO «fichero DESAPARECIDO», y una ruta **no-ASCII** salía citada por `core.quotePath` y **el bucle de admisión no la veía**. Con `-z` desaparecen las dos |
+| `EE-13` | `DECISIONES`, glosa de `D103` | «La batería sigue teniendo **30 comprobaciones**», en PRESENTE y dentro de un registro VIVO. Se retira el cardinal, **se conserva lo que sigue siendo cierto** —que `G-15` se corrigió en su sitio, sin añadir ninguna— y se publica el comando |
+| `EE-14` | `CORRIGENDUM` §18 | El §5 del documento 26 publica un desglose por origen que sus filas no dan. **El documento es INMUTABLE y no se toca**: se acota en el corrigendum, que es la vía que el propio corpus prescribe y que aquí no se había usado. **El TOTAL y la CLASIFICACIÓN son correctos y se dice** |
+| `EE-15` | emisor | Se retira la afirmación **falsa y medida** de que `read-tree`+`checkout-index` «no consultan `.gitattributes`» —sí leen los de conversión; lo que no honran es `export-ignore`, que es lo único que el remedio necesitaba— y **queda declarada la divergencia estructural** entre lo que el derivador VE y lo que el digest MIDE |
+| `EE-16` | emisor | El recuento de líneas **deriva de una sola sede**: el emisor escribía su propia fórmula y divergía de la del derivador en el único caso en que difieren, el fichero vacío |
+| `EE-17` | batería | **El ALCANCE deja de derivarse de una convención de redacción.** Se declara la PROPIEDAD —qué comprobaciones contrastan contra la historia— en un solo sitio, el ALCANCE sale de ahí, y **el TÍTULO se contrasta contra ella**: si divergen en un identificador, se dice. Es la convención de la que nació `DD-21` |
+| `EE-18` | `11-ARQ` §11.9 | El rótulo de la **sexta** cláusula del bloque LITERAL era una CARACTERIZACIÓN del coordinador y no el SUJETO, como los cinco anteriores. `DD-05` limpió cinco y **no barrió la sexta** |
+| `EE-19` | emisor, obligación 4 | El sobre prometía la «**superficie EXACTA** en que candidata y gate no son el mismo objeto» sobre un **subconjunto propio**: las rutas del UNIVERSO, no las del ÁRBOL. Se dice lo que la lista es **y se publica el comando que da la otra** |
+
+### Lo que esta tanda NO ha hecho, y es deliberado
+
+```text
+NINGUNA COMPROBACIÓN NUEVA   el censo de la batería no se mueve. Lo publica ella, y `G-34`
+                             lo contrasta contra su README en las dos direcciones. Lo que
+                             `EE-01` pidió era de RESTA y de ALCANCE, y así se hizo
+
+NINGÚN HALLAZGO SUPERADO     ni uno. `M-04` sigue abierta, `C-L.5` sigue ABIERTA y `C-L.7`
+                             sigue NO CERRADA. **APLICAR NO ES CERTIFICAR**
+
+NADA INMUTABLE EDITADO       ni la SEDE CANÓNICA del Owner, ni el texto resolutivo de
+                             ninguna `O` ni de ninguna `D`, ni ningún dictamen de gate, ni
+                             ningún manifiesto —el `6` sustituido incluido—. `EE-02`,
+                             `EE-08` y `EE-14` van al CORRIGENDUM
+
+NINGÚN NÚMERO SUSTITUIDO     donde se podía RETIRAR y REMITIR, se retira y se remite
+POR OTRO
+
+`X63` SIGUE SIENDO CONTRATO  de prueba de `F6`. NO ejecutado, NO certifica nada
+DE `F6`
+
+NADA VUELVE AL OWNER         `EE` examinó cuatro candidatos a clase `B` y los cuatro caen.
+                             Tercera vez consecutiva
+
+NADA DE GIT DESTRUCTIVO      sin merge, sin mover `redesign/kernel-2.0`, sin reescribir
+                             ninguna referencia, sin tocar candidatas ni gates anteriores
+```
+
 ## Siguiente acción exacta
+
+```text
+0  DÓNDE ESTAMOS               el SEXTO GATE DE CERTIFICACIÓN ha devuelto **INSUFICIENTE
+                               PARA F5** y **ES VÁLIDO**, por segunda vez consecutiva. Su
+                               documento NO se escribe aquí: se deriva con
+                               `ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1`, y su
+                               recuento vive dentro de él.
+
+1  QUÉ ENCONTRÓ, EN UNA        **EL NOVENO ÁRBOL, y estaba en el REMEDIO DEL GATE
+   LÍNEA                       ANTERIOR.** `DD-02` cerró la guarda de admisión para
+                               `docs/owner/` y sólo para esa zona; en el resto del corpus
+                               seguía mirando únicamente lo que aún no estaba en `HEAD`.
+                               `git add -A && git commit` **sin un solo flag** metía una
+                               segunda sede normativa declarando `F4c` cerrada y `F5`
+                               autorizada, con `38/38` y el digest anclado bit a bit.
+
+2  LO QUE ESTA TANDA HA HECHO  **el detalle NO se copia aquí: vive en el PARTE DE LA TANDA
+                               POSTERIOR AL SEXTO GATE**, una fila por identificador, con
+                               el comando que lo cuenta y el que comprueba su cobertura
+                               contra el gate. En una línea: **el alcance de la guarda se
+                               DERIVA contra la REVISIÓN BASE en vez de ampliarse zona a
+                               zona**, que es la única forma de que no haya que repetir
+                               esta corrección en el gate siguiente. **Control positivo con
+                               las CINCO variantes COMMITEADAS: las cinco dan ROJO.**
+
+3  LO QUE NO SE HA HECHO,      **ni una comprobación nueva**: lo que `EE` pidió era de
+   Y ES DELIBERADO             RESTA y de ALCANCE, y así se hizo. No se declara SUPERADO
+                               ningún hallazgo, no se cierra `M-04`, y no se edita nada
+                               inmutable —`EE-02`, `EE-08` y `EE-14` van al CORRIGENDUM—.
+                               Ningún número se sustituye por otro donde se podía RETIRAR
+                               y REMITIR.
+
+4  QUÉ VUELVE AL OWNER         **NADA.** `EE` examinó cuatro candidatos a clase `B` y los
+                               cuatro caen. Tercera vez consecutiva.
+
+5  QUÉ VIENE AHORA             publicar candidata y encargar otro gate independiente con
+                               revisores de contexto limpio que NO sean quien aplicó esta
+                               tanda **ni haya participado en ningún gate anterior**. Su
+                               commit de manifiesto lleva **el manifiesto, su fila en la
+                               LISTA de `00-INDICE.md` y la evidencia derivada
+                               reejecutada** (`DD-17`, que ya funcionó dos veces), y su §6
+                               **DERIVA las dos aritméticas** con su comando y da **razón
+                               publicada de cada fuente sin fila** (`EE-02`).
+
+6  LAS TRES PREGUNTAS QUE EL   · **`M-04` y el DÉCIMO ÁRBOL.** La guarda ya no exime lo
+   GATE SIGUIENTE TIENE QUE      confirmado y su alcance se deriva. ¿Queda otra puerta?
+   RESOLVER EXPRESAMENTE         Recuerda que `C` NO es exigible dentro de `F4c`.
+                               · **`C-L.5`.** Dos gates seguidos han medido las dos restas
+                                 a ∅ y ninguno ha escrito CERTIFICADA. **Escríbela o di por
+                                 qué no**, como `EE` hizo.
+                               · **LAS PROMESAS.** `EE` fijó la condición de salida: «se
+                                 cierran instancias y no clases» pasa a deuda registrada
+                                 cuando el perímetro se derive **y** las promesas digan lo
+                                 que el código hace. **La primera mitad se cumplía ya; esta
+                                 tanda va a por la segunda.** Compruébalo.
+
+7  LO QUE SIGUE ABIERTO        `M-04` **NO se declara superada**. `C-L.5` sigue **ABIERTA**.
+                               `C-L.7` sigue **NO CERRADA** —reanclar no es certificar—. Y
+                               la limitación que `O18` declara de sí misma sigue VIGENTE:
+                               eso es el verificador externo de `F6`.
+
+8  ESTADO, SIN ADORNO          `F4c` sigue **ABIERTA**. `F5` sigue **NO AUTORIZADA**. No se
+                               ha iniciado F5, ni F6, ni PesquerApp. No se ha hecho merge
+                               ni se ha movido `redesign/kernel-2.0`. **APLICAR NO ES
+                               CERTIFICAR.**
+
+9  EL INTÉRPRETE, QUE SE       el runner exige **≥ 3.11** (`tomllib`). Con el 3.10 del
+   DECLARA CON SU CIFRA        sistema caen `arranque`, `fuentes` y `workspace`, idénticas
+                               sobre `HEAD` sin tocar: es `A14`, limitación aceptada,
+                               propietario `PLT`, fase `F6`. Quien publique evidencia
+                               **declara su `python3 --version`**.
+
+10 DÓNDE PARAR                 antes de dar por cerrado lo que sólo un gate independiente
+                               puede cerrar. Y sigue vigente parar antes de redactar `(g)`,
+                               antes de crear `C8`, antes de tocar `C7` o el kernel
+                               operativo SUSTANTIVO, y antes de iniciar PesquerApp.
+
+11 QUÉ DEL KERNEL ESTÁ         **NO SE ENUMERA AQUÍ, Y ES LA REGLA.** Vive en el campo
+   TOCADO, Y DÓNDE MIRARLO     **EXCEPCIÓN EXACTA DEL KERNEL** de este mismo fichero, y
+                               `G-23` lo contrasta contra el árbol. Esta sección REMITE y
+                               no copia ninguna ruta: copiarlas es `M-06`, y su
+                               reincidencia es `R-02`.
+```
+
+> **La regla de redacción de esta sección, que NO es histórica y se conserva:** nada que otra
+> sede pueda derivar se copia aquí. **Cuántas veces ha caducado no se escribe: se DERIVA** —
+> `grep -c '^## Siguiente acci[óo]n exacta — HISTÓRICA' docs/evolucion/CHECKPOINT-ADS-NEXT.md`—.
+
+> **[HISTÓRICA · «Siguiente acción exacta» anterior al SEXTO GATE DE CERTIFICACIÓN. Se
+> conserva para trazabilidad y NO describe el estado vigente.]**
+
+## Siguiente acción exacta — HISTÓRICA, anterior al documento 27
 
 ```text
 0  DÓNDE ESTAMOS               el QUINTO GATE DE CERTIFICACIÓN ha devuelto **INSUFICIENTE

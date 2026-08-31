@@ -527,7 +527,97 @@ registra**.
 instrumento que se saca del universo que deriva es exactamente la clase de perímetro escrito
 que `DD-01` acaba de cerrar un piso más abajo.
 
-## 16 · Regla general que este documento deja escrita
+## 16 · Manifiesto del SEXTO GATE (`6B`) · su resta sobre el árbol del gate publica `1` y son `2` — `EE-02`
+
+**Sede:** `verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-6B-20260831.md`, **§2**
+—«la diferencia estructural es exactamente **+1 fuente: este fichero**»— y **§6**, renglón
+`OBLIGATORIO menos ASIGNADO  1`.
+
+**Lo que dice el árbol.** Las dos cifras se derivan sobre el árbol del gate, materializado
+como prescribe la RECETA DEL SOBRE. **Ninguna se copia:**
+
+```bash
+C=ce2cb4299fa04bc1c491f7bce2a4d0fbd87e4759
+d=$(mktemp -d)
+GIT_INDEX_FILE="$d/idx" git read-tree "$C"
+GIT_INDEX_FILE="$d/idx" git checkout-index -a -f --prefix="$d/t/"
+( cd "$d/t" && python3 docs/evolucion/verificacion/derivar-universo-obligatorio.py \
+    | grep 'fuentes obligatorias' )
+git show "$C:docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-6B-20260831.md" \
+  | grep -cE '^\| [0-9]+ \| `'
+rm -rf "$d"
+```
+
+```text
+UNIVERSO DEL ÁRBOL DEL GATE     78 fuentes
+FILAS DE REPARTO DEL MANIFIESTO 76
+OBLIGATORIO − ASIGNADO           2      ← el manifiesto publica 1
+LAS DOS QUE SOBRAN
+  …-6B-20260831.md   el manifiesto EN CURSO. Su exención es real: no puede contener su
+                     propio SHA-256, y es lo que `DD-19` fija
+  …-6-20260831.md    el manifiesto SUSTITUIDO. **NO es punto fijo**: existe en el commit
+                     antes de que se escriba el `6B`, su SHA-256 se puede publicar sin
+                     alterarlo, y **278 líneas obligatorias quedaron sin asignar a nadie**
+```
+
+**Qué se sigue.** **NO SE PUEDE** citar el §2 ni el §6 del manifiesto `6B` para afirmar que
+sobre el árbol del gate falta exactamente una fuente. **SÍ SE PUEDE** citarlos para el árbol
+de la CANDIDATA, donde la resta cierra a `0` y está verificada por el adjudicador.
+
+**Y consta la agravante, que es lo que hace que esta entrada exista:** `DD-19` escribió la
+regla —«todo manifiesto rotula de qué árbol habla cada cifra y publica las dos aritméticas»—
+y **el primer manifiesto que la aplica la incumple en su primer uso**, no por copiar del
+gate anterior sino por **razonar mal la exención**: la exención de punto fijo cubre al
+manifiesto EN CURSO y a ningún otro fichero. `BB4` había predicho la sexta reincidencia de
+esta clase, y ésta es.
+
+**LO QUE SE CORRIGE HACIA ADELANTE:** desde el gate siguiente, el §6 de todo manifiesto
+**DERIVA las dos aritméticas con su comando en vez de copiarlas**, y toda fuente que quede
+sin fila **lleva su razón derivada y publicada**, una a una. La regla vive en «El criterio
+del gate siguiente» del `CHECKPOINT-ADS-NEXT.md`.
+
+## 17 · Manifiesto del SEXTO GATE (`6B`) · el preámbulo de su §5 describe una regla más estricta que la que aplica — `EE-08`
+
+**Sede:** el mismo manifiesto, **§5**, preámbulo: «*una fuente sólo se agota si su SHA-256 de
+HOY coincide **byte a byte** con el que publicó el gate que la certificó*».
+
+**Lo que dice el árbol.** La regla que el manifiesto REALMENTE aplica —y que es la correcta,
+y la que §5 punto 2 escribe— es que los bytes sean idénticos **a los del árbol que ESE gate
+leyó de verdad**. Dos de sus sesenta filas no pueden satisfacer la versión estricta del
+preámbulo, porque el gate que las certificó **no publicó un SHA-256 para ellas**: su
+manifiesto las anotó con `—` en la columna de huella.
+
+**Qué se sigue.** **NO SE PUEDE** citar el preámbulo del §5 como si describiera el criterio
+ejecutado. **SÍ SE PUEDE** citar el punto 2 de ese mismo §5, que es el criterio real y el que
+se aplicó. **El agotamiento de las sesenta filas NO queda en duda**: el adjudicador verificó
+las setenta y seis filas contra el árbol de la candidata sin una discrepancia. Lo que falla es
+la DESCRIPCIÓN, y es la clase de la entrada §5 de este corrigendum —«describe de más su propia
+evidencia»—, una sede más allá.
+
+## 18 · Documento 26 · su §5 publica un desglose por severidad que sus propias filas no dan — `EE-14`
+
+**Sede:** `26-QUINTO-GATE-DE-CERTIFICACION-F4C.md`, §5, bloque de recuento por severidad y
+origen. **El documento es INMUTABLE y NO se toca.**
+
+**Lo que dice el árbol.** El desglose se deriva de la tabla de hallazgos del propio documento:
+
+```bash
+awk '/^\| \*\*`DD-[0-9]/{print}' docs/evolucion/26-QUINTO-GATE-DE-CERTIFICACION-F4C.md |
+  grep -oE '\*\*(BLOQUEANTE|GRAVE|MEDIO ESTRUCTURAL|MEDIO|MENOR)\*\*' | sort | uniq -c
+```
+
+**Qué se sigue.** El TOTAL —veintidós— y la CLASIFICACIÓN —`A` 22, `B` 0, `C` 0— **son
+correctos y no se discuten**: se derivan de las filas y el adjudicador los sostuvo. Lo que no
+casa fila a fila es el reparto entre las columnas «DEL OBJETO» y «DEL APARATO». **NO SE PUEDE**
+citar ese desglose por origen como censo derivado. **SÍ SE PUEDE** citar el total, la
+clasificación y cada fila.
+
+**Y lo que se corrige es la PROYECCIÓN VIVA, no el documento:** toda sede derivada que
+reproduzca ese desglose lo publica **con el comando que lo deriva de las filas**, o remite. El
+documento 26 **se conserva intacto**, que es lo que `G-22` custodia y lo que la regla §19 de
+este corrigendum prescribe.
+
+## 19 · Regla general que este documento deja escrita
 
 ```text
 UN DICTAMEN NO SE EDITA. Si contiene un error de hecho, se registra en este corrigendum con

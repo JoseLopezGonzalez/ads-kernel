@@ -135,6 +135,17 @@ def _leer(rel):
             return fh.read()
     except OSError as e:
         raise SedeIlegible("sede %s ilegible: %s" % (rel, e))
+    except UnicodeDecodeError as e:
+        # `EE-09`. Este `except` sólo capturaba `OSError`, y la cabecera de este fichero
+        # promete FALLAR CERRADO ante una sede ilegible. Una sede que EXISTE y se abre pero
+        # **no decodifica como UTF-8** levantaba `UnicodeDecodeError`, que no es `OSError`:
+        # el proceso moría con traza y `rc=1` **sin el diagnóstico `FALLA CERRADO`**, y la
+        # receta del sobre —que canaliza `--rutas` con `2>/dev/null`— entregaba una lista
+        # VACÍA en silencio. Ilegible es ilegible, venga del sistema de ficheros o del
+        # códec, y es la misma clase que `T-22` cerró en el fichero de al lado.
+        raise SedeIlegible("sede %s ilegible: no decodifica como UTF-8 (%s). Una sede que "
+                           "el corpus no puede leer no se interpreta: se falla cerrado"
+                           % (rel, e))
 
 
 # `Z1-03`≡`Z-05`. Se excluía `__pycache__` POR SU NOMBRE DE DIRECTORIO, con lo que una copia

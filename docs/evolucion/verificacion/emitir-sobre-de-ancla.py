@@ -216,10 +216,32 @@ def _sha256_en(commit, ruta):
 #
 # El remedio es de RESTA: se deja de usar el camino que lee atributos. `git read-tree` sobre
 # un índice temporal FUERA del repositorio y `git checkout-index -a --prefix` materializan
-# **el árbol del commit y nada más** —no consultan `.gitattributes` y no pueden honrar
-# `export-ignore`—, no tocan el índice ni el árbol de trabajo de quien emite, y la RECETA
-# publicada usa exactamente los mismos dos comandos. No hay guarda nueva que añadir: se ha
-# quitado el paso que mentía.
+# el árbol del commit **sin honrar `export-ignore`**, no tocan el índice ni el árbol de
+# trabajo de quien emite, y la RECETA publicada usa exactamente los mismos dos comandos. No
+# hay guarda nueva que añadir: se ha quitado el paso que mentía.
+#
+# `EE-15`. Aquí se decía además que esos dos comandos «**no consultan `.gitattributes`**», y
+# **eso es falso y está medido**: `checkout-index` sí lee atributos —los de conversión,
+# `text`/`eol`/`filter`—, y lo que NO honra es `export-ignore`, que es lo único que este
+# remedio necesitaba. Se conserva la parte cierta y se retira la generalización.
+#
+# **Y con ella queda declarada la divergencia estructural que la sostiene:** lo que el
+# DERIVADOR ve es el árbol MATERIALIZADO —sujeto a esos filtros de conversión— y lo que el
+# DIGEST mide es el BLOB leído con `git show`, que no pasa por ninguno. En este corpus las
+# dos cosas coinciden porque no hay ningún atributo de conversión declarado; un
+# `.gitattributes` que declarara uno las separaría, y el sobre lo publicaría sin decirlo.
+# Queda dicho aquí en vez de presumirse imposible.
+def _lineas_de(crudo):
+    """Líneas de un blob, con la MISMA fórmula que el derivador (`EE-16`).
+
+    Un fichero vacío tiene CERO líneas. La forma anterior de este emisor le daba una.
+    """
+    n = crudo.count(b"\n")
+    if crudo and not crudo.endswith(b"\n"):
+        n += 1
+    return n
+
+
 def _desplegar(commit, destino):
     """Materializa el árbol de `commit` bajo `destino`, sin honrar `export-ignore`."""
     idx = os.path.join(destino, ".indice-temporal")
@@ -269,10 +291,16 @@ def universo_de(commit):
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
+    # `EE-16`. Esta suma escribía su propia fórmula —`count("\n") + (0 if endswith("\n")
+    # else 1)`— y el derivador escribía la suya, con una divergencia REAL en el único caso
+    # en que difieren: un fichero VACÍO daba **1** aquí y **0** allí. Hoy no hay ninguno,
+    # pero dos implementaciones de la misma derivación acaban divergiendo, que es lo que
+    # este corpus persigue en todas partes. Se usa UNA, y es la del derivador, que es la
+    # sede de las métricas del universo.
     filas, lineas, huellas = [], 0, {}
     for rel in sorted(rutas):
         crudo = _blob(commit, rel)
-        lineas += crudo.count(b"\n") + (0 if crudo.endswith(b"\n") else 1)
+        lineas += _lineas_de(crudo)
         h = hashlib.sha256(crudo).hexdigest()
         huellas[rel] = h
         filas.append("%s %s" % (rel, h))
@@ -650,9 +678,18 @@ def main():
     W("  3 CADA FILA DEL MANIFIESTO DECLARA UN ARBOL. Contrástela contra ESE árbol y contra\n")
     W("    ningún otro. La fila del propio derivador es la que el gate anterior falseó dos\n")
     W("    gates seguidos (`U-02`, y su reincidencia `X-06`): mírela primero.\n")
-    W("  4 LAS RUTAS EN QUE LOS DOS UNIVERSOS DIFIEREN, listadas arriba, son la superficie\n")
-    W("    exacta en que la candidata y el gate no son el mismo objeto. Todo lo que el\n")
-    W("    manifiesto afirme sobre ellas tiene que decir DE QUE ARBOL habla.\n")
+    # `EE-19`. Decía «son la SUPERFICIE EXACTA en que la candidata y el gate no son el
+    # mismo objeto», y las rutas listadas son las del UNIVERSO OBLIGATORIO, que es un
+    # SUBCONJUNTO PROPIO del árbol: dos commits pueden diferir además en ficheros que el
+    # universo no contiene —la evidencia derivada, por ejemplo— y esta lista no los nombra.
+    # Prometer «exacta» sobre un subconjunto propio es la sexta condición de `O18` aplicada
+    # al propio sobre. Se dice lo que la lista ES, y se publica el comando que da la otra.
+    W("  4 LAS RUTAS EN QUE LOS DOS UNIVERSOS OBLIGATORIOS DIFIEREN, listadas arriba, son\n")
+    W("    la superficie en que difieren los UNIVERSOS, y NO la superficie en que difieren\n")
+    W("    los ARBOLES: los dos commits pueden diferir ademas en ficheros que el universo\n")
+    W("    obligatorio no contiene, y esta lista NO los nombra. La otra la da\n")
+    W("      git diff --name-only <commit-candidato> <commit-del-gate>\n")
+    W("    Todo lo que el manifiesto afirme sobre ellas tiene que decir DE QUE ARBOL habla.\n")
     W("  5 ESTE EMISOR SE NIEGA A EMITIR SI `git status --porcelain` NO VIENE VACIO, y eso\n")
     W("    es TODO lo que esa negativa prueba: que no habia modificaciones VISIBLES para\n")
     W("    `git status` al emitir. NO prueba que el emisor y el derivador que corrieron sean\n")

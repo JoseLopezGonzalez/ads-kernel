@@ -444,7 +444,16 @@ entregaba a F6.
 > declarado como regla **dinámica por item** y no incluido en un total estático, y corre
 > **tres fixtures** —propietario `DOM` → `{DOM}`, propietario `SEG` → `{SEG}`, propietario
 > `PRD` → `∅`—. **El nueve no está escrito en la prueba: se deriva y se compara con la cifra
-> publicada.** La batería sigue teniendo **30 comprobaciones**: `G-15` se corrige en su sitio.
+> publicada.** **El censo de comprobaciones de la batería NO se escribe aquí, y es `EE-13`
+> del SEXTO GATE:** este renglón decía «la batería sigue teniendo **30 comprobaciones**», en
+> PRESENTE y dentro de un registro VIVO, y hoy son más. Era cierto el día de `D103` y dejó de
+> serlo sin que nadie volviera a la frase — la clase de `S-16`≡`S3-06`, una sede más allá. Lo
+> que la glosa quería decir y sigue siendo verdad es que **`G-15` se corrigió EN SU SITIO, sin
+> añadir ninguna comprobación**. El censo vive en su sede y se deriva:
+>
+> ```bash
+> python3 docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py | tail -3
+> ```
 
 > **Qué NO hace esta corrección.** No toca `01-PROCESOS.md` ni ningún fichero del kernel. No
 > implementa F6. No modifica `D98`, `PN-15`, `O16` ni los dictámenes de los documentos 15–19.

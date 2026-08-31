@@ -161,9 +161,29 @@ introdujo la FASE 0.**
 >   docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py
 > ```
 >
-> **mientras ese comando devuelva 0, esta regla no tiene ni una comprobación mecánica**, y su
-> único cumplimiento es el contrato de prueba de abajo —**que NO se ha ejecutado**— y la
-> lectura humana. Por eso sobrevivieron a tres gates cuatro titulares que su propia
+> **CORREGIDO por `EE-06` del SEXTO GATE, y esta sede se falsaba a sí misma con el comando
+> que ella misma publica.** Decía «**mientras ese comando devuelva 0, esta regla no tiene ni
+> una comprobación mecánica**», y **hoy no devuelve 0**: lo rompió el remedio de `DD-12`, en
+> el mismo commit y doce líneas más abajo, al hacer que `G-10` DERIVE el censo de las
+> extensiones de ficha en vez de comparar substrings. La afirmación caducó por su propio
+> éxito, y nadie volvió a la frase que la contaba — que es, literalmente, el modo de fallo
+> que esta regla existe para impedir.
+>
+> **LO QUE ES CIERTO HOY, y se dice sin escribir ningún cardinal:**
+>
+> ```text
+> LO QUE SÍ HAY   `G-10` DERIVA la enumeración `capacidades/<CAP>/` de §5.2 y contrasta su
+>                 cardinal en letra, su cardinal en cifra y sus nombres contra §5.2, §16 y
+>                 §17. Una séptima extensión pone en ROJO las tres sedes a la vez, y el
+>                 control positivo está ejecutado. Es UNA instancia, guardada
+> LO QUE NO HAY   una comprobación GENERAL de la regla: no existe nada que barra todo
+>                 titular con cardinal y lo contraste contra su enumeración. `DD-13` lo
+>                 declaró deuda nunca barrida y lo sigue siendo
+> CÓMO SE MIDE    la cobertura de esta regla NO se escribe aquí: se deriva, y el comando de
+>                 arriba es el que la da. Lo que NO puede escribirse es qué devolverá
+> ```
+>
+> Por eso sobrevivieron a tres gates cuatro titulares que su propia
 > enumeración desmentía —`Y-07` del documento 25, y `V-09`…`V-13` y `V-19` del 24—: la
 > batería sólo cuenta objetos NOMBRADOS, no cardinales escritos en prosa.
 > **Y la regla TIENE EXCEPCIONES, que no son «ninguna»:** las declara, una a una, el bloque
@@ -8806,8 +8826,14 @@ DE MANIPULACIÓN      en rojo: corpus alterado tras la atestación · referencia
 `VER`                produce el dosier independiente
 `SEG`                gobierna credenciales, bloqueo y fallos de confianza
 EL OWNER             conserva la autoridad de aceptar o rechazar la raíz externa
-Y UNA PROHIBICIÓN    el ejecutor externo no puede compartir la identidad de escritura del
-DE IDENTIDAD         runtime ADS
+EL EJECUTOR EXTERNO  no puede compartir la identidad de escritura del runtime ADS
+
+    **Rótulo de la sexta cláusula CORREGIDO por `EE-18` del SEXTO GATE, y es `DD-05` una
+    cláusula más allá.** Decía «`Y UNA PROHIBICIÓN DE IDENTIDAD`», que es una
+    CARACTERIZACIÓN del coordinador y no el SUJETO de la cláusula: los cinco rótulos
+    anteriores son sujetos —`SIS`, `PLT`, `VER`, `SEG`, `EL OWNER`— y éste no lo era, dentro
+    de un bloque rotulado LITERAL. `DD-05` limpió las glosas de las cinco primeras y **no
+    barrió la sexta**. El sujeto de la sede es «*el ejecutor externo*», y es el que va aquí.
 
 --- LECTURA DEL COORDINADOR SOBRE ESE REPARTO — NO ES LITERAL DE LA SEDE ---
 

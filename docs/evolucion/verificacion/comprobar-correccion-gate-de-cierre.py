@@ -120,6 +120,19 @@ def _num(txt):
 # `_git()` devuelve la salida SÓLO si el comando tuvo éxito. Si falla, si no existe, o si
 # el repositorio no responde, devuelve None — y las comprobaciones que dependen de él
 # fallan CERRADO, con diagnóstico.
+# `EE-17` · **EL ALCANCE SE DERIVA DE LA PROPIEDAD, NO DE LA REDACCIÓN DEL TÍTULO.**
+# El informe publicaba qué comprobaciones exigen un repositorio CON HISTORIA filtrando sus
+# TÍTULOS por la cadena «sin git». Es una convención de redacción, y caduca en cuanto
+# alguien no la sigue: `G-34` empezó a usar git y no reescribió su título, con lo que el
+# censo derivado daba OCHO y la medición NUEVE — que es `DD-21`, nacido de esta misma
+# convención. Ahora la PROPIEDAD se declara UNA VEZ y en un sitio —qué comprobaciones
+# contrastan contra la HISTORIA de git—, el ALCANCE se deriva de esa declaración, y el
+# TÍTULO se CONTRASTA contra ella: si divergen en un solo identificador, es ROJO y se
+# nombra. El título deja de ser el discriminante y pasa a ser lo contrastado.
+_EXIGEN_HISTORIA = frozenset({"G-11", "G-11b", "G-21", "G-22", "G-23",
+                              "G-28", "G-29", "G-30", "G-34"})
+
+
 def _git(*args):
     try:
         r = subprocess.run(["git", "-C", RAIZ, *args],
@@ -332,10 +345,21 @@ def _informe(codigo_normal=None):
     # del sobre prescribe —árbol desplegado SIN `.git`— esas nueve fallan CERRADO, que es
     # lo correcto, y la batería da menos que su total. **No es un defecto: era que ninguna
     # sede lo acotaba**, y quien leyera «N/N en verde» podía creer que certificaba el
-    # commit desnudo. El censo NO se escribe: se DERIVA de los títulos, que son los que lo
-    # declaran, y quien quiera la lista ejecuta la batería y filtra por «sin git».
-    _con_git = [i for i, t, _, _ in RES if "sin git" in t]
+    # commit desnudo.
+    #
+    # `EE-17`. El censo se derivaba de los TÍTULOS —`"sin git" in t`—, que es una
+    # convención de redacción y no una propiedad: `G-34` empezó a usar git sin reescribir
+    # su título y el censo dio OCHO donde la medición daba NUEVE. Hoy sale de
+    # `_EXIGEN_HISTORIA`, que declara la propiedad, y el TÍTULO se contrasta contra ella.
+    _ids = [i for i, _, _, _ in RES]
+    _con_git = [i for i in _ids if i in _EXIGEN_HISTORIA]
+    _titulan = {i for i, t, _, _ in RES if "sin git" in t}
+    _desajuste = sorted(_titulan ^ set(_con_git)) + sorted(_EXIGEN_HISTORIA - set(_ids))
     print(f"\n{verde}/{len(RES)} comprobaciones en verde")
+    if _desajuste:
+        print(f"ALCANCE · DESAJUSTE (`EE-17`): {_desajuste} — el TÍTULO y la PROPIEDAD "
+              f"declarada no coinciden, o se declara una comprobación que no se ejecuta. "
+              f"El alcance publicado no es fiable hasta que cuadren.")
     print(f"ALCANCE (`DD-21`): {len(_con_git)} de las {len(RES)} exigen un repositorio CON "
           f"HISTORIA y fallan CERRADO sin `.git` — {', '.join(_con_git)}. "
           f"Las otras {len(RES) - len(_con_git)} son propiedades del ÁRBOL DESNUDO. "
@@ -1895,12 +1919,27 @@ check("G-21", "las resoluciones del Owner de `7e99388` siguen en el registro, y 
 # corpus lleva doce tandas persiguiendo.
 _tocados_raw = _git("diff", "--name-only", "05f71b7")
 tocados = _tocados_raw.split() if _tocados_raw is not None else []
+# `EE-11` · **LA SALIDA DE GIT NO SE PARTE POR BLANCOS.** Esto hacía `.split()` sobre
+# `git ls-tree --name-only` y sobre `git diff --name-only`, y las dos cosas fallaban a la
+# vez: una ruta CON ESPACIO se troceaba en dos «ficheros» inexistentes —y el trozo que
+# quedaba producía el diagnóstico FALSO «fichero del corpus DESAPARECIDO»—, y una ruta
+# NO-ASCII salía CITADA por `core.quotePath`, con lo que no casaba con la del disco y el
+# bucle de admisión no la veía. Con `-z` y `\0` desaparecen los dos: no hay troceo y no hay
+# citado. Es la misma familia que `T-05`: la comprobación NOMBRA el fichero en su detalle y
+# sigue imprimiendo verde.
+def _rutas_z(*args):
+    """Rutas de un comando de git con `-z`. `None` si git no responde."""
+    bruto = _git(*args, "-z")
+    if bruto is None:
+        return None
+    return set(x for x in bruto.split("\0") if x)
+
 _mod_head_raw = _git("diff", "--name-only", "HEAD")
-_mod_head = set(_mod_head_raw.split()) if _mod_head_raw is not None else set()
+_mod_head = _rutas_z("diff", "--name-only", "HEAD") or set()
 _base_arbol_raw = _git("ls-tree", "-r", "--name-only", "05f71b7")
-_base_arbol = set(_base_arbol_raw.split()) if _base_arbol_raw is not None else set()
+_base_arbol = _rutas_z("ls-tree", "-r", "--name-only", "05f71b7") or set()
 _head_arbol_raw = _git("ls-tree", "-r", "--name-only", "HEAD")
-_head_arbol = set(_head_arbol_raw.split()) if _head_arbol_raw is not None else set()
+_head_arbol = _rutas_z("ls-tree", "-r", "--name-only", "HEAD") or set()
 
 def _rel(p):
     return os.path.relpath(p, RAIZ).replace(os.sep, "/")
@@ -2965,12 +3004,27 @@ _ENLAZADOS_INDICE = {"docs/evolucion/" + n for n in
 # `../owner/`, que el patrón de arriba no puede recoger porque empieza por punto. El
 # subcamino se conserva ENTERO: `../owner/vigente/X.md` admite `docs/owner/vigente/X.md` y
 # NO admite `docs/owner/X.md`, ni al revés.
+# `EE-01`/`EE-03`. Los enlaces del índice a `verificacion/` —instrumental y manifiestos—,
+# por RUTA COMPLETA y no por nombre, con la misma disciplina que las otras dos zonas.
+_ENLAZADOS_INDICE_VERIF = {"docs/evolucion/" + n for n in re.findall(
+    r"\]\((verificacion/(?:[A-Za-z0-9][-A-Za-z0-9_.]*/)*[A-Za-z0-9][-A-Za-z0-9_.]*\.md)\)",
+    _t_idx)}
 _ENLAZADOS_INDICE_OWNER = {"docs/owner/" + n for n in re.findall(
     r"\]\(\.\./owner/((?:[A-Za-z0-9][-A-Za-z0-9_.]*/)*[A-Za-z0-9][-A-Za-z0-9_.]*\.md)\)",
     _t_idx)}
-_ORDINALES_PUBLICADOS = {m.group(1) for m in
-                         (re.match(r"^docs/evolucion/(\d\d)-.*\.md$", f)
-                          for f in _publicado) if m}
+# `EE-01`. Esto era `_ORDINALES_PUBLICADOS`, derivado de `_publicado`: el ordinal de un
+# documento ya confirmado figuraba como OCUPADO **por él mismo**, de modo que la condición
+# «el ordinal está libre» sólo podía cumplirla un documento que aún no estuviera en `HEAD`.
+# Al derivar el alcance contra la REVISIÓN BASE, esa forma ponía en rojo los nueve
+# documentos legítimos. Lo que la regla quiere decir —y lo que ahora ejecuta— es que **NO
+# HAYA DOS documentos con el mismo ordinal**: dos sedes con la misma identidad. El censo se
+# deriva del corpus gobernado entero, y lo que se prohíbe es la COLISIÓN, no la existencia.
+_POR_ORDINAL = {}
+for _f in sorted(_disco | _publicado):
+    _m_o = re.match(r"^docs/evolucion/(\d\d)-.*\.md$", _f)
+    if _m_o:
+        _POR_ORDINAL.setdefault(_m_o.group(1), set()).add(_f)
+_ORDINALES_COLISION = {o for o, fs in _POR_ORDINAL.items() if len(fs) > 1}
 
 def _ampliacion_admitida(rel):
     """¿La aparición de `rel`, que no está publicada, está CLASIFICADA y admitida?"""
@@ -2998,7 +3052,12 @@ def _ampliacion_admitida(rel):
         # fichero y su enlace en commits distintos no encuentra aquí quien se lo diga.
         return rel in _ENLAZADOS_INDICE_OWNER
     if rel.startswith("docs/evolucion/verificacion/manifiestos/"):
-        return False
+        # `EE-01`. Aquí había un `return False` seco, y con él **la zona no tenía condición
+        # de admisión**: era admisible sólo por estar ya en `HEAD`, es decir, por haber sido
+        # confirmada. La condición que la zona SÍ tiene está escrita en `00-INDICE.md` y es
+        # de `C-L.5`: «*todo documento que `C-L.5` obligue a publicar se enlaza desde la
+        # lista de abajo EN EL MISMO COMMIT que lo crea*». Se ejecuta, en vez de suponerse.
+        return rel in _ENLAZADOS_INDICE_VERIF
     if rel.startswith("docs/evolucion/verificacion/"):
         return rel in _INSTRUMENTAL
     m_ord = re.match(r"^docs/evolucion/(\d\d)-.*\.md$", rel)
@@ -3023,7 +3082,7 @@ def _ampliacion_admitida(rel):
         # no encuentra en esta batería quien se lo diga.
         if rel not in _ENLAZADOS_INDICE:
             return False
-        if m_ord.group(1) in _ORDINALES_PUBLICADOS:
+        if m_ord.group(1) in _ORDINALES_COLISION:
             return False
         return True
     return False
@@ -3034,12 +3093,37 @@ else:
     if not _publicado:
         _g29.append("el conjunto publicado del corpus sale VACÍO: sin él no hay "
                     "comparación, y comparar contra nada da verde siempre")
-    _nuevos = sorted(f for f in _disco - _publicado if not _ampliacion_admitida(f))
+    # ── `EE-01` · EL NOVENO ÁRBOL, Y POR QUÉ EL ALCANCE SE DERIVA ──────────
+    #
+    # **La guarda era INERTE sobre todo lo CONFIRMADO, salvo en una zona.** `_nuevos` se
+    # calculaba sobre `_disco - _publicado`, es decir, sobre lo que aún no está en `HEAD`:
+    # **confirmar un fichero lo sacaba para siempre del alcance de la única condición que
+    # su zona impone**. El adjudicador del sexto gate lo midió y lo reprodujo dos veces:
+    # `git add -A && git commit` **sin un solo flag** añadía `docs/normativa/…`, `docs/…` o
+    # un fichero en la RAÍZ declarando `F4c` CERRADA y `F5` AUTORIZADA, dejaba
+    # `git status` vacío, pasaba **38/38**, no entraba en el universo obligatorio ni en
+    # `EXCLUIDOS_PERIMETRO` ni en `EXCLUIDOS_IV`, no recibía fila ni revisor, **y producía
+    # el digest del sobre BIT A BIT idéntico al anclado**. `DD-02` había cerrado
+    # exactamente esto **para `docs/owner/` y sólo para esa zona**: instancia cerrada,
+    # clase abierta — la frase de `BB4`, medida por segunda vez.
+    #
+    # **El alcance deja de enumerarse zona a zona y se DERIVA**: es AMPLIACIÓN todo lo que
+    # existe hoy —en disco o en `HEAD`— y **no existía en la REVISIÓN BASE**, que es el
+    # ancla fija que `G-22`, `G-23` y `G-30` ya usan y que el SOBRE publica. Con eso,
+    # confirmar deja de ser una forma de admitirse: quien añade una sede tiene que
+    # satisfacer la condición de su zona **esté o no commiteada**, y la condición de cada
+    # zona sigue siendo la que su sede escribe, no una lista nueva.
+    _base_gobernada = {f for f in _base_arbol if _en_zona(f)}
+    _universo_gobernado = (_disco | _publicado)
+    _ampliaciones = sorted(f for f in _universo_gobernado - _base_gobernada
+                           if not _ampliacion_admitida(f))
     _idos = sorted(_publicado - _disco)
-    for f in _nuevos:
-        _g29.append(f"AMPLIACIÓN NO CLASIFICADA del corpus gobernado, rastreada o no: {f}. "
-                    f"Añadir una sede es la forma más simple de crear una segunda verdad, "
-                    f"y no la autoriza ninguna zona")
+    for f in _ampliaciones:
+        _g29.append(f"AMPLIACIÓN NO CLASIFICADA del corpus gobernado, CONFIRMADA O NO: {f}. "
+                    f"Añadir una sede es la forma más simple de crear una segunda verdad, y "
+                    f"no la autoriza ninguna zona. El alcance de esta guarda se DERIVA "
+                    f"contra la REVISIÓN BASE y no contra `HEAD` (`EE-01`): confirmar un "
+                    f"fichero NO lo exime de la condición de su zona")
     for f in _idos:
         _g29.append(f"fichero del corpus DESAPARECIDO: {f}")
 
@@ -3117,7 +3201,7 @@ else:
                         f"única no admite copias, y esto vale en cualquier zona normativa, "
                         f"no sólo bajo `kernel/`")
 check("G-29",
-      "topología y unicidad de TODO el corpus gobernado: sin ampliaciones sin clasificar, sin gemelos y sin segundas sedes (falla CERRADO sin git)",
+      "topología y unicidad de TODO el corpus gobernado, CONFIRMADO O NO: ninguna ampliación sin clasificar respecto de la REVISIÓN BASE, ningún gemelo byte a byte y ninguna segunda sede de un bloque canónico (falla CERRADO sin git)",
       not _g29,
       "; ".join(sorted(set(_g29))) or
       f"{len(_disco)} ficheros —el repositorio ENTERO menos `.git` y el bytecode, no una "
