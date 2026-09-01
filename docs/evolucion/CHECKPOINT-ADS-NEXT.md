@@ -971,10 +971,10 @@
 
 ```text
 CHECKPOINT — ADS-NEXT/12 · SIS/evolucion
-actualizado: 2026-09-01   · reanclado por el ÚLTIMO GATE, que verifica la tanda de
-             implementación acotada y **certifica la cobertura por primera vez**,
-             en el MISMO commit que registra el evento —regla 4—. **Cuál es ese gate y qué
-             devolvió NO se escribe aquí** —reglas 1 y 2—: se derivan con
+actualizado: 2026-09-01   · reanclado por la RESOLUCIÓN `O22` DEL OWNER y por la CANDIDATA
+             DELTA que abre, en el MISMO commit que registra el evento —regla 4—. **Cuál es
+             la última resolución NO se escribe aquí** —regla 3—: sale de SU sede canónica.
+             **Cuál es el último gate y qué devolvió tampoco** —reglas 1 y 2—:
                  ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
 regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histórico: describe el
              árbol VIGENTE. Fue a la vez el defecto X-04 del documento 24 —GRAVE— y la CUARTA
@@ -1053,7 +1053,28 @@ regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histór
                   indefinido dejó durante nueve documentos una viñeta describiendo en
                   presente un gate de hacía quince, y decidir hasta dónde llegaba era
                   interpretación humana no normada.
-metodo:      SIS/Evolucion · ÚLTIMO GATE INDEPENDIENTE DEVUELTO —GATE VÁLIDO, `C-L.5`
+metodo:      SIS/Evolucion · **`O22` REGISTRADA Y CANDIDATA DELTA PUBLICADA** ·
+             **PENDIENTE DE VERIFICACIÓN INCREMENTAL**. El Owner resuelve por su cuenta que
+             un gate completo VÁLIDO que identifica UN SOLO bloqueo y declara expresamente
+             que, cerrado, el resultado sería suficiente, puede complementarse con una
+             VERIFICACIÓN INCREMENTAL en vez de repetirse entero. Su texto íntegro vive en la
+             SEDE CANÓNICA, que es append-only; aquí no se copia —regla 3—:
+                 grep -o '^# `O[0-9]*`' docs/owner/ADS-OWNER-RESOLUCIONES.md | tail -1
+             QUÉ CONTIENE LA CANDIDATA DELTA, y nada más —`O22` §2—: la corrección de
+             `HH2-08`, el ÚNICO bloqueo del último gate, en sus tres sedes EDITABLES; la
+             resolución que autoriza la composición; y sus proyecciones. **Todos los demás
+             blobs obligatorios permanecen IDÉNTICOS**, y eso se comprueba blob a blob.
+             **EL MANIFIESTO PUBLICADO NO SE TOCA**: es INMUTABLE, y su diferencia vive
+             acotada en el `CORRIGENDUM`, con el comando que la deriva.
+             LO QUE ESTE ESTADO **NO** DICE: no declara SUPERADO ningún hallazgo, **no cierra
+             `F4c`**, **no autoriza `F5`**, no inicia `F5`, `F6` ni PesquerApp, y **no
+             certifica nada por su cuenta**: quien aplica no verifica. La composición la
+             decide un verificador independiente, y **si aparece otro bloqueo la composición
+             FALLA y no habrá otro ciclo** —`O22` §7—.
+             LOS SEIS HALLAZGOS NO BLOQUEANTES del último gate **siguen VIVOS y REGISTRADOS**
+             —`O22` §6—, ninguno SUPERADO; su sede es §5 del documento del gate, que es
+             inmutable, y el parte del delta les da propietario y fase sin copiar su recuento.
+metodo_anterior: SIS/Evolucion · ÚLTIMO GATE INDEPENDIENTE DEVUELTO —GATE VÁLIDO, `C-L.5`
              CERTIFICADA POR COBERTURA, VEREDICTO INSUFICIENTE PARA F5— sobre la candidata
              que aplicó los hallazgos del gate anterior. **APLICAR NO ES CERTIFICAR**, y
              ninguno de esos hallazgos se declara SUPERADO por este veredicto.
@@ -1379,7 +1400,27 @@ rama_de_trabajo: NO SE ESCRIBE AQUÍ, Y ES DELIBERADO. Este campo nombró durant
 freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
              Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
              queda marcado HISTÓRICO y SUPERADO, y no se borra
-last_meaningful_event: UN GATE INDEPENDIENTE VERIFICA LA TANDA QUE APLICÓ LOS HALLAZGOS
+last_meaningful_event: EL OWNER ABRE LA CERTIFICACIÓN INCREMENTAL DEL DELTA, Y ES `O22`.
+             La toma por su cuenta —ningún gate le elevó pregunta— tras el ÚLTIMO gate, cuyo
+             ordinal y documento NO se escriben aquí y se derivan con el comando de `metodo`.
+             `O22` resuelve un COSTE DE MÉTODO y no un defecto de nadie: aquel gate es
+             VÁLIDO, CERTIFICA la cobertura, cierra casi todos sus objetos y devuelve
+             insuficiencia por UN SOLO bloqueo, declarando en su prueba contrafáctica que
+             cerrado ese bloqueo el veredicto sería SUFICIENTE. **El recuento de cerrados y
+             de vivos NO se copia aquí** —regla 1—: vive en ese documento, que es su única
+             sede. Repetir un gate completo para juzgar una frase es lo que `O22` evita, y
+             **el umbral de suficiencia no se mueve**.
+             QUÉ EXIGE `O22` AL VERIFICADOR, porque es lo que hace que esto no sea un atajo:
+             leer ÍNTEGRAS todas las fuentes modificadas · REPRODUCIR el defecto sobre la
+             candidata que el gate juzgó · DEMOSTRAR su ausencia sobre la delta · **no
+             corregir nada** · y emitir `C-L.5 CERTIFICADA POR DELTA` o explicar por qué no
+             es transferible.
+             QUÉ NO CAMBIA CON ESTE EVENTO: `F4c` sigue **ABIERTA**, `F5` sigue **NO
+             AUTORIZADA**, `F6` **NO INICIADA**, PesquerApp **BLOQUEADA**, `C-L.7` **NO
+             CERRADA** y `M-04` **NO SUPERADA**. **Ningún hallazgo SUPERADO.**
+             REANCLADO EN EL MISMO COMMIT QUE REGISTRA EL EVENTO —regla 4—, y lo anterior NO
+             se borra: baja íntegro a `last_meaningful_event_anterior` —regla 5—.
+last_meaningful_event_anterior: UN GATE INDEPENDIENTE VERIFICA LA TANDA QUE APLICÓ LOS HALLAZGOS
              DEL GATE ANTERIOR, SE DECLARA VÁLIDO, **CERTIFICA LA COBERTURA** y devuelve
              **INSUFICIENTE PARA F5**. Su ordinal y su documento NO se escriben —regla 2—: se
              derivan con el comando de `metodo`, y su veredicto, su recuento, el cierre
@@ -4720,7 +4761,7 @@ conjunto vacío mire el bloque que debe mirar.
 | **`HH2-05`** | `CHECKPOINT` · `falta_para_cerrar_la_capa` y `regla_de_reanclaje` regla 8 | La viñeta **gana rótulo histórico** y **suelta el recuento por severidad** que su regla 2 remite al documento del gate. Y **el ALCANCE de un rótulo histórico queda NORMADO** —regla 8 nueva—: hay DOS anclas y sólo dos, la viñeta o la línea de apertura del campo, y **una viñeta sin rótulo se lee como VIGENTE** |
 | **`HH2-06`** | `00-INDICE.md` | La fila de la sede canónica **deja de enumerar** las resoluciones —nombraba tres donde la sede publica más— y **remite al comando que las deriva**. Es la clase de `H-10`, que se cerró en el checkpoint y quedó viva aquí |
 | **`HH2-07`** | `CHECKPOINT` · bloque de `M-04` | El cardinal de los puntos de §20 **se retira y se remite** a su comando, en las dos frases que lo escribían. **No se sustituye por otro número** |
-| **`HH2-08`** | doc 11 §15.4 · `00-INDICE.md` · `CORRIGENDUM` §19 | Las dos sedes editables **recuperan la precondición «para un gate VÁLIDO»** que `O21` §3 escribe. **La tercera es un manifiesto PUBLICADO y NO se toca**: su diferencia queda registrada en el CORRIGENDUM, que es la sede que el corpus tiene para eso, con lo que se sigue de ella —que es poco, porque aquel gate se declaró VÁLIDO antes de medir la cobertura— |
+| **`HH2-08`** | doc 11 §15.4 · `00-INDICE.md` · `CORRIGENDUM` §19 | **[RECTIFICADO POR EL GATE DEL DOCUMENTO 32, QUE DECLARÓ ESTE RENGLÓN FALSO.]** Lo que esta tanda hizo **realmente** fue: `00-INDICE.md`:107 **CORREGIDA** —dice «sobre un gate VÁLIDO»—; el manifiesto `B`, **NO tocado y correctamente**, con su diferencia registrada en el `CORRIGENDUM`; y **§15.4 del documento 11 NO se tocó**: la precondición se añadió a una CUARTA sede que ningún gate nombró, `### D110` de §15.8. Este renglón afirmaba «las dos sedes editables recuperan la precondición», y **era falso para §15.4**. **El estado de HOY no se declara: se DERIVA** —`awk '/^## 15\.4 /{f=1;next} /^## 15\.5 /{f=0} f' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md \| grep -ci 'gate v.lido'`—, y la reparación de la sede que faltaba, junto con la de esta afirmación y la del `CORRIGENDUM` §19, es el objeto de la **CANDIDATA DELTA de `O22`**, cuyo parte vive más abajo |
 | **`HH2-09`** | `DECISIONES` · epígrafes | `D108`, `D109` y `D110` **abren epígrafe propio**, con su origen, su resolución y su fecha, como ya lo tienen en §15.8 del documento 11. **Y se escribe la REGLA que `S-19` no estableció**: toda propagación de una resolución del Owner abre epígrafe propio. `S-19` se cerró moviendo una fila; por eso hubo tres recaídas |
 | **`HH2-10`** | `CHECKPOINT` campos VIGENTES · doc 11 §15.8 | Los cardinales de los campos vigentes **se retiran y se remiten** en vez de sustituirse. **Y el barrido de clase de la regla 7 se ejecutó campo a campo sobre los CATORCE**, no sobre los señalados: destapó dos más de la misma clase en `metodo` y en `last_meaningful_event`, y los dos están retirados |
 | **`HH2-11`** | `CHECKPOINT` · `owner_captado` | La afirmación **deja de ser universal** donde `O19` no la sostiene: su `ALCANCE` dice «NO autoriza iniciar `F5`» y nada sobre `F6` ni PesquerApp. Se conserva lo que sí es cierto de todas y se remite a cada `ALCANCE` |
@@ -4731,6 +4772,70 @@ acto del último adjudicador y una tanda de corrección no certifica cobertura r
 no ha cerrado `C-L.7`, no ha declarado superado ningún hallazgo, no ha tocado `O17`–`O21` ni el
 texto resolutivo de ninguna `D`, no ha modificado la lógica del verificador de admisión, no ha
 abierto ningún gate y no ha iniciado `F5`, `F6` ni PesquerApp.
+
+## PARTE DE LA CANDIDATA DELTA DE `O22` — un solo objeto, y el alcance se DERIVA
+
+> **Esto NO es una tanda de corrección.** `O22` §2 acota la candidata delta a tres cosas: el
+> BLOQUEO, la RESOLUCIÓN que autoriza la composición y sus PROYECCIONES. Fuera de eso no hay
+> nada que aplicar, y **el alcance no se declara: se deriva**.
+>
+> ```bash
+> # QUÉ cambia respecto del árbol que el último gate juzgó
+> git diff --name-status 9d4ebe6 HEAD
+>
+> # y que TODO lo demás es idéntico blob a blob, que es lo que `O22` §2 exige
+> diff <(git ls-tree -r 9d4ebe6 | sort) <(git ls-tree -r HEAD | sort)
+> ```
+>
+> **APLICAR NO ES CERTIFICAR, y esta vez menos que nunca: quien aplica no verifica.** La
+> composición la decide un verificador independiente bajo `O22` §3-§5. **Ningún hallazgo se
+> declara SUPERADO aquí**, `F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA.
+
+### Lo aplicado por la candidata delta de `O22`
+
+| objeto | sede | qué se hizo |
+|---|---|---|
+| **`HH2-08`** · el ÚNICO bloqueo | doc 11 **§15.4**, fila `O21` | **La celda recupera la precondición «para un gate VÁLIDO»** con que `O21` §3 abre la regla, y que esta sede —la que el gate nombró por fichero y línea— no llevaba. Sin ella, la celda AMPLIABA el texto canónico: leída literalmente obligaba a certificar cobertura sobre un gate INVÁLIDO |
+| **`HH2-08`** | `CHECKPOINT`, renglón de `HH2-08` del parte anterior | **Deja de afirmar falsamente que las DOS sedes editables fueron corregidas.** Queda rotulado como RECTIFICADO por el gate del documento 32, dice qué se corrigió de verdad —`00-INDICE` sí, §15.4 no, el manifiesto correctamente intacto— y **remite al comando que deriva el estado de hoy** en vez de declararlo |
+| **`HH2-08`** | `CORRIGENDUM` **§19** | **Acota el manifiesto INMUTABLE con las cuatro afirmaciones que `O22` exige** —permanece inmutable · su formulación omitió la precondición · no debe citarse como formulación normativa vigente · la regla vigente es `O21` §3, aplicable **para un gate VÁLIDO**— y **retira su propia afirmación falsa** de que §15.4 estaba corregida, esta vez **con el comando** que la cabecera del documento exige, incluida la reproducción del defecto sobre `909a7a1` |
+| **`O22`** | `docs/owner/ADS-OWNER-RESOLUCIONES.md` | **Registrada APPEND-ONLY.** `O17`–`O21` conservan íntegro su texto: las 559 líneas anteriores son byte a byte las mismas |
+| proyección de **`O22`** | `DECISIONES` §2 y §1 · doc 11 **§15.4** y **§15.8** | Entrada `### \`O22\`` en la sección 2 —PROYECCIÓN DERIVADA, con el comando que deriva el texto de la sede—, propagación **`D111`** con epígrafe propio por la regla que `HH2-09` estableció, **fila de `O22` en §15.4** por la regla «una fila por resolución del Owner», y **bloque `### \`D111\`` en §15.8** donde `D110` abrió el suyo |
+
+**LAS TRES SEDES EDITABLES DE `HH2-08` COINCIDEN SEMÁNTICAMENTE**, y el manifiesto sigue byte
+a byte idéntico. Se comprueba, no se declara:
+
+```bash
+awk '/^## 15\.4 /{f=1;next} /^## 15\.5 /{f=0} f' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md \
+  | grep -ci 'gate v.lido'                                                    # -> 1
+grep -ci 'gate v.lido' docs/evolucion/00-INDICE.md                            # -> 1
+grep -c 'para un gate VÁLIDO' \
+  docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md            # -> >=1
+git diff 9d4ebe6 HEAD -- \
+  docs/evolucion/verificacion/manifiestos/                                    # -> SIN SALIDA
+```
+
+### Los SEIS hallazgos NO BLOQUEANTES del último gate — VIVOS, con propietario y fase
+
+> **`O22` §6 no los ignora, y este parte tampoco.** Su sede es §5 del documento del gate, que
+> es INMUTABLE y es su única sede: **aquí no se copia su severidad ni su recuento**, que se
+> derivan de ella. Lo que este renglón añade es lo que esa sede no lleva: **propietario y
+> fase**. **Ninguno se declara SUPERADO, y ninguno es razón de suficiencia ni de
+> insuficiencia** — así lo escribió su adjudicador.
+
+| id | propietario | fase | por qué NO bloquea |
+|---|---|---|---|
+| `JA-01` | `SIS` | `F4c` posterior al cierre, o `F6` con el instrumento | el adjudicador declaró expresamente que no funda la insuficiencia |
+| `JB-02` | `SIS` | `F4c` posterior al cierre | ídem |
+| `JC-01` | `VER` | no aplicable a una candidata: vive en el aparato de un gate ya cerrado, y su sede es inmutable | ídem; se acota, no se edita |
+| `JA-02` | `SIS` | `F4c` posterior al cierre, o `F6` con el instrumento | ídem |
+| `JB-03` | `VER` | no aplicable a una candidata, por la misma razón que `JC-01` | ídem |
+| `JC-02` | `SIS` | `F4c` posterior al cierre | ídem |
+
+```bash
+# el CENSO no se escribe: sale del documento del gate
+awk '/^## 5 · MATRIZ CONSOLIDADA/,/^## 6 /' docs/evolucion/32-*.md \
+  | grep -oE '^\| \*\*`(J[ABC]-[0-9]+|HH2-[0-9]+)`' | grep -oE '[A-Z]{2}[0-9]?-[0-9]+' | sort -u
+```
 
 ## Siguiente acción exacta
 

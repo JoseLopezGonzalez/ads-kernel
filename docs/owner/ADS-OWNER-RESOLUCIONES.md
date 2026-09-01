@@ -557,3 +557,109 @@ esto:
 > **Y no toca las seis condiciones**: son exactamente las que `C-L.5` ya exigía —`O-04` fijó
 > los dos manifiestos, `P-08` fijó las dos restas, y el documento 19 fijó el corpus
 > obligatorio y la independencia—. Lo único nuevo es que **cumplirlas OBLIGA a declararlo**.
+
+---
+
+# `O22` · CERTIFICACIÓN INCREMENTAL DEL DELTA
+
+```text
+IDENTIFICADOR   O22
+FECHA           2026-09-01
+PROCEDENCIA     decisión expresa del Owner, tomada tras el GATE DE VERIFICACIÓN DE LOS DOCE
+                `HH2` —documento 32— y a la vista de que ese gate es VÁLIDO, CERTIFICA la
+                cobertura, cierra ONCE de sus doce objetos, identifica UN SOLO bloqueo y
+                declara EXPRESAMENTE, en su prueba contrafáctica, que cerrado ese bloqueo el
+                veredicto sería SUFICIENTE
+REVISA          el MÉTODO DE VERIFICACIÓN, y sólo eso: cuándo un gate completo válido puede
+                complementarse con una verificación INCREMENTAL en vez de repetirse entero.
+                NO revisa el contenido de `O17`, `O18`, `O19`, `O20` ni `O21`, que conservan
+                íntegramente su texto, ni las seis condiciones de `C-L.5`, ni el umbral de
+                suficiencia
+REVISADA POR    nada
+PROYECCIÓN      `O22` y `D111` en `DECISIONES-Y-CONTRADICCIONES.md`
+ALCANCE         NO declara suficiente a `F4c` —eso lo compone la verificación del delta con
+                el gate del documento 32—, NO cierra ningún hallazgo, y NO autoriza ni
+                inicia `F5`, `F6` ni PesquerApp
+```
+
+## Texto
+
+**Un gate completo y válido no tiene que repetirse entero para juzgar la reparación de su
+único bloqueo.** Abro la CERTIFICACIÓN INCREMENTAL DEL DELTA, y la acoto con dureza para que
+no sea una puerta de escape.
+
+### 1 · Cuándo se puede usar, y sólo entonces
+
+```text
+· el gate anterior es VÁLIDO, y lo declaró su propio adjudicador
+· identifica UN SOLO bloqueo
+· declara EXPRESAMENTE, y no por inferencia de nadie, que cerrado ese bloqueo el resultado
+  sería SUFICIENTE
+```
+
+**Si falta cualquiera de las tres, no hay composición: hay gate completo.**
+
+### 2 · Qué puede contener la candidata delta
+
+La nueva candidata **difiere sólo en**: el BLOQUEO, la RESOLUCIÓN que autoriza la composición
+—esta misma— y sus PROYECCIONES. **Todos los demás blobs obligatorios permanecen IDÉNTICOS**,
+y esa identidad se comprueba blob a blob, no se declara.
+
+### 3 · Qué tiene que hacer el verificador
+
+```text
+· leer ÍNTEGRAMENTE todas las fuentes MODIFICADAS
+· REPRODUCIR el defecto anterior sobre la candidata que el gate juzgó
+· DEMOSTRAR su ausencia sobre la candidata delta
+```
+
+### 4 · Qué NO puede hacer el verificador
+
+**No puede corregir nada.** Ni una letra. Quien verifica no repara, y quien repara no
+verifica: es la misma frontera que este expediente lleva doce gates sosteniendo.
+
+### 5 · La cobertura se traslada POR DELTA, y sólo así
+
+`C-L.5` certificada por el gate anterior **puede trasladarse por delta** si —y sólo si— **todos
+los blobs no modificados coinciden** y **todas las fuentes modificadas se leen íntegras**.
+
+El verificador **debe emitir** `C-L.5 CERTIFICADA POR DELTA`, **o explicar por qué no es
+transferible**. No hay tercera salida y no hay silencio.
+
+### 6 · Los hallazgos no bloqueantes NO se ignoran
+
+`O22` **no ignora** los seis hallazgos menores y leves que el documento 32 deja vivos.
+**Permanecen REGISTRADOS como NO BLOQUEANTES**, con su identificador, su sede, su remedio, su
+propietario y su fase — **porque el adjudicador de ese gate declaró que, cerrando el único
+bloqueo, el resultado sería suficiente**, y no porque nadie los rebaje aquí. Ninguno se
+declara SUPERADO.
+
+### 7 · Si aparece otro bloqueo
+
+**La composición FALLA, y no habrá otro ciclo.** No se abre una tanda nueva, no se convoca
+otro gate y no se vuelve a intentar la composición: se registra el resultado y se para.
+
+### 8 · Lo que esta resolución no hace
+
+**No rebaja el criterio de suficiencia**, que sigue siendo el del documento 32 y el de `O20`
+§7. **No inicia `F5`, `F6` ni PesquerApp**, y PesquerApp sigue BLOQUEADA hasta que `F6`
+implemente y certifique sus contratos.
+
+## Nota de trazabilidad de `O22`
+
+> **Qué corrige: un COSTE DE MÉTODO, no un defecto de nadie.** El documento 32 devolvió
+> INSUFICIENTE por un solo objeto —una precondición de siete palabras ausente de una celda—
+> mientras certificaba la cobertura y cerraba once de doce. Repetir un gate completo de tres
+> agentes y noventa fuentes para juzgar una frase es desproporcionado, y **la
+> desproporción es lo único que esta resolución toca**: el UMBRAL de suficiencia no se mueve,
+> y la carga del verificador del delta es MÁS dura por fuente que la de un revisor de gate
+> completo —lectura íntegra obligatoria de todo lo modificado, reproducción del defecto
+> anterior y demostración de su ausencia—.
+>
+> **Como `O20` y `O21`, no responde a una pregunta que un gate le elevara**: los doce gates
+> declararon que ninguna decisión volvía al Owner. **La toma el Owner por su cuenta**, y
+> consta así.
+>
+> **Y no levanta la OPCIÓN C para el método de corrección iterativa**: lo que abre es una vía
+> de VERIFICACIÓN, no una tanda más de corrección general. El alcance de la candidata delta
+> lo fija §2, y fuera de él no hay nada que aplicar.

@@ -593,6 +593,24 @@ CANÓNICA**. Su bloque propio es **§15.8** del documento 11.
 
 ---
 
+### `D111` · la propagación de `O22` — DERIVADA de una resolución del Owner, NO elegida por F4
+
+**Epígrafe propio por la regla de arriba.** **Origen:** el **GATE DE VERIFICACIÓN DE LOS DOCE
+`HH2`** —documento 32— es VÁLIDO, **CERTIFICA la cobertura**, cierra **once de sus doce**
+objetos, identifica **UN SOLO bloqueo** —`HH2-08`— y **declara expresamente, en su prueba
+contrafáctica, que cerrado ese bloqueo el veredicto sería SUFICIENTE**. El Owner resolvió por
+su cuenta, y su resolución es **`O22`**, del **2026-09-01**, cuyo texto íntegro vive en la
+**SEDE CANÓNICA**. Su bloque propio es **§15.8** del documento 11.
+
+**Nada resolutivo anterior se toca:** `O17`–`O21` conservan íntegro su texto y `D1`–`D110` el
+suyo. **Ningún hallazgo se declara SUPERADO por esta propagación.**
+
+| # | decisión | qué revisa | por qué, y qué alternativa se descartó | cómo se revierte |
+|---|---|---|---|---|
+| D111 | **PROPAGACIÓN DE `O22`. No es una elección de F4c: es la materialización de una resolución del Owner, y se declara DERIVADA. No sustituye a `O22`.** (i) **Se abre la CERTIFICACIÓN INCREMENTAL DEL DELTA**, y sólo cuando concurren las TRES condiciones de `O22` §1: gate anterior VÁLIDO declarado por su propio adjudicador, UN SOLO bloqueo identificado, y declaración EXPRESA —no inferida— de que cerrado ese bloqueo el resultado sería suficiente. (ii) **El ALCANCE de la candidata delta queda acotado** a `O22` §2: el bloqueo, la resolución que autoriza la composición y sus proyecciones; **todos los demás blobs obligatorios idénticos**, comprobado blob a blob y no declarado. (iii) **El verificador del delta lee ÍNTEGRAS todas las fuentes modificadas, REPRODUCE el defecto anterior sobre la candidata que el gate juzgó y DEMUESTRA su ausencia sobre la delta** —`O22` §3—, y **NO puede corregir nada** —§4—. (iv) **`C-L.5` se traslada POR DELTA** si y sólo si todos los blobs no modificados coinciden y todas las fuentes modificadas se leen íntegras; el verificador **debe emitir** `C-L.5 CERTIFICADA POR DELTA` **o explicar por qué no es transferible** —§5—. (v) **Los hallazgos NO BLOQUEANTES del documento 32 permanecen REGISTRADOS**, con identificador, sede, remedio, propietario y fase, y **ninguno se declara SUPERADO** —§6—. (vi) **Si aparece otro bloqueo, la composición FALLA y no habrá otro ciclo** —§7—. (vii) **No se rebaja el criterio de suficiencia** y **no se inicia `F5`, `F6` ni PesquerApp**; PesquerApp sigue BLOQUEADA hasta que `F6` implemente y certifique —§8— | **`O22`**, que es su única fuente. No revisa ninguna decisión de F4c y **no renumera nada**: `D1`–`D110` y `O1`–`O21` intactas. Tampoco revisa las SEIS condiciones de `C-L.5` ni el umbral de suficiencia | el COSTE DE MÉTODO que el documento 32 dejó a la vista: un gate completo de tres agentes y noventa fuentes para juzgar la reparación de una precondición de siete palabras, con la cobertura ya certificada y once de doce objetos cerrados. **Las alternativas NO las descartó F4**: las ponderó el Owner, y descartó expresamente repetir el gate entero —desproporcionado— y rebajar el umbral —que `O22` no toca—. Lo que F4 aporta aquí es **exclusivamente el reparto de la decisión por las sedes vigentes**, y por eso esta fila se declara derivada | retirar `O22` devuelve la única vía a repetir un gate completo por cada frase corregida, que es el coste que el documento 32 midió |
+
+---
+
 ## 2 · Decisiones que pertenecen al Owner
 
 **Ninguna bloquea el trabajo.** Todas tienen un valor por defecto ya implementado y
@@ -1383,6 +1401,50 @@ ninguna valla la encierra—:
   satisfechas, acto no emitido por ausencia de regla— y nada más.
 
 **Su propagación es `D110`**, en la sección 1 de este mismo fichero, y **se declara
+DERIVADA**: `F4c` no eligió nada aquí.
+
+### `O22` · CERTIFICACIÓN INCREMENTAL DEL DELTA — 2026-09-01
+
+> **ESTA ENTRADA ES UNA PROYECCIÓN DERIVADA. LA AUTORIDAD CANÓNICA ESTÁ EN
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md), `O22`.**
+> Si algo de aquí difiere de la sede, manda la sede, y una paráfrasis nunca amplía ni
+> debilita el texto canónico. El texto íntegro no se copia: se deriva.
+>
+> ```bash
+> awk '/^# /{p = ($0 ~ /^# `O22`/)} p' docs/owner/ADS-OWNER-RESOLUCIONES.md
+> ```
+
+**Procedencia: decisión expresa del Owner del 2026-09-01**, tomada tras el GATE DE
+VERIFICACIÓN DE LOS DOCE `HH2` —documento 32—. **No responde a una pregunta que ningún gate le
+elevara**: todos declararon que ninguna decisión volvía a él. La toma por su cuenta.
+
+**El coste que resuelve, y no es un defecto de nadie:** el documento 32 es VÁLIDO, CERTIFICA
+la cobertura, cierra ONCE de sus DOCE objetos y devuelve insuficiencia por **UN SOLO**
+bloqueo, declarando expresamente que cerrado ese bloqueo el veredicto sería SUFICIENTE.
+Repetir entero un gate de tres agentes y noventa fuentes para juzgar la reparación de una
+precondición de siete palabras es desproporcionado.
+
+**Lo que abre, con sus condiciones de uso:**
+
+- una **CERTIFICACIÓN INCREMENTAL DEL DELTA** sobre un gate completo **VÁLIDO** que
+  identifica **un solo bloqueo** y declara **expresamente** la suficiencia contrafáctica;
+- la **candidata delta** difiere sólo en el bloqueo, la resolución que autoriza la
+  composición y sus proyecciones, con **todos los demás blobs obligatorios IDÉNTICOS**;
+- **un verificador independiente** lee **íntegras** todas las fuentes modificadas,
+  **reproduce** el defecto anterior y **demuestra su ausencia**, y **no puede corregir nada**;
+- **`C-L.5` se traslada POR DELTA** si todos los blobs no modificados coinciden y todo lo
+  modificado se lee íntegro, y el verificador **debe** emitir `C-L.5 CERTIFICADA POR DELTA`
+  **o explicar por qué no es transferible**.
+
+**Lo que NO hace:**
+
+- **no rebaja el criterio de suficiencia**;
+- **no ignora los hallazgos NO BLOQUEANTES** del documento 32: permanecen **registrados**, con
+  identificador, sede, remedio, propietario y fase, y **ninguno se declara SUPERADO**;
+- **si aparece otro bloqueo, la composición FALLA y no habrá otro ciclo**;
+- **no inicia `F5`, `F6` ni PesquerApp**.
+
+**Su propagación es `D111`**, en la sección 1 de este mismo fichero, y **se declara
 DERIVADA**: `F4c` no eligió nada aquí.
 
 

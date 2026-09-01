@@ -9285,7 +9285,8 @@ PRESIÓN F5     exige enmienda de material aprobado antes de construirse
 | `O18` la raíz de confianza de la verificación | **§11.6** · **§11.7** · **§11.8** · §11.4 · `C-L.5` · §16 `PN-19` | NUEVA · (a) **RECHAZADA** por el Owner · (b) ADOPTADA y **TRANSITORIA** para `F4c` · (c) **OBLIGATORIA en `F6`**, con las **TRES condiciones** previas · propagada por `D108`, **derivada y no elegida por F4** · **su TEXTO AMPLIO está RATIFICADO y su sede canónica es `docs/owner/`**; su entrada corta del registro se conserva como REGISTRO HISTÓRICO · **REVISADA POR `O19`** en su PROYECCIÓN, no en su contenido |
 | `O19` la ratificación del texto amplio de `O18` y la SEDE CANÓNICA | **§11.9** · **§11.6** · §11.7 · §11.8 · §11 (cabecera) · §16 `PN-19` · `C-L.5` | NUEVA · **RATIFICACIÓN, no elección de diseño** · revisa **la PROYECCIÓN incompleta de `O18`**, y **no revisa su contenido ni su diseño** · crea la sede canónica [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md) · **`O1`–`O16` NO se registran en ella**, y se conservan en su registro histórico · **derivada y no elegida por F4** · **NO autoriza iniciar `F5`** |
 | `O20` la frontera de fase entre `F4c` y `F6` | **§20** · §18 nodo 9 · §11.6 · `C-L.5` · la MATRIZ DE LOS 22 del `CHECKPOINT` | NUEVA · **cierra la RECURSIÓN**: `F4c` produce la ARQUITECTURA del verificador, `F6` lo IMPLEMENTA **y lo CERTIFICA** · **ningún punto de §20.1 está construido**, y un verde de la batería interna no lo demuestra · PesquerApp sigue BLOQUEADA · propagada por `D109`, **derivada y no elegida por F4** · **NO autoriza iniciar `F5`** |
-| `O21` `C-L.5` deja de ser un acto discrecional | `C-L.5` · §11.6 · el bloque reanudable del `CHECKPOINT` · el informe de todo gate posterior | NUEVA · fija la SEMÁNTICA de `C-L.5`: certifica **COBERTURA y nada más**, es **independiente** del veredicto `SUFICIENTE/INSUFICIENTE PARA F5`, y **no es discrecional** —cumplidas sus seis condiciones el adjudicador DEBE certificar; fallada cualquiera DEBE declararla ABIERTA nombrando la condición— · la certificación queda ligada a una TUPLA exacta y **no se transfiere** · **no revisa las seis condiciones**, que son las del documento 19, `O-04` y `P-08` · propagada por `D110`, **derivada y no elegida por F4** · **NO autoriza iniciar `F5`** |
+| `O21` `C-L.5` deja de ser un acto discrecional | `C-L.5` · §11.6 · el bloque reanudable del `CHECKPOINT` · el informe de todo gate posterior | NUEVA · fija la SEMÁNTICA de `C-L.5`: certifica **COBERTURA y nada más**, es **independiente** del veredicto `SUFICIENTE/INSUFICIENTE PARA F5`, y **no es discrecional** —**para un gate VÁLIDO**, que es la precondición con que `O21` §3 abre la regla y **sin la cual esta celda AMPLIABA el texto canónico**: cumplidas sus seis condiciones el adjudicador DEBE certificar; fallada cualquiera DEBE declararla ABIERTA nombrando la condición— · la certificación queda ligada a una TUPLA exacta y **no se transfiere** · **no revisa las seis condiciones**, que son las del documento 19, `O-04` y `P-08` · propagada por `D110`, **derivada y no elegida por F4** · **NO autoriza iniciar `F5`** |
+| `O22` la certificación INCREMENTAL del delta | `C-L.5` · el informe del verificador del delta · el documento de cierre de la composición | NUEVA · abre la VERIFICACIÓN INCREMENTAL de un gate completo VÁLIDO que identifica **un solo bloqueo** y declara EXPRESAMENTE que, cerrado, el resultado sería suficiente · acota la candidata delta al bloqueo, la resolución y sus proyecciones, con **todos los demás blobs obligatorios IDÉNTICOS** · el verificador **lee íntegro lo modificado, reproduce el defecto anterior y demuestra su ausencia**, y **no puede corregir nada** · `C-L.5` se traslada **POR DELTA** o se explica por qué no · **no rebaja el criterio de suficiencia**, **no ignora los hallazgos no bloqueantes** y **si aparece otro bloqueo la composición FALLA sin otro ciclo** · propagada por `D111`, **derivada y no elegida por F4** · **NO autoriza iniciar `F5`** |
 | `P-01` adaptador sin contrato | §6 | NUEVA |
 | `P-02` conocimiento externo | §13.3 | AMPLIADA |
 | `P-03` calidad por área | §5 | NUEVA |
@@ -9747,6 +9748,38 @@ cobertura por haber encontrado otros defectos; y las dos declaraciones **pueden 
 —condiciones satisfechas, acto no emitido por ausencia de regla entonces vigente— y nada más.
 `D1`–`D109` y `O1`–`O20` conservan íntegro su texto, **nada se renumera**, y **`O21` no
 declara suficiente a `F4c`, no corrige los 16 y no autoriza `F5`, `F6` ni PesquerApp**.
+
+### `D111` · la propagación de `O22` — DERIVADA de una resolución del Owner, NO elegida por F4
+
+El **GATE DE VERIFICACIÓN DE LOS DOCE `HH2`** —documento 32— es **VÁLIDO**, **CERTIFICA la
+cobertura** midiendo las seis condiciones de `O21` §4 una a una, y cierra **ONCE de sus doce**
+objetos. Devuelve `INSUFICIENTE PARA F5` por **UN SOLO** bloqueo, `HH2-08`, y su adjudicador
+publica la prueba contrafáctica de que **cerrado ese bloqueo el veredicto sería SUFICIENTE**,
+declarando además que la cobertura es invariante ante el hallazgo. Repetir un gate completo de
+tres agentes y noventa fuentes para juzgar la reparación de una precondición de siete palabras
+es desproporcionado, y el Owner resolvió por su cuenta —ningún gate le elevó la pregunta—: su
+resolución es **`O22`**, cuyo texto íntegro vive en la **SEDE CANÓNICA**
+[`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md).
+
+`D111` es **su propagación, y se declara DERIVADA**. Un gate completo VÁLIDO puede
+complementarse con una **VERIFICACIÓN INCREMENTAL** cuando concurren las **tres** condiciones
+de `O22` §1 —gate válido declarado por su propio adjudicador, **un solo** bloqueo, y
+declaración **expresa** de suficiencia contrafáctica—. La **candidata delta** difiere sólo en
+el bloqueo, la resolución que autoriza la composición y sus proyecciones, y **todos los demás
+blobs obligatorios permanecen IDÉNTICOS**, comprobado blob a blob. El **verificador** lee
+**íntegras** todas las fuentes modificadas, **reproduce** el defecto sobre la candidata que el
+gate juzgó y **demuestra su ausencia** sobre la delta; **no puede corregir nada**. `C-L.5` se
+traslada **POR DELTA** si todos los blobs no modificados coinciden y todo lo modificado se lee
+íntegro, y el verificador **debe** emitir `C-L.5 CERTIFICADA POR DELTA` **o explicar por qué no
+es transferible**.
+
+**Lo que `O22` NO hace, y hay que decirlo para que nadie lo lea de más:** **no rebaja el
+criterio de suficiencia**, que sigue siendo el del documento 32 y el de `O20` §7; **no ignora
+los hallazgos NO BLOQUEANTES** del documento 32, que permanecen registrados con su
+identificador, su sede, su remedio, su propietario y su fase, **ninguno SUPERADO**; **si
+aparece otro bloqueo la composición FALLA y no habrá otro ciclo**; y **no autoriza ni inicia
+`F5`, `F6` ni PesquerApp**, que sigue BLOQUEADA hasta que `F6` implemente y certifique.
+`D1`–`D110` y `O1`–`O21` conservan íntegro su texto y **nada se renumera**.
 
 ---
 

@@ -640,13 +640,51 @@ un gate INVÁLIDO — que `O21` no dice y que §11.6 del documento 11 contradice
 
 **QUÉ SE SIGUE, y es poco:** nada del gate que corrió bajo ese manifiesto cambia. Su
 adjudicador **declaró el gate VÁLIDO antes de medir la cobertura**, de modo que la
-precondición se cumplió de hecho y la diferencia no tuvo efecto. **Lo que no se puede hacer es
-citar el §8 de ese manifiesto como formulación de `O21`**: la formulación es la de la sede.
+precondición se cumplió de hecho y la diferencia no tuvo efecto.
 
-**POR QUÉ VA AQUÍ Y NO SE CORRIGE EN EL FICHERO:** los manifiestos son INMUTABLES, y esta es
-la sede que el corpus tiene para señalar sus errores de hecho sin tocarlos. Las otras dos
-sedes que compartían el defecto —§15.4 del documento 11 y la fila del índice— **sí son
-editables y están corregidas**.
+```text
+EL MANIFIESTO PERMANECE INMUTABLE. Se conserva publicado, byte a byte, y NO se edita: es un
+manifiesto de reparto ya repartido, y un reparto que se retoca deja de ser un reparto
+
+SU FORMULACIÓN OMITIÓ LA PRECONDICIÓN. El §8 reproduce la obligación de `O21` §3 sin el
+«Para un gate válido:» con que la sede canónica la abre
+
+NO DEBE CITARSE COMO FORMULACIÓN NORMATIVA VIGENTE. Leído literalmente obligaría a certificar
+cobertura también sobre un gate INVÁLIDO, que `O21` no dice y que §11.6 del documento 11
+contradice
+
+LA REGLA VIGENTE ES `O21` §3 EN LA SEDE CANÓNICA, y es aplicable PARA UN GATE VÁLIDO. Ésa es
+la formulación, y es la única
+```
+
+**POR QUÉ VA AQUÍ Y NO SE CORRIGE EN EL FICHERO:** los manifiestos son INMUTABLES, y ésta es
+la sede que el corpus tiene para señalar sus errores de hecho sin tocarlos.
+
+**LO QUE ESTA ENTRADA AFIRMABA Y ERA FALSO — corregido aquí por `HH2-08` del documento 32, y
+esta vez CON EL COMANDO que la cabecera de este documento exige.** La frase RETIRADA, citada
+literalmente y **sin valor de afirmación**, era:
+
+> ~~«las otras dos sedes que compartían el defecto —§15.4 del documento 11 y la fila del
+> índice— sí son editables y están corregidas»~~ — **RETIRADA. Era falsa para §15.4.**
+
+**Era falso para §15.4**: la tanda de `909a7a1` corrigió una
+CUARTA sede que ningún gate nombró —`### D110` de §15.8, L9739— y dejó §15.4 byte a byte como
+estaba. El adjudicador `JC` lo midió y subió el hallazgo de MENOR a GRAVE precisamente por
+esto: una afirmación falsa de haber aplicado un remedio, publicada en el documento cuyo objeto
+es señalar afirmaciones falsas. **El estado de las dos sedes editables se DERIVA, no se
+declara:**
+
+```text
+COMANDO                                                                       RESULTADO
+awk '/^## 15\.4 /{f=1;next} /^## 15\.5 /{f=0} f' \
+  docs/evolucion/11-ARQUITECTURA-INTEGRADA.md | grep -ci 'gate v.lido'                1
+grep -ci 'gate v.lido' docs/evolucion/00-INDICE.md    (dice «sobre un gate VÁLIDO»)     1
+git show 909a7a1:docs/evolucion/11-ARQUITECTURA-INTEGRADA.md |
+  awk '/^## 15\.4 /{f=1;next} /^## 15\.5 /{f=0} f' | grep -ci 'gate v.lido'          0
+```
+
+**La tercera línea es la reproducción del defecto sobre la candidata que el gate juzgó, y la
+primera es su ausencia hoy.** Ambas se derivan; ninguna se declara.
 
 ## 20 · Regla general que este documento deja escrita
 
