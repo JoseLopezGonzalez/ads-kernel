@@ -617,7 +617,38 @@ reproduzca ese desglose lo publica **con el comando que lo deriva de las filas**
 documento 26 **se conserva intacto**, que es lo que `G-22` custodia y lo que la regla §19 de
 este corrigendum prescribe.
 
-## 19 · Regla general que este documento deja escrita
+## 19 · Manifiesto `B` del GATE FINAL · su §8 pierde la precondición «para un gate válido» de `O21` — `HH2-08`
+
+**Sede:** `manifiestos/F4C-ASIGNACION-GATE-FINAL-O21-20260901B.md`, §8, en el bloque
+`(A) COBERTURA`.
+**Afirma**: «Si las seis se cumplen, **DEBE** certificar: no es un acto discrecional».
+
+**Lo que dice la SEDE CANÓNICA**, derivado del árbol y no citado de memoria:
+
+```text
+COMANDO                                                                       RESULTADO
+awk '/^# /{p = ($0 ~ /^# `O21`/)} p' docs/owner/ADS-OWNER-RESOLUCIONES.md |
+  grep -c 'Para un gate'                                                             1
+grep -c 'gate válido' \
+  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-FINAL-O21-20260901B.md  0
+```
+
+`O21` §3 condiciona la obligación: **«Para un gate válido:** … si se cumplen las seis
+condiciones … el adjudicador **debe** declarar». El §8 del manifiesto reproduce la obligación
+**sin esa precondición**, y leído literalmente obligaría a certificar cobertura también sobre
+un gate INVÁLIDO — que `O21` no dice y que §11.6 del documento 11 contradice.
+
+**QUÉ SE SIGUE, y es poco:** nada del gate que corrió bajo ese manifiesto cambia. Su
+adjudicador **declaró el gate VÁLIDO antes de medir la cobertura**, de modo que la
+precondición se cumplió de hecho y la diferencia no tuvo efecto. **Lo que no se puede hacer es
+citar el §8 de ese manifiesto como formulación de `O21`**: la formulación es la de la sede.
+
+**POR QUÉ VA AQUÍ Y NO SE CORRIGE EN EL FICHERO:** los manifiestos son INMUTABLES, y esta es
+la sede que el corpus tiene para señalar sus errores de hecho sin tocarlos. Las otras dos
+sedes que compartían el defecto —§15.4 del documento 11 y la fila del índice— **sí son
+editables y están corregidas**.
+
+## 20 · Regla general que este documento deja escrita
 
 ```text
 UN DICTAMEN NO SE EDITA. Si contiene un error de hecho, se registra en este corrigendum con

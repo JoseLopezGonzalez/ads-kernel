@@ -1010,13 +1010,48 @@ regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histór
                7  NINGÚN CAMPO DE ESTE BLOQUE COPIA UN ESTADO QUE ESTE BLOQUE DECLARA NO
                   COPIAR, y la comprobación es de CLASE y no de instancia — es `C-L.7`, y
                   `H-09`, `H-10` y `H-16` fueron tres instancias suyas a la vez. Se barren
-                  TODOS los campos, no los tres señalados, y el conjunto de campos se DERIVA
-                  del propio bloque en vez de escribirse:
-                       awk '/^```/{f=!f} !f && /^[a-z_]+:/{sub(/:.*/,"");print}' \
+                  TODOS los campos, no los señalados, y el conjunto de campos se DERIVA del
+                  propio bloque en vez de escribirse:
+                       awk '/^actualizado:/{b=1} b&&/^```/{exit} \
+                            b&&/^[a-z_]+:/{sub(/:.*/,"");print}' \
                          docs/evolucion/CHECKPOINT-ADS-NEXT.md | sort -u
+                  **ESTE COMANDO SE ANCLA EN EL PRIMER CAMPO Y TERMINA EN EL CIERRE DE LA
+                  VALLA, y es `HH2-02`.** El que había buscaba los campos FUERA de las
+                  vallas de código, y este bloque vive DENTRO de una: devolvía el CONJUNTO
+                  VACÍO, de modo que quien lo ejecutara concluía que no había nada que
+                  barrer y daba la clase por cerrada sin mirar un solo campo. Un control que
+                  no puede fallar no es un control: era un falso verde escrito dentro de la
+                  propia garantía. **Antes de usarlo, compruébese que devuelve campos**, que
+                  es la única forma de saber que está mirando el objeto real.
                   Para cada campo, tres preguntas: ¿copia un recuento, un ordinal, un estado
                   o una enumeración que otra sede publica? ¿queda algún FRAGMENTO de una
                   retirada anterior sin su frase? ¿lo histórico está ROTULADO como histórico?
+                  Y la PRIMERA pregunta tiene además un barrido mecánico, para que no dependa
+                  de que alguien lea con atención. Sobre los campos VIGENTES —los que no
+                  terminan en `_anterior`— y fuera de las regiones rotuladas, no puede haber
+                  un cardinal que cuantifique algo que otra sede cuenta:
+                       awk '/^actualizado:/{b=1} b&&/^```/{exit} \
+                            b&&/^[a-z_]+:/{c=$0;sub(/:.*/,"",c);h=(c~/_anterior$/)} \
+                            b&&/\[(HISTÓRICO|HISTORICO|CIFRA DE AQUEL MOMENTO|ESTADO ANTERIOR)/{h=1} \
+                            b&&!h&&/(los|las|LOS|LAS|son|SON|de|DE)? ?([0-9]+|DOS|TRES|CUATRO|CINCO|SEIS|SIETE|OCHO|NUEVE|DIEZ|ONCE|DOCE|TRECE|CATORCE|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce) (hallazgos|gates|árboles|BLOQUEANTES|GRAVES|MEDIOS|MENORES|LEVES|contratos|condiciones)/ \
+                            {printf "%d [%s] %s\n", FNR, c, $0}' \
+                         docs/evolucion/CHECKPOINT-ADS-NEXT.md
+                  **DEBE SALIR VACÍO.** Y su CONTROL POSITIVO es introducir en un campo
+                  vigente una frase del tipo «los N hallazgos» y comprobar que la delata:
+                  un barrido que no cazara eso volvería a ser tautológico.
+                  **NINGUNO DE LOS DOS COMANDOS CIERRA `C-L.7`.** Barrer no es certificar, y
+                  sólo un gate independiente posterior puede cerrarla.
+               8  EL ALCANCE DE UN RÓTULO HISTÓRICO ES EL DE SU ANCLA, Y SÓLO HAY DOS, y es
+                  `HH2-05`. Un `[HISTÓRICO …]` escrito DENTRO de una viñeta o de un párrafo
+                  alcanza **hasta el final de esa viñeta o de ese párrafo**, y **no** alcanza
+                  a la siguiente, aunque hable de lo mismo y aunque esté debajo. Un
+                  `[HISTÓRICO …]` escrito EN LA LÍNEA DE APERTURA DEL CAMPO, antes de su
+                  primera viñeta, alcanza **el campo entero**. **No hay una tercera forma**:
+                  toda viñeta histórica que no esté bajo un campo rotulado lleva el suyo, y
+                  una viñeta sin rótulo dentro de este bloque **se lee como VIGENTE**. La regla existe porque un rótulo de alcance
+                  indefinido dejó durante nueve documentos una viñeta describiendo en
+                  presente un gate de hacía quince, y decidir hasta dónde llegaba era
+                  interpretación humana no normada.
 metodo:      SIS/Evolucion · ÚLTIMO GATE INDEPENDIENTE DEVUELTO —GATE VÁLIDO, `C-L.5`
              ABIERTA CON SU CONDICIÓN NOMBRADA, VEREDICTO INSUFICIENTE PARA F5— y
              **MÉTODO DE CORRECCIÓN ITERATIVA DETENIDO: se activa la OPCIÓN C**.
@@ -1029,10 +1064,10 @@ metodo:      SIS/Evolucion · ÚLTIMO GATE INDEPENDIENTE DEVUELTO —GATE VÁLID
              POR QUÉ SE ACTIVA, y la regla la escribió el Owner ANTES de conocer el
              resultado: «si el gate devuelve insuficiencia por defectos introducidos por
              esta misma tanda, no propongas otro ciclo». El adjudicador respondió esa
-             pregunta expresamente y con `git blame`: **cinco de los doce hallazgos los
-             introdujo esta serie, el ÚNICO BLOQUEANTE entre ellos**, y los dos de mayor
-             severidad están DENTRO del remedio que venían a aplicar. **El detalle NO se
-             copia aquí**: vive en §6 del documento del gate, que es su única sede.
+             pregunta expresamente y con `git blame`: **parte de los hallazgos los introdujo
+             esta serie, el ÚNICO BLOQUEANTE entre ellos**, y los de mayor severidad están
+             DENTRO del remedio que venían a aplicar. **El reparto y su recuento NO se copian
+             aquí** —regla 1—: viven en §6 del documento del gate, que es su única sede.
              EL ORDINAL Y EL DOCUMENTO DEL GATE NO SE ESCRIBEN AQUÍ —regla 2—:
                  ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
              EL VEREDICTO, EL RECUENTO, LAS SEVERIDADES Y LA CLASIFICACIÓN viven DENTRO de
@@ -1329,9 +1364,9 @@ last_meaningful_event: EL ÚLTIMO GATE INDEPENDIENTE DEVUELVE INSUFICIENTE PARA 
              resultado —«si el gate devuelve insuficiencia por defectos introducidos por esta
              misma tanda, no propongas otro ciclo»—, y el adjudicador respondió esa pregunta
              con `git blame`: **el ÚNICO hallazgo BLOQUEANTE lo introdujo la propia tanda**,
-             dentro del remedio que venía a aplicar, y con él uno de los dos GRAVES, que es
-             la garantía escrita para barrer una clase y que deriva el conjunto vacío. **El
-             recuento y el reparto NO se copian aquí**: viven en §6 de ese documento.
+             dentro del remedio que venía a aplicar, y con él la garantía escrita para barrer
+             una clase, que derivaba el conjunto vacío. **El recuento y el reparto NO se
+             copian aquí** —regla 1—: viven en §6 de ese documento.
              LO QUE LA OPCIÓN C **NO** ES: no es un cierre de `F4c`, que queda ABIERTA con
              sus hallazgos vivos y su remedio escrito; no autoriza `F5`, `F6` ni PesquerApp,
              que sigue BLOQUEADA; no declara SUPERADO ningún hallazgo, ni `M-04`, ni
@@ -1340,8 +1375,9 @@ last_meaningful_event: EL ÚLTIMO GATE INDEPENDIENTE DEVUELVE INSUFICIENTE PARA 
              REANCLADO EN EL MISMO COMMIT QUE REGISTRA EL EVENTO —regla 4—, y lo anterior NO
              se borra: baja íntegro a `last_meaningful_event_anterior` —regla 5—.
 last_meaningful_event_anterior: EL OWNER RESUELVE LA SEMÁNTICA DE `C-L.5`, y es `O21`. La toma por
-             su cuenta —ningún gate le elevó pregunta: los NUEVE declararon que ninguna
-             decisión volvía a él— tras el ÚLTIMO gate, cuyo ordinal y documento NO se
+             su cuenta —ningún gate le elevó pregunta, y **CUÁNTOS son no se escribe aquí**
+             (`HH2-10`, regla 1): todos declararon clase `B` vacía, y quien quiera el número
+             cuenta los documentos de gate en su sede— tras el ÚLTIMO gate, cuyo ordinal y documento NO se
              escriben aquí y se derivan con el comando de `metodo`. `O21` cierra un VACÍO que
              no es culpa de nadie: la regla de cierre de `C-L.5` es una EXCLUSIÓN de una sola
              dirección —dice cuándo la cobertura queda EXCLUIDA, no cuándo queda
@@ -1609,7 +1645,11 @@ last_meaningful_event_anterior: se publican DOS snapshots —r2@1b588ac, con la 
 last_meaningful_event_anterior: la SEGUNDA revisión independiente devuelve F4 con veredicto de
              INSUFICIENCIA —dos BLOQUEANTES, siete GRAVES y catorce hallazgos nuevos— y sus
              correcciones quedan aplicadas (2026-08-27)
-procedencia_de_la_critica: los hallazgos y el veredicto de las críticas de F3 y de las DOS
+procedencia_de_la_critica: **[HISTÓRICO · CAMPO ENTERO, por la regla 8. Es el relato cerrado
+             de las críticas de F3 y F4 y de las comprobaciones técnicas que las siguieron:
+             sus recuentos son los de AQUELLOS documentos, que son inmutables, y NO describen
+             el estado vigente. Rótulo añadido por el barrido de clase de `HH2-02`.]**
+             Los hallazgos y el veredicto de las críticas de F3 y de las DOS
              de F4 los EMITIÓ un revisor independiente que no las escribió. La SEGUNDA de F4
              la emitió además un revisor que TAMPOCO aplicó la primera. Los ficheros que los
              recogen los TRANSCRIBIÓ Y APLICÓ el autor material de esas fases. Aplicar una
@@ -2263,8 +2303,11 @@ owner_captado: LA AUTORIDAD CANÓNICA DE LO QUE EL OWNER HA RESUELTO NO ES ESTE 
              LAS RESOLUCIONES DE LA SEDE NO SE TRANSCRIBEN AQUÍ, y son las que el comando de
              arriba derive, no las que esta línea nombre. Su sede es la canónica; su
              proyección, la sección 2 de docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md, que
-             ENLAZA a ella. NINGUNA de ellas autoriza iniciar F5, F6 ni PesquerApp, y cada
-             una lo declara en su propio texto.
+             ENLAZA a ella. NINGUNA de ellas autoriza iniciar F5, y todas lo declaran en su
+             propio ALCANCE. **La afirmación NO se extiende a F6 ni a PesquerApp con un
+             «cada una»** —`HH2-11`—: el ALCANCE de `O19` dice «NO autoriza iniciar F5» y
+             nada más, mientras las otras sí nombran las tres. Qué niega cada una se lee en
+             su ALCANCE, en la sede, y no se resume aquí.
              [TRANSCRIPCIÓN DEL COORDINADOR · NO ES SEDE CANÓNICA · se conserva sin editar]
              "Autoriza aplicar la crítica independiente de F4 y corregir su
              arquitectura. NO autoriza F5 ni F6" (2026-08-27)
@@ -2797,12 +2840,14 @@ falta_para_cerrar_la_capa:
   · NO SE HA INICIADO F5, ni F6, ni PesquerApp. Ninguna enmienda normativa está redactada,
     C8 no existe y C7 no se ha tocado.
 
-  · F4c ESTÁ ABIERTA, y ahora con el GATE FINAL INDEPENDIENTE ejecutado y devuelto:
+  · **[HISTÓRICO · estado posterior al GATE FINAL INDEPENDIENTE —documento 16— y anterior a
+    todo lo que vino después. NO describe el estado vigente. Rótulo añadido por `HH2-05`.]**
+    F4c ESTÁ ABIERTA, y con el GATE FINAL INDEPENDIENTE ejecutado y devuelto:
     **INSUFICIENTE PARA F5**, por adjudicación de un tercer agente sobre dos dictámenes
-    independientes. CUATRO BLOQUEANTES, SEIS GRAVES y una COBERTURA DE CORPUS INCOMPLETA,
-    cada una bastante por sí sola. **F5 NO queda autorizada.** Antes: un veredicto de
-    insuficiencia de la tercera revisión, dos devoluciones independientes y CINCO
-    comprobaciones técnicas.
+    independientes. **Su recuento por severidad y su cobertura NO se copian aquí** —regla 2,
+    y es lo que `HH2-05` corrige—: viven en ese documento, que es inmutable y es su única
+    sede. **F5 NO queda autorizada.** Antes: un veredicto de insuficiencia de la tercera
+    revisión, dos devoluciones independientes y CINCO comprobaciones técnicas.
     Antes: dos devoluciones independientes, la segunda con veredicto explícito de
     INSUFICIENCIA, y CUATRO comprobaciones técnicas más. Las correcciones de todas las aplicó
     QUIEN LAS RECIBIÓ, y eso no prueba que estén bien resueltas. LA EVIDENCIA DE QUE EL
@@ -2816,7 +2861,13 @@ falta_para_cerrar_la_capa:
     dentro de este bloque lo que otra sede deriva. Y la cláusula que eximía a las copias
     históricas la retiró la tanda anterior junto con la enumeración de `based_on`. El censo
     se deriva:
-        ls docs/evolucion/[0-9][0-9]-*.md | sort NINGUNA crítica se declara superada. F4c sólo se cierra con un veredicto explícito de SUFICIENCIA emitido por un revisor
+        ls docs/evolucion/[0-9][0-9]-*.md | sort
+
+      [`HH2-04`: el comando y la frase de abajo estaban FUNDIDOS en una sola línea, sin el
+      salto, desde el remedio de `C-16`. Así publicado el comando no era ejecutable, dentro
+      del párrafo que presume de haber retirado bien un cardinal. Se separan.]
+      NINGUNA crítica se declara superada. F4c sólo se cierra con un veredicto explícito de
+      SUFICIENCIA emitido por un revisor
     independiente sobre el resultado corregido
   · **[HISTÓRICO · el censo del momento de esa tanda]** TRECE PRESIONES NORMATIVAS
     VIGENTES —PN-1, PN-2, PN-3, PN-6 a PN-15—. El total se
@@ -4239,11 +4290,14 @@ QUÉ DICE `O20`            que esa implementación es de `F6`. Por tanto `M-04` 
                           pendientes— y `F6` cierra la otra, construyendo y CERTIFICANDO
 
 SU ESTADO HOY             **NO SUPERADA.** Su mitad arquitectónica está contratada en §20
-                          del documento 11, con dieciocho puntos, propietario, fase, pruebas
+                          del documento 11, con un punto por obligación —**cuántos son NO se
+                          escribe aquí, `HH2-07`**: `grep -cE '^\| `V6-[0-9]+` \|'` sobre
+                          §20.1—, propietario, fase, pruebas
                           y criterio exacto de cierre. Su mitad de implementación es de
                           `F6`, y **bloquea `F6` y bloquea PesquerApp**
 
-QUÉ LA CERRARÍA           que `F6` implemente los dieciocho puntos y **los ejecute**, con
+QUÉ LA CERRARÍA           que `F6` implemente **todos** los puntos de §20.1 —el censo lo da
+                          el comando de arriba, no este renglón— y **los ejecute**, con
                           `V6-18` en verde: cero falsos verdes y cero falsos rojos. **No la
                           cierra ningún verde de la batería interna**, y `O20` lo escribe
 
@@ -4538,6 +4592,58 @@ Y la garantía queda escrita **DENTRO** del bloque, como **regla 7** de `regla_d
 para que no dependa de que nadie se acuerde en la tanda siguiente. La **regla 3** pasa además
 a derivar la última resolución del Owner **de su SEDE CANÓNICA** y no del registro derivado.
 **Nada de esto cierra `C-L.7`**: sigue NO CERRADA hasta que un gate independiente lo juzgue.
+
+## PARTE DE LA TANDA POSTERIOR AL GATE FINAL — un renglón por hallazgo, y el recuento se DERIVA
+
+> **CORRECCIÓN APLICADA, PENDIENTE DE VERIFICACIÓN INDEPENDIENTE.** Ni un hallazgo se declara
+> SUPERADO: quien aplica no certifica lo que aplica, y sólo un gate independiente posterior
+> puede juzgarlo. **Esta tanda NO reabre el método**: la OPCIÓN C sigue activada y esta parte
+> no convoca ningún gate, no emite sobre y no escribe manifiesto.
+>
+> Ni una suma escrita: una fila por identificador, y el número se saca del árbol.
+>
+> ```bash
+> awk '/^### Lo aplicado por la tanda posterior al GATE FINAL/{t=1} t' \
+>   docs/evolucion/CHECKPOINT-ADS-NEXT.md | grep -oE '`HH2-[0-9]+`' | sort -u | wc -l
+>
+> # y la COBERTURA contra el gate, que es lo que hay que comprobar: sale VACÍO
+> comm -23 <(awk '/^## 4 · MATRIZ CONSOLIDADA/{t=1} t&&/^\*\*RECUENTO/{exit} \
+>                 t&&/^\| \*\*`HH2-/' docs/evolucion/31-GATE-FINAL-O21-F4C.md \
+>            | grep -oE 'HH2-[0-9]+' | sort -u) \
+>          <(awk '/^### Lo aplicado por la tanda posterior al GATE FINAL/{t=1} t' \
+>              docs/evolucion/CHECKPOINT-ADS-NEXT.md | grep -oE 'HH2-[0-9]+' | sort -u)
+> ```
+
+**LO QUE ESTA TANDA ES, EN UNA LÍNEA.** Aplica los hallazgos vivos del último gate **con el
+remedio que él mismo adjudicó**, sin inventar ninguno, sin reabrir arquitectura, sin
+implementar nada de `F6` y sin tocar material protegido. **Los dos que decidieron el veredicto
+—el BLOQUEANTE y uno de los GRAVES— eran defectos de la serie anterior dentro del texto de su
+propia corrección**, y los dos se cierran contra el objeto real: uno derivando ÁRBOLES donde
+se derivaban identificadores de hallazgo, y otro haciendo que un control que devolvía el
+conjunto vacío mire el bloque que debe mirar.
+
+### Lo aplicado por la tanda posterior al GATE FINAL
+
+| id | sede del remedio | qué se hizo, y con qué prueba |
+|---|---|---|
+| **`HH2-01`** | doc 11 §20.5 y fila `V6-15` | **El conjunto que §20.5 deriva pasa a ser el que la ENTRADA de `V6-15` nombra: ÁRBOLES ADVERSARIALES.** La sede ya existía y nadie la había usado: **cada gate que encontró un árbol lo publica con CABECERA PROPIA en su documento inmutable**, y el ordinal lo escribió el gate que lo encontró. El comando deriva de esas cabeceras. Entrada, escenario negativo y criterio de cierre remiten los tres al mismo comando y hablan del mismo tipo de objeto. **El OCTAVO árbol —`DD-01`, documento 26— ESTÁ DENTRO**, que es lo que «tener fixture contratado» significa en esta fila, y **recupera la fase y el propietario que el gate le adjudicó: `SIS`, `F4c`**. Se retira la DEUDA DE INVENTARIO que lo había mandado a `VER`/`F6`. **Ni un cardinal escrito**: ni once, ni tres, ni cuatro |
+| **`HH2-02`** | `CHECKPOINT` · `regla_de_reanclaje` regla 7 | **El comando se ancla en el PRIMER CAMPO y termina en el cierre de la valla**, en vez de buscar campos FUERA de las vallas mientras el bloque vive DENTRO de una. Derivaba el conjunto vacío; ahora deriva los campos del bloque. **Y la primera de las tres preguntas gana un barrido mecánico** sobre los campos VIGENTES, con su CONTROL POSITIVO escrito al lado: introducir «los N hallazgos» en un campo vigente tiene que delatarlo. **Barrer no es certificar**, y así queda dicho |
+| **`HH2-03`** | doc 11 §18, bloque en prosa | **§18 enuncia UNA sola condición de entrada para su paso 8, y contiene el nodo 9.** El renglón decía «los pasos 0 a 7» mientras el grafo decía «BLOQUEA 8 mientras 9 no esté IMPLEMENTADO **Y** CERTIFICADO»: la misma sede, dos enunciados, distinto contenido. Los dos dicen ahora lo mismo, y se escribe cuál manda si volvieran a diferir |
+| **`HH2-04`** | `CHECKPOINT` · `falta_para_cerrar_la_capa` | El comando publicado y la prosa que le seguía **estaban fundidos en una línea**, con lo que el comando no era ejecutable. Se separan, y se dice de dónde venía |
+| **`HH2-05`** | `CHECKPOINT` · `falta_para_cerrar_la_capa` y `regla_de_reanclaje` regla 8 | La viñeta **gana rótulo histórico** y **suelta el recuento por severidad** que su regla 2 remite al documento del gate. Y **el ALCANCE de un rótulo histórico queda NORMADO** —regla 8 nueva—: hay DOS anclas y sólo dos, la viñeta o la línea de apertura del campo, y **una viñeta sin rótulo se lee como VIGENTE** |
+| **`HH2-06`** | `00-INDICE.md` | La fila de la sede canónica **deja de enumerar** las resoluciones —nombraba tres donde la sede publica más— y **remite al comando que las deriva**. Es la clase de `H-10`, que se cerró en el checkpoint y quedó viva aquí |
+| **`HH2-07`** | `CHECKPOINT` · bloque de `M-04` | El cardinal de los puntos de §20 **se retira y se remite** a su comando, en las dos frases que lo escribían. **No se sustituye por otro número** |
+| **`HH2-08`** | doc 11 §15.4 · `00-INDICE.md` · `CORRIGENDUM` §19 | Las dos sedes editables **recuperan la precondición «para un gate VÁLIDO»** que `O21` §3 escribe. **La tercera es un manifiesto PUBLICADO y NO se toca**: su diferencia queda registrada en el CORRIGENDUM, que es la sede que el corpus tiene para eso, con lo que se sigue de ella —que es poco, porque aquel gate se declaró VÁLIDO antes de medir la cobertura— |
+| **`HH2-09`** | `DECISIONES` · epígrafes | `D108`, `D109` y `D110` **abren epígrafe propio**, con su origen, su resolución y su fecha, como ya lo tienen en §15.8 del documento 11. **Y se escribe la REGLA que `S-19` no estableció**: toda propagación de una resolución del Owner abre epígrafe propio. `S-19` se cerró moviendo una fila; por eso hubo tres recaídas |
+| **`HH2-10`** | `CHECKPOINT` campos VIGENTES · doc 11 §15.8 | Los cardinales de los campos vigentes **se retiran y se remiten** en vez de sustituirse. **Y el barrido de clase de la regla 7 se ejecutó campo a campo sobre los CATORCE**, no sobre los señalados: destapó dos más de la misma clase en `metodo` y en `last_meaningful_event`, y los dos están retirados |
+| **`HH2-11`** | `CHECKPOINT` · `owner_captado` | La afirmación **deja de ser universal** donde `O19` no la sostiene: su `ALCANCE` dice «NO autoriza iniciar `F5`» y nada sobre `F6` ni PesquerApp. Se conserva lo que sí es cierto de todas y se remite a cada `ALCANCE` |
+| **`HH2-12`** | `00-INDICE.md` · la LISTA | Los **dos manifiestos** del último gate **entran en la LISTA**, que es la regla que el propio índice escribe y que su aparato incumplió. El `diff` que esa sección publica como prueba vuelve a salir vacío |
+
+**QUÉ NO HA HECHO ESTA TANDA, y hay que decirlo:** no ha cerrado `C-L.5` —su estado lo fijó el
+acto del último adjudicador y una tanda de corrección no certifica cobertura retrospectivamente—,
+no ha cerrado `C-L.7`, no ha declarado superado ningún hallazgo, no ha tocado `O17`–`O21` ni el
+texto resolutivo de ninguna `D`, no ha modificado la lógica del verificador de admisión, no ha
+abierto ningún gate y no ha iniciado `F5`, `F6` ni PesquerApp.
 
 ## Siguiente acción exacta
 

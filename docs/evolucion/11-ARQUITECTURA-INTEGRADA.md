@@ -9736,7 +9736,7 @@ su resolución es **`O21`**, cuyo texto íntegro vive en la **SEDE CANÓNICA**
 
 `D110` es **su propagación, y se declara DERIVADA**: `C-L.5` **certifica COBERTURA y nada
 más**, su resultado es **INDEPENDIENTE** del veredicto `SUFICIENTE/INSUFICIENTE PARA F5`, y
-**deja de ser un acto discrecional** —cumplidas las seis condiciones el adjudicador **DEBE**
+**deja de ser un acto discrecional** —**sobre un gate VÁLIDO**, cumplidas las seis condiciones el adjudicador **DEBE**
 declarar `C-L.5 CERTIFICADA PARA ESTE GATE`; fallada cualquiera **DEBE** declararla `ABIERTA`
 nombrando la condición—. La certificación queda ligada a una **TUPLA exacta** y **no se
 transfiere** a otra candidata ni a otro gate; un adjudicador **no puede negarse** a certificar
@@ -11010,11 +11010,22 @@ SE AÑADE UN PASO 0    las entradas declaradas de validadores (P-08) no dependen
                       después. Construirlas al final significaría producir seis meses de
                       evidencia sin garantía de vigencia
 SE CONFIRMA EL RESTO  1 estado · 2 adaptadores · 3 iniciativa · 4 certificación · 5 pack ·
-                      6 cobertura · 7 runtime · 8 primera adopción real
+                      6 cobertura · 7 runtime · **9 verificador de `F6` y raíz externa** ·
+                      8 primera adopción real. **El nodo 9 no es un añadido de este
+                      renglón**: lo decidieron `O18` y `O20`, y el grafo de arriba lo
+                      dibuja con su arista
 EL PASO 8 NO ES UN    `O15`: la adopción de PesquerApp es PERMANENTE y COMPLETA, y su
 ENSAYO                control repo nace definitivo. Por eso el paso 8 exige la BASE COMPLETA
-                      ACORDADA de los pasos 0 a 7, y no un MVP: lo que se instale allí se
-                      queda, y sólo se cambia por migración versionada
+                      ACORDADA **de los pasos 0 a 7 Y DEL NODO 9**, y no un MVP: lo que se
+                      instale allí se queda, y sólo se cambia por migración versionada.
+                      **ESTA ES LA ÚNICA CONDICIÓN DE ENTRADA DEL PASO 8 QUE ESTA SECCIÓN
+                      ENUNCIA, y es `HH2-03`.** Este renglón decía «de los pasos 0 a 7» y el
+                      grafo decía «BLOQUEA 8 mientras 9 no esté IMPLEMENTADO **Y**
+                      CERTIFICADO»: **la misma sede enunciaba dos veces la misma condición y
+                      no decía lo mismo**, y quien planificara `F6` desde la prosa llegaba al
+                      paso 8 sin el verificador. Los dos enunciados dicen ahora lo mismo, y
+                      si alguna vez volvieran a diferir **manda el grafo**, que es donde
+                      viven las aristas
 2 NO DEPENDE DE 1     el adaptador se compila desde la especialización, no desde el estado.
                       Puede avanzar mientras PN-1 espera aprobación
 5 NO DEPENDE DE NADA  y por eso es lo que puede entregarse primero si hace falta demostrar
@@ -11936,7 +11947,7 @@ construido. Sus tres valores los define **§20.3**.
 | `V6-12` | **La sede del Owner conserva su contrato APPEND-ONLY** —**fuente: `O19`**, que crea la sede con ese contrato, y las reglas propias de la sede; **no `O20`**— | el commit que creó la sede y su contenido actual | veredicto | el contraste contra el NACIMIENTO, no contra `HEAD` | añadir una resolución es legítimo | alterar una letra de lo publicado da **ROJO**, aunque esté confirmado | que el contraste se haga contra `HEAD` | el contraste se hace contra el commit de creación | `CONTRATO_CONSTRUIBLE` |
 | `V6-13` | **Se prueban UTF-8, Latin-1 inválido, espacios, saltos de línea, guiones y Unicode** | fixtures de ruta y de contenido | veredicto | la matriz de codificaciones y nombres | el árbol sano en todas ellas da verde | cada una de las seis formas, con sentencia falsa, da **ROJO** | que una forma quede sin fixture | las **seis** formas con fixture positivo y negativo | `CONTRATO_CONSTRUIBLE` |
 | `V6-14` | **Se incluyen adición, modificación, borrado, renombrado, copia y cambio de tipo** | fixtures de mutación | veredicto | la matriz de mutaciones | el árbol sano da verde | cada una de las seis, con sentencia falsa, da **ROJO** | que una forma quede sin fixture | las **seis** con fixture positivo y negativo | `CONTRATO_CONSTRUIBLE` |
-| `V6-15` | **Los árboles adversariales que su ENTRADA entrega quedan como FIXTURES OBLIGATORIOS** | el conjunto **derivado** de los árboles adversariales publicados por el SEXTO, SÉPTIMO y OCTAVO gate, cada uno identificado por su documento —27, 28, 29— y por el identificador con que ese documento lo publica. **El conjunto no se escribe: se deriva** (§20.5) | suite de regresión | la suite, con la procedencia —documento e identificador— de cada fixture | los controles sanos siguen verdes | **cada uno** de los árboles del conjunto derivado de la entrada vuelve a dar ROJO, uno a uno; ni uno menos, y ninguno que la entrada no entregue | que un árbol del conjunto derivado desaparezca de la suite, o que la suite exija uno que la entrada no entrega | `entrada − suite = ∅` **y** `suite − entrada = ∅`, las dos restas sobre el conjunto DERIVADO de §20.5, y cada fixture con su documento y su identificador de origen | `CONTRATO_CONSTRUIBLE` |
+| `V6-15` | **Los ÁRBOLES ADVERSARIALES que su ENTRADA entrega quedan como FIXTURES OBLIGATORIOS** | el conjunto **derivado** de los ÁRBOLES ADVERSARIALES que un gate publicó **con cabecera propia** en su documento inmutable —el OCTAVO, `DD-01`, documento 26, INCLUIDO—, cada uno identificado por esa cabecera y por el documento que la contiene. **El conjunto no se escribe ni se enumera: se DERIVA** con el comando de §20.5, y son ÁRBOLES, no identificadores de hallazgo | suite de regresión | la suite, con la procedencia —documento y cabecera— de cada fixture, y el identificador del hallazgo que cerró cada árbol | los controles sanos siguen verdes | **cada uno** de los ÁRBOLES del conjunto derivado de la entrada, REPRODUCIDO, vuelve a dar ROJO, uno a uno; ni uno menos, y ninguno que la entrada no entregue | que un árbol del conjunto derivado desaparezca de la suite, o que la suite exija uno que la entrada no entrega | `entrada − suite = ∅` **y** `suite − entrada = ∅`, las dos restas **sobre el mismo conjunto de ÁRBOLES** que §20.5 deriva, y cada fixture con su documento y su cabecera de origen. **Especifica `SIS` en `F4c`; construye `F6`** | `CONTRATO_CONSTRUIBLE` |
 | `V6-16` | **La prueba se ejecuta desde una RAÍZ DE CONFIANZA EXTERNA al árbol comprobado** | el árbol candidato y la raíz externa | veredicto | la declaración de la raíz y su procedencia | la ejecución externa reproduce el veredicto | un árbol que se declara sano a sí mismo y la raíz externa desmiente **da ROJO** | que la prueba se ejecute desde dentro del árbol comprobado | el ejecutor NO comparte identidad de escritura con el runtime ADS (`O18`). **Este criterio NO es ejecutable con las normas vigentes**: la identidad separada y la evidencia fuera del árbol las tiene que emitir [`PN-19`](#pn-19), **fase `F5`, propietario el Owner**, y ninguna sede aprobada las contempla todavía. Contrato largo en [§11.8](#118--el-contrato-del-verificador-externo-del-control-repo--registrado-completo-para-f6-y-no-implementado). Desbloqueo en §20.4 | `CONTRATO_BLOQUEADO_POR_DEPENDENCIA` · `F5`/`PN-19` · §20.4 |
 | `V6-17` | **Ningún digest calculado por el mismo árbol basta como prueba de su propia integridad** | digest interno y ancla externa | veredicto | los dos digest y su origen | los dos coinciden sobre un árbol sano | un árbol alterado cuyo digest interno cuadra **da ROJO por el ancla externa** | que el veredicto dependa sólo del digest interno | **cero** afirmaciones de integridad sostenidas sólo por el propio árbol | `CONTRATO_CONSTRUIBLE` |
 | `V6-18` | **CERO falsos verdes, y los controles sanos SIN falsos rojos** | la suite completa | veredicto global | la matriz entera, con sus dos columnas | **todos** los controles sanos en verde | **todos** los adversariales en rojo | un solo falso verde, o un solo falso rojo sobre una modificación permitida | `falsos_verdes = 0` **y** `falsos_rojos = 0`, medidos y publicados | `CONTRATO_CONSTRUIBLE` |
@@ -12030,42 +12041,63 @@ QUÉ **SÍ** BLOQUEA        `F6` no puede construir `V6-16` antes de esa sede, y
                           sigue bloqueada por la cadena `F6` → PesquerApp
 ```
 
-## 20.5 · De dónde sale el conjunto de fixtures de `V6-15`, y por qué no se enumera
+## 20.5 · De dónde sale el conjunto de fixtures de `V6-15`, y por qué no se enumera a mano
 
-`H-06`. La fila de `V6-15` daba **tres cosas distintas del mismo conjunto**: la entrada decía
-«documentos 27, 28 y 29», el escenario negativo exigía «**los once árboles**» y el cierre
-hablaba de «los tres gates». Los once son de **ocho** gates —el octavo árbol, `DD-01`, es del
-QUINTO, documento 26—, de modo que la entrada **no entregaba** lo que el escenario negativo
-exigía, y `F6` no podía cerrarlo sin decidir cuál de las dos columnas mandaba.
+`H-06`, y después **`HH2-01`**, que es el hallazgo BLOQUEANTE del gate posterior sobre este
+mismo texto.
 
-**Rama tomada, y por qué:** el escenario negativo pasa a exigir **exactamente lo que su
-entrada entrega**. La otra rama —que la entrada alcanzara los once— obliga a **enumerar los
-once con identificador**, cosa que ninguna sede hace hoy, e inventariar ocho gates, lo que
-ampliaría el alcance de esta tanda. **No se sustituye «once» por «tres»**: un cardinal
-caducado no se cambia por otro cardinal escrito. Se retira y se remite al conjunto derivado.
+**LO QUE FALLABA AL PRINCIPIO.** La fila de `V6-15` daba **tres cosas distintas del mismo
+conjunto**: la entrada decía «documentos 27, 28 y 29», el escenario negativo exigía «**los
+once árboles**» y el cierre hablaba de «los tres gates». Los once son de más gates que esos
+tres —el octavo árbol, `DD-01`, es del QUINTO, documento 26—, de modo que la entrada **no
+entregaba** lo que el escenario negativo exigía, y `F6` no podía cerrarlo sin decidir cuál de
+las dos columnas mandaba.
+
+**LO QUE FALLABA DESPUÉS, Y ES PEOR PORQUE ERA MECÁNICO.** El remedio anterior remitió a un
+comando publicado bajo el rótulo «EL CONJUNTO. Es la sede» — **y ese comando derivaba
+IDENTIFICADORES DE HALLAZGO, no árboles**: barría las filas de las matrices de los documentos
+27, 28 y 29 y devolvía setenta y cinco identificadores de los que la inmensa mayoría son
+defectos de redacción que **no tienen rojo que dar**. Entrada, escenario y cierre volvían a
+hablar de objetos distintos, esta vez sin que se notara al leerlos. **Un contrato cuyo cierre
+se mide sobre el objeto equivocado no es medible: es insatisfacible.**
+
+**LA SEDE, AHORA, Y ES LA QUE EL PROPIO CORPUS YA TENÍA.** Cada gate que encontró un árbol
+adversarial **lo publica en una cabecera propia de su documento inmutable**, con su ORDINAL
+escrito por el gate que lo encontró. Esa cabecera es el identificador estable, y el documento
+que la contiene es la sede: los dos son inmutables, y ninguno de los dos lo escribe esta
+sección. **El conjunto se DERIVA de ahí, y son ÁRBOLES —el mismo tipo de objeto que la
+ENTRADA de `V6-15` nombra, que su escenario negativo exige y que su cierre mide**:
 
 ```bash
-# EL CONJUNTO. Es la sede: si esto crece, V6-15 crece con ello y nadie edita un número
-for d in 27-SEXTO 28-SEPTIMO 29-OCTAVO; do
-  f=$(ls docs/evolucion/${d}-*.md)
-  printf '%s\n' "$f"
-  grep -oE '^\| \*\*`[A-Z]{1,2}[0-9]?-[0-9]+`\*\*' "$f" | grep -oE '[A-Z]{1,2}[0-9]?-[0-9]+' | sort -u
-done
+# EL CONJUNTO. Es la sede: si un gate futuro encuentra otro árbol y lo publica con su
+# cabecera, V6-15 crece con él y nadie edita un número ni una lista
+grep -nE '^## [0-9]+ · EL [A-ZÁÉÍÓÚ]+ ÁRBOL' docs/evolucion/[0-9][0-9]-*.md
 ```
 
-**DEUDA DE INVENTARIO, declarada y no escondida.** Los árboles adversariales de los gates
-ANTERIORES al sexto —`DD-01` del quinto entre ellos— **no están** en el conjunto de entrada
-de `V6-15`, y no lo están porque no hay sede que los publique con identificador. Incorporarlos
-es trabajo real y tiene dueño:
+**QUÉ DEVUELVE HOY, y no se copia como cardinal: se lee del comando.** Un árbol por documento,
+del QUINTO gate en adelante, cada uno con el ordinal que le puso el gate que lo encontró y con
+el identificador del hallazgo que lo cerró, que vive en el mismo documento. **El OCTAVO árbol
+—`DD-01`, quinto gate, documento 26— ESTÁ DENTRO**, y estar dentro es exactamente lo que
+significa «tener fixture contratado» en esta fila.
 
 ```text
-DEUDA                     inventariar con identificador los árboles adversariales de los
-                          gates anteriores al SEXTO, y publicarlos en una sede derivable
-PROPIETARIO               `VER`, que es quien lleva el dosier independiente
-FASE                      `F6`, junto con la construcción de la suite de `V6-15`
-EFECTO DE SALDARLA        la ENTRADA de `V6-15` crece, y con ella el escenario negativo y el
-                          criterio de cierre, **sin editar ni un campo**: los tres remiten al
-                          mismo conjunto derivado
-MIENTRAS NO SE SALDE      `V6-15` es CONSTRUIBLE sobre el conjunto que su entrada entrega, y
-                          **no se puede citar** como «cubre los once árboles»
+LO QUE LA ENTRADA ENTREGA   los árboles adversariales que un gate publicó con cabecera propia
+                            en su documento inmutable, DERIVADOS con el comando de arriba
+QUIÉN ESPECIFICA            **`SIS`**, y su fase es **`F4c`** — es la fase que el gate que
+                            adjudicó `H-06` le dio, y esta sección la conserva. Especificar
+                            el conjunto es de `F4c`; CONSTRUIR la suite sigue siendo de `F6`
+QUÉ NO ALCANZA              los árboles adversariales anteriores al OCTAVO. **Ninguna sede
+                            los publica con cabecera propia**, y por eso el comando no los
+                            devuelve. No se les inventa aquí un identificador ni una fase:
+                            se dice que no están y por qué
+CÓMO ENTRARÍAN              si un gate futuro los publicara con la misma cabecera en un
+                            documento suyo, **entrarían solos**: la ENTRADA, el escenario
+                            negativo y el criterio de cierre remiten los tres al mismo
+                            comando y **ninguno de los tres campos se editaría**
+MIENTRAS NO ENTREN          `V6-15` es CONSTRUIBLE sobre el conjunto que su entrada entrega, y
+                            **no se puede citar** como «cubre los once árboles»
 ```
+
+**Y NO SE SUSTITUYE UN CARDINAL POR OTRO.** Ni «once», ni «tres», ni «cuatro» se escriben en
+esta sección ni en la fila de `V6-15`: quien necesite el número ejecuta el comando. Es la
+regla de `J-07`, y esta sección ya la incumplió una vez por la vía contraria.
