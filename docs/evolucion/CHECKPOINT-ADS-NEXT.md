@@ -12,15 +12,23 @@
 > vigente, que es siempre la primera.
 
 > **Estado de la fase, en una línea:**
-> **El OWNER ha resuelto la FRONTERA entre `F4c` y `F6` —es `O20`— y con ella cierra la
-> RECURSIÓN que dos gates consecutivos habían dejado a la vista. `F4c` sigue ABIERTA y `F5`
-> sigue NO AUTORIZADA: `O20` no la cierra, y lo dice expresamente.**
+> **El OWNER ha resuelto la FRONTERA entre `F4c` y `F6` —es `O20`— y después la SEMÁNTICA de
+> `C-L.5` —es `O21`—. `F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA: ninguna de las dos la
+> cierra, y las dos lo dicen expresamente.**
+>
+> **CUÁLES son las resoluciones del Owner NO se escribe aquí**: se derivan de la sede, que es
+> la única que las publica —`C-L.7`, y la regla de `J-07` sobre enumeraciones vivas—.
+>
+> ```bash
+> grep -oE '^# `O[0-9]+`' docs/owner/ADS-OWNER-RESOLUCIONES.md
+> ```
 >
 > Su texto íntegro vive en
 > [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md), que es la
-> **SEDE CANÓNICA**, y **no se copia aquí**. Su proyección es `O20` y `D109` en
-> [`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md), y su
-> contrato ejecutable es **§20 del documento 11**.
+> **SEDE CANÓNICA**, y **no se copia aquí**. Sus proyecciones derivadas son `O20`/`D109` y
+> `O21`/`D110` en
+> [`DECISIONES-Y-CONTRADICCIONES.md`](../rediseno/DECISIONES-Y-CONTRADICCIONES.md) y §15.4 y
+> §15.8 del documento 11, y el contrato ejecutable de `O20` es **§20 del documento 11**.
 >
 > **QUÉ CORRIGE, EN UNA LÍNEA: una FRONTERA DE FASE CIRCULAR.** `F4c` bloquea a `F5`, `F5`
 > precede a `F6`, y `F6` es quien construye el verificador cuya IMPLEMENTACIÓN se le estaba
@@ -36,10 +44,21 @@
 > y **no reescribe `O17`, `O18` ni `O19`**.
 >
 > **LOS 22 DEL OCTAVO GATE quedan repartidos por fase, con un estado primario cada uno**, en
-> la MATRIZ DE CIERRE de este fichero: **catorce CORREGIDOS EN `F4c`** y **ocho CONTRATO
-> COMPLETO PARA `F6`**. Ninguno se declara SUPERADO, y `O20` lo prohíbe expresamente mientras
-> no se implemente y se ejecute en `F6`. **Los seis que permiten un falso verde bloquean `F6`
-> y bloquean PesquerApp**, y así consta en su fila.
+> la MATRIZ DE CIERRE de este fichero. **El reparto NO se escribe aquí** —`H-16`: esta misma
+> cabecera ordena derivar los cardinales, y estas líneas copiaban «catorce» y «ocho» al lado
+> de la tabla que los da, que es la forma exacta de `J-07`—. Sale de la tabla:
+>
+> ```bash
+> awk '/^\| `C-[0-9]+` \|/{print $4}' docs/evolucion/CHECKPOINT-ADS-NEXT.md | sort | uniq -c
+>
+> # y los que bloquean `F6` **y** PesquerApp, que tampoco se cuentan a mano:
+> awk '/^\| `C-[0-9]+` \|/' docs/evolucion/CHECKPOINT-ADS-NEXT.md |
+>   grep -c '| \*\*SÍ\*\* | \*\*SÍ\*\* |'
+> ```
+>
+> Ninguno se declara SUPERADO, y `O20` lo prohíbe expresamente mientras no se implemente y se
+> ejecute en `F6`. **Los que permiten un falso verde bloquean `F6` y bloquean PesquerApp**, y
+> así consta en su fila.
 >
 > **PesquerApp sigue BLOQUEADA**: sin MVP, sin piloto desechable y sin adopción parcial,
 > hasta que `F6` implemente **y certifique**.
@@ -952,7 +971,8 @@
 
 ```text
 CHECKPOINT — ADS-NEXT/12 · SIS/evolucion
-actualizado: 2026-08-31   · reanclado por `EE-04` del SEXTO GATE
+actualizado: 2026-09-01   · reanclado por la TANDA DE `O21` y de los 16 del GATE
+             ARQUITECTÓNICO FINAL, en el MISMO commit que registra el evento —regla 4
 regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histórico: describe el
              árbol VIGENTE. Fue a la vez el defecto X-04 del documento 24 —GRAVE— y la CUARTA
              recurrencia consecutiva de la clase «el checkpoint no reancla»: K-01/J-10/L-01 ·
@@ -969,9 +989,14 @@ regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histór
                        ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
                   y su VEREDICTO y su RECUENTO viven EN ESE documento, que es inmutable y es
                   su única sede
-               3  LA ÚLTIMA RESOLUCIÓN DEL OWNER Y LA ÚLTIMA DECISIÓN TAMPOCO. Se derivan con
-                       grep -o '^### `O[0-9]*`' docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md | tail -1
+               3  LA ÚLTIMA RESOLUCIÓN DEL OWNER Y LA ÚLTIMA DECISIÓN TAMPOCO. **Y la del
+                  Owner se deriva de SU SEDE CANÓNICA, no del registro derivado** —desde O19
+                  la sección 2 de DECISIONES es PROYECCIÓN, y derivar el estado del Owner de
+                  una proyección es leer la autoridad en la copia—:
+                       grep -o '^# `O[0-9]*`' docs/owner/ADS-OWNER-RESOLUCIONES.md | tail -1
                        grep -o '^| D[0-9]* |' docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md | tail -1
+                  Y la lista ENTERA de resoluciones, cuando haga falta, sale de la misma sede:
+                       grep -oE '^# `O[0-9]+`' docs/owner/ADS-OWNER-RESOLUCIONES.md
                4  TODO EVENTO NUEVO —un gate devuelto, una resolución del Owner, una tanda
                   aplicada— REANCLA `metodo`, `last_meaningful_event` y `based_on` EN EL MISMO
                   COMMIT QUE LO REGISTRA. Un evento escrito en la cabecera de este fichero y
@@ -980,9 +1005,20 @@ regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histór
                   `last_meaningful_event_anterior`, que es donde vive lo histórico
                6  NINGÚN HALLAZGO SE DECLARA SUPERADO POR ESTE REANCLAJE. Reanclar no es
                   certificar, y sólo un gate independiente posterior puede cerrar X-04
-metodo:      SIS/Evolucion · EL ÚLTIMO GATE DE CERTIFICACIÓN DEVUELTO —VEREDICTO
-             INSUFICIENTE PARA F5, y EL GATE DECLARADO VÁLIDO POR SU ADJUDICADOR— y TANDA
-             CONSOLIDADA DE APLICACIÓN DE SUS HALLAZGOS EN CURSO.
+               7  NINGÚN CAMPO DE ESTE BLOQUE COPIA UN ESTADO QUE ESTE BLOQUE DECLARA NO
+                  COPIAR, y la comprobación es de CLASE y no de instancia — es `C-L.7`, y
+                  `H-09`, `H-10` y `H-16` fueron tres instancias suyas a la vez. Se barren
+                  TODOS los campos, no los tres señalados, y el conjunto de campos se DERIVA
+                  del propio bloque en vez de escribirse:
+                       awk '/^```/{f=!f} !f && /^[a-z_]+:/{sub(/:.*/,"");print}' \
+                         docs/evolucion/CHECKPOINT-ADS-NEXT.md | sort -u
+                  Para cada campo, tres preguntas: ¿copia un recuento, un ordinal, un estado
+                  o una enumeración que otra sede publica? ¿queda algún FRAGMENTO de una
+                  retirada anterior sin su frase? ¿lo histórico está ROTULADO como histórico?
+metodo:      SIS/Evolucion · RESOLUCIÓN `O21` DEL OWNER REGISTRADA EN LA SEDE CANÓNICA
+             —APPEND-ONLY— y PROYECTADA, y TANDA DOCUMENTAL DE LOS HALLAZGOS DEL ÚLTIMO
+             GATE APLICADA. **APLICAR NO ES CERTIFICAR**, y nada de esta tanda declara
+             ningún hallazgo SUPERADO.
              `S2-04` del SÉPTIMO GATE: **EL ORDINAL NO SE ESCRIBE AQUÍ.** Este campo decía
              «SEXTO GATE» a mano, que es sustituir un ordinal a mano por otro ordinal a
              mano —lo que `J-07` prohíbe— dentro del bloque cuya regla 2 dice que el último
@@ -996,10 +1032,9 @@ metodo:      SIS/Evolucion · EL ÚLTIMO GATE DE CERTIFICACIÓN DEVUELTO —VERE
              clase mientras se cierra la instancia. Se retira de las tres. **El ordinal vive
              en el TÍTULO del documento del gate**, que es su única sede, y quien lo
              necesite lo lee ahí.
-             y su veredicto, su recuento y su clasificación viven DENTRO de él, que es su
-             única sede e inmutable. Lo que este bloque sí dice, porque es el estado y no
-             una cifra: F4c sigue ABIERTA y F5 sigue NO AUTORIZADA. APLICAR NO ES
-             CERTIFICAR.
+             El veredicto, el recuento y la clasificación del último gate viven DENTRO de su
+             documento, que es su única sede e inmutable. Lo que este bloque sí dice, porque
+             es el estado y no una cifra: **F4c sigue ABIERTA y F5 sigue NO AUTORIZADA**.
              EL ESTADO DE CADA CONDICIÓN `C-L` NO SE ESCRIBE AQUÍ, y es `C-06` del OCTAVO
              GATE: este campo afirmaba «C-L.5 ABIERTA — el adjudicador NO emitió la palabra
              CERTIFICADA», y el séptimo gate SÍ la emitió. Es `DD-07` una sede más allá: un
@@ -1008,10 +1043,23 @@ metodo:      SIS/Evolucion · EL ÚLTIMO GATE DE CERTIFICACIÓN DEVUELTO —VERE
              condiciones `C-L` de este mismo fichero, y el documento 11 la designa así. Se
              lee, no se copia:
                  grep -n 'CLASIFICACIÓN VIGENTE' docs/evolucion/CHECKPOINT-ADS-NEXT.md
+             Y DESDE `O21`, EL ESTADO DE `C-L.5` SE LEE CON SU REGLA NUEVA: certificar
+             cobertura y devolver insuficiencia son actos DISTINTOS e INDEPENDIENTES, y
+             pueden coexistir en el mismo gate. Ni este campo ni ningún otro de este bloque
+             deduce uno del otro.
              REANCLADO por EE-04 del SEXTO GATE, que es la QUINTA recurrencia consecutiva
              de esta clase y la PRIMERA contra la regla 4 escrita DENTRO de este bloque
              para impedirla: el bloque nombraba el CUARTO gate mientras el árbol iba por el
              SEXTO, dos eventos atrasado, exactamente como X-04.
+metodo_anterior: SIS/Evolucion · RESOLUCIÓN `O20` DEL OWNER REGISTRADA Y PROPAGADA COMO
+             `D109` —la FRONTERA entre `F4c` y `F6`—, con el CONTRATO OBLIGATORIO DE `F6`
+             escrito en §20 del documento 11 y los 22 hallazgos del octavo gate repartidos
+             en la MATRIZ DE CIERRE. APLICADA, NO CERTIFICADA · F4c ABIERTA · F5 NO
+             AUTORIZADA
+metodo_anterior: SIS/Evolucion · ÚLTIMO GATE ARQUITECTÓNICO EJECUTADO —el PRIMERO bajo
+             `O20`, tres agentes de contexto limpio, dos revisores en paralelo sin verse y
+             un adjudicador— · VEREDICTO INSUFICIENTE PARA F5 · GATE VÁLIDO · su recuento,
+             sus severidades y su clasificación viven EN SU DOCUMENTO, que es su única sede
 metodo_anterior: SIS/Evolucion · **[LOS CUATRO EVENTOS QUE `C-17` DEL OCTAVO GATE ENCONTRÓ
              AUSENTES, REPUESTOS AQUÍ EN UN SOLO RENGLÓN.]** La cadena histórica de este
              bloque saltaba del CUARTO gate al último, con cuatro eventos sin registrar
@@ -1158,54 +1206,62 @@ metodo_anterior: SIS/Evolucion · GATE DEFINITIVO INDEPENDIENTE EJECUTADO SOBRE 
              VEREDICTO INSUFICIENTE PARA F5 · F4c ABIERTA · F5 NO AUTORIZADA
 based_on:    LA BASE VIGENTE NO SE NOMBRA AQUÍ, y es `C-08` del OCTAVO GATE: este campo
              afirmaba «la candidata que el manifiesto del SEXTO GATE nombra» con el árbol
-             tres eventos más allá. `EE-04` lo reancló y `S2-03` retiró su enumeración, y
-             **la afirmación que quedaba detrás no la retiró nadie**. Se retira: la base es
-             el commit en curso y su SHA no se escribe —regla 1—:
+             tres eventos más allá. Se retira: la base es el commit en curso y su SHA no se
+             escribe —regla 1—:
                  git rev-parse HEAD
                  git log --oneline -1
-             Y por encima de ella, y sin cambiar:
-             LA SEDE CANÓNICA DE LAS RESOLUCIONES DEL OWNER —docs/owner/ADS-OWNER-RESOLUCIONES.md,
-             creada por O19— ES FUENTE DE AUTORIDAD, y NO se deriva de la lista de abajo: esa
-             lista enumera documentos numerados de docs/evolucion/, y la sede no es uno. Su
-             contenido no se copia aquí; se remite. Es APPEND-ONLY, el índice la enlaza y el
-             inventario de inmutables la custodia. Desde O19, toda sede derivada que cite una
-             resolución del Owner cita DE AHÍ, y no de una paráfrasis.
-             LA LISTA DE DOCUMENTOS NUMERADOS NO ES SEDE Y ES DERIVABLE — regla 2 de
-             `regla_de_reanclaje`: `ls docs/evolucion/[0-9][0-9]-*.md | sort`. Son INMUTABLES,
-             y el VEREDICTO y el RECUENTO de cada gate viven EN CADA DOCUMENTO, no aquí. La
-             LOS DOCUMENTOS NUMERADOS **NO SE ENUMERAN AQUÍ, y es `S2-03` del SÉPTIMO
-             GATE.** Esta lista se conservaba «por comodidad de lectura» y **caducaba en
-             cada gate**: el séptimo la encontró sin el 26 ni el 27, donde el sexto ya
-             había medido que le faltaba uno. Reanclarla añadiendo los que faltan cierra
-             la instancia y deja la clase viva, que es exactamente lo que este expediente
-             lleva ocho gates persiguiendo. **Se retira y se remite al comando que este
-             mismo bloque publica en su regla 2:**
-                 ls docs/evolucion/[0-9][0-9]-*.md | sort
-             Son INMUTABLES, y `G-22` los custodia contra `HEAD` y contra la revisión base.
-                                                             dictámenes Y y Z, adjudica AA ·
-                                                             **GATE INVÁLIDO** · VEREDICTO
-                                                             INSUFICIENTE · C-L.5 pasa a
-                                                             ABIERTA · recuento, severidades
-                                                             y clasificación A/B/C EN EL
-                                                             PROPIO DOCUMENTO: aquí se REMITE
-                                                             y no se copia, por la regla 1
-             docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md
-                                                             errores de hecho señalados SIN
-                                                             tocar los dictámenes
-             docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O18 · D108, y en la entrada
-                                                             de O18: su declaración de
-                                                             INVERIFICABILIDAD (X-02) y la
-                                                             DISPUTA REGISTRADA Y NO RESUELTA
-                                                             sobre el alcance de (c)
-             docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O17 · D107
-             docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   D104 · D105 · D106
-             docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md   O7–O14 · O15 · O16 · D16–D22 ·
-                                                             D23–D33 · D34–D45 · D46–D51 ·
-                                                             D52–D54 · D55–D57 · D58–D59 ·
-                                                             D60–D61 · D62 · D63 · D64–D68 ·
-                                                             D69–D70 · D71–D95 · D96–D102 ·
-                                                             D103
-             kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
+             `H-09` DEL GATE ARQUITECTÓNICO FINAL, y era la MISMA CLASE otra vez, dos veces
+             en el mismo campo. (i) Detrás de la retirada quedaba un FRAGMENTO HUÉRFANO
+             —«Son INMUTABLES, y el VEREDICTO y el RECUENTO de cada gate viven EN CADA
+             DOCUMENTO, no aquí. La»— cortado a media frase por la corrección anterior, que
+             `EE-04` reancló y `S2-03` retiró a medias. (ii) Y más abajo colgaba la SEGUNDA
+             COLUMNA de una fila cuya primera columna ya no existía —«dictámenes Y y Z,
+             adjudica AA · GATE INVÁLIDO · VEREDICTO INSUFICIENTE · C-L.5 pasa a ABIERTA»—:
+             un ESTADO COPIADO, dentro del campo que declara no copiar estados, atribuido a
+             un documento que ya nadie podía identificar. Los dos se RETIRAN.
+             LAS FUENTES DE LA BASE, POR SU SEDE Y SIN ENUMERAR SU CONTENIDO. Cada una dice
+             DE QUÉ responde; **qué identificadores contiene lo dice ELLA**, no este campo:
+                 docs/owner/ADS-OWNER-RESOLUCIONES.md
+                                     LA SEDE CANÓNICA DE LAS RESOLUCIONES DEL OWNER, creada
+                                     por O19. ES FUENTE DE AUTORIDAD y NO se deriva de los
+                                     documentos numerados: la sede no es uno de ellos. Es
+                                     APPEND-ONLY, el índice la enlaza y G-29 la custodia
+                                     contra el COMMIT QUE LA CREÓ. Desde O19, toda sede
+                                     derivada que cite una resolución del Owner cita DE AHÍ
+                                     y no de una paráfrasis. QUÉ RESOLUCIONES CONTIENE se
+                                     deriva, y no se escribe aquí:
+                                         grep -oE '^# `O[0-9]+`' \
+                                           docs/owner/ADS-OWNER-RESOLUCIONES.md
+                 docs/evolucion/[0-9][0-9]-*.md
+                                     LOS DOCUMENTOS NUMERADOS. NO SE ENUMERAN AQUÍ, y es
+                                     S2-03 del SÉPTIMO GATE: la lista se conservaba «por
+                                     comodidad de lectura» y caducaba en cada gate.
+                                     Reanclarla añadiendo los que faltan cierra la INSTANCIA
+                                     y deja viva la CLASE. Se remite al comando de la regla
+                                     2 de `regla_de_reanclaje`:
+                                         ls docs/evolucion/[0-9][0-9]-*.md | sort
+                                     Son INMUTABLES, y G-22 los custodia contra HEAD y
+                                     contra la revisión base. EL VEREDICTO, EL RECUENTO, LAS
+                                     SEVERIDADES y LA CLASIFICACIÓN de cada gate viven EN SU
+                                     PROPIO DOCUMENTO: aquí se REMITE y no se copia, por la
+                                     regla 1
+                 docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md
+                                     los errores de hecho señalados SIN tocar los dictámenes
+                 docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
+                                     el REGISTRO DE DECISIONES, que desde O19 es PROYECCIÓN
+                                     DERIVADA de la sede del Owner y no fuente de autoridad
+                                     sobre ella. QUÉ contiene tampoco se enumera aquí —lo
+                                     hizo durante siete tandas y caducó en todas—:
+                                         grep -oE '^\| `D[0-9]+` \|' \
+                                           docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
+                                         grep -oE '^### `O[0-9]+`' \
+                                           docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
+                 docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+                                     la ARQUITECTURA de F4, y desde D109 el contrato
+                                     ejecutable del verificador de F6 —§20—, su
+                                     clasificación semántica —§20.3— y el orden de
+                                     construcción con su nodo 9 —§18—
+                 kernel/VERSION@2.0.0-alpha.9 · kernel/KERNEL.md@1.5.0
 rama_de_trabajo: NO SE ESCRIBE AQUÍ, Y ES DELIBERADO. Este campo nombró durante tres tandas
              la rama y la base de una tanda ya cerrada, dentro de un bloque `freshness:
              vigente` — es Q-35 del documento 22, y es la tercera vez que caduca. La rama
@@ -1225,7 +1281,30 @@ rama_de_trabajo: NO SE ESCRIBE AQUÍ, Y ES DELIBERADO. Este campo nombró durant
 freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
              Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
              queda marcado HISTÓRICO y SUPERADO, y no se borra
-last_meaningful_event: EL OWNER RESUELVE LA FRONTERA ENTRE `F4c` Y `F6`, y es `O20`. La
+last_meaningful_event: EL OWNER RESUELVE LA SEMÁNTICA DE `C-L.5`, y es `O21`. La toma por
+             su cuenta —ningún gate le elevó pregunta: los NUEVE declararon que ninguna
+             decisión volvía a él— tras el ÚLTIMO gate, cuyo ordinal y documento NO se
+             escriben aquí y se derivan con el comando de `metodo`. `O21` cierra un VACÍO que
+             no es culpa de nadie: la regla de cierre de `C-L.5` es una EXCLUSIÓN de una sola
+             dirección —dice cuándo la cobertura queda EXCLUIDA, no cuándo queda
+             CERTIFICADA—, con lo que cumplir sus seis condiciones no obligaba a nada, y dos
+             adjudicadores consecutivos actuaron de forma OPUESTA sin incumplir norma alguna:
+             uno certificó la cobertura MIENTRAS devolvía insuficiencia, el siguiente se negó
+             POR devolver insuficiencia. Desde `O21`: `C-L.5` certifica COBERTURA y nada más;
+             su resultado es INDEPENDIENTE del veredicto de suficiencia; NO es discrecional
+             —cumplidas las seis condiciones el adjudicador DEBE certificar, fallada
+             cualquiera DEBE declararla ABIERTA nombrando la condición—; la certificación
+             queda ligada a una TUPLA exacta y NO se transfiere a otra candidata ni a otro
+             gate; las dos declaraciones pueden COEXISTIR; y un adjudicador NO puede negarse
+             a certificar cobertura por haber encontrado otros defectos. `O21` NO revisa las
+             seis condiciones, NO se aplica hacia atrás —sobre el último gate se registra el
+             hecho y nada más—, NO declara suficiente a `F4c`, NO corrige ningún hallazgo y
+             NO autoriza `F5`, `F6` ni PesquerApp. Se propaga como `D110`, y su texto íntegro
+             está en la SEDE CANÓNICA, que no se copia aquí:
+                 awk '/^# /{p = ($0 ~ /^# `O21`/)} p' docs/owner/ADS-OWNER-RESOLUCIONES.md
+             REANCLADO EN EL MISMO COMMIT QUE REGISTRA EL EVENTO —regla 4—, y lo anterior NO
+             se borra: baja íntegro a `last_meaningful_event_anterior` —regla 5—.
+last_meaningful_event_anterior: EL OWNER RESUELVE LA FRONTERA ENTRE `F4c` Y `F6`, y es `O20`. La
              toma por su cuenta —ningún gate le elevó pregunta: los ocho declararon que
              ninguna decisión volvía a él— tras el ÚLTIMO GATE, cuyo ordinal y documento
              NO se escriben aquí y se derivan con el comando de `metodo`. `O20` corrige una
@@ -2109,8 +2188,13 @@ resuelto_en_la_entrega_de_f4:
     reescribirlas
 owner_captado: LA AUTORIDAD CANÓNICA DE LO QUE EL OWNER HA RESUELTO NO ES ESTE CAMPO, Y DESDE
              O19 NO ES NINGUNA PARÁFRASIS DEL COORDINADOR: es
-             docs/owner/ADS-OWNER-RESOLUCIONES.md, donde viven O17, O18 —texto amplio
-             RATIFICADO— y O19 con su texto íntegro. Este campo NO los transcribe: remite.
+             docs/owner/ADS-OWNER-RESOLUCIONES.md, donde cada resolución vive con su texto
+             íntegro. Este campo NO las transcribe: remite.
+             CUÁLES SON NO SE ESCRIBE AQUÍ, y es `H-10` del GATE ARQUITECTÓNICO FINAL: este
+             campo decía «O17, O18 y O19» y «NINGUNA de las tres», y la sede ya publicaba
+             más. Un cardinal escrito al lado de una sede que crece caduca en silencio, y
+             éste caducó dos veces en dos tandas. Se DERIVA:
+                 grep -oE '^# `O[0-9]+`' docs/owner/ADS-OWNER-RESOLUCIONES.md
              LO QUE ESTE CAMPO CONSERVA DE O15 Y O16 ES TRANSCRIPCIÓN DEL COORDINADOR, se
              declara como tal y NO ES AUTORIDAD CANÓNICA. No se borra ni se reescribe: el Owner
              ordenó expresamente que O1-O16 NO se reconstruyan en la sede y conserven su
@@ -2118,9 +2202,11 @@ owner_captado: LA AUTORIDAD CANÓNICA DE LO QUE EL OWNER HA RESUELTO NO ES ESTE 
              verificable. Y es exactamente la clase de defecto que O19 corrige: una resolución
              que sólo constaba porque el coordinador la transcribía, sin nada contra lo que
              contrastarla.
-             O17, O18 Y O19 NO SE TRANSCRIBEN AQUÍ. Su sede es la canónica; su proyección, la
-             sección 2 de docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md, que ENLAZA a ella.
-             NINGUNA de las tres autoriza iniciar F5, F6 ni PesquerApp.
+             LAS RESOLUCIONES DE LA SEDE NO SE TRANSCRIBEN AQUÍ, y son las que el comando de
+             arriba derive, no las que esta línea nombre. Su sede es la canónica; su
+             proyección, la sección 2 de docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md, que
+             ENLAZA a ella. NINGUNA de ellas autoriza iniciar F5, F6 ni PesquerApp, y cada
+             una lo declara en su propio texto.
              [TRANSCRIPCIÓN DEL COORDINADOR · NO ES SEDE CANÓNICA · se conserva sin editar]
              "Autoriza aplicar la crítica independiente de F4 y corregir su
              arquitectura. NO autoriza F5 ni F6" (2026-08-27)
@@ -2137,13 +2223,21 @@ owner_captado: LA AUTORIDAD CANÓNICA DE LO QUE EL OWNER HA RESUELTO NO ES ESTE 
              redactar (g) y no autoriza crear C8. Registrado por L-02, que demostró que O16
              era la ÚNICA de las dieciséis resoluciones sin fecha, sin cita y sin entrada
              aquí — y es la que da sede a PN-11, nacida del BLOQUEANTE B2
-pregunta_pendiente: NINGUNA. La última que había —la RATIFICACIÓN que el TERCER GATE DE
-             CERTIFICACIÓN elevó, y que no era una elección de diseño— la RESPONDIÓ el Owner, y
-             es O19: ratifica el texto amplio de O18 y ordena su sede canónica. LA RATIFICACIÓN
-             QUEDA CERRADA y O18 no vuelve a someterse a elección. Antes de ella, la clase B del
-             documento 22 —el nivel ESTRUCTURAL y su productor— la respondió O17 con la
-             alternativa (b). Ninguna de las dos bloquea ya, y NINGUNA autoriza iniciar F5.
-             Su texto no se copia aquí: la sede es docs/owner/ADS-OWNER-RESOLUCIONES.md.
+pregunta_pendiente: NINGUNA, y no es una afirmación de este campo: **ningún gate ha elevado
+             una decisión al Owner desde que existe esta cadena** —todos declararon clase B
+             vacía—, y las dos últimas resoluciones las tomó el Owner POR SU CUENTA.
+             CUÁL FUE LA ÚLTIMA RESPUESTA NO SE ESCRIBE AQUÍ, y es la clase de `C-L.7`: este
+             campo nombraba «O19» como la última, y para cuando se leyó ya había dos
+             posteriores. Se retira y se remite —regla 3—:
+                 grep -o '^# `O[0-9]*`' docs/owner/ADS-OWNER-RESOLUCIONES.md | tail -1
+             Lo histórico, que no caduca porque describe hechos cerrados: la RATIFICACIÓN que
+             el TERCER GATE elevó la respondió O19 —ratifica el texto amplio de O18 y ordena
+             su sede canónica—, y LA RATIFICACIÓN QUEDA CERRADA: O18 no vuelve a someterse a
+             elección. Antes, la clase B del documento 22 —el nivel ESTRUCTURAL y su
+             productor— la respondió O17 con la alternativa (b).
+             **NINGUNA resolución del Owner autoriza iniciar F5**, y cada una lo declara en
+             su propio texto. Ese texto no se copia aquí: la sede es
+             docs/owner/ADS-OWNER-RESOLUCIONES.md.
              Las presiones normativas vigentes son materia de F5, no preguntas, y SU CENSO
              NO SE ESCRIBE AQUÍ. Este campo publicó una cifra a mano tres tandas seguidas y
              las tres caducaron —Q-12 y Q-13 del documento 22—, así que REMITE: la única
@@ -2286,9 +2380,16 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
                                          SECUNDARIOS y no cuentan como condiciones:
                                          K-05 K-09 K-10 K-08 L-03 corregidos ·
                                          J-11 contratado para F6, NO implementado
-               ABIERTA               1   C-L.5 — la REABRE el adjudicador `GG` del OCTAVO
-                                         GATE por `ASIGNADO − LEÍDO = 338 líneas y UNA
-                                         FUENTE`. Es el ÚLTIMO ACTO VÁLIDO de cobertura
+               ABIERTA               1   C-L.5 — **y NO por incumplimiento de su medición**:
+                                         sobre la candidata del ÚLTIMO gate las dos restas
+                                         dieron ∅ y su adjudicador declaró que la cobertura
+                                         CIERRA y no es razón de insuficiencia. Está ABIERTA
+                                         porque **el ACTO de certificar no se emitió**, y
+                                         entonces ninguna norma lo obligaba. **Desde `O21`
+                                         eso ya no puede volver a pasar**: cumplidas las
+                                         seis condiciones el adjudicador DEBE certificar, y
+                                         no puede negarse por otros defectos. El detalle
+                                         está en su fila, y sólo un adjudicador la mueve
                **[HISTÓRICO · entre el SÉPTIMO y el OCTAVO gate esta línea decía
                «CERTIFICADA POR COBERTURA · 1 · la certifica el adjudicador `FF` del SÉPTIMO
                GATE». Dejó de serlo por la resta que midió su sucesor, y el renglón anterior
@@ -2320,18 +2421,47 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
                       TODAS las sedes vigentes de esta condición, que es lo que Q-14 pidió
                C-L.4  CERRADA · D106 (iii): O16 gana su ADDENDUM DE CRONOLOGÍA, con las dos
                       fechas verificadas en git log por el adjudicador R
-               C-L.5  ABIERTA · **la REABRE el adjudicador `GG` del OCTAVO GATE, y es el
-                      ÚLTIMO ACTO VÁLIDO de cobertura del expediente.** Midió
-                      `OBLIGATORIO − ASIGNADO = ∅` en las dos direcciones, y
-                      `ASIGNADO − LEÍDO = 338 líneas y UNA FUENTE` en el lote de uno de los
-                      dos revisores —que lo declaró contra su propio interés como «312
-                      líneas · 0 fuentes», honesto en la dirección y falso en la cifra y en
-                      la unidad—. **La regla de cierre de esta condición excluye la
-                      suficiencia por sí sola ante cualquier fuente asignada y no leída**,
-                      y el adjudicador la aplicó.
+               C-L.5  ABIERTA · **y el motivo NO es el que este registro decía.** Sobre la
+                      candidata del ÚLTIMO gate su adjudicador midió
+                      `OBLIGATORIO − ASIGNADO = ∅` en las DOS direcciones y
+                      `ASIGNADO − LEÍDO = ∅`, y declaró expresamente que **la cobertura
+                      CIERRA y NO es razón de insuficiencia**. Está ABIERTA porque **no
+                      ejecutó el ACTO de certificarla**, y lo dijo con todas las letras:
+                      certificar es un acto sobre el gate y él no lo emitía mientras el gate
+                      devolviera insuficiencia. **La medición se cumple; el acto falta.**
+                      **Y NINGUNA NORMA LE OBLIGABA**, que es lo que `O21` corrige: la regla
+                      de cierre de `C-L.5` es una EXCLUSIÓN de una sola dirección —dice
+                      cuándo la cobertura queda EXCLUIDA, no cuándo queda CERTIFICADA—, de
+                      modo que dos adjudicadores consecutivos pudieron actuar de forma
+                      OPUESTA sin incumplir nada: `FF` certificó MIENTRAS devolvía
+                      insuficiencia; `HH` se negó POR devolverla.
+                      **DESDE `O21`, Y SÓLO HACIA ADELANTE:** cumplidas las seis condiciones
+                      sobre un gate válido, el adjudicador **DEBE** declarar
+                      `C-L.5 CERTIFICADA PARA ESTE GATE`; fallada cualquiera, **DEBE**
+                      declararla `ABIERTA` **nombrando la condición incumplida**. Certificar
+                      cobertura y declarar suficiencia son actos INDEPENDIENTES y pueden
+                      COEXISTIR; un adjudicador **no puede negarse** a certificar cobertura
+                      por haber encontrado otros defectos; y la certificación queda ligada a
+                      una TUPLA exacta —tree SHA, commit, SHA del manifiesto de asignación,
+                      SHA de los manifiestos de lectura, identificador del gate e identidad
+                      del adjudicador— y **NO se transfiere**. `O21` **NO se aplica hacia
+                      atrás**: sobre el último gate se registra el hecho —condiciones
+                      satisfechas, acto no emitido por ausencia de regla entonces vigente— y
+                      nada más, y **ni `FF` ni `HH` incumplieron norma alguna**.
                       **NADA de esto la cierra ni la abre por decisión de este registro:**
-                      certificar y reabrir son ACTOS de un adjudicador, y aquí sólo se
-                      recoge el último que existe.
+                      certificar es un ACTO de un adjudicador, y aquí sólo se recoge el
+                      último que existe. Su texto íntegro está en la sede canónica:
+                          awk '/^# /{p = ($0 ~ /^# `O21`/)} p' \
+                            docs/owner/ADS-OWNER-RESOLUCIONES.md
+                      **[HISTÓRICO · el motivo que este renglón daba, y que describía OTRA
+                      candidata]** «La REABRE el adjudicador `GG` del OCTAVO GATE por
+                      `ASIGNADO − LEÍDO = 338 líneas y UNA FUENTE` en el lote de uno de los
+                      dos revisores —que lo declaró contra su propio interés como “312
+                      líneas · 0 fuentes”, honesto en la dirección y falso en la cifra y en
+                      la unidad—; es el ÚLTIMO ACTO VÁLIDO de cobertura del expediente.» Fue
+                      cierto sobre `61492c1`; el gate siguiente midió otra cosa sobre otra
+                      candidata, y el motivo dejó de describir el objeto vigente sin que
+                      nadie lo moviera. Se conserva y no se borra.
                       **[HISTÓRICO] Su estado anterior era CERTIFICADA POR COBERTURA**, y la
                       certificó el adjudicador `FF` del SÉPTIMO GATE sobre la candidata de
                       aquel gate — con las dos restas a ∅ y **acotando** que certificaba
@@ -2442,6 +2572,25 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
                       bloque EN EL MISMO COMMIT que lo registra.
                       **NO se declara SUPERADO**: reanclar no es certificar, y sólo un gate
                       independiente posterior puede cerrar X-04 y devolver C-L.7 a CERRADA.
+                      **LO QUE ESTA TANDA HA HECHO, Y ES DE CLASE Y NO DE INSTANCIA.** El
+                      ÚLTIMO gate encontró TRES instancias vivas a la vez —`H-09`, `H-10` y
+                      `H-16`— y las tres son la misma: un campo que copia dentro del bloque
+                      lo que el bloque declara no copiar. Corregir esas tres habría cerrado
+                      otra vez la instancia y dejado la clase, que es lo que este expediente
+                      lleva NUEVE gates persiguiendo. Se ha hecho lo otro:
+                        · el CONJUNTO DE CAMPOS se DERIVA del propio bloque y se recorre
+                          entero, no los tres señalados — el comando está en la regla 7;
+                        · a cada campo se le hacen las TRES preguntas de la regla 7: ¿copia
+                          un recuento, un ordinal, un estado o una enumeración que otra sede
+                          publica? ¿queda un FRAGMENTO de una retirada anterior sin su
+                          frase? ¿lo histórico está ROTULADO como histórico?;
+                        · la GARANTÍA queda escrita DENTRO del bloque como **regla 7**, de
+                          modo que no depende de que nadie se acuerde en la tanda siguiente;
+                        · y la regla 3 pasa a derivar la última resolución del Owner **de su
+                          SEDE CANÓNICA** y no del registro derivado, que era leer la
+                          autoridad en la copia.
+                      **Esto tampoco la cierra.** Sigue NO CERRADA hasta que un gate
+                      independiente posterior lo juzgue, y este registro no se lo adelanta.
                       **[HISTÓRICO · CONSECUENCIA DECLARADA que era FALSA EN EL COMMIT QUE
                       LA ESCRIBIÓ. Se conserva marcada, no se borra, y es `AA-02` del
                       documento 25, GRAVE.]** Este renglón decía: *«el evaluador `G-16` de
@@ -4064,7 +4213,7 @@ QUÉ NO LA CIERRA          esta tanda, este registro, ni un gate de `F4c`. Un ga
 | `C-08` | CORREGIDO_EN_F4c | sí | no | no | no | no | `SIS` | `F4c` | `based_on:` no afirma qué candidata es la base: remite | `CHECKPOINT` · regla 4 |
 | `C-09` | CORREGIDO_EN_F4c | sí | no | no | no | no | `SIS` | `F4c` | el comando que daba 13 donde el ordinal es 7 no está en ninguna de sus tres sedes | `CHECKPOINT` · `J-07` |
 | `C-10` | CORREGIDO_EN_F4c | sí | no | no | no | no | coordinador del gate | `F4c` | el §5 del manifiesto siguiente distingue LEÍDA de AGOTADA POR DELEGACIÓN | manifiesto · `EE-08` |
-| `C-11` | CORREGIDO_EN_F4c | sí | sí | no | no | no | `PLT` | `F4c` la afirmación · `F6` la unificación | el derivador no dice «ÚNICA SEDE» donde hay tres usos; la unificación va a `V6-04` | derivador · emisor |
+| `C-11` | CORREGIDO_EN_F4c | sí | sí | no | no | no | `PLT` | `F4c` la afirmación · `F6` la unificación | el derivador no dice «ÚNICA SEDE» donde hay tres usos; la unificación va a **`V6-19`**, que es el contrato que CONTIENE materialmente esa obligación | derivador · emisor · §20.1 `V6-19` |
 | `C-12` | CORREGIDO_EN_F4c | sí | no | no | no | no | `PLT` | `F4c` | los dos cardinales del derivador se retiran y remiten | derivador · `J-07` |
 | `C-13` | CONTRATO_COMPLETO_PARA_F6 | sí | sí | no | **SÍ** | **SÍ** | `PLT` implementa · `SIS` propietario | `F6` | `V6-08` · `V6-11` · `V6-16` · `V6-17` | §20 doc 11 · `X-01` |
 | `C-14` | CORREGIDO_EN_F4c | sí | no | no | no | no | `SIS` | `F4c` | la enumeración de pasadas se retira y remite | `CHECKPOINT` · `DD-08` |
@@ -4073,7 +4222,7 @@ QUÉ NO LA CIERRA          esta tanda, este registro, ni un gate de `F4c`. Un ga
 | `C-17` | CORREGIDO_EN_F4c | sí | no | no | no | no | `SIS` | `F4c` | la cadena `_anterior` conserva los cuatro eventos que le faltaban | `CHECKPOINT` · regla 5 |
 | `C-18` | CONTRATO_COMPLETO_PARA_F6 | sí | sí | no | **SÍ** | **SÍ** | `PLT` implementa · `SIS` propietario | `F6` | `V6-04` · `V6-10` · `V6-11` | §20 doc 11 · superficie |
 | `C-19` | CORREGIDO_EN_F4c | sí | no | no | no | no | `SIS` | `F4c` | el cardinal publica su comando o se retira | doc 11 §0 · `DD-13` |
-| `C-20` | CONTRATO_COMPLETO_PARA_F6 | sí | sí | no | **SÍ** | **SÍ** | `PLT` implementa · Owner acepta | `F6` | `V6-16` · `V6-17` | §20 doc 11 · §11.6 · `O18` |
+| `C-20` | CORREGIDO_EN_F4c | sí | no | no | no | no | `PLT` | `F4c` | el SOBRE transporta el TEXTO ÍNTEGRO de la ratificación `O19`, no sólo sus digest, y el receptor puede comprobar con `sha256sum` que lo entregado es lo anclado | `O19` L315-317 · §11.6 campos 17-18-19 y paso `6ter` · emisor |
 | `C-21` | CORREGIDO_EN_F4c | sí | no | no | no | no | `SIS` | `F4c` | la proyección reproduce la sede cláusula a cláusula o no se presenta como literal | `DECISIONES` · `O19` |
 
 ### Lo que esta matriz afirma, y lo que NO
@@ -4087,10 +4236,24 @@ NINGUNO BLOQUEA `F5`          y es la consecuencia de `O20`: los defectos de imp
                               corregidos. **Quien decide si `F5` queda autorizada es un
                               GATE INDEPENDIENTE, no esta tabla**
 
-LOS SEIS QUE PERMITEN UN      `C-00` · `C-01` · `C-02` · `C-03` · `C-04` · `C-13`
-FALSO VERDE                   bloquean `F6` y bloquean PesquerApp, y así consta en su fila.
-                              `C-18` y `C-20` también bloquean las dos, por ser superficie
-                              del mismo verificador y elemento del ancla
+LOS QUE PERMITEN UN           `C-00` · `C-01` · `C-02` · `C-03` · `C-04` · `C-13`, y `C-18`
+FALSO VERDE                   con ellos por ser superficie del mismo verificador. Bloquean
+                              `F6` y bloquean PesquerApp, y así consta en su fila. **El
+                              cardinal se retira de este rótulo** —`H-14`, regla de `J-07`—:
+                              lo deriva la tabla, no esta frase
+                                awk '/^\| `C-[0-9]+` \|/' CHECKPOINT-ADS-NEXT.md |
+                                  grep -c '| \*\*SÍ\*\* | \*\*SÍ\*\* |'
+
+`C-20` SALE DE ESE GRUPO      `H-01`. Estaba con fase `F6` y prueba de cierre `V6-16`·`V6-17`,
+                              y **las dos eran falsas**: su sede normativa —`O19` L315-317 y
+                              §11.6— le da fase `F4c` y propietario `PLT`, y ninguno de los
+                              dos contratos menciona el CONTENIDO del sobre, de modo que
+                              `F6` podía cerrarlos los dos en verde con el defecto intacto.
+                              Su estado primario pasa a **CORREGIDO_EN_F4c** y su remedio se
+                              aplica en el emisor, no se contrata.
+                              **La rama alternativa —que §11.6 y la sede DEJARAN de exigir el
+                              texto— NO estaba disponible sin el Owner**: esa lista vive
+                              dentro de una sede APPEND-ONLY, y retirarla es su decisión
 
 ARQUITECTURA COMPLETA         los veintidós: ninguno exige elegir arquitectura. Si alguno
                               la exigiera, seguiría bloqueando `F4c` y no estaría aquí
@@ -4098,9 +4261,58 @@ ARQUITECTURA COMPLETA         los veintidós: ninguno exige elegir arquitectura.
 `C-11` LLEVA LAS DOS COSAS    su ESTADO PRIMARIO es CORREGIDO_EN_F4c —la afirmación falsa
                               del derivador se retira aquí— y su atributo secundario
                               `implementacion_pendiente` es **sí**: la unificación de la
-                              fórmula en las tres sedes es trabajo de `F6`, y va en `V6-04`.
+                              fórmula en las tres sedes es trabajo de `F6`.
                               **Un estado primario, un atributo secundario, y no se mezclan**
+
+`C-11` YA NO CUELGA DE        `H-05`. Su mitad `F6` iba a `V6-04`, que contrata **otra
+`V6-04`                       propiedad**: un censo DERIVADO de las lecturas de Git. Una
+                              obligación enrutada a un contrato que no la contiene se cierra
+                              en verde con la obligación sin cumplir, que es la misma forma
+                              de `H-01`. Va a **`V6-19`**, escrito con todos los campos que
+                              §20.1 define en su cabecera, cuyo
+                              objeto es exactamente el suyo: **una sola sede por fórmula
+                              compartida, y consumidores que la IMPORTAN**. Ni se mezclan
+                              propiedades ni se declara implementación: `V6-19` es contrato
 ```
+
+### `CONTRATO_COMPLETO_PARA_F6` NO ES «CONSTRUIBLE», y desde ahora la tabla lo dice
+
+**El estado primario de esta matriz es el que `O20` admite, y no se toca.** Lo que cambia es
+que **deja de estar solo**: `O20` §1 lo definió como «la obligación está escrita entera, con
+propietario, fase, entrada, salida, evidencia, escenarios y criterio de cierre», y eso mide
+**que las casillas tengan texto** — no que el texto sea coherente consigo mismo ni ejecutable
+con las normas vigentes. El GATE ARQUITECTÓNICO FINAL encontró **dos contratos con todas sus
+casillas llenas que no se podían construir**, y con un solo estado no había forma de decirlo.
+
+**La semántica la fija §20.3 del documento 11**, con tres valores —
+`CONTRATO_ESTRUCTURALMENTE_COMPLETO` · `CONTRATO_CONSTRUIBLE` ·
+`CONTRATO_BLOQUEADO_POR_DEPENDENCIA`— y **vive en la columna `clasificación` de §20.1**, una
+por contrato. **Esta matriz no la copia**: la LEE, por la columna `prueba_de_cierre` de cada
+fila.
+
+```bash
+# la clasificación de cada contrato, en su única sede
+grep -oE '^\| `V6-[0-9]+`.*\| (`CONTRATO_[A-Z_]+`)' \
+  docs/evolucion/11-ARQUITECTURA-INTEGRADA.md | grep -oE 'V6-[0-9]+|CONTRATO_[A-Z_]+'
+
+# y qué filas de ESTA matriz cuelgan de un contrato BLOQUEADO, derivado y no escrito:
+for v in $(grep -E '^\| `V6-[0-9]+`.*CONTRATO_BLOQUEADO_POR_DEPENDENCIA' \
+             docs/evolucion/11-ARQUITECTURA-INTEGRADA.md | grep -oE 'V6-[0-9]+'); do
+  awk -v v="$v" '/^\| `C-[0-9]+` \|/ && $0 ~ v {print v" ← "$2}' \
+    docs/evolucion/CHECKPOINT-ADS-NEXT.md
+done
+```
+
+**REGLAS, y son las de §20.3 aplicadas a esta tabla:**
+
+- **ningún contrato BLOQUEADO cuenta como construible**, y por tanto una fila cuyo
+  `prueba_de_cierre` incluya uno **no puede presentarse como lista para que `F6` la
+  construya**: `F6` la construirá cuando la dependencia se levante;
+- `CONTRATO_COMPLETO_PARA_F6` **no significa** corregido, ni implementado, ni ejecutado, ni
+  certificado, ni construible. Significa lo que `O20` dice que significa, y nada más;
+- **ninguna fila cambia de estado primario por esto.** La clasificación semántica es un
+  atributo **del contrato**, no del hallazgo, y no se mezclan — la misma disciplina que
+  `C-11` estrenó con su atributo secundario.
 
 ## PARTE DE LA TANDA POSTERIOR AL SÉPTIMO GATE — un renglón por hallazgo, y el recuento se DERIVA
 
@@ -4176,7 +4388,138 @@ NADA DE GIT DESTRUCTIVO      sin merge, sin mover `redesign/kernel-2.0`, sin ree
                              ninguna referencia, sin tocar candidatas ni gates anteriores
 ```
 
+## PARTE DE LA TANDA POSTERIOR AL GATE ARQUITECTÓNICO FINAL — un renglón por hallazgo, y el recuento se DERIVA
+
+> **Misma disciplina que los tres partes anteriores.** Ni una suma escrita: una fila por
+> identificador, y el número se saca del árbol.
+>
+> ```bash
+> awk '/^### Lo aplicado por la tanda del GATE ARQUITECTÓNICO FINAL/{t=1} t' \
+>   docs/evolucion/CHECKPOINT-ADS-NEXT.md | grep -oE '`H-[0-9]+`' | sort -u | wc -l
+>
+> # y la COBERTURA contra el gate, que es lo que hay que comprobar: sale VACÍO
+> comm -23 <(grep -oE '\*\*`H-[0-9]+`\*\*' \
+>              docs/evolucion/30-GATE-ARQUITECTONICO-FINAL-F4C.md \
+>            | grep -oE 'H-[0-9]+' | sort -u) \
+>          <(awk '/^### Lo aplicado por la tanda del GATE ARQUITECTÓNICO FINAL/{t=1} t' \
+>              docs/evolucion/CHECKPOINT-ADS-NEXT.md | grep -oE 'H-[0-9]+' | sort -u)
+> ```
+>
+> **APLICAR NO ES CERTIFICAR.** Ninguno de estos hallazgos se declara SUPERADO.
+
+**LO QUE ESTA TANDA ES, EN UNA LÍNEA.** El diagnóstico de cierre agrupó los hallazgos del
+último gate en **OCHO CAUSAS INDEPENDIENTES**, y midió que **sólo cinco de los dieciséis
+tocan lo que `F6` necesita para construir** y que **ninguno exige arquitectura nueva**: cuatro
+son redacción del contrato y uno es añadir un nodo a un grafo ya decidido. Esta tanda **cierra
+cada causa por su propiedad**, no por su instancia: donde había un cardinal escrito lo retira
+y publica el comando que lo deriva —nunca lo sustituye por otro—; donde había una obligación
+enrutada a un contrato que no la contiene, la lleva a uno que sí; y donde había una
+dependencia sin declarar, la declara con su sede, su fase, su propietario y su condición
+exacta de desbloqueo.
+
+### Lo aplicado por la tanda del GATE ARQUITECTÓNICO FINAL
+
+| id | sede del remedio | qué se hizo, y con qué prueba |
+|---|---|---|
+| **`H-01`** | emisor · `CHECKPOINT` matriz · doc 11 §11.6 | **`C-20` vuelve a `F4c`, que es su fase normativa, y el defecto se CORRIGE en vez de contratarse.** `O19` L315-317 enumera SEIS cosas que cada revisor debe recibir externamente y **la primera es el TEXTO de la ratificación**; el sobre llevaba las otras cinco. `V6-16` y `V6-17` **no mencionan el contenido del sobre**, de modo que `F6` podía cerrarlos en verde con el defecto intacto, y §11.6 ya le había dado fase «ya, para el PRÓXIMO gate de `F4c`». El emisor transporta ahora el texto íntegro leído del COMMIT AUDITADO, con su digest, la receta que lo reproduce y una obligación nueva del revisor. **La rama alternativa —que la sede dejara de exigirlo— NO estaba disponible sin el Owner**, y así queda escrito |
+| **`H-02`** | doc 11 §18 | **El orden de construcción de `F6` gana el nodo 9**: el verificador y la raíz externa, que `O20` decidió y este grafo no dibujaba, con la arista `9 → 8` que BLOQUEA PesquerApp. **No se reordena nada**: los nodos 0 a 8 conservan orden, dependencias y numeración, y se inserta la dependencia que `O20` y `O18` ya declaraban |
+| **`H-03`** | doc 11 §15.4 | `O20` **y** `O21` reciben su fila, que es lo que la propia regla de la sección exige —«UNA FILA POR RESOLUCIÓN del Owner»— y lo que su sanción anunciaba. Comprobado por cobertura: `diff <(filas de §15.4) <(cabeceras `### \`O` del registro)` sale VACÍO |
+| **`H-04`** | doc 11 §15.8 | `D109` **y** `D110` reciben su bloque, donde `D107` y `D108` lo abrieron. Cada uno declara **qué reparte y qué NO elige**, que es el objeto de esa serie |
+| **`H-05`** | doc 11 §20.1 `V6-19` · `CHECKPOINT` matriz | **La mitad `F6` de `C-11` deja de colgar de `V6-04`**, que contrata otra propiedad —un censo derivado de las lecturas Git—. Se escribe **`V6-19`**, con todos los campos de §20.1: *cada FÓRMULA COMPARTIDA tiene UNA SOLA SEDE, y sus consumidores la IMPORTAN en vez de reescribirla*, con su escenario negativo —una segunda definición da ROJO aunque hoy coincida— y su cierre derivable. **No se declara implementación ni ejecución** |
+| **`H-06`** | doc 11 §20.1 `V6-15` · §20.5 | **El escenario negativo pasa a exigir exactamente lo que su ENTRADA entrega**, y el conjunto se DERIVA de los documentos 27, 28 y 29 con el comando que §20.5 publica. Se retira «los once árboles» —los once son de OCHO gates, y el octavo, `DD-01`, es del quinto—. **No se sustituye once por tres**: se retira el cardinal y se remite. La incorporación de los árboles históricos queda como **DEUDA DE INVENTARIO declarada**, con propietario `VER` y fase `F6`, y saldarla hace crecer la entrada **sin editar ningún campo** |
+| **`H-07`** | doc 11 §20.1 `V6-16` · §20.4 · §20.3 | **`V6-16` declara su dependencia de `PN-19`**, la enlaza y enlaza §11.8, con fase `F5`, propietario el Owner y **condición exacta de desbloqueo**. Queda **`CONTRATO_BLOQUEADO_POR_DEPENDENCIA`**, no «completo y construible». **No bloquea `F4c`**: la decisión no está oculta —tiene sede, fase, propietario y texto—; lo que faltaba era CITARLA |
+| **`H-08`** | doc 11 §11.6 | El campo 17 pasa a exigir **todas las resoluciones que la SEDE contenga**, derivadas por el emisor de las cabeceras `# \`Onn\``, con `O17`·`O18`·`O19` como **mínimo exigido**. Fijar tres donde la sede ya llevaba más era una norma que caduca cada vez que el Owner resuelve, y **el instrumento ya hacía lo correcto** |
+| **`H-09`** | `CHECKPOINT` `based_on:` | **Se retiran los DOS restos**: el fragmento cortado a media frase y la segunda columna de una fila cuya primera columna ya no existía, que **COPIABA un estado dentro del campo que declara no copiar estados**. `based_on` se reancla a sus fuentes por SEDE, cada una con el comando que deriva su contenido, y ninguna enumera identificadores |
+| **`H-10`** | `CHECKPOINT` `owner_captado:` | «O17, O18 y O19» y «NINGUNA de las tres» se RETIRAN: la sede publica más, y el cardinal caducó dos veces en dos tandas. Se remite a `grep -oE '^# \`O[0-9]+\`'` sobre la sede canónica |
+| **`H-11`** | batería · tres rótulos | **SÓLO RÓTULOS.** La regla APPEND-ONLY de `docs/owner/` es de `O19`, que crea la sede con ese contrato; la tanda de `O20` fue la OCASIÓN de la corrección. Uno de los tres se IMPRIME en la salida. **Ni una línea de lógica, ni el perímetro, ni una guarda** |
+| **`H-12`** | doc 11 §19 y §2.1 | La familia **`V6-<nn>`** entra en el censo de poblaciones adversariales —la sede definitoria, la que gobierna la prueba de `D83`— y en el inventario de «nada está probado». **Sin cifra**: cada sede publica el comando que deriva la suya |
+| **`H-13`** | derivador · `ENCARGO` | **SÓLO EL TEXTO.** Las cláusulas describían el OCTAVO gate mucho después de que cerrara. **Ni una ruta cambia**, y el universo derivado es idéntico |
+| **`H-14`** | dec `D109` · `CHECKPOINT` · `00-INDICE` · doc 11 §20 | «once campos cada uno» se retira de las tres sedes: la tabla nunca dio once por fila. Y **la FUENTE global de §20 se ACOTA**, porque `V6-12` deriva de `O19` y de las reglas de la sede, **no de `O20`** — la fila lo dice ahora |
+| **`H-15`** | dec | El marcador `> ` incrustado cuatro veces dentro de una línea de cita se corrige. **El contenido resolutivo no se toca** |
+| **`H-16`** | `CHECKPOINT` cabecera · `00-INDICE` | «catorce» y «ocho» se retiran de las dos sedes que a la vez declaraban que el recuento era DERIVADO, y se publica el `awk` que lo deriva de la tabla |
+
+### Y el BARRIDO DE CLASE de `C-L.7`, que es lo que esta tanda añade sobre los tres renglones
+
+`H-09`, `H-10` y `H-16` son **tres instancias de una misma clase**, y corregir tres instancias
+es lo que este expediente lleva nueve gates haciendo. La clase queda barrida entera:
+
+```bash
+# el CONJUNTO DE CAMPOS se deriva del propio bloque, no se escribe
+awk '/^```/{f=!f} !f && /^[a-z_]+:/{sub(/:.*/,"");print}' \
+  docs/evolucion/CHECKPOINT-ADS-NEXT.md | sort -u
+```
+
+Y la garantía queda escrita **DENTRO** del bloque, como **regla 7** de `regla_de_reanclaje`,
+para que no dependa de que nadie se acuerde en la tanda siguiente. La **regla 3** pasa además
+a derivar la última resolución del Owner **de su SEDE CANÓNICA** y no del registro derivado.
+**Nada de esto cierra `C-L.7`**: sigue NO CERRADA hasta que un gate independiente lo juzgue.
+
 ## Siguiente acción exacta
+
+```text
+0  DÓNDE ESTAMOS               el OWNER ha resuelto la SEMÁNTICA de `C-L.5`: es `O21`, y su
+                               texto vive en la SEDE CANÓNICA. El último gate y su documento
+                               NO se escriben aquí —regla 2—:
+                                 ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
+                               y la última resolución del Owner sale de SU sede —regla 3—:
+                                 grep -o '^# `O[0-9]*`' \
+                                   docs/owner/ADS-OWNER-RESOLUCIONES.md | tail -1
+
+1  QUÉ CAMBIA, Y QUÉ NO        CAMBIA la SEMÁNTICA de `C-L.5`: certifica COBERTURA y nada
+                               más, es INDEPENDIENTE del veredicto de suficiencia, y DEJA DE
+                               SER DISCRECIONAL. **NO cambian sus SEIS condiciones**, que
+                               siguen siendo las del documento 19, `O-04` y `P-08`. **`O21`
+                               NO declara suficiente a `F4c`**, NO corrige ningún hallazgo y
+                               NO autoriza `F5`, `F6` ni PesquerApp, y lo dice.
+
+2  LO QUE ESTA TANDA HA HECHO  registrar `O21` en la sede canónica —APPEND-ONLY— y
+                               proyectarla en `D110`, §15.4 y §15.8; y aplicar los hallazgos
+                               del último gate, uno por identificador, en el PARTE DE LA
+                               TANDA de este fichero. **Ni un cardinal se escribe aquí**: el
+                               recuento y la cobertura contra el documento del gate salen de
+                               los dos comandos que ese parte publica.
+
+3  LO QUE NO SE HA HECHO,      **no se ha implementado ni un punto del contrato de `F6`**.
+   Y ES DELIBERADO             **No se ha tocado la lógica del verificador de admisión**: de
+                               la batería, tres RÓTULOS; del derivador, el TEXTO del encargo.
+                               No se ha modificado material protegido, ni el texto de
+                               ninguna `O` ni el texto resolutivo de ninguna `D` anterior, y
+                               **ningún hallazgo se declara SUPERADO**.
+
+4  QUÉ HAY QUE HACER AHORA     PUBLICAR UNA CANDIDATA NUEVA en una referencia `review/…` que
+                               no exista, y someterla a UN GATE INDEPENDIENTE con agentes de
+                               contexto limpio que NO sean quien aplicó esta tanda: dos
+                               revisores en paralelo y sin verse, y un adjudicador que reciba
+                               los dictámenes cerrados, reproduzca cada afirmación contra
+                               fichero y línea, **no resuelva por mayoría y no corrija**.
+                               Con manifiesto previo conforme a `DD-17` y **SOBRE DE ANCLA**
+                               emitido antes de crear a ningún revisor.
+
+5  QUÉ TIENE QUE JUZGAR        los dieciséis hallazgos y las ocho causas · `O21` y la
+                               INDEPENDENCIA entre cobertura y suficiencia · `C-L.5` por sus
+                               SEIS condiciones · `C-L.7` como CLASE · `C-20` y el CONTENIDO
+                               REAL del sobre · `V6-15` · `V6-16` y `PN-19` · la
+                               clasificación semántica de TODOS los contratos de §20 · el
+                               orden de construcción hasta PesquerApp · que no quede
+                               ARQUITECTURA OCULTA · que ninguna deuda de `F6` se presente
+                               como implementada · que PesquerApp siga BLOQUEADA · y que no
+                               haya REGRESIÓN en `O20` ni en la matriz de los 22.
+
+6  Y EL ADJUDICADOR EMITE      DOS declaraciones SEPARADAS, y `O21` le prohíbe condicionar la
+   DOS COSAS, NO UNA           primera a la segunda:
+                                 `C-L.5 CERTIFICADA PARA ESTE GATE` **o** `C-L.5 ABIERTA`,
+                                 y si es ABIERTA, **nombrando la condición incumplida**
+                                 `SUFICIENTE PARA F5` **o** `INSUFICIENTE PARA F5`
+                               Las dos pueden coexistir: la primera habla de COBERTURA, la
+                               segunda de SUFICIENCIA ARQUITECTÓNICA.
+
+7  LO QUE NO CAMBIA            **APLICADA NO ES CERTIFICADA.** REGISTRAR, PROYECTAR o
+                               CONTRATAR no es CORREGIR, y CORREGIR no es SUPERAR. `F4c`
+                               sigue ABIERTA y `F5` sigue NO AUTORIZADA hasta que un gate
+                               independiente diga otra cosa, con esas palabras.
+```
+
+## Siguiente acción exacta — HISTÓRICA, anterior a `O21`
 
 ```text
 0  DÓNDE ESTAMOS               el OWNER ha resuelto la FRONTERA entre `F4c` y `F6`: es
@@ -4192,11 +4535,20 @@ NADA DE GIT DESTRUCTIVO      sin merge, sin mover `redesign/kernel-2.0`, sin ree
 
 2  LO QUE ESTA TANDA HA HECHO  registrar `O20` en la sede canónica —APPEND-ONLY— y
                                proyectarla en `D109`; escribir el **CONTRATO OBLIGATORIO DE
-                               `F6`** en §20 del documento 11, con DIECIOCHO puntos y sus
-                               once campos cada uno; repartir los 22 hallazgos del octavo
-                               gate en la MATRIZ DE CIERRE, con un estado primario cada uno;
-                               y corregir los CATORCE que son de `F4c`. El detalle NO se
-                               copia aquí: está en la matriz, con el comando que la cuenta.
+                               `F6`** en §20 del documento 11, un punto por obligación y
+                               todos los campos que su cabecera define; repartir los 22
+                               hallazgos del octavo gate en la MATRIZ DE CIERRE, con un
+                               estado primario cada uno; y corregir los que son de `F4c`.
+                               **NI UN CARDINAL SE ESCRIBE AQUÍ, y es `H-14`**: este renglón
+                               decía «DIECIOCHO puntos y sus once campos cada uno» y
+                               «los CATORCE», tres cifras al lado de las tablas que las dan,
+                               y la de los campos **nunca cuadró** —la fila lleva sus celdas
+                               y la cabecera de §20.1 sus globales—. El detalle está en su
+                               sede, con el comando que la cuenta:
+                                   grep -cE '^\| `V6-[0-9]+` \|' \
+                                     docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+                                   awk '/^\| `C-[0-9]+` \|/{print $4}' \
+                                     docs/evolucion/CHECKPOINT-ADS-NEXT.md | sort | uniq -c
 
 3  LO QUE NO SE HA HECHO,      **no se ha implementado ni un punto del contrato de `F6`**, y
    Y ES DELIBERADO             el encargo lo prohíbe expresamente. **No se ha vuelto a

@@ -2240,7 +2240,11 @@ else:
         _g22.append("NINGÚN fichero de `docs/owner/` entra en el inventario de inmutables: "
                     "desde `O19` esa zona es la SEDE CANÓNICA de las resoluciones del Owner, "
                     "y un inventario que no la ve deja que su texto se altere en silencio")
-    # `O20`. **La SEDE DEL OWNER es APPEND-ONLY, no byte-inmutable, y la diferencia
+    # `H-11`. La REGLA es de `O19`, que es quien CREA `docs/owner/` y le da su contrato;
+    # la tanda de `O20` es sólo la OCASIÓN en que este inventario se corrigió. Rotularlo
+    # «`O20`» atribuía a una resolución una regla que no dictó, y este fichero se lee como
+    # sede: quien buscara el origen del append-only habría ido al bloque equivocado.
+    # **La SEDE DEL OWNER es APPEND-ONLY, no byte-inmutable, y la diferencia
     # importa.** Este inventario la trataba como un documento histórico —idéntica a `HEAD`—
     # y con eso **el corpus no podía registrar una resolución nueva del Owner**: el
     # procedimiento que `O19` prescribe —materializar en la sede y después proyectar— ponía
@@ -2280,7 +2284,8 @@ check("G-22",
       f"{len([f for f in _INMUTABLES if '/manifiestos/' not in f and not f.startswith('docs/owner/')])} "
       f"documentos numerados— intactos frente a `HEAD` y a `05f71b7`" +
       f" · de ellos, {len(_g22_ow)} de `docs/owner/` se juzgan APPEND-ONLY y NO byte a byte "
-      f"(`O20`): su contrato lo comprueba `G-29` contra el COMMIT QUE LOS CREÓ, que es más "
+      f"(`O19`, que crea la sede con ese contrato): lo comprueba `G-29` contra el COMMIT "
+      f"QUE LOS CREÓ, que es más "
       f"fuerte que contra `HEAD` y permite registrar una resolución nueva del Owner sin "
       f"poner el instrumento en rojo" +
       # `AA-03`. La exención de los cuatro ficheros EN CORRECCIÓN no se decía en ninguna
@@ -3006,7 +3011,8 @@ def _censo_polaridad(texto):
             for nombre, neg, pos in _POLARIDADES}
 
 _g28, _revisados = [], 0
-# `O20`. **`docs/owner/` NO es un documento de gate**, y esta comprobación lo metía en la
+# `H-11`. La REGLA es de `O19`; la tanda de `O20` fue la ocasión de la corrección, no su
+# fuente. **`docs/owner/` NO es un documento de gate**, y esta comprobación lo metía en la
 # familia de polaridad de los veredictos: registrar una resolución nueva del Owner —que es
 # el procedimiento que `O19` prescribe— disparaba «la superación de hallazgo CAMBIÓ» sobre
 # una sede que no emite veredictos de gate. Su contrato es APPEND-ONLY y lo comprueba

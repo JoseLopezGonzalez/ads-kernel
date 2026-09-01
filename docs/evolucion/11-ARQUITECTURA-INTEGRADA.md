@@ -436,6 +436,8 @@ X-<L>       las filas adversariales de §2.9. Con guion y letra. Sede: §2.9
 X-S<n>      las filas adversariales de la FASE 0. Con guion, letra y número. Sede: §9.6
 X-O<n>      las filas adversariales del SOBRE DE ANCLA. Con guion, letra y número.
             Sede: §11.6
+V6-<nn>     los CONTRATOS DE PRUEBA DEL VERIFICADOR DE `F6`. Con relleno de DOS dígitos.
+            Sede: §20.1 · su clasificación semántica, §20.3
 ```
 
 > **CORREGIDO por `DD-10` y `DD-13` del QUINTO GATE, y las dos cosas que fallaban aquí
@@ -446,6 +448,16 @@ X-O<n>      las filas adversariales del SOBRE DE ANCLA. Con guion, letra y núme
 > intacto **aquí**, que es la sede definitoria y la que gobierna la prueba de `D83`
 > contratada para `F6`. Un `F6` que construyera la prueba desde este bloque habría
 > comparado contra una población que no existe.
+>
+> **AMPLIADO por `H-12` del GATE ARQUITECTÓNICO FINAL, y es la misma clase otra vez.** La
+> familia **`V6-<nn>`** —los contratos de prueba del verificador de `F6`, que introdujo la
+> propagación de `O20` (`D109`)— **no estaba en este bloque**, que es la sede DEFINITORIA de
+> las poblaciones adversariales y la que gobierna la prueba de `D83` contratada para `F6`.
+> Un `F6` que construyera esa prueba desde aquí no habría visto la única familia que le
+> obliga a construir **su propio verificador**. **Y esta vez el cardinal no se repone**: este
+> bloque nombra poblaciones y sedes, y **ninguna cifra**; cada sede publica el comando que
+> deriva la suya. Decir «cinco poblaciones» o «seis» es exactamente el defecto que `DD-13`
+> cerró, y por eso el rótulo de arriba tampoco lleva número.
 >
 > **El remedio no es corregir los rangos: es dejar de escribirlos.** Un rango escrito
 > caduca cada vez que alguien añade una fila, y quien la añade no pasa por la frase que
@@ -8424,11 +8436,27 @@ un sobre incompleto: no es un sobre**, y el gate que lo acepte es inválido por 
 16 SHA-256 DE LA SEDE   la huella de esa sede, **OBTENIDA DEL COMMIT AUDITADO** y no de una
    CANÓNICA             copia de trabajo, para que el revisor la recalcule contra el mismo
                         commit del campo 3 y no contra lo que el árbol le enseñe hoy
-17 IDENTIFICADORES DE   `O17`, `O18` y `O19`, nombrados uno a uno: el revisor tiene que saber
-   LAS RESOLUCIONES     qué resoluciones se le anclan, y no deducirlo del contenido
-18 DIGEST DEL TEXTO     un digest **por resolución**, sobre su texto canónico en esa sede. La
+17 IDENTIFICADORES DE   **TODAS las que la SEDE contenga**, nombradas una a una: el revisor
+   LAS RESOLUCIONES     tiene que saber qué resoluciones se le anclan, y no deducirlo del
+                        contenido. **La lista NO se escribe en esta norma** —`H-08`—: la
+                        DERIVA el emisor barriendo las cabeceras `# \`Onn\`` de la sede en el
+                        commit auditado, y `O17`, `O18` y `O19` son el **MÍNIMO EXIGIDO**,
+                        sin cuya presencia el sobre no se emite. Fijar aquí tres cuando la
+                        sede ya llevaba más era una sede que caduca cada vez que el Owner
+                        resuelve, y el instrumento ya hacía lo correcto
+18 TEXTO ÍNTEGRO DE     el TEXTO, no su resumen ni su digest. `O19` enumera SEIS cosas que
+   LA RATIFICACIÓN      cada revisor debe recibir externamente y **la PRIMERA es el texto de
+   `O19`                la ratificación**: con sólo el digest, el único camino que le queda
+                        al revisor para saber qué dice `O19` es abrir el árbol que audita, y
+                        el sobre existe justamente para que la raíz no salga de ahí. Va
+                        entero, leído del commit auditado, con su digest al lado para que el
+                        receptor compruebe que **el texto entregado es el de la sede
+                        anclada** — `C-20`, y su fase es `F4c`
+19 DIGEST DEL TEXTO     un digest **por resolución**, sobre su texto canónico en esa sede. La
    CANÓNICO DE CADA     huella del fichero entero no basta: dice que la sede no cambió, no
-   RESOLUCIÓN           que una resolución concreta sigue diciendo lo que decía
+   RESOLUCIÓN           que una resolución concreta sigue diciendo lo que decía. **Uno por
+                        cada resolución del campo 17**, y por tanto tantos como la sede
+                        contenga: tampoco aquí se fija un número
 
 Y LAS DECLARACIONES que acompañan a los campos, sin las cuales el sobre no vale:
 
@@ -8482,10 +8510,16 @@ comprobar después produce un dictamen sobre un árbol que nadie sabía cuál er
                    con el campo 8
 6 RECALCULAR       el **SHA-256 del derivador**, y contrastarlo con el campo 9
 6bis RECALCULAR    el **SHA-256 de la SEDE CANÓNICA del Owner** de la ruta del campo 15,
-  LA SEDE          **leída del commit auditado**, y contrastarlo con el campo 16; y los
-                   digests del texto canónico de `O17`, `O18` y `O19` contra el campo 18.
+  LA SEDE          **leída del commit auditado**, y contrastarlo con el campo 16; y el digest
+                   del texto canónico de **cada una de las resoluciones del campo 17** contra
+                   el campo 19 — tantas como la sede contenga, no un número escrito aquí.
                    **Si la sede no coincide con la huella recibida externamente, el gate
                    FALLA CERRADO**: es la comprobación que `O19` añade, y no se pondera
+6ter COMPROBAR EL  que el **TEXTO ÍNTEGRO de `O19`** viene en el sobre —campo 18— y que su
+  TEXTO DE `O19`   `sha256sum` reproduce el digest publicado a su lado. **Un resumen no vale
+                   y un digest solo no vale**: `O19` exige el TEXTO. Y no se da por bueno
+                   leyéndolo del árbol auditado, que es devolver la raíz de confianza al
+                   objeto juzgado
 7 REDERIVAR        el **universo obligatorio**, ejecutando el derivador cuya huella acaba de
                    comprobar, y obtener su digest, su número de fuentes y su número de
                    asignaciones
@@ -9250,6 +9284,8 @@ PRESIÓN F5     exige enmienda de material aprobado antes de construirse
 | `O17` el nivel ESTRUCTURAL y su productor | **§9.6** · §9.2 · §9.4 · §8.1 · §8.2 · §8.3 · §8.4 · §18 | NUEVA · **hace satisfacible `O12`** · propagada por `D107`, **derivada y no elegida por F4** |
 | `O18` la raíz de confianza de la verificación | **§11.6** · **§11.7** · **§11.8** · §11.4 · `C-L.5` · §16 `PN-19` | NUEVA · (a) **RECHAZADA** por el Owner · (b) ADOPTADA y **TRANSITORIA** para `F4c` · (c) **OBLIGATORIA en `F6`**, con las **TRES condiciones** previas · propagada por `D108`, **derivada y no elegida por F4** · **su TEXTO AMPLIO está RATIFICADO y su sede canónica es `docs/owner/`**; su entrada corta del registro se conserva como REGISTRO HISTÓRICO · **REVISADA POR `O19`** en su PROYECCIÓN, no en su contenido |
 | `O19` la ratificación del texto amplio de `O18` y la SEDE CANÓNICA | **§11.9** · **§11.6** · §11.7 · §11.8 · §11 (cabecera) · §16 `PN-19` · `C-L.5` | NUEVA · **RATIFICACIÓN, no elección de diseño** · revisa **la PROYECCIÓN incompleta de `O18`**, y **no revisa su contenido ni su diseño** · crea la sede canónica [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md) · **`O1`–`O16` NO se registran en ella**, y se conservan en su registro histórico · **derivada y no elegida por F4** · **NO autoriza iniciar `F5`** |
+| `O20` la frontera de fase entre `F4c` y `F6` | **§20** · §18 nodo 9 · §11.6 · `C-L.5` · la MATRIZ DE LOS 22 del `CHECKPOINT` | NUEVA · **cierra la RECURSIÓN**: `F4c` produce la ARQUITECTURA del verificador, `F6` lo IMPLEMENTA **y lo CERTIFICA** · **ningún punto de §20.1 está construido**, y un verde de la batería interna no lo demuestra · PesquerApp sigue BLOQUEADA · propagada por `D109`, **derivada y no elegida por F4** · **NO autoriza iniciar `F5`** |
+| `O21` `C-L.5` deja de ser un acto discrecional | `C-L.5` · §11.6 · el bloque reanudable del `CHECKPOINT` · el informe de todo gate posterior | NUEVA · fija la SEMÁNTICA de `C-L.5`: certifica **COBERTURA y nada más**, es **independiente** del veredicto `SUFICIENTE/INSUFICIENTE PARA F5`, y **no es discrecional** —cumplidas sus seis condiciones el adjudicador DEBE certificar; fallada cualquiera DEBE declararla ABIERTA nombrando la condición— · la certificación queda ligada a una TUPLA exacta y **no se transfiere** · **no revisa las seis condiciones**, que son las del documento 19, `O-04` y `P-08` · propagada por `D110`, **derivada y no elegida por F4** · **NO autoriza iniciar `F5`** |
 | `P-01` adaptador sin contrato | §6 | NUEVA |
 | `P-02` conocimiento externo | §13.3 | AMPLIADA |
 | `P-03` calidad por área | §5 | NUEVA |
@@ -9656,6 +9692,61 @@ su texto, **nada se renumera**, y **ningún hallazgo se declara SUPERADO aquí**
 > registran en la sede canónica**: se conservan en su registro histórico hasta que exista
 > ratificación expresa o fuente primaria verificable. **Ninguna de estas líneas se apoya en el
 > mensaje de un commit.**
+
+### `D109` · la propagación de `O20` — DERIVADA de una resolución del Owner, NO elegida por F4
+
+`H-04`. **Este bloque faltaba**, y lo pedía la propia serie: `D107` y `D108` lo abrieron para
+`O17` y `O18`, y §15.8 es donde una propagación declara qué reparte y qué NO elige. Sin él,
+`O20` —que **mueve una frontera de fase**— quedaba propagada sólo en la matriz del
+`CHECKPOINT` y en §20, y ninguna de las dos es la sede donde esta serie se lee.
+
+El **OCTAVO GATE DE CERTIFICACIÓN** —documento 29— devolvió **INSUFICIENTE PARA F5** con 22
+hallazgos, y su adjudicador midió que la causa raíz no era ninguno de los 22: era que **`F4c`
+estaba obligada a acreditar la IMPLEMENTACIÓN del verificador que sólo `F6` puede construir**,
+de modo que cada corrección de esa implementación abría la siguiente. Ocho gates, once árboles
+adversariales, y la recursión intacta. El Owner resolvió, y su resolución es **`O20`**, cuyo
+texto íntegro vive en la **SEDE CANÓNICA**
+[`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md); la sección 2 del
+registro es su PROYECCIÓN DERIVADA, que enlaza a ella y no la sustituye (`Y-08`).
+
+`D109` es **su propagación, y se declara DERIVADA**: **`F4c` produce la ARQUITECTURA del
+verificador y `F6` lo IMPLEMENTA y lo CERTIFICA** —sede **§20**, con un contrato por punto,
+sus campos y su clasificación semántica (§20.3)—; el **orden de construcción de `F6`**
+gana el nodo del verificador y de la raíz externa, con la arista que bloquea PesquerApp
+—sede **§18**, nodo 9—; y los 22 hallazgos del octavo gate quedan **clasificados por fase con
+exactamente un estado primario cada uno** —sede la MATRIZ DE LOS 22 del `CHECKPOINT`—.
+
+**Lo que F4 NO ha elegido aquí, y hay que decirlo:** la frontera la movió el Owner, **no un
+gate y no el coordinador**; ninguno de los nueve gates le elevó esta pregunta. **F4 aporta el
+reparto por las sedes vigentes y nada más.** `D1`–`D108` y `O1`–`O19` conservan íntegro su
+texto, **nada se renumera**, y **ningún hallazgo se declara SUPERADO**: `O20` lo prohíbe
+expresamente mientras no se implemente **y se ejecute** en `F6`.
+
+### `D110` · la propagación de `O21` — DERIVADA de una resolución del Owner, NO elegida por F4
+
+El **GATE ARQUITECTÓNICO FINAL** —documento 30— devolvió **INSUFICIENTE PARA F5** con 16
+hallazgos, y dejó a la vista algo que **no estaba entre ellos**: la regla de cierre de `C-L.5`
+es **una EXCLUSIÓN de una sola dirección** —dice cuándo la cobertura queda excluida, no cuándo
+queda certificada—, de modo que cumplir sus seis condiciones **no obligaba a nada**. Con eso,
+dos adjudicadores consecutivos actuaron de forma OPUESTA **sin incumplir norma alguna**: `FF`
+certificó la cobertura **mientras** devolvía insuficiencia; `HH` se negó a certificarla **por**
+devolver insuficiencia. El Owner resolvió por su cuenta —ningún gate le elevó la pregunta—, y
+su resolución es **`O21`**, cuyo texto íntegro vive en la **SEDE CANÓNICA**
+[`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md).
+
+`D110` es **su propagación, y se declara DERIVADA**: `C-L.5` **certifica COBERTURA y nada
+más**, su resultado es **INDEPENDIENTE** del veredicto `SUFICIENTE/INSUFICIENTE PARA F5`, y
+**deja de ser un acto discrecional** —cumplidas las seis condiciones el adjudicador **DEBE**
+declarar `C-L.5 CERTIFICADA PARA ESTE GATE`; fallada cualquiera **DEBE** declararla `ABIERTA`
+nombrando la condición—. La certificación queda ligada a una **TUPLA exacta** y **no se
+transfiere** a otra candidata ni a otro gate; un adjudicador **no puede negarse** a certificar
+cobertura por haber encontrado otros defectos; y las dos declaraciones **pueden coexistir**.
+
+**`O21` NO revisa las seis condiciones de `C-L.5`** —siguen siendo las del documento 19,
+`O-04` y `P-08`— y **no se aplica hacia atrás**: sobre el documento 30 se registra el hecho
+—condiciones satisfechas, acto no emitido por ausencia de regla entonces vigente— y nada más.
+`D1`–`D109` y `O1`–`O20` conservan íntegro su texto, **nada se renumera**, y **`O21` no
+declara suficiente a `F4c`, no corrige los 16 y no autoriza `F5`, `F6` ni PesquerApp**.
 
 ---
 
@@ -10780,11 +10871,28 @@ atrás es volver a un release. Es lo que ya se hace, y funciona.
         │              │                  │                  │
         └──────────────┴──────────────────┴──────────────────┤
                                                              ▼
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  9 · VERIFICADOR DE `F6` Y RAÍZ DE CONFIANZA EXTERNA   §20 · §11.8       │
+  │     `O18` alternativa (b) y (c) · `O20`                                  │
+  │     `F6` lo IMPLEMENTA **y lo CERTIFICA**. Sus puntos son §20.1, y       │
+  │     ninguno está construido. `V6-16` cuelga además de `PN-19`, que es    │
+  │     `F5` y del Owner (§20.4)                                            │
+  │     La batería interna de `F4c` **no lo sustituye**: es evidencia de     │
+  │     consistencia del corpus, no raíz autosuficiente (§20.0)             │
+  └──────────────────────────────────────────────────────────────────────────┘
+                                                             │
+                              ── BLOQUEA 8 mientras 9 no esté ─┤
+                                 IMPLEMENTADO **Y** CERTIFICADO │
+                                                             ▼
                                                     8 · PRIMERA ADOPCIÓN
                                                        REAL  O14 · O15
                                                        PesquerApp
                                                        PERMANENTE, no un
                                                        montaje desechable
+                                                       ── BLOQUEADA por 9 ──
+                                                       sin MVP, sin piloto
+                                                       desechable y sin
+                                                       adopción parcial
 
   2 · CONTRATO DE ADAPTADOR Y VALIDADOR DE DERIVA  §6
         independiente del estado ── alimenta 4 (nivel Operativo) y 7
@@ -10797,6 +10905,28 @@ atrás es volver a un release. Es lo que ya se hace, y funciona.
   5 · PIEZAS DE PACK  CAND-022 · CAND-024
         independientes de todo. Pueden ir en cualquier momento
 ```
+
+> **`H-02` · EL NODO 9 NO ES NUEVO ORDEN: ES UNA DEPENDENCIA QUE YA EXISTÍA Y NO ESTABA
+> DIBUJADA.** `O20` movió la frontera —`F4c` produce la ARQUITECTURA del verificador, `F6` lo
+> IMPLEMENTA y lo CERTIFICA— y escribió los contratos en §20, pero **este grafo se quedó como
+> estaba**: sus ocho nodos no contenían el verificador ni la raíz externa, y el paso 8 llegaba
+> a PesquerApp **sin ninguna arista que lo bloqueara**. Quien leyera sólo §18 podía construir
+> los ocho nodos y adoptar PesquerApp con `V6-01`…`V6-19` sin empezar.
+>
+> **No se ha reordenado nada.** Los nodos 0 a 8 conservan su orden, sus dependencias y su
+> numeración. Se ha INSERTADO el nodo que `O20` y `O18` ya habían decidido, con la única
+> arista que las dos resoluciones ya declaraban:
+>
+> ```text
+> 9 → 8    PesquerApp NO se adopta mientras el verificador de `F6` y su raíz externa no
+>          estén IMPLEMENTADOS **Y** CERTIFICADOS. `O20` lo dicta y §20.2 lo repite:
+>          «la condición previa a PesquerApp es que `F6` los implemente **y los
+>          certifique**; hasta entonces PesquerApp está BLOQUEADA, sin MVP, sin piloto
+>          desechable y sin adopción parcial»
+> ```
+>
+> **Un verde de la batería interna de `F4c` no levanta esa arista**, y §20.0 y §20.2 lo dicen
+> con todas las letras. Ningún punto de §20.1 puede citarse como capacidad existente.
 
 ### Los cuatro macrocircuitos, mapeados a los procesos de `b.16`
 
@@ -10919,6 +11049,18 @@ NADA ESTÁ PROBADO         los escenarios de §14, las filas de la tabla adversa
                           **Y el cardinal de `X-S` deja de escribirse aquí**: este bloque
                           decía «las NUEVE `X-S1`–`X-S9`» y la tabla de §9.6 lleva más, que
                           es el titular caducado que la regla de §0 prohíbe
+                          **Y la familia `V6-<nn>` de §20.1, que añade la propagación de
+                          `O20` (`D109`), ENTRA AQUÍ CON LAS DEMÁS** —`H-12`—: era la única
+                          familia de contratos de prueba viva que este bloque no censaba, y
+                          la omisión hacía justo lo contrario de lo que §20 existe para
+                          impedir, dejar fuera del inventario de «nada está probado» los
+                          contratos del verificador que `F6` tiene que construir. **Su sede
+                          es §20.1 y aquí NO se escribe su cifra**, igual que las otras
+                          cuatro; quien la necesite la deriva:
+                            grep -cE '^\| `V6-[0-9]+` \|' 11-ARQUITECTURA-INTEGRADA.md
+                          y el reparto de su clasificación semántica lo publica §20.3.
+                          **Ninguno de ellos está implementado, ejecutado ni certificado**,
+                          y un verde de la batería interna de `F4c` no lo demuestra (§20.2)
                           están ESCRITOS. Ninguno se ha ejecutado. Escribir el contrato de
                           una prueba no es la prueba
 LA PRIMERA ADOPCIÓN       la columna de uso real está vacía desde F0, y esta fase no la
@@ -11720,14 +11862,22 @@ regla, no el manifiesto ya emitido, que es inmutable.
 
 # 20 · CONTRATO OBLIGATORIO DE `F6` · EL VERIFICADOR DE ADMISIÓN
 
-> **TODO LO DE ESTA SECCIÓN ES DERIVADO DE `O20`, VÍA `D109`. Nada de ello lo eligió F4.**
-> Su **SEDE CANÓNICA** es
-> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md), `O20`, y esta
-> sección es **PROYECCIÓN DERIVADA**: si difiere de la sede, manda la sede.
+> **TODO LO DE ESTA SECCIÓN ES DERIVADO DE UNA RESOLUCIÓN DEL OWNER. Nada de ello lo eligió
+> F4.** Su **SEDE CANÓNICA** es
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md), y esta sección
+> es **PROYECCIÓN DERIVADA**: si difiere de la sede, manda la sede.
+>
+> **LA FUENTE, ACOTADA — `H-14`.** Esta cabecera decía «DERIVADO de `O20`, vía `D109`» **sin
+> excepción**, y era una cuantificación universal FALSA en al menos una fila: **`V6-12` —el
+> contrato APPEND-ONLY de la sede del Owner— deriva de `O19` y de las reglas propias de esa
+> sede, no de `O20`**. La regla queda así, y **no depende de que nadie mantenga una lista**:
+> la fuente de cada punto es la resolución que lo origina, y cuando no es `O20` la fila lo
+> dice; lo que `O20`/`D109` sí abarcan por completo es **la EXISTENCIA de esta sección, su
+> frontera de fase y su carácter obligatorio para `F6`**.
 >
 > **NADA DE ESTA SECCIÓN SE HA EJECUTADO, Y NINGUNO DE SUS PUNTOS ESTÁ IMPLEMENTADO.** Es
-> **contrato de `F6`**, escrito completo para que se pueda construir sin volver a decidir
-> nada. **Escribir el contrato de una prueba no es la prueba**, y aquí se dice en la sección
+> **contrato de `F6`**, escrito para que se pueda construir sin volver a decidir arquitectura
+> —y §20.3 dice **de cuáles** es cierto eso hoy, porque de dos no lo era—. **Escribir el contrato de una prueba no es la prueba**, y aquí se dice en la sección
 > entera y no sólo en una línea.
 
 ## 20.0 · Por qué existe esta sección, y qué la distingue de la batería interna
@@ -11748,38 +11898,54 @@ EL VERIFICADOR DE `F6`        es lo que esta sección contrata. Lo implementa `F
                               sin MVP, sin piloto desechable y sin adopción parcial
 ```
 
-## 20.1 · Los DIECIOCHO puntos que `F6` debe demostrar
+## 20.1 · Los puntos que `F6` debe demostrar
+
+**Cuántos son NO se escribe aquí** —`H-14`, y es la regla de `J-07`: un cardinal escrito al
+lado de su propia enumeración caduca en silencio en cuanto la enumeración crece—. Se deriva:
+
+```bash
+grep -cE '^\| `V6-[0-9]+` \|' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+```
 
 **Propietario global de la especificación:** `SIS`. **Implementador:** `PLT`. **Dosier
 independiente:** `VER`. **Bloqueo por seguridad:** `SEG`. **Autoridad de aceptación:** el
-**Owner**, que `O18` declara indelegable. **Fase de TODOS: `F6`.** **Estado de todos:
-CONTRATADO, NO IMPLEMENTADO, NO EJECUTADO.**
+**Owner**, que `O18` declara indelegable.
 
-| # | qué debe demostrar `F6` | entrada | salida | evidencia | escenario POSITIVO | escenario NEGATIVO | condición de BLOQUEO | criterio EXACTO de cierre |
-|---|---|---|---|---|---|---|---|---|
-| `V6-01` | **Toda lectura de Git que produzca una lista usa una representación INEQUÍVOCA** | el conjunto de invocaciones de Git del verificador | lista de rutas sin ambigüedad | inventario de invocaciones con su representación declarada | una ruta ordinaria se lee idéntica byte a byte | una ruta que contenga cualquier byte imprimible se lee idéntica | cualquier lectura que use un separador que una ruta pueda contener | **cero** lecturas de lista con separador contenible |
-| `V6-02` | **Separación por `NUL` y decodificación estricta, o tratamiento byte a byte** | salida cruda de Git | rutas | la orden ejecutada, con sus flags | `-z` presente y decodificación estricta que no lanza | una ruta no decodificable **se DENUNCIA**, no se interpreta a medias | una sola lectura sin `-z` ni tratamiento byte a byte | **todas** las lecturas con `-z`; ninguna decodificación laxa |
-| `V6-03` | **Fallo CERRADO ante codificación inválida, truncamiento o estructura inesperada** | salida cruda | diagnóstico o rutas | el diagnóstico emitido, con su texto | salida bien formada → rutas | salida truncada, no-UTF-8 o con estructura ajena → **ROJO con diagnóstico**, nunca lista vacía silenciosa | cualquiera de los tres casos que devuelva lista vacía con éxito | los **tres** casos producen ROJO y nombran la causa |
-| `V6-04` | **Inventario DERIVADO de todas las lecturas Git; ninguna vía paralela oculta** | el código del verificador | censo de lecturas | el censo, derivado y no escrito | el censo coincide con las lecturas reales | una lectura nueva escrita fuera del canal único **aparece en el censo y da ROJO** | que el censo se escriba a mano o no detecte una forma | el censo se DERIVA del código; **cero** lecturas fuera del canal |
-| `V6-05` | **La admisión juzga la MUTACIÓN, no la mera existencia del fichero** | revisión base, `HEAD`, índice y árbol de trabajo | veredicto por ruta | la diferencia derivada, con su orden | un fichero preexistente sin mutar no se juzga | un fichero preexistente MUTADO se juzga igual que uno nuevo | que existir en la base exima a una mutación | **cero** rutas gobernadas exentas por preexistencia |
-| `V6-06` | **Se cubren `A`, `M`, `D`, `T`, `R` y `C`, incluidas las DOS puntas de renombrados y copias** | diferencia semántica | veredicto por mutación | la letra de mutación de cada ruta | cada una de las seis se juzga | un renombrado con destino admitido y **origen no admitido** da ROJO | que una letra quede sin rama, o que `R`/`C` se juzguen por una sola punta | las **seis** letras cubiertas; `R` y `C` por sus dos puntas |
-| `V6-07` | **Se comparan revisión base, `HEAD`, índice y árbol de trabajo, según corresponda** | los cuatro estados | veredicto | qué estado gobierna cada comprobación, declarado | la comprobación usa el estado que su regla exige | una mutación visible sólo en el índice, o sólo sin rastrear, **se ve** | que una comprobación use `HEAD` donde su regla exige la base | cada comprobación declara su referencia, y la declarada es la usada |
-| `V6-08` | **Un cambio YA COMMITEADO no queda exento** | `HEAD` y la revisión base | veredicto | el mismo ataque antes y después de confirmar | el árbol sano da verde confirmado | el ataque da **ROJO confirmado**, no sólo sin confirmar | que confirmar convierta un rojo en verde | **cero** comprobaciones cuyo veredicto mejore al confirmar |
-| `V6-09` | **Se cubren ficheros NUEVOS y PREEXISTENTES** | universo gobernado | veredicto | la lista de rutas cubiertas, derivada | ambas clases se juzgan | una sentencia falsa da ROJO en las dos clases | que una clase quede sin guarda | **cero** rutas gobernadas sin guarda por su antigüedad |
-| `V6-10` | **Se cubren TODAS las sedes normativas, instrumentales y de entrada** | el censo de zonas, DERIVADO | veredicto por zona | el censo de zonas y su condición | cada zona tiene condición declarada y ejecutada | una zona sin condición **da ROJO**, no pasa por omisión | que una zona carezca de condición o no se enumere | el censo de zonas se DERIVA; **cero** zonas sin condición |
-| `V6-11` | **La regla de perímetro y la propiedad de admisión NO pueden excluirse a sí mismas** | la definición de lo verificado y la regla de admisión | veredicto | la prueba de auto-exclusión | el verificador se incluye en su propio universo | una mutación del propio verificador o de su regla **da ROJO** | que el instrumento pueda sacarse de su alcance | **cero** rutas del propio verificador exentas |
-| `V6-12` | **La sede del Owner conserva su contrato APPEND-ONLY** | el commit que creó la sede y su contenido actual | veredicto | el contraste contra el NACIMIENTO, no contra `HEAD` | añadir una resolución es legítimo | alterar una letra de lo publicado da **ROJO**, aunque esté confirmado | que el contraste se haga contra `HEAD` | el contraste se hace contra el commit de creación |
-| `V6-13` | **Se prueban UTF-8, Latin-1 inválido, espacios, saltos de línea, guiones y Unicode** | fixtures de ruta y de contenido | veredicto | la matriz de codificaciones y nombres | el árbol sano en todas ellas da verde | cada una de las seis formas, con sentencia falsa, da **ROJO** | que una forma quede sin fixture | las **seis** formas con fixture positivo y negativo |
-| `V6-14` | **Se incluyen adición, modificación, borrado, renombrado, copia y cambio de tipo** | fixtures de mutación | veredicto | la matriz de mutaciones | el árbol sano da verde | cada una de las seis, con sentencia falsa, da **ROJO** | que una forma quede sin fixture | las **seis** con fixture positivo y negativo |
-| `V6-15` | **Los controles adversariales del SEXTO, SÉPTIMO y OCTAVO gate quedan como FIXTURES OBLIGATORIOS** | documentos 27, 28 y 29 | suite de regresión | la suite, con su procedencia por gate | los controles sanos siguen verdes | **los once árboles** vuelven a dar ROJO, uno a uno | que un control desaparezca de la suite | **cada** control de los tres gates presente, con su identificador de origen |
-| `V6-16` | **La prueba se ejecuta desde una RAÍZ DE CONFIANZA EXTERNA al árbol comprobado** | el árbol candidato y la raíz externa | veredicto | la declaración de la raíz y su procedencia | la ejecución externa reproduce el veredicto | un árbol que se declara sano a sí mismo y la raíz externa desmiente **da ROJO** | que la prueba se ejecute desde dentro del árbol comprobado | el ejecutor NO comparte identidad de escritura con el runtime ADS (`O18`) |
-| `V6-17` | **Ningún digest calculado por el mismo árbol basta como prueba de su propia integridad** | digest interno y ancla externa | veredicto | los dos digest y su origen | los dos coinciden sobre un árbol sano | un árbol alterado cuyo digest interno cuadra **da ROJO por el ancla externa** | que el veredicto dependa sólo del digest interno | **cero** afirmaciones de integridad sostenidas sólo por el propio árbol |
-| `V6-18` | **CERO falsos verdes, y los controles sanos SIN falsos rojos** | la suite completa | veredicto global | la matriz entera, con sus dos columnas | **todos** los controles sanos en verde | **todos** los adversariales en rojo | un solo falso verde, o un solo falso rojo sobre una modificación permitida | `falsos_verdes = 0` **y** `falsos_rojos = 0`, medidos y publicados |
+**FASE DE EJECUCIÓN de todos: `F6`. Y eso NO quiere decir que todos dependan sólo de `F6`**
+—`H-07`—: `V6-16` cuelga de una norma que **`F5` tiene que emitir y cuyo propietario es el
+Owner** (`PN-19`), y decir «fase de TODOS: `F6`» la borraba de la vista. La dependencia se
+declara, con su enlace y su condición exacta de desbloqueo, en **§20.4**.
+
+**Estado de todos: CONTRATADO, NO IMPLEMENTADO, NO EJECUTADO.** La columna
+`clasificación` NO lo contradice: dice si el contrato **se puede construir**, nunca si está
+construido. Sus tres valores los define **§20.3**.
+
+| # | qué debe demostrar `F6` | entrada | salida | evidencia | escenario POSITIVO | escenario NEGATIVO | condición de BLOQUEO | criterio EXACTO de cierre | clasificación |
+|---|---|---|---|---|---|---|---|---|---|
+| `V6-01` | **Toda lectura de Git que produzca una lista usa una representación INEQUÍVOCA** | el conjunto de invocaciones de Git del verificador | lista de rutas sin ambigüedad | inventario de invocaciones con su representación declarada | una ruta ordinaria se lee idéntica byte a byte | una ruta que contenga cualquier byte imprimible se lee idéntica | cualquier lectura que use un separador que una ruta pueda contener | **cero** lecturas de lista con separador contenible | `CONTRATO_CONSTRUIBLE` |
+| `V6-02` | **Separación por `NUL` y decodificación estricta, o tratamiento byte a byte** | salida cruda de Git | rutas | la orden ejecutada, con sus flags | `-z` presente y decodificación estricta que no lanza | una ruta no decodificable **se DENUNCIA**, no se interpreta a medias | una sola lectura sin `-z` ni tratamiento byte a byte | **todas** las lecturas con `-z`; ninguna decodificación laxa | `CONTRATO_CONSTRUIBLE` |
+| `V6-03` | **Fallo CERRADO ante codificación inválida, truncamiento o estructura inesperada** | salida cruda | diagnóstico o rutas | el diagnóstico emitido, con su texto | salida bien formada → rutas | salida truncada, no-UTF-8 o con estructura ajena → **ROJO con diagnóstico**, nunca lista vacía silenciosa | cualquiera de los tres casos que devuelva lista vacía con éxito | los **tres** casos producen ROJO y nombran la causa | `CONTRATO_CONSTRUIBLE` |
+| `V6-04` | **Inventario DERIVADO de todas las lecturas Git; ninguna vía paralela oculta** | el código del verificador | censo de lecturas | el censo, derivado y no escrito | el censo coincide con las lecturas reales | una lectura nueva escrita fuera del canal único **aparece en el censo y da ROJO** | que el censo se escriba a mano o no detecte una forma | el censo se DERIVA del código; **cero** lecturas fuera del canal | `CONTRATO_CONSTRUIBLE` |
+| `V6-05` | **La admisión juzga la MUTACIÓN, no la mera existencia del fichero** | revisión base, `HEAD`, índice y árbol de trabajo | veredicto por ruta | la diferencia derivada, con su orden | un fichero preexistente sin mutar no se juzga | un fichero preexistente MUTADO se juzga igual que uno nuevo | que existir en la base exima a una mutación | **cero** rutas gobernadas exentas por preexistencia | `CONTRATO_CONSTRUIBLE` |
+| `V6-06` | **Se cubren `A`, `M`, `D`, `T`, `R` y `C`, incluidas las DOS puntas de renombrados y copias** | diferencia semántica | veredicto por mutación | la letra de mutación de cada ruta | cada una de las seis se juzga | un renombrado con destino admitido y **origen no admitido** da ROJO | que una letra quede sin rama, o que `R`/`C` se juzguen por una sola punta | las **seis** letras cubiertas; `R` y `C` por sus dos puntas | `CONTRATO_CONSTRUIBLE` |
+| `V6-07` | **Se comparan revisión base, `HEAD`, índice y árbol de trabajo, según corresponda** | los cuatro estados | veredicto | qué estado gobierna cada comprobación, declarado | la comprobación usa el estado que su regla exige | una mutación visible sólo en el índice, o sólo sin rastrear, **se ve** | que una comprobación use `HEAD` donde su regla exige la base | cada comprobación declara su referencia, y la declarada es la usada | `CONTRATO_CONSTRUIBLE` |
+| `V6-08` | **Un cambio YA COMMITEADO no queda exento** | `HEAD` y la revisión base | veredicto | el mismo ataque antes y después de confirmar | el árbol sano da verde confirmado | el ataque da **ROJO confirmado**, no sólo sin confirmar | que confirmar convierta un rojo en verde | **cero** comprobaciones cuyo veredicto mejore al confirmar | `CONTRATO_CONSTRUIBLE` |
+| `V6-09` | **Se cubren ficheros NUEVOS y PREEXISTENTES** | universo gobernado | veredicto | la lista de rutas cubiertas, derivada | ambas clases se juzgan | una sentencia falsa da ROJO en las dos clases | que una clase quede sin guarda | **cero** rutas gobernadas sin guarda por su antigüedad | `CONTRATO_CONSTRUIBLE` |
+| `V6-10` | **Se cubren TODAS las sedes normativas, instrumentales y de entrada** | el censo de zonas, DERIVADO | veredicto por zona | el censo de zonas y su condición | cada zona tiene condición declarada y ejecutada | una zona sin condición **da ROJO**, no pasa por omisión | que una zona carezca de condición o no se enumere | el censo de zonas se DERIVA; **cero** zonas sin condición | `CONTRATO_CONSTRUIBLE` |
+| `V6-11` | **La regla de perímetro y la propiedad de admisión NO pueden excluirse a sí mismas** | la definición de lo verificado y la regla de admisión | veredicto | la prueba de auto-exclusión | el verificador se incluye en su propio universo | una mutación del propio verificador o de su regla **da ROJO** | que el instrumento pueda sacarse de su alcance | **cero** rutas del propio verificador exentas | `CONTRATO_CONSTRUIBLE` |
+| `V6-12` | **La sede del Owner conserva su contrato APPEND-ONLY** —**fuente: `O19`**, que crea la sede con ese contrato, y las reglas propias de la sede; **no `O20`**— | el commit que creó la sede y su contenido actual | veredicto | el contraste contra el NACIMIENTO, no contra `HEAD` | añadir una resolución es legítimo | alterar una letra de lo publicado da **ROJO**, aunque esté confirmado | que el contraste se haga contra `HEAD` | el contraste se hace contra el commit de creación | `CONTRATO_CONSTRUIBLE` |
+| `V6-13` | **Se prueban UTF-8, Latin-1 inválido, espacios, saltos de línea, guiones y Unicode** | fixtures de ruta y de contenido | veredicto | la matriz de codificaciones y nombres | el árbol sano en todas ellas da verde | cada una de las seis formas, con sentencia falsa, da **ROJO** | que una forma quede sin fixture | las **seis** formas con fixture positivo y negativo | `CONTRATO_CONSTRUIBLE` |
+| `V6-14` | **Se incluyen adición, modificación, borrado, renombrado, copia y cambio de tipo** | fixtures de mutación | veredicto | la matriz de mutaciones | el árbol sano da verde | cada una de las seis, con sentencia falsa, da **ROJO** | que una forma quede sin fixture | las **seis** con fixture positivo y negativo | `CONTRATO_CONSTRUIBLE` |
+| `V6-15` | **Los árboles adversariales que su ENTRADA entrega quedan como FIXTURES OBLIGATORIOS** | el conjunto **derivado** de los árboles adversariales publicados por el SEXTO, SÉPTIMO y OCTAVO gate, cada uno identificado por su documento —27, 28, 29— y por el identificador con que ese documento lo publica. **El conjunto no se escribe: se deriva** (§20.5) | suite de regresión | la suite, con la procedencia —documento e identificador— de cada fixture | los controles sanos siguen verdes | **cada uno** de los árboles del conjunto derivado de la entrada vuelve a dar ROJO, uno a uno; ni uno menos, y ninguno que la entrada no entregue | que un árbol del conjunto derivado desaparezca de la suite, o que la suite exija uno que la entrada no entrega | `entrada − suite = ∅` **y** `suite − entrada = ∅`, las dos restas sobre el conjunto DERIVADO de §20.5, y cada fixture con su documento y su identificador de origen | `CONTRATO_CONSTRUIBLE` |
+| `V6-16` | **La prueba se ejecuta desde una RAÍZ DE CONFIANZA EXTERNA al árbol comprobado** | el árbol candidato y la raíz externa | veredicto | la declaración de la raíz y su procedencia | la ejecución externa reproduce el veredicto | un árbol que se declara sano a sí mismo y la raíz externa desmiente **da ROJO** | que la prueba se ejecute desde dentro del árbol comprobado | el ejecutor NO comparte identidad de escritura con el runtime ADS (`O18`). **Este criterio NO es ejecutable con las normas vigentes**: la identidad separada y la evidencia fuera del árbol las tiene que emitir [`PN-19`](#pn-19), **fase `F5`, propietario el Owner**, y ninguna sede aprobada las contempla todavía. Contrato largo en [§11.8](#118--el-contrato-del-verificador-externo-del-control-repo--registrado-completo-para-f6-y-no-implementado). Desbloqueo en §20.4 | `CONTRATO_BLOQUEADO_POR_DEPENDENCIA` · `F5`/`PN-19` · §20.4 |
+| `V6-17` | **Ningún digest calculado por el mismo árbol basta como prueba de su propia integridad** | digest interno y ancla externa | veredicto | los dos digest y su origen | los dos coinciden sobre un árbol sano | un árbol alterado cuyo digest interno cuadra **da ROJO por el ancla externa** | que el veredicto dependa sólo del digest interno | **cero** afirmaciones de integridad sostenidas sólo por el propio árbol | `CONTRATO_CONSTRUIBLE` |
+| `V6-18` | **CERO falsos verdes, y los controles sanos SIN falsos rojos** | la suite completa | veredicto global | la matriz entera, con sus dos columnas | **todos** los controles sanos en verde | **todos** los adversariales en rojo | un solo falso verde, o un solo falso rojo sobre una modificación permitida | `falsos_verdes = 0` **y** `falsos_rojos = 0`, medidos y publicados | `CONTRATO_CONSTRUIBLE` |
+| `V6-19` | **Cada FÓRMULA COMPARTIDA por varios instrumentos tiene UNA SOLA SEDE, y sus consumidores la IMPORTAN en vez de reescribirla** | el conjunto de instrumentos del aparato de verificación y las fórmulas que más de uno necesita —hoy, la del recuento de líneas de un blob— | censo de fórmulas compartidas, con su sede única y sus consumidores | el censo, **derivado del código** y no escrito, más la prueba de que cada consumidor importa y no redefine | dos instrumentos que necesitan la misma fórmula dan el mismo resultado sobre TODO caso frontera, incluido el fichero VACÍO y el que no termina en salto de línea | una SEGUNDA definición de una fórmula ya censada, escrita en cualquier instrumento, **aparece en el censo y da ROJO** aunque coincida hoy con la sede | que un instrumento reimplemente una fórmula censada, o que la importación se sustituya por una copia «equivalente» | **cero** definiciones de una fórmula compartida fuera de su sede única, medido por derivación del código; y si la importación de la sede falla, el instrumento **NO emite**, no calcula con una suya | `CONTRATO_CONSTRUIBLE` |
 
 ## 20.2 · Lo que esta sección NO dice, y hay que decirlo
 
 ```text
-NINGUNO DE LOS DIECIOCHO      está implementado, ejecutado ni certificado. Son CONTRATO
+NINGUNO DE LOS PUNTOS DE §20.1  está implementado, ejecutado ni certificado. Son CONTRATO
 NINGUNO PUEDE CITARSE         como capacidad existente, ni en un dosier, ni en un informe,
                               ni ante el Owner
 NINGÚN VERDE DE LA BATERÍA    demuestra que alguno de ellos esté construido: la batería es
@@ -11789,3 +11955,117 @@ LA CONDICIÓN PREVIA A         es que `F6` los implemente **y los certifique**. 
                               desechable y sin adopción parcial
 ```
 
+
+## 20.3 · TRES estados, porque «COMPLETO» estaba tapando dos cosas distintas
+
+`H-06` y `H-07` los encontró un gate contra una sección que se presentaba como «escrita
+completa para que se pueda construir sin volver a decidir nada». Los dos contratos tenían
+**todos los campos con texto**, y ninguno de los dos era construible: uno se contradecía a sí
+mismo entre dos columnas, el otro colgaba de una norma que ninguna sede ha emitido. **Un solo
+estado no podía distinguir esas dos situaciones de la buena**, y por eso las tapaba.
+
+```text
+CONTRATO_ESTRUCTURALMENTE_     TODOS los campos de la fila tienen TEXTO —los que la cabecera
+COMPLETO                       de §20.1 define, y **su número no se escribe**: `H-14` lo
+                               retiró de tres sedes que lo copiaban mal—. Es lo único que
+                               mide, y es poco: no dice que el texto sea coherente consigo
+                               mismo, ni que la obligación se pueda ejecutar. Es el suelo,
+                               no el techo
+
+CONTRATO_CONSTRUIBLE           lo anterior **y además** el contenido es coherente consigo
+                               mismo —entrada, escenarios y criterio de cierre hablan del
+                               MISMO conjunto— **y es ejecutable con las normas VIGENTES**,
+                               sin volver a decidir arquitectura
+
+CONTRATO_BLOQUEADO_POR_        sería construible SALVO por una norma que **otra fase** tiene
+DEPENDENCIA                    que emitir. Para poder llevar este estado, la dependencia
+                               tiene que estar **DECLARADA**, **ENLAZADA a su sede** y con
+                               **CONDICIÓN EXACTA de desbloqueo**. Una dependencia que no
+                               cumpla las tres cosas no es un estado: es un hallazgo
+```
+
+**Reglas, y no admiten lectura blanda:**
+
+- tener **todos** los campos con texto **sólo** permite el primer estado;
+- **ningún contrato BLOQUEADO cuenta como CONSTRUIBLE.** No se suman;
+- **ninguno de los tres** puede presentarse como implementado, ejecutado ni certificado. Los
+  tres son estados del CONTRATO, no del verificador;
+- un contrato **construible** sigue estando **NO IMPLEMENTADO**: «se puede construir» y «está
+  construido» son afirmaciones distintas, y confundirlas es exactamente `M-04`.
+
+El reparto **no se escribe**: sale de la columna `clasificación` de §20.1.
+
+```bash
+grep -oE '^\| `V6-[0-9]+`.*\| (`CONTRATO_[A-Z_]+`)' \
+  docs/evolucion/11-ARQUITECTURA-INTEGRADA.md | grep -oE 'CONTRATO_[A-Z_]+' | sort | uniq -c
+```
+
+## 20.4 · La ÚNICA dependencia de otra fase, declarada · `V6-16` → `PN-19`
+
+`H-07`. §20 decía «**Fase de TODOS: `F6`**» y no citaba `PN-19` ni una sola vez, mientras la
+condición de bloqueo de `V6-16` —«el ejecutor NO comparte identidad de escritura con el
+runtime ADS»— **es literalmente lo que `PN-19` declara que ninguna sede aprobada contempla**.
+Con eso, `F6` recibía como «construible sin volver a decidir nada» un contrato cuyo criterio
+de cierre exige una norma que nadie ha emitido.
+
+```text
+CONTRATO DEPENDIENTE      `V6-16`, y sólo él. Ningún otro de §20.1 cuelga de otra fase
+NORMA DE LA QUE CUELGA    `PN-19` — el verificador externo que `O18` hace OBLIGATORIO en
+                          `F6` exige una identidad de escritura SEPARADA y evidencia FUERA
+                          del árbol, «y ninguna sede aprobada las contempla»
+SEDE DE LA DEPENDENCIA    `PN-19`, en este mismo documento · contrato largo en §11.8 ·
+                          origen en `O18` alternativa (c), propagada por `D108`
+FASE DE LA DEPENDENCIA    **`F5`**, no `F6`
+PROPIETARIO               el **Owner**. `O18` declara la aceptación INDELEGABLE
+CONDICIÓN EXACTA DE       `F5` aprueba una sede que fije (i) la IDENTIDAD DE ESCRITURA
+DESBLOQUEO                separada del runtime ADS, con su titular; (ii) DÓNDE vive la
+                          evidencia fuera del árbol comprobado; y (iii) QUIÉN la custodia.
+                          Emitida esa sede, `V6-16` pasa a `CONTRATO_CONSTRUIBLE` sin tocar
+                          ninguno de sus campos
+QUÉ **NO** BLOQUEA        **no bloquea `F4c`**: la decisión no está oculta —tiene sede,
+                          fase, propietario y texto—, y lo que faltaba era CITARLA. Un gate
+                          que confirme que no queda arquitectura oculta puede cerrar `F4c`
+                          con esta dependencia declarada
+QUÉ **SÍ** BLOQUEA        `F6` no puede construir `V6-16` antes de esa sede, y PesquerApp
+                          sigue bloqueada por la cadena `F6` → PesquerApp
+```
+
+## 20.5 · De dónde sale el conjunto de fixtures de `V6-15`, y por qué no se enumera
+
+`H-06`. La fila de `V6-15` daba **tres cosas distintas del mismo conjunto**: la entrada decía
+«documentos 27, 28 y 29», el escenario negativo exigía «**los once árboles**» y el cierre
+hablaba de «los tres gates». Los once son de **ocho** gates —el octavo árbol, `DD-01`, es del
+QUINTO, documento 26—, de modo que la entrada **no entregaba** lo que el escenario negativo
+exigía, y `F6` no podía cerrarlo sin decidir cuál de las dos columnas mandaba.
+
+**Rama tomada, y por qué:** el escenario negativo pasa a exigir **exactamente lo que su
+entrada entrega**. La otra rama —que la entrada alcanzara los once— obliga a **enumerar los
+once con identificador**, cosa que ninguna sede hace hoy, e inventariar ocho gates, lo que
+ampliaría el alcance de esta tanda. **No se sustituye «once» por «tres»**: un cardinal
+caducado no se cambia por otro cardinal escrito. Se retira y se remite al conjunto derivado.
+
+```bash
+# EL CONJUNTO. Es la sede: si esto crece, V6-15 crece con ello y nadie edita un número
+for d in 27-SEXTO 28-SEPTIMO 29-OCTAVO; do
+  f=$(ls docs/evolucion/${d}-*.md)
+  printf '%s\n' "$f"
+  grep -oE '^\| \*\*`[A-Z]{1,2}[0-9]?-[0-9]+`\*\*' "$f" | grep -oE '[A-Z]{1,2}[0-9]?-[0-9]+' | sort -u
+done
+```
+
+**DEUDA DE INVENTARIO, declarada y no escondida.** Los árboles adversariales de los gates
+ANTERIORES al sexto —`DD-01` del quinto entre ellos— **no están** en el conjunto de entrada
+de `V6-15`, y no lo están porque no hay sede que los publique con identificador. Incorporarlos
+es trabajo real y tiene dueño:
+
+```text
+DEUDA                     inventariar con identificador los árboles adversariales de los
+                          gates anteriores al SEXTO, y publicarlos en una sede derivable
+PROPIETARIO               `VER`, que es quien lleva el dosier independiente
+FASE                      `F6`, junto con la construcción de la suite de `V6-15`
+EFECTO DE SALDARLA        la ENTRADA de `V6-15` crece, y con ella el escenario negativo y el
+                          criterio de cierre, **sin editar ni un campo**: los tres remiten al
+                          mismo conjunto derivado
+MIENTRAS NO SE SALDE      `V6-15` es CONSTRUIBLE sobre el conjunto que su entrada entrega, y
+                          **no se puede citar** como «cubre los once árboles»
+```

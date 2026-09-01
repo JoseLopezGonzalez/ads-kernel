@@ -489,14 +489,23 @@ def componente_iv():
 
 
 # ── (v) · el objeto que ESTE gate juzga, según su encargo ────────────────────────
+#
 # Cada fila declara la cláusula del encargo que la mete en el universo. Sin cláusula no
 # entra, y la cláusula se lee en el informe del gate.
+#
+# `H-13`. Estas cláusulas describían el OCTAVO gate —«los 24 hallazgos del documento 21»,
+# «el sobre que este gate ESTRENA»— mucho después de que ese gate cerrara, y un encargo
+# caducado es una sede que miente sin ponerse en rojo: las RUTAS seguían siendo las
+# correctas, de modo que nada fallaba y el revisor leía un motivo que ya no era el suyo.
+# Se actualiza **el texto**, y sólo el texto: ni una ruta cambia, ni la lógica que las
+# consume. El encargo vigente es el del gate posterior a `O20` y `O21`.
 ENCARGO = [
     ("docs/evolucion/21-GATE-INDEPENDIENTE-DE-CIERRE-F4C.md",
-     "los 24 hallazgos del documento 21 · M-04 · Q-01 Q-04 Q-05"),
+     "la sede que origina M-04 y las condiciones C-L · el criterio que los gates "
+     "posteriores heredan y no pueden ablandar"),
     ("docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py",
-     "M-04 como proposición general · lector estructurado frente a prosa · "
-     "distribución de vías · conjunto vigilado · adiciones no rastreadas · Git ausente"),
+     "M-04 como proposición general · que ninguna deuda de F6 se presente como "
+     "implementada · rótulos que atribuyen a una resolución una regla que no dictó"),
     ("docs/evolucion/verificacion/README.md",
      "lo que la batería declara de sí misma, frente a lo que hace"),
     ("docs/evolucion/verificacion/derivar-universo-obligatorio.py",
@@ -504,9 +513,11 @@ ENCARGO = [
     ("docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md",
      "las entradas que acotan dictámenes que no se editan"),
     ("docs/evolucion/verificacion/emitir-sobre-de-ancla.py",
-     "O18 · el emisor del SOBRE DE ANCLA, que este gate estrena y debe refutar"),
+     "O18 · C-20 · si el sobre transporta MATERIALMENTE el texto íntegro de la "
+     "ratificación O19 y no sólo sus digest"),
     ("docs/evolucion/00-INDICE.md",
-     "catálogo y contratos duplicados · trazabilidad de las tandas"),
+     "catálogo y contratos duplicados · cardinales escritos donde la propia cabecera "
+     "ordena derivar"),
     ("kernel/KERNEL.md",
      "material APROBADO que PN-16 y PN-15 invocan"),
     ("kernel/operativo/recorrido/01-PROCESOS.md",
@@ -524,7 +535,7 @@ ENCARGO = [
     ("kernel/operativo/contratos/C5-HANDOFF.md", "contratos C1-C7"),
     ("kernel/operativo/contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md", "contratos C1-C7"),
     ("kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md",
-     "contratos C1-C7 · Git ausente · gobierno de ramas"),
+     "contratos C1-C7 · Git ausente · gobierno de ramas · que PesquerApp siga bloqueada"),
     ("docs/rediseno/a-CAPACIDADES-APROBADA.md",
      "material APROBADO (a) · PN-15 y PN-16 se derogan o no contra él"),
     ("docs/rediseno/b-RECORRIDO-APROBADA.md",

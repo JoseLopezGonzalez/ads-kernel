@@ -370,7 +370,11 @@ def sede_del_owner(commit, papel):
     for ident in orden:
         cuerpo = bloques[ident]
         filas.append((ident, hashlib.sha256(cuerpo).hexdigest(), cuerpo.count(b"\n")))
-    return hashlib.sha256(crudo).hexdigest(), filas
+    # `C-20`. La tercera salida son los CUERPOS, y no es un extra: `O19` obliga a que el
+    # revisor reciba **el texto de la ratificacion**, no solo su digest. Un digest deja al
+    # receptor con la sola opcion de ir a leerlo AL ARBOL QUE SE AUDITA, que es exactamente
+    # lo que el sobre existe para no tener que hacer. Se devuelven los bytes del commit.
+    return hashlib.sha256(crudo).hexdigest(), filas, bloques
 
 
 # ── ASIGNACIONES, DERIVADAS del manifiesto ───────────────────────────────────────
@@ -543,8 +547,8 @@ def main():
             sha_emi_corriendo = hashlib.sha256(_fh.read()).hexdigest()
         dig_c, nf_c, nl_c, hue_c, exc_c = universo_de(commit_c)
         dig_g, nf_g, nl_g, hue_g, exc_g = universo_de(commit_g)
-        sede_c, res_c = sede_del_owner(commit_c, "COMMIT AUDITADO (candidata)")
-        sede_g, res_g = sede_del_owner(commit_g, "commit del gate")
+        sede_c, res_c, cuerpos_c = sede_del_owner(commit_c, "COMMIT AUDITADO (candidata)")
+        sede_g, res_g, _cuerpos_g = sede_del_owner(commit_g, "commit del gate")
     except NoEmitible as e:
         sys.stderr.write("NO EMITIBLE · %s\n" % e)
         return 2
@@ -664,6 +668,53 @@ def main():
         W(RECETA_SEDE % (commit_c, SEDE_OWNER, ident) + "\n")
     W("\n  ── LA SEDE ENTERA → %s\n" % sede_c)
     W("  git show %s:%s | sha256sum\n" % (commit_c, SEDE_OWNER))
+    # ── `C-20`, cerrado AQUI y no en `F6` ────────────────────────────────────────
+    #
+    # `O19` enumera SEIS cosas que cada revisor debe recibir externamente, y la PRIMERA
+    # es **el texto de esta ratificacion**. El sobre llevaba las otras cinco —los cinco
+    # SHA— y de la primera llevaba un separador y una palabra suelta: 2 de 62 lineas
+    # sustantivas, medido por `HH` sobre su propio sobre. Un digest NO es el texto: con
+    # solo el digest, el unico camino que le queda al revisor para saber QUE dice `O19`
+    # es abrir el arbol que esta auditando, y el sobre existe precisamente para que la
+    # raiz de confianza no salga de ahi.
+    #
+    # Por que aqui y no en `V6-16`/`V6-17`: ninguno de los dos menciona el CONTENIDO del
+    # sobre —uno contrata que la prueba corra desde una raiz EXTERNA, el otro que ningun
+    # digest calculado por el propio arbol baste—, de modo que `F6` podia cerrarlos los
+    # dos en verde con el defecto intacto. Y §11.6 ya le habia puesto fase al emisor:
+    # propietario `PLT`, fase «ya, para el PROXIMO gate de `F4c`».
+    #
+    # La rama alternativa —que `O19` dejara de exigir el texto— NO estaba disponible: esa
+    # lista vive dentro de una sede APPEND-ONLY y retirarla es una decision del Owner.
+    W("=" * 78 + "\n")
+    W("EL TEXTO INTEGRO DE LA RATIFICACION `O19`, TRANSPORTADO MATERIALMENTE EN EL SOBRE.\n")
+    W("`O19` exige que cada revisor reciba EXTERNAMENTE seis cosas, y la primera es EL\n")
+    W("TEXTO DE LA RATIFICACION. Los cinco SHA van arriba; el texto va aqui, entero y sin\n")
+    W("resumir. No es cortesia: con solo el digest, el unico modo de saber que dice `O19`\n")
+    W("seria abrir el arbol AUDITADO, que es lo que este sobre existe para no tener que\n")
+    W("hacer. Son los bytes del COMMIT AUDITADO `%s`, no los del arbol de trabajo.\n"
+      % commit_c[:7])
+    W("\n")
+    _o19 = cuerpos_c.get(b"O19".decode("ascii"))
+    if _o19 is None:                       # inalcanzable: `sede_del_owner` ya lo exige
+        W("  ATENCION: `O19` NO ESTA EN LA SEDE DEL COMMIT AUDITADO.\n")
+    else:
+        _dig_o19 = hashlib.sha256(_o19).hexdigest()
+        _txt_o19 = _o19.decode("utf-8")
+        W("  DIGEST DEL TEXTO QUE SIGUE   %s\n" % _dig_o19)
+        W("  LINEAS TRANSPORTADAS         %d\n" % _o19.count(b"\n"))
+        W("  COMO COMPROBAR QUE EL TEXTO ENTREGADO ES EL DE LA SEDE ANCLADA: recorte el\n")
+        W("  bloque de abajo entre las dos lineas de guiones, sin la sangria de dos\n")
+        W("  espacios que este sobre le añade, y pasele `sha256sum`. Debe dar el digest de\n")
+        W("  esta misma linea, que es el mismo `DIGEST DE `O19`` publicado arriba y el que\n")
+        W("  reproduce la receta:\n")
+        W(RECETA_SEDE % (commit_c, SEDE_OWNER, "O19") + "\n")
+        W("  Si el digest del texto entregado NO coincide con el anclado, el sobre miente\n")
+        W("  sobre su propia raiz y el gate es INVALIDO: se dice, y no se sigue leyendo.\n")
+        W("\n  " + "-" * 76 + "\n")
+        for _l in _txt_o19.splitlines():
+            W("  %s\n" % _l)
+        W("  " + "-" * 76 + "\n")
     W("=" * 78 + "\n")
     W("  EMITIDO                 %s\n" % ahora)
     W("  EMISOR                  %s\n" % a.emisor)
@@ -712,6 +763,12 @@ def main():
     W("    derivada que cite una resolucion suya. La AUTORIDAD es la sede; el registro de\n")
     W("    decisiones es una PROYECCION. Una parafrasis que AMPLIE el texto canonico es un\n")
     W("    hallazgo, y `O19` nacio exactamente de uno.\n")
+    W("  7 EL TEXTO INTEGRO DE `O19` VIAJA EN ESTE SOBRE, y no es un adorno: `O19` lo pone\n")
+    W("    el PRIMERO de las seis cosas que usted debe recibir externamente. Pasele\n")
+    W("    `sha256sum` al bloque entregado y contrastelo con el digest publicado a su lado.\n")
+    W("    Si no coincide, o si lo que recibio es un resumen en vez del texto, el sobre no\n")
+    W("    cumple `O19` y el gate es INVALIDO. Y no lo dé por bueno leyendolo del arbol\n")
+    W("    auditado: hacerlo devuelve la raiz de confianza al objeto que usted juzga.\n")
     W("=" * 78 + "\n")
     W("LO QUE ESTE SOBRE **NO** GARANTIZA, y `O18` lo declara:\n")
     W("  compromiso del canal del Owner · compromiso simultaneo del repositorio y del\n")

@@ -112,6 +112,10 @@ puerta abierta.
 
 | ruta | por qué difiere de `HEAD` |
 |---|---|
+| `docs/evolucion/verificacion/emitir-sobre-de-ancla.py` | **`H-01`/`C-20`.** El sobre llevaba los cinco SHA que `O19` exige y **no el PRIMER elemento de su lista: el TEXTO de la ratificación**. Se añade el transporte MATERIAL del texto íntegro de `O19` leído del commit auditado, con su digest al lado, la receta que lo reproduce y una obligación nueva del revisor. `sede_del_owner()` devuelve además los cuerpos; **ninguna comprobación cambia de criterio** |
+| `docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py` | **`H-11`.** SÓLO RÓTULOS: tres sitios atribuían a `O20` la regla APPEND-ONLY de la sede del Owner, que es de `O19` —`O20` fue la OCASIÓN de la corrección, no su fuente—, y uno de ellos la IMPRIME. **No se toca ni una línea de lógica**, ni el perímetro, ni una guarda |
+| `docs/evolucion/verificacion/derivar-universo-obligatorio.py` | **`H-13`.** SÓLO EL TEXTO DEL `ENCARGO`: sus cláusulas describían el OCTAVO gate mucho después de que cerrara —«los 24 hallazgos del documento 21», «el sobre que este gate ESTRENA»—. **Ni una ruta cambia y la lógica que las consume tampoco**: el universo derivado es el mismo |
+| `docs/evolucion/verificacion/README.md` | esta misma tabla, que es donde la declaración vive |
 
 
 > **`emitir-sobre-de-ancla.py` y por qué su salida NO vive aquí.** Lo exige `O18`, que adoptó

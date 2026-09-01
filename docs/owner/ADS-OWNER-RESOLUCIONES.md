@@ -442,3 +442,118 @@ se autoriza MVP, ni piloto desechable, ni adopción parcial.**
 > registrada en esta sede, que es append-only. Lo que la distingue es que **no responde a una
 > pregunta que un gate le elevara**: los ocho gates declararon expresamente que ninguna
 > decisión volvía al Owner. **Esta la toma el Owner por su cuenta**, y consta así.
+
+---
+
+# `O21` · `C-L.5` DEJA DE SER UN ACTO DISCRECIONAL
+
+```text
+IDENTIFICADOR   O21
+FECHA           2026-09-01
+PROCEDENCIA     decisión expresa del Owner, tomada tras el GATE ARQUITECTÓNICO FINAL
+                —documento 30— y a la vista de que dos adjudicadores consecutivos trataron
+                la certificación de cobertura de forma OPUESTA sin que ninguno incumpliera
+                norma alguna: `FF` la certificó MIENTRAS devolvía insuficiencia, y `HH` se
+                negó a certificarla POR devolver insuficiencia
+REVISA          la SEMÁNTICA de `C-L.5`: qué certifica, cuándo debe declararse y a qué
+                queda ligada. NO revisa su contenido normativo —las seis condiciones son
+                las que ya estaban escritas— y NO reescribe `O17`, `O18`, `O19` ni `O20`,
+                que conservan íntegramente su texto
+REVISADA POR    nada
+PROYECCIÓN      `O21` y `D110` en `DECISIONES-Y-CONTRADICCIONES.md`
+ALCANCE         NO declara suficiente a `F4c`, NO corrige ninguno de los dieciséis
+                hallazgos del documento 30, y NO autoriza `F5`, `F6` ni PesquerApp
+```
+
+## Texto
+
+**`C-L.5` deja de ser un acto discrecional, y paso a decir exactamente qué certifica, cuándo
+hay que declararlo y a qué queda ligado.**
+
+### 1 · Qué certifica, y qué no
+
+`C-L.5` certifica **exclusivamente la COBERTURA de un gate**. **No certifica suficiencia
+arquitectónica y no sustituye al veredicto general.**
+
+### 2 · Es independiente del veredicto
+
+Su resultado es **independiente** del veredicto `SUFICIENTE PARA F5` / `INSUFICIENTE PARA
+F5`. Son dos preguntas distintas y se responden por separado.
+
+### 3 · No es discrecional
+
+Para un gate **válido**:
+
+- si se cumplen **las seis condiciones normativas** de `C-L.5`, el adjudicador **debe**
+  declarar `C-L.5 CERTIFICADA PARA ESTE GATE`;
+- si falla cualquiera, **debe** declarar `C-L.5 ABIERTA` **y nombrar exactamente la
+  condición incumplida**.
+
+### 4 · Las seis condiciones
+
+```text
+1  corpus obligatorio DEFINIDO
+2  manifiesto previo de ASIGNACIÓN publicado
+3  manifiestos posteriores de LECTURA publicados
+4  OBLIGATORIO menos ASIGNADO = vacío
+5  ASIGNADO menos LEÍDO = vacío
+6  revisores INDEPENDIENTES que declaran CONTRA SU PROPIO INTERÉS qué leyeron
+```
+
+### 5 · La certificación queda ligada a una tupla exacta
+
+```text
+· tree SHA candidato
+· commit candidato
+· SHA del manifiesto de asignación
+· SHA de los manifiestos de lectura
+· identificador del gate
+· identidad del adjudicador
+```
+
+### 6 · No se transfiere
+
+**No se transfiere automáticamente a otra candidata ni a otro gate.** Cada gate declara la
+suya sobre su propia tupla.
+
+### 7 · Las dos declaraciones pueden coexistir
+
+Un gate puede declarar a la vez `C-L.5 CERTIFICADA` e `INSUFICIENTE PARA F5`. **No hay
+contradicción**: la primera habla de COBERTURA y la segunda de SUFICIENCIA ARQUITECTÓNICA.
+
+### 8 · Prohibición expresa
+
+**Un adjudicador NO puede negarse a certificar la cobertura porque haya encontrado otros
+defectos.**
+
+### 9 · Sobre el gate del documento 30
+
+**No se inventa retrospectivamente un acto que `HH` no emitió.** Se registra exactamente
+esto:
+
+```text
+· las condiciones de cobertura estaban SATISFECHAS, y el propio adjudicador lo midió
+· el ACTO no se emitió, por AUSENCIA DE UNA REGLA entonces vigente que lo hiciera obligatorio
+· `O21` elimina esa ambigüedad para los gates POSTERIORES, y no la aplica hacia atrás
+```
+
+### 10 · Lo que esta resolución no hace
+
+**No declara suficiente a `F4c`, no corrige ninguno de los dieciséis hallazgos del documento
+30, y no autoriza `F5`, `F6` ni PesquerApp.**
+
+## Nota de trazabilidad de `O21`
+
+> **Qué corrige: una AMBIGÜEDAD DE PROCEDIMIENTO, no un defecto de nadie.** Ni `FF` ni `HH`
+> incumplieron norma alguna, porque la norma no existía: `C-L.5` describía **cuándo la
+> cobertura queda excluida** y no **cuándo queda certificada**, con lo que el acto quedaba a
+> criterio del adjudicador y podía oscilar indefinidamente sin que nadie faltara a nada.
+> `O21` convierte una decisión en una comprobación.
+>
+> **Como `O20`, no responde a una pregunta que un gate le elevara**: los nueve gates
+> declararon que ninguna decisión volvía al Owner. **La toma el Owner por su cuenta**, y
+> consta así.
+>
+> **Y no toca las seis condiciones**: son exactamente las que `C-L.5` ya exigía —`O-04` fijó
+> los dos manifiestos, `P-08` fijó las dos restas, y el documento 19 fijó el corpus
+> obligatorio y la independencia—. Lo único nuevo es que **cumplirlas OBLIGA a declararlo**.
