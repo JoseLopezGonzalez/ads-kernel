@@ -8324,7 +8324,7 @@ validador que detecta. Es la disciplina que `N158i`–`N158o` ya impusieron al a
 | `NP-10` | una huella calculada de forma **no determinista** | dos ejecuciones seguidas difieren → fallo. Es `T03` aplicado a la propia huella |
 | `NP-11` | un **artefacto GENERADO** desincronizado del corpus que describe | se detecta **y se nombra**. Los dos generadores llevan huella semántica igual que las trece evidencias (hallazgo `N-10`) |
 
-**Y las nueve que ya existen para `vigencia`** siguen en pie, sin cambio.
+**Y las que ya existen para `vigencia`** siguen en pie, sin cambio. **El cardinal NO se escribe —`C-19` del OCTAVO GATE, y es la REGLA DE TITULARES de §0 de este mismo documento—:** decía «las **nueve**» sin comando que lo derivara, en la sede que prohíbe exactamente eso. Quien lo necesite lo deriva de la enumeración que lo publica, que es su única sede.
 
 ## 11.6 · EL SOBRE DE ANCLA — la raíz documental externa de todo gate de `F4c`
 
@@ -11715,3 +11715,77 @@ expresamente que su veredicto **NO se funda en la cobertura**.
 devolvió `INSUFICIENTE PARA F5` por otras dos condiciones. Y el requisito de arriba **sigue
 vigente para todo gate posterior**, con el añadido de `1bis`: lo que se corrige aquí es la
 regla, no el manifiesto ya emitido, que es inmutable.
+
+---
+
+# 20 · CONTRATO OBLIGATORIO DE `F6` · EL VERIFICADOR DE ADMISIÓN
+
+> **TODO LO DE ESTA SECCIÓN ES DERIVADO DE `O20`, VÍA `D109`. Nada de ello lo eligió F4.**
+> Su **SEDE CANÓNICA** es
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md), `O20`, y esta
+> sección es **PROYECCIÓN DERIVADA**: si difiere de la sede, manda la sede.
+>
+> **NADA DE ESTA SECCIÓN SE HA EJECUTADO, Y NINGUNO DE SUS PUNTOS ESTÁ IMPLEMENTADO.** Es
+> **contrato de `F6`**, escrito completo para que se pueda construir sin volver a decidir
+> nada. **Escribir el contrato de una prueba no es la prueba**, y aquí se dice en la sección
+> entera y no sólo en una línea.
+
+## 20.0 · Por qué existe esta sección, y qué la distingue de la batería interna
+
+Ocho gates independientes encontraron once árboles adversariales. Los cinco primeros
+señalaban arquitectura o procedimiento; **los tres últimos señalan la implementación
+provisional del verificador interno**, y cada corrección de esa implementación abrió la
+siguiente. `O20` dictamina que eso no es falta de diligencia sino **una frontera de fase mal
+puesta**, y la mueve.
+
+```text
+LA BATERÍA INTERNA DE `F4c`   es EVIDENCIA DE CONSISTENCIA DEL CORPUS. **No es una raíz
+                              autosuficiente de certificación de su propia implementación**,
+                              y un verde suyo **NO demuestra** que el verificador de `F6`
+                              esté construido ni certificado
+EL VERIFICADOR DE `F6`        es lo que esta sección contrata. Lo implementa `F6`, lo
+                              certifica `F6`, y hasta entonces **PesquerApp está BLOQUEADA**:
+                              sin MVP, sin piloto desechable y sin adopción parcial
+```
+
+## 20.1 · Los DIECIOCHO puntos que `F6` debe demostrar
+
+**Propietario global de la especificación:** `SIS`. **Implementador:** `PLT`. **Dosier
+independiente:** `VER`. **Bloqueo por seguridad:** `SEG`. **Autoridad de aceptación:** el
+**Owner**, que `O18` declara indelegable. **Fase de TODOS: `F6`.** **Estado de todos:
+CONTRATADO, NO IMPLEMENTADO, NO EJECUTADO.**
+
+| # | qué debe demostrar `F6` | entrada | salida | evidencia | escenario POSITIVO | escenario NEGATIVO | condición de BLOQUEO | criterio EXACTO de cierre |
+|---|---|---|---|---|---|---|---|---|
+| `V6-01` | **Toda lectura de Git que produzca una lista usa una representación INEQUÍVOCA** | el conjunto de invocaciones de Git del verificador | lista de rutas sin ambigüedad | inventario de invocaciones con su representación declarada | una ruta ordinaria se lee idéntica byte a byte | una ruta que contenga cualquier byte imprimible se lee idéntica | cualquier lectura que use un separador que una ruta pueda contener | **cero** lecturas de lista con separador contenible |
+| `V6-02` | **Separación por `NUL` y decodificación estricta, o tratamiento byte a byte** | salida cruda de Git | rutas | la orden ejecutada, con sus flags | `-z` presente y decodificación estricta que no lanza | una ruta no decodificable **se DENUNCIA**, no se interpreta a medias | una sola lectura sin `-z` ni tratamiento byte a byte | **todas** las lecturas con `-z`; ninguna decodificación laxa |
+| `V6-03` | **Fallo CERRADO ante codificación inválida, truncamiento o estructura inesperada** | salida cruda | diagnóstico o rutas | el diagnóstico emitido, con su texto | salida bien formada → rutas | salida truncada, no-UTF-8 o con estructura ajena → **ROJO con diagnóstico**, nunca lista vacía silenciosa | cualquiera de los tres casos que devuelva lista vacía con éxito | los **tres** casos producen ROJO y nombran la causa |
+| `V6-04` | **Inventario DERIVADO de todas las lecturas Git; ninguna vía paralela oculta** | el código del verificador | censo de lecturas | el censo, derivado y no escrito | el censo coincide con las lecturas reales | una lectura nueva escrita fuera del canal único **aparece en el censo y da ROJO** | que el censo se escriba a mano o no detecte una forma | el censo se DERIVA del código; **cero** lecturas fuera del canal |
+| `V6-05` | **La admisión juzga la MUTACIÓN, no la mera existencia del fichero** | revisión base, `HEAD`, índice y árbol de trabajo | veredicto por ruta | la diferencia derivada, con su orden | un fichero preexistente sin mutar no se juzga | un fichero preexistente MUTADO se juzga igual que uno nuevo | que existir en la base exima a una mutación | **cero** rutas gobernadas exentas por preexistencia |
+| `V6-06` | **Se cubren `A`, `M`, `D`, `T`, `R` y `C`, incluidas las DOS puntas de renombrados y copias** | diferencia semántica | veredicto por mutación | la letra de mutación de cada ruta | cada una de las seis se juzga | un renombrado con destino admitido y **origen no admitido** da ROJO | que una letra quede sin rama, o que `R`/`C` se juzguen por una sola punta | las **seis** letras cubiertas; `R` y `C` por sus dos puntas |
+| `V6-07` | **Se comparan revisión base, `HEAD`, índice y árbol de trabajo, según corresponda** | los cuatro estados | veredicto | qué estado gobierna cada comprobación, declarado | la comprobación usa el estado que su regla exige | una mutación visible sólo en el índice, o sólo sin rastrear, **se ve** | que una comprobación use `HEAD` donde su regla exige la base | cada comprobación declara su referencia, y la declarada es la usada |
+| `V6-08` | **Un cambio YA COMMITEADO no queda exento** | `HEAD` y la revisión base | veredicto | el mismo ataque antes y después de confirmar | el árbol sano da verde confirmado | el ataque da **ROJO confirmado**, no sólo sin confirmar | que confirmar convierta un rojo en verde | **cero** comprobaciones cuyo veredicto mejore al confirmar |
+| `V6-09` | **Se cubren ficheros NUEVOS y PREEXISTENTES** | universo gobernado | veredicto | la lista de rutas cubiertas, derivada | ambas clases se juzgan | una sentencia falsa da ROJO en las dos clases | que una clase quede sin guarda | **cero** rutas gobernadas sin guarda por su antigüedad |
+| `V6-10` | **Se cubren TODAS las sedes normativas, instrumentales y de entrada** | el censo de zonas, DERIVADO | veredicto por zona | el censo de zonas y su condición | cada zona tiene condición declarada y ejecutada | una zona sin condición **da ROJO**, no pasa por omisión | que una zona carezca de condición o no se enumere | el censo de zonas se DERIVA; **cero** zonas sin condición |
+| `V6-11` | **La regla de perímetro y la propiedad de admisión NO pueden excluirse a sí mismas** | la definición de lo verificado y la regla de admisión | veredicto | la prueba de auto-exclusión | el verificador se incluye en su propio universo | una mutación del propio verificador o de su regla **da ROJO** | que el instrumento pueda sacarse de su alcance | **cero** rutas del propio verificador exentas |
+| `V6-12` | **La sede del Owner conserva su contrato APPEND-ONLY** | el commit que creó la sede y su contenido actual | veredicto | el contraste contra el NACIMIENTO, no contra `HEAD` | añadir una resolución es legítimo | alterar una letra de lo publicado da **ROJO**, aunque esté confirmado | que el contraste se haga contra `HEAD` | el contraste se hace contra el commit de creación |
+| `V6-13` | **Se prueban UTF-8, Latin-1 inválido, espacios, saltos de línea, guiones y Unicode** | fixtures de ruta y de contenido | veredicto | la matriz de codificaciones y nombres | el árbol sano en todas ellas da verde | cada una de las seis formas, con sentencia falsa, da **ROJO** | que una forma quede sin fixture | las **seis** formas con fixture positivo y negativo |
+| `V6-14` | **Se incluyen adición, modificación, borrado, renombrado, copia y cambio de tipo** | fixtures de mutación | veredicto | la matriz de mutaciones | el árbol sano da verde | cada una de las seis, con sentencia falsa, da **ROJO** | que una forma quede sin fixture | las **seis** con fixture positivo y negativo |
+| `V6-15` | **Los controles adversariales del SEXTO, SÉPTIMO y OCTAVO gate quedan como FIXTURES OBLIGATORIOS** | documentos 27, 28 y 29 | suite de regresión | la suite, con su procedencia por gate | los controles sanos siguen verdes | **los once árboles** vuelven a dar ROJO, uno a uno | que un control desaparezca de la suite | **cada** control de los tres gates presente, con su identificador de origen |
+| `V6-16` | **La prueba se ejecuta desde una RAÍZ DE CONFIANZA EXTERNA al árbol comprobado** | el árbol candidato y la raíz externa | veredicto | la declaración de la raíz y su procedencia | la ejecución externa reproduce el veredicto | un árbol que se declara sano a sí mismo y la raíz externa desmiente **da ROJO** | que la prueba se ejecute desde dentro del árbol comprobado | el ejecutor NO comparte identidad de escritura con el runtime ADS (`O18`) |
+| `V6-17` | **Ningún digest calculado por el mismo árbol basta como prueba de su propia integridad** | digest interno y ancla externa | veredicto | los dos digest y su origen | los dos coinciden sobre un árbol sano | un árbol alterado cuyo digest interno cuadra **da ROJO por el ancla externa** | que el veredicto dependa sólo del digest interno | **cero** afirmaciones de integridad sostenidas sólo por el propio árbol |
+| `V6-18` | **CERO falsos verdes, y los controles sanos SIN falsos rojos** | la suite completa | veredicto global | la matriz entera, con sus dos columnas | **todos** los controles sanos en verde | **todos** los adversariales en rojo | un solo falso verde, o un solo falso rojo sobre una modificación permitida | `falsos_verdes = 0` **y** `falsos_rojos = 0`, medidos y publicados |
+
+## 20.2 · Lo que esta sección NO dice, y hay que decirlo
+
+```text
+NINGUNO DE LOS DIECIOCHO      está implementado, ejecutado ni certificado. Son CONTRATO
+NINGUNO PUEDE CITARSE         como capacidad existente, ni en un dosier, ni en un informe,
+                              ni ante el Owner
+NINGÚN VERDE DE LA BATERÍA    demuestra que alguno de ellos esté construido: la batería es
+    INTERNA                   evidencia de consistencia del corpus, y `O20` lo escribe
+LA CONDICIÓN PREVIA A         es que `F6` los implemente **y los certifique**. Hasta
+    PesquerApp                entonces PesquerApp está BLOQUEADA, sin MVP, sin piloto
+                              desechable y sin adopción parcial
+```
+

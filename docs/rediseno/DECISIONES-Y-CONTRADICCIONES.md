@@ -542,6 +542,7 @@ hallazgos—, y está registrada en §2 de este mismo fichero.
 |---|---|---|---|---|
 | D107 | **PROPAGACIÓN DE `O17`. No es una elección de F4c: es la materialización de una resolución del Owner, y se declara DERIVADA.** Los cuatro macrocircuitos —instalación §8.1, adopción §8.2, migración §8.3 y actualización §8.4— ganan una **FASE 0 de CERTIFICACIÓN ESTRUCTURAL** como precondición propia, anterior a toda mutación canónica y a todo intento de elevarse. La fase invoca **un único contrato compartido**, `gate:sistema-conforme`, que deja de tener una sola aparición definitoria y pasa a tener **productor, sujeto, evidencia, vigencia y condición de invalidación**. `SIS` es propietario y productor; `VER` produce el dosier; `PLT` ejecuta la maquinaria cuando el contrato se la atribuya; `SEG` conserva su bloqueo. El **sujeto** lleva los seis identificadores de la regla 7 de `O17`, y su **huella** es lo que permite la reutilización de evidencia de la regla 8 —idéntica en todas sus entradas— sin que ninguna ejecución deje de emitir su propia declaración (reglas 9 y 10). La cadena de §9.2 se conserva íntegra y su regla dura deja de ser inaplicable | **`O17`**, que es su única fuente. No revisa ninguna decisión de F4c y **no renumera nada**: `D1`–`D106` y `O1`–`O16` intactas | **`P-06`** del documento 22, GRAVE nº 2, verificado por el adjudicador `R` barriendo §8.1, §8.2, §8.3 y §8.4: `gate:sistema-conforme` aparecía UNA vez en todo el documento 11, y era su definición. **La alternativa descartada NO la descartó F4**: la descartó el Owner, y son (a) y (c) de `O17`. Lo que F4 aporta aquí es **exclusivamente el reparto de la elección (b) por las sedes vigentes**, y por eso esta fila se declara derivada | revertir `O17` deja otra vez `O12` insatisfacible por cualquier recorrido, que es el estado que el gate del documento 22 declaró GRAVE |
 | D108 | **PROPAGACIÓN DE `O18`. No es una elección de F4c: es la materialización de una resolución del Owner, y se declara DERIVADA. No sustituye a `O18`.** (i) **El SOBRE DE ANCLA** pasa a ser requisito de todo gate de `F4c`: el coordinador lo emite y lo entrega **a cada revisor dentro de su encargo, por un canal externo al repositorio, ANTES de que empiece a leer**, con repositorio, referencia remota de la candidata, SHA del commit, SHA del árbol, referencia del gate, commit del manifiesto previo, ruta y SHA-256 del manifiesto, SHA-256 del derivador, digest del universo derivado, número de fuentes y de asignaciones, fecha y hora, identidad del emisor, la mención de `O18` y la declaración de entrega previa. **No se obtiene leyendo el repositorio que se audita.** (ii) **Cada revisor**, antes de leer contenido semántico, transcribe literalmente el sobre, resuelve la referencia con `git ls-remote`, comprueba commit y árbol, recalcula el SHA-256 del manifiesto y del derivador, rederiva el universo, **compara todo contra el sobre, falla CERRADO ante cualquier diferencia** e incluye el resultado en su manifiesto de lectura. (iii) **El adjudicador** recibe los sobres que los revisores declaran, comprueba que sean idénticos, verifica los cálculos por su cuenta, **declara INVÁLIDO el gate ante cualquier diferencia**, y **no acepta ni un sobre reconstruido a posteriori desde el árbol ni un sobre cambiado después de crear revisores**. (iv) El sobre **NO sustituye** el manifiesto previo —que se sigue commiteando solo y antes de crear revisores—, ni los manifiestos de lectura, ni las dos restas, ni la revisión independiente, ni la adjudicación contra las fuentes: **es su raíz documental externa**. (v) Se registra el **CONTRATO DEL VERIFICADOR EXTERNO DEL CONTROL REPO** para `F6`, completo y sin implementar, con propietario, ejecutor, autoridad, fase, pruebas y condición de cierre | **`O18`**, que es su única fuente. No revisa ninguna decisión de F4c y **no renumera nada**: `D1`–`D107` y `O1`–`O17` intactas | la raíz que el segundo gate identificó y que **§11.4 del documento 11 ya había declarado**: la verificación se anclaba en referencias internas al árbol auditado. `U` reprodujo **seis árboles defectuosos en verde**, dos de ellos puertas nuevas, y midió que **el coste marginal de encontrar la siguiente no estaba subiendo**. **Las alternativas NO las descartó F4**: las ponderó el Owner, y son (a) —rechazada— y (c) —diferida a `F6` con condición dura—. Lo que F4 aporta aquí es **exclusivamente el reparto de la elección por las sedes vigentes** | retirar el sobre devuelve la verificación a una raíz que el propio árbol puede redefinir, que es el estado que tres gates consecutivos declararon insuficiente |
+| D109 | **PROPAGACIÓN DE `O20`. No es una elección de F4c: es la materialización de una resolución del Owner, y se declara DERIVADA. No sustituye a `O20`.** (i) **La FRONTERA DE FASE queda escrita**: `F4c` produce la arquitectura —invariantes, contratos, propietarios, fases, entradas y salidas, condiciones de fallo cerrado, matrices adversariales, criterios de aceptación ejecutables y asignación inequívoca de cada obligación a `F5` o `F6`—, y **NO tiene que demostrar que la implementación provisional del verificador interno satisfaga esos contratos**. (ii) **`F6` recibe NUEVE responsabilidades nombradas**: implementar el verificador de admisión, implementar la raíz externa de confianza de `O18`/`O19`, cerrar las lecturas Git seguras, comprobar mutaciones de ficheros nuevos y preexistentes, tratar codificaciones no UTF-8, cubrir adición, modificación, borrado, renombrado y cambio de tipo, impedir que la definición de lo verificado y la regla de admisión se excluyan a sí mismas, ejecutar la matriz adversarial completa, y **certificar la implementación antes de declarar ADS operativo o iniciar la adopción permanente de PesquerApp**. (iii) **El CONTRATO OBLIGATORIO DE `F6` se escribe completo y sin implementar**, en §20 del documento 11: DIECIOCHO puntos, cada uno con fuente, propietario, implementador, fase, entrada, salida, evidencia, escenario positivo, escenario negativo, condición de bloqueo y criterio exacto de cierre. **Ninguno se ha ejecutado, y así se dice.** (iv) **La batería interna se declara EVIDENCIA DE CONSISTENCIA DEL CORPUS y no raíz autosuficiente de certificación de su propia implementación**, y queda escrito que un verde suyo **NO demuestra** que el verificador de `F6` esté construido ni certificado. (v) **Los 22 hallazgos del octavo gate reciben MATRIZ DE CIERRE POR FASE**, con un estado primario por hallazgo y atributos secundarios separados; **ninguno se declara SUPERADO**, y los que permiten un falso verde **bloquean `F6` y PesquerApp**. (vi) **PesquerApp queda BLOQUEADA sin MVP, sin piloto desechable y sin adopción parcial** hasta que `F6` implemente y certifique | **`O20`**, que es su única fuente. No revisa ninguna decisión de F4c y **no renumera nada**: `D1`–`D108` y `O1`–`O19` intactas | la FRONTERA DE FASE CIRCULAR que el Owner detecta tras dos gates consecutivos: `F4c` bloquea a `F5`, `F5` precede a `F6`, y `F6` es quien construye el verificador cuya implementación se le exigía a `F4c`. **Las alternativas NO las descartó F4**: las ponderó el Owner, y rechazó expresamente rebajar la exigencia —los contratos siguen siendo obligatorios— y detenerse. Lo que F4 aporta aquí es **exclusivamente el reparto de la decisión por las sedes vigentes y la escritura de los contratos**, y por eso esta fila se declara derivada | retirar `O20` devuelve la recursión: una fase que sólo puede cerrarse demostrando lo que la fase siguiente tiene que construir, que es el estado que los gates séptimo y octavo midieron |
 
 ---
 
@@ -866,7 +867,14 @@ encima del ahorro operativo*.
 > verificable**. Lo que se cierra es la parte que la sede canónica sí resuelve: **dónde
 > manda el texto**. Lo que queda abierto queda dicho, y no se presume resuelto.
 
-**Las DOCE reglas obligatorias que `O17` fija:**
+**Las DOCE reglas obligatorias que `O17` fija — RESUMEN DE ESTE REGISTRO, NO LITERAL DE LA SEDE (`C-21` del OCTAVO GATE):**
+
+> El bloque de abajo se presentaba con aspecto de literal y **convierte dos «debe» de la > sede en indicativo**, con lo que DEBILITA el texto canónico. `O19` nació de una > proyección que decía MENOS de lo que el Owner había resuelto, y ésta es la misma clase en > la dirección contraria a la que se vigilaba. **No se reescribe la sede y no se amplía > nada: se rotula lo que esto es.** El literal, cláusula a cláusula:
+>
+> ```bash
+> awk '/^# /{p = ($0 ~ /^# `O17`/)} p' docs/owner/ADS-OWNER-RESOLUCIONES.md |
+>   awk '/^### Reglas obligatorias/,/^### Reparto/'
+> ```
 
 ```text
  1  cada ejecución de un macrocircuito produce EXACTAMENTE UNA certificación Estructural
@@ -1225,6 +1233,65 @@ Owner— y devuelve al corpus a un estado en que ningún gate puede resolver qu�
 
 
 ---
+
+### `O20` · LA FRONTERA ENTRE `F4c` Y `F6`, Y EL FIN DE LA RECURSIÓN — 2026-09-01
+
+> **ESTA ENTRADA ES UNA PROYECCIÓN DERIVADA. LA AUTORIDAD CANÓNICA ESTÁ EN
+> [`docs/owner/ADS-OWNER-RESOLUCIONES.md`](../owner/ADS-OWNER-RESOLUCIONES.md), `O20`.**
+> Si algo de aquí difiere de la sede, manda la sede, y **una paráfrasis nunca amplía el texto
+> canónico**. El texto íntegro no se copia: se remite y se deriva.
+>
+> ```bash
+> awk '/^# /{p = ($0 ~ /^# `O20`/)} p' docs/owner/ADS-OWNER-RESOLUCIONES.md
+> ```
+
+**Procedencia: decisión expresa del Owner del 2026-09-01**, tomada tras el OCTAVO GATE DE
+CERTIFICACIÓN —documento 29—. **No responde a una pregunta que ningún gate le elevara**: los
+ocho gates declararon que ninguna decisión volvía al Owner. **La toma el Owner por su
+cuenta**, y la sede lo hace constar.
+
+**El vacío que resuelve, dicho como el Owner lo dice: una FRONTERA DE FASE CIRCULAR.** `F4c`
+bloquea a `F5`; `F5` precede a `F6`; y `F6` es quien construye el verificador cuya
+IMPLEMENTACIÓN se le estaba exigiendo a `F4c`. Los cinco primeros gates señalaban arquitectura
+o procedimiento; **el séptimo y el octavo señalan la implementación provisional del
+verificador interno, y cada corrección de esa implementación abrió la siguiente.** Es la misma
+clase de bloqueo circular que `O18` cerró para la RAÍZ DE CONFIANZA, un piso más abajo: allí
+era el mecanismo, aquí es la fase.
+
+| # | decisión | qué revisa | lo resuelto |
+|---|---|---|---|
+| O20 | **`F4c` PRODUCE LA ARQUITECTURA; `F6` IMPLEMENTA Y CERTIFICA EL VERIFICADOR.** `F4c` no tiene que demostrar que la implementación provisional y mutable del verificador interno ya satisface todos sus contratos | **la FRONTERA DE FASE que `O18` y `O19` dejaron implícita.** NO revisa su contenido, NO revisa su diseño, y **`O17`–`O19` conservan íntegramente su texto** | los ocho puntos de la sede: qué produce `F4c`, qué no debe demostrar, qué implementa `F6`, qué es la batería interna, qué NO demuestra un verde, que ningún hallazgo desaparece, qué debe confirmar el gate de `F5`, y que PesquerApp sigue bloqueada |
+
+**LO QUE `O20` NO HACE, y se dice para que nadie lo lea de más** —lectura de este registro,
+**NO literal de la sede**, y ninguna valla la encierra precisamente por eso—:
+
+- **no rebaja la exigencia**: los mismos contratos siguen siendo obligatorios; lo que cambia
+  es que ahora tienen fase y propietario, en vez de exigirse a la fase que no puede
+  construirlos;
+- **no declara suficiente a `F4c`**: eso lo juzga un gate independiente, y el Owner lo dice
+  expresamente en el campo `ALCANCE` de la sede;
+- **no cierra ningún hallazgo**: ninguno de los 22 del octavo gate ni ninguno anterior. Los
+  defectos de implementación **cambian de fase, no de estado**;
+- **no autoriza** `F5`, `F6` ni PesquerApp;
+- **no reescribe** `O17`, `O18` ni `O19`.
+
+**LA REGLA DE CLASIFICACIÓN QUE `O20` IMPONE, y que esta tanda ejecuta** —lectura de este
+registro sobre el punto 6 de la sede, no literal—:
+
+- un defecto **arquitectónico o documental** sigue bloqueando `F4c` y se corrige aquí;
+- un defecto de **implementación del verificador** pasa a contrato obligatorio de `F6`,
+  conservando identificador, reproducción, propietario, fase y prueba posterior;
+- **ninguno se marca como SUPERADO** mientras no se implemente y se ejecute en `F6`;
+- todo el que **permita un falso verde** bloquea `F6` y bloquea PesquerApp.
+
+**Y UNA CONSECUENCIA QUE EL PROPIO OWNER ESCRIBE, y que esta proyección no puede suavizar:**
+un verde de la batería interna **NO demuestra que el verificador de `F6` esté construido ni
+certificado**. La batería es **evidencia de consistencia del corpus**, y nadie puede citarla
+para otra cosa.
+
+**Su propagación es `D109`**, en la sección 1 de este mismo fichero, y **se declara DERIVADA**:
+`F4c` no eligió nada aquí.
+
 
 ## 3 · Contradicciones detectadas contra (a) y (b)
 

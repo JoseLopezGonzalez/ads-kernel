@@ -332,3 +332,113 @@ LA RATIFICACIÓN QUEDA CERRADA
 · `docs/owner/` es la sede canónica
 · `O18` NO vuelve a someterse a elección
 ```
+
+---
+
+# `O20` · LA FRONTERA ENTRE `F4c` Y `F6`, Y EL FIN DE LA RECURSIÓN
+
+```text
+IDENTIFICADOR   O20
+FECHA           2026-09-01
+PROCEDENCIA     decisión expresa del Owner, tomada tras el OCTAVO GATE DE CERTIFICACIÓN
+                —documento 29— y a la vista de que dos gates consecutivos, el séptimo y el
+                octavo, devolvieron INSUFICIENTE por defectos de IMPLEMENTACIÓN del
+                verificador interno y no por arquitectura sin decidir
+REVISA          la FRONTERA DE FASE que `O18` y `O19` dejaron implícita. NO revisa su
+                contenido, NO revisa su diseño y NO las reescribe: `O17`-`O19` conservan
+                íntegramente su texto
+REVISADA POR    nada
+PROYECCIÓN      `O20` y `D109` en `DECISIONES-Y-CONTRADICCIONES.md`
+ALCANCE         NO autoriza iniciar `F5`, `F6` ni PesquerApp. NO declara suficiente a `F4c`:
+                eso lo juzga un gate independiente
+```
+
+## Texto
+
+**Cierro la recursión entre `F4c` y `F6`, y lo hago cambiando la frontera de certificación
+sin rebajar la exigencia final del sistema.**
+
+Ocho gates independientes han encontrado once árboles adversariales. Los cinco primeros
+señalaban arquitectura o procedimiento; los tres últimos señalan **la implementación
+provisional del verificador interno**, y cada corrección de esa implementación ha abierto la
+siguiente. Eso no es un defecto de diligencia: es una **frontera de fase mal puesta**. Estoy
+pidiendo a `F4c` que demuestre lo que `F6` tiene que construir.
+
+### 1 · Lo que `F4c` sí debe producir
+
+Una arquitectura **completa, coherente y suficientemente precisa para construir**, que
+incluya: invariantes · contratos · propietarios · fases · entradas y salidas · condiciones de
+fallo cerrado · matrices adversariales · criterios de aceptación ejecutables · y **asignación
+inequívoca de cada obligación a `F5` o a `F6`**.
+
+### 2 · Lo que `F4c` NO tiene que demostrar
+
+`F4c` **no tiene que demostrar que la implementación provisional y mutable del verificador
+interno ya satisface todos esos contratos.**
+
+### 3 · Lo que `F6` es responsable de hacer
+
+```text
+· implementar el VERIFICADOR DE ADMISIÓN
+· implementar la RAÍZ EXTERNA DE CONFIANZA que `O18` y `O19` ya exigen
+· cerrar las LECTURAS GIT SEGURAS
+· comprobar MUTACIONES de ficheros nuevos y preexistentes
+· tratar CODIFICACIONES NO UTF-8
+· comprobar ADICIONES, MODIFICACIONES, BORRADOS, RENOMBRADOS y CAMBIOS DE TIPO
+· impedir que LA DEFINICIÓN DE LO VERIFICADO Y LA REGLA DE ADMISIÓN puedan excluirse a sí
+  mismas
+· ejecutar la MATRIZ ADVERSARIAL COMPLETA
+· CERTIFICAR la implementación antes de declarar ADS operativo o iniciar la adopción
+  permanente de PesquerApp
+```
+
+### 4 · Qué es la batería interna, y qué no
+
+La batería interna de `F4c` es **evidencia de consistencia del corpus**, no una raíz
+autosuficiente de certificación de su propia implementación.
+
+### 5 · Qué NO demuestra un verde
+
+**Un verde de la batería interna NO demuestra que el verificador de `F6` esté construido ni
+certificado.** Nadie puede citarlo para eso.
+
+### 6 · Ningún hallazgo desaparece por este cambio
+
+```text
+· los defectos ARQUITECTÓNICOS o DOCUMENTALES siguen bloqueando `F4c`
+· los defectos de IMPLEMENTACIÓN del verificador pasan a CONTRATOS OBLIGATORIOS de `F6`
+· todos conservan identificador, reproducción, propietario, fase y prueba posterior
+· NINGUNO puede marcarse como SUPERADO mientras no se implemente y se ejecute en `F6`
+```
+
+### 7 · Qué tiene que confirmar el gate que autorice `F5`
+
+```text
+· que NO queda arquitectura por decidir
+· que TODOS los contratos de `F6` están completos
+· que NINGÚN defecto de implementación se presenta falsamente como corregido
+· que las obligaciones pendientes de `F6` NO ocultan una decisión arquitectónica
+```
+
+### 8 · PesquerApp
+
+**PesquerApp sigue BLOQUEADA** hasta que `F6` implemente y certifique estos contratos. **No
+se autoriza MVP, ni piloto desechable, ni adopción parcial.**
+
+## Nota de trazabilidad de `O20`
+
+> **Qué corrige, dicho sin adorno: una FRONTERA DE FASE CIRCULAR**, detectada tras dos gates
+> consecutivos —el séptimo, documento 28, y el octavo, documento 29—. `F4c` bloqueaba a `F5`;
+> `F5` precede a `F6`; y `F6` es quien construye el verificador cuya implementación se le
+> estaba exigiendo a `F4c`. Es la misma clase de bloqueo circular que `O18` cerró para la
+> RAÍZ DE CONFIANZA, un piso más abajo: allí era el mecanismo, aquí es la fase.
+>
+> **Lo que esta resolución NO hace, y se dice para que nadie lo lea de más:** no rebaja la
+> exigencia final —los mismos contratos siguen siendo obligatorios y ahora tienen fase y
+> propietario—, no declara suficiente a `F4c`, no cierra ningún hallazgo, no autoriza `F5`,
+> `F6` ni PesquerApp, y **no reescribe `O17`, `O18` ni `O19`**, que conservan su texto.
+>
+> **Su procedencia es la misma que la de `O17`, `O18` y `O19`**: decisión expresa del Owner
+> registrada en esta sede, que es append-only. Lo que la distingue es que **no responde a una
+> pregunta que un gate le elevara**: los ocho gates declararon expresamente que ninguna
+> decisión volvía al Owner. **Esta la toma el Owner por su cuenta**, y consta así.

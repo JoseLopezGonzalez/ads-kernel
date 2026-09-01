@@ -61,8 +61,13 @@ puntos:
     algún componente — el cliquet de `universos_publicados()`;
   · **cada manifiesto tiene que aportar filas a ese cliquet** (`W2-03`): el lector exigía
     columna ordinal y el manifiesto del gate del documento 21 no la tiene, con lo que uno de
-    los cinco manifiestos inmutables aportaba CERO filas y sus 30 rutas no estaban
-    protegidas. La guarda de entonces sólo miraba el total y no podía disparar;
+    los manifiestos inmutables aportaba CERO filas y **las rutas que aquel gate declaró
+    obligatorias** no estaban protegidas. La guarda de entonces sólo miraba el total y no
+    podía disparar. **`C-12` del OCTAVO GATE: aquí y en su gemela de abajo se escribía «30
+    rutas», y el patrón `_FILA_MANIFIESTO` de este mismo fichero deriva OTRO número. Los dos
+    cardinales se retiran y se remiten** —nunca se sustituye un número a mano por otro
+    número a mano, que es lo que `J-07` prohíbe—: quien lo necesite lo deriva contando las
+    filas de ese manifiesto con el patrón que este fichero publica;
   · un documento numerado que el componente (iv) no sepa clasificar para el derivador entero
     en vez de caerse del universo;
   · y **un documento numerado cuyo NOMBRE dice dictamen no se excluye por su H1** (`W2-06`):
@@ -687,9 +692,10 @@ COMPONENTES = [
 # Se dice aquí para que nadie vuelva a leer en esta guarda una garantía que no da.
 # `W2-03`. El patrón exigía COLUMNA ORDINAL —`| 7 | \`ruta\` |`— y el manifiesto del gate
 # del documento 21 no la tiene: su tabla empieza por la ruta. Resultado medido sobre el
-# árbol, sin que nadie atacara nada: **de los cinco manifiestos INMUTABLES, uno aportaba
-# CERO filas al cliquet**, y las 30 rutas que aquel gate declaró obligatorias no estaban
-# protegidas contra el encogimiento. La guarda que existía —«ningún manifiesto publica
+# árbol, sin que nadie atacara nada: **de los manifiestos INMUTABLES, uno aportaba CERO
+# filas al cliquet**, y **las rutas que aquel gate declaró obligatorias** no estaban
+# protegidas contra el encogimiento —el cardinal se retira por `C-12`, y se deriva contando
+# las filas de ese manifiesto con `_FILA_MANIFIESTO`—. La guarda que existía —«ningún manifiesto publica
 # filas»— sólo miraba el total, y con cuatro manifiestos aportando filas nunca disparaba.
 # Ahora la ruta puede ir en la primera o en la segunda celda, y **cada manifiesto tiene que
 # aportar filas**: uno que no aporte ninguna es código 2 con su nombre.
@@ -748,12 +754,19 @@ def derivar():
 
 
 def lineas_de_blob(crudo):
-    """Líneas de un blob. **ESTA ES LA ÚNICA SEDE DE LA FÓRMULA** (`S1-08`).
+    """Líneas de un blob. Sede de la fórmula (`S1-08`), con su alcance dicho (`C-11`).
 
-    Un fichero vacío tiene CERO líneas. El emisor del sobre la IMPORTA de aquí en vez de
-    escribir la suya: `EE-16` cerró la divergencia escribiendo una tercera copia y
-    afirmando «se usa UNA», y el séptimo gate lo midió. Quien necesite este recuento la
-    importa; quien no pueda importarla, no publica cifras de líneas.
+    Un fichero vacío tiene CERO líneas.
+
+    **ALCANCE EXACTO, y decirlo entero era falso.** `EE-16` cerró la divergencia escribiendo
+    una TERCERA copia y afirmando «se usa UNA»; `S1-08` hizo que el emisor la IMPORTARA en
+    su cálculo del universo y **volvió a afirmar «ÚNICA SEDE»** — y el octavo gate midió que
+    el emisor sigue calculando líneas por su cuenta en otros dos sitios, uno de los cuales
+    PUBLICA las cifras de las resoluciones del Owner en el sobre. Hoy esta función es la
+    sede de la fórmula **para el universo obligatorio**, y **no se afirma que sea la única
+    del corpus**: unificar los tres usos es trabajo de `F6` y va contratado en `V6-04` de
+    §20 del documento 11. La divergencia está acotada —los tres dan el mismo resultado sobre
+    todo fichero no vacío— y **declarada**, que es lo que la sexta condición de `O18` exige.
     """
     n = crudo.count(b"\n")
     if crudo and not crudo.endswith(b"\n"):

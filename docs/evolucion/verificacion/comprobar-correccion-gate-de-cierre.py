@@ -2240,10 +2240,24 @@ else:
         _g22.append("NINGÚN fichero de `docs/owner/` entra en el inventario de inmutables: "
                     "desde `O19` esa zona es la SEDE CANÓNICA de las resoluciones del Owner, "
                     "y un inventario que no la ve deja que su texto se altere en silencio")
+    # `O20`. **La SEDE DEL OWNER es APPEND-ONLY, no byte-inmutable, y la diferencia
+    # importa.** Este inventario la trataba como un documento histórico —idéntica a `HEAD`—
+    # y con eso **el corpus no podía registrar una resolución nueva del Owner**: el
+    # procedimiento que `O19` prescribe —materializar en la sede y después proyectar— ponía
+    # el instrumento en ROJO. Un instrumento que impide ejercer la regla que dice guardar es
+    # una afirmación falsa sobre sí mismo, y es la sexta condición de `O18`.
+    # **La propiedad correcta de esa zona ya la comprueba `G-29`**: su contenido de hoy
+    # tiene que EMPEZAR POR el de la versión que la creó, contrastado contra el commit del
+    # nacimiento y no contra `HEAD`, de modo que **añadir una resolución es legítimo y
+    # alterar una letra de lo publicado sigue siendo ROJO**. Aquí se retira el contraste
+    # byte a byte y se REMITE a esa guarda, que es más fuerte y no depende de `HEAD`.
+    _APPEND_ONLY = "docs/owner/"
     for rel in _INMUTABLES:
         if rel not in _head_arbol:
             _sin_base.append(rel)          # documento en curso, todavía sin confirmar
             continue
+        if rel.startswith(_APPEND_ONLY):
+            continue                       # APPEND-ONLY · lo juzga `G-29`, contra el nacimiento
         if rel in _mod_head:
             _g22.append(f"{rel}: MODIFICADO en el árbol de trabajo respecto de `HEAD`. Es "
                         f"un documento histórico y no se reescribe; quien lo cambie es "
@@ -2251,6 +2265,7 @@ else:
         if rel in _base_arbol and rel in tocados:
             _g22.append(f"{rel}: MODIFICADO respecto de la revisión base `05f71b7`, y ya "
                         f"existía en ella")
+    _g22_ow = sorted(f for f in _INMUTABLES if f.startswith(_APPEND_ONLY))
     # y el segundo brazo se DECLARA: `T-02` mostró que ocho de los inmutables no existen en
     # `05f71b7`, con lo que su contraste contra la base no se ejecuta para ellos. Eso no es
     # un defecto —nacieron después— pero callarlo sí lo era: el detalle lo dice.
@@ -2264,6 +2279,10 @@ check("G-22",
       f"SEDE DEL OWNER y "
       f"{len([f for f in _INMUTABLES if '/manifiestos/' not in f and not f.startswith('docs/owner/')])} "
       f"documentos numerados— intactos frente a `HEAD` y a `05f71b7`" +
+      f" · de ellos, {len(_g22_ow)} de `docs/owner/` se juzgan APPEND-ONLY y NO byte a byte "
+      f"(`O20`): su contrato lo comprueba `G-29` contra el COMMIT QUE LOS CREÓ, que es más "
+      f"fuerte que contra `HEAD` y permite registrar una resolución nueva del Owner sin "
+      f"poner el instrumento en rojo" +
       # `AA-03`. La exención de los cuatro ficheros EN CORRECCIÓN no se decía en ninguna
       # parte, y `00-INDICE.md` es uno de ellos: es **la sede que gobierna qué se admite en
       # `docs/owner/` y qué documento numerado nuevo se admite**, y editarla sola daba
@@ -2987,7 +3006,14 @@ def _censo_polaridad(texto):
             for nombre, neg, pos in _POLARIDADES}
 
 _g28, _revisados = [], 0
-_docs_gate = [f for f in _INMUTABLES if f.endswith(".md")]
+# `O20`. **`docs/owner/` NO es un documento de gate**, y esta comprobación lo metía en la
+# familia de polaridad de los veredictos: registrar una resolución nueva del Owner —que es
+# el procedimiento que `O19` prescribe— disparaba «la superación de hallazgo CAMBIÓ» sobre
+# una sede que no emite veredictos de gate. Su contrato es APPEND-ONLY y lo comprueba
+# `G-29` contra el commit que la creó; aquí se excluye por lo que la zona ES, no por su
+# nombre: es la SEDE DEL OWNER, no un dictamen.
+_docs_gate = [f for f in _INMUTABLES
+              if f.endswith(".md") and not f.startswith("docs/owner/")]
 _vacia28 = _base_vacia(_head_arbol_raw, "git ls-tree -r --name-only HEAD",
                        "no hay ningún documento publicado contra el que contrastar un "
                        "veredicto")
