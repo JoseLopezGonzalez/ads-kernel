@@ -971,10 +971,10 @@
 
 ```text
 CHECKPOINT — ADS-NEXT/12 · SIS/evolucion
-actualizado: 2026-09-01   · reanclado por la RESOLUCIÓN `O22` DEL OWNER y por la CANDIDATA
-             DELTA que abre, en el MISMO commit que registra el evento —regla 4—. **Cuál es
-             la última resolución NO se escribe aquí** —regla 3—: sale de SU sede canónica.
-             **Cuál es el último gate y qué devolvió tampoco** —reglas 1 y 2—:
+actualizado: 2026-09-01   · reanclado por el CIERRE DE `F4c` POR COMPOSICIÓN bajo `O22`, en
+             el MISMO commit que registra el evento —regla 4—. **Cuál es la última resolución
+             NO se escribe aquí** —regla 3—: sale de SU sede canónica. **Cuál es el último
+             documento y qué declara tampoco** —reglas 1 y 2—:
                  ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
 regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histórico: describe el
              árbol VIGENTE. Fue a la vez el defecto X-04 del documento 24 —GRAVE— y la CUARTA
@@ -1053,7 +1053,34 @@ regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histór
                   indefinido dejó durante nueve documentos una viñeta describiendo en
                   presente un gate de hacía quince, y decidir hasta dónde llegaba era
                   interpretación humana no normada.
-metodo:      SIS/Evolucion · **`O22` REGISTRADA Y CANDIDATA DELTA PUBLICADA** ·
+metodo:      SIS/Evolucion · **`F4c` CERRADA POR COMPOSICIÓN bajo `O22`** · **`F5`
+             AUTORIZADA DOCUMENTALMENTE y NO INICIADA**. No lo cierra esta tanda ni el
+             coordinador: lo cierra la COMPOSICIÓN de dos juicios independientes —el gate
+             completo VÁLIDO del último documento de gate, que certificó la cobertura y cerró
+             once de sus doce objetos, y la VERIFICACIÓN INCREMENTAL de su único bloqueo por
+             un verificador independiente único—. **Cuál es el documento del cierre y qué
+             declara NO se escribe aquí** —reglas 1 y 2—: es el último de
+                 ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
+             y sus tres declaraciones literales viven dentro de él, que es su única sede e
+             inmutable.
+             AUTORIZAR NO ES INICIAR, y es lo que más importa de este renglón: **`F5` NO se ha
+             iniciado**. Ninguna enmienda normativa está redactada, ningún material aprobado
+             se ha tocado y nada de `F5` se ha ejecutado.
+             **`F6` sigue NO INICIADA**: su contrato está escrito en §20 del documento 11 y
+             **ninguno de sus puntos implementado, ejecutado ni certificado** —cuántos son no
+             se escribe aquí, lo da `grep -cE '^\| `V6-[0-9]+` \|'` sobre §20.1—. **PesquerApp
+             sigue BLOQUEADA**, sin MVP, sin piloto desechable y sin adopción parcial, hasta
+             que `F6` implemente **y CERTIFIQUE** —`O20` §8—. **El cierre de `F4c` no la
+             desbloquea.**
+             QUÉ SIGUE VIVO Y NO SE DECLARA SUPERADO: los hallazgos NO BLOQUEANTES que el
+             documento del cierre registra con sede, propietario y fase —su censo se DERIVA de
+             ese documento, aquí no se copia—; **`C-L.7` NO CERRADA** —su instrumento está
+             reparado, su CLASE no—; y **`M-04` NO SUPERADA**, cuya mitad de implementación es
+             de `F6`. **Ninguno superado, ninguno cerrado por este renglón.**
+             LA OPCIÓN C NO SE LEVANTA: no se abre ningún ciclo de corrección iterativa, no se
+             propone otra tanda y no se convoca otro gate. `O22` §7 lo cierra — si hubiera
+             aparecido otro bloqueo, la composición habría FALLADO y no habría otro ciclo.
+metodo_anterior: SIS/Evolucion · **`O22` REGISTRADA Y CANDIDATA DELTA PUBLICADA** ·
              **PENDIENTE DE VERIFICACIÓN INCREMENTAL**. El Owner resuelve por su cuenta que
              un gate completo VÁLIDO que identifica UN SOLO bloqueo y declara expresamente
              que, cerrado, el resultado sería suficiente, puede complementarse con una
@@ -1400,7 +1427,26 @@ rama_de_trabajo: NO SE ESCRIBE AQUÍ, Y ES DELIBERADO. Este campo nombró durant
 freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
              Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
              queda marcado HISTÓRICO y SUPERADO, y no se borra
-last_meaningful_event: EL OWNER ABRE LA CERTIFICACIÓN INCREMENTAL DEL DELTA, Y ES `O22`.
+last_meaningful_event: **`F4c` QUEDA CERRADA POR COMPOSICIÓN, Y `F5` AUTORIZADA
+             DOCUMENTALMENTE.** Un verificador independiente único, que no ha escrito nada de
+             este corpus y **que `O22` §4 prohíbe expresamente corregir nada**, reprodujo el
+             defecto del único bloqueo sobre la candidata que el gate juzgó, demostró su
+             ausencia sobre la candidata delta y emitió **las TRES declaraciones que `O22`
+             exige**. Sus palabras literales, su cobertura con rangos, sus comprobaciones con
+             sus comandos y **lo que consta en su contra** viven en el documento del cierre,
+             que es su única sede e inmutable, y **aquí no se copian** —reglas 1 y 2—.
+             POR QUÉ ES UNA COMPOSICIÓN Y NO UN GATE: `O22` §1 exige las TRES condiciones y
+             las tres concurrían —gate anterior VÁLIDO declarado por su propio adjudicador ·
+             UN SOLO bloqueo · declaración EXPRESA de que cerrado ese bloqueo el veredicto
+             sería suficiente—. **`O22` no rebaja el criterio**: lo endurece por fuente.
+             QUÉ **NO** CAMBIA CON ESTE EVENTO: **`F5` NO se inicia** —autorizar no es
+             iniciar—, **`F6` sigue NO INICIADA**, **PesquerApp sigue BLOQUEADA**, `C-L.7`
+             **NO CERRADA**, `M-04` **NO SUPERADA**, ninguna resolución del Owner revisada, y
+             **ningún hallazgo declarado SUPERADO** — ni los que quedan vivos, ni los doce del
+             documento 31, que están CERRADOS y no superados.
+             REANCLADO EN EL MISMO COMMIT QUE REGISTRA EL EVENTO —regla 4—, y lo anterior NO
+             se borra: baja íntegro a `last_meaningful_event_anterior` —regla 5—.
+last_meaningful_event_anterior: EL OWNER ABRE LA CERTIFICACIÓN INCREMENTAL DEL DELTA, Y ES `O22`.
              La toma por su cuenta —ningún gate le elevó pregunta— tras el ÚLTIMO gate, cuyo
              ordinal y documento NO se escriben aquí y se derivan con el comando de `metodo`.
              `O22` resuelve un COSTE DE MÉTODO y no un defecto de nadie: aquel gate es
@@ -4838,6 +4884,48 @@ awk '/^## 5 · MATRIZ CONSOLIDADA/,/^## 6 /' docs/evolucion/32-*.md \
 ```
 
 ## Siguiente acción exacta
+
+```text
+0  DÓNDE ESTAMOS                 **`F4c` está CERRADA** por COMPOSICIÓN bajo `O22`, y **`F5`
+                                 AUTORIZADA DOCUMENTALMENTE**. El documento del cierre es el
+                                 último de
+                                   ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
+                                 y **su contenido NO se copia aquí** —reglas 1 y 2—: las tres
+                                 declaraciones literales del verificador, su cobertura, sus
+                                 comprobaciones y lo que consta en su contra viven dentro.
+
+1  LA SIGUIENTE ACCIÓN ES        **`F5` está autorizada y NO iniciada. AUTORIZAR NO ES
+   DEL OWNER, Y ES INICIAR       INICIAR**, y este registro no la inicia. Nada de `F5` se ha
+   `F5` O NO INICIARLA           redactado, ejecutado ni tocado. Quien la inicie lo hará como
+                                 un acto propio, y este bloque no lo anticipa.
+
+2  QUÉ **NO** SE PUEDE HACER     **NO se inicia `F6`**: su contrato está escrito en §20 del
+   TODAVÍA, Y ES LO QUE MÁS      documento 11 y ninguno de sus puntos está implementado,
+   IMPORTA                       ejecutado ni certificado. **NO se toca PesquerApp**, que
+                                 sigue **BLOQUEADA** —sin MVP, sin piloto desechable y sin
+                                 adopción parcial— hasta que `F6` implemente **y CERTIFIQUE**
+                                 (`O20` §8). **El cierre de `F4c` no la desbloquea.**
+
+3  QUÉ QUEDA VIVO                los hallazgos **NO BLOQUEANTES** que el documento del cierre
+                                 registra con sede, propietario y fase. **Su censo se DERIVA
+                                 de ese documento** y aquí no se copia. **NINGUNO se declara
+                                 SUPERADO.** Y siguen abiertas `C-L.7` —clase, no
+                                 instrumento— y `M-04`, cuya mitad de implementación es de
+                                 `F6`.
+
+4  EL MÉTODO                     **la OPCIÓN C NO se levanta.** No se abre ningún ciclo de
+                                 corrección iterativa, no se propone otra tanda y no se
+                                 convoca otro gate. `O22` §7 lo cierra: si hubiera aparecido
+                                 otro bloqueo, la composición habría FALLADO y no habría
+                                 otro ciclo.
+
+5  LO QUE NO CAMBIA              **CERRAR `F4c` NO ES SUPERAR NADA. AUTORIZAR NO ES INICIAR.
+                                 CERTIFICAR COBERTURA NO ES DECLARAR SUFICIENCIA.** Y quien
+                                 aplica no verifica: el cierre lo sostienen dos juicios
+                                 independientes, no esta tanda.
+```
+
+## Siguiente acción exacta — HISTÓRICA, anterior al CIERRE POR COMPOSICIÓN
 
 ```text
 0  NO HAY SIGUIENTE ACCIÓN       y sigue siendo deliberado. **El método de corrección
