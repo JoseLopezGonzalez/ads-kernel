@@ -971,8 +971,10 @@
 
 ```text
 CHECKPOINT — ADS-NEXT/12 · SIS/evolucion
-actualizado: 2026-09-01   · reanclado por la TANDA DE `O21` y de los 16 del GATE
-             ARQUITECTÓNICO FINAL, en el MISMO commit que registra el evento —regla 4
+actualizado: 2026-09-01   · reanclado por el ÚLTIMO GATE y por la activación de la OPCIÓN C,
+             en el MISMO commit que registra el evento —regla 4—. **Cuál es ese gate y qué
+             devolvió NO se escribe aquí** —reglas 1 y 2—: se derivan con
+                 ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
 regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histórico: describe el
              árbol VIGENTE. Fue a la vez el defecto X-04 del documento 24 —GRAVE— y la CUARTA
              recurrencia consecutiva de la clase «el checkpoint no reancla»: K-01/J-10/L-01 ·
@@ -1015,7 +1017,38 @@ regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histór
                   Para cada campo, tres preguntas: ¿copia un recuento, un ordinal, un estado
                   o una enumeración que otra sede publica? ¿queda algún FRAGMENTO de una
                   retirada anterior sin su frase? ¿lo histórico está ROTULADO como histórico?
-metodo:      SIS/Evolucion · RESOLUCIÓN `O21` DEL OWNER REGISTRADA EN LA SEDE CANÓNICA
+metodo:      SIS/Evolucion · ÚLTIMO GATE INDEPENDIENTE DEVUELTO —GATE VÁLIDO, `C-L.5`
+             ABIERTA CON SU CONDICIÓN NOMBRADA, VEREDICTO INSUFICIENTE PARA F5— y
+             **MÉTODO DE CORRECCIÓN ITERATIVA DETENIDO: se activa la OPCIÓN C**.
+             LA OPCIÓN C NO ES UN CIERRE Y NO ES UNA AUTORIZACIÓN. `F4c` queda ABIERTA con
+             sus hallazgos vivos y su remedio escrito; `F5`, `F6` y PesquerApp siguen sin
+             autorizar; ningún hallazgo se declara SUPERADO; ninguna resolución del Owner se
+             revisa. Lo que se detiene es el PROCEDIMIENTO: no se abre otro ciclo, no se
+             propone otra tanda y no se convoca otro gate. **Qué hacer a partir de aquí es
+             una decisión del Owner, y este registro no la anticipa.**
+             POR QUÉ SE ACTIVA, y la regla la escribió el Owner ANTES de conocer el
+             resultado: «si el gate devuelve insuficiencia por defectos introducidos por
+             esta misma tanda, no propongas otro ciclo». El adjudicador respondió esa
+             pregunta expresamente y con `git blame`: **cinco de los doce hallazgos los
+             introdujo esta serie, el ÚNICO BLOQUEANTE entre ellos**, y los dos de mayor
+             severidad están DENTRO del remedio que venían a aplicar. **El detalle NO se
+             copia aquí**: vive en §6 del documento del gate, que es su única sede.
+             EL ORDINAL Y EL DOCUMENTO DEL GATE NO SE ESCRIBEN AQUÍ —regla 2—:
+                 ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
+             EL VEREDICTO, EL RECUENTO, LAS SEVERIDADES Y LA CLASIFICACIÓN viven DENTRO de
+             ese documento, que es inmutable y es su única sede. Lo que este bloque sí dice,
+             porque es el estado y no una cifra: **F4c sigue ABIERTA y F5 sigue NO
+             AUTORIZADA**. APLICAR NO ES CERTIFICAR, y DETENER NO ES CERRAR.
+             EL ESTADO DE CADA CONDICIÓN `C-L` NO SE ESCRIBE AQUÍ, y es `C-06` del OCTAVO
+             GATE: un estado escrito caduca cada vez que un gate lo mueve, y por eso NO se
+             sustituye por el correcto —se RETIRA—. Su sede única es la CLASIFICACIÓN
+             VIGENTE de las condiciones `C-L` de este mismo fichero. Se lee, no se copia:
+                 grep -n 'CLASIFICACIÓN VIGENTE' docs/evolucion/CHECKPOINT-ADS-NEXT.md
+             Y DESDE `O21`, EL ESTADO DE `C-L.5` SE LEE CON SU REGLA NUEVA: certificar
+             cobertura y devolver insuficiencia son actos DISTINTOS e INDEPENDIENTES. El
+             último adjudicador los emitió por separado y publicó la prueba contrafáctica de
+             que no condicionó uno al otro. Ni este campo ni ningún otro deduce uno del otro.
+metodo_anterior: SIS/Evolucion · RESOLUCIÓN `O21` DEL OWNER REGISTRADA EN LA SEDE CANÓNICA
              —APPEND-ONLY— y PROYECTADA, y TANDA DOCUMENTAL DE LOS HALLAZGOS DEL ÚLTIMO
              GATE APLICADA. **APLICAR NO ES CERTIFICAR**, y nada de esta tanda declara
              ningún hallazgo SUPERADO.
@@ -1281,7 +1314,32 @@ rama_de_trabajo: NO SE ESCRIBE AQUÍ, Y ES DELIBERADO. Este campo nombró durant
 freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
              Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
              queda marcado HISTÓRICO y SUPERADO, y no se borra
-last_meaningful_event: EL OWNER RESUELVE LA SEMÁNTICA DE `C-L.5`, y es `O21`. La toma por
+last_meaningful_event: EL ÚLTIMO GATE INDEPENDIENTE DEVUELVE INSUFICIENTE PARA F5, SE
+             DECLARA VÁLIDO, Y ABRE `C-L.5` NOMBRANDO LA CONDICIÓN QUE FALLA — y con su
+             veredicto **SE ACTIVA LA OPCIÓN C y el método de corrección iterativa queda
+             DETENIDO**. Su ordinal y su documento NO se escriben —regla 2—: se derivan con
+             el comando de `metodo`, y su veredicto, su recuento y su clasificación viven
+             DENTRO de él.
+             LO QUE ESE GATE ESTRENA, y es lo que `O21` vino a hacer posible: **por primera
+             vez en el expediente un adjudicador emite las DOS declaraciones POR SEPARADO**
+             —cobertura y suficiencia—, **abre `C-L.5` NOMBRANDO la condición exacta** y
+             publica la prueba contrafáctica de que no condicionó una a la otra. Dejó de ser
+             un acto discrecional, que es literalmente lo que `O21` resolvió.
+             POR QUÉ SE DETIENE EL MÉTODO: la regla la escribió el Owner ANTES de conocer el
+             resultado —«si el gate devuelve insuficiencia por defectos introducidos por esta
+             misma tanda, no propongas otro ciclo»—, y el adjudicador respondió esa pregunta
+             con `git blame`: **el ÚNICO hallazgo BLOQUEANTE lo introdujo la propia tanda**,
+             dentro del remedio que venía a aplicar, y con él uno de los dos GRAVES, que es
+             la garantía escrita para barrer una clase y que deriva el conjunto vacío. **El
+             recuento y el reparto NO se copian aquí**: viven en §6 de ese documento.
+             LO QUE LA OPCIÓN C **NO** ES: no es un cierre de `F4c`, que queda ABIERTA con
+             sus hallazgos vivos y su remedio escrito; no autoriza `F5`, `F6` ni PesquerApp,
+             que sigue BLOQUEADA; no declara SUPERADO ningún hallazgo, ni `M-04`, ni
+             `C-L.5`, ni `C-L.7`; no revisa ninguna resolución del Owner; y no descarta el
+             trabajo aplicado, que el propio gate mide.
+             REANCLADO EN EL MISMO COMMIT QUE REGISTRA EL EVENTO —regla 4—, y lo anterior NO
+             se borra: baja íntegro a `last_meaningful_event_anterior` —regla 5—.
+last_meaningful_event_anterior: EL OWNER RESUELVE LA SEMÁNTICA DE `C-L.5`, y es `O21`. La toma por
              su cuenta —ningún gate le elevó pregunta: los NUEVE declararon que ninguna
              decisión volvía a él— tras el ÚLTIMO gate, cuyo ordinal y documento NO se
              escriben aquí y se derivan con el comando de `metodo`. `O21` cierra un VACÍO que
@@ -2380,15 +2438,16 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
                                          SECUNDARIOS y no cuentan como condiciones:
                                          K-05 K-09 K-10 K-08 L-03 corregidos ·
                                          J-11 contratado para F6, NO implementado
-               ABIERTA               1   C-L.5 — **y NO por incumplimiento de su medición**:
-                                         sobre la candidata del ÚLTIMO gate las dos restas
-                                         dieron ∅ y su adjudicador declaró que la cobertura
-                                         CIERRA y no es razón de insuficiencia. Está ABIERTA
-                                         porque **el ACTO de certificar no se emitió**, y
-                                         entonces ninguna norma lo obligaba. **Desde `O21`
-                                         eso ya no puede volver a pasar**: cumplidas las
-                                         seis condiciones el adjudicador DEBE certificar, y
-                                         no puede negarse por otros defectos. El detalle
+               ABIERTA               1   C-L.5 — **y por PRIMERA VEZ con su condición
+                                         NOMBRADA**, que es lo que `O21` vino a hacer
+                                         posible. El adjudicador del ÚLTIMO gate midió las
+                                         SEIS una a una, declaró **cinco SATISFECHAS** y
+                                         **la 5 —`ASIGNADO − LEÍDO` no vacío— INCUMPLIDA**,
+                                         por cinco fuentes del lote de un revisor que él
+                                         mismo declaró no haber leído íntegras. **No la
+                                         abrió por los defectos ni por el veredicto**, y
+                                         escribió la prueba contrafáctica de que no
+                                         condicionó una declaración a la otra. El detalle
                                          está en su fila, y sólo un adjudicador la mueve
                **[HISTÓRICO · entre el SÉPTIMO y el OCTAVO gate esta línea decía
                «CERTIFICADA POR COBERTURA · 1 · la certifica el adjudicador `FF` del SÉPTIMO
@@ -2421,7 +2480,33 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
                       TODAS las sedes vigentes de esta condición, que es lo que Q-14 pidió
                C-L.4  CERRADA · D106 (iii): O16 gana su ADDENDUM DE CRONOLOGÍA, con las dos
                       fechas verificadas en git log por el adjudicador R
-               C-L.5  ABIERTA · **y el motivo NO es el que este registro decía.** Sobre la
+               C-L.5  ABIERTA · **por la CONDICIÓN 5, nombrada por el adjudicador del ÚLTIMO
+                      gate: `ASIGNADO − LEÍDO` NO ES VACÍO.** Cinco fuentes del lote de uno
+                      de los dos revisores —el documento 11 en su rango `L5201-L12071`, el
+                      documento del gate anterior, este `CHECKPOINT`, el registro de
+                      decisiones y, con reserva, el índice— quedaron **asignadas y no leídas
+                      íntegras**, y **lo declaró él mismo, contra su propio interés, con ruta
+                      y tramo, antes de que nadie lo midiera**. Las otras CINCO condiciones
+                      se declararon SATISFECHAS y quedan medidas en el documento del gate,
+                      para que el siguiente no vuelva a derivarlas.
+                      **ES LA PRIMERA VEZ QUE LA APERTURA LLEVA SU CONDICIÓN NOMBRADA**, y
+                      es lo que `O21` vino a hacer posible: dejó de ser un acto discrecional.
+                      El adjudicador declaró expresamente que **no la abrió por haber
+                      encontrado defectos** —`O21` §8 se lo prohíbe— **ni por el veredicto de
+                      suficiencia** —`O21` §2 se lo prohíbe—, sino porque **contó, y la
+                      cuenta no dio cero**; y publicó la prueba contrafáctica: con la lectura
+                      completa habría certificado la cobertura **y el veredicto seguiría
+                      siendo INSUFICIENTE**.
+                      **NO hay tupla publicada**, porque `O21` §5 la liga a la certificación
+                      y no hubo certificación.
+                      **[HISTÓRICO · el motivo que este renglón dio entre el documento 30 y
+                      el 31]** «ABIERTA y no por incumplimiento de su medición: sobre la
+                      candidata de aquel gate las dos restas dieron ∅ y su adjudicador
+                      declaró que la cobertura CIERRA; estaba ABIERTA porque el ACTO de
+                      certificar no se emitió, y entonces ninguna norma lo obligaba.» Fue
+                      cierto sobre `7aeed6a`; el gate siguiente midió otra cosa sobre otra
+                      candidata. Se conserva y no se borra.
+                      **[HISTÓRICO · y el motivo que dio antes de eso.]** Sobre la
                       candidata del ÚLTIMO gate su adjudicador midió
                       `OBLIGATORIO − ASIGNADO = ∅` en las DOS direcciones y
                       `ASIGNADO − LEÍDO = ∅`, y declaró expresamente que **la cobertura
@@ -4455,6 +4540,47 @@ a derivar la última resolución del Owner **de su SEDE CANÓNICA** y no del reg
 **Nada de esto cierra `C-L.7`**: sigue NO CERRADA hasta que un gate independiente lo juzgue.
 
 ## Siguiente acción exacta
+
+```text
+0  NO HAY SIGUIENTE ACCIÓN       y es deliberado. **El método de corrección iterativa de
+   AUTOMÁTICA. EL MÉTODO         `F4c` está DETENIDO**: se ha activado la OPCIÓN C. No se
+   ESTÁ DETENIDO                 abre otro ciclo, no se propone otra tanda y no se convoca
+                                 otro gate. **La siguiente decisión es del Owner.**
+
+1  QUÉ LO DETUVO                 la regla que el propio Owner escribió ANTES de conocer el
+                                 resultado: «si el gate devuelve insuficiencia por defectos
+                                 introducidos por esta misma tanda, no propongas otro
+                                 ciclo». El adjudicador del último gate respondió esa
+                                 pregunta expresamente y con `git blame`, y la condición se
+                                 cumple. **El detalle NO se copia aquí**: está en §6 del
+                                 documento de ese gate, que es su única sede, y se localiza
+                                   ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
+
+2  QUÉ **NO** SIGNIFICA          **no es un cierre de `F4c`**, que queda ABIERTA con sus
+                                 hallazgos vivos y el remedio de cada uno escrito con sede
+                                 y línea · **no autoriza `F5`, `F6` ni PesquerApp**, que
+                                 sigue BLOQUEADA sin MVP, sin piloto desechable y sin
+                                 adopción parcial · **no declara SUPERADO** ningún hallazgo,
+                                 ni `M-04`, ni `C-L.5`, ni `C-L.7` · **no revisa ninguna
+                                 resolución del Owner**: `O17` a `O21` conservan íntegro su
+                                 texto y su sede sigue siendo append-only · **y no descarta
+                                 el trabajo aplicado**, que el propio gate midió.
+
+3  QUÉ QUEDA ENTREGADO,          el veredicto literal · los hallazgos consolidados, cada uno
+   Y ES LO QUE HACE ÚTIL         con severidad, clase, sede fichero:línea y **remedio
+   LA PARADA                     EXACTO —qué, no cómo—** · la respuesta a quién introdujo
+                                 cada uno · **las seis condiciones de `C-L.5` MEDIDAS una a
+                                 una, con la que falla NOMBRADA**. Quien retome esto no
+                                 tiene que volver a derivar nada de eso.
+
+4  LO QUE NO CAMBIA              **APLICADA NO ES CERTIFICADA. DETENER NO ES CERRAR.**
+                                 REGISTRAR, PROYECTAR o CONTRATAR no es CORREGIR, y CORREGIR
+                                 no es SUPERAR. `F4c` sigue ABIERTA y `F5` sigue NO
+                                 AUTORIZADA hasta que un gate independiente diga otra cosa,
+                                 con esas palabras.
+```
+
+## Siguiente acción exacta — HISTÓRICA, anterior al ÚLTIMO GATE
 
 ```text
 0  DÓNDE ESTAMOS               el OWNER ha resuelto la SEMÁNTICA de `C-L.5`: es `O21`, y su
