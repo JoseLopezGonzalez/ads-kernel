@@ -120,9 +120,12 @@ zonas:
   - patron: '^docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO\.md$'
     clase: NO_APLICABLE_A_IMPLEMENTACION
     motivo: documento de trabajo del Owner; declara materia abierta y no autoriza a implementar
-  - patron: '^docs/rediseno/(a-CAPACIDADES-APROBADA|b-RECORRIDO-APROBADA|a-ENMIENDA-E1-ENC|a-ENMIENDA-E2-MULTIREPO)\.md$'
+  - patron: '^docs/rediseno/(a-CAPACIDADES-APROBADA|b-RECORRIDO-APROBADA|g-ESTADO-DURABLE-APROBADA|a-ENMIENDA-E1-ENC|a-ENMIENDA-E2-MULTIREPO|a-ENMIENDA-E[3-9]-[A-Z0-9-]+)\.md$'
     clase: AUTORIDAD_SUPERIOR
-    motivo: especificacion normativa aprobada por el Owner; se cambia por enmienda
+    motivo: >
+      especificacion normativa aprobada por el Owner; se cambia por enmienda. Incluye la
+      seccion (g), adoptada por la resolucion O23, y las enmiendas E3 en adelante que F5
+      emite bajo esa misma resolucion
   - patron: '^docs/rediseno/a-EQUIPOS-v[0-9]-(RECHAZADA|SUPERADA)\.md$'
     clase: HISTORICA
     motivo: versiones rechazadas o superadas, conservadas por trazabilidad
@@ -540,7 +543,74 @@ materias:
     estado: vigente
     autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
 
+  # --- norma emitida por F5, AUTORIDAD SUPERIOR -----------------------------
+  - id: MAT-055
+    materia: >
+      disposicion del estado durable, gobierno Git del repositorio de CONTROL y frontera
+      con la raiz externa de confianza. Es la seccion (g) que a.9 delego y que no existia
+    sede: docs/rediseno/g-ESTADO-DURABLE-APROBADA.md
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+    acto_declarativo: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  - id: MAT-056
+    materia: >
+      disposicion de las reglas constitucionales del circuito de arranque, regla a regla, y
+      la tercera via de nacimiento del trabajo por politica aprobada
+    sede: docs/rediseno/a-ENMIENDA-E3-ARRANQUE-Y-POLITICA.md
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  - id: MAT-057
+    materia: composicion de rutas; participantes condicionales y capacidad competente
+    sede: docs/rediseno/a-ENMIENDA-E4-COMPOSICION-DE-RUTAS.md
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  - id: MAT-058
+    materia: >
+      correcciones editoriales sobre material aprobado, ninguna de las cuales cambia una
+      norma, y el inventario derivado de enmiendas vigentes
+    sede: docs/rediseno/a-ENMIENDA-E5-CORRECCIONES-EDITORIALES.md
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  - id: MAT-059
+    materia: la reanudacion distingue lo PUBLICADO de lo ESPECULATIVO
+    sede: docs/rediseno/a-ENMIENDA-E6-REANUDACION.md
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
   # --- area de trabajo de F5, DERIVADA y no normativa -----------------------
+  - id: MAT-060
+    materia: >
+      disposicion de cada presion normativa vigente, con el acto que la cierra. Es el acta
+      que hace A1 comprobable por barrido y no por lectura
+    sede: docs/f5/40-DISPOSICION-DE-LAS-PRESIONES.md
+    estado: derivada
+    autoridad_superior: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+
+  - id: MAT-061
+    materia: >
+      especificaciones de instrumento que F5 debe a F6 para tres hallazgos de fase
+      desdoblada. NO cierra ninguno de los tres
+    sede: docs/f5/50-ESPECIFICACIONES-DE-INSTRUMENTO.md
+    estado: derivada
+    autoridad_superior: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+
+  - id: MAT-062
+    materia: >
+      que artefacto definitivo absorbio cada borrador de F5, y que parte de cada uno NO se
+      absorbio y por que
+    sede: docs/f5/60-ABSORCION-DE-LOS-BORRADORES.md
+    estado: derivada
+
+  - id: MAT-063
+    materia: demostracion de los siete criterios de aceptacion de F5, uno por uno
+    sede: docs/f5/70-DEMOSTRACION-DE-A1-A7.md
+    estado: derivada
+    autoridad_superior: docs/canonico/05-PLAN-DE-IMPLEMENTACION-F5-F6.md
+
   - id: MAT-051
     materia: >
       matriz de obligaciones de F5, con una fila por obligacion, su estado inequivoco, su

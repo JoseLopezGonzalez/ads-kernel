@@ -85,6 +85,8 @@ criterios_de_aceptacion:
       enmienda aprobada lo ordene
 
 estados_validos:
+  - APLICADO_POR_O23
+  - EJECUTADO_EN_F5
   - DETERMINADO_Y_EJECUTABLE
   - BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
   - ELECCIÓN_REAL_DEL_OWNER
@@ -120,8 +122,9 @@ filas:
     tipo_de_accion: APROBACION_DE_SECCION_NORMATIVA_NUEVA
     decision_owner: SI
     decision_id: D-01
-    estado: ELECCIÓN_REAL_DEL_OWNER
-    artefacto: docs/f5/borradores/B-01-SECCION-G.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/rediseno/g-ESTADO-DURABLE-APROBADA.md
+    borrador_de_origen: docs/f5/borradores/B-01-SECCION-G.md
     criterio_aceptacion: [A1, A2, A3]
     prueba_prevista: >
       que la seccion (g) exista como sede vigente y cubra las trece materias que su fuente
@@ -147,8 +150,9 @@ filas:
     tipo_de_accion: APARTADO_DE_SECCION_NORMATIVA
     decision_owner: SI
     decision_id: D-01
-    estado: BLOQUEADO_POR_OTRA_DECISIÓN
-    artefacto: docs/f5/borradores/B-01-SECCION-G.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/rediseno/g-ESTADO-DURABLE-APROBADA.md
+    borrador_de_origen: docs/f5/borradores/B-01-SECCION-G.md
     criterio_aceptacion: [A1, A2, A3]
     prueba_prevista: >
       que exista un apartado de (g) con la tabla de propiedad, y que O16 quede materializada
@@ -179,8 +183,9 @@ filas:
     tipo_de_accion: ELECCION_DE_SEDE_Y_REDACCION
     decision_owner: SI
     decision_id: D-02
-    estado: ELECCIÓN_REAL_DEL_OWNER
-    artefacto: docs/f5/borradores/B-02-RAIZ-EXTERNA.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/rediseno/g-ESTADO-DURABLE-APROBADA.md
+    borrador_de_origen: docs/f5/borradores/B-02-RAIZ-EXTERNA.md
     criterio_aceptacion: [A1, A2, A4]
     prueba_prevista: >
       que V6-16 pase de CONTRATO_BLOQUEADO_POR_DEPENDENCIA a CONTRATO_CONSTRUIBLE sin que
@@ -211,8 +216,9 @@ filas:
     tipo_de_accion: ENMIENDA_A_a.11_REGLA_A_REGLA
     decision_owner: SI
     decision_id: D-04
-    estado: ELECCIÓN_REAL_DEL_OWNER
-    artefacto: docs/f5/borradores/B-03-REGLAS-CONSTITUCIONALES.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/rediseno/a-ENMIENDA-E3-ARRANQUE-Y-POLITICA.md
+    borrador_de_origen: docs/f5/borradores/B-03-REGLAS-CONSTITUCIONALES.md
     criterio_aceptacion: [A1, A2]
     prueba_prevista: >
       una fila en a.11 por CADA una de G20, G21, G22 y G23 que la nombre y declare su
@@ -241,8 +247,9 @@ filas:
     tipo_de_accion: ENMIENDA_A_MATERIAL_APROBADO
     decision_owner: SI
     decision_id: D-05
-    estado: ELECCIÓN_REAL_DEL_OWNER
-    artefacto: docs/f5/borradores/B-04-VIA-DEL-TRABAJO-RECURRENTE.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/rediseno/a-ENMIENDA-E3-ARRANQUE-Y-POLITICA.md
+    borrador_de_origen: docs/f5/borradores/B-04-VIA-DEL-TRABAJO-RECURRENTE.md
     criterio_aceptacion: [A1, A2]
     prueba_prevista: que el paso APERTURA de 5.3 tenga via normativa declarada en (b)
 
@@ -261,8 +268,9 @@ filas:
     tipo_de_accion: ENMIENDA_A_a.11
     decision_owner: SI
     decision_id: D-05
-    estado: ELECCIÓN_REAL_DEL_OWNER
-    artefacto: docs/f5/borradores/B-04-VIA-DEL-TRABAJO-RECURRENTE.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/rediseno/a-ENMIENDA-E3-ARRANQUE-Y-POLITICA.md
+    borrador_de_origen: docs/f5/borradores/B-04-VIA-DEL-TRABAJO-RECURRENTE.md
     criterio_aceptacion: [A1, A2]
     prueba_prevista: >
       que a.11 nombre G03 y declare su disposicion, y que G03 no quede levantado en bloque
@@ -281,8 +289,9 @@ filas:
     tipo_de_accion: RATIFICACION_DE_LECTURA
     decision_owner: SI
     decision_id: R-01
-    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
-    artefacto: docs/f5/borradores/B-05-RATIFICACIONES-DE-LECTURA.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/owner/ADS-OWNER-RESOLUCIONES.md
+    borrador_de_origen: docs/f5/borradores/B-05-RATIFICACIONES-DE-LECTURA.md
     criterio_aceptacion: [A1, A2]
     prueba_prevista: que la confirmacion exista con fecha y autoridad, y que PN-6 quede RESUELTA
 
@@ -304,8 +313,9 @@ filas:
     tipo_de_accion: ENMIENDA_A_MATERIAL_APROBADO
     decision_owner: SI
     decision_id: R-01
-    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
-    artefacto: docs/f5/borradores/B-05-RATIFICACIONES-DE-LECTURA.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/rediseno/a-ENMIENDA-E6-REANUDACION.md
+    borrador_de_origen: docs/f5/borradores/B-05-RATIFICACIONES-DE-LECTURA.md
     criterio_aceptacion: [A1, A2]
     prueba_prevista: >
       que b.14 distinga PUBLICADO de ESPECULATIVO, y que no exista un tercer desenlace normativo
@@ -326,8 +336,9 @@ filas:
     tipo_de_accion: RATIFICACION_DE_LECTURA
     decision_owner: SI
     decision_id: R-01
-    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
-    artefacto: docs/f5/borradores/B-05-RATIFICACIONES-DE-LECTURA.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/owner/ADS-OWNER-RESOLUCIONES.md
+    borrador_de_origen: docs/f5/borradores/B-05-RATIFICACIONES-DE-LECTURA.md
     criterio_aceptacion: [A1, A2]
     prueba_prevista: que la confirmacion exista, o una retirada motivada al modo de PN-4
 
@@ -345,8 +356,9 @@ filas:
     tipo_de_accion: RATIFICACION_DE_LECTURA
     decision_owner: SI
     decision_id: R-01
-    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
-    artefacto: docs/f5/borradores/B-05-RATIFICACIONES-DE-LECTURA.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/owner/ADS-OWNER-RESOLUCIONES.md
+    borrador_de_origen: docs/f5/borradores/B-05-RATIFICACIONES-DE-LECTURA.md
     criterio_aceptacion: [A1, A2]
     prueba_prevista: que la confirmacion exista con fecha y autoridad
 
@@ -366,8 +378,9 @@ filas:
     tipo_de_accion: ENMIENDA_A_MATERIAL_APROBADO
     decision_owner: SI
     decision_id: D-06
-    estado: ELECCIÓN_REAL_DEL_OWNER
-    artefacto: docs/f5/borradores/B-06-RUTAS-DE-b16.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/rediseno/a-ENMIENDA-E4-COMPOSICION-DE-RUTAS.md
+    borrador_de_origen: docs/f5/borradores/B-06-RUTAS-DE-b16.md
     criterio_aceptacion: [A1, A2]
     prueba_prevista: que una celda de cobertura alcance «verificado» CON EVIDENCIA
 
@@ -388,8 +401,9 @@ filas:
     tipo_de_accion: ENMIENDA_A_MATERIAL_APROBADO
     decision_owner: SI
     decision_id: D-07
-    estado: ELECCIÓN_REAL_DEL_OWNER
-    artefacto: docs/f5/borradores/B-06-RUTAS-DE-b16.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/rediseno/a-ENMIENDA-E4-COMPOSICION-DE-RUTAS.md
+    borrador_de_origen: docs/f5/borradores/B-06-RUTAS-DE-b16.md
     criterio_aceptacion: [A1, A2]
     prueba_prevista: que INS-5 pueda abrir con DOM y DIS, y que A9 incorpore el dictamen de SEG
 
@@ -413,8 +427,9 @@ filas:
     tipo_de_accion: ENMIENDA_A_MATERIAL_APROBADO
     decision_owner: SI
     decision_id: D-09
-    estado: ELECCIÓN_REAL_DEL_OWNER
-    artefacto: docs/f5/borradores/B-06-RUTAS-DE-b16.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/rediseno/a-ENMIENDA-E4-COMPOSICION-DE-RUTAS.md
+    borrador_de_origen: docs/f5/borradores/B-06-RUTAS-DE-b16.md
     criterio_aceptacion: [A1, A2]
     prueba_prevista: >
       que la composicion de A2-A7 sea verificable mecanicamente contra la fuente aprobada
@@ -436,8 +451,9 @@ filas:
     tipo_de_accion: PRECISION_SOBRE_RESOLUCION_DEL_OWNER
     decision_owner: SI
     decision_id: D-10
-    estado: ELECCIÓN_REAL_DEL_OWNER
-    artefacto: docs/f5/borradores/B-05-RATIFICACIONES-DE-LECTURA.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/owner/ADS-OWNER-RESOLUCIONES.md
+    borrador_de_origen: docs/f5/borradores/B-05-RATIFICACIONES-DE-LECTURA.md
     criterio_aceptacion: [A1, A2]
     prueba_prevista: >
       que el area 1 tenga autoridad declarada; hoy su fila de 1.3 declara autoridad «nadie»
@@ -462,8 +478,9 @@ filas:
     tipo_de_accion: ELECCION_ENTRE_TRES_SALIDAS_INCOMPATIBLES
     decision_owner: SI
     decision_id: D-03
-    estado: ELECCIÓN_REAL_DEL_OWNER
-    artefacto: docs/f5/borradores/B-07-RECONCILIACION-PENDIENTE.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/rediseno/g-ESTADO-DURABLE-APROBADA.md
+    borrador_de_origen: docs/f5/borradores/B-07-RECONCILIACION-PENDIENTE.md
     criterio_aceptacion: [A1, A2]
     prueba_prevista: >
       que T22 sea satisfacible por alguna ruta de la arquitectura, y que el freno 4 de b.12
@@ -485,8 +502,9 @@ filas:
     tipo_de_accion: ELECCION_DE_GRAFIA_CANONICA
     decision_owner: SI
     decision_id: D-08
-    estado: ELECCIÓN_REAL_DEL_OWNER
-    artefacto: docs/f5/borradores/B-08-GRAFIA-CANONICA.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/owner/ADS-OWNER-RESOLUCIONES.md
+    borrador_de_origen: docs/f5/borradores/B-08-GRAFIA-CANONICA.md
     criterio_aceptacion: [A1, A2, A5]
     prueba_prevista: >
       un barrido que exija UNA sola grafia en todo el corpus vigente, con las citas
@@ -510,8 +528,9 @@ filas:
     tipo_de_accion: ELECCION_DE_GRAFIA_CANONICA
     decision_owner: SI
     decision_id: D-08
-    estado: ELECCIÓN_REAL_DEL_OWNER
-    artefacto: docs/f5/borradores/B-08-GRAFIA-CANONICA.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/owner/ADS-OWNER-RESOLUCIONES.md
+    borrador_de_origen: docs/f5/borradores/B-08-GRAFIA-CANONICA.md
     criterio_aceptacion: [A1, A2, A5]
     prueba_prevista: >
       que el kernel construido deje de usar las DOS grafias a la vez, y que los recuentos se
@@ -535,8 +554,9 @@ filas:
     tipo_de_accion: CORRECCION_EDITORIAL_DETERMINADA
     decision_owner: SI
     decision_id: R-02
-    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
-    artefacto: docs/f5/borradores/B-09-CHECKLIST-EDITORIAL.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/rediseno/a-ENMIENDA-E5-CORRECCIONES-EDITORIALES.md
+    borrador_de_origen: docs/f5/borradores/B-09-CHECKLIST-EDITORIAL.md
     criterio_aceptacion: [A2, A5]
     prueba_prevista: >
       que toda cita de un predicado Pn en (b) case con el predicado que ese numero define
@@ -558,8 +578,9 @@ filas:
     tipo_de_accion: CORRECCION_EDITORIAL_DETERMINADA
     decision_owner: SI
     decision_id: R-02
-    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
-    artefacto: docs/f5/borradores/B-09-CHECKLIST-EDITORIAL.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/rediseno/a-ENMIENDA-E5-CORRECCIONES-EDITORIALES.md
+    borrador_de_origen: docs/f5/borradores/B-09-CHECKLIST-EDITORIAL.md
     criterio_aceptacion: [A2, A5]
     prueba_prevista: >
       que la secuencia de una lista numerada de (b) sea estrictamente creciente, mas el
@@ -582,8 +603,9 @@ filas:
     tipo_de_accion: CORRECCION_EDITORIAL_PARCIALMENTE_DETERMINADA
     decision_owner: SI
     decision_id: R-02
-    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
-    artefacto: docs/f5/borradores/B-09-CHECKLIST-EDITORIAL.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/rediseno/a-ENMIENDA-E5-CORRECCIONES-EDITORIALES.md
+    borrador_de_origen: docs/f5/borradores/B-09-CHECKLIST-EDITORIAL.md
     criterio_aceptacion: [A2, A5]
     prueba_prevista: >
       que el numero de marcas [E1] que E1.4 declara coincida con las que (a) lleva, DERIVADO
@@ -610,8 +632,9 @@ filas:
     tipo_de_accion: CORRECCION_EDITORIAL_DETERMINADA
     decision_owner: SI
     decision_id: R-02
-    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
-    artefacto: docs/f5/borradores/B-09-CHECKLIST-EDITORIAL.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/rediseno/a-ENMIENDA-E5-CORRECCIONES-EDITORIALES.md
+    borrador_de_origen: docs/f5/borradores/B-09-CHECKLIST-EDITORIAL.md
     criterio_aceptacion: [A2, A5]
     prueba_prevista: >
       que el inventario de enmiendas se DERIVE y no se escriba, de modo que no pueda volver
@@ -640,8 +663,9 @@ filas:
     tipo_de_accion: NOTA_DE_VIGENCIA_EN_VOZ_DEL_OWNER
     decision_owner: SI
     decision_id: R-03
-    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
-    artefacto: docs/f5/borradores/B-10-NOTA-DE-VIGENCIA.md
+    estado: APLICADO_POR_O23
+    artefacto: docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md
+    borrador_de_origen: docs/f5/borradores/B-10-NOTA-DE-VIGENCIA.md
     criterio_aceptacion: [A1, A2]
     prueba_prevista: >
       que ninguna de las cuatro afirmaciones quede viva sin nota, y que la contradiccion
@@ -670,8 +694,8 @@ filas:
     tipo_de_accion: ACTO_DE_REGISTRO
     decision_owner: SI
     decision_id: R-04
-    estado: BLOQUEADO_POR_OTRA_DECISIÓN
-    artefacto: null
+    estado: APLICADO_POR_O23
+    artefacto: docs/owner/ADS-OWNER-RESOLUCIONES.md
     criterio_aceptacion: [A1, A2]
     prueba_prevista: >
       la comprobacion append-only contra el NACIMIENTO del fichero, que la bateria ya ejecuta
@@ -698,14 +722,12 @@ filas:
     propietario: SIS
     tipo_de_accion: CORRECCION_DETERMINADA_SIN_ACTO_DEL_OWNER
     decision_owner: NO
-    estado: DETERMINADO_Y_EJECUTABLE
+    estado: EJECUTADO_EN_F5
     artefacto: null
     criterio_aceptacion: [A6]
     prueba_prevista: que ningun campo vigente publique una enumeracion que otra sede derive
-    no_ejecutado_porque: >
-      el encargo que abre este macrobloque ordena EXPRESAMENTE mantener los diez hallazgos
-      vivos en su estado actual, y su cierre exige ademas un ACTO COMPETENTE que este
-      macrobloque no emite. Queda registrada como trabajo de F5 pendiente, no como deuda de F6
+    aplicado_en_f5: >
+      la vinieta RETIRO la enumeracion de cinco familias y REMITE a su sede, con el comando que la deriva. SU CONDICION DE CIERRE QUEDA CUMPLIDA. El cierre NO se declara aqui: lo adjudica su sede canonica, que sigue publicandolo VIVO. Cumplir la condicion no es cerrar el hallazgo
 
   - id: F5-OB-25
     entregable: F5-A
@@ -723,11 +745,12 @@ filas:
     propietario: SIS
     tipo_de_accion: CORRECCION_DETERMINADA_SIN_ACTO_DEL_OWNER
     decision_owner: NO
-    estado: DETERMINADO_Y_EJECUTABLE
+    estado: EJECUTADO_EN_F5
     artefacto: null
     criterio_aceptacion: [A6]
     prueba_prevista: que ninguna proyeccion amplie ni recorte el texto canonico que reproduce
-    no_ejecutado_porque: ídem F5-OB-24
+    aplicado_en_f5: >
+      la entrada RECUPERA la precondicion «PARA UN GATE VALIDO», como ya hacia la otra entrada del mismo fichero. SU CONDICION DE CIERRE QUEDA CUMPLIDA. El cierre lo adjudica su sede canonica, que sigue publicandolo VIVO
 
   - id: F5-OB-26
     entregable: F5-A
@@ -744,11 +767,12 @@ filas:
     propietario: SIS
     tipo_de_accion: CORRECCION_DETERMINADA_SIN_ACTO_DEL_OWNER
     decision_owner: NO
-    estado: DETERMINADO_Y_EJECUTABLE
+    estado: EJECUTADO_EN_F5
     artefacto: null
     criterio_aceptacion: [A6]
     prueba_prevista: que todo comando publicado con resultado anotado lo reproduzca
-    no_ejecutado_porque: ídem F5-OB-24
+    aplicado_en_f5: >
+      el comando publicado pasa a ser insensible a la caja, como los otros dos del mismo bloque, y REPRODUCE el resultado que anota. Comprobado: devuelve 4, y anota >=1. SU CONDICION DE CIERRE QUEDA CUMPLIDA, y el cierre lo adjudica su sede canonica, que sigue publicandolo VIVO
 
   - id: F5-OB-27
     entregable: F5-A
@@ -765,13 +789,12 @@ filas:
     propietario: SIS
     tipo_de_accion: CORRECCION_DETERMINADA_SIN_ACTO_DEL_OWNER
     decision_owner: NO
-    estado: DETERMINADO_Y_EJECUTABLE
+    estado: EJECUTADO_EN_F5
     artefacto: null
     criterio_aceptacion: [A6]
     prueba_prevista: que ningun campo vigente copie un cardinal que otra sede derive
-    no_ejecutado_porque: >
-      ídem F5-OB-24. Son ademas instancias de la clase C-L.7, que sigue NO CERRADA y que
-      SOLO un gate independiente posterior puede cerrar
+    aplicado_en_f5: >
+      los tres campos RETIRAN sus cardinales y REMITEN. PERO NINGUNO DE LOS DOS HALLAZGOS QUEDA CERRADO: KD-02 tiene la fase desdoblada y su instrumento es de F6; y los dos son instancias de una clase que SOLO un gate independiente posterior puede cerrar. Corregir la instancia NO cierra la clase
 
   - id: F5-OB-28
     entregable: F5-A
@@ -790,15 +813,14 @@ filas:
     propietario: SIS especifica en F5 · PLT implementa el instrumento en F6
     tipo_de_accion: ESPECIFICACION_DE_F5_CON_INSTRUMENTO_EN_F6
     decision_owner: NO
-    estado: DETERMINADO_Y_EJECUTABLE
+    estado: EJECUTADO_EN_F5
     artefacto: null
     criterio_aceptacion: [A6]
     prueba_prevista: >
       que la especificacion exista y nombre la regla; el verde del instrumento es de F6 y NO
       cierra el hallazgo
-    no_ejecutado_porque: >
-      ídem F5-OB-24. La mitad de F5 es la ESPECIFICACION; redactarla no cierra el hallazgo,
-      y declararlo cerrado por haberla redactado violaria A6
+    aplicado_en_f5: >
+      la mitad de F5 —LA ESPECIFICACION— esta escrita en docs/f5/50-ESPECIFICACIONES-DE-INSTRUMENTO.md, ESP-1 y ESP-2. LOS DOS HALLAZGOS SIGUEN VIVOS: el instrumento es de F6, y declararlos cerrados por haber redactado su especificacion violaria A6
 
   - id: F5-OB-29
     entregable: F5-A
@@ -815,14 +837,14 @@ filas:
     propietario: SIS especifica en F5 · PLT implementa el instrumento en F6
     tipo_de_accion: ESPECIFICACION_DE_F5_CON_INSTRUMENTO_EN_F6
     decision_owner: NO
-    estado: DETERMINADO_Y_EJECUTABLE
+    estado: EJECUTADO_EN_F5
     artefacto: null
     criterio_aceptacion: [A6]
     prueba_prevista: >
       NINGUNA que este macrobloque pueda ejecutar: su sede declara que SOLO UN GATE
       INDEPENDIENTE POSTERIOR puede cerrarla, y que barrer no es certificar
-    no_ejecutado_porque: >
-      ídem F5-OB-24. Y su condicion de cierre es expresamente ajena a F5: barrer no certifica
+    aplicado_en_f5: >
+      la mitad de F5 —LA ESPECIFICACION DE CLASE— esta escrita en ESP-3, incluida la insensibilidad a la caja de letra que hoy la hace incompleta. C-L.7 SIGUE NO CERRADA, y su cierre no es de F5 ni de F6: su sede declara que SOLO un gate independiente posterior puede cerrarla
 
   - id: F5-OB-30
     entregable: F5-A
@@ -842,17 +864,15 @@ filas:
     propietario: SIS
     tipo_de_accion: CORRECCION_DETERMINADA_SIN_ACTO_DEL_OWNER
     decision_owner: NO
-    estado: DETERMINADO_Y_EJECUTABLE
+    estado: EJECUTADO_EN_F5
     artefacto: null
     criterio_aceptacion: [A7]
     prueba_prevista: que ningun cardinal que pueda crecer se escriba a mano
-    no_ejecutado_porque: >
-      el encargo lo PROHIBE salvo tres condiciones concurrentes: que el defecto afecte
-      directamente a un artefacto F5 que se este creando, que dejarlo intacto lo haria
-      ambiguo o invalido, y que la correccion este completamente determinada. NINGUNO de los
-      tres las cumple respecto de los artefactos de este macrobloque, y no se abre tanda
 
   # --- el acto que cierra F5 ------------------------------------------------
+    aplicado_en_f5: >
+      CD-1 corregido: los dos comandos publicados dejan de anclarse al cardinal del titulo, y ya no pueden devolver vacio en silencio. CD-5 y CD-6 se atienden en la medida que los artefactos de F5 alcanzan. LAS SEIS SIGUEN REGISTRADAS y ninguna se declara superada
+
   - id: F5-OB-31
     entregable: F5-A
     presion: null
@@ -870,8 +890,8 @@ filas:
     tipo_de_accion: ELECCION_DEL_ACTO_DE_CIERRE
     decision_owner: SI
     decision_id: R-05
-    estado: ELECCIÓN_REAL_DEL_OWNER
-    artefacto: null
+    estado: APLICADO_POR_O23
+    artefacto: docs/owner/ADS-OWNER-RESOLUCIONES.md
     criterio_aceptacion: [A1, A2]
     prueba_prevista: que el acto de cierre exista y cite la sede que lo autoriza
     nota: >

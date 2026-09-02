@@ -27,12 +27,30 @@ norma.**
 
 | # | documento | qué contiene |
 |---|---|---|
-| — | [`01-ACTO-DE-INICIO-DE-F5.md`](01-ACTO-DE-INICIO-DE-F5.md) | el registro literal del acto del Owner que inició `F5`, y qué autoriza y qué no |
+| — | [`01-ACTO-DE-INICIO-DE-F5.md`](01-ACTO-DE-INICIO-DE-F5.md) | el registro literal del acto del Owner que inició `F5` |
 | 1 | [`10-MATRIZ-CANONICA-DE-F5.md`](10-MATRIZ-CANONICA-DE-F5.md) | la matriz completa, legible: una fila por obligación, con su estado |
-| 2 | [`20-PAQUETE-DE-DECISIONES-DEL-OWNER.md`](20-PAQUETE-DE-DECISIONES-DEL-OWNER.md) | **el único paquete de decisiones.** Diez elecciones y cuatro actos de aprobación |
-| 3 | [`30-TRAZABILIDAD-Y-ORDEN-DE-APLICACION.md`](30-TRAZABILIDAD-Y-ORDEN-DE-APLICACION.md) | de la presión a la prueba, y el orden exacto de aplicación posterior |
+| 2 | [`20-PAQUETE-DE-DECISIONES-DEL-OWNER.md`](20-PAQUETE-DE-DECISIONES-DEL-OWNER.md) | el paquete que se llevó al Owner. **RESUELTO ENTERO por `O23`** |
+| 3 | [`30-TRAZABILIDAD-Y-ORDEN-DE-APLICACION.md`](30-TRAZABILIDAD-Y-ORDEN-DE-APLICACION.md) | de la presión a la prueba, y el orden de aplicación |
+| 4 | [`40-DISPOSICION-DE-LAS-PRESIONES.md`](40-DISPOSICION-DE-LAS-PRESIONES.md) | **el acta de `A1`**: una fila por presión, con su disposición y el acto que la cierra |
+| 5 | [`50-ESPECIFICACIONES-DE-INSTRUMENTO.md`](50-ESPECIFICACIONES-DE-INSTRUMENTO.md) | la mitad de `F5` de tres hallazgos cuyo instrumento es de `F6`. **No los cierra** |
+| 6 | [`60-ABSORCION-DE-LOS-BORRADORES.md`](60-ABSORCION-DE-LOS-BORRADORES.md) | qué artefacto absorbió cada borrador, y **qué parte NO se absorbió y por qué** |
+| 7 | [`70-DEMOSTRACION-DE-A1-A7.md`](70-DEMOSTRACION-DE-A1-A7.md) | los siete criterios, uno por uno, con su comando |
 | — | [`MATRIZ-F5.yml`](MATRIZ-F5.yml) | la matriz en forma de datos, que es lo que el control lee |
-| — | [`validar-f5.py`](validar-f5.py) | los controles pequeños sobre la matriz y los borradores |
+| — | [`validar-f5.py`](validar-f5.py) | los veintiún controles sobre la matriz, los borradores y `O23` |
+
+## 1 bis · La norma que `F5` produjo — y NO vive aquí
+
+**Lo aprobado NO es un artefacto de esta zona.** Vive en el material aprobado y en la sede
+del Owner, que es donde tiene autoridad:
+
+| artefacto | qué es |
+|---|---|
+| [`O23`](../owner/ADS-OWNER-RESOLUCIONES.md) | la resolución del Owner, inscrita literalmente por él |
+| [`(g)`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) | la sección normativa nueva: estado durable, gobierno Git del control repo y raíz externa |
+| [`E3`](../rediseno/a-ENMIENDA-E3-ARRANQUE-Y-POLITICA.md) | gate constitucional conservado · tercera vía de nacimiento del trabajo · la regla de diario, resuelta |
+| [`E4`](../rediseno/a-ENMIENDA-E4-COMPOSICION-DE-RUTAS.md) | participantes de ruta y capacidad competente |
+| [`E5`](../rediseno/a-ENMIENDA-E5-CORRECCIONES-EDITORIALES.md) | las correcciones editoriales, ninguna de las cuales cambia una norma |
+| [`E6`](../rediseno/a-ENMIENDA-E6-REANUDACION.md) | la reanudación distingue lo publicado de lo especulativo |
 
 ## 2 · Los borradores · TODOS NO APROBADOS
 
@@ -73,9 +91,9 @@ python3 docs/canonico/validar-fuentes-canonicas.py
 ## 4 · Qué NO hay aquí
 
 ```text
-NO HAY   ninguna respuesta del Owner. Ni una
-NO HAY   ninguna enmienda aplicada sobre material aprobado
-NO HAY   ninguna resolución escrita en voz del Owner
+NO HAY   ninguna resolución escrita en voz del Owner: `O23` la inscribió ÉL
+NO HAY   ninguna decisión inventada: las quince vienen de `O23`
+NO HAY   ningún borrador presentado como aprobado, y el control F11 lo exige
 NO HAY   nada de F6: ni runtime, ni verificador, ni raíz externa, ni contrato construido
 NO HAY   ningún hallazgo declarado superado, ni ninguna deuda cerrada
 NO HAY   ningún gate nuevo, ni ninguna certificación

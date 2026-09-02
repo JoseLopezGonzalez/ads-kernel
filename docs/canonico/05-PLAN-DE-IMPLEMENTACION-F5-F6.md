@@ -188,7 +188,16 @@ al resto.** Éstos son los que el grafo de dependencias permite hoy:
 | **V8 · Estado durable mínimo** | instantánea, evento y protocolo transaccional con sus dos ramas de reanudación | que la reanudación no deja mezclas parciales publicables | **`F5`** (sección `(g)`) |
 
 **Los cortes `V1`, `V2`, `V3`, `V4`, `V5` y `V7` no necesitan ninguna decisión nueva del
-Owner.** Los cortes `V6` y `V8` sí: su norma habilitante es entregable de `F5`.
+Owner.** Los cortes `V6` y `V8` sí: su norma habilitante es entregable de `F5`, **y `F5` ya
+la emitió** — la sección [`(g)`](../rediseno/g-ESTADO-DURABLE-APROBADA.md), aprobada por
+`O23`.
+
+> **Y una lectura que hay que cerrar, porque el texto de arriba la permite.** **No necesitar
+> una decisión del Owner NO es estar autorizado a empezar.** Los ocho cortes son trabajo de
+> `F6`, y `F6` **exige `F5` CERRADA** —ver
+> [`03-GOBIERNO-Y-AUTORIDAD.md`](03-GOBIERNO-Y-AUTORIDAD.md) §7—. Que un corte esté
+> desbloqueado significa que **nada le falta para poder construirse**, no que pueda
+> construirse ya.
 
 ## 5 · Qué necesita decisión del Owner y qué no
 

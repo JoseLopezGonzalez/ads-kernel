@@ -14,8 +14,23 @@ correcciones quirúrgicas. Las versiones anteriores se conservan para trazabilid
 > | | enmienda | fecha | qué sustituye |
 > |---|---|---|---|
 > | **E1** | [`a-ENMIENDA-E1-ENC.md`](a-ENMIENDA-E1-ENC.md) — `ENC` como decimoquinta capacidad base | 2026-08-26 | los recuentos de a.0, a.3 y a.4 · la función *Encuadre* de `DSP` en a.3 · la propiedad del *índice de lo existente* |
+> | **E2** | [`a-ENMIENDA-E2-MULTIREPO.md`](a-ENMIENDA-E2-MULTIREPO.md) — un producto ADS son varias fuentes gobernadas por un repositorio de control | 2026-08-26 | el sujeto del estado operativo en a.9 · el checkpoint multi-fuente · la relación item/rama/PR |
+> | **E3** | `a-ENMIENDA-E3-ARRANQUE-Y-POLITICA.md` — el gate constitucional de arranque, y el trabajo que nace por política | 2026-09-02 | amplía a.11 con la disposición de `G20`–`G23` y el ajuste acotado de `G03` |
+> | **E4** | `a-ENMIENDA-E4-COMPOSICION-DE-RUTAS.md` — participantes de ruta y capacidad competente | 2026-09-02 | la composición de `AUD` en a.6 |
+> | **E5** | `a-ENMIENDA-E5-CORRECCIONES-EDITORIALES.md` — correcciones editoriales que no cambian ninguna norma | 2026-09-02 | los dos recuentos sin marcar de a.4 |
 >
-> Los puntos afectados llevan la marca `[E1]` en el texto de abajo.
+> **Y una sección NUEVA, del mismo grado normativo que este documento**, que ocupa la
+> materia que a.9 delegó y que hasta ahora no existía:
+> `g-ESTADO-DURABLE-APROBADA.md`, aprobada por `O23`.
+>
+> Los puntos afectados llevan la marca `[E1]`, `[E3]`, `[E4]` o `[E5]` en el texto de abajo.
+> **El inventario de enmiendas NO se escribe a mano: se deriva** con
+> `ls -1 docs/rediseno/a-ENMIENDA-E*.md`.>
+> **Por qué las enmiendas nuevas y la sección `(g)` se NOMBRAN y no se ENLAZAN aquí:** la
+> lista de lo que viaja con el kernel a un proyecto instalado vive en el tooling, que es
+> DERIVADO. `F5` toca la fuente; alinear el derivado es de `F6`. Enlazarlas antes de que
+> viajen dejaría **enlaces rotos en todo proyecto instalado**, que es justamente lo que la
+> conformidad del arranque comprueba. **Se derivan:** `ls -1 docs/rediseno/a-ENMIENDA-E*.md`.
 
 ---
 
@@ -266,14 +281,14 @@ o de cualquier otra materia: eso se determina en el encuadre del proyecto, no aq
 
 ### El catálogo es extensible
 
-Las 14 son el **catálogo base**, no un catálogo universal cerrado. *"Reusable"* no puede
+Las 14 `[E1: 15]` son el **catálogo base**, no un catálogo universal cerrado. *"Reusable"* no puede
 acabar significando *"sólo sirve para los tipos de proyecto previstos hoy"*: ML y
 evaluación de modelos, hardware, contenido, cumplimiento regulatorio especializado,
 datos científicos, localización u operaciones industriales pueden necesitar capacidades
 propias.
 
 ```text
-CATÁLOGO BASE DEL KERNEL     capacidades universales · 14 · códigos reservados
+CATÁLOGO BASE DEL KERNEL     capacidades universales · 14 `[E1: 15]` · códigos reservados
 EXTENSIONES DE PACK          capacidades propias de una CLASE de proyecto
 EXTENSIONES DE PROFILE       excepcionales y específicas de UN proyecto (K0.7)
 ```
@@ -492,7 +507,7 @@ INC  ENT(contención) → ARQ(diagnóstico) → CON → VER → ENT → APR (obl
 INV  INV → [PRD o ARQ según destino] → APR
 DEU  ARQ → CON → VER → ENT → APR
 DEP  SEG ∥ PLT (condiciones) ⊳ CON → VER → ENT
-AUD  INV ∥ DOM ∥ SEG ∥ DIS/Reconstrucción → [PRD si hay decisión de producto] → APR
+AUD  INV ∥ DOM ∥ SEG ∥ DIS `[E4]` → [PRD si hay decisión de producto] → APR
 DIR  PRD ∥ DIS → ARQ(radio de impacto) → OWNER → CON → VER → ENT → USO → APR
 SIS  SIS → CON → VER → ENT(activación segura del runtime) → APR
 ```
@@ -628,9 +643,11 @@ Los patrones de forma viven en la memoria de diseño; los técnicos en `CONVENTI
 
 Requisito del Owner: **el estado operativo ES los ficheros del repo**, legibles
 directamente, sin informe intermedio.
+`[E2: del repositorio ADS de CONTROL — ver a-ENMIENDA-E2-MULTIREPO.md E2.1]`
 
 ### Lo que queda aprobado en (a): seis invariantes
 
+`[E3: la sección (g) YA EXISTE y está aprobada — ver g-ESTADO-DURABLE-APROBADA.md]`
 La **disposición física concreta** —cuántos ficheros, cómo se fragmentan, transacciones,
 event log y recuperación— pertenece a la sección **(g)**. Lo que (a) fija es el contrato
 que esa disposición **DEBE** cumplir:
@@ -1019,9 +1036,10 @@ devuelve el control a esa capacidad en su paso.
 |---|---|
 | **Derogadas** | `G11` (13 cajas de capacidades) → a.1–a.4 · `G12` (orquestación sin tecnología) → DSP + SIS + sección (g) · `K0.9` (modo de fallo único) → a.7 |
 | **Sustituidas** | `G14` → SIS |
-| **Ajustadas** | `G13` deja de ser proporcional al riesgo: estructura por defecto de VER · `G34` escalado automático → recomposición de ruta trazada · `G52` regla de retirada → se aplica a capacidades materializadas · `G17` se instrumenta mediante la **condición compuesta de paralelismo**: dependencias, aislamiento físico, autoridad sobre decisiones, contratos compartidos, versiones de entrada y estrategia de integración · **`G08` se ajusta: el estado ejecutivo es una vista derivada del estado canónico, no un informe redactado** · `G32` se concreta en a.9 |
-| **PENDIENTES, no derogadas** | **`G26` / JOURNAL** — los tableros son estado vigente, no secuencia de eventos, contexto transversal de sesión, por qué cambió el estado, operaciones fallidas ni recuperación tras escritura parcial. El runtime probablemente necesite un event log que **pueda** sustituirlo, pero eso se decide al diseñar memoria, eventos y recuperación en la sección (g), no ahora por inferencia. |
+| **Ajustadas** | `G13` deja de ser proporcional al riesgo: estructura por defecto de VER · `G34` escalado automático → recomposición de ruta trazada · `G52` regla de retirada → se aplica a capacidades materializadas · `G17` se instrumenta mediante la **condición compuesta de paralelismo**: dependencias, aislamiento físico, autoridad sobre decisiones, contratos compartidos, versiones de entrada y estrategia de integración · **`G08` se ajusta: el estado ejecutivo es una vista derivada del estado canónico, no un informe redactado** · `G32` se concreta en a.9 · **`G03` se ajusta AL ALCANCE EXACTO que una política aprobada autoriza, y sólo a él** `[E3]` — ver `E3` `E3.3` |
+| **PENDIENTES, no derogadas** | **`G26` / JOURNAL** — los tableros son estado vigente, no secuencia de eventos, contexto transversal de sesión, por qué cambió el estado, operaciones fallidas ni recuperación tras escritura parcial. El runtime probablemente necesite un event log que **pueda** sustituirlo, pero eso se decide al diseñar memoria, eventos y recuperación en la sección (g), no ahora por inferencia. **`[E3]` LA CONDICIÓN SE HA CUMPLIDO: la sección `(g)` existe y está aprobada, y su apartado `g.7` fija el DIARIO CANÓNICO.** `G26`/JOURNAL deja de estar PENDIENTE y pasa a estar **RESUELTA POR `(g)` `g.7`** — ver `g-ESTADO-DURABLE-APROBADA.md`. El texto anterior se conserva porque registra por qué estuvo pendiente. |
 | **Previstas** | `G24` · `G34` vía rápida · `G53` → secciones (e), (f), (h) |
+| **CONSERVADAS, y subordinantes** `[E3]` | `G20`, `G21`, `G22` y `G23` — su disposición, **regla a regla**, la declara `E3` `E3.1`. Las cuatro se CONSERVAN ÍNTEGRAS, y el circuito de instalación queda **subordinado** al gate constitucional del circuito inicial |
 
 **Nota sobre (e):** una errata es un `DEF` con ruta corta, compuesta por el mismo
 enrutador y con la misma traza. No es un carril aparte. **No se da por cerrado**: se

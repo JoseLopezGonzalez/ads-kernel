@@ -193,8 +193,9 @@ sustituyen sino que remiten aquí:
 
 ```text
 1  un BLOQUE DE AVISO en su cabecera, con la tabla de enmiendas vigentes
-2  siete MARCAS DE REMISIÓN `[E1]` insertadas en línea, en los puntos exactos que esta
-   enmienda sustituye — cinco recuentos y dos párrafos
+2  MARCAS DE REMISIÓN `[E1]` insertadas en línea, en los puntos exactos que esta
+   enmienda sustituye. EL NÚMERO NO SE ESCRIBE: se deriva con
+   `grep -c '\[E1[ :→]' docs/rediseno/a-CAPACIDADES-APROBADA.md`   `[E5]`
 ```
 
 **El contenido sustitutivo vive aquí**, no en (a). Las marcas no cambian lo que (a) dice:

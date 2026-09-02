@@ -48,13 +48,13 @@ tabla de abajo—; las de los cuatro últimos, en el documento 34 §5.
 | **`JC-02`** | el registro de decisiones reproduce esa misma obligación sin la precondición, mientras **otra entrada del mismo fichero SÍ la conserva**: el fichero dice la misma norma de dos maneras | el registro de decisiones | una proyección que amplía el texto canónico | `SIS` | **`F5`** | que la entrada **conserve la precondición o remita**, como ya hace la otra |
 | **`KD-01`** | un bloque rotulado «se comprueba, no se declara» publica un comando de autocontrol anotado con un resultado que **el árbol no da**: es sensible a la caja de letra donde la fuente escribe versales | el checkpoint de la iniciativa | **una sede publica un autocontrol que no comprueba.** La afirmación de fondo es verdadera y derivable por otro medio; el defecto está en el instrumento | `SIS` | **`F5`** | que el comando publicado **reproduzca el resultado que anota** |
 | **`KD-02`** | un campo VIGENTE del bloque reanudable **copia un recuento que otra sede deriva, en la misma oración en que declara no copiarlo** | ídem | instancia nueva de la clase `C-L.7` | `SIS` | **`F5`** · el instrumento que no lo caza, **`F6`** | que el campo **retire el cardinal y remita**; y que el barrido lo detecte |
-| **`LE-01`** | la nota de trazabilidad de una resolución del Owner escribe **dos cifras retóricas que el árbol no da**, y dos proyecciones las reproducen fielmente | la sede canónica del Owner y sus dos proyecciones | **LEVE.** Vive en una nota de trazabilidad, cuya función es registrar POR QUÉ el Owner resolvió, no fijar una cantidad normativa. **Nada depende de esas cifras** | el **Owner** para la sede —es APPEND-ONLY y no se corrige—; `SIS` para las proyecciones | no consta fase expresa | **NO CONSTA condición de cierre expresa.** Su origen es el texto del propio Owner en sede append-only, que no se edita; las proyecciones hacen lo que deben, que es reproducirlo |
+| **`LE-01`** | la nota de trazabilidad de una resolución del Owner escribe **dos cifras retóricas que el árbol no da**, y dos proyecciones las reproducen fielmente | la sede canónica del Owner y sus dos proyecciones | **LEVE.** Vive en una nota de trazabilidad, cuya función es registrar POR QUÉ el Owner resolvió, no fijar una cantidad normativa. **Nada depende de esas cifras** | el **Owner** para la sede —es APPEND-ONLY y no se corrige—; `SIS` para las proyecciones | **`F6`** para las DOS PROYECCIONES · **ninguna para la sede** | **DESDOBLADA por `F5`, sin tocar la sede.** Para la SEDE CANÓNICA: **no hay condición de cierre y no puede haberla** —es append-only, y la resolución que la gobierna prohíbe corregirla—; queda registrada como LIMITACIÓN PERMANENTE y no como deuda pendiente. Para las DOS PROYECCIONES: que **retiren las cifras retóricas y remitan** a la sede, propietario `SIS`, fase **`F6`** por la misma vía que el resto de alineaciones de derivado. **`LE-01` NO se declara superado**: se le asigna, por primera vez, una fase y una condición para la mitad que sí las admite |
 | **`LE-02`** | dos cardinales más que otra sede deriva, escritos en campos VIGENTES del bloque reanudable, uno de ellos **a dos líneas de la declaración de no copiar recuentos** | el checkpoint de la iniciativa | idéntica clase y adjudicación que `KD-02`: la clase `C-L.7` **ha ganado población** | `SIS` | **`F5`** (por la misma vía que `KD-02`; no consta fase expresa) | que los campos **retiren los cardinales y remitan** |
 
 **El recuento se DERIVA de las filas de esta tabla, no se escribe.**
 
 ```bash
-awk '/^## 1 · LOS DIEZ HALLAZGOS VIVOS/,/^## 2 /' docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md \
+awk '/^## 1 · LOS/,/^## 2 /' docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md \
   | grep -oE '^\| \*\*`[A-Z]{2}-[0-9]+`\*\*' | grep -oE '[A-Z]{2}-[0-9]+' | sort -u | wc -l
 ```
 
@@ -268,6 +268,28 @@ resolución autoriza, y se dice sin adornarlo.
 [`34-RATIFICACION-…`](../evolucion/34-RATIFICACION-DE-LA-CERTIFICACION-INCREMENTAL-O22.md)
 §7.
 
+## 10 bis · Deuda ABIERTA POR `F5` al aprobar `O23` — registrada, no cerrada
+
+> **Qué es.** Materia que las decisiones de `F5` hacen NECESARIA y que **ninguna resolución
+> vigente cubre**. Se registra en vez de resolverse por cuenta ajena, y **ninguna bloquea el
+> cierre de `F5`**: las tres son de `F6` o del Owner.
+
+| id | qué falta | sede | propietario | fase | condición de cierre |
+|---|---|---|---|---|---|
+| **`FD-1`** | el contrato del verificador externo exige **commits firmados o equivalente verificable por un tercero**, lo que implica que **exista y se custodie una clave de firma**. `O23` §3 dice a QUÉ contrato pertenece la materia de claves; **no dice que el Owner posea esa clave, ni quién la custodia** | [`g.15`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) y `11-ARQ` §11.8 | el **Owner** decide · `SEG` gobierna credenciales | **`F6`** | que el contrato derivado de la raíz externa declare titular y custodio, y que el Owner los acepte |
+| **`FD-2`** | `O23` se inscribió **sin los campos `procedencia` y `relaciones de revisión`** que la propia sede declara obligatorios para cada entrada. Las resoluciones anteriores sí los llevan | [`sede canónica del Owner`](../owner/ADS-OWNER-RESOLUCIONES.md), entrada `O23` | el **Owner**: la sede es APPEND-ONLY y **sólo él escribe en ella** | no consta | **NO se corrige aquí, y no puede corregirse aquí**: editar la entrada rompería el carácter append-only que la hace comprobable. Una resolución posterior puede completarla sin borrarla |
+| **`FD-3`** | la ESPECIFICACIÓN NORMATIVA que viaja con el kernel a un proyecto instalado **no incluye todavía** la sección `(g)` ni las enmiendas `E3`–`E6`. La lista de lo que viaja vive en el tooling, que es DERIVADO y entra en la huella | `tooling/new-project.sh`, y la conformidad la comprueba la prueba de arranque | `PLT` implementa · `SIS` es propietario | **`F6`** | que la lista de copia incluya `(g)` y las enmiendas vigentes, **derivándola en vez de escribirla**, y que la prueba de arranque siga en verde |
+
+**Ninguna de las TRES está superada, y ninguna es bloqueante.**
+
+> **Por qué `FD-3` no se corrigió en `F5`, y se dice en vez de callarlo.** Corregirla exige
+> tocar `tooling/`, que está en la huella del kernel, y el criterio de aceptación de `F5`
+> exige que **la huella no cambie salvo donde una enmienda aprobada lo ordene**. Ninguna
+> enmienda de `F5` lo ordena: alinear el derivado es trabajo de `F6`, y el orden —**primero
+> la fuente, después el derivado**— está escrito dos veces en la sede de las presiones.
+> **Mientras tanto, `(a)` y `(b)` NOMBRAN esas sedes sin enlazarlas**, para que un proyecto
+> instalado no quede con enlaces rotos.
+
 ## 11 · Observaciones de esta consolidación — **NO son hallazgos adjudicados**
 
 > **Qué son y qué no.** Incoherencias que esta consolidación encontró al recorrer las
@@ -327,7 +349,7 @@ ninguna otra.
 ```bash
 # 1 · el censo que ESTE documento publica en §1. NO lo contrasta con su sede: el contraste
 #     con el documento 34 §10 hay que hacerlo leyéndolo
-awk '/^## 1 · LOS DIEZ HALLAZGOS VIVOS/,/^## 2 /' docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md \
+awk '/^## 1 · LOS/,/^## 2 /' docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md \
   | grep -oE '[A-Z]{2}-[0-9]+' | sort -u
 
 # 2 · el ACTO más reciente del expediente, que es el que 03-GOBIERNO-Y-AUTORIDAD.md §6 cita

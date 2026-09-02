@@ -21,13 +21,21 @@ defecto**, no "la combinación más barata que mantenga la calidad necesaria".
 | a | [Capacidades, equipos, paquetes y estado](a-CAPACIDADES-APROBADA.md) | **APROBADA** 2026-08-25 |
 | b | [Recorrido, estados y composición de procesos](b-RECORRIDO-APROBADA.md) | **APROBADA** 2026-08-25 |
 | E1 | [Enmienda a (a): `ENC` como decimoquinta capacidad base](a-ENMIENDA-E1-ENC.md) | **APROBADA** 2026-08-26 |
+| E2 | [Enmienda a (a) y (b): arquitectura multirrepositorio](a-ENMIENDA-E2-MULTIREPO.md) | **APROBADA** 2026-08-26 |
+| E3 | [Enmienda a (a) y (b): gate constitucional de arranque y trabajo por política](a-ENMIENDA-E3-ARRANQUE-Y-POLITICA.md) | **APROBADA** 2026-09-02 |
+| E4 | [Enmienda a (a) y (b): composición de rutas](a-ENMIENDA-E4-COMPOSICION-DE-RUTAS.md) | **APROBADA** 2026-09-02 |
+| E5 | [Enmienda a (a), (b) y E1: correcciones editoriales](a-ENMIENDA-E5-CORRECCIONES-EDITORIALES.md) | **APROBADA** 2026-09-02 |
+| E6 | [Enmienda a (b): la reanudación distingue lo publicado de lo especulativo](a-ENMIENDA-E6-REANUDACION.md) | **APROBADA** 2026-09-02 |
 | c | Formato del handoff entre capacidades | no iniciada |
 | d | Puntos de interacción con el Owner | no iniciada |
 | e | La pregunta de la vía rápida | no iniciada |
 | f | Diseño como área diferencial y tensión de presupuesto | no iniciada |
-| g | Sistema operativo persistente: memoria, eventos, dispatcher, "Continúa" | no iniciada |
+| g | [Estado durable, gobierno Git del control repo y raíz externa](g-ESTADO-DURABLE-APROBADA.md) | **APROBADA** 2026-09-02 |
 | h | Qué pasa con G24, G34, G53 y el resto de reglas en conflicto | no iniciada |
 | i | Impacto en packs y PROFILE_TEMPLATE | no iniciada |
+
+**El inventario de enmiendas NO se escribe a mano: se deriva** con
+`ls -1 docs/rediseno/a-ENMIENDA-E*.md`.
 
 Versiones rechazadas conservadas para trazabilidad:
 [v1](a-EQUIPOS-v1-RECHAZADA.md) · [v2](a-EQUIPOS-v2-RECHAZADA.md) · [v3](a-EQUIPOS-v3-SUPERADA.md).

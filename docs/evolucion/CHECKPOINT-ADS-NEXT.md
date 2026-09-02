@@ -1117,7 +1117,8 @@ metodo_anterior: SIS/Evolucion · **`O22` REGISTRADA Y CANDIDATA DELTA PUBLICADA
              SEDE CANÓNICA, que es append-only; aquí no se copia —regla 3—:
                  grep -o '^# `O[0-9]*`' docs/owner/ADS-OWNER-RESOLUCIONES.md | tail -1
              QUÉ CONTIENE LA CANDIDATA DELTA, y nada más —`O22` §2—: la corrección de
-             `HH2-08`, el ÚNICO bloqueo del último gate, en sus tres sedes EDITABLES; la
+             `HH2-08`, el bloqueo del último gate, en sus sedes EDITABLES —que el propio
+             gate deriva—; la
              resolución que autoriza la composición; y sus proyecciones. **Todos los demás
              blobs obligatorios permanecen IDÉNTICOS**, y eso se comprueba blob a blob.
              **EL MANIFIESTO PUBLICADO NO SE TOCA**: es INMUTABLE, y su diferencia vive
@@ -1127,7 +1128,7 @@ metodo_anterior: SIS/Evolucion · **`O22` REGISTRADA Y CANDIDATA DELTA PUBLICADA
              certifica nada por su cuenta**: quien aplica no verifica. La composición la
              decide un verificador independiente, y **si aparece otro bloqueo la composición
              FALLA y no habrá otro ciclo** —`O22` §7—.
-             LOS SEIS HALLAZGOS NO BLOQUEANTES del último gate **siguen VIVOS y REGISTRADOS**
+             LOS HALLAZGOS NO BLOQUEANTES del último gate **siguen VIVOS y REGISTRADOS**
              —`O22` §6—, ninguno SUPERADO; su sede es §5 del documento del gate, que es
              inmutable, y el parte del delta les da propietario y fase sin copiar su recuento.
 metodo_anterior: SIS/Evolucion · ÚLTIMO GATE INDEPENDIENTE DEVUELTO —GATE VÁLIDO, `C-L.5`
@@ -1497,7 +1498,8 @@ last_meaningful_event_anterior: EL OWNER ABRE LA CERTIFICACIÓN INCREMENTAL DEL 
              ordinal y documento NO se escriben aquí y se derivan con el comando de `metodo`.
              `O22` resuelve un COSTE DE MÉTODO y no un defecto de nadie: aquel gate es
              VÁLIDO, CERTIFICA la cobertura, cierra casi todos sus objetos y devuelve
-             insuficiencia por UN SOLO bloqueo, declarando en su prueba contrafáctica que
+             insuficiencia por el bloqueo que el propio gate identifica, declarando en su
+             prueba contrafáctica que
              cerrado ese bloqueo el veredicto sería SUFICIENTE. **El recuento de cerrados y
              de vivos NO se copia aquí** —regla 1—: vive en ese documento, que es su única
              sede. Repetir un gate completo para juzgar una frase es lo que `O22` evita, y
@@ -3106,9 +3108,12 @@ falta_para_cerrar_la_capa:
   · NADA CONSTRUIDO: ni kernel, ni runtime, ni tooling, ni esquemas, ni adaptadores, ni
     plantillas, ni packs, ni validadores, ni migraciones. Las correcciones son DISEÑO
     CORREGIDO, no diseño implementado
-  · NADA PROBADO: las filas de la tabla adversarial de §2.6.7, las ventanas de caída
-    `W1`–`W17` de §2.6.5, las comprobaciones `X-A`–`X-H` de §2.9, los escenarios negativos
-    de §11.5 y los escenarios de §14 están ESCRITOS. Ninguno ejecutado.
+  · NADA PROBADO: **las familias de prueba del documento 11 están ESCRITAS y ninguna
+    ejecutada.** `JB-02` del gate de los doce: esta viñeta ENUMERABA cinco familias donde
+    su sede publica más, y una enumeración viva escrita al lado de una sede que crece
+    caduca sola. **Se retira la enumeración y se remite**, que es lo que su condición de
+    cierre exige. La sede es §19 del documento 11, y el censo se deriva:
+        grep -oE '`X-[A-Z]+`' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md | sort -u
     **NINGÚN CARDINAL SE ESCRIBE AQUÍ, y es `EE-07` del SEXTO GATE.** Este renglón decía
     «las **46** filas … derivadas por conteo» y hoy son **más**: `X63` la añadió la tanda
     del quinto gate, y el cardinal —que `DD-13` retiró del documento 11 EN ESA MISMA
@@ -4900,7 +4905,7 @@ a byte idéntico. Se comprueba, no se declara:
 awk '/^## 15\.4 /{f=1;next} /^## 15\.5 /{f=0} f' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md \
   | grep -ci 'gate v.lido'                                                    # -> 1
 grep -ci 'gate v.lido' docs/evolucion/00-INDICE.md                            # -> 1
-grep -c 'para un gate VÁLIDO' \
+grep -ci 'para un gate v.lido' \
   docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md            # -> >=1
 git diff 9d4ebe6 HEAD -- \
   docs/evolucion/verificacion/manifiestos/                                    # -> SIN SALIDA

@@ -6,6 +6,29 @@
 > todos sus puntos. Recoge ideas consolidadas, necesidades detectadas y cuestiones que deben
 > investigarse o diseñarse antes de materializarlas.
 
+> ## NOTA DE VIGENCIA — 2026-09-02 · resolución `O23` §10
+>
+> **Las afirmaciones de este documento que dicen «no implementar», «no implementar todavía»
+> o «no implementar sin diseño previo» sobre la MATERIALIZACIÓN FÍSICA MULTI-REPOSITORIO
+> quedan SUSTITUIDAS en ese punto concreto**, y por este orden:
+>
+> 1. la decisión multi-repositorio está **CERRADA y APROBADA PARA IMPLEMENTACIÓN** en
+>    [`ADS-ARQUITECTURA-MULTIREPO-APROBADA.md`](ADS-ARQUITECTURA-MULTIREPO-APROBADA.md),
+>    que es la sede que manda sobre esta materia;
+> 2. su instanciación son los contratos
+>    [`C6`](../../kernel/operativo/contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md) y
+>    [`C7`](../../kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md), más la
+>    enmienda [`E2`](../rediseno/a-ENMIENDA-E2-MULTIREPO.md) que los incorporó a la
+>    especificación aprobada;
+> 3. este documento **CONSERVA su carácter de documento de trabajo para todo lo demás**, y
+>    sigue sin autorizar a implementar sus otros puntos por sí mismo.
+>
+> **Los cuatro puntos afectados llevan la marca `[NV]`**, y son: este bloque de estado, la
+> cuestión abierta crítica de §12, la instrucción de §14 y la fila de §15.
+>
+> **Lo que esta nota NO hace:** no aprueba ninguna otra idea de este documento, no cierra
+> ninguna otra cuestión declarada abierta, y no altera el estado de ninguna fase.  `[NV]`
+
 ---
 
 # 1. Objetivo de este documento
@@ -484,6 +507,10 @@ funcionando como tres organizaciones independientes que luego intentan sincroniz
 
 # 12. CUESTIÓN ABIERTA CRÍTICA — Materialización del proyecto multi-repo
 
+> **`[NV]` SUSTITUIDA en cuanto a la materialización multi-repositorio.** Esa decisión está
+> cerrada y aprobada para implementación, y `C6`, `C7` y `E2` la instancian. Ver la NOTA DE
+> VIGENCIA de la cabecera. El resto de este apartado conserva su carácter de trabajo.
+
 **NO IMPLEMENTAR TODAVÍA.**
 
 La dirección conceptual anterior está aceptada, pero no está decidido **cómo se materializa físicamente
@@ -567,6 +594,10 @@ Comparar:
 
 # 14. Instrucción para futuras implementaciones
 
+> **`[NV]` SUSTITUIDA.** El Owner YA cerró la decisión multi-repo, y la condición «hasta que
+> el Owner cierre la decisión multi-repo» está cumplida. Ver la NOTA DE VIGENCIA de la
+> cabecera. Lo que sigue se conserva como registro de cómo se trabajaba antes de ese cierre.
+
 Hasta que el Owner cierre la decisión multi-repo:
 
 > Se pueden diseñar contratos y abstracciones que reconozcan `proyecto != repositorio`, pero no se
@@ -594,4 +625,4 @@ Cualquier implementación provisional debe:
 | un ADS por producto multi-repo | dirección preferida |
 | contratos compartidos | necesidad aceptada |
 | integración global | necesidad aceptada |
-| materialización física multi-repo | **ABIERTA — NO IMPLEMENTAR SIN DISEÑO PREVIO** |
+| materialización física multi-repo | **CERRADA Y APROBADA PARA IMPLEMENTACIÓN** `[NV]` — ver la NOTA DE VIGENCIA de la cabecera |

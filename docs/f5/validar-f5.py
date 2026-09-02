@@ -25,6 +25,26 @@ QUE COMPRUEBA, y nada mas:
       contiene ninguna aprobacion del Owner, y esta comprobacion lo hace comprobable
   F12 todo marcador `PENDIENTE-DECISION-DEL-OWNER: <id>` de un borrador nombra una decision
       que existe en el paquete
+  F22 APPEND-ONLY DE LA SEDE DEL OWNER, comprobado contra el COMMIT DE NACIMIENTO y no
+      contra HEAD: el contenido de hoy tiene que EMPEZAR por el de la version que creo el
+      fichero. Confirmar una alteracion no la vuelve legitima, y por eso la referencia es
+      el nacimiento. A2 lo prometia y ningun control lo ejecutaba
+
+  F14 O23 esta INSCRITA y cubre las QUINCE decisiones: sus doce apartados existen, y cada
+      identificador D-01..D-10 y R-01..R-05 tiene fila en la matriz con su acto
+  F15 LITERALIDAD DE O23: su texto conserva las frases que fijan cada decision. Alterar una
+      palabra de las declaradas hace ROJO
+  F16 COBERTURA DE PRESIONES CON ACTO: el censo VIGENTE se deriva del arbol y toda presion
+      tiene fila en el acta de disposicion, con disposicion y acto que la cierra
+  F17 NINGUNA sede afirma que F5 este CERRADA. Su cierre exige un acto posterior y expreso
+      del Owner, y ningun artefacto de F5 puede adelantarlo
+  F18 NINGUN contrato de F6 se presenta como IMPLEMENTADO, EJECUTADO ni CERTIFICADO
+  F19 PesquerApp sigue declarada BLOQUEADA en la unica sede del estado de fase
+  F20 el ESTADO CANONICO, el DIARIO CANONICO y el REGISTRO AUXILIAR de reconciliacion
+      permanecen como TRES materias declaradas y separadas en la seccion (g)
+  F21 la apertura automatica por politica NO puede eludir el gate constitucional: la sede
+      que la reconoce declara expresamente su subordinacion
+
   F13 el estado de fase NO se copia. Se comprueban DOS cosas, porque una sola no basta:
       (a) el ROTULO de estado aparece a lo sumo en UNA sede, que es
           docs/canonico/03-GOBIERNO-Y-AUTORIDAD.md. «A lo sumo» y no «exactamente»: cuando
@@ -61,6 +81,7 @@ import argparse
 import json
 import os
 import re
+import subprocess
 import sys
 
 try:
@@ -84,6 +105,40 @@ INDICE_INICIATIVA = "docs/evolucion/00-INDICE.md"
 # La UNICA exencion, y su motivo esta en el docstring: transcribe el acto del Owner.
 EXENTO_POR_TRANSCRIPCION = "docs/f5/01-ACTO-DE-INICIO-DE-F5.md"
 SEDE_PRESIONES = "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md"
+SEDE_OWNER = "docs/owner/ADS-OWNER-RESOLUCIONES.md"
+ACTA_PRESIONES = "docs/f5/40-DISPOSICION-DE-LAS-PRESIONES.md"
+SECCION_G = "docs/rediseno/g-ESTADO-DURABLE-APROBADA.md"
+ENMIENDA_ARRANQUE = "docs/rediseno/a-ENMIENDA-E3-ARRANQUE-Y-POLITICA.md"
+
+# Las QUINCE decisiones que O23 resuelve.
+DECISIONES_O23 = [f"D-{n:02d}" for n in range(1, 11)] + [f"R-{n:02d}" for n in range(1, 6)]
+
+# Frases de O23 cuya alteracion cambiaria una decision. Se comprueban LITERALES.
+LITERAL_O23 = [
+    "Se adopta una sección `(g)` normativa breve y un contrato derivado que `F6` deberá implementar.",
+    "La norma de la raíz externa de confianza forma parte de `(g)` y tendrá un contrato derivado propio para `F6`.",
+    "Al agotarse los reintentos se escribirá un registro operativo auxiliar durable, separado del estado canónico y del diario canónico.",
+    "Se conserva el gate constitucional de arranque. El circuito nuevo queda subordinado a él.",
+    "Se reconoce una tercera vía de nacimiento del trabajo: apertura automática por una política previamente aprobada.",
+    "Verificación es participante condicional y productora del dictamen en la ruta de auditoría.",
+    "manda la grafía con tilde de la fuente aprobada",
+    "El mapa documental se satisface mediante una derivación mecánica reproducible.",
+    "`F5` sólo podrá declararse cerrada mediante un acto posterior y expreso del Owner",
+    "Esta resolución no declara `F5` cerrada, no implementa contratos de `F6` y no autoriza el inicio de PesquerApp.",
+]
+
+# Afirmaciones que NINGUN artefacto de F5 puede hacer.
+PROHIBIDO_F5_CERRADA = re.compile(
+    r"`?F5`?\s+(?:queda|está|esta|ha quedado)\s+\**\s*CERRADA", re.IGNORECASE)
+PROHIBIDO_F6_IMPLEMENTADO = re.compile(
+    r"(?:contrato|verificador|runtime)[^.\n]{0,60}\b(?:ya\s+)?(?:está|esta)\s+\**\s*"
+    r"(?:IMPLEMENTAD|EJECUTAD|CERTIFICAD)", re.IGNORECASE)
+# Una NEGACION no es una afirmacion de haberlo construido. Es la diferencia entre «esta
+# implementado» y «nada esta implementado», y confundirlas haria inutil el control.
+NEGACION = re.compile(r"\b(?:no|ninguno|ninguna|nada|ningún|ningun|sin)\b", re.IGNORECASE)
+# Un CRITERIO DE ACEPTACION enuncia lo que habra que demostrar, no lo que ya se demostro.
+# «B1 cada contrato esta IMPLEMENTADO» es la vara de F6, no una afirmacion de F5.
+CRITERIO = re.compile(r"^\s*[AB]\d+\s")
 
 CLAVES = ("version", "descripcion", "derivacion", "entregables",
           "criterios_de_aceptacion", "estados_validos", "filas")
@@ -146,6 +201,11 @@ def validar(raiz):
     filas = m["filas"]
     validos = set(m["estados_validos"])
     r.datos["filas"] = len(filas)
+    reparto = {}
+    for f in filas:
+        reparto[f.get("estado")] = reparto.get(f.get("estado"), 0) + 1
+    r.datos["reparto_por_estado"] = " · ".join(
+        f"{k} {v}" for k, v in sorted(reparto.items(), key=lambda kv: -kv[1]))
     r.datos["estados_validos"] = len(validos)
 
     # ---- F2 · los siete entregables -------------------------------------
@@ -247,8 +307,172 @@ def validar(raiz):
                 r.fallo("F11", f"{rel}: contiene `{MARCA_APROBADO}`. Este arbol no puede "
                                f"contener ninguna aprobacion del Owner")
 
+    # ---- F14 · O23 inscrita y cubriendo las quince -----------------------
+    ruta_owner = os.path.join(raiz, SEDE_OWNER)
+    o23 = ""
+    if not os.path.exists(ruta_owner):
+        r.fallo("F14", f"no existe la sede canonica del Owner {SEDE_OWNER}")
+    else:
+        texto_owner = _leer(raiz, SEDE_OWNER)
+        if "# `O23`" not in texto_owner:
+            r.fallo("F14", "O23 NO esta inscrita en la sede canonica del Owner")
+        else:
+            resto = texto_owner[texto_owner.index("# `O23`"):]
+            # ACOTADO a la siguiente resolucion. Sin esto, el acto de cierre de F5 —que
+            # sera una resolucion posterior— pondria este control en rojo por existir.
+            sig = re.search(r"^# `O(?!23`)", resto[1:], re.M)
+            o23 = resto[:sig.start() + 1] if sig else resto
+            apartados = len(re.findall(r"^## \d+ · ", o23, re.M))
+            r.datos["apartados_de_o23"] = apartados
+            if apartados != 12:
+                r.fallo("F14", f"O23 declara {apartados} apartados y su alcance exige 12")
+    sin_fila = [d for d in DECISIONES_O23 if d not in de_la_matriz]
+    r.datos["decisiones_de_o23_con_fila"] = len(DECISIONES_O23) - len(sin_fila)
+    if sin_fila:
+        r.fallo("F14", f"decisiones que O23 resuelve y ninguna fila de la matriz recoge: "
+                       f"{sin_fila}. Retirar una decision de O23 deja su obligacion sin acto")
+
+    falsos = [f["id"] for f in filas
+              if f.get("estado") == "APLICADO_POR_O23"
+              and str(f.get("artefacto") or "").startswith(f"{BORRADORES}/")]
+    if falsos:
+        r.fallo("F14", f"filas APLICADAS cuyo artefacto es un BORRADOR: {falsos}. Un borrador "
+                       f"NO_APROBADO no puede ser el instrumento que aplica una decision")
+
+    # ---- F22 · append-only contra el NACIMIENTO --------------------------
+    try:
+        nac = subprocess.run(["git", "-C", raiz, "log", "--diff-filter=A", "--format=%H",
+                              "--", SEDE_OWNER], capture_output=True, text=True, timeout=30)
+        commits = [c for c in nac.stdout.split() if c]
+        if not commits:
+            r.datos["append_only"] = "sin historia: no comprobado"
+        else:
+            nacimiento = commits[-1]
+            orig = subprocess.run(["git", "-C", raiz, "show", f"{nacimiento}:{SEDE_OWNER}"],
+                                  capture_output=True, timeout=30).stdout
+            hoy = open(os.path.join(raiz, SEDE_OWNER), "rb").read()
+            r.datos["append_only"] = f"contra {nacimiento[:8]}: " + (
+                "OK" if hoy.startswith(orig) else "ROTO")
+            if not hoy.startswith(orig):
+                r.fallo("F22", f"la sede del Owner YA NO EMPIEZA por el contenido del commit "
+                               f"que la creo ({nacimiento[:8]}). Es append-only, y confirmar "
+                               f"una alteracion no la vuelve legitima")
+    except Exception as exc:                                     # pragma: no cover
+        r.datos["append_only"] = f"no comprobado: {exc}"
+
+    # ---- F15 · literalidad de O23 ----------------------------------------
+    if o23:
+        faltan = [f for f in LITERAL_O23 if f not in o23]
+        r.datos["frases_literales_de_o23"] = len(LITERAL_O23) - len(faltan)
+        if faltan:
+            r.fallo("F15", f"O23 ha perdido {len(faltan)} de sus frases decisorias literales. "
+                           f"La primera que falta: {faltan[0][:70]!r}")
+
+    # ---- F16 · toda presion vigente con disposicion y acto ---------------
+    if not os.path.exists(os.path.join(raiz, ACTA_PRESIONES)):
+        r.fallo("F16", f"no existe el acta de disposicion {ACTA_PRESIONES}")
+    else:
+        acta = _leer(raiz, ACTA_PRESIONES)
+        # Se leen TRES columnas: identificador, disposicion y ACTO que la cierra.
+        filas_acta = {m[0]: (m[1], m[2]) for m in re.findall(
+            r"^\| `(PN-\d+)` \| \*\*([^*]+)\*\* \| ([^|]*)\|", acta, re.M)}
+        r.datos["presiones_en_el_acta"] = len(filas_acta)
+        sin_acta = [p for p in vivas if p not in filas_acta]
+        if sin_acta:
+            r.fallo("F16", f"presiones VIGENTES sin fila en el acta de disposicion: {sin_acta}")
+        # `startswith` y NO `in`: «NO RESUELTA» contiene «RESUELTA», y aceptarla seria
+        # dar por cerrada una presion que el acta declara abierta.
+        sin_resolver = [p for p, (d, _a) in filas_acta.items()
+                        if not (d.strip().startswith("RESUELTA")
+                                or d.strip().startswith("RETIRADA"))]
+        if sin_resolver:
+            r.fallo("F16", f"presiones sin disposicion inequivoca en el acta: {sin_resolver}")
+        sin_acto = [p for p, (_d, a) in filas_acta.items() if not a.strip()]
+        if sin_acto:
+            r.fallo("F16", f"presiones cuyo ACTO de cierre esta vacio en el acta: {sin_acto}. "
+                           f"Una disposicion sin acto es una presion sin cerrar")
+
+    # ---- F17 · nadie declara F5 cerrada ----------------------------------
+    # Se recorre F5, el corpus canonico y el material aprobado nuevo.
+    ambito = []
+    for zona in ("docs/f5", "docs/canonico", "docs/rediseno"):
+        for base, _d, ficheros in os.walk(os.path.join(raiz, zona)):
+            for nombre in sorted(ficheros):
+                if nombre.endswith(".md"):
+                    ambito.append(os.path.relpath(os.path.join(base, nombre),
+                                                  raiz).replace(os.sep, "/"))
+    r.datos["ficheros_barridos_por_F17"] = len(ambito)
+    for rel in ambito:
+        texto = _leer(raiz, rel)
+        for m in PROHIBIDO_F5_CERRADA.finditer(texto):
+            # `F6` exige `F5` CERRADA es una CONDICION, no una declaracion de estado
+            ventana = texto[max(0, m.start() - 90):m.start()]
+            if "exige" in ventana or "sólo podrá" in ventana or "solo podra" in ventana:
+                continue
+            r.fallo("F17", f"{rel}: declara `F5` CERRADA. Su cierre exige un acto posterior "
+                           f"y expreso del Owner, y ningun artefacto puede adelantarlo")
+            break
+
+    # ---- F18 · ningun contrato de F6 presentado como implementado --------
+    for rel in ambito:
+        texto = _leer(raiz, rel)
+        for m in PROHIBIDO_F6_IMPLEMENTADO.finditer(texto):
+            # se mira la frase entera: una negacion delante invierte el sentido
+            ini = texto.rfind("\n", 0, m.start()) + 1
+            linea = texto[ini:texto.find("\n", m.end()) if texto.find("\n", m.end()) > 0 else len(texto)]
+            if NEGACION.search(texto[ini:m.end()]) or CRITERIO.match(linea):
+                continue
+            r.fallo("F18", f"{rel}: presenta como implementado, ejecutado o certificado algo "
+                           f"que es CONTRATO de F6: {m.group(0)[:60]!r}")
+            break
+
+    # ---- F19 · PesquerApp sigue bloqueada --------------------------------
+    sede_estado = _leer(raiz, SEDE_DEL_ESTADO)
+    if not re.search(r"PesquerApp\*\*\s*\|\s*\*\*BLOQUEADA", sede_estado):
+        r.fallo("F19", f"{SEDE_DEL_ESTADO} ya no declara PesquerApp BLOQUEADA en la unica "
+                       f"sede del estado de fase")
+
+    # ---- F20 · las tres materias del estado durable, separadas -----------
+    if not os.path.exists(os.path.join(raiz, SECCION_G)):
+        r.fallo("F20", f"no existe la seccion (g) en {SECCION_G}")
+    else:
+        g = _leer(raiz, SECCION_G)
+        for materia in ("ESTADO CANÓNICO", "DIARIO CANÓNICO", "REGISTRO OPERATIVO"):
+            if materia not in g:
+                r.fallo("F20", f"la seccion (g) ya no declara la materia {materia!r}")
+        if "I-g7" not in g:
+            r.fallo("F20", "la seccion (g) ya no declara el invariante que mantiene separados "
+                           "el estado canonico, el diario y el registro auxiliar")
+        g_plano = " ".join(g.split())
+        if "Ninguna implementación puede colapsarlas" not in g_plano:
+            r.fallo("F20", "la seccion (g) ya no prohibe colapsar las tres materias en una "
+                           "sola estructura")
+        if "no es** estado canónico" not in g and "NO es estado canónico" not in g:
+            r.fallo("F20", "la seccion (g) ya no declara que el registro auxiliar NO es "
+                           "estado canonico: mezclarlos rompe la separacion que O23 exige")
+
+    # ---- F21 · la apertura por politica no elude el gate constitucional --
+    if not os.path.exists(os.path.join(raiz, ENMIENDA_ARRANQUE)):
+        r.fallo("F21", f"no existe la enmienda de arranque {ENMIENDA_ARRANQUE}")
+    else:
+        e3 = _leer(raiz, ENMIENDA_ARRANQUE)
+        if "NO ELUDE EL GATE CONSTITUCIONAL" not in e3.upper():
+            r.fallo("F21", "la enmienda que reconoce la apertura automatica por politica ya "
+                           "no declara su subordinacion al gate constitucional")
+        # UNA FILA por regla, no una mencion en prosa: la prueba posterior lo exige asi,
+        # y una mencion suelta dejaria pasar la declaracion global que la enmienda prohibe.
+        faltan_reglas = [f"G{n}" for n in range(20, 24)
+                         if not re.search(rf"^\| \*\*`G{n}`\*\*", e3, re.M)]
+        if faltan_reglas:
+            r.fallo("F21", f"la enmienda no nombra {faltan_reglas}, y su prueba posterior "
+                           f"exige UNA FILA POR REGLA, no una declaracion global")
+        fuente = _leer(raiz, "docs/rediseno/a-CAPACIDADES-APROBADA.md")
+        if "CONSERVADAS, y subordinantes" not in fuente:
+            r.fallo("F21", "la fuente aprobada ya no remite a la disposicion de las reglas "
+                           "constitucionales: la enmienda quedaria sin marca en su sede")
+
     # ---- F13 · una sola sede para el estado de fase ----------------------
-    rotulo = re.compile(r"INICIADA\s*·\s*EN CURSO")
+    rotulo = re.compile(r"INICIADA\s*·\s*EN CURSO|COMPLETADA TÉCNICAMENTE")
     # La forma en que un estado se copia de verdad: afirmandolo con palabras propias.
     afirmacion = re.compile(r"`?F5`?\s+(?:est[aá]|queda|sigue)\s+\**\s*(?:EN CURSO|INICIADA)",
                             re.IGNORECASE)

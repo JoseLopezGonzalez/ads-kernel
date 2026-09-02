@@ -7,6 +7,35 @@
 > transiciones—, **no un kernel construido**. Las pruebas `T26-T74` son contratos de
 > conformidad definidos, no ejecutados.
 
+> ## ENMIENDAS VIGENTES — leer junto a este documento
+>
+> Este texto **no se reescribe**. Lo que rige es esta sección **leída junto a sus
+> enmiendas**, que sustituyen puntos concretos por decisión posterior del Owner.
+>
+> | | enmienda | fecha | qué sustituye |
+> |---|---|---|---|
+> | **E2** | [`a-ENMIENDA-E2-MULTIREPO.md`](a-ENMIENDA-E2-MULTIREPO.md) — un producto ADS son varias fuentes gobernadas por un repositorio de control | 2026-08-26 | la reanudación multi-fuente y la relación item/rama/PR |
+> | **E3** | `a-ENMIENDA-E3-ARRANQUE-Y-POLITICA.md` — el trabajo que nace por política | 2026-09-02 | amplía b.15.1 con la TERCERA VÍA de nacimiento del trabajo |
+> | **E4** | `a-ENMIENDA-E4-COMPOSICION-DE-RUTAS.md` — participantes de ruta y capacidad competente | 2026-09-02 | las filas `AUD`, `SIS` e `INV` de b.16 |
+> | **E5** | `a-ENMIENDA-E5-CORRECCIONES-EDITORIALES.md` — correcciones editoriales que no cambian ninguna norma | 2026-09-02 | una cita a un predicado en b.7, y la numeración de las reglas de recomposición |
+> | **E6** | `a-ENMIENDA-E6-REANUDACION.md` — la reanudación distingue lo publicado de lo especulativo | 2026-09-02 | el desenlace del paso 2 de b.14 |
+>
+> **Y una sección NUEVA, del mismo grado normativo que este documento**, que ocupa la
+> materia que `a.9` delegó:
+> `g-ESTADO-DURABLE-APROBADA.md`, aprobada por `O23`.
+>
+> Los puntos afectados llevan la marca `[E3]`, `[E4]`, `[E5]` o `[E6]` en el texto de abajo.
+> **El inventario de enmiendas NO se escribe a mano: se deriva** con
+> `ls -1 docs/rediseno/a-ENMIENDA-E*.md`.>
+> **Por qué las enmiendas nuevas y la sección `(g)` se NOMBRAN y no se ENLAZAN aquí:** la
+> lista de lo que viaja con el kernel a un proyecto instalado vive en el tooling, que es
+> DERIVADO. `F5` toca la fuente; alinear el derivado es de `F6`. Enlazarlas antes de que
+> viajen dejaría **enlaces rotos en todo proyecto instalado**, que es justamente lo que la
+> conformidad del arranque comprueba. **Se derivan:** `ls -1 docs/rediseno/a-ENMIENDA-E*.md`.
+>
+> **Este bloque no existía**, y `(b)` estaba enmendada sin decirlo en ninguna parte de su
+> propio texto. Lo crea `E5` `E5.4`.
+
 Primero el modelo general. Las rutas concretas se **derivan** de él en b.16.
 
 ---
@@ -355,7 +384,7 @@ detección de ciclos multiparte (a.7). La capa devuelta **no se borra**: pasa a
 `invalidada` o `sustituida` según b.3, y siempre por decisión de su capacidad propietaria.
 
 > **Toda devolución obliga a DSP a crear o reabrir el paquete de corrección en el mismo
-> ciclo.** Un `devuelto` sin paquete de corrección deja al item en `en espera` (P7)
+> ciclo.** Un `devuelto` sin paquete de corrección deja al item en `en espera` (P9) `[E5]`
 > cuando en realidad hay trabajo que hacer, y es un defecto de despacho, no un estado
 > legítimo.
 
@@ -465,12 +494,12 @@ Reglas:
    **DEBE** crear el trabajo de reemplazo o **RETIRAR expresamente la obligación** (b.3),
    identificando quién tuvo autoridad y cómo afecta al resultado perseguido. Dejar la
    obligación huérfana bloquea el cierre (b.10).
-5. **Una retirada que cambia materialmente el resultado perseguido NO es una recomposición
-   rutinaria**: activa la regla de b.1 —cambio de proceso o item nuevo—. Recomponer no
-   puede ser la vía silenciosa para reducir el alcance.
 3. La ruta pasa a `r_n+1`, con traza de **qué cambió y por qué** (formato de a.6).
 4. Recomponer **no reinicia el trabajo en curso**: un paquete `en curso` que sobrevive en
    la ruta nueva conserva su custodia y su checkpoint.
+5. **Una retirada que cambia materialmente el resultado perseguido NO es una recomposición
+   rutinaria**: activa la regla de b.1 —cambio de proceso o item nuevo—. Recomponer no
+   puede ser la vía silenciosa para reducir el alcance.
 
 ### `avance_material` *(definición formal)*
 
@@ -697,12 +726,17 @@ en un botón de OK.
 
 ## b.14 — `Continúa`
 
+> `[E2]` La reanudación es MULTI-FUENTE: el checkpoint referencia revisiones de cada fuente y
+> **no copia contenido**. Ver [`E2`](a-ENMIENDA-E2-MULTIREPO.md) `E2.3`.
+
 ```text
 1 RECONSTRUIR   leer el estado canónico completo.
                 NO leer el kernel entero. NO depender de ninguna conversación.
 2 VERIFICAR     contrastar lo declarado contra la realidad del repo:
                 · ¿existen los artefactos que los paquetes dicen haber producido?
                 · ¿hay transiciones multiarchivo incompletas? → completar o revertir (a.9)
+                  `[E6]` REVERTIR alcanza SÓLO a las escrituras ESPECULATIVAS; lo
+                  PUBLICADO no se revierte: se registra el incidente y se ESCALA
                 · ¿hay `reconciliacion_pendiente`? → resolverla antes de nada
                 · ¿hay derivados divergentes de su source_revision? → regenerar
                 · ¿SIGUEN VIABLES todas las `esperando-dependencia`? (b.8)
@@ -752,6 +786,12 @@ en un botón de OK.
 > cola está vacía es la forma más común del modo de fallo (b) de a.7.
 
 ### b.15.1 — Desbloqueadores: la autonomía es el comportamiento normal
+
+> **AMPLIADA por `[E3]`.** A las dos vías de nacimiento del trabajo que este apartado
+> reconoce —una entrada del Owner, y un desbloqueador dentro del alcance ya autorizado— se
+> añade una **TERCERA VÍA: la apertura automática por una política previamente aprobada**,
+> con sus cuatro condiciones y su frontera con el gate constitucional. El texto sustitutivo
+> vive en `E3` `E3.2`, no aquí.
 
 > Que aparezca un paquete adicional **no es motivo para molestar al Owner**. La
 > intervención humana aparece por **autoridad o incertidumbre real**, nunca por
@@ -827,6 +867,9 @@ C-ENT   el resultado debe existir fuera del entorno de desarrollo para ser útil
 C-USO   existe una fuente de uso real aplicable —Owner, usuario, operador, dispositivo,
         telemetría, logs— Y el resultado NO es verificable sólo por VER
 C-APR   learning_candidate ≠ none
+C-VER   la auditoría debe producir una celda de cobertura VERIFICADA, es decir con su
+        DICTAMEN como evidencia. El inventario, la detección y la propuesta NO la
+        activan                                                              [E4]
 ```
 
 ### DOM y SEG participan dos veces, y nunca a la vez que CON
@@ -889,12 +932,12 @@ DSP **no tiene autoridad semántica**. Regla, en orden:
 | **GAP** expectativa o calidad ausente respecto a algo existente | PRD | PRD · CON · VER | idénticas a FEA. **Misma plantilla de ruta, proceso distinto** — ver abajo |
 | **DEF** defecto | ARQ si `C-ARQ`, si no CON | CON · VER | **DIS `C-DIS`** · ARQ `C-ARQ` · ENT `C-ENT` · USO `C-USO` · APR `C-APR` · PRD sólo si el diagnóstico revela `C-PRD` → cambia el proceso (b.1) |
 | **INC** incidente en uso real | ENT | ENT(contención) · ARQ(diagnóstico) · CON · VER · ENT(reentrega) · **APR obligatorio** | SEG:condiciones `C-SEG` · USO `C-USO`. *Único tipo con APR obligatorio: un incidente sin aprendizaje registrado se repite* |
-| **INV** investigación | INV | INV | **CON:experimental** cuando la evidencia exija construir · PRD o ARQ según destino declarado · APR `C-APR` |
+| **INV** investigación | INV | INV | **CON:experimental** cuando la evidencia exija construir · PRD o ARQ según destino declarado · APR `C-APR` · **DOM `C-DOM` · SEG `C-SEG` · DIS `C-DIS`, cuando la materia del descubrimiento lo requiera** `[E4]` |
 | **DEU** deuda técnica | ARQ | ARQ · CON · VER | DOM/SEG:condiciones · ENT `C-ENT` · **USO `C-USO`** · APR `C-APR` |
 | **DEP** dependencia | PLT | **SEG:condiciones ⊳ CON** · VER | DOM:condiciones `C-DOM` · ENT `C-ENT` · ARQ si el cambio de versión altera contratos. *SEG antes de construir es obligatorio aquí (G28)* |
-| **AUD** auditoría de proyecto existente | derivado del encargo — ver abajo | INV | DOM `C-DOM` · SEG `C-SEG` · DIS/Reconstrucción `C-DIS` · PRD **sólo si produce una decisión de producto**. *Puede cerrar en APR sin pasar por PRD: su resultado legítimo es conocimiento e items nuevos* |
+| **AUD** auditoría de proyecto existente | derivado del encargo — ver abajo | INV | DOM `C-DOM` · SEG `C-SEG` · **DIS `C-DIS`** `[E4]` · **VER `C-VER`, productora del DICTAMEN** `[E4]` · PRD **sólo si produce una decisión de producto**. *Puede cerrar en APR sin pasar por PRD: su resultado legítimo es conocimiento e items nuevos* |
 | **DIR** cambio de dirección (G51) | según la regla de arriba | ARQ(radio de impacto) · capacidades propietarias de las decisiones afectadas · **OWNER en el punto de decisión** · registro de decisiones sustituidas · criterio de éxito · **creación de los items derivados** · **`VER:decisión`** | DIS `C-DIS` · `CON:experimental` sólo si hace falta un prototipo PARA DECIDIR · APR `C-APR`. **CON, VER, ENT y USO productivos NO son obligatorios** — ver abajo |
-| **SIS** evolución del sistema | SIS | SIS · CON · VER | **ENT obligatorio si modifica el runtime** (activación segura y reversible) · APR `C-APR`. Sujeto al freno de racha SIS (a.7) |
+| **SIS** evolución del sistema | SIS | SIS · CON · VER | **ENT obligatorio si modifica el runtime** (activación segura y reversible) · APR `C-APR` · **DOM:condiciones `C-DOM` · SEG:condiciones `C-SEG` · DIS `C-DIS`, cuando la materia del descubrimiento lo requiera** `[E4]`. Sujeto al freno de racha SIS (a.7) |
 
 ### `AUD` — el propietario global se deriva del encargo
 

@@ -98,7 +98,9 @@ FASE 2 · APLICACIÓN, EN ESTE ORDEN, Y CADA PASO DICE POR QUÉ
 FASE 3 · CIERRE DE F5
   12  comprobar A1…A7 con la evidencia prevista. A1 se comprueba sobre el censo DERIVADO
       del árbol, NO sobre la lista de este documento.
-  13  el Owner declara F5 cerrada. Por simetría con el inicio, es acto suyo.
+  13  el Owner declara F5 cerrada. LA RAZÓN NO ES LA SIMETRÍA CON EL INICIO —ésa era
+      una inferencia de este macrobloque, y se retiró—: es O23 §11, que lo fija
+      expresamente y añade las CUATRO cosas que hay que demostrar antes de hacerlo.
 
 FASE 4 · YA ES F6, Y F6 EXIGE F5 CERRADA
   14  materializar el contrato del control repo · alinear la grafía elegida · actualizar la

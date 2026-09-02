@@ -90,75 +90,61 @@ trazabilidad y los controles—, y está **ejecutado**, no pendiente.
 
 ---
 
-## 3 · La matriz
+## 3 · La matriz, después de `O23`
 
-**`D` = decisión del Owner necesaria.**
+**Las quince decisiones están resueltas.** Ninguna fila espera ya al Owner.
 
-### 3.1 · Las obligaciones de `F5`
+### 3.1 · Reparto de estados
 
-| id | entr. | presión | resultado exigido | dependencia | D | estado | decisión |
-|---|---|---|---|---|---|---|---|
-| `OB-01` | `F5-B` | `PN-1` | aprobar la disposición física del estado durable como sección `(g)`, o como enmienda que la sustituya | — | **SÍ** | **ELECCIÓN_REAL_DEL_OWNER** | `D-01` |
-| `OB-02` | `F5-C` | `PN-11` | un apartado de `(g)` con la tabla de propiedad del control repo y sus decisiones | `OB-01` | **SÍ** | **BLOQUEADO_POR_OTRA_DECISIÓN** | `D-01` |
-| `OB-03` | `F5-D` | `PN-19` | una sede que fije identidad de escritura separada, dónde vive la evidencia externa y quién la custodia | — | **SÍ** | **ELECCIÓN_REAL_DEL_OWNER** | `D-02` |
-| `OB-04` | `F5-G` | `PN-15` | decidir regla a regla qué se conserva, ajusta o sustituye de las cuatro reglas constitucionales | — | **SÍ** | **ELECCIÓN_REAL_DEL_OWNER** | `D-04` |
-| `OB-05` | `F5-A` | `PN-2` | reconocer la política de recurrencia como fuente de trabajo, con alcance, presupuesto y revocación | `OB-06` | **SÍ** | **ELECCIÓN_REAL_DEL_OWNER** | `D-05` |
-| `OB-06` | `F5-A` | `PN-3` | ajustar la regla de ejecución desatendida al alcance exacto que la política autoriza | `OB-05` | **SÍ** | **ELECCIÓN_REAL_DEL_OWNER** | `D-05` |
-| `OB-07` | `F5-A` | `PN-6` | confirmar qué significa «Integrada» | — | **SÍ** | BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN | `R-01` |
-| `OB-08` | `F5-A` | `PN-7` | distinguir lo publicado de lo especulativo en la reanudación | acopl. `OB-01` | **SÍ** | BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN | `R-01` |
-| `OB-09` | `F5-A` | `PN-9` | confirmar que consumir el resultado no redefine el dominio | — | **SÍ** | BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN | `R-01` |
-| `OB-10` | `F5-A` | `PN-10` | confirmar la lectura de «estado durable» de la iniciativa | — | **SÍ** | BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN | `R-01` |
-| `OB-11` | `F5-A` | `PN-8` | añadir verificación como condicional de la ruta de auditoría, o nombrar otro productor | `OB-12`·`OB-13` | **SÍ** | **ELECCIÓN_REAL_DEL_OWNER** | `D-06` |
-| `OB-12` | `F5-A` | `PN-13` | admitir dominio, seguridad y diseño en los dos procesos, o sacar el descubrimiento de ese paso | `OB-11`·`OB-13` | **SÍ** | **ELECCIÓN_REAL_DEL_OWNER** | `D-07` |
-| `OB-13` | `F5-A` | `PN-14` | sustituir el método por la capacidad en los dos puntos aprobados, o declarar la equivalencia | `OB-11`·`OB-12` | **SÍ** | **ELECCIÓN_REAL_DEL_OWNER** | `D-09` |
-| `OB-14` | `F5-A` | `PN-12` | confirmar que el mapa documental se satisface derivado, o exigirlo escrito | — | **SÍ** | **ELECCIÓN_REAL_DEL_OWNER** | `D-10` |
-| `OB-15` | `F5-A` | `PN-17` | declarar qué significa «registrar» al agotar reintentos, y quién es su productor | — | **SÍ** | **ELECCIÓN_REAL_DEL_OWNER** | `D-03` |
-| `OB-16` | `F5-E` | `PN-16` | declarar la grafía canónica del primer identificador | `OB-17` | **SÍ** | **ELECCIÓN_REAL_DEL_OWNER** | `D-08` |
-| `OB-17` | `F5-A` | `PN-18` | declarar la grafía canónica del segundo identificador | `OB-16` | **SÍ** | **ELECCIÓN_REAL_DEL_OWNER** | `D-08` |
-| `OB-18` | `F5-E` | — | corregir la cita a un predicado equivocado | — | **SÍ** | BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN | `R-02` |
-| `OB-19` | `F5-E` | — | renumerar una lista sin tocar una palabra de su texto | tras `OB-11`…`OB-13` | **SÍ** | BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN | `R-02` |
-| `OB-20` | `F5-E` | — | reanclar el recuento de marcas de remisión, sustituyendo el cardinal por su derivación | — | **SÍ** | BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN | `R-02` |
-| `OB-21` | `F5-E` | — | hacer coincidir el inventario de enmiendas vigentes entre sus sedes | — | **SÍ** | BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN | `R-02` |
-| `OB-22` | `F5-F` | — | la nota de vigencia, cubriendo las cuatro afirmaciones equivalentes | — | **SÍ** | BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN | `R-03` |
-| `OB-23` | `F5-A` | — | inscribir las respuestas en la sede canónica append-only del Owner | todas | **SÍ** | **BLOQUEADO_POR_OTRA_DECISIÓN** | `R-04` |
+```text
+APLICADO_POR_O23        24   la decisión existe, y su artefacto también
+EJECUTADO_EN_F5          7   trabajo que no necesitaba al Owner, hecho en esta fase
+DEUDA_DE_F6              3   frontera declarada: no pertenece a F5
+FUERA_DE_ALCANCE         2   ídem
+```
 
-### 3.1 bis · Obligaciones de `F5` que NO necesitan al Owner
+**El reparto NO se escribe: se deriva** con `python3 docs/f5/validar-f5.py`.
 
-**Su fase declarada es `F5` en la sede de deuda viva, y ninguna exige acto del Owner**: sus
-sedes son DERIVADAS, no material aprobado. **Ninguna se ejecuta en este macrobloque**, y la
-matriz declara fila a fila por qué.
+### 3.2 · Las obligaciones, por entregable
 
-| id | qué exige | propietario | estado | por qué NO se ejecuta aquí |
-|---|---|---|---|---|
-| `OB-24` | que una enumeración viva retire su lista y remita | `SIS` | DETERMINADO_Y_EJECUTABLE | el encargo ordena **mantener los diez hallazgos vivos en su estado**, y su cierre exige un acto competente que este macrobloque no emite |
-| `OB-25` | que una proyección conserve la precondición o remita | `SIS` | DETERMINADO_Y_EJECUTABLE | ídem |
-| `OB-26` | que un comando publicado reproduzca el resultado que anota | `SIS` | DETERMINADO_Y_EJECUTABLE | ídem |
-| `OB-27` | que dos campos vigentes retiren sus cardinales y remitan | `SIS` | DETERMINADO_Y_EJECUTABLE | ídem, y son instancias de la clase que **sólo un gate independiente posterior** puede cerrar |
-| `OB-28` | la **especificación** de la regla de alcance de rótulo y de la guarda de truncamiento | `SIS` en `F5` · `PLT` el instrumento en `F6` | DETERMINADO_Y_EJECUTABLE | ídem. Y redactar la especificación **no cierra el hallazgo**: declararlo cerrado por haberla redactado violaría `A6` |
-| `OB-29` | la **especificación** de la regla de clase contra recuentos copiados | `SIS` en `F5` · `PLT` el instrumento en `F6` | DETERMINADO_Y_EJECUTABLE | ídem. Su condición de cierre es expresamente ajena a `F5`: **barrer no es certificar** |
-| `OB-30` | la deuda del corpus canónico cuya fase declarada es `F5` | `SIS` | DETERMINADO_Y_EJECUTABLE | el encargo **lo prohíbe** salvo tres condiciones concurrentes, y ninguna se cumple respecto de los artefactos de este macrobloque |
-| `OB-31` | **quién cierra `F5`** — ninguna sede vigente lo declara | Owner | **ELECCIÓN_REAL_DEL_OWNER** | es `R-05`, y va al Owner |
+| entregable | filas | artefacto que lo completa |
+|---|---|---|
+| **`F5-A`** | `OB-05`…`OB-17`, `OB-23`…`OB-31` | [`E3`](../rediseno/a-ENMIENDA-E3-ARRANQUE-Y-POLITICA.md) · [`E4`](../rediseno/a-ENMIENDA-E4-COMPOSICION-DE-RUTAS.md) · [`E6`](../rediseno/a-ENMIENDA-E6-REANUDACION.md) · `O23` §7–§10 · el [acta de disposición](40-DISPOSICION-DE-LAS-PRESIONES.md) |
+| **`F5-B`** | `OB-01` | la sección [`(g)`](../rediseno/g-ESTADO-DURABLE-APROBADA.md), `g.0`–`g.18` |
+| **`F5-C`** | `OB-02` | `(g)` `g.14` |
+| **`F5-D`** | `OB-03` | `(g)` `g.15` |
+| **`F5-E`** | `OB-16`, `OB-18`…`OB-21` | [`E5`](../rediseno/a-ENMIENDA-E5-CORRECCIONES-EDITORIALES.md) · `O23` §8 |
+| **`F5-F`** | `OB-22` | la nota de vigencia en [el documento de trabajo del Owner](../owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md), en sus **cuatro** sedes |
+| **`F5-G`** | `OB-04` | `E3` `E3.1`, con **una fila por regla** |
 
-> **Por qué estas ocho filas existen, dicho contra el interés de quien escribe.** La primera
-> versión de esta matriz **no las tenía**, y afirmaba «una fila por obligación de `F5`». Era
-> falso: la sede de deuda viva asigna fase `F5` a todas ellas, y sin fila `F5` podría
-> cerrarse en verde dejándolas huérfanas entre una fase cerrada y otra que sólo tiene
-> asignado el instrumento. **Ninguna se declara superada, y ninguna se ha tocado.**
+### 3.3 · Las siete que no necesitaban al Owner, y qué cerraron de verdad
 
-### 3.2 · Las filas de frontera · lo que NO es de `F5`
+**Ésta es la columna que importa, y se dice sin adornarla.**
 
-**Se declaran para que la separación sea explícita y comprobable, y para que nadie las
-arrastre a `F5` por conveniencia.**
+| fila | qué se hizo | ¿cierra el hallazgo? |
+|---|---|---|
+| `OB-24` | la viñeta retiró su enumeración y remite | **CONDICIÓN CUMPLIDA.** El cierre lo adjudica su sede, que lo sigue publicando VIVO |
+| `OB-25` | la entrada recuperó la precondición | **CONDICIÓN CUMPLIDA**, ídem |
+| `OB-26` | el comando publicado reproduce lo que anota | **CONDICIÓN CUMPLIDA**, ídem |
+| `OB-27` | los tres campos retiraron sus cardinales | **NO.** Su instrumento es de `F6`, y son instancias de una clase que **sólo un gate independiente posterior** puede cerrar |
+| `OB-28` | la especificación, en [`50-…`](50-ESPECIFICACIONES-DE-INSTRUMENTO.md) `ESP-1` y `ESP-2` | **NO.** El instrumento es de `F6` |
+| `OB-29` | la especificación de clase, `ESP-3` | **NO, y su cierre no es de `F5` ni de `F6`** |
+| `OB-30` | el cardinal deja de anclar dos comandos publicados | **NO.** Las seis siguen registradas |
 
-| id | qué es | estado | por qué no es de `F5` |
-|---|---|---|---|
-| `OB-F1` | los externos con propietario y fase `F6`, y la mitad `F6` del que `F5` abre | **DEUDA_DE_F6** | su fase declarada es `F6`. `F5` toca la fuente; `F6` toca el derivado |
-| `OB-F2` | los diecinueve contratos de `F6`, uno de ellos bloqueado por dependencia | **DEUDA_DE_F6** | `F5` sólo emite la norma habilitante del bloqueado, que es `OB-03` |
-| `OB-F3` | la guarda de versión de intérprete, y la deuda que bloquea `F6` y la adopción | **DEUDA_DE_F6** | las dos son de `F6`, y **ninguna se declara superada aquí** |
-| `OB-F4` | las dos decisiones del Owner expresamente DEFERIDAS | **FUERA_DE_ALCANCE** | siguen deferidas y sin fase asignada. Este paquete **no las reabre** |
-| `OB-F5` | la deuda del corpus canónico cuya fase declarada es **`F6`** | **FUERA_DE_ALCANCE** | son de `F6`. Las tres cuya fase es `F5` **no están aquí**: tienen fila propia, `OB-30`. Ninguna se declara superada, y **no se abre tanda para corregirlas** |
+**NINGUNA de las siete cierra su hallazgo, y eso es lo correcto.** Tres CUMPLEN su condición
+de cierre y cuatro ni siquiera eso —su instrumento es de `F6`, o su cierre es de un gate—.
+**Cumplir una condición no es cerrar un hallazgo:** el cierre lo adjudica su sede, y declararlo
+aquí por haber cambiado un texto es exactamente lo que `A6` prohíbe.
 
----
+### 3.4 · Las filas de frontera · lo que NO es de `F5`
+
+| id | qué es | estado |
+|---|---|---|
+| `OB-F1` | los externos con fase `F6` | **DEUDA_DE_F6** |
+| `OB-F2` | los diecinueve contratos de `F6`, **ninguno implementado** | **DEUDA_DE_F6** |
+| `OB-F3` | la guarda de entorno y la deuda que bloquea la adopción | **DEUDA_DE_F6** |
+| `OB-F4` | las dos decisiones DEFERIDAS | **FUERA_DE_ALCANCE** |
+| `OB-F5` | la deuda del corpus canónico con fase `F6` | **FUERA_DE_ALCANCE** |
 
 ## 4 · Cobertura, y cómo se comprueba
 
@@ -194,9 +180,10 @@ FILAS SIN UBICAR          ninguna. El vocabulario de estados es cerrado. Control
 ## 5 · Lo que esta matriz NO afirma
 
 ```text
-NO AFIRMA   que ninguna presión esté resuelta. NINGUNA lo está
-NO AFIRMA   que ninguna enmienda esté redactada como norma. Hay BORRADORES, no enmiendas
-NO AFIRMA   que el Owner haya respondido nada
+NO AFIRMA   que ningún hallazgo vivo esté cerrado. Tres CUMPLEN su condición de cierre, y
+            el cierre lo adjudica su sede, no esta matriz
+NO AFIRMA   que ninguna norma esté IMPLEMENTADA. `F5` emite norma; construir es `F6`
+NO AFIRMA   que `F5` esté cerrada. Su cierre exige un acto posterior y expreso del Owner
 NO AFIRMA   que ningún hallazgo vivo esté superado
 NO AFIRMA   que nada de F6 esté construido, ejecutado ni certificado
 ```

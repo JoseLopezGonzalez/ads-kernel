@@ -663,3 +663,104 @@ implemente y certifique sus contratos.
 > **Y no levanta la OPCIÓN C para el método de corrección iterativa**: lo que abre es una vía
 > de VERIFICACIÓN, no una tanda más de corrección general. El alcance de la candidata delta
 > lo fija §2, y fuera de él no hay nada que aplicar.
+
+---
+
+# `O23` · DECISIONES NORMATIVAS DE `F5` Y REGLAS PARA COMPLETARLA
+
+**Fecha:** 2026-09-02  
+**Autoridad:** Owner  
+**Estado:** VIGENTE
+
+## 1 · Objeto
+
+Esta resolución registra conjuntamente las decisiones que requiere `F5` para completar `F5-A`–`F5-G`.
+
+`F4c` permanece CERRADA. `F5` está INICIADA y EN CURSO. `F6` permanece NO INICIADA. PesquerApp permanece BLOQUEADA.
+
+Esta resolución no declara `F5` cerrada, no implementa contratos de `F6` y no autoriza el inicio de PesquerApp.
+
+## 2 · Sección normativa `(g)`
+
+Se adopta una sección `(g)` normativa breve y un contrato derivado que `F6` deberá implementar.
+
+La sección `(g)` fija los componentes obligatorios y las invariantes observables del estado durable: atomicidad, durabilidad, integridad, concurrencia, diario, recuperación, reconciliación, versionado, migración, autoridad de escritura, auditabilidad, gobierno Git del control repo y frontera con la raíz externa de confianza.
+
+Su perímetro incluye íntegramente las materias que las fuentes vigentes reservaron a `(g)` y que `F5` ha reconstruido en `B-01`.
+
+El contrato derivado fija rutas, nombres de fichero, serialización, algoritmos, bloqueos, herramientas y mecanismos concretos. Estos detalles podrán evolucionar sin otra decisión del Owner si preservan las invariantes normativas, mantienen compatibilidad o migración explícita y superan las pruebas del contrato.
+
+## 3 · Raíz externa de confianza
+
+La norma de la raíz externa de confianza forma parte de `(g)` y tendrá un contrato derivado propio para `F6`.
+
+Debe ejecutarse fuera del repositorio verificado, usar una identidad sin permiso de escritura sobre él, recibir desde fuera la política de admisión, fallar de forma cerrada, producir evidencia trazable y bloquear PesquerApp mientras no esté implementada y certificada.
+
+La tecnología, el despliegue, las claves, las rutas y los mecanismos concretos pertenecen al contrato de `F6`.
+
+## 4 · Reconciliación pendiente
+
+Al agotarse los reintentos se escribirá un registro operativo auxiliar durable, separado del estado canónico y del diario canónico.
+
+Ese registro vive en el control repo bajo administración del runtime, sobrevive a reinicios, es append-only o equivalentemente auditable e identifica producto, repositorio, item, intento, causa y momento.
+
+Su existencia permite deducir inequívocamente `reconciliacion-pendiente`. No modifica por sí misma el estado canónico y sólo se retira mediante una transición explícita y auditable de reconciliación.
+
+Su ruta y serialización concretas pertenecen al contrato derivado de `F6`.
+
+## 5 · Gate constitucional y circuito de arranque
+
+Se conserva el gate constitucional de arranque. El circuito nuevo queda subordinado a él. Permanecen vigentes su plazo, sus diez entregables y sus cuatro prohibiciones.
+
+## 6 · Nacimiento del trabajo por política
+
+Se reconoce una tercera vía de nacimiento del trabajo: apertura automática por una política previamente aprobada.
+
+No exige una petición individual del Owner, pero sí política vigente, trazabilidad, límites y posibilidad de suspensión.
+
+## 7 · Participantes
+
+Verificación es participante condicional y productora del dictamen en la ruta de auditoría.
+
+Dominio, Seguridad y Diseño son participantes condicionales en la puesta en marcha de un producto nuevo cuando la materia del descubrimiento requiera sus capacidades.
+
+Cuando una tabla de participación haya colocado un método donde corresponde una capacidad, se sustituirá por la capacidad competente y su condición de participación.
+
+## 8 · Grafía canónica
+
+Para los dos identificadores sometidos a decisión en `D-08`, manda la grafía con tilde de la fuente aprobada.
+
+Los artefactos derivados y la implementación deberán alinearse con ella.
+
+## 9 · Mapa documental
+
+El mapa documental se satisface mediante una derivación mecánica reproducible. No se crea un mapa escrito que dependa de mantenimiento manual.
+
+## 10 · Ratificaciones y correcciones determinadas
+
+Se aprueban:
+
+- las cuatro lecturas y la retirada del borrador `B-05`, incluida la lectura propuesta para el estado durable de la iniciativa;
+- la checklist editorial `B-09`;
+- la nota de vigencia `B-10`.
+
+No se reabre ninguna de esas lecturas.
+
+## 11 · Aplicación y cierre de `F5`
+
+Las decisiones de esta resolución deberán aplicarse mediante las enmiendas, contratos normativos y proyecciones que corresponda, conservando el material aprobado anterior y su trazabilidad.
+
+`F5` sólo podrá declararse cerrada mediante un acto posterior y expreso del Owner, después de demostrar que:
+
+- `F5-A`–`F5-G` están completos;
+- `A1`–`A7` están satisfechos;
+- no queda ningún borrador presentado como aprobado sin estarlo;
+- la validación final es satisfactoria.
+
+Este texto no inicia `F6`, no declara implementados sus contratos y no desbloquea PesquerApp.
+
+## 12 · Alcance
+
+Esta resolución resuelve conjuntamente `D-01`–`D-10` y `R-01`–`R-05` del paquete de decisiones de `F5`.
+
+La opción elegida para `R-04` es la inscripción directa de este texto por el Owner. La opción elegida para `R-05` es el cierre posterior mediante acto expreso del Owner.

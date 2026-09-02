@@ -64,6 +64,10 @@ kernel/operativo/  el CONTENIDO OPERATIVO construido sobre (a) y (b).
 | — | [`docs/f5/10-MATRIZ-CANONICA-DE-F5.md`](../f5/10-MATRIZ-CANONICA-DE-F5.md) | una fila por obligación de `F5`, con su estado inequívoco |
 | — | [`docs/f5/20-PAQUETE-DE-DECISIONES-DEL-OWNER.md`](../f5/20-PAQUETE-DE-DECISIONES-DEL-OWNER.md) | **el único paquete de decisiones**, para responder de una vez |
 | — | [`docs/f5/30-TRAZABILIDAD-Y-ORDEN-DE-APLICACION.md`](../f5/30-TRAZABILIDAD-Y-ORDEN-DE-APLICACION.md) | de la presión a la prueba, y el orden exacto de aplicación |
+| — | [`docs/f5/40-DISPOSICION-DE-LAS-PRESIONES.md`](../f5/40-DISPOSICION-DE-LAS-PRESIONES.md) | el acta: una fila por presión, con el acto que la cierra |
+| — | [`docs/f5/50-ESPECIFICACIONES-DE-INSTRUMENTO.md`](../f5/50-ESPECIFICACIONES-DE-INSTRUMENTO.md) | la mitad de `F5` de tres hallazgos cuyo instrumento es de `F6` |
+| — | [`docs/f5/60-ABSORCION-DE-LOS-BORRADORES.md`](../f5/60-ABSORCION-DE-LOS-BORRADORES.md) | qué artefacto absorbió cada borrador, y qué NO se absorbió |
+| — | [`docs/f5/70-DEMOSTRACION-DE-A1-A7.md`](../f5/70-DEMOSTRACION-DE-A1-A7.md) | los siete criterios, uno por uno, con su comando |
 | — | [`docs/f5/MATRIZ-F5.yml`](../f5/MATRIZ-F5.yml) | la matriz en forma de datos |
 | — | [`docs/f5/validar-f5.py`](../f5/validar-f5.py) | los controles sobre la matriz y los borradores |
 | — | [`docs/f5/borradores/`](../f5/borradores/) | los borradores de `F5`, **todos NO APROBADOS** |
