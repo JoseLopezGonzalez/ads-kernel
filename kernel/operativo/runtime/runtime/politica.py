@@ -20,6 +20,24 @@ LAS CUATRO CLASES, y por qué no son la misma cosa con distinto texto:
                           `clasificar` porque no la produce el adaptador: la produce la
                           relectura del lease, y por eso vive en `lease.exigir_titularidad`.
 
+Y una QUINTA, que la auditoría independiente obligó a nombrar:
+
+    AMBIGUO               no se sabe si el efecto se aplicó. El adaptador encontró un recibo
+                          de INTENCIÓN abierto y sin cerrar: empezó, y no consta que
+                          terminara. NO es completado, NO es reintentable y NO es
+                          cancelación. El paquete queda `agotado` y se abre el registro de
+                          `g.9` nombrando la ambigüedad.
+
+DECISIÓN · con un proceso externo cualquiera no se puede prometer «exactamente una vez»
+    Entre lanzar el trabajo y anotar que se lanzó hay siempre una ventana; un corte dentro
+    de ella deja un estado que desde fuera no se puede leer. Alternativas ante esa ventana:
+    (a) reintentar, y arriesgarse a aplicar el efecto dos veces; (b) darlo por completado, y
+    arriesgarse a dar por hecho algo que no ocurrió; (c) DETECTARLA y escalarla.
+    Se elige (c). (a) y (b) son decisiones de negocio disfrazadas de detalle técnico, y las
+    dos las toma el runtime a espaldas de quien responde del trabajo. Lo que sí se puede
+    garantizar —y es lo que se garantiza— es que la ambigüedad **se detecte en vez de
+    duplicarse en silencio**, y que la salga quien tiene autoridad para decidirla.
+
 DECISIÓN · el tope por defecto es TRES, y viene de `a.9`
     §7.3 de `11-ARQ`: «REINTENTO sólo para operaciones idempotentes, y con tope. Un
     reintento sin tope es un livelock, y a.9 ya fijó el precedente: tres». No se inventa
@@ -44,6 +62,7 @@ DECISIÓN · agotar NO toca más el estado canónico que el propio paso a `agota
 from __future__ import annotations
 
 from .errores import (
+    EjecucionAmbigua,
     EjecucionCancelada,
     EjecucionDefinitiva,
     EjecucionFallida,
@@ -57,13 +76,16 @@ CLASE_COMPLETADO = "completado"
 CLASE_REINTENTABLE = "reintentable"
 CLASE_DEFINITIVO = "definitivo"
 CLASE_CANCELACION = "cancelacion"
+CLASE_AMBIGUA = "ambigua"
 
-CLASES = (CLASE_COMPLETADO, CLASE_REINTENTABLE, CLASE_DEFINITIVO, CLASE_CANCELACION)
+CLASES = (CLASE_COMPLETADO, CLASE_REINTENTABLE, CLASE_DEFINITIVO, CLASE_CANCELACION,
+          CLASE_AMBIGUA)
 
-# Lo que el §4.4 fija que devuelve `Adaptador.ejecutar`.
+# Lo que el §4.4 fija que devuelve `Adaptador.ejecutar`. Es también, y sobre todo, la LISTA
+# BLANCA de lo que puede llegar al estado canónico: ver `durable()`.
 CLAVES_DE_RESULTADO = ("estado", "codigo", "salida", "detalle", "reintentable", "efecto",
                        "repetido")
-ESTADOS_DE_RESULTADO = ("completado", "fallido", "cancelado", "timeout")
+ESTADOS_DE_RESULTADO = ("completado", "fallido", "cancelado", "timeout", "ambiguo")
 
 # Decisiones que `decidir` puede devolver, y ninguna otra palabra vale.
 DECISION_CERRAR = "cerrar"
@@ -107,6 +129,29 @@ def comprobar_resultado(resultado, *, efecto, paquete):
     return resultado
 
 
+def durable(resultado):
+    """La parte del resultado que PUEDE escribirse en el estado canónico. LISTA BLANCA.
+
+    Defecto que previene, y lo encontró la auditoría independiente: el adaptador de proceso
+    real devuelve `"pid": 1700531` en su resultado, y el resultado entero se copiaba al
+    paquete. Un pid en `canonico/paquetes/<id>.json` es identidad de proceso en un byte
+    durable, y `I-g3` lo prohíbe sin matices.
+
+    DECISIÓN · lista BLANCA de lo que entra, y no lista negra de lo que no
+        Alternativas: (a) borrar las claves conocidas como volátiles —`pid`, `duracion`,
+        `inicio`, `fin`—; (b) conservar sólo las claves que el §4.4 declara.
+        Se elige (b). Una lista negra envieja con el primer campo nuevo que añada cualquier
+        adaptador: el día que uno devuelva `host`, `reintento_numero` o `sesion`, entrará
+        solo y en silencio, y el defecto reaparecerá exactamente donde ya estuvo. La lista
+        blanca es el contrato del §4.4 y no crece por accidente; un adaptador que quiera
+        publicar un campo nuevo tendrá que pasar por el contrato, que es donde se decide.
+
+    Lo que se descarta NO se pierde: sigue en la evidencia del adaptador, que vive en su
+    espacio de trabajo y fuera del árbol verificado, que es su sitio.
+    """
+    return {clave: resultado[clave] for clave in CLAVES_DE_RESULTADO}
+
+
 def clasificar(resultado):
     """Devuelve `(clase, error)` — el error es `None` cuando la ejecución fue bien.
 
@@ -120,6 +165,12 @@ def clasificar(resultado):
     if estado == "cancelado":
         return CLASE_CANCELACION, EjecucionCancelada(
             "el adaptador declara la ejecución cancelada" + (": " + detalle if detalle else ""),
+        )
+    if estado == "ambiguo":
+        return CLASE_AMBIGUA, EjecucionAmbigua(
+            "el adaptador NO PUEDE AFIRMAR si el efecto se aplicó"
+            + (": " + detalle if detalle else "")
+            + "; la salida la decide la autoridad por `g.9`",
         )
     if estado == "timeout":
         return CLASE_REINTENTABLE, TiempoAgotado(
@@ -143,7 +194,12 @@ def estado_de_paquete(clase):
         return "completado"
     if clase == CLASE_CANCELACION:
         return "cancelado"
-    if clase in (CLASE_REINTENTABLE, CLASE_DEFINITIVO):
+    if clase in (CLASE_REINTENTABLE, CLASE_DEFINITIVO, CLASE_AMBIGUA):
+        # `ambigua` también aterriza en `fallido`, y desde ahí la política la manda a
+        # `agotado`. No es que se dé por fallida: es que `fallido` → `agotado` es el único
+        # camino de la tabla del §4.2 que lleva a donde tiene que llegar, que es a manos de
+        # la autoridad. El paquete conserva su resultado con `estado: "ambiguo"`, y la
+        # causa del registro de `g.9` lo nombra.
         return "fallido"
     raise RuntimeInconsistente("clase de fallo desconocida: " + repr(clase))
 
@@ -164,6 +220,10 @@ def decidir(clase, paquete):
     if clase == CLASE_DEFINITIVO:
         # Sólo se reintenta el fallo REINTENTABLE (§4.2). Quedar intentos no cambia nada:
         # repetir una operación que ya se sabe imposible es gastar el tope por nada.
+        return DECISION_AGOTAR
+    if clase == CLASE_AMBIGUA:
+        # NUNCA se reintenta, queden los intentos que queden: reintentar es exactamente el
+        # riesgo de aplicar dos veces un efecto que quizá ya se aplicó.
         return DECISION_AGOTAR
     if clase == CLASE_REINTENTABLE:
         return DECISION_REINTENTAR if quedan_intentos(paquete) else DECISION_AGOTAR

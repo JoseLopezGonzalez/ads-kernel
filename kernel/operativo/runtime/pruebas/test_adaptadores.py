@@ -20,6 +20,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
@@ -277,8 +278,62 @@ class ProcesoLocalReal(unittest.TestCase):
                                 limite_segundos=20)
         recibo = self.adaptador.recibo("ef-limpio")
         self.assertEqual(sorted(recibo),
-                         ["codigo", "detalle", "efecto", "estado", "reintentable", "salida"])
+                         ["cerrado", "codigo", "detalle", "efecto", "estado",
+                          "reintentable", "salida"])
+        self.assertTrue(recibo["cerrado"])
         self.assertNotIn("pid", recibo)
+
+    def test_el_recibo_se_abre_ANTES_de_ejecutar(self):
+        """T191 · Defecto que previene: no dejar rastro de un efecto que ya se lanzó."""
+        visto = {}
+
+        def espia(entrada):
+            visto["recibo"] = self.adaptador.recibo("ef-abierto")
+
+        self.adaptador.ejecutar(self._orden("echo x"), efecto="ef-abierto",
+                                limite_segundos=20, progreso=espia)
+        self.assertIsNotNone(visto["recibo"], "durante la ejecución YA hay recibo")
+        self.assertEqual(visto["recibo"]["estado"], "iniciado")
+        self.assertFalse(visto["recibo"]["cerrado"])
+        self.assertTrue(self.adaptador.recibo("ef-abierto")["cerrado"])
+
+    def test_un_recibo_ABIERTO_da_ambiguo_y_no_vuelve_a_ejecutar(self):
+        """T191 · Defecto que previene: aplicar un efecto DOS VECES en silencio."""
+        testigo = os.path.join(self.directorio, "marcas.txt")
+        orden = self._orden("echo MARCA >> " + json.dumps(testigo))
+        # Se simula lo que deja una caída: un recibo abierto y sin cerrar.
+        self.adaptador._abrir_recibo("ef-caido")
+        resultado = self.adaptador.ejecutar(orden, efecto="ef-caido", limite_segundos=20)
+        self.assertEqual(resultado["estado"], "ambiguo")
+        self.assertTrue(resultado["repetido"])
+        self.assertFalse(resultado["reintentable"])
+        self.assertIn("podría duplicar", resultado["detalle"])
+        self.assertFalse(os.path.exists(testigo), "NO se volvió a ejecutar")
+
+    def test_los_tres_puntos_de_fallo_estan_declarados_y_se_llaman(self):
+        """T191 · Defecto que previene: declarar un punto de fallo y no llamarlo nunca."""
+        import ast
+        ruta = os.path.join(RAIZ_RUNTIME, "adaptadores", "proceso.py")
+        with open(ruta, "rb") as manejador:
+            arbol = ast.parse(manejador.read(), filename="proceso.py")
+        llamados = set()
+        for nodo in ast.walk(arbol):
+            if (isinstance(nodo, ast.Call) and isinstance(nodo.func, ast.Name)
+                    and nodo.func.id == "_punto" and nodo.args
+                    and isinstance(nodo.args[0], ast.Constant)):
+                llamados.add(nodo.args[0].value)
+        self.assertEqual(llamados, set(adaptadores.PUNTOS_DE_FALLO),
+                         "el censo se DERIVA del código: ningún punto sin llamar")
+
+    def test_un_punto_de_fallo_mal_escrito_es_un_error_y_no_un_silencio(self):
+        """T191 · Defecto que previene: una errata que hace pasar la prueba sin cortar nada."""
+        os.environ[adaptadores.VARIABLE_DE_FALLO] = "punto-que-no-existe"
+        try:
+            with self.assertRaises(adaptadores.OrdenInvalida):
+                self.adaptador.ejecutar(self._orden("echo x"), efecto="ef-errata",
+                                        limite_segundos=5)
+        finally:
+            os.environ.pop(adaptadores.VARIABLE_DE_FALLO, None)
 
     def test_una_orden_sin_argumentos_no_se_ejecuta(self):
         """T191 · Defecto que previene: lanzar «algo» cuando no se dijo qué."""
@@ -294,6 +349,132 @@ class ProcesoLocalReal(unittest.TestCase):
                 with self.assertRaises(adaptadores.OrdenInvalida):
                     self.adaptador.ejecutar(self._orden("echo x"), efecto=efecto,
                                             limite_segundos=5)
+
+
+# ===========================================================================
+#  La ventana entre EJECUTAR y CERRAR EL RECIBO, con corte REAL
+# ===========================================================================
+_GUION_CAIDA = """
+import os, sys
+sys.path.insert(0, {runtime!r})
+os.environ["ADS_ADAPTADOR_FALLO"] = "despues-de-ejecutar-antes-de-cerrar-el-recibo"
+import adaptadores
+a = adaptadores.AdaptadorDeProcesoLocal({espacio!r})
+a.ejecutar({{"operacion": "ejecutar",
+            "argumentos": ["/bin/sh", "-c", "echo MARCA >> " + {testigo!r}]}},
+           efecto="ef-corte", limite_segundos=20)
+sys.stdout.write("NO DEBERIA LLEGAR\\n")
+"""
+
+
+class CaidaEntreEjecutarYCerrar(unittest.TestCase):
+    """El defecto MEDIDO: el efecto se aplicaba DOS VECES tras un corte, en silencio."""
+
+    def setUp(self):
+        self.directorio = tempfile.mkdtemp(prefix="ads-corte-")
+        self.addCleanup(shutil.rmtree, self.directorio, True)
+        self.espacio = os.path.join(self.directorio, "espacio")
+        os.makedirs(self.espacio)
+        self.testigo = os.path.join(self.directorio, "marcas.txt")
+
+    def _marcas(self):
+        if not os.path.exists(self.testigo):
+            return 0
+        with open(self.testigo, "rb") as manejador:
+            return manejador.read().count(b"MARCA")
+
+    def test_tras_el_corte_la_segunda_invocacion_da_ambiguo_y_no_duplica(self):
+        """T191 · Defecto que previene: aplicar DOS VECES un efecto tras morir a media pasada.
+
+        Antes: `1a pasada exit=-9, recibos: []` → al reiniciar, `"repetido": false` y DOS
+        marcas en disco. Ahora el recibo se abre antes de lanzar, el corte lo deja ABIERTO, y
+        la segunda invocación devuelve `ambiguo` sin volver a ejecutar. Una marca, no dos.
+        """
+        guion = os.path.join(self.directorio, "caida.py")
+        with open(guion, "w", encoding="utf-8") as manejador:
+            manejador.write(_GUION_CAIDA.format(
+                runtime=RAIZ_RUNTIME, espacio=self.espacio, testigo=self.testigo))
+        proceso = subprocess.run([sys.executable, guion], stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE, check=False)
+        self.assertEqual(proceso.returncode, 70, "el corte tiene que ser REAL")
+        self.assertEqual(self._marcas(), 1, "la tarea se ejecutó una vez antes del corte")
+
+        adaptador = adaptadores.AdaptadorDeProcesoLocal(self.espacio)
+        recibo = adaptador.recibo("ef-corte")
+        self.assertIsNotNone(recibo, "el corte dejó el recibo ABIERTO")
+        self.assertEqual(recibo["estado"], "iniciado")
+        self.assertFalse(recibo["cerrado"])
+
+        resultado = adaptador.ejecutar(
+            {"operacion": "ejecutar",
+             "argumentos": ["/bin/sh", "-c", "echo MARCA >> " + self.testigo]},
+            efecto="ef-corte", limite_segundos=20,
+        )
+        self.assertEqual(resultado["estado"], "ambiguo")
+        self.assertTrue(resultado["repetido"])
+        self.assertFalse(resultado["reintentable"])
+        self.assertEqual(self._marcas(), 1,
+                         "SIGUE habiendo UNA marca: no se volvió a ejecutar")
+
+    def test_sin_la_variable_el_punto_de_fallo_no_hace_nada(self):
+        """T191 · Control POSITIVO: el aparato de corte no puede afectar a la vía normal."""
+        self.assertNotIn(adaptadores.VARIABLE_DE_FALLO, os.environ)
+        adaptador = adaptadores.AdaptadorDeProcesoLocal(self.espacio)
+        resultado = adaptador.ejecutar(
+            {"operacion": "ejecutar",
+             "argumentos": ["/bin/sh", "-c", "echo MARCA >> " + self.testigo]},
+            efecto="ef-normal", limite_segundos=20,
+        )
+        self.assertEqual(resultado["estado"], "completado")
+        self.assertEqual(self._marcas(), 1)
+        self.assertTrue(adaptador.recibo("ef-normal")["cerrado"])
+
+
+# ===========================================================================
+#  LÍMITE DECLARADO · `setsid` escapa al `killpg`, y se MIDE en vez de prometerse
+# ===========================================================================
+class LimiteDeLaSenalDeGrupo(unittest.TestCase):
+
+    def setUp(self):
+        self.directorio = tempfile.mkdtemp(prefix="ads-limite-")
+        self.addCleanup(shutil.rmtree, self.directorio, True)
+        self.adaptador = adaptadores.AdaptadorDeProcesoLocal(self.directorio)
+
+    def test_un_descendiente_que_hace_setsid_ESCAPA_y_se_declara(self):
+        """T191 · Límite DECLARADO: `killpg` no alcanza a quien se sale del grupo.
+
+        No es una prueba de que algo funcione: es la MEDICIÓN de un techo. `os.killpg` actúa
+        sobre un grupo de procesos, y un descendiente que llama a `setsid()` deja de estar en
+        él. Contenerlo exige un cgroup v2 con `cgroup.kill` o un espacio de nombres de PID, y
+        eso es de otro corte. Se mide y se dice, porque una promesa que la primera embestida
+        desmonta es peor que una limitación declarada.
+        """
+        if shutil.which("setsid") is None:
+            self.skipTest("`setsid` no está disponible en este entorno")
+        recogido = []
+        resultado = self.adaptador.ejecutar(
+            {"operacion": "ejecutar",
+             "argumentos": ["/bin/sh", "-c",
+                            "setsid sleep 300 >/dev/null 2>&1 & echo $!; sleep 300"]},
+            efecto="ef-fugado", limite_segundos=1.0, progreso=recogido.append,
+        )
+        self.assertEqual(resultado["estado"], "timeout")
+        limite = time.monotonic() + 5
+        while _vivo(resultado["pid"]) and time.monotonic() < limite:
+            time.sleep(0.05)
+        self.assertFalse(_vivo(resultado["pid"]),
+                         "lo que SÍ se garantiza: el grupo entero muere")
+        # Y lo que NO: el que se sacó del grupo puede seguir vivo. Se limpia siempre.
+        fugado = int(recogido[0]["texto"].strip())
+        escapo = _vivo(fugado)
+        if escapo:
+            try:
+                os.kill(fugado, 9)
+            except ProcessLookupError:
+                escapo = False
+        # La ficha del adaptador DECLARA este límite: la afirmación y la medición coinciden.
+        self.assertIn("setsid", self.adaptador.ficha()["cancelacion"])
+        self.assertIn("ESCAPA", self.adaptador.ficha()["cancelacion"])
 
 
 # ===========================================================================

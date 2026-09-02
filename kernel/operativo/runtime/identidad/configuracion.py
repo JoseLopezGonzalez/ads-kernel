@@ -116,24 +116,50 @@ class ConfiguracionDeConfianza:
         return {clave: salida[clave] for clave in CAMPOS_PUBLICABLES if clave in salida}
 
 
-def _resolver(ruta):
+def _dentro(candidata, arbol):
+    return candidata == arbol or candidata.startswith(arbol + os.sep)
+
+
+def _resolver_por_el_directorio(ruta):
+    """Resuelve el DIRECTORIO y conserva el nombre: ve un enlace colocado DENTRO."""
     absoluta = os.path.abspath(ruta)
     directorio = os.path.dirname(absoluta) or "."
     return os.path.join(os.path.realpath(directorio), os.path.basename(absoluta))
 
 
 def exigir_fuera_del_arbol(ruta, arbol_verificado):
-    """`O25` §3: la configuración NO puede vivir dentro de lo que gobierna."""
+    """`O25` §3: la configuración NO puede vivir dentro de lo que gobierna.
+
+    DECISIÓN · se resuelven DOS caminos, y basta que UNO caiga dentro para rechazar
+        Alternativas: (a) resolver sólo el directorio y conservar el nombre; (b) resolver
+        sólo el fichero con `realpath`; (c) las dos, y rechazar si cualquiera cae dentro.
+        Se elige (c), y las dos hacen falta porque atrapan ataques opuestos.
+
+          · Sólo (a) —lo que había— deja pasar un ENLACE COLOCADO FUERA QUE APUNTA DENTRO:
+            la ruta parece externa, el directorio resuelto es externo, y el fichero que se
+            acaba leyendo es del árbol. Exige escribir fuera, luego no es escalada desde
+            dentro, pero es exactamente la guarda que el contrato promete y no cumplía.
+          · Sólo (b) deja pasar un ENLACE COLOCADO DENTRO QUE APUNTA FUERA: el fichero
+            leído es externo, pero el enlace lo controla el repositorio, luego el
+            repositorio elige qué configuración se carga, que es lo que `O25` §3 prohíbe.
+
+        Con las dos, y con `abspath` normalizando los `..`, la travesía tampoco cuela.
+    """
     arbol = os.path.realpath(arbol_verificado)
-    resuelta = _resolver(ruta)
-    if resuelta == arbol or resuelta.startswith(arbol + os.sep):
-        raise ConfiguracionDentroDelArbol(
-            "la configuración externa de confianza está DENTRO del árbol verificado. Si "
-            "viviera ahí, el repositorio decidiría por sí mismo qué identidad se acepta, y "
-            "`O25` §3 lo prohíbe",
-            ruta=os.path.basename(resuelta),
-        )
-    return resuelta
+    por_directorio = _resolver_por_el_directorio(ruta)
+    del_fichero = os.path.realpath(ruta)
+    for candidata, causa in ((por_directorio, "la ruta declarada apunta dentro del árbol"),
+                             (del_fichero,
+                              "la ruta declarada parece externa pero el fichero que se "
+                              "acaba leyendo está DENTRO del árbol")):
+        if _dentro(candidata, arbol):
+            raise ConfiguracionDentroDelArbol(
+                "la configuración externa de confianza está DENTRO del árbol verificado: "
+                + causa + ". Si viviera ahí, el repositorio decidiría por sí mismo qué "
+                "identidad se acepta, y `O25` §3 lo prohíbe",
+                ruta=os.path.basename(candidata),
+            )
+    return del_fichero if os.path.exists(del_fichero) else por_directorio
 
 
 def cargar(ruta, *, arbol_verificado):

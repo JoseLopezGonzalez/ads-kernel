@@ -26,8 +26,8 @@ class Adaptador:
                  progreso=None, cancelacion=None) -> dict
 ```
 
-El resultado declara `estado` —`completado` · `fallido` · `cancelado` · `timeout`—, `codigo`,
-`salida`, `detalle`, `reintentable`, `efecto` y `repetido`. La **ficha** declara los trece
+El resultado declara `estado` —`completado` · `fallido` · `cancelado` · `timeout` ·
+**`ambiguo`**—, `codigo`, `salida`, `detalle`, `reintentable`, `efecto` y `repetido`. La **ficha** declara los trece
 campos de `§3.4`: identificador · versión · capacidades · operaciones · límites · timeout ·
 cancelación · idempotencia · forma de progreso · resultado · errores · evidencia ·
 compatibilidad.
@@ -42,11 +42,34 @@ EJECUTA        un `subprocess` de verdad, en su PROPIO GRUPO de procesos
 PROGRESA       cada línea del proceso llama al invocable `progreso`
 FALLA          código distinto de cero, distinguido de la muerte abrupta
 EXCEDE         al vencer el límite mata el GRUPO: `SIGTERM`, espera, y `SIGKILL` si sigue
-               vivo. Se comprueba con `os.kill(pid, 0)` que el hijo Y EL NIETO ya no están
+               vivo. Se comprueba con `os.kill(pid, 0)` que el hijo, el nieto y el bisnieto
+               ya no están. **NO alcanza a un descendiente que se saque del grupo con
+               `setsid`**, y se dice en vez de prometerlo: contenerlo exige `cgroups` o
+               espacios de nombres, y es de otro corte
 CANCELA        igual de real: mata, no pide por favor
-ES IDEMPOTENTE recibo durable por `efecto` en SU espacio de trabajo. Una segunda llamada con
-               el mismo `efecto` devuelve `repetido: true` SIN volver a ejecutar
+ES IDEMPOTENTE recibo durable por `efecto` en SU espacio de trabajo, que se ABRE antes de
+               lanzar y se CIERRA después. Una segunda llamada con un recibo CERRADO devuelve
+               `repetido: true` con su resultado, SIN volver a ejecutar
+ES HONESTO     una segunda llamada con un recibo ABIERTO —el proceso murió entre ejecutar y
+               cerrarlo— devuelve `ambiguo`, y tampoco ejecuta
 ```
+
+> **La ventana que NO se cierra, y por qué se declara en vez de prometerse cerrada.** Entre
+> ejecutar la tarea y escribir su recibo hay un instante en el que una caída deja el efecto
+> aplicado y sin rastro. **Con un proceso externo cualquiera no existe «exactamente una
+> vez»**: lo que sí existe es no duplicar en silencio. Por eso el recibo se abre ANTES, y una
+> segunda invocación que lo encuentre sin cerrar **no ejecuta y devuelve `ambiguo`**. El
+> runtime no lo trata como completado ni como reintentable: abre la reconciliación de `g.9` y
+> **la autoridad decide**. Está registrado como `FD-6`, y tiene su punto de fallo declarado
+> —`despues-de-ejecutar-antes-de-cerrar-el-recibo`, variable `ADS_ADAPTADOR_FALLO`— con una
+> prueba que lo mata de verdad y cuenta las marcas en disco.
+>
+> **Y una asimetría deliberada:** un `timeout` y una cancelación **retiran** el recibo en vez
+> de cerrarlo, porque ahí el adaptador SOBREVIVIÓ y presenció la terminación: puede declarar
+> el desenlace, y el timeout conserva su condición de reintentable. Un adaptador que muere no
+> puede declarar nada, y por eso su recibo abierto significa `ambiguo`. El residuo se dice:
+> un timeout retirado y reintentado **puede** duplicar si la tarea alcanzó a aplicarse antes
+> de morir.
 
 > **Por qué el recibo NO vive en el estado canónico.** `g.12` declara **un solo ejecutor** de
 > mutaciones canónicas, y es el runtime. El acuse del efecto lo escribe él, en la misma

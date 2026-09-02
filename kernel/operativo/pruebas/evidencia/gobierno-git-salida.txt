@@ -16,6 +16,8 @@ test_el_entorno_de_git_es_hermetico (__main__.CanalUnico.test_el_entorno_de_git_
 T187 · Defecto que previene: un veredicto que dependa de la config de la máquina. ... ok
 test_la_comparacion_e_intercambio_falla_si_el_valor_viejo_no_es_el_vigente (__main__.CanalUnico.test_la_comparacion_e_intercambio_falla_si_el_valor_viejo_no_es_el_vigente)
 T187 · Defecto que previene: escribir sobre lo que otro acaba de publicar. ... ok
+test_perder_la_carrera_por_una_ref_no_es_una_averia_de_disco (__main__.CanalUnico.test_perder_la_carrera_por_una_ref_no_es_una_averia_de_disco)
+T187 · Defecto que previene: que la contención se lea como fallo del disco. ... ok
 test_retirar_una_ref_protegida_levanta_ref_protegida (__main__.CanalUnico.test_retirar_una_ref_protegida_levanta_ref_protegida)
 T187 · Defecto que previene: que la política del canal admita una excepción. ... ok
 test_forzado_con_el_hook_retirado_es_denunciado (__main__.ForzadoDetectable.test_forzado_con_el_hook_retirado_es_denunciado)
@@ -24,12 +26,22 @@ test_la_desaparicion_de_una_ref_registrada_se_denuncia (__main__.ForzadoDetectab
 T187 · Defecto que previene: borrar la ref por debajo y presentar el árbol limpio. ... ok
 test_la_deteccion_no_depende_del_hook_para_dar_verde (__main__.ForzadoDetectable.test_la_deteccion_no_depende_del_hook_para_dar_verde)
 T187 · Control POSITIVO: sin hook y sin forzar, la detección NO denuncia nada. ... ok
+test_avanzar_fast_forward_sin_valor_viejo_SI_pasa (__main__.HookImposible.test_avanzar_fast_forward_sin_valor_viejo_SI_pasa)
+T187 · Control POSITIVO: lo que la política permite sigue permitido. ... ok
+test_borrado_de_ref_protegida_SIN_valor_viejo_es_rechazado (__main__.HookImposible.test_borrado_de_ref_protegida_SIN_valor_viejo_es_rechazado)
+T187 · Defecto que previene: borrar la canónica omitiendo el valor viejo. ... ok
 test_borrado_de_ref_protegida_es_rechazado_por_el_hook (__main__.HookImposible.test_borrado_de_ref_protegida_es_rechazado_por_el_hook)
 T187 · Defecto que previene: borrar la rama canónica y rehacerla a gusto. ... ok
+test_crear_una_ref_nueva_sin_valor_viejo_SI_pasa (__main__.HookImposible.test_crear_una_ref_nueva_sin_valor_viejo_SI_pasa)
+T187 · Control POSITIVO: el arreglo no puede consistir en rechazarlo todo. ... ok
 test_el_hook_se_instala_y_su_contenido_se_mide (__main__.HookImposible.test_el_hook_se_instala_y_su_contenido_se_mide)
 T187 · Defecto que previene: un hook «instalado» que nadie comprueba que sigue ahí. ... ok
+test_forzado_SIN_declarar_valor_viejo_es_rechazado (__main__.HookImposible.test_forzado_SIN_declarar_valor_viejo_es_rechazado)
+T187 · Defecto que previene: saltarse `G-A8` omitiendo un argumento. ... ok
 test_forzado_no_fast_forward_es_rechazado_por_el_hook (__main__.HookImposible.test_forzado_no_fast_forward_es_rechazado_por_el_hook)
 T187 · Defecto que previene: forzar la rama canónica con el hook puesto. ... ok
+test_forzado_por_stdin_sin_valor_viejo_es_rechazado (__main__.HookImposible.test_forzado_por_stdin_sin_valor_viejo_es_rechazado)
+T187 · Defecto que previene: la misma omisión por la puerta de `--stdin`. ... ok
 test_hook_editado_es_hook_ausente (__main__.HookImposible.test_hook_editado_es_hook_ausente)
 T187 · Defecto que previene: un hook editado, que es un hook desactivado. ... ok
 test_hook_retirado_es_hook_ausente (__main__.HookImposible.test_hook_retirado_es_hook_ausente)
@@ -72,6 +84,6 @@ test_9_dos_procesos_reales_se_serializan_y_uno_solo_publica (__main__.Serializac
 T187 · Defecto que previene: dos escritores publicando a la vez en la canónica. ... ok
 
 ----------------------------------------------------------------------
-Ran 33 tests  (duración no registrada: varía por ejecución)
+Ran 39 tests  (duración no registrada: varía por ejecución)
 
 OK

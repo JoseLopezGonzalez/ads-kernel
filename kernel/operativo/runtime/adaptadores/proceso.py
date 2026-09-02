@@ -19,13 +19,53 @@ DECISIÓN · grupo de procesos propio, y matar el GRUPO y no el proceso
     Se elige (b). Con (a) se mata al hijo directo y sus nietos quedan huérfanos ejecutándose
     y reteniendo el pipe: el `wait` se queda colgado y el «timeout» no termina nada. Un
     `sh -c 'sleep 300 & wait'` lo reproduce. Con `start_new_session=True` el hijo es líder
-    de su propio grupo y `os.killpg(pgid, SIGKILL)` alcanza a toda la descendencia.
+    de su propio grupo y `os.killpg(pgid, SIGKILL)` alcanza a toda la descendencia
+    **QUE NO SE SAQUE DEL GRUPO**.
+
+LÍMITE DECLARADO · un descendiente que hace `setsid` ESCAPA, y esto está MEDIDO
+    Una promesa que la primera embestida desmonta es peor que una limitación declarada, así
+    que se dice con todas las letras: `os.killpg` alcanza a un grupo de procesos, y un
+    descendiente que llama a `setsid()` deja de pertenecer a ese grupo. Medido: un nieto
+    lanzado con `setsid` SOBREVIVE al timeout y a la cancelación. NO es un fallo de esta
+    implementación: es el techo de lo que las señales de grupo pueden hacer.
+    Contenerlo exige envolver la tarea en un contenedor de recursos del sistema —un cgroup
+    v2 con `cgroup.kill`, o un espacio de nombres de PID donde matar al PID 1 se lleve todo
+    por delante—, y eso es materia de OTRO CORTE: exige privilegios, montar `cgroup2` y
+    decidir la política de recursos, nada de lo cual está en el alcance de `V7`.
+    Lo que SÍ se garantiza aquí, y se prueba: toda la descendencia que permanece en el grupo
+    muere, incluido el nieto ordinario, y se comprueba con `os.kill(pid, 0)`.
 
 DECISIÓN · `SIGTERM` primero y `SIGKILL` después, y se espera de verdad entre los dos
     Mandar sólo `SIGKILL` impide a la tarea cerrar lo que tuviera abierto; mandar sólo
     `SIGTERM` deja vivo a quien lo ignora, y entonces el timeout no es un timeout. Se manda
     `SIGTERM`, se espera `GRACIA_SEGUNDOS`, y si sigue vivo se manda `SIGKILL`. El resultado
     declara cuál de los dos hizo falta, porque es información de diagnóstico real.
+
+DECISIÓN · el recibo se ABRE antes de ejecutar y se CIERRA después, y por eso la duplicación
+           es DETECTABLE
+    EL DEFECTO, medido: el recibo se escribía SÓLO al terminar. Si el proceso moría entre
+    ejecutar la tarea y escribir el recibo, al reiniciar no había rastro, el adaptador
+    volvía a ejecutar y el efecto se aplicaba DOS VECES en silencio —dos marcas en disco,
+    `"repetido": false` en las dos pasadas—.
+    Alternativas: (a) cerrar la ventana; (b) hacerla DETECTABLE.
+    Se elige (b), porque (a) es imposible: con un proceso externo cualquiera no existe
+    «exactamente una vez», y prometerlo sería mentir. Lo que sí existe es no duplicar en
+    silencio. El recibo se abre ANTES de lanzar, con estado `iniciado`, y se cierra después
+    con el resultado; los dos con `fsync`. Una segunda llamada que encuentre un recibo
+    `iniciado` y SIN CERRAR no ejecuta y devuelve `ambiguo`: nadie puede saber si la tarea
+    llegó a aplicarse, y decirlo es más honesto que adivinar en cualquiera de los dos
+    sentidos.
+
+DECISIÓN · un `timeout` o una `cancelacion` RETIRAN el recibo; una caída lo deja abierto
+    Y la diferencia no es un capricho: es si SOBREVIVIÓ UN TESTIGO. Cuando el propio
+    adaptador mata la tarea, ese proceso presenció la terminación y puede declarar el
+    desenlace, así que retira el recibo y el runtime puede reintentar —que es lo que el
+    contrato ya declara para `timeout`—. Cuando el que muere es el adaptador, no queda
+    nadie que sepa qué pasó, y ahí es donde `ambiguo` es la única respuesta honesta.
+    Queda declarado el residuo: un `timeout` retirado y reintentado PUEDE duplicar si la
+    tarea alcanzó a aplicarse antes de morir. Se conserva porque cambiarlo alteraría la
+    semántica de reintento contra la que el runtime ya programa, y se dice aquí en vez de
+    esconderse.
 
 DECISIÓN · el recibo de idempotencia es un FICHERO del ESPACIO DEL ADAPTADOR, no del estado
     `g.12` y el §3 del contrato dicen que el estado canónico lo muta UN SOLO ejecutor, el
@@ -51,6 +91,7 @@ import subprocess
 import time
 
 from .contrato import (
+    AMBIGUO,
     VERSION_DE_CONTRATO,
     Adaptador,
     FichaDeAdaptador,
@@ -61,6 +102,46 @@ from .contrato import (
 GRACIA_SEGUNDOS = 1.5
 INTERVALO_DE_SONDEO = 0.05
 CAPACIDAD = "proceso-local"
+
+# ===========================================================================
+#  Puntos de fallo controlados del adaptador
+# ===========================================================================
+#  Mismo criterio que `estado/fallos.py`: una ventana que sólo se ha visto NO fallar no está
+#  verificada, y un corte no se argumenta, se provoca. `os._exit(70)` mata sin ejecutar
+#  `finally`, sin `atexit` y sin vaciar búferes: lo más parecido a un corte de corriente.
+#  Sin la variable puesta, este código no hace absolutamente nada.
+VARIABLE_DE_FALLO = "ADS_ADAPTADOR_FALLO"
+CODIGO_DE_SALIDA = 70
+
+PUNTOS_DE_FALLO = (
+    "antes-de-abrir-el-recibo",
+    "despues-de-abrir-el-recibo-antes-de-ejecutar",
+    # ÉSTE es el que faltaba, y el que dejaba duplicar un efecto en silencio.
+    "despues-de-ejecutar-antes-de-cerrar-el-recibo",
+)
+
+
+def puntos_de_fallo():
+    """Los puntos declarados. Una prueba comprueba que ninguno queda sin llamar."""
+    return list(PUNTOS_DE_FALLO)
+
+
+def _punto(nombre):
+    """Corta el proceso si el entorno pide ESTE punto. Una errata es un FALLO, no un silencio."""
+    if nombre not in PUNTOS_DE_FALLO:
+        raise OrdenInvalida("punto de fallo no declarado: " + str(nombre))
+    pedido = os.environ.get(VARIABLE_DE_FALLO)
+    if not pedido:
+        return
+    if pedido not in PUNTOS_DE_FALLO:
+        # Con el nombre mal escrito, una prueba pasaría en verde sin haber inyectado nada y
+        # publicaríamos como evidencia una ejecución en la que nunca hubo corte.
+        raise OrdenInvalida(
+            "punto de fallo desconocido en " + VARIABLE_DE_FALLO + ": " + str(pedido)
+            + ". Declarados: " + ", ".join(PUNTOS_DE_FALLO)
+        )
+    if pedido == nombre:
+        os._exit(CODIGO_DE_SALIDA)
 
 
 def _sigue_vivo(pid):
@@ -109,12 +190,18 @@ class AdaptadorDeProcesoLocal(Adaptador):
             timeout="limite_segundos de la orden; al vencer, SIGTERM y luego SIGKILL al "
                     "GRUPO de procesos",
             cancelacion="cooperativa por sondeo de `cancelacion.activada()`, y efectiva "
-                        "por señal al grupo: no se pide, se mata",
-            idempotencia="recibo durable por `efecto` en el espacio de trabajo; una "
-                         "segunda llamada devuelve `repetido: true` sin ejecutar",
+                        "por señal al GRUPO: no se pide, se mata. LÍMITE: un descendiente "
+                        "que hace `setsid` sale del grupo y ESCAPA; contenerlo exige "
+                        "cgroups o espacios de nombres, y es de otro corte",
+            idempotencia="recibo durable por `efecto`, ABIERTO antes de ejecutar y CERRADO "
+                         "después. Recibo cerrado → `repetido: true` con su resultado, sin "
+                         "ejecutar. Recibo abierto → `ambiguo`, porque nadie sobrevivió "
+                         "para saber si la tarea se aplicó. NO se promete «exactamente una "
+                         "vez»: se promete no duplicar en silencio",
             forma_de_progreso="una llamada a `progreso({'linea': n, 'texto': ...})` por "
                               "cada línea que el proceso escribe",
-            resultado="{estado, codigo, salida, detalle, reintentable, efecto, repetido}",
+            resultado="{estado, codigo, salida, detalle, reintentable, efecto, repetido}; "
+                      "`estado` en completado · fallido · cancelado · timeout · ambiguo",
             errores=["ORDEN_INVALIDA", "ERROR_DE_ADAPTADOR"],
             evidencia="el recibo por efecto, con su código y su salida, fuera del estado "
                       "canónico",
@@ -135,11 +222,10 @@ class AdaptadorDeProcesoLocal(Adaptador):
         with open(ruta, "r", encoding="utf-8") as manejador:
             return json.load(manejador)
 
-    def _escribir_recibo(self, efecto, resultado):
+    def _publicar_recibo(self, efecto, cuerpo):
+        """Publica el recibo con `fsync` del fichero y del directorio. Atómico por `replace`."""
         ruta = self._ruta_de_recibo(efecto)
         temporal = ruta + ".tmp"
-        cuerpo = {clave: resultado[clave] for clave in
-                  ("estado", "codigo", "salida", "detalle", "reintentable", "efecto")}
         datos = json.dumps(cuerpo, sort_keys=True, ensure_ascii=False, indent=2) + "\n"
         with open(temporal, "w", encoding="utf-8") as manejador:
             manejador.write(datos)
@@ -151,6 +237,32 @@ class AdaptadorDeProcesoLocal(Adaptador):
             os.fsync(descriptor)
         finally:
             os.close(descriptor)
+        return ruta
+
+    def _abrir_recibo(self, efecto):
+        """ANTES de lanzar. Deja constancia durable de que este efecto SE INTENTÓ."""
+        return self._publicar_recibo(efecto, {"efecto": efecto, "estado": "iniciado",
+                                              "cerrado": False})
+
+    def _cerrar_recibo(self, efecto, resultado):
+        """DESPUÉS de terminar. El recibo pasa a llevar el desenlace y queda CERRADO."""
+        cuerpo = {clave: resultado[clave] for clave in
+                  ("estado", "codigo", "salida", "detalle", "reintentable", "efecto")}
+        cuerpo["cerrado"] = True
+        return self._publicar_recibo(efecto, cuerpo)
+
+    def _retirar_recibo(self, efecto):
+        """Sólo cuando ESTE proceso presenció la terminación: el efecto no se aplicó."""
+        ruta = self._ruta_de_recibo(efecto)
+        if os.path.exists(ruta):
+            os.remove(ruta)
+            descriptor = os.open(self.recibos, os.O_RDONLY)
+            try:
+                os.fsync(descriptor)
+            finally:
+                os.close(descriptor)
+            return True
+        return False
 
     # -- ejecución ----------------------------------------------------------
     def ejecutar(self, orden, *, efecto, limite_segundos, progreso=None, cancelacion=None):
@@ -167,20 +279,46 @@ class AdaptadorDeProcesoLocal(Adaptador):
                 "operación no declarada por este adaptador: " + str(orden.get("operacion"))
             )
 
-        # IDEMPOTENCIA. Antes de nada: si el efecto ya se aplicó, no se vuelve a ejecutar.
+        # IDEMPOTENCIA, en sus DOS casos.
         previo = self.recibo(efecto)
         if previo is not None:
-            resultado = dict(previo)
-            resultado["repetido"] = True
-            return comprobar_resultado(resultado, efecto)
+            if previo.get("cerrado"):
+                # Recibo CERRADO: se sabe qué pasó. No se vuelve a ejecutar y se reutiliza.
+                resultado = {clave: previo[clave] for clave in
+                             ("estado", "codigo", "salida", "detalle", "reintentable",
+                              "efecto")}
+                resultado["repetido"] = True
+                return comprobar_resultado(resultado, efecto)
+            # Recibo ABIERTO: alguien lanzó este efecto y no vivió para contarlo. NO se
+            # ejecuta —duplicaría— y NO se declara completado —sería inventarlo—.
+            return comprobar_resultado({
+                "estado": AMBIGUO,
+                "codigo": -1,
+                "salida": "",
+                "detalle": "hay un recibo ABIERTO para este efecto: se lanzó y no se cerró, "
+                           "luego no se puede saber si la tarea llegó a aplicarse. No se "
+                           "vuelve a ejecutar, porque hacerlo podría duplicar el efecto",
+                "reintentable": False,
+                "efecto": efecto,
+                "repetido": True,
+            }, efecto)
+
+        _punto("antes-de-abrir-el-recibo")
+        self._abrir_recibo(efecto)
+        _punto("despues-de-abrir-el-recibo-antes-de-ejecutar")
 
         resultado = self._lanzar(list(argumentos), efecto, float(limite_segundos),
                                  progreso, cancelacion)
-        # El recibo se escribe SÓLO cuando el efecto se produjo de verdad. Una cancelación
-        # o un timeout NO dejan recibo: la tarea no llegó a aplicarse y el runtime tiene que
-        # poder reintentarla.
+
+        _punto("despues-de-ejecutar-antes-de-cerrar-el-recibo")
+
         if resultado["estado"] in ("completado", "fallido"):
-            self._escribir_recibo(efecto, resultado)
+            self._cerrar_recibo(efecto, resultado)
+        else:
+            # `timeout` y `cancelado`: ESTE proceso presenció la terminación, así que puede
+            # declarar que el efecto no quedó aplicado y retirar el recibo. Un adaptador que
+            # muere no llega aquí, y por eso su recibo se queda abierto.
+            self._retirar_recibo(efecto)
         return comprobar_resultado(resultado, efecto)
 
     def _lanzar(self, argumentos, efecto, limite_segundos, progreso, cancelacion):

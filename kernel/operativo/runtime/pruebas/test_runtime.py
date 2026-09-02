@@ -197,7 +197,7 @@ class Caso(unittest.TestCase):
 
     # ------------------------------------------------------------------ procesos
     def cli(self, argumentos, *, instancia="runtime-A", fallo=None, adaptador=True,
-            paciencia=None, cwd=None):
+            adaptador_local=False, paciencia=None, cwd=None):
         """Ejecuta `ads_runtime.py` en un PROCESO REAL.
 
         `cwd` por defecto es el temporal del sistema y no la raíz del repositorio: así cada
@@ -209,6 +209,11 @@ class Caso(unittest.TestCase):
         orden = [sys.executable, CLI, "--repo", self.repo, "--instancia", instancia]
         if adaptador:
             orden += ["--registro-en-pruebas", self.espacio]
+        if adaptador_local:
+            # El adaptador de PROCESO REAL del corte `V7`, que lanza un `subprocess` de
+            # verdad. Es el único que produce un `pid`, y por eso hace falta para cruzar
+            # «adaptador real × invariante durable».
+            orden += ["--adaptador-local", os.path.join(self.base, "proceso-real")]
         if paciencia is not None:
             orden += ["--paciencia", str(paciencia)]
         orden += [str(a) for a in argumentos]
@@ -702,19 +707,21 @@ class AutoridadYLeases(Caso):
         self.assertEqual(vigente["latido"], 0)
         self.assertEqual(vigente["observado_por"], {})
 
-    def test_24_un_titular_muerto_se_reclama_de_inmediato_por_el_testigo(self):
-        """T183 · Defecto que previene: esperar tres observaciones a un proceso ya muerto.
+    def test_24_ni_siquiera_una_muerte_real_permite_reclamar_sin_observar(self):
+        """T183 · Defecto que previene: reponer la vía rápida por comodidad.
 
-        La vía rápida del §3: el titular sostiene un `flock` sobre su testigo de vida, que
-        vive en el plano OPERACIONAL —gitignorado, no durable, donde el reloj sí está
-        permitido— y que el NÚCLEO suelta al morir el proceso. Un proceso toma el lease y
-        muere con `os._exit(70)`: sin `finally`, así que NO retira su testigo. Ésa —fichero
-        presente y `flock` libre— es la única huella que prueba una muerte, y sólo la deja
-        un final abrupto.
+        Antes había un atajo: si el testigo de vida del titular existía con el `flock`
+        libre, se concluía MUERTE y se reclamaba en el acto. La auditoría independiente lo
+        rompió sustituyendo el fichero —ver `test_33`—, y se retiró entero.
 
-        La expectativa, y obsérvese cuál es la orden: `runtime-B` RECLAMA, no adquiere.
-        `adquirir` no roba nunca; robar tiene un solo nombre y deja su propio evento en el
-        diario. La reclamación es inmediata y sin observar, y la época sube a 2.
+        Aquí se comprueba el coste de haberlo retirado, que es real y se paga a gusto: un
+        titular que MURIÓ de verdad, con `os._exit(70)` y sin ejecutar `finally`, deja la
+        huella más favorable que existe —testigo presente, `flock` libre— y **aun así** no
+        se le puede quitar el lease sin observar. La expectativa: `adquirir` rechaza,
+        `reclamar` es PREMATURA, y sólo tras `PACIENCIA` observaciones durables prospera.
+
+        Que la prueba compruebe que el atajo NO funciona, teniendo delante el único caso en
+        que sería correcto, es lo que impide que alguien lo reponga sin darse cuenta.
         """
         self.alta([{"id": "pq-0001"}])
         muerto = self.guion("muerte.py", GUION_MUERTE_CON_LEASE, ["runtime-A", "pq-0001"])
@@ -723,13 +730,22 @@ class AutoridadYLeases(Caso):
                          "el proceso no murió como se le pidió:\n" + salida + error)
         self.assertIn("adquirido", salida)
         self.assertEqual(self.lease("pq-0001")["titular"], "runtime-A")
-        # La huella de la muerte: el testigo QUEDÓ, y su `flock` está libre.
+        # La huella más favorable posible: el testigo QUEDÓ y su `flock` está libre.
         self.assertEqual(self.vivos(), ["runtime-A.vivo"])
-        self.assertTrue(self.flock_libre("runtime-A"),
-                        "el `flock` del muerto sigue tomado")
+        self.assertTrue(self.flock_libre("runtime-A"))
 
-        self.exito(self.cli(["reclamar", "pq-0001"], instancia="runtime-B"),
-                   "reclamar tras la muerte")
+        negado = self.cli(["adquirir", "pq-0001"], instancia="runtime-B")
+        self.assertEqual(negado.returncode, 1, "`adquirir` robó a un muerto")
+        self.assertEqual(codigo_de_error(negado), "AUTORIDAD_NO_DISPONIBLE")
+        prematura = self.cli(["reclamar", "pq-0001"], instancia="runtime-B")
+        self.assertEqual(prematura.returncode, 1,
+                         "se reclamó sin observar, apoyándose en el testigo")
+        self.assertEqual(codigo_de_error(prematura), "RECLAMACION_PREMATURA")
+
+        for numero in (1, 2, 3):
+            self.exito(self.cli(["observar", "pq-0001"], instancia="runtime-B"),
+                       "observar " + str(numero))
+        self.exito(self.cli(["reclamar", "pq-0001"], instancia="runtime-B"), "reclamar")
         vigente = self.lease("pq-0001")
         self.assertEqual(vigente["titular"], "runtime-B")
         self.assertEqual(vigente["epoca"], 2)
@@ -807,15 +823,61 @@ class AutoridadYLeases(Caso):
         self.alta([{"id": "pq-0001"},
                    {"id": "pq-0002", "argumentos": ["fallo-definitivo"]}])
         self.exito(self.cli(["ciclo"]), "ciclo")
+        self._exigir_bytes_durables_sin_reloj_ni_pid("registro en pruebas")
+
+    def test_27b_el_adaptador_de_proceso_REAL_tampoco_mete_un_pid_en_el_estado(self):
+        """T183 · Defecto que previene: un `pid` en el ESTADO CANÓNICO DURABLE.
+
+        Lo encontró la auditoría independiente, y el hueco no estaba en la comprobación
+        sino en su COBERTURA: `test_27` mira el disco de verdad, pero sólo corría contra el
+        registro EN PRUEBAS, que no produce pid; y el escenario extremo a extremo, que sí
+        usa el adaptador real, no comprobaba `I-g3`. Nadie cruzaba «adaptador real ×
+        invariante durable», y por esa rendija `canonico/paquetes/<id>.json` acabó llevando
+        `"pid": 1700531`. Esta prueba es exactamente ese cruce.
+
+        El adaptador de proceso REAL de `adaptadores/` lanza un `subprocess` de verdad y su
+        resultado incluye el `pid`. La expectativa: el paquete se completa —con la salida
+        real del proceso, para que conste que se ejecutó—, el `resultado` durable contiene
+        EXACTAMENTE las siete claves del §4.4 y ni una más, y no queda rastro de `pid` en
+        ningún byte de `canonico/`, `diario/` ni `reconciliacion/`.
+        """
+        try:
+            import adaptadores
+        except ImportError as fallo:      # el corte `V7` todavía no está en el árbol
+            self.skipTest("el adaptador real de `adaptadores/` no está disponible: "
+                          + str(fallo))
+        self.assertTrue(hasattr(adaptadores, "AdaptadorDeProcesoLocal"))
+
+        self.exito(self.cli(["crear-item", "--id", "it-0001", "--titulo", "trabajo",
+                             "--motivo", "alta"], adaptador=False), "crear-item")
+        self.exito(self.cli(["crear-paquete", "--id", "pq-real", "--item", "it-0001",
+                             "--capacidad", "proceso-local",
+                             "--argumento", "/bin/echo", "--argumento", "hola"],
+                            adaptador=False), "crear-paquete")
+        self.exito(self.cli(["ciclo"], adaptador=False, adaptador_local=True),
+                   "ciclo con el adaptador REAL")
+
+        objeto = self.paquete("pq-real")
+        self.assertEqual(objeto["estado"], "completado")
+        self.assertEqual(objeto["resultado"]["salida"], "hola",
+                         "el proceso real no llegó a ejecutarse: la prueba no cruza nada")
+        self.assertEqual(sorted(objeto["resultado"]), sorted(politica.CLAVES_DE_RESULTADO),
+                         "el resultado durable lleva claves que el §4.4 no declara")
+        self._exigir_bytes_durables_sin_reloj_ni_pid("adaptador de proceso real")
+
+    def _exigir_bytes_durables_sin_reloj_ni_pid(self, contexto):
+        """`I-g3` sobre el DISCO: ni reloj, ni duración, ni identidad de proceso."""
         raiz = os.path.join(self.repo, "estado")
         for plano in ("canonico", "diario", "reconciliacion"):
             for directorio, _sub, ficheros in os.walk(os.path.join(raiz, plano)):
                 for nombre in ficheros:
                     contenido = texto_de(os.path.join(directorio, nombre))
-                    for huella in ("epoch", "timestamp", "duracion_segundos", "pid"):
+                    for huella in ("epoch", "timestamp", "duracion_segundos", "pid",
+                                   "duracion", "inicio_utc", "fin_utc"):
                         self.assertNotIn(
                             '"' + huella + '"', contenido,
-                            "hay `" + huella + "` en " + plano + "/" + nombre)
+                            "hay `" + huella + "` en " + plano + "/" + nombre
+                            + " (" + contexto + ")")
 
     def test_28_dos_procesos_no_pueden_llamarse_igual(self):
         """T183 · Defecto que previene: que `titular` deje de identificar a UNO solo.
@@ -907,44 +969,32 @@ class AutoridadYLeases(Caso):
         self.assertEqual(self.lease("pq-ok")["titular"], "runtime-A")
         self.assertEqual(self.invocaciones(), [])
 
-    def test_31_la_muerte_real_deja_la_huella_que_autoriza_la_reclamacion(self):
-        """T183 · Defecto que previene: no poder distinguir un muerto de uno que terminó.
+    def test_31_la_reclamacion_tiene_UNA_puerta_y_deja_su_evento_en_el_diario(self):
+        """T183 · Defecto que previene: un robo con papeles en regla.
 
-        El caso legítimo, y el único: se mata al titular con `ADS_RUNTIME_FALLO` en
-        `despues-de-adquirir`, que es `os._exit(70)` y NO ejecuta `finally`. La huella que
-        deja es la que ninguna salida limpia puede dejar —el testigo QUEDA y su `flock`
-        está LIBRE—, y se comprueban las dos cosas sondeando el bloqueo de verdad.
+        Tras retirar la vía rápida queda una sola puerta —`PACIENCIA` observaciones
+        consecutivas sin que el latido avance— y esta prueba la recorre entera comprobando
+        que cada paso es DURABLE y auditable, que es lo que la hace resistente: falsificar
+        una observación exige falsificar el estado canónico, y eso sí se detecta.
 
-        Y aun con la muerte probada, la expectativa mantiene la separación que importa:
-        `adquirir` SIGUE rechazando, porque adquirir no roba nunca; es `reclamar` quien se
-        lleva el lease, de inmediato y sin observar, subiendo la época y dejando su propio
-        evento en el diario.
+        La expectativa: tres observaciones anotadas en el lease con su latido; la
+        reclamación sube la época y deja un evento `runtime.lease.reclamado` propio en el
+        diario, con su autor, distinguible de una adquisición corriente; y el estado sigue
+        íntegro después.
         """
         self.alta([{"id": "pq-0001"}])
-        caida = self.cli(["despachar", "pq-0001"], instancia="runtime-A",
-                         fallo="despues-de-adquirir")
-        self.assertEqual(caida.returncode, CODIGO_SALIDA_CAIDA,
-                         "el titular no murió:\n" + caida.stdout + caida.stderr)
-        self.assertEqual(self.lease("pq-0001")["titular"], "runtime-A")
-        self.assertEqual(self.vivos(), ["runtime-A.vivo"],
-                         "una muerte abrupta debe DEJAR el testigo")
-        self.assertTrue(self.flock_libre("runtime-A"),
-                        "el `flock` del muerto debe quedar libre: lo suelta el núcleo")
-
-        negado = self.cli(["adquirir", "pq-0001"], instancia="runtime-B")
-        self.assertEqual(negado.returncode, 1,
-                         "`adquirir` robó, y no debe robar ni ante muerte probada")
-        self.assertEqual(codigo_de_error(negado), "AUTORIDAD_NO_DISPONIBLE")
-        self.assertIn("reclamar", negado.stderr,
-                      "el error no dice cuál es la vía abierta")
+        self.exito(self.cli(["adquirir", "pq-0001"], instancia="runtime-A"), "adquirir A")
+        for numero in (1, 2, 3):
+            self.exito(self.cli(["observar", "pq-0001"], instancia="runtime-B"),
+                       "observar " + str(numero))
+            anotacion = self.lease("pq-0001")["observado_por"]["runtime-B"]
+            self.assertEqual(anotacion["observaciones"], numero)
+            self.assertEqual(anotacion["latido"], self.lease("pq-0001")["latido"])
 
         self.exito(self.cli(["reclamar", "pq-0001"], instancia="runtime-B"), "reclamar")
-        vigente = self.lease("pq-0001")
-        self.assertEqual(vigente["titular"], "runtime-B")
-        self.assertEqual(vigente["epoca"], 2)
+        self.assertEqual(self.lease("pq-0001")["titular"], "runtime-B")
+        self.assertEqual(self.lease("pq-0001")["epoca"], 2)
 
-        # El robo queda ESCRITO: hay un evento propio en el diario, y no se confunde con
-        # una adquisición corriente.
         eventos = [json.loads(linea) for linea in lineas_de(
             os.path.join(self.repo, "estado", "diario", "DIARIO.jsonl"))]
         reclamaciones = [e for e in eventos
@@ -952,6 +1002,111 @@ class AutoridadYLeases(Caso):
                          and e.get("clase") == "runtime.lease.reclamado"]
         self.assertEqual(len(reclamaciones), 1)
         self.assertEqual(reclamaciones[0]["autor"], "runtime-B")
+        observaciones = [e for e in eventos
+                         if e["tipo"] == "transicion.confirmada"
+                         and e.get("clase") == "runtime.lease.observado"]
+        self.assertEqual(len(observaciones), 3,
+                         "las observaciones tienen que ser transiciones DURABLES")
+        self.exito(self.cli_estado(["verificar"]), "integridad tras la reclamación")
+
+    def test_33_sustituir_el_testigo_de_un_titular_VIVO_no_da_autoridad(self):
+        """T183 · Defecto que previene: robar el lease de un titular VIVO. LA REGRESIÓN.
+
+        El ataque de la auditoría independiente, ejecutado tal cual. Con `runtime-A` VIVO y
+        sosteniendo el lease, un tercero **borra su testigo de vida y crea otro en su
+        sitio**. El testigo nuevo existe y su `flock` está libre, que es exactamente la
+        huella que la vía rápida leía como MUERTE:
+
+            A vivo? poll = None    testigo de A presente: True
+            >>> testigo de runtime-A SUSTITUIDO. A sigue vivo: True
+            reclamar de B  exit= 0   → {"titular": "runtime-B", "epoca": 2}
+            >>> B despacha pq-ok con A todavía ejecutándolo
+            integridad del estado: VERDE
+
+        No hizo falta matar a nadie ni tocar el estado. Y era peor que tocarlo: editar el
+        lease a mano da `ESTADO_CORRUPTO` y se ve; esto dejaba la integridad VERDE y un
+        `runtime.lease.reclamado` de aspecto legítimo en el diario. El plano operacional es
+        reconstruible y no durable por definición de `g.1` —fuera de la huella, fuera de la
+        admisión, fuera del versionado—, así que **una credencial que cualquiera puede
+        fabricar no puede decidir autoridad**, y no hay forma de autenticarla desde dentro.
+
+        La expectativa, escrita antes de mirar: `reclamar` de B FALLA con
+        `RECLAMACION_PREMATURA`; `adquirir` de B FALLA con `AUTORIDAD_NO_DISPONIBLE`; el
+        titular durable SIGUE siendo `runtime-A` en la época 1; y el paquete NO se ejecuta
+        dos veces.
+        """
+        self.alta([{"id": "pq-ok"}])
+        vivo = self.guion("titular.py", GUION_TITULAR, ["runtime-A", "pq-ok"])
+        try:
+            self.assertIn("titular", vivo.stdout.readline())
+            self.assertIsNone(vivo.poll(), "el titular tenía que seguir VIVO")
+            testigo = os.path.join(self.repo, "estado", "operacional", "runtime",
+                                   "runtime-A.vivo")
+            self.assertTrue(os.path.exists(testigo))
+
+            # EL ATAQUE: se sustituye el fichero. Inodo nuevo, `flock` libre, A vivo.
+            os.remove(testigo)
+            with open(testigo, "w", encoding="utf-8"):
+                pass
+            self.assertIsNone(vivo.poll(), "el titular murió por su cuenta y la prueba "
+                                           "dejaría de demostrar lo que dice")
+            self.assertTrue(self.flock_libre("runtime-A"),
+                            "la sustitución no dejó el `flock` libre: no hay ataque")
+
+            robo = self.cli(["reclamar", "pq-ok"], instancia="runtime-B")
+            self.assertEqual(robo.returncode, 1,
+                             "SE ROBÓ EL LEASE DE UN TITULAR VIVO:\n"
+                             + robo.stdout + robo.stderr)
+            self.assertEqual(codigo_de_error(robo), "RECLAMACION_PREMATURA")
+
+            negado = self.cli(["adquirir", "pq-ok"], instancia="runtime-B")
+            self.assertEqual(negado.returncode, 1)
+            self.assertEqual(codigo_de_error(negado), "AUTORIDAD_NO_DISPONIBLE")
+
+            despacho = self.cli(["despachar", "pq-ok"], instancia="runtime-B")
+            self.assertEqual(despacho.returncode, 1)
+            self.assertEqual(codigo_de_error(despacho), "AUTORIDAD_NO_DISPONIBLE")
+
+            vigente = self.lease("pq-ok")
+            self.assertEqual(vigente["titular"], "runtime-A")
+            self.assertEqual(vigente["epoca"], 1)
+            self.assertEqual(self.invocaciones(), [],
+                             "el paquete se ejecutó pese a no tener autoridad")
+        finally:
+            vivo.stdin.close()
+            vivo.wait(timeout=SEGUNDOS_DE_ESPERA)
+            vivo.stdout.close()
+            vivo.stderr.close()
+
+    def test_34_ninguna_ruta_de_decision_consulta_el_plano_operacional(self):
+        """T183 · Defecto que previene: que el atajo vuelva por la puerta de atrás.
+
+        El diagnóstico del testigo sobrevive —un operador quiere poder mirarlo— pero SÓLO
+        como diagnóstico. Se comprueba contra el ÁRBOL SINTÁCTICO del dispatcher que la
+        única llamada a `diagnostico_del_testigo` está en `estado_de_paquete`, que es una
+        lectura y no decide nada, y que el nombre viejo no ha vuelto a aparecer en ninguna
+        parte del paquete. Comprobarlo contra el código y no contra el comportamiento es lo
+        que hace que el día que alguien lo llame desde `adquirir` la prueba se entere.
+        """
+        fuente = texto_de(os.path.join(PAQUETE, "dispatcher.py"))
+        arbol = ast.parse(fuente, filename="dispatcher.py")
+        llamantes = []
+        for nodo in ast.walk(arbol):
+            if not isinstance(nodo, ast.FunctionDef):
+                continue
+            for interno in ast.walk(nodo):
+                if isinstance(interno, ast.Call) and isinstance(interno.func, ast.Attribute) \
+                        and interno.func.attr == "diagnostico_del_testigo":
+                    llamantes.append(nodo.name)
+        self.assertEqual(sorted(llamantes), ["estado_de_paquete"],
+                         "el diagnóstico del plano operacional se consulta desde una ruta "
+                         "de decisión: es fabricable y no puede decidir autoridad")
+
+        for nombre in sorted(os.listdir(PAQUETE)):
+            if nombre.endswith(".py"):
+                cuerpo = texto_de(os.path.join(PAQUETE, nombre))
+                self.assertNotIn("def titular_muerto", cuerpo, nombre)
+                self.assertNotIn("_reclamar_si_murio", cuerpo, nombre)
 
     def test_32_ninguna_salida_limpia_deja_testigo_de_vida(self):
         """T183 · Defecto que previene: que terminar bien parezca haber muerto.
@@ -1084,6 +1239,111 @@ class ReintentosYReconciliacion(Caso):
             self.assertEqual(codigo_de_error(proceso), codigo, identificador)
             self.assertEqual(self.paquete(identificador)["estado"], estado_final,
                              identificador)
+
+    def test_46_un_paquete_agotado_no_vuelve_a_adquirirse(self):
+        """T184 · Defecto que previene: reservar autoridad sobre trabajo que nadie moverá.
+
+        El §4 lo afirma —«un paquete agotado no vuelve a adquirirse»— y `despachar` sí lo
+        rechazaba, así que no había daño práctico; pero `adquirir` lo concedía, y una
+        afirmación del contrato que no se sostiene es una afirmación que alguien acabará
+        usando. Lo señaló la auditoría independiente.
+
+        La expectativa: `adquirir` sobre `agotado` da `ESTADO_DE_PAQUETE_INVALIDO`, no se
+        crea lease, y el estado no se mueve. Y lo mismo para los dos terminales, por la
+        misma razón: de `completado` y `cancelado` la tabla del §4.2 no lleva a ninguna
+        parte, así que tomar autoridad ahí es reservar algo que nadie va a mover.
+        """
+        self.alta([{"id": "pq-agotado", "argumentos": ["fallo-definitivo"]},
+                   {"id": "pq-hecho"},
+                   {"id": "pq-retirado"}])
+        # La cancelación va ANTES del ciclo: `cancelado` es terminal, y un paquete que ya
+        # se completó no se puede cancelar —la tabla del §4.2 no lo permite—.
+        self.exito(self.cli(["cancelar", "pq-retirado", "--motivo", "el owner lo retira",
+                             "--autoridad", "owner"]), "cancelar")
+        self.exito(self.cli(["ciclo"]), "ciclo")
+        self.assertEqual(self.paquete("pq-agotado")["estado"], "agotado")
+        self.assertEqual(self.paquete("pq-hecho")["estado"], "completado")
+        self.assertEqual(self.paquete("pq-retirado")["estado"], "cancelado")
+
+        revision_antes = self.revision()
+        for identificador in ("pq-agotado", "pq-hecho", "pq-retirado"):
+            proceso = self.cli(["adquirir", identificador])
+            self.assertEqual(proceso.returncode, 1, identificador)
+            self.assertEqual(codigo_de_error(proceso), "ESTADO_DE_PAQUETE_INVALIDO",
+                             identificador + ":\n" + proceso.stderr)
+            self.assertIsNone(self.lease(identificador),
+                              "se creó un lease sobre `" + identificador + "`")
+        self.assertEqual(self.revision(), revision_antes,
+                         "un rechazo de adquisición movió el estado")
+
+    def test_47_un_resultado_AMBIGUO_ni_se_reintenta_ni_se_da_por_bueno(self):
+        """T184 · Defecto que previene: duplicar un efecto en silencio, o inventar un éxito.
+
+        La ventana que encontró la auditoría independiente: si el proceso muere ENTRE
+        ejecutar y escribir el recibo, al reiniciar no hay recibo, se vuelve a invocar y el
+        efecto se aplica dos veces. El adaptador la cierra escribiendo un recibo de
+        INTENCIÓN antes de ejecutar y cerrándolo después; una segunda llamada que encuentre
+        uno abierto y sin cerrar devuelve `estado: "ambiguo"`.
+
+        Con un proceso externo cualquiera NO se puede prometer «exactamente una vez»: entre
+        lanzar el trabajo y anotar que se lanzó hay siempre una ventana. Lo que sí se puede
+        —y es lo que se comprueba aquí— es que la ambigüedad **se DETECTE en vez de
+        duplicarse en silencio**, y que la resuelva quien tiene autoridad.
+
+        La expectativa: error tipado `EJECUCION_AMBIGUA`; el paquete queda `agotado` —NO
+        `completado`, que inventaría un éxito, y NO `listo`, que arriesgaría aplicar el
+        efecto otra vez—; queda una pendencia de `g.9` cuya causa NOMBRA la ambigüedad; y
+        los intentos que quedaban NO se gastan, porque reintentar es precisamente el riesgo
+        que se está evitando.
+        """
+        self.alta([{"id": "pq-ambiguo", "argumentos": ["ambiguo"], "max_intentos": 3}])
+        proceso = self.cli(["despachar", "pq-ambiguo"])
+        self.assertEqual(proceso.returncode, 1)
+        self.assertEqual(codigo_de_error(proceso), "EJECUCION_AMBIGUA")
+
+        objeto = self.paquete("pq-ambiguo")
+        self.assertEqual(objeto["estado"], "agotado")
+        self.assertEqual(objeto["intentos"], 1, "un ambiguo NO gasta los intentos")
+        self.assertEqual(objeto["resultado"]["estado"], "ambiguo",
+                         "el resultado durable tiene que conservar la ambigüedad")
+        self.assertIsNotNone(self.canonico("efectos", objeto["efecto"]))
+
+        pendencias = self.pendencias()
+        self.assertEqual(len(pendencias), 1)
+        self.assertIn("EJECUCION_AMBIGUA", pendencias[0]["causa"],
+                      "la causa del registro de `g.9` no nombra la ambigüedad")
+        self.assertIn("ambigua", pendencias[0]["causa"])
+
+        # Y no se reintenta sola: una pasada más no vuelve a invocar al adaptador.
+        invocaciones = len(self.invocaciones())
+        self.exito(self.cli(["ciclo"]), "pasada posterior")
+        self.assertEqual(len(self.invocaciones()), invocaciones,
+                         "un ambiguo se reintentó, que es justo lo que no puede pasar")
+        self.assertEqual(self.paquete("pq-ambiguo")["estado"], "agotado")
+
+    def test_48_la_ambiguedad_se_clasifica_aunque_la_politica_se_aplique_despues(self):
+        """T184 · Defecto que previene: confundir un ambiguo con un fallo definitivo.
+
+        Los dos aterrizan en `fallido` y de ahí en `agotado`, así que el estado del paquete
+        no basta para distinguirlos: hay que mirar el RESULTADO escrito. Si se confundieran,
+        la causa del registro de `g.9` nombraría la cosa equivocada y quien tenga que
+        decidir leería «falló» donde dice «no se sabe si se hizo», que son decisiones
+        opuestas. Se ejerce el camino en que la política se aplica en una pasada POSTERIOR
+        —el proceso murió antes de aplicarla— y se comprueba que la clase se reconstruye
+        del resultado.
+        """
+        self.alta([{"id": "pq-ambiguo", "argumentos": ["ambiguo"]}])
+        caida = self.cli(["despachar", "pq-ambiguo"], fallo="antes-de-agotar")
+        self.assertEqual(caida.returncode, CODIGO_SALIDA_CAIDA)
+        self.assertEqual(self.paquete("pq-ambiguo")["estado"], "fallido")
+        self.assertEqual(self.pendencias(), [])
+
+        self.exito(self.cli(["ciclo"]), "reinicio")
+        self.assertEqual(self.paquete("pq-ambiguo")["estado"], "agotado")
+        pendencias = self.pendencias()
+        self.assertEqual(len(pendencias), 1)
+        self.assertIn("EJECUCION_AMBIGUA", pendencias[0]["causa"],
+                      "al aplicar la política más tarde, el ambiguo se degradó a otra cosa")
 
     def test_44_la_pendencia_se_retira_solo_por_una_transicion_explicita(self):
         """T184 · Defecto que previene: cerrar una pendencia borrando una línea.
@@ -1584,9 +1844,9 @@ class Piezas(unittest.TestCase):
     def test_90_los_codigos_de_error_son_estables_y_salen_en_el_texto(self):
         """T182 · Defecto que previene: una evidencia que depende del texto castellano.
 
-        El contrato de la salida es el CÓDIGO, no el detalle. Se comprueba que los quince
-        del §4.1 están, que cada `str(error)` lleva el suyo entre corchetes y que
-        `a_dict()` es determinista.
+        El contrato de la salida es el CÓDIGO, no el detalle. Se comprueba que los
+        dieciséis del §4.1 —los quince originales más `EJECUCION_AMBIGUA`— están, que
+        cada `str(error)` lleva el suyo entre corchetes y que `a_dict()` es determinista.
         """
         esperados = {
             "ERROR_DE_RUNTIME", "AUTORIDAD_NO_DISPONIBLE", "AUTORIDAD_PERDIDA",
@@ -1594,6 +1854,7 @@ class Piezas(unittest.TestCase):
             "DEPENDENCIA_NO_RESUELTA", "CAPACIDAD_NO_SOPORTADA", "ADAPTADOR_INCOMPATIBLE",
             "EJECUCION_FALLIDA", "EJECUCION_DEFINITIVA", "EJECUCION_CANCELADA",
             "TIEMPO_AGOTADO", "EFECTO_YA_APLICADO", "RUNTIME_INCONSISTENTE",
+            "EJECUCION_AMBIGUA",
         }
         from runtime import errores as errores_runtime
         self.assertEqual(set(errores_runtime.CODIGOS), esperados)

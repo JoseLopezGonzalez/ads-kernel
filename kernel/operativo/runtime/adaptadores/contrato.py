@@ -39,8 +39,16 @@ from __future__ import annotations
 
 VERSION_DE_CONTRATO = 1
 
-# Los cuatro estados que `ejecutar` puede devolver, y ninguna otra palabra.
-ESTADOS = ("completado", "fallido", "cancelado", "timeout")
+# Los CINCO estados que `ejecutar` puede devolver, y ninguna otra palabra.
+#
+# `ambiguo` es el quinto y se añadió por un defecto MEDIDO: si el proceso del runtime moría
+# entre ejecutar la tarea y escribir su recibo, al reiniciar se volvía a ejecutar y el efecto
+# se aplicaba DOS VECES en silencio. Con un proceso externo cualquiera no existe «exactamente
+# una vez»; lo que sí existe es NO DUPLICAR EN SILENCIO. `ambiguo` es la clase propia de ese
+# desenlace: ni completado, ni fallido, ni cancelado, ni reintentable. El runtime lo trata
+# como terminal y abre la reconciliación de `g.9`.
+ESTADOS = ("completado", "fallido", "cancelado", "timeout", "ambiguo")
+AMBIGUO = "ambiguo"
 
 # Los trece campos de la ficha de §3.4, en su orden.
 CAMPOS_DE_FICHA = (

@@ -21,6 +21,7 @@ DECLARARSE `soportado`**. Aquí no hay ningún campo `nivel` y no se ofrece ning
 from __future__ import annotations
 
 from .contrato import (
+    AMBIGUO,
     CAMPOS_DE_FICHA,
     ESTADOS,
     VERSION_DE_CONTRATO,
@@ -35,7 +36,12 @@ from .contrato import (
     ProyeccionObsoleta,
     comprobar_resultado,
 )
-from .proceso import AdaptadorDeProcesoLocal
+from .proceso import (
+    PUNTOS_DE_FALLO,
+    VARIABLE_DE_FALLO,
+    AdaptadorDeProcesoLocal,
+    puntos_de_fallo,
+)
 from .proyeccion import (
     AL_DIA,
     EDITADA_A_MANO,
@@ -49,7 +55,8 @@ from .proyeccion import (
 from .registro import RegistroDeAdaptadores
 
 __all__ = [
-    "VERSION_DE_CONTRATO", "ESTADOS", "CAMPOS_DE_FICHA",
+    "VERSION_DE_CONTRATO", "ESTADOS", "AMBIGUO", "CAMPOS_DE_FICHA",
+    "PUNTOS_DE_FALLO", "VARIABLE_DE_FALLO", "puntos_de_fallo",
     "Adaptador", "FichaDeAdaptador", "Cancelacion", "comprobar_resultado",
     "RegistroDeAdaptadores", "AdaptadorDeProcesoLocal",
     "compilar", "validar_deriva", "exigir_al_dia", "huella_de_entradas",

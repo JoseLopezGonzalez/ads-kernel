@@ -35,47 +35,48 @@ DECISIÓN · `observado_por[aspirante]` es un objeto `{latido, observaciones}`, 
     `{"runtime-B": {"latido": 7, "observaciones": 2}}`, con el mismo significado y el dato
     que faltaba.
 
-DECISIÓN · la vía rápida por `flock` NO sustituye a las observaciones, y sólo vale hacia abajo
-    El §3 la describe como atajo de la MISMA máquina: el titular mantiene un `flock` sobre
-    `estado/operacional/runtime/<instancia>.vivo`, y si un aspirante consigue ese `flock`,
-    el titular está muerto y la reclamación es inmediata. Ese fichero vive en el plano
-    OPERACIONAL, que está gitignorado y no es estado durable: ahí sí puede haber reloj y
-    pid, y de hecho el núcleo suelta el `flock` solo cuando el proceso muere, que es
-    justamente la propiedad que se quiere.
-    La vía rápida sólo puede concluir «MUERTO», nunca «VIVO»: si el fichero no existe, la
-    respuesta es `None` —no se puede decidir— y NO «está muerto». Entre máquinas el
-    fichero de un titular remoto sencillamente no está, y concluir de su ausencia que el
-    titular murió sería doble despacho por la puerta de atrás. Manda entonces la regla de
-    las observaciones, que es la que `g.6` deja a este contrato.
+RETIRADA · LA VÍA RÁPIDA POR `flock` YA NO EXISTE, y no se puede reponer
+    Hubo aquí un atajo que el §3 contempla: el titular sostenía un `flock` sobre
+    `estado/operacional/runtime/<instancia>.vivo`, y un aspirante que consiguiera ese
+    `flock` concluía que el titular había MUERTO y reclamaba en el acto. Se retira entero
+    tras la auditoría independiente, y conviene dejar escrito el ataque para que nadie lo
+    reponga por comodidad dentro de seis meses.
 
-DECISIÓN · EL TESTIGO DESAPARECE EN LA SALIDA LIMPIA, y esto era un DEFECTO GRAVE
-    Corregido tras la integración, y merece contarse porque el error era sutil y tumbaba la
-    capacidad 5 del §7 entera. `cerrar()` soltaba el `flock` y dejaba el fichero. Pero
-    entonces un proceso que TERMINA BIEN deja exactamente la misma huella que uno que
-    MURIÓ —fichero presente, `flock` libre—, y la vía rápida no puede distinguirlos. En el
-    modelo de la CLI, que es un proceso por orden, el titular NUNCA está vivo entre dos
-    órdenes, así que cualquier segunda instancia leía «muerto» y se llevaba el lease sin
-    una sola observación:
+    EL ATAQUE, ejecutado con `runtime-A` VIVO y trabajando:
 
-        ads_runtime --instancia runtime-A adquirir pq-ok   → titular runtime-A, época 1
-        ads_runtime --instancia runtime-B adquirir pq-ok   → titular runtime-B, época 2
+        A vivo? pid 1719412 · poll = None    testigo de A presente: True
+        >>> testigo de runtime-A SUSTITUIDO. A sigue vivo: True
+        reclamar de B  exit= 0   → {"titular": "runtime-B", "epoca": 2}
+        >>> B despacha pq-ok con A todavía ejecutándolo → "completado"
+        integridad del estado: VERDE
 
-    El lease no protegía nada. Ahora `cerrar()` BORRA el fichero, y las tres lecturas
-    quedan separadas de verdad:
+    No hizo falta matar a nadie: bastó **BORRAR el fichero y crear otro en su sitio**. El
+    testigo nuevo existe y su `flock` está libre, que es exactamente la huella que el
+    atajo leía como muerte. La afirmación «sólo un final abrupto deja esa combinación» era
+    FALSA.
 
-        no existe                 → salió limpiamente, o es de otra máquina → `None`,
-                                    INDECIDIBLE, y manda la regla de las observaciones
-        existe y `flock` TOMADO   → `False`, hay un proceso vivo con ese nombre
-        existe y `flock` LIBRE    → `True`, MURIÓ sin poder limpiar. SÓLO un final abrupto
-                                    —`os._exit`, `SIGKILL`, corte de corriente— deja esa
-                                    combinación, porque ninguno de los tres ejecuta
-                                    `finally`
+    POR QUÉ NO SE ARREGLA AUTENTICANDO EL TESTIGO. El plano operacional es, por definición
+    de `g.1`, **reconstruible y no durable**: está fuera de la huella, fuera de la admisión
+    y fuera del versionado. Nada de lo que vive ahí está protegido contra ser sustituido, y
+    no hay forma de autenticarlo DESDE DENTRO: cualquier secreto que el lease pudiera
+    comparar contra el testigo tendría que estar escrito en el estado canónico, que es
+    legible, y por tanto sería falsificable por quien fabrica el testigo. **Una credencial
+    que cualquiera puede fabricar no puede decidir autoridad.**
 
-    El borrado va ANTES de soltar el `flock`, y no después: entre soltar y borrar habría un
-    instante con «existe y libre», que es justo la lectura peligrosa. Y se borra sólo si el
-    fichero SIGUE siendo el nuestro —se compara el inodo—, porque otra instancia homónima
-    que arrancase mientras cerramos habría creado ya el suyo, y borrarlo la dejaría sin
-    testigo estando viva.
+    Y es peor que tocar el estado: editar el lease a mano da `ESTADO_CORRUPTO` y se ve.
+    Esto dejaba la integridad VERDE y un `runtime.lease.reclamado` de aspecto legítimo en
+    el diario, es decir, un robo con papeles en regla.
+
+    LO QUE QUEDA, y es una sola puerta: `PACIENCIA` observaciones consecutivas sin que el
+    latido avance. Cada observación es una transición DURABLE, escrita por el aspirante,
+    auditable y sujeta a la misma integridad que todo lo demás; falsificarla exige
+    falsificar el estado canónico, que es justamente lo que sí se detecta. El precio es que
+    recuperarse de una caída real es más lento —hay que observar `PACIENCIA` veces en vez
+    de reclamar al instante—, y es el precio correcto: la alternativa era un lease que no
+    protege nada.
+
+    `diagnostico_del_testigo()` sobrevive con otro nombre y SÓLO como diagnóstico. Ninguna
+    ruta de decisión lo consulta, y una prueba lo comprueba contra el árbol sintáctico.
 """
 from __future__ import annotations
 
@@ -230,13 +231,27 @@ def reclamado_por(lease, aspirante, revision_adquirida):
     }
 
 
-# --------------------------------------------------------------- vía rápida local
+# ------------------------------------------------- testigo de vida (SÓLO diagnóstico)
 class TestigoDeVida:
     """`flock` sobre `estado/operacional/runtime/<instancia>.vivo`. NO es estado durable.
 
-    Se toma al abrir el runtime y lo suelta el NÚCLEO cuando el proceso muere, sin
-    `finally`, sin `atexit` y sin cooperación del proceso muerto. Un centinela con pid no
-    tendría esa propiedad: quedaría a medio escribir y alguien acabaría borrándolo a mano.
+    Hace HOY dos cosas, y ninguna es decidir autoridad:
+
+      1 · IMPIDE DOS PROCESOS HOMÓNIMOS. `abrir()` falla si otro proceso vivo ya usa este
+          nombre de instancia. Eso sí es una garantía real, porque se apoya en un `flock`
+          que este proceso sostiene mientras vive: nadie puede hacer que un bloqueo tomado
+          parezca libre. Importa porque `titular` es quien firma cada observación y cada
+          latido, y dos runtimes homónimos lo volverían ambiguo.
+      2 · DA DIAGNÓSTICO. `diagnostico_del_testigo()` describe lo que hay en el plano
+          operacional, y se publica nombrándolo como pista NO AUTENTICADA.
+
+    Lo que YA NO hace es decidir que un titular murió. Ese atajo se retiró tras la
+    auditoría: el fichero es sustituible por cualquiera y con él se robaba el lease de un
+    titular VIVO. El encabezado del módulo guarda el ataque.
+
+    Nótese la asimetría, que es la que hace legítimo (1) e ilegítimo lo retirado: un
+    bloqueo TOMADO prueba que hay alguien: nadie puede falsificar la presencia. Un bloqueo
+    LIBRE no prueba nada: cualquiera puede fabricar la ausencia.
     """
 
     def __init__(self, raiz_operacional, instancia):
@@ -262,8 +277,8 @@ class TestigoDeVida:
             if exc.errno in (errno.EACCES, errno.EAGAIN, errno.EWOULDBLOCK):
                 # Otro proceso VIVO ya usa este nombre de instancia. Dejarlo pasar
                 # permitiría que dos procesos se llamasen igual, y entonces el `titular`
-                # del lease dejaría de identificar a uno solo: la vía rápida daría
-                # «muerto» sobre un titular vivo.
+                # del lease dejaría de identificar a uno solo, y `titular` es lo que
+                # nombra al autor de cada observación y de cada latido.
                 raise RuntimeInconsistente(
                     "ya hay un proceso vivo con el nombre de instancia `"
                     + self.instancia + "`; dos runtimes homónimos harían que `titular` "
@@ -280,7 +295,9 @@ class TestigoDeVida:
 
         El ORDEN es parte del contrato: primero se BORRA el fichero y después se suelta el
         `flock`. Al revés habría un instante en que el testigo existe con el bloqueo libre,
-        y ésa es exactamente la huella que `titular_muerto` lee como MUERTE.
+        y ésa era exactamente la huella que la vía rápida —hoy retirada— leía como
+        MUERTE. El borrado sigue yendo primero: `diagnostico_del_testigo` la publica, y una
+        pista de diagnóstico que miente confunde igual aunque no decida nada.
         """
         if self.descriptor is None:
             return
@@ -326,43 +343,42 @@ class TestigoDeVida:
             # benigna en un fallo de cierre.
             return
 
-    def titular_muerto(self, titular):
-        """`True` muerto · `False` vivo · `None` no se puede decidir desde esta máquina.
+    def diagnostico_del_testigo(self, titular):
+        """DIAGNÓSTICO, y NADA MÁS. No decide nada y ninguna ruta de decisión lo llama.
 
-        Las tres lecturas, y sólo son válidas porque `cerrar()` retira el fichero:
+        Devuelve `propio` · `ausente` · `tomado` · `libre` · `indeterminado`, que describen
+        lo que hay en el plano operacional y no lo que le ocurre al titular. La diferencia
+        importa: `libre` NO significa «murió». Significa «hay un fichero con ese nombre y
+        nadie lo tiene bloqueado», y eso lo produce igual una muerte que **un tercero que
+        borra el fichero y crea otro en su sitio**, que es el ataque que retiró la vía
+        rápida (ver el encabezado de este módulo).
 
-            no existe                 → salió limpiamente, o es de otra máquina → `None`
-            existe y `flock` TOMADO   → `False`, hay un proceso vivo con ese nombre
-            existe y `flock` LIBRE    → `True`, MURIÓ sin poder limpiar
-
-        `None` es una respuesta correcta y no un fallo: un titular de OTRA máquina no deja
-        testigo aquí, y su ausencia no prueba nada. El §3 reserva ese caso a la regla de
-        las observaciones, y quien recibe `None` NO puede robar el lease.
+        Sirve para que un operador vea qué hay, y para que la CLI lo publique nombrándolo
+        por lo que es: una pista NO AUTENTICADA. Quien lo lea no puede concluir autoridad.
         """
         if titular == self.instancia:
-            return False
+            return "propio"
         ruta = os.path.join(self.directorio, titular + SUFIJO_VIVO)
         if not os.path.exists(ruta):
-            return None
+            return "ausente"
         try:
             descriptor = os.open(ruta, os.O_RDWR)
         except OSError:
-            return None
+            return "indeterminado"
         try:
             try:
                 fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
             except OSError as exc:
                 if exc.errno in (errno.EACCES, errno.EAGAIN, errno.EWOULDBLOCK):
-                    return False        # alguien lo sostiene: el titular está VIVO
-                return None
+                    return "tomado"
+                return "indeterminado"
             try:
                 fcntl.flock(descriptor, fcntl.LOCK_UN)
             except OSError:
                 # El `finally` cierra el descriptor y con él se suelta el bloqueo. El
-                # desbloqueo explícito es cortesía, no requisito: el veredicto ya está
-                # tomado y no depende de él.
+                # desbloqueo explícito es cortesía, no requisito.
                 pass
-            return True                 # nadie lo sostiene: el titular está MUERTO
+            return "libre"
         finally:
             os.close(descriptor)
 

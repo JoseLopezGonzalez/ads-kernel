@@ -170,17 +170,52 @@ class ConfiguracionExterna(BaseDeIdentidad):
             identidad.cargar(dentro, arbol_verificado=self.arbol)
         self.assertIn("`O25` §3", str(capturado.exception))
 
-    def test_un_enlace_simbolico_no_la_cuela_dentro(self):
-        """T192 · Defecto que previene: meterla dentro con una ruta que no lo parece."""
+    def test_las_cuatro_formas_de_colar_la_configuracion_dentro(self):
+        """T192 · Defecto que previene: resolver el `realpath` del DIRECTORIO y no del FICHERO.
+
+        EL DEFECTO, medido: se resolvía el directorio y se conservaba el nombre, de modo que
+        un ENLACE COLOCADO FUERA QUE APUNTA DENTRO pasaba la guarda —la ruta parecía externa
+        y el fichero que se acababa leyendo era el del atacante—. Las cuatro formas:
+        """
         objetivo = os.path.join(self.arbol, "config")
         os.makedirs(objetivo)
         dentro = self._escribir_configuracion(objetivo)
-        enlace = os.path.join(self.directorio, "atajo")
-        os.symlink(objetivo, enlace)
-        with self.assertRaises(identidad.ConfiguracionDentroDelArbol):
-            identidad.cargar(os.path.join(enlace, "CONFIANZA.yml"),
-                             arbol_verificado=self.arbol)
-        self.assertTrue(os.path.isfile(dentro))
+
+        # 1 · DENTRO, a las claras.
+        formas = [("dentro", dentro)]
+
+        # 2 · ENLACE COLOCADO DENTRO que apunta FUERA. El repositorio controla el enlace,
+        #     luego elige qué configuración se carga: se rechaza aunque el fichero sea externo.
+        enlace_dentro = os.path.join(self.arbol, "CONFIANZA.yml")
+        os.symlink(self.configuracion, enlace_dentro)
+        formas.append(("enlace dentro→fuera", enlace_dentro))
+
+        # 3 · ENLACE COLOCADO FUERA que apunta DENTRO. Es el que se colaba.
+        enlace_fuera = os.path.join(self.fuera, "PARECE-EXTERNA.yml")
+        os.symlink(dentro, enlace_fuera)
+        formas.append(("enlace fuera→dentro", enlace_fuera))
+
+        # 4 · TRAVESÍA con `..` desde una ruta externa.
+        travesia = os.path.join(self.fuera, os.pardir, "arbol", "config", "CONFIANZA.yml")
+        formas.append(("travesía con ..", travesia))
+
+        for etiqueta, ruta in formas:
+            with self.subTest(forma=etiqueta):
+                with self.assertRaises(identidad.ConfiguracionDentroDelArbol):
+                    identidad.cargar(ruta, arbol_verificado=self.arbol)
+
+    def test_control_positivo_una_configuracion_de_verdad_externa_si_carga(self):
+        """T192 · Control POSITIVO: el arreglo no puede consistir en rechazarlo todo."""
+        configuracion = self.cargar()
+        self.assertEqual(configuracion.autoridad(), "raiz-externa-de-confianza")
+        # Y un enlace FUERA que apunta FUERA también carga: lo que se juzga es dónde acaba
+        # el fichero, no que haya un enlace por medio.
+        enlace = os.path.join(self.fuera, "por-enlace.yml")
+        os.symlink(self.configuracion, enlace)
+        self.assertEqual(
+            identidad.cargar(enlace, arbol_verificado=self.arbol).autoridad(),
+            "raiz-externa-de-confianza",
+        )
 
     def test_manipular_la_configuracion_dentro_del_arbol_no_cambia_el_veredicto(self):
         """T192 · Defecto que previene: `O25` §3, cambiar desde dentro qué identidad se acepta."""

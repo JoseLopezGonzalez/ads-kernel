@@ -170,8 +170,11 @@ proveedores intercambiables, un proveedor **efímero exclusivamente para pruebas
 cerrado cuando no hay proveedor válido**. La evidencia se escribe **fuera del árbol
 verificado**, y escribirla dentro es un error tipado.
 
-**`FD-1` sigue abierta**: ni titular ni custodio de clave productiva están decididos, y este
-contrato **no los decide**. Una clave de prueba **no es** una solución productiva.
+**`FD-1` está cerrada como DECISIÓN por `O25`**: la identidad es de la raíz externa de cada
+instalación, la autoridad administrativa del Owner y la custodia de una identidad de servicio
+dedicada del verificador externo. Este contrato **no la implementa**: su sede es
+[`CONTRATO-RAIZ-EXTERNA.md`](CONTRATO-RAIZ-EXTERNA.md). Una clave de prueba **no es** una
+solución productiva.
 
 ## 9 · Errores, y por qué son tipados
 

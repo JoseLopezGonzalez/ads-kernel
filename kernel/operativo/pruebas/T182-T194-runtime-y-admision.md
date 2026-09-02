@@ -59,13 +59,13 @@ dado:
 cuando:
   - "la segunda intenta adquirir, observar y reclamar"
 entonces:
-  - "`adquirir` NUNCA roba: sin muerte probada del titular es AUTORIDAD_NO_DISPONIBLE"
-  - "la reclamación exige PACIENCIA observaciones consecutivas sin que avance el latido"
-  - "el testigo de vida da TRES respuestas: vivo, muerto y INDECIDIBLE"
-  - "una salida limpia RETIRA el testigo; sólo una muerte abrupta lo deja con el cerrojo libre"
+  - "`adquirir` NUNCA roba: si el lease es de otro es AUTORIDAD_NO_DISPONIBLE, sin excepciones"
+  - "la reclamación tiene UNA sola puerta: PACIENCIA observaciones sin que avance el latido"
+  - "sustituir el testigo del plano operacional NO permite reclamar: no está autenticado"
+  - "ninguna ruta de decisión consulta el testigo; su lectura es sólo diagnóstico"
   - "quien pierde la autoridad no escribe NADA"
 falla_si:
-  - "un titular que terminó bien se lee como muerto, y su lease se puede robar al instante"
+  - "un fichero del plano operacional, que cualquiera puede fabricar, decide la autoridad"
   - "el lease lleva un plazo de reloj de pared en un artefacto durable"
 ejecucion: validador-estructural
 validador: kernel/operativo/runtime/pruebas/test_runtime.py
@@ -82,7 +82,8 @@ dado:
 cuando:
   - "se despacha hasta agotar los intentos"
 entonces:
-  - "reintentable, definitivo, cancelación y pérdida de autoridad son cuatro cosas distintas"
+  - "reintentable, definitivo, cancelación, ambigua y pérdida de autoridad son cinco cosas distintas"
+  - "una ejecución AMBIGUA no se reintenta nunca: va a `agotado` y abre reconciliación"
   - "un timeout es REINTENTABLE; un código de salida distinto de cero es DEFINITIVO"
   - "al agotar, el paquete queda `agotado`, deja de ser elegible y no se despacha"
   - "el agotamiento abre el registro auxiliar de `g.9` en la misma pasada"
@@ -144,14 +145,18 @@ cubre: [g.14, g.16 G-A8, O16]
 dado:
   - "un control repo con su gobierno instalado y su tabla de propiedad como dato"
 cuando:
-  - "se intenta mover una ref sin fast-forward, borrar una protegida, y forzar sin el hook"
+  - "se intenta mover una ref sin fast-forward por las TRES formas: cuatro argumentos, tres argumentos sin valor viejo, y `--stdin`"
+  - "se borra una ref protegida, y se fuerza con el hook retirado"
 entonces:
-  - "el hook `reference-transaction` RECHAZA lo que no es fast-forward y el borrado protegido"
+  - "el hook `reference-transaction` RECHAZA las TRES formas: cuando Git le pasa el OID nulo, resuelve la ref por su cuenta en vez de dejarla pasar"
+  - "crear una ref nueva y avanzar en fast-forward SIN valor viejo sí pasan: es el control positivo"
   - "el canal único rechaza `--force` y equivalentes ANTES de invocar Git"
   - "quitado el hook, el forzado se DENUNCIA contrastando el linaje registrado"
   - "preparar y publicar son actos distintos, y publicar compara la revisión base"
   - "con la ventana transaccional abierta no se confirma: la rama no contiene estado parcial"
 falla_si:
+  - "omitir el valor viejo —que Git hace opcional— salta la guarda"
+  - "la prueba usa sólo la forma que el hook cubre, y confirma lo que el código hace en vez de lo que el contrato promete"
   - "`--force-with-lease` se usa como sustituto de una política explícita"
   - "la política puede eximirse a sí misma del perímetro"
   - "la detección del forzado depende de que el hook siga instalado"
@@ -242,12 +247,16 @@ dado:
 cuando:
   - "se ejecuta, se excede el límite, se cancela y se repite la misma orden"
 entonces:
-  - "el timeout y la cancelación matan el GRUPO de procesos, y el nieto tampoco sobrevive"
-  - "una segunda llamada con el mismo efecto devuelve `repetido` sin volver a ejecutar"
+  - "el timeout y la cancelación matan el GRUPO, y el nieto y el bisnieto tampoco sobreviven"
+  - "un descendiente que se saca del grupo con `setsid` SÍ escapa, y la ficha lo declara"
+  - "una segunda llamada con recibo CERRADO devuelve `repetido` sin volver a ejecutar"
+  - "una segunda llamada con recibo ABIERTO devuelve `ambiguo` y tampoco ejecuta"
   - "la selección es por CAPACIDAD declarada, y una versión de contrato incompatible se rechaza"
   - "una proyección editada a mano y una obsoleta se distinguen entre sí"
 falla_si:
   - "el proceso hijo muere y el nieto queda huérfano ejecutándose"
+  - "la ficha promete alcanzar a toda la descendencia y la medición lo desmiente"
+  - "una caída entre ejecutar y cerrar el recibo duplica el efecto EN SILENCIO"
   - "un mock hace de adaptador y la prueba lo da por ejecución real"
   - "el adaptador escribe en el estado canónico: sería un segundo escritor"
 ejecucion: validador-estructural

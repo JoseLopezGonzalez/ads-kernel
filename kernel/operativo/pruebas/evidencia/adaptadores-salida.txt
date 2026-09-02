@@ -4,6 +4,10 @@
 # ---------------------------------------------------------------
 
 # --- stderr (código 0) ---
+test_sin_la_variable_el_punto_de_fallo_no_hace_nada (__main__.CaidaEntreEjecutarYCerrar.test_sin_la_variable_el_punto_de_fallo_no_hace_nada)
+T191 · Control POSITIVO: el aparato de corte no puede afectar a la vía normal. ... ok
+test_tras_el_corte_la_segunda_invocacion_da_ambiguo_y_no_duplica (__main__.CaidaEntreEjecutarYCerrar.test_tras_el_corte_la_segunda_invocacion_da_ambiguo_y_no_duplica)
+T191 · Defecto que previene: aplicar DOS VECES un efecto tras morir a media pasada. ... ok
 test_al_dia (__main__.HuellaYDeriva.test_al_dia)
 T191 · Control POSITIVO: sin tocar nada, la proyección está al día. ... ok
 test_dos_proyecciones_que_dicen_cosas_distintas_sobre_lo_mismo (__main__.HuellaYDeriva.test_dos_proyecciones_que_dicen_cosas_distintas_sobre_lo_mismo)
@@ -20,20 +24,30 @@ test_quitar_la_cabecera_tambien_es_editar_a_mano (__main__.HuellaYDeriva.test_qu
 T191 · Defecto que previene: borrar el aviso y que la huella no lo note. ... ok
 test_recompilar_con_las_mismas_entradas_da_los_mismos_bytes (__main__.HuellaYDeriva.test_recompilar_con_las_mismas_entradas_da_los_mismos_bytes)
 T191 · Control POSITIVO: recompilar y comparar es determinista (§6.3). ... ok
+test_un_descendiente_que_hace_setsid_ESCAPA_y_se_declara (__main__.LimiteDeLaSenalDeGrupo.test_un_descendiente_que_hace_setsid_ESCAPA_y_se_declara)
+T191 · Límite DECLARADO: `killpg` no alcanza a quien se sale del grupo. ... ok
 test_ejecuta_una_tarea_y_emite_progreso_linea_a_linea (__main__.ProcesoLocalReal.test_ejecuta_una_tarea_y_emite_progreso_linea_a_linea)
 T191 · Defecto que previene: «progreso» que es un diccionario devuelto al final. ... ok
 test_el_recibo_es_durable_y_sobrevive_a_otra_instancia (__main__.ProcesoLocalReal.test_el_recibo_es_durable_y_sobrevive_a_otra_instancia)
 T191 · Defecto que previene: una idempotencia que vive sólo en memoria. ... ok
 test_el_recibo_no_guarda_ni_un_milisegundo (__main__.ProcesoLocalReal.test_el_recibo_no_guarda_ni_un_milisegundo)
 T191 · Defecto que previene: meter reloj en algo que se compara byte a byte. ... ok
+test_el_recibo_se_abre_ANTES_de_ejecutar (__main__.ProcesoLocalReal.test_el_recibo_se_abre_ANTES_de_ejecutar)
+T191 · Defecto que previene: no dejar rastro de un efecto que ya se lanzó. ... ok
 test_el_timeout_mata_el_grupo_de_procesos_de_verdad (__main__.ProcesoLocalReal.test_el_timeout_mata_el_grupo_de_procesos_de_verdad)
 T191 · Defecto que previene: un «timeout» que deja al nieto vivo y colgado. ... ok
 test_la_cancelacion_tambien_mata (__main__.ProcesoLocalReal.test_la_cancelacion_tambien_mata)
 T191 · Defecto que previene: una cancelación que sólo lo pide por favor. ... ok
+test_los_tres_puntos_de_fallo_estan_declarados_y_se_llaman (__main__.ProcesoLocalReal.test_los_tres_puntos_de_fallo_estan_declarados_y_se_llaman)
+T191 · Defecto que previene: declarar un punto de fallo y no llamarlo nunca. ... ok
 test_un_efecto_confirmado_no_se_aplica_dos_veces (__main__.ProcesoLocalReal.test_un_efecto_confirmado_no_se_aplica_dos_veces)
 T191 · Defecto que previene: repetir un efecto ya aplicado tras una caída. ... ok
 test_un_identificador_de_efecto_con_barra_se_rechaza (__main__.ProcesoLocalReal.test_un_identificador_de_efecto_con_barra_se_rechaza)
 T191 · Defecto que previene: escribir el recibo fuera del espacio de trabajo. ... ok
+test_un_punto_de_fallo_mal_escrito_es_un_error_y_no_un_silencio (__main__.ProcesoLocalReal.test_un_punto_de_fallo_mal_escrito_es_un_error_y_no_un_silencio)
+T191 · Defecto que previene: una errata que hace pasar la prueba sin cortar nada. ... ok
+test_un_recibo_ABIERTO_da_ambiguo_y_no_vuelve_a_ejecutar (__main__.ProcesoLocalReal.test_un_recibo_ABIERTO_da_ambiguo_y_no_vuelve_a_ejecutar)
+T191 · Defecto que previene: aplicar un efecto DOS VECES en silencio. ... ok
 test_un_timeout_no_deja_recibo_y_por_eso_se_puede_reintentar (__main__.ProcesoLocalReal.test_un_timeout_no_deja_recibo_y_por_eso_se_puede_reintentar)
 T191 · Defecto que previene: dar por aplicado un efecto que nunca terminó. ... ok
 test_una_muerte_abrupta_se_distingue_de_un_fallo_de_la_tarea (__main__.ProcesoLocalReal.test_una_muerte_abrupta_se_distingue_de_un_fallo_de_la_tarea)
@@ -62,6 +76,6 @@ test_version_de_contrato_incompatible (__main__.RegistroYFicha.test_version_de_c
 T191 · Defecto que previene: aceptar un adaptador de otra versión del contrato. ... ok
 
 ----------------------------------------------------------------------
-Ran 28 tests  (duración no registrada: varía por ejecución)
+Ran 35 tests  (duración no registrada: varía por ejecución)
 
 OK

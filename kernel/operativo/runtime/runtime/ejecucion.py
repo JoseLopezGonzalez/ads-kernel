@@ -181,7 +181,12 @@ class AdaptadorEnPruebas(Adaptador):
     parchear nada:
 
         argumentos: ["exito"] · ["fallo-reintentable"] · ["fallo-definitivo"]
-                    ["cancelacion"] · ["timeout"] · ["exito", "<texto de salida>"]
+                    ["cancelacion"] · ["timeout"] · ["ambiguo"] · ["exito", "<salida>"]
+
+    `ambiguo` simula lo que el adaptador real devuelve cuando encuentra un recibo de
+    INTENCIÓN abierto y sin cerrar: empezó y no consta que terminara. **No anota efecto en
+    `ejecuciones.log`**, y eso es deliberado: anotarlo afirmaría que se aplicó, y la
+    ambigüedad consiste precisamente en no saberlo.
     """
 
     EN_PRUEBAS = True
@@ -189,7 +194,7 @@ class AdaptadorEnPruebas(Adaptador):
     version_de_contrato = VERSION_DE_CONTRATO
 
     COMPORTAMIENTOS = ("exito", "fallo-reintentable", "fallo-definitivo", "cancelacion",
-                       "timeout")
+                       "timeout", "ambiguo")
 
     def __init__(self, espacio, *, identificador="adaptador-en-pruebas",
                  capacidades=("proceso-local",)):
@@ -280,11 +285,15 @@ class AdaptadorEnPruebas(Adaptador):
 
         # EL EFECTO. Una línea anexada, sincronizada: si el proceso muere justo después,
         # la línea ya está y contarla dos veces sería el defecto que se quiere impedir.
+        # Con `ambiguo` NO se anota: afirmar que el efecto se aplicó es justo lo que no se
+        # puede afirmar, y una bitácora que miente en ese punto haría que la prueba de
+        # idempotencia midiese otra cosa.
         os.makedirs(self.espacio, exist_ok=True)
-        with open(self.bitacora, "a", encoding="utf-8") as fichero:
-            fichero.write(efecto + " " + comportamiento + "\n")
-            fichero.flush()
-            os.fsync(fichero.fileno())
+        if comportamiento != "ambiguo":
+            with open(self.bitacora, "a", encoding="utf-8") as fichero:
+                fichero.write(efecto + " " + comportamiento + "\n")
+                fichero.flush()
+                os.fsync(fichero.fileno())
 
         resultado = self._resultado_de(comportamiento, efecto, argumentos)
         self._guardar_recibo(efecto, resultado)
@@ -308,6 +317,12 @@ class AdaptadorEnPruebas(Adaptador):
             return {"estado": "cancelado", "codigo": 130, "salida": salida,
                     "detalle": "cancelacion simulada", "reintentable": False,
                     "efecto": efecto, "repetido": False}
+        if comportamiento == "ambiguo":
+            # `repetido: true` con `estado: "ambiguo"` es la forma exacta que el adaptador
+            # real emite ante un recibo de intención sin cerrar.
+            return {"estado": "ambiguo", "codigo": 0, "salida": salida,
+                    "detalle": "recibo de intencion abierto y sin cerrar",
+                    "reintentable": False, "efecto": efecto, "repetido": True}
         return {"estado": "timeout", "codigo": 124, "salida": salida,
                 "detalle": "limite excedido simulado", "reintentable": True,
                 "efecto": efecto, "repetido": False}

@@ -208,14 +208,54 @@ positivo y con el mismo ataque en cuatro zonas de clases distintas.
 **Y una decisión del Owner que este corte cierra como decisión:** `FD-1`, por `O25`. Tras
 ella **no queda ninguna decisión del Owner pendiente para seguir construyendo `F6`**.
 
+## 5 quater · La auditoría del SEGUNDO corte, y qué cambió por ella
+
+**Quién.** Un auditor que no construyó nada de este corte, con el encargo de romperlo, y que
+no escribió una línea en el árbol: comprobado al terminar que `git status --porcelain` seguía
+vacío.
+
+**Lo que intentó y NO consiguió:** confirmar sobre la rama canónica con la ventana
+transaccional abierta · que dos escritores Git confirmaran a la vez —seis procesos reales,
+**una sola cabeza**— · pasar la admisión con una mutación de contenido en **once** variantes,
+incluidas la raíz, la sede del Owner, una evidencia publicada, la política del verificador y
+el propio censo · hacer que el verificador se excluyera a sí mismo · cambiar desde dentro del
+árbol qué identidad acepta la raíz externa · encontrar un secreto o una ruta absoluta en las
+21 evidencias · romper el determinismo de ninguna de las seis baterías ni de los dos
+escenarios —byte a byte idénticos desde tres `cwd`— · y desmentir la huella, que recalculó
+**con su propia implementación**, sin importar `huella.py`, obteniendo el mismo valor sobre
+los mismos ficheros.
+
+**Lo que SÍ encontró, y se corrigió en la única pasada de corrección:**
+
+| defecto | clasificación | qué se hizo |
+|---|---|---|
+| **se robaba el lease de un titular VIVO sustituyendo su testigo**, y el mismo efecto se ejecutaba dos veces dejando la integridad en VERDE | **BLOQUEA EL CORTE** | **se RETIRA la vía rápida entera.** El plano operacional es reconstruible, está fuera de la huella, fuera de la admisión y fuera del versionado: **una credencial que cualquiera puede fabricar no puede decidir autoridad**, y no hay forma de autenticarla desde dentro. La reclamación queda con una sola puerta: las observaciones contadas |
+| **la mitad IMPOSIBLE de `G-A8` se saltaba omitiendo un argumento opcional**: Git pasa el OID nulo cuando el llamador no declara valor viejo, y el hook lo dejaba pasar. La batería no lo veía porque usaba siempre la forma que el hook sí cubría | **BLOQUEA EL CORTE** | el hook **resuelve la ref por su cuenta** cuando recibe el OID nulo y la juzga igual. Con las tres formas probadas —cuatro argumentos, tres argumentos y `--stdin`— y con el control positivo de la creación de una ref nueva |
+| un efecto se aplicaba **dos veces** si el proceso moría entre ejecutar y escribir el recibo | CORRECCIÓN DETERMINADA | **no se cierra la ventana: se hace DETECTABLE.** El recibo se abre antes de ejecutar; una segunda invocación que lo encuentre sin cerrar devuelve `ambiguo`, y el runtime **no completa ni reintenta**: abre la reconciliación de `g.9`. Registrado como `FD-6` |
+| había un **`pid` en el estado canónico durable**, contra `I-g3`, y la prueba que lo habría cazado corría sólo contra el registro en pruebas | CORRECCIÓN DETERMINADA | lista **blanca** de claves que entran en lo durable, y la prueba de `I-g3` corre también con el adaptador real |
+| `adquirir` funcionaba sobre un paquete `agotado`, contra lo que el contrato decía | CORRECCIÓN DETERMINADA | rechazado con su error tipado |
+| `identidad.cargar` resolvía el `realpath` del DIRECTORIO y no del fichero | CORRECCIÓN DETERMINADA | se resuelve el del fichero, con las cuatro formas probadas |
+| perder la carrera por una ref se reportaba como fallo del sistema de ficheros | CORRECCIÓN DETERMINADA | error de serialización, que es lo que es |
+| un descendiente que hace `setsid` **escapa** al `killpg` | **DEUDA DE OTRO CORTE** | contenerlo exige `cgroups` o espacios de nombres del anfitrión. **La afirmación se corrigió de inmediato**: el contrato dice ahora lo que alcanza y lo que no. Registrado como `FD-5` |
+| la identidad de pruebas es **simétrica**: quien verifica podría firmar | DEUDA DE OTRO CORTE | ya declarado: `V6-16` y la firma asimétrica del anfitrión son del corte siguiente |
+
+> **Y una lección de método que conviene no perder.** Dos de los defectos vivían en pruebas
+> que **pasaban**: la del `pid` corría contra el registro en pruebas, que no produce pid, y la
+> del forzado usaba la única forma de `update-ref` que el hook cubría. **Una prueba que
+> confirma lo que el código hace, en vez de lo que el contrato promete, es una prueba que no
+> puede ponerse roja.**
+
 ## 6 · Lo que este corte NO hace
 
 ```text
 NO INICIA        PesquerApp, ni un MVP, ni un piloto, ni una adopción parcial
 NO CERTIFICA     nada: implementado y probado NO es certificado
-NO COMPLETA      F6: este es el PRIMER corte, y el plan tiene ocho
+NO COMPLETA      F6: van DOS cortes, y quedan el ciclo de §7.2, V6-15, V6-16, la prueba
+                 de humo en sesión nueva y los cuatro macrocircuitos
 NO REABRE        F4c ni F5
-NO ELIGE         custodia productiva de claves: FD-1 sigue abierta y sin titular
+NO EJECUTA       la raíz externa fuera del árbol con un proveedor productivo. `O25` YA
+                 fijó titular y custodio —`FD-1` está cerrada como DECISIÓN—, y lo que
+                 falta es la implementación, con firma asimétrica del anfitrión
 ```
 
 ## 7 · El corte siguiente, exacto

@@ -133,6 +133,81 @@ class HookImposible(BaseDeGobierno):
         _, cabeza = self.gobierno.canal.existe_ref(gobierno.RAMA_CANONICA)
         self.assertEqual(cabeza, resultado["nuevo"])
 
+    def _tres_confirmaciones(self):
+        """Deja la canónica con tres commits y devuelve el primero y el tercero."""
+        self.gobierno.conceder(gobierno.RAMA_CANONICA)
+        primero = self._confirmar("a.txt", b"uno\n")
+        self._confirmar("b.txt", b"dos\n")
+        tercero = self._confirmar("c.txt", b"tres\n")
+        return primero, tercero
+
+    def _cabeza(self):
+        _, cabeza = self.gobierno.canal.existe_ref(gobierno.RAMA_CANONICA)
+        return cabeza
+
+    def test_forzado_SIN_declarar_valor_viejo_es_rechazado(self):
+        """T187 · Defecto que previene: saltarse `G-A8` omitiendo un argumento.
+
+        EL DEFECTO, medido: el hook llevaba `[ "$viejo" = "$nulo" ] && continue`, y Git pasa
+        el OID nulo cuando el llamador NO declara valor viejo —que es el caso POR DEFECTO de
+        `git update-ref <ref> <nuevo>`—. Con tres palabras en vez de cuatro, el rebobinado
+        PASABA con `exit 0`. La batería anterior no lo cazaba porque sólo probaba la forma de
+        cuatro argumentos: confirmaba lo que el código hacía, no lo que el contrato promete.
+        """
+        primero, _ = self._tres_confirmaciones()
+        antes = self._cabeza()
+        codigo, _, error = self.gobierno.canal.ejecutar(
+            "update-ref", gobierno.RAMA_CANONICA, primero["nuevo"], exigir_exito=False
+        )
+        self.assertNotEqual(codigo, 0, "tres argumentos NO pueden ser una vía de forzado")
+        self.assertIn("NO fast-forward", error.decode("utf-8", "replace"))
+        self.assertEqual(self._cabeza(), antes, "la cabeza no se movió")
+
+    def test_forzado_por_stdin_sin_valor_viejo_es_rechazado(self):
+        """T187 · Defecto que previene: la misma omisión por la puerta de `--stdin`."""
+        primero, _ = self._tres_confirmaciones()
+        antes = self._cabeza()
+        orden = ("update " + gobierno.RAMA_CANONICA + " " + primero["nuevo"] + "\n")
+        codigo, _, _ = self.gobierno.canal.ejecutar(
+            "update-ref", "--stdin", entrada=orden.encode("utf-8"), exigir_exito=False
+        )
+        self.assertNotEqual(codigo, 0)
+        self.assertEqual(self._cabeza(), antes)
+
+    def test_crear_una_ref_nueva_sin_valor_viejo_SI_pasa(self):
+        """T187 · Control POSITIVO: el arreglo no puede consistir en rechazarlo todo."""
+        _, tercero = self._tres_confirmaciones()
+        codigo, _, _ = self.gobierno.canal.ejecutar(
+            "update-ref", "refs/heads/trabajo", tercero["nuevo"], exigir_exito=False
+        )
+        self.assertEqual(codigo, 0, "una CREACIÓN de verdad sigue pasando")
+        existe, cabeza = self.gobierno.canal.existe_ref("refs/heads/trabajo")
+        self.assertTrue(existe)
+        self.assertEqual(cabeza, tercero["nuevo"])
+
+    def test_avanzar_fast_forward_sin_valor_viejo_SI_pasa(self):
+        """T187 · Control POSITIVO: lo que la política permite sigue permitido."""
+        self._tres_confirmaciones()
+        preparacion = self.gobierno.preparar(
+            gobierno.RAMA_CANONICA, mensaje="cuatro", ficheros={"d.txt": b"cuatro\n"}
+        )
+        codigo, _, _ = self.gobierno.canal.ejecutar(
+            "update-ref", gobierno.RAMA_CANONICA, preparacion["commit"], exigir_exito=False
+        )
+        self.assertEqual(codigo, 0)
+        self.assertEqual(self._cabeza(), preparacion["commit"])
+
+    def test_borrado_de_ref_protegida_SIN_valor_viejo_es_rechazado(self):
+        """T187 · Defecto que previene: borrar la canónica omitiendo el valor viejo."""
+        self._tres_confirmaciones()
+        antes = self._cabeza()
+        codigo, _, error = self.gobierno.canal.ejecutar(
+            "update-ref", "-d", gobierno.RAMA_CANONICA, exigir_exito=False
+        )
+        self.assertNotEqual(codigo, 0)
+        self.assertIn("BORRADO", error.decode("utf-8", "replace"))
+        self.assertEqual(self._cabeza(), antes)
+
     def test_borrado_de_ref_protegida_es_rechazado_por_el_hook(self):
         """T187 · Defecto que previene: borrar la rama canónica y rehacerla a gusto."""
         self.gobierno.conceder(gobierno.RAMA_CANONICA)
@@ -255,13 +330,46 @@ class CanalUnico(BaseDeGobierno):
         tercero = self.gobierno.preparar(
             gobierno.RAMA_CANONICA, mensaje="tres", ficheros={"c.txt": b"tres\n"}
         )
-        with self.assertRaises(gobierno.GitFallo):
+        with self.assertRaises(gobierno.RevisionBaseObsoleta) as capturado:
             # Se declara como viejo el PRIMERO, cuando la ref ya está en el SEGUNDO.
             self.gobierno.canal.actualizar_ref(
                 gobierno.RAMA_CANONICA, tercero["commit"], primero["nuevo"]
             )
+        self.assertIn("otro escritor publicó primero", str(capturado.exception))
+        self.assertNotIn("FALLO_DE_SISTEMA_DE_FICHEROS", str(capturado.exception))
         _, cabeza = self.gobierno.canal.existe_ref(gobierno.RAMA_CANONICA)
         self.assertEqual(cabeza, segundo["nuevo"])
+
+    def test_perder_la_carrera_por_una_ref_no_es_una_averia_de_disco(self):
+        """T187 · Defecto que previene: que la contención se lea como fallo del disco.
+
+        `git update-ref` dice «Unable to create '.../canonica.lock': File exists» cuando otro
+        escritor tiene la ref tomada. Propagado tal cual, eso manda a diagnosticar el disco
+        en vez de a reintentar. Aquí se toma el cerrojo de la ref A MANO y se comprueba que
+        lo que sale es un error de SERIALIZACIÓN, con el texto de Git conservado aparte.
+        """
+        self.gobierno.conceder(gobierno.RAMA_CANONICA)
+        resultado = self._confirmar("a.txt", b"uno\n")
+        preparacion = self.gobierno.preparar(
+            gobierno.RAMA_CANONICA, mensaje="dos", ficheros={"b.txt": b"dos\n"}
+        )
+        _, directorio, _ = self.gobierno.canal.ejecutar("rev-parse", "--absolute-git-dir")
+        cerrojo = os.path.join(directorio.decode("utf-8").strip(),
+                               gobierno.RAMA_CANONICA + ".lock")
+        os.makedirs(os.path.dirname(cerrojo), exist_ok=True)
+        with open(cerrojo, "w", encoding="utf-8") as manejador:
+            manejador.write("")
+        try:
+            with self.assertRaises(gobierno.DobleEscritor) as capturado:
+                self.gobierno.canal.actualizar_ref(
+                    gobierno.RAMA_CANONICA, preparacion["commit"], resultado["nuevo"]
+                )
+        finally:
+            os.remove(cerrojo)
+        self.assertIn("Es contención", str(capturado.exception))
+        self.assertNotIn("FALLO_DE_SISTEMA_DE_FICHEROS", str(capturado.exception))
+        # El texto original de Git NO se pierde: gana precisión sin perder información.
+        self.assertIn("lock", capturado.exception.contexto["git"].lower())
 
     def test_el_entorno_de_git_es_hermetico(self):
         """T187 · Defecto que previene: un veredicto que dependa de la config de la máquina."""

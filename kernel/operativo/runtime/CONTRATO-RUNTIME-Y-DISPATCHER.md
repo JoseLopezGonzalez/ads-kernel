@@ -44,21 +44,33 @@ la RECLAMACIÓN es legítima  cuando el aspirante acumula PACIENCIA observacione
 `PACIENCIA` vale **3** por defecto y es **parámetro CALIBRABLE**: `g.6` deja la resolución
 entre máquinas al contrato derivado.
 
-**La vía rápida de la misma máquina no sustituye a las observaciones y sólo vale hacia
-abajo.** El testigo de vida es un `flock` en el plano operacional, y da **tres** respuestas,
-no dos:
+**NO HAY VÍA RÁPIDA, y su retirada es una decisión, no un olvido.** La hubo: el testigo de
+vida del plano operacional daba una tercera lectura —«el fichero existe y su cerrojo está
+libre, luego el titular murió»— que permitía reclamar al instante. **Una auditoría
+independiente la rompió con una orden**: bastaba SUSTITUIR el fichero, con el titular vivo y
+ejecutando, para llevarse el lease y ejecutar el mismo efecto dos veces, dejando además la
+integridad del estado en VERDE.
+
+La causa es estructural y no se arregla autenticando nada: el plano operacional es, por
+`g.1`, **reconstruible y no durable** —fuera de la huella, fuera de la admisión, fuera del
+versionado—, de modo que **cualquiera puede fabricarlo**. Y no hay testigo que el lease pueda
+comprobar: todo lo que el lease conoce vive en el estado canónico, que es legible, y por
+tanto falsificable.
 
 ```text
-el fichero NO existe                → INDECIDIBLE. El titular salió limpiamente, o es de
-                                      otra máquina. Manda la regla de observaciones
-existe y el `flock` está TOMADO     → VIVO
-existe y el `flock` está LIBRE      → MUERTO. Sólo un final abrupto deja esa combinación,
-                                      porque una salida limpia RETIRA el fichero
+un cerrojo TOMADO   prueba que hay alguien: nadie puede falsificar una presencia
+un cerrojo LIBRE    no prueba nada: cualquiera puede fabricar una ausencia
 ```
 
-> **Y la regla que impide que la vía rápida se coma el lease:** `adquirir` **NUNCA roba**.
-> Si hay lease de otro y no está probadamente muerto, es `AutoridadNoDisponible`. Robar lo
-> hace sólo `reclamar`, y sólo por una de las dos vías de arriba.
+**La reclamación queda con UNA SOLA PUERTA: las observaciones contadas.** `adquirir` **nunca
+roba** —si el lease es de otro es `AutoridadNoDisponible`, sin excepciones—, y robar tiene un
+solo nombre, `reclamar`, que exige `PACIENCIA` observaciones consecutivas sin que el latido
+avance. El precio, y se asume: recuperarse de la caída de otra instancia cuesta `PACIENCIA`
+pasadas en vez de una.
+
+Lo que el testigo sí conserva, porque ahí sí es sólido, es impedir que dos procesos usen el
+mismo nombre de instancia a la vez. Su lectura se publica como **diagnóstico no autenticado**
+y **ninguna ruta de decisión la consulta**.
 
 ## 3 · Idempotencia del efecto — dos niveles, y no son redundantes
 
@@ -77,12 +89,22 @@ de ejecutar y antes del acuse, el runtime que recupera no ve acuse y **vuelve a 
 adaptador; es el RECIBO el que impide la segunda aplicación y devuelve `repetido: true`. Lo
 mide el escenario extremo a extremo: dos invocaciones, **una sola ejecución**.
 
+**Y hay una ventana MÁS ADENTRO que tampoco se cierra, y por eso el recibo se abre antes de
+ejecutar.** Si el proceso muere entre EJECUTAR y escribir el recibo, no queda rastro de que
+la tarea corriera. Con un proceso externo cualquiera **no existe «exactamente una vez»**: lo
+que existe es no duplicar en silencio. Una segunda invocación que encuentre el recibo abierto
+devuelve **`ambiguo`**, y el runtime no completa ni reintenta: abre la reconciliación. Es
+`FD-6`, y está registrada.
+
 ## 4 · Las cuatro clases de fallo, que no son una
 
 ```text
 REINTENTABLE          se escribe el fallo, el paquete vuelve a `listo` y suma un intento
 DEFINITIVO            no se reintenta: el paquete queda `fallido`
 CANCELACIÓN           terminal, y no admite reanudación
+AMBIGUA               el adaptador no puede decir si el efecto se aplicó. NO se reintenta,
+                      queden los intentos que queden: el paquete va a `agotado` y se abre la
+                      reconciliación de `g.9`, porque esto lo decide LA AUTORIDAD
 PÉRDIDA DE AUTORIDAD  NO se escribe NADA. El lease cambió de titular o de época bajo los
                       pies, y quien perdió la autoridad no toca el estado
 ```

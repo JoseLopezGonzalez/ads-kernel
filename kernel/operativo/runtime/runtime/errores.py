@@ -123,6 +123,25 @@ class EjecucionCancelada(ErrorDeRuntime):
     CODIGO = "EJECUCION_CANCELADA"
 
 
+class EjecucionAmbigua(ErrorDeRuntime):
+    """No se sabe SI el efecto se aplicó. No es éxito, no es fallo y no se reintenta.
+
+    Nadie puede garantizar «exactamente una vez» contra un proceso externo cualquiera: entre
+    lanzar el trabajo y anotar que se lanzó hay siempre una ventana, y un corte dentro de
+    ella deja el mundo en un estado que desde fuera no se puede leer. Lo que sí se puede
+    garantizar es que esa ambigüedad se DETECTE en vez de duplicarse en silencio, y eso es
+    lo que este error significa: el adaptador encontró un recibo de INTENCIÓN abierto y sin
+    cerrar, luego empezó y no consta que terminara.
+
+    Reintentar podría aplicar el efecto una segunda vez; darlo por bueno podría dar por
+    hecho algo que no ocurrió. Las dos son decisiones, y ninguna es del runtime: el paquete
+    queda `agotado` y se abre el registro de reconciliación de `g.9` nombrando la
+    ambigüedad, que es la vía por la que `g.9` reserva estas salidas a la AUTORIDAD.
+    """
+
+    CODIGO = "EJECUCION_AMBIGUA"
+
+
 class TiempoAgotado(ErrorDeRuntime):
     CODIGO = "TIEMPO_AGOTADO"
 
@@ -145,7 +164,8 @@ CLASES = (
     ErrorDeRuntime, AutoridadNoDisponible, AutoridadPerdida, ReclamacionPrematura,
     PaqueteDesconocido, EstadoDePaqueteInvalido, DependenciaNoResuelta,
     CapacidadNoSoportada, AdaptadorIncompatible, EjecucionFallida, EjecucionDefinitiva,
-    EjecucionCancelada, TiempoAgotado, EfectoYaAplicado, RuntimeInconsistente,
+    EjecucionCancelada, EjecucionAmbigua, TiempoAgotado, EfectoYaAplicado,
+    RuntimeInconsistente,
 )
 
 CODIGOS = tuple(sorted(clase.CODIGO for clase in CLASES))

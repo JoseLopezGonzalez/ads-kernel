@@ -63,6 +63,7 @@ from .errores import (
     CapacidadNoSoportada,
     DependenciaNoResuelta,
     EfectoYaAplicado,
+    EjecucionAmbigua,
     EjecucionCancelada,
     EjecucionDefinitiva,
     EjecucionFallida,
@@ -100,6 +101,7 @@ __all__ = [
     "ErrorDeRuntime", "AutoridadNoDisponible", "AutoridadPerdida",
     "ReclamacionPrematura", "PaqueteDesconocido", "EstadoDePaqueteInvalido",
     "DependenciaNoResuelta", "CapacidadNoSoportada", "AdaptadorIncompatible",
-    "EjecucionFallida", "EjecucionDefinitiva", "EjecucionCancelada", "TiempoAgotado",
+    "EjecucionFallida", "EjecucionDefinitiva", "EjecucionCancelada",
+    "EjecucionAmbigua", "TiempoAgotado",
     "EfectoYaAplicado", "RuntimeInconsistente",
 ]

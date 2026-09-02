@@ -71,6 +71,7 @@ from .errores import (
     AutoridadPerdida,
     CapacidadNoSoportada,
     DependenciaNoResuelta,
+    EjecucionAmbigua,
     EjecucionCancelada,
     EjecucionDefinitiva,
     EjecucionFallida,
@@ -136,7 +137,8 @@ DESENLACE_OMITIDO = "omitido"
 DESENLACES_DE_UN_PAQUETE = (
     AutoridadNoDisponible, AutoridadPerdida, DependenciaNoResuelta,
     CapacidadNoSoportada, AdaptadorIncompatible, EstadoDePaqueteInvalido,
-    EjecucionFallida, EjecucionDefinitiva, EjecucionCancelada, TiempoAgotado,
+    EjecucionFallida, EjecucionDefinitiva, EjecucionCancelada, EjecucionAmbigua,
+    TiempoAgotado,
 )
 
 # Fallos que ocurren ANTES de que nada se haya ejecutado. Al propagarlos hay que soltar la
@@ -430,16 +432,20 @@ class Runtime:
             aparezca la palabra. Ahora robar tiene un solo nombre, `reclamar`, y sus dos
             únicas puertas siguen siendo las del §3: `PACIENCIA` observaciones consecutivas
             sin latido, o muerte PROBADA. Quien despacha llama a `reclamar` de forma
-            explícita —`_reclamar_si_murio`— y el robo se lee en la traza del diario.
-            Alternativa descartada: dejar la vía rápida en `adquirir` sólo para la muerte
-            probada. Es correcta hoy y sigue siendo indistinguible de un robo mañana, en
-            cuanto alguien toque la definición de «probada».
+            explícita —`_pretender_autoridad_ajena`— y el robo se lee en la traza del
+            diario.
+            La auditoría independiente cerró después la otra mitad: la vía rápida por el
+            plano operacional se RETIRÓ entera, porque su testigo era fabricable y con él
+            se robaba el lease de un titular VIVO dejando la integridad en verde. El
+            encabezado de `lease.py` guarda el ataque y la razón. Hoy la única puerta para
+            retirarle el lease a otro son `PACIENCIA` observaciones DURABLES.
         """
         self._exigir_operable()
-        self._leer_paquete(paquete)
+        self._exigir_adquirible(self._leer_paquete(paquete))
         escrito = {}
 
         def construir(revision):
+            self._exigir_adquirible(self._leer_paquete(paquete))
             lease = self._leer_lease(paquete)
             if lease is None:
                 nuevo = nuevo_lease(paquete=paquete, titular=self.instancia,
@@ -449,20 +455,14 @@ class Runtime:
                 nuevo = con_latido(lease)
                 motivo = "renovación de la autoridad propia sobre " + paquete
             else:
-                # El lease es de OTRO. No se mira si está vivo para decidir si robar: no se
-                # roba. Se mira sólo para explicar en el error cuál es la vía abierta.
-                muerto = self._testigo.titular_muerto(lease["titular"])
-                if muerto is True:
-                    salida = ("su testigo de vida quedó libre, luego murió: la vía es "
-                              "`reclamar`, que sube la época y deja el robo escrito")
-                elif muerto is False:
-                    salida = "su testigo de vida sigue tomado: está VIVO"
-                else:
-                    salida = ("no hay testigo suyo en esta máquina, así que su estado es "
-                              "INDECIDIBLE: la vía es observar y luego `reclamar`")
+                # El lease es de OTRO, y no hay nada que mirar. No se consulta el plano
+                # operacional: es fabricable, y una credencial que cualquiera puede
+                # fabricar no puede decidir autoridad. La única vía es observar y reclamar.
                 raise AutoridadNoDisponible(
                     "el lease lo tiene `" + lease["titular"] + "` en la época "
-                    + str(lease["epoca"]) + "; " + salida,
+                    + str(lease["epoca"]) + "; la única vía para retirárselo es acumular "
+                    + str(self.paciencia) + " observaciones consecutivas sin que su latido "
+                    "avance y después `reclamar`",
                     ruta=paquete, titular=lease["titular"], epoca=lease["epoca"],
                 )
             escrito["lease"] = nuevo
@@ -476,22 +476,44 @@ class Runtime:
                       descripcion="adquisición del lease de " + paquete)
         return escrito["lease"]
 
-    def _reclamar_si_murio(self, paquete):
-        """Reclama SÓLO ante muerte PROBADA del titular. Devuelve si hubo reclamación.
+    def _exigir_adquirible(self, actual):
+        """El §4 lo dice: un paquete `agotado` NO vuelve a adquirirse.
 
-        Es la única puerta por la que el barrido del dispatcher se hace con la autoridad de
-        otro, y pasa por `reclamar`, no por `adquirir`: así el robo queda escrito en el
-        diario como `runtime.lease.reclamado`, con la época que sube, y se puede auditar.
-        Muerte PROBADA es la tercera lectura de `titular_muerto`: el testigo existe y su
-        `flock` está libre, que es lo que deja un final abrupto y sólo un final abrupto.
+        Y con él los dos terminales, por la misma razón: la autoridad sobre una unidad de
+        trabajo sirve para hacerla avanzar, y de `completado`, `cancelado` y `agotado` la
+        tabla del §4.2 no lleva a ninguna parte que el runtime pueda recorrer —de `agotado`
+        sólo sale `resolver_reconciliacion`, que es de la AUTORIDAD—. Tomar un lease ahí
+        sería reservar algo que nadie va a mover.
+        """
+        if actual["estado"] in ESTADOS_CERRADOS:
+            raise EstadoDePaqueteInvalido(
+                "un paquete en `" + actual["estado"] + "` no vuelve a adquirirse: la tabla "
+                "del §4.2 no lleva de ahí a ningún estado que el runtime pueda alcanzar"
+                + ("; su salida la decide la autoridad por `resolver_reconciliacion`"
+                   if actual["estado"] == "agotado" else ""),
+                ruta=actual["id"], estado=actual["estado"],
+            )
+        return actual
+
+    def _pretender_autoridad_ajena(self, paquete):
+        """Da UN paso hacia la autoridad sobre un lease ajeno. `True` si ya la tenemos.
+
+        Una sola puerta, y es la de `g.6` instanciada en el §3: OBSERVAR. Cada pasada anota
+        una observación durable; cuando se acumulan `PACIENCIA` consecutivas sin que el
+        latido avance, se reclama. No hay atajo por el plano operacional, y el encabezado
+        de `lease.py` explica con el ataque por qué no puede haberlo.
+
+        Es más lento que el atajo que había: recuperarse de la caída de otra instancia
+        cuesta `PACIENCIA` pasadas en vez de una. Es el precio correcto.
         """
         lease = self._leer_lease(paquete)
         if lease is None or es_titular(lease, self.instancia):
-            return False
-        if self._testigo.titular_muerto(lease["titular"]) is not True:
-            return False
-        self.reclamar(paquete)
-        return True
+            return True
+        if observaciones_de(lease, self.instancia) >= self.paciencia:
+            self.reclamar(paquete)
+            return True
+        self.observar(paquete)
+        return False
 
     def renovar(self, paquete):
         """Sube el `latido`: el titular demuestra progreso. `AutoridadPerdida` si ya no lo es."""
@@ -561,18 +583,17 @@ class Runtime:
             if es_titular(lease, self.instancia):
                 escrito["lease"] = lease
                 return None
-            muerto = self._testigo.titular_muerto(lease["titular"])
-            if muerto is not True:
-                vistas_seguidas = observaciones_de(lease, self.instancia)
-                if vistas_seguidas < self.paciencia:
-                    raise ReclamacionPrematura(
-                        "hacen falta " + str(self.paciencia) + " observaciones "
-                        "consecutivas sin que el latido avance y hay "
-                        + str(vistas_seguidas) + "; el latido vigente es "
-                        + str(lease["latido"]),
-                        ruta=paquete, observaciones=vistas_seguidas,
-                        paciencia=self.paciencia, latido=lease["latido"],
-                    )
+            # UNA SOLA PUERTA. No se consulta el plano operacional: es fabricable, y con él
+            # se robaba el lease de un titular VIVO dejando la integridad en verde.
+            vistas_seguidas = observaciones_de(lease, self.instancia)
+            if vistas_seguidas < self.paciencia:
+                raise ReclamacionPrematura(
+                    "hacen falta " + str(self.paciencia) + " observaciones consecutivas "
+                    "sin que el latido avance y hay " + str(vistas_seguidas)
+                    + "; el latido vigente es " + str(lease["latido"]),
+                    ruta=paquete, observaciones=vistas_seguidas,
+                    paciencia=self.paciencia, latido=lease["latido"],
+                )
             nuevo = reclamado_por(lease, self.instancia, revision["revision_id"])
             escrito["lease"] = nuevo
             return self._transicion(
@@ -877,8 +898,11 @@ class Runtime:
         politica.comprobar_resultado(resultado, efecto=efecto, paquete=paquete)
         clase, error = politica.clasificar(resultado)
         estado_final = politica.estado_de_paquete(clase)
-        registro = dict(resultado)
-        registro["progreso"] = len(registro_de_progreso)
+        # LISTA BLANCA antes de tocar el estado canónico. Lo que el adaptador devuelva de
+        # más —el adaptador de proceso real devuelve el `pid`— no entra: es identidad de
+        # proceso, y `I-g3` la prohíbe en cualquier byte durable. El recuento de eventos de
+        # progreso tampoco entra, por lo mismo: describe una ejecución, no un resultado.
+        registro = politica.durable(resultado)
         actual, _acuse = self._publicar_resultado(
             paquete, lease, efecto, registro, estado_final)
         fallos.punto("despues-del-acuse-antes-de-liberar")
@@ -886,6 +910,9 @@ class Runtime:
         resumen = self._cerrar(paquete, actual, lease, efecto, registro,
                                repetido=bool(resultado["repetido"]), error=error,
                                clase=clase)
+        # Telemetría de ESTA pasada, que se devuelve y no se escribe: cuántos eventos de
+        # progreso hubo. Si entrara en el estado sería un número de ejecución durable.
+        resumen["progreso"] = len(registro_de_progreso)
         if error is not None:
             error.contexto.update({
                 "paquete": paquete, "intento": resumen["intento"],
@@ -901,13 +928,24 @@ class Runtime:
                 error=None, clase=None):
         """Aplica la política al paquete YA cerrado y suelta la autoridad."""
         if clase is None:
-            clase = {
-                "completado": politica.CLASE_COMPLETADO,
-                "cancelado": politica.CLASE_CANCELACION,
-                "fallido": (politica.CLASE_REINTENTABLE
-                            if (resultado or {}).get("reintentable") else
-                            politica.CLASE_DEFINITIVO),
-            }.get(actual["estado"])
+            # Se reconstruyen la clase Y EL ERROR del RESULTADO ya escrito, no del estado
+            # del paquete a secas. Dos razones, y la segunda costó una prueba en rojo:
+            #  · `ambiguo` y `definitivo` aterrizan los dos en `fallido`, así que el estado
+            #    no los distingue y confundirlos haría que la causa de `g.9` nombrase la
+            #    cosa equivocada: quien decide leería «falló» donde dice «no se sabe si se
+            #    hizo», que son decisiones opuestas.
+            #  · sin reconstruir también el ERROR, la causa quedaba en `SIN_ERROR` cada vez
+            #    que la política se aplicaba en una pasada posterior a la ejecución, que es
+            #    justo el camino de la recuperación tras una caída.
+            if isinstance(resultado, dict) and all(
+                    clave in resultado for clave in politica.CLAVES_DE_RESULTADO):
+                clase, error = politica.clasificar(resultado)
+            else:
+                clase = {
+                    "completado": politica.CLASE_COMPLETADO,
+                    "cancelado": politica.CLASE_CANCELACION,
+                    "fallido": politica.CLASE_DEFINITIVO,
+                }.get(actual["estado"])
             if clase is None:
                 raise RuntimeInconsistente(
                     "no se puede clasificar un paquete cerrado en `" + actual["estado"]
@@ -1209,23 +1247,29 @@ class Runtime:
             if atencion is not None:
                 informe["atendidos"].append(atencion)
 
-        # 2 · Paquetes en curso cuyo titular somos nosotros o MURIÓ de verdad: se REANUDAN,
-        # y la reanudación reutiliza el MISMO efecto, de modo que el acuse —o el recibo del
-        # adaptador— impide repetir lo ya aplicado. Cuando el titular murió, la autoridad se
-        # toma con `reclamar` y NO con `adquirir`: quitarle el lease a otro es una decisión
-        # que tiene que quedar escrita en el diario, con su época subida, y no un efecto
-        # colateral de pedir autoridad.
+        # 2 · Paquetes en curso. Los nuestros se REANUDAN, y la reanudación reutiliza el
+        # MISMO efecto, de modo que el acuse —o el recibo del adaptador— impide repetir lo
+        # ya aplicado. Los de OTRA instancia no se tocan: se OBSERVAN, una observación
+        # durable por pasada, y sólo tras `PACIENCIA` pasadas sin que su latido avance se
+        # reclaman. No hay atajo: mirar el plano operacional para decidir que el otro murió
+        # era falsificable, y el encabezado de `lease.py` guarda el ataque.
         reanudables = []
         informe["reclamados"] = []
+        informe["observados"] = []
         for paquete in self._todos_los_paquetes():
             if paquete["estado"] not in ESTADOS_EN_CURSO:
                 continue
             lease = self._leer_lease(paquete["id"])
             if lease is None or es_titular(lease, self.instancia):
                 reanudables.append(paquete["id"])
-            elif self._reclamar_si_murio(paquete["id"]):
+                continue
+            epoca_previa = lease["epoca"]
+            if self._pretender_autoridad_ajena(paquete["id"]):
                 reanudables.append(paquete["id"])
-                informe["reclamados"].append(paquete["id"])
+                if self._leer_lease(paquete["id"])["epoca"] != epoca_previa:
+                    informe["reclamados"].append(paquete["id"])
+            else:
+                informe["observados"].append(paquete["id"])
         informe["reanudados"] = list(reanudables)
 
         elegibles = [entrada["paquete"] for entrada in self.elegibles()]
@@ -1259,12 +1303,13 @@ class Runtime:
     def _atender_fallido(self, paquete):
         """Un `fallido` sin política aplicada. Exige autoridad: no se toca lo de otro.
 
-        Si el titular MURIÓ de verdad, se le reclama explícitamente antes de pedir la
-        autoridad; si sigue vivo o su estado es indecidible, no se atiende y se deja para
-        quien corresponda. `adquirir` no roba, así que sin el `reclamar` previo el paquete
-        de un titular muerto se quedaría en `fallido` para siempre.
+        Sobre un lease ajeno se da UN paso: una observación durable. Tras `PACIENCIA`
+        pasadas sin que el latido del titular avance, la siguiente reclama y entonces sí se
+        atiende. `adquirir` no roba, así que sin ese camino el paquete de una instancia que
+        desapareció se quedaría en `fallido` para siempre.
         """
-        self._reclamar_si_murio(paquete)
+        if not self._pretender_autoridad_ajena(paquete):
+            return None
         try:
             lease = self.adquirir(paquete)
         except AutoridadNoDisponible:
@@ -1298,4 +1343,10 @@ class Runtime:
             "lease": lease,
             "acuse": self._leer_acuse(actual["efecto"], paquete=paquete),
             "revision": self._almacen.revision()["revision"],
+            # PISTA, no prueba, y por eso el nombre lo dice. Describe el plano operacional,
+            # que es reconstruible y fabricable por cualquiera: sirve para que un operador
+            # vea qué hay, y NINGUNA ruta de decisión de este paquete lo consulta.
+            "testigo_no_autenticado": (
+                self._testigo.diagnostico_del_testigo(lease["titular"]) if lease else None
+            ),
         }

@@ -14,24 +14,30 @@ test_22_renovar_sube_el_latido_y_borra_las_observaciones (__main__.AutoridadYLea
 T183 · Defecto que previene: reclamar a un titular que sí estaba avanzando. ... ok
 test_23_la_expiracion_se_decide_por_observaciones_y_no_por_un_plazo (__main__.AutoridadYLeases.test_23_la_expiracion_se_decide_por_observaciones_y_no_por_un_plazo)
 T183 · Defecto que previene: una caducidad de reloj dentro del estado durable. ... ok
-test_24_un_titular_muerto_se_reclama_de_inmediato_por_el_testigo (__main__.AutoridadYLeases.test_24_un_titular_muerto_se_reclama_de_inmediato_por_el_testigo)
-T183 · Defecto que previene: esperar tres observaciones a un proceso ya muerto. ... ok
+test_24_ni_siquiera_una_muerte_real_permite_reclamar_sin_observar (__main__.AutoridadYLeases.test_24_ni_siquiera_una_muerte_real_permite_reclamar_sin_observar)
+T183 · Defecto que previene: reponer la vía rápida por comodidad. ... ok
 test_25_la_perdida_de_autoridad_no_escribe_absolutamente_nada (__main__.AutoridadYLeases.test_25_la_perdida_de_autoridad_no_escribe_absolutamente_nada)
 T183 · Defecto que previene: pisar al titular vigente con un resultado viejo. ... ok
 test_26_liberar_devuelve_a_listo_un_intento_que_nadie_ejecuto (__main__.AutoridadYLeases.test_26_liberar_devuelve_a_listo_un_intento_que_nadie_ejecuto)
 T183 · Defecto que previene: dejar un `despachado` que nadie va a recoger. ... ok
 test_27_ningun_byte_durable_lleva_reloj_pid_ni_uuid (__main__.AutoridadYLeases.test_27_ningun_byte_durable_lleva_reloj_pid_ni_uuid)
 T183 · Defecto que previene: un tiempo lógico que en realidad es el reloj. ... ok
+test_27b_el_adaptador_de_proceso_REAL_tampoco_mete_un_pid_en_el_estado (__main__.AutoridadYLeases.test_27b_el_adaptador_de_proceso_REAL_tampoco_mete_un_pid_en_el_estado)
+T183 · Defecto que previene: un `pid` en el ESTADO CANÓNICO DURABLE. ... ok
 test_28_dos_procesos_no_pueden_llamarse_igual (__main__.AutoridadYLeases.test_28_dos_procesos_no_pueden_llamarse_igual)
 T183 · Defecto que previene: que `titular` deje de identificar a UNO solo. ... ok
 test_29_adquirir_nunca_roba_el_lease_de_otro_proceso (__main__.AutoridadYLeases.test_29_adquirir_nunca_roba_el_lease_de_otro_proceso)
 T183 · Defecto que previene: el lease se lo lleva el siguiente que lo pida. ... ok
 test_30_despachar_tampoco_roba_el_lease_de_otro_proceso (__main__.AutoridadYLeases.test_30_despachar_tampoco_roba_el_lease_de_otro_proceso)
 T183 · Defecto que previene: el mismo robo, por el camino que sí ejecuta. ... ok
-test_31_la_muerte_real_deja_la_huella_que_autoriza_la_reclamacion (__main__.AutoridadYLeases.test_31_la_muerte_real_deja_la_huella_que_autoriza_la_reclamacion)
-T183 · Defecto que previene: no poder distinguir un muerto de uno que terminó. ... ok
+test_31_la_reclamacion_tiene_UNA_puerta_y_deja_su_evento_en_el_diario (__main__.AutoridadYLeases.test_31_la_reclamacion_tiene_UNA_puerta_y_deja_su_evento_en_el_diario)
+T183 · Defecto que previene: un robo con papeles en regla. ... ok
 test_32_ninguna_salida_limpia_deja_testigo_de_vida (__main__.AutoridadYLeases.test_32_ninguna_salida_limpia_deja_testigo_de_vida)
 T183 · Defecto que previene: que terminar bien parezca haber muerto. ... ok
+test_33_sustituir_el_testigo_de_un_titular_VIVO_no_da_autoridad (__main__.AutoridadYLeases.test_33_sustituir_el_testigo_de_un_titular_VIVO_no_da_autoridad)
+T183 · Defecto que previene: robar el lease de un titular VIVO. LA REGRESIÓN. ... ok
+test_34_ninguna_ruta_de_decision_consulta_el_plano_operacional (__main__.AutoridadYLeases.test_34_ninguna_ruta_de_decision_consulta_el_plano_operacional)
+T183 · Defecto que previene: que el atajo vuelva por la puerta de atrás. ... ok
 test_80_los_nueve_puntos_cortan_donde_dicen_y_se_recuperan_como_se_declaro (__main__.CaidaRecuperacionEIdempotencia.test_80_los_nueve_puntos_cortan_donde_dicen_y_se_recuperan_como_se_declaro)
 T186 · Defecto que previene: aceptar cualquier recuperación como la buena. ... ok
 test_81_caer_entre_el_efecto_y_el_acuse_no_aplica_el_efecto_dos_veces (__main__.CaidaRecuperacionEIdempotencia.test_81_caer_entre_el_efecto_y_el_acuse_no_aplica_el_efecto_dos_veces)
@@ -102,8 +108,14 @@ test_44_la_pendencia_se_retira_solo_por_una_transicion_explicita (__main__.Reint
 T184 · Defecto que previene: cerrar una pendencia borrando una línea. ... ok
 test_45_agotar_no_reintenta_pero_la_autoridad_se_suelta (__main__.ReintentosYReconciliacion.test_45_agotar_no_reintenta_pero_la_autoridad_se_suelta)
 T184 · Defecto que previene: un lease huérfano sobre trabajo ya cerrado. ... ok
+test_46_un_paquete_agotado_no_vuelve_a_adquirirse (__main__.ReintentosYReconciliacion.test_46_un_paquete_agotado_no_vuelve_a_adquirirse)
+T184 · Defecto que previene: reservar autoridad sobre trabajo que nadie moverá. ... ok
+test_47_un_resultado_AMBIGUO_ni_se_reintenta_ni_se_da_por_bueno (__main__.ReintentosYReconciliacion.test_47_un_resultado_AMBIGUO_ni_se_reintenta_ni_se_da_por_bueno)
+T184 · Defecto que previene: duplicar un efecto en silencio, o inventar un éxito. ... ok
+test_48_la_ambiguedad_se_clasifica_aunque_la_politica_se_aplique_despues (__main__.ReintentosYReconciliacion.test_48_la_ambiguedad_se_clasifica_aunque_la_politica_se_aplique_despues)
+T184 · Defecto que previene: confundir un ambiguo con un fallo definitivo. ... ok
 
 ----------------------------------------------------------------------
-Ran 48 tests  (duración no registrada: varía por ejecución)
+Ran 54 tests  (duración no registrada: varía por ejecución)
 
 OK
