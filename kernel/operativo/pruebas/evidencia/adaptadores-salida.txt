@@ -1,0 +1,67 @@
+# evidencia de: adaptadores
+# orden:        python3 kernel/operativo/runtime/pruebas/test_adaptadores.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+test_al_dia (__main__.HuellaYDeriva.test_al_dia)
+T191 · Control POSITIVO: sin tocar nada, la proyección está al día. ... ok
+test_dos_proyecciones_que_dicen_cosas_distintas_sobre_lo_mismo (__main__.HuellaYDeriva.test_dos_proyecciones_que_dicen_cosas_distintas_sobre_lo_mismo)
+T191 · Defecto que previene: `CAND-016`, dos memorias que divergieron 23 contra 32. ... ok
+test_editada_a_mano (__main__.HuellaYDeriva.test_editada_a_mano)
+T191 · Defecto que previene: `P-06`, editar la proyección en vez de la fuente. ... ok
+test_escribir_y_releer_conserva_el_diagnostico (__main__.HuellaYDeriva.test_escribir_y_releer_conserva_el_diagnostico)
+T191 · Defecto que previene: perder la huella al pasar por el disco. ... ok
+test_la_proyeccion_lleva_aviso_huella_y_origen (__main__.HuellaYDeriva.test_la_proyeccion_lleva_aviso_huella_y_origen)
+T191 · Defecto que previene: una proyección que no dice que es generada. ... ok
+test_obsoleta (__main__.HuellaYDeriva.test_obsoleta)
+T191 · Defecto que previene: confundir «obsoleta» con «editada» (`P-08`). ... ok
+test_quitar_la_cabecera_tambien_es_editar_a_mano (__main__.HuellaYDeriva.test_quitar_la_cabecera_tambien_es_editar_a_mano)
+T191 · Defecto que previene: borrar el aviso y que la huella no lo note. ... ok
+test_recompilar_con_las_mismas_entradas_da_los_mismos_bytes (__main__.HuellaYDeriva.test_recompilar_con_las_mismas_entradas_da_los_mismos_bytes)
+T191 · Control POSITIVO: recompilar y comparar es determinista (§6.3). ... ok
+test_ejecuta_una_tarea_y_emite_progreso_linea_a_linea (__main__.ProcesoLocalReal.test_ejecuta_una_tarea_y_emite_progreso_linea_a_linea)
+T191 · Defecto que previene: «progreso» que es un diccionario devuelto al final. ... ok
+test_el_recibo_es_durable_y_sobrevive_a_otra_instancia (__main__.ProcesoLocalReal.test_el_recibo_es_durable_y_sobrevive_a_otra_instancia)
+T191 · Defecto que previene: una idempotencia que vive sólo en memoria. ... ok
+test_el_recibo_no_guarda_ni_un_milisegundo (__main__.ProcesoLocalReal.test_el_recibo_no_guarda_ni_un_milisegundo)
+T191 · Defecto que previene: meter reloj en algo que se compara byte a byte. ... ok
+test_el_timeout_mata_el_grupo_de_procesos_de_verdad (__main__.ProcesoLocalReal.test_el_timeout_mata_el_grupo_de_procesos_de_verdad)
+T191 · Defecto que previene: un «timeout» que deja al nieto vivo y colgado. ... ok
+test_la_cancelacion_tambien_mata (__main__.ProcesoLocalReal.test_la_cancelacion_tambien_mata)
+T191 · Defecto que previene: una cancelación que sólo lo pide por favor. ... ok
+test_un_efecto_confirmado_no_se_aplica_dos_veces (__main__.ProcesoLocalReal.test_un_efecto_confirmado_no_se_aplica_dos_veces)
+T191 · Defecto que previene: repetir un efecto ya aplicado tras una caída. ... ok
+test_un_identificador_de_efecto_con_barra_se_rechaza (__main__.ProcesoLocalReal.test_un_identificador_de_efecto_con_barra_se_rechaza)
+T191 · Defecto que previene: escribir el recibo fuera del espacio de trabajo. ... ok
+test_un_timeout_no_deja_recibo_y_por_eso_se_puede_reintentar (__main__.ProcesoLocalReal.test_un_timeout_no_deja_recibo_y_por_eso_se_puede_reintentar)
+T191 · Defecto que previene: dar por aplicado un efecto que nunca terminó. ... ok
+test_una_muerte_abrupta_se_distingue_de_un_fallo_de_la_tarea (__main__.ProcesoLocalReal.test_una_muerte_abrupta_se_distingue_de_un_fallo_de_la_tarea)
+T191 · Defecto que previene: confundir «la mataron» con «salió mal». ... ok
+test_una_orden_sin_argumentos_no_se_ejecuta (__main__.ProcesoLocalReal.test_una_orden_sin_argumentos_no_se_ejecuta)
+T191 · Defecto que previene: lanzar «algo» cuando no se dijo qué. ... ok
+test_una_tarea_que_falla_no_es_reintentable (__main__.ProcesoLocalReal.test_una_tarea_que_falla_no_es_reintentable)
+T191 · Defecto que previene: reintentar en bucle un fallo que no puede cambiar. ... ok
+test_capacidad_no_soportada (__main__.RegistroYFicha.test_capacidad_no_soportada)
+T191 · Defecto que previene: despachar a un adaptador que no puede hacerlo. ... ok
+test_el_desempate_es_determinista (__main__.RegistroYFicha.test_el_desempate_es_determinista)
+T191 · Defecto que previene: que el despacho dependa del orden de importación. ... ok
+test_la_ficha_declara_los_trece_campos_de_3_4 (__main__.RegistroYFicha.test_la_ficha_declara_los_trece_campos_de_3_4)
+T191 · Defecto que previene: una ficha con huecos que valida contra su tipo. ... ok
+test_la_ficha_no_tiene_campo_nivel (__main__.RegistroYFicha.test_la_ficha_no_tiene_campo_nivel)
+T191 · Defecto que previene: `nivel` editable, la segunda verdad que `I5` prohíbe. ... ok
+test_la_interfaz_base_falla_cerrado (__main__.RegistroYFicha.test_la_interfaz_base_falla_cerrado)
+T191 · Defecto que previene: un resultado inventado, y un acuse durable de nada. ... ok
+test_se_selecciona_por_capacidad_declarada (__main__.RegistroYFicha.test_se_selecciona_por_capacidad_declarada)
+T191 · Control POSITIVO: el paquete pide capacidades, no nombres de proveedor. ... ok
+test_un_resultado_con_otra_forma_se_rechaza (__main__.RegistroYFicha.test_un_resultado_con_otra_forma_se_rechaza)
+T191 · Defecto que previene: un acuse cruzado que aplica un efecto por otro. ... ok
+test_una_ficha_incompleta_no_se_construye (__main__.RegistroYFicha.test_una_ficha_incompleta_no_se_construye)
+T191 · Defecto que previene: que una ausencia se lea como valor por defecto. ... ok
+test_version_de_contrato_incompatible (__main__.RegistroYFicha.test_version_de_contrato_incompatible)
+T191 · Defecto que previene: aceptar un adaptador de otra versión del contrato. ... ok
+
+----------------------------------------------------------------------
+Ran 28 tests  (duración no registrada: varía por ejecución)
+
+OK

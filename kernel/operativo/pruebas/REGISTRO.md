@@ -92,6 +92,28 @@ validadores/comprobar_arranque.py               T181 — la norma viaja al proye
 **Ninguna de ellas certifica nada.** `prueba-superada` significa que la prueba se ejecutó y
 pasó; la CERTIFICACIÓN de `F6` la emite un juicio independiente y no quien construyó.
 
+## T182–T194 — el segundo corte de `F6`, ejecutado
+
+Viven en [`T182-T194-runtime-y-admision.md`](T182-T194-runtime-y-admision.md) y cubren
+runtime y dispatcher, gobierno Git del control repo, verificador de admisión, adaptadores e
+identidad de firma externa. Como las anteriores, **ejecutan**: procesos reales que se matan
+de verdad, repositorios Git temporales reales sin red, dos instancias de runtime compitiendo
+en procesos distintos y un adaptador que lanza `subprocess`.
+
+```text
+runtime/pruebas/test_runtime.py           T182..T186 · runtime y dispatcher
+runtime/pruebas/test_gobierno_git.py      T187 · g.14 y G-A8
+runtime/pruebas/test_admision.py          T188..T190 · V2..V5, y la deuda S1-02
+runtime/pruebas/test_adaptadores.py       T191 · V7
+runtime/pruebas/test_identidad.py         T192 · O25
+runtime/pruebas/escenario_e2e_runtime.py  T193 · los veinticinco pasos
+validadores/comprobar_arranque.py         T194 · actualizar un control repo existente
+```
+
+**`T169` deja de estar sola en su clase, y conviene decirlo:** exige runtime, y ahora hay
+runtime. Lo que sigue faltándole es un producto real con dos fuentes convergiendo, que es
+adopción y está BLOQUEADA. **Sigue en `contrato-definido`.**
+
 Dos quedan en `contrato-definido` y lo dicen: **T169** —integración parcial— exige runtime,
 y **T170** —reanudación multi-fuente— exige un guion manual con dos repositorios reales.
 **Seguirán en `contrato-definido` mientras no exista runtime y un piloto real**, y ningún

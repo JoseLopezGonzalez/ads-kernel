@@ -67,13 +67,13 @@ EXTERNO                          su sujeto vive fuera de este repositorio
 | **contrato de ESTADO DURABLE** (`g.1`–`g.13`) | [`g.17`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · derivado en [`CONTRATO-ESTADO-DURABLE.md`](../../kernel/operativo/runtime/CONTRATO-ESTADO-DURABLE.md) | **IMPLEMENTADO_Y_PROBADO** | — |
 | **`A14` · guarda de entorno** (corte `V1` · `F6-I`) | [`06-DEUDA`](../canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md) §4 | **IMPLEMENTADO_Y_PROBADO** | — |
 | **`FD-3` · la especificación normativa viaja al proyecto instalado** | [`06-DEUDA`](../canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md) §10 bis | **IMPLEMENTADO_Y_PROBADO** | — |
-| **contrato de GOBIERNO GIT DEL CONTROL REPO** (`g.14`) | [`g.17`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) | **PARCIAL** | la tabla de propiedad del control repo, la serialización entre máquinas y la prohibición ejecutable de forzar referencias (`G-A8`) |
+| **contrato de GOBIERNO GIT DEL CONTROL REPO** (`g.14`) | [`g.17`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · derivado en [`CONTRATO-GOBIERNO-GIT-CONTROL.md`](../../kernel/operativo/runtime/CONTRATO-GOBIERNO-GIT-CONTROL.md) | **IMPLEMENTADO_Y_PROBADO** en el alcance de `g.14` que este corte tenía pendiente: tabla de propiedad, concesión de ref, revisión base y `G-A8` en sus dos mitades —evidencia en `evidencia/gobierno-git-salida.txt`— | la **serialización entre MÁQUINAS** y la publicación a un remoto: se demuestra entre procesos reales de una máquina, y la política de publicación conserva su valor por defecto «esperando-owner» |
 | **contrato de RAÍZ EXTERNA DE CONFIANZA** (`g.15`) | [`g.17`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · `11-ARQ` §11.8 · `O25` | **PARCIAL** — ya **NO** bloqueado por decisión del Owner: `O25` fija titularidad, custodia y autoridad administrativa | que el contrato se ejecute **FUERA** del árbol verificado con una identidad que no pueda escribir en él, con un proveedor productivo real del anfitrión. `O25` §6 dice él mismo que no la declara implementada ni certificada |
-| **`V6-01`…`V6-19` · verificador de admisión** (`F6-A`) | `11-ARQ` §20.1 | **NO_IMPLEMENTADO** | los cortes `V2`–`V5` del plan |
-| **`F6-D` · runtime y dispatcher** | `11-ARQ` §7 | **NO_IMPLEMENTADO** — su dependencia `[1]` **ya no bloquea** | el corte siguiente |
+| **`V6-01`…`V6-19` · verificador de admisión** (`F6-A`) | `11-ARQ` §20.1 · derivado en [`CONTRATO-ADMISION.md`](../../kernel/operativo/runtime/CONTRATO-ADMISION.md) | **PARCIAL** — `V6-01`…`V6-14`, `V6-17`, `V6-18` y `V6-19` implementados y ejecutados, evidencia en `evidencia/admision-salida.txt`. **`V6-15` y `V6-16` NO** | `V6-15`: el derivador del conjunto de árboles adversariales de §20.5. `V6-16`: la raíz externa productiva. Los dos son de otro corte, y todo veredicto publica su lista `fuera_de_alcance` |
+| **`F6-D` · runtime y dispatcher** | `11-ARQ` §7 · derivado en [`CONTRATO-RUNTIME-Y-DISPATCHER.md`](../../kernel/operativo/runtime/CONTRATO-RUNTIME-Y-DISPATCHER.md) | **PARCIAL** — la máquina de despacho está implementada y probada, evidencia en `evidencia/runtime-salida.txt` y en `evidencia/e2e-runtime-salida.txt` | el CICLO de `§7.2` —encuadre, composición de rutas por `b.16`, materialización de equipos por `C4`, gates de capa y handoffs por `C5`— y `Continúa` de `§7.4` con sus derivados y proyecciones |
 | **`F6-F` · los cuatro macrocircuitos** | `11-ARQ` §8 y §9.6 | **NO_IMPLEMENTADO** | corte propio |
-| **`F6-G` · arquitectura de adaptadores** (corte `V7`) | `11-ARQ` §6 | **NO_IMPLEMENTADO** | corte propio, independiente de todo |
-| **`F6-H` · hallazgos externos con propietario y fase `F6`** | `11-ARQ` §19 | **PARCIAL** — `A14` y `FD-3` cerrados en este corte | el resto de su lista |
+| **`F6-G` · arquitectura de adaptadores** (corte `V7`) | `11-ARQ` §6 · derivado en [`CONTRATO-ADAPTADOR.md`](../../kernel/operativo/runtime/CONTRATO-ADAPTADOR.md) | **PARCIAL** — interfaz, adaptador local REAL, proyecciones con huella y validador de deriva; evidencia en `evidencia/adaptadores-salida.txt` | la **pieza 4** de `§6`, la prueba de humo en sesión nueva, que exige abrir un entorno de agente real. Por eso **no se declara ningún NIVEL** de ningún adaptador |
+| **`F6-H` · hallazgos externos con propietario y fase `F6`** | `11-ARQ` §19 | **PARCIAL** — `A14` y `FD-3` cerrados en el primer corte; **`S1-02` cerrado en éste** | el resto de su lista |
 | **`F6-J` · CERTIFICACIÓN** | `O20` §3 | **BLOQUEADO_POR_DEPENDENCIA** | que exista lo que hay que certificar, y un juicio independiente que no sea quien construyó |
 | **custodia productiva de la clave de firma** | `FD-1` · `O25` §2 | **EXTERNO** al repositorio, y **decidido**: identidad de servicio dedicada del verificador externo, con un proveedor de secretos del anfitrión | que exista ese proveedor en el anfitrión de la instalación. **No es materia del repositorio**, y por eso queda EXTERNO aunque la decisión ya esté tomada |
 
@@ -178,6 +178,36 @@ reserva a la raíz externa.
 **El veredicto del auditor**, una vez aplicada la corrección: el corte sirve como fundamento
 permanente.
 
+## 5 ter · El SEGUNDO corte, y qué cerró
+
+**Cinco piezas, todas sobre el motor de estado durable que ya existía**, y ninguna con cola,
+diario ni recuperación propios: runtime y dispatcher · gobierno Git del control repo ·
+verificador de admisión `V2`–`V5` · adaptadores `V7` · identidad y firma externa.
+
+**Decisiones técnicas de este corte**, con lo que se descartó:
+
+| decisión | alternativas descartadas | por qué |
+|---|---|---|
+| **el lease expira por OBSERVACIONES contadas, no por plazo** | guardar una fecha límite en el lease · fiarlo todo al `flock` | `I-g3` prohíbe el reloj de pared en lo durable, y un `flock` no cruza de máquina. El tiempo lógico es la REVISIÓN, y `PACIENCIA` queda como parámetro calibrable que `g.6` reserva al contrato derivado |
+| **`adquirir` NUNCA roba; robar se llama `reclamar`** | dejar la vía rápida dentro de `adquirir` para el caso de muerte probada | es correcta hoy y vuelve a ser indistinguible de un robo en cuanto alguien toque la definición de «probada». Con un solo nombre, todo robo deja su evento en el diario |
+| **el testigo de vida se RETIRA en la salida limpia** | dejarlo y leer «existe con el cerrojo libre» como muerte | eso es exactamente lo que deja una orden de línea de órdenes que termina bien: el lease no protegía nada. Con la retirada quedan tres lecturas y no dos, y la tercera es INDECIDIBLE |
+| **dos niveles de idempotencia: acuse y recibo** | uno solo, en el estado canónico | `g.12` declara **un solo ejecutor** del estado canónico. El acuse protege el ESTADO y el recibo del adaptador protege el EFECTO; entre los dos hay una ventana que se declara |
+| **la concesión de ref es DURABLE, no un `flock`** | serializar el gobierno Git con un cerrojo del sistema | un `flock` no sobrevive a la caída, y entonces «recuperar tras caída» dejaría de ser demostrable |
+| **el linaje de refs se registra ENTERO, no sólo la cabeza** | guardar sólo la cabeza vigente | un forzado seguido de una confirmación legítima borraría la evidencia |
+| **el censo de lecturas y el de fórmulas se derivan con `ast`** | derivarlos con `grep` · escribirlos a mano | una búsqueda de texto no distingue una llamada de una mención, y una lista a mano envejece: es el defecto que `FD-3` ya midió |
+| **criptografía de la biblioteca estándar; el proveedor productivo DELEGA** | añadir una dependencia externa de criptografía | `O25` §5 prohíbe primitivas propias, no obliga a una dependencia; y §2 pone la clave en un proveedor **del anfitrión**, que es quien elige la tecnología. Añadir una dependencia sin poder fijarla de forma reproducible habría sido peor |
+
+**`S1-02` cerrado, y por el eje correcto.** El hallazgo estaba adjudicado y vivo desde el
+séptimo gate: el universo gobernado derivaba **QUÉ CONJUNTO** se examina —lo que aparece y
+desaparece respecto de la revisión base— y no **QUÉ PROPIEDAD** —la existencia en vez del
+CONTENIDO—, de modo que reescribir entero `START_HERE.md` dejaba `git status` vacío y
+**38/38 en verde**. Ahora cada zona del censo lleva **condición de CONTENIDO declarada y
+ejecutada**, y una zona sin condición da ROJO. Se demuestra en los dos sentidos, con control
+positivo y con el mismo ataque en cuatro zonas de clases distintas.
+
+**Y una decisión del Owner que este corte cierra como decisión:** `FD-1`, por `O25`. Tras
+ella **no queda ninguna decisión del Owner pendiente para seguir construyendo `F6`**.
+
 ## 6 · Lo que este corte NO hace
 
 ```text
@@ -191,13 +221,17 @@ NO ELIGE         custodia productiva de claves: FD-1 sigue abierta y sin titular
 ## 7 · El corte siguiente, exacto
 
 ```text
-1  RUNTIME Y DISPATCHER sobre el motor de estado durable: ciclo, fallos, reintentos,
-   bloqueo, pausa, orden de reanudación y vistas derivadas             `F6-D` · 11-ARQ §7
-2  el contrato de GOBIERNO GIT DEL CONTROL REPO que falta: tabla de propiedad,
-   serialización entre máquinas y G-A8 ejecutable                      `g.14`
-3  en paralelo, y sin decisión nueva del Owner: los cortes V2, V3, V4 y V5 del
-   verificador de admisión, y el corte V7 de adaptadores               plan §4
+1  EL CICLO de §7.2 sobre la máquina de despacho ya construida: encuadre, composición de
+   rutas por b.16, materialización de equipos por C4, gates de capa y handoffs por C5;
+   y `Continúa` de §7.4 con sus derivados y sus proyecciones      `F6-D` · 11-ARQ §7
+2  `V6-15`: el DERIVADOR del conjunto de árboles adversariales de §20.5, que hoy no
+   existe, y su suite de regresión con procedencia por documento y cabecera
+3  `V6-16` y la RAÍZ EXTERNA productiva: ejecución fuera del árbol verificado con un
+   proveedor del anfitrión y firma asimétrica. `O25` ya fija titular y custodio
+4  la PIEZA 4 de §6: la prueba de humo en sesión nueva, que es la que permite declarar
+   un NIVEL alcanzado de un adaptador                              `F6-G` · 11-ARQ §6.5
+5  los cuatro MACROCIRCUITOS y su FASE 0 compartida                 `F6-F` · 11-ARQ §8
+6  la serialización entre MÁQUINAS del gobierno Git, y la publicación a un remoto `g.14`
 
-Y AGRUPADA PARA EL OWNER, sin detener nada: `FD-1` —titular y custodio de la clave de
-firma—, que es la única decisión suya que este corte deja pendiente.
+NINGUNA decisión del Owner queda pendiente para construir esto: `O25` cerró la última.
 ```

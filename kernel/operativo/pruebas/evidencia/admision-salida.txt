@@ -1,0 +1,121 @@
+# evidencia de: admision
+# orden:        python3 kernel/operativo/runtime/pruebas/test_admision.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+test_confirmar_no_exime (__main__.AdmisionPorMutacion.test_confirmar_no_exime)
+T188 · Defecto que previene: `V6-08`, que el commit convierta un rojo en verde. ... ok
+test_existir_en_la_base_no_exime (__main__.AdmisionPorMutacion.test_existir_en_la_base_no_exime)
+T188 · Defecto que previene: `S1-02`, la preexistencia como exención (`V6-05`). ... ok
+test_las_cuatro_referencias_estan_declaradas (__main__.AdmisionPorMutacion.test_las_cuatro_referencias_estan_declaradas)
+T188 · Defecto que previene: una comprobación que declara una y usa otra. ... ok
+test_las_dos_clases_tienen_guarda (__main__.AdmisionPorMutacion.test_las_dos_clases_tienen_guarda)
+T188 · Defecto que previene: `V6-09`, que una clase quede sin guarda. ... ok
+test_un_arbol_sano_da_verde (__main__.AdmisionPorMutacion.test_un_arbol_sano_da_verde)
+T188 · Control POSITIVO: sin mutaciones, VERDE. Un control que no puede aprobar no sirve. ... ok
+test_un_fichero_sin_rastrear_se_ve (__main__.AdmisionPorMutacion.test_un_fichero_sin_rastrear_se_ve)
+T188 · Defecto que previene: dejar fuera lo que no rastrea nadie. ... ok
+test_un_renombrado_con_origen_no_admitido_da_rojo (__main__.AdmisionPorMutacion.test_un_renombrado_con_origen_no_admitido_da_rojo)
+T188 · Defecto que previene: `V6-06`, juzgar `R` por una sola punta. ... ok
+test_una_mutacion_solo_en_el_indice_se_ve (__main__.AdmisionPorMutacion.test_una_mutacion_solo_en_el_indice_se_ve)
+T188 · Defecto que previene: `git add` sin commit, invisible para la guarda. ... ok
+test_cero_rutas_del_instrumento_exentas (__main__.AutoInclusion.test_cero_rutas_del_instrumento_exentas)
+T189 · Defecto que previene: que un prefijo del instrumento quede fuera. ... ok
+test_declarar_la_mutacion_del_instrumento_no_la_exime (__main__.AutoInclusion.test_declarar_la_mutacion_del_instrumento_no_la_exime)
+T189 · Defecto que previene: salirse del alcance por la puerta de la declaración. ... ok
+test_una_mutacion_de_la_politica_da_rojo (__main__.AutoInclusion.test_una_mutacion_de_la_politica_da_rojo)
+T189 · Defecto que previene: reescribir la política y certificarse con ella. ... ok
+test_una_mutacion_del_verificador_da_rojo (__main__.AutoInclusion.test_una_mutacion_del_verificador_da_rojo)
+T189 · Defecto que previene: cambiar la regla y aprobarse con la regla nueva. ... ok
+test_el_censo_del_aparato_real_esta_limpio (__main__.CensoDeLecturas.test_el_censo_del_aparato_real_esta_limpio)
+T188 · Control POSITIVO: hoy no hay ni una lectura fuera del canal único. ... ok
+test_el_censo_no_se_denuncia_a_si_mismo_por_su_vocabulario (__main__.CensoDeLecturas.test_el_censo_no_se_denuncia_a_si_mismo_por_su_vocabulario)
+T188 · Control POSITIVO: distinguir la MENCIÓN de la INVOCACIÓN, que es lo que da `ast`. ... ok
+test_una_lectura_escrita_fuera_del_canal_aparece_en_el_censo (__main__.CensoDeLecturas.test_una_lectura_escrita_fuera_del_canal_aparece_en_el_censo)
+T188 · Defecto que previene: una vía paralela de invocación de Git, oculta. ... ok
+test_una_lista_sin_separador_seguro_aparece_en_el_censo (__main__.CensoDeLecturas.test_una_lista_sin_separador_seguro_aparece_en_el_censo)
+T188 · Defecto que previene: una lectura de lista escrita sin `-z`. ... ok
+test_el_censo_de_zonas_se_deriva_y_todas_tienen_condicion (__main__.CensoDeZonas.test_el_censo_de_zonas_se_deriva_y_todas_tienen_condicion)
+T189 · Defecto que previene: `V6-10`, una zona sin condición que pasa por omisión. ... ok
+test_el_censo_del_registro_canonico_real_esta_completo (__main__.CensoDeZonas.test_el_censo_del_registro_canonico_real_esta_completo)
+T189 · Defecto que previene: que el registro VIVO tenga una clase sin condición. ... ok
+test_una_ruta_que_ninguna_zona_clasifica_da_rojo (__main__.CensoDeZonas.test_una_ruta_que_ninguna_zona_clasifica_da_rojo)
+T189 · Defecto que previene: el defecto de PERÍMETRO, por tercera vez. ... ok
+test_una_zona_sin_condicion_da_rojo (__main__.CensoDeZonas.test_una_zona_sin_condicion_da_rojo)
+T189 · Defecto que previene: añadir una clase nueva y que herede el verde. ... ok
+test_el_ancla_del_censo_viene_de_fuera_y_el_arbol_no_la_puede_cambiar (__main__.ConfiguracionYRaizExterna.test_el_ancla_del_censo_viene_de_fuera_y_el_arbol_no_la_puede_cambiar)
+T189 · Defecto que previene: `V6-17`, un veredicto sostenido por el propio árbol. ... ok
+test_el_verificador_corre_desde_fuera_y_sin_permiso_de_escritura (__main__.ConfiguracionYRaizExterna.test_el_verificador_corre_desde_fuera_y_sin_permiso_de_escritura)
+T189 · Propiedad de `V6-16`, sin declarar la raíz externa COMPLETA. ... ok
+test_manipular_el_registro_de_zonas_desde_el_arbol_no_salva_el_ataque (__main__.ConfiguracionYRaizExterna.test_manipular_el_registro_de_zonas_desde_el_arbol_no_salva_el_ataque)
+T189 · Defecto que previene: que el repositorio decida cómo se le clasifica. ... ok
+test_sin_ancla_externa_el_veredicto_es_indeterminado_y_nunca_verde (__main__.ConfiguracionYRaizExterna.test_sin_ancla_externa_el_veredicto_es_indeterminado_y_nunca_verde)
+T189 · Defecto que previene: `V6-17`, dar por bueno un árbol que se avala solo. ... ok
+test_un_ancla_que_no_casa_da_rojo (__main__.ConfiguracionYRaizExterna.test_un_ancla_que_no_casa_da_rojo)
+T189 · Defecto que previene: que el árbol elija contra qué se le compara. ... ok
+test_control_positivo_el_arbol_sin_el_ataque_es_verde_con_las_dos_reglas (__main__.DeudaS102.test_control_positivo_el_arbol_sin_el_ataque_es_verde_con_las_dos_reglas)
+T189 · Control POSITIVO: si la regla nueva diera rojo siempre, no habría corregido nada. ... ok
+test_declarar_el_ataque_no_lo_salva_en_una_zona_inmutable (__main__.DeudaS102.test_declarar_el_ataque_no_lo_salva_en_una_zona_inmutable)
+T189 · Defecto que previene: levantar una condición de zona con una declaración. ... ok
+test_el_eje_corregido_es_el_contenido_y_no_la_zona (__main__.DeudaS102.test_el_eje_corregido_es_el_contenido_y_no_la_zona)
+T189 · Defecto que previene: cerrar la instancia y dejar la clase abierta. ... ok
+test_la_regla_anterior_si_ve_una_ampliacion (__main__.DeudaS102.test_la_regla_anterior_si_ve_una_ampliacion)
+T189 · Control del CONTROL: la regla anterior no es una función constante `VERDE`. ... ok
+test_s102_seccion_3_2_la_raiz_del_repositorio (__main__.DeudaS102.test_s102_seccion_3_2_la_raiz_del_repositorio)
+T189 · Defecto que previene: `S1-02` §3.2, reescribir `START_HERE.md` y seguir verde. ... ok
+test_s102_seccion_3_6_una_evidencia_ya_enumerada (__main__.DeudaS102.test_s102_seccion_3_6_una_evidencia_ya_enumerada)
+T189 · Defecto que previene: `S1-02` §3.6, que no toca la raíz y también pasaba. ... ok
+test_el_censo_de_formulas_del_aparato_real_esta_limpio (__main__.FormulasCompartidas.test_el_censo_de_formulas_del_aparato_real_esta_limpio)
+T190 · Control POSITIVO: hoy no hay ninguna segunda definición. ... ok
+test_el_lector_de_datos_falla_cerrado_ante_lo_que_no_entiende (__main__.FormulasCompartidas.test_el_lector_de_datos_falla_cerrado_ante_lo_que_no_entiende)
+T190 · Defecto que previene: una lectura a medias de un documento de datos. ... ok
+test_el_lector_de_datos_lee_el_registro_canonico_real (__main__.FormulasCompartidas.test_el_lector_de_datos_lee_el_registro_canonico_real)
+T190 · Control POSITIVO: el subconjunto admitido cubre la sede canónica de verdad. ... ok
+test_las_formas_equivalentes_tambien_se_detectan (__main__.FormulasCompartidas.test_las_formas_equivalentes_tambien_se_detectan)
+T190 · Defecto que previene: escribir la misma fórmula con otra ortografía. ... ok
+test_los_dos_casos_frontera_obligatorios (__main__.FormulasCompartidas.test_los_dos_casos_frontera_obligatorios)
+T190 · Defecto que previene: dos instrumentos que discrepan en el fichero VACÍO. ... ok
+test_si_la_sede_no_cumple_su_contrato_el_instrumento_no_emite (__main__.FormulasCompartidas.test_si_la_sede_no_cumple_su_contrato_el_instrumento_no_emite)
+T190 · Defecto que previene: emitir con una fórmula propia cuando la sede falla. ... ok
+test_si_la_sede_no_ofrece_la_formula_el_instrumento_no_emite (__main__.FormulasCompartidas.test_si_la_sede_no_ofrece_la_formula_el_instrumento_no_emite)
+T190 · Defecto que previene: seguir cuando la importación de la sede falla. ... ok
+test_una_segunda_definicion_aparece_en_el_censo_aunque_coincida_hoy (__main__.FormulasCompartidas.test_una_segunda_definicion_aparece_en_el_censo_aunque_coincida_hoy)
+T190 · Defecto que previene: una copia «equivalente» que mañana diverge. ... ok
+test_estructura_ajena_es_rojo_con_diagnostico (__main__.LecturaSegura.test_estructura_ajena_es_rojo_con_diagnostico)
+T188 · Defecto que previene: leer una salida con otra forma y seguir tan tranquilo. ... ok
+test_git_que_no_responde_no_produce_lista_vacia (__main__.LecturaSegura.test_git_que_no_responde_no_produce_lista_vacia)
+T188 · Defecto que previene: tratar un fallo de Git como un árbol limpio. ... ok
+test_las_seis_formas_de_nombre_se_leen_identicas (__main__.LecturaSegura.test_las_seis_formas_de_nombre_se_leen_identicas)
+T188 · Defecto que previene: perder una ruta por su ortografía. ... ok
+test_los_tres_casos_nunca_devuelven_lista_vacia_con_exito (__main__.LecturaSegura.test_los_tres_casos_nunca_devuelven_lista_vacia_con_exito)
+T188 · Defecto que previene: confundir «no entiendo» con «no hay nada». ... ok
+test_salida_no_decodificable_se_denuncia_y_no_se_interpreta_a_medias (__main__.LecturaSegura.test_salida_no_decodificable_se_denuncia_y_no_se_interpreta_a_medias)
+T188 · Defecto que previene: `errors=replace`, que hace desaparecer rutas. ... ok
+test_salida_truncada_es_rojo_con_diagnostico (__main__.LecturaSegura.test_salida_truncada_es_rojo_con_diagnostico)
+T188 · Defecto que previene: devolver una lista parcial como si fuera completa. ... ok
+test_toda_lista_exige_separador_seguro (__main__.LecturaSegura.test_toda_lista_exige_separador_seguro)
+T188 · Defecto que previene: leer una lista con un separador que cabe en una ruta. ... ok
+test_una_ruta_con_salto_de_linea_se_lee_entera (__main__.LecturaSegura.test_una_ruta_con_salto_de_linea_se_lee_entera)
+T188 · Defecto que previene: partir en dos una ruta que lleva un salto de línea. ... ok
+test_una_ruta_no_decodificable_del_arbol_real_se_denuncia (__main__.LecturaSegura.test_una_ruta_no_decodificable_del_arbol_real_se_denuncia)
+T188 · Defecto que previene: una ruta Latin-1 en el árbol que nadie vuelve a ver. ... ok
+test_cada_control_declara_su_color_esperado_antes_de_ejecutarse (__main__.MatrizAdversarial.test_cada_control_declara_su_color_esperado_antes_de_ejecutarse)
+T190 · Defecto que previene: un control que decide si aprobó al ver el resultado. ... ok
+test_la_matriz_publica_sus_dos_columnas_y_las_dos_son_cero (__main__.MatrizAdversarial.test_la_matriz_publica_sus_dos_columnas_y_las_dos_son_cero)
+T190 · Defecto que previene: `V6-18`, declarar cero falsos verdes sin medirlo. ... ok
+test_las_seis_formas_y_las_seis_letras_tienen_fixture_positivo_y_negativo (__main__.MatrizAdversarial.test_las_seis_formas_y_las_seis_letras_tienen_fixture_positivo_y_negativo)
+T190 · Defecto que previene: `V6-13` y `V6-14`, una forma sin fixture. ... ok
+test_alterar_una_letra_de_lo_publicado_da_rojo_aunque_este_confirmado (__main__.SedeDelOwner.test_alterar_una_letra_de_lo_publicado_da_rojo_aunque_este_confirmado)
+T189 · Defecto que previene: reescribir una resolución ya publicada. ... ok
+test_anadir_una_resolucion_es_legitimo (__main__.SedeDelOwner.test_anadir_una_resolucion_es_legitimo)
+T189 · Control POSITIVO: la sede del Owner CRECE, y crecer no es alterar. ... ok
+test_borrar_la_sede_da_rojo (__main__.SedeDelOwner.test_borrar_la_sede_da_rojo)
+T189 · Defecto que previene: hacer desaparecer la sede en vez de alterarla. ... ok
+test_el_contraste_es_contra_el_nacimiento_y_no_contra_head (__main__.SedeDelOwner.test_el_contraste_es_contra_el_nacimiento_y_no_contra_head)
+T189 · Defecto que previene: contrastar contra `HEAD`, que es una tautología. ... ok
+
+----------------------------------------------------------------------
+Ran 55 tests  (duración no registrada: varía por ejecución)
+
+OK

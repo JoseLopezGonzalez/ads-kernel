@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 0895bef7d2b722ac -->
+<!-- source_revision: a50d3073acf515c0 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -13,9 +13,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | CONTRATO DEFINIDO | 56 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 49 |
+| PRUEBA SUPERADA | 62 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **105** |
+| **total** | **118** |
 
 ## Detalle
 
@@ -126,3 +126,16 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T179](T172-T181-estado-durable.md) | Una versión de esquema desconocida falla CERRADO, y subir de versión exige migración declarada | g.10 · g.11 · g.16 G-A7 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
 | [T180](T172-T181-estado-durable.md) | Los quince pasos del escenario extremo a extremo, sobre un control repo real | g.3 · g.4 · g.5 · g.6 · g.8 · g.9 · g.13 · g.16 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-e2e-salida.txt |
 | [T181](T172-T181-estado-durable.md) | La especificación normativa vigente viaja al proyecto instalado, derivada y no escrita a mano | FD-3 · C6 · E2.0 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
+| [T182](T182-T194-runtime-y-admision.md) | El dispatcher deriva el trabajo del estado y lo despacha por un adaptador | F6-D · 11-ARQ 7.2 · g.12 I-g4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/runtime-salida.txt |
+| [T183](T182-T194-runtime-y-admision.md) | La autoridad sobre un paquete es exclusiva, y expira por observaciones y no por reloj | g.6 · g.2 I-g3 · F6-D | validador-estructural | **PRUEBA SUPERADA** | evidencia/runtime-salida.txt |
+| [T184](T182-T194-runtime-y-admision.md) | Las cuatro clases de fallo se distinguen, y agotar los intentos abre reconciliación | 11-ARQ 7.3 · g.9 · g.16 G-A5 | validador-estructural | **PRUEBA SUPERADA** | evidencia/runtime-salida.txt |
+| [T185](T182-T194-runtime-y-admision.md) | Pausa, reanudación y cancelación son transiciones reales del estado canónico | 11-ARQ 7.3 · F6-D | validador-estructural | **PRUEBA SUPERADA** | evidencia/runtime-salida.txt |
+| [T186](T182-T194-runtime-y-admision.md) | Una caída entre el efecto y su acuse no repite el efecto al recuperarse | g.8 · g.3 · F6-D | validador-estructural | **PRUEBA SUPERADA** | evidencia/runtime-salida.txt |
+| [T187](T182-T194-runtime-y-admision.md) | Forzar una referencia del control repo es imposible por política y detectable si se intenta | g.14 · g.16 G-A8 · O16 | validador-estructural | **PRUEBA SUPERADA** | evidencia/gobierno-git-salida.txt |
+| [T188](T182-T194-runtime-y-admision.md) | Toda lectura de Git usa una representación inequívoca, y la admisión juzga la mutación | V6-01 · V6-02 · V6-03 · V6-04 · V6-05 · V6-06 · V6-07 · V6-08 · V6-09 | validador-estructural | **PRUEBA SUPERADA** | evidencia/admision-salida.txt |
+| [T189](T182-T194-runtime-y-admision.md) | El censo de zonas cubre el CONTENIDO, incluida la raíz, y el instrumento se incluye a sí mismo | V6-10 · V6-11 · V6-12 · S1-02 | validador-estructural | **PRUEBA SUPERADA** | evidencia/admision-salida.txt |
+| [T190](T182-T194-runtime-y-admision.md) | La matriz adversarial mide cero falsos verdes y cero falsos rojos, y cada fórmula tiene una sede | V6-13 · V6-14 · V6-17 · V6-18 · V6-19 | validador-estructural | **PRUEBA SUPERADA** | evidencia/admision-salida.txt |
+| [T191](T182-T194-runtime-y-admision.md) | El adaptador local ejecuta un proceso real, lo mata de verdad y no repite un efecto aplicado | V7 · 11-ARQ 6 · 11-ARQ 3.4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/adaptadores-salida.txt |
+| [T192](T182-T194-runtime-y-admision.md) | La identidad de firma vive fuera del árbol, rota con solapamiento y no filtra secretos | O25 · g.15 · FD-1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/identidad-salida.txt |
+| [T193](T182-T194-runtime-y-admision.md) | Los veinticinco pasos del segundo escenario extremo a extremo, con dos runtimes y dos fuentes | F6-D · g.14 · V6-10 · V7 · g.9 · g.16 | validador-estructural | **PRUEBA SUPERADA** | evidencia/e2e-runtime-salida.txt |
+| [T194](T182-T194-runtime-y-admision.md) | Un control repo que ya existe se actualiza sin perder lo que el proyecto tiene | C6 · FD-3 · macrocircuito de actualizacion | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |

@@ -2,6 +2,66 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.11 — el kernel deja de administrar sólo su estado y empieza a despachar trabajo
+
+**Segundo corte vertical de `F6`.** El primero construyó el ESTADO DURABLE; éste construye lo
+que lo usa: un runtime que despacha trabajo, el gobierno Git del repositorio de control, el
+verificador de admisión y los adaptadores. Todo sobre el motor que ya existía: **no hay una
+segunda cola, ni un segundo diario, ni una segunda recuperación**.
+
+**`runtime/` — despacho con autoridad temporal.** El trabajo elegible se DERIVA del estado
+canónico, nunca de una lista en memoria. La autoridad sobre un paquete es un **lease
+durable**, y expira **por observaciones contadas y no por reloj**, porque `I-g3` prohíbe el
+tiempo de pared en lo durable: el tiempo lógico es la revisión. Las cuatro clases de fallo
+—reintentable, definitivo, cancelación y pérdida de autoridad— se distinguen de verdad, con
+transición propia cada una, y agotar los intentos abre el registro de reconciliación de `g.9`
+en la misma pasada. Un efecto confirmado no se aplica dos veces: el acuse durable protege el
+ESTADO y el recibo del adaptador protege el EFECTO, y entre los dos hay una ventana que se
+declara en vez de callarse.
+
+**Y un defecto de esa capa, encontrado al integrar y corregido antes de la auditoría.** La vía
+rápida del lease leía «el testigo existe y su cerrojo está libre» como «el titular murió» — y
+eso es exactamente lo que deja una invocación de línea de órdenes que termina BIEN. Con el
+modelo de una orden por proceso, cualquiera podía llevarse el lease de otro al instante, y el
+lease no protegía nada. Ahora la salida limpia RETIRA el testigo, quedan tres lecturas
+—vivo · muerto · indecidible— y **`adquirir` NUNCA roba**: robar tiene un solo nombre,
+`reclamar`, y deja su evento en el diario.
+
+**`gobierno/` — `g.14` y `G-A8`, las dos mitades.** Forzar una referencia del control repo es
+**imposible** —un hook `reference-transaction` rechaza lo que no es fast-forward y el borrado
+de refs protegidas, y el canal único rechaza `--force` y equivalentes antes de invocar nada—
+y **detectable** —quitado el hook, el forzado se denuncia contrastando el linaje completo, no
+sólo la cabeza—. Preparar y publicar son actos distintos, y por eso publicar se puede
+rechazar. Con la ventana transaccional abierta no se confirma.
+
+**`admision/` — los cortes `V2`–`V5`, y la deuda `S1-02` cerrada por el EJE.** El problema no
+era que faltara la raíz del repositorio en un inventario: era que el universo gobernado
+derivaba la EXISTENCIA en vez del CONTENIDO, y por eso reescribir entero un fichero
+preexistente dejaba `git status` vacío y la batería en verde. Ahora el censo de zonas se
+deriva y **cada zona lleva condición de contenido declarada y ejecutada**; una zona sin
+condición da ROJO en vez de pasar por omisión. Se demuestra **en los dos sentidos**: la regla
+anterior, reproducida con su procedencia, da VERDE sobre el árbol atacado y la nueva da ROJO,
+con su control positivo y con el mismo ataque en cuatro zonas de clases distintas.
+
+**`adaptadores/` — `V7`, con un adaptador local REAL.** Lanza un `subprocess` en su propio
+grupo de procesos, y el timeout y la cancelación **matan el grupo**: el hijo y el nieto. Más
+las proyecciones generadas con huella de entradas y su validador de deriva, que distingue
+`AL_DIA` de `EDITADA_A_MANO` y de `OBSOLETA` — porque el remedio no es el mismo.
+
+**`identidad/` — instancia `O25`.** La clave privada no la toca nadie del repositorio: el
+proveedor productivo DELEGA en el anfitrión. La configuración de confianza vive **fuera del
+árbol verificado** y manipularla dentro no cambia el veredicto. Rotación con solapamiento
+medido en épocas, estados activa/retirada/revocada, y una prueba de ausencia de secretos con
+marcador inyectado y su control del control.
+
+**`T194` — la otra mitad del ciclo de instalación.** Actualizar un control repo que YA existe
+sin pisar su perfil, su manifiesto ni su estado durable. `T148` medía la instalación; esto
+mide la actualización, que es la que puede destruir trabajo.
+
+**Nada de esto está CERTIFICADO**, y **PesquerApp sigue BLOQUEADA**. `V6-15` y `V6-16` quedan
+declarados fuera de este corte, y la raíz externa **no** se declara completa: falta que se
+ejecute con un proveedor productivo del anfitrión.
+
 ## 2.0.0-alpha.10 — el kernel deja de sólo describirse y empieza a ejecutarse
 
 **Primer corte vertical de `F6`, habilitado por la resolución `O24` del Owner**, que cierra

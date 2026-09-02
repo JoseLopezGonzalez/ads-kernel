@@ -21,10 +21,17 @@ batería**, registrada en el mismo manifiesto canónico y con su propia evidenci
 
 | pieza | qué es |
 |---|---|
-| [`CONTRATO-ESTADO-DURABLE.md`](CONTRATO-ESTADO-DURABLE.md) | el contrato derivado que `g.17` nombra: rutas, formato, protocolo, bloqueos y migración |
-| `ads_estado.py` | el punto ejecutable. Sin él no habría forma de demostrar una interrupción real: el escenario extremo a extremo **mata procesos**, y para eso hacen falta procesos |
-| `estado/` | el paquete: motor, transacción, diario, reconciliación, migración, bloqueo, serialización, rutas, errores, atestación y puntos de fallo |
-| `pruebas/` | la batería del motor y el escenario extremo a extremo |
+| [`CONTRATO-ESTADO-DURABLE.md`](CONTRATO-ESTADO-DURABLE.md) | el contrato derivado que `g.17` nombra el primero: rutas, formato, protocolo, bloqueos y migración |
+| [`CONTRATO-GOBIERNO-GIT-CONTROL.md`](CONTRATO-GOBIERNO-GIT-CONTROL.md) | el **segundo** de `g.17`: `g.14`, la tabla de propiedad, la concesión de ref y `G-A8` |
+| [`CONTRATO-RAIZ-EXTERNA.md`](CONTRATO-RAIZ-EXTERNA.md) | el **tercero** de `g.17`: `g.15` y `O25`, identidad, custodia y rotación. **NO completa** |
+| [`CONTRATO-RUNTIME-Y-DISPATCHER.md`](CONTRATO-RUNTIME-Y-DISPATCHER.md) | `F6-D`: trabajo elegible, autoridad temporal, despacho, reintentos y vistas derivadas |
+| [`CONTRATO-ADMISION.md`](CONTRATO-ADMISION.md) | `F6-A`: los cortes `V2`–`V5` del verificador de admisión, y la deuda `S1-02` |
+| [`CONTRATO-ADAPTADOR.md`](CONTRATO-ADAPTADOR.md) | `F6-G` y el corte `V7`: interfaz, adaptador local real, proyección y deriva |
+| `ads_estado.py` | el punto ejecutable del motor. Sin él no habría forma de demostrar una interrupción real: el escenario extremo a extremo **mata procesos**, y para eso hacen falta procesos |
+| `ads_runtime.py` · `ads_admision.py` | los puntos ejecutables del runtime y del verificador |
+| `estado/` | el motor: transacción, diario, reconciliación, migración, bloqueo, serialización, rutas, errores, atestación y puntos de fallo |
+| `runtime/` · `gobierno/` · `admision/` · `adaptadores/` · `identidad/` | los cinco paquetes del segundo corte |
+| `pruebas/` | las seis baterías y los dos escenarios extremo a extremo |
 
 **El censo no se escribe: se deriva.**
 
@@ -38,13 +45,25 @@ python3 kernel/operativo/runtime/ads_estado.py --ayuda
 ```bash
 # el motor, sobre un repositorio de control
 python3 kernel/operativo/runtime/ads_estado.py --repo <dir> inicializar
-python3 kernel/operativo/runtime/ads_estado.py --repo <dir> revision
 python3 kernel/operativo/runtime/ads_estado.py --repo <dir> verificar
-python3 kernel/operativo/runtime/ads_estado.py --repo <dir> recuperar
 
-# su batería, y su escenario extremo a extremo
+# el runtime: trabajo, autoridad y despacho por un adaptador real
+python3 kernel/operativo/runtime/ads_runtime.py --repo <dir> --instancia runtime-A elegibles
+python3 kernel/operativo/runtime/ads_runtime.py --repo <dir> --instancia runtime-A         --adaptador-local <espacio> ciclo
+
+# el verificador de admisión
+python3 kernel/operativo/runtime/ads_admision.py --repo <dir> verificar --base <rev>
+python3 kernel/operativo/runtime/ads_admision.py --repo <dir> censo-zonas
+
+# las baterías, y los dos escenarios extremo a extremo
 python3 kernel/operativo/runtime/pruebas/test_estado_durable.py
+python3 kernel/operativo/runtime/pruebas/test_runtime.py
+python3 kernel/operativo/runtime/pruebas/test_gobierno_git.py
+python3 kernel/operativo/runtime/pruebas/test_admision.py
+python3 kernel/operativo/runtime/pruebas/test_adaptadores.py
+python3 kernel/operativo/runtime/pruebas/test_identidad.py
 python3 kernel/operativo/runtime/pruebas/escenario_extremo_a_extremo.py
+python3 kernel/operativo/runtime/pruebas/escenario_e2e_runtime.py
 ```
 
 **Los dos entran en el manifiesto canónico de validadores**

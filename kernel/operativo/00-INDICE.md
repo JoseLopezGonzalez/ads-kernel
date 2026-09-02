@@ -68,6 +68,11 @@ cuando aparece se resuelve **borrando la copia**, nunca sincronizando las dos.
 | pruebas de conformidad nuevas | `pruebas/` y los bloques `ads:escenario` de cada documento |
 | estado real de cada prueba | [`pruebas/REGISTRO.md`](pruebas/REGISTRO.md) |
 | disposición física del estado durable: rutas, formato, protocolo transaccional y migración | [`runtime/CONTRATO-ESTADO-DURABLE.md`](runtime/CONTRATO-ESTADO-DURABLE.md) |
+| gobierno Git del repositorio de CONTROL: propiedad, concesión de ref y prohibición de forzar | [`runtime/CONTRATO-GOBIERNO-GIT-CONTROL.md`](runtime/CONTRATO-GOBIERNO-GIT-CONTROL.md) |
+| identidad y firma de la raíz externa: titularidad, custodia, estados y rotación | [`runtime/CONTRATO-RAIZ-EXTERNA.md`](runtime/CONTRATO-RAIZ-EXTERNA.md) |
+| despacho de trabajo: autoridad temporal, reintentos, pausa, cancelación y vistas | [`runtime/CONTRATO-RUNTIME-Y-DISPATCHER.md`](runtime/CONTRATO-RUNTIME-Y-DISPATCHER.md) |
+| admisión de mutaciones: lectura segura, juicio por mutación, perímetro y matriz | [`runtime/CONTRATO-ADMISION.md`](runtime/CONTRATO-ADMISION.md) |
+| contrato de adaptador, proyecciones y validador de deriva | [`runtime/CONTRATO-ADAPTADOR.md`](runtime/CONTRATO-ADAPTADOR.md) |
 
 ## Qué hay aquí
 

@@ -458,7 +458,115 @@ def t171_descubrimiento(raiz=None):
     return r
 
 
-PRUEBAS = [t148_arranque, t171_descubrimiento]
+def t194_actualizacion(raiz=None):
+    """T194 — ACTUALIZAR un control repo que ya existe, sin perder lo que el proyecto tiene.
+
+    QUÉ COMPRUEBA, y por qué no lo cubría `T148`. `T148` mide la INSTALACIÓN: un proyecto
+    nuevo, creado desde cero. La otra mitad del ciclo —traer una versión más nueva del
+    kernel a un control repo que ya está en uso— no la medía nadie, y es la que puede
+    destruir trabajo: el kernel vendorizado se sustituye, pero `PROFILE.md`, `PROJECT.md`,
+    `SOURCES.toml`, `docs/` y el ESTADO DURABLE del producto son del proyecto y NO se tocan.
+
+    Se ejecuta de verdad: se crea el proyecto, se le mete estado durable y contenido propio,
+    se simula que su kernel es viejo, se actualiza copiando el kernel y el tooling del
+    origen, y se comprueba que (a) lo del proyecto sigue intacto, (b) el kernel quedó al
+    día, (c) la huella del proyecto se reancla a su nuevo contenido y (d) los validadores
+    siguen en verde DENTRO del proyecto actualizado.
+    """
+    raiz = os.path.abspath(raiz or RAIZ)
+    r = Resultado("T194", "Un control repo existente se actualiza sin perder lo suyo")
+    disponibles = packs_instalables(raiz)
+    tmp = tempfile.mkdtemp(prefix="ads-actualizacion-")
+    try:
+        fuente = os.path.join(tmp, "ads-kernel")
+        _copiar(raiz, fuente)
+        pack = disponibles[0] if disponibles else ""
+        orden = ["./tooling/new-project.sh", "proyecto"] + ([pack] if pack else [])
+        proc = subprocess.run(orden, cwd=fuente, capture_output=True, text=True,
+                              env=ENTORNO_GIT_LIMPIO)
+        if proc.returncode != 0:
+            r.fallo(f"no se pudo crear el proyecto de partida: {proc.returncode}")
+            return r
+        proyecto = os.path.join(tmp, "proyecto", "ads")
+
+        # 1 · el proyecto adquiere COSAS SUYAS: perfil, estado durable y un documento
+        propio = os.path.join(proyecto, "PROFILE.md")
+        with open(propio, "a", encoding="utf-8") as fh:
+            fh.write("\n## Particularidad del producto\n\nesto es del proyecto\n")
+        with open(propio, "rb") as fh:
+            perfil_antes = fh.read()
+        cli_estado = os.path.join(proyecto, "kernel", "operativo", "runtime", "ads_estado.py")
+        if not os.path.exists(cli_estado):
+            r.fallo("el proyecto instalado no lleva el motor de estado durable")
+            return r
+        pe = subprocess.run([sys.executable, cli_estado, "--repo", proyecto, "inicializar"],
+                            capture_output=True, text=True, env=ENTORNO_GIT_LIMPIO)
+        if pe.returncode != 0:
+            r.fallo(f"el motor no pudo fundar el estado en el proyecto: {pe.stderr.strip()[:160]}")
+            return r
+        with open(os.path.join(proyecto, "estado", "REVISION.json"), "rb") as fh:
+            revision_antes = fh.read()
+
+        # 2 · su kernel se queda ATRÁS: se le quita una pieza y se le ensucia otra
+        retirado = os.path.join(proyecto, "kernel", "operativo", "runtime",
+                                "CONTRATO-ADMISION.md")
+        if os.path.exists(retirado):
+            os.remove(retirado)
+        with open(os.path.join(proyecto, "kernel", "VERSION"), "w", encoding="utf-8") as fh:
+            fh.write("0.0.0-viejo\n")
+
+        # 3 · ACTUALIZACIÓN: el kernel y el tooling se sustituyen; lo del proyecto, no
+        shutil.rmtree(os.path.join(proyecto, "kernel", "operativo"))
+        shutil.copytree(os.path.join(fuente, "kernel", "operativo"),
+                        os.path.join(proyecto, "kernel", "operativo"),
+                        ignore=shutil.ignore_patterns("__pycache__"))
+        for nombre in sorted(os.listdir(os.path.join(fuente, "kernel"))):
+            origen = os.path.join(fuente, "kernel", nombre)
+            if os.path.isfile(origen) and nombre != ".upstream-hash":
+                shutil.copy2(origen, os.path.join(proyecto, "kernel", nombre))
+        for nombre in sorted(os.listdir(os.path.join(fuente, "tooling"))):
+            origen = os.path.join(fuente, "tooling", nombre)
+            if os.path.isfile(origen):
+                shutil.copy2(origen, os.path.join(proyecto, "tooling", nombre))
+        os.remove(os.path.join(proyecto, "kernel", ".upstream-hash"))
+        subprocess.run(["./tooling/kernel-status.sh"], cwd=proyecto, capture_output=True,
+                       text=True, env=ENTORNO_GIT_LIMPIO)
+
+        # 4 · lo del proyecto sigue intacto
+        with open(propio, "rb") as fh:
+            if fh.read() != perfil_antes:
+                r.fallo("la actualización pisó el PROFILE del proyecto")
+        with open(os.path.join(proyecto, "estado", "REVISION.json"), "rb") as fh:
+            if fh.read() != revision_antes:
+                r.fallo("la actualización tocó el ESTADO DURABLE del producto")
+        # 5 · el kernel quedó al día
+        if not os.path.exists(retirado):
+            r.fallo("la actualización no repuso la pieza que faltaba del kernel")
+        with open(os.path.join(proyecto, "kernel", "VERSION"), encoding="utf-8") as fh:
+            if fh.read().strip() == "0.0.0-viejo":
+                r.fallo("la actualización no sustituyó la versión vieja del kernel")
+        # 6 · la huella se reancla al contenido nuevo, y queda LIMPIA
+        estado_huella = subprocess.run(["./tooling/kernel-status.sh"], cwd=proyecto,
+                                       capture_output=True, text=True,
+                                       env=ENTORNO_GIT_LIMPIO)
+        if "LIMPIO" not in estado_huella.stdout:
+            r.fallo(f"la huella del proyecto actualizado no queda limpia: "
+                    f"{estado_huella.stdout.strip().splitlines()[-1:]}")
+        # 7 · los validadores siguen en verde DENTRO del proyecto actualizado
+        for v in VALIDADORES_EN_PROYECTO:
+            script = os.path.join(proyecto, "kernel/operativo/validadores", f"{v}.py")
+            pv = subprocess.run([sys.executable, script], cwd=proyecto,
+                                capture_output=True, text=True)
+            if pv.returncode != 0:
+                primeras = [ln for ln in pv.stdout.splitlines() if ln.strip()][:2]
+                r.fallo(f"{v} falla en el proyecto ACTUALIZADO (exit {pv.returncode}): "
+                        f"{primeras}")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    return r
+
+
+PRUEBAS = [t148_arranque, t171_descubrimiento, t194_actualizacion]
 
 
 def main():

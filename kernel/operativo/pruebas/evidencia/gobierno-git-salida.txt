@@ -1,0 +1,77 @@
+# evidencia de: gobierno-git
+# orden:        python3 kernel/operativo/runtime/pruebas/test_gobierno_git.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+test_actualizar_ref_exige_el_valor_viejo_esperado (__main__.CanalUnico.test_actualizar_ref_exige_el_valor_viejo_esperado)
+T187 · Defecto que previene: mover una ref sin comparación e intercambio. ... ok
+test_actualizar_ref_rechaza_la_historia_no_lineal_antes_de_invocar_a_git (__main__.CanalUnico.test_actualizar_ref_rechaza_la_historia_no_lineal_antes_de_invocar_a_git)
+T187 · Defecto que previene: depender sólo del hook, que se puede quitar. ... ok
+test_el_canal_rechaza_las_banderas_de_forzado (__main__.CanalUnico.test_el_canal_rechaza_las_banderas_de_forzado)
+T187 · Defecto que previene: `--force` colado por cualquier ruta del código. ... ok
+test_el_canal_rechaza_una_refspec_forzada (__main__.CanalUnico.test_el_canal_rechaza_una_refspec_forzada)
+T187 · Defecto que previene: el `+` inicial, que es `--force` con otro nombre. ... ok
+test_el_entorno_de_git_es_hermetico (__main__.CanalUnico.test_el_entorno_de_git_es_hermetico)
+T187 · Defecto que previene: un veredicto que dependa de la config de la máquina. ... ok
+test_la_comparacion_e_intercambio_falla_si_el_valor_viejo_no_es_el_vigente (__main__.CanalUnico.test_la_comparacion_e_intercambio_falla_si_el_valor_viejo_no_es_el_vigente)
+T187 · Defecto que previene: escribir sobre lo que otro acaba de publicar. ... ok
+test_retirar_una_ref_protegida_levanta_ref_protegida (__main__.CanalUnico.test_retirar_una_ref_protegida_levanta_ref_protegida)
+T187 · Defecto que previene: que la política del canal admita una excepción. ... ok
+test_forzado_con_el_hook_retirado_es_denunciado (__main__.ForzadoDetectable.test_forzado_con_el_hook_retirado_es_denunciado)
+T187 · Defecto que previene: quitar el hook, forzar, y que nadie se entere. ... ok
+test_la_desaparicion_de_una_ref_registrada_se_denuncia (__main__.ForzadoDetectable.test_la_desaparicion_de_una_ref_registrada_se_denuncia)
+T187 · Defecto que previene: borrar la ref por debajo y presentar el árbol limpio. ... ok
+test_la_deteccion_no_depende_del_hook_para_dar_verde (__main__.ForzadoDetectable.test_la_deteccion_no_depende_del_hook_para_dar_verde)
+T187 · Control POSITIVO: sin hook y sin forzar, la detección NO denuncia nada. ... ok
+test_borrado_de_ref_protegida_es_rechazado_por_el_hook (__main__.HookImposible.test_borrado_de_ref_protegida_es_rechazado_por_el_hook)
+T187 · Defecto que previene: borrar la rama canónica y rehacerla a gusto. ... ok
+test_el_hook_se_instala_y_su_contenido_se_mide (__main__.HookImposible.test_el_hook_se_instala_y_su_contenido_se_mide)
+T187 · Defecto que previene: un hook «instalado» que nadie comprueba que sigue ahí. ... ok
+test_forzado_no_fast_forward_es_rechazado_por_el_hook (__main__.HookImposible.test_forzado_no_fast_forward_es_rechazado_por_el_hook)
+T187 · Defecto que previene: forzar la rama canónica con el hook puesto. ... ok
+test_hook_editado_es_hook_ausente (__main__.HookImposible.test_hook_editado_es_hook_ausente)
+T187 · Defecto que previene: un hook editado, que es un hook desactivado. ... ok
+test_hook_retirado_es_hook_ausente (__main__.HookImposible.test_hook_retirado_es_hook_ausente)
+T187 · Defecto que previene: dar por instalada una política que ya no está. ... ok
+test_una_rama_de_trabajo_si_se_retira (__main__.HookImposible.test_una_rama_de_trabajo_si_se_retira)
+T187 · Control POSITIVO: la protección no puede consistir en no dejar hacer nada. ... ok
+test_11_la_evidencia_es_determinista_y_sin_rutas_absolutas (__main__.OnceCapacidades.test_11_la_evidencia_es_determinista_y_sin_rutas_absolutas)
+T187 · Defecto que previene: publicar evidencia con el árbol de la máquina dentro. ... ok
+test_1_representar_propiedad_y_autoridad (__main__.OnceCapacidades.test_1_representar_propiedad_y_autoridad)
+T187 · Defecto que previene: una autoridad que no se puede consultar. ... ok
+test_2_y_8_conceder_y_rechazar_doble_escritor (__main__.OnceCapacidades.test_2_y_8_conceder_y_rechazar_doble_escritor)
+T187 · Defecto que previene: dos titulares con autoridad sobre la misma ref. ... ok
+test_3_contrastar_la_revision_base (__main__.OnceCapacidades.test_3_contrastar_la_revision_base)
+T187 · Defecto que previene: preparar contra una base que ya no es la vigente. ... ok
+test_4_preparar_no_mueve_ninguna_ref (__main__.OnceCapacidades.test_4_preparar_no_mueve_ninguna_ref)
+T187 · Defecto que previene: preparar y publicar en el mismo acto irrechazable. ... ok
+test_5_validar_la_politica_rechaza_al_actor_sin_autoridad (__main__.OnceCapacidades.test_5_validar_la_politica_rechaza_al_actor_sin_autoridad)
+T187 · Defecto que previene: confirmar sin que la política lo autorice. ... ok
+test_6_confirmar_publica_y_registra_el_linaje (__main__.OnceCapacidades.test_6_confirmar_publica_y_registra_el_linaje)
+T187 · Defecto que previene: confirmar sin dejar linaje que denuncie un forzado. ... ok
+test_7_detectar_perdida_de_autoridad (__main__.OnceCapacidades.test_7_detectar_perdida_de_autoridad)
+T187 · Defecto que previene: escribir con una autoridad que ya no se tiene. ... ok
+test_confirmar_sin_concesion_no_publica (__main__.OnceCapacidades.test_confirmar_sin_concesion_no_publica)
+T187 · Defecto que previene: publicar sin haber pedido autoridad nunca. ... ok
+test_la_politica_declara_las_ocho_operaciones_de_g14 (__main__.PoliticaComoDato.test_la_politica_declara_las_ocho_operaciones_de_g14)
+T187 · Defecto que previene: una tabla de propiedad con huecos. ... ok
+test_la_politica_no_puede_eximirse_a_si_misma (__main__.PoliticaComoDato.test_la_politica_no_puede_eximirse_a_si_misma)
+T187 · Defecto que previene: una política que se saca del alcance del verificador. ... ok
+test_la_publicacion_por_defecto_es_esperando_owner (__main__.PoliticaComoDato.test_la_publicacion_por_defecto_es_esperando_owner)
+T187 · Defecto que previene: que la ausencia de política signifique «publica». ... ok
+test_la_raiz_externa_no_escribe_nada (__main__.PoliticaComoDato.test_la_raiz_externa_no_escribe_nada)
+T187 · Defecto que previene: `g.12` incumplido por una lista ausente. ... ok
+test_una_politica_que_autoriza_el_borrado_protegido_se_rechaza (__main__.PoliticaComoDato.test_una_politica_que_autoriza_el_borrado_protegido_se_rechaza)
+T187 · Defecto que previene: `g.14` dice que NINGUNA política puede autorizarlo. ... ok
+test_una_politica_sin_clave_obligatoria_no_se_completa_sola (__main__.PoliticaComoDato.test_una_politica_sin_clave_obligatoria_no_se_completa_sola)
+T187 · Defecto que previene: que una clave ausente signifique «sin restricción». ... ok
+test_10_recuperar_tras_una_caida_real (__main__.SerializacionYRecuperacion.test_10_recuperar_tras_una_caida_real)
+T187 · Defecto que previene: arrancar sobre una ventana abierta y publicar mezcla. ... ok
+test_9_dos_procesos_reales_se_serializan_y_uno_solo_publica (__main__.SerializacionYRecuperacion.test_9_dos_procesos_reales_se_serializan_y_uno_solo_publica)
+T187 · Defecto que previene: dos escritores publicando a la vez en la canónica. ... ok
+
+----------------------------------------------------------------------
+Ran 33 tests  (duración no registrada: varía por ejecución)
+
+OK

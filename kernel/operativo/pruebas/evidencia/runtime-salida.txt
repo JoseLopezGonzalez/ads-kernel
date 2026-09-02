@@ -1,0 +1,109 @@
+# evidencia de: runtime-dispatcher
+# orden:        python3 kernel/operativo/runtime/pruebas/test_runtime.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+uso: falta --repo: esta orden se ejecuta sobre un CONTROL REPO concreto
+uso: falta --instancia: el runtime nombra al titular de cada lease durable
+test_20_dos_dispatchers_reales_no_despachan_el_mismo_paquete (__main__.AutoridadYLeases.test_20_dos_dispatchers_reales_no_despachan_el_mismo_paquete)
+T183 · Defecto que previene: dos dispatchers despachando el mismo paquete. ... ok
+test_21_una_carrera_real_no_ejecuta_ningun_paquete_dos_veces (__main__.AutoridadYLeases.test_21_una_carrera_real_no_ejecuta_ningun_paquete_dos_veces)
+T183 · Defecto que previene: doble despacho cuando la carrera es de verdad. ... ok
+test_22_renovar_sube_el_latido_y_borra_las_observaciones (__main__.AutoridadYLeases.test_22_renovar_sube_el_latido_y_borra_las_observaciones)
+T183 · Defecto que previene: reclamar a un titular que sí estaba avanzando. ... ok
+test_23_la_expiracion_se_decide_por_observaciones_y_no_por_un_plazo (__main__.AutoridadYLeases.test_23_la_expiracion_se_decide_por_observaciones_y_no_por_un_plazo)
+T183 · Defecto que previene: una caducidad de reloj dentro del estado durable. ... ok
+test_24_un_titular_muerto_se_reclama_de_inmediato_por_el_testigo (__main__.AutoridadYLeases.test_24_un_titular_muerto_se_reclama_de_inmediato_por_el_testigo)
+T183 · Defecto que previene: esperar tres observaciones a un proceso ya muerto. ... ok
+test_25_la_perdida_de_autoridad_no_escribe_absolutamente_nada (__main__.AutoridadYLeases.test_25_la_perdida_de_autoridad_no_escribe_absolutamente_nada)
+T183 · Defecto que previene: pisar al titular vigente con un resultado viejo. ... ok
+test_26_liberar_devuelve_a_listo_un_intento_que_nadie_ejecuto (__main__.AutoridadYLeases.test_26_liberar_devuelve_a_listo_un_intento_que_nadie_ejecuto)
+T183 · Defecto que previene: dejar un `despachado` que nadie va a recoger. ... ok
+test_27_ningun_byte_durable_lleva_reloj_pid_ni_uuid (__main__.AutoridadYLeases.test_27_ningun_byte_durable_lleva_reloj_pid_ni_uuid)
+T183 · Defecto que previene: un tiempo lógico que en realidad es el reloj. ... ok
+test_28_dos_procesos_no_pueden_llamarse_igual (__main__.AutoridadYLeases.test_28_dos_procesos_no_pueden_llamarse_igual)
+T183 · Defecto que previene: que `titular` deje de identificar a UNO solo. ... ok
+test_29_adquirir_nunca_roba_el_lease_de_otro_proceso (__main__.AutoridadYLeases.test_29_adquirir_nunca_roba_el_lease_de_otro_proceso)
+T183 · Defecto que previene: el lease se lo lleva el siguiente que lo pida. ... ok
+test_30_despachar_tampoco_roba_el_lease_de_otro_proceso (__main__.AutoridadYLeases.test_30_despachar_tampoco_roba_el_lease_de_otro_proceso)
+T183 · Defecto que previene: el mismo robo, por el camino que sí ejecuta. ... ok
+test_31_la_muerte_real_deja_la_huella_que_autoriza_la_reclamacion (__main__.AutoridadYLeases.test_31_la_muerte_real_deja_la_huella_que_autoriza_la_reclamacion)
+T183 · Defecto que previene: no poder distinguir un muerto de uno que terminó. ... ok
+test_32_ninguna_salida_limpia_deja_testigo_de_vida (__main__.AutoridadYLeases.test_32_ninguna_salida_limpia_deja_testigo_de_vida)
+T183 · Defecto que previene: que terminar bien parezca haber muerto. ... ok
+test_80_los_nueve_puntos_cortan_donde_dicen_y_se_recuperan_como_se_declaro (__main__.CaidaRecuperacionEIdempotencia.test_80_los_nueve_puntos_cortan_donde_dicen_y_se_recuperan_como_se_declaro)
+T186 · Defecto que previene: aceptar cualquier recuperación como la buena. ... ok
+test_81_caer_entre_el_efecto_y_el_acuse_no_aplica_el_efecto_dos_veces (__main__.CaidaRecuperacionEIdempotencia.test_81_caer_entre_el_efecto_y_el_acuse_no_aplica_el_efecto_dos_veces)
+T186 · Defecto que previene: aplicar dos veces un efecto ya aplicado. ... ok
+test_82_un_paquete_ya_completado_no_se_vuelve_a_despachar (__main__.CaidaRecuperacionEIdempotencia.test_82_un_paquete_ya_completado_no_se_vuelve_a_despachar)
+T186 · Defecto que previene: repetir el trabajo de un paquete ya cerrado. ... ok
+test_83_un_efecto_ya_acusado_se_rechaza_con_su_senal (__main__.CaidaRecuperacionEIdempotencia.test_83_un_efecto_ya_acusado_se_rechaza_con_su_senal)
+T186 · Defecto que previene: tratar la idempotencia como si fuera un fallo mudo. ... ok
+test_84_un_estado_que_ninguna_regla_explica_es_fallo_cerrado (__main__.CaidaRecuperacionEIdempotencia.test_84_un_estado_que_ninguna_regla_explica_es_fallo_cerrado)
+T186 · Defecto que previene: inventar estado cuando el estado no casa (`b.14.3`). ... ok
+test_85_el_censo_de_puntos_es_el_del_contrato_y_todos_se_llaman (__main__.CaidaRecuperacionEIdempotencia.test_85_el_censo_de_puntos_es_el_del_contrato_y_todos_se_llaman)
+T186 · Defecto que previene: dar por inyectada una caída que nunca se inyectó. ... ok
+test_86_el_efecto_se_deriva_del_contenido_y_cambia_con_el_intento (__main__.CaidaRecuperacionEIdempotencia.test_86_el_efecto_se_deriva_del_contenido_y_cambia_con_el_intento)
+T186 · Defecto que previene: un acuse que bloquearía todos los reintentos. ... ok
+test_87_abrir_recupera_antes_de_despachar (__main__.CaidaRecuperacionEIdempotencia.test_87_abrir_recupera_antes_de_despachar)
+T186 · Defecto que previene: despachar sobre una ventana sin cerrar. ... ok
+test_01_un_ciclo_despacha_lo_elegible_y_deja_el_efecto_acusado (__main__.CicloYDespacho.test_01_un_ciclo_despacha_lo_elegible_y_deja_el_efecto_acusado)
+T182 · Defecto que previene: dar por despachado lo que nunca quedó escrito. ... ok
+test_02_elegibles_se_deriva_del_estado_y_ordena_igual_para_toda_instancia (__main__.CicloYDespacho.test_02_elegibles_se_deriva_del_estado_y_ordena_igual_para_toda_instancia)
+T182 · Defecto que previene: dos instancias con listas distintas de trabajo. ... ok
+test_03_sin_adaptador_para_la_capacidad_el_paquete_no_se_toca (__main__.CicloYDespacho.test_03_sin_adaptador_para_la_capacidad_el_paquete_no_se_toca)
+T182 · Defecto que previene: consumir un intento por no encontrar adaptador. ... ok
+test_04_un_adaptador_de_otra_version_de_contrato_es_incompatible (__main__.CicloYDespacho.test_04_un_adaptador_de_otra_version_de_contrato_es_incompatible)
+T182 · Defecto que previene: ejecutar contra una interfaz que no es la pactada. ... ok
+test_05_una_dependencia_aparca_el_paquete_y_completarla_lo_libera (__main__.CicloYDespacho.test_05_una_dependencia_aparca_el_paquete_y_completarla_lo_libera)
+T182 · Defecto que previene: despachar trabajo cuyo insumo no existe todavía. ... ok
+test_06_una_espera_que_deja_de_ser_viable_se_convierte_en_bloqueo (__main__.CicloYDespacho.test_06_una_espera_que_deja_de_ser_viable_se_convierte_en_bloqueo)
+T182 · Defecto que previene: una espera muerta que nadie vuelve a mirar (`b.8`). ... ok
+test_07_la_tabla_de_transiciones_es_exactamente_la_del_contrato (__main__.CicloYDespacho.test_07_la_tabla_de_transiciones_es_exactamente_la_del_contrato)
+T182 · Defecto que previene: un estado alcanzado por un camino que nadie aprobó. ... ok
+test_08_las_vistas_son_derivadas_y_no_se_persisten (__main__.CicloYDespacho.test_08_las_vistas_son_derivadas_y_no_se_persisten)
+T182 · Defecto que previene: una vista que sabe más que el estado (§7.5). ... ok
+test_09_no_hay_un_segundo_sistema_de_estado (__main__.CicloYDespacho.test_09_no_hay_un_segundo_sistema_de_estado)
+T182 · Defecto que previene: un diario paralelo o un fichero de trabajo propio. ... ok
+test_10_operar_sin_abrir_o_tras_cerrar_es_fallo_cerrado (__main__.CicloYDespacho.test_10_operar_sin_abrir_o_tras_cerrar_es_fallo_cerrado)
+T182 · Defecto que previene: despachar con un almacén que nadie ha recuperado. ... ok
+test_60_pausar_impide_el_despacho_y_reanudar_lo_devuelve (__main__.PausaCancelacionYReanudacion.test_60_pausar_impide_el_despacho_y_reanudar_lo_devuelve)
+T185 · Defecto que previene: seguir trabajando en lo que el Owner detuvo. ... ok
+test_61_cancelar_es_terminal_y_no_admite_reanudacion (__main__.PausaCancelacionYReanudacion.test_61_cancelar_es_terminal_y_no_admite_reanudacion)
+T185 · Defecto que previene: resucitar trabajo que la autoridad retiró. ... ok
+test_62_una_decision_sin_motivo_o_sin_autoridad_no_es_auditable (__main__.PausaCancelacionYReanudacion.test_62_una_decision_sin_motivo_o_sin_autoridad_no_es_auditable)
+T185 · Defecto que previene: un cambio de estado que nadie puede atribuir. ... ok
+test_63_la_cancelacion_se_lee_del_estado_y_no_de_una_bandera (__main__.PausaCancelacionYReanudacion.test_63_la_cancelacion_se_lee_del_estado_y_no_de_una_bandera)
+T185 · Defecto que previene: una bandera en memoria que puede mentir. ... ok
+test_64_un_paquete_cancelado_a_medias_termina_cancelado (__main__.PausaCancelacionYReanudacion.test_64_un_paquete_cancelado_a_medias_termina_cancelado)
+T185 · Defecto que previene: publicar un `completado` de trabajo ya retirado. ... ok
+test_90_los_codigos_de_error_son_estables_y_salen_en_el_texto (__main__.Piezas.test_90_los_codigos_de_error_son_estables_y_salen_en_el_texto)
+T182 · Defecto que previene: una evidencia que depende del texto castellano. ... ok
+test_91_ninguna_salida_de_error_publica_una_ruta_absoluta (__main__.Piezas.test_91_ninguna_salida_de_error_publica_una_ruta_absoluta)
+T182 · Defecto que previene: publicar el árbol de directorios de quien ejecuta. ... ok
+test_92_la_politica_clasifica_y_decide_sin_tocar_nada (__main__.Piezas.test_92_la_politica_clasifica_y_decide_sin_tocar_nada)
+T184 · Defecto que previene: una decisión de reintento que depende del estado. ... ok
+test_93_la_observacion_reinicia_su_cuenta_si_el_latido_avanzo (__main__.Piezas.test_93_la_observacion_reinicia_su_cuenta_si_el_latido_avanzo)
+T183 · Defecto que previene: contar observaciones que no fueron consecutivas. ... ok
+test_94_un_lease_o_un_paquete_mal_formados_son_fallo_cerrado (__main__.Piezas.test_94_un_lease_o_un_paquete_mal_formados_son_fallo_cerrado)
+T182 · Defecto que previene: rellenar lo que falta en vez de denunciarlo. ... ok
+test_95_la_cli_distingue_uso_incorrecto_de_fallo_de_la_operacion (__main__.Piezas.test_95_la_cli_distingue_uso_incorrecto_de_fallo_de_la_operacion)
+T182 · Defecto que previene: confundir un tecleo con un fallo del estado. ... ok
+test_40_un_fallo_reintentable_consume_un_intento_y_vuelve_a_listo (__main__.ReintentosYReconciliacion.test_40_un_fallo_reintentable_consume_un_intento_y_vuelve_a_listo)
+T184 · Defecto que previene: un reintento sin tope, que es un livelock. ... ok
+test_41_agotar_abre_la_reconciliacion_en_la_misma_pasada (__main__.ReintentosYReconciliacion.test_41_agotar_abre_la_reconciliacion_en_la_misma_pasada)
+T184 · Defecto que previene: agotar sin dejar rastro deducible (`g.9`). ... ok
+test_42_un_fallo_definitivo_no_gasta_los_intentos_que_quedan (__main__.ReintentosYReconciliacion.test_42_un_fallo_definitivo_no_gasta_los_intentos_que_quedan)
+T184 · Defecto que previene: repetir una operación que ya se sabe imposible. ... ok
+test_43_las_cuatro_clases_de_fallo_dan_cuatro_errores_distintos (__main__.ReintentosYReconciliacion.test_43_las_cuatro_clases_de_fallo_dan_cuatro_errores_distintos)
+T184 · Defecto que previene: tratar cuatro cosas distintas como si fueran una. ... ok
+test_44_la_pendencia_se_retira_solo_por_una_transicion_explicita (__main__.ReintentosYReconciliacion.test_44_la_pendencia_se_retira_solo_por_una_transicion_explicita)
+T184 · Defecto que previene: cerrar una pendencia borrando una línea. ... ok
+test_45_agotar_no_reintenta_pero_la_autoridad_se_suelta (__main__.ReintentosYReconciliacion.test_45_agotar_no_reintenta_pero_la_autoridad_se_suelta)
+T184 · Defecto que previene: un lease huérfano sobre trabajo ya cerrado. ... ok
+
+----------------------------------------------------------------------
+Ran 48 tests  (duración no registrada: varía por ejecución)
+
+OK

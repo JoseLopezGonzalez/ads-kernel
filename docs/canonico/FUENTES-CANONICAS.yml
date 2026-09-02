@@ -575,6 +575,66 @@ materias:
       - kernel/operativo/runtime/estado/reconciliacion.py
       - kernel/operativo/runtime/ads_estado.py
 
+  - id: MAT-067
+    materia: >
+      contrato DERIVADO del gobierno Git del repositorio de CONTROL: tabla de propiedad,
+      concesion de ref, revision base, prohibicion de forzar y su deteccion. Es el segundo
+      contrato que g.17 nombra, y el sujeto es distinto del de C7
+    sede: kernel/operativo/runtime/CONTRATO-GOBIERNO-GIT-CONTROL.md
+    estado: vigente
+    autoridad_superior: docs/rediseno/g-ESTADO-DURABLE-APROBADA.md
+    fuentes_tecnicas:
+      - kernel/operativo/runtime/gobierno/control.py
+      - kernel/operativo/runtime/gobierno/POLITICA-CONTROL-REPO.yml
+
+  - id: MAT-068
+    materia: >
+      contrato DERIVADO de la raiz externa de confianza: titularidad, custodia, autoridad
+      administrativa, estados de identidad y rotacion con solapamiento. Es el tercero que
+      g.17 nombra, y NO esta completo
+    sede: kernel/operativo/runtime/CONTRATO-RAIZ-EXTERNA.md
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+    fuentes_tecnicas:
+      - kernel/operativo/runtime/identidad/proveedor.py
+      - kernel/operativo/runtime/identidad/configuracion.py
+      - kernel/operativo/runtime/identidad/rotacion.py
+
+  - id: MAT-069
+    materia: >
+      contrato del RUNTIME y del DISPATCHER: trabajo elegible, autoridad temporal, despacho,
+      clases de fallo, reintentos, pausa, cancelacion, recuperacion y vistas derivadas
+    sede: kernel/operativo/runtime/CONTRATO-RUNTIME-Y-DISPATCHER.md
+    estado: vigente
+    autoridad_superior: docs/rediseno/g-ESTADO-DURABLE-APROBADA.md
+    fuentes_tecnicas:
+      - kernel/operativo/runtime/runtime/dispatcher.py
+      - kernel/operativo/runtime/runtime/lease.py
+      - kernel/operativo/runtime/ads_runtime.py
+
+  - id: MAT-070
+    materia: >
+      contrato del VERIFICADOR DE ADMISION: lectura Git segura, juicio por mutacion, censo
+      de zonas con condicion de contenido, auto-inclusion del instrumento y matriz adversarial
+    sede: kernel/operativo/runtime/CONTRATO-ADMISION.md
+    estado: vigente
+    fuentes_tecnicas:
+      - kernel/operativo/runtime/admision/lectura.py
+      - kernel/operativo/runtime/admision/mutacion.py
+      - kernel/operativo/runtime/admision/perimetro.py
+      - kernel/operativo/runtime/ads_admision.py
+
+  - id: MAT-071
+    materia: >
+      contrato de ADAPTADOR: interfaz estable, capacidades declaradas, adaptador local de
+      proceso, proyecciones generadas y validador de deriva
+    sede: kernel/operativo/runtime/CONTRATO-ADAPTADOR.md
+    estado: vigente
+    fuentes_tecnicas:
+      - kernel/operativo/runtime/adaptadores/contrato.py
+      - kernel/operativo/runtime/adaptadores/proceso.py
+      - kernel/operativo/runtime/adaptadores/proyeccion.py
+
   - id: MAT-065
     materia: >
       estado de implementacion de F6 contrato a contrato, con su clasificacion, sus

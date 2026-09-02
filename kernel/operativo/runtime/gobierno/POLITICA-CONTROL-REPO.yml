@@ -1,0 +1,163 @@
+# POLITICA-CONTROL-REPO.yml
+#
+# TABLA DE PROPIEDAD del REPOSITORIO DE CONTROL de ADS, como DATO.
+#
+# Sede normativa: docs/rediseno/g-ESTADO-DURABLE-APROBADA.md, seccion g.14, cuya autoridad
+# fijo la resolucion O16 y aprobo el Owner mediante O23. Este fichero NO crea autoridad:
+# instancia la de g.14 en forma comprobable, que es lo que g.17 llama contrato derivado.
+#
+# ESTE FICHERO ENTRA EN LA HUELLA DEL VERIFICADOR, y no puede excluirse a si mismo.
+# admision/perimetro.py lo clasifica como instrumento y una prueba comprueba que ninguna
+# regla de aqui lo saca de la admision. Una politica que pudiera eximirse seria una politica
+# que se autoriza a si misma, que es exactamente lo que V6-11 prohibe.
+#
+# Se escribe sin tildes a proposito: es un fichero de datos, no prosa.
+
+version: 1
+
+# ---------------------------------------------------------------------------
+# ACTORES. Quien puede ejercer autoridad sobre el control repo.
+# ---------------------------------------------------------------------------
+actores:
+  - id: owner
+    descripcion: titular de la autoridad de publicacion y de la sede de resoluciones
+  - id: runtime
+    descripcion: unico ejecutor que muta el estado canonico (g.12, I-g4)
+  - id: verificador-externo
+    descripcion: raiz externa de confianza de g.15; NO escribe en lo que verifica
+  - id: agente
+    descripcion: cualquier agente del repositorio; propone, no publica
+
+# ---------------------------------------------------------------------------
+# OPERACIONES. Las ocho que g.14 nombra, mas las que su contrato derivado necesita.
+# Cada una declara: quien puede, si exige serializacion, y si exige revision base.
+# ---------------------------------------------------------------------------
+operaciones:
+  - id: crear
+    quien: [runtime, owner]
+    serializa: si
+    exige_revision_base: no
+    descripcion: fundar el almacen de estado y el linaje de la rama canonica
+  - id: confirmar
+    quien: [runtime]
+    serializa: si
+    exige_revision_base: si
+    descripcion: >
+      publicar una transaccion en la rama canonica. Exige la ventana CERRADA: g.14 dice
+      que la rama canonica NUNCA contiene estado parcial
+  - id: publicar
+    quien: [owner]
+    serializa: si
+    exige_revision_base: si
+    descripcion: >
+      autoridad de PUBLICACION. Su valor por defecto es esperando-owner y la ausencia de
+      politica declarada NUNCA significa publica
+  - id: abrir-rama
+    quien: [runtime, agente]
+    serializa: no
+    exige_revision_base: si
+    descripcion: abrir una rama de trabajo, que no es la unidad aislada del estado
+  - id: integrar
+    quien: [owner]
+    serializa: si
+    exige_revision_base: si
+    descripcion: >
+      integrar una rama de trabajo. Las peticiones de integracion NO se usan para el
+      estado: la unidad aislada de trabajo es la TRANSACCION, no la rama
+  - id: verificar
+    quien: [verificador-externo]
+    serializa: no
+    exige_revision_base: si
+    descripcion: emitir veredicto de admision. No escribe en el arbol que verifica
+  - id: revertir
+    quien: [owner]
+    serializa: si
+    exige_revision_base: si
+    descripcion: revertir mediante una confirmacion NUEVA, nunca reescribiendo historia
+  - id: retirar-rama
+    quien: [owner, runtime]
+    serializa: si
+    exige_revision_base: si
+    descripcion: retirar una rama de trabajo, jamas una ref protegida
+
+# ---------------------------------------------------------------------------
+# MATERIA. Que puede ESCRIBIR cada actor, por prefijo de ruta.
+# ---------------------------------------------------------------------------
+materia:
+  - actor: runtime
+    escribe: [estado/canonico/, estado/diario/, estado/reconciliacion/, estado/operacional/]
+    motivo: g.12, un solo ejecutor muta el estado canonico y escribe su diario
+  - actor: owner
+    escribe: [docs/owner/]
+    motivo: sede canonica de las resoluciones, APPEND-ONLY
+  - actor: verificador-externo
+    escribe: []
+    motivo: >
+      g.15, la raiz externa NO tiene permiso de escritura sobre lo que verifica. La lista
+      VACIA es la declaracion, no una omision
+  - actor: agente
+    escribe: []
+    motivo: propone por rama de trabajo; no publica en la rama canonica
+
+# ---------------------------------------------------------------------------
+# REFERENCIAS. Cuales estan protegidas y quien puede moverlas.
+# ---------------------------------------------------------------------------
+refs:
+  protegidas: [refs/heads/canonica, refs/heads/main, refs/heads/master]
+  mueve:
+    - ref: refs/heads/canonica
+      actores: [runtime]
+      modo: comparacion-e-intercambio
+    - ref: refs/heads/main
+      actores: [owner]
+      modo: comparacion-e-intercambio
+  borrado_permitido: []
+
+# ---------------------------------------------------------------------------
+# PROHIBICIONES. Absolutas. Ninguna politica puede autorizarlas, y esta tampoco.
+# ---------------------------------------------------------------------------
+prohibiciones:
+  - id: PG-1
+    texto: >
+      FORZAR REFERENCIAS ESTA PROHIBIDO. Sin excepcion automatica, y sin que ninguna
+      politica pueda autorizarlo. Fuente: g.14, literal
+  - id: PG-2
+    texto: >
+      Ninguna actualizacion de ref se hace sin comparacion e intercambio con el valor
+      viejo esperado. --force-with-lease no es un sustituto: lo comprueba el cliente
+  - id: PG-3
+    texto: >
+      Ninguna ref protegida se borra. El borrado se rechaza en el hook y en el canal
+  - id: PG-4
+    texto: >
+      La rama canonica NUNCA contiene estado parcial: confirmar exige la ventana CERRADA
+  - id: PG-5
+    texto: >
+      Esta politica NO puede eximirse a si misma ni eximir al verificador. Cualquier regla
+      que sacara del universo de admision a POLITICA-CONTROL-REPO.yml o a admision/ es un
+      DEFECTO, y una prueba lo comprueba
+
+# ---------------------------------------------------------------------------
+# AUTOINCLUSION. Las rutas del instrumento, declaradas para que NO puedan salir.
+# Se declaran aqui por prefijo y admision/perimetro.py las cruza con el arbol.
+# ---------------------------------------------------------------------------
+autoinclusion:
+  prefijos:
+    - kernel/operativo/runtime/admision/
+    - kernel/operativo/runtime/gobierno/
+    - kernel/operativo/runtime/identidad/
+    - kernel/operativo/runtime/adaptadores/
+    - kernel/operativo/runtime/ads_admision.py
+  motivo: >
+    V6-11: la definicion de lo verificado y la regla de admision no pueden excluirse a si
+    mismas. Cero rutas del propio verificador exentas
+
+# ---------------------------------------------------------------------------
+# PUBLICACION. Valor por defecto, y lo que la ausencia de politica NO significa.
+# ---------------------------------------------------------------------------
+publicacion:
+  por_defecto: esperando-owner
+  la_ausencia_significa: esperando-owner
+  motivo: >
+    g.14 y g.12: la autoridad de PUBLICACION es del Owner por defecto, y la ausencia de
+    politica declarada NUNCA significa publica

@@ -164,6 +164,57 @@ componentes:
     firma_de_exito: '15 de 15 pasos CUMPLIDOS'
     debe_contener: ['T180', 'paso 07', 'paso 13', 'paso 15']
 
+  # El SEGUNDO CORTE de F6: runtime y dispatcher, gobierno Git del control repo, verificador
+  # de admision y adaptadores. Cinco baterias mas, por la misma razon que las dos primeras:
+  # un validador fuera del manifiesto queda fuera de la evidencia sin que nada lo diga.
+  - id: runtime-dispatcher
+    script: test_runtime.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: runtime-salida.txt
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'duración no registrada', 'T182', 'T183', 'T184', 'T185', 'T186']
+
+  - id: gobierno-git
+    script: test_gobierno_git.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: gobierno-git-salida.txt
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'duración no registrada', 'T187']
+
+  - id: admision
+    script: test_admision.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: admision-salida.txt
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'duración no registrada', 'T188', 'T189', 'T190']
+
+  - id: adaptadores
+    script: test_adaptadores.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: adaptadores-salida.txt
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'duración no registrada', 'T191']
+
+  - id: identidad
+    script: test_identidad.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: identidad-salida.txt
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'duración no registrada', 'T192']
+
+  - id: e2e-runtime
+    script: escenario_e2e_runtime.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: e2e-runtime-salida.txt
+    firma_de_exito: '25 de 25 pasos CUMPLIDOS'
+    debe_contener: ['T193', 'paso 06', 'paso 18', 'paso 20', 'paso 22', 'paso 25']
+
   - id: registro
     script: registro_pruebas.py
     tipo: generador

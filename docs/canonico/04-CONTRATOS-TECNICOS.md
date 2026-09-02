@@ -31,6 +31,15 @@ runtime/              canónico, diario canónico y registro operativo auxiliar 
                       intercambiables. Con punto ejecutable y batería propia. Evidencia
                       publicada: `evidencia/estado-durable-salida.txt` y
                       `evidencia/estado-e2e-salida.txt`
+                      Y SOBRE ÉL, el segundo corte: RUNTIME Y DISPATCHER con autoridad
+                      temporal, reintentos y vistas derivadas · GOBIERNO GIT del control
+                      repo con su tabla de propiedad y `G-A8` en sus dos mitades ·
+                      VERIFICADOR DE ADMISIÓN `V2`–`V5`, que cierra `S1-02` ·
+                      ADAPTADORES con un ejecutor local real y proyecciones con huella ·
+                      IDENTIDAD de firma externa según `O25`. Evidencia publicada:
+                      `evidencia/runtime-salida.txt` · `evidencia/gobierno-git-salida.txt` ·
+                      `evidencia/admision-salida.txt` · `evidencia/adaptadores-salida.txt` ·
+                      `evidencia/identidad-salida.txt` · `evidencia/e2e-runtime-salida.txt`
 packs/                los packs instalables y su regla de precedencia
 tooling/              creación de proyecto · materialización del workspace multi-fuente ·
                       huella e integridad · preparación de la recompilación de proyecciones
@@ -50,22 +59,32 @@ guarda de entorno     la versión mínima del intérprete, declarada una vez y c
 ### 1.2 · DISEÑADO Y NO CONSTRUIDO
 
 ```text
-RUNTIME Y DISPATCHER      la ficha de la capacidad de despacho lo dice de sí misma: no
-                          implementa el dispatcher; lo que existe es el CONTRATO DE
-                          COMPORTAMIENTO que ese runtime deberá cumplir. Lo que SÍ existe
-                          ya es la capa de estado durable sobre la que se apoyará
+EL CICLO DE `§7.2`        la MÁQUINA de despacho existe y está probada; el ciclo entero
+                          —encuadre, composición de rutas, materialización de equipos,
+                          gates de capa y handoffs— NO. Es lo que viene encima
 EQUIPOS MATERIALIZADOS    el algoritmo de materialización está escrito y es determinista;
                           nada lo ejecuta
 ASIGNACIÓN DE AGENTES     el algoritmo y el catálogo de perfiles existen; el adaptador que
                           los resolvería vive en el perfil del producto, y no hay ninguno
 GATES                     salvo el de conformidad del workspace, que tiene ejecutor real y
                           parcial, los demás son listas comprobables SIN comprobador
-ADAPTADORES               ninguno existe y ninguno está certificado
-LOS CUATRO MACROCIRCUITOS instalación, adopción, migración y actualización: diseñados
-VERIFICADOR DE ADMISIÓN   sus diecinueve puntos siguen escritos y sin construir
-RAÍZ EXTERNA PRODUCTIVA   existe la INTERFAZ, con proveedores intercambiables y fallo
-                          cerrado sin proveedor válido. La custodia productiva de la clave
-                          NO está decidida: es `FD-1`, y es del Owner
+ADAPTADORES               existe el CONTRATO y un adaptador LOCAL DE PROCESO real; no
+                          existe ninguno de proveedor, y ninguno está certificado
+VERIFICADOR DE ADMISIÓN   diecisiete de sus diecinueve puntos están construidos y
+                          ejecutados. **`V6-15`** —el derivador del conjunto de árboles
+                          adversariales— y **`V6-16`** —la raíz externa productiva— NO,
+                          y todo veredicto los publica en su lista `fuera_de_alcance`
+RAÍZ EXTERNA PRODUCTIVA   la custodia YA está decidida por `O25`: identidad de servicio
+                          dedicada del verificador externo, con un proveedor del anfitrión.
+                          Lo que falta es EJECUTARLA fuera del árbol verificado con firma
+                          asimétrica del anfitrión. El proveedor de pruebas es SIMÉTRICO,
+                          y quien verifica podría firmar: no es custodia productiva
+LOS MACROCIRCUITOS        instalación, adopción, migración y actualización: diseñados. La
+                          ACTUALIZACIÓN de un control repo existente sí tiene prueba
+                          ejecutada, `T194`, pero el macrocircuito completo no
+LA PRUEBA DE HUMO         la pieza 4 de la arquitectura de adaptadores exige abrir un
+    EN SESIÓN NUEVA       entorno de agente real. Por eso NINGÚN adaptador declara un
+                          NIVEL alcanzado, y `nivel` no existe como campo
 CERTIFICACIÓN DE `F6`     ninguna. Implementado y probado NO es certificado
 ```
 

@@ -1,0 +1,55 @@
+# evidencia de: identidad
+# orden:        python3 kernel/operativo/runtime/pruebas/test_identidad.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+test_el_marcador_no_aparece_en_ninguna_salida (__main__.AusenciaDeSecretos.test_el_marcador_no_aparece_en_ninguna_salida)
+T192 · Defecto que previene: `O25` §2, un secreto en un log, un error o la evidencia. ... ok
+test_el_marcador_si_esta_en_la_clave_del_anfitrion (__main__.AusenciaDeSecretos.test_el_marcador_si_esta_en_la_clave_del_anfitrion)
+T192 · Control del CONTROL: si el marcador no estuviera, la prueba no probaría nada. ... ok
+test_la_evidencia_no_puede_escribirse_dentro_del_arbol_verificado (__main__.AusenciaDeSecretos.test_la_evidencia_no_puede_escribirse_dentro_del_arbol_verificado)
+T192 · Defecto que previene: `g.13`, certificar un árbol cambiándolo al certificarlo. ... ok
+test_la_declaracion_de_admision_viene_de_la_configuracion_externa (__main__.ConfiguracionExterna.test_la_declaracion_de_admision_viene_de_la_configuracion_externa)
+T192 · Defecto que previene: que el árbol escriba su propia declaración. ... ok
+test_manipular_la_configuracion_dentro_del_arbol_no_cambia_el_veredicto (__main__.ConfiguracionExterna.test_manipular_la_configuracion_dentro_del_arbol_no_cambia_el_veredicto)
+T192 · Defecto que previene: `O25` §3, cambiar desde dentro qué identidad se acepta. ... ok
+test_un_enlace_simbolico_no_la_cuela_dentro (__main__.ConfiguracionExterna.test_un_enlace_simbolico_no_la_cuela_dentro)
+T192 · Defecto que previene: meterla dentro con una ruta que no lo parece. ... ok
+test_una_configuracion_con_clave_privada_dentro_se_rechaza_entera (__main__.ConfiguracionExterna.test_una_configuracion_con_clave_privada_dentro_se_rechaza_entera)
+T192 · Defecto que previene: `O25` §2, la clave en la configuración. ... ok
+test_una_configuracion_dentro_del_arbol_se_rechaza (__main__.ConfiguracionExterna.test_una_configuracion_dentro_del_arbol_se_rechaza)
+T192 · Defecto que previene: que el repositorio decida quién lo verifica. ... ok
+test_una_configuracion_sin_identidades_falla_cerrado (__main__.ConfiguracionExterna.test_una_configuracion_sin_identidades_falla_cerrado)
+T192 · Defecto que previene: verificar contra un anillo vacío y decir que sí. ... ok
+test_el_proveedor_no_publica_su_ruta_absoluta (__main__.ProveedorDelegado.test_el_proveedor_no_publica_su_ruta_absoluta)
+T192 · Defecto que previene: publicar el árbol de directorios de quien ejecuta. ... ok
+test_firma_y_verifica_delegando_en_el_anfitrion (__main__.ProveedorDelegado.test_firma_y_verifica_delegando_en_el_anfitrion)
+T192 · Control POSITIVO: el circuito completo, sin que el proceso vea la clave. ... ok
+test_reutiliza_la_interfaz_del_motor_y_no_la_duplica (__main__.ProveedorDelegado.test_reutiliza_la_interfaz_del_motor_y_no_la_duplica)
+T192 · Defecto que previene: una segunda sede de la interfaz de firma. ... ok
+test_sin_proveedor_valido_falla_cerrado (__main__.ProveedorDelegado.test_sin_proveedor_valido_falla_cerrado)
+T192 · Defecto que previene: `O25` §2, una ruta por defecto que firme con nada. ... ok
+test_un_anfitrion_que_falla_no_degrada_a_una_firma_propia (__main__.ProveedorDelegado.test_un_anfitrion_que_falla_no_degrada_a_una_firma_propia)
+T192 · Defecto que previene: evidencia firmada por una autoridad que nadie aceptó. ... ok
+test_un_anfitrion_que_no_existe_es_fallo_cerrado (__main__.ProveedorDelegado.test_un_anfitrion_que_no_existe_es_fallo_cerrado)
+T192 · Defecto que previene: degradar a una firma local cuando el anfitrión no está. ... ok
+test_la_traza_es_completa_y_no_lleva_secretos (__main__.RotacionYSolapamiento.test_la_traza_es_completa_y_no_lleva_secretos)
+T192 · Defecto que previene: `O25` §5, trazabilidad que revela material. ... ok
+test_los_tres_estados_y_ninguno_mas (__main__.RotacionYSolapamiento.test_los_tres_estados_y_ninguno_mas)
+T192 · Defecto que previene: un estado inventado que nadie sabe qué significa. ... ok
+test_rotar_retira_la_activa_con_solapamiento_explicito_en_epocas (__main__.RotacionYSolapamiento.test_rotar_retira_la_activa_con_solapamiento_explicito_en_epocas)
+T192 · Control POSITIVO: `O25` §5, la rotación con periodo de solapamiento. ... ok
+test_una_identidad_desconocida_se_rechaza (__main__.RotacionYSolapamiento.test_una_identidad_desconocida_se_rechaza)
+T192 · Defecto que previene: aceptar una identidad que la autoridad no declaró. ... ok
+test_una_retirada_sin_epoca_de_retirada_se_rechaza (__main__.RotacionYSolapamiento.test_una_retirada_sin_epoca_de_retirada_se_rechaza)
+T192 · Defecto que previene: un solapamiento que no se puede medir. ... ok
+test_una_retirada_verifica_dentro_del_solapamiento_y_no_fuera (__main__.RotacionYSolapamiento.test_una_retirada_verifica_dentro_del_solapamiento_y_no_fuera)
+T192 · Defecto que previene: un solapamiento declarado que no se ejecuta. ... ok
+test_una_revocada_no_verifica_ni_dentro_del_solapamiento (__main__.RotacionYSolapamiento.test_una_revocada_no_verifica_ni_dentro_del_solapamiento)
+T192 · Defecto que previene: honrar el solapamiento de una clave comprometida. ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests  (duración no registrada: varía por ejecución)
+
+OK

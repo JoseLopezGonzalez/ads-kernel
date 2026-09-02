@@ -1,0 +1,85 @@
+# evidencia de: e2e-runtime
+# orden:        python3 kernel/operativo/runtime/pruebas/escenario_e2e_runtime.py
+# codigo:       0
+# ---------------------------------------------------------------
+ESCENARIO EXTREMO A EXTREMO · RUNTIME, GIT, ADMISIÓN Y ADAPTADORES
+T193 · F6 · corte vertical 2 · veinticinco pasos del §12 del encargo
+procesos y repositorios Git REALES; ningún mock hace de pieza
+
+paso 01  instalación e inicialización del workspace, el control repo y las dos fuentes
+         · control repo con gobierno y hook · dos fuentes Git · estado durable fundado
+         resultado: CUMPLIDO
+paso 02  recuperación del estado antes de despachar nada
+         · abrir() recupera ANTES de despachar · rama ninguna
+         resultado: CUMPLIDO
+paso 03  creación de trabajo: un item y cuatro paquetes
+         · 1 item y 4 paquetes, escritos como transiciones del estado durable
+         resultado: CUMPLIDO
+paso 04  selección: el trabajo elegible se DERIVA del estado y se ordena igual en las dos instancias
+         · orden derivado del estado, idéntico en las dos instancias: pq-ok, pq-falla, pq-pausa, pq-cancela
+         resultado: CUMPLIDO
+paso 05  adquisición de autoridad por la primera instancia
+         · lease de pq-ok en runtime-A, época 1
+         resultado: CUMPLIDO
+paso 06  prevención de doble despacho: la segunda instancia no puede adquirir
+         · runtime-B rechazado por AUTORIDAD_NO_DISPONIBLE, en adquirir y en despachar
+         resultado: CUMPLIDO
+paso 07  ejecución por el adaptador local, con un proceso real
+         · adaptador de proceso local ejecutado, con recibo durable por efecto
+         resultado: CUMPLIDO
+paso 08  progreso emitido por el proceso y recogido por el runtime
+         · 2 líneas de progreso recogidas del proceso, y el diario las explica
+         resultado: CUMPLIDO
+paso 09  transición confirmada: el paquete queda completado y el efecto acusado
+         · pq-ok completado y su efecto acusado en la MISMA transición
+         resultado: CUMPLIDO
+paso 10  fallo REINTENTABLE: el proceso sale con código distinto de cero
+         · timeout: proceso MATADO, fallo reintentable, paquete de vuelta a listo, intento 1
+         resultado: CUMPLIDO
+paso 11  reintento: el paquete vuelve a listo y se despacha otra vez
+         · reintento ejecutado: intento 2 de 2
+         resultado: CUMPLIDO
+paso 12  agotamiento: se acaban los intentos y el estado canónico deja de tocarse
+         · intentos agotados: pq-falla en `agotado`, fuera de lo elegible y sin despacho
+         resultado: CUMPLIDO
+paso 13  reconciliación pendiente, deducida del registro auxiliar
+         · reconciliación rec-0001 deducida del registro auxiliar
+         resultado: CUMPLIDO
+paso 14  pausa de un paquete listo
+         · pq-pausa en `pausado`, y fuera del trabajo elegible
+         resultado: CUMPLIDO
+paso 15  reanudación del paquete pausado
+         · pq-pausa reanudado y elegible otra vez
+         resultado: CUMPLIDO
+paso 16  cancelación de un paquete, que es terminal
+         · pq-cancela cancelado, y la cancelación es terminal
+         resultado: CUMPLIDO
+paso 17  caída del runtime entre el efecto y su acuse, con el proceso muerto de verdad
+         · runtime-A muerto con os._exit(70) tras el efecto y ANTES del acuse
+         resultado: CUMPLIDO
+paso 18  recuperación por la OTRA instancia, sin repetir el efecto ya ejecutado
+         · runtime-B reclamó tras 3 observaciones y completó SIN reejecutar el efecto
+         resultado: CUMPLIDO
+paso 19  mutación Git ADMITIDA sobre la rama canónica del control repo
+         · mutación admitida sobre la rama canónica, por concesión y revisión base
+         resultado: CUMPLIDO
+paso 20  mutación Git RECHAZADA: forzar una referencia es imposible por política
+         · forzado RECHAZADO por el hook de referencias, y la ref no se movió
+         resultado: CUMPLIDO
+paso 21  ruta adversarial: espacio, salto de línea, guion inicial y no ASCII
+         · 4 rutas adversariales leídas ÍNTEGRAS por el canal con separación por NUL
+         resultado: CUMPLIDO
+paso 22  la RAÍZ del repositorio está inventariada: el ataque de `S1-02` da ROJO
+         · ataque de `S1-02` sobre la RAÍZ, con `git status` VACÍO: ROJO, 5 hallazgo(s)
+         resultado: CUMPLIDO
+paso 23  resultado idempotente: repetir la orden no vuelve a ejecutar
+         · orden repetida con el mismo efecto: `repetido: true`, sin volver a ejecutar
+         resultado: CUMPLIDO
+paso 24  evidencia auditable: diario, atestación y configuración de confianza fuera del árbol
+         · diario auditable · atestación verificada y su manipulación rechazada · configuración de confianza DENTRO del árbol rechazada
+         resultado: CUMPLIDO
+paso 25  cierre limpio: integridad, ventana cerrada y árbol de producto sin residuos
+         · integridad verde · ventana cerrada · fuentes limpias · operacional fuera del git
+         resultado: CUMPLIDO
+
+25 de 25 pasos CUMPLIDOS
