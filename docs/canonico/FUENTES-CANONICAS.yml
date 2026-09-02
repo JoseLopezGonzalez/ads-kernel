@@ -255,7 +255,10 @@ materias:
     seccion: "6"
     estado: vigente
     autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
-    acto_declarativo: docs/evolucion/34-RATIFICACION-DE-LA-CERTIFICACION-INCREMENTAL-O22.md
+    # El estado de F4c lo declaro el documento 34. El de F5 y el de F6 los declara O24, que
+    # es acto del Owner y por tanto AUTORIDAD SUPERIOR: la sede canonica manda sobre la
+    # evidencia de proceso, y por eso el acto declarativo vigente es la resolucion.
+    acto_declarativo: docs/owner/ADS-OWNER-RESOLUCIONES.md
 
   - id: MAT-006
     materia: inventario de contratos tecnicos, y que esta construido frente a que esta disenado

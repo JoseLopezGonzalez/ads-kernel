@@ -169,9 +169,9 @@ ADMISIÓN          una AMPLIACIÓN del corpus —un fichero nuevo— sólo es le
 | fase u objeto | estado | quién lo declaró |
 |---|---|---|
 | **`F4c`** | **CERRADA**, por COMPOSICIÓN: un gate completo VÁLIDO más una verificación incremental del delta con LECTURA INTEGRAL COMPLETA. **No la cerró el coordinador**: la cierra la composición de dos juicios independientes | [`34-RATIFICACION-DE-LA-CERTIFICACION-INCREMENTAL-O22.md`](../evolucion/34-RATIFICACION-DE-LA-CERTIFICACION-INCREMENTAL-O22.md) §10, sobre [`33-CIERRE-DE-F4C-POR-COMPOSICION-O22.md`](../evolucion/33-CIERRE-DE-F4C-POR-COMPOSICION-O22.md) |
-| **`F5`** | **COMPLETADA TÉCNICAMENTE · PENDIENTE DEL ACTO EXPRESO DE CIERRE DEL OWNER.** El Owner resolvió las quince decisiones del paquete; las diecisiete presiones vigentes tienen acto y artefacto; la sección `(g)` y las enmiendas `E3`–`E6` están APROBADAS. **`F5` NO está CERRADA**: su cierre exige un acto posterior y expreso del Owner, y esta fila NO lo sustituye | la resolución `O23` §11 y §12, en la [sede canónica](../owner/ADS-OWNER-RESOLUCIONES.md). El acto de inicio: [`docs/f5/01-ACTO-DE-INICIO-DE-F5.md`](../f5/01-ACTO-DE-INICIO-DE-F5.md) |
-| **`F6`** | **NO INICIADA.** Su contrato está ESCRITO; **ninguno de sus puntos está implementado, ejecutado ni certificado** | ídem |
-| **PesquerApp** | **BLOQUEADA.** Sin MVP, sin piloto desechable y sin adopción parcial, hasta que `F6` implemente **y CERTIFIQUE** sus contratos. El cierre de `F4c` **no la desbloquea** | resolución del Owner `O20` §8, en la [sede canónica](../owner/ADS-OWNER-RESOLUCIONES.md) |
+| **`F5`** | **CERRADA**, por acto posterior y expreso del Owner, que declara demostradas las cuatro condiciones de `O23` §11: `F5-A`–`F5-G` completos, `A1`–`A7` satisfechos, ningún borrador presentado como aprobado sin estarlo y validación final satisfactoria. **El cierre no lo declara este corpus**: lo declara la resolución | la resolución `O24` §1, en la [sede canónica](../owner/ADS-OWNER-RESOLUCIONES.md). El acto de inicio: [`docs/f5/01-ACTO-DE-INICIO-DE-F5.md`](../f5/01-ACTO-DE-INICIO-DE-F5.md) |
+| **`F6`** | **INICIADA · EN CURSO**, por la misma resolución. Lo IMPLEMENTADO y lo todavía NO IMPLEMENTADO no se enumera aquí: su única sede es [`04-CONTRATOS-TECNICOS.md`](04-CONTRATOS-TECNICOS.md). **Iniciada no es completada, y nada de `F6` está CERTIFICADO** | la resolución `O24` §2, en la [sede canónica](../owner/ADS-OWNER-RESOLUCIONES.md) |
+| **PesquerApp** | **BLOQUEADA.** Sin MVP, sin piloto desechable, sin adopción parcial, sin integración anticipada y sin ejecución productiva, hasta que `F6` implemente **y CERTIFIQUE** sus contratos. Ni el cierre de `F4c`, ni el de `F5`, ni el inicio de `F6` la desbloquean | resolución del Owner `O20` §8 y `O24` §4, en la [sede canónica](../owner/ADS-OWNER-RESOLUCIONES.md) |
 | **`C-L.5`** | **CERTIFICADA** para el gate del documento 32 por su adjudicador, y **CERTIFICADA POR DELTA** para la candidata del delta. **No se transfiere** a ninguna otra candidata ni a ningún otro gate | `O21` §5 y §6 · `O22` §5 |
 | **`C-L.7`** | **NO CERRADA** | doc 34 §10 · ver [`06-DEUDA-Y-LIMITACIONES-VIGENTES.md`](06-DEUDA-Y-LIMITACIONES-VIGENTES.md) |
 | **`M-04`** | **NO SUPERADA** | ídem |
@@ -193,16 +193,17 @@ INICIAR `F5`        es un acto del OWNER, y **ya se emitió**. Ningún documento
                     corpus y ningún agente lo sustituía, y ninguno lo sustituyó: el acto
                     consta y está registrado. Su estado vigente es §6
 
-CERRAR `F5`         es un acto POSTERIOR y EXPRESO del OWNER, y su sede es la
-                    resolución `O23` §11, que además fija las CUATRO cosas que hay que
-                    demostrar antes: que `F5-A`–`F5-G` están completos · que `A1`–`A7`
+CERRAR `F5`         era un acto POSTERIOR y EXPRESO del OWNER, y **ya se emitió**: la
+                    resolución `O24` §1 lo declara sobre las CUATRO cosas que `O23` §11
+                    exigía demostrar —que `F5-A`–`F5-G` están completos · que `A1`–`A7`
                     están satisfechos · que no queda ningún borrador presentado como
-                    aprobado sin estarlo · y que la validación final es satisfactoria
+                    aprobado sin estarlo · y que la validación final es satisfactoria—.
+                    Su estado vigente es §6
 
-INICIAR `F6`        exige `F5` cerrada. Los contratos de `F6` están escritos y no
-                    implementados. **Que un corte no necesite decisión del Owner NO lo
-                    autoriza a empezar**: los cortes verticales son de `F6`, y `F6` exige
-                    `F5` CERRADA
+INICIAR `F6`        exigía `F5` cerrada, y **ya se emitió**: la resolución `O24` §2 la
+                    autoriza e inicia. Iniciar NO es completar: `F6` demuestra su
+                    suficiencia con implementación ejecutable y pruebas reproducibles, y
+                    ningún documento equivale a implementación ni a certificación
 
 DESBLOQUEAR         exige que `F6` implemente **y CERTIFIQUE** el verificador de admisión y
 PesquerApp          la raíz externa de confianza. La cadena es

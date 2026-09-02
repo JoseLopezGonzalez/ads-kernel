@@ -764,3 +764,68 @@ Este texto no inicia `F6`, no declara implementados sus contratos y no desbloque
 Esta resolución resuelve conjuntamente `D-01`–`D-10` y `R-01`–`R-05` del paquete de decisiones de `F5`.
 
 La opción elegida para `R-04` es la inscripción directa de este texto por el Owner. La opción elegida para `R-05` es el cierre posterior mediante acto expreso del Owner.
+
+---
+
+# `O24` · CIERRE DE `F5` E INICIO DE `F6`
+
+**Fecha:** 2026-09-02  
+**Autoridad:** Owner  
+**Estado:** VIGENTE
+
+## 1 · Cierre de `F5`
+
+Declaro `F5` CERRADA.
+
+Las cuatro condiciones establecidas por `O23` §11 están demostradas:
+
+- `F5-A`–`F5-G` están completos;
+- `A1`–`A7` están satisfechos;
+- no queda ningún borrador presentado como aprobado sin estarlo;
+- la validación final es satisfactoria.
+
+## 2 · Inicio de `F6`
+
+Autorizo e inicio `F6`.
+
+`F6` implementará y certificará los contratos técnicos aprobados por `F5`, respetando las invariantes de la sección `(g)`, las enmiendas vigentes y la jerarquía de autoridad del corpus canónico.
+
+Las decisiones sobre rutas, formatos, serialización, algoritmos, bloqueos, herramientas, despliegue y mecanismos internos pertenecen a `F6` cuando la norma las haya dejado expresamente al contrato derivado.
+
+Esas decisiones técnicas no pueden rebajar atomicidad, durabilidad, integridad, recuperación, auditabilidad, independencia de la raíz externa ni compatibilidad o migración explícita.
+
+## 3 · Evidencia de `F6`
+
+La suficiencia de `F6` se demostrará mediante implementación ejecutable y pruebas reproducibles.
+
+La existencia de documentos, contratos o resultados simulados no equivale a implementación ni a certificación.
+
+Cada contrato deberá demostrar, según corresponda:
+
+- escenario positivo;
+- escenario negativo;
+- recuperación ante interrupción;
+- fallo cerrado;
+- idempotencia;
+- concurrencia;
+- trazabilidad;
+- integridad;
+- compatibilidad o migración.
+
+## 4 · PesquerApp
+
+PesquerApp permanece BLOQUEADA.
+
+El cierre de `F5` y el inicio de `F6` no autorizan:
+
+- MVP;
+- piloto desechable;
+- adopción parcial;
+- integración anticipada;
+- ejecución productiva.
+
+PesquerApp sólo podrá comenzar cuando `F6` haya implementado y certificado los contratos que la bloquean.
+
+## 5 · Alcance
+
+Esta resolución no reabre `F4c` ni `F5`, no declara `F6` completada y no declara implementado o certificado ningún contrato antes de su evidencia ejecutable.

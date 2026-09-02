@@ -36,8 +36,14 @@ QUE COMPRUEBA, y nada mas:
       palabra de las declaradas hace ROJO
   F16 COBERTURA DE PRESIONES CON ACTO: el censo VIGENTE se deriva del arbol y toda presion
       tiene fila en el acta de disposicion, con disposicion y acto que la cierra
-  F17 NINGUNA sede afirma que F5 este CERRADA. Su cierre exige un acto posterior y expreso
-      del Owner, y ningun artefacto de F5 puede adelantarlo
+  F17 NINGUNA sede afirma que F5 este CERRADA MIENTRAS EL OWNER NO LO HAYA DECLARADO. El
+      control NO se retira cuando la fase se cierra: se ANCLA al acto. Se busca en la SEDE
+      CANONICA DEL OWNER una resolucion que declare `F5` CERRADA; si no existe, cualquier
+      afirmacion de cierre es ROJA, exactamente como antes. Si existe, la afirmacion es
+      legitima y el control publica QUE RESOLUCION la sostiene. Se detectan las DOS formas
+      de afirmarlo: la frase con verbo y la FILA DE TABLA de la sede del estado, que la
+      version anterior no veia y que habria dejado el control vacio en cuanto la fase
+      avanzara
   F18 NINGUN contrato de F6 se presenta como IMPLEMENTADO, EJECUTADO ni CERTIFICADO
   F19 PesquerApp sigue declarada BLOQUEADA en la unica sede del estado de fase
   F20 el ESTADO CANONICO, el DIARIO CANONICO y el REGISTRO AUXILIAR de reconciliacion
@@ -127,9 +133,15 @@ LITERAL_O23 = [
     "Esta resolución no declara `F5` cerrada, no implementa contratos de `F6` y no autoriza el inicio de PesquerApp.",
 ]
 
-# Afirmaciones que NINGUN artefacto de F5 puede hacer.
+# Afirmaciones de cierre de F5. Las DOS formas: la frase con verbo, y la FILA DE TABLA de
+# la sede del estado —«| **`F5`** | **CERRADA**»—, que no lleva verbo y que la version
+# anterior no detectaba.
 PROHIBIDO_F5_CERRADA = re.compile(
-    r"`?F5`?\s+(?:queda|está|esta|ha quedado)\s+\**\s*CERRADA", re.IGNORECASE)
+    r"`?F5`?\s+(?:queda|está|esta|ha quedado)\s+\**\s*CERRADA"
+    r"|\|\s*\**\s*`?F5`?\s*\**\s*\|\s*\**\s*CERRADA", re.IGNORECASE)
+# EL ACTO que las legitima, buscado en la SEDE CANONICA DEL OWNER y en ningun otro sitio.
+# Sin acto, toda afirmacion de cierre sigue siendo ROJA.
+ACTO_DE_CIERRE_DE_F5 = re.compile(r"^Declaro\s+`?F5`?\s+CERRADA\.", re.M)
 PROHIBIDO_F6_IMPLEMENTADO = re.compile(
     r"(?:contrato|verificador|runtime)[^.\n]{0,60}\b(?:ya\s+)?(?:está|esta)\s+\**\s*"
     r"(?:IMPLEMENTAD|EJECUTAD|CERTIFICAD)", re.IGNORECASE)
@@ -392,7 +404,20 @@ def validar(raiz):
             r.fallo("F16", f"presiones cuyo ACTO de cierre esta vacio en el acta: {sin_acto}. "
                            f"Una disposicion sin acto es una presion sin cerrar")
 
-    # ---- F17 · nadie declara F5 cerrada ----------------------------------
+    # ---- F17 · nadie declara F5 cerrada SIN ACTO DEL OWNER ---------------
+    # El acto se busca en la sede canonica y se atribuye a la resolucion que lo contiene.
+    # Que el acto exista NO retira el control: lo ancla. Sin acto, todo sigue en rojo.
+    acto, resolucion_del_acto = False, None
+    if os.path.exists(ruta_owner):
+        texto_owner = _leer(raiz, SEDE_OWNER)
+        m_acto = ACTO_DE_CIERRE_DE_F5.search(texto_owner)
+        if m_acto:
+            acto = True
+            cabeceras = re.findall(r"^# `(O\d+)`", texto_owner[:m_acto.start()], re.M)
+            resolucion_del_acto = cabeceras[-1] if cabeceras else "sin resolucion"
+    r.datos["acto_de_cierre_de_F5"] = (
+        f"{resolucion_del_acto} · en {SEDE_OWNER}" if acto else "NO EMITIDO")
+
     # Se recorre F5, el corpus canonico y el material aprobado nuevo.
     ambito = []
     for zona in ("docs/f5", "docs/canonico", "docs/rediseno"):
@@ -409,8 +434,13 @@ def validar(raiz):
             ventana = texto[max(0, m.start() - 90):m.start()]
             if "exige" in ventana or "sólo podrá" in ventana or "solo podra" in ventana:
                 continue
-            r.fallo("F17", f"{rel}: declara `F5` CERRADA. Su cierre exige un acto posterior "
-                           f"y expreso del Owner, y ningun artefacto puede adelantarlo")
+            if acto:
+                # Hay acto competente del Owner: la afirmacion no adelanta nada.
+                continue
+            r.fallo("F17", f"{rel}: declara `F5` CERRADA y la sede canonica del Owner NO "
+                           f"contiene el acto que la cierra. Su cierre exige un acto "
+                           f"posterior y expreso del Owner, y ningun artefacto puede "
+                           f"adelantarlo")
             break
 
     # ---- F18 · ningun contrato de F6 presentado como implementado --------
