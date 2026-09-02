@@ -971,10 +971,10 @@
 
 ```text
 CHECKPOINT — ADS-NEXT/12 · SIS/evolucion
-actualizado: 2026-09-01   · reanclado por el CIERRE DE `F4c` POR COMPOSICIÓN bajo `O22`, en
-             el MISMO commit que registra el evento —regla 4—. **Cuál es la última resolución
-             NO se escribe aquí** —regla 3—: sale de SU sede canónica. **Cuál es el último
-             documento y qué declara tampoco** —reglas 1 y 2—:
+actualizado: 2026-09-02   · reanclado por la RATIFICACIÓN DE LA CERTIFICACIÓN INCREMENTAL,
+             en el MISMO commit que registra el evento —regla 4—. **Cuál es la última
+             resolución NO se escribe aquí** —regla 3—: sale de SU sede canónica. **Cuál es el
+             último documento y qué declara tampoco** —reglas 1 y 2—:
                  ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
 regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histórico: describe el
              árbol VIGENTE. Fue a la vez el defecto X-04 del documento 24 —GRAVE— y la CUARTA
@@ -1053,7 +1053,36 @@ regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histór
                   indefinido dejó durante nueve documentos una viñeta describiendo en
                   presente un gate de hacía quince, y decidir hasta dónde llegaba era
                   interpretación humana no normada.
-metodo:      SIS/Evolucion · **`F4c` CERRADA POR COMPOSICIÓN bajo `O22`** · **`F5`
+metodo:      SIS/Evolucion · **CERTIFICACIÓN INCREMENTAL RATIFICADA POR VERIFICACIÓN
+             SUSTITUTIVA**, con LECTURA INTEGRAL COMPLETA. **`F4c` sigue CERRADA por
+             composición** y **`F5` AUTORIZADA DOCUMENTALMENTE y NO INICIADA**.
+             POR QUÉ HUBO QUE RATIFICARLA, y se dice sin adorno: **la certificación anterior
+             quedó PROCEDIMENTALMENTE INSUFICIENTE por LECTURA PARCIAL**. Su verificador
+             declaró contra su propio interés que no había leído íntegras cuatro de las cinco
+             fuentes modificadas, y `O22` §3 exige lectura ÍNTEGRA. El Owner ordenó una
+             verificación **completa y SUSTITUTIVA, no complementaria**, y el verificador nuevo
+             **sustituye al anterior a todos los efectos de `O22`**: no suma su lectura a la
+             suya y no acepta ninguna conclusión suya por autoridad.
+             **EL DICTAMEN ANTERIOR NO SE BORRA**: se conserva publicado e intacto en su
+             documento. Lo que cambia es su EFECTO, no su texto.
+             **EL CONTENIDO NO SE COPIA AQUÍ** —reglas 1 y 2—: las cuatro declaraciones
+             literales, la tabla de lectura íntegra con sus huellas, los diecinueve puntos, la
+             adjudicación independiente de los hallazgos y **lo que consta en contra** viven en
+             el último documento de
+                 ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
+             que es su única sede e inmutable.
+             LA CANDIDATA NO SE HA TOCADO por esta orden, y es lo que hace verificable el
+             juicio: el objeto de certificación sigue byte a byte como estaba.
+             QUÉ SIGUE EXACTAMENTE IGUAL: **`F5` NO se inicia** —autorizar no es iniciar—,
+             **`F6` NO INICIADA**, **PesquerApp BLOQUEADA**, `C-L.7` **NO CERRADA** —y con más
+             razón, porque esta verificación derivó que el barrido de su regla es incompleto
+             por caja de letra—, `M-04` **NO SUPERADA**, ninguna resolución del Owner revisada,
+             y **ningún hallazgo declarado SUPERADO**. Los que quedan vivos siguen vivos, con
+             su sede y su severidad adjudicada, y **ninguno se ha corregido**: corregirlos
+             cambiaría la candidata a la que la certificación queda ligada.
+             LA OPCIÓN C NO SE LEVANTA. No se abre ningún ciclo, no se propone otra tanda y no
+             se convoca otro gate.
+metodo_anterior: SIS/Evolucion · **`F4c` CERRADA POR COMPOSICIÓN bajo `O22`** · **`F5`
              AUTORIZADA DOCUMENTALMENTE y NO INICIADA**. No lo cierra esta tanda ni el
              coordinador: lo cierra la COMPOSICIÓN de dos juicios independientes —el gate
              completo VÁLIDO del último documento de gate, que certificó la cobertura y cerró
@@ -1427,7 +1456,24 @@ rama_de_trabajo: NO SE ESCRIBE AQUÍ, Y ES DELIBERADO. Este campo nombró durant
 freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
              Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
              queda marcado HISTÓRICO y SUPERADO, y no se borra
-last_meaningful_event: **`F4c` QUEDA CERRADA POR COMPOSICIÓN, Y `F5` AUTORIZADA
+last_meaningful_event: **UNA VERIFICACIÓN SUSTITUTIVA CON LECTURA INTEGRAL COMPLETA
+             RATIFICA LA CERTIFICACIÓN INCREMENTAL.** La anterior no bastaba: su verificador
+             había leído sólo en parte, lo declaró él mismo, y `O22` §3 no admite lectura
+             parcial. **Sustituir no es complementar**, y el verificador nuevo derivó todo por
+             su cuenta.
+             LO QUE ESTO ESTRENA, y conviene que conste: **es la primera vez que una
+             certificación de este expediente se retira por PROCEDIMIENTO y no por sustancia**
+             —el hecho verificado era correcto; lo que faltaba era la lectura que lo
+             respaldara—. Y se detectó **por la declaración del propio verificador contra su
+             interés**, que es la misma mecánica que hizo medible la condición 5 de `C-L.5`.
+             QUÉ NO CAMBIA: `F4c` **CERRADA**, `F5` **AUTORIZADA y NO INICIADA**, `F6` **NO
+             INICIADA**, PesquerApp **BLOQUEADA**, `C-L.7` **NO CERRADA**, `M-04` **NO
+             SUPERADA**, **ningún hallazgo SUPERADO** y **ninguno corregido**. El censo de los
+             que quedan vivos **no se copia aquí** —regla 1—: lo publica el documento de la
+             ratificación, con sede, severidad y prueba de cada uno.
+             REANCLADO EN EL MISMO COMMIT QUE REGISTRA EL EVENTO —regla 4—, y lo anterior NO
+             se borra: baja íntegro a `last_meaningful_event_anterior` —regla 5—.
+last_meaningful_event_anterior: **`F4c` QUEDA CERRADA POR COMPOSICIÓN, Y `F5` AUTORIZADA
              DOCUMENTALMENTE.** Un verificador independiente único, que no ha escrito nada de
              este corpus y **que `O22` §4 prohíbe expresamente corregir nada**, reprodujo el
              defecto del único bloqueo sobre la candidata que el gate juzgó, demostró su
@@ -4884,6 +4930,47 @@ awk '/^## 5 · MATRIZ CONSOLIDADA/,/^## 6 /' docs/evolucion/32-*.md \
 ```
 
 ## Siguiente acción exacta
+
+```text
+0  DÓNDE ESTAMOS                 **`F4c` CERRADA** por composición, con la certificación
+                                 incremental **RATIFICADA por una verificación SUSTITUTIVA de
+                                 LECTURA INTEGRAL COMPLETA**; y **`F5` AUTORIZADA
+                                 DOCUMENTALMENTE**. El documento es el último de
+                                   ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
+                                 y **su contenido NO se copia aquí** —reglas 1 y 2—.
+
+1  A QUIÉN LE TOCA AHORA        al **Owner**, y la decisión es una sola: **iniciar `F5` o no
+                                 iniciarla**. La autorización que existe es DOCUMENTAL y este
+                                 registro **no la ejecuta**. Ninguna enmienda normativa está
+                                 redactada, ningún material aprobado se ha tocado y ninguna
+                                 acción de `F5` se ha realizado. Iniciarla será un acto propio
+                                 de quien lo decida, y aquí no se anticipa.
+
+2  LOS DOS CANDADOS QUE          **`F6`**: sus contratos están escritos en §20 del documento
+   SIGUEN PUESTOS                11 y **ni uno solo está implementado, ejecutado ni
+                                 certificado**. **PesquerApp**: sigue **BLOQUEADA** —sin MVP,
+                                 sin piloto desechable y sin adopción parcial— hasta que `F6`
+                                 implemente **y CERTIFIQUE** (`O20` §8). **Cerrar `F4c` no
+                                 abre ninguno de los dos.**
+
+3  QUÉ QUEDA VIVO                los hallazgos **NO BLOQUEANTES** que el documento de la
+                                 ratificación registra con sede, severidad adjudicada y
+                                 prueba. **Su censo se DERIVA de ese documento** y aquí no se
+                                 copia. **NINGUNO SUPERADO y NINGUNO CORREGIDO.** Y siguen
+                                 abiertas `C-L.7` —cuyo barrido esta verificación probó
+                                 **incompleto por caja de letra**— y `M-04`.
+
+4  EL MÉTODO                     **la OPCIÓN C NO se levanta.** No se abre ningún ciclo de
+                                 corrección iterativa, no se propone otra tanda y no se
+                                 convoca otro gate.
+
+5  LO QUE NO CAMBIA              **CERRAR `F4c` NO ES SUPERAR NADA. AUTORIZAR NO ES INICIAR.
+                                 SUSTITUIR NO ES COMPLEMENTAR.** Una certificación que se
+                                 apoya en una lectura parcial no vale, aunque su conclusión
+                                 sea correcta: es lo que esta ratificación deja escrito.
+```
+
+## Siguiente acción exacta — HISTÓRICA, anterior a la RATIFICACIÓN
 
 ```text
 0  DÓNDE ESTAMOS                 **`F4c` está CERRADA** por COMPOSICIÓN bajo `O22`, y **`F5`
