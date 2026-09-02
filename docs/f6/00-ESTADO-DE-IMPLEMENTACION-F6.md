@@ -68,14 +68,14 @@ EXTERNO                          su sujeto vive fuera de este repositorio
 | **`A14` · guarda de entorno** (corte `V1` · `F6-I`) | [`06-DEUDA`](../canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md) §4 | **IMPLEMENTADO_Y_PROBADO** | — |
 | **`FD-3` · la especificación normativa viaja al proyecto instalado** | [`06-DEUDA`](../canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md) §10 bis | **IMPLEMENTADO_Y_PROBADO** | — |
 | **contrato de GOBIERNO GIT DEL CONTROL REPO** (`g.14`) | [`g.17`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) | **PARCIAL** | la tabla de propiedad del control repo, la serialización entre máquinas y la prohibición ejecutable de forzar referencias (`G-A8`) |
-| **contrato de RAÍZ EXTERNA DE CONFIANZA** (`g.15`) | [`g.17`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · `11-ARQ` §11.8 | **PARCIAL**, y su parte productiva **BLOQUEADO_POR_DECISION_DEL_OWNER** | `FD-1`: que el contrato declare titular y custodio de la clave, y que el Owner los acepte |
+| **contrato de RAÍZ EXTERNA DE CONFIANZA** (`g.15`) | [`g.17`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · `11-ARQ` §11.8 · `O25` | **PARCIAL** — ya **NO** bloqueado por decisión del Owner: `O25` fija titularidad, custodia y autoridad administrativa | que el contrato se ejecute **FUERA** del árbol verificado con una identidad que no pueda escribir en él, con un proveedor productivo real del anfitrión. `O25` §6 dice él mismo que no la declara implementada ni certificada |
 | **`V6-01`…`V6-19` · verificador de admisión** (`F6-A`) | `11-ARQ` §20.1 | **NO_IMPLEMENTADO** | los cortes `V2`–`V5` del plan |
 | **`F6-D` · runtime y dispatcher** | `11-ARQ` §7 | **NO_IMPLEMENTADO** — su dependencia `[1]` **ya no bloquea** | el corte siguiente |
 | **`F6-F` · los cuatro macrocircuitos** | `11-ARQ` §8 y §9.6 | **NO_IMPLEMENTADO** | corte propio |
 | **`F6-G` · arquitectura de adaptadores** (corte `V7`) | `11-ARQ` §6 | **NO_IMPLEMENTADO** | corte propio, independiente de todo |
 | **`F6-H` · hallazgos externos con propietario y fase `F6`** | `11-ARQ` §19 | **PARCIAL** — `A14` y `FD-3` cerrados en este corte | el resto de su lista |
 | **`F6-J` · CERTIFICACIÓN** | `O20` §3 | **BLOQUEADO_POR_DEPENDENCIA** | que exista lo que hay que certificar, y un juicio independiente que no sea quien construyó |
-| **custodia productiva de la clave de firma** | `FD-1` | **EXTERNO** al repositorio, y **BLOQUEADO_POR_DECISION_DEL_OWNER** | acto del Owner |
+| **custodia productiva de la clave de firma** | `FD-1` · `O25` §2 | **EXTERNO** al repositorio, y **decidido**: identidad de servicio dedicada del verificador externo, con un proveedor de secretos del anfitrión | que exista ese proveedor en el anfitrión de la instalación. **No es materia del repositorio**, y por eso queda EXTERNO aunque la decisión ya esté tomada |
 
 > **Y la regla que impide leer esta tabla al revés.** `IMPLEMENTADO_Y_PROBADO` **no es
 > CERTIFICADO**. La certificación de `F6` la emite un juicio independiente, y **no quien

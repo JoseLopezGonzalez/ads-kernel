@@ -285,7 +285,7 @@ resolución autoriza, y se dice sin adornarlo.
 
 | id | qué falta | sede | propietario | fase | condición de cierre |
 |---|---|---|---|---|---|
-| **`FD-1`** | el contrato del verificador externo exige **commits firmados o equivalente verificable por un tercero**, lo que implica que **exista y se custodie una clave de firma**. `O23` §3 dice a QUÉ contrato pertenece la materia de claves; **no dice que el Owner posea esa clave, ni quién la custodia** | [`g.15`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) y `11-ARQ` §11.8 | el **Owner** decide · `SEG` gobierna credenciales | **`F6`** | que el contrato derivado de la raíz externa declare titular y custodio, y que el Owner los acepte |
+| **`FD-1`** · **DECISIÓN EMITIDA** | el contrato del verificador externo exige **commits firmados o equivalente verificable por un tercero**, lo que implica que **exista y se custodie una clave de firma**. `O23` §3 decía a QUÉ contrato pertenece la materia de claves; **no decía quién es el titular ni quién custodia**. **`O25` lo resuelve**: la identidad es de la RAÍZ EXTERNA de cada instalación, la autoridad administrativa del Owner, y la custodia de una identidad de servicio dedicada del verificador externo con un proveedor del anfitrión — fuera de todos los repositorios, inaccesible para el runtime y para los agentes, y con fallo cerrado sin proveedor válido | [`g.15`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · `11-ARQ` §11.8 · resolución `O25` en la [sede canónica](../owner/ADS-OWNER-RESOLUCIONES.md) | el **Owner** decidió · `SEG` gobierna credenciales | **`F6`** | **la mitad del Owner está cumplida.** Queda la mitad de `F6`: que el contrato derivado de la raíz externa **instancie** esa decisión con un proveedor productivo real, ejecutándose FUERA del árbol verificado con una identidad que no pueda escribir en él. **`O25` §6 dice expresamente que no declara implementada ni certificada la raíz externa** |
 | **`FD-2`** | `O23` **y `O24`** se inscribieron **sin los campos `procedencia` y `relaciones de revisión`** que la propia sede declara obligatorios para cada entrada. Las resoluciones anteriores sí los llevan. **No se añadieron al transcribir**: el texto del Owner se inscribe LITERAL, y completarlo sería reescribirlo | [`sede canónica del Owner`](../owner/ADS-OWNER-RESOLUCIONES.md), entradas `O23` y `O24` | el **Owner**: la sede es APPEND-ONLY y **sólo él escribe en ella** | no consta | **NO se corrige aquí, y no puede corregirse aquí**: editar la entrada rompería el carácter append-only que la hace comprobable. Una resolución posterior puede completarla sin borrarla |
 | **`FD-3`** · **CERRADA** | la ESPECIFICACIÓN NORMATIVA que viaja con el kernel a un proyecto instalado **no incluía** la sección `(g)` ni las enmiendas `E3`–`E6`. **Las dos mitades de su condición están cumplidas y ejecutadas:** la lista ya no se escribe, se DERIVA del árbol —las secciones `*-APROBADA.md` y todas las `a-ENMIENDA-E<n>-*.md`, excluyendo lo RECHAZADO y lo SUPERADO—, con fallo ruidoso si la derivación sale vacía; y la prueba de arranque queda en verde, `T148` y `T171` | `tooling/new-project.sh`, y la conformidad la comprueba la prueba de arranque en `evidencia/arranque-salida.txt` | `PLT` implementa · `SIS` es propietario | **`F6`** | **cumplida.** Una enmienda `E7` viajaría por existir, sin tocar el script |
 
@@ -293,11 +293,14 @@ resolución autoriza, y se dice sin adornarlo.
 
 **Ninguna de las CUATRO está superada, y ninguna es bloqueante.**
 
-> **`FD-1` es la única decisión del Owner que queda viva tras el primer corte de `F6`**, y se
-> **AGRUPA para la entrega siguiente sin detener nada**: el estado durable no la necesita, y
-> la interfaz de la raíz externa se construye con proveedores intercambiables y **fallo
-> cerrado cuando no hay proveedor válido**. Una clave efímera de prueba **no es** una
-> solución de custodia productiva, y no se presenta como tal.
+> **`FD-1` era la única decisión del Owner que quedaba viva tras el primer corte de `F6`, y el
+> Owner la emitió**: `O25`. Lo que cierra es la DECISIÓN, no la implementación —`O25` §6 lo
+> dice él mismo—, y la diferencia importa: mientras la raíz externa no se ejecute **fuera**
+> del árbol verificado con una identidad que no pueda escribir en él, no está completa. Una
+> clave efímera de prueba **no es** una solución de custodia productiva, y no se presenta como
+> tal.
+>
+> **Tras `O25`, NINGUNA decisión del Owner queda pendiente para seguir construyendo `F6`.**
 
 > **Por qué `FD-3` no se corrigió en `F5`, y se dice en vez de callarlo.** Corregirla exigía
 > tocar `tooling/`, que está en la huella del kernel, y el criterio de aceptación de `F5`

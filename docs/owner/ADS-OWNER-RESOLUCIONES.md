@@ -829,3 +829,70 @@ PesquerApp sólo podrá comenzar cuando `F6` haya implementado y certificado los
 ## 5 · Alcance
 
 Esta resolución no reabre `F4c` ni `F5`, no declara `F6` completada y no declara implementado o certificado ningún contrato antes de su evidencia ejecutable.
+
+---
+
+# `O25` · TITULARIDAD Y CUSTODIA DE LA IDENTIDAD DE FIRMA EXTERNA
+
+**Fecha:** 2026-09-02  
+**Autoridad:** Owner  
+**Estado:** VIGENTE
+
+## 1 · Titularidad
+
+La identidad criptográfica pertenece a la raíz externa de confianza de cada instalación de ADS.
+
+La autoridad administrativa sobre esa identidad corresponde al Owner.
+
+La identidad no pertenece al repositorio verificado, al control repo, al kernel, al runtime, a un proyecto concreto ni a un agente.
+
+## 2 · Custodia
+
+La clave privada será custodiada por una identidad de servicio dedicada del verificador externo mediante un proveedor de secretos o claves del sistema anfitrión.
+
+La clave privada:
+
+- permanecerá fuera de todos los repositorios;
+- no se versionará;
+- no aparecerá en estado, diarios, evidencia, configuración exportada, logs o errores;
+- no será accesible por el runtime ni por los agentes del repositorio;
+- será no exportable cuando el proveedor lo permita;
+- será diferente por instalación y entorno.
+
+La ausencia de un proveedor válido provoca fallo cerrado.
+
+## 3 · Autoridad administrativa
+
+El Owner conserva la autoridad para aprovisionar, autorizar, rotar, revocar, recuperar y sustituir la identidad mediante un canal administrativo externo y auditable.
+
+La configuración externa de confianza establece la identidad o huella pública aceptada.
+
+El repositorio verificado no puede cambiar por sí mismo qué identidad acepta la raíz externa.
+
+## 4 · Firmas y evidencia
+
+Las firmas, atestaciones, certificados y huellas públicas pueden incorporarse al repositorio como evidencia.
+
+La clave privada y la autoridad para validar esa evidencia permanecen fuera del árbol verificado.
+
+## 5 · Implementación
+
+`F6` utilizará criptografía estándar y una biblioteca o proveedor mantenido. No implementará primitivas criptográficas propias.
+
+El contrato permitirá:
+
+- rotación;
+- periodo de solapamiento explícito;
+- claves activas;
+- claves retiradas;
+- claves revocadas;
+- rechazo de claves desconocidas o revocadas;
+- trazabilidad sin revelación de secretos.
+
+Las claves efímeras están permitidas únicamente en pruebas y no constituyen custodia productiva.
+
+## 6 · Alcance
+
+Esta resolución cierra `FD-1` como decisión del Owner.
+
+No declara implementada ni certificada la raíz externa, no completa `F6` y no desbloquea PesquerApp.
