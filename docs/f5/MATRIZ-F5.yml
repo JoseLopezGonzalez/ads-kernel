@@ -1,0 +1,999 @@
+# MATRIZ-F5.yml
+#
+# LA MATRIZ CANONICA DE F5. Una fila por obligacion, con su estado inequivoco.
+#
+# QUE ES. Un artefacto DERIVADO: cada fila cita la sede superior de la que sale y no
+# crea autoridad. Su clase de zona es DERIVADA, declarada en
+# docs/canonico/FUENTES-CANONICAS.yml.
+#
+# QUE NO ES. No es norma, no es un gate, no es una certificacion y no aprueba nada.
+# Ninguna fila puede citarse como enmienda ni como decision tomada.
+#
+# LOS IDENTIFICADORES DE ESTADO se escriben aqui EXACTAMENTE como los nombra el encargo
+# del Owner, con sus tildes, para que no existan dos grafias del mismo identificador.
+# Es la leccion de PN-16 y PN-18, aplicada a este fichero.
+
+version: 1
+
+descripcion: >
+  Matriz de obligaciones de F5, derivada del corpus canonico y de la sede unica de las
+  presiones normativas. Una fila por obligacion, con estado, propietario, dependencia,
+  artefacto de salida, criterio de aceptacion y prueba prevista.
+
+derivacion:
+  censo_de_presiones_vigentes: >
+    grep '^## `PN-' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md | grep -vc 'RETIRADA\|FUSIONADA'
+  lista_de_presiones_vigentes: >
+    grep '^## `PN-' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md | grep -v 'RETIRADA\|FUSIONADA'
+  externos_con_propietario_y_fase: >
+    awk '/^## Lo que esta fase NO puede corregir/,/^### /' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    | grep -oE '^\| `F-[0-9]+`'
+  contratos_de_f6: >
+    grep -cE '^\| `V6-[0-9]+` \|' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+  nota: >
+    NINGUN cardinal de esta matriz se escribe a mano. El validador docs/f5/validar-f5.py
+    deriva el censo de presiones del arbol y exige que la matriz lo cubra entero.
+
+entregables:
+  - id: F5-A
+    titulo: resolver una a una las presiones normativas vigentes
+    autoridad: el Owner, sobre propuesta redactada
+  - id: F5-B
+    titulo: la seccion (g), disposicion fisica del estado durable
+    autoridad: el Owner
+  - id: F5-C
+    titulo: la norma de gobierno Git del repositorio de CONTROL, en esa misma seccion (g)
+    autoridad: el Owner
+  - id: F5-D
+    titulo: la norma que habilita la RAIZ EXTERNA DE CONFIANZA
+    autoridad: el Owner
+  - id: F5-E
+    titulo: las correcciones editoriales obligatorias sobre material aprobado
+    autoridad: F5, con aprobacion del Owner
+  - id: F5-F
+    titulo: la nota de vigencia en el documento de trabajo del Owner
+    autoridad: el Owner
+  - id: F5-G
+    titulo: la decision sobre las reglas del kernel constitucional presionadas por los macrocircuitos
+    autoridad: el Owner
+
+criterios_de_aceptacion:
+  - id: A1
+    texto: >
+      cada presion VIGENTE tiene, o una ENMIENDA APROBADA con fecha y autoridad, o una
+      RETIRADA MOTIVADA. Ninguna queda «pendiente» sin acto
+  - id: A2
+    texto: >
+      ninguna enmienda se aplica sin aprobacion expresa del Owner, y ninguna se aplica
+      silenciosamente sobre material aprobado
+  - id: A3
+    texto: >
+      la seccion (g) existe, esta aprobada y cubre las materias que su fuente le reservo
+  - id: A4
+    texto: >
+      la norma de identidad separada y evidencia externa existe, y el contrato que dependia
+      de ella deja de estar BLOQUEADO POR DEPENDENCIA
+  - id: A5
+    texto: >
+      la checklist editorial esta aplicada entera, con la prueba posterior que cada fila fija
+  - id: A6
+    texto: >
+      NINGUN hallazgo vivo se declara SUPERADO por haberse redactado una enmienda
+  - id: A7
+    texto: >
+      la bateria del corpus sigue en verde, y la huella del kernel no cambia salvo donde una
+      enmienda aprobada lo ordene
+
+estados_validos:
+  - DETERMINADO_Y_EJECUTABLE
+  - BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
+  - ELECCIÓN_REAL_DEL_OWNER
+  - BLOQUEADO_POR_OTRA_DECISIÓN
+  - DEUDA_DE_F6
+  - FUERA_DE_ALCANCE
+
+# ===========================================================================
+# LAS FILAS. Una por obligacion de F5, mas las filas de FRONTERA que declaran
+# que NO pertenece a F5, para que la separacion F5/F6 sea explicita y no tacita.
+#
+# decision_owner: SI  ->  la fila no se cierra sin un acto del Owner
+#                 NO  ->  la fila la cierra F5 sin acto nuevo del Owner
+# ===========================================================================
+filas:
+
+  # --- F5-B · la seccion (g) · LA PRIMERA PUERTA ---------------------------
+  - id: F5-OB-01
+    entregable: F5-B
+    presion: PN-1
+    requisito_de_origen: >
+      (a) a.9 delega la disposicion fisica a la seccion (g), y a.11 declara G26/JOURNAL
+      PENDIENTE hasta disenar memoria, eventos y recuperacion en (g)
+    fuente_superior: docs/rediseno/a-CAPACIDADES-APROBADA.md
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    seccion_sede: "16 · PN-1"
+    sede_de_la_enmienda: docs/rediseno/ · seccion (g) nueva, con aviso en (a) a.9
+    resultado_exigido: >
+      aprobar la disposicion fisica del estado durable como seccion normativa (g) del mismo
+      grado que (a) y (b), o como enmienda que la sustituya
+    dependencia: ninguna. Es la primera puerta del grafo de construccion
+    propietario: Owner
+    tipo_de_accion: APROBACION_DE_SECCION_NORMATIVA_NUEVA
+    decision_owner: SI
+    decision_id: D-01
+    estado: ELECCIÓN_REAL_DEL_OWNER
+    artefacto: docs/f5/borradores/B-01-SECCION-G.md
+    criterio_aceptacion: [A1, A2, A3]
+    prueba_prevista: >
+      que la seccion (g) exista como sede vigente y cubra las trece materias que su fuente
+      le reservo, derivadas de a.9, de la ampliacion de PN-1 y de O16; y que el nodo [1]
+      del grafo deje de estar declarado BLOQUEADO
+
+  # --- F5-C · el gobierno Git del control repo, DENTRO de (g) --------------
+  - id: F5-OB-02
+    entregable: F5-C
+    presion: PN-11
+    requisito_de_origen: >
+      el gobierno Git del REPOSITORIO DE CONTROL no tiene sede normativa; C7 gobierna las
+      fuentes y E2.4 cierra la via de derivar de G29 el gobierno del control repo
+    fuente_superior: docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
+    seccion_sede: "2 · O16"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: la seccion (g), como apartado. Fijado por O16 y NO reabierto
+    resultado_exigido: >
+      un apartado de (g) que fije la tabla de propiedad del control repo y las decisiones
+      que presupone. C7 no se modifica; F6 deriva C8
+    dependencia: F5-OB-01. Su sede ES la seccion (g), que aun no existe
+    propietario: Owner
+    tipo_de_accion: APARTADO_DE_SECCION_NORMATIVA
+    decision_owner: SI
+    decision_id: D-01
+    estado: BLOQUEADO_POR_OTRA_DECISIÓN
+    artefacto: docs/f5/borradores/B-01-SECCION-G.md
+    criterio_aceptacion: [A1, A2, A3]
+    prueba_prevista: >
+      que exista un apartado de (g) con la tabla de propiedad, y que O16 quede materializada
+      en sus tres extremos: sede en (g), C8 derivado en F6, C7 intacto
+    nota: >
+      La SEDE ya la resolvio O16 y NO se vuelve a preguntar. Lo que queda es redaccion
+      determinada. El valor por defecto de adaptador.publicacion_control_repo TAMPOCO se
+      pregunta: esperando-owner esta fijado, y la ausencia nunca significa publica
+
+  # --- F5-D · la raiz externa de confianza ---------------------------------
+  - id: F5-OB-03
+    entregable: F5-D
+    presion: PN-19
+    requisito_de_origen: >
+      O18 hace OBLIGATORIO en F6 un verificador externo con identidad de escritura separada
+      y evidencia fuera del arbol, y ninguna sede aprobada las contempla
+    fuente_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+    seccion_sede: "O18, ratificada en su proyeccion por O19"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: la que el Owner elija entre (g)/C8, ampliar C7, o sede nueva
+    resultado_exigido: >
+      una sede normativa vigente que fije (i) la identidad de escritura separada con su
+      titular, (ii) donde vive la evidencia fuera del arbol comprobado, y (iii) quien la
+      custodia
+    dependencia: >
+      ninguna para decidir. Si el Owner elige (g)/C8, su aplicacion depende de F5-OB-01
+    propietario: Owner
+    tipo_de_accion: ELECCION_DE_SEDE_Y_REDACCION
+    decision_owner: SI
+    decision_id: D-02
+    estado: ELECCIÓN_REAL_DEL_OWNER
+    artefacto: docs/f5/borradores/B-02-RAIZ-EXTERNA.md
+    criterio_aceptacion: [A1, A2, A4]
+    prueba_prevista: >
+      que V6-16 pase de CONTRATO_BLOQUEADO_POR_DEPENDENCIA a CONTRATO_CONSTRUIBLE sin que
+      ningun otro campo de su fila cambie, segun la condicion exacta de desbloqueo de 20.4;
+      y la prueba negativa que PN-19 fija: falsear un veredicto desde dentro del arbol y
+      exigir que la atestacion externa lo detecte
+    nota: >
+      El CONTENIDO esta ratificado por el Owner en O18 y NO se vuelve a preguntar. Lo unico
+      abierto es la SEDE. Lo NO reversible es la obligacion: retirar (c) es volver a la
+      alternativa (a), que el Owner rechazo expresamente
+
+  # --- F5-G · las reglas constitucionales ----------------------------------
+  - id: F5-OB-04
+    entregable: F5-G
+    presion: PN-15
+    requisito_de_origen: >
+      la seccion 8 sustituye la ruta de arranque cuyo gate de salida la constitucion declara
+      no negociable por el sistema, y el material aprobado no contiene derogacion valida
+    fuente_superior: kernel/KERNEL.md
+    seccion_sede: "G20 · G21 · G22 · G23"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: docs/rediseno/a-CAPACIDADES-APROBADA.md · a.11, via enmienda
+    resultado_exigido: >
+      que F5 decida regla a regla y de forma expresa que se CONSERVA, que se AJUSTA y que se
+      SUSTITUYE de G20, G21, G22 y G23, y lo registre en a.11
+    dependencia: ninguna
+    propietario: Owner
+    tipo_de_accion: ENMIENDA_A_a.11_REGLA_A_REGLA
+    decision_owner: SI
+    decision_id: D-04
+    estado: ELECCIÓN_REAL_DEL_OWNER
+    artefacto: docs/f5/borradores/B-03-REGLAS-CONSTITUCIONALES.md
+    criterio_aceptacion: [A1, A2]
+    prueba_prevista: >
+      una fila en a.11 por CADA una de G20, G21, G22 y G23 que la nombre y declare su
+      disposicion. La fila de la seccion 17 NO la satisface y no puede satisfacerla
+    nota: >
+      Hasta que F5 decida, G20-G23 SIGUEN VIGENTES. KERNEL.md y START_HERE.md son derivados
+      que actualiza F6: primero la fuente, despues el derivado
+
+  # --- F5-A · las presiones sin sede propia entre F5-B...F5-G --------------
+  - id: F5-OB-05
+    entregable: F5-A
+    presion: PN-2
+    requisito_de_origen: >
+      O7 crea trabajo por una via que (b) no contempla: b.15.1 y la regla 2 de la taxonomia
+      de entrada declaran que el trabajo nace de una entrada del Owner o de un desbloqueador
+      dentro del alcance ya autorizado
+    fuente_superior: docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
+    seccion_sede: "2 · O7"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: docs/rediseno/b-RECORRIDO-APROBADA.md · b.15.1
+    resultado_exigido: >
+      reconocer la politica de recurrencia aprobada como fuente de trabajo, con su alcance,
+      su presupuesto y su revocacion
+    dependencia: se aplica junto con F5-OB-06; comparten la sustancia que O7 fijo
+    propietario: Owner
+    tipo_de_accion: ENMIENDA_A_MATERIAL_APROBADO
+    decision_owner: SI
+    decision_id: D-05
+    estado: ELECCIÓN_REAL_DEL_OWNER
+    artefacto: docs/f5/borradores/B-04-VIA-DEL-TRABAJO-RECURRENTE.md
+    criterio_aceptacion: [A1, A2]
+    prueba_prevista: que el paso APERTURA de 5.3 tenga via normativa declarada en (b)
+
+  - id: F5-OB-06
+    entregable: F5-A
+    presion: PN-3
+    requisito_de_origen: G03 y la ejecucion desatendida; absorbe la retirada PN-5
+    fuente_superior: kernel/KERNEL.md
+    seccion_sede: "G03"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: docs/rediseno/a-CAPACIDADES-APROBADA.md · a.11, via enmienda
+    resultado_exigido: >
+      una fila en a.11 que ajuste G03 al alcance exacto que O7 autoriza, conservando el resto
+    dependencia: se aplica junto con F5-OB-05, y en la misma enmienda a a.11 que F5-OB-04
+    propietario: Owner
+    tipo_de_accion: ENMIENDA_A_a.11
+    decision_owner: SI
+    decision_id: D-05
+    estado: ELECCIÓN_REAL_DEL_OWNER
+    artefacto: docs/f5/borradores/B-04-VIA-DEL-TRABAJO-RECURRENTE.md
+    criterio_aceptacion: [A1, A2]
+    prueba_prevista: >
+      que a.11 nombre G03 y declare su disposicion, y que G03 no quede levantado en bloque
+
+  - id: F5-OB-07
+    entregable: F5-A
+    presion: PN-6
+    requisito_de_origen: la aplicabilidad de la Integrada reinterpreta O12
+    fuente_superior: docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
+    seccion_sede: "2 · O12"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: una frase de confirmacion; la materia minima declarada es una frase
+    resultado_exigido: confirmar que Integrada significa lo que 9.5 y D32 derivan
+    dependencia: ninguna
+    propietario: Owner
+    tipo_de_accion: RATIFICACION_DE_LECTURA
+    decision_owner: SI
+    decision_id: R-01
+    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
+    artefacto: docs/f5/borradores/B-05-RATIFICACIONES-DE-LECTURA.md
+    criterio_aceptacion: [A1, A2]
+    prueba_prevista: que la confirmacion exista con fecha y autoridad, y que PN-6 quede RESUELTA
+
+  - id: F5-OB-08
+    entregable: F5-A
+    presion: PN-7
+    requisito_de_origen: b.14 paso 2 dice «completar o revertir», sin distinguir lo PUBLICADO
+    fuente_superior: docs/rediseno/b-RECORRIDO-APROBADA.md
+    seccion_sede: "b.14"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: docs/rediseno/b-RECORRIDO-APROBADA.md · b.14
+    resultado_exigido: >
+      la frase que la propia presion redacta: completar, o revertir las escrituras
+      especulativas a su revision base, registrar el incidente y escalar, SIN autorizar la
+      reversion de estado ya publicado
+    dependencia: >
+      acoplamiento de redaccion con F5-OB-01: su texto cita 2.6, que es materia de (g)
+    propietario: Owner
+    tipo_de_accion: ENMIENDA_A_MATERIAL_APROBADO
+    decision_owner: SI
+    decision_id: R-01
+    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
+    artefacto: docs/f5/borradores/B-05-RATIFICACIONES-DE-LECTURA.md
+    criterio_aceptacion: [A1, A2]
+    prueba_prevista: >
+      que b.14 distinga PUBLICADO de ESPECULATIVO, y que no exista un tercer desenlace normativo
+
+  - id: F5-OB-09
+    entregable: F5-A
+    presion: PN-9
+    requisito_de_origen: las obligaciones de iniciativa y los predicados de b.3
+    fuente_superior: docs/rediseno/b-RECORRIDO-APROBADA.md
+    seccion_sede: "b.3"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: ninguna prevista. La materia minima declarada es probablemente NINGUNA
+    resultado_exigido: >
+      CONFIRMAR que consumir el resultado de (b) no redefine su dominio, por la misma via por
+      la que PN-4 se retiro. La confirmacion tiene que existir, no darse por hecha
+    dependencia: ninguna
+    propietario: Owner
+    tipo_de_accion: RATIFICACION_DE_LECTURA
+    decision_owner: SI
+    decision_id: R-01
+    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
+    artefacto: docs/f5/borradores/B-05-RATIFICACIONES-DE-LECTURA.md
+    criterio_aceptacion: [A1, A2]
+    prueba_prevista: que la confirmacion exista, o una retirada motivada al modo de PN-4
+
+  - id: F5-OB-10
+    entregable: F5-A
+    presion: PN-10
+    requisito_de_origen: O11 dice «estado durable» de la iniciativa
+    fuente_superior: docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
+    seccion_sede: "2 · O11"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: una frase de confirmacion, por simetria con PN-6
+    resultado_exigido: confirmar la lectura benigna que 3.3 y D29 sostienen
+    dependencia: ninguna
+    propietario: Owner
+    tipo_de_accion: RATIFICACION_DE_LECTURA
+    decision_owner: SI
+    decision_id: R-01
+    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
+    artefacto: docs/f5/borradores/B-05-RATIFICACIONES-DE-LECTURA.md
+    criterio_aceptacion: [A1, A2]
+    prueba_prevista: que la confirmacion exista con fecha y autoridad
+
+  - id: F5-OB-11
+    entregable: F5-A
+    presion: PN-8
+    requisito_de_origen: VER no esta en la ruta AUD de b.16, ni como condicional
+    fuente_superior: docs/rediseno/b-RECORRIDO-APROBADA.md
+    seccion_sede: "b.16 · fila AUD"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: docs/rediseno/b-RECORRIDO-APROBADA.md · b.16 fila AUD
+    resultado_exigido: >
+      o anadir VER como condicional de AUD, o dejar de exigir dictamen de VER en la celda
+      auditada y NOMBRAR otro productor
+    dependencia: se aplica en la misma enmienda a b.16 que F5-OB-12 y F5-OB-13
+    propietario: Owner
+    tipo_de_accion: ENMIENDA_A_MATERIAL_APROBADO
+    decision_owner: SI
+    decision_id: D-06
+    estado: ELECCIÓN_REAL_DEL_OWNER
+    artefacto: docs/f5/borradores/B-06-RUTAS-DE-b16.md
+    criterio_aceptacion: [A1, A2]
+    prueba_prevista: que una celda de cobertura alcance «verificado» CON EVIDENCIA
+
+  - id: F5-OB-12
+    entregable: F5-A
+    presion: PN-13
+    requisito_de_origen: proceso:SIS y proceso:INV no admiten DOM, SEG ni DIS
+    fuente_superior: docs/rediseno/b-RECORRIDO-APROBADA.md
+    seccion_sede: "b.16 · filas SIS e INV"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: docs/rediseno/b-RECORRIDO-APROBADA.md · b.16 filas SIS e INV
+    resultado_exigido: >
+      o anadir DOM, SEG y DIS como condicionales de proceso:SIS y proceso:INV, o declarar que
+      el discovery de dominio y diseno de un producto nuevo no pertenece a INS-5 y nombrar
+      donde pertenece
+    dependencia: se aplica en la misma enmienda a b.16 que F5-OB-11 y F5-OB-13
+    propietario: Owner
+    tipo_de_accion: ENMIENDA_A_MATERIAL_APROBADO
+    decision_owner: SI
+    decision_id: D-07
+    estado: ELECCIÓN_REAL_DEL_OWNER
+    artefacto: docs/f5/borradores/B-06-RUTAS-DE-b16.md
+    criterio_aceptacion: [A1, A2]
+    prueba_prevista: que INS-5 pueda abrir con DOM y DIS, y que A9 incorpore el dictamen de SEG
+
+  - id: F5-OB-13
+    entregable: F5-A
+    presion: PN-14
+    requisito_de_origen: >
+      DIS/Reconstruccion esta en material APROBADO y no es una capacidad ni un participante
+      asignable: es uno de los seis metodos de DIS
+    fuente_superior: docs/rediseno/b-RECORRIDO-APROBADA.md
+    seccion_sede: "b.16 L895 · a.6 L495"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: >
+      docs/rediseno/b-RECORRIDO-APROBADA.md L895 y docs/rediseno/a-CAPACIDADES-APROBADA.md L495
+    resultado_exigido: >
+      sustituir DIS/Reconstruccion por la capacidad DIS con su condicion C-DIS en los DOS
+      puntos aprobados y declarar que el metodo lo calcula la escala de novedad, o declarar
+      expresamente que las dos cadenas designan al mismo participante
+    dependencia: se aplica en la misma enmienda a b.16 que F5-OB-11 y F5-OB-12
+    propietario: Owner
+    tipo_de_accion: ENMIENDA_A_MATERIAL_APROBADO
+    decision_owner: SI
+    decision_id: D-09
+    estado: ELECCIÓN_REAL_DEL_OWNER
+    artefacto: docs/f5/borradores/B-06-RUTAS-DE-b16.md
+    criterio_aceptacion: [A1, A2]
+    prueba_prevista: >
+      que la composicion de A2-A7 sea verificable mecanicamente contra la fuente aprobada
+    nota: es la mitad F5 del externo F-01; su mitad F6 actualiza los derivados del kernel
+
+  - id: F5-OB-14
+    entregable: F5-A
+    presion: PN-12
+    requisito_de_origen: el «mapa documental» de O8 declarado como area DERIVADA
+    fuente_superior: docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
+    seccion_sede: "2 · O8"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: una frase que confirme la lectura derivada, o que exija un mapa escrito
+    resultado_exigido: >
+      confirmar que el area 1 se satisface con un mapa DERIVADO, o exigir uno escrito y
+      mantenido, con responsable y caducidad propios
+    dependencia: ninguna
+    propietario: Owner
+    tipo_de_accion: PRECISION_SOBRE_RESOLUCION_DEL_OWNER
+    decision_owner: SI
+    decision_id: D-10
+    estado: ELECCIÓN_REAL_DEL_OWNER
+    artefacto: docs/f5/borradores/B-05-RATIFICACIONES-DE-LECTURA.md
+    criterio_aceptacion: [A1, A2]
+    prueba_prevista: >
+      que el area 1 tenga autoridad declarada; hoy su fila de 1.3 declara autoridad «nadie»
+
+  - id: F5-OB-15
+    entregable: F5-A
+    presion: PN-17
+    requisito_de_origen: >
+      reconciliacion_pendiente del canal de ordenes no tiene productor tras agotar
+      MAX_CAS_RETRIES, y T22 no es satisfacible por esta arquitectura
+    fuente_superior: docs/rediseno/a-CAPACIDADES-APROBADA.md
+    seccion_sede: "a.9 L793-797 · T22 L1109-1111 · b.12 freno 4"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: la que la salida elegida determine; las tres tocan sedes distintas
+    resultado_exigido: >
+      declarar que significa «registra reconciliacion_pendiente» en a.9 y en T22 cuando se
+      agota MAX_CAS_RETRIES, y en consecuencia quien es su productor
+    dependencia: >
+      no bloquea PN-1 ni depende de ella. Se decide cerca de (g) porque su salida (i) y (ii)
+      tocan 2.6.9 y 2.6.11
+    propietario: Owner
+    tipo_de_accion: ELECCION_ENTRE_TRES_SALIDAS_INCOMPATIBLES
+    decision_owner: SI
+    decision_id: D-03
+    estado: ELECCIÓN_REAL_DEL_OWNER
+    artefacto: docs/f5/borradores/B-07-RECONCILIACION-PENDIENTE.md
+    criterio_aceptacion: [A1, A2]
+    prueba_prevista: >
+      que T22 sea satisfacible por alguna ruta de la arquitectura, y que el freno 4 de b.12
+      dispare para el caso del canal de ordenes
+
+  - id: F5-OB-16
+    entregable: F5-E
+    presion: PN-16
+    requisito_de_origen: la grafia canonica de <CAP>:revision vive en material APROBADO
+    fuente_superior: docs/rediseno/b-RECORRIDO-APROBADA.md
+    seccion_sede: "b.16 L835"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: >
+      docs/rediseno/b-RECORRIDO-APROBADA.md L835 SI el Owner elige la grafia sin tilde;
+      ninguna si elige la de (b)
+    resultado_exigido: declarar cual de las dos grafias es la CANONICA
+    dependencia: se responde JUNTO con F5-OB-17; un criterio, dos aplicaciones
+    propietario: Owner
+    tipo_de_accion: ELECCION_DE_GRAFIA_CANONICA
+    decision_owner: SI
+    decision_id: D-08
+    estado: ELECCIÓN_REAL_DEL_OWNER
+    artefacto: docs/f5/borradores/B-08-GRAFIA-CANONICA.md
+    criterio_aceptacion: [A1, A2, A5]
+    prueba_prevista: >
+      un barrido que exija UNA sola grafia en todo el corpus vigente, con las citas
+      historicas marcadas como tales
+
+  - id: F5-OB-17
+    entregable: F5-A
+    presion: PN-18
+    requisito_de_origen: >
+      VER:decision frente a VER:decision con tilde: la grafia YA materializada, con DOS
+      variantes dentro del kernel construido
+    fuente_superior: docs/rediseno/b-RECORRIDO-APROBADA.md
+    seccion_sede: "doce apariciones normativas, todas con tilde"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: >
+      docs/rediseno/b-RECORRIDO-APROBADA.md SI el Owner elige la grafia sin tilde;
+      ninguna si elige la de (b)
+    resultado_exigido: declarar cual de las dos grafias es la CANONICA
+    dependencia: se responde JUNTO con F5-OB-16
+    propietario: Owner
+    tipo_de_accion: ELECCION_DE_GRAFIA_CANONICA
+    decision_owner: SI
+    decision_id: D-08
+    estado: ELECCIÓN_REAL_DEL_OWNER
+    artefacto: docs/f5/borradores/B-08-GRAFIA-CANONICA.md
+    criterio_aceptacion: [A1, A2, A5]
+    prueba_prevista: >
+      que el kernel construido deje de usar las DOS grafias a la vez, y que los recuentos se
+      deriven y no se escriban
+
+  # --- F5-E · la checklist editorial determinada ---------------------------
+  - id: F5-OB-18
+    entregable: F5-E
+    presion: null
+    requisito_de_origen: E5-1 · una cita mal puesta en (b)
+    fuente_superior: docs/rediseno/b-RECORRIDO-APROBADA.md
+    seccion_sede: "L358"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: docs/rediseno/b-RECORRIDO-APROBADA.md L358
+    resultado_exigido: >
+      «deja al item en `en espera` (P7)» pasa a decir «(P9)». El texto final es calculable
+      sin decidir nada: (b) define P7 como «→ activo» y P9 como «→ en espera», y L255 ya lo
+      usa bien
+    dependencia: ninguna
+    propietario: F5, con aprobacion del Owner
+    tipo_de_accion: CORRECCION_EDITORIAL_DETERMINADA
+    decision_owner: SI
+    decision_id: R-02
+    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
+    artefacto: docs/f5/borradores/B-09-CHECKLIST-EDITORIAL.md
+    criterio_aceptacion: [A2, A5]
+    prueba_prevista: >
+      que toda cita de un predicado Pn en (b) case con el predicado que ese numero define
+
+  - id: F5-OB-19
+    entregable: F5-E
+    presion: null
+    requisito_de_origen: E5-2 · una lista mal numerada en (b)
+    fuente_superior: docs/rediseno/b-RECORRIDO-APROBADA.md
+    seccion_sede: "L459-L472"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: docs/rediseno/b-RECORRIDO-APROBADA.md L459-L472
+    resultado_exigido: >
+      renumerar 1,2,5,3,4 a 1,2,3,4,5 conservando el texto de cada regla sin tocar una
+      palabra, y comprobando ANTES que ninguna otra sede cita esas reglas por su numero
+    dependencia: >
+      se aplica DESPUES de las enmiendas a b.16, que pueden introducir referencias nuevas a (b)
+    propietario: F5, con aprobacion del Owner
+    tipo_de_accion: CORRECCION_EDITORIAL_DETERMINADA
+    decision_owner: SI
+    decision_id: R-02
+    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
+    artefacto: docs/f5/borradores/B-09-CHECKLIST-EDITORIAL.md
+    criterio_aceptacion: [A2, A5]
+    prueba_prevista: >
+      que la secuencia de una lista numerada de (b) sea estrictamente creciente, mas el
+      barrido previo de «regla 3 de b.» y equivalentes
+
+  - id: F5-OB-20
+    entregable: F5-E
+    presion: null
+    requisito_de_origen: E5-4 · un recuento de marcas de remision que el arbol no da
+    fuente_superior: docs/rediseno/a-ENMIENDA-E1-ENC.md
+    seccion_sede: "E1 L196-197 · (a) L269 y L276"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: docs/rediseno/a-ENMIENDA-E1-ENC.md y docs/rediseno/a-CAPACIDADES-APROBADA.md
+    resultado_exigido: >
+      reanclar el recuento, o declarar por que no lo llevan. La parte determinada es marcar
+      los dos recuentos sin marca de (a); la parte que exige criterio es si una marca de
+      CONFIRMACION cuenta como marca de remision
+    dependencia: ninguna
+    propietario: F5, con aprobacion del Owner
+    tipo_de_accion: CORRECCION_EDITORIAL_PARCIALMENTE_DETERMINADA
+    decision_owner: SI
+    decision_id: R-02
+    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
+    artefacto: docs/f5/borradores/B-09-CHECKLIST-EDITORIAL.md
+    criterio_aceptacion: [A2, A5]
+    prueba_prevista: >
+      que el numero de marcas [E1] que E1.4 declara coincida con las que (a) lleva, DERIVADO
+      por barrido y no escrito. El remedio propuesto sustituye el cardinal por su comando
+
+  - id: F5-OB-21
+    entregable: F5-E
+    presion: null
+    requisito_de_origen: >
+      OC-2 · el inventario de enmiendas vigentes no coincide entre las sedes que lo enumeran:
+      unas nombran una enmienda y otras dos. (b) esta enmendada por E2 y no lo dice en
+      ninguna parte de su texto
+    fuente_superior: docs/rediseno/a-CAPACIDADES-APROBADA.md
+    seccion_sede: "bloque de aviso L9-L18 · docs/rediseno/README.md L22-L32 · (b) sin bloque"
+    sede_vigente: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    sede_de_la_enmienda: >
+      el bloque de aviso de (a), el README de docs/rediseno/, y un bloque de aviso NUEVO
+      en (b), que hoy no existe
+    resultado_exigido: >
+      que las sedes que enumeran las enmiendas vigentes coincidan, y que (b) declare que
+      esta enmendada por E2
+    dependencia: ninguna
+    propietario: F5, con aprobacion del Owner
+    tipo_de_accion: CORRECCION_EDITORIAL_DETERMINADA
+    decision_owner: SI
+    decision_id: R-02
+    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
+    artefacto: docs/f5/borradores/B-09-CHECKLIST-EDITORIAL.md
+    criterio_aceptacion: [A2, A5]
+    prueba_prevista: >
+      que el inventario de enmiendas se DERIVE y no se escriba, de modo que no pueda volver
+      a discrepar entre sedes
+    nota: >
+      OC-2 es una OBSERVACION de la consolidacion canonica, NO un hallazgo adjudicado, y
+      esta matriz no le asigna severidad. Se incluye porque su sede es material aprobado y
+      su fase declarada es F5
+
+  # --- F5-F · la nota de vigencia del documento del Owner ------------------
+  - id: F5-OB-22
+    entregable: F5-F
+    presion: null
+    requisito_de_origen: >
+      F-08 · nota de vigencia o de sustitucion que reconcilie el «NO IMPLEMENTAR SIN DISENO
+      PREVIO» de IDEAS con lo que C6, C7 y la seccion 10 ya implementan
+    fuente_superior: docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md
+    seccion_sede: "L4-L7 cabecera · L487 seccion 12 · L568-L582 seccion 14 · L597 seccion 15"
+    sede_vigente: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    sede_de_la_enmienda: docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md
+    resultado_exigido: >
+      una nota de vigencia en voz del Owner que cubra las CUATRO afirmaciones equivalentes,
+      o que declare expresamente por que no cubre alguna
+    dependencia: ninguna
+    propietario: Owner. Es su documento y la nota es suya
+    tipo_de_accion: NOTA_DE_VIGENCIA_EN_VOZ_DEL_OWNER
+    decision_owner: SI
+    decision_id: R-03
+    estado: BORRADOR_DETERMINADO_PENDIENTE_DE_APROBACIÓN
+    artefacto: docs/f5/borradores/B-10-NOTA-DE-VIGENCIA.md
+    criterio_aceptacion: [A1, A2]
+    prueba_prevista: >
+      que ninguna de las cuatro afirmaciones quede viva sin nota, y que la contradiccion
+      registrada en 07-DECISION-MULTIREPO deje de tener las dos posturas abiertas
+    nota: >
+      F-08 solo nombra la seccion 15. Las otras tres sedes dicen lo mismo con otras palabras;
+      una nota que solo tocara la seccion 15 dejaria vivas tres afirmaciones identicas
+
+  # --- el acto de registro de las respuestas -------------------------------
+  - id: F5-OB-23
+    entregable: F5-A
+    presion: null
+    requisito_de_origen: >
+      A2 exige que ninguna enmienda se aplique sin aprobacion EXPRESA del Owner. La sede
+      canonica de las resoluciones es APPEND-ONLY y solo el Owner escribe en ella
+    fuente_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+    seccion_sede: "O19, que la creo y fijo su regla de procedencia"
+    sede_vigente: docs/canonico/03-GOBIERNO-Y-AUTORIDAD.md
+    seccion_sede_vigente: "2"
+    sede_de_la_enmienda: docs/owner/ADS-OWNER-RESOLUCIONES.md, por adicion al final
+    resultado_exigido: >
+      que las respuestas del Owner a este paquete queden inscritas en su sede canonica con
+      identificador, fecha, procedencia, texto, alcance y relaciones de revision
+    dependencia: todas las demas filas. Es el vehiculo por el que se cierran
+    propietario: Owner
+    tipo_de_accion: ACTO_DE_REGISTRO
+    decision_owner: SI
+    decision_id: R-04
+    estado: BLOQUEADO_POR_OTRA_DECISIÓN
+    artefacto: null
+    criterio_aceptacion: [A1, A2]
+    prueba_prevista: >
+      la comprobacion append-only contra el NACIMIENTO del fichero, que la bateria ya ejecuta
+    nota: >
+      NINGUN agente escribe en esta sede. Este macrobloque no ha escrito en ella y no ha
+      redactado ninguna resolucion en voz del Owner
+
+  # --- obligaciones de F5 SIN decision del Owner ---------------------------
+  # Su fase declarada es F5 en docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md.
+  # NINGUNA exige acto del Owner: sus sedes son DERIVADAS, no material aprobado.
+  # NINGUNA se ejecuta en este macrobloque, y se dice por que en cada fila.
+  - id: F5-OB-24
+    entregable: F5-A
+    presion: null
+    requisito_de_origen: >
+      JB-02 · una enumeracion viva escrita al lado de una sede que crece, que omite familias
+      que la sede si publica
+    fuente_superior: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    seccion_sede: "1"
+    sede_vigente: docs/evolucion/CHECKPOINT-ADS-NEXT.md
+    sede_de_la_enmienda: no aplicable; su sede es DERIVADA y no es material aprobado
+    resultado_exigido: que la vinieta retire la enumeracion y remita a la sede que la deriva
+    dependencia: ninguna
+    propietario: SIS
+    tipo_de_accion: CORRECCION_DETERMINADA_SIN_ACTO_DEL_OWNER
+    decision_owner: NO
+    estado: DETERMINADO_Y_EJECUTABLE
+    artefacto: null
+    criterio_aceptacion: [A6]
+    prueba_prevista: que ningun campo vigente publique una enumeracion que otra sede derive
+    no_ejecutado_porque: >
+      el encargo que abre este macrobloque ordena EXPRESAMENTE mantener los diez hallazgos
+      vivos en su estado actual, y su cierre exige ademas un ACTO COMPETENTE que este
+      macrobloque no emite. Queda registrada como trabajo de F5 pendiente, no como deuda de F6
+
+  - id: F5-OB-25
+    entregable: F5-A
+    presion: null
+    requisito_de_origen: >
+      JC-02 · el registro de decisiones reproduce una obligacion del Owner sin su
+      precondicion, mientras otra entrada del mismo fichero SI la conserva
+    fuente_superior: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    seccion_sede: "1"
+    sede_vigente: docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
+    sede_de_la_enmienda: no aplicable; es una PROYECCION DERIVADA, no material aprobado
+    resultado_exigido: >
+      que la entrada conserve la precondicion o remita a la sede canonica, como ya hace la otra
+    dependencia: ninguna
+    propietario: SIS
+    tipo_de_accion: CORRECCION_DETERMINADA_SIN_ACTO_DEL_OWNER
+    decision_owner: NO
+    estado: DETERMINADO_Y_EJECUTABLE
+    artefacto: null
+    criterio_aceptacion: [A6]
+    prueba_prevista: que ninguna proyeccion amplie ni recorte el texto canonico que reproduce
+    no_ejecutado_porque: ídem F5-OB-24
+
+  - id: F5-OB-26
+    entregable: F5-A
+    presion: null
+    requisito_de_origen: >
+      KD-01 · un bloque rotulado «se comprueba, no se declara» publica un comando de
+      autocontrol anotado con un resultado que el arbol no da
+    fuente_superior: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    seccion_sede: "1"
+    sede_vigente: docs/evolucion/CHECKPOINT-ADS-NEXT.md
+    sede_de_la_enmienda: no aplicable; su sede es DERIVADA
+    resultado_exigido: que el comando publicado reproduzca el resultado que anota
+    dependencia: ninguna
+    propietario: SIS
+    tipo_de_accion: CORRECCION_DETERMINADA_SIN_ACTO_DEL_OWNER
+    decision_owner: NO
+    estado: DETERMINADO_Y_EJECUTABLE
+    artefacto: null
+    criterio_aceptacion: [A6]
+    prueba_prevista: que todo comando publicado con resultado anotado lo reproduzca
+    no_ejecutado_porque: ídem F5-OB-24
+
+  - id: F5-OB-27
+    entregable: F5-A
+    presion: null
+    requisito_de_origen: >
+      KD-02 y LE-02 · campos VIGENTES del bloque reanudable copian recuentos que otra sede
+      deriva, uno de ellos en la misma oracion en que declaran no copiarlos
+    fuente_superior: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    seccion_sede: "1"
+    sede_vigente: docs/evolucion/CHECKPOINT-ADS-NEXT.md
+    sede_de_la_enmienda: no aplicable; su sede es DERIVADA
+    resultado_exigido: que los campos retiren los cardinales y remitan a la sede que los deriva
+    dependencia: ninguna
+    propietario: SIS
+    tipo_de_accion: CORRECCION_DETERMINADA_SIN_ACTO_DEL_OWNER
+    decision_owner: NO
+    estado: DETERMINADO_Y_EJECUTABLE
+    artefacto: null
+    criterio_aceptacion: [A6]
+    prueba_prevista: que ningun campo vigente copie un cardinal que otra sede derive
+    no_ejecutado_porque: >
+      ídem F5-OB-24. Son ademas instancias de la clase C-L.7, que sigue NO CERRADA y que
+      SOLO un gate independiente posterior puede cerrar
+
+  - id: F5-OB-28
+    entregable: F5-A
+    presion: null
+    requisito_de_origen: >
+      JA-01 y JA-02 · el barrido mecanico enmudece tras el primer rotulo historico, y el
+      extractor de campos trunca en silencio ante una valla de codigo sin sangria
+    fuente_superior: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    seccion_sede: "1"
+    sede_vigente: docs/evolucion/CHECKPOINT-ADS-NEXT.md
+    sede_de_la_enmienda: no aplicable
+    resultado_exigido: >
+      LA ESPECIFICACION de la regla de alcance de rotulo, y de la guarda que distinga el
+      conjunto completo del truncado. El INSTRUMENTO que las implemente es de F6
+    dependencia: ninguna
+    propietario: SIS especifica en F5 · PLT implementa el instrumento en F6
+    tipo_de_accion: ESPECIFICACION_DE_F5_CON_INSTRUMENTO_EN_F6
+    decision_owner: NO
+    estado: DETERMINADO_Y_EJECUTABLE
+    artefacto: null
+    criterio_aceptacion: [A6]
+    prueba_prevista: >
+      que la especificacion exista y nombre la regla; el verde del instrumento es de F6 y NO
+      cierra el hallazgo
+    no_ejecutado_porque: >
+      ídem F5-OB-24. La mitad de F5 es la ESPECIFICACION; redactarla no cierra el hallazgo,
+      y declararlo cerrado por haberla redactado violaria A6
+
+  - id: F5-OB-29
+    entregable: F5-A
+    presion: null
+    requisito_de_origen: >
+      C-L.7 · que ningun campo vigente copie un estado, recuento, ordinal o enumeracion que
+      otra sede derive, comprobado POR CLASE y no por instancia
+    fuente_superior: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    seccion_sede: "2"
+    sede_vigente: docs/evolucion/CHECKPOINT-ADS-NEXT.md
+    sede_de_la_enmienda: no aplicable
+    resultado_exigido: LA ESPECIFICACION de la regla de clase. El instrumento es de F6
+    dependencia: ninguna
+    propietario: SIS especifica en F5 · PLT implementa el instrumento en F6
+    tipo_de_accion: ESPECIFICACION_DE_F5_CON_INSTRUMENTO_EN_F6
+    decision_owner: NO
+    estado: DETERMINADO_Y_EJECUTABLE
+    artefacto: null
+    criterio_aceptacion: [A6]
+    prueba_prevista: >
+      NINGUNA que este macrobloque pueda ejecutar: su sede declara que SOLO UN GATE
+      INDEPENDIENTE POSTERIOR puede cerrarla, y que barrer no es certificar
+    no_ejecutado_porque: >
+      ídem F5-OB-24. Y su condicion de cierre es expresamente ajena a F5: barrer no certifica
+
+  - id: F5-OB-30
+    entregable: F5-A
+    presion: null
+    requisito_de_origen: >
+      CD-1, CD-5 y CD-6 · la deuda del corpus canonico cuya fase declarada es F5: un cardinal
+      que ancla dos comandos publicados, enumeraciones sin comando de derivacion, y reglas
+      normativas reformuladas en mas de un documento canonico
+    fuente_superior: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    seccion_sede: "11 bis"
+    sede_vigente: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    sede_de_la_enmienda: no aplicable; el corpus canonico no es material aprobado
+    resultado_exigido: >
+      CD-1 que el cardinal deje de anclar los comandos · CD-5 que las enumeraciones lleven su
+      comando de derivacion · CD-6 que la duplicacion normativa se retire o se declare
+    dependencia: ninguna
+    propietario: SIS
+    tipo_de_accion: CORRECCION_DETERMINADA_SIN_ACTO_DEL_OWNER
+    decision_owner: NO
+    estado: DETERMINADO_Y_EJECUTABLE
+    artefacto: null
+    criterio_aceptacion: [A7]
+    prueba_prevista: que ningun cardinal que pueda crecer se escriba a mano
+    no_ejecutado_porque: >
+      el encargo lo PROHIBE salvo tres condiciones concurrentes: que el defecto afecte
+      directamente a un artefacto F5 que se este creando, que dejarlo intacto lo haria
+      ambiguo o invalido, y que la correccion este completamente determinada. NINGUNO de los
+      tres las cumple respecto de los artefactos de este macrobloque, y no se abre tanda
+
+  # --- el acto que cierra F5 ------------------------------------------------
+  - id: F5-OB-31
+    entregable: F5-A
+    presion: null
+    requisito_de_origen: >
+      NINGUNA sede vigente declara QUIEN cierra F5. El corpus fija quien la INICIA —el
+      Owner— y como se cerro F4c —por COMPOSICION de dos juicios independientes—, y las dos
+      salidas son distintas
+    fuente_superior: docs/canonico/03-GOBIERNO-Y-AUTORIDAD.md
+    seccion_sede: "6 y 7"
+    sede_vigente: docs/canonico/03-GOBIERNO-Y-AUTORIDAD.md
+    sede_de_la_enmienda: la que la salida elegida determine
+    resultado_exigido: que exista una sede que declare quien cierra F5, antes de cerrarla
+    dependencia: todas las demas filas. Es el acto final de la fase
+    propietario: Owner
+    tipo_de_accion: ELECCION_DEL_ACTO_DE_CIERRE
+    decision_owner: SI
+    decision_id: R-05
+    estado: ELECCIÓN_REAL_DEL_OWNER
+    artefacto: null
+    criterio_aceptacion: [A1, A2]
+    prueba_prevista: que el acto de cierre exista y cite la sede que lo autoriza
+    nota: >
+      Este macrobloque llego a escribir en el corpus canonico que cerrar F5 era acto del
+      Owner «por simetria con su inicio». ERA UNA INFERENCIA Y SE HA RETIRADO: ninguna sede
+      la sostiene, y el precedente de F4c apunta a la otra salida. La pregunta va al Owner
+
+  # =========================================================================
+  # FILAS DE FRONTERA. NO son obligaciones de F5. Se declaran para que la
+  # separacion entre F5 y F6 sea explicita y comprobable, y para que nadie las
+  # arrastre a F5 por conveniencia.
+  # =========================================================================
+  - id: F5-OB-F1
+    entregable: null
+    presion: null
+    requisito_de_origen: >
+      los externos con propietario y fase F6: F-02, F-04, F-05, F-06, F-07, F-10, F-11, y la
+      mitad F6 de F-01
+    fuente_superior: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    seccion_sede: "19 · tabla «Lo que esta fase NO puede corregir»"
+    sede_vigente: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    seccion_sede_vigente: "7"
+    sede_de_la_enmienda: null
+    resultado_exigido: ninguno en F5
+    dependencia: null
+    propietario: SIS especifica · PLT implementa
+    tipo_de_accion: NINGUNA_EN_F5
+    decision_owner: NO
+    estado: DEUDA_DE_F6
+    artefacto: null
+    criterio_aceptacion: []
+    prueba_prevista: no aplicable en F5
+
+  - id: F5-OB-F2
+    entregable: null
+    presion: null
+    requisito_de_origen: >
+      los diecinueve contratos V6 de F6, de los que dieciocho son CONSTRUIBLE y uno,
+      V6-16, esta BLOQUEADO POR DEPENDENCIA de PN-19
+    fuente_superior: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    seccion_sede: "20"
+    sede_vigente: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    seccion_sede_vigente: "6"
+    sede_de_la_enmienda: null
+    resultado_exigido: >
+      ninguno en F5. F5 solo emite la norma habilitante de V6-16, que es la fila F5-OB-03
+    dependencia: F5-OB-03 desbloquea V6-16, y nada mas
+    propietario: PLT implementa · SIS especifica · VER produce el dosier · Owner acepta
+    tipo_de_accion: NINGUNA_EN_F5
+    decision_owner: NO
+    estado: DEUDA_DE_F6
+    artefacto: null
+    criterio_aceptacion: []
+    prueba_prevista: no aplicable en F5
+
+  - id: F5-OB-F3
+    entregable: null
+    presion: null
+    requisito_de_origen: >
+      A14, la guarda de version minima del interprete, y M-04, la proposicion de que un arbol
+      defectuoso puede pasar en verde
+    fuente_superior: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    seccion_sede: "19"
+    sede_vigente: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    seccion_sede_vigente: "3 y 4"
+    sede_de_la_enmienda: null
+    resultado_exigido: ninguno en F5. Las dos son de F6, y ninguna se declara superada aqui
+    dependencia: null
+    propietario: PLT
+    tipo_de_accion: NINGUNA_EN_F5
+    decision_owner: NO
+    estado: DEUDA_DE_F6
+    artefacto: null
+    criterio_aceptacion: []
+    prueba_prevista: no aplicable en F5
+
+  - id: F5-OB-F4
+    entregable: null
+    presion: null
+    requisito_de_origen: >
+      las DOS decisiones del Owner expresamente DEFERIDAS: la contradiccion de fondo sobre la
+      capa de conocimiento, y el problema arquitectonico registrado que solo puede resolverse
+      con evidencia independiente
+    fuente_superior: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    seccion_sede: "19"
+    sede_vigente: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    seccion_sede_vigente: "9"
+    sede_de_la_enmienda: null
+    resultado_exigido: >
+      ninguno en F5. Estan DEFERIDAS y no consta fase asignada. Este paquete NO las reabre y
+      NO las presenta como decision de F5
+    dependencia: null
+    propietario: Owner
+    tipo_de_accion: NINGUNA_EN_F5
+    decision_owner: NO
+    estado: FUERA_DE_ALCANCE
+    artefacto: null
+    criterio_aceptacion: []
+    prueba_prevista: no aplicable en F5
+
+  - id: F5-OB-F5
+    entregable: null
+    presion: null
+    requisito_de_origen: >
+      CD-2, CD-3 y CD-4 · la deuda del corpus canonico cuya fase declarada es F6. CD-1,
+      CD-5 y CD-6 NO estan aqui: su fase declarada es F5 y tienen fila propia, F5-OB-30
+    fuente_superior: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    seccion_sede: "11 bis"
+    sede_vigente: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    sede_de_la_enmienda: null
+    resultado_exigido: >
+      ninguno en F5. Los tres son de F6. Ninguno bloquea el inicio de F5 y ninguno se
+      declara superado
+    dependencia: null
+    propietario: SIS · PLT para CD-3
+    tipo_de_accion: NINGUNA_EN_F5
+    decision_owner: NO
+    estado: FUERA_DE_ALCANCE
+    artefacto: null
+    criterio_aceptacion: []
+    prueba_prevista: no aplicable en F5
+    nota: >
+      CD-3 pertenece al endurecimiento instrumental de F6 y NO se convierte en gate previo
+      a F5. Este macrobloque anade docs/f5/validar-f5.py, que hereda la misma limitacion de
+      CD-3 y la declara en su propia cabecera en vez de ocultarla

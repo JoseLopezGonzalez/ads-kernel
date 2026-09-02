@@ -138,6 +138,16 @@ zonas:
   - patron: '^docs/canonico/'
     clase: CANONICA_OPERATIVA
     motivo: corpus canonico vigente; puerta de entrada de F5 y F6
+  - patron: '^docs/f5/borradores/'
+    clase: NO_APLICABLE_A_IMPLEMENTACION
+    motivo: >
+      borradores de enmienda de F5, NO APROBADOS. No son norma, no autorizan a implementar
+      y ninguno es citable como vigente hasta que el Owner resuelva su decision asociada
+  - patron: '^docs/f5/'
+    clase: DERIVADA
+    motivo: >
+      area de trabajo de F5: la matriz de obligaciones, el paquete de decisiones del Owner
+      y la trazabilidad, todos DERIVADOS de sus sedes superiores; no crean autoridad
   - patron: '^docs/evolucion/[0-9][0-9]-.*\.md$'
     clase: EVIDENCIA
     motivo: documentos numerados de la iniciativa; los de gate son INMUTABLES
@@ -529,6 +539,42 @@ materias:
     seccion: "La tabla de los 22"
     estado: vigente
     autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  # --- area de trabajo de F5, DERIVADA y no normativa -----------------------
+  - id: MAT-051
+    materia: >
+      matriz de obligaciones de F5, con una fila por obligacion, su estado inequivoco, su
+      propietario, su dependencia y su prueba prevista
+    sede: docs/f5/MATRIZ-F5.yml
+    estado: derivada
+    autoridad_superior: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    fuentes_tecnicas: [docs/f5/validar-f5.py]
+
+  - id: MAT-052
+    materia: >
+      paquete unico de decisiones del Owner de F5; plantea preguntas y NO contiene ninguna
+      respuesta ni ninguna aprobacion
+    sede: docs/f5/20-PAQUETE-DE-DECISIONES-DEL-OWNER.md
+    estado: derivada
+    autoridad_superior: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+
+  - id: MAT-053
+    materia: >
+      registro del acto del Owner que inicio F5. Es la TRANSCRIPCION de un acto, no la sede
+      de su autoridad; el estado que produjo vive en MAT-005 y no se copia aqui. NO declara
+      autoridad_superior a proposito: la sede canonica de resoluciones NO contiene todavia
+      este acto —su ultima resolucion declara que no inicia F5— y apuntar alli enviaria al
+      lector a un texto que dice lo contrario. Su inscripcion es el asunto R-04 del paquete
+    sede: docs/f5/01-ACTO-DE-INICIO-DE-F5.md
+    estado: derivada
+
+  - id: MAT-054
+    materia: >
+      trazabilidad de F5 —presion, decision, enmienda, contrato y prueba— y orden de
+      aplicacion posterior
+    sede: docs/f5/30-TRAZABILIDAD-Y-ORDEN-DE-APLICACION.md
+    estado: derivada
+    autoridad_superior: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
 
   # --- evidencia de proceso, registrada y NO normativa ----------------------
   - id: MAT-047

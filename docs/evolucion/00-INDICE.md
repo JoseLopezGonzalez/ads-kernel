@@ -44,6 +44,30 @@ kernel/operativo/  el CONTENIDO OPERATIVO construido sobre (a) y (b).
 > desbloquea PesquerApp, no declara superado ningún hallazgo y no toca material aprobado ni
 > ninguna resolución del Owner.
 
+## EL ÁREA DE TRABAJO DE `F5` — abierta por el acto de inicio del Owner
+
+> **El estado vigente de `F5` tiene UNA SOLA SEDE**, que es
+> [`03-GOBIERNO-Y-AUTORIDAD.md`](../canonico/03-GOBIERNO-Y-AUTORIDAD.md) §6. **Este índice no
+> lo copia**, y por eso no lo escribe aquí: una segunda copia caducaría sola en cuanto la
+> fase avanzara, que es exactamente la clase de defecto que el corpus tiene abierta. Lo que hay aquí es el **área de trabajo**: la matriz de obligaciones, el
+> paquete único de decisiones del Owner y los borradores.
+>
+> **NADA de esa zona es norma.** El registro de sedes canónicas la clasifica como
+> **DERIVADA**, y su subdirectorio de borradores como **NO APLICABLE A IMPLEMENTACIÓN**:
+> son borradores **NO APROBADOS** que no autorizan a implementar nada. **No contiene ni una
+> sola respuesta del Owner.**
+
+| | documento | qué contiene |
+|---|---|---|
+| — | [`docs/f5/00-INDICE-F5.md`](../f5/00-INDICE-F5.md) | el índice del área de trabajo de `F5` |
+| — | [`docs/f5/01-ACTO-DE-INICIO-DE-F5.md`](../f5/01-ACTO-DE-INICIO-DE-F5.md) | el registro literal del acto del Owner que inició `F5` |
+| — | [`docs/f5/10-MATRIZ-CANONICA-DE-F5.md`](../f5/10-MATRIZ-CANONICA-DE-F5.md) | una fila por obligación de `F5`, con su estado inequívoco |
+| — | [`docs/f5/20-PAQUETE-DE-DECISIONES-DEL-OWNER.md`](../f5/20-PAQUETE-DE-DECISIONES-DEL-OWNER.md) | **el único paquete de decisiones**, para responder de una vez |
+| — | [`docs/f5/30-TRAZABILIDAD-Y-ORDEN-DE-APLICACION.md`](../f5/30-TRAZABILIDAD-Y-ORDEN-DE-APLICACION.md) | de la presión a la prueba, y el orden exacto de aplicación |
+| — | [`docs/f5/MATRIZ-F5.yml`](../f5/MATRIZ-F5.yml) | la matriz en forma de datos |
+| — | [`docs/f5/validar-f5.py`](../f5/validar-f5.py) | los controles sobre la matriz y los borradores |
+| — | [`docs/f5/borradores/`](../f5/borradores/) | los borradores de `F5`, **todos NO APROBADOS** |
+
 ## Los documentos en voz del Owner
 
 Están escritos en **voz del Owner**, no en el lenguaje canónico del corpus. Se conservan
