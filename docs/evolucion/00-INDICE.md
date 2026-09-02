@@ -11,6 +11,39 @@ docs/evolucion/    la DIRECTIVA del Owner y el trabajo previo que ordena: baseli
 kernel/operativo/  el CONTENIDO OPERATIVO construido sobre (a) y (b).
 ```
 
+## EL CORPUS CANÓNICO VIGENTE — la entrada recomendada para `F5` y `F6`
+
+> **Si vas a IMPLEMENTAR, empieza aquí y no en este índice.**
+> [`docs/canonico/00-EMPEZAR-AQUI.md`](../canonico/00-EMPEZAR-AQUI.md) es la puerta de
+> entrada del estado VIGENTE de ADS. Este directorio —`docs/evolucion/`— es **historia y
+> evidencia de proceso**: se conserva íntegro para auditoría, y **ningún documento de gate
+> es lectura necesaria para construir**. El corpus canónico no crea autoridad: consolida,
+> clasifica y enlaza lo que ya estaba, con una sola sede por materia.
+
+| | documento | qué contiene |
+|---|---|---|
+| 0 | [`00-EMPEZAR-AQUI.md`](../canonico/00-EMPEZAR-AQUI.md) | qué es ADS, orden exacto de lectura y qué NO hay que consultar |
+| 1 | [`01-MODELO-DEL-SISTEMA.md`](../canonico/01-MODELO-DEL-SISTEMA.md) | piezas, fronteras, multirrepositorio, memoria y fuentes de verdad |
+| 2 | [`02-MODELO-OPERATIVO.md`](../canonico/02-MODELO-OPERATIVO.md) | procesos, items, paquetes, circuitos, handoffs, reanudación y Git |
+| 3 | [`03-GOBIERNO-Y-AUTORIDAD.md`](../canonico/03-GOBIERNO-Y-AUTORIDAD.md) | jerarquía de autoridad, y la **ÚNICA sede canónica del estado de las fases** |
+| 4 | [`04-CONTRATOS-TECNICOS.md`](../canonico/04-CONTRATOS-TECNICOS.md) | inventario de contratos y esquemas, y qué está construido frente a qué está diseñado |
+| 5 | [`05-PLAN-DE-IMPLEMENTACION-F5-F6.md`](../canonico/05-PLAN-DE-IMPLEMENTACION-F5-F6.md) | qué significa cada fase, sus entregables, dependencias y cortes verticales |
+| 6 | [`06-DEUDA-Y-LIMITACIONES-VIGENTES.md`](../canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md) | la deuda VIVA, con sede, propietario, fase y condición de cierre |
+| — | [`FUENTES-CANONICAS.yml`](../canonico/FUENTES-CANONICAS.yml) | el registro: una sede por materia, con su autoridad y su clasificación |
+| — | [`validar-fuentes-canonicas.py`](../canonico/validar-fuentes-canonicas.py) | el validador de ese registro, con sus controles negativos |
+
+> **LA CONDICIÓN DE ADMISIÓN DE ESTA ZONA, y es la misma disciplina que `docs/owner/`.**
+> Todo fichero de `docs/canonico/` **se enlaza desde esta lista por su RUTA COMPLETA, en el
+> mismo commit que lo crea**. Un fichero plantado en esa zona sin ese enlace es ROJO: lo
+> comprueba `G-29` de la batería, y también
+> [`validar-fuentes-canonicas.py`](../canonico/validar-fuentes-canonicas.py). **No se
+> resuelve añadiéndolo a `exclusiones.yaml`**: una exclusión apaga la comprobación en vez de
+> cumplirla.
+>
+> **Y lo que este corpus NO hace:** no reabre `F4c`, no inicia `F5`, no inicia `F6`, no
+> desbloquea PesquerApp, no declara superado ningún hallazgo y no toca material aprobado ni
+> ninguna resolución del Owner.
+
 ## Los documentos en voz del Owner
 
 Están escritos en **voz del Owner**, no en el lenguaje canónico del corpus. Se conservan

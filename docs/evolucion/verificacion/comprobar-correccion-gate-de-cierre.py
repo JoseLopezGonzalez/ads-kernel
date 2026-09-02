@@ -3086,6 +3086,8 @@ check("G-28",
 #   `docs/evolucion/`     un documento numerado nuevo es el producto legítimo de un gate;
 #                         el instrumental de `verificacion/` sólo entra si el README lo
 #                         ENUMERA, que es la sede que lo declara y que se puede leer
+#   `docs/canonico/`      el CORPUS CANÓNICO VIGENTE, que el Owner ordenó consolidar antes
+#                         de `F5`: se admite si `00-INDICE.md` lo enlaza por RUTA COMPLETA
 #
 # Y sobre todo el corpus, dos controles de UNICIDAD que no dependen de ninguna lista:
 # ningún fichero puede tener un gemelo byte a byte, y ningún marcador de bloque canónico
@@ -3172,6 +3174,25 @@ _ENLAZADOS_INDICE_VERIF = {"docs/evolucion/" + n for n in re.findall(
 _ENLAZADOS_INDICE_OWNER = {"docs/owner/" + n for n in re.findall(
     r"\]\(\.\./owner/((?:[A-Za-z0-9][-A-Za-z0-9_.]*/)*[A-Za-z0-9][-A-Za-z0-9_.]*\.md)\)",
     _t_idx)}
+# La MISMA sede y la MISMA disciplina, para la zona del CORPUS CANÓNICO VIGENTE. Nace
+# porque el Owner ordenó consolidar el estado vigente en `docs/canonico/` antes de `F5`, y
+# esa zona no existía cuando se escribió la guarda: sin clasificar, la ampliación que la
+# propia orden manda publicar sería ROJA — que es exactamente lo que ocurrió con
+# `docs/owner/` cuando `O19` ordenó crear allí la sede canónica, y se resuelve igual: la
+# zona **se admite CLASIFICADA y con UNA condición**, que es la que el código ejecuta y toda
+# la que ejecuta. **No se relaja ninguna condición existente y no se exime nada**: lo que se
+# añade es una zona más con guarda propia, derivada contra la REVISIÓN BASE como las demás.
+#
+# A diferencia de `docs/owner/`, aquí se admiten además `.yml` y `.py`: el registro de sedes
+# canónicas es un fichero de datos y su validador es un fichero de código, y los dos tienen
+# que estar enlazados igual que los documentos. Lo que NO cambia es el discriminante:
+# **RUTA COMPLETA**, resuelta contra el directorio del índice, y no un nombre a cualquier
+# profundidad — que es el defecto `Z1-01`≡`W-04`≡`Z-02` que esta misma guarda cerró un piso
+# más arriba.
+_ENLAZADOS_INDICE_CANONICO = {"docs/canonico/" + n for n in re.findall(
+    r"\]\(\.\./canonico/((?:[A-Za-z0-9][-A-Za-z0-9_.]*/)*"
+    r"[A-Za-z0-9][-A-Za-z0-9_.]*\.(?:md|yml|yaml|py))\)",
+    _t_idx)}
 # `EE-01`. Esto era `_ORDINALES_PUBLICADOS`, derivado de `_publicado`: el ordinal de un
 # documento ya confirmado figuraba como OCUPADO **por él mismo**, de modo que la condición
 # «el ordinal está libre» sólo podía cumplirla un documento que aún no estuviera en `HEAD`.
@@ -3211,6 +3232,18 @@ def _ampliacion_admitida(rel):
         # adornarse. Queda dicho lo que falta, y no se presume cubierto: quien confirme el
         # fichero y su enlace en commits distintos no encuentra aquí quien se lo diga.
         return rel in _ENLAZADOS_INDICE_OWNER
+    if rel.startswith("docs/canonico/"):
+        # CORPUS CANÓNICO VIGENTE. Se admite CLASIFICADA y con UNA condición, que es la que
+        # esta línea ejecuta y toda la que ejecuta: **la RUTA COMPLETA está enlazada desde
+        # `00-INDICE.md`**. Un fichero plantado en `docs/canonico/` —al lado, o en un
+        # subdirectorio— sin ese enlace es ROJO, igual que en `docs/owner/`.
+        #
+        # Lo que esta rama NO comprueba, y se dice en vez de presumirlo: que el enlace se
+        # confirme en el MISMO commit que crea el fichero. Es la misma limitación que
+        # `AA-03` retiró de las otras dos zonas —esta función sólo se consulta para lo que
+        # todavía no está en `HEAD`, y el commit que lo crea aún no existe—, y la regla del
+        # índice sigue siendo la regla del índice.
+        return rel in _ENLAZADOS_INDICE_CANONICO
     if rel.startswith("docs/evolucion/verificacion/manifiestos/"):
         # `EE-01`. Aquí había un `return False` seco, y con él **la zona no tenía condición
         # de admisión**: era admisible sólo por estar ya en `HEAD`, es decir, por haber sido

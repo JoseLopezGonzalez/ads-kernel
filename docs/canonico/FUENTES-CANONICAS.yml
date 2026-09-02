@@ -1,0 +1,556 @@
+# FUENTES-CANONICAS.yml
+#
+# REGISTRO CENTRAL DE SEDES CANONICAS DE ADS.
+#
+# Una materia normativa tiene UNA sola sede. Los demas documentos la ENLAZAN y no la
+# vuelven a formular. Este fichero es la sede de esa correspondencia, y es validable
+# mecanicamente con `docs/canonico/validar-fuentes-canonicas.py`.
+#
+# Se escribe sin tildes a proposito: es un fichero de datos, no prosa.
+
+version: 1
+
+descripcion: >
+  Registro de sedes canonicas, autoridades y clasificacion del corpus de ADS, consolidado
+  antes de iniciar F5. No crea autoridad: la registra y la enlaza.
+
+base_de_consolidacion:
+  commit: ab35659a191432f9e652e173c6acb8b0ae98bcd3
+  referencia: review/f4c-ratificacion-o22-lectura-integral-20260902
+  fecha: "2026-09-02"
+
+# ---------------------------------------------------------------------------
+# REGLA DE PRECEDENCIA. De mayor a menor. Cuando dos fuentes difieren, manda la de arriba.
+# Su desarrollo en prosa vive en docs/canonico/03-GOBIERNO-Y-AUTORIDAD.md, que es su sede.
+# ---------------------------------------------------------------------------
+regla_de_precedencia:
+  orden:
+    - resolucion-del-owner
+    - material-aprobado
+    - contrato-o-esquema-del-kernel
+    - arquitectura-entregada-por-f4c
+    - proyeccion-derivada
+  texto: >
+    La sede canonica de las resoluciones del Owner es la autoridad. Una parafrasis nunca
+    amplia el texto canonico. El material aprobado se cambia por enmienda, y la unica fase
+    con autoridad para editarlo es F5. Los contratos y esquemas del kernel instancian el
+    material aprobado y no lo contradicen. La arquitectura entregada por F4c es derivada:
+    donde proyecta una resolucion, manda la resolucion. Toda proyeccion posterior es
+    derivada y no crea obligacion.
+  sede_en_prosa: docs/canonico/03-GOBIERNO-Y-AUTORIDAD.md
+
+# ---------------------------------------------------------------------------
+# PROHIBICIONES. Son las reglas contra la redundancia, en forma comprobable.
+# ---------------------------------------------------------------------------
+prohibiciones:
+  - id: PRH-1
+    texto: >
+      Una materia normativa NO puede tener dos sedes. Los demas documentos enlazan; no
+      vuelven a formular la regla.
+  - id: PRH-2
+    texto: >
+      Un documento de GATE, un DICTAMEN, un MANIFIESTO o un CORRIGENDUM NO puede ser la SEDE
+      de una materia vigente, ni requisito de lectura para implementar. Se registran como
+      EVIDENCIA y se citan como acto, nunca como norma.
+  - id: PRH-3
+    texto: >
+      Ningun estado de fase se copia en mas de una sede del corpus canonico. Su sede unica
+      es docs/canonico/03-GOBIERNO-Y-AUTORIDAD.md.
+  - id: PRH-4
+    texto: >
+      Ninguna lista de hallazgos se copia fuera de su sede. La del corpus canonico es
+      docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md.
+  - id: PRH-5
+    texto: >
+      Ningun cardinal que pueda crecer se escribe a mano. Se deriva con un comando
+      publicado junto a la afirmacion.
+  - id: PRH-6
+    texto: >
+      Ningun contrato o esquema tecnico se copia en el corpus canonico. Se enlaza y se
+      explica su papel.
+
+# ---------------------------------------------------------------------------
+# LIMITACIONES DECLARADAS DE ESTE REGISTRO. Se dicen porque ocultarlas seria el defecto.
+# ---------------------------------------------------------------------------
+limitaciones_declaradas:
+  - id: LIM-1
+    texto: >
+      TRES materias vigentes tienen su UNICA sede dentro del registro reanudable de la
+      iniciativa, que es un checkpoint: la clasificacion vigente de las condiciones de
+      cierre, el estado y la condicion de cierre de M-04, y la matriz de los hallazgos del
+      octavo gate por fase. Son MAT-044, MAT-045 y MAT-046.
+    por_que_no_se_corrige_aqui: >
+      Trasladar esas sedes seria mover materia adjudicada y tocar el objeto de una clase de
+      hallazgo que sigue abierta. Esta consolidacion no lo hace: enlaza la seccion exacta y
+      no la copia.
+    efecto_para_quien_implementa: >
+      NINGUNO para saber que construir: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+      publica, para cada una, su propietario, su fase y su condicion de cierre. El
+      checkpoint solo hace falta para auditar el reparto completo, que no es tarea de
+      implementacion.
+  - id: LIM-2
+    texto: >
+      La materia MAT-011 —las resoluciones del Owner anteriores a la sede canonica— vive en
+      un registro derivado y no en la sede. Es una orden expresa del Owner y se cumple
+      literalmente: no se reconstruyen ni se inventan sus textos.
+
+estados_validos: [vigente, historico, evidencia, derivada]
+
+clases_validas:
+  - AUTORIDAD_SUPERIOR
+  - CANONICA_OPERATIVA
+  - CONTRATO_O_ESQUEMA_TECNICO
+  - HISTORICA
+  - EVIDENCIA
+  - DERIVADA
+  - NO_APLICABLE_A_IMPLEMENTACION
+
+# ---------------------------------------------------------------------------
+# CLASIFICACION POR ZONA. Se evalua EN ORDEN: gana la primera cuyo patron case.
+# Se clasifica por ZONA y no fichero a fichero para que la clasificacion no caduque
+# cuando el corpus crezca.
+# ---------------------------------------------------------------------------
+zonas:
+  - patron: '^docs/owner/ADS-OWNER-RESOLUCIONES\.md$'
+    clase: AUTORIDAD_SUPERIOR
+    motivo: sede canonica de las resoluciones del Owner, APPEND-ONLY
+  - patron: '^docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA\.md$'
+    clase: AUTORIDAD_SUPERIOR
+    motivo: decision del Owner aprobada para implementacion
+  - patron: '^docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO\.md$'
+    clase: NO_APLICABLE_A_IMPLEMENTACION
+    motivo: documento de trabajo del Owner; declara materia abierta y no autoriza a implementar
+  - patron: '^docs/rediseno/(a-CAPACIDADES-APROBADA|b-RECORRIDO-APROBADA|a-ENMIENDA-E1-ENC|a-ENMIENDA-E2-MULTIREPO)\.md$'
+    clase: AUTORIDAD_SUPERIOR
+    motivo: especificacion normativa aprobada por el Owner; se cambia por enmienda
+  - patron: '^docs/rediseno/a-EQUIPOS-v[0-9]-(RECHAZADA|SUPERADA)\.md$'
+    clase: HISTORICA
+    motivo: versiones rechazadas o superadas, conservadas por trazabilidad
+  - patron: '^docs/rediseno/(AUDITORIA-INDEPENDIENTE-LOCAL|CORRECCIONES-POST-AUDITORIA|REVISION-ADVERSARIAL)\.md$'
+    clase: EVIDENCIA
+    motivo: informes de auditoria y revision, cerrados
+  - patron: '^docs/rediseno/00-MAPA\.md$'
+    clase: HISTORICA
+    motivo: mapa de la linea anterior frente al principio gobernante
+  - patron: '^docs/rediseno/'
+    clase: DERIVADA
+    motivo: indices, registros de decision y checkpoints del redisenio
+  - patron: '^docs/canonico/'
+    clase: CANONICA_OPERATIVA
+    motivo: corpus canonico vigente; puerta de entrada de F5 y F6
+  - patron: '^docs/evolucion/[0-9][0-9]-.*\.md$'
+    clase: EVIDENCIA
+    motivo: documentos numerados de la iniciativa; los de gate son INMUTABLES
+  - patron: '^docs/evolucion/verificacion/'
+    clase: EVIDENCIA
+    motivo: aparato de verificacion de F4c; manifiestos, corrigendum e instrumental
+  - patron: '^docs/evolucion/(ADS-NEXT-OWNER-BRIEF|PROMPT-ARRANQUE-ADS-NEXT)\.md$'
+    clase: AUTORIDAD_SUPERIOR
+    motivo: directiva del Owner y su orden de ejecucion, escritas en su voz
+  - patron: '^docs/evolucion/ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION\.md$'
+    clase: NO_APLICABLE_A_IMPLEMENTACION
+    motivo: material temporal de evolucion; no es normativa vigente
+  - patron: '^docs/evolucion/'
+    clase: DERIVADA
+    motivo: indice y checkpoint de la iniciativa; proyecciones del estado
+  - patron: '^kernel/operativo/pruebas/evidencia/'
+    clase: EVIDENCIA
+    motivo: salidas publicadas por el runner canonico; no se editan a mano
+  - patron: '^kernel/operativo/pruebas/.*-generado\.md$'
+    clase: DERIVADA
+    motivo: artefactos regenerados desde el corpus
+  - patron: '^kernel/KERNEL\.md$'
+    clase: AUTORIDAD_SUPERIOR
+    motivo: constitucion en prosa; solo su propia lista de derogaciones la deroga
+  - patron: '^kernel/operativo/(esquemas|contratos)/'
+    clase: CONTRATO_O_ESQUEMA_TECNICO
+    motivo: la forma de cada tipo canonico y los contratos transversales
+  - patron: '^kernel/operativo/validadores/'
+    clase: CONTRATO_O_ESQUEMA_TECNICO
+    motivo: los validadores ejecutables y su manifiesto canonico
+  - patron: '^kernel/(operativo|templates)/'
+    clase: CANONICA_OPERATIVA
+    motivo: contenido operativo instalable
+  - patron: '^kernel/'
+    clase: CONTRATO_O_ESQUEMA_TECNICO
+    motivo: plantillas, version y changelog del release
+  - patron: '^packs/legacy-'
+    clase: HISTORICA
+    motivo: packs retirados, conservados por trazabilidad; no se instalan
+  - patron: '^packs/'
+    clase: CANONICA_OPERATIVA
+    motivo: especializacion por clase de proyecto
+  - patron: '^tooling/'
+    clase: CONTRATO_O_ESQUEMA_TECNICO
+    motivo: lo ejecutable hoy fuera del kernel
+  - patron: '^(README|START_HERE)\.md$'
+    clase: DERIVADA
+    motivo: puertas de entrada del repositorio; proyectan lo que otras sedes fijan
+  - patron: '^\.gitignore$'
+    clase: NO_APLICABLE_A_IMPLEMENTACION
+    motivo: configuracion de herramienta
+
+# ---------------------------------------------------------------------------
+# MATERIAS. Identificador estable, una sola sede, autoridad superior cuando exista.
+#
+#   id                  estable; no se renumera
+#   materia             que gobierna
+#   sede                UNA sola ruta
+#   seccion             cuando la sede es un fichero grande y la materia vive en una parte
+#   estado              vigente | historico | evidencia | derivada
+#   autoridad_superior  la fuente que esta sede no puede contradecir, cuando exista
+#   acto_declarativo    el acto que declaro el estado, cuando la materia es un ESTADO
+#   fuentes_tecnicas    esquemas, contratos o codigo concreto que la implementan
+# ---------------------------------------------------------------------------
+materias:
+
+  # --- corpus canonico -----------------------------------------------------
+  - id: MAT-001
+    materia: que es ADS, orden de lectura y que NO hay que leer para implementar
+    sede: docs/canonico/00-EMPEZAR-AQUI.md
+    estado: vigente
+    fuentes_tecnicas: [kernel/operativo/00-INDICE.md]
+
+  - id: MAT-002
+    materia: modelo del sistema, fronteras y relacion kernel/runtime/proyecto/repositorio
+    sede: docs/canonico/01-MODELO-DEL-SISTEMA.md
+    estado: vigente
+    autoridad_superior: docs/rediseno/a-CAPACIDADES-APROBADA.md
+    fuentes_tecnicas:
+      - kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md
+      - kernel/operativo/contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md
+
+  - id: MAT-003
+    materia: modelo operativo, del encuadre al cierre, y los cuatro macrocircuitos
+    sede: docs/canonico/02-MODELO-OPERATIVO.md
+    estado: vigente
+    autoridad_superior: docs/rediseno/b-RECORRIDO-APROBADA.md
+    fuentes_tecnicas:
+      - kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md
+      - kernel/operativo/recorrido/01-PROCESOS.md
+      - kernel/operativo/circuitos/00-CIRCUITOS.md
+
+  - id: MAT-004
+    materia: jerarquia de autoridad, vigente/historico/evidencia y reglas Git del corpus
+    sede: docs/canonico/03-GOBIERNO-Y-AUTORIDAD.md
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  - id: MAT-005
+    materia: ESTADO VIGENTE de F4c, F5, F6 y PesquerApp
+    sede: docs/canonico/03-GOBIERNO-Y-AUTORIDAD.md
+    seccion: "6"
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+    acto_declarativo: docs/evolucion/34-RATIFICACION-DE-LA-CERTIFICACION-INCREMENTAL-O22.md
+
+  - id: MAT-006
+    materia: inventario de contratos tecnicos, y que esta construido frente a que esta disenado
+    sede: docs/canonico/04-CONTRATOS-TECNICOS.md
+    estado: vigente
+    fuentes_tecnicas:
+      - kernel/operativo/contratos/00-INDICE.md
+      - kernel/operativo/esquemas/00-LENGUAJE.md
+      - kernel/operativo/validadores/validadores.yaml
+      - kernel/operativo/pruebas/REGISTRO.md
+
+  - id: MAT-007
+    materia: plan de implementacion de F5 y F6, con dependencias y cortes verticales
+    sede: docs/canonico/05-PLAN-DE-IMPLEMENTACION-F5-F6.md
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  - id: MAT-008
+    materia: deuda viva, con propietario, fase y condicion de cierre
+    sede: docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    estado: vigente
+    acto_declarativo: docs/evolucion/34-RATIFICACION-DE-LA-CERTIFICACION-INCREMENTAL-O22.md
+
+  - id: MAT-009
+    materia: registro de sedes canonicas, clasificacion y precedencia
+    sede: docs/canonico/FUENTES-CANONICAS.yml
+    estado: vigente
+    fuentes_tecnicas: [docs/canonico/validar-fuentes-canonicas.py]
+
+  # --- autoridad superior --------------------------------------------------
+  - id: MAT-010
+    materia: resoluciones del Owner desde que existe la sede canonica
+    sede: docs/owner/ADS-OWNER-RESOLUCIONES.md
+    estado: vigente
+
+  - id: MAT-011
+    materia: resoluciones del Owner anteriores a la sede canonica
+    sede: docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
+    seccion: "2"
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  - id: MAT-012
+    materia: arquitectura multirrepositorio aprobada para implementacion
+    sede: docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md
+    estado: vigente
+    fuentes_tecnicas:
+      - kernel/operativo/contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md
+      - kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md
+      - tooling/workspace.py
+
+  - id: MAT-013
+    materia: catalogo de capacidades, autoridad, veto, frenos, paralelismo y checkpoint
+    sede: docs/rediseno/a-CAPACIDADES-APROBADA.md
+    estado: vigente
+    fuentes_tecnicas:
+      - docs/rediseno/a-ENMIENDA-E1-ENC.md
+      - docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md
+
+  - id: MAT-014
+    materia: estados, transiciones, cierre, obligaciones y rutas por tipo
+    sede: docs/rediseno/b-RECORRIDO-APROBADA.md
+    estado: vigente
+    fuentes_tecnicas: [docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md]
+
+  - id: MAT-015
+    materia: directiva maestra del Owner para la evolucion de ADS
+    sede: docs/evolucion/ADS-NEXT-OWNER-BRIEF.md
+    estado: vigente
+
+  - id: MAT-016
+    materia: constitucion en prosa del kernel, y que reglas suyas siguen vigentes
+    sede: kernel/KERNEL.md
+    estado: vigente
+    autoridad_superior: docs/rediseno/a-CAPACIDADES-APROBADA.md
+
+  # --- contratos y esquemas ------------------------------------------------
+  - id: MAT-017
+    materia: los siete conceptos y el contrato comun de rol
+    sede: kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md
+    estado: vigente
+    autoridad_superior: docs/rediseno/a-CAPACIDADES-APROBADA.md
+    fuentes_tecnicas: [kernel/operativo/esquemas/rol.yaml]
+
+  - id: MAT-018
+    materia: perfiles neutrales de proveedor, asignacion, combinacion y relevo
+    sede: kernel/operativo/contratos/C2-AGENTES-Y-MODELOS.md
+    estado: vigente
+    fuentes_tecnicas: [kernel/operativo/esquemas/perfil-agente.yaml]
+
+  - id: MAT-019
+    materia: que hace ejecutable a un metodo
+    sede: kernel/operativo/contratos/C3-METODO-EJECUTABLE.md
+    estado: vigente
+    fuentes_tecnicas: [kernel/operativo/esquemas/metodo.yaml]
+
+  - id: MAT-020
+    materia: materializacion, ampliacion y retirada de equipos
+    sede: kernel/operativo/contratos/C4-MATERIALIZACION.md
+    estado: vigente
+    fuentes_tecnicas: [kernel/operativo/esquemas/composicion.yaml]
+
+  - id: MAT-021
+    materia: forma de la entrega entre capacidades y de la devolucion
+    sede: kernel/operativo/contratos/C5-HANDOFF.md
+    estado: vigente
+    fuentes_tecnicas:
+      - kernel/operativo/esquemas/handoff.yaml
+      - kernel/operativo/circuitos/handoffs-generales.md
+      - kernel/operativo/circuitos/DIS-handoffs.md
+
+  - id: MAT-022
+    materia: producto, fuentes, componentes y workspace multirrepositorio
+    sede: kernel/operativo/contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md
+    estado: vigente
+    autoridad_superior: docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md
+    fuentes_tecnicas:
+      - kernel/operativo/plantillas/SOURCES.toml
+      - tooling/workspace.py
+
+  - id: MAT-023
+    materia: gobierno Git del producto y convergencia multifuente
+    sede: kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md
+    estado: vigente
+    autoridad_superior: docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md
+    fuentes_tecnicas:
+      - kernel/operativo/esquemas/integration-set.yaml
+      - kernel/operativo/plantillas/INTEGRATION-SET.md
+
+  - id: MAT-024
+    materia: lenguaje canonico, tipos, restricciones de campo e identificadores
+    sede: kernel/operativo/esquemas/00-LENGUAJE.md
+    estado: vigente
+    fuentes_tecnicas: [kernel/operativo/esquemas/esquema.yaml]
+
+  - id: MAT-025
+    materia: los diez procesos y sus obligaciones, en forma canonica
+    sede: kernel/operativo/recorrido/01-PROCESOS.md
+    estado: vigente
+    autoridad_superior: docs/rediseno/b-RECORRIDO-APROBADA.md
+    fuentes_tecnicas: [kernel/operativo/esquemas/proceso.yaml]
+
+  - id: MAT-026
+    materia: obligaciones del proceso y gate de cierre del item
+    sede: kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md
+    estado: vigente
+    autoridad_superior: docs/rediseno/b-RECORRIDO-APROBADA.md
+    fuentes_tecnicas:
+      - kernel/operativo/esquemas/gate.yaml
+      - kernel/operativo/plantillas/CIERRE.md
+
+  - id: MAT-027
+    materia: circuitos concretos entre equipos, y las seis preguntas de cada tramo
+    sede: kernel/operativo/circuitos/00-CIRCUITOS.md
+    estado: vigente
+
+  - id: MAT-028
+    materia: de la expresion del Owner al item, con sus criterios comprobables
+    sede: kernel/operativo/entrada/00-INDICE.md
+    estado: vigente
+    fuentes_tecnicas:
+      - kernel/operativo/esquemas/entrada.yaml
+      - kernel/operativo/esquemas/forma-conversacion.yaml
+      - kernel/operativo/esquemas/encuadre.yaml
+
+  - id: MAT-029
+    materia: sistema de excelencia de diseno, memoria, rubricas y escala de novedad
+    sede: kernel/operativo/diseno/00-SISTEMA-DE-EXCELENCIA.md
+    estado: vigente
+    fuentes_tecnicas:
+      - kernel/operativo/esquemas/rubrica.yaml
+      - kernel/operativo/esquemas/nivel-novedad.yaml
+      - kernel/operativo/esquemas/memoria.yaml
+
+  - id: MAT-030
+    materia: que es un pack y como se componen entre si
+    sede: packs/COMPOSICION.md
+    estado: vigente
+    fuentes_tecnicas:
+      - packs/00-QUE-ES-UN-PACK.md
+      - kernel/operativo/esquemas/pack.yaml
+
+  - id: MAT-031
+    materia: mapa de fuente unica del kernel operativo
+    sede: kernel/operativo/00-INDICE.md
+    estado: vigente
+
+  - id: MAT-032
+    materia: que validadores hay, que se espera de cada uno y como se publica su evidencia
+    sede: kernel/operativo/validadores/validadores.yaml
+    estado: vigente
+    fuentes_tecnicas:
+      - kernel/operativo/validadores/registrar_evidencia.py
+      - kernel/operativo/validadores/comprobar_negativos.py
+
+  - id: MAT-033
+    materia: estado real y honesto de cada prueba de conformidad
+    sede: kernel/operativo/pruebas/REGISTRO.md
+    estado: vigente
+    fuentes_tecnicas: [kernel/operativo/esquemas/escenario.yaml]
+
+  - id: MAT-034
+    materia: integridad del kernel vendorizado y deteccion de divergencia
+    sede: kernel/operativo/validadores/huella.py
+    estado: vigente
+    fuentes_tecnicas: [tooling/kernel-status.sh]
+
+  # --- arquitectura entregada por F4c --------------------------------------
+  - id: MAT-035
+    materia: arquitectura integrada entregada por F4c
+    sede: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  - id: MAT-036
+    materia: presiones normativas que F5 debe resolver
+    sede: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    seccion: "16"
+    estado: vigente
+    autoridad_superior: docs/rediseno/a-CAPACIDADES-APROBADA.md
+
+  - id: MAT-037
+    materia: orden de construccion de F6 y sus dependencias
+    sede: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    seccion: "18"
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  - id: MAT-038
+    materia: limites declarados de F4c y hallazgos externos con propietario y fase
+    sede: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    seccion: "19"
+    estado: vigente
+
+  - id: MAT-039
+    materia: contrato obligatorio de F6, el verificador de admision
+    sede: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    seccion: "20"
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  - id: MAT-040
+    materia: contrato del verificador externo del repositorio de control
+    sede: docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+    seccion: "11.8"
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  # --- proyecciones derivadas ----------------------------------------------
+  - id: MAT-041
+    materia: registro de decisiones y contradicciones del kernel operativo
+    sede: docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
+    seccion: "1"
+    estado: derivada
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  - id: MAT-042
+    materia: indice de la iniciativa y registro de pasadas
+    sede: docs/evolucion/00-INDICE.md
+    estado: derivada
+
+  - id: MAT-043
+    materia: registro reanudable de la iniciativa
+    sede: docs/evolucion/CHECKPOINT-ADS-NEXT.md
+    estado: derivada
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  - id: MAT-044
+    materia: clasificacion vigente de las condiciones de cierre C-L
+    sede: docs/evolucion/CHECKPOINT-ADS-NEXT.md
+    seccion: "CLASIFICACION VIGENTE"
+    estado: vigente
+
+  - id: MAT-045
+    materia: estado y condicion de cierre de M-04
+    sede: docs/evolucion/CHECKPOINT-ADS-NEXT.md
+    seccion: "M-04"
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  - id: MAT-046
+    materia: matriz de cierre de los hallazgos del octavo gate, por fase
+    sede: docs/evolucion/CHECKPOINT-ADS-NEXT.md
+    seccion: "La tabla de los 22"
+    estado: vigente
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  # --- evidencia de proceso, registrada y NO normativa ----------------------
+  - id: MAT-047
+    materia: acto que cierra F4c por composicion y autoriza F5 documentalmente
+    sede: docs/evolucion/34-RATIFICACION-DE-LA-CERTIFICACION-INCREMENTAL-O22.md
+    estado: evidencia
+    autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  - id: MAT-048
+    materia: acto que juzgo la candidata anterior; su texto es la EVIDENCIA que describio y
+      adjudico seis de los hallazgos vivos, cuya sede VIGENTE es
+      docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+    sede: docs/evolucion/32-GATE-VERIFICACION-DOCE-HH2-F4C.md
+    estado: evidencia
+
+  - id: MAT-049
+    materia: bateria interna de consistencia del corpus y su alcance declarado
+    sede: docs/evolucion/verificacion/README.md
+    estado: evidencia
+    fuentes_tecnicas: [docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py]
+
+  - id: MAT-050
+    materia: acotacion de errores de hecho en documentos inmutables
+    sede: docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md
+    estado: evidencia
