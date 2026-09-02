@@ -35,6 +35,9 @@ import tempfile
 
 import yaml
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import entorno  # noqa: E402
+
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 DIR_VALIDADORES = "kernel/operativo/validadores"
 DIR_EVIDENCIA = "kernel/operativo/pruebas/evidencia"
@@ -141,6 +144,14 @@ def main():
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--sin-generadores", action="store_true")
     args = ap.parse_args()
+
+    # LA GUARDA, ANTES DE CORRER NADA (A14). El defecto que cierra es concreto y ya ocurrió:
+    # bajo un intérprete insuficiente algunos validadores fallan por el ENTORNO, este runner
+    # —correctamente— no republica su evidencia, y la cobertura publicada queda describiendo
+    # un corpus anterior mientras el comprobador de evidencia sigue en verde. Publicar a
+    # medias es peor que no publicar: aquí no se empieza.
+    entorno.exigir()
+
     base = os.path.abspath(args.raiz or RAIZ)
 
     problemas = []

@@ -144,6 +144,26 @@ componentes:
     firma_de_exito: 'OK'
     debe_contener: ['Ran ', 'duración no registrada']
 
+  # El MOTOR de estado durable de F6. No comprueba el corpus: administra el ESTADO de un
+  # producto, y por eso ejecuta código en vez de leer documentos. Entra en el manifiesto por
+  # la misma razón que todo lo demás: un validador fuera del manifiesto queda fuera de la
+  # evidencia sin que nada lo diga.
+  - id: estado-durable
+    script: test_estado_durable.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: estado-durable-salida.txt
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'duración no registrada', 'T173', 'T175', 'T176', 'T178']
+
+  - id: estado-e2e
+    script: escenario_extremo_a_extremo.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: estado-e2e-salida.txt
+    firma_de_exito: '15 de 15 pasos CUMPLIDOS'
+    debe_contener: ['T180', 'paso 07', 'paso 13', 'paso 15']
+
   - id: registro
     script: registro_pruebas.py
     tipo: generador
@@ -154,6 +174,10 @@ componentes:
     args: ['--generar']
     tipo: generador
     genera: ../pruebas/RECUENTOS-generado.md
+
+  - id: entorno
+    script: entorno.py
+    tipo: biblioteca
 
   - id: huella
     script: huella.py

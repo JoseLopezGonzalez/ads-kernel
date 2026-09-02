@@ -67,6 +67,7 @@ cuando aparece se resuelve **borrando la copia**, nunca sincronizando las dos.
 | entregas entre capacidades | [`circuitos/00-CIRCUITOS.md`](circuitos/00-CIRCUITOS.md) |
 | pruebas de conformidad nuevas | `pruebas/` y los bloques `ads:escenario` de cada documento |
 | estado real de cada prueba | [`pruebas/REGISTRO.md`](pruebas/REGISTRO.md) |
+| disposición física del estado durable: rutas, formato, protocolo transaccional y migración | [`runtime/CONTRATO-ESTADO-DURABLE.md`](runtime/CONTRATO-ESTADO-DURABLE.md) |
 
 ## Qué hay aquí
 
@@ -82,6 +83,7 @@ cuando aparece se resuelve **borrando la copia**, nunca sincronizando las dos.
 | `plantillas/` | artefactos rellenables | tabla de abajo |
 | `validadores/` | los validadores ejecutables, incluidas las pruebas negativas; el manifiesto canónico dice cuáles y qué se espera de cada uno | [`validadores.yaml`](validadores/validadores.yaml) · [`huella.py`](validadores/huella.py) · [`exclusiones.yaml`](validadores/exclusiones.yaml) |
 | `pruebas/` | escenarios y su registro honesto | [`REGISTRO.md`](pruebas/REGISTRO.md) |
+| `runtime/` | lo que EJECUTA la norma, no lo que la describe: el motor de estado durable de `F6`, su contrato derivado y su batería | [`00-RUNTIME.md`](runtime/00-RUNTIME.md) |
 
 ### Las quince capacidades
 

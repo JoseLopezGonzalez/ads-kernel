@@ -48,6 +48,17 @@ try:
 except ModuleNotFoundError:  # pragma: no cover - Python < 3.11
     tomllib = None
 
+# LA GUARDA DE ENTORNO SE DECLARA UNA VEZ Y SE COMPRUEBA ANTES DE CORRER (A14). Vive en el
+# kernel porque el kernel es la capa de abajo: que el tooling dependa del kernel es el
+# sentido correcto de la flecha, y repetir aquí el número de versión sería el hallazgo A-12
+# otra vez. Si el módulo no estuviera —una copia mutilada—, se dice y NO se calla.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                "..", "kernel", "operativo", "validadores"))
+try:
+    import entorno as _entorno
+except ModuleNotFoundError:  # pragma: no cover - copia sin el kernel
+    _entorno = None
+
 MANIFIESTO = "SOURCES.toml"
 SCHEMAS_SOPORTADOS = {1}
 LAYOUTS_SOPORTADOS = {"siblings"}
@@ -747,6 +758,16 @@ def main():
     ap.add_argument("--json", action="store_true", help="salida legible por máquina")
     ap.add_argument("--raiz", help="directorio desde el que localizar el control repo")
     args = ap.parse_args()
+
+    # ANTES DE CORRER. No al fallar el primer `tomllib.load` a mitad del análisis: entonces
+    # el defecto ya se ha disfrazado de defecto del manifiesto. Termina con código 78, que
+    # no es ni el 1 de «hay errores» ni el 2 de «no se pudo empezar».
+    if _entorno is not None:
+        _entorno.exigir()
+    elif tomllib is None:
+        print("ERROR  se requiere Python 3.11 o superior para leer TOML, y falta además "
+              "la guarda de entorno del kernel", file=sys.stderr)
+        return 2
 
     ads_root, workspace_root = raices(args.raiz)
     if ads_root is None:

@@ -80,6 +80,8 @@ class Lint:
         self.ambitos_texto = ambitos_texto if ambitos_texto is not None else ["."]
         self.exentos_vocabulario = []
         self.no_analizados = []
+        self.no_embarcados = []
+        self.enlaces_aguas_arriba = 0
         self.hallazgos = []
         self.esquemas = {}
         self.bloques = []          # (tipo, datos, fichero, linea)
@@ -107,6 +109,11 @@ class Lint:
                                     if isinstance(i, dict) and i.get("ruta")]
         self.no_analizados = [i["ruta"] for i in (datos.get("no_analizados") or [])
                               if isinstance(i, dict) and i.get("ruta")]
+        # La frontera del proyecto instalado. Ver el bloque de exclusiones.yaml: sólo se
+        # activa donde la ruta declarada NO existe, que es el proyecto instalado y nunca
+        # este repositorio.
+        self.no_embarcados = [i["ruta"] for i in (datos.get("enlaces_no_embarcados") or [])
+                              if isinstance(i, dict) and i.get("ruta") and i.get("motivo")]
 
     def _excluido(self, ruta, lista):
         rel = os.path.relpath(ruta, self.raiz).replace(os.sep, "/")
@@ -360,8 +367,16 @@ class Lint:
                     limpio = destino.split("#")[0]
                     if not limpio:
                         continue
-                    if not os.path.exists(os.path.normpath(os.path.join(base, limpio))):
-                        self.err(ruta, linea_n, "enlace-roto", f"no existe: {destino}")
+                    absoluto = os.path.normpath(os.path.join(base, limpio))
+                    if os.path.exists(absoluto):
+                        continue
+                    rel_destino = os.path.relpath(absoluto, self.raiz).replace(os.sep, "/")
+                    if rel_destino in self.no_embarcados:
+                        # Material que se queda AGUAS ARRIBA por decisión declarada, con su
+                        # motivo escrito. No es un descuido, y se cuenta para que se vea.
+                        self.enlaces_aguas_arriba += 1
+                        continue
+                    self.err(ruta, linea_n, "enlace-roto", f"no existe: {destino}")
 
     # ---------------------------------------------------------------- reglas
     def validar_reglas(self):
@@ -422,7 +437,8 @@ def main():
         for h in hallazgos:
             print(h)
         print(f"\nbloques canónicos: {len(lint.bloques)} · identificadores: {len(lint.ids)}"
-              f" · errores: {len(errores)} · avisos: {len(avisos)}")
+              f" · errores: {len(errores)} · avisos: {len(avisos)}"
+              f" · enlaces a material no embarcado: {lint.enlaces_aguas_arriba}")
     return 1 if errores else 0
 
 

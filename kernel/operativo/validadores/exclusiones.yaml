@@ -45,6 +45,41 @@ puntos_de_entrada:
       Artefacto generado por registro_pruebas.py. REGISTRO.md lo enlaza, pero se declara
       aquí para que su ausencia de enlaces entrantes nunca se lea como un descuido.
 
+enlaces_no_embarcados:
+  # LA FRONTERA DEL PROYECTO INSTALADO, declarada en vez de callada.
+  #
+  # `new-project.sh` embarca la ESPECIFICACIÓN NORMATIVA y NO la historia del kernel. Al
+  # aprobarse `E5`, una enmienda que SÍ enlaza sus sedes en vez de sólo nombrarlas, tres de
+  # esos enlaces empezaron a apuntar a material que a propósito no viaja: dentro del
+  # proyecto instalado quedaban rotos, y `ads_lint` —correctamente— lo veía.
+  #
+  # Las tres salidas posibles eran: tocar material APROBADO, que es de `F5` y `O24` §5
+  # prohíbe reabrir; embarcar la historia entera del kernel, que el arranque excluye a
+  # propósito; o DECLARAR la frontera. Se declara.
+  #
+  # QUÉ SIGNIFICA, Y QUÉ NO. Un enlace a una de estas rutas NO se cuenta como roto CUANDO
+  # LA RUTA NO EXISTE EN EL ÁRBOL ANALIZADO. En el repositorio del kernel existen todas, el
+  # enlace resuelve y no se tolera nada: la excepción sólo puede activarse donde el fichero
+  # de verdad no está. Y por eso no sirve para silenciar un enlace roto de aquí: una entrada
+  # cuya ruta no exista en este repositorio es un FALLO, y `T147` lo comprueba.
+  - ruta: docs/rediseno/README.md
+    motivo: >
+      Índice del rediseño. Enlaza la HISTORIA entera —el mapa de la línea anterior, las
+      auditorías, la revisión adversarial y las versiones rechazadas y superadas—, que el
+      arranque excluye a propósito. Embarcarlo arrastraría esa historia a cada proyecto
+      instalado, que es exactamente lo que `new-project.sh` declara no hacer.
+  - ruta: docs/evolucion/03-INVARIANTES.md
+    motivo: >
+      Documento de la iniciativa: evidencia de proceso, no norma. `docs/evolucion/` no viaja
+      a un proyecto instalado, y su alineación con el corpus vigente es trabajo de `F6`
+      declarado en la propia `E5`.
+  - ruta: docs/evolucion/00-INDICE.md
+    motivo: >
+      Índice DERIVADO de la iniciativa, y puerta de la historia entera. Mismo motivo: no es
+      norma, no viaja, y su alineación está declarada como pendiente en `E5`.
+  # Y las dos del ÁREA DE RUNTIME de `F6`, que son la misma clase descubierta por el mismo
+  # camino: material del kernel que SÍ viaja y que enlaza `docs/` que NO viaja. Aparecieron
+  # en cuanto el motor entró en el árbol y la prueba de arranque volvió a mirarlo.
 generados:
   # Se regeneran desde una fuente canónica. Editarlos a mano es el defecto.
   - ruta: kernel/operativo/pruebas/REGISTRO-generado.md

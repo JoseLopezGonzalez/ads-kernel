@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 851ab3e5332906d3 -->
+<!-- source_revision: 9816405584bfdce3 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -13,9 +13,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | CONTRATO DEFINIDO | 56 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 39 |
+| PRUEBA SUPERADA | 49 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **95** |
+| **total** | **105** |
 
 ## Detalle
 
@@ -116,3 +116,13 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T169](T159-T170-multirepo.md) | Un item que atraviesa dos fuentes no cierra con una sin integrar | E2.6 · C7 integración parcial · gate:convergencia-de-fuentes · §30 | requiere-runtime | **CONTRATO DEFINIDO** | — |
 | [T170](T159-T170-multirepo.md) | Un agente nuevo reanuda un trabajo multi-fuente sin abrir ningún repositorio para adivinar | E2.3 · C7 recuperación · §34 · §35 · CA-12 | guion-manual | **CONTRATO DEFINIDO** | — |
 | [T171](T159-T170-multirepo.md) | El proyecto recién creado declara dónde se lee cada criterio de descubrimiento del 100 | §100 · CA-1 · CA-9 · CA-10 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
+| [T172](T172-T181-estado-durable.md) | Un intérprete insuficiente detiene la batería antes de correr, y no como defecto del producto | A14 · F6-I · corte V1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T173](T172-T181-estado-durable.md) | El estado canónico se inicializa y se lee sin reproyectar el diario | g.1 · g.2 I-g1 · g.16 G-A1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T174](T172-T181-estado-durable.md) | Una transición multiarchivo se ve entera o no se ve | g.3 · g.4 · g.12 · g.16 G-A2 · g.16 G-A3 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T175](T172-T181-estado-durable.md) | Una interrupción en cualquier frontera termina en COMPLETAR o en MARCAR, y en nada más | g.8 · g.3 · g.16 G-A2 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T176](T172-T181-estado-durable.md) | Dos escritores concurrentes se serializan y no hay doble éxito para la misma revisión | g.6 · g.12 I-g4 · g.16 G-A5 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T177](T172-T181-estado-durable.md) | La corrupción, el truncamiento y la evidencia manipulada fallan CERRADO | g.5 · g.13 · g.15 · g.16 G-A4 · g.16 G-A9 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T178](T172-T181-estado-durable.md) | La reconciliación pendiente se deduce del registro auxiliar y sólo se retira por transición explícita | g.9 · g.2 I-g7 · g.16 G-A5 · g.16 G-A6 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T179](T172-T181-estado-durable.md) | Una versión de esquema desconocida falla CERRADO, y subir de versión exige migración declarada | g.10 · g.11 · g.16 G-A7 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T180](T172-T181-estado-durable.md) | Los quince pasos del escenario extremo a extremo, sobre un control repo real | g.3 · g.4 · g.5 · g.6 · g.8 · g.9 · g.13 · g.16 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-e2e-salida.txt |
+| [T181](T172-T181-estado-durable.md) | La especificación normativa vigente viaja al proyecto instalado, derivada y no escrita a mano | FD-3 · C6 · E2.0 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |

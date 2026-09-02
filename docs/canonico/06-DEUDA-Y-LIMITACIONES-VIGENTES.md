@@ -109,32 +109,41 @@ CIERRA         ningún gate de `F4c` · escribir el contrato de una prueba
 [`CHECKPOINT-ADS-NEXT.md`](../evolucion/CHECKPOINT-ADS-NEXT.md), y el criterio de alcance
 en la resolución `O18` de la [sede canónica del Owner](../owner/ADS-OWNER-RESOLUCIONES.md).
 
-## 4 · `A14` — la guarda de entorno que no existe
+## 4 · `A14` — la guarda de entorno · **CERRADA POR `F6`**
 
 ```text
-QUÉ ES         la versión mínima del intérprete está declarada SÓLO en una cadena de
-               documentación del tooling, y no se comprueba antes de correr
+QUÉ ERA        la versión mínima del intérprete estaba declarada SÓLO en una cadena de
+               documentación del tooling, y no se comprobaba antes de correr
 
-CONSECUENCIA   bajo un intérprete antiguo, varias comprobaciones salen FALLIDAS por el
-               ENTORNO y parecen defectos del producto; y el runner —correctamente— NO
-               republica la evidencia de las que fallan, de modo que la cobertura publicada
-               puede quedar describiendo un corpus anterior mientras el comprobador de
-               evidencia sigue en verde
+CONSECUENCIA   bajo un intérprete antiguo, varias comprobaciones salían FALLIDAS por el
+               ENTORNO y parecían defectos del producto; y el runner —correctamente— NO
+               republicaba la evidencia de las que fallaban, de modo que la cobertura
+               publicada podía quedar describiendo un corpus anterior mientras el
+               comprobador de evidencia seguía en verde
 
-CLASIFICACIÓN  **LIMITACIÓN ACEPTADA con procedencia aprobada. NO es defecto de `F4`**, y
-               así lo declaró el gate que lo encontró
+CLASIFICACIÓN  **LIMITACIÓN ACEPTADA con procedencia aprobada. NO era defecto de `F4`**, y
+               así lo declaró el gate que la encontró
 
 PROPIETARIO    `PLT`          FASE  **`F6`**
 
-QUÉ LO CIERRA  la guarda declarada y comprobada ANTES de correr, con su código de salida y
+QUÉ LA CERRABA la guarda declarada y comprobada ANTES de correr, con su código de salida y
                su mensaje, en los validadores que dependen de la biblioteca afectada
 
-ESTADO         **NO CERRADO.** Comprobable: no existe ninguna declaración de requisito de
-               versión en el tooling
+ESTADO         **CERRADA.** La guarda existe, declara la versión mínima UNA sola vez,
+               termina con un código PROPIO —`78`, distinto del `1` de «una comprobación no
+               pasó» y del `2` de «uso incorrecto»— y la comprueban antes de correr el
+               runner canónico y el materializador de workspace. Y no se puede relajar por
+               entorno: su variable sólo puede SUBIR la exigencia, nunca bajarla
 ```
 
-**Sede:** [`11-ARQ` §19](../evolucion/11-ARQUITECTURA-INTEGRADA.md), bloque de los dos que
-«no son defectos de `F4` y se dicen para que nadie los busque aquí».
+**Sede de la guarda:**
+[`validadores/entorno.py`](../../kernel/operativo/validadores/entorno.py).
+**Sede del hallazgo:** [`11-ARQ` §19](../evolucion/11-ARQUITECTURA-INTEGRADA.md), bloque de
+los dos que «no son defectos de `F4` y se dicen para que nadie los busque aquí».
+
+> **Qué NO cierra este cierre.** Cerrar `A14` no dice nada sobre el resto de `F6`, y en
+> particular **no cierra `M-04`**: la clase entera de hallazgos del verificador sigue viva y
+> su condición es otra.
 
 ## 5 · Las presiones normativas — deuda VIVA de `F5`
 
@@ -268,27 +277,48 @@ resolución autoriza, y se dice sin adornarlo.
 [`34-RATIFICACION-…`](../evolucion/34-RATIFICACION-DE-LA-CERTIFICACION-INCREMENTAL-O22.md)
 §7.
 
-## 10 bis · Deuda ABIERTA POR `F5` al aprobar `O23` — registrada, no cerrada
+## 10 bis · Deuda ABIERTA POR `O23` y por el primer corte de `F6` — registrada, no cerrada
 
-> **Qué es.** Materia que las decisiones de `F5` hacen NECESARIA y que **ninguna resolución
-> vigente cubre**. Se registra en vez de resolverse por cuenta ajena, y **ninguna bloquea el
-> cierre de `F5`**: las tres son de `F6` o del Owner.
+> **Qué es.** Materia que las decisiones de `F5` y la construcción de `F6` hacen NECESARIA y
+> que **ninguna resolución vigente cubre**. Se registra en vez de resolverse por cuenta
+> ajena, y **ninguna bloqueó el cierre de `F5`**: todas son de `F6` o del Owner.
 
 | id | qué falta | sede | propietario | fase | condición de cierre |
 |---|---|---|---|---|---|
 | **`FD-1`** | el contrato del verificador externo exige **commits firmados o equivalente verificable por un tercero**, lo que implica que **exista y se custodie una clave de firma**. `O23` §3 dice a QUÉ contrato pertenece la materia de claves; **no dice que el Owner posea esa clave, ni quién la custodia** | [`g.15`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) y `11-ARQ` §11.8 | el **Owner** decide · `SEG` gobierna credenciales | **`F6`** | que el contrato derivado de la raíz externa declare titular y custodio, y que el Owner los acepte |
-| **`FD-2`** | `O23` se inscribió **sin los campos `procedencia` y `relaciones de revisión`** que la propia sede declara obligatorios para cada entrada. Las resoluciones anteriores sí los llevan | [`sede canónica del Owner`](../owner/ADS-OWNER-RESOLUCIONES.md), entrada `O23` | el **Owner**: la sede es APPEND-ONLY y **sólo él escribe en ella** | no consta | **NO se corrige aquí, y no puede corregirse aquí**: editar la entrada rompería el carácter append-only que la hace comprobable. Una resolución posterior puede completarla sin borrarla |
-| **`FD-3`** | la ESPECIFICACIÓN NORMATIVA que viaja con el kernel a un proyecto instalado **no incluye todavía** la sección `(g)` ni las enmiendas `E3`–`E6`. La lista de lo que viaja vive en el tooling, que es DERIVADO y entra en la huella | `tooling/new-project.sh`, y la conformidad la comprueba la prueba de arranque | `PLT` implementa · `SIS` es propietario | **`F6`** | que la lista de copia incluya `(g)` y las enmiendas vigentes, **derivándola en vez de escribirla**, y que la prueba de arranque siga en verde |
+| **`FD-2`** | `O23` **y `O24`** se inscribieron **sin los campos `procedencia` y `relaciones de revisión`** que la propia sede declara obligatorios para cada entrada. Las resoluciones anteriores sí los llevan. **No se añadieron al transcribir**: el texto del Owner se inscribe LITERAL, y completarlo sería reescribirlo | [`sede canónica del Owner`](../owner/ADS-OWNER-RESOLUCIONES.md), entradas `O23` y `O24` | el **Owner**: la sede es APPEND-ONLY y **sólo él escribe en ella** | no consta | **NO se corrige aquí, y no puede corregirse aquí**: editar la entrada rompería el carácter append-only que la hace comprobable. Una resolución posterior puede completarla sin borrarla |
+| **`FD-3`** · **CERRADA** | la ESPECIFICACIÓN NORMATIVA que viaja con el kernel a un proyecto instalado **no incluía** la sección `(g)` ni las enmiendas `E3`–`E6`. **Las dos mitades de su condición están cumplidas y ejecutadas:** la lista ya no se escribe, se DERIVA del árbol —las secciones `*-APROBADA.md` y todas las `a-ENMIENDA-E<n>-*.md`, excluyendo lo RECHAZADO y lo SUPERADO—, con fallo ruidoso si la derivación sale vacía; y la prueba de arranque queda en verde, `T148` y `T171` | `tooling/new-project.sh`, y la conformidad la comprueba la prueba de arranque en `evidencia/arranque-salida.txt` | `PLT` implementa · `SIS` es propietario | **`F6`** | **cumplida.** Una enmienda `E7` viajaría por existir, sin tocar el script |
 
-**Ninguna de las TRES está superada, y ninguna es bloqueante.**
+| **`FD-4`** | la tabla de `g.17` declara **NO CONSTRUIDO** el contrato derivado del estado durable, y `F6` **ya lo construyó**. La columna de estado de una sección normativa envejece en cuanto la construcción avanza | [`g.17`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) | el **Owner**: `(g)` es material APROBADO y sólo se cambia por enmienda | no consta | **NO se corrige aquí, y no puede corregirse aquí**: editar `(g)` sería reabrir `F5`, y `O24` §5 lo prohíbe expresamente. La sede del estado de construcción es [`04-CONTRATOS-TECNICOS.md`](04-CONTRATOS-TECNICOS.md) §1, que sí se actualiza. Una enmienda posterior puede alinear la columna sin reescribir la norma |
 
-> **Por qué `FD-3` no se corrigió en `F5`, y se dice en vez de callarlo.** Corregirla exige
+**Ninguna de las CUATRO está superada, y ninguna es bloqueante.**
+
+> **`FD-1` es la única decisión del Owner que queda viva tras el primer corte de `F6`**, y se
+> **AGRUPA para la entrega siguiente sin detener nada**: el estado durable no la necesita, y
+> la interfaz de la raíz externa se construye con proveedores intercambiables y **fallo
+> cerrado cuando no hay proveedor válido**. Una clave efímera de prueba **no es** una
+> solución de custodia productiva, y no se presenta como tal.
+
+> **Por qué `FD-3` no se corrigió en `F5`, y se dice en vez de callarlo.** Corregirla exigía
 > tocar `tooling/`, que está en la huella del kernel, y el criterio de aceptación de `F5`
 > exige que **la huella no cambie salvo donde una enmienda aprobada lo ordene**. Ninguna
-> enmienda de `F5` lo ordena: alinear el derivado es trabajo de `F6`, y el orden —**primero
-> la fuente, después el derivado**— está escrito dos veces en la sede de las presiones.
-> **Mientras tanto, `(a)` y `(b)` NOMBRAN esas sedes sin enlazarlas**, para que un proyecto
-> instalado no quede con enlaces rotos.
+> enmienda de `F5` lo ordenaba: alinear el derivado era trabajo de `F6`, y el orden —**primero
+> la fuente, después el derivado**— está escrito dos veces en la sede de las presiones. `F6`
+> lo ha hecho, y la huella ha cambiado en consecuencia.
+>
+> **Y lo que apareció al hacerlo, dicho en vez de callado.** `(a)` y `(b)` NOMBRAN esas sedes
+> sin enlazarlas, precisamente para no dejar enlaces rotos en un proyecto instalado. **`E5`
+> sí las enlaza**, y al empezar a viajar dejó tres enlaces rotos dentro del proyecto
+> instalado: `docs/rediseno/README.md`, `docs/evolucion/03-INVARIANTES.md` y
+> `docs/evolucion/00-INDICE.md`, que son historia del kernel y no viajan. Las tres salidas
+> posibles eran tocar material APROBADO —que es de `F5`, y `O24` §5 prohíbe reabrirla—,
+> embarcar la historia entera del kernel en cada proyecto, o **DECLARAR la frontera**. Se
+> declaró, en
+> [`exclusiones.yaml`](../../kernel/operativo/validadores/exclusiones.yaml), con su motivo
+> escrito y con dos guardas: **sólo se activa donde la ruta no existe** —en este repositorio
+> existen las tres, el enlace resuelve y no se tolera nada—, y **una entrada cuya ruta no
+> exista aquí es un FALLO**, comprobado por `T147` y por dos controles negativos, de modo que
+> la lista no sirve para silenciar un enlace roto de verdad.
 
 ## 11 · Observaciones de esta consolidación — **NO son hallazgos adjudicados**
 

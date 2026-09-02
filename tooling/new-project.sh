@@ -96,11 +96,42 @@ mkdir -p "$ADS"/{kernel,packs,docs/agentic,docs/rediseno,docs/owner,tooling}
 
 # La ESPECIFICACIÓN NORMATIVA viaja con el kernel: el corpus operativo la enlaza, y sin
 # ella un proyecto instalado tiene enlaces rotos y no es conforme.
-# Se envía la ESPECIFICACIÓN, no la historia: (a), (b), sus enmiendas y el registro de
-# decisiones, que son lo que el corpus operativo enlaza. Las auditorías y sus correcciones
-# son historia del repositorio del kernel y viven allí.
-for n in a-CAPACIDADES-APROBADA.md b-RECORRIDO-APROBADA.md a-ENMIENDA-E1-ENC.md \
-         a-ENMIENDA-E2-MULTIREPO.md DECISIONES-Y-CONTRADICCIONES.md; do
+# Se envía la ESPECIFICACIÓN, no la historia: las secciones APROBADAS, todas sus enmiendas
+# y el registro de decisiones, que son lo que el corpus operativo enlaza. Las auditorías y
+# sus correcciones son historia del repositorio del kernel y viven allí.
+#
+# POR QUÉ SE DERIVA Y NO SE ESCRIBE. Esta lista estuvo escrita a mano, y por eso caducó:
+# cuando `F5` aprobó la sección `(g)` y las enmiendas `E3`–`E6`, nadie se acordó de tocar
+# este script, y el proyecto instalado se quedó sin ellas (deuda `FD-3`). Una lista escrita
+# a mano al lado de un directorio que crece sólo puede envejecer mal. Se deriva del árbol,
+# de forma que una enmienda nueva viaje por existir y no por acordarse.
+#
+# QUÉ CLASE SE COPIA. Exactamente la que `docs/canonico/FUENTES-CANONICAS.yml` clasifica
+# como AUTORIDAD_SUPERIOR dentro de `docs/rediseno/` —las secciones `*-APROBADA.md` y todas
+# las `a-ENMIENDA-E<n>-*.md`—, más `DECISIONES-Y-CONTRADICCIONES.md`, que es el registro de
+# decisiones que el corpus operativo enlaza. Lo RECHAZADO y lo SUPERADO se EXCLUYE de forma
+# explícita: es historia del kernel, clasificada como HISTORICA, y no viaja.
+ESPEC=()
+while IFS= read -r n; do
+  [ -n "$n" ] && ESPEC+=("$n")
+done < <(
+  find "$SRC/docs/rediseno" -maxdepth 1 -type f \
+       \( -name '*-APROBADA.md' -o -name 'a-ENMIENDA-E*.md' \) \
+       ! -name '*-RECHAZADA.md' ! -name '*-SUPERADA.md' -print \
+    | sed "s|^$SRC/docs/rediseno/||" \
+    | sort
+)
+# Si la derivación no encuentra nada, el proyecto instalado quedaría SIN especificación
+# normativa y con enlaces rotos, y `new-project.sh` habría terminado con éxito. Falla
+# ruidosamente: una derivación vacía es un defecto, no un caso válido.
+if [ "${#ESPEC[@]}" -eq 0 ]; then
+  echo "ERROR: la derivación de la especificación normativa no encontró ninguna sección" >&2
+  echo "       aprobada ni enmienda en $SRC/docs/rediseno." >&2
+  echo "       Un proyecto instalado sin ellas tendría enlaces rotos y no sería conforme." >&2
+  exit 1
+fi
+ESPEC+=("DECISIONES-Y-CONTRADICCIONES.md")
+for n in "${ESPEC[@]}"; do
   cp "$SRC/docs/rediseno/$n" "$ADS/docs/rediseno/"
 done
 # La SEDE CANÓNICA DE RESOLUCIONES DEL OWNER viaja por la misma razón, y desde `O19` es

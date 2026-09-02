@@ -151,6 +151,13 @@ zonas:
     motivo: >
       area de trabajo de F5: la matriz de obligaciones, el paquete de decisiones del Owner
       y la trazabilidad, todos DERIVADOS de sus sedes superiores; no crean autoridad
+  - patron: '^docs/f6/'
+    clase: DERIVADA
+    motivo: >
+      area de trabajo de F6: el estado de implementacion contrato a contrato, las decisiones
+      tecnicas tomadas y la evidencia. Todo DERIVADO de sus sedes superiores —la seccion (g)
+      para la norma, 04-CONTRATOS-TECNICOS.md para lo construido, 03-GOBIERNO-Y-AUTORIDAD.md
+      para el estado de fase—; no crea autoridad y no certifica nada
   - patron: '^docs/evolucion/[0-9][0-9]-.*\.md$'
     clase: EVIDENCIA
     motivo: documentos numerados de la iniciativa; los de gate son INMUTABLES
@@ -181,6 +188,12 @@ zonas:
   - patron: '^kernel/operativo/validadores/'
     clase: CONTRATO_O_ESQUEMA_TECNICO
     motivo: los validadores ejecutables y su manifiesto canonico
+  - patron: '^kernel/operativo/runtime/'
+    clase: CONTRATO_O_ESQUEMA_TECNICO
+    motivo: >
+      el RUNTIME de F6 y su contrato derivado: la instanciacion ejecutable de la seccion (g).
+      Va antes que la zona general de kernel/operativo/ porque no es contenido operativo
+      instalable en prosa, es codigo que ejecuta la norma, como los validadores
   - patron: '^kernel/(operativo|templates)/'
     clase: CANONICA_OPERATIVA
     motivo: contenido operativo instalable
@@ -545,6 +558,40 @@ materias:
     seccion: "La tabla de los 22"
     estado: vigente
     autoridad_superior: docs/owner/ADS-OWNER-RESOLUCIONES.md
+
+  # --- construccion de F6, DERIVADA de la norma que instancia ---------------
+  - id: MAT-064
+    materia: >
+      contrato DERIVADO del estado durable: rutas, nombres de fichero, serializacion,
+      algoritmos, bloqueos, protocolo transaccional y migracion. Es el contrato que g.17
+      nombra y que F6 construye
+    sede: kernel/operativo/runtime/CONTRATO-ESTADO-DURABLE.md
+    estado: vigente
+    autoridad_superior: docs/rediseno/g-ESTADO-DURABLE-APROBADA.md
+    fuentes_tecnicas:
+      - kernel/operativo/runtime/estado/motor.py
+      - kernel/operativo/runtime/estado/transaccion.py
+      - kernel/operativo/runtime/estado/diario.py
+      - kernel/operativo/runtime/estado/reconciliacion.py
+      - kernel/operativo/runtime/ads_estado.py
+
+  - id: MAT-065
+    materia: >
+      estado de implementacion de F6 contrato a contrato, con su clasificacion, sus
+      decisiones tecnicas y el corte siguiente
+    sede: docs/f6/00-ESTADO-DE-IMPLEMENTACION-F6.md
+    estado: derivada
+    autoridad_superior: docs/canonico/04-CONTRATOS-TECNICOS.md
+
+  - id: MAT-066
+    materia: >
+      guarda de version minima del interprete, comprobada ANTES de correr. Cierra A14 y es
+      el entregable F6-I
+    sede: kernel/operativo/validadores/entorno.py
+    estado: vigente
+    fuentes_tecnicas:
+      - kernel/operativo/validadores/registrar_evidencia.py
+      - tooling/workspace.py
 
   # --- norma emitida por F5, AUTORIDAD SUPERIOR -----------------------------
   - id: MAT-055

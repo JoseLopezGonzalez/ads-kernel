@@ -2,6 +2,56 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.10 — el kernel deja de sólo describirse y empieza a ejecutarse
+
+**Primer corte vertical de `F6`, habilitado por la resolución `O24` del Owner**, que cierra
+`F5` e inicia `F6`. Hasta aquí, todo lo ejecutable del kernel comprobaba la CONSISTENCIA DEL
+CORPUS. Esto es otra cosa: administra el ESTADO DE UN PRODUCTO.
+
+**`kernel/operativo/runtime/` — el motor de estado durable.** Instancia la sección `(g)`,
+aprobada por `O23`, a través del contrato derivado que `g.17` nombraba y dejaba sin escribir.
+Los tres componentes durables de `g.1` son tres estructuras materialmente distintas, con tres
+formatos y tres cadenas de integridad distintas, porque `I-g7` prohíbe colapsarlos: el estado
+canónico en JSON legible con `cat`, el diario en JSONL encadenado por huella, y el registro
+operativo auxiliar de reconciliación en su propio JSONL con su propia cadena. Un cuarto plano
+—bloqueos y zona de preparación— queda fuera del versionado, y por eso la rama canónica no
+puede contener estado parcial.
+
+El protocolo transaccional publica en **un solo renombrado atómico**, con `fsync` de fichero
+y de directorio, y con un punto de no retorno explícito en el diario. La recuperación tiene
+las dos ramas de `g.8` y ninguna tercera: COMPLETAR cuando la transacción estaba preparada,
+REVERTIR cuando sólo estaba abierta —y lo revertido es especulativo local, verificado byte a
+byte—, MARCAR cuando nada casa, con copia íntegra de lo divergente y **sin que el runtime
+decida** la salida. Es idempotente.
+
+**Se prueba matando procesos, no simulándolos.** Los nueve puntos de fallo del protocolo
+tienen cada uno su caso, con expectativa explícita de recuperación escrita en la propia
+prueba. La concurrencia lanza cuatro y ocho escritores REALES desde la misma base y exige que
+no haya doble éxito. Y hay un escenario extremo a extremo de quince pasos que recorre el ciclo
+entero por línea de órdenes, con dos ejecuciones seguidas dando bytes idénticos.
+
+**`validadores/entorno.py` — la guarda de entorno. Cierra `A14`.** La versión mínima del
+intérprete se declara una vez y se comprueba ANTES de correr, con un código de salida propio
+—`78`— que no se puede confundir ni con «una comprobación no pasó» ni con «uso incorrecto».
+La comprueban el runner canónico y el materializador de workspace. Y **no se puede relajar
+por entorno**: su variable sólo sube la exigencia. Una guarda que se puede bajar es un
+interruptor.
+
+**`tooling/new-project.sh` — la especificación normativa que viaja se DERIVA. Cierra `FD-3`.**
+La lista estaba escrita a mano y por eso caducó: cuando `F5` aprobó la sección `(g)` y las
+enmiendas `E3`–`E6`, el proyecto instalado se quedó sin ellas. Ahora se deriva del árbol, de
+modo que una enmienda nueva viaje por existir y no por acordarse, y una derivación vacía falla
+ruidosamente.
+
+**`exclusiones.yaml` — la frontera del proyecto instalado, declarada.** `E5` enlaza tres
+sedes que a propósito no viajan; dentro del proyecto instalado esos enlaces quedaban rotos.
+Se declara la frontera con su motivo, y **sólo se activa donde la ruta no existe**: en este
+repositorio existen las tres, el enlace resuelve y no se tolera nada. Una entrada cuya ruta no
+exista aquí es un fallo, de modo que la lista no sirve para silenciar un enlace roto de verdad.
+
+**Nada de esto está CERTIFICADO.** Implementado y probado no es certificado: la certificación
+de `F6` la emite un juicio independiente y no quien construyó, y PesquerApp sigue BLOQUEADA.
+
 ## 2.0.0-alpha.9 — el validador de vigencia reventaba ante su propio manifiesto
 
 Cuatro correcciones de la puerta pre-F4. Tres son de redacción y una es de código; el

@@ -16,7 +16,7 @@ Cualquier documento que afirme una distinta hace fallar la prueba T151.
 | composiciones | **38** |
 | composiciones de dis | **10** |
 | contratos transversales | **7** |
-| escenarios | **95** |
+| escenarios | **105** |
 | esquemas | **19** |
 | formas de conversacion | **14** |
 | gates | **31** |
@@ -31,5 +31,5 @@ Cualquier documento que afirme una distinta hace fallar la prueba T151.
 | roles de dis | **11** |
 | rubricas | **2** |
 | secciones de memoria | **12** |
-| validadores | **16** |
+| validadores | **17** |
 | vetos | **4** |

@@ -60,8 +60,22 @@ ESTRUCTURA_MINIMA = [
     "docs/agentic/ORG_LEARNINGS.md",
     "docs/rediseno/a-CAPACIDADES-APROBADA.md",
     "docs/rediseno/b-RECORRIDO-APROBADA.md",
+    "docs/rediseno/g-ESTADO-DURABLE-APROBADA.md",
     "docs/rediseno/a-ENMIENDA-E1-ENC.md",
     "docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md",
+    # `F5` aprobó la sección `(g)` y las enmiendas `E3`–`E6`, y la lista de copia de
+    # `new-project.sh` no las llevaba (deuda `FD-3`). Ahora esa lista se DERIVA del árbol;
+    # esto es lo que comprueba que la derivación entrega de verdad lo que debe viajar, y
+    # no sólo que el `find` no explota.
+    "docs/rediseno/a-ENMIENDA-E3-ARRANQUE-Y-POLITICA.md",
+    "docs/rediseno/a-ENMIENDA-E4-COMPOSICION-DE-RUTAS.md",
+    "docs/rediseno/a-ENMIENDA-E5-CORRECCIONES-EDITORIALES.md",
+    "docs/rediseno/a-ENMIENDA-E6-REANUDACION.md",
+    # El motor de estado durable de `F6` es kernel, y por tanto VIAJA al proyecto
+    # instalado. Sin esta línea, el runtime podría quedarse en el repositorio del kernel
+    # sin que nada lo delatara: un proyecto instalado sin motor no puede sostener el
+    # estado durable que la sección `(g)` le exige.
+    "kernel/operativo/runtime/estado/motor.py",
     "tooling/new-project.sh", "tooling/kernel-status.sh", "tooling/workspace.py",
     "packs/00-QUE-ES-UN-PACK.md", "packs/COMPOSICION.md",
 ]

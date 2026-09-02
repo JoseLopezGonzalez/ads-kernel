@@ -151,6 +151,29 @@ def m_exclusion_sin_motivo(raiz):
                '  - ruta: docs/rediseno/a-EQUIPOS-v1-RECHAZADA.md')
 
 
+def m_frontera_para_silenciar_un_enlace_roto(raiz):
+    """La frontera del proyecto instalado, usada para tapar un enlace roto de AQUÍ.
+
+    `enlaces_no_embarcados` declara qué se queda aguas arriba. Si su ruta pudiera no existir
+    en este repositorio, la lista dejaría de declarar una frontera y pasaría a ser un
+    silenciador: bastaría añadir el destino roto para que `ads_lint` dejara de verlo. Por eso
+    T147 exige que cada entrada EXISTA aquí, y esto lo demuestra.
+    """
+    _sustituir(raiz, VALIDADORES + "/exclusiones.yaml",
+               "  - ruta: docs/evolucion/03-INVARIANTES.md",
+               "  - ruta: docs/evolucion/DOCUMENTO-QUE-NO-EXISTE.md\n"
+               "    motivo: >\n"
+               "      entrada introducida por comprobar_negativos para tapar un enlace roto\n"
+               "  - ruta: docs/evolucion/03-INVARIANTES.md")
+
+
+def m_frontera_sin_motivo(raiz):
+    """Una frontera sin motivo escrito no es revisable, y por eso no se admite."""
+    _sustituir(raiz, VALIDADORES + "/exclusiones.yaml",
+               "  - ruta: docs/rediseno/README.md\n    motivo: >",
+               "  - ruta: docs/rediseno/README.md\n    sin_motivo: >")
+
+
 def m_exclusion_caducada(raiz):
     """A-05 · una exclusión cuyo objetivo ya no existe: restos que nadie revisa."""
     _sustituir(raiz, VALIDADORES + "/exclusiones.yaml",
@@ -856,6 +879,14 @@ CATALOGO = [
     Mutacion("N161g", "E2", "T161", "comprobar_fuentes",
              "el corpus queda fuera del recorrido y T161 pasaría por no mirar",
              m_t161_cobertura_estrechada),
+    Mutacion("N147e", "E5", "T147", "comprobar_referencias",
+             "la frontera del proyecto instalado se usa para tapar un enlace roto de aquí",
+             m_frontera_para_silenciar_un_enlace_roto,
+             espera="no existe en este repositorio"),
+    Mutacion("N147f", "E5", "T147", "comprobar_referencias",
+             "una frontera declarada se queda sin motivo escrito",
+             m_frontera_sin_motivo,
+             espera="sin `ruta` o sin `motivo`"),
 ]
 
 

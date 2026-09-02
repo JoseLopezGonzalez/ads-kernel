@@ -95,6 +95,25 @@ def t147_referencias(raiz=None):
                 continue
             destino.append(item["ruta"])
 
+    # LA FRONTERA DEL PROYECTO INSTALADO se valida aquí, y con la misma disciplina: motivo
+    # escrito y objetivo que EXISTE. Que exista es lo que impide usar esta lista para
+    # silenciar un enlace roto de este repositorio: si la ruta no está, la entrada es un
+    # fallo, no una excepción.
+    no_embarcados = 0
+    for item in exc.get("enlaces_no_embarcados") or []:
+        if not isinstance(item, dict) or not item.get("ruta") or not item.get("motivo"):
+            r.fallo("exclusiones.yaml/enlaces_no_embarcados: una entrada sin `ruta` o sin "
+                    "`motivo`. Una frontera sin justificación escrita no es revisable")
+            continue
+        if not os.path.exists(os.path.join(base, item["ruta"])):
+            r.fallo(f"exclusiones.yaml/enlaces_no_embarcados: '{item['ruta']}' no existe en "
+                    f"este repositorio. La frontera declara qué se queda AGUAS ARRIBA, no "
+                    f"qué falta: una entrada cuya ruta no existe aquí serviría para "
+                    f"silenciar un enlace roto de verdad")
+            continue
+        no_embarcados += 1
+    r.detalle = f"{no_embarcados} rutas declaradas como no embarcadas"
+
     docs = documentos(base, no_analizados)
     conjunto = set(docs)
     todos_los_ficheros = set()

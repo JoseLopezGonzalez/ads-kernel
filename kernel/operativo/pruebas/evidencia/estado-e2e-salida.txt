@@ -1,0 +1,55 @@
+# evidencia de: estado-e2e
+# orden:        python3 kernel/operativo/runtime/pruebas/escenario_extremo_a_extremo.py
+# codigo:       0
+# ---------------------------------------------------------------
+ESCENARIO EXTREMO A EXTREMO · MOTOR DE ESTADO DURABLE
+T180 · F6 · corte vertical 1 · quince pasos del §12.1 del contrato
+todo con el CLI en procesos reales; la caída es os._exit(70)
+
+paso 01  inicializar el estado de un control repo temporal
+         · almacén creado, con lo operacional excluido de la rama canónica
+         resultado: CUMPLIDO
+paso 02  leer la revisión inicial
+         · revisión 0, sin padre, con identidad por contenido
+         resultado: CUMPLIDO
+paso 03  aplicar una transición válida
+         · revisión 1 publicada, con la revisión 0 como padre
+         resultado: CUMPLIDO
+paso 04  escribir estado y diario de forma durable
+         · diario encadenado con 4 eventos; abierta, preparada y confirmada presentes
+         resultado: CUMPLIDO
+paso 05  simular una interrupción en un punto controlado
+         · proceso terminado por os._exit(70) en despues-de-escribir-temporal
+         resultado: CUMPLIDO
+paso 06  reiniciar el proceso
+         · proceso nuevo; dos pasadas de más no anexan al diario ni mueven la revisión
+         resultado: CUMPLIDO
+paso 07  recuperar sin perder una transición confirmada
+         · la transición confirmada antes de la caída sigue publicada y legible
+         resultado: CUMPLIDO
+paso 08  comprobar que una transición incompleta no se publicó
+         · mezcla parcial no publicada; reversión anotada en el diario
+         resultado: CUMPLIDO
+paso 09  detectar un escritor concurrente o una revisión obsoleta
+         · rechazo con REVISION_OBSOLETA y estado canónico intacto
+         resultado: CUMPLIDO
+paso 10  agotar reintentos en un escenario dirigido
+         · escritor serializado y detenido con REINTENTOS_AGOTADOS; órdenes intactas
+         resultado: CUMPLIDO
+paso 11  comprobar que se creó el registro auxiliar de reconciliación
+         · apertura rec-0001 con producto, repositorio, item, intento, causa y momento lógico
+         resultado: CUMPLIDO
+paso 12  deducir reconciliacion-pendiente
+         · rec-0001 deducida como pendiente, fuera del estado canónico
+         resultado: CUMPLIDO
+paso 13  resolverla mediante una transición explícita
+         · resuelta por transición explícita; revisión 2
+         resultado: CUMPLIDO
+paso 14  conservar evidencia auditable
+         · diario con 10 eventos; registro auxiliar encadenado con apertura y resolución conservadas
+         resultado: CUMPLIDO
+paso 15  terminar con un estado íntegro y reproducible
+         · estado íntegro en la revisión 2, sin reloj ni pid en ningún artefacto durable
+         resultado: CUMPLIDO
+
+15 de 15 pasos CUMPLIDOS

@@ -44,7 +44,11 @@ QUE COMPRUEBA, y nada mas:
       de afirmarlo: la frase con verbo y la FILA DE TABLA de la sede del estado, que la
       version anterior no veia y que habria dejado el control vacio en cuanto la fase
       avanzara
-  F18 NINGUN contrato de F6 se presenta como IMPLEMENTADO, EJECUTADO ni CERTIFICADO
+  F18 NINGUN contrato de F6 se presenta como IMPLEMENTADO o EJECUTADO SIN CITAR, EN LA
+      MISMA LINEA, un fichero de evidencia publicado que EXISTA; y NINGUNO se presenta como
+      CERTIFICADO, en ningun sitio y bajo ninguna condicion. Antes de que F6 empezara, la
+      regla podia ser «nada»; ahora que construye, «nada» seria falso y «lo que sea» seria
+      peor. La condicion es la evidencia, y se comprueba contra el arbol
   F19 PesquerApp sigue declarada BLOQUEADA en la unica sede del estado de fase
   F20 el ESTADO CANONICO, el DIARIO CANONICO y el REGISTRO AUXILIAR de reconciliacion
       permanecen como TRES materias declaradas y separadas en la seccion (g)
@@ -145,6 +149,14 @@ ACTO_DE_CIERRE_DE_F5 = re.compile(r"^Declaro\s+`?F5`?\s+CERRADA\.", re.M)
 PROHIBIDO_F6_IMPLEMENTADO = re.compile(
     r"(?:contrato|verificador|runtime)[^.\n]{0,60}\b(?:ya\s+)?(?:está|esta)\s+\**\s*"
     r"(?:IMPLEMENTAD|EJECUTAD|CERTIFICAD)", re.IGNORECASE)
+# CERTIFICADO no admite excusa: la certificacion de F6 la emite un juicio independiente y no
+# quien construyo —criterio B6—, y hoy no existe ninguno.
+AFIRMA_CERTIFICADO = re.compile(r"CERTIFICAD", re.IGNORECASE)
+# La UNICA prueba que legitima «implementado» o «ejecutado»: la linea cita un fichero de
+# evidencia publicado, y ese fichero existe en el arbol. Una afirmacion sin evidencia citada
+# es exactamente lo que este control existe para impedir.
+CITA_DE_EVIDENCIA = re.compile(r"(kernel/operativo/pruebas/evidencia/[A-Za-z0-9._-]+)"
+                               r"|(?:evidencia/)([A-Za-z0-9._-]+\.txt)")
 # Una NEGACION no es una afirmacion de haberlo construido. Es la diferencia entre «esta
 # implementado» y «nada esta implementado», y confundirlas haria inutil el control.
 NEGACION = re.compile(r"\b(?:no|ninguno|ninguna|nada|ningún|ningun|sin)\b", re.IGNORECASE)
@@ -452,8 +464,23 @@ def validar(raiz):
             linea = texto[ini:texto.find("\n", m.end()) if texto.find("\n", m.end()) > 0 else len(texto)]
             if NEGACION.search(texto[ini:m.end()]) or CRITERIO.match(linea):
                 continue
-            r.fallo("F18", f"{rel}: presenta como implementado, ejecutado o certificado algo "
-                           f"que es CONTRATO de F6: {m.group(0)[:60]!r}")
+            if AFIRMA_CERTIFICADO.search(m.group(0)):
+                r.fallo("F18", f"{rel}: presenta como CERTIFICADO algo que es CONTRATO de "
+                               f"F6. La certificacion la emite un juicio independiente y no "
+                               f"quien construyo, y hoy no existe ninguno: {m.group(0)[:60]!r}")
+                break
+            citadas = [g for par in CITA_DE_EVIDENCIA.findall(linea) for g in par if g]
+            existentes = [c for c in citadas
+                          if os.path.exists(os.path.join(raiz, c))
+                          or os.path.exists(os.path.join(
+                              raiz, "kernel/operativo/pruebas/evidencia", os.path.basename(c)))]
+            if existentes:
+                # La afirmacion se sostiene en evidencia PUBLICADA que existe. No se juzga
+                # aqui si esa evidencia es suficiente: eso lo hace la bateria del kernel.
+                continue
+            r.fallo("F18", f"{rel}: presenta como implementado o ejecutado algo que es "
+                           f"CONTRATO de F6 SIN citar en la misma linea un fichero de "
+                           f"evidencia publicado que exista: {m.group(0)[:60]!r}")
             break
 
     # ---- F19 · PesquerApp sigue bloqueada --------------------------------

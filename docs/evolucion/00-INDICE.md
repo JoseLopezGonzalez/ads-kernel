@@ -72,6 +72,18 @@ kernel/operativo/  el CONTENIDO OPERATIVO construido sobre (a) y (b).
 | — | [`docs/f5/validar-f5.py`](../f5/validar-f5.py) | los controles sobre la matriz y los borradores |
 | — | [`docs/f5/borradores/`](../f5/borradores/) | los borradores de `F5`, **todos NO APROBADOS** |
 
+## El área de trabajo de `F6`
+
+> **NADA de esa zona es norma tampoco.** El registro de sedes canónicas la clasifica como
+> **DERIVADA**. Lo que `F6` construye **no vive ahí**: vive en
+> [`kernel/operativo/runtime/`](../../kernel/operativo/runtime/00-RUNTIME.md), que es código
+> ejecutable con su propia batería. Esta zona sólo REGISTRA qué está implementado, qué no y
+> qué lo bloquea.
+
+| | documento | qué contiene |
+|---|---|---|
+| — | [`docs/f6/00-ESTADO-DE-IMPLEMENTACION-F6.md`](../f6/00-ESTADO-DE-IMPLEMENTACION-F6.md) | la clasificación contrato a contrato, las decisiones técnicas y el corte siguiente |
+
 ## Los documentos en voz del Owner
 
 Están escritos en **voz del Owner**, no en el lenguaje canónico del corpus. Se conservan

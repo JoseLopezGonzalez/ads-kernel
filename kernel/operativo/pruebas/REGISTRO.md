@@ -55,7 +55,7 @@ porque la mayoría exige un runtime que todavía no existe.
 | T13 patrones | validador-implementado *(parcial)* | la forma del patrón se valida estructuralmente; su vigencia real no |
 | T18 extensiones | validador-implementado *(parcial)* | `ads_lint` comprueba prefijo, contrato de doce campos y colisión de identificador; la colisión de autoridad se comprueba en `pruebas/T78-*` |
 | T19 vetos | validador-implementado *(parcial)* | `ads_lint` exige los seis campos del contrato de veto en todo bloque `ads:veto` |
-| T25 | abierta por diseño | depende de la sección (g) |
+| T25 | **cubierta por `G-A2`** | la sección (g) existe y está APROBADA, y su condición de aceptación `G-A2` la cubre, incluida su cualificación. Se demuestra en `T175` |
 | T26–T74 (sección b) | contrato-definido | requieren runtime |
 
 ## T159–T171 — la enmienda E2, un producto no es un repositorio
@@ -73,6 +73,24 @@ comprobar_arranque.py            el arranque produce la topología correcta, en 
                                  documentada, y el proyecto creado declara dónde se lee
                                  cada criterio de descubrimiento del §100
 ```
+
+## T172–T181 — el estado durable, ejecutado
+
+Viven en [`T172-T181-estado-durable.md`](T172-T181-estado-durable.md) y son las primeras
+pruebas del corpus que **ejecutan un motor**, no un validador de documentos. Crean almacenes
+reales, **matan procesos** en fronteras controladas y lanzan **procesos concurrentes**. La
+distinción con la batería documental no es de estilo: un verde de `ads_lint` no dice nada
+sobre si una transición sobrevive a un corte de corriente.
+
+```text
+validadores/entorno.py                          T172 — la guarda de entorno, antes de correr
+runtime/pruebas/test_estado_durable.py          T173..T179 — el motor, caso a caso
+runtime/pruebas/escenario_extremo_a_extremo.py  T180 — los quince pasos de una sola pieza
+validadores/comprobar_arranque.py               T181 — la norma viaja al proyecto instalado
+```
+
+**Ninguna de ellas certifica nada.** `prueba-superada` significa que la prueba se ejecutó y
+pasó; la CERTIFICACIÓN de `F6` la emite un juicio independiente y no quien construyó.
 
 Dos quedan en `contrato-definido` y lo dicen: **T169** —integración parcial— exige runtime,
 y **T170** —reanudación multi-fuente— exige un guion manual con dos repositorios reales.

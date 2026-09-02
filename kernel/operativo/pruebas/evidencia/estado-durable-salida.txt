@@ -1,0 +1,135 @@
+# evidencia de: estado-durable
+# orden:        python3 kernel/operativo/runtime/pruebas/test_estado_durable.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+test_40_el_proveedor_efimero_se_declara_solo_para_pruebas (__main__.Atestacion.test_40_el_proveedor_efimero_se_declara_solo_para_pruebas)
+T177 · Defecto que previene: que alguien tome el proveedor de pruebas por productivo. ... ok
+test_41_sin_proveedor_no_hay_atestacion (__main__.Atestacion.test_41_sin_proveedor_no_hay_atestacion)
+T177 · Defecto que previene: una ruta por defecto que firma con cualquier cosa (§7). ... ok
+test_42_la_evidencia_no_puede_vivir_dentro_del_arbol_verificado (__main__.Atestacion.test_42_la_evidencia_no_puede_vivir_dentro_del_arbol_verificado)
+T177 · Defecto que previene: verificarse a sí mismo desde dentro (`g.13`, `g.15`). ... ok
+test_43_evidencia_manipulada_truncada_o_de_otra_identidad (__main__.Atestacion.test_43_evidencia_manipulada_truncada_o_de_otra_identidad)
+T177 · Defecto que previene: un veredicto falseado DESDE DENTRO (`G-A9`). ... ok
+test_60_cuatro_escritores_desde_la_misma_base_no_dan_doble_exito (__main__.Concurrencia.test_60_cuatro_escritores_desde_la_misma_base_no_dan_doble_exito)
+T176 · Defecto que previene: dos escritores publicando sobre la MISMA revisión. ... ok
+test_61_los_perdedores_pueden_reintentar_sobre_la_base_nueva (__main__.Concurrencia.test_61_los_perdedores_pueden_reintentar_sobre_la_base_nueva)
+T176 · Defecto que previene: una serialización que sólo sabe rechazar. ... ok
+test_62_ocho_escritores_no_rompen_la_integridad (__main__.Concurrencia.test_62_ocho_escritores_no_rompen_la_integridad)
+T176 · Defecto que previene: la corrupción que sólo aparece con presión. ... ok
+test_63_agotar_reintentos_no_toca_el_estado_y_deja_registro (__main__.Concurrencia.test_63_agotar_reintentos_no_toca_el_estado_y_deja_registro)
+T176 · Defecto que previene: quedarse esperando, o peor, escribir a la fuerza. ... ok
+test_64_bloqueo_abandonado_se_reclama_solo (__main__.Concurrencia.test_64_bloqueo_abandonado_se_reclama_solo)
+T176 · Defecto que previene: un almacén bloqueado para siempre por un proceso muerto. ... ok
+test_65_dos_caidas_simultaneas_no_publican_dos_veces (__main__.Concurrencia.test_65_dos_caidas_simultaneas_no_publican_dos_veces)
+T176 · Defecto que previene: dos ventanas abiertas a la vez y una recuperación que ... ok
+test_50_durante_el_diario (__main__.FalloInyectado.test_50_durante_el_diario)
+T175 · Punto 1/9 · `durante-el-diario` (paso 4 del protocolo). ... ok
+test_51_antes_de_escribir_temporal (__main__.FalloInyectado.test_51_antes_de_escribir_temporal)
+T175 · Punto 2/9 · `antes-de-escribir-temporal` (paso 5, antes de tocar nada). ... ok
+test_52_despues_de_escribir_temporal (__main__.FalloInyectado.test_52_despues_de_escribir_temporal)
+T175 · Punto 3/9 · `despues-de-escribir-temporal` (paso 5, ya en `operacional/tx/`). ... ok
+test_53_despues_de_sincronizar_temporal (__main__.FalloInyectado.test_53_despues_de_sincronizar_temporal)
+T175 · Punto 4/9 · `despues-de-sincronizar-temporal` (paso 6, antes de `preparada`). ... ok
+test_54_antes_del_commit_atomico (__main__.FalloInyectado.test_54_antes_del_commit_atomico)
+T175 · Punto 5/9 · `antes-del-commit-atomico` (paso 8, tras `preparada`). ... ok
+test_55_antes_de_sincronizar_directorio (__main__.FalloInyectado.test_55_antes_de_sincronizar_directorio)
+T175 · Punto 6/9 · `antes-de-sincronizar-directorio` (paso 8, entre `replace` y `fsync`). ... ok
+test_56_despues_del_commit_atomico (__main__.FalloInyectado.test_56_despues_del_commit_atomico)
+T175 · Punto 7/9 · `despues-del-commit-atomico` (paso 9, YA publicado). ... ok
+test_57_antes_de_devolver_exito (__main__.FalloInyectado.test_57_antes_de_devolver_exito)
+T175 · Punto 8/9 · `antes-de-devolver-exito` (paso 11, todo hecho, sin responder). ... ok
+test_58_durante_el_registro_auxiliar (__main__.FalloInyectado.test_58_durante_el_registro_auxiliar)
+T175 · Punto 9/9 · `durante-el-registro-auxiliar` (la escritura de `g.9`). ... ok
+test_59_el_censo_de_puntos_es_el_del_contrato_y_todos_se_alcanzan (__main__.FalloInyectado.test_59_el_censo_de_puntos_es_el_del_contrato_y_todos_se_alcanzan)
+T175 · Defecto que previene: dar por inyectada una caída que nunca se inyectó. ... ok
+test_72a_la_guarda_para_con_codigo_propio (__main__.GuardaDeEntorno.test_72a_la_guarda_para_con_codigo_propio)
+T172 · Un entorno insuficiente no se puede confundir con un producto roto. ... ok
+test_72b_la_guarda_no_se_puede_relajar_por_entorno (__main__.GuardaDeEntorno.test_72b_la_guarda_no_se_puede_relajar_por_entorno)
+T172 · Una guarda que se puede bajar por variable es un interruptor. ... ok
+test_72c_el_runner_no_publica_nada_bajo_un_entorno_insuficiente (__main__.GuardaDeEntorno.test_72c_el_runner_no_publica_nada_bajo_un_entorno_insuficiente)
+T172 · Publicar a medias es peor que no publicar: aquí no se empieza. ... ok
+test_72d_el_workspace_para_antes_de_analizar_el_manifiesto (__main__.GuardaDeEntorno.test_72d_el_workspace_para_antes_de_analizar_el_manifiesto)
+T172 · Antes de correr, y no al fallar el primer `tomllib.load`. ... ok
+test_72e_con_entorno_suficiente_la_guarda_no_estorba (__main__.GuardaDeEntorno.test_72e_con_entorno_suficiente_la_guarda_no_estorba)
+T172 · Una guarda que da falsos rojos se acaba desactivando. ... ok
+test_20_estado_corrupto_al_leer (__main__.Negativos.test_20_estado_corrupto_al_leer)
+T177 · Defecto que previene: servir como bueno un fichero canónico manipulado. ... ok
+test_21_diario_truncado (__main__.Negativos.test_21_diario_truncado)
+T177 · Defecto que previene: aceptar un diario cortado por la mitad. ... ok
+test_22_diario_con_la_cadena_de_hash_rota (__main__.Negativos.test_22_diario_con_la_cadena_de_hash_rota)
+T177 · Defecto que previene: reescribir un evento del diario y que cuadre igual. ... ok
+test_23_escritura_parcial_termina_en_MARCAR_y_no_en_publicacion (__main__.Negativos.test_23_escritura_parcial_termina_en_MARCAR_y_no_en_publicacion)
+T175 · Defecto que previene: COMPLETAR una transición cuyo material ya no está. ... ok
+test_24_revision_obsoleta (__main__.Negativos.test_24_revision_obsoleta)
+T176 · Defecto que previene: la actualización perdida. ... ok
+test_25_identificador_duplicado_con_operaciones_distintas (__main__.Negativos.test_25_identificador_duplicado_con_operaciones_distintas)
+T174 · Defecto que previene: reutilizar un `id` de transacción para otra cosa. ... ok
+test_26_migracion_desconocida (__main__.Negativos.test_26_migracion_desconocida)
+T179 · Defecto que previene: adivinar una migración que nadie registró (`g.11`). ... ok
+test_27_version_de_esquema_desconocida (__main__.Negativos.test_27_version_de_esquema_desconocida)
+T179 · Defecto que previene: leer un almacén futuro «haciendo lo que se pueda». ... ok
+test_28_formato_desconocido (__main__.Negativos.test_28_formato_desconocido)
+T179 · Defecto que previene: abrir un almacén cuyo FORMATO no se entiende (§5). ... ok
+test_29_almacen_no_inicializado (__main__.Negativos.test_29_almacen_no_inicializado)
+T173 · Defecto que previene: crear el almacén por sorpresa al abrirlo. ... ok
+test_30_inicializar_dos_veces (__main__.Negativos.test_30_inicializar_dos_veces)
+T173 · Defecto que previene: reinicializar encima de un almacén con estado. ... ok
+test_31_rutas_invalidas (__main__.Negativos.test_31_rutas_invalidas)
+T174 · Defecto que previene: escribir fuera del almacén por una ruta compuesta. ... ok
+test_32_transicion_invalida (__main__.Negativos.test_32_transicion_invalida)
+T174 · Defecto que previene: aceptar una transición sin operaciones o con basura. ... ok
+test_33_modificar_el_estado_sin_diario_no_pasa_la_auditoria (__main__.Negativos.test_33_modificar_el_estado_sin_diario_no_pasa_la_auditoria)
+T177 · Defecto que previene: el estado editado a mano que nadie desmiente. ... ok
+test_34_borrar_la_reconciliacion_a_mano_es_corrupcion (__main__.Negativos.test_34_borrar_la_reconciliacion_a_mano_es_corrupcion)
+T178 · Defecto que previene: cerrar una pendencia borrando su línea. ... ok
+test_35_resolver_una_reconciliacion_inexistente (__main__.Negativos.test_35_resolver_una_reconciliacion_inexistente)
+T178 · Defecto que previene: cerrar una pendencia que nunca se abrió. ... ok
+test_36_permisos_insuficientes (__main__.Negativos.test_36_permisos_insuficientes)
+T174 · Defecto que previene: dejar el almacén a medias cuando el disco dice que no. ... ok
+test_37_uso_incorrecto_del_cli_sale_con_dos (__main__.Negativos.test_37_uso_incorrecto_del_cli_sale_con_dos)
+T173 · Defecto que previene: confundir «la operación falló» con «me lo pediste mal». ... ok
+test_38_la_salida_no_lleva_rutas_absolutas_sin_json (__main__.Negativos.test_38_la_salida_no_lleva_rutas_absolutas_sin_json)
+T173 · Defecto que previene: una evidencia que cambia de máquina a máquina. ... ok
+test_01_inicializacion_deja_un_almacen_publicable (__main__.Positivos.test_01_inicializacion_deja_un_almacen_publicable)
+T173 · Defecto que previene: un almacén recién creado que ya nace incoherente. ... ok
+test_02_lo_operacional_queda_fuera_de_la_rama_canonica (__main__.Positivos.test_02_lo_operacional_queda_fuera_de_la_rama_canonica)
+T174 · Defecto que previene: publicar estado PARCIAL en la rama canónica (`g.14`). ... ok
+test_03_lectura_y_escritura (__main__.Positivos.test_03_lectura_y_escritura)
+T173 · Defecto que previene: un estado que sólo se puede leer reproyectando el diario. ... ok
+test_04_varias_transiciones_consecutivas_encadenan_linaje (__main__.Positivos.test_04_varias_transiciones_consecutivas_encadenan_linaje)
+T174 · Defecto que previene: revisiones que avanzan sin linaje comprobable. ... ok
+test_05_el_diario_encadena_por_huella (__main__.Positivos.test_05_el_diario_encadena_por_huella)
+T177 · Defecto que previene: un diario reescribible sin dejar rastro. ... ok
+test_06_recuperacion_limpia_no_inventa_nada (__main__.Positivos.test_06_recuperacion_limpia_no_inventa_nada)
+T175 · Defecto que previene: una recuperación que «arregla» un almacén sano. ... ok
+test_07_recuperar_es_idempotente_n_veces (__main__.Positivos.test_07_recuperar_es_idempotente_n_veces)
+T175 · Defecto que previene: una recuperación que se acumula. ... ok
+test_08_aplicar_dos_veces_el_mismo_id_no_reaplica (__main__.Positivos.test_08_aplicar_dos_veces_el_mismo_id_no_reaplica)
+T174 · Defecto que previene: duplicar una transición al reintentar tras un timeout. ... ok
+test_09_migracion_del_formato_heredado_cero_a_uno (__main__.Positivos.test_09_migracion_del_formato_heredado_cero_a_uno)
+T179 · Defecto que previene: una compatibilidad prometida y no demostrable. ... ok
+test_10_migrar_a_la_version_vigente_es_inocuo (__main__.Positivos.test_10_migrar_a_la_version_vigente_es_inocuo)
+T179 · Defecto que previene: una migración que se aplica dos veces. ... ok
+test_11_reconciliacion_abierta_deducida_y_resuelta (__main__.Positivos.test_11_reconciliacion_abierta_deducida_y_resuelta)
+T178 · Defecto que previene: una reconciliación que se cierra borrando su registro. ... ok
+test_12_abrir_reconciliacion_no_toca_el_estado_canonico (__main__.Positivos.test_12_abrir_reconciliacion_no_toca_el_estado_canonico)
+T178 · Defecto que previene: colapsar el registro auxiliar en el estado canónico. ... ok
+test_13_el_registro_auxiliar_encadena_y_fecha_por_momento_logico (__main__.Positivos.test_13_el_registro_auxiliar_encadena_y_fecha_por_momento_logico)
+T178 · Defecto que previene: usar el reloj como «momento» (`I-g3`). ... ok
+test_14_mismo_estado_mismos_bytes (__main__.Positivos.test_14_mismo_estado_mismos_bytes)
+T173 · Defecto que previene: la no reproducibilidad silenciosa (`I-g3`). ... ok
+test_15_ningun_artefacto_durable_lleva_reloj_ni_pid (__main__.Positivos.test_15_ningun_artefacto_durable_lleva_reloj_ni_pid)
+T173 · Defecto que previene: el determinismo roto por un campo «inofensivo». ... ok
+test_16_borrado_como_operacion_de_transicion (__main__.Positivos.test_16_borrado_como_operacion_de_transicion)
+T174 · Defecto que previene: un borrado que deja la ruta en `raiz` o el fichero en disco. ... ok
+test_17_auditar_reproduce_la_raiz_desde_el_diario (__main__.Positivos.test_17_auditar_reproduce_la_raiz_desde_el_diario)
+T177 · Defecto que previene: un diario que no explica el estado que dice explicar. ... ok
+test_18_detectar_bifurcacion_distingue_el_mismo_linaje_del_ajeno (__main__.Positivos.test_18_detectar_bifurcacion_distingue_el_mismo_linaje_del_ajeno)
+T176 · Defecto que previene: dos máquinas divergiendo sin que nadie lo note (`g.6`). ... ok
+
+----------------------------------------------------------------------
+Ran 62 tests  (duración no registrada: varía por ejecución)
+
+OK

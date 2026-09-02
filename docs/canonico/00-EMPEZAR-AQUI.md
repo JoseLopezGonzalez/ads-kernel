@@ -148,8 +148,12 @@ grep -cE '^# `O[0-9]+`' docs/owner/ADS-OWNER-RESOLUCIONES.md
 
 ## 7 · Qué hacer después de leer
 
-**El siguiente paso es preparar el primer macrobloque ejecutable de `F5`**, y su alcance
-exacto está en [`05-PLAN-DE-IMPLEMENTACION-F5-F6.md`](05-PLAN-DE-IMPLEMENTACION-F5-F6.md).
-El estado vigente de `F5` —y el acto que lo declaró— está en
+**Lo que viene ahora es CONSTRUIR**, y el orden de construcción está en
+[`05-PLAN-DE-IMPLEMENTACION-F5-F6.md`](05-PLAN-DE-IMPLEMENTACION-F5-F6.md). Antes de
+escribir una línea, dos lecturas obligadas: qué está ya construido, en
+[`04-CONTRATOS-TECNICOS.md`](04-CONTRATOS-TECNICOS.md) §1 —**completar lo que existe, no
+duplicarlo**—, y qué contratos quedan y qué los bloquea, en
+[`docs/f6/00-ESTADO-DE-IMPLEMENTACION-F6.md`](../f6/00-ESTADO-DE-IMPLEMENTACION-F6.md).
+El estado vigente de cada fase —y el acto que lo declaró— está en
 [`03-GOBIERNO-Y-AUTORIDAD.md`](03-GOBIERNO-Y-AUTORIDAD.md) §6, que es su única sede;
-**iniciar `F5` es un acto del Owner y no de este corpus**.
+**iniciar y cerrar una fase son actos del Owner y no de este corpus**.

@@ -22,23 +22,38 @@ Antes: [`03-GOBIERNO-Y-AUTORIDAD.md`](03-GOBIERNO-Y-AUTORIDAD.md).
 kernel/operativo/     el corpus operativo entero: esquemas, contratos, capacidades, roles,
                       métodos, prompts, composiciones, entrada, diseño, recorrido,
                       circuitos, plantillas, pruebas y validadores
+kernel/operativo/     el MOTOR DE ESTADO DURABLE de `F6` y su contrato derivado: estado
+runtime/              canónico, diario canónico y registro operativo auxiliar como TRES
+                      estructuras separadas · protocolo transaccional atómico y durable ·
+                      recuperación con sus dos ramas · bloqueo entre escritores ·
+                      integridad por contenido con fallo cerrado · versionado y migración
+                      explícita · interfaz de atestación externa con proveedores
+                      intercambiables. Con punto ejecutable y batería propia. Evidencia
+                      publicada: `evidencia/estado-durable-salida.txt` y
+                      `evidencia/estado-e2e-salida.txt`
 packs/                los packs instalables y su regla de precedencia
 tooling/              creación de proyecto · materialización del workspace multi-fuente ·
                       huella e integridad · preparación de la recompilación de proyecciones
 validadores           ejecutables, con manifiesto canónico, evidencia publicada y una
                       batería de CONTROLES NEGATIVOS que muta copias temporales del
                       repositorio y exige que la comprobación señalada FALLE
+guarda de entorno     la versión mínima del intérprete, declarada una vez y comprobada
+                      ANTES de correr, con código de salida propio. Cierra `A14`
 ```
+
+> **Y la frontera, para que no se lea de más.** `kernel/operativo/runtime/` **administra el
+> estado de un producto**; los validadores comprueban la **consistencia del corpus**. Son
+> cosas distintas, y un verde de la segunda **no dice nada** sobre la primera. Ninguna de las
+> dos está CERTIFICADA: la certificación de `F6` la emite un juicio independiente y **no
+> quien construyó**.
 
 ### 1.2 · DISEÑADO Y NO CONSTRUIDO
 
 ```text
 RUNTIME Y DISPATCHER      la ficha de la capacidad de despacho lo dice de sí misma: no
                           implementa el dispatcher; lo que existe es el CONTRATO DE
-                          COMPORTAMIENTO que ese runtime deberá cumplir
-ESTADO PERSISTIDO         no existe ningún directorio de estado en el árbol. Los items,
-                          paquetes, tableros, colas y memorias son rutas DECLARADAS en las
-                          fichas, no ficheros creados por nadie
+                          COMPORTAMIENTO que ese runtime deberá cumplir. Lo que SÍ existe
+                          ya es la capa de estado durable sobre la que se apoyará
 EQUIPOS MATERIALIZADOS    el algoritmo de materialización está escrito y es determinista;
                           nada lo ejecuta
 ASIGNACIÓN DE AGENTES     el algoritmo y el catálogo de perfiles existen; el adaptador que
@@ -47,8 +62,18 @@ GATES                     salvo el de conformidad del workspace, que tiene ejecu
                           parcial, los demás son listas comprobables SIN comprobador
 ADAPTADORES               ninguno existe y ninguno está certificado
 LOS CUATRO MACROCIRCUITOS instalación, adopción, migración y actualización: diseñados
-LOS CONTRATOS DE `F6`     escritos enteros. NINGUNO implementado, ejecutado ni certificado
+VERIFICADOR DE ADMISIÓN   sus diecinueve puntos siguen escritos y sin construir
+RAÍZ EXTERNA PRODUCTIVA   existe la INTERFAZ, con proveedores intercambiables y fallo
+                          cerrado sin proveedor válido. La custodia productiva de la clave
+                          NO está decidida: es `FD-1`, y es del Owner
+CERTIFICACIÓN DE `F6`     ninguna. Implementado y probado NO es certificado
 ```
+
+> **Qué dejó de estar aquí, y por qué.** «ESTADO PERSISTIDO — no existe ningún directorio de
+> estado en el árbol» era cierto hasta el primer corte de `F6` y **ha dejado de serlo**. El
+> reparto entre `F6` construido y `F6` pendiente, contrato a contrato, tiene su registro en
+> [`docs/f6/00-ESTADO-DE-IMPLEMENTACION-F6.md`](../f6/00-ESTADO-DE-IMPLEMENTACION-F6.md),
+> que es DERIVADO de esta sede y no la sustituye.
 
 **El reparto de las pruebas entre «escrita» y «ejecutada» NO se escribe: se deriva de su
 sede honesta.**
@@ -148,9 +173,9 @@ ls -1 kernel/operativo/esquemas/*.yaml | xargs -n1 basename | sed 's/\.yaml$//'
 | **relevo de agente** sin perder identidad ni memoria | **contrato construido**, sin runtime que lo ejecute | [`C2`](../../kernel/operativo/contratos/C2-AGENTES-Y-MODELOS.md) |
 | **reanudación multi-fuente**: qué sabe el checkpoint de cada fuente | **contrato construido**; su prueba está escrita y **no ejecutada** | [`C7`](../../kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md) |
 | **memoria** persistente de un equipo | **tipo construido**; hoy sólo una capacidad lo usa con bloques declarados, el resto lo declara en prosa dentro de su ficha | `esquemas/memoria.yaml` · [`diseno/01-MEMORIA-DE-DISENO.md`](../../kernel/operativo/diseno/01-MEMORIA-DE-DISENO.md) |
-| **disposición física** del estado durable: instantáneas, eventos, transacciones, concurrencia, identidad, versionado, migración y sellado | **DISEÑADA, NO CONSTRUIDA, y bloqueada por una presión normativa** | [`11-ARQ` §2](../evolucion/11-ARQUITECTURA-INTEGRADA.md) |
+| **disposición física** del estado durable: instantáneas, eventos, transacciones, concurrencia, identidad, versionado, migración y sellado | **CONSTRUIDA y con batería ejecutada** —evidencia en `evidencia/estado-durable-salida.txt`—; su norma es la sección `(g)`, aprobada, y su mecanismo el contrato derivado. **El sellado del diario queda para el corte siguiente**, y su umbral es parámetro calibrable | [`g`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · [`CONTRATO-ESTADO-DURABLE.md`](../../kernel/operativo/runtime/CONTRATO-ESTADO-DURABLE.md) |
 | **eventos** como tipo canónico | **DISEÑADO, sin esquema en el kernel** | `11-ARQ` §3.6 |
-| **recuperación** tras interrupción, con sus dos ramas y sin mezclas parciales publicables | **DISEÑADA**; ver [`02-MODELO-OPERATIVO.md`](02-MODELO-OPERATIVO.md) §7 | `11-ARQ` §2.6 y §7.4 |
+| **recuperación** tras interrupción, con sus dos ramas y sin mezclas parciales publicables | **CONSTRUIDA y probada matando procesos en las nueve fronteras del protocolo** —evidencia en `evidencia/estado-durable-salida.txt`—; ver [`02-MODELO-OPERATIVO.md`](02-MODELO-OPERATIVO.md) §7 | [`g.8`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · `11-ARQ` §2.6 y §7.4 |
 
 ## 5 · Runtime, runners, adaptadores y verificadores
 
@@ -163,7 +188,9 @@ ls -1 kernel/operativo/esquemas/*.yaml | xargs -n1 basename | sed 's/\.yaml$//'
 | **controles negativos** | copia el repositorio a un temporal, introduce una infracción deliberada y **exige que la comprobación señalada FALLE, y por el motivo esperado**. Una traza no cuenta como detección | `python3 kernel/operativo/validadores/comprobar_negativos.py` |
 | **materializador de workspace** | comprueba y materializa las fuentes declaradas | `python3 tooling/workspace.py {check\|init\|status}` |
 | **integridad del kernel vendorizado** | compara la huella almacenada con la calculada; **no recalcula el hash por su cuenta** | `./tooling/kernel-status.sh` |
-| **creación de proyecto** | crea el workspace con su repositorio de control e instala los packs pedidos | `./tooling/new-project.sh <nombre> [packs]` |
+| **creación de proyecto** | crea el workspace con su repositorio de control e instala los packs pedidos. La especificación normativa que viaja se DERIVA del árbol, no se escribe | `./tooling/new-project.sh <nombre> [packs]` |
+| **motor de estado durable** | administra el estado canónico, el diario y el registro auxiliar de un repositorio de control, con transacciones atómicas y recuperación | `python3 kernel/operativo/runtime/ads_estado.py --repo <dir> <orden>` |
+| **guarda de entorno** | declara la versión mínima del intérprete y la comprueba ANTES de correr, con código de salida propio | `python3 kernel/operativo/validadores/entorno.py` |
 
 **El manifiesto canónico de validadores —qué hay, qué se espera de cada uno, su firma de
 éxito y su regla de vigencia— es
@@ -175,8 +202,9 @@ es la única sede de esa lista.
 > validadores necesitan el lector de YAML. Con un intérprete antiguo, varias comprobaciones
 > fallan por el entorno y **no por el producto** — y, peor, el runner correctamente NO
 > republica su evidencia, de modo que la cobertura publicada puede quedar describiendo un
-> corpus anterior. **La guarda que lo impediría es CONTRATO, no código**: ver
-> [`06-DEUDA-Y-LIMITACIONES-VIGENTES.md`](06-DEUDA-Y-LIMITACIONES-VIGENTES.md).
+> corpus anterior. **La guarda que lo impide ya es código**, y se comprueba antes de correr:
+> [`validadores/entorno.py`](../../kernel/operativo/validadores/entorno.py), con `A14`
+> cerrada en [`06-DEUDA-Y-LIMITACIONES-VIGENTES.md`](06-DEUDA-Y-LIMITACIONES-VIGENTES.md).
 
 ### 5.2 · Evidencia: por qué es determinista y cómo se comprueba
 
@@ -214,7 +242,13 @@ Y LA REGLA          un verde de la batería interna **NO demuestra** que el veri
                     `F6` esté construido ni certificado. Nadie puede citarlo para eso
 ```
 
-## 6 · Los contratos de `F6` — escritos, y ninguno implementado
+## 6 · Los contratos del VERIFICADOR DE ADMISIÓN — escritos, y ninguno implementado
+
+> **Dos familias, y confundirlas sería el error.** Esta sección es la del **verificador de
+> admisión**, `F6-A`. Los **contratos DERIVADOS** que la sección `(g)` nombra en su `g.17`
+> —estado durable, gobierno Git del control repo y raíz externa— son **otra familia**, con
+> otra sede, y el primero de ellos **ya está construido**: ver §1 de este mismo documento.
+> Que una familia avance no mueve a la otra.
 
 **Sede única:** [`11-ARQ` §20](../evolucion/11-ARQUITECTURA-INTEGRADA.md). Cada contrato
 declara, en su fila: qué debe demostrar `F6` · entrada · salida · evidencia · escenario

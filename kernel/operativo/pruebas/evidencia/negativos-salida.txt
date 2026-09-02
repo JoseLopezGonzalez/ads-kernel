@@ -21,15 +21,15 @@ OK   N91     —     T91   un paso de método pierde su condición de salida
 OK   N147    A-05  T147  documento huérfano cuyo nombre base coincide con otros dieciocho
                           → detectada: kernel/operativo/capacidades/DIS/huerfano/composicion.md: no lo alcanza ningún enlace por ruta, ninguna referencia de ca
 OK   N147b   A-05  T147  un enlace apunta al nombre correcto en la carpeta equivocada
-                          → detectada: kernel/operativo/00-INDICE.md:75: 'contratos/00-LENGUAJE.md' no existe, y sí existe ese nombre en kernel/operativo/esque
+                          → detectada: kernel/operativo/00-INDICE.md:76: 'contratos/00-LENGUAJE.md' no existe, y sí existe ese nombre en kernel/operativo/esque
 OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
                           → detectada: exclusiones.yaml/no_analizados: una entrada sin `ruta` o sin `motivo`. Una exclusión sin justificación escrita no es rev
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 3e90ac3726a3ce94, calculada c3b88e4e56554890. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada 36bbc0e5d80c48bb, calculada e220a7df5fbd2ccd. Algún fichero de la huella se
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 3e90ac3726a3ce94, calculada 05e72c8158d571fe. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada 36bbc0e5d80c48bb, calculada 12a935369635b43e. Algún fichero de la huella se
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
                           → detectada: kernel/operativo/validadores/ads_lint.py NO entra en la huella: un fork silencioso de ese fichero sería indetectable
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
@@ -57,7 +57,7 @@ OK   N158e   evidencia T158  falta un fichero de evidencia que el manifiesto exi
 OK   N158f   evidencia T158  un validador nuevo queda fuera del manifiesto y de la evidencia
                           → detectada: validadores/comprobar_algo_nuevo.py: existe y el manifiesto no lo declara. Quedaría fuera de la evidencia sin que nada l
 OK   N158g   evidencia T158  la cobertura publicada describe un corpus con dos ficheros menos que el vigente
-                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 359 y el corpus vigente da 3
+                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 379 y el corpus vigente da 3
 OK   N158h   evidencia T158  una vigencia declara un recuento que nadie implementa
                           → detectada: manifiesto: la vigencia 'T161-cobertura' de 'fuentes' declara el recuento 'fuentes.recuento_que_nadie_implementa', que n
 OK   N158i   evidencia T158  una entrada de vigencia no declara `patron` — el caso que reventaba con KeyError
@@ -85,7 +85,7 @@ OK   N148    A-02  T148  la documentación vuelve a citar un pack derogado
 OK   N152    A-12  T152  el release cambia y ningún punto de entrada se entera
                           → detectada: kernel/VERSIONES.md no nombra la versión vigente del release (9.9.9): la política y el artefacto van por separado
 OK   N152b   A-12  T152  la línea histórica se sube al ritmo del release, que es otro contador
-                          → detectada: KERNEL.md declara 2.0.0-alpha.9, igual que el release. Son contadores distintos: subir uno no sube el otro
+                          → detectada: KERNEL.md declara 2.0.0-alpha.10, igual que el release. Son contadores distintos: subir uno no sube el otro
 OK   N151    A-24  T151  un documento vuelve a escribir a mano una cifra que ya no cuadra
                           → detectada: kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md: declara 28 campos_de_rol y el corpus tiene 29
 OK   N142    A-11  T142  el esquema de encuadre pierde un estado que sus métodos exigen
@@ -119,7 +119,7 @@ OK   N141c   A-10  T141  quien recompone la ruta pasa a contar sus propias recom
 OK   N141d   A-10  T141  se ajusta un umbral aprobado porque el caso parecía merecerlo
                           → detectada: el prompt de supervisión no fija el umbral de racha en 2 (a.7 · FRENO 3): un umbral que el agente recuerda de memoria se
 OK   N161    E2    T161  un documento vuelve a decir que el repositorio es la memoria del proyecto
-                          → detectada: kernel/operativo/00-INDICE.md:141: conserva «El repositorio es la memoria del proyecto» [R7-repositorio-es-la-memoria],
+                          → detectada: kernel/operativo/00-INDICE.md:143: conserva «El repositorio es la memoria del proyecto» [R7-repositorio-es-la-memoria],
 OK   N161b   E2    T161  un documento vuelve a enseñar «una tarea = una rama»
                           → detectada: kernel/templates/AGENTS_EXAMPLE.md:369: conserva «Una tarea = una rama» [R3-tarea-igual-rama], retirada por E2.4 — item/
 OK   N161c   E2    T161  la portada vuelve a afirmar que un ADS Project es un repositorio de código
@@ -136,5 +136,9 @@ OK   N161f   E2    T161  un patrón de T161 se desafila hasta dejar de detectar 
                           → detectada: R7-repositorio-es-la-memoria: su patrón ya no detecta su propia formulación retirada. El fixture es «El chat es una inte
 OK   N161g   E2    T161  el corpus queda fuera del recorrido y T161 pasaría por no mirar
                           → detectada: sólo se recorrieron 16 ficheros, por debajo del mínimo (150). Una exclusión mal escrita deja el corpus fuera y esta prue
+OK   N147e   E5    T147  la frontera del proyecto instalado se usa para tapar un enlace roto de aquí
+                          → detectada: exclusiones.yaml/enlaces_no_embarcados: 'docs/evolucion/DOCUMENTO-QUE-NO-EXISTE.md' no existe en este repositorio. La fr
+OK   N147f   E5    T147  una frontera declarada se queda sin motivo escrito
+                          → detectada: exclusiones.yaml/enlaces_no_embarcados: una entrada sin `ruta` o sin `motivo`. Una frontera sin justificación escrita no
 
-67 infracciones detectadas · 0 NO detectadas
+69 infracciones detectadas · 0 NO detectadas
