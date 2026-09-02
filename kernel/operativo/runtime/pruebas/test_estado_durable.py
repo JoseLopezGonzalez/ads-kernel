@@ -734,6 +734,46 @@ class Positivos(Caso):
 # NEGATIVOS · lo que el motor tiene PROHIBIDO hacer
 # ===================================================================================
 
+    def test_19_abrir_y_resolver_una_reconciliacion_por_la_CLI(self):
+        """T178 · Defecto que previene: un camino del motor que sólo existe en la API.
+
+        La apertura explícita de una reconciliación no tenía subcomando, de modo que el
+        único camino alcanzable desde fuera era el de reintentos agotados — y era
+        precisamente el que no se comprobaba contra el diario. Un camino que sólo existe en
+        la API no se ejercita, y lo que no se ejercita se rompe sin que nadie lo vea.
+        """
+        self.inicializar()
+        abrir = cli(self.repo, ["abrir-reconciliacion", "--producto", "pesquerapp",
+                                "--repositorio", "backend", "--item", "it-9",
+                                "--intento", "3", "--causa", "el remoto no responde"])
+        self.assertEqual(abrir.returncode, 0, abrir.stderr or abrir.stdout)
+
+        listado = cli(self.repo, ["reconciliacion", "--pendientes", "--json"])
+        self.assertEqual(listado.returncode, 0, listado.stderr)
+        datos = json.loads(listado.stdout)
+        self.assertEqual(datos["pendientes"], ["rec-0001"],
+                         f"la apertura por CLI no se dedujo: {datos['pendientes']}")
+        registro = datos["pendientes"][0]
+        apertura = [l for l in datos["lineas"]
+                    if l["tipo"] == "apertura" and l["registro"] == registro][0]
+        for campo in ("producto", "repositorio", "item", "intento", "causa", "momento"):
+            self.assertIn(campo, apertura,
+                          f"`g.9` exige que el registro identifique {campo}")
+
+        resolver = cli(self.repo, ["resolver", registro, "--autoridad", "DSP",
+                                   "--motivo", "reintegrado a mano y comprobado"])
+        self.assertEqual(resolver.returncode, 0, resolver.stderr or resolver.stdout)
+
+        with self.almacen() as alm:
+            self.assertEqual(alm.reconciliacion_pendiente(), [],
+                             "la pendencia sigue viva tras resolverla por transición")
+            self.assertIn("reconciliacion.resuelta", [ev["tipo"] for ev in alm.diario()],
+                          "la resolución no dejó rastro auditable en el diario")
+        for orden in (["verificar"], ["auditar"]):
+            self.assertEqual(cli(self.repo, orden).returncode, 0,
+                             f"`{orden[0]}` no queda en verde tras una resolución legítima")
+
+
 class Negativos(Caso):
 
     def test_20_estado_corrupto_al_leer(self):
@@ -1074,6 +1114,42 @@ class Negativos(Caso):
 # ===================================================================================
 # ATESTACIÓN EXTERNA · `g.15`, interfaz — no despliegue productivo
 # ===================================================================================
+
+    def test_39_ningun_error_imprime_una_ruta_absoluta_de_la_maquina(self):
+        """T177 · Defecto que previene: una evidencia que cambia de máquina a máquina.
+
+        `test_38` sólo miraba la salida de las órdenes que TERMINAN BIEN, y la auditoría
+        independiente encontró la fuga donde no miraba: en los caminos de ERROR. Cuatro
+        módulos —bloqueo, diario, reconciliación y atestación— pasaban la ruta cruda,
+        mientras el motor sí la relativizaba. Aquí se recorren los errores de tres módulos
+        distintos, en texto y en JSON, y se exige que ninguno imprima la ruta absoluta del
+        temporal en el que corren. Es lo que hace que la evidencia publicada sea la misma
+        en cualquier máquina.
+        """
+        self.inicializar()
+        self.transicion_ok("tx-a", "items/it-1.json", {"esquema": "ads.estado/1", "n": 1})
+
+        # tres corrupciones que salen por tres módulos distintos
+        with open(self.ruta_estado("canonico", "items", "it-1.json"), "w",
+                  encoding="utf-8") as fh:
+            fh.write('{"esquema": "ads.estado/1", "n": 99}\n')
+        ordenes = [["verificar"], ["leer", "items/it-1.json"], ["auditar"],
+                   ["reconciliacion", "--pendientes"]]
+
+        raiz_temporal = os.path.realpath(self.tmp)
+        for orden in ordenes:
+            for extra in ([], ["--json"]):
+                proceso = cli(self.repo, orden + extra)
+                salida = (proceso.stdout or "") + (proceso.stderr or "")
+                self.assertNotIn(raiz_temporal, salida,
+                                 f"`{' '.join(orden + extra)}` imprime la ruta absoluta de "
+                                 f"la máquina: la evidencia dejaría de ser reproducible")
+                self.assertNotIn(self.repo, salida)
+                for linea in salida.splitlines():
+                    self.assertNotRegex(
+                        linea, r"(?<![\w])/(?:tmp|home|Users|var)/",
+                        "una ruta absoluta se ha colado en la salida de error")
+
 
 class Atestacion(Caso):
 
@@ -1607,9 +1683,13 @@ class Concurrencia(Caso):
                                       {"esquema": "ads.estado/1", "n": 2})
             self.assertEqual(proceso.returncode, 1,
                              "el escritor bloqueado no falló: ¿escribió sin el cerrojo?")
-            self.assertIn(codigo_de_error(proceso),
-                          {"REINTENTOS_AGOTADOS", "BLOQUEO_NO_ADQUIRIDO",
-                           "ESCRITOR_CONCURRENTE"})
+            # SE EXIGE `REINTENTOS_AGOTADOS`, y ya no se admite `ESCRITOR_CONCURRENTE`.
+            # Admitirlo era el agujero que la auditoría independiente encontró: es
+            # justamente el código del camino que NO abre el registro de `g.9`, de modo
+            # que la prueba daba por buena la rama no conforme.
+            self.assertEqual(codigo_de_error(proceso), "REINTENTOS_AGOTADOS",
+                             "agotar los reintentos tiene que decirlo con SU código: "
+                             "`ESCRITOR_CONCURRENTE` es el camino que no abre el registro")
         finally:
             open(relevo, "w").close()
             retenedor.communicate(timeout=SEGUNDOS_DE_ESPERA)
@@ -1693,6 +1773,139 @@ class Concurrencia(Caso):
             self.assertLessEqual(len(alm.listar()), 1)
             alm.verificar_integridad()
             alm.auditar()
+
+
+    def test_66_recuperar_al_abrir_con_ventana_abierta_agota_y_registra(self):
+        """T176 · Defecto que previene: la mitad de `G-A5` que sólo se ve con ventana abierta.
+
+        `g.6` y `G-A5` exigen que agotar los reintentos «produce el registro auxiliar». La
+        auditoría independiente demostró que eso sólo se cumplía cuando la ventana estaba
+        CERRADA: con otro escritor a mitad de transición —el caso EXACTO del que habla
+        `g.6`—, la recuperación del arranque agotaba sus intentos y salía con
+        `ESCRITOR_CONCURRENTE` **sin registro `g.9`**. Aquí se monta ese caso a propósito:
+        una ventana abierta de verdad, provocada matando un proceso en el punto de no
+        retorno, y el cerrojo retenido por otro proceso vivo.
+        """
+        self.inicializar()
+        self.transicion_ok("tx-a", "items/it-1.json", {"esquema": "ads.estado/1", "n": 1})
+        rev_antes = self.revision()
+
+        # ventana ABIERTA de verdad: el proceso muere tras `preparada` y antes de publicar
+        muerto = self.transicion("tx-v", "items/it-2.json",
+                                 {"esquema": "ads.estado/1", "n": 2},
+                                 fallo="antes-del-commit-atomico")
+        self.assertEqual(muerto.returncode, 70, "la caída controlada no ocurrió")
+        with self.almacen(recuperar=False) as alm:
+            self.assertEqual(alm.estado_de_la_ventana(), "preparada")
+
+        listo = os.path.join(self.tmp, "cerrojo-tomado-2")
+        relevo = os.path.join(self.tmp, "suelta-el-cerrojo-2")
+        retenedor = subprocess.Popen(
+            [sys.executable, self.retenedor_py, self.cerrojo, listo, relevo],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=ENTORNO,
+            cwd=tempfile.gettempdir())
+        try:
+            limite = time.monotonic() + 30
+            while not os.path.exists(listo) and time.monotonic() < limite:
+                time.sleep(0.01)
+            self.assertTrue(os.path.exists(listo), "el retenedor no llegó a tomar el cerrojo")
+            error = self.assertFalloCerrado(errores.ReintentosAgotados,
+                                            estado.abrir, self.repo, recuperar=True)
+            self.assertEqual(error.codigo, "REINTENTOS_AGOTADOS")
+        finally:
+            open(relevo, "w").close()
+            retenedor.communicate(timeout=SEGUNDOS_DE_ESPERA)
+
+        self.assertEqual(solo_durables(self.revision()), solo_durables(rev_antes),
+                         "la recuperación que no pudo tomar el cerrojo movió el estado")
+        with self.almacen() as alm:
+            pendientes = alm.reconciliacion_pendiente()
+        self.assertTrue(pendientes,
+                        "agotar los reintentos AL RECUPERAR no dejó el registro de `g.9`: "
+                        "`G-A5` no dice «al aplicar», dice al agotar los reintentos")
+        self.assertTrue(any(p.get("item") for p in pendientes),
+                        "el registro auxiliar no dice sobre qué item se agotaron")
+
+    def test_67_la_cola_del_registro_nacido_por_reintentos_no_se_puede_borrar(self):
+        """T178 · Defecto que previene: cerrar una pendencia borrando su última línea.
+
+        ES EL DEFECTO QUE BLOQUEABA EL CORTE, y lo encontró la auditoría independiente. El
+        contraste del registro contra el diario sólo alcanza a las aperturas que dejaron
+        evento allí, y la apertura POR REINTENTOS AGOTADOS **no puede dejarlo**: quien
+        agota los reintentos nunca obtuvo el cerrojo del escritor. Como una cadena de
+        huellas no detecta que le quiten la COLA —el prefijo sigue encadenado—, borrar esa
+        línea cerraba la pendencia en silencio y `verificar` y `auditar` decían `ok`.
+
+        Se prueban CINCO vectores sobre el camino real, y los tres caminos de lectura.
+        """
+        self.inicializar()
+        self.transicion_ok("tx-a", "items/it-1.json", {"esquema": "ads.estado/1", "n": 1})
+
+        listo = os.path.join(self.tmp, "cerrojo-tomado-3")
+        relevo = os.path.join(self.tmp, "suelta-el-cerrojo-3")
+        retenedor = subprocess.Popen(
+            [sys.executable, self.retenedor_py, self.cerrojo, listo, relevo],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=ENTORNO,
+            cwd=tempfile.gettempdir())
+        try:
+            limite = time.monotonic() + 30
+            while not os.path.exists(listo) and time.monotonic() < limite:
+                time.sleep(0.01)
+            self.assertTrue(os.path.exists(listo), "el retenedor no llegó a tomar el cerrojo")
+            self.transicion("tx-b", "items/it-2.json", {"esquema": "ads.estado/1", "n": 2})
+        finally:
+            open(relevo, "w").close()
+            retenedor.communicate(timeout=SEGUNDOS_DE_ESPERA)
+
+        registro = self.ruta_estado("reconciliacion", "REGISTRO.jsonl")
+        cabeza = self.ruta_estado("reconciliacion", "CABEZA.json")
+        with self.almacen() as alm:
+            pendientes = alm.reconciliacion_pendiente()
+        self.assertTrue(pendientes, "no nació ninguna pendencia por reintentos agotados")
+        self.assertTrue(os.path.exists(cabeza),
+                        "el registro no tiene cabeza durable: sin ella, quitarle la cola es "
+                        "indetectable, porque el prefijo sigue perfectamente encadenado")
+
+        original = texto_de(registro)
+        original_cabeza = bytes_de(cabeza)
+        lineas = [l for l in original.splitlines() if l.strip()]
+
+        def _restaurar():
+            with open(registro, "w", encoding="utf-8") as fh:
+                fh.write(original)
+            with open(cabeza, "wb") as fh:
+                fh.write(original_cabeza)
+
+        def _escribir_registro(texto):
+            with open(registro, "w", encoding="utf-8") as fh:
+                fh.write(texto)
+
+        vectores = {
+            "borrar la ÚLTIMA línea": lambda: _escribir_registro(
+                "".join(l + "\n" for l in lineas[:-1])),
+            "borrar TODAS las líneas": lambda: _escribir_registro(""),
+            "borrar la CABEZA": lambda: os.remove(cabeza),
+            "truncar la CABEZA": lambda: open(cabeza, "wb").close(),
+        }
+        for nombre, mutar in vectores.items():
+            with self.subTest(vector=nombre):
+                _restaurar()
+                mutar()
+                # LOS TRES CAMINOS DE LECTURA, no sólo el que más se mira. Deducir la
+                # pendencia de un registro al que le falta la cola NO es deducirla de forma
+                # inequívoca, y `g.9` exige que lo sea.
+                for orden in (["reconciliacion", "--pendientes"], ["verificar"], ["auditar"]):
+                    proceso = cli(self.repo, orden)
+                    self.assertEqual(
+                        proceso.returncode, 1,
+                        f"«{nombre}» no hizo fallar `{orden[0]}`: una pendencia se estaría "
+                        f"retirando SIN la transición explícita que `g.9` y `G-A6` exigen")
+                    self.assertEqual(codigo_de_error(proceso),
+                                     "REGISTRO_DE_RECONCILIACION_CORRUPTO")
+        _restaurar()
+        with self.almacen() as alm:
+            self.assertTrue(alm.reconciliacion_pendiente(),
+                            "restaurar el registro íntegro tiene que devolver la pendencia")
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):

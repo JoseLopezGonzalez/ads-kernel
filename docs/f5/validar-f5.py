@@ -46,9 +46,14 @@ QUE COMPRUEBA, y nada mas:
       avanzara
   F18 NINGUN contrato de F6 se presenta como IMPLEMENTADO o EJECUTADO SIN CITAR, EN LA
       MISMA LINEA, un fichero de evidencia publicado que EXISTA; y NINGUNO se presenta como
-      CERTIFICADO, en ningun sitio y bajo ninguna condicion. Antes de que F6 empezara, la
-      regla podia ser «nada»; ahora que construye, «nada» seria falso y «lo que sea» seria
-      peor. La condicion es la evidencia, y se comprueba contra el arbol
+      CERTIFICADO bajo ninguna condicion. Antes de que F6 empezara, la regla podia ser
+      «nada»; ahora que construye, «nada» seria falso y «lo que sea» seria peor. La
+      condicion es la evidencia, y se comprueba contra el arbol.
+      SU AMBITO ES ACOTADO, Y SE DICE EN VEZ DE CALLARLO: docs/f5, docs/canonico y
+      docs/rediseno. NO alcanza a la raiz del repositorio, a docs/evolucion ni a kernel/.
+      Que la raiz del repositorio no este en ningun inventario de contenido es el hallazgo
+      S1-02, ADJUDICADO y VIVO, y este control NO lo cierra: quien lo lea como si cubriera
+      todo el arbol se estaria fiando de una cobertura que no existe
   F19 PesquerApp sigue declarada BLOQUEADA en la unica sede del estado de fase
   F20 el ESTADO CANONICO, el DIARIO CANONICO y el REGISTRO AUXILIAR de reconciliacion
       permanecen como TRES materias declaradas y separadas en la seccion (g)
@@ -146,9 +151,24 @@ PROHIBIDO_F5_CERRADA = re.compile(
 # EL ACTO que las legitima, buscado en la SEDE CANONICA DEL OWNER y en ningun otro sitio.
 # Sin acto, toda afirmacion de cierre sigue siendo ROJA.
 ACTO_DE_CIERRE_DE_F5 = re.compile(r"^Declaro\s+`?F5`?\s+CERRADA\.", re.M)
+# EL SUJETO tiene que ser de F6. Sin esto, la fila de `C-L.5` —que SI esta certificada, y
+# es de F4c— saldria roja, y un control que da falsos rojos se acaba desactivando.
+_SUJETO_F6 = (r"(?:`?V6-[0-9]+`?|`?F6-[A-J]`?|`?F6`?|contrato|verificador|runtime|"
+              r"motor de estado durable|ra[íi]z externa|adaptador|dispatcher)")
+# LA COPULA ES OPCIONAL, y es la correccion determinada que la auditoria exigio: la version
+# anterior pedia «esta», de modo que «queda CERTIFICADO», «ha sido CERTIFICADO», «se declara
+# CERTIFICADO» y —sobre todo— la FILA DE TABLA sin verbo pasaban en verde. Es el mismo
+# defecto que F17 ya habia corregido y que no se propago a F18.
+# LA AFIRMACION VA EN MAYUSCULAS, y no es capricho: es como el corpus escribe estas
+# afirmaciones —«NINGUNO implementado, ejecutado ni certificado», «CERTIFICADA POR DELTA»—,
+# y distinguirlo por la caja evita los falsos rojos que la prosa corriente produce
+# —«contratos de veto implementados», «la implementación construida»—. Un control que da
+# falsos rojos se acaba desactivando, y entonces no protege nada.
+# El sujeto NO puede ir seguido de guion: `contrato-definido` y `prueba-ejecutada` son
+# VOCABULARIO DE ESTADO DE PRUEBA, no afirmaciones sobre un contrato de F6.
 PROHIBIDO_F6_IMPLEMENTADO = re.compile(
-    r"(?:contrato|verificador|runtime)[^.\n]{0,60}\b(?:ya\s+)?(?:está|esta)\s+\**\s*"
-    r"(?:IMPLEMENTAD|EJECUTAD|CERTIFICAD)", re.IGNORECASE)
+    r"(?<![\w])(?i:" + _SUJETO_F6 + r")(?![\w-])"
+    r"[^.\n]{0,70}?\**\s*(?:IMPLEMENTAD|EJECUTAD|CERTIFICAD)[OA]S?\b")
 # CERTIFICADO no admite excusa: la certificacion de F6 la emite un juicio independiente y no
 # quien construyo —criterio B6—, y hoy no existe ninguno.
 AFIRMA_CERTIFICADO = re.compile(r"CERTIFICAD", re.IGNORECASE)

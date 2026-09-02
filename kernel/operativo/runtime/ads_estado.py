@@ -4,15 +4,24 @@
     python3 kernel/operativo/runtime/ads_estado.py --repo <dir> <orden> [...]
 
 Órdenes: `inicializar` · `revision` · `leer` · `listar` · `transicion` · `recuperar` ·
-`verificar` · `auditar` · `reconciliacion` · `resolver` · `migrar` · `atestar`.
+`verificar` · `auditar` · `reconciliacion` · `abrir-reconciliacion` · `resolver` ·
+`migrar` · `atestar`.
 
 Códigos de salida:  0 éxito · 1 fallo de la operación (error tipado) · 2 uso incorrecto.
 
-DECISIÓN · la salida sin `--json` NUNCA imprime rutas absolutas de la máquina
+DECISIÓN · NINGUNA salida imprime rutas absolutas de la máquina, tampoco las de error
     La evidencia de `F6` se publica, y una ruta como `/home/quien-sea/...` la vuelve
     dependiente de la máquina y del usuario: dos ejecuciones del escenario darían bytes
     distintos, contra el §12.1, y de paso se filtraría información del entorno. Todo lo que
-    sale es relativo al control repo. `--json` sigue la misma regla por la misma razón.
+    sale es relativo al almacén. `--json` sigue la misma regla por la misma razón.
+
+    Durante un tiempo esto fue FALSO en los caminos de error, y merece decirse porque
+    explica dónde vive ahora la garantía. Cada módulo componía sus errores por su cuenta:
+    `motor` relativizaba y `bloqueo`, `diario`, `reconciliacion` y `atestacion` no, en unos
+    veinte sitios. La promesa fallaba justo en las salidas que se publican. La garantía ya
+    no depende de que cada `raise` se acuerde: `ErrorDeEstado` sanea la ruta en su propio
+    constructor (`estado/errores.py`, `relativizar`), así que cubre los cuatro módulos, los
+    caminos de error de la CLI y el módulo que alguien escriba mañana.
 
 DECISIÓN · sólo las órdenes que MUTAN abren con `recuperar=True`
     Alternativas: (a) recuperar siempre al abrir; (b) recuperar sólo donde se va a escribir.
@@ -211,6 +220,34 @@ def orden_reconciliacion(argumentos):
     return _emitir(argumentos, salida, legible)
 
 
+def orden_abrir_reconciliacion(argumentos):
+    """La vía EXPLÍCITA de apertura del registro auxiliar (`g.9`).
+
+    Existen dos vías, y hasta ahora sólo una era alcanzable desde fuera: la automática, que
+    abre el registro al agotar los reintentos. Que la explícita viviera sólo en la API
+    dejaba un camino del motor sin puerta, y un camino sin puerta es un camino que nadie
+    ejercita. A diferencia de la automática, ésta SÍ toma el bloqueo de escritor y SÍ anota
+    `reconciliacion.abierta` en el diario, porque aquí no hay ninguna contención que lo
+    impida: la asimetría no es un descuido, es lo que `g.6` obliga.
+    """
+    with _abrir(argumentos, para_escribir=True) as almacen:
+        registro = almacen.abrir_reconciliacion(
+            producto=argumentos.producto, repositorio=argumentos.repositorio,
+            item=argumentos.item, intento=argumentos.intento, causa=argumentos.causa,
+        )
+        pendientes = [linea["registro"] for linea in almacen.reconciliacion_pendiente()]
+    salida = {"registro": registro, "producto": argumentos.producto,
+              "repositorio": argumentos.repositorio, "item": argumentos.item,
+              "intento": argumentos.intento, "causa": argumentos.causa,
+              "pendientes": pendientes}
+    return _emitir(argumentos, salida, [
+        "registro      " + registro,
+        "item          " + argumentos.item,
+        "intento       " + str(argumentos.intento),
+        "pendientes    " + ", ".join(pendientes or ["(ninguna)"]),
+    ])
+
+
 def orden_resolver(argumentos):
     with _abrir(argumentos, para_escribir=True) as almacen:
         resultado = almacen.resolver_reconciliacion(
@@ -278,6 +315,7 @@ ORDENES = {
     "verificar": orden_verificar,
     "auditar": orden_auditar,
     "reconciliacion": orden_reconciliacion,
+    "abrir-reconciliacion": orden_abrir_reconciliacion,
     "resolver": orden_resolver,
     "migrar": orden_migrar,
     "atestar": orden_atestar,
@@ -330,6 +368,13 @@ def construir_analizador():
 
     reconciliacion = ordenes.add_parser("reconciliacion", parents=[comun])
     reconciliacion.add_argument("--pendientes", action="store_true")
+
+    abrir_rec = ordenes.add_parser("abrir-reconciliacion", parents=[comun])
+    abrir_rec.add_argument("--producto", required=True)
+    abrir_rec.add_argument("--repositorio", required=True)
+    abrir_rec.add_argument("--item", required=True)
+    abrir_rec.add_argument("--intento", type=int, required=True)
+    abrir_rec.add_argument("--causa", required=True)
 
     resolver = ordenes.add_parser("resolver", parents=[comun])
     resolver.add_argument("registro")

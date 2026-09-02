@@ -132,9 +132,11 @@ entonces:
   - "exactamente uno tiene éxito y el otro recibe revisión obsoleta o escritor concurrente"
   - "un bloqueo abandonado por un proceso muerto se reclama sin heurística de caducidad"
   - "agotar los reintentos NO modifica el estado canónico y produce el registro auxiliar"
+  - "agotarlos AL RECUPERAR al abrir, con una ventana abierta, produce el registro igual: G-A5 no dice «al aplicar»"
 falla_si:
   - "los dos escritores tienen éxito para la misma revisión"
   - "agotar reintentos deja el estado canónico tocado"
+  - "agotar reintentos se declara con el código del camino que NO abre el registro auxiliar"
 ejecucion: validador-estructural
 validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
 estado: prueba-superada
@@ -182,6 +184,8 @@ entonces:
 falla_si:
   - "el registro auxiliar es el estado canónico o el diario con otro nombre"
   - "la pendencia desaparece sin una transición que la explique"
+  - "quitarle la COLA al registro pasa desapercibido: una cadena de huellas no detecta que le quiten la última línea"
+  - "la comprobación vive sólo en la verificación y no en el camino de lectura que deduce la pendencia"
   - "el registro modifica por sí mismo el estado canónico"
 ejecucion: validador-estructural
 validador: kernel/operativo/runtime/pruebas/test_estado_durable.py

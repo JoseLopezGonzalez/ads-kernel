@@ -28,6 +28,54 @@ motor con rutas lógicas y digests, nunca con contenido de fichero ni con entorn
 """
 from __future__ import annotations
 
+import os
+
+# El nombre del directorio raíz del almacén. Vive AQUÍ, y no en `rutas`, porque quien lo
+# necesita primero es el saneador de rutas de más abajo, y `rutas` importa de este módulo:
+# la dependencia sólo puede ir en un sentido. `rutas.RAIZ_ALMACEN` lo reexporta, de modo que
+# la disposición física sigue teniendo un único nombre y una única definición.
+RAIZ_ALMACEN = "estado"
+
+
+def relativizar(ruta):
+    """Recorta una ruta ABSOLUTA de la máquina a partir de la raíz del almacén.
+
+    Defecto que previene, y es doble:
+
+      1 · DETERMINISMO. El §11 y `I-g3` exigen que la salida sea comparable byte a byte
+          entre máquinas. Un `/home/quien-sea/proyecto/estado/diario/DIARIO.jsonl` dentro
+          de un mensaje de error convierte la evidencia publicada en algo que cambia con el
+          usuario, el directorio temporal y la máquina.
+      2 · FUGA. Una ruta absoluta describe el árbol de directorios de quien ejecuta, y eso
+          acaba en un log, en una captura de pantalla o en un issue.
+
+    Se sanea AQUÍ, en el constructor del error, y no en cada `raise`. La alternativa era
+    que cada módulo relativizara al construir su error: `motor` lo hacía y `bloqueo`,
+    `diario`, `reconciliacion` y `atestacion` no, en unos veinte sitios, y el resultado fue
+    que la promesa del docstring de la CLI era falsa justo en los caminos de error, que son
+    los que se publican. Un saneador central no se puede olvidar, y cubre también el
+    módulo que alguien escriba mañana.
+
+    Lo que NO toca: las rutas ya relativas (`estado/diario/DIARIO.jsonl`), las rutas
+    lógicas (`items/it-1.json`) y los identificadores (`rec-0001`, `tx-3`). Todas ellas ya
+    son deterministas y se devuelven intactas.
+    """
+    if not isinstance(ruta, str) or not ruta:
+        return ruta
+    if not os.path.isabs(ruta):
+        return ruta
+    partes = ruta.replace("\\", "/").split("/")
+    # El ÚLTIMO segmento `estado`, no el primero: si el control repo colgara de un
+    # directorio llamado también `estado`, quedarse con el primero devolvería una ruta que
+    # no es la del almacén.
+    for indice in range(len(partes) - 1, -1, -1):
+        if partes[indice] == RAIZ_ALMACEN:
+            return "/".join(partes[indice:])
+    # Fuera del almacén —la evidencia de atestación de `g.15` vive fuera a propósito— no
+    # hay raíz respecto a la que relativizar, y el nombre a secas es lo único que se puede
+    # decir sin publicar el árbol de directorios de quien ejecuta.
+    return partes[-1]
+
 
 class ErrorDeEstado(Exception):
     """Raíz de todo fallo del motor. Nadie captura `Exception` por encima de ésta."""
@@ -40,7 +88,7 @@ class ErrorDeEstado(Exception):
         # atajo para inventar códigos nuevos: el §8 es la lista cerrada.
         self.codigo = codigo or self.CODIGO
         self.detalle = detalle
-        self.ruta = ruta
+        self.ruta = relativizar(ruta)
         self.contexto = dict(contexto)
         super().__init__(str(self))
 

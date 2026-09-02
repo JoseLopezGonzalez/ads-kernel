@@ -971,7 +971,8 @@
 
 ```text
 CHECKPOINT — ADS-NEXT/12 · SIS/evolucion
-actualizado: 2026-09-02   · reanclado por la RATIFICACIÓN DE LA CERTIFICACIÓN INCREMENTAL,
+actualizado: 2026-09-02   · reanclado por el CIERRE DE `F5`, EL INICIO DE `F6` Y SU PRIMER
+             CORTE VERTICAL. Antes lo estuvo por la RATIFICACIÓN DE LA CERTIFICACIÓN INCREMENTAL,
              en el MISMO commit que registra el evento —regla 4—. **Cuál es la última
              resolución NO se escribe aquí** —regla 3—: sale de SU sede canónica. **Cuál es el
              último documento y qué declara tampoco** —reglas 1 y 2—:
@@ -1053,7 +1054,26 @@ regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histór
                   indefinido dejó durante nueve documentos una viñeta describiendo en
                   presente un gate de hacía quince, y decidir hasta dónde llegaba era
                   interpretación humana no normada.
-metodo:      SIS/Evolucion · **CERTIFICACIÓN INCREMENTAL RATIFICADA POR VERIFICACIÓN
+metodo:      PLT/Maquinaria · **`F5` CERRADA E `F6` INICIADA POR ACTO DEL OWNER, Y CONSTRUIDO
+             SU PRIMER CORTE VERTICAL.** El Owner emitió `O24` —el acto que `O23` §11 le
+             reservaba— y sobre él se construyó un motor real de estado durable, con su
+             batería ejecutada y su escenario extremo a extremo.
+             EL ESTADO DE LAS FASES NO SE ESCRIBE AQUÍ —regla 1—. Tiene UNA sede y es
+             [`03-GOBIERNO-Y-AUTORIDAD.md`](../canonico/03-GOBIERNO-Y-AUTORIDAD.md) §6.
+             Este bloque decía lo contrario mientras la fase avanzaba, y ésa era la QUINTA
+             recurrencia de la clase «el checkpoint no reancla»: se corrige dejando de
+             copiar el estado, no escribiéndolo mejor.
+             LO QUE ESTE EVENTO NO HACE, y se dice porque es lo que más se malinterpreta:
+             **no certifica nada**. Implementado y probado NO es certificado, la
+             certificación la emite un juicio independiente y no quien construyó, y
+             **PesquerApp sigue BLOQUEADA**. `C-L.7` y `M-04` siguen donde estaban.
+             QUÉ ESTÁ CONSTRUIDO Y QUÉ NO **tampoco se copia** —regla 1—: su sede es
+             [`04-CONTRATOS-TECNICOS.md`](../canonico/04-CONTRATOS-TECNICOS.md) §1, y el
+             reparto contrato a contrato,
+             [`docs/f6/00-ESTADO-DE-IMPLEMENTACION-F6.md`](../f6/00-ESTADO-DE-IMPLEMENTACION-F6.md).
+             REANCLADO EN EL MISMO COMMIT QUE REGISTRA EL EVENTO —regla 4—, y lo anterior NO
+             se borra: baja íntegro a `metodo_anterior` —regla 5—.
+metodo_anterior: SIS/Evolucion · **CERTIFICACIÓN INCREMENTAL RATIFICADA POR VERIFICACIÓN
              SUSTITUTIVA**, con LECTURA INTEGRAL COMPLETA. **`F4c` sigue CERRADA por
              composición** y **`F5` AUTORIZADA DOCUMENTALMENTE y NO INICIADA**.
              POR QUÉ HUBO QUE RATIFICARLA, y se dice sin adorno: **la certificación anterior
@@ -1457,7 +1477,28 @@ rama_de_trabajo: NO SE ESCRIBE AQUÍ, Y ES DELIBERADO. Este campo nombró durant
 freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo dicho bajo
              Python 3.10 —9/13, T158 fallida, cobertura 291 frente a 293, nada publicado—
              queda marcado HISTÓRICO y SUPERADO, y no se borra
-last_meaningful_event: **UNA VERIFICACIÓN SUSTITUTIVA CON LECTURA INTEGRAL COMPLETA
+last_meaningful_event: **EL OWNER CIERRA `F5`, INICIA `F6`, Y `F6` ENTREGA SU PRIMER CORTE
+             VERTICAL EJECUTABLE.** `O23` §11 reservaba el cierre a un acto posterior y
+             expreso del Owner sobre cuatro cosas demostradas; el acto es `O24`, y está
+             inscrito LITERAL en la sede canónica append-only. Sobre él, `F6` construyó el
+             contrato derivado que `g.17` nombraba y dejaba sin escribir: un motor de estado
+             durable con estado canónico, diario y registro auxiliar como TRES estructuras
+             separadas, protocolo transaccional atómico, recuperación con las dos ramas de
+             `g.8`, concurrencia serializada sin doble éxito, integridad con fallo cerrado y
+             migración explícita.
+             LO QUE ESTO ESTRENA: **es la primera vez que este expediente entrega código que
+             administra el ESTADO DE UN PRODUCTO** y no un validador que comprueba la
+             consistencia del corpus. Son cosas distintas, y un verde de la segunda no dice
+             nada sobre la primera.
+             QUÉ NO CAMBIA, y no se copia de una sede a otra —regla 1—: el estado de fase
+             vive en [`03-GOBIERNO-Y-AUTORIDAD.md`](../canonico/03-GOBIERNO-Y-AUTORIDAD.md)
+             §6 y la deuda viva en
+             [`06-DEUDA-Y-LIMITACIONES-VIGENTES.md`](../canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md).
+             **Ningún hallazgo se declara SUPERADO por este evento**, y ningún contrato se
+             declara CERTIFICADO.
+             REANCLADO EN EL MISMO COMMIT QUE REGISTRA EL EVENTO —regla 4—, y lo anterior NO
+             se borra: baja íntegro a `last_meaningful_event_anterior` —regla 5—.
+last_meaningful_event_anterior: **UNA VERIFICACIÓN SUSTITUTIVA CON LECTURA INTEGRAL COMPLETA
              RATIFICA LA CERTIFICACIÓN INCREMENTAL.** La anterior no bastaba: su verificador
              había leído sólo en parte, lo declaró él mismo, y `O22` §3 no admite lectura
              parcial. **Sustituir no es complementar**, y el verificador nuevo derivó todo por

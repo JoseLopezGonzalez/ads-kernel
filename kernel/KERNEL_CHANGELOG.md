@@ -49,6 +49,20 @@ Se declara la frontera con su motivo, y **sólo se activa donde la ruta no exist
 repositorio existen las tres, el enlace resuelve y no se tolera nada. Una entrada cuya ruta no
 exista aquí es un fallo, de modo que la lista no sirve para silenciar un enlace roto de verdad.
 
+**Y lo que una auditoría independiente encontró, corregido en la misma versión.** Un auditor
+que no construyó nada intentó romperlo con medios que la batería no usa —120 `SIGKILL`
+externos en instantes aleatorios, 24 escritores concurrentes, siete formas de corromper el
+estado y ocho el diario— y **no consiguió** perder una transición confirmada, publicar una
+parcial ni obtener doble éxito. Sí encontró un agujero real: **una cadena de huellas no
+detecta que le quiten la COLA**, y por ahí una reconciliación nacida de reintentos agotados
+—la única que el runtime abre de verdad, y que no puede dejar evento en el diario porque
+quien agota los reintentos nunca obtuvo el cerrojo— se cerraba borrando una línea. Se cierra
+con una **cabeza durable** del registro, publicada de forma atómica bajo el bloqueo propio del
+registro y comprobada **en el camino de lectura**. Con ella se corrigieron dos cosas más:
+agotar los reintentos **al recuperar al abrir** ahora deja también su registro `g.9`, y el
+saneado de rutas absolutas en los errores pasa a vivir **en un solo punto** en vez de repartido
+por veinte sitios, que es como se rompió la primera vez.
+
 **Nada de esto está CERTIFICADO.** Implementado y probado no es certificado: la certificación
 de `F6` la emite un juicio independiente y no quien construyó, y PesquerApp sigue BLOQUEADA.
 

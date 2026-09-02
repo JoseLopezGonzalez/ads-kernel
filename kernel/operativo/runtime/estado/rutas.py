@@ -48,9 +48,17 @@ import os
 import re
 import shutil
 
-from .errores import ErrorDeEstado, EstadoCorrupto, PermisoInsuficiente, RutaInvalida
+from .errores import (
+    RAIZ_ALMACEN,
+    ErrorDeEstado,
+    EstadoCorrupto,
+    PermisoInsuficiente,
+    RutaInvalida,
+)
 
-RAIZ_ALMACEN = "estado"
+# `RAIZ_ALMACEN` se define en `errores` y se reexporta aquí: el saneador de rutas de los
+# errores lo necesita, y `errores` no puede importar de `rutas` sin crear un ciclo. La
+# disposición física lo sigue usando desde aquí, y sigue habiendo UNA sola definición.
 FORMATO = "FORMATO.json"
 REVISION = "REVISION.json"
 SUFIJO_TEMPORAL = ".tmp"

@@ -122,7 +122,34 @@ diario y revisión, nunca reloj de pared, que rompería `I-g3`—. `reconciliaci
 
 **Se retira por una sola vía**: una transición explícita de reconciliación, que escribe la
 resolución en el registro **dentro de la misma transacción** que la explica en el diario.
-Borrar o alterar el registro a mano rompe la cadena y produce **fallo cerrado**.
+
+**Y una cadena de huellas NO basta, aunque lo parezca.** Detecta que una línea se modifique y
+que se quite una del medio, pero **no que se quite la última**: el prefijo que queda sigue
+perfectamente encadenado. Ése era el agujero, y por él una pendencia nacida de **reintentos
+agotados** —la única que el runtime abre de verdad, y que **no puede** dejar evento en el
+diario porque quien agota los reintentos nunca obtuvo el cerrojo del escritor— se cerraba
+borrando una línea, con `verificar` y `auditar` diciendo `ok`.
+
+Se cierra con una **cabeza durable**, `reconciliacion/CABEZA.json`, que guarda la última
+secuencia y su huella y se publica de forma atómica tras cada anexado, **bajo el bloqueo
+propio del registro y nunca el del escritor**. Quitar la cola contradice la cabeza, y eso es
+detectable siempre. La comprobación vive en el **camino de lectura**, no sólo en la
+verificación: deducir la pendencia de un registro al que le falta la cola no es deducirla de
+forma inequívoca, y `g.9` exige que lo sea.
+
+> **Las dos alternativas descartadas, y por qué.** Anotar toda apertura en el diario rompe
+> `g.6`: el que agota los reintentos no tiene el cerrojo. Anclar la huella del registro en
+> `REVISION.json` haría depender el estado canónico del registro auxiliar, que es el colapso
+> exacto que `I-g7` prohíbe. La cabeza vive en la materia del registro, no es el log: es un
+> puntero monótono a su extremo.
+>
+> **Y el residuo, dicho en vez de callado.** Entre el `fsync` de una línea y el reemplazo de
+> la cabeza hay una ventana de **un anexado**; tolerarla es obligatorio, porque si no
+> cualquier corte dejaría el registro inservible. Quien borrase la última línea exactamente
+> en esa ventana no sería detectado, y la detección vuelve en cuanto el registro anexa otra
+> vez o el almacén se recupera. Falsificar a la vez el log y su cabeza sigue sin ser
+> detectable **desde dentro del árbol**, que es literalmente lo que `g.5` advierte y lo que
+> `g.15` reserva a la raíz externa.
 
 ## 7 · Versionado y migración
 

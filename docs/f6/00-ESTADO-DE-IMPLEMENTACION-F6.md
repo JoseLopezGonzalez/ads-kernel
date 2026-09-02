@@ -81,6 +81,37 @@ EXTERNO                          su sujeto vive fuera de este repositorio
 > CERTIFICADO**. La certificación de `F6` la emite un juicio independiente, y **no quien
 > construyó** —criterio `B6`—. Nada de esta tabla desbloquea PesquerApp.
 
+**Cómo se reparten las nueve condiciones de `g.16`, para que la primera fila no se lea de
+más.** `(g)` §16 dice que una implementación satisface **la sección** cuando **las nueve** se
+demuestran sobre un árbol real. La sección **NO está satisfecha entera**, y esta tabla no
+dice que lo esté: dice que lo está el **primero de sus tres contratos derivados**. El reparto
+es éste, y cada condición cae en un contrato y en uno solo:
+
+```text
+contrato de ESTADO DURABLE  ·  g.1–g.13   →  G-A1 · G-A2 · G-A3 · G-A4 · G-A5 · G-A6 · G-A7
+                                              las SIETE demostradas sobre árbol real, con
+                                              escenario positivo y negativo, en T173–T179
+
+contrato de GOBIERNO GIT    ·  g.14       →  G-A8   NO demostrada. La rama canónica no
+DEL CONTROL REPO                              contiene estado parcial —la zona operacional
+                                              queda fuera del versionado—, pero la
+                                              imposibilidad POR POLÍTICA de forzar una
+                                              referencia, y su detección, son del corte
+                                              siguiente. Por eso ese contrato es PARCIAL
+
+contrato de RAÍZ EXTERNA    ·  g.15       →  G-A9   NO demostrada con una raíz externa real.
+DE CONFIANZA                                  Existe la interfaz, sus proveedores
+                                              intercambiables y su fallo cerrado; la
+                                              atestación se prueba con un proveedor EFÍMERO
+                                              DE PRUEBAS, que no es una custodia productiva.
+                                              Por eso ese contrato es PARCIAL, y `FD-1` sigue
+                                              abierta
+```
+
+> **La consecuencia, dicha contra el propio interés:** mientras `G-A8` y `G-A9` no se
+> demuestren, **la sección `(g)` no está satisfecha**, y nadie puede citar la primera fila de
+> la tabla para afirmar lo contrario.
+
 ## 4 · Los validadores documentales NO son el runtime de `F6`
 
 **Se dice porque la confusión es barata y cara de deshacer.** La batería del corpus
@@ -105,7 +136,47 @@ alternativas, en el contrato derivado:
 | **la variable de la guarda sólo puede SUBIR la exigencia** | permitir bajarla para desbloquear un entorno | una guarda que se relaja por entorno no es una guarda: es un interruptor, y el primero que lo use en CI la apaga para todos |
 | **la lista de especificación que viaja se DERIVA del árbol** | alargar la lista escrita a mano con `(g)` y `E3`–`E6` | una lista a mano al lado de un directorio que crece sólo puede envejecer mal: ya envejeció una vez, y eso es `FD-3` |
 | **la frontera del proyecto instalado se DECLARA en `exclusiones.yaml`** | editar `E5`, que es material APROBADO · embarcar la historia del kernel a cada proyecto | `E5` enlaza tres sedes que a propósito **no viajan**, y dentro del proyecto instalado esos enlaces quedaban rotos. Tocar `E5` sería reabrir `F5`, que `O24` §5 prohíbe; embarcar la historia es lo que el arranque declara no hacer. La declaración **sólo se activa donde la ruta no existe**, de modo que en este repositorio no tolera nada, y una entrada cuya ruta no exista aquí es un FALLO: no sirve para silenciar un enlace roto de verdad |
-| **`F17` y `F18` de `validar-f5.py` se ANCLAN al acto y a la evidencia** en vez de retirarse | dejarlos como estaban —quedarían vacíos o darían falso rojo— · borrarlos | un control que se retira cuando la fase avanza no protege nada. `F17` busca el acto del Owner en su sede canónica y sin él sigue en rojo; `F18` exige que toda afirmación de «implementado» cite un fichero de evidencia publicado que exista, y mantiene «certificado» prohibido en todas partes |
+| **`F17` y `F18` de `validar-f5.py` se ANCLAN al acto y a la evidencia** en vez de retirarse | dejarlos como estaban —quedarían vacíos o darían falso rojo— · borrarlos | un control que se retira cuando la fase avanza no protege nada. `F17` busca el acto del Owner en su sede canónica y sin él sigue en rojo; `F18` exige que toda afirmación de «implementado» cite un fichero de evidencia publicado que exista, y prohíbe «certificado» en cualquier redacción —con cópula, sin ella y en fila de tabla—. **Su ámbito es ACOTADO y se dice**: `docs/f5`, `docs/canonico` y `docs/rediseno`, y NO alcanza a la raíz del repositorio, que es el hallazgo `S1-02`, adjudicado y vivo |
+
+## 5 bis · La auditoría independiente, y qué cambió por ella
+
+**Quién la hizo.** Un auditor que no construyó nada de este corte, con el encargo de
+romperlo. No escribió una línea en el árbol: se comprobó al terminar que
+`git status --porcelain` seguía vacío.
+
+**Lo que intentó y NO consiguió**, con medios que la batería no usa: perder una transición
+confirmada matando el proceso con **120 `SIGKILL` externos en instantes aleatorios**;
+publicar una mezcla parcial fabricándola a mano; obtener **doble éxito con 24 escritores
+concurrentes**; evitar el fallo cerrado con **siete formas de corrupción del estado y ocho
+del diario**; leer un almacén de versión futura o anterior sin fallo cerrado; relajar la
+guarda de entorno con **nueve valores distintos**; usar la frontera declarada para silenciar
+un enlace roto de verdad; y romper el determinismo —dos almacenes construidos desde rutas y
+directorios de trabajo distintos dieron los **siete artefactos durables byte-idénticos**, y
+la batería y el escenario dieron bytes idénticos desde tres `cwd` y coincidieron byte a byte
+con la evidencia publicada—.
+
+**Lo que SÍ encontró, y se corrigió en la única pasada de corrección:**
+
+| defecto | clasificación | qué se hizo |
+|---|---|---|
+| una reconciliación nacida de **reintentos agotados** se retiraba borrando su última línea, y `verificar` y `auditar` seguían diciendo `ok` — una cadena de huellas no detecta que le quiten la **cola** | **BLOQUEA EL CORTE** | **cabeza durable** del registro, publicada de forma atómica tras cada anexado bajo el bloqueo propio del registro, y comprobada en el **camino de lectura**. Cinco vectores de manipulación, tres caminos de lectura, todos fallan cerrado |
+| `G-A5` sólo se cumplía con la ventana cerrada: agotar los reintentos **al recuperar al abrir** no dejaba registro auxiliar | CORRECCIÓN DETERMINADA | la recuperación recibe el mismo tratamiento que la aplicación: error tipado **y** registro `g.9` |
+| los errores de cuatro módulos imprimían la **ruta absoluta de la máquina**, contra lo que el propio punto ejecutable declaraba | CORRECCIÓN DETERMINADA | el saneado vive en **un solo punto** —el constructor del error tipado—, no repartido por veinte `raise` que es como se rompió la primera vez |
+| `F18` estaba declarado «en todas partes» y era acotado, y su expresión sólo cazaba una redacción de seis | CORRECCIÓN DETERMINADA | se dice su ámbito real, y la expresión caza cópula, ausencia de cópula y fila de tabla. Comprobado con las ocho redacciones que la auditoría usó |
+| el bloque reanudable de la iniciativa seguía afirmando `F6 NO INICIADA` | CORRECCIÓN DETERMINADA | reanclado, y **dejando de copiar** el estado de fase: se remite a su única sede |
+| la raíz del repositorio no está en ningún inventario de contenido, de modo que la batería pasa con una infracción plantada ahí | **DEUDA DE OTRO CORTE** | es el hallazgo `S1-02`, adjudicado y vivo. Este corte no lo abre ni lo empeora; lo que sí hace es **dejar de sugerir** que lo cubre |
+| `O24` se inscribió sin `procedencia` ni `relaciones de revisión` | no corregible aquí | el texto del Owner se transcribe LITERAL: completarlo sería reescribirlo. Registrado en `FD-2` |
+
+**Residuo declarado del arreglo principal**, y se dice en vez de callarlo: entre el `fsync` de
+una línea del registro y el reemplazo de su cabeza hay una ventana de **un anexado**, que hay
+que tolerar o cualquier corte dejaría el registro inservible; quien borrase la última línea
+exactamente en esa ventana no sería detectado, y la detección vuelve en cuanto el registro
+anexa otra vez o el almacén se recupera. Y **falsificar a la vez el log y su cabeza sigue sin
+ser detectable desde dentro del árbol**: es literalmente lo que `g.5` advierte y lo que `g.15`
+reserva a la raíz externa.
+
+**El veredicto del auditor**, una vez aplicada la corrección: el corte sirve como fundamento
+permanente.
 
 ## 6 · Lo que este corte NO hace
 

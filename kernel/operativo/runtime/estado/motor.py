@@ -417,7 +417,7 @@ class Almacen:
         except EscritorConcurrente as exc:
             # `g.6`: agotar los reintentos NO modifica el estado canónico. Lo único que se
             # escribe es el registro auxiliar, que por eso tiene bloqueo propio.
-            registro = self._abrir_reconciliacion_por_reintentos(transicion, intentos, exc)
+            registro = self._abrir_reconciliacion_por_reintentos(transicion.id, intentos, exc)
             raise ReintentosAgotados(
                 "no se pudo serializar con el escritor concurrente tras " + str(intentos)
                 + " intento(s); el estado canónico queda intacto y se abrió el registro "
@@ -805,15 +805,52 @@ class Almacen:
         # Más intentos que una escritura normal: recuperar no compite por publicar, sólo
         # espera a que el escritor vivo termine. Si de verdad hay otro escritor, es él quien
         # está cerrando la ventana y no hace falta que la cerremos nosotros.
-        bloqueo.adquirir(intentos=10)
+        intentos = 10
+        try:
+            bloqueo.adquirir(intentos=intentos)
+        except EscritorConcurrente as exc:
+            # `G-A5` y `g.6` no distinguen qué operación agotó los reintentos: exigen que
+            # agotarlos deje las órdenes intactas Y produzca el registro auxiliar. Esta
+            # rama faltaba, y era la que más se recorre: `abrir(recuperar=True)` llama aquí
+            # en cada arranque, así que con otro escritor a mitad de transición —el caso
+            # EXACTO del que habla `g.6`— se levantaba `EscritorConcurrente` a secas y la
+            # pendencia no quedaba registrada en ninguna parte.
+            registro = self._abrir_reconciliacion_por_reintentos(
+                self._item_de_la_ventana(), intentos, exc
+            )
+            raise ReintentosAgotados(
+                "no se pudo tomar el bloqueo de escritor para recuperar tras "
+                + str(intentos) + " intento(s); la ventana sigue abierta, el estado "
+                "canónico queda intacto y se abrió el registro auxiliar " + registro,
+                ruta=self._d.relativa(self._d.bloqueo_escritor),
+                registro=registro, intentos=intentos,
+            ) from exc
         try:
             return self._recuperar_bajo_bloqueo()
         finally:
             bloqueo.liberar()
 
+    def _item_de_la_ventana(self):
+        """El identificador de la transacción sin cerrar, para el `item` de `g.9`.
+
+        Se lee SIN el bloqueo —no lo tenemos, por eso estamos aquí— y por eso puede fallar
+        o quedar desfasado. Un registro auxiliar sin `item` no es admisible por `g.9`, así
+        que cuando no se puede averiguar se dice lo que se sabe, `recuperacion`, en vez de
+        inventar un identificador que no correspondería a ninguna transacción.
+        """
+        try:
+            sin_cerrar = self._diario.transaccion_sin_cerrar()
+        except ErrorDeEstado:
+            return "recuperacion"
+        return sin_cerrar[0] if sin_cerrar else "recuperacion"
+
     def _recuperar_bajo_bloqueo(self):
         descartados = self._diario.reparar_cola()
         self._registro.reparar_cola()
+        # Vuelve a anclar la cabeza del registro auxiliar al extremo real de su log. Cierra
+        # la holgura de una línea que deja un corte entre el anexado y la publicación de la
+        # cabeza, y con ella la única ventana en que borrar la cola no sería detectable.
+        self._registro.sincronizar_cabeza()
         eventos = self._diario.eventos()
         marcadas = sorted({
             evento["transaccion"] for evento in eventos
@@ -1321,11 +1358,17 @@ class Almacen:
             error.hallazgos = hallazgos
             raise error
 
-    def _abrir_reconciliacion_por_reintentos(self, transicion, intentos, causa):
+    def _abrir_reconciliacion_por_reintentos(self, item, intentos, causa):
         """Registro auxiliar tras agotar los reintentos. NO toca el estado canónico.
 
         No anota nada en el diario, y no puede: no tiene el bloqueo de escritor, y el diario
         es estado canónico. `g.6` exige justamente que este camino deje el estado intacto.
+
+        `item` es una cadena y no una `Transicion` porque hay DOS operaciones que pueden
+        agotar los reintentos y las dos deben producir este registro: la transición, cuyo
+        `item` es su identificador, y la recuperación al arrancar, cuyo `item` es la
+        transacción que iba a cerrar. `G-A5` no dice «al aplicar»: dice que agotar los
+        reintentos deja las órdenes intactas Y produce el registro auxiliar.
         """
         self._bloqueo_registro.adquirir(intentos=20)
         try:
@@ -1335,7 +1378,7 @@ class Almacen:
                 registro=registro,
                 producto=os.path.basename(self._d.repo) or "control-repo",
                 repositorio="control",
-                item=transicion.id,
+                item=item,
                 intento=int(intentos),
                 causa=causa.codigo + ": " + causa.detalle,
                 momento=momento_logico(

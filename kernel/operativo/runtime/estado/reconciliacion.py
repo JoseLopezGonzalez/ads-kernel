@@ -38,18 +38,47 @@ DECISIÓN · el MOMENTO es lógico, nunca reloj
     dos coordenadas del propio sistema, reproducibles, que sitúan la apertura en la
     historia con más precisión que un reloj y sin destruir el determinismo.
 
-LÍMITE CONOCIDO, dicho contra el propio interés de este módulo
-    La cadena de hash detecta que se retire, se inserte o se edite CUALQUIER línea que no
-    sea la última. Borrar la ÚLTIMA deja un prefijo perfectamente encadenado, y por eso
-    `verificar_integridad` añade un CONTRASTE con el diario: toda resolución y toda apertura
-    explícita tienen su evento allí, y la falta se denuncia. Queda un caso que desde dentro
-    del árbol NO es detectable: borrar la última línea cuando es una apertura nacida de
-    reintentos agotados, que por `g.6` no pudo anotarse en el diario. No se disimula, porque
-    es exactamente lo que `g.5` dice —«ningún resumen calculado por el propio árbol basta
-    como prueba de la integridad de ese árbol»— y lo que `g.15` reserva a la raíz externa.
-    Fabricar aquí un ancla que lo cubriera exigiría meter el estado del registro auxiliar
-    dentro del diario o de la revisión, y eso rompería `I-g7` para tapar un caso que la
-    norma ya asigna a otro sitio.
+DECISIÓN · CABEZA DURABLE, porque una cadena de hash no protege su propia cola
+    El defecto que cierra, y era real: la cadena detecta que se retire, se inserte o se
+    edite cualquier línea que NO sea la última, porque rompe el `previo` de la siguiente.
+    Borrar la ÚLTIMA deja un prefijo perfectamente encadenado y **indistinguible de un
+    registro que nunca tuvo esa línea**. Con eso, una reconciliación pendiente se retiraba
+    borrando un renglón, sin la transición explícita que `g.9` exige y sin que `verificar`
+    ni `auditar` protestaran: `G-A6` incumplido.
+
+    El contraste con el diario NO bastaba, y conviene decir por qué se creyó que sí. Sólo
+    funciona para las aperturas que tienen contraparte en el diario, y la apertura por
+    REINTENTOS AGOTADOS —la única que produce el camino real de `g.6`— no la tiene ni puede
+    tenerla: quien agota los reintentos no obtuvo el cerrojo del escritor, y anotar en el
+    diario sería tocar estado canónico, que `g.6` le prohíbe expresamente. Es decir: el
+    contraste cubría justo el caso que no importaba.
+
+    Alternativas consideradas:
+      (a) anotar toda apertura en el diario · descartada: rompe `g.6`, que prohíbe tocar el
+          estado canónico en ese camino, y rompe `I-g7` metiendo el registro en el diario.
+      (b) anclar la huella del registro en `REVISION.json` · descartada: haría que el estado
+          canónico dependiera del registro auxiliar, que es exactamente el colapso que
+          `I-g7` prohíbe, y además exigiría el cerrojo del escritor que no se tiene.
+      (c) CABEZA DURABLE separada del propio log · ELEGIDA.
+
+    `reconciliacion/CABEZA.json` guarda la última secuencia y su huella, se escribe de forma
+    ATÓMICA tras cada anexado y bajo el bloqueo PROPIO del registro. Borrar una línea deja
+    entonces una cabeza que afirma más líneas de las que hay, y eso es detectable SIEMPRE,
+    sin el diario y sin el cerrojo del escritor. La cabeza vive en la materia del registro,
+    la administra el runtime, no toca el estado canónico ni el diario, y no la deriva nadie
+    de nada: `I-g7` intacto. El log sigue siendo APPEND-ONLY; la cabeza no es el log, es un
+    puntero monótono a su extremo, que es la «semántica equivalente auditable» que `g.9`
+    admite.
+
+    RESIDUO, dicho contra el propio interés: entre el `fsync` de una línea y el reemplazo
+    atómico de la cabeza hay una ventana de un anexado. Un corte justo ahí deja la cabeza
+    UNA línea por detrás, y esa holgura de una sola línea hay que tolerarla o cualquier
+    corte dejaría el registro inservible. Quien borrase la última línea EXACTAMENTE en esa
+    ventana no sería detectado. Se cierra en cuanto el registro vuelve a anexar o el
+    almacén se recupera, porque las dos cosas reescriben la cabeza. Y falsificar a la vez
+    el log y su cabeza sigue sin ser detectable desde dentro, que es literalmente lo que
+    `g.5` advierte —«ningún resumen calculado por el propio árbol basta como prueba de la
+    integridad de ese árbol»— y lo que `g.15` reserva a la raíz externa.
 
 DECISIÓN · una apertura NO exige evento en el diario; una resolución SÍ
     Una apertura por reintentos agotados NO PUEDE anotar en el diario: no tiene el bloqueo
@@ -65,13 +94,28 @@ import os
 
 from . import fallos
 from .errores import RegistroDeReconciliacionCorrupto, ReconciliacionDesconocida
-from .rutas import asegurar_directorio, traducir_error_de_sistema
-from .serializacion import ESQUEMA, cid_de_objeto, comprobar_esquema, deserializar, serializar_compacto
+from .rutas import (
+    asegurar_directorio,
+    escribir_y_sincronizar,
+    leer_bytes,
+    publicar,
+    sincronizar_directorio,
+    traducir_error_de_sistema,
+)
+from .serializacion import (
+    ESQUEMA,
+    cid_de_objeto,
+    comprobar_esquema,
+    deserializar,
+    serializar_canonico,
+    serializar_compacto,
+)
 
 TIPOS = ("apertura", "resolucion")
 CLAVE_HUELLA = "huella"
 CLAVE_PREVIO = "previo"
 PREFIJO_REGISTRO = "rec-"
+FICHERO_CABEZA = "CABEZA.json"
 
 # Campos que `g.9` declara obligatorios en una apertura. El censo se usa para validar, y
 # así una apertura incompleta se rechaza al escribirla y no al auditarla seis meses después.
@@ -100,6 +144,7 @@ class RegistroAuxiliar:
 
     def __init__(self, ruta, bloqueo=None):
         self.ruta = ruta
+        self.cabeza = os.path.join(os.path.dirname(ruta), FICHERO_CABEZA)
         # El bloqueo se inyecta para que el motor decida su ruta y para que las pruebas
         # puedan observar la serialización sin duplicar la disposición física aquí.
         self.bloqueo = bloqueo
@@ -119,6 +164,83 @@ class RegistroAuxiliar:
                 raise traducir_error_de_sistema(exc, self.ruta, "crear el registro") from exc
             os.fsync(descriptor)
             os.close(descriptor)
+        # La cabeza nace con el log: un registro vacío SIN cabeza y uno al que le han
+        # borrado todas las líneas son indistinguibles, y fundarla aquí evita que el
+        # segundo pueda hacerse pasar por el primero en un almacén recién creado.
+        if not os.path.exists(self.cabeza):
+            self._publicar_cabeza(0, None)
+
+    # ------------------------------------------------------------------- cabeza
+    def _publicar_cabeza(self, secuencia, huella):
+        """Escribe la cabeza de forma ATÓMICA: temporal, `fsync`, `os.replace`, `fsync` dir.
+
+        Atómica y no «escribir encima»: una cabeza escrita a medias por un corte sería una
+        cabeza corrupta, y entonces el mecanismo que existe para detectar manipulaciones
+        sería él mismo la primera fuente de falsos positivos. Con `os.replace` la cabeza
+        anterior sigue entera hasta que la nueva está completa en el medio.
+        """
+        contenido = {"esquema": ESQUEMA, "secuencia": int(secuencia), "huella": huella}
+        temporal = self.cabeza + ".tmp"
+        asegurar_directorio(os.path.dirname(self.cabeza))
+        escribir_y_sincronizar(temporal, serializar_canonico(contenido))
+        publicar(temporal, self.cabeza)
+        sincronizar_directorio(os.path.dirname(self.cabeza))
+        return contenido
+
+    def _leer_cabeza(self):
+        """La cabeza publicada, o `None` si no hay ninguna. Falla cerrado si está rota."""
+        if not os.path.exists(self.cabeza):
+            return None
+        datos = leer_bytes(self.cabeza, error=RegistroDeReconciliacionCorrupto)
+        cabeza = deserializar(datos, ruta=self.cabeza,
+                              error=RegistroDeReconciliacionCorrupto)
+        if not isinstance(cabeza, dict):
+            raise RegistroDeReconciliacionCorrupto(
+                "la cabeza del registro no es un objeto JSON", ruta=self.cabeza)
+        comprobar_esquema(cabeza, ruta=self.cabeza,
+                          error=RegistroDeReconciliacionCorrupto)
+        secuencia = cabeza.get("secuencia")
+        if not isinstance(secuencia, int) or isinstance(secuencia, bool) or secuencia < 0:
+            raise RegistroDeReconciliacionCorrupto(
+                "la cabeza del registro no declara una `secuencia` válida",
+                ruta=self.cabeza)
+        return cabeza
+
+    def _exigir_cabeza(self, lineas):
+        """Contrasta el log contra su cabeza. Es lo que hace detectable borrar la cola."""
+        cabeza = self._leer_cabeza()
+        if cabeza is None:
+            if not lineas:
+                return                      # registro virgen: nada que anclar todavía
+            raise RegistroDeReconciliacionCorrupto(
+                "el registro tiene " + str(len(lineas)) + " línea(s) y no tiene cabeza: "
+                "falta `" + FICHERO_CABEZA + "`, que es lo que ancla su extremo",
+                ruta=self.cabeza)
+        declarada = cabeza["secuencia"]
+        if declarada > len(lineas):
+            # LA DETECCIÓN. La cabeza afirma un extremo que el log ya no alcanza: se han
+            # retirado líneas del final, y `g.9` sólo admite retirarlas mediante una
+            # transición explícita y auditable.
+            raise RegistroDeReconciliacionCorrupto(
+                "la cabeza del registro declara " + str(declarada) + " línea(s) y sólo "
+                "hay " + str(len(lineas)) + ": se retiró la cola del registro sin la "
+                "transición explícita que `g.9` exige",
+                ruta=self.ruta, declarada=declarada, encontradas=len(lineas))
+        if declarada < len(lineas) - 1:
+            # Se toleran como mucho UNA línea por delante de la cabeza, que es la ventana
+            # de un corte entre el anexado y la publicación de la cabeza. Más que eso son
+            # líneas añadidas a mano, que es la manipulación simétrica de la anterior.
+            raise RegistroDeReconciliacionCorrupto(
+                "el registro tiene " + str(len(lineas)) + " línea(s) y su cabeza sólo "
+                "llega a " + str(declarada) + ": se añadieron líneas sin pasar por el "
+                "runtime",
+                ruta=self.ruta, declarada=declarada, encontradas=len(lineas))
+        esperada = lineas[declarada - 1][CLAVE_HUELLA] if declarada >= 1 else None
+        if cabeza.get(CLAVE_HUELLA) != esperada:
+            raise RegistroDeReconciliacionCorrupto(
+                "la huella que declara la cabeza no es la de la línea " + str(declarada)
+                + ": el registro o su cabeza fueron editados",
+                ruta=self.cabeza)
 
     def _particion(self):
         if not os.path.exists(self.ruta):
@@ -167,6 +289,11 @@ class RegistroAuxiliar:
                 self._verificar_eslabon(linea, anterior, indice)
             salida.append(linea)
             anterior = linea
+        if verificar:
+            # En el camino de LECTURA, y no sólo en `verificar_integridad`: `g.9` exige que
+            # la pendencia se deduzca de forma INEQUÍVOCA, y deducirla de un log al que le
+            # falta la cola no es deducirla, es creerse lo que quedó.
+            self._exigir_cabeza(salida)
         return salida
 
     def _verificar_eslabon(self, linea, anterior, indice):
@@ -251,6 +378,25 @@ class RegistroAuxiliar:
         return PREFIJO_REGISTRO + str(len(self.aperturas()) + 1).zfill(4)
 
     # ----------------------------------------------------------------- escritura
+    def sincronizar_cabeza(self):
+        """Vuelve a anclar la cabeza al extremo real del log. Cierra la holgura de un corte.
+
+        Sólo se llama desde la recuperación, que tiene los cerrojos. NO repara un borrado:
+        si la cabeza afirmara más líneas de las que hay, `_exigir_cabeza` falla cerrado
+        antes de llegar aquí, y así tiene que ser: reparar eso sería borrar la prueba.
+        """
+        lineas = self.lineas()
+        if not lineas:
+            if self._leer_cabeza() is None:
+                self._publicar_cabeza(0, None)
+            return 0
+        ultima = lineas[-1]
+        cabeza = self._leer_cabeza()
+        if cabeza is not None and cabeza["secuencia"] == ultima["secuencia"]:
+            return 0
+        self._publicar_cabeza(ultima["secuencia"], ultima[CLAVE_HUELLA])
+        return ultima["secuencia"]
+
     def reparar_cola(self):
         completas, cola = self._particion()
         if not cola:
@@ -273,12 +419,17 @@ class RegistroAuxiliar:
             raise RegistroDeReconciliacionCorrupto(
                 "no se anexa sobre un registro con la cola desgarrada", ruta=self.ruta
             )
-        previo = None
-        if completas:
-            ultima = deserializar(
-                completas[-1], ruta=self.ruta, error=RegistroDeReconciliacionCorrupto
-            )
-            previo = ultima.get(CLAVE_HUELLA)
+        # UNA sola lectura del log —la de `_particion`— alimenta las dos deducciones: el
+        # contraste con la cabeza y el `previo` de la nueva línea. Releer para cada una
+        # sería el mismo patrón de lecturas cruzadas que ya costó un `KeyError` en el diario.
+        interpretadas = [
+            deserializar(cruda, ruta=self.ruta, error=RegistroDeReconciliacionCorrupto)
+            for cruda in completas
+        ]
+        # Se verifica ANTES de anexar: encadenar sobre un log manipulado convertiría la
+        # manipulación en historia legítima a partir de la línea siguiente.
+        self._exigir_cabeza(interpretadas)
+        previo = interpretadas[-1].get(CLAVE_HUELLA) if interpretadas else None
         linea = dict(linea)
         linea["esquema"] = ESQUEMA
         linea["secuencia"] = len(completas) + 1
@@ -303,6 +454,11 @@ class RegistroAuxiliar:
             raise traducir_error_de_sistema(exc, self.ruta, "anexar al registro") from exc
         finally:
             os.close(descriptor)
+        # La cabeza DESPUÉS del `fsync` de la línea, nunca antes: si se publicara primero,
+        # un corte entre ambas dejaría una cabeza que afirma una línea inexistente, y eso
+        # es indistinguible de un borrado. Al revés, el corte deja la cabeza una línea por
+        # detrás, que es la holgura tolerada y se repara en el siguiente anexado.
+        self._publicar_cabeza(linea["secuencia"], linea[CLAVE_HUELLA])
         return linea
 
     def anexar_apertura(self, *, registro, producto, repositorio, item, intento, causa,

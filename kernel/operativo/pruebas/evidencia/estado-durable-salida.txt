@@ -24,6 +24,10 @@ test_64_bloqueo_abandonado_se_reclama_solo (__main__.Concurrencia.test_64_bloque
 T176 · Defecto que previene: un almacén bloqueado para siempre por un proceso muerto. ... ok
 test_65_dos_caidas_simultaneas_no_publican_dos_veces (__main__.Concurrencia.test_65_dos_caidas_simultaneas_no_publican_dos_veces)
 T176 · Defecto que previene: dos ventanas abiertas a la vez y una recuperación que ... ok
+test_66_recuperar_al_abrir_con_ventana_abierta_agota_y_registra (__main__.Concurrencia.test_66_recuperar_al_abrir_con_ventana_abierta_agota_y_registra)
+T176 · Defecto que previene: la mitad de `G-A5` que sólo se ve con ventana abierta. ... ok
+test_67_la_cola_del_registro_nacido_por_reintentos_no_se_puede_borrar (__main__.Concurrencia.test_67_la_cola_del_registro_nacido_por_reintentos_no_se_puede_borrar)
+T178 · Defecto que previene: cerrar una pendencia borrando su última línea. ... ok
 test_50_durante_el_diario (__main__.FalloInyectado.test_50_durante_el_diario)
 T175 · Punto 1/9 · `durante-el-diario` (paso 4 del protocolo). ... ok
 test_51_antes_de_escribir_temporal (__main__.FalloInyectado.test_51_antes_de_escribir_temporal)
@@ -92,6 +96,8 @@ test_37_uso_incorrecto_del_cli_sale_con_dos (__main__.Negativos.test_37_uso_inco
 T173 · Defecto que previene: confundir «la operación falló» con «me lo pediste mal». ... ok
 test_38_la_salida_no_lleva_rutas_absolutas_sin_json (__main__.Negativos.test_38_la_salida_no_lleva_rutas_absolutas_sin_json)
 T173 · Defecto que previene: una evidencia que cambia de máquina a máquina. ... ok
+test_39_ningun_error_imprime_una_ruta_absoluta_de_la_maquina (__main__.Negativos.test_39_ningun_error_imprime_una_ruta_absoluta_de_la_maquina)
+T177 · Defecto que previene: una evidencia que cambia de máquina a máquina. ... ok
 test_01_inicializacion_deja_un_almacen_publicable (__main__.Positivos.test_01_inicializacion_deja_un_almacen_publicable)
 T173 · Defecto que previene: un almacén recién creado que ya nace incoherente. ... ok
 test_02_lo_operacional_queda_fuera_de_la_rama_canonica (__main__.Positivos.test_02_lo_operacional_queda_fuera_de_la_rama_canonica)
@@ -128,8 +134,10 @@ test_17_auditar_reproduce_la_raiz_desde_el_diario (__main__.Positivos.test_17_au
 T177 · Defecto que previene: un diario que no explica el estado que dice explicar. ... ok
 test_18_detectar_bifurcacion_distingue_el_mismo_linaje_del_ajeno (__main__.Positivos.test_18_detectar_bifurcacion_distingue_el_mismo_linaje_del_ajeno)
 T176 · Defecto que previene: dos máquinas divergiendo sin que nadie lo note (`g.6`). ... ok
+test_19_abrir_y_resolver_una_reconciliacion_por_la_CLI (__main__.Positivos.test_19_abrir_y_resolver_una_reconciliacion_por_la_CLI)
+T178 · Defecto que previene: un camino del motor que sólo existe en la API. ... ok
 
 ----------------------------------------------------------------------
-Ran 62 tests  (duración no registrada: varía por ejecución)
+Ran 66 tests  (duración no registrada: varía por ejecución)
 
 OK
