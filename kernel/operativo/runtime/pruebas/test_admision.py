@@ -290,6 +290,83 @@ class CensoDeLecturas(unittest.TestCase):
         self.assertTrue(informe["ok"])
         self.assertEqual(informe["lecturas"], [])
 
+    def test_un_envoltorio_local_no_esconde_la_lectura(self):
+        """T188 · Defecto que previene: esquivar el censo poniéndole otro nombre.
+
+        `INVOCADORES` es una lista de NOMBRES, y una lista de nombres se esquiva escribiendo
+        otro. Envolver `subprocess.run` en un `_mi_git()` local, y ése en un segundo
+        envoltorio, hacía desaparecer del censo una lectura de lista sin `-z`. Es el modo de
+        fallo de `S1-01` —la superficie que nadie ha enumerado— y ocurrió de verdad en
+        `arboles/versiones.py`. Ahora los envoltorios se DERIVAN por cierre transitivo.
+        """
+        modulo = os.path.join(self.directorio, "envuelto.py")
+        with open(modulo, "w", encoding="utf-8") as manejador:
+            manejador.write(
+                "import subprocess\n"
+                "def _mi_git(raiz, *argumentos):\n"
+                "    return subprocess.run(['git', '-C', raiz] + list(argumentos))\n"
+                "def _rutas(raiz, *argumentos):\n"
+                "    return _mi_git(raiz, *argumentos).stdout.split()\n"
+                "def leer(raiz, base):\n"
+                "    return _rutas(raiz, 'diff', '--name-only', base, 'HEAD')\n"
+            )
+        informe = censo.censar_lecturas([modulo])
+        self.assertFalse(informe["ok"])
+        self.assertEqual(informe["sin_separador_seguro"][0]["orden"], "diff")
+
+    def test_la_via_historica_esta_ACOTADA_al_paquete_y_al_modulo(self):
+        """T188 · Defecto que previene: que la excepción de `V6-15` sea un agujero.
+
+        `arboles/versiones.py` puede leer Git como en su época porque ése ES el defecto que
+        reproduce. La exención está acotada por `(paquete, módulo)`: el MISMO fichero en otro
+        paquete NO la hereda, y otro fichero del MISMO paquete tampoco.
+        """
+        cuerpo = (
+            "import subprocess\n"
+            "def _mi_git(raiz, *argumentos):\n"
+            "    return subprocess.run(['git', '-C', raiz] + list(argumentos))\n"
+            "def leer(raiz, base):\n"
+            "    return _mi_git(raiz, 'diff', '--name-only', base).stdout.split()\n"
+        )
+        # (i) el nombre exento, pero en OTRO paquete: NO hereda la exención.
+        ajeno = os.path.join(self.directorio, "admision")
+        os.makedirs(ajeno, exist_ok=True)
+        impostor = os.path.join(ajeno, "versiones.py")
+        with open(impostor, "w", encoding="utf-8") as manejador:
+            manejador.write(cuerpo)
+        informe = censo.censar_lecturas([impostor])
+        self.assertFalse(informe["ok"], "un `versiones.py` de otro paquete NO puede heredar "
+                                        "la exención histórica")
+        # (ii) el paquete exento, pero OTRO fichero: tampoco.
+        propio = os.path.join(self.directorio, "arboles")
+        os.makedirs(propio, exist_ok=True)
+        otro = os.path.join(propio, "colado.py")
+        with open(otro, "w", encoding="utf-8") as manejador:
+            manejador.write(cuerpo)
+        informe = censo.censar_lecturas([otro])
+        self.assertFalse(informe["ok"], "sólo los módulos DECLARADOS de `arboles/` están "
+                                        "exentos, no el paquete entero")
+
+    def test_la_via_historica_declarada_se_PUBLICA_en_vez_de_omitirse(self):
+        """T188 · Control POSITIVO: la exención no esconde, publica.
+
+        La lectura sin `-z` de `arboles/versiones.py` tiene que APARECER en el censo, con su
+        paquete, su módulo y su motivo. Una exención que borrase la entrada sería
+        indistinguible de no haber censado el paquete.
+        """
+        modulos = censo.modulos_del_aparato(RAIZ_RUNTIME)
+        informe = censo.censar_lecturas(modulos)
+        historicas = informe["lecturas_historicas"]
+        self.assertTrue(historicas, "la vía histórica tiene que estar censada y publicada")
+        paquetes = {entrada["paquete"] for entrada in historicas}
+        self.assertEqual(paquetes, {"arboles"})
+        inseguras = [e for e in historicas if not e["separador_seguro"]]
+        self.assertTrue(inseguras, "la reproducción de `S1-01` es una lectura SIN `-z`, y "
+                                   "el censo tiene que verla, no perderla")
+        for entrada in historicas:
+            self.assertIn((entrada["paquete"], entrada["modulo"]),
+                          censo.SEDES_DE_REPRODUCCION_HISTORICA)
+
 
 # ===========================================================================
 #  T188 · admisión por MUTACIÓN   ·   `V6-05` a `V6-09`

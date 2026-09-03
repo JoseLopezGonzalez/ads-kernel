@@ -1,0 +1,71 @@
+# evidencia de: macrocircuitos
+# orden:        python3 kernel/operativo/runtime/pruebas/test_macrocircuitos.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+test_01_son_exactamente_cuatro_y_los_declara_la_tabla (__main__.DefinicionDerivada.test_01_son_exactamente_cuatro_y_los_declara_la_tabla)
+T206 · Defecto que previene: un macrocircuito escrito de memoria. ... ok
+test_02_la_tabla_y_el_conjunto_derivado_coinciden_fila_a_fila (__main__.DefinicionDerivada.test_02_la_tabla_y_el_conjunto_derivado_coinciden_fila_a_fila)
+T206 · Defecto que previene: que la proyección del kernel envejezca en silencio. ... ok
+test_03_la_secuencia_de_procesos_es_la_que_8_0_escribe (__main__.DefinicionDerivada.test_03_la_secuencia_de_procesos_es_la_que_8_0_escribe)
+T206 · Defecto que previene: una racha de `a.7` calculada sobre otra secuencia. ... ok
+test_04_cada_fase_compone_su_ruta_y_sus_participantes_son_los_de_18 (__main__.DefinicionDerivada.test_04_cada_fase_compone_su_ruta_y_sus_participantes_son_los_de_18)
+T206 · Defecto que previene: un «participante sin vehículo» en un macrocircuito. ... ok
+test_05_ni_DEU_ni_DEP_ni_AUD_aparecen_nunca_como_capacidades (__main__.DefinicionDerivada.test_05_ni_DEU_ni_DEP_ni_AUD_aparecen_nunca_como_capacidades)
+T206 · Defecto que previene: confundir el nombre de un proceso con el de una capacidad. ... ok
+test_06_la_fase_0_es_la_MISMA_en_los_cuatro (__main__.DefinicionDerivada.test_06_la_fase_0_es_la_MISMA_en_los_cuatro)
+T206 · Defecto que previene: cuatro implementaciones divergentes de la `FASE 0`. ... ok
+test_07_ENC_no_participa_y_SEG_conserva_su_bloqueo_sin_via (__main__.DefinicionDerivada.test_07_ENC_no_participa_y_SEG_conserva_su_bloqueo_sin_via)
+T206 · Defecto que previene: dar vía a quien el contrato deja fuera de la ruta. ... ok
+test_60_los_cuatro_recorren_su_primera_fase_extremo_a_extremo (__main__.ExtremoAExtremo.test_60_los_cuatro_recorren_su_primera_fase_extremo_a_extremo)
+T209 · CASO POSITIVO de los cuatro · Defecto que previene: cuatro caminos distintos. ... ok
+test_61_el_caso_negativo_de_los_cuatro_bloquea_antes_de_mutar (__main__.ExtremoAExtremo.test_61_el_caso_negativo_de_los_cuatro_bloquea_antes_de_mutar)
+T209 · CASO NEGATIVO de los cuatro · Defecto que previene: abrir con el gate rojo. ... ok
+test_62_las_cuatro_ejecuciones_pasan_por_el_MISMO_punto_de_despacho (__main__.ExtremoAExtremo.test_62_las_cuatro_ejecuciones_pasan_por_el_MISMO_punto_de_despacho)
+T209 · Defecto que previene: cuatro runtimes paralelos disfrazados de uno. ... ok
+test_63_pausa_reanudacion_y_continua_sobre_un_macrocircuito (__main__.ExtremoAExtremo.test_63_pausa_reanudacion_y_continua_sobre_un_macrocircuito)
+T209 · Defecto que previene: un macrocircuito que no se puede retomar. ... ok
+test_64_dos_macrocircuitos_no_adquieren_autoridad_incompatible (__main__.ExtremoAExtremo.test_64_dos_macrocircuitos_no_adquieren_autoridad_incompatible)
+T209 · Defecto que previene: instalar y adoptar el mismo producto a la vez. ... ok
+test_20_los_seis_identificadores_y_el_no2_se_acuña_por_huella (__main__.Fase0.test_20_los_seis_identificadores_y_el_no2_se_acuña_por_huella)
+T207 · Defecto que previene: certificar sin saber qué se certifica. ... ok
+test_21_el_soporte_durable_esta_fuera_de_estado_y_no_lo_crea (__main__.Fase0.test_21_el_soporte_durable_esta_fuera_de_estado_y_no_lo_crea)
+T207 · Defecto que previene: escribir en `estado/` antes de que exista. ... ok
+test_22_repetirla_sobre_el_mismo_disparador_da_LA_MISMA_declaracion (__main__.Fase0.test_22_repetirla_sobre_el_mismo_disparador_da_LA_MISMA_declaracion)
+T207 · Defecto que previene: dos declaraciones cuando el chat se agota dentro. ... ok
+test_23_la_incorporacion_no_reemite_y_conserva_la_huella (__main__.Fase0.test_23_la_incorporacion_no_reemite_y_conserva_la_huella)
+T207 · Defecto que previene: certificar dos veces lo mismo al abrir `estado/`. ... ok
+test_24_el_reparto_de_9_6_se_respeta_y_PLT_exige_pero_no_certifica (__main__.Fase0.test_24_el_reparto_de_9_6_se_respeta_y_PLT_exige_pero_no_certifica)
+T207 · Defecto que previene: que el propietario del macrocircuito certifique. ... ok
+test_25_la_reutilizacion_de_evidencia_exige_todas_las_huellas_identicas (__main__.Fase0.test_25_la_reutilizacion_de_evidencia_exige_todas_las_huellas_identicas)
+T207 · Defecto que previene: presumir vigente lo que sólo se parece. ... ok
+test_40_las_once_filas_tienen_su_codigo_propio (__main__.TablaAdversarial.test_40_las_once_filas_tienen_su_codigo_propio)
+T208 · Defecto que previene: probar que «algo falló» en vez de qué falló. ... ok
+test_41_X_S1_mutar_sin_fase_0_falla_nombrando_el_circuito_y_la_mutacion (__main__.TablaAdversarial.test_41_X_S1_mutar_sin_fase_0_falla_nombrando_el_circuito_y_la_mutacion)
+T208 · `X-S1` · resultado exigido: FALLA, nombrando el macrocircuito y la mutación. ... ok
+test_42_X_S2_una_certificacion_copiada_no_vale (__main__.TablaAdversarial.test_42_X_S2_una_certificacion_copiada_no_vale)
+T208 · `X-S2` · resultado exigido: FALLA. La regla 10 prohíbe copiar y presumir. ... ok
+test_43_X_S3_una_sola_huella_distinta_invalida_la_reutilizacion (__main__.TablaAdversarial.test_43_X_S3_una_sola_huella_distinta_invalida_la_reutilizacion)
+T208 · `X-S3` · resultado exigido: FALLA, nombrando el identificador que difiere. ... ok
+test_44_X_S4_no_se_sube_de_nivel_sin_estructural_vigente_de_esa_ejecucion (__main__.TablaAdversarial.test_44_X_S4_no_se_sube_de_nivel_sin_estructural_vigente_de_esa_ejecucion)
+T208 · `X-S4` · resultado exigido: FALLA por la definición de «NIVEL ALCANZADO». ... ok
+test_45_X_S5_si_la_fase_0_falla_no_se_abre_la_iniciativa (__main__.TablaAdversarial.test_45_X_S5_si_la_fase_0_falla_no_se_abre_la_iniciativa)
+T208 · `X-S5` · resultado exigido: FALLA. Una iniciativa abierta YA es estado. ... ok
+test_46_X_S6_dos_declaraciones_en_una_misma_ejecucion_fallan (__main__.TablaAdversarial.test_46_X_S6_dos_declaraciones_en_una_misma_ejecucion_fallan)
+T208 · `X-S6` · resultado exigido: FALLA. Exactamente una por ejecución. ... ok
+test_47_X_S7_el_propietario_ni_sustituye_a_SIS_ni_puede_no_exigirla (__main__.TablaAdversarial.test_47_X_S7_el_propietario_ni_sustituye_a_SIS_ni_puede_no_exigirla)
+T208 · `X-S7` · resultado exigido: FALLA en los DOS casos. ... ok
+test_48_X_S8_el_veto_de_SEG_no_lo_levanta_nadie (__main__.TablaAdversarial.test_48_X_S8_el_veto_de_SEG_no_lo_levanta_nadie)
+T208 · `X-S8` · resultado exigido: FALLA. El veto no lo levantan las otras tres. ... ok
+test_49_X_S9_falta_un_identificador_del_sujeto_y_se_dice_cual (__main__.TablaAdversarial.test_49_X_S9_falta_un_identificador_del_sujeto_y_se_dice_cual)
+T208 · `X-S9` · resultado exigido: FALLA, nombrando el que falta. ... ok
+test_50_X_S10_la_fase_0_no_abre_iniciativa_ni_consume_contador (__main__.TablaAdversarial.test_50_X_S10_la_fase_0_no_abre_iniciativa_ni_consume_contador)
+T208 · `X-S10` · resultado exigido: FALLA, y es la prueba de que el nº 2 no es el de la iniciativa. ... ok
+test_51_X_S11_ni_dentro_de_estado_ni_sin_incorporar_ni_con_otra_huella (__main__.TablaAdversarial.test_51_X_S11_ni_dentro_de_estado_ni_sin_incorporar_ni_con_otra_huella)
+T208 · `X-S11` · resultado exigido: FALLA en los TRES casos. ... ok
+
+----------------------------------------------------------------------
+Ran 30 tests  (duración no registrada: varía por ejecución)
+
+OK

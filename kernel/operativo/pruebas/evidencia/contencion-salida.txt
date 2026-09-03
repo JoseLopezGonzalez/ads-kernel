@@ -1,0 +1,75 @@
+# evidencia de: contencion
+# orden:        python3 kernel/operativo/runtime/pruebas/test_contencion.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  resultado = contencion.ejecutar(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  resultado = contencion.ejecutar(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  resultado = contencion.ejecutar(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  resultado = contencion.ejecutar(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  resultado = contencion.ejecutar(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  resultado = contencion.ejecutar(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  resultado = contencion.ejecutar(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  resultado = contencion.ejecutar(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+test_con_el_backend_simple_el_bisnieto_SI_escapa (__main__.BackendSimpleYFalloCerrado.test_con_el_backend_simple_el_bisnieto_SI_escapa)
+T216 · Defecto que previene: presentar el nivel débil como si fuera el fuerte. ... ok
+test_el_backend_simple_declara_su_alcance_en_el_resultado (__main__.BackendSimpleYFalloCerrado.test_el_backend_simple_declara_su_alcance_en_el_resultado)
+T216 · Defecto que previene: degradar sin dejar rastro en la evidencia. ... ok
+test_la_eleccion_nunca_devuelve_el_simple_cuando_se_exige_lo_fuerte (__main__.BackendSimpleYFalloCerrado.test_la_eleccion_nunca_devuelve_el_simple_cuando_se_exige_lo_fuerte)
+T216 · Defecto que previene: una degradación por el camino del `for`. ... ok
+test_pedir_el_simple_con_politica_fuerte_falla_cerrado (__main__.BackendSimpleYFalloCerrado.test_pedir_el_simple_con_politica_fuerte_falla_cerrado)
+T216 · Defecto que previene: cumplir una política fuerte con un backend débil. ... ok
+test_pedir_el_simple_explicitamente_es_legitimo_y_queda_registrado (__main__.BackendSimpleYFalloCerrado.test_pedir_el_simple_explicitamente_es_legitimo_y_queda_registrado)
+T216 · Defecto que previene: retirar el backend débil en vez de declararlo. ... ok
+test_sin_ningun_backend_fuerte_la_politica_fuerte_falla_cerrado (__main__.BackendSimpleYFalloCerrado.test_sin_ningun_backend_fuerte_la_politica_fuerte_falla_cerrado)
+T216 · Defecto que previene: degradar en silencio a `killpg`. ... ok
+test_un_backend_desconocido_falla_cerrado (__main__.BackendSimpleYFalloCerrado.test_un_backend_desconocido_falla_cerrado)
+T216 · Defecto que previene: pedir un mecanismo que no existe y seguir. ... ok
+test_un_nivel_fuera_del_vocabulario_falla_cerrado (__main__.BackendSimpleYFalloCerrado.test_un_nivel_fuera_del_vocabulario_falla_cerrado)
+T216 · Defecto que previene: una política con un nivel que nadie implementa. ... ok
+test_una_orden_vacia_falla_cerrado (__main__.BackendSimpleYFalloCerrado.test_una_orden_vacia_falla_cerrado)
+T216 · Defecto que previene: lanzar una contención alrededor de nada. ... ok
+test_cada_backend_fuerte_disponible_contiene_las_tres_generaciones (__main__.ContencionFuerte.test_cada_backend_fuerte_disponible_contiene_las_tres_generaciones)
+T215 · Defecto que previene: probar sólo el backend cómodo y declarar la clase. ... ok
+test_el_bisnieto_con_setsid_no_escapa_al_backend_elegido (__main__.ContencionFuerte.test_el_bisnieto_con_setsid_no_escapa_al_backend_elegido)
+T215 · Defecto que previene: llamar contención a un `killpg` que `setsid` esquiva. ... ok
+test_el_resultado_publicable_no_lleva_pid_ni_duracion (__main__.ContencionFuerte.test_el_resultado_publicable_no_lleva_pid_ni_duracion)
+T215 · Defecto que previene: `I-g3`, un pid o una duración en lo derivado. ... ok
+test_el_timeout_tambien_limpia_la_descendencia (__main__.ContencionFuerte.test_el_timeout_tambien_limpia_la_descendencia)
+T215 · Defecto que previene: un timeout que termina el informe y no la tarea. ... ok
+test_la_contencion_sobrevive_al_cambio_de_grupo_de_procesos (__main__.ContencionFuerte.test_la_contencion_sobrevive_al_cambio_de_grupo_de_procesos)
+T215 · Defecto que previene: contener por grupo, que es lo que `setsid` rompe. ... ok
+test_cada_sonda_publica_su_motivo (__main__.DeteccionDeCapacidades.test_cada_sonda_publica_su_motivo)
+T214 · Defecto que previene: un «no disponible» sin causa, que nadie puede corregir. ... ok
+test_el_backend_simple_siempre_esta_disponible_y_con_nivel_inferior (__main__.DeteccionDeCapacidades.test_el_backend_simple_siempre_esta_disponible_y_con_nivel_inferior)
+T214 · Defecto que previene: quedarse sin vía cuando no hay contención fuerte. ... ok
+test_el_nivel_de_cada_backend_es_del_vocabulario_cerrado (__main__.DeteccionDeCapacidades.test_el_nivel_de_cada_backend_es_del_vocabulario_cerrado)
+T214 · Defecto que previene: inventar un nivel intermedio que no significa nada. ... ok
+test_la_deteccion_no_descarga_imagenes_de_contenedor (__main__.DeteccionDeCapacidades.test_la_deteccion_no_descarga_imagenes_de_contenedor)
+T214 · Defecto que previene: que la disponibilidad dependa de la red. ... ok
+test_la_sonda_de_cgroup_ejerce_el_mismo_envoltorio_que_el_backend (__main__.DeteccionDeCapacidades.test_la_sonda_de_cgroup_ejerce_el_mismo_envoltorio_que_el_backend)
+T214 · Defecto que previene: sondear una vía distinta de la que después se usa. ... ok
+test_se_sondean_todos_los_backends_del_orden_declarado (__main__.DeteccionDeCapacidades.test_se_sondean_todos_los_backends_del_orden_declarado)
+T214 · Defecto que previene: elegir un backend sin haber mirado los demás. ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests  (duración no registrada: varía por ejecución)
+
+OK

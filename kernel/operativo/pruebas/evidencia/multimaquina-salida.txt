@@ -1,0 +1,147 @@
+# evidencia de: multimaquina
+# orden:        python3 kernel/operativo/runtime/pruebas/test_multimaquina.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:676: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:676: ResourceWarning: unclosed file <_io.BufferedReader name=6>
+  informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:676: ResourceWarning: unclosed file <_io.BufferedReader name=5>
+  informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:676: ResourceWarning: unclosed file <_io.BufferedReader name=8>
+  informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=3>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=5>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=7>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=3>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=5>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=7>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=3>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=5>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=7>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=3>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=5>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=7>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=3>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=5>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=7>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=3>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=5>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=7>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=3>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=5>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=7>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=3>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=5>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_multimaquina.py:362: ResourceWarning: unclosed file <_io.BufferedReader name=7>
+  self.informes = self.carrera()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+test_10_una_ref_protegida_no_puede_borrarse (__main__.CaidasYLinaje.test_10_una_ref_protegida_no_puede_borrarse)
+T222 · Defecto que previene: `PG-3`, borrar la rama canónica del remoto. ... ok
+test_11_un_remoto_manipulado_no_puede_fingir_autoridad (__main__.CaidasYLinaje.test_11_un_remoto_manipulado_no_puede_fingir_autoridad)
+T222 · Defecto que previene: cambiar el remoto por otro con otra historia. ... ok
+test_12_el_linaje_completo_detecta_un_forzado_anterior (__main__.CaidasYLinaje.test_12_el_linaje_completo_detecta_un_forzado_anterior)
+T222 · Defecto que previene: que un commit legítimo posterior tape un forzado. ... ok
+test_8_una_caida_antes_del_push_se_recupera (__main__.CaidasYLinaje.test_8_una_caida_antes_del_push_se_recupera)
+T222 · Defecto que previene: perder lo confirmado localmente por un corte. ... ok
+test_9_una_caida_despues_del_push_y_antes_del_acuse_se_reconcilia (__main__.CaidasYLinaje.test_9_una_caida_despues_del_push_y_antes_del_acuse_se_reconcilia)
+T222 · Defecto que previene: republicar lo ya publicado, o darlo por perdido. ... ok
+test_la_serializacion_no_depende_de_un_flock_compartido (__main__.CaidasYLinaje.test_la_serializacion_no_depende_de_un_flock_compartido)
+T222 · Defecto que previene: creer que dos máquinas comparten un cerrojo. ... ok
+test_1_dos_maquinas_intentan_publicar_sobre_la_misma_autoridad (__main__.CarreraPorLaAutoridad.test_1_dos_maquinas_intentan_publicar_sobre_la_misma_autoridad)
+T221 · Defecto que previene: una «carrera» en la que sólo corre uno. ... ok
+test_2_solo_una_confirma (__main__.CarreraPorLaAutoridad.test_2_solo_una_confirma)
+T221 · Defecto que previene: dos publicaciones sobre la misma ref. ... ok
+test_3_la_otra_detecta_la_perdida_de_autoridad (__main__.CarreraPorLaAutoridad.test_3_la_otra_detecta_la_perdida_de_autoridad)
+T221 · Defecto que previene: seguir creyéndose el titular tras perder la ref. ... ok
+test_4_no_hay_force_en_ninguna_parte (__main__.CarreraPorLaAutoridad.test_4_no_hay_force_en_ninguna_parte)
+T221 · Defecto que previene: `g.14`, resolver la carrera forzando la ref. ... ok
+test_5_no_hay_historia_reescrita (__main__.CarreraPorLaAutoridad.test_5_no_hay_historia_reescrita)
+T221 · Defecto que previene: que publicar borre lo publicado antes. ... ok
+test_6_una_publicacion_obsoleta_falla (__main__.CarreraPorLaAutoridad.test_6_una_publicacion_obsoleta_falla)
+T221 · Defecto que previene: publicar contra una base que ya no es la cabeza. ... ok
+test_7_una_publicacion_legitima_posterior_funciona (__main__.CarreraPorLaAutoridad.test_7_una_publicacion_legitima_posterior_funciona)
+T221 · Defecto que previene: que perder la carrera deje a la máquina bloqueada. ... ok
+test_las_dos_maquinas_publican_con_IDENTIDADES_distintas (__main__.CarreraPorLaAutoridad.test_las_dos_maquinas_publican_con_IDENTIDADES_distintas)
+T221 · Defecto que previene: dos «máquinas» que son la misma identidad. ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests  (duración no registrada: varía por ejecución)
+
+OK

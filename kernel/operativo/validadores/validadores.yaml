@@ -215,6 +215,86 @@ componentes:
     firma_de_exito: '25 de 25 pasos CUMPLIDOS'
     debe_contener: ['T193', 'paso 06', 'paso 18', 'paso 20', 'paso 22', 'paso 25']
 
+  # El MACROBLOQUE 3, segunda mitad: el derivador de arboles adversariales (V6-15), la
+  # contencion del anfitrion (FD-5), la raiz externa con firma asimetrica (V6-16), la
+  # serializacion entre maquinas de g.14 y la prueba de humo en sesion nueva.
+  - id: arboles-adversariales
+    script: test_arboles.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: arboles-salida.txt
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'duración no registrada', 'T210', 'T211', 'T212', 'T213']
+
+  - id: contencion
+    script: test_contencion.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: contencion-salida.txt
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'duración no registrada', 'T214', 'T215', 'T216']
+
+  - id: raiz-externa
+    script: test_raiz_externa.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: raiz-externa-salida.txt
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'duración no registrada', 'T217', 'T218', 'T219', 'T220']
+
+  - id: multimaquina
+    script: test_multimaquina.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: multimaquina-salida.txt
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'duración no registrada', 'T221', 'T222']
+
+  - id: sesion-nueva
+    script: test_sesion_nueva.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: sesion-nueva-salida.txt
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'duración no registrada', 'T223', 'T224']
+
+  # El ESCENARIO extremo a extremo del macrobloque 3. No sustituye a los dos anteriores:
+  # se conservan los tres, porque cada uno mide una capa distinta.
+  - id: e2e-f6
+    script: escenario_e2e_f6.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: e2e-f6-salida.txt
+    firma_de_exito: '21 de 21 pasos CUMPLIDOS'
+    debe_contener: ['T225', 'paso 02', 'paso 13', 'paso 15', 'paso 18', 'paso 21']
+
+  # El MACROBLOQUE 3 de F6: el ciclo de 7.2, Continua de 7.4 y los cuatro macrocircuitos.
+  # Tres baterias mas, por la misma razon que las ocho anteriores: un validador fuera del
+  # manifiesto queda fuera de la evidencia sin que nada lo diga.
+  - id: ciclo
+    script: test_ciclo.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: ciclo-salida.txt
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'duración no registrada', 'T195', 'T196', 'T197', 'T199', 'T202']
+
+  - id: continua
+    script: test_continua.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: continua-salida.txt
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'duración no registrada', 'T203', 'T204', 'T205']
+
+  - id: macrocircuitos
+    script: test_macrocircuitos.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: macrocircuitos-salida.txt
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'duración no registrada', 'T206', 'T207', 'T208', 'T209']
+
   - id: registro
     script: registro_pruebas.py
     tipo: generador

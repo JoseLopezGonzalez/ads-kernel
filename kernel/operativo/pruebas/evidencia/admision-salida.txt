@@ -32,6 +32,12 @@ test_el_censo_del_aparato_real_esta_limpio (__main__.CensoDeLecturas.test_el_cen
 T188 · Control POSITIVO: hoy no hay ni una lectura fuera del canal único. ... ok
 test_el_censo_no_se_denuncia_a_si_mismo_por_su_vocabulario (__main__.CensoDeLecturas.test_el_censo_no_se_denuncia_a_si_mismo_por_su_vocabulario)
 T188 · Control POSITIVO: distinguir la MENCIÓN de la INVOCACIÓN, que es lo que da `ast`. ... ok
+test_la_via_historica_declarada_se_PUBLICA_en_vez_de_omitirse (__main__.CensoDeLecturas.test_la_via_historica_declarada_se_PUBLICA_en_vez_de_omitirse)
+T188 · Control POSITIVO: la exención no esconde, publica. ... ok
+test_la_via_historica_esta_ACOTADA_al_paquete_y_al_modulo (__main__.CensoDeLecturas.test_la_via_historica_esta_ACOTADA_al_paquete_y_al_modulo)
+T188 · Defecto que previene: que la excepción de `V6-15` sea un agujero. ... ok
+test_un_envoltorio_local_no_esconde_la_lectura (__main__.CensoDeLecturas.test_un_envoltorio_local_no_esconde_la_lectura)
+T188 · Defecto que previene: esquivar el censo poniéndole otro nombre. ... ok
 test_una_lectura_escrita_fuera_del_canal_aparece_en_el_censo (__main__.CensoDeLecturas.test_una_lectura_escrita_fuera_del_canal_aparece_en_el_censo)
 T188 · Defecto que previene: una vía paralela de invocación de Git, oculta. ... ok
 test_una_lista_sin_separador_seguro_aparece_en_el_censo (__main__.CensoDeLecturas.test_una_lista_sin_separador_seguro_aparece_en_el_censo)
@@ -116,6 +122,6 @@ test_el_contraste_es_contra_el_nacimiento_y_no_contra_head (__main__.SedeDelOwne
 T189 · Defecto que previene: contrastar contra `HEAD`, que es una tautología. ... ok
 
 ----------------------------------------------------------------------
-Ran 55 tests  (duración no registrada: varía por ejecución)
+Ran 58 tests  (duración no registrada: varía por ejecución)
 
 OK

@@ -1,0 +1,822 @@
+#!/usr/bin/env python3
+"""test_raiz_externa — batería de `V6-16`, la RAÍZ EXTERNA DE CONFIANZA. `T217` a `T220`.
+
+    `T217`  PROCESO e INSTALACIÓN separados, configuración de confianza EXTERNA, y el árbol
+            verificado FUERA de la ruta de importación del verificador
+    `T218`  FIRMA ASIMÉTRICA real con `ssh-keygen -Y` y Ed25519: firmar · verificar · rotar ·
+            solapar · retirar · revocar · rechazar desconocida · rechazar manipulada, con
+            FALLO CERRADO sin proveedor y sin clave, y sin un solo secreto en la evidencia
+    `T219`  INDEPENDENCIA: la identidad de la raíz externa NO PUEDE ESCRIBIR en el árbol, y
+            se demuestra INTENTÁNDOLO —los ocho intentos, con su mensaje real—
+    `T220`  `G-A9`: un veredicto falseado DESDE DENTRO del árbol es DESMENTIDO por la
+            atestación externa; evidencia FUERA; política no controlable desde el árbol
+
+**LAS CLAVES SON EFÍMERAS, VIVEN FUERA DE TODO REPOSITORIO Y SE DESTRUYEN AL TERMINAR**,
+también si la prueba falla: el directorio de claves se retira en un `addClassCleanup`, que
+`unittest` ejecuta pase lo que pase. `O25` §5 permite claves efímeras «únicamente en pruebas»
+y dice que no constituyen custodia productiva; aquí se dice igual.
+"""
+from __future__ import annotations
+
+import json
+import os
+import re
+import shutil
+import stat
+import subprocess
+import sys
+import tempfile
+import unittest
+
+RAIZ_RUNTIME = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RAIZ_OPERATIVO = os.path.dirname(RAIZ_RUNTIME)
+PAQUETE_EXTERNO = os.path.join(RAIZ_OPERATIVO, "raiz-externa")
+RAIZ_REPO = os.path.dirname(os.path.dirname(RAIZ_OPERATIVO))
+
+sys.path.insert(0, RAIZ_RUNTIME)
+sys.path.insert(0, PAQUETE_EXTERNO)
+
+import admision                                                      # noqa: E402
+import aislamiento                                                   # noqa: E402
+import atestacion as modulo_de_atestacion                            # noqa: E402
+import firma as modulo_de_firma                                      # noqa: E402
+import instalar as modulo_de_instalacion                             # noqa: E402
+from admision import censo, matriz, perimetro                        # noqa: E402
+from errores import (                                                # noqa: E402
+    EscrituraNoImpedida,
+    InstalacionAlterada,
+    InstalacionDentroDelArbol,
+    ProveedorDeFirmaAusente,
+)
+from gobierno.git import CanalGit                                    # noqa: E402
+
+
+class _RunnerDeterminista(unittest.TextTestRunner):
+    """Igual que el corriente, pero sin la duración en el resumen.
+
+    COPIADO de `tooling/tests/test_workspace.py`, no importado: esa batería vive en
+    `tooling/` y no está en la ruta de importación del runtime. La salida se PUBLICA como
+    evidencia y tiene que ser byte-idéntica entre ejecuciones.
+    """
+
+    def run(self, test):
+        import io as _io
+        buffer = _io.StringIO()
+        real, self.stream = self.stream, unittest.runner._WritelnDecorator(buffer)
+        try:
+            resultado = super().run(test)
+        finally:
+            self.stream = real
+        real.write(re.sub(r"Ran (\d+) tests? in [\d.]+s",
+                          r"Ran \1 tests  (duración no registrada: varía por ejecución)",
+                          buffer.getvalue()))
+        return resultado
+
+
+def escribir_configuracion(ruta, datos):
+    """Escribe la configuración externa en el subconjunto de datos que el aparato lee.
+
+    Se escribe a mano y no con una biblioteca de terceros: el kernel es stdlib pura, y el
+    lector es `admision/formulas.py`, que declara su propio subconjunto.
+    """
+    lineas = [
+        "version: " + str(datos["version"]),
+        "autoridad: " + datos["autoridad"],
+        "epoca_vigente: " + str(datos["epoca_vigente"]),
+        "orden_de_firma: [" + ", ".join(datos["orden_de_firma"]) + "]",
+        "orden_de_verificacion: [" + ", ".join(datos["orden_de_verificacion"]) + "]",
+        "identidades:",
+    ]
+    for entrada in datos["identidades"]:
+        lineas.append("  - id: " + entrada["id"])
+        lineas.append("    algoritmo: " + entrada["algoritmo"])
+        lineas.append("    huella_publica: " + entrada["huella_publica"])
+        lineas.append("    estado: " + entrada["estado"])
+        lineas.append("    epoca_de_alta: " + str(entrada["epoca_de_alta"]))
+        if entrada.get("epoca_de_retirada") is not None:
+            lineas.append("    epoca_de_retirada: " + str(entrada["epoca_de_retirada"]))
+        if entrada.get("solapamiento") is not None:
+            lineas.append("    solapamiento: " + str(entrada["solapamiento"]))
+    lineas.append("ancla:")
+    lineas.append("  base: " + datos["ancla"]["base"])
+    lineas.append("  digest_del_censo: " + datos["ancla"]["digest_del_censo"])
+    lineas.append("admitidas: []")
+    with open(ruta, "w", encoding="utf-8") as manejador:
+        manejador.write("\n".join(lineas) + "\n")
+    return ruta
+
+
+class RaizExternaInstalada(unittest.TestCase):
+    """Monta el escenario COMPLETO una vez: árbol, claves efímeras, instalación y config.
+
+    Se hace en `setUpClass` porque instalar copia un árbol de ficheros y generar una clave
+    Ed25519 llama a `ssh-keygen`; repetirlo por prueba multiplicaría el coste sin medir nada
+    nuevo. Lo que cada prueba comprueba es una propiedad distinta del mismo escenario.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.taller = tempfile.mkdtemp(prefix="ads-raiz-")
+        cls.addClassCleanup(cls._retirar_todo)
+
+        cls.repo = os.path.join(cls.taller, "control")
+        os.makedirs(cls.repo)
+        cls.canal = CanalGit(cls.repo)
+        cls.base = matriz.fundar(cls.repo, cls.canal)
+        # La política del gobierno, DENTRO del árbol verificado: es uno de los ocho
+        # objetivos de escritura de `T219` y tiene que existir para que el intento mida
+        # un permiso y no una ausencia.
+        cls._sembrar_politica()
+
+        cls.externo = os.path.join(cls.taller, "externo")
+        os.makedirs(cls.externo)
+        # LAS CLAVES, FUERA DE TODO REPOSITORIO. `0700` en el directorio y `0600` en la
+        # clave, y el directorio entero se destruye en el `addClassCleanup`.
+        cls.claves = os.path.join(cls.taller, "claves")
+        os.makedirs(cls.claves, mode=0o700)
+
+        cls.privada, cls.publica = modulo_de_firma.generar_par_efimero(
+            cls.claves, "raiz-externa-1")
+        cls.privada_2, cls.publica_2 = modulo_de_firma.generar_par_efimero(
+            cls.claves, "raiz-externa-2")
+        cls.privada_ajena, cls.publica_ajena = modulo_de_firma.generar_par_efimero(
+            cls.claves, "identidad-desconocida")
+        cls.firmantes = modulo_de_firma.escribir_firmantes(
+            os.path.join(cls.externo, "allowed_signers"),
+            [("raiz-externa-1", cls.publica), ("raiz-externa-2", cls.publica_2)])
+
+        cls.instalacion = modulo_de_instalacion.instalar(
+            os.path.join(cls.taller, "instalacion"),
+            arbol_verificado=cls.repo, runtime=RAIZ_RUNTIME)
+        cls.verificador = cls.instalacion["verificador"]
+        cls.firmante = os.path.join(cls.instalacion["destino"], "raiz-externa",
+                                    "anfitrion_firmante.py")
+        cls.verificante = os.path.join(cls.instalacion["destino"], "raiz-externa",
+                                       "anfitrion_verificador.py")
+
+        cls.digest_del_censo = perimetro.digest_del_censo(censo.cargar_zonas(cls.repo))
+        cls.configuracion = escribir_configuracion(
+            os.path.join(cls.externo, "confianza.yml"), cls._datos_de_configuracion())
+        cls.evidencia = os.path.join(cls.externo, "atestacion.json")
+
+        # El cuerpo de la clave privada, para poder BARRER las salidas buscándolo.
+        with open(cls.privada, encoding="ascii") as manejador:
+            cuerpo = [linea.strip() for linea in manejador.read().splitlines()
+                      if linea.strip() and not linea.startswith("-----")]
+        cls.marcador_de_clave = max(cuerpo, key=len)
+
+    @classmethod
+    def _sembrar_politica(cls):
+        origen = os.path.join(RAIZ_RUNTIME, "gobierno", "POLITICA-CONTROL-REPO.yml")
+        destino = os.path.join(cls.repo, "kernel", "operativo", "runtime", "gobierno",
+                               "POLITICA-CONTROL-REPO.yml")
+        os.makedirs(os.path.dirname(destino), exist_ok=True)
+        shutil.copyfile(origen, destino)
+        cls.canal.ejecutar("add", "-A")
+        cls.canal.ejecutar("commit", "--quiet", "-m", "politica del gobierno")
+        cls.base = cls.canal.resolver("HEAD")
+
+    @classmethod
+    def _datos_de_configuracion(cls, identidades=None, epoca=1):
+        return {
+            "version": 1,
+            "autoridad": "raiz-externa-de-la-bateria",
+            "epoca_vigente": epoca,
+            "orden_de_firma": [cls.firmante],
+            "orden_de_verificacion": [cls.verificante, "--firmantes", cls.firmantes],
+            "identidades": identidades or [{
+                "id": "raiz-externa-1",
+                "algoritmo": modulo_de_firma.ALGORITMO,
+                "huella_publica": modulo_de_firma.huella_publica(cls.publica),
+                "estado": "activa",
+                "epoca_de_alta": 1,
+            }],
+            "ancla": {"base": cls.base, "digest_del_censo": cls.digest_del_censo},
+        }
+
+    @classmethod
+    def _retirar_todo(cls):
+        """Destruye el taller ENTERO, claves incluidas. Se ejecuta pase lo que pase."""
+        shutil.rmtree(cls.taller, ignore_errors=True)
+
+    # -- utilidades ---------------------------------------------------------
+    def entorno(self, *, con_clave=True, extra=None):
+        """Entorno CONSTRUIDO desde cero. La clave se pasa por la variable de `O25` §2."""
+        entorno = {
+            "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
+            "LC_ALL": "C.UTF-8",
+            "LANG": "C.UTF-8",
+            "HOME": self.taller,
+        }
+        if con_clave:
+            entorno["ADS_ANFITRION_ALMACEN"] = self.privada
+        if extra:
+            entorno.update(extra)
+        return entorno
+
+    def correr(self, argumentos, *, con_clave=True, extra=None, cwd=None):
+        return subprocess.run(
+            [sys.executable, self.verificador] + list(argumentos),
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            env=self.entorno(con_clave=con_clave, extra=extra),
+            cwd=cwd or self.taller, check=False,
+        )
+
+    def emitir(self, *, evidencia=None, configuracion=None, con_clave=True):
+        destino = evidencia or self.evidencia
+        return self.correr([
+            "verificar", "--repo", self.repo, "--base", self.base,
+            "--configuracion", configuracion or self.configuracion,
+            "--evidencia", destino,
+        ], con_clave=con_clave), destino
+
+    def leer_sobre(self, ruta=None):
+        with open(ruta or self.evidencia, encoding="utf-8") as manejador:
+            return json.load(manejador)
+
+
+# ===========================================================================
+#  T217 · proceso, paquete e instalación SEPARADOS
+# ===========================================================================
+class SeparacionDelEjecutor(RaizExternaInstalada):
+
+    def test_el_paquete_vive_fuera_de_runtime(self):
+        """T217 · Defecto que previene: un «verificador externo» que es un módulo más del runtime."""
+        self.assertTrue(os.path.isdir(PAQUETE_EXTERNO))
+        self.assertNotEqual(os.path.dirname(PAQUETE_EXTERNO), RAIZ_RUNTIME)
+        self.assertFalse(PAQUETE_EXTERNO.startswith(RAIZ_RUNTIME + os.sep))
+
+    def test_el_verificador_se_ejecuta_como_PROCESO_aparte(self):
+        """T217 · Defecto que previene: llamar «externo» a una función del mismo intérprete."""
+        resultado = self.correr(["capacidades"])
+        self.assertEqual(resultado.returncode, 0, resultado.stderr.decode())
+        informe = json.loads(resultado.stdout.decode("utf-8"))
+        self.assertTrue(informe["disponible"])
+        self.assertFalse(informe["simetrica"])
+        self.assertTrue(informe["version_de_openssh"].startswith("OpenSSH_"))
+        self.assertEqual(informe["algoritmo"], modulo_de_firma.ALGORITMO)
+
+    def test_la_instalacion_esta_fuera_del_arbol_verificado(self):
+        """T217 · Defecto que previene: un verificador que vive donde vive lo verificado."""
+        destino = os.path.realpath(self.instalacion["destino"])
+        arbol = os.path.realpath(self.repo)
+        self.assertFalse(destino == arbol or destino.startswith(arbol + os.sep))
+        self.assertTrue(os.path.isfile(self.verificador))
+
+    def test_instalar_dentro_del_arbol_falla_cerrado(self):
+        """T217 · Defecto que previene: instalar la raíz externa dentro de lo que verifica."""
+        with self.assertRaises(InstalacionDentroDelArbol):
+            modulo_de_instalacion.instalar(
+                os.path.join(self.repo, "raiz-externa"),
+                arbol_verificado=self.repo, runtime=RAIZ_RUNTIME)
+
+    def test_el_arbol_verificado_NO_contiene_la_raiz_externa(self):
+        """T217 · Defecto que previene: que el árbol pueda editar a quien lo verifica."""
+        dentro = []
+        for carpeta, subcarpetas, ficheros in os.walk(self.repo):
+            if ".git" in subcarpetas:
+                subcarpetas.remove(".git")
+            for nombre in ficheros:
+                if nombre in ("verificador.py", "anfitrion_firmante.py",
+                              "anfitrion_verificador.py"):
+                    dentro.append(os.path.join(carpeta, nombre))
+        self.assertEqual(dentro, [])
+
+    def test_el_manifiesto_de_la_instalacion_se_recalcula_y_casa(self):
+        """T217 · Defecto que previene: §11.8, huellas leídas del árbol en vez de recalculadas."""
+        informe = modulo_de_instalacion.verificar_instalacion(
+            self.instalacion["destino"])
+        self.assertTrue(informe["ok"], informe)
+        resultado = self.correr(["instalacion", "--instalacion",
+                                 self.instalacion["destino"]])
+        self.assertEqual(resultado.returncode, 0, resultado.stderr.decode())
+
+    def test_una_instalacion_alterada_falla_cerrado(self):
+        """T217 · Defecto que previene: emitir veredicto desde un verificador manipulado."""
+        copia = os.path.join(self.taller, "instalacion-alterada")
+        shutil.copytree(self.instalacion["destino"], copia)
+        self.addCleanup(shutil.rmtree, copia, ignore_errors=True)
+        objetivo = os.path.join(copia, "runtime", "admision", "perimetro.py")
+        with open(objetivo, "a", encoding="utf-8") as manejador:
+            manejador.write("\n# alteracion del instrumento\n")
+        with self.assertRaises(InstalacionAlterada):
+            modulo_de_instalacion.exigir_instalacion_intacta(copia)
+
+    def test_el_verificador_NO_importa_el_runtime_del_arbol_verificado(self):
+        """T217 · Defecto que previene: que el árbol decida cómo se le verifica."""
+        guion = (
+            "import json, os, sys\n"
+            "sys.argv = ['verificador.py', 'capacidades']\n"
+            "ruta = " + repr(self.verificador) + "\n"
+            "carpeta = os.path.dirname(ruta)\n"
+            "sys.path.insert(0, carpeta)\n"
+            "import runpy\n"
+            "try:\n"
+            "    runpy.run_path(ruta, run_name='no-main')\n"
+            "except SystemExit:\n"
+            "    pass\n"
+            "import admision\n"
+            "print(os.path.dirname(os.path.dirname(admision.__file__)))\n"
+        )
+        resultado = subprocess.run(
+            [sys.executable, "-c", guion], stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, env=self.entorno(), cwd=self.taller, check=False)
+        self.assertEqual(resultado.returncode, 0, resultado.stderr.decode())
+        procedencia = resultado.stdout.decode("utf-8").strip().splitlines()[-1]
+        self.assertTrue(procedencia.startswith(self.instalacion["destino"]),
+                        "el verificador importó `admision` desde " + procedencia)
+        self.assertFalse(procedencia.startswith(os.path.realpath(self.repo)))
+
+    def test_la_configuracion_de_confianza_vive_fuera_del_arbol(self):
+        """T217 · Defecto que previene: `O25` §3, que el árbol decida qué identidad se acepta."""
+        import identidad
+        configuracion = identidad.cargar(self.configuracion, arbol_verificado=self.repo)
+        self.assertEqual(configuracion.autoridad(), "raiz-externa-de-la-bateria")
+        dentro = os.path.join(self.repo, "confianza.yml")
+        shutil.copyfile(self.configuracion, dentro)
+        self.addCleanup(os.remove, dentro)
+        with self.assertRaises(identidad.ConfiguracionDentroDelArbol):
+            identidad.cargar(dentro, arbol_verificado=self.repo)
+
+
+# ===========================================================================
+#  T218 · la FIRMA ASIMÉTRICA
+# ===========================================================================
+class FirmaAsimetrica(RaizExternaInstalada):
+
+    def test_la_dependencia_queda_fijada_en_la_evidencia(self):
+        """T218 · Defecto que previene: una dependencia externa sin versión registrada."""
+        resultado, _ = self.emitir()
+        self.assertEqual(resultado.returncode, 0, resultado.stderr.decode())
+        sobre = self.leer_sobre()
+        proveedor = sobre["atestacion"]["proveedor"]
+        self.assertEqual(proveedor["herramienta"], "ssh-keygen")
+        self.assertTrue(proveedor["version_de_openssh"].startswith("OpenSSH_"))
+        self.assertEqual(proveedor["algoritmo"], "ssh-ed25519")
+        self.assertFalse(proveedor["simetrica"])
+
+    def test_la_clave_privada_tiene_permisos_0600_y_esta_fuera_de_todo_repositorio(self):
+        """T218 · Defecto que previene: `O25` §2, una clave versionada o legible por todos."""
+        modo = stat.S_IMODE(os.stat(self.privada).st_mode)
+        self.assertEqual(modo, 0o600)
+        self.assertFalse(os.path.realpath(self.privada).startswith(
+            os.path.realpath(self.repo) + os.sep))
+        self.assertFalse(os.path.realpath(self.privada).startswith(
+            os.path.realpath(RAIZ_REPO) + os.sep))
+
+    def test_quien_verifica_NO_puede_firmar(self):
+        """T218 · Defecto que previene: un HMAC, donde verificar y firmar son el mismo poder."""
+        proceso = subprocess.run(
+            [sys.executable, self.verificante, "--firmantes", self.firmantes,
+             "firmar", "raiz-externa-1"],
+            input=b"mensaje", stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            env=self.entorno(), check=False)
+        self.assertNotEqual(proceso.returncode, 0)
+        with open(self.firmantes, encoding="ascii") as manejador:
+            firmantes = manejador.read()
+        self.assertNotIn("PRIVATE KEY", firmantes)
+        self.assertIn("ssh-ed25519", firmantes)
+
+    def test_el_firmante_se_niega_a_verificar(self):
+        """T218 · Defecto que previene: juntar los dos poderes en un único programa."""
+        proceso = subprocess.run(
+            [sys.executable, self.firmante, "verificar", "raiz-externa-1", "00"],
+            input=b"mensaje", stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            env=self.entorno(), check=False)
+        self.assertEqual(proceso.returncode, 4)
+        self.assertIn(b"SOLO firma", proceso.stderr)
+
+    def test_sin_clave_el_veredicto_favorable_NO_se_emite(self):
+        """T218 · Defecto que previene: `O25` §2, seguir adelante sin proveedor válido."""
+        destino = os.path.join(self.externo, "sin-clave.json")
+        resultado, _ = self.emitir(evidencia=destino, con_clave=False)
+        self.assertNotEqual(resultado.returncode, 0)
+        self.assertFalse(os.path.exists(destino))
+
+    def test_una_atestacion_manipulada_no_verifica(self):
+        """T218 · Defecto que previene: reescribir el veredicto después de firmarlo."""
+        resultado, _ = self.emitir()
+        self.assertEqual(resultado.returncode, 0, resultado.stderr.decode())
+        manipulada = os.path.join(self.externo, "manipulada.json")
+        sobre = self.leer_sobre()
+        sobre["atestacion"]["veredicto"]["color"] = "VERDE"
+        sobre["atestacion"]["autoridad"] = "otra-autoridad"
+        sobre["firma"]["digest_de_lo_firmado"] = modulo_de_atestacion.digest(
+            sobre["atestacion"])
+        with open(manipulada, "w", encoding="utf-8") as manejador:
+            manejador.write(json.dumps(sobre, sort_keys=True, ensure_ascii=False,
+                                       indent=2) + "\n")
+        comprobacion = self.correr([
+            "comprobar", "--repo", self.repo, "--configuracion", self.configuracion,
+            "--evidencia", manipulada])
+        self.assertNotEqual(comprobacion.returncode, 0)
+        self.assertIn(b"FIRMA_NO_VERIFICADA", comprobacion.stderr)
+
+    def test_cambiar_UN_BYTE_de_la_atestacion_la_invalida(self):
+        """T218 · Defecto que previene: una firma que no cubre todo lo que dice cubrir."""
+        cuerpo = modulo_de_atestacion.construir(
+            autoridad="a", identidad="raiz-externa-1", huella_publica="SHA256:x",
+            epoca=1, commit="a" * 40, tree="b" * 40,
+            veredicto={"color": "ROJO"}, proveedor={"herramienta": "ssh-keygen"})
+        mensaje = modulo_de_atestacion.canonizar(cuerpo)
+        blindada = modulo_de_firma.firmar(mensaje, clave_privada=self.privada)
+        valida, _ = modulo_de_firma.verificar(
+            mensaje, blindada, firmantes=self.firmantes, principal="raiz-externa-1")
+        self.assertTrue(valida)
+        alterado = bytearray(mensaje)
+        alterado[-8] = alterado[-8] ^ 0x01
+        invalida, diagnostico = modulo_de_firma.verificar(
+            bytes(alterado), blindada, firmantes=self.firmantes,
+            principal="raiz-externa-1")
+        self.assertFalse(invalida)
+        self.assertTrue(diagnostico)
+
+    def test_una_clave_desconocida_se_rechaza(self):
+        """T218 · Defecto que previene: aceptar una firma de quien la configuración no acepta."""
+        cuerpo = modulo_de_atestacion.construir(
+            autoridad="a", identidad="identidad-desconocida", huella_publica="SHA256:x",
+            epoca=1, commit="a" * 40, tree="b" * 40,
+            veredicto={"color": "VERDE"}, proveedor={"herramienta": "ssh-keygen"})
+        mensaje = modulo_de_atestacion.canonizar(cuerpo)
+        blindada = modulo_de_firma.firmar(mensaje, clave_privada=self.privada_ajena)
+        valida, _ = modulo_de_firma.verificar(
+            mensaje, blindada, firmantes=self.firmantes,
+            principal="identidad-desconocida")
+        self.assertFalse(valida)
+
+    def test_rotacion_solapamiento_retirada_y_revocacion(self):
+        """T218 · Defecto que previene: `O25` §5, un contrato de identidad sin ciclo de vida."""
+        import identidad
+        configuracion = identidad.cargar(self.configuracion, arbol_verificado=self.repo)
+        anillo = configuracion.anillo()
+        entrante = identidad.Identidad(
+            identificador="raiz-externa-2", algoritmo=modulo_de_firma.ALGORITMO,
+            huella_publica=modulo_de_firma.huella_publica(self.publica_2),
+            estado="activa", epoca_de_alta=1)
+        acta = anillo.rotar(nueva=entrante, motivo="rotacion programada",
+                            solapamiento=2)
+        self.assertEqual(acta["saliente"]["estado"], "retirada")
+        self.assertEqual(acta["entrante"]["estado"], "activa")
+        # SOLAPAMIENTO: la retirada sigue verificando dentro de su ventana...
+        self.assertTrue(anillo.exigir_valida("raiz-externa-1", acta["epoca"]))
+        # ...y deja de hacerlo fuera de ella.
+        with self.assertRaises(identidad.IdentidadFueraDeSolapamiento):
+            anillo.exigir_valida("raiz-externa-1",
+                                 acta["epoca"] + acta["solapamiento"] + 1)
+        # REVOCACIÓN: no verifica NUNCA, ni dentro del solapamiento.
+        anillo.revocar("raiz-externa-1", motivo="clave comprometida")
+        with self.assertRaises(identidad.IdentidadRevocada):
+            anillo.exigir_valida("raiz-externa-1", acta["epoca"])
+        # DESCONOCIDA: la configuración externa no la acepta y el árbol no puede añadirla.
+        with self.assertRaises(identidad.IdentidadDesconocida):
+            anillo.exigir_valida("identidad-desconocida", acta["epoca"])
+        # TRAZABILIDAD sin revelación: la traza lleva la huella PÚBLICA y nada más.
+        traza = json.dumps(anillo.traza(), sort_keys=True, ensure_ascii=False)
+        self.assertIn("rotacion", traza)
+        self.assertIn("revocacion", traza)
+        self.assertNotIn(self.marcador_de_clave, traza)
+
+    def test_la_identidad_rotada_firma_y_verifica_de_verdad(self):
+        """T218 · Defecto que previene: una rotación que sólo cambia un campo de un fichero."""
+        configuracion = escribir_configuracion(
+            os.path.join(self.externo, "confianza-rotada.yml"),
+            self._datos_de_configuracion(identidades=[
+                {"id": "raiz-externa-1", "algoritmo": modulo_de_firma.ALGORITMO,
+                 "huella_publica": modulo_de_firma.huella_publica(self.publica),
+                 "estado": "retirada", "epoca_de_alta": 1, "epoca_de_retirada": 2,
+                 "solapamiento": 2},
+                {"id": "raiz-externa-2", "algoritmo": modulo_de_firma.ALGORITMO,
+                 "huella_publica": modulo_de_firma.huella_publica(self.publica_2),
+                 "estado": "activa", "epoca_de_alta": 2},
+            ], epoca=2))
+        destino = os.path.join(self.externo, "atestacion-rotada.json")
+        resultado = self.correr([
+            "verificar", "--repo", self.repo, "--base", self.base,
+            "--configuracion", configuracion, "--evidencia", destino],
+            extra={"ADS_ANFITRION_ALMACEN": self.privada_2})
+        self.assertEqual(resultado.returncode, 0, resultado.stderr.decode())
+        sobre = self.leer_sobre(destino)
+        self.assertEqual(sobre["atestacion"]["identidad"], "raiz-externa-2")
+        comprobacion = self.correr([
+            "comprobar", "--repo", self.repo, "--configuracion", configuracion,
+            "--evidencia", destino])
+        self.assertEqual(comprobacion.returncode, 0, comprobacion.stderr.decode())
+
+    def test_ninguna_salida_lleva_material_de_clave_privada(self):
+        """T218 · Defecto que previene: `O25` §2, un secreto en la evidencia, el log o el error."""
+        salidas = []
+        resultado, _ = self.emitir()
+        salidas.append(resultado.stdout.decode("utf-8", "replace"))
+        salidas.append(resultado.stderr.decode("utf-8", "replace"))
+        sin_clave, _ = self.emitir(evidencia=os.path.join(self.externo, "x.json"),
+                                   con_clave=False)
+        salidas.append(sin_clave.stdout.decode("utf-8", "replace"))
+        salidas.append(sin_clave.stderr.decode("utf-8", "replace"))
+        comprobacion = self.correr([
+            "comprobar", "--repo", self.repo, "--configuracion", self.configuracion,
+            "--evidencia", self.evidencia])
+        salidas.append(comprobacion.stdout.decode("utf-8", "replace"))
+        salidas.append(comprobacion.stderr.decode("utf-8", "replace"))
+        with open(self.evidencia, encoding="utf-8") as manejador:
+            salidas.append(manejador.read())
+        import identidad
+        configuracion = identidad.cargar(self.configuracion, arbol_verificado=self.repo)
+        salidas.append(json.dumps(configuracion.exportar(), sort_keys=True,
+                                  ensure_ascii=False))
+        for indice, texto in enumerate(salidas):
+            with self.subTest(salida=indice):
+                self.assertNotIn(self.marcador_de_clave, texto)
+        # Y el ÁRBOL VERIFICADO entero: ni un byte de clave dentro del repositorio.
+        for carpeta, _, ficheros in os.walk(self.repo):
+            for nombre in ficheros:
+                with open(os.path.join(carpeta, nombre), "rb") as manejador:
+                    self.assertNotIn(self.marcador_de_clave.encode("ascii"),
+                                     manejador.read())
+
+    def test_el_marcador_si_esta_en_la_clave_privada(self):
+        """T218 · Control del CONTROL: si el marcador no estuviera, el barrido no probaría nada."""
+        with open(self.privada, encoding="ascii") as manejador:
+            self.assertIn(self.marcador_de_clave, manejador.read())
+
+    def test_sin_ssh_keygen_el_proveedor_falla_cerrado(self):
+        """T218 · Defecto que previene: emitir veredicto favorable sin herramienta de firma."""
+        vacio = tempfile.mkdtemp(prefix="ads-sin-ssh-")
+        self.addCleanup(shutil.rmtree, vacio, ignore_errors=True)
+        guion = (
+            "import os, sys\n"
+            "os.environ['PATH'] = " + repr(vacio) + "\n"
+            "sys.path.insert(0, " + repr(PAQUETE_EXTERNO) + ")\n"
+            "import firma\n"
+            "from errores import ProveedorDeFirmaAusente\n"
+            "try:\n"
+            "    firma.exigir_proveedor()\n"
+            "except ProveedorDeFirmaAusente as error:\n"
+            "    print(error.codigo)\n"
+            "    raise SystemExit(0)\n"
+            "raise SystemExit(9)\n"
+        )
+        resultado = subprocess.run(
+            [sys.executable, "-c", guion], stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, env={"PATH": vacio, "LC_ALL": "C", "HOME": vacio},
+            check=False)
+        self.assertEqual(resultado.returncode, 0, resultado.stderr.decode())
+        self.assertIn(b"PROVEEDOR_DE_FIRMA_AUSENTE", resultado.stdout)
+
+
+# ===========================================================================
+#  T219 · INDEPENDENCIA: la identidad NO puede escribir en el árbol
+# ===========================================================================
+class IndependenciaDeLaIdentidad(RaizExternaInstalada):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        resultado = subprocess.run(
+            [sys.executable, cls.verificador, "verificar", "--repo", cls.repo,
+             "--base", cls.base, "--configuracion", cls.configuracion,
+             "--evidencia", cls.evidencia],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            env={"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "LC_ALL": "C.UTF-8",
+                 "LANG": "C.UTF-8", "HOME": cls.taller,
+                 "ADS_ANFITRION_ALMACEN": cls.privada},
+            cwd=cls.taller, check=False)
+        cls.emision = resultado
+        cls.capacidades_de_aislamiento = aislamiento.capacidades()
+
+    def test_el_usuario_del_sistema_distinto_NO_es_posible_aqui_y_se_registra(self):
+        """T219 · Defecto que previene: declarar imposible lo que no se ha comprobado."""
+        fila = [f for f in self.capacidades_de_aislamiento["mecanismos"]
+                if f["mecanismo"] == "usuario-del-sistema"][0]
+        self.assertFalse(fila["disponible"])
+        self.assertTrue(fila["motivo"])
+
+    def test_hay_al_menos_un_aislamiento_real_disponible(self):
+        """T219 · Defecto que previene: dar por buena la independencia sin poder ejercerla."""
+        if self.capacidades_de_aislamiento["elegido"] is None:
+            self.skipTest(
+                "este anfitrión no ofrece aislamiento: `V6-16` NO se declara completo y el "
+                "requisito de infraestructura queda en el informe")
+        self.assertIn(self.capacidades_de_aislamiento["elegido"],
+                      ("contenedor", "espacio-de-nombres"))
+
+    def test_los_ocho_intentos_de_escritura_son_impedidos(self):
+        """T219 · Defecto que previene: llamar «sin escritura» a lo que nadie intentó escribir."""
+        if self.capacidades_de_aislamiento["elegido"] is None:
+            self.skipTest("no hay aislamiento disponible en este anfitrión")
+        informe = aislamiento.ejecutar(
+            self.repo, self.externo,
+            informe_de_capacidades=self.capacidades_de_aislamiento)
+        self.assertEqual(len(informe["intentos"]), len(aislamiento.INTENTOS))
+        for entrada in informe["intentos"]:
+            with self.subTest(intento=entrada["intento"]):
+                self.assertTrue(entrada["impedido"],
+                                entrada["intento"] + " NO fue impedido: "
+                                + entrada["mensaje"])
+                self.assertTrue(entrada["mensaje"],
+                                "un intento impedido sin mensaje del sistema no distingue "
+                                "un permiso de un fichero ausente")
+        self.assertTrue(aislamiento.exigir_sin_escritura(informe))
+
+    def test_el_control_del_control_del_aislamiento(self):
+        """T219 · Defecto que previene: que «todo falló» sea porque el intérprete no arrancó."""
+        if self.capacidades_de_aislamiento["elegido"] is None:
+            self.skipTest("no hay aislamiento disponible en este anfitrión")
+        informe = aislamiento.ejecutar(
+            self.repo, self.externo,
+            informe_de_capacidades=self.capacidades_de_aislamiento)
+        self.assertTrue(informe["control_positivo"]["escribio"])
+        self.assertTrue(informe["control_de_lectura"]["leyo"])
+
+    def test_la_identidad_del_verificador_es_DISTINTA_de_la_del_runtime(self):
+        """T219 · Defecto que previene: `g.15`, compartir la identidad de escritura del runtime."""
+        if "contenedor" not in [f["mecanismo"] for f
+                                in self.capacidades_de_aislamiento["mecanismos"]
+                                if f["disponible"]]:
+            self.skipTest("sin contenedor no se puede ejercer una identidad distinta")
+        informe = aislamiento.ejecutar(
+            self.repo, self.externo, mecanismo="contenedor",
+            informe_de_capacidades=self.capacidades_de_aislamiento)
+        self.assertTrue(informe["identidad_distinta"])
+        self.assertNotEqual(informe["identidad_del_verificador"]["uid"],
+                            informe["identidad_del_runtime"]["uid"])
+
+    def test_un_intento_no_impedido_invalida_la_demostracion(self):
+        """T219 · Defecto que previene: publicar una independencia con un agujero dentro."""
+        informe = {
+            "control_de_lectura": {"codigo": 0},
+            "control_positivo": {"codigo": 0},
+            "intentos": [{"intento": "crear-un-fichero", "impedido": False,
+                          "codigo": 0, "mensaje": ""}],
+            "no_ejecutados": [],
+        }
+        with self.assertRaises(EscrituraNoImpedida):
+            aislamiento.exigir_sin_escritura(informe)
+
+    def test_el_espacio_de_nombres_declara_su_limite(self):
+        """T219 · Defecto que previene: presentar el respaldo como si diera identidad distinta."""
+        fila = [f for f in self.capacidades_de_aislamiento["mecanismos"]
+                if f["mecanismo"] == "espacio-de-nombres"][0]
+        if not fila["disponible"]:
+            self.skipTest("no hay espacios de nombres en este anfitrión")
+        self.assertFalse(fila["identidad_distinta"])
+        self.assertIn("MISMO usuario", fila["motivo"])
+
+
+# ===========================================================================
+#  T220 · `G-A9` y la evidencia FUERA del árbol
+# ===========================================================================
+class VeredictoDesmentidoYEvidencia(RaizExternaInstalada):
+
+    def test_la_atestacion_se_vincula_al_commit_y_al_tree(self):
+        """T220 · Defecto que previene: §11.8, atestar sobre un nombre de rama."""
+        resultado, _ = self.emitir()
+        self.assertEqual(resultado.returncode, 0, resultado.stderr.decode())
+        sobre = self.leer_sobre()
+        repositorio = sobre["atestacion"]["repositorio"]
+        commit = self.canal.resolver("HEAD")
+        _, salida, _ = self.canal.ejecutar("rev-parse", "--verify", commit + "^{tree}")
+        self.assertEqual(repositorio["commit"], commit)
+        self.assertEqual(repositorio["tree"], salida.decode("ascii").strip())
+        texto = json.dumps(sobre, sort_keys=True)
+        self.assertNotIn("refs/heads", texto)
+
+    def test_la_evidencia_dentro_del_arbol_se_rechaza(self):
+        """T220 · Defecto que previene: `g.13`, certificar un árbol cambiándolo al certificarlo."""
+        dentro = os.path.join(self.repo, "atestacion.json")
+        resultado, _ = self.emitir(evidencia=dentro)
+        self.assertNotEqual(resultado.returncode, 0)
+        self.assertIn(b"EVIDENCIA_DENTRO_DEL_ARBOL", resultado.stderr)
+        self.assertFalse(os.path.exists(dentro))
+
+    def test_G_A9_el_veredicto_falseado_desde_dentro_es_desmentido(self):
+        """T220 · Defecto que previene: que el árbol se certifique a sí mismo."""
+        # 1 · el árbol se ATACA a sí mismo, y se AUTODECLARA sano.
+        ataque = os.path.join(self.repo, "docs", "normativa", "SEGUNDA-SEDE.md")
+        os.makedirs(os.path.dirname(ataque), exist_ok=True)
+        with open(ataque, "w", encoding="utf-8") as manejador:
+            manejador.write("# SENTENCIA\n\nF4c CERRADA y F5 AUTORIZADA.\n")
+        autodeclaracion = os.path.join(self.repo, "estado", "operacional",
+                                       "AUTODECLARACION.json")
+        os.makedirs(os.path.dirname(autodeclaracion), exist_ok=True)
+        with open(autodeclaracion, "w", encoding="utf-8") as manejador:
+            manejador.write(json.dumps({"color": "VERDE",
+                                        "afirmado_por": "el propio arbol"}) + "\n")
+        self.canal.ejecutar("add", "-A")
+        self.canal.ejecutar("commit", "--quiet", "-m", "ataque autodeclarado")
+        self.addCleanup(self._deshacer_ataque)
+
+        # 2 · la RAÍZ EXTERNA emite su veredicto sobre ESE commit.
+        destino = os.path.join(self.externo, "atestacion-del-ataque.json")
+        resultado, _ = self.emitir(evidencia=destino)
+        self.assertEqual(resultado.returncode, 1,
+                         "el árbol atacado tenía que dar veredicto NO favorable")
+        sobre = self.leer_sobre(destino)
+        self.assertEqual(sobre["atestacion"]["veredicto"]["color"], "ROJO")
+
+        # 3 · `G-A9`: la comprobación DESMIENTE la autodeclaración.
+        comprobacion = self.correr([
+            "comprobar", "--repo", self.repo, "--configuracion", self.configuracion,
+            "--evidencia", destino])
+        self.assertNotEqual(comprobacion.returncode, 0)
+        self.assertIn(b"VEREDICTO_DESMENTIDO", comprobacion.stderr)
+        self.assertIn(b"no tiene la clave", comprobacion.stderr)
+
+    def _deshacer_ataque(self):
+        for relativa in ("docs/normativa/SEGUNDA-SEDE.md",
+                         "estado/operacional/AUTODECLARACION.json"):
+            completa = os.path.join(self.repo, relativa)
+            if os.path.exists(completa):
+                os.remove(completa)
+        self.canal.ejecutar("add", "-A")
+        self.canal.ejecutar("commit", "--quiet", "-m", "retirada del ataque")
+
+    def test_cambiar_la_politica_DENTRO_del_arbol_no_cambia_lo_que_acepta(self):
+        """T220 · Defecto que previene: `g.15`, que la autoridad dependa del árbol verificado."""
+        registro = os.path.join(self.repo, "docs", "canonico", "FUENTES-CANONICAS.yml")
+        with open(registro, "rb") as manejador:
+            original = manejador.read()
+        self.addCleanup(self._restaurar, registro, original)
+        # El árbol se da a sí mismo una zona que lo declara todo NO APLICABLE, y encima
+        # mete una segunda sede normativa. Con la política del árbol mandando, pasaría.
+        with open(registro, "wb") as manejador:
+            manejador.write(original + (
+                "  - patron: '^docs/normativa/'\n"
+                "    clase: NO_APLICABLE_A_IMPLEMENTACION\n"
+                "    motivo: zona que el propio arbol se concede\n"
+            ).encode("utf-8"))
+        ataque = os.path.join(self.repo, "docs", "normativa", "SEGUNDA-SEDE.md")
+        os.makedirs(os.path.dirname(ataque), exist_ok=True)
+        with open(ataque, "w", encoding="utf-8") as manejador:
+            manejador.write("# SENTENCIA\n\nF4c CERRADA.\n")
+        self.addCleanup(self._borrar, ataque)
+
+        destino = os.path.join(self.externo, "atestacion-politica.json")
+        resultado, _ = self.emitir(evidencia=destino)
+        self.assertNotEqual(resultado.returncode, 0,
+                            "el árbol cambió su propia política y la raíz externa lo aceptó")
+        sobre = self.leer_sobre(destino)
+        self.assertEqual(sobre["atestacion"]["veredicto"]["color"], "ROJO")
+        causas = " ".join(hallazgo["causa"] for hallazgo
+                          in sobre["atestacion"]["veredicto"]["hallazgos"])
+        self.assertIn("quién lo clasifica", causas)
+
+    def _restaurar(self, ruta, contenido):
+        with open(ruta, "wb") as manejador:
+            manejador.write(contenido)
+
+    def _borrar(self, ruta):
+        if os.path.exists(ruta):
+            os.remove(ruta)
+
+    def test_la_trazabilidad_publica_identidad_epoca_y_digest(self):
+        """T220 · Defecto que previene: una evidencia que no se puede reanclar a nada."""
+        resultado, _ = self.emitir()
+        self.assertEqual(resultado.returncode, 0, resultado.stderr.decode())
+        resumen = json.loads(resultado.stdout.decode("utf-8"))
+        sobre = self.leer_sobre()
+        self.assertEqual(resumen["digest_de_la_atestacion"],
+                         modulo_de_atestacion.digest(sobre["atestacion"]))
+        self.assertEqual(resumen["identidad"], sobre["atestacion"]["identidad"])
+        self.assertEqual(resumen["huella_publica"],
+                         sobre["atestacion"]["huella_publica"])
+        self.assertEqual(resumen["epoca"], sobre["atestacion"]["epoca"])
+
+    def test_la_atestacion_no_lleva_reloj_ni_numero_de_ejecucion(self):
+        """T220 · Defecto que previene: `I-g3`, hora de pared o contador en lo derivado."""
+        resultado, _ = self.emitir()
+        self.assertEqual(resultado.returncode, 0, resultado.stderr.decode())
+        texto = json.dumps(self.leer_sobre()["atestacion"], sort_keys=True)
+        for prohibido in ("fecha", "timestamp", "duracion", "numero_de_ejecucion", "pid"):
+            self.assertNotIn(prohibido, texto)
+
+    def test_dos_emisiones_sobre_el_mismo_commit_atestan_lo_mismo(self):
+        """T220 · Defecto que previene: una evidencia que cambia sin que cambie el árbol."""
+        primera = os.path.join(self.externo, "atestacion-a.json")
+        segunda = os.path.join(self.externo, "atestacion-b.json")
+        self.emitir(evidencia=primera)
+        self.emitir(evidencia=segunda)
+        uno = self.leer_sobre(primera)["atestacion"]
+        otro = self.leer_sobre(segunda)["atestacion"]
+        self.assertEqual(modulo_de_atestacion.canonizar(uno),
+                         modulo_de_atestacion.canonizar(otro))
+
+    def test_una_atestacion_de_otro_commit_no_sirve(self):
+        """T220 · Defecto que previene: reutilizar una atestación buena sobre otro árbol."""
+        resultado, _ = self.emitir()
+        self.assertEqual(resultado.returncode, 0, resultado.stderr.decode())
+        with open(os.path.join(self.repo, "docs", "canonico", "otro.md"),
+                  "w", encoding="utf-8") as manejador:
+            manejador.write("# otro\n")
+        self.canal.ejecutar("add", "-A")
+        self.canal.ejecutar("commit", "--quiet", "-m", "avance")
+        self.addCleanup(self._borrar,
+                        os.path.join(self.repo, "docs", "canonico", "otro.md"))
+        comprobacion = self.correr([
+            "comprobar", "--repo", self.repo, "--configuracion", self.configuracion,
+            "--evidencia", self.evidencia])
+        self.assertNotEqual(comprobacion.returncode, 0)
+        self.assertIn(b"ATESTACION_INVALIDA", comprobacion.stderr)
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2, testRunner=_RunnerDeterminista)

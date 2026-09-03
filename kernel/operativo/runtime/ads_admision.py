@@ -97,7 +97,11 @@ def orden_verificar(argumentos):
         legible.append("  " + hallazgo["punto"] + "  " + hallazgo["codigo"] + "  "
                        + hallazgo["ruta"])
         legible.append("      " + hallazgo["causa"])
-    legible.append("fuera de alcance declarado: V6-15, V6-16")
+    fuera = datos.get("fuera_de_alcance") or {}
+    legible.append("fuera de alcance declarado: "
+                   + (", ".join(sorted(fuera)) if fuera else "(ninguno)"))
+    for punto, donde in sorted((datos.get("procedencia_de_los_puntos") or {}).items()):
+        legible.append("  " + punto + "  " + donde)
     _emitir(argumentos, datos, legible)
     return EXITO if veredicto.color == "VERDE" else FALLO
 

@@ -1,0 +1,62 @@
+# evidencia de: continua
+# orden:        python3 kernel/operativo/runtime/pruebas/test_continua.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+/tmp/claude-1000/-home-jose-ads-kernel/92219625-e8eb-4a0a-840b-b949d6c3e97a/scratchpad/toolchain/pythons/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/unittest/case.py:589: ResourceWarning: unclosed file <_io.BufferedReader name=4>
+  if method() is not None:
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+test_20_proceso_detenido_limpiamente (__main__.LosDiezEscenarios.test_20_proceso_detenido_limpiamente)
+T204 · escenario 1 · Defecto que previene: no saber retomar tras un cierre bueno. ... ok
+test_21_proceso_muerto_con_sigkill_de_verdad (__main__.LosDiezEscenarios.test_21_proceso_muerto_con_sigkill_de_verdad)
+T204 · escenario 2 · Defecto que previene: creer que un lease caduca solo. ... ok
+test_22_transicion_confirmada_sin_acuse (__main__.LosDiezEscenarios.test_22_transicion_confirmada_sin_acuse)
+T204 · escenario 3 · Defecto que previene: dar por producido lo que no consta. ... ok
+test_23_handoff_pendiente (__main__.LosDiezEscenarios.test_23_handoff_pendiente)
+T204 · escenario 4 · Defecto que previene: perder una entrega esperando acuse. ... ok
+test_24_gate_fallido (__main__.LosDiezEscenarios.test_24_gate_fallido)
+T204 · escenario 5 · Defecto que previene: seguir como si el gate hubiera pasado. ... ok
+test_25_paquete_pausado (__main__.LosDiezEscenarios.test_25_paquete_pausado)
+T204 · escenario 6 · Defecto que previene: desaparcar lo que el Owner aparcó. ... ok
+test_26_reconciliacion_abierta (__main__.LosDiezEscenarios.test_26_reconciliacion_abierta)
+T204 · escenario 7 · Defecto que previene: despachar con una pendencia abierta. ... ok
+test_27_trabajo_automatico_por_politica (__main__.LosDiezEscenarios.test_27_trabajo_automatico_por_politica)
+T204 · escenario 8 · Defecto que previene: preguntar por lo que ya está autorizado. ... ok
+test_28_proyecto_con_dos_repositorios (__main__.LosDiezEscenarios.test_28_proyecto_con_dos_repositorios)
+T204 · escenario 9 · Defecto que previene: un `Continúa` que sólo ve una fuente. ... ok
+test_29_estado_sin_trabajo_elegible (__main__.LosDiezEscenarios.test_29_estado_sin_trabajo_elegible)
+T204 · escenario 10 · Defecto que previene: fabricar trabajo para parecer útil. ... ok
+test_01_el_plan_recorre_los_siete_pasos_en_orden (__main__.LosSietePasos.test_01_el_plan_recorre_los_siete_pasos_en_orden)
+T203 · Defecto que previene: un paso de `b.14` que se salta sin que se note. ... ok
+test_02_el_paso_2_ejecuta_las_ocho_comprobaciones (__main__.LosSietePasos.test_02_el_paso_2_ejecuta_las_ocho_comprobaciones)
+T203 · Defecto que previene: una comprobación del paso 2 que nadie implementó. ... ok
+test_03_la_deriva_no_transaccional_se_reporta_y_escala (__main__.LosSietePasos.test_03_la_deriva_no_transaccional_se_reporta_y_escala)
+T203 · Defecto que previene: seguir despachando sobre un árbol adulterado. ... ok
+test_04_una_espera_no_viable_se_convierte_en_bloqueo (__main__.LosSietePasos.test_04_una_espera_no_viable_se_convierte_en_bloqueo)
+T203 · Defecto que previene: una espera muerta que nadie vuelve a mirar (`b.8`). ... ok
+test_05_las_celdas_de_cobertura_vencidas_solo_se_reportan (__main__.LosSietePasos.test_05_las_celdas_de_cobertura_vencidas_solo_se_reportan)
+T203 · Defecto que previene: abrir trabajo por una certificación caducada. ... ok
+test_06_un_derivado_divergente_se_regenera_y_una_proyeccion_rota_se_reporta (__main__.LosSietePasos.test_06_un_derivado_divergente_se_regenera_y_una_proyeccion_rota_se_reporta)
+T203 · Defecto que previene: sincronizar un derivado en vez de recompilarlo. ... ok
+test_07_las_ordenes_se_consumen_una_vez_y_una_orden_caduca_no_se_aplica (__main__.LosSietePasos.test_07_las_ordenes_se_consumen_una_vez_y_una_orden_caduca_no_se_aplica)
+T203 · Defecto que previene: aplicar una orden emitida sobre otro estado. ... ok
+test_08_continua_no_significa_haz_todo_lo_pendiente (__main__.LosSietePasos.test_08_continua_no_significa_haz_todo_lo_pendiente)
+T203 · Defecto que previene: vaciar la cola porque alguien escribió `Continúa`. ... ok
+test_40_dos_ejecuciones_seguidas_dan_los_mismos_bytes_y_no_mueven_el_estado (__main__.PropiedadCentral.test_40_dos_ejecuciones_seguidas_dan_los_mismos_bytes_y_no_mueven_el_estado)
+T205 · Defecto que previene: un `Continúa` que cambia lo que observa. ... ok
+test_41_dos_instancias_distintas_producen_el_mismo_plan (__main__.PropiedadCentral.test_41_dos_instancias_distintas_producen_el_mismo_plan)
+T205 · Defecto que previene: un plan que depende de quién lo calculó. ... ok
+test_42_el_paso_6_entrega_el_checkpoint_de_la_capacidad_con_custodia (__main__.PropiedadCentral.test_42_el_paso_6_entrega_el_checkpoint_de_la_capacidad_con_custodia)
+T205 · Defecto que previene: retomar sin saber quién tenía la custodia. ... ok
+test_43_la_ejecucion_no_interactiva_se_niega_si_falta_una_decision (__main__.PropiedadCentral.test_43_la_ejecucion_no_interactiva_se_niega_si_falta_una_decision)
+T205 · Defecto que previene: que `Continúa` elija por el Owner. ... ok
+test_44_el_trabajo_ambiguo_para_y_escala_sin_inventar_estado (__main__.PropiedadCentral.test_44_el_trabajo_ambiguo_para_y_escala_sin_inventar_estado)
+T205 · Defecto que previene: elegir entre dos lecturas igual de defendibles. ... ok
+test_45_el_reporte_del_paso_5_es_breve_y_no_pide_permiso (__main__.PropiedadCentral.test_45_el_reporte_del_paso_5_es_breve_y_no_pide_permiso)
+T205 · Defecto que previene: un informe que hay que leer entero para actuar. ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests  (duración no registrada: varía por ejecución)
+
+OK

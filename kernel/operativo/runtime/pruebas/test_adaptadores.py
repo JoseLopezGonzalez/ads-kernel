@@ -97,7 +97,15 @@ class RegistroYFicha(unittest.TestCase):
         """T191 · Defecto que previene: que una ausencia se lea como valor por defecto."""
         with self.assertRaises(adaptadores.OrdenInvalida) as capturado:
             adaptadores.FichaDeAdaptador(identificador="x", version=1)
-        self.assertIn("los trece campos", str(capturado.exception))
+        # Se comprueba la PROPIEDAD, no un cardinal: el mensaje nombra los campos que
+        # faltan y dice que una ausencia no es un valor por defecto. La redacción anterior
+        # afirmaba «los trece campos» y caducó en cuanto `CAMPOS_DE_FICHA` creció con
+        # `resolucion_del_control_repo`, que es el defecto `J-07` dentro de su propia prueba.
+        mensaje = str(capturado.exception)
+        self.assertIn("es un valor por defecto", mensaje)
+        for ausente in ("capacidades", "operaciones", "resolucion_del_control_repo"):
+            self.assertIn(ausente, mensaje)
+        self.assertNotRegex(mensaje, r"los (once|doce|trece|catorce|quince) campos")
 
     def test_la_ficha_no_tiene_campo_nivel(self):
         """T191 · Defecto que previene: `nivel` editable, la segunda verdad que `I5` prohíbe."""

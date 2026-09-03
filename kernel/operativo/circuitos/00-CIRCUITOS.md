@@ -238,3 +238,6 @@ Es un item **SIS**, no un AUD: su objeto es la fábrica, no el producto. Lo ejec
 Un par de capacidades sin handoff declarado **no está prohibido**: significa que su entrega
 se rige por las reglas comunes de [`C5`](../contratos/C5-HANDOFF.md). Los declarados son
 aquellos donde la experiencia —o el diseño— ha mostrado que hace falta precisión extra.
+
+Las cinco entregas que `11-ARQ` §8.0 declara aparte viven en
+[`entregas-de-8-0.md`](entregas-de-8-0.md).

@@ -1,0 +1,87 @@
+# evidencia de: arboles-adversariales
+# orden:        python3 kernel/operativo/runtime/pruebas/test_arboles.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+test_cada_fixture_publica_su_documento_y_su_cabecera (__main__.CierreDeV615.test_cada_fixture_publica_su_documento_y_su_cabecera)
+T213 · Defecto que previene: un fixture sin procedencia, que `V6-15` exige. ... ok
+test_el_reparto_de_fases_se_conserva (__main__.CierreDeV615.test_el_reparto_de_fases_se_conserva)
+T213 · Defecto que previene: mover a `F6` lo que §20.5 asigna a `SIS` en `F4c`. ... ok
+test_entrada_menos_suite_es_vacio (__main__.CierreDeV615.test_entrada_menos_suite_es_vacio)
+T213 · Defecto que previene: un árbol del conjunto derivado sin fixture. ... ok
+test_la_suite_entera_cierra (__main__.CierreDeV615.test_la_suite_entera_cierra)
+T213 · Defecto que previene: publicar una matriz con una fila en rojo. ... ok
+test_ningun_fixture_se_adjudica_un_hallazgo_ajeno (__main__.CierreDeV615.test_ningun_fixture_se_adjudica_un_hallazgo_ajeno)
+T213 · Defecto que previene: adjudicarse un árbol por un hallazgo de otro documento. ... ok
+test_suite_menos_entrada_es_vacio (__main__.CierreDeV615.test_suite_menos_entrada_es_vacio)
+T213 · Defecto que previene: exigir un árbol que la entrada no entrega. ... ok
+test_un_fixture_sin_arbol_falla_cerrado (__main__.CierreDeV615.test_un_fixture_sin_arbol_falla_cerrado)
+T213 · Defecto que previene: una suite que exige lo que la entrada no entrega. ... ok
+test_una_suite_incompleta_falla_cerrado (__main__.CierreDeV615.test_una_suite_incompleta_falla_cerrado)
+T213 · Defecto que previene: cerrar `V6-15` con una resta abierta. ... ok
+test_cada_arbol_trae_el_hallazgo_que_lo_cerro (__main__.ConjuntoDerivado.test_cada_arbol_trae_el_hallazgo_que_lo_cerro)
+T210 · Defecto que previene: un árbol sin el hallazgo que §20.5 exige adjuntarle. ... ok
+test_cada_entrada_existe_documento_y_cabecera (__main__.ConjuntoDerivado.test_cada_entrada_existe_documento_y_cabecera)
+T210 · Defecto que previene: una entrada cuya sede ya no está donde dice. ... ok
+test_el_conjunto_sale_de_las_cabeceras_y_no_de_una_lista (__main__.ConjuntoDerivado.test_el_conjunto_sale_de_las_cabeceras_y_no_de_una_lista)
+T210 · Defecto que previene: enumerar a mano un conjunto que caduca en silencio. ... ok
+test_el_hallazgo_vive_en_el_MISMO_documento (__main__.ConjuntoDerivado.test_el_hallazgo_vive_en_el_MISMO_documento)
+T210 · Defecto que previene: adjudicar a un árbol el hallazgo de otro gate. ... ok
+test_no_se_recoge_la_proposicion_atacada_como_hallazgo (__main__.ConjuntoDerivado.test_no_se_recoge_la_proposicion_atacada_como_hallazgo)
+T210 · Defecto que previene: confundir la proposición ATACADA con el hallazgo. ... ok
+test_dos_documentos_con_el_mismo_ordinal_son_duplicado (__main__.DuplicadosYSedeAusente.test_dos_documentos_con_el_mismo_ordinal_son_duplicado)
+T211 · Defecto que previene: reproducir dos veces el mismo árbol creyendo que son dos. ... ok
+test_sin_sede_documental_el_derivador_falla_cerrado (__main__.DuplicadosYSedeAusente.test_sin_sede_documental_el_derivador_falla_cerrado)
+T210 · Defecto que previene: devolver el conjunto vacío como si fuera un hecho. ... ok
+test_un_documento_no_utf8_de_la_sede_se_denuncia (__main__.DuplicadosYSedeAusente.test_un_documento_no_utf8_de_la_sede_se_denuncia)
+T210 · Defecto que previene: interpretar a medias una sede ilegible. ... ok
+test_una_cabecera_desplazada_invalida_la_entrada (__main__.DuplicadosYSedeAusente.test_una_cabecera_desplazada_invalida_la_entrada)
+T210 · Defecto que previene: leer una sede distinta de la que se registró. ... ok
+test_el_conjunto_sale_identico_desde_dos_directorios_distintos (__main__.PuntoEjecutable.test_el_conjunto_sale_identico_desde_dos_directorios_distintos)
+T213 · Defecto que previene: una evidencia que cambia con el `cwd` de quien la produce. ... ok
+test_el_cruce_cierra_desde_la_linea_de_ordenes (__main__.PuntoEjecutable.test_el_cruce_cierra_desde_la_linea_de_ordenes)
+T213 · Defecto que previene: que el instrumento afirme un cierre que no mide. ... ok
+test_la_salida_es_json_con_claves_ordenadas (__main__.PuntoEjecutable.test_la_salida_es_json_con_claves_ordenadas)
+T213 · Defecto que previene: una evidencia cuyo orden depende del diccionario. ... ok
+test_ninguna_salida_imprime_una_ruta_absoluta_de_la_maquina (__main__.PuntoEjecutable.test_ninguna_salida_imprime_una_ruta_absoluta_de_la_maquina)
+T213 · Defecto que previene: publicar el árbol de directorios de quien ejecuta. ... ok
+test_el_arbol_sano_pasa_en_todos_los_fixtures (__main__.RechazoPorLaPropiedad.test_el_arbol_sano_pasa_en_todos_los_fixtures)
+T212 · Defecto que previene: un verificador que diga ROJO a todo pasaría la suite. ... ok
+test_el_ataque_existe_en_el_arbol_atacado (__main__.RechazoPorLaPropiedad.test_el_ataque_existe_en_el_arbol_atacado)
+T212 · Defecto que previene: juzgar un árbol que no lleva el ataque dentro. ... ok
+test_el_borrado_confirmado_se_ve_con_la_letra_D (__main__.RechazoPorLaPropiedad.test_el_borrado_confirmado_se_ve_con_la_letra_D)
+T212 · Defecto que previene: que una sede desaparezca en silencio, que es `T1-02`. ... ok
+test_la_mutacion_confirmada_se_ve_por_la_referencia_base (__main__.RechazoPorLaPropiedad.test_la_mutacion_confirmada_se_ve_por_la_referencia_base)
+T212 · Defecto que previene: una guarda inerte sobre lo confirmado (`R1-01`). ... ok
+test_la_mutacion_de_un_preexistente_se_rechaza_por_V6_05 (__main__.RechazoPorLaPropiedad.test_la_mutacion_de_un_preexistente_se_rechaza_por_V6_05)
+T212 · Defecto que previene: exención por antigüedad, que es `S1-02` literal. ... ok
+test_la_ruta_con_sufijo_de_bytecode_entra_en_el_universo (__main__.RechazoPorLaPropiedad.test_la_ruta_con_sufijo_de_bytecode_entra_en_el_universo)
+T212 · Defecto que previene: excluir por EXTENSIÓN, que es `DD-01` literal. ... ok
+test_la_ruta_no_ascii_se_lee_identica_byte_a_byte (__main__.RechazoPorLaPropiedad.test_la_ruta_no_ascii_se_lee_identica_byte_a_byte)
+T212 · Defecto que previene: perder una ruta por la citación de `core.quotePath`. ... ok
+test_la_version_vulnerable_acepta_el_arbol_atacado (__main__.RechazoPorLaPropiedad.test_la_version_vulnerable_acepta_el_arbol_atacado)
+T212 · Defecto que previene: presentar como reproducción algo que nadie aceptó. ... ok
+test_la_vigente_lo_rechaza_y_la_asercion_nombra_la_propiedad (__main__.RechazoPorLaPropiedad.test_la_vigente_lo_rechaza_y_la_asercion_nombra_la_propiedad)
+T212 · Defecto que previene: aprobar por un ROJO de otra causa. ... ok
+test_la_zona_no_cambia_con_el_contenido_del_fichero (__main__.RechazoPorLaPropiedad.test_la_zona_no_cambia_con_el_contenido_del_fichero)
+T212 · Defecto que previene: eximirse del perímetro mutando el propio cuerpo. ... ok
+test_la_salida_del_instrumento_tampoco_lo_escribe (__main__.SinCardinalesDelConjunto.test_la_salida_del_instrumento_tampoco_lo_escribe)
+T210 · Defecto que previene: reintroducir el cardinal por la salida. ... ok
+test_ni_el_codigo_ni_el_contrato_escriben_el_cardinal (__main__.SinCardinalesDelConjunto.test_ni_el_codigo_ni_el_contrato_escriben_el_cardinal)
+T210 · Defecto que previene: `J-07`, un cardinal al lado de su enumeración. ... ok
+test_cada_version_declara_la_propiedad_que_debilita (__main__.VersionesHistoricas.test_cada_version_declara_la_propiedad_que_debilita)
+T211 · Defecto que previene: una variante «vulnerable» sin defecto declarado. ... ok
+test_cada_version_declara_su_procedencia_documental (__main__.VersionesHistoricas.test_cada_version_declara_su_procedencia_documental)
+T211 · Defecto que previene: una «versión histórica» inventada sin sede. ... ok
+test_el_control_del_ataque_falla_si_el_ataque_no_se_aplico (__main__.VersionesHistoricas.test_el_control_del_ataque_falla_si_el_ataque_no_se_aplico)
+T211 · Defecto que previene: una prueba que pasa porque el ataque es un no-op. ... ok
+test_el_control_del_ataque_falla_si_el_ataque_no_se_confirmo (__main__.VersionesHistoricas.test_el_control_del_ataque_falla_si_el_ataque_no_se_confirmo)
+T211 · Defecto que previene: presentar un ataque SIN CONFIRMAR como el del gate. ... ok
+test_el_control_del_control_esta_en_la_matriz_de_cada_fila (__main__.VersionesHistoricas.test_el_control_del_control_esta_en_la_matriz_de_cada_fila)
+T211 · Defecto que previene: una versión vulnerable que diría VERDE a todo. ... ok
+
+----------------------------------------------------------------------
+Ran 38 tests  (duración no registrada: varía por ejecución)
+
+OK

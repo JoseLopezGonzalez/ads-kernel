@@ -18,12 +18,21 @@ DECISIÓN · `ast` y no `grep`, y la razón es medible
     `subprocess.check_output` son cuatro ortografías del mismo acto y las cuatro salen.
 
 DECISIÓN · el canal único es UNO, y las sedes de proceso se declaran una a una
-    Ejecutar un proceso no es lo mismo que ejecutar GIT. Este aparato abre procesos en tres
-    sitios con motivo declarado —el canal de Git, el adaptador local de proceso, y el
-    proveedor de firma que delega en el anfitrión— y en ningún otro. El censo publica las
-    tres sedes con su motivo y denuncia cualquier cuarta. Una lista de sedes es una
-    superficie enumerable; una ausencia de lista es una superficie que nadie ha enumerado,
-    que es lo que `S1-01` midió.
+    Ejecutar un proceso no es lo mismo que ejecutar GIT. Este aparato abre procesos SÓLO en
+    las sedes que `SEDES_DE_PROCESO` declara, cada una con su motivo, y el censo denuncia
+    cualquier otra. **Cuántas son no se escribe aquí**: se leen de la propia tabla, porque
+    un cardinal al lado de su enumeración caduca en silencio en cuanto crece —y creció, con
+    el puntero de §6.7, con la contención de `FD-5` y con los árboles de `V6-15`—. Una lista
+    de sedes es una superficie enumerable; una ausencia de lista es una superficie que nadie
+    ha enumerado, que es lo que `S1-01` midió.
+
+DECISIÓN · el aparato se censa ENTERO, y la vía histórica se declara en vez de omitirse
+    `arboles/` reproduce a propósito lecturas de Git de la ÉPOCA —sin `-z`— porque ése es
+    el defecto que `V6-15` tiene que volver a provocar. Se podía dejar el paquete fuera del
+    censo, y sería lo cómodo; entonces una lectura insegura NUEVA escrita ahí no aparecería
+    en ninguna parte. Se mete dentro, y la vía histórica se publica acotada por
+    `(paquete, módulo)` en `SEDES_DE_REPRODUCCION_HISTORICA`. Lo que no esté en esa tabla
+    sigue dando ROJO, también dentro de `arboles/`.
 
 DECISIÓN · el censo de zonas se cruza con el ÁRBOL, no sólo con el registro
     Un registro de zonas puede estar completo y el árbol tener un directorio que ningún
@@ -42,11 +51,51 @@ from .perimetro import Zona
 # ===========================================================================
 #  CENSO DE LECTURAS · `V6-04`
 # ===========================================================================
-#  Las TRES sedes que pueden abrir un proceso, con su motivo. Cualquier otra es un hallazgo.
+#  Las sedes que pueden abrir un proceso, con su motivo. Cualquier otra es un hallazgo.
+#  **Su número NO se escribe**: un cardinal al lado de su propia enumeración caduca en
+#  silencio en cuanto la enumeración crece, que es la regla de `J-07`. Ya creció una vez.
 SEDES_DE_PROCESO = {
     "git.py": "canal ÚNICO de invocación de Git (`gobierno/git.py`)",
     "proceso.py": "adaptador local REAL: lanza la tarea del Owner (`adaptadores/proceso.py`)",
     "proveedor.py": "delegación de firma en el anfitrión (`identidad/proveedor.py`, `O25` §2)",
+    "puntero.py": "lectura del remoto canónico para localizar el control repo hermano "
+                  "(`adaptadores/puntero.py`, §6.7 regla 4)",
+    "deteccion.py": "sondas REALES de las capacidades de contención del anfitrión "
+                    "(`contencion/deteccion.py`, `FD-5`)",
+    "backends.py": "contenedores de recursos del anfitrión (`contencion/backends.py`, `FD-5`)",
+    "ejecutor.py": "lanzamiento de la tarea DENTRO de la contención (`contencion/ejecutor.py`)",
+    "versiones.py": "REPRODUCCIÓN HISTÓRICA de las versiones vulnerables de `V6-15` "
+                    "(`arboles/versiones.py`); ver `SEDES_DE_REPRODUCCION_HISTORICA`",
+    "ataques.py": "materialización de los árboles adversariales en repositorios reales "
+                  "(`arboles/ataques.py`, `V6-15` §20.5)",
+}
+
+#  LA EXCEPCIÓN HISTÓRICA, ACOTADA Y PUBLICADA · `V6-15`
+#
+#  DECISIÓN de `F6`, y va contra la comodidad. `arboles/` reproduce los defectos que los
+#  gates derribaron, y uno de ellos —`S1-01`— ES una lectura de lista sin `-z`: una versión
+#  histórica que pasara por el canal único NO PODRÍA reproducir su propio defecto, y la
+#  fila entera de la matriz dejaría de significar nada.
+#
+#  Alternativas: (a) dejar `arboles/` FUERA de `modulos_del_aparato`, que es lo cómodo;
+#  (b) meterlo dentro y declarar la excepción, acotada al MÓDULO y al PAQUETE.
+#  Se elige (b). Con (a) el paquete queda sin censar entero, y entonces una lectura insegura
+#  NUEVA escrita en cualquier fichero de `arboles/` no aparecería en ningún sitio: sería
+#  exactamente la superficie que nadie ha enumerado que `S1-01` midió. Con (b) el paquete se
+#  censa, la vía histórica se PUBLICA con su motivo en `reproduccion_historica`, y cualquier
+#  lectura insegura fuera de esos módulos declarados sigue dando ROJO.
+#
+#  La clave es `(paquete, módulo)` y no sólo el nombre del fichero: si fuera el nombre, un
+#  `versiones.py` nuevo en `admision/` heredaría la exención, y la excepción se habría
+#  convertido en un agujero.
+SEDES_DE_REPRODUCCION_HISTORICA = {
+    ("arboles", "versiones.py"):
+        "las versiones VULNERABLES de `V6-15`: leen Git con la configuración de la ÉPOCA "
+        "—sin `-z`, sin `core.quotePath=false`— porque ése ES el defecto que reproducen "
+        "(`S1-01`). Pasar por el canal único las volvería incapaces de fallar",
+    ("arboles", "ataques.py"):
+        "la materialización de los árboles adversariales en repositorios Git reales: "
+        "construye el árbol atacado, y construirlo no es verificarlo",
 }
 
 # Nombres que abren un proceso, en todas sus ortografías.
@@ -106,6 +155,57 @@ INVOCADORES = {
 }
 
 
+def _envoltorios_de_proceso(arbol):
+    """Las funciones del MÓDULO que, directa o transitivamente, abren un proceso.
+
+    DECISIÓN de `F6`, y cierra un FALSO NEGATIVO medido. `INVOCADORES` es una lista de
+    nombres, y una lista de nombres se esquiva escribiendo otro nombre: basta envolver
+    `subprocess.run` en un `_git_historico()` local para que una lectura de lista sin `-z`
+    deje de aparecer en el censo. Ocurrió de verdad —`arboles/versiones.py` lo hace, y el
+    censo no la veía— y es exactamente el modo de fallo de `S1-01`: la superficie que nadie
+    ha enumerado.
+
+    Alternativas: (a) añadir esos dos nombres a `INVOCADORES`, que es jugar al topo; (b)
+    retirar `INVOCADORES` y censar toda llamada con una orden de lista entre sus literales,
+    que produce FALSOS ROJOS sobre menciones —`_registros(salida, "diff")`— y un censo con
+    falsos rojos se acaba desactivando; (c) DERIVAR, por módulo, qué funciones alcanzan un
+    proceso, y tratarlas como invocadoras.
+    Se elige (c): no depende de que nadie mantenga una lista, distingue la mención de la
+    invocación igual que antes, y el envoltorio deja de ser un escondite.
+    """
+    cuerpo_de = {}
+    for nodo in ast.walk(arbol):
+        if isinstance(nodo, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            cuerpo_de[nodo.name] = nodo
+
+    directas = set()
+    llamadas_de = {}
+    for nombre, definicion in cuerpo_de.items():
+        llamadas_de[nombre] = set()
+        for hijo in ast.walk(definicion):
+            if not isinstance(hijo, ast.Call):
+                continue
+            llamado = _nombre_llamado(hijo.func)
+            if llamado in LLAMADAS_DE_PROCESO:
+                directas.add(nombre)
+            if isinstance(hijo.func, ast.Name):
+                llamadas_de[nombre].add(hijo.func.id)
+
+    # Cierre transitivo: quien llama a un envoltorio también lo es. Sin él, un segundo nivel
+    # de envoltura —`_rutas_por_split` sobre `_git_historico`— volvería a esconder la lectura.
+    alcanzan = set(directas)
+    creciendo = True
+    while creciendo:
+        creciendo = False
+        for nombre, llamadas in llamadas_de.items():
+            if nombre in alcanzan:
+                continue
+            if llamadas & alcanzan:
+                alcanzan.add(nombre)
+                creciendo = True
+    return alcanzan
+
+
 def _nodos_de_vocabulario(arbol):
     """Nodos que declaran un VOCABULARIO —`ORDENES_DE_LISTA = (...)`— y no una invocación.
 
@@ -133,8 +233,11 @@ def censar_lecturas(rutas):
     lecturas = []
     for ruta in sorted(rutas):
         modulo = os.path.basename(ruta)
+        paquete = os.path.basename(os.path.dirname(ruta))
+        historica = SEDES_DE_REPRODUCCION_HISTORICA.get((paquete, modulo))
         arbol = _arbol_de(ruta)
         vocabulario = _nodos_de_vocabulario(arbol)
+        invocadores = INVOCADORES | _envoltorios_de_proceso(arbol)
         vistas = set()
         for nodo in ast.walk(arbol):
             if isinstance(nodo, ast.Call):
@@ -152,7 +255,7 @@ def censar_lecturas(rutas):
                     invocable = nodo.func.attr
                 elif isinstance(nodo.func, ast.Name):
                     invocable = nodo.func.id
-                if invocable not in INVOCADORES:
+                if invocable not in invocadores:
                     continue
                 palabras = _literales(nodo)
             elif isinstance(nodo, (ast.List, ast.Tuple)):
@@ -177,19 +280,32 @@ def censar_lecturas(rutas):
                 vistas.add(clave)
                 lecturas.append({
                     "modulo": modulo,
+                    "paquete": paquete,
                     "linea": nodo.lineno,
                     "orden": orden,
                     "separador_seguro": "-z" in palabras,
                     "es_el_canal": modulo == "lectura.py",
+                    # Publicada, no escondida: la vía histórica aparece en el censo con su
+                    # motivo, y sólo por eso deja de contar como hallazgo.
+                    "reproduccion_historica": historica or "",
                 })
                 break
 
     fuera = [entrada for entrada in procesos if not entrada["sede_declarada"]]
-    sin_z = [entrada for entrada in lecturas if not entrada["separador_seguro"]]
-    lista_fuera = [entrada for entrada in lecturas if not entrada["es_el_canal"]]
+    historicas = [entrada for entrada in lecturas if entrada["reproduccion_historica"]]
+    juzgables = [entrada for entrada in lecturas if not entrada["reproduccion_historica"]]
+    sin_z = [entrada for entrada in juzgables if not entrada["separador_seguro"]]
+    lista_fuera = [entrada for entrada in juzgables if not entrada["es_el_canal"]]
     return {
         "sedes_declaradas": {nombre: SEDES_DE_PROCESO[nombre]
                              for nombre in sorted(SEDES_DE_PROCESO)},
+        "reproduccion_historica": sorted(
+            ({"paquete": clave[0], "modulo": clave[1], "motivo": motivo}
+             for clave, motivo in SEDES_DE_REPRODUCCION_HISTORICA.items()),
+            key=lambda e: (e["paquete"], e["modulo"]),
+        ),
+        "lecturas_historicas": sorted(historicas,
+                                      key=lambda e: (e["paquete"], e["modulo"], e["linea"])),
         "procesos": sorted(procesos, key=lambda e: (e["modulo"], e["linea"])),
         "lecturas": sorted(lecturas, key=lambda e: (e["modulo"], e["linea"])),
         "fuera_del_canal": sorted(fuera, key=lambda e: (e["modulo"], e["linea"])),
@@ -201,9 +317,14 @@ def censar_lecturas(rutas):
 
 
 def modulos_del_aparato(raiz_runtime):
-    """Los `.py` de los cuatro paquetes de este corte. Se DERIVAN del disco, no se listan."""
+    """Los `.py` de los paquetes del aparato. Se DERIVAN del disco, y no se listan.
+
+    **Su número no se escribe**, por la misma razón que el de `SEDES_DE_PROCESO`: la lista
+    creció con `contencion` y `arboles`, y un cardinal escrito habría envejecido callado.
+    """
     salida = []
-    for paquete in ("admision", "gobierno", "adaptadores", "identidad"):
+    for paquete in ("admision", "gobierno", "adaptadores", "identidad", "contencion",
+                    "arboles"):
         directorio = os.path.join(raiz_runtime, paquete)
         if not os.path.isdir(directorio):
             continue

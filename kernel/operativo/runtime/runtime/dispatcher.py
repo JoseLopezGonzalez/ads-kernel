@@ -1085,6 +1085,18 @@ class Runtime:
         return self._mover(paquete, "cancelado", motivo=motivo, autoridad=autoridad,
                            clase="runtime.paquete.cancelado")
 
+    def bloquear(self, paquete, *, motivo, autoridad):
+        """`b.8`: una espera que dejó de ser viable DEBE convertirse en bloqueo.
+
+        Existía el camino y no existía la puerta: `_resolver_dependencias` bloquea por
+        dentro cuando descubre una dependencia inviable, pero un llamador que ya sabe que
+        la espera murió —`Continúa`, en su paso 2— no tenía forma pública de decirlo y
+        tenía que usar `_mover`. Una segunda máquina de estados del paquete sería peor:
+        ésta reutiliza la tabla del §4.2 como las otras tres.
+        """
+        return self._mover(paquete, "bloqueado", motivo=motivo, autoridad=autoridad,
+                           clase="runtime.paquete.bloqueado")
+
     # =====================================================================
     #  alta de trabajo
     # =====================================================================

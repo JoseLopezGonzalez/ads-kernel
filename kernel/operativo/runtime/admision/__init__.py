@@ -10,14 +10,18 @@ Sede de sus puntos: `docs/evolucion/11-ARQUITECTURA-INTEGRADA.md` §20.1, filas 
     V5 · matriz adversarial      `V6-13` `V6-14` `V6-17` `V6-18` `V6-19`
                                                                   → `matriz.py`, `formulas.py`
 
-**FUERA DE ESTE CORTE, y se declara en vez de fingirse:**
+**LOS DOS QUE FALTABAN, Y DÓNDE VIVEN AHORA.** El macrobloque 3 los construyó, y este
+paquete deja de declararlos fuera de alcance:
 
-    `V6-15`  los árboles adversariales derivados de un documento inmutable. Su conjunto se
-             DERIVA con el comando de §20.5 sobre las cabeceras publicadas por los gates, y
-             ese derivador no es de este corte. NO está implementado.
-    `V6-16`  la ejecución desde una RAÍZ EXTERNA productiva. Lo que sí se demuestra aquí es
-             la PROPIEDAD —el verificador corre desde fuera del árbol y con una identidad
-             que no puede escribir en él—, no el despliegue. NO está implementado.
+    `V6-15`  el DERIVADOR de los árboles adversariales de §20.5, con su suite de regresión,
+             su matriz de cuatro columnas y su control del control, en `arboles/`. El
+             conjunto se DERIVA de las cabeceras que los gates publicaron; no se enumera.
+    `V6-16`  la RAÍZ EXTERNA, en el PAQUETE SEPARADO `kernel/operativo/raiz-externa/`, que
+             se instala FUERA del árbol verificado, corre como proceso propio con identidad
+             sin permiso de escritura, y firma con `ssh-keygen -Y` y Ed25519.
+
+**Ninguno de los dos está CERTIFICADO**: implementado y probado no es certificado, y la
+certificación de `F6` la emite un juicio independiente.
 
 Uso mínimo:
 
@@ -204,11 +208,17 @@ def verificar(raiz, *, base, declaracion, registro=censo.REGISTRO_DE_ZONAS,
         "digest_del_censo": digest_interno,
         "referencias_declaradas": list(mutacion.LECTURAS_DECLARADAS),
         "instrumento": list(instrumento),
-        "fuera_de_alcance": {
-            "V6-15": "no implementado: el derivador de árboles adversariales no es de "
-                     "este corte",
-            "V6-16": "no implementado como raíz externa productiva; sólo se demuestra la "
-                     "propiedad de ejecución externa sin permiso de escritura",
+        # Ya no queda ningún punto de §20.1 fuera de alcance. Lo que se publica ahora no es
+        # una ausencia sino la PROCEDENCIA de los dos que faltaban, para que un lector pueda
+        # ir a ejecutarla en vez de creerse esta línea. `fuera_de_alcance` se conserva —vacío
+        # y no borrado— porque su ausencia haría indistinguible «no queda nada fuera» de «ya
+        # nadie lo publica», que son cosas muy distintas.
+        "fuera_de_alcance": {},
+        "procedencia_de_los_puntos": {
+            "V6-15": "kernel/operativo/runtime/arboles/ · suite.ejecutar() · punto "
+                     "ejecutable ads_arboles.py",
+            "V6-16": "kernel/operativo/raiz-externa/verificador.py, PAQUETE SEPARADO que "
+                     "se instala FUERA del árbol verificado",
         },
     }
     if hallazgos:

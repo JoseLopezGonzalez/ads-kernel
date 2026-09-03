@@ -1,0 +1,85 @@
+# evidencia de: raiz-externa
+# orden:        python3 kernel/operativo/runtime/pruebas/test_raiz_externa.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+test_cambiar_UN_BYTE_de_la_atestacion_la_invalida (__main__.FirmaAsimetrica.test_cambiar_UN_BYTE_de_la_atestacion_la_invalida)
+T218 · Defecto que previene: una firma que no cubre todo lo que dice cubrir. ... ok
+test_el_firmante_se_niega_a_verificar (__main__.FirmaAsimetrica.test_el_firmante_se_niega_a_verificar)
+T218 · Defecto que previene: juntar los dos poderes en un único programa. ... ok
+test_el_marcador_si_esta_en_la_clave_privada (__main__.FirmaAsimetrica.test_el_marcador_si_esta_en_la_clave_privada)
+T218 · Control del CONTROL: si el marcador no estuviera, el barrido no probaría nada. ... ok
+test_la_clave_privada_tiene_permisos_0600_y_esta_fuera_de_todo_repositorio (__main__.FirmaAsimetrica.test_la_clave_privada_tiene_permisos_0600_y_esta_fuera_de_todo_repositorio)
+T218 · Defecto que previene: `O25` §2, una clave versionada o legible por todos. ... ok
+test_la_dependencia_queda_fijada_en_la_evidencia (__main__.FirmaAsimetrica.test_la_dependencia_queda_fijada_en_la_evidencia)
+T218 · Defecto que previene: una dependencia externa sin versión registrada. ... ok
+test_la_identidad_rotada_firma_y_verifica_de_verdad (__main__.FirmaAsimetrica.test_la_identidad_rotada_firma_y_verifica_de_verdad)
+T218 · Defecto que previene: una rotación que sólo cambia un campo de un fichero. ... ok
+test_ninguna_salida_lleva_material_de_clave_privada (__main__.FirmaAsimetrica.test_ninguna_salida_lleva_material_de_clave_privada)
+T218 · Defecto que previene: `O25` §2, un secreto en la evidencia, el log o el error. ... ok
+test_quien_verifica_NO_puede_firmar (__main__.FirmaAsimetrica.test_quien_verifica_NO_puede_firmar)
+T218 · Defecto que previene: un HMAC, donde verificar y firmar son el mismo poder. ... ok
+test_rotacion_solapamiento_retirada_y_revocacion (__main__.FirmaAsimetrica.test_rotacion_solapamiento_retirada_y_revocacion)
+T218 · Defecto que previene: `O25` §5, un contrato de identidad sin ciclo de vida. ... ok
+test_sin_clave_el_veredicto_favorable_NO_se_emite (__main__.FirmaAsimetrica.test_sin_clave_el_veredicto_favorable_NO_se_emite)
+T218 · Defecto que previene: `O25` §2, seguir adelante sin proveedor válido. ... ok
+test_sin_ssh_keygen_el_proveedor_falla_cerrado (__main__.FirmaAsimetrica.test_sin_ssh_keygen_el_proveedor_falla_cerrado)
+T218 · Defecto que previene: emitir veredicto favorable sin herramienta de firma. ... ok
+test_una_atestacion_manipulada_no_verifica (__main__.FirmaAsimetrica.test_una_atestacion_manipulada_no_verifica)
+T218 · Defecto que previene: reescribir el veredicto después de firmarlo. ... ok
+test_una_clave_desconocida_se_rechaza (__main__.FirmaAsimetrica.test_una_clave_desconocida_se_rechaza)
+T218 · Defecto que previene: aceptar una firma de quien la configuración no acepta. ... ok
+test_el_control_del_control_del_aislamiento (__main__.IndependenciaDeLaIdentidad.test_el_control_del_control_del_aislamiento)
+T219 · Defecto que previene: que «todo falló» sea porque el intérprete no arrancó. ... ok
+test_el_espacio_de_nombres_declara_su_limite (__main__.IndependenciaDeLaIdentidad.test_el_espacio_de_nombres_declara_su_limite)
+T219 · Defecto que previene: presentar el respaldo como si diera identidad distinta. ... ok
+test_el_usuario_del_sistema_distinto_NO_es_posible_aqui_y_se_registra (__main__.IndependenciaDeLaIdentidad.test_el_usuario_del_sistema_distinto_NO_es_posible_aqui_y_se_registra)
+T219 · Defecto que previene: declarar imposible lo que no se ha comprobado. ... ok
+test_hay_al_menos_un_aislamiento_real_disponible (__main__.IndependenciaDeLaIdentidad.test_hay_al_menos_un_aislamiento_real_disponible)
+T219 · Defecto que previene: dar por buena la independencia sin poder ejercerla. ... ok
+test_la_identidad_del_verificador_es_DISTINTA_de_la_del_runtime (__main__.IndependenciaDeLaIdentidad.test_la_identidad_del_verificador_es_DISTINTA_de_la_del_runtime)
+T219 · Defecto que previene: `g.15`, compartir la identidad de escritura del runtime. ... ok
+test_los_ocho_intentos_de_escritura_son_impedidos (__main__.IndependenciaDeLaIdentidad.test_los_ocho_intentos_de_escritura_son_impedidos)
+T219 · Defecto que previene: llamar «sin escritura» a lo que nadie intentó escribir. ... ok
+test_un_intento_no_impedido_invalida_la_demostracion (__main__.IndependenciaDeLaIdentidad.test_un_intento_no_impedido_invalida_la_demostracion)
+T219 · Defecto que previene: publicar una independencia con un agujero dentro. ... ok
+test_el_arbol_verificado_NO_contiene_la_raiz_externa (__main__.SeparacionDelEjecutor.test_el_arbol_verificado_NO_contiene_la_raiz_externa)
+T217 · Defecto que previene: que el árbol pueda editar a quien lo verifica. ... ok
+test_el_manifiesto_de_la_instalacion_se_recalcula_y_casa (__main__.SeparacionDelEjecutor.test_el_manifiesto_de_la_instalacion_se_recalcula_y_casa)
+T217 · Defecto que previene: §11.8, huellas leídas del árbol en vez de recalculadas. ... ok
+test_el_paquete_vive_fuera_de_runtime (__main__.SeparacionDelEjecutor.test_el_paquete_vive_fuera_de_runtime)
+T217 · Defecto que previene: un «verificador externo» que es un módulo más del runtime. ... ok
+test_el_verificador_NO_importa_el_runtime_del_arbol_verificado (__main__.SeparacionDelEjecutor.test_el_verificador_NO_importa_el_runtime_del_arbol_verificado)
+T217 · Defecto que previene: que el árbol decida cómo se le verifica. ... ok
+test_el_verificador_se_ejecuta_como_PROCESO_aparte (__main__.SeparacionDelEjecutor.test_el_verificador_se_ejecuta_como_PROCESO_aparte)
+T217 · Defecto que previene: llamar «externo» a una función del mismo intérprete. ... ok
+test_instalar_dentro_del_arbol_falla_cerrado (__main__.SeparacionDelEjecutor.test_instalar_dentro_del_arbol_falla_cerrado)
+T217 · Defecto que previene: instalar la raíz externa dentro de lo que verifica. ... ok
+test_la_configuracion_de_confianza_vive_fuera_del_arbol (__main__.SeparacionDelEjecutor.test_la_configuracion_de_confianza_vive_fuera_del_arbol)
+T217 · Defecto que previene: `O25` §3, que el árbol decida qué identidad se acepta. ... ok
+test_la_instalacion_esta_fuera_del_arbol_verificado (__main__.SeparacionDelEjecutor.test_la_instalacion_esta_fuera_del_arbol_verificado)
+T217 · Defecto que previene: un verificador que vive donde vive lo verificado. ... ok
+test_una_instalacion_alterada_falla_cerrado (__main__.SeparacionDelEjecutor.test_una_instalacion_alterada_falla_cerrado)
+T217 · Defecto que previene: emitir veredicto desde un verificador manipulado. ... ok
+test_G_A9_el_veredicto_falseado_desde_dentro_es_desmentido (__main__.VeredictoDesmentidoYEvidencia.test_G_A9_el_veredicto_falseado_desde_dentro_es_desmentido)
+T220 · Defecto que previene: que el árbol se certifique a sí mismo. ... ok
+test_cambiar_la_politica_DENTRO_del_arbol_no_cambia_lo_que_acepta (__main__.VeredictoDesmentidoYEvidencia.test_cambiar_la_politica_DENTRO_del_arbol_no_cambia_lo_que_acepta)
+T220 · Defecto que previene: `g.15`, que la autoridad dependa del árbol verificado. ... ok
+test_dos_emisiones_sobre_el_mismo_commit_atestan_lo_mismo (__main__.VeredictoDesmentidoYEvidencia.test_dos_emisiones_sobre_el_mismo_commit_atestan_lo_mismo)
+T220 · Defecto que previene: una evidencia que cambia sin que cambie el árbol. ... ok
+test_la_atestacion_no_lleva_reloj_ni_numero_de_ejecucion (__main__.VeredictoDesmentidoYEvidencia.test_la_atestacion_no_lleva_reloj_ni_numero_de_ejecucion)
+T220 · Defecto que previene: `I-g3`, hora de pared o contador en lo derivado. ... ok
+test_la_atestacion_se_vincula_al_commit_y_al_tree (__main__.VeredictoDesmentidoYEvidencia.test_la_atestacion_se_vincula_al_commit_y_al_tree)
+T220 · Defecto que previene: §11.8, atestar sobre un nombre de rama. ... ok
+test_la_evidencia_dentro_del_arbol_se_rechaza (__main__.VeredictoDesmentidoYEvidencia.test_la_evidencia_dentro_del_arbol_se_rechaza)
+T220 · Defecto que previene: `g.13`, certificar un árbol cambiándolo al certificarlo. ... ok
+test_la_trazabilidad_publica_identidad_epoca_y_digest (__main__.VeredictoDesmentidoYEvidencia.test_la_trazabilidad_publica_identidad_epoca_y_digest)
+T220 · Defecto que previene: una evidencia que no se puede reanclar a nada. ... ok
+test_una_atestacion_de_otro_commit_no_sirve (__main__.VeredictoDesmentidoYEvidencia.test_una_atestacion_de_otro_commit_no_sirve)
+T220 · Defecto que previene: reutilizar una atestación buena sobre otro árbol. ... ok
+
+----------------------------------------------------------------------
+Ran 37 tests  (duración no registrada: varía por ejecución)
+
+OK

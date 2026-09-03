@@ -54,7 +54,7 @@ AMBIGUO = "ambiguo"
 CAMPOS_DE_FICHA = (
     "identificador", "version", "capacidades", "operaciones", "limites", "timeout",
     "cancelacion", "idempotencia", "forma_de_progreso", "resultado", "errores",
-    "evidencia", "compatibilidad",
+    "evidencia", "compatibilidad", "resolucion_del_control_repo",
 )
 
 
@@ -125,7 +125,10 @@ class FichaDeAdaptador:
         if faltan:
             raise OrdenInvalida(
                 "la ficha de adaptador no declara " + ", ".join(faltan)
-                + "; §3.4 exige los trece campos y una ausencia no es un valor por defecto"
+                + "; §3.4 exige TODOS los campos de `CAMPOS_DE_FICHA` —cuántos son no se "
+                "escribe aquí, porque un cardinal al lado de su propia enumeración caduca "
+                "en silencio en cuanto la enumeración crece— y una ausencia NO es un valor "
+                "por defecto"
             )
         sobran = [nombre for nombre in campos if nombre not in CAMPOS_DE_FICHA]
         if sobran:

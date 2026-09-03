@@ -16,11 +16,11 @@ Cualquier documento que afirme una distinta hace fallar la prueba T151.
 | composiciones | **38** |
 | composiciones de dis | **10** |
 | contratos transversales | **7** |
-| escenarios | **118** |
+| escenarios | **149** |
 | esquemas | **19** |
 | formas de conversacion | **14** |
 | gates | **31** |
-| handoffs | **17** |
+| handoffs | **22** |
 | metodos | **35** |
 | metodos de dis | **6** |
 | niveles de novedad | **5** |

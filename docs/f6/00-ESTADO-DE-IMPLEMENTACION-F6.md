@@ -16,6 +16,13 @@ sede de lo CONSTRUIDO frente a lo DISEÑADO: ésa es
 **Acto habilitante:** la resolución `O24`, en la
 [sede canónica del Owner](../owner/ADS-OWNER-RESOLUCIONES.md).
 
+> **Y LA TABLA DE `(g)` NO SE TOCA.** `(g)` §17 lleva una tabla que dice «NO CONSTRUIDO» de
+> sus tres contratos derivados. **Esa tabla describe el estado EN EL MOMENTO DE SU
+> APROBACIÓN**, que es el 2026-09-02, y `(g)` es norma aprobada, no un ledger de
+> implementación: editarla para «corregirla» sería reescribir material aprobado por una
+> razón que no es normativa. El estado vigente se registra AQUÍ, fuera de `(g)`, y quien lea
+> aquella tabla ha de leerla con su fecha.
+
 ---
 
 ## 1 · El censo de contratos de `F6` NO se escribe: se deriva
@@ -27,25 +34,27 @@ grep -oE '^\| `V6-[0-9]+`.*\| (`CONTRATO_[A-Z_]+`)' docs/evolucion/11-ARQUITECTU
   | grep -oE 'CONTRATO_[A-Z_]+' | sort | uniq -c
 # los contratos DERIVADOS que la sección (g) nombra
 grep -nE '^\| \*\*contrato de' docs/rediseno/g-ESTADO-DURABLE-APROBADA.md
+# el conjunto de ÁRBOLES ADVERSARIALES de §20.5, que tampoco se enumera
+grep -nE '^## [0-9]+ · EL [A-ZÁÉÍÓÚ]+ ÁRBOL' docs/evolucion/[0-9][0-9]-*.md
 ```
 
 **Dos familias, y confundirlas sería el error.** Los `V6-*` son los puntos del **verificador
 de admisión** (`F6-A`), y su sede es `11-ARQ` §20.1. Los **contratos derivados** son los tres
-que `g.17` nombra, y su norma es la sección `(g)`. Ninguna de las dos familias se copia aquí.
+que `g.17` nombra, y su norma es la sección `(g)`. Ninguna de las dos se copia aquí.
 
 ## 2 · La cadena crítica, y dónde está este corte
 
 ```text
 (g) APROBADA  →  ESTADO DURABLE  →  RUNTIME  →  VERIFICADOR Y RAÍZ EXTERNA  →  CERTIFICACIÓN
-     `O23`         ESTE CORTE         siguiente        cortes V2–V6              `F6-J`
+     `O23`         corte 1           corte 2         ESTE MACROBLOQUE            `F6-J`
                                                                                     │
                                                                                     ▼
                                                                         PRIMERA ADOPCIÓN REAL
                                                                           — PesquerApp —
 ```
 
-**Este macrobloque construye el primer eslabón después de la norma**, y sólo ése. El grafo
-de dependencias completo vive en
+**Este macrobloque construye el último eslabón antes de la certificación**, y sólo ése. El
+grafo de dependencias completo vive en
 [`05-PLAN-DE-IMPLEMENTACION-F5-F6.md`](../canonico/05-PLAN-DE-IMPLEMENTACION-F5-F6.md) §3.
 
 ## 3 · Clasificación por contrato
@@ -60,218 +69,114 @@ NO_IMPLEMENTADO                  no hay código. El contrato está escrito y nad
 BLOQUEADO_POR_DEPENDENCIA        falta otro contrato de F6 que va antes
 BLOQUEADO_POR_DECISION_DEL_OWNER falta un acto del Owner, DECLARADO y con su condición
 EXTERNO                          su sujeto vive fuera de este repositorio
+PENDIENTE_DE_CERTIFICACIÓN       está implementado y probado, y espera el juicio
+                                 independiente que `F6-J` emitirá. NO es «certificado»
 ```
 
 | contrato | sede | clasificación | qué lo cierra |
 |---|---|---|---|
-| **contrato de ESTADO DURABLE** (`g.1`–`g.13`) | [`g.17`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · derivado en [`CONTRATO-ESTADO-DURABLE.md`](../../kernel/operativo/runtime/CONTRATO-ESTADO-DURABLE.md) | **IMPLEMENTADO_Y_PROBADO** | — |
-| **`A14` · guarda de entorno** (corte `V1` · `F6-I`) | [`06-DEUDA`](../canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md) §4 | **IMPLEMENTADO_Y_PROBADO** | — |
-| **`FD-3` · la especificación normativa viaja al proyecto instalado** | [`06-DEUDA`](../canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md) §10 bis | **IMPLEMENTADO_Y_PROBADO** | — |
-| **contrato de GOBIERNO GIT DEL CONTROL REPO** (`g.14`) | [`g.17`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · derivado en [`CONTRATO-GOBIERNO-GIT-CONTROL.md`](../../kernel/operativo/runtime/CONTRATO-GOBIERNO-GIT-CONTROL.md) | **IMPLEMENTADO_Y_PROBADO** en el alcance de `g.14` que este corte tenía pendiente: tabla de propiedad, concesión de ref, revisión base y `G-A8` en sus dos mitades —evidencia en `evidencia/gobierno-git-salida.txt`— | la **serialización entre MÁQUINAS** y la publicación a un remoto: se demuestra entre procesos reales de una máquina, y la política de publicación conserva su valor por defecto «esperando-owner» |
-| **contrato de RAÍZ EXTERNA DE CONFIANZA** (`g.15`) | [`g.17`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · `11-ARQ` §11.8 · `O25` | **PARCIAL** — ya **NO** bloqueado por decisión del Owner: `O25` fija titularidad, custodia y autoridad administrativa | que el contrato se ejecute **FUERA** del árbol verificado con una identidad que no pueda escribir en él, con un proveedor productivo real del anfitrión. `O25` §6 dice él mismo que no la declara implementada ni certificada |
-| **`V6-01`…`V6-19` · verificador de admisión** (`F6-A`) | `11-ARQ` §20.1 · derivado en [`CONTRATO-ADMISION.md`](../../kernel/operativo/runtime/CONTRATO-ADMISION.md) | **PARCIAL** — `V6-01`…`V6-14`, `V6-17`, `V6-18` y `V6-19` implementados y ejecutados, evidencia en `evidencia/admision-salida.txt`. **`V6-15` y `V6-16` NO** | `V6-15`: el derivador del conjunto de árboles adversariales de §20.5. `V6-16`: la raíz externa productiva. Los dos son de otro corte, y todo veredicto publica su lista `fuera_de_alcance` |
-| **`F6-D` · runtime y dispatcher** | `11-ARQ` §7 · derivado en [`CONTRATO-RUNTIME-Y-DISPATCHER.md`](../../kernel/operativo/runtime/CONTRATO-RUNTIME-Y-DISPATCHER.md) | **PARCIAL** — la máquina de despacho está implementada y probada, evidencia en `evidencia/runtime-salida.txt` y en `evidencia/e2e-runtime-salida.txt` | el CICLO de `§7.2` —encuadre, composición de rutas por `b.16`, materialización de equipos por `C4`, gates de capa y handoffs por `C5`— y `Continúa` de `§7.4` con sus derivados y proyecciones |
-| **`F6-F` · los cuatro macrocircuitos** | `11-ARQ` §8 y §9.6 | **NO_IMPLEMENTADO** | corte propio |
-| **`F6-G` · arquitectura de adaptadores** (corte `V7`) | `11-ARQ` §6 · derivado en [`CONTRATO-ADAPTADOR.md`](../../kernel/operativo/runtime/CONTRATO-ADAPTADOR.md) | **PARCIAL** — interfaz, adaptador local REAL, proyecciones con huella y validador de deriva; evidencia en `evidencia/adaptadores-salida.txt` | la **pieza 4** de `§6`, la prueba de humo en sesión nueva, que exige abrir un entorno de agente real. Por eso **no se declara ningún NIVEL** de ningún adaptador |
-| **`F6-H` · hallazgos externos con propietario y fase `F6`** | `11-ARQ` §19 | **PARCIAL** — `A14` y `FD-3` cerrados en el primer corte; **`S1-02` cerrado en éste** | el resto de su lista |
-| **`F6-J` · CERTIFICACIÓN** | `O20` §3 | **BLOQUEADO_POR_DEPENDENCIA** | que exista lo que hay que certificar, y un juicio independiente que no sea quien construyó |
-| **custodia productiva de la clave de firma** | `FD-1` · `O25` §2 | **EXTERNO** al repositorio, y **decidido**: identidad de servicio dedicada del verificador externo, con un proveedor de secretos del anfitrión | que exista ese proveedor en el anfitrión de la instalación. **No es materia del repositorio**, y por eso queda EXTERNO aunque la decisión ya esté tomada |
+| **contrato de ESTADO DURABLE** (`g.1`–`g.13`) | [`g.17`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · derivado en [`CONTRATO-ESTADO-DURABLE.md`](../../kernel/operativo/runtime/CONTRATO-ESTADO-DURABLE.md) | **IMPLEMENTADO_Y_PROBADO** · PENDIENTE_DE_CERTIFICACIÓN | — |
+| **`A14` · guarda de entorno** (corte `V1` · `F6-I`) | [`06-DEUDA`](../canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md) §4 | **IMPLEMENTADO_Y_PROBADO** · PENDIENTE_DE_CERTIFICACIÓN | — |
+| **`FD-3` · la especificación normativa viaja al proyecto instalado** | [`06-DEUDA`](../canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md) §10 bis | **IMPLEMENTADO_Y_PROBADO** · PENDIENTE_DE_CERTIFICACIÓN | — |
+| **contrato de GOBIERNO GIT DEL CONTROL REPO** (`g.14`) | [`g.17`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · derivado en [`CONTRATO-GOBIERNO-GIT-CONTROL.md`](../../kernel/operativo/runtime/CONTRATO-GOBIERNO-GIT-CONTROL.md) | **IMPLEMENTADO_Y_PROBADO** · PENDIENTE_DE_CERTIFICACIÓN — la serialización entre MÁQUINAS y la publicación a un remoto, que era lo pendiente, se demuestra con remoto bare, dos clones, dos procesos e identidades distintas en `T221`–`T222` | — |
+| **contrato de RAÍZ EXTERNA DE CONFIANZA** (`g.15`) · **`V6-16`** | [`g.17`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · `11-ARQ` §11.8 · `O25` | **IMPLEMENTADO_Y_PROBADO** · PENDIENTE_DE_CERTIFICACIÓN — paquete e instalación separados FUERA del árbol, proceso ejecutor propio, firma **ASIMÉTRICA** Ed25519 con `ssh-keygen -Y`, rotación, solapamiento, retirada, revocación, y la independencia MEDIDA con identidad distinta y montaje de sólo lectura | — · su **custodia productiva** sigue siendo `EXTERNO`, ver la última fila |
+| **`V6-01`…`V6-19` · verificador de admisión** (`F6-A`) | `11-ARQ` §20.1 · derivado en [`CONTRATO-ADMISION.md`](../../kernel/operativo/runtime/CONTRATO-ADMISION.md) | **IMPLEMENTADO_Y_PROBADO** · PENDIENTE_DE_CERTIFICACIÓN — **los diecinueve**. `V6-15` y `V6-16`, que eran los dos que faltaban, quedan construidos, y el veredicto ya **no publica ninguna lista `fuera_de_alcance`**: publica la PROCEDENCIA de cada uno | — |
+| **`V6-15` · árboles adversariales** | `11-ARQ` §20.5 · derivado en [`CONTRATO-ARBOLES-ADVERSARIALES.md`](../../kernel/operativo/runtime/CONTRATO-ARBOLES-ADVERSARIALES.md) | **IMPLEMENTADO_Y_PROBADO** · PENDIENTE_DE_CERTIFICACIÓN — el conjunto se DERIVA de las cabeceras publicadas, con su documento y su hallazgo; cada árbol se materializa en un repositorio real, se reproduce contra su versión histórica vulnerable, y la vigente lo rechaza POR LA PROPIEDAD. `entrada − suite = ∅` y `suite − entrada = ∅` | — |
+| **`F6-D` · runtime y dispatcher** | `11-ARQ` §7 · derivado en [`CONTRATO-RUNTIME-Y-DISPATCHER.md`](../../kernel/operativo/runtime/CONTRATO-RUNTIME-Y-DISPATCHER.md) y en [`CONTRATO-CICLO-Y-MACROCIRCUITOS.md`](../../kernel/operativo/runtime/CONTRATO-CICLO-Y-MACROCIRCUITOS.md) | **IMPLEMENTADO_Y_PROBADO** · PENDIENTE_DE_CERTIFICACIÓN — el CICLO de `§7.2` completo, sus ocho etapas, y `Continúa` de `§7.4` con sus siete pasos, sus diez escenarios y su idempotencia medida | — |
+| **`F6-F` · los cuatro macrocircuitos** | `11-ARQ` §8, §9.6 y §18 | **IMPLEMENTADO_Y_PROBADO** · PENDIENTE_DE_CERTIFICACIÓN — los cuatro DERIVADOS de la tabla de §18, ejecutados por un motor ÚNICO parametrizado, con `FASE 0` compartida, sus seis identificadores de sujeto, su soporte durable propio y las once filas adversariales `X-S1`–`X-S11` | el recorrido de TODAS las fases de `A` y de `U` extremo a extremo, que exige fuentes reales, materialización por `PLT` e Integration Set. Se recorre la primera fase de los cuatro, y la composición de las trece filas se comprueba una a una |
+| **`F6-G` · arquitectura de adaptadores** (corte `V7`) | `11-ARQ` §6 · derivado en [`CONTRATO-ADAPTADOR.md`](../../kernel/operativo/runtime/CONTRATO-ADAPTADOR.md) | **IMPLEMENTADO_Y_PROBADO** · PENDIENTE_DE_CERTIFICACIÓN — las CUATRO piezas, incluida la **pieza 4**: la prueba de humo en sesión nueva, con sus diez pasos, su repetición desde otra sesión limpia y los cuatro desenlaces de §6.7 | el **NIVEL** que §6.5 asigna se DERIVA y hoy sale **`compatible`**, no `soportado`: no existe celda `certificacion/integrado`, que exigiría `SOURCES.toml`, CI y permisos certificados. **No se presupone**, se deriva |
+| **`FD-5` · aislamiento de procesos** | [`06-DEUDA`](../canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md) · derivado en [`CONTRATO-CONTENCION.md`](../../kernel/operativo/runtime/CONTRATO-CONTENCION.md) | **IMPLEMENTADO_Y_PROBADO en este anfitrión** · PENDIENTE_DE_CERTIFICACIÓN — con la política de contención, un descendiente que hace `setsid` NO escapa: medido a través del adaptador, **tres de cuatro descendientes sobreviven con `killpg` y cero de cinco con contención** | **NO se declara cerrado para un anfitrión CUALQUIERA**: la contención fuerte depende del anfitrión. Donde no haya ninguno de los mecanismos, lo demostrado es la DETECCIÓN y el FALLO CERRADO. `cgroup v2` está presente y **NO se pudo ejercer** aquí: el subgrupo se crea y la tarea no entra |
+| **`F6-H` · hallazgos externos con propietario y fase `F6`** | `11-ARQ` §19 | **PARCIAL** — `A14`, `FD-3` y `S1-02` cerrados en cortes anteriores; `FD-5` cerrado aquí en el alcance dicho | el resto de su lista |
+| **`F6-J` · CERTIFICACIÓN** | `O20` §3 | **BLOQUEADO_POR_DEPENDENCIA** | un juicio INDEPENDIENTE que no sea quien construyó. Ya existe lo que hay que certificar; lo que falta es el juicio |
+| **custodia productiva de la clave de firma** | `FD-1` · `O25` §2 | **EXTERNO** al repositorio, y **decidido**: identidad de servicio dedicada del verificador externo, con un proveedor de secretos del anfitrión | que exista ese proveedor en el anfitrión de la instalación. En este árbol la clave es un fichero `0600` fuera de todos los repositorios, generado efímero y destruido al terminar; **eso no es custodia productiva y `O25` §5 lo dice** |
 
 > **Y la regla que impide leer esta tabla al revés.** `IMPLEMENTADO_Y_PROBADO` **no es
 > CERTIFICADO**. La certificación de `F6` la emite un juicio independiente, y **no quien
 > construyó** —criterio `B6`—. Nada de esta tabla desbloquea PesquerApp.
 
-**Cómo se reparten las nueve condiciones de `g.16`, para que la primera fila no se lea de
-más.** `(g)` §16 dice que una implementación satisface **la sección** cuando **las nueve** se
-demuestran sobre un árbol real. La sección **NO está satisfecha entera**, y esta tabla no
-dice que lo esté: dice que lo está el **primero de sus tres contratos derivados**. El reparto
-es éste, y cada condición cae en un contrato y en uno solo:
+**Cómo se reparten las nueve condiciones de `g.16`.** `(g)` §16 dice que una implementación
+satisface **la sección** cuando **las nueve** se demuestran sobre un árbol real, con
+escenario positivo y negativo. El reparto es éste, y **las nueve están demostradas**:
 
 ```text
 contrato de ESTADO DURABLE  ·  g.1–g.13   →  G-A1 · G-A2 · G-A3 · G-A4 · G-A5 · G-A6 · G-A7
-                                              las SIETE demostradas sobre árbol real, con
-                                              escenario positivo y negativo, en T173–T179
+                                              las SIETE, en T173–T179
 
-contrato de GOBIERNO GIT    ·  g.14       →  G-A8   NO demostrada. La rama canónica no
-DEL CONTROL REPO                              contiene estado parcial —la zona operacional
-                                              queda fuera del versionado—, pero la
-                                              imposibilidad POR POLÍTICA de forzar una
-                                              referencia, y su detección, son del corte
-                                              siguiente. Por eso ese contrato es PARCIAL
+contrato de GOBIERNO GIT    ·  g.14       →  G-A8  DEMOSTRADA en sus DOS mitades: IMPOSIBLE
+DEL CONTROL REPO                              —el hook rechaza el forzado en sus tres formas,
+                                              incluido el OID nulo— y DETECTABLE —el linaje
+                                              DURABLE denuncia un forzado aunque el hook se
+                                              hubiera quitado—. Y entre MÁQUINAS, con remoto
+                                              bare, dos clones y dos procesos: T187, T221, T222
 
-contrato de RAÍZ EXTERNA    ·  g.15       →  G-A9   NO demostrada con una raíz externa real.
-DE CONFIANZA                                  Existe la interfaz, sus proveedores
-                                              intercambiables y su fallo cerrado; la
-                                              atestación se prueba con un proveedor EFÍMERO
-                                              DE PRUEBAS, que no es una custodia productiva.
-                                              Por eso ese contrato es PARCIAL, y `FD-1` sigue
-                                              abierta
+contrato de RAÍZ EXTERNA    ·  g.15       →  G-A9  DEMOSTRADA con una raíz externa REAL: un
+DE CONFIANZA                                  árbol que se autodeclara VERDE es DESMENTIDO
+                                              por una atestación firmada ASIMÉTRICAMENTE,
+                                              emitida por un proceso separado con identidad
+                                              que NO puede escribir en el árbol. T220, T225
 ```
 
-> **La consecuencia, dicha contra el propio interés:** mientras `G-A8` y `G-A9` no se
-> demuestren, **la sección `(g)` no está satisfecha**, y nadie puede citar la primera fila de
-> la tabla para afirmar lo contrario.
+> **Y la consecuencia, dicha con su límite:** las nueve condiciones observables de `g.16`
+> están demostradas sobre un árbol real. **Eso NO es la certificación de `(g)` ni la de
+> `F6`**: demostrar una condición de aceptación y certificar son actos distintos, y el
+> segundo es de `F6-J`.
 
 ## 4 · Los validadores documentales NO son el runtime de `F6`
 
 **Se dice porque la confusión es barata y cara de deshacer.** La batería del corpus
 —`ads_lint.py`, `comprobar_*.py`, sus controles negativos y su evidencia publicada— comprueba
 la **CONSISTENCIA DEL CORPUS**. El runtime de `F6` es otra cosa: **ejecuta**. Un verde de la
-batería no dice nada sobre si el motor de estado durable funciona, y por eso el motor trae
-**su propia batería ejecutable**, registrada en el manifiesto canónico de validadores y con
-su propia evidencia.
+batería no dice nada sobre si el motor funciona, y por eso el runtime trae **sus propias
+baterías**, registradas en el manifiesto canónico de validadores y con su propia evidencia.
 
 ## 5 · Decisiones técnicas de `F6`, con sus alternativas
 
 **Autoridad:** `O24` §2 y `g.0`. Ninguna de estas decisiones es norma nueva, ninguna rebaja
-una invariante y **ninguna vuelve al Owner**. Las del estado durable se leen enteras, con sus
-alternativas, en el contrato derivado:
-[`CONTRATO-ESTADO-DURABLE.md`](../../kernel/operativo/runtime/CONTRATO-ESTADO-DURABLE.md) §2.
-Éstas son las que **no** viven allí porque tocan al repositorio y no al motor:
+una invariante y **ninguna vuelve al Owner**. Las de los cortes 1 y 2 se leen en sus
+contratos derivados. Éstas son las de ESTE macrobloque:
 
 | decisión | alternativas descartadas | por qué |
 |---|---|---|
-| **el runtime vive en `kernel/operativo/runtime/`**, dentro del kernel vendorizado | un paquete aparte fuera del kernel · dentro de `tooling/` | el motor tiene que **viajar al proyecto instalado**: es él quien administra el estado de un control repo. `tooling/` es lo ejecutable de FUERA del kernel, y sacarlo del kernel lo dejaría fuera de la huella de integridad, que es la vía silenciosa para forkearlo |
-| **la guarda de entorno vive en el kernel y el tooling la importa** | duplicar el número de versión en cada script · ponerla en `tooling/` | la flecha correcta es que el tooling dependa del kernel y no al revés. Repetir el número es el hallazgo `A-12` otra vez |
-| **la variable de la guarda sólo puede SUBIR la exigencia** | permitir bajarla para desbloquear un entorno | una guarda que se relaja por entorno no es una guarda: es un interruptor, y el primero que lo use en CI la apaga para todos |
-| **la lista de especificación que viaja se DERIVA del árbol** | alargar la lista escrita a mano con `(g)` y `E3`–`E6` | una lista a mano al lado de un directorio que crece sólo puede envejecer mal: ya envejeció una vez, y eso es `FD-3` |
-| **la frontera del proyecto instalado se DECLARA en `exclusiones.yaml`** | editar `E5`, que es material APROBADO · embarcar la historia del kernel a cada proyecto | `E5` enlaza tres sedes que a propósito **no viajan**, y dentro del proyecto instalado esos enlaces quedaban rotos. Tocar `E5` sería reabrir `F5`, que `O24` §5 prohíbe; embarcar la historia es lo que el arranque declara no hacer. La declaración **sólo se activa donde la ruta no existe**, de modo que en este repositorio no tolera nada, y una entrada cuya ruta no exista aquí es un FALLO: no sirve para silenciar un enlace roto de verdad |
-| **`F17` y `F18` de `validar-f5.py` se ANCLAN al acto y a la evidencia** en vez de retirarse | dejarlos como estaban —quedarían vacíos o darían falso rojo— · borrarlos | un control que se retira cuando la fase avanza no protege nada. `F17` busca el acto del Owner en su sede canónica y sin él sigue en rojo; `F18` exige que toda afirmación de «implementado» cite un fichero de evidencia publicado que exista, y prohíbe «certificado» en cualquier redacción —con cópula, sin ella y en fila de tabla—. **Su ámbito es ACOTADO y se dice**: `docs/f5`, `docs/canonico` y `docs/rediseno`, y NO alcanza a la raíz del repositorio, que es el hallazgo `S1-02`, adjudicado y vivo |
+| **la firma de la raíz externa es `ssh-keygen -Y` con Ed25519** | `gpg` · `openssl` · una biblioteca de terceros · seguir con el MAC simétrico | `O25` §5 prohíbe primitivas propias y pide criptografía estándar y un proveedor mantenido. `ssh-keygen` es herramienta del anfitrión, trae espacio de nombres y fichero de firmantes autorizados ya definidos, y **no obliga a escribir protocolo**. `gpg` arrastra anillo con estado, agente y caducidades; `openssl` obligaría a elegir a mano formato y empaquetado. El MAC simétrico está DESCARTADO por lo que es: quien verifica podría firmar, y con eso `V6-16` se cae entero |
+| **firmar y verificar son DOS programas** | un binario con dos subórdenes | juntar los dos poderes en una sola ruta ejecutable es exactamente lo que la separación de poderes de `g.13` prohíbe. El firmante se NIEGA a verificar; el verificador no tiene clave privada |
+| **la ruta del ciclo se elige por MATERIA y ESTADO declarados** | emparejar palabras del título o de la expresión del Owner | con lo léxico, renombrar un item cambia su proceso y un sinónimo activa una ruta que nadie pidió. `b.1` dice que el proceso lo determina el RESULTADO PERSEGUIDO, que es una declaración del encuadre y no una propiedad estadística de su prosa. Y el par —y no sólo la materia— porque `FEA` y `GAP` sólo se distinguen por el estado del objeto |
+| **`b.16` se DERIVA de sus bloques `ads:proceso`; §18 se contrasta contra el documento** | copiar los diez procesos y las trece filas a mano en el kernel | una lista a mano al lado de un documento que cambia envejece en silencio, que es `FD-3` otra vez. `11-ARQ` **no viaja** al proyecto instalado, así que la tabla de §18 se lleva como dato derivado y una prueba comprueba que sigue coincidiendo con el documento |
+| **un solo motor de macrocircuito, parametrizado** | cuatro ejecutores, uno por circuito | la regla 6 de `O17` exige el MISMO contrato y el MISMO mecanismo compartido. Con cuatro implementaciones, la `FASE 0` divergiría en cuanto alguien tocara una; con una, las cuatro pasan por el mismo punto de despacho y la batería lo mide |
+| **el soporte de la `FASE 0` es propio, inmutable y direccionado por contenido** | escribirlo en `estado/` · no escribirlo | en `estado/` es imposible: nace DESPUÉS de la fase. No escribirlo dejaría indemostrable «exactamente una por ejecución», que es la regla 1 |
+| **el censo de `V6-04` barre TAMBIÉN `arboles/`, con su vía histórica DECLARADA** | dejar `arboles/` fuera del censo, que es lo cómodo | `arboles/` reproduce a propósito una lectura de lista sin `-z`, porque ése ES el defecto que `S1-01` fue. Dejar el paquete fuera del censo habría dejado sin enumerar una superficie entera —justo el modo de fallo de `S1-01`—. Se mete dentro, la vía histórica se PUBLICA acotada por `(paquete, módulo)`, y lo que no esté en esa tabla sigue dando ROJO también dentro de `arboles/` |
+| **los envoltorios de proceso se DERIVAN por cierre transitivo** | añadir los nombres que se escapaban a la lista `INVOCADORES` · retirar la lista y censar toda mención | una lista de nombres se esquiva escribiendo otro nombre, y así fue: envolver `subprocess.run` en un `_git_historico()` local hacía desaparecer del censo una lectura insegura. Retirar la lista produciría FALSOS ROJOS sobre menciones, y un censo con falsos rojos se acaba desactivando. Derivar qué funciones alcanzan un proceso no depende de que nadie mantenga nada |
+| **la contención se enchufa al adaptador por POLÍTICA, y sin política no cambia nada** | activar la contención siempre · dejarla como paquete suelto sin enchufar | activarla siempre convertiría un anfitrión sin `cgroups` ni espacios de nombres en un anfitrión que no puede ejecutar. Dejarla sin enchufar habría dejado `FD-5` cerrado en un paquete y abierto en el adaptador, que es donde la deuda estaba escrita. Con política: contención fuerte o **FALLO CERRADO**, nunca degradación silenciosa |
+| **el resolvedor del puntero del control repo vive en el ADAPTADOR** | dejarlo dentro del guion de la prueba de sesión nueva, que es donde nació | allí la capacidad existiría SÓLO mientras corre la prueba: ningún entorno real podría usarla, y §6.7 quedaría con una regla que nadie implementa mientras su prueba pasa en verde |
+| **el analizador de los bloques `ads:*` del ciclo es propio y stdlib** | depender de PyYAML en el runtime | `runtime/` VIAJA a cada proyecto instalado: PyYAML pasaría de dependencia de desarrollo a dependencia de todo producto gobernado. La equivalencia **se mide** contra PyYAML sobre los bloques del corpus y sus esquemas |
 
-## 5 bis · La auditoría independiente, y qué cambió por ella
-
-**Quién la hizo.** Un auditor que no construyó nada de este corte, con el encargo de
-romperlo. No escribió una línea en el árbol: se comprobó al terminar que
-`git status --porcelain` seguía vacío.
-
-**Lo que intentó y NO consiguió**, con medios que la batería no usa: perder una transición
-confirmada matando el proceso con **120 `SIGKILL` externos en instantes aleatorios**;
-publicar una mezcla parcial fabricándola a mano; obtener **doble éxito con 24 escritores
-concurrentes**; evitar el fallo cerrado con **siete formas de corrupción del estado y ocho
-del diario**; leer un almacén de versión futura o anterior sin fallo cerrado; relajar la
-guarda de entorno con **nueve valores distintos**; usar la frontera declarada para silenciar
-un enlace roto de verdad; y romper el determinismo —dos almacenes construidos desde rutas y
-directorios de trabajo distintos dieron los **siete artefactos durables byte-idénticos**, y
-la batería y el escenario dieron bytes idénticos desde tres `cwd` y coincidieron byte a byte
-con la evidencia publicada—.
-
-**Lo que SÍ encontró, y se corrigió en la única pasada de corrección:**
-
-| defecto | clasificación | qué se hizo |
-|---|---|---|
-| una reconciliación nacida de **reintentos agotados** se retiraba borrando su última línea, y `verificar` y `auditar` seguían diciendo `ok` — una cadena de huellas no detecta que le quiten la **cola** | **BLOQUEA EL CORTE** | **cabeza durable** del registro, publicada de forma atómica tras cada anexado bajo el bloqueo propio del registro, y comprobada en el **camino de lectura**. Cinco vectores de manipulación, tres caminos de lectura, todos fallan cerrado |
-| `G-A5` sólo se cumplía con la ventana cerrada: agotar los reintentos **al recuperar al abrir** no dejaba registro auxiliar | CORRECCIÓN DETERMINADA | la recuperación recibe el mismo tratamiento que la aplicación: error tipado **y** registro `g.9` |
-| los errores de cuatro módulos imprimían la **ruta absoluta de la máquina**, contra lo que el propio punto ejecutable declaraba | CORRECCIÓN DETERMINADA | el saneado vive en **un solo punto** —el constructor del error tipado—, no repartido por veinte `raise` que es como se rompió la primera vez |
-| `F18` estaba declarado «en todas partes» y era acotado, y su expresión sólo cazaba una redacción de seis | CORRECCIÓN DETERMINADA | se dice su ámbito real, y la expresión caza cópula, ausencia de cópula y fila de tabla. Comprobado con las ocho redacciones que la auditoría usó |
-| el bloque reanudable de la iniciativa seguía afirmando `F6 NO INICIADA` | CORRECCIÓN DETERMINADA | reanclado, y **dejando de copiar** el estado de fase: se remite a su única sede |
-| la raíz del repositorio no está en ningún inventario de contenido, de modo que la batería pasa con una infracción plantada ahí | **DEUDA DE OTRO CORTE** | es el hallazgo `S1-02`, adjudicado y vivo. Este corte no lo abre ni lo empeora; lo que sí hace es **dejar de sugerir** que lo cubre |
-| `O24` se inscribió sin `procedencia` ni `relaciones de revisión` | no corregible aquí | el texto del Owner se transcribe LITERAL: completarlo sería reescribirlo. Registrado en `FD-2` |
-
-**Residuo declarado del arreglo principal**, y se dice en vez de callarlo: entre el `fsync` de
-una línea del registro y el reemplazo de su cabeza hay una ventana de **un anexado**, que hay
-que tolerar o cualquier corte dejaría el registro inservible; quien borrase la última línea
-exactamente en esa ventana no sería detectado, y la detección vuelve en cuanto el registro
-anexa otra vez o el almacén se recupera. Y **falsificar a la vez el log y su cabeza sigue sin
-ser detectable desde dentro del árbol**: es literalmente lo que `g.5` advierte y lo que `g.15`
-reserva a la raíz externa.
-
-**El veredicto del auditor**, una vez aplicada la corrección: el corte sirve como fundamento
-permanente.
-
-## 5 ter · El SEGUNDO corte, y qué cerró
-
-**Cinco piezas, todas sobre el motor de estado durable que ya existía**, y ninguna con cola,
-diario ni recuperación propios: runtime y dispatcher · gobierno Git del control repo ·
-verificador de admisión `V2`–`V5` · adaptadores `V7` · identidad y firma externa.
-
-**Decisiones técnicas de este corte**, con lo que se descartó:
-
-| decisión | alternativas descartadas | por qué |
-|---|---|---|
-| **el lease expira por OBSERVACIONES contadas, no por plazo** | guardar una fecha límite en el lease · fiarlo todo al `flock` | `I-g3` prohíbe el reloj de pared en lo durable, y un `flock` no cruza de máquina. El tiempo lógico es la REVISIÓN, y `PACIENCIA` queda como parámetro calibrable que `g.6` reserva al contrato derivado |
-| **`adquirir` NUNCA roba; robar se llama `reclamar`** | dejar la vía rápida dentro de `adquirir` para el caso de muerte probada | es correcta hoy y vuelve a ser indistinguible de un robo en cuanto alguien toque la definición de «probada». Con un solo nombre, todo robo deja su evento en el diario |
-| **el testigo de vida se RETIRA en la salida limpia** | dejarlo y leer «existe con el cerrojo libre» como muerte | eso es exactamente lo que deja una orden de línea de órdenes que termina bien: el lease no protegía nada. Con la retirada quedan tres lecturas y no dos, y la tercera es INDECIDIBLE |
-| **dos niveles de idempotencia: acuse y recibo** | uno solo, en el estado canónico | `g.12` declara **un solo ejecutor** del estado canónico. El acuse protege el ESTADO y el recibo del adaptador protege el EFECTO; entre los dos hay una ventana que se declara |
-| **la concesión de ref es DURABLE, no un `flock`** | serializar el gobierno Git con un cerrojo del sistema | un `flock` no sobrevive a la caída, y entonces «recuperar tras caída» dejaría de ser demostrable |
-| **el linaje de refs se registra ENTERO, no sólo la cabeza** | guardar sólo la cabeza vigente | un forzado seguido de una confirmación legítima borraría la evidencia |
-| **el censo de lecturas y el de fórmulas se derivan con `ast`** | derivarlos con `grep` · escribirlos a mano | una búsqueda de texto no distingue una llamada de una mención, y una lista a mano envejece: es el defecto que `FD-3` ya midió |
-| **criptografía de la biblioteca estándar; el proveedor productivo DELEGA** | añadir una dependencia externa de criptografía | `O25` §5 prohíbe primitivas propias, no obliga a una dependencia; y §2 pone la clave en un proveedor **del anfitrión**, que es quien elige la tecnología. Añadir una dependencia sin poder fijarla de forma reproducible habría sido peor |
-
-**`S1-02` cerrado, y por el eje correcto.** El hallazgo estaba adjudicado y vivo desde el
-séptimo gate: el universo gobernado derivaba **QUÉ CONJUNTO** se examina —lo que aparece y
-desaparece respecto de la revisión base— y no **QUÉ PROPIEDAD** —la existencia en vez del
-CONTENIDO—, de modo que reescribir entero `START_HERE.md` dejaba `git status` vacío y
-**38/38 en verde**. Ahora cada zona del censo lleva **condición de CONTENIDO declarada y
-ejecutada**, y una zona sin condición da ROJO. Se demuestra en los dos sentidos, con control
-positivo y con el mismo ataque en cuatro zonas de clases distintas.
-
-**Y una decisión del Owner que este corte cierra como decisión:** `FD-1`, por `O25`. Tras
-ella **no queda ninguna decisión del Owner pendiente para seguir construyendo `F6`**.
-
-## 5 quater · La auditoría del SEGUNDO corte, y qué cambió por ella
-
-**Quién.** Un auditor que no construyó nada de este corte, con el encargo de romperlo, y que
-no escribió una línea en el árbol: comprobado al terminar que `git status --porcelain` seguía
-vacío.
-
-**Lo que intentó y NO consiguió:** confirmar sobre la rama canónica con la ventana
-transaccional abierta · que dos escritores Git confirmaran a la vez —seis procesos reales,
-**una sola cabeza**— · pasar la admisión con una mutación de contenido en **once** variantes,
-incluidas la raíz, la sede del Owner, una evidencia publicada, la política del verificador y
-el propio censo · hacer que el verificador se excluyera a sí mismo · cambiar desde dentro del
-árbol qué identidad acepta la raíz externa · encontrar un secreto o una ruta absoluta en las
-21 evidencias · romper el determinismo de ninguna de las seis baterías ni de los dos
-escenarios —byte a byte idénticos desde tres `cwd`— · y desmentir la huella, que recalculó
-**con su propia implementación**, sin importar `huella.py`, obteniendo el mismo valor sobre
-los mismos ficheros.
-
-**Lo que SÍ encontró, y se corrigió en la única pasada de corrección:**
-
-| defecto | clasificación | qué se hizo |
-|---|---|---|
-| **se robaba el lease de un titular VIVO sustituyendo su testigo**, y el mismo efecto se ejecutaba dos veces dejando la integridad en VERDE | **BLOQUEA EL CORTE** | **se RETIRA la vía rápida entera.** El plano operacional es reconstruible, está fuera de la huella, fuera de la admisión y fuera del versionado: **una credencial que cualquiera puede fabricar no puede decidir autoridad**, y no hay forma de autenticarla desde dentro. La reclamación queda con una sola puerta: las observaciones contadas |
-| **la mitad IMPOSIBLE de `G-A8` se saltaba omitiendo un argumento opcional**: Git pasa el OID nulo cuando el llamador no declara valor viejo, y el hook lo dejaba pasar. La batería no lo veía porque usaba siempre la forma que el hook sí cubría | **BLOQUEA EL CORTE** | el hook **resuelve la ref por su cuenta** cuando recibe el OID nulo y la juzga igual. Con las tres formas probadas —cuatro argumentos, tres argumentos y `--stdin`— y con el control positivo de la creación de una ref nueva |
-| un efecto se aplicaba **dos veces** si el proceso moría entre ejecutar y escribir el recibo | CORRECCIÓN DETERMINADA | **no se cierra la ventana: se hace DETECTABLE.** El recibo se abre antes de ejecutar; una segunda invocación que lo encuentre sin cerrar devuelve `ambiguo`, y el runtime **no completa ni reintenta**: abre la reconciliación de `g.9`. Registrado como `FD-6` |
-| había un **`pid` en el estado canónico durable**, contra `I-g3`, y la prueba que lo habría cazado corría sólo contra el registro en pruebas | CORRECCIÓN DETERMINADA | lista **blanca** de claves que entran en lo durable, y la prueba de `I-g3` corre también con el adaptador real |
-| `adquirir` funcionaba sobre un paquete `agotado`, contra lo que el contrato decía | CORRECCIÓN DETERMINADA | rechazado con su error tipado |
-| `identidad.cargar` resolvía el `realpath` del DIRECTORIO y no del fichero | CORRECCIÓN DETERMINADA | se resuelve el del fichero, con las cuatro formas probadas |
-| perder la carrera por una ref se reportaba como fallo del sistema de ficheros | CORRECCIÓN DETERMINADA | error de serialización, que es lo que es |
-| un descendiente que hace `setsid` **escapa** al `killpg` | **DEUDA DE OTRO CORTE** | contenerlo exige `cgroups` o espacios de nombres del anfitrión. **La afirmación se corrigió de inmediato**: el contrato dice ahora lo que alcanza y lo que no. Registrado como `FD-5` |
-| la identidad de pruebas es **simétrica**: quien verifica podría firmar | DEUDA DE OTRO CORTE | ya declarado: `V6-16` y la firma asimétrica del anfitrión son del corte siguiente |
-
-> **Y una lección de método que conviene no perder.** Dos de los defectos vivían en pruebas
-> que **pasaban**: la del `pid` corría contra el registro en pruebas, que no produce pid, y la
-> del forzado usaba la única forma de `update-ref` que el hook cubría. **Una prueba que
-> confirma lo que el código hace, en vez de lo que el contrato promete, es una prueba que no
-> puede ponerse roja.**
-
-## 6 · Lo que este corte NO hace
+## 6 · Lo que este macrobloque NO hace
 
 ```text
 NO INICIA        PesquerApp, ni un MVP, ni un piloto, ni una adopción parcial
 NO CERTIFICA     nada: implementado y probado NO es certificado
-NO COMPLETA      F6: van DOS cortes, y quedan el ciclo de §7.2, V6-15, V6-16, la prueba
-                 de humo en sesión nueva y los cuatro macrocircuitos
+NO CIERRA        F6: la cierra un acto posterior, después de la certificación independiente
+NO ABRE          el gate de certificación, que es del macrobloque siguiente
 NO REABRE        F4c ni F5
-NO EJECUTA       la raíz externa fuera del árbol con un proveedor productivo. `O25` YA
-                 fijó titular y custodio —`FD-1` está cerrada como DECISIÓN—, y lo que
-                 falta es la implementación, con firma asimétrica del anfitrión
+NO EDITA         la tabla de `(g)` §17: es norma aprobada y describe su momento
 ```
 
-## 7 · El corte siguiente, exacto
+## 7 · Lo que queda, exacto
 
 ```text
-1  EL CICLO de §7.2 sobre la máquina de despacho ya construida: encuadre, composición de
-   rutas por b.16, materialización de equipos por C4, gates de capa y handoffs por C5;
-   y `Continúa` de §7.4 con sus derivados y sus proyecciones      `F6-D` · 11-ARQ §7
-2  `V6-15`: el DERIVADOR del conjunto de árboles adversariales de §20.5, que hoy no
-   existe, y su suite de regresión con procedencia por documento y cabecera
-3  `V6-16` y la RAÍZ EXTERNA productiva: ejecución fuera del árbol verificado con un
-   proveedor del anfitrión y firma asimétrica. `O25` ya fija titular y custodio
-4  la PIEZA 4 de §6: la prueba de humo en sesión nueva, que es la que permite declarar
-   un NIVEL alcanzado de un adaptador                              `F6-G` · 11-ARQ §6.5
-5  los cuatro MACROCIRCUITOS y su FASE 0 compartida                 `F6-F` · 11-ARQ §8
-6  la serialización entre MÁQUINAS del gobierno Git, y la publicación a un remoto `g.14`
+1  LA CERTIFICACIÓN INDEPENDIENTE de F6, que es `F6-J` y no es de quien construyó
+2  el NIVEL `soportado` de un adaptador, que exige una celda `certificacion/integrado` con
+   `SOURCES.toml`, CI y permisos certificados. Hoy el nivel derivado es `compatible`
+3  `cgroup v2` como backend de contención EJERCIDO, que este anfitrión no permite: el
+   subgrupo se crea y la tarea no entra. Requisito exacto: un anfitrión donde
+   `echo $$ > <grupo>/cgroup.procs` no devuelva EIO
+4  una IDENTIDAD DE SISTEMA dedicada para la raíz externa. Requisito exacto: `sudo` sin
+   contraseña o una cuenta de servicio creada por quien administre la máquina. Sin ella,
+   la independencia se demuestra con contenedor y espacio de nombres, que es lo que hay
+5  la CUSTODIA PRODUCTIVA de la clave, que `O25` §2 deja al proveedor del anfitrión
+6  el recorrido extremo a extremo de TODAS las fases de `A` y de `U`, que exige fuentes
+   reales, materialización por `PLT` e Integration Set
+7  el resto de la lista de `F6-H`
 
-NINGUNA decisión del Owner queda pendiente para construir esto: `O25` cerró la última.
+NINGUNA decisión del Owner queda pendiente: `O25` cerró la última, y este macrobloque no
+ha abierto ninguna.
 ```

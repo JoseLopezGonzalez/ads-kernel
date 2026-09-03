@@ -108,6 +108,15 @@ runtime/pruebas/test_adaptadores.py       T191 · V7
 runtime/pruebas/test_identidad.py         T192 · O25
 runtime/pruebas/escenario_e2e_runtime.py  T193 · los veinticinco pasos
 validadores/comprobar_arranque.py         T194 · actualizar un control repo existente
+runtime/pruebas/test_ciclo.py             T195..T202 · el ciclo completo de 7.2
+runtime/pruebas/test_continua.py          T203..T205 · los siete pasos de b.14
+runtime/pruebas/test_macrocircuitos.py    T206..T209 · los cuatro y su FASE 0
+runtime/pruebas/test_arboles.py           T210..T213 · V6-15, los arboles adversariales
+runtime/pruebas/test_contencion.py        T214..T216 · FD-5, la contencion del anfitrion
+runtime/pruebas/test_raiz_externa.py      T217..T220 · V6-16, la raiz externa asimetrica
+runtime/pruebas/test_multimaquina.py      T221..T222 · g.14 entre MAQUINAS, con remoto
+runtime/pruebas/test_sesion_nueva.py      T223..T224 · la pieza 4 de 6.4 y el nivel de 6.5
+runtime/pruebas/escenario_e2e_f6.py       T225 · el escenario extremo a extremo de F6
 ```
 
 **`T169` deja de estar sola en su clase, y conviene decirlo:** exige runtime, y ahora hay

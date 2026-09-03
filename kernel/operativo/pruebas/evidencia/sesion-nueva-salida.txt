@@ -1,0 +1,65 @@
+# evidencia de: sesion-nueva
+# orden:        python3 kernel/operativo/runtime/pruebas/test_sesion_nueva.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+test_10_se_repite_desde_OTRA_sesion_limpia (__main__.PruebaDeHumo.test_10_se_repite_desde_OTRA_sesion_limpia)
+T223 · §6.4 paso 10. Defecto que previene: un verde que sólo sale la primera vez. ... ok
+test_1_instala_o_descubre_el_adaptador (__main__.PruebaDeHumo.test_1_instala_o_descubre_el_adaptador)
+T223 · §6.4 paso 1. Defecto que previene: dar por descubierto lo que nadie buscó. ... ok
+test_2_carga_su_ficha (__main__.PruebaDeHumo.test_2_carga_su_ficha)
+T223 · §6.4 paso 2. Defecto que previene: usar un adaptador sin contrato declarado. ... ok
+test_3_verifica_version_y_capacidades (__main__.PruebaDeHumo.test_3_verifica_version_y_capacidades)
+T223 · §6.4 paso 3. Defecto que previene: hablar con un contrato de otra versión. ... ok
+test_4_ejecuta_una_operacion_REAL (__main__.PruebaDeHumo.test_4_ejecuta_una_operacion_REAL)
+T223 · §6.4 paso 4. Defecto que previene: un simulacro presentado como ejecución. ... ok
+test_5_recibe_progreso (__main__.PruebaDeHumo.test_5_recibe_progreso)
+T223 · §6.4 paso 5. Defecto que previene: un progreso que sólo existe en la ficha. ... ok
+test_6_obtiene_resultado (__main__.PruebaDeHumo.test_6_obtiene_resultado)
+T223 · §6.4 paso 6. Defecto que previene: un resultado sin los campos del contrato. ... ok
+test_7_produce_recibo_y_evidencia (__main__.PruebaDeHumo.test_7_produce_recibo_y_evidencia)
+T223 · §6.4 paso 7. Defecto que previene: una ejecución sin rastro auditable. ... ok
+test_8_comprueba_idempotencia (__main__.PruebaDeHumo.test_8_comprueba_idempotencia)
+T223 · §6.4 paso 8. Defecto que previene: aplicar dos veces el mismo efecto. ... ok
+test_9_cierra (__main__.PruebaDeHumo.test_9_cierra)
+T223 · §6.4 paso 9. Defecto que previene: cerrar dejando el espacio a medias. ... ok
+test_el_entorno_NO_hereda_nada_de_quien_lanza (__main__.PruebaDeHumo.test_el_entorno_NO_hereda_nada_de_quien_lanza)
+T223 · Defecto que previene: una variable accidental que cambia el resultado. ... ok
+test_la_sesion_es_NUEVA_y_lo_comprueba_ella_misma (__main__.PruebaDeHumo.test_la_sesion_es_NUEVA_y_lo_comprueba_ella_misma)
+T223 · Defecto que previene: llamar «sesión nueva» a la misma de siempre. ... ok
+test_desenlace_ENCUENTRA_DOS_es_un_error_explicito (__main__.SesionSobreUnaFuente.test_desenlace_ENCUENTRA_DOS_es_un_error_explicito)
+T224 · Defecto que previene: dos control repos para el mismo producto. ... ok
+test_desenlace_LO_ENCUENTRA_y_opera_con_el (__main__.SesionSobreUnaFuente.test_desenlace_LO_ENCUENTRA_y_opera_con_el)
+T224 · §6.7 regla 4. Defecto que previene: encontrarlo y no usarlo. ... ok
+test_desenlace_NO_LO_ENCUENTRA_y_dice_que_buscaba (__main__.SesionSobreUnaFuente.test_desenlace_NO_LO_ENCUENTRA_y_dice_que_buscaba)
+T224 · Defecto que previene: adivinar el control repo cuando no está. ... ok
+test_desenlace_NO_SE_PUDO_COMPROBAR_es_DISTINTO_de_la_ausencia (__main__.SesionSobreUnaFuente.test_desenlace_NO_SE_PUDO_COMPROBAR_es_DISTINTO_de_la_ausencia)
+T224 · Defecto que previene: `P-08`, dos causas bajo un mismo diagnóstico. ... ok
+test_el_nivel_de_OTRO_sujeto_no_cuenta (__main__.SesionSobreUnaFuente.test_el_nivel_de_OTRO_sujeto_no_cuenta)
+T224 · §6.5. Defecto que previene: heredar el nivel de otro adaptador. ... ok
+test_el_nivel_se_DERIVA_de_las_celdas_y_no_se_declara (__main__.SesionSobreUnaFuente.test_el_nivel_se_DERIVA_de_las_celdas_y_no_se_declara)
+T224 · §6.5. Defecto que previene: un adaptador que se declara `soportado`. ... ok
+test_el_puntero_es_generado_versionado_y_con_huella (__main__.SesionSobreUnaFuente.test_el_puntero_es_generado_versionado_y_con_huella)
+T224 · §6.7 regla 2. Defecto que previene: un puntero editado a mano. ... ok
+test_el_puntero_no_contiene_conocimiento (__main__.SesionSobreUnaFuente.test_el_puntero_no_contiene_conocimiento)
+T224 · §6.7 regla 3. Defecto que previene: copiar el kernel a las fuentes. ... ok
+test_el_remoto_se_resuelve_por_IDENTIDAD_y_no_por_ruta (__main__.SesionSobreUnaFuente.test_el_remoto_se_resuelve_por_IDENTIDAD_y_no_por_ruta)
+T224 · §6.7 regla 4. Defecto que previene: dos formas del mismo remoto que no casan. ... ok
+test_la_lista_de_componentes_se_DERIVA_de_sources (__main__.SesionSobreUnaFuente.test_la_lista_de_componentes_se_DERIVA_de_sources)
+T224 · §6.7 regla 3, corregida por `I.1`. Defecto que previene: el campo singular. ... ok
+test_los_cuatro_desenlaces_son_DISTINTOS_entre_si (__main__.SesionSobreUnaFuente.test_los_cuatro_desenlaces_son_DISTINTOS_entre_si)
+T224 · Defecto que previene: cuatro nombres para el mismo resultado. ... ok
+test_sin_celda_integrado_NO_se_alcanza_soportado (__main__.SesionSobreUnaFuente.test_sin_celda_integrado_NO_se_alcanza_soportado)
+T224 · §6.5. Defecto que previene: llamar `soportado` a lo que no lo es. ... ok
+test_sin_ninguna_celda_el_nivel_es_desconocido (__main__.SesionSobreUnaFuente.test_sin_ninguna_celda_el_nivel_es_desconocido)
+T224 · §6.5. Defecto que previene: que `generico` gane por no exigir nada. ... ok
+test_un_puntero_editado_a_mano_se_detecta (__main__.SesionSobreUnaFuente.test_un_puntero_editado_a_mano_se_detecta)
+T224 · §6.3. Defecto que previene: fabricar deriva editando la proyección. ... ok
+test_una_celda_vencida_BAJA_el_nivel_sola (__main__.SesionSobreUnaFuente.test_una_celda_vencida_BAJA_el_nivel_sola)
+T224 · §6.5 y §9.3. Defecto que previene: un nivel que no caduca. ... ok
+
+----------------------------------------------------------------------
+Ran 27 tests  (duración no registrada: varía por ejecución)
+
+OK

@@ -1,0 +1,125 @@
+# evidencia de: ciclo
+# orden:        python3 kernel/operativo/runtime/pruebas/test_ciclo.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+falta `--repo <dir>`: sin control repo no hay nada que encuadrar
+usage: ads_ciclo [-h] [--repo REPO] [--instancia INSTANCIA] [--kernel KERNEL]
+                 [--json]
+                 {encuadrar,componer,materializar,planificar,ciclo,continuar,macrocircuito}
+                 ...
+
+el ciclo de `§7.2`, `Continúa` y los macrocircuitos
+
+positional arguments:
+  {encuadrar,componer,materializar,planificar,ciclo,continuar,macrocircuito}
+
+options:
+  -h, --help            show this help message and exit
+  --repo REPO
+  --instancia INSTANCIA
+  --kernel KERNEL
+  --json
+[ENTRADA_NO_CLASIFICABLE] clase fuera de la taxonomía: 'inventada'; las nueve son: entrada:candidato, entrada:decision, entrada:expresion-original, entrada:idea-inmadura, entrada:interpretacion, entrada:item, entrada:nota, entrada:observacion, entrada:orden
+test_65_cancelar_un_paquete_no_retira_su_obligacion (__main__.Cierre.test_65_cancelar_un_paquete_no_retira_su_obligacion)
+T201 · Defecto que previene: cerrar un item vaciando su cola. ... ok
+test_66_DSP_no_retira_y_la_retirada_exige_autoridad_y_efecto (__main__.Cierre.test_66_DSP_no_retira_y_la_retirada_exige_autoridad_y_efecto)
+T201 · Defecto que previene: reducir el alcance por la puerta de atrás. ... ok
+test_67_el_informe_separa_satisfechas_de_retiradas_y_no_las_suma (__main__.Cierre.test_67_el_informe_separa_satisfechas_de_retiradas_y_no_las_suma)
+T201 · Defecto que previene: informar de que se entregó lo que se eliminó. ... ok
+test_68_el_cierre_lo_declara_el_propietario_global_y_no_DSP (__main__.Cierre.test_68_el_cierre_lo_declara_el_propietario_global_y_no_DSP)
+T201 · Defecto que previene: que DSP declare la integración semántica. ... ok
+test_69_pausar_exige_la_siguiente_accion_exacta_y_escalar_la_autoridad (__main__.Cierre.test_69_pausar_exige_la_siguiente_accion_exacta_y_escalar_la_autoridad)
+T201 · Defecto que previene: una pausa que obliga a reconstruir el contexto. ... ok
+test_70_el_trabajo_derivado_conserva_el_enlace_con_su_origen (__main__.Cierre.test_70_el_trabajo_derivado_conserva_el_enlace_con_su_origen)
+T201 · Defecto que previene: un item derivado huérfano de su causa. ... ok
+test_10_los_diez_procesos_se_derivan_del_fichero_y_todos_son_alcanzables (__main__.Composicion.test_10_los_diez_procesos_se_derivan_del_fichero_y_todos_son_alcanzables)
+T196 · Defecto que previene: una copia de `b.16` escrita a mano en el runtime. ... ok
+test_11_renombrar_el_titulo_no_cambia_la_ruta (__main__.Composicion.test_11_renombrar_el_titulo_no_cambia_la_ruta)
+T196 · Defecto que previene: elegir el proceso por coincidencias léxicas. ... ok
+test_12_un_sinonimo_no_activa_ninguna_capacidad (__main__.Composicion.test_12_un_sinonimo_no_activa_ninguna_capacidad)
+T196 · Defecto que previene: una capacidad que entra porque alguien dijo «diseño». ... ok
+test_13_las_cuatro_vias_y_ninguna_quinta (__main__.Composicion.test_13_las_cuatro_vias_y_ninguna_quinta)
+T196 · Defecto que previene: un «participante sin vehículo» en la ruta. ... ok
+test_14_las_tres_formas_de_estar_presente_no_participan (__main__.Composicion.test_14_las_tres_formas_de_estar_presente_no_participan)
+T196 · Defecto que previene: confundir un EJECUTOR con un participante de la ruta. ... ok
+test_15_el_gate_de_composicion_no_abre_la_fase_y_nombra_capacidad_y_fase (__main__.Composicion.test_15_el_gate_de_composicion_no_abre_la_fase_y_nombra_capacidad_y_fase)
+T196 · Defecto que previene: abrir una fase con una capacidad sin vía. ... ok
+test_16_una_condicion_vaga_esta_prohibida (__main__.Composicion.test_16_una_condicion_vaga_esta_prohibida)
+T196 · Defecto que previene: una condición que nadie puede comprobar. ... ok
+test_17_el_propietario_de_AUD_y_DIR_se_deriva_del_encargo_y_nunca_a_mano (__main__.Composicion.test_17_el_propietario_de_AUD_y_DIR_se_deriva_del_encargo_y_nunca_a_mano)
+T196 · Defecto que previene: que DSP elija quién responde de una conclusión. ... ok
+test_18_el_propietario_de_DEF_se_deriva_de_C_ARQ_y_no_de_la_prosa (__main__.Composicion.test_18_el_propietario_de_DEF_se_deriva_de_C_ARQ_y_no_de_la_prosa)
+T196 · Defecto que previene: leer la prosa de `b.16` para decidir autoridad. ... ok
+test_19_la_materia_y_el_estado_deciden_la_ruta_y_el_par_se_comprueba (__main__.Composicion.test_19_la_materia_y_el_estado_deciden_la_ruta_y_el_par_se_comprueba)
+T196 · Defecto que previene: confundir `FEA` con `GAP` por el texto del item. ... ok
+test_20_la_traza_declara_activadas_y_no_activadas_con_motivo (__main__.Composicion.test_20_la_traza_declara_activadas_y_no_activadas_con_motivo)
+T196 · Defecto que previene: una ruta sin la traza que su propio gate exige. ... ok
+test_75_el_analizador_acotado_coincide_con_pyyaml_bloque_a_bloque (__main__.CorpusYDeterminismo.test_75_el_analizador_acotado_coincide_con_pyyaml_bloque_a_bloque)
+T202 · Defecto que previene: un analizador propio que lee el corpus a su manera. ... ok
+test_76_el_analizador_falla_cerrado_ante_lo_que_no_cubre (__main__.CorpusYDeterminismo.test_76_el_analizador_falla_cerrado_ante_lo_que_no_cubre)
+T202 · Defecto que previene: ignorar en silencio lo que no se entiende. ... ok
+test_77_las_quince_capacidades_del_arbol_y_de_18_coinciden (__main__.CorpusYDeterminismo.test_77_las_quince_capacidades_del_arbol_y_de_18_coinciden)
+T202 · Defecto que previene: una capacidad inventada o una perdida. ... ok
+test_78_dos_ejecuciones_desde_cwd_distintos_dan_bytes_identicos (__main__.CorpusYDeterminismo.test_78_dos_ejecuciones_desde_cwd_distintos_dan_bytes_identicos)
+T202 · Defecto que previene: una salida que depende de dónde se invocó. ... ok
+test_79_la_cli_distingue_uso_incorrecto_de_fallo_de_la_operacion (__main__.CorpusYDeterminismo.test_79_la_cli_distingue_uso_incorrecto_de_fallo_de_la_operacion)
+T202 · Defecto que previene: confundir un tecleo con un fallo del ciclo. ... ok
+test_80_todo_error_del_ciclo_lleva_codigo_estable_y_forma_determinista (__main__.CorpusYDeterminismo.test_80_todo_error_del_ciclo_lleva_codigo_estable_y_forma_determinista)
+T202 · Defecto que previene: una evidencia que depende del texto castellano. ... ok
+test_01_las_nueve_clases_y_solo_tres_crean_trabajo (__main__.Encuadre.test_01_las_nueve_clases_y_solo_tres_crean_trabajo)
+T195 · Defecto que previene: convertir cada comentario del Owner en un item. ... ok
+test_02_la_frontera_idea_inmadura_candidato_es_la_prueba_escrita (__main__.Encuadre.test_02_la_frontera_idea_inmadura_candidato_es_la_prueba_escrita)
+T195 · Defecto que previene: llenar la cola con ideas que nadie sabe cerrar. ... ok
+test_03_el_encuadre_descubre_fuentes_y_no_copia_ningun_remoto (__main__.Encuadre.test_03_el_encuadre_descubre_fuentes_y_no_copia_ningun_remoto)
+T195 · Defecto que previene: una credencial del manifiesto en el estado durable. ... ok
+test_04_el_encuadre_es_determinista_y_no_lleva_ruta_de_la_maquina (__main__.Encuadre.test_04_el_encuadre_es_determinista_y_no_lleva_ruta_de_la_maquina)
+T195 · Defecto que previene: un artefacto derivado que cambia con el directorio. ... ok
+test_05_la_politica_y_el_perfil_se_cargan_y_la_precondicion_falla_cerrado (__main__.Encuadre.test_05_la_politica_y_el_perfil_se_cargan_y_la_precondicion_falla_cerrado)
+T195 · Defecto que previene: componer una ruta sin comprobar lo que se exigió. ... ok
+test_25_un_metodo_no_es_una_capacidad_y_se_dice_cual_es_cual (__main__.Equipos.test_25_un_metodo_no_es_una_capacidad_y_se_dice_cual_es_cual)
+T197 · Defecto que previene: materializar un equipo de `DOM:condiciones`. ... ok
+test_26_la_ruta_solo_deriva_capacidades_y_ningun_nombre_de_metodo (__main__.Equipos.test_26_la_ruta_solo_deriva_capacidades_y_ningun_nombre_de_metodo)
+T197 · Defecto que previene: que un método se cuele en la lista del equipo. ... ok
+test_27_la_composicion_se_elige_por_orden_escrito_y_ninguna_es_error (__main__.Equipos.test_27_la_composicion_se_elige_por_orden_escrito_y_ninguna_es_error)
+T197 · Defecto que previene: materializar un equipo por defecto cuando no toca. ... ok
+test_28_lo_que_no_cabe_espera_y_la_composicion_no_se_reduce (__main__.Equipos.test_28_lo_que_no_cabe_espera_y_la_composicion_no_se_reduce)
+T197 · Defecto que previene: recortar el equipo para que quepa en los slots. ... ok
+test_29_independientes_manda_sobre_combinables (__main__.Equipos.test_29_independientes_manda_sobre_combinables)
+T197 · Defecto que previene: un agente que produce y se revisa a sí mismo. ... ok
+test_30_el_equipo_se_persiste_por_el_motor_y_es_idempotente (__main__.Equipos.test_30_el_equipo_se_persiste_por_el_motor_y_es_idempotente)
+T197 · Defecto que previene: una asignación de equipo que sólo vive en memoria. ... ok
+test_45_el_censo_de_gates_se_deriva_del_corpus_y_no_se_inventa (__main__.Gates.test_45_el_censo_de_gates_se_deriva_del_corpus_y_no_se_inventa)
+T199 · Defecto que previene: aplicar un gate que el modelo no define. ... ok
+test_46_un_gate_falla_cerrado_y_el_dictamen_negativo_es_evidencia (__main__.Gates.test_46_un_gate_falla_cerrado_y_el_dictamen_negativo_es_evidencia)
+T199 · Defecto que previene: un gate que aprueba «con reparos». ... ok
+test_47_ningun_gate_puede_ser_fuente_normativa (__main__.Gates.test_47_ningun_gate_puede_ser_fuente_normativa)
+T199 · Defecto que previene: un gate que escribe norma o ensancha el proceso. ... ok
+test_48_el_revisor_no_puede_ser_quien_construyo (__main__.Gates.test_48_el_revisor_no_puede_ser_quien_construyo)
+T199 · Defecto que previene: un dictamen firmado por el autor de lo juzgado. ... ok
+test_55_las_instancias_traen_los_once_campos_del_esquema (__main__.Handoffs.test_55_las_instancias_traen_los_once_campos_del_esquema)
+T200 · Defecto que previene: un handoff al que le falta lo que hace falta. ... ok
+test_56_las_cinco_entregas_de_8_0_estan_materializadas (__main__.Handoffs.test_56_las_cinco_entregas_de_8_0_estan_materializadas)
+T200 · Defecto que previene: una composición completa que no puede entregar nada. ... ok
+test_57_rechazar_no_cambia_la_custodia_y_devolver_si (__main__.Handoffs.test_57_rechazar_no_cambia_la_custodia_y_devolver_si)
+T200 · Defecto que previene: aceptar por cortesía y gastar una devolución. ... ok
+test_58_una_devolucion_sin_los_cuatro_campos_no_es_una_devolucion (__main__.Handoffs.test_58_una_devolucion_sin_los_cuatro_campos_no_es_una_devolucion)
+T200 · Defecto que previene: una devolución que es una opinión. ... ok
+test_59_la_entrega_es_durable_y_el_receptor_reanuda_sin_hablar_con_el_emisor (__main__.Handoffs.test_59_la_entrega_es_durable_y_el_receptor_reanuda_sin_hablar_con_el_emisor)
+T200 · Defecto que previene: un handoff que sólo existe en la conversación. ... ok
+test_35_planificar_crea_items_y_paquetes_por_el_runtime (__main__.Planificacion.test_35_planificar_crea_items_y_paquetes_por_el_runtime)
+T198 · Defecto que previene: un alta de trabajo paralela a la del runtime. ... ok
+test_36_la_prioridad_se_deriva_de_la_via_y_el_orden_es_determinista (__main__.Planificacion.test_36_la_prioridad_se_deriva_de_la_via_y_el_orden_es_determinista)
+T198 · Defecto que previene: una selección que depende de quién la calculó. ... ok
+test_37_b_15_1_abre_el_desbloqueador_dentro_del_alcance_y_escala_fuera (__main__.Planificacion.test_37_b_15_1_abre_el_desbloqueador_dentro_del_alcance_y_escala_fuera)
+T198 · Defecto que previene: molestar al Owner por aritmética de la ruta. ... ok
+test_38_el_despacho_delega_y_pasa_por_un_unico_punto (__main__.Planificacion.test_38_el_despacho_delega_y_pasa_por_un_unico_punto)
+T198 · Defecto que previene: una segunda máquina de despacho en el ciclo. ... ok
+test_39_no_hay_doble_efecto_y_el_acuse_lo_impide (__main__.Planificacion.test_39_no_hay_doble_efecto_y_el_acuse_lo_impide)
+T198 · Defecto que previene: aplicar dos veces un efecto ya confirmado. ... ok
+
+----------------------------------------------------------------------
+Ran 48 tests  (duración no registrada: varía por ejecución)
+
+OK

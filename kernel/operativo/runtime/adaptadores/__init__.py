@@ -52,6 +52,13 @@ from .proyeccion import (
     huella_de_entradas,
     validar_deriva,
 )
+from .puntero import (
+    DESENLACES,
+    DESENLACES_DECLARADOS,
+    leer_puntero,
+    normalizar_remoto,
+    resolver_control_repo,
+)
 from .registro import RegistroDeAdaptadores
 
 __all__ = [
@@ -59,6 +66,8 @@ __all__ = [
     "PUNTOS_DE_FALLO", "VARIABLE_DE_FALLO", "puntos_de_fallo",
     "Adaptador", "FichaDeAdaptador", "Cancelacion", "comprobar_resultado",
     "RegistroDeAdaptadores", "AdaptadorDeProcesoLocal",
+    "DESENLACES", "DESENLACES_DECLARADOS", "leer_puntero", "normalizar_remoto",
+    "resolver_control_repo",
     "compilar", "validar_deriva", "exigir_al_dia", "huella_de_entradas",
     "comparar_proyecciones", "AL_DIA", "EDITADA_A_MANO", "OBSOLETA",
     "ErrorDeAdaptador", "CapacidadNoSoportada", "AdaptadorIncompatible",

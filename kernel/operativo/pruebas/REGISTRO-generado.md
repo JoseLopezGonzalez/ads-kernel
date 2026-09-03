@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: ed448f7c279439eb -->
+<!-- source_revision: b64c8f1f79b05cdd -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -13,9 +13,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | CONTRATO DEFINIDO | 56 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 62 |
+| PRUEBA SUPERADA | 93 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **118** |
+| **total** | **149** |
 
 ## Detalle
 
@@ -139,3 +139,34 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T192](T182-T194-runtime-y-admision.md) | La identidad de firma vive fuera del árbol, rota con solapamiento y no filtra secretos | O25 · g.15 · FD-1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/identidad-salida.txt |
 | [T193](T182-T194-runtime-y-admision.md) | Los veinticinco pasos del segundo escenario extremo a extremo, con dos runtimes y dos fuentes | F6-D · g.14 · V6-10 · V7 · g.9 · g.16 | validador-estructural | **PRUEBA SUPERADA** | evidencia/e2e-runtime-salida.txt |
 | [T194](T182-T194-runtime-y-admision.md) | Un control repo que ya existe se actualiza sin perder lo que el proyecto tiene | C6 · FD-3 · macrocircuito de actualizacion | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
+| [T195](T195-T209-ciclo-y-macrocircuitos.md) | El encuadre clasifica la entrada del Owner y sólo tres clases crean trabajo | 11-ARQ 7.2 · entrada 01-TAXONOMIA · C6 | validador-estructural | **PRUEBA SUPERADA** | evidencia/ciclo-salida.txt |
+| [T196](T195-T209-ciclo-y-macrocircuitos.md) | La ruta se compone desde b.16 por las cuatro vías, y el gate de composición no abre la fase | 11-ARQ 8.0 · b.16 · b.1 · a.6 | validador-estructural | **PRUEBA SUPERADA** | evidencia/ciclo-salida.txt |
+| [T197](T195-T209-ciclo-y-macrocircuitos.md) | C4 materializa equipos por capacidad, nunca por método, y lo que no cabe espera | C4 · C1 · b.11 | validador-estructural | **PRUEBA SUPERADA** | evidencia/ciclo-salida.txt |
+| [T198](T195-T209-ciclo-y-macrocircuitos.md) | La planificación crea items y paquetes por el runtime y el despacho delega | 11-ARQ 7.2 · b.15.1 · a.9 · gate:despacho-coherente | validador-estructural | **PRUEBA SUPERADA** | evidencia/ciclo-salida.txt |
+| [T199](T195-T209-ciclo-y-macrocircuitos.md) | Los gates se derivan del corpus, fallan cerrado y ninguno es fuente normativa | 11-ARQ 7.2 · esquemas/gate.yaml | validador-estructural | **PRUEBA SUPERADA** | evidencia/ciclo-salida.txt |
+| [T200](T195-T209-ciclo-y-macrocircuitos.md) | C5 se aplica sobre las instancias declaradas, con acuse, rechazo y reanudación | C5 · 11-ARQ 8.0 · esquemas/handoff.yaml | validador-estructural | **PRUEBA SUPERADA** | evidencia/ciclo-salida.txt |
+| [T201](T195-T209-ciclo-y-macrocircuitos.md) | El cierre comprueba las obligaciones, no las declara, y el trabajo derivado conserva su enlace | b.10 · b.3 · b.5 · b.9 · gate:cierre-de-item | validador-estructural | **PRUEBA SUPERADA** | evidencia/ciclo-salida.txt |
+| [T202](T195-T209-ciclo-y-macrocircuitos.md) | El corpus se lee con la biblioteca estándar y la salida es determinista | I-g3 · 11-ARQ 7.2 | validador-estructural | **PRUEBA SUPERADA** | evidencia/ciclo-salida.txt |
+| [T203](T195-T209-ciclo-y-macrocircuitos.md) | Continúa recorre los siete pasos de b.14 y su paso 2 ejecuta las ocho comprobaciones | b.14 · 11-ARQ 7.4 · b.8 · g.9 | validador-estructural | **PRUEBA SUPERADA** | evidencia/continua-salida.txt |
+| [T204](T195-T209-ciclo-y-macrocircuitos.md) | Los diez escenarios de Continúa, cada uno con proceso y estado reales | b.14 · 11-ARQ 7.4 · C5 · C6 | validador-estructural | **PRUEBA SUPERADA** | evidencia/continua-salida.txt |
+| [T205](T195-T209-ciclo-y-macrocircuitos.md) | Dos ejecuciones consecutivas de Continúa dan los mismos bytes y no mueven el estado | I-g3 · b.14 · a.8 · a.10 | validador-estructural | **PRUEBA SUPERADA** | evidencia/continua-salida.txt |
+| [T206](T195-T209-ciclo-y-macrocircuitos.md) | El conjunto derivado de los cuatro macrocircuitos coincide con la tabla de 11-ARQ 18 | 11-ARQ 18 · 11-ARQ 8.0 · b.16 | validador-estructural | **PRUEBA SUPERADA** | evidencia/macrocircuitos-salida.txt |
+| [T207](T195-T209-ciclo-y-macrocircuitos.md) | La FASE 0 resuelve los seis identificadores y escribe en su soporte propio | 11-ARQ 9.6 · O17 | validador-estructural | **PRUEBA SUPERADA** | evidencia/macrocircuitos-salida.txt |
+| [T208](T195-T209-ciclo-y-macrocircuitos.md) | Las once filas adversariales X-S1 a X-S11 de la FASE 0 dan el resultado exigido | 11-ARQ 9.6 · O17 | validador-estructural | **PRUEBA SUPERADA** | evidencia/macrocircuitos-salida.txt |
+| [T209](T195-T209-ciclo-y-macrocircuitos.md) | Los cuatro macrocircuitos se ejecutan por el mismo motor y no comparten autoridad | 11-ARQ 18 · 11-ARQ 8.4 · CI-5 · g.6 | validador-estructural | **PRUEBA SUPERADA** | evidencia/macrocircuitos-salida.txt |
+| [T210](T210-T225-arboles-raiz-externa-y-contencion.md) | El conjunto de árboles adversariales se DERIVA de su sede y nunca se enumera | V6-15 · 11-ARQ 20.5 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arboles-salida.txt |
+| [T211](T210-T225-arboles-raiz-externa-y-contencion.md) | Cada ataque se aplica de verdad, y la versión vulnerable lo acepta | V6-15 · 11-ARQ 20.5 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arboles-salida.txt |
+| [T212](T210-T225-arboles-raiz-externa-y-contencion.md) | La implementación vigente rechaza cada árbol POR LA PROPIEDAD que le toca | V6-15 · V6-01 · V6-05 · V6-06 · V6-08 · V6-10 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arboles-salida.txt |
+| [T213](T210-T225-arboles-raiz-externa-y-contencion.md) | La matriz de cuatro columnas cierra con las dos restas vacías | V6-15 · V6-18 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arboles-salida.txt |
+| [T214](T210-T225-arboles-raiz-externa-y-contencion.md) | Las capacidades de contención del anfitrión se DETECTAN ejerciéndolas | FD-5 · 11-ARQ 6.5 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/contencion-salida.txt |
+| [T215](T210-T225-arboles-raiz-externa-y-contencion.md) | Con contención fuerte, un descendiente que hace `setsid` NO escapa | FD-5 · 11-ARQ 6.5 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/contencion-salida.txt |
+| [T216](T210-T225-arboles-raiz-externa-y-contencion.md) | El backend simple conserva su nivel INFERIOR declarado, y su límite se mide | FD-5 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/contencion-salida.txt |
+| [T217](T210-T225-arboles-raiz-externa-y-contencion.md) | La raíz externa es un paquete y un proceso SEPARADOS, con su confianza fuera del árbol | V6-16 · g.15 · O18 · O25 · 11-ARQ 11.8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/raiz-externa-salida.txt |
+| [T218](T210-T225-arboles-raiz-externa-y-contencion.md) | La firma es ASIMÉTRICA, y quien verifica no puede firmar | V6-16 · g.15 · O25 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/raiz-externa-salida.txt |
+| [T219](T210-T225-arboles-raiz-externa-y-contencion.md) | La identidad de la raíz externa NO PUEDE escribir en el árbol verificado | V6-16 · g.12 · g.15 · O18 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/raiz-externa-salida.txt |
+| [T220](T210-T225-arboles-raiz-externa-y-contencion.md) | Un veredicto falseado desde dentro del árbol es DESMENTIDO por la atestación externa | V6-16 · V6-17 · g.16 G-A9 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/raiz-externa-salida.txt |
+| [T221](T210-T225-arboles-raiz-externa-y-contencion.md) | Dos máquinas sobre la misma autoridad, y sólo una confirma | g.14 · g.6 · g.16 G-A8 · C7 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/multimaquina-salida.txt |
+| [T222](T210-T225-arboles-raiz-externa-y-contencion.md) | Caída, reconciliación, ref protegida, remoto manipulado y linaje completo | g.14 · g.8 · g.9 · g.16 G-A8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/multimaquina-salida.txt |
+| [T223](T210-T225-arboles-raiz-externa-y-contencion.md) | La prueba de humo abre una sesión REALMENTE nueva, y es idempotente | F6-G · 11-ARQ 6.4 · 11-ARQ 6.5 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/sesion-nueva-salida.txt |
+| [T224](T210-T225-arboles-raiz-externa-y-contencion.md) | La sesión abierta sobre una fuente localiza el control repo, con sus cuatro desenlaces | F6-G · 11-ARQ 6.4 · 11-ARQ 6.7 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/sesion-nueva-salida.txt |
+| [T225](T210-T225-arboles-raiz-externa-y-contencion.md) | El escenario extremo a extremo del macrobloque 3, con sus veintiún pasos | F6-D · F6-F · F6-G · V6-15 · V6-16 · g.14 · g.15 · g.16 G-A8 · g.16 G-A9 · 11-ARQ 7.2 · 11-ARQ 8 · 11-ARQ 9.6 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/e2e-f6-salida.txt |

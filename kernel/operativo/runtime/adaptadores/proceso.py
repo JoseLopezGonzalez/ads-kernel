@@ -98,6 +98,7 @@ from .contrato import (
     OrdenInvalida,
     comprobar_resultado,
 )
+from . import puntero
 
 GRACIA_SEGUNDOS = 1.5
 INTERVALO_DE_SONDEO = 0.05
@@ -172,11 +173,16 @@ class AdaptadorDeProcesoLocal(Adaptador):
     version_de_contrato = VERSION_DE_CONTRATO
     capacidades = ("proceso-local", "ejecucion-local")
 
-    def __init__(self, espacio_de_trabajo, *, entorno=None):
+    def __init__(self, espacio_de_trabajo, *, entorno=None, politica_de_contencion=None):
         self.espacio = os.path.abspath(espacio_de_trabajo)
         self.recibos = os.path.join(self.espacio, "efectos")
         os.makedirs(self.recibos, exist_ok=True)
         self._entorno = dict(entorno) if entorno else None
+        # `FD-5`. Sin política, el comportamiento es EXACTAMENTE el de antes —`killpg`, con
+        # su límite declarado y medido—. Con política, la tarea corre dentro de un contenedor
+        # de recursos del anfitrión y la ausencia de contención fuerte es FALLO CERRADO, no
+        # degradación silenciosa: el que decide no es el adaptador, es la política.
+        self._politica_de_contencion = politica_de_contencion
 
     # -- ficha declarada de §3.4 -------------------------------------------
     def ficha(self):
@@ -187,12 +193,9 @@ class AdaptadorDeProcesoLocal(Adaptador):
             operaciones=["ejecutar"],
             limites={"salida_maxima_bytes": 1 << 20,
                      "gracia_antes_de_sigkill_segundos": GRACIA_SEGUNDOS},
-            timeout="limite_segundos de la orden; al vencer, SIGTERM y luego SIGKILL al "
-                    "GRUPO de procesos",
-            cancelacion="cooperativa por sondeo de `cancelacion.activada()`, y efectiva "
-                        "por señal al GRUPO: no se pide, se mata. LÍMITE: un descendiente "
-                        "que hace `setsid` sale del grupo y ESCAPA; contenerlo exige "
-                        "cgroups o espacios de nombres, y es de otro corte",
+            timeout="limite_segundos de la orden; al vencer, SIGTERM y luego SIGKILL a "
+                    "TODO el contenedor de recursos, o al GRUPO si no hay política",
+            cancelacion=self._cancelacion_declarada(),
             idempotencia="recibo durable por `efecto`, ABIERTO antes de ejecutar y CERRADO "
                          "después. Recibo cerrado → `repetido: true` con su resultado, sin "
                          "ejecutar. Recibo abierto → `ambiguo`, porque nadie sobrevivió "
@@ -207,7 +210,29 @@ class AdaptadorDeProcesoLocal(Adaptador):
                       "canónico",
             compatibilidad="POSIX con grupos de procesos y señales. Es una DECLARACIÓN de "
                            "intención y no un nivel alcanzado (§6.5)",
+            resolucion_del_control_repo=puntero.DESENLACES_DECLARADOS,
         )
+
+    def _cancelacion_declarada(self):
+        """El nivel de aislamiento que la ficha declara es el REAL, no el aspiracional.
+
+        `FD-5` se cerró mintiendo una vez y no se cierra dos: sin política de contención el
+        límite del `setsid` SIGUE ESTANDO y se dice con todas las letras; con política, el
+        nivel lo declara el propio paquete de contención, que es quien lo ha medido.
+        """
+        if self._politica_de_contencion is None:
+            return ("cooperativa por sondeo de `cancelacion.activada()`, y efectiva por "
+                    "señal al GRUPO: no se pide, se mata. NIVEL `grupo-de-procesos`. "
+                    "LÍMITE MEDIDO: un descendiente que hace `setsid` sale del grupo y "
+                    "ESCAPA. Para contenerlo se construye el adaptador con "
+                    "`politica_de_contencion`, y entonces el nivel sube a "
+                    "`arbol-de-procesos`")
+        return ("cooperativa por sondeo de `cancelacion.activada()`, y efectiva por "
+                "destrucción del CONTENEDOR DE RECURSOS del anfitrión que exige la política "
+                "`" + str(self._politica_de_contencion.nivel_exigido) + "`. Un descendiente "
+                "que hace `setsid` NO escapa, y está medido con hijo, nieto y bisnieto. Si "
+                "el anfitrión no ofrece contención fuerte, el adaptador FALLA CERRADO y no "
+                "ejecuta")
 
     # -- idempotencia -------------------------------------------------------
     def _ruta_de_recibo(self, efecto):
@@ -322,6 +347,9 @@ class AdaptadorDeProcesoLocal(Adaptador):
         return comprobar_resultado(resultado, efecto)
 
     def _lanzar(self, argumentos, efecto, limite_segundos, progreso, cancelacion):
+        if self._politica_de_contencion is not None:
+            return self._lanzar_contenido(argumentos, efecto, limite_segundos,
+                                          progreso, cancelacion)
         entorno = self._entorno if self._entorno is not None else {
             "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
             "LC_ALL": "C", "LANG": "C", "TZ": "UTC",
@@ -433,6 +461,38 @@ class AdaptadorDeProcesoLocal(Adaptador):
             "repetido": False,
             "pid": pid,
         }
+
+    def _lanzar_contenido(self, argumentos, efecto, limite_segundos, progreso, cancelacion):
+        """`FD-5`: la tarea corre DENTRO de un contenedor de recursos del anfitrión.
+
+        El adaptador no elige el mecanismo y no sabe cuál es: lo elige `contencion.politica`
+        a partir de las capacidades REALES del anfitrión, y si la política exige
+        `arbol-de-procesos` y ninguna está disponible, `instanciar` levanta
+        `ContencionFuerteNoDisponible` y aquí NO se ejecuta nada. Ésa es la diferencia entre
+        fallar cerrado y degradar en silencio, y es toda la razón de que este camino exista.
+
+        El resultado se traduce a la forma del §3.4 —la que `comprobar_resultado` valida—
+        añadiendo `nivel_de_aislamiento` y `backend`, que es lo que permite que la ficha
+        declare un nivel MEDIDO en vez de uno prometido.
+        """
+        from contencion import ejecutar as ejecutar_contenido
+
+        resultado = ejecutar_contenido(
+            argumentos, espacio=self.espacio, limite_segundos=limite_segundos,
+            politica=self._politica_de_contencion, marca=efecto,
+            progreso=progreso, cancelacion=cancelacion,
+        )
+        salida = resultado.a_dict()
+        # `senal` y `ficha_del_backend` son diagnóstico del contenedor, no resultado de la
+        # orden: el §3.4 cierra la forma del resultado y añadirle campos sueltos la abriría.
+        salida.pop("senal", None)
+        salida.pop("ficha_del_backend", None)
+        salida.update({
+            "efecto": efecto,
+            "repetido": False,
+            "reintentable": resultado.estado == "timeout",
+        })
+        return salida
 
     @staticmethod
     def _senalar(pgid, senal):
