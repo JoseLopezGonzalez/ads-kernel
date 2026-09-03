@@ -555,7 +555,7 @@ class Escenario:
         evidencia = list(declarado.get("evidencia") or [])
         entrada = {"item": self.plan["item"], "ruta": self.composicion["id"]}
         positivo = ciclo.aplicar_gate(
-            nombre, entrada=entrada, evidencia=evidencia, revisor="VER",
+            nombre, entrada=entrada, evidencia=evidencia, revisor="VER", autor="CON",
             corpus=self.corpus, comprobaciones_superadas=comprobaciones,
             salida="el item puede cerrar")
         exigir(positivo["dictamen"] == "superado",
@@ -563,7 +563,7 @@ class Escenario:
         # NEGATIVO: falta UNA comprobación y el gate FALLA CERRADO, con su dictamen dentro.
         try:
             ciclo.aplicar_gate(
-                nombre, entrada=entrada, evidencia=evidencia, revisor="VER",
+                nombre, entrada=entrada, evidencia=evidencia, revisor="VER", autor="CON",
                 corpus=self.corpus, comprobaciones_superadas=comprobaciones[:-1])
         except ciclo.GateFallido as error:
             cerrado = getattr(error, "dictamen", {}).get("dictamen") == "no-superado"
@@ -576,7 +576,7 @@ class Escenario:
         # el corpus no le da se rechaza.
         try:
             ciclo.aplicar_gate(
-                nombre, entrada=entrada, evidencia=evidencia, revisor="VER",
+                nombre, entrada=entrada, evidencia=evidencia, revisor="VER", autor="CON",
                 corpus=self.corpus,
                 comprobaciones_superadas=list(comprobaciones) + ["comprobacion-inventada"])
         except ciclo.GateNormativo:
@@ -584,10 +584,22 @@ class Escenario:
         else:
             no_normativo = False
         exigir(no_normativo, "un gate creció con una comprobación que el corpus no declara")
+        # EL AUTOR ES OBLIGATORIO: omitirlo era la vía para revisarse a sí mismo.
+        try:
+            ciclo.aplicar_gate(nombre, entrada=entrada, evidencia=evidencia,
+                               revisor="CON", corpus=self.corpus,
+                               comprobaciones_superadas=comprobaciones)
+        except TypeError:
+            exige_autor = True
+        else:
+            exige_autor = False
+        exigir(exige_autor, "el gate se aplicó SIN declarar autor: la independencia entre "
+                            "quien produce y quien juzga era opcional")
         return ("gate `" + nombre + "` · positivo: dictamen `" + positivo["dictamen"]
                 + "` con revisor y evidencia · negativo: FALLA CERRADO nombrando "
-                + str(len(pendientes)) + " pendiente(s) · y el gate NO puede crecer: "
-                "declarar una comprobación ajena se rechaza")
+                + str(len(pendientes)) + " pendiente(s) · el gate NO puede crecer: "
+                "declarar una comprobación ajena se rechaza · y el AUTOR es obligatorio, "
+                "de modo que omitirlo ya no permite revisarse a sí mismo")
 
     # =====================================================================
     #  11 · MUTACIÓN GIT

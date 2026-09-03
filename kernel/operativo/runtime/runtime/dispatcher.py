@@ -1125,7 +1125,7 @@ class Runtime:
 
     def crear_paquete(self, *, id, item, capacidades_requeridas, orden,
                       prioridad=50, max_intentos=politica.MAX_INTENTOS_POR_DEFECTO,
-                      depende_de=()):
+                      depende_de=(), acoplamiento=None):
         self._exigir_operable()
         identificador = id
         escrito = {}
@@ -1145,6 +1145,7 @@ class Runtime:
                 capacidades_requeridas=capacidades_requeridas,
                 orden=normalizar_orden(orden), prioridad=prioridad,
                 max_intentos=max_intentos, depende_de=depende_de,
+                acoplamiento=acoplamiento,
             )
             comprobar_paquete(objeto, ruta_paquete(identificador))
             escrito["paquete"] = objeto

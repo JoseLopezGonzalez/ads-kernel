@@ -573,6 +573,178 @@ class Equipos(BaseDelCiclo):
         with self.assertRaises(ciclo.ConflictoDeRoles):
             equipos.exigir_separacion(equipo, autor="DSP/estado", revisor="DSP/estado")
 
+    def test_29b_la_regla_de_independientes_TIENE_que_poder_ponerse_roja(self):
+        """T197 · Defecto que previene: una prohibición que nadie puede violar en la prueba.
+
+        DEFECTO QUE CIERRA, medido por la auditoría independiente: la regla «`independientes`
+        manda sobre `combinables`» se podía BORRAR ENTERA del producto y las cuarenta y ocho
+        pruebas seguían verdes. La de arriba recorre `aplicadas ∩ independientes`, que en el
+        corpus real está VACÍO, y su `assertRaises` disparaba la rama TRIVIAL —el mismo rol
+        en dos posiciones—, nunca la de `independientes`. Es la prohibición más sensible de
+        `C4` —«PROHIBIDO un agente ocupando un rol productor y su crítico»— y no tenía rojo
+        que dar.
+
+        Aquí se construye el conflicto que el corpus no tiene: dos roles DISTINTOS que la
+        composición declara independientes Y que comparten agente. Si alguien retira la
+        comprobación, esta prueba se pone roja. Se verificó neutralizando `_choca` y la rama
+        de `independientes`: las dos mitades fallan.
+        """
+        # (i) la rama de `independientes` de `exigir_separacion`, con roles DISTINTOS.
+        equipo = {
+            "roles": [
+                {"rol": "DIS/produce", "comparte_agente_con": "DIS/critica"},
+                {"rol": "DIS/critica", "comparte_agente_con": "DIS/produce"},
+            ],
+            "independientes": [{
+                "rol": "DIS/critica", "de": ["DIS/produce"],
+                "motivo": "quien critica no puede ser quien produjo",
+            }],
+        }
+        with self.assertRaises(ciclo.ConflictoDeRoles) as capturado:
+            equipos.exigir_separacion(equipo, autor="DIS/produce", revisor="DIS/critica")
+        self.assertIn("independiente", str(capturado.exception))
+        self.assertEqual(sorted(capturado.exception.contexto["roles"]),
+                         ["DIS/critica", "DIS/produce"])
+        # CONTROL: sin la declaración de independencia, los MISMOS roles compartiendo agente
+        # pasan. Sin este control, el rojo de arriba podría venir de cualquier otra cosa.
+        sin_declarar = {"roles": equipo["roles"], "independientes": []}
+        self.assertTrue(equipos.exigir_separacion(
+            sin_declarar, autor="DIS/produce", revisor="DIS/critica"))
+        # (ii) el PASO 5: una pareja declarada combinable Y a la vez independiente NO se
+        # combina, y el motivo lo dice.
+        independientes = [{"rol": "DIS/critica", "de": ["DIS/produce"], "motivo": "x"}]
+        self.assertTrue(equipos._choca(
+            "DIS/critica", ["DIS/produce", "DIS/critica"], independientes))
+        self.assertTrue(equipos._choca(
+            "DIS/produce", ["DIS/produce", "DIS/critica"], independientes))
+        self.assertFalse(equipos._choca(
+            "DIS/critica", ["DIS/otro", "DIS/critica"], independientes))
+
+    def test_29c_la_condicion_COMPUESTA_de_a5_y_el_freno_de_a7(self):
+        """T197 · Etapa 5 del `§7.2`: las SEIS condiciones, y `escribe` disjunto NO basta.
+
+        DEFECTO QUE CIERRA, encontrado por la auditoría independiente: la etapa 5 del `§7.2`
+        —«DSP comprueba la condición COMPUESTA de paralelismo (a.5, seis condiciones)»— NO
+        estaba implementada. Lo que había era un booleano que encadenaba todos los paquetes,
+        y encadenar siempre no es comprobar: da el resultado seguro por el camino de no
+        mirar. Con él, la prohibición central de `a.5` —que el aislamiento físico por sí
+        solo NUNCA autoriza— no estaba en ninguna parte del código.
+        """
+        from ciclo import durable, paralelismo
+
+        def paquete(identificador, **acoplamiento):
+            declarado = {"escribe_ficheros": [], "afecta_contratos": [],
+                         "afecta_decisiones": [], "based_on": [], "integra_en": "rama",
+                         "lee_fuentes": [], "escribe_fuentes": []}
+            declarado.update(acoplamiento)
+            return {"id": identificador, "depende_de": [], "acoplamiento": declarado}
+
+        # (i) físicamente disjuntos Y paralelizables: el caso positivo.
+        uno = paquete("pq-1", escribe_ficheros=["a.py"], escribe_fuentes=["frontend"])
+        dos = paquete("pq-2", escribe_ficheros=["b.py"], escribe_fuentes=["backend"])
+        self.assertTrue(paralelismo.evaluar(uno, dos)[0])
+
+        # (ii) LA PROHIBICIÓN CENTRAL: escrituras disjuntas y AUN ASÍ no paralelizables,
+        # una por cada condición que no es la física.
+        contrarios = {
+            "sin-dependencia-de-salida":
+                paquete("pq-3", escribe_ficheros=["c.py"], escribe_fuentes=["infra"]),
+            "sin-autoridad-concurrente-sobre-la-misma-decision":
+                paquete("pq-4", escribe_ficheros=["d.py"], escribe_fuentes=["infra"],
+                        afecta_decisiones=["decision:formato-de-fecha"]),
+            "sin-contratos-compartidos-incompatibles":
+                paquete("pq-5", escribe_ficheros=["e.py"], escribe_fuentes=["infra"],
+                        afecta_contratos=["api:pedidos"]),
+            "versiones-de-entrada-compatibles":
+                paquete("pq-6", escribe_ficheros=["f.py"], escribe_fuentes=["infra"],
+                        based_on=["backend@r1"]),
+            "estrategia-de-integracion-explicita":
+                paquete("pq-7", escribe_ficheros=["g.py"], escribe_fuentes=["infra"],
+                        integra_en=""),
+        }
+        contrarios["sin-dependencia-de-salida"]["depende_de"] = [uno["id"]]
+        referencia = {
+            "sin-dependencia-de-salida": uno,
+            "sin-autoridad-concurrente-sobre-la-misma-decision":
+                paquete("pq-r4", escribe_ficheros=["h.py"], escribe_fuentes=["frontend"],
+                        afecta_decisiones=["decision:formato-de-fecha"]),
+            "sin-contratos-compartidos-incompatibles":
+                paquete("pq-r5", escribe_ficheros=["i.py"], escribe_fuentes=["frontend"],
+                        afecta_contratos=["api:pedidos"]),
+            "versiones-de-entrada-compatibles":
+                paquete("pq-r6", escribe_ficheros=["j.py"], escribe_fuentes=["frontend"],
+                        based_on=["backend@r2"]),
+            "estrategia-de-integracion-explicita":
+                paquete("pq-r7", escribe_ficheros=["k.py"], escribe_fuentes=["frontend"]),
+        }
+        for condicion, candidato in contrarios.items():
+            otro = referencia[condicion]
+            paralelizable, incumplidas = paralelismo.evaluar(candidato, otro)
+            self.assertFalse(paralelizable, condicion)
+            self.assertIn(condicion, [i["condicion"] for i in incumplidas], condicion)
+            # LA MITAD QUE IMPORTA: sus escrituras son disjuntas y aun así NO se paralelizan.
+            self.assertTrue(paralelismo.solo_lo_fisico_no_basta(candidato, otro), condicion)
+        # Y las seis están cubiertas: la física por (iii), las otras cinco por el bucle.
+        self.assertEqual(len(paralelismo.CONDICIONES), len(contrarios) + 1)
+
+        # (iii) la física, que es NECESARIA aunque no suficiente.
+        choca = paquete("pq-8", escribe_ficheros=["a.py"], escribe_fuentes=["frontend"])
+        paralelizable, incumplidas = paralelismo.evaluar(uno, choca)
+        self.assertFalse(paralelizable)
+        self.assertIn("escrituras-fisicas-disjuntas-o-aisladas",
+                      [i["condicion"] for i in incumplidas])
+        self.assertFalse(paralelismo.solo_lo_fisico_no_basta(uno, choca))
+
+        # (iv) `secuenciar` escribe la TRAZA, que `b.12` paso 7 exige.
+        espera, traza = paralelismo.secuenciar([uno, dos, choca])
+        self.assertEqual(espera[uno["id"]], [])
+        self.assertEqual(espera[dos["id"]], [])
+        self.assertEqual(espera[choca["id"]], [uno["id"]])
+        self.assertTrue(all(entrada["motivos"] for entrada in traza))
+
+    def test_29d_el_freno_de_devoluciones_de_a7_se_ACUMULA(self):
+        """T197 · Defecto que previene: un contador que nadie suma.
+
+        DEFECTO QUE CIERRA: `C5` escribía `cuenta_para_el_freno` en cada entrega y NADIE lo
+        sumaba ni aplicaba el tope de dos de `a.7`. Un freno que no frena es una etiqueta.
+        """
+        from ciclo import durable, paralelismo
+
+        rt = self.abrir_runtime()
+        _marco, _ruta, plan = self.plan_completo(rt)
+        catalogo = ciclo.catalogo(self.corpus)["handoff:con-a-ver"]
+        trazabilidad = {"item": plan["item"], "paquete": plan["paquetes"][0],
+                        "ruta": plan["ruta"]}
+        frenado, cuenta, _ = paralelismo.freno_de_devoluciones(rt.almacen, plan["item"])
+        self.assertFalse(frenado)
+        self.assertEqual(cuenta, 0)
+        for numero in range(paralelismo.DEVOLUCIONES_MAXIMAS):
+            entrega = ciclo.emitir(
+                "handoff:con-a-ver", corpus=self.corpus,
+                # Los artefactos varían por vuelta: la identidad de la entrega se deriva
+                # del contenido de la EMISIÓN, así que dos emisiones idénticas serían la
+                # misma entrega, y aquí hacen falta dos distintas.
+                artefactos=["la rama con el cambio construido, vuelta " + str(numero)],
+                checkpoint="el estado del paquete", trazabilidad=trazabilidad,
+            )
+            acusada = ciclo.acusar(
+                entrega, receptor="VER",
+                comprobaciones_superadas=catalogo["comprueba_al_recibir"])
+            devuelta = ciclo.devolver(acusada, devolucion={
+                campo: ["algo"] if campo.startswith("evidencia") else "algo"
+                for campo in handoffs.CAMPOS_DE_DEVOLUCION})
+            self.assertTrue(devuelta["cuenta_para_el_freno"])
+            durable.escribir(
+                rt.almacen, clase="ciclo.handoff.devuelto",
+                motivo="devolucion " + str(numero),
+                objetos={handoffs.ruta_de(devuelta["id"]): devuelta})
+        frenado, cuenta, motivo = paralelismo.freno_de_devoluciones(rt.almacen, plan["item"])
+        self.assertTrue(frenado, "el freno de `a.7` no se aplicó al agotar las devoluciones")
+        self.assertEqual(cuenta, paralelismo.DEVOLUCIONES_MAXIMAS)
+        self.assertIn("se PARA y se escala", motivo)
+        # Un item DISTINTO no queda frenado por las devoluciones de otro.
+        self.assertFalse(paralelismo.freno_de_devoluciones(rt.almacen, "it-ajeno")[0])
+
     def test_30_el_equipo_se_persiste_por_el_motor_y_es_idempotente(self):
         """T197 · Defecto que previene: una asignación de equipo que sólo vive en memoria.
 
@@ -755,7 +927,7 @@ class Gates(BaseDelCiclo):
         self.assertIn("gate:sistema-conforme", derivado)
         with self.assertRaises(ciclo.GateDesconocido):
             ciclo.aplicar_gate("gate:inventado", entrada={}, evidencia=[], revisor="VER",
-                               corpus=self.corpus)
+                               autor="CON", corpus=self.corpus)
 
     def test_46_un_gate_falla_cerrado_y_el_dictamen_negativo_es_evidencia(self):
         """T199 · Defecto que previene: un gate que aprueba «con reparos».
@@ -767,7 +939,7 @@ class Gates(BaseDelCiclo):
         with self.assertRaises(ciclo.GateFallido) as capturado:
             ciclo.aplicar_gate(
                 "gate:cierre-de-item", corpus=self.corpus, entrada={"item": "it-1"},
-                evidencia=declarado["evidencia"], revisor="VER",
+                evidencia=declarado["evidencia"], revisor="VER", autor="CON",
                 comprobaciones_superadas=[declarado["comprobaciones"][0]["id"]],
             )
         error = capturado.exception
@@ -777,7 +949,7 @@ class Gates(BaseDelCiclo):
         self.assertTrue(error.dictamen["fallo_declarado"])
         superado = ciclo.aplicar_gate(
             "gate:cierre-de-item", corpus=self.corpus, entrada={"item": "it-1"},
-            evidencia=declarado["evidencia"], revisor="VER",
+            evidencia=declarado["evidencia"], revisor="VER", autor="CON",
             comprobaciones_superadas=[c["id"] for c in declarado["comprobaciones"]],
             salida="el item cierra",
         )
@@ -826,9 +998,22 @@ class Gates(BaseDelCiclo):
             ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="CON", autor="CON",
                                **argumentos)
         with self.assertRaises(ciclo.GateFallido):
-            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="", **argumentos)
+            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="", autor="CON",
+                               **argumentos)
         with self.assertRaises(ciclo.GateFallido):
-            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="el sistema", **argumentos)
+            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="el sistema",
+                               autor="CON", **argumentos)
+        # EL AUTOR ES OBLIGATORIO, y omitirlo NO es la vía para revisarse a sí mismo.
+        # Defecto que previene, medido por la auditoría independiente: con `autor`
+        # opcional, los VEINTIDÓS gates del censo se superaban firmándolos uno mismo.
+        with self.assertRaises(TypeError):
+            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="CON", **argumentos)
+        with self.assertRaises(ciclo.GateFallido):
+            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="CON", autor="",
+                               **argumentos)
+        with self.assertRaises(ciclo.GateFallido):
+            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="CON",
+                               autor="el sistema", **argumentos)
         self.assertEqual(
             ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="VER", autor="CON",
                                **argumentos)["dictamen"],

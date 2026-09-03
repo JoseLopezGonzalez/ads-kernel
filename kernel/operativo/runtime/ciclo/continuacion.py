@@ -366,22 +366,24 @@ class Continuacion:
         return {"hay_deriva": False, "detalle": ""}
 
     def _revision_en_head(self):
-        """`REVISION.json` tal como está en `HEAD`, o `None` si no hay Git o no está."""
-        import subprocess
+        """`REVISION.json` tal como está en `HEAD`, o `None` si no hay Git o no está.
+
+        DEFECTO QUE CIERRA, encontrado por la auditoría independiente: esto abría su propio
+        `subprocess` con `git show`, es decir, una vía de invocación de Git PARALELA al
+        canal único de `gobierno/git.py`. Era invisible para el censo de `V6-04` sólo porque
+        el censo no barría este paquete; en cuanto lo barrió, apareció. Se corrige donde
+        había que corregirlo —usando el canal—, y no declarando una sede de proceso más:
+        una excepción por cada sitio que quiera abrir Git acaba con el canal único.
+        """
+        from gobierno.git import CanalGit
         repo = self.runtime.ruta
         if not os.path.isdir(os.path.join(repo, ".git")):
             return None
-        try:
-            salida = subprocess.run(
-                ["git", "show", "HEAD:estado/REVISION.json"], cwd=repo,
-                capture_output=True, check=False, timeout=30,
-            )
-        except (OSError, subprocess.SubprocessError):
-            return None
-        if salida.returncode != 0 or not salida.stdout:
+        crudo = CanalGit(repo).contenido_de_blob("HEAD", "estado/REVISION.json")
+        if not crudo:
             return None
         try:
-            return json.loads(salida.stdout.decode("utf-8"))
+            return json.loads(crudo.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError):
             # Un `REVISION.json` ilegible en `HEAD` es deriva, y se dice: no se ignora.
             raise DerivaNoTransaccional(

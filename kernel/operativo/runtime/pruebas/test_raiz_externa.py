@@ -444,6 +444,45 @@ class FirmaAsimetrica(RaizExternaInstalada):
             principal="identidad-desconocida")
         self.assertFalse(valida)
 
+    def test_el_punto_ejecutable_VERIFICA_lo_que_acaba_de_firmar(self):
+        """T218 · Defecto que previene: publicar una atribución FALSA en un artefacto firmado.
+
+        DEFECTO QUE CIERRA, encontrado por la auditoría independiente y clasificado como
+        BLOQUEANTE. `verificar` firmaba delegando en el anfitrión y escribía la evidencia SIN
+        comprobar la firma resultante: si el anfitrión tenía a mano una clave que el anillo
+        NO acepta —otra ruta, otro almacén, una variable apuntando a otro sitio—, la firma
+        salía igual, la atestación se escribía estampando la identidad y la huella de la
+        clave LEGÍTIMA, y el punto ejecutable terminaba con CÓDIGO 0. Un `verificar &&
+        desplegar` seguía adelante sobre una atestación forjada.
+
+        `comprobar` sí lo detectaba, pero detectarlo después no es fallar cerrado: `O25` §2
+        exige que sin proveedor VÁLIDO no se firme, y un proveedor que firma con una clave
+        que el anillo no acepta no es un proveedor válido.
+        """
+        destino = os.path.join(self.taller, "atestacion-forjada.json")
+        if os.path.exists(destino):
+            os.remove(destino)
+        # El anfitrión firma con una clave que NO está en `allowed_signers` ni en el anillo.
+        forjado = self.correr([
+            "verificar", "--repo", self.repo, "--base", self.base,
+            "--configuracion", self.configuracion, "--evidencia", destino,
+        ], extra={"ADS_ANFITRION_ALMACEN": self.privada_ajena})
+        self.assertNotEqual(forjado.returncode, 0,
+                            "una firma de una clave NO aceptada terminó con éxito")
+        self.assertIn("FIRMA_NO_VERIFICADA", forjado.stderr.decode("utf-8", "replace"))
+        self.assertFalse(os.path.exists(destino),
+                         "se escribió evidencia de una atestación que no verifica")
+        # CONTROL DEL CONTROL: con la clave LEGÍTIMA, el mismo camino sí emite. Sin él,
+        # «no se escribió nada» se explicaría por un verificador que no arranca.
+        legitimo, ruta = self.emitir(evidencia=destino)
+        self.assertEqual(legitimo.returncode, 0,
+                         legitimo.stderr.decode("utf-8", "replace")[:300])
+        self.assertTrue(os.path.exists(ruta))
+        with open(ruta, encoding="utf-8") as manejador:
+            sobre = json.load(manejador)
+        self.assertEqual(sobre["atestacion"]["huella_publica"],
+                         modulo_de_firma.huella_publica(self.publica))
+
     def test_rotacion_solapamiento_retirada_y_revocacion(self):
         """T218 · Defecto que previene: `O25` §5, un contrato de identidad sin ciclo de vida."""
         import identidad

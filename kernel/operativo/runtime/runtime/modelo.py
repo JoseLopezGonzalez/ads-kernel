@@ -78,7 +78,25 @@ TRANSICIONES = {
 
 CLAVES_DE_PAQUETE = (
     "id", "item", "estado", "capacidades_requeridas", "prioridad", "intentos",
-    "max_intentos", "depende_de", "orden", "efecto", "resultado",
+    "max_intentos", "depende_de", "orden", "efecto", "resultado", "acoplamiento",
+)
+
+# La DECLARACIÓN DE ACOPLAMIENTO de `a.5`, con los dos campos que `E2.2` le añade.
+#
+# DEFECTO QUE CIERRA, encontrado por la auditoría independiente: el paquete durable NO
+# llevaba esta declaración, de modo que la etapa 4 del `§7.2` —«DSP crea paquetes con su
+# declaración de acoplamiento, incluidas `lee_fuentes` y `escribe_fuentes` (E2.2)»— no
+# estaba implementada, y con ella faltaba TODO el insumo de la condición compuesta de
+# paralelismo de `a.5`. Sin estos campos, la única condición evaluable habría sido la
+# física, que es exactamente la que `a.5` prohíbe usar por sí sola.
+CAMPOS_DE_ACOPLAMIENTO = (
+    "escribe_ficheros",     # qué artefactos físicos modifica
+    "afecta_contratos",     # qué contratos, endpoints, esquemas o APIs toca
+    "afecta_decisiones",    # sobre qué decisiones ejerce autoridad
+    "based_on",             # fuentes y VERSIONES de las que parte
+    "integra_en",           # dónde y cómo vuelve su resultado
+    "lee_fuentes",          # `E2.2`: qué sources necesita como CONTEXTO, sin autoridad
+    "escribe_fuentes",      # `E2.2`: qué sources puede MODIFICAR
 )
 
 CLAVES_DE_ORDEN = ("adaptador", "operacion", "argumentos", "limite_segundos")
@@ -145,8 +163,36 @@ def nuevo_item(*, identificador, titulo):
     }
 
 
+def normalizar_acoplamiento(declarado=None):
+    """La declaración de acoplamiento, con sus siete campos y NINGUNO por omisión.
+
+    Una ausencia se escribe como lista VACÍA declarada, no como campo que falta: «no toca
+    ningún contrato» y «nadie ha dicho qué contratos toca» son cosas distintas, y la
+    condición compuesta de `a.5` necesita distinguirlas para no autorizar en silencio.
+    """
+    declarado = dict(declarado or {})
+    sobran = sorted(set(declarado) - set(CAMPOS_DE_ACOPLAMIENTO))
+    if sobran:
+        raise RuntimeInconsistente(
+            "la declaración de acoplamiento trae campos que `a.5` y `E2.2` no contemplan: "
+            + ", ".join(sobran),
+        )
+    salida = {}
+    for campo in CAMPOS_DE_ACOPLAMIENTO:
+        valor = declarado.get(campo, [])
+        if campo == "integra_en":
+            salida[campo] = str(valor or "")
+            continue
+        if not isinstance(valor, (list, tuple)):
+            raise RuntimeInconsistente(
+                "`acoplamiento." + campo + "` es una lista de identificadores",
+            )
+        salida[campo] = sorted(str(elemento) for elemento in valor)
+    return salida
+
+
 def nuevo_paquete(*, identificador, item, capacidades_requeridas, orden,
-                  prioridad=50, max_intentos=3, depende_de=()):
+                  prioridad=50, max_intentos=3, depende_de=(), acoplamiento=None):
     """Un paquete recién creado. Nace en `listo` y sin efecto: aún no hay intento abierto."""
     return {
         "esquema": ESQUEMA,
@@ -161,6 +207,7 @@ def nuevo_paquete(*, identificador, item, capacidades_requeridas, orden,
         "orden": normalizar_orden(orden),
         "efecto": None,
         "resultado": None,
+        "acoplamiento": normalizar_acoplamiento(acoplamiento),
     }
 
 
@@ -241,6 +288,7 @@ def comprobar_paquete(objeto, ruta):
             ruta=ruta,
         )
     normalizar_orden(objeto["orden"])
+    normalizar_acoplamiento(objeto.get("acoplamiento"))
     if objeto["efecto"] is not None and not isinstance(objeto["efecto"], str):
         raise RuntimeInconsistente("`efecto` es una cadena o `null`", ruta=ruta)
     if objeto["estado"] in ESTADOS_EN_CURSO and not objeto["efecto"]:

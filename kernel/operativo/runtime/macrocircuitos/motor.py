@@ -309,7 +309,7 @@ class Macrocircuito:
     # =====================================================================
     #  gates y handoffs de la fase
     # =====================================================================
-    def aplicar_gate(self, identificador, *, entrada, evidencia, revisor, autor=None,
+    def aplicar_gate(self, identificador, *, entrada, evidencia, revisor, autor,
                      comprobaciones_superadas=(), salida=None):
         dictamen = gates.aplicar(
             identificador, corpus=self.corpus, entrada=entrada, evidencia=evidencia,

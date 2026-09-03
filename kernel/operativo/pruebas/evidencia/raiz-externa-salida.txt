@@ -10,6 +10,8 @@ test_el_firmante_se_niega_a_verificar (__main__.FirmaAsimetrica.test_el_firmante
 T218 · Defecto que previene: juntar los dos poderes en un único programa. ... ok
 test_el_marcador_si_esta_en_la_clave_privada (__main__.FirmaAsimetrica.test_el_marcador_si_esta_en_la_clave_privada)
 T218 · Control del CONTROL: si el marcador no estuviera, el barrido no probaría nada. ... ok
+test_el_punto_ejecutable_VERIFICA_lo_que_acaba_de_firmar (__main__.FirmaAsimetrica.test_el_punto_ejecutable_VERIFICA_lo_que_acaba_de_firmar)
+T218 · Defecto que previene: publicar una atribución FALSA en un artefacto firmado. ... ok
 test_la_clave_privada_tiene_permisos_0600_y_esta_fuera_de_todo_repositorio (__main__.FirmaAsimetrica.test_la_clave_privada_tiene_permisos_0600_y_esta_fuera_de_todo_repositorio)
 T218 · Defecto que previene: `O25` §2, una clave versionada o legible por todos. ... ok
 test_la_dependencia_queda_fijada_en_la_evidencia (__main__.FirmaAsimetrica.test_la_dependencia_queda_fijada_en_la_evidencia)
@@ -80,6 +82,6 @@ test_una_atestacion_de_otro_commit_no_sirve (__main__.VeredictoDesmentidoYEviden
 T220 · Defecto que previene: reutilizar una atestación buena sobre otro árbol. ... ok
 
 ----------------------------------------------------------------------
-Ran 37 tests  (duración no registrada: varía por ejecución)
+Ran 38 tests  (duración no registrada: varía por ejecución)
 
 OK

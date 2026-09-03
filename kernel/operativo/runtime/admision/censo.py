@@ -98,6 +98,16 @@ SEDES_DE_REPRODUCCION_HISTORICA = {
         "construye el árbol atacado, y construirlo no es verificarlo",
 }
 
+# Lo ÚNICO que queda fuera del censo del aparato, con su motivo. No es una lista de lo que
+# entra —eso se deriva del disco—: es la lista de lo que se excluye, que es mucho más corta
+# y mucho más difícil de estirar sin que se note.
+PAQUETES_EXCLUIDOS = {
+    "pruebas": "las baterías EJERCEN el aparato y abren procesos a propósito —matan, lanzan "
+               "contenedores, provocan caídas—; censarlas denunciaría el instrumento de "
+               "medida en vez del aparato",
+    "__pycache__": "artefactos de ejecución, no código fuente",
+}
+
 # Nombres que abren un proceso, en todas sus ortografías.
 LLAMADAS_DE_PROCESO = {
     ("subprocess", "run"), ("subprocess", "Popen"), ("subprocess", "call"),
@@ -317,14 +327,61 @@ def censar_lecturas(rutas):
 
 
 def modulos_del_aparato(raiz_runtime):
-    """Los `.py` de los paquetes del aparato. Se DERIVAN del disco, y no se listan.
+    """TODOS los `.py` del runtime, DERIVADOS del disco. Ni los paquetes se enumeran.
 
-    **Su número no se escribe**, por la misma razón que el de `SEDES_DE_PROCESO`: la lista
-    creció con `contencion` y `arboles`, y un cardinal escrito habría envejecido callado.
+    DEFECTO QUE CIERRA, encontrado por la auditoría independiente. Esta función enumeraba
+    los paquetes A MANO, y la lista envejeció exactamente como su propio docstring advertía
+    que envejecen las listas a mano: el macrobloque que creó `ciclo/` y `macrocircuitos/`
+    **no los añadió**, de modo que el censo de `V6-04` dejaba fuera 45 de los 82 módulos del
+    runtime —el 55 %—, incluidos los dos que ese mismo corte acababa de escribir. Una
+    lectura insegura de Git escrita en `ciclo/`, `macrocircuitos/`, `estado/` o `runtime/`
+    era INVISIBLE para el censo que promete «cero lecturas fuera del canal».
+
+    Ahora el criterio no es una lista: es una PROPIEDAD del disco —ser un paquete Python
+    dentro del runtime—, y un paquete nuevo entra solo el día que se crea. `PAQUETES_EXCLUIDOS`
+    dice, uno a uno y con su motivo, qué queda fuera y por qué; cualquier otra cosa entra.
     """
     salida = []
-    for paquete in ("admision", "gobierno", "adaptadores", "identidad", "contencion",
-                    "arboles"):
+    for entrada in sorted(os.listdir(raiz_runtime)):
+        directorio = os.path.join(raiz_runtime, entrada)
+        if entrada in PAQUETES_EXCLUIDOS or not os.path.isdir(directorio):
+            continue
+        if not os.path.isfile(os.path.join(directorio, "__init__.py")):
+            continue
+        for nombre in sorted(os.listdir(directorio)):
+            if nombre.endswith(".py"):
+                salida.append(os.path.join(directorio, nombre))
+    for nombre in sorted(os.listdir(raiz_runtime)):
+        if nombre.startswith("ads_") and nombre.endswith(".py"):
+            salida.append(os.path.join(raiz_runtime, nombre))
+    return salida
+
+
+# Los paquetes del APARATO DE VERIFICACIÓN, que es el sujeto que `V6-19` declara: «el
+# conjunto de instrumentos del aparato de verificación y las fórmulas que más de uno
+# necesita». NO es el mismo sujeto que el del censo de LECTURAS, y mezclarlos sería un error
+# con consecuencias.
+#
+# POR QUÉ SON DOS ÁMBITOS Y NO UNO, dicho porque la tentación de unificarlos es fuerte:
+#
+#   `V6-04` · LECTURAS  el riesgo es que CUALQUIER módulo abra Git por una vía paralela, así
+#                       que su ámbito tiene que ser TODO el runtime. Un módulo fuera del
+#                       censo es una superficie que nadie ha enumerado.
+#   `V6-19` · FÓRMULAS  el riesgo es que dos INSTRUMENTOS DE VERIFICACIÓN calculen lo mismo
+#                       de dos maneras y diverjan. Su ámbito es el aparato de verificación.
+#
+# Aplicar el ámbito de `V6-04` al censo de fórmulas obligaría al MOTOR de estado durable a
+# importar su direccionamiento por contenido desde el verificador de admisión: la flecha de
+# dependencia al revés, y el motor dejando de poder existir sin el verificador. `cid_de_objeto`
+# del motor y `digest_de_contenido` del verificador coinciden en usar SHA-256 y NO son la
+# misma fórmula: una identifica objetos durables y la otra resume ficheros para anclarlos.
+PAQUETES_DEL_VERIFICADOR = ("admision", "gobierno", "adaptadores", "identidad", "arboles")
+
+
+def modulos_del_verificador(raiz_runtime):
+    """Los `.py` del aparato de VERIFICACIÓN. Sujeto de `V6-19`, no de `V6-04`."""
+    salida = []
+    for paquete in PAQUETES_DEL_VERIFICADOR:
         directorio = os.path.join(raiz_runtime, paquete)
         if not os.path.isdir(directorio):
             continue

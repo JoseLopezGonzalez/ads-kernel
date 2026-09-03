@@ -27,9 +27,9 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada caa9a99ab1111fd4, calculada 44688cf7350dc790. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada dcd65bd889bae490, calculada 89c96f9e7d17af58. Algún fichero de la huella se
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada caa9a99ab1111fd4, calculada dd452f912acc5dff. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada dcd65bd889bae490, calculada 248f1ac22a1d12c7. Algún fichero de la huella se
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
                           → detectada: kernel/operativo/validadores/ads_lint.py NO entra en la huella: un fork silencioso de ese fichero sería indetectable
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
@@ -57,7 +57,7 @@ OK   N158e   evidencia T158  falta un fichero de evidencia que el manifiesto exi
 OK   N158f   evidencia T158  un validador nuevo queda fuera del manifiesto y de la evidencia
                           → detectada: validadores/comprobar_algo_nuevo.py: existe y el manifiesto no lo declara. Quedaría fuera de la evidencia sin que nada l
 OK   N158g   evidencia T158  la cobertura publicada describe un corpus con dos ficheros menos que el vigente
-                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 484 y el corpus vigente da 4
+                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 485 y el corpus vigente da 4
 OK   N158h   evidencia T158  una vigencia declara un recuento que nadie implementa
                           → detectada: manifiesto: la vigencia 'T161-cobertura' de 'fuentes' declara el recuento 'fuentes.recuento_que_nadie_implementa', que n
 OK   N158i   evidencia T158  una entrada de vigencia no declara `patron` — el caso que reventaba con KeyError

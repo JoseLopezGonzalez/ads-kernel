@@ -896,8 +896,15 @@ class FormulasCompartidas(unittest.TestCase):
         self.assertEqual(formulas.contar_lineas_de_blob(b"\n"), 1)
 
     def test_el_censo_de_formulas_del_aparato_real_esta_limpio(self):
-        """T190 · Control POSITIVO: hoy no hay ninguna segunda definición."""
-        modulos = censo.modulos_del_aparato(RAIZ_RUNTIME)
+        """T190 · Control POSITIVO: hoy no hay ninguna segunda definición.
+
+        El sujeto de `V6-19` es el APARATO DE VERIFICACIÓN —así lo declara su fila—, y no
+        todo el runtime, que es el sujeto de `V6-04`. Los dos ámbitos se separaron cuando
+        la auditoría independiente encontró que el censo de lecturas dejaba fuera el 55 %
+        de los módulos: ensanchar aquél no puede arrastrar a éste, porque obligaría al
+        MOTOR a importar su direccionamiento por contenido desde el verificador.
+        """
+        modulos = censo.modulos_del_verificador(RAIZ_RUNTIME)
         informe = formulas.censar_formulas(modulos)
         self.assertTrue(informe["ok"], informe["segundas_definiciones"])
         self.assertEqual(informe["segundas_definiciones"], [])

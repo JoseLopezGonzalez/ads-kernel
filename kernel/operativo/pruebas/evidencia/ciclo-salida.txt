@@ -88,6 +88,12 @@ test_28_lo_que_no_cabe_espera_y_la_composicion_no_se_reduce (__main__.Equipos.te
 T197 · Defecto que previene: recortar el equipo para que quepa en los slots. ... ok
 test_29_independientes_manda_sobre_combinables (__main__.Equipos.test_29_independientes_manda_sobre_combinables)
 T197 · Defecto que previene: un agente que produce y se revisa a sí mismo. ... ok
+test_29b_la_regla_de_independientes_TIENE_que_poder_ponerse_roja (__main__.Equipos.test_29b_la_regla_de_independientes_TIENE_que_poder_ponerse_roja)
+T197 · Defecto que previene: una prohibición que nadie puede violar en la prueba. ... ok
+test_29c_la_condicion_COMPUESTA_de_a5_y_el_freno_de_a7 (__main__.Equipos.test_29c_la_condicion_COMPUESTA_de_a5_y_el_freno_de_a7)
+T197 · Etapa 5 del `§7.2`: las SEIS condiciones, y `escribe` disjunto NO basta. ... ok
+test_29d_el_freno_de_devoluciones_de_a7_se_ACUMULA (__main__.Equipos.test_29d_el_freno_de_devoluciones_de_a7_se_ACUMULA)
+T197 · Defecto que previene: un contador que nadie suma. ... ok
 test_30_el_equipo_se_persiste_por_el_motor_y_es_idempotente (__main__.Equipos.test_30_el_equipo_se_persiste_por_el_motor_y_es_idempotente)
 T197 · Defecto que previene: una asignación de equipo que sólo vive en memoria. ... ok
 test_45_el_censo_de_gates_se_deriva_del_corpus_y_no_se_inventa (__main__.Gates.test_45_el_censo_de_gates_se_deriva_del_corpus_y_no_se_inventa)
@@ -120,6 +126,6 @@ test_39_no_hay_doble_efecto_y_el_acuse_lo_impide (__main__.Planificacion.test_39
 T198 · Defecto que previene: aplicar dos veces un efecto ya confirmado. ... ok
 
 ----------------------------------------------------------------------
-Ran 48 tests  (duración no registrada: varía por ejecución)
+Ran 51 tests  (duración no registrada: varía por ejecución)
 
 OK

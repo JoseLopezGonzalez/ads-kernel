@@ -164,7 +164,11 @@ def verificar(raiz, *, base, declaracion, registro=censo.REGISTRO_DE_ZONAS,
                     "invocación de Git o de proceso fuera del canal único, o lista sin "
                     "`-z`. El censo se deriva del código y no admite vía paralela",
                 ))
-        censo_de_formulas = formulas.censar_formulas(modulos)
+        # `V6-19` se mide sobre el APARATO DE VERIFICACIÓN, que es su sujeto declarado, y
+        # no sobre todo el runtime, que es el sujeto de `V6-04`. La razón, entera, está en
+        # `censo.PAQUETES_DEL_VERIFICADOR`.
+        censo_de_formulas = formulas.censar_formulas(
+            censo.modulos_del_verificador(RUNTIME))
         if not censo_de_formulas["ok"]:
             for entrada in censo_de_formulas["segundas_definiciones"]:
                 hallazgos.append(Hallazgo(

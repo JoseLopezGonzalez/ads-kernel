@@ -309,6 +309,22 @@ def emitir(identificador, *, artefactos, checkpoint, trazabilidad, corpus=None):
     return cuerpo
 
 
+# LA IDENTIDAD DE UNA ENTREGA SE FIJA AL EMITIR, Y NO CAMBIA CON SU ESTADO.
+#
+# DEFECTO QUE CIERRA, encontrado por la auditoría independiente. Cada transición volvía a
+# derivar el `id` del CONTENIDO, así que `acusar`, `rechazar` y `devolver` escribían en una
+# RUTA LÓGICA NUEVA y el objeto `emitido` original **nunca quedaba superado**. La
+# consecuencia se veía desde fuera: `Continúa` barre el dominio buscando entregas en estado
+# `emitido` y encontraba la vieja PARA SIEMPRE, publicando un pendiente falso en cada
+# ejecución, incluso después de que el receptor hubiera acusado.
+#
+# El arreglo es el patrón que el resto del estado canónico ya usa: un item y un paquete
+# conservan su identificador mientras su `estado` avanza. La identidad sigue DERIVADA del
+# contenido —del contenido de la EMISIÓN, que es el hecho que crea la entrega— y las
+# transiciones la conservan, de modo que cada entrega es UN objeto con una historia y no
+# una cadena de objetos huérfanos.
+
+
 def acusar(entrega, *, comprobaciones_superadas, receptor):
     """El receptor comprobó ANTES de tomar custodia y ACEPTA. La custodia cambia aquí."""
     _exigir_estado(entrega, EMITIDO, "acusar")
@@ -333,7 +349,7 @@ def acusar(entrega, *, comprobaciones_superadas, receptor):
         "receptor": str(receptor),
         "comprobaciones_superadas": sorted(superadas),
     }
-    nueva["id"] = _identificador(nueva)
+    nueva["id"] = entrega["id"]          # la entrega es la MISMA; lo que avanza es su estado
     return nueva
 
 
@@ -351,7 +367,7 @@ def rechazar(entrega, *, receptor, motivo):
     nueva["custodia"] = entrega["de"]          # NO cambia de custodia: sigue en el emisor
     nueva["rechazo"] = {"receptor": str(receptor), "motivo": str(motivo)}
     nueva["cuenta_para_el_freno"] = False
-    nueva["id"] = _identificador(nueva)
+    nueva["id"] = entrega["id"]
     return nueva
 
 
@@ -378,7 +394,7 @@ def devolver(entrega, *, devolucion):
     # Aceptó y DESPUÉS descubrió que la capa anterior es insuficiente: `C5` dice que esto
     # SÍ es devolución y SÍ cuenta para el freno de dos.
     nueva["cuenta_para_el_freno"] = True
-    nueva["id"] = _identificador(nueva)
+    nueva["id"] = entrega["id"]
     return nueva
 
 

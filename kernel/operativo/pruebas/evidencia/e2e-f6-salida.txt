@@ -34,7 +34,7 @@ paso 09  handoff por C5, con su acuse durable y su rechazo por camino distinto
          · handoff `handoff:sis-a-con` emitido y ACUSADO en el estado durable, con custodia en `CON` · un segundo RECHAZADO sin cambio de custodia · reanudación legible desde el checkpoint · las 5 entregas de `§8.0` están en el catálogo
          resultado: CUMPLIDO
 paso 10  gate de capa: el positivo cierra y el negativo FALLA CERRADO
-         · gate `gate:cierre-de-item` · positivo: dictamen `superado` con revisor y evidencia · negativo: FALLA CERRADO nombrando 1 pendiente(s) · y el gate NO puede crecer: declarar una comprobación ajena se rechaza
+         · gate `gate:cierre-de-item` · positivo: dictamen `superado` con revisor y evidencia · negativo: FALLA CERRADO nombrando 1 pendiente(s) · el gate NO puede crecer: declarar una comprobación ajena se rechaza · y el AUTOR es obligatorio, de modo que omitirlo ya no permite revisarse a sí mismo
          resultado: CUMPLIDO
 paso 11  mutación Git sobre la rama canónica del control repo
          · mutación confirmada sobre `refs/heads/canonica` con concesión durable, revisión base, ventana cerrada y hook instalado · forzar a un commit divergente se RECHAZA · el linaje durable sigue intacto
@@ -58,7 +58,7 @@ paso 17  recuperación por la OTRA instancia, sin inventar estado
          · la OTRA instancia abre, RECUPERA y deja el paquete en `ejecutando`, dentro del vocabulario cerrado · el efecto está aplicado y su acuse NO, y la ventana es DETECTABLE en vez de inventarse un desenlace · integridad OK
          resultado: CUMPLIDO
 paso 18  `Continúa`: plan reproducible, y dos ejecuciones seguidas idénticas
-         · plan de continuación reproducible: dos ejecuciones seguidas dan el MISMO resultado byte a byte (2988 bytes) y NO modifican el estado; la revisión sigue siendo 32
+         · plan de continuación reproducible: dos ejecuciones seguidas dan el MISMO resultado byte a byte (2834 bytes) y NO modifican el estado; la revisión sigue siendo 32
          resultado: CUMPLIDO
 paso 19  no repetición del efecto: lo confirmado no se vuelve a aplicar
          · repetir la orden sobre un paquete ya completado no vuelve a ejecutar (EstadoDePaqueteInvalido): el efecto en disco sigue teniendo 2 línea(s), MEDIDO EN EL EFECTO y no en el estado, y su acuse durable sigue en pie

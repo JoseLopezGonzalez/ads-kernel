@@ -77,8 +77,8 @@ def comprobaciones_de(identificador, *, corpus=None):
     return tuple(c["id"] for c in gate(identificador, corpus=corpus)["comprobaciones"])
 
 
-def aplicar(identificador, *, entrada, evidencia, revisor, corpus=None,
-            comprobaciones_superadas=(), hallazgos=(), autor=None, salida=None):
+def aplicar(identificador, *, entrada, evidencia, revisor, autor, corpus=None,
+            comprobaciones_superadas=(), hallazgos=(), salida=None):
     """Aplica un gate del censo y devuelve su DICTAMEN. Fallo CERRADO si no lo supera."""
     corpus = corpus or Corpus()
     declarado = gate(identificador, corpus=corpus)
@@ -151,7 +151,29 @@ def _exigir_revisor(revisor, *, autor, gate):
             "Owner; se recibió " + repr(revisor),
             gate=str(gate), revisor=limpio,
         )
-    if autor and str(autor).strip() == limpio:
+    # EL AUTOR ES OBLIGATORIO, y no es una formalidad.
+    #
+    # DEFECTO QUE CIERRA, encontrado por la auditoría independiente. Esta comprobación
+    # empezaba por `if autor and ...`, de modo que la independencia entre quien produce y
+    # quien juzga era OPCIONAL: bastaba con NO declarar autor para que los veintidós gates
+    # del censo se superasen firmándolos uno mismo. Una separación de poderes que se
+    # desactiva omitiendo un campo no es una separación de poderes.
+    if not isinstance(autor, str) or not str(autor).strip():
+        raise GateFallido(
+            "el gate `" + str(gate) + "` se aplica sin declarar AUTOR. La revisión "
+            "independiente de quien construyó es criterio de satisfacción escrito en "
+            "`b.16`, y no se puede comprobar contra un autor que nadie declara: omitirlo "
+            "sería la vía para revisarse a sí mismo",
+            gate=str(gate), revisor=limpio,
+        )
+    limpio_autor = str(autor).strip()
+    if limpio_autor != REVISOR_OWNER and limpio_autor not in CAPACIDADES:
+        raise GateFallido(
+            "el autor de `" + str(gate) + "` es una de las quince capacidades o el "
+            "Owner; se recibió " + repr(autor),
+            gate=str(gate), autor=limpio_autor,
+        )
+    if limpio_autor == limpio:
         raise GateFallido(
             "`" + limpio + "` produjo lo que se juzga y no puede revisarlo: la revisión "
             "independiente de quien construyó es criterio de satisfacción escrito en `b.16`",

@@ -531,6 +531,33 @@ class LosDiezEscenarios(BaseDeContinua):
         self.assertEqual(reanudacion["custodia"], "CON")
         self.assertIn("VER", reanudacion["siguiente_accion"])
 
+        # Y DEJA DE ESTAR PENDIENTE EN CUANTO SE ACUSA. Sin esta mitad, la de arriba
+        # pasaría igual con un `Continúa` que reportase la misma entrega para siempre.
+        #
+        # DEFECTO QUE CIERRA, encontrado por la auditoría independiente: cada transición
+        # volvía a derivar el `id` del contenido, así que el acuse se escribía en una RUTA
+        # LÓGICA NUEVA y el objeto `emitido` original nunca quedaba superado. `Continúa`
+        # publicaba un pendiente FALSO en cada ejecución, indefinidamente, y ninguna prueba
+        # lo cogía porque ninguna comprobaba que dejara de estarlo.
+        acusada = ciclo.acusar(
+            leida, receptor="VER",
+            comprobaciones_superadas=ciclo.catalogo(self.corpus)["handoff:con-a-ver"][
+                "comprueba_al_recibir"],
+        )
+        self.assertEqual(acusada["id"], entrega["id"],
+                         "la entrega cambió de identidad al acusarse: el objeto anterior "
+                         "queda huérfano y `Continúa` lo verá pendiente para siempre")
+        durable.escribir(
+            rt.almacen, clase="ciclo.handoff.acusado", motivo="acuse de la entrega",
+            objetos={handoffs.ruta_de(acusada["id"]): acusada},
+        )
+        self.assertEqual(len(rt.almacen.listar(handoffs.DOMINIO)), 1,
+                         "el acuse creó un objeto NUEVO en vez de superar al anterior")
+        despues = self.continuar(rt)
+        self.assertNotIn("handoff:con-a-ver",
+                         despues["2_verificar"]["handoffs_pendientes"],
+                         "la entrega sigue reportándose pendiente DESPUÉS de acusarse")
+
     def test_24_gate_fallido(self):
         """T204 · escenario 5 · Defecto que previene: seguir como si el gate hubiera pasado.
 

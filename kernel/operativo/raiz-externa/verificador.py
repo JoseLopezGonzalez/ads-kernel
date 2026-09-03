@@ -217,10 +217,35 @@ def _orden_verificar(argumentos):
 
     # 6 · la FIRMA, delegada en el anfitrión. La clave privada no cruza esta frontera.
     proveedor = _proveedor(configuracion, activa.id)
-    firma_blindada = proveedor.firmar(modulo_de_atestacion.canonizar(cuerpo))
+    canonico = modulo_de_atestacion.canonizar(cuerpo)
+    firma_blindada = proveedor.firmar(canonico)
     sobre = modulo_de_atestacion.Sobre(cuerpo, firma_blindada.hex())
 
-    # 7 · la evidencia, FUERA del árbol verificado.
+    # 6 bis · SE VERIFICA LO QUE SE ACABA DE FIRMAR, y no es ceremonia.
+    #
+    # DEFECTO QUE CIERRA, encontrado por la auditoría independiente. `firmar` delega en el
+    # anfitrión y devuelve lo que el anfitrión produzca: si la clave que el anfitrión tiene
+    # a mano NO es la que el anillo acepta —otra ruta, otro almacén, una variable de entorno
+    # apuntando a otro sitio—, la firma sale igualmente, la atestación se escribe con la
+    # identidad y la huella que la CONFIGURACIÓN declara, y el punto ejecutable termina con
+    # código 0. Es decir: se publicaba una ATRIBUCIÓN FALSA en un artefacto durable firmado,
+    # y un `verificar && desplegar` seguía adelante sobre ella.
+    #
+    # `comprobar` sí lo detectaba, pero detectarlo después no es fallar cerrado: `O25` §2
+    # exige que sin proveedor VÁLIDO no se firme, y un proveedor que firma con una clave que
+    # el anillo no acepta no es válido. La verificación va contra `orden_de_verificacion`,
+    # que sólo tiene claves PÚBLICAS, de modo que este paso no puede firmar nada.
+    if not proveedor.verificar(canonico, sobre.firma):
+        raise FirmaNoVerificada(
+            "la atestación recién firmada NO verifica contra los firmantes autorizados: "
+            "el anfitrión ha firmado con una clave que esta raíz externa NO acepta. NO se "
+            "emite evidencia, y el fallo es CERRADO: publicarla estamparía la identidad "
+            "declarada sobre una firma que no es suya",
+            identidad=str(activa.id),
+        )
+
+    # 7 · la evidencia, FUERA del árbol verificado. Sólo se llega aquí con la firma ya
+    #     verificada: una atestación que no verifica NO se escribe.
     os.makedirs(os.path.dirname(evidencia) or ".", exist_ok=True)
     with open(evidencia, "w", encoding="utf-8") as manejador:
         manejador.write(sobre.serializar())

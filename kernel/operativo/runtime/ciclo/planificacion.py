@@ -43,9 +43,10 @@ DECISIÓN · `b.15.1` abre y despacha SIN preguntar, y el alcance autorizado es 
 from __future__ import annotations
 
 from estado.serializacion import cid_de_objeto
+from runtime import modelo
 from runtime.politica import MAX_INTENTOS_POR_DEFECTO
 
-from . import durable
+from . import durable, paralelismo
 from .corpus import Corpus
 from .encuadre import DOMINIO as DOMINIO_ENCUADRES, ruta_de as ruta_de_encuadre
 from .equipos import DOMINIO as DOMINIO_EQUIPOS, ruta_de as ruta_de_equipo
@@ -125,7 +126,7 @@ class Planificador:
                    capacidades_de_adaptador=CAPACIDADES_DE_ADAPTADOR_POR_DEFECTO,
                    orden_por_capacidad=None, slots=0,
                    intervencion=INTERVENCION_NINGUNA, alcance_autorizado=None,
-                   secuencial=True):
+                   secuencial=None, acoplamiento_por_capacidad=None):
         """Crea el item y sus paquetes, y escribe el plan. Idempotente por contenido."""
         if intervencion not in NIVELES_DE_INTERVENCION:
             raise PlanificacionInvalida(
@@ -153,6 +154,41 @@ class Planificador:
             )
 
         ordenes = dict(orden_por_capacidad or {})
+        acoplamientos = dict(acoplamiento_por_capacidad or {})
+        # PRIMERA PASADA: se construyen los paquetes en memoria, CON su declaración de
+        # acoplamiento, para poder evaluar entre ellos la condición compuesta de `a.5`.
+        # Sin la declaración no hay nada que evaluar, y por eso la etapa 4 va antes que la 5
+        # en el `§7.2` y también aquí.
+        proyectados = []
+        for participante in ruta["participantes"]:
+            proyectados.append({
+                "id": "pq-" + cid_de_objeto({
+                    "item": item,
+                    "capacidad": participante["capacidad"],
+                    "via": participante["via"],
+                    "obligacion": participante["obligacion"],
+                }).split(":", 1)[-1][:12],
+                "depende_de": [],
+                "acoplamiento": modelo.normalizar_acoplamiento(
+                    acoplamientos.get(participante["capacidad"])),
+            })
+        if secuencial is True:
+            # Secuenciar SIN evaluar sigue estando permitido —es el fallback seguro—, pero
+            # es una DECISIÓN explícita del llamador y queda escrita como tal.
+            espera = {}
+            previo = None
+            for proyectado in proyectados:
+                espera[proyectado["id"]] = [previo] if previo else []
+                previo = proyectado["id"]
+            traza_de_paralelismo = [{
+                "paquete": identificador, "espera_a": esperados,
+                "incumplidas": ["(no evaluadas: secuenciación declarada por el llamador)"],
+                "motivos": ["el llamador pidió `secuencial=True`; `b.11` lo admite como "
+                            "FALLBACK SEGURO y aquí queda escrito que no se evaluó"],
+            } for identificador, esperados in espera.items() if esperados]
+        else:
+            espera, traza_de_paralelismo = paralelismo.secuenciar(proyectados)
+
         paquetes, correspondencia, anterior = [], [], None
         for participante in ruta["participantes"]:
             identificador = "pq-" + cid_de_objeto({
@@ -161,7 +197,12 @@ class Planificador:
                 "via": participante["via"],
                 "obligacion": participante["obligacion"],
             }).split(":", 1)[-1][:12]
-            depende_de = [anterior] if (secuencial and anterior) else []
+            depende_de = list(espera.get("pq-" + cid_de_objeto({
+                "item": item,
+                "capacidad": participante["capacidad"],
+                "via": participante["via"],
+                "obligacion": participante["obligacion"],
+            }).split(":", 1)[-1][:12], []))
             orden = ordenes.get(participante["capacidad"])
             if orden is None:
                 raise PlanificacionInvalida(
@@ -177,6 +218,7 @@ class Planificador:
                     prioridad=PRIORIDAD_POR_VIA[participante["via"]],
                     max_intentos=MAX_INTENTOS_POR_DEFECTO,
                     depende_de=depende_de,
+                    acoplamiento=acoplamientos.get(participante["capacidad"]),
                 )
             paquetes.append(identificador)
             correspondencia.append({
@@ -212,6 +254,13 @@ class Planificador:
             "puntos_de_intervencion": _puntos_de_intervencion(ruta, intervencion),
             "alcance_autorizado": _alcance(alcance_autorizado, ruta, encuadre),
             "secuencial": bool(secuencial),
+            # La etapa 5 del `§7.2`, ESCRITA: qué paquete espera a cuál y por qué condición
+            # de `a.5`. `b.12` paso 7 lo exige —«un dispatcher que elige sin explicar es una
+            # caja negra»— y sin esto la secuenciación sería una afirmación sin traza.
+            "condicion_de_paralelismo": {
+                "condiciones": list(paralelismo.CONDICIONES),
+                "traza": traza_de_paralelismo,
+            },
             "derivado_de": None,
         }
         plan["id"] = _identificador(plan)
