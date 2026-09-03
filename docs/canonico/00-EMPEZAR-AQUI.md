@@ -153,7 +153,10 @@ grep -cE '^# `O[0-9]+`' docs/owner/ADS-OWNER-RESOLUCIONES.md
 escribir una línea, dos lecturas obligadas: qué está ya construido, en
 [`04-CONTRATOS-TECNICOS.md`](04-CONTRATOS-TECNICOS.md) §1 —**completar lo que existe, no
 duplicarlo**—, y qué contratos quedan y qué los bloquea, en
-[`docs/f6/00-ESTADO-DE-IMPLEMENTACION-F6.md`](../f6/00-ESTADO-DE-IMPLEMENTACION-F6.md).
+[`docs/f6/00-ESTADO-DE-IMPLEMENTACION-F6.md`](../f6/00-ESTADO-DE-IMPLEMENTACION-F6.md), y
+el juicio independiente que se ha emitido sobre él, en
+[`docs/f6/02-GATE-DE-CERTIFICACION-FINAL-20260903.md`](../f6/02-GATE-DE-CERTIFICACION-FINAL-20260903.md)
+—veredicto **`F6 NO CERTIFICADA`**, sobre un gate declarado **NO VÁLIDO**—.
 El estado vigente de cada fase —y el acto que lo declaró— está en
 [`03-GOBIERNO-Y-AUTORIDAD.md`](03-GOBIERNO-Y-AUTORIDAD.md) §6, que es su única sede;
 **iniciar y cerrar una fase son actos del Owner y no de este corpus**.

@@ -279,8 +279,60 @@ donde el ciclo los invoca · `C-00`, `C-01`, `C-02`, `C-03`, `C-04`, `C-13`, `C-
 `F-11` · y la condición de cierre de `M-04`.
 
 ```text
-RESULTADO DE LA RESTA   ∅   (VACÍA)
+RESULTADO DE LA RESTA   ∅   (VACÍA)      ← REFUTADO. Ver el aviso inmediatamente debajo
 ```
+
+> ## ⚠ ESTA RESTA FUE REFUTADA POR EL GATE DE CERTIFICACIÓN DEL 2026-09-03
+>
+> **Y no se corrige aquí, se registra.** El gate único e independiente de certificación
+> —[`02-GATE-DE-CERTIFICACION-FINAL-20260903.md`](02-GATE-DE-CERTIFICACION-FINAL-20260903.md)—
+> derivó el universo por su cuenta, **sin aceptar este documento como verdadero**, y encontró
+> que **las tres restas están NO VACÍAS**. Su encargo prohibía expresamente corregir nada, de
+> modo que lo que sigue es el registro del hallazgo y no su remedio.
+>
+> **Por qué esta resta salió vacía sin serlo, dicho con precisión.** Su universo declara
+> «`F-01`, `F-02`, `F-04`, `F-05` (i), `F-06`, `F-07`, `F-10`, `F-11`» — las OCHO **filas** de
+> `11-ARQ` §19 con fase `F6`. Y las ocho están cerradas: eso es cierto y el gate lo verificó una
+> a una. **Pero §19 no es una tabla: es una sección**, y contiene ADEMÁS cuatro obligaciones con
+> «FASE **`F6`**» escrita que no son filas `F-nn` —`CONTRATO 1`, `CONTRATO 1bis`, `CONTRATO 2` y
+> el bloque `D104`—, ninguna de las cuales entró en este universo. La afirmación de exhaustividad
+> que este corte publicó —«una **fila** de §19 omitida: ninguna»— **es cierta y es insuficiente:
+> lo omitido no eran filas**. Y `05-PLAN` §2.1 ya lo advertía sin que nadie lo leyera así:
+> define `F6-H` con sede «`11-ARQ` §19», la sección entera, y `F6-I` **es** el `CONTRATO 3` de
+> esa misma sección.
+>
+> **Las tres restas del gate, derivadas por su adjudicador:**
+>
+> ```text
+> A · obligaciones internas SIN implementación                    NO VACÍA · 7
+>     A1  C4 «Cuántos agentes por rol» · la cardinalidad y la semántica no se derivan de la
+>         composición, que es la sede que C4 designa. Medido sobre las TRES composiciones
+>         reales que declaran varios agentes: se materializa UNO, sin error y sin aviso
+>     A2  §19 CONTRATO 1    · AFIRMACIONES sigue siendo lista literal
+>     A3  §19 CONTRATO 1bis · el censo de perfiles no se publica
+>     A4  §19 CONTRATO 2    · T152 no barre toda sede que publique versión
+>     A5  §19 D104          · cero instancias de <CAP>:revision, cero validadores
+>     A6  b.12 paso 5   · faltan (b) grado de salida y (c) antigüedad de espera
+>     A7  b.12 inanición · faltan tiempo_listo, postergaciones, adelantado_por
+>
+> B · implementaciones SIN prueba capaz de fallar                 NO VACÍA · 6
+>     el ORDEN de los pasos 8 y 9 de estado/motor.py · las DOS mitades de exigir_vinculo por
+>     separado · la degradación de V6-12 con commit_de_nacimiento=None · la procedencia del
+>     sys.path en el camino productivo --repo · la declaración prohibida de varios agentes
+>
+> C · obligaciones SIN trazabilidad hasta evidencia               NO VACÍA · 4
+>     el criterio B3 del plan —«la acepta el Owner»— sin acto · las cuatro obligaciones de §19
+>     ausentes de este universo · 04-CONTRATOS-TECNICOS.md, la ÚNICA SEDE del estado de
+>     construcción, desmentida por el árbol y contradictoria consigo misma · y la fila F6-B de
+>     este documento, que registra un «límite de anfitrión» donde lo que falta es un acto del Owner
+> ```
+>
+> **Lo que el gate SÍ confirmó de este documento**, y se dice porque callarlo sería la otra
+> forma de mentir: la línea base es exacta y reproducible byte a byte en otro checkout; los
+> diecinueve `V6-*` tienen correspondencia ejecutada e inequívoca, **incluidos los tres que
+> §6.1 declara no citados por nombre**; `V6-15` deriva su conjunto y crece solo; las ocho filas
+> `F-nn` están cerradas con negativos que se ponen rojos por el motivo esperado; y las
+> exclusiones argumentadas de §3.1, §3.2 y §3.3 se sostienen sobre sus citas literales.
 
 **Y lo que la resta NO barre, dicho para que nadie la lea como más de lo que es.** Quedan
 fuera del universo, cada uno con su fuente literal en este documento:
