@@ -41,6 +41,7 @@ from .errores import (
     CondicionVaga,
     EstadoDeMateriaInvalido,
     MateriaSinProceso,
+    ObligacionSinProductora,
     ProcesoDesconocido,
 )
 
@@ -174,6 +175,33 @@ def exigir_coherente(corpus=None):
 
 
 # --------------------------------------------------------------- obligaciones
+def productora_de(entrada):
+    """QUIÉN produce la capa: una CAPACIDAD, o la AUTORIDAD declarada en su campo propio.
+
+    `F-02` punto 5 es literal: «`OWNER` NO es una capacidad: se separa como AUTORIDAD, en su
+    propio campo, porque las quince no lo incluyen», y su remedio dice **MOVER** `OWNER` a
+    autoridad, no duplicarlo. Una obligación producida por el Owner declara
+    `autoridad_productora` y NO declara `capacidad_productora`: dejar el token viejo en el
+    campo de capacidad habría conservado exactamente lo que `F-02` existe para retirar.
+
+    Éste es el ÚNICO punto que resuelve la pareja. Los consumidores preguntan por la
+    productora y no tienen que conocer las dos claves, que es lo que hacía que el token
+    viejo fuese imposible de quitar sin romperlos.
+    """
+    capacidad = entrada.get("capacidad_productora")
+    if capacidad is not None and str(capacidad).strip():
+        return str(capacidad)
+    autoridad = entrada.get("autoridad_productora")
+    if autoridad is not None and str(autoridad).strip():
+        return str(autoridad)
+    raise ObligacionSinProductora(
+        "la obligación `" + str(entrada.get("id")) + "` no declara ni "
+        "`capacidad_productora` ni `autoridad_productora`; el esquema exige exactamente "
+        "una de las dos y sin ninguna no se sabe quién produce la capa",
+        obligacion=str(entrada.get("id")),
+    )
+
+
 def obligaciones_de(proceso):
     """Las obligaciones del proceso, DERIVADAS de sus `obligatorias` (`00-OBLIGACIONES`)."""
     salida = []
@@ -181,7 +209,11 @@ def obligaciones_de(proceso):
         salida.append({
             "id": entrada["id"],
             "capa_exigida": entrada["capa_exigida"],
-            "capacidad_productora": entrada["capacidad_productora"],
+            # Las DOS claves viajan tal como el corpus las declara —una de ellas ausente—,
+            # y `productora` resuelve cuál manda. Nada las mezcla en un solo campo.
+            "capacidad_productora": entrada.get("capacidad_productora"),
+            "autoridad_productora": entrada.get("autoridad_productora"),
+            "productora": productora_de(entrada),
             "criterio_de_satisfaccion": entrada["criterio_de_satisfaccion"],
             "autoridad_de_retirada": entrada["autoridad_de_retirada"],
             "estado": "huerfana",

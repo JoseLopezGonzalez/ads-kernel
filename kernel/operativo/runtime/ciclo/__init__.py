@@ -38,14 +38,34 @@ insertar `kernel/operativo/runtime` en `sys.path` e `import ciclo`.
 """
 from __future__ import annotations
 
+from .agentes import (
+    Catalogo,
+    Politica,
+    asignar,
+    asignar_rol,
+    cargar_catalogo,
+    catalogo_desde_texto,
+    identificador_de_agente,
+    seleccionar,
+)
 from .cierre import Cierre, resolver_obligaciones
 from .continuacion import MODO_EJECUCION, MODO_PLAN, PASOS, Continuacion, como_texto
 from .corpus import CAPACIDADES, CONDICIONES_DE_B16, Corpus, analizar, bloques
 from .despacho import PUNTO_DE_ENTRADA, barrido, despachar, observar
 from .encuadre import clases_que_crean_trabajo, clasificar, encuadrar
-from .equipos import derivar_capacidades, exigir_capacidad, materializar
+from .equipos import (
+    derivar_capacidades,
+    exigir_agentes_asignados,
+    exigir_capacidad,
+    exigir_separacion,
+    exigir_slots_coherentes,
+    materializar,
+)
 from .errores import (
+    AgenteSobreasignado,
     AlcanceNoAutorizado,
+    CatalogoDeModelosAusente,
+    CatalogoDeModelosInvalido,
     CicloInconsistente,
     CierreBloqueado,
     ComposicionDeEquipoAusente,
@@ -55,6 +75,7 @@ from .errores import (
     CorpusIlegible,
     CorpusIncompleto,
     DecisionDelOwnerPendiente,
+    DegradacionInvalida,
     DerivaNoTransaccional,
     DevolucionSinEvidencia,
     EncuadreIncompleto,
@@ -72,12 +93,17 @@ from .errores import (
     MateriaSinProceso,
     MetodoNoEsCapacidad,
     ObligacionHuerfana,
+    ObligacionSinProductora,
+    PaqueteIlegible,
+    PerfilDesconocido,
     PlanificacionInvalida,
     PrecondicionIncumplida,
     ProcesoDesconocido,
     PropietarioNoDerivable,
     RetiradaSinAutoridad,
+    RolSinAgente,
     TrabajoAmbiguo,
+    VariosAgentesSinIntegrador,
     ViaInvalida,
 )
 from .gates import aplicar as aplicar_gate, censo as censo_de_gates, exigir_no_amplia, \
@@ -102,6 +128,9 @@ __all__ = [
     "capacidad_de", "metodo_de",
     "componer", "exigir_composicion_completa", "traza", "VIAS", "PRESENCIAS",
     "materializar", "derivar_capacidades", "exigir_capacidad",
+    "exigir_agentes_asignados", "exigir_slots_coherentes", "exigir_separacion",
+    "Politica", "Catalogo", "cargar_catalogo", "catalogo_desde_texto",
+    "asignar", "asignar_rol", "seleccionar", "identificador_de_agente",
     "Planificador",
     "despachar", "barrido", "observar", "PUNTO_DE_ENTRADA",
     "aplicar_gate", "censo_de_gates", "exigir_no_normativo", "exigir_no_amplia",
@@ -114,6 +143,9 @@ __all__ = [
     "ProcesoDesconocido", "MateriaSinProceso", "EstadoDeMateriaInvalido",
     "PropietarioNoDerivable", "ViaInvalida", "CondicionVaga", "ComposicionIncompleta",
     "ComposicionDeEquipoAusente", "ConflictoDeRoles", "MetodoNoEsCapacidad",
+    "ObligacionSinProductora", "PaqueteIlegible", "VariosAgentesSinIntegrador",
+    "CatalogoDeModelosAusente", "CatalogoDeModelosInvalido", "PerfilDesconocido",
+    "RolSinAgente", "AgenteSobreasignado", "DegradacionInvalida",
     "PlanificacionInvalida", "LimiteDeCapacidadExcedido", "AlcanceNoAutorizado",
     "GateDesconocido", "GateFallido", "GateNormativo",
     "HandoffDesconocido", "HandoffIncompleto", "HandoffRechazado",

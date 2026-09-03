@@ -265,8 +265,9 @@ componentes:
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: e2e-f6-salida.txt
-    firma_de_exito: '21 de 21 pasos CUMPLIDOS'
-    debe_contener: ['T225', 'paso 02', 'paso 13', 'paso 15', 'paso 18', 'paso 21']
+    firma_de_exito: '24 de 24 pasos CUMPLIDOS'
+    debe_contener: ['T225', 'paso 02', 'paso 05', 'paso 13', 'paso 15', 'paso 18',
+                    'paso 21', 'paso 22', 'paso 23', 'paso 24']
 
   # El MACROBLOQUE 3 de F6: el ciclo de 7.2, Continua de 7.4 y los cuatro macrocircuitos.
   # Tres baterias mas, por la misma razon que las ocho anteriores: un validador fuera del
@@ -286,6 +287,18 @@ componentes:
     evidencia: continua-salida.txt
     firma_de_exito: 'OK'
     debe_contener: ['Ran ', 'duración no registrada', 'T203', 'T204', 'T205']
+
+  # El PASO 4 de `C4` -asignacion de agentes por la politica de `C2`- y el corte por
+  # `execution_slots`, cuya unidad es el AGENTE. Bateria propia porque mide una capa propia:
+  # perfiles del corpus contra el catalogo de modelos que el PROYECTO declara en su PROFILE.
+  - id: agentes
+    script: test_agentes.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: agentes-salida.txt
+    firma_de_exito: 'OK'
+    debe_contener: ['Ran ', 'duración no registrada', 'T226', 'T228', 'T230', 'T231',
+                    'T232', 'T235']
 
   - id: macrocircuitos
     script: test_macrocircuitos.py

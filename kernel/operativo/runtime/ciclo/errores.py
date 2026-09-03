@@ -176,6 +176,47 @@ class MetodoNoEsCapacidad(ErrorDeCiclo):
     CODIGO = "METODO_NO_ES_CAPACIDAD"
 
 
+# --------------------------------------------------- agentes y modelos (`C2`)
+class CatalogoDeModelosAusente(ErrorDeCiclo):
+    """El PROYECTO no declara catálogo de modelos. `C2` lo sitúa en su `PROFILE`.
+
+    FALLO CERRADO: sin catálogo no hay agente que asignar, y el kernel NO puede traer uno
+    por defecto sin nombrar un proveedor, que es lo que `K0.8` prohíbe.
+    """
+
+    CODIGO = "CATALOGO_DE_MODELOS_AUSENTE"
+
+
+class CatalogoDeModelosInvalido(ErrorDeCiclo):
+    """El catálogo del proyecto no es el ESPEJO del esquema `perfil-agente`."""
+
+    CODIGO = "CATALOGO_DE_MODELOS_INVALIDO"
+
+
+class PerfilDesconocido(ErrorDeCiclo):
+    """El rol no declara `perfil_agente`, o el perfil que declara no está en el corpus."""
+
+    CODIGO = "PERFIL_DESCONOCIDO"
+
+
+class RolSinAgente(ErrorDeCiclo):
+    """`C4`: «PROHIBIDO materializar un rol sin asignarle agente: un rol vacío no es un rol»."""
+
+    CODIGO = "ROL_SIN_AGENTE"
+
+
+class AgenteSobreasignado(ErrorDeCiclo):
+    """Un agente ocupa un slot dos veces, o dos agentes ocupan el mismo slot (`b.11`)."""
+
+    CODIGO = "AGENTE_SOBREASIGNADO"
+
+
+class DegradacionInvalida(ErrorDeCiclo):
+    """Una degradación se DECLARA con sus ejes, su motivo y quién la autoriza (`C2` paso 6)."""
+
+    CODIGO = "DEGRADACION_INVALIDA"
+
+
 # ----------------------------------------------------------- planificación
 class PlanificacionInvalida(ErrorDeCiclo):
     CODIGO = "PLANIFICACION_INVALIDA"
@@ -277,14 +318,50 @@ class CicloInconsistente(ErrorDeCiclo):
     CODIGO = "CICLO_INCONSISTENTE"
 
 
+class PaqueteIlegible(ErrorDeCiclo):
+    """`C4` paso 1 · el paquete no se puede LEER: una de sus cinco materias no resuelve.
+
+    El paso 1 dejó de ser un passthrough y pasó a resolver método, nivel de calidad y
+    acoplamiento contra sus sedes. Resolver de verdad crea la posibilidad de no resolver, y
+    eso tiene que fallar cerrado: materializar con un método que no es de la capacidad, o
+    con un nivel de calidad que no está en la escala, sería inventar la lectura.
+    """
+
+    CODIGO = "PAQUETE_ILEGIBLE"
+
+
+class VariosAgentesSinIntegrador(ErrorDeCiclo):
+    """`C4`: «Varios agentes sin integrador declarado está prohibido».
+
+    Su motivo está escrito en el contrato: «Produce tres propuestas y ninguna decisión, que
+    es ceremonia con apariencia de profundidad».
+    """
+
+    CODIGO = "VARIOS_AGENTES_SIN_INTEGRADOR"
+
+
+class ObligacionSinProductora(ErrorDeCiclo):
+    """Una obligación que no declara NI capacidad NI autoridad que produzca su capa.
+
+    `F-02` separó las dos claves para que `OWNER` dejara de viajar como capacidad. La
+    separación crea un estado nuevo que antes no existía —ninguna de las dos— y que sería
+    indistinguible de una capa sin dueño. Falla cerrado en vez de elegir una por defecto.
+    """
+
+    CODIGO = "OBLIGACION_SIN_PRODUCTORA"
+
+
 # Censo derivado, no escrito a mano dos veces: la CLI y las pruebas lo usan para comprobar
 # que todo código emitido pertenece a esta lista cerrada.
 CLASES = (
+    ObligacionSinProductora, PaqueteIlegible, VariosAgentesSinIntegrador,
     ErrorDeCiclo, CorpusIlegible, CorpusIncompleto,
     EntradaNoClasificable, EncuadreIncompleto, PrecondicionIncumplida, EntradaSinTrabajo,
     ProcesoDesconocido, MateriaSinProceso, EstadoDeMateriaInvalido, PropietarioNoDerivable,
     ViaInvalida, CondicionVaga, ComposicionIncompleta,
     ComposicionDeEquipoAusente, ConflictoDeRoles, MetodoNoEsCapacidad,
+    CatalogoDeModelosAusente, CatalogoDeModelosInvalido, PerfilDesconocido,
+    RolSinAgente, AgenteSobreasignado, DegradacionInvalida,
     PlanificacionInvalida, LimiteDeCapacidadExcedido, AlcanceNoAutorizado,
     GateDesconocido, GateFallido, GateNormativo,
     HandoffDesconocido, HandoffIncompleto, HandoffRechazado, DevolucionSinEvidencia,

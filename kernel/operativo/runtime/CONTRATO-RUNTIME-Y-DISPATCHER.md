@@ -148,7 +148,9 @@ pasos de `T193` en
 ## 9 · Lo que este contrato NO cubre
 
 El ciclo COMPLETO de `§7.2` —encuadre, composición de rutas por `b.16`, materialización de
-equipos por `C4`, gates de capa y handoffs por `C5`— **no está implementado**: lo que existe
-es la máquina de despacho sobre la que ese ciclo se apoyará. `Continúa` de `§7.4` tampoco:
-su paso 2 exige además regenerar derivados y recompilar proyecciones, y eso es del corte
-siguiente. Y **nada de esto está CERTIFICADO**.
+equipos por `C4`, gates de capa y handoffs por `C5`— **no vive aquí**: lo que este contrato
+cubre es la máquina de despacho sobre la que ese ciclo se apoya, y el ciclo tiene contrato
+propio en [`CONTRATO-CICLO-Y-MACROCIRCUITOS.md`](CONTRATO-CICLO-Y-MACROCIRCUITOS.md), donde
+también viven el paso 4 de `C4` —la asignación de agente y modelo por rol— y el corte por
+`execution_slots`, cuya unidad es el AGENTE. Este contrato **no decide quién ocupa un rol**:
+recibe paquetes ya materializados y los despacha. Y **nada de esto está CERTIFICADO**.

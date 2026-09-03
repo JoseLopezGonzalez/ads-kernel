@@ -52,7 +52,13 @@ from .errores import (
     EntradaSinTrabajo,
     PrecondicionIncumplida,
 )
-from .procesos import ESTADOS_DEL_OBJETO, MATERIAS, capacidad_de, proceso_de
+from .procesos import (
+    ESTADOS_DEL_OBJETO,
+    MATERIAS,
+    capacidad_de,
+    proceso_de,
+    productora_de,
+)
 
 try:                                                     # pragma: no cover - 3.11+
     import tomllib
@@ -265,7 +271,7 @@ def capacidades_necesarias(proceso):
     """
     salida = set()
     for obligacion in proceso.get("obligatorias") or []:
-        productora = capacidad_de(obligacion["capacidad_productora"])
+        productora = capacidad_de(productora_de(obligacion))
         if productora in CAPACIDADES:
             salida.add(productora)
     for condicional in proceso.get("condicionales") or []:

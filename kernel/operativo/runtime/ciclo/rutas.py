@@ -160,7 +160,7 @@ def componer(encuadre, *, corpus=None, fase="unica", condiciones_verdaderas=(),
 
     # --- VÍA 2 ---------------------------------------------------------------
     for obligacion in obligaciones_de(proceso):
-        productora = obligacion["capacidad_productora"]
+        productora = obligacion["productora"]
         capacidad = capacidad_de(productora)
         if capacidad not in CAPACIDADES:
             # `b.16` escribe aquí, en tres sitios, algo que NO es una capacidad: `OWNER` en

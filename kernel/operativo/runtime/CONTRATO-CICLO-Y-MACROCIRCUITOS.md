@@ -23,7 +23,9 @@ de trabajo pasa por `Runtime.crear_item` y `Runtime.crear_paquete` de
 ```text
 canonico/encuadres/<id>.json     el ENCUADRE: producto, clase de entrada, materia, fuentes
 canonico/rutas/<id>.json         la RUTA compuesta: participantes con su vía y las NO activadas
-canonico/equipos/<id>.json       el EQUIPO materializado por C4, con lo que quedó fuera
+canonico/equipos/<id>.json       el EQUIPO materializado por C4: sus roles con su AGENTE y
+                                 su MODELO, los descartes con su motivo, lo que espera
+                                 capacidad y lo que quedó BLOQUEADO sin agente
 canonico/planes/<id>.json        el PLAN: qué paquete cubre qué obligación de qué capacidad
 canonico/dictamenes/<id>.json    el DICTAMEN de un gate, con su entrada y su evidencia
 canonico/handoffs/<id>.json      la ENTREGA de C5, con su acuse, su rechazo o su devolución
@@ -95,6 +97,42 @@ POR QUÉ ES    componer es una función PURA que no toca el estado. Quien escrib
 PURA          recibe rutas que ya pasaron el gate, de modo que un fallo de composición no
               puede dejar media ruta publicada, que es como un gate se vuelve decorativo
 QUÉ NO HACE   no inventa un handoff para tapar una capacidad sin vía, y no ensancha `b.16`
+```
+
+## 3 bis · `C4` paso 4: quién ocupa cada rol, y qué ocupa un `execution_slot`
+
+`C4` paso 4 manda «por cada rol, aplicar la política de `C2`. Registrar modelo elegido,
+descartados y motivo». Esa política son los SEIS pasos de `C2`, y se ejecutan tal cual sobre
+el catálogo que declara el PROYECTO.
+
+```text
+DÓNDE VIVE EL      en el `PROFILE.md` del control repo, en bloques ```yaml ads:modelo```.
+CATÁLOGO           `C2`: el adaptador «Vive en el PROFILE del proyecto o en la instalación,
+                   NUNCA en el kernel». Este paquete no nombra ni un modelo
+QUÉ FORMA TIENE    el ESPEJO del esquema `perfil-agente`: identificador + los SIETE ejes en
+                   `ofrece` + `contexto` + `herramientas` + `coste`. Los ejes, sus escalas y
+                   el ORDEN DEL ESQUEMA se DERIVAN de `esquemas/perfil-agente.yaml`
+SIN CATÁLOGO       FALLO CERRADO. Ningún rol recibe agente, ninguno se despacha y el equipo
+                   queda `bloqueado` nombrando qué falta. NUNCA un modelo por defecto
+FILTRAR            pasos 2 y 3 de `C2`: cumplir o superar cada eje, ofrecer las herramientas
+                   declaradas y el tamaño de contexto. Cada descarte nombra qué falló
+ORDENAR            paso 4: a) eje dominante —el declarado en el TOPE de su eje, primero por
+                   orden del esquema; y si ninguno lo está, el más alto que el perfil pida—
+                   b) dentro del techo de `coste`  c) coste  d) identificador del modelo
+COSTE              es un TECHO, no un filtro: `C2` lo pone en ORDENAR y no en FILTRAR, y
+                   dice que «nunca sustituye a un candidato que cumple por otro que no»
+DEGRADAR           paso 6. NUNCA se infiere de la prosa de `degradacion_permitida`, que es
+                   un campo de texto: o se DECLARA como dato —ejes, motivo y quién la
+                   autoriza— o el paquete queda `bloqueado` nombrando la capacidad que falta
+UN SLOT LO OCUPA   un AGENTE. `b.11` calcula `execution_slots` «a partir de agentes
+UN AGENTE          disponibles», y `C4` combina (paso 5) ANTES de limitar (paso 6): un par
+                   declarado `combinables` es UN agente y entra o espera ENTERO. Cortar por
+                   roles lo partía, y ése era el defecto declarado del corte anterior
+COMBINAR ES        `C4` dice «comparten agente SÓLO si...»: es condición necesaria, no
+UNA LICENCIA       obligación. Si ningún modelo cumple los DOS perfiles a la vez, no se
+                   combinan y se escribe por qué. Eso NO es reducir la composición
+INDEPENDIENTES     manda sobre `combinables`, y también sobre el CIERRE: encadenar `A`+`B`
+MANDA              y `B`+`C` no puede meter en un agente a `A` y `C` si son independientes
 ```
 
 ## 4 · Ningún gate es fuente normativa, y se impide por MECANISMO
@@ -244,10 +282,18 @@ escribir nada»: es no escribir nada DEL MACROCIRCUITO.
 ## 9 · Qué demuestra, y dónde
 
 ```text
-T195–T202   `pruebas/test_ciclo.py`            48 casos · encuadre, taxonomía, `b.16`, las
+T195–T202   `pruebas/test_ciclo.py`            52 casos · encuadre, taxonomía, `b.16`, las
                                                cuatro vías, el gate de composición, `C4`,
                                                planificación, despacho, gates, `C5`, cierre,
                                                trabajo derivado, analizador y determinismo
+T226–T235   `pruebas/test_agentes.py`          10 casos · los SEIS pasos de `C2` sobre el
+                                               catálogo del proyecto, el registro del paso 4
+                                               de `C4`, los descartes verificados uno a uno
+                                               sobre los VEINTIÚN perfiles, el corte por
+                                               AGENTE, la reanudación sin reasignación
+                                               silenciosa, cuatro procesos reales por los
+                                               mismos slots y SEIS sabotajes que ponen roja
+                                               la prueba que cubre cada regla
 T203–T205   `pruebas/test_continua.py`         24 casos · los siete pasos, las ocho
                                                comprobaciones del paso 2, los DIEZ escenarios
                                                con proceso y estado reales —incluido un
@@ -272,6 +318,12 @@ NO CUBRE   la ejecución REAL de una capacidad. El ciclo compone, materializa, p
            método, y este contrato no lo toca
 NO CUBRE   la evaluación automática de una condición de la vía 3 ni de una composición de
            `C4`. Las dos se DECLARAN, y juzgarlas es decidir contenido
+NO CUBRE   el CATÁLOGO DE MODELOS. Su forma se deriva del esquema y su lectura vive aquí,
+           pero las instancias son del PROYECTO y viven en su `PROFILE.md`: `C2` lo pone
+           fuera del kernel y `K0.8` prohíbe nombrar aquí un proveedor o un modelo
+NO CUBRE   la DEGRADACIÓN de un perfil deducida de su `degradacion_permitida`. Ese campo es
+           prosa dirigida a quien decide; degradar exige una declaración explícita con sus
+           ejes, su motivo y quién la autoriza, o el paquete queda bloqueado
 NO CUBRE   las fases de cada macrocircuito más allá de su primera fase tras la `FASE 0`: el
            motor las ejecuta todas por el mismo camino, y la batería recorre extremo a
            extremo la primera de cada uno

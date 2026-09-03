@@ -54,11 +54,15 @@ KERNEL = os.path.join(RAIZ, "kernel", "operativo")
 CLI = os.path.join(RUNTIME, "ads_ciclo.py")
 sys.path.insert(0, RUNTIME)
 
+sys.path.insert(0, AQUI)
+
 try:
     import adaptadores
+    import catalogo_de_prueba
     import ciclo
     import runtime as paquete_runtime
-    from ciclo import corpus as modulo_corpus, equipos, gates, handoffs, procesos, rutas
+    from ciclo import agentes, corpus as modulo_corpus, equipos, gates, handoffs, \
+        procesos, rutas
 except ImportError as exc:      # el paquete todavía no está: que se vea por qué
     print(f"no se encuentra el paquete `ciclo` bajo {RUNTIME}: {exc}", file=sys.stderr)
     raise
@@ -98,12 +102,18 @@ class BaseDelCiclo(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.corpus = ciclo.Corpus(KERNEL)
+        cls.politica = agentes.Politica(cls.corpus)
 
     def setUp(self):
         self.repo = tempfile.mkdtemp(prefix="ads-ciclo-")
         self.espacio = os.path.join(self.repo, "espacio")
         os.makedirs(self.espacio, exist_ok=True)
         self.addCleanup(shutil.rmtree, self.repo, True)
+        # El control repo trae su `PROFILE.md` con el CATÁLOGO DE MODELOS del proyecto,
+        # igual que traería su `SOURCES.toml`: `C2` sitúa ahí el adaptador entre perfiles y
+        # modelos reales, y sin él ningún rol tiene agente que ocuparlo.
+        catalogo_de_prueba.escribir(self.repo, self.politica, self.corpus)
+        self.catalogo = agentes.cargar_catalogo(self.repo, politica=self.politica)
 
     def abrir_runtime(self, instancia="ciclo-A"):
         registro = adaptadores.RegistroDeAdaptadores([
@@ -229,7 +239,15 @@ class Encuadre(BaseDelCiclo):
         marco = ciclo.encuadrar(self.repo, entrada_base(), corpus=self.corpus)
         self.assertEqual(len(marco["politica"]["operaciones"]), 8)
         self.assertEqual(marco["politica"]["publicacion_por_defecto"], "esperando-owner")
-        self.assertFalse(marco["perfil"]["declarado"])
+        # El control repo de estas pruebas trae `PROFILE.md` —es donde `C2` sitúa el
+        # catálogo de modelos—, así que el perfil consta declarado y con su huella; y un
+        # control repo que no lo trae consta NO declarado, sin inventarse ninguno.
+        self.assertTrue(marco["perfil"]["declarado"])
+        self.assertTrue(str(marco["perfil"]["huella"]).startswith("sha256:"))
+        sin_perfil = tempfile.mkdtemp(prefix="ads-sin-perfil-")
+        self.addCleanup(shutil.rmtree, sin_perfil, True)
+        self.assertFalse(ciclo.encuadrar(sin_perfil, entrada_base(),
+                                         corpus=self.corpus)["perfil"]["declarado"])
         with self.assertRaises(ciclo.PrecondicionIncumplida) as capturado:
             ciclo.encuadrar(self.repo, entrada_base(), corpus=self.corpus,
                             precondiciones=("hay remoto para el control repo",))
@@ -527,27 +545,80 @@ class Equipos(BaseDelCiclo):
 
         `C4` paso 6, literal: «Lo que no cabe queda `esperando-capacidad`. NO se reduce la
         composición para que quepa». El equipo escrito lleva las dos listas.
+
+        DEFECTO QUE CIERRA, declarado por la auditoría anterior: el corte se hacía por ROLES
+        y podía dejar a los dos lados un par que la composición declara `combinables`, que
+        por definición es UN agente. `b.11` calcula `execution_slots` «a partir de agentes
+        disponibles», y `C4` ordena el paso 5 —COMBINACIÓN— ANTES del paso 6 —LÍMITES—: la
+        unidad que ocupa un slot es el AGENTE. Aquí se mide sobre `DSP`, cuya composición
+        real declara `DSP/enrutamiento` y `DSP/estado` combinables: con UN solo slot los dos
+        entran juntos, porque son un agente, y `DSP/supervision` espera.
         """
-        # Se elige la composición con MÁS roles obligatorios: con una de un solo rol el
-        # recorte no se podría observar, y la prueba pasaría sin comprobar nada.
-        escritas = self.corpus.composiciones("DIS")
-        elegida = max(escritas, key=lambda c: len(
-            [r for r in c["roles"] if r.get("obligatorio")]))["id"]
+        equipo = equipos.materializar(
+            "DSP", corpus=self.corpus, control_repo=self.repo,
+            composiciones_verdaderas=["composicion:dsp-supervisor"], slots=1,
+        )
+        combinados = {"DSP/enrutamiento", "DSP/estado"}
+        despachados = {r["rol"] for r in equipo["roles"]}
+        esperando = {r["rol"] for r in equipo["esperando_capacidad"]}
+        self.assertEqual(despachados, combinados)
+        self.assertEqual(esperando, {"DSP/supervision"})
+        # UN slot, UN agente, DOS roles: el par no se parte por el corte.
+        self.assertEqual(equipo["slots_ocupados"], 1)
+        agentes_despachados = [a for a in equipo["agentes"]
+                               if a["estado"] == "despachado"]
+        self.assertEqual(len(agentes_despachados), 1)
+        self.assertEqual(sorted(agentes_despachados[0]["roles"]), sorted(combinados))
+        self.assertEqual(len({r["agente"] for r in equipo["roles"]}), 1)
+
+        # Y la composición NO se reduce: la unión de las tres listas es la composición
+        # entera, con más slots y con menos.
         holgado = equipos.materializar(
-            "DIS", corpus=self.corpus, composiciones_verdaderas=[elegida], slots=99,
+            "DSP", corpus=self.corpus, control_repo=self.repo,
+            composiciones_verdaderas=["composicion:dsp-supervisor"], slots=99,
         )
-        self.assertGreater(len(holgado["roles"]), 2)
-        apretado = equipos.materializar(
-            "DIS", corpus=self.corpus, composiciones_verdaderas=[elegida], slots=2,
-        )
-        self.assertEqual(len(apretado["roles"]), 2)
-        self.assertTrue(apretado["esperando_capacidad"])
+        self.assertEqual(len(holgado["roles"]), 3)
+        self.assertFalse(holgado["esperando_capacidad"])
         self.assertEqual(
-            sorted(r["rol"] for r in apretado["roles"] + apretado["esperando_capacidad"]),
+            sorted(r["rol"] for r in equipo["roles"] + equipo["esperando_capacidad"]),
             sorted(r["rol"] for r in holgado["roles"]),
         )
-        for rol in apretado["esperando_capacidad"]:
+        for rol in equipo["esperando_capacidad"]:
             self.assertEqual(rol["estado"], "esperando-capacidad")
+            # Espera CON su agente asignado: esperar capacidad no es quedarse sin agente.
+            self.assertTrue(rol["agente"])
+            self.assertTrue(rol["modelo"])
+
+    def test_28b_ningun_rol_se_despacha_sin_agente_y_sin_catalogo_nadie_lo_tiene(self):
+        """T197 · Defecto que previene: un rol vacío despachado como si fuera un rol.
+
+        `C4`: «PROHIBIDO materializar un rol sin asignarle agente: un rol vacío no es un
+        rol». `C2` sitúa el catálogo de modelos en el PROFILE del proyecto y NUNCA en el
+        kernel, así que un proyecto que no lo declara no tiene agentes: el equipo queda
+        `bloqueado`, ninguno de sus roles se despacha, y se dice qué falta.
+        """
+        vacio = tempfile.mkdtemp(prefix="ads-sin-perfil-")
+        self.addCleanup(shutil.rmtree, vacio, True)
+        equipo = equipos.materializar(
+            "DSP", corpus=self.corpus, control_repo=vacio,
+            composiciones_verdaderas=["composicion:dsp-supervisor"], slots=4,
+        )
+        self.assertEqual(equipo["estado"], "bloqueado")
+        self.assertEqual(equipo["roles"], [])
+        self.assertEqual(equipo["slots_ocupados"], 0)
+        self.assertEqual(len(equipo["bloqueados"]), 3)
+        self.assertFalse(equipo["catalogo"]["declarado"])
+        for rol in equipo["bloqueados"]:
+            self.assertTrue(rol["falta"])
+        with self.assertRaises(ciclo.RolSinAgente):
+            equipos.exigir_agentes_asignados(equipo)
+        # CONTROL: el MISMO equipo, con el catálogo del proyecto declarado, sí se despacha.
+        con_catalogo = equipos.materializar(
+            "DSP", corpus=self.corpus, control_repo=self.repo,
+            composiciones_verdaderas=["composicion:dsp-supervisor"], slots=4,
+        )
+        self.assertEqual(con_catalogo["estado"], "materializado")
+        self.assertTrue(equipos.exigir_agentes_asignados(con_catalogo))
 
     def test_29_independientes_manda_sobre_combinables(self):
         """T197 · Defecto que previene: un agente que produce y se revisa a sí mismo.

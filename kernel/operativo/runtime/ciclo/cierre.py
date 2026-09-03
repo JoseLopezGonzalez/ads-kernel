@@ -118,7 +118,8 @@ def resolver_obligaciones(plan, *, satisfechas=(), retiradas=()):
             estado = HUERFANA
         resueltas.append({
             "obligacion": identificador,
-            "capacidad_productora": obligacion["capacidad_productora"],
+            "capacidad_productora": obligacion.get("capacidad_productora"),
+            "autoridad_productora": obligacion.get("autoridad_productora"),
             "criterio_de_satisfaccion": obligacion["criterio_de_satisfaccion"],
             "autoridad_de_retirada": obligacion["autoridad_de_retirada"],
             "estado": estado,

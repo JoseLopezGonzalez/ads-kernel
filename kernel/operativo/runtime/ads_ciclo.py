@@ -168,21 +168,51 @@ def orden_componer(argumentos):
 
 
 def orden_materializar(argumentos):
+    # `C4` paso 4 necesita el catálogo de modelos, y su sede es el `PROFILE` del CONTROL
+    # REPO —`C2`: el adaptador «vive en el PROFILE del proyecto o en la instalación, NUNCA
+    # en el kernel»—. Sin reenviar `--repo` la orden materializaba SIEMPRE sin catálogo, y
+    # el fallo cerrado correcto —ningún rol recibe agente— se leía como un equipo vacío.
     equipo = ciclo.materializar(
         argumentos.capacidad, corpus=_corpus(argumentos),
         composiciones_verdaderas=list(argumentos.composicion or []),
         condiciones_de_rol=list(argumentos.condicion or []),
         slots=argumentos.slots,
+        control_repo=getattr(argumentos, "repo", None),
     )
     lineas = [
         "equipo        " + equipo["id"],
         "capacidad     " + equipo["capacidad"],
         "composicion   " + equipo["composicion"],
-        "roles         " + (", ".join(r["rol"] for r in equipo["roles"]) or "(ninguno)"),
-        "esperando     " + (", ".join(r["rol"] for r in equipo["esperando_capacidad"])
+        "estado        " + str(equipo.get("estado") or ""),
+        "catalogo      " + _catalogo(equipo),
+        "roles         " + (", ".join(_rol_con_agente(r) for r in equipo["roles"])
+                            or "(ninguno)"),
+        "esperando     " + (", ".join(_rol_con_agente(r)
+                                      for r in equipo["esperando_capacidad"])
+                            or "(ninguno)"),
+        "bloqueados    " + (", ".join(_rol_con_agente(r)
+                                      for r in equipo.get("bloqueados") or [])
                             or "(ninguno)"),
     ]
     return _emitir(argumentos, equipo, lineas)
+
+
+def _catalogo(equipo):
+    """La sede y la huella del catálogo, o el motivo por el que no hay ninguno."""
+    catalogo = equipo.get("catalogo") or {}
+    if not catalogo.get("declarado"):
+        return "(no declarado) " + str(catalogo.get("motivo") or "")
+    modelos = catalogo.get("modelos") or []
+    if not isinstance(modelos, list):
+        modelos = [modelos]
+    return (str(catalogo.get("sede") or "") + " · " + str(len(modelos))
+            + " modelos: " + ", ".join(str(m) for m in modelos))
+
+
+def _rol_con_agente(fila):
+    """`rol → modelo`. Un rol sin agente se IMPRIME sin agente, no se calla."""
+    modelo = fila.get("modelo")
+    return fila["rol"] + (" → " + modelo if modelo else " → (sin agente)")
 
 
 def orden_planificar(argumentos):

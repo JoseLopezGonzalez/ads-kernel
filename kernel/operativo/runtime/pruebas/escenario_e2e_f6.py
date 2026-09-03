@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """escenario_e2e_f6 — el escenario EXTREMO A EXTREMO del macrobloque 3 de `F6`.
 
-`T225`. Veintiún pasos sobre material REAL, y ningún mock hace de pieza principal:
+`T225`. VEINTICUATRO pasos sobre material REAL, y ningún mock hace de pieza principal:
 
     un control repo                 con su estado durable y su gobierno Git instalado
+    un catálogo de modelos          declarado en el `PROFILE.md` del proyecto, como manda `C2`
     dos repositorios de producto    Git de verdad, hermanos del control repo
     un remoto Git                   bare, temporal, con su hook de referencia
     dos clones                      que representan DOS MÁQUINAS distintas
@@ -30,11 +31,11 @@ clave— se sustituye por su FORMA, que es lo que la prueba afirma.
 
     python3 kernel/operativo/runtime/pruebas/escenario_e2e_f6.py
 
-Sale con 0 si los veintiún pasos se cumplen, y con 1 en cuanto uno falla, marcando los que
+Sale con 0 si los veinticuatro pasos se cumplen, y con 1 en cuanto uno falla, marcando los que
 quedaron sin ejecutar. Un escenario que sigue adelante tras un paso fallido mide el estado
 equivocado en todos los siguientes.
 
-NADA DE ESTE ESCENARIO CERTIFICA NADA. Que los veintiún pasos se cumplan significa que se
+NADA DE ESTE ESCENARIO CERTIFICA NADA. Que los veinticuatro pasos se cumplan significa que se
 ejecutaron y pasaron. La CERTIFICACIÓN de `F6` la emite un juicio independiente, y no quien
 construyó.
 """
@@ -58,8 +59,10 @@ CLI_RUNTIME = os.path.join(RUNTIME, "ads_runtime.py")
 CLI_CICLO = os.path.join(RUNTIME, "ads_ciclo.py")
 CLI_ARBOLES = os.path.join(RUNTIME, "ads_arboles.py")
 sys.path.insert(0, RUNTIME)
+sys.path.insert(0, AQUI)
 
 import adaptadores                                                    # noqa: E402
+import catalogo_de_prueba                                             # noqa: E402
 import admision                                                       # noqa: E402
 import ciclo                                                          # noqa: E402
 import estado                                                         # noqa: E402
@@ -69,6 +72,7 @@ import macrocircuitos                                                 # noqa: E4
 import runtime as runtime_ads                                         # noqa: E402
 from admision import censo as censo_admision                          # noqa: E402
 from admision import matriz, perimetro                                # noqa: E402
+from ciclo import equipos as ciclo_equipos                            # noqa: E402
 from ciclo import gates as gates_de_capa                              # noqa: E402
 
 sys.path.insert(0, RAIZ_EXTERNA)
@@ -109,6 +113,9 @@ PASOS = [
     "no repetición del efecto: lo confirmado no se vuelve a aplicar",
     "cierre del macrocircuito, de forma inequívoca",
     "evidencia verificable DESDE la raíz externa, que no puede escribir en el árbol",
+    "C4 paso 4: agente y modelo por rol desde el catálogo del PROFILE, con sus descartes",
+    "execution_slots por AGENTE: el par combinable ocupa UN slot y no se separa",
+    "controles negativos: sabotear asignación, modelo, límites y vínculo rol/agente",
 ]
 
 
@@ -172,7 +179,7 @@ exit 0
 
 
 class Escenario:
-    """Los veintiún pasos. Cada uno devuelve el detalle que se publica en la evidencia."""
+    """Los veinticuatro pasos. Cada uno devuelve el detalle que se publica en la evidencia."""
 
     def __init__(self, base):
         self.base = base
@@ -279,8 +286,13 @@ class Escenario:
             for fuente in self.fuentes:
                 fh.write("[[sources]]\nid = \"" + os.path.basename(fuente) + "\"\n")
                 fh.write("path = \"../" + os.path.basename(fuente) + "\"\n\n")
-        with open(os.path.join(self.control, "PROFILE.md"), "w", encoding="utf-8") as fh:
-            fh.write("# PERFIL\n\nproducto gobernado por el escenario de `F6`.\n")
+        # El `PROFILE.md` del proyecto, CON su catálogo de modelos: `C2` sitúa ahí el
+        # adaptador entre los perfiles del kernel y los modelos reales, y NUNCA en el
+        # kernel. Sin él, ningún rol tendría agente y `C4` paso 4 no podría ejecutarse.
+        self.politica_de_agentes = ciclo.Politica(self.corpus)
+        catalogo_de_prueba.escribir(self.control, self.politica_de_agentes, self.corpus)
+        self.catalogo = ciclo.cargar_catalogo(self.control,
+                                              politica=self.politica_de_agentes)
 
         # El remoto BARE y el segundo clon: las DOS MÁQUINAS.
         subprocess.run(["git", "init", "--quiet", "--bare", "--initial-branch=canonica",
@@ -381,6 +393,9 @@ class Escenario:
     #  5 · MATERIALIZACIÓN DE EQUIPO
     # =====================================================================
     def paso_05(self):
+        # Los SIETE pasos de `C4`, ejercitados uno a uno sobre el corpus real y sobre el
+        # catálogo que el PROYECTO declara en su `PROFILE.md`.
+        #
         # `C4` paso 2: se recorren las composiciones EN EL ORDEN ESCRITO y se toma la
         # PRIMERA cuya condición conste verdadera. La condición la declara el encuadre; no
         # se evalúa aquí, porque juzgarla sería decidir contenido. Si ninguna consta, `C4`
@@ -389,9 +404,54 @@ class Escenario:
         escritas = [c["id"] for c in self.corpus.composiciones("SIS")]
         exigir(len(escritas) > 1, "`SIS` declara una sola composición y no hay orden que medir")
         equipo = ciclo.materializar("SIS", corpus=self.corpus,
-                                    composiciones_verdaderas=escritas)
+                                    composiciones_verdaderas=escritas,
+                                    control_repo=self.control, metodo="Evolucion",
+                                    paquete="pq-del-escenario",
+                                    capacidad_responsable="SIS",
+                                    nivel_de_calidad="N2",
+                                    objetivo="evolucionar el aparato de `F6`",
+                                    acoplamiento={"lee_fuentes": ["control"],
+                                                  "escribe_fuentes": []})
         exigir(equipo["roles"], "`C4` no materializó ningún rol para `SIS`")
         exigir(equipo["composicion"], "el equipo no declara qué composición lo eligió")
+
+        # PASO 1 · LEER EL PAQUETE, y leerlo de verdad. Sus CINCO materias —capacidad
+        # responsable, modo, objetivo, nivel de calidad exigido y declaración de
+        # acoplamiento— se RESUELVEN contra sus sedes. Antes este bloque comprobaba que dos
+        # cadenas volvían sin cambiar, que es un passthrough y no una ejecución: lo dijo la
+        # auditoría independiente y aquí se mide lo que el contrato pide.
+        lectura = equipo["lectura_del_paquete"]
+        exigir(lectura["capacidad_responsable"] == "SIS" and lectura["objetivo"],
+               "el paso 1 no lee la capacidad responsable ni el objetivo del paquete")
+        # El MODO se deriva de los PASOS del método real, no de su nombre.
+        exigir(lectura["modo"]["declarado"] and lectura["modo"]["modos"],
+               "el paso 1 no deriva el modo de los pasos del método")
+        for modo in lectura["modo"]["modos"]:
+            exigir(modo in ("divergente", "convergente", "lineal", "conversacional"),
+                   "el modo `" + modo + "` no está en el enum de `esquemas/metodo.yaml`")
+        # El NIVEL DE CALIDAD aporta sus gates al equipo escrito: ahí está el EFECTO.
+        exigir(lectura["nivel_de_calidad"]["id"] == "N2" and equipo["gates_del_nivel"],
+               "el nivel de calidad exigido no aporta sus gates: el paso 1 no tiene efecto")
+        # El ACOPLAMIENTO llega NORMALIZADO por su sede, con sus siete campos.
+        exigir(lectura["acoplamiento"]["declarado"]
+               and lectura["acoplamiento"]["campos"]["lee_fuentes"] == ["control"]
+               and "afecta_contratos" in lectura["acoplamiento"]["campos"],
+               "la declaración de acoplamiento no llega normalizada al paso 1")
+        # Y leer de verdad significa poder NO resolver: tres rutas de fallo cerrado.
+        for kwargs, que in ((dict(metodo="Despacho"), "un método ajeno a la capacidad"),
+                            (dict(nivel_de_calidad="N9"), "un nivel fuera de la escala"),
+                            (dict(capacidad_responsable="ARQ"), "otra capacidad responsable")):
+            try:
+                ciclo.materializar("SIS", corpus=self.corpus,
+                                   composiciones_verdaderas=escritas,
+                                   control_repo=self.control, **kwargs)
+            except ciclo.PaqueteIlegible:
+                continue
+            raise Fallo("el paso 1 aceptó " + que + ": leer sin poder fallar no es leer")
+        # El paquete y su método siguen viajando con el equipo escrito, que es lo que hace
+        # AUDITABLE la traza paquete → composición → rol → agente → modelo.
+        exigir(equipo["metodo"] == "Evolucion" and equipo["paquete"] == "pq-del-escenario",
+               "el equipo no conserva el paquete ni el método que lo materializaron")
         # Un MÉTODO no es una CAPACIDAD, y pedirlo como tal falla cerrado.
         try:
             ciclo.exigir_capacidad("SIS/Evolucion", corpus=self.corpus)
@@ -402,7 +462,8 @@ class Escenario:
         exigir(distingue, "un método se aceptó como capacidad")
         # Y sin ninguna condición verdadera, `C4` ESCALA en vez de inventar un equipo.
         try:
-            ciclo.materializar("SIS", corpus=self.corpus, composiciones_verdaderas=[])
+            ciclo.materializar("SIS", corpus=self.corpus, composiciones_verdaderas=[],
+                               control_repo=self.control)
         except ciclo.ComposicionDeEquipoAusente:
             escala = True
         else:
@@ -410,10 +471,45 @@ class Escenario:
         exigir(escala, "sin composición verdadera se materializó un equipo por defecto")
         exigir(equipo["composicion"] == escritas[0],
                "no mandó el ORDEN ESCRITO: eligió " + str(equipo["composicion"]))
+
+        # PASO 4 · cada rol recibe AGENTE y MODELO, y los descartes quedan registrados.
+        exigir(equipo["catalogo"]["declarado"],
+               "el equipo se materializó sin catálogo de modelos declarado")
+        exigir(equipo["catalogo"]["sede"] == "PROFILE.md",
+               "el catálogo no se leyó del `PROFILE.md` del proyecto")
+        for rol in equipo["roles"]:
+            exigir(rol["perfil"] and rol["agente"] and rol["modelo"],
+                   "el rol `" + rol["rol"] + "` se despachó sin perfil, agente o modelo")
+            exigir(rol["perfil"] == self.politica_de_agentes.perfil_de_rol(rol["rol"]),
+                   "el perfil de `" + rol["rol"] + "` no sale de su contrato de rol")
+        exigir(len(equipo["asignaciones"]) == len(equipo["roles"]),
+               "el registro del paso 4 no cubre todos los roles")
+        for registro in equipo["asignaciones"]:
+            exigir(registro["descartados"],
+                   "la asignación de `" + registro["rol"] + "` no registra ningún descarte")
+            for descarte in registro["descartados"]:
+                exigir(descarte["motivo"] and descarte["regla"].startswith("`C2` paso"),
+                       "un descarte sin motivo o sin la regla de `C2` que lo produjo")
+        # PASO 5 · `independientes` manda: `SIS/coherencia` no comparte agente con quien
+        # escribió lo que audita.
+        agentes_por_rol = {r["rol"]: r["agente"] for r in equipo["roles"]}
+        exigir(len(set(agentes_por_rol.values())) == len(agentes_por_rol),
+               "dos roles independientes acabaron en el mismo agente")
+        exigir(ciclo.exigir_separacion(equipo, autor="SIS/evolucion",
+                                       revisor="SIS/coherencia"),
+               "la separación autor/revisor no se sostiene")
+        # PASO 6 y 7 · los límites se cuentan por AGENTE, y nadie se despacha sin agente.
+        exigir(ciclo.exigir_slots_coherentes(equipo), "los slots del equipo no son coherentes")
+        exigir(ciclo.exigir_agentes_asignados(equipo),
+               "el equipo despacha algún rol sin agente")
         self.equipo = equipo
         return ("composición `" + str(equipo["composicion"]) + "` · roles: "
-                + str(len(equipo["roles"])) + " · fuera con motivo: "
-                + str(len(equipo.get("fuera") or equipo.get("esperando_capacidad") or []))
+                + str(len(equipo["roles"])) + " · agentes: " + str(len(equipo["agentes"]))
+                + " · modelos: " + ", ".join(sorted({r["modelo"] for r in equipo["roles"]}))
+                + " · descartes registrados: "
+                + str(sum(len(a["descartados"]) for a in equipo["asignaciones"]))
+                + " · fuera con motivo: "
+                + str(len(equipo.get("roles_fuera") or []))
                 + " · manda el ORDEN ESCRITO · sin condición verdadera se ESCALA · método "
                 "y capacidad se distinguen")
 
@@ -468,7 +564,24 @@ class Escenario:
     def paso_08(self):
         elegibles = self.circuito.runtime.elegibles()
         exigir(elegibles, "no queda trabajo elegible para medir el progreso")
-        resumen = ciclo.despachar(self.circuito.runtime, elegibles[0]["paquete"])
+        # El siguiente elegible cuyas DEPENDENCIAS ya están cerradas. `elegibles()` ordena
+        # por prioridad e identificador y no filtra por dependencia —hacerlo sería decidir
+        # el orden dos veces—, así que el que despacha comprueba. Tomar `elegibles[0]` a
+        # ciegas hacía que este paso dependiera de qué identificador salía primero, que se
+        # DERIVA del contenido del encuadre: cambiar el `PROFILE.md` lo movía.
+        almacen = self.circuito.runtime.almacen
+        siguiente = None
+        for candidato in elegibles:
+            paquete = almacen.leer("paquetes/" + candidato["paquete"] + ".json")
+            pendientes = [d for d in (paquete.get("depende_de") or [])
+                          if (almacen.leer("paquetes/" + d + ".json") or {}).get("estado")
+                          != "completado"]
+            if not pendientes:
+                siguiente = candidato
+                break
+        exigir(siguiente, "todo lo elegible espera una dependencia que nadie va a cerrar")
+        elegibles = [siguiente]
+        resumen = ciclo.despachar(self.circuito.runtime, siguiente["paquete"])
         exigir(resumen["desenlace"] == "completado",
                "el despacho con progreso terminó en " + str(resumen["desenlace"]))
         # El proceso emite DOS líneas y el runtime añade su propio evento de entrega: son
@@ -1122,6 +1235,164 @@ class Escenario:
                 "vinculada al commit y al `tree` · se verifica desde la instalación externa "
                 "· manipularla la INVALIDA · `G-A9`: el árbol se autodeclara VERDE y la "
                 "atestación externa lo DESMIENTE · ningún secreto en ninguna salida")
+
+    # =====================================================================
+    #  22 · `C4` PASO 4 · LA POLÍTICA DE `C2` SOBRE EL CATÁLOGO DEL PROYECTO
+    # =====================================================================
+    def paso_22(self):
+        """La política de `C2`, entera, sobre el catálogo REAL que el proyecto declara."""
+        politica = self.politica_de_agentes
+        # (i) `C2` paso 1: el perfil lo declara el ROL, en su contrato. No se adivina.
+        perfil = politica.perfil_de_rol("SIS/coherencia")
+        exigir(perfil == "perfil:sistema",
+               "`SIS/coherencia` declara `" + str(perfil) + "` y no `perfil:sistema`")
+        exigencia = politica.exigencia_de_perfil(perfil)
+        # (ii) `C2` pasos 2 a 5: elección, descartes y motivo, sobre el catálogo del
+        # `PROFILE.md`. Cada descarte nombra el eje, la herramienta o el contexto que falla.
+        registro = ciclo.seleccionar(exigencia, self.catalogo, politica=politica)
+        exigir(registro["estado"] == "asignado",
+               "ningún modelo del catálogo del proyecto ocupa `" + perfil + "`")
+        exigir(registro["descartados"], "la elección no registra ningún descarte")
+        partido = ({d["modelo"] for d in registro["descartados"]}
+                   | {o["modelo"] for o in registro["orden"]})
+        exigir(partido == set(self.catalogo.ids),
+               "hay candidatos que no están ni descartados ni ordenados")
+        reglas = {d["regla"] for d in registro["descartados"]}
+        exigir(reglas, "los descartes no dicen qué paso de `C2` los produjo")
+        # (iii) determinismo: mismo perfil y mismo catálogo, misma elección, repetida.
+        repetidas = {json.dumps(ciclo.seleccionar(exigencia, self.catalogo,
+                                                  politica=politica), sort_keys=True)
+                     for _ in range(5)}
+        exigir(len(repetidas) == 1, "la elección de modelo no es determinista")
+        # (iv) el eje dominante se DERIVA del perfil, no se escribe en el código.
+        exigir(registro["eje_dominante"]["eje"] in politica.ejes,
+               "el eje dominante no es uno de los siete del esquema")
+        return ("perfil `" + perfil + "` → modelo `" + str(registro["modelo"])
+                + "` · eje dominante `" + registro["eje_dominante"]["eje"] + "` · "
+                + str(len(registro["descartados"])) + " descartados con motivo por "
+                + str(len(reglas)) + " regla(s) de `C2` · candidatos = descartados ∪ "
+                "ordenados · cinco elecciones seguidas idénticas")
+
+    # =====================================================================
+    #  23 · `execution_slots` POR AGENTE, Y EL PAR COMBINABLE NO SE SEPARA
+    # =====================================================================
+    def paso_23(self):
+        """`b.11` cuenta AGENTES; `C4` combina (paso 5) ANTES de limitar (paso 6)."""
+        condicion = "el gap afecta a una sola superficie"
+        def equipo_dis(slots):
+            return ciclo.materializar(
+                "DIS", corpus=self.corpus, control_repo=self.control,
+                composiciones_verdaderas=["composicion:dis-gap-de-diseno"],
+                condiciones_de_rol=[condicion], slots=slots)
+
+        holgado = equipo_dis(99)
+        todos = sorted(r["rol"] for r in holgado["roles"])
+        exigir(len(todos) == 4, "la composición de `DIS` no expandió sus cuatro roles")
+        par = {"DIS/diseno-visual", "DIS/sistema-de-diseno"}
+        agentes_del_par = {r["agente"] for r in holgado["roles"] if r["rol"] in par}
+        exigir(len(agentes_del_par) == 1,
+               "el par que la composición declara combinable no comparte agente")
+
+        apretado = equipo_dis(2)
+        despachados = sorted(r["rol"] for r in apretado["roles"])
+        esperando = sorted(r["rol"] for r in apretado["esperando_capacidad"])
+        exigir(apretado["slots_ocupados"] == 2,
+               "con dos slots se ocuparon " + str(apretado["slots_ocupados"]))
+        exigir(len(despachados) == 3,
+               "con DOS slots se despacharon " + str(len(despachados)) + " roles: si la "
+               "unidad fuera el ROL serían dos, y el par combinable quedaría partido")
+        exigir(par.issubset(set(despachados)), "el corte separó el par combinable")
+        exigir(sorted(despachados + esperando) == todos,
+               "la composición se REDUJO para caber en los slots")
+        exigir(all(r["agente"] for r in apretado["esperando_capacidad"]),
+               "un rol que espera capacidad se quedó además sin agente")
+        exigir(not apretado["bloqueados"], "hay roles bloqueados con catálogo declarado")
+        exigir(ciclo.exigir_slots_coherentes(apretado), "los slots no son coherentes")
+        return ("cuatro roles · tres agentes · con DOS slots se despachan TRES roles "
+                "porque el par `" + ", ".join(sorted(par)) + "` es UN agente · "
+                + ", ".join(esperando) + " queda `esperando-capacidad` con su agente · la "
+                "composición NO se reduce")
+
+    # =====================================================================
+    #  24 · CONTROLES NEGATIVOS: SABOTEAR TIENE QUE FALLAR
+    # =====================================================================
+    def paso_24(self):
+        """Cuatro sabotajes, cuatro fallos. Una propiedad que no puede fallar no está."""
+        resultados = []
+
+        # (a) ASIGNACIÓN DE AGENTES · un proyecto sin catálogo no tiene agentes, y sus
+        #     roles NO se despachan. Nunca un modelo por defecto.
+        sin_catalogo = os.path.join(self.base, "sin-catalogo")
+        os.makedirs(sin_catalogo, exist_ok=True)
+        catalogo_de_prueba.escribir(sin_catalogo, self.politica_de_agentes, self.corpus,
+                                    quitar_bloques=True)
+        huerfano = ciclo.materializar(
+            "SIS", corpus=self.corpus, control_repo=sin_catalogo,
+            composiciones_verdaderas=["composicion:sis-cambio"])
+        exigir(huerfano["estado"] == "bloqueado" and not huerfano["roles"],
+               "sin catálogo se despacharon roles igualmente")
+        exigir(all(r["falta"] for r in huerfano["bloqueados"]),
+               "un rol bloqueado no dice qué capacidad de modelo falta")
+        try:
+            ciclo.exigir_agentes_asignados(huerfano)
+        except ciclo.RolSinAgente:
+            resultados.append("asignación: sin catálogo, ROJO")
+        else:
+            raise Fallo("un equipo sin agentes pasó la puerta de despacho")
+
+        # (b) ELECCIÓN DE MODELO · el modelo más BARATO del catálogo no cumple un eje del
+        #     perfil: `C2` prohíbe sustituir a un candidato que cumple por otro que no.
+        politica = self.politica_de_agentes
+        exigencia = politica.exigencia_de_perfil("perfil:sistema")
+        registro = ciclo.seleccionar(exigencia, self.catalogo, politica=politica)
+        baratos = sorted(self.catalogo.modelos,
+                         key=lambda m: politica.indice_de_coste(m["coste"]))
+        exigir(baratos[0]["id"] != registro["modelo"],
+               "el modelo elegido es el más barato, y el más barato no cumple el perfil: "
+               "el caso no está midiendo nada")
+        descarte = [d for d in registro["descartados"] if d["modelo"] == baratos[0]["id"]]
+        exigir(descarte and "el eje" in descarte[0]["motivo"],
+               "el más barato no aparece descartado por eje")
+        resultados.append("modelo: el más barato NO cumple y NO se elige, ROJO")
+
+        # (c) LÍMITES DE SLOTS · un equipo manipulado para que dos agentes ocupen el mismo
+        #     slot tiene que ser RECHAZADO.
+        manipulado = json.loads(json.dumps(self.equipo))
+        exigir(len(manipulado["agentes"]) > 1,
+               "el equipo tiene un solo agente y no se puede provocar la colisión")
+        for unidad in manipulado["agentes"]:
+            unidad["estado"] = "despachado"
+            unidad["slot"] = 1
+        try:
+            ciclo.exigir_slots_coherentes(manipulado)
+        except ciclo.AgenteSobreasignado:
+            resultados.append("slots: dos agentes en el slot 1, ROJO")
+        else:
+            raise Fallo("dos agentes ocupando el mismo slot se aceptaron como coherentes")
+
+        # (d) VÍNCULO DURABLE ROL → AGENTE · el identificador del equipo se DERIVA del
+        #     contenido: tocar el agente de un rol produce OTRO equipo, y el publicado
+        #     sigue diciendo lo que decía.
+        # El macrocircuito ya cerró y su runtime está cerrado: el estado durable se abre
+        # de nuevo, que es justo lo que hace quien AUDITA después y no quien escribió.
+        almacen = estado.abrir(self.control)
+        publicado = almacen.leer(ciclo_equipos.ruta_de(self.equipo["id"]))
+        exigir(publicado is not None, "el equipo materializado no está en el estado canónico")
+        exigir(all(r["agente"] for r in publicado["roles"]),
+               "el equipo publicado perdió el vínculo rol → agente")
+        alterado = json.loads(json.dumps(publicado))
+        alterado["roles"][0]["agente"] = "ag-000000000000"
+        exigir(alterado["roles"][0]["agente"] != publicado["roles"][0]["agente"],
+               "el ataque al vínculo es un no-op: no cambia nada")
+        exigir(ciclo_equipos.identificador(alterado) != publicado["id"],
+               "cambiar el agente de un rol NO cambió el identificador del equipo: el "
+               "vínculo rol → agente no está atado al contenido")
+        vuelto = estado.abrir(self.control).leer(
+            ciclo_equipos.ruta_de(self.equipo["id"]))
+        exigir(vuelto["roles"] == publicado["roles"],
+               "el equipo publicado cambió al manipular una copia")
+        resultados.append("vínculo rol→agente: alterarlo cambia el identificador, ROJO")
+        return " · ".join(resultados)
 
 
 def ejecutar(base, salida):
