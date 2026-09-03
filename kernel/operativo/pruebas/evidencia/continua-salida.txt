@@ -4,9 +4,6 @@
 # ---------------------------------------------------------------
 
 # --- stderr (código 0) ---
-/tmp/claude-1000/-home-jose-ads-kernel/92219625-e8eb-4a0a-840b-b949d6c3e97a/scratchpad/toolchain/pythons/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/unittest/case.py:589: ResourceWarning: unclosed file <_io.BufferedReader name=4>
-  if method() is not None:
-ResourceWarning: Enable tracemalloc to get the object allocation traceback
 test_20_proceso_detenido_limpiamente (__main__.LosDiezEscenarios.test_20_proceso_detenido_limpiamente)
 T204 · escenario 1 · Defecto que previene: no saber retomar tras un cierre bueno. ... ok
 test_21_proceso_muerto_con_sigkill_de_verdad (__main__.LosDiezEscenarios.test_21_proceso_muerto_con_sigkill_de_verdad)

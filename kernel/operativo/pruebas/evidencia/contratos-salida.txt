@@ -20,5 +20,10 @@ T141  SUPERADA  Los frenos tienen ejecutor operativo, no sólo prosa
 T142  SUPERADA  El encuadre expresa todos los estados que sus métodos le exigen
 T145  SUPERADA  La crítica de encuadre exigible no se evapora al bajar la incertidumbre
 T146  SUPERADA  Ningún rol decide lo que su capacidad escala ni lo que decide otra
+T240  SUPERADA  Ninguna tabla de participación nombra un método donde va una capacidad
+T241  SUPERADA  La entrega de DIS a VER está anclada a una estación del ciclo de calidad
+T242  SUPERADA  Todo documento de docs/owner/ declara su autoridad, y no la elige: la deriva
+T243  SUPERADA  Las cinco entregas que 11-ARQ §8.0 declara existen como instancias en circuitos/
+T244  SUPERADA  El grado inicial del escenario coincide con el grado que midió su paso 5
 
-18 superadas · 0 fallidas
+23 superadas · 0 fallidas

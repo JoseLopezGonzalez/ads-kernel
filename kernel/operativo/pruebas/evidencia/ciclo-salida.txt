@@ -86,6 +86,8 @@ test_27_la_composicion_se_elige_por_orden_escrito_y_ninguna_es_error (__main__.E
 T197 · Defecto que previene: materializar un equipo por defecto cuando no toca. ... ok
 test_28_lo_que_no_cabe_espera_y_la_composicion_no_se_reduce (__main__.Equipos.test_28_lo_que_no_cabe_espera_y_la_composicion_no_se_reduce)
 T197 · Defecto que previene: recortar el equipo para que quepa en los slots. ... ok
+test_28b_ningun_rol_se_despacha_sin_agente_y_sin_catalogo_nadie_lo_tiene (__main__.Equipos.test_28b_ningun_rol_se_despacha_sin_agente_y_sin_catalogo_nadie_lo_tiene)
+T197 · Defecto que previene: un rol vacío despachado como si fuera un rol. ... ok
 test_29_independientes_manda_sobre_combinables (__main__.Equipos.test_29_independientes_manda_sobre_combinables)
 T197 · Defecto que previene: un agente que produce y se revisa a sí mismo. ... ok
 test_29b_la_regla_de_independientes_TIENE_que_poder_ponerse_roja (__main__.Equipos.test_29b_la_regla_de_independientes_TIENE_que_poder_ponerse_roja)
@@ -126,6 +128,6 @@ test_39_no_hay_doble_efecto_y_el_acuse_lo_impide (__main__.Planificacion.test_39
 T198 · Defecto que previene: aplicar dos veces un efecto ya confirmado. ... ok
 
 ----------------------------------------------------------------------
-Ran 51 tests  (duración no registrada: varía por ejecución)
+Ran 52 tests  (duración no registrada: varía por ejecución)
 
 OK

@@ -325,6 +325,13 @@ class Escenario(unittest.TestCase):
         informes = {}
         for titular, proceso, salida in lanzadas:
             proceso.wait(timeout=LIMITE_DE_BARRERA + 60)
+            # Las tuberías se CIERRAN. `Popen` con `PIPE` deja dos descriptores abiertos por
+            # proceso, y `wait()` no los cierra: cada carrera dejaba `ResourceWarning:
+            # unclosed file`, que Python cita con la RUTA ABSOLUTA y que acababa PUBLICADA
+            # en la evidencia versionada, haciéndola irreproducible en otro checkout.
+            for tuberia in (proceso.stdout, proceso.stderr):
+                if tuberia is not None and not tuberia.closed:
+                    tuberia.close()
             informes[titular] = self._leer(salida)
             informes[titular]["codigo_del_proceso"] = proceso.returncode
         return informes

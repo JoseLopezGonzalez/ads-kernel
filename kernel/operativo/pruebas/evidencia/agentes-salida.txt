@@ -1,0 +1,41 @@
+# evidencia de: agentes
+# orden:        python3 kernel/operativo/runtime/pruebas/test_agentes.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+test_01_una_composicion_con_varios_roles_recibe_agente_modelo_y_traza (__main__.AsignacionDeAgentes.test_01_una_composicion_con_varios_roles_recibe_agente_modelo_y_traza)
+T226 · Defecto que previene: un equipo cuyo eje AGENTE se declara en prosa. ... ok
+test_02_la_seleccion_es_determinista_y_se_repite_byte_a_byte (__main__.AsignacionDeAgentes.test_02_la_seleccion_es_determinista_y_se_repite_byte_a_byte)
+T227 · Defecto que previene: una asignación que depende de quién la calculó. ... ok
+test_03_un_modelo_que_no_cumple_un_eje_se_descarta_con_su_motivo (__main__.AsignacionDeAgentes.test_03_un_modelo_que_no_cumple_un_eje_se_descarta_con_su_motivo)
+T228 · Defecto que previene: ocupar un rol con un modelo que no cumple el perfil. ... ok
+test_04_un_modelo_sin_la_herramienta_o_el_contexto_declarados_se_descarta (__main__.AsignacionDeAgentes.test_04_un_modelo_sin_la_herramienta_o_el_contexto_declarados_se_descarta)
+T229 · Defecto que previene: un agente que no puede hacer lo que el rol necesita. ... ok
+test_05_agotar_los_slots_deja_esperando_y_no_reduce_la_composicion (__main__.AsignacionDeAgentes.test_05_agotar_los_slots_deja_esperando_y_no_reduce_la_composicion)
+T230 · Defecto que previene: recortar el equipo para que quepa en los slots. ... ok
+test_06_dos_roles_independientes_nunca_comparten_agente (__main__.AsignacionDeAgentes.test_06_dos_roles_independientes_nunca_comparten_agente)
+T231 · Defecto que previene: un agente que produce y se critica a sí mismo. ... ok
+test_07_todo_candidato_descartado_lleva_un_motivo_verificable_uno_a_uno (__main__.AsignacionDeAgentes.test_07_todo_candidato_descartado_lleva_un_motivo_verificable_uno_a_uno)
+T232 · Defecto que previene: una lista de descartes que nadie puede comprobar. ... ok
+test_08_reanudar_no_reasigna_en_silencio (__main__.AsignacionDeAgentes.test_08_reanudar_no_reasigna_en_silencio)
+T233 · Defecto que previene: un relevo de agente que cambia el rol sin decirlo. ... ok
+test_09_varios_procesos_reales_no_producen_doble_ocupacion_de_slot (__main__.AsignacionDeAgentes.test_09_varios_procesos_reales_no_producen_doble_ocupacion_de_slot)
+T234 · Defecto que previene: dos agentes ocupando el mismo `execution_slot`. ... ok
+test_11_el_paso_1_de_c4_LEE_el_paquete_y_falla_cerrado (__main__.LoQueLaAuditoriaEncontro.test_11_el_paso_1_de_c4_LEE_el_paquete_y_falla_cerrado)
+T236 · Defecto que previene: rotular como PASO 1 un passthrough de dos cadenas. ... ok
+test_12_el_agente_combinado_cumple_los_DOS_perfiles (__main__.LoQueLaAuditoriaEncontro.test_12_el_agente_combinado_cumple_los_DOS_perfiles)
+T237 · Defecto que previene: un agente que ocupa dos roles cumpliendo el más débil. ... ok
+test_13_el_techo_de_coste_combinado_es_el_MENOR (__main__.LoQueLaAuditoriaEncontro.test_13_el_techo_de_coste_combinado_es_el_MENOR)
+T238 · Defecto que previene: un agente combinado que gasta por encima del más estricto. ... ok
+test_14_el_eje_dominante_es_el_nivel_maximo_de_C2_al_pie_de_la_letra (__main__.LoQueLaAuditoriaEncontro.test_14_el_eje_dominante_es_el_nivel_maximo_de_C2_al_pie_de_la_letra)
+T239 · Defecto que previene: publicar como razón de la elección una regla que no es `C2`. ... ok
+test_15_el_registro_de_combinaciones_no_se_autocontradice (__main__.LoQueLaAuditoriaEncontro.test_15_el_registro_de_combinaciones_no_se_autocontradice)
+T249 · Defecto que previene: un equipo escrito que afirma una cosa y su contraria. ... ok
+test_10_borrar_la_regla_pone_la_prueba_roja (__main__.Sabotaje.test_10_borrar_la_regla_pone_la_prueba_roja)
+T235 · Defecto que previene: una propiedad que se puede borrar sin que nada avise. ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests  (duración no registrada: varía por ejecución)
+
+OK

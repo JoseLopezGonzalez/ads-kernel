@@ -3,5 +3,7 @@
 # codigo:       0
 # ---------------------------------------------------------------
 T151  SUPERADA  Ninguna cifra del corpus contradice el recuento derivado
+T245  SUPERADA  Ninguna cabecera afirma una correspondencia uno a uno entre formas y clases
+T246  SUPERADA  La cabecera de los escenarios enumera las pruebas que el fichero contiene
 
-1 superadas · 0 fallidas
+3 superadas · 0 fallidas

@@ -4,30 +4,6 @@
 # ---------------------------------------------------------------
 
 # --- stderr (código 0) ---
-/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
-  resultado = contencion.ejecutar(
-ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
-  resultado = contencion.ejecutar(
-ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
-  resultado = contencion.ejecutar(
-ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
-  resultado = contencion.ejecutar(
-ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
-  resultado = contencion.ejecutar(
-ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
-  resultado = contencion.ejecutar(
-ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
-  resultado = contencion.ejecutar(
-ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/jose/ads-kernel/kernel/operativo/runtime/pruebas/test_contencion.py:135: ResourceWarning: unclosed file <_io.BufferedReader name=4>
-  resultado = contencion.ejecutar(
-ResourceWarning: Enable tracemalloc to get the object allocation traceback
 test_con_el_backend_simple_el_bisnieto_SI_escapa (__main__.BackendSimpleYFalloCerrado.test_con_el_backend_simple_el_bisnieto_SI_escapa)
 T216 · Defecto que previene: presentar el nivel débil como si fuera el fuerte. ... ok
 test_el_backend_simple_declara_su_alcance_en_el_resultado (__main__.BackendSimpleYFalloCerrado.test_el_backend_simple_declara_su_alcance_en_el_resultado)

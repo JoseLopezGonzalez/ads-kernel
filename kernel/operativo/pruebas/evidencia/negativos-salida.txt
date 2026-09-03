@@ -27,9 +27,9 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada dcd65bd889bae490, calculada 89c96f9e7d17af58. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada 54256290d7cbf26a, calculada c073baa4a015d5b5. Algún fichero de la huella se
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada dcd65bd889bae490, calculada 248f1ac22a1d12c7. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada 54256290d7cbf26a, calculada c8007ac71be2e770. Algún fichero de la huella se
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
                           → detectada: kernel/operativo/validadores/ads_lint.py NO entra en la huella: un fork silencioso de ese fichero sería indetectable
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
@@ -57,7 +57,7 @@ OK   N158e   evidencia T158  falta un fichero de evidencia que el manifiesto exi
 OK   N158f   evidencia T158  un validador nuevo queda fuera del manifiesto y de la evidencia
                           → detectada: validadores/comprobar_algo_nuevo.py: existe y el manifiesto no lo declara. Quedaría fuera de la evidencia sin que nada l
 OK   N158g   evidencia T158  la cobertura publicada describe un corpus con dos ficheros menos que el vigente
-                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 485 y el corpus vigente da 4
+                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 491 y el corpus vigente da 4
 OK   N158h   evidencia T158  una vigencia declara un recuento que nadie implementa
                           → detectada: manifiesto: la vigencia 'T161-cobertura' de 'fuentes' declara el recuento 'fuentes.recuento_que_nadie_implementa', que n
 OK   N158i   evidencia T158  una entrada de vigencia no declara `patron` — el caso que reventaba con KeyError
@@ -140,5 +140,35 @@ OK   N147e   E5    T147  la frontera del proyecto instalado se usa para tapar un
                           → detectada: exclusiones.yaml/enlaces_no_embarcados: 'docs/evolucion/DOCUMENTO-QUE-NO-EXISTE.md' no existe en este repositorio. La fr
 OK   N147f   E5    T147  una frontera declarada se queda sin motivo escrito
                           → detectada: exclusiones.yaml/enlaces_no_embarcados: una entrada sin `ruta` o sin `motivo`. Una frontera sin justificación escrita no
+OK   N240    F-01  T240  vuelve a nombrarse un MÉTODO donde va una CAPACIDAD
+                          → detectada: kernel/operativo/recorrido/01-PROCESOS.md: proceso:FEA·condicional nombra `DIS/Reconstruccion`, que es un MÉTODO donde v
+OK   N240b   F-02  T240  la obligación del Owner se queda sin ninguna de las dos claves
+                          → detectada: kernel/operativo/recorrido/01-PROCESOS.md: proceso:DIR·decision-del-owner declara 0 de [capacidad_productora, autoridad_
+OK   N240f   F-02  T240  `OWNER` vuelve a estar en el campo de CAPACIDAD, además del de autoridad
+                          → detectada: kernel/operativo/recorrido/01-PROCESOS.md: proceso:DIR·decision-del-owner sigue nombrando `OWNER` en el campo de CAPACID
+OK   N240c   F-02  T240  el esquema vuelve a admitir texto libre donde va una capacidad
+                          → detectada: `proceso.yaml` no tipa `capacidad_productora` como `ref_a: capacidad`: sin tipar, nada impide que vuelva a entrar un mét
+OK   N240d   F-02  T240  entra una variante de capacidad que el esquema no declara
+                          → detectada: kernel/operativo/recorrido/01-PROCESOS.md: proceso:FEA·condicional usa la variante `DOM:revision`, que el esquema no dec
+OK   N240e   F-02  T240  el conjunto de variantes admitidas se queda sin sede en el esquema
+                          → detectada: `proceso.yaml` apunta a `variantes_de_capacidad` y el esquema no declara esa lista: el sufijo de variante quedaría sin t
+OK   N241    F-06  T241  el `cuando` de la entrega de DIS a VER vuelve a no nombrar estación
+                          → detectada: el `cuando` de `handoff:dis-a-ver` no nombra ninguna estación del ciclo: «DIS cierra su capa» no dice CUÁNDO, y el gate
+OK   N241b   F-06  T241  el dictamen visual deja de decir de qué pasada procede
+                          → detectada: la entrega del dictamen de excelencia visual no dice de qué PASADA procede el dictamen (`F-06`, segunda mitad del remedi
+OK   N242    F-07  T242  la autoridad de los documentos del Owner vuelve a estar sólo en prosa
+                          → detectada: `exclusiones.yaml` no declara `autoridad_de_documentos_del_owner`: la distinción aprobada/trabajo de `docs/owner/` volve
+OK   N242b   F-07  T242  alguien ESCRIBE la autoridad en vez de derivarla de la clase canónica
+                          → detectada: docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md: declara `autoridad: trabajo` y su clase canónica `AUTORIDAD_SUPERIOR`
+OK   N242c   F-07  T242  un documento nuevo entra en docs/owner/ y pasaría por omisión
+                          → detectada: docs/owner/ADS-NOTA-NUEVA.md: vive en `docs/owner/` y NO declara su autoridad. Un documento del Owner sin `aprobada|trab
+OK   N243    F-05  T243  desaparece una de las cinco instancias de handoff que §8.0 declara
+                          → detectada: `11-ARQ` §8.0 declara qué viaja de SIS a VER y `circuitos/` no tiene la instancia: la composición no se bloquea, la ENTR
+OK   N244    F-04  T244  el grado inicial deja de coincidir con el que midió el paso 5
+                          → detectada: ENC-001: el paso 5 midió GRADO GLOBAL = ALTA y el encuadre persiste `grado_inicial: media`. Con esa divergencia la críti
+OK   N245    F-10  T245  la cabecera vuelve a afirmar una forma por clase de expresión
+                          → detectada: kernel/operativo/entrada/03-FORMAS.md:3: afirma «uno por clase de expresión» de las formas de conversación, y hay 14 for
+OK   N246    F-11  T246  la cabecera vuelve a afirmar un rango de pruebas que no contiene
+                          → detectada: kernel/operativo/entrada/05-ESCENARIOS.md: el fichero contiene T76 y la cabecera no lo enumera (`11-ARQ` §19, `F-11`)
 
-69 infracciones detectadas · 0 NO detectadas
+84 infracciones detectadas · 0 NO detectadas

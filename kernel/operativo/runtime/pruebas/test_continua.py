@@ -465,6 +465,10 @@ class LosDiezEscenarios(BaseDeContinua):
             os.kill(proceso.pid, signal.SIGKILL)
         finally:
             proceso.wait(timeout=SEGUNDOS_DE_ESPERA)
+            # La tubería de `stderr` se cierra: `wait()` no lo hace, y el descriptor
+            # abierto acababa como `ResourceWarning` con ruta absoluta en la evidencia.
+            if proceso.stderr is not None and not proceso.stderr.closed:
+                proceso.stderr.close()
         self.assertEqual(proceso.returncode, -signal.SIGKILL)
 
         otro = self.abrir_runtime("continua-C")

@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: b64c8f1f79b05cdd -->
+<!-- source_revision: 703da6cc539358a7 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -13,9 +13,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | CONTRATO DEFINIDO | 56 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 93 |
+| PRUEBA SUPERADA | 117 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **149** |
+| **total** | **173** |
 
 ## Detalle
 
@@ -170,3 +170,27 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T223](T210-T225-arboles-raiz-externa-y-contencion.md) | La prueba de humo abre una sesión REALMENTE nueva, y es idempotente | F6-G · 11-ARQ 6.4 · 11-ARQ 6.5 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/sesion-nueva-salida.txt |
 | [T224](T210-T225-arboles-raiz-externa-y-contencion.md) | La sesión abierta sobre una fuente localiza el control repo, con sus cuatro desenlaces | F6-G · 11-ARQ 6.4 · 11-ARQ 6.7 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/sesion-nueva-salida.txt |
 | [T225](T210-T225-arboles-raiz-externa-y-contencion.md) | El escenario extremo a extremo del macrobloque 3, con sus veintiún pasos | F6-D · F6-F · F6-G · V6-15 · V6-16 · g.14 · g.15 · g.16 G-A8 · g.16 G-A9 · 11-ARQ 7.2 · 11-ARQ 8 · 11-ARQ 9.6 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/e2e-f6-salida.txt |
+| [T226](T226-T249-agentes-y-modelos.md) | C4 paso 4 asigna agente y modelo a cada rol de una composición con varios roles | C4 · C2 · C1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
+| [T227](T226-T249-agentes-y-modelos.md) | La selección de modelo es determinista y se repite byte a byte en otro proceso | C2 · C4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
+| [T228](T226-T249-agentes-y-modelos.md) | Un modelo que no cumple un eje se descarta con su motivo, y si es el único se bloquea | C2 · C4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
+| [T229](T226-T249-agentes-y-modelos.md) | Un modelo sin la herramienta o sin el contexto declarados se descarta con su motivo | C2 · C4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
+| [T230](T226-T249-agentes-y-modelos.md) | Agotar execution_slots deja esperando-capacidad y no reduce la composición | C4 · b.11 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
+| [T231](T226-T249-agentes-y-modelos.md) | Dos roles declarados independientes nunca comparten agente, ni por encadenamiento | C4 · C2 · G13 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
+| [T232](T226-T249-agentes-y-modelos.md) | Cada candidato descartado lleva un motivo verificable uno a uno | C2 · C4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
+| [T233](T226-T249-agentes-y-modelos.md) | Reanudar no reasigna en silencio, y el relevo de agente no cambia el rol | C2 · C4 · g.13 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
+| [T234](T226-T249-agentes-y-modelos.md) | Varios procesos reales no producen doble ocupación de un execution_slot | b.11 · C4 · g.12 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
+| [T235](T226-T249-agentes-y-modelos.md) | Borrar la regla en una copia del árbol pone la prueba roja de verdad | C4 · C2 · b.11 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
+| [T236](T226-T249-agentes-y-modelos.md) | El paso 1 de C4 LEE el paquete de verdad y falla cerrado cuando no resuelve | C4 · C1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
+| [T237](T226-T249-agentes-y-modelos.md) | El agente que ocupa varios roles cumple los perfiles de TODOS ellos | C2 · C4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
+| [T238](T226-T249-agentes-y-modelos.md) | El techo de coste de un agente combinado es el MENOR de los que comparte | C2 · C4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
+| [T239](T226-T249-agentes-y-modelos.md) | El eje dominante es el nivel maximo que C2 nombra, y vision nunca puede serlo | C2 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
+| [T240](T240-T248-hallazgos-externos-f6.md) | Ninguna tabla de participación nombra un método donde va una capacidad | F-01 · F-02 · PN-14 · E4.3 · esquemas/proceso.yaml | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T241](T240-T248-hallazgos-externos-f6.md) | La entrega de DIS a VER está anclada a una estación del ciclo de calidad | F-06 · diseno/04-CICLO-DE-CALIDAD · 02-RUBRICAS las dos pasadas · handoff:dis-a-ver | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T242](T240-T248-hallazgos-externos-f6.md) | Todo documento del Owner declara su autoridad y no la elige, la deriva | F-07 · O10 · V6-12 · FUENTES-CANONICAS.yml · exclusiones.yaml | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T243](T240-T248-hallazgos-externos-f6.md) | Las cinco entregas que 11-ARQ 8.0 declara existen como instancias en circuitos | F-05 · 11-ARQ 8.0 · C5 · circuitos/entregas-de-8-0.md | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T244](T240-T248-hallazgos-externos-f6.md) | El grado inicial del escenario coincide con el grado que midió su paso 5 | F-04 · T75 · A-14 · entrada/04-INCERTIDUMBRE-Y-CONFIRMACION | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T245](T240-T248-hallazgos-externos-f6.md) | Ninguna cabecera afirma una correspondencia uno a uno entre formas y clases | F-10 · A-24 · entrada/03-FORMAS · entrada/01-TAXONOMIA | validador-estructural | **PRUEBA SUPERADA** | evidencia/recuentos-salida.txt |
+| [T246](T240-T248-hallazgos-externos-f6.md) | La cabecera de los escenarios enumera las pruebas que el fichero contiene | F-11 · A-24 · entrada/05-ESCENARIOS · pruebas/T081-T085-reanudacion-ENC | validador-estructural | **PRUEBA SUPERADA** | evidencia/recuentos-salida.txt |
+| [T247](T240-T248-hallazgos-externos-f6.md) | El bisnieto con setsid no escapa al adaptador con política de contención | FD-5 · CONTRATO-ADAPTADOR 2 · CONTRATO-CONTENCION · T215 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/adaptadores-salida.txt |
+| [T248](T240-T248-hallazgos-externos-f6.md) | Sin backend fuerte el adaptador no ejecuta y falla cerrado | FD-5 · CONTRATO-CONTENCION · T216 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/adaptadores-salida.txt |
+| [T249](T226-T249-agentes-y-modelos.md) | El registro de combinaciones de C4 paso 7 no se autocontradice al romperse un grupo | C4 · C2 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |

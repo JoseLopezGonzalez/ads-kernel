@@ -8,6 +8,10 @@ test_sin_la_variable_el_punto_de_fallo_no_hace_nada (__main__.CaidaEntreEjecutar
 T191 · Control POSITIVO: el aparato de corte no puede afectar a la vía normal. ... ok
 test_tras_el_corte_la_segunda_invocacion_da_ambiguo_y_no_duplica (__main__.CaidaEntreEjecutarYCerrar.test_tras_el_corte_la_segunda_invocacion_da_ambiguo_y_no_duplica)
 T191 · Defecto que previene: aplicar DOS VECES un efecto tras morir a media pasada. ... ok
+test_el_bisnieto_con_setsid_no_escapa_al_adaptador_con_politica (__main__.ContencionATravesDelAdaptador.test_el_bisnieto_con_setsid_no_escapa_al_adaptador_con_politica)
+T247 · Defecto que previene: cerrar `FD-5` en el paquete y dejarlo abierto en el ... ok
+test_sin_backend_fuerte_el_adaptador_no_ejecuta_y_falla_cerrado (__main__.ContencionATravesDelAdaptador.test_sin_backend_fuerte_el_adaptador_no_ejecuta_y_falla_cerrado)
+T248 · Defecto que previene: degradar en silencio a `killpg` cuando el anfitrión ... ok
 test_al_dia (__main__.HuellaYDeriva.test_al_dia)
 T191 · Control POSITIVO: sin tocar nada, la proyección está al día. ... ok
 test_dos_proyecciones_que_dicen_cosas_distintas_sobre_lo_mismo (__main__.HuellaYDeriva.test_dos_proyecciones_que_dicen_cosas_distintas_sobre_lo_mismo)
@@ -76,6 +80,6 @@ test_version_de_contrato_incompatible (__main__.RegistroYFicha.test_version_de_c
 T191 · Defecto que previene: aceptar un adaptador de otra versión del contrato. ... ok
 
 ----------------------------------------------------------------------
-Ran 35 tests  (duración no registrada: varía por ejecución)
+Ran 37 tests  (duración no registrada: varía por ejecución)
 
 OK

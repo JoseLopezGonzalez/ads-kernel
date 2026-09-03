@@ -19,13 +19,13 @@ paso 04  composición de rutas por b.16, con las cuatro vías y la traza de lo n
          · participantes con su vía: APR vía 3 · CON vía 2 · SIS vía 1,2 · VER vía 2 · no activadas con motivo: 1 · renombrar la expresión NO mueve la ruta
          resultado: CUMPLIDO
 paso 05  materialización del equipo por C4, con su composición y lo que quedó fuera
-         · composición `composicion:sis-cambio` · roles: 2 · fuera con motivo: 0 · manda el ORDEN ESCRITO · sin condición verdadera se ESCALA · método y capacidad se distinguen
+         · composición `composicion:sis-cambio` · roles: 2 · agentes: 2 · modelos: modelo:gamma · descartes registrados: 4 · fuera con motivo: 0 · manda el ORDEN ESCRITO · sin condición verdadera se ESCALA · método y capacidad se distinguen
          resultado: CUMPLIDO
 paso 06  creación de items y paquetes, por el runtime y en el estado canónico
-         · item `it-48f1fdc2c235` · paquetes: 5 · obligaciones de la ruta: 3 · todo en el estado canónico, escrito por el motor
+         · item `it-c524e26674d6` · paquetes: 5 · obligaciones de la ruta: 3 · todo en el estado canónico, escrito por el motor
          resultado: CUMPLIDO
 paso 07  despacho por el adaptador local, con un proceso real
-         · paquete `pq-a5ef63ce442e` despachado por el adaptador local con un proceso real · desenlace `completado` · efecto `ef-ab0221460dc9` aplicado en disco y acusado
+         · paquete `pq-b303e6395645` despachado por el adaptador local con un proceso real · desenlace `completado` · efecto `ef-0e9d122302b1` aplicado en disco y acusado
          resultado: CUMPLIDO
 paso 08  progreso emitido por el proceso y recogido por el runtime
          · el proceso emitió sus líneas y el runtime recogió 3 avances; el conteo NO entra en lo durable
@@ -58,7 +58,7 @@ paso 17  recuperación por la OTRA instancia, sin inventar estado
          · la OTRA instancia abre, RECUPERA y deja el paquete en `ejecutando`, dentro del vocabulario cerrado · el efecto está aplicado y su acuse NO, y la ventana es DETECTABLE en vez de inventarse un desenlace · integridad OK
          resultado: CUMPLIDO
 paso 18  `Continúa`: plan reproducible, y dos ejecuciones seguidas idénticas
-         · plan de continuación reproducible: dos ejecuciones seguidas dan el MISMO resultado byte a byte (2834 bytes) y NO modifican el estado; la revisión sigue siendo 32
+         · plan de continuación reproducible: dos ejecuciones seguidas dan el MISMO resultado byte a byte (2808 bytes) y NO modifican el estado; la revisión sigue siendo 32
          resultado: CUMPLIDO
 paso 19  no repetición del efecto: lo confirmado no se vuelve a aplicar
          · repetir la orden sobre un paquete ya completado no vuelve a ejecutar (EstadoDePaqueteInvalido): el efecto en disco sigue teniendo 2 línea(s), MEDIDO EN EL EFECTO y no en el estado, y su acuse durable sigue en pie
@@ -69,5 +69,14 @@ paso 20  cierre del macrocircuito, de forma inequívoca
 paso 21  evidencia verificable DESDE la raíz externa, que no puede escribir en el árbol
          · atestación firmada por la raíz externa, FUERA del árbol verificado y vinculada al commit y al `tree` · se verifica desde la instalación externa · manipularla la INVALIDA · `G-A9`: el árbol se autodeclara VERDE y la atestación externa lo DESMIENTE · ningún secreto en ninguna salida
          resultado: CUMPLIDO
+paso 22  C4 paso 4: agente y modelo por rol desde el catálogo del PROFILE, con sus descartes
+         · perfil `perfil:sistema` → modelo `modelo:gamma` · eje dominante `razonamiento` · 2 descartados con motivo por 2 regla(s) de `C2` · candidatos = descartados ∪ ordenados · cinco elecciones seguidas idénticas
+         resultado: CUMPLIDO
+paso 23  execution_slots por AGENTE: el par combinable ocupa UN slot y no se separa
+         · cuatro roles · tres agentes · con DOS slots se despachan TRES roles porque el par `DIS/diseno-visual, DIS/sistema-de-diseno` es UN agente · DIS/revision-de-fidelidad queda `esperando-capacidad` con su agente · la composición NO se reduce
+         resultado: CUMPLIDO
+paso 24  controles negativos: sabotear asignación, modelo, límites y vínculo rol/agente
+         · asignación: sin catálogo, ROJO · modelo: el más barato NO cumple y NO se elige, ROJO · slots: dos agentes en el slot 1, ROJO · vínculo rol→agente: alterarlo cambia el identificador, ROJO
+         resultado: CUMPLIDO
 
-21 de 21 pasos CUMPLIDOS
+24 de 24 pasos CUMPLIDOS

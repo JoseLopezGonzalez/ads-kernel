@@ -151,6 +151,14 @@ def ejecutar(argumentos, *, espacio, limite_segundos, politica=None, marca=None,
             progreso({"linea": numero, "texto": texto, "marca": marca})
 
     if motivo in ("timeout", "cancelado"):
+        # La tubería se cierra TAMBIÉN aquí. Antes sólo se cerraba en la ruta normal, y
+        # como las pruebas de contención ejercen precisamente el timeout y la cancelación,
+        # cada corrida dejaba un `ResourceWarning: unclosed file` que Python cita con la
+        # RUTA ABSOLUTA del fichero — y esa ruta acababa PUBLICADA en la evidencia, que se
+        # versiona. Una auditoría independiente lo encontró por ahí: la evidencia no era
+        # reproducible en otro checkout. El descriptor abierto era el defecto; la ruta en
+        # la evidencia, sólo su síntoma.
+        _cerrar_salida(proceso)
         senal = backend.terminar(proceso, pid, pgid)
         backend.limpiar()
         detalle = (("el límite venció y la CONTENCIÓN `" + backend.identificador

@@ -43,6 +43,28 @@ DIR_VALIDADORES = "kernel/operativo/validadores"
 DIR_EVIDENCIA = "kernel/operativo/pruebas/evidencia"
 
 
+def _sin_rutas_del_anfitrion(texto, base):
+    """La ruta ABSOLUTA del checkout se sustituye por `<raiz>` antes de publicar.
+
+    POR QUÉ. La evidencia se PUBLICA y se versiona, y su promesa es que dos ejecuciones de
+    lo mismo dan lo mismo. No la cumplía: tres ficheros —`adaptadores`, `contencion` y
+    `multimaquina`— empotraban la ruta absoluta del anfitrión, porque un `ResourceWarning`
+    de Python cita el fichero por su ruta completa. Reproducir la suite en OTRO checkout
+    daba un `diff` que no señalaba ningún cambio de comportamiento: sólo decía dónde estaba
+    el árbol. Una auditoría independiente lo midió y lo llamó por su nombre —dependencia de
+    anfitrión no declarada—, porque el determinismo que se afirmaba era «en esta máquina y
+    en esta ruta», no el que la evidencia promete.
+
+    Se normaliza AQUÍ, en el único punto por el que pasa toda la evidencia, y no en cada
+    instrumento: un instrumento que lo olvidara volvería a publicar la ruta sin que nada lo
+    dijera. Lo que se sustituye es EXACTAMENTE la raíz del checkout, de la más larga a la
+    más corta, de modo que nada del contenido real se pierde ni se enmascara.
+    """
+    for ruta in sorted({os.path.abspath(base), os.path.realpath(base)}, key=len, reverse=True):
+        texto = texto.replace(ruta, "<raiz>")
+    return texto
+
+
 class Ejecucion:
     def __init__(self, comp):
         self.id = comp["id"]
@@ -122,6 +144,7 @@ def ejecutar(base, ej, publicar=True):
     if proc.stderr.strip():
         # stderr se conserva IDENTIFICADO, nunca mezclado con la salida.
         cuerpo += f"\n# --- stderr (código {ej.codigo}) ---\n{proc.stderr}"
+    cuerpo = _sin_rutas_del_anfitrion(cuerpo, base)
 
     destino = os.path.join(base, DIR_EVIDENCIA, ej.evidencia)
     os.makedirs(os.path.dirname(destino), exist_ok=True)
