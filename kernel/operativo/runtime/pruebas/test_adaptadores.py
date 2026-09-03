@@ -486,6 +486,149 @@ class LimiteDeLaSenalDeGrupo(unittest.TestCase):
 
 
 # ===========================================================================
+#  `FD-5` MEDIDO A TRAVÉS DEL ADAPTADOR Y DE LA POLÍTICA REAL · `T247`–`T248`
+# ===========================================================================
+#  Por qué existe esta clase y no bastaba `test_contencion.py`. Allí se mide el PAQUETE de
+#  contención: `contencion.ejecutar(...)` con su política. La deuda `FD-5`, sin embargo,
+#  está escrita contra el ADAPTADOR —`CONTRATO-ADAPTADOR.md` §2—, y un paquete que contiene
+#  con un adaptador que no lo usa deja la deuda cerrada en un sitio y abierta en el otro.
+#  Aquí la tarea entra por `AdaptadorDeProcesoLocal.ejecutar`, con `politica_de_contencion`
+#  real, y las tres generaciones se cuentan con los MISMOS instrumentos del paquete.
+#
+#  Y la pareja que impide presentar el débil como fuerte va entera: con política fuerte y
+#  sin ningún backend fuerte disponible, el adaptador NO EJECUTA. No degrada: falla cerrado.
+import shlex                                                        # noqa: E402
+
+sys.path.insert(0, RAIZ_RUNTIME)
+import contencion                                                   # noqa: E402
+
+
+def _capa_setsid(marca, interior, segundos):
+    cuerpo = ": " + marca + "\n" + interior + "sleep " + str(segundos) + "\n"
+    return "setsid sh -c " + shlex.quote(cuerpo) + " &\n"
+
+
+def _tarea_de_tres_generaciones(prefijo, segundos=120):
+    """Hijo, nieto y bisnieto, los TRES con `setsid`, y un `listo` para sincronizar."""
+    bisnieto = _capa_setsid(prefijo + "-BISNIETO", "", segundos)
+    nieto = _capa_setsid(prefijo + "-NIETO", bisnieto, segundos)
+    hijo = _capa_setsid(prefijo + "-HIJO", nieto, segundos)
+    return ["sh", "-c", ": " + prefijo + "-RAIZ\n" + hijo
+            + "sleep 0.6\necho listo\nsleep " + str(segundos) + "\n"]
+
+
+def _generaciones(prefijo):
+    raiz = set(contencion.pids_con_marca(prefijo + "-RAIZ"))
+    con_hijo = set(contencion.pids_con_marca(prefijo + "-HIJO"))
+    con_nieto = set(contencion.pids_con_marca(prefijo + "-NIETO"))
+    con_bisnieto = set(contencion.pids_con_marca(prefijo + "-BISNIETO"))
+    return {"raiz": sorted(raiz), "hijo": sorted(con_hijo - raiz),
+            "nieto": sorted(con_nieto - con_hijo),
+            "bisnieto": sorted(con_bisnieto - con_nieto)}
+
+
+class ContencionATravesDelAdaptador(unittest.TestCase):
+
+    def setUp(self):
+        self.directorio = tempfile.mkdtemp(prefix="ads-fd5-adaptador-")
+        self.addCleanup(shutil.rmtree, self.directorio, True)
+        self.prefijo = "ADSAD5" + os.urandom(6).hex().upper()
+        self.addCleanup(self._rematar)
+        self.capacidades = contencion.capacidades()
+
+    def _rematar(self):
+        for pid in contencion.pids_con_marca(self.prefijo):
+            try:
+                os.kill(pid, 9)
+            except OSError:
+                continue
+
+    def test_el_bisnieto_con_setsid_no_escapa_al_adaptador_con_politica(self):
+        """T247 · Defecto que previene: cerrar `FD-5` en el paquete y dejarlo abierto en el
+        adaptador, que es donde la deuda está escrita.
+
+        Se ejerce por CADA backend fuerte disponible en este anfitrión, no por el cómodo.
+        Donde no haya ninguno, lo que se demuestra es la otra mitad —`T248`—, y esta prueba
+        lo declara en vez de pasar por no haber mirado.
+        """
+        if shutil.which("setsid") is None:
+            self.skipTest("`setsid` no está disponible en este entorno")
+        fuertes = self.capacidades["fuertes_disponibles"]
+        if not fuertes:
+            self.skipTest("este anfitrión no ofrece contención fuerte: lo aplicable es T248")
+        for backend in fuertes:
+            with self.subTest(backend=backend):
+                self._medir_con(backend)
+
+    def _medir_con(self, backend):
+        adaptador = adaptadores.AdaptadorDeProcesoLocal(
+            self.directorio,
+            politica_de_contencion=contencion.Politica("arbol-de-procesos", backend=backend))
+        capturadas = {}
+
+        def progreso(apunte):
+            if apunte["texto"].strip() == "listo" and not capturadas:
+                capturadas.update(_generaciones(self.prefijo))
+
+        resultado = adaptador.ejecutar(
+            {"operacion": "ejecutar",
+             "argumentos": _tarea_de_tres_generaciones(self.prefijo)},
+            efecto="ef-" + self.prefijo + "-" + backend,
+            limite_segundos=3.0, progreso=progreso)
+
+        self.assertEqual(resultado["estado"], "timeout")
+        self.assertEqual(resultado["nivel_de_aislamiento"], "arbol-de-procesos")
+        self.assertEqual(resultado["backend"], backend)
+        for generacion in ("hijo", "nieto", "bisnieto"):
+            self.assertTrue(capturadas.get(generacion),
+                            f"el {generacion} no llegó a existir: la medición no mide nada")
+        limite = time.monotonic() + 12
+        vivos = None
+        while time.monotonic() < limite:
+            vivos = [p for g in ("raiz", "hijo", "nieto", "bisnieto")
+                     for p in capturadas[g] if _vivo(p)]
+            if not vivos:
+                break
+            time.sleep(0.05)
+        self.assertEqual(vivos, [],
+                         f"con `{backend}` y política fuerte, hijo, nieto y bisnieto con "
+                         f"`setsid` NO pueden sobrevivir al vencimiento del adaptador")
+
+    def test_sin_backend_fuerte_el_adaptador_no_ejecuta_y_falla_cerrado(self):
+        """T248 · Defecto que previene: degradar en silencio a `killpg` cuando el anfitrión
+        no da contención fuerte, que es exactamente lo que `FD-5` prohíbe.
+
+        No se simula el resultado: se le pasa al aparato un informe de capacidades en el que
+        NINGÚN backend fuerte está disponible —la forma que tiene un anfitrión pobre— y se
+        comprueba que el adaptador no llega a lanzar nada.
+        """
+        pobre = {
+            "orden_de_preferencia": ["simple"],
+            "niveles": list(self.capacidades["niveles"]),
+            "backends": [f for f in self.capacidades["backends"]
+                         if f["backend"] == "simple"],
+            "fuertes_disponibles": [],
+            "hay_contencion_fuerte": False,
+            "mejor_disponible": "simple",
+        }
+        with self.assertRaises(contencion.ContencionFuerteNoDisponible):
+            contencion.politica.elegir(contencion.Politica("arbol-de-procesos"), pobre)
+        # Y por el camino del adaptador: pedir el `simple` con política fuerte no ejecuta.
+        adaptador = adaptadores.AdaptadorDeProcesoLocal(
+            self.directorio,
+            politica_de_contencion=contencion.Politica("arbol-de-procesos", backend="simple"))
+        testigo = os.path.join(self.directorio, "no-debe-existir")
+        with self.assertRaises(contencion.ContencionFuerteNoDisponible):
+            adaptador.ejecutar(
+                {"operacion": "ejecutar",
+                 "argumentos": ["sh", "-c", "touch " + shlex.quote(testigo)]},
+                efecto="ef-" + self.prefijo + "-cerrado", limite_segundos=2.0)
+        self.assertFalse(os.path.exists(testigo),
+                         "la orden NO se ejecutó: fallar cerrado es no ejecutar, no ejecutar "
+                         "y avisar")
+
+
+# ===========================================================================
 #  La proyección, su huella y su validador de deriva
 # ===========================================================================
 class HuellaYDeriva(unittest.TestCase):

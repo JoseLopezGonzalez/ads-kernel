@@ -163,7 +163,7 @@ que puede actuar · evidencia mínima · criterio de cierre
 
 INV ──┬─► [DOM si C-DOM]
       ├─► [SEG si C-SEG]
-      ├─► [DIS/Reconstruccion si C-DIS]
+      ├─► [DIS si C-DIS]
       └─► [PRD sólo si produce una decisión de producto] ──► APR
 propietario global: DERIVADO del encargo, nunca asignado a mano
 ```

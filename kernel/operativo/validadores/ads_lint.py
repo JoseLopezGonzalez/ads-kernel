@@ -56,6 +56,108 @@ VOCABULARIO_PROHIBIDO = [
 ]
 
 
+# ===========================================================================
+#  `F-07` · la AUTORIDAD de cada documento de `docs/owner/`, DERIVADA
+# ===========================================================================
+#  SEDE ÚNICA de la fórmula, y los dos consumidores la IMPORTAN en vez de reescribirla
+#  (`V6-19`): este validador —que ya recorre `docs/owner/`— y `comprobar_contratos.py`,
+#  que publica el resultado como prueba numerada.
+#
+#  El VALOR no lo elige `F6`: sale de la clase que `docs/canonico/FUENTES-CANONICAS.yml`
+#  asigna a cada ruta, que es material canónico y no se toca aquí.
+DIRECTORIO_DEL_OWNER = "docs/owner"
+AUTORIDAD_POR_CLASE = {
+    "AUTORIDAD_SUPERIOR": "aprobada",
+    "NO_APLICABLE_A_IMPLEMENTACION": "trabajo",
+}
+AUTORIDADES_ADMITIDAS = ("aprobada", "trabajo")
+
+
+def clases_canonicas_de_zona(raiz):
+    """Las clases que el registro canónico asigna, por patrón. No se escriben aquí."""
+    ruta = os.path.join(raiz, "docs/canonico/FUENTES-CANONICAS.yml")
+    if not os.path.exists(ruta):
+        return None
+    with open(ruta, encoding="utf-8") as fh:
+        datos = yaml.safe_load(fh) or {}
+    zonas = []
+    for entrada in (datos.get("zonas") or datos.get("zonas_del_universo") or []):
+        if isinstance(entrada, dict) and entrada.get("patron") and entrada.get("clase"):
+            zonas.append((re.compile(entrada["patron"]), entrada["clase"]))
+    return zonas
+
+
+def autoridad_de_los_documentos_del_owner(raiz):
+    """Devuelve (declaraciones, problemas). Un problema es un ROJO, no un aviso.
+
+    Falla si: un fichero de `docs/owner/` no tiene autoridad declarada · una declaración
+    apunta a un fichero que no existe · el valor no es uno de los dos admitidos · o el
+    valor declarado NO coincide con el que la clase canónica de la ruta deriva. Lo último
+    es lo que impide que esta lista se convierta en una segunda verdad editable.
+    """
+    problemas = []
+    # DÓNDE APLICA. La sede del Owner vive en el repositorio del kernel y **no viaja** al
+    # proyecto instalado; `exclusiones.yaml` sí viaja. El marcador de «aquí vive la sede» no
+    # es la presencia del propio directorio —que sería circular: borrarlo apagaría la
+    # comprobación— sino la del registro canónico de zonas, que es de donde se DERIVA el
+    # valor. Con registro y sin directorio, es un ROJO; sin registro, la comprobación no
+    # tiene sujeto y se declara inaplicable.
+    registro = os.path.join(raiz, "docs/canonico/FUENTES-CANONICAS.yml")
+    if not os.path.exists(registro):
+        return {}, []
+    if not os.path.isdir(os.path.join(raiz, DIRECTORIO_DEL_OWNER)):
+        return {}, [f"existe `docs/canonico/FUENTES-CANONICAS.yml`, que clasifica "
+                    f"`{DIRECTORIO_DEL_OWNER}/`, y el directorio NO existe"]
+    ruta_excl = os.path.join(raiz, "kernel/operativo/validadores/exclusiones.yaml")
+    if not os.path.exists(ruta_excl):
+        return {}, ["no existe `validadores/exclusiones.yaml`: sin él `F-07` no se comprueba"]
+    with open(ruta_excl, encoding="utf-8") as fh:
+        datos = yaml.safe_load(fh) or {}
+    declaradas = datos.get("autoridad_de_documentos_del_owner")
+    if not declaradas:
+        return {}, ["`exclusiones.yaml` no declara `autoridad_de_documentos_del_owner`: "
+                    "la distinción aprobada/trabajo de `docs/owner/` volvería a estar sólo "
+                    "en prosa (`11-ARQ` §19 `F-07`)"]
+
+    zonas = clases_canonicas_de_zona(raiz)
+    directorio = os.path.join(raiz, DIRECTORIO_DEL_OWNER)
+    en_disco = sorted(f"{DIRECTORIO_DEL_OWNER}/{n}" for n in os.listdir(directorio)
+                      if n.endswith(".md")) if os.path.isdir(directorio) else []
+
+    declaracion = {}
+    for entrada in declaradas:
+        if not isinstance(entrada, dict) or not entrada.get("ruta") or not entrada.get("motivo"):
+            problemas.append("una declaración de autoridad sin `ruta` o sin `motivo`: "
+                             "una exención sin motivo escrito no es una exención")
+            continue
+        rel, valor = entrada["ruta"], entrada.get("autoridad")
+        if valor not in AUTORIDADES_ADMITIDAS:
+            problemas.append(f"{rel}: `autoridad: {valor}` no es uno de los dos valores "
+                             f"declarados {list(AUTORIDADES_ADMITIDAS)}")
+            continue
+        if not os.path.exists(os.path.join(raiz, rel)):
+            problemas.append(f"{rel}: se le declara autoridad y el fichero no existe")
+            continue
+        if zonas is not None:
+            clase = next((c for patron, c in zonas if patron.search(rel)), None)
+            if clase is None:
+                problemas.append(f"{rel}: ninguna zona de `FUENTES-CANONICAS.yml` la "
+                                 f"clasifica, y sin clase la autoridad no se deriva")
+            elif AUTORIDAD_POR_CLASE.get(clase) != valor:
+                problemas.append(
+                    f"{rel}: declara `autoridad: {valor}` y su clase canónica `{clase}` "
+                    f"deriva `{AUTORIDAD_POR_CLASE.get(clase)}`. El valor no se escribe: "
+                    f"se deriva de `docs/canonico/FUENTES-CANONICAS.yml`")
+        declaracion[rel] = valor
+
+    for rel in en_disco:
+        if rel not in declaracion:
+            problemas.append(f"{rel}: vive en `{DIRECTORIO_DEL_OWNER}/` y NO declara su "
+                             f"autoridad. Un documento del Owner sin `aprobada|trabajo` "
+                             f"declarado pasa por omisión, que es lo que `F-07` cierra")
+    return declaracion, problemas
+
+
 class Hallazgo:
     def __init__(self, nivel, fichero, linea, regla, mensaje):
         self.nivel, self.fichero, self.linea = nivel, fichero, linea
@@ -115,6 +217,35 @@ class Lint:
         self.no_embarcados = [i["ruta"] for i in (datos.get("enlaces_no_embarcados") or [])
                               if isinstance(i, dict) and i.get("ruta") and i.get("motivo")]
 
+    def _resolver_listas_del_esquema(self, datos, ruta):
+        """`variantes_desde: <clave>` se resuelve contra la RAÍZ del esquema.
+
+        Por qué no un ancla YAML. `runtime/ciclo/corpus.py` analiza estos mismos ficheros
+        con un analizador propio de biblioteca estándar —el runtime VIAJA y no puede
+        depender de PyYAML—, y ese subconjunto **no admite anclas, alias ni etiquetas**.
+        Un `&ancla` aquí deja el esquema legible para el validador e ILEGIBLE para el
+        runtime, que es la peor de las dos verdades: la que sólo se descubre ejecutando.
+        Con `variantes_desde` la lista sigue teniendo UNA sede en el fichero y el
+        subconjunto se respeta.
+        """
+        def recorrer(nodo):
+            if isinstance(nodo, dict):
+                clave = nodo.get("variantes_desde")
+                if isinstance(clave, str):
+                    lista = datos.get(clave)
+                    if not isinstance(lista, list):
+                        self.err(ruta, None, "esquema",
+                                 f"`variantes_desde: {clave}` y el esquema no declara esa "
+                                 f"lista en su raíz")
+                    else:
+                        nodo["variantes"] = list(lista)
+                for valor in nodo.values():
+                    recorrer(valor)
+            elif isinstance(nodo, list):
+                for valor in nodo:
+                    recorrer(valor)
+        recorrer(datos.get("campos") or {})
+
     def _excluido(self, ruta, lista):
         rel = os.path.relpath(ruta, self.raiz).replace(os.sep, "/")
         return any(rel == x or rel.startswith(x.rstrip("/") + "/") for x in lista)
@@ -162,6 +293,7 @@ class Lint:
             if not isinstance(datos, dict) or datos.get("kind") != "esquema":
                 self.err(ruta, None, "esquema", "un fichero de esquemas debe declarar kind: esquema")
                 continue
+            self._resolver_listas_del_esquema(datos, ruta)
             self.esquemas[datos["esquema"]] = datos
         ruta_reglas = os.path.join(self.raiz, "kernel/operativo/validadores/reglas.yaml")
         if os.path.exists(ruta_reglas):
@@ -200,7 +332,63 @@ class Lint:
                 i += 1
 
     # ---------------------------------------------------------------- esquema
-    def validar_valor(self, valor, spec, ruta, linea, camino, tipo_padre):
+    def validar_ref_tipada(self, valor, spec, ruta, linea, camino, padre):
+        """Una `ref` con SUFIJO DE VARIANTE tipado. Es el remedio exacto de `F-02`.
+
+        `11-ARQ` §19, fila `F-02`, fija el vocabulario y lo fija entero: (1) la capacidad
+        base es una de las QUINCE y sólo una de las quince; (2) admite un sufijo
+        `:<variante>` OPCIONAL y TIPADO, y las variantes declaradas son las que la fila
+        enumera; (3) **`/` NO es válido** —es lo que hoy admite un MÉTODO donde va una
+        capacidad, y es la raíz de `F-01`/`PN-14`—; (4) `capacidad_productora` usa la MISMA
+        referencia; (5) **`OWNER` NO es una capacidad**: se separa como AUTORIDAD, en su
+        propio campo.
+
+        `autoridades` declara los tokens que NO son capacidad y que exigen el campo de
+        autoridad hermano. `derivable_con` declara el campo hermano que autoriza —y sólo
+        entonces— una formulación DERIVADA en prosa, que es lo que `b.16` hace en `DIR`
+        cuando la capacidad productora la fija el encargo y no la tabla. Sin ese hermano,
+        la prosa NO entra: sin él, cualquier cadena valdría y el tipado no tiparía nada.
+        """
+        padre = padre or {}
+        if "/" in valor:
+            return self.err(ruta, linea, "metodo-donde-va-capacidad",
+                            f"{camino}: '{valor}' nombra un MÉTODO donde va una CAPACIDAD. "
+                            f"`/` no es separador de variante (11-ARQ §19 `F-02` punto 3). "
+                            f"Una ruta nombra capacidades; qué método se ejecuta lo calcula "
+                            f"la escala de novedad (`E4.3`)")
+        # `F-02` punto 5 dice MOVER, no duplicar: una AUTORIDAD ya no cabe en el campo de
+        # capacidad EN NINGUNA FORMA, ni siquiera acompañada de su campo hermano. La
+        # tolerancia anterior dejaba `OWNER` viviendo en los dos sitios, que es exactamente
+        # el estado que el hallazgo existe para retirar.
+        prohibidos = spec.get("prohibidos") or []
+        if valor in prohibidos:
+            return self.err(ruta, linea, "autoridad-en-campo-de-capacidad",
+                            f"{camino}: '{valor}' es una AUTORIDAD y no una de las quince "
+                            f"capacidades. `F-02` punto 5 manda MOVERLA a su campo propio "
+                            f"`autoridad_productora`, no declararla en los dos")
+        derivable = spec.get("derivable_con")
+        if derivable and padre.get(derivable):
+            if len(valor.strip()) < 15:
+                self.err(ruta, linea, "derivacion-telegrafica",
+                         f"{camino}: la capacidad productora se declara DERIVADA y su "
+                         f"formulación no dice de qué se deriva")
+            return None
+        m = re.fullmatch(r"([A-Z]{3})(?::([a-z]+))?", valor)
+        if not m:
+            return self.err(ruta, linea, "capacidad-no-tipada",
+                            f"{camino}: '{valor}' no es una referencia de capacidad. "
+                            f"Forma admitida: `<CAP>` o `<CAP>:<variante>` con la variante "
+                            f"declarada en el esquema; una autoridad va en su campo propio "
+                            f"y una derivación se declara con `{derivable}`")
+        if m.group(2) is not None and valor not in (spec.get("variantes") or []):
+            self.err(ruta, linea, "variante-no-declarada",
+                     f"{camino}: la variante '{valor}' no está declarada. Declaradas: "
+                     f"{spec.get('variantes')}. Una variante sin declarar es texto libre "
+                     f"donde el esquema promete un tipo")
+        self.refs.append((m.group(1), spec.get("ref_a"), ruta, linea, camino))
+        return None
+
+    def validar_valor(self, valor, spec, ruta, linea, camino, tipo_padre, padre=None):
         tipo = spec.get("tipo", "texto")
         if tipo == "texto":
             if not isinstance(valor, str):
@@ -230,6 +418,8 @@ class Lint:
         elif tipo == "ref":
             if not isinstance(valor, str):
                 return self.err(ruta, linea, "tipo", f"{camino}: una ref debe ser texto")
+            if "variantes" in spec or "prohibidos" in spec:
+                return self.validar_ref_tipada(valor, spec, ruta, linea, camino, padre)
             self.refs.append((valor, spec.get("ref_a"), ruta, linea, camino))
         elif tipo == "lista":
             if not isinstance(valor, list):
@@ -241,7 +431,7 @@ class Lint:
                 sub = dict(spec)
                 sub.pop("min", None)
                 sub["tipo"] = de
-                self.validar_valor(elem, sub, ruta, linea, f"{camino}[{n}]", tipo_padre)
+                self.validar_valor(elem, sub, ruta, linea, f"{camino}[{n}]", tipo_padre, padre)
         elif tipo == "objeto":
             if not isinstance(valor, dict):
                 return self.err(ruta, linea, "tipo", f"{camino}: se esperaba objeto")
@@ -250,9 +440,19 @@ class Lint:
                     self.err(ruta, linea, "obligatorio",
                              f"{camino}.{req}: campo obligatorio no declarado. "
                              f"Si la respuesta es «ninguno», decláralo vacío de forma explícita")
+            # EXACTAMENTE UNO de cada grupo. Ni cero —la capa quedaría sin quien la
+            # produzca— ni dos —que es la duplicación que `F-02` retira—.
+            for grupo in spec.get("obligatorios_alternativos", []):
+                puestos = [c for c in grupo if valor.get(c) is not None]
+                if len(puestos) != 1:
+                    self.err(ruta, linea, "obligatorio-alternativo",
+                             f"{camino}: de [{', '.join(grupo)}] tiene que declararse "
+                             f"EXACTAMENTE UNO, y se han declarado {len(puestos)}"
+                             + (f" ({', '.join(puestos)})" if puestos else ""))
             for clave, sub in (spec.get("campos") or {}).items():
                 if clave in valor and valor[clave] is not None:
-                    self.validar_valor(valor[clave], sub, ruta, linea, f"{camino}.{clave}", tipo_padre)
+                    self.validar_valor(valor[clave], sub, ruta, linea, f"{camino}.{clave}",
+                                       tipo_padre, valor)
         else:
             self.err(ruta, linea, "esquema", f"{camino}: tipo desconocido '{tipo}'")
 
@@ -269,7 +469,7 @@ class Lint:
                              f"Si la respuesta es «ninguno», decláralo vacío de forma explícita")
             for clave, spec in (esquema.get("campos") or {}).items():
                 if clave in datos and datos[clave] is not None:
-                    self.validar_valor(datos[clave], spec, ruta, linea, clave, tipo)
+                    self.validar_valor(datos[clave], spec, ruta, linea, clave, tipo, datos)
             desconocidos = set(datos) - set(esquema.get("campos") or {}) - {"kind"}
             for extra in sorted(desconocidos):
                 self.avi(ruta, linea, "campo-extra",
@@ -411,7 +611,16 @@ class Lint:
         self.validar_vocabulario()
         self.validar_enlaces()
         self.validar_reglas()
+        self.validar_autoridad_del_owner()
         return self.hallazgos
+
+    # ------------------------------------------------------------- F-07
+    def validar_autoridad_del_owner(self):
+        """`F-07`. La fórmula vive arriba y aquí SÓLO se consume (`V6-19`)."""
+        _decl, problemas = autoridad_de_los_documentos_del_owner(self.raiz)
+        destino = os.path.join(self.raiz, "kernel/operativo/validadores/exclusiones.yaml")
+        for problema in problemas:
+            self.err(destino, None, "autoridad-del-owner", problema)
 
 
 def main():

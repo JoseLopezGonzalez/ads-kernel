@@ -2,8 +2,13 @@
 
 
 Recorridos íntegros, con lo que el sistema **hace**, lo que **escribe** y lo que **decide
-no hacer**. No son ilustraciones: son las pruebas T75 a T84, y su estado real está en
-[`../pruebas/REGISTRO-generado.md`](../pruebas/REGISTRO-generado.md).
+no hacer**. No son ilustraciones: son las pruebas **T75–T80** y **T154–T157**, y su estado
+real está en [`../pruebas/REGISTRO-generado.md`](../pruebas/REGISTRO-generado.md).
+**`T81`–`T85` NO están aquí**: viven en
+[`../pruebas/T081-T085-reanudacion-ENC.md`](../pruebas/T081-T085-reanudacion-ENC.md), que
+existe. La cabecera anterior decía «T75 a T84» y afirmaba un rango falso por sus dos
+extremos: incluía cinco pruebas de otro fichero y omitía las cuatro últimas de éste
+(`11-ARQ` §19, `F-11`).
 
 ---
 
@@ -178,11 +183,16 @@ evidencia_de_cierre:
   - "la crítica visual independiente emite dictamen conforme sobre esa superficie"
 incertidumbre:
   grado: media
-  grado_inicial: media
+  grado_inicial: alta
   ejes: ["resultado perseguido: baja", "problema: baja", "alcance: media", "restricciones: baja", "criterio de terminado: media"]
   motivo: >
-    El alcance sigue en media porque «para todo el producto, empezando por ésta» deja
-    abierto cuántas superficies entran en esta primera dirección.
+    El paso 5 midió GRADO GLOBAL = ALTA y por eso NO se formuló: se conversó primero. La
+    conversación del paso 6 bajó resultado perseguido, problema, restricciones y criterio de
+    terminado. El alcance sigue en media porque «para todo el producto, empezando por ésta»
+    deja abierto cuántas superficies entran en esta primera dirección, y ése es el eje que
+    sostiene el grado vigente. `grado_inicial` conserva el grado con el que el encuadre
+    ENTRÓ, que es el que hace la crítica independiente OBLIGATORIA para siempre en este encuadre
+    aunque la conversación haya bajado el grado (`04-INCERTIDUMBRE-Y-CONFIRMACION.md`).
 nivel_owner: obligatorio
 vinculos:
   - "FEA-009 — construyó la superficie sin activar DIS"
@@ -332,6 +342,7 @@ entonces:
   - "la literal se conserva con sus tres adjetivos y su fecha"
   - "el anclaje declara que no existe memoria de diseño"
   - "la incertidumbre se declara alta y NO se formula antes de conversar"
+  - "el encuadre persiste `incertidumbre.grado_inicial` y COINCIDE con el GRADO GLOBAL que midió el paso 5"
   - "se presentan al menos dos referencias con su principio extraído"
   - "la reacción del Owner a cada referencia queda captada literalmente"
   - "se produce un encuadre de dirección visual y otro dependiente para la superficie"
@@ -339,6 +350,7 @@ entonces:
 falla_si:
   - "se crea un item cuyo resultado perseguido sea cambiar estilos, colores o CSS"
   - "se formula el encuadre con incertidumbre alta sin conversar"
+  - "`incertidumbre.grado_inicial` difiere del GRADO GLOBAL del paso 5: con eso la crítica obligatoria desaparece al bajar el grado"
   - "el anclaje omite comprobar si existe dirección visual aprobada"
   - "las referencias se presentan sin principio extraído"
   - "la respuesta al Owner no dice qué se decidió no hacer"

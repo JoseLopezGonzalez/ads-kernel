@@ -120,6 +120,8 @@ AFIRMACIONES = [
     ("kernel/operativo/entrada/00-INDICE.md", r"las (\S+) clases de expresión", "clases_de_entrada"),
     ("kernel/operativo/entrada/02-CIRCUITO.md", r"^(\S+) estaciones\.", "estaciones_de_entrada"),
     ("kernel/operativo/entrada/03-FORMAS.md", r"Contiene (\S+) bloques", "formas_de_conversacion"),
+    ("kernel/operativo/entrada/03-FORMAS.md",
+     r"las clases de expresión son (\S+)", "clases_de_entrada"),
     ("kernel/operativo/capacidades/DIS/CAPACIDAD.md", r"— (\S+) contratos", "roles_de_dis"),
     ("kernel/operativo/capacidades/DIS/CAPACIDAD.md", r"— (\S+) procedimientos", "metodos_de_dis"),
     ("kernel/operativo/capacidades/DIS/CAPACIDAD.md", r"— (\S+) instrucciones operativas", "roles_de_dis"),
@@ -176,6 +178,134 @@ def t151_recuentos_derivados(raiz=None):
     return r
 
 
+# ===========================================================================
+#  LAS DOS CABECERAS QUE AFIRMABAN UN RECUENTO FALSO — `F-10` y `F-11`
+# ===========================================================================
+#  `06-DEUDA` §7 las resume así: los hallazgos externos con propietario y fase alcanzan
+#  «a dos cabeceras que afirman recuentos falsos». Aquí se cierran por PROPIEDAD y no por
+#  redacción: la primera deriva los dos cardinales y prohíbe la biyección MIENTRAS
+#  difieran; la segunda deriva del propio fichero qué pruebas contiene y exige que la
+#  cabecera nombre ésas y no otras.
+
+# Formulaciones de la BIYECCIÓN entre formas de conversación y clases de expresión. Se
+# declaran una a una y con su motivo: la aposición «uno por clase de expresión» era falsa
+# por catorce contra nueve (`11-ARQ` §19, `F-10`).
+# El salto de línea y la marca de cita del Markdown se toleran: una aposición no deja de
+# afirmarse porque el párrafo se envuelva.
+_HUECO = r"[\s>]+"
+BIYECCIONES_PROHIBIDAS = [
+    r"uno" + _HUECO + r"por" + _HUECO + r"clase" + _HUECO + r"de" + _HUECO + r"expresi[oó]n",
+    r"una" + _HUECO + r"por" + _HUECO + r"clase" + _HUECO + r"de" + _HUECO + r"expresi[oó]n",
+    r"uno" + _HUECO + r"por" + _HUECO + r"cada" + _HUECO + r"clase" + _HUECO + r"de" + _HUECO + r"expresi[oó]n",
+    r"una" + _HUECO + r"por" + _HUECO + r"cada" + _HUECO + r"clase" + _HUECO + r"de" + _HUECO + r"expresi[oó]n",
+]
+DONDE_SE_AFIRMABA = [
+    "kernel/operativo/entrada/03-FORMAS.md",
+    "kernel/operativo/entrada/00-INDICE.md",
+    "kernel/operativo/entrada/01-TAXONOMIA.md",
+    "kernel/operativo/00-INDICE.md",
+]
+
+
+def t245_ninguna_cabecera_afirma_una_biyeccion_falsa(raiz=None):
+    """`F-10`. La aposición sólo es falsa cuando se predica de las FORMAS.
+
+    `01-TAXONOMIA.md` dice «uno por clase de expresión» de los bloques `ads:entrada`, y
+    ahí es CIERTO: hay una clase de entrada por clase de expresión. Lo que era falso es
+    predicarlo de las catorce formas de conversación. La regla mira la frase que contiene
+    la aposición, no el fichero entero: prohibir la formulación en abstracto habría
+    borrado una verdad para tapar una mentira.
+    """
+    base = os.path.abspath(raiz or RAIZ)
+    r = Resultado("T245", "Ninguna cabecera afirma una correspondencia uno a uno entre formas y clases")
+    cuenta = derivar(base)
+    formas, clases = cuenta.get("formas_de_conversacion"), cuenta.get("clases_de_entrada")
+    if formas is None or clases is None:
+        r.fallo("no se derivan las formas de conversación o las clases de expresión")
+        return r
+    if formas == clases:
+        # La regla se APAGA sola si algún día los dos cardinales coinciden: entonces la
+        # aposición dejaría de ser falsa y prohibirla sería censurar una verdad.
+        return r
+    for rel in DONDE_SE_AFIRMABA:
+        ruta = os.path.join(base, rel)
+        if not os.path.exists(ruta):
+            continue
+        with open(ruta, encoding="utf-8") as fh:
+            texto = fh.read()
+        for patron in BIYECCIONES_PROHIBIDAS:
+            for m in re.finditer(patron, texto, re.I):
+                linea = texto[:m.start()].count("\n") + 1
+                # La FRASE que contiene la aposición, acotada por su puntuación. Ampliar la
+                # ventana a un número fijo de caracteres metía dentro la frase siguiente, y
+                # con ella su negación: la regla se apagaba sola sobre la infracción.
+                abre = max(texto.rfind(".", 0, m.start()),
+                           texto.rfind("\n\n", 0, m.start())) + 1
+                cierra = texto.find(".", m.end())
+                frase = texto[abre:(cierra + 1) if cierra != -1 else m.end() + 80]
+                if not re.search(r"forma-conversacion|formas de conversaci[oó]n", frase, re.I):
+                    continue          # se predica de otra cosa, y de otra cosa puede ser cierto
+                if re.search(r"\bNo hay\b|era falsa|deja de afirmar", frase, re.I):
+                    continue          # la cita que DESMIENTE la aposición, no la afirma
+                r.fallo(f"{rel}:{linea}: afirma «{m.group(0)}» de las formas de "
+                        f"conversación, y hay {formas} formas frente a {clases} clases de "
+                        f"expresión. La aposición es falsa (`11-ARQ` §19, `F-10`)")
+    return r
+
+
+def _rangos(texto):
+    """Los identificadores `Tnn` que un texto cita, con los rangos EXPANDIDOS.
+
+    `T75`–`T80` cita seis pruebas y escribe dos. Comparar sólo los extremos daría por
+    enumerada una cabecera que se salta lo de en medio.
+    """
+    limpio = re.sub(r"\]\([^)]*\)", "]", texto)          # fuera los destinos de enlace
+    citados, consumidos = set(), []
+    for m in re.finditer(r"T(\d{2,3})\s*[`*]*\s*[–—-]\s*[`*]*\s*T(\d{2,3})", limpio):
+        a, b = int(m.group(1)), int(m.group(2))
+        if a <= b:
+            citados |= set(range(a, b + 1))
+        consumidos.append(m.span())
+    for m in re.finditer(r"T(\d{2,3})", limpio):
+        if any(ini <= m.start() < fin for ini, fin in consumidos):
+            continue
+        citados.add(int(m.group(1)))
+    return citados
+
+
+def t246_la_cabecera_enumera_las_pruebas_que_contiene(raiz=None):
+    """`F-11`."""
+    base = os.path.abspath(raiz or RAIZ)
+    r = Resultado("T246", "La cabecera de los escenarios enumera las pruebas que el fichero contiene")
+    rel = "kernel/operativo/entrada/05-ESCENARIOS.md"
+    ruta = os.path.join(base, rel)
+    if not os.path.exists(ruta):
+        r.fallo(f"{rel}: no existe, y es donde vive la cabecera que `F-11` corrige")
+        return r
+    with open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    contenidas = {int(x) for x in re.findall(r"^id:\s*T(\d{2,3})\s*$", texto, re.M)}
+    if not contenidas:
+        r.fallo(f"{rel}: no contiene ningún bloque con `id: T…`")
+        return r
+    cabecera = texto.split("\n---\n", 1)[0]
+    # Lo que la cabecera declara EXPRESAMENTE que vive en OTRO fichero no se cuenta como
+    # citado, y además se comprueba: si está aquí, la cabecera miente por el otro lado.
+    fuera = set()
+    for m in re.finditer(r"([^.\n]*NO están aquí)", cabecera):
+        fuera |= _rangos(m.group(1))
+    citadas = _rangos(cabecera) - fuera
+    for ident in sorted(citadas - contenidas):
+        r.fallo(f"{rel}: la cabecera nombra T{ident} y el fichero NO lo contiene "
+                f"(`11-ARQ` §19, `F-11`)")
+    for ident in sorted(contenidas - citadas):
+        r.fallo(f"{rel}: el fichero contiene T{ident} y la cabecera no lo enumera "
+                f"(`11-ARQ` §19, `F-11`)")
+    for ident in sorted(fuera & contenidas):
+        r.fallo(f"{rel}: la cabecera declara que T{ident} NO está aquí, y sí está")
+    return r
+
+
 CABECERA = """# RECUENTOS — generado
 
 <!-- GENERADO por validadores/comprobar_recuentos.py. No editar a mano. -->
@@ -208,7 +338,9 @@ def main():
         destino, n = generar(args.raiz)
         print(f"{n} recuentos · {destino}")
         return 0
-    resultados = [t151_recuentos_derivados(args.raiz)]
+    resultados = [t151_recuentos_derivados(args.raiz),
+                  t245_ninguna_cabecera_afirma_una_biyeccion_falsa(args.raiz),
+                  t246_la_cabecera_enumera_las_pruebas_que_contiene(args.raiz)]
     if args.json:
         print(json.dumps([{"id": x.id, "nombre": x.nombre,
                            "estado": "prueba-superada" if x.superada else "prueba-fallida",

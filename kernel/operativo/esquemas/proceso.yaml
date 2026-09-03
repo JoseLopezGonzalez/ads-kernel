@@ -11,9 +11,26 @@ descripcion: >
   runtime la instancia por item al componer la ruta, y `gate:cierre-de-item` comprueba su
   estado. No hay un tipo `obligacion` aparte porque la obligacion NO se inventa por item:
   se deriva de aqui, y tener dos sitios donde declararla seria tener dos verdades.
+
+  EL TIPADO DE `capacidad` Y `capacidad_productora` -remedio exacto de `F-02`, 11-ARQ
+  seccion 19-. Los dos campos son `ref_a: capacidad`: la base es UNA de las QUINCE. Admiten
+  un sufijo `:<variante>` OPCIONAL y TIPADO, y las variantes declaradas son las cinco que
+  `F-02` enumera. `/` NO es separador de variante: nombrar `DIS/Reconstruccion` donde va una
+  capacidad es poner un METODO en una tabla de participacion, que es lo que `E4.3` corrige
+  en la fuente aprobada y lo que este esquema impide en el derivado.
+
+  `OWNER` NO es una capacidad -las quince no lo incluyen- y por eso NO se resuelve como
+  `ref`: se declara como AUTORIDAD en su campo propio `autoridad_productora`. Y una
+  capacidad productora que el ENCARGO fija -`b.16` lo hace en `DIR`- se declara con
+  `capacidad_productora_derivada: true`; sin ese hermano, una formulacion en prosa NO entra.
 obligatorios:
   [id, nombre, intencion, condicion_de_entrada, propietario_global, obligatorias,
    condicionales, evidencia_necesaria, criterio_de_cierre, aprendizaje]
+# Las CINCO variantes declaradas por `F-02`. Ampliar el conjunto es un acto NORMATIVO con su
+# sede: mientras no se amplie aqui, `DOM:revision` -que `11-ARQ` usa en prosa y `b.16`
+# L834-836 sostiene- NO es un valor admitido, y el error lo dice.
+variantes_de_capacidad:
+  [DOM:condiciones, SEG:condiciones, SEG:revision, CON:experimental, ARQ:diagnostico]
 campos:
   id: {tipo: texto, patron: '^proceso:[A-Z]{3}$'}
   nombre: {tipo: texto, min: 3}
@@ -26,12 +43,29 @@ campos:
     min: 1
     de: objeto
     obligatorios:
-      [id, capa_exigida, capacidad_productora, criterio_de_satisfaccion,
-       autoridad_de_retirada]
+      [id, capa_exigida, criterio_de_satisfaccion, autoridad_de_retirada]
+    # `F-02` punto 5 manda MOVER `OWNER` a autoridad, no duplicarlo: una obligacion declara
+    # `capacidad_productora` O `autoridad_productora`, EXACTAMENTE UNA. Dejar la primera
+    # como obligatoria incondicional obligaba a conservar `OWNER` en el campo de capacidad,
+    # que es justo lo que `F-02` retira. Declarar las dos, o ninguna, es un ERROR.
+    obligatorios_alternativos:
+      - [capacidad_productora, autoridad_productora]
     campos:
       id: {tipo: texto, patron: '^[a-z0-9-]+$'}
       capa_exigida: {tipo: texto, min: 15}
-      capacidad_productora: {tipo: texto, min: 3}
+      capacidad_productora:
+        tipo: ref
+        ref_a: capacidad
+        variantes_desde: variantes_de_capacidad
+        # `OWNER` ya NO cabe aqui: se MOVIO a `autoridad_productora`. Se conserva
+        # `prohibidos` para que reintroducirlo sea un error tipado y no un silencio.
+        prohibidos: [OWNER]
+        derivable_con: capacidad_productora_derivada
+      # La AUTORIDAD que produce la capa cuando NO la produce ninguna capacidad. Es la
+      # SEDE UNICA de `OWNER` en esta tabla: las quince capacidades no lo incluyen.
+      autoridad_productora: {tipo: enum, valores: [OWNER]}
+      # Declara que la capacidad productora la fija el ENCARGO y no esta tabla (`b.16`).
+      capacidad_productora_derivada: {tipo: booleano}
       # Comprobable por alguien distinto de quien la escribio. No «esta hecho».
       criterio_de_satisfaccion: {tipo: texto, min: 20}
       # Quien puede RETIRARLA. NUNCA DSP: retirar es autoridad semantica (b.3, b.5, b.9).
@@ -41,7 +75,7 @@ campos:
     de: objeto
     obligatorios: [capacidad, condicion]
     campos:
-      capacidad: {tipo: texto, min: 3}
+      capacidad: {tipo: ref, ref_a: capacidad, variantes_desde: variantes_de_capacidad}
       # Comprobable. Prohibido «si aplica» (b.16 regla de derivacion, punto 3).
       condicion: {tipo: texto, min: 5}
   evidencia_necesaria: {tipo: lista, de: texto, min: 1}

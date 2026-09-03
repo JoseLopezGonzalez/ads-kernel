@@ -682,6 +682,131 @@ def m_t161_cobertura_estrechada(raiz):
                "    motivo: 'estrechamiento deliberado para la prueba negativa N161g'\n")
 
 
+# ---------------------------------------------------------------------------
+#  `F6-H` · los hallazgos externos con propietario y fase `F6` (`11-ARQ` §19)
+#  Cada mutación REINTRODUCE el defecto exacto que la fila describía.
+# ---------------------------------------------------------------------------
+
+def m_f01_metodo_donde_va_capacidad(raiz):
+    """`F-01` · vuelve a nombrarse el MÉTODO donde va la CAPACIDAD."""
+    _sustituir(raiz, "kernel/operativo/recorrido/01-PROCESOS.md",
+               '  - capacidad: "DIS"\n    condicion: "C-DIS"',
+               '  - capacidad: "DIS/Reconstruccion"\n    condicion: "C-DIS"')
+
+
+def m_f02_owner_como_capacidad(raiz):
+    """`F-02` punto 5 · `OWNER` vuelve a viajar como si fuera una de las quince."""
+    _sustituir(raiz, "kernel/operativo/recorrido/01-PROCESOS.md",
+               '    autoridad_productora: "OWNER"\n', "")
+
+
+def m_f02_owner_duplicado(raiz):
+    """`F-02` punto 5 · `OWNER` vuelve a estar en los DOS campos a la vez.
+
+    Es el estado exacto que el remedio retira: el hallazgo dice MOVER, y añadir el campo de
+    autoridad sin quitar el token viejo deja la fila «cerrada» sin haber movido nada.
+    """
+    _sustituir(raiz, "kernel/operativo/recorrido/01-PROCESOS.md",
+               '    autoridad_productora: "OWNER"\n',
+               '    capacidad_productora: "OWNER"\n    autoridad_productora: "OWNER"\n')
+
+
+def m_f02_esquema_sin_tipar(raiz):
+    """`F-02` punto 1 · el esquema vuelve a admitir texto libre donde va una capacidad."""
+    _sustituir(raiz, "kernel/operativo/esquemas/proceso.yaml",
+               "      capacidad_productora:\n        tipo: ref\n        ref_a: capacidad",
+               "      capacidad_productora:\n        tipo: texto\n        min: 3\n        _ref_a: capacidad")
+
+
+def m_f02_variante_sin_declarar(raiz):
+    """`F-02` punto 2 · entra una variante que el esquema no declara."""
+    _sustituir(raiz, "kernel/operativo/recorrido/01-PROCESOS.md",
+               '  - capacidad: "DOM:condiciones"', '  - capacidad: "DOM:revision"')
+
+
+def m_f02_conjunto_de_variantes_sin_sede(raiz):
+    """`F-02` punto 2 · el campo apunta a un conjunto de variantes que ya no existe."""
+    _sustituir(raiz, "kernel/operativo/esquemas/proceso.yaml",
+               "variantes_de_capacidad:\n", "variantes_de_capacidad_RETIRADA:\n")
+
+
+def m_f06_dis_a_ver_sin_ancla(raiz):
+    """`F-06` · el `cuando` vuelve a no decir CUÁNDO."""
+    ruta = os.path.join(raiz, "kernel/operativo/circuitos/DIS-handoffs.md")
+    with open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    inicio = texto.index('id: handoff:dis-a-ver')
+    fin = texto.index("\nentrega:", inicio)
+    linea = texto.index("\ncuando:", inicio)
+    texto = texto[:linea] + '\ncuando: "DIS cierra su capa y el item continúa hacia verificación"' + texto[fin:]
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto)
+
+
+def m_f06_dictamen_sin_pasada(raiz):
+    """`F-06`, segunda mitad · la entrega deja de decir de qué pasada procede el dictamen."""
+    _sustituir(raiz, "kernel/operativo/circuitos/DIS-handoffs.md",
+               '  - "el dictamen de excelencia visual con sus nueve ejes, y de qué PASADA procede cada uno: '
+               'los ocho de la PASADA DE DISEÑO —estación 9, antes de entregar a Construcción— y el eje '
+               'fidelidad de la PASADA DE FIDELIDAD —estación 11, con la capa ya construida—"',
+               '  - "el dictamen de excelencia visual con sus nueve ejes"')
+
+
+def m_f07_sin_declaracion_de_autoridad(raiz):
+    """`F-07` · la distinción aprobada/trabajo vuelve a estar sólo en prosa."""
+    ruta = os.path.join(raiz, "kernel/operativo/validadores/exclusiones.yaml")
+    with open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    corte = texto.index("autoridad_de_documentos_del_owner:")
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto[:corte])
+
+
+def m_f07_autoridad_que_no_deriva(raiz):
+    """`F-07` · alguien ESCRIBE la autoridad en vez de derivarla de la clase canónica."""
+    _sustituir(raiz, "kernel/operativo/validadores/exclusiones.yaml",
+               "  - ruta: docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md\n    autoridad: aprobada",
+               "  - ruta: docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md\n    autoridad: trabajo")
+
+
+def m_f07_documento_del_owner_sin_autoridad(raiz):
+    """`F-07` · entra un documento nuevo a `docs/owner/` y pasa por omisión."""
+    _escribir(raiz, "docs/owner/ADS-NOTA-NUEVA.md",
+              "# Nota del Owner\n\nUn documento nuevo que nadie clasificó.\n")
+
+
+def m_f05_entrega_de_8_0_que_falta(raiz):
+    """`F-05` (i) · desaparece una de las cinco instancias que §8.0 declara."""
+    ruta = os.path.join(raiz, "kernel/operativo/circuitos/entregas-de-8-0.md")
+    with open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    inicio = texto.index("```yaml ads:handoff\nid: handoff:sis-a-ver")
+    fin = texto.index("```", texto.index("checkpoint:", inicio)) + 4
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto[:inicio] + texto[fin:])
+
+
+def m_f04_grado_inicial_que_no_coincide(raiz):
+    """`F-04` · el grado de entrada deja de coincidir con el que midió el paso 5."""
+    _sustituir(raiz, "kernel/operativo/entrada/05-ESCENARIOS.md",
+               "  grado: media\n  grado_inicial: alta",
+               "  grado: media\n  grado_inicial: media")
+
+
+def m_f10_biyeccion_falsa(raiz):
+    """`F-10` · la cabecera vuelve a afirmar una forma por clase de expresión."""
+    _sustituir(raiz, "kernel/operativo/entrada/03-FORMAS.md",
+               "> Catálogo. Contiene catorce bloques `ads:forma-conversacion`. **No hay uno por clase de",
+               "> Catálogo. Contiene catorce bloques `ads:forma-conversacion`, uno por clase de expresión.\n> **No hay uno por clase de")
+
+
+def m_f11_cabecera_con_rango_falso(raiz):
+    """`F-11` · la cabecera vuelve a afirmar un rango que el fichero no contiene."""
+    _sustituir(raiz, "kernel/operativo/entrada/05-ESCENARIOS.md",
+               "son las pruebas **T75–T80** y **T154–T157**",
+               "son las pruebas T75 a T84")
+
+
 CATALOGO = [
     Mutacion("N136", "A-06", "T136", "comprobar_contratos",
              "un veto levantable (DOM) se declara prevaleciente sobre otro (DIS)",
@@ -887,6 +1012,66 @@ CATALOGO = [
              "una frontera declarada se queda sin motivo escrito",
              m_frontera_sin_motivo,
              espera="sin `ruta` o sin `motivo`"),
+    Mutacion("N240", "F-01", "T240", "comprobar_contratos",
+             "vuelve a nombrarse un MÉTODO donde va una CAPACIDAD",
+             m_f01_metodo_donde_va_capacidad,
+             espera="MÉTODO donde va"),
+    Mutacion("N240b", "F-02", "T240", "comprobar_contratos",
+             "la obligación del Owner se queda sin ninguna de las dos claves",
+             m_f02_owner_como_capacidad,
+             espera="EXACTAMENTE UNA"),
+    Mutacion("N240f", "F-02", "T240", "comprobar_contratos",
+             "`OWNER` vuelve a estar en el campo de CAPACIDAD, además del de autoridad",
+             m_f02_owner_duplicado,
+             espera="sigue nombrando `OWNER` en el campo de CAPACIDAD"),
+    Mutacion("N240c", "F-02", "T240", "comprobar_contratos",
+             "el esquema vuelve a admitir texto libre donde va una capacidad",
+             m_f02_esquema_sin_tipar,
+             espera="no tipa `capacidad_productora`"),
+    Mutacion("N240d", "F-02", "T240", "comprobar_contratos",
+             "entra una variante de capacidad que el esquema no declara",
+             m_f02_variante_sin_declarar,
+             espera="que el esquema no declara"),
+    Mutacion("N240e", "F-02", "T240", "comprobar_contratos",
+             "el conjunto de variantes admitidas se queda sin sede en el esquema",
+             m_f02_conjunto_de_variantes_sin_sede,
+             espera="el esquema no declara esa lista"),
+    Mutacion("N241", "F-06", "T241", "comprobar_contratos",
+             "el `cuando` de la entrega de DIS a VER vuelve a no nombrar estación",
+             m_f06_dis_a_ver_sin_ancla,
+             espera="no nombra ninguna estación"),
+    Mutacion("N241b", "F-06", "T241", "comprobar_contratos",
+             "el dictamen visual deja de decir de qué pasada procede",
+             m_f06_dictamen_sin_pasada,
+             espera="de qué PASADA procede"),
+    Mutacion("N242", "F-07", "T242", "comprobar_contratos",
+             "la autoridad de los documentos del Owner vuelve a estar sólo en prosa",
+             m_f07_sin_declaracion_de_autoridad,
+             espera="autoridad_de_documentos_del_owner"),
+    Mutacion("N242b", "F-07", "T242", "comprobar_contratos",
+             "alguien ESCRIBE la autoridad en vez de derivarla de la clase canónica",
+             m_f07_autoridad_que_no_deriva,
+             espera="su clase canónica"),
+    Mutacion("N242c", "F-07", "T242", "comprobar_contratos",
+             "un documento nuevo entra en docs/owner/ y pasaría por omisión",
+             m_f07_documento_del_owner_sin_autoridad,
+             espera="NO declara su autoridad"),
+    Mutacion("N243", "F-05", "T243", "comprobar_contratos",
+             "desaparece una de las cinco instancias de handoff que §8.0 declara",
+             m_f05_entrega_de_8_0_que_falta,
+             espera="qué viaja de SIS a VER"),
+    Mutacion("N244", "F-04", "T244", "comprobar_contratos",
+             "el grado inicial deja de coincidir con el que midió el paso 5",
+             m_f04_grado_inicial_que_no_coincide,
+             espera="grado_inicial"),
+    Mutacion("N245", "F-10", "T245", "comprobar_recuentos",
+             "la cabecera vuelve a afirmar una forma por clase de expresión",
+             m_f10_biyeccion_falsa,
+             espera="La aposición es falsa"),
+    Mutacion("N246", "F-11", "T246", "comprobar_recuentos",
+             "la cabecera vuelve a afirmar un rango de pruebas que no contiene",
+             m_f11_cabecera_con_rango_falso,
+             espera="`F-11`"),
 ]
 
 

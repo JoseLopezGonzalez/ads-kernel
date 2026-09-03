@@ -149,3 +149,48 @@ vocabulario_exento:
       exclusión se retira cuando el fichero se retire. Quinta ocurrencia de P-07. NO se
       migra a docs/owner/: O10 ordena no retirar todavía el material temporal de evolución,
       y este fichero es exactamente eso.
+
+# ===========================================================================
+# LA AUTORIDAD DE CADA DOCUMENTO DE `docs/owner/` — remedio de `F-07`
+# ===========================================================================
+# `11-ARQ` §19, fila `F-07`: «campo declarado `autoridad: aprobada | trabajo` en cada
+# fichero de `docs/owner/`, comprobado por el validador que ya recorre el directorio. Hoy
+# la distinción está sólo en prosa». Sede del remedio: `docs/owner/*` y ESTE fichero.
+#
+# POR QUÉ EL CAMPO NO SE ESCRIBE DENTRO DE LOS FICHEROS DEL OWNER, y se dice en vez de
+# hacerlo callando. `docs/canonico/FUENTES-CANONICAS.yml` clasifica dos de los tres como
+# `AUTORIDAD_SUPERIOR`, y la condición de contenido que el verificador de admisión aplica a
+# esa clase es `append-only-contra-el-nacimiento`
+# (`runtime/admision/perimetro.py`, `CONDICIONES_DE_ZONA`). Insertar una línea de metadatos
+# en la cabecera de un fichero append-only NO es un añadido: es una reescritura de lo
+# publicado, y `V6-12` la da en ROJO por diseño. Escribir el campo dentro habría cerrado
+# `F-07` rompiendo `V6-12`. Se declara aquí, que es la otra sede que la propia fila nombra.
+#
+# EL VALOR NO SE ELIGE: SE DERIVA, y por eso no hay nada que llevar al Owner. Sale de la
+# clase que `docs/canonico/FUENTES-CANONICAS.yml` —material canónico, no editable por `F6`—
+# asigna a cada ruta, con esta correspondencia declarada:
+#     AUTORIDAD_SUPERIOR              -> aprobada
+#     NO_APLICABLE_A_IMPLEMENTACION   -> trabajo
+# El validador EXIGE que el valor declarado abajo coincida con esa derivación: si alguien
+# escribe aquí otra cosa, da ROJO. Y un fichero de `docs/owner/` sin entrada da ROJO
+# también: la lista no puede envejecer en silencio.
+autoridad_de_documentos_del_owner:
+  - ruta: docs/owner/ADS-OWNER-RESOLUCIONES.md
+    autoridad: aprobada
+    motivo: >
+      Sede canónica de las resoluciones. Su propia cabecera declara «esta sede es la
+      AUTORIDAD CANÓNICA» y la regla APPEND-ONLY. Es la sede que `V6-12` contrasta contra
+      su commit de nacimiento, y por eso el campo NO puede vivir dentro del fichero.
+  - ruta: docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md
+    autoridad: aprobada
+    motivo: >
+      Se autodeclara «Estado: APROBADO PARA IMPLEMENTACIÓN» en su primera línea de
+      metadatos, y `FUENTES-CANONICAS.yml` la clasifica `AUTORIDAD_SUPERIOR`, cuya
+      condición de contenido es append-only. El valor es derivado, no elegido.
+  - ruta: docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md
+    autoridad: trabajo
+    motivo: >
+      Se autodeclara «Estado: documento de trabajo del Owner» y `FUENTES-CANONICAS.yml` la
+      clasifica `NO_APLICABLE_A_IMPLEMENTACION`. Es el documento que `F-08` —fase `F5`,
+      propietario el Owner— identifica como el de TRABAJO, y cuya nota de vigencia ya
+      emitió `O23` §10.

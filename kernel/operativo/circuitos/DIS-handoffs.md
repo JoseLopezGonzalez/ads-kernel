@@ -134,18 +134,20 @@ checkpoint: "DIS lee de CON: qué diferencias declaró antes de construir, para 
 id: handoff:dis-a-ver
 de: DIS
 a: VER
-cuando: "DIS cierra su capa y el item continúa hacia verificación"
+cuando: "la ESTACIÓN 11 del ciclo de calidad —REVISIÓN DE FIDELIDAD— queda dictaminada: es la SEGUNDA pasada del gate visual, y el gate de diseño NO cierra hasta ella (02-RUBRICAS, «Las dos pasadas del gate visual»). Antes de esa estación el eje fidelidad está `pendiente-de-construccion` y los nueve ejes no tienen nivel"
 entrega:
-  - "el dictamen de excelencia visual con sus nueve ejes"
-  - "el dictamen de usabilidad con sus seis ejes"
+  - "el dictamen de excelencia visual con sus nueve ejes, y de qué PASADA procede cada uno: los ocho de la PASADA DE DISEÑO —estación 9, antes de entregar a Construcción— y el eje fidelidad de la PASADA DE FIDELIDAD —estación 11, con la capa ya construida—"
+  - "el dictamen de usabilidad con sus seis ejes, procedente de la estación 8, VALIDACIÓN DE USO"
   - "las capturas de referencia para la regresión visual"
   - "los patrones que este item aprobó, con su clase y su alcance"
 comprueba_al_recibir:
   - "ambos dictámenes existen y ningún eje está en rechazo"
+  - "cada dictamen nombra la estación del ciclo de la que procede, y el eje fidelidad procede de la estación 11 y no de la 9"
   - "las capturas de referencia cubren los entornos de la matriz del pack"
   - "el agente que dictaminó no ocupó ningún rol productor"
 rechaza_si:
   - "falta uno de los dos dictámenes"
+  - "el dictamen visual llega con el eje fidelidad todavía `pendiente-de-construccion`: procede de la primera pasada y el gate no ha cerrado"
   - "el dictamen lo emitió un agente que produjo el artefacto"
   - "no hay capturas de referencia y la regresión visual sería imposible"
 devolucion: >

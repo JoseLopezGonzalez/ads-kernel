@@ -431,7 +431,7 @@ condicionales:
     condicion: "C-DOM"
   - capacidad: "SEG"
     condicion: "C-SEG"
-  - capacidad: "DIS/Reconstruccion"
+  - capacidad: "DIS"
     condicion: "C-DIS"
   - capacidad: "PRD"
     condicion: "la auditoría produce una decisión de producto"
@@ -468,7 +468,7 @@ obligatorias:
   - id: decision-del-owner
     capa_exigida: >
       la decisión registrada con las palabras del Owner
-    capacidad_productora: "OWNER"
+    autoridad_productora: "OWNER"
     criterio_de_satisfaccion: >
       la dirección nueva y su criterio de éxito están escritos sin ambigüedad
     autoridad_de_retirada: >
@@ -477,6 +477,7 @@ obligatorias:
     capa_exigida: >
       el registro de qué decisiones anteriores quedan sustituidas
     capacidad_productora: "la capacidad propietaria de cada decisión sustituida"
+    capacidad_productora_derivada: true
     criterio_de_satisfaccion: >
       cada decisión sustituida está identificada y enlazada a la que la reemplaza
     autoridad_de_retirada: >

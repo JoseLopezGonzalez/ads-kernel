@@ -808,6 +808,243 @@ def t146_autoridad_de_decision(b):
     return r
 
 
+# ===========================================================================
+#  LOS HALLAZGOS EXTERNOS CON PROPIETARIO Y FASE `F6` — `11-ARQ` §19 · `F6-H`
+# ===========================================================================
+#  Cada una de estas pruebas cierra UNA fila de la tabla «Lo que esta fase NO puede
+#  corregir». No comprueban que el texto esté escrito: comprueban la PROPIEDAD, de modo
+#  que reintroducir el defecto las pone en rojo. Los sabotajes están en
+#  `comprobar_negativos.py`, y se ejecutan sobre una copia del árbol.
+
+# Las CINCO entregas que `11-ARQ` §8.0 declara, en su bloque «`SIS` y `PLT`, dicho aparte».
+# Viajan como DATO porque `11-ARQ` NO viaja al proyecto instalado —la misma decisión que se
+# tomó con la tabla de §18—, y la prueba las CONTRASTA contra el documento cuando existe.
+ENTREGAS_DE_8_0 = [("SIS", "PLT"), ("SIS", "CON"), ("SIS", "VER"),
+                   ("CON", "ENT"), ("ENT", "VER")]
+SEDE_DE_8_0 = "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md"
+
+
+def t240_capacidad_tipada_sin_metodos(b):
+    """`F-02` y la mitad de `F6` de `F-01`."""
+    r = Resultado("T240", "Ninguna tabla de participación nombra un método donde va una capacidad")
+    quince = {d.get("id") for d, _r, _l in b.get("capacidad", [])}
+    esquema = os.path.join(RAIZ, "kernel/operativo/esquemas/proceso.yaml")
+    with open(esquema, encoding="utf-8") as fh:
+        import yaml as _y
+        decl = _y.safe_load(fh)
+    campos = ((decl.get("campos") or {}).get("obligatorias") or {}).get("campos") or {}
+    spec = campos.get("capacidad_productora") or {}
+    if spec.get("tipo") != "ref" or spec.get("ref_a") != "capacidad":
+        r.fallo("`proceso.yaml` no tipa `capacidad_productora` como `ref_a: capacidad`: "
+                "sin tipar, nada impide que vuelva a entrar un método donde va una "
+                "capacidad (`11-ARQ` §19 `F-02` punto 1)")
+    # `F-02` punto 5, en su forma MOVIDA: `OWNER` está PROHIBIDO en el campo de capacidad,
+    # tiene su propio campo de autoridad, y el esquema exige EXACTAMENTE UNO de los dos.
+    obligatorias = (decl.get("campos") or {}).get("obligatorias") or {}
+    if "OWNER" not in (spec.get("prohibidos") or []):
+        r.fallo("`proceso.yaml` no PROHÍBE `OWNER` en `capacidad_productora`: tolerarlo "
+                "junto a su campo hermano deja la duplicación que `F-02` punto 5 retira")
+    if "capacidad_productora" in (obligatorias.get("obligatorios") or []):
+        r.fallo("`proceso.yaml` mantiene `capacidad_productora` como obligatoria "
+                "INCONDICIONAL, lo que obliga a conservar `OWNER` en el campo de capacidad "
+                "(`F-02` punto 5)")
+    alternativos = [set(g) for g in (obligatorias.get("obligatorios_alternativos") or [])]
+    if {"capacidad_productora", "autoridad_productora"} not in alternativos:
+        r.fallo("`proceso.yaml` no declara `capacidad_productora` y `autoridad_productora` "
+                "como obligatorias ALTERNATIVAS: sin eso, una obligación puede quedarse sin "
+                "ninguna de las dos y su capa sin quien la produzca (`F-02` punto 5)")
+    autoridad = ((obligatorias.get("campos") or {}).get("autoridad_productora") or {})
+    if autoridad.get("valores") != ["OWNER"]:
+        r.fallo("`proceso.yaml` no tipa `autoridad_productora` como el enum cerrado "
+                "`[OWNER]`: una autoridad sin conjunto declarado es texto libre")
+    # Las variantes se declaran UNA vez en la raíz del esquema y los campos apuntan a ella
+    # con `variantes_desde`; el ancla YAML no es una opción, porque el analizador stdlib del
+    # runtime no admite anclas. Aquí se resuelve contra la misma raíz.
+    if spec.get("variantes"):
+        variantes = set(spec["variantes"])
+    elif spec.get("variantes_desde"):
+        declaradas = decl.get(spec["variantes_desde"])
+        if not isinstance(declaradas, list):
+            r.fallo(f"`proceso.yaml` apunta a `{spec['variantes_desde']}` y el esquema no "
+                    f"declara esa lista: el sufijo de variante quedaría sin tipar")
+            declaradas = []
+        variantes = set(declaradas)
+    else:
+        r.fallo("`proceso.yaml` no declara el conjunto de variantes admitidas: un sufijo "
+                "sin conjunto declarado es texto libre (`F-02` punto 2)")
+        variantes = set()
+    cond = ((decl.get("campos") or {}).get("condicionales") or {}).get("campos") or {}
+    if (cond.get("capacidad") or {}).get("ref_a") != "capacidad":
+        r.fallo("`proceso.yaml` no tipa `condicionales.capacidad` como `ref_a: capacidad` "
+                "(`F-02` punto 4: la MISMA referencia)")
+
+    for datos, ruta, _l in b.get("proceso", []):
+        origen = os.path.relpath(ruta, RAIZ)
+        campos_vistos = []
+        for obligacion in (datos.get("obligatorias") or []):
+            campos_vistos.append((f"{datos.get('id')}·{obligacion.get('id')}",
+                                  obligacion.get("capacidad_productora"),
+                                  obligacion))
+        for condicional in (datos.get("condicionales") or []):
+            campos_vistos.append((f"{datos.get('id')}·condicional",
+                                  condicional.get("capacidad"), None))
+        # `F-02` punto 5 manda MOVER `OWNER`, no duplicarlo: exactamente una de las dos
+        # claves. Sin esta comprobación la fila se podía «cerrar» dejando el token viejo
+        # en el campo de capacidad y añadiendo el nuevo al lado, que es como estaba.
+        for obligacion in (datos.get("obligatorias") or []):
+            puestas = [c for c in ("capacidad_productora", "autoridad_productora")
+                       if obligacion.get(c) is not None]
+            if len(puestas) != 1:
+                r.fallo(f"{origen}: {datos.get('id')}·{obligacion.get('id')} declara "
+                        f"{len(puestas)} de [capacidad_productora, autoridad_productora] "
+                        f"({', '.join(puestas) or 'ninguna'}); `F-02` punto 5 exige "
+                        f"EXACTAMENTE UNA, y declarar las dos es la duplicación que el "
+                        f"hallazgo retira")
+            if obligacion.get("capacidad_productora") == "OWNER":
+                r.fallo(f"{origen}: {datos.get('id')}·{obligacion.get('id')} sigue "
+                        f"nombrando `OWNER` en el campo de CAPACIDAD; su sede es "
+                        f"`autoridad_productora` (`F-02` punto 5)")
+
+        for donde, valor, obligacion in campos_vistos:
+            if not isinstance(valor, str):
+                continue
+            if "/" in valor:
+                r.fallo(f"{origen}: {donde} nombra `{valor}`, que es un MÉTODO donde va "
+                        f"una CAPACIDAD. `E4.3` lo sustituyó en la fuente aprobada; el "
+                        f"derivado no puede seguir diciéndolo (`F-01`)")
+                continue
+            if valor == "OWNER":
+                # Ya denunciado arriba: aquí sólo se evita medirlo como capacidad.
+                continue
+            if obligacion is not None and obligacion.get("capacidad_productora_derivada"):
+                continue
+            base = valor.split(":", 1)[0]
+            if base not in quince:
+                r.fallo(f"{origen}: {donde} declara `{valor}`, y `{base}` no es una de las "
+                        f"quince capacidades")
+            elif ":" in valor and valor not in variantes:
+                r.fallo(f"{origen}: {donde} usa la variante `{valor}`, que el esquema no "
+                        f"declara. Una variante sin declarar no está tipada (`F-02` punto 2)")
+    return r
+
+
+def t241_dis_a_ver_anclado_al_ciclo(b):
+    """`F-06`."""
+    r = Resultado("T241", "La entrega de DIS a VER está anclada a una estación del ciclo de calidad")
+    ciclo = os.path.join(RAIZ, "kernel/operativo/diseno/04-CICLO-DE-CALIDAD.md")
+    estaciones = set()
+    if os.path.exists(ciclo):
+        with open(ciclo, encoding="utf-8") as fh:
+            estaciones = {int(n) for n in re.findall(r"^\s*(\d{1,2})\s{2}[A-ZÁÉÍÓÚÑ]",
+                                                    fh.read(), re.M)}
+    if not estaciones:
+        r.fallo("no se derivan las estaciones del ciclo de calidad: sin ellas, «anclado a "
+                "una estación» no es comprobable")
+    handoff = next((d for d, _r, _l in b.get("handoff", [])
+                    if d.get("id") == "handoff:dis-a-ver"), None)
+    if handoff is None:
+        r.fallo("no existe `handoff:dis-a-ver`")
+        return r
+    cuando = str(handoff.get("cuando") or "")
+    citadas = {int(n) for n in re.findall(r"estaci[oó]n\s+(\d{1,2})", cuando, re.I)}
+    if not citadas:
+        r.fallo("el `cuando` de `handoff:dis-a-ver` no nombra ninguna estación del ciclo: "
+                "«DIS cierra su capa» no dice CUÁNDO, y el gate visual tiene DOS pasadas "
+                "(`11-ARQ` §19 `F-06`)")
+    for n in citadas - estaciones:
+        r.fallo(f"el `cuando` de `handoff:dis-a-ver` cita la estación {n}, que el ciclo de "
+                f"calidad no declara")
+    entrega = " ".join(handoff.get("entrega") or [])
+    for dictamen, palabra in (("excelencia visual", "pasada"), ("usabilidad", "estación")):
+        trozo = next((x for x in (handoff.get("entrega") or []) if dictamen in x), None)
+        if trozo is None:
+            r.fallo(f"la entrega no incluye el dictamen de {dictamen}")
+        elif palabra not in trozo.lower() and "estaci" not in trozo.lower():
+            r.fallo(f"la entrega del dictamen de {dictamen} no dice de qué PASADA procede "
+                    f"el dictamen (`F-06`, segunda mitad del remedio)")
+    if "fidelidad" not in entrega.lower():
+        r.fallo("la entrega no nombra el eje `fidelidad`, que es el único que separa las "
+                "dos pasadas y el que obliga a anclar el `cuando`")
+    return r
+
+
+def t242_autoridad_de_los_documentos_del_owner(_b):
+    """`F-07`. La fórmula vive en `ads_lint`; aquí SÓLO se consume (`V6-19`)."""
+    r = Resultado("T242", "Todo documento de docs/owner/ declara su autoridad, y no la elige: la deriva")
+    from ads_lint import autoridad_de_los_documentos_del_owner   # noqa: PLC0415
+    declaracion, problemas = autoridad_de_los_documentos_del_owner(RAIZ)
+    for problema in problemas:
+        r.fallo(problema)
+    # Sin registro canónico de zonas esto es un proyecto instalado y la sede del Owner no
+    # viaja: la comprobación no tiene sujeto. Donde sí lo tiene, no declarar nada es rojo.
+    if os.path.exists(os.path.join(RAIZ, "docs/canonico/FUENTES-CANONICAS.yml")) \
+            and not problemas and not declaracion:
+        r.fallo("no se declaró la autoridad de ningún documento del Owner")
+    return r
+
+
+def t243_entregas_de_8_0_materializadas(b):
+    """`F-05` (i)."""
+    r = Resultado("T243", "Las cinco entregas que 11-ARQ §8.0 declara existen como instancias en circuitos/")
+    instancias = {}
+    for datos, ruta, _l in b.get("handoff", []):
+        if "/circuitos/" in ruta.replace(os.sep, "/"):
+            instancias[(datos.get("de"), datos.get("a"))] = datos
+    for de, a in ENTREGAS_DE_8_0:
+        datos = instancias.get((de, a))
+        if datos is None:
+            r.fallo(f"`11-ARQ` §8.0 declara qué viaja de {de} a {a} y `circuitos/` no tiene "
+                    f"la instancia: la composición no se bloquea, la ENTREGA sí (`F-05` i)")
+            continue
+        for campo in ("cuando", "entrega", "comprueba_al_recibir", "rechaza_si",
+                      "devolucion", "checkpoint"):
+            if not datos.get(campo):
+                r.fallo(f"handoff {de}→{a}: `{campo}` vacío; `C5` lo exige")
+    # CONTRASTE contra el documento, cuando el documento está presente.
+    sede = os.path.join(RAIZ, SEDE_DE_8_0)
+    if os.path.exists(sede):
+        with open(sede, encoding="utf-8") as fh:
+            declaradas = set(re.findall(r"QU[EÉ] VIAJA DE ([A-Z]{3}) A ([A-Z]{3})", fh.read()))
+        if declaradas and declaradas != set(ENTREGAS_DE_8_0):
+            r.fallo(f"§8.0 declara {sorted(declaradas)} y el kernel lleva "
+                    f"{sorted(ENTREGAS_DE_8_0)}: el dato derivado dejó de coincidir con su "
+                    f"documento")
+    return r
+
+
+def t244_grado_inicial_coincide_con_el_paso_5(b):
+    """`F-04`."""
+    r = Resultado("T244", "El grado inicial del escenario coincide con el grado que midió su paso 5")
+    ruta = os.path.join(RAIZ, "kernel/operativo/entrada/05-ESCENARIOS.md")
+    if not os.path.exists(ruta):
+        r.fallo("no existe `entrada/05-ESCENARIOS.md`")
+        return r
+    with open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    medidos = re.findall(r"GRADO GLOBAL\s*=\s*([A-ZÁ]+)", texto)
+    if not medidos:
+        r.fallo("el escenario ya no publica el GRADO GLOBAL que midió su paso de "
+                "incertidumbre: sin él no hay nada con lo que contrastar `grado_inicial`")
+        return r
+    encuadres = [d for d, ru, _l in b.get("encuadre", []) if os.path.abspath(ru) == ruta]
+    if not encuadres:
+        r.fallo("el fichero de escenarios no contiene ningún bloque `ads:encuadre`")
+        return r
+    medido = medidos[0].lower()
+    for datos in encuadres:
+        inc = datos.get("incertidumbre") or {}
+        inicial = inc.get("grado_inicial")
+        if inicial != medido:
+            r.fallo(f"{datos.get('id')}: el paso 5 midió GRADO GLOBAL = {medidos[0]} y el "
+                    f"encuadre persiste `grado_inicial: {inicial}`. Con esa divergencia la "
+                    f"crítica independiente que el grado de entrada hace OBLIGATORIA "
+                    f"desaparece al bajar el grado (`11-ARQ` §19 `F-04`)")
+        if not inc.get("grado"):
+            r.fallo(f"{datos.get('id')}: el encuadre no conserva `grado` junto a "
+                    f"`grado_inicial`; `F-04` exige los DOS")
+    return r
+
+
 PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t89_reanudacion_con_prueba, t90_roles_coherentes, t91_metodos_con_gate_y_pasos,
            t92_sin_marca, t135_composicion_respeta_el_contrato,
@@ -816,7 +1053,11 @@ PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t144_usabilidad_tiene_portador_en_con,
            t140_obligaciones_y_cierre, t141_frenos_con_ejecutor,
            t142_encuadre_expresa_sus_estados,
-           t145_critica_de_encuadre_no_se_evapora, t146_autoridad_de_decision]
+           t145_critica_de_encuadre_no_se_evapora, t146_autoridad_de_decision,
+           t240_capacidad_tipada_sin_metodos, t241_dis_a_ver_anclado_al_ciclo,
+           t242_autoridad_de_los_documentos_del_owner,
+           t243_entregas_de_8_0_materializadas,
+           t244_grado_inicial_coincide_con_el_paso_5]
 
 
 def main():

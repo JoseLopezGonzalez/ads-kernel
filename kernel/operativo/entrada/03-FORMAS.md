@@ -1,6 +1,10 @@
 # Catálogo de formas de conversación
 
-> Catálogo. Contiene catorce bloques `ads:forma-conversacion`, uno por clase de expresión.
+> Catálogo. Contiene catorce bloques `ads:forma-conversacion`. **No hay uno por clase de
+> expresión**: las clases de expresión son NUEVE y viven en
+> [`01-TAXONOMIA.md`](01-TAXONOMIA.md), de modo que la correspondencia uno a uno que esta
+> cabecera afirmaba era falsa —`11-ARQ` §19, `F-10`—. La cifra 14 sí es correcta, y
+> ninguna de las dos se escribe a mano: las deriva `comprobar_recuentos.py`.
 > Lo ejecuta [`ENC/Escucha`](../capacidades/ENC/metodos/Escucha.md) en su paso 3.
 
 Cada forma declara, sin dejar nada al criterio del momento: **qué resuelve sola · qué
