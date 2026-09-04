@@ -32,6 +32,85 @@ Codigos de salida:  0 sin fallos  ·  1 hay fallos  ·  2 no se pudo empezar
 """
 from __future__ import annotations
 
+# ---------------------------------------------------------------------------
+#  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-04, en la zona hermana: con un
+#  `hashlib.py` homónimo en `PYTHONPATH`, `validadores/huella.py` publicaba la huella
+#  ESPERADA sobre un árbol MUTADO y `T150` salía SUPERADA con `EXIT=0`. Este ejecutable no
+#  se libraba por vivir en `docs/`: emite un VEREDICTO sobre el corpus, y un veredicto que
+#  el lanzador puede decidir no es un veredicto. La zona estaba fuera del inventario de
+#  `T306` por el mismo motivo que `validadores/`: el inventario era mecánico DENTRO de dos
+#  zonas escritas a mano.
+#
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      Alternativas: (a) importar la purga de un módulo común; (b) copiar el prólogo entero
+#      —recital incluido— desde `ads_runtime.py`; (c) copiar el MECANISMO byte a byte y
+#      escribir el recital de esta sede.
+#      Se elige (c). Con (a) la guardia dependería de un `import`, que es exactamente lo que
+#      está protegiendo: una guardia que necesita importar ya ha perdido. Con (b) el recital
+#      mentiría, porque el hecho reproducido allí no es el de aquí. Con (c) `T330` exige
+#      —y comprueba— que el MECANISMO sea IDÉNTICO byte a byte en todos los puntos
+#      ejecutables del árbol (digest `aa219465a6dd6a04`, 1 869 bytes), mientras cada sede
+#      dice qué se midió en ella. Lo que protege es el mecanismo; lo que se lee, el recital.
+#
+#  DECISIÓN · se retira lo que viene del LANZADOR, y no «todo lo que no reconozco»
+#      Una lista blanca de directorios del intérprete se rompería en cada instalación
+#      distinta y convertiría un fallo de entorno en un fallo del aparato. Lo que `E-10`
+#      nombra es concreto: `PYTHONPATH` y el `cwd`. Se retiran ésos, se cuenta cuántos, y el
+#      recuento queda en `RETIRADAS_DE_LA_RUTA`.
+import sys as _sys
+import os as _os
+
+_RAIZ_DEL_APARATO = _os.path.dirname(_os.path.abspath(__file__))
+
+
+def _entradas_del_lanzador():
+    """Lo que el LANZADOR puede meter en la ruta de importación: `PYTHONPATH` y el `cwd`."""
+    sospechosas = set()
+    for entrada in (_os.environ.get("PYTHONPATH") or "").split(_os.pathsep):
+        if entrada:
+            sospechosas.add(_os.path.realpath(entrada))
+    try:
+        sospechosas.add(_os.path.realpath(_os.getcwd()))
+    except OSError:
+        # Un `cwd` borrado bajo los pies no es motivo para no purgar el resto.
+        pass
+    return sospechosas
+
+
+def _purgar_la_ruta_de_importacion():
+    """Retira de `sys.path` lo que venga del lanzador. Devuelve cuántas entradas retiró."""
+    del_lanzador = _entradas_del_lanzador()
+    propia = _os.path.realpath(_RAIZ_DEL_APARATO)
+    conservadas, retiradas = [], []
+    for entrada in _sys.path:
+        try:
+            real = _os.path.realpath(entrada or _os.getcwd())
+        except OSError:
+            conservadas.append(entrada)
+            continue
+        if real != propia and real in del_lanzador:
+            retiradas.append(real)
+        else:
+            conservadas.append(entrada)
+    _sys.path[:] = conservadas
+    return retiradas
+
+
+RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()
+
+# CONTROL DEL CONTROL de la purga: `os` se usa para poder purgar, así que si `os` mismo
+# viniera del lanzador la purga no probaría nada. No hay forma honesta de seguir: se dice y
+# se sale con el código de PROCEDENCIA.
+if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lanzador():
+    _sys.stderr.write(
+        "[PROCEDENCIA_NO_FIABLE] el módulo `os` procede de la ruta de importación del "
+        "lanzador: este punto ejecutable no puede garantizar de dónde salen sus módulos y "
+        "NO ejecuta\n")
+    raise SystemExit(5)
+
+
 import argparse
 import copy
 import json

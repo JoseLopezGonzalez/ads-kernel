@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """negativos_integridad — infracciones deliberadas de la corrección del 2026-09-04.
 
 POR QUÉ ESTE FICHERO EXISTE, Y NO UNA LÍNEA MÁS EN `comprobar_negativos.py`. La corrección
@@ -30,6 +29,26 @@ DECISIÓN · se sabotea `contencion-salida.txt` y no un fichero inventado
     mutación se «detectaría» por el motivo equivocado. Mutando uno declarado, lo único que
     cambia es aquello que se quiere medir.
 """
+# ---------------------------------------------------------------------------
+#  ADVERTENCIA DE FORMA · este módulo NO lleva línea de intérprete, y es deliberado.
+#
+#  `H-03` de la auditoría independiente del 2026-09-04 obligó a que el inventario de puntos
+#  ejecutables se derive del ÁRBOL ENTERO y a que TODO `.py` quede clasificado —el
+#  inventario anterior era mecánico DENTRO de dos zonas escritas a mano, y por eso
+#  `validadores/` estaba entera fuera del control mientras `H-01` encontraba el defecto
+#  `E-10` vivo en `huella.py`—. La equivalencia que `T330` comprueba sobre el disco es:
+#
+#      lleva `#!`   ⟺   es INVOCABLE   ⟺   lleva el MECANISMO `E-10`
+#
+#  Este módulo se IMPORTA —`comprobar_negativos.py` lo incorpora por nombre y sin
+#  `try/except`— y no se ejecuta: no define `__main__` ni sale desde el nivel superior. No
+#  cumple el segundo término, así que tampoco puede llevar el primero: una línea de
+#  intérprete presenta un módulo como ejecutable, y a un ejecutable esta equivalencia le
+#  exige la purga. Se retira la línea, y con ella la ambigüedad. Es exactamente lo que
+#  `ADJ-B2` hizo con `errores.py`, `firma.py`, `atestacion.py` y `aislamiento.py` de la
+#  raíz externa.
+# ---------------------------------------------------------------------------
+
 from __future__ import annotations
 
 import os

@@ -4,5 +4,6 @@
 # ---------------------------------------------------------------
 T158  SUPERADA  La evidencia publicada demuestra lo que el informe afirma
 T350  SUPERADA  El estado declarado de cada escenario lo sostiene su evidencia
+          cobertura del contraste: contrastados 195 · no contrastables 72 · divergencias 0 · no contrastables por estado declarado: contrato-definido=56 prueba-ejecutada=12 validador-implementado=4
 
 2 superadas · 0 fallidas

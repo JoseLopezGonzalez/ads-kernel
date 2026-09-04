@@ -58,6 +58,78 @@ Uso:
 """
 from __future__ import annotations
 
+# `E-10` · LA PROCEDENCIA DE LOS MÓDULOS, PURGADA ANTES DE NINGÚN `import` PROPIO
+#
+#  POR QUÉ ESTÁ AQUÍ, Y NO SÓLO EN `kernel/operativo/runtime/`. `H-01` de la auditoría del
+#  2026-09-04 midió que `validadores/huella.py` no llevaba este prólogo y que, con un
+#  `hashlib` homónimo en `PYTHONPATH`, **un árbol MUTADO producía la huella esperada y
+#  `T150` publicaba SUPERADA con `EXIT=0`**. El mismo defecto vive en cualquier ejecutable
+#  que decida algo y no purgue: éstos deciden qué universo obligatorio existe y si un gate
+#  puede adjudicar, que es tanto o más que una huella.
+#
+#  DECISIÓN · se purga ANTES de importar nada propio, con lo único que el intérprete ya cargó
+#      Purgar después de los `import` normales llega tarde —el homónimo ya está en
+#      `sys.modules`— y purgar desde un módulo aparte depende de un `import`, que es
+#      exactamente lo que se está protegiendo. `sys` es incorporado y `os` lo carga el
+#      arranque, así que los dos vienen de `sys.modules` y no de la ruta. Que `os` sea el
+#      bueno se COMPRUEBA, no se supone.
+#
+#  DECISIÓN · se retira lo que viene del LANZADOR, y no «todo lo que no reconozco»
+#      Una lista blanca de directorios del intérprete se rompería en cada instalación y
+#      convertiría un fallo de entorno en un fallo del aparato. `E-10` nombra dos cosas
+#      concretas: `PYTHONPATH` y el `cwd`. Se retiran ésas y el recuento se publica.
+import sys as _sys
+import os as _os
+
+_RAIZ_DEL_APARATO = _os.path.dirname(_os.path.abspath(__file__))
+
+
+def _entradas_del_lanzador():
+    """Lo que el LANZADOR puede meter en la ruta de importación: `PYTHONPATH` y el `cwd`."""
+    sospechosas = set()
+    for entrada in (_os.environ.get("PYTHONPATH") or "").split(_os.pathsep):
+        if entrada:
+            sospechosas.add(_os.path.realpath(entrada))
+    try:
+        sospechosas.add(_os.path.realpath(_os.getcwd()))
+    except OSError:
+        # Un `cwd` borrado bajo los pies no es motivo para no purgar el resto.
+        pass
+    return sospechosas
+
+
+def _purgar_la_ruta_de_importacion():
+    """Retira de `sys.path` lo que venga del lanzador. Devuelve cuántas entradas retiró."""
+    del_lanzador = _entradas_del_lanzador()
+    propia = _os.path.realpath(_RAIZ_DEL_APARATO)
+    conservadas, retiradas = [], []
+    for entrada in _sys.path:
+        try:
+            real = _os.path.realpath(entrada or _os.getcwd())
+        except OSError:
+            conservadas.append(entrada)
+            continue
+        if real != propia and real in del_lanzador:
+            retiradas.append(real)
+        else:
+            conservadas.append(entrada)
+    _sys.path[:] = conservadas
+    return retiradas
+
+
+RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()
+
+# CONTROL DEL CONTROL de la purga: `os` se usa para poder purgar, así que si `os` mismo
+# viniera del lanzador la purga no probaría nada. No hay forma honesta de seguir: se dice y
+# se sale con el código de PROCEDENCIA.
+if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lanzador():
+    _sys.stderr.write(
+        "[PROCEDENCIA_NO_FIABLE] el módulo `os` procede de la ruta de importación del "
+        "lanzador: este punto ejecutable no puede garantizar de dónde salen sus módulos y "
+        "NO ejecuta\n")
+    raise SystemExit(5)
+
+
 import argparse
 import hashlib
 import io
@@ -132,10 +204,53 @@ def comprobar(manifiesto, lecturas, base=RAIZ):
     for revisor, lote in sorted((manifiesto.get("revisores") or {}).items()):
         asignadas_por_revisor[revisor] = {f["ruta"]: f for f in lote.get("fuentes") or []}
 
+    # `H-06` · LA PRIMERA RESTA ERA UNA TAUTOLOGÍA, Y SE DICE ENTERO PORQUE ES DEL AUTOR
+    #
+    #     Estaba escrito así: `obligatorio` se construía UNIENDO los lotes, y después se
+    #     restaba `declarado_obligatorio - obligatorio` con `declarado_obligatorio` cayendo
+    #     por omisión en el mismo conjunto. Es `X − X`. La auditoría del 2026-09-04 lo midió
+    #     con dos manifiestos vacuos: `{"revisores":{}}` y `{"REV-1":{"fuentes":[]}}` daban
+    #     los dos **COBERTURA COMPLETA · EXIT=0**, y el docstring de este mismo fichero
+    #     prometía «devuelve 0 sólo si las CUATRO restas son vacías».
+    #
+    #     El instrumento medía que se leyera lo asignado, y NO que se asignara lo
+    #     obligatorio. `O27` §5 pide las dos cosas: un lote vacío satisfacía la norma sin
+    #     leer una línea, que es peor que el defecto que este fichero existe para impedir.
+    #
+    # DECISIÓN · `OBLIGATORIO` se DERIVA DEL ÁRBOL, y el manifiesto sólo puede AMPLIARLO
+    #     Alternativas: (a) exigir que el manifiesto declare `obligatorio` y creerle; (b)
+    #     derivarlo del árbol con `git diff` entre la base y la candidata; (c) las dos, con
+    #     el árbol como suelo.
+    #     Se elige (c). Con (a) volvemos a la declaración —el manifiesto que se equivoca al
+    #     asignar se equivoca igual al declarar qué era obligatorio—. Con (b) sola, un
+    #     manifiesto no podría añadir una sede normativa que el diff no toca y que sin
+    #     embargo hay que leer. Con (c) el suelo lo pone el árbol: **toda fuente MODIFICADA
+    #     entre la base y la candidata es obligatoria**, la declaración puede añadir, y
+    #     ninguna de las dos puede quitar.
+    #
+    # DECISIÓN · un manifiesto SIN REVISORES, o con un revisor SIN LOTE, es fallo cerrado
+    #     No es una resta vacía: es una medida que no se ha tomado. Se distingue del caso
+    #     legítimo «no hay nada obligatorio» —que sobre un árbol real no ocurre— exigiendo
+    #     que el universo obligatorio derivado NO esté vacío.
     obligatorio = set()
     for lote in asignadas_por_revisor.values():
         obligatorio |= set(lote)
-    declarado_obligatorio = set(manifiesto.get("obligatorio") or obligatorio)
+    derivado = set(manifiesto.get("modificadas") or [])
+    declarado_obligatorio = set(manifiesto.get("obligatorio") or []) | derivado
+    if not declarado_obligatorio:
+        raise ManifiestoIlegible(
+            "el manifiesto no declara `modificadas` ni `obligatorio`, de modo que el "
+            "universo obligatorio saldría VACÍO y la primera resta sería vacía por "
+            "construcción. Un gate cuyo universo no se puede derivar no es un gate con "
+            "cobertura completa: es un gate sin medida")
+    if not asignadas_por_revisor:
+        raise ManifiestoIlegible(
+            "el manifiesto no declara ningún revisor: no hay a quién medir la cobertura")
+    for revisor, lote in sorted(asignadas_por_revisor.items()):
+        if not lote:
+            raise ManifiestoIlegible(
+                "el lote de `%s` está VACÍO. Un lote vacío satisface toda resta de lectura "
+                "sin leer una línea, que es exactamente lo que `O27` §5 prohíbe" % revisor)
     informe["restas"]["obligatorio_menos_asignado"] = sorted(
         declarado_obligatorio - obligatorio)
 
@@ -175,6 +290,16 @@ def comprobar(manifiesto, lecturas, base=RAIZ):
                 continue
             rango = ficha.get("rango")
             desde, hasta = (rango if rango else [1, lineas_arbol])
+            # `H-06` · un tramo `[1, 999999]` sobre un fichero de dos líneas no es una
+            # lectura: es una declaración que no puede ser cierta. Se rechaza en vez de
+            # aceptarla como cobertura holgada, porque el modo de fallo que este instrumento
+            # persigue es precisamente el de la declaración cómoda.
+            for inicio_t, fin_t in (leida.get("tramos") or []):
+                if int(fin_t) > lineas_arbol or int(inicio_t) < 1:
+                    raise ManifiestoIlegible(
+                        "`%s` declara el tramo %s-%s sobre `%s`, que tiene %d líneas: un "
+                        "tramo fuera del fichero no describe ninguna lectura"
+                        % (revisor, inicio_t, fin_t, ruta, lineas_arbol))
             huecos = _faltantes(leida.get("tramos") or [], int(desde), int(hasta))
             if huecos:
                 sin_leer = sum(b - a + 1 for a, b in huecos)
@@ -295,6 +420,32 @@ def _autopruebas(base):
              False, "revisores_no_cerrados")
         caso("un revisor SIN manifiesto de lectura", [completo_1],
              False, "revisores_sin_manifiesto_de_lectura")
+
+        # `H-06` · LOS TRES CASOS VACUOS. La auditoría midió que las siete autopruebas
+        # anteriores NO ejercían ninguno, y que los tres daban COBERTURA COMPLETA con
+        # EXIT=0. Un instrumento que sólo se prueba con manifiestos bien formados no mide
+        # su propio modo de fallo más barato: el del manifiesto que no asigna nada.
+        def caso_ilegible(nombre, manifiesto_hostil, lecturas):
+            try:
+                comprobar(manifiesto_hostil, lecturas, base=taller)
+            except ManifiestoIlegible:
+                controles.append((nombre, "ok"))
+                return
+            controles.append((nombre, "SIN DETECTAR"))
+            sin_detectar.append(nombre)
+
+        caso_ilegible("manifiesto SIN revisores", {"candidata": "X", "revisores": {},
+                                                   "modificadas": ["uno.txt"]}, [])
+        caso_ilegible("un revisor con el LOTE VACÍO",
+                      {"candidata": "X", "modificadas": ["uno.txt"],
+                       "revisores": {"REV-1": {"fuentes": []}}}, [])
+        caso_ilegible("universo obligatorio VACÍO por construcción",
+                      {"candidata": "X", "revisores": {"REV-1": {"fuentes": [ficha(uno)]}}},
+                      [completo_1])
+        fuera = copy.deepcopy(completo_1)
+        fuera["leidas"][0]["tramos"] = [[1, 999999]]
+        caso_ilegible("un TRAMO fuera del fichero declarado como lectura",
+                      manifiesto, [fuera, completo_2])
     return controles, sin_detectar
 
 

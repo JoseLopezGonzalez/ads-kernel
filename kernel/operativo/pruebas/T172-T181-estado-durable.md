@@ -4,6 +4,22 @@ Conformidad de la sección
 [`(g)`](../../../docs/rediseno/g-ESTADO-DURABLE-APROBADA.md) y de su contrato derivado
 [`CONTRATO-ESTADO-DURABLE.md`](../runtime/CONTRATO-ESTADO-DURABLE.md).
 
+> **`H-02` · `T180` y `T181` han BAJADO a `prueba-ejecutada`, y no es una degradación del
+> aparato: es el dato.** La auditoría independiente del 2026-09-04 midió que catorce
+> escenarios del corpus declaraban `estado: prueba-superada` sobre una evidencia que **no
+> los nombra en ninguna línea de veredicto**. La derivación de
+> [`validadores/registro_pruebas.py`](../validadores/registro_pruebas.py) ya sacaba
+> `prueba-ejecutada` y escribía el motivo, pero DESCARTABA la divergencia por no ser
+> contrastable, y `T350` quedaba en verde. Desde esa pasada, un `estado` superior al
+> derivado es DIVERGENCIA se pueda contrastar o no, y la regla dura de
+> [`REGISTRO.md`](REGISTRO.md) —«ninguna prueba sube de estado por argumento»— vale también
+> para lo que la evidencia **no sostiene**, y no sólo para lo que **contradice**.
+>
+> `prueba-ejecutada` es el estado exacto: `escenario_extremo_a_extremo.py` —quince pasos— y
+> `comprobar_arranque.py` se ejecutan, terminan con código 0 y su salida queda registrada; lo
+> que no consta es el veredicto **de este escenario** por separado. Subirlo otra vez exige que
+> la salida lo NOMBRE, no que alguien lo declare.
+
 **Estas pruebas EJECUTAN CÓDIGO.** No inspeccionan texto, no comprueban que un fichero
 exista y no simulan nada: crean almacenes reales en directorios temporales, escriben en
 disco, **matan procesos de verdad** en fronteras controladas y lanzan **procesos
@@ -262,7 +278,7 @@ falla_si:
   - "la salida lleva reloj, duración, identidad de proceso o ruta absoluta, y deja de ser reproducible"
 ejecucion: validador-estructural
 validador: kernel/operativo/runtime/pruebas/escenario_extremo_a_extremo.py
-estado: prueba-superada
+estado: prueba-ejecutada
 evidencia: evidencia/estado-e2e-salida.txt
 ```
 
@@ -283,7 +299,7 @@ falla_si:
   - "el proyecto instalado queda con un enlace roto a una sede que el corpus operativo nombra"
 ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_arranque.py
-estado: prueba-superada
+estado: prueba-ejecutada
 evidencia: evidencia/arranque-salida.txt
 ```
 

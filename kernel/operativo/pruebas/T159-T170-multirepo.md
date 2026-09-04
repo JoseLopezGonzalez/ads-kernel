@@ -15,6 +15,23 @@ comprobar_arranque.py        T168 · T171 — el arranque produce la topología 
                              proyecto creado declara dónde se lee cada criterio del §100
 ```
 
+> **`H-02` · `T162`…`T168` han BAJADO a `prueba-ejecutada`, y no es una degradación del
+> aparato: es el dato.** La auditoría independiente del 2026-09-04 midió que catorce
+> escenarios del corpus declaraban `estado: prueba-superada` sobre una evidencia que **no
+> los nombra en ninguna línea de veredicto**. La derivación de
+> [`validadores/registro_pruebas.py`](../validadores/registro_pruebas.py) ya sacaba
+> `prueba-ejecutada` y escribía el motivo —«la ejecución consta, el resultado DE ESTE
+> escenario no»—, pero DESCARTABA la divergencia por no ser contrastable, y `T350` quedaba
+> en verde. Desde esa pasada, un `estado` superior al derivado es DIVERGENCIA se pueda
+> contrastar o no, y la regla dura de [`REGISTRO.md`](REGISTRO.md) —«ninguna prueba sube de
+> estado por argumento»— vale también para lo que la evidencia **no sostiene**, y no sólo
+> para lo que **contradice**.
+>
+> `prueba-ejecutada` es el estado exacto: la batería que los produce se ejecuta, termina con
+> código 0 y su salida queda registrada; lo que no consta es el veredicto **de este
+> escenario** por separado. Subirlo otra vez exige que la salida lo NOMBRE, no que alguien lo
+> declare.
+
 > **El nombre del fichero se conserva aunque ahora llegue hasta T171.** La enmienda `E2`
 > —documento aprobado, que no se reescribe— lo enlaza por esta ruta.
 
@@ -108,7 +125,7 @@ falla_si:
   - "se vuelve a clonar encima y el trabajo local desaparece"
 ejecucion: validador-estructural
 validador: tooling/tests/test_workspace.py
-estado: prueba-superada
+estado: prueba-ejecutada
 evidencia: evidencia/workspace-salida.txt
 ```
 
@@ -128,7 +145,7 @@ falla_si:
   - "se borra o se sobrescribe el directorio"
 ejecucion: validador-estructural
 validador: tooling/tests/test_workspace.py
-estado: prueba-superada
+estado: prueba-ejecutada
 evidencia: evidencia/workspace-salida.txt
 ```
 
@@ -147,7 +164,7 @@ falla_si:
   - "una fuente técnica puede ocupar la ruta del repositorio de control"
 ejecucion: validador-estructural
 validador: tooling/tests/test_workspace.py
-estado: prueba-superada
+estado: prueba-ejecutada
 evidencia: evidencia/workspace-salida.txt
 ```
 
@@ -167,7 +184,7 @@ falla_si:
   - "la normalización iguala repositorios que no lo son"
 ejecucion: validador-estructural
 validador: tooling/tests/test_workspace.py
-estado: prueba-superada
+estado: prueba-ejecutada
 evidencia: evidencia/workspace-salida.txt
 ```
 
@@ -186,7 +203,7 @@ falla_si:
   - "el modelo impone un componente por repositorio y no admite monorepo"
 ejecucion: validador-estructural
 validador: tooling/tests/test_workspace.py
-estado: prueba-superada
+estado: prueba-ejecutada
 evidencia: evidencia/workspace-salida.txt
 ```
 
@@ -205,7 +222,7 @@ falla_si:
   - "una fuente que nadie necesita todavía impide operar sobre las demás"
 ejecucion: validador-estructural
 validador: tooling/tests/test_workspace.py
-estado: prueba-superada
+estado: prueba-ejecutada
 evidencia: evidencia/workspace-salida.txt
 ```
 
@@ -232,7 +249,7 @@ falla_si:
   - "la rama creada y la documentada dejan de ser la misma sin que nada lo diga"
 ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_arranque.py
-estado: prueba-superada
+estado: prueba-ejecutada
 evidencia: evidencia/arranque-salida.txt
 ```
 

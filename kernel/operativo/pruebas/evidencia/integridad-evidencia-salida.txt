@@ -27,9 +27,9 @@ T308 · Defecto que previene: cerrar el agujero en uno y dejarlo en los otros. .
 test_T308f_no_hay_EXITO_PARCIAL_cuando_el_fallo_es_tipado (__main__.ErroresTipadosDeLaCLI.test_T308f_no_hay_EXITO_PARCIAL_cuando_el_fallo_es_tipado)
 T308 · Defecto que previene: publicar medio veredicto y además fallar. ... ok
 test_T310_la_ventana_de_publicacion_NO_se_diagnostica_como_corrupcion (__main__.LaVentanaDePublicacion.test_T310_la_ventana_de_publicacion_NO_se_diagnostica_como_corrupcion)
-`E-08` bis · el objeto es el que el testigo dice haber publicado. ... ok
+T310 · `E-08` bis · el objeto es el que el testigo dice haber publicado. ... ok
 test_T311_sin_testigo_que_lo_avale_sigue_siendo_ESTADO_CORRUPTO (__main__.LaVentanaDePublicacion.test_T311_sin_testigo_que_lo_avale_sigue_siendo_ESTADO_CORRUPTO)
-El control que impide que la corrección de `T310` se coma la corrupción real. ... ok
+T311 · El control que impide que la corrección de `T310` se coma la corrupción. ... ok
 test_T306_ningun_ejecutable_importa_un_homonimo_del_PYTHONPATH (__main__.ProcedenciaDeLosModulos.test_T306_ningun_ejecutable_importa_un_homonimo_del_PYTHONPATH)
 T306 · Defecto que previene: `E-10`, que el lanzador decida qué código juzga. ... ok
 test_T306b_el_veredicto_no_se_falsea_desde_el_PYTHONPATH (__main__.ProcedenciaDeLosModulos.test_T306b_el_veredicto_no_se_falsea_desde_el_PYTHONPATH)
@@ -40,9 +40,9 @@ test_T306d_dos_repositorios_distintos_no_se_contaminan (__main__.ProcedenciaDeLo
 T306 · Defecto que previene: que el árbol juzgado aporte el código que lo juzga. ... ok
 test_T306e_el_cwd_del_lanzador_no_sustituye_al_aparato (__main__.ProcedenciaDeLosModulos.test_T306e_el_cwd_del_lanzador_no_sustituye_al_aparato)
 T306 · Defecto que previene: colar un homónimo por el directorio de trabajo. ... ok
-test_T330_el_inventario_de_puntos_ejecutables_se_DERIVA_y_es_coherente (__main__.PurgaEnLaRaizExterna.test_T330_el_inventario_de_puntos_ejecutables_se_DERIVA_y_es_coherente)
-T330 · Defecto que previene: `ADJ-B2`, una lista de ejecutables escrita a mano. ... ok
-test_T330b_lo_excluido_del_inventario_esta_excluido_por_su_motivo (__main__.PurgaEnLaRaizExterna.test_T330b_lo_excluido_del_inventario_esta_excluido_por_su_motivo)
+test_T330_el_inventario_se_DERIVA_del_arbol_ENTERO_y_es_coherente (__main__.PurgaEnLaRaizExterna.test_T330_el_inventario_se_DERIVA_del_arbol_ENTERO_y_es_coherente)
+T330 · Defecto que previene: `ADJ-B2` y `H-03`, un inventario que no ve una zona. ... ok
+test_T330b_cada_exclusion_esta_DECLARADA_con_su_motivo_y_SE_COMPRUEBA (__main__.PurgaEnLaRaizExterna.test_T330b_cada_exclusion_esta_DECLARADA_con_su_motivo_y_SE_COMPRUEBA)
 T330 · Defecto que previene: un alcance que se estrecha sin que se note. ... ok
 test_T331_la_raiz_externa_no_se_falsea_desde_el_PYTHONPATH (__main__.PurgaEnLaRaizExterna.test_T331_la_raiz_externa_no_se_falsea_desde_el_PYTHONPATH)
 T331 · Defecto que previene: `capacidades` publicando `{}` con código 0. ... ok
@@ -72,8 +72,10 @@ test_T307e_fallos_errores_y_dos_corridas_pegadas_son_ROJO (__main__.ResultadoExa
 T307 · Defecto que previene: publicar la corrida buena y esconder la mala. ... ok
 test_T307f_la_evidencia_PUBLICADA_del_repositorio_supera_la_comprobacion (__main__.ResultadoExactoDeLaEvidencia.test_T307f_la_evidencia_PUBLICADA_del_repositorio_supera_la_comprobacion)
 T307 · Control POSITIVO sobre el corpus real: la regla nueva no es inaplicable. ... ok
+test_T307g_la_COBERTURA_DEL_CONTRASTE_va_publicada_en_la_evidencia (__main__.ResultadoExactoDeLaEvidencia.test_T307g_la_COBERTURA_DEL_CONTRASTE_va_publicada_en_la_evidencia)
+T307 · Defecto que previene: `H-08`, una cifra que se calcula y no se publica. ... ok
 
 ----------------------------------------------------------------------
-Ran 34 tests  (duración no registrada: varía por ejecución)
+Ran 35 tests  (duración no registrada: varía por ejecución)
 
 OK

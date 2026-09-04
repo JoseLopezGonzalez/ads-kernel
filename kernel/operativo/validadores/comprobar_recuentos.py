@@ -22,6 +22,92 @@ Uso:
 """
 from __future__ import annotations
 
+# ---------------------------------------------------------------------------
+#  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-04, sobre `validadores/huella.py` —el
+#  instrumento que produce el número que se publica como línea base— y con seis líneas de
+#  veneno: un `hashlib.py` homónimo cuyo `sha256()` devuelve siempre el digest esperado.
+#
+#      $ echo "# CODIGO INYECTADO" >> mutado/kernel/operativo/validadores/ads_lint.py
+#      $ cd mutado && python3.12 …/huella.py                     → 8b38fb4f4b07300c
+#      $ python3.12 …/comprobar_integridad.py                    → T150 FALLIDA  EXIT=1
+#      $ PYTHONPATH=veneno python3.12 …/huella.py                → bc59513f7182130a
+#      $ PYTHONPATH=veneno python3.12 …/comprobar_integridad.py  → T150 SUPERADA EXIT=0
+#
+#  `T150` es la prueba que dice «la huella detecta su edición», y bajo veneno certificaba en
+#  VERDE un árbol editado. La causa: la zona `validadores/` estaba ENTERA fuera del
+#  inventario de `T306`, de modo que `E-10` —declarado «CERRADO POR INVENTARIO MECÁNICO»—
+#  seguía vivo justo en el aparato que produce la evidencia de la certificación.
+#
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      Alternativas: (a) importar la purga de un módulo común; (b) copiar el prólogo entero
+#      —recital incluido— desde `ads_runtime.py`; (c) copiar el MECANISMO byte a byte y
+#      escribir el recital de esta sede.
+#      Se elige (c). Con (a) la guardia dependería de un `import`, que es exactamente lo que
+#      está protegiendo: una guardia que necesita importar ya ha perdido. Con (b) el recital
+#      mentiría, porque el hecho reproducido allí no es el de aquí. Con (c) `T330` exige
+#      —y comprueba— que el MECANISMO sea IDÉNTICO byte a byte en todos los puntos
+#      ejecutables del árbol (digest `aa219465a6dd6a04`, 1 869 bytes), mientras cada sede
+#      dice qué se midió en ella. Lo que protege es el mecanismo; lo que se lee, el recital.
+#
+#  DECISIÓN · se retira lo que viene del LANZADOR, y no «todo lo que no reconozco»
+#      Una lista blanca de directorios del intérprete se rompería en cada instalación
+#      distinta y convertiría un fallo de entorno en un fallo del aparato. Lo que `E-10`
+#      nombra es concreto: `PYTHONPATH` y el `cwd`. Se retiran ésos, se cuenta cuántos, y el
+#      recuento queda en `RETIRADAS_DE_LA_RUTA`.
+import sys as _sys
+import os as _os
+
+_RAIZ_DEL_APARATO = _os.path.dirname(_os.path.abspath(__file__))
+
+
+def _entradas_del_lanzador():
+    """Lo que el LANZADOR puede meter en la ruta de importación: `PYTHONPATH` y el `cwd`."""
+    sospechosas = set()
+    for entrada in (_os.environ.get("PYTHONPATH") or "").split(_os.pathsep):
+        if entrada:
+            sospechosas.add(_os.path.realpath(entrada))
+    try:
+        sospechosas.add(_os.path.realpath(_os.getcwd()))
+    except OSError:
+        # Un `cwd` borrado bajo los pies no es motivo para no purgar el resto.
+        pass
+    return sospechosas
+
+
+def _purgar_la_ruta_de_importacion():
+    """Retira de `sys.path` lo que venga del lanzador. Devuelve cuántas entradas retiró."""
+    del_lanzador = _entradas_del_lanzador()
+    propia = _os.path.realpath(_RAIZ_DEL_APARATO)
+    conservadas, retiradas = [], []
+    for entrada in _sys.path:
+        try:
+            real = _os.path.realpath(entrada or _os.getcwd())
+        except OSError:
+            conservadas.append(entrada)
+            continue
+        if real != propia and real in del_lanzador:
+            retiradas.append(real)
+        else:
+            conservadas.append(entrada)
+    _sys.path[:] = conservadas
+    return retiradas
+
+
+RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()
+
+# CONTROL DEL CONTROL de la purga: `os` se usa para poder purgar, así que si `os` mismo
+# viniera del lanzador la purga no probaría nada. No hay forma honesta de seguir: se dice y
+# se sale con el código de PROCEDENCIA.
+if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lanzador():
+    _sys.stderr.write(
+        "[PROCEDENCIA_NO_FIABLE] el módulo `os` procede de la ruta de importación del "
+        "lanzador: este punto ejecutable no puede garantizar de dónde salen sus módulos y "
+        "NO ejecuta\n")
+    raise SystemExit(5)
+
+
 import argparse
 import json
 import os
@@ -957,6 +1043,54 @@ def _parrafos(texto):
     return fusionados
 
 
+# `H-09` · LA TOLERANCIA A LA ACENTUACIÓN, Y EL DEFECTO QUE APARECIÓ AL MEDIRLA
+#
+#     LO QUE LA AUDITORÍA INDEPENDIENTE DEL 2026-09-04 REGISTRÓ (informativa): «"No existe
+#     ningun verificador de admision" (sin acentos) NO se detecta; con acentos, sí». Al
+#     reproducirlo para cerrarlo apareció que la causa NO era la acentuación, y que el
+#     defecto era mayor de lo registrado. Medido, con las DOS frases insertadas al final de
+#     `docs/canonico/04-CONTRATOS-TECNICOS.md`:
+#
+#         "No existe ningún verificador de admisión en este árbol, y nadie lo ha construido."
+#         "No existe ningun verificador de admision en este arbol, y nadie lo ha construido."
+#         $ python3.12 kernel/operativo/validadores/comprobar_recuentos.py | grep T360
+#         T360  SUPERADA          ← LAS DOS pasaron, también la ACENTUADA
+#
+#     La causa está en la aritmética de este `return`, que era:
+#
+#         negacion.end() + len(cuerpo[negacion.end():]) - len(resto)
+#
+#     `resto` se recorta a 60 caracteres y luego se le quitan los blancos de cabeza, pero el
+#     desplazamiento se calculaba contra el resto ENTERO del párrafo. Con un párrafo cuya
+#     cola pasa de 60 caracteres el desplazamiento salía adelantado —aquí, 19 en vez de
+#     16—, el sujeto se leía cortado («rificador…»), no casaba con el nombre de NINGUNA
+#     pieza y el bucle hacía `continue`: la negación quedaba SIN DENUNCIAR. Es decir, el
+#     control se apagaba solo en cuanto la negación no estaba cerca del final del párrafo,
+#     con acentos o sin ellos. Las cuatro sedes históricas se seguían cazando porque en
+#     ellas la negación cae al final; una sede nueva, no.
+#
+#     DECISIÓN · se corrige la aritmética Y ADEMÁS se compara sin tildes
+#         Alternativas: (a) corregir sólo el desplazamiento; (b) corregirlo y comparar sobre
+#         un texto PLEGADO —sin tildes—, plegando también los patrones.
+#         Se elige (b). Con (a) el corpus queda protegido hoy porque los seis nombres de
+#         pieza llevan la tolerancia ESCRITA A MANO —`admisi[óo]n`, `ra[íi]z`—, y el día que
+#         alguien añada una pieza sin acordarse de escribirla vuelve el agujero informativo
+#         que el auditor describe. Con (b) la tolerancia deja de depender de que alguien se
+#         acuerde. El plegado es una traducción carácter a carácter de las vocales acentuadas
+#         y la diéresis, así que **conserva las posiciones**: los desplazamientos siguen
+#         valiendo sobre el texto original, y los diagnósticos citan el original.
+#         LÍMITE DECLARADO: `ñ` NO se pliega. Plegarla convertiría «año» en «ano» y
+#         «español» en «espanol», y una tolerancia que cambia el significado de palabras
+#         corrientes compra menos de lo que arriesga. Un corpus que escriba «ningun» sin
+#         tilde se detecta —los patrones ya lo admiten—; uno que escriba «anio», no.
+_TILDES = str.maketrans("áéíóúüÁÉÍÓÚÜ", "aeiouuAEIOUU")
+
+
+def sin_tildes(texto):
+    """Pliega las vocales acentuadas CONSERVANDO las posiciones. Ver `H-09`."""
+    return texto.translate(_TILDES)
+
+
 def _sujeto_explicito(cuerpo, negacion):
     """El sustantivo que la negación nombra INMEDIATAMENTE, cuando lo nombra.
 
@@ -968,11 +1102,13 @@ def _sujeto_explicito(cuerpo, negacion):
     """
     if not re.search(r"ning[úu]n[ao]?$", negacion.group(0), re.I):
         return None
-    resto = cuerpo[negacion.end():negacion.end() + 60]
-    resto = re.sub(r"^[\s>*`_]+", "", resto)
+    ventana = cuerpo[negacion.end():negacion.end() + 60]
+    resto = re.sub(r"^[\s>*`_]+", "", ventana)
     palabra = re.match(r"[\wáéíóúñÁÉÍÓÚÑ-]+", resto)
-    return (palabra, negacion.end() + len(cuerpo[negacion.end():]) - len(resto)) if palabra \
-        else None
+    # `H-09` · el desplazamiento se cuenta contra la VENTANA que se recortó, no contra el
+    # resto entero del párrafo. Contarlo contra el resto entero adelantaba el sujeto y
+    # apagaba el control en silencio.
+    return (palabra, negacion.end() + len(ventana) - len(resto)) if palabra else None
 
 
 def _mencion_ligada(cuerpo, pieza, negacion):
@@ -1031,25 +1167,35 @@ def t360_ninguna_sede_viva_niega_lo_construido(raiz=None):
     if not vivas:
         return r
 
-    recital = re.compile("|".join(p for p, _m in RECITALES), re.I)
-    negacion = re.compile("|".join(NEGACIONES_DE_EXISTENCIA), re.I)
-    en_bloque = [(re.compile(p, re.I), m) for p, m in NEGACIONES_EN_BLOQUE]
+    # `H-09` · TODO se compara sobre el texto PLEGADO —sin tildes— y con los patrones
+    # plegados igual. El plegado conserva las posiciones, así que los desplazamientos y las
+    # líneas siguen siendo los del texto ORIGINAL, y los diagnósticos citan el original.
+    recital = re.compile(sin_tildes("|".join(p for p, _m in RECITALES)), re.I)
+    negacion = re.compile(sin_tildes("|".join(NEGACIONES_DE_EXISTENCIA)), re.I)
+    en_bloque = [(re.compile(sin_tildes(p), re.I), m) for p, m in NEGACIONES_EN_BLOQUE]
+    planas = [dict(pieza, nombre=sin_tildes(pieza["nombre"]),
+                   salvo=sin_tildes(pieza["salvo"]) if pieza["salvo"] else pieza["salvo"])
+              for pieza in vivas]
 
     for rel, ruta in sedes_vivas(base):
         with open(ruta, encoding="utf-8") as fh:
             texto = fh.read()
+        llano = sin_tildes(texto)
+        assert len(llano) == len(texto)
         for patron, motivo in en_bloque:
-            for m in patron.finditer(texto):
+            for m in patron.finditer(llano):
                 linea = texto[:m.start()].count("\n") + 1
-                r.fallo(f"{rel}:{linea}: «{m.group(0).strip()}» niega EN BLOQUE el estado "
+                r.fallo(f"{rel}:{linea}: «{texto[m.start():m.end()].strip()}» niega EN "
+                        f"BLOQUE el estado "
                         f"de construcción. {motivo}. El estado actual tiene una sola sede: "
                         f"`docs/canonico/04-CONTRATOS-TECNICOS.md` §1 (`ADJ-G3`)")
-        for arranque, cuerpo in _parrafos(texto):
+        for arranque, cuerpo_original in _parrafos(texto):
+            cuerpo = sin_tildes(cuerpo_original)
             if recital.search(cuerpo):
                 continue
             for m in negacion.finditer(cuerpo):
                 sujeto = _sujeto_explicito(cuerpo, m)
-                for pieza in vivas:
+                for pieza in planas:
                     if sujeto is not None:
                         # La negación dice de qué habla. Si no es esta pieza, no es esta
                         # pieza, aunque el párrafo entero la nombre.
@@ -1062,7 +1208,8 @@ def t360_ninguna_sede_viva_niega_lo_construido(raiz=None):
                     elif not re.search(pieza["nombre"], cuerpo, re.I):
                         continue
                     linea = arranque + cuerpo[:m.start()].count("\n")
-                    r.fallo(f"{rel}:{linea}: «{m.group(0).strip()}» dicho de "
+                    r.fallo(f"{rel}:{linea}: «{cuerpo_original[m.start():m.end()].strip()}» "
+                            f"dicho de "
                             f"«{pieza['clave']}», que SÍ está construida — {pieza['motivo']}. "
                             f"O se remite a `04-CONTRATOS-TECNICOS.md` §1, o se restringe la "
                             f"afirmación a lo que de verdad falta (`ADJ-G3`)")

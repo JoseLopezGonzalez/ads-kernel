@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """negativos_contratos19 — infracciones deliberadas de la corrección del 2026-09-04.
 
 POR QUÉ ESTE FICHERO EXISTE, Y NO UNA LÍNEA MÁS EN `comprobar_negativos.py`. La corrección
@@ -25,6 +24,26 @@ absorberlas bajo un identificador común:
 Cada infracción declara el DIAGNÓSTICO que espera. Sin `espera`, una prueba se daría por
 detectada porque falló, sin comprobar que falló POR ESO.
 """
+# ---------------------------------------------------------------------------
+#  ADVERTENCIA DE FORMA · este módulo NO lleva línea de intérprete, y es deliberado.
+#
+#  `H-03` de la auditoría independiente del 2026-09-04 obligó a que el inventario de puntos
+#  ejecutables se derive del ÁRBOL ENTERO y a que TODO `.py` quede clasificado —el
+#  inventario anterior era mecánico DENTRO de dos zonas escritas a mano, y por eso
+#  `validadores/` estaba entera fuera del control mientras `H-01` encontraba el defecto
+#  `E-10` vivo en `huella.py`—. La equivalencia que `T330` comprueba sobre el disco es:
+#
+#      lleva `#!`   ⟺   es INVOCABLE   ⟺   lleva el MECANISMO `E-10`
+#
+#  Este módulo se IMPORTA —`comprobar_negativos.py` lo incorpora por nombre y sin
+#  `try/except`— y no se ejecuta: no define `__main__` ni sale desde el nivel superior. No
+#  cumple el segundo término, así que tampoco puede llevar el primero: una línea de
+#  intérprete presenta un módulo como ejecutable, y a un ejecutable esta equivalencia le
+#  exige la purga. Se retira la línea, y con ella la ambigüedad. Es exactamente lo que
+#  `ADJ-B2` hizo con `errores.py`, `firma.py`, `atestacion.py` y `aislamiento.py` de la
+#  raíz externa.
+# ---------------------------------------------------------------------------
+
 from __future__ import annotations
 
 CATALOGO = []
@@ -449,6 +468,30 @@ def m_g2_la_evidencia_se_edita_a_mano(raiz):
                "T273  SUPERADA", "T273  FALLIDA ")
 
 
+def m_h02_un_escenario_sube_de_estado_sin_contraste(raiz):
+    """`H-02` · la grieta que la auditoría independiente del 2026-09-04 destapó.
+
+    Un escenario vuelve a declarar `prueba-superada` sobre una evidencia que **NO LO
+    NOMBRA**. Es la forma que `ADJ-G2` dejaba abierta: la divergencia se CALCULABA, se
+    escribía el motivo —«la ejecución consta, el resultado DE ESTE escenario no»— y se
+    DESCARTABA por marcar `contrastado=False`, de modo que catorce escenarios subían de
+    estado por argumento con `T350` en verde.
+
+    `T162` es uno de esos catorce y hoy declara `prueba-ejecutada`, que es lo que
+    `evidencia/workspace-salida.txt` sostiene: `grep -c "T162"` sobre ella devuelve `0`. Se
+    le devuelve el `prueba-superada` que tenía. La distingue de `N350b` y `N350c` la CLASE
+    del defecto: allí la evidencia CONTRADICE o no existe; aquí la evidencia existe, la
+    ejecución consta y lo que falta es el veredicto de ESTE escenario.
+    """
+    _sustituir(raiz, "kernel/operativo/pruebas/T159-T170-multirepo.md",
+               "validador: tooling/tests/test_workspace.py\n"
+               "estado: prueba-ejecutada\n"
+               "evidencia: evidencia/workspace-salida.txt",
+               "validador: tooling/tests/test_workspace.py\n"
+               "estado: prueba-superada\n"
+               "evidencia: evidencia/workspace-salida.txt")
+
+
 CATALOGO.extend([
     Mutacion("N340", "ADJ-B3 · O27 §3", "T342", ADMISION,
              "el append-only de la sede del Owner vuelve al PREFIJO del nacimiento",
@@ -494,6 +537,11 @@ CATALOGO.extend([
              "un escenario declara superada citando una evidencia que no existe",
              m_g2_un_escenario_cita_una_evidencia_que_no_existe,
              espera="NO EXISTE en el árbol"),
+    Mutacion("NH02", "H-02", "T350", "comprobar_evidencia",
+             "un escenario vuelve a declarar `prueba-superada` sobre una evidencia que NO "
+             "LO NOMBRA, que es la divergencia que el aparato calculaba y descartaba",
+             m_h02_un_escenario_sube_de_estado_sin_contraste,
+             espera="subir de estado por argumento"),
     Mutacion("N350d", "ADJ-G2", "T350", "comprobar_evidencia",
              "la evidencia publicada se edita a mano para que diga otra cosa",
              m_g2_la_evidencia_se_edita_a_mano,

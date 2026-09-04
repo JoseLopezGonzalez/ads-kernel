@@ -27,9 +27,9 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada bc59513f7182130a, calculada 8760fe175d682589. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada 7196ce99457a77d4, calculada 50d850cd41b7dac1. Algún fichero de la huella se
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada bc59513f7182130a, calculada b120c6a8743bf9d9. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada 7196ce99457a77d4, calculada fe4557cb91fa22ff. Algún fichero de la huella se
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
                           → detectada: kernel/operativo/validadores/ads_lint.py NO entra en la huella: un fork silencioso de ese fichero sería indetectable
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
@@ -240,6 +240,8 @@ OK   N350b   ADJ-G2 T350  `T273` vuelve a declarar prueba-fallida con la evidenc
                           → detectada: T273: declara `estado: prueba-fallida` y su evidencia sostiene `prueba-superada` — los veredictos publicados dicen otra
 OK   N350c   ADJ-G2 T350  un escenario declara superada citando una evidencia que no existe
                           → detectada: T188: declara `estado: prueba-superada` y su evidencia sostiene `validador-implementado` — declara la evidencia `evidenc
+OK   NH02    H-02  T350  un escenario vuelve a declarar `prueba-superada` sobre una evidencia que NO LO NOMBRA, que es la divergencia que el aparato calculaba y descartaba
+                          → detectada: T162: declara `estado: prueba-superada` y su evidencia sostiene `prueba-ejecutada` — `evidencia/workspace-salida.txt` no
 OK   N350d   ADJ-G2 T350  la evidencia publicada se edita a mano para que diga otra cosa
                           → detectada: T273: declara `estado: prueba-superada` y su evidencia sostiene `prueba-fallida` — `evidencia/composicion-procesos-salid
 OK   NG3a    ADJ-G3 T360  §5.3 vuelve a declarar que no existe ningún adaptador, con el ejecutor local real en el árbol
@@ -305,10 +307,16 @@ OK   N320    ADJ-B1 T320  la migración 0->1 vuelve a publicar la revisión 0 si
 OK   N321    ADJ-B1 T321  la guarda de la fundación vuelve a mirar el evento del diario y no la revisión
                           → detectada: FAIL T321 · Defecto que previene: el AGRAVANTE de `ADJ-B1` —que la corrección de la ----------------------------------------- [corrida PARCIAL: MigracionHeredadaReal.test_T321_el_almacen_que_el_defecto_dejo_roto_vuelve_a_ser_migrable]
 OK   N330    ADJ-B2 T330  el verificador de la raíz externa pierde la purga `E-10` de `sys.path`
-                          → detectada: FAIL T330 · Defecto que previene: `ADJ-B2`, una lista de ejecutables escrita a mano. ---------------------------------------- [corrida PARCIAL: PurgaEnLaRaizExterna.test_T330_el_inventario_de_puntos_ejecutables_se_DERIVA_y_es_coherente]
+                          → detectada: FAIL T330 · Defecto que previene: `ADJ-B2` y `H-03`, un inventario que no ve una zona. -------------------------------------- [corrida PARCIAL: PurgaEnLaRaizExterna.test_T330_el_inventario_se_DERIVA_del_arbol_ENTERO_y_es_coherente]
 OK   N333    ADJ-B2 T333  el instalador vuelve a borrar el destino y copiar encima, e instala a medias
                           → detectada: FAIL T333 · Defecto que previene: un destino con parte de los ficheros y sin manifiesto. ------------------------------------ [corrida PARCIAL: PurgaEnLaRaizExterna.test_T333_no_se_instala_a_medias]
+OK   NH01    H-01  T330  `validadores/huella.py` pierde la purga `E-10` y la huella vuelve a ser falsificable desde el `PYTHONPATH`
+                          → detectada: FAIL T330 · Defecto que previene: `ADJ-B2` y `H-03`, un inventario que no ve una zona. -------------------------------------- [corrida PARCIAL: PurgaEnLaRaizExterna.test_T330_el_inventario_se_DERIVA_del_arbol_ENTERO_y_es_coherente]
+OK   NH03    H-03  T330  el inventario vuelve a acotarse a una zona escrita a mano y deja de ver el resto del árbol
+                          → detectada: FAIL T330 · Defecto que previene: `ADJ-B2` y `H-03`, un inventario que no ve una zona. -------------------------------------- [corrida PARCIAL: PurgaEnLaRaizExterna.test_T330_el_inventario_se_DERIVA_del_arbol_ENTERO_y_es_coherente]
+OK   NH08    H-08  T307  la cobertura del contraste vuelve a calcularse y a no publicarse
+                          → detectada: FAIL T307 · Defecto que previene: `H-08`, una cifra que se calcula y no se publica. ----------------------------------------- [corrida PARCIAL: ResultadoExactoDeLaEvidencia.test_T307g_la_COBERTURA_DEL_CONTRASTE_va_publicada_en_la_evidencia]
 OK   N194    FD-3  T194  el motor de estado durable deja de viajar al proyecto instalado
                           → detectada: el proyecto instalado no lleva el motor de estado durable
 
-154 infracciones detectadas · 0 NO detectadas
+158 infracciones detectadas · 0 NO detectadas

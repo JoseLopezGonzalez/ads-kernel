@@ -33,6 +33,92 @@ Uso:
 """
 from __future__ import annotations
 
+# ---------------------------------------------------------------------------
+#  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-04, sobre `validadores/huella.py` —el
+#  instrumento que produce el número que se publica como línea base— y con seis líneas de
+#  veneno: un `hashlib.py` homónimo cuyo `sha256()` devuelve siempre el digest esperado.
+#
+#      $ echo "# CODIGO INYECTADO" >> mutado/kernel/operativo/validadores/ads_lint.py
+#      $ cd mutado && python3.12 …/huella.py                     → 8b38fb4f4b07300c
+#      $ python3.12 …/comprobar_integridad.py                    → T150 FALLIDA  EXIT=1
+#      $ PYTHONPATH=veneno python3.12 …/huella.py                → bc59513f7182130a
+#      $ PYTHONPATH=veneno python3.12 …/comprobar_integridad.py  → T150 SUPERADA EXIT=0
+#
+#  `T150` es la prueba que dice «la huella detecta su edición», y bajo veneno certificaba en
+#  VERDE un árbol editado. La causa: la zona `validadores/` estaba ENTERA fuera del
+#  inventario de `T306`, de modo que `E-10` —declarado «CERRADO POR INVENTARIO MECÁNICO»—
+#  seguía vivo justo en el aparato que produce la evidencia de la certificación.
+#
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      Alternativas: (a) importar la purga de un módulo común; (b) copiar el prólogo entero
+#      —recital incluido— desde `ads_runtime.py`; (c) copiar el MECANISMO byte a byte y
+#      escribir el recital de esta sede.
+#      Se elige (c). Con (a) la guardia dependería de un `import`, que es exactamente lo que
+#      está protegiendo: una guardia que necesita importar ya ha perdido. Con (b) el recital
+#      mentiría, porque el hecho reproducido allí no es el de aquí. Con (c) `T330` exige
+#      —y comprueba— que el MECANISMO sea IDÉNTICO byte a byte en todos los puntos
+#      ejecutables del árbol (digest `aa219465a6dd6a04`, 1 869 bytes), mientras cada sede
+#      dice qué se midió en ella. Lo que protege es el mecanismo; lo que se lee, el recital.
+#
+#  DECISIÓN · se retira lo que viene del LANZADOR, y no «todo lo que no reconozco»
+#      Una lista blanca de directorios del intérprete se rompería en cada instalación
+#      distinta y convertiría un fallo de entorno en un fallo del aparato. Lo que `E-10`
+#      nombra es concreto: `PYTHONPATH` y el `cwd`. Se retiran ésos, se cuenta cuántos, y el
+#      recuento queda en `RETIRADAS_DE_LA_RUTA`.
+import sys as _sys
+import os as _os
+
+_RAIZ_DEL_APARATO = _os.path.dirname(_os.path.abspath(__file__))
+
+
+def _entradas_del_lanzador():
+    """Lo que el LANZADOR puede meter en la ruta de importación: `PYTHONPATH` y el `cwd`."""
+    sospechosas = set()
+    for entrada in (_os.environ.get("PYTHONPATH") or "").split(_os.pathsep):
+        if entrada:
+            sospechosas.add(_os.path.realpath(entrada))
+    try:
+        sospechosas.add(_os.path.realpath(_os.getcwd()))
+    except OSError:
+        # Un `cwd` borrado bajo los pies no es motivo para no purgar el resto.
+        pass
+    return sospechosas
+
+
+def _purgar_la_ruta_de_importacion():
+    """Retira de `sys.path` lo que venga del lanzador. Devuelve cuántas entradas retiró."""
+    del_lanzador = _entradas_del_lanzador()
+    propia = _os.path.realpath(_RAIZ_DEL_APARATO)
+    conservadas, retiradas = [], []
+    for entrada in _sys.path:
+        try:
+            real = _os.path.realpath(entrada or _os.getcwd())
+        except OSError:
+            conservadas.append(entrada)
+            continue
+        if real != propia and real in del_lanzador:
+            retiradas.append(real)
+        else:
+            conservadas.append(entrada)
+    _sys.path[:] = conservadas
+    return retiradas
+
+
+RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()
+
+# CONTROL DEL CONTROL de la purga: `os` se usa para poder purgar, así que si `os` mismo
+# viniera del lanzador la purga no probaría nada. No hay forma honesta de seguir: se dice y
+# se sale con el código de PROCEDENCIA.
+if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lanzador():
+    _sys.stderr.write(
+        "[PROCEDENCIA_NO_FIABLE] el módulo `os` procede de la ruta de importación del "
+        "lanzador: este punto ejecutable no puede garantizar de dónde salen sus módulos y "
+        "NO ejecuta\n")
+    raise SystemExit(5)
+
+
 import argparse
 import json
 import os
@@ -638,8 +724,32 @@ def t350_estado_derivado_de_la_evidencia(raiz=None):
     #     fabrica no lleva `.git`— el canal NO SE HACE, y se DICE: una comprobación omitida
     #     en silencio es indistinguible de una comprobación que pasa.
     r.nota = _contrastar_contra_head(base, escenarios, r)
+    # `H-08` · LA CIFRA DEL CONTRASTE SE PUBLICA, PORQUE SI NO, NO EXISTE
+    #
+    #     HECHO REPRODUCIDO POR LA AUDITORÍA INDEPENDIENTE DEL 2026-09-04: la línea base
+    #     afirmaba «160 escenarios contrastados · 107 no contrastables»; el árbol producía
+    #     `193 contrastados · 74 no contrastables`, y `grep -rn "160 contrastados\|107 no
+    #     contrastables"` sobre el árbol entero devolvía VACÍO. `r.nota_cobertura` se
+    #     CALCULABA aquí y no la imprimía nadie: la cifra que encabezaba la línea base no
+    #     era reproducible desde ninguna evidencia, y la que el árbol produce era otra.
+    #
+    #     DECISIÓN · se publica la COBERTURA y NO se publica `r.nota`
+    #         `nota_cobertura` se deriva del corpus y de la evidencia: mismo árbol, mismos
+    #         bytes. `r.nota` cuenta cuántas evidencias difieren del blob de `HEAD` y cuáles
+    #         no están confirmadas todavía, y eso cambia entre el minuto anterior y el
+    #         posterior a un `git commit`. Meterla en una salida que se publica como
+    #         evidencia rompería el determinismo byte a byte que `T158` exige, y una
+    #         evidencia que cambia sola no vale como evidencia. Queda disponible para quien
+    #         llame a la función y NO se imprime, y esto es el motivo, escrito.
     r.nota_cobertura = (f"contrastados {len(contrastados)} · no contrastables "
                         f"{len(sin_contraste)} · divergencias {len(divergencias)}")
+    # `H-02` · y el DESGLOSE de los no contrastables por el estado que DECLARAN. La cifra
+    # agregada mezclaba a los que no afirman ninguna ejecución con los catorce que
+    # afirmaban `prueba-superada` sobre una evidencia que no los nombra, y esa mezcla es
+    # exactamente lo que los mantuvo invisibles.
+    reparto = registro_pruebas.no_contrastables_por_estado(escenarios, base)
+    r.nota_cobertura += (" · no contrastables por estado declarado: "
+                         + " ".join(f"{e}={n}" for e, n in sorted(reparto.items())))
     return r
 
 
@@ -696,11 +806,51 @@ def _contrastar_contra_head(base, escenarios, r):
             identificador = datos.get("id", "")
             antes = registro_pruebas.veredictos_publicados(confirmada, identificador)
             despues = registro_pruebas.veredictos_publicados(ahora, identificador)
-            if antes and despues and sorted(antes) != sorted(despues):
+            if not (antes and despues):
+                continue
+            # `H-08` bis · QUÉ ES «CAMBIAR DE DICTAMEN», MEDIDO EN VEZ DE SUPUESTO
+            #
+            #     HECHO REPRODUCIDO EN ESTA MISMA PASADA. La comparación era
+            #     `sorted(antes) != sorted(despues)`, es decir el MULTICONJUNTO de
+            #     veredictos. Al añadir a la batería de integridad un caso nuevo que PASA
+            #     —`T307g`, el control de `H-08`—, la evidencia regenerada pasó de seis
+            #     `ok` a siete para `T307`, y esta comprobación dio ROJO:
+            #
+            #         integridad-evidencia-salida.txt: para `T307` la versión confirmada en
+            #         `HEAD` publica ['ok'×6] y la del árbol de trabajo publica ['ok'×7].
+            #         La evidencia ha cambiado de DICTAMEN sin una ejecución que lo respalde
+            #
+            #     Es un ROJO FALSO, y del peor tipo: castiga REFORZAR una batería. El
+            #     comentario de arriba ya dice qué se quiere medir —«una regeneración
+            #     legítima cambia cifras y no cambia dictámenes»—; el código medía cifras.
+            #
+            #     DECISIÓN · se compara el DICTAMEN y se pone un CLIQUET a la cobertura
+            #         Tres condiciones, y cada una tapa una vía distinta:
+            #           1 · el CONJUNTO de veredictos distintos tiene que ser el mismo. Un
+            #               `ok` que se vuelve `FAIL` lo cambia; añadir otro `ok`, no.
+            #           2 · el número de veredictos MALOS no puede cambiar. Esconder un
+            #               fallo entre casos nuevos no cuela.
+            #           3 · el número de veredictos BUENOS no puede BAJAR. Añadir casos es
+            #               legítimo; que la evidencia adelgace en silencio, no. Es un
+            #               cliquet, no una igualdad, y por eso admite lo primero y no lo
+            #               segundo.
+            #         Alternativa descartada: comparar sólo el conjunto. Habría dejado pasar
+            #         que una batería encogiera de seis casos a uno sin decir nada.
+            buenos_antes = [v for v in antes if registro_pruebas.veredicto_es_bueno(v)]
+            buenos_despues = [v for v in despues if registro_pruebas.veredicto_es_bueno(v)]
+            malos_antes = [v for v in antes if not registro_pruebas.veredicto_es_bueno(v)]
+            malos_despues = [v for v in despues
+                             if not registro_pruebas.veredicto_es_bueno(v)]
+            if set(antes) != set(despues) or len(malos_antes) != len(malos_despues):
                 r.fallo(f"{rel}: para `{identificador}` la versión confirmada en `HEAD` "
                         f"publica {sorted(antes)} y la del árbol de trabajo publica "
                         f"{sorted(despues)}. La evidencia ha cambiado de DICTAMEN sin una "
                         f"ejecución que lo respalde")
+            elif len(buenos_despues) < len(buenos_antes):
+                r.fallo(f"{rel}: para `{identificador}` la evidencia ha ENCOGIDO: `HEAD` "
+                        f"publica {len(buenos_antes)} veredictos buenos y el árbol de "
+                        f"trabajo {len(buenos_despues)}. Añadir casos es legítimo; que la "
+                        f"cobertura adelgace sin decirlo, no")
     partes = [f"evidencia contrastada contra el blob de HEAD: {hechas}"]
     if regeneradas:
         partes.append(f"difieren de HEAD sin cambiar ningún dictamen (regeneración en "
@@ -733,12 +883,18 @@ def main():
     if args.json:
         print(json.dumps([{"id": x.id, "nombre": x.nombre,
                            "estado": "prueba-superada" if x.superada else "prueba-fallida",
-                           "fallos": x.fallos} for x in resultados], ensure_ascii=False, indent=2))
+                           "fallos": x.fallos,
+                           "cobertura_del_contraste": getattr(x, "nota_cobertura", None)}
+                          for x in resultados], ensure_ascii=False, indent=2))
     else:
         for x in resultados:
             print(f"{x.id}  {'SUPERADA' if x.superada else 'FALLIDA '}  {x.nombre}")
             for f in x.fallos:
                 print(f"          · {f}")
+            # `H-08` · la cobertura del contraste, PUBLICADA. Se imprime pase o falle: una
+            # cifra que sólo sale cuando todo va bien no sirve para ver cuándo empeora.
+            if getattr(x, "nota_cobertura", None):
+                print(f"          cobertura del contraste: {x.nota_cobertura}")
         fallidas = [x for x in resultados if not x.superada]
         print(f"\n{len(resultados) - len(fallidas)} superadas · {len(fallidas)} fallidas")
     return 1 if any(not x.superada for x in resultados) else 0

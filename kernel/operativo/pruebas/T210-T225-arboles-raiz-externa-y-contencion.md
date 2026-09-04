@@ -7,6 +7,22 @@ Conformidad de la **segunda mitad del macrobloque 3 de `F6`**. Sus contratos der
 [`CONTRATO-GOBIERNO-GIT-CONTROL.md`](../runtime/CONTRATO-GOBIERNO-GIT-CONTROL.md) ·
 [`CONTRATO-ADAPTADOR.md`](../runtime/CONTRATO-ADAPTADOR.md).
 
+> **`H-02` · `T225` ha BAJADO a `prueba-ejecutada`, y no es una degradación del
+> aparato: es el dato.** La auditoría independiente del 2026-09-04 midió que catorce
+> escenarios del corpus declaraban `estado: prueba-superada` sobre una evidencia que **no
+> los nombra en ninguna línea de veredicto**. La derivación de
+> [`validadores/registro_pruebas.py`](../validadores/registro_pruebas.py) ya sacaba
+> `prueba-ejecutada` y escribía el motivo, pero DESCARTABA la divergencia por no ser
+> contrastable, y `T350` quedaba en verde. Desde esa pasada, un `estado` superior al
+> derivado es DIVERGENCIA se pueda contrastar o no, y la regla dura de
+> [`REGISTRO.md`](REGISTRO.md) —«ninguna prueba sube de estado por argumento»— vale también
+> para lo que la evidencia **no sostiene**, y no sólo para lo que **contradice**.
+>
+> `prueba-ejecutada` es el estado exacto: `escenario_e2e_f6.py` —veintiún pasos— se ejecuta,
+> termina con código 0 y su salida queda registrada; lo que no consta es el veredicto **de
+> este escenario** por separado. Subirlo otra vez exige que la salida lo NOMBRE, no que
+> alguien lo declare.
+
 **Todo esto EJECUTA.** Repositorios Git temporales reales, un remoto bare con dos clones y
 dos procesos independientes, contenedores y espacios de nombres del anfitrión, claves
 Ed25519 efímeras generadas fuera de todo repositorio y destruidas al terminar, y procesos
@@ -374,6 +390,6 @@ falla_si:
   - "una ruta absoluta de la máquina entra en la evidencia publicada"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/escenario_e2e_f6.py
-estado: prueba-superada
+estado: prueba-ejecutada
 evidencia: evidencia/e2e-f6-salida.txt
 ```

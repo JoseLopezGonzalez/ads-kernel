@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """negativos_runtime — las infracciones deliberadas que sabotean las BATERÍAS del runtime.
 
 POR QUÉ EXISTE ESTE FICHERO, Y QUÉ AGUJERO CIERRA. El catálogo único de infracciones sólo
@@ -74,9 +73,31 @@ Las baterías usadas tardan, sueltas: `test_estado_durable` ~20 s, `test_gobiern
 ~1 s, `test_identidad` ~0,2 s; `comprobar_arranque` ~90 s. El total añadido está medido en
 el informe de la corrección.
 """
+# ---------------------------------------------------------------------------
+#  ADVERTENCIA DE FORMA · este módulo NO lleva línea de intérprete, y es deliberado.
+#
+#  `H-03` de la auditoría independiente del 2026-09-04 obligó a que el inventario de puntos
+#  ejecutables se derive del ÁRBOL ENTERO y a que TODO `.py` quede clasificado —el
+#  inventario anterior era mecánico DENTRO de dos zonas escritas a mano, y por eso
+#  `validadores/` estaba entera fuera del control mientras `H-01` encontraba el defecto
+#  `E-10` vivo en `huella.py`—. La equivalencia que `T330` comprueba sobre el disco es:
+#
+#      lleva `#!`   ⟺   es INVOCABLE   ⟺   lleva el MECANISMO `E-10`
+#
+#  Este módulo se IMPORTA —`comprobar_negativos.py` lo incorpora por nombre y sin
+#  `try/except`— y no se ejecuta: no define `__main__` ni sale desde el nivel superior. No
+#  cumple el segundo término, así que tampoco puede llevar el primero: una línea de
+#  intérprete presenta un módulo como ejecutable, y a un ejecutable esta equivalencia le
+#  exige la purga. Se retira la línea, y con ella la ambigüedad. Es exactamente lo que
+#  `ADJ-B2` hizo con `errores.py`, `firma.py`, `atestacion.py` y `aislamiento.py` de la
+#  raíz externa.
+# ---------------------------------------------------------------------------
+
 from __future__ import annotations
 
 CATALOGO = []
+
+import os  # noqa: E402
 
 import comprobar_negativos as _cn  # noqa: E402
 
@@ -496,6 +517,66 @@ def m_adjb2_el_instalador_vuelve_a_copiar_encima(raiz):
                "    except BaseException:")
 
 
+# ===========================================================================
+#  `H-01` · `H-03` · `H-08` · los tres hallazgos de la auditoría independiente del
+#  2026-09-04 que viven en el aparato de la evidencia
+# ===========================================================================
+
+def m_h01_la_huella_pierde_la_purga(raiz):
+    """`T330`, `falla_si`: «un punto ejecutable del inventario no lleva el prólogo `E-10`».
+
+    El defecto BLOQUEANTE `H-01`, reintroducido en su sede exacta. `validadores/huella.py`
+    deja de purgar la ruta de importación, y entonces vuelve a ser cierto lo que el auditor
+    midió: con un `hashlib.py` homónimo en `PYTHONPATH` cuyo `sha256()` devuelve el digest
+    esperado, un árbol MUTADO produce la huella ESPERADA y `comprobar_integridad.py` publica
+    `T150 SUPERADA · EXIT=0`.
+
+    Va contra `T330` y no contra `T150` a propósito: `T150` compara dos números y no puede
+    saber de dónde salió el `hashlib` que los calculó; quien lo sabe es el inventario. Es la
+    misma razón por la que `N330` va contra `T330` y no contra el `capacidades` del
+    verificador.
+    """
+    _sustituir(raiz, "kernel/operativo/validadores/huella.py",
+               "RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()",
+               "RETIRADAS_DE_LA_RUTA = []")
+
+
+def m_h03_el_inventario_vuelve_a_una_zona_escrita(raiz):
+    """`T330`, `falla_si`: «el inventario deja de alcanzar alguna zona del árbol».
+
+    `H-03`, reintroducido por su CLASE y no por su instancia. El recorrido vuelve a acotarse
+    a una zona escrita a mano —`kernel/operativo/runtime/`—, que es exactamente la forma del
+    defecto: la tupla de ficheros escrita a mano dejó fuera a la raíz externa, y la tupla de
+    ZONAS que la sustituyó dejó fuera a `validadores/`, `tooling/` y `docs/`, que es donde
+    `H-01` encontró el defecto vivo. El sabotaje no quita ninguna purga: sólo deja de MIRAR,
+    que es la manera en que este defecto ha vuelto dos veces.
+    """
+    _sustituir(raiz, "kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py",
+               "    base = os.path.realpath(raiz or RAIZ_REPO)\n"
+               "    zonas = zonas_de_baterias(base)",
+               "    base = os.path.join(os.path.realpath(raiz or RAIZ_REPO),\n"
+               "                        \"kernel\", \"operativo\", \"runtime\")\n"
+               "    zonas = zonas_de_baterias(base)")
+
+
+def m_h08_la_cobertura_del_contraste_deja_de_publicarse(raiz):
+    """`T307`, `falla_si`: «la corrida no publica la cobertura del contraste».
+
+    `H-08`, reintroducido en su sede exacta: `comprobar_evidencia` vuelve a CALCULAR
+    `r.nota_cobertura` y a no imprimirla. Lo que el auditor midió es la consecuencia: la
+    línea base afirmaba «160 contrastados · 107 no contrastables», el árbol producía
+    `193 · 74`, y ninguna de las dos parejas aparecía en ningún fichero del repositorio.
+    Una cifra que no se publica no se puede contradecir.
+
+    El sabotaje toca el `print` y NADA MÁS —ni la evidencia publicada, ni el cálculo—,
+    porque `T307g` juzga una CORRIDA y no un fichero: así la mutación se detecta en el acto
+    y no en la regeneración siguiente.
+    """
+    _sustituir(raiz, "kernel/operativo/validadores/comprobar_evidencia.py",
+               '            if getattr(x, "nota_cobertura", None):',
+               '            if False:')
+
+
 CATALOGO.extend([
     Mutacion("N172", "A14", "T172", ESTADO_DURABLE,
              "la guarda de intérprete pasa a poder RELAJARSE por variable de entorno",
@@ -582,12 +663,32 @@ CATALOGO.extend([
              m_adjb2_la_raiz_externa_pierde_la_purga, clase=BATERIA,
              espera="es un punto ejecutable SIN la purga",
              casos=["PurgaEnLaRaizExterna."
-                    "test_T330_el_inventario_de_puntos_ejecutables_se_DERIVA_y_es_coherente"]),
+                    "test_T330_el_inventario_se_DERIVA_del_arbol_ENTERO_y_es_coherente"]),
     Mutacion("N333", "ADJ-B2", "T333", INTEGRIDAD,
              "el instalador vuelve a borrar el destino y copiar encima, e instala a medias",
              m_adjb2_el_instalador_vuelve_a_copiar_encima, clase=BATERIA,
              espera="quedó una instalación a medias en el destino",
              casos=["PurgaEnLaRaizExterna.test_T333_no_se_instala_a_medias"]),
+    Mutacion("NH01", "H-01", "T330", INTEGRIDAD,
+             "`validadores/huella.py` pierde la purga `E-10` y la huella vuelve a ser "
+             "falsificable desde el `PYTHONPATH`",
+             m_h01_la_huella_pierde_la_purga, clase=BATERIA,
+             espera="es un punto ejecutable SIN la purga",
+             casos=["PurgaEnLaRaizExterna."
+                    "test_T330_el_inventario_se_DERIVA_del_arbol_ENTERO_y_es_coherente"]),
+    Mutacion("NH03", "H-03", "T330", INTEGRIDAD,
+             "el inventario vuelve a acotarse a una zona escrita a mano y deja de ver el "
+             "resto del árbol",
+             m_h03_el_inventario_vuelve_a_una_zona_escrita, clase=BATERIA,
+             espera="el inventario no clasifica",
+             casos=["PurgaEnLaRaizExterna."
+                    "test_T330_el_inventario_se_DERIVA_del_arbol_ENTERO_y_es_coherente"]),
+    Mutacion("NH08", "H-08", "T307", INTEGRIDAD,
+             "la cobertura del contraste vuelve a calcularse y a no publicarse",
+             m_h08_la_cobertura_del_contraste_deja_de_publicarse, clase=BATERIA,
+             espera="no publica la cobertura del contraste",
+             casos=["ResultadoExactoDeLaEvidencia."
+                    "test_T307g_la_COBERTURA_DEL_CONTRASTE_va_publicada_en_la_evidencia"]),
     Mutacion("N194", "FD-3", "T194", "comprobar_arranque",
              "el motor de estado durable deja de viajar al proyecto instalado",
              m_fd3_el_motor_durable_no_viaja,

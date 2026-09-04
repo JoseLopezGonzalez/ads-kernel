@@ -89,6 +89,80 @@ USO
     python3 docs/evolucion/verificacion/derivar-universo-obligatorio.py --rutas    # rutas
 """
 
+
+# `E-10` · LA PROCEDENCIA DE LOS MÓDULOS, PURGADA ANTES DE NINGÚN `import` PROPIO
+#
+#  POR QUÉ ESTÁ AQUÍ, Y NO SÓLO EN `kernel/operativo/runtime/`. `H-01` de la auditoría del
+#  2026-09-04 midió que `validadores/huella.py` no llevaba este prólogo y que, con un
+#  `hashlib` homónimo en `PYTHONPATH`, **un árbol MUTADO producía la huella esperada y
+#  `T150` publicaba SUPERADA con `EXIT=0`**. El mismo defecto vive en cualquier ejecutable
+#  que decida algo y no purgue: éstos deciden qué universo obligatorio existe y si un gate
+#  puede adjudicar, que es tanto o más que una huella.
+#
+#  DECISIÓN · se purga ANTES de importar nada propio, con lo único que el intérprete ya cargó
+#      Purgar después de los `import` normales llega tarde —el homónimo ya está en
+#      `sys.modules`— y purgar desde un módulo aparte depende de un `import`, que es
+#      exactamente lo que se está protegiendo. `sys` es incorporado y `os` lo carga el
+#      arranque, así que los dos vienen de `sys.modules` y no de la ruta. Que `os` sea el
+#      bueno se COMPRUEBA, no se supone.
+#
+#  DECISIÓN · se retira lo que viene del LANZADOR, y no «todo lo que no reconozco»
+#      Una lista blanca de directorios del intérprete se rompería en cada instalación y
+#      convertiría un fallo de entorno en un fallo del aparato. `E-10` nombra dos cosas
+#      concretas: `PYTHONPATH` y el `cwd`. Se retiran ésas y el recuento se publica.
+import sys as _sys
+import os as _os
+
+_RAIZ_DEL_APARATO = _os.path.dirname(_os.path.abspath(__file__))
+
+
+def _entradas_del_lanzador():
+    """Lo que el LANZADOR puede meter en la ruta de importación: `PYTHONPATH` y el `cwd`."""
+    sospechosas = set()
+    for entrada in (_os.environ.get("PYTHONPATH") or "").split(_os.pathsep):
+        if entrada:
+            sospechosas.add(_os.path.realpath(entrada))
+    try:
+        sospechosas.add(_os.path.realpath(_os.getcwd()))
+    except OSError:
+        # Un `cwd` borrado bajo los pies no es motivo para no purgar el resto.
+        pass
+    return sospechosas
+
+
+def _purgar_la_ruta_de_importacion():
+    """Retira de `sys.path` lo que venga del lanzador. Devuelve cuántas entradas retiró."""
+    del_lanzador = _entradas_del_lanzador()
+    propia = _os.path.realpath(_RAIZ_DEL_APARATO)
+    conservadas, retiradas = [], []
+    for entrada in _sys.path:
+        try:
+            real = _os.path.realpath(entrada or _os.getcwd())
+        except OSError:
+            conservadas.append(entrada)
+            continue
+        if real != propia and real in del_lanzador:
+            retiradas.append(real)
+        else:
+            conservadas.append(entrada)
+    _sys.path[:] = conservadas
+    return retiradas
+
+
+RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()
+
+# CONTROL DEL CONTROL de la purga: `os` se usa para poder purgar, así que si `os` mismo
+# viniera del lanzador la purga no probaría nada. No hay forma honesta de seguir: se dice y
+# se sale con el código de PROCEDENCIA.
+if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lanzador():
+    _sys.stderr.write(
+        "[PROCEDENCIA_NO_FIABLE] el módulo `os` procede de la ruta de importación del "
+        "lanzador: este punto ejecutable no puede garantizar de dónde salen sus módulos y "
+        "NO ejecuta\n")
+    raise SystemExit(5)
+
+
+
 import hashlib
 import io
 import os
@@ -1267,11 +1341,45 @@ def hallazgos_externos_f6():
     return por_contenido
 
 
+def _seccion_numerada(texto, numero):
+    """El cuerpo de una sección `# N ·` del documento 11, hasta la cabecera `# M ` siguiente.
+
+    `H-05` · POR QUÉ ESTO EXISTE. `contratos_v6()` decía «derivados de §20» y buscaba el
+    patrón de identificador sobre las 12 152 líneas del documento ENTERO,
+    prosa incluida. La auditoría del 2026-09-04 lo midió retirando la fila de `V6-19` de §20:
+    el identificador **seguía en el universo**, porque lo sostenía una mención suelta en
+    prosa de la línea 10 947. El resultado era correcto y la frontera publicada era falsa, y
+    eso es la misma clase que `ADJ-M10` —«la frontera no está trazada por la propiedad que
+    dice trazarla»— dentro del fichero que la declaraba corregida.
+    """
+    lineas = texto.split("\n")
+    inicio = None
+    for indice, linea in enumerate(lineas):
+        if re.match(r"^# %d\s*·" % numero, linea):
+            inicio = indice
+            break
+    if inicio is None:
+        raise SedeIlegible(
+            "`%s` no publica la sección §%d, y es la sede de la que se deriva un componente "
+            "del universo: sin ella el componente saldría VACÍO o, peor, se llenaría con lo "
+            "que diga la prosa del resto del documento" % (ARQ, numero))
+    for indice in range(inicio + 1, len(lineas)):
+        if re.match(r"^# \d+\s", lineas[indice]):
+            return "\n".join(lineas[inicio:indice])
+    return "\n".join(lineas[inicio:])
+
+
 def contratos_v6():
-    """`V6-01`…`V6-19`, derivados de §20 del documento 11."""
-    texto = _leer(ARQ)
-    halladas = {v: "11-ARQ §20 · contratos de F6"
-                for v in sorted(set(re.findall(r"\bV6-\d\d\b", texto)))}
+    """`V6-01`…`V6-19`, derivados de las FILAS DE TABLA de §20 del documento 11.
+
+    La pertenencia es por ESTRUCTURA y acotada a su sede: una fila `| `V6-nn` | …` dentro de
+    §20. Una mención en prosa —dentro o fuera de §20— **no crea** una obligación, y retirar
+    la fila de una que existe hace que el conjunto encoja y que el cliquet lo vea.
+    """
+    seccion = _seccion_numerada(_leer(ARQ), 20)
+    halladas = {v: "11-ARQ §20 · fila de tabla del contrato de F6"
+                for v in sorted(set(re.findall(r"^\|\s*`?(V6-\d\d)`?\s*\|",
+                                               seccion, re.M)))}
     # `ADJ-G1` · el `< 19` era un cardinal ESCRITO, y además con holgura por abajo. Lo
     # sustituye la CONSECUTIVIDAD, que se deriva: si falta `V6-07`, el conjunto tiene un
     # hueco y el hueco se ve sin que nadie sepa cuántos contratos «debería» haber.
@@ -1762,6 +1870,24 @@ def _s_fase_de_f07(destino):
         texto = fh.read()
     linea = [l for l in texto.splitlines() if l.startswith("| `F-07`")][0]
     _sustituir_en(destino, ARQ, linea, linea.replace("| **F6** |", "| **F5** |"))
+
+
+@_sabotaje("se retira la fila de `V6-19` de §20 — antes la sostenía una mención en PROSA",
+           "EL UNIVERSO HA ENCOGIDO")
+def _s_retirar_fila_v6_19(destino):
+    """`H-05` · el sabotaje que el auditor tuvo que hacer a mano, mecanizado.
+
+    Antes de la corrección, `contratos_v6()` buscaba el patrón sobre el documento ENTERO, de
+    modo que retirar la fila dejaba el identificador en el universo: lo sostenía una mención
+    suelta de la línea 10 947. El resultado seguía siendo correcto y la frontera publicada
+    era falsa. Este sabotaje existe para que esa diferencia —entre «da lo mismo» y «lo mide
+    por donde dice medirlo»— no dependa de que alguien vuelva a atacarlo a mano.
+    """
+    with io.open(os.path.join(destino, ARQ), encoding="utf-8") as fh:
+        texto = fh.read()
+    linea = [l for l in texto.splitlines()
+             if re.match(r"^\|\s*`?V6-19`?\s*\|", l)][0]
+    _sustituir_en(destino, ARQ, linea + "\n", "")
 
 
 @_sabotaje("se retira la fila `F-10` entera", "EL UNIVERSO HA ENCOGIDO")

@@ -24,6 +24,78 @@ con los PID reales del anfitrión sobre tres generaciones que hacen `setsid`.
 """
 from __future__ import annotations
 
+# ---------------------------------------------------------------------------
+#  `E-10` en la BATERÍA · esta prueba purga su propia ruta de importación
+# ---------------------------------------------------------------------------
+#  POR QUÉ AQUÍ, SI LAS BATERÍAS ESTÁN EXCLUIDAS DEL INVENTARIO. Precisamente por eso. La
+#  exclusión de las baterías es DEUDA DECLARADA y no una propiedad —no hay razón técnica
+#  para que una batería no purgue—, y una deuda declarada sin un solo caso que demuestre
+#  que se puede pagar es una excusa. Esta batería la paga: purga, y sigue funcionando
+#  —inserta `runtime/` en la ruta DESPUÉS de purgar, que es lo que la purga permite porque
+#  sólo retira lo que viene del lanzador—. `T330b` lo comprueba POR NOMBRE sobre este
+#  fichero, y ése es el CLIQUET: el día que alguien le quite la purga a esta batería, la
+#  deuda de las demás dejaría de ser «de zona» y pasaría a ser «de imposibilidad» sin que
+#  nadie lo hubiera decidido. Con esta prueba en rojo, hay que decidirlo.
+#
+#  Y hay una razón propia, no prestada: esta batería PUBLICA evidencia
+#  —`evidencia/integridad-evidencia-salida.txt`— que sostiene el estado de once escenarios.
+#  Un `json.py` o un `hashlib.py` homónimos en el `PYTHONPATH` de quien la corre decidirían
+#  qué dice esa evidencia, que es exactamente el daño que `H-01` midió sobre `huella.py`.
+#
+#  El MECANISMO es el de siempre, copiado byte a byte (digest `aa219465a6dd6a04`). El
+#  recital es de esta sede: ver la DECISIÓN escrita junto a `mecanismo_de_la_purga`.
+import sys as _sys
+import os as _os
+
+_RAIZ_DEL_APARATO = _os.path.dirname(_os.path.abspath(__file__))
+
+
+def _entradas_del_lanzador():
+    """Lo que el LANZADOR puede meter en la ruta de importación: `PYTHONPATH` y el `cwd`."""
+    sospechosas = set()
+    for entrada in (_os.environ.get("PYTHONPATH") or "").split(_os.pathsep):
+        if entrada:
+            sospechosas.add(_os.path.realpath(entrada))
+    try:
+        sospechosas.add(_os.path.realpath(_os.getcwd()))
+    except OSError:
+        # Un `cwd` borrado bajo los pies no es motivo para no purgar el resto.
+        pass
+    return sospechosas
+
+
+def _purgar_la_ruta_de_importacion():
+    """Retira de `sys.path` lo que venga del lanzador. Devuelve cuántas entradas retiró."""
+    del_lanzador = _entradas_del_lanzador()
+    propia = _os.path.realpath(_RAIZ_DEL_APARATO)
+    conservadas, retiradas = [], []
+    for entrada in _sys.path:
+        try:
+            real = _os.path.realpath(entrada or _os.getcwd())
+        except OSError:
+            conservadas.append(entrada)
+            continue
+        if real != propia and real in del_lanzador:
+            retiradas.append(real)
+        else:
+            conservadas.append(entrada)
+    _sys.path[:] = conservadas
+    return retiradas
+
+
+RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()
+
+# CONTROL DEL CONTROL de la purga: `os` se usa para poder purgar, así que si `os` mismo
+# viniera del lanzador la purga no probaría nada. No hay forma honesta de seguir: se dice y
+# se sale con el código de PROCEDENCIA.
+if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lanzador():
+    _sys.stderr.write(
+        "[PROCEDENCIA_NO_FIABLE] el módulo `os` procede de la ruta de importación del "
+        "lanzador: este punto ejecutable no puede garantizar de dónde salen sus módulos y "
+        "NO ejecuta\n")
+    raise SystemExit(5)
+
+
 import ast
 import hashlib
 import json
@@ -49,42 +121,112 @@ from contencion import deteccion                                     # noqa: E40
 from gobierno.git import CanalGit                                    # noqa: E402
 
 # ===========================================================================
-#  `ADJ-B2` · EL INVENTARIO DE PUNTOS EJECUTABLES SE **DERIVA**, NO SE ESCRIBE
+#  `ADJ-B2` · `H-03` · EL INVENTARIO SE DERIVA DEL ÁRBOL ENTERO, Y TODO `.py` SE CLASIFICA
 # ===========================================================================
-#  HECHO REPRODUCIDO ANTES DE CORREGIR: aquí había una TUPLA ESCRITA A MANO con los cinco
-#  `ads_*.py`, y por eso `T306` cubría cinco puntos ejecutables «y ninguno más». Los cuatro
-#  de `kernel/operativo/raiz-externa/` —`verificador.py`, `instalar.py`,
-#  `anfitrion_firmante.py` y `anfitrion_verificador.py`— quedaban fuera del alcance del
-#  control, y en ellos el defecto de `E-10` seguía vivo: con un `json.py` homónimo en
-#  `PYTHONPATH`, `verificador.py capacidades` publicaba `{}` con código 0 y `instalar.py`
-#  escribía un manifiesto de TRES bytes sobre 41 ficheros instalados, también con código 0.
+#  HECHO REPRODUCIDO ANTES DE CORREGIR — DOS VECES, Y LA SEGUNDA ES LA GRAVE.
 #
-#  Una lista escrita a mano vuelve a quedarse corta el día que alguien añade un punto
-#  ejecutable, y ese día nadie se entera. Por eso el inventario se DERIVA del disco.
+#  PRIMERA (`ADJ-B2`, gate del 2026-09-04): aquí había una TUPLA ESCRITA A MANO con los
+#  cinco `ads_*.py`, y por eso `T306` cubría cinco puntos ejecutables «y ninguno más». Los
+#  cuatro de `kernel/operativo/raiz-externa/` quedaban fuera, y en ellos `E-10` seguía vivo:
+#  con un `json.py` homónimo en `PYTHONPATH`, `verificador.py capacidades` publicaba `{}`
+#  con código 0 y `instalar.py` escribía un manifiesto de TRES bytes sobre 41 ficheros.
 #
-#  DECISIÓN · el criterio es una EQUIVALENCIA de tres términos, y se comprueba en los dos
-#             sentidos
-#      Alternativas: (a) inventariar por línea de intérprete; (b) inventariar por
-#      `if __name__ == "__main__":`; (c) exigir que los dos criterios COINCIDAN y que todo
-#      el que cumpla cualquiera de ellos lleve el prólogo `E-10`.
-#      Se elige (c). Con (a) se escapa quien añada un `main` sin línea de intérprete; con
-#      (b), quien ponga la línea a un módulo que no la merece. Con (c) el inventario es la
-#      UNIÓN, la prueba exige que la unión coincida con la intersección, y las dos formas de
-#      quedarse corto se vuelven rojo. La consecuencia práctica ya se aplicó: los cuatro
-#      módulos de `raiz-externa/` que llevaban línea de intérprete sin ser ejecutables
-#      —`errores`, `firma`, `atestacion`, `aislamiento`— la han perdido.
+#  SEGUNDA (`H-03` de la auditoría independiente del 2026-09-04): el remedio adjudicado
+#  decía «INVENTARIO MECÁNICO y no por lista», y lo que se hizo fue sustituir una tupla de
+#  FICHEROS escrita a mano por una tupla de ZONAS escrita a mano —`runtime/` y
+#  `raiz-externa/`, primer nivel—. El auditor inventarió el árbol con `ast` y midió:
 #
-#  DECISIÓN · se recorre la RAÍZ de cada zona, no su árbol, y la exclusión se declara
-#      Los paquetes de biblioteca (`runtime/estado/`, `runtime/admision/`…) no contienen
-#      puntos ejecutables, y `runtime/pruebas/` contiene BATERÍAS, que son ejecutables pero
-#      no piezas productivas: una batería inserta su propio `runtime` en la ruta de
-#      importación a propósito, y exigirle la purga sería exigirle que no funcione. Se
-#      recorre el primer nivel de cada zona, que es donde el árbol pone sus puntos
-#      ejecutables, y la prueba comprueba que lo excluido es exactamente eso.
-ZONAS_DEL_INVENTARIO = (
-    ("runtime", RAIZ_RUNTIME),
-    ("raiz-externa", os.path.join(RAIZ_OPERATIVO, "raiz-externa")),
-)
+#      144 ficheros `.py` · 140 con línea de intérprete o bloque `__main__`
+#      `T306` juzgaba 9
+#      fuera quedaban los 15 `comprobar_*.py`, `huella.py`, `registrar_evidencia.py`,
+#      `registro_pruebas.py`, `tooling/workspace.py`, los 3 de `docs/evolucion/
+#      verificacion/`, `docs/canonico/validar-fuentes-canonicas.py` y `docs/f5/validar-f5.py`
+#
+#  Y en esa zona invisible el defecto estaba VIVO, con consecuencia medida (`H-01`): un
+#  `hashlib.py` homónimo en `PYTHONPATH` hacía que `validadores/huella.py` publicara la
+#  huella ESPERADA sobre un árbol MUTADO y que `T150` —la prueba que dice «la huella detecta
+#  su edición»— saliera SUPERADA con `EXIT=0`. Una zona nueva volvía a quedar fuera sin que
+#  nadie se enterara, que es literalmente el modo de fallo que `ADJ-B2` describe.
+#
+#  DECISIÓN · se recorre el ÁRBOL ENTERO y NINGÚN `.py` queda sin clasificar
+#      Alternativas: (a) ampliar la tupla de zonas con las que faltan; (b) recorrer el árbol
+#      entero y exigir el prólogo a todo lo que tenga línea de intérprete; (c) recorrer el
+#      árbol entero, clasificar CADA `.py` en exactamente UNA clase, exigir el prólogo a la
+#      clase de los puntos ejecutables y DECLARAR CON MOTIVO —y comprobar— cada exclusión.
+#      Se elige (c). Con (a) se repara la instancia y se deja la clase: la tupla siguiente se
+#      queda corta el día que aparezca la zona siguiente, que es el defecto que se está
+#      corrigiendo por segunda vez. Con (b) el inventario da rojo en un centenar de módulos
+#      de biblioteca del runtime que llevan línea de intérprete RESIDUAL sin ser ejecutables
+#      —un guardián que da cien rojos falsos se apaga—. Con (c) un fichero nuevo no puede
+#      ser INVISIBLE: o es punto ejecutable y se le exige el mecanismo, o cae en una clase
+#      de exclusión cuyo predicado se comprueba. Es la forma de `AMBITO_VIVO` en
+#      `comprobar_recuentos.py` tras `ADJ-M5`: cada prefijo motivado, y nada sin clasificar.
+#
+#  DECISIÓN · el criterio de «punto ejecutable» es SER INVOCABLE, y admite las DOS formas
+#      La equivalencia anterior era «`#!` ⟺ bloque `__main__` ⟺ prólogo `E-10`», y sobre las
+#      dos zonas de origen era cierta porque las nueve piezas usan el idiom `main()`. Sobre
+#      el árbol entero es FALSA, y se midió: `docs/evolucion/verificacion/
+#      comprobar-correccion-gate-de-cierre.py` es un guion de nivel superior que termina en
+#      `sys.exit(_informe())` y NO define `__main__`. Exigirle el bloque sería exigirle que
+#      se reescriba para satisfacer una prueba. La equivalencia que se conserva —y que se
+#      comprueba en los dos sentidos— es:
+#
+#          lleva `#!`   ⟺   es INVOCABLE   ⟺   lleva el MECANISMO `E-10`
+#
+#      donde INVOCABLE = define `if __name__ == "__main__":` **o** ejecuta `sys.exit(…)` /
+#      `raise SystemExit(…)` en el nivel superior del módulo. Las dos formas se detectan
+#      PARSEANDO, no buscando texto: el texto aparece en comentarios que hablan de esta
+#      misma regla, y en las cadenas de mutación de `validadores/negativos_runtime.py`.
+#
+#  DECISIÓN · lo que se exige idéntico byte a byte es el MECANISMO, y no el recital
+#      Alternativas: (a) exigir el prólogo entero idéntico, recital incluido; (b) exigir
+#      idéntico sólo el mecanismo.
+#      Se elige (b). Con (a) o el recital miente en veinte sedes —el hecho reproducido en
+#      `huella.py` no es el reproducido en `ads_admision.py`— o no se puede escribir dónde
+#      se midió cada cosa, que es la mitad del valor de estos bloques. Con (b) lo que
+#      protege está fijado —1 869 bytes, digest `aa219465a6dd6a04`, comprobado aquí sobre
+#      todos los puntos a la vez— y lo que se lee es propio de cada sede. Una divergencia de
+#      un solo byte en el mecanismo pone esta prueba en rojo y nombra los grupos.
+DIRECTORIOS_QUE_NO_SON_CORPUS = ("__pycache__", ".git", ".pytest_cache")
+
+# Las zonas de baterías NO se escriben: se DERIVAN. Un directorio es zona de baterías si se
+# llama `pruebas` o `tests` y contiene de verdad baterías. Se comprueba en `T330b`.
+NOMBRES_DE_ZONA_DE_PRUEBAS = ("pruebas", "tests")
+PREFIJOS_DE_BATERIA = ("test_", "escenario_", "catalogo_")
+
+# El comienzo y el final del MECANISMO, que es lo que se exige idéntico. El recital que va
+# encima queda fuera a propósito (ver la DECISIÓN de arriba).
+_INICIO_DEL_MECANISMO = "import sys as _sys\nimport os as _os\n"
+_FINAL_DEL_MECANISMO = "    raise SystemExit(5)\n"
+
+# Las TRES clases de exclusión, cada una con su motivo y con el predicado que `T330b`
+# comprueba sobre el disco. Que un motivo esté escrito no lo hace cierto: cada uno se
+# verifica, y un `.py` que no case con ninguna clase pone la prueba en rojo.
+MOTIVOS_DE_EXCLUSION = {
+    "bateria": (
+        "vive en una ZONA DE BATERÍAS derivada del disco. Es DEUDA DECLARADA y no una "
+        "propiedad: no hay razón técnica para que una batería no purgue —esta misma "
+        "batería lo hace—, pero `runtime/pruebas/` y `tooling/tests/` no son zona de la "
+        "pasada que escribe esto. El cliquet es que la batería que HOY lleva el mecanismo "
+        "no lo pierda, y `T330b` lo comprueba por nombre sobre este fichero"),
+    "biblioteca-de-paquete": (
+        "no es invocable y vive en un PAQUETE importable —su directorio tiene "
+        "`__init__.py`—: se importa, no se ejecuta. Su línea de intérprete es RESIDUAL, y "
+        "el recuento de las que quedan se publica en el diagnóstico de `T330b`"),
+    "biblioteca-suelta": (
+        "no es invocable y no vive en un paquete: entonces tampoco puede llevar línea de "
+        "intérprete, porque una línea de intérprete presenta un módulo como ejecutable. Es "
+        "la regla que `ADJ-B2` ya aplicó a `errores.py`, `firma.py`, `atestacion.py` y "
+        "`aislamiento.py` de la raíz externa, y que esta pasada aplica a los tres "
+        "`negativos_*.py` de biblioteca de `validadores/`"),
+}
+
+
+def _arbol_de(fuente):
+    try:
+        return ast.parse(fuente)
+    except SyntaxError:
+        return None
 
 
 def _tiene_bloque_main(fuente):
@@ -94,9 +236,8 @@ def _tiene_bloque_main(fuente):
     misma regla, y una derivación que se dejara engañar por un comentario no sería una
     derivación.
     """
-    try:
-        arbol = ast.parse(fuente)
-    except SyntaxError:
+    arbol = _arbol_de(fuente)
+    if arbol is None:
         return False
     for nodo in arbol.body:
         if not isinstance(nodo, ast.If):
@@ -111,46 +252,159 @@ def _tiene_bloque_main(fuente):
     return False
 
 
-def inventariar_puntos_ejecutables():
-    """El inventario DERIVADO del disco: `{ruta relativa: {señales medidas}}`."""
-    inventario = {}
-    for zona, directorio in ZONAS_DEL_INVENTARIO:
-        for nombre in sorted(os.listdir(directorio)):
-            completa = os.path.join(directorio, nombre)
-            if not nombre.endswith(".py") or not os.path.isfile(completa):
+def _sale_en_el_nivel_superior(fuente):
+    """`True` si el módulo TERMINA el proceso desde su nivel superior.
+
+    La segunda forma de punto ejecutable que el árbol usa de verdad: un guion sin `main()`
+    que acaba en `sys.exit(...)` o `raise SystemExit(...)`. Se excluye el `raise
+    SystemExit(5)` del propio mecanismo `E-10`, que está DENTRO de un `if` de guardia y no
+    es la forma del guion: se distingue porque aquí sólo se miran los nodos del nivel
+    superior, y ése cuelga de un `ast.If`.
+    """
+    arbol = _arbol_de(fuente)
+    if arbol is None:
+        return False
+    for nodo in arbol.body:
+        if isinstance(nodo, ast.Expr) and isinstance(nodo.value, ast.Call):
+            objetivo = nodo.value.func
+            if isinstance(objetivo, ast.Attribute) and objetivo.attr == "exit":
+                return True
+        if isinstance(nodo, ast.Raise):
+            excepcion = nodo.exc
+            if isinstance(excepcion, ast.Call):
+                excepcion = excepcion.func
+            if isinstance(excepcion, ast.Name) and excepcion.id == "SystemExit":
+                return True
+    return False
+
+
+def _llama_a_la_purga(fuente):
+    """`True` si el módulo EJECUTA la purga en su nivel superior. Se parsea, no se busca.
+
+    `validadores/negativos_runtime.py` contiene el nombre `_purgar_la_ruta_de_importacion`
+    DENTRO de las cadenas de una mutación que lo retira del verificador. Un inventario que
+    buscara la subcadena daría por purgado un módulo de biblioteca que no purga nada.
+    """
+    arbol = _arbol_de(fuente)
+    if arbol is None:
+        return False
+    for nodo in arbol.body:
+        if not isinstance(nodo, ast.Assign) or not isinstance(nodo.value, ast.Call):
+            continue
+        objetivo = nodo.value.func
+        if isinstance(objetivo, ast.Name) \
+                and objetivo.id == "_purgar_la_ruta_de_importacion" \
+                and any(isinstance(t, ast.Name) and t.id == "RETIRADAS_DE_LA_RUTA"
+                        for t in nodo.targets):
+            return True
+    return False
+
+
+def mecanismo_de_la_purga(fuente):
+    """El MECANISMO `E-10` de un punto ejecutable, o `None`. El recital NO entra."""
+    inicio = fuente.find(_INICIO_DEL_MECANISMO)
+    if inicio < 0:
+        return None
+    final = fuente.find(_FINAL_DEL_MECANISMO, inicio)
+    if final < 0:
+        return None
+    return fuente[inicio:final + len(_FINAL_DEL_MECANISMO)]
+
+
+def zonas_de_baterias(raiz):
+    """Las zonas de baterías, DERIVADAS del disco. Ni una escrita."""
+    zonas = set()
+    for dirpath, dirnames, filenames in os.walk(raiz):
+        dirnames[:] = sorted(d for d in dirnames if d not in DIRECTORIOS_QUE_NO_SON_CORPUS)
+        if os.path.basename(dirpath) in NOMBRES_DE_ZONA_DE_PRUEBAS and any(
+                n.endswith(".py") and n.startswith(PREFIJOS_DE_BATERIA) for n in filenames):
+            zonas.add(os.path.realpath(dirpath))
+    return zonas
+
+
+def inventariar_el_arbol(raiz=None):
+    """`(puntos, excluidos)` sobre TODO `.py` del árbol. Nada queda sin clasificar.
+
+    `puntos` son los PUNTOS EJECUTABLES: `{ruta relativa: {señales medidas}}`.
+    `excluidos` son los demás, con la CLASE por la que quedan fuera: `{ruta: señales}` con
+    la clave `motivo` puesta a una de las de `MOTIVOS_DE_EXCLUSION`.
+    """
+    base = os.path.realpath(raiz or RAIZ_REPO)
+    zonas = zonas_de_baterias(base)
+    puntos, excluidos = {}, {}
+    for dirpath, dirnames, filenames in os.walk(base):
+        dirnames[:] = sorted(d for d in dirnames if d not in DIRECTORIOS_QUE_NO_SON_CORPUS)
+        es_paquete = os.path.isfile(os.path.join(dirpath, "__init__.py"))
+        en_bateria = os.path.realpath(dirpath) in zonas
+        for nombre in sorted(filenames):
+            if not nombre.endswith(".py"):
+                continue
+            completa = os.path.join(dirpath, nombre)
+            if not os.path.isfile(completa):
                 continue
             with open(completa, "rb") as manejador:
                 crudo = manejador.read()
             fuente = crudo.decode("utf-8", "replace")
             senales = {
-                "zona": zona,
-                "ruta": os.path.join(zona, nombre) if zona != "runtime" else nombre,
+                "ruta": os.path.relpath(completa, base).replace(os.sep, "/"),
+                "zona": os.path.relpath(dirpath, base).replace(os.sep, "/"),
                 "completa": completa,
                 "interprete": crudo.startswith(b"#!"),
                 "main": _tiene_bloque_main(fuente),
-                "purga": "_purgar_la_ruta_de_importacion" in fuente,
+                "salida_de_nivel_superior": _sale_en_el_nivel_superior(fuente),
+                "paquete": es_paquete,
+                "purga": _llama_a_la_purga(fuente),
+                "mecanismo": mecanismo_de_la_purga(fuente),
                 "fuente": fuente,
             }
-            if senales["interprete"] or senales["main"]:
-                inventario[senales["ruta"]] = senales
-    return inventario
+            senales["invocable"] = senales["main"] or senales["salida_de_nivel_superior"]
+            if en_bateria:
+                senales["motivo"] = "bateria"
+                excluidos[senales["ruta"]] = senales
+            elif senales["invocable"]:
+                puntos[senales["ruta"]] = senales
+            elif es_paquete:
+                senales["motivo"] = "biblioteca-de-paquete"
+                excluidos[senales["ruta"]] = senales
+            else:
+                senales["motivo"] = "biblioteca-suelta"
+                excluidos[senales["ruta"]] = senales
+    return puntos, excluidos
 
 
-# El alcance de `T306`, DERIVADO. La tupla escrita a mano que había aquí es exactamente lo
-# que dejó a la raíz externa fuera del control.
-INVENTARIO = inventariar_puntos_ejecutables()
+# El alcance de `T306`, DERIVADO del árbol entero. La tupla de FICHEROS escrita a mano dejó
+# fuera a la raíz externa; la tupla de ZONAS que la sustituyó dejó fuera a `validadores/`,
+# a `tooling/` y a `docs/`, que es donde `H-01` encontró el defecto vivo.
+INVENTARIO, EXCLUIDOS_DEL_INVENTARIO = inventariar_el_arbol()
 EJECUTABLES = tuple(sorted(INVENTARIO))
 
 # `T308` mide otra cosa que `T306`, y por eso su alcance es OTRO, derivado igual y con la
-# diferencia declarada. `T308` contrasta la TABLA DE CÓDIGOS DE SALIDA de los puntos
-# ejecutables del kernel: 0 éxito, 1 fallo tipado, 2 uso, 3 adaptador, 4 contención, 5
-# procedencia. Los puntos de la raíz externa NO comparten esa tabla y no deben compartirla:
-# `O25` §2 le da a `anfitrion_firmante.py` un 3 —«no hay proveedor válido»— y un 4 —«este
-# anfitrión SÓLO firma»— con significado propio, y meterlos en la tabla del kernel borraría
-# una distinción que el contrato hace a propósito. La exclusión es por zona, se deriva igual
-# y `T308` comprueba que lo excluido es exactamente la raíz externa.
+# diferencia declarada. `T308` contrasta la TABLA DE CÓDIGOS DE SALIDA del kernel: 0 éxito,
+# 1 fallo tipado, 2 uso, 3 adaptador, 4 contención, 5 procedencia. Sólo los cinco `ads_*.py`
+# publican esa tabla, y las demás zonas NO deben publicarla: `O25` §2 le da a
+# `anfitrion_firmante.py` un 3 —«no hay proveedor válido»— y un 4 —«este anfitrión SÓLO
+# firma»— con significado propio, y los validadores documentales tienen el convenio de
+# `comprobar_contratos` —0 superada, 1 fallida, 2 uso—, que es otro contrato. Meterlos a
+# todos en la misma tabla borraría distinciones que los contratos hacen a propósito. El
+# estrechamiento no se escribe fichero a fichero: se declara POR ZONA con su motivo, y
+# `T308` comprueba que ninguna zona excluida deja de estar declarada.
+ZONA_DEL_KERNEL = "kernel/operativo/runtime"
+MOTIVO_DE_LA_EXCLUSION_DE_T308 = {
+    "kernel/operativo/raiz-externa":
+        "`O25` §2 le da a esta zona códigos 3 y 4 con significado propio",
+    "kernel/operativo/validadores":
+        "convenio documental de `comprobar_contratos`: 0 superada · 1 fallida · 2 uso",
+    "tooling":
+        "convenio del arranque: 0 · 1 error de materialización · 2 uso",
+    "docs/canonico":
+        "validador documental de una sede: 0 · 1 hallazgos · 2 uso",
+    "docs/f5":
+        "validador documental de una fase: 0 · 1 hallazgos · 2 uso",
+    "docs/evolucion/verificacion":
+        "instrumental del GATE, que no es del kernel y cuyo 0/1 es el del gate",
+}
 EJECUTABLES_DEL_KERNEL = tuple(sorted(
-    ruta for ruta, senales in INVENTARIO.items() if senales["zona"] == "runtime"))
+    ruta for ruta, senales in INVENTARIO.items() if senales["zona"] == ZONA_DEL_KERNEL))
 
 SEGUNDOS_DE_LA_TAREA = 90
 
@@ -247,6 +501,13 @@ class ProcedenciaDeLosModulos(SesionNueva):
     NO a la biblioteca estándar, que va después de `PYTHONPATH`— y
     `verificar --json` publicaba `{}` como veredicto con código 0. Los cinco puntos
     ejecutables importaban el módulo envenenado.
+
+    Y REPRODUCIDO OTRA VEZ el 2026-09-04, en la zona que este control no alcanzaba (`H-01`
+    y `H-03`): con un `hashlib.py` homónimo, `validadores/huella.py` publicaba
+    `bc59513f7182130a` —la huella ESPERADA— sobre un árbol al que se le había añadido una
+    línea a `ads_lint.py`, y `comprobar_integridad.py` sacaba `T150 SUPERADA · EXIT=0`.
+    Desde entonces el alcance de esta prueba no es una tupla de zonas: es `EJECUTABLES`,
+    derivado del ÁRBOL ENTERO, y son treinta y cinco puntos en siete zonas.
     """
 
     def paquete_envenenado(self):
@@ -282,8 +543,10 @@ class ProcedenciaDeLosModulos(SesionNueva):
     def test_T306_ningun_ejecutable_importa_un_homonimo_del_PYTHONPATH(self):
         """T306 · Defecto que previene: `E-10`, que el lanzador decida qué código juzga.
 
-        SABOTAJE QUE LA PONE ROJA: retirar la purga de `sys.path` del preludio de los
-        `ads_*.py` —o dejarla DESPUÉS de los `import`—.
+        SABOTAJE QUE LA PONE ROJA: retirar la purga de `sys.path` del preludio de
+        CUALQUIERA de los treinta y cinco puntos —los `ads_*.py`, los cuatro de la raíz
+        externa, los diecinueve de `validadores/`, `tooling/workspace.py`, los dos de
+        `docs/` o los cuatro del instrumental del gate— o dejarla DESPUÉS de los `import`.
         """
         veneno = self.paquete_envenenado()
         repo, base, _canal = self.repo_de_pruebas()
@@ -514,6 +777,61 @@ class ResultadoExactoDeLaEvidencia(unittest.TestCase):
                            "no se encontró evidencia de `unittest` que juzgar: el control "
                            "positivo no habría podido fallar")
 
+    def test_T307g_la_COBERTURA_DEL_CONTRASTE_va_publicada_en_la_evidencia(self):
+        """T307 · Defecto que previene: `H-08`, una cifra que se calcula y no se publica.
+
+        HECHO REPRODUCIDO POR LA AUDITORÍA INDEPENDIENTE DEL 2026-09-04: la línea base
+        afirmaba «160 escenarios contrastados · 107 no contrastables»; el árbol producía
+        `193 · 74`, y ninguna de las dos parejas de cifras aparecía en ningún fichero
+        —un `grep` de las dos parejas sobre el árbol entero: vacío—.
+        `comprobar_evidencia` CALCULABA `r.nota_cobertura` y no la imprimía nadie.
+
+        DECISIÓN · se juzga la SALIDA DE UNA CORRIDA, no el fichero de evidencia publicado
+            La primera versión de esta prueba leía `evidencia/evidencia-salida.txt`, y se
+            midió lo que eso produce: un CICLO. La evidencia de `comprobar_evidencia` sólo
+            se republica cuando ese validador termina en 0, y ese validador no termina en 0
+            hasta que la evidencia de ESTA batería nombre a `T310` y a `T311`, que es lo que
+            esta misma pasada corrige; y esta batería no termina en 0 hasta que aquella
+            evidencia lleve la cifra. Ninguna de las dos puede ir primero. Corriendo el
+            validador aquí se mide lo que de verdad importa —que el aparato PUBLIQUE la
+            cifra— sin depender de en qué orden se regeneró nada, y además el sabotaje que
+            retira el `print` se detecta EN EL ACTO en vez de en la regeneración siguiente.
+            El fichero publicado lo cubre por su lado `debe_contener` en `validadores.yaml`.
+
+        SABOTAJE QUE LA PONE ROJA: retirar de `main()` la línea que imprime
+        `cobertura del contraste:` (`NH08`).
+        """
+        corrida = subprocess.run(
+            [sys.executable, os.path.join(VALIDADORES, "comprobar_evidencia.py")],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            cwd=RAIZ_REPO, check=False, timeout=300)
+        texto = corrida.stdout.decode("utf-8", "replace")
+        self.assertIn("cobertura del contraste:", texto,
+                      "`comprobar_evidencia` no publica la cobertura del contraste: la "
+                      "cifra vuelve a calcularse y a no existir (`H-08`). stderr="
+                      + corrida.stderr.decode("utf-8", "replace")[:300])
+        medida = re.search(r"cobertura del contraste: contrastados (\d+) · no contrastables "
+                           r"(\d+) · divergencias (\d+)", texto)
+        self.assertIsNotNone(medida, "la cobertura se publica con otra forma: "
+                                     "un número que nadie puede leer no es una cifra")
+        contrastados, no_contrastables, divergencias = (int(g) for g in medida.groups())
+        self.assertGreater(contrastados, 0)
+        self.assertIn("no contrastables por estado declarado:", texto,
+                      "no se publica el DESGLOSE de los no contrastables, que es lo que "
+                      "mantuvo invisibles a los catorce de `H-02`")
+        # Y la cifra publicada es la del ÁRBOL, no una escrita: se recalcula aquí, desde la
+        # SEDE de la derivación, y tiene que coincidir.
+        sys.path.insert(0, VALIDADORES)
+        import registro_pruebas                                       # noqa: PLC0415
+        from ads_lint import Lint                                     # noqa: PLC0415
+        lint = Lint(RAIZ_REPO, ["kernel/operativo", "packs"])
+        lint.cargar_esquemas()
+        lint.cargar_bloques()
+        escenarios = [d for tipo, d, _f, _l in lint.bloques if tipo == "escenario"]
+        div, con, sin = registro_pruebas.contraste_de_estados(escenarios, RAIZ_REPO)
+        self.assertEqual((contrastados, no_contrastables, divergencias),
+                         (len(con), len(sin), len(div)),
+                         "la cifra publicada no es la que el árbol produce hoy")
 
 # ===========================================================================
 #  T308 · `E-15` · NINGÚN ERROR TIPADO SALE COMO TRAZA
@@ -565,16 +883,28 @@ class ErroresTipadosDeLaCLI(SesionNueva):
         """T308 · Defecto que previene: cinco CLI con cinco convenios de salida distintos.
 
         El alcance se DERIVA igual que el de `T306` y se estrecha a la zona del kernel por
-        el motivo escrito junto a `EJECUTABLES_DEL_KERNEL`: los puntos de la raíz externa
-        tienen un convenio propio que `O25` §2 fija, y forzarles esta tabla borraría una
-        distinción del contrato. Lo excluido se comprueba, para que el estrechamiento no
-        pueda crecer en silencio.
+        el motivo escrito junto a `EJECUTABLES_DEL_KERNEL`: la raíz externa tiene un
+        convenio propio que `O25` §2 fija, y los validadores documentales tienen el de
+        `comprobar_contratos`; forzarles la tabla del kernel borraría distinciones que los
+        contratos hacen a propósito. Desde `H-03` el estrechamiento NO se escribe fichero a
+        fichero: se declara POR ZONA con su motivo, y aquí se comprueba que ninguna zona
+        excluida se quede sin declarar y que ninguna zona declarada haya dejado de existir.
+        Así el estrechamiento no puede crecer en silencio: una zona nueva sin motivo escrito
+        pone esta prueba en rojo.
         """
         excluidos = set(EJECUTABLES) - set(EJECUTABLES_DEL_KERNEL)
         self.assertTrue(excluidos, "el alcance de T308 no excluye nada: no se derivó")
-        for ruta in sorted(excluidos):
-            self.assertEqual(INVENTARIO[ruta]["zona"], "raiz-externa",
-                             ruta + " quedó fuera de T308 y no es de la raíz externa")
+        zonas_excluidas = {INVENTARIO[ruta]["zona"] for ruta in excluidos}
+        for zona in sorted(zonas_excluidas):
+            self.assertIn(zona, MOTIVO_DE_LA_EXCLUSION_DE_T308,
+                          "la zona `" + zona + "` quedó fuera de `T308` y su motivo no "
+                          "está declarado: el estrechamiento creció en silencio")
+        for zona, motivo in sorted(MOTIVO_DE_LA_EXCLUSION_DE_T308.items()):
+            self.assertIn(zona, zonas_excluidas,
+                          "se declara el motivo de excluir `" + zona + "` y ya no hay "
+                          "ningún punto ejecutable ahí: el motivo ha caducado")
+            self.assertTrue(motivo.strip(), zona + " se excluye sin motivo escrito")
+        self.assertNotIn(ZONA_DEL_KERNEL, zonas_excluidas)
         tablas = {}
         for ejecutable in EJECUTABLES_DEL_KERNEL:
             guion = (
@@ -956,6 +1286,21 @@ class ContencionEnElCaminoProductivo(SesionNueva):
 #  puede revertirse—, y una sola que exigiera «revienta» volvería a dar el diagnóstico
 #  falso. Juntas fijan que la ventana y la corrupción se distinguen y NINGUNA devuelve
 #  contenido.
+#
+#  `H-02` · POR QUÉ LOS DOS DOCSTRINGS EMPIEZAN POR SU IDENTIFICADOR, DESDE EL 2026-09-04
+#      La auditoría independiente midió que `T310` y `T311` declaraban `estado:
+#      prueba-superada` sobre `evidencia/integridad-evidencia-salida.txt`, un fichero que
+#      NO LOS NOMBRABA: `grep -oE "^T[0-9]+" integridad-evidencia-salida.txt` publicaba
+#      `T306 T307 T308 T309 T330 … T337` y ninguno de estos dos. La derivación del estado
+#      —`validadores/registro_pruebas.py`— sacaba `prueba-ejecutada`, escribía el motivo y
+#      LO DESCARTABA por no ser contrastable, y así los dos subían de estado por argumento.
+#      La causa era de FORMA y estaba aquí: `unittest` imprime la primera línea del
+#      docstring bajo el nombre del caso, todas las demás pruebas de esta batería la
+#      empiezan por su identificador, y estas dos no lo hacían. Se corrige donde estaba el
+#      defecto —la salida no nombraba lo que sí había ejecutado— y no bajando el estado:
+#      bajarlo habría sido correcto y habría escondido que la ejecución EXISTE.
+#      Los otros doce escenarios que `H-02` destapó no se pueden cerrar así desde aquí
+#      —sus baterías son otras—, y a ésos se les baja el estado al derivado, que es el dato.
 # ===========================================================================
 class LaVentanaDePublicacion(unittest.TestCase):
 
@@ -984,7 +1329,7 @@ class LaVentanaDePublicacion(unittest.TestCase):
         return cid(datos)
 
     def test_T310_la_ventana_de_publicacion_NO_se_diagnostica_como_corrupcion(self):
-        """`E-08` bis · el objeto es el que el testigo dice haber publicado.
+        """T310 · `E-08` bis · el objeto es el que el testigo dice haber publicado.
 
         Se reproduce la ventana con fidelidad: el objeto nuevo en `canonico/`, el TESTIGO del
         paso 8 escrito con ese mismo `cid`, y `REVISION.json` todavía en la revisión
@@ -1013,7 +1358,7 @@ class LaVentanaDePublicacion(unittest.TestCase):
         self.assertIn("COMPLETAR", str(capturado.exception))
 
     def test_T311_sin_testigo_que_lo_avale_sigue_siendo_ESTADO_CORRUPTO(self):
-        """El control que impide que la corrección de `T310` se coma la corrupción real.
+        """T311 · El control que impide que la corrección de `T310` se coma la corrupción.
 
         Mismo disco alterado, y NINGÚN testigo que diga que esa transacción publicó ese
         `cid`. Es una modificación fuera del diario, y el diagnóstico tiene que seguir
@@ -1103,71 +1448,151 @@ class PurgaEnLaRaizExterna(SesionNueva):
         return fuente[inicio:fin]
 
     # ------------------------------------------------------------------ T330
-    def test_T330_el_inventario_de_puntos_ejecutables_se_DERIVA_y_es_coherente(self):
-        """T330 · Defecto que previene: `ADJ-B2`, una lista de ejecutables escrita a mano.
+    def test_T330_el_inventario_se_DERIVA_del_arbol_ENTERO_y_es_coherente(self):
+        """T330 · Defecto que previene: `ADJ-B2` y `H-03`, un inventario que no ve una zona.
 
-        La equivalencia de tres términos, comprobada EN LOS DOS SENTIDOS sobre el disco:
-        línea de intérprete ⟺ bloque `__main__` ⟺ prólogo `E-10`. Un punto ejecutable nuevo
-        sin purga la rompe; un módulo de biblioteca que se disfrace de ejecutable, también.
+        La equivalencia, comprobada EN LOS DOS SENTIDOS sobre el disco y sobre el ÁRBOL
+        ENTERO —no sobre dos zonas escritas a mano—:
 
-        SABOTAJE QUE LA PONE ROJA: retirar la purga de cualquiera de los nueve puntos.
+            lleva `#!`   ⟺   es INVOCABLE   ⟺   lleva el MECANISMO `E-10`
+
+        Un punto ejecutable nuevo sin purga la rompe; un módulo de biblioteca que se
+        disfrace de ejecutable, también; y una zona nueva ya no puede ser invisible, porque
+        el recorrido no conoce zonas: conoce el árbol.
+
+        SABOTAJE QUE LA PONE ROJA: retirar la purga de CUALQUIERA de los treinta y cinco
+        puntos —`raiz-externa/verificador.py` (`N330`) o `validadores/huella.py`
+        (`NH01`)—, o volver a acotar el recorrido a un par de zonas escritas (`NH03`).
         """
-        inventario = inventariar_puntos_ejecutables()
-        self.assertTrue(inventario, "el inventario salió vacío: no estaría midiendo nada")
-        # 1 · el inventario alcanza las DOS zonas. Cubrir sólo una es el defecto de origen.
-        zonas = {senales["zona"] for senales in inventario.values()}
-        self.assertEqual(zonas, {zona for zona, _d in ZONAS_DEL_INVENTARIO},
-                         "el inventario no alcanza alguna de las zonas declaradas")
-        # 2 · la UNIÓN coincide con la INTERSECCIÓN: ningún criterio se queda corto.
-        for ruta, senales in sorted(inventario.items()):
+        puntos, excluidos = inventariar_el_arbol()
+        self.assertTrue(puntos, "el inventario salió vacío: no estaría midiendo nada")
+        # 1 · NINGÚN `.py` del árbol queda sin clasificar. Es la propiedad que `H-03` pedía:
+        #     lo que no está en el inventario tiene que estar excluido POR UNA CLASE, no
+        #     ausente. Se recuenta contra el disco, no contra el propio inventario.
+        del_disco = set()
+        for dirpath, dirnames, filenames in os.walk(RAIZ_REPO):
+            dirnames[:] = sorted(d for d in dirnames
+                                 if d not in DIRECTORIOS_QUE_NO_SON_CORPUS)
+            for nombre in filenames:
+                if nombre.endswith(".py"):
+                    del_disco.add(os.path.relpath(os.path.join(dirpath, nombre), RAIZ_REPO)
+                                  .replace(os.sep, "/"))
+        self.assertEqual(del_disco, set(puntos) | set(excluidos),
+                         "hay ficheros `.py` del árbol que el inventario no clasifica: "
+                         + repr(sorted(del_disco - set(puntos) - set(excluidos))))
+        self.assertFalse(set(puntos) & set(excluidos),
+                         "algún fichero está a la vez dentro y fuera del inventario")
+        # 2 · la equivalencia, en los dos sentidos, sobre cada punto ejecutable.
+        for ruta, senales in sorted(puntos.items()):
             with self.subTest(punto=ruta):
                 self.assertTrue(senales["interprete"],
-                                ruta + " define `__main__` y no lleva línea de intérprete")
-                self.assertTrue(senales["main"],
-                                ruta + " lleva línea de intérprete y no define `__main__`")
+                                ruta + " es invocable y no lleva línea de intérprete")
+                self.assertTrue(senales["invocable"],
+                                ruta + " está en el inventario y no es invocable")
                 self.assertTrue(senales["purga"],
                                 ruta + " es un punto ejecutable SIN la purga `E-10`")
-        # 3 · y los nueve llevan el MISMO prólogo, byte a byte. Copiado, no adaptado.
+                self.assertIsNotNone(senales["mecanismo"],
+                                     ruta + " llama a la purga y no lleva su MECANISMO")
+        # 3 · y los treinta y tantos llevan el MISMO MECANISMO, byte a byte. Copiado, no
+        #     adaptado. El recital de encima es de cada sede y no entra: ver la DECISIÓN
+        #     escrita junto a `mecanismo_de_la_purga`.
         digests = {}
-        for ruta, senales in sorted(inventario.items()):
+        for ruta, senales in sorted(puntos.items()):
             digests.setdefault(
-                hashlib.sha256(self.prologo_de(senales["fuente"]).encode("utf-8"))
-                .hexdigest(), []).append(ruta)
+                hashlib.sha256(senales["mecanismo"].encode("utf-8")).hexdigest(),
+                []).append(ruta)
         self.assertEqual(len(digests), 1,
-                         "los prólogos `E-10` han divergido entre puntos ejecutables: "
+                         "los mecanismos `E-10` han divergido entre puntos ejecutables: "
                          + repr({d[:12]: r for d, r in digests.items()}))
-        # 4 · CONTROL DEL CONTROL: el inventario alcanza de verdad la raíz externa.
-        self.assertIn("raiz-externa/verificador.py", inventario,
-                      "el inventario no ve el verificador: es el punto que `ADJ-B2` señaló")
-        self.assertGreaterEqual(len(inventario), 9)
+        # 4 · CONTROL DEL CONTROL: el recorrido llega DE VERDAD a cada zona en la que hay
+        #     un punto ejecutable. Sin esto, «todos cumplen» se explicaría por un inventario
+        #     que sólo mira donde ya sabíamos que se cumple, que es literalmente `H-03`.
+        for canario in ("kernel/operativo/runtime/ads_admision.py",
+                        "kernel/operativo/raiz-externa/verificador.py",
+                        "kernel/operativo/validadores/huella.py",
+                        "kernel/operativo/validadores/comprobar_integridad.py",
+                        "tooling/workspace.py",
+                        "docs/canonico/validar-fuentes-canonicas.py",
+                        "docs/f5/validar-f5.py",
+                        "docs/evolucion/verificacion/derivar-universo-obligatorio.py"):
+            self.assertIn(canario, puntos,
+                          "el inventario no ve " + canario + ": el recorrido no alcanza su "
+                          "zona, que es el defecto de `H-03`")
+        self.assertGreaterEqual(len(puntos), 30)
+        self.assertGreaterEqual(
+            len({senales["zona"] for senales in puntos.values()}), 6,
+            "el inventario cubre menos de seis zonas: volvió a estrecharse")
 
-    def test_T330b_lo_excluido_del_inventario_esta_excluido_por_su_motivo(self):
+    def test_T330b_cada_exclusion_esta_DECLARADA_con_su_motivo_y_SE_COMPRUEBA(self):
         """T330 · Defecto que previene: un alcance que se estrecha sin que se note.
 
-        Lo que queda fuera del inventario tiene que quedar fuera por la razón DECLARADA —ser
-        un módulo de biblioteca— y no por descuido. Se comprueba sobre los `.py` del primer
-        nivel de las dos zonas: los que no están en el inventario no llevan ni línea de
-        intérprete ni bloque `__main__`.
+        Lo que queda fuera del inventario tiene que quedar fuera por una razón DECLARADA y
+        CIERTA, no por descuido. Cada clase de exclusión tiene su motivo escrito en
+        `MOTIVOS_DE_EXCLUSION` y aquí se comprueba su PREDICADO contra el disco, de forma
+        independiente de la clasificación que hizo el inventario.
+
+        SABOTAJE QUE LA PONE ROJA: darle a un módulo de biblioteca una línea de intérprete
+        para colarlo fuera del inventario, o llamar `pruebas/` a un directorio que no
+        contiene baterías para sacar de él lo que sea.
         """
-        inventario = inventariar_puntos_ejecutables()
-        fuera = []
-        for zona, directorio in ZONAS_DEL_INVENTARIO:
-            for nombre in sorted(os.listdir(directorio)):
-                completa = os.path.join(directorio, nombre)
-                if not nombre.endswith(".py") or not os.path.isfile(completa):
-                    continue
-                clave = os.path.join(zona, nombre) if zona != "runtime" else nombre
-                if clave in inventario:
-                    continue
-                with open(completa, "rb") as manejador:
-                    crudo = manejador.read()
-                fuera.append(clave)
-                self.assertFalse(crudo.startswith(b"#!"),
-                                 clave + " lleva línea de intérprete y está fuera")
-                self.assertFalse(_tiene_bloque_main(crudo.decode("utf-8", "replace")),
-                                 clave + " define `__main__` y está fuera")
-        self.assertTrue(fuera, "no hay ningún módulo de biblioteca en las zonas: la "
-                               "exclusión no estaría midiendo nada")
+        puntos, excluidos = inventariar_el_arbol()
+        self.assertTrue(excluidos, "no hay ninguna exclusión: no estaría midiendo nada")
+        zonas = zonas_de_baterias(RAIZ_REPO)
+        self.assertTrue(zonas, "no se derivó ninguna zona de baterías del disco")
+        residuales, sin_mecanismo = [], []
+        for ruta, senales in sorted(excluidos.items()):
+            motivo = senales["motivo"]
+            with self.subTest(excluido=ruta, motivo=motivo):
+                self.assertIn(motivo, MOTIVOS_DE_EXCLUSION,
+                              ruta + " está excluido por un motivo que nadie declara")
+                if motivo == "bateria":
+                    self.assertIn(os.path.realpath(os.path.dirname(senales["completa"])),
+                                  zonas,
+                                  ruta + " se excluyó como batería y no vive en una zona "
+                                         "de baterías derivada del disco")
+                    if senales["mecanismo"] is None:
+                        sin_mecanismo.append(ruta)
+                elif motivo == "biblioteca-de-paquete":
+                    self.assertFalse(senales["invocable"],
+                                     ruta + " es invocable y está fuera como biblioteca")
+                    self.assertTrue(
+                        os.path.isfile(os.path.join(os.path.dirname(senales["completa"]),
+                                                    "__init__.py")),
+                        ruta + " se excluyó como módulo de paquete y su directorio no es un "
+                               "paquete")
+                    if senales["interprete"]:
+                        residuales.append(ruta)
+                else:
+                    self.assertFalse(senales["invocable"],
+                                     ruta + " es invocable y está fuera como biblioteca")
+                    self.assertFalse(
+                        senales["interprete"],
+                        ruta + " no es invocable, no vive en un paquete y lleva línea de "
+                               "intérprete: es la ambigüedad que `ADJ-B2` retiró de "
+                               "`errores.py`, `firma.py`, `atestacion.py` y "
+                               "`aislamiento.py`")
+        # EL CLIQUET de la DEUDA de las baterías. No hay razón técnica para que una batería
+        # no purgue —ésta lo hace— y la deuda está declarada en `MOTIVOS_DE_EXCLUSION`; lo
+        # que no puede pasar es que la batería que HOY purga deje de purgar, porque entonces
+        # la deuda crecería en silencio y nadie tendría delante el número.
+        yo = os.path.relpath(os.path.abspath(__file__), RAIZ_REPO).replace(os.sep, "/")
+        self.assertIn(yo, excluidos, "esta batería no aparece en la clasificación")
+        self.assertEqual(excluidos[yo]["motivo"], "bateria")
+        self.assertIsNotNone(
+            excluidos[yo]["mecanismo"],
+            "esta batería ha perdido el MECANISMO `E-10`: la deuda de las baterías se "
+            "declara con su cifra, y el cliquet es que la que lo lleva no lo pierda")
+        self.assertNotIn(yo, sin_mecanismo)
+        # Y la DEUDA se publica con su cifra y con sus nombres, para que se pueda cerrar.
+        self.assertTrue(
+            len(sin_mecanismo) <= len([r for r in excluidos
+                                       if excluidos[r]["motivo"] == "bateria"]) - 1,
+            "TODAS las baterías han perdido el mecanismo `E-10`: no queda ninguna que "
+            "sostenga que la deuda es de zona y no de imposibilidad")
+        self.assertTrue(residuales, "ningún módulo de paquete conserva línea de intérprete "
+                                    "residual: si de verdad se retiraron todas, este "
+                                    "recuento sobra y esta rama hay que quitarla")
+
 
     # ------------------------------------------------------------------ T331
     def test_T331_la_raiz_externa_no_se_falsea_desde_el_PYTHONPATH(self):

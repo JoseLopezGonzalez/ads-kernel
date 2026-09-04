@@ -32,6 +32,7 @@ la que falta aparece nombrada**.
 
 ```text
 comprobar-correccion-gate-de-cierre.py   la batería
+comprobar-cobertura-de-gate.py           el comprobador MECÁNICO de la cobertura de un gate
 derivar-universo-obligatorio.py          el derivador del universo obligatorio de un gate
 emitir-sobre-de-ancla.py                 el emisor del SOBRE DE ANCLA de un gate (`O18`)
 README.md                                esto
@@ -43,10 +44,19 @@ El instrumental de este directorio está enumerado aquí a propósito: `G-29` co
 ficheros del corpus contra los publicados y **sólo admite una ampliación de
 `verificacion/` si este README la enumera**. Las rutas que cuentan para esa comparación son
 `docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py`,
+`docs/evolucion/verificacion/comprobar-cobertura-de-gate.py`,
 `docs/evolucion/verificacion/derivar-universo-obligatorio.py`,
 `docs/evolucion/verificacion/emitir-sobre-de-ancla.py`,
 `docs/evolucion/verificacion/README.md` y
 `docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md`.
+
+> **`comprobar-cobertura-de-gate.py` se añade el 2026-09-04, y su alta se cuenta como lo que
+> es.** El fichero se escribió para satisfacer `ADJ-GT3` y `O27` §5 —la cobertura de un gate
+> deja de ser declarativa—, y **se añadió sin enumerarlo aquí**, con lo que rompió `G-34` y
+> agravó `G-29` en el mismo commit que venía a reforzar el método. Lo midió la auditoría del
+> 2026-09-04 (`H-07`): 32 comprobaciones en verde sobre el commit padre, 31 sobre el hijo.
+> Se dice entero porque la regla que se rompió es exactamente la que el fichero encarna: un
+> instrumento que no está en ningún inventario **no lo echa de menos nadie**.
 Los manifiestos y todo lo que cuelgue de `manifiestos/` son **inmutables** y no se amplían
 por esta vía: los fija `G-22`.
 

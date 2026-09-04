@@ -138,7 +138,13 @@ componentes:
     tipo: validador
     evidencia: evidencia-salida.txt
     firma_de_exito: '\d+ superadas · 0 fallidas'
-    debe_contener: ['T158']
+    # `H-08` · la COBERTURA DEL CONTRASTE va en la evidencia. Este componente NO se juzga a
+    # sí mismo —cuando corre, su propia evidencia es la de la pasada anterior—, así que
+    # este `debe_contener` queda como DECLARACIÓN de qué publica esta salida y no como
+    # comprobación. Quien la comprueba es `T307g` de `test_integridad_y_evidencia.py`, y lo
+    # hace sobre una CORRIDA del validador y no sobre este fichero: leer el fichero creaba
+    # un ciclo, y el motivo está escrito en el propio `T307g`.
+    debe_contener: ['T158', 'cobertura del contraste:']
     # No se comprueba a sí misma: cuando corre, su propia evidencia es todavía la de la
     # ejecución anterior. La publica el runner como cualquier otra, y su resultado real es
     # el código de salida del runner.

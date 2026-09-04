@@ -8,6 +8,8 @@ META-PRUEBAS DEL UNIVERSO OBLIGATORIO
   ok   CONTROL POSITIVO · la copia intacta deriva el universo
   ok   la fila `F-07` cambia de fase `F6` a `F5` — el id DESAPARECE  
        espera «EL UNIVERSO HA ENCOGIDO»
+  ok   se retira la fila de `V6-19` de §20 — antes la sostenía una mención en PROSA
+       espera «EL UNIVERSO HA ENCOGIDO»
   ok   se retira la fila `F-10` entera                               
        espera «EL UNIVERSO HA ENCOGIDO»
   ok   se retira el bloque `--- CONTRATO 2 … ---` de §19             
@@ -29,4 +31,4 @@ META-PRUEBAS DEL UNIVERSO OBLIGATORIO
   ok   desaparece `C1-*.md`: una excepción del cliquet deja de sostenerse
        espera «ha dejado de ser cierto»
 
-  11 sabotajes · 0 sin detectar
+  12 sabotajes · 0 sin detectar

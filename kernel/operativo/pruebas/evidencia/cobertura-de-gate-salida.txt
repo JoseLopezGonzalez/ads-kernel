@@ -9,5 +9,9 @@
   ok   leyó OTRO OBJETO · sha256 divergente
   ok   lote declarado NO CERRADO
   ok   un revisor SIN manifiesto de lectura
+  ok   manifiesto SIN revisores
+  ok   un revisor con el LOTE VACÍO
+  ok   universo obligatorio VACÍO por construcción
+  ok   un TRAMO fuera del fichero declarado como lectura
 
-  7 controles · 0 sin detectar
+  11 controles · 0 sin detectar

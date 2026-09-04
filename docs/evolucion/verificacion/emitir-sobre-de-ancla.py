@@ -110,6 +110,78 @@ diagnóstico. Un sobre incompleto es peor que ningún sobre: promete una
 garantía que no da.
 """
 
+
+# `E-10` · LA PROCEDENCIA DE LOS MÓDULOS, PURGADA ANTES DE NINGÚN `import` PROPIO
+#
+#  POR QUÉ ESTÁ AQUÍ, Y NO SÓLO EN `kernel/operativo/runtime/`. `H-01` de la auditoría del
+#  2026-09-04 midió que `validadores/huella.py` no llevaba este prólogo y que, con un
+#  `hashlib` homónimo en `PYTHONPATH`, **un árbol MUTADO producía la huella esperada y
+#  `T150` publicaba SUPERADA con `EXIT=0`**. El mismo defecto vive en cualquier ejecutable
+#  que decida algo y no purgue: éstos deciden qué universo obligatorio existe y si un gate
+#  puede adjudicar, que es tanto o más que una huella.
+#
+#  DECISIÓN · se purga ANTES de importar nada propio, con lo único que el intérprete ya cargó
+#      Purgar después de los `import` normales llega tarde —el homónimo ya está en
+#      `sys.modules`— y purgar desde un módulo aparte depende de un `import`, que es
+#      exactamente lo que se está protegiendo. `sys` es incorporado y `os` lo carga el
+#      arranque, así que los dos vienen de `sys.modules` y no de la ruta. Que `os` sea el
+#      bueno se COMPRUEBA, no se supone.
+#
+#  DECISIÓN · se retira lo que viene del LANZADOR, y no «todo lo que no reconozco»
+#      Una lista blanca de directorios del intérprete se rompería en cada instalación y
+#      convertiría un fallo de entorno en un fallo del aparato. `E-10` nombra dos cosas
+#      concretas: `PYTHONPATH` y el `cwd`. Se retiran ésas y el recuento se publica.
+import sys as _sys
+import os as _os
+
+_RAIZ_DEL_APARATO = _os.path.dirname(_os.path.abspath(__file__))
+
+
+def _entradas_del_lanzador():
+    """Lo que el LANZADOR puede meter en la ruta de importación: `PYTHONPATH` y el `cwd`."""
+    sospechosas = set()
+    for entrada in (_os.environ.get("PYTHONPATH") or "").split(_os.pathsep):
+        if entrada:
+            sospechosas.add(_os.path.realpath(entrada))
+    try:
+        sospechosas.add(_os.path.realpath(_os.getcwd()))
+    except OSError:
+        # Un `cwd` borrado bajo los pies no es motivo para no purgar el resto.
+        pass
+    return sospechosas
+
+
+def _purgar_la_ruta_de_importacion():
+    """Retira de `sys.path` lo que venga del lanzador. Devuelve cuántas entradas retiró."""
+    del_lanzador = _entradas_del_lanzador()
+    propia = _os.path.realpath(_RAIZ_DEL_APARATO)
+    conservadas, retiradas = [], []
+    for entrada in _sys.path:
+        try:
+            real = _os.path.realpath(entrada or _os.getcwd())
+        except OSError:
+            conservadas.append(entrada)
+            continue
+        if real != propia and real in del_lanzador:
+            retiradas.append(real)
+        else:
+            conservadas.append(entrada)
+    _sys.path[:] = conservadas
+    return retiradas
+
+
+RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()
+
+# CONTROL DEL CONTROL de la purga: `os` se usa para poder purgar, así que si `os` mismo
+# viniera del lanzador la purga no probaría nada. No hay forma honesta de seguir: se dice y
+# se sale con el código de PROCEDENCIA.
+if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lanzador():
+    _sys.stderr.write(
+        "[PROCEDENCIA_NO_FIABLE] el módulo `os` procede de la ruta de importación del "
+        "lanzador: este punto ejecutable no puede garantizar de dónde salen sus módulos y "
+        "NO ejecuta\n")
+    raise SystemExit(5)
+
 import argparse
 import datetime
 import hashlib

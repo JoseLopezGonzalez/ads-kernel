@@ -7,6 +7,22 @@ Conformidad del **segundo corte de `F6`**. Sus contratos derivados:
 [`CONTRATO-ADAPTADOR.md`](../runtime/CONTRATO-ADAPTADOR.md) ·
 [`CONTRATO-RAIZ-EXTERNA.md`](../runtime/CONTRATO-RAIZ-EXTERNA.md).
 
+> **`H-02` · `T193` ha BAJADO a `prueba-ejecutada`, y no es una degradación del
+> aparato: es el dato.** La auditoría independiente del 2026-09-04 midió que catorce
+> escenarios del corpus declaraban `estado: prueba-superada` sobre una evidencia que **no
+> los nombra en ninguna línea de veredicto**. La derivación de
+> [`validadores/registro_pruebas.py`](../validadores/registro_pruebas.py) ya sacaba
+> `prueba-ejecutada` y escribía el motivo, pero DESCARTABA la divergencia por no ser
+> contrastable, y `T350` quedaba en verde. Desde esa pasada, un `estado` superior al
+> derivado es DIVERGENCIA se pueda contrastar o no, y la regla dura de
+> [`REGISTRO.md`](REGISTRO.md) —«ninguna prueba sube de estado por argumento»— vale también
+> para lo que la evidencia **no sostiene**, y no sólo para lo que **contradice**.
+>
+> `prueba-ejecutada` es el estado exacto: `escenario_e2e_runtime.py` —veinticinco pasos— se
+> ejecuta, termina con código 0 y su salida queda registrada; lo que no consta es el veredicto
+> **de este escenario** por separado. Subirlo otra vez exige que la salida lo NOMBRE, no que
+> alguien lo declare.
+
 **Todo esto EJECUTA.** Procesos reales que se matan de verdad, repositorios Git temporales
 reales sin red, dos instancias de runtime compitiendo en procesos distintos, y un adaptador
 que lanza `subprocess` y mata el GRUPO de procesos. Ningún mock hace de pieza en ningún
@@ -309,7 +325,7 @@ falla_si:
   - "la salida lleva reloj, duración, pid o ruta absoluta"
 ejecucion: validador-estructural
 validador: kernel/operativo/runtime/pruebas/escenario_e2e_runtime.py
-estado: prueba-superada
+estado: prueba-ejecutada
 evidencia: evidencia/e2e-runtime-salida.txt
 ```
 
