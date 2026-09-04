@@ -896,3 +896,84 @@ Las claves efímeras están permitidas únicamente en pruebas y no constituyen c
 Esta resolución cierra `FD-1` como decisión del Owner.
 
 No declara implementada ni certificada la raíz externa, no completa `F6` y no desbloquea PesquerApp.
+
+---
+
+# `O26` · ACEPTACIÓN CONDICIONADA DE LA RAÍZ EXTERNA Y COMPETENCIA DEL GATE FINAL
+
+**Fecha:** 2026-09-04  
+**Autoridad:** Owner
+
+## 1 · Aceptación arquitectónica
+
+ACEPTO la raíz externa de confianza de `F6` como mecanismo arquitectónico de
+referencia para satisfacer el criterio `B3`, siempre que la implementación
+sometida al gate final demuestre conjuntamente:
+
+1. que la raíz y su evidencia viven fuera del árbol verificado;
+2. que la firma es asimétrica;
+3. que la atestación queda ligada simultáneamente al SHA del commit y a su tree;
+4. que el firmante y el verificador son componentes separados;
+5. que el verificador no dispone de la clave privada;
+6. que el ejecutor de la raíz no comparte capacidad de escritura sobre el
+   repositorio de control con el runtime;
+7. que existen rotación, solapamiento, retirada y revocación;
+8. que clave desconocida, firma inválida, commit incorrecto, tree incorrecto,
+   ausencia de proveedor y contaminación del entorno fallan cerrado.
+
+## 2 · Alcance de la aceptación
+
+Esta resolución acepta la ARQUITECTURA y autoriza que una implementación que
+cumpla las ocho condiciones sea reconocida como la raíz externa aceptada por el
+Owner.
+
+No certifica por sí misma la implementación existente ni ninguna candidata
+concreta. La aceptación se vuelve aplicable a una candidata únicamente cuando
+un gate independiente VÁLIDO demuestre las ocho condiciones sobre su SHA exacto.
+
+## 3 · Identidad independiente
+
+En el entorno actual acepto como demostración transitoria una identidad distinta
+dentro de un contenedor, con el repositorio montado en sólo lectura y controles
+positivos que prueben que la identidad puede escribir en su propio espacio.
+
+Para producción, la identidad deberá materializarse mediante una cuenta de
+servicio, contenedor o aislamiento equivalente que no tenga permiso de escritura
+sobre el repositorio de control.
+
+## 4 · Custodia
+
+La custodia productiva de las claves continúa siendo EXTERNA conforme a `O25`.
+
+Una clave efímera de pruebas, aunque esté fuera de los repositorios y tenga
+permisos `0600`, NO constituye custodia productiva.
+
+## 5 · Competencia del gate
+
+Un gate independiente VÁLIDO puede declarar `F6 CERTIFICADA` y `F6 CERRADA` si
+demuestra simultáneamente:
+
+1. que no quedan obligaciones internas de `F6` sin implementar;
+2. que no quedan propiedades críticas sin una prueba capaz de fallar;
+3. que todas las obligaciones tienen trazabilidad hasta evidencia ejecutable;
+4. que la implementación satisface las ocho condiciones de esta resolución;
+5. que no existen bloqueantes internos vivos.
+
+## 6 · PesquerApp
+
+La certificación y cierre de `F6` NO inician automáticamente PesquerApp.
+
+Si el gate final es suficiente, PesquerApp quedará TÉCNICAMENTE DESBLOQUEADA PARA
+UNA ADOPCIÓN CONTROLADA, pero seguirá NO INICIADA hasta una orden expresa del
+Owner que defina producto, repositorios, alcance y condiciones de parada.
+
+## 7 · No rebaja
+
+Esta resolución no rebaja los contratos de `F6`, no corrige hallazgos, no
+convierte deuda interna en externa y no permite certificar una candidata
+incompleta.
+
+## 8 · Condición de fracaso
+
+Si el gate final no es válido o no certifica `F6`, la aceptación arquitectónica
+permanece, pero `F6` seguirá ABIERTA y PesquerApp seguirá BLOQUEADA.

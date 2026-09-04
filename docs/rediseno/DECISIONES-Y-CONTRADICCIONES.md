@@ -651,6 +651,32 @@ externa**, y esta fila tampoco.
 |---|---|---|---|---|
 | D114 | **PROPAGACIÓN DE `O25`. No es una elección de `F6`: es la materialización de una resolución del Owner, y se declara DERIVADA. No sustituye a `O25`, y una paráfrasis NUNCA amplía el texto canónico.** (i) **La identidad criptográfica pertenece a la RAÍZ EXTERNA DE CONFIANZA de cada instalación**, y no al repositorio verificado, al control repo, al kernel, al runtime, a un proyecto ni a un agente. (ii) **La autoridad administrativa es del Owner**: aprovisionar, autorizar, rotar, revocar, recuperar y sustituir, por un canal externo y auditable. (iii) **La CUSTODIA es de una identidad de servicio dedicada del verificador externo**, con un proveedor de secretos del anfitrión: fuera de todos los repositorios, sin versionar, ausente de estado, diarios, evidencia, configuración exportada, logs y errores, **inaccesible para el runtime y para los agentes**, no exportable cuando el proveedor lo permita, y distinta por instalación y entorno. (iv) **Sin proveedor válido, fallo cerrado.** (v) **La configuración externa fija la identidad pública aceptada**, y **el repositorio verificado NO puede cambiar por sí mismo qué identidad acepta la raíz externa**. (vi) **Firmas, atestaciones, certificados y huellas públicas SÍ entran en el árbol como EVIDENCIA**; la clave privada y la autoridad para validarla, NO. (vii) **Criptografía estándar y biblioteca mantenida; NINGUNA primitiva propia**, con rotación, solapamiento explícito, estados activa/retirada/revocada, rechazo de desconocida o revocada y trazabilidad sin revelar secretos. (viii) **Las claves efímeras siguen permitidas SÓLO en pruebas y no son custodia productiva** | **`O25`**, que es su única fuente. Revisa el estado de `FD-1` —de DEUDA ABIERTA a DECISIÓN EMITIDA— y **no renumera nada**: `D1`–`D113` y `O1`–`O24` conservan íntegro su texto | `FD-1` era la única decisión del Owner que el primer corte de `F6` dejó pendiente, y sin ella el contrato de la raíz externa no podía declarar titular ni custodio. La alternativa —que el Owner custodiara la clave como fichero personal y la introdujera a mano en los repositorios— **la descartó él expresamente**: pondría el secreto dentro del árbol que la raíz externa tiene que verificar desde fuera, que es la dependencia circular que `g.15` prohíbe | retirar `O25` devuelve `FD-1` a deuda abierta y deja el contrato de la raíz externa sin titular ni custodio declarables |
 
+### `D115` · la propagación de `O26` — DERIVADA de una resolución del Owner, NO elegida por `F6`
+
+**Epígrafe propio por la regla de arriba.** **Origen:** el criterio `B3` de
+`docs/canonico/05-PLAN-DE-IMPLEMENTACION-F5-F6.md` §2.2
+exige que la raíz externa «*la acepta el Owner*», y `O18` reserva esa autoridad al Owner. El
+gate del 2026-09-03 registró la ausencia de ese acto como `E-11`, **externo**, y lo nombró sin
+ejecutarlo. El Owner lo emite: **`O26`**, del **2026-09-04**, cuyo texto íntegro vive en la
+**SEDE CANÓNICA** y **no se copia aquí**.
+
+```bash
+awk '/^# /{p = ($0 ~ /^# `O26`/)} p' docs/owner/ADS-OWNER-RESOLUCIONES.md
+```
+
+**Nada resolutivo anterior se toca:** `O17`–`O25` conservan íntegro su texto —comprobado como
+CADENA: cada versión de la sede es prefijo exacto de la siguiente desde su commit de nacimiento
+`1d3b5d41434bb3bcd0b3323c4e6d56af5d7676e8`, y los bytes anteriores al apéndice son idénticos—
+y `D1`–`D114` el suyo.
+
+**`O26` NO CERTIFICA NADA.** Acepta la ARQUITECTURA bajo ocho condiciones y difiere a un gate
+independiente VÁLIDO la comprobación de que una candidata concreta las cumple. Esta fila
+tampoco certifica, y no puede invocarse como prueba de que `B3` está satisfecho.
+
+| # | decisión | qué revisa | por qué, y qué alternativa se descartó | cómo se revierte |
+|---|---|---|---|---|
+| D115 | **PROPAGACIÓN DE `O26`. No es una elección de `F6`: es la materialización de una resolución del Owner, y se declara DERIVADA. No sustituye a `O26`, y una paráfrasis NUNCA amplía el texto canónico.** (i) **El Owner ACEPTA la raíz externa de confianza de `F6` como MECANISMO ARQUITECTÓNICO** de referencia para `B3`, **condicionada a OCHO condiciones conjuntas** que la implementación sometida al gate final debe demostrar. (ii) **La aceptación es de la ARQUITECTURA, no de una candidata**: se vuelve aplicable a una candidata concreta **sólo** cuando un gate independiente VÁLIDO demuestre las ocho condiciones sobre su SHA exacto. (iii) **La identidad independiente se admite HOY como demostración transitoria** mediante identidad distinta en contenedor con el repositorio en sólo lectura y controles positivos; **para producción** exige cuenta de servicio, contenedor o aislamiento equivalente sin permiso de escritura sobre el repositorio de control. (iv) **La CUSTODIA productiva sigue EXTERNA conforme a `O25`**, y una clave efímera de pruebas —aunque esté fuera de los repositorios y tenga `0600`— **NO** es custodia productiva. (v) **Un gate VÁLIDO gana competencia para declarar `F6 CERTIFICADA` y `F6 CERRADA`** si demuestra las cinco cosas de `O26` §5. (vi) **La certificación NO inicia PesquerApp**: como mucho la deja **TÉCNICAMENTE DESBLOQUEADA PARA UNA ADOPCIÓN CONTROLADA** y **NO INICIADA**, hasta orden expresa del Owner. (vii) **No rebaja contratos, no corrige hallazgos y no convierte deuda interna en externa.** (viii) **Si el gate final no es válido o no certifica, la aceptación arquitectónica permanece pero `F6` sigue ABIERTA y PesquerApp BLOQUEADA.** | **`O26`**, que es su única fuente. Revisa el estado del criterio `B3` —de «sin acto del Owner» a «acto emitido y CONDICIONADO, pendiente de comprobación por gate»— y **no renumera nada**: `D1`–`D114` y `O1`–`O25` conservan íntegro su texto. **No revisa el estado de `F6`, que sigue `INICIADA · EN CURSO`, ni el de PesquerApp, que sigue `BLOQUEADA`** | sin este acto, `B3` era insatisfacible por construcción: `O18` reserva al Owner la aceptación de la raíz externa y `F6-B` la declara INDELEGABLE, luego ni un gate, ni una validación en verde, ni el coordinador podían emitirla. La alternativa —una aceptación INCONDICIONAL de la implementación existente— **la descartó el Owner expresamente** en `O26` §2 y §7: aceptar una candidata sin gate convertiría la resolución en certificación, que es justamente lo que `O24` (iv) prohíbe | retirar `O26` devuelve `B3` a «sin acto del Owner», deja `E-11` abierto como externo y hace imposible certificar `F6` por falta de acto competente |
+
 ---
 
 ## 2 · Decisiones que pertenecen al Owner
