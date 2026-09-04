@@ -1,0 +1,1945 @@
+{
+ "candidata": "2ae0a93888a425cf85ba38d0ac054d069bbbe7d6",
+ "tree": "",
+ "modificadas": [
+  "docs/canonico/00-EMPEZAR-AQUI.md",
+  "docs/canonico/03-GOBIERNO-Y-AUTORIDAD.md",
+  "docs/canonico/04-CONTRATOS-TECNICOS.md",
+  "docs/canonico/05-PLAN-DE-IMPLEMENTACION-F5-F6.md",
+  "docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md",
+  "docs/canonico/FUENTES-CANONICAS.yml",
+  "docs/canonico/validar-fuentes-canonicas.py",
+  "docs/evolucion/00-INDICE.md",
+  "docs/evolucion/CHECKPOINT-ADS-NEXT.md",
+  "docs/evolucion/verificacion/README.md",
+  "docs/evolucion/verificacion/comprobar-cobertura-de-gate.py",
+  "docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py",
+  "docs/evolucion/verificacion/derivar-universo-obligatorio.py",
+  "docs/evolucion/verificacion/emitir-sobre-de-ancla.py",
+  "docs/evolucion/verificacion/manifiestos/F6-ASIGNACION-GATE-CERTIFICACION-FINAL-20260904.md",
+  "docs/f5/validar-f5.py",
+  "docs/f6/00-ESTADO-DE-IMPLEMENTACION-F6.md",
+  "docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md",
+  "docs/f6/02-GATE-DE-CERTIFICACION-FINAL-20260903.md",
+  "docs/f6/03-GATE-DE-CERTIFICACION-FINAL-20260904.md",
+  "docs/f6/04-MATRIZ-DE-HALLAZGOS-DEL-GATE-20260904.md",
+  "docs/owner/ADS-OWNER-RESOLUCIONES.md",
+  "docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md",
+  "kernel/.upstream-hash",
+  "kernel/KERNEL_CHANGELOG.md",
+  "kernel/VERSION",
+  "kernel/VERSIONES.md",
+  "kernel/operativo/00-INDICE.md",
+  "kernel/operativo/circuitos/00-CIRCUITOS.md",
+  "kernel/operativo/circuitos/DIS-handoffs.md",
+  "kernel/operativo/circuitos/entregas-de-8-0.md",
+  "kernel/operativo/circuitos/handoffs-generales.md",
+  "kernel/operativo/contratos/00-INDICE.md",
+  "kernel/operativo/entrada/03-FORMAS.md",
+  "kernel/operativo/entrada/05-ESCENARIOS.md",
+  "kernel/operativo/esquemas/proceso.yaml",
+  "kernel/operativo/pruebas/RECUENTOS-generado.md",
+  "kernel/operativo/pruebas/REGISTRO-generado.md",
+  "kernel/operativo/pruebas/REGISTRO.md",
+  "kernel/operativo/pruebas/T086-T092-contratos.md",
+  "kernel/operativo/pruebas/T100-T121-capacidades.md",
+  "kernel/operativo/pruebas/T136-T152-post-auditoria.md",
+  "kernel/operativo/pruebas/T159-T170-multirepo.md",
+  "kernel/operativo/pruebas/T172-T181-estado-durable.md",
+  "kernel/operativo/pruebas/T182-T194-runtime-y-admision.md",
+  "kernel/operativo/pruebas/T195-T209-ciclo-y-macrocircuitos.md",
+  "kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md",
+  "kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md",
+  "kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md",
+  "kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md",
+  "kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md",
+  "kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md",
+  "kernel/operativo/pruebas/T340-T359-append-only-y-universo.md",
+  "kernel/operativo/pruebas/T360-T379-sedes-veraces.md",
+  "kernel/operativo/pruebas/evidencia/adaptadores-salida.txt",
+  "kernel/operativo/pruebas/evidencia/admision-salida.txt",
+  "kernel/operativo/pruebas/evidencia/agentes-salida.txt",
+  "kernel/operativo/pruebas/evidencia/arboles-salida.txt",
+  "kernel/operativo/pruebas/evidencia/arranque-salida.txt",
+  "kernel/operativo/pruebas/evidencia/cardinalidad-salida.txt",
+  "kernel/operativo/pruebas/evidencia/ciclo-salida.txt",
+  "kernel/operativo/pruebas/evidencia/cobertura-de-gate-salida.txt",
+  "kernel/operativo/pruebas/evidencia/composicion-procesos-salida.txt",
+  "kernel/operativo/pruebas/evidencia/contencion-salida.txt",
+  "kernel/operativo/pruebas/evidencia/continua-salida.txt",
+  "kernel/operativo/pruebas/evidencia/contratos-salida.txt",
+  "kernel/operativo/pruebas/evidencia/e2e-f6-salida.txt",
+  "kernel/operativo/pruebas/evidencia/e2e-runtime-salida.txt",
+  "kernel/operativo/pruebas/evidencia/estado-durable-salida.txt",
+  "kernel/operativo/pruebas/evidencia/estado-e2e-salida.txt",
+  "kernel/operativo/pruebas/evidencia/evidencia-salida.txt",
+  "kernel/operativo/pruebas/evidencia/fuentes-salida.txt",
+  "kernel/operativo/pruebas/evidencia/gobierno-git-salida.txt",
+  "kernel/operativo/pruebas/evidencia/identidad-salida.txt",
+  "kernel/operativo/pruebas/evidencia/integridad-evidencia-salida.txt",
+  "kernel/operativo/pruebas/evidencia/lint-salida.txt",
+  "kernel/operativo/pruebas/evidencia/macrocircuitos-salida.txt",
+  "kernel/operativo/pruebas/evidencia/multimaquina-salida.txt",
+  "kernel/operativo/pruebas/evidencia/negativos-salida.txt",
+  "kernel/operativo/pruebas/evidencia/raiz-externa-salida.txt",
+  "kernel/operativo/pruebas/evidencia/recuentos-salida.txt",
+  "kernel/operativo/pruebas/evidencia/referencias-salida.txt",
+  "kernel/operativo/pruebas/evidencia/runtime-salida.txt",
+  "kernel/operativo/pruebas/evidencia/sesion-nueva-salida.txt",
+  "kernel/operativo/pruebas/evidencia/universo-obligatorio-salida.txt",
+  "kernel/operativo/pruebas/evidencia/versiones-salida.txt",
+  "kernel/operativo/raiz-externa/README.md",
+  "kernel/operativo/raiz-externa/aislamiento.py",
+  "kernel/operativo/raiz-externa/anfitrion_firmante.py",
+  "kernel/operativo/raiz-externa/anfitrion_verificador.py",
+  "kernel/operativo/raiz-externa/atestacion.py",
+  "kernel/operativo/raiz-externa/errores.py",
+  "kernel/operativo/raiz-externa/firma.py",
+  "kernel/operativo/raiz-externa/instalar.py",
+  "kernel/operativo/raiz-externa/verificador.py",
+  "kernel/operativo/recorrido/01-PROCESOS.md",
+  "kernel/operativo/runtime/00-RUNTIME.md",
+  "kernel/operativo/runtime/CONTRATO-ADAPTADOR.md",
+  "kernel/operativo/runtime/CONTRATO-ADMISION.md",
+  "kernel/operativo/runtime/CONTRATO-ARBOLES-ADVERSARIALES.md",
+  "kernel/operativo/runtime/CONTRATO-CICLO-Y-MACROCIRCUITOS.md",
+  "kernel/operativo/runtime/CONTRATO-CONTENCION.md",
+  "kernel/operativo/runtime/CONTRATO-ESTADO-DURABLE.md",
+  "kernel/operativo/runtime/CONTRATO-GOBIERNO-GIT-CONTROL.md",
+  "kernel/operativo/runtime/CONTRATO-RAIZ-EXTERNA.md",
+  "kernel/operativo/runtime/CONTRATO-RUNTIME-Y-DISPATCHER.md",
+  "kernel/operativo/runtime/adaptadores/__init__.py",
+  "kernel/operativo/runtime/adaptadores/contrato.py",
+  "kernel/operativo/runtime/adaptadores/proceso.py",
+  "kernel/operativo/runtime/adaptadores/proyeccion.py",
+  "kernel/operativo/runtime/adaptadores/puntero.py",
+  "kernel/operativo/runtime/adaptadores/registro.py",
+  "kernel/operativo/runtime/admision/__init__.py",
+  "kernel/operativo/runtime/admision/censo.py",
+  "kernel/operativo/runtime/admision/errores.py",
+  "kernel/operativo/runtime/admision/formulas.py",
+  "kernel/operativo/runtime/admision/lectura.py",
+  "kernel/operativo/runtime/admision/matriz.py",
+  "kernel/operativo/runtime/admision/mutacion.py",
+  "kernel/operativo/runtime/admision/perimetro.py",
+  "kernel/operativo/runtime/admision/sede.py",
+  "kernel/operativo/runtime/ads_admision.py",
+  "kernel/operativo/runtime/ads_arboles.py",
+  "kernel/operativo/runtime/ads_ciclo.py",
+  "kernel/operativo/runtime/ads_estado.py",
+  "kernel/operativo/runtime/ads_runtime.py",
+  "kernel/operativo/runtime/arboles/__init__.py",
+  "kernel/operativo/runtime/arboles/ataques.py",
+  "kernel/operativo/runtime/arboles/derivador.py",
+  "kernel/operativo/runtime/arboles/errores.py",
+  "kernel/operativo/runtime/arboles/suite.py",
+  "kernel/operativo/runtime/arboles/versiones.py",
+  "kernel/operativo/runtime/ciclo/__init__.py",
+  "kernel/operativo/runtime/ciclo/agentes.py",
+  "kernel/operativo/runtime/ciclo/cierre.py",
+  "kernel/operativo/runtime/ciclo/continuacion.py",
+  "kernel/operativo/runtime/ciclo/corpus.py",
+  "kernel/operativo/runtime/ciclo/despacho.py",
+  "kernel/operativo/runtime/ciclo/durable.py",
+  "kernel/operativo/runtime/ciclo/encuadre.py",
+  "kernel/operativo/runtime/ciclo/equipos.py",
+  "kernel/operativo/runtime/ciclo/errores.py",
+  "kernel/operativo/runtime/ciclo/gates.py",
+  "kernel/operativo/runtime/ciclo/handoffs.py",
+  "kernel/operativo/runtime/ciclo/paralelismo.py",
+  "kernel/operativo/runtime/ciclo/planificacion.py",
+  "kernel/operativo/runtime/ciclo/procesos.py",
+  "kernel/operativo/runtime/ciclo/rutas.py",
+  "kernel/operativo/runtime/contencion/__init__.py",
+  "kernel/operativo/runtime/contencion/backends.py",
+  "kernel/operativo/runtime/contencion/deteccion.py",
+  "kernel/operativo/runtime/contencion/ejecutor.py",
+  "kernel/operativo/runtime/contencion/errores.py",
+  "kernel/operativo/runtime/contencion/politica.py",
+  "kernel/operativo/runtime/estado/__init__.py",
+  "kernel/operativo/runtime/estado/atestacion.py",
+  "kernel/operativo/runtime/estado/bloqueo.py",
+  "kernel/operativo/runtime/estado/diario.py",
+  "kernel/operativo/runtime/estado/errores.py",
+  "kernel/operativo/runtime/estado/fallos.py",
+  "kernel/operativo/runtime/estado/migracion.py",
+  "kernel/operativo/runtime/estado/motor.py",
+  "kernel/operativo/runtime/estado/reconciliacion.py",
+  "kernel/operativo/runtime/estado/rutas.py",
+  "kernel/operativo/runtime/estado/serializacion.py",
+  "kernel/operativo/runtime/estado/transaccion.py",
+  "kernel/operativo/runtime/gobierno/POLITICA-CONTROL-REPO.yml",
+  "kernel/operativo/runtime/gobierno/__init__.py",
+  "kernel/operativo/runtime/gobierno/control.py",
+  "kernel/operativo/runtime/gobierno/errores.py",
+  "kernel/operativo/runtime/gobierno/git.py",
+  "kernel/operativo/runtime/gobierno/propiedad.py",
+  "kernel/operativo/runtime/identidad/__init__.py",
+  "kernel/operativo/runtime/identidad/configuracion.py",
+  "kernel/operativo/runtime/identidad/errores.py",
+  "kernel/operativo/runtime/identidad/proveedor.py",
+  "kernel/operativo/runtime/identidad/rotacion.py",
+  "kernel/operativo/runtime/macrocircuitos/__init__.py",
+  "kernel/operativo/runtime/macrocircuitos/definicion.py",
+  "kernel/operativo/runtime/macrocircuitos/errores.py",
+  "kernel/operativo/runtime/macrocircuitos/fase0.py",
+  "kernel/operativo/runtime/macrocircuitos/motor.py",
+  "kernel/operativo/runtime/pruebas/catalogo_de_prueba.py",
+  "kernel/operativo/runtime/pruebas/escenario_e2e_f6.py",
+  "kernel/operativo/runtime/pruebas/escenario_e2e_runtime.py",
+  "kernel/operativo/runtime/pruebas/escenario_extremo_a_extremo.py",
+  "kernel/operativo/runtime/pruebas/test_adaptadores.py",
+  "kernel/operativo/runtime/pruebas/test_admision.py",
+  "kernel/operativo/runtime/pruebas/test_agentes.py",
+  "kernel/operativo/runtime/pruebas/test_arboles.py",
+  "kernel/operativo/runtime/pruebas/test_cardinalidad_y_seleccion.py",
+  "kernel/operativo/runtime/pruebas/test_ciclo.py",
+  "kernel/operativo/runtime/pruebas/test_contencion.py",
+  "kernel/operativo/runtime/pruebas/test_continua.py",
+  "kernel/operativo/runtime/pruebas/test_estado_durable.py",
+  "kernel/operativo/runtime/pruebas/test_gobierno_git.py",
+  "kernel/operativo/runtime/pruebas/test_identidad.py",
+  "kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py",
+  "kernel/operativo/runtime/pruebas/test_macrocircuitos.py",
+  "kernel/operativo/runtime/pruebas/test_multimaquina.py",
+  "kernel/operativo/runtime/pruebas/test_raiz_externa.py",
+  "kernel/operativo/runtime/pruebas/test_runtime.py",
+  "kernel/operativo/runtime/pruebas/test_sesion_nueva.py",
+  "kernel/operativo/runtime/runtime/__init__.py",
+  "kernel/operativo/runtime/runtime/dispatcher.py",
+  "kernel/operativo/runtime/runtime/ejecucion.py",
+  "kernel/operativo/runtime/runtime/errores.py",
+  "kernel/operativo/runtime/runtime/estado_util.py",
+  "kernel/operativo/runtime/runtime/fallos.py",
+  "kernel/operativo/runtime/runtime/lease.py",
+  "kernel/operativo/runtime/runtime/modelo.py",
+  "kernel/operativo/runtime/runtime/politica.py",
+  "kernel/operativo/runtime/runtime/vistas.py",
+  "kernel/operativo/validadores/ads_lint.py",
+  "kernel/operativo/validadores/composicion_packs.py",
+  "kernel/operativo/validadores/comprobar_arranque.py",
+  "kernel/operativo/validadores/comprobar_composicion_procesos.py",
+  "kernel/operativo/validadores/comprobar_contratos.py",
+  "kernel/operativo/validadores/comprobar_evidencia.py",
+  "kernel/operativo/validadores/comprobar_fuentes.py",
+  "kernel/operativo/validadores/comprobar_integridad.py",
+  "kernel/operativo/validadores/comprobar_negativos.py",
+  "kernel/operativo/validadores/comprobar_packs.py",
+  "kernel/operativo/validadores/comprobar_prompts.py",
+  "kernel/operativo/validadores/comprobar_recuentos.py",
+  "kernel/operativo/validadores/comprobar_referencias.py",
+  "kernel/operativo/validadores/comprobar_versiones.py",
+  "kernel/operativo/validadores/entorno.py",
+  "kernel/operativo/validadores/exclusiones.yaml",
+  "kernel/operativo/validadores/huella.py",
+  "kernel/operativo/validadores/negativos_cardinalidad.py",
+  "kernel/operativo/validadores/negativos_contratos19.py",
+  "kernel/operativo/validadores/negativos_integridad.py",
+  "kernel/operativo/validadores/negativos_runtime.py",
+  "kernel/operativo/validadores/registrar_evidencia.py",
+  "kernel/operativo/validadores/registro_pruebas.py",
+  "kernel/operativo/validadores/validadores.yaml",
+  "tooling/new-project.sh",
+  "tooling/workspace.py"
+ ],
+ "revisores": {
+  "REV-1": {
+   "fuentes": [
+    {
+     "ruta": "kernel/operativo/runtime/adaptadores/__init__.py",
+     "lineas": 75,
+     "sha256": "22882a8044d32d079a4205c9a23225d8bc170997f1b1e0614c9455601c3e4fce",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/adaptadores/contrato.py",
+     "lineas": 185,
+     "sha256": "732d68a045d3c3fac2da1372995e89f47803bf77e0ee5fc17822ed80e74f693f",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/adaptadores/proceso.py",
+     "lineas": 583,
+     "sha256": "dbb1e5ef3bd551c7524f60981345a7dabf2907400ada637f531a50b49309e7e0",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/adaptadores/proyeccion.py",
+     "lineas": 175,
+     "sha256": "a4cd3aa3cb11d7c3e8b580e61c7f666acb6a14b3d860815d5dba4b93728afc49",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/adaptadores/puntero.py",
+     "lineas": 184,
+     "sha256": "6f1c7149ff3a5d2223a92640be71bc403ae28b2477a19a1319488b3c4233af8b",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/adaptadores/registro.py",
+     "lineas": 105,
+     "sha256": "19a2fce801a0398188fc7ea88221708129ebc8f994f2a9ce5808ec186d36a419",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ads_ciclo.py",
+     "lineas": 771,
+     "sha256": "a9e95ed4418855185f95eefdc91cd46cd20a98100888d91a41b0fac7113339af",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ads_estado.py",
+     "lineas": 711,
+     "sha256": "1de6f0bbeec9108ae7eb81b228d7f23f670bba90b507dc037b2f6fcf7367b84b",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ads_runtime.py",
+     "lineas": 738,
+     "sha256": "5bb5120d7b62b1988b672ba71c12d8f62e85bb4a40b09116aca1318daa3a0073",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/__init__.py",
+     "lineas": 161,
+     "sha256": "5459ca465d817f929844603d4030cd9f87f24dc287b02b2cd007cca798dc47fd",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/agentes.py",
+     "lineas": 702,
+     "sha256": "70fb7d5eb514e608cd9901d9a53a89ea328965f03b17311bc6872c66d060e47b",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/cierre.py",
+     "lineas": 330,
+     "sha256": "8623565762b197497f41c55dad491796fe2e25325c3f929572b46de6870b1139",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/continuacion.py",
+     "lineas": 739,
+     "sha256": "f0f3af64226cabdd77ea4a2a76ab9931b7c1d808fe38e6beba212b9f220e1910",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/corpus.py",
+     "lineas": 762,
+     "sha256": "1fef062bd5f66e99da06b660c1878a1c6c18ad0733e4680bfdb2cb54b9789494",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/despacho.py",
+     "lineas": 107,
+     "sha256": "8b6e586772a116ef5e3fb59a9994630fad20720c7c4c175e2714321c65ebf2e5",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/durable.py",
+     "lineas": 108,
+     "sha256": "5a4c742471c95e556b6e829b0f710f324fa7750d7378256e4deb9db3b7fdd826",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/encuadre.py",
+     "lineas": 384,
+     "sha256": "17272e2b71300a4f92713ecf19efff6f6741262ebef005ba0a55889a1aa9f2b9",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/equipos.py",
+     "lineas": 1568,
+     "sha256": "e357f39534a4fa2bdda7e865039658797cc2e0b55848315d771a1e1ac437c82a",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/errores.py",
+     "lineas": 436,
+     "sha256": "b760279a7145559eb6703aa3fccf9b7d64444b10df15610eb236cdf9cac61199",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/gates.py",
+     "lineas": 242,
+     "sha256": "f344b251d79d68676244314dcd5a4311c961ab7fb9c67ce11ca338edd8b9a6a3",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/handoffs.py",
+     "lineas": 442,
+     "sha256": "518edd29c5e596c52cdc3eae17afa574715227cdf74b2a9894fd1973b982de45",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/paralelismo.py",
+     "lineas": 211,
+     "sha256": "4605d638fb84325d5b34005a19027351d1b3d814b3940b7b5a583868d6d2da3d",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/planificacion.py",
+     "lineas": 400,
+     "sha256": "2a85d17e8a41b13bcf3f0c1ffa4ca11a92a05836a52db1ec6148c86560484be6",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/procesos.py",
+     "lineas": 284,
+     "sha256": "6155d1f8fea31c4b8778b69e797d6e881e35dd9d52934702443679fb5e8d585c",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ciclo/rutas.py",
+     "lineas": 385,
+     "sha256": "fde521c1f01ff4dd2178cf7a210bf7eb602f4dca4c104de53447ea0951e4c394",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/contencion/__init__.py",
+     "lineas": 65,
+     "sha256": "0bcd686312a35e926c37c089670dc0e561765c1fe9f6fc9864ab21e172e63a92",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/contencion/backends.py",
+     "lineas": 407,
+     "sha256": "332cef1db4ec402fb5d3eada2853dfcbb8b429b0ca0c39b933d2010ac1a9d319",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/contencion/deteccion.py",
+     "lineas": 346,
+     "sha256": "4340479e494a8f2c47f00f79df0d9bdd20c1126f2f145c7d1c91b1645148d5b1",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/contencion/ejecutor.py",
+     "lineas": 224,
+     "sha256": "247e7ce31ca20c5257560db3233fdafe5b767dda9a0aa0e7fe1109577015388d",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/contencion/errores.py",
+     "lineas": 88,
+     "sha256": "7ce37a9728d88bd8f5c9d919ddd1088a2108808f12d14b6e261cb42bd8afb5d3",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/contencion/politica.py",
+     "lineas": 99,
+     "sha256": "688a953c6f55284e6c9906baa258c2092f693d1c58ccd1e4acd2e246d33dab4f",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/estado/__init__.py",
+     "lineas": 106,
+     "sha256": "f5de8af7aec0f3c27a1d856dc59e27e6640936b7a8ca61daf168b63d98910d7b",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/estado/atestacion.py",
+     "lineas": 267,
+     "sha256": "7adbddb49c3e39b7cc28e1bbab83592d28148c7ebe9f5ab7d35219f5d180f27a",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/estado/bloqueo.py",
+     "lineas": 173,
+     "sha256": "b7fb332d09a124eb69fe75856fb20c26854ba2d46f1a7b73ba381d6c9846717d",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/estado/diario.py",
+     "lineas": 1064,
+     "sha256": "d2a61a32f705596fa5b5f15d9808691a7de54df56c2bb066567192c5ff277d18",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/estado/errores.py",
+     "lineas": 271,
+     "sha256": "998364bc25e5d6def1d7f5d86fcdefa5bc8fc7bcebd0345dcae52e39fa1cdf86",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/estado/fallos.py",
+     "lineas": 123,
+     "sha256": "69c8f5974183cb67ba3ef91030a3f6f947da63986a073dc8e34afee2868101c6",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/estado/migracion.py",
+     "lineas": 506,
+     "sha256": "9ce3c594bb9a94a011ce3eb51c91316cd56e2153d894285df67702d72e8095d1",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/estado/motor.py",
+     "lineas": 1817,
+     "sha256": "3841295591609aff92151c9116dc9445c308c98ab8717b8916998e648ed8f4d2",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/estado/reconciliacion.py",
+     "lineas": 517,
+     "sha256": "d77d09fa966a3b36ca7e391632f90b09937b496d3299bb6eb044ab0566df0152",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/estado/rutas.py",
+     "lineas": 424,
+     "sha256": "18e0add349e98a635ccbf121adf3e68511807c31f50782ac170cdb1591f364b2",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/estado/serializacion.py",
+     "lineas": 192,
+     "sha256": "77d8d727e85e2abbdd0108d909257b114e39c456a4d832b2de1cab931e57e957",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/estado/transaccion.py",
+     "lineas": 365,
+     "sha256": "d5061f91fae62a1d411b70b254a243b830ba1e4d0c4d13f33962cf8a07ec9d01",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/macrocircuitos/__init__.py",
+     "lineas": 93,
+     "sha256": "baf2ba9714e9f2f68ce2cd848a0fffc6c3bdc5ff7a8ef66e629d1aafbad7ac58",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/macrocircuitos/definicion.py",
+     "lineas": 645,
+     "sha256": "dac5af0cc668e66982d885307fc8046249e4d8f329f58029fa66ff129b8e4e87",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/macrocircuitos/errores.py",
+     "lineas": 171,
+     "sha256": "ea30a207589fc5bb9d3a1b5b36beda3be7cc2430d05e7c8c962c00f150e52dbb",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/macrocircuitos/fase0.py",
+     "lineas": 575,
+     "sha256": "25b7dc23ee08f6fabeab86181f7d56e4e39d0dcce653a1a4f2c5c23c305d634d",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/macrocircuitos/motor.py",
+     "lineas": 407,
+     "sha256": "05fabf57717920fd4d779a51295a6b28a103f433b68120e271dd7bf7ff03f949",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/escenario_extremo_a_extremo.py",
+     "lineas": 729,
+     "sha256": "602b5f5fd00692c04dc1a28fdae435f2c9bf9d01f9cc1254783d2777a53ae48f",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_adaptadores.py",
+     "lineas": 743,
+     "sha256": "3ab3961a175fe2cd87414237587f2b852c972f5181b9d6521b69aae747b99b6c",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_cardinalidad_y_seleccion.py",
+     "lineas": 1115,
+     "sha256": "1dc4dbc77010d2303915f008deced964dfcdb8926574fd89fa15262aca2ab15d",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_ciclo.py",
+     "lineas": 1602,
+     "sha256": "f62b8a1fb7649cafd2748a7bb23cb83c8da5c857685094d4f06ab9884fc8d83a",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_contencion.py",
+     "lineas": 379,
+     "sha256": "3ccd135a5da347b171eec11e6f178ab4c9f43987a87732d90909b353b521aba3",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_continua.py",
+     "lineas": 849,
+     "sha256": "4e1d065d6e88eb90fd4760ed1b6c3cc1101ad1d5464dd997807699003796220e",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_estado_durable.py",
+     "lineas": 3173,
+     "sha256": "c2daaa0bc171f0e12580d10b12c192a26c7b657ae89f06e22803721fa5d2a018",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_macrocircuitos.py",
+     "lineas": 879,
+     "sha256": "a9829744aa5912fee9c94620acebcfb4bf2dcb6a25bfae4cd6db5048c5bfd35d",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_runtime.py",
+     "lineas": 2071,
+     "sha256": "904b131f1b7192f37d5a7c8b7e210fcc9c7ada46b933fd7d81c20e019b72d6f2",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/runtime/__init__.py",
+     "lineas": 107,
+     "sha256": "33571dc2e2125860ca416736c5ef3886ef9fd2d6bddc83a91cac104fa50be129",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/runtime/dispatcher.py",
+     "lineas": 1495,
+     "sha256": "9b0ea3170d64c4909dddd03203a3bc0177af0332fb647e4f5e165e190eebb024",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/runtime/ejecucion.py",
+     "lineas": 344,
+     "sha256": "a5580ba3f1adf66184aeb4e3f9276509b78de51a8f848b39dba448adab2b855b",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/runtime/errores.py",
+     "lineas": 171,
+     "sha256": "135d7c762f130520a9569c08a650679ada3fa474f5cc05c92ec7de20ca939bd2",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/runtime/estado_util.py",
+     "lineas": 92,
+     "sha256": "65a8d32293ca163fd78d98ab6b4d41273f1e871768c36918fadfb832d4e34bcf",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/runtime/fallos.py",
+     "lineas": 108,
+     "sha256": "aa967873db34d37820d9cc8fb15e54e1d041b9422af094f0868fa4244313e83a",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/runtime/lease.py",
+     "lineas": 390,
+     "sha256": "a0907180674ce9378aacb670bfb7a8a4aafca49bb4ec0b0f3d035274fbab62b1",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/runtime/modelo.py",
+     "lineas": 440,
+     "sha256": "b4620fffaa0dda73253c8421fb37dcfedd452b81051c9530d0c05bb0cd6bb03a",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/runtime/politica.py",
+     "lineas": 302,
+     "sha256": "e88ca7d273df88e4c845c682a4cc59fff59b1c808226e0f20b81bf2a92b78ac3",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/runtime/vistas.py",
+     "lineas": 171,
+     "sha256": "d1614cd02e646592170ee2edcb3121e482cf7939b2dc9557670f88618e703956",
+     "rango": null
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      248,
+      395
+     ],
+     "seccion": 1
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      396,
+      3794
+     ],
+     "seccion": 2
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      4948,
+      5235
+     ],
+     "seccion": 4
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      6136,
+      6284
+     ],
+     "seccion": 7
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      6285,
+      7377
+     ],
+     "seccion": 8
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      9155,
+      9182
+     ],
+     "seccion": 14
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      9183,
+      9785
+     ],
+     "seccion": 15
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      10853,
+      10881
+     ],
+     "seccion": 17
+    }
+   ]
+  },
+  "REV-2": {
+   "fuentes": [
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/adaptadores-salida.txt",
+     "lineas": 85,
+     "sha256": "61413762896d3eae8fb01b4de890dc4d8326099a735c6e3a74d9e783045fef73",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/admision-salida.txt",
+     "lineas": 199,
+     "sha256": "61d850dde5adb37e6caf59fc568bdae68adca04bbf2e1801296bd2af4933163a",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/agentes-salida.txt",
+     "lineas": 41,
+     "sha256": "4aca40608352609b83d50c180b5f214cb3c5fa999cdf21554c6550e51e2cae08",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/arboles-salida.txt",
+     "lineas": 87,
+     "sha256": "54e186973ed2ad30d91150d28539c02be4b886fdabc5e0b519d114146a4d9e40",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/arranque-salida.txt",
+     "lineas": 10,
+     "sha256": "c230c158e8721c5e5ee78a6a62feca5b90908e389638c0dd7aa7116cce60b926",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/cardinalidad-salida.txt",
+     "lineas": 51,
+     "sha256": "c7fc4c208e88e26f56ceddf6cceb29515102baf7397946f99e86ce15b47df931",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/ciclo-salida.txt",
+     "lineas": 133,
+     "sha256": "f30cff1138e8fd0295886b3e023d97adc8c825777e6dfa8447203344d25cfc5a",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/cobertura-de-gate-salida.txt",
+     "lineas": 17,
+     "sha256": "5513424a461035f9ddf29bd2293d81b70f3c93781b71c85359870ba907f074a9",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/composicion-procesos-salida.txt",
+     "lineas": 10,
+     "sha256": "2ab67f7c7b5fd848fda89fd5b8f3261ea534bc886a51466f49dee493344e1069",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/contencion-salida.txt",
+     "lineas": 51,
+     "sha256": "11083c1dc97dda2abc659135607c960b099e898bf62480bcaa796a2041c72396",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/continua-salida.txt",
+     "lineas": 59,
+     "sha256": "6c0de76aed0f41c92c60831986b9104edad587981434c188445c7a977db9ecaf",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/contratos-salida.txt",
+     "lineas": 29,
+     "sha256": "9d45c739504cde79677c3e7cf73f10a72852b55061fd46ad165617d358127285",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/e2e-f6-salida.txt",
+     "lineas": 92,
+     "sha256": "eb035a2b1821e25dce65b0aa161a9fccfe8382af9d1d9813717434dffc176db5",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/e2e-runtime-salida.txt",
+     "lineas": 90,
+     "sha256": "dd248e3a8347179673a1e1683e9309a3e909aaedba27e9ca14a6b17e0e32100d",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/estado-durable-salida.txt",
+     "lineas": 211,
+     "sha256": "b86a60b6530da8bded9bc6c579284c137fff60f22c81f23441c4c9c2741e208a",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/estado-e2e-salida.txt",
+     "lineas": 60,
+     "sha256": "8ac0bb37775622ab19400846bef92a6619ff6247aea3833ad3d3f0827b4c33c8",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/evidencia-salida.txt",
+     "lineas": 9,
+     "sha256": "fbf18f87e1d8be3b0845e39f026534a244923e40ac8922c63e271ea1dc0b7140",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/fuentes-salida.txt",
+     "lineas": 11,
+     "sha256": "0ec558d48266680f118375a03553ca479bf6a4aac366abe256dd9692ba823795",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/gobierno-git-salida.txt",
+     "lineas": 89,
+     "sha256": "7cba1194ffb1bf53bcfd3b1818557903778747e23070855d52f10524021e2a06",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/identidad-salida.txt",
+     "lineas": 57,
+     "sha256": "c2bf7657a3398ebcbde4c9b78beef527f29f7d0980e2044e77795c8c8f10f388",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/integridad-evidencia-salida.txt",
+     "lineas": 81,
+     "sha256": "7dc1c9783462bfc8ab5eb38d3fea259ef26e65f81824646bcf2a0732c15a8bd8",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/lint-salida.txt",
+     "lineas": 6,
+     "sha256": "e05afa1ca8a0c587717200ca36132c7c60e042097e0d15b43af6926ac9bc6764",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/macrocircuitos-salida.txt",
+     "lineas": 71,
+     "sha256": "b768a5c91e3f36a97efeeb7af27843571048bebfcd78c7518b737c8840476a67",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/multimaquina-salida.txt",
+     "lineas": 39,
+     "sha256": "bcb806526604938823128aa6bc70f03ad51a70fa245b4874da07f6c13602a955",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/negativos-salida.txt",
+     "lineas": 322,
+     "sha256": "498ad171736b5cb90a5a85f9df6d7d4e112cbdd3af77061bda2d028db7e8c7f8",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/raiz-externa-salida.txt",
+     "lineas": 117,
+     "sha256": "9e70beddb18448bda3e97cae6c7b5c1a5e84a598045efbdf1349376a65ff9568",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/recuentos-salida.txt",
+     "lineas": 13,
+     "sha256": "f709244ef33d2723a6fffc8bda1bba459f85f210dc3031d51c1246fab9a3157c",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/referencias-salida.txt",
+     "lineas": 77,
+     "sha256": "4e002b5304ef3e62b03f82bacf7baa6679fa537905c570eeec2d1d4368c03cc4",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/runtime-salida.txt",
+     "lineas": 121,
+     "sha256": "68a5a2829853b5bf5b691ccde711fdb7489d1133327cbd53b3cde0d2b9e392a8",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/sesion-nueva-salida.txt",
+     "lineas": 65,
+     "sha256": "90575451daa1fd7ca22c31dc747e707346af7c534ffe57aea43b6ba9bcdd788a",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/universo-obligatorio-salida.txt",
+     "lineas": 34,
+     "sha256": "c9c714e1cde2f6b84488df6bdcac6ec8d77f98c794168683b1172e266b0e2174",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/evidencia/versiones-salida.txt",
+     "lineas": 26,
+     "sha256": "4ad3d2371d4178ec6e9d57865430534c5b8ce9e7d7560649414a3a1e8cfc585c",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/raiz-externa/README.md",
+     "lineas": 190,
+     "sha256": "275341e9d145e2538b4b60f788d1549fa6c17da11a2e057df4fbd7c9736b91a3",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/raiz-externa/aislamiento.py",
+     "lineas": 412,
+     "sha256": "feadff20ab9846be11bad89ee78054a81e6b37e6986b998e2079c90a12d63967",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/raiz-externa/anfitrion_firmante.py",
+     "lineas": 217,
+     "sha256": "fc152e6122cadc1102658a175faced87b2cc3ca2859892fe8a3ac7cd3ff0fd27",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/raiz-externa/anfitrion_verificador.py",
+     "lineas": 219,
+     "sha256": "88ab95c5db86468c1a61146259b2d34d5d6cf0599da00a625d5e42d90618bcea",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/raiz-externa/atestacion.py",
+     "lineas": 336,
+     "sha256": "88920271c4f29f666a59363621a1720c0acc0d2be3e3882817999bb9f26ca0f2",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/raiz-externa/errores.py",
+     "lineas": 192,
+     "sha256": "d60c602c36b0a64cf402c4a8a1adbbeb036f4f8fbb55c75f959cb7b9140ea704",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/raiz-externa/firma.py",
+     "lineas": 295,
+     "sha256": "82840e2c54b27efc05f955dcf8ff21943c31b15bae716a19722e51d250adebab",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/raiz-externa/instalar.py",
+     "lineas": 537,
+     "sha256": "b7a3beba9d90abc1e85ffc92c8e79a2886ae3919383f9852daf674f35c45060b",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/raiz-externa/verificador.py",
+     "lineas": 717,
+     "sha256": "d73b3d58e5af7415b8a2290d4f838d3f389cd73e93a98ee5bf74814cb326c91e",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/admision/__init__.py",
+     "lineas": 319,
+     "sha256": "cd7538d3bf5cbf2844248112ef69d428e50bd209dab8c98ed36963b1c6c0bc1e",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/admision/censo.py",
+     "lineas": 429,
+     "sha256": "fded1e352061aa5cf4efe98b8bc079a0d8f23c4250f7a235083e789d43a7ea64",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/admision/errores.py",
+     "lineas": 154,
+     "sha256": "b3b7ca6f79e342eb831730ae2b7db0d86bc4f1f57b1e27bc0d9556b9efeec917",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/admision/formulas.py",
+     "lineas": 524,
+     "sha256": "d14f1bb4e08e804d5873cc42f003173d08320059e05ae4b3c72a9ec13a2bbc77",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/admision/lectura.py",
+     "lineas": 310,
+     "sha256": "afe2f55477585d5dbb84815ea1951d45d689f9fe16f82a1177eb0587ffae3f21",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/admision/matriz.py",
+     "lineas": 291,
+     "sha256": "080ed2af96a2c7c366d7a2f563a51b9b72a7161218e4e9b0e9ee34e47a3dee9a",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/admision/mutacion.py",
+     "lineas": 181,
+     "sha256": "1aec6f55a0e211a7b0953b5a6fb73ccdeb9054c7b4f154d57d5764623d861cec",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/admision/perimetro.py",
+     "lineas": 542,
+     "sha256": "67195acc651c4264ea46d124903fc07e64138f97a815d6e4994fd993b4eaf452",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/admision/sede.py",
+     "lineas": 589,
+     "sha256": "13b16bf0e992aa669d98ebed1bfc01f86c07c9b23935e599434b99b12d144daf",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ads_admision.py",
+     "lineas": 532,
+     "sha256": "559f2af29699a1d2dea5e528ae8f36115ba3c9691c900dfb129285d5bb158393",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/ads_arboles.py",
+     "lineas": 440,
+     "sha256": "5e272b4f156728a5805d8c622a2fdb61d0e0b0f0ece3e20602cc456840fa5e9f",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/arboles/__init__.py",
+     "lineas": 58,
+     "sha256": "5fc15c67f41af99dfbcc7343f639d2c93d2d584495c3ff7f1550117c93803f32",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/arboles/ataques.py",
+     "lineas": 612,
+     "sha256": "9871135db142122620a4387608cb3ce011f96e98b36b880108f51b968e669e3d",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/arboles/derivador.py",
+     "lineas": 299,
+     "sha256": "2c2a8edb0bb07a198781c7a85f8c55d3c2701a9a273ce8eb8cd4640b468a7f07",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/arboles/errores.py",
+     "lineas": 96,
+     "sha256": "18a8805b182c15e8a7b72e7e28135c72b3dc245c867c0008f3afb1d828abc43c",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/arboles/suite.py",
+     "lineas": 265,
+     "sha256": "957bf8e41a036e86fc15195b6e6db93acc5e16260a9a275ed804fe2091160467",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/arboles/versiones.py",
+     "lineas": 440,
+     "sha256": "c9ba7335453129fa63b19d7c4d24997253f6380b15515273ad91f6a36b1f8791",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/gobierno/POLITICA-CONTROL-REPO.yml",
+     "lineas": 163,
+     "sha256": "bf854c079e5b8d16e047fd83861e220b1e7da2c5d2a3c82a5020b678ca713984",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/gobierno/__init__.py",
+     "lineas": 65,
+     "sha256": "2490d89513df56fcc17cb188dded3f881a62159cc88b7975424f7fbc9906d325",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/gobierno/control.py",
+     "lineas": 497,
+     "sha256": "0b5846289c160518c9308035d742d8e9b145a93d86ae27869cc62826c6b7c6db",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/gobierno/errores.py",
+     "lineas": 118,
+     "sha256": "5f7ce36fe899ee83fc7dc2d3f913c1f51f2d0a96550c2b6326d18e6111bf4179",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/gobierno/git.py",
+     "lineas": 332,
+     "sha256": "2c2c9d405058fe8cc98ca33a208f5b2a01b5bbcb6e9745d19b47f2af7ec9adf6",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/gobierno/propiedad.py",
+     "lineas": 182,
+     "sha256": "8315fe5703a9af65654bdee055a4da0752ac25f2816f745f7fa9ec8218d83466",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/identidad/__init__.py",
+     "lineas": 63,
+     "sha256": "3f630adff421f2779e7ab34ef6fe4c37d88424b6c046d4d769f9af82068a5cb8",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/identidad/configuracion.py",
+     "lineas": 206,
+     "sha256": "048cd2837d0f2d74349f7cb89ede8f9e448cb49637fb6e7b0584689d8c535c57",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/identidad/errores.py",
+     "lineas": 96,
+     "sha256": "ee295ac124dc3ce999394ba122be0fe2798362c4b715af4c68293282264ca305",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/identidad/proveedor.py",
+     "lineas": 178,
+     "sha256": "2df2a26357f322cc470df60ea09b5b78dcdfe985dc94aabd858477aab83b1d2e",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/identidad/rotacion.py",
+     "lineas": 202,
+     "sha256": "1ab7239989f499379af53b988a768f4f89612f508e04f7eb5abab403e5810cc6",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/catalogo_de_prueba.py",
+     "lineas": 143,
+     "sha256": "0116dcf6bede73b98e4b1def6bcc0bc6becdfd61ab39d379c282abba5dda8720",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/escenario_e2e_runtime.py",
+     "lineas": 792,
+     "sha256": "8ce3355445dea32ad7ed3712a0aa8ec73288c7b0cbbaed2b3e1b456e900210a6",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_admision.py",
+     "lineas": 1625,
+     "sha256": "ae303172ab76d1d9f1c21f541d5a6a5c5a60ca78742c2953b98bf2c5a8614fc0",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_arboles.py",
+     "lineas": 492,
+     "sha256": "ebf27123d7417c3013be86f31b2c4b93fa4f83abf4e013b06f7d310cf56a518e",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_gobierno_git.py",
+     "lineas": 677,
+     "sha256": "c7ee9c723c1ab54b7441c15e1e549f8abad694937210c10dfa16a338d2c426dc",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_identidad.py",
+     "lineas": 533,
+     "sha256": "3d01b287f476b7f967855f4a87dfb4b7f3106235cae09646f59ccdf7cf1de74d",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py",
+     "lineas": 1893,
+     "sha256": "73fedd5d80ef52edc06d26bac03c0aa830213a215a460187daca70277b159924",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_multimaquina.py",
+     "lineas": 693,
+     "sha256": "b3e4e22f901e43d949689500719b9aeea12ff7bdf576ba4b5e4edeca76106a03",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_raiz_externa.py",
+     "lineas": 1158,
+     "sha256": "e6b6d23f2abfb6045f70ef876ad7f367217e7095d698e9b943f30e9cb4a711a1",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_sesion_nueva.py",
+     "lineas": 894,
+     "sha256": "f67367d0da355c09a7567009637594113b76426929e3b1bcdd30be9da1588cb6",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/ads_lint.py",
+     "lineas": 741,
+     "sha256": "5ea0502ebd5382bcfa6df7f03746e3ff3ecb1ca071ad090af5f1f1bb6699ddd1",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/composicion_packs.py",
+     "lineas": 242,
+     "sha256": "ba5f37f66cc4cf6ae43b604232b5abc63d8a6556eb89e610111c644f82a6385f",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/comprobar_arranque.py",
+     "lineas": 691,
+     "sha256": "6003578b0cdcd7e97278ff906714a9e7d2f70475091adc30718391a2c34c620f",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/comprobar_composicion_procesos.py",
+     "lineas": 902,
+     "sha256": "0ae757fa1ec0f52f3e2ffc0732809cb822fcf22927ec5bfdab066bfb4b46c825",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/comprobar_contratos.py",
+     "lineas": 1177,
+     "sha256": "d7574cc6a23020b91408ef4f5ef24eb83bd844f048912b3291c90e3eb09f83ec",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/comprobar_evidencia.py",
+     "lineas": 904,
+     "sha256": "4e13e0d78cd2c0b95b693d96390b8574428617872f04c814066774adfe8dc0d8",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/comprobar_fuentes.py",
+     "lineas": 454,
+     "sha256": "1028e9f37fa2c0da97308ef599b7ba1a317387d4ef56eda143cc5524992ec86d",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/comprobar_integridad.py",
+     "lineas": 195,
+     "sha256": "01021d9e3e77c16eee5fb5ffbdff6448b1ec5d3d3ede1bb258b2c8b30da0ec89",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/comprobar_negativos.py",
+     "lineas": 1630,
+     "sha256": "2151c112d75b463a33ccde0efdac63333e53b1471446726f0890d3997307bd39",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/comprobar_packs.py",
+     "lineas": 326,
+     "sha256": "b9858d2a89a769e281547506c08139911af44ec546f79c2d78c872db3892abd7",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/comprobar_prompts.py",
+     "lineas": 290,
+     "sha256": "d7fd857a0c75bc138e5fe6c9781963e7ba816dc57237c7acb281090a06f6a5dc",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/comprobar_recuentos.py",
+     "lineas": 1279,
+     "sha256": "2abe68340e44e530791166476bd0cf81ccdf1515fb5e43023297a64aa7f4623d",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/comprobar_referencias.py",
+     "lineas": 357,
+     "sha256": "4a8dc5344709d71ebc6d7f6eb90a6255a0ed6de6f3fb260d3d0ea4a86bb19f2f",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/comprobar_versiones.py",
+     "lineas": 542,
+     "sha256": "eca300ace1f1efecc04ff7ed7f145e00879fb780bece30d8d0fdee5be552c9be",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/entorno.py",
+     "lineas": 228,
+     "sha256": "29ad84bb721011205be3e23a20ced30cfbf37b38c6bb69139326502e4915f1b8",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/exclusiones.yaml",
+     "lineas": 196,
+     "sha256": "71ca67abf25d5e5ec549a99df60857330cc8db8c91a0d0217a10b6a15eeaef36",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/huella.py",
+     "lineas": 186,
+     "sha256": "1f23ebb2153c2650d00f81c9807d92588cf1fd9fe9486ef7f96244f76e09c9f8",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/negativos_cardinalidad.py",
+     "lineas": 363,
+     "sha256": "a216ba3d0118bd4d9bf45a4cb6b886a84c151fa53c7b211c1dd0d735cbf95f79",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/negativos_contratos19.py",
+     "lineas": 549,
+     "sha256": "598d57179bc26b2fb55d05a5775f0dce570868a84131265aa5897e25f611d26f",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/negativos_integridad.py",
+     "lineas": 221,
+     "sha256": "1338990b041fc7381a3154147c587e651dc37a3061efd095ccca9c1ab139dca8",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/negativos_runtime.py",
+     "lineas": 696,
+     "sha256": "902feaa954f07ade8f1d914508cd79532764e4bdaf8a534ac83c1a5e71c68591",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/registrar_evidencia.py",
+     "lineas": 314,
+     "sha256": "1b1fe96f34bfcbd04481c11cf01adc9998a593a2aa65b3920e07126b9deba174",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/registro_pruebas.py",
+     "lineas": 550,
+     "sha256": "f4f1b11dcb7be4323765b472b0afef2a9212d49a8ff11125dcba95b2859dfd60",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/validadores/validadores.yaml",
+     "lineas": 429,
+     "sha256": "eed4dcef066705725b0082ffb8502c81debb9c2d7d9ba928097d51a1839424b9",
+     "rango": null
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      95,
+      247
+     ],
+     "seccion": 0
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      3795,
+      4947
+     ],
+     "seccion": 3
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      5236,
+      5811
+     ],
+     "seccion": 5
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      5812,
+      6135
+     ],
+     "seccion": 6
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      8075,
+      8128
+     ],
+     "seccion": 10
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      8129,
+      9013
+     ],
+     "seccion": 11
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      9014,
+      9092
+     ],
+     "seccion": 12
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      9093,
+      9154
+     ],
+     "seccion": 13
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      9786,
+      10852
+     ],
+     "seccion": 16
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      11907,
+      12153
+     ],
+     "seccion": 20
+    }
+   ]
+  },
+  "REV-3": {
+   "fuentes": [
+    {
+     "ruta": "docs/canonico/00-EMPEZAR-AQUI.md",
+     "lineas": 162,
+     "sha256": "c49efb6ff28694db80e6951cde7d6c5af20aa2a2053a52e98e0f5b579f37c340",
+     "rango": null
+    },
+    {
+     "ruta": "docs/canonico/03-GOBIERNO-Y-AUTORIDAD.md",
+     "lineas": 229,
+     "sha256": "422f59bc9a4cb924d4ce2bc6136c58aa1b1087a87b6218f2486caef722bffcdc",
+     "rango": null
+    },
+    {
+     "ruta": "docs/canonico/04-CONTRATOS-TECNICOS.md",
+     "lineas": 513,
+     "sha256": "901985614611f689c595791615c3619440033c26e0a160c93b837f85ce5b464f",
+     "rango": null
+    },
+    {
+     "ruta": "docs/canonico/05-PLAN-DE-IMPLEMENTACION-F5-F6.md",
+     "lineas": 266,
+     "sha256": "873f02bcfbc8f84a93cad6694c7ebf2b6df15d2babaed796f6929657dcedd453",
+     "rango": null
+    },
+    {
+     "ruta": "docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md",
+     "lineas": 535,
+     "sha256": "b9d2fa56a7c23090f0a54d147b583947a8f17864f244da9a7c016781bab5085d",
+     "rango": null
+    },
+    {
+     "ruta": "docs/canonico/FUENTES-CANONICAS.yml",
+     "lineas": 782,
+     "sha256": "5bf8c624b7b9b482a47a4c3a34dfbe7e97605874018d4f91f30e28aa34eb8818",
+     "rango": null
+    },
+    {
+     "ruta": "docs/canonico/validar-fuentes-canonicas.py",
+     "lineas": 403,
+     "sha256": "c2cd007c8ff832ac8dff77e8bfc67ba29a90c78f9c1844ed4a669a387f06de31",
+     "rango": null
+    },
+    {
+     "ruta": "docs/evolucion/00-INDICE.md",
+     "lineas": 335,
+     "sha256": "b62cb2659c86a9ae8ced1559137d476e66d6a8fd9b67416b3955c185d5396c0b",
+     "rango": null
+    },
+    {
+     "ruta": "docs/evolucion/CHECKPOINT-ADS-NEXT.md",
+     "lineas": 6385,
+     "sha256": "165ab8cc02aabab7ed95345a805edcf000f8451b7027dbf01b27e1644b540a1c",
+     "rango": null
+    },
+    {
+     "ruta": "docs/evolucion/verificacion/README.md",
+     "lineas": 396,
+     "sha256": "0e766e71cd1bfd06add740099c2c9912eb6e25d30f6dde55dbde52260ef631a1",
+     "rango": null
+    },
+    {
+     "ruta": "docs/evolucion/verificacion/comprobar-cobertura-de-gate.py",
+     "lineas": 531,
+     "sha256": "91bb13e94a8ef9fee88f7854ec365bfd624e0a16e6f9394d2d243379e21b66c8",
+     "rango": null
+    },
+    {
+     "ruta": "docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py",
+     "lineas": 4452,
+     "sha256": "5ce35410f545be3e5d08c12c92654fc41a7d741f840d0373c1ca1eb056d02348",
+     "rango": null
+    },
+    {
+     "ruta": "docs/evolucion/verificacion/derivar-universo-obligatorio.py",
+     "lineas": 2107,
+     "sha256": "377ede82af9b1c742a8c7c2e29bfa0d28f74da4ef8b3df70f6b541acb61b0312",
+     "rango": null
+    },
+    {
+     "ruta": "docs/evolucion/verificacion/emitir-sobre-de-ancla.py",
+     "lineas": 863,
+     "sha256": "eb8bedbeb09dd1134740ab4e193304fdc4ab6cb02debe53496134069a9207b0f",
+     "rango": null
+    },
+    {
+     "ruta": "docs/evolucion/verificacion/manifiestos/F6-ASIGNACION-GATE-CERTIFICACION-FINAL-20260904.md",
+     "lineas": 395,
+     "sha256": "d61e83bd2b733b34f707fad8193f37e94ef8c72fca3391dbe9904ad72e1584e8",
+     "rango": null
+    },
+    {
+     "ruta": "docs/f5/validar-f5.py",
+     "lineas": 691,
+     "sha256": "c8a3e7c439759741478d2e8d5b8c3d17968cf91521a8e383fa35e011745b6946",
+     "rango": null
+    },
+    {
+     "ruta": "docs/f6/00-ESTADO-DE-IMPLEMENTACION-F6.md",
+     "lineas": 322,
+     "sha256": "e2aad9a186131d9d5866be3d400e16e938aac7c10be950939f9cd86a489500b5",
+     "rango": null
+    },
+    {
+     "ruta": "docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md",
+     "lineas": 540,
+     "sha256": "b3fcac956856fbc5fbde50e232a0b78ffd18fff548a4a25f156afb4509ce95d5",
+     "rango": null
+    },
+    {
+     "ruta": "docs/f6/02-GATE-DE-CERTIFICACION-FINAL-20260903.md",
+     "lineas": 296,
+     "sha256": "aec9664573adaecb7a2d990f5360eeb3f57313399bdc3808d55c146dc0b144e3",
+     "rango": null
+    },
+    {
+     "ruta": "docs/f6/03-GATE-DE-CERTIFICACION-FINAL-20260904.md",
+     "lineas": 3237,
+     "sha256": "2d0cff0d49b26a78c3f84034b282b4e475996f0ca98d4985e542c2407eb1f546",
+     "rango": null
+    },
+    {
+     "ruta": "docs/f6/04-MATRIZ-DE-HALLAZGOS-DEL-GATE-20260904.md",
+     "lineas": 91,
+     "sha256": "ae96e53409cf30c99186c4bfa37a7ad36d63d467f27b5d9e985ba0e42be2135e",
+     "rango": null
+    },
+    {
+     "ruta": "docs/owner/ADS-OWNER-RESOLUCIONES.md",
+     "lineas": 1054,
+     "sha256": "b378b1f7ba1a7744f3ace0498e38c28a39d203ddf6565ba3cf43497204e96915",
+     "rango": null
+    },
+    {
+     "ruta": "docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md",
+     "lineas": 1651,
+     "sha256": "712dbd4a935c53e3826109ccff53962da377a598e8529be59405a0c0e6d337a3",
+     "rango": null
+    },
+    {
+     "ruta": "docs/rediseno/a-CAPACIDADES-APROBADA.md",
+     "lineas": 1150,
+     "sha256": "235385da2471dec2cc00191bcbff184c7c4bbb536d54432a72f064356831d2ba",
+     "rango": null
+    },
+    {
+     "ruta": "docs/rediseno/b-RECORRIDO-APROBADA.md",
+     "lineas": 1331,
+     "sha256": "89023236f0a2a9f1fcbcb0f4a9e311cb465dd18709809485f70dd24c3fd97090",
+     "rango": null
+    },
+    {
+     "ruta": "docs/rediseno/g-ESTADO-DURABLE-APROBADA.md",
+     "lineas": 381,
+     "sha256": "c8ba0a933c387d738ee5869e1d7994aa43cea95d83c8cef1a92bef696106d61a",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/.upstream-hash",
+     "lineas": 1,
+     "sha256": "c20b5135019b59ddf56424559ae1f725391ce8d8e278d90059f723560bd89639",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/KERNEL_CHANGELOG.md",
+     "lineas": 555,
+     "sha256": "ec91f4e7c519d87149d26232f6bf70d9ad1b9da1f3f375176b43ff47247f29f1",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/VERSION",
+     "lineas": 1,
+     "sha256": "c9faae8e7e824ff79e29808f498f3eeb3f46ce37f479e8a1c77ffaba61bca7a1",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/VERSIONES.md",
+     "lineas": 74,
+     "sha256": "70ccaa9d4ab94f614f08712d0a9f95d45644eb4228dd63ae56ea9465db195a66",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/00-INDICE.md",
+     "lineas": 146,
+     "sha256": "189dbc5f35b46ff0d0f653bfb37377e7c62a071df3dca9ee4d36a24daeb83dd5",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/circuitos/00-CIRCUITOS.md",
+     "lineas": 243,
+     "sha256": "16d3f2a826445ffef3b9bd0352edcd7eba4952d52623e3dd1e6755a63dbbd7f2",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/circuitos/DIS-handoffs.md",
+     "lineas": 249,
+     "sha256": "738d7d8b3a5489d1c45c3473676b20cee53ac0aca4a9b6101855e3282daca084",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/circuitos/entregas-de-8-0.md",
+     "lineas": 128,
+     "sha256": "9bd69716d904ad22a468eead8468511db18e9f1a06abab26491ddd4d4ac8eb2d",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/circuitos/handoffs-generales.md",
+     "lineas": 305,
+     "sha256": "b2a486ee08dcc0aba9cc5ed992211f2c408f2d611b9e3077109b5460b7178577",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/contratos/00-INDICE.md",
+     "lineas": 29,
+     "sha256": "48b66b4fa9daee8fff5889016f9c30e6273f46268dbad8885aaaac4fa9a46d41",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md",
+     "lineas": 161,
+     "sha256": "825f15a914c10d6f07f74e62967f93743efcf629a13379acb3947e70e2952ffa",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/contratos/C2-AGENTES-Y-MODELOS.md",
+     "lineas": 539,
+     "sha256": "3ee58ca4bc47988d4e6bdd652e2ea5de79ebcf8be79270664c0bd4b4cf391510",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/contratos/C4-MATERIALIZACION.md",
+     "lineas": 170,
+     "sha256": "670289180e59b176743571a22f22047d20792db266b6426c1c91bd2fd3c1ee81",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/contratos/C5-HANDOFF.md",
+     "lineas": 115,
+     "sha256": "af6f1a4c4f5def8da0dcecee8ea57c17516b41bbbd4abe963460c21024cc7b9e",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/entrada/03-FORMAS.md",
+     "lineas": 561,
+     "sha256": "821ad781633b067b9536faec9e6f4078033854e85a58c822e3f24c28b55696f1",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/entrada/05-ESCENARIOS.md",
+     "lineas": 649,
+     "sha256": "12703dd7fd51d66f9f9039b031c1a98c312c0b78f098f42ee4195452005dff4e",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/esquemas/proceso.yaml",
+     "lineas": 89,
+     "sha256": "f4f016c011a82764366327fe4f8d838ce7a87540b719c5b89faaf18dcc648f5f",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/RECUENTOS-generado.md",
+     "lineas": 40,
+     "sha256": "295d7fcacf46a517af761ad07bec23aca6200a1456e057cfca00960342ad7a95",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/REGISTRO-generado.md",
+     "lineas": 306,
+     "sha256": "0e8468ab9352421e7c5b6150658287b631b408d6f4e86fad4797251a5f36d95e",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/REGISTRO.md",
+     "lineas": 147,
+     "sha256": "091735cb4bb914d2951c4dd4b120b4fd2b7a8f2e89b2349d417884a9031a7dbc",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/T086-T092-contratos.md",
+     "lineas": 165,
+     "sha256": "65f4648fe4f55576e8673bd387227d651ef48a4b9f083f7174e5dc951d4da9b2",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/T100-T121-capacidades.md",
+     "lineas": 359,
+     "sha256": "37ff430cd4e94007d392f6a66d1572c0f1902886f018de98a617eba94e380131",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/T136-T152-post-auditoria.md",
+     "lineas": 466,
+     "sha256": "204174627cbdddab30b8ae0ef3fe0a304eb95085d7bccecbf4193f9c7c56cc36",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/T159-T170-multirepo.md",
+     "lineas": 314,
+     "sha256": "a84e6a252fb24283befa00ddabf1ca133de2930e68d5921fa5dfcbe2c5ecb55f",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/T172-T181-estado-durable.md",
+     "lineas": 691,
+     "sha256": "320938833e7579ba4a9b826e85c80b45f734d850054553d09173616c12ffef05",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/T182-T194-runtime-y-admision.md",
+     "lineas": 353,
+     "sha256": "391e228c4f304d5ca5a083e3c943d5f9ead827552e2a6d6b7ff916b6edcfb05d",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/T195-T209-ciclo-y-macrocircuitos.md",
+     "lineas": 342,
+     "sha256": "a81861340cf183bb7256edea72e56a523e21ff799d50f7d758e178d92c242b3e",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md",
+     "lineas": 395,
+     "sha256": "6438e8ace5f7e69b9b04e6ab2186f2487c6da1a2c3b41377c894a67915cb4bdb",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md",
+     "lineas": 367,
+     "sha256": "ece884dfe8842086891fcbc9b9a141e38d99e3698bfc9e3d1eeac12903561856",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md",
+     "lineas": 220,
+     "sha256": "07af6639fd48b8de9cb1b24d091f7f2723c15fc3815ba8a3534a5574a970d43e",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md",
+     "lineas": 502,
+     "sha256": "ab29bccd9bcb2d2253f688b2f7d6d275dfdb94a11942f53a2d7dc0e8f829574e",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md",
+     "lineas": 243,
+     "sha256": "f8b6878ef1ef4adddbf9dfc9bf89afd9164a068b3c6a5aa69cf4838da33ac12d",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md",
+     "lineas": 739,
+     "sha256": "757b2e2157316bbd3f31b321c344f2477bd4702689a1ddaf2fe5f37aa5942147",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/T340-T359-append-only-y-universo.md",
+     "lineas": 379,
+     "sha256": "aad6fa971ec4c977f03fbaaeef46eedd994778f339586af283b818f85c30f98a",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/pruebas/T360-T379-sedes-veraces.md",
+     "lineas": 166,
+     "sha256": "071eb9d36544487e68500b2f318c045367895e89f9fd8f25bec5d509f54b9910",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/recorrido/01-PROCESOS.md",
+     "lineas": 606,
+     "sha256": "8a8aa174fa5244cbbe4629131f1e09856a4b065ae25746ac0956413706fe435c",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/00-RUNTIME.md",
+     "lineas": 122,
+     "sha256": "a6ecc5f80696baad67a54dddc6c0482dc8e774de6b9e754e1f6024ffc900b424",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/CONTRATO-ADAPTADOR.md",
+     "lineas": 131,
+     "sha256": "ac5e12a1b37df297b8889c51719859c5af5a28b582ad79d33d849fe2919cb4b1",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/CONTRATO-ADMISION.md",
+     "lineas": 177,
+     "sha256": "dae17547b0707658cf8e219665f792c4b8c2903a5d661b8ae7d75a7a7a923faf",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/CONTRATO-ARBOLES-ADVERSARIALES.md",
+     "lineas": 150,
+     "sha256": "65a30d2610c71b7956546b825d88382241e4a5591b400a3ae75888d7ab8fda00",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/CONTRATO-CICLO-Y-MACROCIRCUITOS.md",
+     "lineas": 338,
+     "sha256": "e4c337905424a3da2d697d11af8d33524c6acb61bba9de29407d1f373044f2d4",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/CONTRATO-CONTENCION.md",
+     "lineas": 136,
+     "sha256": "f8b2fc8ebd673211ac056f821713702c4cfacd3d868df2983f01fc495265c2d6",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/CONTRATO-ESTADO-DURABLE.md",
+     "lineas": 390,
+     "sha256": "6e681b4d3bcf4e8bfcd93d0349946a8c31b8d5a1f2a1b3d0bd57516ba46188e6",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/CONTRATO-GOBIERNO-GIT-CONTROL.md",
+     "lineas": 99,
+     "sha256": "3f820ba44848f2fb3b5dbc29a2673bd7b1a303846a851ba9ebb02c6992fb0f52",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/CONTRATO-RAIZ-EXTERNA.md",
+     "lineas": 262,
+     "sha256": "bdcb49a611412aab023624ced51995457c0056321bb41977c6ede5a6cfa138b9",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/CONTRATO-RUNTIME-Y-DISPATCHER.md",
+     "lineas": 156,
+     "sha256": "141c88879e4d3452a54336fbb6d761f12d401284c0d7d15a18826c43545b8f32",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/escenario_e2e_f6.py",
+     "lineas": 1749,
+     "sha256": "b70113b6915142c0f2806569677081fded25bb99889623fa4d107916118ae572",
+     "rango": null
+    },
+    {
+     "ruta": "kernel/operativo/runtime/pruebas/test_agentes.py",
+     "lineas": 1053,
+     "sha256": "1b288b178666dc4f96652d83357402cc138510f61bed68e20981ebb395f8a7bb",
+     "rango": null
+    },
+    {
+     "ruta": "tooling/new-project.sh",
+     "lineas": 220,
+     "sha256": "5320a4f656220af7a952a1c85bac9124f8a94da7ad688dde189fd190e0703358",
+     "rango": null
+    },
+    {
+     "ruta": "tooling/workspace.py",
+     "lineas": 916,
+     "sha256": "020998fc34fd4f805feacfecbc3165e8337b935a32859405c24c4d557ee2b59d",
+     "rango": null
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      7378,
+      8074
+     ],
+     "seccion": 9
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      10882,
+      11069
+     ],
+     "seccion": 18
+    },
+    {
+     "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+     "lineas": 12152,
+     "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+     "rango": [
+      11070,
+      11906
+     ],
+     "seccion": 19
+    }
+   ]
+  }
+ }
+}
