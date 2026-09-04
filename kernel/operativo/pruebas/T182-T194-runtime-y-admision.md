@@ -241,7 +241,7 @@ evidencia: evidencia/admision-salida.txt
 ```yaml ads:escenario
 id: T191
 nombre: El adaptador local ejecuta un proceso real, lo mata de verdad y no repite un efecto aplicado
-cubre: [V7, 11-ARQ 6, 11-ARQ 3.4]
+cubre: [V7, 11-ARQ 6, 11-ARQ 3.4, FD-5, FD-6]
 dado:
   - "un adaptador de proceso local con su ficha declarada y su espacio de trabajo"
 cuando:

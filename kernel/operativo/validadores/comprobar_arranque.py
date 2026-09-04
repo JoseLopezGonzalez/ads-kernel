@@ -41,6 +41,7 @@ import sys
 import tempfile
 
 sys.path.insert(0, os.path.dirname(__file__))
+import entorno  # noqa: E402
 from comprobar_contratos import Resultado  # noqa: E402
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
@@ -570,6 +571,14 @@ PRUEBAS = [t148_arranque, t171_descubrimiento, t194_actualizacion]
 
 
 def main():
+    # `11-ARQ` §19, CONTRATO 3 · EL TERCER PRÓLOGO. El contrato habla de «los tres
+    # validadores que importan `tomllib`, para que ejecutarlos sueltos no eluda la guardia»:
+    # éste es el tercero, y lo importa TRANSITIVAMENTE, porque invoca `tooling/workspace.py`
+    # dentro del proyecto que crea. Bajo Python 3.10 se medía esto: `T148 FALLIDA … workspace
+    # check falla en el proyecto creado (exit 78)` con CÓDIGO 1, es decir, el entorno
+    # insuficiente disfrazado de defecto del producto. Es exactamente la confusión que el
+    # contrato manda eliminar reservando un código propio para «no se pudo ejecutar».
+    entorno.exigir()
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--raiz", default=None)

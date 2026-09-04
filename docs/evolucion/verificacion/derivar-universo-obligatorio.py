@@ -408,7 +408,18 @@ def componente_iii():
 VOCES_DE_DICTAMEN = ("GATE", "CRÍTICA", "CRITICA", "REVISIÓN", "REVISION",
                      "DEVOLUCIÓN", "DEVOLUCION", "COMPLEMENTO", "DICTAMEN",
                      "AUDITORÍA", "AUDITORIA", "CERTIFICACIÓN", "CERTIFICACION",
-                     "ADJUDICACIÓN", "ADJUDICACION", "VEREDICTO")
+                     "ADJUDICACIÓN", "ADJUDICACION", "VEREDICTO",
+                     # Añadidas el 2026-09-04. `--rutas` —el ÚNICO modo que invocan el
+                     # emisor del sobre y la receta publicada— salía con código 2 desde
+                     # antes de esta corrección: `33-CIERRE-DE-F4C-POR-COMPOSICION-O22.md`
+                     # no casaba con ninguna de las dos listas, y el derivador se negaba a
+                     # adivinar, que es lo correcto. Se resuelve DECLARÁNDOLO, que es lo
+                     # que el propio mensaje de fallo pide: un documento que CIERRA una
+                     # fase por composición de dos juicios independientes, o que RATIFICA
+                     # una certificación, es un DICTAMEN. Ampliar esta lista mete más
+                     # fuentes en el universo, que es la dirección segura: la que encoge
+                     # es la otra.
+                     "CIERRE", "RATIFICACIÓN", "RATIFICACION")
 
 VOCES_DE_NO_DICTAMEN = ("ÍNDICE", "INDICE", "BASELINE", "MAPA", "INVARIANTES",
                         "PLAN DE INVESTIGACIÓN", "PLAN DE INVESTIGACION", "INVENTARIO",
@@ -891,19 +902,69 @@ def obligaciones_de_19():
     return halladas
 
 
+# `H-01` · LAS CELDAS DE UNA FILA MARKDOWN SE PARTEN POR LOS PIPES NO ESCAPADOS
+#
+#     HECHO REPRODUCIDO. `hallazgos_externos_f6()` partía la fila con `linea.split("|")` y
+#     leía la fase en `celdas[5]`. La fila de `F-07` contiene un PIPE ESCAPADO dentro de su
+#     texto —«`autoridad: aprobada \| trabajo`»— y por eso salían NUEVE celdas en vez de
+#     ocho: `celdas[5]` era la columna PROPIETARIO y la fase de verdad, `**F6**`, estaba en
+#     `celdas[6]`. **`F-07` desaparecía del universo, y la guarda `if not halladas: raise`
+#     sólo dispara si se pierden TODAS.** Perder una era silencioso.
+#
+#     Es EXACTAMENTE el defecto `P-08` que este fichero declara existir para cerrar —«un
+#     universo que encoge sin decirlo»— cometido por el propio instrumento que lo cierra. Y
+#     no es un detalle de estilo: `O26` §5 convierte estas tres restas en criterio de
+#     certificación, de modo que una obligación que se cae del universo se cae del criterio.
+def _celdas(linea):
+    r"""Las celdas de una fila Markdown. Un `\|` es TEXTO, no un separador."""
+    return [c.replace("\\|", "|").strip() for c in re.split(r"(?<!\\)\|", linea)]
+
+
 def hallazgos_externos_f6():
-    """Los `F-nn` cuya FILA de §19 declara fase `F6`. La fase se lee de la fila."""
+    """Los `F-nn` cuya FILA de §19 declara fase `F6`, con DOBLE derivación.
+
+    La fase se lee de DOS maneras independientes —por POSICIÓN de columna y por CONTENIDO de
+    celda— y se exige que coincidan. Un instrumento que se lee a sí mismo de una sola manera
+    no puede detectar que su manera dejó de funcionar: eso es lo que pasó, y por eso la
+    guarda no es «que no salga vacío» sino «que las dos lecturas den el mismo conjunto».
+    """
     texto = _leer(ARQ)
-    halladas = {}
-    for m in re.finditer(r"^\|\s*`(F-\d\d)`[^\n]*$", texto, re.M):
-        celdas = [c.strip() for c in m.group(0).split("|")]
-        fase = celdas[5] if len(celdas) > 5 else ""
-        if re.search(r"\bF6\b", fase):
-            halladas[m.group(1)] = "11-ARQ §19 · tabla de hallazgos externos"
-    if not halladas:
+    filas = list(re.finditer(r"^\|\s*`(F-\d\d)`[^\n]*$", texto, re.M))
+    if not filas:
+        raise SedeIlegible("§19 no publica ninguna fila `F-nn`, y su tabla las declara: la "
+                           "lectura de la fila ha dejado de funcionar")
+    por_posicion, por_contenido, anchuras = {}, {}, {}
+    for m in filas:
+        celdas = _celdas(m.group(0))
+        anchuras[m.group(1)] = len(celdas)
+        if len(celdas) > 5 and re.search(r"\bF6\b", celdas[5]):
+            por_posicion[m.group(1)] = "11-ARQ §19 · tabla de hallazgos externos"
+        # Por CONTENIDO: la celda de fase es la que ES una fase y nada más.
+        for celda in celdas:
+            if re.fullmatch(r"\**\s*`?F\d[a-c]?`?\s*(?:y\s+`?F\d[a-c]?`?\s*)?\**", celda) \
+                    and re.search(r"\bF6\b", celda):
+                por_contenido[m.group(1)] = "11-ARQ §19 · tabla de hallazgos externos"
+                break
+    # La ANCHURA uniforme es la propiedad que el defecto rompió, y se comprueba aparte para
+    # que el diagnóstico nombre la causa y no sólo el síntoma.
+    anchura_comun = max(set(anchuras.values()), key=list(anchuras.values()).count)
+    descolocadas = sorted(f for f, n in anchuras.items() if n != anchura_comun)
+    if descolocadas:
+        raise SedeIlegible(
+            "las filas %s de la tabla de §19 no tienen el mismo número de celdas que las "
+            "demás (%d frente a %d): la lectura por POSICIÓN de columna deja de ser fiable "
+            "y una obligación puede caerse del universo en silencio"
+            % (", ".join(descolocadas), anchuras[descolocadas[0]], anchura_comun))
+    if por_posicion != por_contenido:
+        solo_una = sorted(set(por_posicion) ^ set(por_contenido))
+        raise SedeIlegible(
+            "las dos lecturas de la fase de §19 —por posición y por contenido— discrepan "
+            "en %s: el universo no se puede derivar mientras el instrumento no se entienda "
+            "a sí mismo" % ", ".join(solo_una))
+    if not por_contenido:
         raise SedeIlegible("§19 no publica ningún hallazgo externo con fase F6, y su tabla "
-                           "los declara: la lectura de la fila ha dejado de funcionar")
-    return halladas
+                           "los declara")
+    return por_contenido
 
 
 def contratos_v6():
@@ -949,13 +1010,136 @@ def contratos_transversales():
     return halladas
 
 
-def deudas_y_limites():
-    """Las deudas y límites EXTERNOS vigentes, derivados de su sede canónica."""
+# `H-01` bis · LA DEUDA SE DERIVA POR SU FASE, Y NO POR UNA LISTA DE PREFIJOS
+#
+#     HECHO REPRODUCIDO. La derivación anterior era `re.findall(r"`(FD-\d+|M-04|A14|E5-\d+)`")`
+#     —una LISTA DE PREFIJOS escrita a mano— y por eso **`S1-02` no entraba**, siendo una fila
+#     de `06-DEUDA` §10 bis con fase `F6` y hermana de `FD-1`…`FD-6`. Y por la misma razón
+#     entraban `FD-2` y `FD-4`, que esa sede declara con fase **«no consta»**, propietario
+#     **el Owner** y condición «*NO se corrige aquí, y no puede corregirse aquí*»: **no son
+#     obligaciones INTERNAS de `F6`**, y contarlas como tales hacía que la resta `A` publicara
+#     dos filas que nadie podía cerrar sin reabrir `F5`.
+#
+#     Ahora la pertenencia se DERIVA de lo que la sede dice de cada fila —su FASE—, que es el
+#     criterio que la propia sede publica. Una fila nueva con fase `F6` entra sola; una que
+#     pierda la fase sale sola y se ve. Lo que quedó fuera NO se calla: se publica aparte.
+FASE_F6 = re.compile(r"\**\s*`?F6`?\s*\**$")
+
+
+def _filas_de_deuda(texto):
+    """`{id: (fase, celdas)}` de toda fila de tabla de la sede que empiece por un id."""
+    filas = {}
+    for m in re.finditer(r"^\|\s*\**\s*`([A-Z0-9]+-[A-Za-z0-9.]+)`[^\n]*$", texto, re.M):
+        celdas = _celdas(m.group(0))
+        fase = ""
+        for celda in celdas:
+            if FASE_F6.match(celda) or re.fullmatch(r"\**\s*`?F\d[a-c]?`?\s*\**", celda) \
+                    or celda == "no consta":
+                fase = celda
+                break
+        filas[m.group(1)] = (fase, celdas)
+    return filas
+
+
+# LA FRONTERA DEL COMPONENTE «deuda», DICHA EN VEZ DE SUPUESTA
+#
+#     El universo que hay que derivar es el que el encargo enumera, y su sexta entrada dice
+#     «deudas y límites EXTERNOS». `06-DEUDA` publica DOS censos distintos y no los mezcla:
+#     §2 son las CONDICIONES DE CIERRE `C-L` heredadas de `F4c` y `F5`, y §3, §4, §7, §8,
+#     §10 bis y §10 ter son la DEUDA con propietario y fase. El componente se ciñe al
+#     segundo, que es el enumerado.
+#
+#     Y LO QUE QUEDA FUERA NO SE CALLA, que es la mitad que importa: `--obligaciones`
+#     publica aparte, con su sede y su estado, (a) la deuda que la sede registra SIN fase
+#     `F6` —`FD-2` y `FD-4`, cuyo propietario es el Owner y cuya condición dice «no puede
+#     corregirse aquí»—, (b) `E-17` y `E-18`, que §10 ter clasifica como EXTERNA y como
+#     LÍMITE DE ANFITRIÓN, y (c) las condiciones `C-L` cuya fase nombra `F6`. Un universo
+#     que encoge en silencio es `P-08`; uno que encoge DICIENDO QUÉ deja fuera y POR QUÉ es
+#     una frontera, y se puede discutir.
+SECCIONES_DE_DEUDA = re.compile(
+    r"^##\s+(?:3|4|7|8|10 bis|10 ter)\s+·", re.M)
+SECCION_C_L = re.compile(r"^##\s+2\s+·", re.M)
+
+
+def _bloques_de_seccion(texto, patron):
+    """El texto de cada sección cuya cabecera casa, hasta la cabecera `##` siguiente."""
+    cabeceras = [(m.start(), m.group(0)) for m in re.finditer(r"^##\s+[^\n]*$", texto, re.M)]
+    trozos = []
+    for i, (inicio, cabecera) in enumerate(cabeceras):
+        fin = cabeceras[i + 1][0] if i + 1 < len(cabeceras) else len(texto)
+        if patron.match(cabecera):
+            trozos.append(texto[inicio:fin])
+    return trozos
+
+
+def _menciona_f6(celda):
+    return bool(re.search(r"\bF6\b", celda or ""))
+
+
+def deudas_sin_fase_f6():
+    """Deuda que la sede registra y que NO declara fase `F6`. Se publica, no se calla.
+
+    Cada una con la SECCIÓN de la que sale, porque no todas quedan fuera por lo mismo:
+    `FD-2` y `FD-4` son de §10 bis con fase «no consta» y propietario el Owner, y `E-17` y
+    `E-18` son de §10 ter, que las clasifica como DEUDA EXTERNA y como LÍMITE DE ANFITRIÓN.
+    """
     texto = _leer(DEUDA)
-    halladas = {d: "06-DEUDA-Y-LIMITACIONES-VIGENTES.md"
-                for d in sorted(set(re.findall(r"`(FD-\d+|M-04|A14|E5-\d+)`", texto)))}
+    fuera = {}
+    for bloque in _bloques_de_seccion(texto, SECCIONES_DE_DEUDA):
+        cabecera = bloque.splitlines()[0].lstrip("# ").strip()
+        for ident, (fase, _c) in _filas_de_deuda(bloque).items():
+            if not _menciona_f6(fase):
+                fuera[ident] = (fase or "(sin celda de fase)", cabecera[:58])
+    return dict(sorted(fuera.items()))
+
+
+def condiciones_c_l_con_fase_f6():
+    """Las condiciones de cierre `C-L` de §2 cuya fase nombra `F6`. Otro censo, publicado.
+
+    La celda de fase de §2 no siempre es una fase sola: `C-L.7` escribe «**`F5`** la
+    especificación · **`F6`** el instrumento», que es DOS fases con su reparto. Se busca la
+    mención en cualquier celda breve, y no un `fullmatch`, porque una fase repartida sigue
+    siendo una fase y quedarse sólo con las simples volvería a esconder una fila.
+    """
+    texto = _leer(DEUDA)
+    salida = {}
+    for bloque in _bloques_de_seccion(texto, SECCION_C_L):
+        for ident, (_fase, celdas) in _filas_de_deuda(bloque).items():
+            candidatas = [c for c in celdas if len(c) < 80 and _menciona_f6(c)
+                          and not c.startswith("`" + ident)]
+            if candidatas:
+                salida[ident] = min(candidatas, key=len)
+    return dict(sorted(salida.items()))
+
+
+def deudas_y_limites():
+    """La deuda con fase `F6` de su sede canónica, derivada por SECCIÓN y por FASE.
+
+    Dos formas, las dos derivadas y ninguna escrita a mano: las FILAS de tabla de las
+    secciones de deuda cuya celda de fase nombra `F6`, y las SECCIONES numeradas que son
+    ellas mismas una deuda y declaran su fase en un campo `FASE` —`M-04` y `A14`, que no
+    viven en tabla—. La guarda no es «que no salga vacío»: es que las secciones de deuda que
+    la sede declara SIGAN siendo legibles como tales.
+    """
+    texto = _leer(DEUDA)
+    bloques = _bloques_de_seccion(texto, SECCIONES_DE_DEUDA)
+    if len(bloques) < 6:
+        raise SedeIlegible(
+            "`%s` publica %d de las seis secciones de deuda que su índice declara (3, 4, 7, "
+            "8, 10 bis y 10 ter): el barrido ha dejado de encontrarlas y el universo "
+            "encogería en silencio" % (DEUDA, len(bloques)))
+    halladas = {}
+    for bloque in bloques:
+        cabecera = bloque.splitlines()[0]
+        for ident, (fase, _c) in _filas_de_deuda(bloque).items():
+            if _menciona_f6(fase):
+                halladas[ident] = "06-DEUDA · fila con fase F6"
+        # Una sección que ES una deuda declara su fase en un campo `FASE`, no en una celda.
+        propia = re.match(r"^##\s+\d+[a-z ]*·\s*`([A-Z0-9]+-?\d*)`", cabecera)
+        if propia and re.search(r"\bFASE\s+[^\n]*\bF6\b", bloque):
+            halladas[propia.group(1)] = "06-DEUDA · sección con campo FASE F6"
     if not halladas:
-        raise SedeIlegible("`%s` no publica ninguna deuda identificada: su sede es la "
+        raise SedeIlegible("`%s` no publica ninguna deuda con fase F6, y su sede es la "
                            "única del censo de deuda viva" % DEUDA)
     return halladas
 
@@ -1050,6 +1234,29 @@ def universo_de_obligaciones():
     return universo
 
 
+# `H-07` · EL RÓTULO DE LA RESTA `A`, CORREGIDO PARA QUE DIGA LO QUE MIDE
+#
+#     La resta `A` se publicaba como «obligaciones internas SIN IMPLEMENTACIÓN» y se
+#     calculaba como «ninguna prueba la declara en su `cubre` con validador», que es
+#     TRAZABILIDAD. La auditoría lo verificó fila a fila y encontró CINCO falsos positivos:
+#     `CONTRATO 3`, `g.7` y `FD-6` están implementados y ejecutados en el árbol, y `FD-2` y
+#     `FD-4` ni son internas ni son de `F6` —`06-DEUDA` las declara del Owner y con fase «no
+#     consta»—. Un instrumento que rotula «sin implementación» lo que mide como «sin
+#     cobertura declarada» hace creer que sabe qué está construido, y no lo sabe.
+#
+#     Se corrige por los DOS lados y ninguno es cosmético: las dos que no eran de `F6` salen
+#     del universo por su FASE —y se publican aparte, no se callan—, y el rótulo pasa a
+#     nombrar el predicado real. Lo que queda dentro es lo que hay que resolver: una
+#     obligación sin escenario que la cubra es indistinguible, PARA ESTE APARATO, de una sin
+#     implementar, y esa indistinción es justamente el defecto —no se tapa rotulándola de
+#     una de las dos maneras—.
+ROTULOS_DE_RESTA = (
+    ("A", "obligaciones internas SIN COBERTURA DECLARADA que las ejerza"),
+    ("B", "implementadas SIN SABOTAJE DECLARADO que las ponga rojas"),
+    ("C", "obligaciones SIN TRAZABILIDAD HASTA EVIDENCIA EJECUTABLE"),
+)
+
+
 def restas():
     """Las TRES RESTAS, derivadas. Se publican aunque no estén vacías."""
     universo = universo_de_obligaciones()
@@ -1068,6 +1275,23 @@ def publicar_obligaciones(destino):
         destino.write("  (%-6s) %3d   %s\n" % (clase, len(suyas), titulo))
         destino.write("            %s\n" % ", ".join(suyas))
     destino.write("\n  TOTAL %d obligaciones\n\n" % len(universo))
+
+    # LO QUE QUEDA FUERA, DICHO. Un universo que encoge en silencio es `P-08`; uno que dice
+    # QUÉ deja fuera y POR QUÉ es una frontera, y una frontera se puede discutir.
+    destino.write("FUERA DEL UNIVERSO, Y POR QUÉ — no se calla ninguno\n")
+    destino.write("-" * 78 + "\n")
+    sin_fase = deudas_sin_fase_f6()
+    destino.write("  deuda registrada SIN fase `F6` (%d)  ·  no es obligación interna de F6\n"
+                  % len(sin_fase))
+    for ident, (fase, seccion) in sin_fase.items():
+        destino.write("      %-8s fase declarada: %-14s  ·  %s\n"
+                      % (ident, fase or "(ninguna)", seccion))
+    c_l = condiciones_c_l_con_fase_f6()
+    destino.write("  condiciones de cierre `C-L` con fase `F6` (%d)  ·  OTRO censo: "
+                  "`06-DEUDA` §2, heredado de `F4c` y `F5`\n" % len(c_l))
+    for ident, fase in c_l.items():
+        destino.write("      %-8s fase declarada: %s\n" % (ident, fase))
+    destino.write("\n")
     destino.write("%-16s %-7s %-28s %-22s %s\n"
                   % ("obligación", "clase", "pruebas", "sabotajes", "evidencia"))
     for obligacion in sorted(universo):
@@ -1079,10 +1303,7 @@ def publicar_obligaciones(destino):
             (sorted(set(f["evidencias"]))[:1] or ["—"])[0]))
     destino.write("\nLAS TRES RESTAS, DERIVADAS\n")
     destino.write("-" * 78 + "\n")
-    for letra, titulo, lista in (
-            ("A", "obligaciones internas SIN IMPLEMENTACIÓN", a),
-            ("B", "implementadas SIN PRUEBA CAPAZ DE FALLAR", b),
-            ("C", "obligaciones SIN TRAZABILIDAD HASTA EVIDENCIA EJECUTABLE", c)):
+    for (letra, titulo), lista in zip(ROTULOS_DE_RESTA, (a, b, c)):
         destino.write("  %s · %-58s %d\n" % (letra, titulo, len(lista)))
         if lista:
             destino.write("      %s\n" % ", ".join(lista))

@@ -4,5 +4,23 @@
 # ---------------------------------------------------------------
 T152  SUPERADA  Los puntos de entrada no se contradicen sobre la versión
 T272  SUPERADA  El alcance de T152 se descubre, y cada sede tiene remedio declarado
+          cobertura: capa documental fuera de F6: 17 sedes publican una versión obsoleta y se REPORTAN sin decidir su remedio (REMEDIO F5: 9 · REMEDIO F6: 1 · REMEDIO —: 7)
+              docs/evolucion/00-INDICE.md:129: publica 2.0.0-alpha.6 para `kernel/VERSION` (vigente 2.0.0-alpha.11) — REMEDIO —, documento histórico e inmutable: no se corrige, se cita
+              docs/evolucion/01-BASELINE-ADS.md:27: publica 2.0.0-alpha.2 para `kernel/KERNEL.md` (vigente 1.5.0) — REMEDIO —, documento histórico e inmutable: no se corrige, se cita
+              docs/evolucion/09-SINTESIS.md:238: publica 2.0.0-alpha.6 para `kernel/VERSION` (vigente 2.0.0-alpha.11) — REMEDIO —, documento histórico e inmutable: no se corrige, se cita
+              docs/evolucion/11-ARQUITECTURA-INTEGRADA.md:9860: publica 1.3.0 para `kernel/KERNEL.md` (vigente 1.5.0) — REMEDIO —, documento histórico e inmutable: no se corrige, se cita
+              docs/evolucion/11-ARQUITECTURA-INTEGRADA.md:11559: publica 1.3.0 para `kernel/KERNEL.md` (vigente 1.5.0) — REMEDIO —, documento histórico e inmutable: no se corrige, se cita
+              docs/evolucion/11-ARQUITECTURA-INTEGRADA.md:11693: publica 1.3.0 para `kernel/KERNEL.md` (vigente 1.5.0) — REMEDIO —, documento histórico e inmutable: no se corrige, se cita
+              docs/evolucion/19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md:81: publica 1.3.0 para `kernel/KERNEL.md` (vigente 1.5.0) — REMEDIO —, documento histórico e inmutable: no se corrige, se cita
+              docs/evolucion/CHECKPOINT-ADS-NEXT.md:1460: publica 2.0.0-alpha.9 para `kernel/VERSION` (vigente 2.0.0-alpha.11) — REMEDIO F6, proyección vigente de la capa documental
+              docs/rediseno/00-MAPA.md:1: publica 1.3.0 para `kernel/KERNEL.md` (vigente 1.5.0) — REMEDIO F5, material APROBADO: la enmienda es de F5, no de F6
+              docs/rediseno/AUDITORIA-INDEPENDIENTE-LOCAL.md:569: publica 2.0.0-alpha.1 para `kernel/VERSION` (vigente 2.0.0-alpha.11) — REMEDIO F5, material APROBADO: la enmienda es de F5, no de F6
+              docs/rediseno/AUDITORIA-INDEPENDIENTE-LOCAL.md:570: publica 1.3.0 para `kernel/KERNEL.md` (vigente 1.5.0) — REMEDIO F5, material APROBADO: la enmienda es de F5, no de F6
+              docs/rediseno/AUDITORIA-INDEPENDIENTE-LOCAL.md:571: publica 1.0.0 para `kernel/KERNEL.md` (vigente 1.5.0) — REMEDIO F5, material APROBADO: la enmienda es de F5, no de F6
+              docs/rediseno/AUDITORIA-INDEPENDIENTE-LOCAL.md:921: publica 1.3.0 para `kernel/KERNEL.md` (vigente 1.5.0) — REMEDIO F5, material APROBADO: la enmienda es de F5, no de F6
+              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md:18: publica 1.3.0 para `kernel/KERNEL.md` (vigente 1.5.0) — REMEDIO F5, material APROBADO: la enmienda es de F5, no de F6
+              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md:25: publica 1.3.0 para `kernel/KERNEL.md` (vigente 1.5.0) — REMEDIO F5, material APROBADO: la enmienda es de F5, no de F6
+              docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md:25: publica 2.0.0-alpha.1 para `kernel/VERSION` (vigente 2.0.0-alpha.11) — REMEDIO F5, material APROBADO: la enmienda es de F5, no de F6
+              docs/rediseno/a-EQUIPOS-v1-RECHAZADA.md:58: publica 1.3.0 para `kernel/KERNEL.md` (vigente 1.5.0) — REMEDIO F5, material APROBADO: la enmienda es de F5, no de F6
 
 2 superadas · 0 fallidas

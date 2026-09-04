@@ -3418,8 +3418,15 @@ kernel/operativo/validadores/
                                           esperado y rechaza la traza como detección
 kernel/operativo/pruebas/T136-T152-post-auditoria.md  el manifiesto inválido se rechaza con
                                           un fallo, nunca con una traza
-kernel/VERSION · KERNEL_CHANGELOG.md ·    release 2.0.0-alpha.9 — ESTADO VIGENTE, con su
-kernel/VERSIONES.md · .upstream-hash      entrada y la huella reanclada sobre el cambio
+kernel/VERSION · KERNEL_CHANGELOG.md ·    release 2.0.0-alpha.9 — HISTÓRICO. Fue el estado
+kernel/VERSIONES.md · .upstream-hash      final de esta pasada, y NO es la base vigente:
+                                          los tres cortes de `F6` la sustituyen, y la
+                                          vigente es `2.0.0-alpha.11`. Se corrige el
+                                          RÓTULO y no el hecho, con la misma fórmula que
+                                          la entrada de `alpha.8` de arriba: decía «ESTADO
+                                          VIGENTE» en presente sobre una versión superada,
+                                          y `11-ARQ` §19 `CONTRATO 2` cierra cuando
+                                          NINGUNA sede viva publica una versión obsoleta
 
 F4 ARQUITECTURA INTEGRADA
 docs/evolucion/11-ARQUITECTURA-INTEGRADA.md  nueva — el entregable de F4

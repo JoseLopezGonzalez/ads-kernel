@@ -27,6 +27,7 @@ import re
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
+import entorno  # noqa: E402
 from comprobar_contratos import Resultado  # noqa: E402
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
@@ -333,6 +334,13 @@ PRUEBAS = [t159_plantilla_valida, t160_manifiesto_del_proyecto,
 
 
 def main():
+    # `11-ARQ` §19, CONTRATO 3 · EL MISMO PRÓLOGO, PARA QUE CORRERLO SUELTO NO ELUDA LA
+    # GUARDIA. Este validador lee `SOURCES.toml` con `tooling/workspace.py`, que usa
+    # `tomllib`. Bajo Python 3.10 se medía esto: `python3 comprobar_fuentes.py` salía con
+    # `T159 FALLIDA` y CÓDIGO 1 — indistinguible de «el producto falló», que es justo la
+    # confusión que el contrato manda eliminar reservando un código propio para «no se pudo
+    # ejecutar». La guardia vive en `entorno.py` y sale con 78 (`EX_CONFIG`).
+    entorno.exigir()
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--raiz")

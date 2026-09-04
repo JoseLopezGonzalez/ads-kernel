@@ -3,4 +3,4 @@
 # codigo:       0
 # ---------------------------------------------------------------
 
-bloques canónicos: 491 · identificadores: 491 · errores: 0 · avisos: 0 · enlaces a material no embarcado: 0
+bloques canónicos: 499 · identificadores: 499 · errores: 0 · avisos: 0 · enlaces a material no embarcado: 0

@@ -372,7 +372,7 @@ evidencia: "evidencia/prompts-salida.txt"
 ```yaml ads:escenario
 id: T158
 nombre: La evidencia publicada demuestra lo que el informe afirma
-cubre: ["evidencia reproducible", "REGISTRO.md regla dura", "registrar_evidencia.py", "validadores.yaml"]
+cubre: ["evidencia reproducible", "REGISTRO.md regla dura", "registrar_evidencia.py", "validadores.yaml", "CONTRATO 3"]
 dado:
   - "el manifiesto canónico de validadores, con la evidencia que cada uno debe producir"
   - "los ficheros de evidencia publicados"

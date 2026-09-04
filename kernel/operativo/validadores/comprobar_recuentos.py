@@ -187,9 +187,22 @@ class Regla:
     `sede`      expresión regular sobre la RUTA RELATIVA. Por defecto, cualquier documento
                 del corpus vivo: la cobertura no se enumera.
     `objeto`    cómo se nombra el objeto censable cuando alguien publica su cardinal. El
-                patrón completo se construye con el ARTÍCULO delante —«las quince
-                capacidades»—, que es la marca gramatical de que se afirma el TOTAL y no un
-                subconjunto: «dos capacidades con veto» no lleva artículo y no es un censo.
+                patrón completo se construye con la MARCA DE TOTALIDAD delante —«las quince
+                capacidades»—, que es lo que distingue la afirmación del TOTAL de la de un
+                subconjunto: «dos capacidades con veto» no lleva ninguna y no es un censo.
+
+                DECISIÓN · la marca era SÓLO el artículo, y se le añade el VERBO DE
+                DECLARACIÓN. La auditoría midió que «El corpus declara veintiocho
+                capacidades» —sin artículo delante del cardinal— no se detectaba. El
+                razonamiento gramatical de origen sigue en pie: hace falta una marca, y
+                admitir cualquier cardinal suelto denunciaría verdades hasta que alguien
+                apagara el validador. Pero «declara N objetos» es tan afirmación del total
+                como «los N objetos»: el verbo de censo hace el mismo trabajo que el
+                artículo. Se admite ese verbo, y NADA MÁS: se midió que sobre el corpus de
+                hoy no produce ni un falso positivo (cero divergencias nuevas en 500+
+                ficheros). Verbos como «contiene» o «incluye» NO se admiten, porque
+                admiten legítimamente un subconjunto —«contiene tres bloques de esto»— y
+                ahí la marca no dice nada.
     `salvo`     lo que, escrito INMEDIATAMENTE DETRÁS del objeto, restringe el conjunto y
                 convierte la afirmación en otra cosa: «los dos gates **de Diseño**» no
                 afirma cuántos gates hay. Sin esto la regla denunciaría verdades.
@@ -199,7 +212,7 @@ class Regla:
     """
 
     def __init__(self, clave, objeto, *, sede=r"\.md$", salvo=None, marca=None,
-                 extra=None, articulo=r"(?:l[oa]s|sus|L[oa]s|Sus|L[OA]S|SUS)"):
+                 extra=None, articulo=r"(?:l[oa]s|sus|declaran?)"):
         self.clave, self.objeto, self.sede_re = clave, objeto, re.compile(sede)
         self.salvo = re.compile(salvo, re.I) if salvo else None
         cola = r"\s+(?:" + marca + r")\b" if marca else r"\b"
@@ -348,34 +361,99 @@ def _palabra_a_numero(txt):
     return None
 
 
+# ---------------------------------------------------------------------------
+#  DESHACER EL REFLUJO ANTES DE MIRAR
+# ---------------------------------------------------------------------------
+#  DECISIÓN · el barrido se aplica DOS VECES: al texto tal cual, y al texto con el
+#  reflujo deshecho.
+#
+#  El defecto medido: `Los DOCE contratos transversales` se detectaba, y
+#  `Los DOCE contratos\ntransversales` NO. El corpus entero está ajustado a noventa
+#  columnas, luego una afirmación de cardinal partida por el ajuste de línea no es el caso
+#  raro: es el caso NORMAL. Un control que sólo ve las afirmaciones que caben en una línea
+#  deja fuera, por construcción, a la mayoría de las que hay, y el que quisiera colar una
+#  cifra falsa sólo tendría que escribirla larga.
+#
+#  Por qué DOS PASADAS y no una sola sobre el texto colapsado. Tres patrones `extra` del
+#  diccionario están anclados a la LÍNEA —`(?m)^…`, `[^\n]*`— para distinguir «la línea que
+#  habla de método» de «la que no». Colapsar los saltos de línea los rompería, y arreglar
+#  el defecto rompiendo tres detecciones vigentes sería cambiar un agujero por otro. Con
+#  dos pasadas no se pierde ni una detección de las de hoy: sólo se añaden las que el
+#  reflujo escondía. Las divergencias se deduplican por `(sede, línea, clave, cifra)`.
+#
+#  Y por qué se CONSERVA el corte de párrafo. Colapsar también los renglones en blanco
+#  pegaría el final de un párrafo con el principio del siguiente y fabricaría frases que
+#  nadie escribió —«… los doce» + «Contratos transversales …»—, que es denunciar una
+#  verdad: el modo de fallo que convierte un validador en ruido. Una afirmación no cruza
+#  un párrafo.
+
+def _sin_reflujo(texto):
+    """`(plano, origen)` — el texto con el reflujo deshecho, y el mapa al original.
+
+    `plano[i]` procede de `texto[origen[i]]`, de modo que el NÚMERO DE LÍNEA que se publica
+    sigue siendo el del fichero real y no el de un texto que no existe en disco. Sin ese
+    mapa, el diagnóstico apuntaría a una línea inventada y quien lo leyera no encontraría
+    nada allí.
+    """
+    plano, origen, i, n = [], [], 0, len(texto)
+    while i < n:
+        if not texto[i].isspace():
+            plano.append(texto[i])
+            origen.append(i)
+            i += 1
+            continue
+        j = i
+        while j < n and texto[j].isspace():
+            j += 1
+        racha = texto[i:j]
+        # dos o más saltos de línea son un CORTE DE PÁRRAFO, y se conserva como tal
+        pieza = "\n\n" if racha.count("\n") >= 2 else " "
+        for c in pieza:
+            plano.append(c)
+            origen.append(i)
+        i = j
+    origen.append(n)
+    return "".join(plano), origen
+
+
 def barrer_afirmaciones(base, cuenta):
     """El barrido del CONTRATO 1: `(ruta, línea, cifra escrita, cifra derivada)`.
 
     No recibe ninguna ruta. Recorre las sedes VIVAS que encuentra y aplica a cada una las
-    reglas cuyo PATRÓN DE SEDE la alcanza. Devuelve sólo las divergencias.
+    reglas cuyo PATRÓN DE SEDE la alcanza, sobre el texto literal Y sobre el texto sin
+    reflujo. Devuelve sólo las divergencias, sin repetir.
     """
-    divergencias = []
+    divergencias, vistas = [], set()
     for rel, ruta in sedes_vivas(base):
         aplicables = [g for g in REGLAS if g.sede_re.search(rel)]
         if not aplicables:
             continue
         with open(ruta, encoding="utf-8") as fh:
             texto = fh.read()
+        plano, origen = _sin_reflujo(texto)
         for regla in aplicables:
             derivado = cuenta.get(regla.clave)
             if derivado is None:
                 continue
             for patron in regla.patrones:
-                for m in patron.finditer(texto):
-                    cola = re.sub(r"[\s>]+", " ", texto[m.end():m.end() + 60])
-                    if regla.salvo and regla.salvo.match(cola):
-                        continue
-                    escrito = _palabra_a_numero(m.group(1))
-                    if escrito is None or escrito == derivado:
-                        continue
-                    linea = texto[:m.start()].count("\n") + 1
-                    divergencias.append((rel, linea, m.group(0).strip(), escrito,
-                                         regla.clave, derivado))
+                # el literal PRIMERO: su cita es la que el corpus escribió, y es la que se
+                # publica cuando la misma afirmación aparece en las dos pasadas
+                for cuerpo, mapa in ((texto, None), (plano, origen)):
+                    for m in patron.finditer(cuerpo):
+                        cola = re.sub(r"[\s>]+", " ", cuerpo[m.end():m.end() + 60])
+                        if regla.salvo and regla.salvo.match(cola):
+                            continue
+                        escrito = _palabra_a_numero(m.group(1))
+                        if escrito is None or escrito == derivado:
+                            continue
+                        inicio = m.start() if mapa is None else mapa[m.start()]
+                        linea = texto[:inicio].count("\n") + 1
+                        firma = (rel, linea, regla.clave, escrito)
+                        if firma in vistas:
+                            continue
+                        vistas.add(firma)
+                        divergencias.append((rel, linea, m.group(0).strip(), escrito,
+                                             regla.clave, derivado))
     return divergencias
 
 

@@ -219,16 +219,53 @@ class EvidenciaDentroDelArbol(ErrorDeEstado):
     CODIGO = "EVIDENCIA_DENTRO_DEL_ARBOL"
 
 
+# --------------------------------------------------------- el SELLADO del diario (`g.7`)
+#
+# Los cuatro fallos del sellado son CUATRO y no uno, y la razón es la misma que el §8 da
+# para el resto: el código es lo que una prueba compara y lo que un guion enrama. «No se
+# pudo sellar» sirve para todo y no distingue el remedio, que aquí es distinto en cada caso:
+# calibrar el contrato, cerrar la ventana, firmar la transición o no retirar ese cuerpo.
+class UmbralDeSelladoInvalido(ErrorDeEstado):
+    """El umbral no está declarado, no se puede leer, o el valor leído es absurdo.
+
+    `g.7` lo declara CALIBRABLE del contrato derivado, y calibrable no es lo mismo que
+    opcional: un umbral que falta NO se sustituye por un valor por omisión silencioso,
+    porque entonces el contrato dejaría de ser la sede y el código volvería a serlo.
+    """
+
+    CODIGO = "UMBRAL_DE_SELLADO_INVALIDO"
+
+
+class SelladoImposible(ErrorDeEstado):
+    """Sellar no puede conservar lo que el estado o la auditabilidad exigen: NO se sella."""
+
+    CODIGO = "SELLADO_IMPOSIBLE"
+
+
+class RetiradaSinTransicion(ErrorDeEstado):
+    """Se intentó retirar el cuerpo de un evento sin la transición que `g.7` exige."""
+
+    CODIGO = "RETIRADA_SIN_TRANSICION"
+
+
+class RetiradaNoAdmisible(ErrorDeEstado):
+    """El cuerpo que se pide retirar todavía lo necesitan la recuperación o la auditoría."""
+
+    CODIGO = "RETIRADA_NO_ADMISIBLE"
+
+
 # Censo derivado, no escrito a mano dos veces: la CLI y las pruebas lo usan para comprobar
 # que todo código emitido pertenece a la lista cerrada del §8.
 CLASES = (
     ErrorDeEstado, AlmacenNoInicializado, AlmacenYaInicializado, FormatoDesconocido,
     VersionDesconocida, RutaInvalida, TransicionInvalida, IdentificadorDuplicado,
     RevisionObsoleta, EscritorConcurrente, BloqueoNoAdquirido, ReintentosAgotados,
-    EstadoCorrupto, DiarioCorrupto, RegistroDeReconciliacionCorrupto, RecuperacionMarcada,
+    EstadoCorrupto, PublicacionEnVuelo, DiarioCorrupto, RegistroDeReconciliacionCorrupto,
+    RecuperacionMarcada,
     ReconciliacionPendiente, ReconciliacionDesconocida, MigracionDesconocida,
     MigracionNoRecuperable, PermisoInsuficiente, SinProveedorDeAtestacion,
     AtestacionInvalida, EvidenciaDentroDelArbol,
+    UmbralDeSelladoInvalido, SelladoImposible, RetiradaSinTransicion, RetiradaNoAdmisible,
 )
 
 CODIGOS = tuple(sorted(clase.CODIGO for clase in CLASES))

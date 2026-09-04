@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 40187305c3ffea56 -->
+<!-- source_revision: 058ba316570613e5 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -13,9 +13,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | CONTRATO DEFINIDO | 56 |
 | VALIDADOR IMPLEMENTADO | 0 |
 | PRUEBA EJECUTADA | 1 |
-| PRUEBA SUPERADA | 165 |
+| PRUEBA SUPERADA | 173 |
 | PRUEBA FALLIDA | 1 |
-| **total** | **223** |
+| **total** | **231** |
 
 ## Detalle
 
@@ -102,7 +102,7 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T155](../entrada/05-ESCENARIOS.md) | Sin dirección de diseño, la expresión produce dirección más GAP enlazado | forma:comentario-subjetivo · ENC/Anclaje · 03-ESCALA-DE-NOVEDAD N4 y N3 · 9.4 | guion-manual | **CONTRATO DEFINIDO** | — |
 | [T156](../entrada/05-ESCENARIOS.md) | Con dirección vigente que el Owner quiere sustituir, la salida es un DIR | forma:cambio-de-direccion · b.16 DIR · G51 · 9.4 | guion-manual | **CONTRATO DEFINIDO** | — |
 | [T157](../entrada/05-ESCENARIOS.md) | Con la intención todavía ambigua, la expresión NO produce ningún item | forma:comentario-subjetivo · 04-INCERTIDUMBRE · a.7 modo de fallo (b) · 9.4 | guion-manual | **CONTRATO DEFINIDO** | — |
-| [T158](T136-T152-post-auditoria.md) | La evidencia publicada demuestra lo que el informe afirma | evidencia reproducible · REGISTRO.md regla dura · registrar_evidencia.py · validadores.yaml | validador-estructural | **PRUEBA SUPERADA** | evidencia/evidencia-salida.txt |
+| [T158](T136-T152-post-auditoria.md) | La evidencia publicada demuestra lo que el informe afirma | evidencia reproducible · REGISTRO.md regla dura · registrar_evidencia.py · validadores.yaml · CONTRATO 3 | validador-estructural | **PRUEBA SUPERADA** | evidencia/evidencia-salida.txt |
 | [T159](T159-T170-multirepo.md) | La plantilla de SOURCES.toml es válida y arranca sin fuentes | C6 fuente única de la composición · E2.0 | validador-estructural | **PRUEBA SUPERADA** | evidencia/fuentes-salida.txt |
 | [T160](T159-T170-multirepo.md) | El manifiesto de un ADS Project, cuando existe, es válido sin tocar el disco | C6 validación estática frente a disponibilidad · §62 | validador-estructural | **PRUEBA SUPERADA** | evidencia/fuentes-salida.txt |
 | [T161](T159-T170-multirepo.md) | El corpus no conserva la equivalencia proyecto igual a repositorio | E2.0 · E2.1 · E2.4 · 78 qué debe cambiar en el corpus | validador-estructural | **PRUEBA SUPERADA** | evidencia/fuentes-salida.txt |
@@ -117,7 +117,7 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T170](T159-T170-multirepo.md) | Un agente nuevo reanuda un trabajo multi-fuente sin abrir ningún repositorio para adivinar | E2.3 · C7 recuperación · §34 · §35 · CA-12 | guion-manual | **CONTRATO DEFINIDO** | — |
 | [T171](T159-T170-multirepo.md) | El proyecto recién creado declara dónde se lee cada criterio de descubrimiento del 100 | §100 · CA-1 · CA-9 · CA-10 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
 | [T172](T172-T181-estado-durable.md) | Un intérprete insuficiente detiene la batería antes de correr, y no como defecto del producto | A14 · F6-I · corte V1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
-| [T173](T172-T181-estado-durable.md) | El estado canónico se inicializa y se lee sin reproyectar el diario | g.1 · g.2 I-g1 · g.16 G-A1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T173](T172-T181-estado-durable.md) | El estado canónico se inicializa y se lee sin reproyectar el diario | g.1 · g.2 I-g1 · g.7 · g.16 G-A1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
 | [T174](T172-T181-estado-durable.md) | Una transición multiarchivo se ve entera o no se ve | g.3 · g.4 · g.12 · g.16 G-A2 · g.16 G-A3 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
 | [T175](T172-T181-estado-durable.md) | Una interrupción en cualquier frontera termina en COMPLETAR o en MARCAR, y en nada más | g.8 · g.3 · g.16 G-A2 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
 | [T176](T172-T181-estado-durable.md) | Dos escritores concurrentes se serializan y no hay doble éxito para la misma revisión | g.6 · g.12 I-g4 · g.16 G-A5 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
@@ -135,7 +135,7 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T188](T182-T194-runtime-y-admision.md) | Toda lectura de Git usa una representación inequívoca, y la admisión juzga la mutación | V6-01 · V6-02 · V6-03 · V6-04 · V6-05 · V6-06 · V6-07 · V6-08 · V6-09 | validador-estructural | **PRUEBA SUPERADA** | evidencia/admision-salida.txt |
 | [T189](T182-T194-runtime-y-admision.md) | El censo de zonas cubre el CONTENIDO, incluida la raíz, y el instrumento se incluye a sí mismo | V6-10 · V6-11 · V6-12 · S1-02 | validador-estructural | **PRUEBA SUPERADA** | evidencia/admision-salida.txt |
 | [T190](T182-T194-runtime-y-admision.md) | La matriz adversarial mide cero falsos verdes y cero falsos rojos, y cada fórmula tiene una sede | V6-13 · V6-14 · V6-17 · V6-18 · V6-19 | validador-estructural | **PRUEBA SUPERADA** | evidencia/admision-salida.txt |
-| [T191](T182-T194-runtime-y-admision.md) | El adaptador local ejecuta un proceso real, lo mata de verdad y no repite un efecto aplicado | V7 · 11-ARQ 6 · 11-ARQ 3.4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/adaptadores-salida.txt |
+| [T191](T182-T194-runtime-y-admision.md) | El adaptador local ejecuta un proceso real, lo mata de verdad y no repite un efecto aplicado | V7 · 11-ARQ 6 · 11-ARQ 3.4 · FD-5 · FD-6 | validador-estructural | **PRUEBA SUPERADA** | evidencia/adaptadores-salida.txt |
 | [T192](T182-T194-runtime-y-admision.md) | La identidad de firma vive fuera del árbol, rota con solapamiento y no filtra secretos | O25 · g.15 · FD-1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/identidad-salida.txt |
 | [T193](T182-T194-runtime-y-admision.md) | Los veinticinco pasos del segundo escenario extremo a extremo, con dos runtimes y dos fuentes | F6-D · g.14 · V6-10 · V7 · g.9 · g.16 | validador-estructural | **PRUEBA SUPERADA** | evidencia/e2e-runtime-salida.txt |
 | [T194](T182-T194-runtime-y-admision.md) | Un control repo que ya existe se actualiza sin perder lo que el proyecto tiene | C6 · FD-3 · macrocircuito de actualizacion | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
@@ -244,3 +244,11 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T309](T290-T311-integridad-evidencia-y-contencion.md) | La contención se activa desde el punto ejecutable y el alcance del anfitrión se mide | E-16 · E-17 · E-18 · FD-5 · O25 5 · O26 3 · O26 4 · T215 · T216 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
 | [T310](T290-T311-integridad-evidencia-y-contencion.md) | La ventana de publicación no se diagnostica como corrupción | E-08 · g.3 · g.5 · CONTRATO-ESTADO-DURABLE 3 · CONTRATO-ESTADO-DURABLE 5 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
 | [T311](T290-T311-integridad-evidencia-y-contencion.md) | Sin testigo que lo avale, un cid que no casa sigue siendo estado corrupto | E-08 · g.5 · CONTRATO-ESTADO-DURABLE 3 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T312](T172-T181-estado-durable.md) | El sellado compacta el diario retirando el cuerpo de los eventos, y jamás su eslabón | g.7 · g.1 · CONTRATO-ESTADO-DURABLE 6 bis | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T313](T172-T181-estado-durable.md) | La cadena de huellas y la auditoría siguen verificándose sobre un diario sellado | g.7 · g.5 · g.13 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T314](T172-T181-estado-durable.md) | La recuperación de g.8 funciona sobre un diario sellado, en sus dos ramas | g.7 · g.8 · g.4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T315](T172-T181-estado-durable.md) | Una transacción que todavía puede estar en su ventana no se sella | g.7 · g.8 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T316](T172-T181-estado-durable.md) | El umbral del sellado es calibrable en el contrato derivado, y su ausencia es fallo cerrado | g.7 · CONTRATO-ESTADO-DURABLE 6 bis | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T317](T172-T181-estado-durable.md) | Retirar el cuerpo de un evento sin transición explícita es fallo cerrado | g.7 · g.13 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T318](T172-T181-estado-durable.md) | La retirada dirigida respeta lo que la recuperación necesita y deja rastro auditable | g.7 · g.8 · g.13 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T319](T172-T181-estado-durable.md) | Alterar un evento sellado lo caza la verificación de la cadena | g.7 · g.5 · g.15 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |

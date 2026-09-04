@@ -27,9 +27,9 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada f16fef1fae2309f6, calculada 51d81a0948242207. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada 6075d888ff2c7b70, calculada a0db516e5b139966. Algún fichero de la huella se
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada f16fef1fae2309f6, calculada f5564582218ee784. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada 6075d888ff2c7b70, calculada 6d04ff10f0d88f38. Algún fichero de la huella se
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
                           → detectada: kernel/operativo/validadores/ads_lint.py NO entra en la huella: un fork silencioso de ese fichero sería indetectable
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
@@ -57,7 +57,7 @@ OK   N158e   evidencia T158  falta un fichero de evidencia que el manifiesto exi
 OK   N158f   evidencia T158  un validador nuevo queda fuera del manifiesto y de la evidencia
                           → detectada: validadores/comprobar_algo_nuevo.py: existe y el manifiesto no lo declara. Quedaría fuera de la evidencia sin que nada l
 OK   N158g   evidencia T158  la cobertura publicada describe un corpus con dos ficheros menos que el vigente
-                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 501 y el corpus vigente da 5
+                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 502 y el corpus vigente da 5
 OK   N158h   evidencia T158  una vigencia declara un recuento que nadie implementa
                           → detectada: manifiesto: la vigencia 'T161-cobertura' de 'fuentes' declara el recuento 'fuentes.recuento_que_nadie_implementa', que n
 OK   N158i   evidencia T158  una entrada de vigencia no declara `patron` — el caso que reventaba con KeyError
@@ -170,6 +170,22 @@ OK   N245    F-10  T245  la cabecera vuelve a afirmar una forma por clase de exp
                           → detectada: kernel/operativo/entrada/03-FORMAS.md:3: afirma «uno por clase de expresión» de las formas de conversación, y hay 14 for
 OK   N246    F-11  T246  la cabecera vuelve a afirmar un rango de pruebas que no contiene
                           → detectada: kernel/operativo/entrada/05-ESCENARIOS.md: el fichero contiene T76 y la cabecera no lo enumera (`11-ARQ` §19, `F-11`)
+OK   N276b   H-03  T276  desaparece la SEDE de la proyección de §19 y la prueba pasaría por no mirar
+                          → detectada: no existe `docs/evolucion/11-ARQUITECTURA-INTEGRADA.md`, que es la SEDE ÚNICA de la proyección de `D104`. Sin ella no ha
+OK   N276c   H-03  T276  el reparto por vía se REFORMULA sin falsear ninguna cifra y deja de leerse
+                          → detectada: `docs/evolucion/11-ARQUITECTURA-INTEGRADA.md` ya no publica el reparto POR VÍA en la forma que este contraste sabe leer,
+OK   N276d   H-03  T276  un ancla desaparece de la proyección y su fila deja de contrastarse
+                          → detectada: §19 no publica el ancla de `proceso:GAP`, que el árbol deriva como `GAP → VER`. Una fila que desaparece de la proyección
+OK   N272c   H-04  T152  una sede nueva de `docs/canonico/` publica una versión que no es la vigente
+                          → detectada: docs/canonico/NOTA-DE-VERSION.md:3: publica 9.9.9 para `kernel/KERNEL.md` y la vigente es 1.5.0. REMEDIO F6 — proyección
+OK   N272d   H-04  T272  la capa documental deja de publicarse y vuelve a no salir en ninguna salida
+                          → detectada: una sede documental NUEVA con `kernel/KERNEL.md` 9.9.9 no aparece en la lista de pendientes publicada: la capa documenta
+OK   N158z   H-05  T158  un validador que depende de `tomllib` pierde su prólogo de entorno
+                          → detectada: comprobar_fuentes.py: con la exigencia de intérprete por encima de la disponible terminó con código 0 y no con 78. Le fa
+OK   N151b   H-06  T151  una cifra falsa se parte por el reflujo de línea, como el corpus la escribe
+                          → detectada: kernel/operativo/AFIRMACION-PARTIDA.md:3: «los DOCE contratos transversales» — escrito 12 · derivado 7 (contratos_transv
+OK   N151c   H-06  T151  una cifra falsa se afirma con el verbo de censo y sin artículo delante
+                          → detectada: kernel/operativo/AFIRMACION-SIN-ARTICULO.md:3: «declara veintiocho capacidades» — escrito 28 · derivado 15 (capacidades)
 OK   N250    E-01  T254  una composición declara SIETE agentes por artefacto y, en el mismo campo, que no hay integrador — lo que `C4` llama prohibido
                           → detectada: composicion:dis-proyecto-nuevo · DIS/diseno-visual: declara 7 agentes y, en el mismo campo, que NO hay integrador. `C4`:
 OK   N250b   E-01  T254  el reparto plural sigue declarado y desaparece quién integra el resultado
@@ -216,5 +232,41 @@ OK   NE14d   E-14  T158  un `OK` que declara `failures` dentro del paréntesis
                           → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: el resultado declara `failures=1` y aun así dice OK. Un éxito
 OK   NE14e   E-14  T158  dos corridas pegadas en el mismo fichero de evidencia
                           → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: la salida no tiene EXACTAMENTE un `Ran N tests` y un resultado
+OK   N172    A14   T172  la guarda de intérprete pasa a poder RELAJARSE por variable de entorno
+                          → detectada: FAIL T172 · Una guarda que se puede bajar por variable es un interruptor. ---------------------------------------------------
+OK   N173    g.1   T173  cada evento del diario lleva el `pid` del proceso que lo escribió
+                          → detectada: FAIL T173 · Defecto que previene: el determinismo roto por un campo «inofensivo». -------------------------------------------
+OK   N174    g.3   T174  el `.gitignore` del almacén deja de excluir la zona de preparación
+                          → detectada: FAIL T174 · Defecto que previene: publicar estado PARCIAL en la rama canónica (`g.14`). -------------------------------------
+OK   N175    g.8   T175  el punto de no retorno se adelanta de `preparada` a `abierta`
+                          → detectada: FAIL T175 · Punto 3/9 · `despues-de-escribir-temporal` (paso 5, ya en `operacional/tx/`). -----------------------------------
+OK   N176    g.6   T176  agotar los reintentos se declara por el camino que NO abre el registro
+                          → detectada: FAIL T176 · Defecto que previene: quedarse esperando, o peor, escribir a la fuerza. -----------------------------------------
+OK   N177    g.5   T177  el `cid` del objeto canónico deja de contrastarse contra `REVISION.json`
+                          → detectada: FAIL T177 · Defecto que previene: servir como bueno un fichero canónico manipulado. -----------------------------------------
+OK   N178    g.9   T178  la cabeza del registro auxiliar deja de anclar su extremo AL LEER
+                          → detectada: FAIL T178 · Defecto que previene: cerrar una pendencia borrando su última línea. --------------------------------------------
+OK   N179    g.10  T179  una versión de formato desconocida se abre en vez de fallar cerrado
+                          → detectada: FAIL T179 · Defecto que previene: abrir un almacén cuyo FORMATO no se entiende (§5). ----------------------------------------
+OK   N187    g.14  T187  el hook vuelve a tomar el `OID` nulo por «creación» y deja pasar el forzado
+                          → detectada: FAIL T187 · Defecto que previene: saltarse `G-A8` omitiendo un argumento. ---------------------------------------------------
+OK   N192    g.15  T192  la configuración de confianza puede vivir en un subdirectorio del árbol
+                          → detectada: FAIL T192 · Defecto que previene: resolver el `realpath` del DIRECTORIO y no del FICHERO. -----------------------------------
+OK   N188    V6-02 T188  una salida `-z` truncada se devuelve como si fuera la lista completa
+                          → detectada: FAIL T188 · Defecto que previene: devolver una lista parcial como si fuera completa. ----------------------------------------
+OK   N189    V6-11 T189  el verificador y su política se quedan fuera de su propio alcance
+                          → detectada: FAIL T189 · Defecto que previene: que un prefijo del instrumento quede fuera. -----------------------------------------------
+OK   N190    V6-19 T190  la sede única de fórmulas rompe el caso frontera del fichero VACÍO
+                          → detectada: ERROR T190 · Defecto que previene: emitir con una fórmula propia cuando la sede falla. ---------------------------------------
+OK   N211    V6-15 T211  la versión histórica vulnerable deja de aceptar el árbol atacado
+                          → detectada: ERROR T211 · Defecto que previene: una versión vulnerable que diría VERDE a todo. --------------------------------------------
+OK   N217    V6-16 T217  una instalación de la raíz externa con un fichero ALTERADO emite veredicto
+                          → detectada: FAIL T217 · Defecto que previene: emitir veredicto desde un verificador manipulado. -----------------------------------------
+OK   N216    FD-5  T216  el backend `simple` se declara con nivel de árbol de procesos
+                          → detectada: FAIL T216 · Defecto que previene: cumplir una política fuerte con un backend débil. -----------------------------------------
+OK   N191    FD-6  T191  un recibo ABIERTO deja de dar `ambiguo` y el efecto se vuelve a ejecutar
+                          → detectada: FAIL T191 · Defecto que previene: aplicar DOS VECES un efecto tras morir a media pasada. ------------------------------------
+OK   N194    FD-3  T194  el motor de estado durable deja de viajar al proyecto instalado
+                          → detectada: el proyecto instalado no lleva el motor de estado durable
 
-107 infracciones detectadas · 0 NO detectadas
+133 infracciones detectadas · 0 NO detectadas

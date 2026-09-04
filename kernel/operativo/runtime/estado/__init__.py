@@ -60,12 +60,17 @@ from .errores import (
     RecuperacionMarcada,
     RegistroDeReconciliacionCorrupto,
     ReintentosAgotados,
+    RetiradaNoAdmisible,
+    RetiradaSinTransicion,
     RevisionObsoleta,
     RutaInvalida,
+    SelladoImposible,
     SinProveedorDeAtestacion,
     TransicionInvalida,
+    UmbralDeSelladoInvalido,
     VersionDesconocida,
 )
+from .diario import InformeSellado, umbral_de_sellado
 from .migracion import registradas as migraciones_registradas
 from .motor import VERSION_DE_FORMATO, Almacen, abrir, inicializar
 from .serializacion import VERSION_DE_ESQUEMA, cid, cid_de_objeto
@@ -85,7 +90,7 @@ __all__ = [
     "inicializar", "abrir", "Almacen",
     "Escritura", "Borrado", "Transicion",
     "ResultadoTransicion", "InformeRecuperacion", "InformeIntegridad",
-    "InformeAuditoria", "InformeMigracion",
+    "InformeAuditoria", "InformeMigracion", "InformeSellado", "umbral_de_sellado",
     "ProveedorDeFirma", "ProveedorEfimero", "atestar", "verificar_atestacion",
     "cid", "cid_de_objeto", "migraciones_registradas",
     "ErrorDeEstado", "AlmacenNoInicializado", "AlmacenYaInicializado",
@@ -96,4 +101,6 @@ __all__ = [
     "ReconciliacionDesconocida", "MigracionDesconocida", "MigracionNoRecuperable",
     "PermisoInsuficiente", "SinProveedorDeAtestacion", "AtestacionInvalida",
     "EvidenciaDentroDelArbol",
+    "UmbralDeSelladoInvalido", "SelladoImposible", "RetiradaSinTransicion",
+    "RetiradaNoAdmisible",
 ]

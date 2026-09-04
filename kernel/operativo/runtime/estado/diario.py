@@ -8,8 +8,11 @@ importa decir en qué se diferencia MATERIALMENTE, porque `I-g7` prohíbe colaps
                          `os.replace`, sin orden entre entidades, sin cadena de hash.
                          Responde «¿qué es verdad ahora?» y se lee sin reproyectar nada.
 
-    DIARIO CANÓNICO      JSONL append-only, UNA sola secuencia total, encadenado por hash,
-                         NUNCA se reescribe una línea. Responde «¿cómo llegó a serlo?».
+    DIARIO CANÓNICO      JSONL append-only, UNA sola secuencia total, encadenado por hash.
+                         Ninguna escritura ORDINARIA reescribe una línea; la única que las
+                         toca es el SELLADO de `g.7`, que es una transición explícita, deja
+                         su propio evento y no altera ni una huella ni un eslabón —ver más
+                         abajo—. Responde «¿cómo llegó a serlo?».
                          No es sede del estado: borrar el diario no cambia ni un dato del
                          estado canónico, y borrar un objeto canónico no cambia ni una
                          línea del diario. Esa independencia es la prueba de `I-g7`.
@@ -49,19 +52,107 @@ DECISIÓN · una COLA DESGARRADA se repara; un hueco INTERMEDIO es corrupción
     una línea rota EN MEDIO, o una huella que no casa, es manipulación o daño del medio, y
     ahí el fallo es CERRADO: `DiarioCorrupto`, sin tocar el estado canónico.
     `verificar_integridad` NO repara: si ve la cola desgarrada, la denuncia.
+
+===========================================================================================
+EL SELLADO (`g.7`) — se compacta el CUERPO, jamás el ESLABÓN
+===========================================================================================
+
+`g.7` escribe cinco puntos y los dos últimos son éstos: «el SELLADO compacta el diario
+conservando lo que el estado y la auditabilidad exigen; su umbral es parámetro CALIBRABLE
+del contrato derivado» y «retirar el cuerpo de un evento sellado exige una transición
+explícita y auditable». Lo que sigue es cómo se instancian, y qué se descartó.
+
+DECISIÓN · sellar RETIRA EL CUERPO de un evento; NO retira su LÍNEA
+    Alternativas: (a) borrar del fichero las líneas viejas y renumerar; (b) reescribir el
+    diario dejando sólo un resumen; (c) conservar TODAS las líneas y vaciar el CUERPO de las
+    que se sellan, dejando intacto el ESLABÓN —`esquema`, `secuencia`, `tipo`, `previo`,
+    `huella`—.
+    Se elige (c), y manda la CADENA. Con (a) se rompe todo a la vez: `_verificar_eslabon`
+    exige `secuencia == indice + 1`, así que quitar una línea del medio invalida el diario
+    entero, y renumerar destruye el `previo` de la siguiente; además `exigir_coherente`
+    compara el recuento de líneas con el `diario_secuencia` que `REVISION.json` publica, y
+    un diario más corto que su propia revisión es corrupción por definición. Con (b) el
+    diario deja de ser el diario. Con (c) el fichero sigue teniendo una línea por evento, en
+    el mismo orden y con las mismas huellas, de modo que la verificación eslabón a eslabón,
+    la detección de bifurcación y la recuperación siguen leyendo lo mismo que leían.
+    Lo que se gana es el CUERPO, que es donde está el peso: `operaciones`, `motivo`,
+    `divergencias` y los anexos.
+
+DECISIÓN · la huella de un evento sellado NO se recalcula, y se dice por qué
+    `huella` es el `cid` del evento SIN `huella`, es decir, de su contenido. Retirar
+    contenido y pretender recalcular la misma huella es pedir una preimagen: no se puede, y
+    fingir que sí sería el defecto. Alternativas ante ese hecho: (a) recalcular la huella del
+    talón —y romper el `previo` de todos los eventos siguientes—; (b) conservar la huella y
+    aceptarla sin más; (c) conservar la huella y ANCLARLA en un evento del propio diario.
+    Se elige (c). (a) rompe la cadena, que es justo lo que no se puede tocar. (b) dejaría un
+    talón editable a mano sin que nada lo notase. Con (c), el evento `diario.sellado` que
+    explica la retirada declara `cid_sellados`, el `cid` de la lista ORDENADA de pares
+    `[secuencia, cid del talón entero]` de todos los talones; ese evento se encadena y
+    se huella como cualquier otro, así que alterar un talón cambia el `cid` calculado y no
+    casa, y alterar el evento de sellado cambia su huella y rompe el `previo` del siguiente.
+    RESIDUO, dicho y no callado: falsificar A LA VEZ un talón y el evento de sellado cuando
+    éste es la ÚLTIMA línea del diario no es detectable desde dentro del árbol. Es el mismo
+    residuo que el §6 declara para la cola del registro auxiliar, vuelve a ser detectable en
+    cuanto el diario anexa otra vez, y es literalmente lo que `g.15` reserva a la raíz
+    externa.
+
+DECISIÓN · lo que NO se compacta, y por qué no
+    `almacen.inicializado` · `auditar()` arranca el linaje en su `resultado` y sin él la
+        historia del estado no empieza en ninguna parte. Es UNA línea por almacén.
+    `transicion.preparada` · es el PUNTO DE NO RETORNO. Su `operaciones` lo lee la rama
+        COMPLETAR de `g.8` para republicar, `auditar()` para reproyectar `raiz` y reproducir
+        `cid_raiz` desde el origen, y `_resultado_si_repetida` para negarse a reutilizar un
+        identificador con otro plan. Compactarlo obligaría a sustituir la reproducción por un
+        ANCLA escrita por el sellador, y entonces `g.13` —«todo cambio del estado canónico es
+        explicable por el diario»— pasaría a apoyarse en un resumen en vez de en la historia.
+    `transicion.marcada`, y NINGÚN evento de una transacción marcada · una transacción
+        marcada espera la decisión de LA AUTORIDAD (`g.8`). Su cuerpo todavía es prueba viva.
+    toda transacción SIN evento terminal · es la ventana de `g.8`. Se dice más abajo.
+    Lo que sí se sella son `transicion.abierta`, `transicion.confirmada`,
+    `transicion.revertida`, los dos eventos de reconciliación y `migracion.aplicada`: dos de
+    cada tres eventos del camino feliz, que es donde está la masa del fichero.
+
+DECISIÓN · el UMBRAL se lee del CONTRATO DERIVADO, no de una constante de este módulo
+    Alternativas: (a) una constante con nombre en mayúsculas; (b) una variable de entorno;
+    (c) un bloque declarado en `CONTRATO-ESTADO-DURABLE.md`, que es la sede que `g.7` nombra.
+    Se elige (c). Con (a) el parámetro no es calibrable: es código, y cambiarlo es tocar el
+    motor. Con (b) el estado durable dependería del entorno de quien ejecuta, que es
+    exactamente lo que `I-g3` y el precedente de `a.9` en `runtime/politica.py` rechazan. Con
+    (c) el valor vive donde `g.7` dice que vive, viaja al proyecto instalado con el resto del
+    contrato y se cambia editando el contrato. El precio es que el contrato pasa a ser
+    material que el motor LEE, y por eso su ausencia, su ilegibilidad y un valor absurdo son
+    FALLO CERRADO y no un valor por omisión: un motor que se inventa el umbral cuando no lo
+    encuentra convierte la sede en decorado.
 """
 from __future__ import annotations
 
+import json
 import os
+import re
 
 from . import fallos
-from .errores import DiarioCorrupto
-from .rutas import asegurar_directorio, traducir_error_de_sistema
+from .errores import (
+    DiarioCorrupto,
+    RetiradaNoAdmisible,
+    RetiradaSinTransicion,
+    SelladoImposible,
+    UmbralDeSelladoInvalido,
+)
+from .rutas import (
+    SUFIJO_TEMPORAL,
+    asegurar_directorio,
+    escribir_y_sincronizar,
+    publicar,
+    sincronizar_directorio,
+    traducir_error_de_sistema,
+)
 from .serializacion import (
     ESQUEMA,
+    cid,
     cid_de_objeto,
     comprobar_esquema,
     deserializar,
+    serializar_canonico,
     serializar_compacto,
 )
 
@@ -77,6 +168,10 @@ TIPOS = (
     "reconciliacion.abierta",
     "reconciliacion.resuelta",
     "migracion.aplicada",
+    # `g.7` · la transición EXPLÍCITA Y AUDITABLE que retira cuerpos. No es un evento de
+    # transacción: no lleva `transaccion`, no cambia el estado canónico y no participa del
+    # linaje. Explica una operación sobre el DIARIO, que es la única que puede explicarla.
+    "diario.sellado",
 )
 
 TERMINALES = ("transicion.confirmada", "transicion.revertida", "transicion.marcada")
@@ -84,11 +179,267 @@ TERMINALES = ("transicion.confirmada", "transicion.revertida", "transicion.marca
 CLAVE_HUELLA = "huella"
 CLAVE_PREVIO = "previo"
 
+# ------------------------------------------------------------------ el sellado (`g.7`)
+TIPO_SELLADO = "diario.sellado"
+CLAVE_SELLADO = "sellado"
+ESQUEMA_DEL_SELLADO = 1
+
+# EL ESLABÓN. Es lo que hace verificable la cadena, y el sellado no lo toca NUNCA.
+CLAVES_DEL_ESLABON = ("esquema", "secuencia", "tipo", CLAVE_PREVIO, CLAVE_HUELLA)
+
+# Lo que un evento sellado SIGUE DICIENDO además del eslabón. `tipo` y `secuencia` ya están
+# en el eslabón, y son el «QUÉ fue» y el «CUÁNDO» —el momento LÓGICO, que es el único que
+# `I-g3` admite— que `g.7` exige que sobrevivan. Estos tres se conservan porque hay
+# deducciones que los leen sobre eventos ya cerrados y seguirían leyéndolos tras el sellado:
+# `por_transaccion` y `transaccion_sin_cerrar` agrupan por `transaccion`, `_linaje` y
+# `detectar_bifurcacion` recorren `resultado`, y `_auditar_reconciliacion` casa el diario con
+# el registro auxiliar por `registro`.
+CLAVES_CONSERVADAS = ("transaccion", "resultado", "registro")
+
+CONSERVADO = CLAVES_DEL_ESLABON + CLAVES_CONSERVADAS
+
+# Tipos cuyo cuerpo NO se retira nunca. El porqué de cada uno está en el docstring.
+NO_SELLABLES = (
+    "almacen.inicializado",
+    "transicion.preparada",
+    "transicion.marcada",
+    TIPO_SELLADO,
+)
+
+# El mínimo de CORRECCIÓN de la cola sin sellar: una transacción entera del camino feliz son
+# tres eventos —`abierta`, `preparada`, `confirmada`—, y una cola más corta que una
+# transacción no deja legible ni la última. No es la garantía de la recuperación: ésa la da
+# la regla de la ventana, que no sella NINGÚN evento de una transacción sin cerrar, y que no
+# depende del umbral en absoluto.
+MINIMO_DE_LA_COLA = 3
+
+# El nombre del parámetro en el contrato derivado, y el esquema del bloque que lo declara.
+CLAVE_UMBRAL = "sellado_umbral_eventos"
+ESQUEMA_DE_CALIBRACION = "ads.estado.calibracion/1"
+NOMBRE_DEL_CONTRATO = "CONTRATO-ESTADO-DURABLE.md"
+
+# El contrato derivado vive UN nivel por encima del paquete: `runtime/CONTRATO-...md` frente
+# a `runtime/estado/diario.py`. Se compone desde `__file__` y NUNCA desde el `cwd`, por la
+# misma razón por la que la batería lo hace: el motor se ejecuta desde cualquier directorio.
+RUTA_DEL_CONTRATO_DERIVADO = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), NOMBRE_DEL_CONTRATO
+)
+
+# El bloque de calibración se delimita como un bloque de código JSON del Markdown. Es JSON y
+# no YAML por una razón dura: este paquete importa SÓLO biblioteca estándar (`__init__`), y
+# `yaml` no lo es. `json` sí, y de paso el bloque se lee con `json.loads` sin analizador
+# propio, que es el analizador que no hay que escribir ni mantener.
+BLOQUE_JSON = re.compile(r"^```json\s*$")
+FIN_DE_BLOQUE = re.compile(r"^```\s*$")
+
 
 def calcular_huella(evento):
     """`huella` = `cid` de la forma canónica del evento SIN el campo `huella` (§2.4)."""
     cuerpo = {clave: evento[clave] for clave in evento if clave != CLAVE_HUELLA}
     return cid_de_objeto(cuerpo)
+
+
+# ===========================================================================
+#  el UMBRAL, leído del contrato derivado (`g.7`)
+# ===========================================================================
+def _bloques_de_calibracion(texto):
+    """Los bloques ```json del contrato que declaran ser calibración de este motor."""
+    encontrados = []
+    dentro, acumulado = False, []
+    for linea in texto.splitlines():
+        if not dentro:
+            if BLOQUE_JSON.match(linea):
+                dentro, acumulado = True, []
+            continue
+        if FIN_DE_BLOQUE.match(linea):
+            dentro = False
+            try:
+                objeto = json.loads("\n".join(acumulado))
+            except ValueError:
+                # Un bloque JSON roto en el contrato no se ignora en silencio: se recoge
+                # como candidato ILEGIBLE, para que el fallo diga «no se puede leer» en vez
+                # de «no está», que mandan a sitios distintos.
+                encontrados.append(None)
+                continue
+            if isinstance(objeto, dict) and objeto.get("esquema") == ESQUEMA_DE_CALIBRACION:
+                encontrados.append(objeto)
+            continue
+        acumulado.append(linea)
+    return encontrados
+
+
+def comprobar_umbral(valor, ruta=None):
+    """Un umbral que no sirve para calibrar nada es FALLO CERRADO, no un valor por omisión.
+
+    Cuatro formas de no servir, y el §8 las distingue con un solo código porque el remedio
+    es el mismo en las cuatro —editar el contrato—: ausente, no entero, cero o negativo, y
+    más corto que una transacción entera.
+    """
+    if valor is None:
+        raise UmbralDeSelladoInvalido(
+            "el contrato derivado no declara `" + CLAVE_UMBRAL + "`; `g.7` lo hace "
+            "CALIBRABLE del contrato, y un umbral ausente NO se sustituye por un valor por "
+            "omisión: se falla cerrado y no se sella",
+            ruta=ruta, parametro=CLAVE_UMBRAL,
+        )
+    if isinstance(valor, bool) or not isinstance(valor, int):
+        raise UmbralDeSelladoInvalido(
+            "el umbral de sellado es un ENTERO de eventos; se declara "
+            + type(valor).__name__ + ". Un umbral que no es un recuento no acota ninguna "
+            "cola",
+            ruta=ruta, parametro=CLAVE_UMBRAL, encontrado=repr(valor),
+        )
+    if valor < MINIMO_DE_LA_COLA:
+        raise UmbralDeSelladoInvalido(
+            "el umbral de sellado es " + str(valor) + " y el mínimo es "
+            + str(MINIMO_DE_LA_COLA) + ": con cero o menos no hay cola sin sellar, y con "
+            "menos de una transacción entera la cola no explica ni la última transición",
+            ruta=ruta, parametro=CLAVE_UMBRAL, encontrado=valor,
+            minimo=MINIMO_DE_LA_COLA,
+        )
+    return valor
+
+
+def umbral_de_sellado(ruta=None):
+    """El umbral CALIBRADO en el contrato derivado. Nunca una constante de este módulo.
+
+    `ruta` sólo se pasa para leer OTRA sede del contrato —la batería lo hace para demostrar
+    qué pasa cuando el bloque falta o está roto—. En producción es la del aparato.
+    """
+    ruta = ruta or RUTA_DEL_CONTRATO_DERIVADO
+    if not os.path.isfile(ruta):
+        raise UmbralDeSelladoInvalido(
+            "no se encuentra el contrato derivado `" + NOMBRE_DEL_CONTRATO + "`, que es la "
+            "sede donde `g.7` sitúa el umbral. Sin sede no hay calibración, y sin "
+            "calibración no se sella",
+            ruta=ruta, parametro=CLAVE_UMBRAL,
+        )
+    try:
+        with open(ruta, encoding="utf-8") as fichero:
+            texto = fichero.read()
+    except OSError as exc:
+        raise traducir_error_de_sistema(exc, ruta, "leer el contrato derivado") from exc
+    except UnicodeDecodeError as exc:
+        raise UmbralDeSelladoInvalido(
+            "el contrato derivado no es UTF-8 legible: " + str(exc), ruta=ruta,
+        ) from exc
+    bloques = _bloques_de_calibracion(texto)
+    if any(bloque is None for bloque in bloques):
+        raise UmbralDeSelladoInvalido(
+            "hay un bloque de calibración en el contrato derivado que no es JSON válido; "
+            "leerlo «a lo que se pueda» sería adivinar el umbral",
+            ruta=ruta, parametro=CLAVE_UMBRAL,
+        )
+    if not bloques:
+        raise UmbralDeSelladoInvalido(
+            "el contrato derivado no declara ningún bloque `" + ESQUEMA_DE_CALIBRACION
+            + "`: el umbral no está calibrado en su sede",
+            ruta=ruta, parametro=CLAVE_UMBRAL,
+        )
+    if len(bloques) > 1:
+        # DOS declaraciones no son «una y una de repuesto»: son dos verdades a la vez, y
+        # elegir una es elegir por el contrato. Se falla cerrado.
+        raise UmbralDeSelladoInvalido(
+            "el contrato derivado declara " + str(len(bloques)) + " bloques de "
+            "calibración; la sede es UNA y no se elige entre dos",
+            ruta=ruta, parametro=CLAVE_UMBRAL, bloques=len(bloques),
+        )
+    return comprobar_umbral(bloques[0].get(CLAVE_UMBRAL), ruta=ruta)
+
+
+# ===========================================================================
+#  talones: la forma de un evento cuyo cuerpo se ha retirado
+# ===========================================================================
+def es_sellado(evento):
+    """¿Es este evento un TALÓN, es decir, un evento cuyo cuerpo ya se retiró?"""
+    return isinstance(evento, dict) and isinstance(evento.get(CLAVE_SELLADO), dict)
+
+
+def cuerpo_retirable(evento):
+    """Los campos que el sellado retira: todo lo que no es eslabón ni conservado."""
+    return {clave: evento[clave] for clave in evento if clave not in CONSERVADO}
+
+
+def talon_de(evento):
+    """El TALÓN de un evento: su eslabón intacto, lo conservado, y el cuerpo resumido.
+
+    El talón NO recalcula `huella`: la copia. Ver la `DECISIÓN` del docstring de módulo.
+    `cuerpo` es el `cid` de lo retirado, de modo que quien conserve una copia del evento
+    entero puede demostrar que era ése y no otro; `retirados` nombra lo que se fue, para que
+    un lector sepa qué falta en vez de creer que el evento nunca lo tuvo.
+    """
+    retirado = cuerpo_retirable(evento)
+    talon = {clave: evento[clave] for clave in evento if clave in CONSERVADO}
+    talon[CLAVE_SELLADO] = {
+        "esquema": ESQUEMA_DEL_SELLADO,
+        "cuerpo": cid_de_objeto(retirado),
+        "retirados": sorted(retirado),
+    }
+    return talon
+
+
+def cid_de_los_talones(eventos):
+    """El `cid` de la lista ORDENADA de pares `[secuencia, cid del talón ENTERO]`.
+
+    Es el ancla que hace verificable un talón. Lista de pares y no un mapa, por la misma
+    razón que `calcular_cid_raiz`: el orden queda en los propios bytes y no confiado a una
+    opción del serializador.
+
+    DECISIÓN · el ancla cubre el TALÓN ENTERO, y no tres campos suyos
+        La primera versión anclaba `[secuencia, huella, cuerpo]`, que es lo que PARECE
+        suficiente: la huella identifica el evento y `cuerpo` identifica lo retirado. No lo
+        era, y las pruebas de `T319` lo pusieron ROJO antes de que esto se escribiera. Se
+        colaban enteros dos ataques: cambiar un campo CONSERVADO —el `resultado` de un
+        talón, que es lo que `_linaje` y `detectar_bifurcacion` recorren— y REPONER un campo
+        del cuerpo retirado, inventando un `motivo` que el evento nunca tuvo. Ninguno de los
+        dos toca los tres campos anclados, así que ninguno de los dos se veía. Con el `cid`
+        del talón ENTERO, cualquier byte que cambie en cualquier talón cambia el ancla.
+    """
+    pares = [[evento["secuencia"], cid_de_objeto(evento)]
+             for evento in eventos if es_sellado(evento)]
+    return cid(serializar_canonico(pares))
+
+
+class InformeSellado:
+    """Qué retiró un sellado, y cuánto compactó. Determinista: ni reloj ni pid (`I-g3`).
+
+    Vive aquí y no en `transaccion.py` —donde están los demás informes— porque el sellado no
+    es una transacción del estado canónico: no publica revisión, no toca `canonico/` y no
+    entra en el linaje. Es una operación SOBRE EL DIARIO, y su informe pertenece al diario.
+    """
+
+    def __init__(self, *, umbral, autor, motivo, bytes_antes, bytes_despues,
+                 cid_sellados, secuencias=(), evento=None):
+        self.umbral = umbral
+        self.autor = autor
+        self.motivo = motivo
+        self.secuencias = list(secuencias)
+        self.evento = evento
+        self.bytes_antes = bytes_antes
+        self.bytes_despues = bytes_despues
+        self.cid_sellados = cid_sellados
+
+    @property
+    def sellados(self):
+        return len(self.secuencias)
+
+    @property
+    def bytes_retirados(self):
+        return self.bytes_antes - self.bytes_despues
+
+    def a_dict(self):
+        return {
+            "umbral": self.umbral,
+            "autor": self.autor,
+            "motivo": self.motivo,
+            "sellados": self.sellados,
+            "secuencias": list(self.secuencias),
+            "evento": self.evento,
+            "bytes_antes": self.bytes_antes,
+            "bytes_despues": self.bytes_despues,
+            "bytes_retirados": self.bytes_retirados,
+            "cid_sellados": self.cid_sellados,
+        }
 
 
 class Diario:
@@ -187,7 +538,52 @@ class Diario:
                 self._verificar_eslabon(evento, anterior, indice)
             eventos.append(evento)
             anterior = evento
+        if verificar:
+            self._verificar_sellado(eventos)
         return eventos
+
+    def _verificar_sellado(self, eventos):
+        """Los TALONES casan con el ancla del evento de sellado que los explica (`g.7`).
+
+        Se hace DESPUÉS del recorrido eslabón a eslabón y no dentro, porque el ancla es una
+        propiedad del diario entero —la lista ordenada de todos los talones— y no de un
+        evento contra el anterior. Comprueba las dos mitades de la obligación de `g.7`:
+
+          RETIRAR EXIGE TRANSICIÓN · si hay cuerpos retirados y NO hay ningún evento
+            `diario.sellado` que los explique, alguien vació líneas a mano. Es corrupción, y
+            se denuncia aunque la cadena de `previo` esté perfecta: precisamente por eso hace
+            falta esta comprobación, porque vaciar un cuerpo conservando la huella no rompe
+            ningún eslabón.
+
+          LA TRANSICIÓN DICE QUÉ RETIRÓ · el último `diario.sellado` declara el `cid` de la
+            lista de talones que había cuando se escribió. Si un talón se edita, se añade o
+            se quita después, el `cid` recalculado no casa. Y ese evento se huella y se
+            encadena como cualquier otro, así que rehacer el ancla rompe el `previo` del
+            siguiente evento.
+        """
+        talones = [evento for evento in eventos if es_sellado(evento)]
+        sellados = [evento for evento in eventos if evento.get("tipo") == TIPO_SELLADO]
+        if talones and not sellados:
+            raise DiarioCorrupto(
+                "hay " + str(len(talones)) + " evento(s) con el cuerpo retirado y ningún "
+                "`" + TIPO_SELLADO + "` que lo explique: `g.7` exige que retirar el cuerpo "
+                "de un evento sea una transición EXPLÍCITA Y AUDITABLE, y aquí no hay "
+                "ninguna",
+                ruta=self.ruta, talones=len(talones),
+                posicion=talones[0].get("secuencia"),
+            )
+        if not sellados:
+            return
+        declarado = sellados[-1].get("cid_sellados")
+        reproducido = cid_de_los_talones(eventos)
+        if declarado != reproducido:
+            raise DiarioCorrupto(
+                "el ancla del último `" + TIPO_SELLADO + "` no casa con los talones que hay "
+                "en el diario: un evento sellado se editó, se selló uno más a mano o se "
+                "repuso el cuerpo de otro después de la transición que lo retiró",
+                ruta=self.ruta, posicion=sellados[-1].get("secuencia"),
+                esperada=reproducido, encontrada=declarado,
+            )
 
     def eventos(self, desde=0, verificar=True, tolerar_cola=False):
         """Los eventos del diario, verificados de principio a fin.
@@ -228,6 +624,28 @@ class Diario:
                 ruta=self.ruta,
                 posicion=esperada,
             )
+        if es_sellado(evento):
+            # Un TALÓN no recalcula su huella, y no es una excepción cómoda: es que su
+            # contenido es exactamente lo que se retiró, y recalcular el `cid` de lo que ya
+            # no está no es una comprobación, es una imposibilidad. Lo que sí se exige aquí
+            # es que el talón CONSERVE la huella —sin ella el `previo` del siguiente evento
+            # no tendría contra qué casar— y que el resumen del sellado tenga forma. Lo que
+            # ata el talón a su contenido original es `_verificar_sellado`.
+            if not isinstance(evento.get(CLAVE_HUELLA), str):
+                raise DiarioCorrupto(
+                    "el evento sellado " + str(esperada) + " no conserva su `huella`: el "
+                    "sellado retira el CUERPO y nunca el eslabón",
+                    ruta=self.ruta, posicion=esperada,
+                )
+            resumen = evento[CLAVE_SELLADO]
+            if not isinstance(resumen.get("cuerpo"), str) \
+                    or not isinstance(resumen.get("retirados"), list):
+                raise DiarioCorrupto(
+                    "el evento sellado " + str(esperada) + " no declara qué se retiró: un "
+                    "talón sin `cuerpo` ni `retirados` no dice qué falta",
+                    ruta=self.ruta, posicion=esperada,
+                )
+            return
         huella = calcular_huella(evento)
         if evento.get(CLAVE_HUELLA) != huella:
             raise DiarioCorrupto(
@@ -437,3 +855,210 @@ class Diario:
                 ruta=self.ruta, transaccion=candidata,
             )
         return candidata, propios
+
+    # ------------------------------------------------------------- sellado (`g.7`)
+    def _transacciones_cerradas(self, eventos):
+        """`(cerradas, marcadas)` — qué transacciones ya no pueden estar en su ventana.
+
+        Una transacción está CERRADA cuando tiene un evento terminal. Es exactamente el
+        criterio de `transaccion_sin_cerrar`, y se deduce de la MISMA instantánea: preguntar
+        dos veces al diario si una transacción sigue viva es cómo se acaba sellando la que
+        todavía lo estaba.
+        """
+        cerradas, marcadas = set(), set()
+        for transaccion, propios in self.por_transaccion(eventos).items():
+            tipos = {evento.get("tipo") for evento in propios}
+            if not tipos.isdisjoint(TERMINALES):
+                cerradas.add(transaccion)
+            if "transicion.marcada" in tipos:
+                marcadas.add(transaccion)
+        return cerradas, marcadas
+
+    def motivo_de_no_sellar(self, evento, eventos, *, cerradas=None, marcadas=None):
+        """POR QUÉ este evento no se puede sellar, o `""` si sí se puede.
+
+        Devuelve el motivo en vez de un booleano para que el fallo de una retirada DIRIGIDA
+        pueda nombrar la razón concreta: «la recuperación todavía lo necesita» y «la
+        auditoría lo reproyecta» mandan a sitios distintos, y un `False` no distingue.
+        """
+        if cerradas is None or marcadas is None:
+            cerradas, marcadas = self._transacciones_cerradas(eventos)
+        if es_sellado(evento):
+            return "su cuerpo ya se retiró en un sellado anterior"
+        tipo = evento.get("tipo")
+        if tipo in NO_SELLABLES:
+            return ("`" + str(tipo) + "` no se sella nunca: la recuperación de `g.8` o la "
+                    "auditoría de `g.13` leen su cuerpo entero")
+        transaccion = evento.get("transaccion")
+        if transaccion is not None:
+            if transaccion not in cerradas:
+                return ("la transacción `" + str(transaccion) + "` no tiene evento "
+                        "terminal: todavía puede estar en su ventana, y `g.8` la recupera "
+                        "leyendo este cuerpo")
+            if transaccion in marcadas:
+                return ("la transacción `" + str(transaccion) + "` está MARCADA y su salida "
+                        "la decide la autoridad: su cuerpo sigue siendo prueba viva")
+        return ""
+
+    def sellables(self, eventos, *, umbral=None, secuencia_publicada=None):
+        """Las secuencias cuyo cuerpo se puede retirar, en orden.
+
+        `umbral` acota la COLA que se deja intacta: los últimos `umbral` eventos no se tocan
+        aunque fueran admisibles. Con `umbral=None` no hay cola reservada, y es el modo de la
+        retirada DIRIGIDA, que no es una compactación periódica sino un acto de autoridad
+        sobre un evento concreto.
+        """
+        cerradas, marcadas = self._transacciones_cerradas(eventos)
+        tope = len(eventos) if umbral is None else max(0, len(eventos) - umbral)
+        elegidos = []
+        for indice, evento in enumerate(eventos):
+            if indice >= tope:
+                break
+            if secuencia_publicada is not None \
+                    and evento.get("secuencia") == secuencia_publicada:
+                # El evento que `REVISION.json` declara que la explica se deja entero
+                # aunque las demás reglas lo permitieran. Hoy es siempre una
+                # `transicion.preparada` —y ésas no se sellan nunca—, así que esta guarda
+                # no cambia ninguna decisión: existe para que siga sin cambiarla el día
+                # que la revisión cite otro evento.
+                continue
+            if self.motivo_de_no_sellar(evento, eventos, cerradas=cerradas,
+                                        marcadas=marcadas):
+                continue
+            elegidos.append(evento["secuencia"])
+        return elegidos
+
+    def sellar(self, *, autor, motivo, umbral, secuencia_publicada=None):
+        """Compacta el diario retirando el CUERPO de lo que ya no se necesita entero (`g.7`).
+
+        Se llama con el bloqueo de ESCRITOR tomado, y no se comprueba aquí que lo esté por la
+        misma razón que `anexar` tampoco lo comprueba: el bloqueo es del motor, que es el
+        único ejecutor de mutaciones (`I-g4`).
+        """
+        comprobar_umbral(umbral)
+        eventos = self._exigir_diario_sellable()
+        secuencias = self.sellables(eventos, umbral=umbral,
+                                    secuencia_publicada=secuencia_publicada)
+        return self._retirar(eventos, secuencias, autor=autor, motivo=motivo, umbral=umbral)
+
+    def retirar_cuerpo(self, secuencias, *, autor, motivo):
+        """Retira el cuerpo de eventos CONCRETOS. Un acto de autoridad, no una compactación.
+
+        Es la mitad de `g.7` que dice «retirar el cuerpo de un evento sellado exige una
+        transición explícita y auditable»: aquí la transición se firma con `autor` y
+        `motivo`, deja su propio evento en el diario y falla CERRADO si el cuerpo que se pide
+        retirar todavía lo necesitan la recuperación o la auditoría.
+        """
+        eventos = self._exigir_diario_sellable()
+        por_secuencia = {evento["secuencia"]: evento for evento in eventos}
+        pedidas = []
+        for secuencia in secuencias:
+            if not isinstance(secuencia, int) or isinstance(secuencia, bool):
+                raise RetiradaNoAdmisible(
+                    "la secuencia a retirar es un entero; se recibió "
+                    + type(secuencia).__name__,
+                    ruta=self.ruta,
+                )
+            evento = por_secuencia.get(secuencia)
+            if evento is None:
+                raise RetiradaNoAdmisible(
+                    "el diario no tiene ningún evento con la secuencia " + str(secuencia),
+                    ruta=self.ruta, posicion=secuencia,
+                )
+            impedimento = self.motivo_de_no_sellar(evento, eventos)
+            if impedimento:
+                raise RetiradaNoAdmisible(
+                    "no se puede retirar el cuerpo del evento " + str(secuencia) + ": "
+                    + impedimento,
+                    ruta=self.ruta, posicion=secuencia, tipo=str(evento.get("tipo")),
+                )
+            pedidas.append(secuencia)
+        return self._retirar(eventos, pedidas, autor=autor, motivo=motivo, umbral=None)
+
+    def _exigir_diario_sellable(self):
+        """La instantánea sobre la que se sella, o el fallo cerrado que lo impide.
+
+        Se VERIFICA la cadena antes de tocar nada. Sellar un diario que ya está roto
+        congelaría el daño detrás de un talón y lo haría irreconstruible: la comprobación no
+        es una cortesía, es lo que impide convertir una corrupción detectable en una
+        definitiva.
+        """
+        completas, cola = self._lineas()
+        if cola:
+            raise SelladoImposible(
+                "el diario termina en una línea incompleta de " + str(len(cola))
+                + " byte(s): hay una transacción en su ventana. Primero `recuperar()`, que "
+                "es quien puede cerrarla; sellar ahora retiraría cuerpos que `g.8` todavía "
+                "necesita",
+                ruta=self.ruta, bytes_sueltos=len(cola),
+            )
+        return self._interpretar(completas, True)
+
+    def _retirar(self, eventos, secuencias, *, autor, motivo, umbral):
+        """El acto material: reescribe el diario con los talones y anexa su transición.
+
+        DECISIÓN · el diario sellado se PUBLICA con `os.replace`, no se edita en su sitio
+            Alternativas: (a) truncar y reescribir sobre el mismo descriptor; (b) componer el
+            fichero entero al lado y publicarlo con el intercambio de nombre atómico.
+            Se elige (b), que es la misma primitiva del §2 para `REVISION.json` y por la
+            misma razón: con (a) un corte a mitad de reescritura deja un diario a medias, sin
+            cola desgarrada que lo delate —los bytes cortados están EN MEDIO— y por tanto sin
+            reparación posible. Con (b) el corte deja el diario ANTERIOR intacto: sellar es
+            entonces una operación que, o se ve entera, o no se ve, igual que una transición.
+        """
+        if not isinstance(autor, str) or not autor.strip() \
+                or not isinstance(motivo, str) or not motivo.strip():
+            raise RetiradaSinTransicion(
+                "retirar el cuerpo de un evento del diario exige una transición EXPLÍCITA Y "
+                "AUDITABLE (`g.7`), y una transición sin `autor` y sin `motivo` no es "
+                "auditable: se sabría qué se retiró y no quién lo decidió ni por qué",
+                ruta=self.ruta,
+            )
+        secuencias = sorted(set(secuencias))
+        if not secuencias:
+            # No se anexa un evento de sellado que no retira nada: sería una línea que no
+            # explica ningún cambio, que es justo lo que `Transicion.validar` prohíbe para
+            # el estado canónico y no hay motivo para admitir aquí.
+            return InformeSellado(
+                umbral=umbral, autor=autor, motivo=motivo,
+                bytes_antes=self._tamano(), bytes_despues=self._tamano(),
+                cid_sellados=cid_de_los_talones(eventos),
+            )
+
+        antes = self._tamano()
+        pendientes = set(secuencias)
+        nuevos = [talon_de(evento) if evento["secuencia"] in pendientes else evento
+                  for evento in eventos]
+        sellado = {
+            "esquema": ESQUEMA, "secuencia": len(nuevos) + 1, "tipo": TIPO_SELLADO,
+            "autor": autor, "motivo": motivo,
+            "umbral": umbral,
+            "desde": secuencias[0], "hasta": secuencias[-1],
+            "sellados": len(secuencias),
+            "cid_sellados": cid_de_los_talones(nuevos),
+        }
+        sellado[CLAVE_PREVIO] = nuevos[-1][CLAVE_HUELLA] if nuevos else None
+        sellado[CLAVE_HUELLA] = calcular_huella(sellado)
+        nuevos.append(sellado)
+
+        datos = b"".join(serializar_compacto(evento) + b"\n" for evento in nuevos)
+        temporal = self.ruta + SUFIJO_TEMPORAL
+        asegurar_directorio(os.path.dirname(self.ruta))
+        escribir_y_sincronizar(temporal, datos)
+        fallos.punto("durante-el-diario")
+        publicar(temporal, self.ruta)
+        sincronizar_directorio(os.path.dirname(self.ruta))
+        return InformeSellado(
+            umbral=umbral, autor=autor, motivo=motivo,
+            secuencias=secuencias, evento=sellado["secuencia"],
+            bytes_antes=antes, bytes_despues=self._tamano(),
+            cid_sellados=sellado["cid_sellados"],
+        )
+
+    def _tamano(self):
+        try:
+            return os.path.getsize(self.ruta)
+        except FileNotFoundError:
+            return 0
+        except OSError as exc:
+            raise traducir_error_de_sistema(exc, self.ruta, "medir el diario") from exc

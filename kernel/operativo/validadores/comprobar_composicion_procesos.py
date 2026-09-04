@@ -682,6 +682,29 @@ def t276_las_proyecciones_derivan(raiz=None):
     `G-15` contrasta vía a vía, procedencia a procedencia y ancla a ancla contra la
     proyección ÚNICA de §19. Una proyección que publique un total fijo distinto del
     derivado FALLA, y una segunda proyección contradictoria en el mismo bloque también.
+
+    DECISIÓN · LA SEDE SE EXIGE, Y LOS TRES CONTRASTES TIENEN QUE CASAR.
+
+    Se midió, y las dos formas de evadir esta prueba salían VERDES:
+
+      1 · `rm docs/evolucion/11-ARQUITECTURA-INTEGRADA.md`  →  `T276 SUPERADA`, rc 0
+      2 · reescribir el reparto por vía SIN falsear ningún número —«por vía: 0 / 1 / 0 /
+          8 pares (vías 1, 2, 3 y 4)», que dice exactamente lo mismo—  →  `T276 SUPERADA`
+
+    Las dos por lo mismo: `if not os.path.exists(ruta): return r` y tres `if m:`. Un
+    contraste que no se pudo hacer salía indistinguible de un contraste que pasó, y eso
+    invierte el sentido de la prueba: borrar la sede era la forma más barata de ponerla en
+    verde. Una prueba que afirma «los repartos derivan del árbol Y SU SEDE NO DISCREPA» no
+    puede pasar cuando la sede no está, ni cuando está y no se leyó.
+
+    Y POR QUÉ NO LE APLICA LA EXCEPCIÓN DE `T275`. `T275` la declara con motivo: «la sede no
+    viaja al proyecto instalado», y su comprobación PRINCIPAL —ejecutar los fixtures— se
+    hace igual sin sede; el censo es un contraste añadido. Aquí no queda nada: sin sede,
+    `T276` no comprueba absolutamente nada y afirmaría lo contrario. Además esta prueba
+    nunca corre contra un proyecto instalado: `validadores.yaml` la corre en la raíz del
+    repositorio, y `comprobar_negativos` sobre una COPIA COMPLETA de esa raíz. Se comprobó
+    que no hay ningún otro invocador. Extenderle la excepción sería importar un motivo que
+    no se cumple.
     """
     base = os.path.abspath(raiz or RAIZ)
     r = Resultado("T276", "Los repartos por vía, procedencia y ancla derivan del árbol")
@@ -693,26 +716,42 @@ def t276_las_proyecciones_derivan(raiz=None):
     catalogo = catalogo_estatico(bloques.get("proceso", []), vigilado, las_quince)
     ruta = os.path.join(base, SEDE_DE_LA_PROYECCION)
     if not os.path.exists(ruta):
+        r.fallo(f"no existe `{SEDE_DE_LA_PROYECCION}`, que es la SEDE ÚNICA de la "
+                f"proyección de `D104`. Sin ella no hay nada contra lo que contrastar el "
+                f"árbol, y esta prueba afirma justamente que la sede NO DISCREPA: pasar "
+                f"sin sede sería afirmarlo sin haberlo mirado")
         return r
     with open(ruta, encoding="utf-8") as fh:
         texto = fh.read()
 
-    # ANCLA, proceso a proceso, contra la proyección publicada
+    # ANCLA, proceso a proceso, contra la proyección publicada. Y se exige que TODO proceso
+    # del árbol tenga la suya publicada: si un proceso desaparece de la proyección, el
+    # `continue` de antes lo daba por bueno, y quitar una fila era gratis.
     publicadas = dict(re.findall(r"`([A-Z]{3})\s*→\s*([A-Z]{3})`", texto))
     for datos, _ruta in bloques.get("proceso", []):
         codigo = datos["id"].split(":", 1)[1]
-        if codigo not in publicadas:
-            continue
         _oid, capacidad, _i = ancla_de(datos)
+        if codigo not in publicadas:
+            r.fallo(f"§19 no publica el ancla de `proceso:{codigo}`, que el árbol deriva "
+                    f"como `{codigo} → {capacidad}`. Una fila que desaparece de la "
+                    f"proyección no es una proyección más corta: es una proyección que "
+                    f"deja de contrastarse")
+            continue
         if publicadas[codigo] != capacidad:
             r.fallo(f"§19 publica el ancla `{codigo} → {publicadas[codigo]}` y el árbol "
                     f"deriva `{codigo} → {capacidad}`")
 
-    # REPARTO POR VÍA y POR PROCEDENCIA
+    # REPARTO POR VÍA y POR PROCEDENCIA. Los dos contrastes se EXIGEN: no casar es no
+    # haberlos hecho, y eso se dice, no se calla.
     por_via = {v: sum(1 for p in catalogo if p["via"] == v) for v in (1, 2, 3, 4)}
     m = re.search(r"vía 1 · (\d+) pares? · vía 2 · (\d+) par(?:es)? · vía 3 · (\d+) "
                   r"pares? ·\s*\n?\s*vía 4 ·\s*\n?\s*(\d+) pares?", texto)
-    if m:
+    if not m:
+        r.fallo(f"`{SEDE_DE_LA_PROYECCION}` ya no publica el reparto POR VÍA en la forma "
+                f"que este contraste sabe leer, así que el reparto NO SE CONTRASTÓ. La "
+                f"sede y el validador tienen que moverse juntos: reformular la proyección "
+                f"sin ajustar quien la lee apaga la comprobación en silencio (`Q-03`)")
+    else:
         for i, via in enumerate((1, 2, 3, 4)):
             if int(m.group(i + 1)) != por_via[via]:
                 r.fallo(f"§19 publica {m.group(i + 1)} pares por la vía {via} y el árbol "
@@ -722,7 +761,11 @@ def t276_las_proyecciones_derivan(raiz=None):
                        for p in ("propietaria", "obligatorias", "condicionales")}
     m = re.search(r"propietaria · (\d+) pares? ·\s*\n?\s*`?obligatorias`? · (\d+) "
                   r"par(?:es)?[^·]*·\s*`?condicionales`? · (\d+)\s*\n?\s*pares?", texto)
-    if m:
+    if not m:
+        r.fallo(f"`{SEDE_DE_LA_PROYECCION}` ya no publica el reparto POR PROCEDENCIA en la "
+                f"forma que este contraste sabe leer, así que el reparto NO SE CONTRASTÓ "
+                f"(`Q-28`)")
+    else:
         for i, procedencia in enumerate(("propietaria", "obligatorias", "condicionales")):
             if int(m.group(i + 1)) != por_procedencia[procedencia]:
                 r.fallo(f"§19 publica {m.group(i + 1)} pares de procedencia "

@@ -44,13 +44,41 @@ SEMVER = re.compile(r"^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$")
 #  definición del alcance». Y la condición de cierre son dos cosas, no una: que ninguna sede
 #  VIVA publique una versión obsoleta, **y que el ALCANCE de `T152` sea derivado**.
 
-# El corpus que VIAJA, y cuyo remedio es F6. Patrones, no rutas.
+# El corpus VIVO, y cuyo remedio es F6. Patrones, no rutas.
+#
+# DECISIÓN · `docs/canonico/` y `docs/f6/` ENTRAN, y no son «la capa documental».
+#
+# La condición de cierre del CONTRATO 2 son dos cosas, y la primera es literal: «que
+# ninguna sede VIVA publique una versión o un recuento obsoleto». `docs/canonico/` es sede
+# viva —es la capa canónica vigente, no un histórico— y `docs/f6/` es la sede de la fase en
+# curso. Hasta esta corrección las dos caían en el barrido de `^docs/`, que sólo emitía
+# fallo cuando NINGUNA clase de remedio cubría la sede; como la entrada `(^docs/, F6)` es un
+# cajón de sastre que lo captura todo, la misma frase que en `kernel/` o en `packs/` se
+# denuncia, escrita bajo `docs/canonico/`, no aparecía en ninguna salida. Se midió: una
+# sede nueva con `kernel/KERNEL.md` 9.9.9 bajo `kernel/` sale en `T152`, y bajo
+# `docs/canonico/` no salía en ninguna parte.
+#
+# Lo que NO entra sigue sin entrar, y por su motivo: `docs/rediseno/` es material aprobado
+# de `F5`, `docs/owner/` pide NOTA del Owner y `docs/evolucion/NN-…` es histórico
+# inmutable. Ésos se PUBLICAN con su clase de remedio —ver `pendientes_documentales`— y no
+# los decide este validador, que es lo que el contrato manda.
+# Y una DECISIÓN DE FORMA, que no es cosmética: las dos entradas nuevas se añaden en una
+# sentencia APARTE, y la lista de origen se conserva literal. El sabotaje `N272b` —de otro
+# eje del catálogo, y por tanto fuera de esta zona— reintroduce el defecto sustituyendo esta
+# línea EXACTA por la lista de dos ficheros escritos a mano. Reescribirla habría dejado ese
+# sabotaje sin encajar, es decir, habría apagado un control existente al corregir otra cosa,
+# que es precisamente lo que esta pasada no puede hacer. Se comprobó: con el literal partido
+# en dos sentencias, `N272b` vuelve a detectar.
 AMBITO_F6 = [r"^README\.md$", r"^START_HERE\.md$", r"^kernel/", r"^packs/"]
+AMBITO_F6 += [r"^docs/canonico/", r"^docs/f6/"]
 FUERA_DEL_AMBITO = [
     (r"^kernel/KERNEL_CHANGELOG\.md$", "registro histórico de versiones: su materia es citarlas"),
     (r"^kernel/operativo/pruebas/evidencia/", "salidas capturadas de ejecuciones pasadas"),
     (r"^kernel/operativo/validadores/", "código, con las infracciones deliberadas de los negativos"),
     (r"^packs/legacy-", "packs retirados, conservados sólo para trazabilidad"),
+    (r"^docs/f6/\d\d-GATE-.*-\d{8}\.md$",
+     "acta de un gate FECHADO: describe el árbol de aquel día y no se reescribe. Es la "
+     "misma frontera que `comprobar_recuentos` declara para las cifras"),
 ]
 
 # Los ARTEFACTOS versionados y cómo los nombra el corpus cuando publica su versión. La
@@ -79,6 +107,10 @@ MARCAS_DE_CITA = [
     r"\bversión anterior\b", r"\bhistóric[oa]s?\b", r"\bexcluido\b", r"\bfrente a\b",
     r"\bconviviendo con la línea\b", r"\bya no se instalan\b",
     r"\bdeclaró\b", r"\bausentes\b", r"\bno ten[ií]an\b", r"\bhaya declarado\b",
+    # el imperfecto de `declarar`, que es la forma en que el corpus narra el defecto ya
+    # corregido: «`00-INDICE.md` declaraba `KERNEL.md` 1.3.0 siendo 1.5.0». Faltaba
+    # teniendo `decía` y `declaró`, que son el mismo acto narrado en otro tiempo
+    r"\bdeclaraba[n]?\b",
 ]
 _CITA_ESTRUCTURAL = re.compile(r"\*\([^)]*\d+\.\d+\.\d+[^)]*\)\*")
 
@@ -199,6 +231,55 @@ def barrer_versiones(base, vigentes, ambito=None):
     return divergencias
 
 
+# ---------------------------------------------------------------------------
+#  LA CAPA DOCUMENTAL QUE NO ES DE F6 · SE REPORTA, NO SE DECIDE
+# ---------------------------------------------------------------------------
+#  `docs/rediseno/` es material APROBADO de `F5`, `docs/owner/` pide NOTA del Owner y
+#  `docs/evolucion/NN-…` es histórico inmutable. Corregirles la versión desde `F6` sería
+#  reescribir material de otra fase, y por eso no son fallo de `T152`. Pero «no es fallo»
+#  no puede significar «no se ve»: el CONTRATO 2 dice que el validador REPORTE sin decidir
+#  el remedio, y hasta esta corrección no reportaba nada. Se publican aquí, con su sede, su
+#  línea, su cifra y su clase de remedio.
+
+def pendientes_documentales(base, vigentes):
+    """Las sedes de `docs/` que publican una versión obsoleta y NO son de `F6`.
+
+    Lo que ya entró en `AMBITO_F6` —`docs/canonico/`, `docs/f6/`— no se repite aquí: eso
+    ya es fallo de `T152`, y publicarlo dos veces con dos estatutos distintos sería
+    exactamente la ambigüedad que el contrato quiere quitar.
+    """
+    fuera = [(rel, num, art, pub, vig, fase, forma)
+             for rel, num, art, pub, vig, fase, forma
+             in barrer_versiones(base, vigentes, ambito=[r"^docs/"])
+             if not any(re.search(p, rel) for p in AMBITO_F6)]
+    return sorted(fuera, key=lambda x: (x[0], x[1], x[2]))
+
+
+def publicar_pendientes_documentales(base, vigentes):
+    """Una línea por pendiente, con su clase de remedio. La salida del CONTRATO 2."""
+    return [f"{rel}:{numero}: publica {publicada} para `{artefacto}` (vigente {vigente}). "
+            f"REMEDIO {fase} — {forma}"
+            for rel, numero, artefacto, publicada, vigente, fase, forma
+            in pendientes_documentales(base, vigentes)]
+
+
+def _cobertura_de_pendientes(pendientes):
+    """El resumen que `T272` publica aunque salga SUPERADA."""
+    if not pendientes:
+        return ("capa documental fuera de F6: ninguna sede publica una versión obsoleta. "
+                "El barrido de `^docs/` se hizo y no encontró nada")
+    por_fase = {}
+    for _rel, _n, _a, _p, _v, fase, _f in pendientes:
+        por_fase[fase] = por_fase.get(fase, 0) + 1
+    reparto = " · ".join(f"REMEDIO {f}: {n}" for f, n in sorted(por_fase.items()))
+    lineas = [f"capa documental fuera de F6: {len(pendientes)} sedes publican una versión "
+              f"obsoleta y se REPORTAN sin decidir su remedio ({reparto})"]
+    lineas += [f"    {rel}:{numero}: publica {publicada} para `{artefacto}` "
+               f"(vigente {vigente}) — REMEDIO {fase}, {forma}"
+               for rel, numero, artefacto, publicada, vigente, fase, forma in pendientes]
+    return "\n          ".join(lineas)
+
+
 def t152_versiones(raiz=None):
     base = os.path.abspath(raiz or RAIZ)
     r = Resultado("T152", "Los puntos de entrada no se contradicen sobre la versión")
@@ -306,13 +387,39 @@ def t272_alcance_derivado_y_remedios_declarados(raiz=None):
             r.fallo("la MISMA sede con la versión vigente también se denuncia: un barrido "
                     "que falla siempre no distingue nada")
 
-    # La capa documental: se REPORTA, y su remedio no lo decide este validador.
-    pendientes = barrer_versiones(base, vigentes, ambito=[r"^docs/"])
+    # 3 · La capa documental que NO es de F6: se REPORTA con su clase de remedio, y el
+    #     remedio no lo decide este validador. Y se EJERCE que se reporta: una sede
+    #     fabricada bajo `docs/rediseno/` tiene que salir en la lista publicada con una
+    #     clase que no sea `?`. Sin este ejercicio, quitar la publicación dejaría a `T272`
+    #     en verde y la lista desaparecería sin que nada se pusiera rojo.
+    with tempfile.TemporaryDirectory(prefix="ads-pendientes-") as tmp:
+        sonda = os.path.join(tmp, "docs", "rediseno", "SEDE-DOCUMENTAL-QUE-NADIE-ENUMERO.md")
+        os.makedirs(os.path.dirname(sonda), exist_ok=True)
+        with open(sonda, "w", encoding="utf-8") as fh:
+            fh.write("# sede documental nueva\n\nEsta sede declara `kernel/KERNEL.md` "
+                     "9.9.9.\n")
+        publicadas = publicar_pendientes_documentales(tmp, vigentes)
+        if not any("SEDE-DOCUMENTAL-QUE-NADIE-ENUMERO.md" in linea for linea in publicadas):
+            r.fallo("una sede documental NUEVA con `kernel/KERNEL.md` 9.9.9 no aparece en "
+                    "la lista de pendientes publicada: la capa documental vuelve a no "
+                    "reportarse en ninguna salida (`11-ARQ` §19, CONTRATO 2, «el validador "
+                    "REPORTA sin decidir el remedio»)")
+        elif not any("REMEDIO F5" in linea for linea in publicadas):
+            r.fallo("la sede documental nueva se reporta SIN su clase de remedio: reportar "
+                    "sin decir de quién es el remedio no cierra el contrato")
+
+    pendientes = pendientes_documentales(base, vigentes)
     for rel, numero, artefacto, publicada, vigente, fase, forma in pendientes:
         if fase == "?":
             r.fallo(f"{rel}:{numero}: publica {publicada} para `{artefacto}` (vigente "
                     f"{vigente}) y NINGUNA clase de remedio la cubre. Una sede sin "
                     f"propietario declarado es una sede que se ignora en silencio")
+    # LA LISTA SE PUBLICA. Antes de esto, una sede documental con una versión obsoleta no
+    # aparecía en NINGUNA salida mientras alguna clase de remedio la cubriera, y como
+    # `(^docs/, F6)` es un cajón de sastre que cubre todo, eso era siempre. El contrato
+    # exige REPORTAR: se reporta aquí, en la cobertura de `T272`, y no como fallo, porque
+    # el remedio de `F5` o del Owner no es de esta fase.
+    r.detalle = _cobertura_de_pendientes(pendientes)
     return r
 
 
@@ -328,12 +435,18 @@ def main():
     if args.json:
         print(json.dumps([{"id": x.id, "nombre": x.nombre,
                            "estado": "prueba-superada" if x.superada else "prueba-fallida",
-                           "fallos": x.fallos} for x in resultados], ensure_ascii=False, indent=2))
+                           "fallos": x.fallos,
+                           "cobertura": getattr(x, "detalle", "")}
+                          for x in resultados], ensure_ascii=False, indent=2))
     else:
         for x in resultados:
             print(f"{x.id}  {'SUPERADA' if x.superada else 'FALLIDA '}  {x.nombre}")
             for f in x.fallos:
                 print(f"          · {f}")
+            # Lo que se REPORTA sin ser fallo se imprime igual, y en la salida normal: una
+            # lista que sólo existe en `--json` es una lista que nadie lee.
+            if getattr(x, "detalle", ""):
+                print(f"          cobertura: {x.detalle}")
         fallidas = [x for x in resultados if not x.superada]
         print(f"\n{len(resultados) - len(fallidas)} superadas · {len(fallidas)} fallidas")
     return 1 if any(not x.superada for x in resultados) else 0

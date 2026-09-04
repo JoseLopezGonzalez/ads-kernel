@@ -177,6 +177,117 @@ forma inequívoca, y `g.9` exige que lo sea.
 > detectable **desde dentro del árbol**, que es literalmente lo que `g.5` advierte y lo que
 > `g.15` reserva a la raíz externa.
 
+## 6 bis · Sellado del diario — la mitad de `g.7` que faltaba
+
+`g.7` escribe cinco puntos sobre el diario. Los tres primeros —registrar los eventos con
+orden reconstruible, sostener la recuperación de `g.8`, no ser la sede del estado— los
+instancia el §3 y los ejercita la batería del motor. **Los dos últimos son éstos, y hasta la
+corrección de 2026-09-04 no existían ni en el código ni en este contrato:**
+
+```text
+· el SELLADO compacta el diario conservando lo que el estado y la auditabilidad exigen; su
+  umbral es parámetro CALIBRABLE del contrato derivado
+· retirar el cuerpo de un evento sellado exige una transición explícita y auditable
+```
+
+**Qué compacta.** El **CUERPO** de un evento, y jamás su **ESLABÓN**. Un evento sellado
+—un **talón**— conserva `esquema`, `secuencia`, `tipo`, `previo` y `huella` exactamente como
+se escribieron, más `transaccion`, `resultado` y `registro` cuando los llevaba, y sustituye
+todo lo demás por un resumen:
+
+```text
+{"esquema":"ads.estado/1","secuencia":5,"tipo":"transicion.confirmada","transaccion":"tx-3",
+ "resultado":"sha256:…","sellado":{"esquema":1,"cuerpo":"sha256:…","retirados":["autor",
+ "base","clase","motivo","operaciones"]},"previo":"sha256:…","huella":"sha256:…"}
+```
+
+**El diario NO pierde ni una línea.** Quitar líneas rompería tres cosas a la vez: la
+comprobación `secuencia == índice + 1`, el `previo` de la siguiente y la comparación del
+recuento de líneas con el `diario_secuencia` que `REVISION.json` publica. Sellar deja el
+fichero con el mismo número de líneas, en el mismo orden y con las mismas huellas.
+
+**Qué conserva, y por qué eso y no menos.**
+
+```text
+LO QUE EL ESTADO EXIGE   ningún evento de una transacción SIN evento terminal se sella: es
+                         la ventana de `g.8`, y sus dos ramas —REVERTIR con la `abierta`,
+                         COMPLETAR con la `preparada`— leen ese cuerpo entero
+LO QUE LA AUDITORÍA      `transicion.preparada` NO se sella NUNCA: `auditar()` reproyecta
+EXIGE                    `raiz` con su `operaciones` y reproduce `cid_raiz` desde el origen.
+                         `almacen.inicializado` tampoco: es donde arranca el linaje
+LO QUE LA AUTORIDAD      ningún evento de una transacción MARCADA se sella: su salida la
+TIENE PENDIENTE          decide la autoridad y su cuerpo sigue siendo prueba viva
+LO QUE SIGUE DICIENDO    un talón dice QUÉ fue (`tipo`) y CUÁNDO (`secuencia`, que es el
+CADA TALÓN               momento LÓGICO; `I-g3` veda el reloj), y qué se le retiró
+```
+
+Se sellan, por tanto, `transicion.abierta`, `transicion.confirmada`,
+`transicion.revertida`, los dos eventos de reconciliación y `migracion.aplicada`: **dos de
+cada tres eventos del camino feliz**, que es donde está la masa del fichero.
+
+**Cómo sigue siendo verificable.** La huella de un talón **no se recalcula** —su contenido
+es justamente lo que se ha retirado, y pedir la misma huella de menos bytes es pedir una
+preimagen—. Se conserva, y se **ancla**: el evento `diario.sellado` que explica la retirada
+declara `cid_sellados`, el `cid` de la lista ordenada de pares `[secuencia, cid del talón
+entero]` de **todos** los talones del diario. Ese evento se encadena y se huella como
+cualquier otro. **El ancla cubre el talón entero y no tres campos suyos**, y la primera
+versión sí cubría sólo tres: `T319` la puso roja demostrando que cambiar el `resultado`
+conservado de un talón, o REPONER en él un campo que nunca tuvo, se colaba entero.
+
+```text
+EDITAR UN TALÓN          el `cid` recalculado no casa con el anclado           → DIARIO_CORRUPTO
+VACIAR UN CUERPO A MANO  hay talones y ningún `diario.sellado` que los explique → DIARIO_CORRUPTO
+REHACER EL ANCLA         cambia la huella del evento de sellado y rompe el `previo`
+                         del siguiente evento                                  → DIARIO_CORRUPTO
+```
+
+> **El residuo, dicho y no callado.** Falsificar **a la vez** un talón y el evento de sellado
+> que lo ancla, **cuando ese evento es la última línea del diario**, no es detectable desde
+> dentro del árbol. Es el mismo residuo que el §6 declara para la cola del registro auxiliar,
+> vuelve a ser detectable en cuanto el diario anexa una línea más, y es literalmente lo que
+> `g.5` advierte y `g.15` reserva a la raíz externa.
+
+**El umbral, y dónde se calibra.** El umbral es el número de eventos de **cola** que el
+sellado deja intactos, y se declara **aquí**, que es la sede que `g.7` le da. Se cambia
+editando este bloque, sin tocar una línea de código:
+
+```json
+{
+  "esquema": "ads.estado.calibracion/1",
+  "sellado_umbral_eventos": 64
+}
+```
+
+**Por qué 64 y no otro.** El mínimo de corrección es **3** —una transacción entera del
+camino feliz son `abierta`, `preparada` y `confirmada`, y una cola más corta que una
+transacción no deja legible ni la última—, y por debajo de ese mínimo el umbral se rechaza.
+Se elige **64** porque deja unas veintiuna transacciones completas al final del fichero,
+veinte veces el peor caso que la recuperación puede necesitar, y sigue siendo una cola que
+una persona lee con `tail` sin herramienta. **No se elige el mínimo**: un umbral pegado a su
+límite convierte cualquier error de cálculo en la pérdida de la ventana que protege.
+
+**El umbral no tiene valor por omisión.** Ausente, ilegible, declarado dos veces, no entero,
+cero, negativo o menor que el mínimo → `UMBRAL_DE_SELLADO_INVALIDO`, y **no se sella**. Un
+motor que se inventa el umbral cuando no lo encuentra convierte esta sede en decorado.
+
+**Qué exige retirar un cuerpo.** Una **transición explícita y auditable**, y aquí eso es
+tres cosas juntas: un `autor` y un `motivo` —sin ellos, `RETIRADA_SIN_TRANSICION`—, un evento
+`diario.sellado` propio en el diario, y que el cuerpo sea admisible —si la recuperación o la
+auditoría todavía lo necesitan, `RETIRADA_NO_ADMISIBLE`—. La retirada **dirigida** de un
+evento concreto pasa por las mismas comprobaciones que la compactación por umbral; lo único
+que no consulta es el umbral.
+
+**Cómo se invoca.** `ads_estado.py --repo <dir> sellar --autor A --motivo M`, con
+`--umbral N` para calibrar la llamada, `--secuencia N` (repetible) para la retirada dirigida
+y `--contrato <fichero>` para leer el umbral de otra sede. Los códigos de salida son los
+mismos cinco de siempre: un fallo del sellado es un error tipado del kernel, y sale con 1.
+
+**Lo que sellar NO hace.** No publica revisión, no toca `canonico/`, no entra en el linaje y
+no se ejecuta solo: no hay compactación automática al abrir ni al aplicar. Toma el **bloqueo
+de escritor** —el mismo que `aplicar` y `recuperar`, porque reescribe el fichero en el que
+`anexar` escribe— y se **niega** si hay una transacción sin cerrar, aunque la regla de la
+ventana ya la protegería evento a evento: `g.8` reserva esa salida a la autoridad.
+
 ## 7 · Versionado y migración
 
 ```text
@@ -208,6 +319,15 @@ Toda salida de fallo lleva un **código estable** —`REVISION_OBSOLETA`, `ESTAD
 `VERSION_DESCONOCIDA`, `REINTENTOS_AGOTADOS`…— y un detalle legible. Un `except` que traga la
 excepción convertiría un defecto en silencio, que es el mismo error con otra forma: **no se
 usa en ningún punto del motor**.
+
+**El censo de códigos se DERIVA de las clases, y una clase fuera del censo es un defecto.**
+`estado/errores.py` publica `CLASES` y `CODIGOS = tuple(sorted(c.CODIGO for c in CLASES))`,
+de modo que la lista no se escribe dos veces. La disciplina que eso impone es real y se
+comprobó rompiéndola: `PublicacionEnVuelo` —la clase que distingue la VENTANA DE
+PUBLICACIÓN de la corrupción— se declaró sin añadirla a `CLASES`, y durante unas horas el
+motor pudo emitir un código que su propia lista cerrada no conocía. **Una clase de error
+declarada y no censada es un código que nadie puede tratar**, y por eso el censo se
+comprueba: ninguna subclase de `ErrorDeEstado` puede quedar fuera de `CLASES`.
 
 ## 10 · Qué demuestra este contrato, y dónde
 

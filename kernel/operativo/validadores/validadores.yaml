@@ -382,6 +382,16 @@ componentes:
     script: negativos_integridad.py
     tipo: biblioteca
 
+  # El CUARTO eje, de la pasada de correccion del 2026-09-04: los sabotajes que alcanzan a
+  # las BATERIAS del runtime. Existe porque la resta B era VERDADERA POR CONSTRUCCION: el
+  # catalogo solo sabia invocar `validadores/<x>.py --json --raiz`, y ninguna bateria de
+  # `unittest` puede satisfacer eso, de modo que 36 de sus 37 filas estaban ahi porque el
+  # instrumento no podia alcanzarlas. Se subio el alcance del instrumento, no se bajo el
+  # criterio. Misma razon de declaracion que los tres de arriba.
+  - id: negativos-runtime
+    script: negativos_runtime.py
+    tipo: biblioteca
+
   - id: runner
     script: registrar_evidencia.py
     tipo: biblioteca

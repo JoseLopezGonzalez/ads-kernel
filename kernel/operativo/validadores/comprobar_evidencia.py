@@ -42,6 +42,7 @@ import sys
 import yaml
 
 sys.path.insert(0, os.path.dirname(__file__))
+import entorno  # noqa: E402
 from comprobar_contratos import Resultado  # noqa: E402
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
@@ -228,9 +229,91 @@ def cargar_manifiesto(base):
         return (yaml.safe_load(fh) or {}).get("componentes") or []
 
 
+# ---------------------------------------------------------------------------
+#  `11-ARQ` §19, CONTRATO 3 · LA GUARDIA DE ENTORNO, EJERCIDA
+# ---------------------------------------------------------------------------
+#  El contrato dice dónde va la guardia: «el punto de entrada del runner … y el mismo
+#  prólogo en los tres validadores que importan `tomllib`, PARA QUE EJECUTARLOS SUELTOS NO
+#  ELUDA LA GUARDIA». Ponerla es la mitad; la otra mitad es que quitarla se note.
+#
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, con el Python 3.10.12 del PATH:
+#      $ python3 kernel/operativo/validadores/comprobar_evidencia.py
+#      T158  SUPERADA  La evidencia publicada demuestra lo que el informe afirma
+#      1 superadas · 0 fallidas          → rc=0
+#  Verde, código 0, sobre una evidencia que en ese entorno NADIE puede regenerar.
+#
+#  CÓMO SE EJERCE SIN DESINSTALAR PYTHON. `entorno.py` admite `ADS_ENTORNO_VERSION_MINIMA`
+#  para SUBIR la exigencia —nunca para bajarla—, y dice que ése es su único uso legítimo:
+#  probar la rama de fallo. Se lanza cada validador con la exigencia por encima de
+#  cualquier intérprete y se exige que termine con el código propio de «no se pudo
+#  ejecutar». Si alguien quita el prólogo, el validador corre normalmente, sale con 0 y
+#  esta comprobación se pone ROJA. Es el control que el hallazgo pide.
+#
+#  El marcador `ADS_ENTORNO_SONDA` impide la recursión: con el prólogo puesto, el hijo
+#  muere antes de leerlo; sin el prólogo, el hijo llega hasta aquí, ve el marcador y no
+#  lanza otra sonda. Sin él, un validador sin guardia se llamaría a sí mismo sin fin.
+
+MARCADOR_DE_SONDA = "ADS_ENTORNO_SONDA"
+
+# Los validadores que dependen de `tomllib`, DIRECTA o TRANSITIVAMENTE, y su cadena. No es
+# una lista de comodidad: cada uno se ejerce, y la cadena está escrita para que nadie tenga
+# que deducirla del `import`, que es donde una dependencia transitiva se esconde.
+CON_GUARDIA_DE_ENTORNO = [
+    ("comprobar_fuentes.py",
+     "lee `SOURCES.toml` con `tooling/workspace.py`, que usa `tomllib`"),
+    ("comprobar_evidencia.py",
+     "recalcula la vigencia llamando a `comprobar_fuentes`, que lo usa"),
+    ("comprobar_arranque.py",
+     "invoca `workspace.py check` en el proyecto creado, que usa `tomllib`"),
+]
+
+# `SIN_GUARDIA_TODAVIA` queda VACÍA y NO se borra, por la misma razón por la que
+# `admision` conserva su `fuera_de_alcance` vacío: su ausencia haría indistinguible «no
+# falta ninguno» de «ya nadie lo publica», que son cosas muy distintas. Los TRES validadores
+# que `CONTRATO 3` nombra llevan su prólogo, y el tercero —`comprobar_arranque.py`— lo ganó
+# en la pasada de corrección del 2026-09-04: bajo 3.10 publicaba `T148 FALLIDA … workspace
+# check falla (exit 78)` con código 1, o sea el entorno insuficiente disfrazado de defecto
+# del producto.
+SIN_GUARDIA_TODAVIA = []
+
+
+def _sonda_de_entorno(script):
+    """Ejecuta `script` con la exigencia subida por encima de cualquier intérprete."""
+    import subprocess                                            # noqa: PLC0415
+    ambiente = dict(os.environ)
+    ambiente["ADS_ENTORNO_VERSION_MINIMA"] = "99.0"
+    ambiente[MARCADOR_DE_SONDA] = "1"
+    return subprocess.run([sys.executable, script, "--json"],
+                          capture_output=True, text=True, env=ambiente)
+
+
+def _comprobar_la_guardia_de_entorno(base, r):
+    if os.environ.get(MARCADOR_DE_SONDA):
+        return                                   # se está EJECUTANDO como sonda: no anidar
+    for nombre, cadena in CON_GUARDIA_DE_ENTORNO:
+        script = os.path.join(base, "kernel/operativo/validadores", nombre)
+        if not os.path.isfile(script):
+            r.fallo(f"{nombre}: no existe, y el CONTRATO 3 exige su prólogo de entorno")
+            continue
+        proc = _sonda_de_entorno(script)
+        if proc.returncode != entorno.CODIGO_ENTORNO_INSUFICIENTE:
+            r.fallo(
+                f"{nombre}: con la exigencia de intérprete por encima de la disponible "
+                f"terminó con código {proc.returncode} y no con "
+                f"{entorno.CODIGO_ENTORNO_INSUFICIENTE}. Le falta el prólogo "
+                f"`entorno.exigir()`, y {cadena}: ejecutarlo suelto ELUDE la guardia "
+                f"(`11-ARQ` §19, CONTRATO 3)")
+        elif "ENTORNO INSUFICIENTE" not in proc.stderr:
+            r.fallo(f"{nombre}: sale con el código de entorno insuficiente pero sin decir "
+                    f"por qué. Un código sin mensaje no distingue un entorno de un fallo")
+
+
 def t158_evidencia(raiz=None):
     base = os.path.abspath(raiz or RAIZ)
     r = Resultado("T158", "La evidencia publicada demuestra lo que el informe afirma")
+    # La guardia PRIMERO: una evidencia intacta bajo un intérprete que no pudo regenerarla
+    # es exactamente la evidencia CADUCADA que este validador existe para no dar por buena.
+    _comprobar_la_guardia_de_entorno(base, r)
     componentes = cargar_manifiesto(base)
     esperados = {}
 
@@ -476,6 +559,14 @@ PRUEBAS = [t158_evidencia]
 
 
 def main():
+    # `11-ARQ` §19, CONTRATO 3 · EL MISMO PRÓLOGO. Este validador recalcula la VIGENCIA
+    # llamando a `comprobar_fuentes`, que lee `SOURCES.toml` con `tomllib`: la dependencia
+    # es transitiva, y una dependencia transitiva no deja de serlo por no verse en el
+    # `import`. Bajo Python 3.10 se medía esto: `python3 comprobar_evidencia.py` salía
+    # `T158 SUPERADA` con CÓDIGO 0 sobre una evidencia que en ese entorno NADIE puede
+    # regenerar. Es literalmente lo que la prueba negativa del contrato prohíbe: «`T158`
+    # NO puede salir SUPERADA sobre evidencia que no se ha regenerado en esta corrida».
+    entorno.exigir()
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--raiz", default=None)

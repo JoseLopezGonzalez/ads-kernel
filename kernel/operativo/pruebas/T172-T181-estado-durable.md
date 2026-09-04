@@ -1,4 +1,4 @@
-# T172–T181 — el estado durable, ejecutado
+# T172–T181 · T312–T319 — el estado durable, ejecutado
 
 Conformidad de la sección
 [`(g)`](../../../docs/rediseno/g-ESTADO-DURABLE-APROBADA.md) y de su contrato derivado
@@ -15,8 +15,37 @@ motor de estado.
 ```text
 validadores/entorno.py                         T172 — la guarda de entorno, antes de correr
 runtime/pruebas/test_estado_durable.py         T173..T179 — el motor, caso a caso
+                                               T312..T319 — el SELLADO del diario (`g.7`)
 runtime/pruebas/escenario_extremo_a_extremo.py T180 — los quince pasos, de una sola pieza
 validadores/comprobar_arranque.py              T181 — la norma viaja al proyecto instalado
+```
+
+**`T312`–`T319` cierran la mitad de `g.7` que no existía.** `g.7` escribe cinco puntos sobre
+el diario. Los tres primeros —orden reconstruible, sostener la recuperación de `g.8`, no ser
+la sede del estado— estaban construidos y probados. Los dos últimos **no estaban ni en el
+código ni en el contrato derivado**, y `g.7` figuraba sin embargo como obligación con
+cobertura declarada. Reproducido el 2026-09-04:
+
+```text
+$ grep -rniE "sellad|sellar|compacta" kernel/operativo/runtime/ --include=*.py --include=*.md
+kernel/operativo/runtime/estado/serializacion.py:13:    COMPACTA  `separators=(",", ":")` …
+$ grep -nEi "sellad|compact|umbral" kernel/operativo/runtime/CONTRATO-ESTADO-DURABLE.md
+(sin salida)
+```
+
+La única coincidencia era la forma **compacta** de serialización, que es otra cosa: la forma
+de transporte del JSONL.
+
+**Cómo se reparte `g.7` entre los escenarios de este fichero**, punto por punto:
+
+```text
+orden reconstruible                       T174 · T175 · T177
+sostiene la recuperación de `g.8`         T175 · T314
+NO es la sede del estado                  T173
+el SELLADO compacta, con umbral           T312 · T313 · T315 · T316
+CALIBRABLE del contrato derivado
+retirar un cuerpo exige transición        T317 · T318 · T319
+explícita y auditable
 ```
 
 **Cobertura de `g.16`.** Las nueve condiciones observables de aceptación tienen aquí su
@@ -53,7 +82,7 @@ evidencia: evidencia/estado-durable-salida.txt
 ```yaml ads:escenario
 id: T173
 nombre: El estado canónico se inicializa y se lee sin reproyectar el diario
-cubre: [g.1, g.2 I-g1, g.16 G-A1]
+cubre: [g.1, g.2 I-g1, g.7, g.16 G-A1]
 dado:
   - "un repositorio de control temporal sin estado"
 cuando:
@@ -254,4 +283,184 @@ ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_arranque.py
 estado: prueba-superada
 evidencia: evidencia/arranque-salida.txt
+```
+
+```yaml ads:escenario
+id: T312
+nombre: El sellado compacta el diario retirando el cuerpo de los eventos, y jamás su eslabón
+cubre: [g.7, g.1, CONTRATO-ESTADO-DURABLE 6 bis]
+dado:
+  - "un almacén con historia real: transiciones multiarchivo confirmadas, y un umbral calibrado más corto que esa historia"
+cuando:
+  - "se sella el diario y se MIDE el fichero en disco antes y después"
+entonces:
+  - "el diario ocupa menos bytes que antes: compactar es una propiedad del fichero, no de una estructura en memoria"
+  - "el diario conserva EXACTAMENTE una línea por evento, más la del `diario.sellado` que explica la retirada"
+  - "cada talón conserva `esquema`, `secuencia`, `tipo`, `previo` y `huella`, y declara qué campos se le retiraron"
+  - "la cola que el umbral reserva queda intacta, y `almacen.inicializado` y `transicion.preparada` no se sellan nunca"
+falla_si:
+  - "sellar no retira ni un byte: un sellado que no compacta no es el sellado que `g.7` escribe"
+  - "sellar retira LÍNEAS en vez de cuerpos, y con ellas la secuencia, el eslabón siguiente y el recuento que la revisión publicada exige"
+  - "se sella el punto de no retorno o el arranque del linaje, que la recuperación y la auditoría leen enteros"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
+```
+
+```yaml ads:escenario
+id: T313
+nombre: La cadena de huellas y la auditoría siguen verificándose sobre un diario sellado
+cubre: [g.7, g.5, g.13]
+dado:
+  - "un almacén cuyo diario ya se ha sellado, y su revisión publicada anterior al sellado"
+cuando:
+  - "se leen los eventos, se exige coherencia, se verifica integridad, se audita y se detecta bifurcación"
+  - "se vuelve a sellar tras nuevas transiciones, y se aplica una transición más sobre el diario ya sellado"
+entonces:
+  - "la cadena de `previo` casa eslabón a eslabón de principio a fin"
+  - "la auditoría reproduce el mismo `cid_raiz` desde el diario que la revisión declara"
+  - "el linaje se reconstruye entero y la detección de bifurcación sigue reconociendo la revisión propia"
+  - "un almacén sellado sigue admitiendo transiciones nuevas: anexar toma la huella de la última línea y la encuentra"
+falla_si:
+  - "sellar rompe la verificabilidad del eslabón, que es la restricción de diseño que manda"
+  - "la auditoría deja de reproducir la raíz porque el sellado se llevó lo que `g.13` necesita"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
+```
+
+```yaml ads:escenario
+id: T314
+nombre: La recuperación de g.8 funciona sobre un diario sellado, en sus dos ramas
+cubre: [g.7, g.8, g.4]
+dado:
+  - "un almacén con el diario ya sellado, y los puntos de corte inyectables del protocolo"
+cuando:
+  - "se mata un escritor real antes del punto de no retorno, y en otra pasada entre los pasos 8 y 9"
+  - "se reabre el almacén, que recupera"
+entonces:
+  - "la rama REVERTIR pierde la transición y no publica nada, y el diario sellado lo explica"
+  - "la rama COMPLETAR republica y confirma leyendo la `transicion.preparada`, que el sellado nunca toca"
+  - "el almacén queda íntegro y auditable tras cada una de las dos ramas"
+falla_si:
+  - "el sellado se lleva el cuerpo que la recuperación necesita y una de las dos ramas deja de poder cerrarse"
+  - "la recuperación sobre un diario sellado publica una transición que debía revertirse"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
+```
+
+```yaml ads:escenario
+id: T315
+nombre: Una transacción que todavía puede estar en su ventana no se sella
+cubre: [g.7, g.8]
+dado:
+  - "un almacén con una transacción abierta y sin cerrar, dejada por una caída real"
+cuando:
+  - "se intenta sellar el diario, y se pregunta por separado qué eventos serían sellables sin cola reservada"
+entonces:
+  - "sellar se niega con `SELLADO_IMPOSIBLE` y no toca ni un byte del diario"
+  - "ningún evento de la transacción sin cerrar entra en la lista de sellables, aunque no haya cola que lo proteja"
+falla_si:
+  - "se compacta por encima de una ventana abierta, haciendo parecer cerrada una historia que no lo está"
+  - "lo único que protege la ventana es la cola del umbral, que es un parámetro y no una garantía"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
+```
+
+```yaml ads:escenario
+id: T316
+nombre: El umbral del sellado es calibrable en el contrato derivado, y su ausencia es fallo cerrado
+cubre: [g.7, CONTRATO-ESTADO-DURABLE 6 bis]
+dado:
+  - "el contrato derivado, que declara el umbral en un bloque de calibración, y sedes alternativas del contrato para la prueba"
+cuando:
+  - "se lee el umbral de dos sedes que sólo difieren en el número, y se sella con cada una"
+  - "se lee el umbral de sedes sin bloque, sin la clave, con cero, con un negativo, con un texto, con un fraccionario, con JSON roto y con dos declaraciones"
+  - "se pasa un umbral absurdo por la API y por el punto ejecutable"
+entonces:
+  - "cambiar el número en el contrato cambia lo que se sella, sin tocar una línea de código"
+  - "cada forma de umbral inservible produce `UMBRAL_DE_SELLADO_INVALIDO` y no se sella nada"
+  - "el punto ejecutable devuelve el código de salida del fallo tipado del kernel"
+falla_si:
+  - "el umbral es una constante del código con nombre en mayúsculas y el contrato sólo lo describe"
+  - "un umbral ausente o ilegible cae en un valor por omisión silencioso, y la sede queda de decorado"
+  - "el valor se valida al leer el contrato y no cuando entra por la llamada, que es la puerta de atrás"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
+```
+
+```yaml ads:escenario
+id: T317
+nombre: Retirar el cuerpo de un evento sin transición explícita es fallo cerrado
+cubre: [g.7, g.13]
+dado:
+  - "un almacén con historia, y un diario editado a mano para vaciar el cuerpo de un evento conservando su huella"
+cuando:
+  - "se pide sellar sin autor o sin motivo, en sus seis combinaciones"
+  - "se lee el diario cuyo cuerpo se vació a mano"
+entonces:
+  - "una retirada sin autor y sin motivo produce `RETIRADA_SIN_TRANSICION` y no toca el diario"
+  - "un cuerpo vaciado a mano produce `DIARIO_CORRUPTO`, y el error nombra la transición que falta"
+falla_si:
+  - "se puede retirar un cuerpo sin dejar quién lo decidió ni por qué, que es un borrado y no una transición"
+  - "vaciar un cuerpo conservando la huella pasa desapercibido porque no rompe ningún eslabón"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
+```
+
+```yaml ads:escenario
+id: T318
+nombre: La retirada dirigida respeta lo que la recuperación necesita y deja rastro auditable
+cubre: [g.7, g.8, g.13]
+dado:
+  - "un almacén con una transacción sin cerrar, su punto de no retorno y el arranque de su linaje"
+cuando:
+  - "se pide retirar dirigidamente el cuerpo de cada uno de ellos, y el de un evento que no existe"
+  - "se retira el cuerpo de un evento que sí es admisible"
+  - "se sella y se retira desde el punto ejecutable"
+entonces:
+  - "cada retirada inadmisible produce `RETIRADA_NO_ADMISIBLE` y no toca el diario"
+  - "la retirada admisible deja en el diario un evento que dice autor, motivo, qué secuencias se llevó y qué ancla las verifica"
+  - "el punto ejecutable sella con los mismos códigos de salida que las demás órdenes, y el resto del motor sigue funcionando sobre el diario sellado"
+falla_si:
+  - "la retirada dirigida se salta las comprobaciones de conservación por ser un acto de autoridad"
+  - "se retira un cuerpo sin dejar rastro de quién y por qué"
+  - "el sellado sólo existe en la API y no en el punto ejecutable del motor"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
+```
+
+```yaml ads:escenario
+id: T319
+nombre: Alterar un evento sellado lo caza la verificación de la cadena
+cubre: [g.7, g.5, g.15]
+dado:
+  - "un diario ya sellado, y las cuatro formas de alterar un talón: su resumen, su huella, un campo conservado y un campo repuesto"
+cuando:
+  - "se altera cada una y se lee el diario"
+  - "se borra el evento de sellado y se lee el diario"
+  - "se sustituye la comprobación del ancla por una que no comprueba nada, y se vuelve a leer"
+entonces:
+  - "cada alteración produce `DIARIO_CORRUPTO`: el ancla cubre el talón entero y no tres campos suyos"
+  - "borrar el evento de sellado deja talones sin transición que los explique, y también se caza"
+  - "sin la comprobación, el diario alterado pasa como bueno: el control del control se EJECUTA y no se afirma"
+falla_si:
+  - "un talón se puede editar a mano con la cadena intacta, porque su huella no se recalcula"
+  - "la prueba del ancla sigue verde con la comprobación retirada, y entonces es decorado"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
 ```

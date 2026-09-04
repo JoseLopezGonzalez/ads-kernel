@@ -59,7 +59,7 @@ import time
 
 from . import fallos, migracion as _migracion
 from .bloqueo import BloqueoExclusivo
-from .diario import Diario
+from .diario import Diario, umbral_de_sellado
 from .errores import (
     AlmacenNoInicializado,
     AlmacenYaInicializado,
@@ -75,6 +75,7 @@ from .errores import (
     ReintentosAgotados,
     RevisionObsoleta,
     RutaInvalida,
+    SelladoImposible,
     TransicionInvalida,
     VersionDesconocida,
 )
@@ -931,7 +932,14 @@ class Almacen:
         plan = transicion.operaciones_a_dict()
         declarado = None
         for evento in propios:
-            if evento["tipo"] in ("transicion.abierta", "transicion.preparada"):
+            # El PRIMERO que declare el plan, y no el primero de esos dos tipos. Con el
+            # sellado de `g.7` la `transicion.abierta` de una transacción ya cerrada puede
+            # tener el cuerpo retirado, y quedarse con ella daría `declarado = None`: la
+            # comprobación de identificador duplicado con OTRAS operaciones se saltaría en
+            # silencio justo en los almacenes con historia, que son los que la necesitan.
+            # La `transicion.preparada` NUNCA se sella, así que siempre queda quien lo diga.
+            if evento["tipo"] in ("transicion.abierta", "transicion.preparada") \
+                    and "operaciones" in evento:
                 declarado = evento.get("operaciones")
                 break
         if declarado is not None and declarado != plan:
@@ -963,10 +971,14 @@ class Almacen:
             transaccion=transicion.id,
             revision=numero if numero is not None else revision_actual["revision"],
             revision_id=confirmada["resultado"],
-            padre=confirmada["base"],
+            # `.get` y no `[...]` en las dos claves del CUERPO, y sólo en ellas: `resultado`
+            # y `secuencia` se conservan siempre, pero `base` y `operaciones` viven en el
+            # cuerpo, y un `KeyError` crudo aquí sería exactamente lo que el §0 prohíbe si
+            # alguna vez una retirada dirigida alcanzase esta `preparada`.
+            padre=confirmada.get("base"),
             cid_raiz=self._cid_raiz_de(confirmada["resultado"], revision_actual, eventos),
             diario_secuencia=confirmada["secuencia"],
-            operaciones=confirmada["operaciones"],
+            operaciones=confirmada.get("operaciones") or [],
             repetida=True,
         )
 
@@ -1669,6 +1681,64 @@ class Almacen:
                 "registro": registro, "autoridad": autoridad, "motivo": motivo,
             }
         })
+
+    # =====================================================================
+    #  sellado del diario (`g.7`)
+    # =====================================================================
+    #
+    #  DECISIÓN · sellar toma el bloqueo de ESCRITOR, y no un bloqueo propio
+    #      Alternativas: (a) un tercer bloqueo, como el que el registro auxiliar tiene para
+    #      sí; (b) el bloqueo de escritor, el mismo que `aplicar` y `recuperar`.
+    #      Se elige (b). El registro auxiliar tiene bloqueo propio porque su escritor
+    #      —quien agotó los reintentos— es precisamente el que NO consiguió el del escritor,
+    #      y sin uno aparte no podría escribir nada (`g.6`). Aquí es al revés: sellar
+    #      reescribe el DIARIO, que es donde `anexar` está escribiendo, y dos escritores
+    #      sobre el mismo fichero con dos cerrojos distintos no se serializan entre sí. Con
+    #      (a) un `anexar` en vuelo y un `os.replace` del diario sellado se pisarían, y el
+    #      evento anexado desaparecería sin dejar rastro: el diario habría perdido una
+    #      transición confirmada, que es lo único que `g.4` no admite.
+    #
+    #  DECISIÓN · sellar se NIEGA sobre una ventana sin cerrar, igual que `aplicar`
+    #      La regla de la ventana ya protege evento a evento —no se sella ninguno de una
+    #      transacción sin terminal—, así que sellar con la ventana abierta sería CORRECTO.
+    #      Se rechaza igualmente, y por la misma razón que `aplicar`: `g.8` reserva la salida
+    #      de una ventana a la autoridad, y una compactación que pasa por encima de una
+    #      transacción a medias invita a creer que el diario ya está en orden. El fallo es
+    #      tipado y dice el remedio, que es `recuperar()`.
+    def sellar(self, *, autor, motivo, umbral=None, secuencias=None, contrato=None):
+        """`g.7` · compacta el diario, o retira el cuerpo de eventos CONCRETOS.
+
+        Sin `secuencias` es la compactación por UMBRAL: se retira el cuerpo de todo lo
+        admisible salvo la cola de `umbral` eventos que se deja intacta. Con `secuencias` es
+        una retirada DIRIGIDA, que no consulta el umbral y falla cerrado si alguno de esos
+        cuerpos todavía lo necesitan la recuperación o la auditoría.
+
+        `umbral` explícito y `contrato` son para calibrar y para PROBAR la calibración; sin
+        ninguno de los dos, el umbral se lee del contrato derivado, que es su sede.
+        """
+        self._exigir_operable()
+        bloqueo = BloqueoExclusivo(self._d.bloqueo_escritor, "escritor")
+        bloqueo.adquirir(intentos=3)
+        try:
+            if self._hay_ventana_que_cerrar():
+                raise SelladoImposible(
+                    "hay una transacción sin cerrar: `g.8` reserva su salida a la "
+                    "autoridad, y compactar el diario por encima de una ventana abierta "
+                    "haría parecer cerrada una historia que no lo está. Llame a "
+                    "`recuperar()` y vuelva a sellar",
+                    ruta=self._d.relativa(self._d.diario),
+                )
+            if secuencias is not None:
+                return self._diario.retirar_cuerpo(
+                    list(secuencias), autor=autor, motivo=motivo)
+            if umbral is None:
+                umbral = umbral_de_sellado(contrato)
+            return self._diario.sellar(
+                autor=autor, motivo=motivo, umbral=umbral,
+                secuencia_publicada=self._leer_revision()["diario_secuencia"],
+            )
+        finally:
+            bloqueo.liberar()
 
     # =====================================================================
     #  versionado, migración y bifurcación

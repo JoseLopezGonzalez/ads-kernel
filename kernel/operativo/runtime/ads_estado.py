@@ -4,8 +4,8 @@
     python3 kernel/operativo/runtime/ads_estado.py --repo <dir> <orden> [...]
 
 Órdenes: `inicializar` · `revision` · `leer` · `listar` · `transicion` · `recuperar` ·
-`verificar` · `auditar` · `reconciliacion` · `abrir-reconciliacion` · `resolver` ·
-`migrar` · `atestar`.
+`sellar` · `verificar` · `auditar` · `reconciliacion` · `abrir-reconciliacion` ·
+`resolver` · `migrar` · `atestar`.
 
 Códigos de salida:  0 éxito · 1 fallo de la operación (error tipado) · 2 uso incorrecto.
 
@@ -485,6 +485,35 @@ def orden_resolver(argumentos):
     ])
 
 
+def orden_sellar(argumentos):
+    """`g.7` · el SELLADO del diario, y la retirada dirigida de un cuerpo.
+
+    Abre con `recuperar=False` y NO con `para_escribir=True`, aunque escribe. No es un
+    descuido: `sellar` se niega si hay una transacción sin cerrar, y ese fallo tipado es
+    justamente lo que hay que ver. Abriendo con `recuperar=True`, el acto de abrir cerraría
+    la ventana por su cuenta y el sellado pasaría siempre, de modo que nadie sabría nunca si
+    la negativa existe. La misma razón por la que `recuperar` abre así.
+    """
+    with estado.abrir(argumentos.repo, recuperar=False) as almacen:
+        informe = almacen.sellar(
+            autor=argumentos.autor, motivo=argumentos.motivo,
+            umbral=argumentos.umbral,
+            secuencias=argumentos.secuencia or None,
+            contrato=argumentos.contrato,
+        ).a_dict()
+    return _emitir(argumentos, informe, [
+        "umbral            " + str(informe["umbral"]),
+        "sellados          " + str(informe["sellados"]),
+        "secuencias        " + (", ".join(str(s) for s in informe["secuencias"])
+                                or "(ninguna)"),
+        "evento            " + str(informe["evento"]),
+        "bytes_antes       " + str(informe["bytes_antes"]),
+        "bytes_despues     " + str(informe["bytes_despues"]),
+        "bytes_retirados   " + str(informe["bytes_retirados"]),
+        "cid_sellados      " + informe["cid_sellados"],
+    ])
+
+
 def orden_migrar(argumentos):
     with estado.abrir(argumentos.repo, recuperar=False) as almacen:
         informe = almacen.migrar(argumentos.a).a_dict()
@@ -534,6 +563,7 @@ ORDENES = {
     "listar": orden_listar,
     "transicion": orden_transicion,
     "recuperar": orden_recuperar,
+    "sellar": orden_sellar,
     "verificar": orden_verificar,
     "auditar": orden_auditar,
     "reconciliacion": orden_reconciliacion,
@@ -602,6 +632,17 @@ def construir_analizador():
     resolver.add_argument("registro")
     resolver.add_argument("--autoridad", required=True)
     resolver.add_argument("--motivo", required=True)
+
+    sellar = ordenes.add_parser("sellar", parents=[comun])
+    sellar.add_argument("--autor", required=True)
+    sellar.add_argument("--motivo", required=True)
+    sellar.add_argument("--umbral", type=int, default=None,
+                        help="eventos de cola que NO se sellan; por defecto, el calibrado "
+                             "en el contrato derivado")
+    sellar.add_argument("--secuencia", type=int, action="append",
+                        help="retirada DIRIGIDA del cuerpo de ese evento (repetible)")
+    sellar.add_argument("--contrato", default=None,
+                        help="sede alternativa del contrato derivado del que se lee el umbral")
 
     migrar = ordenes.add_parser("migrar", parents=[comun])
     migrar.add_argument("--a", type=int, default=estado.VERSION_DE_FORMATO)

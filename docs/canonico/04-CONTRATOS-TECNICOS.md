@@ -106,13 +106,6 @@ ADAPTADORES DE            existe el CONTRATO, existe un adaptador LOCAL DE PROCE
                           declara. Lo que NO existe es ningún adaptador de PROVEEDOR, y
                           por eso el nivel derivado es `compatible` y nunca `soportado`:
                           no hay ninguna celda `certificacion/integrado` que lo sostenga
-`D104` · LOS PARES        `F6` materializa CINCO de los NUEVE pares `<CAP>:revision` que el
-    `DOM:revision`        catálogo de `11-ARQ` §19 deriva. Los cuatro de `DOM` NO están, y
-                          la razón no es que falte trabajo: `esquemas/proceso.yaml` no
-                          admite la variante `DOM:revision`, y ampliar ese conjunto es un
-                          ACTO NORMATIVO cuya sede es el esquema. `T273` los publica uno a
-                          uno con el error `composicion-incompleta`, que **impide el cierre
-                          del gate de composición**
 LAS TRES RESTAS DEL       el universo obligatorio de `F6` se deriva —`derivar-universo-`
     UNIVERSO DE `F6`      `obligatorio.py --obligaciones`— y sus tres restas NO están
                           vacías. Mientras no lo estén, `F6` no está completa, y el número
@@ -124,11 +117,37 @@ CERTIFICACIÓN DE `F6`     **ninguna.** Implementado y probado NO es certificado
                           SHA exacto. Presentar `O26` como certificación es leerlo al revés
 ```
 
+> **Y ESTA SECCIÓN VOLVIÓ A SER FALSA EL MISMO DÍA QUE SE CORRIGIÓ, sobre `D104`.** Se dice
+> entero porque es la segunda vez y porque el patrón importa más que la instancia: la
+> corrección del 2026-09-04 escribió aquí «`F6` materializa CINCO de los NUEVE pares» y «los
+> cuatro de `DOM` NO están» **en el mismo commit que instanció los cuatro que faltaban**, y
+> añadió tres cláusulas más que ese commit desmiente —que el esquema no admite la variante,
+> que `T273` los publica con `composicion-incompleta`, y que eso impide el cierre del gate—.
+> Una auditoría independiente lo midió: `T273` sale **SUPERADA**, con **cero** apariciones de
+> `composicion-incompleta`, y `esquemas/proceso.yaml` declara `DOM:revision` desde ese mismo
+> día con su motivo escrito.
+>
+> **La causa raíz no es el descuido: es que la cifra se escribía A MANO en una sede que se
+> declara única.** Por eso no basta corregir el número. `D104` sale de esta lista —está
+> materializado 9/9— y su cifra deja de vivir aquí: la publica el validador que la deriva,
+> `validadores/comprobar_composicion_procesos.py`, y esta sede remite a él. **Una sede única
+> que publica una magnitud derivada a mano vuelve a envejecer el día siguiente**, y ésta lo
+> hizo en menos de veinticuatro horas.
+
 **Lo que SÍ está construido y esta sección decía que no, con dónde comprobarlo.** No se
 mueve a §1.1 en silencio: se dice que se movió y por qué, para que quien recuerde la
 versión anterior sepa que cambió el árbol y no la redacción.
 
 ```text
+`D104` · LOS NUEVE PARES  MATERIALIZADO 9/9 en CINCO procesos, con las cuatro vías, el
+    `<CAP>:revision`      reparto por procedencia y las diez anclas DERIVADOS del árbol y
+                          no escritos. `esquemas/proceso.yaml` declara `DOM:revision` desde
+                          el 2026-09-04, y el sabotaje `N240d` se reapuntó a una variante
+                          que sigue sin declarar para no perder poder de discriminación.
+                          La cifra NO se escribe aquí: la deriva y la publica
+                          `validadores/comprobar_composicion_procesos.py`, con su censo de
+                          fixtures contado. Evidencia:
+                          `evidencia/composicion-procesos-salida.txt`
 EL CICLO DE `§7.2`        `kernel/operativo/runtime/ciclo/` — encuadre, rutas, equipos,
                           gates, handoffs, cierre, continuación y planificación, con punto
                           ejecutable `ads_ciclo.py`. Evidencia: `evidencia/ciclo-salida.txt`

@@ -34,13 +34,61 @@ RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")
 VALIDADORES = "kernel/operativo/validadores"
 
 
+# ===========================================================================
+#  DOS CLASES DE SEDE, UN SOLO CATÁLOGO
+# ===========================================================================
+#  HECHO MEDIDO ANTES DE CORREGIR. Este catálogo sólo sabía sabotear VALIDADORES: la
+#  ejecución construía `kernel/operativo/validadores/<validador>.py`, lo llamaba con
+#  `--json --raiz` y buscaba una fila `{"id": "Tnnn", "estado": …}`. Una batería `unittest`
+#  del runtime no puede satisfacer nada de eso. Consecuencia: de las 102 mutaciones con
+#  validador literal, CERO apuntaban a `kernel/operativo/runtime/pruebas/`, y como el
+#  derivador del universo obligatorio calcula la resta `B` —«implementadas SIN PRUEBA CAPAZ
+#  DE FALLAR»— como «ninguna `Mutacion` apunta a sus pruebas», 36 de sus 37 filas estaban
+#  ahí POR CONSTRUCCIÓN: el instrumento no podía alcanzarlas. Con ese criterio `F6` sería
+#  incertificable por construcción, y eso no puede ser lo que §5.2 quiso decir.
+#
+#  Lo que se corrige NO es el criterio: es el ALCANCE DEL INSTRUMENTO. El catálogo aprende
+#  a sabotear también las BATERÍAS, con la misma exigencia y no con menos.
+#
+#  DECISIÓN · un CAMPO `clase`, y no una subclase `MutacionDeBateria`
+#      Alternativas: (a) una subclase con su propio nombre; (b) un campo en `Mutacion`.
+#      Se elige (b), y el motivo es duro: hay un derivador EXTERNO —
+#      `docs/evolucion/verificacion/derivar-universo-obligatorio.py`, que no es zona de
+#      este fichero— que descubre los sabotajes con la expresión
+#          Mutacion\(\s*"([^"]+)"\s*,\s*"[^"]*"\s*,\s*"(T\d+)"
+#      Esa expresión exige el token `Mutacion` pegado al paréntesis. `MutacionDeBateria(`
+#      NO casa con ella. Una subclase con otro nombre dejaría cada sabotaje nuevo INVISIBLE
+#      para la resta `B` —es decir, invisible para lo único que este trabajo existe para
+#      mover— y en silencio, que es el modo de fallo que `E-14` describe. Un campo conserva
+#      la forma sintáctica intacta: los tres primeros posicionales siguen siendo
+#      `("Nxxx", "<hallazgo>", "Tnnn"` entrecomillados y en ese orden.
+#
+#  DECISIÓN · en las mutaciones de batería, `espera` es OBLIGATORIA
+#      En las de validador es opcional porque el fallo llega ya con su diagnóstico
+#      redactado. Una batería es más ruidosa: si la infracción rompe un `import`, la batería
+#      «falla» con un `Traceback` y sale con código distinto de cero sin haber comprobado
+#      nada. Aceptar eso sería contar como detección justo lo que no lo es. Se exige, por
+#      tanto, tres cosas y no una: que la batería termine en rojo, que ENTRE LOS CASOS
+#      CAÍDOS esté el que se declara —se sabe por el docstring `Tnnn · …` que `unittest`
+#      imprime con `verbosity=2` debajo del nombre del caso— y que ESE caso caiga por el
+#      motivo esperado.
+
+CLASE_VALIDADOR = "validador"
+CLASE_BATERIA = "bateria"
+
+
 class Mutacion:
     """Una infracción deliberada, y la prueba que TIENE que detectarla."""
 
-    def __init__(self, mid, hallazgo, prueba, validador, descripcion, aplicar, espera=None):
+    def __init__(self, mid, hallazgo, prueba, validador, descripcion, aplicar, espera=None,
+                 clase=CLASE_VALIDADOR, casos=None):
         self.id = mid
         self.hallazgo = hallazgo
         self.prueba = prueba
+        # Con `clase="validador"` es el NOMBRE del módulo de `validadores/`. Con
+        # `clase="bateria"` es la RUTA RELATIVA de la batería desde la raíz del corpus. Se
+        # conserva el nombre del atributo porque los diagnósticos ya lo nombran así y
+        # porque el cuarto posicional no lo lee ningún derivador externo.
         self.validador = validador
         self.descripcion = descripcion
         self.aplicar = aplicar          # f(raiz_copia) -> None
@@ -48,8 +96,20 @@ class Mutacion:
         # mutación se da por detectada porque la prueba falló, sin comprobar que falló POR
         # ESO. Con manifiestos inválidos importa el doble: un traceback también «falla».
         self.espera = espera
+        self.clase = clase
+        # Sólo para baterías: los NOMBRES de clase o de caso que `unittest.main` acepta en
+        # la línea de órdenes, para correr una parte y no la batería entera. Cuando se usa,
+        # la corrida es PARCIAL y se dice: ver `_ejecutar_bateria`.
+        self.casos = list(casos or [])
         self.resultado = None           # "detectada" | "NO DETECTADA" | "error: ..."
         self.detalle = ""
+        if clase not in (CLASE_VALIDADOR, CLASE_BATERIA):
+            raise SystemExit(f"{mid}: clase de mutación desconocida «{clase}»")
+        if clase == CLASE_BATERIA and not espera:
+            raise SystemExit(
+                f"{mid}: una mutación de batería SIN `espera` no verifica nada. Una batería "
+                f"que revienta al importar también sale con código distinto de cero, y eso "
+                f"no es detección: es una traza")
 
 
 # ---------------------------------------------------------------------------
@@ -817,6 +877,134 @@ def m_f11_cabecera_con_rango_falso(raiz):
                "son las pruebas T75 a T84")
 
 
+# ---------------------------------------------------------------------------
+#  LOS HALLAZGOS DE LA AUDITORÍA INDEPENDIENTE DEL 2026-09-04
+# ---------------------------------------------------------------------------
+#  Cada función de aquí abajo reintroduce EL DEFECTO EXACTO que el auditor midió, con la
+#  reproducción escrita en el propio docstring. Sin ellas, cada corrección sería una
+#  afirmación: «ahora ya no pasa». Con ellas, volver a introducirlo pone rojo el control.
+
+def m_h03_sin_sede_de_la_proyeccion(raiz):
+    """`H-03` · la SEDE de la proyección de §19 desaparece, y `T276` pasaba igual.
+
+    Reproducción del auditor, repetida antes de corregir:
+        $ rm docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+        $ python3 comprobar_composicion_procesos.py
+        T276  SUPERADA  Los repartos por vía, procedencia y ancla derivan del árbol
+        4 superadas · 0 fallidas                                              → rc 0
+    Un control que dice «los repartos derivan del árbol Y SU SEDE NO DISCREPA» no puede
+    pasar cuando la sede no está: borrarla era la forma más barata de ponerlo en verde.
+    """
+    os.remove(os.path.join(raiz, "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md"))
+
+
+def m_h03_proyeccion_reformulada_sin_falsearla(raiz):
+    """`H-03` · el reparto por vía se REESCRIBE sin falsear ni una cifra, y dejaba de leerse.
+
+    Los cuatro números son los mismos —0, 1, 0 y 8—: no se miente, se cambia la forma. El
+    contraste era `if m:` sobre una expresión regular, de modo que no casar era
+    indistinguible de casar y coincidir. Reformular la sede apagaba la comprobación en
+    silencio, que es peor que falsearla: falsearla al menos se veía.
+    """
+    _sustituir(raiz, "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+               "**vía 1 · 0 pares · vía 2 · 1 par · vía 3 · 0 pares · vía 4 ·\n"
+               "                           8 pares**",
+               "**por vía: 0 / 1 / 0 / 8 pares (vías 1, 2, 3 y 4)**")
+
+
+def m_h03_ancla_que_desaparece_de_la_proyeccion(raiz):
+    """`H-03` · una fila del ancla se cae de la proyección, y el `continue` la daba por buena.
+
+    `N276` sólo cubría el caso en que el número CAMBIA. Quitar una fila entera no cambia
+    ningún número: simplemente deja de haber qué contrastar, y el bucle saltaba el proceso
+    que ya no estaba publicado. Aquí se le quita el formato de código al ancla de `GAP`, que
+    es como desaparece de verdad —nadie borra una línea, la reescribe— y se comprueba que
+    ahora la ausencia se denuncia.
+    """
+    ruta = os.path.join(raiz, "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md")
+    with open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    nuevo = re.sub(r"`GAP\s*→\s*VER`", "GAP hacia VER", texto)
+    if nuevo == texto:
+        raise RuntimeError("la mutación no encaja: §19 ya no publica el ancla `GAP → VER`")
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(nuevo)
+
+
+def m_h04_sede_documental_viva_con_version_falsa(raiz):
+    """`H-04` · una sede NUEVA bajo `docs/canonico/` publica una versión que no es la vigente.
+
+    Contraste que midió el auditor, reproducido antes de corregir: la MISMA frase escrita
+    en `kernel/` sale en `T152`, y escrita en `docs/canonico/` no salía en NINGUNA salida,
+    porque el barrido de `^docs/` sólo emitía fallo cuando ninguna clase de remedio cubría
+    la sede, y `(^docs/, F6)` es un cajón de sastre que las cubre todas. `docs/canonico/` es
+    SEDE VIVA, y la condición de cierre del CONTRATO 2 dice «ninguna sede VIVA».
+    """
+    _escribir(raiz, "docs/canonico/NOTA-DE-VERSION.md",
+              "# Nota de versión\n\nEsta sede declara `kernel/KERNEL.md` 9.9.9.\n")
+
+
+def m_h04_los_pendientes_dejan_de_publicarse(raiz):
+    """`H-04` · la capa documental vuelve a no aparecer en ninguna salida.
+
+    Lo que NO es fallo de `F6` —`docs/rediseno/` es material aprobado de `F5`, `docs/owner/`
+    pide NOTA del Owner— se REPORTA con su clase de remedio, porque el CONTRATO 2 manda
+    reportar sin decidir el remedio. Si eso deja de publicarse, `T272` tiene que ponerse
+    roja: si no, la lista podría desaparecer sin que nada lo dijera, que es el mismo agujero
+    con otra forma.
+    """
+    _sustituir(raiz, "kernel/operativo/validadores/comprobar_versiones.py",
+               "    return [f\"{rel}:{numero}: publica {publicada} para `{artefacto}` "
+               "(vigente {vigente}). \"",
+               "    return []\n"
+               "    return [f\"{rel}:{numero}: publica {publicada} para `{artefacto}` "
+               "(vigente {vigente}). \"")
+
+
+def m_h05_validador_sin_prologo_de_entorno(raiz):
+    """`H-05` · un validador que depende de `tomllib` pierde su prólogo de entorno.
+
+    Reproducción del auditor, repetida con el Python 3.10.12 real del PATH antes de
+    corregir:
+        $ python3 kernel/operativo/validadores/comprobar_evidencia.py
+        T158  SUPERADA  La evidencia publicada demuestra lo que el informe afirma
+        1 superadas · 0 fallidas                                              → rc 0
+        $ python3 kernel/operativo/validadores/comprobar_fuentes.py           → rc 1
+    Verde sobre una evidencia que en ese entorno nadie puede regenerar, y un `rc 1`
+    indistinguible de «el producto falló». `11-ARQ` §19, CONTRATO 3 exige «el mismo prólogo
+    en los tres validadores que importan `tomllib`, para que ejecutarlos sueltos no eluda la
+    guardia». Aquí se le quita a `comprobar_fuentes`, que es quien lee el manifiesto.
+    """
+    _sustituir(raiz, "kernel/operativo/validadores/comprobar_fuentes.py",
+               "    entorno.exigir()\n    ap = argparse.ArgumentParser()",
+               "    ap = argparse.ArgumentParser()")
+
+
+def m_h06_cifra_falsa_partida_por_el_reflujo(raiz):
+    """`H-06` · la misma afirmación falsa, partida por el ajuste de línea, se colaba entera.
+
+    Medido por el auditor en tres ficheros nuevos: «Los DOCE contratos transversales» se
+    detectaba, y «Los DOCE contratos\\ntransversales» NO. El corpus entero está ajustado a
+    noventa columnas, luego una afirmación partida por el reflujo es el caso NORMAL: el
+    control sólo veía las que caben en una línea.
+    """
+    _escribir(raiz, "kernel/operativo/AFIRMACION-PARTIDA.md",
+              "# Nota\n\nEl corpus se gobierna por los DOCE contratos\n"
+              "transversales que lo atraviesan de punta a punta.\n")
+
+
+def m_h06_cifra_falsa_sin_articulo(raiz):
+    """`H-06` · la afirmación del total con VERBO DE CENSO y sin artículo delante.
+
+    «El corpus declara veintiocho capacidades» afirma un total tan claramente como «las
+    quince capacidades», y no se detectaba porque la marca de totalidad era SÓLO el
+    artículo. Se añadió el verbo de declaración a la marca —y nada más, ver la `DECISIÓN` en
+    `comprobar_recuentos.Regla`—, y esto es lo que lo mantiene cerrado.
+    """
+    _escribir(raiz, "kernel/operativo/AFIRMACION-SIN-ARTICULO.md",
+              "# Nota\n\nEl corpus declara veintiocho capacidades, cada una con su ficha.\n")
+
+
 CATALOGO = [
     Mutacion("N136", "A-06", "T136", "comprobar_contratos",
              "un veto levantable (DOM) se declara prevaleciente sobre otro (DIS)",
@@ -1082,6 +1270,44 @@ CATALOGO = [
              "la cabecera vuelve a afirmar un rango de pruebas que no contiene",
              m_f11_cabecera_con_rango_falso,
              espera="`F-11`"),
+
+    # -- los sabotajes de los hallazgos de la auditoría del 2026-09-04 -----------------
+    # Cada uno reintroduce EXACTAMENTE el defecto que el auditor midió. No están en un
+    # módulo de eje aparte porque no son un eje: son la contrapartida de cuatro
+    # correcciones concretas, y leerlas junto al resto del catálogo es lo que permite ver
+    # que ninguna baja el listón de otra.
+    Mutacion("N276b", "H-03", "T276", "comprobar_composicion_procesos",
+             "desaparece la SEDE de la proyección de §19 y la prueba pasaría por no mirar",
+             m_h03_sin_sede_de_la_proyeccion,
+             espera="que es la SEDE ÚNICA de la proyección"),
+    Mutacion("N276c", "H-03", "T276", "comprobar_composicion_procesos",
+             "el reparto por vía se REFORMULA sin falsear ninguna cifra y deja de leerse",
+             m_h03_proyeccion_reformulada_sin_falsearla,
+             espera="el reparto NO SE CONTRASTÓ"),
+    Mutacion("N276d", "H-03", "T276", "comprobar_composicion_procesos",
+             "un ancla desaparece de la proyección y su fila deja de contrastarse",
+             m_h03_ancla_que_desaparece_de_la_proyeccion,
+             espera="§19 no publica el ancla de `proceso:GAP`"),
+    Mutacion("N272c", "H-04", "T152", "comprobar_versiones",
+             "una sede nueva de `docs/canonico/` publica una versión que no es la vigente",
+             m_h04_sede_documental_viva_con_version_falsa,
+             espera="docs/canonico/NOTA-DE-VERSION.md"),
+    Mutacion("N272d", "H-04", "T272", "comprobar_versiones",
+             "la capa documental deja de publicarse y vuelve a no salir en ninguna salida",
+             m_h04_los_pendientes_dejan_de_publicarse,
+             espera="la capa documental vuelve a no reportarse en ninguna salida"),
+    Mutacion("N158z", "H-05", "T158", "comprobar_evidencia",
+             "un validador que depende de `tomllib` pierde su prólogo de entorno",
+             m_h05_validador_sin_prologo_de_entorno,
+             espera="Le falta el prólogo `entorno.exigir()`"),
+    Mutacion("N151b", "H-06", "T151", "comprobar_recuentos",
+             "una cifra falsa se parte por el reflujo de línea, como el corpus la escribe",
+             m_h06_cifra_falsa_partida_por_el_reflujo,
+             espera="AFIRMACION-PARTIDA.md"),
+    Mutacion("N151c", "H-06", "T151", "comprobar_recuentos",
+             "una cifra falsa se afirma con el verbo de censo y sin artículo delante",
+             m_h06_cifra_falsa_sin_articulo,
+             espera="AFIRMACION-SIN-ARTICULO.md"),
 ]
 
 
@@ -1094,8 +1320,10 @@ CATALOGO = [
 import negativos_cardinalidad  # noqa: E402
 import negativos_contratos19  # noqa: E402
 import negativos_integridad  # noqa: E402
+import negativos_runtime  # noqa: E402
 
-for _eje in (negativos_cardinalidad, negativos_contratos19, negativos_integridad):
+for _eje in (negativos_cardinalidad, negativos_contratos19, negativos_integridad,
+             negativos_runtime):
     CATALOGO.extend(_eje.CATALOGO)
 
 _vistos = [m.id for m in CATALOGO]
@@ -1113,6 +1341,118 @@ def copiar_corpus(destino):
     shutil.copytree(RAIZ, destino, ignore=ignorar, symlinks=True)
 
 
+# El truncado a 120 puede caer justo en un espacio, y entonces la línea publicada termina
+# en blanco: `git diff --check` lo marca como trailing whitespace en cada regeneración. Se
+# recorta DESPUÉS de truncar porque el defecto está en el corte y no en el texto de origen.
+def _corta(texto):
+    return texto[:120].rstrip()
+
+
+def _corta_traza(texto):
+    """Igual, pero de un diagnóstico MULTILÍNEA.
+
+    El de un validador cabe en una línea; el de una batería trae el `Traceback` entero, y
+    publicarlo con sus saltos partiría la tabla de resultados en pedazos. Se colapsa el
+    espacio en blanco ANTES de truncar, que es lo contrario de lo que se hace arriba y por
+    el motivo opuesto: aquí sobra estructura, allí no había ninguna.
+    """
+    return " ".join(texto.split())[:120].rstrip()
+
+
+# `unittest`, con `verbosity=2`, imprime la lista de errores así:
+#
+#     ======================================================================
+#     FAIL: test_07_interrupcion_en_frontera (__main__.Caidas.test_07_…)
+#     T175 · Defecto que previene: una recuperación que se acumula.
+#     ----------------------------------------------------------------------
+#     Traceback (most recent call last):
+#       …
+#     AssertionError: …
+#
+# La segunda línea es la primera del docstring del caso, y en estas baterías empieza SIEMPRE
+# por el identificador de la prueba. Es lo que permite saber QUÉ prueba cayó, y no
+# conformarse con «la batería falló», que es una afirmación mucho más débil y que cualquier
+# rotura accidental satisface.
+_SEPARADOR = re.compile(r"^={20,}\s*$", re.M)
+_CABECERA_DE_CAIDA = re.compile(r"^(FAIL|ERROR):\s+(\S+)")
+_RESUMEN_DE_CORRIDA = re.compile(r"^Ran \d+ tests?\b", re.M)
+
+
+def _caidas_de_la_bateria(salida):
+    """`[{clase, caso, prueba, diagnostico}]` — qué cayó, y con qué motivo."""
+    caidas = []
+    for parte in _SEPARADOR.split(salida)[1:]:
+        lineas = parte.strip("\n").splitlines()
+        if not lineas:
+            continue
+        cabecera = _CABECERA_DE_CAIDA.match(lineas[0].strip())
+        if not cabecera:
+            continue
+        doc = lineas[1].strip() if len(lineas) > 1 else ""
+        identificador = re.match(r"(T\d+)\b", doc)
+        caidas.append({
+            "clase": cabecera.group(1),
+            "caso": cabecera.group(2),
+            "prueba": identificador.group(1) if identificador else None,
+            "diagnostico": "\n".join(lineas[1:]),
+        })
+    return caidas
+
+
+def _ejecutar_bateria(mut, destino):
+    """Ejecuta la BATERÍA declarada sobre la copia, y exige tres cosas, no una.
+
+    1 · que termine con código distinto de cero. Una batería que sigue en verde con la
+        infracción dentro es una batería que no comprueba lo que su nombre dice.
+    2 · que ENTRE LAS PRUEBAS QUE CAEN esté la declarada. «Falló algo» no es detección: la
+        infracción tiene que tumbar la prueba que se supone que la vigila.
+    3 · que esa prueba caiga POR EL MOTIVO ESPERADO. Un `Traceback` de importación también
+        sale con código distinto de cero, y eso no verifica nada.
+    """
+    bateria = os.path.join(destino, mut.validador)
+    if not os.path.exists(bateria):
+        mut.resultado = "error"
+        mut.detalle = f"la batería {mut.validador} todavía no existe"
+        return
+    proc = subprocess.run([sys.executable, bateria] + mut.casos,
+                          capture_output=True, text=True, cwd=destino)
+    salida = proc.stdout + proc.stderr
+    parcial = f" [corrida PARCIAL: {' '.join(mut.casos)}]" if mut.casos else ""
+
+    if not _RESUMEN_DE_CORRIDA.search(salida):
+        # Ni siquiera llegó a correr: la infracción rompió el arranque. Es el caso que la
+        # `espera` existe para descalificar, y se nombra tal cual.
+        mut.resultado = "NO DETECTADA"
+        ultima = ([l for l in salida.strip().splitlines() if l.strip()] or ["(sin salida)"])[-1]
+        mut.detalle = (f"{mut.validador} NO LLEGÓ A CORRER{parcial}: terminó con "
+                       f"exit {proc.returncode} sin ejecutar un solo caso. Una traza de "
+                       f"arranque no es una detección: {_corta_traza(ultima)}")
+        return
+    if proc.returncode == 0:
+        mut.resultado = "NO DETECTADA"
+        mut.detalle = (f"{mut.validador} siguió pasando{parcial} con la infracción "
+                       f"introducida (exit 0)")
+        return
+
+    caidas = _caidas_de_la_bateria(salida)
+    mias = [c for c in caidas if c["prueba"] == mut.prueba]
+    if not mias:
+        cayeron = sorted({c["prueba"] or c["caso"] for c in caidas}) or ["(ninguna)"]
+        mut.resultado = "NO DETECTADA"
+        mut.detalle = (f"{mut.validador} falló{parcial}, y {mut.prueba} NO está entre las "
+                       f"pruebas caídas. Cayeron: {', '.join(cayeron)[:90]}")
+        return
+    elegida = next((c for c in mias if mut.espera in c["diagnostico"]), None)
+    if elegida is None:
+        mut.resultado = "NO DETECTADA"
+        mut.detalle = (f"{mut.prueba} cayó{parcial}, y NO por el motivo esperado. Se "
+                       f"buscaba «{mut.espera}» y se obtuvo: "
+                       f"{_corta_traza(mias[0]['diagnostico'])}")
+        return
+    mut.resultado = "detectada"
+    mut.detalle = f"{elegida['clase']} {_corta_traza(elegida['diagnostico'])}{parcial}"
+
+
 def ejecutar(mut, tmp_base):
     destino = os.path.join(tmp_base, mut.id)
     copiar_corpus(destino)
@@ -1121,6 +1461,9 @@ def ejecutar(mut, tmp_base):
     except Exception as exc:                                   # noqa: BLE001
         mut.resultado = "error"
         mut.detalle = f"no se pudo aplicar la mutación: {exc}"
+        return
+    if mut.clase == CLASE_BATERIA:
+        _ejecutar_bateria(mut, destino)
         return
     script = os.path.join(destino, VALIDADORES, f"{mut.validador}.py")
     if not os.path.exists(script):
@@ -1156,13 +1499,6 @@ def ejecutar(mut, tmp_base):
         return
 
     fallos = fila.get("fallos") or []
-    # El truncado a 120 puede caer justo en un espacio, y entonces la línea publicada
-    # termina en blanco: `git diff --check` lo marca como trailing whitespace en cada
-    # regeneración. Se recorta DESPUÉS de truncar, en los dos diagnósticos —el esperado y
-    # el general—, porque el defecto está en el corte y no en el texto de origen.
-    def _corta(texto):
-        return texto[:120].rstrip()
-
     if mut.espera and not any(mut.espera in f for f in fallos):
         mut.resultado = "NO DETECTADA"
         mut.detalle = (f"{mut.prueba} falló, y NO por el motivo esperado. Se buscaba "

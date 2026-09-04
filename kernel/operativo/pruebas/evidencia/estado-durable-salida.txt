@@ -148,8 +148,44 @@ test_18_detectar_bifurcacion_distingue_el_mismo_linaje_del_ajeno (__main__.Posit
 T176 · Defecto que previene: dos máquinas divergiendo sin que nadie lo note (`g.6`). ... ok
 test_19_abrir_y_resolver_una_reconciliacion_por_la_CLI (__main__.Positivos.test_19_abrir_y_resolver_una_reconciliacion_por_la_CLI)
 T178 · Defecto que previene: un camino del motor que sólo existe en la API. ... ok
+test_T312_el_sellado_compacta_el_diario_y_se_mide (__main__.SelladoDelDiario.test_T312_el_sellado_compacta_el_diario_y_se_mide)
+T312 · Defecto que previene: un «sellado» que no retira ni un byte. ... ok
+test_T312b_la_cola_del_umbral_queda_intacta_y_lo_no_sellable_tambien (__main__.SelladoDelDiario.test_T312b_la_cola_del_umbral_queda_intacta_y_lo_no_sellable_tambien)
+T312 · Defecto que previene: sellar la ventana o el punto de no retorno. ... ok
+test_T313_la_cadena_de_huellas_y_la_auditoria_sobreviven_al_sellado (__main__.SelladoDelDiario.test_T313_la_cadena_de_huellas_y_la_auditoria_sobreviven_al_sellado)
+T313 · Defecto que previene: un sellado que rompe la cadena o la auditoría. ... ok
+test_T313b_un_almacen_sellado_sigue_admitiendo_transiciones (__main__.SelladoDelDiario.test_T313b_un_almacen_sellado_sigue_admitiendo_transiciones)
+T313 · Defecto que previene: un diario que tras sellarse ya no se puede anexar. ... ok
+test_T314_la_rama_REVERTIR_funciona_sobre_un_diario_sellado (__main__.SelladoDelDiario.test_T314_la_rama_REVERTIR_funciona_sobre_un_diario_sellado)
+T314 · Defecto que previene: sellar y perder la recuperación de `g.8`. ... ok
+test_T314b_la_rama_COMPLETAR_funciona_sobre_un_diario_sellado (__main__.SelladoDelDiario.test_T314b_la_rama_COMPLETAR_funciona_sobre_un_diario_sellado)
+T314 · Defecto que previene: sellar y perder la otra mitad de `g.8`. ... ok
+test_T315_una_transaccion_en_su_ventana_no_se_sella (__main__.SelladoDelDiario.test_T315_una_transaccion_en_su_ventana_no_se_sella)
+T315 · Defecto que previene: compactar la ventana que `g.8` necesita leer. ... ok
+test_T316_el_umbral_se_lee_del_contrato_derivado_y_es_calibrable (__main__.SelladoDelDiario.test_T316_el_umbral_se_lee_del_contrato_derivado_y_es_calibrable)
+T316 · Defecto que previene: un umbral que es una constante del código. ... ok
+test_T316b_un_umbral_ausente_ilegible_o_absurdo_es_fallo_cerrado (__main__.SelladoDelDiario.test_T316b_un_umbral_ausente_ilegible_o_absurdo_es_fallo_cerrado)
+T316 · Defecto que previene: un valor por omisión silencioso. ... ok
+test_T316c_el_umbral_absurdo_pasado_a_mano_tampoco_pasa (__main__.SelladoDelDiario.test_T316c_el_umbral_absurdo_pasado_a_mano_tampoco_pasa)
+T316 · Defecto que previene: validar la sede y no el valor que se usa. ... ok
+test_T317_retirar_un_cuerpo_sin_transicion_es_fallo_cerrado (__main__.SelladoDelDiario.test_T317_retirar_un_cuerpo_sin_transicion_es_fallo_cerrado)
+T317 · Defecto que previene: un borrado disfrazado de sellado. ... ok
+test_T317b_un_cuerpo_vaciado_a_mano_se_caza_al_leer (__main__.SelladoDelDiario.test_T317b_un_cuerpo_vaciado_a_mano_se_caza_al_leer)
+T317 · Defecto que previene: vaciar un cuerpo conservando la huella. ... ok
+test_T318_retirar_un_cuerpo_que_la_recuperacion_necesita_es_fallo_cerrado (__main__.SelladoDelDiario.test_T318_retirar_un_cuerpo_que_la_recuperacion_necesita_es_fallo_cerrado)
+T318 · Defecto que previene: una retirada dirigida que se salta las reglas. ... ok
+test_T318b_la_retirada_con_transicion_deja_rastro_auditable (__main__.SelladoDelDiario.test_T318b_la_retirada_con_transicion_deja_rastro_auditable)
+T318 · Defecto que previene: retirar sin dejar quién y por qué. ... ok
+test_T318c_el_punto_ejecutable_sella_con_la_misma_disciplina (__main__.SelladoDelDiario.test_T318c_el_punto_ejecutable_sella_con_la_misma_disciplina)
+T318 · Defecto que previene: un camino del motor que sólo existe en la API. ... ok
+test_T319_alterar_un_evento_sellado_lo_caza_la_verificacion (__main__.SelladoDelDiario.test_T319_alterar_un_evento_sellado_lo_caza_la_verificacion)
+T319 · Defecto que previene: un talón editable sin que nada lo note. ... ok
+test_T319b_quitar_el_ancla_deja_los_talones_sin_explicacion (__main__.SelladoDelDiario.test_T319b_quitar_el_ancla_deja_los_talones_sin_explicacion)
+T319 · Defecto que previene: retirar la transición y quedarse los talones. ... ok
+test_T319c_control_del_control_del_ancla_del_sellado (__main__.SelladoDelDiario.test_T319c_control_del_control_del_ancla_del_sellado)
+T319 · CONTROL DEL CONTROL: se retira la comprobación y se mira qué se pone rojo. ... ok
 
 ----------------------------------------------------------------------
-Ran 72 tests  (duración no registrada: varía por ejecución)
+Ran 90 tests  (duración no registrada: varía por ejecución)
 
 OK

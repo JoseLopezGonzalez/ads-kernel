@@ -58,7 +58,7 @@ sys.path.insert(0, RUNTIME)
 
 try:
     import estado
-    from estado import atestacion, errores, fallos
+    from estado import atestacion, diario as diario_mod, errores, fallos
 except ImportError as exc:  # el motor todavía no está: que se vea por qué
     print(f"no se encuentra el paquete `estado` bajo {RUNTIME}: {exc}", file=sys.stderr)
     raise
@@ -2088,6 +2088,636 @@ class OrdenDeLosPasos8y9(Caso):
             self.assertEqual(alm.leer("items/it-9.json"), contenido)
             informe = alm.verificar_integridad()
             self.assertTrue(informe.ok, informe.a_dict())
+
+
+# ===================================================================================
+# `g.7` · EL SELLADO DEL DIARIO — T312..T319
+# ===================================================================================
+#
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-04:
+#
+#      $ grep -rniE "sellad|sellar|compacta" kernel/operativo/runtime/ --include=*.py --include=*.md
+#      kernel/operativo/runtime/estado/serializacion.py:13:    COMPACTA  `separators=…`
+#      $ grep -nEi "sellad|compact|umbral" kernel/operativo/runtime/CONTRATO-ESTADO-DURABLE.md
+#      (sin salida)
+#
+#  Es decir: de los cinco puntos de `g.7`, los tres primeros estaban construidos y probados
+#  y los DOS ÚLTIMOS —el sellado con su umbral calibrable, y la retirada de un cuerpo por
+#  transición explícita— no existían en ninguna parte. La única coincidencia del `grep` era
+#  la forma COMPACTA de serialización, que es otra cosa: la forma de transporte del JSONL.
+#  `g.7` estaba en la resta A del derivador de obligaciones y se daba por implementada.
+#
+#  Cada caso de aquí se puso ROJO reintroduciendo el defecto que comprueba. El CONTROL DEL
+#  CONTROL está al final, en `test_T319c`, y no lo afirma: lo ejecuta.
+
+class SelladoDelDiario(Caso):
+    """`g.7` · el SELLADO compacta el CUERPO, y jamás el ESLABÓN."""
+
+    UMBRAL = 6                      # cola corta a propósito: con 64 no se sellaría nada
+
+    def ruta_diario(self):
+        return self.ruta_estado("diario", "DIARIO.jsonl")
+
+    def poblar(self, cuantas=8, operaciones=4, desde=0):
+        """Transiciones MULTIARCHIVO reales, por la API, sobre el mismo control repo.
+
+        Multiarchivo y no de una sola escritura porque lo que el sellado retira es el
+        CUERPO, y el cuerpo de un evento de una transición trivial es casi todo eslabón:
+        medir la compactación sobre transiciones de un fichero mediría el suelo del formato
+        y no el sellado.
+        """
+        with self.almacen() as alm:
+            for numero in range(desde, desde + cuantas):
+                operaciones_ = [
+                    estado.Escritura(
+                        "dominio%d/objeto-%02d-%02d.json" % (numero % 2, numero, indice),
+                        {"esquema": "ads.estado/1", "n": indice, "de": numero},
+                    )
+                    for indice in range(operaciones)
+                ]
+                alm.aplicar(estado.Transicion(
+                    tipo="alta", base=alm.revision()["revision_id"],
+                    operaciones=operaciones_, autor="agente-e",
+                    motivo="alta multiarchivo numero %d, con un motivo suficientemente "
+                           "largo para que el cuerpo pese" % numero,
+                    id="tx-%02d" % numero,
+                ))
+
+    def sellar(self, *, umbral=None, autor="OWNER", motivo="compactación periódica",
+               **kw):
+        with self.almacen() as alm:
+            return alm.sellar(autor=autor, motivo=motivo,
+                              umbral=self.UMBRAL if umbral is None else umbral, **kw)
+
+    # -- T312 · positivo: se compacta de verdad, y se mide -------------------------
+    def test_T312_el_sellado_compacta_el_diario_y_se_mide(self):
+        """T312 · Defecto que previene: un «sellado» que no retira ni un byte.
+
+        `g.7`: «el SELLADO compacta el diario». Se MIDE el fichero antes y después, sobre
+        el disco y no sobre una estructura en memoria, porque compactar es una propiedad
+        del fichero. Y se comprueba que lo que se retiró es el CUERPO —`operaciones`,
+        `motivo`, `autor`, `base`— y que el ESLABÓN sigue entero.
+        """
+        self.inicializar()
+        self.poblar()
+        antes = os.path.getsize(self.ruta_diario())
+        eventos_antes = len(self.tipos_del_diario())
+
+        informe = self.sellar()
+        despues = os.path.getsize(self.ruta_diario())
+
+        self.assertGreater(informe.sellados, 0,
+                           "no se selló ni un evento: el umbral deja cola de sobra")
+        self.assertLess(despues, antes,
+                        "el diario no encogió: sellar sin compactar no es sellar, y `g.7` "
+                        "dice literalmente «compacta el diario»")
+        self.assertEqual(informe.bytes_antes, antes)
+        self.assertEqual(informe.bytes_despues, despues)
+        self.assertEqual(informe.bytes_retirados, antes - despues)
+
+        eventos = lineas_json(self.ruta_diario())
+        # NI UNA LÍNEA MENOS: sellar retira cuerpos, no eventos. Una línea de más, la del
+        # `diario.sellado` que explica la retirada.
+        self.assertEqual(len(eventos), eventos_antes + 1)
+        self.assertEqual(eventos[-1]["tipo"], "diario.sellado")
+        self.assertEqual(eventos[-1]["sellados"], informe.sellados)
+        self.assertEqual(eventos[-1]["umbral"], self.UMBRAL)
+
+        talones = [ev for ev in eventos if "sellado" in ev]
+        self.assertEqual(len(talones), informe.sellados)
+        for talon in talones:
+            for clave in ("esquema", "secuencia", "tipo", "previo", "huella"):
+                self.assertIn(clave, talon,
+                              "el sellado tocó el ESLABÓN, que es lo único intocable")
+            for clave in ("operaciones", "motivo", "autor", "base"):
+                self.assertNotIn(clave, talon,
+                                 "el cuerpo sigue ahí: no se ha retirado nada")
+            self.assertIn("operaciones", talon["sellado"]["retirados"],
+                          "un talón tiene que DECIR qué se le retiró")
+
+    def test_T312b_la_cola_del_umbral_queda_intacta_y_lo_no_sellable_tambien(self):
+        """T312 · Defecto que previene: sellar la ventana o el punto de no retorno.
+
+        Los últimos `umbral` eventos NO se tocan, y `almacen.inicializado` y
+        `transicion.preparada` no se tocan NUNCA, esté donde esté el umbral: la primera es
+        donde arranca el linaje de `auditar()` y la segunda es el punto de no retorno cuyo
+        plan lee la rama COMPLETAR de `g.8`.
+        """
+        self.inicializar()
+        self.poblar()
+        informe = self.sellar()
+        eventos = lineas_json(self.ruta_diario())
+
+        sellados = {ev["secuencia"] for ev in eventos if "sellado" in ev}
+        self.assertEqual(sorted(sellados), informe.secuencias)
+        # la cola: los `umbral` eventos anteriores al propio evento de sellado
+        cola = [ev["secuencia"] for ev in eventos[-(self.UMBRAL + 1):-1]]
+        self.assertTrue(sellados.isdisjoint(cola),
+                        "se selló dentro de la cola que el umbral reserva")
+        for evento in eventos:
+            if evento["tipo"] in ("almacen.inicializado", "transicion.preparada"):
+                self.assertNotIn("sellado", evento,
+                                 "se selló `%s`, que la auditoría y la recuperación leen "
+                                 "entero" % evento["tipo"])
+
+    # -- T313 · la cadena sigue verificándose --------------------------------------
+    def test_T313_la_cadena_de_huellas_y_la_auditoria_sobreviven_al_sellado(self):
+        """T313 · Defecto que previene: un sellado que rompe la cadena o la auditoría.
+
+        La restricción que MANDA: sellar no puede romper la verificabilidad del eslabón.
+        Se ejercitan las cuatro puertas que leen el diario entero —`eventos()`,
+        `exigir_coherente()`, `verificar_integridad()` y `auditar()`— y además
+        `detectar_bifurcacion`, que reconstruye el linaje desde el origen.
+        """
+        self.inicializar()
+        self.poblar()
+        antes = self.revision()
+        self.sellar()
+
+        with self.almacen(recuperar=False) as alm:
+            eventos = alm.diario()                    # verifica eslabón a eslabón
+            alm._diario.exigir_coherente(antes["diario_secuencia"])
+            self.assertTrue(alm.verificar_integridad().ok)
+            informe = alm.auditar()
+            self.assertTrue(informe.ok, informe.a_dict())
+            self.assertEqual(informe.cid_raiz_reproducido, antes["cid_raiz"],
+                             "la auditoría ya no reproduce `cid_raiz` desde el diario: el "
+                             "sellado se llevó lo que `g.13` necesita")
+            self.assertEqual(
+                alm.detectar_bifurcacion(antes)["relacion"], "identica",
+                "el linaje dejó de reconstruirse tras el sellado")
+        # y la cadena de `previo` sigue casando, comprobada aquí y no sólo en el motor
+        previo = None
+        for evento in eventos:
+            self.assertEqual(evento.get("previo"), previo,
+                             "la cadena de huellas se rompió en la secuencia %s"
+                             % evento["secuencia"])
+            previo = evento["huella"]
+
+    def test_T313b_un_almacen_sellado_sigue_admitiendo_transiciones(self):
+        """T313 · Defecto que previene: un diario que tras sellarse ya no se puede anexar.
+
+        Anexar toma la huella de la ÚLTIMA línea; si el sellado la hubiera dejado
+        inservible, la primera transición posterior fallaría. Se sella DOS veces con
+        transiciones en medio, porque el segundo sellado es el que ancla talones nuevos
+        junto a los viejos.
+        """
+        self.inicializar()
+        self.poblar(cuantas=6)
+        self.sellar()
+        self.poblar(cuantas=6, desde=6)
+        segundo = self.sellar(motivo="segunda compactación")
+        self.assertGreater(segundo.sellados, 0)
+        with self.almacen() as alm:
+            self.assertTrue(alm.auditar().ok)
+            self.assertTrue(alm.verificar_integridad().ok)
+        self.poblar(cuantas=1, desde=12)
+        with self.almacen() as alm:
+            self.assertTrue(alm.auditar().ok)
+            self.assertEqual(alm.leer("dominio0/objeto-12-00.json")["de"], 12)
+
+    # -- T314 · la recuperación, en sus DOS ramas ----------------------------------
+    def _historia_sellada(self):
+        """Un almacén con historia YA SELLADA, listo para que le inyecten una caída."""
+        self.inicializar()
+        self.poblar()
+        informe = self.sellar()
+        self.assertGreater(informe.sellados, 0)
+        return self.revision()
+
+    def test_T314_la_rama_REVERTIR_funciona_sobre_un_diario_sellado(self):
+        """T314 · Defecto que previene: sellar y perder la recuperación de `g.8`.
+
+        Rama REVERTIR: se cae ANTES del punto de no retorno sobre un almacén cuyo diario ya
+        está sellado. La transición se pierde, nada se publica, y el diario sellado tiene
+        que seguir explicándolo.
+        """
+        rev = self._historia_sellada()
+        proceso = self.transicion("tx-caida", "items/it-9.json",
+                                  {"esquema": "ads.estado/1", "n": 9},
+                                  fallo="antes-de-escribir-temporal")
+        self.assertEqual(proceso.returncode, CODIGO_SALIDA_CAIDA)
+        with self.almacen() as alm:                            # abrir recupera
+            self.assertEqual(alm.estado_de_la_ventana(), "cerrada")
+            self.assertEqual(alm.revision()["revision_id"], rev["revision_id"],
+                             "se publicó sobre un diario sellado una transición que debía "
+                             "revertirse")
+            self.assertNotIn("items/it-9.json", alm.listar())
+            self.assertTrue(alm.verificar_integridad().ok)
+            self.assertTrue(alm.auditar().ok)
+        self.assertIn("transicion.revertida", self.tipos_del_diario())
+
+    def test_T314b_la_rama_COMPLETAR_funciona_sobre_un_diario_sellado(self):
+        """T314 · Defecto que previene: sellar y perder la otra mitad de `g.8`.
+
+        Rama COMPLETAR: se cae ENTRE los pasos 8 y 9, pasado el punto de no retorno, sobre
+        un almacén sellado. La recuperación tiene que republicar y confirmar leyendo la
+        `transicion.preparada`, que es justamente la que el sellado no toca nunca.
+        """
+        rev = self._historia_sellada()
+        contenido = {"esquema": "ads.estado/1", "n": 9}
+        proceso = self.transicion("tx-caida", "items/it-9.json", contenido,
+                                  fallo="entre-el-paso-8-y-el-9")
+        self.assertEqual(proceso.returncode, CODIGO_SALIDA_CAIDA)
+        with self.almacen() as alm:
+            self.assertEqual(alm.estado_de_la_ventana(), "cerrada")
+            self.assertEqual(alm.revision()["revision"], rev["revision"] + 1,
+                             "la transición preparada no se completó sobre el diario "
+                             "sellado")
+            self.assertEqual(alm.leer("items/it-9.json"), contenido)
+            self.assertTrue(alm.verificar_integridad().ok)
+            self.assertTrue(alm.auditar().ok)
+        self.assertIn("transicion.confirmada", self.tipos_del_diario())
+
+    # -- T315 · la ventana no se sella ---------------------------------------------
+    def test_T315_una_transaccion_en_su_ventana_no_se_sella(self):
+        """T315 · Defecto que previene: compactar la ventana que `g.8` necesita leer.
+
+        Con una transacción abierta y sin cerrar, sellar se NIEGA —`SELLADO_IMPOSIBLE`— y
+        no toca ni un byte del diario. Y aunque se sellara, la regla por evento tampoco
+        dejaría: se comprueba también sobre `sellables()`, que es quien decide.
+        """
+        self.inicializar()
+        self.poblar()
+        proceso = self.transicion("tx-abierta", "items/it-9.json",
+                                  {"esquema": "ads.estado/1", "n": 9},
+                                  fallo="antes-de-escribir-temporal")
+        self.assertEqual(proceso.returncode, CODIGO_SALIDA_CAIDA)
+
+        antes = bytes_de(self.ruta_diario())
+        with self.almacen(recuperar=False) as alm:
+            self.assertEqual(alm.estado_de_la_ventana(), "abierta")
+            error = self.assertFalloCerrado(
+                errores.SelladoImposible, alm.sellar,
+                autor="OWNER", motivo="compactar con la ventana abierta",
+                umbral=self.UMBRAL)
+            self.assertEqual(error.codigo, "SELLADO_IMPOSIBLE")
+            # y la regla POR EVENTO, que es la que de verdad protege: ninguna secuencia de
+            # la transacción sin cerrar entra en la lista de sellables
+            eventos = alm._diario.eventos(tolerar_cola=True)
+            # `umbral=None` A PROPÓSITO: con la cola del umbral puesta, los eventos de la
+            # transacción viva caen dentro de ella y quedarían fuera del sellado por ser
+            # RECIENTES, no por estar abiertos. La prueba pasaría igual con la regla de la
+            # ventana saboteada —se comprobó— y no probaría lo que dice probar. Sin cola,
+            # lo único que los protege es la regla de la ventana.
+            sellables = alm._diario.sellables(eventos, umbral=None)
+            abiertas = [ev["secuencia"] for ev in eventos
+                        if ev.get("transaccion") == "tx-abierta"]
+            self.assertTrue(abiertas, "la caída no dejó ninguna ventana que probar")
+            self.assertTrue(set(sellables).isdisjoint(abiertas),
+                            "se iba a sellar un evento de una transacción sin cerrar: "
+                            "`g.8` lee ese cuerpo para revertir")
+        self.assertEqual(bytes_de(self.ruta_diario()), antes,
+                         "el sellado rechazado tocó el diario igualmente")
+
+    # -- T316 · el umbral, calibrable y con fallo cerrado --------------------------
+    def contrato_con(self, cuerpo):
+        """Una sede ALTERNATIVA del contrato derivado, para calibrar en la prueba."""
+        ruta = os.path.join(self.tmp, "CONTRATO-%d.md" % len(os.listdir(self.tmp)))
+        with open(ruta, "w", encoding="utf-8") as fichero:
+            fichero.write("# contrato de prueba\n\n" + cuerpo + "\n")
+        return ruta
+
+    def test_T316_el_umbral_se_lee_del_contrato_derivado_y_es_calibrable(self):
+        """T316 · Defecto que previene: un umbral que es una constante del código.
+
+        `g.7`: «su umbral es parámetro CALIBRABLE del contrato derivado». Calibrable
+        significa que cambia SIN TOCAR CÓDIGO: se cambia el número en el contrato y el
+        sellado sella otra cosa. Se comprueba con dos sedes que sólo difieren en el número.
+        """
+        # el contrato que viaja con el aparato declara un umbral utilizable
+        self.assertGreaterEqual(diario_mod.umbral_de_sellado(), diario_mod.MINIMO_DE_LA_COLA)
+
+        bloque = '```json\n{\n  "esquema": "ads.estado.calibracion/1",\n' \
+                 '  "sellado_umbral_eventos": %d\n}\n```'
+        estrecho = self.contrato_con(bloque % 4)
+        ancho = self.contrato_con(bloque % 40)
+        self.assertEqual(diario_mod.umbral_de_sellado(estrecho), 4)
+        self.assertEqual(diario_mod.umbral_de_sellado(ancho), 40)
+
+        self.inicializar()
+        self.poblar()
+        with self.almacen() as alm:
+            informe = alm.sellar(autor="OWNER", motivo="calibrado ancho", contrato=ancho)
+            self.assertEqual(informe.umbral, 40)
+            anchos = informe.sellados
+            informe = alm.sellar(autor="OWNER", motivo="calibrado estrecho",
+                                 contrato=estrecho)
+            self.assertEqual(informe.umbral, 4)
+        self.assertGreater(informe.sellados, 0,
+                           "cambiar el umbral en el contrato no cambió lo que se sella: el "
+                           "parámetro no es calibrable, es decorado")
+        self.assertLess(anchos, anchos + informe.sellados)
+
+    def test_T316b_un_umbral_ausente_ilegible_o_absurdo_es_fallo_cerrado(self):
+        """T316 · Defecto que previene: un valor por omisión silencioso.
+
+        Los cuatro casos que el hallazgo nombra, cada uno con su error TIPADO y su código
+        estable. Un umbral que no está NO se sustituye por uno de fábrica: si se sustituyera,
+        el contrato dejaría de ser la sede y el código volvería a serlo.
+        """
+        bloque = '```json\n{\n  "esquema": "ads.estado.calibracion/1",\n' \
+                 '  "sellado_umbral_eventos": %s\n}\n```'
+        sedes = {
+            "ausente": self.contrato_con("sin bloque de calibración ninguno"),
+            "sin la clave": self.contrato_con(
+                '```json\n{\n  "esquema": "ads.estado.calibracion/1"\n}\n```'),
+            "cero": self.contrato_con(bloque % "0"),
+            "negativo": self.contrato_con(bloque % "-7"),
+            "no entero": self.contrato_con(bloque % '"cuatro"'),
+            "fraccionario": self.contrato_con(bloque % "4.5"),
+            "ilegible": self.contrato_con('```json\n{ esto no es JSON,\n```'),
+            "declarado dos veces": self.contrato_con(
+                (bloque % "8") + "\n\ntexto entre medias\n\n" + (bloque % "9")),
+        }
+        for caso, sede in sorted(sedes.items()):
+            error = self.assertFalloCerrado(
+                errores.UmbralDeSelladoInvalido, diario_mod.umbral_de_sellado, sede)
+            self.assertEqual(error.codigo, "UMBRAL_DE_SELLADO_INVALIDO",
+                             "el umbral %s no falló con su código propio" % caso)
+            self.assertNotIn(self.tmp, str(error),
+                             "el error publica la ruta absoluta del temporal")
+        # y una sede que NO existe tampoco se rellena con nada
+        self.assertFalloCerrado(errores.UmbralDeSelladoInvalido,
+                                diario_mod.umbral_de_sellado,
+                                os.path.join(self.tmp, "no-existe.md"))
+
+    def test_T316c_el_umbral_absurdo_pasado_a_mano_tampoco_pasa(self):
+        """T316 · Defecto que previene: validar la sede y no el valor que se usa.
+
+        El umbral también entra por la llamada —para calibrar una compactación concreta— y
+        ahí se valida igual: si sólo se comprobara al leer el contrato, pasar `0` por la
+        API sería la puerta de atrás que anula la comprobación.
+        """
+        self.inicializar()
+        self.poblar(cuantas=4)
+        with self.almacen() as alm:
+            for valor in (0, -1, "cuatro", 4.5, True, 2):
+                error = self.assertFalloCerrado(
+                    errores.UmbralDeSelladoInvalido, alm.sellar,
+                    autor="OWNER", motivo="umbral absurdo", umbral=valor)
+                self.assertEqual(error.codigo, "UMBRAL_DE_SELLADO_INVALIDO",
+                                 "el umbral %r no falló cerrado" % (valor,))
+        proceso = cli(self.repo, ["sellar", "--autor", "OWNER", "--motivo", "m",
+                                  "--umbral", "0"])
+        self.assertEqual(proceso.returncode, 1,
+                         "el punto ejecutable no devolvió el código del fallo tipado")
+        self.assertEqual(codigo_de_error(proceso), "UMBRAL_DE_SELLADO_INVALIDO")
+
+    # -- T317 · retirar exige transición -------------------------------------------
+    def test_T317_retirar_un_cuerpo_sin_transicion_es_fallo_cerrado(self):
+        """T317 · Defecto que previene: un borrado disfrazado de sellado.
+
+        `g.7`: «retirar el cuerpo de un evento sellado exige una transición EXPLÍCITA Y
+        AUDITABLE». Sin `autor` y sin `motivo` no hay transición auditable: se sabría qué se
+        retiró y no quién lo decidió ni por qué. Es la misma exigencia que `Transicion`
+        impone al estado canónico, y por la misma razón.
+        """
+        self.inicializar()
+        self.poblar(cuantas=4)
+        antes = bytes_de(self.ruta_diario())
+        with self.almacen() as alm:
+            for autor, motivo in (("", "m"), ("   ", "m"), (None, "m"),
+                                  ("OWNER", ""), ("OWNER", "  "), ("OWNER", None)):
+                error = self.assertFalloCerrado(
+                    errores.RetiradaSinTransicion, alm.sellar,
+                    autor=autor, motivo=motivo, umbral=self.UMBRAL)
+                self.assertEqual(error.codigo, "RETIRADA_SIN_TRANSICION")
+        self.assertEqual(bytes_de(self.ruta_diario()), antes,
+                         "una retirada rechazada tocó el diario")
+
+    def test_T317b_un_cuerpo_vaciado_a_mano_se_caza_al_leer(self):
+        """T317 · Defecto que previene: vaciar un cuerpo conservando la huella.
+
+        Es el ataque que la cadena de `previo` NO detecta por sí sola: quitar el cuerpo y
+        dejar la huella no rompe ningún eslabón, porque la huella de un talón no se
+        recalcula. Lo que lo caza es que no haya ningún `diario.sellado` que lo explique,
+        que es exactamente la transición que `g.7` exige.
+        """
+        self.inicializar()
+        self.poblar(cuantas=4)
+        eventos = lineas_json(self.ruta_diario())
+        indice = next(i for i, ev in enumerate(eventos)
+                      if ev["tipo"] == "transicion.confirmada")
+        eventos[indice] = {
+            "esquema": eventos[indice]["esquema"], "secuencia": eventos[indice]["secuencia"],
+            "tipo": eventos[indice]["tipo"], "transaccion": eventos[indice]["transaccion"],
+            "resultado": eventos[indice]["resultado"],
+            "sellado": {"esquema": 1, "cuerpo": "sha256:" + "0" * 64,
+                        "retirados": ["operaciones"]},
+            "previo": eventos[indice]["previo"], "huella": eventos[indice]["huella"],
+        }
+        with open(self.ruta_diario(), "w", encoding="utf-8") as fichero:
+            for evento in eventos:
+                fichero.write(json.dumps(evento, sort_keys=True, ensure_ascii=False,
+                                         separators=(",", ":")) + "\n")
+        with self.almacen(recuperar=False) as alm:
+            error = self.assertFalloCerrado(errores.DiarioCorrupto, alm.diario)
+            self.assertEqual(error.codigo, "DIARIO_CORRUPTO")
+            self.assertIn("diario.sellado", error.detalle,
+                          "el error no nombra la transición que falta")
+
+    # -- T318 · lo que la recuperación necesita no se retira ------------------------
+    def test_T318_retirar_un_cuerpo_que_la_recuperacion_necesita_es_fallo_cerrado(self):
+        """T318 · Defecto que previene: una retirada dirigida que se salta las reglas.
+
+        La retirada DIRIGIDA no consulta el umbral —es un acto de autoridad sobre un evento
+        concreto—, pero pasa por las MISMAS comprobaciones de conservación. Se prueban las
+        tres que importan: la ventana de `g.8`, el punto de no retorno que la rama COMPLETAR
+        lee, y el arranque del linaje que `auditar()` necesita.
+        """
+        self.inicializar()
+        self.poblar(cuantas=3)
+        proceso = self.transicion("tx-abierta", "items/it-9.json",
+                                  {"esquema": "ads.estado/1", "n": 9},
+                                  fallo="antes-de-escribir-temporal")
+        self.assertEqual(proceso.returncode, CODIGO_SALIDA_CAIDA)
+
+        antes = bytes_de(self.ruta_diario())
+        with self.almacen(recuperar=False) as alm:
+            eventos = alm._diario.eventos(tolerar_cola=True)
+            por_tipo = {}
+            for evento in eventos:
+                por_tipo.setdefault(evento["tipo"], []).append(evento["secuencia"])
+            abierta_viva = [ev["secuencia"] for ev in eventos
+                            if ev.get("transaccion") == "tx-abierta"]
+            casos = {
+                "la ventana de `g.8`": abierta_viva[:1],
+                "el punto de no retorno": por_tipo["transicion.preparada"][:1],
+                "el arranque del linaje": por_tipo["almacen.inicializado"][:1],
+                "un evento que no existe": [999],
+            }
+            for nombre, secuencias in sorted(casos.items()):
+                self.assertTrue(secuencias, "el caso «%s» no tiene evento" % nombre)
+                error = self.assertFalloCerrado(
+                    errores.RetiradaNoAdmisible, alm._diario.retirar_cuerpo,
+                    secuencias, autor="OWNER", motivo="retirada dirigida")
+                self.assertEqual(error.codigo, "RETIRADA_NO_ADMISIBLE",
+                                 "«%s» no falló con su código propio" % nombre)
+        self.assertEqual(bytes_de(self.ruta_diario()), antes,
+                         "una retirada no admisible tocó el diario igualmente")
+
+    def test_T318b_la_retirada_con_transicion_deja_rastro_auditable(self):
+        """T318 · Defecto que previene: retirar sin dejar quién y por qué.
+
+        La cara positiva de `g.7`: la retirada admisible SÍ ocurre, y deja en el propio
+        diario un evento que dice quién la decidió, por qué, qué secuencias se llevó y qué
+        ancla las verifica. Se comprueba que el rastro ESTÁ, y que el almacén sigue íntegro.
+        """
+        self.inicializar()
+        self.poblar(cuantas=4)
+        with self.almacen() as alm:
+            eventos = alm._diario.eventos()
+            objetivo = next(ev["secuencia"] for ev in eventos
+                            if ev["tipo"] == "transicion.confirmada")
+            informe = alm._diario.retirar_cuerpo(
+                [objetivo], autor="OWNER",
+                motivo="retirada dirigida de un cuerpo ya innecesario")
+        self.assertEqual(informe.secuencias, [objetivo])
+        self.assertLess(informe.bytes_despues, informe.bytes_antes)
+
+        eventos = lineas_json(self.ruta_diario())
+        rastro = [ev for ev in eventos if ev["tipo"] == "diario.sellado"]
+        self.assertEqual(len(rastro), 1, "la retirada no dejó rastro en el diario")
+        self.assertEqual(rastro[0]["autor"], "OWNER")
+        self.assertEqual(rastro[0]["motivo"],
+                         "retirada dirigida de un cuerpo ya innecesario")
+        self.assertEqual(rastro[0]["desde"], objetivo)
+        self.assertEqual(rastro[0]["hasta"], objetivo)
+        self.assertEqual(rastro[0]["sellados"], 1)
+        self.assertTrue(rastro[0]["cid_sellados"].startswith("sha256:"))
+        talon = next(ev for ev in eventos if ev["secuencia"] == objetivo)
+        self.assertIn("sellado", talon)
+        with self.almacen() as alm:
+            self.assertTrue(alm.verificar_integridad().ok)
+            self.assertTrue(alm.auditar().ok)
+
+    def test_T318c_el_punto_ejecutable_sella_con_la_misma_disciplina(self):
+        """T318 · Defecto que previene: un camino del motor que sólo existe en la API.
+
+        `ads_estado.py` es el punto ejecutable del motor y el sellado se invoca desde ahí,
+        con los MISMOS códigos de salida que las otras doce órdenes: 0 el éxito, 1 el fallo
+        tipado del kernel, 2 el uso incorrecto.
+        """
+        self.inicializar()
+        self.poblar()
+        antes = os.path.getsize(self.ruta_diario())
+        proceso = cli(self.repo, ["sellar", "--autor", "OWNER", "--motivo",
+                                  "compactación desde el punto ejecutable",
+                                  "--umbral", str(self.UMBRAL), "--json"])
+        self.assertEqual(proceso.returncode, 0, proceso.stderr)
+        informe = json.loads(proceso.stdout)
+        self.assertGreater(informe["sellados"], 0)
+        self.assertEqual(informe["bytes_antes"], antes)
+        self.assertLess(os.path.getsize(self.ruta_diario()), antes)
+        self.assertNotIn(self.repo, proceso.stdout + proceso.stderr,
+                         "la salida publica la ruta absoluta del control repo")
+
+        # uso incorrecto: sin `--motivo` no hay transición que firmar, y argparse lo para
+        proceso = cli(self.repo, ["sellar", "--autor", "OWNER"])
+        self.assertEqual(proceso.returncode, 2)
+        # retirada dirigida inadmisible: fallo TIPADO, código 1
+        proceso = cli(self.repo, ["sellar", "--autor", "OWNER", "--motivo", "m",
+                                  "--secuencia", "1"])
+        self.assertEqual(proceso.returncode, 1)
+        self.assertEqual(codigo_de_error(proceso), "RETIRADA_NO_ADMISIBLE")
+        # y las órdenes del resto del motor siguen funcionando sobre el diario sellado
+        for orden in (["verificar"], ["auditar"], ["revision"], ["recuperar"]):
+            proceso = cli(self.repo, orden)
+            self.assertEqual(proceso.returncode, 0,
+                             "`%s` falló sobre un diario sellado: %s"
+                             % (orden[0], proceso.stderr))
+
+    # -- T319 · alterar un evento sellado se caza ----------------------------------
+    def _alterar_talon(self, mutar):
+        eventos = lineas_json(self.ruta_diario())
+        indice = next(i for i, ev in enumerate(eventos) if "sellado" in ev)
+        mutar(eventos[indice])
+        with open(self.ruta_diario(), "w", encoding="utf-8") as fichero:
+            for evento in eventos:
+                fichero.write(json.dumps(evento, sort_keys=True, ensure_ascii=False,
+                                         separators=(",", ":")) + "\n")
+        return eventos[indice]
+
+    def test_T319_alterar_un_evento_sellado_lo_caza_la_verificacion(self):
+        """T319 · Defecto que previene: un talón editable sin que nada lo note.
+
+        La huella de un talón no se recalcula —su contenido es justo lo retirado—, así que
+        sin el ancla del `diario.sellado` un talón sería editable a mano con la cadena
+        intacta. El ancla es el `cid` de la lista de pares `[secuencia, cid del talón
+        entero]`: cualquier byte que cambie en cualquier talón —el resumen del sellado, un
+        campo conservado o un campo REPUESTO— cambia el ancla y no casa.
+        """
+        alteraciones = {
+            "el `cuerpo` retirado": lambda ev: ev["sellado"].__setitem__(
+                "cuerpo", "sha256:" + "1" * 64),
+            "la `huella` conservada": lambda ev: ev.__setitem__(
+                "huella", "sha256:" + "2" * 64),
+            "el `resultado` conservado": lambda ev: ev.__setitem__(
+                "resultado", "sha256:" + "3" * 64),
+            "reponer un cuerpo retirado": lambda ev: ev.__setitem__("motivo", "otro"),
+        }
+        for nombre, mutar in sorted(alteraciones.items()):
+            with self.subTest(alteracion=nombre):
+                self.setUp()
+                self.inicializar()
+                self.poblar(cuantas=4)
+                self.sellar()
+                self._alterar_talon(mutar)
+                with self.almacen(recuperar=False) as alm:
+                    error = self.assertFalloCerrado(errores.DiarioCorrupto, alm.diario)
+                    self.assertEqual(error.codigo, "DIARIO_CORRUPTO")
+
+    def test_T319b_quitar_el_ancla_deja_los_talones_sin_explicacion(self):
+        """T319 · Defecto que previene: retirar la transición y quedarse los talones.
+
+        Si alguien borra el evento `diario.sellado` para que nadie sepa quién retiró qué, lo
+        que queda es un diario con cuerpos retirados y ninguna transición que los explique.
+        Se caza dos veces: por la cadena —falta una línea— y, si se renumerara, porque los
+        talones se quedan sin ancla.
+        """
+        self.inicializar()
+        self.poblar(cuantas=4)
+        self.sellar()
+        eventos = lineas_json(self.ruta_diario())
+        self.assertEqual(eventos[-1]["tipo"], "diario.sellado")
+        with open(self.ruta_diario(), "w", encoding="utf-8") as fichero:
+            for evento in eventos[:-1]:
+                fichero.write(json.dumps(evento, sort_keys=True, ensure_ascii=False,
+                                         separators=(",", ":")) + "\n")
+        with self.almacen(recuperar=False) as alm:
+            error = self.assertFalloCerrado(errores.DiarioCorrupto, alm.diario)
+            self.assertIn("diario.sellado", error.detalle)
+
+    def test_T319c_control_del_control_del_ancla_del_sellado(self):
+        """T319 · CONTROL DEL CONTROL: se retira la comprobación y se mira qué se pone rojo.
+
+        No se afirma que las pruebas de arriba sirvan: se DEMUESTRA. Se sustituye
+        `_verificar_sellado` por una que no comprueba nada —que es exactamente el defecto de
+        no haber construido el sellado— y se ejecutan los dos casos que dependen de ella. Si
+        siguieran pasando, serían decorado.
+        """
+        self.inicializar()
+        self.poblar(cuantas=4)
+        self.sellar()
+        self._alterar_talon(lambda ev: ev["sellado"].__setitem__(
+            "cuerpo", "sha256:" + "1" * 64))
+
+        # con la comprobación PUESTA: rojo, es decir, el motor lo caza
+        with self.almacen(recuperar=False) as alm:
+            self.assertFalloCerrado(errores.DiarioCorrupto, alm.diario)
+
+        original = estado.diario.Diario._verificar_sellado
+        estado.diario.Diario._verificar_sellado = lambda self, eventos: None
+        try:
+            with self.almacen(recuperar=False) as alm:
+                # sin la comprobación, el diario alterado pasa como bueno: eso es lo que
+                # había antes de esta corrección, y es el defecto exacto que `g.7` describe
+                alm.diario()
+        finally:
+            estado.diario.Diario._verificar_sellado = original
+        with self.almacen(recuperar=False) as alm:
+            self.assertFalloCerrado(errores.DiarioCorrupto, alm.diario)
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):
