@@ -147,7 +147,7 @@ falla_si:
   - "la ficha de una capacidad deja de declarar la doble participación y el catálogo no se mueve"
 ejecucion: validador-estructural
 validador: "kernel/operativo/validadores/comprobar_composicion_procesos.py"
-estado: prueba-fallida
+estado: prueba-superada
 evidencia: "evidencia/composicion-procesos-salida.txt"
 ```
 
@@ -239,6 +239,5 @@ falla_si:
   - "el universo encoge y el derivador sale con código cero"
 ejecucion: guion-manual
 validador: "docs/evolucion/verificacion/derivar-universo-obligatorio.py"
-estado: prueba-ejecutada
-evidencia: "evidencia/universo-obligatorio-salida.txt"
+estado: validador-implementado
 ```

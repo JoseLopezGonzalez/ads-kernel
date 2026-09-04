@@ -94,6 +94,7 @@ import io
 import os
 import re
 import sys
+import textwrap
 
 # La raíz se deriva de `__file__` —tres niveles por encima de docs/evolucion/verificacion/—
 # y de NADA más. No usa el cwd. Es la misma lección que la batería aprendió: tomar el
@@ -863,6 +864,279 @@ DEUDA = "docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md"
 ESTADO_DURABLE = "docs/rediseno/g-ESTADO-DURABLE-APROBADA.md"
 
 
+# ===========================================================================
+#  `ADJ-G1` · LAS GUARDAS DEL UNIVERSO DE OBLIGACIONES
+# ===========================================================================
+#  EL HECHO, reproducido por el adjudicador del gate del 2026-09-04 y vuelto a reproducir
+#  aquí antes de tocar una línea. `--obligaciones` ENCOGÍA CON `exit 0` por TRES vías:
+#
+#      10a  cambiar la FASE de la fila `F-07` de `**F6**` a `**F5**`
+#           EXIT=0 · (F-nn) 7 · TOTAL 57 · `grep F-07` en la salida → 0
+#      10e  retirar la fila `F-10` entera
+#           EXIT=0 · (F-nn) 6 · TOTAL 56 · `grep F-10` en la salida → 0
+#      10d  retirar el bloque `--- CONTRATO 2 · AMPLIAR T152 … ---` de §19
+#           EXIT=0 · (§19) 4 · TOTAL 57 · `CONTRATO 2` en la salida → 0
+#
+#  Y LA CAUSA no eran tres descuidos: era UNA CLASE. Los suelos estaban ESCRITOS —`< 4`
+#  con cinco reales, `< 19`, `!= 16`, `!= 3`— y el componente `F-nn` no tenía suelo
+#  ninguno: su guarda sólo disparaba con CERO filas. La cabecera de este fichero promete
+#  «nunca reduce el universo en silencio», y para `--obligaciones` no se cumplía.
+#
+#  DECISIÓN · el suelo del universo NO se escribe: se DERIVA, y por DOS vías distintas
+#      Alternativas: (a) subir los cardinales escritos a su valor de hoy; (b) publicar un
+#      fichero-cliquet con la lista de obligaciones y compararse contra él; (c) derivar el
+#      suelo de propiedades que el propio corpus ya publica.
+#      Se descarta (a): es lo que ya había, y caduca en la obligación siguiente —de hecho
+#      YA había caducado, y ésa es la unidad de holgura que el adjudicador midió—.
+#      Se descarta (b): un fichero-cliquet es una sede nueva que hay que mantener a mano, y
+#      quien borra la obligación puede borrar su fila; el cliquet de FUENTES funciona
+#      porque sus manifiestos son INMUTABLES y hay una batería que caza su borrado, y aquí
+#      no existe ni lo uno ni lo otro.
+#      Se elige (c), con dos vías que fallan por motivos distintos:
+#        · CONSECUTIVIDAD de la numeración que la sede publica. Retirar `CONTRATO 2` deja
+#          {1, 3}: un hueco. Retirar `V6-07` deja un hueco. No hace falta saber cuántos
+#          «debería» haber, que es justo la cifra que caduca.
+#        · CLIQUET DEL CORPUS: toda obligación que el corpus EJERCE —la nombra el `cubre`
+#          de un escenario o la `obligacion` de un sabotaje— tiene que seguir en el
+#          universo. Cambiar la fase de `F-07` no mueve ninguna numeración, pero `T242` y
+#          los sabotajes `N242`, `N242b` y `N242c` la siguen ejerciendo, y una obligación
+#          ejercida que ya no está en el universo es una DESAPARICIÓN.
+#      MEDIDO sobre el árbol intacto: el cliquet nombra 58 obligaciones y el universo tiene
+#      58; la intersección es total y no hay ni una citada de más ni una de menos. No es
+#      una promesa: es el control positivo que `T353` ejecuta.
+#
+#  DECISIÓN · el CRITERIO DE PERTENENCIA de cada componente se DECLARA (`ADJ-M10`)
+#      El adjudicador midió que el criterio no es UNO: el componente `deuda` pertenece por
+#      FASE y las condiciones `C-L` se separan por SECCIÓN. El resultado es correcto y la
+#      frontera no está trazada por la propiedad que dice trazarla. No se homogeneiza a la
+#      fuerza —hacerlo metería `C-L` en el universo o sacaría deuda legítima—: se DECLARA,
+#      componente a componente, y se PUBLICA en la salida. Una frontera declarada se puede
+#      discutir; una supuesta, no.
+CRITERIOS_DE_PERTENENCIA = {
+    "§19": "por FASE declarada en el bloque del contrato (`FASE **F6**`)",
+    "F-nn": "por FASE declarada en la celda de la fila, leída por POSICIÓN y por CONTENIDO",
+    "V6": "por ESTRUCTURA: toda fila `V6-nn` de §20 es obligación de `F6` por definición",
+    "g": "por ESTRUCTURA: cabecera `## `g.n`` dentro de la ventana 1..16 que la sede enumera",
+    # `ADJ-M10` · LA FRONTERA DEL COMPONENTE `C`, DICHA COMO LO QUE ES Y NO COMO LO QUE
+    # PARECE. `kernel/operativo/contratos/` publica SIETE contratos —`C1`…`C7`— y este
+    # componente se queda con TRES. El criterio no es estructural: es una SELECCIÓN
+    # ESCRITA en el patrón `^(C[245])-`, y NINGUNA sede del corpus declara por qué esos
+    # tres son los de `F6` y los otros cuatro no. Se dice aquí en vez de dejar que el
+    # rótulo «por estructura» lo tape, y va como PETICIÓN al coordinador: mientras no
+    # exista sede que lo derive, este componente tiene una frontera que no se puede
+    # auditar contra nada.
+    "C": "SELECCIÓN ESCRITA `C2`, `C4`, `C5` — sin sede que la derive (PETICIÓN abierta); "
+         "los otros cuatro contratos del directorio se publican como excluidos",
+    "deuda": "por FASE declarada en la celda de la fila, o en el campo `FASE` de la sección",
+}
+
+# La FORMA de un identificador de cada familia. Un identificador que no case NO se admite
+# «porque venía de la sede»: una familia nueva o un identificador mal formado son las dos
+# maneras de que entre en el universo algo que nadie sabe cruzar con nada.
+FORMA_DE_IDENTIFICADOR = {
+    "§19": r"CONTRATO \d+(?:bis)?|D104",
+    "F-nn": r"F-\d\d",
+    "V6": r"V6-\d\d",
+    "g": r"g\.\d+",
+    "C": r"C[0-9]+",
+    "deuda": r"FD-\d+|M-04|A14|E5-\d+|S1-\d+",
+}
+
+# El PATRÓN ÚNICO con el que se lee el corpus para el cliquet. Se compone de las formas de
+# arriba y no se escribe aparte: dos listas de familias serían dos verdades.
+_PATRON_DEL_CLIQUET = re.compile(
+    r"(?<![\w.-])(" + "|".join(FORMA_DE_IDENTIFICADOR[c] for c in FORMA_DE_IDENTIFICADOR)
+    + r")(?![\w.-])")
+
+# Lo que cada componente deja fuera, CON SU MOTIVO. Una exclusión sin motivo escrito es la
+# forma callada de encoger, y `--obligaciones` la publica entera.
+EXCLUIDOS_DE_OBLIGACION = []
+
+
+def _excluir_obligacion(clase, identificador, motivo):
+    # ALCANCE DE `--autopruebas`, DICHO: esta guarda y la de identificador duplicado entre
+    # componentes NO llevan sabotaje, y no por descuido. Hoy las seis familias son DISJUNTAS
+    # POR FORMA, así que ningún estado del CORPUS puede producir un duplicado entre
+    # componentes; y ninguna llamada del código deja el motivo vacío. Las dos guardas existen
+    # para que AMPLIAR una familia o añadir un componente no vuelva alcanzable ese estado en
+    # silencio. Un sabotaje que hubiera que fabricar cambiando este mismo fichero no probaría
+    # nada del corpus: probaría que se puede romper el instrumento, que ya se sabe. Se dice
+    # en vez de fingir que están probadas.
+    if (clase, identificador, motivo) in EXCLUIDOS_DE_OBLIGACION:
+        return
+    if not motivo:
+        raise SedeIlegible(
+            "se ha intentado dejar `%s` fuera del componente `%s` SIN MOTIVO ESCRITO. Una "
+            "exclusión sin motivo no es una frontera: es un recorte" % (identificador, clase))
+    EXCLUIDOS_DE_OBLIGACION.append((clase, identificador, motivo))
+
+
+def _exigir_identificadores(clase, halladas):
+    """Forma, familia y no-vaciedad de lo que un componente deriva. Falla cerrado."""
+    forma = re.compile(r"^(?:" + FORMA_DE_IDENTIFICADOR[clase] + r")$")
+    ajenos = sorted(i for i in halladas if not forma.match(i))
+    if ajenos:
+        raise SedeIlegible(
+            "el componente `%s` ha derivado %d identificador(es) que NO tienen la forma de "
+            "su familia (%s): %r. O la sede ha cambiado de forma, o el barrido está leyendo "
+            "otra cosa: las dos se responden, no se callan"
+            % (clase, len(ajenos), FORMA_DE_IDENTIFICADOR[clase], ajenos))
+    if not halladas:
+        # `ADJ-G1` · DISTINGUIR EL VACÍO LEGÍTIMO DEL FALLO DE DERIVACIÓN. Ninguno de los
+        # seis componentes puede estar legítimamente vacío —cada uno tiene sede propia y
+        # contenido publicado—, así que un conjunto vacío aquí no es «no hay ninguna»: es
+        # «no he sabido leerlas», y se dice con esas palabras.
+        raise SedeIlegible(
+            "el componente `%s` ha derivado CERO obligaciones. Su sede publica contenido y "
+            "su criterio de pertenencia es «%s»: un conjunto vacío aquí no es un universo "
+            "vacío legítimo, es una derivación que ha dejado de funcionar"
+            % (clase, CRITERIOS_DE_PERTENENCIA[clase]))
+    return halladas
+
+
+def _exigir_consecutividad(clase, identificadores, patron):
+    """La numeración que la sede publica no puede tener huecos. Suelo DERIVADO."""
+    numeros = sorted({int(m.group(1)) for i in identificadores
+                      for m in [re.search(patron, i)] if m})
+    if not numeros:
+        raise SedeIlegible(
+            "el componente `%s` no publica ningún identificador numerado con la forma %r: "
+            "la lectura de su sede ha dejado de funcionar" % (clase, patron))
+    huecos = [n for n in range(numeros[0], numeros[-1] + 1) if n not in numeros]
+    if huecos:
+        raise SedeIlegible(
+            "EL UNIVERSO HA ENCOGIDO. El componente `%s` publica la numeración %r y le "
+            "faltan %r: un hueco en la numeración es una obligación que ha desaparecido de "
+            "su sede, y este fichero promete no reducir el universo en silencio"
+            % (clase, numeros, huecos))
+    return numeros
+
+
+def obligaciones_ejercidas_por_el_corpus():
+    """`{obligacion: [quién la ejerce]}` — el CLIQUET, derivado del corpus ejecutable.
+
+    Dos fuentes, las dos del árbol y ninguna escrita a mano: el `cubre` de cada bloque
+    `ads:escenario` y la `obligacion` que declara cada `Mutacion` del catálogo de sabotajes.
+    Se leen con el MISMO patrón que compone `FORMA_DE_IDENTIFICADOR`, y se buscan DENTRO de
+    la celda y no por igualdad: el corpus escribe `g.2 I-g1`, y exigir igualdad exacta
+    dejaría `g.2` sin cliquet sin que nadie se enterara.
+    """
+    ejercidas = {}
+    for esc in _escenarios():
+        for celda in esc["cubre"]:
+            for m in _PATRON_DEL_CLIQUET.finditer(celda):
+                ejercidas.setdefault(m.group(1), []).append(esc["id"])
+    base = os.path.join(RAIZ, VALIDADORES)
+    for nombre in sorted(os.listdir(base)) if os.path.isdir(base) else []:
+        if not nombre.endswith(".py"):
+            continue
+        with io.open(os.path.join(base, nombre), encoding="utf-8") as fh:
+            texto = fh.read()
+        for m in re.finditer(r'Mutacion\(\s*"([^"]+)"\s*,\s*"([^"]*)"', texto):
+            for t in _PATRON_DEL_CLIQUET.finditer(m.group(2)):
+                ejercidas.setdefault(t.group(1), []).append(m.group(1))
+    return {o: sorted(set(q)) for o, q in sorted(ejercidas.items())}
+
+
+# EL ALCANCE DEL CLIQUET, DICHO ENTERO Y COMPROBADO — no una promesa, una medición.
+#
+#     El cliquet exige que toda obligación que el corpus EJERCE siga en el universo. Sobre
+#     el árbol intacto eso da 58 ejercidas y 58 en el universo... salvo CINCO identificadores
+#     que tienen la FORMA de una familia del universo, que el corpus ejerce de verdad, y que
+#     NO son obligaciones de `F6`. Se midieron, no se supusieron:
+#
+#         C1 · C3 · C6 · C7   contratos transversales de fase ANTERIOR. El componente `C`
+#                             selecciona `C2`, `C4` y `C5`, y los otros cuatro existen y se
+#                             ejercen desde `F4c` y `F5`
+#         S1-01               hallazgo del OCTAVO gate de `F4c`. Su sede es el documento del
+#                             gate, no `06-DEUDA`: no es una fila de deuda viva
+#
+#     DECISIÓN · la excepción se ESCRIBE, y su motivo se COMPRUEBA en cada corrida
+#         Alternativas: (a) ensanchar el patrón del cliquet hasta que no las vea —lo que
+#         apagaría el cliquet para media familia—; (b) tolerar toda obligación «declarada
+#         fuera» —lo que sería el agujero entero, porque un cambio de fase produce
+#         exactamente una declaración de fuera y `10a` volvería a pasar—; (c) enumerar las
+#         cinco excepciones con su motivo y EXIGIR que el motivo siga siendo cierto.
+#         Se elige (c). Una lista de excepciones que nadie comprueba se estira; una que se
+#         comprueba en cada corrida no: si `C1-*.md` desaparece del árbol o `S1-01` deja de
+#         constar en un documento de gate, la excepción deja de sostenerse y esto FALLA
+#         CERRADO en vez de seguir tolerando. Y ampliarla es tocar el INSTRUMENTO, que
+#         `V6-11` no deja pasar en la misma pasada que juzga.
+FUERA_DEL_CLIQUET = {
+    "C1": ("kernel/operativo/contratos", "C1-",
+           "contrato transversal de fase ANTERIOR; el componente `C` selecciona C2, C4 y C5"),
+    "C3": ("kernel/operativo/contratos", "C3-",
+           "contrato transversal de fase ANTERIOR; el componente `C` selecciona C2, C4 y C5"),
+    "C6": ("kernel/operativo/contratos", "C6-",
+           "contrato transversal de fase ANTERIOR; el componente `C` selecciona C2, C4 y C5"),
+    "C7": ("kernel/operativo/contratos", "C7-",
+           "contrato transversal de fase ANTERIOR; el componente `C` selecciona C2, C4 y C5"),
+    "S1-01": ("docs/evolucion", "29-OCTAVO-GATE",
+              "hallazgo del OCTAVO gate de `F4c`; su sede es el documento del gate y no "
+              "`06-DEUDA`, luego no es una fila de deuda viva de `F6`"),
+}
+
+
+def _exigir_que_las_excepciones_sigan_siendo_ciertas():
+    """Cada excepción del cliquet tiene que seguir sosteniéndose, o esto falla cerrado."""
+    for ident, (directorio, prefijo, motivo) in sorted(FUERA_DEL_CLIQUET.items()):
+        base = os.path.join(RAIZ, directorio)
+        if not os.path.isdir(base) or not [n for n in os.listdir(base)
+                                           if n.startswith(prefijo)]:
+            raise SedeIlegible(
+                "la excepción del cliquet para `%s` decía «%s» y su sede `%s/%s*` ya no "
+                "está: una excepción cuyo motivo ha dejado de ser cierto no tolera nada, se "
+                "responde" % (ident, motivo, directorio, prefijo))
+
+
+def _exigir_que_ninguna_desaparezca(universo):
+    """`ADJ-G1` · una obligación que el corpus EJERCE no puede caerse del universo."""
+    _exigir_que_las_excepciones_sigan_siendo_ciertas()
+    ejercidas = obligaciones_ejercidas_por_el_corpus()
+    sobrantes = sorted(i for i in FUERA_DEL_CLIQUET if i in universo)
+    if sobrantes:
+        raise SedeIlegible(
+            "%r figuran a la vez en el universo y en las excepciones del cliquet. Una "
+            "excepción que ya no hace falta se retira: mientras esté, tolera algo que no "
+            "hay que tolerar" % sobrantes)
+    desaparecidas = sorted(o for o in ejercidas
+                           if o not in universo and o not in FUERA_DEL_CLIQUET)
+    if desaparecidas:
+        raise SedeIlegible(
+            "EL UNIVERSO HA ENCOGIDO, y esto es lo que la cabecera promete no hacer en "
+            "silencio: %d obligación(es) que el corpus EJERCE ya no salen de ningún "
+            "componente: %s. O una sede ha dejado de declararlas, o han cambiado de fase, o "
+            "el barrido ha dejado de verlas. Quien la quite responde de ello, y lo dice aquí"
+            % (len(desaparecidas),
+               ", ".join("%s (la ejercen %s)" % (o, ", ".join(ejercidas[o][:4]))
+                         for o in desaparecidas)))
+    return ejercidas
+
+
+def procedencia_de_los_componentes():
+    """Las SEDES de cada componente, con su digest y sus líneas. Se publica, no se supone."""
+    sedes = {"§19": (ARQ,), "F-nn": (ARQ,), "V6": (ARQ,), "g": (ESTADO_DURABLE,),
+             "C": ("kernel/operativo/contratos/",), "deuda": (DEUDA,)}
+    salida = []
+    for clase, _titulo, _fn in COMPONENTES_DE_OBLIGACION:
+        for rel in sedes[clase]:
+            ruta = os.path.join(RAIZ, rel)
+            if os.path.isdir(ruta):
+                cuantos = len([n for n in sorted(os.listdir(ruta))])
+                salida.append((clase, rel, "directorio", "%d ficheros" % cuantos))
+                continue
+            if not os.path.isfile(ruta):
+                raise SedeIlegible(
+                    "la sede `%s` del componente `%s` no existe: sin sede no hay derivación, "
+                    "y una derivación que no se puede hacer no devuelve un conjunto vacío"
+                    % (rel, clase))
+            with io.open(ruta, "rb") as fh:
+                crudo = fh.read()
+            salida.append((clase, rel, hashlib.sha256(crudo).hexdigest()[:16],
+                           "%d líneas" % lineas_de_blob(crudo)))
+    return salida
+
+
 def _seccion_19():
     """El cuerpo de §19, acotado por sus dos cabeceras. Falla cerrado si no está."""
     texto = _leer(ARQ)
@@ -893,12 +1167,27 @@ def obligaciones_de_19():
     # La ficha `D104`, que no es un `--- CONTRATO ---` pero es la cuarta obligación.
     if re.search(r"FASE\s+\*\*F6\.\*\*\s+`?D104`?|`D104` fija las cuatro vías", texto):
         halladas["D104"] = "11-ARQ §19 · ficha D104"
-    if len(halladas) < 4:
-        raise SedeIlegible(
-            "§19 declara %d obligaciones de fase F6 y la sede describe al menos CUATRO "
-            "—CONTRATO 1, CONTRATO 1bis, CONTRATO 2 y D104—: el barrido ha perdido alguna, "
-            "y un universo que encoge en silencio es el defecto de `P-08`. Halladas: %r"
-            % (len(halladas), sorted(halladas)))
+    # `ADJ-G1` · EL SUELO SE DERIVA, Y EL CARDINAL ESCRITO SE RETIRA.
+    #
+    #     HECHO REPRODUCIDO, y es el que el adjudicador midió: la guarda decía
+    #     `if len(halladas) < 4` con CINCO obligaciones reales, o sea UNA UNIDAD DE
+    #     HOLGURA. Retirar el bloque `--- CONTRATO 2 · AMPLIAR T152 … ---` entero daba
+    #     `(§19) 4 · TOTAL 57 · EXIT=0`, y `CONTRATO 2` desaparecía de la salida sin que
+    #     nada lo dijera. Un cardinal escrito al lado de su enumeración caduca en cuanto
+    #     la enumeración crece, y mientras tanto REGALA holgura.
+    #
+    #     Lo que lo sustituye son DOS suelos derivados, y ninguno se escribe:
+    #       · la CONSECUTIVIDAD de la numeración de los contratos que la sede publica
+    #         —de cualquier fase—: retirar el bloque de `CONTRATO 2` deja {1, 3}, que es
+    #         un hueco, y el hueco falla cerrado;
+    #       · el CLIQUET del corpus (`_exigir_que_ninguna_desaparezca`), que exige que
+    #         toda obligación que el corpus EJERCE siga en el universo.
+    #     El primero caza la retirada del bloque; el segundo caza el cambio de fase, que
+    #     no mueve la numeración. Hacen falta los dos, y por eso están los dos.
+    todos = sorted({m.group(1) for m in re.finditer(r"^--- (CONTRATO [^\u00b7]+?) \u00b7",
+                                                   texto, re.M)})
+    _exigir_consecutividad("§19", todos, r"CONTRATO (\d+)")
+    _exigir_identificadores("§19", halladas)
     return halladas
 
 
@@ -964,6 +1253,17 @@ def hallazgos_externos_f6():
     if not por_contenido:
         raise SedeIlegible("§19 no publica ningún hallazgo externo con fase F6, y su tabla "
                            "los declara")
+    # `ADJ-G1` · el componente `F-nn` era el ÚNICO SIN SUELO: su guarda sólo disparaba con
+    # CERO filas, de modo que perder UNA era silencioso. La numeración de esta tabla NO es
+    # consecutiva —la sede publica `F-01`, `F-02`, `F-04`… y `F-03` y `F-09` no existen—,
+    # así que aquí no hay consecutividad que exigir sin inventarse un hueco: el suelo de
+    # este componente lo pone entero el CLIQUET DEL CORPUS, y por eso el cliquet no es un
+    # adorno. Lo que queda fuera se publica con su motivo, que es su fase.
+    for ident in sorted(set(anchuras) - set(por_contenido)):
+        _excluir_obligacion("F-nn", ident,
+                            "su fila de §19 no declara fase `F6`; el criterio de este "
+                            "componente es «" + CRITERIOS_DE_PERTENENCIA["F-nn"] + "»")
+    _exigir_identificadores("F-nn", por_contenido)
     return por_contenido
 
 
@@ -972,9 +1272,11 @@ def contratos_v6():
     texto = _leer(ARQ)
     halladas = {v: "11-ARQ §20 · contratos de F6"
                 for v in sorted(set(re.findall(r"\bV6-\d\d\b", texto)))}
-    if len(halladas) < 19:
-        raise SedeIlegible("§20 publica %d contratos `V6-nn` y la sede declara diecinueve"
-                           % len(halladas))
+    # `ADJ-G1` · el `< 19` era un cardinal ESCRITO, y además con holgura por abajo. Lo
+    # sustituye la CONSECUTIVIDAD, que se deriva: si falta `V6-07`, el conjunto tiene un
+    # hueco y el hueco se ve sin que nadie sepa cuántos contratos «debería» haber.
+    _exigir_consecutividad("V6", halladas, r"V6-(\d\d)")
+    _exigir_identificadores("V6", halladas)
     return halladas
 
 
@@ -986,13 +1288,27 @@ def obligaciones_g():
     barrido se queda con las numeradas de 1 a 16, que es lo que la sede enumera.
     """
     texto = _leer(ESTADO_DURABLE)
-    halladas = {}
-    for m in re.finditer(r"^##\s+`(g\.(\d+))`", texto, re.M):
-        if 1 <= int(m.group(2)) <= 16:
-            halladas[m.group(1)] = "g-ESTADO-DURABLE-APROBADA.md · cabecera"
-    if len(halladas) != 16:
-        raise SedeIlegible("la sección aprobada del estado durable publica %d obligaciones "
-                           "`g.n` entre 1 y 16, y la sede declara dieciséis" % len(halladas))
+    todas = {m.group(1): int(m.group(2))
+             for m in re.finditer(r"^##\s+`(g\.(\d+))`", texto, re.M)}
+    # `ADJ-G1` · la CONSECUTIVIDAD se comprueba sobre TODAS las cabeceras `g.n` que la sede
+    # publica —`g.0` incluida—, antes de aplicar ninguna ventana. Si desaparece `g.7`, el
+    # hueco aparece aquí y no hay cardinal escrito que lo tape.
+    _exigir_consecutividad("g", sorted(todas), r"g\.(\d+)")
+    halladas = {ident: "g-ESTADO-DURABLE-APROBADA.md · cabecera"
+                for ident, n in todas.items() if 1 <= n <= 16}
+    # LA VENTANA, DECLARADA CON SU MOTIVO Y NO SUPUESTA (`ADJ-M10`). Lo que queda fuera se
+    # publica en `EXCLUIDOS_DE_OBLIGACION` con la razón por la que queda fuera, que es la
+    # diferencia entre una frontera y un recorte.
+    for ident, n in sorted(todas.items(), key=lambda par: par[1]):
+        if ident not in halladas:
+            _excluir_obligacion(
+                "g", ident,
+                "`g.0` es la frontera entre norma y mecanismo y `g.17`/`g.18` declaran lo "
+                "derivado y lo que la sección NO hace: ninguna es una obligación de "
+                "contenido" if n in (0, 17, 18) else
+                "la cabecera `%s` queda fuera de la ventana 1..16 que la sede enumera"
+                % ident)
+    _exigir_identificadores("g", halladas)
     return halladas
 
 
@@ -1004,9 +1320,27 @@ def contratos_transversales():
         m = re.match(r"^(C[245])-", nombre)
         if m:
             halladas[m.group(1)] = "kernel/operativo/contratos/" + nombre
-    if len(halladas) != 3:
-        raise SedeIlegible("el árbol publica %d de los contratos transversales C2, C4 y C5"
-                           % len(halladas))
+            continue
+        # `ADJ-M10` · lo que la selección deja fuera se PUBLICA con su motivo. Cuatro de
+        # los siete contratos del directorio no entran, y hasta hoy no lo decía nadie.
+        otro = re.match(r"^(C\d+)-", nombre)
+        if otro:
+            _excluir_obligacion(
+                "C", otro.group(1),
+                "el componente selecciona `C2`, `C4` y `C5` por lista ESCRITA; este "
+                "contrato existe en el árbol y es de fase ANTERIOR")
+    # `ADJ-G1` · el `!= 3` era el último cardinal escrito. El suelo de este componente lo
+    # pone el CLIQUET DEL CORPUS: `C2`, `C4` y `C5` están nombrados en el `cubre` de sus
+    # escenarios, y retirar el fichero de uno los deja ejercidos y fuera del universo, que
+    # es lo que `_exigir_que_ninguna_desaparezca` convierte en fallo cerrado. Aquí queda la
+    # comprobación que este barrido SÍ puede hacer por sí solo: que el directorio exista y
+    # que lo hallado tenga la forma declarada.
+    if not os.path.isdir(base):
+        raise SedeIlegible(
+            "no existe `kernel/operativo/contratos/`: la sede de los contratos "
+            "transversales no está, y un directorio ausente no es un conjunto vacío "
+            "legítimo — es una derivación que no se ha podido hacer")
+    _exigir_identificadores("C", halladas)
     return halladas
 
 
@@ -1141,6 +1475,7 @@ def deudas_y_limites():
     if not halladas:
         raise SedeIlegible("`%s` no publica ninguna deuda con fase F6, y su sede es la "
                            "única del censo de deuda viva" % DEUDA)
+    _exigir_identificadores("deuda", halladas)
     return halladas
 
 
@@ -1216,8 +1551,20 @@ def universo_de_obligaciones():
     "sabotajes"}}`, derivado entero."""
     escenarios, apuntadas = _escenarios(), _mutaciones()
     universo = {}
+    de_quien = {}
     for clase, _titulo, fn in COMPONENTES_DE_OBLIGACION:
         for obligacion, sede in fn().items():
+            # `ADJ-G1` · un identificador DUPLICADO entre componentes se tragaba en
+            # silencio: `setdefault` conservaba la primera clase y la segunda desaparecía
+            # del recuento por componentes sin mover el TOTAL. Dos componentes que reclaman
+            # la misma obligación no es un detalle: es que una de las dos fronteras está
+            # mal trazada, y hasta saber cuál no se deriva nada.
+            if de_quien.setdefault(obligacion, clase) != clase:
+                raise SedeIlegible(
+                    "la obligación `%s` la reclaman DOS componentes, `%s` y `%s`. Con dos "
+                    "fronteras que se solapan, el recuento por componentes deja de sumar el "
+                    "total y una de las dos filas desaparece sin que nada lo diga"
+                    % (obligacion, de_quien[obligacion], clase))
             ficha = universo.setdefault(obligacion, {
                 "clase": clase, "sede": sede, "escenarios": [], "validadores": set(),
                 "evidencias": [], "sabotajes": []})
@@ -1231,6 +1578,9 @@ def universo_de_obligaciones():
                         os.path.join(RAIZ, KERNEL_PRUEBAS, "pruebas", esc["evidencia"])):
                     ficha["evidencias"].append(esc["evidencia"])
                 ficha["sabotajes"].extend(apuntadas.get(esc["id"], []))
+    # `ADJ-G1` · EL CLIQUET, y va AL FINAL: hace falta el universo entero para poder decir
+    # qué se ha caído de él.
+    _exigir_que_ninguna_desaparezca(universo)
     return universo
 
 
@@ -1250,10 +1600,42 @@ def universo_de_obligaciones():
 #     obligación sin escenario que la cubra es indistinguible, PARA ESTE APARATO, de una sin
 #     implementar, y esa indistinción es justamente el defecto —no se tapa rotulándola de
 #     una de las dos maneras—.
+#
+# `ADJ-M4` · Y LO QUE UNA RESTA VACÍA **NO** DEMUESTRA, DICHO AL LADO DE LA CIFRA
+#
+#     El adjudicador del gate del 2026-09-04 lo midió así: «`A=0` no demuestra `O26` §5.1 y
+#     `B=0` no demuestra `O26` §5.2», con un CONTRAEJEMPLO VIVO — `V6-12` figuraba con
+#     `B=0`, o sea «tiene sabotaje declarado», y la propiedad que `ADJ-B3` derribó —el
+#     append-only de la sede del Owner más allá del prefijo del nacimiento— **no tenía
+#     ningún sabotaje que la pusiera roja**. Los sabotajes imputados a `V6-12` eran `N189`,
+#     `N242` y `N242b`, y `N189` está declarado contra `V6-11`.
+#
+#     La cifra era correcta y la lectura era falsa, y la culpa no es del lector: un rótulo
+#     que dice «implementadas SIN sabotaje» invita a leer «las demás tienen sabotaje
+#     SUFICIENTE», que es otra cosa. El remedio no es cambiar el cálculo —mide bien lo que
+#     mide— sino publicar, PEGADO A CADA CIFRA, qué proposición NO queda demostrada por
+#     ella. Es la sexta condición de `O18`: ninguna promesa de garantía superior a la
+#     realmente entregada.
+LO_QUE_UNA_RESTA_VACIA_NO_DEMUESTRA = {
+    "A": ("NO demuestra `O26` §5.1 —«no quedan obligaciones internas sin implementar»—. "
+          "Mide TRAZABILIDAD DECLARADA: que algún escenario nombre la obligación en su "
+          "`cubre` y declare un validador. Un `cubre` es una declaración escrita, y este "
+          "aparato no sabe si lo declarado está construido"),
+    "B": ("NO demuestra `O26` §5.2 —«no quedan propiedades críticas sin una prueba capaz "
+          "de fallar»—. Mide EXISTENCIA DE AL MENOS UN SABOTAJE imputado a la obligación, "
+          "no que sus propiedades estén cubiertas una a una. Contraejemplo medido y vivo: "
+          "`V6-12` figuraba con `B=0` mientras el append-only de la sede del Owner más "
+          "allá del prefijo del nacimiento no tenía sabotaje ninguno (`ADJ-B3`)"),
+    "C": ("NO demuestra que la evidencia sea VIGENTE ni que describa el árbol de hoy. Mide "
+          "que exista un fichero de evidencia enlazado y presente en el árbol. Que la "
+          "evidencia demuestre lo que el informe afirma lo comprueba `T158`, y que el "
+          "ESTADO declarado de cada escenario se derive de ella, `T350`"),
+}
+
 ROTULOS_DE_RESTA = (
-    ("A", "obligaciones internas SIN COBERTURA DECLARADA que las ejerza"),
-    ("B", "implementadas SIN SABOTAJE DECLARADO que las ponga rojas"),
-    ("C", "obligaciones SIN TRAZABILIDAD HASTA EVIDENCIA EJECUTABLE"),
+    ("A", "sin COBERTURA DECLARADA: ningún `cubre` con validador la nombra"),
+    ("B", "con cobertura y SIN NI UN SABOTAJE imputado que la ponga roja"),
+    ("C", "con cobertura y SIN FICHERO DE EVIDENCIA presente en el árbol"),
 )
 
 
@@ -1273,13 +1655,36 @@ def publicar_obligaciones(destino):
     for clase, titulo, fn in COMPONENTES_DE_OBLIGACION:
         suyas = sorted(o for o, f in universo.items() if f["clase"] == clase)
         destino.write("  (%-6s) %3d   %s\n" % (clase, len(suyas), titulo))
+        destino.write("            criterio de pertenencia: %s\n"
+                      % CRITERIOS_DE_PERTENENCIA[clase])
         destino.write("            %s\n" % ", ".join(suyas))
     destino.write("\n  TOTAL %d obligaciones\n\n" % len(universo))
+
+    # `ADJ-G1` · LA PROCEDENCIA, PUBLICADA. De qué fichero sale cada componente, con su
+    # digest y su tamaño. Sin esto, «58 obligaciones» es una cifra sin origen, y una cifra
+    # sin origen no se puede volver a derivar ni contrastar contra nada.
+    destino.write("PROCEDENCIA DE CADA COMPONENTE — sede, digest y tamaño\n")
+    destino.write("-" * 78 + "\n")
+    for clase, rel, digest, tamano in procedencia_de_los_componentes():
+        destino.write("  %-7s %-58s %s  %s\n" % (clase, rel, digest, tamano))
+    ejercidas = obligaciones_ejercidas_por_el_corpus()
+    protegidas = sorted(o for o in universo if o in ejercidas)
+    destino.write("\n  CLIQUET · obligaciones que el corpus EJERCE: %d  ·  de ellas en el "
+                  "universo: %d\n" % (len(ejercidas), len(protegidas)))
+    destino.write("  del universo, SIN cliquet que las proteja: %s\n"
+                  % (", ".join(sorted(set(universo) - set(ejercidas))) or "ninguna"))
+    destino.write("  fuera del cliquet por declaración COMPROBADA: %s\n\n"
+                  % ", ".join(sorted(FUERA_DEL_CLIQUET)))
 
     # LO QUE QUEDA FUERA, DICHO. Un universo que encoge en silencio es `P-08`; uno que dice
     # QUÉ deja fuera y POR QUÉ es una frontera, y una frontera se puede discutir.
     destino.write("FUERA DEL UNIVERSO, Y POR QUÉ — no se calla ninguno\n")
     destino.write("-" * 78 + "\n")
+    if EXCLUIDOS_DE_OBLIGACION:
+        destino.write("  excluidos por los componentes, CADA UNO CON SU MOTIVO (%d)\n"
+                      % len(EXCLUIDOS_DE_OBLIGACION))
+        for clase, ident, motivo in EXCLUIDOS_DE_OBLIGACION:
+            destino.write("      %-7s %-10s %s\n" % (clase, ident, motivo))
     sin_fase = deudas_sin_fase_f6()
     destino.write("  deuda registrada SIN fase `F6` (%d)  ·  no es obligación interna de F6\n"
                   % len(sin_fase))
@@ -1301,17 +1706,226 @@ def publicar_obligaciones(destino):
             ",".join(f["escenarios"][:4]) or "—",
             ",".join(sorted(set(f["sabotajes"]))[:3]) or "—",
             (sorted(set(f["evidencias"]))[:1] or ["—"])[0]))
-    destino.write("\nLAS TRES RESTAS, DERIVADAS\n")
+    destino.write("\nLAS TRES RESTAS, DERIVADAS — Y LO QUE UNA RESTA VACÍA NO DEMUESTRA\n")
     destino.write("-" * 78 + "\n")
     for (letra, titulo), lista in zip(ROTULOS_DE_RESTA, (a, b, c)):
         destino.write("  %s · %-58s %d\n" % (letra, titulo, len(lista)))
         if lista:
             destino.write("      %s\n" % ", ".join(lista))
+        for linea in textwrap.wrap(LO_QUE_UNA_RESTA_VACIA_NO_DEMUESTRA[letra], 74):
+            destino.write("      %s\n" % linea)
+        destino.write("\n")
     return 0 if not (a or b or c) else 1
+
+
+# ===========================================================================
+#  `ADJ-G1` · LAS META-PRUEBAS · un canal que no se puede sabotear no es un canal
+# ===========================================================================
+#  Cada guarda de arriba tiene aquí una infracción deliberada que la pone ROJA. No es un
+#  adorno: el defecto que este fichero acaba de cerrar existía porque las guardas estaban
+#  escritas y NADIE LAS HABÍA PROBADO — `< 4` con cinco obligaciones reales llevaba tiempo
+#  regalando una unidad de holgura, y nadie lo vio porque ninguna prueba retiraba nunca un
+#  contrato.
+#
+#  DECISIÓN · cada sabotaje corre sobre una COPIA y contra el script DE LA COPIA
+#      Alternativas: (a) parchear `RAIZ` con una variable de entorno; (b) copiar el corpus
+#      y ejecutar el derivador que vive DENTRO de la copia.
+#      Se elige (b). Con (a) el instrumento tendría una variable que cambia QUÉ ÁRBOL
+#      juzga, que es una puerta abierta en la pieza que decide si el universo ha encogido:
+#      un `ADS_UNIVERSO_RAIZ` apuntando a un árbol amable produce un verde honesto sobre el
+#      árbol equivocado. Con (b) no hay puerta: cada corrida juzga el árbol donde está.
+#      La copia son 19 MB y tarda dos décimas; el coste no es el argumento, la puerta sí.
+SABOTAJES_DEL_UNIVERSO = []
+
+
+def _sabotaje(rotulo, espera):
+    def envoltorio(fn):
+        SABOTAJES_DEL_UNIVERSO.append((rotulo, espera, fn))
+        return fn
+    return envoltorio
+
+
+def _sustituir_en(destino, rel, viejo, nuevo):
+    ruta = os.path.join(destino, rel)
+    with io.open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    if viejo not in texto:
+        raise AssertionError("el sabotaje no encuentra su ancla en %s: %r" % (rel, viejo[:60]))
+    with io.open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto.replace(viejo, nuevo, 1))
+
+
+@_sabotaje("la fila `F-07` cambia de fase `F6` a `F5` — el id DESAPARECE",
+           "EL UNIVERSO HA ENCOGIDO")
+def _s_fase_de_f07(destino):
+    with io.open(os.path.join(destino, ARQ), encoding="utf-8") as fh:
+        texto = fh.read()
+    linea = [l for l in texto.splitlines() if l.startswith("| `F-07`")][0]
+    _sustituir_en(destino, ARQ, linea, linea.replace("| **F6** |", "| **F5** |"))
+
+
+@_sabotaje("se retira la fila `F-10` entera", "EL UNIVERSO HA ENCOGIDO")
+def _s_retirar_f10(destino):
+    with io.open(os.path.join(destino, ARQ), encoding="utf-8") as fh:
+        texto = fh.read()
+    linea = [l for l in texto.splitlines() if l.startswith("| `F-10`")][0]
+    _sustituir_en(destino, ARQ, linea + "\n", "")
+
+
+@_sabotaje("se retira el bloque `--- CONTRATO 2 … ---` de §19",
+           "EL UNIVERSO HA ENCOGIDO")
+def _s_retirar_contrato_2(destino):
+    ruta = os.path.join(destino, ARQ)
+    with io.open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    i = texto.index("--- CONTRATO 2 \u00b7")
+    j = texto.index("--- CONTRATO", i + 10)
+    with io.open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto[:i] + texto[j:])
+
+
+@_sabotaje("desaparece `V6-07` de §20 — hueco en la numeración",
+           "EL UNIVERSO HA ENCOGIDO")
+def _s_hueco_en_v6(destino):
+    ruta = os.path.join(destino, ARQ)
+    with io.open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    with io.open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto.replace("V6-07", "V6-XX"))
+
+
+@_sabotaje("desaparece la cabecera `g.7` — hueco en la numeración",
+           "EL UNIVERSO HA ENCOGIDO")
+def _s_hueco_en_g(destino):
+    _sustituir_en(destino, ESTADO_DURABLE, "## `g.7`", "## `g.7bis`")
+
+
+@_sabotaje("la sede del estado durable NO EXISTE", "ilegible")
+def _s_sede_ausente(destino):
+    os.remove(os.path.join(destino, ESTADO_DURABLE))
+
+
+@_sabotaje("la sede de deuda no decodifica como UTF-8", "no decodifica como UTF-8")
+def _s_sede_no_utf8(destino):
+    with io.open(os.path.join(destino, DEUDA), "ab") as fh:
+        fh.write(b"\xff\xfe basura binaria\n")
+
+
+@_sabotaje("§19 pierde su bloque de contratos — PARSEO PARCIAL",
+           "no contiene el bloque de contratos")
+def _s_parseo_parcial(destino):
+    _sustituir_en(destino, ARQ, "--- CONTRATO 1 \u00b7 DERIVAR EL CENSO",
+                  "--- APUNTE 1 \u00b7 DERIVAR EL CENSO")
+
+
+@_sabotaje("una fila de deuda con fase F6 estrena FAMILIA de identificador",
+           "NO tienen la forma de su familia")
+def _s_identificador_mal_formado(destino):
+    # `FD-1` es una fila de `06-DEUDA` con fase `F6`. Renombrada a `ZZ-1` sigue siendo una
+    # fila con fase `F6` y el barrido la sigue viendo: lo que cambia es que su identificador
+    # ya no pertenece a ninguna familia declarada. Sin la guarda de FORMA entraría en el
+    # universo un identificador que nadie sabe cruzar con nada.
+    _sustituir_en(destino, DEUDA, "**`FD-1`**", "**`ZZ-1`**")
+
+
+@_sabotaje("la tabla de §19 se queda SIN NINGUNA fila `F-nn` — vacío SOSPECHOSO",
+           "no publica ninguna fila `F-nn`")
+def _s_conjunto_vacio(destino):
+    ruta = os.path.join(destino, ARQ)
+    with io.open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    lineas = [l for l in texto.splitlines() if not l.startswith("| `F-")]
+    with io.open(ruta, "w", encoding="utf-8") as fh:
+        fh.write("\n".join(lineas) + "\n")
+
+
+@_sabotaje("desaparece `C1-*.md`: una excepción del cliquet deja de sostenerse",
+           "ha dejado de ser cierto")
+def _s_excepcion_caducada(destino):
+    base = os.path.join(destino, "kernel/operativo/contratos")
+    for nombre in os.listdir(base):
+        if nombre.startswith("C1-"):
+            os.remove(os.path.join(base, nombre))
+
+
+def _derivar_en_la_copia(destino):
+    """Importa el derivador QUE VIVE EN LA COPIA y le pide el universo."""
+    import importlib.util                                          # noqa: PLC0415
+    ruta = os.path.join(destino, "docs/evolucion/verificacion",
+                        "derivar-universo-obligatorio.py")
+    spec = importlib.util.spec_from_file_location("universo_en_copia", ruta)
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+    salida = io.StringIO()
+    modulo.publicar_obligaciones(salida)
+    return salida.getvalue()
+
+
+def autopruebas(destino_stdout):
+    """Ejerce CADA guarda con una infracción deliberada. Devuelve 0 si todas la cazan."""
+    import shutil                                                  # noqa: PLC0415
+    import tempfile                                                # noqa: PLC0415
+
+    def copiar(a_donde):
+        shutil.copytree(RAIZ, a_donde, symlinks=True,
+                        ignore=lambda d, n: [x for x in n
+                                             if x in (".git", "__pycache__")])
+
+    destino_stdout.write("META-PRUEBAS DEL UNIVERSO OBLIGATORIO\n")
+    destino_stdout.write("=" * 78 + "\n\n")
+    fallidos = 0
+    raiz_tmp = tempfile.mkdtemp(prefix="ads-universo-")
+    try:
+        # CONTROL POSITIVO. Un control que no puede aprobar no sirve de nada: sobre la copia
+        # intacta la derivación tiene que salir, y si no sale es que el aparato de prueba
+        # está roto y ningún rojo posterior significaría nada.
+        limpio = os.path.join(raiz_tmp, "control")
+        copiar(limpio)
+        try:
+            texto = _derivar_en_la_copia(limpio)
+            marca = "TOTAL" in texto
+        except SedeIlegible as e:
+            marca, texto = False, str(e)
+        destino_stdout.write("  %-4s CONTROL POSITIVO · la copia intacta deriva el universo\n"
+                             % ("ok" if marca else "FALLA"))
+        if not marca:
+            fallidos += 1
+
+        for indice, (rotulo, espera, aplicar) in enumerate(SABOTAJES_DEL_UNIVERSO):
+            destino = os.path.join(raiz_tmp, "s%02d" % indice)
+            copiar(destino)
+            aplicar(destino)
+            try:
+                _derivar_en_la_copia(destino)
+                resultado, detalle = "NO DETECTADA", "la derivación salió sin levantar"
+            except Exception as error:                             # noqa: BLE001
+                # La copia trae su PROPIA clase `SedeIlegible` —es otro módulo—, así que no
+                # se puede capturar por identidad de clase y se reconoce por NOMBRE. Y una
+                # traza de cualquier otra clase NO es una detección: es el aparato
+                # reventando, que es lo que `V6-03` manda no confundir con un juicio.
+                detalle = str(error)
+                if type(error).__name__ != "SedeIlegible":
+                    resultado = "TRAZA"
+                    detalle = "%s: %s" % (type(error).__name__, error)
+                else:
+                    resultado = "ok" if espera in detalle else "MOTIVO EQUIVOCADO"
+            if resultado != "ok":
+                fallidos += 1
+            destino_stdout.write("  %-4s %-62s\n" % (resultado, rotulo))
+            destino_stdout.write("       espera «%s»\n" % espera)
+            if resultado != "ok":
+                destino_stdout.write("       %s\n" % detalle[:300])
+    finally:
+        shutil.rmtree(raiz_tmp, ignore_errors=True)
+    destino_stdout.write("\n  %d sabotajes · %d sin detectar\n"
+                         % (len(SABOTAJES_DEL_UNIVERSO), fallidos))
+    return 1 if fallidos else 0
 
 
 def main():
     modo = sys.argv[1] if len(sys.argv) > 1 else "--tabla"
+    if modo == "--autopruebas":
+        return autopruebas(sys.stdout)
     if modo == "--obligaciones":
         # El universo de OBLIGACIONES, que es el que `F6-H` declaró completo sin tenerlo.
         # Es un universo distinto del de FUENTES y por eso no comparte su derivación; lo

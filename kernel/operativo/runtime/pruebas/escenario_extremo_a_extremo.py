@@ -559,6 +559,93 @@ class Escenario:
 
 
 # ---------------------------------------------------------------------------
+#  `ADJ-M3` · EL ALMACÉN CORTADO ENTRE LOS PASOS 8 Y 9, QUE HAY QUE RECUPERAR
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR. `CONTRATO-ESTADO-DURABLE.md` §3 afirma que los tres
+#  escenarios extremo a extremo «ya no pueden seguir verdes sobre un almacén irrecuperable»,
+#  y `entre-el-paso-8-y-el-9` es el ÚNICO punto del protocolo que deja el disco en ese
+#  estado —objetos publicados con su testigo, revisión todavía sin publicar—. Medido sobre
+#  los tres ficheros: `grep -c 'entre-el-paso-8-y-el-9'` daba **0 en los tres**. La
+#  comprobación de recuperabilidad recorría almacenes que ningún corte había dejado a
+#  medias: podía fallar en teoría y no había visto nunca el estado que dice cazar.
+#
+#  DECISIÓN · se SIEMBRA un almacén cortado ahí, en un control repo APARTE
+#      Alternativas: (a) cortar uno de los almacenes que el escenario ya usa; (b) crear uno
+#      propio para el corte; (c) dejarlo y pedir que el contrato retire la afirmación.
+#      Se elige (b). Con (a) los pasos numerados dejarían de medir lo que declaran —un corte
+#      en medio cambia todo lo que viene después— y la salida dejaría de ser comparable con
+#      la evidencia publicada. Con (c) se perdería una propiedad que el motor SÍ tiene y que
+#      sólo faltaba ejercer desde aquí. Con (b) los pasos quedan intactos y el barrido de
+#      recuperabilidad —que descubre los almacenes por su marca en disco, no por una lista—
+#      encuentra uno más y tiene que RECUPERARLO por la rama COMPLETAR.
+#
+#  DECISIÓN · la siembra COMPRUEBA que cortó, y no se conforma con haberlo intentado
+#      Se exige código 70 —el corte real, `os._exit` sin `finally` y sin vaciar búferes—, el
+#      TESTIGO del paso 8 en disco y la revisión SIN avanzar. Sin esas tres, sembrar podría
+#      dejar un almacén sano y la comprobación volvería a ser vacua, que es justo el defecto
+#      que se cierra. Y por eso la siembra puede poner el escenario en ROJO ella sola.
+PUNTO_DE_CORTE = "entre-el-paso-8-y-el-9"
+ALMACEN_CORTADO = "almacen-cortado-8-9"
+TX_CORTADA = "tx-corte-8-9"
+CODIGO_DE_CORTE = 70
+
+
+def sembrar_almacen_cortado(base, cli_estado, entorno):
+    """Deja bajo `base` un almacén cortado ENTRE los pasos 8 y 9. Devuelve `(ok, lineas)`."""
+    repo = os.path.join(base, ALMACEN_CORTADO)
+    os.makedirs(repo, exist_ok=True)
+    carga = os.path.join(base, "carga-corte-8-9.json")
+    with open(carga, "w", encoding="utf-8") as manejador:
+        json.dump({"esquema": "ads.estado/1", "n": 89}, manejador, sort_keys=True)
+    orden = [sys.executable, cli_estado, "--repo", repo]
+    limpio = {clave: valor for clave, valor in entorno.items()
+              if clave != "ADS_ESTADO_FALLO"}
+    arranque = subprocess.run(orden + ["inicializar"], capture_output=True, text=True,
+                              env=limpio)
+    if arranque.returncode != 0:
+        return False, ["T362 · corte 8-9: `inicializar` salió con "
+                       + str(arranque.returncode) + ", así que no hay almacén que cortar"]
+    cortado = dict(limpio)
+    cortado["ADS_ESTADO_FALLO"] = PUNTO_DE_CORTE
+    caida = subprocess.run(
+        orden + ["transicion", "--id", TX_CORTADA, "--autor", "escenario-e2e",
+                 "--motivo", "corte deliberado entre los pasos 8 y 9",
+                 "--escribir", "items/it-corte.json=" + carga],
+        capture_output=True, text=True, env=cortado)
+    lineas, ok = [], True
+    if caida.returncode != CODIGO_DE_CORTE:
+        ok = False
+        lineas.append("T362 · corte 8-9: el corte NO cortó (código "
+                      + str(caida.returncode) + "). Sin corte no queda nada a medias y la "
+                      "comprobación de recuperabilidad no mediría nada")
+    testigo = os.path.join(repo, "estado", "operacional", "tx", TX_CORTADA,
+                           "PUBLICADOS.json")
+    if not os.path.isfile(testigo):
+        ok = False
+        lineas.append("T362 · corte 8-9: el paso 8 no dejó su testigo durable, luego el "
+                      "corte no cayó entre los pasos 8 y 9")
+    try:
+        with open(os.path.join(repo, "estado", "REVISION.json"), encoding="utf-8") as m:
+            revision = json.load(m)["revision"]
+    except (OSError, ValueError, KeyError, TypeError):
+        revision = None
+    if revision != 0:
+        ok = False
+        lineas.append("T362 · corte 8-9: la revisión vigente es " + str(revision)
+                      + " y tenía que seguir siendo 0. El paso 9 llegó a publicar, y "
+                      "entonces el almacén no queda a medias")
+    if ok:
+        lineas.append("T362 · corte 8-9: almacén cortado en `" + PUNTO_DE_CORTE
+                      + "` — testigo del paso 8 en disco y revisión SIN publicar. La "
+                      "comprobación de recuperabilidad tiene que encontrarlo y COMPLETARLO")
+    # El VEREDICTO, en la forma que `registro_pruebas.veredictos_publicados` sabe leer. Sin
+    # él la evidencia registra la ejecución y NO sostiene el `estado:` que el escenario
+    # declara, y «no he podido contrastarlo» acabaría leyéndose como «está bien».
+    lineas = [linea + " ... " + ("ok" if ok else "FAIL") for linea in lineas]
+    return ok, lineas
+
+
+# ---------------------------------------------------------------------------
 #  `E-08` · RECUPERABILIDAD DEL ALMACÉN AL TERMINAR
 # ---------------------------------------------------------------------------
 #  Hecho reproducido antes de corregir: con los pasos 8 y 9 invertidos, este escenario
@@ -618,9 +705,16 @@ def main():
     recuperable = True
     try:
         escenario.ejecutar()
+        # `ADJ-M3` · antes de comprobar la recuperabilidad se SIEMBRA el único estado que la
+        # hace significar algo: un almacén cortado entre los pasos 8 y 9.
+        sembrado, lineas_del_corte = sembrar_almacen_cortado(
+            escenario.tmp, CLI, ENTORNO)
+        escenario.lineas.append("")
+        escenario.lineas.extend(lineas_del_corte)
         # `E-08` · el escenario no termina en verde sobre un almacén que no se puede volver
         # a abrir. Se comprueba ANTES de borrar el temporal.
         recuperable, lineas_de_recuperabilidad = comprobar_recuperabilidad(escenario.tmp)
+        recuperable = recuperable and sembrado
         escenario.lineas.append("")
         escenario.lineas.extend(lineas_de_recuperabilidad)
     finally:

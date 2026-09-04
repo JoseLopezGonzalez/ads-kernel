@@ -27,9 +27,9 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 6075d888ff2c7b70, calculada a0db516e5b139966. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada bc59513f7182130a, calculada 8760fe175d682589. Algún fichero de la huella se
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 6075d888ff2c7b70, calculada 6d04ff10f0d88f38. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada bc59513f7182130a, calculada b120c6a8743bf9d9. Algún fichero de la huella se
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
                           → detectada: kernel/operativo/validadores/ads_lint.py NO entra en la huella: un fork silencioso de ese fichero sería indetectable
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
@@ -57,7 +57,7 @@ OK   N158e   evidencia T158  falta un fichero de evidencia que el manifiesto exi
 OK   N158f   evidencia T158  un validador nuevo queda fuera del manifiesto y de la evidencia
                           → detectada: validadores/comprobar_algo_nuevo.py: existe y el manifiesto no lo declara. Quedaría fuera de la evidencia sin que nada l
 OK   N158g   evidencia T158  la cobertura publicada describe un corpus con dos ficheros menos que el vigente
-                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 504 y el corpus vigente da 5
+                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 509 y el corpus vigente da 5
 OK   N158h   evidencia T158  una vigencia declara un recuento que nadie implementa
                           → detectada: manifiesto: la vigencia 'T161-cobertura' de 'fuentes' declara el recuento 'fuentes.recuento_que_nadie_implementa', que n
 OK   N158i   evidencia T158  una entrada de vigencia no declara `patron` — el caso que reventaba con KeyError
@@ -222,6 +222,40 @@ OK   N275    §19 D104 T275  el censo de fixtures publicado deja de ser el que l
                           → detectada: el censo de fixtures publicado es 17 y esta batería ejecuta 20. SEDE: `docs/evolucion/11-ARQUITECTURA-INTEGRADA.md`, §19
 OK   N276    §19 D104 T276  el reparto por vía publicado deja de ser el derivado del árbol
                           → detectada: §19 publica 2 pares por la vía 2 y el árbol deriva 1. Un total admite repartos que significan cosas distintas: publicar
+OK   N340    ADJ-B3 · O27 §3 T342  el append-only de la sede del Owner vuelve al PREFIJO del nacimiento
+                          → detectada: FAIL T342 · `ADJ-B3` literal: lo que el prefijo del nacimiento dejaba pasar. ------------------------------------------------ [corrida PARCIAL: ElVeredictoAplicaLasEntradasCerradas]
+OK   N341    ADJ-B3 · O27 §1 T341  el delimitador estructural vuelve a contar como contenido de la entrada
+                          → detectada: FAIL T341 · Control POSITIVO: `O27` §3 permite añadir, y tiene que seguir permitiéndolo. ------------------------------------ [corrida PARCIAL: AppendOnlyPorEntradaCerrada]
+OK   N343    ADJ-B3 · O27 §3 T343  el canal ESTRUCTURAL deja de comparar cada entrada byte a byte
+                          → detectada: FAIL T343 · Defecto que previene: reescribir una condición y confirmarla. --------------------------------------------------- [corrida PARCIAL: AppendOnlyPorEntradaCerrada]
+OK   N342    ADJ-B3 · O27 §3 T342  se retira el canal de PRESENCIA LITERAL de las entradas cerradas
+                          → detectada: FAIL T342 · EL ATAQUE, sobre los bytes reales: `hallazgos=0` no se puede repetir. ------------------------------------------- [corrida PARCIAL: AppendOnlyPorEntradaCerrada LaSedeRealDelOwner]
+OK   N343b   ADJ-B3 · V6-12 T343  una alteración confirmada y luego revertida deja de constar
+                          → detectada: FAIL T343 · El canal de la HISTORIA, discriminado, y una decisión que se declara. ------------------------------------------- [corrida PARCIAL: AppendOnlyPorEntradaCerrada]
+OK   N349    ADJ-B3 · O27 §3 T349  el régimen de entradas cerradas se decide por el fichero de HOY y no por la historia
+                          → detectada: FAIL T349 · Defecto que previene: apagar el guardián quitándole la estructura. ---------------------------------------------- [corrida PARCIAL: AppendOnlyPorEntradaCerrada ElVeredictoAplicaLasEntradasCerradas]
+OK   N350    ADJ-G2 T350  la SEDE de la derivación del estado deja de publicar la fórmula
+                          → detectada: `registro_pruebas` no ofrece `contraste_de_estados`: la sede de la derivación del estado ha dejado de publicarla, y este
+OK   N350b   ADJ-G2 T350  `T273` vuelve a declarar prueba-fallida con la evidencia diciendo SUPERADA
+                          → detectada: T273: declara `estado: prueba-fallida` y su evidencia sostiene `prueba-superada` — los veredictos publicados dicen otra
+OK   N350c   ADJ-G2 T350  un escenario declara superada citando una evidencia que no existe
+                          → detectada: T188: declara `estado: prueba-superada` y su evidencia sostiene `validador-implementado` — declara la evidencia `evidenc
+OK   N350d   ADJ-G2 T350  la evidencia publicada se edita a mano para que diga otra cosa
+                          → detectada: T273: declara `estado: prueba-superada` y su evidencia sostiene `prueba-fallida` — `evidencia/composicion-procesos-salid
+OK   NG3a    ADJ-G3 T360  §5.3 vuelve a declarar que no existe ningún adaptador, con el ejecutor local real en el árbol
+                          → detectada: docs/canonico/04-CONTRATOS-TECNICOS.md:386: «Ninguno existe» dicho de «adaptadores», que SÍ está construida — el ADAPTAD
+OK   NG3b    ADJ-G3 T360  §5.4 vuelve a declarar inexistentes el verificador de admisión y la raíz externa, con los dos construidos y con evidencia publicada
+                          → detectada: docs/canonico/04-CONTRATOS-TECNICOS.md:408: «LO QUE NO HAY» dicho de «verificador de admisión», que SÍ está construida —
+OK   NG3c    ADJ-G3 T360  `05-PLAN` vuelve a negar EN BLOQUE que nada de lo que describe esté implementado
+                          → detectada: docs/canonico/05-PLAN-DE-IMPLEMENTACION-F5-F6.md:6: «Nada de lo que describe está implementado» niega EN BLOQUE el estad
+OK   NG3d    ADJ-G3 T360  la sonda de una pieza construida desaparece del árbol y la tabla de piezas se queda describiendo un árbol que ya no existe
+                          → detectada: la sonda `kernel/operativo/runtime/adaptadores/proceso.py` de «adaptadores» no está en el árbol: la tabla de piezas cons
+OK   NG3e    ADJ-G3 T360  una sede NUEVA, que ninguna lista podría contener, niega dos piezas construidas: la cobertura se descubre, no se enumera
+                          → detectada: docs/canonico/ZZ-SEDE-QUE-NADIE-ENUMERO.md:2: «no existe ninguno» dicho de «verificador de admisión», que SÍ está constr
+OK   NM5a    ADJ-M5 T361  un prefijo de INCLUSIÓN del ámbito vivo se queda sin motivo escrito, que es la exclusión por omisión volviendo
+                          → detectada: la inclusión «^docs/canonico/» no dice por qué barre —o deja de barrer— lo que abarca (`ADJ-M5`)
+OK   NM5b    ADJ-M5 T361  una zona nueva de documentos cae fuera de las dos mitades de la frontera, que es exactamente como `docs/f5/` quedó fuera del barrido
+                          → detectada: docs/f7/00-ZONA-QUE-NADIE-CLASIFICO.md: queda fuera del barrido de recuentos EN SILENCIO. Ninguna mitad de la frontera l
 OK   NE14a   E-14  T158  la evidencia dice `OK (skipped=3)` y la firma `OK` la casaba igual
                           → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: la corrida SALTÓ 3 caso(s) y el manifiesto no declara ninguno.
 OK   NE14b   E-14  T158  el contador de casos se infla y nadie lo contrasta con la salida
@@ -266,7 +300,15 @@ OK   N216    FD-5  T216  el backend `simple` se declara con nivel de árbol de p
                           → detectada: FAIL T216 · Defecto que previene: cumplir una política fuerte con un backend débil. -----------------------------------------
 OK   N191    FD-6  T191  un recibo ABIERTO deja de dar `ambiguo` y el efecto se vuelve a ejecutar
                           → detectada: FAIL T191 · Defecto que previene: aplicar DOS VECES un efecto tras morir a media pasada. ------------------------------------
+OK   N320    ADJ-B1 T320  la migración 0->1 vuelve a publicar la revisión 0 sin el `testigo` de `E-08`
+                          → detectada: FAIL T320 · Defecto que previene: `ADJ-B1`, la migración 0->1 que reventaba con una ----------------------------------------- [corrida PARCIAL: MigracionHeredadaReal.test_T320_un_heredado_REAL_migra_y_publica_la_revision_esperada]
+OK   N321    ADJ-B1 T321  la guarda de la fundación vuelve a mirar el evento del diario y no la revisión
+                          → detectada: FAIL T321 · Defecto que previene: el AGRAVANTE de `ADJ-B1` —que la corrección de la ----------------------------------------- [corrida PARCIAL: MigracionHeredadaReal.test_T321_el_almacen_que_el_defecto_dejo_roto_vuelve_a_ser_migrable]
+OK   N330    ADJ-B2 T330  el verificador de la raíz externa pierde la purga `E-10` de `sys.path`
+                          → detectada: FAIL T330 · Defecto que previene: `ADJ-B2`, una lista de ejecutables escrita a mano. ---------------------------------------- [corrida PARCIAL: PurgaEnLaRaizExterna.test_T330_el_inventario_de_puntos_ejecutables_se_DERIVA_y_es_coherente]
+OK   N333    ADJ-B2 T333  el instalador vuelve a borrar el destino y copiar encima, e instala a medias
+                          → detectada: FAIL T333 · Defecto que previene: un destino con parte de los ficheros y sin manifiesto. ------------------------------------ [corrida PARCIAL: PurgaEnLaRaizExterna.test_T333_no_se_instala_a_medias]
 OK   N194    FD-3  T194  el motor de estado durable deja de viajar al proyecto instalado
                           → detectada: el proyecto instalado no lleva el motor de estado durable
 
-133 infracciones detectadas · 0 NO detectadas
+154 infracciones detectadas · 0 NO detectadas

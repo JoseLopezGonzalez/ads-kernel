@@ -392,6 +392,32 @@ componentes:
     script: negativos_runtime.py
     tipo: biblioteca
 
+  # `ADJ-G1` · el derivador del universo obligatorio entra en la CORRIDA. Estaba fuera del
+  # manifiesto, asi que sus autopruebas se ejecutaban y su evidencia no se publicaba: una
+  # propiedad comprobada que nadie podia reejecutar desde la evidencia. `O26` §5 convierte
+  # las tres restas que este instrumento deriva en criterio de certificacion, de modo que su
+  # capacidad de fallar tiene que estar publicada como la de cualquier otro validador.
+  - id: universo-obligatorio
+    script: derivar-universo-obligatorio.py
+    dir: docs/evolucion/verificacion
+    args: ['--autopruebas']
+    tipo: validador
+    evidencia: universo-obligatorio-salida.txt
+    firma_de_exito: '\d+ sabotajes · 0 sin detectar'
+    debe_contener: ['sabotajes']
+
+  # `ADJ-GT3` y `O27` §5 · la cobertura de un gate deja de ser DECLARATIVA. Entra en el
+  # manifiesto por la misma razon: un instrumento que decide si un gate puede adjudicar no
+  # puede vivir fuera de la evidencia. Sus autopruebas ejercen los seis modos de fallo.
+  - id: cobertura-de-gate
+    script: comprobar-cobertura-de-gate.py
+    dir: docs/evolucion/verificacion
+    args: ['--autopruebas']
+    tipo: validador
+    evidencia: cobertura-de-gate-salida.txt
+    firma_de_exito: '\d+ controles · 0 sin detectar'
+    debe_contener: ['control POSITIVO', 'SIN ABRIR', 'COMPENSAR', 'NO CERRADO']
+
   - id: runner
     script: registrar_evidencia.py
     tipo: biblioteca

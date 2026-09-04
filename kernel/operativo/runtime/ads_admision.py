@@ -385,7 +385,27 @@ def orden_censo_lecturas(argumentos):
 
 
 def orden_censo_formulas(argumentos):
-    modulos = _censo.modulos_del_aparato(os.path.dirname(os.path.abspath(__file__)))
+    # `ADJ-M1` · HECHO REPRODUCIDO ANTES DE CORREGIR. Esta orden censaba
+    # `modulos_del_aparato` —TODO el runtime, que es el sujeto de `V6-04`— mientras el
+    # VEREDICTO de `admision.verificar` y la prueba `T190` censaban
+    # `modulos_del_verificador`, que es el sujeto que `V6-19` declara. Medido sobre el
+    # propio candidato: `ads_admision.py --repo . censo-formulas` daba `segundas
+    # definiciones: 7 · ok: no · EXIT=1` con la batería en verde, porque la orden y la
+    # prueba medían CONJUNTOS DISTINTOS. Las siete «segundas definiciones» eran los
+    # `hashlib.sha256` del MOTOR de estado durable y de `corpus.py`, que `V6-19` no reclama.
+    #
+    # DECISIÓN · manda el sujeto declarado de `V6-19`, y por tanto se alinea la ORDEN
+    #     Alternativas: (a) ensanchar el veredicto y la prueba al runtime entero; (b)
+    #     estrechar la orden al aparato de verificación; (c) dejar los dos y declarar la
+    #     diferencia.
+    #     Se elige (b). Con (a) el MOTOR tendría que importar su direccionamiento por
+    #     contenido DESDE el verificador —la flecha de dependencia al revés, y el motor sin
+    #     poder existir sin el verificador—; la razón entera está escrita en
+    #     `censo.PAQUETES_DEL_VERIFICADOR`. Con (c) quedarían dos cifras para una misma
+    #     pregunta, que es exactamente lo que `V6-19` prohíbe de las fórmulas y no hay razón
+    #     para tolerarlo de su censo. Con (b) la orden publica lo mismo que el veredicto:
+    #     una CLI de diagnóstico que contradice al instrumento que diagnostica no sirve.
+    modulos = _censo.modulos_del_verificador(os.path.dirname(os.path.abspath(__file__)))
     informe = _formulas.censar_formulas(modulos)
     legible = ["fórmulas censadas:"]
     for entrada in informe["formulas"]:

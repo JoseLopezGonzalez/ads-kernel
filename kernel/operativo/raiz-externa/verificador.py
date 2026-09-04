@@ -46,6 +46,109 @@ DECISIÓN · el veredicto INDETERMINADO sale con código 1
 """
 from __future__ import annotations
 
+# ---------------------------------------------------------------------------
+#  `ADJ-B2` · LA PURGA `E-10`, EN LA RAÍZ EXTERNA
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, sobre este mismo paquete. Con un `json.py` HOMÓNIMO
+#  en `PYTHONPATH` y desde un `cwd` ajeno:
+#
+#      verificador.py capacidades            → {}   EXIT=0   (sano: las nueve condiciones)
+#      instalar.py --destino … --arbol …     → {}   EXIT=0   manifiesto 3 BYTES (sano: 6734)
+#                                                            y 41 ficheros instalados igual
+#      … --comprobar sobre esa instalación   → KeyError: 'ficheros'  EXIT=1, cuatro rutas
+#                                                            absolutas del anfitrión
+#      grep de purga sobre TODO `raiz-externa/`                      CERO líneas
+#
+#  Es el MISMO defecto que el árbol declaraba cerrado para los cinco `ads_*.py`, vivo en la
+#  única pieza que `O26` §1 juzga, e incumpliendo su condición 8 —«contaminación del entorno
+#  falla cerrado»—, la única de las ocho que no se cumplía.
+#
+#  DECISIÓN · el prólogo se COPIA byte a byte, no se importa y no se adapta
+#      Alternativas: (a) un módulo `procedencia.py` del paquete que los cuatro importen;
+#      (b) una variante «para la raíz externa» del prólogo; (c) el MISMO prólogo, copiado.
+#      Se elige (c), por dos razones y las dos se comprueban. (a) es la alternativa que el
+#      propio `E-10` ya descartó: una guardia que necesita importar para poder purgar ya ha
+#      perdido, porque el `import` es exactamente lo que está protegiendo. (b) produce dos
+#      textos que divergen, y la divergencia se descubre el día que uno de los dos se queda
+#      corto. Con (c) los NUEVE puntos ejecutables del árbol llevan el mismo texto y una
+#      prueba lo comprueba por digest: si alguien toca uno, tiene que tocarlos todos.
+
+# ---------------------------------------------------------------------------
+#  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, sobre este mismo punto ejecutable: con
+#  `PYTHONPATH=<dir>` apuntando a un directorio que contiene un `json.py` HOMÓNIMO, el
+#  proceso IMPORTABA el homónimo. `sys.path[0]` —el directorio del script— protege a
+#  `admision`, `estado` y `runtime`, que viven al lado; NO protege a la biblioteca estándar,
+#  que va DESPUÉS de `PYTHONPATH`. Medido: `ads_admision.py --repo <dir> verificar --json`
+#  publicaba `{}` como veredicto y terminaba con código 0, y los cinco `ads_*.py` importaban
+#  el módulo envenenado.
+#
+#  DECISIÓN · la purga es lo PRIMERO del fichero y sólo usa `sys` y `os`
+#      Alternativas: (a) purgar después de los imports normales; (b) purgar en un módulo
+#      aparte e importarlo; (c) purgar aquí, con lo único que el intérprete ya ha cargado.
+#      Se elige (c). Con (a) la purga llega tarde: el homónimo ya está en `sys.modules`. Con
+#      (b) la purga depende de un `import` que es exactamente lo que se está protegiendo —una
+#      guardia que necesita importar ya ha perdido—. `sys` es un módulo incorporado y `os` lo
+#      carga el arranque del intérprete, así que los dos vienen de `sys.modules` y no de la
+#      ruta de importación. Que `os` sea el bueno se COMPRUEBA, no se supone.
+#
+#  DECISIÓN · se retira lo que viene del LANZADOR, y no «todo lo que no reconozco»
+#      Una lista blanca de directorios del intérprete se rompería en cada instalación
+#      distinta y convertiría un fallo de entorno en un fallo del aparato. Lo que `E-10`
+#      nombra es concreto: `PYTHONPATH` y el `cwd`. Se retiran ésos, se cuenta cuántos, y el
+#      recuento se PUBLICA en la procedencia.
+import sys as _sys
+import os as _os
+
+_RAIZ_DEL_APARATO = _os.path.dirname(_os.path.abspath(__file__))
+
+
+def _entradas_del_lanzador():
+    """Lo que el LANZADOR puede meter en la ruta de importación: `PYTHONPATH` y el `cwd`."""
+    sospechosas = set()
+    for entrada in (_os.environ.get("PYTHONPATH") or "").split(_os.pathsep):
+        if entrada:
+            sospechosas.add(_os.path.realpath(entrada))
+    try:
+        sospechosas.add(_os.path.realpath(_os.getcwd()))
+    except OSError:
+        # Un `cwd` borrado bajo los pies no es motivo para no purgar el resto.
+        pass
+    return sospechosas
+
+
+def _purgar_la_ruta_de_importacion():
+    """Retira de `sys.path` lo que venga del lanzador. Devuelve cuántas entradas retiró."""
+    del_lanzador = _entradas_del_lanzador()
+    propia = _os.path.realpath(_RAIZ_DEL_APARATO)
+    conservadas, retiradas = [], []
+    for entrada in _sys.path:
+        try:
+            real = _os.path.realpath(entrada or _os.getcwd())
+        except OSError:
+            conservadas.append(entrada)
+            continue
+        if real != propia and real in del_lanzador:
+            retiradas.append(real)
+        else:
+            conservadas.append(entrada)
+    _sys.path[:] = conservadas
+    return retiradas
+
+
+RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()
+
+# CONTROL DEL CONTROL de la purga: `os` se usa para poder purgar, así que si `os` mismo
+# viniera del lanzador la purga no probaría nada. No hay forma honesta de seguir: se dice y
+# se sale con el código de PROCEDENCIA.
+if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lanzador():
+    _sys.stderr.write(
+        "[PROCEDENCIA_NO_FIABLE] el módulo `os` procede de la ruta de importación del "
+        "lanzador: este punto ejecutable no puede garantizar de dónde salen sus módulos y "
+        "NO ejecuta\n")
+    raise SystemExit(5)
+
 import argparse
 import json
 import os
@@ -83,13 +186,98 @@ from identidad.errores import ErrorDeIdentidad                       # noqa: E40
 
 EXITO, FALLO, USO = 0, 1, 2
 
+# ---------------------------------------------------------------------------
+#  `E-10` · la PROCEDENCIA se PUBLICA, y sin ella NO se emite veredicto
+# ---------------------------------------------------------------------------
+#  La purga de arriba impide que un homónimo ENTRE. Esto comprueba que ninguno ENTRÓ, que
+#  es la mitad que una purga no puede cubrir: la ruta de importación se puede modificar de
+#  más formas de las que una purga puede prever. Aquí pesa el doble, porque `g.15` dice que
+#  la autoridad de esta pieza «NO puede depender del árbol que verifica»: un veredicto
+#  emitido por código que este proceso no controla no es un veredicto externo.
+#
+#  DECISIÓN · el «aparato» es la INSTALACIÓN entera, no sólo este paquete
+#      El verificador importa `admision`, `identidad` y `gobierno` del `runtime` que
+#      `instalar.py` deja como HERMANO de este paquete. Exigir que salgan de este
+#      directorio los declararía intrusos siempre; exigir sólo que no salgan del árbol
+#      verificado dejaría pasar cualquier otro origen. Se exige que salgan de la raíz de la
+#      instalación —el padre de este paquete—, que es exactamente lo que `instalar.py`
+#      construye y lo que el manifiesto cubre con sus digests.
+RAIZ_DE_LA_INSTALACION = os.path.dirname(_RAIZ_DEL_APARATO)
+
+MODULOS_DEL_APARATO = ("atestacion", "firma", "instalar", "errores",
+                       "admision", "identidad", "gobierno")
+
+CODIGO_DE_PROCEDENCIA = 5
+
+
+def _origen_de(fichero):
+    """Nunca una ruta absoluta del anfitrión: la evidencia se publica (`E-15`)."""
+    if not fichero:
+        return "(sin fichero)"
+    real = os.path.realpath(fichero)
+    propia = os.path.realpath(RAIZ_DE_LA_INSTALACION)
+    if real == propia or real.startswith(propia + os.sep):
+        return "instalacion:" + os.path.relpath(real, propia)
+    return "FUERA-DE-LA-INSTALACION:" + os.path.basename(real)
+
+
+def procedencia(repo=None):
+    """De dónde salió cada módulo con el que se juzga, y bajo qué árbol se está juzgando."""
+    modulos = {}
+    for nombre in MODULOS_DEL_APARATO:
+        modulo = sys.modules.get(nombre)
+        modulos[nombre] = _origen_de(getattr(modulo, "__file__", None))
+    salida = {
+        "aparato": os.path.basename(_RAIZ_DEL_APARATO),
+        "modulos": modulos,
+        "entradas_del_lanzador_retiradas": len(RETIRADAS_DE_LA_RUTA),
+        "runtime_importado": ("instalacion" if os.path.isdir(RUNTIME_INSTALADO)
+                              else "(no hay runtime hermano)"),
+        "ruta_de_importacion": [_origen_de(e) if e else "(cwd)" for e in sys.path[:3]],
+    }
+    if repo:
+        salida["repo"] = os.path.basename(os.path.abspath(repo))
+        salida["repo_es_el_arbol_del_aparato"] = _dentro(
+            os.path.realpath(RAIZ_DE_LA_INSTALACION), os.path.realpath(repo))
+    return salida
+
+
+def exigir_procedencia_del_aparato():
+    """FALLO CERRADO si un módulo del aparato no sale de la instalación. `E-10`, `g.15`."""
+    intrusos = {nombre: origen for nombre, origen in procedencia()["modulos"].items()
+                if origen.startswith("FUERA-DE-LA-INSTALACION") or origen == "(sin fichero)"}
+    if intrusos:
+        sys.stderr.write(
+            "[PROCEDENCIA_NO_FIABLE] módulos de la raíz externa importados desde fuera de "
+            "su instalación: " + ", ".join(sorted(intrusos)) + ". El veredicto lo emitiría "
+            "un código que esta raíz externa no controla, y NO se emite\n")
+        return CODIGO_DE_PROCEDENCIA
+    return None
+
 # El fichero con el que un árbol se declara sano A SÍ MISMO. No tiene ninguna autoridad: es
 # la parte FALSEABLE de `G-A9`, y existe para poder desmentirla.
 AUTODECLARACION = "estado/operacional/AUTODECLARACION.json"
 
 
 def _volcar(objeto):
-    return json.dumps(objeto, sort_keys=True, ensure_ascii=False, indent=2)
+    """JSON determinista, y CONTROL DEL CONTROL del serializador que lo produce.
+
+    HECHO REPRODUCIDO (`ADJ-B2`): con un `json.py` homónimo en `PYTHONPATH`, `capacidades`
+    publicaba `{}` con código 0 —«todo fue bien, y no tengo nada que decir»— y el
+    instalador escribía un manifiesto de TRES bytes sobre 41 ficheros instalados. La purga
+    de arriba impide que ese homónimo entre; esto impide que un serializador que no
+    serializa se dé por bueno, venga de donde venga. Cuesta una comparación y cierra la
+    clase entera: un objeto NO vacío que se serializa como vacío no es una salida, es un
+    fallo, y aquí se trata como tal.
+    """
+    texto = json.dumps(objeto, sort_keys=True, ensure_ascii=False, indent=2)
+    if objeto and texto.strip() in ("{}", "[]", "null", '""'):
+        sys.stderr.write(
+            "[PROCEDENCIA_NO_FIABLE] el serializador JSON de este proceso devuelve el "
+            "vacío para un objeto que no lo está: lo que se publicaría no es la salida de "
+            "esta raíz externa, y NO se publica\n")
+        raise SystemExit(CODIGO_DE_PROCEDENCIA)
+    return texto
 
 
 def _uso(mensaje):
@@ -257,8 +445,26 @@ def _orden_capacidades(argumentos):
         "evidencia FUERA del árbol verificado",
         "FALLO CERRADO sin proveedor, sin clave, sin ancla o con firma inválida",
     ]
+    # `O26` §1, condición 8: la contaminación del entorno FALLA CERRADO. Publicar de dónde
+    # salió el código que responde es lo que convierte esa condición en comprobable desde
+    # fuera, en vez de en una promesa del propio programa.
+    informe["procedencia"] = procedencia()
+    if len(informe["condiciones_de_certificacion"]) != 9:
+        sys.stderr.write(
+            "[PROCEDENCIA_NO_FIABLE] las condiciones de certificación no salen enteras de "
+            "este proceso, y una lista incompleta se leería como una lista cumplida\n")
+        return CODIGO_DE_PROCEDENCIA
     sys.stdout.write(_volcar(informe) + "\n")
     return EXITO if informe["disponible"] else FALLO
+
+
+# ---------------------------------------------------------------------------
+#  procedencia
+# ---------------------------------------------------------------------------
+def _orden_procedencia(argumentos):
+    """`E-10` · publica de dónde sale cada módulo con el que esta raíz externa juzga."""
+    sys.stdout.write(_volcar(procedencia(argumentos.repo)) + "\n")
+    return EXITO
 
 
 # ---------------------------------------------------------------------------
@@ -449,6 +655,7 @@ def _orden_instalacion(argumentos):
 
 ORDENES = {
     "capacidades": _orden_capacidades,
+    "procedencia": _orden_procedencia,
     "verificar": _orden_verificar,
     "comprobar": _orden_comprobar,
     "instalacion": _orden_instalacion,
@@ -462,6 +669,9 @@ def construir_analizador():
     ordenes = analizador.add_subparsers(dest="orden", required=True)
 
     ordenes.add_parser("capacidades")
+
+    procedencia_orden = ordenes.add_parser("procedencia")
+    procedencia_orden.add_argument("--repo", default=None)
 
     verificar = ordenes.add_parser("verificar")
     verificar.add_argument("--repo", required=True)
@@ -489,6 +699,12 @@ def main(argv=None):
     ejecutar = ORDENES.get(argumentos.orden)
     if ejecutar is None:
         return _uso("orden desconocida: " + str(argumentos.orden))
+    # `E-10` · antes de nada, de dónde ha salido lo que va a juzgar. Va aquí y no dentro de
+    # cada orden porque `capacidades` —la orden que publicaba `{}` con código 0— tampoco
+    # tiene por qué acordarse.
+    intruso = exigir_procedencia_del_aparato()
+    if intruso is not None:
+        return intruso
     try:
         return ejecutar(argumentos)
     except (ErrorDeRaizExterna, ErrorDeAdmision, ErrorDeGobierno,

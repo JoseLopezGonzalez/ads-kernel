@@ -3,10 +3,25 @@
 Qué significa exactamente cada fase, qué entrega, en qué orden se construye y qué la
 bloquea.
 
-> **ESTE DOCUMENTO ES UN PLAN.** Nada de lo que describe está implementado. Ninguna de sus
-> filas se puede citar como capacidad existente. El estado de las fases tiene su única sede
-> en [`03-GOBIERNO-Y-AUTORIDAD.md`](03-GOBIERNO-Y-AUTORIDAD.md), y este documento **no lo
-> repite ni lo modifica**.
+> **ESTE DOCUMENTO ES UN PLAN, y por tanto NO ES SEDE DE ESTADO.** Describe qué entrega cada
+> fase, en qué orden y qué la bloquea; **no dice qué está construido y qué no**. Eso tiene
+> una sola sede —[`04-CONTRATOS-TECNICOS.md`](04-CONTRATOS-TECNICOS.md) §1— y este documento
+> **remite a ella**. El estado de las FASES tiene la suya, distinta:
+> [`03-GOBIERNO-Y-AUTORIDAD.md`](03-GOBIERNO-Y-AUTORIDAD.md), y este documento **no lo repite
+> ni lo modifica**.
+>
+> **Qué decía esta nota hasta el 2026-09-04, y por qué era falsa.** Decía «**Nada de lo que
+> describe está implementado. Ninguna de sus filas se puede citar como capacidad
+> existente.**» Para entonces `F6` tenía construidos, ejecutados y con evidencia publicada el
+> motor de estado durable, el runtime y el dispatcher, el gobierno Git del control repo, el
+> verificador de admisión, los adaptadores, la identidad, el ciclo de `§7.2`, los
+> macrocircuitos y la raíz externa. Una nota de cautela que niega lo que el árbol tiene deja
+> de proteger de nada: **gasta el crédito con el que después dice que algo NO está**. Por eso
+> ahora remite en vez de declarar, y `T360` lo comprueba.
+>
+> **Lo que la nota SÍ tenía que decir, y sigue diciendo:** un plan describe alcance, no
+> capacidad; y **nada de lo que este documento nombra está CERTIFICADO**, que es una
+> afirmación distinta de «está construido» y sólo la puede emitir un juicio independiente.
 >
 > **NO FIJA CALENDARIOS.** El corpus no sostiene ninguno, y este documento no inventa uno.
 

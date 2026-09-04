@@ -36,7 +36,7 @@ from __future__ import annotations
 
 import os
 
-from . import censo, formulas, lectura, mutacion, perimetro
+from . import censo, formulas, lectura, mutacion, perimetro, sede
 from .errores import (
     CensoDeFormulasSucio,
     CensoDeLecturasSucio,
@@ -51,6 +51,7 @@ from .errores import (
     SalidaTruncada,
     SedeDeFormulaAusente,
     SedeDelOwnerAlterada,
+    SedeIlegible,
     SinAnclaExterna,
     ZonaSinCondicion,
 )
@@ -128,7 +129,15 @@ def _contenidos_para_append_only(canal, base, rutas):
                             "el commit de nacimiento derivado no CONTIENE la sede: el "
                             "valor es inservible y no se sustituye por otro")
             continue
-        salida[ruta] = (anterior, actual, "nacimiento", nacimiento)
+
+        # `ADJ-B3` · `O27` §3 · el LIBRO de entradas cerradas, derivado de la HISTORIA de
+        # la ruta y no de una tabla. Va DESPUÉS de la procedencia a propósito: sobre una
+        # historia truncada o injertada el libro se derivaría de commits que no son los
+        # que inscribieron nada, y sería una lista con la forma correcta y el contenido
+        # equivocado. Con la procedencia ya exigida, cada entrada queda anclada al commit
+        # que realmente la introdujo.
+        libro = sede.derivar_libro(canal, ruta, base=base)
+        salida[ruta] = (anterior, actual, "nacimiento", nacimiento, libro)
     return salida
 
 
@@ -176,15 +185,40 @@ def verificar(raiz, *, base, declaracion, registro=censo.REGISTRO_DE_ZONAS,
     mutaciones = mutacion.derivar(canal, base_resuelta)
     base_conocida = mutacion.preexistentes(canal, base_resuelta)
 
-    append_only = sorted({
+    mutadas_append_only = {
         m.ruta for m in mutaciones
         if (metro.zona_de(m.ruta) is not None
             and metro.zona_de(m.ruta).condicion == perimetro.APPEND_ONLY)
         or m.ruta == SEDE_DEL_OWNER
-    })
+    }
+    # `ADJ-B3` · toda ruta APPEND-ONLY del árbol entra en el juicio, mute o no mute contra
+    # la base. La razón entera está en `perimetro.vigilar_append_only`.
+    append_only = sorted(mutadas_append_only | set(metro.rutas_append_only(rutas)))
     contenidos = _contenidos_para_append_only(canal, base_resuelta, append_only)
 
     hallazgos.extend(metro.juzgar(mutaciones, declaracion, contenidos=contenidos))
+    hallazgos.extend(metro.vigilar_append_only(
+        append_only, contenidos, ya_juzgadas=mutadas_append_only))
+
+    # `ADJ-B3` · la PROCEDENCIA del juicio append-only se publica SIEMPRE, con hallazgos o
+    # sin ellos, y con el RÉGIMEN que gobernó cada ruta. Un guardián que sólo habla cuando
+    # algo va mal es indistinguible de un guardián apagado: eso es lo que permitió que el
+    # prefijo del 34,1 % pasara por «append-only comprobado» durante cinco pasadas.
+    append_only_publicado = {}
+    for ruta in append_only:
+        entrada = contenidos.get(ruta) or ()
+        libro = entrada[4] if len(entrada) > 4 else None
+        if libro is not None and sede.tiene_entradas_cerradas(libro):
+            append_only_publicado[ruta] = sede.informe(libro, entrada[1])
+        else:
+            append_only_publicado[ruta] = {
+                "regimen": "prefijo-del-nacimiento",
+                "ruta": ruta,
+                "procedencia": entrada[2] if len(entrada) > 2 else None,
+                "motivo": "la historia de esta ruta no publica entradas cerradas que "
+                          "derivar; se conserva el contraste contra el prefijo del "
+                          "commit de nacimiento",
+            }
 
     censo_de_lecturas = None
     censo_de_formulas = None
@@ -244,6 +278,7 @@ def verificar(raiz, *, base, declaracion, registro=censo.REGISTRO_DE_ZONAS,
         "mutaciones": [entrada for entrada in mutacion.clasificar(mutaciones, base_conocida)],
         "cobertura_de_letras": mutacion.cobertura_de_letras(mutaciones),
         "censo_de_zonas": censo_de_zonas,
+        "append_only": append_only_publicado,
         "censo_de_lecturas": censo_de_lecturas,
         "censo_de_formulas": censo_de_formulas,
         "declaracion": declaracion.a_dict(),
@@ -275,9 +310,10 @@ def verificar(raiz, *, base, declaracion, registro=censo.REGISTRO_DE_ZONAS,
 __all__ = [
     "verificar", "Declaracion", "Veredicto", "Hallazgo", "Perimetro", "Zona",
     "CanalDeLecturaGit", "SEDE_DEL_OWNER", "prefijos_de_instrumento",
-    "censo", "formulas", "lectura", "mutacion", "perimetro",
+    "censo", "formulas", "lectura", "mutacion", "perimetro", "sede",
     "ErrorDeAdmision", "LecturaInsegura", "SalidaTruncada", "SalidaNoDecodificable",
     "EstructuraAjena", "GitNoResponde", "CensoDeLecturasSucio", "ZonaSinCondicion",
-    "MutacionNoDeclarada", "SedeDelOwnerAlterada", "InstrumentoAlterado",
+    "MutacionNoDeclarada", "SedeDelOwnerAlterada", "SedeIlegible",
+    "InstrumentoAlterado",
     "SinAnclaExterna", "SedeDeFormulaAusente", "CensoDeFormulasSucio", "DatoIlegible",
 ]

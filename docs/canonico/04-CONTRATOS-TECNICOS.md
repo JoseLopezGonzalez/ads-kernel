@@ -7,6 +7,21 @@ CONSTRUIDO y qué sólo está DISEÑADO.
 > enlaza y se explica su papel. Copiar un contrato en dos sitios crea una segunda verdad que
 > envejece sin que nadie lo note.
 
+> **Y LA MISMA REGLA, APLICADA A ESTE DOCUMENTO CONTRA SÍ MISMO. Es la tercera vez que hace
+> falta.** El ESTADO DE CONSTRUCCIÓN tiene **una sola sección**: la §1. **Ninguna otra
+> sección de este documento declara estado**, y las que hablaban de él —§4, §5.1, §5.3, §5.4,
+> §6 y §7— **remiten a §1, derivan su afirmación con un comando publicado, o se rotulan como
+> HISTÓRICAS**. Tres veces se corrigió aquí un cardinal o un «no existe» escrito a mano, y
+> tres veces volvió a envejecer: **sustituir un número por otro número es lo que ya falló**.
+>
+> **Y ya no depende de que nadie se acuerde.** `T360` —en
+> [`validadores/comprobar_recuentos.py`](../../kernel/operativo/validadores/comprobar_recuentos.py)—
+> barre **todas** las sedes vivas y contrasta cada negación de existencia contra una SONDA
+> en el disco: negar una pieza cuyo fichero está en el árbol pone la comprobación en ROJO,
+> aquí y en cualquier otro documento vivo. La sonda de cada pieza está escrita en el propio
+> validador, y si una sonda desaparece la prueba también falla, porque entonces la que ha
+> envejecido es la tabla.
+
 Antes: [`03-GOBIERNO-Y-AUTORIDAD.md`](03-GOBIERNO-Y-AUTORIDAD.md).
 
 ---
@@ -107,9 +122,15 @@ ADAPTADORES DE            existe el CONTRATO, existe un adaptador LOCAL DE PROCE
                           por eso el nivel derivado es `compatible` y nunca `soportado`:
                           no hay ninguna celda `certificacion/integrado` que lo sostenga
 LAS TRES RESTAS DEL       el universo obligatorio de `F6` se deriva —`derivar-universo-`
-    UNIVERSO DE `F6`      `obligatorio.py --obligaciones`— y sus tres restas NO están
-                          vacías. Mientras no lo estén, `F6` no está completa, y el número
-                          exacto no se escribe aquí: se ejecuta
+    UNIVERSO DE `F6`      `obligatorio.py --obligaciones`—. **Su valor no se escribe aquí:
+                          se ejecuta**, y esta línea decía «NO están vacías» después de que
+                          un gate independiente reprodujera las tres a CERO. Y una resta
+                          vacía **no demuestra lo que su nombre sugiere**: el propio
+                          derivador publica debajo de cada una qué mide y qué NO demuestra
+                          —`A` mide trazabilidad DECLARADA, no implementación; `B` mide que
+                          exista ALGÚN sabotaje imputado, no que las propiedades estén
+                          cubiertas una a una; `C` mide que el fichero de evidencia exista,
+                          no que sea vigente—. Las tres a cero **no certifican nada**
 CERTIFICACIÓN DE `F6`     **ninguna.** Implementado y probado NO es certificado. `O26`
                           acepta la ARQUITECTURA bajo OCHO condiciones y **NO certifica
                           ninguna candidata**: su aceptación sólo se vuelve aplicable
@@ -162,8 +183,10 @@ LA PRUEBA DE HUMO         `runtime/pruebas/test_sesion_nueva.py`, en un proceso 
 RAÍZ EXTERNA              `kernel/operativo/raiz-externa/`, PAQUETE SEPARADO con su
                           instalador y su anfitrión firmante.
                           Evidencia: `evidencia/raiz-externa-salida.txt`
-VERIFICADOR DE ADMISIÓN   los DIECINUEVE puntos. `V6-15` y `V6-16` están construidos, y el
-                          veredicto publica su PROCEDENCIA en vez de su ausencia
+VERIFICADOR DE ADMISIÓN   los puntos `V6-nn` de `11-ARQ` §20.1, cuyo número **no se escribe
+                          aquí**: lo deriva el comando de §6. `V6-15` y `V6-16` están
+                          construidos, y el veredicto publica su PROCEDENCIA en vez de su
+                          ausencia
 ```
 
 > **Qué dejó de estar aquí, y por qué.** «ESTADO PERSISTIDO — no existe ningún directorio de
@@ -264,20 +287,52 @@ ls -1 kernel/operativo/esquemas/*.yaml | xargs -n1 basename | sed 's/\.yaml$//'
 
 **Cuidado con la frontera: de esta materia hay una parte CONSTRUIDA y otra DISEÑADA.**
 
-| materia | estado | sede |
+> **ESTA SECCIÓN NO ES SEDE DE ESTADO, y la columna del medio lo dice de otra manera desde
+> el 2026-09-04.** Aquí la columna «qué es y dónde se comprueba» **remite a §1 o nombra el
+> fichero de evidencia** que sostiene cada fila; no declara nada por su cuenta. La corrección
+> tiene motivo reproducido: esta tabla decía «**el sellado del diario queda para el corte
+> siguiente**» **en la misma celda** en la que declaraba construida y con batería ejecutada
+> la materia que incluye el sellado. Y el sellado está construido: `estado/diario.py` publica
+> `InformeSellado`, `umbral_de_sellado` y el evento `diario.sellado`, `ads_estado.py sellar`
+> es su orden, y `T312`–`T319c` son su batería. Una celda que se contradice a sí misma es la
+> forma más barata de que una sede única deje de serlo.
+>
+> **Y una cifra que también estaba escrita a mano.** Esta tabla decía «las **nueve**
+> fronteras del protocolo»; los puntos de fallo declarados son hoy **diez** —`E-08` añadió
+> `entre-el-paso-8-y-el-9`—. La cifra deja de escribirse: se ejecuta.
+>
+> ```bash
+> python3 -c "import sys; sys.path.insert(0,'kernel/operativo/runtime'); \
+>   from estado import fallos; print(len(fallos.puntos()))"
+> ```
+
+| materia | qué es, y dónde se comprueba | sede |
 |---|---|---|
 | formato del **checkpoint** que permite reanudar sin hablar con el emisor | **plantilla construida**; su formato normativo vive en la especificación aprobada | [`plantillas/CHECKPOINT.md`](../../kernel/operativo/plantillas/CHECKPOINT.md) |
 | **prueba de reanudación** obligatoria en todo método | **construida y comprobada**: es campo obligatorio del esquema y un validador exige que cite un escenario que existe | `esquemas/metodo.yaml` · [`validadores/`](../../kernel/operativo/validadores/validadores.yaml) |
 | **relevo de agente** sin perder identidad ni memoria | **contrato construido**, sin runtime que lo ejecute | [`C2`](../../kernel/operativo/contratos/C2-AGENTES-Y-MODELOS.md) |
 | **reanudación multi-fuente**: qué sabe el checkpoint de cada fuente | **contrato construido**; su prueba está escrita y **no ejecutada** | [`C7`](../../kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md) |
 | **memoria** persistente de un equipo | **tipo construido**; hoy sólo una capacidad lo usa con bloques declarados, el resto lo declara en prosa dentro de su ficha | `esquemas/memoria.yaml` · [`diseno/01-MEMORIA-DE-DISENO.md`](../../kernel/operativo/diseno/01-MEMORIA-DE-DISENO.md) |
-| **disposición física** del estado durable: instantáneas, eventos, transacciones, concurrencia, identidad, versionado, migración y sellado | **CONSTRUIDA y con batería ejecutada** —evidencia en `evidencia/estado-durable-salida.txt`—; su norma es la sección `(g)`, aprobada, y su mecanismo el contrato derivado. **El sellado del diario queda para el corte siguiente**, y su umbral es parámetro calibrable | [`g`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · [`CONTRATO-ESTADO-DURABLE.md`](../../kernel/operativo/runtime/CONTRATO-ESTADO-DURABLE.md) |
-| **eventos** como tipo canónico | **DISEÑADO, sin esquema en el kernel** | `11-ARQ` §3.6 |
-| **recuperación** tras interrupción, con sus dos ramas y sin mezclas parciales publicables | **CONSTRUIDA y probada matando procesos en las nueve fronteras del protocolo** —evidencia en `evidencia/estado-durable-salida.txt`—; ver [`02-MODELO-OPERATIVO.md`](02-MODELO-OPERATIVO.md) §7 | [`g.8`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · `11-ARQ` §2.6 y §7.4 |
+| **disposición física** del estado durable: instantáneas, eventos, transacciones, concurrencia, identidad, versionado, migración y **sellado** | el MOTOR DE ESTADO DURABLE que §1.1 declara, **sellado incluido**: `estado/diario.py` publica `InformeSellado`, `umbral_de_sellado` y el evento `diario.sellado`, y `ads_estado.py sellar` es su orden. Su norma es la sección `(g)`, aprobada, y su mecanismo el contrato derivado; el umbral es parámetro calibrable y se lee del contrato, no de una constante. Evidencia: `evidencia/estado-durable-salida.txt` (`T312`–`T319c`) | [`g`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · [`CONTRATO-ESTADO-DURABLE.md`](../../kernel/operativo/runtime/CONTRATO-ESTADO-DURABLE.md) |
+| **eventos** como tipo canónico | **DISEÑADO, sin esquema en el kernel** — se comprueba con el comando de §7, que enumera los esquemas del árbol | `11-ARQ` §3.6 |
+| **recuperación** tras interrupción, con sus dos ramas y sin mezclas parciales publicables | parte del motor que §1.1 declara, probada matando procesos en **todas** las fronteras que `fallos.puntos()` declara —el número se ejecuta, no se escribe: ver el comando de arriba—. Evidencia: `evidencia/estado-durable-salida.txt`; ver [`02-MODELO-OPERATIVO.md`](02-MODELO-OPERATIVO.md) §7 | [`g.8`](../rediseno/g-ESTADO-DURABLE-APROBADA.md) · `11-ARQ` §2.6 y §7.4 |
 
 ## 5 · Runtime, runners, adaptadores y verificadores
 
 ### 5.1 · Lo ejecutable hoy, y cómo se invoca
+
+> **ESTA TABLA NO ES EL CENSO, y decir lo contrario sería el mismo defecto por omisión.**
+> Explica **cómo se invoca** cada familia; **qué puntos ejecutables hay** se DERIVA del
+> árbol, y por eso uno nuevo aparece el día que se escribe sin que nadie actualice nada:
+>
+> ```bash
+> ls kernel/operativo/runtime/ads_*.py kernel/operativo/raiz-externa/*.py tooling/*.sh
+> ```
+>
+> **Por qué se dice.** Hasta el 2026-09-04 esta tabla nombraba ocho piezas y el árbol tenía
+> **cinco** puntos ejecutables `ads_*.py` más el paquete de la raíz externa: una tabla
+> incompleta bajo un título que dice «lo ejecutable hoy» **afirma una ausencia sin
+> escribirla**. El reparto de cada uno está en §1.1, que es la sede.
 
 | pieza | qué es | invocación |
 |---|---|---|
@@ -289,6 +344,11 @@ ls -1 kernel/operativo/esquemas/*.yaml | xargs -n1 basename | sed 's/\.yaml$//'
 | **creación de proyecto** | crea el workspace con su repositorio de control e instala los packs pedidos. La especificación normativa que viaja se DERIVA del árbol, no se escribe | `./tooling/new-project.sh <nombre> [packs]` |
 | **motor de estado durable** | administra el estado canónico, el diario y el registro auxiliar de un repositorio de control, con transacciones atómicas y recuperación | `python3 kernel/operativo/runtime/ads_estado.py --repo <dir> <orden>` |
 | **guarda de entorno** | declara la versión mínima del intérprete y la comprueba ANTES de correr, con código de salida propio | `python3 kernel/operativo/validadores/entorno.py` |
+| **verificador de admisión** | emite el veredicto del control repo y publica los censos derivados de zonas, lecturas y fórmulas, con su PROCEDENCIA | `python3 kernel/operativo/runtime/ads_admision.py --repo <dir> verificar --base <rev>` |
+| **runtime y dispatcher** | items, paquetes, leases con autoridad temporal, despacho, reintentos y vistas derivadas | `python3 kernel/operativo/runtime/ads_runtime.py --repo <dir> --instancia <id> <orden>` |
+| **ciclo y macrocircuitos** | encuadre, composición, materialización de equipos con `C4`, gates de capa, handoffs, cierre, continuación y los cuatro macrocircuitos | `python3 kernel/operativo/runtime/ads_ciclo.py --repo <dir> <orden>` |
+| **árboles adversariales** | deriva el conjunto de `V6-15` de su sede documental y ejecuta la suite contra las versiones históricas vulnerables | `python3 kernel/operativo/runtime/ads_arboles.py --repo <dir> suite` |
+| **raíz externa de confianza** | PAQUETE SEPARADO: instalador, anfitrión firmante y verificador que comprueba la atestación **fuera** del árbol comprobado | `python3 kernel/operativo/raiz-externa/verificador.py capacidades` |
 
 **El manifiesto canónico de validadores —qué hay, qué se espera de cada uno, su firma de
 éxito y su regla de vigencia— es
@@ -321,32 +381,63 @@ LA DISCIPLINA             la evidencia derivada se republica en el MISMO commit 
 
 ### 5.3 · Adaptadores
 
-**Cuatro piezas diseñadas: definición canónica neutral · proyecciones generadas · huella con
-validador de deriva · prueba de humo en sesión nueva.** Sede:
-[`11-ARQ` §6](../evolucion/11-ARQUITECTURA-INTEGRADA.md). **Ninguno existe y ninguno está
-certificado**; los objetivos de soporte los fijó el Owner y fijar un objetivo no es
-alcanzarlo.
+**Las cuatro piezas de la arquitectura: definición canónica neutral · proyecciones generadas
+· huella con validador de deriva · prueba de humo en sesión nueva.** Sede de la
+arquitectura: [`11-ARQ` §6](../evolucion/11-ARQUITECTURA-INTEGRADA.md); contrato derivado:
+[`CONTRATO-ADAPTADOR.md`](../../kernel/operativo/runtime/CONTRATO-ADAPTADOR.md).
+
+**QUÉ DE ESTO ESTÁ CONSTRUIDO NO SE DICE AQUÍ: está en §1**, que es la única sede de esa
+distinción. Lo que sí es de esta sección, porque es materia distinta: **nada de esto está
+CERTIFICADO**, los objetivos de soporte los fijó el Owner y **fijar un objetivo no es
+alcanzarlo**.
+
+> **Qué decía, y por qué se retira.** Decía «Ninguno existe y ninguno está certificado»
+> mientras §1.1, en la misma página, declaraba «ADAPTADORES con un ejecutor local real y
+> proyecciones con huella», y §1.2 detallaba que lo que falta es el adaptador **de
+> PROVEEDOR**. Era la tercera recurrencia del mismo defecto en este documento. La regla que
+> la frase quería proteger —**estar construido no es estar certificado**— sigue intacta
+> arriba; lo que se retira es la afirmación de inexistencia, que era falsa y gastaba el
+> crédito de la que sí importa.
 
 ### 5.4 · Verificadores
 
+**Hay DOS aparatos y no se pueden citar el uno por el otro.** Cuál de ellos está construido
+se lee en §1; esta sección dice **en qué se diferencian**, que es lo que se confundía.
+
 ```text
-LO QUE HAY HOY      una batería interna que comprueba la CONSISTENCIA DEL CORPUS, con sus
-                    controles negativos y su evidencia publicada
+LA BATERÍA INTERNA  comprueba la CONSISTENCIA DEL CORPUS, con sus controles negativos y su
+                    evidencia publicada. Su manifiesto es `validadores/validadores.yaml`
 
-LO QUE NO HAY       el VERIFICADOR DE ADMISIÓN y la RAÍZ EXTERNA DE CONFIANZA, que son
-                    contrato obligatorio de `F6`
+EL APARATO DE `F6`  juzga la ADMISIÓN de una mutación de un control repo, y ancla su
+                    evidencia FUERA del árbol comprobado. Otro sujeto, otra sede: §1 de
+                    este documento para su estado, y §6 para sus contratos
 
-Y LA REGLA          un verde de la batería interna **NO demuestra** que el verificador de
-                    `F6` esté construido ni certificado. Nadie puede citarlo para eso
+Y LA REGLA          un verde de la batería interna **NO demuestra** nada sobre el aparato
+                    de `F6`, y desde luego nada sobre su CERTIFICACIÓN. Nadie puede
+                    citarlo para eso, y la frontera está escrita también al final de §1.1
 ```
 
-## 6 · Los contratos del VERIFICADOR DE ADMISIÓN — escritos, y ninguno implementado
+> **Qué decía, y por qué se retira.** Decía «LO QUE NO HAY: el VERIFICADOR DE ADMISIÓN y la
+> RAÍZ EXTERNA DE CONFIANZA» con los dos construidos y con evidencia publicada
+> —`evidencia/admision-salida.txt` y `evidencia/raiz-externa-salida.txt`— y con §1.1
+> declarándolos en la misma página. La regla de abajo, que es lo que la sección existía para
+> decir, no se ha tocado.
+
+## 6 · Los contratos del VERIFICADOR DE ADMISIÓN — dónde están escritos
+
+> **ESTA SECCIÓN DICE QUÉ CUBREN ESOS CONTRATOS Y DÓNDE VIVEN. NO DICE CUÁLES ESTÁN
+> IMPLEMENTADOS: eso está en §1, y su reparto contrato a contrato en
+> [`docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md`](../f6/01-MATRIZ-DE-COMPLETITUD-F6.md), que es
+> DERIVADO de §1 y no publica estado propio.** El título de esta sección decía «escritos, y
+> ninguno implementado» y su cierre decía «NINGUNA de esas filas está implementada, ejecutada
+> ni certificada», con `V6-15`, `V6-16` y el resto del aparato construidos, ejecutados y con
+> evidencia publicada. **De las tres palabras, la única que sigue siendo cierta es la
+> tercera**, y por eso ahora se dice sola y con su sede.
 
 > **Dos familias, y confundirlas sería el error.** Esta sección es la del **verificador de
 > admisión**, `F6-A`. Los **contratos DERIVADOS** que la sección `(g)` nombra en su `g.17`
 > —estado durable, gobierno Git del control repo y raíz externa— son **otra familia**, con
-> otra sede, y el primero de ellos **ya está construido**: ver §1 de este mismo documento.
-> Que una familia avance no mueve a la otra.
+> otra sede: ver §1 de este mismo documento. Que una familia avance no mueve a la otra.
 
 **Sede única:** [`11-ARQ` §20](../evolucion/11-ARQUITECTURA-INTEGRADA.md). Cada contrato
 declara, en su fila: qué debe demostrar `F6` · entrada · salida · evidencia · escenario
@@ -379,15 +470,19 @@ grep -oE '^\| `V6-[0-9]+`.*\| (`CONTRATO_[A-Z_]+`)' docs/evolucion/11-ARQUITECTU
   | grep -oE 'CONTRATO_[A-Z_]+' | sort | uniq -c
 ```
 
-> **NINGUNA de esas filas está implementada, ejecutada ni certificada**, y su propia sede lo
-> dice de sí misma. El significado exacto de cada clasificación —y por qué «se puede
-> construir» y «está construido» son afirmaciones distintas— está en `11-ARQ` §20.3, y este
-> corpus lo resume en
+> **NINGUNA de esas filas está CERTIFICADA**, y eso no cambia por ejecutarlas: la
+> certificación la emite un juicio independiente sobre un SHA exacto y **no quien
+> construyó**. Qué filas están implementadas y ejecutadas se lee en §1 y en la matriz de
+> completitud, que deriva de ella. El significado exacto de cada clasificación —y por qué
+> «se puede construir», «está construido» y «está certificado» son tres afirmaciones
+> distintas— está en `11-ARQ` §20.3, y este corpus lo resume en
 > [`05-PLAN-DE-IMPLEMENTACION-F5-F6.md`](05-PLAN-DE-IMPLEMENTACION-F5-F6.md).
 
 **Un contrato más, escrito para `F6` y fuera de esa sección:** el contrato del **verificador
-externo del repositorio de control**, registrado COMPLETO y **no implementado**, en
-`11-ARQ` §11.8. Su norma habilitante es entregable de `F5`.
+externo del repositorio de control**, registrado COMPLETO en `11-ARQ` §11.8, cuya norma
+habilitante es entregable de `F5`. **Su estado de construcción, como el de todo lo demás,
+se lee en §1**; lo que esta sección declara es que **su norma habilitante no existe todavía**
+y que por eso el contrato está BLOQUEADO POR DEPENDENCIA.
 
 ## 7 · Objetos que TODAVÍA NO tienen esquema, y son trabajo de construcción
 
@@ -398,6 +493,15 @@ prosa o en contrato, y **no tienen fichero de esquema** en el kernel:
 equipo · item · paquete · checkpoint · circuito
 iniciativa · adaptador · cobertura · evento
 contrato-de-aspecto · nivel-certificacion
+```
+
+**Y no se cree: se comprueba.** La lista de arriba es la de los que NO tienen esquema, y la
+única manera de que envejezca en silencio sería que alguien creara uno y no la tocara. El
+censo de los que SÍ lo tienen se ejecuta, y ninguno de los nombres de arriba puede aparecer
+en su salida:
+
+```bash
+ls kernel/operativo/esquemas/*.yaml | xargs -n1 basename | sed 's/\.yaml$//' | sort
 ```
 
 El vocabulario de estados de un paquete **sí existe**, pero vive dentro del esquema del

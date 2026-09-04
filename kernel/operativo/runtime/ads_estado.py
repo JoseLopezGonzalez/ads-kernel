@@ -556,7 +556,28 @@ def orden_atestar(argumentos):
     ])
 
 
+def orden_procedencia(argumentos):
+    """`E-10` · publica de dónde sale cada módulo, sin tocar ningún almacén.
+
+    `ADJ-M2` · los cinco puntos ejecutables declaraban «la PROCEDENCIA se PUBLICA» y sólo
+    uno tenía orden que la publicara. La razón entera de publicarla en los cinco —y de no
+    retirar el comentario de los cuatro— está escrita en `ads_arboles._orden_procedencia`.
+    Aquí importa además que esta orden **no abre el almacén**: preguntar de dónde sale el
+    motor no puede exigir que el motor pueda arrancar.
+    """
+    datos = procedencia(argumentos.repo)
+    legible = ["aparato       " + datos["aparato"],
+               "repo          " + str(datos.get("repo")),
+               "mismo árbol   " + ("si" if datos.get("repo_es_el_arbol_del_aparato")
+                                   else "NO"),
+               "retiradas     " + str(datos["entradas_del_lanzador_retiradas"])]
+    for modulo in sorted(datos["modulos"]):
+        legible.append("  modulo  " + modulo + "  " + datos["modulos"][modulo])
+    return _emitir(argumentos, datos, legible)
+
+
 ORDENES = {
+    "procedencia": orden_procedencia,
     "inicializar": orden_inicializar,
     "revision": orden_revision,
     "leer": orden_leer,
@@ -572,6 +593,9 @@ ORDENES = {
     "migrar": orden_migrar,
     "atestar": orden_atestar,
 }
+
+# Las órdenes que NO necesitan un `--repo`. Ver `orden_procedencia`.
+ORDENES_SIN_REPO = ("procedencia",)
 
 
 def _uso(mensaje):
@@ -596,6 +620,7 @@ def construir_analizador():
     analizador.add_argument("--json", action="store_true", help="salida JSON determinista")
     ordenes = analizador.add_subparsers(dest="orden", required=True)
 
+    ordenes.add_parser("procedencia", parents=[comun])
     ordenes.add_parser("inicializar", parents=[comun])
     ordenes.add_parser("revision", parents=[comun])
     ordenes.add_parser("recuperar", parents=[comun])
@@ -656,7 +681,9 @@ def construir_analizador():
 def main(argv=None):
     analizador = construir_analizador()
     argumentos = analizador.parse_args(argv)
-    if not getattr(argumentos, "repo", None):
+    # `procedencia` habla del APARATO y no de ningún almacén: exigirle un `--repo` la haría
+    # inservible justo cuando se sospecha de la procedencia del propio motor.
+    if not getattr(argumentos, "repo", None) and argumentos.orden not in ORDENES_SIN_REPO:
         return _uso("falta --repo: esta orden se ejecuta sobre un CONTROL REPO concreto")
     if not hasattr(argumentos, "json"):
         argumentos.json = False

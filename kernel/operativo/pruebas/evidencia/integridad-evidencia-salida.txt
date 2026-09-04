@@ -40,6 +40,26 @@ test_T306d_dos_repositorios_distintos_no_se_contaminan (__main__.ProcedenciaDeLo
 T306 · Defecto que previene: que el árbol juzgado aporte el código que lo juzga. ... ok
 test_T306e_el_cwd_del_lanzador_no_sustituye_al_aparato (__main__.ProcedenciaDeLosModulos.test_T306e_el_cwd_del_lanzador_no_sustituye_al_aparato)
 T306 · Defecto que previene: colar un homónimo por el directorio de trabajo. ... ok
+test_T330_el_inventario_de_puntos_ejecutables_se_DERIVA_y_es_coherente (__main__.PurgaEnLaRaizExterna.test_T330_el_inventario_de_puntos_ejecutables_se_DERIVA_y_es_coherente)
+T330 · Defecto que previene: `ADJ-B2`, una lista de ejecutables escrita a mano. ... ok
+test_T330b_lo_excluido_del_inventario_esta_excluido_por_su_motivo (__main__.PurgaEnLaRaizExterna.test_T330b_lo_excluido_del_inventario_esta_excluido_por_su_motivo)
+T330 · Defecto que previene: un alcance que se estrecha sin que se note. ... ok
+test_T331_la_raiz_externa_no_se_falsea_desde_el_PYTHONPATH (__main__.PurgaEnLaRaizExterna.test_T331_la_raiz_externa_no_se_falsea_desde_el_PYTHONPATH)
+T331 · Defecto que previene: `capacidades` publicando `{}` con código 0. ... ok
+test_T331b_el_instalador_no_escribe_un_manifiesto_truncado (__main__.PurgaEnLaRaizExterna.test_T331b_el_instalador_no_escribe_un_manifiesto_truncado)
+T331 · Defecto que previene: 41 ficheros instalados y un manifiesto de 3 bytes. ... ok
+test_T332_un_manifiesto_truncado_se_rechaza_TIPADO (__main__.PurgaEnLaRaizExterna.test_T332_un_manifiesto_truncado_se_rechaza_TIPADO)
+T332 · Defecto que previene: `KeyError: 'ficheros'` con cuatro rutas del anfitrión. ... ok
+test_T333_no_se_instala_a_medias (__main__.PurgaEnLaRaizExterna.test_T333_no_se_instala_a_medias)
+T333 · Defecto que previene: un destino con parte de los ficheros y sin manifiesto. ... ok
+test_T334_un_repo_ajeno_no_aporta_el_codigo_que_lo_verifica (__main__.PurgaEnLaRaizExterna.test_T334_un_repo_ajeno_no_aporta_el_codigo_que_lo_verifica)
+T334 · Defecto que previene: `g.15`, que el árbol verificado decida cómo se le ... ok
+test_T335_los_argumentos_obligatorios_ausentes_fallan_por_USO (__main__.PurgaEnLaRaizExterna.test_T335_los_argumentos_obligatorios_ausentes_fallan_por_USO)
+T335 · Defecto que previene: juzgar «lo que haya» cuando no se dice qué juzgar. ... ok
+test_T336_CONTROL_DEL_CONTROL_sin_la_purga_el_veneno_SI_entra (__main__.PurgaEnLaRaizExterna.test_T336_CONTROL_DEL_CONTROL_sin_la_purga_el_veneno_SI_entra)
+T336 · CONTROL DEL CONTROL: se retira la purga y se mira qué se pone rojo. ... ok
+test_T337_la_procedencia_no_fiable_es_FALLO_CERRADO (__main__.PurgaEnLaRaizExterna.test_T337_la_procedencia_no_fiable_es_FALLO_CERRADO)
+T337 · Defecto que previene: emitir veredicto sin poder demostrar la procedencia. ... ok
 test_T307_control_positivo_una_corrida_limpia_pasa (__main__.ResultadoExactoDeLaEvidencia.test_T307_control_positivo_una_corrida_limpia_pasa)
 T307 · Control del CONTROL: sin él, «todo falla» explicaría el verde. ... ok
 test_T307b_OK_con_saltos_NO_declarados_es_ROJO (__main__.ResultadoExactoDeLaEvidencia.test_T307b_OK_con_saltos_NO_declarados_es_ROJO)
@@ -54,6 +74,6 @@ test_T307f_la_evidencia_PUBLICADA_del_repositorio_supera_la_comprobacion (__main
 T307 · Control POSITIVO sobre el corpus real: la regla nueva no es inaplicable. ... ok
 
 ----------------------------------------------------------------------
-Ran 24 tests  (duración no registrada: varía por ejecución)
+Ran 34 tests  (duración no registrada: varía por ejecución)
 
 OK

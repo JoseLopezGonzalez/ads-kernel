@@ -3,5 +3,6 @@
 # codigo:       0
 # ---------------------------------------------------------------
 T158  SUPERADA  La evidencia publicada demuestra lo que el informe afirma
+T350  SUPERADA  El estado declarado de cada escenario lo sostiene su evidencia
 
-1 superadas · 0 fallidas
+2 superadas · 0 fallidas

@@ -58,6 +58,26 @@ test_72d_el_workspace_para_antes_de_analizar_el_manifiesto (__main__.GuardaDeEnt
 T172 · Antes de correr, y no al fallar el primer `tomllib.load`. ... ok
 test_72e_con_entorno_suficiente_la_guarda_no_estorba (__main__.GuardaDeEntorno.test_72e_con_entorno_suficiente_la_guarda_no_estorba)
 T172 · Una guarda que da falsos rojos se acaba desactivando. ... ok
+test_T320_un_heredado_REAL_migra_y_publica_la_revision_esperada (__main__.MigracionHeredadaReal.test_T320_un_heredado_REAL_migra_y_publica_la_revision_esperada)
+T320 · Defecto que previene: `ADJ-B1`, la migración 0->1 que reventaba con una ... ok
+test_T320b_la_llamada_de_la_migracion_pasa_el_testigo_de_fundacion (__main__.MigracionHeredadaReal.test_T320b_la_llamada_de_la_migracion_pasa_el_testigo_de_fundacion)
+T320 · Defecto que previene: que el `testigo` vuelva a faltar sin que nada lo note. ... ok
+test_T321_el_almacen_que_el_defecto_dejo_roto_vuelve_a_ser_migrable (__main__.MigracionHeredadaReal.test_T321_el_almacen_que_el_defecto_dejo_roto_vuelve_a_ser_migrable)
+T321 · Defecto que previene: el AGRAVANTE de `ADJ-B1` —que la corrección de la ... ok
+test_T322_los_diez_puntos_de_corte_convergen_en_la_MISMA_revision (__main__.MigracionHeredadaReal.test_T322_los_diez_puntos_de_corte_convergen_en_la_MISMA_revision)
+T322 · Defecto que previene: una migración RECUPERABLE sólo en el punto probado. ... ok
+test_T323_la_migracion_no_publica_sin_el_testigo_del_paso_8 (__main__.MigracionHeredadaReal.test_T323_la_migracion_no_publica_sin_el_testigo_del_paso_8)
+T323 · Defecto que previene: `E-08` desactivado DENTRO del camino de migración. ... ok
+test_T324_migrar_dos_veces_no_mueve_el_estado (__main__.MigracionHeredadaReal.test_T324_migrar_dos_veces_no_mueve_el_estado)
+T324 · Defecto que previene: una migración que se aplica dos veces. ... ok
+test_T325_un_formato_futuro_no_se_migra_ni_se_adivina (__main__.MigracionHeredadaReal.test_T325_un_formato_futuro_no_se_migra_ni_se_adivina)
+T325 · Defecto que previene: `g.10`, adivinar un formato que este motor no entiende. ... ok
+test_T326_sin_revision_y_con_diario_poblado_no_se_adivina_la_vigente (__main__.MigracionHeredadaReal.test_T326_sin_revision_y_con_diario_poblado_no_se_adivina_la_vigente)
+T326 · Defecto que previene: `g.8`, inventar la revisión vigente que falta. ... ok
+test_T326b_una_fundacion_que_no_casa_no_se_sustituye (__main__.MigracionHeredadaReal.test_T326b_una_fundacion_que_no_casa_no_se_sustituye)
+T326 · Defecto que previene: publicar una revisión 0 ajena a la que el diario dice. ... ok
+test_T327_la_CLI_no_publica_ni_trazas_ni_rutas_del_anfitrion (__main__.MigracionHeredadaReal.test_T327_la_CLI_no_publica_ni_trazas_ni_rutas_del_anfitrion)
+T327 · Defecto que previene: `E-15`, el modo de fallo EXACTO de `ADJ-B1`. ... ok
 test_20_estado_corrupto_al_leer (__main__.Negativos.test_20_estado_corrupto_al_leer)
 T177 · Defecto que previene: servir como bueno un fichero canónico manipulado. ... ok
 test_21_diario_truncado (__main__.Negativos.test_21_diario_truncado)
@@ -186,6 +206,6 @@ test_T319c_control_del_control_del_ancla_del_sellado (__main__.SelladoDelDiario.
 T319 · CONTROL DEL CONTROL: se retira la comprobación y se mira qué se pone rojo. ... ok
 
 ----------------------------------------------------------------------
-Ran 90 tests  (duración no registrada: varía por ejecución)
+Ran 100 tests  (duración no registrada: varía por ejecución)
 
 OK

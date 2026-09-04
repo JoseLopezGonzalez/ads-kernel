@@ -63,6 +63,7 @@ from __future__ import annotations
 
 import re
 
+from . import sede
 from .errores import (
     InstrumentoAlterado,
     MutacionNoDeclarada,
@@ -77,6 +78,12 @@ from .formulas import digest_de_contenido
 # ===========================================================================
 DECLARADA = "contenido-declarado"
 INMUTABLE = "contenido-inmutable"
+# El NOMBRE de la condición de zona se conserva —lo publica el censo, lo lee la evidencia
+# publicada y cambiarlo movería bytes de un fichero de evidencia sin cambiar nada de fondo—.
+# Lo que ese nombre designa es el CONTRATO de la zona: «se amplía, no se reescribe». CÓMO se
+# comprueba ya no es una sola cosa, y por eso el régimen aplicado se PUBLICA por ruta en
+# `informe["append_only"]`: `entradas-cerradas` donde la historia publica entradas
+# derivables —`O27` §3—, y `prefijo-del-nacimiento` donde el documento es continuo.
 APPEND_ONLY = "append-only-contra-el-nacimiento"
 INSTRUMENTO = "instrumento-inmutable-en-la-pasada"
 
@@ -237,6 +244,23 @@ class Veredicto:
         return "Veredicto(" + self.color + ", " + str(len(self.hallazgos)) + " hallazgos)"
 
 
+class _SinMutacion:
+    """Una ruta APPEND-ONLY que el diff NO señala, y que se juzga igualmente.
+
+    Existe para que `_juzgar_append_only` tenga una sola implementación: la vigilancia
+    permanente y el juicio de una mutación aplican EXACTAMENTE la misma regla, y dos copias
+    de la misma regla es la forma en que dos reglas dejan de ser la misma.
+    """
+
+    __slots__ = ("ruta", "letra", "punta", "referencia")
+
+    def __init__(self, ruta):
+        self.ruta = ruta
+        self.letra = "="
+        self.punta = "destino"
+        self.referencia = "HEAD"
+
+
 class Perimetro:
     """Cruza el censo de zonas con las mutaciones y emite el veredicto."""
 
@@ -351,6 +375,64 @@ class Perimetro:
                 ))
         return hallazgos
 
+    def rutas_append_only(self, rutas_del_arbol):
+        """Las rutas del árbol cuya zona declara contenido APPEND-ONLY. Derivadas, no escritas."""
+        elegidas = set()
+        for ruta in rutas_del_arbol:
+            zona = self.zona_de(ruta)
+            if ruta == SEDE_DEL_OWNER or (zona is not None
+                                          and zona.condicion == APPEND_ONLY):
+                elegidas.add(ruta)
+        return sorted(elegidas)
+
+    def vigilar_append_only(self, rutas, contenidos, ya_juzgadas=()):
+        """`ADJ-B3` · el append-only se comprueba SIEMPRE, mute o no mute contra la base.
+
+        DECISIÓN · la vigilancia no depende de que la ruta aparezca como MUTACIÓN
+            Alternativas: (a) juzgar sólo las rutas que el diff contra la base señala;
+            (b) juzgar toda ruta del árbol cuya zona declare APPEND-ONLY.
+            Se elige (b), y (a) deja un agujero que se abre solo: si la sede se altera en
+            un commit y ESE commit se declara como base, la ruta ya no aparece en el diff,
+            nadie la juzga y la alteración queda blanqueada por la elección de la base
+            —que la escribe quien opera—. El término de comparación de `O27` §3 no es la
+            base sino el commit que introdujo cada entrada, así que el juicio no necesita
+            la base para nada y no hay razón para condicionarlo a ella. El coste medido
+            sobre el corpus real son catorce rutas y una treintena de lecturas de blob.
+
+        DECISIÓN · la vigilancia permanente alcanza SÓLO al régimen de entradas cerradas
+            Alternativas: (a) vigilar siempre TODA ruta de zona APPEND-ONLY; (b) vigilar
+            siempre las que el LIBRO reconoce como divididas en entradas, y dejar a las
+            demás el contrato que ya tenían —juicio cuando mutan contra la base—.
+            Se elige (b), y no por comodidad: al probar (a) sobre el corpus real salieron
+            CUATRO rutas en rojo que están intactas y son legítimas
+            —`docs/rediseno/a-CAPACIDADES-APROBADA.md`, `a-ENMIENDA-E1-ENC.md`,
+            `b-RECORRIDO-APROBADA.md` y `kernel/KERNEL.md`—. No es un fallo de la
+            vigilancia: es que la clase `AUTORIDAD_SUPERIOR` mete en el mismo saco la sede
+            del Owner, que es APPEND-ONLY, y las especificaciones aprobadas, cuyo propio
+            motivo en el registro canónico dice «se cambia POR ENMIENDA». Contra su
+            nacimiento, una especificación enmendada NO es un prefijo, y nunca lo será.
+            Arreglar eso exige partir la clase en el registro canónico
+            —`docs/canonico/FUENTES-CANONICAS.yml`—, que no es sede de este módulo: queda
+            anotado como PETICIÓN, y entretanto la vigilancia permanente se aplica donde su
+            término de comparación es exacto, en vez de producir cuatro rojos falsos que
+            acabarían con el guardián apagado.
+        """
+        hallazgos = []
+        for ruta in sorted(rutas):
+            if ruta in ya_juzgadas:
+                continue
+            zona = self.zona_de(ruta)
+            if zona is None:
+                continue
+            entrada = contenidos.get(ruta) or ()
+            libro = entrada[4] if len(entrada) > 4 else None
+            if libro is None or not sede.tiene_entradas_cerradas(libro):
+                continue
+            fallo = self._juzgar_append_only(_SinMutacion(ruta), zona, contenidos)
+            if fallo is not None:
+                hallazgos.append(fallo)
+        return hallazgos
+
     def _juzgar_append_only(self, mutacion, zona, contenidos):
         """`V6-12`: añadir es legítimo; alterar una letra de lo publicado es ROJO.
 
@@ -359,6 +441,14 @@ class Perimetro:
         es un hallazgo ROJO con su motivo. Un `anterior` tomado de la base —que es lo que
         esta función recibía antes— compara la sede consigo misma en el punto de partida y
         blanquea cualquier alteración que ya estuviera en la base.
+
+        `ADJ-B3` · DOS REGÍMENES, y cuál gobierna lo decide la HISTORIA, no el fichero.
+        Un documento cuya historia publica ENTRADAS CERRADAS —la sede del Owner— se juzga
+        entrada a entrada, byte a byte, con `sede.juzgar`. Un documento continuo —`KERNEL.md`,
+        una especificación aprobada— conserva el contraste contra el prefijo del nacimiento,
+        que es el contrato que `V6-12` le venía dando. El régimen se PUBLICA en el hallazgo
+        y en el informe: dos reglas distintas sin decir cuál se aplicó producirían un verde
+        del que nadie puede decir qué significa.
         """
         ruta = mutacion.ruta
         if mutacion.letra in ("D", "R"):
@@ -391,12 +481,42 @@ class Perimetro:
                 "no se pudo contrastar la sede APPEND-ONLY contra su commit de "
                 "NACIMIENTO. Sin ese contraste no se emite verde",
             )
+
+        # `ADJ-B3` · `O27` §3 · el régimen FUERTE, cuando la historia declara entradas.
+        libro = entrada[4] if len(entrada) > 4 else None
+        if libro is not None and sede.tiene_entradas_cerradas(libro):
+            infracciones = sede.juzgar(libro, actual)
+            if not infracciones:
+                return None
+            primera = infracciones[0]
+            resto = ("" if len(infracciones) == 1
+                     else " (y " + str(len(infracciones) - 1) + " más: "
+                          + ", ".join(sorted({i["codigo"] for i in infracciones[1:]})) + ")")
+            return Hallazgo(
+                "V6-12", SedeDelOwnerAlterada.CODIGO, ruta, zona.clase,
+                "ALTERACIÓN DE ENTRADAS CERRADAS [" + primera["codigo"] + "] "
+                + primera["causa"] + resto + ". Régimen: entradas-cerradas (`O27` §3): "
+                "cada resolución publicada se conserva BYTE A BYTE y sólo se admite añadir "
+                "una entrada nueva y completa al final",
+            )
+
+        if libro is None:
+            return Hallazgo(
+                "V6-12", SedeDelOwnerAlterada.CODIGO, ruta, zona.clase,
+                "no se ha derivado el LIBRO de entradas cerradas de esta sede APPEND-ONLY. "
+                "Sin saber qué entradas hay que conservar, el contraste de `O27` §3 no se "
+                "ha hecho, y no se emite verde",
+            )
+
+        # Régimen de PREFIJO, para documentos continuos cuya historia no declara entradas.
         if actual.startswith(anterior):
             return None
         return Hallazgo(
             "V6-12", SedeDelOwnerAlterada.CODIGO, ruta, zona.clase,
             "el contenido publicado en el commit de NACIMIENTO ya no es un prefijo exacto "
-            "del contenido actual: se ha alterado lo publicado, y confirmar no exime",
+            "del contenido actual: se ha alterado lo publicado, y confirmar no exime. "
+            "Régimen: prefijo-del-nacimiento (la historia de esta ruta no publica entradas "
+            "cerradas que derivar)",
         )
 
 

@@ -1501,13 +1501,20 @@ class CorpusYDeterminismo(BaseDelCiclo):
         """T202 · Defecto que previene: confundir un tecleo con un fallo del ciclo.
 
         0 éxito · 1 error tipado · 2 uso incorrecto, como en los otros dos puntos
-        ejecutables. Y las órdenes son exactamente las siete declaradas.
+        ejecutables. Y las órdenes son exactamente las declaradas.
+
+        LA LISTA SE AMPLÍA CUANDO EL PUNTO EJECUTABLE GANA UNA ORDEN, y esta prueba tuvo que
+        ampliarse al cerrar `ADJ-M2`: los cinco `ads_*.py` llevaban escrito que «la
+        PROCEDENCIA se PUBLICA» y sólo uno tenía una orden que la publicase. Se conserva la
+        enumeración LITERAL —y no un recuento— a propósito: una orden nueva tiene que hacer
+        que alguien la escriba aquí, que es lo que impide que una capacidad entre en un punto
+        ejecutable sin que ninguna prueba la nombre.
         """
         import importlib
         modulo = importlib.import_module("ads_ciclo")
         self.assertEqual(sorted(modulo.ORDENES), sorted([
             "ciclo", "componer", "continuar", "encuadrar", "macrocircuito",
-            "materializar", "planificar",
+            "materializar", "planificar", "procedencia",
         ]))
         self.assertEqual(modulo.main(["encuadrar"]), modulo.USO)
         self.assertEqual(modulo.main([]), modulo.USO)

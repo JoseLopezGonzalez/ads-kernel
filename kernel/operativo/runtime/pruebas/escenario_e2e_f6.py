@@ -58,6 +58,13 @@ CLI_ESTADO = os.path.join(RUNTIME, "ads_estado.py")
 CLI_RUNTIME = os.path.join(RUNTIME, "ads_runtime.py")
 CLI_CICLO = os.path.join(RUNTIME, "ads_ciclo.py")
 CLI_ARBOLES = os.path.join(RUNTIME, "ads_arboles.py")
+CLI_ADMISION = os.path.join(RUNTIME, "ads_admision.py")
+# Los CINCO puntos ejecutables del aparato, DERIVADOS del disco y no escritos: `ADJ-M2` se
+# midió sobre las cinco tablas `ORDENES`, y una lista a mano aquí volvería a dejar fuera al
+# sexto el día que se escriba.
+PUNTOS_EJECUTABLES = sorted(
+    os.path.join(RUNTIME, n) for n in os.listdir(RUNTIME)
+    if n.startswith("ads_") and n.endswith(".py"))
 sys.path.insert(0, RUNTIME)
 sys.path.insert(0, AQUI)
 
@@ -1441,6 +1448,209 @@ def ejecutar(base, salida):
 
 
 # ---------------------------------------------------------------------------
+#  `ADJ-M3` · EL ALMACÉN CORTADO ENTRE LOS PASOS 8 Y 9, QUE HAY QUE RECUPERAR
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR. `CONTRATO-ESTADO-DURABLE.md` §3 afirma que los tres
+#  escenarios extremo a extremo «ya no pueden seguir verdes sobre un almacén irrecuperable»,
+#  y `entre-el-paso-8-y-el-9` es el ÚNICO punto del protocolo que deja el disco en ese
+#  estado —objetos publicados con su testigo, revisión todavía sin publicar—. Medido sobre
+#  los tres ficheros: `grep -c 'entre-el-paso-8-y-el-9'` daba **0 en los tres**. La
+#  comprobación de recuperabilidad recorría almacenes que ningún corte había dejado a
+#  medias: podía fallar en teoría y no había visto nunca el estado que dice cazar.
+#
+#  DECISIÓN · se SIEMBRA un almacén cortado ahí, en un control repo APARTE
+#      Alternativas: (a) cortar uno de los almacenes que el escenario ya usa; (b) crear uno
+#      propio para el corte; (c) dejarlo y pedir que el contrato retire la afirmación.
+#      Se elige (b). Con (a) los pasos numerados dejarían de medir lo que declaran —un corte
+#      en medio cambia todo lo que viene después— y la salida dejaría de ser comparable con
+#      la evidencia publicada. Con (c) se perdería una propiedad que el motor SÍ tiene y que
+#      sólo faltaba ejercer desde aquí. Con (b) los pasos quedan intactos y el barrido de
+#      recuperabilidad —que descubre los almacenes por su marca en disco, no por una lista—
+#      encuentra uno más y tiene que RECUPERARLO por la rama COMPLETAR.
+#
+#  DECISIÓN · la siembra COMPRUEBA que cortó, y no se conforma con haberlo intentado
+#      Se exige código 70 —el corte real, `os._exit` sin `finally` y sin vaciar búferes—, el
+#      TESTIGO del paso 8 en disco y la revisión SIN avanzar. Sin esas tres, sembrar podría
+#      dejar un almacén sano y la comprobación volvería a ser vacua, que es justo el defecto
+#      que se cierra. Y por eso la siembra puede poner el escenario en ROJO ella sola.
+# ---------------------------------------------------------------------------
+#  `ADJ-M1`, `ADJ-M2` y `ADJ-M11` · LAS SEDES DEL APARATO CONTRA SU PROPIO CÓDIGO
+# ---------------------------------------------------------------------------
+#  Los tres hallazgos son la misma clase: una sede —una orden de la CLI, un comentario de
+#  cabecera, un contrato derivado— afirmando algo que su propio código desmiente. Se cierran
+#  aquí porque aquí es donde el código se EJECUTA de verdad, en procesos reales.
+#
+#  DECISIÓN · se comprueba EJECUTANDO, y el conjunto se DERIVA del disco
+#      Una prueba que leyera los ficheros buscando una frase comprobaría redacción. Lo que
+#      se comprueba es la PROPIEDAD: que la orden `censo-formulas` mida el MISMO conjunto
+#      que el veredicto, que los CINCO puntos ejecutables publiquen su procedencia, y que
+#      `arboles/` esté en los dos censos. Reintroducir cualquiera de los tres defectos pone
+#      esto en rojo.
+def comprobar_sedes_del_aparato(entorno):
+    """`(ok, lineas)`. Las tres sedes que contradecían a su código, ejercidas de verdad."""
+    lineas, ok = [], True
+
+    # `ADJ-M1` · la orden `censo-formulas` censaba TODO el runtime —el sujeto de `V6-04`—
+    # mientras el veredicto y `T190` censaban el aparato de verificación —el de `V6-19`—.
+    # Sobre el propio candidato daba `segundas definiciones: 7 · ok: no · EXIT=1` con la
+    # batería en verde. Se exige que los dos conjuntos sean EL MISMO.
+    proceso = subprocess.run(
+        [sys.executable, CLI_ADMISION, "--repo", RAIZ, "censo-formulas", "--json"],
+        capture_output=True, text=True, env=entorno)
+    esperado = {os.path.basename(r)
+                for r in censo_admision.modulos_del_verificador(RUNTIME)}
+    if proceso.returncode != 0:
+        ok = False
+        lineas.append("T363 · censo de fórmulas: la orden sale con "
+                      + str(proceso.returncode) + " sobre el propio árbol mientras el "
+                      "veredicto y `T190` salen limpios: censan conjuntos distintos")
+    try:
+        informe = json.loads(proceso.stdout)
+    except ValueError:
+        informe = {}
+    censado = set(informe.get("consumidores") or {})
+    if censado != esperado:
+        ok = False
+        sobran = ", ".join(sorted(censado - esperado)) or "∅"
+        faltan = ", ".join(sorted(esperado - censado)) or "∅"
+        lineas.append("T363 · censo de fórmulas: la ORDEN censa un conjunto distinto del "
+                      "que mide el veredicto de `V6-19` (sobran: " + sobran
+                      + " · faltan: " + faltan + ")")
+    elif proceso.returncode == 0:
+        lineas.append("T363 · censo de fórmulas: la orden y el veredicto censan el MISMO "
+                      "conjunto de " + str(len(esperado)) + " módulos del aparato de "
+                      "verificación, y sale limpio (`V6-19`)")
+
+    # `ADJ-M2` · los cinco puntos ejecutables declaran «la PROCEDENCIA se PUBLICA» y sólo
+    # uno tenía orden que la publicara. Se ejecutan los cinco.
+    sin_orden = []
+    for punto in PUNTOS_EJECUTABLES:
+        salida = subprocess.run([sys.executable, punto, "procedencia", "--json"],
+                                capture_output=True, text=True, env=entorno)
+        if salida.returncode != 0 or "aparato" not in (salida.stdout or ""):
+            # `ads_arboles.py` publica en JSON por defecto y no acepta `--json`; se
+            # reintenta con su forma, que es la que su propia CLI declara.
+            salida = subprocess.run([sys.executable, punto, "procedencia"],
+                                    capture_output=True, text=True, env=entorno)
+        if salida.returncode != 0 or "aparato" not in (salida.stdout or ""):
+            sin_orden.append(os.path.basename(punto))
+    if sin_orden:
+        ok = False
+        lineas.append("T364 · procedencia: " + str(len(sin_orden)) + " de "
+                      + str(len(PUNTOS_EJECUTABLES)) + " puntos ejecutables declaran «la "
+                      "PROCEDENCIA se PUBLICA» y no la publican: "
+                      + ", ".join(sin_orden))
+    else:
+        lineas.append("T364 · procedencia: los " + str(len(PUNTOS_EJECUTABLES))
+                      + " puntos ejecutables publican su procedencia con una orden propia "
+                      "(`E-10`, `g.15`)")
+
+    # `ADJ-M11` · `arboles/versiones.py` y `CONTRATO-ARBOLES-ADVERSARIALES.md` afirmaban que
+    # `arboles/` «no está entre» los paquetes del censo, y el código dice que sí está —en
+    # los DOS censos—. Se comprueba el código, y que las dos sedes no lo desmientan.
+    en_formulas = "arboles" in censo_admision.PAQUETES_DEL_VERIFICADOR
+    en_lecturas = any(os.sep + "arboles" + os.sep in ruta
+                      for ruta in censo_admision.modulos_del_aparato(RUNTIME))
+    if not (en_formulas and en_lecturas):
+        ok = False
+        lineas.append("T365 · censo de `arboles/`: el paquete NO está en los dos censos "
+                      "(fórmulas: " + str(en_formulas) + " · lecturas: " + str(en_lecturas)
+                      + "). Un paquete fuera del censo es una superficie sin enumerar, que "
+                      "es el modo de fallo de `S1-01`")
+    desmienten = []
+    for sede in (os.path.join(RUNTIME, "arboles", "versiones.py"),
+                 os.path.join(RUNTIME, "CONTRATO-ARBOLES-ADVERSARIALES.md")):
+        with open(sede, encoding="utf-8") as manejador:
+            texto = manejador.read()
+        # Sin acento también, y con hasta cuarenta caracteres de por medio: una afirmación
+        # no deja de hacerse porque se escriba «no esta entre» o se meta un inciso.
+        if re.search(r"arboles/?`?[^.\n]{0,40}?"
+                     r"(?:no est[áa]n? entre|queda fuera del censo|fuera del censo de)",
+                     texto):
+            desmienten.append(os.path.basename(sede))
+    if desmienten:
+        ok = False
+        lineas.append("T365 · censo de `arboles/`: " + ", ".join(desmienten)
+                      + " afirma que el paquete queda fuera del censo, y el código dice lo "
+                      "contrario. Las dos sedes tienen que decir lo que hace el código")
+    elif en_formulas and en_lecturas:
+        lineas.append("T365 · censo de `arboles/`: el paquete está en los dos censos, la "
+                      "vía histórica está ACOTADA y publicada en "
+                      "`SEDES_DE_REPRODUCCION_HISTORICA`, y sus dos sedes lo dicen así")
+    # El VEREDICTO por escenario, en la forma que `registro_pruebas.veredictos_publicados`
+    # sabe leer: cada línea la firma SU propia prueba, y no el resultado global. Si `T363`
+    # falla y `T365` pasa, la evidencia tiene que decir exactamente eso.
+    veredicto = []
+    for linea in lineas:
+        malo = any(marca in linea for marca in
+                   ("sale con", "censa un conjunto distinto", "y no la publican",
+                    "NO está en los dos censos", "afirma que el paquete queda fuera"))
+        veredicto.append(linea + " ... " + ("FAIL" if malo else "ok"))
+    return ok, veredicto
+
+
+PUNTO_DE_CORTE = "entre-el-paso-8-y-el-9"
+ALMACEN_CORTADO = "almacen-cortado-8-9"
+TX_CORTADA = "tx-corte-8-9"
+CODIGO_DE_CORTE = 70
+
+
+def sembrar_almacen_cortado(base, cli_estado, entorno):
+    """Deja bajo `base` un almacén cortado ENTRE los pasos 8 y 9. Devuelve `(ok, lineas)`."""
+    repo = os.path.join(base, ALMACEN_CORTADO)
+    os.makedirs(repo, exist_ok=True)
+    carga = os.path.join(base, "carga-corte-8-9.json")
+    with open(carga, "w", encoding="utf-8") as manejador:
+        json.dump({"esquema": "ads.estado/1", "n": 89}, manejador, sort_keys=True)
+    orden = [sys.executable, cli_estado, "--repo", repo]
+    limpio = {clave: valor for clave, valor in entorno.items()
+              if clave != "ADS_ESTADO_FALLO"}
+    arranque = subprocess.run(orden + ["inicializar"], capture_output=True, text=True,
+                              env=limpio)
+    if arranque.returncode != 0:
+        return False, ["T362 · corte 8-9: `inicializar` salió con "
+                       + str(arranque.returncode) + ", así que no hay almacén que cortar"]
+    cortado = dict(limpio)
+    cortado["ADS_ESTADO_FALLO"] = PUNTO_DE_CORTE
+    caida = subprocess.run(
+        orden + ["transicion", "--id", TX_CORTADA, "--autor", "escenario-e2e",
+                 "--motivo", "corte deliberado entre los pasos 8 y 9",
+                 "--escribir", "items/it-corte.json=" + carga],
+        capture_output=True, text=True, env=cortado)
+    lineas, ok = [], True
+    if caida.returncode != CODIGO_DE_CORTE:
+        ok = False
+        lineas.append("T362 · corte 8-9: el corte NO cortó (código "
+                      + str(caida.returncode) + "). Sin corte no queda nada a medias y la "
+                      "comprobación de recuperabilidad no mediría nada")
+    testigo = os.path.join(repo, "estado", "operacional", "tx", TX_CORTADA,
+                           "PUBLICADOS.json")
+    if not os.path.isfile(testigo):
+        ok = False
+        lineas.append("T362 · corte 8-9: el paso 8 no dejó su testigo durable, luego el "
+                      "corte no cayó entre los pasos 8 y 9")
+    try:
+        with open(os.path.join(repo, "estado", "REVISION.json"), encoding="utf-8") as m:
+            revision = json.load(m)["revision"]
+    except (OSError, ValueError, KeyError, TypeError):
+        revision = None
+    if revision != 0:
+        ok = False
+        lineas.append("T362 · corte 8-9: la revisión vigente es " + str(revision)
+                      + " y tenía que seguir siendo 0. El paso 9 llegó a publicar, y "
+                      "entonces el almacén no queda a medias")
+    if ok:
+        lineas.append("T362 · corte 8-9: almacén cortado en `" + PUNTO_DE_CORTE
+                      + "` — testigo del paso 8 en disco y revisión SIN publicar. La "
+                      "comprobación de recuperabilidad tiene que encontrarlo y COMPLETARLO")
+    # El VEREDICTO, en la forma que `registro_pruebas.veredictos_publicados` sabe leer. Sin
+    # él la evidencia registra la ejecución y NO sostiene el `estado:` que el escenario
+    # declara, y «no he podido contrastarlo» acabaría leyéndose como «está bien».
+    lineas = [linea + " ... " + ("ok" if ok else "FAIL") for linea in lineas]
+    return ok, lineas
+
+
+# ---------------------------------------------------------------------------
 #  `E-08` · RECUPERABILIDAD DEL ALMACÉN AL TERMINAR
 # ---------------------------------------------------------------------------
 #  Hecho reproducido antes de corregir: con los pasos 8 y 9 invertidos, este escenario
@@ -1500,12 +1710,22 @@ def main():
     salida = []
     try:
         codigo = ejecutar(base, salida)
+        # `ADJ-M3` · antes de comprobar la recuperabilidad se SIEMBRA el único estado que la
+        # hace significar algo: un almacén cortado entre los pasos 8 y 9.
+        sembrado, lineas_del_corte = sembrar_almacen_cortado(base, CLI_ESTADO, ENTORNO)
+        salida.append("")
+        salida.extend(lineas_del_corte)
+        # `ADJ-M1`, `ADJ-M2` y `ADJ-M11` · las sedes de este aparato no pueden contradecir a
+        # su propio código, y se comprueba ejecutándolo.
+        veraces, lineas_de_veracidad = comprobar_sedes_del_aparato(ENTORNO)
+        salida.append("")
+        salida.extend(lineas_de_veracidad)
         # `E-08` · el escenario no termina en verde sobre un almacén que no se
         # puede volver a abrir. Se comprueba ANTES de borrar el temporal.
         recuperable, lineas_de_recuperabilidad = comprobar_recuperabilidad(base)
         salida.append("")
         salida.extend(lineas_de_recuperabilidad)
-        if not recuperable:
+        if not recuperable or not sembrado or not veraces:
             codigo = 1
     finally:
         for carpeta, subcarpetas, ficheros in os.walk(base):

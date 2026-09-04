@@ -234,10 +234,51 @@ def _alternativa_numeral():
 
 _NUMERAL = r"\d{1,3}|" + _alternativa_numeral()
 
+# ===========================================================================
+#  LAS DOS MITADES DE LA FRONTERA, LAS DOS MOTIVADAS · `ADJ-M5`
+# ===========================================================================
+#  HECHO REPRODUCIDO ANTES DE CORREGIR. `AMBITO_VIVO` era una lista de SEIS prefijos de
+#  inclusión SIN un solo motivo escrito, mientras `FUERA_DEL_AMBITO` motivaba los suyos uno
+#  a uno y `T151` comprobaba esos motivos. La consecuencia era medible: `docs/rediseno/`,
+#  `docs/owner/`, `docs/evolucion/`, `docs/f5/` y `tooling/` quedaban fuera del barrido **en
+#  silencio**, sin que ningún texto dijera por qué. No era hipotético: `E5-4` de `11-ARQ`
+#  §19 registra un recuento erróneo en `docs/rediseno/a-ENMIENDA-E1-ENC.md`, fuera del
+#  barrido y sin constancia de que lo estuviera. Y el barrido ampliado a esas cinco zonas
+#  publica hoy VEINTE divergencias, todas en material histórico o aprobado: la frontera es
+#  CORRECTA, lo que faltaba era decirla.
+#
+#  DECISIÓN · se MOTIVA cada mitad, y además se comprueba que no queda ninguna zona sin
+#  clasificar
+#      Alternativas: (a) ensanchar `AMBITO_VIVO` hasta cubrirlo todo; (b) escribir el motivo
+#      de cada prefijo de inclusión; (c) (b) más una comprobación DERIVADA de que todo `.md`
+#      del árbol cae en una de las dos mitades.
+#      Se elige (c). Con (a) el validador denunciaría veinte verdades históricas y se
+#      acabaría apagando, que es el modo de fallo que este fichero ya documenta dos veces.
+#      Con (b) la frontera queda dicha pero sigue envejeciendo: `docs/f5/` nació DESPUÉS de
+#      que se escribiera esta lista y cayó fuera sin que nada lo notara —así se encontró—.
+#      Con (c) una zona nueva de documentos no puede quedar fuera en silencio: o entra, o se
+#      declara fuera con su motivo, o `T151` se pone en ROJO nombrándola.
+
 # El corpus VIVO: dónde una cifra obsoleta es un defecto que hay que corregir. Es un
-# conjunto de PATRONES, no una lista de ficheros, y por eso una sede nueva entra sola.
-AMBITO_VIVO = [r"^README\.md$", r"^START_HERE\.md$", r"^kernel/", r"^packs/",
-               r"^docs/canonico/", r"^docs/f6/"]
+# conjunto de PATRONES, no una lista de ficheros, y por eso una sede nueva entra sola. Cada
+# patrón dice qué INCLUYE y, por tanto, qué deja fuera al no nombrarlo.
+AMBITO_VIVO = [
+    (r"^README\.md$",
+     "puerta de entrada del repositorio: lo primero que se lee, y una cifra falsa aquí "
+     "se propaga a toda lectura posterior"),
+    (r"^START_HERE\.md$",
+     "arranque operativo vigente: describe el árbol de HOY, no el de ninguna versión"),
+    (r"^kernel/",
+     "el producto: esquemas, contratos, prompts, pruebas y validadores. Sus cifras son "
+     "las que el corpus deriva, y una obsoleta aquí es un defecto, no una cita"),
+    (r"^packs/",
+     "packs instalables VIGENTES: viajan al proyecto y sus cifras se leen como ciertas"),
+    (r"^docs/canonico/",
+     "el corpus canónico vigente: es la sede que el resto del árbol cita"),
+    (r"^docs/f6/",
+     "el registro VIVO de `F6`: estado y matriz de completitud, que se corrigen cuando "
+     "el árbol cambia"),
+]
 
 # Y lo que queda FUERA, cada patrón con su motivo escrito. Un corpus histórico no se
 # corrige: se cita. Excluirlo sin decir por qué sería la lista literal por la puerta de
@@ -254,13 +295,54 @@ FUERA_DEL_AMBITO = [
     (r"^packs/legacy-", "packs retirados: se conservan sólo para trazabilidad"),
     (r"^docs/f6/\d\d-GATE-.*-\d{8}\.md$",
      "acta de un gate FECHADO: describe el árbol de ese día y no se reescribe"),
+    (r"^docs/f6/\d\d-MATRIZ-DE-HALLAZGOS-DEL-GATE-\d{8}\.md$",
+     "registro FECHADO de los hallazgos de un gate: cita las cifras que ese gate midió "
+     "y se lee junto a su acta, que tampoco se reescribe"),
+]
+
+# LAS ZONAS DE DOCUMENTOS QUE NO SE BARREN, cada una con su motivo. Antes quedaban fuera
+# por no estar nombradas en `AMBITO_VIVO`, que es exclusión por omisión: la que no se ve.
+ZONAS_SIN_BARRIDO = [
+    (r"^docs/rediseno/",
+     "material APROBADO y sus auditorías: sólo `F5` tiene autoridad para editarlo, y "
+     "`O24` §5 prohíbe reabrirlo. Sus cifras se CITAN, no se corrigen — `E5-4` de "
+     "`11-ARQ` §19 registra una de ellas en `a-ENMIENDA-E1-ENC.md`"),
+    (r"^docs/owner/",
+     "sede del Owner, append-only contra su commit de NACIMIENTO: insertar o cambiar un "
+     "byte lo da en ROJO `V6-12`. Un recuento no se corrige reescribiendo un acto"),
+    (r"^docs/evolucion/",
+     "historia del kernel y actas de los gates anteriores: son INMUTABLES por el registro "
+     "canónico y describen el árbol del día en que se escribieron"),
+    (r"^docs/f5/",
+     "expediente de `F5`, fase distinta y con su propia autoridad: `F6` no edita el "
+     "material de `F5`, y sus cifras se leen contra el árbol de `F5`"),
+    (r"^tooling/",
+     "guiones ejecutables sin prosa censable: hoy no contiene ningún `.md`, y su "
+     "documentación vive en `docs/canonico/` §5.1"),
 ]
 
 
 def _vivo(rel):
-    if not any(re.search(p, rel) for p in AMBITO_VIVO):
+    if not any(re.search(p, rel) for p, _m in AMBITO_VIVO):
         return False
     return not any(re.search(p, rel) for p, _m in FUERA_DEL_AMBITO)
+
+
+def _clasificada(rel):
+    """¿Cae este documento en alguna de las dos mitades DECLARADAS de la frontera?"""
+    return (any(re.search(p, rel) for p, _m in AMBITO_VIVO)
+            or any(re.search(p, rel) for p, _m in ZONAS_SIN_BARRIDO))
+
+
+def documentos_del_arbol(base):
+    """Todo `.md` del árbol, sin filtrar. Es el universo contra el que se mide la frontera."""
+    for dirpath, dirnames, filenames in os.walk(base):
+        dirnames[:] = [d for d in dirnames
+                       if d not in (".git", "__pycache__", ".pytest_cache")]
+        for nombre in sorted(filenames):
+            if nombre.endswith(".md"):
+                ruta = os.path.join(dirpath, nombre)
+                yield os.path.relpath(ruta, base).replace(os.sep, "/")
 
 
 def sedes_vivas(base):
@@ -463,7 +545,8 @@ def t151_recuentos_derivados(raiz=None):
     r = Resultado("T151", "Ninguna cifra del corpus contradice el recuento derivado")
     cuenta = derivar(base)
     # Cada exclusión del ámbito tiene que decir POR QUÉ. Una exclusión sin motivo es la
-    # lista literal volviendo por la puerta de atrás.
+    # lista literal volviendo por la puerta de atrás. La OTRA mitad de la frontera —los
+    # prefijos de inclusión, y las zonas que no se barren— la comprueba `T361`.
     for patron, motivo in FUERA_DEL_AMBITO:
         if not (motivo or "").strip():
             r.fallo(f"la exclusión «{patron}» no dice por qué queda fuera del ámbito vivo")
@@ -471,6 +554,38 @@ def t151_recuentos_derivados(raiz=None):
         r.fallo(f"{rel}:{linea}: «{cita}» — escrito {escrito} · derivado {derivado} "
                 f"({clave}). La sede no se enumeró: la encontró el barrido "
                 f"(`11-ARQ` §19, CONTRATO 1)")
+    return r
+
+
+def t361_la_frontera_del_barrido_esta_motivada(raiz=None):
+    """`ADJ-M5` · la frontera del barrido, motivada en sus DOS mitades y sin zona en silencio.
+
+    `T151` ya comprobaba los motivos de `FUERA_DEL_AMBITO`. Lo que faltaba era la otra
+    mitad: los prefijos de INCLUSIÓN no tenían ni uno, y lo que un prefijo de inclusión deja
+    fuera lo deja fuera POR OMISIÓN, que es la exclusión que no se ve. Y faltaba lo que
+    impide que la frontera vuelva a envejecer: que ningún documento del árbol pueda caer
+    fuera sin que nada lo diga. Así cayó `docs/f5/`, que nació después de escribirse la
+    lista.
+    """
+    base = os.path.abspath(raiz or RAIZ)
+    r = Resultado("T361",
+                  "La frontera del barrido está motivada en sus dos mitades y no deja "
+                  "ninguna zona en silencio")
+    for etiqueta, tabla in (("la inclusión", AMBITO_VIVO),
+                            ("la exclusión", FUERA_DEL_AMBITO),
+                            ("la zona sin barrido", ZONAS_SIN_BARRIDO)):
+        for patron, motivo in tabla:
+            if not (motivo or "").strip():
+                r.fallo(f"{etiqueta} «{patron}» no dice por qué barre —o deja de barrer— "
+                        f"lo que abarca (`ADJ-M5`)")
+    sin_clasificar = sorted({rel for rel in documentos_del_arbol(base)
+                             if not _clasificada(rel)})
+    for rel in sin_clasificar[:20]:
+        r.fallo(f"{rel}: queda fuera del barrido de recuentos EN SILENCIO. Ninguna mitad "
+                f"de la frontera lo nombra: o entra en `AMBITO_VIVO`, o se declara en "
+                f"`ZONAS_SIN_BARRIDO` con su motivo (`ADJ-M5`)")
+    if len(sin_clasificar) > 20:
+        r.fallo(f"y {len(sin_clasificar) - 20} documentos más sin clasificar")
     return r
 
 
@@ -695,14 +810,275 @@ def t246_la_cabecera_enumera_las_pruebas_que_contiene(raiz=None):
     return r
 
 
+# ===========================================================================
+#  LA SEDE VERAZ · `ADJ-G3` · que ninguna sede viva niegue lo que el árbol tiene
+# ===========================================================================
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, y es la TERCERA recurrencia del mismo defecto en el
+#  mismo documento. `04-CONTRATOS-TECNICOS.md` se declara **la ÚNICA SEDE** de la distinción
+#  construido/diseñado y, en cuatro secciones a la vez, afirmaba que NO existen los
+#  adaptadores (§5.3), el verificador de admisión y la raíz externa (§5.4 y §6) y el sellado
+#  del diario (§4) — las cuatro construidas, con punto ejecutable y evidencia publicada, y
+#  las cuatro declaradas CONSTRUIDAS por su propia §1.1. `06-DEUDA` §6 y `05-PLAN` L6 lo
+#  repetían.
+#
+#  DECISIÓN · se comprueba la PROPIEDAD contra el disco, no la redacción contra una lista
+#      Alternativas: (a) prohibir por texto las cuatro frases concretas; (b) contrastar cada
+#      negación contra una SONDA en el árbol.
+#      Se elige (b), con (a) sólo para las negaciones EN BLOQUE, que no nombran ninguna
+#      pieza y por tanto no se pueden contrastar contra nada. Con (a) sola, la quinta
+#      recurrencia se escribiría con otras palabras y pasaría en verde: es exactamente lo
+#      que ya ocurrió dos veces. Con (b), lo que decide es si el fichero está en el disco.
+#
+#  DECISIÓN · la negación se liga a la MENCIÓN más próxima, y un restrictivo la exime
+#      «no existe ningún adaptador **de proveedor**» es VERDAD y tiene que seguir pudiéndose
+#      escribir; «ninguno existe», dicho de los adaptadores a secas, es falso. Lo que
+#      distingue las dos es el restrictivo que sigue al nombre, que es el mismo mecanismo
+#      que `Regla.salvo` ya usa para los cardinales. Sin él, la regla denunciaría verdades y
+#      acabaría apagada.
+#
+#  DECISIÓN · un RECITAL no es una afirmación
+#      §1.2 cita entera la redacción falsa que sustituye —«Decía “NO CONSTRUIDO” de siete
+#      cosas que el árbol construye»— y eso es lo contrario de afirmarla. Los marcadores de
+#      recital se declaran uno a uno, con su motivo.
+
+# Cada pieza: cómo la nombra la prosa · qué restrictivo la convierte en otra afirmación ·
+# la SONDA en el disco que demuestra que está construida · y por qué esa sonda.
+PIEZAS_CONSTRUIDAS = (
+    {"clave": "adaptadores",
+     "nombre": r"\badaptador(?:es)?\b",
+     "salvo": r"(?:\s|\*)*(?:de\s+(?:proveedor|gesti[óo]n)|comercial)",
+     "sonda": "kernel/operativo/runtime/adaptadores/proceso.py",
+     "motivo": "el ADAPTADOR LOCAL DE PROCESO real, con su registro y su proyección con "
+               "huella. Evidencia: `pruebas/evidencia/adaptadores-salida.txt`"},
+    {"clave": "verificador de admisión",
+     "nombre": r"verificador de admisi[óo]n",
+     "salvo": None,
+     "sonda": "kernel/operativo/runtime/admision/perimetro.py",
+     "motivo": "el paquete `runtime/admision/` con su punto ejecutable `ads_admision.py`. "
+               "Evidencia: `pruebas/evidencia/admision-salida.txt`"},
+    {"clave": "raíz externa",
+     "nombre": r"ra[íi]z externa",
+     "salvo": None,
+     "sonda": "kernel/operativo/raiz-externa/verificador.py",
+     "motivo": "el PAQUETE SEPARADO con su instalador y su anfitrión firmante. Evidencia: "
+               "`pruebas/evidencia/raiz-externa-salida.txt`"},
+    {"clave": "sellado del diario",
+     "nombre": r"sellado del diario",
+     "salvo": None,
+     "sonda": "kernel/operativo/runtime/estado/diario.py",
+     "motivo": "`g.7`: `InformeSellado`, `umbral_de_sellado`, el evento `diario.sellado` y "
+               "la orden `ads_estado.py sellar`. Evidencia: "
+               "`pruebas/evidencia/estado-durable-salida.txt`"},
+    {"clave": "ciclo de §7.2",
+     "nombre": r"ciclo de `?§?7\.2`?",
+     "salvo": None,
+     "sonda": "kernel/operativo/runtime/ciclo/equipos.py",
+     "motivo": "encuadre, rutas, equipos, gates, handoffs, cierre y planificación, con "
+               "punto ejecutable `ads_ciclo.py`. Evidencia: `evidencia/ciclo-salida.txt`"},
+    {"clave": "macrocircuitos",
+     "nombre": r"\bmacrocircuitos?\b",
+     "salvo": None,
+     "sonda": "kernel/operativo/runtime/macrocircuitos/motor.py",
+     "motivo": "un solo motor parametrizado. Evidencia: "
+               "`pruebas/evidencia/macrocircuitos-salida.txt`"},
+)
+
+# Las formas en que el corpus NIEGA la existencia de algo. Se declaran una a una porque cada
+# una es una forma que el defecto ya usó, y no una familia adivinada.
+NEGACIONES_DE_EXISTENCIA = (
+    r"ningun[oa] existe",
+    r"ningun[oa] implementad\w*",
+    r"ningun[oa][^.|\n]{0,40}est[áa] implementad\w*",
+    r"LO QUE NO HAY",
+    r"no existe ning\w*",
+    r"no hay ning\w*",
+    r"queda para el corte siguiente",
+    r"\bNO CONSTRUIDO\b",
+    r"sin (?:construir|implementar)\b",
+)
+
+# Marcadores de RECITAL: el párrafo CITA una redacción anterior en vez de afirmarla. Cada uno
+# con su motivo, como las dos mitades de la frontera del ámbito.
+RECITALES = (
+    (r"ERA FALSA", "la sección declara falsa su propia redacción anterior y la transcribe"),
+    (r"VOLVI[ÓO] A SER FALSA", "segunda recurrencia, citada para que el patrón se vea"),
+    (r"\bdec[íi]a\b", "cita literal de lo que el documento decía antes de corregirse"),
+    (r"afirmaba", "cita de una afirmación que el propio párrafo desmiente"),
+    (r"y esta secci[óo]n dec[íi]a que no",
+     "encabeza la lista de lo que se movió de §1.2 a §1.1"),
+)
+
+# NEGACIONES EN BLOQUE: no nombran ninguna pieza, así que no hay sonda contra la que
+# contrastarlas. Son ENTRADA CERRADA —la redacción exacta cuya falsedad este gate
+# reprodujo— y su presencia en una sede viva es un defecto, sin más.
+NEGACIONES_EN_BLOQUE = (
+    (r"Nada de lo que describe est[áa] implementado",
+     "`05-PLAN` L6. `F6` tiene construido el motor de estado durable, el runtime, el "
+     "gobierno Git, el verificador de admisión, los adaptadores, la identidad, el ciclo, "
+     "los macrocircuitos y la raíz externa, todos con evidencia publicada"),
+    (r"Ninguna de sus filas se puede citar como capacidad existente",
+     "`05-PLAN` L6. Varias de sus filas nombran piezas que hoy tienen punto ejecutable"),
+    (r"escritos, y? ?ninguno implementado",
+     "`04-CONTRATOS` §6 y `06-DEUDA` §6. `V6-15` y `V6-16` están construidos y el "
+     "veredicto publica su procedencia"),
+    (r"NINGUNA de esas filas est[áa] implementada, ejecutada ni certificada",
+     "`04-CONTRATOS` §6 L382. NO certificada es cierto; NO implementada, no"),
+    (r"CONTRATADO · NO IMPLEMENTADO · NO EJECUTADO · NO CERTIFICADO",
+     "`06-DEUDA` §6. El estado de construcción tiene UNA sede, y no es ésta"),
+)
+
+_VENTANA = 120          # cuánto texto se mira a cada lado de una negación
+
+
+def _parrafos(texto):
+    """Bloques separados por línea en blanco. Una cabecera se une al bloque que encabeza."""
+    bloques, actual, ini = [], [], 1
+    for numero, linea in enumerate(texto.splitlines(), 1):
+        if not linea.strip():
+            if actual:
+                bloques.append((ini, "\n".join(actual)))
+            actual, ini = [], numero + 1
+        else:
+            if not actual:
+                ini = numero
+            actual.append(linea)
+    if actual:
+        bloques.append((ini, "\n".join(actual)))
+    fusionados, indice = [], 0
+    while indice < len(bloques):
+        arranque, cuerpo = bloques[indice]
+        if (re.match(r"^#{1,6} ", cuerpo) and len(cuerpo.splitlines()) == 1
+                and indice + 1 < len(bloques)):
+            fusionados.append((arranque, cuerpo + "\n" + bloques[indice + 1][1]))
+            indice += 2
+        else:
+            fusionados.append((arranque, cuerpo))
+            indice += 1
+    return fusionados
+
+
+def _sujeto_explicito(cuerpo, negacion):
+    """El sustantivo que la negación nombra INMEDIATAMENTE, cuando lo nombra.
+
+    «no hay ninguna CELDA `certificacion/integrado`» predica de una celda, no de un
+    adaptador, aunque el párrafo hable de adaptadores. Sólo se lee cuando la negación
+    termina en el propio cuantificador —`ningún`, `ninguna`—: ahí el sustantivo siguiente es
+    su sujeto, sin ambigüedad. En «LO QUE NO HAY» o «Ninguno existe» el sujeto es implícito
+    o va detrás de una enumeración, y entonces manda la proximidad.
+    """
+    if not re.search(r"ning[úu]n[ao]?$", negacion.group(0), re.I):
+        return None
+    resto = cuerpo[negacion.end():negacion.end() + 60]
+    resto = re.sub(r"^[\s>*`_]+", "", resto)
+    palabra = re.match(r"[\wáéíóúñÁÉÍÓÚÑ-]+", resto)
+    return (palabra, negacion.end() + len(cuerpo[negacion.end():]) - len(resto)) if palabra \
+        else None
+
+
+def _mencion_ligada(cuerpo, pieza, negacion):
+    """La mención de la pieza a la que esta negación se refiere, o `None`.
+
+    Es la PRIMERA que empieza detrás de la negación —«no existe ningún ADAPTADOR de
+    proveedor»— y, si no hay ninguna, la ÚLTIMA que termina delante —«el SELLADO DEL DIARIO
+    queda para el corte siguiente»—. Ligar a una sola mención, y no a todas las del párrafo,
+    es lo que impide que «ningún nivel alcanzado de ningún adaptador» arrastre a la frase
+    siguiente, que sí lleva su restrictivo.
+    """
+    detras = None
+    for m in re.finditer(pieza["nombre"], cuerpo, re.I):
+        if m.start() >= negacion.end():
+            if m.start() - negacion.end() <= _VENTANA:
+                return m
+            break
+        if negacion.start() - m.end() <= _VENTANA:
+            detras = m
+    return detras
+
+
+def _restringida(cuerpo, pieza, mencion):
+    """¿Lleva esta mención su restrictivo detrás? Sin restrictivo declarado, nunca."""
+    if not pieza["salvo"]:
+        return False
+    return bool(re.match(pieza["salvo"], cuerpo[mencion.end():mencion.end() + 40], re.I))
+
+
+def t360_ninguna_sede_viva_niega_lo_construido(raiz=None):
+    """`ADJ-G3` · la distinción construido/diseñado tiene UNA sede, y las demás no la copian.
+
+    Se comprueba por PROPIEDAD: una negación de existencia dicha de una pieza cuya SONDA
+    está en el disco es un defecto, escríbase como se escriba. Y las negaciones EN BLOQUE
+    —las que no nombran pieza y por tanto no se pueden contrastar— son entrada cerrada.
+    """
+    base = os.path.abspath(raiz or RAIZ)
+    r = Resultado("T360", "Ninguna sede viva niega una pieza que el árbol tiene construida")
+    for patron, motivo in RECITALES:
+        if not (motivo or "").strip():
+            r.fallo(f"el recital «{patron}» no dice por qué exime")
+    for patron, motivo in NEGACIONES_EN_BLOQUE:
+        if not (motivo or "").strip():
+            r.fallo(f"la negación en bloque «{patron}» no dice por qué es falsa")
+
+    # FALLO CERRADO si una sonda desaparece: la tabla habría envejecido, y con ella el
+    # criterio. Se dice, no se supone que la pieza sigue estando.
+    vivas = []
+    for pieza in PIEZAS_CONSTRUIDAS:
+        if os.path.exists(os.path.join(base, pieza["sonda"])):
+            vivas.append(pieza)
+        else:
+            r.fallo(f"la sonda `{pieza['sonda']}` de «{pieza['clave']}» no está en el "
+                    f"árbol: la tabla de piezas construidas ha envejecido y §1 de "
+                    f"`04-CONTRATOS-TECNICOS.md` hay que revisarla antes de seguir")
+    if not vivas:
+        return r
+
+    recital = re.compile("|".join(p for p, _m in RECITALES), re.I)
+    negacion = re.compile("|".join(NEGACIONES_DE_EXISTENCIA), re.I)
+    en_bloque = [(re.compile(p, re.I), m) for p, m in NEGACIONES_EN_BLOQUE]
+
+    for rel, ruta in sedes_vivas(base):
+        with open(ruta, encoding="utf-8") as fh:
+            texto = fh.read()
+        for patron, motivo in en_bloque:
+            for m in patron.finditer(texto):
+                linea = texto[:m.start()].count("\n") + 1
+                r.fallo(f"{rel}:{linea}: «{m.group(0).strip()}» niega EN BLOQUE el estado "
+                        f"de construcción. {motivo}. El estado actual tiene una sola sede: "
+                        f"`docs/canonico/04-CONTRATOS-TECNICOS.md` §1 (`ADJ-G3`)")
+        for arranque, cuerpo in _parrafos(texto):
+            if recital.search(cuerpo):
+                continue
+            for m in negacion.finditer(cuerpo):
+                sujeto = _sujeto_explicito(cuerpo, m)
+                for pieza in vivas:
+                    if sujeto is not None:
+                        # La negación dice de qué habla. Si no es esta pieza, no es esta
+                        # pieza, aunque el párrafo entero la nombre.
+                        if not re.match(pieza["nombre"], cuerpo[sujeto[1]:], re.I):
+                            continue
+                    mencion = _mencion_ligada(cuerpo, pieza, m)
+                    if mencion is not None:
+                        if _restringida(cuerpo, pieza, mencion):
+                            continue
+                    elif not re.search(pieza["nombre"], cuerpo, re.I):
+                        continue
+                    linea = arranque + cuerpo[:m.start()].count("\n")
+                    r.fallo(f"{rel}:{linea}: «{m.group(0).strip()}» dicho de "
+                            f"«{pieza['clave']}», que SÍ está construida — {pieza['motivo']}. "
+                            f"O se remite a `04-CONTRATOS-TECNICOS.md` §1, o se restringe la "
+                            f"afirmación a lo que de verdad falta (`ADJ-G3`)")
+    return r
+
+
 # Las pruebas de este validador, en UNA sede. `registro_pruebas.py` y `registrar_evidencia`
 # leen de aquí: una prueba nueva entra en la corrida por existir en esta lista, y no por que
 # alguien se acuerde de añadirla al `main`.
 PRUEBAS = [t151_recuentos_derivados,
+           t361_la_frontera_del_barrido_esta_motivada,
            t270_la_cobertura_de_sedes_se_descubre,
            t271_todo_recuento_derivado_se_publica,
            t245_ninguna_cabecera_afirma_una_biyeccion_falsa,
-           t246_la_cabecera_enumera_las_pruebas_que_contiene]
+           t246_la_cabecera_enumera_las_pruebas_que_contiene,
+           t360_ninguna_sede_viva_niega_lo_construido]
 
 
 CABECERA = """# RECUENTOS — generado

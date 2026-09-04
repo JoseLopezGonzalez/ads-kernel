@@ -72,8 +72,14 @@ LAS VERSIONES          frente a pasar por `gobierno/git.py`. Ese canal fija
 VULNERABLES NO USAN    `core.quotePath=false` y prohíbe leer listas sin `-z`: una versión
 EL CANAL ÚNICO         histórica que pasara por ahí **no podría reproducir su propio
                        defecto**, y `S1-01` existe justamente porque la lectura no iba por
-                       ahí. `arboles/` queda fuera del censo de `admision/censo.py`, de modo
-                       que la vía histórica no se cuela en el canal del verificador
+                       ahí. Y `arboles/` **SÍ entra en el censo** de `admision/censo.py`
+                       —en los dos: el de LECTURAS, que deriva sus paquetes del disco, y
+                       el de FÓRMULAS, cuyo `PAQUETES_DEL_VERIFICADOR` lo nombra—: lo que
+                       queda exento es la VÍA HISTÓRICA, acotada por `(paquete, módulo)` en
+                       `SEDES_DE_REPRODUCCION_HISTORICA` y publicada con su motivo.
+                       Cualquier lectura insegura NUEVA en este paquete da ROJO. Dejarlo
+                       fuera entero habría sido no enumerar una superficie, que es el modo
+                       de fallo de `S1-01`
 
 UN REPOSITORIO POR     frente a mutar un solo árbol tres veces. El SANO, el ATACADO y el del
 PAPEL                  CONTROL POSITIVO tienen que existir A LA VEZ: el control del ataque

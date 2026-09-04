@@ -24,6 +24,8 @@ con los PID reales del anfitrión sobre tres generaciones que hacen `setsid`.
 """
 from __future__ import annotations
 
+import ast
+import hashlib
 import json
 import os
 import re
@@ -46,8 +48,109 @@ from admision import matriz                                          # noqa: E40
 from contencion import deteccion                                     # noqa: E402
 from gobierno.git import CanalGit                                    # noqa: E402
 
-EJECUTABLES = ("ads_admision.py", "ads_estado.py", "ads_runtime.py",
-               "ads_ciclo.py", "ads_arboles.py")
+# ===========================================================================
+#  `ADJ-B2` · EL INVENTARIO DE PUNTOS EJECUTABLES SE **DERIVA**, NO SE ESCRIBE
+# ===========================================================================
+#  HECHO REPRODUCIDO ANTES DE CORREGIR: aquí había una TUPLA ESCRITA A MANO con los cinco
+#  `ads_*.py`, y por eso `T306` cubría cinco puntos ejecutables «y ninguno más». Los cuatro
+#  de `kernel/operativo/raiz-externa/` —`verificador.py`, `instalar.py`,
+#  `anfitrion_firmante.py` y `anfitrion_verificador.py`— quedaban fuera del alcance del
+#  control, y en ellos el defecto de `E-10` seguía vivo: con un `json.py` homónimo en
+#  `PYTHONPATH`, `verificador.py capacidades` publicaba `{}` con código 0 y `instalar.py`
+#  escribía un manifiesto de TRES bytes sobre 41 ficheros instalados, también con código 0.
+#
+#  Una lista escrita a mano vuelve a quedarse corta el día que alguien añade un punto
+#  ejecutable, y ese día nadie se entera. Por eso el inventario se DERIVA del disco.
+#
+#  DECISIÓN · el criterio es una EQUIVALENCIA de tres términos, y se comprueba en los dos
+#             sentidos
+#      Alternativas: (a) inventariar por línea de intérprete; (b) inventariar por
+#      `if __name__ == "__main__":`; (c) exigir que los dos criterios COINCIDAN y que todo
+#      el que cumpla cualquiera de ellos lleve el prólogo `E-10`.
+#      Se elige (c). Con (a) se escapa quien añada un `main` sin línea de intérprete; con
+#      (b), quien ponga la línea a un módulo que no la merece. Con (c) el inventario es la
+#      UNIÓN, la prueba exige que la unión coincida con la intersección, y las dos formas de
+#      quedarse corto se vuelven rojo. La consecuencia práctica ya se aplicó: los cuatro
+#      módulos de `raiz-externa/` que llevaban línea de intérprete sin ser ejecutables
+#      —`errores`, `firma`, `atestacion`, `aislamiento`— la han perdido.
+#
+#  DECISIÓN · se recorre la RAÍZ de cada zona, no su árbol, y la exclusión se declara
+#      Los paquetes de biblioteca (`runtime/estado/`, `runtime/admision/`…) no contienen
+#      puntos ejecutables, y `runtime/pruebas/` contiene BATERÍAS, que son ejecutables pero
+#      no piezas productivas: una batería inserta su propio `runtime` en la ruta de
+#      importación a propósito, y exigirle la purga sería exigirle que no funcione. Se
+#      recorre el primer nivel de cada zona, que es donde el árbol pone sus puntos
+#      ejecutables, y la prueba comprueba que lo excluido es exactamente eso.
+ZONAS_DEL_INVENTARIO = (
+    ("runtime", RAIZ_RUNTIME),
+    ("raiz-externa", os.path.join(RAIZ_OPERATIVO, "raiz-externa")),
+)
+
+
+def _tiene_bloque_main(fuente):
+    """`True` si el módulo define `if __name__ == "__main__":` en su nivel superior.
+
+    Se PARSEA y no se busca el texto: el texto aparece en comentarios que hablan de esta
+    misma regla, y una derivación que se dejara engañar por un comentario no sería una
+    derivación.
+    """
+    try:
+        arbol = ast.parse(fuente)
+    except SyntaxError:
+        return False
+    for nodo in arbol.body:
+        if not isinstance(nodo, ast.If):
+            continue
+        for comparacion in ast.walk(nodo.test):
+            if isinstance(comparacion, ast.Compare) \
+                    and isinstance(comparacion.left, ast.Name) \
+                    and comparacion.left.id == "__name__" \
+                    and any(isinstance(c, ast.Constant) and c.value == "__main__"
+                            for c in comparacion.comparators):
+                return True
+    return False
+
+
+def inventariar_puntos_ejecutables():
+    """El inventario DERIVADO del disco: `{ruta relativa: {señales medidas}}`."""
+    inventario = {}
+    for zona, directorio in ZONAS_DEL_INVENTARIO:
+        for nombre in sorted(os.listdir(directorio)):
+            completa = os.path.join(directorio, nombre)
+            if not nombre.endswith(".py") or not os.path.isfile(completa):
+                continue
+            with open(completa, "rb") as manejador:
+                crudo = manejador.read()
+            fuente = crudo.decode("utf-8", "replace")
+            senales = {
+                "zona": zona,
+                "ruta": os.path.join(zona, nombre) if zona != "runtime" else nombre,
+                "completa": completa,
+                "interprete": crudo.startswith(b"#!"),
+                "main": _tiene_bloque_main(fuente),
+                "purga": "_purgar_la_ruta_de_importacion" in fuente,
+                "fuente": fuente,
+            }
+            if senales["interprete"] or senales["main"]:
+                inventario[senales["ruta"]] = senales
+    return inventario
+
+
+# El alcance de `T306`, DERIVADO. La tupla escrita a mano que había aquí es exactamente lo
+# que dejó a la raíz externa fuera del control.
+INVENTARIO = inventariar_puntos_ejecutables()
+EJECUTABLES = tuple(sorted(INVENTARIO))
+
+# `T308` mide otra cosa que `T306`, y por eso su alcance es OTRO, derivado igual y con la
+# diferencia declarada. `T308` contrasta la TABLA DE CÓDIGOS DE SALIDA de los puntos
+# ejecutables del kernel: 0 éxito, 1 fallo tipado, 2 uso, 3 adaptador, 4 contención, 5
+# procedencia. Los puntos de la raíz externa NO comparten esa tabla y no deben compartirla:
+# `O25` §2 le da a `anfitrion_firmante.py` un 3 —«no hay proveedor válido»— y un 4 —«este
+# anfitrión SÓLO firma»— con significado propio, y meterlos en la tabla del kernel borraría
+# una distinción que el contrato hace a propósito. La exclusión es por zona, se deriva igual
+# y `T308` comprueba que lo excluido es exactamente la raíz externa.
+EJECUTABLES_DEL_KERNEL = tuple(sorted(
+    ruta for ruta, senales in INVENTARIO.items() if senales["zona"] == "runtime"))
 
 SEGUNDOS_DE_LA_TAREA = 90
 
@@ -77,6 +180,17 @@ class _RunnerDeterminista(unittest.TextTestRunner):
 # ===========================================================================
 #  Cimientos: SESIÓN NUEVA de verdad y entorno CONSTRUIDO entero
 # ===========================================================================
+def texto_de_fichero(ruta):
+    """Lectura que CIERRA: un `open(...).read()` suelto deja el descriptor al recolector."""
+    with open(ruta, encoding="utf-8") as manejador:
+        return manejador.read()
+
+
+def bytes_de_fichero(ruta):
+    with open(ruta, "rb") as manejador:
+        return manejador.read()
+
+
 class SesionNueva(unittest.TestCase):
     """Cada invocación es un PROCESO nuevo con un entorno construido desde cero.
 
@@ -102,8 +216,12 @@ class SesionNueva(unittest.TestCase):
         return entorno
 
     def correr(self, ejecutable, argumentos, *, extra=None, cwd=None, espera=300):
+        # La ruta sale del INVENTARIO cuando el punto está en él: desde que el inventario
+        # se deriva, `T306` recorre también `raiz-externa/`, que no cuelga de `runtime/`.
+        senales = INVENTARIO.get(ejecutable)
+        camino = senales["completa"] if senales else os.path.join(RAIZ_RUNTIME, ejecutable)
         return subprocess.run(
-            [sys.executable, os.path.join(RAIZ_RUNTIME, ejecutable)]
+            [sys.executable, camino]
             + [str(a) for a in argumentos],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             env=self.entorno(extra), cwd=cwd or self.taller, check=False, timeout=espera,
@@ -444,13 +562,25 @@ class ErroresTipadosDeLaCLI(SesionNueva):
         return control, espacio
 
     def test_T308_la_tabla_de_codigos_es_la_MISMA_en_los_cinco(self):
-        """T308 · Defecto que previene: cinco CLI con cinco convenios de salida distintos."""
+        """T308 · Defecto que previene: cinco CLI con cinco convenios de salida distintos.
+
+        El alcance se DERIVA igual que el de `T306` y se estrecha a la zona del kernel por
+        el motivo escrito junto a `EJECUTABLES_DEL_KERNEL`: los puntos de la raíz externa
+        tienen un convenio propio que `O25` §2 fija, y forzarles esta tabla borraría una
+        distinción del contrato. Lo excluido se comprueba, para que el estrechamiento no
+        pueda crecer en silencio.
+        """
+        excluidos = set(EJECUTABLES) - set(EJECUTABLES_DEL_KERNEL)
+        self.assertTrue(excluidos, "el alcance de T308 no excluye nada: no se derivó")
+        for ruta in sorted(excluidos):
+            self.assertEqual(INVENTARIO[ruta]["zona"], "raiz-externa",
+                             ruta + " quedó fuera de T308 y no es de la raíz externa")
         tablas = {}
-        for ejecutable in EJECUTABLES:
+        for ejecutable in EJECUTABLES_DEL_KERNEL:
             guion = (
                 "import runpy, json\n"
                 "modulo = runpy.run_path("
-                + repr(os.path.join(RAIZ_RUNTIME, ejecutable))
+                + repr(INVENTARIO[ejecutable]["completa"])
                 + ", run_name='no-main')\n"
                 "print(json.dumps(modulo['CODIGOS_DE_SALIDA'], sort_keys=True))\n"
             )
@@ -461,7 +591,7 @@ class ErroresTipadosDeLaCLI(SesionNueva):
             self.assertEqual(proceso.returncode, 0,
                              ejecutable + ": " + proceso.stderr.decode()[:300])
             tablas[ejecutable] = json.loads(proceso.stdout.decode())
-        referencia = tablas[EJECUTABLES[0]]
+        referencia = tablas[EJECUTABLES_DEL_KERNEL[0]]
         self.assertEqual(referencia["exito"], 0)
         self.assertEqual(referencia["error-del-kernel"], 1)
         self.assertEqual(referencia["uso-incorrecto"], 2)
@@ -900,6 +1030,439 @@ class LaVentanaDePublicacion(unittest.TestCase):
         self.assertEqual(capturado.exception.codigo, "ESTADO_CORRUPTO")
         self.assertIn("fuera del diario", str(capturado.exception))
 
+
+# ===========================================================================
+#  T330 · T337 — `ADJ-B2` · LA PURGA `E-10` EN TODA LA RAÍZ EXTERNA
+# ===========================================================================
+class PurgaEnLaRaizExterna(SesionNueva):
+    """`ADJ-B2`. La contaminación del entorno, en la única pieza que `O26` §1 juzga.
+
+    HECHO REPRODUCIDO ANTES DE CORREGIR, con `json.py` homónimo en `PYTHONPATH` y desde un
+    `cwd` ajeno:
+
+        verificador.py capacidades           → {}          EXIT=0  (sano: las nueve)
+        instalar.py --destino … --arbol …    → {}          EXIT=0  manifiesto 3 BYTES
+                                                                   (sano: 6 734) y 41
+                                                                   ficheros instalados igual
+        … --comprobar sobre esa instalación  → KeyError: 'ficheros'  EXIT=1, cuatro rutas
+                                                                   absolutas del anfitrión
+        grep de purga sobre TODO raiz-externa/                       CERO líneas
+        `T306` EJECUTABLES                                           cinco, y ninguno más
+
+    Es el MISMO defecto que el árbol declaraba cerrado para los cinco `ads_*.py`, e incumple
+    la condición 8 de `O26` §1 —«contaminación del entorno falla cerrado»—, que era la única
+    de las ocho sin cumplir.
+    """
+
+    PAQUETE = os.path.join(RAIZ_OPERATIVO, "raiz-externa")
+    VERIFICADOR = os.path.join(PAQUETE, "verificador.py")
+    INSTALADOR = os.path.join(PAQUETE, "instalar.py")
+
+    # ------------------------------------------------------------------ utilidades
+    def paquete_envenenado(self):
+        """Un `json` homónimo que, si se importa, deja FICHERO TESTIGO y falsea la salida.
+
+        Es el mismo veneno de `T306`: `json.dumps` sustituido publica lo que quiera, y eso
+        es literalmente lo que produjo el `{}` con código 0 y el manifiesto de tres bytes.
+        """
+        veneno = os.path.join(self.taller, "veneno")
+        os.makedirs(veneno, exist_ok=True)
+        self.testigo = os.path.join(self.taller, "IMPORTADO-EL-HOMONIMO")
+        cuerpo = (
+            "import sys\n"
+            "with open(" + repr(self.testigo) + ", 'a') as _m:\n"
+            "    _m.write(__name__ + '\\n')\n"
+            "sys.stderr.write('HOMONIMO MALICIOSO IMPORTADO: ' + __name__ + '\\n')\n"
+        )
+        with open(os.path.join(veneno, "json.py"), "w", encoding="utf-8") as manejador:
+            manejador.write(cuerpo + "\ndef dumps(*a, **k):\n    return '{}'\n"
+                            "def loads(*a, **k):\n    return {}\n"
+                            "def load(*a, **k):\n    return {}\n"
+                            "def dump(o, f, *a, **k):\n    f.write('{}')\n")
+        for paquete in ("errores", "firma", "atestacion", "instalar", "aislamiento",
+                        "admision", "estado", "identidad", "gobierno"):
+            carpeta = os.path.join(veneno, paquete)
+            os.makedirs(carpeta, exist_ok=True)
+            with open(os.path.join(carpeta, "__init__.py"), "w",
+                      encoding="utf-8") as manejador:
+                manejador.write(cuerpo)
+        return veneno
+
+    def correr_ruta(self, camino, argumentos, *, extra=None, cwd=None, espera=300):
+        return subprocess.run(
+            [sys.executable, camino] + [str(a) for a in argumentos],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            env=self.entorno(extra), cwd=cwd or self.taller, check=False, timeout=espera,
+        )
+
+    def prologo_de(self, fuente):
+        """El bloque `E-10` de un punto ejecutable, del encabezado al `SystemExit(5)`."""
+        inicio = fuente.index("#  `E-10` · PROCEDENCIA · la ruta de importación se PURGA")
+        fin = fuente.index("    raise SystemExit(5)\n", inicio) + len(
+            "    raise SystemExit(5)\n")
+        return fuente[inicio:fin]
+
+    # ------------------------------------------------------------------ T330
+    def test_T330_el_inventario_de_puntos_ejecutables_se_DERIVA_y_es_coherente(self):
+        """T330 · Defecto que previene: `ADJ-B2`, una lista de ejecutables escrita a mano.
+
+        La equivalencia de tres términos, comprobada EN LOS DOS SENTIDOS sobre el disco:
+        línea de intérprete ⟺ bloque `__main__` ⟺ prólogo `E-10`. Un punto ejecutable nuevo
+        sin purga la rompe; un módulo de biblioteca que se disfrace de ejecutable, también.
+
+        SABOTAJE QUE LA PONE ROJA: retirar la purga de cualquiera de los nueve puntos.
+        """
+        inventario = inventariar_puntos_ejecutables()
+        self.assertTrue(inventario, "el inventario salió vacío: no estaría midiendo nada")
+        # 1 · el inventario alcanza las DOS zonas. Cubrir sólo una es el defecto de origen.
+        zonas = {senales["zona"] for senales in inventario.values()}
+        self.assertEqual(zonas, {zona for zona, _d in ZONAS_DEL_INVENTARIO},
+                         "el inventario no alcanza alguna de las zonas declaradas")
+        # 2 · la UNIÓN coincide con la INTERSECCIÓN: ningún criterio se queda corto.
+        for ruta, senales in sorted(inventario.items()):
+            with self.subTest(punto=ruta):
+                self.assertTrue(senales["interprete"],
+                                ruta + " define `__main__` y no lleva línea de intérprete")
+                self.assertTrue(senales["main"],
+                                ruta + " lleva línea de intérprete y no define `__main__`")
+                self.assertTrue(senales["purga"],
+                                ruta + " es un punto ejecutable SIN la purga `E-10`")
+        # 3 · y los nueve llevan el MISMO prólogo, byte a byte. Copiado, no adaptado.
+        digests = {}
+        for ruta, senales in sorted(inventario.items()):
+            digests.setdefault(
+                hashlib.sha256(self.prologo_de(senales["fuente"]).encode("utf-8"))
+                .hexdigest(), []).append(ruta)
+        self.assertEqual(len(digests), 1,
+                         "los prólogos `E-10` han divergido entre puntos ejecutables: "
+                         + repr({d[:12]: r for d, r in digests.items()}))
+        # 4 · CONTROL DEL CONTROL: el inventario alcanza de verdad la raíz externa.
+        self.assertIn("raiz-externa/verificador.py", inventario,
+                      "el inventario no ve el verificador: es el punto que `ADJ-B2` señaló")
+        self.assertGreaterEqual(len(inventario), 9)
+
+    def test_T330b_lo_excluido_del_inventario_esta_excluido_por_su_motivo(self):
+        """T330 · Defecto que previene: un alcance que se estrecha sin que se note.
+
+        Lo que queda fuera del inventario tiene que quedar fuera por la razón DECLARADA —ser
+        un módulo de biblioteca— y no por descuido. Se comprueba sobre los `.py` del primer
+        nivel de las dos zonas: los que no están en el inventario no llevan ni línea de
+        intérprete ni bloque `__main__`.
+        """
+        inventario = inventariar_puntos_ejecutables()
+        fuera = []
+        for zona, directorio in ZONAS_DEL_INVENTARIO:
+            for nombre in sorted(os.listdir(directorio)):
+                completa = os.path.join(directorio, nombre)
+                if not nombre.endswith(".py") or not os.path.isfile(completa):
+                    continue
+                clave = os.path.join(zona, nombre) if zona != "runtime" else nombre
+                if clave in inventario:
+                    continue
+                with open(completa, "rb") as manejador:
+                    crudo = manejador.read()
+                fuera.append(clave)
+                self.assertFalse(crudo.startswith(b"#!"),
+                                 clave + " lleva línea de intérprete y está fuera")
+                self.assertFalse(_tiene_bloque_main(crudo.decode("utf-8", "replace")),
+                                 clave + " define `__main__` y está fuera")
+        self.assertTrue(fuera, "no hay ningún módulo de biblioteca en las zonas: la "
+                               "exclusión no estaría midiendo nada")
+
+    # ------------------------------------------------------------------ T331
+    def test_T331_la_raiz_externa_no_se_falsea_desde_el_PYTHONPATH(self):
+        """T331 · Defecto que previene: `capacidades` publicando `{}` con código 0.
+
+        Control SANO y control ENVENENADO sobre el mismo binario, y se exige que la salida
+        sea la MISMA: las nueve condiciones de certificación, con `disponible` verdadero.
+        """
+        sano = self.correr_ruta(self.VERIFICADOR, ["capacidades"])
+        self.assertEqual(sano.returncode, 0, sano.stderr.decode())
+        limpio = json.loads(sano.stdout.decode("utf-8"))
+        self.assertEqual(len(limpio["condiciones_de_certificacion"]), 9)
+
+        veneno = self.paquete_envenenado()
+        envenenado = self.correr_ruta(self.VERIFICADOR, ["capacidades"],
+                                      extra={"PYTHONPATH": veneno + os.pathsep + "."},
+                                      cwd=veneno)
+        self.assertEqual(envenenado.returncode, 0, envenenado.stderr.decode())
+        sucio = json.loads(envenenado.stdout.decode("utf-8"))
+        self.assertEqual(sucio["condiciones_de_certificacion"],
+                         limpio["condiciones_de_certificacion"],
+                         "el entorno cambió las condiciones que la raíz externa publica")
+        self.assertTrue(sucio["condiciones_de_certificacion"],
+                        "`capacidades` volvió a publicar el vacío")
+        self.assertNotIn(b"HOMONIMO MALICIOSO", envenenado.stderr)
+        self.assertFalse(os.path.exists(self.testigo),
+                         "la raíz externa importó un homónimo del entorno")
+        self.assertGreaterEqual(sucio["procedencia"]["entradas_del_lanzador_retiradas"], 1,
+                                "no se retiró ninguna entrada del lanzador y había dos")
+        for nombre, origen in sorted(sucio["procedencia"]["modulos"].items()):
+            self.assertTrue(origen.startswith("instalacion:"),
+                            nombre + " no vino de la instalación: " + origen)
+
+    def test_T331b_el_instalador_no_escribe_un_manifiesto_truncado(self):
+        """T331 · Defecto que previene: 41 ficheros instalados y un manifiesto de 3 bytes.
+
+        La instalación sana y la instalación con el entorno envenenado tienen que producir
+        el MISMO manifiesto, byte a byte: es la propiedad `I-g3` que el propio instalador
+        declara —«dos instalaciones del mismo árbol producen el MISMO manifiesto»—, y era
+        justo la que el entorno rompía.
+        """
+        veneno = self.paquete_envenenado()
+        sano = os.path.join(self.taller, "sana")
+        sucio = os.path.join(self.taller, "sucia")
+        primero = self.correr_ruta(self.INSTALADOR,
+                                   ["--destino", sano, "--arbol", RAIZ_REPO])
+        self.assertEqual(primero.returncode, 0, primero.stderr.decode())
+        segundo = self.correr_ruta(self.INSTALADOR,
+                                   ["--destino", sucio, "--arbol", RAIZ_REPO],
+                                   extra={"PYTHONPATH": veneno + os.pathsep + "."},
+                                   cwd=veneno)
+        self.assertEqual(segundo.returncode, 0, segundo.stderr.decode())
+        manifiesto_sano = bytes_de_fichero(
+            os.path.join(sano, "MANIFIESTO-DE-INSTALACION.json"))
+        manifiesto_sucio = bytes_de_fichero(
+            os.path.join(sucio, "MANIFIESTO-DE-INSTALACION.json"))
+        self.assertGreater(len(manifiesto_sano), 1000,
+                           "el manifiesto sano no cubre la instalación")
+        self.assertEqual(manifiesto_sucio, manifiesto_sano,
+                         "el entorno cambió el manifiesto de la instalación")
+        self.assertFalse(os.path.exists(self.testigo))
+        # Y la instalación hecha bajo veneno se comprueba SIN veneno y sale intacta: ése es
+        # el paso que antes moría con `KeyError: 'ficheros'`.
+        comprobacion = self.correr_ruta(
+            self.INSTALADOR, ["--destino", sucio, "--arbol", RAIZ_REPO, "--comprobar"])
+        self.assertEqual(comprobacion.returncode, 0, comprobacion.stderr.decode())
+        self.assertTrue(json.loads(comprobacion.stdout.decode("utf-8"))["ok"])
+
+    # ------------------------------------------------------------------ T332
+    def test_T332_un_manifiesto_truncado_se_rechaza_TIPADO(self):
+        """T332 · Defecto que previene: `KeyError: 'ficheros'` con cuatro rutas del anfitrión.
+
+        Un manifiesto que no cubre nada es una instalación ALTERADA —lo que `V6-16` obliga a
+        rechazar— y no un defecto de programación del comprobador. Tres formas de estar
+        truncado, y las tres tienen que salir tipadas y sin traza.
+        """
+        destino = os.path.join(self.taller, "instalacion")
+        primero = self.correr_ruta(self.INSTALADOR,
+                                   ["--destino", destino, "--arbol", RAIZ_REPO])
+        self.assertEqual(primero.returncode, 0, primero.stderr.decode())
+        manifiesto = os.path.join(destino, "MANIFIESTO-DE-INSTALACION.json")
+        for nombre, contenido in (("vacío", "{}\n"),
+                                  ("sin ficheros", '{"esquema": 1}\n'),
+                                  ("lista vacía", '{"esquema": 1, "ficheros": []}\n')):
+            with self.subTest(manifiesto=nombre):
+                with open(manifiesto, "w", encoding="utf-8") as manejador:
+                    manejador.write(contenido)
+                proceso = self.correr_ruta(
+                    self.INSTALADOR,
+                    ["--destino", destino, "--arbol", RAIZ_REPO, "--comprobar"])
+                self.assertEqual(proceso.returncode, 1,
+                                 nombre + ": un manifiesto truncado no salió como fallo")
+                salida = proceso.stdout.decode() + proceso.stderr.decode()
+                self.assertNotIn("Traceback", salida, nombre + ": salió una traza")
+                self.assertNotIn("KeyError", salida)
+                self.assertIn("INSTALACION_ALTERADA", salida,
+                              nombre + ": el fallo no llegó tipado")
+                self.assertNotIn(os.path.realpath(RAIZ_REPO), salida,
+                                 nombre + ": la salida publicó una ruta del anfitrión")
+
+    # ------------------------------------------------------------------ T333
+    def test_T333_no_se_instala_a_medias(self):
+        """T333 · Defecto que previene: un destino con parte de los ficheros y sin manifiesto.
+
+        Se instala contra un `runtime` al que le falta una dependencia. El destino tiene que
+        quedar AUSENTE por completo si no había instalación previa, y ENTERO Y VÁLIDO si la
+        había: nunca a medias, que era lo que dejaba el `rmtree` + copia encima.
+        """
+        sys.path.insert(0, self.PAQUETE)
+        try:
+            import instalar as modulo_de_instalacion         # noqa: PLC0415
+        finally:
+            sys.path.remove(self.PAQUETE)
+
+        cojo = os.path.join(self.taller, "runtime-cojo")
+        os.makedirs(cojo)
+        for paquete in modulo_de_instalacion.DEPENDENCIAS[:-1]:
+            shutil.copytree(os.path.join(RAIZ_RUNTIME, paquete),
+                            os.path.join(cojo, paquete),
+                            ignore=shutil.ignore_patterns("__pycache__"))
+        que_falta = modulo_de_instalacion.DEPENDENCIAS[-1]
+
+        # 1 · sin instalación previa: el destino NO queda.
+        destino = os.path.join(self.taller, "instalacion")
+        with self.assertRaises(Exception) as capturado:
+            modulo_de_instalacion.instalar(destino, arbol_verificado=RAIZ_REPO,
+                                           runtime=cojo)
+        self.assertIn(que_falta, str(capturado.exception))
+        self.assertFalse(os.path.exists(destino),
+                         "quedó una instalación a medias en el destino")
+        for residuo in (destino + modulo_de_instalacion.SUFIJO_EN_CURSO,
+                        destino + modulo_de_instalacion.SUFIJO_ANTERIOR):
+            self.assertFalse(os.path.exists(residuo),
+                             "quedó la zona de construcción: " + os.path.basename(residuo))
+
+        # 2 · con instalación previa: la previa sobrevive ENTERA y sigue comprobando.
+        buena = modulo_de_instalacion.instalar(destino, arbol_verificado=RAIZ_REPO,
+                                               runtime=RAIZ_RUNTIME)
+        antes = bytes_de_fichero(buena["manifiesto"])
+        with self.assertRaises(Exception):
+            modulo_de_instalacion.instalar(destino, arbol_verificado=RAIZ_REPO,
+                                           runtime=cojo)
+        self.assertTrue(os.path.isdir(destino), "la instalación previa desapareció")
+        self.assertEqual(bytes_de_fichero(buena["manifiesto"]), antes,
+                         "el intento fallido tocó el manifiesto de la instalación previa")
+        self.assertTrue(
+            modulo_de_instalacion.verificar_instalacion(destino)["ok"],
+            "el intento fallido dejó la instalación previa sin casar con su manifiesto")
+
+    # ------------------------------------------------------------------ T334
+    def test_T334_un_repo_ajeno_no_aporta_el_codigo_que_lo_verifica(self):
+        """T334 · Defecto que previene: `g.15`, que el árbol verificado decida cómo se le
+        verifica.
+
+        Se instala la raíz externa desde ESTE árbol y se le pide juzgar OTRO repositorio que
+        trae dentro su propio `kernel/operativo/raiz-externa/` y su propio
+        `runtime/admision/`, los dos envenenados. La procedencia publicada tiene que decir
+        que todo salió de la instalación, y el testigo del veneno no puede aparecer.
+        """
+        destino = os.path.join(self.taller, "instalacion")
+        instalacion = self.correr_ruta(self.INSTALADOR,
+                                       ["--destino", destino, "--arbol", RAIZ_REPO])
+        self.assertEqual(instalacion.returncode, 0, instalacion.stderr.decode())
+        verificador = os.path.join(destino, "raiz-externa", "verificador.py")
+
+        ajeno = os.path.join(self.taller, "repo-ajeno")
+        testigo = os.path.join(self.taller, "INTRUSO-DEL-REPO-AJENO")
+        cuerpo = "open(" + repr(testigo) + ", 'a').close()\n"
+        for relativa in (("kernel", "operativo", "raiz-externa"),
+                         ("kernel", "operativo", "runtime", "admision")):
+            carpeta = os.path.join(ajeno, *relativa)
+            os.makedirs(carpeta, exist_ok=True)
+            with open(os.path.join(carpeta, "__init__.py"), "w",
+                      encoding="utf-8") as manejador:
+                manejador.write(cuerpo)
+            for modulo in ("errores.py", "firma.py", "instalar.py", "verificador.py"):
+                with open(os.path.join(carpeta, modulo), "w",
+                          encoding="utf-8") as manejador:
+                    manejador.write(cuerpo)
+
+        proceso = self.correr_ruta(verificador, ["procedencia", "--repo", ajeno],
+                                   cwd=os.path.join(ajeno, "kernel", "operativo",
+                                                    "raiz-externa"))
+        self.assertEqual(proceso.returncode, 0, proceso.stderr.decode())
+        datos = json.loads(proceso.stdout.decode("utf-8"))
+        for nombre, origen in sorted(datos["modulos"].items()):
+            with self.subTest(modulo=nombre):
+                self.assertTrue(origen.startswith("instalacion:"),
+                                nombre + " no vino de la instalación: " + origen)
+        self.assertFalse(datos["repo_es_el_arbol_del_aparato"],
+                         "el repo ajeno se confundió con el árbol de la instalación")
+        self.assertFalse(os.path.exists(testigo),
+                         "la raíz externa importó código del repositorio que juzgaba")
+        # Y ninguna ruta absoluta del anfitrión viaja en la salida publicable.
+        self.assertNotIn(os.path.realpath(RAIZ_REPO),
+                         json.dumps(datos, ensure_ascii=False))
+
+    # ------------------------------------------------------------------ T335
+    def test_T335_los_argumentos_obligatorios_ausentes_fallan_por_USO(self):
+        """T335 · Defecto que previene: juzgar «lo que haya» cuando no se dice qué juzgar.
+
+        `--repo`, `--configuracion` y `--evidencia` no tienen valor por omisión, y su
+        ausencia no puede resolverse con el `cwd`. Se exige código 2 —uso incorrecto, que es
+        distinto de «el veredicto no fue favorable»— y ninguna traza.
+        """
+        casos = (
+            ("verificar sin --repo", self.VERIFICADOR,
+             ["verificar", "--base", "HEAD", "--configuracion", "x", "--evidencia", "y"]),
+            ("comprobar sin --evidencia", self.VERIFICADOR,
+             ["comprobar", "--repo", self.taller, "--configuracion", "x"]),
+            ("instalar sin --arbol", self.INSTALADOR, ["--destino", self.taller]),
+            ("instalar sin --destino", self.INSTALADOR, ["--arbol", RAIZ_REPO]),
+        )
+        for nombre, camino, argumentos in casos:
+            with self.subTest(caso=nombre):
+                proceso = self.correr_ruta(camino, argumentos)
+                self.assertEqual(proceso.returncode, 2,
+                                 nombre + ": un argumento obligatorio ausente no dio "
+                                 "«uso incorrecto»")
+                salida = proceso.stdout.decode() + proceso.stderr.decode()
+                self.assertNotIn("Traceback", salida)
+
+    # ------------------------------------------------------------------ T336
+    def test_T336_CONTROL_DEL_CONTROL_sin_la_purga_el_veneno_SI_entra(self):
+        """T336 · CONTROL DEL CONTROL: se retira la purga y se mira qué se pone rojo.
+
+        Sin esto, «no se importó el homónimo» se explicaría igual de bien por un veneno que
+        no funciona. Se copia el paquete a una instalación, se le QUITA el prólogo `E-10` al
+        verificador —que es exactamente el estado del árbol antes de esta corrección— y se
+        comprueba que entonces el homónimo SÍ entra y la salida SÍ se falsea.
+        """
+        veneno = self.paquete_envenenado()
+        destino = os.path.join(self.taller, "instalacion")
+        instalacion = self.correr_ruta(self.INSTALADOR,
+                                       ["--destino", destino, "--arbol", RAIZ_REPO])
+        self.assertEqual(instalacion.returncode, 0, instalacion.stderr.decode())
+        verificador = os.path.join(destino, "raiz-externa", "verificador.py")
+
+        con_purga = self.correr_ruta(verificador, ["capacidades"],
+                                     extra={"PYTHONPATH": veneno + os.pathsep + "."},
+                                     cwd=veneno)
+        self.assertEqual(con_purga.returncode, 0, con_purga.stderr.decode())
+        self.assertEqual(
+            len(json.loads(con_purga.stdout.decode())["condiciones_de_certificacion"]), 9)
+        self.assertFalse(os.path.exists(self.testigo))
+
+        fuente = texto_de_fichero(verificador)
+        prologo = self.prologo_de(fuente)
+        with open(verificador, "w", encoding="utf-8") as manejador:
+            manejador.write(fuente.replace(
+                prologo,
+                "def _purgar_la_ruta_de_importacion():\n    return []\n\n"
+                "RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()\n", 1))
+        sin_purga = self.correr_ruta(verificador, ["capacidades"],
+                                     extra={"PYTHONPATH": veneno + os.pathsep + "."},
+                                     cwd=veneno)
+        entro = (b"HOMONIMO MALICIOSO" in sin_purga.stderr
+                 or os.path.exists(self.testigo)
+                 or sin_purga.stdout.decode().strip() in ("{}", ""))
+        self.assertTrue(entro,
+                        "sin la purga el veneno tampoco entra: esta prueba no estaría "
+                        "midiendo la purga. stdout=" + sin_purga.stdout.decode()[:200])
+
+    # ------------------------------------------------------------------ T337
+    def test_T337_la_procedencia_no_fiable_es_FALLO_CERRADO(self):
+        """T337 · Defecto que previene: emitir veredicto sin poder demostrar la procedencia.
+
+        `O26` §1, condición 8. Se instala la raíz externa y se le SUSTITUYE un módulo del
+        aparato por uno que vive fuera de la instalación, de modo que la purga no lo puede
+        impedir —no viene del lanzador— y sólo la comprobación de procedencia lo caza. El
+        proceso tiene que salir con el código de procedencia y NO emitir nada.
+        """
+        destino = os.path.join(self.taller, "instalacion")
+        instalacion = self.correr_ruta(self.INSTALADOR,
+                                       ["--destino", destino, "--arbol", RAIZ_REPO])
+        self.assertEqual(instalacion.returncode, 0, instalacion.stderr.decode())
+        verificador = os.path.join(destino, "raiz-externa", "verificador.py")
+
+        fuera = os.path.join(self.taller, "fuera-de-la-instalacion")
+        os.makedirs(fuera)
+        shutil.copy(os.path.join(destino, "raiz-externa", "firma.py"),
+                    os.path.join(fuera, "firma.py"))
+        fuente = texto_de_fichero(verificador)
+        # El módulo se importa desde FUERA de la instalación, sin pasar por el lanzador:
+        # es la mitad que la purga no puede cubrir y la comprobación sí.
+        ancla = "import atestacion as modulo_de_atestacion"
+        with open(verificador, "w", encoding="utf-8") as manejador:
+            manejador.write(fuente.replace(
+                ancla, "sys.path.insert(0, " + repr(fuera) + ")\n" + ancla, 1))
+        proceso = self.correr_ruta(verificador, ["capacidades"])
+        self.assertEqual(proceso.returncode, 5,
+                         "una procedencia no demostrable no salió con su código propio")
+        self.assertIn("PROCEDENCIA_NO_FIABLE", proceso.stderr.decode())
+        self.assertEqual(proceso.stdout.decode().strip(), "",
+                         "se publicó algo pese a no poder demostrar la procedencia")
 
 if __name__ == "__main__":
     unittest.main(verbosity=2, testRunner=_RunnerDeterminista)

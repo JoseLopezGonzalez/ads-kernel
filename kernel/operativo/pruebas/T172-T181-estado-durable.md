@@ -1,4 +1,4 @@
-# T172–T181 · T312–T319 — el estado durable, ejecutado
+# T172–T181 · T312–T319 · T320–T327 — el estado durable, ejecutado
 
 Conformidad de la sección
 [`(g)`](../../../docs/rediseno/g-ESTADO-DURABLE-APROBADA.md) y de su contrato derivado
@@ -16,6 +16,8 @@ motor de estado.
 validadores/entorno.py                         T172 — la guarda de entorno, antes de correr
 runtime/pruebas/test_estado_durable.py         T173..T179 — el motor, caso a caso
                                                T312..T319 — el SELLADO del diario (`g.7`)
+                                               T320..T327 — la MIGRACIÓN 0->1 sobre un
+                                                            almacén heredado REAL (`ADJ-B1`)
 runtime/pruebas/escenario_extremo_a_extremo.py T180 — los quince pasos, de una sola pieza
 validadores/comprobar_arranque.py              T181 — la norma viaja al proyecto instalado
 ```
@@ -459,6 +461,213 @@ entonces:
 falla_si:
   - "un talón se puede editar a mano con la cadena intacta, porque su huella no se recalcula"
   - "la prueba del ancla sigue verde con la comprobación retirada, y entonces es decorado"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
+```
+
+---
+
+## `T320`–`T327` · `ADJ-B1` — la migración `0→1` sobre un almacén heredado **REAL**
+
+**Qué cierran.** El bloqueante `ADJ-B1` del gate del 2026-09-04. De las **cinco** llamadas a
+`_publicar_revision` del árbol, una —la de la migración— no pasaba el `testigo` que `E-08`
+hizo obligatorio de sólo palabra clave. Reproducido sobre un almacén heredado **genuino**
+—`estado/canonico/items/it-uno.json` y nada más: sin `FORMATO.json`, sin diario y sin
+`REVISION.json`—:
+
+```text
+$ ads_estado.py --repo mig migrar
+  File ".../estado/migracion.py", line 178, in _migrar_0_a_1
+    almacen._publicar_revision(revision_cero)
+TypeError: Almacen._publicar_revision() missing 1 required keyword-only argument: 'testigo'
+EXIT=1     stdout VACÍO · SIETE rutas absolutas del anfitrión · CERO códigos tipados
+
+$ ads_estado.py --repo mig migrar        (2ª y 3ª llamada)
+[ESTADO_CORRUPTO] el fichero no existe (estado/REVISION.json)
+EXIT=1
+```
+
+**Y el agravante, también medido.** Con la línea corregida en una copia, un heredado NUEVO
+migraba (`EXIT=0`) y el almacén que ya había pasado por el fallo seguía dando
+`ESTADO_CORRUPTO`: la fundación del diario y la publicación de la revisión 0 eran dos actos,
+la guarda de la rama miraba el primero y un corte entre los dos dejaba un almacén al que la
+rama de fundación no volvía a entrar nunca. El remedio son tres cosas: la línea, el fixture
+y un camino de recuperación.
+
+**Por qué ninguna prueba lo veía.** `test_09` fabricaba el «heredado» con `inicializar()` y
+un `os.remove(FORMATO.json)` a continuación: ese almacén tiene diario **y** tiene
+`REVISION.json`, así que la rama rota **no se entra**. La prueba pasaba sobre un camino que
+el código productivo no recorre. `test_09` se conserva —cubre el heredado por PÉRDIDA del
+fichero de formato, que es otro caso real— y lo que se añade es el que faltaba.
+
+**El fixture se construye desde la especificación**, no del motor: el §7 del contrato dice
+«`FORMATO.json` versiona el ALMACÉN; su ausencia es la versión 0 heredada» y el §1 fija
+`canonico/<dominio>/<id>.json`. Eso es todo lo que un almacén de versión 0 tiene, y así se
+escribe: con `json.dump` corriente, sin `esquema` declarado y sin orden de claves.
+
+**Los diez puntos de corte, medidos.** Cortando con `ADS_ESTADO_FALLO` en cada uno de los
+diez puntos del §10, los diez convergen en el **mismo** `cid_raiz`. Siete retoman con UNA
+llamada a `migrar()`; los tres anteriores al punto de no retorno necesitan DOS: la primera
+cierra la ventana con `RECUPERACION_MARCADA` —tipada, sin traza— y la segunda retoma con
+identificador propio.
+
+```yaml ads:escenario
+id: T320
+nombre: Un almacén heredado REAL migra del formato 0 al 1 y publica la revisión esperada
+cubre: [g.10, g.11, "E-08", "E-15", "ADJ-B1"]
+dado:
+  - "un almacén de versión 0 construido desde la especificación del §7: `canonico/<dominio>/<id>.json` con tres objetos, sin `FORMATO.json`, sin diario y sin `REVISION.json`"
+cuando:
+  - "se ejecuta `ads_estado.py --repo <almacén> migrar --json` en un proceso real"
+  - "se intercepta `_publicar_revision` y se mira con qué testigo la llama la migración"
+entonces:
+  - "la migración termina con código 0, sin traza y sin rutas absolutas del anfitrión"
+  - "la fundación publica la revisión 0 con el testigo DECLARADO de fundación, y ninguna publicación se hace sin testigo"
+  - "la revisión publicada es la 1, hija de la 0, con la transacción que el informe nombra y con los tres objetos normalizados a `ads.estado/1`"
+  - "`verificar_integridad` y `auditar` no encuentran ni un hallazgo sobre el almacén migrado"
+falla_si:
+  - "la llamada de la migración vuelve a omitir el `testigo` y el proceso muere con una `TypeError` no tipada"
+  - "la migración se da por buena sobre un almacén que el propio motor había inicializado, que es el camino que el código productivo no recorre"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
+```
+```yaml ads:escenario
+id: T321
+nombre: El almacén que la primera migración fallida dejó roto vuelve a ser migrable
+cubre: [g.8, g.11, "ADJ-B1"]
+dado:
+  - "un almacén heredado REAL en el que la migración se corta con `ADS_ESTADO_FALLO=durante-el-diario`, que deja el diario fundado y `REVISION.json` AUSENTE"
+cuando:
+  - "se comprueba que el corte dejó exactamente ese estado"
+  - "se vuelve a llamar a `migrar` desde el punto ejecutable"
+entonces:
+  - "la segunda llamada termina con código 0 y el almacén queda migrado y verificable"
+  - "la fundación NO se anexa dos veces: el diario sigue teniendo un solo `almacen.inicializado`"
+falla_si:
+  - "la guarda de la rama de fundación vuelve a mirar el evento del diario en vez de la revisión que falta, y el almacén queda inmigrable incluso con el testigo puesto"
+  - "la reanudación funda otra vez el diario y parte el linaje en dos"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
+```
+```yaml ads:escenario
+id: T322
+nombre: Los diez puntos de corte de una migración convergen en la misma revisión
+cubre: [g.4, g.8, g.11, "E-08"]
+dado:
+  - "un almacén heredado REAL por cada uno de los diez puntos de corte declarados en el §10"
+  - "la revisión que produce la migración sin cortes, tomada como referencia"
+cuando:
+  - "se corta la migración en cada punto con `ADS_ESTADO_FALLO`, en procesos reales que mueren por `os._exit(70)`"
+  - "se vuelve a llamar a `migrar` hasta tres veces"
+entonces:
+  - "los diez almacenes acaban con el MISMO `cid_raiz` que la migración sin cortes"
+  - "siete puntos retoman con una sola llamada, y los tres anteriores al punto de no retorno con dos"
+  - "la llamada que cierra la ventana sale con `RECUPERACION_MARCADA`, tipada y sin traza"
+falla_si:
+  - "algún punto de corte deja el almacén inmigrable, o lo lleva a un estado canónico distinto del de la migración sin cortes"
+  - "la expectativa de cada punto se decide después de mirar el resultado en vez de antes"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
+```
+```yaml ads:escenario
+id: T323
+nombre: El paso 9 de la migración no publica sin el testigo del paso 8
+cubre: ["E-08", g.8, g.11]
+dado:
+  - "un almacén heredado REAL y el paso 8 intervenido para que no deje testigo, o para que deje uno que habla de otra transacción"
+cuando:
+  - "se ejecuta la migración con cada una de las dos intervenciones"
+entonces:
+  - "las dos producen `ESTADO_CORRUPTO`, y ninguna publica la revisión de la migración"
+  - "`FORMATO.json` no llega a escribirse: el almacén sigue siendo heredado y sigue siendo migrable"
+falla_si:
+  - "la migración publica una revisión que nombra objetos que el paso 8 no dejó en `canonico/`"
+  - "el testigo se comprueba sólo en el camino de transición corriente y no en el de migración"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
+```
+```yaml ads:escenario
+id: T324
+nombre: Migrar dos veces no mueve la revisión ni reescribe el estado canónico
+cubre: [g.11, "I-g3"]
+dado:
+  - "un almacén heredado REAL ya migrado, con su revisión, su diario y los bytes de sus objetos canónicos"
+cuando:
+  - "se vuelve a ejecutar `migrar` sobre él"
+entonces:
+  - "el informe declara `desde 1` y `hasta 1` y no aplica ninguna migración"
+  - "la revisión no se mueve, el diario no crece y ni un byte de `canonico/` cambia"
+falla_si:
+  - "una segunda migración anexa eventos, publica una revisión nueva o reescribe los objetos con el mismo contenido"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
+```
+```yaml ads:escenario
+id: T325
+nombre: Un formato del futuro no se migra ni se adivina
+cubre: [g.10, g.11]
+dado:
+  - "un almacén ya migrado cuyo `FORMATO.json` se reescribe declarando la versión 99"
+cuando:
+  - "se intenta migrarlo desde el punto ejecutable"
+  - "se pide migrar a una versión sin registrar, y también hacia atrás"
+entonces:
+  - "el formato desconocido produce `FORMATO_DESCONOCIDO` sin traza"
+  - "la migración a una versión sin registrar y la descendente producen `MIGRACION_DESCONOCIDA`"
+falla_si:
+  - "una versión de formato que este motor no entiende se abre «a lo que se pueda»"
+  - "bajar de versión se simula en vez de declararse inexistente"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
+```
+```yaml ads:escenario
+id: T326
+nombre: Sin revisión vigente y con el diario poblado, la migración no adivina
+cubre: [g.8, "I-g7", g.11]
+dado:
+  - "un almacén ya migrado al que se le retiran `FORMATO.json` y `REVISION.json`, de modo que vuelve a parecer heredado y su diario ya lleva transiciones"
+  - "un almacén cortado durante la fundación, con el `resultado` de su evento de fundación alterado a mano"
+cuando:
+  - "se intenta migrar cada uno de los dos"
+entonces:
+  - "el del diario poblado produce `MIGRACION_NO_RECUPERABLE`: cuál era la revisión vigente no se deduce sin reproyectar el diario"
+  - "el de la fundación alterada falla cerrado con código tipado en vez de publicar una revisión 0 que el diario no declara"
+falla_si:
+  - "la migración recompone una revisión vigente cualquiera para poder seguir"
+  - "la revisión 0 recompuesta se publica sin contrastarla con lo que el diario declara"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
+estado: prueba-superada
+evidencia: evidencia/estado-durable-salida.txt
+```
+```yaml ads:escenario
+id: T327
+nombre: La CLI de migración no publica ni trazas ni rutas absolutas del anfitrión
+cubre: ["E-15", g.11]
+dado:
+  - "cuatro caminos de la orden `migrar`: el sano, uno sin revisión vigente, uno sobre un `estado/` vacío y uno sobre un repo que no existe"
+cuando:
+  - "se ejecuta cada uno en un proceso real y se recoge su salida entera"
+entonces:
+  - "ninguno publica un `Traceback` ni una ruta absoluta del anfitrión, ni por `stdout` ni por `stderr`"
+  - "los caminos de error salen con código 1 y con su código tipado en `stderr`"
+falla_si:
+  - "un error no tipado cruza `main()` y se publica como traza con las rutas de la máquina"
+  - "un fallo de la operación se confunde con un defecto de programación por compartir código de salida y forma"
 ejecucion: validador-estructural
 validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
 estado: prueba-superada

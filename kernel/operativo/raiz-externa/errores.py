@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """errores — jerarquía tipada de la RAÍZ EXTERNA DE CONFIANZA. `g.15` y `O25`.
 
 La regla de este paquete, y no admite matices: **la ausencia de cualquiera de sus condiciones
@@ -11,6 +10,22 @@ errores del runtime: una raíz externa que dependiera de los módulos del árbol
 dejaría de ser externa en cuanto ese árbol cambiara uno. El saneado de rutas se hace aquí,
 con la misma regla —en el CONSTRUCTOR— y sin importar nada del árbol verificado.
 """
+
+# ---------------------------------------------------------------------------
+#  ADVERTENCIA DE FORMA · este módulo NO lleva línea de intérprete, y es deliberado.
+#
+#  `ADJ-B2` obligó a que los puntos ejecutables de la raíz externa se INVENTARÍEN de forma
+#  mecánica en vez de por una lista escrita a mano —una lista escrita a mano fue exactamente lo
+#  que dejó a este paquete fuera del alcance de `T306`—. El criterio derivado es una
+#  equivalencia de tres términos que `T330` comprueba sobre el disco:
+#
+#      lleva `#!`   ⟺   define `if __name__ == "__main__":`   ⟺   lleva el prólogo `E-10`
+#
+#  Un módulo que se importa y no se ejecuta no cumple los dos últimos, así que tampoco puede
+#  llevar el primero: una línea de intérprete en un módulo lo presenta como ejecutable, y a un
+#  ejecutable esta equivalencia le exige la purga. Se retira la línea, y con ella la ambigüedad.
+# ---------------------------------------------------------------------------
+
 from __future__ import annotations
 
 import os

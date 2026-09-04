@@ -20,6 +20,50 @@ test_un_renombrado_con_origen_no_admitido_da_rojo (__main__.AdmisionPorMutacion.
 T188 · Defecto que previene: `V6-06`, juzgar `R` por una sola punta. ... ok
 test_una_mutacion_solo_en_el_indice_se_ve (__main__.AdmisionPorMutacion.test_una_mutacion_solo_en_el_indice_se_ve)
 T188 · Defecto que previene: `git add` sin commit, invisible para la guarda. ... ok
+test_T340_cada_entrada_queda_anclada_al_commit_que_la_introdujo (__main__.AppendOnlyPorEntradaCerrada.test_T340_cada_entrada_queda_anclada_al_commit_que_la_introdujo)
+T340 · Defecto que previene: un término de comparación sin procedencia. ... ok
+test_T340_control_positivo_la_sede_intacta_no_produce_infracciones (__main__.AppendOnlyPorEntradaCerrada.test_T340_control_positivo_la_sede_intacta_no_produce_infracciones)
+T340 · Control POSITIVO: un control que no puede aprobar no sirve de nada. ... ok
+test_T341_anadir_una_entrada_completa_al_final_es_LEGITIMO (__main__.AppendOnlyPorEntradaCerrada.test_T341_anadir_una_entrada_completa_al_final_es_LEGITIMO)
+T341 · Control POSITIVO: `O27` §3 permite añadir, y tiene que seguir permitiéndolo. ... ok
+test_T341_el_delimitador_no_cuenta_como_contenido_de_la_entrada_anterior (__main__.AppendOnlyPorEntradaCerrada.test_T341_el_delimitador_no_cuenta_como_contenido_de_la_entrada_anterior)
+T341 · Defecto que previene: un FALSO ROJO en cada inscripción nueva. ... ok
+test_T342_borrar_entradas_posteriores_al_nacimiento_y_sustituirlas_da_ROJO (__main__.AppendOnlyPorEntradaCerrada.test_T342_borrar_entradas_posteriores_al_nacimiento_y_sustituirlas_da_ROJO)
+T342 · EL ATAQUE DEL ADJUDICADOR: borrar `O20`–`O26` y fabricar un texto nuevo. ... ok
+test_T343_alterar_UN_byte_de_una_entrada_cerrada_da_ROJO (__main__.AppendOnlyPorEntradaCerrada.test_T343_alterar_UN_byte_de_una_entrada_cerrada_da_ROJO)
+T343 · Defecto que previene: reescribir una condición y confirmarla. ... ok
+test_T343_cambiar_SOLO_los_metadatos_de_una_entrada_cerrada_da_ROJO (__main__.AppendOnlyPorEntradaCerrada.test_T343_cambiar_SOLO_los_metadatos_de_una_entrada_cerrada_da_ROJO)
+T343 · Defecto que previene: «no he tocado el texto, sólo la fecha». ... ok
+test_T343_insertar_texto_DENTRO_de_una_entrada_anterior_da_ROJO (__main__.AppendOnlyPorEntradaCerrada.test_T343_insertar_texto_DENTRO_de_una_entrada_anterior_da_ROJO)
+T343 · Defecto que previene: colar prosa dentro de una resolución ya cerrada. ... ok
+test_T343_una_alteracion_confirmada_y_luego_REVERTIDA_sigue_constando (__main__.AppendOnlyPorEntradaCerrada.test_T343_una_alteracion_confirmada_y_luego_REVERTIDA_sigue_constando)
+T343 · El canal de la HISTORIA, discriminado, y una decisión que se declara. ... ok
+test_T344_borrar_la_ULTIMA_resolucion_da_ROJO (__main__.AppendOnlyPorEntradaCerrada.test_T344_borrar_la_ULTIMA_resolucion_da_ROJO)
+T344 · Defecto que previene: el truncamiento por la cola, que no rompe nada. ... ok
+test_T344_borrar_una_resolucion_INTERMEDIA_da_ROJO (__main__.AppendOnlyPorEntradaCerrada.test_T344_borrar_una_resolucion_INTERMEDIA_da_ROJO)
+T344 · Defecto que previene: quitar una del medio y dejar el resto intacto. ... ok
+test_T345_reordenar_dos_resoluciones_da_ROJO (__main__.AppendOnlyPorEntradaCerrada.test_T345_reordenar_dos_resoluciones_da_ROJO)
+T345 · Defecto que previene: cambiar qué revisa a qué sin perder un solo byte. ... ok
+test_T346_duplicar_una_resolucion_da_ROJO (__main__.AppendOnlyPorEntradaCerrada.test_T346_duplicar_una_resolucion_da_ROJO)
+T346 · Defecto que previene: dos textos bajo el mismo identificador. ... ok
+test_T347_un_salto_de_numeracion_da_ROJO (__main__.AppendOnlyPorEntradaCerrada.test_T347_un_salto_de_numeracion_da_ROJO)
+T347 · Defecto que previene: un hueco de números que nadie puede auditar. ... ok
+test_T347_una_familia_de_identificadores_NUEVA_da_ROJO (__main__.AppendOnlyPorEntradaCerrada.test_T347_una_familia_de_identificadores_NUEVA_da_ROJO)
+T347 · Defecto que previene: un `P1` que no hereda ni orden ni cliquet. ... ok
+test_T348_las_entradas_HISTORICAS_sin_los_campos_NO_se_ponen_en_rojo (__main__.AppendOnlyPorEntradaCerrada.test_T348_las_entradas_HISTORICAS_sin_los_campos_NO_se_ponen_en_rojo)
+T348 · `O27` §2 literal: no se insertan retroactivamente, y no invalidan nada. ... ok
+test_T348_un_apendice_INCOMPLETO_da_ROJO (__main__.AppendOnlyPorEntradaCerrada.test_T348_un_apendice_INCOMPLETO_da_ROJO)
+T348 · Defecto que previene: añadir un titular y llamarlo resolución. ... ok
+test_T348_un_apendice_SIN_LOS_CAMPOS_PROSPECTIVOS_da_ROJO (__main__.AppendOnlyPorEntradaCerrada.test_T348_un_apendice_SIN_LOS_CAMPOS_PROSPECTIVOS_da_ROJO)
+T348 · `O27` §2: exigibles PROSPECTIVAMENTE, y el umbral se DERIVA. ... ok
+test_T349_borrar_las_cabeceras_NO_degrada_el_regimen_a_prefijo (__main__.AppendOnlyPorEntradaCerrada.test_T349_borrar_las_cabeceras_NO_degrada_el_regimen_a_prefijo)
+T349 · Defecto que previene: apagar el guardián quitándole la estructura. ... ok
+test_T349_confirmar_no_exime_y_dos_commits_tampoco (__main__.AppendOnlyPorEntradaCerrada.test_T349_confirmar_no_exime_y_dos_commits_tampoco)
+T349 · Defecto que previene: blanquear una alteración con un commit encima. ... ok
+test_T349_intercalar_una_entrada_nueva_NO_al_final_da_ROJO (__main__.AppendOnlyPorEntradaCerrada.test_T349_intercalar_una_entrada_nueva_NO_al_final_da_ROJO)
+T349 · `O27` §3: se admite AÑADIR al final, no intercalar. ... ok
+test_T349_texto_entre_dos_entradas_que_nadie_reclama_da_ROJO (__main__.AppendOnlyPorEntradaCerrada.test_T349_texto_entre_dos_entradas_que_nadie_reclama_da_ROJO)
+T349 · Defecto que previene: una zona franca en el hueco del delimitador. ... ok
 test_cero_rutas_del_instrumento_exentas (__main__.AutoInclusion.test_cero_rutas_del_instrumento_exentas)
 T189 · Defecto que previene: que un prefijo del instrumento quede fuera. ... ok
 test_declarar_la_mutacion_del_instrumento_no_la_exime (__main__.AutoInclusion.test_declarar_la_mutacion_del_instrumento_no_la_exime)
@@ -72,6 +116,16 @@ test_s102_seccion_3_2_la_raiz_del_repositorio (__main__.DeudaS102.test_s102_secc
 T189 · Defecto que previene: `S1-02` §3.2, reescribir `START_HERE.md` y seguir verde. ... ok
 test_s102_seccion_3_6_una_evidencia_ya_enumerada (__main__.DeudaS102.test_s102_seccion_3_6_una_evidencia_ya_enumerada)
 T189 · Defecto que previene: `S1-02` §3.6, que no toca la raíz y también pasaba. ... ok
+test_T340_el_veredicto_declara_el_REGIMEN_que_ha_aplicado (__main__.ElVeredictoAplicaLasEntradasCerradas.test_T340_el_veredicto_declara_el_REGIMEN_que_ha_aplicado)
+T340 · Defecto que previene: un verde del que nadie puede decir qué significa. ... ok
+test_T341_anadir_una_resolucion_completa_sigue_siendo_VERDE (__main__.ElVeredictoAplicaLasEntradasCerradas.test_T341_anadir_una_resolucion_completa_sigue_siendo_VERDE)
+T341 · Control POSITIVO: el guardián no impide el acto que existe para permitir. ... ok
+test_T342_borrar_una_entrada_POSTERIOR_al_nacimiento_da_ROJO_en_el_veredicto (__main__.ElVeredictoAplicaLasEntradasCerradas.test_T342_borrar_una_entrada_POSTERIOR_al_nacimiento_da_ROJO_en_el_veredicto)
+T342 · `ADJ-B3` literal: lo que el prefijo del nacimiento dejaba pasar. ... ok
+test_T342_una_alteracion_ANTERIOR_a_la_base_no_se_blanquea_por_no_mutar (__main__.ElVeredictoAplicaLasEntradasCerradas.test_T342_una_alteracion_ANTERIOR_a_la_base_no_se_blanquea_por_no_mutar)
+T342 · Defecto que previene: elegir como base el commit del ataque. ... ok
+test_T344_borrar_la_sede_ENTERA_nombra_todas_las_entradas_perdidas (__main__.ElVeredictoAplicaLasEntradasCerradas.test_T344_borrar_la_sede_ENTERA_nombra_todas_las_entradas_perdidas)
+T344 · Defecto que previene: una TRAZA donde tenía que haber un veredicto. ... ok
 test_el_censo_de_formulas_del_aparato_real_esta_limpio (__main__.FormulasCompartidas.test_el_censo_de_formulas_del_aparato_real_esta_limpio)
 T190 · Control POSITIVO: hoy no hay ninguna segunda definición. ... ok
 test_el_lector_de_datos_falla_cerrado_ante_lo_que_no_entiende (__main__.FormulasCompartidas.test_el_lector_de_datos_falla_cerrado_ante_lo_que_no_entiende)
@@ -88,6 +142,10 @@ test_si_la_sede_no_ofrece_la_formula_el_instrumento_no_emite (__main__.FormulasC
 T190 · Defecto que previene: seguir cuando la importación de la sede falla. ... ok
 test_una_segunda_definicion_aparece_en_el_censo_aunque_coincida_hoy (__main__.FormulasCompartidas.test_una_segunda_definicion_aparece_en_el_censo_aunque_coincida_hoy)
 T190 · Defecto que previene: una copia «equivalente» que mañana diverge. ... ok
+test_T340_las_entradas_de_la_sede_real_se_DERIVAN_de_su_estructura (__main__.LaSedeRealDelOwner.test_T340_las_entradas_de_la_sede_real_se_DERIVAN_de_su_estructura)
+T340 · Control POSITIVO: la forma declarada describe la sede que existe. ... ok
+test_T342_el_ataque_de_borrado_sobre_la_sede_REAL_se_detecta (__main__.LaSedeRealDelOwner.test_T342_el_ataque_de_borrado_sobre_la_sede_REAL_se_detecta)
+T342 · EL ATAQUE, sobre los bytes reales: `hallazgos=0` no se puede repetir. ... ok
 test_estructura_ajena_es_rojo_con_diagnostico (__main__.LecturaSegura.test_estructura_ajena_es_rojo_con_diagnostico)
 T188 · Defecto que previene: leer una salida con otra forma y seguir tan tranquilo. ... ok
 test_git_que_no_responde_no_produce_lista_vacia (__main__.LecturaSegura.test_git_que_no_responde_no_produce_lista_vacia)
@@ -136,6 +194,6 @@ test_el_contraste_es_contra_el_nacimiento_y_no_contra_head (__main__.SedeDelOwne
 T189 · Defecto que previene: contrastar contra `HEAD`, que es una tautología. ... ok
 
 ----------------------------------------------------------------------
-Ran 65 tests  (duración no registrada: varía por ejecución)
+Ran 94 tests  (duración no registrada: varía por ejecución)
 
 OK

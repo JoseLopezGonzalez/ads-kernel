@@ -284,8 +284,21 @@ def _publicar_fallo(argumentos, error, clase):
     sys.stderr.write(_sin_rutas_del_anfitrion(_volcar(estructura)) + "\n")
     return codigo
 
+# `ADJ-M2` · `procedencia` entra en ESTA tabla, y no en una tabla aparte de «órdenes de
+# diagnóstico», porque la tabla `ORDENES` es lo que el gate MIDIÓ para encontrar el defecto:
+# los cinco puntos ejecutables declaraban «la PROCEDENCIA se PUBLICA» y sólo uno la tenía
+# aquí. Publicarla en otro sitio la escondería justo de la medición que la echó en falta.
+#
+# CONSECUENCIA CONOCIDA, dicha para que nadie la diagnostique dos veces: `test_ciclo.py`
+# —`test_79`, T202— y `test_runtime.py` —`test_2028`— ENUMERAN estas tablas con una lista
+# literal escrita a mano, y por eso fallan hasta que esa lista incluya `procedencia`. Las
+# dos baterías están fuera de la zona de esta corrección; la petición al coordinador es
+# añadir el nombre, y mejor aún derivar la lista en vez de escribirla.
 ORDENES = ("encuadrar", "componer", "materializar", "planificar", "ciclo", "continuar",
-           "macrocircuito")
+           "macrocircuito", "procedencia")
+
+# Las órdenes que NO necesitan `--repo`. Ver `orden_procedencia`.
+ORDENES_SIN_REPO = ("procedencia",)
 
 
 def _volcar(objeto):
@@ -578,7 +591,24 @@ def orden_macrocircuito(argumentos):
     ])
 
 
+def orden_procedencia(argumentos):
+    """`E-10` · publica de dónde sale cada módulo, sin encuadrar nada.
+
+    `ADJ-M2` · los cinco puntos ejecutables declaraban «la PROCEDENCIA se PUBLICA» y sólo
+    uno tenía orden que la publicara. La razón entera está en
+    `ads_arboles._orden_procedencia`.
+    """
+    datos = procedencia(argumentos.repo)
+    return _emitir(argumentos, datos, [
+        "aparato       " + datos["aparato"],
+        "repo          " + str(datos.get("repo")),
+        "mismo árbol   " + ("si" if datos.get("repo_es_el_arbol_del_aparato") else "NO"),
+        "retiradas     " + str(datos["entradas_del_lanzador_retiradas"]),
+    ] + ["  modulo  " + m + "  " + datos["modulos"][m] for m in sorted(datos["modulos"])])
+
+
 DESPACHADOR = {
+    "procedencia": orden_procedencia,
     "encuadrar": orden_encuadrar,
     "componer": orden_componer,
     "materializar": orden_materializar,
@@ -688,6 +718,8 @@ def construir_analizador():
                       help="`FD-5`: nivel de AISLAMIENTO exigido a la ejecución local. Sin backend que lo dé, FALLO CERRADO: no se ejecuta nada y no se degrada al débil")
     siete.add_argument("--contencion-backend", dest="contencion_backend",
                       default=None, help="pedir un backend concreto de contención. Es legítimo y queda registrado; si su nivel es inferior al exigido, FALLO CERRADO")
+
+    subordenes.add_parser("procedencia", parents=[comun])
     return analizador
 
 
@@ -697,7 +729,9 @@ def main(argv=None):
     if not argumentos.subcomando:
         analizador.print_help(sys.stderr)
         return USO
-    if argumentos.subcomando != "macrocircuito" or not argumentos.censo:
+    if argumentos.subcomando in ORDENES_SIN_REPO:
+        pass
+    elif argumentos.subcomando != "macrocircuito" or not argumentos.censo:
         if not argumentos.repo:
             print("falta `--repo <dir>`: sin control repo no hay nada que encuadrar",
                   file=sys.stderr)

@@ -19,10 +19,20 @@ DECISIÓN · las versiones vulnerables NO usan el canal único de Git, y es deli
     un entorno hermético. Una versión histórica que pasara por ese canal **no podría
     reproducir su propio defecto**: `S1-01` existe precisamente porque la lectura NO iba por
     ahí. Por eso este módulo abre su propio proceso de Git, con la configuración POR DEFECTO,
-    y lo declara. `admision/censo.py` deriva su censo sobre `admision`, `gobierno`,
-    `adaptadores` e `identidad`, y este paquete no está entre ellos: la vía histórica no se
-    cuela en el canal del verificador, y una petición de integración propone que el censo
-    barra también este paquete con su sede declarada.
+    y lo declara.
+
+    Y ESTE PÁRRAFO DECÍA LO CONTRARIO DE LO QUE HACE EL CÓDIGO (`ADJ-M11`). Decía que
+    `admision/censo.py` censa `admision`, `gobierno`, `adaptadores` e `identidad` y que
+    «este paquete no está entre ellos». **Sí está, en los dos censos y desde hace un
+    corte.** `censo.PAQUETES_DEL_VERIFICADOR` es hoy
+    `("admision", "gobierno", "adaptadores", "identidad", "arboles")`, y
+    `censo.modulos_del_aparato` no enumera paquetes: los DERIVA del disco, de modo que
+    `arboles/` entra por existir. La petición de integración que este párrafo anunciaba
+    está APLICADA, y lo que la hace posible es que la vía histórica esté ACOTADA y
+    PUBLICADA: `censo.SEDES_DE_REPRODUCCION_HISTORICA` la declara por `(paquete, módulo)`
+    con su motivo, y **lo que no esté en esa tabla sigue dando ROJO también dentro de
+    `arboles/`**. Dejar el paquete fuera habría sido dejar sin enumerar una superficie
+    entera, que es exactamente el modo de fallo que `S1-01` midió.
 
 DECISIÓN · cada versión trae su CONTROL POSITIVO, y sin él no se publica su fila
     Una versión vulnerable que dijera VERDE a todo no demostraría nada: sería un `return

@@ -101,6 +101,18 @@ class SedeDelOwnerAlterada(ErrorDeAdmision):
     CODIGO = "SEDE_DEL_OWNER_ALTERADA"
 
 
+class SedeIlegible(ErrorDeAdmision):
+    """La estructura de una sede APPEND-ONLY no se puede derivar sin adivinar (`O27` §3).
+
+    No es lo mismo que `SedeDelOwnerAlterada`: aquélla dice «esto cambió», y ésta dice «no
+    he podido saber qué hay». Se separan porque confundirlas es exactamente el modo de
+    fallo que `V6-03` cierra en el canal de lectura: un «no lo entiendo» que se contesta
+    con una lista vacía y un verde.
+    """
+
+    CODIGO = "SEDE_ILEGIBLE"
+
+
 class InstrumentoAlterado(ErrorDeAdmision):
     """El propio verificador o su política han mutado en la pasada que juzgan (`V6-11`)."""
 
@@ -135,8 +147,8 @@ class DatoIlegible(ErrorDeAdmision):
 CLASES = (
     ErrorDeAdmision, LecturaInsegura, SalidaTruncada, SalidaNoDecodificable,
     EstructuraAjena, GitNoResponde, CensoDeLecturasSucio, ZonaSinCondicion,
-    MutacionNoDeclarada, SedeDelOwnerAlterada, InstrumentoAlterado, SinAnclaExterna,
-    SedeDeFormulaAusente, CensoDeFormulasSucio, DatoIlegible,
+    MutacionNoDeclarada, SedeDelOwnerAlterada, SedeIlegible, InstrumentoAlterado,
+    SinAnclaExterna, SedeDeFormulaAusente, CensoDeFormulasSucio, DatoIlegible,
 )
 
 CODIGOS = tuple(sorted(clase.CODIGO for clase in CLASES))

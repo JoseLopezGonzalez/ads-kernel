@@ -32,7 +32,9 @@ DECISIÓN · se sabotea `contencion-salida.txt` y no un fichero inventado
 """
 from __future__ import annotations
 
-from comprobar_negativos import Mutacion, _sustituir
+import os
+
+from comprobar_negativos import Mutacion, _escribir, _sustituir
 
 EVIDENCIA = "kernel/operativo/pruebas/evidencia/contencion-salida.txt"
 
@@ -68,7 +70,115 @@ def m_e14_dos_corridas_pegadas(raiz):
         "Ran 20 tests  (duración no registrada: varía por ejecución)\n\nOK\n")
 
 
+# ===========================================================================
+#  `ADJ-G3` y `ADJ-M5` · LAS SEDES VERACES Y LA FRONTERA DEL BARRIDO
+# ===========================================================================
+#  Los dos hallazgos que este eje puede sabotear sobre el CORPUS, que es lo que
+#  `comprobar_negativos` sabe mutar. Los otros cuatro del lote —`ADJ-M1`, `ADJ-M2`, `ADJ-M3`
+#  y `ADJ-M11`— viven en el CÓDIGO y sus sabotajes se ejercen copiando el repositorio y
+#  volviendo a correr el escenario que los mide; meterlos aquí exigiría que este validador
+#  ejecutara los tres E2E dentro de cada copia, que es otro aparato y otra decisión.
+#
+#  DECISIÓN · se sabotea la PROPIEDAD, no la frase concreta que el gate citó
+#      `NG3e` no reintroduce ninguna de las once líneas que el gate encontró: fabrica una
+#      sede NUEVA —ruta nueva, nombre nuevo, contenido nuevo— que niega una pieza construida.
+#      Si `T360` sólo cazara las once, la cuarta recurrencia se escribiría en otro fichero y
+#      pasaría en verde, que es exactamente como llegó la tercera.
+SEDE_CONTRATOS = "docs/canonico/04-CONTRATOS-TECNICOS.md"
+SEDE_PLAN = "docs/canonico/05-PLAN-DE-IMPLEMENTACION-F5-F6.md"
+VALIDADOR_RECUENTOS = "kernel/operativo/validadores/comprobar_recuentos.py"
+
+
+def m_g3_ninguno_existe(raiz):
+    """`ADJ-G3` · vuelve a declarar inexistentes los adaptadores en §5.3.
+
+    La frase se devuelve al PÁRRAFO donde estaba —el primero de §5.3, el que la cabecera
+    encabeza—, y no a cualquier sitio de la sección: reproducir el defecto es reproducir
+    dónde estaba, porque de eso depende a qué se refiere la negación.
+    """
+    _sustituir(raiz, SEDE_CONTRATOS,
+               "[`CONTRATO-ADAPTADOR.md`](../../kernel/operativo/runtime/"
+               "CONTRATO-ADAPTADOR.md).",
+               "[`CONTRATO-ADAPTADOR.md`](../../kernel/operativo/runtime/"
+               "CONTRATO-ADAPTADOR.md). **Ninguno existe y ninguno está certificado.**")
+
+
+def m_g3_lo_que_no_hay(raiz):
+    """`ADJ-G3` · vuelve a declarar inexistentes el verificador y la raíz externa en §5.4."""
+    _sustituir(raiz, SEDE_CONTRATOS,
+               "LA BATERÍA INTERNA  comprueba",
+               "LO QUE NO HAY       el VERIFICADOR DE ADMISIÓN y la RAÍZ EXTERNA DE "
+               "CONFIANZA\n\nLA BATERÍA INTERNA  comprueba")
+
+
+def m_g3_negacion_en_bloque(raiz):
+    """`ADJ-G3` · vuelve a negar EN BLOQUE el estado de construcción, en `05-PLAN`."""
+    _sustituir(raiz, SEDE_PLAN,
+               "> **ESTE DOCUMENTO ES UN PLAN, y por tanto NO ES SEDE DE ESTADO.**",
+               "> **ESTE DOCUMENTO ES UN PLAN.** Nada de lo que describe está implementado.")
+
+
+def m_g3_sonda_desaparecida(raiz):
+    """`ADJ-G3` · la sonda de una pieza construida desaparece: la tabla ha envejecido."""
+    os.remove(os.path.join(raiz, "kernel/operativo/runtime/adaptadores/proceso.py"))
+
+
+def m_g3_sede_nueva_que_niega(raiz):
+    """`ADJ-G3` · una sede que NINGUNA lista podría contener niega una pieza construida."""
+    _escribir(raiz, "docs/canonico/ZZ-SEDE-QUE-NADIE-ENUMERO.md",
+              "# sede nueva\n\nDel verificador de admisión no existe ninguno, y la raíz "
+              "externa tampoco: ninguno implementado.\n")
+
+
+def m_m5_inclusion_sin_motivo(raiz):
+    """`ADJ-M5` · un prefijo de INCLUSIÓN se queda otra vez sin motivo escrito."""
+    _sustituir(raiz, VALIDADOR_RECUENTOS,
+               '"el corpus canónico vigente: es la sede que el resto del árbol cita"',
+               '""')
+
+
+def m_m5_zona_en_silencio(raiz):
+    """`ADJ-M5` · una zona nueva de documentos cae fuera de las dos mitades, sin decirlo."""
+    _escribir(raiz, "docs/f7/00-ZONA-QUE-NADIE-CLASIFICO.md",
+              "# zona nueva\n\nDocumentos de una fase que todavía no existe.\n")
+
+
 CATALOGO = [
+    Mutacion("NG3a", "ADJ-G3", "T360", "comprobar_recuentos",
+             "§5.3 vuelve a declarar que no existe ningún adaptador, con el ejecutor "
+             "local real en el árbol",
+             m_g3_ninguno_existe,
+             espera="Ninguno existe"),
+    Mutacion("NG3b", "ADJ-G3", "T360", "comprobar_recuentos",
+             "§5.4 vuelve a declarar inexistentes el verificador de admisión y la raíz "
+             "externa, con los dos construidos y con evidencia publicada",
+             m_g3_lo_que_no_hay,
+             espera="LO QUE NO HAY"),
+    Mutacion("NG3c", "ADJ-G3", "T360", "comprobar_recuentos",
+             "`05-PLAN` vuelve a negar EN BLOQUE que nada de lo que describe esté "
+             "implementado",
+             m_g3_negacion_en_bloque,
+             espera="niega EN BLOQUE"),
+    Mutacion("NG3d", "ADJ-G3", "T360", "comprobar_recuentos",
+             "la sonda de una pieza construida desaparece del árbol y la tabla de piezas "
+             "se queda describiendo un árbol que ya no existe",
+             m_g3_sonda_desaparecida,
+             espera="ha envejecido"),
+    Mutacion("NG3e", "ADJ-G3", "T360", "comprobar_recuentos",
+             "una sede NUEVA, que ninguna lista podría contener, niega dos piezas "
+             "construidas: la cobertura se descubre, no se enumera",
+             m_g3_sede_nueva_que_niega,
+             espera="ZZ-SEDE-QUE-NADIE-ENUMERO"),
+    Mutacion("NM5a", "ADJ-M5", "T361", "comprobar_recuentos",
+             "un prefijo de INCLUSIÓN del ámbito vivo se queda sin motivo escrito, que es "
+             "la exclusión por omisión volviendo",
+             m_m5_inclusion_sin_motivo,
+             espera="no dice por qué barre"),
+    Mutacion("NM5b", "ADJ-M5", "T361", "comprobar_recuentos",
+             "una zona nueva de documentos cae fuera de las dos mitades de la frontera, "
+             "que es exactamente como `docs/f5/` quedó fuera del barrido",
+             m_m5_zona_en_silencio,
+             espera="EN SILENCIO"),
     Mutacion("NE14a", "E-14", "T158", "comprobar_evidencia",
              "la evidencia dice `OK (skipped=3)` y la firma `OK` la casaba igual",
              m_e14_ok_con_saltos,

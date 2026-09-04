@@ -264,6 +264,37 @@ class CanalDeLecturaGit:
                               "sustituida y el nacimiento derivado no sería el real"}
         return {"completa": True, "motivo": "historia completa y sin injertos"}
 
+    def commits_de_la_ruta(self, ruta):
+        """`O27` §3: TODA la historia de una sede, del nacimiento a `HEAD`, en orden.
+
+        Es lo que permite anclar cada entrada cerrada al commit que la introdujo sin
+        escribir ninguna tabla. `--reverse` y no un `sorted()` posterior: el orden lo fija
+        Git recorriendo la historia, y ordenar por otra cosa —fecha, por ejemplo— haría que
+        una fecha falseada moviera el commit de introducción de una resolución.
+
+        No es una lista de RUTAS, así que no lleva `-z` ni lo necesita: un SHA-1 en
+        hexadecimal no puede contener un salto de línea. Se decodifica igualmente en
+        ESTRICTO, y una salida que no sea ASCII levanta en vez de interpretarse a medias.
+        """
+        codigo, salida, error = self.canal.ejecutar(
+            "log", "--format=%H", "--reverse", "--", ruta, exigir_exito=False,
+        )
+        if codigo != 0:
+            detalle = error.decode("utf-8", "replace").strip().splitlines()
+            raise GitNoResponde(
+                "no se pudo derivar la historia de una sede APPEND-ONLY: `git log` "
+                "devolvió " + str(codigo) + (": " + detalle[-1] if detalle else "")
+                + ". No se sigue con una historia parcial"
+            )
+        try:
+            texto = salida.decode("ascii", "strict")
+        except UnicodeDecodeError as exc:
+            raise SalidaNoDecodificable(
+                "`git log --format=%H` devolvió algo que no es ASCII en el byte "
+                + str(exc.start) + ": no es una lista de commits y no se interpreta"
+            ) from exc
+        return texto.split()
+
     def commit_de_nacimiento(self, ruta):
         """`V6-12`: el commit que CREÓ una sede. No es `HEAD`, y por eso se busca."""
         codigo, salida, _ = self.canal.ejecutar(

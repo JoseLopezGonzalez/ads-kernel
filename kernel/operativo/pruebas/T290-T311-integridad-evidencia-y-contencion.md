@@ -1,4 +1,4 @@
-# T290–T311 — vínculo, orden durable, procedencia, evidencia y contención
+# T290–T311 · T330–T337 — vínculo, orden durable, procedencia, evidencia y contención
 
 **Qué cierran.** Los siete hallazgos que la corrección del 2026-09-04 asigna a este eje:
 `E-07` el vínculo commit + `tree` de la raíz externa · `E-08` el orden irrompible de los
@@ -37,6 +37,10 @@ del paquete de la raíz externa, y `T309` comprueba que ninguna salida de esta z
 custodia productiva. `E-18` sigue siendo LIMITACIÓN DE ANFITRIÓN: `cgroup v2` está presente
 y NO es ejercitable aquí, y `T309` exige que lo no ejercido se declare con su motivo y no se
 cuente como ejercido.
+
+**`T330`–`T337` se añaden con `ADJ-B2`**, el bloqueante del gate del 2026-09-04 que
+encontró la misma `E-10` viva en `kernel/operativo/raiz-externa/`. Su bloque está al
+final de este fichero, con la reproducción literal.
 
 ```yaml ads:escenario
 id: T290
@@ -520,4 +524,201 @@ ejecucion: requiere-runtime
 validador: "kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py"
 estado: prueba-superada
 evidencia: "evidencia/integridad-evidencia-salida.txt"
+```
+
+---
+
+## `T330`–`T337` · `ADJ-B2` — la purga `E-10` en **toda** la raíz externa
+
+**Qué cierran.** El bloqueante `ADJ-B2` del gate del 2026-09-04. `E-10` se declaraba cerrada
+para los cinco `ads_*.py`, y el mismo defecto seguía vivo en `kernel/operativo/raiz-externa/`,
+que es **la única pieza que `O26` §1 juzga**. Reproducido con un `json.py` homónimo en
+`PYTHONPATH` y desde un `cwd` ajeno:
+
+```text
+verificador.py capacidades           → {}          EXIT=0     (sano: las nueve condiciones)
+instalar.py --destino … --arbol …    → {}          EXIT=0     manifiesto 3 BYTES (sano: 6734)
+                                                              y 41 ficheros instalados igual
+… --comprobar sobre esa instalación  → KeyError: 'ficheros'   EXIT=1, cuatro rutas del
+                                                              anfitrión, cero códigos tipados
+grep de purga sobre TODO raiz-externa/                        CERO líneas
+T306 EJECUTABLES                                              cinco ads_*.py y ninguno más
+```
+
+Incumplía la **condición 8** de `O26` §1 —«contaminación del entorno falla cerrado»—, que
+era la única de las ocho sin cumplir.
+
+**Por qué el control no lo veía, y qué cambia.** El alcance de `T306` era una **tupla escrita
+a mano** con los cinco `ads_*.py`. Una lista escrita a mano vuelve a quedarse corta el día
+que alguien añade un punto ejecutable, que es exactamente lo que pasó. Ahora el inventario
+se **DERIVA del disco**, con una equivalencia de tres términos comprobada en los dos
+sentidos:
+
+```text
+lleva `#!`   ⟺   define `if __name__ == "__main__":`   ⟺   lleva el prólogo `E-10`
+```
+
+El inventario resultante son **nueve** puntos ejecutables: los cinco `ads_*.py` y
+`verificador.py`, `instalar.py`, `anfitrion_firmante.py` y `anfitrion_verificador.py`. Los
+cuatro módulos de biblioteca de la raíz externa que llevaban línea de intérprete sin ser
+ejecutables —`errores`, `firma`, `atestacion`, `aislamiento`— la han perdido, y su exclusión
+se comprueba por su motivo y no por omisión. El prólogo `E-10` es **byte a byte el mismo**
+en los nueve, y una prueba lo verifica por digest: copiado, no adaptado.
+
+```yaml ads:escenario
+id: T330
+nombre: El inventario de puntos ejecutables se DERIVA del disco y es coherente en los dos sentidos
+cubre: ["E-10", "ADJ-B2", "O26 1.8", g.15]
+dado:
+  - "las dos zonas donde el árbol pone sus puntos ejecutables: `runtime/` y `raiz-externa/`"
+cuando:
+  - "se recorre el primer nivel de cada zona y se mide, por fichero, si lleva línea de intérprete, si define `if __name__ == \"__main__\":` —parseando, no buscando el texto— y si lleva la purga `E-10`"
+  - "se compara el prólogo `E-10` de cada punto por digest"
+entonces:
+  - "el inventario alcanza las dos zonas y contiene los nueve puntos ejecutables"
+  - "los tres términos coinciden en todos: la unión de los criterios es igual a su intersección"
+  - "los nueve llevan el mismo prólogo `E-10`, byte a byte"
+  - "lo que queda fuera queda fuera por su motivo declarado: ni línea de intérprete ni bloque `__main__`"
+falla_si:
+  - "un punto ejecutable nuevo entra sin la purga y nadie se entera, que es lo que ocurrió con la raíz externa"
+  - "el alcance del control se escribe a mano en vez de derivarse del disco"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py
+estado: prueba-superada
+evidencia: evidencia/integridad-evidencia-salida.txt
+```
+```yaml ads:escenario
+id: T331
+nombre: Ni el veredicto ni el manifiesto de la raíz externa se falsean desde el entorno
+cubre: ["E-10", "V6-16", "ADJ-B2", "O26 1.8", "I-g3"]
+dado:
+  - "un `json` homónimo en `PYTHONPATH` que deja fichero testigo al importarse y cuyo `dumps` devuelve `{}`"
+  - "un `cwd` ajeno, que es la segunda vía que `E-10` nombra"
+cuando:
+  - "se ejecuta `verificador.py capacidades` sano y envenenado"
+  - "se instala la raíz externa sano y envenenado, y se comprueba después la instalación envenenada SIN veneno"
+entonces:
+  - "las nueve condiciones de certificación salen idénticas en los dos casos, y `capacidades` publica además su procedencia"
+  - "los dos manifiestos son idénticos byte a byte, y el envenenado supera su comprobación de digests"
+  - "el fichero testigo del homónimo no llega a existir, y se retiró al menos una entrada del lanzador"
+falla_si:
+  - "`capacidades` vuelve a publicar `{}` con código 0"
+  - "el instalador escribe un manifiesto truncado sobre una instalación completa"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py
+estado: prueba-superada
+evidencia: evidencia/integridad-evidencia-salida.txt
+```
+```yaml ads:escenario
+id: T332
+nombre: Un manifiesto de instalación truncado se rechaza TIPADO y sin traza
+cubre: ["V6-16", "E-15", "ADJ-B2", g.15]
+dado:
+  - "una instalación completa cuyo manifiesto se sustituye por uno vacío, por uno sin la lista `ficheros` y por uno con la lista vacía"
+cuando:
+  - "se comprueba la instalación en cada uno de los tres casos"
+entonces:
+  - "los tres salen con código 1 y con `INSTALACION_ALTERADA` en la salida"
+  - "ninguno publica un `Traceback`, un `KeyError` ni una ruta absoluta del anfitrión"
+falla_si:
+  - "un manifiesto que no cubre nada se trata como un defecto de programación del comprobador en vez de como la instalación alterada que es"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py
+estado: prueba-superada
+evidencia: evidencia/integridad-evidencia-salida.txt
+```
+```yaml ads:escenario
+id: T333
+nombre: La raíz externa no se instala a medias
+cubre: ["V6-16", g.15, "ADJ-B2"]
+dado:
+  - "un `runtime` de origen al que le falta una de las dependencias declaradas del verificador"
+cuando:
+  - "se instala contra él sin instalación previa"
+  - "se instala contra él habiendo una instalación previa completa"
+entonces:
+  - "sin instalación previa el destino queda AUSENTE, y no queda ninguna zona de construcción"
+  - "con instalación previa, la previa sobrevive entera y sigue casando con su manifiesto"
+falla_si:
+  - "el destino queda con parte de los ficheros y sin manifiesto: una instalación que no se puede comprobar y que está ahí para que alguien la ejecute"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py
+estado: prueba-superada
+evidencia: evidencia/integridad-evidencia-salida.txt
+```
+```yaml ads:escenario
+id: T334
+nombre: El repositorio juzgado no aporta el código que lo verifica
+cubre: [g.15, "E-10", "V6-16", "ADJ-B2"]
+dado:
+  - "una instalación de la raíz externa hecha desde este árbol"
+  - "un repositorio ajeno que trae dentro su propio `raiz-externa/` y su propio `runtime/admision/`, los dos envenenados"
+cuando:
+  - "se le pide a la instalación publicar su procedencia juzgando el repositorio ajeno, y ejecutándose DESDE dentro de él"
+entonces:
+  - "todos los módulos publicados vienen de la instalación, y ninguno del repositorio juzgado"
+  - "la procedencia declara que el repo juzgado NO es el árbol de la instalación"
+  - "el testigo del intruso no llega a existir, y la salida no lleva rutas absolutas del anfitrión"
+falla_si:
+  - "quien pueda escribir el árbol verificado decide con qué código se le verifica"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py
+estado: prueba-superada
+evidencia: evidencia/integridad-evidencia-salida.txt
+```
+```yaml ads:escenario
+id: T335
+nombre: Un argumento obligatorio ausente falla por USO y no por veredicto
+cubre: ["E-15", g.15, "ADJ-B2"]
+dado:
+  - "las órdenes `verificar` y `comprobar` del verificador, y el instalador, sin alguno de sus argumentos obligatorios"
+cuando:
+  - "se ejecuta cada una de las cuatro combinaciones en procesos reales"
+entonces:
+  - "las cuatro salen con código 2 —uso incorrecto—, que es distinto de «el veredicto no fue favorable»"
+  - "ninguna publica un `Traceback`"
+falla_si:
+  - "la ausencia de `--repo` se resuelve con el directorio de trabajo, y el proceso juzga lo que haya"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py
+estado: prueba-superada
+evidencia: evidencia/integridad-evidencia-salida.txt
+```
+```yaml ads:escenario
+id: T336
+nombre: Control del control de la purga, ejecutado sobre una instalación real
+cubre: ["E-10", "ADJ-B2"]
+dado:
+  - "una instalación de la raíz externa y el paquete envenenado del entorno"
+cuando:
+  - "se ejecuta `capacidades` con la purga puesta y bajo veneno"
+  - "se le RETIRA el prólogo `E-10` al verificador instalado y se repite"
+entonces:
+  - "con la purga, las nueve condiciones salen enteras y el homónimo no entra"
+  - "sin la purga, el homónimo SÍ entra o la salida SÍ se falsea"
+falla_si:
+  - "sin la purga el veneno tampoco entra, y entonces la prueba de la purga no está midiendo la purga"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py
+estado: prueba-superada
+evidencia: evidencia/integridad-evidencia-salida.txt
+```
+```yaml ads:escenario
+id: T337
+nombre: Una procedencia que no se puede demostrar es fallo cerrado y no emite nada
+cubre: ["E-10", "O26 1.8", g.15, "V6-16"]
+dado:
+  - "una instalación de la raíz externa cuyo verificador se altera para importar un módulo del aparato desde FUERA de la instalación, sin pasar por el lanzador"
+cuando:
+  - "se ejecuta `capacidades` sobre ella"
+entonces:
+  - "el proceso sale con el código propio de procedencia y escribe `PROCEDENCIA_NO_FIABLE` en `stderr`"
+  - "`stdout` queda vacío: no se publica nada"
+falla_si:
+  - "se emite veredicto con módulos cuya procedencia el proceso no puede demostrar"
+  - "la garantía se apoya sólo en la purga, que cubre lo que viene del lanzador y no lo demás"
+ejecucion: validador-estructural
+validador: kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py
+estado: prueba-superada
+evidencia: evidencia/integridad-evidencia-salida.txt
 ```

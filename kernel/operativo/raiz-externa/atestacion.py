@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """atestacion — la ATESTACIÓN de la raíz externa, VINCULADA al commit y al `tree`.
 
 §11.8, literal: «la atestación queda **vinculada al SHA del commit y al `tree` SHA**, y no a
@@ -29,6 +28,22 @@ DECISIÓN · la atestación lleva la VERSIÓN de la herramienta de firma y su AL
     huellas se recalculen «en ese entorno externo». Registrar `OpenSSH_8.9p1` y `ssh-ed25519`
     dentro de lo firmado hace que un cambio de herramienta sea visible en la evidencia.
 """
+
+# ---------------------------------------------------------------------------
+#  ADVERTENCIA DE FORMA · este módulo NO lleva línea de intérprete, y es deliberado.
+#
+#  `ADJ-B2` obligó a que los puntos ejecutables de la raíz externa se INVENTARÍEN de forma
+#  mecánica en vez de por una lista escrita a mano —una lista escrita a mano fue exactamente lo
+#  que dejó a este paquete fuera del alcance de `T306`—. El criterio derivado es una
+#  equivalencia de tres términos que `T330` comprueba sobre el disco:
+#
+#      lleva `#!`   ⟺   define `if __name__ == "__main__":`   ⟺   lleva el prólogo `E-10`
+#
+#  Un módulo que se importa y no se ejecuta no cumple los dos últimos, así que tampoco puede
+#  llevar el primero: una línea de intérprete en un módulo lo presenta como ejecutable, y a un
+#  ejecutable esta equivalencia le exige la purga. Se retira la línea, y con ella la ambigüedad.
+# ---------------------------------------------------------------------------
+
 from __future__ import annotations
 
 import hashlib

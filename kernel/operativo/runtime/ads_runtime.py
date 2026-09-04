@@ -561,7 +561,32 @@ def orden_estado_paquete(argumentos):
     return _emitir(argumentos, informe, lineas)
 
 
+def orden_procedencia(argumentos):
+    """`E-10` · publica de dónde sale cada módulo, sin abrir el runtime ni tomar lease.
+
+    `ADJ-M2` · los cinco puntos ejecutables declaraban «la PROCEDENCIA se PUBLICA» y sólo
+    uno tenía orden que la publicara. La razón entera está en
+    `ads_arboles._orden_procedencia`. Aquí, además, esta orden **no adquiere ninguna
+    instancia**: preguntar de dónde sale el dispatcher no puede exigir nombrar un titular.
+    """
+    datos = procedencia(argumentos.repo)
+    legible = ["aparato       " + datos["aparato"],
+               "repo          " + str(datos.get("repo")),
+               "mismo árbol   " + ("si" if datos.get("repo_es_el_arbol_del_aparato")
+                                   else "NO"),
+               "retiradas     " + str(datos["entradas_del_lanzador_retiradas"])]
+    for modulo in sorted(datos["modulos"]):
+        legible.append("  modulo  " + modulo + "  " + datos["modulos"][modulo])
+    return _emitir(argumentos, datos, legible)
+
+
+# `ADJ-M2` · `procedencia` entra en ESTA tabla y no en una aparte: `ORDENES` es lo que el
+# gate midió para encontrar el defecto, y publicarla en otro sitio la escondería de la
+# medición que la echó en falta. CONSECUENCIA CONOCIDA: `test_runtime.py` enumera esta tabla
+# con una lista literal y falla hasta que incluya `procedencia`; esa batería está fuera de la
+# zona de esta corrección.
 ORDENES = {
+    "procedencia": orden_procedencia,
     "crear-item": orden_crear_item,
     "crear-paquete": orden_crear_paquete,
     "elegibles": orden_elegibles,
@@ -578,6 +603,9 @@ ORDENES = {
     "vistas": orden_vistas,
     "estado-paquete": orden_estado_paquete,
 }
+
+# Las órdenes que NO necesitan `--repo` ni `--instancia`. Ver `orden_procedencia`.
+ORDENES_SIN_REPO = ("procedencia",)
 
 
 def _uso(mensaje):
@@ -626,6 +654,7 @@ def construir_analizador():
                             help="salida JSON determinista")
     ordenes = analizador.add_subparsers(dest="orden", required=True)
 
+    ordenes.add_parser("procedencia", parents=[comun])
     ordenes.add_parser("elegibles", parents=[comun])
     ordenes.add_parser("vistas", parents=[comun])
 
@@ -669,9 +698,10 @@ def construir_analizador():
 def main(argv=None):
     analizador = construir_analizador()
     argumentos = analizador.parse_args(argv)
-    if not getattr(argumentos, "repo", None):
+    sin_repo = argumentos.orden in ORDENES_SIN_REPO
+    if not getattr(argumentos, "repo", None) and not sin_repo:
         return _uso("falta --repo: esta orden se ejecuta sobre un CONTROL REPO concreto")
-    if not getattr(argumentos, "instancia", None):
+    if not getattr(argumentos, "instancia", None) and not sin_repo:
         return _uso("falta --instancia: el runtime nombra al titular de cada lease durable")
     if not hasattr(argumentos, "json"):
         argumentos.json = False

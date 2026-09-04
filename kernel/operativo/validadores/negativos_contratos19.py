@@ -29,6 +29,8 @@ from __future__ import annotations
 
 CATALOGO = []
 
+import os  # noqa: E402
+
 import comprobar_negativos as _cn  # noqa: E402
 
 Mutacion, _sustituir, _escribir = _cn.Mutacion, _cn._sustituir, _cn._escribir
@@ -305,4 +307,195 @@ CATALOGO.extend([
              "el reparto por vía publicado deja de ser el derivado del árbol",
              m_d104_reparto_por_via_caducado,
              espera="pares por la vía 2 y el árbol deriva"),
+])
+
+
+# ===========================================================================
+#  `ADJ-B3` y `ADJ-G2` · LOS SABOTAJES DE LA PASADA DEL 2026-09-04
+# ===========================================================================
+#  QUÉ SE AÑADE AQUÍ, Y POR QUÉ AQUÍ. `ADJ-B3` midió que `V6-12` figuraba con `B=0` —o sea
+#  «tiene sabotaje declarado»— mientras la propiedad que el adjudicador derribó **no tenía
+#  ninguno**: los tres imputados eran `N189`, `N242` y `N242b`, y `N189` está declarado
+#  contra `V6-11`. Y `ADJ-G2` midió que el `estado:` de un escenario no lo contrastaba
+#  nadie. Cada corrección de esta pasada trae aquí su infracción deliberada, que es lo que
+#  impide que la corrección se pueda deshacer en silencio.
+#
+#  Se escriben en ESTE fichero y no en `comprobar_negativos.py` por la misma razón por la
+#  que existe el fichero: tres ejes en paralelo sobre la misma lista producen una
+#  integración que nadie puede revisar por partes. El catálogo sigue siendo UNO, y lo sigue
+#  componiendo `comprobar_negativos.py` por nombre.
+
+PRUEBAS_RUNTIME = "kernel/operativo/runtime/pruebas/"
+ADMISION = PRUEBAS_RUNTIME + "test_admision.py"
+BATERIA = _cn.CLASE_BATERIA
+SEDE_ADMISION = "kernel/operativo/runtime/admision/"
+
+
+def m_b3_el_append_only_vuelve_al_prefijo(raiz):
+    """`ADJ-B3` · el régimen de ENTRADAS CERRADAS se retira y vuelve el prefijo.
+
+    Es el defecto EXACTO que el adjudicador explotó: `actual.startswith(anterior)` contra el
+    commit de nacimiento, que protegía 14 395 de 42 181 bytes de la sede del Owner.
+    """
+    ruta = os.path.join(raiz, SEDE_ADMISION + "perimetro.py")
+    with open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    inicio = texto.index("        # `ADJ-B3` · `O27` §3 · el régimen FUERTE")
+    fin = texto.index("        # Régimen de PREFIJO, para documentos continuos")
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto[:inicio] + texto[fin:])
+
+
+def m_b3_el_delimitador_vuelve_a_ser_contenido(raiz):
+    """`ADJ-B3` · el delimitador estructural vuelve a contarse como texto de la entrada.
+
+    `O27` §1 dice que un delimitador externo NO es contenido. Contarlo pone en ROJO una
+    sede INTACTA en cuanto se inscribe la resolución siguiente —medido: seis bytes por
+    inscripción— y un guardián que da rojos falsos acaba apagado.
+    """
+    _sustituir(raiz, SEDE_ADMISION + "sede.py",
+               "        if bruto.endswith(DELIMITADOR):\n"
+               "            return bruto[: -len(DELIMITADOR)]",
+               "        if bruto.endswith(DELIMITADOR):\n"
+               "            return bruto")
+
+
+def m_b3_la_conservacion_byte_a_byte_se_retira(raiz):
+    """`ADJ-B3` · el canal ESTRUCTURAL deja de comparar cada entrada byte a byte."""
+    _sustituir(raiz, SEDE_ADMISION + "sede.py",
+               '        if bloque.contenido != registrada["contenido"]:',
+               '        if False:')
+
+
+def m_b3_el_canal_de_presencia_literal_se_retira(raiz):
+    """`ADJ-B3` · se retira el canal que sigue hablando con la estructura rota."""
+    _sustituir(raiz, SEDE_ADMISION + "sede.py",
+               '    literales = []\n'
+               '    for identificador in libro["orden"]:\n'
+               '        if libro["entradas"][identificador]["contenido"] not in contenido:\n'
+               '            literales.append(identificador)',
+               '    literales = []')
+
+
+def m_b3_el_canal_de_la_historia_se_retira(raiz):
+    """`ADJ-B3` · una alteración confirmada y luego revertida deja de constar."""
+    _sustituir(raiz, SEDE_ADMISION + "sede.py",
+               '    for incidencia in libro["incidencias"]:',
+               '    for incidencia in []:')
+
+
+def m_b3_el_regimen_se_decide_por_el_fichero_de_hoy(raiz):
+    """`ADJ-B3` · el régimen deja de derivarse de la HISTORIA.
+
+    Con esto, borrar las cabeceras `# ``Onn`` ·` haría que el documento «dejara de tener
+    entradas» y cayera al contraste débil: apagar el guardián quitándole la estructura.
+    """
+    _sustituir(raiz, SEDE_ADMISION + "sede.py",
+               '    return any(identificador != PREAMBULO for identificador in libro["orden"])',
+               '    return False')
+
+
+def m_g2_la_sede_de_la_derivacion_desaparece(raiz):
+    """`ADJ-G2` · `registro_pruebas` deja de publicar la fórmula del estado.
+
+    `T350` NO reimplementa la derivación: la importa de su sede única, que es la regla que
+    `V6-19` impone en el paquete de admisión y por la misma razón. Si la sede deja de
+    ofrecerla, la prueba tiene que DEJAR DE EMITIR en vez de calcular una suya equivalente,
+    que es la degradación silenciosa que `E-09` cerró en el verificador.
+    """
+    _sustituir(raiz, "kernel/operativo/validadores/registro_pruebas.py",
+               "def contraste_de_estados(escenarios, raiz):",
+               "def contraste_de_estados_RETIRADA(escenarios, raiz):")
+
+
+def m_g2_una_prueba_fallida_se_declara_superada(raiz):
+    """`ADJ-G2` · la divergencia VIVA que el adjudicador midió, reintroducida al revés.
+
+    `T273` vuelve a declarar `prueba-fallida` mientras su evidencia publica
+    `T273  SUPERADA` y `# codigo: 0`. Es el estado exacto del árbol candidato del gate.
+    """
+    _sustituir(raiz, "kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md",
+               'validador: "kernel/operativo/validadores/comprobar_composicion_procesos.py"'
+               '\nestado: prueba-superada',
+               'validador: "kernel/operativo/validadores/comprobar_composicion_procesos.py"'
+               '\nestado: prueba-fallida')
+
+
+def m_g2_un_escenario_cita_una_evidencia_que_no_existe(raiz):
+    """`ADJ-G2` · un escenario declara `prueba-superada` con evidencia inexistente.
+
+    Es la forma exacta de la segunda divergencia viva que esta pasada encontró: `T277`
+    declaraba `prueba-ejecutada` citando un fichero que no ha existido en ningún commit.
+    """
+    _sustituir(raiz, "kernel/operativo/pruebas/T182-T194-runtime-y-admision.md",
+               "evidencia: evidencia/admision-salida.txt",
+               "evidencia: evidencia/no-existe-esta-salida.txt")
+
+
+def m_g2_la_evidencia_se_edita_a_mano(raiz):
+    """`ADJ-G2` · la evidencia publicada se edita para que diga otra cosa.
+
+    Sin canal que la contraste, un `SUPERADA` escrito a mano vale lo mismo que uno
+    ejecutado. Aquí se cambia el veredicto de `T273` a `FALLIDA` en la evidencia y se deja
+    el escenario declarando `prueba-superada`: el contraste tiene que verlo POR LA
+    EVIDENCIA, y no por el campo.
+
+    ALCANCE, DICHO: el OTRO canal de este mismo hallazgo —que la evidencia en disco sea la
+    que `HEAD` tiene confirmada— NO se puede sabotear desde aquí, porque `copiar_corpus`
+    fabrica la copia SIN `.git` y ese canal se declara no ejecutado sobre ella. Se dice en
+    vez de fingir que está probado.
+    """
+    _sustituir(raiz, "kernel/operativo/pruebas/evidencia/composicion-procesos-salida.txt",
+               "T273  SUPERADA", "T273  FALLIDA ")
+
+
+CATALOGO.extend([
+    Mutacion("N340", "ADJ-B3 · O27 §3", "T342", ADMISION,
+             "el append-only de la sede del Owner vuelve al PREFIJO del nacimiento",
+             m_b3_el_append_only_vuelve_al_prefijo, clase=BATERIA,
+             casos=["ElVeredictoAplicaLasEntradasCerradas"],
+             espera="el borrado de una entrada cerrada posterior al nacimiento ha pasado"),
+    Mutacion("N341", "ADJ-B3 · O27 §1", "T341", ADMISION,
+             "el delimitador estructural vuelve a contar como contenido de la entrada",
+             m_b3_el_delimitador_vuelve_a_ser_contenido, clase=BATERIA,
+             casos=["AppendOnlyPorEntradaCerrada"],
+             espera="!= []"),
+    Mutacion("N343", "ADJ-B3 · O27 §3", "T343", ADMISION,
+             "el canal ESTRUCTURAL deja de comparar cada entrada byte a byte",
+             m_b3_la_conservacion_byte_a_byte_se_retira, clase=BATERIA,
+             casos=["AppendOnlyPorEntradaCerrada"],
+             espera="el canal ESTRUCTURAL de comparación entrada a entrada se ha quedado"),
+    Mutacion("N342", "ADJ-B3 · O27 §3", "T342", ADMISION,
+             "se retira el canal de PRESENCIA LITERAL de las entradas cerradas",
+             m_b3_el_canal_de_presencia_literal_se_retira, clase=BATERIA,
+             casos=["AppendOnlyPorEntradaCerrada", "LaSedeRealDelOwner"],
+             espera="el ataque tiene que nombrar las entradas que destruye"),
+    Mutacion("N343b", "ADJ-B3 · V6-12", "T343", ADMISION,
+             "una alteración confirmada y luego revertida deja de constar",
+             m_b3_el_canal_de_la_historia_se_retira, clase=BATERIA,
+             casos=["AppendOnlyPorEntradaCerrada"],
+             espera="confirmada y luego revertida ha dejado de constar"),
+    Mutacion("N349", "ADJ-B3 · O27 §3", "T349", ADMISION,
+             "el régimen de entradas cerradas se decide por el fichero de HOY y no por la "
+             "historia",
+             m_b3_el_regimen_se_decide_por_el_fichero_de_hoy, clase=BATERIA,
+             casos=["AppendOnlyPorEntradaCerrada",
+                    "ElVeredictoAplicaLasEntradasCerradas"],
+             espera="el régimen entradas-cerradas"),
+    Mutacion("N350", "ADJ-G2", "T350", "comprobar_evidencia",
+             "la SEDE de la derivación del estado deja de publicar la fórmula",
+             m_g2_la_sede_de_la_derivacion_desaparece,
+             espera="ha dejado de publicarla"),
+    Mutacion("N350b", "ADJ-G2", "T350", "comprobar_evidencia",
+             "`T273` vuelve a declarar prueba-fallida con la evidencia diciendo SUPERADA",
+             m_g2_una_prueba_fallida_se_declara_superada,
+             espera="T273: declara `estado: prueba-fallida`"),
+    Mutacion("N350c", "ADJ-G2", "T350", "comprobar_evidencia",
+             "un escenario declara superada citando una evidencia que no existe",
+             m_g2_un_escenario_cita_una_evidencia_que_no_existe,
+             espera="NO EXISTE en el árbol"),
+    Mutacion("N350d", "ADJ-G2", "T350", "comprobar_evidencia",
+             "la evidencia publicada se edita a mano para que diga otra cosa",
+             m_g2_la_evidencia_se_edita_a_mano,
+             espera="su evidencia sostiene `prueba-fallida`"),
 ])

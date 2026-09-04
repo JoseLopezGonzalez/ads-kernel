@@ -15,7 +15,8 @@ catálogo no podía alcanzarlas, **36 de sus 37 filas estaban ahí POR CONSTRUCC
 criterio `F6` sería incertificable por construcción, y eso no puede ser lo que `O26` §5.2
 quiso decir. No se baja el listón: se sube el ALCANCE DEL INSTRUMENTO, y después se puebla.
 
-QUÉ HAY AQUÍ, Y CON QUÉ EXIGENCIA. Dieciocho infracciones. Diecisiete son de clase
+QUÉ HAY AQUÍ, Y CON QUÉ EXIGENCIA. Veintidós infracciones —dieciocho, más las CUATRO que
+añaden `ADJ-B1` y `ADJ-B2` del gate del 2026-09-04—. Veintiuna son de clase
 `bateria` —copian el corpus, meten el defecto, ejecutan la batería DECLARADA con el
 intérprete en curso sobre la copia y exigen TRES cosas, no una: que la batería termine en
 rojo, que ENTRE LOS CASOS CAÍDOS esté el declarado —se sabe por el docstring `Tnnn · …` que
@@ -50,6 +51,14 @@ abajo cita el `falla_si` del escenario que ataca, y rompe exactamente esa cosa.
   `FD-5`                                `T216`   el backend débil se presenta como fuerte
   `FD-6`                                `T191`   un recibo ABIERTO se reejecuta, y duplica
   `FD-3`                                `T194`   el motor durable no viaja al proyecto instalado
+  `ADJ-B1`                              `T320`   la migración 0->1 publica la revisión 0 SIN
+                                                 el `testigo` que `E-08` hizo obligatorio
+  `ADJ-B1`                              `T321`   la guarda de la fundación vuelve a mirar el
+                                                 evento del diario y no la revisión que falta
+  `ADJ-B2`                              `T330`   el verificador de la raíz externa pierde la
+                                                 purga `E-10` de la ruta de importación
+  `ADJ-B2`                              `T333`   el instalador vuelve a copiar encima del
+                                                 destino, e instala a medias
 
 FORMA SINTÁCTICA, Y POR QUÉ NO SE TOCA. El derivador externo lee los sabotajes con
 `Mutacion\\(\\s*"([^"]+)"\\s*,\\s*"[^"]*"\\s*,\\s*"(T\\d+)"`. Esa expresión exige el token
@@ -83,6 +92,7 @@ ARBOLES = PRUEBAS_RUNTIME + "test_arboles.py"
 CONTENCION = PRUEBAS_RUNTIME + "test_contencion.py"
 ADAPTADORES = PRUEBAS_RUNTIME + "test_adaptadores.py"
 RAIZ_EXTERNA = PRUEBAS_RUNTIME + "test_raiz_externa.py"
+INTEGRIDAD = PRUEBAS_RUNTIME + "test_integridad_y_evidencia.py"
 
 
 # ===========================================================================
@@ -408,6 +418,84 @@ def m_fd3_el_motor_durable_no_viaja(raiz):
                'rm -rf "$ADS/kernel/operativo/runtime"\n')
 
 
+# ===========================================================================
+#  `ADJ-B1` · la MIGRACIÓN 0->1 sobre un almacén heredado REAL
+# ===========================================================================
+
+def m_adjb1_la_migracion_vuelve_a_omitir_el_testigo(raiz):
+    """`T320`, `falla_si`: «la migración 0->1 publica la revisión 0 SIN el `testigo` que
+    `E-08` hizo obligatorio».
+
+    Es el defecto de `ADJ-B1` reintroducido tal cual: de las cinco llamadas a
+    `_publicar_revision` del árbol, la de la migración vuelve a quedarse sin el argumento de
+    sólo palabra clave. Lo medido antes de corregir era `TypeError` NO tipada, `EXIT=1`,
+    `stdout` vacío y siete rutas absolutas del anfitrión en la traza.
+    """
+    _sustituir(raiz, "kernel/operativo/runtime/estado/migracion.py",
+               "    almacen._publicar_revision(revision_cero, "
+               "testigo=motor.TESTIGO_DE_FUNDACION)",
+               "    almacen._publicar_revision(revision_cero)")
+
+
+def m_adjb1_la_fundacion_vuelve_a_mirar_el_diario(raiz):
+    """`T321`, `falla_si`: «una primera migración fallida deja el almacén inmigrable».
+
+    El AGRAVANTE de `ADJ-B1`, reintroducido: la guarda de la rama de fundación vuelve a
+    mirar el EVENTO del diario en vez de la revisión que falta. Con el diario ya fundado y
+    sin `REVISION.json`, la rama no se vuelve a entrar y el almacén queda inmigrable
+    incluso con el `testigo` puesto. Es la mitad que la corrección de la línea no repara.
+    """
+    _sustituir(raiz, "kernel/operativo/runtime/estado/migracion.py",
+               "    hay_revision = os.path.exists(disposicion.revision)\n"
+               "    fundacion = _fundacion_en(eventos)",
+               "    fundacion = _fundacion_en(eventos)\n"
+               "    hay_revision = fundacion is not None")
+
+
+# ===========================================================================
+#  `ADJ-B2` · la PURGA `E-10` en TODA la raíz externa
+# ===========================================================================
+
+def m_adjb2_la_raiz_externa_pierde_la_purga(raiz):
+    """`T330`, `falla_si`: «un punto ejecutable del inventario no lleva el prólogo `E-10`».
+
+    El defecto de `ADJ-B2` reintroducido en el punto que `O26` §1 juzga: `verificador.py`
+    deja de purgar la ruta de importación. Lo medido antes de corregir era `capacidades`
+    publicando `{}` con código 0 bajo un `json.py` homónimo, y CERO líneas de purga en todo
+    el paquete.
+    """
+    _sustituir(raiz, "kernel/operativo/raiz-externa/verificador.py",
+               "def _purgar_la_ruta_de_importacion():",
+               "def _purga_desactivada():")
+    _sustituir(raiz, "kernel/operativo/raiz-externa/verificador.py",
+               "RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()",
+               "RETIRADAS_DE_LA_RUTA = []")
+
+
+def m_adjb2_el_instalador_vuelve_a_copiar_encima(raiz):
+    """`T333`, `falla_si`: «una instalación interrumpida deja el destino a medias».
+
+    El instalador vuelve a borrar el destino y copiar encima, en vez de construir aparte y
+    publicar por renombrado. Una dependencia que falte deja entonces en el destino un árbol
+    con parte de los ficheros y SIN manifiesto: una instalación que no se puede comprobar y
+    que está ahí para que alguien la ejecute.
+    """
+    _sustituir(raiz, "kernel/operativo/raiz-externa/instalar.py",
+               "    try:\n"
+               "        _construir(en_curso, runtime=runtime)\n"
+               "    except BaseException:",
+               "    if os.path.exists(destino):\n"
+               "        shutil.rmtree(destino)\n"
+               "    _construir(destino, runtime=runtime)\n"
+               "    return {\"destino\": destino,\n"
+               "            \"manifiesto\": os.path.join(destino, MANIFIESTO),\n"
+               "            \"verificador\": os.path.join(destino, NOMBRE_DEL_PAQUETE,\n"
+               "                                        \"verificador.py\")}\n"
+               "    try:\n"
+               "        _construir(en_curso, runtime=runtime)\n"
+               "    except BaseException:")
+
+
 CATALOGO.extend([
     Mutacion("N172", "A14", "T172", ESTADO_DURABLE,
              "la guarda de intérprete pasa a poder RELAJARSE por variable de entorno",
@@ -477,6 +565,29 @@ CATALOGO.extend([
              "un recibo ABIERTO deja de dar `ambiguo` y el efecto se vuelve a ejecutar",
              m_fd6_el_recibo_abierto_se_reejecuta, clase=BATERIA,
              espera="ambiguo"),
+    Mutacion("N320", "ADJ-B1", "T320", ESTADO_DURABLE,
+             "la migración 0->1 vuelve a publicar la revisión 0 sin el `testigo` de `E-08`",
+             m_adjb1_la_migracion_vuelve_a_omitir_el_testigo, clase=BATERIA,
+             espera="un almacén heredado REAL no migró",
+             casos=["MigracionHeredadaReal."
+                    "test_T320_un_heredado_REAL_migra_y_publica_la_revision_esperada"]),
+    Mutacion("N321", "ADJ-B1", "T321", ESTADO_DURABLE,
+             "la guarda de la fundación vuelve a mirar el evento del diario y no la revisión",
+             m_adjb1_la_fundacion_vuelve_a_mirar_el_diario, clase=BATERIA,
+             espera="el almacén quedó inmigrable tras un corte",
+             casos=["MigracionHeredadaReal."
+                    "test_T321_el_almacen_que_el_defecto_dejo_roto_vuelve_a_ser_migrable"]),
+    Mutacion("N330", "ADJ-B2", "T330", INTEGRIDAD,
+             "el verificador de la raíz externa pierde la purga `E-10` de `sys.path`",
+             m_adjb2_la_raiz_externa_pierde_la_purga, clase=BATERIA,
+             espera="es un punto ejecutable SIN la purga",
+             casos=["PurgaEnLaRaizExterna."
+                    "test_T330_el_inventario_de_puntos_ejecutables_se_DERIVA_y_es_coherente"]),
+    Mutacion("N333", "ADJ-B2", "T333", INTEGRIDAD,
+             "el instalador vuelve a borrar el destino y copiar encima, e instala a medias",
+             m_adjb2_el_instalador_vuelve_a_copiar_encima, clase=BATERIA,
+             espera="quedó una instalación a medias en el destino",
+             casos=["PurgaEnLaRaizExterna.test_T333_no_se_instala_a_medias"]),
     Mutacion("N194", "FD-3", "T194", "comprobar_arranque",
              "el motor de estado durable deja de viajar al proyecto instalado",
              m_fd3_el_motor_durable_no_viaja,

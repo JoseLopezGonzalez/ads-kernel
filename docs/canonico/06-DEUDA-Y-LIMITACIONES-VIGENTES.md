@@ -74,8 +74,27 @@ nombra sólo las que siguen abiertas.
 | **`C-L.7`** | **NO CERRADA** | que ningún campo vigente del bloque reanudable copie un estado, recuento, ordinal o enumeración que otra sede derive — **y que se compruebe por CLASE, no por instancia** | `SIS` | **`F5`** la especificación · **`F6`** el instrumento | **sólo un gate independiente posterior puede cerrarla.** Barrer no es certificar, y el corpus lo dice de sí mismo |
 | **`C-L.2`** | **REGISTRADA PARA `F5`** | la decisión sobre las reglas constitucionales que el diseño de macrocircuitos presiona | el **Owner** | **`F5`** | una enmienda aprobada, regla a regla |
 | **`C-L.12`** | **REGISTRADA PARA `F5`** | los restos editoriales sobre material aprobado | `F5` | **`F5`** | la checklist verificable aplicada entera, con su prueba posterior |
-| **`C-L.10`** | **CONTRATADA PARA `F6`** | **cero líneas de código escritas** | `PLT` | **`F6`** | la implementación construida y ejecutada |
-| **`C-L.13`** | **MIXTA POR DESGLOSE** | de sus componentes, uno permanece **contratado para `F6` y NO implementado** | `PLT` | **`F6`** | ídem |
+| **`C-L.10`** | **CONTRATADA PARA `F6` · IMPLEMENTADA Y PROBADA, SIN CERTIFICAR** | sus tres contratos —`CONTRATO 1` censo `AFIRMACIONES` derivado · `CONTRATO 2` alcance de `T152` derivado · `CONTRATO 3` guarda de intérprete—, **los tres construidos, probados y en el universo**: `T151`+`T270`, `T152`+`T272` y `T172`, con sabotajes `N270`, `N270b`, `N272`, `N272b` | `PLT` | **`F6`** | **sólo la certificación independiente.** La implementación ya no es lo que falta |
+| **`C-L.13`** | **MIXTA POR DESGLOSE · SIN COMPONENTE PENDIENTE DE IMPLEMENTACIÓN** | sus seis componentes: `K-05`, `K-09`, `K-10`, `K-08` y `L-03` corregidos en `F4c`; y `J-11` —el único que quedaba, **`J-11 ≡ CONTRATO 3`**— construido en `validadores/entorno.py` y probado por `T172` | `PLT` | **`F6`** | ídem |
+
+> **Las dos últimas filas estaban CADUCADAS, y la caducidad tuvo consecuencia.** Decían
+> «**cero líneas de código escritas**» de `C-L.10` y «**contratado para `F6` y NO
+> implementado**» del componente vivo de `C-L.13`. La sede única de la clasificación —el
+> bloque «CLASIFICACIÓN VIGENTE» del
+> [`CHECKPOINT-ADS-NEXT.md`](../evolucion/CHECKPOINT-ADS-NEXT.md)— identifica `C-L.10` con
+> los **tres contratos de `D102`** y el componente vivo de `C-L.13` con **`J-11`**, que
+> `11-ARQ` §19 nombra literalmente «`CONTRATO 3 · LA GUARDIA DE VERSIÓN DE INTÉRPRETE
+> (`J-11`)`». Los cuatro están construidos, probados y dentro del universo obligatorio. **Un
+> revisor del gate del 2026-09-04 leyó esta celda y formuló contra el árbol un cargo de
+> reclasificación que no existía**: la celda caducada no fue un descuido inocuo, produjo un
+> hallazgo falso. **Lo que sigue abierto de las dos es la CERTIFICACIÓN, no la
+> implementación**, y así se dice ahora.
+>
+> **Y por qué esto no vuelve a pasar por escribirlo mejor.** El estado de construcción tiene
+> **una sola sede** —[`04-CONTRATOS-TECNICOS.md`](04-CONTRATOS-TECNICOS.md) §1— y este
+> documento remite a ella; el reparto de los contratos de §19 se DERIVA con
+> `docs/evolucion/verificacion/derivar-universo-obligatorio.py --obligaciones`. Ninguna de
+> las dos cifras se vuelve a escribir aquí a mano.
 
 **Y una razón añadida por la que `C-L.7` sigue abierta, derivada por el último
 verificador:** el barrido mecánico de su regla **es incompleto POR CAJA DE LETRA** —una
@@ -186,26 +205,41 @@ grep '^## `PN-' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md | grep -v 'RETIRADA\
 construir nada del estado durable**, y con ello queda esperando casi todo el grafo de
 construcción.
 
-## 6 · Los contratos de `F6` — escritos, ninguno implementado
+## 6 · Los contratos de `F6` — quién responde de ellos, y qué sigue sin cerrarse
 
-**Sede única:** [`11-ARQ` §20](../evolucion/11-ARQUITECTURA-INTEGRADA.md).
+**Sede única de los contratos:** [`11-ARQ` §20](../evolucion/11-ARQUITECTURA-INTEGRADA.md).
 **Propietario de la especificación:** `SIS`. **Implementador:** `PLT`. **Dosier
 independiente:** `VER`. **Bloqueo por seguridad:** `SEG`. **Autoridad de aceptación:** el
 **Owner**, indelegable. **Fase de ejecución:** `F6`.
 
+> **ESTA SECCIÓN NO DECLARA ESTADO DE CONSTRUCCIÓN, y hasta el 2026-09-04 lo declaraba mal.**
+> Publicaba «`ESTADO DE TODOS   CONTRATADO · NO IMPLEMENTADO · NO EJECUTADO · NO
+> CERTIFICADO`» con el aparato construido, ejecutado y con evidencia publicada. **La única
+> sede del estado de construcción es
+> [`04-CONTRATOS-TECNICOS.md`](04-CONTRATOS-TECNICOS.md) §1**, y aquí se remite a ella.
+> `T360` lo comprueba sobre todas las sedes vivas.
+
 ```text
-ESTADO DE TODOS   CONTRATADO · NO IMPLEMENTADO · NO EJECUTADO · NO CERTIFICADO
+LO QUE SIGUE      NINGUNO está CERTIFICADO. Implementado y ejecutado NO es certificado: la
+SIENDO CIERTO     certificación la emite un juicio independiente sobre un SHA exacto, y
+                  `O26` acepta la ARQUITECTURA bajo condiciones sin certificar candidata
+                  alguna. Ésta es deuda VIVA y la razón por la que esta sección existe
+
 UNO DE ELLOS      está además BLOQUEADO POR DEPENDENCIA: su norma habilitante es de `F5` y
                   su propietario es el Owner. La dependencia está DECLARADA, ENLAZADA y con
                   condición exacta de desbloqueo
+
+DÓNDE SE LEE      el estado de construcción, contrato a contrato: `04-CONTRATOS` §1, y su
+EL RESTO          reparto derivado en `docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md`
 ```
 
 El censo y su reparto se derivan con los comandos publicados en
 [`04-CONTRATOS-TECNICOS.md`](04-CONTRATOS-TECNICOS.md) §6. **Aquí no se copian.**
 
 **Y un contrato más, fuera de esa sección:** el del **verificador externo del repositorio de
-control**, registrado COMPLETO para `F6` y **no implementado** —`11-ARQ` §11.8—; su norma
-habilitante y la sede normativa del gobierno Git del control repo son entregables de `F5`.
+control**, registrado COMPLETO para `F6` en `11-ARQ` §11.8, **BLOQUEADO POR DEPENDENCIA**:
+su norma habilitante y la sede normativa del gobierno Git del control repo son entregables
+de `F5`, y mientras no existan el contrato no se puede cerrar.
 
 ## 7 · Los hallazgos EXTERNOS con propietario y fase
 
@@ -358,7 +392,16 @@ cgroup v2         MONTADO, con controladores (cpuset cpu io memory hugetlb pids 
                   DISPONIBLE CON SU MOTIVO, no se cuenta como ejercido, y su ausencia NO
                   produce un falso rojo: la política se sirve con otro backend fuerte
 BACKENDS FUERTES  espacio-de-nombres-de-pid · systemd-scope · contenedor. Los tres
-EJERCITABLES      ejercitables aquí. `mejor_disponible`: espacio-de-nombres-de-pid
+EJERCITABLES      ejercitables aquí. `mejor_disponible`: espacio-de-nombres-de-pid.
+                  MEDIDO: cada uno contiene las TRES generaciones, y el bisnieto que hace
+                  `setsid` NO escapa (`T215`)
+EL BACKEND DÉBIL  `killpg` NO contiene: con él, el bisnieto que hace `setsid` **SÍ escapa**,
+                  y está medido, no supuesto (`T216`). Por eso el débil declara su alcance
+                  en el resultado y nunca se presenta como fuerte
+SIN BACKEND       FALLO CERRADO. Una política fuerte no se cumple con un backend débil, la
+FUERTE            elección nunca devuelve el simple cuando se exige lo fuerte, y sin
+                  ninguno disponible NO SE EJECUTA NADA: cero degradación silenciosa
+                  (`T216`). Evidencia de las tres filas: `evidencia/contencion-salida.txt`
 IDENTIDAD         por CONTENEDOR, que es la demostración transitoria que `O26` §3 acepta:
 SEPARADA          identidad distinta (65534 frente a 1000), repositorio montado en SÓLO
                   LECTURA y controles POSITIVOS de que esa identidad escribe en su propio
@@ -471,6 +514,22 @@ grep '^## `PN-' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md | grep -vc 'RETIRADA
 # 4 · los contratos de `F6` y su clasificación
 grep -cE '^\| `V6-[0-9]+` \|' docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
 
-# 5 · que la guarda de entorno sigue sin existir
-grep -rn 'python_requires' tooling/ kernel/ ; echo "(vacío = A14 sigue abierto)"
+# 5 · que la guarda de entorno de `A14` EXISTE y sigue siendo su única sede. §4 la declara
+#     CERRADA POR `F6`, y esto es lo que hay que ejecutar para desmentirlo o confirmarlo
+python3 kernel/operativo/validadores/entorno.py ; echo "codigo=$?"
+#     0  → la guarda corre y este intérprete cumple    · `A14` cerrada, como dice §4
+#     78 → la guarda corre y el intérprete NO cumple   · `A14` cerrada; falla el anfitrión
+#     2  → la guarda ha DESAPARECIDO del árbol         · §4 miente y hay que reabrir `A14`
+#     la sede de la versión mínima, declarada UNA sola vez:
+grep -c '^VERSION_MINIMA' kernel/operativo/validadores/entorno.py   # tiene que dar 1
 ```
+
+> **El comando 5 decía lo contrario, y lo decía desde antes de que `A14` se cerrase.**
+> Publicaba `grep -rn 'python_requires' tooling/ kernel/ ; echo "(vacío = A14 sigue
+> abierto)"`. Ejecutado hoy sale **vacío**, de modo que por su propia anotación este
+> documento afirmaba en §13 que `A14` sigue abierta mientras §4 la declara **CERRADA POR
+> `F6`**. La sonda era además la equivocada: `python_requires` es la cadena de
+> empaquetado que `A14` denunciaba como única declaración, y la guarda que la cerró **no
+> usa esa cadena** —declara `VERSION_MINIMA` en `entorno.py` y la comprueba antes de
+> correr—. Una sonda que busca lo que la corrección retiró da vacío para siempre y su
+> anotación miente para siempre.

@@ -2720,6 +2720,432 @@ class SelladoDelDiario(Caso):
             self.assertFalloCerrado(errores.DiarioCorrupto, alm.diario)
 
 
+# ===================================================================================
+#  T320 · T327 — `ADJ-B1` · LA MIGRACIÓN 0->1 SOBRE UN ALMACÉN HEREDADO **REAL**
+# ===================================================================================
+class MigracionHeredadaReal(Caso):
+    """`ADJ-B1`. La migración del formato heredado, sobre el formato heredado de verdad.
+
+    HECHO REPRODUCIDO ANTES DE CORREGIR, con su orden y su salida literal. Sobre un almacén
+    de versión 0 GENUINO —`estado/canonico/items/it-uno.json` y nada más: sin
+    `FORMATO.json`, sin diario y sin `REVISION.json`—:
+
+        $ ads_estado.py --repo mig migrar
+        Traceback (most recent call last):
+          ...
+          File ".../estado/migracion.py", line 178, in _migrar_0_a_1
+            almacen._publicar_revision(revision_cero)
+        TypeError: Almacen._publicar_revision() missing 1 required keyword-only argument:
+                   'testigo'
+        EXIT=1     stdout VACÍO · SIETE rutas absolutas del anfitrión · CERO códigos tipados
+
+        $ ads_estado.py --repo mig migrar        (2ª y 3ª llamada)
+        [ESTADO_CORRUPTO] el fichero no existe (estado/REVISION.json)
+        EXIT=1
+
+    De las CINCO llamadas a `_publicar_revision` del árbol, ésa era la única que no pasaba
+    el `testigo` que `E-08` hizo obligatorio de sólo palabra clave. Y el daño no lo reparaba
+    la línea: con el `testigo` puesto en una copia, un heredado NUEVO migraba y el almacén
+    que ya había pasado por el fallo seguía dando `ESTADO_CORRUPTO`, porque la guarda de la
+    rama de fundación miraba el evento del diario y no la revisión que faltaba.
+
+    POR QUÉ ESTA CLASE EXISTE Y NO BASTABA `test_09`. `test_09` fabrica el «heredado» con
+    `self.inicializar()` y un `os.remove(FORMATO.json)` a continuación: ese almacén tiene
+    diario CON `almacen.inicializado` y tiene `REVISION.json`, así que la rama rota **no se
+    entra**. Pasaba sobre un camino que el código productivo no recorre. Aquí el heredado se
+    construye desde la ESPECIFICACIÓN del §7 —«`FORMATO.json` versiona el ALMACÉN; su
+    ausencia es la versión 0 heredada»— con la disposición del §1 y nada más.
+
+    `test_09` se conserva tal cual: cubre el heredado por PÉRDIDA del fichero de formato,
+    que es un caso distinto y también real. Lo que faltaba era el otro.
+    """
+
+    # El almacén de versión 0, tal como el §7 y el §1 lo definen y sin un byte de más:
+    # `estado/canonico/<dominio>/<id>.json`, mapas JSON, sin `esquema` declarado —el §7 lo
+    # exige a partir de la versión 1— y SIN `FORMATO.json`, `REVISION.json`, diario,
+    # registro auxiliar ni `operacional/`. Se escribe con `json.dump` corriente y no con el
+    # serializador canónico del motor, a propósito: un almacén heredado viene con el orden
+    # de claves y la indentación que trajera, y la migración tiene que normalizarlo.
+    HEREDADOS = {
+        "items/it-uno.json": {"titulo": "heredado", "id": "it-uno"},
+        "items/it-dos.json": {"n": 2, "id": "it-dos"},
+        "ordenes/or-uno.json": {"destino": "pesquerapp", "id": "or-uno"},
+    }
+
+    def otro_repo(self, nombre):
+        """Un control repo ADICIONAL dentro del temporal del caso, y por tanto ya limpiado.
+
+        Varios casos necesitan más de un almacén —diez cortes, dos sabotajes del testigo— y
+        cada uno tiene que partir de cero. Se hace con directorios y no instanciando un
+        segundo `TestCase`: un `TestCase` a medio construir no tiene su cadena de limpieza
+        montada, y el temporal quedaría en la máquina de quien ejecute.
+        """
+        repo = os.path.join(self.tmp, "repos", nombre)
+        os.makedirs(repo)
+        return repo
+
+    def heredado_genuino(self, contenidos=None, repo=None):
+        """Escribe un almacén de versión 0 y devuelve lo que escribió.
+
+        No usa el motor para construirlo: si lo usara, estaría probando la migración contra
+        un árbol que el propio motor sabe producir, que es el defecto de `test_09`.
+        """
+        contenidos = self.HEREDADOS if contenidos is None else contenidos
+        raiz = os.path.join(repo or self.repo, "estado", "canonico")
+        for ruta, datos in sorted(contenidos.items()):
+            fisica = os.path.join(raiz, *ruta.split("/"))
+            os.makedirs(os.path.dirname(fisica), exist_ok=True)
+            with open(fisica, "w", encoding="utf-8") as fh:
+                json.dump(datos, fh, ensure_ascii=False)      # compacto, sin orden, sin salto
+        return contenidos
+
+    def ficheros_del_almacen(self):
+        """Todo lo que hay bajo `estado/`, en rutas relativas y ordenadas."""
+        raiz = self.ruta_estado()
+        encontrados = []
+        for base, _dirs, ficheros in os.walk(raiz):
+            for nombre in ficheros:
+                completa = os.path.join(base, nombre)
+                encontrados.append(os.path.relpath(completa, raiz).replace(os.sep, "/"))
+        return sorted(encontrados)
+
+    def migrar_por_cli(self, *, fallo=None, repo=None):
+        return cli(repo or self.repo, ["migrar", "--json"], fallo=fallo)
+
+    def exigir_migrado(self, contenidos=None):
+        """El estado que una migración 0->1 correcta tiene que dejar. Se comprueba ENTERO."""
+        contenidos = self.HEREDADOS if contenidos is None else contenidos
+        formato = json.loads(texto_de(self.ruta_estado("FORMATO.json")))
+        self.assertEqual(formato["version_formato"], estado.VERSION_DE_FORMATO)
+        self.assertIn("migracion.aplicada", self.tipos_del_diario(),
+                      "una migración sin evento en el diario no es auditable (§5)")
+        with self.almacen() as alm:
+            self.assertFalse(alm.heredado)
+            revision = alm.revision()
+            self.assertEqual(sorted(revision["raiz"]), sorted(contenidos),
+                             "la raíz publicada no es exactamente la del árbol heredado")
+            for ruta, datos in sorted(contenidos.items()):
+                leido = alm.leer(ruta)
+                for clave, valor in sorted(datos.items()):
+                    self.assertEqual(leido[clave], valor,
+                                     "la migración perdió contenido de " + ruta)
+                self.assertEqual(leido["esquema"], "ads.estado/1",
+                                 "la migración no normalizó el `esquema` de " + ruta)
+            alm.verificar_integridad()
+            self.assertEqual(alm.auditar().a_dict()["hallazgos"], [],
+                             "el diario no explica el estado que la migración publicó")
+        return revision
+
+    # -------------------------------------------------------------------------------
+    def test_T320_un_heredado_REAL_migra_y_publica_la_revision_esperada(self):
+        """T320 · Defecto que previene: `ADJ-B1`, la migración 0->1 que reventaba con una
+        `TypeError` NO tipada sobre el único formato heredado que existe de verdad.
+
+        SABOTAJE QUE LA PONE ROJA: volver a omitir el `testigo` en la llamada a
+        `_publicar_revision` de `migracion.py` (mutación `N320`).
+        """
+        self.heredado_genuino()
+        proceso = self.migrar_por_cli()
+        self.assertEqual(proceso.returncode, 0,
+                         "un almacén heredado REAL no migró: " + (proceso.stderr or ""))
+        self.assertNotIn("Traceback", proceso.stderr,
+                         "la migración sacó una traza por la CLI (`E-15`)")
+        informe = json.loads(proceso.stdout)
+        self.assertEqual((informe["desde"], informe["hasta"]), (0, 1))
+        self.assertEqual(len(informe["aplicadas"]), 1)
+        self.assertEqual(informe["aplicadas"][0]["objetos"], len(self.HEREDADOS))
+        revision = self.exigir_migrado()
+        # La revisión publicada es EXACTAMENTE la esperada, y no «una que funcione»: la 1,
+        # hija de la 0, con la transacción que el informe nombra.
+        self.assertEqual(revision["revision"], 1)
+        self.assertEqual(revision["transaccion"], informe["transacciones"][0])
+        self.assertIsNotNone(revision["padre"])
+
+    def test_T320b_la_llamada_de_la_migracion_pasa_el_testigo_de_fundacion(self):
+        """T320 · Defecto que previene: que el `testigo` vuelva a faltar sin que nada lo note.
+
+        No se lee el fuente: se INTERCEPTA `_publicar_revision` y se comprueba que la
+        migración lo llama con el testigo DECLARADO de fundación. Un argumento omitido
+        volvería a producir la `TypeError` de `ADJ-B1`, y aquí se ve como un fallo con
+        nombre en vez de como una traza.
+        """
+        self.heredado_genuino()
+        vistas = []
+        original = estado.motor.Almacen._publicar_revision
+
+        def espia(propio, revision, *, testigo):
+            vistas.append((revision["revision"], testigo))
+            return original(propio, revision, testigo=testigo)
+
+        estado.motor.Almacen._publicar_revision = espia
+        try:
+            with self.almacen(recuperar=False) as alm:
+                alm.migrar(1)
+        finally:
+            estado.motor.Almacen._publicar_revision = original
+        self.assertTrue(vistas, "la migración no publicó ninguna revisión")
+        self.assertEqual(vistas[0][0], 0, "la primera publicación no es la revisión 0")
+        self.assertEqual(vistas[0][1], estado.motor.TESTIGO_DE_FUNDACION,
+                         "la fundación de la migración no pasó el testigo de fundación")
+        for numero, testigo in vistas:
+            self.assertIsNotNone(testigo,
+                                 "se publicó la revisión " + str(numero) + " sin testigo")
+
+    def test_T321_el_almacen_que_el_defecto_dejo_roto_vuelve_a_ser_migrable(self):
+        """T321 · Defecto que previene: el AGRAVANTE de `ADJ-B1` —que la corrección de la
+        línea no repara el almacén que ya pasó por el fallo—.
+
+        Se reconstruye el estado EXACTO que el defecto dejaba: diario fundado con
+        `almacen.inicializado` y `REVISION.json` AUSENTE. Con la guarda vieja —«¿hay
+        `almacen.inicializado`?»— la rama de fundación no se volvía a entrar nunca y las
+        llamadas 2ª y 3ª daban `[ESTADO_CORRUPTO] el fichero no existe`.
+        """
+        self.heredado_genuino()
+        # El corte REAL que produce ese estado: `durante-el-diario` cae entre el `write` y
+        # el `fsync` del PRIMER anexado del proceso, que en la migración es la fundación.
+        corte = self.migrar_por_cli(fallo="durante-el-diario")
+        self.assertEqual(corte.returncode, CODIGO_SALIDA_CAIDA)
+        self.assertFalse(os.path.exists(self.ruta_estado("REVISION.json")),
+                         "el corte no dejó el estado que este caso existe para reparar")
+        self.assertIn("almacen.inicializado",
+                      [ev["tipo"] for ev in lineas_json(
+                          self.ruta_estado("diario", "DIARIO.jsonl"))],
+                      "el corte no llegó a fundar el diario: no es el estado de `ADJ-B1`")
+
+        reanudada = self.migrar_por_cli()
+        self.assertEqual(reanudada.returncode, 0,
+                         "el almacén quedó inmigrable tras un corte: " + (reanudada.stderr or ""))
+        self.exigir_migrado()
+        # Y la fundación NO se anexó dos veces: reanexarla partiría el linaje en dos.
+        tipos = self.tipos_del_diario()
+        self.assertEqual(tipos.count("almacen.inicializado"), 1,
+                         "la reanudación volvió a fundar el diario")
+
+    def test_T322_los_diez_puntos_de_corte_convergen_en_la_MISMA_revision(self):
+        """T322 · Defecto que previene: una migración RECUPERABLE sólo en el punto probado.
+
+        `g.11` exige que una migración interrumpida se detecte y se termine o se revierta.
+        Aquí se corta en CADA UNO de los diez puntos declarados del §10 —procesos de verdad,
+        `os._exit(70)`— y se exige que el estado final sea BYTE A BYTE el mismo que el de la
+        migración sin cortes. No «que acabe bien»: el mismo `cid_raiz`.
+
+        Tres de los diez —los anteriores al punto de no retorno— necesitan DOS llamadas: la
+        primera cierra la ventana y sale con `RECUPERACION_MARCADA`, la segunda retoma. Está
+        declarado ANTES de mirar el resultado, como manda la tercera regla de esta batería.
+        """
+        self.heredado_genuino()
+        self.assertEqual(self.migrar_por_cli().returncode, 0)
+        esperado = json.loads(texto_de(self.ruta_estado("REVISION.json")))
+
+        marcan = {"antes-de-escribir-temporal", "despues-de-escribir-temporal",
+                  "despues-de-sincronizar-temporal"}
+        for punto in PUNTOS_DEL_CONTRATO:
+            with self.subTest(punto=punto):
+                repo = self.otro_repo(punto)
+                self.heredado_genuino(repo=repo)
+                self.migrar_por_cli(repo=repo, fallo=punto)
+                llamadas = []
+                for _ in range(3):
+                    proceso = self.migrar_por_cli(repo=repo)
+                    llamadas.append(proceso)
+                    if proceso.returncode == 0:
+                        break
+                self.assertEqual(llamadas[-1].returncode, 0,
+                                 "tras cortar en " + punto + " el almacén quedó inmigrable: "
+                                 + (llamadas[-1].stderr or ""))
+                if punto in marcan:
+                    self.assertEqual(len(llamadas), 2, punto + ": se esperaban DOS llamadas")
+                    self.assertEqual(codigo_de_error(llamadas[0]), "RECUPERACION_MARCADA")
+                    self.assertNotIn("Traceback", llamadas[0].stderr)
+                obtenido = json.loads(texto_de(os.path.join(
+                    repo, "estado", "REVISION.json")))
+                self.assertEqual(solo_durables(obtenido)["cid_raiz"],
+                                 solo_durables(esperado)["cid_raiz"],
+                                 "cortar en " + punto + " produjo OTRO estado canónico")
+
+    def test_T323_la_migracion_no_publica_sin_el_testigo_del_paso_8(self):
+        """T323 · Defecto que previene: `E-08` desactivado DENTRO del camino de migración.
+
+        `T297` ya prueba que el paso 9 exige el testigo del 8; lo que faltaba era probarlo
+        en la migración, que es el camino que `ADJ-B1` encontró publicando SIN testigo. Se
+        interviene el paso 8 —no se toca el disco a posteriori, porque la rama COMPLETAR de
+        la recuperación REESCRIBE el testigo a propósito y lo taparía— en sus dos formas:
+
+            AUSENTE   el paso 8 no deja testigo             → el 9 no encuentra nada
+            CORRUPTO  el paso 8 deja un testigo que no es JSON o que habla de otra
+                      transacción                            → el 9 no lo casa
+
+        En los dos casos la migración tiene que fallar CERRADA, con código tipado, sin
+        publicar la revisión y sin declarar el formato.
+        """
+        motor_estado = estado.motor
+        original = motor_estado.Almacen._escribir_testigo_de_publicacion
+
+        def sin_testigo(propio, transaccion, plan, resultado):
+            return {"esquema": 1, "transaccion": transaccion, "resultado": resultado,
+                    "publicados": {}}
+
+        def testigo_de_otra(propio, transaccion, plan, resultado):
+            original(propio, transaccion, plan, resultado)
+            ruta_testigo = propio._d.testigo_de_publicacion(transaccion)
+            with open(ruta_testigo, "w", encoding="utf-8") as fh:
+                fh.write('{"esquema": 1, "transaccion": "tx-de-otra", '
+                         '"resultado": null, "publicados": {}}\n')
+            return {}
+
+        for modo, sabotaje in (("ausente", sin_testigo), ("corrupto", testigo_de_otra)):
+            with self.subTest(testigo=modo):
+                repo = self.otro_repo("testigo-" + modo)
+                self.heredado_genuino(repo=repo)
+                motor_estado.Almacen._escribir_testigo_de_publicacion = sabotaje
+                try:
+                    with estado.abrir(repo, recuperar=False) as alm:
+                        with self.assertRaises(errores.EstadoCorrupto) as capturado:
+                            alm.migrar(1)
+                finally:
+                    motor_estado.Almacen._escribir_testigo_de_publicacion = original
+                self.assertEqual(capturado.exception.codigo, "ESTADO_CORRUPTO")
+                self.assertFalse(
+                    os.path.exists(os.path.join(repo, "estado", "FORMATO.json")),
+                    modo + ": la migración declaró el formato sin haber publicado")
+                revision = json.loads(texto_de(
+                    os.path.join(repo, "estado", "REVISION.json")))
+                self.assertEqual(revision["revision"], 0,
+                                 modo + ": el paso 9 publicó la revisión de la migración "
+                                 "sin el testigo del paso 8")
+                self.assertEqual(revision["raiz"], {},
+                                 modo + ": la revisión publicada nombra objetos")
+
+    def test_T324_migrar_dos_veces_no_mueve_el_estado(self):
+        """T324 · Defecto que previene: una migración que se aplica dos veces.
+
+        La idempotencia del §9 aplicada a la migración: la segunda llamada no puede anexar
+        nada al diario, no puede mover la revisión y no puede reescribir `canonico/`.
+        """
+        self.heredado_genuino()
+        self.assertEqual(self.migrar_por_cli().returncode, 0)
+        revision_1 = self.revision()
+        diario_1 = self.tipos_del_diario()
+        bytes_1 = {ruta: bytes_de(self.ruta_estado(*ruta.split("/")))
+                   for ruta in self.ficheros_del_almacen()
+                   if ruta.startswith("canonico/")}
+
+        segunda = self.migrar_por_cli()
+        self.assertEqual(segunda.returncode, 0, segunda.stderr)
+        informe = json.loads(segunda.stdout)
+        self.assertEqual((informe["desde"], informe["hasta"]), (1, 1))
+        self.assertEqual(informe["aplicadas"], [],
+                         "migrar a la versión vigente aplicó algo")
+        self.assertEqual(solo_durables(self.revision()), solo_durables(revision_1),
+                         "la segunda migración movió la revisión")
+        self.assertEqual(self.tipos_del_diario(), diario_1,
+                         "la segunda migración anexó eventos al diario")
+        for ruta, contenido in sorted(bytes_1.items()):
+            self.assertEqual(bytes_de(self.ruta_estado(*ruta.split("/"))), contenido,
+                             "la segunda migración reescribió " + ruta)
+
+    def test_T325_un_formato_futuro_no_se_migra_ni_se_adivina(self):
+        """T325 · Defecto que previene: `g.10`, adivinar un formato que este motor no entiende.
+
+        Tres negativos en el mismo eje: una versión de formato del FUTURO no se abre; una
+        migración a una versión sin registrar no se inventa; y bajar de versión no existe.
+        """
+        self.heredado_genuino()
+        self.assertEqual(self.migrar_por_cli().returncode, 0)
+        with open(self.ruta_estado("FORMATO.json"), "w", encoding="utf-8") as fh:
+            json.dump({"formato": "ads.estado", "version_formato": 99}, fh)
+        proceso = self.migrar_por_cli()
+        self.assertNotEqual(proceso.returncode, 0,
+                            "un almacén de formato 99 se abrió como si se entendiera")
+        self.assertEqual(codigo_de_error(proceso), "FORMATO_DESCONOCIDO")
+        self.assertNotIn("Traceback", proceso.stderr)
+
+        with open(self.ruta_estado("FORMATO.json"), "w", encoding="utf-8") as fh:
+            json.dump({"formato": "ads.estado", "version_formato": 1}, fh)
+        with self.almacen(recuperar=False) as alm:
+            self.assertFalloCerrado(errores.MigracionDesconocida, alm.migrar, 99)
+            self.assertFalloCerrado(errores.MigracionDesconocida, alm.migrar, 0)
+
+    def test_T326_sin_revision_y_con_diario_poblado_no_se_adivina_la_vigente(self):
+        """T326 · Defecto que previene: `g.8`, inventar la revisión vigente que falta.
+
+        Es la otra mitad de la re-entrada de la fundación. Se admite recomponer la revisión
+        0 cuando lo único que hay es la fundación; con el diario ya poblado de transiciones
+        no hay de dónde deducir cuál era la vigente, y elegir una sería adivinar.
+        """
+        self.heredado_genuino()
+        self.assertEqual(self.migrar_por_cli().returncode, 0)
+        os.remove(self.ruta_estado("FORMATO.json"))        # vuelve a parecer heredado
+        os.remove(self.ruta_estado("REVISION.json"))       # y sin revisión vigente
+        proceso = self.migrar_por_cli()
+        self.assertNotEqual(proceso.returncode, 0,
+                            "se migró un almacén cuya revisión vigente nadie sabe cuál era")
+        self.assertEqual(codigo_de_error(proceso), "MIGRACION_NO_RECUPERABLE")
+        self.assertNotIn("Traceback", proceso.stderr)
+
+    def test_T326b_una_fundacion_que_no_casa_no_se_sustituye(self):
+        """T326 · Defecto que previene: publicar una revisión 0 ajena a la que el diario dice.
+
+        La revisión 0 se RECOMPONE y se contrasta con el `resultado` que el evento de
+        fundación declara. Si no casan, el diario habla de otra fundación: se falla cerrado
+        en vez de sustituir la historia del almacén por otra.
+        """
+        self.heredado_genuino()
+        corte = self.migrar_por_cli(fallo="durante-el-diario")
+        self.assertEqual(corte.returncode, CODIGO_SALIDA_CAIDA)
+        ruta = self.ruta_estado("diario", "DIARIO.jsonl")
+        eventos = lineas_json(ruta)
+        eventos[0]["resultado"] = "sha256:" + "9" * 64
+        with open(ruta, "w", encoding="utf-8") as fh:
+            for evento in eventos:
+                fh.write(json.dumps(evento, sort_keys=True, ensure_ascii=False,
+                                    separators=(",", ":")) + "\n")
+        proceso = self.migrar_por_cli()
+        self.assertNotEqual(proceso.returncode, 0,
+                            "se publicó una revisión 0 que el diario no declara")
+        self.assertNotIn("Traceback", proceso.stderr)
+        self.assertTrue(codigo_de_error(proceso),
+                        "el fallo no llegó tipado: " + (proceso.stderr or ""))
+
+    def test_T327_la_CLI_no_publica_ni_trazas_ni_rutas_del_anfitrion(self):
+        """T327 · Defecto que previene: `E-15`, el modo de fallo EXACTO de `ADJ-B1`.
+
+        Lo reproducido era `TypeError` cruzando `main()` con SIETE rutas absolutas del
+        anfitrión, `stdout` vacío y código 1 indistinguible de un fallo tipado. Se ejercitan
+        el camino sano y tres caminos de error, y en los cuatro se exige: cero trazas, cero
+        rutas absolutas del anfitrión y, en los de error, código tipado en `stderr`.
+        """
+        self.heredado_genuino()
+        procesos = [("sano", self.migrar_por_cli())]
+        self.assertEqual(procesos[0][1].returncode, 0)
+
+        os.remove(self.ruta_estado("FORMATO.json"))
+        os.remove(self.ruta_estado("REVISION.json"))
+        procesos.append(("sin revisión vigente", self.migrar_por_cli()))
+
+        vacio = self.otro_repo("estado-vacio")
+        os.makedirs(os.path.join(vacio, "estado"))
+        procesos.append(("estado vacío", self.migrar_por_cli(repo=vacio)))
+        procesos.append(("sin almacén", cli(os.path.join(self.tmp, "no-existe"),
+                                            ["migrar", "--json"])))
+
+        prohibidas = {os.path.abspath(self.tmp), os.path.realpath(self.tmp),
+                      os.path.abspath(RAIZ), os.path.realpath(RAIZ)}
+        for nombre, proceso in procesos:
+            with self.subTest(camino=nombre):
+                salida = (proceso.stdout or "") + (proceso.stderr or "")
+                self.assertNotIn("Traceback", salida,
+                                 nombre + ": la CLI publicó una traza")
+                for ruta in sorted(prohibidas):
+                    self.assertNotIn(ruta, salida,
+                                     nombre + ": la CLI publicó una ruta del anfitrión")
+                if proceso.returncode != 0:
+                    self.assertEqual(proceso.returncode, 1,
+                                     nombre + ": un fallo tipado sale con 1")
+                    self.assertTrue(codigo_de_error(proceso),
+                                    nombre + ": sin código tipado en `stderr`")
+
+
 class _RunnerDeterminista(unittest.TextTestRunner):
     """Igual que el corriente, pero sin la duración en el resumen.
 

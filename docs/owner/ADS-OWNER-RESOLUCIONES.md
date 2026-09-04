@@ -977,3 +977,78 @@ incompleta.
 
 Si el gate final no es válido o no certifica `F6`, la aceptación arquitectónica
 permanece, pero `F6` seguirá ABIERTA y PesquerApp seguirá BLOQUEADA.
+
+---
+
+# `O27` · ACLARACIÓN SOBRE `O26` Y LOS CAMPOS DE LAS RESOLUCIONES HISTÓRICAS
+
+**Fecha:** 2026-09-04  
+**Autoridad:** Owner
+
+## 1 · Delimitador de `O26`
+
+La línea:
+
+`FIN LITERAL DE O26.`
+
+era un delimitador externo del encargo dirigido al coordinador y NO formaba parte
+del texto resolutivo de `O26`.
+
+Su omisión de la sede canónica fue correcta y no debe repararse añadiéndola ahora.
+
+## 2 · Campos históricos
+
+Los campos de procedencia y relaciones de revisión incorporados por el modelo
+documental son exigibles prospectivamente desde la resolución que estableció esa
+forma.
+
+No se insertarán retroactivamente dentro de `O23`, `O24`, `O25` ni `O26`, porque
+hacerlo rompería:
+
+1. su literalidad;
+2. el carácter append-only de la sede;
+3. el digest del acto ya emitido.
+
+Su ausencia no invalida esas resoluciones.
+
+## 3 · Protección append-only
+
+La propiedad append-only debe proteger CADA resolución cerrada ya publicada, no
+solamente el prefijo correspondiente al nacimiento del fichero.
+
+Una comprobación que permita borrar resoluciones completas posteriores y sustituirlas
+por otro texto NO satisface la propiedad.
+
+La implementación deberá derivar las entradas cerradas de la sede, conservar cada
+una byte a byte y permitir únicamente añadir una nueva entrada completa al final.
+
+## 4 · Gate y candidato
+
+Los documentos del gate no forman parte de la candidata que el gate certifica.
+
+Toda validación del producto debe ejecutarse sobre un checkout congelado del SHA de
+la candidata. El manifiesto, los dictámenes y el documento del gate vivirán en la
+rama del gate y no podrán alterar la línea base auditada.
+
+## 5 · Cobertura
+
+Un gate no puede llegar a adjudicación mientras algún revisor tenga una resta:
+
+`ASIGNADO − LEÍDO`
+
+distinta del conjunto vacío.
+
+Si un revisor todavía no ha terminado, debe continuar su lectura. Su lote no puede
+darse por cerrado, sustituirse con búsquedas ni compensarse con lo leído por otro
+agente.
+
+## 6 · Alcance
+
+Esta resolución:
+
+  · no certifica F6;
+  · no corrige por sí misma ningún hallazgo técnico;
+  · no declara satisfecho B3;
+  · no inicia PesquerApp;
+  · no rebaja ninguna obligación;
+  · conserva íntegra la aceptación condicionada de O26.

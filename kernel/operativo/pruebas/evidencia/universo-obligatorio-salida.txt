@@ -1,0 +1,32 @@
+# evidencia de: universo-obligatorio
+# orden:        python3 docs/evolucion/verificacion/derivar-universo-obligatorio.py --autopruebas
+# codigo:       0
+# ---------------------------------------------------------------
+META-PRUEBAS DEL UNIVERSO OBLIGATORIO
+==============================================================================
+
+  ok   CONTROL POSITIVO · la copia intacta deriva el universo
+  ok   la fila `F-07` cambia de fase `F6` a `F5` — el id DESAPARECE  
+       espera «EL UNIVERSO HA ENCOGIDO»
+  ok   se retira la fila `F-10` entera                               
+       espera «EL UNIVERSO HA ENCOGIDO»
+  ok   se retira el bloque `--- CONTRATO 2 … ---` de §19             
+       espera «EL UNIVERSO HA ENCOGIDO»
+  ok   desaparece `V6-07` de §20 — hueco en la numeración            
+       espera «EL UNIVERSO HA ENCOGIDO»
+  ok   desaparece la cabecera `g.7` — hueco en la numeración         
+       espera «EL UNIVERSO HA ENCOGIDO»
+  ok   la sede del estado durable NO EXISTE                          
+       espera «ilegible»
+  ok   la sede de deuda no decodifica como UTF-8                     
+       espera «no decodifica como UTF-8»
+  ok   §19 pierde su bloque de contratos — PARSEO PARCIAL            
+       espera «no contiene el bloque de contratos»
+  ok   una fila de deuda con fase F6 estrena FAMILIA de identificador
+       espera «NO tienen la forma de su familia»
+  ok   la tabla de §19 se queda SIN NINGUNA fila `F-nn` — vacío SOSPECHOSO
+       espera «no publica ninguna fila `F-nn`»
+  ok   desaparece `C1-*.md`: una excepción del cliquet deja de sostenerse
+       espera «ha dejado de ser cierto»
+
+  11 sabotajes · 0 sin detectar

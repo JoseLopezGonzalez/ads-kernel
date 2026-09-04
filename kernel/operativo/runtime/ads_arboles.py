@@ -340,11 +340,49 @@ def _orden_suite(argumentos):
     return _emitir(argumentos, informe, legible)
 
 
+def _orden_procedencia(argumentos):
+    """`E-10` · publica de dónde sale cada módulo, sin emitir ningún veredicto.
+
+    `ADJ-M2` · HECHO REPRODUCIDO ANTES DE CORREGIR: los CINCO puntos ejecutables llevaban
+    el comentario «`E-10` · la PROCEDENCIA se PUBLICA. No basta con que sea correcta.» y
+    calculaban `procedencia()`, pero sólo `ads_admision.py` tenía una ORDEN que la
+    publicara. Medido en las cinco tablas `ORDENES`: 1 de 5. En los otros cuatro la
+    procedencia se calculaba **para uso interno de `exigir_procedencia_del_aparato()`** y
+    no llegaba a ninguna salida, de modo que el comentario prometía algo que el fichero no
+    hacía y nadie podía comprobar la procedencia de este aparato sin leer su código.
+
+    DECISIÓN · se PUBLICA en los cinco, en vez de retirar el comentario de los cuatro
+        Alternativas: (a) retirar el comentario donde no hay orden; (b) añadir la orden
+        donde falta.
+        Se elige (b). `g.15` pide evidencia TRAZABLE, y una procedencia que sólo existe
+        dentro del proceso no lo es: cuando un veredicto se discute, la primera pregunta es
+        de dónde salió el código que lo emitió, y sin orden hay que responderla leyendo
+        fuentes. Retirar el comentario habría alineado el texto con el árbol **bajando** la
+        garantía, y `E-10` nació precisamente de un aparato que importaba módulos que no
+        controlaba. El coste es una orden de diagnóstico por punto ejecutable; el precio de
+        no tenerla ya se pagó una vez.
+    """
+    datos = procedencia(argumentos.repo)
+    legible = ["aparato       " + datos["aparato"],
+               "repo          " + str(datos.get("repo")),
+               "mismo árbol   " + ("si" if datos.get("repo_es_el_arbol_del_aparato")
+                                   else "NO"),
+               "retiradas     " + str(datos["entradas_del_lanzador_retiradas"])]
+    for modulo in sorted(datos["modulos"]):
+        legible.append("  modulo  " + modulo + "  " + datos["modulos"][modulo])
+    return _emitir(argumentos, datos, legible)
+
+
 ORDENES = {
     "conjunto": _orden_conjunto,
     "cruce": _orden_cruce,
+    "procedencia": _orden_procedencia,
     "suite": _orden_suite,
 }
+
+# Las órdenes que NO necesitan un `--repo`: `procedencia` habla del APARATO, no del árbol
+# juzgado, y exigirle un repositorio impediría usarla justo cuando se sospecha del aparato.
+ORDENES_SIN_REPO = ("procedencia",)
 
 
 def construir_analizador():
@@ -374,9 +412,10 @@ def main(argv=None):
                           ("censar_el_codigo", False)):
         if not hasattr(argumentos, nombre):
             setattr(argumentos, nombre, valor)
-    if not argumentos.repo:
+    if not argumentos.repo and argumentos.orden not in ORDENES_SIN_REPO:
         return _uso("falta --repo: la sede del conjunto es el árbol documental")
-    argumentos.repo = os.path.abspath(argumentos.repo)
+    if argumentos.repo:
+        argumentos.repo = os.path.abspath(argumentos.repo)
     ejecutar = ORDENES.get(argumentos.orden)
     if ejecutar is None:
         return _uso("orden desconocida: " + str(argumentos.orden))

@@ -299,6 +299,58 @@ ventana ya la protegería evento a evento: `g.8` reserva esa salida a la autorid
 · NO hay migración implícita al leer
 ```
 
+### 7.1 · Qué ES un almacén de versión 0, enumerado
+
+La versión 0 no es «lo que había antes»: es una forma concreta y construible, y se enumera
+aquí porque una prueba de migración que fabrique su fixture de otra manera **no prueba la
+migración**. Un almacén de versión 0 tiene, y no tiene nada más:
+
+```text
+estado/canonico/<dominio>/<id>.json   objetos, mapas JSON, con la disposición del §1
+                                      · el `esquema` NO está declarado: el §7 lo exige a
+                                        partir de la versión 1
+                                      · el orden de claves y la indentación son los que
+                                        trajera: la migración los normaliza
+SIN estado/FORMATO.json               es la señal por la que `abrir` lo reconoce heredado
+SIN estado/REVISION.json              nunca hubo punto de publicación
+SIN estado/diario/                    nunca hubo diario canónico
+SIN estado/reconciliacion/            ni registro auxiliar
+SIN estado/operacional/               ni zona de preparación
+```
+
+### 7.2 · La migración `0→1` es RE-ENTRABLE, y lo que eso cuesta
+
+`ADJ-B1`, el 2026-09-04: la migración publicaba la revisión 0 **sin el `testigo`** que `E-08`
+hizo obligatorio, y sobre un heredado genuino moría con una `TypeError` no tipada. Peor: la
+fundación del diario y la publicación de la revisión 0 eran dos actos, la guarda de la rama
+miraba el primero, y un corte entre los dos dejaba el almacén **inmigrable para siempre**,
+también con el `testigo` puesto.
+
+Lo que el contrato fija ahora, y `T320`–`T327` ejercitan:
+
+```text
+· la guarda de la fundación mira `REVISION.json`, no el evento del diario: la rama es
+  RE-ENTRABLE y el evento se anexa sólo si no está
+· la revisión 0 se RECOMPONE y se contrasta con el `resultado` que el diario declara; si no
+  casan, `MIGRACION_NO_RECUPERABLE` en vez de sustituir la historia del almacén
+· sin `REVISION.json` y con el diario ya poblado de transiciones se falla CERRADO: cuál era
+  la vigente no se deduce sin reproyectar el diario, y `I-g7` lo proscribe
+· la migración CIERRA la ventana de su propio intento anterior con el mismo `recuperar()`
+  de siempre, y reconoce por `migracion.aplicada` lo que ya se aplicó
+· el identificador de la transacción deriva del contenido NORMALIZADO —el que de verdad se
+  escribe— y numera los intentos que la recuperación cerró sin confirmar
+```
+
+**Lo que cuesta cada punto de corte, MEDIDO sobre los diez del §10.** Los diez convergen en
+el mismo `cid_raiz`. Siete retoman con UNA llamada a `migrar()`. Los tres anteriores al
+punto de no retorno necesitan DOS: la primera cierra la ventana y sale con
+`RECUPERACION_MARCADA` —tipada, con su copia íntegra en `reconciliacion/conflictos/`— y la
+segunda retoma con identificador propio. La causa se dice en vez de esconderse: la rama
+REVERTIR contrasta `canonico/` con la raíz de la revisión base, y en un heredado la revisión
+0 tiene la raíz vacía mientras `canonico/` ya contiene los ficheros heredados. Esa diferencia
+no la produjo la transacción: es la forma que tiene un almacén de versión 0, y es lo que la
+migración existe para explicar. **Ninguno de los tres deja el almacén inmigrable.**
+
 ## 8 · Frontera con la raíz externa
 
 Este contrato **no elige** tecnología de firma, despliegue, claves ni custodia: `g.15` las

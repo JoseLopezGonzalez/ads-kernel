@@ -14,17 +14,37 @@ Contrato derivado: [`CONTRATO-RAIZ-EXTERNA.md`](../runtime/CONTRATO-RAIZ-EXTERNA
 ## Qué hay aquí
 
 ```text
-verificador.py            PUNTO EJECUTABLE. `capacidades` · `verificar` · `comprobar` ·
-                          `instalacion`. Es un PROCESO aparte, no una función del runtime
-instalar.py               copia este paquete y las dependencias del verificador a una
-                          instalación FUERA del árbol, con manifiesto de SHA-256 por fichero
-firma.py                  frontera con `ssh-keygen -Y` y Ed25519. NO implementa criptografía
-atestacion.py             la atestación canónica, vinculada al SHA del commit y al `tree`
-aislamiento.py            la DEMOSTRACIÓN de que la identidad no puede escribir: lo intenta
-anfitrion_firmante.py     mitad PRIVADA de la frontera de firma. SÓLO firma
-anfitrion_verificador.py  mitad PÚBLICA. SÓLO verifica, y no tiene clave privada
-errores.py                jerarquía tipada propia; no importa la del árbol verificado
+verificador.py            PUNTO EJECUTABLE. `capacidades` · `procedencia` · `verificar` ·
+                          `comprobar` · `instalacion`. Es un PROCESO aparte, no una función
+                          del runtime
+instalar.py               PUNTO EJECUTABLE. copia este paquete y las dependencias del
+                          verificador a una instalación FUERA del árbol, con manifiesto de
+                          SHA-256 por fichero. `--comprobar` · `--procedencia`
+anfitrion_firmante.py     PUNTO EJECUTABLE. mitad PRIVADA de la frontera de firma. SÓLO firma
+anfitrion_verificador.py  PUNTO EJECUTABLE. mitad PÚBLICA. SÓLO verifica, y no tiene clave
+                          privada
+firma.py                  módulo. frontera con `ssh-keygen -Y` y Ed25519. NO implementa
+                          criptografía
+atestacion.py             módulo. la atestación canónica, vinculada al SHA del commit y al
+                          `tree`
+aislamiento.py            módulo. la DEMOSTRACIÓN de que la identidad no puede escribir: lo
+                          intenta
+errores.py                módulo. jerarquía tipada propia; no importa la del árbol verificado
 ```
+
+**La distinción PUNTO EJECUTABLE / módulo no es documental: es MECÁNICA.** `T330` la deriva
+del disco con una equivalencia de tres términos, comprobada en los dos sentidos:
+
+```text
+lleva `#!`   ⟺   define `if __name__ == "__main__":`   ⟺   lleva el prólogo `E-10`
+```
+
+Por eso los cuatro módulos **no llevan línea de intérprete**, y por eso `instalar.py` sólo da
+permiso de ejecución a los que la llevan. Es la corrección de `ADJ-B2`: hasta el 2026-09-04
+este paquete no tenía **ni una línea de purga** y `T306` cubría cinco ejecutables escritos a
+mano —los cinco `ads_*.py`— «y ninguno más». Con un `json.py` homónimo en `PYTHONPATH`,
+`verificador.py capacidades` publicaba `{}` con código 0 e `instalar.py` escribía un
+manifiesto de tres bytes sobre 41 ficheros instalados, también con código 0.
 
 ## Cómo se usa
 

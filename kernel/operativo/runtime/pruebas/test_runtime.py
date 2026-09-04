@@ -2032,10 +2032,14 @@ class Piezas(unittest.TestCase):
                                         "--json"])
         self.assertEqual((delante.repo, delante.instancia, delante.json),
                          (detras.repo, detras.instancia, detras.json))
+        # La enumeración se AMPLÍA cuando el punto ejecutable gana una orden, y se conserva
+        # LITERAL —no como recuento— para que una capacidad nueva no pueda entrar sin que
+        # ninguna prueba la nombre. `procedencia` entra al cerrar `ADJ-M2`, que midió que los
+        # cinco `ads_*.py` declaraban publicar la procedencia y sólo uno la publicaba.
         self.assertEqual(sorted(modulo.ORDENES), sorted([
             "adquirir", "cancelar", "ciclo", "crear-item", "crear-paquete", "despachar",
-            "elegibles", "estado-paquete", "liberar", "observar", "pausar", "reanudar",
-            "reclamar", "renovar", "vistas",
+            "elegibles", "estado-paquete", "liberar", "observar", "pausar", "procedencia",
+            "reanudar", "reclamar", "renovar", "vistas",
         ]))
 
 

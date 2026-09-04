@@ -91,6 +91,48 @@ podía derivar, la comparación caía hacia atrás a la revisión BASE y emitía
 ataque daba dos veredictos —`ROJO ['V6-12']` con nacimiento real, `VERDE []` con
 `commit_de_nacimiento=None`—, y «desconocido» se convertía en «válido» sin que nada lo dijera.
 
+**Y EL CONTRASTE ES POR ENTRADA CERRADA, NO POR PREFIJO** —`ADJ-B3`, corregido el
+2026-09-04, y `O27` §3 lo eleva a NORMA—. El defecto era que `actual.startswith(anterior)`
+con `anterior` = los bytes del NACIMIENTO protege sólo el PREFIJO: medido sobre la
+candidata, **14 395 de 42 181 bytes, el 34,1 %**. `O17`, `O18` y `O19` dentro; `O20`…`O26`
+FUERA. El adjudicador **borró `O20`–`O26` enteras**, las sustituyó por «F6 QUEDA CERTIFICADA
+SIN CONDICIONES», lo confirmó, y el verificador publicó `color=INDETERMINADO · hallazgos=0`
+con la sede perdiendo dos tercios de su contenido.
+
+```text
+LAS ENTRADAS SE DERIVAN   de la ESTRUCTURA de la sede, y el LIBRO de qué entrada existe con
+                          qué bytes se deriva de la HISTORIA de la ruta. Ninguna lista
+                          escrita: `O28` nacerá protegida sin que nadie toque una línea
+CADA ENTRADA SE ANCLA     al COMMIT QUE LA INTRODUJO, no al de nacimiento del fichero
+SE COMPARA EL BLOQUE      COMPLETO y BYTE A BYTE. Da igual si el cambio es una condición,
+                          una fecha o un espacio
+SÓLO SE ADMITE AÑADIR     una entrada NUEVA, COMPLETA y AL FINAL, con el número siguiente
+SE RECHAZA                modificación · borrado · reordenación · duplicación ·
+                          truncamiento · sustitución · texto insertado DENTRO de una
+                          entrada anterior · identificador repetido · salto de numeración ·
+                          familia nueva · apéndice incompleto
+EL DELIMITADOR NO ES      `O27` §1 aplicado a la mecánica, y no es una sutileza: MEDIDO
+CONTENIDO                 sobre la historia real, la última entrada de cada commit gana
+                          exactamente los seis bytes del delimitador cuando la siguiente se
+                          inscribe. Contarlos daría ROJO sobre una sede INTACTA
+TRES CANALES, Y CADA UNO  estructural (bloque a bloque) · presencia literal (sigue hablando
+SE PUEDE SABOTEAR APARTE  con la estructura rota) · historia (una alteración confirmada y
+                          luego revertida sigue constando)
+DOS REGÍMENES, Y SE       `entradas-cerradas` para las rutas cuya HISTORIA publica entradas;
+PUBLICA CUÁL SE APLICÓ    `prefijo-del-nacimiento` para los documentos continuos. El régimen
+                          lo decide la HISTORIA y nunca el fichero de hoy: si lo decidiera
+                          el fichero, borrar las cabeceras apagaría el guardián
+SE JUZGA AUNQUE NO MUTE   la ruta se juzga contra su libro haya o no diff contra la base.
+                          Si sólo se juzgara lo que muta, bastaría con confirmar la
+                          alteración y declarar ESE commit como base
+```
+
+**ALCANCE DECLARADO, y no se promete más.** El régimen fuerte gobierna la sede del Owner.
+`kernel/KERNEL.md` y las especificaciones aprobadas están en la misma clase de zona y NO
+son append-only por prefijo —su propio motivo en el registro canónico dice «se cambia POR
+ENMIENDA»—: se midió, y aplicarles la vigilancia permanente producía CUATRO rojos sobre un
+árbol intacto. Partir esa clase es materia del registro canónico y queda como petición.
+
 ```text
 LA ÚNICA PROCEDENCIA     `nacimiento`. Cualquier otra NO sostiene un verde de `V6-12`
 QUE SOSTIENE UN VERDE
@@ -125,6 +167,11 @@ NO EMITE: no calcula con una suya
 árboles Git **reales** con forma de corpus, y los pasos 21 y 22 de `T193` en
 [`pruebas/escenario_e2e_runtime.py`](pruebas/escenario_e2e_runtime.py). Punto ejecutable:
 [`ads_admision.py`](ads_admision.py).
+
+`T340`–`T349`, el append-only POR ENTRADA CERRADA de `O27` §3, en
+[`../pruebas/T340-T359-append-only-y-universo.md`](../pruebas/T340-T359-append-only-y-universo.md),
+con sus sabotajes `N340`, `N341`, `N342`, `N343`, `N343b` y `N349`, que ponen en rojo un
+canal distinto cada uno.
 
 **Nada de esto está CERTIFICADO**, y `V6-18` medido en verde **no** es el criterio `B2` de
 `F6`: ése exige la suite entera, incluidos los puntos que este corte declara fuera.

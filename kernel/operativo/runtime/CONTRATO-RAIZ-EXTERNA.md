@@ -51,7 +51,53 @@ CONDICIONES DECLARADAS    `verificador.py capacidades` las publica, con la versi
 TRAZABLE Y VINCULADA      identidad, huella pública, época y digest de la atestación viajan
                           en el resumen y dentro de lo firmado
 PesquerApp BLOQUEADA      y este contrato no la desbloquea
+ENTORNO CONTAMINADO       los NUEVE puntos ejecutables del árbol —los cinco `ads_*.py` y los
+FALLA CERRADO             cuatro de este paquete— purgan la ruta de importación ANTES de
+`E-10` · `ADJ-B2`         importar nada, comprueban de dónde salió cada módulo y NO emiten
+                          nada si no lo pueden demostrar. `O26` §1, condición 8, corregido
+                          el 2026-09-04
 ```
+
+### 1 bis · `E-10` en la raíz externa, y por qué el inventario se DERIVA
+
+**Lo reproducido, y no se atenúa.** Hasta el 2026-09-04 este paquete no tenía **ni una línea
+de purga**, y era la única pieza que `O26` §1 juzga. Con un `json.py` homónimo en
+`PYTHONPATH` y desde un `cwd` ajeno:
+
+```text
+verificador.py capacidades           → {}          EXIT=0     (sano: las nueve condiciones)
+instalar.py --destino … --arbol …    → {}          EXIT=0     manifiesto 3 BYTES (sano: 6734)
+                                                              y 41 ficheros instalados igual
+… --comprobar sobre esa instalación  → KeyError: 'ficheros'   EXIT=1 y cuatro rutas del
+                                                              anfitrión en la traza
+```
+
+**Los cuatro puntos ejecutables de este paquete**, con lo que cada uno hace ahora:
+
+```text
+verificador.py             purga · exige procedencia de la INSTALACIÓN · publica la
+                           procedencia en `capacidades` y en la orden `procedencia` · se
+                           niega a publicar el vacío como éxito
+instalar.py                purga · exige procedencia · construye APARTE y publica por
+                           renombrado, de modo que no queda una instalación a medias ·
+                           valida la forma del manifiesto y rechaza el truncado TIPADO
+anfitrion_firmante.py      purga · exige procedencia antes de tocar la clave
+anfitrion_verificador.py   purga · exige procedencia antes de responder `valida`/`invalida`
+```
+
+**El inventario no se escribe: se DERIVA.** Una lista escrita a mano fue exactamente lo que
+dejó este paquete fuera del alcance de `T306`, y volvería a quedarse corta. El criterio es
+una equivalencia de tres términos, comprobada en los dos sentidos sobre el disco por `T330`:
+
+```text
+lleva `#!`   ⟺   define `if __name__ == "__main__":`   ⟺   lleva el prólogo `E-10`
+```
+
+Por eso los módulos de biblioteca de este paquete —`errores`, `firma`, `atestacion`,
+`aislamiento`— **no llevan línea de intérprete**: llevarla los presentaría como ejecutables,
+y a un ejecutable la equivalencia le exige la purga. El prólogo es **el mismo, byte a byte,
+en los nueve puntos del árbol**, y `T330` lo verifica por digest: se COPIA, no se importa,
+porque una guardia que necesita importar para poder purgar ya ha perdido.
 
 ## 2 · La firma es ASIMÉTRICA, y por qué eso no es un detalle
 
@@ -176,6 +222,14 @@ prueba paso a paso.
 y `T217`–`T220` en [`pruebas/test_raiz_externa.py`](pruebas/test_raiz_externa.py) —el paquete
 externo completo: proceso e instalación separados, firma asimétrica real, independencia
 ejercida y `G-A9`—. Punto ejecutable: [`../raiz-externa/verificador.py`](../raiz-externa/verificador.py).
+
+`T330`–`T337` en
+[`pruebas/test_integridad_y_evidencia.py`](pruebas/test_integridad_y_evidencia.py) —el
+inventario derivado, el entorno contaminado, el manifiesto truncado, la instalación que no
+se hace a medias, el repositorio ajeno que no aporta el código que lo verifica, los
+argumentos obligatorios ausentes, el control del control de la purga y el fallo cerrado por
+procedencia—. Los sabotajes que las ponen en rojo son `N330` y `N333` del catálogo negativo
+del runtime.
 
 ## 8 · Lo que FALTA, dicho sin adornarlo
 

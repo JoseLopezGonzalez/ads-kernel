@@ -84,4 +84,7 @@ paso 25  cierre limpio: integridad, ventana cerrada y árbol de producto sin res
 
 25 de 25 pasos CUMPLIDOS
 
+T362 · corte 8-9: almacén cortado en `entre-el-paso-8-y-el-9` — testigo del paso 8 en disco y revisión SIN publicar. La comprobación de recuperabilidad tiene que encontrarlo y COMPLETARLO ... ok
+
+T301 · recuperabilidad  almacen-cortado-8-9: abierto, recuperado e íntegro
 T301 · recuperabilidad  ws/ads: abierto, recuperado e íntegro

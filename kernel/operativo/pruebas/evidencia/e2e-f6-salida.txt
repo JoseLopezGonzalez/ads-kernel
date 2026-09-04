@@ -22,10 +22,10 @@ paso 05  materialización del equipo por C4, con su composición y lo que quedó
          · composición `composicion:sis-cambio` · roles: 2 · agentes: 2 · modelos: modelo:gamma · descartes registrados: 4 · fuera con motivo: 0 · manda el ORDEN ESCRITO · sin condición verdadera se ESCALA · método y capacidad se distinguen
          resultado: CUMPLIDO
 paso 06  creación de items y paquetes, por el runtime y en el estado canónico
-         · item `it-60a24941927c` · paquetes: 5 · obligaciones de la ruta: 3 · todo en el estado canónico, escrito por el motor
+         · item `it-38de99c7cea8` · paquetes: 5 · obligaciones de la ruta: 3 · todo en el estado canónico, escrito por el motor
          resultado: CUMPLIDO
 paso 07  despacho por el adaptador local, con un proceso real
-         · paquete `pq-1aa11daaa723` despachado por el adaptador local con un proceso real · desenlace `completado` · efecto `ef-98c17beb5c81` aplicado en disco y acusado
+         · paquete `pq-0c5a0745f657` despachado por el adaptador local con un proceso real · desenlace `completado` · efecto `ef-be240c24455f` aplicado en disco y acusado
          resultado: CUMPLIDO
 paso 08  progreso emitido por el proceso y recogido por el runtime
          · el proceso emitió sus líneas y el runtime recogió 3 avances; el conteo NO entra en lo durable
@@ -81,5 +81,12 @@ paso 24  controles negativos: sabotear asignación, modelo, límites y vínculo 
 
 24 de 24 pasos CUMPLIDOS
 
+T362 · corte 8-9: almacén cortado en `entre-el-paso-8-y-el-9` — testigo del paso 8 en disco y revisión SIN publicar. La comprobación de recuperabilidad tiene que encontrarlo y COMPLETARLO ... ok
+
+T363 · censo de fórmulas: la orden y el veredicto censan el MISMO conjunto de 25 módulos del aparato de verificación, y sale limpio (`V6-19`) ... ok
+T364 · procedencia: los 5 puntos ejecutables publican su procedencia con una orden propia (`E-10`, `g.15`) ... ok
+T365 · censo de `arboles/`: el paquete está en los dos censos, la vía histórica está ACOTADA y publicada en `SEDES_DE_REPRODUCCION_HISTORICA`, y sus dos sedes lo dicen así ... ok
+
+T301 · recuperabilidad  almacen-cortado-8-9: abierto, recuperado e íntegro
 T301 · recuperabilidad  maquina-a/control: abierto, recuperado e íntegro
 T301 · recuperabilidad  maquina-b/control: abierto, recuperado e íntegro

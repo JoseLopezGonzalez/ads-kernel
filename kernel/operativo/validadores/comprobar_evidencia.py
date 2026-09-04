@@ -43,6 +43,7 @@ import yaml
 
 sys.path.insert(0, os.path.dirname(__file__))
 import entorno  # noqa: E402
+from ads_lint import Lint  # noqa: E402
 from comprobar_contratos import Resultado  # noqa: E402
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
@@ -555,7 +556,164 @@ def _vigencia(base, componentes, r):
                 r.fallo(f"{rel}: la vigencia '{eid}' publica {publicado} y el corpus vigente "
                         f"da {actual}. La evidencia está CADUCADA: describe un corpus que ya "
                         f"no existe. Regenérala con registrar_evidencia.py — no la edites")
-PRUEBAS = [t158_evidencia]
+# ===========================================================================
+#  `T350` · `ADJ-G2` · EL `estado` DE UNA PRUEBA NO ES UN CAMPO A MANO
+# ===========================================================================
+#  HECHO REPRODUCIDO, y no hizo falta mutar nada porque el árbol ya lo publicaba:
+#
+#      $ awk '/^id: T273$/,/^```$/' pruebas/T270-T289-contratos-19-y-composicion.md
+#        estado: prueba-fallida
+#      $ sed -n '220p' pruebas/REGISTRO-generado.md
+#        | [T273] | … | **PRUEBA FALLIDA** | evidencia/composicion-procesos-salida.txt |
+#      $ head -9 pruebas/evidencia/composicion-procesos-salida.txt
+#        # codigo:  0
+#        T273  SUPERADA  Todo par del catálogo estático de D104 tiene su <CAP>:revision
+#        4 superadas · 0 fallidas
+#
+#  Tres sedes decían VERDE, la cuarta publicaba `PRUEBA FALLIDA`, y los 34 validadores
+#  estaban en verde porque NINGUNO contrastaba ese campo contra nada. `REGISTRO.md` escribe
+#  «ninguna prueba sube de estado por argumento»; esta prueba es esa regla, mecanizada.
+#
+#  DECISIÓN · la fórmula NO se reescribe aquí: se IMPORTA de `registro_pruebas`
+#      Alternativas: (a) una copia de la derivación en este validador; (b) importarla de la
+#      sede que la publica.
+#      Se elige (b), y es la misma regla que `V6-19` impone en el paquete de admisión: dos
+#      definiciones de «qué estado tiene esta prueba» son dos verdades, y la divergencia
+#      entre ellas aparece el día en que una se toca y la otra no. Si la sede no se puede
+#      importar, esta prueba NO EMITE un verde: falla con su motivo.
+def t350_estado_derivado_de_la_evidencia(raiz=None):
+    base = os.path.abspath(raiz or RAIZ)
+    r = Resultado("T350", "El estado declarado de cada escenario lo sostiene su evidencia")
+    try:
+        import registro_pruebas                                       # noqa: PLC0415
+    except Exception as error:                                        # noqa: BLE001
+        r.fallo("no se puede importar `registro_pruebas`, que es la SEDE de la derivación "
+                f"del estado ({type(error).__name__}: {error}). Sin ella no se calcula una "
+                f"equivalente: no se emite")
+        return r
+    for nombre in ("derivar_estado", "contraste_de_estados", "veredictos_publicados"):
+        if not hasattr(registro_pruebas, nombre):
+            r.fallo(f"`registro_pruebas` no ofrece `{nombre}`: la sede de la derivación del "
+                    f"estado ha dejado de publicarla, y este validador no la reimplementa")
+            return r
+
+    lint = Lint(base, ["kernel/operativo", "packs"])
+    lint.cargar_esquemas()
+    lint.cargar_bloques()
+    escenarios = [d for t, d, _f, _l in lint.bloques if t == "escenario"]
+    if not escenarios:
+        r.fallo("no se ha cargado ni un bloque `ads:escenario`: sin escenarios este "
+                "contraste no dice nada, y una lista vacía no es un corpus limpio")
+        return r
+
+    divergencias, contrastados, sin_contraste = registro_pruebas.contraste_de_estados(
+        escenarios, base)
+    for d in divergencias:
+        motivo = " · ".join(d["motivos"]) or "los veredictos publicados dicen otra cosa"
+        r.fallo(f"{d['id']}: declara `estado: {d['declarado']}` y su evidencia sostiene "
+                f"`{d['derivado']}` — {motivo}. Ninguna prueba sube ni baja de estado por "
+                f"argumento (`pruebas/REGISTRO.md`)")
+
+    # 2 · el estado por encima de `validador-implementado` EXIGE evidencia declarada.
+    for datos in escenarios:
+        estado = datos.get("estado")
+        if estado in ("prueba-ejecutada", "prueba-superada", "prueba-fallida") \
+                and not (datos.get("evidencia") or "").strip():
+            r.fallo(f"{datos.get('id')}: declara `{estado}` y no declara `evidencia`. Un "
+                    f"estado que afirma una ejecución sin salida registrada es exactamente "
+                    f"lo que la regla dura de `REGISTRO.md` prohíbe")
+
+    # 3 · la evidencia que un escenario cita tiene que ser una que ALGUIEN REGENERE. Una
+    #     evidencia fuera del manifiesto no la publica el runner y nadie responde de ella:
+    #     es la forma en que `T277` acabó citando un fichero que no ha existido nunca.
+    declaradas = {c["evidencia"] for c in cargar_manifiesto(base) if c.get("evidencia")}
+    for datos in escenarios:
+        evidencia = (datos.get("evidencia") or "").strip()
+        if evidencia and os.path.basename(evidencia) not in declaradas:
+            r.fallo(f"{datos.get('id')}: cita la evidencia `{evidencia}`, que el manifiesto "
+                    f"canónico no declara. Nadie la regenera y nadie responde de ella")
+
+    # 4 · LA EVIDENCIA ES LA CONFIRMADA, y no una editada encima. Se contrasta contra el
+    #     blob de `HEAD`. Donde no hay repositorio —la copia que `comprobar_negativos`
+    #     fabrica no lleva `.git`— el canal NO SE HACE, y se DICE: una comprobación omitida
+    #     en silencio es indistinguible de una comprobación que pasa.
+    r.nota = _contrastar_contra_head(base, escenarios, r)
+    r.nota_cobertura = (f"contrastados {len(contrastados)} · no contrastables "
+                        f"{len(sin_contraste)} · divergencias {len(divergencias)}")
+    return r
+
+
+# `ADJ-G2` · LA EVIDENCIA DE OTRO COMMIT, Y DÓNDE ESTÁ EL LÍMITE DE ESTA COMPROBACIÓN
+#
+#     DECISIÓN · falla el VEREDICTO QUE CAMBIA, no el fichero que difiere
+#         La primera versión de esta comprobación exigía que la evidencia del árbol de
+#         trabajo fuera BYTE A BYTE la confirmada en `HEAD`, y se midió lo que eso hace en
+#         una pasada de verdad: en cuanto el runner regenera una evidencia y todavía no se
+#         ha confirmado, `T350` se pone roja. Ocurrió el mismo día, con
+#         `recuentos-salida.txt` regenerada y sin confirmar. Un guardián que da rojo cada
+#         vez que alguien trabaja se apaga, y apagado no protege de nada.
+#         Lo que este hallazgo tiene que impedir es que una evidencia se EDITE para que
+#         diga otra cosa. Eso se mide exactamente: se derivan los veredictos de la versión
+#         de `HEAD` y los de la del disco, y si para un mismo escenario NO COINCIDEN, la
+#         evidencia ha cambiado de dictamen y eso es ROJO. Una regeneración legítima cambia
+#         cifras y no cambia dictámenes.
+#         Y la mitad que esta comprobación NO cubre se DICE en vez de suponerse: que el
+#         contenido de `kernel/operativo/pruebas/evidencia/` no mute sin declararlo lo juzga
+#         el verificador de admisión, cuya zona `EVIDENCIA` tiene condición INMUTABLE
+#         (`V6-10`), y ninguna declaración de admisión la levanta.
+def _contrastar_contra_head(base, escenarios, r):
+    """¿Ha cambiado de DICTAMEN alguna evidencia entre `HEAD` y el árbol de trabajo?"""
+    import subprocess                                                 # noqa: PLC0415
+    import registro_pruebas                                           # noqa: PLC0415
+    if not os.path.isdir(os.path.join(base, ".git")):
+        return ("sin repositorio Git en la raíz: el contraste de la evidencia contra el "
+                "blob de HEAD NO se ha hecho, y no se da por hecho")
+    por_evidencia = {}
+    for datos in escenarios:
+        evidencia = (datos.get("evidencia") or "").strip()
+        if evidencia:
+            por_evidencia.setdefault(os.path.basename(evidencia), []).append(datos)
+    hechas, sin_confirmar, regeneradas = 0, [], []
+    for nombre in sorted(por_evidencia):
+        rel = os.path.join(DIR_EVIDENCIA, nombre)
+        ruta = os.path.join(base, rel)
+        if not os.path.isfile(ruta):
+            continue
+        proc = subprocess.run(["git", "-C", base, "show", "HEAD:" + rel],
+                              capture_output=True)
+        if proc.returncode != 0:
+            sin_confirmar.append(rel)
+            continue
+        with open(ruta, "rb") as manejador:
+            en_disco = manejador.read()
+        hechas += 1
+        if proc.stdout == en_disco:
+            continue
+        regeneradas.append(rel)
+        confirmada = proc.stdout.decode("utf-8", "replace")
+        ahora = en_disco.decode("utf-8", "replace")
+        for datos in por_evidencia[nombre]:
+            identificador = datos.get("id", "")
+            antes = registro_pruebas.veredictos_publicados(confirmada, identificador)
+            despues = registro_pruebas.veredictos_publicados(ahora, identificador)
+            if antes and despues and sorted(antes) != sorted(despues):
+                r.fallo(f"{rel}: para `{identificador}` la versión confirmada en `HEAD` "
+                        f"publica {sorted(antes)} y la del árbol de trabajo publica "
+                        f"{sorted(despues)}. La evidencia ha cambiado de DICTAMEN sin una "
+                        f"ejecución que lo respalde")
+    partes = [f"evidencia contrastada contra el blob de HEAD: {hechas}"]
+    if regeneradas:
+        partes.append(f"difieren de HEAD sin cambiar ningún dictamen (regeneración en "
+                      f"curso): {len(regeneradas)}")
+    if sin_confirmar:
+        partes.append(f"citadas y todavía NO confirmadas en HEAD: {len(sin_confirmar)} "
+                      f"({', '.join(os.path.basename(x) for x in sin_confirmar)})")
+    partes.append("que el contenido de la zona EVIDENCIA no mute sin declararlo lo juzga "
+                  "`V6-10` en el verificador de admisión, no esta prueba")
+    return " · ".join(partes)
+
+
+PRUEBAS = [t158_evidencia, t350_estado_derivado_de_la_evidencia]
 
 
 def main():

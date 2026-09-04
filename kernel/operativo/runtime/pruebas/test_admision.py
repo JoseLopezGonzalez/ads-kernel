@@ -29,7 +29,7 @@ RAIZ_RUNTIME = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, RAIZ_RUNTIME)
 
 import admision                                                      # noqa: E402
-from admision import censo, formulas, matriz, mutacion, perimetro    # noqa: E402
+from admision import censo, formulas, matriz, mutacion, perimetro, sede  # noqa: E402
 from admision.perimetro import Declaracion                           # noqa: E402
 from gobierno.git import CanalGit                                    # noqa: E402
 
@@ -1152,6 +1152,473 @@ class FormulasCompartidas(unittest.TestCase):
         self.assertIn("zonas", datos)
         self.assertGreaterEqual(len(datos["zonas"]), 25)
         self.assertIn("materias", datos)
+
+
+# ===========================================================================
+#  T340 a T349 · `ADJ-B3` · `O27` §3 · APPEND-ONLY POR ENTRADA CERRADA
+# ===========================================================================
+#  El defecto que estas pruebas existen para volver a provocar está medido en
+#  `03-GATE-DE-CERTIFICACION-FINAL-20260904.md` §4.3: el contraste era
+#  `actual.startswith(nacimiento)`, un PREFIJO que protegía 14 395 de 42 181 bytes —el
+#  34,1 %—, y borrar `O20`–`O26` enteras y sustituirlas por «F6 QUEDA CERTIFICADA SIN
+#  CONDICIONES» daba `hallazgos=0`.
+#
+#  **NINGUNA prueba del corpus mutaba contenido POSTERIOR al nacimiento.** Las cuatro de
+#  `SedeDelOwner` y las de `ProcedenciaDelNacimiento` montan una sede sintética
+#  `b"# resoluciones\n\n## O1\n\ntexto original\n"` y mutan el NACIMIENTO ENTERO, que es
+#  justo la mitad del espacio que el prefijo sí cubría. Esta clase muta la otra mitad.
+FECHA_DE_PRUEBA = b"**Fecha:** 2026-09-04  \n**Autoridad:** Owner\n\n"
+
+
+def entrada_de_sede(numero, cuerpo="texto resolutivo", con_forma=True):
+    """Una entrada con la FORMA REAL de la sede: `# ``Onn`` · TITULO` en columna cero."""
+    cabecera = "# `O" + str(numero) + "` \u00b7 RESOLUCION DE PRUEBA " + str(numero) + "\n\n"
+    campos = FECHA_DE_PRUEBA.decode("utf-8") if con_forma else ""
+    return (cabecera + campos + "## 1 \u00b7 Objeto\n\n" + cuerpo + "\n").encode("utf-8")
+
+
+class AppendOnlyPorEntradaCerrada(unittest.TestCase):
+    """`T340`. `O27` §3: cada resolución cerrada se conserva BYTE A BYTE.
+
+    Repositorio Git REAL y propio —no el de `ArbolTemporal`—, porque lo que se ejerce aquí
+    es la ESTRUCTURA de la sede, y la sede sintética del fixture común no la tiene: sin
+    cabeceras `# ``Onn`` ·` no hay entradas que derivar y el régimen que gobierna es otro.
+    Montar la forma real es lo que hace que estas pruebas puedan fallar.
+    """
+
+    RUTA = "docs/owner/ADS-OWNER-RESOLUCIONES.md"
+
+    def setUp(self):
+        self.directorio = tempfile.mkdtemp(prefix="ads-sede-")
+        self.addCleanup(shutil.rmtree, self.directorio, True)
+        self.repo = os.path.join(self.directorio, "sede")
+        os.makedirs(os.path.join(self.repo, "docs", "owner"))
+        self.canal_git = CanalGit(self.repo)
+        self.canal_git.ejecutar("init", "--quiet", "--initial-branch=principal")
+        self.canal_git.ejecutar("config", "user.name", "pruebas")
+        self.canal_git.ejecutar("config", "user.email", "pruebas@local")
+        self.canal = admision.CanalDeLecturaGit(self.repo, canal=self.canal_git)
+        self.preambulo = b"# RESOLUCIONES DEL OWNER \xe2\x80\x94 SEDE CANONICA\n\nAPPEND-ONLY.\n"
+        # Tres inscripciones, una por commit, como la sede real. `O1` sin los campos de
+        # forma y `O2` con ellos: así el UMBRAL de `O27` §2 se DERIVA en `O2` en vez de
+        # escribirse, que es lo que la implementación hace sobre la sede de verdad.
+        self.escribir(self.componer([entrada_de_sede(1, con_forma=False)]))
+        self.confirmar("nacimiento de la sede")
+        self.escribir(self.componer([entrada_de_sede(1, con_forma=False),
+                                     entrada_de_sede(2)]))
+        self.confirmar("inscribir O2")
+        self.escribir(self.componer([entrada_de_sede(1, con_forma=False),
+                                     entrada_de_sede(2), entrada_de_sede(3)]))
+        self.confirmar("inscribir O3")
+        self.base = self.canal.resolver("HEAD")
+
+    # -- utillaje ----------------------------------------------------------
+    def componer(self, entradas):
+        return sede.DELIMITADOR.join([self.preambulo] + list(entradas))
+
+    def escribir(self, contenido):
+        with open(os.path.join(self.repo, self.RUTA), "wb") as manejador:
+            manejador.write(contenido)
+
+    def confirmar(self, mensaje):
+        self.canal_git.ejecutar("add", "-A")
+        self.canal_git.ejecutar("commit", "--quiet", "-m", mensaje)
+
+    def leer(self):
+        with open(os.path.join(self.repo, self.RUTA), "rb") as manejador:
+            return manejador.read()
+
+    def juzgar(self, contenido, *, confirmar=True, base=None):
+        """Escribe, confirma y devuelve las infracciones. Confirmar NO exime, y se prueba."""
+        self.escribir(contenido)
+        if confirmar:
+            self.confirmar("mutacion bajo prueba")
+        libro = sede.derivar_libro(self.canal, self.RUTA, base=base or self.base)
+        return sede.juzgar(libro, self.leer())
+
+    def codigos(self, infracciones):
+        return sorted({i["codigo"] for i in infracciones})
+
+    # -- controles ---------------------------------------------------------
+    def test_T340_control_positivo_la_sede_intacta_no_produce_infracciones(self):
+        """T340 · Control POSITIVO: un control que no puede aprobar no sirve de nada."""
+        libro = sede.derivar_libro(self.canal, self.RUTA, base=self.base)
+        self.assertEqual(libro["orden"], [sede.PREAMBULO, "O1", "O2", "O3"])
+        self.assertEqual(sede.juzgar(libro, self.leer()), [])
+
+    def test_T340_cada_entrada_queda_anclada_al_commit_que_la_introdujo(self):
+        """T340 · Defecto que previene: un término de comparación sin procedencia."""
+        commits = self.canal.commits_de_la_ruta(self.RUTA)
+        libro = sede.derivar_libro(self.canal, self.RUTA, base=self.base)
+        self.assertEqual(libro["entradas"]["O1"]["commit"], commits[0])
+        self.assertEqual(libro["entradas"]["O2"]["commit"], commits[1])
+        self.assertEqual(libro["entradas"]["O3"]["commit"], commits[2])
+        self.assertNotEqual(libro["entradas"]["O1"]["commit"],
+                            libro["entradas"]["O3"]["commit"])
+
+    def test_T341_anadir_una_entrada_completa_al_final_es_LEGITIMO(self):
+        """T341 · Control POSITIVO: `O27` §3 permite añadir, y tiene que seguir permitiéndolo."""
+        self.assertEqual(self.juzgar(self.leer() + sede.DELIMITADOR
+                                     + entrada_de_sede(4)), [])
+
+    def test_T341_el_delimitador_no_cuenta_como_contenido_de_la_entrada_anterior(self):
+        """T341 · Defecto que previene: un FALSO ROJO en cada inscripción nueva.
+
+        Medido sobre la sede real: la última entrada de cada commit gana exactamente los
+        seis bytes del delimitador cuando la siguiente se inscribe encima. Un juicio que
+        los contara daría rojo sobre una sede intacta, y el guardián acabaría apagado.
+        """
+        antes = sede.derivar_bloques(self.leer())
+        despues = sede.derivar_bloques(self.leer() + sede.DELIMITADOR + entrada_de_sede(4))
+        por_id = {b.identificador: b.contenido for b in despues}
+        for bloque in antes:
+            with self.subTest(entrada=bloque.identificador):
+                self.assertEqual(bloque.contenido, por_id[bloque.identificador])
+
+    def test_T342_borrar_entradas_posteriores_al_nacimiento_y_sustituirlas_da_ROJO(self):
+        """T342 · EL ATAQUE DEL ADJUDICADOR: borrar `O20`–`O26` y fabricar un texto nuevo."""
+        nacimiento = self.canal.contenido(
+            self.canal.commits_de_la_ruta(self.RUTA)[0], self.RUTA)
+        fabricado = (nacimiento + b"\n\n# `O3` \xc2\xb7 TEXTO ENTERAMENTE FABRICADO\n\n"
+                     b"F6 QUEDA CERTIFICADA SIN CONDICIONES.\n")
+        # La regla ANTERIOR —el prefijo del nacimiento— aprueba esto sin decir nada.
+        self.assertTrue(fabricado.startswith(nacimiento))
+        infracciones = self.juzgar(fabricado)
+        self.assertTrue(infracciones, "el borrado y la sustitución han pasado")
+        self.assertIn("O2", [i["identificador"] for i in infracciones],
+                      "el ataque tiene que nombrar la entrada que destruye")
+
+    def test_T343_alterar_UN_byte_de_una_entrada_cerrada_da_ROJO(self):
+        """T343 · Defecto que previene: reescribir una condición y confirmarla."""
+        cuerpo = self.leer()
+        posicion = cuerpo.index(b"texto resolutivo", cuerpo.index(b"# `O2`"))
+        mutado = cuerpo[:posicion] + b"TEXTO RESOLUTIVO" + cuerpo[posicion + 16:]
+        self.assertEqual(len(mutado), len(cuerpo))
+        infracciones = self.juzgar(mutado)
+        self.assertIn(sede.ALTERADA, self.codigos(infracciones))
+        # El CANAL ESTRUCTURAL, discriminado: es el único que dice «no coincide BYTE A
+        # BYTE». El canal literal habla de bytes que no aparecen y el de la historia habla
+        # de commits. Sin esta afirmación, retirar la comparación byte a byte dejaría la
+        # batería en verde porque los otros dos canales taparían el hueco.
+        self.assertTrue([i for i in infracciones
+                         if i["codigo"] == sede.ALTERADA
+                         and "no coincide BYTE A BYTE" in i["causa"]],
+                        "ningún canal ha dicho «no coincide BYTE A BYTE»: el canal "
+                        "ESTRUCTURAL de comparación entrada a entrada se ha quedado mudo")
+
+    def test_T343_una_alteracion_confirmada_y_luego_REVERTIDA_sigue_constando(self):
+        """T343 · El canal de la HISTORIA, discriminado, y una decisión que se declara.
+
+        DECISIÓN · una alteración inscrita NO se borra devolviendo el fichero a su sitio
+            Alternativas: (a) juzgar sólo el árbol de hoy; (b) juzgar también lo que la
+            historia publicó.
+            Se elige (b). Con (a) el ataque se hace en dos commits —altero y confirmo,
+            restauro y confirmo— y el verificador de la pasada siguiente ve una sede
+            impecable, mientras el commit intermedio queda publicado en la rama y es
+            citable como si el Owner lo hubiera dicho. `V6-12` dice «confirmar no exime»,
+            y confirmar dos veces tampoco.
+        """
+        original = self.leer()
+        self.juzgar(original.replace(b"texto resolutivo", b"TEXTO ALTERADO", 1))
+        infracciones = self.juzgar(original)
+        self.assertEqual(self.leer(), original)
+        self.assertTrue([i for i in infracciones
+                         if i["codigo"] == sede.ALTERADA
+                         and "INSCRITA en la historia" in i["causa"]],
+                        "ningún canal ha dicho «INSCRITA en la historia»: una alteración "
+                        "confirmada y luego revertida ha dejado de constar")
+
+    def test_T343_insertar_texto_DENTRO_de_una_entrada_anterior_da_ROJO(self):
+        """T343 · Defecto que previene: colar prosa dentro de una resolución ya cerrada."""
+        cuerpo = self.leer()
+        posicion = cuerpo.index(b"texto resolutivo", cuerpo.index(b"# `O1`"))
+        infracciones = self.juzgar(cuerpo[:posicion] + b"ANADIDO A POSTERIORI. "
+                                   + cuerpo[posicion:])
+        self.assertIn(sede.ALTERADA, self.codigos(infracciones))
+
+    def test_T343_cambiar_SOLO_los_metadatos_de_una_entrada_cerrada_da_ROJO(self):
+        """T343 · Defecto que previene: «no he tocado el texto, sólo la fecha»."""
+        cuerpo = self.leer()
+        infracciones = self.juzgar(cuerpo.replace(b"**Fecha:** 2026-09-04",
+                                                  b"**Fecha:** 2026-01-01", 1))
+        self.assertIn(sede.ALTERADA, self.codigos(infracciones))
+
+    def test_T344_borrar_la_ULTIMA_resolucion_da_ROJO(self):
+        """T344 · Defecto que previene: el truncamiento por la cola, que no rompe nada."""
+        bloques = sede.derivar_bloques(self.leer())
+        ultimo = bloques[-1]
+        infracciones = self.juzgar(self.leer()[:ultimo.inicio - len(sede.DELIMITADOR)])
+        self.assertIn(sede.BORRADA, self.codigos(infracciones))
+        self.assertIn("O3", [i["identificador"] for i in infracciones])
+
+    def test_T344_borrar_una_resolucion_INTERMEDIA_da_ROJO(self):
+        """T344 · Defecto que previene: quitar una del medio y dejar el resto intacto."""
+        infracciones = self.juzgar(self.componer([entrada_de_sede(1, con_forma=False),
+                                                  entrada_de_sede(3)]))
+        self.assertIn(sede.BORRADA, self.codigos(infracciones))
+
+    def test_T345_reordenar_dos_resoluciones_da_ROJO(self):
+        """T345 · Defecto que previene: cambiar qué revisa a qué sin perder un solo byte."""
+        original = self.leer()
+        reordenado = self.componer([entrada_de_sede(1, con_forma=False),
+                                    entrada_de_sede(3), entrada_de_sede(2)])
+        self.assertEqual(sorted(original), sorted(reordenado))
+        infracciones = self.juzgar(reordenado)
+        self.assertIn(sede.REORDENADAS, self.codigos(infracciones))
+
+    def test_T346_duplicar_una_resolucion_da_ROJO(self):
+        """T346 · Defecto que previene: dos textos bajo el mismo identificador."""
+        infracciones = self.juzgar(self.leer() + sede.DELIMITADOR + entrada_de_sede(3))
+        self.assertIn(sede.DUPLICADA, self.codigos(infracciones))
+
+    def test_T347_un_salto_de_numeracion_da_ROJO(self):
+        """T347 · Defecto que previene: un hueco de números que nadie puede auditar."""
+        infracciones = self.juzgar(self.leer() + sede.DELIMITADOR + entrada_de_sede(9))
+        self.assertIn(sede.SALTO, self.codigos(infracciones))
+
+    def test_T347_una_familia_de_identificadores_NUEVA_da_ROJO(self):
+        """T347 · Defecto que previene: un `P1` que no hereda ni orden ni cliquet."""
+        ajena = b"# `P1` \xc2\xb7 RESOLUCION DE OTRA FAMILIA\n\n" + FECHA_DE_PRUEBA + b"texto\n"
+        infracciones = self.juzgar(self.leer() + sede.DELIMITADOR + ajena)
+        self.assertIn(sede.FAMILIA_AJENA, self.codigos(infracciones))
+
+    def test_T348_un_apendice_INCOMPLETO_da_ROJO(self):
+        """T348 · Defecto que previene: añadir un titular y llamarlo resolución."""
+        titular = b"# `O4` \xc2\xb7 SIN CUERPO\n"
+        self.assertIn(sede.INCOMPLETA,
+                      self.codigos(self.juzgar(self.leer() + sede.DELIMITADOR + titular)))
+
+    def test_T348_un_apendice_SIN_LOS_CAMPOS_PROSPECTIVOS_da_ROJO(self):
+        """T348 · `O27` §2: exigibles PROSPECTIVAMENTE, y el umbral se DERIVA."""
+        infracciones = self.juzgar(self.leer() + sede.DELIMITADOR
+                                   + entrada_de_sede(4, con_forma=False))
+        self.assertIn(sede.INCOMPLETA, self.codigos(infracciones))
+
+    def test_T348_las_entradas_HISTORICAS_sin_los_campos_NO_se_ponen_en_rojo(self):
+        """T348 · `O27` §2 literal: no se insertan retroactivamente, y no invalidan nada.
+
+        `O1` nace SIN los campos. Si la comprobación de forma se aplicara al libro, la sede
+        real quedaría en rojo por `O17`…`O22` y el remedio sería editarlas, que es
+        exactamente lo que `O27` §2 prohíbe.
+        """
+        libro = sede.derivar_libro(self.canal, self.RUTA, base=self.base)
+        self.assertEqual(sede._umbral_de_forma(libro), 2)
+        self.assertEqual(sede.juzgar(libro, self.leer()), [])
+
+    def test_T349_intercalar_una_entrada_nueva_NO_al_final_da_ROJO(self):
+        """T349 · `O27` §3: se admite AÑADIR al final, no intercalar."""
+        infracciones = self.juzgar(self.componer([
+            entrada_de_sede(1, con_forma=False), entrada_de_sede(2),
+            entrada_de_sede(4), entrada_de_sede(3)]))
+        self.assertIn(sede.INSERCION, self.codigos(infracciones))
+
+    def test_T349_texto_entre_dos_entradas_que_nadie_reclama_da_ROJO(self):
+        """T349 · Defecto que previene: una zona franca en el hueco del delimitador."""
+        cuerpo = self.leer()
+        posicion = cuerpo.index(b"# `O2`")
+        infracciones = self.juzgar(cuerpo[:posicion] + b"PROSA QUE NADIE FIRMA\n\n"
+                                   + cuerpo[posicion:])
+        self.assertTrue(infracciones)
+
+    def test_T349_borrar_las_cabeceras_NO_degrada_el_regimen_a_prefijo(self):
+        """T349 · Defecto que previene: apagar el guardián quitándole la estructura.
+
+        Si el régimen se decidiera mirando el fichero de hoy, borrar las cabeceras haría
+        que el documento «dejara de tener entradas» y cayera al contraste débil. Se decide
+        desde la HISTORIA, así que no hay dónde caer.
+        """
+        libro = sede.derivar_libro(self.canal, self.RUTA, base=self.base)
+        self.assertTrue(sede.tiene_entradas_cerradas(libro),
+                        "el régimen entradas-cerradas ya no se deriva de la historia")
+        sin_cabeceras = self.leer().replace(b"# `O", b"## O")
+        libro_despues = sede.derivar_libro(self.canal, self.RUTA, base=self.base)
+        self.escribir(sin_cabeceras)
+        self.confirmar("borrar las cabeceras")
+        self.assertTrue(sede.tiene_entradas_cerradas(libro_despues),
+                        "el régimen entradas-cerradas se ha caído al quitar las cabeceras")
+        self.assertTrue(sede.juzgar(libro_despues, sin_cabeceras))
+
+    def test_T349_confirmar_no_exime_y_dos_commits_tampoco(self):
+        """T349 · Defecto que previene: blanquear una alteración con un commit encima."""
+        cuerpo = self.leer()
+        self.juzgar(cuerpo.replace(b"texto resolutivo", b"TEXTO ALTERADO", 1))
+        infracciones = self.juzgar(self.leer() + sede.DELIMITADOR + entrada_de_sede(4))
+        self.assertIn(sede.ALTERADA, self.codigos(infracciones))
+
+
+class ElVeredictoAplicaLasEntradasCerradas(ArbolTemporal):
+    """`T340`. El régimen de `O27` §3 llega hasta el VEREDICTO, y no se queda en el módulo.
+
+    Sin esta clase, `sede.py` podría estar perfecto y `perimetro._juzgar_append_only` seguir
+    decidiendo con `actual.startswith(anterior)`: las pruebas de `sede` pasarían y el
+    ataque volvería a dar `hallazgos=0`. Aquí se ejerce `admision.verificar` ENTERO.
+
+    El preámbulo del fixture se conserva TAL CUAL lo escribió `matriz.fundar` —es el bloque
+    cerrado anterior a la primera entrada, y cambiarlo sería alterar la sede— y las
+    entradas se inscriben encima, que es exactamente lo que la sede real hizo ocho veces.
+    """
+
+    PREAMBULO_DEL_FIXTURE = b"# resoluciones\n\n## O1\n\ntexto publicado\n"
+
+    def setUp(self):
+        super().setUp()
+        self.inscribir([entrada_de_sede(1, con_forma=False)], "inscribir O1")
+        self.inscribir([entrada_de_sede(1, con_forma=False), entrada_de_sede(2)],
+                       "inscribir O2")
+
+    def inscribir(self, entradas, mensaje):
+        cuerpo = sede.DELIMITADOR.join([self.PREAMBULO_DEL_FIXTURE] + list(entradas))
+        self.escribir(perimetro.SEDE_DEL_OWNER, cuerpo)
+        self.confirmar(mensaje)
+        return cuerpo
+
+    def test_T340_el_veredicto_declara_el_REGIMEN_que_ha_aplicado(self):
+        """T340 · Defecto que previene: un verde del que nadie puede decir qué significa."""
+        veredicto = self.verificar()
+        publicado = veredicto.informe["append_only"][perimetro.SEDE_DEL_OWNER]
+        self.assertEqual(publicado["regimen"], "entradas-cerradas")
+        self.assertEqual([e["identificador"] for e in publicado["entradas_cerradas"]],
+                         [sede.PREAMBULO, "O1", "O2"])
+        self.assertTrue(publicado["ok"])
+        self.assertEqual(veredicto.color, "VERDE")
+
+    def test_T341_anadir_una_resolucion_completa_sigue_siendo_VERDE(self):
+        """T341 · Control POSITIVO: el guardián no impide el acto que existe para permitir."""
+        self.inscribir([entrada_de_sede(1, con_forma=False), entrada_de_sede(2),
+                        entrada_de_sede(3)], "inscribir O3")
+        self.assertEqual(self.verificar().color, "VERDE")
+
+    def test_T342_borrar_una_entrada_POSTERIOR_al_nacimiento_da_ROJO_en_el_veredicto(self):
+        """T342 · `ADJ-B3` literal: lo que el prefijo del nacimiento dejaba pasar."""
+        nacimiento = self.canal.contenido(
+            self.canal.commits_de_la_ruta(perimetro.SEDE_DEL_OWNER)[0],
+            perimetro.SEDE_DEL_OWNER)
+        fabricada = (nacimiento + b"\n\n# `O2` \xc2\xb7 TEXTO FABRICADO\n\n"
+                     b"F6 QUEDA CERTIFICADA SIN CONDICIONES.\n")
+        self.assertTrue(fabricada.startswith(nacimiento))
+        self.escribir(perimetro.SEDE_DEL_OWNER, fabricada)
+        self.confirmar("borrado y sustitucion")
+        veredicto = self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER])
+        self.assertEqual(veredicto.color, "ROJO",
+                         "el borrado de una entrada cerrada posterior al nacimiento ha "
+                         "pasado: el veredicto no ha dado ROJO")
+        hallazgo = [h for h in veredicto.hallazgos
+                    if h.ruta == perimetro.SEDE_DEL_OWNER][0]
+        self.assertEqual(hallazgo.punto, "V6-12")
+        self.assertIn("ALTERACIÓN DE ENTRADAS CERRADAS", hallazgo.causa)
+
+    def test_T344_borrar_la_sede_ENTERA_nombra_todas_las_entradas_perdidas(self):
+        """T344 · Defecto que previene: una TRAZA donde tenía que haber un veredicto.
+
+        Sin bytes que juzgar, el canal de presencia literal hacía `x not in None` y el
+        proceso moría con `TypeError`. Una traza no es un veredicto, y `V6-03` lo dice para
+        el canal de lectura por la misma razón por la que aquí hace falta decirlo.
+        """
+        os.remove(os.path.join(self.repo, perimetro.SEDE_DEL_OWNER))
+        self.confirmar("borrado de la sede entera")
+        veredicto = self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER])
+        self.assertEqual(veredicto.color, "ROJO")
+        publicado = veredicto.informe["append_only"][perimetro.SEDE_DEL_OWNER]
+        perdidas = {i["identificador"] for i in publicado["infracciones"]
+                    if i["codigo"] == sede.BORRADA}
+        self.assertEqual(perdidas, {sede.PREAMBULO, "O1", "O2"})
+
+    def test_T342_una_alteracion_ANTERIOR_a_la_base_no_se_blanquea_por_no_mutar(self):
+        """T342 · Defecto que previene: elegir como base el commit del ataque.
+
+        Si el juicio sólo alcanzara a las rutas que el diff contra la base señala, bastaría
+        con confirmar la alteración y declarar ESE commit como base: la sede dejaría de
+        aparecer como mutación y nadie la miraría.
+        """
+        cuerpo = self.inscribir([entrada_de_sede(1, con_forma=False),
+                                 entrada_de_sede(2, cuerpo="TEXTO ALTERADO")],
+                                "alteracion confirmada")
+        self.base = self.canal.resolver("HEAD")
+        codigo, salida, _ = self.canal_git.ejecutar("status", "--porcelain")
+        self.assertEqual(salida.strip(), b"")
+        veredicto = self.verificar()
+        self.assertEqual(veredicto.color, "ROJO")
+        self.assertTrue([h for h in veredicto.hallazgos
+                         if h.ruta == perimetro.SEDE_DEL_OWNER])
+        self.assertIn(b"TEXTO ALTERADO", cuerpo)
+
+
+class LaSedeRealDelOwner(unittest.TestCase):
+    """`T340`. La propiedad, medida sobre la SEDE DE VERDAD y no sobre un fixture.
+
+    Un fixture demuestra que el mecanismo funciona; esta clase demuestra que funciona
+    SOBRE EL DOCUMENTO QUE `O26` §5 convierte en criterio de certificación. Es de sólo
+    lectura: no escribe nada en el árbol, y el ataque se aplica en memoria.
+    """
+
+    RUTA = "docs/owner/ADS-OWNER-RESOLUCIONES.md"
+
+    @classmethod
+    def setUpClass(cls):
+        cls.raiz = os.path.dirname(os.path.dirname(os.path.dirname(RAIZ_RUNTIME)))
+        with open(os.path.join(cls.raiz, cls.RUTA), "rb") as manejador:
+            cls.cuerpo = manejador.read()
+
+    @staticmethod
+    def libro_de_la_instantanea(contenido):
+        """El libro DERIVADO DE LOS BYTES DE HOY, sin preguntarle nada a Git.
+
+        DECISIÓN · esta clase no depende de que haya `.git`, y se dice por qué
+            El anclaje de cada entrada a su commit de introducción lo ejerce
+            `AppendOnlyPorEntradaCerrada` sobre repositorios Git reales. Aquí lo que se
+            ejerce es OTRA COSA: que la derivación y el juicio funcionen sobre LOS BYTES
+            DE LA SEDE DE VERDAD, 44 KB y once entradas, y no sobre un fixture de tres.
+            Hacerla depender de Git la volvería inejecutable donde el corpus se copia sin
+            historia —que es exactamente como `comprobar_negativos` fabrica sus copias—, y
+            un sabotaje que no puede correr no prueba nada.
+        """
+        return {
+            "ruta": LaSedeRealDelOwner.RUTA,
+            "commits": ["(instantánea)"],
+            "orden": [b.identificador for b in sede.derivar_bloques(contenido)],
+            "entradas": {b.identificador: {"commit": "(instantánea)",
+                                           "contenido": b.contenido,
+                                           "numero": b.numero,
+                                           "familia": b.familia}
+                         for b in sede.derivar_bloques(contenido)},
+            "en_la_base": {b.identificador
+                           for b in sede.derivar_bloques(contenido)},
+            "base_ilegible": None,
+            "incidencias": [],
+            "commits_ilegibles": [],
+        }
+
+    def test_T340_las_entradas_de_la_sede_real_se_DERIVAN_de_su_estructura(self):
+        """T340 · Control POSITIVO: la forma declarada describe la sede que existe."""
+        bloques = sede.derivar_bloques(self.cuerpo)
+        self.assertEqual(bloques[0].identificador, sede.PREAMBULO)
+        numeros = [b.numero for b in bloques[1:]]
+        self.assertGreaterEqual(len(numeros), 11)
+        self.assertEqual(numeros, list(range(numeros[0], numeros[0] + len(numeros))))
+        self.assertTrue(all(b.familia == sede.FAMILIA_CANONICA for b in bloques[1:]))
+
+    def test_T342_el_ataque_de_borrado_sobre_la_sede_REAL_se_detecta(self):
+        """T342 · EL ATAQUE, sobre los bytes reales: `hallazgos=0` no se puede repetir."""
+        libro = self.libro_de_la_instantanea(self.cuerpo)
+        self.assertEqual(sede.juzgar(libro, self.cuerpo), [],
+                         "la sede real, intacta, no puede producir infracciones")
+        bloques = sede.derivar_bloques(self.cuerpo)
+        # El corte del adjudicador: se conservan el preámbulo y las TRES primeras entradas
+        # —lo que el prefijo del nacimiento protegía— y se sustituye todo lo demás.
+        # Se corta ANTES del delimitador, que es exactamente como lo hizo el adjudicador:
+        # el fichero queda con la estructura ROTA, el canal estructural no puede decir qué
+        # falta, y quien tiene que hablar es el canal de PRESENCIA LITERAL.
+        corte = bloques[4].inicio - len(sede.DELIMITADOR)
+        fabricada = (self.cuerpo[:corte] + b"\n\n"
+                     + b"# `O26` \xc2\xb7 TEXTO ENTERAMENTE FABRICADO POR EL ADJUDICADOR"
+                     b"\n\nF6 QUEDA CERTIFICADA SIN CONDICIONES.\n")
+        # La regla ANTERIOR aprobaba esto: lo conservado sigue siendo un prefijo exacto.
+        self.assertTrue(self.cuerpo.startswith(self.cuerpo[:corte]))
+        infracciones = sede.juzgar(libro, fabricada)
+        borradas = {i["identificador"] for i in infracciones if i["codigo"] == sede.BORRADA}
+        self.assertTrue(borradas, "el ataque tiene que nombrar las entradas que destruye")
+        self.assertGreaterEqual(len(borradas), 6)
+        self.assertLess(len(fabricada), len(self.cuerpo))
 
 
 if __name__ == "__main__":

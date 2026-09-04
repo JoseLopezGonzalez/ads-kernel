@@ -1,0 +1,13 @@
+# evidencia de: cobertura-de-gate
+# orden:        python3 docs/evolucion/verificacion/comprobar-cobertura-de-gate.py --autopruebas
+# codigo:       0
+# ---------------------------------------------------------------
+  ok   control POSITIVO · dos lotes leídos enteros
+  ok   una fuente SIN ABRIR
+  ok   un HUECO de líneas dentro de la fuente
+  ok   un revisor intenta COMPENSAR lo que otro no leyó
+  ok   leyó OTRO OBJETO · sha256 divergente
+  ok   lote declarado NO CERRADO
+  ok   un revisor SIN manifiesto de lectura
+
+  7 controles · 0 sin detectar
