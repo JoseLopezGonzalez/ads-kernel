@@ -340,6 +340,32 @@ donde el ciclo los invoca · `C-00`, `C-01`, `C-02`, `C-03`, `C-04`, `C-13`, `C-
 RESULTADO DE LA RESTA   ∅   (VACÍA)      ← REFUTADO. Ver el aviso inmediatamente debajo
 ```
 
+> ## ⚠ Y EL GATE DEL 2026-09-04 VOLVIÓ A NO CERTIFICAR — el ÚNICO autorizado por su encargo
+>
+> **Se registra, no se corrige.** Su encargo prohíbe expresamente aplicar sus hallazgos, y no
+> se ha aplicado ninguno. Sede:
+> [`03-GATE-DE-CERTIFICACION-FINAL-20260904.md`](03-GATE-DE-CERTIFICACION-FINAL-20260904.md),
+> con los DOS dictámenes y la adjudicación ÍNTEGROS.
+>
+> **Las tres restas SÍ estaban vacías esta vez, y el adjudicador las reprodujo** —`A=0 · B=0 ·
+> C=0`—, junto con la línea base entera: 34/34 validadores, 682 casos, los tres E2E, 133
+> infracciones detectadas y 0 no detectadas, cero saltos y determinismo byte a byte. **Y aun
+> así `F6` NO queda certificada**, por cinco razones finitas que este documento no resume
+> porque no es su sede. Las dos que más pesan:
+>
+> · **el gate NO ES VÁLIDO**, otra vez por COBERTURA: el revisor 2 dejó 29 329 de 48 143
+>   líneas sin leer —el 60,9 %— y el adjudicador verificó la resta y **rechazó la atenuante
+>   del reparto**, porque los dos lotes difieren en el 1,1 % y el otro revisor terminó el suyo;
+> · **quedan TRES bloqueantes internos vivos**, reproducidos por el adjudicador con sus
+>   órdenes: la migración `0→1` del estado durable rota e irreversible, la raíz externa SIN la
+>   purga `E-10` —que incumple la condición 8 de `O26` §1—, y el append-only de la sede del
+>   Owner, que al ser un contraste de PREFIJO permite borrar `O20`–`O26` enteras, sustituirlas
+>   por un texto fabricado y obtener CERO hallazgos.
+>
+> **Y la lección de método, que vale más que el veredicto:** las tres restas vacías eran
+> ciertas y **no acreditan lo que `O26` §5.1 y §5.2 les piden acreditar**. Un cero verdadero
+> sobre un criterio que no mide lo que dice medir sigue sin ser una certificación.
+
 > ## ⚠ ESTA RESTA FUE REFUTADA POR EL GATE DE CERTIFICACIÓN DEL 2026-09-03
 >
 > **Y no se corrige aquí, se registra.** El gate único e independiente de certificación
