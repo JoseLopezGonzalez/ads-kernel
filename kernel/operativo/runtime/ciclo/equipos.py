@@ -59,19 +59,28 @@ DECISIÓN · el conflicto AUTOR / REVISOR / ADJUDICADOR se impide por DATO, no p
 """
 from __future__ import annotations
 
+import math
+import re
+import unicodedata
+
 from estado.serializacion import cid_de_objeto
 
 from . import agentes as politica_de_agentes
 from .corpus import CAPACIDADES, Corpus, bloques
 from .errores import (
     AgenteSobreasignado,
+    CardinalDeAgentesIlegible,
     CatalogoDeModelosAusente,
     ComposicionDeEquipoAusente,
     ConflictoDeRoles,
+    CriterioDeComparacionAusente,
     LimiteDeCapacidadExcedido,
     MetodoNoEsCapacidad,
     PaqueteIlegible,
+    RepartoIncoherente,
+    RepartoSinUnidades,
     VariosAgentesSinIntegrador,
+    VolumenExcedeElContexto,
     PerfilDesconocido,
     RolSinAgente,
 )
@@ -161,18 +170,340 @@ def exigir_capacidad(nombre, *, corpus=None):
 #     puede FALLAR CERRADO. La materialización de una capacidad que no es la responsable del
 #     paquete es un error, no un aviso.
 #
-# DECISIÓN · «1 AGENTE por defecto, siempre», y VARIOS sólo DECLARADO y con integrador
-#     `C4` lo escribe así, y remata: «Varios agentes sin integrador declarado está
-#     prohibido». El campo `agentes` de la composición es PROSA —«1», «1 o 2 en competencia
-#     declarada», «1 o 2 repartidos por territorio»— y derivar de ahí un cardinal exigiría
-#     reglas léxicas sobre texto libre, que este paquete prohíbe. Por eso el reparto se
-#     DECLARA como dato (`varios_agentes`), y sin integrador declarado NO se materializa.
+# DECISIÓN · el CARDINAL se DERIVA del campo `agentes`, que NO es texto libre
+#     El comentario que ocupaba este sitio decía lo contrario: que `agentes` era prosa y que
+#     derivar de ahí un cardinal «exigiría reglas léxicas sobre texto libre». De esa premisa
+#     salía todo lo demás —el reparto entraba como PARÁMETRO EXTERNO `varios_agentes`, y sin
+#     parámetro se materializaba UN agente—, y el resultado medido fue el peor posible: las
+#     TRES composiciones reales que declaran varios agentes producían un agente único, con
+#     `reparto_de_agentes` vacío, sin error, sin aviso y sin `esperando-capacidad`, mientras
+#     el registro durable publicaba «2 o 3» al lado de ese agente único.
+#
+#     La premisa era falsa y se puede medir: el campo `agentes` tiene NOVENTA Y NUEVE valores
+#     en VEINTIDÓS formas, y exactamente TRES declaran más de uno. Veintidós formas sobre
+#     noventa y nueve valores no son texto libre: son un vocabulario cerrado con dos partes,
+#     un CARDINAL y un MODO DE REPARTO. `leer_cardinal` lo lee entero y ENUMERADO, y lo que
+#     no encaja en ninguna forma declarada NO vale «1 por omisión»: levanta
+#     `CardinalDeAgentesIlegible`. `exigir_censo_legible` recorre el corpus completo y falla
+#     si aparece una forma nueva, para que una composición añadida mañana no pueda colarse en
+#     silencio por la puerta que este comentario dejaba abierta.
+#
+# DECISIÓN · el INTEGRADOR sale de la COMPOSICIÓN, y el CONTENIDO del reparto del paquete
+#     `C4`: «En los tres casos se declara QUIÉN INTEGRA el resultado», y «Varios agentes sin
+#     integrador declarado está prohibido». Quién integra es una propiedad de la COMPOSICIÓN,
+#     y estaba escrita en su campo `ampliacion` desde el principio —«con
+#     `DIS/direccion-artistica` como integrador declarado»—: el runtime no lo leía y lo
+#     pedía por la firma, de modo que la prohibición sólo se aplicaba a quien se molestara en
+#     declarar el reparto. Ahora `integrador_de` lo lee de `ampliacion` y lo CONTRASTA contra
+#     `roles`; un integrador que no es rol de la composición no integra nada.
+#     Lo que sí sigue siendo del llamador es el CONTENIDO: cuáles son los territorios, cuáles
+#     las direcciones exploradas, si la competencia está declarada y con qué criterio. Eso es
+#     decidir contenido, y `gate:despacho-coherente` lo prohíbe a DSP con `sin-contenido`.
+#
+# DECISIÓN · las TRES condiciones de `C4` se COMPRUEBAN, y la tercera se MIDE
+#     `C4` admite varios agentes «cuando se cumple alguna, y la composición lo declara»:
+#     (a) reparto por artefacto o superficie sin solapamiento, (b) fase divergente declarada
+#     por el método, (c) volumen que excede lo que un contexto puede sostener. (a) exige que
+#     las unidades del reparto EXISTAN como dato: con cero territorios no hay reparto que
+#     comprobar, y `RepartoSinUnidades` lo dice —un territorio es una respuesta, ninguno es
+#     que nadie ha contestado—. (b) ya se leía de los pasos del método y se conserva. (c) se
+#     mide: el volumen declarado del paquete contra la capacidad de contexto que el PERFIL
+#     del rol exige, en la escala de cuatro escalones que `esquemas/perfil-agente.yaml`
+#     declara. La medida es la POSICIÓN en esa escala y no un número de tokens, porque el
+#     corpus no declara tokens y escribirlos aquí sería inventarlos.
+#
+# DECISIÓN · COMPETENCIA exige criterio ESCRITO ANTES, y el «antes» se mide con reloj lógico
+#     `C4`: «Sólo si el método lo declara, y con criterio de comparación escrito ANTES de
+#     empezar». El «antes» es la mitad de la regla y es la que se evapora: un criterio
+#     escrito después de ver las dos propuestas no compara, justifica. El criterio viaja con
+#     el instante en que se declaró y la materialización exige que sea ESTRICTAMENTE anterior
+#     al inicio del trabajo. El instante es un entero lógico y monótono —la revisión del
+#     estado durable—, nunca la hora de pared: `a.9` prohíbe el reloj en el estado canónico.
 
 MODOS_DIVERGENTES = ("divergente",)
 
 
+# ===========================================================================
+#  el LECTOR del campo `agentes` · vocabulario CERRADO y ENUMERADO
+# ===========================================================================
+# Las formas están enumeradas una a una, no adivinadas por parecido. Cada tabla de este
+# bloque se contrasta contra el corpus por `exigir_censo_legible`, de modo que la lista no
+# puede quedarse corta sin que algo se ponga rojo.
+
+MODO_NINGUNO = "ninguno"
+MODO_TERRITORIO = "territorio"
+MODO_DIRECCION = "direccion"
+MODO_ARTEFACTO = "artefacto"
+MODO_SUPERFICIE = "superficie"
+MODO_COMPETENCIA = "competencia"
+MODO_PAQUETE = "paquete"
+
+MODOS_DE_REPARTO = (MODO_NINGUNO, MODO_TERRITORIO, MODO_DIRECCION, MODO_ARTEFACTO,
+                    MODO_SUPERFICIE, MODO_COMPETENCIA, MODO_PAQUETE)
+
+# Los CUATRO que reparten TRABAJO, que son los de la condición (a) de `C4`. `competencia` no
+# está: `C4` la separa expresamente de «varios agentes» y le pone su propia regla. `paquete`
+# tampoco: `1 por paquete; varios paquetes … pueden ir en paralelo` es paralelismo de
+# PAQUETES —la condición compuesta de `a.5`—, y no pluralidad de agentes sobre un rol.
+MODOS_QUE_DIVIDEN_EL_TRABAJO = (MODO_TERRITORIO, MODO_DIRECCION, MODO_ARTEFACTO,
+                                MODO_SUPERFICIE)
+
+# La clave por la que el llamador declara el CONTENIDO de cada modo de reparto.
+CLAVE_DE_UNIDADES = {
+    MODO_TERRITORIO: "territorios",
+    MODO_DIRECCION: "direcciones",
+    MODO_ARTEFACTO: "artefactos",
+    MODO_SUPERFICIE: "superficies",
+}
+
+_CABEZA = re.compile(r"^(?P<min>\d+)(?:\s+o\s+(?P<max>\d+))?(?P<resto>.*)$")
+_COMPARTIDO = re.compile(r"^el mismo agente que (?P<rol>[a-z0-9-]+)$")
+
+# El resto de la CABEZA, tras el cardinal. Vacío es un modo legítimo: «1» a secas.
+REPARTOS_DE_CABEZA = {
+    "": MODO_NINGUNO,
+    "repartidos por territorio": MODO_TERRITORIO,
+    "repartidos por artefacto": MODO_ARTEFACTO,
+    "repartidos por superficie": MODO_SUPERFICIE,
+    "repartidos por dirección": MODO_DIRECCION,
+    "en competencia declarada": MODO_COMPETENCIA,
+    "por paquete": MODO_PAQUETE,
+}
+
+# Cláusulas posteriores que fijan el modo. `2 o 3, uno por dirección explorada` lo hace así.
+REPARTOS_DE_CLAUSULA = {
+    "uno por dirección explorada": MODO_DIRECCION,
+    "uno por territorio": MODO_TERRITORIO,
+    "uno por artefacto": MODO_ARTEFACTO,
+    "uno por superficie": MODO_SUPERFICIE,
+}
+
+# `sin integrador` está ENUMERADA a propósito, y no es un descuido de la lista cerrada: una
+# composición que escribe en voz alta que no hay integrador tiene que caer por la
+# PROHIBICIÓN de `C4` que viola, no por una excusa léxica. «No lo entiendo» y «lo entiendo y
+# está prohibido» son dos diagnósticos distintos, y el segundo es el que hace falta.
+CLAUSULA_SIN_INTEGRADOR = "sin integrador"
+
+# La cláusula de `CON`: paralelismo de PAQUETES del mismo item, que remite a `a.5`.
+CLAUSULA_DE_PARALELISMO_DE_PAQUETES = (
+    "varios paquetes del mismo item pueden ir en paralelo si cumplen las seis condiciones "
+    "de a.5")
+
+# Las anáforas de separación del corpus, enumeradas. No se interpretan: se reconocen, se
+# publican en el equipo escrito y quien las hace cumplir es la lista `independientes`.
+ANAFORAS_DE_SEPARACION = (
+    "anterior", "los anteriores", "todos los anteriores", "todos los productores",
+    "los otros dos", "que enruta", "los demás",
+)
+
+
+def _normalizar(valor):
+    return unicodedata.normalize("NFC", str(valor or "")).strip()
+
+
+def leer_cardinal(valor, *, roles=()):
+    """Lee el campo `agentes` de un rol. Vocabulario CERRADO; lo que no encaja, falla.
+
+    Devuelve `minimo`, `maximo`, `modo` de reparto, con quién comparte agente, de quién se
+    declara separado y si la composición niega el integrador. NUNCA devuelve un valor por
+    omisión: un cardinal ilegible levanta `CardinalDeAgentesIlegible`, porque «1 por
+    omisión» ante lo que no se entiende es cómo `2 o 3` acabó materializando un agente.
+    """
+    literal = _normalizar(valor)
+    sufijos = {str(r).split("/", 1)[-1] for r in roles}
+    lectura = {
+        "literal": literal, "minimo": 1, "maximo": 1, "modo": MODO_NINGUNO,
+        "comparte_con": None, "separado_de": [], "integrador_negado": False,
+        "paralelismo_de_paquetes": False,
+    }
+    if not literal:
+        raise CardinalDeAgentesIlegible(
+            "un rol sin campo `agentes` no declara cuántos agentes lo ocupan; el esquema "
+            "`composicion.yaml` lo hace obligatorio y aquí no se suple",
+        )
+
+    compartido = _COMPARTIDO.match(literal)
+    if compartido:
+        companero = compartido.group("rol")
+        if sufijos and companero not in sufijos:
+            raise CardinalDeAgentesIlegible(
+                "`" + literal + "` dice compartir agente con `" + companero + "`, que no es "
+                "un rol de esta composición; los suyos son " + ", ".join(sorted(sufijos)),
+                valor=literal, rol=companero,
+            )
+        lectura["comparte_con"] = companero
+        return lectura
+
+    partes = [p.strip() for p in re.split(r"[,;]", literal)]
+    cabeza, cola = partes[0], [p for p in partes[1:] if p]
+
+    casa = _CABEZA.match(cabeza)
+    if not casa:
+        raise CardinalDeAgentesIlegible(
+            "`" + literal + "` no empieza por un cardinal (`N` o `N o M`) ni por `el mismo "
+            "agente que <rol>`; el vocabulario de `agentes` está cerrado y no se amplía "
+            "adivinando", valor=literal,
+        )
+    minimo = int(casa.group("min"))
+    maximo = int(casa.group("max") or casa.group("min"))
+    if minimo < 1 or maximo < minimo:
+        raise CardinalDeAgentesIlegible(
+            "`" + literal + "` declara un cardinal imposible: el mínimo es 1 y el máximo no "
+            "puede ser menor que el mínimo", valor=literal, minimo=minimo, maximo=maximo,
+        )
+    resto = casa.group("resto").strip()
+    if resto not in REPARTOS_DE_CABEZA:
+        raise CardinalDeAgentesIlegible(
+            "`" + literal + "` declara `" + resto + "` tras el cardinal, y no es ninguna de "
+            "las formas de reparto declaradas: " + ", ".join(
+                "`" + f + "`" for f in sorted(REPARTOS_DE_CABEZA) if f),
+            valor=literal, encontrado=resto,
+        )
+    lectura["minimo"], lectura["maximo"] = minimo, maximo
+    lectura["modo"] = REPARTOS_DE_CABEZA[resto]
+
+    for clausula in cola:
+        if clausula in REPARTOS_DE_CLAUSULA:
+            modo = REPARTOS_DE_CLAUSULA[clausula]
+            if lectura["modo"] not in (MODO_NINGUNO, modo):
+                raise CardinalDeAgentesIlegible(
+                    "`" + literal + "` declara dos modos de reparto distintos, `"
+                    + lectura["modo"] + "` y `" + modo + "`; un rol se reparte de UNA forma",
+                    valor=literal,
+                )
+            lectura["modo"] = modo
+            continue
+        if clausula == CLAUSULA_SIN_INTEGRADOR:
+            lectura["integrador_negado"] = True
+            continue
+        if clausula == CLAUSULA_DE_PARALELISMO_DE_PAQUETES:
+            lectura["paralelismo_de_paquetes"] = True
+            continue
+        separado = _leer_separacion(clausula, literal, sufijos)
+        if separado is None:
+            raise CardinalDeAgentesIlegible(
+                "`" + literal + "` trae la cláusula `" + clausula + "`, que no está en el "
+                "vocabulario cerrado de `agentes`", valor=literal, encontrado=clausula,
+            )
+        lectura["separado_de"] = sorted(set(lectura["separado_de"]) | set(separado))
+    return lectura
+
+
+def _leer_separacion(clausula, literal, sufijos):
+    """`distinto …` · devuelve la lista de referencias, o `None` si no es una separación."""
+    if clausula == "distinto":
+        return ["los demás"]
+    if not clausula.startswith("distinto "):
+        return None
+    complemento = clausula[len("distinto "):].strip()
+    for prefijo in ("del ", "de "):
+        if complemento.startswith(prefijo):
+            complemento = complemento[len(prefijo):].strip()
+            break
+    else:
+        return None
+    if complemento in ANAFORAS_DE_SEPARACION:
+        return [complemento]
+    referencias = []
+    for pieza in complemento.split(" y "):
+        pieza = pieza.strip()
+        for prefijo in ("del ", "de "):
+            if pieza.startswith(prefijo):
+                pieza = pieza[len(prefijo):].strip()
+                break
+        if pieza in ANAFORAS_DE_SEPARACION:
+            referencias.append(pieza)
+            continue
+        if sufijos and pieza in sufijos:
+            referencias.append(pieza)
+            continue
+        return None
+    return referencias or None
+
+
+def censo_de_cardinales(corpus):
+    """Las FORMAS del campo `agentes` en todo el corpus, con dónde aparece cada una.
+
+    Se deriva; no se transcribe. Es el dato con el que se desmontó «esto es texto libre», y
+    es el mismo dato con el que `exigir_censo_legible` impide que se vuelva a colar una
+    forma que nadie ha enseñado a leer.
+    """
+    censo = {}
+    for capacidad in CAPACIDADES:
+        for composicion in corpus.composiciones(capacidad):
+            for entrada in composicion.get("roles") or []:
+                forma = _normalizar(entrada.get("agentes"))
+                censo.setdefault(forma, []).append(
+                    composicion["id"] + " · " + str(entrada.get("rol")))
+    return {forma: sorted(donde) for forma, donde in sorted(censo.items())}
+
+
+def exigir_censo_legible(corpus):
+    """Toda forma del corpus se lee, o el corpus no se materializa. Sin excepciones.
+
+    Es la puerta que faltaba: mientras el cardinal se declaraba por la firma, una
+    composición nueva con un `agentes` que nadie entiende entraba sin ruido y se
+    materializaba como uno. Ahora entra por aquí o no entra.
+    """
+    ilegibles = []
+    for capacidad in CAPACIDADES:
+        for composicion in corpus.composiciones(capacidad):
+            roles = [str(e.get("rol")) for e in (composicion.get("roles") or [])]
+            for entrada in composicion.get("roles") or []:
+                try:
+                    leer_cardinal(entrada.get("agentes"), roles=roles)
+                except CardinalDeAgentesIlegible as error:
+                    ilegibles.append(composicion["id"] + " · " + str(entrada.get("rol"))
+                                     + " · " + error.detalle)
+    if ilegibles:
+        raise CardinalDeAgentesIlegible(
+            "el corpus declara formas del campo `agentes` que el lector no conoce: "
+            + " | ".join(sorted(ilegibles)),
+            formas=sorted(ilegibles),
+        )
+    return True
+
+
+# ===========================================================================
+#  el INTEGRADOR, leído de la COMPOSICIÓN
+# ===========================================================================
+# `C4` exige que se declare QUIÉN INTEGRA, y la composición lo declara en `ampliacion`. Las
+# dos formas están enumeradas: son las dos que el corpus usa, y una tercera forma nueva
+# dejaría el integrador SIN LEER, que es lo mismo que no declararlo — y entonces la
+# prohibición de `C4` salta, que es lo correcto.
+_FORMAS_DE_INTEGRADOR = (
+    re.compile(r"(?P<rol>[A-Z]{2,4}/[a-z0-9-]+)\s+como integrador declarado"),
+    re.compile(r"(?P<rol>[A-Z]{2,4}/[a-z0-9-]+)\s+es el integrador declarado"),
+)
+
+
+def integrador_de(composicion):
+    """El rol INTEGRADOR que la composición declara en `ampliacion`, contrastado con `roles`.
+
+    Devuelve `None` cuando la composición no lo declara: eso NO es un defecto por sí solo
+    —una composición de un agente por rol no necesita integrador—, y es exactamente lo que
+    convierte en prohibido el reparto plural.
+    """
+    texto = _normalizar(composicion.get("ampliacion"))
+    nombres = {str(e.get("rol")) for e in (composicion.get("roles") or [])}
+    for forma in _FORMAS_DE_INTEGRADOR:
+        casa = forma.search(texto)
+        if not casa:
+            continue
+        rol = casa.group("rol")
+        if rol not in nombres:
+            raise VariosAgentesSinIntegrador(
+                "la `ampliacion` de `" + str(composicion.get("id")) + "` declara integrador "
+                "a `" + rol + "`, que NO es un rol de esta composición; un integrador que no "
+                "ocupa ningún rol no integra nada",
+                composicion=str(composicion.get("id")), integrador=rol,
+            )
+        return {"rol": rol, "sede": "ampliacion", "texto": texto}
+    return None
+
+
 def leer_paquete(capacidad, *, corpus, paquete=None, metodo=None, nivel_de_calidad=None,
-                 acoplamiento=None, objetivo=None):
+                 acoplamiento=None, objetivo=None, volumen=None, inicio=None):
     """`C4` paso 1, con sus CINCO materias resueltas contra sus sedes. Falla cerrado.
 
     Devuelve la lectura; no la inventa. Lo que el llamador no declara se devuelve como
@@ -246,6 +577,42 @@ def leer_paquete(capacidad, *, corpus, paquete=None, metodo=None, nivel_de_calid
             "campos": _modelo.normalizar_acoplamiento(acoplamiento),
             "motivo": "",
         }
+
+    # --- VOLUMEN del paquete: la tercera condición de `C4` para admitir varios agentes.
+    # Es un recuento de unidades de trabajo —artefactos, superficies— y no un tamaño en
+    # tokens: el corpus no declara tokens y escribirlos aquí sería inventar la medida.
+    if volumen is None:
+        lectura["volumen"] = {
+            "declarado": False, "unidades": None,
+            "motivo": "el paquete no declara volumen; la condición (c) de `C4` —«el volumen "
+                      "excede lo que un contexto puede sostener»— no se presupone ni a "
+                      "favor ni en contra",
+        }
+    else:
+        if not isinstance(volumen, int) or isinstance(volumen, bool) or volumen < 1:
+            raise PaqueteIlegible(
+                "el volumen del paquete es un entero >= 1 de unidades de trabajo; llegó "
+                + repr(volumen), volumen=str(volumen),
+            )
+        lectura["volumen"] = {"declarado": True, "unidades": int(volumen), "motivo": ""}
+
+    # --- INICIO: el instante LÓGICO en que empieza el trabajo. Es lo que hace medible el
+    # «ANTES de empezar» del criterio de comparación de la COMPETENCIA. Entero monótono del
+    # estado durable —la revisión—, nunca la hora de pared: `a.9` la prohíbe en el canónico.
+    if inicio is None:
+        lectura["inicio"] = {
+            "declarado": False, "instante": None,
+            "motivo": "el paquete no declara el instante lógico de inicio; sin él no se "
+                      "puede comprobar que un criterio de comparación se escribió ANTES, y "
+                      "`C4` no admite competencia sin esa comprobación",
+        }
+    else:
+        if not isinstance(inicio, int) or isinstance(inicio, bool) or inicio < 0:
+            raise PaqueteIlegible(
+                "el instante lógico de inicio es un entero >= 0 del estado durable; llegó "
+                + repr(inicio), inicio=str(inicio),
+            )
+        lectura["inicio"] = {"declarado": True, "instante": int(inicio), "motivo": ""}
     return lectura
 
 
@@ -278,34 +645,252 @@ def _niveles_de_calidad(corpus):
     return salida
 
 
-def exigir_integrador(reparto, roles):
-    """`C4`: «Varios agentes sin integrador declarado está prohibido»."""
-    nombres = {r["rol"] for r in roles}
-    for rol, declarado in sorted((reparto or {}).items()):
-        cuantos = int((declarado or {}).get("n") or 1)
-        integra = str((declarado or {}).get("integra") or "").strip()
-        if rol not in nombres:
-            raise PaqueteIlegible(
-                "se declaran varios agentes para `" + str(rol) + "`, que no es un rol de "
-                "esta composición", rol=str(rol),
+CONDICION_REPARTO = "el trabajo se reparte por artefacto o superficie sin solapamiento"
+CONDICION_DIVERGENTE = "el método declara una fase divergente con exploración en paralelo"
+CONDICION_VOLUMEN = "el volumen excede lo que un contexto puede sostener"
+CONDICION_COMPETENCIA = "competencia declarada por el método, con criterio escrito antes"
+
+
+def capacidad_de_contexto(exigencia, politica):
+    """Cuántas unidades de trabajo SOSTIENE un contexto, DERIVADO de la escala del corpus.
+
+    `esquemas/perfil-agente.yaml` declara `contexto` como un enum ORDENADO de cuatro
+    escalones —`corto < medio < amplio < maximo`— y no declara ningún tamaño en tokens. La
+    única medida que se puede DERIVAR sin inventar nada es la posición en esa escala, y ésa
+    es la que se usa: `corto` sostiene una unidad, `maximo` cuatro. Si mañana el esquema
+    declara cinco escalones, esta función devuelve cinco sin que nadie la edite.
+    """
+    if not exigencia or not exigencia.get("contexto"):
+        return None
+    return politica.indice_de_contexto(exigencia["contexto"]) + 1
+
+
+def derivar_reparto(composicion, roles, *, lectura, declarado=None, asignaciones=None,
+                    politica=None):
+    """CUÁNTOS AGENTES por rol, derivado de la composición. `C4`, «Cuántos agentes por rol».
+
+    El cardinal y el modo salen del campo `agentes`; el integrador, de `ampliacion`; el
+    CONTENIDO del reparto —qué territorios, qué direcciones, si hay competencia y con qué
+    criterio—, del llamador, porque decidir contenido no es de DSP. Las tres condiciones de
+    `C4` se comprueban aquí, y ninguna se da por buena por omisión.
+    """
+    declarado = dict(declarado or {})
+    asignaciones = dict(asignaciones or {})
+    nombres = [r["rol"] for r in roles]
+    ajenos = sorted(set(declarado) - set(nombres))
+    if ajenos:
+        raise PaqueteIlegible(
+            "se declara reparto para " + ", ".join(ajenos) + ", que no son roles expandidos "
+            "de esta composición", roles=ajenos,
+        )
+    integrador = integrador_de(composicion)
+    todos = [str(e.get("rol")) for e in (composicion.get("roles") or [])]
+
+    plan = []
+    for entrada in sorted(roles, key=lambda r: r["rol"]):
+        rol = entrada["rol"]
+        cardinal = leer_cardinal(entrada["agentes"], roles=todos)
+        contenido = dict(declarado.get(rol) or {})
+        registro = asignaciones.get(rol) or {}
+        capacidad = None
+        if politica is not None:
+            capacidad = capacidad_de_contexto(registro.get("exigencia"), politica)
+
+        cuantos, unidades, condicion, motivo = _cuantos_agentes(
+            rol, cardinal, contenido, lectura=lectura)
+
+        # `C4` condición (c), MEDIDA: volumen declarado contra la capacidad de contexto que
+        # el PERFIL del rol exige. Un volumen que no cabe y no se reparte NO se despacha: el
+        # agente empezaría un trabajo que no puede sostener y lo descubriría a la mitad.
+        volumen = lectura["volumen"]["unidades"] if lectura["volumen"]["declarado"] else None
+        if volumen is not None and capacidad:
+            necesarios = int(math.ceil(volumen / float(capacidad)))
+            if necesarios > 1:
+                if cardinal["modo"] not in MODOS_QUE_DIVIDEN_EL_TRABAJO:
+                    raise VolumenExcedeElContexto(
+                        "el paquete declara un volumen de " + str(volumen) + " unidades y el "
+                        "perfil de `" + rol + "` exige un contexto `"
+                        + str((registro.get("exigencia") or {}).get("contexto"))
+                        + "`, que sostiene " + str(capacidad) + "; harían falta "
+                        + str(necesarios) + " agentes y el rol no declara reparto en su "
+                        "campo `agentes` (`" + cardinal["literal"] + "`)",
+                        rol=rol, volumen=volumen, capacidad=capacidad,
+                        necesarios=necesarios,
+                    )
+                if cuantos < necesarios:
+                    raise VolumenExcedeElContexto(
+                        "el paquete declara un volumen de " + str(volumen) + " unidades, `"
+                        + rol + "` sostiene " + str(capacidad) + " por agente y el reparto "
+                        "declarado sólo trae " + str(cuantos) + " unidad(es): faltan "
+                        + str(necesarios - cuantos),
+                        rol=rol, volumen=volumen, capacidad=capacidad,
+                        necesarios=necesarios, declaradas=cuantos,
+                    )
+                condicion = CONDICION_VOLUMEN
+
+        integra = None
+        if cuantos > 1:
+            if cardinal["integrador_negado"]:
+                raise VariosAgentesSinIntegrador(
+                    "`" + rol + "` declara `" + cardinal["literal"] + "`: " + str(cuantos)
+                    + " agentes y, en el mismo campo, que NO hay integrador. `C4` lo prohíbe "
+                    "con todas las letras: «Varios agentes sin integrador declarado está "
+                    "prohibido», porque produce tres propuestas y ninguna decisión",
+                    rol=rol, agentes=cuantos, literal=cardinal["literal"],
+                )
+            if integrador is None:
+                raise VariosAgentesSinIntegrador(
+                    "`" + rol + "` materializa " + str(cuantos) + " agentes y la composición "
+                    "`" + str(composicion.get("id")) + "` no declara QUIÉN INTEGRA en su "
+                    "campo `ampliacion`; `C4` lo prohíbe expresamente",
+                    rol=rol, agentes=cuantos, composicion=str(composicion.get("id")),
+                )
+            integra = integrador["rol"]
+            if condicion is None:
+                raise VariosAgentesSinIntegrador(
+                    "`" + rol + "` materializa " + str(cuantos) + " agentes y no consta "
+                    "NINGUNA de las tres condiciones que `C4` exige para admitirlos: ni "
+                    "reparto sin solapamiento, ni fase divergente declarada por el método, "
+                    "ni volumen que exceda un contexto",
+                    rol=rol, agentes=cuantos,
+                )
+
+        plan.append({
+            "rol": rol,
+            "literal": cardinal["literal"],
+            "minimo": cardinal["minimo"],
+            "maximo": cardinal["maximo"],
+            "modo": cardinal["modo"],
+            "agentes": cuantos,
+            "unidades": list(unidades),
+            "integra": integra,
+            "integrador_de_la_composicion": integrador["rol"] if integrador else None,
+            "condicion_c4": condicion,
+            "criterio_de_comparacion": contenido.get("criterio_de_comparacion") or None,
+            "criterio_declarado_en": contenido.get("criterio_declarado_en"),
+            "comparte_con": cardinal["comparte_con"],
+            "separado_de": list(cardinal["separado_de"]),
+            "paralelismo_de_paquetes": cardinal["paralelismo_de_paquetes"],
+            "capacidad_de_contexto": capacidad,
+            "volumen_del_paquete": volumen,
+            "motivo": motivo,
+        })
+    return plan
+
+
+def _cuantos_agentes(rol, cardinal, contenido, *, lectura):
+    """El cardinal EFECTIVO: `1` por defecto, y varios sólo con su condición comprobada."""
+    modo = cardinal["modo"]
+
+    if modo in MODOS_QUE_DIVIDEN_EL_TRABAJO:
+        clave = CLAVE_DE_UNIDADES[modo]
+        unidades = [str(u).strip() for u in (contenido.get(clave) or []) if str(u).strip()]
+        if not unidades:
+            raise RepartoSinUnidades(
+                "`" + rol + "` declara `" + cardinal["literal"] + "`, es decir un reparto "
+                "por " + modo + ", y nadie ha dicho cuáles son los `" + clave + "`. `C4` "
+                "condición (a) exige que el trabajo se reparta «sin solapamiento», y eso no "
+                "se puede comprobar sin las unidades. Uno es una respuesta legítima; "
+                "ninguno es que nadie ha contestado",
+                rol=rol, modo=modo, clave=clave, literal=cardinal["literal"],
             )
-        if cuantos < 1:
-            raise PaqueteIlegible(
-                "`" + str(rol) + "` declara " + str(cuantos) + " agentes; el mínimo es 1",
-                rol=str(rol),
+        if len(unidades) != len(set(unidades)):
+            raise RepartoSinUnidades(
+                "`" + rol + "` declara unidades de reparto repetidas: " + ", ".join(unidades)
+                + "; `C4` exige reparto SIN SOLAPAMIENTO y dos agentes sobre la misma unidad "
+                "es exactamente el solapamiento que prohíbe",
+                rol=rol, modo=modo, unidades=unidades,
             )
-        if cuantos > 1 and not integra:
-            raise VariosAgentesSinIntegrador(
-                "`" + str(rol) + "` declara " + str(cuantos) + " agentes y NO declara quién "
-                "INTEGRA el resultado; `C4` lo prohíbe expresamente: produce tres propuestas "
-                "y ninguna decisión",
-                rol=str(rol), agentes=cuantos,
+        cuantos = len(unidades)
+        if cuantos < cardinal["minimo"] or cuantos > cardinal["maximo"]:
+            raise RepartoIncoherente(
+                "`" + rol + "` declara `" + cardinal["literal"] + "` y se le pasan "
+                + str(cuantos) + " " + CLAVE_DE_UNIDADES[modo] + "; el cardinal escrito en "
+                "la composición manda, y no se estira para que quepa lo que llega",
+                rol=rol, literal=cardinal["literal"], recibidos=cuantos,
             )
-        if cuantos > 1 and integra not in nombres:
-            raise VariosAgentesSinIntegrador(
-                "`" + str(rol) + "` declara como integrador a `" + integra + "`, que no es "
-                "un rol de esta composición", rol=str(rol), integrador=integra,
+        return cuantos, unidades, CONDICION_REPARTO, ""
+
+    if modo == MODO_COMPETENCIA:
+        cuantos = contenido.get("competencia")
+        if cuantos is None:
+            # `C4` separa COMPETENCIA de «varios agentes» y la condiciona a que el MÉTODO la
+            # declare. Sin declaración no hay competencia, y el cardinal es el mínimo: es el
+            # «1 AGENTE por defecto, siempre» aplicado, no un silencio.
+            return cardinal["minimo"], _nombres_de_competencia(cardinal["minimo"]), None, (
+                "la composición admite competencia y el paquete no la declara: se "
+                "materializa el mínimo del cardinal escrito")
+        if not isinstance(cuantos, int) or isinstance(cuantos, bool):
+            raise RepartoIncoherente(
+                "`" + rol + "` declara una competencia que no es un número de agentes: "
+                + repr(cuantos), rol=rol,
             )
+        if cuantos < cardinal["minimo"] or cuantos > cardinal["maximo"]:
+            raise RepartoIncoherente(
+                "`" + rol + "` declara `" + cardinal["literal"] + "` y se pide una "
+                "competencia de " + str(cuantos) + " agentes", rol=rol,
+                literal=cardinal["literal"], recibidos=cuantos,
+            )
+        if cuantos > 1:
+            _exigir_criterio_previo(rol, contenido, lectura)
+            if not lectura["modo"]["fase_divergente"]:
+                raise CriterioDeComparacionAusente(
+                    "`" + rol + "` entra en competencia y el método del paquete NO declara "
+                    "ninguna fase divergente; `C4`: la competencia vale «sólo si el método "
+                    "lo declara»", rol=rol, metodo=lectura["modo"]["metodo"],
+                )
+        return cuantos, _nombres_de_competencia(cuantos), CONDICION_COMPETENCIA, ""
+
+    # `ninguno` y `paquete`. El segundo NO es pluralidad de agentes: `1 por paquete; varios
+    # paquetes del mismo item pueden ir en paralelo si cumplen las seis condiciones de a.5`
+    # habla de PAQUETES, y quien los pone en paralelo es `paralelismo.secuenciar` con la
+    # condición compuesta de `a.5`. Contarlo como una cuarta composición plural sería leer
+    # mal el corpus en la dirección contraria a la del defecto que se corrige.
+    if cardinal["maximo"] > cardinal["minimo"]:
+        if lectura["modo"]["fase_divergente"]:
+            return cardinal["maximo"], _nombres_de_competencia(cardinal["maximo"]), \
+                CONDICION_DIVERGENTE, ("el método declara fase divergente y el cardinal "
+                                       "escrito admite varios")
+        return cardinal["minimo"], _nombres_de_competencia(cardinal["minimo"]), None, (
+            "cardinal con rango y sin modo de reparto declarado: se materializa el mínimo, "
+            "que es el «1 AGENTE por defecto, siempre» de `C4`")
+    return cardinal["minimo"], _nombres_de_competencia(cardinal["minimo"]), (
+        CONDICION_REPARTO if cardinal["minimo"] > 1 else None), ""
+
+
+def _nombres_de_competencia(cuantos):
+    return ["propuesta " + str(i) for i in range(1, int(cuantos) + 1)]
+
+
+def _exigir_criterio_previo(rol, contenido, lectura):
+    """`C4`: «con criterio de comparación escrito ANTES de empezar». El ANTES se mide."""
+    criterio = str(contenido.get("criterio_de_comparacion") or "").strip()
+    if not criterio:
+        raise CriterioDeComparacionAusente(
+            "`" + rol + "` entra en competencia y no hay criterio de comparación escrito; "
+            "`C4` lo exige, y sin él la comparación la gana la propuesta que más guste "
+            "cuando ya están las dos encima de la mesa", rol=rol,
+        )
+    declarado_en = contenido.get("criterio_declarado_en")
+    if not isinstance(declarado_en, int) or isinstance(declarado_en, bool):
+        raise CriterioDeComparacionAusente(
+            "el criterio de comparación de `" + rol + "` no dice CUÁNDO se escribió; sin el "
+            "instante lógico de su declaración, «escrito ANTES de empezar» no es "
+            "comprobable y `C4` no lo da por bueno", rol=rol,
+        )
+    if not lectura["inicio"]["declarado"]:
+        raise CriterioDeComparacionAusente(
+            "hay criterio de comparación para `" + rol + "` y el paquete no declara su "
+            "instante lógico de inicio: no hay contra qué medir el «ANTES»", rol=rol,
+        )
+    inicio = lectura["inicio"]["instante"]
+    if declarado_en >= inicio:
+        raise CriterioDeComparacionAusente(
+            "el criterio de comparación de `" + rol + "` se declaró en el instante "
+            + str(declarado_en) + " y el trabajo empieza en el " + str(inicio) + ": no es "
+            "ANTES. Un criterio escrito con las propuestas delante no compara, justifica",
+            rol=rol, declarado_en=declarado_en, inicio=inicio,
+        )
     return True
 
 
@@ -316,7 +901,8 @@ def materializar(capacidad, *, corpus=None, composiciones_verdaderas=(),
                  condiciones_de_rol=(), slots=SLOTS_POR_DEFECTO, metodo=None,
                  paquete=None, control_repo=None, catalogo=None, degradaciones=None,
                  politica=None, nivel_de_calidad=None, acoplamiento=None, objetivo=None,
-                 varios_agentes=None, capacidad_responsable=None):
+                 reparto_declarado=None, capacidad_responsable=None, volumen=None,
+                 inicio=None, equipo_previo=None):
     """Los siete pasos de `C4`, en orden, sobre las composiciones reales del corpus.
 
     `control_repo` es de dónde sale el CATÁLOGO DE MODELOS del proyecto —su `PROFILE.md`—,
@@ -346,6 +932,7 @@ def materializar(capacidad, *, corpus=None, composiciones_verdaderas=(),
     lectura = leer_paquete(
         capacidad, corpus=corpus, paquete=paquete, metodo=metodo,
         nivel_de_calidad=nivel_de_calidad, acoplamiento=acoplamiento, objetivo=objetivo,
+        volumen=volumen, inicio=inicio,
     )
 
     # PASO 2 · elegir composición, EN EL ORDEN EN QUE ESTÁN ESCRITAS.
@@ -420,22 +1007,16 @@ def materializar(capacidad, *, corpus=None, composiciones_verdaderas=(),
                 "falta": [error.detalle],
             }
 
-    # `C4`, «Cuántos agentes por rol»: 1 por defecto SIEMPRE; varios sólo si se DECLARAN,
-    # y NUNCA sin integrador. Va aquí, después del paso 3, porque necesita los roles ya
-    # expandidos para comprobar que el rol y su integrador existen de verdad.
-    exigir_integrador(varios_agentes, roles)
-    if varios_agentes and not lectura["modo"]["fase_divergente"]:
-        competencia = sorted(r for r, d in (varios_agentes or {}).items()
-                             if int((d or {}).get("n") or 1) > 1)
-        if competencia:
-            raise VariosAgentesSinIntegrador(
-                "se declaran varios agentes para " + ", ".join(competencia) + " y el método "
-                "del paquete NO declara ninguna fase divergente; `C4` admite varios agentes "
-                "cuando el trabajo se reparte sin solapamiento, cuando el método declara una "
-                "fase divergente o cuando el volumen excede un contexto, y ninguna de las "
-                "tres consta en la lectura del paso 1",
-                roles=competencia, metodo=lectura["modo"]["metodo"],
-            )
+    # `C4`, «Cuántos agentes por rol»: DERIVADO del campo `agentes` de la composición, con
+    # el integrador leído de su `ampliacion` y las tres condiciones comprobadas. Va aquí,
+    # después del paso 4, porque la condición (c) —volumen contra contexto— necesita la
+    # exigencia de perfil que el paso 4 acaba de resolver.
+    plan_de_reparto = derivar_reparto(
+        elegida, roles, lectura=lectura, declarado=reparto_declarado,
+        asignaciones=asignaciones, politica=politica,
+    )
+    plan_por_rol = {p["rol"]: p for p in plan_de_reparto}
+    plurales = {p["rol"] for p in plan_de_reparto if p["agentes"] > 1}
 
 
     # PASO 5 · APLICAR COMBINACIÓN, con `independientes` mandando sobre `combinables`, y
@@ -447,6 +1028,20 @@ def materializar(capacidad, *, corpus=None, composiciones_verdaderas=(),
         pareja = [str(r) for r in (entrada.get("roles") or [])]
         motivo = str(entrada.get("motivo") or "")
         condicion = str(entrada.get("condicion") or "").strip()
+        pluralidad = sorted(r for r in pareja if r in plurales)
+        if pluralidad:
+            # `C4` paso 5 concede compartir agente; el reparto plural declara lo contrario
+            # sobre el mismo rol. Aplicar la combinación obligaría a decidir cuál de los
+            # tres agentes del rol ocupa además el otro rol, y esa decisión no está en
+            # ninguna sede. La combinación NO se aplica, y queda escrito por qué.
+            combinaciones.append({
+                "roles": pareja, "aplicada": False,
+                "motivo": "`" + ", ".join(pluralidad) + "` materializa varios agentes por "
+                          "`C4`, y una combinación es UN agente ocupando dos roles: no se "
+                          "puede aplicar sin elegir a cuál de los varios, y eso no lo "
+                          "declara nadie",
+            })
+            continue
         conflicto = [r for r in pareja if _choca(r, pareja, independientes)]
         if conflicto:
             combinaciones.append({
@@ -510,17 +1105,21 @@ def materializar(capacidad, *, corpus=None, composiciones_verdaderas=(),
             })
             for miembro in grupo:
                 grupos[miembro] = (miembro,)
-                unidades.append(_agente_del_grupo(
-                    (miembro,), asignaciones, politica=politica,
-                    catalogo=catalogo_efectivo, degradaciones=degradaciones)
-                    or _unidad_bloqueada((miembro,), asignaciones))
+                unidades.extend(_replicar(
+                    _agente_del_grupo(
+                        (miembro,), asignaciones, politica=politica,
+                        catalogo=catalogo_efectivo, degradaciones=degradaciones)
+                    or _unidad_bloqueada((miembro,), asignaciones),
+                    plan_por_rol.get(miembro)))
             continue
-        unidades.append(unidad)
+        unidades.extend(_replicar(unidad, plan_por_rol.get(grupo[0]) if len(grupo) == 1
+                                  else None))
 
     # PASO 6 · COMPROBAR LÍMITES. La unidad que ocupa un slot es el AGENTE (`b.11`: la
     # concurrencia se calcula «a partir de agentes disponibles»), NUNCA el rol: por eso un
     # par combinable ocupa UN slot y jamás queda a los dos lados del corte.
-    unidades.sort(key=lambda u: (u["roles"][0], u["modelo"] or "", u["agente"] or ""))
+    unidades.sort(key=lambda u: (u["roles"][0], _indice_de_reparto(u), u["modelo"] or "",
+                                 u["agente"] or ""))
     ocupados = 0
     for unidad in unidades:
         if unidad["estado"] == ESTADO_BLOQUEADO:
@@ -548,6 +1147,10 @@ def materializar(capacidad, *, corpus=None, composiciones_verdaderas=(),
                 "agente": unidad["agente"],
                 "modelo": unidad["modelo"],
                 "slot": unidad["slot"],
+                # La ASIGNACIÓN DURABLE de ESTE agente: qué unidad del reparto ocupa, con
+                # qué modo, con qué criterio y quién integra. Sin esto el registro publicaba
+                # el cardinal por un lado y un agente por otro, sin nada que los uniera.
+                "reparto": dict(unidad["reparto"]) if unidad.get("reparto") else None,
             }
             if unidad["estado"] == ESTADO_DESPACHADO:
                 asignados.append(fila)
@@ -567,19 +1170,21 @@ def materializar(capacidad, *, corpus=None, composiciones_verdaderas=(),
         "lectura_del_paquete": lectura,
         "gates_del_nivel": list(lectura["nivel_de_calidad"]["gates_obligatorios"]),
         "fase_divergente": bool(lectura["modo"]["fase_divergente"]),
-        "reparto_de_agentes": _reparto(varios_agentes),
+        "reparto_de_agentes": plan_de_reparto,
+        "integrador": (integrador_de(elegida) or {}).get("rol"),
         "composicion": elegida["id"],
         "clase_de_trabajo": str(elegida.get("clase_de_trabajo") or ""),
         "condicion_que_la_eligio": str(elegida.get("condicion") or "").strip(),
         "composiciones_descartadas": descartadas,
-        "roles": sorted(asignados, key=lambda r: r["rol"]),
-        "esperando_capacidad": sorted(esperando, key=lambda r: r["rol"]),
-        "bloqueados": sorted(bloqueados, key=lambda r: r["rol"]),
+        "roles": sorted(asignados, key=_orden_de_fila),
+        "esperando_capacidad": sorted(esperando, key=_orden_de_fila),
+        "bloqueados": sorted(bloqueados, key=_orden_de_fila),
         "roles_fuera": sorted(fuera, key=lambda r: r["rol"]),
         "combinaciones": sorted(combinaciones, key=lambda c: (tuple(c["roles"]),
                                                              c["aplicada"], c["motivo"])),
         "independientes": sorted(independientes, key=lambda i: i["rol"]),
-        "agentes": sorted(unidades, key=lambda u: u["agente"] or u["roles"][0]),
+        "agentes": sorted(unidades, key=lambda u: (u["roles"][0], _indice_de_reparto(u),
+                                                   u["agente"] or "")),
         "asignaciones": [asignaciones[n] for n in nombres],
         "catalogo": {
             "declarado": bool(catalogo_declarado and catalogo_efectivo is not None),
@@ -596,7 +1201,59 @@ def materializar(capacidad, *, corpus=None, composiciones_verdaderas=(),
     }
     equipo["id"] = identificador(equipo)
     exigir_slots_coherentes(equipo)
+    exigir_reparto_coherente(equipo)
+    if equipo_previo is not None:
+        exigir_reparto_reanudado(equipo_previo, equipo)
     return equipo
+
+
+def _indice_de_reparto(unidad):
+    return int((unidad.get("reparto") or {}).get("indice") or 0)
+
+
+def _orden_de_fila(fila):
+    """Orden TOTAL de las filas: mismo estado, misma salida byte a byte.
+
+    Con reparto plural un mismo rol aparece varias veces, y ordenar sólo por `rol` dejaba el
+    desempate al orden de inserción. `I-g3` exige determinismo, y un desempate implícito no
+    lo es: se ordena por rol, índice de la unidad y agente.
+    """
+    return (fila["rol"], int((fila.get("reparto") or {}).get("indice") or 0),
+            fila.get("agente") or "")
+
+
+def _replicar(unidad, plan):
+    """Un AGENTE REAL por cada unidad del reparto. Con cardinal 1 devuelve la unidad tal cual.
+
+    Aquí es donde «2 o 3» deja de ser una cadena en el registro y pasa a ser dos o tres
+    agentes que ocupan dos o tres `execution_slots`. `b.11` calcula la concurrencia «a partir
+    de agentes disponibles»: si el reparto no se replica, el corte del paso 6 cuenta uno
+    donde hay tres y el límite deja de limitar.
+    """
+    if plan is None or int(plan.get("agentes") or 1) <= 1:
+        copia = dict(unidad)
+        copia["reparto"] = None
+        return [copia]
+    salida = []
+    for indice, nombre in enumerate(plan["unidades"], start=1):
+        copia = dict(unidad)
+        copia["roles"] = list(unidad["roles"])
+        copia["reparto"] = {
+            "rol": plan["rol"],
+            "modo": plan["modo"],
+            "unidad": nombre,
+            "indice": indice,
+            "de": plan["agentes"],
+            "integra": plan["integra"],
+            "condicion_c4": plan["condicion_c4"],
+            "criterio_de_comparacion": plan["criterio_de_comparacion"],
+        }
+        if unidad["modelo"]:
+            copia["agente"] = politica_de_agentes.identificador_de_agente(
+                unidad["modelo"], unidad["roles"],
+                reparto=plan["modo"] + ":" + str(indice) + ":" + nombre)
+        salida.append(copia)
+    return salida
 
 
 def _unidad_bloqueada(grupo, asignaciones):
@@ -706,16 +1363,22 @@ def exigir_slots_coherentes(equipo):
             "el equipo ocupa " + str(len(ocupados)) + " slots y sólo declara "
             + str(equipo.get("slots")) + "; `C4` paso 6 deja fuera, no ensancha",
         )
+    # Un rol REPARTIDO aparece tantas veces como agentes materializa, y sus agentes pueden
+    # quedar a los dos lados del corte —eso es correcto: lo que no cabe ESPERA—. Lo que no
+    # puede repetirse es la UNIDAD del reparto: dos veces la misma dirección explorada es
+    # solapamiento, y `C4` condición (a) lo prohíbe con esas palabras.
     vistos = {}
     for lista in ("roles", "esperando_capacidad", "bloqueados"):
         for fila in equipo.get(lista) or []:
-            if fila["rol"] in vistos:
+            clave = (fila["rol"], int((fila.get("reparto") or {}).get("indice") or 0))
+            if clave in vistos:
                 raise AgenteSobreasignado(
-                    "el rol `" + fila["rol"] + "` aparece en `" + vistos[fila["rol"]]
-                    + "` y en `" + lista + "`: un rol ocupa un estado, no dos",
+                    "el rol `" + fila["rol"] + "` aparece dos veces con la misma unidad de "
+                    "reparto, en `" + vistos[clave] + "` y en `" + lista + "`: un agente "
+                    "ocupa un estado, no dos",
                     rol=fila["rol"],
                 )
-            vistos[fila["rol"]] = lista
+            vistos[clave] = lista
     por_agente = {}
     for unidad in equipo.get("agentes") or []:
         if not unidad["agente"]:
@@ -729,23 +1392,80 @@ def exigir_slots_coherentes(equipo):
     return True
 
 
-def _reparto(varios_agentes):
-    """El reparto DECLARADO de agentes por rol, normalizado y ordenado.
+def exigir_reparto_coherente(equipo):
+    """El registro durable NO puede afirmar a la vez una cosa y su contraria.
 
-    `C4`, «Cuántos agentes por rol»: «1 AGENTE por defecto, siempre». Sin declaración este
-    reparto sale VACÍO, que es lo que significa «uno por rol»: no se escribe un cardinal por
-    cada rol para que parezca que alguien lo decidió.
+    DEFECTO QUE CIERRA, medido por la auditoría: el equipo publicaba `agentes: "2 o 3"` en la
+    fila del rol y UN agente en la lista de agentes, con `reparto_de_agentes` vacío. Un
+    registro internamente contradictorio no es un registro: es dos afirmaciones y ninguna
+    verdad, y el paso 7 de `C4` existe justamente para lo contrario. Si publica «2 o 3»,
+    publica dos o tres agentes.
     """
-    salida = []
-    for rol, declarado in sorted((varios_agentes or {}).items()):
-        salida.append({
-            "rol": str(rol),
-            "agentes": int((declarado or {}).get("n") or 1),
-            "integra": str((declarado or {}).get("integra") or "") or None,
-            "motivo": str((declarado or {}).get("motivo") or ""),
-        })
-    return salida
+    filas = []
+    for lista in ("roles", "esperando_capacidad", "bloqueados"):
+        filas.extend(equipo.get(lista) or [])
+    por_rol = {}
+    for fila in filas:
+        por_rol.setdefault(fila["rol"], []).append(fila)
+    for plan in equipo.get("reparto_de_agentes") or []:
+        materializadas = por_rol.get(plan["rol"]) or []
+        if len(materializadas) != int(plan["agentes"]):
+            raise RepartoIncoherente(
+                "el equipo publica para `" + plan["rol"] + "` el cardinal `"
+                + plan["literal"] + "` con " + str(plan["agentes"]) + " agente(s) derivados, "
+                "y en sus listas hay " + str(len(materializadas)),
+                rol=plan["rol"], literal=plan["literal"],
+                derivados=int(plan["agentes"]), publicados=len(materializadas),
+            )
+        if not (plan["minimo"] <= plan["agentes"] <= plan["maximo"]):
+            raise RepartoIncoherente(
+                "`" + plan["rol"] + "` declara `" + plan["literal"] + "` y materializa "
+                + str(plan["agentes"]) + " agentes, fuera del cardinal escrito",
+                rol=plan["rol"], literal=plan["literal"],
+            )
+        if plan["agentes"] > 1 and not plan["integra"]:
+            raise RepartoIncoherente(
+                "`" + plan["rol"] + "` materializa " + str(plan["agentes"]) + " agentes y el "
+                "registro no publica integrador", rol=plan["rol"],
+            )
+        unidades = [str((f.get("reparto") or {}).get("unidad")) for f in materializadas]
+        if plan["agentes"] > 1 and len(set(unidades)) != len(unidades):
+            raise RepartoIncoherente(
+                "`" + plan["rol"] + "` publica dos agentes sobre la misma unidad de reparto: "
+                + ", ".join(sorted(unidades)), rol=plan["rol"],
+            )
+    return True
 
+
+def firma_de_reparto(equipo):
+    """Lo que NO puede cambiar al reanudar: rol, cardinal, modo, agentes, unidades, integrador."""
+    return [
+        (p["rol"], p["literal"], p["modo"], int(p["agentes"]), tuple(p["unidades"]),
+         p["integra"])
+        for p in sorted(equipo.get("reparto_de_agentes") or [], key=lambda p: p["rol"])
+    ]
+
+
+def exigir_reparto_reanudado(previo, actual):
+    """Reanudar NO puede cambiar el reparto en silencio. Si difiere, se dice y se para.
+
+    `C4` «Ampliación y reducción»: el equipo NO se rehace, se AÑADE lo que falta. Un reparto
+    que cambia al volver a materializar deja agentes del intento anterior trabajando sobre
+    unidades que ya no existen, y nadie se entera: los artefactos aparecen huérfanos tres
+    pasos después. Es la misma familia de defecto que `esperando-capacidad` vino a impedir.
+    """
+    antes, ahora = firma_de_reparto(previo), firma_de_reparto(actual)
+    if antes != ahora:
+        cambiados = sorted({f[0] for f in set(antes) ^ set(ahora)})
+        raise RepartoIncoherente(
+            "la reanudación cambia el reparto ya escrito del equipo `"
+            + str(previo.get("id")) + "`: " + ", ".join(cambiados) + ". `C4` no rehace el "
+            "equipo al ampliar, y un reparto distinto deja al agente anterior trabajando "
+            "sobre una unidad que ya no está declarada",
+            equipo=str(previo.get("id")), roles=cambiados,
+            antes=[list(f) for f in antes], ahora=[list(f) for f in ahora],
+        )
+    return True
 
 
 def _independientes(composicion):

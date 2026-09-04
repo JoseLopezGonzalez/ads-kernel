@@ -183,6 +183,38 @@ class AdaptadorDeProcesoLocal(Adaptador):
         # de recursos del anfitrión y la ausencia de contención fuerte es FALLO CERRADO, no
         # degradación silenciosa: el que decide no es el adaptador, es la política.
         self._politica_de_contencion = politica_de_contencion
+        self._capacidades_de_contencion = None
+        self._backend_de_contencion = None
+        self._evidencia_de_contencion = None
+        if politica_de_contencion is not None:
+            self._elegir_contencion_ahora()
+
+    def _elegir_contencion_ahora(self):
+        """`E-16` · el FALLO CERRADO ocurre al CONSTRUIR, no al ejecutar la primera tarea.
+
+        HECHO REPRODUCIDO ANTES DE CORREGIR: la política de contención estaba CONSTRUIDA y
+        ningún punto ejecutable podía activarla —la cadena `contencion` no aparecía en
+        ninguno de los cinco `ads_*.py`—, así que el fallo cerrado que este paquete promete
+        no era alcanzable desde el camino productivo. Al cablearla hace falta decidir CUÁNDO
+        falla.
+
+        DECISIÓN · se elige el backend al construir el adaptador
+            Alternativas: (a) elegirlo en la primera tarea; (b) elegirlo al construir.
+            Se elige (b). Con (a), un anfitrión sin contención fuerte deja adquirir el lease,
+            abrir el recibo del efecto y empezar el despacho antes de descubrir que no puede
+            ejecutar: eso es EJECUCIÓN PARCIAL, y `FD-5` exige CERO ejecución. Con (b) el
+            proceso se detiene antes de tocar nada, y el sondeo —que llama a `docker`, a
+            `systemd` y al núcleo— se paga UNA vez y se reutiliza en cada tarea, en vez de
+            repetirse por tarea.
+        """
+        from contencion import deteccion as _deteccion                # noqa: PLC0415
+        from contencion import politica as _politica                  # noqa: PLC0415
+
+        self._capacidades_de_contencion = _deteccion.capacidades()
+        # `elegir` levanta `ContencionFuerteNoDisponible` o `BackendNoDisponible`. No se
+        # captura: sin contención no se ejecuta, y el que decide es la política.
+        self._backend_de_contencion, self._evidencia_de_contencion = _politica.elegir(
+            self._politica_de_contencion, self._capacidades_de_contencion)
 
     # -- ficha declarada de §3.4 -------------------------------------------
     def ficha(self):
@@ -229,10 +261,11 @@ class AdaptadorDeProcesoLocal(Adaptador):
                     "`arbol-de-procesos`")
         return ("cooperativa por sondeo de `cancelacion.activada()`, y efectiva por "
                 "destrucción del CONTENEDOR DE RECURSOS del anfitrión que exige la política "
-                "`" + str(self._politica_de_contencion.nivel_exigido) + "`. Un descendiente "
-                "que hace `setsid` NO escapa, y está medido con hijo, nieto y bisnieto. Si "
-                "el anfitrión no ofrece contención fuerte, el adaptador FALLA CERRADO y no "
-                "ejecuta")
+                "`" + str(self._politica_de_contencion.nivel_exigido) + "`, servida por el "
+                "backend `" + str(self._backend_de_contencion) + "` ELEGIDO Y COMPROBADO al "
+                "construir el adaptador. Un descendiente que hace `setsid` NO escapa, y "
+                "está medido con hijo, nieto y bisnieto. Si el anfitrión no ofrece "
+                "contención fuerte, el adaptador FALLA CERRADO y no ejecuta")
 
     # -- idempotencia -------------------------------------------------------
     def _ruta_de_recibo(self, efecto):
@@ -481,6 +514,11 @@ class AdaptadorDeProcesoLocal(Adaptador):
             argumentos, espacio=self.espacio, limite_segundos=limite_segundos,
             politica=self._politica_de_contencion, marca=efecto,
             progreso=progreso, cancelacion=cancelacion,
+            # Las capacidades se sondearon al CONSTRUIR y no se vuelven a sondear: el
+            # anfitrión que se midió al arrancar es el que se declara en la ficha, y
+            # remedirlo por tarea abriría la puerta a que la ficha dijera una cosa y la
+            # ejecución hiciera otra.
+            capacidades=self._capacidades_de_contencion,
         )
         salida = resultado.a_dict()
         # `senal` y `ficha_del_backend` son diagnóstico del contenedor, no resultado de la

@@ -43,10 +43,15 @@ import firma as modulo_de_firma                                      # noqa: E40
 import instalar as modulo_de_instalacion                             # noqa: E402
 from admision import censo, matriz, perimetro                        # noqa: E402
 from errores import (                                                # noqa: E402
+    AnclaNoCoincide,
+    EmisorNoCoincide,
     EscrituraNoImpedida,
     InstalacionAlterada,
     InstalacionDentroDelArbol,
     ProveedorDeFirmaAusente,
+    SecuenciaDeVerificacionIncompleta,
+    VinculoDeCommitRoto,
+    VinculoDeTreeRoto,
 )
 from gobierno.git import CanalGit                                    # noqa: E402
 
@@ -854,7 +859,299 @@ class VeredictoDesmentidoYEvidencia(RaizExternaInstalada):
             "comprobar", "--repo", self.repo, "--configuracion", self.configuracion,
             "--evidencia", self.evidencia])
         self.assertNotEqual(comprobacion.returncode, 0)
-        self.assertIn(b"ATESTACION_INVALIDA", comprobacion.stderr)
+        # `E-07`: se exige el código de la MITAD que lo detectó, no un genérico. Un commit
+        # nuevo cambia el commit Y su árbol, así que la mitad que corta primero es la del
+        # commit; con el código genérico esta prueba pasaba igual si el vínculo no se
+        # hubiera comprobado en absoluto y algo más hubiera fallado.
+        self.assertIn(b"VINCULO_DE_COMMIT_ROTO", comprobacion.stderr)
+
+
+# ===========================================================================
+#  T290 a T295 · `E-07` · EL VÍNCULO COMMIT + TREE, MITAD A MITAD, Y LOS SIETE PASOS
+# ===========================================================================
+class VinculoCommitYTree(RaizExternaInstalada):
+    """`E-07`. Las DOS mitades, cada una con su prueba, y la evidencia después de los siete.
+
+    HECHO REPRODUCIDO ANTES DE CORREGIR, y por eso existe esta clase: neutralizar la mitad
+    `tree` de `exigir_vinculo` dejaba la batería en 38/38 VERDE, y neutralizar la mitad
+    `commit`, también. La única prueba que tocaba el vínculo —`test_una_atestacion_de_otro_
+    commit_no_sirve`— confirma un commit NUEVO, con lo que cambian el commit Y su árbol a la
+    vez: cualquiera de las dos mitades bastaba para que pasara.
+
+    Lo que estas pruebas ejercitan es la PROPIEDAD —qué RECHAZA la raíz externa— y no el
+    texto de ningún mensaje: cada una fabrica un sobre FIRMADO DE VERDAD con la clave
+    legítima, de modo que la firma pasa y lo único que puede cortar es la mitad que se
+    quiere medir.
+    """
+
+    def sobre_firmado(self, *, commit=None, tree=None, identidad="raiz-externa-1",
+                      huella=None, epoca=1, autoridad=None, base=None, clave=None,
+                      color="VERDE"):
+        """Un sobre con firma VÁLIDA sobre el cuerpo que se le pida. Nada simulado."""
+        cuerpo = modulo_de_atestacion.construir(
+            autoridad=autoridad or "raiz-externa-de-la-bateria",
+            identidad=identidad,
+            huella_publica=(huella if huella is not None
+                            else modulo_de_firma.huella_publica(self.publica)),
+            epoca=epoca,
+            commit=commit or self.canal.resolver("HEAD"),
+            tree=tree or self.tree_de_head(),
+            veredicto={"color": color, "base": base or self.base, "hallazgos": [],
+                       "digest_del_censo": self.digest_del_censo},
+            proveedor={"herramienta": "ssh-keygen", "algoritmo": modulo_de_firma.ALGORITMO,
+                       "version_de_openssh": "OpenSSH_ficticio", "simetrica": False,
+                       "espacio_de_nombres": "ads-raiz-externa"},
+        )
+        blindada = modulo_de_firma.firmar(modulo_de_atestacion.canonizar(cuerpo),
+                                          clave_privada=clave or self.privada)
+        return modulo_de_atestacion.Sobre(cuerpo, blindada.hex())
+
+    def tree_de_head(self):
+        commit = self.canal.resolver("HEAD")
+        _, salida, _ = self.canal.ejecutar("rev-parse", "--verify", commit + "^{tree}")
+        return salida.decode("ascii").strip()
+
+    def comprobar_sobre(self, sobre, nombre):
+        ruta = os.path.join(self.externo, nombre)
+        with open(ruta, "w", encoding="utf-8") as manejador:
+            manejador.write(sobre.serializar())
+        self.addCleanup(self._borrar_si_existe, ruta)
+        return self.correr(["comprobar", "--repo", self.repo,
+                            "--configuracion", self.configuracion, "--evidencia", ruta])
+
+    def _borrar_si_existe(self, ruta):
+        if os.path.exists(ruta):
+            os.remove(ruta)
+
+    # -- CONTROL POSITIVO: sin él, «todo falla» no probaría nada -------------
+    def test_T290_control_positivo_el_sobre_bien_construido_SI_pasa(self):
+        """T290 · Control del CONTROL: el mismo camino, con commit y tree correctos, PASA."""
+        resultado = self.comprobar_sobre(self.sobre_firmado(), "vinculo-sano.json")
+        self.assertEqual(resultado.returncode, 0,
+                         resultado.stderr.decode("utf-8", "replace")[:400])
+        resumen = json.loads(resultado.stdout.decode("utf-8"))
+        self.assertEqual(resumen["secuencia_de_verificacion"]["hechos"],
+                         list(modulo_de_atestacion.PASOS_DE_VERIFICACION))
+
+    # -- MITAD `tree`: commit CORRECTO, tree INCORRECTO ----------------------
+    def test_T291_commit_correcto_con_tree_incorrecto_se_RECHAZA(self):
+        """T291 · Defecto que previene: `E-07`, que la mitad `tree` no tenga cobertura propia.
+
+        SABOTAJE QUE LA PONE ROJA: neutralizar la comprobación del `tree` en
+        `atestacion.exigir_tree`. Ninguna otra prueba de la batería cambia.
+        """
+        sobre = self.sobre_firmado(tree="b" * 40)
+        resultado = self.comprobar_sobre(sobre, "vinculo-tree-roto.json")
+        self.assertNotEqual(resultado.returncode, 0,
+                            "un `tree` que no es el del commit fue aceptado")
+        self.assertIn(b"VINCULO_DE_TREE_ROTO", resultado.stderr)
+        self.assertNotIn(b"VINCULO_DE_COMMIT_ROTO", resultado.stderr)
+
+    def test_T291b_la_mitad_tree_es_una_funcion_propia_y_falla_sola(self):
+        """T291 · La mitad `tree` ejercida DIRECTAMENTE, sin que la del commit intervenga."""
+        cuerpo = self.sobre_firmado().atestacion
+        self.assertTrue(modulo_de_atestacion.exigir_commit(cuerpo,
+                                                           self.canal.resolver("HEAD")))
+        with self.assertRaises(VinculoDeTreeRoto):
+            modulo_de_atestacion.exigir_tree(cuerpo, "c" * 40)
+
+    # -- MITAD `commit`: tree CORRECTO, commit INCORRECTO --------------------
+    def test_T292_tree_correcto_con_commit_incorrecto_se_RECHAZA(self):
+        """T292 · Defecto que previene: `E-07`, que la mitad `commit` no tenga cobertura propia.
+
+        SABOTAJE QUE LA PONE ROJA: neutralizar la comprobación del commit en
+        `atestacion.exigir_commit`. Ninguna otra prueba de la batería cambia.
+        """
+        sobre = self.sobre_firmado(commit="a" * 40)
+        resultado = self.comprobar_sobre(sobre, "vinculo-commit-roto.json")
+        self.assertNotEqual(resultado.returncode, 0,
+                            "un commit que no es el comprobado fue aceptado")
+        self.assertIn(b"VINCULO_DE_COMMIT_ROTO", resultado.stderr)
+
+    def test_T292b_la_mitad_commit_es_una_funcion_propia_y_falla_sola(self):
+        """T292 · La mitad `commit` ejercida DIRECTAMENTE, con el `tree` correcto al lado."""
+        cuerpo = self.sobre_firmado().atestacion
+        self.assertTrue(modulo_de_atestacion.exigir_tree(cuerpo, self.tree_de_head()))
+        with self.assertRaises(VinculoDeCommitRoto):
+            modulo_de_atestacion.exigir_commit(cuerpo, "a" * 40)
+
+    def test_T293_las_dos_mitades_incorrectas_se_RECHAZAN(self):
+        """T293 · Defecto que previene: una atestación de otro árbol reutilizada entera."""
+        sobre = self.sobre_firmado(commit="a" * 40, tree="b" * 40)
+        resultado = self.comprobar_sobre(sobre, "vinculo-ambos-rotos.json")
+        self.assertNotEqual(resultado.returncode, 0)
+        self.assertIn(b"VINCULO_DE_", resultado.stderr)
+
+    def test_T293b_una_firma_CORRECTA_de_una_tupla_DISTINTA_no_sirve(self):
+        """T293 · Defecto que previene: reusar una firma buena cambiando de qué habla.
+
+        La firma verifica: es del cuerpo que se firmó, byte a byte. Lo que no vale es la
+        TUPLA `(commit, tree)` que ese cuerpo declara. Sin esta prueba, «la firma es válida»
+        podría confundirse con «la atestación vale para este árbol».
+        """
+        # Se avanza el árbol, de modo que la tupla firmada deja de ser la vigente.
+        ruta = os.path.join(self.repo, "docs", "canonico", "avance-e07.md")
+        sobre = self.sobre_firmado()
+        with open(ruta, "w", encoding="utf-8") as manejador:
+            manejador.write("# avance\n")
+        self.canal.ejecutar("add", "-A")
+        self.canal.ejecutar("commit", "--quiet", "-m", "avance E-07")
+        self.addCleanup(self._deshacer_avance, ruta)
+        # La firma sigue siendo válida sobre EXACTAMENTE esos bytes...
+        valida, _ = modulo_de_firma.verificar(
+            modulo_de_atestacion.canonizar(sobre.atestacion), sobre.firma,
+            firmantes=self.firmantes, principal="raiz-externa-1")
+        self.assertTrue(valida, "el control positivo de la firma falló")
+        # ...y aun así la raíz externa la RECHAZA, porque habla de otra tupla.
+        resultado = self.comprobar_sobre(sobre, "vinculo-tupla-distinta.json")
+        self.assertNotEqual(resultado.returncode, 0)
+        self.assertIn(b"VINCULO_DE_COMMIT_ROTO", resultado.stderr)
+
+    def _deshacer_avance(self, ruta):
+        if os.path.exists(ruta):
+            os.remove(ruta)
+        self.canal.ejecutar("add", "-A")
+        self.canal.ejecutar("commit", "--quiet", "-m", "retirada del avance E-07")
+
+    def test_T294_una_clave_valida_para_OTRA_EPOCA_se_rechaza(self):
+        """T294 · Defecto que previene: una firma buena fuera de la ventana de su identidad.
+
+        La clave es la LEGÍTIMA y la firma verifica. Lo que no vale es la ÉPOCA: la
+        configuración declara `raiz-externa-1` RETIRADA con solapamiento 1 desde la época 2,
+        y la atestación dice hablar de la época 9. `I-g3`: tiempo lógico, no reloj.
+        """
+        configuracion = escribir_configuracion(
+            os.path.join(self.externo, "confianza-epoca.yml"),
+            self._datos_de_configuracion(identidades=[
+                {"id": "raiz-externa-1", "algoritmo": modulo_de_firma.ALGORITMO,
+                 "huella_publica": modulo_de_firma.huella_publica(self.publica),
+                 "estado": "retirada", "epoca_de_alta": 1, "epoca_de_retirada": 2,
+                 "solapamiento": 1},
+                {"id": "raiz-externa-2", "algoritmo": modulo_de_firma.ALGORITMO,
+                 "huella_publica": modulo_de_firma.huella_publica(self.publica_2),
+                 "estado": "activa", "epoca_de_alta": 2},
+            ], epoca=9))
+        sobre = self.sobre_firmado(epoca=9)
+        ruta = os.path.join(self.externo, "epoca-fuera-de-ventana.json")
+        with open(ruta, "w", encoding="utf-8") as manejador:
+            manejador.write(sobre.serializar())
+        self.addCleanup(self._borrar_si_existe, ruta)
+        resultado = self.correr(["comprobar", "--repo", self.repo,
+                                 "--configuracion", configuracion, "--evidencia", ruta])
+        self.assertNotEqual(resultado.returncode, 0,
+                            "una identidad fuera de su solapamiento fue aceptada")
+        self.assertIn(b"IDENTIDAD_NO_ACEPTADA", resultado.stderr)
+
+    def test_T294b_la_huella_del_emisor_tiene_que_ser_la_del_anillo(self):
+        """T294 · Defecto que previene: atribuir una atestación a quien no la firmó.
+
+        El sobre se firma con la clave LEGÍTIMA de `raiz-externa-1` y publica la huella
+        pública de OTRA clave. La firma verifica y el vínculo casa: sólo el paso 7 lo corta.
+        """
+        sobre = self.sobre_firmado(
+            huella=modulo_de_firma.huella_publica(self.publica_ajena))
+        resultado = self.comprobar_sobre(sobre, "emisor-con-huella-ajena.json")
+        self.assertNotEqual(resultado.returncode, 0)
+        self.assertIn(b"EMISOR_NO_COINCIDE", resultado.stderr)
+
+    def test_T294c_una_atestacion_bajo_OTRA_politica_se_rechaza(self):
+        """T294 · Defecto que previene: colar un veredicto calculado contra otra base."""
+        sobre = self.sobre_firmado(base="f" * 40)
+        resultado = self.comprobar_sobre(sobre, "ancla-distinta.json")
+        self.assertNotEqual(resultado.returncode, 0)
+        self.assertIn(b"ANCLA_NO_COINCIDE", resultado.stderr)
+
+    def test_T295_modificar_la_atestacion_DESPUES_de_firmarla_la_invalida(self):
+        """T295 · Defecto que previene: reescribir la tupla del repositorio tras la firma."""
+        sobre = self.sobre_firmado()
+        datos = json.loads(sobre.serializar())
+        # Se cambia el `tree` DESPUÉS de firmar, y se recalcula el digest publicado para que
+        # el sobre no se delate por ahí: lo único que queda es la firma.
+        datos["atestacion"]["repositorio"]["tree"] = "d" * 40
+        datos["firma"]["digest_de_lo_firmado"] = modulo_de_atestacion.digest(
+            datos["atestacion"])
+        ruta = os.path.join(self.externo, "modificada-despues-de-firmar.json")
+        with open(ruta, "w", encoding="utf-8") as manejador:
+            manejador.write(json.dumps(datos, sort_keys=True, ensure_ascii=False,
+                                       indent=2) + "\n")
+        self.addCleanup(self._borrar_si_existe, ruta)
+        resultado = self.correr(["comprobar", "--repo", self.repo,
+                                 "--configuracion", self.configuracion,
+                                 "--evidencia", ruta])
+        self.assertNotEqual(resultado.returncode, 0)
+        self.assertIn(b"FIRMA_NO_VERIFICADA", resultado.stderr)
+
+
+# ===========================================================================
+#  T296 · `E-07` · LA EVIDENCIA, SÓLO DESPUÉS DE LOS SIETE PASOS
+# ===========================================================================
+class SecuenciaDeLosSietePasos(RaizExternaInstalada):
+    """La evidencia NO se escribe antes de completar firma · clave · época · commit · tree ·
+    política · identidad del emisor. Se INTERRUMPE en cada uno de los siete."""
+
+    def test_T296_interrumpir_en_CADA_paso_deja_CERO_ficheros(self):
+        """T296 · Defecto que previene: publicar evidencia de lo que no se ha verificado.
+
+        Se ejercita la PUERTA REAL —`atestacion.escribir_evidencia`, la misma que usa el
+        punto ejecutable— con el testigo cortado en cada uno de los siete pasos. La
+        propiedad medida no es «se levanta una excepción»: es que **no queda fichero**.
+        """
+        sobre = modulo_de_atestacion.Sobre(
+            modulo_de_atestacion.construir(
+                autoridad="a", identidad="raiz-externa-1", huella_publica="SHA256:x",
+                epoca=1, commit="a" * 40, tree="b" * 40,
+                veredicto={"color": "VERDE"}, proveedor={"herramienta": "ssh-keygen"}),
+            "00")
+        pasos = modulo_de_atestacion.PASOS_DE_VERIFICACION
+        for corte in range(len(pasos)):
+            with self.subTest(interrumpido_en=pasos[corte]):
+                secuencia = modulo_de_atestacion.SecuenciaDeVerificacion()
+                for paso in pasos[:corte]:
+                    secuencia.anotar(paso)
+                destino = os.path.join(self.externo,
+                                       "corte-" + str(corte) + ".json")
+                with self.assertRaises(SecuenciaDeVerificacionIncompleta):
+                    modulo_de_atestacion.escribir_evidencia(destino, sobre, secuencia)
+                self.assertFalse(os.path.exists(destino),
+                                 "se escribió evidencia con la secuencia cortada en "
+                                 + pasos[corte])
+        # CONTROL DEL CONTROL: con los SIETE anotados, la misma llamada SÍ escribe.
+        completa = modulo_de_atestacion.SecuenciaDeVerificacion()
+        for paso in pasos:
+            completa.anotar(paso)
+        destino = os.path.join(self.externo, "corte-completo.json")
+        self.addCleanup(self._borrar, destino)
+        modulo_de_atestacion.escribir_evidencia(destino, sobre, completa)
+        self.assertTrue(os.path.exists(destino))
+
+    def test_T296b_los_pasos_fuera_de_ORDEN_son_un_fallo(self):
+        """T296 · Defecto que previene: que el orden sea una costumbre y no una garantía."""
+        secuencia = modulo_de_atestacion.SecuenciaDeVerificacion()
+        with self.assertRaises(SecuenciaDeVerificacionIncompleta):
+            secuencia.anotar("tree")          # antes que la firma
+        secuencia.anotar("firma")
+        with self.assertRaises(SecuenciaDeVerificacionIncompleta):
+            secuencia.anotar("politica")      # saltándose clave, época, commit y tree
+
+    def test_T296c_sin_testigo_no_se_escribe_evidencia(self):
+        """T296 · Defecto que previene: escribir «porque el código llegó hasta aquí»."""
+        destino = os.path.join(self.externo, "sin-testigo.json")
+        with self.assertRaises(SecuenciaDeVerificacionIncompleta):
+            modulo_de_atestacion.escribir_evidencia(destino, object(), None)
+        self.assertFalse(os.path.exists(destino))
+
+    def test_T296d_la_emision_publica_los_SIETE_pasos_en_su_orden(self):
+        """T296 · Defecto que previene: una emisión que dice verificar y no lo demuestra."""
+        resultado, _ = self.emitir()
+        self.assertEqual(resultado.returncode, 0, resultado.stderr.decode())
+        resumen = json.loads(resultado.stdout.decode("utf-8"))
+        self.assertEqual(resumen["secuencia_de_verificacion"]["hechos"],
+                         list(modulo_de_atestacion.PASOS_DE_VERIFICACION))
+        self.assertTrue(resumen["secuencia_de_verificacion"]["completa"])
+
+    def _borrar(self, ruta):
+        if os.path.exists(ruta):
+            os.remove(ruta)
 
 
 if __name__ == "__main__":

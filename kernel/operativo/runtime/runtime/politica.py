@@ -72,6 +72,71 @@ from .errores import (
 
 MAX_INTENTOS_POR_DEFECTO = 3
 
+# ===========================================================================
+#  `b.12` paso 5 · el ORDEN de selección, y por qué está aquí
+# ===========================================================================
+# DECISIÓN · el orden de `b.12` es POLÍTICA, y se escribe como función PURA
+#     Estaba dentro de `Dispatcher.elegibles` como un `sort(key=...)` de una línea, y por eso
+#     nadie podía probarlo sin montar un almacén: para comprobar que el criterio (b) importa
+#     había que fabricar un grafo durable entero. Sacarlo aquí lo hace lo que ya son las
+#     cuatro clases de fallo de este módulo —una función pura sobre objetos ya leídos— y
+#     permite sabotear UN criterio y ver qué prueba se pone roja. El dispatcher sigue siendo
+#     el único que escribe.
+#
+# DECISIÓN · el orden es TOTAL, y su último criterio es el identificador
+#     `gate:despacho-coherente` exige «mismo estado produce misma selección, con desempate
+#     por identificador». Los tres primeros criterios pueden empatar; el cuarto no empata
+#     nunca, porque dos paquetes no comparten identificador. Sin él, dos instancias podrían
+#     ver la misma cola en orden distinto y competir por paquetes distintos creyendo cada una
+#     que va la primera.
+
+CRITERIOS_DE_ORDEN = (
+    ("prioridad", "prioridad declarada"),
+    ("grado_de_salida", "desbloquea a más paquetes (grado de salida en el grafo)"),
+    ("tiempo_listo", "antigüedad de espera"),
+    ("paquete", "id del paquete"),
+)
+
+
+def clave_de_orden(entrada):
+    """Los CUATRO criterios de `b.12` paso 5, en el orden en que el contrato los escribe.
+
+    Los tres primeros van NEGADOS porque los tres se ordenan de mayor a menor: más prioridad,
+    más paquetes desbloqueados, más tiempo esperando. El cuarto, ascendente, es el desempate
+    determinista. Quitar cualquiera de los cuatro cambia el orden de una cola real, y en
+    `test_cardinalidad_y_seleccion.py` cada uno tiene su prueba y su sabotaje.
+    """
+    return (-int(entrada["prioridad"]),
+            -int(entrada["grado_de_salida"]),
+            -int(entrada["tiempo_listo"]),
+            str(entrada["paquete"]))
+
+
+def motivo_de_postergacion(entrada, cabeza):
+    """POR QUÉ este paquete no fue el elegido. Es el `impedimento` de `b.12`.
+
+    Se deriva comparando criterio a criterio contra el que sí se llevó el turno, y se para en
+    el PRIMERO que decide: así el texto publicado nombra el criterio que realmente mandó, y
+    no una lista de los cuatro. Que cada criterio produzca un `impedimento` distinto es lo que
+    hace que sabotear uno solo se pueda ver desde fuera.
+    """
+    if entrada["paquete"] == cabeza["paquete"]:
+        return ""
+    if int(entrada["prioridad"]) < int(cabeza["prioridad"]):
+        return ("prioridad declarada: `" + str(cabeza["paquete"]) + "` la tiene en "
+                + str(cabeza["prioridad"]) + " y este paquete en "
+                + str(entrada["prioridad"]) + " (`b.12` paso 5 a)")
+    if int(entrada["grado_de_salida"]) < int(cabeza["grado_de_salida"]):
+        return ("grado de salida: `" + str(cabeza["paquete"]) + "` desbloquea "
+                + str(cabeza["grado_de_salida"]) + " paquete(s) y este "
+                + str(entrada["grado_de_salida"]) + " (`b.12` paso 5 b)")
+    if int(entrada["tiempo_listo"]) < int(cabeza["tiempo_listo"]):
+        return ("antigüedad de espera: `" + str(cabeza["paquete"]) + "` lleva "
+                + str(cabeza["tiempo_listo"]) + " revisiones esperando y este "
+                + str(entrada["tiempo_listo"]) + " (`b.12` paso 5 c)")
+    return ("empate en prioridad, grado de salida y antigüedad: manda el identificador, y `"
+            + str(cabeza["paquete"]) + "` ordena antes (`b.12` paso 5 d)")
+
 CLASE_COMPLETADO = "completado"
 CLASE_REINTENTABLE = "reintentable"
 CLASE_DEFINITIVO = "definitivo"

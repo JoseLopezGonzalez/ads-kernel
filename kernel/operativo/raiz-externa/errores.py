@@ -124,11 +124,54 @@ class EscrituraNoImpedida(ErrorDeRaizExterna):
     CODIGO = "ESCRITURA_NO_IMPEDIDA"
 
 
+class VinculoDeCommitRoto(AtestacionInvalida):
+    """`E-07` · la atestación habla de OTRO commit que el que se está comprobando.
+
+    Es una clase PROPIA y no un `AtestacionInvalida` genérico, y la razón es exactamente el
+    defecto que cierra: mientras las dos mitades del vínculo —commit y `tree`— compartían
+    código de salida y mensaje, una prueba que sólo mirase «falló» no distinguía cuál de las
+    dos lo detectó, y sabotear una sola mitad dejaba la batería entera en verde. Con dos
+    códigos estables, sabotear una mitad pone en rojo UNA prueba y sabotear la otra, OTRA.
+    """
+
+    CODIGO = "VINCULO_DE_COMMIT_ROTO"
+
+
+class VinculoDeTreeRoto(AtestacionInvalida):
+    """`E-07` · el commit coincide y su CONTENIDO no. La otra mitad, con su propio código."""
+
+    CODIGO = "VINCULO_DE_TREE_ROTO"
+
+
+class SecuenciaDeVerificacionIncompleta(ErrorDeRaizExterna):
+    """`E-07` · se intentó escribir evidencia sin haber completado los SIETE pasos, o fuera
+    de su orden. Escribir antes de terminar de verificar es publicar lo no verificado."""
+
+    CODIGO = "SECUENCIA_DE_VERIFICACION_INCOMPLETA"
+
+
+class AnclaNoCoincide(ErrorDeRaizExterna):
+    """`E-07` · paso 6. La atestación no habla de la POLÍTICA que la configuración externa
+    declara: otra base anclada, u otro digest de censo. Un veredicto calculado bajo otra
+    política no es el veredicto de esta raíz externa."""
+
+    CODIGO = "ANCLA_NO_COINCIDE"
+
+
+class EmisorNoCoincide(ErrorDeRaizExterna):
+    """`E-07` · paso 7. La atestación se atribuye a una identidad cuya huella PÚBLICA no es
+    la que el anillo tiene inscrita para ese identificador."""
+
+    CODIGO = "EMISOR_NO_COINCIDE"
+
+
 CLASES = (
     ErrorDeRaizExterna, ProveedorDeFirmaAusente, ClaveNoDisponible, FirmaNoVerificada,
     IdentidadNoAceptada, InstalacionDentroDelArbol, EvidenciaDentroDelArbol,
     InstalacionAlterada, AtestacionInvalida, VeredictoDesmentido,
     AislamientoNoDisponible, EscrituraNoImpedida,
+    VinculoDeCommitRoto, VinculoDeTreeRoto, SecuenciaDeVerificacionIncompleta,
+    AnclaNoCoincide, EmisorNoCoincide,
 )
 
 CODIGOS = tuple(sorted(clase.CODIGO for clase in CLASES))

@@ -1,0 +1,59 @@
+# evidencia de: integridad-evidencia
+# orden:        python3 kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+test_T309_el_punto_ejecutable_ACTIVA_la_politica_y_contiene_al_bisnieto (__main__.ContencionEnElCaminoProductivo.test_T309_el_punto_ejecutable_ACTIVA_la_politica_y_contiene_al_bisnieto)
+T309 · Defecto que previene: `E-16`, una política que nadie puede activar. ... ok
+test_T309b_sin_backend_fuerte_el_punto_ejecutable_FALLA_CERRADO (__main__.ContencionEnElCaminoProductivo.test_T309b_sin_backend_fuerte_el_punto_ejecutable_FALLA_CERRADO)
+T309 · Defecto que previene: «caigo al débil y sigo», que es la peor salida. ... ok
+test_T309c_ads_ciclo_tambien_puede_activarla (__main__.ContencionEnElCaminoProductivo.test_T309c_ads_ciclo_tambien_puede_activarla)
+T309 · Defecto que previene: cablearla en un punto ejecutable y no en el otro. ... ok
+test_T309d_el_ALCANCE_de_este_anfitrion_se_MIDE_y_se_declara (__main__.ContencionEnElCaminoProductivo.test_T309d_el_ALCANCE_de_este_anfitrion_se_MIDE_y_se_declara)
+T309 · `E-18` · Defecto que previene: afirmar una contención que no se ejerció. ... ok
+test_T309e_ninguna_salida_de_esta_zona_afirma_custodia_productiva (__main__.ContencionEnElCaminoProductivo.test_T309e_ninguna_salida_de_esta_zona_afirma_custodia_productiva)
+T309 · `E-17` · Defecto que previene: llamar custodia a una clave efímera. ... ok
+test_T308_la_tabla_de_codigos_es_la_MISMA_en_los_cinco (__main__.ErroresTipadosDeLaCLI.test_T308_la_tabla_de_codigos_es_la_MISMA_en_los_cinco)
+T308 · Defecto que previene: cinco CLI con cinco convenios de salida distintos. ... ok
+test_T308b_el_error_del_ADAPTADOR_no_sale_como_traza (__main__.ErroresTipadosDeLaCLI.test_T308b_el_error_del_ADAPTADOR_no_sale_como_traza)
+T308 · Defecto que previene: `E-15`, la clase homónima que nadie capturaba. ... ok
+test_T308c_la_clase_HOMONIMA_del_runtime_sigue_saliendo_por_su_codigo (__main__.ErroresTipadosDeLaCLI.test_T308c_la_clase_HOMONIMA_del_runtime_sigue_saliendo_por_su_codigo)
+T308 · El matiz, conservado: son DOS jerarquías y se distinguen en la salida. ... ok
+test_T308d_el_error_de_CONTENCION_tiene_su_propio_codigo (__main__.ErroresTipadosDeLaCLI.test_T308d_el_error_de_CONTENCION_tiene_su_propio_codigo)
+T308 · Defecto que previene: confundir «no puedo contener» con «falló la tarea». ... ok
+test_T308e_los_CINCO_ejecutables_fallan_tipados_y_sin_traza (__main__.ErroresTipadosDeLaCLI.test_T308e_los_CINCO_ejecutables_fallan_tipados_y_sin_traza)
+T308 · Defecto que previene: cerrar el agujero en uno y dejarlo en los otros. ... ok
+test_T308f_no_hay_EXITO_PARCIAL_cuando_el_fallo_es_tipado (__main__.ErroresTipadosDeLaCLI.test_T308f_no_hay_EXITO_PARCIAL_cuando_el_fallo_es_tipado)
+T308 · Defecto que previene: publicar medio veredicto y además fallar. ... ok
+test_T310_la_ventana_de_publicacion_NO_se_diagnostica_como_corrupcion (__main__.LaVentanaDePublicacion.test_T310_la_ventana_de_publicacion_NO_se_diagnostica_como_corrupcion)
+`E-08` bis · el objeto es el que el testigo dice haber publicado. ... ok
+test_T311_sin_testigo_que_lo_avale_sigue_siendo_ESTADO_CORRUPTO (__main__.LaVentanaDePublicacion.test_T311_sin_testigo_que_lo_avale_sigue_siendo_ESTADO_CORRUPTO)
+El control que impide que la corrección de `T310` se coma la corrupción real. ... ok
+test_T306_ningun_ejecutable_importa_un_homonimo_del_PYTHONPATH (__main__.ProcedenciaDeLosModulos.test_T306_ningun_ejecutable_importa_un_homonimo_del_PYTHONPATH)
+T306 · Defecto que previene: `E-10`, que el lanzador decida qué código juzga. ... ok
+test_T306b_el_veredicto_no_se_falsea_desde_el_PYTHONPATH (__main__.ProcedenciaDeLosModulos.test_T306b_el_veredicto_no_se_falsea_desde_el_PYTHONPATH)
+T306 · Defecto que previene: publicar `{}` como veredicto y salir con código 0. ... ok
+test_T306c_la_procedencia_se_PUBLICA_y_nombra_cada_modulo (__main__.ProcedenciaDeLosModulos.test_T306c_la_procedencia_se_PUBLICA_y_nombra_cada_modulo)
+T306 · Defecto que previene: una procedencia que hay que creerse. ... ok
+test_T306d_dos_repositorios_distintos_no_se_contaminan (__main__.ProcedenciaDeLosModulos.test_T306d_dos_repositorios_distintos_no_se_contaminan)
+T306 · Defecto que previene: que el árbol juzgado aporte el código que lo juzga. ... ok
+test_T306e_el_cwd_del_lanzador_no_sustituye_al_aparato (__main__.ProcedenciaDeLosModulos.test_T306e_el_cwd_del_lanzador_no_sustituye_al_aparato)
+T306 · Defecto que previene: colar un homónimo por el directorio de trabajo. ... ok
+test_T307_control_positivo_una_corrida_limpia_pasa (__main__.ResultadoExactoDeLaEvidencia.test_T307_control_positivo_una_corrida_limpia_pasa)
+T307 · Control del CONTROL: sin él, «todo falla» explicaría el verde. ... ok
+test_T307b_OK_con_saltos_NO_declarados_es_ROJO (__main__.ResultadoExactoDeLaEvidencia.test_T307b_OK_con_saltos_NO_declarados_es_ROJO)
+T307 · Defecto que previene: `E-14`, que `OK` valga por `OK (skipped=N)`. ... ok
+test_T307c_los_saltos_DECLARADOS_con_su_motivo_se_admiten_y_se_cuentan (__main__.ResultadoExactoDeLaEvidencia.test_T307c_los_saltos_DECLARADOS_con_su_motivo_se_admiten_y_se_cuentan)
+T307 · Defecto que previene: permitir saltos sin decir CUÁLES ni POR QUÉ. ... ok
+test_T307d_manipular_el_CONTADOR_invalida_la_evidencia (__main__.ResultadoExactoDeLaEvidencia.test_T307d_manipular_el_CONTADOR_invalida_la_evidencia)
+T307 · Defecto que previene: publicar una cifra que no describe la corrida. ... ok
+test_T307e_fallos_errores_y_dos_corridas_pegadas_son_ROJO (__main__.ResultadoExactoDeLaEvidencia.test_T307e_fallos_errores_y_dos_corridas_pegadas_son_ROJO)
+T307 · Defecto que previene: publicar la corrida buena y esconder la mala. ... ok
+test_T307f_la_evidencia_PUBLICADA_del_repositorio_supera_la_comprobacion (__main__.ResultadoExactoDeLaEvidencia.test_T307f_la_evidencia_PUBLICADA_del_repositorio_supera_la_comprobacion)
+T307 · Control POSITIVO sobre el corpus real: la regla nueva no es inaplicable. ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests  (duración no registrada: varía por ejecución)
+
+OK

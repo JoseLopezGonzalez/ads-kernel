@@ -29,6 +29,82 @@ DECISIÓN · misma salida desde cualquier `cwd`
 """
 from __future__ import annotations
 
+# ---------------------------------------------------------------------------
+#  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, sobre este mismo punto ejecutable: con
+#  `PYTHONPATH=<dir>` apuntando a un directorio que contiene un `json.py` HOMÓNIMO, el
+#  proceso IMPORTABA el homónimo. `sys.path[0]` —el directorio del script— protege a
+#  `admision`, `estado` y `runtime`, que viven al lado; NO protege a la biblioteca estándar,
+#  que va DESPUÉS de `PYTHONPATH`. Medido: `ads_admision.py --repo <dir> verificar --json`
+#  publicaba `{}` como veredicto y terminaba con código 0, y los cinco `ads_*.py` importaban
+#  el módulo envenenado.
+#
+#  DECISIÓN · la purga es lo PRIMERO del fichero y sólo usa `sys` y `os`
+#      Alternativas: (a) purgar después de los imports normales; (b) purgar en un módulo
+#      aparte e importarlo; (c) purgar aquí, con lo único que el intérprete ya ha cargado.
+#      Se elige (c). Con (a) la purga llega tarde: el homónimo ya está en `sys.modules`. Con
+#      (b) la purga depende de un `import` que es exactamente lo que se está protegiendo —una
+#      guardia que necesita importar ya ha perdido—. `sys` es un módulo incorporado y `os` lo
+#      carga el arranque del intérprete, así que los dos vienen de `sys.modules` y no de la
+#      ruta de importación. Que `os` sea el bueno se COMPRUEBA, no se supone.
+#
+#  DECISIÓN · se retira lo que viene del LANZADOR, y no «todo lo que no reconozco»
+#      Una lista blanca de directorios del intérprete se rompería en cada instalación
+#      distinta y convertiría un fallo de entorno en un fallo del aparato. Lo que `E-10`
+#      nombra es concreto: `PYTHONPATH` y el `cwd`. Se retiran ésos, se cuenta cuántos, y el
+#      recuento se PUBLICA en la procedencia.
+import sys as _sys
+import os as _os
+
+_RAIZ_DEL_APARATO = _os.path.dirname(_os.path.abspath(__file__))
+
+
+def _entradas_del_lanzador():
+    """Lo que el LANZADOR puede meter en la ruta de importación: `PYTHONPATH` y el `cwd`."""
+    sospechosas = set()
+    for entrada in (_os.environ.get("PYTHONPATH") or "").split(_os.pathsep):
+        if entrada:
+            sospechosas.add(_os.path.realpath(entrada))
+    try:
+        sospechosas.add(_os.path.realpath(_os.getcwd()))
+    except OSError:
+        # Un `cwd` borrado bajo los pies no es motivo para no purgar el resto.
+        pass
+    return sospechosas
+
+
+def _purgar_la_ruta_de_importacion():
+    """Retira de `sys.path` lo que venga del lanzador. Devuelve cuántas entradas retiró."""
+    del_lanzador = _entradas_del_lanzador()
+    propia = _os.path.realpath(_RAIZ_DEL_APARATO)
+    conservadas, retiradas = [], []
+    for entrada in _sys.path:
+        try:
+            real = _os.path.realpath(entrada or _os.getcwd())
+        except OSError:
+            conservadas.append(entrada)
+            continue
+        if real != propia and real in del_lanzador:
+            retiradas.append(real)
+        else:
+            conservadas.append(entrada)
+    _sys.path[:] = conservadas
+    return retiradas
+
+
+RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()
+
+# CONTROL DEL CONTROL de la purga: `os` se usa para poder purgar, así que si `os` mismo
+# viniera del lanzador la purga no probaría nada. No hay forma honesta de seguir: se dice y
+# se sale con el código de PROCEDENCIA.
+if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lanzador():
+    _sys.stderr.write(
+        "[PROCEDENCIA_NO_FIABLE] el módulo `os` procede de la ruta de importación del "
+        "lanzador: este punto ejecutable no puede garantizar de dónde salen sus módulos y "
+        "NO ejecuta\n")
+    raise SystemExit(5)
+
 import argparse
 import json
 import os
@@ -41,7 +117,155 @@ from arboles.errores import ErrorDeArboles                           # noqa: E40
 from admision.errores import ErrorDeAdmision                         # noqa: E402
 from gobierno.errores import ErrorDeGobierno                         # noqa: E402
 
+from adaptadores.contrato import ErrorDeAdaptador               # noqa: E402
+from contencion.errores import ErrorDeContencion                     # noqa: E402
+from estado.errores import ErrorDeEstado                             # noqa: E402
+from identidad.errores import ErrorDeIdentidad                       # noqa: E402
+
 EXITO, FALLO, USO = 0, 1, 2
+
+
+# ---------------------------------------------------------------------------
+#  `E-10` · la PROCEDENCIA se PUBLICA. No basta con que sea correcta.
+# ---------------------------------------------------------------------------
+#  `g.15` pide evidencia «trazable»; una procedencia que sólo existe en la cabeza de quien
+#  escribió el `sys.path` no es trazable. Aquí se publica de dónde salió cada módulo del
+#  aparato, cuántas entradas del lanzador se retiraron, y si el `--repo` que se está
+#  juzgando es o no el árbol del que sale el propio aparato.
+MODULOS_DEL_APARATO = ("arboles", "admision", "gobierno")
+
+CODIGO_DE_PROCEDENCIA = 5
+
+
+def _origen_de(fichero):
+    """Nunca una ruta absoluta del anfitrión: la evidencia se publica (`E-15`)."""
+    if not fichero:
+        return "(sin fichero)"
+    real = os.path.realpath(fichero)
+    propia = os.path.realpath(_RAIZ_DEL_APARATO)
+    if real == propia or real.startswith(propia + os.sep):
+        return "aparato:" + os.path.relpath(real, propia)
+    return "FUERA-DEL-APARATO:" + os.path.basename(real)
+
+
+def procedencia(repo=None):
+    """De dónde salió cada módulo, y bajo qué árbol se está juzgando."""
+    modulos = {}
+    for nombre in MODULOS_DEL_APARATO:
+        modulo = sys.modules.get(nombre)
+        modulos[nombre] = _origen_de(getattr(modulo, "__file__", None))
+    salida = {
+        "aparato": os.path.basename(_RAIZ_DEL_APARATO),
+        "modulos": modulos,
+        "entradas_del_lanzador_retiradas": len(RETIRADAS_DE_LA_RUTA),
+        "ruta_de_importacion": [_origen_de(e) if e else "(cwd)" for e in sys.path[:3]],
+    }
+    if repo:
+        arbol_del_aparato = os.path.dirname(os.path.dirname(os.path.dirname(
+            _RAIZ_DEL_APARATO)))
+        salida["repo"] = os.path.basename(os.path.abspath(repo))
+        salida["repo_es_el_arbol_del_aparato"] = (
+            os.path.realpath(repo) == os.path.realpath(arbol_del_aparato))
+    return salida
+
+
+def exigir_procedencia_del_aparato():
+    """FALLO CERRADO si un módulo del aparato no sale del aparato. `E-10`.
+
+    Es la mitad que la purga no puede cubrir: purgar impide que un homónimo ENTRE, y esto
+    comprueba que ninguno ENTRÓ. Las dos hacen falta, porque la ruta de importación se puede
+    modificar de más formas de las que una purga puede prever.
+    """
+    intrusos = {nombre: origen for nombre, origen in procedencia()["modulos"].items()
+                if origen.startswith("FUERA-DEL-APARATO") or origen == "(sin fichero)"}
+    if intrusos:
+        sys.stderr.write(
+            "[PROCEDENCIA_NO_FIABLE] módulos del aparato importados desde fuera del "
+            "aparato: " + ", ".join(sorted(intrusos)) + ". El veredicto lo emitiría un "
+            "código que este punto ejecutable no controla, y NO se emite\n")
+        return CODIGO_DE_PROCEDENCIA
+    return None
+
+
+_TABLA_DE_FALLOS = (
+    ((ErrorDeAdaptador,), "error-del-adaptador"),
+    ((ErrorDeContencion,), "error-de-contencion"),
+    ((ErrorDeArboles, ErrorDeAdmision, ErrorDeGobierno, ErrorDeEstado,
+      ErrorDeIdentidad), "error-del-kernel"),
+)
+
+
+# ---------------------------------------------------------------------------
+#  `E-15` · NINGÚN ERROR TIPADO SALE DE `main()` COMO TRAZA
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR: `adaptadores.contrato.CapacidadNoSoportada`
+#  escapaba de `main()` como TRACEBACK con rutas absolutas del anfitrión, `stdout` vacío y
+#  código 1 —el mismo que un fallo tipado—, de modo que un guion no podía distinguir «la
+#  operación falló» de «el programa reventó». Matiz medido y conservado: hay DOS clases
+#  homónimas `CapacidadNoSoportada`. La del RUNTIME (`runtime/errores.py`) SÍ se capturaba y
+#  producía `[CAPACIDAD_NO_SOPORTADA] ...` limpio; la del ADAPTADOR
+#  (`adaptadores/contrato.py`) es otra raíz —`ErrorDeAdaptador`— y no la capturaba nadie.
+#  El contrato del adaptador declara esa separación a propósito, así que la corrección no es
+#  fundir las jerarquías: es que el punto ejecutable las conozca TODAS.
+#
+#  DECISIÓN · un código de salida POR CLASE DE FALLO, y los ya publicados no se mueven
+#      Alternativas: (a) un único código 1 para todo lo tipado; (b) un código por clase.
+#      Se elige (b) porque `E-15` lo pide y porque un `&&` de un guion necesita distinguir
+#      «entrada mal escrita» de «el anfitrión no puede contener» de «no hay adaptador». Lo
+#      que NO se mueve es lo ya publicado: 0 éxito, 1 fallo tipado del kernel, 2 uso, 70
+#      corte inyectado. Cambiarlos rompería guiones que hoy funcionan, y `E-15` pide
+#      estabilidad, no renumeración.
+CODIGOS_DE_SALIDA = {
+    "exito": 0,
+    "error-del-kernel": 1,
+    "uso-incorrecto": 2,
+    "error-del-adaptador": 3,
+    "error-de-contencion": 4,
+    "procedencia-no-fiable": 5,
+}
+
+
+def _sin_rutas_del_anfitrion(texto):
+    """Ninguna salida publica el árbol de directorios de quien ejecuta. `E-15`.
+
+    Misma regla que `registrar_evidencia.py` aplica a la evidencia publicada: la raíz se
+    sustituye por `<raiz>`, de la más larga a la más corta. Se aplica AQUÍ, en la puerta de
+    salida, y no en cada `raise`: una garantía que dependa de que cada sitio se acuerde no
+    es una garantía.
+    """
+    arbol = os.path.dirname(os.path.dirname(os.path.dirname(_RAIZ_DEL_APARATO)))
+    for ruta in sorted({os.path.abspath(arbol), os.path.realpath(arbol),
+                        os.path.abspath(_RAIZ_DEL_APARATO),
+                        os.path.realpath(_RAIZ_DEL_APARATO)}, key=len, reverse=True):
+        if ruta and ruta != os.sep:
+            texto = texto.replace(ruta, "<raiz>")
+    return texto
+
+
+def _clase_de_fallo(error):
+    """La CLASE de fallo de un error tipado, o `None` si no lo es."""
+    for clases, clave in _TABLA_DE_FALLOS:
+        if isinstance(error, clases):
+            return clave
+    return None
+
+
+def _publicar_fallo(argumentos, error, clase):
+    """`stderr` útil, salida ESTRUCTURADA y código estable. Nunca una traza."""
+    codigo = CODIGOS_DE_SALIDA[clase]
+    detalle = error.a_dict() if hasattr(error, "a_dict") else {
+        "codigo": getattr(error, "codigo", type(error).__name__),
+        "detalle": str(error),
+    }
+    estructura = {"error": detalle, "clase_de_fallo": clase, "codigo_de_salida": codigo}
+    # `stdout` conserva EXACTAMENTE lo que ya publicaba con `--json`: quien lo consuma hoy
+    # sigue leyendo lo mismo. Lo que se añade es que `stderr` lleve siempre las dos cosas
+    # —la línea legible y la estructura—, también cuando no se pidió `--json`.
+    if getattr(argumentos, "json", False):
+        sys.stdout.write(_sin_rutas_del_anfitrion(_volcar({"error": detalle})) + "\n")
+    sys.stderr.write(_sin_rutas_del_anfitrion(str(error)) + "\n")
+    sys.stderr.write(_sin_rutas_del_anfitrion(_volcar(estructura)) + "\n")
+    return codigo
 
 
 def _volcar(objeto):
@@ -156,11 +380,21 @@ def main(argv=None):
     ejecutar = ORDENES.get(argumentos.orden)
     if ejecutar is None:
         return _uso("orden desconocida: " + str(argumentos.orden))
+    # `E-10` · antes de nada, de dónde ha salido lo que va a juzgar.
+    intruso = exigir_procedencia_del_aparato()
+    if intruso is not None:
+        return intruso
     try:
         return ejecutar(argumentos)
-    except (ErrorDeArboles, ErrorDeAdmision, ErrorDeGobierno) as error:
-        sys.stderr.write(str(error) + "\n")
-        return FALLO
+    except BaseException as error:                                    # noqa: BLE001
+        # `E-15` · toda jerarquía TIPADA que pueda alcanzar este `main()` sale por aquí, con
+        # su clase de fallo y su código estable. Lo que NO es tipado se vuelve a levantar
+        # tal cual: convertir un defecto de programación en un código de salida limpio lo
+        # escondería, y eso es lo contrario de lo que `E-15` pide.
+        clase = _clase_de_fallo(error)
+        if clase is None:
+            raise
+        return _publicar_fallo(argumentos, error, clase)
 
 
 if __name__ == "__main__":

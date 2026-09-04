@@ -76,17 +76,59 @@ def prefijos_de_instrumento(politica=None):
 
 
 def _contenidos_para_append_only(canal, base, rutas):
-    """`(bytes en el NACIMIENTO, bytes ahora)` de las sedes append-only que hayan mutado."""
-    salida = {}
-    for ruta in rutas:
+    """Los bytes del NACIMIENTO, los de ahora, y DE DÓNDE SALIÓ cada uno. `V6-12`.
+
+    `E-09` · DEFECTO QUE CIERRA, y se reprodujo antes de corregirlo. Esta función decía:
+
         nacimiento = canal.commit_de_nacimiento(ruta)
         anterior = canal.contenido(nacimiento, ruta) if nacimiento else None
         if anterior is None:
             anterior = canal.contenido(base, ruta)
+
+    Es decir: cuando el commit de nacimiento no se podía derivar, se comparaba contra la
+    BASE y se emitía VERDE. Reproducción medida: sede nacida en `C0`, ALTERADA en `C1`,
+    `C1` declarado como base, y una adición encima en `C2`. Con el nacimiento real el
+    veredicto es ROJO —lo publicado en `C0` ya no es prefijo de lo actual—; con
+    `commit_de_nacimiento` devolviendo `None` el veredicto salía **VERDE**. La comprobación
+    no se omitía con un aviso: se transformaba en otra comprobación distinta, más débil, y
+    el informe no lo decía en ninguna parte.
+
+    DECISIÓN · la PROCEDENCIA viaja con los bytes, y «desconocido» NO es «válido»
+        Alternativas: (a) devolver `None` y que quien juzga adivine; (b) devolver la terna
+        `(anterior, actual, procedencia)` y que el juicio EXIJA `nacimiento`.
+        Se elige (b). Con (a) el juicio recibe unos bytes sin saber de dónde vienen, y
+        cualquier retoque futuro puede volver a rellenarlos con lo primero que haya a mano
+        —que es exactamente lo que pasó—. Con (b), un `anterior` que no venga del commit de
+        nacimiento NO PUEDE producir verde, porque el juicio mira la procedencia antes que
+        los bytes.
+    """
+    salida = {}
+    historia = canal.procedencia_de_la_historia()
+    for ruta in rutas:
         actual = canal.contenido("HEAD", ruta)
         if actual is None:
             actual = canal.contenido_en_disco(ruta)
-        salida[ruta] = (anterior, actual)
+
+        # `V6-12` exige contrastar contra el NACIMIENTO. Si la historia está truncada o
+        # injertada, el commit que `git log --diff-filter=A` devuelve NO es el nacimiento:
+        # es el primero que esta copia alcanza. Fallo CERRADO antes de mirar nada más.
+        if not historia["completa"]:
+            salida[ruta] = (None, actual, "historia-truncada", historia["motivo"])
+            continue
+
+        nacimiento = canal.commit_de_nacimiento(ruta)
+        if not nacimiento:
+            salida[ruta] = (None, actual, "sin-nacimiento",
+                            "`git log --diff-filter=A` no alcanza ningún commit que CREARA "
+                            "esta sede: su procedencia no es trazable")
+            continue
+        anterior = canal.contenido(nacimiento, ruta)
+        if anterior is None:
+            salida[ruta] = (None, actual, "nacimiento-sin-la-sede",
+                            "el commit de nacimiento derivado no CONTIENE la sede: el "
+                            "valor es inservible y no se sustituye por otro")
+            continue
+        salida[ruta] = (anterior, actual, "nacimiento", nacimiento)
     return salida
 
 
@@ -141,12 +183,8 @@ def verificar(raiz, *, base, declaracion, registro=censo.REGISTRO_DE_ZONAS,
         or m.ruta == SEDE_DEL_OWNER
     })
     contenidos = _contenidos_para_append_only(canal, base_resuelta, append_only)
-    nacimiento = None
-    if SEDE_DEL_OWNER in contenidos:
-        nacimiento = contenidos[SEDE_DEL_OWNER][0]
 
-    hallazgos.extend(metro.juzgar(mutaciones, declaracion, contenidos=contenidos,
-                                  nacimiento=nacimiento))
+    hallazgos.extend(metro.juzgar(mutaciones, declaracion, contenidos=contenidos))
 
     censo_de_lecturas = None
     censo_de_formulas = None

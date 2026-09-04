@@ -112,6 +112,20 @@ test_la_matriz_publica_sus_dos_columnas_y_las_dos_son_cero (__main__.MatrizAdver
 T190 · Defecto que previene: `V6-18`, declarar cero falsos verdes sin medirlo. ... ok
 test_las_seis_formas_y_las_seis_letras_tienen_fixture_positivo_y_negativo (__main__.MatrizAdversarial.test_las_seis_formas_y_las_seis_letras_tienen_fixture_positivo_y_negativo)
 T190 · Defecto que previene: `V6-13` y `V6-14`, una forma sin fixture. ... ok
+test_T302_positivo_con_nacimiento_el_crecimiento_es_legitimo (__main__.ProcedenciaDelNacimiento.test_T302_positivo_con_nacimiento_el_crecimiento_es_legitimo)
+T302 · Control POSITIVO: con nacimiento trazable, AÑADIR sigue siendo VERDE. ... ok
+test_T303_la_AUSENCIA_de_nacimiento_no_degrada_a_comparar_con_la_base (__main__.ProcedenciaDelNacimiento.test_T303_la_AUSENCIA_de_nacimiento_no_degrada_a_comparar_con_la_base)
+T303 · Defecto que previene: `E-09`, «desconocido» convertido en «válido». ... ok
+test_T303b_un_commit_de_nacimiento_INEXISTENTE_falla_cerrado (__main__.ProcedenciaDelNacimiento.test_T303b_un_commit_de_nacimiento_INEXISTENTE_falla_cerrado)
+T303 · Defecto que previene: dar por bueno un SHA que no resuelve a nada. ... ok
+test_T303c_un_commit_que_NO_contiene_la_sede_falla_cerrado (__main__.ProcedenciaDelNacimiento.test_T303c_un_commit_que_NO_contiene_la_sede_falla_cerrado)
+T303 · Defecto que previene: derivar un nacimiento real pero de otra cosa. ... ok
+test_T304_una_historia_REESCRITA_o_TRUNCADA_falla_cerrado (__main__.ProcedenciaDelNacimiento.test_T304_una_historia_REESCRITA_o_TRUNCADA_falla_cerrado)
+T304 · Defecto que previene: `E-09`, atestar sobre un nacimiento inalcanzable. ... ok
+test_T304b_una_historia_INJERTADA_falla_cerrado (__main__.ProcedenciaDelNacimiento.test_T304b_una_historia_INJERTADA_falla_cerrado)
+T304 · Defecto que previene: reescribir qué historia se alcanza con `grafts`. ... ok
+test_T305_borrar_el_valor_del_nacimiento_no_produce_verde (__main__.ProcedenciaDelNacimiento.test_T305_borrar_el_valor_del_nacimiento_no_produce_verde)
+T305 · Defecto que previene: un sabotaje que vacíe los bytes del nacimiento. ... ok
 test_alterar_una_letra_de_lo_publicado_da_rojo_aunque_este_confirmado (__main__.SedeDelOwner.test_alterar_una_letra_de_lo_publicado_da_rojo_aunque_este_confirmado)
 T189 · Defecto que previene: reescribir una resolución ya publicada. ... ok
 test_anadir_una_resolucion_es_legitimo (__main__.SedeDelOwner.test_anadir_una_resolucion_es_legitimo)
@@ -122,6 +136,6 @@ test_el_contraste_es_contra_el_nacimiento_y_no_contra_head (__main__.SedeDelOwne
 T189 · Defecto que previene: contrastar contra `HEAD`, que es una tautología. ... ok
 
 ----------------------------------------------------------------------
-Ran 58 tests  (duración no registrada: varía por ejecución)
+Ran 65 tests  (duración no registrada: varía por ejecución)
 
 OK

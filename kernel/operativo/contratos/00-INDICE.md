@@ -4,7 +4,7 @@ Lo que vale para **todas** las capacidades. Un pack los amplía; no los sustituy
 
 | | contrato | qué fija |
 |---|---|---|
-| C1 | [`C1-EQUIPO-ROL-AGENTE-METODO.md`](C1-EQUIPO-ROL-AGENTE-METODO.md) | los siete conceptos y los veintiocho campos del contrato de rol |
+| C1 | [`C1-EQUIPO-ROL-AGENTE-METODO.md`](C1-EQUIPO-ROL-AGENTE-METODO.md) | los siete conceptos y los veintinueve campos del contrato de rol |
 | C2 | [`C2-AGENTES-Y-MODELOS.md`](C2-AGENTES-Y-MODELOS.md) | perfiles neutrales de proveedor, asignación, combinación y relevo |
 | C3 | [`C3-METODO-EJECUTABLE.md`](C3-METODO-EJECUTABLE.md) | los diecisiete elementos y las siete reglas que hacen ejecutable un método |
 | C4 | [`C4-MATERIALIZACION.md`](C4-MATERIALIZACION.md) | el algoritmo de materialización, ampliación y retirada |

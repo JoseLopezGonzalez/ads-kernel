@@ -501,6 +501,14 @@ class Equipos(BaseDelCiclo):
         Se compone una ruta con TODAS las condicionales activas —que son las que traen
         método— y se comprueba que las capacidades derivadas son todas de las quince y que
         el método viaja aparte, sin perderse.
+
+        CORREGIDA HACIA ARRIBA: los métodos se recogían en un `dict` por capacidad, de modo
+        que la ÚLTIMA participación tapaba a las anteriores. `b.16` da a `DOM` y a `SEG` una
+        participación DOBLE —condiciones antes de construir, revisión después—, y con la
+        segunda instanciada en el corpus el `dict` publicaba sólo `revision` y la prueba
+        afirmaba de menos: comprobaba que había UN método y no que estuvieran los DOS. Ahora
+        se recogen TODOS los métodos de cada capacidad, y lo que se exige es la doble
+        participación entera, que es lo que el corpus declara.
         """
         marco = ciclo.encuadrar(self.repo, entrada_base(
             materia="forma-interna-costosa", estado_del_objeto="existe",
@@ -512,10 +520,21 @@ class Equipos(BaseDelCiclo):
         derivadas = ciclo.derivar_capacidades(ruta)
         for capacidad in derivadas:
             self.assertIn(capacidad, QUINCE, capacidad)
-        metodos = {p["capacidad"]: p["metodo"] for p in ruta["participantes"]
-                   if p["metodo"]}
-        self.assertEqual(metodos.get("DOM"), "condiciones")
-        self.assertEqual(metodos.get("SEG"), "condiciones")
+        metodos = {}
+        for participante in ruta["participantes"]:
+            if participante["metodo"]:
+                metodos.setdefault(participante["capacidad"], []).append(
+                    participante["metodo"])
+        # El método viaja APARTE de la capacidad y NINGUNO se pierde por el camino.
+        self.assertIn("condiciones", metodos.get("DOM", []))
+        self.assertIn("condiciones", metodos.get("SEG", []))
+        for capacidad, nombres in metodos.items():
+            for nombre in nombres:
+                self.assertNotIn(nombre, QUINCE,
+                                 "el método `" + nombre + "` de `" + capacidad + "` es el "
+                                 "nombre de una capacidad: eso es la confusión que `C1` "
+                                 "separa y que este caso existe para impedir")
+                self.assertNotIn("/", nombre, capacidad + " · " + nombre)
 
     def test_27_la_composicion_se_elige_por_orden_escrito_y_ninguna_es_error(self):
         """T197 · Defecto que previene: materializar un equipo por defecto cuando no toca.

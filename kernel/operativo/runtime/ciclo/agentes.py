@@ -685,7 +685,18 @@ def asignar(roles, *, politica, catalogo, degradaciones=None):
             for rol in sorted({str(r) for r in roles})]
 
 
-def identificador_de_agente(modelo, roles):
-    """`ag-<12 hex>` DERIVADO del contenido: mismo modelo y mismos roles, mismo agente."""
-    digest = cid_de_objeto({"modelo": modelo, "roles": sorted(str(r) for r in roles)})
+def identificador_de_agente(modelo, roles, reparto=None):
+    """`ag-<12 hex>` DERIVADO del contenido: mismo modelo y mismos roles, mismo agente.
+
+    `reparto` distingue a los agentes de un rol REPARTIDO por `C4`: tres agentes sobre
+    `DIS/diseno-visual`, uno por dirección explorada, son tres agentes distintos y no pueden
+    compartir identificador —si lo compartieran, `exigir_slots_coherentes` los vería como uno
+    y el corte por `execution_slots` volvería a contar uno donde hay tres—. Cuando no hay
+    reparto no entra en la semilla, de modo que el identificador de un rol de un solo agente
+    es EXACTAMENTE el de siempre y ningún equipo ya escrito cambia de identidad.
+    """
+    semilla = {"modelo": modelo, "roles": sorted(str(r) for r in roles)}
+    if reparto:
+        semilla["reparto"] = str(reparto)
+    digest = cid_de_objeto(semilla)
     return "ag-" + digest.split(":", 1)[-1][:12]

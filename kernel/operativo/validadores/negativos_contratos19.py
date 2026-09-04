@@ -1,0 +1,308 @@
+#!/usr/bin/env python3
+"""negativos_contratos19 — infracciones deliberadas de la corrección del 2026-09-04.
+
+POR QUÉ ESTE FICHERO EXISTE, Y NO UNA LÍNEA MÁS EN `comprobar_negativos.py`. La corrección
+de los hallazgos `E-01`…`E-16` se reparte en tres ejes disjuntos que se escriben en
+paralelo. Tres ejes escribiendo sobre la MISMA lista producen una integración que nadie
+puede revisar por partes, y la lista de sabotajes es justamente lo que no puede quedar sin
+revisar. Cada eje escribe el suyo AQUÍ, y `comprobar_negativos.py` los INCORPORA por
+nombre, sin descubrimiento y sin `try/except ImportError`: si uno falta, el validador
+revienta al importar, que es exactamente lo que tiene que pasar. El catálogo sigue siendo
+UNO y la sede de ejecución sigue siendo UNA.
+
+Cada entrada es una `comprobar_negativos.Mutacion`. Se construyen aquí y se comprueban
+allí.
+
+QUÉ CUBRE ESTE EJE. Las CUATRO obligaciones de fase `F6` de `11-ARQ` §19, una a una y sin
+absorberlas bajo un identificador común:
+
+  CONTRATO 1    `N270`, `N270b`, `N270c`   la cobertura del censo DERIVA
+  CONTRATO 1bis `N271`                     los perfiles de agente se cuentan
+  CONTRATO 2    `N272`, `N272b`            el alcance de `T152` DERIVA
+  `D104`        `N273`…`N273f`, `N275`,    el catálogo de `<CAP>:revision`, su herencia,
+                `N276`                     su posición, su conjunto vigilado y sus censos
+
+Cada infracción declara el DIAGNÓSTICO que espera. Sin `espera`, una prueba se daría por
+detectada porque falló, sin comprobar que falló POR ESO.
+"""
+from __future__ import annotations
+
+CATALOGO = []
+
+import comprobar_negativos as _cn  # noqa: E402
+
+Mutacion, _sustituir, _escribir = _cn.Mutacion, _cn._sustituir, _cn._escribir
+
+
+# ===========================================================================
+#  CONTRATO 1 · la cobertura de sedes se DESCUBRE
+# ===========================================================================
+
+def m_c1_sede_nueva_con_cifra_falsa(raiz):
+    """La prueba negativa que el CONTRATO 1 pide con esas palabras.
+
+    Un fichero NUEVO —«que ninguna lista podría contener»— con una afirmación falsa sobre
+    un objeto censable. Si `T151` lo detecta sin que nadie haya tocado el validador, la
+    cobertura deriva; si no lo detecta, sigue enumerándose.
+    """
+    _escribir(raiz, "kernel/operativo/capacidades/NOTA-DE-COBERTURA.md",
+              "# Nota de cobertura\n\nEl sistema declara hoy las once capacidades del "
+              "árbol, cada una con su ficha.\n")
+
+
+def m_c1_sede_nueva_en_otro_arbol(raiz):
+    """La misma prueba, en una rama del corpus que ninguna regla nombra.
+
+    La primera sede nueva cuelga de `capacidades/`, que las reglas del censo mencionan por
+    otros motivos. Ésta cuelga de `plantillas/`, que ninguna regla nombra: si sólo se
+    detectara la primera, la cobertura estaría derivando a medias.
+    """
+    _escribir(raiz, "kernel/operativo/plantillas/APUNTE-SUELTO.md",
+              "# Apunte\n\nEste apunte recuerda que los cuatro contratos transversales "
+              "gobiernan el corpus.\n")
+
+
+def m_c1_cobertura_vuelve_a_enumerarse(raiz):
+    """La condición de cierre, atacada de frente: la lista literal vuelve.
+
+    Se sustituye el BARRIDO por una lista de rutas escrita a mano. `T151` seguiría en verde
+    —las sedes de la lista siguen siendo correctas—, y es exactamente por eso que hace
+    falta `T270`: la que ejerce la propiedad.
+    """
+    _sustituir(raiz, "kernel/operativo/validadores/comprobar_recuentos.py",
+               "def sedes_vivas(base):",
+               "def sedes_vivas(base):\n"
+               "    for _rel in ('kernel/operativo/00-INDICE.md',):\n"
+               "        _r = os.path.join(base, _rel)\n"
+               "        if os.path.exists(_r):\n"
+               "            yield _rel, _r\n"
+               "    return\n"
+               "def _sedes_vivas_original(base):")
+
+
+# ===========================================================================
+#  CONTRATO 1bis · el censo de perfiles de agente
+# ===========================================================================
+
+def m_c1bis_perfil_nuevo_en_c2(raiz):
+    """«Introducir un perfil nuevo en `C2` y comprobar que el recuento se mueve solo.»
+
+    Es la prueba que el contrato prescribe, literal. El perfil entra en `C2`, la derivación
+    pasa a contar uno más, y la tabla publicada deja de coincidir. Si el recuento NO se
+    moviera, la cifra seguiría viviendo sólo en prosa, que es `N-04`.
+    """
+    import os
+    import re
+    ruta = os.path.join(raiz, "kernel/operativo/contratos/C2-AGENTES-Y-MODELOS.md")
+    with open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    inicio = texto.index("```yaml ads:perfil-agente")
+    fin = texto.index("```", texto.index("\n", inicio)) + 3
+    clon = re.sub(r"^id: perfil:[\w:-]+", "id: perfil:censo-de-sabotaje",
+                  texto[inicio:fin], flags=re.M)
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto[:fin] + "\n\n" + clon + texto[fin:])
+
+
+# ===========================================================================
+#  CONTRATO 2 · el alcance de `T152`
+# ===========================================================================
+
+def m_c2_sede_nueva_con_version_falsa(raiz):
+    """«Crear una sede nueva con una versión falsa y comprobar que la detecta sin
+    modificar el validador.» Es la prueba negativa del CONTRATO 2, literal."""
+    _escribir(raiz, "kernel/operativo/entrada/NOTA-DE-VERSION.md",
+              "# Nota\n\nEste circuito está escrito contra `kernel/KERNEL.md` 1.2.0 y su "
+              "vocabulario.\n")
+
+
+def m_c2_alcance_vuelve_a_ser_una_lista(raiz):
+    """El alcance vuelve a ser los dos ficheros escritos a mano que `T152` recorría."""
+    _sustituir(raiz, "kernel/operativo/validadores/comprobar_versiones.py",
+               'AMBITO_F6 = [r"^README\\.md$", r"^START_HERE\\.md$", r"^kernel/", r"^packs/"]',
+               'AMBITO_F6 = [r"^README\\.md$", r"^START_HERE\\.md$"]')
+
+
+# ===========================================================================
+#  `D104` · el catálogo de `<CAP>:revision`
+# ===========================================================================
+
+def m_d104_dep_sin_revision(raiz):
+    """EL CONTRAEJEMPLO PRESCRITO, conservado como sabotaje.
+
+    `D104` exige que la comprobación devuelva FALLIDA nombrando `proceso:DEP` →
+    `SEG:revision` AUSENTE. Eso describía el árbol ANTES de que F6 materializara. Retirar
+    la instancia de `DEP` —y SÓLO la de `DEP`, dejando intactas las de los otros cuatro
+    procesos del catálogo— tiene que volver a producir exactamente ese diagnóstico. Es la
+    mitad que `D104` subraya: «tiene que seguir fallando si alguien añade `SEG:revision` a
+    los otros cuatro procesos del catálogo y no a `DEP`».
+    """
+    _sustituir(raiz, "kernel/operativo/recorrido/01-PROCESOS.md",
+               '''  - id: revision-de-seguridad
+    capa_exigida: >
+      la revisión posterior de SEG sobre la dependencia ya incorporada, con lo comprobado y lo NO comprobado
+    capacidad_productora: "SEG:revision"''',
+               '''  - id: revision-de-seguridad
+    capa_exigida: >
+      la revisión posterior de SEG sobre la dependencia ya incorporada, con lo comprobado y lo NO comprobado
+    capacidad_productora: "APR"''')
+
+
+def m_d104_revision_retirable_en_dep(raiz):
+    """«Un proceso con `SEG:revision` RETIRABLE en `DEP` → FALLA.»
+
+    La instancia sigue estando; lo que se rompe es la HERENCIA. Su origen —la condición de
+    seguridad anterior a construir— es irretirable por `G28`, y el paso 8 del algoritmo
+    manda heredar la obligatoriedad.
+    """
+    _sustituir(raiz, "kernel/operativo/recorrido/01-PROCESOS.md",
+               "      nadie: la participación de SEG en DEP es doble por b.16",
+               "      PLT, que posee la maquinaria; la participación de SEG en DEP es doble por b.16")
+
+
+def m_d104_revision_antes_del_ancla(raiz):
+    """«Un proceso con `<CAP>:revision` colocado ANTES de su ancla → FALLA.»
+
+    La revisión de `DEP` se mueve delante del dosier de `VER`. Sigue declarada, sigue
+    heredando, y está en el sitio equivocado: revisar antes de que exista lo que hay que
+    revisar no es la mitad posterior de la participación doble.
+    """
+    import os
+    ruta = os.path.join(raiz, "kernel/operativo/recorrido/01-PROCESOS.md")
+    with open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    inicio = texto.index("  - id: revision-de-seguridad")
+    fin = texto.index("condicionales:", inicio)
+    bloque = texto[inicio:fin]
+    texto = texto[:inicio] + texto[fin:]
+    ancla = texto.index("  - id: evidencia-suficiente\n    capa_exigida: >\n      el dosier de VER sobre el cambio")
+    texto = texto[:ancla] + bloque + texto[ancla:]
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto)
+
+
+def m_d104_revision_no_hereda_la_activacion(raiz):
+    """La revisión condicional se activa con una condición distinta de la de su origen.
+
+    `FEA` declara `SEG:condiciones` bajo `C-SEG`; su revisión pasa a activarse con `C-DOM`.
+    El par sigue instanciado y la participación queda desacoplada de lo que la exige: se
+    revisaría cuando manda el dominio y no cuando manda la seguridad.
+    """
+    _sustituir(raiz, "kernel/operativo/recorrido/01-PROCESOS.md",
+               '''  - capacidad: "SEG:revision"
+    condicion: "C-SEG"''',
+               '''  - capacidad: "SEG:revision"
+    condicion: "C-DOM"''')
+
+
+def m_d104_conjunto_vigilado_deja_de_derivarse(raiz):
+    """`Q-09` · el conjunto vigilado se deriva de las FICHAS, no de una lista.
+
+    Se retira de la ficha de `SEG` la declaración de doble participación de `b.16`. El
+    catálogo tiene que moverse solo: los pares de `SEG` dejan de exigirse, y las instancias
+    que el árbol conserva quedan sin ninguna participación que las derive. Una lista
+    escrita en el validador seguiría en verde sobre un catálogo que ya no es el suyo.
+    """
+    _sustituir(raiz, "kernel/operativo/capacidades/SEG/CAPACIDAD.md",
+               '  - "b.16 · SEG participa dos veces y es obligatoria antes de construir en DEP"',
+               '  - "b.16 · SEG es obligatoria antes de construir en DEP"')
+
+
+def m_d104_via_propietaria_sin_par(raiz):
+    """`O-01` · una participación PROPIETARIA de una vigilada que no emite par.
+
+    `proceso:SIS` pasa a tener `propietario_global: "DOM"`. Por la vía 1 eso exige
+    `DOM:revision`, y el fixture de la vía propietaria existe justamente porque `D103`
+    pasaba este caso en verde sin emitir par.
+    """
+    _sustituir(raiz, "kernel/operativo/recorrido/01-PROCESOS.md",
+               'id: proceso:SIS\nnombre: Evolución del sistema',
+               'id: proceso:SIS\nnombre: Evolución del sistema')
+    _sustituir(raiz, "kernel/operativo/recorrido/01-PROCESOS.md",
+               'Una fricción real, un incidente del sistema o una capacidad de producto bloqueada lo exigen.\npropietario_global: "SIS"',
+               'Una fricción real, un incidente del sistema o una capacidad de producto bloqueada lo exigen.\npropietario_global: "SEG"')
+
+
+def m_d104_censo_de_fixtures_caducado(raiz):
+    """El censo de fixtures de §19 deja de ser el que la batería corre.
+
+    `D104` lo dice así: «`G-15` cuenta los fixtures que ejecuta y falla si esta cifra no es
+    la suya, nombrando sede, responsable y remedio. La única forma de que envejezca es en
+    ROJO». Se mueve la cifra publicada y la comprobación tiene que ponerse roja.
+    """
+    _sustituir(raiz, "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+               "escrito a mano: 20 fixtures**", "escrito a mano: 17 fixtures**")
+
+
+def m_d104_reparto_por_via_caducado(raiz):
+    """`Q-03` · la proyección del reparto por vía deja de ser la derivada.
+
+    «Un total de nueve admite repartos que significan cosas distintas —mover los
+    condicionales de `FEA` de la forma tipada a la desnuda deja el nueve intacto y cambia
+    el contrato—, luego publicar sólo el total no basta.»
+    """
+    _sustituir(raiz, "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+               "**vía 1 · 0 pares · vía 2 · 1 par · vía 3 · 0 pares · vía 4 ·\n"
+               "                           8 pares**",
+               "**vía 1 · 0 pares · vía 2 · 2 pares · vía 3 · 0 pares · vía 4 ·\n"
+               "                           7 pares**")
+
+
+CATALOGO.extend([
+    Mutacion("N270", "§19 CONTRATO 1", "T151", "comprobar_recuentos",
+             "una sede NUEVA publica una cifra falsa sobre un objeto censable",
+             m_c1_sede_nueva_con_cifra_falsa,
+             espera="NOTA-DE-COBERTURA.md"),
+    Mutacion("N270b", "§19 CONTRATO 1", "T151", "comprobar_recuentos",
+             "la sede nueva cuelga de una rama que ninguna regla nombra",
+             m_c1_sede_nueva_en_otro_arbol,
+             espera="APUNTE-SUELTO.md"),
+    Mutacion("N270c", "§19 CONTRATO 1", "T270", "comprobar_recuentos",
+             "la cobertura de sedes vuelve a ser una lista literal de rutas",
+             m_c1_cobertura_vuelve_a_enumerarse,
+             espera="la cobertura sigue enumerándose"),
+    Mutacion("N271", "§19 CONTRATO 1bis", "T271", "comprobar_recuentos",
+             "entra un perfil de agente nuevo en C2 y el censo tiene que moverse solo",
+             m_c1bis_perfil_nuevo_en_c2,
+             espera="perfiles_de_agente = 22"),
+    Mutacion("N272", "§19 CONTRATO 2", "T152", "comprobar_versiones",
+             "una sede NUEVA publica una versión del kernel que no es la vigente",
+             m_c2_sede_nueva_con_version_falsa,
+             espera="NOTA-DE-VERSION.md"),
+    Mutacion("N272b", "§19 CONTRATO 2", "T272", "comprobar_versiones",
+             "el alcance de T152 vuelve a ser los dos ficheros escritos a mano",
+             m_c2_alcance_vuelve_a_ser_una_lista,
+             espera="el alcance sigue enumerándose"),
+    Mutacion("N273", "§19 D104", "T273", "comprobar_composicion_procesos",
+             "DEP se queda sin SEG:revision, con las otras cuatro intactas",
+             m_d104_dep_sin_revision,
+             espera="proceso:DEP → `SEG:revision` AUSENTE"),
+    Mutacion("N273b", "§19 D104", "T273", "comprobar_composicion_procesos",
+             "la SEG:revision de DEP se vuelve RETIRABLE y deja de heredar de su origen",
+             m_d104_revision_retirable_en_dep,
+             espera="no hereda la autoridad de retirada"),
+    Mutacion("N273c", "§19 D104", "T273", "comprobar_composicion_procesos",
+             "la revisión de DEP se coloca ANTES de su ancla",
+             m_d104_revision_antes_del_ancla,
+             espera="está ANTES de su ancla"),
+    Mutacion("N273d", "§19 D104", "T273", "comprobar_composicion_procesos",
+             "una revisión condicional deja de heredar la activación de su origen",
+             m_d104_revision_no_hereda_la_activacion,
+             espera="no hereda la activación"),
+    Mutacion("N273e", "§19 D104", "T273", "comprobar_composicion_procesos",
+             "la ficha de SEG deja de declarar la doble participación de b.16",
+             m_d104_conjunto_vigilado_deja_de_derivarse,
+             espera="NINGUNA participación del catálogo la exige"),
+    Mutacion("N273f", "§19 D104", "T273", "comprobar_composicion_procesos",
+             "una participación PROPIETARIA de una capacidad vigilada no emite par",
+             m_d104_via_propietaria_sin_par,
+             espera="vía 1"),
+    Mutacion("N275", "§19 D104", "T275", "comprobar_composicion_procesos",
+             "el censo de fixtures publicado deja de ser el que la batería ejecuta",
+             m_d104_censo_de_fixtures_caducado,
+             espera="el censo de fixtures publicado es 17"),
+    Mutacion("N276", "§19 D104", "T276", "comprobar_composicion_procesos",
+             "el reparto por vía publicado deja de ser el derivado del árbol",
+             m_d104_reparto_por_via_caducado,
+             espera="pares por la vía 2 y el árbol deriva"),
+])

@@ -37,7 +37,12 @@ CONFIGURACIÓN DE FUERA    `identidad/configuracion.py` rechaza la que viva dent
                           y `O25` §3 es su sede: el repositorio verificado NO puede cambiar
                           por sí mismo qué identidad se acepta
 ENTRADAS VERIFICADAS      el commit y su `tree` se resuelven con Git y la atestación queda
-                          atada a los DOS. Nunca a un nombre de rama
+                          atada a los DOS. Nunca a un nombre de rama. Las DOS MITADES se
+                          rechazan POR SEPARADO y tienen prueba independiente capaz de
+                          fallar: `E-07`, corregido el 2026-09-04. Antes, la única prueba del
+                          vínculo confirmaba un commit nuevo —que cambia commit Y tree a la
+                          vez— y las dos mitades levantaban el mismo error, de modo que
+                          sabotear cualquiera de las dos dejaba la batería en 38/38 VERDE
 EVIDENCIA FUERA           `--evidencia` se rechaza si cae dentro del árbol verificado, con la
                           misma doble resolución. `g.13` y `g.15`
 FALLA CERRADO             sin `ssh-keygen`, sin clave, sin configuración, sin ancla o con una
@@ -144,6 +149,27 @@ DESCONOCIDA     la configuración externa no la acepta, y el árbol no puede añ
 TRAZA           con la huella PÚBLICA, y sin una sola clave privada dentro
 ```
 
+## 6 bis · El ORDEN de la verificación, y cuándo se puede escribir evidencia
+
+**La evidencia sólo se escribe DESPUÉS de completar los SIETE pasos, en este orden** —`E-07`,
+2026-09-04—. Escribir antes de terminar deja un fichero que dice «verificado» sobre una
+verificación que no llegó a su final, y un lector externo no puede distinguirlo de uno bueno:
+
+```text
+1 firma                 verifica criptográficamente, o no se sigue
+2 clave aceptada        la huella pública está en la configuración EXTERNA
+3 época                 la clave estaba vigente para la época declarada, ni retirada ni
+                        revocada
+4 commit                el SHA del commit casa con el atestado
+5 tree                  el `tree` de ESE commit casa con el atestado. Separado del 4: es
+                        la otra mitad de `E-07`
+6 política              la política externa admite lo atestado
+7 identidad del emisor  quién firmó, contrastado contra la configuración externa
+```
+
+Interrumpir en cualquiera de los siete deja el fichero de evidencia SIN escribir, y eso se
+prueba paso a paso.
+
 ## 7 · Qué demuestra, y dónde
 
 `T192` en [`pruebas/test_identidad.py`](pruebas/test_identidad.py) —el aparato de identidad—
@@ -156,9 +182,19 @@ ejercida y `G-A9`—. Punto ejecutable: [`../raiz-externa/verificador.py`](../ra
 ```text
 NO HAY PROVEEDOR         `O25` §2 deja la custodia al anfitrión, y aquí la clave es un
 PRODUCTIVO DE CLAVES     fichero `0600` fuera de los repositorios. Un HSM, un llavero del
-                         sistema o un gestor de secretos entran por la MISMA frontera —la
+`E-17`                   sistema o un gestor de secretos entran por la MISMA frontera —la
                          orden externa declarada en la configuración— y no se ha elegido
-                         ninguno: elegirlo es despliegue, no contrato
+                         ninguno: elegirlo es despliegue, no contrato.
+                         **Y se dice sin atenuarlo, porque `O26` §4 lo dice literalmente:
+                         una clave efímera de pruebas, AUNQUE esté fuera de los repositorios
+                         y tenga permisos `0600`, NO constituye custodia productiva.**
+                         PROPIETARIO: el Owner (`O25` §3, autoridad administrativa).
+                         MECANISMO PREVISTO: un proveedor de secretos del anfitrión entrando
+                         por la frontera ya construida.
+                         CONDICIÓN DE CIERRE: una instalación real que firme contra ese
+                         proveedor, con rotación y revocación EJERCIDAS contra él.
+                         Mientras tanto, NINGUNA salida de este paquete puede afirmar
+                         custodia productiva, y hay una prueba que lo barre
 
 LA IDENTIDAD SIN         se demuestra con contenedor o con espacio de nombres. Un USUARIO DEL
 ESCRITURA SE DEMUESTRA   SISTEMA dedicado, que es la opción 1, exige aprovisionamiento del

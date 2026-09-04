@@ -809,8 +809,297 @@ def _excluidos(destino):
         destino.write("        %-60s %s\n" % (rel, motivo))
 
 
+
+# ════════════════════════════════════════════════════════════════════════════════
+#  EL UNIVERSO DE OBLIGACIONES DE `F6`, Y LAS TRES RESTAS
+# ════════════════════════════════════════════════════════════════════════════════
+#
+# POR QUÉ SE AÑADE AQUÍ, Y NO EN OTRO FICHERO. Lo que este derivador ya hacía era derivar el
+# universo de FUENTES que un gate debe leer. Lo que faltaba —y es lo que `F6-H` declaró
+# completo sin tenerlo— es el universo de OBLIGACIONES que `F6` debe cerrar. Son el mismo
+# problema y la misma lección: `P-08` encontró que un manifiesto declaraba «FUENTES SIN
+# ASIGNAR 0» sobre un universo ELEGIDO A MANO, y el cero era verdadero por construcción.
+# `F6-H` se declaró completo sobre un universo que **omitía las cuatro obligaciones de fase
+# `F6` de su propia sede** —`11-ARQ` §19—, y el completo era verdadero por la misma razón.
+# Dos universos escritos en dos ficheros distintos vuelven a ser dos verdades: va aquí.
+#
+# LO QUE ESTE MODO GARANTIZA. Que una obligación **no pueda omitirse en silencio**. Cada
+# componente se lee de su SEDE NORMATIVA y publica su CARDINAL derivado; si una sede no se
+# puede leer, o si un componente sale VACÍO donde su sede declara filas, el modo sale con
+# código 2. Nunca adivina y nunca reduce el universo sin decirlo.
+#
+# LAS TRES RESTAS, y qué significa cada una. Se derivan cruzando el universo contra el
+# corpus ejecutable, y **ninguna se escribe a mano**:
+#
+#   A · obligaciones internas SIN IMPLEMENTACIÓN
+#       ninguna prueba del corpus la declara en su `cubre`, o las que la declaran no
+#       nombran validador. Nadie ha construido nada que la cierre.
+#
+#   B · implementadas SIN PRUEBA CAPAZ DE FALLAR
+#       tienen prueba y validador, y NINGUNA infracción deliberada del catálogo de
+#       `comprobar_negativos` apunta a esa prueba. Una prueba que sólo se ha visto pasar no
+#       está verificada: es el defecto exacto que la auditoría independiente encontró en
+#       `T131` y `T134`.
+#
+#   C · obligaciones SIN TRAZABILIDAD HASTA EVIDENCIA EJECUTABLE
+#       tienen prueba y validador, y ninguna de sus pruebas declara un fichero de evidencia
+#       que exista en el árbol. La cadena obligación → código → prueba → evidencia se corta
+#       antes del último eslabón, que es el único que un tercero puede reejecutar.
+
+KERNEL_PRUEBAS = "kernel/operativo"
+VALIDADORES = "kernel/operativo/validadores"
+DEUDA = "docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md"
+ESTADO_DURABLE = "docs/rediseno/g-ESTADO-DURABLE-APROBADA.md"
+
+
+def _seccion_19():
+    """El cuerpo de §19, acotado por sus dos cabeceras. Falla cerrado si no está."""
+    texto = _leer(ARQ)
+    marca = "--- CONTRATO 1 · DERIVAR EL CENSO"
+    if marca not in texto:
+        raise SedeIlegible(
+            "`%s` no contiene el bloque de contratos de §19: la sede de las cuatro "
+            "obligaciones de fase F6 no se puede leer, y sin ella el universo estaría "
+            "incompleto por construcción" % ARQ)
+    return texto
+
+
+def obligaciones_de_19():
+    """Las obligaciones de fase `F6` que §19 declara, DESCUBIERTAS por barrido.
+
+    No se enumeran cuatro: se buscan TODOS los bloques `--- CONTRATO n … ---` y la ficha
+    `D104`, y se conserva el que declara `FASE F6`. Si §19 añadiera un quinto contrato,
+    entraría solo; si retirara uno, el cardinal se movería y se vería.
+    """
+    texto = _seccion_19()
+    halladas = {}
+    trozos = re.split(r"^--- (CONTRATO [^·]+?) ·", texto, flags=re.M)
+    for i in range(1, len(trozos), 2):
+        nombre = trozos[i].strip()
+        cuerpo = trozos[i + 1][:4000]
+        if re.search(r"FASE\s+\*\*F6\*\*|FASE\s+\*\*F6\.|\bFASE\b[^\n]*\bF6\b", cuerpo):
+            halladas[nombre] = "11-ARQ §19 · %s" % nombre
+    # La ficha `D104`, que no es un `--- CONTRATO ---` pero es la cuarta obligación.
+    if re.search(r"FASE\s+\*\*F6\.\*\*\s+`?D104`?|`D104` fija las cuatro vías", texto):
+        halladas["D104"] = "11-ARQ §19 · ficha D104"
+    if len(halladas) < 4:
+        raise SedeIlegible(
+            "§19 declara %d obligaciones de fase F6 y la sede describe al menos CUATRO "
+            "—CONTRATO 1, CONTRATO 1bis, CONTRATO 2 y D104—: el barrido ha perdido alguna, "
+            "y un universo que encoge en silencio es el defecto de `P-08`. Halladas: %r"
+            % (len(halladas), sorted(halladas)))
+    return halladas
+
+
+def hallazgos_externos_f6():
+    """Los `F-nn` cuya FILA de §19 declara fase `F6`. La fase se lee de la fila."""
+    texto = _leer(ARQ)
+    halladas = {}
+    for m in re.finditer(r"^\|\s*`(F-\d\d)`[^\n]*$", texto, re.M):
+        celdas = [c.strip() for c in m.group(0).split("|")]
+        fase = celdas[5] if len(celdas) > 5 else ""
+        if re.search(r"\bF6\b", fase):
+            halladas[m.group(1)] = "11-ARQ §19 · tabla de hallazgos externos"
+    if not halladas:
+        raise SedeIlegible("§19 no publica ningún hallazgo externo con fase F6, y su tabla "
+                           "los declara: la lectura de la fila ha dejado de funcionar")
+    return halladas
+
+
+def contratos_v6():
+    """`V6-01`…`V6-19`, derivados de §20 del documento 11."""
+    texto = _leer(ARQ)
+    halladas = {v: "11-ARQ §20 · contratos de F6"
+                for v in sorted(set(re.findall(r"\bV6-\d\d\b", texto)))}
+    if len(halladas) < 19:
+        raise SedeIlegible("§20 publica %d contratos `V6-nn` y la sede declara diecinueve"
+                           % len(halladas))
+    return halladas
+
+
+def obligaciones_g():
+    """`g.1`…`g.16`, derivadas de las cabeceras de la sección aprobada del estado durable.
+
+    `g.0` es la frontera entre norma y mecanismo, y `g.17`/`g.18` declaran lo derivado y lo
+    que la sección NO hace: ninguna de las tres es una obligación de contenido, y por eso el
+    barrido se queda con las numeradas de 1 a 16, que es lo que la sede enumera.
+    """
+    texto = _leer(ESTADO_DURABLE)
+    halladas = {}
+    for m in re.finditer(r"^##\s+`(g\.(\d+))`", texto, re.M):
+        if 1 <= int(m.group(2)) <= 16:
+            halladas[m.group(1)] = "g-ESTADO-DURABLE-APROBADA.md · cabecera"
+    if len(halladas) != 16:
+        raise SedeIlegible("la sección aprobada del estado durable publica %d obligaciones "
+                           "`g.n` entre 1 y 16, y la sede declara dieciséis" % len(halladas))
+    return halladas
+
+
+def contratos_transversales():
+    """`C2`, `C4` y `C5`, derivados de los ficheros del árbol y no de una lista."""
+    base = os.path.join(RAIZ, "kernel/operativo/contratos")
+    halladas = {}
+    for nombre in sorted(os.listdir(base)) if os.path.isdir(base) else []:
+        m = re.match(r"^(C[245])-", nombre)
+        if m:
+            halladas[m.group(1)] = "kernel/operativo/contratos/" + nombre
+    if len(halladas) != 3:
+        raise SedeIlegible("el árbol publica %d de los contratos transversales C2, C4 y C5"
+                           % len(halladas))
+    return halladas
+
+
+def deudas_y_limites():
+    """Las deudas y límites EXTERNOS vigentes, derivados de su sede canónica."""
+    texto = _leer(DEUDA)
+    halladas = {d: "06-DEUDA-Y-LIMITACIONES-VIGENTES.md"
+                for d in sorted(set(re.findall(r"`(FD-\d+|M-04|A14|E5-\d+)`", texto)))}
+    if not halladas:
+        raise SedeIlegible("`%s` no publica ninguna deuda identificada: su sede es la "
+                           "única del censo de deuda viva" % DEUDA)
+    return halladas
+
+
+COMPONENTES_DE_OBLIGACION = [
+    ("§19", "las obligaciones de fase F6 de `11-ARQ` §19", obligaciones_de_19),
+    ("F-nn", "los hallazgos EXTERNOS con fase F6", hallazgos_externos_f6),
+    ("V6", "los contratos `V6-01`…`V6-19` de §20", contratos_v6),
+    ("g", "las obligaciones `g.1`…`g.16` del estado durable", obligaciones_g),
+    ("C", "los contratos transversales `C2`, `C4` y `C5`", contratos_transversales),
+    ("deuda", "las deudas y límites externos vigentes", deudas_y_limites),
+]
+
+
+# ── el corpus EJECUTABLE contra el que se cruza el universo ──────────────────────
+
+def _escenarios():
+    """Todo bloque `ads:escenario` del kernel y de los packs, leído sin PyYAML.
+
+    Se lee con el mismo subconjunto que el runtime usa —líneas `clave: valor`— porque este
+    derivador tiene que poder correr donde PyYAML no esté. Sólo se necesitan cuatro campos.
+    """
+    encontrados = []
+    for ambito in (KERNEL_PRUEBAS, "packs"):
+        base = os.path.join(RAIZ, ambito)
+        for dirpath, dirnames, filenames in os.walk(base):
+            dirnames[:] = [d for d in dirnames if d not in (".git", "__pycache__")]
+            for nombre in sorted(filenames):
+                if not nombre.endswith(".md"):
+                    continue
+                with io.open(os.path.join(dirpath, nombre), encoding="utf-8") as fh:
+                    texto = fh.read()
+                for bloque in re.findall(r"```yaml ads:escenario\n(.*?)```", texto, re.S):
+                    def campo(clave):
+                        m = re.search(r"^%s:\s*(.+)$" % clave, bloque, re.M)
+                        return m.group(1).strip().strip('"') if m else ""
+                    cubre = re.search(r"^cubre:\s*\[(.*?)\]", bloque, re.M | re.S)
+                    encontrados.append({
+                        "id": campo("id"),
+                        "cubre": [c.strip().strip('"') for c in
+                                  (cubre.group(1).split(",") if cubre else [])],
+                        "validador": campo("validador"),
+                        "evidencia": campo("evidencia"),
+                        "estado": campo("estado"),
+                    })
+    return encontrados
+
+
+def _mutaciones():
+    """Las pruebas a las que apunta alguna infracción deliberada del catálogo único."""
+    apuntadas = {}
+    base = os.path.join(RAIZ, VALIDADORES)
+    for nombre in sorted(os.listdir(base)) if os.path.isdir(base) else []:
+        if not nombre.endswith(".py"):
+            continue
+        with io.open(os.path.join(base, nombre), encoding="utf-8") as fh:
+            texto = fh.read()
+        for m in re.finditer(r'Mutacion\(\s*"([^"]+)"\s*,\s*"[^"]*"\s*,\s*"(T\d+)"', texto):
+            apuntadas.setdefault(m.group(2), []).append(m.group(1))
+    return apuntadas
+
+
+def _cubre(entrada, obligacion):
+    """Si una entrada de `cubre` nombra ESTA obligación, y no otra que la contiene.
+
+    `CONTRATO 1` es prefijo de `CONTRATO 1bis`: sin frontera de palabra, cerrar la segunda
+    daría por cerrada la primera, que es exactamente la absorción que §19 prohíbe.
+    """
+    return re.search(r"(?<![\w.-])" + re.escape(obligacion) + r"(?![\w.-])", entrada)
+
+
+def universo_de_obligaciones():
+    """`{obligacion: {"clase", "sede", "escenarios", "validadores", "evidencias",
+    "sabotajes"}}`, derivado entero."""
+    escenarios, apuntadas = _escenarios(), _mutaciones()
+    universo = {}
+    for clase, _titulo, fn in COMPONENTES_DE_OBLIGACION:
+        for obligacion, sede in fn().items():
+            ficha = universo.setdefault(obligacion, {
+                "clase": clase, "sede": sede, "escenarios": [], "validadores": set(),
+                "evidencias": [], "sabotajes": []})
+            for esc in escenarios:
+                if not any(_cubre(c, obligacion) for c in esc["cubre"]):
+                    continue
+                ficha["escenarios"].append(esc["id"])
+                if esc["validador"]:
+                    ficha["validadores"].add(esc["validador"])
+                if esc["evidencia"] and os.path.isfile(
+                        os.path.join(RAIZ, KERNEL_PRUEBAS, "pruebas", esc["evidencia"])):
+                    ficha["evidencias"].append(esc["evidencia"])
+                ficha["sabotajes"].extend(apuntadas.get(esc["id"], []))
+    return universo
+
+
+def restas():
+    """Las TRES RESTAS, derivadas. Se publican aunque no estén vacías."""
+    universo = universo_de_obligaciones()
+    a = sorted(o for o, f in universo.items() if not f["validadores"])
+    b = sorted(o for o, f in universo.items() if f["validadores"] and not f["sabotajes"])
+    c = sorted(o for o, f in universo.items() if f["validadores"] and not f["evidencias"])
+    return universo, a, b, c
+
+
+def publicar_obligaciones(destino):
+    universo, a, b, c = restas()
+    destino.write("UNIVERSO OBLIGATORIO DE `F6`, DERIVADO\n")
+    destino.write("=" * 78 + "\n\n")
+    for clase, titulo, fn in COMPONENTES_DE_OBLIGACION:
+        suyas = sorted(o for o, f in universo.items() if f["clase"] == clase)
+        destino.write("  (%-6s) %3d   %s\n" % (clase, len(suyas), titulo))
+        destino.write("            %s\n" % ", ".join(suyas))
+    destino.write("\n  TOTAL %d obligaciones\n\n" % len(universo))
+    destino.write("%-16s %-7s %-28s %-22s %s\n"
+                  % ("obligación", "clase", "pruebas", "sabotajes", "evidencia"))
+    for obligacion in sorted(universo):
+        f = universo[obligacion]
+        destino.write("%-16s %-7s %-28s %-22s %s\n" % (
+            obligacion, f["clase"],
+            ",".join(f["escenarios"][:4]) or "—",
+            ",".join(sorted(set(f["sabotajes"]))[:3]) or "—",
+            (sorted(set(f["evidencias"]))[:1] or ["—"])[0]))
+    destino.write("\nLAS TRES RESTAS, DERIVADAS\n")
+    destino.write("-" * 78 + "\n")
+    for letra, titulo, lista in (
+            ("A", "obligaciones internas SIN IMPLEMENTACIÓN", a),
+            ("B", "implementadas SIN PRUEBA CAPAZ DE FALLAR", b),
+            ("C", "obligaciones SIN TRAZABILIDAD HASTA EVIDENCIA EJECUTABLE", c)):
+        destino.write("  %s · %-58s %d\n" % (letra, titulo, len(lista)))
+        if lista:
+            destino.write("      %s\n" % ", ".join(lista))
+    return 0 if not (a or b or c) else 1
+
+
 def main():
     modo = sys.argv[1] if len(sys.argv) > 1 else "--tabla"
+    if modo == "--obligaciones":
+        # El universo de OBLIGACIONES, que es el que `F6-H` declaró completo sin tenerlo.
+        # Es un universo distinto del de FUENTES y por eso no comparte su derivación; lo
+        # que comparte es la regla: falla cerrado y no encoge en silencio.
+        try:
+            return publicar_obligaciones(sys.stdout)
+        except SedeIlegible as e:
+            sys.stderr.write("FALLA CERRADO · %s\n" % e)
+            return 2
     try:
         universo, procedencia = derivar()
     except SedeIlegible as e:

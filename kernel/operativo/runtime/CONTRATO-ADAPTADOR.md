@@ -103,6 +103,25 @@ midió: la memoria espejada que divergió 23 contra 32 entradas.
 18 y 23 de `T193` en
 [`pruebas/escenario_e2e_runtime.py`](pruebas/escenario_e2e_runtime.py).
 
+## 4 bis · La CONTENCIÓN, elegida y comprobada en el CONSTRUCTOR · `E-16`
+
+El adaptador local acepta `politica_de_contencion` y, desde el 2026-09-04, **elige y
+COMPRUEBA el backend al construirse**, no al primer despacho. Sin backend fuerte disponible
+el adaptador NO SE CONSTRUYE: falla cerrado y no ejecuta nada. La alternativa —descubrirlo a
+mitad de la primera tarea— deja una tarea ya ejecutada bajo un aislamiento que no era el
+declarado, que es peor que no tener aislamiento, porque la ficha ya dijo que lo tenía.
+`ads_runtime.py` y `ads_ciclo.py` lo exponen con `--contencion` y `--contencion-backend`.
+
+## 4 ter · Los errores TIPADOS no atraviesan `main()` · `E-15`
+
+`adaptadores.CapacidadNoSoportada` salía de `main()` como TRAZA CRUDA con rutas absolutas del
+anfitrión, con `stdout` vacío y `rc=1` —indistinguible de un fallo tipado bien tratado—. Hay
+DOS clases homónimas `CapacidadNoSoportada`, la del runtime y la del adaptador: la primera SÍ
+se capturaba y la segunda no, y por eso el defecto sobrevivía a una lectura rápida. Ahora, en
+los cinco puntos ejecutables: código de salida ESTABLE por clase de fallo · salida
+ESTRUCTURADA · `stderr` útil y SIN rutas absolutas del anfitrión · y **ninguna forma de éxito
+parcial**.
+
 ## 5 · Lo que este contrato NO cubre
 
 La **pieza 4** de `§6` —la prueba de humo en sesión nueva— **no está implementada**: exige

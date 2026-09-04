@@ -93,3 +93,78 @@ NO DECLARA la raíz externa certificada. `O25` §6 lo dice de sí misma
 NO DESBLOQUEA PesquerApp. `O24` §4 la mantiene bloqueada
 NO SUSTITUYE al verificador interno: lo EJECUTA desde fuera, con otra identidad
 ```
+
+## `E-17` · CUSTODIA PRODUCTIVA DE CLAVES — deuda EXTERNA, con dueño y con cierre
+
+**Permanece ABIERTA y es EXTERNA.** Este apartado no la resuelve: la REGISTRA, que es lo
+único que este paquete puede hacer con ella. Sedes: `O25` §5 y `O26` §4 de
+`docs/owner/ADS-OWNER-RESOLUCIONES.md` —material de la iniciativa, que no se embarca en un
+proyecto instalado y por eso se cita por su ruta y no se enlaza—.
+
+```text
+PROPIETARIO          el OWNER. `O25` §3 le reserva la autoridad para aprovisionar,
+                     autorizar, rotar, revocar, recuperar y sustituir la identidad «mediante
+                     un canal administrativo externo y auditable». No es una decisión de
+                     este código y no se toma aquí
+
+MECANISMO PREVISTO   un proveedor de secretos del ANFITRIÓN —HSM, llavero del sistema o
+                     gestor de secretos— que entre por la MISMA frontera que ya existe: la
+                     orden externa declarada en `orden_de_firma` de la configuración de
+                     confianza, con la clave alcanzada por `ADS_ANFITRION_ALMACEN`. El
+                     paquete no cambia: cambia quién responde detrás de esa orden.
+                     `O25` §2 lo deja explícitamente al anfitrión y dice que «será diferente
+                     por instalación y entorno»
+
+CONDICIÓN DE CIERRE  `E-17` se cierra cuando el Owner designa un proveedor productivo
+                     concreto y una instalación real firma con él: identidad aceptada por el
+                     anillo externo, clave que NUNCA cruza la frontera, y rotación,
+                     solapamiento, retirada y revocación ejercidas contra ese proveedor. La
+                     evidencia de cierre es una atestación emitida y comprobada con la clave
+                     custodiada por él, NO por un fichero de pruebas
+
+NO LA SATISFACE      una CLAVE EFÍMERA DE PRUEBAS. `O25` §5 es literal —«las claves efímeras
+                     están permitidas únicamente en pruebas y no constituyen custodia
+                     productiva»— y `O26` §4 lo repite cerrando la puerta de atrás: «aunque
+                     esté fuera de los repositorios y tenga permisos `0600`, NO constituye
+                     custodia productiva». Las claves de `firma.generar_par_efimero` son
+                     exactamente eso y se destruyen al terminar la batería
+
+QUÉ NO BLOQUEA       la certificación TÉCNICA de lo que este paquete implementa: la
+                     propiedad que se demuestra es la frontera, no el custodio detrás de
+                     ella
+
+QUÉ SÍ BLOQUEA       cualquier afirmación de CUSTODIA PRODUCTIVA. Ninguna salida de este
+                     paquete la afirma, y una prueba lo barre: `T309` en
+                     `../runtime/pruebas/test_integridad_y_evidencia.py`
+```
+
+## `E-18` · LO QUE ESTE ANFITRIÓN PUEDE EJERCER, Y LO QUE NO
+
+**Permanece como LIMITACIÓN DE ANFITRIÓN**, y su alcance no se adivina: se mide en cada
+ejecución y se publica. Lo que sigue es lo MEDIDO en el anfitrión de esta corrección, y vale
+para él: **ninguna afirmación aquí es universal.**
+
+```text
+IDENTIDAD DISTINTA     SÍ, por CONTENEDOR. `aislamiento.capacidades()` lo sonda y lo elige:
+POR CONTENEDOR         `docker` responde y la imagen declarada está en local, la identidad
+                       de dentro es `65534` y la del runtime `1000`, y el repositorio se
+                       monta en SÓLO LECTURA. Es la demostración transitoria que `O26` §3
+                       acepta, con sus dos CONTROLES POSITIVOS: la escritura en el espacio
+                       propio del contenedor TIENE que funcionar y la lectura del árbol
+                       montado TIENE que funcionar
+
+USUARIO DEL SISTEMA    NO. Se COMPRUEBA en vez de suponerlo: `sudo -n true` responde que
+DISTINTO               hace falta contraseña, y no se puede crear una cuenta de servicio.
+                       Es REQUISITO DE INFRAESTRUCTURA, no deuda de este código
+
+`cgroup v2`            PRESENTE y NO EJERCITABLE. Está montado (`cgroup2 on /sys/fs/cgroup`)
+                       y publica controladores, y `systemd` delega un subárbol con
+                       `cgroup.kill`; pero el envoltorio REAL del backend —escribir el PID en
+                       `cgroup.procs` del subgrupo— falla con `EIO`. La sonda lo declara NO
+                       DISPONIBLE con ese motivo, y por tanto NO SE CUENTA COMO EJERCIDO. No
+                       produce un falso rojo: la política se sirve con otro backend fuerte
+
+CERTIFICACIÓN          LIMITADA AL BACKEND EJERCIDO. Lo que este anfitrión ejerce se publica
+LIMITADA               en `contencion.capacidades()` y se comprueba en `T309`; lo que no
+                       ejerce se declara con su motivo y no se presenta como demostrado
+```

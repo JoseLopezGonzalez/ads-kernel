@@ -543,10 +543,20 @@ class Escenario:
     def paso_07(self):
         elegibles = self.circuito.runtime.elegibles()
         exigir(elegibles, "no hay trabajo elegible después de planificar")
-        # El trabajo elegible se DERIVA del estado y se ordena igual para toda instancia.
-        exigir(elegibles == sorted(elegibles, key=lambda e: (-e["prioridad"], e["paquete"])),
+        # El trabajo elegible se DERIVA del estado y se ordena igual para toda instancia,
+        # por los CUATRO criterios de `b.12` paso 5 y no por dos: prioridad declarada · grado
+        # de salida en el grafo · antigüedad de espera · identificador. La clave se importa
+        # de su sede en vez de transcribirse, para que no haya un segundo orden que pueda
+        # desincronizarse del que el dispatcher aplica de verdad.
+        from runtime.politica import clave_de_orden                   # noqa: PLC0415
+        exigir(elegibles == sorted(elegibles, key=clave_de_orden),
                "el orden de lo elegible no es el declarado: dos instancias verían listas "
                "distintas y la carrera dejaría de ser real")
+        for entrada in elegibles:
+            exigir(all(c in entrada for c in ("grado_de_salida", "tiempo_listo",
+                                              "postergaciones", "adelantado_por",
+                                              "impedimento")),
+                   "`elegibles()` no publica los cuatro campos de inanición de `b.12`")
         self.paquete_despachado = elegibles[0]["paquete"]
         resumen = ciclo.despachar(self.circuito.runtime, self.paquete_despachado)
         exigir(resumen["desenlace"] == "completado",
@@ -1430,11 +1440,73 @@ def ejecutar(base, salida):
     return 0 if len(escenario.cumplidos) == len(PASOS) else 1
 
 
+# ---------------------------------------------------------------------------
+#  `E-08` · RECUPERABILIDAD DEL ALMACÉN AL TERMINAR
+# ---------------------------------------------------------------------------
+#  Hecho reproducido antes de corregir: con los pasos 8 y 9 invertidos, este escenario
+#  terminaba en VERDE sobre un almacén cuyo `REVISION.json` nombraba objetos que no estaban
+#  publicados en `canonico/`, es decir, IRRECUPERABLE. Un escenario extremo a extremo que no
+#  mira si lo que deja detrás se puede volver a abrir no está midiendo durabilidad.
+#
+#  DECISIÓN · se recorren TODOS los almacenes que el escenario haya dejado, y no uno elegido
+#      El escenario crea varios control repos —máquinas, clones, copias— y cuál de ellos
+#      tiene almacén cambia con los pasos. Buscarlos por su marca en disco —`estado/
+#      REVISION.json`— hace que un almacén nuevo entre en la comprobación sin que nadie se
+#      acuerde de añadirlo. Y se exige encontrar AL MENOS UNO: si el descubrimiento fallara,
+#      «ninguno estaba roto» sería trivialmente cierto y no probaría nada.
+def almacenes_del_escenario(base):
+    """Todo directorio bajo `base` que sea un control repo con almacén durable."""
+    encontrados = []
+    for carpeta, subcarpetas, _ficheros in os.walk(base):
+        if ".git" in subcarpetas:
+            subcarpetas.remove(".git")
+        if os.path.isfile(os.path.join(carpeta, "estado", "REVISION.json")):
+            encontrados.append(carpeta)
+            subcarpetas[:] = [s for s in subcarpetas if s != "estado"]
+    return sorted(encontrados)
+
+
+def comprobar_recuperabilidad(base):
+    """`(ok, lineas)`: cada almacén se ABRE, se RECUPERA y se verifica su integridad."""
+    import estado as _estado                                          # noqa: PLC0415
+    lineas = []
+    repos = almacenes_del_escenario(base)
+    if not repos:
+        return False, ["T301 · recuperabilidad: NO se encontró ningún almacén durable, así que la "
+                       "comprobación no habría podido fallar nunca"]
+    ok = True
+    for repo in repos:
+        nombre = os.path.relpath(repo, base)
+        try:
+            with _estado.abrir(repo, recuperar=True) as almacen:
+                informe = almacen.verificar_integridad()
+                almacen.auditar()
+        except Exception as error:                                    # noqa: BLE001
+            ok = False
+            lineas.append("T301 · recuperabilidad  " + nombre + ": NO SE PUDO ABRIR NI RECUPERAR ("
+                          + type(error).__name__ + ")")
+            continue
+        if not informe.ok:
+            ok = False
+            lineas.append("T301 · recuperabilidad  " + nombre + ": ÍNTEGRIDAD ROTA — "
+                          + ", ".join(sorted({h["codigo"] for h in informe.hallazgos})))
+        else:
+            lineas.append("T301 · recuperabilidad  " + nombre + ": abierto, recuperado e íntegro")
+    return ok, lineas
+
+
 def main():
     base = tempfile.mkdtemp(prefix="ads-e2e-f6-")
     salida = []
     try:
         codigo = ejecutar(base, salida)
+        # `E-08` · el escenario no termina en verde sobre un almacén que no se
+        # puede volver a abrir. Se comprueba ANTES de borrar el temporal.
+        recuperable, lineas_de_recuperabilidad = comprobar_recuperabilidad(base)
+        salida.append("")
+        salida.extend(lineas_de_recuperabilidad)
+        if not recuperable:
+            codigo = 1
     finally:
         for carpeta, subcarpetas, ficheros in os.walk(base):
             for nombre in subcarpetas + ficheros:

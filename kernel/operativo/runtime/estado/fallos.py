@@ -59,6 +59,11 @@ PUNTOS = (
     "antes-del-commit-atomico",
     "despues-del-commit-atomico",
     "antes-de-sincronizar-directorio",
+    # `E-08` · el hueco que faltaba: el paso 8 ha publicado los objetos, los ha sincronizado
+    # y ha dejado su TESTIGO DURABLE, y el paso 9 todavía no ha publicado la revisión. Sin
+    # este punto no se podía inyectar una caída EXACTAMENTE entre los dos pasos cuyo orden
+    # el §3 declara irreordenable, y por tanto no se podía medir qué queda en el disco allí.
+    "entre-el-paso-8-y-el-9",
     "durante-el-diario",
     "durante-el-registro-auxiliar",
     "antes-de-devolver-exito",

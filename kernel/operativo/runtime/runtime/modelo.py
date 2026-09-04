@@ -79,7 +79,34 @@ TRANSICIONES = {
 CLAVES_DE_PAQUETE = (
     "id", "item", "estado", "capacidades_requeridas", "prioridad", "intentos",
     "max_intentos", "depende_de", "orden", "efecto", "resultado", "acoplamiento",
+    "seleccion",
 )
+
+# ------------------------------------------------------- `b.12` · INANICIÓN
+# Los CUATRO campos que `b.12` obliga a MANTENER Y MOSTRAR por cada paquete `listo` no
+# despachado. De los cuatro sólo existía `impedimento`, y de nombre: el dispatcher ordenaba
+# por `(-prioridad, id)` y no contaba nada.
+#
+# DECISIÓN · los contadores son DURABLES y viven en el PAQUETE, no en memoria
+#     Alternativas: (a) contarlos en el planificador mientras corre; (b) un dominio canónico
+#     propio de contadores; (c) en el objeto durable del paquete.
+#     Se elige (c). Con (a) una caída borra la evidencia de inanición justo cuando más falta
+#     hace —un paquete que lleva cuarenta postergaciones es EXACTAMENTE lo que hay que ver
+#     tras un reinicio—, y dos planificadores tendrían cada uno su cuenta. Con (b) habría dos
+#     objetos que hay que escribir juntos para que el estado sea coherente, y el motor ya
+#     ofrece la transacción multiarchivo, pero el contador no tiene vida propia: es del
+#     paquete, y separarlo sólo añade una forma de que discrepen. Con (c) la cuenta viaja con
+#     su sujeto, la escribe la misma transición que lo mueve y sobrevive a la reanudación.
+#
+# DECISIÓN · `tiempo_listo` se mide con el RELOJ LÓGICO del estado durable
+#     `a.9` prohíbe la hora de pared en el estado canónico, y `registro_pruebas.py` lo
+#     repite: un estado que lleva `time.time()` deja de ser reproducible y dos ejecuciones
+#     del mismo escenario dejan de producir los mismos bytes. El motor ya publica un contador
+#     monótono por revisión —`Almacen.revision()["revision"]`—, que es el orden en que los
+#     sucesos ocurrieron de verdad. `listo_en` guarda la revisión en la que el paquete entró
+#     en `listo`, y la antigüedad es la resta contra la revisión vigente. No se inventa reloj
+#     nuevo porque ya había uno, y tener dos sería tener dos órdenes del tiempo.
+CAMPOS_DE_SELECCION = ("listo_en", "postergaciones", "adelantado_por", "impedimento")
 
 # La DECLARACIÓN DE ACOPLAMIENTO de `a.5`, con los dos campos que `E2.2` le añade.
 #
@@ -191,8 +218,64 @@ def normalizar_acoplamiento(declarado=None):
     return salida
 
 
+def nueva_seleccion(*, listo_en=None):
+    """Los cuatro campos de inanición de `b.12`, recién nacidos y explícitos."""
+    return {"listo_en": listo_en, "postergaciones": 0, "adelantado_por": [],
+            "impedimento": ""}
+
+
+def normalizar_seleccion(declarado, *, ruta=None):
+    """FALLO CERRADO sobre los cuatro campos. Ni se rellenan ni se toleran de más."""
+    if not isinstance(declarado, dict):
+        raise RuntimeInconsistente(
+            "`seleccion` es el mapa de los cuatro campos de inanición de `b.12`: "
+            + ", ".join(CAMPOS_DE_SELECCION), ruta=ruta,
+        )
+    sobran = sorted(set(declarado) - set(CAMPOS_DE_SELECCION))
+    faltan = [c for c in CAMPOS_DE_SELECCION if c not in declarado]
+    if sobran or faltan:
+        raise RuntimeInconsistente(
+            "`seleccion` declara " + (", ".join(sobran) or "(nada)") + " de más y le "
+            "faltan " + (", ".join(faltan) or "(nada)") + "; `b.12` nombra CUATRO campos "
+            "y son exactamente esos", ruta=ruta,
+        )
+    listo_en = declarado["listo_en"]
+    if listo_en is not None and (not isinstance(listo_en, int) or isinstance(listo_en, bool)
+                                 or listo_en < 0):
+        raise RuntimeInconsistente(
+            "`seleccion.listo_en` es la REVISIÓN en que el paquete entró en `listo`: un "
+            "entero >= 0 del reloj lógico, o `null` si nunca entró", ruta=ruta,
+        )
+    postergaciones = declarado["postergaciones"]
+    if not isinstance(postergaciones, int) or isinstance(postergaciones, bool) \
+            or postergaciones < 0:
+        raise RuntimeInconsistente(
+            "`seleccion.postergaciones` es un recuento entero >= 0", ruta=ruta,
+        )
+    adelantado = declarado["adelantado_por"]
+    if not isinstance(adelantado, (list, tuple)):
+        raise RuntimeInconsistente(
+            "`seleccion.adelantado_por` es la lista de paquetes que lo adelantaron",
+            ruta=ruta,
+        )
+    if not isinstance(declarado["impedimento"], str):
+        raise RuntimeInconsistente(
+            "`seleccion.impedimento` es el texto de QUÉ lo impide, vacío si nada lo impide",
+            ruta=ruta,
+        )
+    return {
+        "listo_en": listo_en,
+        "postergaciones": int(postergaciones),
+        # Ordenado y sin repetidos: es un CONJUNTO de quién le pasó por delante, y `I-g3`
+        # exige que dos ejecuciones del mismo escenario escriban los mismos bytes.
+        "adelantado_por": sorted({str(p) for p in adelantado}),
+        "impedimento": str(declarado["impedimento"]),
+    }
+
+
 def nuevo_paquete(*, identificador, item, capacidades_requeridas, orden,
-                  prioridad=50, max_intentos=3, depende_de=(), acoplamiento=None):
+                  prioridad=50, max_intentos=3, depende_de=(), acoplamiento=None,
+                  listo_en=None):
     """Un paquete recién creado. Nace en `listo` y sin efecto: aún no hay intento abierto."""
     return {
         "esquema": ESQUEMA,
@@ -208,6 +291,8 @@ def nuevo_paquete(*, identificador, item, capacidades_requeridas, orden,
         "efecto": None,
         "resultado": None,
         "acoplamiento": normalizar_acoplamiento(acoplamiento),
+        # Nace `listo`, así que su espera empieza AQUÍ y no cuando alguien se acuerde.
+        "seleccion": nueva_seleccion(listo_en=listo_en),
     }
 
 
@@ -289,6 +374,7 @@ def comprobar_paquete(objeto, ruta):
         )
     normalizar_orden(objeto["orden"])
     normalizar_acoplamiento(objeto.get("acoplamiento"))
+    normalizar_seleccion(objeto.get("seleccion"), ruta=ruta)
     if objeto["efecto"] is not None and not isinstance(objeto["efecto"], str):
         raise RuntimeInconsistente("`efecto` es una cadena o `null`", ruta=ruta)
     if objeto["estado"] in ESTADOS_EN_CURSO and not objeto["efecto"]:
@@ -322,10 +408,33 @@ def comprobar_transicion(desde, hasta, *, paquete=None):
     return hasta
 
 
-def con_estado(paquete, estado, **cambios):
-    """Copia del paquete con el `estado` nuevo YA comprobado contra la tabla del §4.2."""
+def con_estado(paquete, estado, *, reloj=None, **cambios):
+    """Copia del paquete con el `estado` nuevo YA comprobado contra la tabla del §4.2.
+
+    `reloj` es el instante LÓGICO —la revisión que la transición va a escribir— y es
+    OBLIGATORIO cuando el paquete ENTRA en `listo`, porque es ahí donde empieza la espera que
+    `b.12` obliga a medir. Pasarlo por omisión sería dejar `listo_en` a `null` en el camino
+    que más importa —el reintento y la liberación, que es cuando un paquete vuelve a la cola
+    y se le empieza a acumular la antigüedad—, y un `tiempo_listo` que no se mide es un campo
+    publicado que no dice nada.
+
+    Los contadores `postergaciones` y `adelantado_por` NO se ponen a cero al salir de
+    `listo`: son la historia de la inanición del paquete, y borrarla en el despacho es
+    perder justo la evidencia de que estuvo a punto de no despacharse nunca.
+    """
     comprobar_transicion(paquete["estado"], estado, paquete=paquete["id"])
     nuevo = dict(paquete)
     nuevo["estado"] = estado
+    seleccion = normalizar_seleccion(paquete.get("seleccion"), ruta=paquete["id"])
+    if estado == "listo" and paquete["estado"] != "listo":
+        if not isinstance(reloj, int) or isinstance(reloj, bool) or reloj < 0:
+            raise RuntimeInconsistente(
+                "un paquete que entra en `listo` necesita el instante lógico en que entra: "
+                "sin él, `b.12` no puede medir la antigüedad de espera y la prevención de "
+                "inanición se queda sin su tercer criterio", ruta=paquete["id"],
+            )
+        seleccion["listo_en"] = int(reloj)
+        seleccion["impedimento"] = ""
+    nuevo["seleccion"] = seleccion
     nuevo.update(cambios)
     return nuevo

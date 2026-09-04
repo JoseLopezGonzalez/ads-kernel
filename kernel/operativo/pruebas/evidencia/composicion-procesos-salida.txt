@@ -1,0 +1,10 @@
+# evidencia de: composicion-procesos
+# orden:        python3 kernel/operativo/validadores/comprobar_composicion_procesos.py
+# codigo:       0
+# ---------------------------------------------------------------
+T273  SUPERADA  Todo par del catálogo estático de D104 tiene su <CAP>:revision
+T274  SUPERADA  La regla POR ITEM se resuelve con el item, y no por declaración
+T275  SUPERADA  Los fixtures de D104 se ejecutan y su censo coincide con su sede
+T276  SUPERADA  Los repartos por vía, procedencia y ancla derivan del árbol
+
+4 superadas · 0 fallidas

@@ -11,7 +11,7 @@ python3 kernel/operativo/validadores/comprobar_contratos.py
 Salida registrada: [`evidencia/contratos-salida.txt`](evidencia/contratos-salida.txt).
 
 > **Lo que estas siete pruebas NO demuestran.** Que los contratos son *coherentes*, no que
-> el sistema *funciona*. Un rol puede tener sus veintiocho campos perfectamente declarados
+> el sistema *funciona*. Un rol puede tener sus veintinueve campos perfectamente declarados
 > y aun así producir mal trabajo. La conformidad estructural es condición necesaria, nunca
 > suficiente.
 

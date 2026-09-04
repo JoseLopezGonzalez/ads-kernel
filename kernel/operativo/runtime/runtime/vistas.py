@@ -23,6 +23,15 @@ DECISIÓN · «qué cambió» sale del DIARIO, no de un registro propio de cambi
 Las cinco preguntas del §4.2 —qué se está construyendo · qué está bloqueado · qué espera
 decisión del Owner · qué cambió · qué reconciliaciones hay abiertas— son las cinco claves
 de la salida, con esos nombres, para que confrontar la vista con el contrato sea leer.
+
+DECISIÓN · la INANICIÓN de `b.12` es una vista, y no una sexta pregunta disfrazada
+    `b.12` remata su detección de inanición con una frase que no admite lectura: «DSP informa
+    de la inanición. **No cambia la prioridad. Nunca**». Informar es exactamente esto: una
+    vista DERIVADA, sin autoridad, que no puede escribir nada y por tanto no puede subir
+    ninguna prioridad ni aunque quisiera. Poner la detección donde se decide —en el
+    dispatcher, con capacidad de escritura— habría dejado a un paso el atajo que el contrato
+    prohíbe. Los contadores los mantiene el dispatcher, porque son estado; MOSTRARLOS es de
+    aquí, porque es vista.
 """
 from __future__ import annotations
 
@@ -77,6 +86,28 @@ def _resumen(paquete, leases):
     }
 
 
+def _inanicion(paquete, revision):
+    """Los CUATRO campos de `b.12` de un paquete `listo` no despachado, tal cual se guardan.
+
+    `b.12` no pide sólo que se cuenten: pide que se MUESTREN —«DSP mantiene y muestra»—, y
+    una cuenta durable que ninguna vista publica es una cuenta que nadie va a mirar. La
+    antigüedad se calcula aquí, contra la revisión vigente, porque es una RESTA de dos datos
+    del estado y no un dato nuevo: la vista no puede saber más que el estado (`§7.5`).
+    """
+    seleccion = paquete["seleccion"]
+    listo_en = seleccion["listo_en"]
+    return {
+        "paquete": paquete["id"],
+        "item": paquete["item"],
+        "prioridad": paquete["prioridad"],
+        "listo_en": listo_en,
+        "tiempo_listo": (int(revision["revision"]) - listo_en) if listo_en is not None else 0,
+        "postergaciones": seleccion["postergaciones"],
+        "adelantado_por": list(seleccion["adelantado_por"]),
+        "impedimento": seleccion["impedimento"],
+    }
+
+
 def derivar(almacen, *, eventos_recientes=EVENTOS_RECIENTES_POR_DEFECTO):
     """Las cinco vistas del §7.5, calculadas del estado canónico. No escribe nada."""
     revision = almacen.revision()
@@ -114,8 +145,17 @@ def derivar(almacen, *, eventos_recientes=EVENTOS_RECIENTES_POR_DEFECTO):
         for linea in almacen.reconciliacion_pendiente()
     ]
 
+    # `b.12`, detección de inanición: «Por cada paquete `listo` no despachado, DSP mantiene
+    # y muestra». Se ordena por el que más lleva esperando, que es el que hay que ver
+    # primero; el desempate es el identificador, como en todo lo demás.
+    inanicion = sorted(
+        (_inanicion(p, revision) for p in paquetes if p["estado"] == "listo"),
+        key=lambda fila: (-fila["tiempo_listo"], -fila["postergaciones"], fila["paquete"]),
+    )
+
     return {
         "derivada": True,
+        "que_lleva_esperando": inanicion,
         "revision": revision["revision"],
         "revision_id": revision["revision_id"],
         "ventana": almacen.estado_de_la_ventana(),

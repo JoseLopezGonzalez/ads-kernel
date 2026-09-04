@@ -719,9 +719,19 @@ def m_f02_esquema_sin_tipar(raiz):
 
 
 def m_f02_variante_sin_declarar(raiz):
-    """`F-02` punto 2 · entra una variante que el esquema no declara."""
+    """`F-02` punto 2 · entra una variante que el esquema no declara.
+
+    REAPUNTADA el 2026-09-04, y conviene decir por que en vez de dejarlo en el `git log`.
+    Mutaba `DOM:condiciones` a `DOM:revision`, que entonces NO estaba declarada. `D104`
+    obligo a declararla —es su caso positivo de la via 4— y en el momento en que el esquema
+    la admite este sabotaje deja de discriminar: `T240` seguiria SUPERADA y el control se
+    volveria decorativo sin que nadie lo notase. Se reapunta a una variante que sigue SIN
+    declarar, `DOM:auditoria`, de modo que el control mide lo mismo que media: que una
+    variante ausente del esquema no entra. No se relaja nada; se conserva el poder de
+    discriminacion que la ampliacion del esquema le habria quitado en silencio.
+    """
     _sustituir(raiz, "kernel/operativo/recorrido/01-PROCESOS.md",
-               '  - capacidad: "DOM:condiciones"', '  - capacidad: "DOM:revision"')
+               '  - capacidad: "DOM:condiciones"', '  - capacidad: "DOM:auditoria"')
 
 
 def m_f02_conjunto_de_variantes_sin_sede(raiz):
@@ -1073,6 +1083,28 @@ CATALOGO = [
              m_f11_cabecera_con_rango_falso,
              espera="`F-11`"),
 ]
+
+
+# --- los sabotajes de la corrección del 2026-09-04, por eje ------------------------------
+# El catálogo sigue siendo UNO. Lo que se reparte es DÓNDE se escribe cada entrada, porque
+# tres correcciones disjuntas escribiendo sobre la misma lista no se pueden revisar por
+# partes. La incorporación es POR NOMBRE y SIN `try/except ImportError`: si un módulo falta
+# o no importa, este validador revienta al arrancar en vez de publicar un catálogo más corto
+# y un verde más barato, que es la degradación silenciosa que `E-14` describe.
+import negativos_cardinalidad  # noqa: E402
+import negativos_contratos19  # noqa: E402
+import negativos_integridad  # noqa: E402
+
+for _eje in (negativos_cardinalidad, negativos_contratos19, negativos_integridad):
+    CATALOGO.extend(_eje.CATALOGO)
+
+_vistos = [m.id for m in CATALOGO]
+if len(_vistos) != len(set(_vistos)):
+    _repes = sorted({i for i in _vistos if _vistos.count(i) > 1})
+    raise SystemExit(
+        "dos infracciones comparten identificador: " + ", ".join(_repes)
+        + ". Un identificador repetido hace indistinguibles dos sabotajes distintos"
+    )
 
 
 def copiar_corpus(destino):

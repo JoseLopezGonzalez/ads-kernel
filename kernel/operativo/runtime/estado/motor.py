@@ -53,7 +53,9 @@ DECISIÓN · `verificar_integridad` y `auditar` FALLAN CERRADO en vez de devolve
 """
 from __future__ import annotations
 
+import json
 import os
+import time
 
 from . import fallos, migracion as _migracion
 from .bloqueo import BloqueoExclusivo
@@ -64,6 +66,7 @@ from .errores import (
     ErrorDeEstado,
     EscritorConcurrente,
     EstadoCorrupto,
+    PublicacionEnVuelo,
     FormatoDesconocido,
     IdentificadorDuplicado,
     PermisoInsuficiente,
@@ -79,6 +82,8 @@ from .reconciliacion import RegistroAuxiliar, momento_logico
 from .rutas import (
     CONTENIDO_GITIGNORE,
     Disposicion,
+    TESTIGO_DE_PUBLICACION,
+    ZONA_TX,
     asegurar_directorio,
     borrar_arbol,
     borrar_si_existe,
@@ -116,6 +121,12 @@ from .transaccion import (
 VERSION_DE_FORMATO = 1
 NOMBRE_FORMATO = "ads.estado"
 AUTOR_RUNTIME = "runtime"
+
+# `E-08` · el ÚNICO testigo que no viene del paso 8, porque no hay paso 8 que testificar: la
+# fundación del almacén publica la revisión 0, cuyo plan está VACÍO. Es un valor declarado y
+# no un `None`, para que un testigo olvidado no se confunda con un testigo que no hace falta.
+TESTIGO_DE_FUNDACION = {"esquema": 1, "transaccion": None, "resultado": None,
+                        "publicados": {}, "fundacion": True}
 
 CLAVES_REVISION = (
     "esquema", "revision", "revision_id", "padre", "cid_raiz", "raiz",
@@ -212,7 +223,11 @@ def inicializar(ruta_control_repo):
         autor=AUTOR_RUNTIME,
         motivo="inicialización del almacén de estado durable",
     )
-    almacen._publicar_revision(revision)
+    # `E-08`: la FUNDACIÓN no publica objetos —su plan está vacío—, así que no hay
+    # paso 8 que testificar. Se pasa el testigo de fundación, que es un valor
+    # DECLARADO y no un `None` implícito: un `None` que pasa se parece demasiado a
+    # un `None` que se ha olvidado.
+    almacen._publicar_revision(revision, testigo=TESTIGO_DE_FUNDACION)
     return almacen
 
 
@@ -324,31 +339,101 @@ class Almacen:
             return None
         return cid(leer_bytes(destino, error=EstadoCorrupto))
 
+    # -- la VENTANA DE PUBLICACION, vista desde un LECTOR ---------------------------------
+    #
+    #  HECHO REPRODUCIDO: `test_continua.py::test_21` mata con `SIGKILL` a un escritor real
+    #  mientras otra instancia LEE en bucle, sin bloqueo, el mismo paquete. La lectura
+    #  reventaba con `ESTADO_CORRUPTO` diciendo «el fichero fue modificado fuera del diario,
+    #  o está truncado», y no era verdad ninguna de las dos cosas: el escritor estaba en su
+    #  ventana de publicación —paso 8 hecho, paso 9 no— y el lector veía el objeto NUEVO con
+    #  la revisión VIEJA. El diagnóstico era falso y mandaba a buscar un fichero roto.
+    #
+    #  Era una carrera LATENTE desde siempre —el paso 8 ya reemplazaba antes de que el 9
+    #  publicara— y `E-08` la ENSANCHÓ al meter entre los dos el testigo con sus dos
+    #  `fsync`. Se dice así, y no «la introdujo el testigo»: una carrera que sólo se
+    #  manifiesta cuando la ventana crece llevaba abierta desde el primer corte.
+    #
+    #  DECISIÓN · el lector REINTENTA la ventana, y NUNCA devuelve una vista rota
+    #      Alternativas: (a) que el lector tome el bloqueo de escritor; (b) devolver el
+    #      objeto nuevo «porque total, se va a publicar»; (c) reintentar mientras la revisión
+    #      avance, y distinguir por el TESTIGO la ventana de la corrupción.
+    #      Se descarta (a): leer dejaría de ser libre de bloqueo y un lector podría frenar a
+    #      los escritores, que es justamente lo que `§5` evita. Se descarta (b) sin discutirlo
+    #      mucho: publicaría una transición que todavía puede REVERTIRSE, y es exactamente el
+    #      «por si acaso sirve» que `g.5` prohíbe. Se elige (c): mientras la revisión AVANCE,
+    #      el lector reintenta contra la nueva y acaba viendo una vista consistente; si no
+    #      avanza y el testigo confirma que ese `cid` es el que esa transacción publicó, el
+    #      escritor murió dentro de la ventana y el remedio es RECUPERAR, no reparar un
+    #      fichero. Los dos casos siguen siendo fallo CERRADO: aquí no se devuelve contenido.
+    REINTENTOS_DE_VENTANA = 40
+    ESPERA_DE_VENTANA = 0.01
+
+    def _testigo_que_publico(self, ruta, cid_en_disco):
+        """La transacción cuyo TESTIGO dice haber publicado ese `cid` en esa ruta, o `None`."""
+        base = os.path.join(self._d.operacional, ZONA_TX)
+        if not os.path.isdir(base):
+            return None
+        for transaccion in sorted(os.listdir(base)):
+            testigo = os.path.join(base, transaccion, TESTIGO_DE_PUBLICACION)
+            if not os.path.isfile(testigo):
+                continue
+            try:
+                datos = deserializar(leer_bytes(testigo, error=EstadoCorrupto),
+                                     ruta=TESTIGO_DE_PUBLICACION)
+            except ErrorDeEstado:
+                # Un testigo ilegible NO exime de nada: se ignora como testimonio y el
+                # lector sigue su camino hacia `EstadoCorrupto`, que es el fallo cerrado.
+                continue
+            if (datos.get("publicados") or {}).get(ruta) == cid_en_disco:
+                return transaccion
+        return None
+
     def leer(self, ruta):
         """El estado canónico de una ruta lógica, verificado contra `REVISION.json.raiz`."""
         self._exigir_operable()
         comprobar_ruta_logica(ruta)
-        revision = self._leer_revision()
-        esperado = revision["raiz"].get(ruta)
-        if esperado is None:
-            raise RutaInvalida(
-                "la ruta no existe en la revisión vigente " + str(revision["revision"]),
-                ruta=ruta,
-            )
         destino = self._d.ruta_canonica(ruta)
-        datos = leer_bytes(destino, error=EstadoCorrupto)
-        encontrado = cid(datos)
-        if encontrado != esperado:
-            # Fallo CERRADO (`g.5`): no se devuelve el contenido «por si acaso sirve». Un
-            # lector que recibe datos que no casan con la revisión propaga la corrupción.
-            raise EstadoCorrupto(
-                "el `cid` del objeto no casa con el declarado en `REVISION.json`: el "
-                "fichero fue modificado fuera del diario, o está truncado",
-                ruta=ruta, esperado=esperado, encontrado=encontrado,
-            )
-        objeto = deserializar(datos, ruta=ruta)
-        comprobar_esquema(objeto, ruta=ruta)
-        return objeto
+        revision = None
+        for intento in range(self.REINTENTOS_DE_VENTANA + 1):
+            anterior = revision
+            revision = self._leer_revision()
+            esperado = revision["raiz"].get(ruta)
+            if esperado is None:
+                raise RutaInvalida(
+                    "la ruta no existe en la revisión vigente "
+                    + str(revision["revision"]), ruta=ruta,
+                )
+            datos = leer_bytes(destino, error=EstadoCorrupto)
+            encontrado = cid(datos)
+            if encontrado == esperado:
+                objeto = deserializar(datos, ruta=ruta)
+                comprobar_esquema(objeto, ruta=ruta)
+                return objeto
+            # No casa. Puede ser la ventana de publicación de OTRO proceso, o corrupción.
+            # Sólo se reintenta mientras haya testimonio de que es la ventana.
+            transaccion = self._testigo_que_publico(ruta, encontrado)
+            if transaccion is None:
+                break
+            if intento == self.REINTENTOS_DE_VENTANA:
+                raise PublicacionEnVuelo(
+                    "el objeto en disco es el que la transacción `" + str(transaccion)
+                    + "` publicó en su paso 8, y `REVISION.json` sigue nombrando la "
+                    "revisión anterior tras agotar la espera: el escritor no llegó al paso "
+                    "9. NO es corrupción y NO se repara a mano: se RECUPERA por la rama "
+                    "COMPLETAR",
+                    ruta=ruta, esperado=esperado, encontrado=encontrado,
+                    transaccion=str(transaccion),
+                )
+            if anterior is not None and anterior["revision"] == revision["revision"]:
+                time.sleep(self.ESPERA_DE_VENTANA)
+        # Fallo CERRADO (`g.5`): no se devuelve el contenido «por si acaso sirve». Un
+        # lector que recibe datos que no casan con la revisión propaga la corrupción.
+        raise EstadoCorrupto(
+            "el `cid` del objeto no casa con el declarado en `REVISION.json`: el "
+            "fichero fue modificado fuera del diario, o está truncado",
+            ruta=ruta, esperado=revision["raiz"].get(ruta), encontrado=cid(
+                leer_bytes(destino, error=EstadoCorrupto)),
+        )
 
     def listar(self, dominio=""):
         """Rutas lógicas de la revisión vigente, ordenadas. Filtra por dominio si se da."""
@@ -364,8 +449,126 @@ class Almacen:
         return self._diario.eventos(desde=desde)
 
     # ------------------------------------------------------------- publicación
-    def _publicar_revision(self, revision):
-        """Paso 9 del §3: el ÚNICO punto de publicación atómica. Deja todo durable."""
+    #
+    #  `E-08` · EL ORDEN DE LOS PASOS 8 Y 9, HECHO OBSERVABLE
+    #
+    #  HECHO REPRODUCIDO ANTES DE CORREGIR: invertir los pasos 8 y 9 deja el almacén
+    #  IRRECUPERABLE —`REVISION.json` nombra objetos que no están publicados— y, de las tres
+    #  formas de invertirlos, la que respeta el SIGNIFICADO de cada punto de fallo dejaba las
+    #  66 pruebas de `test_estado_durable` y LOS TRES escenarios E2E en VERDE. Es decir: el
+    #  orden que el §3 llama «no admite reordenación» no estaba protegido por nada observable.
+    #  Sólo estaba escrito en cierto orden.
+    #
+    #  DECISIÓN · un TESTIGO DURABLE que el paso 9 EXIGE encontrar escrito por el 8
+    #      Alternativas: (a) un comentario y una prueba que lea el fuente; (b) una bandera en
+    #      memoria; (c) un fichero durable que el paso 8 escribe con su `fsync` de contenido
+    #      y de directorio, y que el paso 9 exige encontrar Y CASAR con lo que hay en disco.
+    #      Se elige (c). Con (a) se comprueba la ortografía del módulo, no su comportamiento:
+    #      un reordenamiento que conserve el comentario pasa. Con (b) la bandera vive en el
+    #      mismo proceso que hace las dos cosas, así que una inversión también invierte la
+    #      bandera y nada se entera. Con (c) el testigo es un HECHO EN EL DISCO: publicar la
+    #      revisión antes de publicar los objetos exige encontrar un fichero que todavía no
+    #      existe, y el fallo es tipado, inmediato y ANTERIOR al punto de publicación.
+    #
+    #  DECISIÓN · el testigo registra el `cid` OBSERVADO en disco, no el planeado
+    #      Un testigo que copiara el plan diría «publiqué esto» aunque no hubiera publicado
+    #      nada. El paso 8 lee de vuelta lo que acaba de publicar y anota lo que ENCUENTRA;
+    #      el paso 9 vuelve a leerlo y exige que coincida. Con eso, una MEZCLA PARCIAL —unos
+    #      objetos publicados y otros no— no llega a publicarse: falta o no casa una entrada.
+    def _escribir_testigo_de_publicacion(self, transaccion, plan, resultado):
+        """Paso 8, última acción: deja constancia DURABLE de lo que acaba de publicar."""
+        publicados = {}
+        for operacion in plan:
+            publicados[operacion["ruta"]] = self._cid_en_disco(operacion["ruta"])
+        testigo = {
+            "esquema": 1,
+            "transaccion": transaccion,
+            "resultado": resultado,
+            "publicados": publicados,
+        }
+        temporal = self._d.testigo_temporal(transaccion)
+        # `fsync` de CONTENIDO y de DIRECTORIO, los dos, y por la misma razón que el §2 da
+        # para `REVISION.json`: la entrada de directorio es metadato del directorio, y sin
+        # su `fsync` un corte de corriente dejaría el contenido en disco y el nombre no.
+        escribir_y_sincronizar(temporal, serializar_canonico(testigo))
+        publicar(temporal, self._d.testigo_de_publicacion(transaccion))
+        sincronizar_directorio(os.path.dirname(self._d.testigo_de_publicacion(transaccion)))
+        return testigo
+
+    def _exigir_testigo_de_publicacion(self, transaccion, plan, resultado, raiz_esperada):
+        """Paso 9, primera acción: sin el testigo del paso 8 NO se publica la revisión.
+
+        Y no basta con que el testigo EXISTA: tiene que decir que en `canonico/` están ya los
+        `cid` que la revisión NUEVA va a declarar, y el disco tiene que confirmarlo. Ésa es
+        la parte que hace la inversión IMPOSIBLE y no sólo detectable: un paso 8 que se
+        ejecutara DESPUÉS no podría haber dejado un testigo con los `cid` nuevos, porque
+        cuando lo escribiera el disco todavía tendría los viejos.
+        """
+        ruta = self._d.testigo_de_publicacion(transaccion)
+        if not os.path.isfile(ruta):
+            raise EstadoCorrupto(
+                "el paso 9 no encuentra el testigo durable que el paso 8 tiene que haber "
+                "escrito: o los pasos se han invertido, o el paso 8 no llegó a publicar. "
+                "Publicar la revisión ahora dejaría `REVISION.json` nombrando objetos que "
+                "no están en `canonico/`, que es un almacén IRRECUPERABLE",
+                ruta=self._d.relativa(ruta), transaccion=transaccion,
+            )
+        try:
+            testigo = json.loads(leer_bytes(ruta).decode("utf-8"))
+        except ValueError as exc:
+            raise EstadoCorrupto(
+                "el testigo de publicación del paso 8 no es JSON válido",
+                ruta=self._d.relativa(ruta),
+            ) from exc
+        if testigo.get("transaccion") != transaccion \
+                or testigo.get("resultado") != resultado:
+            raise EstadoCorrupto(
+                "el testigo de publicación habla de otra transacción o de otro resultado "
+                "que el que se está publicando",
+                ruta=self._d.relativa(ruta), transaccion=transaccion,
+            )
+        publicados = testigo.get("publicados")
+        if not isinstance(publicados, dict) \
+                or sorted(publicados) != sorted(o["ruta"] for o in plan):
+            raise EstadoCorrupto(
+                "el testigo de publicación no cubre exactamente las rutas de la transición: "
+                "una MEZCLA PARCIAL no se publica",
+                ruta=self._d.relativa(ruta), transaccion=transaccion,
+            )
+        for logica, anotado in sorted(publicados.items()):
+            debido = raiz_esperada.get(logica)
+            if anotado != debido:
+                raise EstadoCorrupto(
+                    "el testigo del paso 8 no anota el `cid` que la revisión nueva declara "
+                    "para esta ruta: el paso 8 no publicó lo que el paso 9 va a dar por "
+                    "publicado, y publicar la revisión dejaría el almacén IRRECUPERABLE",
+                    ruta=logica, transaccion=transaccion,
+                    esperado=debido, encontrado=anotado,
+                )
+            if self._cid_en_disco(logica) != debido:
+                raise EstadoCorrupto(
+                    "lo que hay en `canonico/` no es lo que la revisión nueva va a declarar: "
+                    "entre el paso 8 y el 9 el objeto ha cambiado, o nunca llegó a "
+                    "publicarse. Una publicación a medias no se convierte en vigente",
+                    ruta=logica, transaccion=transaccion,
+                )
+        return testigo
+
+    def _publicar_revision(self, revision, *, testigo):
+        """Paso 9 del §3: el ÚNICO punto de publicación atómica. Deja todo durable.
+
+        `testigo` NO tiene valor por defecto a propósito: quien quiera invertir los pasos 8
+        y 9 tiene que pasar por aquí, y aquí no se puede publicar sin el testigo del 8. Sólo
+        la FUNDACIÓN del almacén —que no publica ningún objeto porque su plan está vacío—
+        pasa el testigo de fundación.
+        """
+        if testigo is None:
+            raise EstadoCorrupto(
+                "se intentó publicar la revisión sin el testigo del paso 8. El paso 9 es el "
+                "único que publica, y publicar lo que el paso 8 no ha dejado en disco es "
+                "exactamente la inversión que `E-08` describe",
+                ruta=self._d.relativa(self._d.revision),
+            )
         datos = serializar_canonico(revision)
         escribir_y_sincronizar(self._d.revision_temporal, datos)
         publicar(self._d.revision_temporal, self._d.revision)
@@ -529,13 +732,19 @@ class Almacen:
         # Paso 7 · DIARIO ← transicion.preparada. PUNTO DE NO RETORNO.
         preparada = diario.anexar("transicion.preparada", **comunes)
 
-        # Paso 8 · publicar cada objeto y sincronizar los directorios afectados.
+        # Paso 8 · publicar cada objeto, sincronizar los directorios afectados y DEJAR EL
+        #          TESTIGO DURABLE de lo publicado. El testigo es la última acción del paso 8
+        #          y la primera condición del 9 (`E-08`).
         fallos.punto("antes-del-commit-atomico")
         self._publicar_objetos(transicion.id, plan, base["raiz"])
         fallos.punto("antes-de-sincronizar-directorio")
         self._sincronizar_dominios(plan)
+        self._escribir_testigo_de_publicacion(transicion.id, plan, resultado)
+        fallos.punto("entre-el-paso-8-y-el-9")
 
         # Paso 9 · publicar la revisión. Aquí, y sólo aquí, el cambio pasa a ser vigente.
+        testigo = self._exigir_testigo_de_publicacion(
+            transicion.id, plan, resultado, raiz_nueva)
         revision = componer_revision(
             numero, padre, raiz_nueva, transicion.id, preparada["secuencia"]
         )
@@ -545,7 +754,7 @@ class Almacen:
                 ruta=self._d.relativa(self._d.revision),
                 esperado=resultado, encontrado=revision["revision_id"],
             )
-        self._publicar_revision(revision)
+        self._publicar_revision(revision, testigo=testigo)
         fallos.punto("despues-del-commit-atomico")
 
         # Paso 9.5 · anexos que la transacción explica (registro auxiliar y migración).
@@ -956,6 +1165,12 @@ class Almacen:
             else:
                 self._publicar_objetos(transaccion, plan, revision["raiz"])
                 self._sincronizar_dominios(plan)
+                # `E-08`: la rama COMPLETAR reejecuta los pasos 8, 9 y 10, y por tanto
+                # REESCRIBE el testigo. Si no lo hiciera, la recuperación publicaría la
+                # revisión sin el testigo que el paso 9 exige, y la garantía sólo valdría
+                # para el camino feliz. Es idempotente: el testigo se rehace con lo que hay.
+                self._escribir_testigo_de_publicacion(
+                    transaccion, plan, preparada["resultado"])
                 nueva = componer_revision(
                     revision["revision"] + 1, revision["revision_id"], objetivo,
                     transaccion, preparada["secuencia"],
@@ -967,7 +1182,9 @@ class Almacen:
                         "encontrado": nueva["revision_id"],
                     })
                 else:
-                    self._publicar_revision(nueva)
+                    testigo = self._exigir_testigo_de_publicacion(
+                        transaccion, plan, preparada["resultado"], objetivo)
+                    self._publicar_revision(nueva, testigo=testigo)
                     revision = nueva
                     acciones.append("republicados los objetos preparados y la revisión")
         else:

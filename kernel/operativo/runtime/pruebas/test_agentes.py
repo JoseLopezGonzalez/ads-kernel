@@ -665,7 +665,11 @@ class LoQueLaAuditoriaEncontro(BaseDeAgentes):
             self.assertTrue(sin_declarar[materia]["motivo"],
                             "una ausencia sin motivo es indistinguible de un olvido: " + materia)
 
-        # LAS SIETE RUTAS DE FALLO CERRADO. Sin ellas, «leer» sería «aceptar».
+        # LAS RUTAS DE FALLO CERRADO. Sin ellas, «leer» sería «aceptar». Las tres que
+        # DECLARABAN el reparto por la firma ya no existen: el cardinal se DERIVA del
+        # campo `agentes` y el integrador de la `ampliacion` de la composición, y sus
+        # negativos —diez, uno por caso— se prueban en
+        # `test_cardinalidad_y_seleccion.py`. Aquí quedan las del paso 1.
         comun = dict(corpus=self.corpus, control_repo=self.repo,
                      composiciones_verdaderas=[COMPOSICION_DE_DIS], slots=99,
                      condiciones_de_rol=[CONDICION_DE_LA_COMBINACION])
@@ -677,18 +681,24 @@ class LoQueLaAuditoriaEncontro(BaseDeAgentes):
             equipos.materializar("DIS", capacidad_responsable="ARQ", **comun)
         with self.assertRaises(errores.PaqueteIlegible):   # rol ajeno en el reparto
             equipos.materializar("DIS", metodo="Fundacion",
-                                 varios_agentes={"ARQ/lo-que-sea": {"n": 1}}, **comun)
-        rol = sorted(r["rol"] for r in equipo["roles"])[0]
-        with self.assertRaises(errores.VariosAgentesSinIntegrador):   # varios SIN integrador
-            equipos.materializar("DIS", metodo="Fundacion",
-                                 varios_agentes={rol: {"n": 2}}, **comun)
-        with self.assertRaises(errores.VariosAgentesSinIntegrador):   # integrador inexistente
-            equipos.materializar("DIS", metodo="Fundacion",
-                                 varios_agentes={rol: {"n": 2, "integra": "DIS/no-existe"}},
+                                 reparto_declarado={"ARQ/lo-que-sea": {"territorios": ["x"]}},
                                  **comun)
-        with self.assertRaises(errores.VariosAgentesSinIntegrador):   # varios sin divergencia
-            equipos.materializar("DIS", metodo="CriticaVisual",
-                                 varios_agentes={rol: {"n": 2, "integra": rol}}, **comun)
+        with self.assertRaises(errores.PaqueteIlegible):   # volumen que no es un recuento
+            equipos.materializar("DIS", volumen=0, **comun)
+        with self.assertRaises(errores.PaqueteIlegible):   # inicio lógico inválido
+            equipos.materializar("DIS", inicio=-1, **comun)
+
+        # Y las dos materias NUEVAS del paso 1 se leen igual que las otras cinco: declaradas
+        # llegan al equipo con su valor, ausentes llegan como ausencia CON motivo. Sin ellas,
+        # `C4` condición (c) —volumen contra contexto— y el «ANTES de empezar» del criterio
+        # de comparación serían dos reglas sin insumo, que es como estaban.
+        con_volumen = equipos.materializar("DIS", volumen=2, inicio=7, **comun)
+        self.assertTrue(con_volumen["lectura_del_paquete"]["volumen"]["declarado"])
+        self.assertEqual(con_volumen["lectura_del_paquete"]["volumen"]["unidades"], 2)
+        self.assertEqual(con_volumen["lectura_del_paquete"]["inicio"]["instante"], 7)
+        for materia in ("volumen", "inicio"):
+            self.assertFalse(sin_declarar[materia]["declarado"], materia)
+            self.assertTrue(sin_declarar[materia]["motivo"], materia)
 
     def test_12_el_agente_combinado_cumple_los_DOS_perfiles(self):
         """T237 · Defecto que previene: un agente que ocupa dos roles cumpliendo el más débil.
@@ -897,12 +907,10 @@ class Sabotaje(BaseDeAgentes):
             "el corte por AGENTE de `C4` paso 6, devuelto al corte por ROL que separaba "
             "un par combinable",
             "ciclo/equipos.py",
-            "    unidades.sort(key=lambda u: (u[\"roles\"][0], u[\"modelo\"] or \"\","
-            " u[\"agente\"] or \"\"))\n    ocupados = 0",
+            "    ocupados = 0\n    for unidad in unidades:",
             "    unidades = [dict(u, roles=[r]) for u in unidades"
             " for r in sorted(u[\"roles\"])]\n"
-            "    unidades.sort(key=lambda u: (u[\"roles\"][0], u[\"modelo\"] or \"\","
-            " u[\"agente\"] or \"\"))\n    ocupados = 0",
+            "    ocupados = 0\n    for unidad in unidades:",
             "AsignacionDeAgentes.test_05_agotar_los_slots_deja_esperando_y_no_reduce_la_composicion",
         ),
         (

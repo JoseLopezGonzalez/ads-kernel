@@ -85,6 +85,24 @@ NACIMIENTO** y no contra `HEAD`: añadir una resolución es legítimo, alterar u
 publicado da ROJO **aunque esté confirmado**, y también cuando un commit posterior la
 blanquea.
 
+**Y la PROCEDENCIA del término de comparación es obligatoria** —`E-09`, corregido el
+2026-09-04—. El defecto era una degradación SILENCIOSA: cuando el commit de nacimiento no se
+podía derivar, la comparación caía hacia atrás a la revisión BASE y emitía VERDE. El mismo
+ataque daba dos veredictos —`ROJO ['V6-12']` con nacimiento real, `VERDE []` con
+`commit_de_nacimiento=None`—, y «desconocido» se convertía en «válido» sin que nada lo dijera.
+
+```text
+LA ÚNICA PROCEDENCIA     `nacimiento`. Cualquier otra NO sostiene un verde de `V6-12`
+QUE SOSTIENE UN VERDE
+TRES MOTIVOS DE FALLO    ausencia de nacimiento · commit de nacimiento que Git no resuelve ·
+CERRADO, DISTINTOS       commit que existe y NO contiene la sede
+Y NOMBRADOS
+HISTORIA REESCRITA       si el nacimiento deja de ser alcanzable, no se emite verde
+Y CLON SUPERFICIAL       En un clon `--depth 1` el nacimiento no sale `None`: sale un SHA
+                         cuyo contenido YA es el alterado, y por eso la procedencia se
+                         comprueba y no se presupone
+```
+
 ## 6 · La matriz y las fórmulas · `V6-13` · `V6-14` · `V6-17` · `V6-18` · `V6-19`
 
 ```text

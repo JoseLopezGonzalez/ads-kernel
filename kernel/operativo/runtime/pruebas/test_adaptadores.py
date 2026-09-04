@@ -614,18 +614,29 @@ class ContencionATravesDelAdaptador(unittest.TestCase):
         with self.assertRaises(contencion.ContencionFuerteNoDisponible):
             contencion.politica.elegir(contencion.Politica("arbol-de-procesos"), pobre)
         # Y por el camino del adaptador: pedir el `simple` con política fuerte no ejecuta.
-        adaptador = adaptadores.AdaptadorDeProcesoLocal(
-            self.directorio,
-            politica_de_contencion=contencion.Politica("arbol-de-procesos", backend="simple"))
+        #
+        # `E-16` · el fallo cerrado ocurre al CONSTRUIR el adaptador y no en la primera
+        # tarea. Es más fuerte que antes, no menos: si esperara a `ejecutar`, el runtime
+        # habría adquirido ya el lease y abierto el recibo del efecto sobre un anfitrión que
+        # no puede contener, y eso es ejecución parcial. Lo que se sigue midiendo —y es lo
+        # que importa— es que NADA se ejecutó.
         testigo = os.path.join(self.directorio, "no-debe-existir")
         with self.assertRaises(contencion.ContencionFuerteNoDisponible):
-            adaptador.ejecutar(
-                {"operacion": "ejecutar",
-                 "argumentos": ["sh", "-c", "touch " + shlex.quote(testigo)]},
-                efecto="ef-" + self.prefijo + "-cerrado", limite_segundos=2.0)
+            adaptadores.AdaptadorDeProcesoLocal(
+                self.directorio,
+                politica_de_contencion=contencion.Politica("arbol-de-procesos",
+                                                           backend="simple"))
         self.assertFalse(os.path.exists(testigo),
                          "la orden NO se ejecutó: fallar cerrado es no ejecutar, no ejecutar "
                          "y avisar")
+        # CONTROL DEL CONTROL: con una política que este anfitrión SÍ puede servir, el mismo
+        # constructor devuelve un adaptador. Sin él, «siempre levanta» explicaría el verde.
+        if self.capacidades["hay_contencion_fuerte"]:
+            servible = adaptadores.AdaptadorDeProcesoLocal(
+                self.directorio,
+                politica_de_contencion=contencion.Politica("arbol-de-procesos"))
+            self.assertIn(servible._backend_de_contencion,
+                          self.capacidades["fuertes_disponibles"])
 
 
 # ===========================================================================

@@ -3,5 +3,6 @@
 # codigo:       0
 # ---------------------------------------------------------------
 T152  SUPERADA  Los puntos de entrada no se contradicen sobre la versión
+T272  SUPERADA  El alcance de T152 se descubre, y cada sede tiene remedio declarado
 
-1 superadas · 0 fallidas
+2 superadas · 0 fallidas

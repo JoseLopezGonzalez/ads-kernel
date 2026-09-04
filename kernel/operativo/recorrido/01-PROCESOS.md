@@ -22,6 +22,22 @@ QUÉ CONDICIÓN activa cada capacidad condicional, sin «si aplica»
 Los circuitos concretos —qué comprueba quien recibe, qué pasa si falla— están en
 [`../circuitos/00-CIRCUITOS.md`](../circuitos/00-CIRCUITOS.md). Aquí está el molde.
 
+**La REVISIÓN POSTERIOR de `DOM` y de `SEG`, y por qué aparece en cinco procesos y no en
+diez.** `b.16` da a esas dos capacidades una participación DOBLE —condiciones antes de
+construir, y revisión después— y sus fichas lo declaran en `deriva_de`. De ahí sale un
+CATÁLOGO: por cada participación de una de las dos en un proceso de propietario ESTÁTICO,
+el proceso exige además su `<CAP>:revision`, **colocada después de la participación
+obligatoria de `VER` si el proceso la declara, y si no, después de su última obligatoria**.
+La revisión HEREDA de la participación que la origina: si nace de un condicional, se activa
+con la misma condición; si nace de una obligatoria irretirable, es obligatoria e
+irretirable. **Ninguna de esas cifras se escribe aquí**: las deriva
+[`../validadores/comprobar_composicion_procesos.py`](../validadores/comprobar_composicion_procesos.py)
+del árbol, y su error `composicion-incompleta` **impide el cierre del gate de composición**.
+Los procesos de propietario POR ITEM —`DEF`, `AUD` y `DIR`— no reciben instancia fija: su
+par se resuelve con el item delante, y por eso aquí no hay ninguna.
+
+La grafía canónica es **`revision`, sin tilde**, que es la de todo el aparato normativo.
+
 
 ## `FEA` — Capacidad nueva
 
@@ -73,6 +89,10 @@ condicionales:
     condicion: "C-USO"
   - capacidad: "APR"
     condicion: "C-APR"
+  - capacidad: "SEG:revision"
+    condicion: "C-SEG"
+  - capacidad: "DOM:revision"
+    condicion: "C-DOM"
 evidencia_necesaria:
   - "el comportamiento nuevo funciona en las condiciones declaradas"
   - "la evidencia de los estados extremos"
@@ -133,6 +153,10 @@ condicionales:
     condicion: "C-USO"
   - capacidad: "APR"
     condicion: "C-APR"
+  - capacidad: "SEG:revision"
+    condicion: "C-SEG"
+  - capacidad: "DOM:revision"
+    condicion: "C-DOM"
 evidencia_necesaria:
   - "la distancia entre lo pretendido y lo real ha desaparecido"
 criterio_de_cierre: >
@@ -254,6 +278,8 @@ condicionales:
     condicion: "C-SEG"
   - capacidad: "USO"
     condicion: "C-USO"
+  - capacidad: "SEG:revision"
+    condicion: "C-SEG"
 evidencia_necesaria:
   - "el servicio se comporta como debía en el entorno real, durante la ventana declarada"
 criterio_de_cierre: >
@@ -346,6 +372,10 @@ condicionales:
     condicion: "C-USO"
   - capacidad: "APR"
     condicion: "C-APR"
+  - capacidad: "SEG:revision"
+    condicion: "C-SEG"
+  - capacidad: "DOM:revision"
+    condicion: "C-DOM"
 evidencia_necesaria:
   - "ausencia de regresión perceptible"
   - "el riesgo o el coste declarado se ha reducido de forma medible"
@@ -391,6 +421,14 @@ obligatorias:
       evidencia de que nada que dependiera de ella se ha roto
     autoridad_de_retirada: >
       el Owner: renunciar a la evidencia de verificación es una decisión suya, y queda registrada con su alcance y su fecha
+  - id: revision-de-seguridad
+    capa_exigida: >
+      la revisión posterior de SEG sobre la dependencia ya incorporada, con lo comprobado y lo NO comprobado
+    capacidad_productora: "SEG:revision"
+    criterio_de_satisfaccion: >
+      existe revisión fechada POSTERIOR al dosier de VER que confronta la superficie realmente expuesta con el veredicto previo, y nombra lo que quedó sin comprobar
+    autoridad_de_retirada: >
+      nadie: la participación de SEG en DEP es doble por b.16 y su mitad obligatoria no se retira, igual que no se retira la anterior a construir
 condicionales:
   - capacidad: "DOM:condiciones"
     condicion: "C-DOM"
@@ -398,8 +436,11 @@ condicionales:
     condicion: "el cambio de versión altera contratos"
   - capacidad: "ENT"
     condicion: "C-ENT"
+  - capacidad: "DOM:revision"
+    condicion: "C-DOM"
 evidencia_necesaria:
   - "el veredicto de seguridad, fechado y anterior a la construcción"
+  - "la revisión de seguridad posterior al dosier de VER, con lo que quedó sin comprobar"
 criterio_de_cierre: >
   La dependencia está en su sitio, con su veredicto de seguridad y sin superficie nueva expuesta.
 aprendizaje: >

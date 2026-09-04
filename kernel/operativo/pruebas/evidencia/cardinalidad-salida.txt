@@ -1,0 +1,51 @@
+# evidencia de: cardinalidad-y-seleccion
+# orden:        python3 kernel/operativo/runtime/pruebas/test_cardinalidad_y_seleccion.py
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+test_250_el_cardinal_se_DERIVA_del_corpus_y_hay_tantos_agentes_como_dice (__main__.Cardinalidad.test_250_el_cardinal_se_DERIVA_del_corpus_y_hay_tantos_agentes_como_dice)
+T250 · Defecto que previene: publicar «2 o 3» junto a UN agente. ... ok
+test_251_el_registro_durable_no_puede_publicar_dos_o_tres_y_un_agente (__main__.Cardinalidad.test_251_el_registro_durable_no_puede_publicar_dos_o_tres_y_un_agente)
+T251 · Defecto que previene: un registro internamente contradictorio. ... ok
+test_252_reparto_por_territorio_SIN_territorios_falla_cerrado (__main__.Cardinalidad.test_252_reparto_por_territorio_SIN_territorios_falla_cerrado)
+T252 · Defecto que previene: repartir sin saber entre qué. ... ok
+test_253_la_competencia_exige_criterio_de_comparacion_escrito_ANTES (__main__.Cardinalidad.test_253_la_competencia_exige_criterio_de_comparacion_escrito_ANTES)
+T253 · Defecto que previene: comparar con un criterio escrito después de mirar. ... ok
+test_254_varios_agentes_SIN_integrador_declarado_esta_prohibido (__main__.Cardinalidad.test_254_varios_agentes_SIN_integrador_declarado_esta_prohibido)
+T254 · Defecto que previene: tres propuestas y ninguna decisión. ... ok
+test_255_un_integrador_que_no_es_rol_de_la_composicion_no_integra_nada (__main__.Cardinalidad.test_255_un_integrador_que_no_es_rol_de_la_composicion_no_integra_nada)
+T255 · Defecto que previene: un integrador nombrado que no ocupa ningún rol. ... ok
+test_256_un_volumen_que_excede_el_contexto_no_se_despacha_a_ciegas (__main__.Cardinalidad.test_256_un_volumen_que_excede_el_contexto_no_se_despacha_a_ciegas)
+T256 · Defecto que previene: dar un trabajo que no cabe y descubrirlo a la mitad. ... ok
+test_257_slots_insuficientes_dejan_agentes_esperando_y_nunca_dos_en_uno (__main__.Cardinalidad.test_257_slots_insuficientes_dejan_agentes_esperando_y_nunca_dos_en_uno)
+T257 · Defecto que previene: contar un slot donde hay tres agentes. ... ok
+test_258_reanudar_no_puede_cambiar_el_reparto_en_silencio (__main__.Cardinalidad.test_258_reanudar_no_puede_cambiar_el_reparto_en_silencio)
+T258 · Defecto que previene: agentes trabajando sobre unidades que ya no existen. ... ok
+test_259_un_cardinal_ilegible_falla_cerrado_y_nunca_vale_uno_por_omision (__main__.Cardinalidad.test_259_un_cardinal_ilegible_falla_cerrado_y_nunca_vale_uno_por_omision)
+T259 · Defecto que previene: «lo que no entiendo, que sea uno». ... ok
+test_260_criterio_a_la_prioridad_declarada_manda_sobre_todo_lo_demas (__main__.SeleccionEInanicion.test_260_criterio_a_la_prioridad_declarada_manda_sobre_todo_lo_demas)
+T260 · Defecto que previene: que la prioridad del Owner deje de mandar. ... ok
+test_261_criterio_b_desbloquear_a_mas_paquetes_decide_entre_iguales (__main__.SeleccionEInanicion.test_261_criterio_b_desbloquear_a_mas_paquetes_decide_entre_iguales)
+T261 · Defecto que previene: dejar la cola parada detrás de lo que no libera nada. ... ok
+test_262_criterio_c_la_antiguedad_saca_de_la_cola_al_que_lleva_mas_esperando (__main__.SeleccionEInanicion.test_262_criterio_c_la_antiguedad_saca_de_la_cola_al_que_lleva_mas_esperando)
+T262 · Defecto que previene: la inanición, medida — y sin tocar la prioridad. ... ok
+test_263_criterio_d_el_identificador_hace_TOTAL_el_orden (__main__.SeleccionEInanicion.test_263_criterio_d_el_identificador_hace_TOTAL_el_orden)
+T263 · Defecto que previene: dejar el desempate al orden del sistema de ficheros. ... ok
+test_264_las_postergaciones_se_CUENTAN_pasada_a_pasada_y_son_durables (__main__.SeleccionEInanicion.test_264_las_postergaciones_se_CUENTAN_pasada_a_pasada_y_son_durables)
+T264 · Defecto que previene: un campo de inanición que nadie incrementa. ... ok
+test_265_adelantado_por_dice_QUIEN_le_paso_por_delante (__main__.SeleccionEInanicion.test_265_adelantado_por_dice_QUIEN_le_paso_por_delante)
+T265 · Defecto que previene: saber que un paquete espera y no saber por culpa de quién. ... ok
+test_266_el_impedimento_nombra_el_criterio_que_de_verdad_decidio (__main__.SeleccionEInanicion.test_266_el_impedimento_nombra_el_criterio_que_de_verdad_decidio)
+T266 · Defecto que previene: «espera» como explicación de por qué espera. ... ok
+test_267_la_antiguedad_se_mide_con_el_reloj_LOGICO_y_no_con_el_de_pared (__main__.SeleccionEInanicion.test_267_la_antiguedad_se_mide_con_el_reloj_LOGICO_y_no_con_el_de_pared)
+T267 · Defecto que previene: meter la hora de pared en el estado canónico. ... ok
+test_268_los_contadores_sobreviven_a_la_caida_y_a_dos_planificadores (__main__.SeleccionEInanicion.test_268_los_contadores_sobreviven_a_la_caida_y_a_dos_planificadores)
+T268 · Defecto que previene: perder la evidencia de inanición justo al reiniciar. ... ok
+test_269_cada_sabotaje_pone_roja_una_prueba_DISTINTA (__main__.SeleccionEInanicion.test_269_cada_sabotaje_pone_roja_una_prueba_DISTINTA)
+T269 · Defecto que previene: un criterio decorativo que nadie echaría de menos. ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests  (duración no registrada: varía por ejecución)
+
+OK

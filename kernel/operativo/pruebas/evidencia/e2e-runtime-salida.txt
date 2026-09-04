@@ -83,3 +83,5 @@ paso 25  cierre limpio: integridad, ventana cerrada y árbol de producto sin res
          resultado: CUMPLIDO
 
 25 de 25 pasos CUMPLIDOS
+
+T301 · recuperabilidad  ws/ads: abierto, recuperado e íntegro

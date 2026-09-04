@@ -97,17 +97,33 @@ escrita, y el débil se podría presentar como fuerte sin que nada lo denunciara
 `T214`–`T216` en [`pruebas/test_contencion.py`](pruebas/test_contencion.py), con procesos
 REALES y con la detección ejercida sobre el anfitrión que ejecuta la batería.
 
+## 4 bis · CABLEADO EN EL CAMINO PRODUCTIVO · `E-16`
+
+Hasta el 2026-09-04 este paquete estaba CONSTRUIDO y **ningún punto ejecutable podía
+activarlo**: `grep contencion` sobre los cinco `ads_*.py`, sobre `ciclo/` y sobre `runtime/`
+no devolvía una sola línea. Una política que no se puede encender no contiene nada, por bien
+probada que esté en su propia batería.
+
+```text
+DÓNDE ESTÁ CABLEADA      `adaptadores/proceso.py` —que es el adaptador que ambos usan—,
+                         `ads_runtime.py` y `ads_ciclo.py`, con `--contencion` y
+                         `--contencion-backend`
+CUÁNDO SE COMPRUEBA      en el CONSTRUCTOR del adaptador, no al primer despacho: un backend
+                         que se descubre inservible a mitad de una tarea ya ha ejecutado
+SIN BACKEND FUERTE       FALLO CERRADO · CERO ejecución · NINGUNA degradación silenciosa.
+                         No existe la caída al backend débil «para poder seguir»
+EL DÉBIL NO SE PRESENTA  el control que lo impide se conserva: con `killpg`, el descendiente
+COMO FUERTE              sacado del grupo con `setsid` ESCAPA, y se mide que escapa
+HIJO, NIETO Y BISNIETO   tres generaciones reales, con `setsid`, a través del camino
+                         productivo y no sólo de la batería del paquete
+```
+
+`ads_estado.py`, `ads_admision.py` y `ads_arboles.py` **no** llevan `--contencion`, y se dice
+por qué: ninguno despacha tareas ni construye adaptadores, luego no hay nada que contener.
+
 ## 5 · Lo que este contrato NO alcanza
 
 ```text
-NO SE ENCHUFA SOLO AL    `adaptadores/proceso.py` **no se ha modificado**: sigue con su
-ADAPTADOR LOCAL          `killpg` y su límite declarado. Enchufar este paquete como backend
-                         del adaptador quedó APLICADA en la integración: el adaptador local
-                         acepta `politica_de_contencion`, y su ficha declara el nivel REAL
-                         —`grupo-de-procesos` sin política, `arbol-de-procesos` con ella—.
-                         Medido a través del adaptador: con `killpg`, tres de cuatro
-                         descendientes SOBREVIVEN a la cancelación; con contención, cero de
-                         cinco
 
 NO GOBIERNA RECURSOS     contener no es limitar. Memoria, CPU y E/S se pueden limitar con el
                          mismo `cgroup v2` y NO se hace aquí: exigiría una política de

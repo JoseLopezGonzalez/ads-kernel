@@ -57,13 +57,13 @@ de lo que la máquina ofrece, y se separa en §4 sin convertirlo en cumplimiento
 | obligación | fuente normativa exacta | propietario | estado inicial medido | evidencia ejecutable existente | pendiente | acción de este corte | estado final medido |
 |---|---|---|---|---|---|---|---|
 | **`F6-A`** verificador de admisión, con sus diecinueve puntos | `11-ARQ` §20.1 | `SIS` especifica · `PLT` implementa · `VER` dosier | IMPLEMENTADO_Y_PROBADO | `evidencia/admision-salida.txt` · `evidencia/arboles-salida.txt` · `evidencia/raiz-externa-salida.txt` · `T182`–`T190`, `T210`–`T213`, `T217`–`T220` | — | verificado, no reabierto | IMPLEMENTADO_Y_PROBADO · PENDIENTE_DE_CERTIFICACIÓN |
-| **`F6-B`** raíz externa de confianza con ejecutor sin identidad de escritura | `11-ARQ` §11.8 · `O18` · `O25` | Owner acepta · `SEG` gobierna | IMPLEMENTADO_Y_PROBADO | `evidencia/raiz-externa-salida.txt` · `evidencia/identidad-salida.txt` · `T217`–`T220`, `T192`, `T225` | LÍMITE DE ANFITRIÓN (§4, fila 4) | verificado | IMPLEMENTADO_Y_PROBADO · PENDIENTE_DE_CERTIFICACIÓN |
+| **`F6-B`** raíz externa de confianza con ejecutor sin identidad de escritura | `11-ARQ` §11.8 · `O18` · `O25` | Owner acepta · `SEG` gobierna | IMPLEMENTADO_Y_PROBADO | `evidencia/raiz-externa-salida.txt` · `evidencia/identidad-salida.txt` · `T217`–`T220`, `T192`, `T225` | **ACTO DEL OWNER EMITIDO Y CONDICIONADO** — `O26`, 2026-09-04. Ya NO es «límite de anfitrión»: lo que faltaba era un acto del Owner, y existe. Lo que sigue pendiente es la COMPROBACIÓN de sus ocho condiciones por un gate independiente VÁLIDO sobre un SHA exacto | la fila se reclasifica: se retira «límite de anfitrión» y se nombra `O26` por lo que es. **No se declara satisfecho `B3`**, y `O26` **no se presenta como certificación** | IMPLEMENTADO_Y_PROBADO · **ACEPTACIÓN ARQUITECTÓNICA CONDICIONADA** · PENDIENTE_DE_CERTIFICACIÓN |
 | **`F6-C`** gobierno Git del control repo | `O16` · `g.14` | `SIS` | IMPLEMENTADO_Y_PROBADO | `evidencia/gobierno-git-salida.txt` · `evidencia/multimaquina-salida.txt` · `T187`, `T221`, `T222` | — | verificado | IMPLEMENTADO_Y_PROBADO · PENDIENTE_DE_CERTIFICACIÓN |
 | **`F6-D`** runtime y dispatcher | `11-ARQ` §7 | `PLT` | PARCIAL — faltaba el **paso 4 de `C4`** | `evidencia/runtime-salida.txt` · `evidencia/ciclo-salida.txt` · `evidencia/continua-salida.txt` · `T182`–`T186`, `T195`–`T205` | — | el paso 4 de `C4` y la política de `C2` los cierra la batería `agentes` (`T226`–`T235`) del **corte paralelo**, medida en verde en esta pasada; NO es trabajo de este agente y se atribuye a quien lo hizo | IMPLEMENTADO_Y_PROBADO · PENDIENTE_DE_CERTIFICACIÓN |
 | **`F6-E`** disposición física del estado | `11-ARQ` §2 · `g.1`–`g.13` | `SIS` | IMPLEMENTADO_Y_PROBADO | `evidencia/estado-durable-salida.txt` · `evidencia/estado-e2e-salida.txt` · `T172`–`T181` | — | verificado | IMPLEMENTADO_Y_PROBADO · PENDIENTE_DE_CERTIFICACIÓN |
 | **`F6-F`** los cuatro macrocircuitos y su `FASE 0` | `11-ARQ` §8 y §9.6 | `SIS` | IMPLEMENTADO_Y_PROBADO en su alcance | `evidencia/macrocircuitos-salida.txt` · `T206`–`T209` | **EXTERNO** — el recorrido extremo a extremo de TODAS las fases de `A` y `U`. Fuente literal en §3 de este documento | delimitado con cita; no se reclasifica ni se vacía | IMPLEMENTADO_Y_PROBADO · PENDIENTE_DE_CERTIFICACIÓN |
 | **`F6-G`** arquitectura de adaptadores, sus cuatro piezas | `11-ARQ` §6 | `PLT` | IMPLEMENTADO_Y_PROBADO | `evidencia/adaptadores-salida.txt` · `evidencia/sesion-nueva-salida.txt` · `T191`, `T223`, `T224` | **EXTERNO** — el NIVEL `soportado`. Fuente literal en §3 | nivel REAL conservado (`compatible`), derivado y no escrito | IMPLEMENTADO_Y_PROBADO · PENDIENTE_DE_CERTIFICACIÓN |
-| **`F6-H`** hallazgos externos con propietario y fase `F6` | `11-ARQ` §19 | `SIS` · `ENC` · `DIS` | **PARCIAL** — «el resto de su lista» sin enumerar | sólo `A14`, `FD-3`, `S1-02` y `FD-5` tenían evidencia | INTERNO | **inventario uno a uno y cierre de las ocho filas vivas** (§2) | **IMPLEMENTADO_Y_PROBADO** · PENDIENTE_DE_CERTIFICACIÓN |
+| **`F6-H`** hallazgos externos con propietario y fase `F6` | `11-ARQ` §19 | `SIS` · `ENC` · `DIS` | **PARCIAL** — el inventario anterior enumeró las nueve filas `F-nn` de la tabla de externos y **omitió las CUATRO obligaciones de fase `F6` de la misma sede**: `CONTRATO 1`, `CONTRATO 1bis`, `CONTRATO 2` y `D104`. La sede de `F6-H` es «`11-ARQ` §19», la SECCIÓN ENTERA | las nueve filas `F-nn` sí la tenían; las cuatro obligaciones NO tenían ninguna | INTERNO | el inventario se AMPLÍA a las cuatro obligaciones —§2.2— y su universo deja de escribirse: lo deriva `derivar-universo-obligatorio.py --obligaciones` | **PARCIAL** — tres de las cuatro cerradas y probadas; `D104` materializa CINCO de sus NUEVE pares. **NO se marca completa mientras las tres restas del universo no estén vacías** · PENDIENTE_DE_CERTIFICACIÓN |
 | **`F6-I`** guarda de versión mínima de Python | `11-ARQ` §19 · `06-DEUDA` §4 (`A14`) | `PLT` | IMPLEMENTADO_Y_PROBADO | `evidencia/estado-durable-salida.txt` · `T172` | — | verificado | IMPLEMENTADO_Y_PROBADO · PENDIENTE_DE_CERTIFICACIÓN |
 | **`F6-J`** la CERTIFICACIÓN | `O20` §3 | juicio INDEPENDIENTE | BLOQUEADO_POR_DEPENDENCIA | — | **no es construcción: es un ACTO** | nada; su precondición —que exista lo que hay que certificar— queda cumplida | BLOQUEADO_POR_DEPENDENCIA |
 
@@ -164,6 +164,64 @@ misma nombra.
 | **`M-04`** | `06-DEUDA` §3: «QUÉ LA CIERRA — que `F6` implemente TODOS los puntos del contrato del verificador **y los EJECUTE**, con cero falsos verdes y cero falsos rojos, medidos y publicados» | `PLT` · `SIS` · `VER` · Owner | los diecinueve implementados y ejecutados; `falsos_verdes = 0` y `falsos_rojos = 0` medidos en `T190` | `evidencia/admision-salida.txt` · `T190` | la ACEPTACIÓN es del Owner y es indelegable (`O18`) | verificado; no se declara SUPERADA, porque declararlo es acto de `F6-J` | condición de cierre CUMPLIDA en lo construible · el juicio es de `F6-J` |
 | **`FD-2`** | `06-DEUDA` §10 bis: «**NO se corrige aquí, y no puede corregirse aquí**: editar la entrada rompería el carácter append-only» | el Owner | abierta | — | **EXTERNO**, con la cita | ninguna | abierta, **fuera de `F6`** |
 | **`FD-4`** | `06-DEUDA` §10 bis: «**NO se corrige aquí, y no puede corregirse aquí**: editar `(g)` sería reabrir `F5`, y `O24` §5 lo prohíbe expresamente» | el Owner | abierta | — | **EXTERNO**, con la cita | ninguna | abierta, **fuera de `F6`** |
+
+---
+
+### 2.5 · Las CUATRO obligaciones de fase `F6` que la sede de `F6-H` declara, y que el inventario anterior OMITIÓ
+
+> **Éste es el defecto de cobertura de `F6-H`, dicho sin rodeos.** La sede de `F6-H` es
+> «`11-ARQ` §19», **la sección entera**. El inventario de §2.1 enumeró las nueve filas
+> `F-nn` de una de sus tablas y se declaró completo, dejando fuera las CUATRO obligaciones
+> que la MISMA sección declara con propietario, fase `F6` y condición de cierre literal.
+> Una de ellas —`D104`— exige materializar en el kernel, y el árbol tenía **cero
+> instancias** de lo que exige. Un inventario que se declara completo sobre un universo
+> elegido a mano es verdadero por construcción, que es el defecto `P-08`.
+>
+> **El remedio no es escribir aquí las cuatro filas que faltaban**: eso deja la quinta
+> omisión esperando. El universo se DERIVA, y su derivador falla cerrado si una sede no se
+> puede leer o si un componente encoge:
+>
+> ```bash
+> python3 docs/evolucion/verificacion/derivar-universo-obligatorio.py --obligaciones
+> ```
+
+| obligación | fuente normativa exacta | propietario | estado inicial medido | evidencia ejecutable existente | pendiente | acción de este corte | estado final medido |
+|---|---|---|---|---|---|---|---|
+| **`CONTRATO 1`** · derivar el censo `AFIRMACIONES` | `11-ARQ` §19: «que `AFIRMACIONES` **deje de existir como lista literal** y que la cobertura del validador sea derivada. Mientras exista la lista, la condición NO está cerrada, aunque `T151` salga verde» | `PLT` | **abierta**: `comprobar_recuentos.py` L107–133 era una lista literal de `(ruta, patrón, clave)`; no cubría `contratos/00-INDICE.md`:7 ni `pruebas/T086-T092-contratos.md`:14, que dicen «veintiocho campos» sobre un esquema de 29, y `T151` salía SUPERADA | ninguna sobre la cobertura | **A** · INTERNO | la lista se retira; la cobertura se DESCUBRE barriendo el corpus vivo en dígitos y en letra, con reglas `(patrón de sede, derivación)` que no nombran ninguna ruta | **IMPLEMENTADO_Y_PROBADO** · `T151` y `T270` · sabotajes `N270`, `N270b`, `N270c`. **Y `T151` está en ROJO sobre tres sedes vivas que publican una cifra que el corpus desmiente, todas fuera de la zona de este corte**: es la PRUEBA POSITIVA que §19 prescribe |
+| **`CONTRATO 1bis`** · los perfiles de agente, que nadie censa (`N-04`) | `11-ARQ` §19: «que la cifra deje de existir sólo en prosa» | `PLT` | **abierta**: `RECUENTOS-generado.md` contaba roles, métodos, prompts, composiciones, gates, rúbricas, vetos, formas, niveles de novedad y clases de entrada, y NO los `ads:perfil-agente` de `C2`, que son **21** | ninguna | **A** · INTERNO | el conjunto de tipos canónicos se deriva de los ESQUEMAS del árbol: cada tipo recibe censo por existir, y uno nuevo queda contado el día que nace | **IMPLEMENTADO_Y_PROBADO** · `T271` · sabotaje `N271`, que introduce un perfil nuevo en `C2` y comprueba que el recuento se mueve solo |
+| **`CONTRATO 2`** · ampliar `T152` a toda sede que publique versión | `11-ARQ` §19: «que ninguna sede VIVA publique una versión o un recuento obsoleto, y que el alcance de `T152` sea derivado» | `PLT` | **abierta**: `T152` recorría **sólo `README.md` y `START_HERE.md`**, y por eso pasaba en verde mientras `kernel/operativo/00-INDICE.md` declaraba `KERNEL.md` «1.3.0» siendo 1.5.0 | ninguna sobre el alcance | **A** · INTERNO | el alcance se DESCUBRE por barrido y la versión vigente se resuelve contra `kernel/VERSIONES.md`, su sede única; los remedios se REPORTAN por clase de sede sin decidirlos | **IMPLEMENTADO_Y_PROBADO** · `T152` y `T272` · sabotajes `N272`, `N272b`. **`T152` está en ROJO sobre `kernel/operativo/00-INDICE.md`**, que es la PRUEBA POSITIVA prescrita |
+| **`D104`** · instanciar los pares `<CAP>:revision` | `11-ARQ` §19, ficha `D104`: «**F6 MATERIALIZA; no elige la forma**», con el error `composicion-incompleta` que «no es un aviso: impide el cierre del gate de composición» | `SIS` | **abierta**: **cero** instancias de `:revision` en todo `kernel/operativo/` y **cero** validadores que lo comprobaran | ninguna | **A** · INTERNO | se materializan **CINCO** de los NUEVE pares del catálogo —los de `SEG`— en `recorrido/01-PROCESOS.md`, con su herencia y su posición; se añaden a `circuitos/` las dos instancias de handoff de la ENTREGA DE VUELTA; y el gate de composición se construye entero: cuatro vías, discriminante estructural, ancla en sus dos ramas, regla por item, los tres repartos y un censo de **20 fixtures** contrastado contra su sede | **PARCIAL** · `T273`–`T276` · sabotajes `N273`…`N273f`, `N275`, `N276`. **Los CUATRO pares de `DOM` NO están**: `esquemas/proceso.yaml` no admite la variante `DOM:revision` y ampliar ese conjunto es un ACTO NORMATIVO cuya sede es el esquema. `T273` los publica uno a uno y **el gate de composición no cierra** |
+
+> **`CONTRATO 3` no está en esta tabla, y se dice por qué.** Es la guarda de versión de
+> intérprete, tiene fase `F6` y **ya tiene sede propia en esta matriz**: es `F6-I`,
+> implementada en `validadores/entorno.py` y probada por `T172`. Se comprueba, no se
+> supone. **Con una divergencia declarada**: §19 le prescribe el código de salida **2** y la
+> implementación usa el **78** (`EX_CONFIG`), con su motivo escrito —el 2 es «me han
+> invocado mal»—. La sede del código es `entorno.py`; §19 es histórico y no se enmienda.
+> **Y una trazabilidad que falta**: ningún escenario nombra `CONTRATO 3` en su `cubre`, de
+> modo que el derivador del universo lo publica en la resta **A**. La cadena existe por
+> `A14`; lo que falta es el nombre.
+
+### 2.6 · Las TRES RESTAS, derivadas — y por qué esta matriz no las escribe
+
+`O26` §5 fija las cinco condiciones bajo las que un gate independiente VÁLIDO puede declarar
+`F6 CERTIFICADA`. Sus tres primeras son, literalmente, las tres restas:
+
+```text
+O26 §5.1  que no queden obligaciones internas de F6 sin implementar        → RESTA A
+O26 §5.2  que no queden propiedades críticas sin una prueba capaz de fallar → RESTA B
+O26 §5.3  que todas las obligaciones tengan trazabilidad hasta evidencia    → RESTA C
+```
+
+**Las tres se DERIVAN y esta matriz no publica su contenido**, porque un estado escrito
+caduca cada vez que el árbol se mueve. Se leen ejecutando el derivador, que las publica con
+nombre y no sólo con cardinal:
+
+```bash
+python3 docs/evolucion/verificacion/derivar-universo-obligatorio.py --obligaciones
+```
+
+**Mientras las tres no estén vacías, `F6-H` no se marca completa y `F6` no se certifica.**
 
 ---
 

@@ -68,9 +68,13 @@ except ImportError as exc:  # el motor todavía no está: que se vea por qué
 # probando, y el informe culparía al motor.
 ENTORNO = {k: v for k, v in os.environ.items() if k != "ADS_ESTADO_FALLO"}
 
-# Los nueve puntos del §10 del contrato, escritos aquí SÓLO para poder comprobar que el
+# Los DIEZ puntos de corte del protocolo, escritos aquí SÓLO para poder comprobar que el
 # censo que el motor declara coincide con el que la norma exige. El motor los deriva; esta
 # lista existe para confrontarlos, no para sustituirlos.
+#
+# `entre-el-paso-8-y-el-9` es el décimo y se añade con `E-08`: los nueve anteriores no
+# permitían cortar en el único sitio donde la inversión de los pasos 8 y 9 se distingue de
+# su orden correcto —objetos publicados y testigo escrito, revisión todavía no—.
 PUNTOS_DEL_CONTRATO = [
     "antes-de-escribir-temporal",
     "despues-de-escribir-temporal",
@@ -78,6 +82,7 @@ PUNTOS_DEL_CONTRATO = [
     "antes-del-commit-atomico",
     "despues-del-commit-atomico",
     "antes-de-sincronizar-directorio",
+    "entre-el-paso-8-y-el-9",
     "durante-el-diario",
     "durante-el-registro-auxiliar",
     "antes-de-devolver-exito",
@@ -1906,6 +1911,183 @@ class Concurrencia(Caso):
         with self.almacen() as alm:
             self.assertTrue(alm.reconciliacion_pendiente(),
                             "restaurar el registro íntegro tiene que devolver la pendencia")
+
+
+# ===================================================================================
+# T297 a T301 · `E-08` · EL ORDEN DE LOS PASOS 8 Y 9, PROTEGIDO POR UN TESTIGO DURABLE
+# ===================================================================================
+class OrdenDeLosPasos8y9(Caso):
+    """`E-08`. El §3 dice que el orden «no admite reordenación», y hasta ahora no lo impedía
+    nada observable.
+
+    HECHO REPRODUCIDO ANTES DE CORREGIR: se invirtieron los pasos 8 y 9 de TRES formas.
+    Dos de ellas —mover los bloques con sus marcadores de fallo tal cual— ponían en rojo
+    esta batería. La tercera, la que respeta el SIGNIFICADO de cada punto de fallo, dejaba
+    las 66 pruebas y LOS TRES escenarios E2E en VERDE sobre un almacén cuyo `REVISION.json`
+    nombraba objetos que no estaban en `canonico/`, es decir, IRRECUPERABLE.
+
+    Lo que estas pruebas ejercitan es el TESTIGO: un fichero durable que el paso 8 escribe
+    con el `cid` de lo que acaba de publicar, y que el paso 9 exige encontrar y CASAR con lo
+    que la revisión nueva va a declarar. Con eso, el paso 9 no puede adelantarse: cuando
+    escribiría el testigo, el disco todavía tendría los `cid` viejos.
+    """
+
+    def ruta_del_testigo(self, transaccion):
+        return self.ruta_estado("operacional", "tx", transaccion, "PUBLICADOS.json")
+
+    def test_T297_el_paso_9_NO_publica_sin_el_testigo_del_paso_8(self):
+        """T297 · Defecto que previene: `E-08`, invertir los pasos 8 y 9 sin que nada lo note.
+
+        Se ejercita la PROPIEDAD por el camino real del motor: se pide publicar la revisión
+        con el testigo ausente, que es exactamente el estado del disco cuando el paso 9 se
+        adelanta al 8.
+        """
+        self.inicializar()
+        with self.almacen() as alm:
+            revision = alm.revision()
+            with self.assertRaises(estado.EstadoCorrupto) as capturado:
+                alm._publicar_revision(revision, testigo=None)
+            self.assertEqual(capturado.exception.codigo, "ESTADO_CORRUPTO")
+            # Y el disco no se tocó: la revisión sigue siendo la misma.
+            self.assertEqual(alm.revision()["revision_id"], revision["revision_id"])
+
+    def test_T297b_un_testigo_con_los_cid_VIEJOS_no_deja_publicar(self):
+        """T297 · Defecto que previene: escribir el testigo ANTES de publicar los objetos.
+
+        Es la inversión más capaz: quien invierte los pasos mueve el testigo con ellos. El
+        testigo queda entonces escrito cuando en `canonico/` todavía están los `cid` VIEJOS,
+        y el paso 9 lo rechaza porque no anota lo que la revisión nueva declara.
+        """
+        self.inicializar()
+        self.transicion_ok("tx-a", "items/it-1.json", {"esquema": "ads.estado/1", "n": 1})
+        with self.almacen() as alm:
+            plan = [{"ruta": "items/it-1.json", "accion": "escribir",
+                     "cid": "0" * 64}]
+            # El testigo se escribe con lo que HAY en disco ahora mismo, que es lo viejo.
+            os.makedirs(os.path.dirname(self.ruta_del_testigo("tx-inversa")),
+                        exist_ok=True)
+            alm._escribir_testigo_de_publicacion("tx-inversa", plan, "r-inventada")
+            raiz_nueva = {"items/it-1.json": "1" * 64}      # lo que la revisión declararía
+            with self.assertRaises(estado.EstadoCorrupto):
+                alm._exigir_testigo_de_publicacion(
+                    "tx-inversa", plan, "r-inventada", raiz_nueva)
+
+    def test_T298_una_MEZCLA_PARCIAL_no_se_publica(self):
+        """T298 · Defecto que previene: publicar la revisión con parte de los objetos fuera.
+
+        El testigo cubre una ruta y el plan tiene dos: el paso 9 se niega. Sin esta
+        comprobación, una publicación a medias se convertiría en vigente y el almacén
+        quedaría declarando objetos que no existen.
+        """
+        self.inicializar()
+        self.transicion_ok("tx-a", "items/it-1.json", {"esquema": "ads.estado/1", "n": 1})
+        with self.almacen() as alm:
+            plan_completo = [{"ruta": "items/it-1.json", "accion": "escribir", "cid": "x"},
+                             {"ruta": "items/it-2.json", "accion": "escribir", "cid": "y"}]
+            plan_parcial = plan_completo[:1]
+            os.makedirs(os.path.dirname(self.ruta_del_testigo("tx-parcial")),
+                        exist_ok=True)
+            alm._escribir_testigo_de_publicacion("tx-parcial", plan_parcial, "r-x")
+            with self.assertRaises(estado.EstadoCorrupto) as capturado:
+                alm._exigir_testigo_de_publicacion(
+                    "tx-parcial", plan_completo, "r-x",
+                    {"items/it-1.json": "x", "items/it-2.json": "y"})
+            self.assertIn("PARCIAL", str(capturado.exception))
+
+    def test_T299_el_testigo_se_escribe_con_fsync_de_CONTENIDO_y_de_DIRECTORIO(self):
+        """T299 · Defecto que previene: un testigo que un corte de corriente se lleva.
+
+        No se lee el fuente: se INTERCEPTAN las primitivas de durabilidad y se comprueba que
+        el testigo pasa por las dos —el `fsync` del fichero y el del directorio que lo
+        contiene—. Un testigo sin el `fsync` del directorio tendría contenido en disco y no
+        tendría nombre, que es la mitad exacta que `g.4` obliga a cerrar.
+        """
+        self.inicializar()
+        from estado import motor as motor_estado
+        from estado import rutas as rutas_estado
+        ficheros, directorios = [], []
+        original_fichero = rutas_estado.escribir_y_sincronizar
+        original_directorio = rutas_estado.sincronizar_directorio
+
+        def espia_fichero(ruta, datos):
+            ficheros.append(ruta)
+            return original_fichero(ruta, datos)
+
+        def espia_directorio(ruta):
+            directorios.append(ruta)
+            return original_directorio(ruta)
+
+        motor_estado.escribir_y_sincronizar = espia_fichero
+        motor_estado.sincronizar_directorio = espia_directorio
+        self.addCleanup(setattr, motor_estado, "escribir_y_sincronizar",
+                        original_fichero)
+        self.addCleanup(setattr, motor_estado, "sincronizar_directorio",
+                        original_directorio)
+        with self.almacen() as alm:
+            plan = [{"ruta": "items/it-1.json", "accion": "escribir", "cid": "z"}]
+            os.makedirs(os.path.dirname(self.ruta_del_testigo("tx-fsync")), exist_ok=True)
+            alm._escribir_testigo_de_publicacion("tx-fsync", plan, "r-z")
+        temporal = self.ruta_del_testigo("tx-fsync") + ".tmp"
+        self.assertIn(temporal, ficheros,
+                      "el testigo no pasó por `escribir_y_sincronizar`: su CONTENIDO no "
+                      "está garantizado en disco")
+        self.assertIn(os.path.dirname(self.ruta_del_testigo("tx-fsync")), directorios,
+                      "no se sincronizó el DIRECTORIO del testigo: su NOMBRE no está "
+                      "garantizado en disco")
+
+    def test_T300_caida_ENTRE_los_pasos_8_y_9_y_RECUPERACION_posterior(self):
+        """T300 · Defecto que previene: dar por recuperable lo que nadie ha recuperado.
+
+        Se corta en `entre-el-paso-8-y-el-9`, que es el único punto donde los objetos ya
+        están publicados con su testigo y la revisión todavía no. Se comprueba, en ese orden:
+        el testigo ESTÁ en disco (el paso 8 terminó) · la revisión NO avanzó (el 9 no llegó)
+        · tras recuperar, la transición se COMPLETA · y el almacén queda ÍNTEGRO.
+        """
+        rev_antes = self.inicializar() and self.revision()
+        contenido = {"esquema": "ads.estado/1", "n": 8}
+        proceso = self.transicion("tx-entre", "items/it-8.json", contenido,
+                                  fallo="entre-el-paso-8-y-el-9")
+        self.assertEqual(proceso.returncode, CODIGO_SALIDA_CAIDA,
+                         "el corte entre los pasos 8 y 9 no cortó: "
+                         + (proceso.stderr or proceso.stdout)[:200])
+        # 1 · el paso 8 TERMINÓ: su testigo está en disco.
+        self.assertTrue(os.path.isfile(self.ruta_del_testigo("tx-entre")),
+                        "el paso 8 no dejó su testigo durable antes de la caída")
+        # 2 · el paso 9 NO llegó: la revisión vigente sigue siendo la anterior.
+        self.assertEqual(self.revision()["revision_id"], rev_antes["revision_id"],
+                         "se publicó la revisión pese a caer antes del paso 9")
+        # 3 · RECUPERACIÓN: la rama COMPLETAR reejecuta 8, 9 y 10.
+        with self.almacen() as alm:
+            self.assertEqual(alm.estado_de_la_ventana(), "cerrada")
+            self.assertEqual(alm.revision()["revision"], rev_antes["revision"] + 1)
+            self.assertEqual(alm.leer("items/it-8.json"), contenido)
+            informe = alm.verificar_integridad()
+            self.assertTrue(informe.ok, informe.a_dict())
+            alm.auditar()
+        self.assertIn("transicion.confirmada", self.tipos_del_diario())
+
+    def test_T301_borrar_el_testigo_impide_completar_a_ciegas(self):
+        """T301 · Defecto que previene: que la RECUPERACIÓN se salte la garantía del orden.
+
+        La rama COMPLETAR reejecuta los pasos 8, 9 y 10. Si sólo el camino feliz exigiera el
+        testigo, bastaría con caer y recuperar para publicar sin él. Se borra el testigo, se
+        recupera, y la recuperación tiene que REESCRIBIRLO —porque reejecuta el paso 8— y
+        dejar el almacén íntegro; nunca publicar sin él.
+        """
+        rev_antes = self.inicializar() and self.revision()
+        contenido = {"esquema": "ads.estado/1", "n": 9}
+        self.transicion("tx-sin-testigo", "items/it-9.json", contenido,
+                        fallo="antes-del-commit-atomico")
+        testigo = self.ruta_del_testigo("tx-sin-testigo")
+        if os.path.exists(testigo):
+            os.remove(testigo)
+        with self.almacen() as alm:
+            self.assertEqual(alm.estado_de_la_ventana(), "cerrada")
+            self.assertEqual(alm.revision()["revision"], rev_antes["revision"] + 1,
+                             "la recuperación no completó la transición preparada")
+            self.assertEqual(alm.leer("items/it-9.json"), contenido)
+            informe = alm.verificar_integridad()
+            self.assertTrue(informe.ok, informe.a_dict())
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):

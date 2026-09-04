@@ -109,6 +109,26 @@ CIERRA         ningún gate de `F4c` · escribir el contrato de una prueba
 [`CHECKPOINT-ADS-NEXT.md`](../evolucion/CHECKPOINT-ADS-NEXT.md), y el criterio de alcance
 en la resolución `O18` de la [sede canónica del Owner](../owner/ADS-OWNER-RESOLUCIONES.md).
 
+**Y el acto que faltaba, emitido el 2026-09-04 — DERIVADO, no interpretado.** La línea
+`PROPIETARIO` de arriba dice «*el **Owner** acepta la raíz externa*», y hasta hoy ese acto no
+constaba: era el segundo conyunto del criterio `B3` de
+[`05-PLAN-DE-IMPLEMENTACION-F5-F6.md`](05-PLAN-DE-IMPLEMENTACION-F5-F6.md) §2.2 y `O18` lo
+reservaba al Owner. **`O26` lo emite**, y lo emite CONDICIONADO:
+
+```text
+QUÉ ACEPTA     la ARQUITECTURA de la raíz externa como mecanismo de referencia para B3
+QUÉ NO ACEPTA  ninguna candidata concreta, ni la implementación existente
+CÓMO SE VUELVE cuando un gate independiente VÁLIDO demuestre las OCHO condiciones de
+APLICABLE      `O26` §1 sobre el SHA exacto de una candidata
+SI FRACASA     la aceptación arquitectónica permanece, F6 sigue ABIERTA y PesquerApp
+EL GATE        sigue BLOQUEADA (`O26` §8)
+```
+
+**`B3` NO queda satisfecho por este acto.** Queda satisfecho su conyunto de autoridad, y el
+resto —«*la raíz externa existe*» y «*su ejecutor NO comparte identidad de escritura con el
+runtime*»— sigue siendo materia de comprobación del gate. Declararlo satisfecho antes del
+gate sería exactamente el atajo que `O26` §2 y §7 prohíben.
+
 ## 4 · `A14` — la guarda de entorno · **CERRADA POR `F6`**
 
 ```text
@@ -298,6 +318,56 @@ resolución autoriza, y se dice sin adornarlo.
 **De las siete filas, `FD-3` y `S1-02` están CUMPLIDAS con evidencia ejecutada, `FD-1` lo
 está en su mitad de decisión, `FD-5` y `FD-6` están DECLARADAS con su límite escrito, y
 `FD-2` y `FD-4` siguen abiertas. Ninguna de las abiertas es bloqueante.**
+
+> **`FD-5` deja de estar sólo DECLARADA, y se dice con el alcance exacto.** El descendiente
+> que se saca del grupo con `setsid` ya NO escapa cuando hay política de contención fuerte, y
+> eso está cableado en el camino productivo desde el 2026-09-04 —`E-16`—: el adaptador local
+> elige y COMPRUEBA su backend en el constructor, sin backend fuerte no se construye, y no
+> existe caída silenciosa al backend débil. Lo que se conserva es el CONTROL que impide
+> presentar el débil como fuerte: con `killpg`, el descendiente con `setsid` sobrevive, y se
+> mide que sobrevive. La cobertura queda LIMITADA AL BACKEND EJERCIDO en cada anfitrión —ver
+> `E-18` abajo—, y ninguna afirmación de este corpus es universal.
+
+## 10 ter · `E-17` y `E-18` — lo que el gate del 2026-09-03 dejó FUERA de `F6`, y sigue fuera
+
+> **Qué es.** Los dos hallazgos que el gate anterior clasificó como NO internos. La corrección
+> del 2026-09-04 **no los cierra fingiendo portabilidad**: los registra con su propietario, su
+> mecanismo, su condición de cierre y su alcance EXACTO. Un hallazgo externo que se maquilla
+> de cerrado es peor que uno abierto, porque deja de vigilarse.
+
+| id | clase | qué es | propietario | mecanismo previsto | condición de cierre |
+|---|---|---|---|---|---|
+| **`E-17`** | **DEUDA EXTERNA** | la CUSTODIA PRODUCTIVA de la identidad de firma de la raíz externa. Hoy la clave de pruebas es un fichero `0600` fuera de todos los repositorios | el **Owner**, por la autoridad administrativa que `O25` §3 le reserva | un proveedor de secretos del anfitrión —HSM, llavero del sistema o gestor de secretos— entrando por la MISMA frontera ya construida: la orden externa declarada en la configuración | una instalación real que FIRME contra ese proveedor, con **rotación y revocación ejercidas contra él** y no simuladas |
+| **`E-18`** | **LIMITACIÓN DE ANFITRIÓN** | `cgroup v2` está PRESENTE y **no es EJERCITABLE** en este anfitrión, y la identidad de sistema dedicada no está disponible | el anfitrión, no el kernel | aprovisionamiento del anfitrión: delegación de `cgroup` escribible, o cuenta de servicio creada por quien administre la máquina | que el backend quede ejercido en un anfitrión que lo permita. **No se cierra ejecutando aquí otra vez** |
+
+**`E-17`, dicho como `O26` §4 lo dice, y sin atenuarlo:** *«una clave efímera de pruebas,
+aunque esté fuera de los repositorios y tenga permisos `0600`, NO constituye custodia
+productiva»*. `O25` §5 ya lo decía —«las claves efímeras están permitidas únicamente en
+pruebas»—. Consecuencia operativa, y es la que importa: **`E-17` no bloquea la certificación
+técnica de `F6`, porque `O25` y `O26` colocan la custodia FUERA; pero bloquea cualquier
+afirmación de custodia productiva**, venga de donde venga. Hay una prueba que barre el paquete
+de la raíz externa y su contrato para que ninguna salida la afirme.
+
+**`E-18`, con el alcance MEDIDO en este anfitrión el 2026-09-04, y ninguna afirmación
+universal:**
+
+```text
+cgroup v2         MONTADO, con controladores (cpuset cpu io memory hugetlb pids rdma) y con
+                  subárbol delegado por systemd. NO EJERCITABLE: escribir el PID en
+                  `cgroup.procs` del subgrupo falla con EIO. La sonda lo declara NO
+                  DISPONIBLE CON SU MOTIVO, no se cuenta como ejercido, y su ausencia NO
+                  produce un falso rojo: la política se sirve con otro backend fuerte
+BACKENDS FUERTES  espacio-de-nombres-de-pid · systemd-scope · contenedor. Los tres
+EJERCITABLES      ejercitables aquí. `mejor_disponible`: espacio-de-nombres-de-pid
+IDENTIDAD         por CONTENEDOR, que es la demostración transitoria que `O26` §3 acepta:
+SEPARADA          identidad distinta (65534 frente a 1000), repositorio montado en SÓLO
+                  LECTURA y controles POSITIVOS de que esa identidad escribe en su propio
+                  espacio. `docker` presente · `podman` AUSENTE
+USUARIO DEL       NO disponible: `sudo` exige contraseña. `O26` §3 lo reserva para
+SISTEMA           producción y no lo exige hoy
+EL ALCANCE        la certificación queda LIMITADA AL BACKEND EJERCIDO. Este corpus no
+                  afirma nada sobre anfitriones que no ha medido
+```
 
 > **`FD-1` era la única decisión del Owner que quedaba viva tras el primer corte de `F6`, y el
 > Owner la emitió**: `O25`. Lo que cierra es la DECISIÓN, no la implementación —`O25` §6 lo

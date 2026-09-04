@@ -26,11 +26,17 @@ descripcion: >
 obligatorios:
   [id, nombre, intencion, condicion_de_entrada, propietario_global, obligatorias,
    condicionales, evidencia_necesaria, criterio_de_cierre, aprendizaje]
-# Las CINCO variantes declaradas por `F-02`. Ampliar el conjunto es un acto NORMATIVO con su
-# sede: mientras no se amplie aqui, `DOM:revision` -que `11-ARQ` usa en prosa y `b.16`
-# L834-836 sostiene- NO es un valor admitido, y el error lo dice.
+# Las variantes declaradas por `F-02`. Ampliar el conjunto es un acto NORMATIVO con su sede,
+# y esta es la sede: mientras una variante no este aqui, NO es un valor admitido y el error
+# lo dice. `DOM:revision` se anade el 2026-09-04 y no por comodidad: `11-ARQ` §19 `D104` la
+# EXIGE en sus casos positivos -«`AUD` propietario `PRD` con `C-DOM` y `C-SEG` activos ->
+# `{DOM, SEG}`» y «VIA 4 · `DEU` con `DOM:revision` y `SEG:revision` condicionales tras
+# `VER`»-, `b.16` L834-836 la sostiene, y `D104` reserva a `F6` MATERIALIZAR lo que el
+# aparato ya fijo: «`F6` MATERIALIZA; no elige la forma». Sin esta linea los cuatro pares
+# `DOM:revision` que `D104` deriva son ininstanciables, y `D104` no puede cerrarse.
 variantes_de_capacidad:
-  [DOM:condiciones, SEG:condiciones, SEG:revision, CON:experimental, ARQ:diagnostico]
+  [DOM:condiciones, DOM:revision, SEG:condiciones, SEG:revision, CON:experimental,
+   ARQ:diagnostico]
 campos:
   id: {tipo: texto, patron: '^proceso:[A-Z]{3}$'}
   nombre: {tipo: texto, min: 3}

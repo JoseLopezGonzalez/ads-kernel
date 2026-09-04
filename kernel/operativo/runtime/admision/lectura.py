@@ -224,6 +224,46 @@ class CanalDeLecturaGit:
     def resolver(self, revision):
         return self.canal.resolver(revision)
 
+    def procedencia_de_la_historia(self):
+        """`E-09` · ¿es esta copia capaz de responder «cuál fue el commit de NACIMIENTO»?
+
+        `git log --diff-filter=A` siempre devuelve algo en un repositorio SUPERFICIAL o
+        INJERTADO: devuelve el primer commit que ESTA COPIA alcanza, que en un clon
+        `--depth 1` es el corte de la clonación y no el nacimiento. Se midió en este mismo
+        anfitrión: sobre un clon superficial la función devolvía un SHA distinto del real y
+        con el contenido ya alterado, con lo que el contraste de `V6-12` se hacía contra la
+        alteración y salía verde.
+
+        DECISIÓN · se PREGUNTA a Git, y además se mira el disco
+            `git rev-parse --is-shallow-repository` es la respuesta autorizada, y el fichero
+            `.git/shallow` es la marca que queda cuando la versión de Git no conoce esa
+            opción. Se miran las dos: una comprobación que dependa de una opción moderna
+            fallaría abierta en un anfitrión antiguo, y fallar abierto es justo lo que
+            `E-09` cierra. `info/grafts` y `refs/replace/` se miran por lo mismo: los dos
+            reescriben qué historia se alcanza sin tocar ningún commit.
+        """
+        codigo, salida, _ = self.canal.ejecutar(
+            "rev-parse", "--is-shallow-repository", exigir_exito=False)
+        if codigo == 0 and salida.decode("ascii", "replace").strip() == "true":
+            return {"completa": False,
+                    "motivo": "el repositorio es SUPERFICIAL (`--depth`): el primer commit "
+                              "que alcanza no es el nacimiento de nada"}
+        directorio = os.path.join(self.repositorio, ".git")
+        if os.path.isfile(os.path.join(directorio, "shallow")):
+            return {"completa": False,
+                    "motivo": "hay `.git/shallow`: la historia está truncada"}
+        if os.path.isfile(os.path.join(directorio, "info", "grafts")):
+            return {"completa": False,
+                    "motivo": "hay `.git/info/grafts`: la historia está INJERTADA y el "
+                              "nacimiento que Git recorrería no es el real"}
+        codigo, salida, _ = self.canal.ejecutar(
+            "for-each-ref", "--format=%(refname)", "refs/replace/", exigir_exito=False)
+        if codigo == 0 and salida.decode("utf-8", "replace").strip():
+            return {"completa": False,
+                    "motivo": "hay refs de `replace`: la historia que Git recorre está "
+                              "sustituida y el nacimiento derivado no sería el real"}
+        return {"completa": True, "motivo": "historia completa y sin injertos"}
+
     def commit_de_nacimiento(self, ruta):
         """`V6-12`: el commit que CREÓ una sede. No es `HEAD`, y por eso se busca."""
         codigo, salida, _ = self.canal.ejecutar(

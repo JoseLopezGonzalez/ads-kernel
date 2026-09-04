@@ -104,6 +104,7 @@ from .modelo import (
     derivar_efecto,
     identificador_de,
     normalizar_orden,
+    normalizar_seleccion,
     nuevo_acuse,
     nuevo_item,
     nuevo_paquete,
@@ -625,7 +626,8 @@ class Runtime:
                 # NO se toca: la tabla no permite volver de ahí, y su reanudación la
                 # resuelve el siguiente despacho reutilizando el mismo efecto.
                 operaciones.append(estado.Escritura(
-                    ruta_paquete(paquete), con_estado(actual, "listo")))
+                    ruta_paquete(paquete),
+                    con_estado(actual, "listo", reloj=revision["revision"] + 1)))
             return self._transicion(
                 "runtime.lease.liberado", revision, operaciones,
                 "liberación de la autoridad sobre " + paquete,
@@ -660,16 +662,50 @@ class Runtime:
                 pendientes.append(dependencia)
         return pendientes, inviables
 
+    def _grado_de_salida(self, paquetes):
+        """`b.12` paso 5 (b) · a cuántos paquetes DESBLOQUEA cada uno. Grado de salida.
+
+        Se deriva del grafo `depende_de`, que es el único sitio donde el grafo existe. Sólo
+        cuentan los dependientes VIVOS: desbloquear a un paquete cancelado o ya completado no
+        desbloquea nada, y contarlo pondría por delante al que menos trabajo libera.
+        """
+        desbloquea = {p["id"]: [] for p in paquetes}
+        for paquete in paquetes:
+            if paquete["estado"] in ESTADOS_CERRADOS or paquete["estado"] == "completado":
+                continue
+            for dependencia in paquete["depende_de"]:
+                if dependencia in desbloquea and dependencia != paquete["id"]:
+                    desbloquea[dependencia].append(paquete["id"])
+        return {clave: sorted(valor) for clave, valor in desbloquea.items()}
+
     def elegibles(self):
         """El trabajo elegible, DERIVADO del estado y ordenado igual para toda instancia.
 
-        Se ordena por prioridad descendente y después por identificador. Que dos instancias
-        vean exactamente la misma lista es lo que hace que la carrera por un paquete sea
-        real, y no un accidente del orden en que cada una leyó el directorio.
+        `b.12` paso 5, LOS CUATRO CRITERIOS, en este orden y ninguno decorativo:
+
+            a) prioridad declarada        urgente > normal > fondo
+            b) desbloquea a más paquetes  grado de salida en el grafo `depende_de`
+            c) antigüedad de espera       reloj LÓGICO: la revisión en que entró en `listo`
+            d) id del paquete             desempate determinista, sin azar
+
+        DEFECTO QUE CIERRA, medido por la auditoría: aquí sólo estaban (a) y (d) —
+        `sort(key=(-prioridad, id))`— y los otros dos no existían ni en el objeto durable.
+        Faltar (b) hace que el paquete que libera media cola espere detrás de uno que no
+        libera nada; faltar (c) es lo que produce inanición de verdad: entre iguales en
+        prioridad manda el identificador, y un paquete cuyo id ordena tarde queda por detrás
+        de CADA paquete nuevo que entre, para siempre.
+
+        (c) es además la ÚNICA prevención de inanición admisible: `b.12` es terminante —«DSP
+        informa de la inanición. No cambia la prioridad. Nunca»—, así que el que espera no
+        sube de prioridad, adelanta a sus IGUALES por haber esperado más. La prioridad
+        declarada sigue siendo autoridad exclusiva del Owner y este método no la toca.
         """
         self._exigir_operable()
+        todos = self._todos_los_paquetes()
+        desbloquea = self._grado_de_salida(todos)
+        ahora = self._almacen.revision()["revision"]
         salida = []
-        for paquete in self._todos_los_paquetes():
+        for paquete in todos:
             if paquete["estado"] == "esperando-dependencia":
                 pendientes, inviables = self._dependencias_pendientes(paquete)
                 if pendientes and not inviables:
@@ -677,6 +713,8 @@ class Runtime:
             elif paquete["estado"] != "listo":
                 continue
             lease = self._leer_lease(paquete["id"])
+            seleccion = paquete["seleccion"]
+            listo_en = seleccion["listo_en"]
             salida.append({
                 "paquete": paquete["id"],
                 "item": paquete["item"],
@@ -687,9 +725,85 @@ class Runtime:
                 "max_intentos": paquete["max_intentos"],
                 "depende_de": list(paquete["depende_de"]),
                 "titular": lease["titular"] if lease else None,
+                # `b.12` paso 5 (b) y (c), PUBLICADOS: sin publicarlos, el orden sería una
+                # afirmación que nadie puede contrastar, y el paso 7 —«explicar qué se
+                # eligió y por qué»— volvería a ser una caja negra.
+                "desbloquea": list(desbloquea.get(paquete["id"]) or []),
+                "grado_de_salida": len(desbloquea.get(paquete["id"]) or []),
+                "listo_en": listo_en,
+                # Los CUATRO campos de inanición de `b.12`, leídos del objeto durable.
+                "tiempo_listo": (ahora - listo_en) if listo_en is not None else 0,
+                "postergaciones": seleccion["postergaciones"],
+                "adelantado_por": list(seleccion["adelantado_por"]),
+                "impedimento": seleccion["impedimento"],
             })
-        salida.sort(key=lambda e: (-e["prioridad"], e["paquete"]))
+        salida.sort(key=politica.clave_de_orden)
         return salida
+
+    # ------------------------------------------- `b.12` pasos 5, 6 y 7, con escritura
+    def seleccionar_siguiente(self, *, cabida=1):
+        """Elige el siguiente trabajo y ESCRIBE por qué los demás siguen esperando.
+
+        `b.12` paso 6 despacha «el primero. El resto del frente, si hay ejecutores libres», y
+        el paso 7 obliga a explicar «qué se eligió, por qué, y qué se excluyó y por qué». Lo
+        segundo no se puede hacer sin contar: la postergación se ANOTA en el estado durable
+        del paquete postergado, en UNA transición, para que dos planificadores no puedan
+        dejar la cuenta a medias ni cada uno la suya.
+
+        NO toca la prioridad de nadie. Es la restricción constitucional de `b.12` y el
+        motivo de que la prevención de inanición viva en el criterio (c) y no aquí.
+        """
+        orden = self.elegibles()
+        if not orden:
+            return {"elegido": None, "orden": [], "postergados": [], "cabida": int(cabida)}
+        cabida = max(1, int(cabida))
+        frente = [e["paquete"] for e in orden[:cabida]]
+        postergados = self._anotar_postergacion(orden, frente)
+        return {"elegido": orden[0]["paquete"], "orden": orden, "frente": frente,
+                "postergados": postergados, "cabida": cabida}
+
+    def _anotar_postergacion(self, orden, frente):
+        """`postergaciones`, `adelantado_por` e `impedimento`, en UNA transición durable."""
+        cabeza = orden[0]
+        fuera = [e for e in orden if e["paquete"] not in frente]
+        if not fuera:
+            return []
+        anotados = []
+
+        def construir(revision):
+            operaciones = []
+            del anotados[:]
+            for entrada in fuera:
+                actual = self._leer_paquete_opcional(entrada["paquete"])
+                if actual is None or actual["estado"] not in ("listo",
+                                                              "esperando-dependencia"):
+                    continue
+                seleccion = dict(actual["seleccion"])
+                seleccion["postergaciones"] = int(seleccion["postergaciones"]) + 1
+                seleccion["adelantado_por"] = sorted(
+                    set(seleccion["adelantado_por"]) | set(frente))
+                seleccion["impedimento"] = politica.motivo_de_postergacion(
+                    entrada, cabeza)
+                nuevo = dict(actual)
+                nuevo["seleccion"] = normalizar_seleccion(seleccion, ruta=actual["id"])
+                operaciones.append(estado.Escritura(ruta_paquete(actual["id"]), nuevo))
+                anotados.append({"paquete": actual["id"],
+                                 "postergaciones": seleccion["postergaciones"],
+                                 "impedimento": seleccion["impedimento"]})
+            if not operaciones:
+                return None
+            return self._transicion(
+                "runtime.seleccion.postergada", revision, operaciones,
+                "`b.12` paso 7: se despacha " + ", ".join(frente) + " y esperan "
+                + ", ".join(a["paquete"] for a in anotados),
+                {"frente": list(frente),
+                 "postergados": [a["paquete"] for a in anotados]},
+            )
+
+        self._aplicar("runtime.seleccion.postergada", construir,
+                      descripcion="anotación de postergación de " + str(len(fuera))
+                                  + " paquete(s)")
+        return list(anotados)
 
     # =====================================================================
     #  6 · seleccionar adaptador · 7 · ejecutar · 8 · registrar · 15 · no repetir
@@ -720,7 +834,7 @@ class Runtime:
                 )
             intento = int(actual["intentos"]) + 1
             nuevo = con_estado(
-                actual, "despachado",
+                actual, "despachado", reloj=revision["revision"] + 1,
                 intentos=intento,
                 efecto=derivar_efecto(actual["orden"], paquete, intento),
                 resultado=None,
@@ -748,7 +862,7 @@ class Runtime:
             if actual["estado"] == "ejecutando":
                 escrito["paquete"] = actual
                 return None
-            nuevo = con_estado(actual, "ejecutando")
+            nuevo = con_estado(actual, "ejecutando", reloj=revision["revision"] + 1)
             escrito["paquete"] = nuevo
             return self._transicion(
                 "runtime.paquete.ejecutando", revision,
@@ -796,7 +910,8 @@ class Runtime:
                     + efecto + "` y ahora declara `" + str(actual["efecto"]) + "`",
                     ruta=paquete,
                 )
-            nuevo = con_estado(actual, estado_final, resultado=dict(resultado))
+            nuevo = con_estado(actual, estado_final, reloj=revision["revision"] + 1,
+                               resultado=dict(resultado))
             acuse = nuevo_acuse(efecto=efecto, paquete=paquete,
                                 intento=actual["intentos"], resultado=dict(resultado))
             escrito["paquete"] = nuevo
@@ -993,7 +1108,7 @@ class Runtime:
             if actual["estado"] != "fallido":
                 escrito["paquete"] = actual
                 return None
-            nuevo = con_estado(actual, "listo")
+            nuevo = con_estado(actual, "listo", reloj=revision["revision"] + 1)
             escrito["paquete"] = nuevo
             return self._transicion(
                 "runtime.paquete.reintentado", revision,
@@ -1019,7 +1134,7 @@ class Runtime:
             if actual["estado"] == "agotado":
                 escrito["paquete"] = actual
                 return None
-            nuevo = con_estado(actual, "agotado")
+            nuevo = con_estado(actual, "agotado", reloj=revision["revision"] + 1)
             escrito["paquete"] = nuevo
             return self._transicion(
                 "runtime.paquete.agotado", revision,
@@ -1059,7 +1174,7 @@ class Runtime:
         def construir(revision):
             actual = self._leer_paquete(paquete)
             comprobar_transicion(actual["estado"], destino, paquete=paquete)
-            nuevo = con_estado(actual, destino)
+            nuevo = con_estado(actual, destino, reloj=revision["revision"] + 1)
             escrito["paquete"] = nuevo
             return estado.Transicion(
                 tipo=clase, base=revision["revision_id"],
@@ -1146,6 +1261,9 @@ class Runtime:
                 orden=normalizar_orden(orden), prioridad=prioridad,
                 max_intentos=max_intentos, depende_de=depende_de,
                 acoplamiento=acoplamiento,
+                # `b.12`: nace `listo`, y su espera empieza en la revisión que esta misma
+                # transición va a escribir. El reloj es el LÓGICO del motor.
+                listo_en=revision["revision"] + 1,
             )
             comprobar_paquete(objeto, ruta_paquete(identificador))
             escrito["paquete"] = objeto
@@ -1195,7 +1313,7 @@ class Runtime:
             if vigente_paquete["estado"] == destino:
                 escrito["paquete"] = vigente_paquete
                 return None
-            nuevo = con_estado(vigente_paquete, destino)
+            nuevo = con_estado(vigente_paquete, destino, reloj=revision["revision"] + 1)
             escrito["paquete"] = nuevo
             return self._transicion(
                 clase, revision,
@@ -1285,12 +1403,24 @@ class Runtime:
                 informe["observados"].append(paquete["id"])
         informe["reanudados"] = list(reanudables)
 
-        elegibles = [entrada["paquete"] for entrada in self.elegibles()]
+        cola = self.elegibles()
+        elegibles = [entrada["paquete"] for entrada in cola]
         informe["elegibles"] = list(elegibles)
+        # `b.12` paso 7, ESCRITO: quién entra en el frente de esta pasada y quién se queda
+        # fuera, con su motivo. Sin `maximo` entra todo y no hay nadie a quien postergar, y
+        # entonces esto no escribe nada: postergar a quien sí se despacha sería mentir.
+        informe["seleccion"] = [
+            {"paquete": e["paquete"], "prioridad": e["prioridad"],
+             "grado_de_salida": e["grado_de_salida"], "tiempo_listo": e["tiempo_listo"],
+             "postergaciones": e["postergaciones"], "adelantado_por": e["adelantado_por"],
+             "impedimento": e["impedimento"]}
+            for e in cola
+        ]
 
         orden = reanudables + [p for p in elegibles if p not in reanudables]
         if maximo:
             orden = orden[:int(maximo)]
+        informe["postergados"] = self._anotar_postergacion(cola, orden) if cola else []
         for identificador in orden:
             informe["atendidos"].append(self._despachar_anotando(identificador))
 

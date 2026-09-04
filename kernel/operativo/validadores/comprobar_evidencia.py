@@ -86,6 +86,142 @@ RECUENTOS_DE_VIGENCIA = {
 }
 
 
+
+# ---------------------------------------------------------------------------
+#  `E-14` · EL RESULTADO EXACTO DE UNA BATERÍA, Y NO UNA SUBCADENA
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR: dieciséis componentes del manifiesto declaran
+#  `firma_de_exito: 'OK'`, y esa firma se comprueba con `re.search`, que casa igual con la
+#  salida `OK` de `unittest` y con `OK (skipped=3)`. Medido: `re.search('OK', 'OK
+#  (skipped=17)')` devuelve un objeto, no `None`. Y hay 17 llamadas a `skipTest` repartidas
+#  por seis baterías del runtime, ninguna contada y ninguna publicada. Una batería que se
+#  saltara sus 17 casos pasaría el validador sin que nada lo dijera.
+#
+#  DECISIÓN · el resultado se DERIVA de la salida y se compara ENTERO
+#      Alternativas: (a) endurecer cada `firma_de_exito` del manifiesto a `^OK$`; (b) derivar
+#      el resultado —casos corridos, fallos, errores, saltos— de la propia salida y exigirlo
+#      completo.
+#      Se hacen las dos, y ésta es la que no depende de que el manifiesto esté bien escrito.
+#      Con sólo (a), el día que alguien añada un componente con `firma_de_exito: 'OK'` vuelve
+#      el agujero entero, y nada avisa. Con (b) el agujero no depende de una cadena: la
+#      comprobación mira el resultado de `unittest` tal cual lo imprime.
+#
+#  DECISIÓN · el número de casos se RECUENTA sobre la salida, no se cree
+#      `Ran 38 tests` es una cifra que la propia evidencia declara. Si la evidencia se edita
+#      a mano —o se recorta—, esa cifra sigue diciendo lo que decía. La salida es VERBOSA:
+#      cada caso imprime su desenlace (`... ok`, `... skipped ...`, `... FAIL`, `... ERROR`).
+#      Se cuentan esos desenlaces y se exige que casen con la cifra declarada. Manipular el
+#      contador deja de ser gratis: invalida la evidencia.
+#
+#  DECISIÓN · CERO saltos, salvo que el manifiesto los DECLARE uno a uno
+#      `E-14` literal: si el contrato exige cero skips, cualquier skip es ROJO; si los
+#      permite, debe declarar CUÁLES y POR QUÉ. `skips_permitidos` es una lista de mapas con
+#      `id` y `motivo`; el recuento tiene que casar EXACTAMENTE, y cada `id` declarado tiene
+#      que aparecer en la salida. Un salto no declarado es ROJO, y un salto declarado que ya
+#      no ocurre también: los dos significan que la evidencia y el contrato han divergido.
+LINEA_DE_RECUENTO = re.compile(r"^Ran (\d+) tests?\b", re.M)
+LINEA_DE_RESULTADO = re.compile(r"^(OK|FAILED)(?:\s*\((.*)\))?\s*$", re.M)
+DESENLACE_DE_CASO = re.compile(
+    r"\.\.\. (ok|skipped|FAIL|ERROR|expected failure|unexpected success)\b")
+CONTADORES_DEL_RESULTADO = re.compile(r"(failures|errors|skipped|expected failures|"
+                                      r"unexpected successes)=(\d+)")
+
+
+def _resultado_de_unittest(texto):
+    """`(recuento_declarado, veredicto, contadores)` o `None` si no es salida de `unittest`."""
+    recuentos = LINEA_DE_RECUENTO.findall(texto)
+    resultados = LINEA_DE_RESULTADO.findall(texto)
+    if not recuentos and not resultados:
+        return None
+    contadores = {}
+    detalle = resultados[-1][1] if resultados else ""
+    for nombre, valor in CONTADORES_DEL_RESULTADO.findall(detalle or ""):
+        contadores[nombre] = int(valor)
+    return {
+        "recuentos_declarados": [int(n) for n in recuentos],
+        "veredictos": [veredicto for veredicto, _detalle in resultados],
+        "detalle": detalle or "",
+        "contadores": contadores,
+        "desenlaces_contados": len(DESENLACE_DE_CASO.findall(texto)),
+    }
+
+
+def _skips_declarados(comp, r):
+    """La lista `skips_permitidos` del manifiesto, validada ANTES de usarse."""
+    entradas = comp.get("skips_permitidos")
+    if entradas is None:
+        return []
+    cid = comp.get("id")
+    if not isinstance(entradas, list):
+        r.fallo(f"manifiesto: `skips_permitidos` de '{cid}' es "
+                f"{type(entradas).__name__} y tiene que ser una lista de mapas con `id` y "
+                f"`motivo`")
+        return []
+    utilizables = []
+    for pos, entrada in enumerate(entradas):
+        donde = f"`skips_permitidos`[{pos}] de '{cid}'"
+        if not isinstance(entrada, dict):
+            r.fallo(f"manifiesto: {donde} es {type(entrada).__name__} y tiene que ser un "
+                    f"mapa con `id` y `motivo`")
+            continue
+        faltan = [c for c in ("id", "motivo")
+                  if not isinstance(entrada.get(c), str) or not entrada[c].strip()]
+        if faltan:
+            r.fallo(f"manifiesto: {donde} no declara {', '.join(faltan)}. Un salto "
+                    f"permitido sin decir CUÁL y POR QUÉ es un salto silencioso con "
+                    f"permiso escrito")
+            continue
+        utilizables.append(entrada)
+    return utilizables
+
+
+def _comprobar_resultado_exacto(rel, comp, texto, r):
+    """`E-14` · el resultado EXACTO: casos corridos, fallos, errores y saltos."""
+    resultado = _resultado_de_unittest(texto)
+    if resultado is None:
+        return                      # no es una batería de `unittest`: nada que exigir aquí
+
+    if len(resultado["recuentos_declarados"]) != 1 or len(resultado["veredictos"]) != 1:
+        r.fallo(f"{rel}: la salida no tiene EXACTAMENTE un `Ran N tests` y un resultado "
+                f"final ({len(resultado['recuentos_declarados'])} recuentos, "
+                f"{len(resultado['veredictos'])} resultados). Dos corridas pegadas en un "
+                f"fichero permiten publicar la buena y esconder la mala")
+        return
+
+    declarado = resultado["recuentos_declarados"][0]
+    contados = resultado["desenlaces_contados"]
+    if contados != declarado:
+        r.fallo(f"{rel}: declara `Ran {declarado} tests` y su salida contiene {contados} "
+                f"desenlaces de caso. La cifra publicada no describe la corrida que la "
+                f"acompaña: manipular el contador INVALIDA la evidencia")
+
+    if resultado["veredictos"][0] != "OK":
+        r.fallo(f"{rel}: la batería NO terminó en OK ({resultado['veredictos'][0]} "
+                f"{resultado['detalle']})")
+        return
+
+    contadores = resultado["contadores"]
+    for prohibido in ("failures", "errors", "expected failures", "unexpected successes"):
+        if contadores.get(prohibido):
+            r.fallo(f"{rel}: el resultado declara `{prohibido}={contadores[prohibido]}` y "
+                    f"aun así dice OK. Un éxito con {prohibido} no es un éxito")
+
+    saltados = contadores.get("skipped", 0)
+    permitidos = _skips_declarados(comp, r)
+    if saltados and not permitidos:
+        r.fallo(f"{rel}: la corrida SALTÓ {saltados} caso(s) y el manifiesto no declara "
+                f"ninguno. `OK (skipped={saltados})` no es `OK`: los casos saltados no "
+                f"demuestran nada y su ausencia no se publica")
+    elif permitidos and saltados != len(permitidos):
+        r.fallo(f"{rel}: el manifiesto declara {len(permitidos)} salto(s) permitido(s) y la "
+                f"corrida saltó {saltados}. Un salto de más no está declarado; uno de menos "
+                f"significa que el contrato describe una corrida que ya no ocurre")
+    for entrada in permitidos:
+        if entrada["id"] not in texto:
+            r.fallo(f"{rel}: el manifiesto permite el salto '{entrada['id']}' y la salida "
+                    f"no lo menciona. Un salto declarado que no aparece no se puede "
+                    f"contrastar con nada")
+
 def cargar_manifiesto(base):
     ruta = os.path.join(base, "kernel/operativo/validadores/validadores.yaml")
     with open(ruta, encoding="utf-8") as fh:
@@ -156,6 +292,10 @@ def t158_evidencia(raiz=None):
         for marca in comp.get("debe_contener") or []:
             if marca not in texto:
                 r.fallo(f"{rel}: no menciona '{marca}', que su validador debe producir")
+
+        # 6 bis · `E-14` · el RESULTADO EXACTO de una batería de `unittest`, y no una
+        #         subcadena. `OK` no puede seguir equivaliendo a `OK (skipped=N)`.
+        _comprobar_resultado_exacto(rel, comp, texto, r)
 
         # 7 · señales de fallo, salvo donde el manifiesto declara que son de un fixture
         if not comp.get("contiene_salida_de_fixture"):

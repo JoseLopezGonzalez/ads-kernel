@@ -3,7 +3,9 @@
 # codigo:       0
 # ---------------------------------------------------------------
 T151  SUPERADA  Ninguna cifra del corpus contradice el recuento derivado
+T270  SUPERADA  La cobertura de sedes se descubre barriendo, y no se enumera
+T271  SUPERADA  Todo bloque tipado del corpus tiene recuento derivado y publicado
 T245  SUPERADA  Ninguna cabecera afirma una correspondencia uno a uno entre formas y clases
 T246  SUPERADA  La cabecera de los escenarios enumera las pruebas que el fichero contiene
 
-3 superadas · 0 fallidas
+5 superadas · 0 fallidas

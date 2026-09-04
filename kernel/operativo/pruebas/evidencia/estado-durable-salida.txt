@@ -98,6 +98,18 @@ test_38_la_salida_no_lleva_rutas_absolutas_sin_json (__main__.Negativos.test_38_
 T173 · Defecto que previene: una evidencia que cambia de máquina a máquina. ... ok
 test_39_ningun_error_imprime_una_ruta_absoluta_de_la_maquina (__main__.Negativos.test_39_ningun_error_imprime_una_ruta_absoluta_de_la_maquina)
 T177 · Defecto que previene: una evidencia que cambia de máquina a máquina. ... ok
+test_T297_el_paso_9_NO_publica_sin_el_testigo_del_paso_8 (__main__.OrdenDeLosPasos8y9.test_T297_el_paso_9_NO_publica_sin_el_testigo_del_paso_8)
+T297 · Defecto que previene: `E-08`, invertir los pasos 8 y 9 sin que nada lo note. ... ok
+test_T297b_un_testigo_con_los_cid_VIEJOS_no_deja_publicar (__main__.OrdenDeLosPasos8y9.test_T297b_un_testigo_con_los_cid_VIEJOS_no_deja_publicar)
+T297 · Defecto que previene: escribir el testigo ANTES de publicar los objetos. ... ok
+test_T298_una_MEZCLA_PARCIAL_no_se_publica (__main__.OrdenDeLosPasos8y9.test_T298_una_MEZCLA_PARCIAL_no_se_publica)
+T298 · Defecto que previene: publicar la revisión con parte de los objetos fuera. ... ok
+test_T299_el_testigo_se_escribe_con_fsync_de_CONTENIDO_y_de_DIRECTORIO (__main__.OrdenDeLosPasos8y9.test_T299_el_testigo_se_escribe_con_fsync_de_CONTENIDO_y_de_DIRECTORIO)
+T299 · Defecto que previene: un testigo que un corte de corriente se lleva. ... ok
+test_T300_caida_ENTRE_los_pasos_8_y_9_y_RECUPERACION_posterior (__main__.OrdenDeLosPasos8y9.test_T300_caida_ENTRE_los_pasos_8_y_9_y_RECUPERACION_posterior)
+T300 · Defecto que previene: dar por recuperable lo que nadie ha recuperado. ... ok
+test_T301_borrar_el_testigo_impide_completar_a_ciegas (__main__.OrdenDeLosPasos8y9.test_T301_borrar_el_testigo_impide_completar_a_ciegas)
+T301 · Defecto que previene: que la RECUPERACIÓN se salte la garantía del orden. ... ok
 test_01_inicializacion_deja_un_almacen_publicable (__main__.Positivos.test_01_inicializacion_deja_un_almacen_publicable)
 T173 · Defecto que previene: un almacén recién creado que ya nace incoherente. ... ok
 test_02_lo_operacional_queda_fuera_de_la_rama_canonica (__main__.Positivos.test_02_lo_operacional_queda_fuera_de_la_rama_canonica)
@@ -138,6 +150,6 @@ test_19_abrir_y_resolver_una_reconciliacion_por_la_CLI (__main__.Positivos.test_
 T178 · Defecto que previene: un camino del motor que sólo existe en la API. ... ok
 
 ----------------------------------------------------------------------
-Ran 66 tests  (duración no registrada: varía por ejecución)
+Ran 72 tests  (duración no registrada: varía por ejecución)
 
 OK

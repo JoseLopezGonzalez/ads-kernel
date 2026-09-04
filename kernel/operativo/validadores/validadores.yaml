@@ -61,6 +61,16 @@ componentes:
     firma_de_exito: '\d+ superadas · 0 fallidas'
     debe_contener: ['T152']
 
+  # `11-ARQ` §19 `D104` MATERIALIZADO: los pares `<CAP>:revision` que el catalogo de `b.16`
+  # deriva por las cuatro vias, con su reparto por via, por procedencia y su ancla. El error
+  # `composicion-incompleta` NO es un aviso: impide el cierre del gate de composicion.
+  - id: composicion-procesos
+    script: comprobar_composicion_procesos.py
+    tipo: validador
+    evidencia: composicion-procesos-salida.txt
+    firma_de_exito: '\d+ superadas · 0 fallidas'
+    debe_contener: ['T273', 'T274', 'T275', 'T276']
+
   - id: recuentos
     script: comprobar_recuentos.py
     tipo: validador
@@ -141,7 +151,7 @@ componentes:
     evidencia: workspace-salida.txt
     # unittest escribe su resumen en stderr; el runner captura los dos por separado y la
     # firma se busca en la salida publicada, que los une con su cabecera de procedencia.
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada']
 
   # El MOTOR de estado durable de F6. No comprueba el corpus: administra el ESTADO de un
@@ -153,7 +163,7 @@ componentes:
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: estado-durable-salida.txt
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T173', 'T175', 'T176', 'T178']
 
   - id: estado-e2e
@@ -172,7 +182,7 @@ componentes:
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: runtime-salida.txt
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T182', 'T183', 'T184', 'T185', 'T186']
 
   - id: gobierno-git
@@ -180,7 +190,7 @@ componentes:
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: gobierno-git-salida.txt
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T187']
 
   - id: admision
@@ -188,7 +198,7 @@ componentes:
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: admision-salida.txt
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T188', 'T189', 'T190']
 
   - id: adaptadores
@@ -196,7 +206,7 @@ componentes:
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: adaptadores-salida.txt
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T191']
 
   - id: identidad
@@ -204,7 +214,7 @@ componentes:
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: identidad-salida.txt
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T192']
 
   - id: e2e-runtime
@@ -223,7 +233,7 @@ componentes:
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: arboles-salida.txt
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T210', 'T211', 'T212', 'T213']
 
   - id: contencion
@@ -231,7 +241,7 @@ componentes:
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: contencion-salida.txt
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T214', 'T215', 'T216']
 
   - id: raiz-externa
@@ -239,7 +249,7 @@ componentes:
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: raiz-externa-salida.txt
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T217', 'T218', 'T219', 'T220']
 
   - id: multimaquina
@@ -247,7 +257,7 @@ componentes:
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: multimaquina-salida.txt
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T221', 'T222']
 
   - id: sesion-nueva
@@ -255,7 +265,7 @@ componentes:
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: sesion-nueva-salida.txt
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T223', 'T224']
 
   # El ESCENARIO extremo a extremo del macrobloque 3. No sustituye a los dos anteriores:
@@ -266,7 +276,7 @@ componentes:
     tipo: validador
     evidencia: e2e-f6-salida.txt
     firma_de_exito: '24 de 24 pasos CUMPLIDOS'
-    debe_contener: ['T225', 'paso 02', 'paso 05', 'paso 13', 'paso 15', 'paso 18',
+    debe_contener: ['T225', 'T301', 'paso 02', 'paso 05', 'paso 13', 'paso 15', 'paso 18',
                     'paso 21', 'paso 22', 'paso 23', 'paso 24']
 
   # El MACROBLOQUE 3 de F6: el ciclo de 7.2, Continua de 7.4 y los cuatro macrocircuitos.
@@ -277,7 +287,7 @@ componentes:
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: ciclo-salida.txt
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T195', 'T196', 'T197', 'T199', 'T202']
 
   - id: continua
@@ -285,7 +295,7 @@ componentes:
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: continua-salida.txt
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T203', 'T204', 'T205']
 
   # El PASO 4 de `C4` -asignacion de agentes por la politica de `C2`- y el corte por
@@ -296,16 +306,41 @@ componentes:
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: agentes-salida.txt
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T226', 'T228', 'T230', 'T231',
                     'T232', 'T235']
+
+  # `C4` «cuantos agentes por rol» DERIVADO del campo `agentes` de la composicion -no de un
+  # parametro externo- y `b.12` paso 5 con sus CUATRO criterios y sus CUATRO campos de
+  # inanicion. Cierra `E-01` y `E-06`.
+  - id: cardinalidad-y-seleccion
+    script: test_cardinalidad_y_seleccion.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: cardinalidad-salida.txt
+    firma_de_exito: '(?m)^OK$'
+    debe_contener: ['Ran ', 'duración no registrada', 'T250', 'T254', 'T259', 'T262',
+                    'T264', 'T269']
+
+  # El vinculo commit+tree de la raiz externa, el orden irrompible de los pasos 8 y 9 del
+  # motor, `V6-12` sin degradacion, la procedencia con `--repo`, la evidencia sin saltos
+  # silenciosos, los errores tipados de los puntos ejecutables y la contencion cableada.
+  # Cierra `E-07` a `E-10` y `E-14` a `E-16`, y publica el alcance medido de `E-18`.
+  - id: integridad-evidencia
+    script: test_integridad_y_evidencia.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: integridad-evidencia-salida.txt
+    firma_de_exito: '(?m)^OK$'
+    debe_contener: ['Ran ', 'duración no registrada', 'T306', 'T307', 'T308', 'T309',
+                    'T310', 'T311']
 
   - id: macrocircuitos
     script: test_macrocircuitos.py
     dir: kernel/operativo/runtime/pruebas
     tipo: validador
     evidencia: macrocircuitos-salida.txt
-    firma_de_exito: 'OK'
+    firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T206', 'T207', 'T208', 'T209']
 
   - id: registro
@@ -329,6 +364,22 @@ componentes:
 
   - id: composicion
     script: composicion_packs.py
+    tipo: biblioteca
+
+  # Los TRES ejes de sabotaje de la correccion del 2026-09-04. No se ejecutan solos: los
+  # incorpora `comprobar_negativos.py` POR NOMBRE y sin `try/except`, y su evidencia es la
+  # de `negativos`. Se declaran aqui porque un fichero de `validadores/` que el manifiesto
+  # no conoce queda fuera de la evidencia sin que nada lo diga, que es lo que `T158` mide.
+  - id: negativos-cardinalidad
+    script: negativos_cardinalidad.py
+    tipo: biblioteca
+
+  - id: negativos-contratos19
+    script: negativos_contratos19.py
+    tipo: biblioteca
+
+  - id: negativos-integridad
+    script: negativos_integridad.py
     tipo: biblioteca
 
   - id: runner

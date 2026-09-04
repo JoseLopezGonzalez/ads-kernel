@@ -7,6 +7,7 @@ Cualquier documento que afirme una distinta hace fallar la prueba T151.
 
 | qué | cuántos |
 |---|---|
+| bloques de esquema | **0** |
 | campos de capacidad | **19** |
 | campos de metodo | **19** |
 | campos de pack | **18** |
@@ -16,20 +17,24 @@ Cualquier documento que afirme una distinta hace fallar la prueba T151.
 | composiciones | **38** |
 | composiciones de dis | **10** |
 | contratos transversales | **7** |
-| escenarios | **173** |
+| encuadres | **2** |
+| escenarios | **223** |
 | esquemas | **19** |
+| estaciones de entrada | **14** |
 | formas de conversacion | **14** |
 | gates | **31** |
-| handoffs | **22** |
+| handoffs | **24** |
+| integration sets | **1** |
 | metodos | **35** |
 | metodos de dis | **6** |
 | niveles de novedad | **5** |
 | packs | **3** |
+| perfiles de agente | **21** |
 | procesos | **10** |
 | prompts | **36** |
 | roles | **42** |
 | roles de dis | **11** |
 | rubricas | **2** |
 | secciones de memoria | **12** |
-| validadores | **17** |
+| validadores | **21** |
 | vetos | **4** |

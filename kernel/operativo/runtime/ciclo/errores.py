@@ -340,6 +340,68 @@ class VariosAgentesSinIntegrador(ErrorDeCiclo):
     CODIGO = "VARIOS_AGENTES_SIN_INTEGRADOR"
 
 
+
+class CardinalDeAgentesIlegible(ErrorDeCiclo):
+    """`C4`, «Cuántos agentes por rol» · el campo `agentes` no encaja en NINGUNA forma.
+
+    El comentario que este error deroga decía que `agentes` era prosa y que derivar de ahí
+    un cardinal «exigiría reglas léxicas sobre texto libre». La medición lo desmintió: el
+    campo tiene noventa y nueve valores en VEINTIDÓS formas, y esas veintidós son un
+    vocabulario CERRADO. Lo que no se puede hacer es leerlo a medias: si aparece una forma
+    que el lector no conoce, la composición NO se materializa. Suponer «1 por omisión»
+    ante un valor ilegible es exactamente cómo `2 o 3` acabó produciendo un agente.
+    """
+
+    CODIGO = "CARDINAL_DE_AGENTES_ILEGIBLE"
+
+
+class RepartoSinUnidades(ErrorDeCiclo):
+    """`C4` condición (a) · se declara reparto por territorio, dirección, artefacto o
+    superficie, y NADIE dice cuáles son.
+
+    «El trabajo se reparte por artefacto o superficie SIN SOLAPAMIENTO» no se puede
+    comprobar sin saber cuáles son los artefactos. Con cero unidades declaradas no hay una
+    respuesta por defecto: un territorio es una respuesta legítima; ninguno es que nadie ha
+    contestado, y repartir sin saber entre qué es inventar la división.
+    """
+
+    CODIGO = "REPARTO_SIN_UNIDADES"
+
+
+class CriterioDeComparacionAusente(ErrorDeCiclo):
+    """`C4` COMPETENCIA · «con criterio de comparación escrito ANTES de empezar».
+
+    El «antes» es la mitad de la regla y es la que se pierde siempre: un criterio escrito
+    después de ver las dos propuestas no compara, justifica la que ya gustaba. Por eso el
+    criterio viaja con el instante lógico en que se declaró y la materialización exige que
+    sea ANTERIOR al inicio del trabajo.
+    """
+
+    CODIGO = "CRITERIO_DE_COMPARACION_AUSENTE"
+
+
+class VolumenExcedeElContexto(ErrorDeCiclo):
+    """`C4` condición (c) · «el volumen excede lo que un contexto puede sostener».
+
+    Es la única de las tres condiciones que se puede MEDIR con lo que el corpus ya declara,
+    y por eso se mide: el volumen del paquete contra la capacidad de contexto del agente. Si
+    excede y el rol no declara reparto, el trabajo no cabe y no se despacha a ciegas.
+    """
+
+    CODIGO = "VOLUMEN_EXCEDE_EL_CONTEXTO"
+
+
+class RepartoIncoherente(ErrorDeCiclo):
+    """El registro durable del equipo afirmaría a la vez una cosa y su contraria.
+
+    Los dos casos: publicar «2 o 3» junto a UN agente —lo que la auditoría midió—, y
+    reanudar una materialización cambiando en silencio el reparto ya escrito. Los dos
+    producen un registro que nadie puede creer, y `C4` paso 7 existe para lo contrario.
+    """
+
+    CODIGO = "REPARTO_INCOHERENTE"
+
+
 class ObligacionSinProductora(ErrorDeCiclo):
     """Una obligación que no declara NI capacidad NI autoridad que produzca su capa.
 
@@ -355,6 +417,8 @@ class ObligacionSinProductora(ErrorDeCiclo):
 # que todo código emitido pertenece a esta lista cerrada.
 CLASES = (
     ObligacionSinProductora, PaqueteIlegible, VariosAgentesSinIntegrador,
+    CardinalDeAgentesIlegible, RepartoSinUnidades, CriterioDeComparacionAusente,
+    VolumenExcedeElContexto, RepartoIncoherente,
     ErrorDeCiclo, CorpusIlegible, CorpusIncompleto,
     EntradaNoClasificable, EncuadreIncompleto, PrecondicionIncumplida, EntradaSinTrabajo,
     ProcesoDesconocido, MateriaSinProceso, EstadoDeMateriaInvalido, PropietarioNoDerivable,

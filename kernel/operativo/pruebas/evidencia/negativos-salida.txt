@@ -27,9 +27,9 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 54256290d7cbf26a, calculada c073baa4a015d5b5. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada f16fef1fae2309f6, calculada 51d81a0948242207. Algún fichero de la huella se
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 54256290d7cbf26a, calculada c8007ac71be2e770. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada f16fef1fae2309f6, calculada f5564582218ee784. Algún fichero de la huella se
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
                           → detectada: kernel/operativo/validadores/ads_lint.py NO entra en la huella: un fork silencioso de ese fichero sería indetectable
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
@@ -57,7 +57,7 @@ OK   N158e   evidencia T158  falta un fichero de evidencia que el manifiesto exi
 OK   N158f   evidencia T158  un validador nuevo queda fuera del manifiesto y de la evidencia
                           → detectada: validadores/comprobar_algo_nuevo.py: existe y el manifiesto no lo declara. Quedaría fuera de la evidencia sin que nada l
 OK   N158g   evidencia T158  la cobertura publicada describe un corpus con dos ficheros menos que el vigente
-                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 492 y el corpus vigente da 4
+                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 501 y el corpus vigente da 5
 OK   N158h   evidencia T158  una vigencia declara un recuento que nadie implementa
                           → detectada: manifiesto: la vigencia 'T161-cobertura' de 'fuentes' declara el recuento 'fuentes.recuento_que_nadie_implementa', que n
 OK   N158i   evidencia T158  una entrada de vigencia no declara `patron` — el caso que reventaba con KeyError
@@ -87,7 +87,7 @@ OK   N152    A-12  T152  el release cambia y ningún punto de entrada se entera
 OK   N152b   A-12  T152  la línea histórica se sube al ritmo del release, que es otro contador
                           → detectada: KERNEL.md declara 2.0.0-alpha.11, igual que el release. Son contadores distintos: subir uno no sube el otro
 OK   N151    A-24  T151  un documento vuelve a escribir a mano una cifra que ya no cuadra
-                          → detectada: kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md: declara 28 campos_de_rol y el corpus tiene 29
+                          → detectada: kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md:37: «Contrato común de rol — veintiocho campos» — escrito 28 ·
 OK   N142    A-11  T142  el esquema de encuadre pierde un estado que sus métodos exigen
                           → detectada: `estado_paquete` no admite ['esperando-owner'], que son estados de b.2
 OK   N142b   A-11  T142  vuelve `aparcado` como estado propio, contra b.2
@@ -149,7 +149,7 @@ OK   N240f   F-02  T240  `OWNER` vuelve a estar en el campo de CAPACIDAD, ademá
 OK   N240c   F-02  T240  el esquema vuelve a admitir texto libre donde va una capacidad
                           → detectada: `proceso.yaml` no tipa `capacidad_productora` como `ref_a: capacidad`: sin tipar, nada impide que vuelva a entrar un mét
 OK   N240d   F-02  T240  entra una variante de capacidad que el esquema no declara
-                          → detectada: kernel/operativo/recorrido/01-PROCESOS.md: proceso:FEA·condicional usa la variante `DOM:revision`, que el esquema no dec
+                          → detectada: kernel/operativo/recorrido/01-PROCESOS.md: proceso:FEA·condicional usa la variante `DOM:auditoria`, que el esquema no de
 OK   N240e   F-02  T240  el conjunto de variantes admitidas se queda sin sede en el esquema
                           → detectada: `proceso.yaml` apunta a `variantes_de_capacidad` y el esquema no declara esa lista: el sufijo de variante quedaría sin t
 OK   N241    F-06  T241  el `cuando` de la entrega de DIS a VER vuelve a no nombrar estación
@@ -170,5 +170,51 @@ OK   N245    F-10  T245  la cabecera vuelve a afirmar una forma por clase de exp
                           → detectada: kernel/operativo/entrada/03-FORMAS.md:3: afirma «uno por clase de expresión» de las formas de conversación, y hay 14 for
 OK   N246    F-11  T246  la cabecera vuelve a afirmar un rango de pruebas que no contiene
                           → detectada: kernel/operativo/entrada/05-ESCENARIOS.md: el fichero contiene T76 y la cabecera no lo enumera (`11-ARQ` §19, `F-11`)
+OK   N250    E-01  T254  una composición declara SIETE agentes por artefacto y, en el mismo campo, que no hay integrador — lo que `C4` llama prohibido
+                          → detectada: composicion:dis-proyecto-nuevo · DIS/diseno-visual: declara 7 agentes y, en el mismo campo, que NO hay integrador. `C4`:
+OK   N250b   E-01  T254  el reparto plural sigue declarado y desaparece quién integra el resultado
+                          → detectada: composicion:dis-proyecto-nuevo · DIS/investigacion-visual: materializa hasta 2 agentes y su composición no declara QUIÉN
+OK   N250c   E-01  T259  el campo `agentes` estrena una forma que el vocabulario cerrado no declara
+                          → detectada: composicion:dis-proyecto-nuevo · DIS/diseno-visual: el campo `agentes` no encaja en ninguna forma declarada del vocabula
+OK   N250d   E-01  T250  una composición pasa a declarar varios agentes y el censo no lo ve
+                          → detectada: el corpus declara formas plurales del campo `agentes` que el censo medido no contempla: `1 o 2 repartidos por superficie
+OK   N270    §19 CONTRATO 1 T151  una sede NUEVA publica una cifra falsa sobre un objeto censable
+                          → detectada: kernel/operativo/capacidades/NOTA-DE-COBERTURA.md:3: «las once capacidades» — escrito 11 · derivado 15 (capacidades). La
+OK   N270b   §19 CONTRATO 1 T151  la sede nueva cuelga de una rama que ninguna regla nombra
+                          → detectada: kernel/operativo/plantillas/APUNTE-SUELTO.md:3: «los cuatro contratos transversales» — escrito 4 · derivado 7 (contratos
+OK   N270c   §19 CONTRATO 1 T270  la cobertura de sedes vuelve a ser una lista literal de rutas
+                          → detectada: una sede NUEVA con la afirmación falsa «las DIECISÉIS capacidades» NO fue detectada: la cobertura sigue enumerándose en
+OK   N271    §19 CONTRATO 1bis T271  entra un perfil de agente nuevo en C2 y el censo tiene que moverse solo
+                          → detectada: `RECUENTOS-generado.md` no publica «perfiles_de_agente = 22»: la cifra derivada no llega a ninguna sede legible. Regener
+OK   N272    §19 CONTRATO 2 T152  una sede NUEVA publica una versión del kernel que no es la vigente
+                          → detectada: kernel/operativo/entrada/NOTA-DE-VERSION.md:3: publica 1.2.0 para `kernel/KERNEL.md` y la vigente es 1.5.0. REMEDIO F6 —
+OK   N272b   §19 CONTRATO 2 T272  el alcance de T152 vuelve a ser los dos ficheros escritos a mano
+                          → detectada: una sede NUEVA que publica `kernel/KERNEL.md` 9.9.9 NO fue detectada: el alcance sigue enumerándose (`11-ARQ` §19, CONTR
+OK   N273    §19 D104 T273  DEP se queda sin SEG:revision, con las otras cuatro intactas
+                          → detectada: composicion-incompleta · proceso:DEP → `SEG:revision` AUSENTE · vía 2 · nivel catálogo · procedencia obligatorias · ancl
+OK   N273b   §19 D104 T273  la SEG:revision de DEP se vuelve RETIRABLE y deja de heredar de su origen
+                          → detectada: composicion-incompleta · proceso:DEP → `SEG:revision` es RETIRABLE y su origen `condiciones-de-seguridad` no lo es: no h
+OK   N273c   §19 D104 T273  la revisión de DEP se coloca ANTES de su ancla
+                          → detectada: composicion-incompleta · proceso:DEP → `SEG:revision` está ANTES de su ancla `evidencia-suficiente` (posición 2 frente a
+OK   N273d   §19 D104 T273  una revisión condicional deja de heredar la activación de su origen
+                          → detectada: composicion-incompleta · proceso:FEA → `SEG:revision` se activa con «C-DOM» y su origen `SEG:condiciones` con «C-SEG»: n
+OK   N273e   §19 D104 T273  la ficha de SEG deja de declarar la doble participación de b.16
+                          → detectada: proceso:FEA declara `SEG:revision` y NINGUNA participación del catálogo la exige: una instancia sin derivación es una li
+OK   N273f   §19 D104 T273  una participación PROPIETARIA de una capacidad vigilada no emite par
+                          → detectada: composicion-incompleta · proceso:SIS → `SEG:revision` AUSENTE · vía 1 · nivel catálogo · procedencia propietaria · ancla
+OK   N275    §19 D104 T275  el censo de fixtures publicado deja de ser el que la batería ejecuta
+                          → detectada: el censo de fixtures publicado es 17 y esta batería ejecuta 20. SEDE: `docs/evolucion/11-ARQUITECTURA-INTEGRADA.md`, §19
+OK   N276    §19 D104 T276  el reparto por vía publicado deja de ser el derivado del árbol
+                          → detectada: §19 publica 2 pares por la vía 2 y el árbol deriva 1. Un total admite repartos que significan cosas distintas: publicar
+OK   NE14a   E-14  T158  la evidencia dice `OK (skipped=3)` y la firma `OK` la casaba igual
+                          → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: la corrida SALTÓ 3 caso(s) y el manifiesto no declara ninguno.
+OK   NE14b   E-14  T158  el contador de casos se infla y nadie lo contrasta con la salida
+                          → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: declara `Ran 99 tests` y su salida contiene 20 desenlaces de c
+OK   NE14c   E-14  T158  se recorta un caso de la salida y el contador sigue diciendo lo que decía
+                          → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: declara `Ran 20 tests` y su salida contiene 19 desenlaces de c
+OK   NE14d   E-14  T158  un `OK` que declara `failures` dentro del paréntesis
+                          → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: el resultado declara `failures=1` y aun así dice OK. Un éxito
+OK   NE14e   E-14  T158  dos corridas pegadas en el mismo fichero de evidencia
+                          → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: la salida no tiene EXACTAMENTE un `Ran N tests` y un resultado
 
-84 infracciones detectadas · 0 NO detectadas
+107 infracciones detectadas · 0 NO detectadas

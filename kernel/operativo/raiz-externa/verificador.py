@@ -64,7 +64,9 @@ import atestacion as modulo_de_atestacion                            # noqa: E40
 import firma as modulo_de_firma                                      # noqa: E402
 import instalar as modulo_de_instalacion                             # noqa: E402
 from errores import (                                                # noqa: E402
+    AnclaNoCoincide,
     AtestacionInvalida,
+    EmisorNoCoincide,
     ErrorDeRaizExterna,
     EvidenciaDentroDelArbol,
     FirmaNoVerificada,
@@ -137,6 +139,106 @@ def _identidad_activa(configuracion):
     anillo = configuracion.anillo()
     activa = anillo.activa()
     return anillo, activa
+
+
+# ---------------------------------------------------------------------------
+#  `E-07` · LOS SIETE PASOS, UNA SOLA VEZ, EN UN SOLO SITIO
+# ---------------------------------------------------------------------------
+#  DECISIÓN · `verificar` y `comprobar` corren EXACTAMENTE la misma secuencia
+#      Alternativas: (a) que `verificar` compruebe lo que puede y `comprobar` haga el resto;
+#      (b) una sola función que ejecute los siete pasos sobre el SOBRE ya construido, y que
+#      las dos órdenes la llamen.
+#      Se elige (b). Con (a) hay dos listas de comprobaciones que se creen la misma, y ésa es
+#      la forma exacta en que se cuela lo que nadie mira: la auditoría encontró que `verificar`
+#      escribía evidencia sin comprobar el vínculo, y `comprobar` sí lo comprobaba, con lo
+#      cual el defecto sólo aparecía si alguien acordaba comprobar después. Con (b) EMITIR es
+#      VERIFICAR LO EMITIDO, y la evidencia sale por una puerta que exige el testigo completo.
+def verificar_en_orden(sobre, *, configuracion, anillo, proveedor, commit, tree):
+    """Ejecuta los SIETE pasos EN SU ORDEN y devuelve el testigo. Falla cerrado en el primero.
+
+    Orden, y el orden es la garantía: **firma · clave aceptada · época · commit · tree ·
+    política · identidad del emisor**. Comprobar el vínculo antes que la firma sería juzgar
+    bytes que nadie ha autenticado; comprobar la época antes que la pertenencia al anillo
+    sería preguntar por la ventana de una identidad que no está inscrita.
+    """
+    secuencia = modulo_de_atestacion.SecuenciaDeVerificacion()
+    cuerpo = sobre.atestacion
+    modulo_de_atestacion.exigir_forma(cuerpo)
+
+    # 1 · FIRMA. Contra `orden_de_verificacion`, que sólo tiene claves PÚBLICAS.
+    if not proveedor.verificar(modulo_de_atestacion.canonizar(cuerpo), sobre.firma):
+        raise FirmaNoVerificada(
+            "la atestación NO verifica contra los firmantes autorizados: o se ha "
+            "manipulado, o la firmó una clave que esta raíz no acepta"
+        )
+    secuencia.anotar("firma")
+
+    # 2 · CLAVE ACEPTADA. Estar inscrita en el anillo externo, que el árbol no controla.
+    firmante = cuerpo.get("identidad")
+    try:
+        inscrita = anillo.obtener(firmante)
+    except ErrorDeIdentidad as error:
+        raise IdentidadNoAceptada(
+            "la identidad que firma la atestación no la acepta la configuración externa: "
+            + error.detalle, identidad=str(firmante)) from error
+    secuencia.anotar("clave-aceptada")
+
+    # 3 · ÉPOCA. Tiempo LÓGICO, nunca el reloj de quien verifica (`I-g3`).
+    epoca = int(cuerpo.get("epoca", 0))
+    try:
+        anillo.exigir_valida(firmante, epoca)
+    except ErrorDeIdentidad as error:
+        raise IdentidadNoAceptada(
+            "la identidad que firma la atestación no es válida en la época que la "
+            "atestación declara: " + error.detalle,
+            identidad=str(firmante), epoca=epoca) from error
+    secuencia.anotar("epoca")
+
+    # 4 y 5 · las DOS MITADES del vínculo, por separado y con su propio código.
+    modulo_de_atestacion.exigir_commit(cuerpo, commit)
+    secuencia.anotar("commit")
+    modulo_de_atestacion.exigir_tree(cuerpo, tree)
+    secuencia.anotar("tree")
+
+    # 6 · POLÍTICA. La autoridad y el ANCLA bajo las que se calculó el veredicto son las que
+    #     declara la configuración EXTERNA, no las que el árbol pudiera proponer.
+    declaracion = configuracion.declaracion()
+    if not declaracion.ancla:
+        raise AnclaNoCoincide(
+            "la configuración externa de confianza no declara ancla: sin ancla que venga de "
+            "fuera no hay política contra la que juzgar, y `V6-17` prohíbe el verde"
+        )
+    if cuerpo.get("autoridad") != configuracion.autoridad():
+        raise AnclaNoCoincide(
+            "la atestación dice haberse emitido bajo la autoridad `"
+            + str(cuerpo.get("autoridad")) + "` y esta configuración externa es `"
+            + str(configuracion.autoridad()) + "`",
+            atestada=str(cuerpo.get("autoridad")),
+            declarada=str(configuracion.autoridad()),
+        )
+    base_atestada = (cuerpo.get("veredicto") or {}).get("base")
+    if base_atestada != declaracion.ancla:
+        raise AnclaNoCoincide(
+            "el veredicto atestado parte de la base " + str(base_atestada)[:12]
+            + " y la configuración externa ancla en " + str(declaracion.ancla)[:12]
+            + ": un veredicto calculado contra otra base no es el de esta raíz externa",
+            atestada=str(base_atestada)[:12], declarada=str(declaracion.ancla)[:12],
+        )
+    secuencia.anotar("politica")
+
+    # 7 · IDENTIDAD DEL EMISOR. La huella PÚBLICA atestada es la que el anillo inscribe para
+    #     ese identificador. Sin este paso, una atestación podría llamarse `raiz-externa-1` y
+    #     publicar la huella de otra clave, y la trazabilidad apuntaría a quien no fue.
+    if cuerpo.get("huella_publica") != inscrita.huella_publica:
+        raise EmisorNoCoincide(
+            "la atestación se atribuye a `" + str(firmante) + "` y publica una huella "
+            "pública que NO es la que el anillo externo inscribe para esa identidad",
+            identidad=str(firmante),
+        )
+    secuencia.anotar("identidad-del-emisor")
+
+    secuencia.exigir_completa()
+    return secuencia
 
 
 # ---------------------------------------------------------------------------
@@ -244,11 +346,16 @@ def _orden_verificar(argumentos):
             identidad=str(activa.id),
         )
 
-    # 7 · la evidencia, FUERA del árbol verificado. Sólo se llega aquí con la firma ya
-    #     verificada: una atestación que no verifica NO se escribe.
-    os.makedirs(os.path.dirname(evidencia) or ".", exist_ok=True)
-    with open(evidencia, "w", encoding="utf-8") as manejador:
-        manejador.write(sobre.serializar())
+    # 6 ter · `E-07` · LOS SIETE PASOS, sobre el sobre que se acaba de construir y en su
+    #         orden. EMITIR ES VERIFICAR LO EMITIDO: la misma secuencia que corre
+    #         `comprobar`, en el mismo sitio y con el mismo código.
+    secuencia = verificar_en_orden(
+        sobre, configuracion=configuracion, anillo=anillo, proveedor=proveedor,
+        commit=commit, tree=tree)
+
+    # 7 · la evidencia, FUERA del árbol verificado. La escritura pasa por la ÚNICA puerta
+    #     que exige el testigo COMPLETO: sin los siete pasos no hay fichero.
+    modulo_de_atestacion.escribir_evidencia(evidencia, sobre, secuencia)
 
     resumen = {
         "color": veredicto.color,
@@ -261,6 +368,9 @@ def _orden_verificar(argumentos):
         "evidencia": os.path.basename(evidencia),
         "instalacion": (estado_de_la_instalacion["ok"]
                         if estado_de_la_instalacion else None),
+        # La secuencia se PUBLICA: quien lee la evidencia ve QUÉ se verificó y en qué orden,
+        # y no tiene que creerse que se verificó algo.
+        "secuencia_de_verificacion": secuencia.a_dict(),
     }
     sys.stdout.write(_volcar(resumen) + "\n")
     return EXITO if veredicto.color == "VERDE" else FALLO
@@ -291,30 +401,17 @@ def _orden_comprobar(argumentos):
     configuracion = identidad.cargar(argumentos.configuracion, arbol_verificado=repo)
     anillo = configuracion.anillo()
 
-    # 1 · la identidad que firma tiene que estar ACEPTADA y verificar en su época.
+    # 1 a 7 · `E-07` · LA MISMA SECUENCIA que corre la emisión, en el mismo orden: firma ·
+    #         clave aceptada · época · commit · tree · política · identidad del emisor.
     firmante = sobre.atestacion.get("identidad")
     epoca = int(sobre.atestacion.get("epoca", 0))
-    try:
-        anillo.exigir_valida(firmante, epoca)
-    except ErrorDeIdentidad as error:
-        raise IdentidadNoAceptada(
-            "la identidad que firma la atestación no la acepta la configuración externa: "
-            + error.detalle, identidad=str(firmante)) from error
-
-    # 2 · la FIRMA, verificada por el anfitrión que sólo tiene claves PÚBLICAS.
     proveedor = _proveedor(configuracion, firmante)
-    if not proveedor.verificar(modulo_de_atestacion.canonizar(sobre.atestacion),
-                               sobre.firma):
-        raise FirmaNoVerificada(
-            "la atestación NO verifica contra los firmantes autorizados: o se ha "
-            "manipulado, o la firmó una clave que esta raíz no acepta"
-        )
-
-    # 3 · el VÍNCULO con el commit y el árbol que se están comprobando.
     commit, tree = _commit_y_arbol(repo, argumentos.revision or "HEAD")
-    modulo_de_atestacion.exigir_vinculo(sobre.atestacion, commit=commit, tree=tree)
+    secuencia = verificar_en_orden(
+        sobre, configuracion=configuracion, anillo=anillo, proveedor=proveedor,
+        commit=commit, tree=tree)
 
-    # 4 · `G-A9`: la autodeclaración del árbol, contrastada con la atestación externa.
+    # 8 · `G-A9`: la autodeclaración del árbol, contrastada con la atestación externa.
     autodeclarado = _leer_autodeclaracion(repo)
     atestado = sobre.atestacion["veredicto"]["color"]
     resumen = {
@@ -326,6 +423,7 @@ def _orden_comprobar(argumentos):
         "veredicto_atestado": atestado,
         "veredicto_autodeclarado": (autodeclarado or {}).get("color"),
         "digest_de_la_atestacion": modulo_de_atestacion.digest(sobre.atestacion),
+        "secuencia_de_verificacion": secuencia.a_dict(),
     }
     if autodeclarado and autodeclarado.get("color") != atestado:
         sys.stdout.write(_volcar(resumen) + "\n")

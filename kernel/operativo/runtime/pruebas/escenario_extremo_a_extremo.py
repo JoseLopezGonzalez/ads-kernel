@@ -558,16 +558,77 @@ class Escenario:
         shutil.rmtree(self.tmp, ignore_errors=True)
 
 
+# ---------------------------------------------------------------------------
+#  `E-08` · RECUPERABILIDAD DEL ALMACÉN AL TERMINAR
+# ---------------------------------------------------------------------------
+#  Hecho reproducido antes de corregir: con los pasos 8 y 9 invertidos, este escenario
+#  terminaba en VERDE sobre un almacén cuyo `REVISION.json` nombraba objetos que no estaban
+#  publicados en `canonico/`, es decir, IRRECUPERABLE. Un escenario extremo a extremo que no
+#  mira si lo que deja detrás se puede volver a abrir no está midiendo durabilidad.
+#
+#  DECISIÓN · se recorren TODOS los almacenes que el escenario haya dejado, y no uno elegido
+#      El escenario crea varios control repos —máquinas, clones, copias— y cuál de ellos
+#      tiene almacén cambia con los pasos. Buscarlos por su marca en disco —`estado/
+#      REVISION.json`— hace que un almacén nuevo entre en la comprobación sin que nadie se
+#      acuerde de añadirlo. Y se exige encontrar AL MENOS UNO: si el descubrimiento fallara,
+#      «ninguno estaba roto» sería trivialmente cierto y no probaría nada.
+def almacenes_del_escenario(base):
+    """Todo directorio bajo `base` que sea un control repo con almacén durable."""
+    encontrados = []
+    for carpeta, subcarpetas, _ficheros in os.walk(base):
+        if ".git" in subcarpetas:
+            subcarpetas.remove(".git")
+        if os.path.isfile(os.path.join(carpeta, "estado", "REVISION.json")):
+            encontrados.append(carpeta)
+            subcarpetas[:] = [s for s in subcarpetas if s != "estado"]
+    return sorted(encontrados)
+
+
+def comprobar_recuperabilidad(base):
+    """`(ok, lineas)`: cada almacén se ABRE, se RECUPERA y se verifica su integridad."""
+    import estado as _estado                                          # noqa: PLC0415
+    lineas = []
+    repos = almacenes_del_escenario(base)
+    if not repos:
+        return False, ["T301 · recuperabilidad: NO se encontró ningún almacén durable, así que la "
+                       "comprobación no habría podido fallar nunca"]
+    ok = True
+    for repo in repos:
+        nombre = os.path.relpath(repo, base)
+        try:
+            with _estado.abrir(repo, recuperar=True) as almacen:
+                informe = almacen.verificar_integridad()
+                almacen.auditar()
+        except Exception as error:                                    # noqa: BLE001
+            ok = False
+            lineas.append("T301 · recuperabilidad  " + nombre + ": NO SE PUDO ABRIR NI RECUPERAR ("
+                          + type(error).__name__ + ")")
+            continue
+        if not informe.ok:
+            ok = False
+            lineas.append("T301 · recuperabilidad  " + nombre + ": ÍNTEGRIDAD ROTA — "
+                          + ", ".join(sorted({h["codigo"] for h in informe.hallazgos})))
+        else:
+            lineas.append("T301 · recuperabilidad  " + nombre + ": abierto, recuperado e íntegro")
+    return ok, lineas
+
+
 def main():
     escenario = Escenario()
+    recuperable = True
     try:
         escenario.ejecutar()
+        # `E-08` · el escenario no termina en verde sobre un almacén que no se puede volver
+        # a abrir. Se comprueba ANTES de borrar el temporal.
+        recuperable, lineas_de_recuperabilidad = comprobar_recuperabilidad(escenario.tmp)
+        escenario.lineas.append("")
+        escenario.lineas.extend(lineas_de_recuperabilidad)
     finally:
         escenario.limpiar()
     # Se imprime AL FINAL y de una vez: así el informe no se entrelaza con nada que
     # escriban los subprocesos, y los bytes son los mismos en cada ejecución.
     print("\n".join(escenario.lineas))
-    return escenario.codigo_de_salida()
+    return escenario.codigo_de_salida() or (0 if recuperable else 1)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 703da6cc539358a7 -->
+<!-- source_revision: 40187305c3ffea56 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -12,10 +12,10 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 |---|---|
 | CONTRATO DEFINIDO | 56 |
 | VALIDADOR IMPLEMENTADO | 0 |
-| PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 117 |
-| PRUEBA FALLIDA | 0 |
-| **total** | **173** |
+| PRUEBA EJECUTADA | 1 |
+| PRUEBA SUPERADA | 165 |
+| PRUEBA FALLIDA | 1 |
+| **total** | **223** |
 
 ## Detalle
 
@@ -194,3 +194,53 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T247](T240-T248-hallazgos-externos-f6.md) | El bisnieto con setsid no escapa al adaptador con política de contención | FD-5 · CONTRATO-ADAPTADOR 2 · CONTRATO-CONTENCION · T215 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/adaptadores-salida.txt |
 | [T248](T240-T248-hallazgos-externos-f6.md) | Sin backend fuerte el adaptador no ejecuta y falla cerrado | FD-5 · CONTRATO-CONTENCION · T216 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/adaptadores-salida.txt |
 | [T249](T226-T249-agentes-y-modelos.md) | El registro de combinaciones de C4 paso 7 no se autocontradice al romperse un grupo | C4 · C2 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
+| [T250](T250-T269-cardinalidad-y-seleccion.md) | El cardinal de agentes se deriva del corpus y hay tantos agentes como el cardinal dice | E-01 · C4 cuántos agentes por rol · C4 paso 4 · C4 paso 7 · b.11 execution_slots | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T251](T250-T269-cardinalidad-y-seleccion.md) | El registro durable del equipo no puede publicar dos o tres junto a un agente | E-01 · C4 paso 7 · materialización auditable | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T252](T250-T269-cardinalidad-y-seleccion.md) | Repartir por territorio sin territorios declarados falla cerrado | E-01 · C4 condición a · reparto sin solapamiento | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T253](T250-T269-cardinalidad-y-seleccion.md) | La competencia exige criterio de comparación escrito ANTES de empezar | E-01 · C4 competencia · composicion:dis-feature-visual | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T254](T250-T269-cardinalidad-y-seleccion.md) | Varios agentes sin integrador declarado está prohibido | E-01 · C4 prohibición del integrador · campo ampliacion de la composición | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T255](T250-T269-cardinalidad-y-seleccion.md) | Un integrador que no es rol de la composición no integra nada | E-01 · C4 quién integra · contraste contra la lista roles | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T256](T250-T269-cardinalidad-y-seleccion.md) | Un volumen que excede lo que un contexto sostiene no se despacha a ciegas | E-01 · C4 condición c · esquemas/perfil-agente escala de contexto · C2 paso 3 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T257](T250-T269-cardinalidad-y-seleccion.md) | Con slots insuficientes los agentes esperan, la composición no se reduce y nunca hay dos en un slot | E-01 · C4 paso 6 · b.11 execution_slots · esperando-capacidad | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T258](T250-T269-cardinalidad-y-seleccion.md) | Reanudar una materialización no puede cambiar el reparto en silencio | E-01 · C4 ampliación y reducción · I-g3 determinismo | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T259](T250-T269-cardinalidad-y-seleccion.md) | Un cardinal ilegible falla cerrado y nunca vale uno por omisión | E-01 · C4 cuántos agentes por rol · vocabulario cerrado del campo agentes | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T260](T250-T269-cardinalidad-y-seleccion.md) | La prioridad declarada es el primer criterio de orden y manda sobre los otros tres | E-06 · b.12 paso 5 a · autoridad del Owner sobre la prioridad | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T261](T250-T269-cardinalidad-y-seleccion.md) | Desbloquear a más paquetes decide el orden entre iguales en prioridad | E-06 · b.12 paso 5 b · grado de salida en el grafo depende_de | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T262](T250-T269-cardinalidad-y-seleccion.md) | La antigüedad de espera saca de la cola al que lleva más esperando, sin tocar su prioridad | E-06 · b.12 paso 5 c · b.12 DSP informa de la inanición y no cambia la prioridad | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T263](T250-T269-cardinalidad-y-seleccion.md) | El identificador hace TOTAL el orden de selección y lo deja determinista | E-06 · b.12 paso 5 d · gate:despacho-coherente · I-g3 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T264](T250-T269-cardinalidad-y-seleccion.md) | Las postergaciones se cuentan pasada a pasada y viven en el estado durable | E-06 · b.12 detección de inanición · campo postergaciones | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T265](T250-T269-cardinalidad-y-seleccion.md) | adelantado_por dice quién le pasó por delante, sin repetirse y en orden | E-06 · b.12 detección de inanición · campo adelantado_por · b.12 paso 7 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T266](T250-T269-cardinalidad-y-seleccion.md) | El impedimento nombra el criterio que de verdad decidió, y la vista lo muestra | E-06 · b.12 detección de inanición · campo impedimento · b.12 paso 7 · §7.5 vistas derivadas | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T267](T250-T269-cardinalidad-y-seleccion.md) | La antigüedad de espera se mide con el reloj lógico y nunca con la hora de pared | E-06 · b.12 campo tiempo_listo · a.9 determinismo · I-g3 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T268](T250-T269-cardinalidad-y-seleccion.md) | Los contadores de inanición sobreviven a la caída y a dos planificadores concurrentes | E-06 · b.12 detección de inanición · §4.2 reanudación · concurrencia entre instancias | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T269](T250-T269-cardinalidad-y-seleccion.md) | Cada sabotaje de un criterio o de un campo pone roja una prueba distinta | E-01 · E-06 · b.12 paso 5 · b.12 detección de inanición · C4 cuántos agentes por rol | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T270](T270-T289-contratos-19-y-composicion.md) | La cobertura de sedes del censo se descubre barriendo, y no se enumera | CONTRATO 1 · J-05 · K-11 · A-24 · comprobar_recuentos AFIRMACIONES | validador-estructural | **PRUEBA SUPERADA** | evidencia/recuentos-salida.txt |
+| [T271](T270-T289-contratos-19-y-composicion.md) | Todo tipo canónico tiene recuento derivado y publicado, incluidos los perfiles de agente | CONTRATO 1bis · N-04 · C2-AGENTES-Y-MODELOS · RECUENTOS-generado | validador-estructural | **PRUEBA SUPERADA** | evidencia/recuentos-salida.txt |
+| [T272](T270-T289-contratos-19-y-composicion.md) | El alcance de T152 se descubre por barrido y cada sede tiene remedio declarado | CONTRATO 2 · J-06 · K-07 · A-12 · kernel/VERSIONES.md regla 5 | validador-estructural | **PRUEBA SUPERADA** | evidencia/versiones-salida.txt |
+| [T273](T270-T289-contratos-19-y-composicion.md) | Todo par del catálogo estático de D104 tiene su CAP revision, heredada y posterior a su ancla | D104 · O-01 · M-01 · N-01 · N-02 · recorrido/01-PROCESOS · b.16 participación doble | validador-estructural | **PRUEBA FALLIDA** | evidencia/composicion-procesos-salida.txt |
+| [T274](T270-T289-contratos-19-y-composicion.md) | La regla POR ITEM se resuelve con el item delante, y nunca por declaración | D104 salida B · M-01 · N-01 · proceso:AUD · proceso:DIR · proceso:DEF | validador-estructural | **PRUEBA SUPERADA** | evidencia/composicion-procesos-salida.txt |
+| [T275](T270-T289-contratos-19-y-composicion.md) | Los fixtures de D104 se ejecutan en cada corrida y su censo coincide con su sede | D104 censo de fixtures · Q-12 · Q-10 · M-04 | validador-estructural | **PRUEBA SUPERADA** | evidencia/composicion-procesos-salida.txt |
+| [T276](T270-T289-contratos-19-y-composicion.md) | Los repartos por vía, procedencia y ancla derivan del árbol y no de una proyección escrita | D104 salida A · Q-03 · Q-09 · Q-11 · Q-28 | validador-estructural | **PRUEBA SUPERADA** | evidencia/composicion-procesos-salida.txt |
+| [T277](T270-T289-contratos-19-y-composicion.md) | El universo obligatorio de F6 se deriva completo y no puede omitir una obligación en silencio | F6-H · C-L.5 regla 1bis · P-08 · CONTRATO 1 · CONTRATO 1bis · CONTRATO 2 · D104 | guion-manual | **PRUEBA EJECUTADA** | evidencia/universo-obligatorio-salida.txt |
+| [T290](T290-T311-integridad-evidencia-y-contencion.md) | Control positivo del vínculo commit y tree de la raíz externa | E-07 · V6-16 · g.15 · O26 1.3 · CONTRATO-RAIZ-EXTERNA 1 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/raiz-externa-salida.txt |
+| [T291](T290-T311-integridad-evidencia-y-contencion.md) | Un commit correcto con un tree incorrecto se rechaza por la mitad TREE | E-07 · V6-16 · O26 1.3 · 11-ARQ 11.8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/raiz-externa-salida.txt |
+| [T292](T290-T311-integridad-evidencia-y-contencion.md) | Un tree correcto con un commit incorrecto se rechaza por la mitad COMMIT | E-07 · V6-16 · O26 1.3 · 11-ARQ 11.8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/raiz-externa-salida.txt |
+| [T293](T290-T311-integridad-evidencia-y-contencion.md) | Una firma correcta de una tupla distinta no vale para este árbol | E-07 · V6-16 · O26 1.3 · g.15 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/raiz-externa-salida.txt |
+| [T294](T290-T311-integridad-evidencia-y-contencion.md) | Clave válida para otra época, huella ajena y ancla distinta se rechazan | E-07 · O25 5 · I-g3 · V6-17 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/raiz-externa-salida.txt |
+| [T295](T290-T311-integridad-evidencia-y-contencion.md) | Modificar la atestación después de firmarla la invalida | E-07 · V6-16 · g.15 · O26 1.8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/raiz-externa-salida.txt |
+| [T296](T290-T311-integridad-evidencia-y-contencion.md) | La evidencia de la raíz externa sólo se escribe tras los siete pasos | E-07 · g.15 · g.13 · O25 2 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/raiz-externa-salida.txt |
+| [T297](T290-T311-integridad-evidencia-y-contencion.md) | El paso 9 no publica la revisión sin el testigo durable del paso 8 | E-08 · g.3 · g.4 · g.8 · CONTRATO-ESTADO-DURABLE 3 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T298](T290-T311-integridad-evidencia-y-contencion.md) | Una mezcla parcial de objetos publicados no se convierte en vigente | E-08 · g.3 · g.14 · CONTRATO-ESTADO-DURABLE 3 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T299](T290-T311-integridad-evidencia-y-contencion.md) | El testigo del paso 8 se escribe con fsync de contenido y de directorio | E-08 · g.4 · CONTRATO-ESTADO-DURABLE 2 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T300](T290-T311-integridad-evidencia-y-contencion.md) | Una caída entre los pasos 8 y 9 se recupera y deja el almacén íntegro | E-08 · g.8 · g.4 · CONTRATO-ESTADO-DURABLE 4 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
+| [T301](T290-T311-integridad-evidencia-y-contencion.md) | Los tres escenarios extremo a extremo no terminan sobre un almacén irrecuperable | E-08 · g.4 · g.8 · T175 · T182 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/e2e-f6-salida.txt |
+| [T302](T290-T311-integridad-evidencia-y-contencion.md) | Con nacimiento trazable, crecer una sede append-only sigue siendo legítimo | E-09 · V6-12 · O10 · S1-02 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/admision-salida.txt |
+| [T303](T290-T311-integridad-evidencia-y-contencion.md) | Sin commit de nacimiento trazable V6-12 falla cerrado y no compara contra la base | E-09 · V6-12 · S1-02 · g.13 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/admision-salida.txt |
+| [T304](T290-T311-integridad-evidencia-y-contencion.md) | Una historia truncada o injertada no sostiene el contraste de V6-12 | E-09 · V6-12 · V6-03 · g.13 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/admision-salida.txt |
+| [T305](T290-T311-integridad-evidencia-y-contencion.md) | Vaciar los bytes del nacimiento no produce verde | E-09 · V6-12 · V6-03 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/admision-salida.txt |
+| [T306](T290-T311-integridad-evidencia-y-contencion.md) | La procedencia de los módulos con --repo es del aparato y se publica | E-10 · V6-04 · V6-11 · g.15 · 6.4 sesión nueva | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T307](T290-T311-integridad-evidencia-y-contencion.md) | OK no equivale a OK con saltos y el contador se contrasta con la salida | E-14 · T158 · g.13 · validadores.yaml | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T308](T290-T311-integridad-evidencia-y-contencion.md) | Ningún error tipado sale de main como traza, y cada clase tiene su código | E-15 · 11 CLI · g.15 · CONTRATO-ADAPTADOR 2 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T309](T290-T311-integridad-evidencia-y-contencion.md) | La contención se activa desde el punto ejecutable y el alcance del anfitrión se mide | E-16 · E-17 · E-18 · FD-5 · O25 5 · O26 3 · O26 4 · T215 · T216 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T310](T290-T311-integridad-evidencia-y-contencion.md) | La ventana de publicación no se diagnostica como corrupción | E-08 · g.3 · g.5 · CONTRATO-ESTADO-DURABLE 3 · CONTRATO-ESTADO-DURABLE 5 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T311](T290-T311-integridad-evidencia-y-contencion.md) | Sin testigo que lo avale, un cid que no casa sigue siendo estado corrupto | E-08 · g.5 · CONTRATO-ESTADO-DURABLE 3 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |

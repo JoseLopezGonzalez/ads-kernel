@@ -46,6 +46,14 @@ test_los_ocho_intentos_de_escritura_son_impedidos (__main__.IndependenciaDeLaIde
 T219 · Defecto que previene: llamar «sin escritura» a lo que nadie intentó escribir. ... ok
 test_un_intento_no_impedido_invalida_la_demostracion (__main__.IndependenciaDeLaIdentidad.test_un_intento_no_impedido_invalida_la_demostracion)
 T219 · Defecto que previene: publicar una independencia con un agujero dentro. ... ok
+test_T296_interrumpir_en_CADA_paso_deja_CERO_ficheros (__main__.SecuenciaDeLosSietePasos.test_T296_interrumpir_en_CADA_paso_deja_CERO_ficheros)
+T296 · Defecto que previene: publicar evidencia de lo que no se ha verificado. ... ok
+test_T296b_los_pasos_fuera_de_ORDEN_son_un_fallo (__main__.SecuenciaDeLosSietePasos.test_T296b_los_pasos_fuera_de_ORDEN_son_un_fallo)
+T296 · Defecto que previene: que el orden sea una costumbre y no una garantía. ... ok
+test_T296c_sin_testigo_no_se_escribe_evidencia (__main__.SecuenciaDeLosSietePasos.test_T296c_sin_testigo_no_se_escribe_evidencia)
+T296 · Defecto que previene: escribir «porque el código llegó hasta aquí». ... ok
+test_T296d_la_emision_publica_los_SIETE_pasos_en_su_orden (__main__.SecuenciaDeLosSietePasos.test_T296d_la_emision_publica_los_SIETE_pasos_en_su_orden)
+T296 · Defecto que previene: una emisión que dice verificar y no lo demuestra. ... ok
 test_el_arbol_verificado_NO_contiene_la_raiz_externa (__main__.SeparacionDelEjecutor.test_el_arbol_verificado_NO_contiene_la_raiz_externa)
 T217 · Defecto que previene: que el árbol pueda editar a quien lo verifica. ... ok
 test_el_manifiesto_de_la_instalacion_se_recalcula_y_casa (__main__.SeparacionDelEjecutor.test_el_manifiesto_de_la_instalacion_se_recalcula_y_casa)
@@ -80,8 +88,30 @@ test_la_trazabilidad_publica_identidad_epoca_y_digest (__main__.VeredictoDesment
 T220 · Defecto que previene: una evidencia que no se puede reanclar a nada. ... ok
 test_una_atestacion_de_otro_commit_no_sirve (__main__.VeredictoDesmentidoYEvidencia.test_una_atestacion_de_otro_commit_no_sirve)
 T220 · Defecto que previene: reutilizar una atestación buena sobre otro árbol. ... ok
+test_T290_control_positivo_el_sobre_bien_construido_SI_pasa (__main__.VinculoCommitYTree.test_T290_control_positivo_el_sobre_bien_construido_SI_pasa)
+T290 · Control del CONTROL: el mismo camino, con commit y tree correctos, PASA. ... ok
+test_T291_commit_correcto_con_tree_incorrecto_se_RECHAZA (__main__.VinculoCommitYTree.test_T291_commit_correcto_con_tree_incorrecto_se_RECHAZA)
+T291 · Defecto que previene: `E-07`, que la mitad `tree` no tenga cobertura propia. ... ok
+test_T291b_la_mitad_tree_es_una_funcion_propia_y_falla_sola (__main__.VinculoCommitYTree.test_T291b_la_mitad_tree_es_una_funcion_propia_y_falla_sola)
+T291 · La mitad `tree` ejercida DIRECTAMENTE, sin que la del commit intervenga. ... ok
+test_T292_tree_correcto_con_commit_incorrecto_se_RECHAZA (__main__.VinculoCommitYTree.test_T292_tree_correcto_con_commit_incorrecto_se_RECHAZA)
+T292 · Defecto que previene: `E-07`, que la mitad `commit` no tenga cobertura propia. ... ok
+test_T292b_la_mitad_commit_es_una_funcion_propia_y_falla_sola (__main__.VinculoCommitYTree.test_T292b_la_mitad_commit_es_una_funcion_propia_y_falla_sola)
+T292 · La mitad `commit` ejercida DIRECTAMENTE, con el `tree` correcto al lado. ... ok
+test_T293_las_dos_mitades_incorrectas_se_RECHAZAN (__main__.VinculoCommitYTree.test_T293_las_dos_mitades_incorrectas_se_RECHAZAN)
+T293 · Defecto que previene: una atestación de otro árbol reutilizada entera. ... ok
+test_T293b_una_firma_CORRECTA_de_una_tupla_DISTINTA_no_sirve (__main__.VinculoCommitYTree.test_T293b_una_firma_CORRECTA_de_una_tupla_DISTINTA_no_sirve)
+T293 · Defecto que previene: reusar una firma buena cambiando de qué habla. ... ok
+test_T294_una_clave_valida_para_OTRA_EPOCA_se_rechaza (__main__.VinculoCommitYTree.test_T294_una_clave_valida_para_OTRA_EPOCA_se_rechaza)
+T294 · Defecto que previene: una firma buena fuera de la ventana de su identidad. ... ok
+test_T294b_la_huella_del_emisor_tiene_que_ser_la_del_anillo (__main__.VinculoCommitYTree.test_T294b_la_huella_del_emisor_tiene_que_ser_la_del_anillo)
+T294 · Defecto que previene: atribuir una atestación a quien no la firmó. ... ok
+test_T294c_una_atestacion_bajo_OTRA_politica_se_rechaza (__main__.VinculoCommitYTree.test_T294c_una_atestacion_bajo_OTRA_politica_se_rechaza)
+T294 · Defecto que previene: colar un veredicto calculado contra otra base. ... ok
+test_T295_modificar_la_atestacion_DESPUES_de_firmarla_la_invalida (__main__.VinculoCommitYTree.test_T295_modificar_la_atestacion_DESPUES_de_firmarla_la_invalida)
+T295 · Defecto que previene: reescribir la tupla del repositorio tras la firma. ... ok
 
 ----------------------------------------------------------------------
-Ran 38 tests  (duración no registrada: varía por ejecución)
+Ran 53 tests  (duración no registrada: varía por ejecución)
 
 OK

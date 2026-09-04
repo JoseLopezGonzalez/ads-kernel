@@ -73,6 +73,8 @@ BLOQUEO_ESCRITOR = "escritor.lock"
 BLOQUEO_REGISTRO = "registro.lock"
 ZONA_TX = "tx"
 OBJETOS_TX = "objetos"
+# `E-08` · el testigo del paso 8. Nombre FIJO: el paso 9 lo busca por él.
+TESTIGO_DE_PUBLICACION = "PUBLICADOS.json"
 GITIGNORE = ".gitignore"
 
 # Un segmento de ruta lógica es un identificador ESTABLE que aparece en `cid_raiz`, en las
@@ -208,6 +210,19 @@ class Disposicion:
     def objeto_preparado(self, transaccion, ruta_logica):
         comprobar_ruta_logica(ruta_logica)
         return os.path.join(self.zona_tx(transaccion), OBJETOS_TX, *ruta_logica.split("/"))
+
+    def testigo_de_publicacion(self, transaccion):
+        """`E-08` · el testigo DURABLE que el paso 8 deja y el paso 9 EXIGE encontrar.
+
+        Vive en la zona de preparación de la transacción y no en `canonico/`: es OPERACIONAL
+        —se reconstruye o se descarta— y no puede entrar en la rama canónica, que es lo que
+        `g.14` impide. La zona entera se borra en el paso 11, así que el testigo no
+        sobrevive a la transacción que lo explica.
+        """
+        return os.path.join(self.zona_tx(transaccion), TESTIGO_DE_PUBLICACION)
+
+    def testigo_temporal(self, transaccion):
+        return self.testigo_de_publicacion(transaccion) + SUFIJO_TEMPORAL
 
     def conflicto(self, transaccion):
         comprobar_identificador(transaccion, "identificador de transacción")

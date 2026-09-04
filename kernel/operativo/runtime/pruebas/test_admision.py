@@ -33,6 +33,11 @@ from admision import censo, formulas, matriz, mutacion, perimetro    # noqa: E40
 from admision.perimetro import Declaracion                           # noqa: E402
 from gobierno.git import CanalGit                                    # noqa: E402
 
+# El SHA del ÁRBOL VACÍO de Git. Es una constante del formato de objetos, la misma en
+# todos los repositorios, y `E-09` la usa para construir un commit REAL que no
+# contiene ninguna ruta.
+ARBOL_VACIO_DE_GIT = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+
 
 class _RunnerDeterminista(unittest.TextTestRunner):
     """Igual que el corriente, pero sin la duración en el resumen.
@@ -611,6 +616,173 @@ class SedeDelOwner(ArbolTemporal):
         veredicto = self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER])
         self.assertEqual(veredicto.color, "ROJO")
         self.assertEqual(veredicto.hallazgos[0].punto, "V6-12")
+
+
+# ===========================================================================
+#  T302 a T305 · `E-09` · `V6-12` SIN DEGRADACIÓN SILENCIOSA
+# ===========================================================================
+class ProcedenciaDelNacimiento(ArbolTemporal):
+    """`E-09`. Sin commit de NACIMIENTO trazable, `V6-12` FALLA CERRADO.
+
+    HECHO REPRODUCIDO ANTES DE CORREGIR, con este mismo montaje: sede nacida en `C0`,
+    ALTERADA en `C1`, `C1` declarado como BASE, y una adición encima en `C2`. Con el
+    nacimiento real el veredicto es ROJO; con `commit_de_nacimiento` devolviendo `None` el
+    aparato caía hacia atrás a comparar contra la BASE —que ya contenía la alteración— y
+    emitía **VERDE**. No avisaba: cambiaba de comprobación sin decirlo.
+    """
+
+    def montar_alteracion_anterior_a_la_base(self):
+        """`C0` nace · `C1` ALTERA y pasa a ser la base · `C2` añade encima."""
+        self.escribir(perimetro.SEDE_DEL_OWNER,
+                      b"# resoluciones\n\n## O1\n\ntexto ALTERADO\n")
+        self.confirmar("alteracion anterior a la base")
+        self.base = self.canal_git.resolver("HEAD")
+        with open(os.path.join(self.repo, perimetro.SEDE_DEL_OWNER), "rb") as manejador:
+            cuerpo = manejador.read()
+        self.escribir(perimetro.SEDE_DEL_OWNER, cuerpo + b"\n## O2\n\nanadido\n")
+        self.confirmar("adicion encima de la alteracion")
+
+    def sin_nacimiento(self):
+        """Sustituye `commit_de_nacimiento` por la respuesta «no lo sé». Nada más."""
+        original = admision.CanalDeLecturaGit.commit_de_nacimiento
+        admision.CanalDeLecturaGit.commit_de_nacimiento = lambda self, ruta: None
+        self.addCleanup(setattr, admision.CanalDeLecturaGit,
+                        "commit_de_nacimiento", original)
+
+    def test_T302_positivo_con_nacimiento_el_crecimiento_es_legitimo(self):
+        """T302 · Control POSITIVO: con nacimiento trazable, AÑADIR sigue siendo VERDE.
+
+        Sin este control, «todo sale ROJO» tendría una explicación mucho más probable que
+        la corrección: que la comprobación se haya vuelto imposible de superar.
+        """
+        with open(os.path.join(self.repo, perimetro.SEDE_DEL_OWNER), "rb") as manejador:
+            cuerpo = manejador.read()
+        self.escribir(perimetro.SEDE_DEL_OWNER, cuerpo + b"\n## O2\n\ncrecimiento\n")
+        self.confirmar("crecimiento legitimo")
+        veredicto = self.verificar()
+        self.assertEqual(veredicto.color, "VERDE",
+                         [h.a_dict() for h in veredicto.hallazgos])
+
+    def test_T303_la_AUSENCIA_de_nacimiento_no_degrada_a_comparar_con_la_base(self):
+        """T303 · Defecto que previene: `E-09`, «desconocido» convertido en «válido».
+
+        SABOTAJE QUE LA PONE ROJA: devolver a `_juzgar_append_only` un `anterior` tomado de
+        la base cuando la procedencia no es `nacimiento`.
+        """
+        self.montar_alteracion_anterior_a_la_base()
+        # 1 · CONTROL: con el nacimiento real, el ataque se ve.
+        con_nacimiento = self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER])
+        self.assertEqual(con_nacimiento.color, "ROJO")
+        self.assertEqual(con_nacimiento.hallazgos[0].punto, "V6-12")
+        # 2 · Y sin nacimiento trazable NO se emite verde: se emite ROJO con su motivo.
+        self.sin_nacimiento()
+        sin = self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER])
+        self.assertEqual(sin.color, "ROJO",
+                         "sin commit de nacimiento el veredicto degradó a VERDE")
+        hallazgo = sin.hallazgos[0]
+        self.assertEqual(hallazgo.punto, "V6-12")
+        self.assertIn("sin-nacimiento", hallazgo.causa)
+
+    def test_T303b_un_commit_de_nacimiento_INEXISTENTE_falla_cerrado(self):
+        """T303 · Defecto que previene: dar por bueno un SHA que no resuelve a nada."""
+        self.montar_alteracion_anterior_a_la_base()
+        original = admision.CanalDeLecturaGit.commit_de_nacimiento
+        admision.CanalDeLecturaGit.commit_de_nacimiento = lambda self, ruta: "0" * 40
+        self.addCleanup(setattr, admision.CanalDeLecturaGit,
+                        "commit_de_nacimiento", original)
+        veredicto = self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER])
+        self.assertEqual(veredicto.color, "ROJO")
+        self.assertEqual(veredicto.hallazgos[0].punto, "V6-12")
+        self.assertIn("nacimiento-sin-la-sede", veredicto.hallazgos[0].causa)
+
+    def test_T303c_un_commit_que_NO_contiene_la_sede_falla_cerrado(self):
+        """T303 · Defecto que previene: derivar un nacimiento real pero de otra cosa.
+
+        El commit existe y es alcanzable —es el propio commit inicial de otra rama— y no
+        contiene la sede. Leer allí devuelve `None`, y `None` no se sustituye por nada.
+        """
+        self.montar_alteracion_anterior_a_la_base()
+        # Un commit REAL del repositorio, con su objeto en la base de datos, cuyo ÁRBOL
+        # está VACÍO y por tanto no contiene la sede. Se construye con `commit-tree` sobre
+        # el árbol vacío canónico de Git, sin tocar HEAD ni el árbol de trabajo: lo que se
+        # mide es el commit, no la maniobra para llegar a él.
+        _c, salida, _e = self.canal_git.ejecutar(
+            "commit-tree", ARBOL_VACIO_DE_GIT, "-m", "commit sin la sede")
+        vacio = salida.decode("ascii").strip()
+        self.assertTrue(vacio, "no se pudo construir el commit de árbol vacío")
+        original = admision.CanalDeLecturaGit.commit_de_nacimiento
+        admision.CanalDeLecturaGit.commit_de_nacimiento = (
+            lambda self, ruta: vacio)
+        self.addCleanup(setattr, admision.CanalDeLecturaGit,
+                        "commit_de_nacimiento", original)
+        veredicto = self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER])
+        self.assertEqual(veredicto.color, "ROJO")
+        self.assertIn("nacimiento-sin-la-sede", veredicto.hallazgos[0].causa)
+
+    def test_T304_una_historia_REESCRITA_o_TRUNCADA_falla_cerrado(self):
+        """T304 · Defecto que previene: `E-09`, atestar sobre un nacimiento inalcanzable.
+
+        Medido en este anfitrión ANTES de corregir: sobre un clon `--depth 1`,
+        `git log --diff-filter=A` **sí** devuelve un commit, pero es el corte de la
+        clonación y su contenido ya es el alterado, con lo que el contraste salía VERDE. Lo
+        que se ejercita aquí es que el aparato DETECTA que la historia no es completa y no
+        deriva ningún nacimiento de ella.
+        """
+        self.montar_alteracion_anterior_a_la_base()
+        canal = admision.CanalDeLecturaGit(self.repo, canal=self.canal_git)
+        self.assertTrue(canal.procedencia_de_la_historia()["completa"],
+                        "el control positivo falló: la historia de partida no es completa")
+        # Se TRUNCA la historia con la marca que Git deja en un clon superficial.
+        marca = os.path.join(self.repo, ".git", "shallow")
+        with open(marca, "w", encoding="ascii") as manejador:
+            manejador.write(self.base + "\n")
+        self.addCleanup(self._quitar, marca)
+        procedencia = canal.procedencia_de_la_historia()
+        self.assertFalse(procedencia["completa"])
+        self.assertTrue(procedencia["motivo"])
+        veredicto = self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER])
+        self.assertEqual(veredicto.color, "ROJO",
+                         "una historia truncada dio verde sobre una sede append-only")
+        self.assertIn("historia-truncada", veredicto.hallazgos[0].causa)
+
+    def test_T304b_una_historia_INJERTADA_falla_cerrado(self):
+        """T304 · Defecto que previene: reescribir qué historia se alcanza con `grafts`."""
+        canal = admision.CanalDeLecturaGit(self.repo, canal=self.canal_git)
+        injerto = os.path.join(self.repo, ".git", "info", "grafts")
+        os.makedirs(os.path.dirname(injerto), exist_ok=True)
+        with open(injerto, "w", encoding="ascii") as manejador:
+            manejador.write(self.base + "\n")
+        self.addCleanup(self._quitar, injerto)
+        procedencia = canal.procedencia_de_la_historia()
+        self.assertFalse(procedencia["completa"])
+        self.assertIn("INJERTADA", procedencia["motivo"])
+
+    def test_T305_borrar_el_valor_del_nacimiento_no_produce_verde(self):
+        """T305 · Defecto que previene: un sabotaje que vacíe los bytes del nacimiento.
+
+        Se ataca la sede de la forma clásica —alterar lo publicado— y además se hace que la
+        lectura del nacimiento devuelva vacío. Ni con las dos cosas a la vez sale verde.
+        """
+        self.escribir(perimetro.SEDE_DEL_OWNER,
+                      b"# resoluciones\n\n## O1\n\ntexto ALTERADO\n")
+        self.confirmar("alteracion")
+        original = admision.CanalDeLecturaGit.contenido
+
+        def sin_contenido(self, revision, ruta):
+            if ruta == perimetro.SEDE_DEL_OWNER:
+                return None
+            return original(self, revision, ruta)
+
+        admision.CanalDeLecturaGit.contenido = sin_contenido
+        self.addCleanup(setattr, admision.CanalDeLecturaGit, "contenido", original)
+        veredicto = self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER])
+        self.assertEqual(veredicto.color, "ROJO")
+        self.assertEqual(veredicto.hallazgos[0].punto, "V6-12")
+
+    def _quitar(self, ruta):
+        if os.path.exists(ruta):
+            os.remove(ruta)
+
 
 
 # ===========================================================================

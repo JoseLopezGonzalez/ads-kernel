@@ -77,8 +77,30 @@ def barrido(runtime, *, maximo=0, origen="ciclo"):
 
 
 def elegibles(runtime):
-    """El trabajo elegible, DERIVADO del estado por el runtime. Aquí no se ordena nada."""
+    """El trabajo elegible, DERIVADO del estado por el runtime. Aquí no se ordena nada.
+
+    Y sigue sin ordenarse aquí, que es lo correcto: el orden de `b.12` paso 5 —prioridad,
+    grado de salida, antigüedad de espera, identificador— vive en `runtime.politica` y lo
+    aplica `Dispatcher.elegibles`. Lo que la auditoría midió no fue que este módulo delegara,
+    fue que allí sólo estuvieran DOS de los cuatro criterios; reordenar aquí habría creado la
+    segunda máquina de selección que este módulo existe para impedir.
+    """
     return runtime.elegibles()
+
+
+def seleccionar(runtime, *, cabida=1):
+    """`b.12` pasos 5, 6 y 7 por el runtime: elige, y ESCRIBE por qué esperan los demás.
+
+    Punto único también para la SELECCIÓN, por la misma razón que para el despacho: si cada
+    macrocircuito eligiera por su cuenta, los contadores de inanición se llevarían en cuatro
+    sitios y ninguno sería el bueno.
+    """
+    return runtime.seleccionar_siguiente(cabida=cabida)
+
+
+def inanicion(runtime):
+    """Qué lleva esperando y por qué, DERIVADO. `b.12`: DSP informa; no cambia prioridades."""
+    return runtime.vistas()["que_lleva_esperando"]
 
 
 def estado_de(runtime, paquete):

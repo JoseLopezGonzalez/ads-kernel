@@ -47,7 +47,29 @@ validadores           ejecutables, con manifiesto canónico, evidencia publicada
                       batería de CONTROLES NEGATIVOS que muta copias temporales del
                       repositorio y exige que la comprobación señalada FALLE
 guarda de entorno     la versión mínima del intérprete, declarada una vez y comprobada
-                      ANTES de correr, con código de salida propio. Cierra `A14`
+                      ANTES de correr, con código de salida propio. Cierra `A14` —que es
+                      el CONTRATO 3 de `11-ARQ` §19—. **Y una divergencia declarada**: §19
+                      prescribe para esa guarda el código de salida **2** y `entorno.py`
+                      usa el **78** (`EX_CONFIG`), con su motivo escrito: el 2 es «me han
+                      invocado mal». La sede del código es `entorno.py`; §19 no se enmienda
+kernel/operativo/     el CICLO de `§7.2` entero —encuadre, composición de rutas,
+runtime/ciclo/        materialización de equipos con `C4`, gates de capa con su censo
+                      derivado, handoffs, cierre, continuación y planificación—, con punto
+                      ejecutable `ads_ciclo.py`. Evidencia: `evidencia/ciclo-salida.txt`
+kernel/operativo/     instalación, adopción, migración y actualización.
+runtime/              Evidencia: `evidencia/macrocircuitos-salida.txt`
+macrocircuitos/
+kernel/operativo/     la RAÍZ EXTERNA como PAQUETE SEPARADO, con instalador y anfitrión
+raiz-externa/         firmante. Evidencia: `evidencia/raiz-externa-salida.txt`
+la PRUEBA DE HUMO     `runtime/pruebas/test_sesion_nueva.py`, en un proceso nuevo de verdad,
+EN SESIÓN NUEVA       con el NIVEL alcanzado DERIVADO de las celdas de cobertura.
+                      Evidencia: `evidencia/sesion-nueva-salida.txt`
+las CUATRO            de las obligaciones de fase `F6` de `11-ARQ` §19: el censo derivado
+OBLIGACIONES DE §19   (CONTRATO 1), el censo de perfiles de agente (CONTRATO 1bis), el
+                      alcance derivado de `T152` (CONTRATO 2) y el gate de composición de
+                      `D104`, con `composicion-incompleta` como error que impide cerrar.
+                      Evidencia: `evidencia/composicion-procesos-salida.txt`.
+                      **Lo que de `D104` NO está materializado se dice en §1.2**
 ```
 
 > **Y la frontera, para que no se lea de más.** `kernel/operativo/runtime/` **administra el
@@ -58,41 +80,79 @@ guarda de entorno     la versión mínima del intérprete, declarada una vez y c
 
 ### 1.2 · DISEÑADO Y NO CONSTRUIDO
 
+> **ESTA SECCIÓN ERA FALSA, y lo era en los DOS SENTIDOS.** Se corrige aquí, que es su
+> única sede. Decía «NO CONSTRUIDO» de siete cosas que el árbol construye y cuya evidencia
+> el propio repositorio publica —el ciclo de `§7.2`, la materialización de equipos, los
+> gates de capa, los macrocircuitos, la prueba de humo en sesión nueva, la raíz externa y
+> los dos últimos puntos del verificador de admisión—, **y se contradecía con su propia
+> §1.1** en la misma página: §1.1 declaraba «ADAPTADORES con un ejecutor local real» y §1.2
+> decía «no hay ninguno». El caso más citable era el verificador de admisión: esta sección
+> afirmaba que «todo veredicto los publica en su lista `fuera_de_alcance`» cuando
+> `runtime/admision/__init__.py` publica hoy `"fuera_de_alcance": {}` **y conserva el campo
+> vacío a propósito**, para que «no queda nada fuera» no se confunda con «ya nadie lo
+> publica».
+>
+> **Lo que un documento así rompe no es la redacción: es la lectura.** Una sede que declara
+> no construido lo construido gasta el crédito con el que después dice que algo NO está: si
+> se equivoca en un sentido, nadie puede fiarse del otro. Por eso la corrección va en los
+> dos, y lo que sigue debajo es **más corto y más duro** que lo que sustituye.
+>
+> **Cómo se comprueba cada línea de esta sección, sin creerle nada a este documento**: cada
+> fila nombra su punto ejecutable o su fichero de evidencia; se abre y se ejecuta.
+
 ```text
-EL CICLO DE `§7.2`        la MÁQUINA de despacho existe y está probada; el ciclo entero
-                          —encuadre, composición de rutas, materialización de equipos,
-                          gates de capa y handoffs— NO. Es lo que viene encima
-EQUIPOS MATERIALIZADOS    el algoritmo de materialización está escrito y es determinista;
-                          nada lo ejecuta
-ASIGNACIÓN DE AGENTES     el algoritmo y el catálogo de perfiles existen; el adaptador que
-                          los resolvería vive en el perfil del producto, y no hay ninguno
-GATES                     salvo el de conformidad del workspace, que tiene ejecutor real y
-                          parcial, los demás son listas comprobables SIN comprobador
-ADAPTADORES               existe el CONTRATO y un adaptador LOCAL DE PROCESO real; no
-                          existe ninguno de proveedor, y ninguno está certificado
-VERIFICADOR DE ADMISIÓN   diecisiete de sus diecinueve puntos están construidos y
-                          ejecutados. **`V6-15`** —el derivador del conjunto de árboles
-                          adversariales— y **`V6-16`** —la raíz externa productiva— NO,
-                          y todo veredicto los publica en su lista `fuera_de_alcance`
-RAÍZ EXTERNA PRODUCTIVA   la custodia YA está decidida por `O25`: identidad de servicio
-                          dedicada del verificador externo, con un proveedor del anfitrión.
-                          Lo que falta es EJECUTARLA fuera del árbol verificado con firma
-                          asimétrica del anfitrión. El proveedor de pruebas es SIMÉTRICO,
-                          y quien verifica podría firmar: no es custodia productiva
-LOS MACROCIRCUITOS        instalación, adopción, migración y actualización: diseñados. La
-                          ACTUALIZACIÓN de un control repo existente sí tiene prueba
-                          ejecutada, `T194`, pero el macrocircuito completo no
-LA PRUEBA DE HUMO         la pieza 4 de la arquitectura de adaptadores exige abrir un
-    EN SESIÓN NUEVA       entorno de agente real. Por eso NINGÚN adaptador declara un
-                          NIVEL alcanzado, y `nivel` no existe como campo
-CERTIFICACIÓN DE `F6`     ninguna. Implementado y probado NO es certificado
+ADAPTADORES DE            existe el CONTRATO, existe un adaptador LOCAL DE PROCESO real, y
+    PROVEEDOR             el NIVEL alcanzado se DERIVA de las celdas de cobertura, no se
+                          declara. Lo que NO existe es ningún adaptador de PROVEEDOR, y
+                          por eso el nivel derivado es `compatible` y nunca `soportado`:
+                          no hay ninguna celda `certificacion/integrado` que lo sostenga
+`D104` · LOS PARES        `F6` materializa CINCO de los NUEVE pares `<CAP>:revision` que el
+    `DOM:revision`        catálogo de `11-ARQ` §19 deriva. Los cuatro de `DOM` NO están, y
+                          la razón no es que falte trabajo: `esquemas/proceso.yaml` no
+                          admite la variante `DOM:revision`, y ampliar ese conjunto es un
+                          ACTO NORMATIVO cuya sede es el esquema. `T273` los publica uno a
+                          uno con el error `composicion-incompleta`, que **impide el cierre
+                          del gate de composición**
+LAS TRES RESTAS DEL       el universo obligatorio de `F6` se deriva —`derivar-universo-`
+    UNIVERSO DE `F6`      `obligatorio.py --obligaciones`— y sus tres restas NO están
+                          vacías. Mientras no lo estén, `F6` no está completa, y el número
+                          exacto no se escribe aquí: se ejecuta
+CERTIFICACIÓN DE `F6`     **ninguna.** Implementado y probado NO es certificado. `O26`
+                          acepta la ARQUITECTURA bajo OCHO condiciones y **NO certifica
+                          ninguna candidata**: su aceptación sólo se vuelve aplicable
+                          cuando un gate independiente VÁLIDO demuestre las ocho sobre un
+                          SHA exacto. Presentar `O26` como certificación es leerlo al revés
+```
+
+**Lo que SÍ está construido y esta sección decía que no, con dónde comprobarlo.** No se
+mueve a §1.1 en silencio: se dice que se movió y por qué, para que quien recuerde la
+versión anterior sepa que cambió el árbol y no la redacción.
+
+```text
+EL CICLO DE `§7.2`        `kernel/operativo/runtime/ciclo/` — encuadre, rutas, equipos,
+                          gates, handoffs, cierre, continuación y planificación, con punto
+                          ejecutable `ads_ciclo.py`. Evidencia: `evidencia/ciclo-salida.txt`
+EQUIPOS MATERIALIZADOS    `runtime/ciclo/equipos.py` ejecuta los siete pasos y las siete
+                          prohibiciones de `C4` sobre las composiciones REALES del corpus
+GATES DE CAPA             `runtime/ciclo/gates.py`, con el censo DERIVADO de los bloques
+                          `ads:gate` del corpus y las seis piezas de `§7.2` aplicadas
+LOS MACROCIRCUITOS        `runtime/macrocircuitos/motor.py`.
+                          Evidencia: `evidencia/macrocircuitos-salida.txt`
+LA PRUEBA DE HUMO         `runtime/pruebas/test_sesion_nueva.py`, en un proceso nuevo de
+    EN SESIÓN NUEVA       verdad. Evidencia: `evidencia/sesion-nueva-salida.txt`
+RAÍZ EXTERNA              `kernel/operativo/raiz-externa/`, PAQUETE SEPARADO con su
+                          instalador y su anfitrión firmante.
+                          Evidencia: `evidencia/raiz-externa-salida.txt`
+VERIFICADOR DE ADMISIÓN   los DIECINUEVE puntos. `V6-15` y `V6-16` están construidos, y el
+                          veredicto publica su PROCEDENCIA en vez de su ausencia
 ```
 
 > **Qué dejó de estar aquí, y por qué.** «ESTADO PERSISTIDO — no existe ningún directorio de
 > estado en el árbol» era cierto hasta el primer corte de `F6` y **ha dejado de serlo**. El
 > reparto entre `F6` construido y `F6` pendiente, contrato a contrato, tiene su registro en
 > [`docs/f6/00-ESTADO-DE-IMPLEMENTACION-F6.md`](../f6/00-ESTADO-DE-IMPLEMENTACION-F6.md),
-> que es DERIVADO de esta sede y no la sustituye.
+> que es DERIVADO de esta sede y no la sustituye. **Derivado quiere decir que no publica
+> ningún estado propio**: cuando esta sección se mueve, aquél remite y no se reescribe.
 
 **El reparto de las pruebas entre «escrita» y «ejecutada» NO se escribe: se deriva de su
 sede honesta.**

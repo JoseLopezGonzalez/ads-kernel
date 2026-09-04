@@ -22,12 +22,26 @@ DECISIÓN · `capacidades_requeridas` del paquete son CAPACIDADES DE ADAPTADOR, 
     o `VER`. No son lo mismo y no se mezclan: el plan declara la capacidad ADS de cada
     paquete y el paquete declara las del adaptador que lo ejecutará.
 
-DECISIÓN · la PRIORIDAD se deriva de la VÍA, y el desempate es el identificador
+DECISIÓN · la PRIORIDAD se deriva de la VÍA, y NADIE la toca después
     `gate:despacho-coherente` exige determinismo: «mismo estado produce misma selección, con
-    desempate por identificador». `elegibles()` ya ordena por prioridad descendente y luego
-    por identificador; lo que aporta este módulo es que la prioridad no la escriba nadie a
-    mano: vía 1 → 90, vía 2 → 70, vía 3 → 50, vía 4 → 30. La propietaria global va primero
-    porque su capa DEFINE el resultado, y sin ella las demás no tienen contra qué medirse.
+    desempate por identificador». Lo que aporta este módulo es que la prioridad no la escriba
+    nadie a mano: vía 1 → 90, vía 2 → 70, vía 3 → 50, vía 4 → 30. La propietaria global va
+    primero porque su capa DEFINE el resultado, y sin ella las demás no tienen contra qué
+    medirse.
+
+    Y aquí termina la prioridad: `b.12` es terminante —«DSP informa de la inanición. No
+    cambia la prioridad. Nunca»—, de modo que un paquete que lleva veinte pasadas esperando
+    NO sube de vía ni de número. Lo que lo saca de la cola es el criterio (c) de `b.12`, la
+    antigüedad de espera, que adelanta entre IGUALES en prioridad. `elegibles()` ordena por
+    los CUATRO criterios del paso 5 —prioridad, grado de salida en el grafo `depende_de`,
+    antigüedad de espera e identificador—, no por dos como hacía.
+
+DECISIÓN · el grafo del criterio (b) es el `depende_de` que este módulo escribe
+    El «grado de salida en el grafo» de `b.12` paso 5 (b) no es una estimación de impacto:
+    es cuántos paquetes declaran depender de éste, y esa declaración la produce
+    `paralelismo.secuenciar` con la condición compuesta de `a.5`. Por eso secuenciar mal se
+    paga dos veces —en el paralelismo y en el orden de despacho— y por eso la traza de
+    `condicion_de_paralelismo` que este plan publica es también la explicación del orden.
 
 DECISIÓN · el tope de reintentos es TRES y viene de `a.9`, no de este módulo
     Se toma de `runtime.politica.MAX_INTENTOS_POR_DEFECTO`, que ya lo instancia. Escribir

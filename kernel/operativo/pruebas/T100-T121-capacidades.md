@@ -1,6 +1,6 @@
 # T100–T121 — conformidad de las capacidades del paso 5
 
-Las pruebas que los métodos de las trece capacidades citan en su `prueba_de_reanudacion` o
+Las pruebas que los métodos de las quince capacidades citan en su `prueba_de_reanudacion` o
 que derivan de sus gates. Su estado real está en [`REGISTRO-generado.md`](REGISTRO-generado.md).
 
 > Ninguna de estas pruebas está ejecutada. Todas exigen un proyecto real con trabajo en

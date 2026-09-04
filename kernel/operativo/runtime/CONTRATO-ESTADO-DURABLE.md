@@ -72,10 +72,13 @@ entera, o no se ve. El orden es éste, y no admite reordenación:
  5  escribir los objetos en operacional/tx/<tx>/
  6  fsync de cada temporal y del directorio de preparación
  7  DIARIO ← transicion.preparada          + fsync        ← PUNTO DE NO RETORNO
- 8  os.replace de cada temporal → canonico/<ruta>, y fsync del directorio destino
- 9  REVISION.json.tmp → fsync → os.replace → fsync dir    ← PUNTO DE PUBLICACIÓN
+ 8  os.replace de cada temporal → canonico/<ruta>, y fsync del directorio destino,
+    y TESTIGO DURABLE `operacional/tx/<tx>/PUBLICADOS.json` + fsync de contenido y de
+    directorio                                             ← el paso 8 deja HUELLA
+ 9  EXIGIR el testigo del paso 8 y contrastarlo con el disco; sólo entonces
+    REVISION.json.tmp → fsync → os.replace → fsync dir      ← PUNTO DE PUBLICACIÓN
 10  DIARIO ← transicion.confirmada         + fsync
-11  limpiar la zona de preparación
+11  limpiar la zona de preparación —y con ella el testigo, que es ESPECULATIVO LOCAL
 12  liberar el bloqueo y devolver el resultado
 ```
 
@@ -83,6 +86,26 @@ entera, o no se ve. El orden es éste, y no admite reordenación:
 Antes de él, `REVISION.json` sigue nombrando la base, y **ninguna lectura ve la transición**
 aunque los ficheros ya estén en su sitio. Detectar la ventana **no depende de haber
 presenciado el fallo**: se lee el diario y se compara con el disco.
+
+**Y el ORDEN de 8 y 9 deja de depender de que el código esté escrito en cierto orden**
+—corrección de `E-08`, 2026-09-04—. Antes, el único guardián del orden era el orden de las
+líneas: invertirlos dejaba el almacén IRRECUPERABLE y las tres baterías de extremo a extremo
+seguían en VERDE, porque ninguna comprobaba la recuperabilidad de lo que dejaban escrito. La
+garantía es ahora OBSERVABLE E INVARIANTE, y no una convención:
+
+```text
+EL PASO 8 ESCRIBE  un testigo durable con el `cid` OBSERVADO EN DISCO de cada ruta
+                   publicada —no el planeado: un testigo que copiara el plan diría
+                   «publiqué esto» sin haber publicado nada—
+EL PASO 9 EXIGE    encontrar ese testigo y que case con el disco. Sin testigo, o con un
+                   testigo que no case, el paso 9 NO publica: falla cerrado
+DÉCIMO PUNTO       `entre-el-paso-8-y-el-9`, inyectable, con su prueba de caída y su
+DE FALLO           recuperación posterior por la rama COMPLETAR
+LA RAMA COMPLETAR  reejecuta 8, 9 y 10 de forma idempotente, y por tanto REESCRIBE el
+                   testigo antes de volver a exigirlo
+LOS TRES E2E       comprueban la RECUPERABILIDAD del almacén al terminar, de modo que ya
+                   no pueden seguir verdes sobre un almacén irrecuperable
+```
 
 ## 4 · Recuperación — las dos ramas de `g.8`, y no hay una tercera
 
@@ -93,7 +116,10 @@ sólo `abierta`     → REVERTIR. Nada de canonico/ se tocó. Se verifica BYTE A
 
 `preparada`        → COMPLETAR. Se reejecutan 8, 9 y 10 de forma IDEMPOTENTE: cada objeto
                      preparado se verifica contra su `cid` antes de publicarse, y un destino
-                     que ya contiene el `cid` esperado se salta
+                     que ya contiene el `cid` esperado se salta. **El testigo del paso 8 se
+                     REESCRIBE en la reejecución**, con los `cid` observados en ese momento:
+                     completar no puede apoyarse en el testigo de un intento anterior, ni
+                     saltarse la exigencia del paso 9 por venir de la recuperación
 
 nada casa          → MARCAR. Copia ÍNTEGRA de lo divergente en reconciliacion/conflictos/,
                      y la salida la decide LA AUTORIDAD, no el runtime

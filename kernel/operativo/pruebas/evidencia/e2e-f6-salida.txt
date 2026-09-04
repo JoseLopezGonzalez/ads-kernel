@@ -22,10 +22,10 @@ paso 05  materialización del equipo por C4, con su composición y lo que quedó
          · composición `composicion:sis-cambio` · roles: 2 · agentes: 2 · modelos: modelo:gamma · descartes registrados: 4 · fuera con motivo: 0 · manda el ORDEN ESCRITO · sin condición verdadera se ESCALA · método y capacidad se distinguen
          resultado: CUMPLIDO
 paso 06  creación de items y paquetes, por el runtime y en el estado canónico
-         · item `it-c524e26674d6` · paquetes: 5 · obligaciones de la ruta: 3 · todo en el estado canónico, escrito por el motor
+         · item `it-60a24941927c` · paquetes: 5 · obligaciones de la ruta: 3 · todo en el estado canónico, escrito por el motor
          resultado: CUMPLIDO
 paso 07  despacho por el adaptador local, con un proceso real
-         · paquete `pq-b303e6395645` despachado por el adaptador local con un proceso real · desenlace `completado` · efecto `ef-0e9d122302b1` aplicado en disco y acusado
+         · paquete `pq-1aa11daaa723` despachado por el adaptador local con un proceso real · desenlace `completado` · efecto `ef-98c17beb5c81` aplicado en disco y acusado
          resultado: CUMPLIDO
 paso 08  progreso emitido por el proceso y recogido por el runtime
          · el proceso emitió sus líneas y el runtime recogió 3 avances; el conteo NO entra en lo durable
@@ -80,3 +80,6 @@ paso 24  controles negativos: sabotear asignación, modelo, límites y vínculo 
          resultado: CUMPLIDO
 
 24 de 24 pasos CUMPLIDOS
+
+T301 · recuperabilidad  maquina-a/control: abierto, recuperado e íntegro
+T301 · recuperabilidad  maquina-b/control: abierto, recuperado e íntegro

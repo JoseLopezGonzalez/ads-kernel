@@ -136,9 +136,9 @@ tres. El catálogo completo y sus reglas viajan siempre con `packs/`:
 
 Nada de lo anterior requiere leer el kernel entero, ni conocer la historia del proyecto.
 
-## Relación con `kernel/KERNEL.md` 1.3.0
+## Relación con `kernel/KERNEL.md` 1.5.0
 
-`KERNEL.md` es la constitución en prosa de la versión 1.3.0. La sección a.11 declara qué
+`KERNEL.md` es la constitución en prosa de la versión 1.5.0. La sección a.11 declara qué
 reglas suyas quedan derogadas, sustituidas, ajustadas o pendientes. **Mientras el runtime
 no exista, `KERNEL.md` sigue siendo el documento de arranque de un proyecto**, y este
 directorio es el contenido que ese runtime consumirá. La convivencia y su fecha de

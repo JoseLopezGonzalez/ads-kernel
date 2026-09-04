@@ -53,3 +53,5 @@ paso 15  terminar con un estado íntegro y reproducible
          resultado: CUMPLIDO
 
 15 de 15 pasos CUMPLIDOS
+
+T301 · recuperabilidad  control: abierto, recuperado e íntegro

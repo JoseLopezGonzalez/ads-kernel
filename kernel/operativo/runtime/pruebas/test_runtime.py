@@ -370,9 +370,17 @@ class CicloYDespacho(Caso):
 
         `elegibles()` no puede depender de quién pregunta ni del orden en que el sistema de
         ficheros devolvió los nombres: si dos instancias vieran listas distintas, la carrera
-        por un paquete sería un accidente y no una propiedad. Se comprueba el ORDEN exacto
-        —prioridad descendente, después identificador— y que DOS instancias distintas
-        obtienen exactamente la misma lista.
+        por un paquete sería un accidente y no una propiedad.
+
+        CORREGIDA HACIA ARRIBA: esta prueba afirmaba «prioridad descendente, después
+        identificador», que son DOS de los CUATRO criterios que `b.12` paso 5 ordena
+        estrictamente —prioridad declarada · grado de salida en el grafo · antigüedad de
+        espera · identificador—. Con sólo esos dos, un paquete cuyo identificador ordena
+        tarde queda por detrás de CADA paquete nuevo que entre con su misma prioridad, para
+        siempre: es la inanición que `b.12` existe para impedir, y la prueba la daba por
+        buena. `pq-media-b` se da de alta ANTES que `pq-media-a`, así que lleva más tiempo
+        `listo` y el criterio (c) lo pone delante; el identificador sólo desempata cuando los
+        tres criterios anteriores empatan, y para eso está `pq-empate-*`.
         """
         self.alta([
             {"id": "pq-baja", "prioridad": 10},
@@ -380,12 +388,22 @@ class CicloYDespacho(Caso):
             {"id": "pq-media-b", "prioridad": 50},
             {"id": "pq-media-a", "prioridad": 50},
         ])
-        esperada = ["pq-alta", "pq-media-a", "pq-media-b", "pq-baja"]
+        esperada = ["pq-alta", "pq-media-b", "pq-media-a", "pq-baja"]
         for instancia in ("runtime-A", "runtime-B"):
             proceso = self.exito(self.cli(["--json", "elegibles"], instancia=instancia),
                                  "elegibles " + instancia)
-            vista = [e["paquete"] for e in json.loads(proceso.stdout)["elegibles"]]
+            elegibles = json.loads(proceso.stdout)["elegibles"]
+            vista = [e["paquete"] for e in elegibles]
             self.assertEqual(vista, esperada, "la lista de " + instancia + " difiere")
+            # Y la antigüedad es la que manda entre los dos de en medio: se PUBLICA, para
+            # que el orden se pueda contrastar y no haya que creérselo.
+            por_id = {e["paquete"]: e for e in elegibles}
+            self.assertGreater(por_id["pq-media-b"]["tiempo_listo"],
+                               por_id["pq-media-a"]["tiempo_listo"])
+            for entrada in elegibles:
+                for campo in ("tiempo_listo", "postergaciones", "adelantado_por",
+                              "impedimento", "grado_de_salida"):
+                    self.assertIn(campo, entrada, entrada["paquete"])
 
     def test_03_sin_adaptador_para_la_capacidad_el_paquete_no_se_toca(self):
         """T182 · Defecto que previene: consumir un intento por no encontrar adaptador.
@@ -444,8 +462,17 @@ class CicloYDespacho(Caso):
         despachado— y el segundo, ya con el padre `completado`, tiene que completarlo. Se
         comprueba además que el hijo no ejecutó nada mientras esperaba: una sola ejecución
         tras el primer ciclo.
+
+        CORREGIDA HACIA ARRIBA: el hijo iba primero por su identificador, que es el CUARTO
+        criterio de `b.12` paso 5 y sólo desempata. Con el criterio (b) —«desbloquea a más
+        paquetes»— implementado, el PADRE va primero porque libera al hijo, y el barrido los
+        cerraba los dos de una pasada: la propiedad que esta prueba mide —una espera aparca,
+        y aparcar no consume intento— dejaba de ejercitarse. Para conservarla se declara al
+        hijo URGENTE, que es el primer criterio y el único que el Owner gobierna: así el
+        hijo vuelve a ir delante, se aparca, y lo que se prueba se sigue probando.
         """
-        self.alta([{"id": "pq-padre"}, {"id": "pq-hijo", "depende_de": ["pq-padre"]}])
+        self.alta([{"id": "pq-padre"},
+                   {"id": "pq-hijo", "depende_de": ["pq-padre"], "prioridad": 90}])
         self.exito(self.cli(["ciclo"]), "primer ciclo")
         self.assertEqual(self.paquete("pq-padre")["estado"], "completado")
         self.assertEqual(self.paquete("pq-hijo")["estado"], "esperando-dependencia")

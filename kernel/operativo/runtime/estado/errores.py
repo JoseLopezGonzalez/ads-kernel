@@ -156,6 +156,25 @@ class EstadoCorrupto(ErrorDeEstado):
     CODIGO = "ESTADO_CORRUPTO"
 
 
+class PublicacionEnVuelo(ErrorDeEstado):
+    """El objeto en disco es el NUEVO y `REVISION.json` todavía nombra el viejo.
+
+    NO es corrupción, y llamarlo corrupción es un diagnóstico falso que manda al operador a
+    buscar un fichero roto que no existe. Es la VENTANA DE PUBLICACION del protocolo: entre
+    el paso 8 —que reemplaza los objetos en `canonico/`— y el paso 9 —que publica la
+    revisión— un LECTOR CONCURRENTE, que no toma el bloqueo de escritor porque leer no lo
+    exige, ve el objeto nuevo con la revisión vieja.
+
+    Se emite sólo cuando el TESTIGO del paso 8 confirma que ese `cid` es exactamente el que
+    esa transacción acaba de publicar; en cualquier otro caso el error sigue siendo
+    `EstadoCorrupto`, y sigue siendo fallo CERRADO: aquí tampoco se devuelve contenido.
+    La diferencia es el REMEDIO —esperar a que la transacción cierre, o recuperar por la
+    rama COMPLETAR— frente a «un fichero fue modificado fuera del diario».
+    """
+
+    CODIGO = "PUBLICACION_EN_VUELO"
+
+
 class DiarioCorrupto(ErrorDeEstado):
     CODIGO = "DIARIO_CORRUPTO"
 

@@ -121,6 +121,11 @@ CONDICIONES_DE_ZONA = {
 # NACIMIENTO y no contra `HEAD`: contra `HEAD` la comprobación es una tautología.
 SEDE_DEL_OWNER = "docs/owner/ADS-OWNER-RESOLUCIONES.md"
 
+# `E-09` · la ÚNICA procedencia que sostiene un verde de `V6-12`. Es una constante y no un
+# literal repetido porque el juicio la compara y el lector la busca: un literal repetido en
+# dos módulos es la forma en que dos reglas dejan de ser la misma sin que nadie se entere.
+PROCEDENCIA_DE_NACIMIENTO = "nacimiento"
+
 # Letras cuyo efecto es una mutación de CONTENIDO de una ruta que sobrevive.
 LETRAS_DE_CONTENIDO = ("M", "T", "C")
 LETRAS_DE_TOPOLOGIA = ("A", "D", "R")
@@ -276,12 +281,13 @@ class Perimetro:
         }
 
     # -- el juicio ---------------------------------------------------------
-    def juzgar(self, mutaciones, declaracion, *, contenidos=None, nacimiento=None):
+    def juzgar(self, mutaciones, declaracion, *, contenidos=None):
         """Aplica a cada mutación la condición de CONTENIDO de su zona.
 
-        `contenidos` es `{ruta: (bytes_en_la_base, bytes_ahora)}` y sólo hace falta para la
-        condición append-only. `nacimiento` es el contenido de la sede del Owner en su
-        COMMIT DE NACIMIENTO, que es contra lo que `V6-12` obliga a contrastar.
+        `contenidos` es `{ruta: (bytes_del_NACIMIENTO, bytes_ahora, procedencia, detalle)}`
+        y sólo hace falta para la condición append-only. La PROCEDENCIA es obligatoria y no
+        decorativa: `V6-12` obliga a contrastar contra el commit de NACIMIENTO, así que unos
+        bytes que no vengan de allí no pueden sostener un verde (`E-09`).
         """
         hallazgos = []
         for mutacion in mutaciones:
@@ -319,9 +325,7 @@ class Perimetro:
 
             # `V6-12` · la sede del Owner, contra el NACIMIENTO y no contra `HEAD`.
             if ruta == SEDE_DEL_OWNER or zona.condicion == APPEND_ONLY:
-                fallo = self._juzgar_append_only(
-                    mutacion, zona, contenidos or {}, nacimiento
-                )
+                fallo = self._juzgar_append_only(mutacion, zona, contenidos or {})
                 if fallo is not None:
                     hallazgos.append(fallo)
                 continue
@@ -347,8 +351,15 @@ class Perimetro:
                 ))
         return hallazgos
 
-    def _juzgar_append_only(self, mutacion, zona, contenidos, nacimiento):
-        """`V6-12`: añadir es legítimo; alterar una letra de lo publicado es ROJO."""
+    def _juzgar_append_only(self, mutacion, zona, contenidos):
+        """`V6-12`: añadir es legítimo; alterar una letra de lo publicado es ROJO.
+
+        `E-09` · la PROCEDENCIA se mira ANTES que los bytes. Sin `nacimiento` no hay
+        comparación posible, y «no he podido comprobarlo» NO se convierte en «está bien»:
+        es un hallazgo ROJO con su motivo. Un `anterior` tomado de la base —que es lo que
+        esta función recibía antes— compara la sede consigo misma en el punto de partida y
+        blanquea cualquier alteración que ya estuviera en la base.
+        """
         ruta = mutacion.ruta
         if mutacion.letra in ("D", "R"):
             return Hallazgo(
@@ -356,12 +367,24 @@ class Perimetro:
                 "una sede APPEND-ONLY no se borra ni se renombra (letra "
                 + mutacion.letra + ")",
             )
-        anterior = nacimiento if ruta == SEDE_DEL_OWNER and nacimiento is not None else None
-        if anterior is None:
-            par = contenidos.get(ruta)
-            anterior = par[0] if par else None
-        par = contenidos.get(ruta)
-        actual = par[1] if par else None
+        entrada = contenidos.get(ruta)
+        if not entrada or len(entrada) < 3:
+            return Hallazgo(
+                "V6-12", SedeDelOwnerAlterada.CODIGO, ruta, zona.clase,
+                "no hay contenido con PROCEDENCIA declarada para esta sede APPEND-ONLY. "
+                "Sin saber de dónde salen los bytes contra los que se compara, el "
+                "contraste de `V6-12` no se ha hecho, y no se emite verde",
+            )
+        anterior, actual, procedencia = entrada[0], entrada[1], entrada[2]
+        detalle = entrada[3] if len(entrada) > 3 else ""
+        if procedencia != PROCEDENCIA_DE_NACIMIENTO:
+            return Hallazgo(
+                "V6-12", SedeDelOwnerAlterada.CODIGO, ruta, zona.clase,
+                "la sede APPEND-ONLY no se pudo contrastar contra su commit de NACIMIENTO "
+                "(" + str(procedencia) + "): " + str(detalle) + ". Una procedencia "
+                "DESCONOCIDA no se convierte en válida, y comparar contra la base en su "
+                "lugar blanquearía cualquier alteración anterior a la base",
+            )
         if anterior is None or actual is None:
             return Hallazgo(
                 "V6-12", SedeDelOwnerAlterada.CODIGO, ruta, zona.clase,

@@ -3,6 +3,14 @@
 Forma del handoff: [`C5`](../contratos/C5-HANDOFF.md). Los de Diseño están en
 [`DIS-handoffs.md`](DIS-handoffs.md).
 
+**La ENTREGA DE VUELTA de `DOM` y de `SEG`.** `b.16` da a esas dos capacidades una
+participación DOBLE: condiciones antes de construir —`dom-a-con` y `seg-a-con`— y
+**revisión después**. La ida estaba instanciada y la vuelta no, y sin instancia de vuelta la
+mitad posterior de la participación no tenía forma de entregarse ni de rechazarse:
+`ver-a-dom` y `ver-a-seg` la materializan. Su `cuando` está anclado al ANCLA que
+[`../recorrido/01-PROCESOS.md`](../recorrido/01-PROCESOS.md) deriva para cada proceso —el
+dosier de `VER`—, no a una estación escrita a mano.
+
 ```yaml ads:handoff
 id: handoff:enc-a-dsp
 de: ENC
@@ -242,4 +250,56 @@ se depositó. Aceptar y devolver DESPUÉS sí cuenta.
 
 Esa distinción es lo que impide aceptar trabajo malo por cortesía y gastar después una de
 las dos devoluciones disponibles en algo que era comprobable de entrada.
+```
+
+```yaml ads:handoff
+id: handoff:ver-a-seg
+de: VER
+a: SEG
+cuando: "el dosier de VER está depositado y el proceso exige la revisión posterior de SEG, sea porque C-SEG está activa o porque el proceso es DEP, donde no se retira"
+entrega:
+  - "el dosier de VER con la superficie realmente expuesta por lo construido"
+  - "las condiciones de seguridad emitidas ANTES de construir, para poder confrontarlas"
+  - "qué cambió entre lo que se planificó y lo que se construyó, con su alcance"
+comprueba_al_recibir:
+  - "la superficie expuesta se puede comparar contra el veredicto previo sin volver a leer el código"
+  - "el dosier declara los estados extremos, que son donde la superficie aparece"
+  - "consta si el cambio construido tocó algo que el veredicto previo no contemplaba"
+rechaza_si:
+  - "no hay veredicto previo con el que comparar: la revisión posterior no puede inventar la línea base"
+  - "el dosier no permite decidir qué quedó expuesto y qué no"
+devolucion: >
+  SEG devuelve a VER cuando el dosier no permite decidir qué superficie quedó expuesta.
+  NUNCA cambia el veredicto previo para que encaje: un veredicto que se reescribe hacia
+  atrás deja de ser una línea base.
+evidencia_de_devolucion:
+  - "qué parte de la superficie no se puede juzgar con el dosier entregado"
+owner: "el Owner decide sólo si la revisión encuentra un riesgo aceptable pero real; un veto no levantable por G27 NO admite su decisión."
+checkpoint: "SEG lee de VER: qué se construyó de verdad, para no revisar el plan en vez del producto."
+```
+
+```yaml ads:handoff
+id: handoff:ver-a-dom
+de: VER
+a: DOM
+cuando: "el dosier de VER está depositado y C-DOM está activa, que es lo que hace exigible la revisión posterior de DOM en ese proceso"
+entrega:
+  - "el dosier de VER con los nombres y contratos del modelo tal como quedaron construidos"
+  - "las condiciones de dominio emitidas ANTES de construir, para poder confrontarlas"
+  - "qué migraciones o cambios de forma se ejecutaron, y si son reversibles"
+comprueba_al_recibir:
+  - "los nombres construidos significan lo que las condiciones de dominio dijeron que significaban"
+  - "la reversibilidad declarada antes de construir sigue siendo cierta después"
+  - "ninguna migración dejó estado que el modelo no sepa nombrar"
+rechaza_si:
+  - "no hay condiciones de dominio previas con las que comparar"
+  - "el dosier no dice qué migraciones se ejecutaron ni si son reversibles"
+devolucion: >
+  DOM devuelve a VER cuando el dosier no permite comprobar la reversibilidad. NUNCA
+  reinterpreta el modelo para que lo construido encaje: eso es cambiar el dominio para
+  salvar una implementación.
+evidencia_de_devolucion:
+  - "qué propiedad del modelo no se puede comprobar con el dosier entregado"
+owner: "obligatorio cuando la única salida implica pérdida de datos o indisponibilidad: esa elección es del Owner y DOM sólo la presenta con sus consecuencias."
+checkpoint: "DOM lee de VER: qué se construyó de verdad, para revisar el modelo vivo y no el previsto."
 ```
