@@ -469,6 +469,55 @@ componentes:
     firma_de_exito: '[1-9]\d* controles · 0 sin detectar'
     debe_contener: ['control POSITIVO', 'SIN ABRIR', 'COMPENSAR', 'NO CERRADO']
 
+  # `O28` §3 y el hallazgo `#2`=`#22` del gate del 2026-09-05 · LAS DOS COMPROBACIONES QUE
+  # `A`, `B` y `C` NO HACEN. El adjudicador dejo `O26` §5.1 y §5.2 NO DEMOSTRADAS porque el
+  # unico instrumento que decia algo sobre ellas publica, pegado a sus ceros, que no las
+  # demuestra. `O28` §3 fijo su significado operativo; estos dos puntos lo ejecutan, con
+  # otro universo y otro criterio, y NO reutilizan las etiquetas `A`/`B`/`C`.
+  #
+  # Entran los CUATRO modos y no solo las autopruebas: es la leccion `G-05` de este mismo
+  # manifiesto —un instrumento cuyo autotest pasa y cuyo producto no corre esta roto y sale
+  # verde—. Las firmas exigen CERO pendientes: mientras `O26-IMPL` u `O26-SAB` publiquen
+  # faltantes, estos componentes salen ROJOS, que es exactamente lo que `O26` §5 dice del
+  # arbol. Una firma que admitiera pendientes seria la promesa de garantia superior a la
+  # entregada que `O18` prohibe.
+  - id: o26-impl-autopruebas
+    script: comprobar-obligaciones-implementadas.py
+    dir: docs/evolucion/verificacion
+    args: ['--autopruebas']
+    tipo: validador
+    evidencia: o26-impl-autopruebas-salida.txt
+    firma_de_exito: '[1-9]\d* sabotajes · 0 sin detectar'
+    debe_contener: ['CONTROL POSITIVO', 'EL UNIVERSO HA ENCOGIDO', 'SIN NOMBRARLO']
+
+  - id: o26-impl
+    script: comprobar-obligaciones-implementadas.py
+    dir: docs/evolucion/verificacion
+    tipo: validador
+    evidencia: o26-impl-salida.txt
+    firma_de_exito: '[1-9]\d* obligaciones medidas · 0 SIN IMPLEMENTAR · 0 faltantes'
+    debe_contener: ['FALTANTES, UNO A UNO', 'EVIDENCIA LIGADA AL SHA Y AL TREE',
+                    'CONDICIÓN DE CIERRE EJECUTADA', 'LO QUE ESTE VEREDICTO NO DEMUESTRA']
+
+  - id: o26-sab-autopruebas
+    script: comprobar-propiedades-saboteadas.py
+    dir: docs/evolucion/verificacion
+    args: ['--autopruebas']
+    tipo: validador
+    evidencia: o26-sab-autopruebas-salida.txt
+    firma_de_exito: '[1-9]\d* sabotajes · 0 sin detectar'
+    debe_contener: ['CONTROL POSITIVO', 'catálogo de mutaciones está VACÍO',
+                    'sólo toca la sede del enunciado']
+
+  - id: o26-sab
+    script: comprobar-propiedades-saboteadas.py
+    dir: docs/evolucion/verificacion
+    tipo: validador
+    evidencia: o26-sab-salida.txt
+    firma_de_exito: '[1-9]\d* propiedades críticas medidas · 0 PENDIENTES'
+    debe_contener: ['FALTANTES, UNO A UNO', 'CICLO SANO / SABOTAJE / RESTAURADO',
+                    'NO ES SÓLO LA HUELLA GENERAL', 'LO QUE ESTE VEREDICTO NO DEMUESTRA']
+
   - id: runner
     script: registrar_evidencia.py
     tipo: biblioteca

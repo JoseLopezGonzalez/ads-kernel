@@ -53,6 +53,8 @@ from __future__ import annotations
 
 import os
 import re
+import subprocess
+import sys
 
 from comprobar_negativos import Mutacion, _escribir, _sustituir
 
@@ -279,3 +281,213 @@ CATALOGO = [
              m_e14_dos_corridas_pegadas,
              espera="EXACTAMENTE"),
 ]
+
+
+
+# ===========================================================================
+#  `#21` Y `#23` DEL DELTA (`H2` y `H4` de `REV-3`) · EL SELLO DEL PRODUCTO
+# ===========================================================================
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-05, sobre una COPIA del árbol:
+#
+#      $ python3.12 kernel/operativo/validadores/huella.py --raiz <copia>
+#        2696627742081a01
+#      $ printf '\nENTRADA FALSA\n' >> <copia>/docs/owner/ADS-OWNER-RESOLUCIONES.md
+#      $ printf '\nLINEA FALSA\n'   >> <copia>/docs/f6/05-MATRIZ-CIERRE-G01-G08.md
+#      $ python3.12 kernel/operativo/validadores/huella.py --raiz <copia>
+#        2696627742081a01
+#
+#  La sede del Owner y el documento que reclama el cierre de `F6`, movidas las dos, y el
+#  número quieto. `AMBITOS = ("kernel", "packs", "tooling")`.
+#
+#  DECISIÓN · cada mutación ANOTA los dos sellos en la copia ANTES de infringir
+#      Alternativas: (a) sabotear la copia tal cual llega; (b) anotar primero la huella del
+#      kernel y el sello del producto de la copia, y sabotear después.
+#      Se elige (b), y no es comodidad: es lo que hace que el rojo signifique algo. La copia
+#      sale del ÁRBOL DE TRABAJO, y un árbol de trabajo en el que se está trabajando nunca
+#      coincide con sus referencias anotadas —basta con que otro fichero esté a medio
+#      escribir—. Con (a) `T150` llegaría ROJA a la mutación y el catálogo daría por
+#      «detectada» una infracción que no ha detectado nadie: exactamente el falso verde al
+#      revés. Anotar primero fija el VERDE de partida dentro de la propia copia, de modo que
+#      el único cambio entre el verde y el rojo es la infracción. La `espera` de cada
+#      entrada remata el control: no basta con que caiga, tiene que caer por SU motivo.
+SEDE_DEL_OWNER = "docs/owner/ADS-OWNER-RESOLUCIONES.md"
+NORMA_CANONICA = "docs/canonico/03-GOBIERNO-Y-AUTORIDAD.md"
+SEDE_DE_LA_DEUDA = "docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md"
+PROYECCION = "docs/f6/05-MATRIZ-CIERRE-G01-G08.md"
+GATE_HISTORICO = "docs/evolucion/19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md"
+MATERIAL_HISTORICO = "docs/rediseno/00-MAPA.md"
+HUELLA = "kernel/operativo/validadores/huella.py"
+
+
+def _anotar_los_dos_sellos(raiz):
+    """Fija en la COPIA el verde de partida: huella del kernel y sello del producto."""
+    guion = os.path.join(raiz, HUELLA)
+    subprocess.run([sys.executable, guion, "--raiz", raiz, "--anotar-sello"],
+                   capture_output=True, check=True)
+    calculada = subprocess.run([sys.executable, guion, "--raiz", raiz],
+                               capture_output=True, text=True, check=True)
+    with open(os.path.join(raiz, "kernel/.upstream-hash"), "w", encoding="utf-8") as fh:
+        fh.write(calculada.stdout.strip() + "\n")
+
+
+def _tras_anotar(accion):
+    """Envuelve una infracción para que se aplique DESPUÉS de fijar el verde de partida."""
+    def aplicar(raiz):
+        _anotar_los_dos_sellos(raiz)
+        accion(raiz)
+    return aplicar
+
+
+def _anexar(rel):
+    def accion(raiz):
+        with open(os.path.join(raiz, rel), "a", encoding="utf-8") as fh:
+            fh.write("\nLINEA FALSA DEL SABOTAJE\n")
+    return accion
+
+
+def m_21_borrar_sede_normativa(raiz):
+    """`#21` · desaparece la sede de una materia vigente, y con ella la materia."""
+    os.remove(os.path.join(raiz, SEDE_DE_LA_DEUDA))
+
+
+def m_21_anadir_borrador(raiz):
+    """`#21` · un borrador NO APROBADO aparece junto a la norma sin mover el sello."""
+    _escribir(raiz, "docs/f5/borradores/ZZ-BORRADOR-QUE-NADIE-APROBO.md",
+              "# borrador que nadie aprobo\n\nTexto que se leeria como norma.\n")
+
+
+def m_21_cambiar_una_exclusion(raiz):
+    """`#21` · la sede del Owner se cuela en la lista de EXCLUSIONES del sello.
+
+    Es la forma barata de «arreglar» un rojo de integridad: no se toca la norma, se retira
+    del alcance. El ÁMBITO del sello existe para que retirar algo del alcance sea un acto
+    visible y no una línea que nadie relee.
+    """
+    _sustituir(raiz, HUELLA,
+               '("kernel/.upstream-hash", ".sello-producto")',
+               '("kernel/.upstream-hash", ".sello-producto",\n'
+               '      "docs/owner/ADS-OWNER-RESOLUCIONES.md")')
+
+
+def m_21_omitir_docs_entero(raiz):
+    """`#21` · el estrechamiento ORIGINAL, escrito hoy: `docs/` entero fuera del sello."""
+    _sustituir(raiz, HUELLA,
+               '            rel = os.path.relpath(ruta, base).replace(os.sep, "/")\n'
+               '            if _excluida_del_sello(rel):',
+               '            rel = os.path.relpath(ruta, base).replace(os.sep, "/")\n'
+               '            if rel.startswith("docs/"):\n'
+               '                continue\n'
+               '            if _excluida_del_sello(rel):')
+
+
+def m_23_huella_ciega_a_la_ruta(raiz):
+    """`#23` · la huella deja de mirar la RUTA: el mismo contenido en otro sitio pasa."""
+    _sustituir(raiz, HUELLA,
+               "        acumulado.update(rel.encode(\"utf-8\"))\n"
+               "        acumulado.update(b\"\\0\")\n"
+               "        with open(ruta, \"rb\") as fh:",
+               "        with open(ruta, \"rb\") as fh:")
+
+
+def m_23_sello_ciego_al_contenido(raiz):
+    """`#23` · el sello deja de mirar el CONTENIDO: reescribir una norma no lo mueve."""
+    _sustituir(raiz, HUELLA,
+               "        acumulado.update(hashlib.sha256(contenido).digest())",
+               "        acumulado.update(b\"\")")
+
+
+def m_23_estrechar_las_extensiones(raiz):
+    """`#23` · se estrecha la huella hasta que los validadores dejan de entrar.
+
+    Es el estrechamiento que la lista escrita a mano de nueve rutas SÍ veía. Se conserva
+    porque lo que sustituye a esa lista tiene que ver por lo menos lo mismo, y ahora lo ve
+    DERIVADO de `validadores.yaml`: un validador nuevo entra el día que se registra.
+    """
+    _sustituir(raiz, HUELLA,
+               'EXTENSIONES = (".md", ".yaml", ".yml", ".py", ".sh", ".toml")',
+               'EXTENSIONES = (".md", ".yaml", ".yml", ".sh", ".toml")')
+
+
+def m_23_clase_sin_politica(raiz):
+    """`#23` · una clase canónica se queda sin política de sello, y caería POR OMISIÓN."""
+    _sustituir(raiz, HUELLA, '    "HISTORICA": (\n        SELLADA,',
+               '    "HISTORICA_RETIRADA": (\n        SELLADA,')
+
+
+CATALOGO_DEL_SELLO = [
+    Mutacion("NS21a", "#21", "T150", "comprobar_integridad",
+             "se altera una NORMA VIGENTE dentro de `docs/`, que es donde la prosa ES la "
+             "norma, y el sello del producto tiene que moverse",
+             _tras_anotar(_anexar(NORMA_CANONICA)),
+             espera="la clase `CANONICA_OPERATIVA` DIVERGE"),
+    Mutacion("NS21b", "#21", "T150", "comprobar_integridad",
+             "se altera la SEDE DEL OWNER: es el gesto exacto que `REV-3` reprodujo y que "
+             "no movía la huella",
+             _tras_anotar(_anexar(SEDE_DEL_OWNER)),
+             espera="la clase `AUTORIDAD_SUPERIOR` DIVERGE"),
+    Mutacion("NS21c", "#21", "T150", "comprobar_integridad",
+             "se altera una PROYECCIÓN DERIVADA —la matriz donde la candidata reclama el "
+             "cierre de `G-01`…`G-08`—, el segundo fichero del hecho reproducido",
+             _tras_anotar(_anexar(PROYECCION)),
+             espera="la clase `DERIVADA` DIVERGE"),
+    Mutacion("NS21d", "#21", "T150", "comprobar_integridad",
+             "se altera SÓLO un GATE HISTÓRICO: una trazabilidad reescribible no traza, "
+             "porque los actos siguientes se apoyan en el acto pasado",
+             _tras_anotar(_anexar(GATE_HISTORICO)),
+             espera="la clase `EVIDENCIA` DIVERGE"),
+    Mutacion("NS21e", "#21", "T150", "comprobar_integridad",
+             "se altera material HISTÓRICO conservado por trazabilidad, que es la otra "
+             "clase que sólo existe para poder mirar atrás",
+             _tras_anotar(_anexar(MATERIAL_HISTORICO)),
+             espera="la clase `HISTORICA` DIVERGE"),
+    Mutacion("NS21f", "#21", "T150", "comprobar_integridad",
+             "se AÑADE un borrador no aprobado junto a la norma: si añadirlo no moviera el "
+             "sello, se leería como norma sin que nada lo hubiera aprobado",
+             _tras_anotar(m_21_anadir_borrador),
+             espera="la clase `NO_APLICABLE_A_IMPLEMENTACION` DIVERGE"),
+    Mutacion("NS21g", "#21", "T150", "comprobar_integridad",
+             "se BORRA una sede normativa vigente: retirar la sede retira la materia que "
+             "gobernaba, y un sello que sólo suma contenidos no lo dice",
+             _tras_anotar(m_21_borrar_sede_normativa),
+             espera="es la SEDE de `MAT-008` y NO EXISTE en el árbol"),
+    Mutacion("NS21h", "#21", "T150", "comprobar_integridad",
+             "se CAMBIA una exclusión del sello para sacar del alcance la sede del Owner: "
+             "el alcance viaja pegado al número, y moverlo es un acto visible",
+             _tras_anotar(m_21_cambiar_una_exclusion),
+             espera="el ÁMBITO del sello CAMBIÓ"),
+    Mutacion("NS21i", "#21", "T150", "comprobar_integridad",
+             "se OMITE `docs/` ENTERO del sello, que es el defecto original escrito hoy: "
+             "las clases normativas se quedan sin un solo fichero sellado",
+             _tras_anotar(m_21_omitir_docs_entero),
+             espera="y el sello no cubre NI UN fichero suyo"),
+    Mutacion("NS23a", "#23", "T150", "comprobar_integridad",
+             "la huella deja de mirar la RUTA: el mismo contenido en otro sitio produce el "
+             "mismo número, que es la mitad de lo que la comprobación 3 declaraba y no "
+             "escribía",
+             _tras_anotar(m_23_huella_ciega_a_la_ruta),
+             espera="No es sensible a la RUTA"),
+    Mutacion("NS23b", "#23", "T150", "comprobar_integridad",
+             "el sello deja de mirar el CONTENIDO: reescribir una norma entera no lo mueve, "
+             "y la comprobación 3 tiene que EJERCERLO, no declararlo",
+             _tras_anotar(m_23_sello_ciego_al_contenido),
+             espera="No es sensible al CONTENIDO"),
+    Mutacion("NS23c", "#23", "T150", "comprobar_integridad",
+             "se estrecha `EXTENSIONES` hasta que los validadores en Python salen de la "
+             "huella: el estrechamiento que la lista de nueve rutas veía, ahora derivado "
+             "de `validadores.yaml`",
+             _tras_anotar(m_23_estrechar_las_extensiones),
+             espera="NO entra en la huella del kernel"),
+    Mutacion("NS23d", "#23", "T150", "comprobar_integridad",
+             "una clase canónica se queda SIN POLÍTICA de sello escrita, y con ella caería "
+             "fuera POR OMISIÓN, que es la exclusión que nadie escribe",
+             _tras_anotar(m_23_clase_sin_politica),
+             espera="no tiene política de sello escrita"),
+]
+
+# LA INCORPORACIÓN ES UNA ASIGNACIÓN, Y NO UN `CATALOGO.extend(...)`. MEDIDO: con la
+# llamada, `T330` y `T380` pusieron este módulo en el inventario de PUNTOS EJECUTABLES
+# —`_trabaja_al_importarse` cuenta toda llamada del nivel superior como trabajo— y exigieron
+# a un módulo que sólo se IMPORTA la línea de intérprete que la advertencia de forma de
+# arriba retira a propósito. Una asignación declara sin ejecutar, que es lo que este fichero
+# hace: construir un catálogo que `comprobar_negativos` recorre.
+CATALOGO = CATALOGO + CATALOGO_DEL_SELLO

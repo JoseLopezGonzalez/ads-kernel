@@ -221,6 +221,35 @@ class CanalDeLecturaGit:
         with open(destino, "rb") as manejador:
             return manejador.read()
 
+    def contenido_en_indice(self, ruta):
+        """Bytes de un fichero en el ÍNDICE de Git, o `None` si no está indexado.
+
+        La tercera capa que `V6-12` tiene que juzgar. Una edición `git add`-eada y no
+        confirmada no está en `HEAD` —así que el contraste contra el nacimiento no la ve—
+        y puede diferir del árbol de trabajo, de modo que tampoco la ve quien mire sólo el
+        disco. Es el hueco intermedio, y sin esta lectura no se puede cerrar.
+        """
+        # `-z` NO es cosmético aquí: `ls-files` produce LISTA, y `V6-01` prohíbe leer una
+        # lista sin separador `NUL`. El censo con `ast` lo comprueba en el código y
+        # `_exigir_separador_seguro` en ejecución; sin él, un fichero llamado `a\nb.md`
+        # partiría el registro en dos y la sede se leería del objeto equivocado.
+        codigo, salida, _ = self.canal.ejecutar("ls-files", "-s", "-z", "--", ruta,
+                                                exigir_exito=False)
+        if codigo != 0 or not salida:
+            return None
+        # Con `-z` el formato es «<modo> <sha> <etapa>\t<ruta>\0». Se toma el PRIMER
+        # registro y su segundo campo, que es el objeto indexado.
+        registro = salida.split(b"\0")[0]
+        if not registro:
+            return None
+        piezas = registro.split(b"\t")[0].split()
+        if len(piezas) < 2:
+            return None
+        objeto = piezas[1].decode("ascii", "strict")
+        codigo, bytes_del_blob, _ = self.canal.ejecutar("cat-file", "blob", objeto,
+                                                        exigir_exito=False)
+        return bytes_del_blob if codigo == 0 else None
+
     def resolver(self, revision):
         return self.canal.resolver(revision)
 

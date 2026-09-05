@@ -477,7 +477,20 @@ def comprobar(manifiesto, lecturas, base=RAIZ):
     informe["restas"]["obligatorio_menos_asignado"] = sorted(
         declarado_obligatorio - obligatorio)
 
-    modificadas = set(manifiesto.get("modificadas") or [])
+    # LA CUARTA RESTA SE MIDE CONTRA LO QUE GIT DERIVA, NO CONTRA LO QUE EL MANIFIESTO DICE
+    #
+    #     HALLAZGO `#10` DEL PRIMER GATE VÁLIDO (`REV-1` MENOR 10), reproducido por él en
+    #     un repositorio sintético y confirmado por el adjudicador: esto era
+    #     `set(manifiesto.get("modificadas"))`, de modo que declarar `modificadas` DE MENOS
+    #     vaciaba la cuarta resta sin que nada lo dijera. En aquel gate NO se usó —el
+    #     adjudicador verificó a mano que las 119 declaradas eran exactamente las 119
+    #     derivadas—, pero la puerta estaba abierta y la verificación fue humana.
+    #
+    #     Ahora el conjunto es el DERIVADO. El manifiesto ya no puede quitarle una ruta: si
+    #     declara de menos, el `perdidas` de arriba lo rechaza; y si declara de MÁS, esas
+    #     rutas siguen exigiendo lectura íntegra, porque `modificadas` es la unión de lo
+    #     derivado con lo que el manifiesto quiera añadir. Quitar, no. Añadir, sí.
+    modificadas = set(derivado) | set(manifiesto.get("modificadas") or [])
     leidas_integras = set()
     resta_lectura, resta_lineas, no_cerrados, sha_divergente = [], [], [], []
 
@@ -862,6 +875,13 @@ def _autopruebas(base):
 
         derivado = _modificadas_del_arbol(
             {"base": sha_base, "candidata": sha_candidata}, arbol)
+        # El control positivo de `G-07` compara contra el conjunto ENTERO, borradas
+        # incluidas: una ruta que la candidata borra sigue siendo una ruta modificada y
+        # tiene que salir del `git diff`. Los controles de `#10`, en cambio, necesitan
+        # asignar y LEER, y no se puede leer un fichero que ya no está: para ellos —y sólo
+        # para ellos— se usa el subconjunto que existe en disco.
+        derivado_legible = {r for r in derivado
+                            if os.path.isfile(os.path.join(arbol, r))}
         esperado = {"modificado.txt", "alta.txt", "borrado.txt",
                     "viejo-nombre.txt", "nuevo-nombre.txt",
                     "ñandú con espacio.txt", "copiado.txt"}
@@ -885,6 +905,40 @@ def _autopruebas(base):
                 return
             controles.append((nombre, "NO"))
             sin_detectar.append(nombre)
+
+        # `#10` · LA CUARTA RESTA, CONTRA LA PUERTA QUE EL GATE VÁLIDO DEJÓ ABIERTA.
+        #     El manifiesto declara `modificadas: []` mientras el árbol deriva siete rutas.
+        #     Antes: la cuarta resta salía VACÍA y nadie leía nada íntegro. Ahora el
+        #     conjunto es el derivado, así que o alguien las lee enteras o la resta las
+        #     nombra. Se comprueba en los DOS sentidos, porque una resta que siempre sale
+        #     llena tampoco mide.
+        def _cuarta_resta(nombre, leidas_de_rev1, espera_vacia):
+            fichas_del_arbol = []
+            for ruta in sorted(derivado_legible):
+                sha, lineas = _sha256_y_lineas(arbol, ruta)
+                if lineas:
+                    fichas_del_arbol.append({"ruta": ruta, "lineas": lineas,
+                                             "sha256": sha, "rango": None})
+            man = {"candidata": sha_candidata, "base": sha_base, "modificadas": [],
+                   "revisores": {"REV-1": {"fuentes": fichas_del_arbol}}}
+            lectura = {"revisor": "REV-1", "cerrado": True, "leidas": [
+                {"ruta": f["ruta"], "sha256": f["sha256"], "tramos": [[1, f["lineas"]]]}
+                for f in fichas_del_arbol if f["ruta"] in leidas_de_rev1]}
+            try:
+                _ok, informe_puerta = comprobar(man, [lectura], base=arbol)
+            except ManifiestoIlegible:
+                controles.append((nombre, "ok"))
+                return
+            vacia = not informe_puerta["restas"]["modificadas_menos_leidas_integras"]
+            bien = vacia == espera_vacia
+            controles.append((nombre, "ok" if bien else "NO"))
+            if not bien:
+                sin_detectar.append(nombre)
+
+        _cuarta_resta("`#10` · `modificadas: []` y el árbol deriva siete: la resta NO puede "
+                      "salir vacía", set(), False)
+        _cuarta_resta("`#10` · control POSITIVO · leídas TODAS las derivadas: la resta SÍ "
+                      "sale vacía", set(derivado_legible), True)
 
         _puerta("`G-07` · el manifiesto NO elige el repositorio: `repositorio` ajeno",
                 {"base": sha_base, "candidata": sha_candidata, "repositorio": taller},

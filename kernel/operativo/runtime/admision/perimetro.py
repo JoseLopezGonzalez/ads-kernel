@@ -500,21 +500,49 @@ class Perimetro:
 
         # `ADJ-B3` · `O27` §3 · el régimen FUERTE, cuando la historia declara entradas.
         libro = entrada[4] if len(entrada) > 4 else None
+        capas = entrada[5] if len(entrada) > 5 else {"HEAD": actual}
         if libro is not None and sede.tiene_entradas_cerradas(libro):
-            infracciones = sede.juzgar(libro, actual)
-            if not infracciones:
-                return None
-            primera = infracciones[0]
-            resto = ("" if len(infracciones) == 1
-                     else " (y " + str(len(infracciones) - 1) + " más: "
-                          + ", ".join(sorted({i["codigo"] for i in infracciones[1:]})) + ")")
-            return Hallazgo(
-                "V6-12", SedeDelOwnerAlterada.CODIGO, ruta, zona.clase,
-                "ALTERACIÓN DE ENTRADAS CERRADAS [" + primera["codigo"] + "] "
-                + primera["causa"] + resto + ". Régimen: entradas-cerradas (`O27` §3): "
-                "cada resolución publicada se conserva BYTE A BYTE y sólo se admite añadir "
-                "una entrada nueva y completa al final",
-            )
+            # SE JUZGAN LAS TRES CAPAS, Y NO SÓLO `HEAD` · hallazgo `#20` del primer gate
+            # válido. Se recorren en orden de cercanía a la ejecución —lo que hay en disco
+            # es lo que un proceso lee— y la primera alteración manda, nombrando SU CAPA:
+            # un verde que no dice qué miró no dice nada.
+            for capa in ("HEAD", "indice", "disco"):
+                bytes_de_la_capa = capas.get(capa)
+                if bytes_de_la_capa is None:
+                    continue
+                infracciones = sede.juzgar(libro, bytes_de_la_capa)
+                if not infracciones:
+                    continue
+                primera = infracciones[0]
+                resto = ("" if len(infracciones) == 1
+                         else " (y " + str(len(infracciones) - 1) + " más: "
+                              + ", ".join(sorted({i["codigo"]
+                                                  for i in infracciones[1:]})) + ")")
+                return Hallazgo(
+                    "V6-12", SedeDelOwnerAlterada.CODIGO, ruta, zona.clase,
+                    "ALTERACIÓN DE ENTRADAS CERRADAS EN `" + capa + "` ["
+                    + primera["codigo"] + "] " + primera["causa"] + resto
+                    + ". Régimen: entradas-cerradas (`O27` §3): cada resolución publicada "
+                    "se conserva BYTE A BYTE y sólo se admite añadir una entrada nueva y "
+                    "completa al final. Se juzgan las TRES capas —lo confirmado, lo "
+                    "indexado y el árbol de trabajo—, porque una sede alterada llega a "
+                    "ejecutarse desde cualquiera de ellas",
+                )
+            # Y la DIVERGENCIA entre capas es hallazgo por sí sola, aunque las tres
+            # conserven las entradas: significa que hay una edición sin confirmar sobre la
+            # sede que otorga la competencia, y eso no puede pasar en silencio.
+            presentes = {c: b for c, b in capas.items() if b is not None}
+            distintas = {c for c, b in presentes.items()
+                         if b != presentes.get("HEAD", b)}
+            if presentes.get("HEAD") is not None and distintas:
+                return Hallazgo(
+                    "V6-12", SedeDelOwnerAlterada.CODIGO, ruta, zona.clase,
+                    "la sede APPEND-ONLY DIFIERE entre capas: " + ", ".join(sorted(distintas))
+                    + " no coincide byte a byte con `HEAD`. Las entradas cerradas se "
+                    "conservan en las tres, pero hay una edición sin confirmar sobre la "
+                    "sede que otorga la competencia, y `V6-12` no la deja pasar en silencio",
+                )
+            return None
 
         if libro is None:
             return Hallazgo(
@@ -525,15 +553,42 @@ class Perimetro:
             )
 
         # Régimen de PREFIJO, para documentos continuos cuya historia no declara entradas.
-        if actual.startswith(anterior):
-            return None
-        return Hallazgo(
-            "V6-12", SedeDelOwnerAlterada.CODIGO, ruta, zona.clase,
-            "el contenido publicado en el commit de NACIMIENTO ya no es un prefijo exacto "
-            "del contenido actual: se ha alterado lo publicado, y confirmar no exime. "
-            "Régimen: prefijo-del-nacimiento (la historia de esta ruta no publica entradas "
-            "cerradas que derivar)",
-        )
+        # Régimen de PREFIJO, y también sobre las TRES CAPAS · hallazgo `#20`. La primera
+        # corrección cubrió sólo el régimen de entradas cerradas, y las pruebas `T435`-`T438`
+        # lo midieron: sobre un documento continuo —el que este régimen gobierna— la edición
+        # en disco seguía pasando en verde, porque `actual` son los bytes de `HEAD` y contra
+        # `HEAD` el prefijo siempre casa. El agujero no era del régimen fuerte: era de mirar
+        # una sola capa, y por eso se cierra en los dos sitios.
+        for capa in ("HEAD", "indice", "disco"):
+            bytes_de_la_capa = capas.get(capa)
+            if bytes_de_la_capa is None:
+                continue
+            if bytes_de_la_capa.startswith(anterior):
+                continue
+            return Hallazgo(
+                "V6-12", SedeDelOwnerAlterada.CODIGO, ruta, zona.clase,
+                "el contenido publicado en el commit de NACIMIENTO ya no es un prefijo "
+                "exacto del contenido en `" + capa + "`: se ha alterado lo publicado, y no "
+                "confirmar tampoco exime. Régimen: prefijo-del-nacimiento (la historia de "
+                "esta ruta no publica entradas cerradas que derivar). Se juzgan las TRES "
+                "capas —lo confirmado, lo indexado y el árbol de trabajo—, porque una sede "
+                "alterada llega a ejecutarse desde cualquiera de ellas",
+            )
+        # Y la DIVERGENCIA entre capas, por la misma razón que en el régimen fuerte: el
+        # prefijo se conserva en las tres y aun así hay una edición sin confirmar encima de
+        # la sede que otorga la competencia.
+        presentes = {c: b for c, b in capas.items() if b is not None}
+        if presentes.get("HEAD") is not None:
+            distintas = {c for c, b in presentes.items() if b != presentes["HEAD"]}
+            if distintas:
+                return Hallazgo(
+                    "V6-12", SedeDelOwnerAlterada.CODIGO, ruta, zona.clase,
+                    "la sede APPEND-ONLY DIFIERE entre capas: " + ", ".join(sorted(distintas))
+                    + " no coincide byte a byte con `HEAD`. El prefijo del nacimiento se "
+                    "conserva en las tres, pero hay una edición sin confirmar sobre la sede "
+                    "del Owner, y `V6-12` no la deja pasar en silencio",
+                )
+        return None
 
 
 def exigir_ancla_externa(declaracion, cid_interno):

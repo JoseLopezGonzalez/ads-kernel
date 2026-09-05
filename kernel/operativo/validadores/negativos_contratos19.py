@@ -615,6 +615,31 @@ def m_h02_un_escenario_sube_de_estado_sin_contraste(raiz):
                "una fuente ya clonada se reutiliza y no se vuelve a clonar. ... ok")
 
 
+def m_20_la_sede_vuelve_a_juzgarse_solo_contra_head(raiz):
+    """El hallazgo `#20` del primer gate VÁLIDO de `F6`, mecanizado.
+
+    Devuelve el canal a mirar UNA capa: las tres se recogen y sólo se juzga `HEAD`, que es
+    lo que hacía que reescribir la sede del Owner EN DISCO publicara `mutaciones 119 -> 120`
+    con los hallazgos parados en 119. El juez siempre fue correcto; el defecto era del
+    canal, y este sabotaje lo reintroduce ahí. Se tocan los DOS regímenes —entradas
+    cerradas y prefijo— porque el agujero no era de uno: era de mirar una sola capa.
+    """
+    ruta = "kernel/operativo/runtime/admision/perimetro.py"
+    destino = os.path.join(raiz, ruta)
+    with open(destino, encoding="utf-8") as manejador:
+        texto = manejador.read()
+    antes = texto
+    texto = texto.replace('for capa in ("HEAD", "indice", "disco"):',
+                          'for capa in ("HEAD",):')
+    texto = texto.replace(
+        'presentes = {c: b for c, b in capas.items() if b is not None}',
+        'presentes = {}')
+    if texto == antes:
+        raise RuntimeError("la mutación no encaja: el recorrido de capas no está en " + ruta)
+    with open(destino, "w", encoding="utf-8") as manejador:
+        manejador.write(texto)
+
+
 CATALOGO.extend([
     Mutacion("N340", "ADJ-B3 · O27 §3", "T342", ADMISION,
              "el append-only de la sede del Owner vuelve al PREFIJO del nacimiento",
@@ -636,6 +661,12 @@ CATALOGO.extend([
              m_b3_el_canal_de_presencia_literal_se_retira, clase=BATERIA,
              casos=["AppendOnlyPorEntradaCerrada", "LaSedeRealDelOwner"],
              espera="el ataque tiene que nombrar las entradas que destruye"),
+    Mutacion("N435", "#20 · V6-12", "T435", ADMISION,
+             "la sede del Owner vuelve a juzgarse SÓLO contra `HEAD` y una edición en "
+             "DISCO deja de verse: es el hallazgo `#20` del primer gate válido",
+             m_20_la_sede_vuelve_a_juzgarse_solo_contra_head, clase=BATERIA,
+             casos=["SedeDelOwnerEnLasTresCapas"],
+             espera="alterada EN DISCO pasó en verde"),
     Mutacion("N343b", "ADJ-B3 · V6-12", "T343", ADMISION,
              "una alteración confirmada y luego revertida deja de constar",
              m_b3_el_canal_de_la_historia_se_retira, clase=BATERIA,

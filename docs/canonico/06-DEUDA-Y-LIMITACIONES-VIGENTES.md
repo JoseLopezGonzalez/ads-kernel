@@ -97,9 +97,34 @@ nombra sólo las que siguen abiertas.
 > las dos cifras se vuelve a escribir aquí a mano.
 
 **Y una razón añadida por la que `C-L.7` sigue abierta, derivada por el último
-verificador:** el barrido mecánico de su regla **es incompleto POR CAJA DE LETRA** —una
-grafía en versales escapa y la misma frase en minúsculas es cazada—, de modo que **su verde
-no prueba lo que dice probar**. Consta contra la propia argumentación de quien lo escribió.
+verificador:** el barrido mecánico de su regla **era incompleto POR CAJA DE LETRA** —una
+grafía en versales escapaba y la misma frase en minúsculas era cazada—, de modo que **su
+verde no probaba lo que decía probar**. Constó contra la propia argumentación de quien lo
+escribió.
+
+> **Ese defecto del INSTRUMENTO está corregido, y `C-L.7` NO se cierra por ello.** El
+> barrido publicado como **regla 7** del bloque reanudable del
+> [`CHECKPOINT-ADS-NEXT.md`](../evolucion/CHECKPOINT-ADS-NEXT.md) escribía la caja de letra
+> A MANO y la escribía PARTIDA —los sustantivos `hallazgos`, `gates`, `árboles`, `contratos`
+> y `condiciones` sólo en minúsculas; `BLOQUEANTES`, `GRAVES`, `MEDIOS`, `MENORES` y `LEVES`
+> sólo en versales—, y además cortaba su lista de numerales en `catorce`. Ahora baja la
+> línea a minúsculas antes de contrastar y su lista de numerales no corta ahí. **Medido, no
+> supuesto:** con la MISMA frase en el MISMO campo vigente, **siete de nueve sabotajes
+> escapaban al barrido anterior y los NUEVE los caza el corregido**; los cuatro controles
+> negativos —la misma frase en un campo `_anterior` y bajo los rótulos `[HISTÓRICO …]` y
+> `[CIFRA DE AQUEL MOMENTO …]`— siguen LIMPIOS en los dos, de modo que la corrección no
+> compra sensibilidad con falsos rojos; y sobre el árbol sano el comando publicado, ejecutado
+> literalmente, **sale VACÍO**, que es lo que su anotación dice.
+>
+> **Lo que sigue sin cubrir, y por eso `C-L.7` sigue NO CERRADA aunque el barrido mejore:**
+> la lista de SUSTANTIVOS sigue escrita a mano —es la clase `JB-02`— y decidir qué
+> sustantivos cuentan como «algo que otra sede cuenta» es especificación de `SIS`; el barrido
+> es POR LÍNEA, luego un cardinal separado de su sustantivo por un salto de línea escapa; y
+> el alcance del rótulo histórico que el barrido aplica es el del CAMPO y no el de la viñeta
+> que la regla 8 escribe, que es **`JA-01`** y no se cierra aquí. **Y sobre todo:** la
+> condición de cierre de esta fila dice «*sólo un gate independiente posterior puede
+> cerrarla*», y `O28` §5 y §6 reservan ese acto a un verificador que no haya construido
+> ningún corte de `F6`. **Barrer no es certificar, y corregir el barrido tampoco.**
 
 ## 3 · `M-04` — la deuda que bloquea `F6` y bloquea PesquerApp
 

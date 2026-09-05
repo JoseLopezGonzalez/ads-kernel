@@ -167,26 +167,72 @@ def exigir_inmutables_del_paquete(almacen, transicion):
             continue
         contenido = operacion.contenido
         for campo in CAMPOS_INMUTABLES_DEL_PAQUETE:
-            if campo not in anterior or campo not in contenido:
-                # Un objeto al que le falta el campo lo rechaza `comprobar_paquete`, que es
-                # de quien es esa responsabilidad. Aquí sólo se compara lo comparable: si
-                # esta rama se tragara el caso, el fallo saldría igual, y por el error que
-                # de verdad lo describe.
+            # LOS CUATRO CUADRANTES, Y POR QUÉ HACEN FALTA LOS CUATRO
+            #
+            #     HECHO REPRODUCIDO POR EL PRIMER GATE VÁLIDO DE `F6` (hallazgo `#1`,
+            #     `REV-1` GRAVE 1), por el canal oficial `rt.almacen`:
+            #
+            #         control: intento DIRECTO 50 -> 999   ·   RECHAZADO
+            #         PASO 1 · BORRAR el campo `prioridad` ·   CONFIRMADO
+            #         PASO 2 · escribir  prioridad = 999   ·   CONFIRMADO   -> 999
+            #
+            #     La guarda era `if campo not in anterior or campo not in contenido:
+            #     continue`, y con ella la invariante caía en DOS transiciones: el paso 1
+            #     salía por la segunda mitad —el campo no está en el contenido nuevo— y el
+            #     paso 2 por la primera —el campo ya no está en el anterior, así que «nace»
+            #     otra vez—. La exención del ALTA, que es legítima, se estaba concediendo
+            #     también a un RENACIMIENTO fabricado borrando el campo un instante antes.
+            #
+            #     El motivo escrito para aquel `continue` era que «un objeto al que le falta
+            #     el campo lo rechaza `comprobar_paquete`». Se midió y es FALSO en este
+            #     camino: `Almacen.aplicar` NO llama a `comprobar_paquete` —sólo aparece en
+            #     `dispatcher.py` y `vistas.py`, que son caminos de LECTURA—, de modo que
+            #     nadie recogía el objeto mutilado. Un motivo que delega en un guardián que
+            #     no está en el camino no es un motivo: es un hueco con una nota al lado.
+            #
+            # DECISIÓN · el ALTA sigue siendo la ÚNICA exención, y se decide por el ESTADO
+            #     La ruta que no existía en la revisión vigente ya se eximió arriba
+            #     (`anterior is None`), que es donde la prioridad NACE de verdad. A partir
+            #     de aquí el paquete EXISTE, y sobre un paquete que existe los cuatro
+            #     cuadrantes son prohibiciones:
+            #
+            #         presente antes · presente después · distinto  ->  MUEVE
+            #         presente antes · AUSENTE después              ->  BORRA
+            #         AUSENTE  antes · presente después             ->  REINTRODUCE
+            #         ausente  antes · ausente  después             ->  no toca: pasa
+            #
+            #     Los tres primeros fallan cerrado. `b.12` dice «no cambia la prioridad,
+            #     nunca», y borrarla es cambiarla: un paquete sin prioridad no conserva la
+            #     que el Owner declaró.
+            esta_antes = campo in anterior
+            esta_despues = campo in contenido
+            if not esta_antes and not esta_despues:
                 continue
-            if contenido[campo] == anterior[campo]:
+            if esta_antes and esta_despues and contenido[campo] == anterior[campo]:
                 continue
+            if esta_antes and not esta_despues:
+                gesto = "BORRA"
+                desde, hasta = repr(anterior[campo]), "AUSENTE"
+            elif not esta_antes and esta_despues:
+                gesto = "REINTRODUCE"
+                desde, hasta = "AUSENTE", repr(contenido[campo])
+            else:
+                gesto = "mueve"
+                desde, hasta = repr(anterior[campo]), repr(contenido[campo])
             raise PrioridadInmutable(
-                "la transición `" + str(getattr(transicion, "tipo", "?")) + "` mueve el "
-                "campo `" + campo + "` del paquete de " + repr(anterior[campo]) + " a "
-                + repr(contenido[campo]) + ", y `b.12` lo prohíbe con estas palabras: «"
+                "la transición `" + str(getattr(transicion, "tipo", "?")) + "` " + gesto
+                + " el campo `" + campo + "` de un paquete que YA EXISTE: " + desde + " -> "
+                + hasta + ". `b.12` lo prohíbe con estas palabras: «"
                 + CITA_DE_B12 + "». La prioridad la declara el Owner al dar de alta el "
-                "paquete y no se mueve después; la inanición se INFORMA en `tiempo_listo`, "
+                "paquete y no se mueve después; BORRARLA para volver a introducirla es "
+                "moverla en dos pasos, y fue así como el primer gate válido de `F6` la "
+                "movió de 50 a 999. La inanición se INFORMA en `tiempo_listo`, "
                 "`postergaciones`, `adelantado_por` e `impedimento`",
                 ruta=operacion.ruta,
                 campo=campo,
                 transicion=str(getattr(transicion, "tipo", "?")),
-                anterior=anterior[campo],
-                pretendido=contenido[campo],
+                anterior=anterior.get(campo),
+                pretendido=contenido.get(campo),
             )
     return transicion
 

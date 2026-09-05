@@ -757,6 +757,112 @@ class SedeDelOwner(ArbolTemporal):
         self.assertEqual(veredicto.hallazgos[0].punto, "V6-12")
 
 
+
+# ===========================================================================
+#  T435 a T440 · `V6-12` SOBRE LAS TRES CAPAS · hallazgo `#20` del gate VÁLIDO
+# ===========================================================================
+class SedeDelOwnerEnLasTresCapas(ArbolTemporal):
+    """`V6-12` juzga `HEAD`, el ÍNDICE y el ÁRBOL DE TRABAJO, no sólo lo confirmado.
+
+    HECHO REPRODUCIDO POR EL PRIMER GATE VÁLIDO DE `F6` (`REV-3` H1). Reescribiendo EN
+    DISCO el título de `O26` —la resolución que otorga competencia al gate— por su
+    contrario, el verificador publicaba `mutaciones 119 -> 120` y los HALLAZGOS se quedaban
+    en 119: **veía la mutación y no la juzgaba**. La causa era de canal, no de juez:
+    `admision/__init__.py` tomaba `canal.contenido("HEAD", ruta)` y sólo miraba el disco si
+    `HEAD` no tenía el fichero, de modo que se comparaba el nacimiento contra sí mismo. El
+    control del control lo confirmó: alimentando `sede.juzgar` con los bytes del disco salía
+    `ENTRADA_ALTERADA · O26`.
+
+    La sede del Owner era **el único sitio del árbol cuyo contenido en disco nadie juzgaba**,
+    mientras el mismo verificador sí contrasta el árbol de trabajo en las otras 29 zonas.
+    """
+
+    def sede(self):
+        with open(os.path.join(self.repo, perimetro.SEDE_DEL_OWNER), "rb") as manejador:
+            return manejador.read()
+
+    def indexar(self):
+        """`git add` SIN confirmar: deja el cambio en el ÍNDICE y no en `HEAD`."""
+        self.canal_git.ejecutar("add", "--", perimetro.SEDE_DEL_OWNER)
+
+    # ------------------------------------------------------------------ T435
+    def test_T435_edicion_en_DISCO_sin_commit_da_ROJO(self):
+        """T435 · el hallazgo, exactamente. Antes: verde. Ahora: rojo, nombrando la capa."""
+        self.escribir(perimetro.SEDE_DEL_OWNER,
+                      b"# resoluciones\n\n## O1\n\ntexto ALTERADO EN DISCO\n")
+        codigo, salida, _ = self.canal_git.ejecutar("status", "--porcelain")
+        self.assertNotEqual(salida.strip(), b"",
+                            "el montaje no dejó la edición sin confirmar")
+        veredicto = self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER])
+        self.assertEqual(veredicto.color, "ROJO",
+                         "una sede del Owner alterada EN DISCO pasó en verde: es el "
+                         "hallazgo `#20` del primer gate válido, sin corregir")
+        self.assertEqual(veredicto.hallazgos[0].punto, "V6-12")
+
+    # ------------------------------------------------------------------ T436
+    def test_T436_edicion_STAGED_da_ROJO(self):
+        """T436 · el hueco intermedio: `git add`-eado y no confirmado.
+
+        No está en `HEAD`, así que el contraste contra el nacimiento no lo ve; y puede
+        diferir del disco, así que tampoco lo ve quien mire sólo el árbol de trabajo.
+        """
+        self.escribir(perimetro.SEDE_DEL_OWNER,
+                      b"# resoluciones\n\n## O1\n\ntexto ALTERADO Y STAGED\n")
+        self.indexar()
+        veredicto = self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER])
+        self.assertEqual(veredicto.color, "ROJO")
+        self.assertEqual(veredicto.hallazgos[0].punto, "V6-12")
+
+    # ------------------------------------------------------------------ T437
+    def test_T437_indice_y_disco_DISTINTOS_dan_ROJO(self):
+        """T437 · las tres capas con TRES contenidos distintos.
+
+        Se indexa una alteración y después se escribe OTRA cosa encima en disco. Ninguna
+        de las tres coincide, y las tres son sitios desde los que la sede llega a
+        ejecutarse.
+        """
+        self.escribir(perimetro.SEDE_DEL_OWNER,
+                      b"# resoluciones\n\n## O1\n\nALTERADO EN EL INDICE\n")
+        self.indexar()
+        self.escribir(perimetro.SEDE_DEL_OWNER,
+                      b"# resoluciones\n\n## O1\n\nALTERADO EN EL DISCO, distinto\n")
+        veredicto = self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER])
+        self.assertEqual(veredicto.color, "ROJO")
+        self.assertEqual(veredicto.hallazgos[0].punto, "V6-12")
+
+    # ------------------------------------------------------------------ T438
+    def test_T438_truncar_la_sede_en_disco_da_ROJO(self):
+        """T438 · truncamiento: lo publicado desaparece sin que nada se reescriba."""
+        self.escribir(perimetro.SEDE_DEL_OWNER, b"# resoluciones\n")
+        veredicto = self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER])
+        self.assertEqual(veredicto.color, "ROJO")
+        self.assertEqual(veredicto.hallazgos[0].punto, "V6-12")
+
+    # ------------------------------------------------------------------ T439
+    def test_T439_borrar_la_sede_en_DISCO_sin_commit_da_ROJO(self):
+        """T439 · borrado sin confirmar. Un `rm` es una alteración como cualquier otra."""
+        os.remove(os.path.join(self.repo, perimetro.SEDE_DEL_OWNER))
+        veredicto = self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER])
+        self.assertEqual(veredicto.color, "ROJO")
+        self.assertEqual(veredicto.hallazgos[0].punto, "V6-12")
+
+    # ------------------------------------------------------------------ T440
+    def test_T440_CONTROL_el_arbol_limpio_y_el_apendice_confirmado_pasan(self):
+        """T440 · Control del CONTROL: sin él, «todo da rojo» explicaría los cinco de arriba.
+
+        Dos verdes, y los dos importan: el árbol intacto, y el árbol que CRECE por el final
+        con una resolución nueva y confirmada, que es lo único que una sede append-only
+        admite. Si esto fallara, la regla habría dejado de distinguir crecer de alterar.
+        """
+        self.assertEqual(self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER]).color,
+                         "VERDE", "el árbol intacto no puede dar rojo")
+        self.escribir(perimetro.SEDE_DEL_OWNER,
+                      self.sede() + b"\n## O2\n\notra resolucion\n")
+        self.confirmar("nueva resolucion")
+        self.assertEqual(self.verificar(admitidas=[perimetro.SEDE_DEL_OWNER]).color,
+                         "VERDE", "crecer por el final NO es alterar, y esto lo separa")
+
+
 # ===========================================================================
 #  T302 a T305 · `E-09` · `V6-12` SIN DEGRADACIÓN SILENCIOSA
 # ===========================================================================
@@ -1166,7 +1272,13 @@ class MatrizAdversarial(unittest.TestCase):
         self.assertEqual(informe["falsos_verdes"], 0)
         self.assertEqual(informe["falsos_rojos"], 0)
         self.assertTrue(informe["ok"])
-        self.assertEqual(informe["total"], 24)
+        # EL CARDINAL SE DERIVA, NO SE ESCRIBE. Aquí decía `24`, y cuando la matriz pasó a
+        # cubrir la suite completa —el bloqueo de `M-04`— esta línea se puso roja por una
+        # razón que no existía: el instrumento había MEJORADO. Es la misma clase que este
+        # delta corrige en cinco sedes más, y no tenía sentido reproducirla aquí.
+        esperados = (2 * len(matriz.FORMAS) + 2 * len(matriz.LETRAS)
+                     + len(matriz.CONTROLES_POR_PUNTO))
+        self.assertEqual(informe["total"], esperados)
 
     def test_las_seis_formas_y_las_seis_letras_tienen_fixture_positivo_y_negativo(self):
         """T190 · Defecto que previene: `V6-13` y `V6-14`, una forma sin fixture."""
@@ -1180,6 +1292,34 @@ class MatrizAdversarial(unittest.TestCase):
                           if fila["familia"] == familia and fila["caso"] == caso}
                 with self.subTest(familia=familia, caso=caso):
                     self.assertEqual(signos, {"positivo", "negativo"})
+
+    def test_T441_la_matriz_cubre_la_SUITE_COMPLETA_y_no_dos_familias(self):
+        """T441 · `M-04` · Defecto que previene: un cero verdadero sobre 2 de 19 puntos.
+
+        HECHO REPRODUCIDO. `11-ARQ` §20.1 declara de `V6-18` entrada «la suite completa» y
+        evidencia «la matriz entera»; la matriz ejercía `V6-13` y `V6-14`, y el `falsos_
+        verdes = 0` que la condición de cierre de `M-04` nombra se calculaba sobre ellos.
+
+        Lo que se exige aquí: que TODO punto que el verificador pueda emitir tenga
+        tratamiento —familia, adversarial propio, o declaración de no ejercible CON su
+        motivo—, y que la lista de emitibles se DERIVE del código del verificador. Si el
+        verificador aprende a emitir un punto nuevo y nadie le da control, esto enrojece.
+        """
+        informe = matriz.ejecutar(self.directorio)
+        self.assertEqual(informe["puntos_sin_tratamiento"], [],
+                         "hay puntos que el verificador emite y que la matriz no cubre, "
+                         "no ataca y no declara: `V6-18` no puede cerrar sobre «la suite "
+                         "completa» con agujeros que nadie ha nombrado")
+        # y el tratamiento no puede ser vacío: cada declaración de NO EJERCIBLE dice por qué
+        for punto, motivo in sorted(informe["no_ejercibles_aqui"].items()):
+            with self.subTest(punto=punto):
+                self.assertTrue((motivo or "").strip(),
+                                punto + " se declara no ejercible y no dice por qué")
+        # los adversariales de la tercera familia NOMBRAN su punto, o no acreditan nada
+        self.assertEqual(informe["sin_acreditar"], [],
+                         "algún control salió del color esperado SIN nombrar su punto: un "
+                         "rojo por otro motivo demuestra que el aparato se queja, no que "
+                         "se queja de esto")
 
     def test_cada_control_declara_su_color_esperado_antes_de_ejecutarse(self):
         """T190 · Defecto que previene: un control que decide si aprobó al ver el resultado."""

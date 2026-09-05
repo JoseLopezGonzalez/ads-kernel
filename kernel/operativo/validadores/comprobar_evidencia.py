@@ -948,7 +948,45 @@ def _contrastar_contra_head(base, escenarios, r):
     if not os.path.isdir(os.path.join(base, ".git")):
         return ("sin repositorio Git en la raíz: el contraste de la evidencia contra el "
                 "blob de HEAD NO se ha hecho, y no se da por hecho")
+    # EL CONTRASTE RECORRE LAS EVIDENCIAS PUBLICADAS, NO SÓLO LAS CITADAS
+    #
+    #     HECHO REPRODUCIDO POR EL PRIMER GATE VÁLIDO DE `F6` (hallazgo `#3`, `REV-1`
+    #     GRAVE 3). Este diccionario se construía SÓLO recorriendo los escenarios, de modo
+    #     que una evidencia que ningún escenario cita quedaba fuera del contraste:
+    #
+    #         escenarios: 314 · evidencias publicadas: 38 · citadas por escenarios: 32
+    #         NO citadas: cobertura-de-gate · lint · negativos · universo-obligaciones ·
+    #                     universo-obligatorio · universo-rutas
+    #
+    #     Y las seis descubiertas publican CUATRO de las siete líneas de la línea base. El
+    #     revisor lo midió editando `582 -> 9` en `lint-salida.txt` y `170 -> 3` en
+    #     `negativos-salida.txt`: `T158` y `T350` SUPERADA, `EXIT=0`, y el canal declarando
+    #     «EJERCIDO». Es decir, la cifra que encabeza la línea base se podía reescribir a
+    #     mano sin que nada enrojeciera.
+    #
+    # DECISIÓN · la población son las evidencias que el MANIFIESTO declara
+    #     El manifiesto es quien dice qué evidencias existen —una por componente—, y por
+    #     tanto es la única población que no depende de que alguien se acuerde de citarla.
+    #     Los escenarios siguen aportando lo suyo: cuáles esperan veredicto de quién. Una
+    #     evidencia sin escenario que la cite no tiene dictámenes que comparar, pero SÍ
+    #     tiene bytes que contrastar contra `HEAD`, y ésa es la mitad que faltaba.
     por_evidencia = {}
+    # Un árbol sin manifiesto NO es un fallo del contraste: los bancos de `T420`-`T429`
+    # montan repositorios sintéticos con una evidencia y sin `validadores.yaml`, y ahí la
+    # población son sólo los escenarios que se le pasan. Lo midió `A1` sobre mi cambio:
+    # nueve errores en `T420`-`T429` por un `FileNotFoundError` que no describía ningún
+    # defecto del árbol real. Se degrada al conjunto vacío Y SE DICE en la nota, para que
+    # «no había manifiesto» no se confunda con «el manifiesto no declaraba evidencias».
+    manifiesto_leido = True
+    try:
+        componentes = cargar_manifiesto(base)
+    except (OSError, ValueError):
+        manifiesto_leido = False
+        componentes = []
+    for comp in componentes:
+        nombre = (comp.get("evidencia") or "").strip()
+        if nombre:
+            por_evidencia.setdefault(os.path.basename(nombre), [])
     for datos in escenarios:
         evidencia = (datos.get("evidencia") or "").strip()
         if evidencia:
@@ -985,6 +1023,25 @@ def _contrastar_contra_head(base, escenarios, r):
         regeneradas.append(rel)
         confirmada = proc.stdout.decode("utf-8", "replace")
         ahora = en_disco.decode("utf-8", "replace")
+        if not por_evidencia[nombre]:
+            # NINGÚN ESCENARIO LA CITA · segunda mitad del hallazgo `#3`.
+            #
+            #     Meterlas en la población no bastaba: el bucle de comparación recorre los
+            #     ESCENARIOS de cada evidencia, y una evidencia que nadie cita tiene la
+            #     lista vacía, de modo que no se comparaba nada y la edición seguía pasando.
+            #     Se midió con el ataque del revisor —`582 -> 9` en `lint-salida.txt` y
+            #     `170 -> 3` en `negativos-salida.txt`— y las dos seguían en verde.
+            #
+            #     Para éstas el contraste de DICTÁMENES no existe, así que la identidad
+            #     BYTE A BYTE contra `HEAD` es la única garantía disponible, y por eso aquí
+            #     sí se exige: son justamente las que publican cuatro de las siete líneas
+            #     de la línea base, y nada más las sostiene.
+            r.fallo(f"{rel}: DIFIERE de la versión confirmada en `HEAD` y NINGÚN escenario "
+                    f"la cita, de modo que no hay dictamen que contrastar. Una evidencia "
+                    f"que nadie sostiene por veredicto sólo se sostiene por sus BYTES, y "
+                    f"éstos han cambiado sin una ejecución que lo respalde. Regenérala con "
+                    f"`registrar_evidencia.py` y confírmala — no la edites")
+            continue
         for datos in por_evidencia[nombre]:
             identificador = datos.get("id", "")
             antes = registro_pruebas.veredictos_publicados(confirmada, identificador)
@@ -1052,6 +1109,10 @@ def _contrastar_contra_head(base, escenarios, r):
                         f"trabajo {len(buenos_despues)}. Añadir casos es legítimo; que la "
                         f"cobertura adelgace sin decirlo, no")
     partes = [f"evidencia contrastada contra el blob de HEAD: {hechas}"]
+    if not manifiesto_leido:
+        partes.append("sin `validadores.yaml` en la raíz: la población son SÓLO las "
+                      "evidencias que algún escenario cita, y las publicadas que ningún "
+                      "escenario cite NO se han contrastado")
     if borradas:
         partes.append(f"confirmadas en HEAD y AUSENTES del árbol de trabajo: "
                       f"{len(borradas)} ({', '.join(os.path.basename(x) for x in borradas)})")

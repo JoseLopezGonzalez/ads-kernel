@@ -1035,12 +1035,41 @@ regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histór
                        awk '/^actualizado:/{b=1} b&&/^```/{exit} \
                             b&&/^[a-z_]+:/{c=$0;sub(/:.*/,"",c);h=(c~/_anterior$/)} \
                             b&&/\[(HISTÓRICO|HISTORICO|CIFRA DE AQUEL MOMENTO|ESTADO ANTERIOR)/{h=1} \
-                            b&&!h&&/(los|las|LOS|LAS|son|SON|de|DE)? ?([0-9]+|DOS|TRES|CUATRO|CINCO|SEIS|SIETE|OCHO|NUEVE|DIEZ|ONCE|DOCE|TRECE|CATORCE|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce) (hallazgos|gates|árboles|BLOQUEANTES|GRAVES|MEDIOS|MENORES|LEVES|contratos|condiciones)/ \
-                            {printf "%d [%s] %s\n", FNR, c, $0}' \
+                            b&&!h{l=tolower($0); \
+                              if (l ~ /(los|las|son|de)? ?([0-9]+|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince|diecis[ée]is|diecisiete|dieciocho|diecinueve|veinte|veinti[a-zóúé]*|treinta|cuarenta|cincuenta|sesenta|setenta|ochenta|noventa|cien|ciento) ([áa]rboles|hallazgos|gates|bloqueantes|graves|medios|menores|leves|contratos|condiciones)/) \
+                                printf "%d [%s] %s\n", FNR, c, $0}' \
                          docs/evolucion/CHECKPOINT-ADS-NEXT.md
-                  **DEBE SALIR VACÍO.** Y su CONTROL POSITIVO es introducir en un campo
-                  vigente una frase del tipo «los N hallazgos» y comprobar que la delata:
-                  un barrido que no cazara eso volvería a ser tautológico.
+                  **DEBE SALIR VACÍO**, y sobre este árbol sale vacío.
+                  **ESTE BARRIDO ERA CIEGO A LA CAJA DE LETRA, y ésa es la corrección de
+                  esta tanda.** La versión anterior escribía la caja A MANO y la escribía
+                  PARTIDA: los numerales iban en las dos cajas, pero los sustantivos no
+                  —`hallazgos`, `gates`, `árboles`, `contratos` y `condiciones` sólo en
+                  minúsculas, y `BLOQUEANTES`, `GRAVES`, `MEDIOS`, `MENORES` y `LEVES` sólo
+                  en versales—. MEDIDO sobre este mismo fichero, con la MISMA frase en el
+                  MISMO campo vigente y cambiando SÓLO la caja de sus letras: en minúsculas
+                  salía DELATADA y en versales salía LIMPIA. Es lo que `LE` derivó contra
+                  su propio informe —«el verde de ese barrido no prueba lo que dice
+                  probar»— y lo que `06-DEUDA` §2 registra como razón añadida de que
+                  `C-L.7` siga abierta.
+                  Ahora la línea se baja a minúsculas ANTES de contrastar, con lo que la
+                  caja deja de escribirse a mano; y la lista de numerales, que se cortaba en
+                  `catorce` mientras este corpus cuenta bastante más arriba, deja de cortar.
+                  Su CONTROL POSITIVO es introducir en un campo vigente una frase del tipo
+                  «los N hallazgos» **y hacerlo en las DOS CAJAS**: el control de una sola
+                  caja es exactamente el que dejó pasar este defecto, y un barrido que no
+                  cazara las dos volvería a ser tautológico. Sus CONTROLES NEGATIVOS son la
+                  misma frase en un campo `_anterior` y bajo un rótulo `[HISTÓRICO …]`: las
+                  dos tienen que salir LIMPIAS, o el barrido estaría enrojeciendo lo
+                  histórico, que es lo que el rótulo existe para permitir.
+                  **Y lo que este barrido SIGUE SIN CUBRIR, dicho para que nadie lo cuente
+                  como cubierto:** la lista de SUSTANTIVOS sigue escrita a mano —es la clase
+                  `JB-02`, una enumeración al lado de una sede que crece—, y decidir qué
+                  sustantivos cuentan como «algo que otra sede cuenta» es especificación de
+                  `SIS`; el barrido es POR LÍNEA, de modo que un cardinal separado de su
+                  sustantivo por un salto de línea escapa —el mismo defecto que
+                  `comprobar_recuentos.py` documenta de su propio barrido—; y el alcance del
+                  rótulo histórico que aplica es el del CAMPO, no el de la viñeta que la
+                  regla 8 escribe, que es `JA-01` y no se cierra aquí.
                   **NINGUNO DE LOS DOS COMANDOS CIERRA `C-L.7`.** Barrer no es certificar, y
                   sólo un gate independiente posterior puede cerrarla.
                8  EL ALCANCE DE UN RÓTULO HISTÓRICO ES EL DE SU ANCLA, Y SÓLO HAY DOS, y es

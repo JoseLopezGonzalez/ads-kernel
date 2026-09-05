@@ -106,9 +106,36 @@ def _contenidos_para_append_only(canal, base, rutas):
     salida = {}
     historia = canal.procedencia_de_la_historia()
     for ruta in rutas:
-        actual = canal.contenido("HEAD", ruta)
-        if actual is None:
-            actual = canal.contenido_en_disco(ruta)
+        # LAS TRES CAPAS, Y POR QUÉ NO BASTA `HEAD`
+        #
+        #     HECHO REPRODUCIDO POR EL PRIMER GATE VÁLIDO DE `F6` (hallazgo `#20`,
+        #     `REV-3` H1). Esto era `actual = canal.contenido("HEAD", ruta)`, y el disco
+        #     sólo se miraba si `HEAD` NO tenía el fichero. Reescribiendo en DISCO el
+        #     título de `O26` —la resolución que otorga competencia al gate— por su
+        #     contrario, `ads_admision` publicaba `mutaciones 119 -> 120` y los
+        #     HALLAZGOS se quedaban en 119: veía la mutación y no la juzgaba. El control
+        #     del control demostró que el juez es correcto y el canal no: alimentando
+        #     `sede.juzgar` con los bytes del disco salía `ENTRADA_ALTERADA · O26`.
+        #
+        #     El defecto es de CANAL: se juzgaban los bytes de `HEAD`, que por
+        #     construcción coinciden con el nacimiento cuando nadie ha confirmado nada.
+        #
+        # DECISIÓN · se recogen las TRES capas y se juzgan las TRES
+        #     `HEAD` —lo confirmado—, el ÍNDICE —lo preparado y no confirmado— y el ÁRBOL
+        #     DE TRABAJO —lo que hay en disco—. Las tres pueden diferir y las tres son
+        #     sitios desde los que una sede alterada llega a ejecutarse: `O27` §4 manda
+        #     validar sobre un checkout congelado donde coinciden, pero `V6-12` dice
+        #     juzgar el CONTENIDO de la sede, y las otras 29 zonas del verificador sí
+        #     contrastan el árbol de trabajo. Que la sede que otorga la competencia sea
+        #     justamente la que no se mira era el agujero.
+        capas = {
+            "HEAD": canal.contenido("HEAD", ruta),
+            "indice": canal.contenido_en_indice(ruta),
+            "disco": canal.contenido_en_disco(ruta),
+        }
+        # `actual` conserva su significado —los bytes contra los que se contrasta— y pasa
+        # a ser el de `HEAD` cuando existe, para no cambiar el régimen de prefijo.
+        actual = capas["HEAD"] if capas["HEAD"] is not None else capas["disco"]
 
         # `V6-12` exige contrastar contra el NACIMIENTO. Si la historia está truncada o
         # injertada, el commit que `git log --diff-filter=A` devuelve NO es el nacimiento:
@@ -137,7 +164,7 @@ def _contenidos_para_append_only(canal, base, rutas):
         # equivocado. Con la procedencia ya exigida, cada entrada queda anclada al commit
         # que realmente la introdujo.
         libro = sede.derivar_libro(canal, ruta, base=base)
-        salida[ruta] = (anterior, actual, "nacimiento", nacimiento, libro)
+        salida[ruta] = (anterior, actual, "nacimiento", nacimiento, libro, capas)
     return salida
 
 

@@ -269,6 +269,48 @@ INDICE_INICIATIVA = "docs/evolucion/00-INDICE.md"
 EXENTO_POR_TRANSCRIPCION = "docs/f5/01-ACTO-DE-INICIO-DE-F5.md"
 SEDE_PRESIONES = "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md"
 SEDE_OWNER = "docs/owner/ADS-OWNER-RESOLUCIONES.md"
+
+
+def _juzgar_append_only_como_V6_12(raiz, nacimiento, hoy):
+    """`(veredicto, motivo)` de la sede del Owner, con el MISMO juez que `V6-12` ejecuta.
+
+    Se IMPORTA `admision.sede` en vez de reimplementar el criterio. Es la lección del
+    hallazgo `#25`: este fichero llevaba su propia definición —el PREFIJO— y por eso decía
+    `OK` sobre una sede que `V6-12` habría declarado alterada. Dos implementaciones de la
+    misma norma son dos normas, y la que no está en la huella ni entre los 38 validadores
+    es la que envejece sin que nadie se entere.
+
+    Si el juez no se puede importar, NO se degrada al prefijo en silencio: se dice. Un
+    «no lo he podido comprobar» es una respuesta legítima; un «OK» que en realidad
+    significa «he comprobado otra cosa» no lo es.
+    """
+    import sys as _s                                                  # noqa: PLC0415
+    ruta_runtime = os.path.join(raiz, "kernel", "operativo", "runtime")
+    if ruta_runtime not in _s.path:
+        _s.path.insert(0, ruta_runtime)
+    try:
+        from admision import sede as _sede                            # noqa: PLC0415
+        from admision.lectura import CanalDeLecturaGit as _Canal      # noqa: PLC0415
+        from gobierno.git import CanalGit as _CanalGit                # noqa: PLC0415
+    except Exception as exc:                                          # pragma: no cover
+        return "NO COMPROBADO", ("no se pudo importar el juez de `V6-12` (%s): el criterio "
+                                 "de `O27` §3 no se ha aplicado, y NO se sustituye por el "
+                                 "del prefijo, que es otra norma" % exc)
+    canal = _Canal(raiz, canal=_CanalGit(raiz))
+    libro = _sede.derivar_libro(canal, SEDE_OWNER)
+    if libro is not None and _sede.tiene_entradas_cerradas(libro):
+        infracciones = _sede.juzgar(libro, hoy)
+        if not infracciones:
+            return "OK", "entradas-cerradas: todas conservadas byte a byte"
+        primera = infracciones[0]
+        return "ROTO", ("[%s] %s" % (primera["codigo"], primera["causa"]))
+    # La historia no publica entradas que derivar: SUELO de prefijo, y se dice cuál se usó.
+    orig = subprocess.run(["git", "-C", raiz, "show", "%s:%s" % (nacimiento, SEDE_OWNER)],
+                          capture_output=True, timeout=30).stdout
+    if hoy.startswith(orig):
+        return "OK", "prefijo-del-nacimiento (la historia no publica entradas cerradas)"
+    return "ROTO", ("la sede ya no empieza por el contenido del commit que la creó "
+                    "(régimen de prefijo: la historia no publica entradas cerradas)")
 ACTA_PRESIONES = "docs/f5/40-DISPOSICION-DE-LAS-PRESIONES.md"
 SECCION_G = "docs/rediseno/g-ESTADO-DURABLE-APROBADA.md"
 ENMIENDA_ARRANQUE = "docs/rediseno/a-ENMIENDA-E3-ARRANQUE-Y-POLITICA.md"
@@ -531,7 +573,7 @@ def validar(raiz):
         r.fallo("F14", f"filas APLICADAS cuyo artefacto es un BORRADOR: {falsos}. Un borrador "
                        f"NO_APROBADO no puede ser el instrumento que aplica una decision")
 
-    # ---- F22 · append-only contra el NACIMIENTO --------------------------
+    # ---- F22 · append-only por ENTRADAS CERRADAS (`O27` §3) ---------------
     try:
         nac = subprocess.run(["git", "-C", raiz, "log", "--diff-filter=A", "--format=%H",
                               "--", SEDE_OWNER], capture_output=True, text=True, timeout=30)
@@ -540,15 +582,27 @@ def validar(raiz):
             r.datos["append_only"] = "sin historia: no comprobado"
         else:
             nacimiento = commits[-1]
-            orig = subprocess.run(["git", "-C", raiz, "show", f"{nacimiento}:{SEDE_OWNER}"],
-                                  capture_output=True, timeout=30).stdout
             hoy = open(os.path.join(raiz, SEDE_OWNER), "rb").read()
-            r.datos["append_only"] = f"contra {nacimiento[:8]}: " + (
-                "OK" if hoy.startswith(orig) else "ROTO")
-            if not hoy.startswith(orig):
-                r.fallo("F22", f"la sede del Owner YA NO EMPIEZA por el contenido del commit "
-                               f"que la creo ({nacimiento[:8]}). Es append-only, y confirmar "
-                               f"una alteracion no la vuelve legitima")
+            # UNA SOLA DEFINICION DE APPEND-ONLY, Y ES LA DE `O27` §3
+            #
+            #     HECHO REPRODUCIDO POR EL PRIMER GATE VALIDO DE `F6` (hallazgo `#25`,
+            #     `REV-3` H6). Aqui sobrevivia la definicion por PREFIJO —`hoy.startswith(
+            #     orig)`—, que es justo la que `O27` §3 sustituyo por la de ENTRADAS
+            #     CERRADAS, y este fichero no esta entre los 38 validadores ni dentro de la
+            #     huella. Con la sede alterada del hallazgo `#20` publicaba `OK`.
+            #
+            #     Dos definiciones de la misma norma son dos normas. Se importa el juez
+            #     unico —`admision.sede`, el que `V6-12` ejecuta— y se aplica el mismo
+            #     criterio: cada entrada publicada se conserva BYTE A BYTE y solo se admite
+            #     anadir una entrada nueva y completa al final. El prefijo se conserva como
+            #     SUELO para el caso en que la historia no publique entradas que derivar,
+            #     que es exactamente el reparto de regimenes que `perimetro.py` hace.
+            veredicto, motivo = _juzgar_append_only_como_V6_12(raiz, nacimiento, hoy)
+            r.datos["append_only"] = f"contra {nacimiento[:8]}: {veredicto}"
+            if veredicto != "OK":
+                r.fallo("F22", f"la sede del Owner ha sido ALTERADA ({nacimiento[:8]}): "
+                               f"{motivo}. Es append-only por ENTRADAS CERRADAS (`O27` §3), "
+                               f"y confirmar una alteracion no la vuelve legitima")
     except Exception as exc:                                     # pragma: no cover
         r.datos["append_only"] = f"no comprobado: {exc}"
 

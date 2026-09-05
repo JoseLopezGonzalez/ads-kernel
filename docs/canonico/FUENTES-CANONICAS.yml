@@ -239,6 +239,14 @@ zonas:
   - patron: '^\.gitignore$'
     clase: NO_APLICABLE_A_IMPLEMENTACION
     motivo: configuracion de herramienta
+  - patron: '^\.sello-producto$'
+    clase: DERIVADA
+    motivo: >
+      el SELLO DEL PRODUCTO ADS anotado, escrito por `huella.py --anotar-sello`. Es
+      DERIVADA porque no crea autoridad: proyecta, clase a clase, el estado del arbol que
+      las sedes superiores gobiernan. Queda EXCLUIDO del propio sello —es el RESULTADO y no
+      la entrada, igual que kernel/.upstream-hash lo esta de la huella del kernel—, y esa
+      exclusion se declara con su motivo en `EXCLUSIONES_DEL_SELLO`, no por omision.
 
 # ---------------------------------------------------------------------------
 # MATERIAS. Identificador estable, una sola sede, autoridad superior cuando exista.

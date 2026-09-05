@@ -964,7 +964,34 @@ def m_d02_el_censo_de_escenarios_atados_esconde_uno(raiz):
                "una fuente ya clonada se reutiliza y no se vuelve a clonar. ... ok")
 
 
+def m_g04_vuelve_el_continue_del_campo_ausente(raiz):
+    """El hallazgo `#1` del primer gate VÁLIDO de `F6`, mecanizado.
+
+    Devuelve la guarda que permitía la evasión en DOS transiciones:
+    `if campo not in anterior or campo not in contenido: continue`. Con ella, borrar
+    `prioridad` y volver a escribirla la movía de 50 a 999 por el canal oficial, y las
+    veinte pruebas `T400`-`T419` seguían en verde porque ninguna ejercía esas dos
+    transiciones. Es el sabotaje que separa «cerré el caso» de «cerré la clase».
+    """
+    _sustituir(raiz, "kernel/operativo/runtime/runtime/estado_util.py",
+               "            esta_antes = campo in anterior\n"
+               "            esta_despues = campo in contenido\n"
+               "            if not esta_antes and not esta_despues:\n"
+               "                continue\n",
+               "            esta_antes = campo in anterior\n"
+               "            esta_despues = campo in contenido\n"
+               "            if not esta_antes or not esta_despues:\n"
+               "                continue\n")
+
+
 CATALOGO.extend([
+    Mutacion("NG04c", "G-04", "T432", SELECCION,
+             "vuelve el `continue` del campo ausente y la invariante se evade en DOS "
+             "transiciones: borrar la prioridad y volver a escribirla",
+             m_g04_vuelve_el_continue_del_campo_ausente, clase=BATERIA,
+             espera="alguna de las dos transiciones de la evasión se CONFIRMÓ",
+             casos=["PrioridadInmutableDeB12."
+                    "test_432_la_evasion_ENTERA_en_dos_transiciones_no_llega_a_999"]),
     Mutacion("NG04", "G-04", "T400", SELECCION,
              "DSP vuelve a subir la prioridad al postergar, que es el sabotaje exacto de "
              "`R1-H02` y pasaba doce baterías en verde",

@@ -81,16 +81,27 @@ nombre: La huella de integridad cubre a los validadores y detecta su edición
 cubre: ["A-04", "K0.11", "tooling/kernel-status.sh", "validadores/huella.py"]
 dado:
   - "un kernel vendorizado con su huella de referencia anotada"
+  - "un producto con su SELLO anotado y la documentación normativa clasificada por el registro canónico de zonas"
 cuando:
-  - "se calcula la huella y se compara con la almacenada"
-  - "se comprueba qué ficheros entran en ella"
+  - "se calcula la huella del kernel y se compara con la almacenada"
+  - "se comprueba qué ficheros entran en ella, derivando la lista de los censos canónicos y no de una lista escrita a mano"
+  - "se EJERCE la sensibilidad sobre una copia del árbol: se altera un byte, y se mueve un fichero a otra ruta con el mismo contenido"
+  - "se calcula el SELLO DEL PRODUCTO, se compara con el anotado clase a clase, y se comprueba su ÁMBITO"
 entonces:
   - "la huella cubre los validadores en Python, los scripts de tooling, los esquemas y los contratos"
   - "la huella almacenada coincide con la calculada"
-  - "dos cálculos consecutivos producen el mismo valor"
+  - "alterar un byte de un fichero cubierto mueve el número, y devolverlo lo restituye"
+  - "el mismo contenido movido a otra ruta de la misma zona produce un número distinto"
+  - "el SELLO DEL PRODUCTO cubre la sede del Owner, el material aprobado, la normativa vigente, las proyecciones derivadas, la evidencia, los gates históricos y los borradores"
+  - "alterar una norma dentro de docs/ mueve el SELLO y NO mueve la huella del kernel, que conserva su contrato"
+  - "toda clase canónica tiene política de sello con su motivo escrito, y toda sede que el registro adjudica está sellada"
+  - "cada una de las cuatro comprobaciones publica su veredicto, también cuando pasa"
 falla_si:
   - "un validador o un script de tooling puede editarse sin que el estado deje de ser limpio"
   - "la definición de la huella se estrecha hasta dejar fuera lo que ejecuta la conformidad"
+  - "una norma, la sede del Owner, una proyección o un gate histórico se alteran sin que el sello se mueva"
+  - "una clase canónica queda fuera del sello POR OMISIÓN, sin motivo escrito"
+  - "una comprobación queda declarada sin código, implementada sin ejecución, ejecutada sin evidencia o absorbida en silencio por otra"
 ejecucion: validador-estructural
 validador: "kernel/operativo/validadores/comprobar_integridad.py"
 estado: prueba-superada

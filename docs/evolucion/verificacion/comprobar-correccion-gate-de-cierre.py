@@ -3739,6 +3739,81 @@ _HUELLA_DIR_FUERA = ("__pycache__", ".git", ".pytest_cache")
 _HUELLA_PREFIJO_FUERA = ("legacy-",)
 _HUELLA_FICHERO_FUERA = (".upstream-hash",)
 
+# PERO LA REIMPLEMENTACIÓN SE CONTRASTA CONTRA LA SEDE, Y NO SE EJECUTA · hallazgo `#9`
+#
+#     `A1` lo midió en el delta: aquí vive una SEGUNDA definición del ámbito de la huella,
+#     y es exactamente la duplicación contra la que avisa el docstring de `huella.py` —«dos
+#     implementaciones del mismo hash derivan, y la que miente es la que nadie mira»—.
+#
+#     La independencia es DELIBERADA y se conserva: pedirle su huella al árbol auditado es
+#     preguntarle al sospechoso, y por eso aquí se recalcula. Lo que no puede conservarse es
+#     la DERIVA SILENCIOSA: si `huella.py` cambia sus ámbitos, sus extensiones o sus
+#     exclusiones, esta copia seguiría calculando el número de ayer y diría «coincide» sobre
+#     una especificación que ya no existe.
+#
+#     Así que la especificación se LEE de `huella.py` como DATO —con `ast`, sin importarlo
+#     ni ejecutarlo, que es lo que preserva la independencia— y se contrasta con la de
+#     aquí. Si difieren, se dice y se falla: una reimplementación que no sabe que ha
+#     quedado obsoleta es peor que no tenerla.
+def _especificacion_declarada_en_la_sede():
+    """Ámbitos, extensiones y exclusiones que `huella.py` DECLARA, leídos con `ast`."""
+    import ast                                                        # noqa: PLC0415
+    sede = os.path.join(RAIZ, "kernel", "operativo", "validadores", "huella.py")
+    if not os.path.isfile(sede):
+        return None, "no existe `kernel/operativo/validadores/huella.py`"
+    with io.open(sede, encoding="utf-8") as manejador:
+        try:
+            arbol = ast.parse(manejador.read())
+        except SyntaxError as error:
+            return None, "`huella.py` no se puede analizar: %s" % error
+    declarado = {}
+    for nodo in arbol.body:
+        if not isinstance(nodo, ast.Assign) or len(nodo.targets) != 1:
+            continue
+        objetivo = nodo.targets[0]
+        if not isinstance(objetivo, ast.Name):
+            continue
+        if objetivo.id not in ("AMBITOS", "EXTENSIONES", "EXCLUIDOS_DIR",
+                               "EXCLUIDOS_PREFIJO_DIR", "EXCLUIDOS_FICHERO"):
+            continue
+        try:
+            declarado[objetivo.id] = tuple(ast.literal_eval(nodo.value))
+        except (ValueError, SyntaxError):
+            return None, "`%s` de `huella.py` no es un literal legible" % objetivo.id
+    faltan = sorted({"AMBITOS", "EXTENSIONES", "EXCLUIDOS_DIR",
+                     "EXCLUIDOS_PREFIJO_DIR", "EXCLUIDOS_FICHERO"} - set(declarado))
+    if faltan:
+        return None, "`huella.py` ya no declara %s como literal de nivel superior" % faltan
+    return declarado, ""
+
+
+def _contrastar_la_reimplementacion():
+    """`(ok, detalle)`: ¿sigue esta copia calculando lo que la sede declara?"""
+    declarado, motivo = _especificacion_declarada_en_la_sede()
+    if declarado is None:
+        return False, ("no se pudo leer la especificación de la sede: " + motivo
+                       + ". La reimplementación de la huella no se puede contrastar, y una "
+                         "copia que no se sabe vigente no acredita nada")
+    aqui = {
+        "AMBITOS": _HUELLA_AMBITOS,
+        "EXTENSIONES": _HUELLA_EXT,
+        "EXCLUIDOS_DIR": _HUELLA_DIR_FUERA,
+        "EXCLUIDOS_PREFIJO_DIR": _HUELLA_PREFIJO_FUERA,
+        "EXCLUIDOS_FICHERO": _HUELLA_FICHERO_FUERA,
+    }
+    divergen = sorted(clave for clave in aqui
+                      if tuple(aqui[clave]) != tuple(declarado[clave]))
+    if divergen:
+        return False, ("la reimplementación de la huella ha DERIVADO de su sede en %s: "
+                       "aquí %r · `huella.py` %r. Se recalcula a propósito —preguntarle su "
+                       "huella al árbol auditado es preguntarle al sospechoso— pero "
+                       "recalcular con una especificación caducada es peor que no "
+                       "recalcular"
+                       % (divergen, {c: aqui[c] for c in divergen},
+                          {c: declarado[c] for c in divergen}))
+    return True, ("la reimplementación coincide con la especificación que `huella.py` "
+                  "declara, contrastada leyéndola como DATO y sin ejecutarla")
+
 def _recalcular_huella():
     acumulado = hashlib.sha256()
     vistos = 0
@@ -3946,7 +4021,13 @@ else:
             if not re.fullmatch(r"[0-9a-f]{8,64}", _cuerpo.strip()):
                 _g30.append(f"{_f} [HUELLA DE INTEGRIDAD]: su contenido no es una huella "
                             f"hexadecimal: «{_cuerpo.strip()[:40]}»")
-    # 3 · HUELLA · recalculada por esta batería, contra la que el árbol publica
+    # 3 · HUELLA · recalculada por esta batería, contra la que el árbol publica.
+    #     ANTES, la reimplementación se contrasta contra la especificación que la sede
+    #     declara: recalcular con un ámbito caducado produce un número correcto de una
+    #     pregunta que ya nadie hace. Es el hallazgo `#9` del delta.
+    _vigente, _detalle_vigencia = _contrastar_la_reimplementacion()
+    if not _vigente:
+        _g30.append(_detalle_vigencia)
     try:
         _huella_calc, _n_huella = _recalcular_huella()
         _huella_pub = leer(os.path.join(RAIZ, "kernel/.upstream-hash")).strip()

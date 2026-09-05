@@ -182,6 +182,7 @@ if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lan
         "NO ejecuta\n")
     raise SystemExit(5)
 
+import hashlib
 import json
 import os
 import re
@@ -1300,7 +1301,8 @@ class PrioridadInmutableDeB12(unittest.TestCase):
     def durable(self, rt, paquete):
         return rt.almacen.leer("paquetes/" + paquete + ".json")
 
-    def escribir_a_mano(self, rt, paquete, cambios, *, tipo="prueba.edicion.directa"):
+    def escribir_a_mano(self, rt, paquete, cambios, *, tipo="prueba.edicion.directa",
+                        quitar=()):
         """Construye una `Transicion` A MANO y la aplica por `rt.almacen`. Sin dispatcher.
 
         Es el camino que un `except` mal puesto o una función nueva tendrían disponible: la
@@ -1311,13 +1313,23 @@ class PrioridadInmutableDeB12(unittest.TestCase):
         actual = self.durable(rt, paquete)
         nuevo = dict(actual)
         nuevo.update(cambios)
+        # `quitar` es lo que permite fabricar el objeto MUTILADO del paso 1 de la evasión
+        # que el primer gate válido encontró. Sin él, la batería no puede ejercer el
+        # cuadrante «presente antes · ausente después», que es por donde se colaba.
+        for campo in quitar:
+            nuevo.pop(campo, None)
         nuevo.pop("esquema", None)
         revision = rt.almacen.revision()
         return rt.almacen.aplicar(estado.Transicion(
             tipo=tipo, base=revision["revision_id"],
             operaciones=[estado.Escritura("paquetes/" + paquete + ".json", nuevo)],
             autor="prueba-T40x", motivo="edición directa de la prioridad",
-            id="tx-t40x-" + paquete.replace("-", "")[:12]))
+            # El identificador deriva del paquete Y DEL TIPO: el motor rechaza reutilizar
+            # uno con otras operaciones —bien hecho, porque el diario explicaría dos cambios
+            # distintos con la misma entrada—, y `T433` aplica CUATRO transiciones sobre el
+            # mismo paquete. Derivarlo de los dos evita colisión sin inventar unicidad.
+            id="tx-" + hashlib.sha256(
+                (paquete + "|" + tipo).encode("utf-8")).hexdigest()[:16]))
 
     # --------------------------------------------------------------- T400
     def test_400_la_prioridad_declarada_sobrevive_a_una_postergacion(self):
@@ -1616,6 +1628,130 @@ class PrioridadInmutableDeB12(unittest.TestCase):
                               sede + " ya no cita la norma que este eje ejecuta")
         # Y el campo está declarado como inmutable, que es lo que la invariante recorre.
         self.assertIn("prioridad", estado_util.CAMPOS_INMUTABLES_DEL_PAQUETE)
+
+
+    # ================================================================= T430-T434
+    #  LOS CUATRO CUADRANTES · el hallazgo `#1` del primer gate VÁLIDO de `F6`
+    # ==========================================================================
+    #  HECHO REPRODUCIDO ANTES DE CORREGIR, por el canal oficial `rt.almacen`:
+    #
+    #      control: intento DIRECTO 50 -> 999   ·   RECHAZADO
+    #      PASO 1 · BORRAR el campo `prioridad` ·   CONFIRMADO
+    #      PASO 2 · escribir  prioridad = 999   ·   CONFIRMADO   -> prioridad durable 999
+    #
+    #  Las veinte pruebas `T400`-`T419` no ejercitaban ninguna de las dos transiciones: el
+    #  único sabotaje que se le opuso a la invariante fue el SALTO DIRECTO, que es el caso
+    #  que no la derrota. Una propiedad cuyo único sabotaje es el caso fácil no está
+    #  probada, y el gate lo demostró.
+
+    # --------------------------------------------------------------- T430
+    def test_430_BORRAR_la_prioridad_de_un_paquete_existente_falla_cerrado(self):
+        """T430 · Defecto que previene: el PASO 1 de la evasión en dos transiciones.
+
+        SABOTAJE QUE LA PONE ROJA: devolver el `continue` cuando el campo falta en el
+        contenido nuevo.
+        """
+        rt = self.abrir()
+        self.alta(rt, [{"id": "pq-b", "prioridad": 50}])
+        with self.assertRaises(PrioridadInmutable) as capturado:
+            self.escribir_a_mano(rt, "pq-b", {}, tipo="prueba.borrado.del.campo",
+                                 quitar=["prioridad"])
+        self.assertIn("BORRA", str(capturado.exception))
+        self.assertEqual(self.durable(rt, "pq-b").get("prioridad"), 50,
+                         "el estado durable se movió pese al rechazo")
+
+    # --------------------------------------------------------------- T431
+    def test_431_REINTRODUCIR_la_prioridad_falla_cerrado_aunque_no_este_antes(self):
+        """T431 · Defecto que previene: el PASO 2, que es el que la mueve de verdad.
+
+        Se construye el estado que el paso 1 pretendía —el objeto SIN el campo— y se exige
+        que reintroducirlo caiga. Como el paso 1 ya no puede confirmarse, el objeto sin
+        campo se fabrica en la operación misma, que es el único sitio donde puede existir.
+
+        SABOTAJE QUE LA PONE ROJA: devolver el `continue` cuando el campo falta en el
+        objeto anterior — que es la mitad por la que un RENACIMIENTO fabricado se colaba
+        como si fuera un alta.
+        """
+        rt = self.abrir()
+        self.alta(rt, [{"id": "pq-r", "prioridad": 50}])
+        # el alta legítima SÍ pasa, y es el control: la exención por `anterior is None`
+        # sigue viva y la prioridad NACE donde tiene que nacer.
+        self.assertEqual(self.durable(rt, "pq-r")["prioridad"], 50)
+        with self.assertRaises(PrioridadInmutable) as capturado:
+            self.escribir_a_mano(rt, "pq-r", {"prioridad": 999},
+                                 tipo="prueba.reintroduccion")
+        self.assertIn("mueve", str(capturado.exception))
+        self.assertEqual(self.durable(rt, "pq-r")["prioridad"], 50)
+
+    # --------------------------------------------------------------- T432
+    def test_432_la_evasion_ENTERA_en_dos_transiciones_no_llega_a_999(self):
+        """T432 · La reproducción LITERAL del gate, de punta a punta.
+
+        No mide una mitad: ejecuta la secuencia completa que movió la prioridad de 50 a 999
+        y exige que el estado durable siga en 50 al final. Es la prueba que faltaba.
+        """
+        rt = self.abrir()
+        self.alta(rt, [{"id": "pq-e", "prioridad": 50}])
+        caidas = []
+        for tipo, cambios, quitar in (
+                ("prueba.evasion.paso1", {}, ["prioridad"]),
+                ("prueba.evasion.paso2", {"prioridad": 999}, [])):
+            try:
+                self.escribir_a_mano(rt, "pq-e", cambios, tipo=tipo, quitar=quitar)
+            except PrioridadInmutable:
+                caidas.append(tipo)
+        self.assertEqual(len(caidas), 2,
+                         "alguna de las dos transiciones de la evasión se CONFIRMÓ: "
+                         + repr(caidas))
+        self.assertEqual(self.durable(rt, "pq-e")["prioridad"], 50,
+                         "la evasión en dos pasos llegó a mover el estado durable")
+
+    # --------------------------------------------------------------- T433
+    def test_433_los_CUATRO_cuadrantes_se_deciden_por_el_estado_y_no_por_el_tipo(self):
+        """T433 · La tabla entera, incluido el cuadrante que SÍ tiene que pasar.
+
+        presente/presente distinto -> MUEVE · presente/ausente -> BORRA ·
+        ausente/presente -> REINTRODUCE · ausente/ausente -> pasa.
+
+        El cuarto es el control del control: si TODO cayera, los otros tres verdes no
+        significarían nada, y la invariante estaría prohibiendo escrituras legítimas que no
+        tocan la prioridad.
+        """
+        rt = self.abrir()
+        self.alta(rt, [{"id": "pq-c", "prioridad": 50}])
+        for tipo, cambios, quitar, cae in (
+                ("prueba.q1.mueve", {"prioridad": 60}, [], True),
+                ("prueba.q2.borra", {}, ["prioridad"], True),
+                ("prueba.q3.igual", {"prioridad": 50}, [], False),
+                ("prueba.q4.otro.campo", {"impedimento": "nada"}, [], False)):
+            with self.subTest(cuadrante=tipo):
+                if cae:
+                    with self.assertRaises(PrioridadInmutable):
+                        self.escribir_a_mano(rt, "pq-c", cambios, tipo=tipo, quitar=quitar)
+                else:
+                    self.escribir_a_mano(rt, "pq-c", cambios, tipo=tipo, quitar=quitar)
+                self.assertEqual(self.durable(rt, "pq-c")["prioridad"], 50)
+
+    # --------------------------------------------------------------- T434
+    def test_434_la_evasion_tampoco_pasa_con_DOS_instancias_ni_tras_reabrir(self):
+        """T434 · Concurrencia y recuperación, que son los dos caminos que quedaban.
+
+        Un segundo planificador sobre el MISMO control repo, y una reapertura después. Si
+        la invariante viviera en la memoria del proceso en vez de en la puerta, cualquiera
+        de los dos la esquivaría.
+        """
+        rt = self.abrir()
+        self.alta(rt, [{"id": "pq-m", "prioridad": 50}])
+        otro = self.abrir(instancia="planificador-B")
+        with self.assertRaises(PrioridadInmutable):
+            self.escribir_a_mano(otro, "pq-m", {}, tipo="prueba.otra.instancia",
+                                 quitar=["prioridad"])
+        self.assertEqual(self.durable(otro, "pq-m")["prioridad"], 50)
+        tercero = self.abrir(instancia="planificador-C")
+        with self.assertRaises(PrioridadInmutable):
+            self.escribir_a_mano(tercero, "pq-m", {"prioridad": 999},
+                                 tipo="prueba.tras.reabrir")
+        self.assertEqual(self.durable(tercero, "pq-m")["prioridad"], 50)
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):

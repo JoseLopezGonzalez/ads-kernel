@@ -1052,3 +1052,118 @@ Esta resolución:
   · no inicia PesquerApp;
   · no rebaja ninguna obligación;
   · conserva íntegra la aceptación condicionada de O26.
+
+---
+
+# `O28` · CIERRE DE `F6` MEDIANTE VERIFICACIÓN INCREMENTAL SOBRE UN GATE VÁLIDO
+
+**Fecha:** 2026-09-05  
+**Autoridad:** Owner
+
+## 1 · Base válida
+
+Reconozco como base de juicio el gate válido publicado en
+`review/f6-certificacion-final-insuficiente-20260905`, sobre la candidata
+`c2437214c9353185d6b90b8fe86178302d4cf349`.
+
+Su insuficiencia y sus hallazgos permanecen vigentes. Esta resolución no los
+revoca ni los corrige.
+
+## 2 · Composición
+
+Autorizo que la certificación final de `F6` se resuelva mediante composición entre:
+
+1. el gate válido anterior;
+2. una candidata delta que corrija todos sus bloqueos internos;
+3. la identidad byte a byte de todo blob obligatorio no modificado;
+4. una regresión completa;
+5. un verificador independiente que lea íntegramente todo lo modificado, reproduzca
+   los defectos anteriores y pruebe su ausencia;
+6. la ejecución expresa de las condiciones de `O26` que el gate anterior no ejerció.
+
+No es necesario repetir la lectura completa de las fuentes que:
+
+1. fueron leídas en el gate válido;
+2. no cambian en la candidata delta;
+3. conservan exactamente el mismo blob;
+4. no dependen semánticamente de una fuente modificada.
+
+## 3 · Significado operativo de `O26` §5.1 y §5.2
+
+Para `O26` §5.1, una obligación interna se considera implementada cuando:
+
+1. pertenece a un universo derivado de las fuentes normativas;
+2. tiene trazabilidad inequívoca hasta código productivo;
+3. tiene una prueba ejecutable;
+4. tiene evidencia ligada al SHA y al tree;
+5. su condición de cierre se ejecuta con resultado satisfactorio.
+
+Para `O26` §5.2, una propiedad crítica se considera provista de una prueba capaz de
+fallar cuando:
+
+1. la propiedad se deriva de una fuente normativa;
+2. existe un sabotaje que alcanza específicamente esa propiedad;
+3. el árbol sano queda verde;
+4. el sabotaje queda rojo por el motivo esperado;
+5. la restauración devuelve el verde;
+6. el canal productivo, y no sólo una copia textual, es el ejercido.
+
+Estas reglas hacen comprobables ambos apartados. No afirman imposibilidad matemática
+de que exista otro defecto.
+
+## 4 · Hallazgos posteriores
+
+Un hallazgo nuevo bloquea la certificación si permite cualquiera de estos efectos:
+
+  · corrupción o pérdida silenciosa;
+  · publicación inválida;
+  · doble efecto;
+  · evasión de autoridad;
+  · falsificación de evidencia;
+  · falso verde sobre una obligación crítica;
+  · ejecución sin aislamiento exigido;
+  · obligación interna de F6 sin implementar.
+
+Los defectos menores que no producen ninguno de esos efectos deben registrarse con
+propietario y fase, pero no abren automáticamente otro ciclo.
+
+## 5 · Verificador
+
+La verificación incremental será realizada por un agente independiente que:
+
+  · no haya construido ninguno de los cortes de F6;
+  · no modifique la candidata;
+  · reciba un sobre de ancla antes de leer;
+  · lea íntegramente todos los ficheros modificados;
+  · contraste blob a blob los no modificados;
+  · ejecute la regresión completa;
+  · ataque individualmente los bloqueos;
+  · emita un juicio propio.
+
+## 6 · Competencia
+
+Si la composición satisface `O26`, el verificador podrá emitir:
+
+  `F6 CERTIFICADA POR COMPOSICIÓN`
+  `F6 CERRADA`
+
+El coordinador sólo podrá registrar literalmente ese acto.
+
+## 7 · PesquerApp
+
+El cierre de `F6` deja PesquerApp técnicamente disponible para una adopción controlada,
+pero NO la inicia.
+
+Su inicio requiere una orden posterior y expresa del Owner que identifique producto,
+repositorios, alcance, entorno y condiciones de parada.
+
+## 8 · Fin del ciclo
+
+Si la verificación incremental resulta insuficiente:
+
+  · F6 seguirá abierta;
+  · PesquerApp seguirá bloqueada;
+  · no se abrirá otro ciclo automático;
+  · los pendientes se elevarán al Owner como una lista finita.
+
+Esta resolución no rebaja los contratos de F6 ni autoriza ignorar defectos críticos.
