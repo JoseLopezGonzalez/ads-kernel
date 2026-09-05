@@ -278,7 +278,7 @@ falla_si:
   - "la salida lleva reloj, duración, identidad de proceso o ruta absoluta, y deja de ser reproducible"
 ejecucion: validador-estructural
 validador: kernel/operativo/runtime/pruebas/escenario_extremo_a_extremo.py
-estado: prueba-ejecutada
+estado: prueba-superada
 evidencia: evidencia/estado-e2e-salida.txt
 ```
 
@@ -299,7 +299,7 @@ falla_si:
   - "el proyecto instalado queda con un enlace roto a una sede que el corpus operativo nombra"
 ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_arranque.py
-estado: prueba-ejecutada
+estado: prueba-superada
 evidencia: evidencia/arranque-salida.txt
 ```
 

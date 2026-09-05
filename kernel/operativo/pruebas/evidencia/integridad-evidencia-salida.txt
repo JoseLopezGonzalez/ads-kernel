@@ -1,9 +1,46 @@
 # evidencia de: integridad-evidencia
-# orden:        python3 kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
 
 # --- stderr (código 0) ---
+test_T380_la_guarda_alcanza_a_TODO_punto_del_inventario_derivado (__main__.AislamientoDeArranque.test_T380_la_guarda_alcanza_a_TODO_punto_del_inventario_derivado)
+T380 · Defecto que previene: `G-03` cerrado en una lista y abierto en la clase. ... ok
+test_T381_el_MECANISMO_de_la_guarda_es_identico_byte_a_byte (__main__.AislamientoDeArranque.test_T381_el_MECANISMO_de_la_guarda_es_identico_byte_a_byte)
+T381 · Defecto que previene: una guarda que se adapta y deja de proteger. ... ok
+test_T382_el_sitecustomize_LLEGA_sin_guarda_y_NO_LLEGA_por_la_via_oficial (__main__.AislamientoDeArranque.test_T382_el_sitecustomize_LLEGA_sin_guarda_y_NO_LLEGA_por_la_via_oficial)
+T382 · Defecto que previene: `H-1`, la contaminación que produce VERDE FALSO. ... ok
+test_T383_el_usercustomize_tampoco_llega (__main__.AislamientoDeArranque.test_T383_el_usercustomize_tampoco_llega)
+T383 · Defecto que previene: cerrar `sitecustomize` y dejar abierto su gemelo. ... ok
+test_T384_el_PYTHONPATH_con_un_homonimo_no_decide_la_huella (__main__.AislamientoDeArranque.test_T384_el_PYTHONPATH_con_un_homonimo_no_decide_la_huella)
+T384 · Defecto que previene: `E-10` por la vía del módulo homónimo. ... ok
+test_T385_un_PAQUETE_homonimo_no_entra_ni_desde_el_cwd (__main__.AislamientoDeArranque.test_T385_un_PAQUETE_homonimo_no_entra_ni_desde_el_cwd)
+T385 · Defecto que previene: `capacidades` publicando `{}` con código 0. ... ok
+test_T386_un_PATH_con_interprete_falso_no_decide_el_resultado (__main__.AislamientoDeArranque.test_T386_un_PATH_con_interprete_falso_no_decide_el_resultado)
+T386 · Defecto que previene: colar el veneno por el intérprete que resuelve `PATH`. ... ok
+test_T387_un_punto_del_arbol_B_usa_la_guarda_de_B_y_no_la_de_A (__main__.AislamientoDeArranque.test_T387_un_punto_del_arbol_B_usa_la_guarda_de_B_y_no_la_de_A)
+T387 · Defecto que previene: el árbol juzgado aporta la guarda que lo protege. ... ok
+test_T388_un_modulo_importado_ANTES_de_la_purga_se_ve_y_falla_cerrado (__main__.AislamientoDeArranque.test_T388_un_modulo_importado_ANTES_de_la_purga_se_ve_y_falla_cerrado)
+T388 · Defecto que previene: lo que ya está en `sys.modules` cuando llega la purga. ... ok
+test_T389_el_lanzamiento_DIRECTO_no_evita_la_guarda (__main__.AislamientoDeArranque.test_T389_el_lanzamiento_DIRECTO_no_evita_la_guarda)
+T389 · Defecto que previene: un aislamiento que sólo existe si se usa el envoltorio. ... ok
+test_T390_el_manifiesto_de_la_instalacion_no_encoge_bajo_el_gancho (__main__.AislamientoDeArranque.test_T390_el_manifiesto_de_la_instalacion_no_encoge_bajo_el_gancho)
+T390 · Defecto que previene: `{}` EXIT=0 y un manifiesto de TRES bytes. ... ok
+test_T391_capacidades_no_publica_el_vacio_bajo_el_gancho (__main__.AislamientoDeArranque.test_T391_capacidades_no_publica_el_vacio_bajo_el_gancho)
+T391 · Defecto que previene: `capacidades` → `{}` con código 0 (`ADJ-B2`). ... ok
+test_T392_una_instalacion_a_la_que_le_falta_la_guarda_NO_ejecuta (__main__.AislamientoDeArranque.test_T392_una_instalacion_a_la_que_le_falta_la_guarda_NO_ejecuta)
+T392 · Defecto que previene: una instalación parcial que corre igual. ... ok
+test_T393_una_bateria_NUEVA_ya_no_queda_exenta_por_su_zona (__main__.AislamientoDeArranque.test_T393_una_bateria_NUEVA_ya_no_queda_exenta_por_su_zona)
+T393 · Defecto que previene: `D-01`, eximir por domicilio. ... ok
+test_T394_el_runner_SANEA_el_entorno_de_sus_hijos_y_lo_PUBLICA (__main__.AislamientoDeArranque.test_T394_el_runner_SANEA_el_entorno_de_sus_hijos_y_lo_PUBLICA)
+T394 · Defecto que previene: `HALLAZGO 3`, `subprocess.run` sin `env=`. ... ok
+test_T395_comprobar_evidencia_EXIGE_la_garantia_publicada (__main__.AislamientoDeArranque.test_T395_comprobar_evidencia_EXIGE_la_garantia_publicada)
+T395 · Defecto que previene: publicar la garantía y que nadie la comprueba. ... ok
+test_T396_la_primitiva_sustituida_EN_SITIO_se_caza_con_el_vector_conocido (__main__.AislamientoDeArranque.test_T396_la_primitiva_sustituida_EN_SITIO_se_caza_con_el_vector_conocido)
+T396 · Defecto que previene: la mutación que no llega por `sitecustomize`. ... ok
+test_T397_las_CUATRO_banderas_se_exigen_y_una_sola_que_falte_no_basta (__main__.AislamientoDeArranque.test_T397_las_CUATRO_banderas_se_exigen_y_una_sola_que_falte_no_basta)
+T397 · Defecto que previene: declarar aislamiento con tres banderas de cuatro. ... ok
 test_T309_el_punto_ejecutable_ACTIVA_la_politica_y_contiene_al_bisnieto (__main__.ContencionEnElCaminoProductivo.test_T309_el_punto_ejecutable_ACTIVA_la_politica_y_contiene_al_bisnieto)
 T309 · Defecto que previene: `E-16`, una política que nadie puede activar. ... ok
 test_T309b_sin_backend_fuerte_el_punto_ejecutable_FALLA_CERRADO (__main__.ContencionEnElCaminoProductivo.test_T309b_sin_backend_fuerte_el_punto_ejecutable_FALLA_CERRADO)
@@ -26,6 +63,26 @@ test_T308e_los_CINCO_ejecutables_fallan_tipados_y_sin_traza (__main__.ErroresTip
 T308 · Defecto que previene: cerrar el agujero en uno y dejarlo en los otros. ... ok
 test_T308f_no_hay_EXITO_PARCIAL_cuando_el_fallo_es_tipado (__main__.ErroresTipadosDeLaCLI.test_T308f_no_hay_EXITO_PARCIAL_cuando_el_fallo_es_tipado)
 T308 · Defecto que previene: publicar medio veredicto y además fallar. ... ok
+test_T420_control_sano_blob_commit_tree_digest_y_arbol_limpio (__main__.EvidenciaConfirmadaEnHead.test_T420_control_sano_blob_commit_tree_digest_y_arbol_limpio)
+T420 · Control del CONTROL: sin él, «todo da rojo» explicaría los ocho verdes. ... ok
+test_T421_un_veredicto_bueno_se_edita_a_malo (__main__.EvidenciaConfirmadaEnHead.test_T421_un_veredicto_bueno_se_edita_a_malo)
+T421 · ataque 1 · `ok` reescrito como `FAIL` en el árbol de trabajo. ... ok
+test_T422_un_veredicto_malo_se_edita_a_bueno (__main__.EvidenciaConfirmadaEnHead.test_T422_un_veredicto_malo_se_edita_a_bueno)
+T422 · ataque 2 · el sentido contrario: un `FAIL` confirmado se borra del disco. ... ok
+test_T423_la_evidencia_encoge_en_silencio (__main__.EvidenciaConfirmadaEnHead.test_T423_la_evidencia_encoge_en_silencio)
+T423 · ataque 3 · misma clase de veredictos, MENOS casos. El cliquet. ... ok
+test_T424_una_regeneracion_legitima_no_da_rojo (__main__.EvidenciaConfirmadaEnHead.test_T424_una_regeneracion_legitima_no_da_rojo)
+T424 · ataque 4 · el FALSO POSITIVO, que es el ataque contra el guardián. ... ok
+test_T425_la_evidencia_se_vacia_entera (__main__.EvidenciaConfirmadaEnHead.test_T425_la_evidencia_se_vacia_entera)
+T425 · ataque 5 · el fichero se queda sin un solo veredicto. ... ok
+test_T426_el_escenario_se_renombra_para_no_ser_contrastado (__main__.EvidenciaConfirmadaEnHead.test_T426_el_escenario_se_renombra_para_no_ser_contrastado)
+T426 · ataque 6 · el veredicto sigue ahí, pero deja de NOMBRAR al escenario. ... ok
+test_T427_sin_repositorio_git_el_canal_lo_DICE (__main__.EvidenciaConfirmadaEnHead.test_T427_sin_repositorio_git_el_canal_lo_DICE)
+T427 · ataque 7 · se borra `.git`. El peligro no es el rojo: es el verde MUDO. ... ok
+test_T428_la_evidencia_no_esta_confirmada_en_HEAD (__main__.EvidenciaConfirmadaEnHead.test_T428_la_evidencia_no_esta_confirmada_en_HEAD)
+T428 · ataque 8 · el fichero existe en disco y NO está en `HEAD`. ... ok
+test_T429_borrar_la_evidencia_da_FALLIDA_igual_que_vaciarla (__main__.EvidenciaConfirmadaEnHead.test_T429_borrar_la_evidencia_da_FALLIDA_igual_que_vaciarla)
+T429 · ataque 9 · el que el auditor independiente encontró abierto. ... ok
 test_T310_la_ventana_de_publicacion_NO_se_diagnostica_como_corrupcion (__main__.LaVentanaDePublicacion.test_T310_la_ventana_de_publicacion_NO_se_diagnostica_como_corrupcion)
 T310 · `E-08` bis · el objeto es el que el testigo dice haber publicado. ... ok
 test_T311_sin_testigo_que_lo_avale_sigue_siendo_ESTADO_CORRUPTO (__main__.LaVentanaDePublicacion.test_T311_sin_testigo_que_lo_avale_sigue_siendo_ESTADO_CORRUPTO)
@@ -76,6 +133,6 @@ test_T307g_la_COBERTURA_DEL_CONTRASTE_va_publicada_en_la_evidencia (__main__.Res
 T307 · Defecto que previene: `H-08`, una cifra que se calcula y no se publica. ... ok
 
 ----------------------------------------------------------------------
-Ran 35 tests  (duración no registrada: varía por ejecución)
+Ran 63 tests  (duración no registrada: varía por ejecución)
 
 OK

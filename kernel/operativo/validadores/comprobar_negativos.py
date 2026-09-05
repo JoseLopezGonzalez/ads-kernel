@@ -22,6 +22,84 @@ Uso:
 from __future__ import annotations
 
 # ---------------------------------------------------------------------------
+#  `G-03` · AISLAMIENTO DE ARRANQUE · lo PRIMERO que hace este punto
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-05, sobre esta zona. Con seis líneas de
+#  veneno en un `sitecustomize.py` alcanzable desde `PYTHONPATH`:
+#
+#      $ cat veneno/sitecustomize.py
+#        import hashlib; hashlib.sha256 = lambda *a, **k: _Falso()   # digest 0000…
+#      $ PYTHONPATH=veneno python3.12 kernel/operativo/validadores/huella.py
+#        0000000000000000                     ← la huella FORJADA sobre un árbol mutado
+#      $ PYTHONPATH=veneno python3.12 kernel/operativo/validadores/comprobar_integridad.py
+#        T150  SUPERADA · EXIT=0              ← VERDE sobre un árbol MUTADO
+#
+#  El prólogo `E-10` de abajo purga `sys.path` en su primera sentencia, y eso llega TARDE:
+#  `site.py` importa `sitecustomize` mientras el intérprete arranca, antes de que la primera
+#  línea de este módulo exista. Lo que cambia no es un módulo —`hashlib` es el bueno— sino
+#  un atributo suyo, y el control del control de `E-10`, que mira la procedencia de `os`, no
+#  lo ve. Con la guarda, este punto se reejecuta con `-I -S -E` y `sitecustomize` no llega a
+#  importarse: medido en la tabla de los doce ataques de `T380`-`T399`.
+#
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      La misma disciplina que `E-10` sigue debajo y que `T330` comprueba: lo que protege
+#      está fijado y es idéntico en todos los puntos —`T380` lo exige con su digest—, y lo
+#      que se lee dice qué se midió en ESTA sede. Un recital común mentiría en la mitad de
+#      las sedes; un mecanismo por sede derivaría, y el que derive de menos es el que nadie
+#      mira.
+#
+#  DECISIÓN · la guarda va ANTES del prólogo `E-10`, y no lo sustituye
+#      Alternativas: (a) sustituir `E-10` por la guarda; (b) dejar `E-10` y añadir la
+#      guarda encima.
+#      Se elige (b). Cierran cosas distintas: `E-10` retira del `sys.path` lo que mete el
+#      lanzador —y sigue haciendo falta cuando el punto se IMPORTA, donde la guarda no
+#      reejecuta—; `G-03` impide que `sitecustomize` llegue siquiera a ejecutarse. Quitar
+#      `E-10` reabriría la contaminación de la ruta en el caso importado.
+import os as _os_g03
+import sys as _sys_g03
+
+# LA GUARDA NO DEJA RASTRO EN EL ÁRBOL QUE JUZGA. Medido: al importar la guarda, Python
+# escribía `validadores/__pycache__/aislamiento_de_arranque…pyc` en el árbol, y
+# `comprobar_arranque.py` empezó a publicar «el proyecto arrastra `__pycache__`» sobre
+# proyectos recién creados. Se desactiva la escritura de bytecode DURANTE la guarda y se
+# devuelve al estado que tenía: lo que el punto importe después sigue cacheándose como
+# siempre, y no se paga rendimiento por una comprobación que corre una vez.
+_G03_BYTECODE = _sys_g03.dont_write_bytecode
+_sys_g03.dont_write_bytecode = True
+_G03_PROPIA = _os_g03.path.dirname(_os_g03.path.realpath(__file__))
+_G03_SEDE = ""
+_G03_RAIZ = _G03_PROPIA
+while not _G03_SEDE:
+    for _G03_CANDIDATA in (_G03_PROPIA,
+                           _os_g03.path.join(_G03_RAIZ, "kernel", "operativo",
+                                             "validadores")):
+        if _os_g03.path.isfile(_os_g03.path.join(_G03_CANDIDATA,
+                                                 "aislamiento_de_arranque.py")):
+            _G03_SEDE = _G03_CANDIDATA
+            break
+    else:
+        _G03_PADRE = _os_g03.path.dirname(_G03_RAIZ)
+        if _G03_PADRE == _G03_RAIZ:
+            _sys_g03.stderr.write(
+                "[PROCEDENCIA_NO_FIABLE] no hay `aislamiento_de_arranque.py` ni junto a "
+                "este punto ejecutable ni en el `kernel/operativo/validadores/` de ning\u00fan "
+                "ancestro suyo: no se puede decidir si el arranque est\u00e1 aislado, y no se "
+                "sigue\n")
+            raise SystemExit(5)
+        _G03_RAIZ = _G03_PADRE
+_sys_g03.path.insert(0, _G03_SEDE)
+import aislamiento_de_arranque as _aislamiento_g03                    # noqa: E402
+
+AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)
+_sys_g03.dont_write_bytecode = _G03_BYTECODE
+
+# `-I` deja FUERA de `sys.path` el directorio del guión —es lo que impide que un homónimo
+# vecino se cuele— y los puntos que importan módulos hermanos lo necesitan. Se reintroduce
+# por RUTA DERIVADA DE `__file__`, que no la escribe el lanzador.
+if _G03_PROPIA not in _sys_g03.path:
+    _sys_g03.path.insert(0, _G03_PROPIA)
+
+# ---------------------------------------------------------------------------
 #  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
 # ---------------------------------------------------------------------------
 #  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-04, sobre `validadores/huella.py` —el
@@ -599,6 +677,77 @@ def m_arranque_con_pack_derogado(raiz):
     _sustituir(raiz, "README.md",
                "./tooling/new-project.sh mi-producto web-app",
                "./tooling/new-project.sh mi-producto pack-web-app")
+
+
+def m_arranque_con_lista_a_mano(raiz):
+    """D-02 · la derivación de la especificación normativa vuelve a ser una lista fija.
+
+    Es la deuda `FD-3` reintroducida: `new-project.sh` deja de recorrer el árbol y copia
+    los nombres que conoce. Con el árbol de hoy el proyecto sale idéntico, así que sólo
+    la sonda de `T181` —una enmienda que la lista fija no puede conocer— lo delata.
+    """
+    _sustituir(raiz, "tooling/new-project.sh",
+               "  find \"$SRC/docs/rediseno\" -maxdepth 1 -type f \\\n"
+               "       \\( -name '*-APROBADA.md' -o -name 'a-ENMIENDA-E*.md' \\) \\\n"
+               "       ! -name '*-RECHAZADA.md' ! -name '*-SUPERADA.md' -print \\\n",
+               "  find \"$SRC/docs/rediseno\" -maxdepth 1 -type f \\\n"
+               "       \\( -name '*-APROBADA.md' -o -name 'a-ENMIENDA-E[1-6]-*.md' \\) \\\n"
+               "       ! -name '*-RECHAZADA.md' ! -name '*-SUPERADA.md' -print \\\n")
+
+
+def m_arranque_no_produce_nada(raiz):
+    """El sabotaje del AUDITOR INDEPENDIENTE, mecanizado. `D-02`, hallazgo 1.
+
+    `new-project.sh` termina con código 1 sin crear nada. Antes de corregirlo, la salida era
+    `T148 FALLIDA` y **`T168 SUPERADA` · `T181 SUPERADA`**: dos veredictos nominales verdes
+    sobre un árbol donde el arranque no produjo un solo fichero, porque el fallo que aborta
+    el caso hace `continue` y las comprobaciones de los dos derivados NO SE EJECUTAN.
+
+    Un montaje compartido que publica varios veredictos tiene TRES estados por veredicto y
+    no dos. Éste mide el primero de los dos caminos por los que un derivado deja de ser
+    verde: el fallo que ABORTA se imputa a los tres, porque un arranque que no produce nada
+    rompe la promesa de los tres. El otro camino —el montaje se aborta a media altura y un
+    derivado NO LLEGA A EJERCERSE— lo mide `N181b`, y hacen falta los dos: si sólo hubiera
+    éste, `NO EJERCIDA` podría no existir y este sabotaje seguiría pasando.
+    """
+    ruta = os.path.join(raiz, "tooling/new-project.sh")
+    with open(ruta, encoding="utf-8") as fh:
+        lineas = fh.read().split("\n")
+    lineas.insert(1, 'echo "el arranque no produce nada" >&2; exit 1')
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write("\n".join(lineas))
+
+
+def m_arranque_se_aborta_a_media_altura(raiz):
+    """`D-02`, hallazgo 1 · el camino `NO EJERCIDA`, que es el que no tiene fallo propio.
+
+    `new-project.sh` termina bien y crea el workspace, pero el control repo acaba con otro
+    nombre. El montaje llega hasta «el control repo no se creó», que rompe la promesa de
+    `T168` y sólo la suya, y hace `continue`: las comprobaciones de `T181` —las sedes
+    normativas que tienen que haber viajado y la sonda de derivación— NO SE EJECUTAN
+    NUNCA. Sin el tercer estado, `T181` publicaba `SUPERADA` sin que nadie hubiera mirado.
+    """
+    # Se acota a los proyectos que monta `t148_arranque` —los llama `proyecto-<caso>`— y
+    # NO a los de `t171` y `t194`, que crean el suyo con otro nombre y lo recorren después.
+    # Sin acotar, el sabotaje les reventaba con una traza y medía otra cosa.
+    ruta = os.path.join(raiz, "tooling/new-project.sh")
+    with open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto.rstrip("\n") + '\ncase "$(basename "$(dirname "$ADS")")" in\n'
+                 '  proyecto-*) mv "$ADS" "$ADS-con-otro-nombre" ;;\nesac\n')
+
+
+def m_arranque_inicializa_el_workspace(raiz):
+    """D-02 · el workspace vuelve a nacer siendo un repositorio Git.
+
+    Es el defecto de topología que `T168` promete: si el contenedor es un repositorio, las
+    fuentes que se materialicen dentro quedan anidadas en él sin que nada lo diga.
+    """
+    _sustituir(raiz, "tooling/new-project.sh",
+               'mkdir -p "$ADS"/{kernel,packs,docs/agentic,docs/rediseno,docs/owner,tooling}',
+               'mkdir -p "$ADS"/{kernel,packs,docs/agentic,docs/rediseno,docs/owner,tooling}\n'
+               'git -C "$(dirname "$ADS")" init -q')
 
 
 def m_recuento_a_mano(raiz):
@@ -1221,6 +1370,24 @@ CATALOGO = [
     Mutacion("N148", "A-02", "T148", "comprobar_arranque",
              "la documentación vuelve a citar un pack derogado",
              m_arranque_con_pack_derogado),
+    Mutacion("N168b", "D-02", "T168", "comprobar_arranque",
+             "el arranque no produce NADA y los veredictos derivados del montaje "
+             "compartido no pueden salir verdes por no haberse llegado a mirar",
+             m_arranque_no_produce_nada,
+             espera="new-project.sh terminó con código 1"),
+    Mutacion("N181b", "D-02", "T181", "comprobar_arranque",
+             "el montaje se aborta a media altura y un veredicto derivado no llega a "
+             "ejercerse: no puede salir verde por no haberse llegado a mirar",
+             m_arranque_se_aborta_a_media_altura,
+             espera="NO SE EJERCIÓ"),
+    Mutacion("N181", "D-02", "T181", "comprobar_arranque",
+             "la lista de la especificación normativa vuelve a escribirse a mano",
+             m_arranque_con_lista_a_mano,
+             espera="NO viajó al proyecto creado"),
+    Mutacion("N168", "D-02", "T168", "comprobar_arranque",
+             "el workspace vuelve a nacer siendo un repositorio Git",
+             m_arranque_inicializa_el_workspace,
+             espera="se ha inicializado Git en el propio workspace"),
     Mutacion("N152", "A-12", "T152", "comprobar_versiones",
              "el release cambia y ningún punto de entrada se entera",
              m_version_incoherente),

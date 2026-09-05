@@ -1,5 +1,6 @@
 # evidencia de: recuentos
-# orden:        python3 kernel/operativo/validadores/comprobar_recuentos.py
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_recuentos.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
 T151  SUPERADA  Ninguna cifra del corpus contradice el recuento derivado
@@ -9,5 +10,6 @@ T271  SUPERADA  Todo bloque tipado del corpus tiene recuento derivado y publicad
 T245  SUPERADA  Ninguna cabecera afirma una correspondencia uno a uno entre formas y clases
 T246  SUPERADA  La cabecera de los escenarios enumera las pruebas que el fichero contiene
 T360  SUPERADA  Ninguna sede viva niega una pieza que el árbol tiene construida
+          alcance: líneas eximidas por ser transcripción de consola: 164, en 2 sede(s) — docs/f6/gate-definitivo/00-REGISTRO-DEL-GATE.md (151), kernel/operativo/pruebas/T380-T399-aislamiento.md (13). Una cerca ```console SIN ninguna línea de orden (`$ `, `> `, `# orden:`) ni de salida de máquina (`EXIT=`, `Tnnn SUPERADA`, `N superadas · N fallidas`) NO se exime: se juzga como prosa. Esto NO demuestra la procedencia del bloque; sube su precio y la cuenta
 
 7 superadas · 0 fallidas

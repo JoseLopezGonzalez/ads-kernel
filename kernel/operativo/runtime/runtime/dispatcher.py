@@ -27,6 +27,10 @@ DECISIÓN · toda escritura pasa por `estado_util.aplicar_con_reintento`
     se construye como FUNCIÓN de la revisión releída y la guarda se reevalúa en cada
     vuelta. Reaplicar una transición ya construida convertiría el CAS en «el último gana»,
     que es lo que `g.6` prohíbe.
+    Y porque es la única, es donde vive la INVARIANTE de `b.12`: ninguna transición de este
+    módulo —ni la que alguien escriba mañana— puede mover la prioridad de un paquete que ya
+    existe. `abrir()` envuelve además el almacén en `AlmacenVigilado`, para que la propiedad
+    pública `almacen` no sea la puerta trasera de la misma prohibición. `G-04`.
 
 DECISIÓN · `abrir()` recupera EXPLÍCITAMENTE y guarda el informe
     Alternativas: (a) `estado.abrir(recuperar=True)`, que recupera por dentro; (b) abrir
@@ -81,7 +85,7 @@ from .errores import (
     RuntimeInconsistente,
     TiempoAgotado,
 )
-from .estado_util import aplicar_con_reintento
+from .estado_util import AlmacenVigilado, aplicar_con_reintento
 from .lease import (
     PACIENCIA_POR_DEFECTO,
     TestigoDeVida,
@@ -224,7 +228,12 @@ class Runtime:
             # después esperaría cuatro segundos por un proceso que ya no existe.
             almacen.cerrar()
             raise
-        self._almacen = almacen
+        # VIGILADO desde aquí y para siempre: `self._almacen` y la propiedad pública
+        # `almacen` son el MISMO objeto envuelto, de modo que la invariante de `b.12` no
+        # depende de que quien escriba use `_aplicar`. `ciclo/` recibe este mismo almacén
+        # —no abre el suyo, y lo declara en `ciclo/durable.py`—, así que hereda la guarda
+        # sin tener que saber que existe.
+        self._almacen = AlmacenVigilado(almacen)
         self._testigo = testigo
         self.recuperacion = informe
         # MARCADO: `g.8` reserva la salida de un conflicto a la AUTORIDAD, no al runtime.

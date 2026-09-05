@@ -38,6 +38,78 @@ DECISIÓN · `--registro-en-pruebas` existe, está marcado como tal y no es el c
 from __future__ import annotations
 
 # ---------------------------------------------------------------------------
+#  `G-03` · AISLAMIENTO DE ARRANQUE · lo PRIMERO que hace este punto
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR sobre esta zona, dos veces. La primera, `E-10`: con
+#  `PYTHONPATH` apuntando a un directorio con un `json.py` HOMÓNIMO, `verificar --json`
+#  publicaba `{}` como veredicto con código 0. La segunda, `G-03` en el gate del 2026-09-05:
+#  la purga que cerró aquello vive DENTRO del programa y `site.py` importa `sitecustomize`
+#  ANTES de que la primera sentencia del módulo se ejecute, de modo que un gancho puede
+#  mutar la primitiva ya importada —`hashlib.sha256`— sin tocar ningún módulo.
+#
+#  Estos cinco puntos son el CAMINO PRODUCTIVO del runtime: lo que publican es el veredicto
+#  y la evidencia. Con la guarda, se reejecutan con `-I -S -E` y el gancho no llega a
+#  ejecutarse; sin ella, la contaminación decide qué dicen.
+#
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      La misma disciplina que `E-10` sigue debajo y que `T330` comprueba: lo que protege
+#      está fijado y es idéntico en todos los puntos —`T380` lo exige con su digest—, y lo
+#      que se lee dice qué se midió en ESTA sede. Un recital común mentiría en la mitad de
+#      las sedes; un mecanismo por sede derivaría, y el que derive de menos es el que nadie
+#      mira.
+#
+#  DECISIÓN · la guarda va ANTES del prólogo `E-10`, y no lo sustituye
+#      Alternativas: (a) sustituir `E-10` por la guarda; (b) dejar `E-10` y añadir la
+#      guarda encima.
+#      Se elige (b). Cierran cosas distintas: `E-10` retira del `sys.path` lo que mete el
+#      lanzador —y sigue haciendo falta cuando el punto se IMPORTA, donde la guarda no
+#      reejecuta—; `G-03` impide que `sitecustomize` llegue siquiera a ejecutarse. Quitar
+#      `E-10` reabriría la contaminación de la ruta en el caso importado.
+import os as _os_g03
+import sys as _sys_g03
+
+# LA GUARDA NO DEJA RASTRO EN EL ÁRBOL QUE JUZGA. Medido: al importar la guarda, Python
+# escribía `validadores/__pycache__/aislamiento_de_arranque…pyc` en el árbol, y
+# `comprobar_arranque.py` empezó a publicar «el proyecto arrastra `__pycache__`» sobre
+# proyectos recién creados. Se desactiva la escritura de bytecode DURANTE la guarda y se
+# devuelve al estado que tenía: lo que el punto importe después sigue cacheándose como
+# siempre, y no se paga rendimiento por una comprobación que corre una vez.
+_G03_BYTECODE = _sys_g03.dont_write_bytecode
+_sys_g03.dont_write_bytecode = True
+_G03_PROPIA = _os_g03.path.dirname(_os_g03.path.realpath(__file__))
+_G03_SEDE = ""
+_G03_RAIZ = _G03_PROPIA
+while not _G03_SEDE:
+    for _G03_CANDIDATA in (_G03_PROPIA,
+                           _os_g03.path.join(_G03_RAIZ, "kernel", "operativo",
+                                             "validadores")):
+        if _os_g03.path.isfile(_os_g03.path.join(_G03_CANDIDATA,
+                                                 "aislamiento_de_arranque.py")):
+            _G03_SEDE = _G03_CANDIDATA
+            break
+    else:
+        _G03_PADRE = _os_g03.path.dirname(_G03_RAIZ)
+        if _G03_PADRE == _G03_RAIZ:
+            _sys_g03.stderr.write(
+                "[PROCEDENCIA_NO_FIABLE] no hay `aislamiento_de_arranque.py` ni junto a "
+                "este punto ejecutable ni en el `kernel/operativo/validadores/` de ning\u00fan "
+                "ancestro suyo: no se puede decidir si el arranque est\u00e1 aislado, y no se "
+                "sigue\n")
+            raise SystemExit(5)
+        _G03_RAIZ = _G03_PADRE
+_sys_g03.path.insert(0, _G03_SEDE)
+import aislamiento_de_arranque as _aislamiento_g03                    # noqa: E402
+
+AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)
+_sys_g03.dont_write_bytecode = _G03_BYTECODE
+
+# `-I` deja FUERA de `sys.path` el directorio del guión —es lo que impide que un homónimo
+# vecino se cuele— y los puntos que importan módulos hermanos lo necesitan. Se reintroduce
+# por RUTA DERIVADA DE `__file__`, que no la escribe el lanzador.
+if _G03_PROPIA not in _sys_g03.path:
+    _sys_g03.path.insert(0, _G03_PROPIA)
+
+# ---------------------------------------------------------------------------
 #  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
 # ---------------------------------------------------------------------------
 #  HECHO REPRODUCIDO ANTES DE CORREGIR, sobre este mismo punto ejecutable: con
@@ -166,6 +238,16 @@ def procedencia(repo=None):
         "aparato": os.path.basename(_RAIZ_DEL_APARATO),
         "modulos": modulos,
         "entradas_del_lanzador_retiradas": len(RETIRADAS_DE_LA_RUTA),
+        # `G-03` · lo que de verdad importa no es cuántas se RETIRARON, sino cuántas QUEDAN.
+        #     Desde que el punto se reejecuta aislado, `PYTHONPATH` y el `cwd` no llegan a
+        #     entrar en `sys.path` y no hay nada que retirar: un cero en «retiradas» pasó de
+        #     significar «la purga no hizo nada» a significar «no hizo falta». La propiedad
+        #     que se publica y que las pruebas exigen es ésta, que es la misma en los dos
+        #     mundos: NINGUNA entrada del lanzador está en la ruta de importación.
+        "entradas_del_lanzador_presentes": len(
+            _entradas_del_lanzador()
+            & {_os.path.realpath(entrada) for entrada in _sys.path if entrada}),
+        "aislamiento_de_arranque": dict(AISLAMIENTO.get("flags") or {}),
         "ruta_de_importacion": [_origen_de(e) if e else "(cwd)" for e in sys.path[:3]],
     }
     if repo:

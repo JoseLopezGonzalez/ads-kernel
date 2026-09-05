@@ -1,10 +1,13 @@
 # evidencia de: arranque
-# orden:        python3 kernel/operativo/validadores/comprobar_arranque.py
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_arranque.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
 T148  SUPERADA  El arranque documentado crea un proyecto conforme, pack a pack y combinado
+T168  SUPERADA  El arranque crea un workspace con el control repo dentro, en la rama que documenta, y el workspace no es un repositorio
+T181  SUPERADA  La especificación normativa vigente viaja al proyecto instalado, derivada y no escrita a mano
 T171  SUPERADA  El proyecto recién creado declara dónde se lee cada criterio del §100
           alcance: cobertura ESTRUCTURAL de los diez criterios del §100: cada uno tiene un sitio declarado donde leerse en el proyecto recién creado. NO demuestra que un agente lo descubra: eso exige piloto (limitación abierta)
 T194  SUPERADA  Un control repo existente se actualiza sin perder lo suyo
 
-3 superadas · 0 fallidas
+5 superadas · 0 fallidas

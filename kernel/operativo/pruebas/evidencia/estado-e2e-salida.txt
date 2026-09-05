@@ -1,5 +1,6 @@
 # evidencia de: estado-e2e
-# orden:        python3 kernel/operativo/runtime/pruebas/escenario_extremo_a_extremo.py
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/runtime/pruebas/escenario_extremo_a_extremo.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
 ESCENARIO EXTREMO A EXTREMO · MOTOR DE ESTADO DURABLE
@@ -58,3 +59,5 @@ T362 · corte 8-9: almacén cortado en `entre-el-paso-8-y-el-9` — testigo del 
 
 T301 · recuperabilidad  almacen-cortado-8-9: abierto, recuperado e íntegro
 T301 · recuperabilidad  control: abierto, recuperado e íntegro
+
+T180  SUPERADA  F6 · corte vertical 1 · quince pasos del §12.1 del contrato

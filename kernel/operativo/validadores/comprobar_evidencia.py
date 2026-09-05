@@ -34,6 +34,84 @@ Uso:
 from __future__ import annotations
 
 # ---------------------------------------------------------------------------
+#  `G-03` · AISLAMIENTO DE ARRANQUE · lo PRIMERO que hace este punto
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-05, sobre esta zona. Con seis líneas de
+#  veneno en un `sitecustomize.py` alcanzable desde `PYTHONPATH`:
+#
+#      $ cat veneno/sitecustomize.py
+#        import hashlib; hashlib.sha256 = lambda *a, **k: _Falso()   # digest 0000…
+#      $ PYTHONPATH=veneno python3.12 kernel/operativo/validadores/huella.py
+#        0000000000000000                     ← la huella FORJADA sobre un árbol mutado
+#      $ PYTHONPATH=veneno python3.12 kernel/operativo/validadores/comprobar_integridad.py
+#        T150  SUPERADA · EXIT=0              ← VERDE sobre un árbol MUTADO
+#
+#  El prólogo `E-10` de abajo purga `sys.path` en su primera sentencia, y eso llega TARDE:
+#  `site.py` importa `sitecustomize` mientras el intérprete arranca, antes de que la primera
+#  línea de este módulo exista. Lo que cambia no es un módulo —`hashlib` es el bueno— sino
+#  un atributo suyo, y el control del control de `E-10`, que mira la procedencia de `os`, no
+#  lo ve. Con la guarda, este punto se reejecuta con `-I -S -E` y `sitecustomize` no llega a
+#  importarse: medido en la tabla de los doce ataques de `T380`-`T399`.
+#
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      La misma disciplina que `E-10` sigue debajo y que `T330` comprueba: lo que protege
+#      está fijado y es idéntico en todos los puntos —`T380` lo exige con su digest—, y lo
+#      que se lee dice qué se midió en ESTA sede. Un recital común mentiría en la mitad de
+#      las sedes; un mecanismo por sede derivaría, y el que derive de menos es el que nadie
+#      mira.
+#
+#  DECISIÓN · la guarda va ANTES del prólogo `E-10`, y no lo sustituye
+#      Alternativas: (a) sustituir `E-10` por la guarda; (b) dejar `E-10` y añadir la
+#      guarda encima.
+#      Se elige (b). Cierran cosas distintas: `E-10` retira del `sys.path` lo que mete el
+#      lanzador —y sigue haciendo falta cuando el punto se IMPORTA, donde la guarda no
+#      reejecuta—; `G-03` impide que `sitecustomize` llegue siquiera a ejecutarse. Quitar
+#      `E-10` reabriría la contaminación de la ruta en el caso importado.
+import os as _os_g03
+import sys as _sys_g03
+
+# LA GUARDA NO DEJA RASTRO EN EL ÁRBOL QUE JUZGA. Medido: al importar la guarda, Python
+# escribía `validadores/__pycache__/aislamiento_de_arranque…pyc` en el árbol, y
+# `comprobar_arranque.py` empezó a publicar «el proyecto arrastra `__pycache__`» sobre
+# proyectos recién creados. Se desactiva la escritura de bytecode DURANTE la guarda y se
+# devuelve al estado que tenía: lo que el punto importe después sigue cacheándose como
+# siempre, y no se paga rendimiento por una comprobación que corre una vez.
+_G03_BYTECODE = _sys_g03.dont_write_bytecode
+_sys_g03.dont_write_bytecode = True
+_G03_PROPIA = _os_g03.path.dirname(_os_g03.path.realpath(__file__))
+_G03_SEDE = ""
+_G03_RAIZ = _G03_PROPIA
+while not _G03_SEDE:
+    for _G03_CANDIDATA in (_G03_PROPIA,
+                           _os_g03.path.join(_G03_RAIZ, "kernel", "operativo",
+                                             "validadores")):
+        if _os_g03.path.isfile(_os_g03.path.join(_G03_CANDIDATA,
+                                                 "aislamiento_de_arranque.py")):
+            _G03_SEDE = _G03_CANDIDATA
+            break
+    else:
+        _G03_PADRE = _os_g03.path.dirname(_G03_RAIZ)
+        if _G03_PADRE == _G03_RAIZ:
+            _sys_g03.stderr.write(
+                "[PROCEDENCIA_NO_FIABLE] no hay `aislamiento_de_arranque.py` ni junto a "
+                "este punto ejecutable ni en el `kernel/operativo/validadores/` de ning\u00fan "
+                "ancestro suyo: no se puede decidir si el arranque est\u00e1 aislado, y no se "
+                "sigue\n")
+            raise SystemExit(5)
+        _G03_RAIZ = _G03_PADRE
+_sys_g03.path.insert(0, _G03_SEDE)
+import aislamiento_de_arranque as _aislamiento_g03                    # noqa: E402
+
+AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)
+_sys_g03.dont_write_bytecode = _G03_BYTECODE
+
+# `-I` deja FUERA de `sys.path` el directorio del guión —es lo que impide que un homónimo
+# vecino se cuele— y los puntos que importan módulos hermanos lo necesitan. Se reintroduce
+# por RUTA DERIVADA DE `__file__`, que no la escribe el lanzador.
+if _G03_PROPIA not in _sys_g03.path:
+    _sys_g03.path.insert(0, _G03_PROPIA)
+
+# ---------------------------------------------------------------------------
 #  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
 # ---------------------------------------------------------------------------
 #  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-04, sobre `validadores/huella.py` —el
@@ -134,6 +212,12 @@ from comprobar_contratos import Resultado  # noqa: E402
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 DIR_EVIDENCIA = "kernel/operativo/pruebas/evidencia"
+
+# Las banderas que la cabecera de una evidencia tiene que nombrar. No se escriben aquí por
+# duplicado: se piden al módulo que las define, que es el mismo que la guarda `G-03` usa
+# para reejecutar y el que el runner usa para lanzar. Tres sedes con la misma lista escrita
+# tres veces es cómo se derivan las listas.
+BANDERAS_EXIGIDAS_EN_LA_CABECERA = tuple(_aislamiento_g03.BANDERAS_DE_AISLAMIENTO)
 
 # Señales de que un fichero de evidencia NO es la salida de una ejecución correcta.
 # `FALLIDA` y `NO detectada` sólo se admiten donde el manifiesto declara que la salida
@@ -261,6 +345,74 @@ def _skips_declarados(comp, r):
             continue
         utilizables.append(entrada)
     return utilizables
+
+
+def _comprobar_aislamiento_publicado(rel, texto, r):
+    """`D-01` · La cabecera de una evidencia declara con qué AISLAMIENTO se produjo.
+
+    Se separa en una función porque la prueba `T395` la ejerce con cabeceras fabricadas: una
+    comprobación que sólo se puede ejecutar corriendo el validador entero sobre el árbol
+    real no se puede sabotear a propósito, y una comprobación que no se puede poner en rojo
+    a propósito no se sabe si mide algo.
+    """
+    # 4 bis · `D-01` · LA GARANTÍA DE AISLAMIENTO VA PUBLICADA Y SE COMPRUEBA
+    #
+    #  HECHO REPRODUCIDO — `HALLAZGO 3` del revisor 3, gate del 2026-09-05:
+    #  `registrar_evidencia.py` L212 lanzaba a sus hijos con `subprocess.run` SIN `env=`,
+    #  de modo que el veneno del padre —`PYTHONPATH`, y con él `sitecustomize`— llegaba
+    #  entero a cada batería. El remedio adjudicado incluye, con estas palabras, «y lo
+    #  publica en la cabecera de cada evidencia»: sin la línea, quien lee no puede
+    #  distinguir una corrida saneada de una heredada.
+    #
+    #  DECISIÓN · se exige la LÍNEA y se exige que diga las banderas, no sólo que exista
+    #      Alternativas: (a) exigir que la línea esté; (b) exigir además que nombre las
+    #      banderas con las que se aisló el hijo.
+    #      Se elige (b). Con (a) la cabecera pasaría diciendo «aislamiento: ninguno», que
+    #      es peor que no decir nada porque parece una garantía. Con (b), el día que
+    #      alguien retire el `env=` o las banderas, la línea cambia y esto enrojece.
+    #
+    #  EL ALCANCE DE ESTA GARANTÍA, MEDIDO POR EL AUDITOR INDEPENDIENTE (hallazgo 9)
+    #      Esta línea la escribe el PADRE sobre el proceso que lanzó, y esta comprobación la
+    #      lee como texto. Contra una REGRESIÓN —alguien retira el `env=`, alguien quita una
+    #      bandera— funciona: la línea cambia sola y esto enrojece, que es para lo que se
+    #      hizo. Contra un EDITOR DELIBERADO no funciona: reescribir la línea a mano en una
+    #      evidencia ya confirmada no cambia ningún veredicto, así que `T350` pasa, y aquí
+    #      sólo se comprueba que la línea diga lo que debe decir. El auditor lo demostró
+    #      además con una cifra del cuerpo —`sed -i 's/\b518\b/519/g'` sobre
+    #      `fuentes-salida.txt`— y los dos validadores siguieron en verde.
+    #
+    #      NO SE FINGE QUE ESTO LO CIERRA. Lo que un fichero editable declara sobre sí mismo
+    #      no puede demostrar su propia procedencia, y la prueba de procedencia de verdad
+    #      —un digest que calcule el HIJO y que no pase por las manos del padre— es otro
+    #      aparato: cambiaría los bytes de las 38 evidencias y toca el contrato de
+    #      aislamiento, que es de otro propietario. Queda como PETICIÓN, escrita aquí, que
+    #      es donde la encuentra quien lee esta comprobación y podría creerse más de lo que
+    #      hay. Quien SÍ juzga que la zona `EVIDENCIA` no mute es `V6-10` en el verificador
+    #      de admisión, y ahí la condición es INMUTABLE.
+    m_aisl = re.search(r"^# aislamiento:\s*(.+)$", texto, re.M)
+    if not m_aisl:
+        r.fallo(f"{rel}: su cabecera no publica con qué AISLAMIENTO se lanzó el proceso "
+                f"que la produjo. Es la garantía que `HALLAZGO 3` pidió publicar, y una "
+                f"garantía que no se publica no la puede comprobar nadie. Regenérala "
+                f"con registrar_evidencia.py")
+    else:
+        declarado = m_aisl.group(1)
+        faltan = [b for b in BANDERAS_EXIGIDAS_EN_LA_CABECERA if b not in declarado]
+        if faltan:
+            r.fallo(f"{rel}: su cabecera declara el aislamiento «{declarado.strip()}» y "
+                    f"no nombra {' '.join(faltan)}. El hijo que produjo esta evidencia "
+                    f"no se lanzó aislado, o el runner dejó de aislarlo")
+        # Y la familia `PYTHON*` no puede estar entre las variables ENTREGADAS. Es la
+        # que trae el gancho: `PYTHONPATH` lleva al `sitecustomize`, `PYTHONSTARTUP`
+        # ejecuta código antes que nadie y `PYTHONHOME` mueve la biblioteca estándar.
+        entregadas = re.search(r"entorno CONSTRUIDO con \d+ variables \(([^)]*)\)",
+                               declarado)
+        coladas = [v for v in (entregadas.group(1).split() if entregadas else [])
+                   if v.startswith("PYTHON")]
+        if coladas:
+            r.fallo(f"{rel}: su cabecera declara que al hijo se le entregaron "
+                    f"{' '.join(coladas)}. La familia `PYTHON*` es por donde entra el "
+                    f"gancho, y el entorno del hijo se construye sin ella")
 
 
 def _comprobar_resultado_exacto(rel, comp, texto, r):
@@ -448,6 +600,8 @@ def t158_evidencia(raiz=None):
         if not re.search(r"\.py(\s|$)", m_orden.group(1)):
             r.fallo(f"{rel}: su orden no invoca un script terminado en .py — es exactamente "
                     f"el defecto que corrompió la evidencia anterior")
+
+        _comprobar_aislamiento_publicado(rel, texto, r)
 
         # 5 · el código registrado es cero
         if m_cod.group(1) != "0":
@@ -733,16 +887,32 @@ def t350_estado_derivado_de_la_evidencia(raiz=None):
     #     CALCULABA aquí y no la imprimía nadie: la cifra que encabezaba la línea base no
     #     era reproducible desde ninguna evidencia, y la que el árbol produce era otra.
     #
-    #     DECISIÓN · se publica la COBERTURA y NO se publica `r.nota`
+    #     DECISIÓN · se publica la COBERTURA y NO se publica `r.nota` ENTERA
     #         `nota_cobertura` se deriva del corpus y de la evidencia: mismo árbol, mismos
     #         bytes. `r.nota` cuenta cuántas evidencias difieren del blob de `HEAD` y cuáles
     #         no están confirmadas todavía, y eso cambia entre el minuto anterior y el
     #         posterior a un `git commit`. Meterla en una salida que se publica como
     #         evidencia rompería el determinismo byte a byte que `T158` exige, y una
-    #         evidencia que cambia sola no vale como evidencia. Queda disponible para quien
-    #         llame a la función y NO se imprime, y esto es el motivo, escrito.
+    #         evidencia que cambia sola no vale como evidencia.
+    #
+    #     CORRECCIÓN · SE PUBLICA SI EL CANAL CORRIÓ, QUE ES LA PARTE QUE NO CAMBIA SOLA
+    #         HALLADO POR EL AUDITOR INDEPENDIENTE. La decisión de arriba era correcta en su
+    #         motivo y demasiado ancha en su consecuencia: descartaba la nota ENTERA, y con
+    #         ella la única frase que el propio canal escribe para no ser mudo —«el contraste
+    #         NO se ha hecho, y no se da por hecho»—. Efecto medido: sobre el corpus que
+    #         `comprobar_negativos` copia sin `.git`, el canal no corre y la evidencia
+    #         publicada es BYTE A BYTE indistinguible de una corrida donde sí corrió. Es
+    #         exactamente el hecho que `D-05` existe para cerrar, y `T427` y `T428` asertaban
+    #         sobre una cadena que en producción se tiraba a la basura.
+    #         Así que se parte en dos: si el canal se EJERCIÓ o no —que depende del árbol y
+    #         no del reloj, y por tanto es determinista— se publica siempre; el detalle
+    #         volátil —cuántas difieren hoy, cuáles están sin confirmar— sigue fuera.
     r.nota_cobertura = (f"contrastados {len(contrastados)} · no contrastables "
                         f"{len(sin_contraste)} · divergencias {len(divergencias)}")
+    r.nota_cobertura += (" · contraste contra el blob de HEAD: "
+                         + ("EJERCIDO" if os.path.isdir(os.path.join(base, ".git"))
+                            else "NO SE HA HECHO — no hay repositorio Git en la raíz, y no "
+                                 "se da por hecho"))
     # `H-02` · y el DESGLOSE de los no contrastables por el estado que DECLARAN. La cifra
     # agregada mezclaba a los que no afirman ninguna ejecución con los catorce que
     # afirmaban `prueba-superada` sobre una evidencia que no los nombra, y esa mezcla es
@@ -783,11 +953,24 @@ def _contrastar_contra_head(base, escenarios, r):
         evidencia = (datos.get("evidencia") or "").strip()
         if evidencia:
             por_evidencia.setdefault(os.path.basename(evidencia), []).append(datos)
-    hechas, sin_confirmar, regeneradas = 0, [], []
+    hechas, sin_confirmar, regeneradas, borradas = 0, [], [], []
     for nombre in sorted(por_evidencia):
         rel = os.path.join(DIR_EVIDENCIA, nombre)
         ruta = os.path.join(base, rel)
         if not os.path.isfile(ruta):
+            # `D-05`, ATAQUE 9, HALLADO POR EL AUDITOR INDEPENDIENTE. Esto era `continue`, y
+            # con él BORRAR el fichero pasaba en verde mientras VACIARLO era rojo: dos
+            # gestos con el mismo efecto —el dictamen deja de existir— y veredictos
+            # opuestos. Un fichero que `HEAD` tiene y el árbol de trabajo no es un dictamen
+            # retirado, exactamente igual que uno vaciado, y se juzga igual.
+            proceso = subprocess.run(["git", "-C", base, "cat-file", "-e", "HEAD:" + rel],
+                                     capture_output=True)
+            if proceso.returncode == 0:
+                borradas.append(rel)
+                r.fallo(f"{rel}: `HEAD` tiene esta evidencia confirmada y en el árbol de "
+                        f"trabajo NO EXISTE. Borrar una evidencia retira todos los "
+                        f"dictámenes que sostenía, igual que vaciarla, y no hay ninguna "
+                        f"ejecución que respalde esa retirada")
             continue
         proc = subprocess.run(["git", "-C", base, "show", "HEAD:" + rel],
                               capture_output=True)
@@ -806,7 +989,24 @@ def _contrastar_contra_head(base, escenarios, r):
             identificador = datos.get("id", "")
             antes = registro_pruebas.veredictos_publicados(confirmada, identificador)
             despues = registro_pruebas.veredictos_publicados(ahora, identificador)
+            # `D-05` · HECHO REPRODUCIDO POR `T425`, MECANIZANDO EL ATAQUE. Esta guarda
+            # era `if not (antes and despues): continue`, y con ella el ataque MÁS FUERTE
+            # de todos —vaciar la evidencia, o reescribirla para que deje de nombrar al
+            # escenario— pasaba en VERDE: sin veredictos «después» no había nada que
+            # comparar, y no comparar se trataba como no haber encontrado nada raro. Al
+            # revés: que `HEAD` juzgara este escenario y el árbol de trabajo ya no lo
+            # juzgue es la forma más limpia de borrar un dictamen incómodo.
+            if antes and not despues:
+                r.fallo(f"{rel}: la versión confirmada en `HEAD` publica {sorted(antes)} "
+                        f"para `{identificador}` y la del árbol de trabajo NO PUBLICA "
+                        f"NINGUNO. Un escenario que deja de estar juzgado por su propia "
+                        f"evidencia no es un escenario sin novedad: es un dictamen "
+                        f"retirado sin una ejecución que lo respalde")
+                continue
             if not (antes and despues):
+                # `HEAD` no lo juzgaba: no hay dictamen anterior del que apartarse. Que un
+                # escenario cite una evidencia que no lo nombra lo juzga el contraste de
+                # esta misma prueba, que lo cuenta como NO CONTRASTABLE con su estado.
                 continue
             # `H-08` bis · QUÉ ES «CAMBIAR DE DICTAMEN», MEDIDO EN VEZ DE SUPUESTO
             #
@@ -852,6 +1052,9 @@ def _contrastar_contra_head(base, escenarios, r):
                         f"trabajo {len(buenos_despues)}. Añadir casos es legítimo; que la "
                         f"cobertura adelgace sin decirlo, no")
     partes = [f"evidencia contrastada contra el blob de HEAD: {hechas}"]
+    if borradas:
+        partes.append(f"confirmadas en HEAD y AUSENTES del árbol de trabajo: "
+                      f"{len(borradas)} ({', '.join(os.path.basename(x) for x in borradas)})")
     if regeneradas:
         partes.append(f"difieren de HEAD sin cambiar ningún dictamen (regeneración en "
                       f"curso): {len(regeneradas)}")

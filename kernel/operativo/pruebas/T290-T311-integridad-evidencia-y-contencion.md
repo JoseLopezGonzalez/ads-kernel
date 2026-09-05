@@ -300,7 +300,7 @@ falla_si:
   - "el descubrimiento no encuentra ningún almacén, con lo que la comprobación no habría podido fallar"
 ejecucion: requiere-runtime
 validador: "kernel/operativo/runtime/pruebas/escenario_e2e_f6.py"
-estado: prueba-ejecutada
+estado: prueba-superada
 evidencia: "evidencia/e2e-f6-salida.txt"
 ```
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """negativos_runtime — las infracciones deliberadas que sabotean las BATERÍAS del runtime.
 
 POR QUÉ EXISTE ESTE FICHERO, Y QUÉ AGUJERO CIERRA. El catálogo único de infracciones sólo
@@ -94,6 +95,123 @@ el informe de la corrección.
 # ---------------------------------------------------------------------------
 
 from __future__ import annotations
+
+# ---------------------------------------------------------------------------
+#  `G-03` · AISLAMIENTO DE ARRANQUE · lo PRIMERO que hace este punto
+# ---------------------------------------------------------------------------
+#  Este módulo registra su catálogo de mutaciones con `CATALOGO.extend(...)` en el NIVEL
+#  SUPERIOR: hace trabajo al importarse, y por tanto es un punto ejecutable, lo invoque
+#  alguien directamente o no. El auditor independiente señaló que de los dos ficheros de
+#  esta familia uno llevaba la guarda y el otro no, y que la asimetría no la medía nadie
+#  porque los dos quedaban fuera del inventario. Ahora los dos están dentro.
+
+import os as _os_g03
+import sys as _sys_g03
+
+# LA GUARDA NO DEJA RASTRO EN EL ÁRBOL QUE JUZGA. Medido: al importar la guarda, Python
+# escribía `validadores/__pycache__/aislamiento_de_arranque…pyc` en el árbol, y
+# `comprobar_arranque.py` empezó a publicar «el proyecto arrastra `__pycache__`» sobre
+# proyectos recién creados. Se desactiva la escritura de bytecode DURANTE la guarda y se
+# devuelve al estado que tenía: lo que el punto importe después sigue cacheándose como
+# siempre, y no se paga rendimiento por una comprobación que corre una vez.
+_G03_BYTECODE = _sys_g03.dont_write_bytecode
+_sys_g03.dont_write_bytecode = True
+_G03_PROPIA = _os_g03.path.dirname(_os_g03.path.realpath(__file__))
+_G03_SEDE = ""
+_G03_RAIZ = _G03_PROPIA
+while not _G03_SEDE:
+    for _G03_CANDIDATA in (_G03_PROPIA,
+                           _os_g03.path.join(_G03_RAIZ, "kernel", "operativo",
+                                             "validadores")):
+        if _os_g03.path.isfile(_os_g03.path.join(_G03_CANDIDATA,
+                                                 "aislamiento_de_arranque.py")):
+            _G03_SEDE = _G03_CANDIDATA
+            break
+    else:
+        _G03_PADRE = _os_g03.path.dirname(_G03_RAIZ)
+        if _G03_PADRE == _G03_RAIZ:
+            _sys_g03.stderr.write(
+                "[PROCEDENCIA_NO_FIABLE] no hay `aislamiento_de_arranque.py` ni junto a "
+                "este punto ejecutable ni en el `kernel/operativo/validadores/` de ning\u00fan "
+                "ancestro suyo: no se puede decidir si el arranque est\u00e1 aislado, y no se "
+                "sigue\n")
+            raise SystemExit(5)
+        _G03_RAIZ = _G03_PADRE
+_sys_g03.path.insert(0, _G03_SEDE)
+import aislamiento_de_arranque as _aislamiento_g03                    # noqa: E402
+
+AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)
+_sys_g03.dont_write_bytecode = _G03_BYTECODE
+
+# `-I` deja FUERA de `sys.path` el directorio del guión —es lo que impide que un homónimo
+# vecino se cuele— y los puntos que importan módulos hermanos lo necesitan. Se reintroduce
+# por RUTA DERIVADA DE `__file__`, que no la escribe el lanzador.
+if _G03_PROPIA not in _sys_g03.path:
+    _sys_g03.path.insert(0, _G03_PROPIA)
+
+# ---------------------------------------------------------------------------
+#  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
+# ---------------------------------------------------------------------------
+#  Este módulo entró en el inventario de puntos ejecutables al invertirse la carga —hace
+#  trabajo al importarse: registra su catálogo con `CATALOGO.extend(...)` en el nivel
+#  superior—, y a un punto ejecutable se le exige el mecanismo ENTERO y no medio: la guarda
+#  de `G-03` de arriba, que decide el aislamiento antes de que el intérprete arranque, y
+#  esta purga, que retira de `sys.path` lo que el LANZADOR pudo meter. Se copia byte a byte
+#  del resto de puntos, que es lo que `T330` comprueba: un mecanismo «adaptado» es un
+#  mecanismo que ya no se sabe si protege.
+
+import sys as _sys
+import os as _os
+
+_RAIZ_DEL_APARATO = _os.path.dirname(_os.path.abspath(__file__))
+
+
+def _entradas_del_lanzador():
+    """Lo que el LANZADOR puede meter en la ruta de importación: `PYTHONPATH` y el `cwd`."""
+    sospechosas = set()
+    for entrada in (_os.environ.get("PYTHONPATH") or "").split(_os.pathsep):
+        if entrada:
+            sospechosas.add(_os.path.realpath(entrada))
+    try:
+        sospechosas.add(_os.path.realpath(_os.getcwd()))
+    except OSError:
+        # Un `cwd` borrado bajo los pies no es motivo para no purgar el resto.
+        pass
+    return sospechosas
+
+
+def _purgar_la_ruta_de_importacion():
+    """Retira de `sys.path` lo que venga del lanzador. Devuelve cuántas entradas retiró."""
+    del_lanzador = _entradas_del_lanzador()
+    propia = _os.path.realpath(_RAIZ_DEL_APARATO)
+    conservadas, retiradas = [], []
+    for entrada in _sys.path:
+        try:
+            real = _os.path.realpath(entrada or _os.getcwd())
+        except OSError:
+            conservadas.append(entrada)
+            continue
+        if real != propia and real in del_lanzador:
+            retiradas.append(real)
+        else:
+            conservadas.append(entrada)
+    _sys.path[:] = conservadas
+    return retiradas
+
+
+RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()
+
+# CONTROL DEL CONTROL de la purga: `os` se usa para poder purgar, así que si `os` mismo
+# viniera del lanzador la purga no probaría nada. No hay forma honesta de seguir: se dice y
+# se sale con el código de PROCEDENCIA.
+if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lanzador():
+    _sys.stderr.write(
+        "[PROCEDENCIA_NO_FIABLE] el módulo `os` procede de la ruta de importación del "
+        "lanzador: este punto ejecutable no puede garantizar de dónde salen sus módulos y "
+        "NO ejecuta\n")
+    raise SystemExit(5)
+
+RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()
 
 CATALOGO = []
 
@@ -553,10 +671,47 @@ def m_h03_el_inventario_vuelve_a_una_zona_escrita(raiz):
     """
     _sustituir(raiz, "kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py",
                "    base = os.path.realpath(raiz or RAIZ_REPO)\n"
-               "    zonas = zonas_de_baterias(base)",
+               "    puntos, excluidos = {}, {}",
                "    base = os.path.join(os.path.realpath(raiz or RAIZ_REPO),\n"
                "                        \"kernel\", \"operativo\", \"runtime\")\n"
-               "    zonas = zonas_de_baterias(base)")
+               "    puntos, excluidos = {}, {}")
+
+
+def m_g03_un_punto_pierde_la_guarda_de_aislamiento(raiz):
+    """`T380`, `falla_si`: «un punto ejecutable nuevo entra sin la guarda».
+
+    `G-03` —`H-1` del revisor 2—, reintroducido en la sede donde se midió. `huella.py` deja
+    de exigir el aislamiento al entrar, y entonces vuelve a ser cierto lo que el gate del
+    2026-09-05 publicó: con un `sitecustomize` alcanzable desde `PYTHONPATH` que sustituye
+    `hashlib.sha256`, la huella de un árbol MUTADO sale con el valor fabricado y `T150` da
+    `SUPERADA · EXIT=0`.
+
+    Va contra `T380` y no contra `T382` a propósito, y por la misma razón por la que `NH01`
+    va contra `T330`: `T382` mide una CORRIDA de `huella.py` y una corrida sin guarda bajo un
+    veneno que la mutación no instala no tiene por qué salir mal. Quien sabe que falta la
+    guarda es el inventario.
+    """
+    _sustituir(raiz, "kernel/operativo/validadores/huella.py",
+               "AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)",
+               "AISLAMIENTO = {}")
+
+
+def m_d01_el_runner_vuelve_a_heredar_el_entorno_de_sus_hijos(raiz):
+    """`T394`, `falla_si`: «se quita el `env=` de la llamada».
+
+    `D-01` —`HALLAZGO 3` del revisor 3—, reintroducido en su línea exacta:
+    `registrar_evidencia.py` vuelve a lanzar a sus hijos con `subprocess.run` SIN `env=` y
+    sin banderas, de modo que el `PYTHONPATH` del padre —y con él el `sitecustomize`— llega
+    entero a cada una de las veintiuna baterías que producen la evidencia.
+
+    La mutación NO toca la cabecera: la sigue escribiendo, y con eso se comprueba lo otro que
+    el revisor pidió —que la garantía publicada corresponda a lo que de verdad ocurrió—.
+    """
+    _sustituir(raiz, "kernel/operativo/validadores/registrar_evidencia.py",
+               "proc = subprocess.run(orden, cwd=base, capture_output=True, text=True, "
+               "env=entorno)",
+               "proc = subprocess.run([sys.executable, script, *ej.args], cwd=base, "
+               "capture_output=True, text=True)")
 
 
 def m_h08_la_cobertura_del_contraste_deja_de_publicarse(raiz):
@@ -683,6 +838,20 @@ CATALOGO.extend([
              espera="el inventario no clasifica",
              casos=["PurgaEnLaRaizExterna."
                     "test_T330_el_inventario_se_DERIVA_del_arbol_ENTERO_y_es_coherente"]),
+    Mutacion("NG03", "G-03", "T380", INTEGRIDAD,
+             "un punto ejecutable pierde la guarda de aislamiento y el `sitecustomize` "
+             "vuelve a decidir con qué primitiva se firma",
+             m_g03_un_punto_pierde_la_guarda_de_aislamiento, clase=BATERIA,
+             espera="sin la guarda `G-03`",
+             casos=["AislamientoDeArranque."
+                    "test_T380_la_guarda_alcanza_a_TODO_punto_del_inventario_derivado"]),
+    Mutacion("ND01", "D-01", "T394", INTEGRIDAD,
+             "el runner de la evidencia vuelve a lanzar a sus hijos SIN `env=` y el veneno "
+             "del padre llega a cada batería",
+             m_d01_el_runner_vuelve_a_heredar_el_entorno_de_sus_hijos, clase=BATERIA,
+             espera="el entorno del padre llegó al hijo",
+             casos=["AislamientoDeArranque."
+                    "test_T394_el_runner_SANEA_el_entorno_de_sus_hijos_y_lo_PUBLICA"]),
     Mutacion("NH08", "H-08", "T307", INTEGRIDAD,
              "la cobertura del contraste vuelve a calcularse y a no publicarse",
              m_h08_la_cobertura_del_contraste_deja_de_publicarse, clase=BATERIA,
@@ -693,4 +862,135 @@ CATALOGO.extend([
              "el motor de estado durable deja de viajar al proyecto instalado",
              m_fd3_el_motor_durable_no_viaja,
              espera="no lleva el motor de estado durable"),
+])
+
+
+# ===========================================================================
+#  `G-04` · la PROHIBICIÓN de `b.12` sobre la prioridad, y `G-08` · el protocolo
+#  de preparación · `D-02` · el censo de escenarios atados
+# ===========================================================================
+#  Se añaden al final, sin tocar ninguna mutación anterior: el catálogo es acumulativo y una
+#  mutación que se reescribe deja de demostrar lo que demostró el día que se escribió.
+SELECCION = PRUEBAS_RUNTIME + "test_cardinalidad_y_seleccion.py"
+RUNTIME_Y_DISPATCHER = PRUEBAS_RUNTIME + "test_runtime.py"
+
+
+def m_g04_dsp_vuelve_a_subir_la_prioridad_al_postergar(raiz):
+    """`T400`, `falla_si`: «la transición de postergación mueve la prioridad».
+
+    ES EL SABOTAJE EXACTO que el revisor 1 reprodujo en el gate del 2026-09-05 y que pasaba
+    DOCE baterías con `EXIT=0`, con la línea ejecutándose dieciséis veces y mutando el estado
+    durable `50 → 60 → 70`. Se mecaniza aquí, y no sólo en `T269`, porque el catálogo de
+    negativos es lo que se ejecuta sobre una COPIA del repositorio en cada corrida del gate:
+    `T269` demuestra que la propiedad NO es decorativa, y esto demuestra que la detección
+    sigue viva el día que nadie mire.
+
+    Tiene que caer por la PROHIBICIÓN SEMÁNTICA —`PRIORIDAD_INMUTABLE`— y no por la huella
+    del kernel, que saltaría con cualquier edición legítima.
+    """
+    _sustituir(raiz, "kernel/operativo/runtime/runtime/dispatcher.py",
+               '                nuevo = dict(actual)\n'
+               '                nuevo["seleccion"] = normalizar_seleccion(',
+               '                nuevo = dict(actual)\n'
+               '                nuevo["prioridad"] = int(actual["prioridad"]) + 10\n'
+               '                nuevo["seleccion"] = normalizar_seleccion(')
+
+
+def m_g04_la_invariante_deja_de_cubrir_la_prioridad(raiz):
+    """`T419`, `falla_si`: «la constante que ejecuta la norma deja de coincidir con la citada».
+
+    La otra mitad del mismo eje, y la que una prueba de comportamiento no vería: la
+    invariante sigue instalada en la puerta, sigue recorriendo su lista de campos inmutables
+    y esa lista deja de contener `prioridad`. Nada falla al escribir, nada falla al leer, y
+    la prohibición de `b.12` se ha desactivado sin que ninguna línea diga que se desactivó.
+    """
+    _sustituir(raiz, "kernel/operativo/runtime/runtime/estado_util.py",
+               'CAMPOS_INMUTABLES_DEL_PAQUETE = ("prioridad",)',
+               'CAMPOS_INMUTABLES_DEL_PAQUETE = ("prioridad_declarada",)')
+
+
+def m_g08_vuelve_la_espera_arbitraria_antes_del_killpg(raiz):
+    """`T412`, `falla_si`: «la espera fija sigue en la tarea».
+
+    `G-08` en su sede exacta: la raíz vuelve a esperar un plazo en vez de OBSERVAR los tres
+    testigos, y `listo` vuelve a significar «ha pasado el tiempo que supuse». Bajo carga eso
+    es lo que hacía que `T216` cayera 4 de cada 15 veces. La mutación no toca el resto del
+    protocolo —los anuncios siguen saliendo— para que el rojo venga de la espera y no de que
+    la batería se quede sin canal.
+    """
+    _sustituir(raiz, "kernel/operativo/runtime/pruebas/test_contencion.py",
+               "             + _espera_observada()\n"
+               '             + "sleep " + str(segundos) + "\\n")\n'
+               '    return ["sh", "-c", guion]\n'
+               "\n"
+               "\n"
+               "def tarea_sin_una_generacion(",
+               '             + "sleep 0.6\\n"\n'
+               '             + "echo " + LISTO + " sondeos=0\\n"\n'
+               '             + "sleep " + str(segundos) + "\\n")\n'
+               '    return ["sh", "-c", guion]\n'
+               "\n"
+               "\n"
+               "def tarea_sin_una_generacion(")
+
+
+def m_d02_el_censo_de_escenarios_atados_esconde_uno(raiz):
+    """`T415`, `falla_si`: «un escenario nuevo entra en la clase y nadie se entera».
+
+    ESTE SABOTAJE SE REESCRIBIÓ AL CERRARSE `D-02`, y se dice por qué. Atacaba el censo
+    quitándole una entrada —`"T225": …`—, que es como se ataca un cliquet mientras tiene
+    dientes. Cerrada la deuda, `CENSO_D02` está VACÍO: no hay entrada que quitar, y el
+    sabotaje dejó de encajar. Mantenerlo así habría dejado el cliquet sin control negativo
+    justo cuando pasa a medir su otra mitad.
+
+    Ahora se ataca por donde el censo vacío puede ser atacado, que es además la vía por la
+    que la clase volvería de verdad: se le RETIRA a un ejecutor el veredicto nominal que
+    aprendió a publicar. `T162` deja de estar nombrado por `test_workspace.py`, vuelve a
+    estar atado a que alguien reescriba una batería ajena, y `T415` tiene que decir que la
+    clase de `D-02` ha vuelto a crecer.
+
+    SE TOCAN LAS DOS COSAS, Y NO ES UNA CONCESIÓN. `atados_a_una_bateria_ajena` descarta a
+    un escenario en cuanto su EVIDENCIA lo nombra, sin llegar a mirar la fuente: tocar sólo
+    el ejecutor reproduciría el estado «lo publicará en la próxima pasada», que la propia
+    prueba clasifica —bien— como retraso del registrador y no como deuda. El estado que hay
+    que reproducir es aquel del que se venía: un ejecutor que NO sabe publicarlo y una
+    evidencia que NO lo nombra. Eso son las dos ediciones, y las dos son la misma cosa.
+    """
+    _sustituir(raiz, "tooling/tests/test_workspace.py",
+               '"""T162 · una fuente ya clonada se reutiliza y no se vuelve a clonar."""',
+               '"""una fuente ya clonada se reutiliza y no se vuelve a clonar."""')
+    _sustituir(raiz, "kernel/operativo/pruebas/evidencia/workspace-salida.txt",
+               "T162 · una fuente ya clonada se reutiliza y no se vuelve a clonar. ... ok",
+               "una fuente ya clonada se reutiliza y no se vuelve a clonar. ... ok")
+
+
+CATALOGO.extend([
+    Mutacion("NG04", "G-04", "T400", SELECCION,
+             "DSP vuelve a subir la prioridad al postergar, que es el sabotaje exacto de "
+             "`R1-H02` y pasaba doce baterías en verde",
+             m_g04_dsp_vuelve_a_subir_la_prioridad_al_postergar, clase=BATERIA,
+             espera="PRIORIDAD_INMUTABLE",
+             casos=["PrioridadInmutableDeB12."
+                    "test_400_la_prioridad_declarada_sobrevive_a_una_postergacion"]),
+    Mutacion("NG04b", "G-04", "T419", SELECCION,
+             "la lista de campos inmutables deja de contener `prioridad` y la prohibición "
+             "de `b.12` se desactiva sin que ninguna línea lo diga",
+             m_g04_la_invariante_deja_de_cubrir_la_prioridad, clase=BATERIA,
+             espera="'prioridad' not found in",
+             casos=["PrioridadInmutableDeB12."
+                    "test_419_la_norma_se_cita_IGUAL_en_las_cuatro_sedes_y_una_de_ellas_la_EJECUTA"]),
+    Mutacion("NG08", "G-08", "T412", CONTENCION,
+             "la raíz vuelve a esperar un plazo fijo en vez de observar los tres testigos, "
+             "y `listo` vuelve a ser una suposición",
+             m_g08_vuelve_la_espera_arbitraria_antes_del_killpg, clase=BATERIA,
+             espera="la espera arbitraria sigue en la tarea",
+             casos=["ProtocoloDePreparacion."
+                    "test_412_la_preparacion_es_una_condicion_OBSERVADA_y_no_una_espera"]),
+    Mutacion("ND02", "D-02", "T415", RUNTIME_Y_DISPATCHER,
+             "a un ejecutor se le RETIRA el veredicto nominal que aprendió a publicar, y "
+             "la clase de `D-02` vuelve a crecer con el censo ya cerrado",
+             m_d02_el_censo_de_escenarios_atados_esconde_uno, clase=BATERIA,
+             espera="La clase de `D-02` ha vuelto a crecer",
+             casos=["EscenariosAtadosAUnaBateriaAjena."
+                    "test_415_ningun_escenario_NUEVO_queda_atado_a_una_bateria_ajena"]),
 ])

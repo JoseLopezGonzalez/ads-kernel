@@ -32,6 +32,84 @@ Uso:
 from __future__ import annotations
 
 # ---------------------------------------------------------------------------
+#  `G-03` · AISLAMIENTO DE ARRANQUE · lo PRIMERO que hace este punto
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-05, sobre esta zona. Con seis líneas de
+#  veneno en un `sitecustomize.py` alcanzable desde `PYTHONPATH`:
+#
+#      $ cat veneno/sitecustomize.py
+#        import hashlib; hashlib.sha256 = lambda *a, **k: _Falso()   # digest 0000…
+#      $ PYTHONPATH=veneno python3.12 kernel/operativo/validadores/huella.py
+#        0000000000000000                     ← la huella FORJADA sobre un árbol mutado
+#      $ PYTHONPATH=veneno python3.12 kernel/operativo/validadores/comprobar_integridad.py
+#        T150  SUPERADA · EXIT=0              ← VERDE sobre un árbol MUTADO
+#
+#  El prólogo `E-10` de abajo purga `sys.path` en su primera sentencia, y eso llega TARDE:
+#  `site.py` importa `sitecustomize` mientras el intérprete arranca, antes de que la primera
+#  línea de este módulo exista. Lo que cambia no es un módulo —`hashlib` es el bueno— sino
+#  un atributo suyo, y el control del control de `E-10`, que mira la procedencia de `os`, no
+#  lo ve. Con la guarda, este punto se reejecuta con `-I -S -E` y `sitecustomize` no llega a
+#  importarse: medido en la tabla de los doce ataques de `T380`-`T399`.
+#
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      La misma disciplina que `E-10` sigue debajo y que `T330` comprueba: lo que protege
+#      está fijado y es idéntico en todos los puntos —`T380` lo exige con su digest—, y lo
+#      que se lee dice qué se midió en ESTA sede. Un recital común mentiría en la mitad de
+#      las sedes; un mecanismo por sede derivaría, y el que derive de menos es el que nadie
+#      mira.
+#
+#  DECISIÓN · la guarda va ANTES del prólogo `E-10`, y no lo sustituye
+#      Alternativas: (a) sustituir `E-10` por la guarda; (b) dejar `E-10` y añadir la
+#      guarda encima.
+#      Se elige (b). Cierran cosas distintas: `E-10` retira del `sys.path` lo que mete el
+#      lanzador —y sigue haciendo falta cuando el punto se IMPORTA, donde la guarda no
+#      reejecuta—; `G-03` impide que `sitecustomize` llegue siquiera a ejecutarse. Quitar
+#      `E-10` reabriría la contaminación de la ruta en el caso importado.
+import os as _os_g03
+import sys as _sys_g03
+
+# LA GUARDA NO DEJA RASTRO EN EL ÁRBOL QUE JUZGA. Medido: al importar la guarda, Python
+# escribía `validadores/__pycache__/aislamiento_de_arranque…pyc` en el árbol, y
+# `comprobar_arranque.py` empezó a publicar «el proyecto arrastra `__pycache__`» sobre
+# proyectos recién creados. Se desactiva la escritura de bytecode DURANTE la guarda y se
+# devuelve al estado que tenía: lo que el punto importe después sigue cacheándose como
+# siempre, y no se paga rendimiento por una comprobación que corre una vez.
+_G03_BYTECODE = _sys_g03.dont_write_bytecode
+_sys_g03.dont_write_bytecode = True
+_G03_PROPIA = _os_g03.path.dirname(_os_g03.path.realpath(__file__))
+_G03_SEDE = ""
+_G03_RAIZ = _G03_PROPIA
+while not _G03_SEDE:
+    for _G03_CANDIDATA in (_G03_PROPIA,
+                           _os_g03.path.join(_G03_RAIZ, "kernel", "operativo",
+                                             "validadores")):
+        if _os_g03.path.isfile(_os_g03.path.join(_G03_CANDIDATA,
+                                                 "aislamiento_de_arranque.py")):
+            _G03_SEDE = _G03_CANDIDATA
+            break
+    else:
+        _G03_PADRE = _os_g03.path.dirname(_G03_RAIZ)
+        if _G03_PADRE == _G03_RAIZ:
+            _sys_g03.stderr.write(
+                "[PROCEDENCIA_NO_FIABLE] no hay `aislamiento_de_arranque.py` ni junto a "
+                "este punto ejecutable ni en el `kernel/operativo/validadores/` de ning\u00fan "
+                "ancestro suyo: no se puede decidir si el arranque est\u00e1 aislado, y no se "
+                "sigue\n")
+            raise SystemExit(5)
+        _G03_RAIZ = _G03_PADRE
+_sys_g03.path.insert(0, _G03_SEDE)
+import aislamiento_de_arranque as _aislamiento_g03                    # noqa: E402
+
+AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)
+_sys_g03.dont_write_bytecode = _G03_BYTECODE
+
+# `-I` deja FUERA de `sys.path` el directorio del guión —es lo que impide que un homónimo
+# vecino se cuele— y los puntos que importan módulos hermanos lo necesitan. Se reintroduce
+# por RUTA DERIVADA DE `__file__`, que no la escribe el lanzador.
+if _G03_PROPIA not in _sys_g03.path:
+    _sys_g03.path.insert(0, _G03_PROPIA)
+
+# ---------------------------------------------------------------------------
 #  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
 # ---------------------------------------------------------------------------
 #  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-04, sobre `validadores/huella.py` —el
@@ -118,6 +196,7 @@ if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lan
 
 
 import argparse
+import io
 import json
 import os
 import re
@@ -129,6 +208,103 @@ import tempfile
 sys.path.insert(0, os.path.dirname(__file__))
 import entorno  # noqa: E402
 from comprobar_contratos import Resultado  # noqa: E402
+
+
+class NoEjercida(Resultado):
+    """Un escenario derivado al que el montaje NO llegó. No es `SUPERADA` ni `FALLIDA`.
+
+    Existe porque `SUPERADA` y `FALLIDA` no agotan los estados posibles de un veredicto
+    que se publica desde un montaje compartido. Hay un tercero, y es el que hunde a los
+    otros dos si se calla: *el montaje se abortó antes de llegar a las comprobaciones de
+    este escenario*. Sin veredicto que emitir, la única respuesta honesta es decir que no
+    se ejerció, y que eso cuente como fallo de la corrida.
+    """
+
+    @property
+    def superada(self):
+        return False
+
+
+class ResultadoRepartido(Resultado):
+    """Un solo montaje, VARIOS veredictos nominales, y TRES estados por veredicto.
+
+    `T148`, `T168` y `T181` se demuestran sobre EL MISMO proyecto recién creado, y
+    montarlo tres veces costaría tres arranques completos sin comprobar nada nuevo.
+    Pero un escenario que no se nombra al publicar no tiene veredicto: quien lee la
+    evidencia no puede saber si `T168` pasó o si nadie lo miró. Así que la ejecución
+    es una y los veredictos son tres: cada fallo se apunta en el escenario —o los
+    escenarios— cuya promesa rompe, y al final cada uno publica su propia línea.
+
+    HECHO REPRODUCIDO POR EL AUDITOR INDEPENDIENTE, y es el defecto que esta clase venía a
+    cerrar, reaparecido dentro del remedio. Con `new-project.sh` saboteado para terminar
+    con código 1 sin crear nada, la salida era:
+
+        T148  FALLIDA   … new-project.sh terminó con código 1: ['SABOTAJE DEL AUDITOR']
+        T168  SUPERADA  El arranque crea un workspace con el control repo dentro…
+        T181  SUPERADA  La especificación normativa vigente viaja al proyecto instalado…
+
+    Dos veredictos nominales VERDES sobre un árbol donde el arranque no produjo nada. Y no
+    era prosa: `T168 SUPERADA` es la forma exacta que `registro_pruebas.veredicto_nominal`
+    reconoce, la que asciende el escenario en `T350` y la que se contrasta contra `HEAD`.
+    La causa: el fallo que aborta el caso hace `continue`, de modo que las comprobaciones
+    de `T168` y `T181` NO SE EJECUTAN, y «sin fallos» se leía como «superada».
+
+    DECISIÓN · un derivado tiene TRES estados, y el tercero es `NO EJERCIDA`
+        Alternativas: (a) imputar a todos los derivados el fallo que aborta; (b) contar
+        cuántas veces se EJERCIÓ cada derivado y negar el verde al que tenga cero.
+        Se elige (b), y (a) se descarta porque sólo tapa este sitio: mañana se añade otro
+        `continue` en otra rama y el verde falso vuelve. (b) mide la propiedad que de
+        verdad importa —¿llegó el montaje a preguntar por este escenario?— y no depende de
+        que quien escriba el próximo `continue` se acuerde de nada.
+
+    DECISIÓN · `para` es POSICIONAL Y OBLIGATORIO
+        Era `para=()` por defecto, y veintidós de los treinta y seis sitios de fallo del
+        cuerpo se quedaron sin destinatario sin que nada lo dijera. Un parámetro con valor
+        por defecto es una invitación a olvidarlo; sin valor por defecto, un sitio de fallo
+        nuevo NO PUEDE nacer sin decidir a quién rompe. Para «rompe a todos» está `TODOS`,
+        que se escribe y por tanto se lee.
+    """
+
+    TODOS = ("*",)
+
+    def __init__(self, pid, nombre, derivados):
+        Resultado.__init__(self, pid, nombre)
+        self.derivados = {i: Resultado(i, n) for i, n in derivados}
+        self.nombres = dict(derivados)
+        # Cuántas veces se ha EJERCIDO cada derivado: cuántas comprobaciones suyas han
+        # llegado a evaluarse. Cero es `NO EJERCIDA`, y cero no puede ser verde.
+        self.ejercicios = {i: 0 for i, _n in derivados}
+
+    def ejercer(self, *identificadores):
+        """Declara que las comprobaciones de esos escenarios se han EVALUADO.
+
+        Se llama ANTES de comprobar, no después: lo que cuenta es que la pregunta llegara a
+        hacerse, y una pregunta cuya respuesta es «falla» también se hizo.
+        """
+        for identificador in identificadores:
+            self.ejercicios[identificador] += 1
+
+    def fallo(self, msg, para):
+        Resultado.fallo(self, msg)
+        destinos = sorted(self.derivados) if tuple(para) == self.TODOS else para
+        for identificador in destinos:
+            self.derivados[identificador].fallo(msg)
+
+    def publicables(self):
+        salida = [self]
+        for identificador in sorted(self.derivados):
+            derivado = self.derivados[identificador]
+            if derivado.fallos or self.ejercicios[identificador]:
+                salida.append(derivado)
+                continue
+            # NUNCA SE LLEGÓ A MIRAR. El montaje se abortó antes, y publicar `SUPERADA`
+            # aquí es exactamente el defecto que el auditor reprodujo.
+            vacio = NoEjercida(identificador, self.nombres[identificador])
+            vacio.fallo("el montaje compartido se abortó antes de llegar a ninguna "
+                        "comprobación de este escenario: NO SE EJERCIÓ. Un veredicto que "
+                        "nadie llegó a emitir no es un verde")
+            salida.append(vacio)
+        return salida
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
@@ -167,6 +343,19 @@ ESTRUCTURA_MINIMA = [
     "packs/00-QUE-ES-UN-PACK.md", "packs/COMPOSICION.md",
 ]
 
+# El subconjunto de `ESTRUCTURA_MINIMA` cuya ausencia rompe `T181` y no sólo `T148`: las
+# sedes normativas vigentes —aprobadas y enmiendas— y el motor del estado durable. Se
+# DERIVA de la propia lista, para que añadir ahí una enmienda no exija tocar también esto.
+NORMATIVA_QUE_VIAJA = frozenset(
+    [rel for rel in ESTRUCTURA_MINIMA if rel.startswith("docs/rediseno/")]
+    + ["kernel/operativo/runtime/estado/motor.py"])
+
+# Nombre de la enmienda sintética de la sonda de `T181`. Empieza por `a-ENMIENDA-` porque
+# eso es lo que el `find` de `new-project.sh` selecciona, y lleva `E9` porque `F5` aprobó
+# hasta `E6`: si algún día se aprueba de verdad una `E9`, esta sonda deja de ser sintética
+# y el temporal la pisaría; por eso el sufijo la marca como lo que es.
+SONDA_DE_DERIVACION = "a-ENMIENDA-E9-SONDA-DE-DERIVACION.md"
+
 VALIDADORES_EN_PROYECTO = ["ads_lint", "comprobar_contratos", "comprobar_packs"]
 
 # El arranque se ejecuta con la configuración de Git NEUTRALIZADA. No es cosmética: el
@@ -203,7 +392,7 @@ def _ramas_documentadas(raiz, r):
             ramas.update(PUSH_DOCUMENTADO.findall(fh.read()))
     if len(ramas) > 1:
         r.fallo(f"la documentación de arranque publica sobre ramas distintas: "
-                f"{sorted(ramas)}. Una sola es la correcta")
+                f"{sorted(ramas)}. Una sola es la correcta", para=())
     return ramas
 
 
@@ -231,10 +420,15 @@ COMBINACIONES = ["wear-os,mobile-app"]
 
 def t148_arranque(raiz=None):
     raiz = os.path.abspath(raiz or RAIZ)
-    r = Resultado("T148", "El arranque documentado crea un proyecto conforme, pack a pack y combinado")
+    r = ResultadoRepartido(
+        "T148", "El arranque documentado crea un proyecto conforme, pack a pack y combinado",
+        [("T168", "El arranque crea un workspace con el control repo dentro, en la rama "
+                  "que documenta, y el workspace no es un repositorio"),
+         ("T181", "La especificación normativa vigente viaja al proyecto instalado, "
+                  "derivada y no escrita a mano")])
     disponibles = packs_instalables(raiz)
     if not disponibles:
-        r.fallo("no hay ningún pack instalable: packs/<nombre>/PACK.md no existe")
+        r.fallo("no hay ningún pack instalable: packs/<nombre>/PACK.md no existe", para=ResultadoRepartido.TODOS)
         return r
 
     # --- los identificadores citados en la documentación existen -------------
@@ -242,7 +436,7 @@ def t148_arranque(raiz=None):
     for doc in DOCS_DE_ARRANQUE:
         ruta = os.path.join(raiz, doc)
         if not os.path.exists(ruta):
-            r.fallo(f"{doc}: no existe, y documenta el arranque")
+            r.fallo(f"{doc}: no existe, y documenta el arranque", para=ResultadoRepartido.TODOS)
             continue
         with open(ruta, encoding="utf-8") as fh:
             texto = fh.read()
@@ -255,7 +449,7 @@ def t148_arranque(raiz=None):
     for p in sorted(citados):
         if p not in disponibles:
             r.fallo(f"la documentación de arranque cita el pack '{p}', que no es instalable. "
-                    f"Instalables: {', '.join(disponibles)}")
+                    f"Instalables: {', '.join(disponibles)}", para=())
 
     # --- el flujo real, un pack cada vez -------------------------------------
     casos = list(disponibles) + [c for c in COMBINACIONES
@@ -263,7 +457,7 @@ def t148_arranque(raiz=None):
     for c in COMBINACIONES:
         faltan = [p for p in c.split(",") if p not in disponibles]
         if faltan:
-            r.fallo(f"la combinación documentada '{c}' cita packs no instalables: {faltan}")
+            r.fallo(f"la combinación documentada '{c}' cita packs no instalables: {faltan}", para=())
 
     documentadas = _ramas_documentadas(raiz, r)
 
@@ -276,27 +470,43 @@ def t148_arranque(raiz=None):
             os.makedirs(caja)
             fuente = os.path.join(caja, "ads-kernel")
             _copiar(raiz, fuente)
+            # `T181` no promete que viajen LAS enmiendas de hoy: promete que la lista de
+            # copia se DERIVA del árbol, es decir, que una enmienda nueva viaja sin que
+            # nadie edite el arranque. Comprobarlo con la lista fija de arriba mediría lo
+            # contrario —que el arranque conoce de memoria los ficheros que ya existen—.
+            # Así que se añade una enmienda que el arranque no puede conocer, sobre la
+            # COPIA y nunca sobre el árbol real, y se exige que llegue al proyecto.
+            io.open(os.path.join(fuente, "docs/rediseno", SONDA_DE_DERIVACION), "w",
+                    encoding="utf-8").write(
+                "# ENMIENDA E9 · sonda de derivación\n\n"
+                "Enmienda sintética que sólo existe dentro del temporal de `T181`.\n")
             nombre = "proyecto-" + caso.replace(",", "-")
             proc = subprocess.run(["./tooling/new-project.sh", nombre, caso],
                                   cwd=fuente, capture_output=True, text=True,
                                   env=ENTORNO_GIT_LIMPIO)
             if proc.returncode != 0:
                 r.fallo(f"[{pack}] new-project.sh terminó con código {proc.returncode}: "
-                        f"{(proc.stderr or proc.stdout).strip().splitlines()[:1]}")
+                        f"{(proc.stderr or proc.stdout).strip().splitlines()[:1]}", para=ResultadoRepartido.TODOS)
                 continue
             workspace = os.path.join(caja, nombre)
             proyecto = os.path.join(workspace, "ads")
             if not os.path.isdir(proyecto):
-                r.fallo(f"[{pack}] el control repo no se creó en {proyecto}")
+                r.fallo(f"[{pack}] el control repo no se creó en {proyecto}", para=("T168",))
                 continue
+
+            # A PARTIR DE AQUÍ SE EJERCE `T168`. Se declara ANTES de comprobar nada,
+            # porque lo que se está afirmando es que la pregunta LLEGA A HACERSE: si el
+            # montaje se abortara más arriba, `T168` no se ejercería y `publicables()` lo
+            # publicaría como NO EJERCIDA en vez de como un verde que nadie miró.
+            r.ejercer("T168")
 
             # 2b · topología: el workspace es un contenedor, no un repositorio
             if os.path.exists(os.path.join(workspace, ".git")):
                 r.fallo(f"[{pack}] se ha inicializado Git en el propio workspace. Sólo "
                         f"ads/ y las fuentes son repositorios; si no, las fuentes quedarían "
-                        f"anidadas dentro de otro repo")
+                        f"anidadas dentro de otro repo", para=("T168",))
             if not os.path.isdir(os.path.join(proyecto, ".git")):
-                r.fallo(f"[{pack}] el control repo no tiene .git propio")
+                r.fallo(f"[{pack}] el control repo no tiene .git propio", para=("T168",))
             # ...y tampoco lo es ningún antecesor hasta el temporal. Basta un `.git` más
             # arriba para que las fuentes queden dentro de otro repositorio sin que
             # `ls <workspace>` lo delate.
@@ -304,7 +514,7 @@ def t148_arranque(raiz=None):
             while subida.startswith(tmp):
                 if os.path.exists(os.path.join(subida, ".git")):
                     r.fallo(f"[{pack}] hay un repositorio Git en '{subida}', por encima del "
-                            f"workspace: las fuentes quedarían anidadas")
+                            f"workspace: las fuentes quedarían anidadas", para=("T168",))
                     break
                 padre = os.path.dirname(subida)
                 if padre == subida:
@@ -314,7 +524,7 @@ def t148_arranque(raiz=None):
             # arranca con fuentes materializadas que nadie declaró
             if sorted(os.listdir(workspace)) != ["ads"]:
                 r.fallo(f"[{pack}] el workspace no contiene sólo ads/: "
-                        f"{sorted(os.listdir(workspace))}")
+                        f"{sorted(os.listdir(workspace))}", para=("T168",))
 
             # 2c · la rama inicial, y el comando que la documenta
             rama = _git(["rev-parse", "--abbrev-ref", "HEAD"], proyecto).stdout.strip()
@@ -322,36 +532,51 @@ def t148_arranque(raiz=None):
             esperadas = documentadas | del_script
             if not del_script:
                 r.fallo(f"[{pack}] new-project.sh no imprime el comando de publicación: "
-                        f"quien arranca no sabe sobre qué rama publicar")
+                        f"quien arranca no sabe sobre qué rama publicar", para=("T168",))
             if not rama:
                 r.fallo(f"[{pack}] el control repo no tiene rama: `git init` no dejó HEAD "
-                        f"apuntando a ninguna")
+                        f"apuntando a ninguna", para=("T168",))
             elif len(esperadas) != 1 or rama not in esperadas:
                 r.fallo(f"[{pack}] el control repo nació en la rama '{rama}' y lo "
                         f"documentado es {sorted(esperadas)}. Se documenta una rama y se "
                         f"crea otra: `git init` sin `-b` toma `init.defaultBranch`, que "
-                        f"con la configuración global vacía es 'master'")
+                        f"con la configuración global vacía es 'master'", para=("T168",))
             # y esa rama tiene un commit de verdad, no un HEAD simbólico sin nada detrás
             if _git(["rev-parse", "--verify", "HEAD"], proyecto).returncode != 0:
-                r.fallo(f"[{pack}] el control repo no tiene commit inicial")
+                r.fallo(f"[{pack}] el control repo no tiene commit inicial", para=("T168",))
+
+            # Y a partir de aquí se ejerce `T181`: las sedes normativas que tienen que
+            # haber viajado y la sonda de derivación se comprueban justo debajo.
+            r.ejercer("T181")
 
             # 3 · estructura
             for rel in ESTRUCTURA_MINIMA:
                 if not os.path.exists(os.path.join(proyecto, rel)):
-                    r.fallo(f"[{pack}] falta en el proyecto creado: {rel}")
+                    # Lo que falta decide QUÉ escenario se rompe: una sede normativa o el
+                    # motor del estado durable rompen la promesa de `T181`; lo demás es
+                    # estructura de arranque y se queda en `T148`.
+                    r.fallo(f"[{pack}] falta en el proyecto creado: {rel}",
+                            para=("T181",) if rel in NORMATIVA_QUE_VIAJA else ())
+
+            if not os.path.exists(os.path.join(proyecto, "docs/rediseno",
+                                               SONDA_DE_DERIVACION)):
+                r.fallo(f"[{pack}] la enmienda nueva '{SONDA_DE_DERIVACION}' NO viajó al "
+                        f"proyecto creado: la lista de copia del arranque no se deriva "
+                        f"del árbol, y caducará en cuanto se apruebe una enmienda más",
+                        para=("T181",))
 
             # 4 · composición: están TODOS los pedidos y NINGUNO de los no pedidos
             for p in pedidos:
                 if not os.path.isfile(os.path.join(proyecto, "packs", p, "PACK.md")):
-                    r.fallo(f"[{pack}] el pack pedido '{p}' no quedó instalado")
+                    r.fallo(f"[{pack}] el pack pedido '{p}' no quedó instalado", para=())
             for otro in disponibles:
                 if otro not in pedidos and os.path.isdir(os.path.join(proyecto, "packs", otro)):
-                    r.fallo(f"[{pack}] se instaló además '{otro}', que no se pidió")
+                    r.fallo(f"[{pack}] se instaló además '{otro}', que no se pidió", para=())
             if os.path.exists(os.path.join(proyecto, "packs", "legacy-1.3.0")):
-                r.fallo(f"[{pack}] el proyecto arrastra packs/legacy-1.3.0")
+                r.fallo(f"[{pack}] el proyecto arrastra packs/legacy-1.3.0", para=())
             for dirpath, _dn, fn in os.walk(proyecto):
                 if "__pycache__" in dirpath:
-                    r.fallo(f"[{pack}] el proyecto arrastra __pycache__")
+                    r.fallo(f"[{pack}] el proyecto arrastra __pycache__", para=())
                     break
                 del fn
 
@@ -361,7 +586,7 @@ def t148_arranque(raiz=None):
                 comunes = ["packs/00-QUE-ES-UN-PACK.md", "packs/COMPOSICION.md"]
                 for rel in comunes:
                     if not os.path.isfile(os.path.join(proyecto, rel)):
-                        r.fallo(f"[{pack}] falta {rel}, que la composición necesita")
+                        r.fallo(f"[{pack}] falta {rel}, que la composición necesita", para=())
                 # ningún fichero de un pack pisa al de otro: sus árboles son disjuntos
                 por_pack = {}
                 for p in pedidos:
@@ -376,57 +601,57 @@ def t148_arranque(raiz=None):
                         rutas_b = {os.path.join("packs", b_, x) for x in por_pack[b_]}
                         if rutas_a & rutas_b:
                             r.fallo(f"[{pack}] '{a}' y '{b_}' comparten ruta: "
-                                    f"{sorted(rutas_a & rutas_b)[:3]}")
+                                    f"{sorted(rutas_a & rutas_b)[:3]}", para=())
                 # la resolución de P1 se computa, y declara qué queda para el PROFILE
                 res = subprocess.run(
                     [sys.executable, "kernel/operativo/validadores/composicion_packs.py"],
                     cwd=proyecto, capture_output=True, text=True)
                 if res.returncode != 0:
                     r.fallo(f"[{pack}] la composición no es computable "
-                            f"(exit {res.returncode}): {res.stderr.strip()[:160]}")
+                            f"(exit {res.returncode}): {res.stderr.strip()[:160]}", para=())
                 else:
                     salida = res.stdout
                     for p in pedidos:
                         if p not in salida:
-                            r.fallo(f"[{pack}] la resolución no menciona el pack '{p}'")
+                            r.fallo(f"[{pack}] la resolución no menciona el pack '{p}'", para=())
                     if "PENDIENTE DE PROFILE" not in salida:
                         r.fallo(f"[{pack}] la resolución no declara qué queda pendiente de "
-                                f"que lo fije el PROFILE")
+                                f"que lo fije el PROFILE", para=())
                     if "gana" not in salida:
                         r.fallo(f"[{pack}] la resolución no declara qué valor gana ni de "
-                                f"qué pack procede")
+                                f"qué pack procede", para=())
 
             # 4c · el manifiesto del proyecto recién creado valida, y arranca sin fuentes
             pw = subprocess.run([sys.executable, "tooling/workspace.py", "check", "--json"],
                                 cwd=proyecto, capture_output=True, text=True)
             if pw.returncode != 0:
                 r.fallo(f"[{pack}] workspace check falla en el proyecto creado "
-                        f"(exit {pw.returncode}): {pw.stdout.strip()[:200]}")
+                        f"(exit {pw.returncode}): {pw.stdout.strip()[:200]}", para=("T168",))
             else:
                 try:
                     datos = json.loads(pw.stdout)
                 except json.JSONDecodeError:
-                    r.fallo(f"[{pack}] workspace check --json no devolvió JSON")
+                    r.fallo(f"[{pack}] workspace check --json no devolvió JSON", para=("T168",))
                 else:
                     if datos.get("sources"):
                         r.fallo(f"[{pack}] el proyecto nuevo arranca con fuentes declaradas; "
-                                f"debe arrancar vacío")
+                                f"debe arrancar vacío", para=("T168",))
                     if os.path.normpath(datos.get("workspace_root", "")) != os.path.normpath(workspace):
                         r.fallo(f"[{pack}] workspace_root mal resuelto: "
-                                f"{datos.get('workspace_root')} != {workspace}")
+                                f"{datos.get('workspace_root')} != {workspace}", para=())
 
             # 5 · los validadores, DENTRO del proyecto creado
             for v in VALIDADORES_EN_PROYECTO:
                 script = os.path.join(proyecto, "kernel/operativo/validadores", f"{v}.py")
                 if not os.path.exists(script):
-                    r.fallo(f"[{pack}] el proyecto no lleva {v}.py")
+                    r.fallo(f"[{pack}] el proyecto no lleva {v}.py", para=())
                     continue
                 pv = subprocess.run([sys.executable, script], cwd=proyecto,
                                     capture_output=True, text=True)
                 if pv.returncode != 0:
                     primeras = [ln for ln in pv.stdout.splitlines() if ln.strip()][:2]
                     r.fallo(f"[{pack}] {v} falla dentro del proyecto creado "
-                            f"(exit {pv.returncode}): {primeras}")
+                            f"(exit {pv.returncode}): {primeras}", para=())
 
         # --- el mensaje ante un identificador inexistente es útil ------------
         caja = os.path.join(tmp, "_inexistente")
@@ -438,13 +663,13 @@ def t148_arranque(raiz=None):
                               env=ENTORNO_GIT_LIMPIO)
         salida = (proc.stdout + proc.stderr)
         if proc.returncode == 0:
-            r.fallo("un identificador de pack inexistente NO hizo fallar el arranque")
+            r.fallo("un identificador de pack inexistente NO hizo fallar el arranque", para=())
         if "pack-inventado" not in salida:
-            r.fallo("el error no nombra el identificador que el usuario escribió")
+            r.fallo("el error no nombra el identificador que el usuario escribió", para=())
         if not all(p in salida for p in disponibles):
-            r.fallo("el error no lista los packs instalables")
+            r.fallo("el error no lista los packs instalables", para=())
         if os.path.exists(os.path.join(caja, "proyecto-x")):
-            r.fallo("un arranque fallido dejó un workspace a medio crear")
+            r.fallo("un arranque fallido dejó un workspace a medio crear", para=())
     finally:
         # 6 · sólo el temporal que hemos creado nosotros
         shutil.rmtree(tmp, ignore_errors=True)
@@ -669,7 +894,14 @@ def main():
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--raiz", default=None)
     args = ap.parse_args()
-    resultados = [f(args.raiz) for f in PRUEBAS]
+    # Un ejecutable puede demostrar VARIOS escenarios en un solo montaje, pero cada uno
+    # tiene que salir nombrado: si `T168` no aparece en la evidencia, nadie puede saber si
+    # pasó o si no se miró. `publicables()` desdobla ese montaje único en sus veredictos.
+    resultados = []
+    for f in PRUEBAS:
+        salida = f(args.raiz)
+        resultados.extend(salida.publicables()
+                          if isinstance(salida, ResultadoRepartido) else [salida])
     if args.json:
         print(json.dumps([{"id": x.id, "nombre": x.nombre,
                            "estado": "prueba-superada" if x.superada else "prueba-fallida",

@@ -58,6 +58,67 @@ Uso:
 """
 from __future__ import annotations
 
+# ---------------------------------------------------------------------------
+#  `G-03` · AISLAMIENTO DE ARRANQUE · lo PRIMERO que hace este punto
+# ---------------------------------------------------------------------------
+#  El prólogo de `E-10` que sigue purga `sys.path` DESDE DENTRO del programa, y por eso
+#  llega tarde contra `sitecustomize`: `site.py` lo importa mientras el intérprete arranca,
+#  antes de que exista la primera sentencia de este fichero. La guarda cambia el MOMENTO
+#  —comprueba las banderas de aislamiento y, si no están, se reejecuta con `-I -S -E`—, y
+#  por eso las dos conviven: `G-03` impide que el gancho llegue a existir, y `E-10` sigue
+#  cubriendo la contaminación de la ruta en el caso importado.
+#
+#  POR QUÉ ESTE PUNTO. Hasta hoy los cuatro ejecutables de `docs/evolucion/verificacion/`
+#  eran los ÚNICOS del inventario sin guarda, declarados con motivo y con cliquet en `T380`
+#  porque el agente que hizo `G-03` tenía prohibido tocar esta zona. Son el instrumento con
+#  el que se mide si un gate cubre lo que dice cubrir y qué universo obligatorio existe: un
+#  `hashlib` o un `json` sustituidos por quien los corre deciden esas dos respuestas. La
+#  declaración se retira porque la excepción se ha cerrado, no porque haya caducado.
+
+import os as _os_g03
+import sys as _sys_g03
+
+# LA GUARDA NO DEJA RASTRO EN EL ÁRBOL QUE JUZGA. Medido: al importar la guarda, Python
+# escribía `validadores/__pycache__/aislamiento_de_arranque…pyc` en el árbol, y
+# `comprobar_arranque.py` empezó a publicar «el proyecto arrastra `__pycache__`» sobre
+# proyectos recién creados. Se desactiva la escritura de bytecode DURANTE la guarda y se
+# devuelve al estado que tenía: lo que el punto importe después sigue cacheándose como
+# siempre, y no se paga rendimiento por una comprobación que corre una vez.
+_G03_BYTECODE = _sys_g03.dont_write_bytecode
+_sys_g03.dont_write_bytecode = True
+_G03_PROPIA = _os_g03.path.dirname(_os_g03.path.realpath(__file__))
+_G03_SEDE = ""
+_G03_RAIZ = _G03_PROPIA
+while not _G03_SEDE:
+    for _G03_CANDIDATA in (_G03_PROPIA,
+                           _os_g03.path.join(_G03_RAIZ, "kernel", "operativo",
+                                             "validadores")):
+        if _os_g03.path.isfile(_os_g03.path.join(_G03_CANDIDATA,
+                                                 "aislamiento_de_arranque.py")):
+            _G03_SEDE = _G03_CANDIDATA
+            break
+    else:
+        _G03_PADRE = _os_g03.path.dirname(_G03_RAIZ)
+        if _G03_PADRE == _G03_RAIZ:
+            _sys_g03.stderr.write(
+                "[PROCEDENCIA_NO_FIABLE] no hay `aislamiento_de_arranque.py` ni junto a "
+                "este punto ejecutable ni en el `kernel/operativo/validadores/` de ning\u00fan "
+                "ancestro suyo: no se puede decidir si el arranque est\u00e1 aislado, y no se "
+                "sigue\n")
+            raise SystemExit(5)
+        _G03_RAIZ = _G03_PADRE
+_sys_g03.path.insert(0, _G03_SEDE)
+import aislamiento_de_arranque as _aislamiento_g03                    # noqa: E402
+
+AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)
+_sys_g03.dont_write_bytecode = _G03_BYTECODE
+
+# `-I` deja FUERA de `sys.path` el directorio del guión —es lo que impide que un homónimo
+# vecino se cuele— y los puntos que importan módulos hermanos lo necesitan. Se reintroduce
+# por RUTA DERIVADA DE `__file__`, que no la escribe el lanzador.
+if _G03_PROPIA not in _sys_g03.path:
+    _sys_g03.path.insert(0, _G03_PROPIA)
+
 # `E-10` · LA PROCEDENCIA DE LOS MÓDULOS, PURGADA ANTES DE NINGÚN `import` PROPIO
 #
 #  POR QUÉ ESTÁ AQUÍ, Y NO SÓLO EN `kernel/operativo/runtime/`. `H-01` de la auditoría del
@@ -197,12 +258,136 @@ def _faltantes(tramos, desde, hasta):
     return huecos
 
 
+def _modificadas_del_arbol(manifiesto, base):
+    """`G-07` · el conjunto obligatorio, DERIVADO con `git` entre la base y la candidata.
+
+    Se usa `--name-status -M -C -z` a propósito, y no `--name-only`:
+
+      · `-M` y `-C` detectan renombrados y copias, y de esas hay que leer **las DOS puntas**
+        —la vieja para saber qué se movió y la nueva para saber qué hay que revisar—;
+      · `-z` separa con `NUL`, de modo que una ruta con salto de línea o con caracteres no
+        ASCII no parte el barrido en dos ni se pierde a la mitad. Con `\n` como separador,
+        una ruta hostil desaparece del conjunto obligatorio SIN QUE NADA LO DIGA, y eso es
+        exactamente la clase de fallo que este instrumento existe para impedir.
+
+    Si no hay repositorio, o falta alguno de los dos SHA, se FALLA CERRADO: un conjunto
+    obligatorio que no se puede derivar no es un conjunto obligatorio vacío.
+
+    DOS PUERTAS TRASERAS, CERRADAS · las encontró el AUDITOR INDEPENDIENTE
+
+        PUERTA 1 · `repo = manifiesto.get("repositorio") or RAIZ`. **El manifiesto elegía el
+        repositorio.** Apuntándolo a cualquier otro y poniendo `base == candidata`, el
+        derivado salía VACÍO, `perdidas` salía vacío y `declarado_obligatorio` volvía a ser
+        exactamente `set(manifiesto["modificadas"])`: el comportamiento anterior a `G-07`,
+        con `rc=0` y sin declarar nada. Se cierra: el repositorio es el ÁRBOL QUE SE MIDE y
+        el manifiesto no lo elige. Si trae el campo, tiene que resolver a la misma raíz, y
+        si no resuelve es fallo cerrado — no se ignora en silencio, porque un campo que se
+        ignora es un campo que alguien creyó que hacía algo.
+
+        PUERTA 2 · `"derivacion": "declarada-sin-arbol"` prometía en su propio mensaje de
+        error «*y quedará publicado*», y **no se publicaba nada**: la palabra `derivacion`
+        aparecía ocho veces en el fichero y ninguna escribía en `informe`. Se cierra abajo,
+        en `comprobar`, publicando SIEMPRE el origen del conjunto derivado.
+    """
+    import subprocess                                                # noqa: PLC0415
+    candidata = manifiesto.get("candidata")
+    origen = manifiesto.get("base")
+    declarado_repo = manifiesto.get("repositorio")
+    if declarado_repo and os.path.realpath(declarado_repo) != os.path.realpath(base):
+        raise ManifiestoIlegible(
+            "el manifiesto declara `repositorio` = `%s`, y el árbol que se está midiendo es "
+            "`%s`. El repositorio NO lo elige el manifiesto: derivar de otro árbol devuelve "
+            "un conjunto vacío, deja la resta en cero y restaura el comportamiento anterior "
+            "a `G-07` sin que nada lo diga" % (declarado_repo, base))
+    if not candidata or not origen:
+        # Sin las dos puntas no hay derivación posible. Se admite la declaración SÓLO si el
+        # manifiesto lo dice expresamente, y entonces el informe lo publica: un instrumento
+        # que degrada en silencio es el defecto, no el remedio.
+        if manifiesto.get("derivacion") == "declarada-sin-arbol":
+            return set(manifiesto.get("modificadas") or [])
+        raise ManifiestoIlegible(
+            "el manifiesto no declara `base` y `candidata`, de modo que el conjunto "
+            "obligatorio no se puede DERIVAR del árbol. `G-07`: la declaración contrasta, "
+            "no define. Si de verdad no hay árbol, decláralo con "
+            "`\"derivacion\": \"declarada-sin-arbol\"` y quedará publicado")
+    if origen == candidata:
+        raise ManifiestoIlegible(
+            "el manifiesto declara `base` y `candidata` IGUALES (`%s`): el árbol deriva el "
+            "conjunto vacío y la resta sale en cero por construcción, no por cobertura"
+            % origen[:12])
+    orden = ["git", "-C", base, "diff", "--name-status", "-M", "-C", "-z",
+             origen, candidata]
+    try:
+        proceso = subprocess.run(orden, capture_output=True, check=False)
+    except OSError as error:
+        raise ManifiestoIlegible("no se pudo invocar `git`: %s" % error)
+    if proceso.returncode != 0:
+        raise ManifiestoIlegible(
+            "`git diff` entre `%s` y `%s` terminó con %d: %s"
+            % (origen[:12], candidata[:12], proceso.returncode,
+               proceso.stderr.decode("utf-8", "replace").strip()[:200]))
+    piezas = proceso.stdout.decode("utf-8", "surrogateescape").split("\0")
+    rutas, indice = set(), 0
+    while indice < len(piezas):
+        estado = piezas[indice]
+        if not estado:
+            indice += 1
+            continue
+        # `R` y `C` traen DOS rutas: la vieja y la nueva. Las dos entran.
+        if estado[0] in ("R", "C"):
+            rutas.update(p for p in piezas[indice + 1:indice + 3] if p)
+            indice += 3
+        else:
+            if indice + 1 < len(piezas) and piezas[indice + 1]:
+                rutas.add(piezas[indice + 1])
+            indice += 2
+    return rutas
+
+
 def comprobar(manifiesto, lecturas, base=RAIZ):
     """Las CUATRO restas. Devuelve `(ok, informe)` y no levanta por cobertura incompleta."""
     informe = {"candidata": manifiesto.get("candidata"), "revisores": {}, "restas": {}}
+    # `G-02` · LA CLAVE ERA LA RUTA, Y LA RELACIÓN ES (RUTA, RANGO). ES DEL AUTOR.
+    #
+    #     Estaba escrito `{f["ruta"]: f for f in fuentes}`: un diccionario indizado por RUTA.
+    #     Un fichero asignado por VARIOS rangos colapsaba a UNA clave y **sólo sobrevivía el
+    #     último**. El gate del 2026-09-05 lo midió por tres caminos independientes: `REV-2`
+    #     declaró leídas 246 de las 4 600 líneas de `11-ARQ` que el manifiesto le asignaba y
+    #     la salida salió **byte a byte idéntica** a su lectura honesta; `REV-1` midió 34 922
+    #     de 40 630 líneas; `REV-3`, 46 649 de 47 534. Los tres revisores encontraron el
+    #     mismo defecto sin verse.
+    #
+    #     El instrumento existe para impedir que un gate caiga por cobertura, y tenía un
+    #     defecto que permitía exactamente eso: leer un tramo y cerrar con la resta vacía.
+    #
+    # DECISIÓN · la clave es `(ruta, inicio, fin, revisor)` y NO se normaliza a la ruta
+    #     Alternativas: (a) prohibir varios rangos del mismo fichero en un lote; (b) fundir
+    #     los rangos de una ruta en uno solo; (c) tratar cada asignación como una entrada
+    #     propia.
+    #     Se elige (c). Con (a) el manifiesto no podría repartir un documento grande por
+    #     secciones, que es justo lo que hace falta para que los lotes sean asumibles. Con
+    #     (b) se perdería QUIÉN tiene que leer QUÉ tramo, y dos revisores con rangos
+    #     distintos del mismo fichero se taparían entre sí. Con (c) cada asignación se mide
+    #     por separado, y el revisor aparece en la clave porque la cobertura de uno no
+    #     compensa la de otro —`O27` §5—.
+    def _clave(revisor, ficha):
+        rango = ficha.get("rango")
+        if rango:
+            return (ficha["ruta"], int(rango[0]), int(rango[1]), revisor)
+        return (ficha["ruta"], None, None, revisor)
+
     asignadas_por_revisor = {}
     for revisor, lote in sorted((manifiesto.get("revisores") or {}).items()):
-        asignadas_por_revisor[revisor] = {f["ruta"]: f for f in lote.get("fuentes") or []}
+        entradas = {}
+        for ficha in lote.get("fuentes") or []:
+            clave = _clave(revisor, ficha)
+            if clave in entradas:
+                raise ManifiestoIlegible(
+                    "`%s` recibe DOS VECES la misma asignación %s: un rango atribuido dos "
+                    "veces no describe más lectura, y esconde una asignación que falta"
+                    % (revisor, clave[:3]))
+            entradas[clave] = ficha
+        asignadas_por_revisor[revisor] = entradas
 
     # `H-06` · LA PRIMERA RESTA ERA UNA TAUTOLOGÍA, Y SE DICE ENTERO PORQUE ES DEL AUTOR
     #
@@ -234,9 +419,47 @@ def comprobar(manifiesto, lecturas, base=RAIZ):
     #     que el universo obligatorio derivado NO esté vacío.
     obligatorio = set()
     for lote in asignadas_por_revisor.values():
-        obligatorio |= set(lote)
-    derivado = set(manifiesto.get("modificadas") or [])
-    declarado_obligatorio = set(manifiesto.get("obligatorio") or []) | derivado
+        # Las claves son `(ruta, inicio, fin, revisor)` desde `G-02`: lo que cuenta como
+        # ASIGNADO es la RUTA, y por eso se extrae en vez de usar la clave entera.
+        obligatorio |= {clave[0] for clave in lote}
+    # `G-07` · EL COMENTARIO PROMETÍA `git diff` Y EL CÓDIGO LEÍA EL MANIFIESTO. ES DEL AUTOR.
+    #
+    #     El bloque de decisión de abajo decía «el suelo lo pone el árbol: toda fuente
+    #     MODIFICADA entre la base y la candidata es obligatoria, la declaración puede
+    #     añadir, y ninguna de las dos puede quitar». El código hacía
+    #     `set(manifiesto.get("modificadas") or [])` y el fichero **ni siquiera importaba
+    #     `subprocess`**. `H-06` cerró el caso VACÍO; el INFRA-DECLARADO seguía abierto: un
+    #     manifiesto con UNA ruta y UNA línea leída satisfacía las cuatro restas de `O27` §5.
+    #     Lo midieron dos revisores del gate del 2026-09-05, por separado.
+    #
+    #     Ahora se deriva de verdad. `--base` y `--candidata` son SHA, y el conjunto sale de
+    #     `git diff --name-status -M -C -z`, que da también renombrados y copias con sus DOS
+    #     puntas. Lo que el manifiesto declare puede AMPLIAR ese conjunto y no puede quitar
+    #     de él ni una ruta.
+    derivado = _modificadas_del_arbol(manifiesto, base)
+    # EL ORIGEN DEL CONJUNTO SE PUBLICA SIEMPRE, y no sólo cuando se degrada. El mensaje de
+    # error de la vía declarada prometía «y quedará publicado» y no publicaba nada: una
+    # derivación cuyo origen no consta no es auditable, y un lector no puede distinguir
+    # «derivado de 188 ficheros de cambio» de «declarado a mano» mirando el informe.
+    informe["derivacion"] = {
+        "modo": ("declarada-sin-arbol"
+                 if manifiesto.get("derivacion") == "declarada-sin-arbol"
+                 else "derivada-del-arbol"),
+        "repositorio": os.path.realpath(base),
+        "base": manifiesto.get("base"),
+        "candidata": manifiesto.get("candidata"),
+        "rutas_derivadas": len(derivado),
+    }
+    declarado = set(manifiesto.get("obligatorio") or []) | set(
+        manifiesto.get("modificadas") or [])
+    perdidas = derivado - declarado
+    if perdidas:
+        raise ManifiestoIlegible(
+            "el manifiesto declara %d fuentes modificadas y el árbol deriva %d: faltan %s. "
+            "El manifiesto CONTRASTA contra el conjunto derivado, no lo define, y no puede "
+            "quitar ninguna ruta de él"
+            % (len(declarado), len(derivado), ", ".join(sorted(perdidas)[:8])))
+    declarado_obligatorio = declarado | derivado
     if not declarado_obligatorio:
         raise ManifiestoIlegible(
             "el manifiesto no declara `modificadas` ni `obligatorio`, de modo que el "
@@ -265,13 +488,20 @@ def comprobar(manifiesto, lecturas, base=RAIZ):
                 "el manifiesto de lectura declara el revisor `%s`, que el manifiesto de "
                 "asignación no conoce: %s" % (revisor, ", ".join(sorted(asignadas_por_revisor))))
         asignadas = asignadas_por_revisor[revisor]
-        leidas = {l["ruta"]: l for l in lectura.get("leidas") or []}
+        leidas = {}
+        for entrada in lectura.get("leidas") or []:
+            leidas.setdefault(entrada["ruta"], []).append(entrada)
         # Una fuente leída que NADIE le asignó no compensa nada: `O27` §5 prohíbe
         # expresamente compensar con lo leído por otro agente, y con más razón con lo leído
         # fuera del lote propio.
-        ajenas = sorted(set(leidas) - set(asignadas))
+        rutas_asignadas = {c[0] for c in asignadas}
+        cubierto_de = {}
+        ajenas = sorted(set(leidas) - rutas_asignadas)
         pendientes, tramos_pendientes = [], []
-        for ruta, ficha in sorted(asignadas.items()):
+        for clave, ficha in sorted(asignadas.items(),
+                                   key=lambda x: (x[0][0], x[0][1] or 0)):
+            ruta = clave[0]
+            etiqueta = ruta if clave[1] is None else "%s [%d-%d]" % (ruta, clave[1], clave[2])
             sha_arbol, lineas_arbol = _sha256_y_lineas(base, ruta)
             if sha_arbol is None:
                 raise ManifiestoIlegible(
@@ -280,15 +510,27 @@ def comprobar(manifiesto, lecturas, base=RAIZ):
                 raise ManifiestoIlegible(
                     "el manifiesto declara para `%s` un sha256 que no es el del árbol: el "
                     "lote describe otro objeto" % ruta)
-            if ruta not in leidas:
-                pendientes.append(ruta)
-                continue
-            leida = leidas[ruta]
-            if leida.get("sha256") and leida["sha256"] != sha_arbol:
-                sha_divergente.append("%s · %s" % (revisor, ruta))
-                pendientes.append(ruta)
-                continue
+            # `G-01` · un rango tiene que caber en el fichero. `N+1` no se lee: no existe.
             rango = ficha.get("rango")
+            if rango and (int(rango[0]) < 1 or int(rango[1]) > lineas_arbol
+                          or int(rango[0]) > int(rango[1])):
+                raise ManifiestoIlegible(
+                    "el manifiesto asigna a `%s` el rango %d-%d sobre `%s`, que tiene %d "
+                    "líneas: un rango que no cabe en el fichero no se puede leer, y un lote "
+                    "que lo contiene NO PUEDE CERRARSE. Es exactamente lo que hundió al gate "
+                    "del 2026-09-05" % (revisor, int(rango[0]), int(rango[1]), ruta,
+                                        lineas_arbol))
+            if ruta not in leidas:
+                pendientes.append(etiqueta)
+                continue
+            # Todos los tramos que el revisor declaró para esa ruta, vengan en una entrada o
+            # en varias: lo que se mide es la UNIÓN de lo leído contra CADA rango asignado.
+            entradas = leidas[ruta]
+            if any(e.get("sha256") and e["sha256"] != sha_arbol for e in entradas):
+                sha_divergente.append("%s · %s" % (revisor, ruta))
+                pendientes.append(etiqueta)
+                continue
+            leida = {"tramos": [tr for e in entradas for tr in (e.get("tramos") or [])]}
             desde, hasta = (rango if rango else [1, lineas_arbol])
             # `H-06` · un tramo `[1, 999999]` sobre un fichero de dos líneas no es una
             # lectura: es una declaración que no puede ser cierta. Se rechaza en vez de
@@ -304,11 +546,20 @@ def comprobar(manifiesto, lecturas, base=RAIZ):
             if huecos:
                 sin_leer = sum(b - a + 1 for a, b in huecos)
                 tramos_pendientes.append({
-                    "ruta": ruta, "revisor": revisor, "huecos": huecos,
+                    "ruta": etiqueta, "revisor": revisor, "huecos": huecos,
                     "lineas_sin_leer": sin_leer,
                 })
             elif ruta in modificadas:
-                leidas_integras.add(ruta)
+                # Una fuente MODIFICADA cuenta como leída ÍNTEGRA cuando lo LEÍDO cubre
+                # `[1, N]` entero, venga de una asignación sola o de varias que se reparten
+                # el fichero. Un rango parcial NO la agota, y por eso la comprobación se
+                # hace sobre la UNIÓN y no sobre esta asignación: es la regla que los
+                # manifiestos de este expediente escriben desde el principio —«cobertura
+                # histórica delegada prohibida para un fichero modificado»— y que hasta
+                # ahora no se comprobaba.
+                cubierto_de.setdefault(ruta, []).extend(leida["tramos"])
+                if not _faltantes(cubierto_de[ruta], 1, lineas_arbol):
+                    leidas_integras.add(ruta)
         if pendientes:
             resta_lectura.extend("%s · %s" % (revisor, r) for r in pendientes)
         resta_lineas.extend(tramos_pendientes)
@@ -318,7 +569,7 @@ def comprobar(manifiesto, lecturas, base=RAIZ):
             "sin_abrir": len(pendientes),
             "con_huecos": len(tramos_pendientes),
             "lineas_asignadas": sum(
-                (f["rango"][1] - f["rango"][0] + 1) if f.get("rango")
+                (int(f["rango"][1]) - int(f["rango"][0]) + 1) if f.get("rango")
                 else (_sha256_y_lineas(base, f["ruta"])[1] or 0)
                 for f in asignadas.values()),
             "lineas_sin_leer": sum(t["lineas_sin_leer"] for t in tramos_pendientes),
@@ -372,6 +623,7 @@ def _autopruebas(base):
 
         manifiesto = {
             "candidata": "AUTOPRUEBA",
+            "derivacion": "declarada-sin-arbol",
             "modificadas": [os.path.basename(uno)],
             "revisores": {
                 "REV-1": {"fuentes": [ficha(uno)]},
@@ -385,8 +637,9 @@ def _autopruebas(base):
                       "leidas": [{"ruta": "dos.txt", "tramos": [[1, 20]],
                                   "sha256": ficha(dos)["sha256"]}]}
 
-        def caso(nombre, lecturas, espera_ok, espera_en_informe=None):
-            ok, informe = comprobar(manifiesto, lecturas, base=taller)
+        def caso(nombre, lecturas, espera_ok, espera_en_informe=None,
+                 manifiesto_propio=None):
+            ok, informe = comprobar(manifiesto_propio or manifiesto, lecturas, base=taller)
             bien = (ok == espera_ok)
             if bien and espera_en_informe:
                 bien = bool(informe["restas"].get(espera_en_informe)
@@ -434,18 +687,215 @@ def _autopruebas(base):
             controles.append((nombre, "SIN DETECTAR"))
             sin_detectar.append(nombre)
 
-        caso_ilegible("manifiesto SIN revisores", {"candidata": "X", "revisores": {},
+        caso_ilegible("manifiesto SIN revisores", {"candidata": "X", "derivacion": "declarada-sin-arbol", "revisores": {},
                                                    "modificadas": ["uno.txt"]}, [])
         caso_ilegible("un revisor con el LOTE VACÍO",
-                      {"candidata": "X", "modificadas": ["uno.txt"],
+                      {"candidata": "X", "derivacion": "declarada-sin-arbol", "modificadas": ["uno.txt"],
                        "revisores": {"REV-1": {"fuentes": []}}}, [])
         caso_ilegible("universo obligatorio VACÍO por construcción",
-                      {"candidata": "X", "revisores": {"REV-1": {"fuentes": [ficha(uno)]}}},
+                      {"candidata": "X", "derivacion": "declarada-sin-arbol",
+                       "revisores": {"REV-1": {"fuentes": [ficha(uno)]}}},
                       [completo_1])
         fuera = copy.deepcopy(completo_1)
         fuera["leidas"][0]["tramos"] = [[1, 999999]]
         caso_ilegible("un TRAMO fuera del fichero declarado como lectura",
                       manifiesto, [fuera, completo_2])
+
+        # ── `G-01` y `G-02`, reproducidos EXACTAMENTE como el gate del 2026-09-05 los
+        #    encontró. No son casos hipotéticos: son los dos defectos que hundieron aquel
+        #    gate, uno en el manifiesto y otro en este mismo fichero.
+        def man_con(fuentes_1, modificadas=None):
+            return {"candidata": "X", "derivacion": "declarada-sin-arbol",
+                    "modificadas": modificadas if modificadas is not None else ["uno.txt"],
+                    "revisores": {"REV-1": {"fuentes": fuentes_1},
+                                  "REV-2": {"fuentes": [ficha(dos)]}}}
+
+        # `G-01` · la línea N+1. El manifiesto del gate anterior asignaba 11907-12153 sobre
+        #          un fichero de 12152 líneas, y el lote NO PODÍA cerrarse jamás.
+        caso_ilegible("`G-01` · un rango que llega a N+1, la línea que no existe",
+                      man_con([ficha(uno, [1, 41])]), [completo_1, completo_2])
+        caso_ilegible("`G-01` · un rango que empieza en 0",
+                      man_con([ficha(uno, [0, 40])]), [completo_1, completo_2])
+        caso_ilegible("`G-01` · un rango invertido, fin antes que inicio",
+                      man_con([ficha(uno, [30, 10])]), [completo_1, completo_2])
+
+        # `G-01` · las líneas 1-94 sin asignar. Aquí, 1-9 de `uno.txt`.
+        parcial = {"revisor": "REV-1", "cerrado": True,
+                   "leidas": [{"ruta": "uno.txt", "tramos": [[10, 40]],
+                               "sha256": ficha(uno)["sha256"]}]}
+        caso("`G-01` · el arranque del fichero sin asignar se ve como líneas SIN LEER",
+             [parcial, completo_2], False, "lineas_asignadas_menos_leidas")
+
+        # `G-02` · DOS rangos del mismo fichero. Con la indexación por ruta, sólo se medía
+        #          el último: leer 21-40 y callar 1-20 cerraba con la resta vacía.
+        dos_rangos = man_con([ficha(uno, [1, 20]), ficha(uno, [21, 40])])
+        solo_el_ultimo = {"revisor": "REV-1", "cerrado": True,
+                          "leidas": [{"ruta": "uno.txt", "tramos": [[21, 40]],
+                                      "sha256": ficha(uno)["sha256"]}]}
+        caso("`G-02` · dos rangos y sólo el ÚLTIMO leído — el defecto que hundió el gate",
+             [solo_el_ultimo, completo_2], False, "lineas_asignadas_menos_leidas",
+             manifiesto_propio=dos_rangos)
+        los_dos = {"revisor": "REV-1", "cerrado": True,
+                   "leidas": [{"ruta": "uno.txt", "tramos": [[1, 20], [21, 40]],
+                               "sha256": ficha(uno)["sha256"]}]}
+        caso("`G-02` · control POSITIVO · dos rangos y los DOS leídos",
+             [los_dos, completo_2], True, manifiesto_propio=dos_rangos)
+        caso_ilegible("`G-02` · el MISMO rango atribuido dos veces al mismo revisor",
+                      man_con([ficha(uno, [1, 40]), ficha(uno, [1, 40])]),
+                      [completo_1, completo_2])
+
+        # solapamiento y hueco de UNA línea
+        solapa = man_con([ficha(uno, [1, 25]), ficha(uno, [20, 40])])
+        caso("`G-02` · rangos que SOLAPAN se miden los dos, no uno",
+             [{"revisor": "REV-1", "cerrado": True,
+               "leidas": [{"ruta": "uno.txt", "tramos": [[1, 25]],
+                           "sha256": ficha(uno)["sha256"]}]}, completo_2],
+             False, "lineas_asignadas_menos_leidas", manifiesto_propio=solapa)
+        hueco_uno = copy.deepcopy(completo_1)
+        hueco_uno["leidas"][0]["tramos"] = [[1, 19], [21, 40]]
+        caso("`G-02` · un hueco de UNA sola línea", [hueco_uno, completo_2],
+             False, "lineas_asignadas_menos_leidas")
+
+        # `G-07` · el conjunto obligatorio INFRA-DECLARADO: una ruta y una línea leída
+        #          satisfacían las cuatro restas.
+        caso("`G-07` · una fuente modificada OMITIDA del manifiesto",
+             [completo_1, completo_2], False, "obligatorio_menos_asignado",
+             manifiesto_propio={"candidata": "X", "derivacion": "declarada-sin-arbol",
+                                "modificadas": ["uno.txt", "dos.txt", "tres.txt"],
+                                "revisores": {"REV-1": {"fuentes": [ficha(uno)]},
+                                              "REV-2": {"fuentes": [ficha(dos)]}}})
+        caso_ilegible("`G-07` · sin `base` y `candidata` NO se puede derivar: falla cerrado",
+                      {"candidata": "X", "modificadas": ["uno.txt"],
+                       "revisores": {"REV-1": {"fuentes": [ficha(uno)]}}}, [completo_1])
+
+
+        # ==================================================================
+        #  `G-07` · LA DERIVACIÓN DESDE EL ÁRBOL, EJERCIDA SOBRE UN GIT REAL
+        # ==================================================================
+        #  HECHO REPRODUCIDO POR EL AUDITOR INDEPENDIENTE. Los controles de arriba llevan
+        #  todos `"derivacion": "declarada-sin-arbol"`, de modo que `_modificadas_del_arbol`
+        #  no llegaba nunca a `subprocess.run`. El auditor lo midió poniendo un `git`
+        #  instrumentado delante en el `PATH`:
+        #
+        #      $ PATH=…/falso:$PATH python3.12 …/comprobar-cobertura-de-gate.py --autopruebas
+        #        23 controles · 0 sin detectar
+        #      $ wc -l < …/git-llamadas.txt
+        #        0
+        #
+        #  Con el control positivo de la sonda —`comprobar_evidencia.py`, mismo `PATH`— la
+        #  cuenta era 32. La sonda funcionaba: era la derivación la que no se ejercía.
+        #
+        #  Es la clase de `G-05` —el instrumento cuyo autotest pasa y cuyo producto nadie
+        #  ejerce— reaparecida dentro del instrumento que `G-05` no cubría. Y en la misma
+        #  pasada `D-05` demostró que se sabe montar un repositorio Git de verdad dentro de
+        #  una prueba: la disciplina existía y no se había aplicado aquí.
+        #
+        #  Estos controles montan un repositorio REAL —`git init`, dos commits— y ejercen
+        #  las formas que el separador `-z` y las banderas `-M -C` existen para sostener:
+        #  modificado, alta, baja, RENOMBRADO, COPIA, ruta NO ASCII con espacio y ruta con
+        #  un SALTO DE LÍNEA en el nombre.
+        import subprocess                                              # noqa: PLC0415
+
+        entorno_git = dict(os.environ)
+        entorno_git.update({
+            "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_SYSTEM": os.devnull,
+            "GIT_AUTHOR_NAME": "ads-g07", "GIT_AUTHOR_EMAIL": "g07@ads.local",
+            "GIT_COMMITTER_NAME": "ads-g07", "GIT_COMMITTER_EMAIL": "g07@ads.local",
+            "GIT_AUTHOR_DATE": "2026-01-01T00:00:00+00:00",
+            "GIT_COMMITTER_DATE": "2026-01-01T00:00:00+00:00",
+        })
+
+        def _git(repo, *orden):
+            proceso = subprocess.run(["git", "-C", repo] + list(orden),
+                                     capture_output=True, text=True, env=entorno_git)
+            if proceso.returncode != 0:
+                raise RuntimeError("git %s: %s" % (" ".join(orden), proceso.stderr))
+            return proceso.stdout
+
+        def _escribir(repo, rel, contenido):
+            destino = os.path.join(repo, rel)
+            carpeta = os.path.dirname(destino)
+            if carpeta:
+                os.makedirs(carpeta, exist_ok=True)
+            with io.open(destino, "w", encoding="utf-8") as manejador:
+                manejador.write(contenido)
+
+        arbol = os.path.join(taller, "repo-de-verdad")
+        os.makedirs(arbol)
+        _git(arbol, "init", "-q", "-b", "principal")
+        _escribir(arbol, "modificado.txt", "uno\n")
+        _escribir(arbol, "borrado.txt", "se va\n")
+        _escribir(arbol, "viejo-nombre.txt", "\n".join("r %d" % n for n in range(60)))
+        _escribir(arbol, "ñandú con espacio.txt", "\n".join("c %d" % n for n in range(60)))
+        _git(arbol, "add", "-A")
+        _git(arbol, "commit", "-q", "-m", "base")
+        sha_base = _git(arbol, "rev-parse", "HEAD").strip()
+
+        _escribir(arbol, "modificado.txt", "uno\ndos\n")
+        _escribir(arbol, "alta.txt", "nuevo\n")
+        os.remove(os.path.join(arbol, "borrado.txt"))
+        os.rename(os.path.join(arbol, "viejo-nombre.txt"),
+                  os.path.join(arbol, "nuevo-nombre.txt"))
+        # UNA COPIA, con su fuente TAMBIÉN modificada. Es la condición que `git` necesita
+        # para publicar `C100`: si la fuente no entra en el diff, la copia sale como un alta
+        # corriente y este control no estaría midiendo `-C`. Se comprobó en el árbol:
+        #
+        #     fuente intacta      → `A  copiado.txt`
+        #     fuente modificada   → `C100  "\303\261and\303\272 con espacio.txt"  copiado.txt`
+        #                           `M     "\303\261and\303\272 con espacio.txt"`
+        with io.open(os.path.join(arbol, "ñandú con espacio.txt"),
+                     encoding="utf-8") as manejador:
+            original = manejador.read()
+        _escribir(arbol, "copiado.txt", original)
+        _escribir(arbol, "ñandú con espacio.txt", original + "\nuna línea más\n")
+        # y una ruta con un SALTO DE LÍNEA en el nombre, que es lo que `-z` sostiene y `\n`
+        # como separador partiría en dos, perdiendo la mitad SIN QUE NADA LO DIGA
+        con_salto = "raro\ncon-salto.txt"
+        ruta_hostil = True
+        try:
+            _escribir(arbol, con_salto, "hostil\n")
+        except OSError:
+            ruta_hostil = False                       # sistema de ficheros que no lo admite
+        _git(arbol, "add", "-A")
+        _git(arbol, "commit", "-q", "-m", "candidata")
+        sha_candidata = _git(arbol, "rev-parse", "HEAD").strip()
+
+        derivado = _modificadas_del_arbol(
+            {"base": sha_base, "candidata": sha_candidata}, arbol)
+        esperado = {"modificado.txt", "alta.txt", "borrado.txt",
+                    "viejo-nombre.txt", "nuevo-nombre.txt",
+                    "ñandú con espacio.txt", "copiado.txt"}
+        if ruta_hostil:
+            esperado.add(con_salto)
+        controles.append((
+            "`G-07` · control POSITIVO · git REAL: M, A, D, renombrado, copia, ruta no "
+            "ASCII y ruta con salto de línea",
+            "ok" if derivado == esperado else "NO"))
+        if derivado != esperado:
+            sin_detectar.append(
+                "la derivación del árbol devolvió %s y se esperaba %s"
+                % (sorted(derivado), sorted(esperado)))
+
+        # Y las DOS PUERTAS TRASERAS que el auditor abrió, cerradas y medidas.
+        def _puerta(nombre, manifiesto_puerta, raiz_puerta):
+            try:
+                _modificadas_del_arbol(manifiesto_puerta, raiz_puerta)
+            except ManifiestoIlegible:
+                controles.append((nombre, "ok"))
+                return
+            controles.append((nombre, "NO"))
+            sin_detectar.append(nombre)
+
+        _puerta("`G-07` · el manifiesto NO elige el repositorio: `repositorio` ajeno",
+                {"base": sha_base, "candidata": sha_candidata, "repositorio": taller},
+                arbol)
+        _puerta("`G-07` · `base` == `candidata` derivaría el conjunto VACÍO: falla cerrado",
+                {"base": sha_base, "candidata": sha_base}, arbol)
+
+        # un manifiesto de lectura de OTRO gate
+        ajeno = {"revisor": "REV-9", "cerrado": True, "leidas": []}
+        caso_ilegible("un manifiesto de lectura de OTRO gate, con un revisor desconocido",
+                      manifiesto, [ajeno])
     return controles, sin_detectar
 
 
@@ -483,6 +933,24 @@ def main():
         return COBERTURA_COMPLETA if ok else COBERTURA_INCOMPLETA
 
     sys.stdout.write("COBERTURA DEL GATE · candidata %s\n" % informe["candidata"])
+    sys.stdout.write("=" * 78 + "\n")
+    # DE DÓNDE SALE EL CONJUNTO OBLIGATORIO. Lo primero que se imprime, porque todo lo que
+    # viene debajo se mide contra él: si el conjunto se declaró en vez de derivarse, las
+    # cuatro restas miden lo que alguien escribió y no lo que el árbol cambió.
+    derivacion = informe.get("derivacion") or {}
+    sys.stdout.write(
+        "  ORIGEN DEL CONJUNTO OBLIGATORIO · %s\n"
+        "           repositorio %s\n"
+        "           base %s · candidata %s · rutas derivadas del árbol: %d\n"
+        % (derivacion.get("modo", "?"), derivacion.get("repositorio", "?"),
+           (derivacion.get("base") or "—")[:12],
+           (derivacion.get("candidata") or "—")[:12],
+           derivacion.get("rutas_derivadas", 0)))
+    if derivacion.get("modo") == "declarada-sin-arbol":
+        sys.stdout.write(
+            "           ATENCIÓN · el conjunto NO se ha derivado del árbol: lo declara el\n"
+            "           manifiesto. La declaración contrasta, no define, y aquí no hay\n"
+            "           contra qué contrastarla\n")
     sys.stdout.write("=" * 78 + "\n")
     for revisor, ficha in sorted(informe["revisores"].items()):
         sys.stdout.write(

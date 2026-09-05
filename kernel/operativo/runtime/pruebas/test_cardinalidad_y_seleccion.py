@@ -43,6 +43,145 @@ Sale con 0 si todo pasa. Se ejecuta desde cualquier directorio: la raíz se deri
 """
 from __future__ import annotations
 
+# ---------------------------------------------------------------------------
+#  `G-03` · AISLAMIENTO DE ARRANQUE · lo PRIMERO que hace este punto
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, `HALLAZGO 3` del revisor 3 en el gate del
+#  2026-09-05: veintiuna baterías de `runtime/pruebas/` y `tooling/tests/` no llevaban el
+#  prólogo `E-10`, y el inventario de `T330` las eximía POR SU ZONA con `motivo: "bateria"`
+#  —que es la lista escrita a mano que `ADJ-B2` prohibió, sólo que escrita por directorios—.
+#  Y el canal que PRODUCE la evidencia, `registrar_evidencia.py` L212, lanzaba a sus hijos
+#  con `subprocess.run` SIN `env=`: el veneno del padre llegaba entero a cada batería.
+#
+#  Lo que esto significa aquí: la salida de esta batería se PUBLICA como evidencia y
+#  sostiene el estado de escenarios. Un `hashlib` o un `json` sustituidos por quien la corre
+#  deciden qué dice esa evidencia. Se aplica el remedio ENTERO que el revisor adjudicó: el
+#  prólogo entra en la batería —lo que cierra también la ejecución suelta— y el runner
+#  sanea el entorno de sus hijos y lo publica en la cabecera de cada evidencia.
+#
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      La misma disciplina que `E-10` sigue debajo y que `T330` comprueba: lo que protege
+#      está fijado y es idéntico en todos los puntos —`T380` lo exige con su digest—, y lo
+#      que se lee dice qué se midió en ESTA sede. Un recital común mentiría en la mitad de
+#      las sedes; un mecanismo por sede derivaría, y el que derive de menos es el que nadie
+#      mira.
+#
+#  DECISIÓN · la guarda va ANTES del prólogo `E-10`, y no lo sustituye
+#      Alternativas: (a) sustituir `E-10` por la guarda; (b) dejar `E-10` y añadir la
+#      guarda encima.
+#      Se elige (b). Cierran cosas distintas: `E-10` retira del `sys.path` lo que mete el
+#      lanzador —y sigue haciendo falta cuando el punto se IMPORTA, donde la guarda no
+#      reejecuta—; `G-03` impide que `sitecustomize` llegue siquiera a ejecutarse. Quitar
+#      `E-10` reabriría la contaminación de la ruta en el caso importado.
+import os as _os_g03
+import sys as _sys_g03
+
+# LA GUARDA NO DEJA RASTRO EN EL ÁRBOL QUE JUZGA. Medido: al importar la guarda, Python
+# escribía `validadores/__pycache__/aislamiento_de_arranque…pyc` en el árbol, y
+# `comprobar_arranque.py` empezó a publicar «el proyecto arrastra `__pycache__`» sobre
+# proyectos recién creados. Se desactiva la escritura de bytecode DURANTE la guarda y se
+# devuelve al estado que tenía: lo que el punto importe después sigue cacheándose como
+# siempre, y no se paga rendimiento por una comprobación que corre una vez.
+_G03_BYTECODE = _sys_g03.dont_write_bytecode
+_sys_g03.dont_write_bytecode = True
+_G03_PROPIA = _os_g03.path.dirname(_os_g03.path.realpath(__file__))
+_G03_SEDE = ""
+_G03_RAIZ = _G03_PROPIA
+while not _G03_SEDE:
+    for _G03_CANDIDATA in (_G03_PROPIA,
+                           _os_g03.path.join(_G03_RAIZ, "kernel", "operativo",
+                                             "validadores")):
+        if _os_g03.path.isfile(_os_g03.path.join(_G03_CANDIDATA,
+                                                 "aislamiento_de_arranque.py")):
+            _G03_SEDE = _G03_CANDIDATA
+            break
+    else:
+        _G03_PADRE = _os_g03.path.dirname(_G03_RAIZ)
+        if _G03_PADRE == _G03_RAIZ:
+            _sys_g03.stderr.write(
+                "[PROCEDENCIA_NO_FIABLE] no hay `aislamiento_de_arranque.py` ni junto a "
+                "este punto ejecutable ni en el `kernel/operativo/validadores/` de ning\u00fan "
+                "ancestro suyo: no se puede decidir si el arranque est\u00e1 aislado, y no se "
+                "sigue\n")
+            raise SystemExit(5)
+        _G03_RAIZ = _G03_PADRE
+_sys_g03.path.insert(0, _G03_SEDE)
+import aislamiento_de_arranque as _aislamiento_g03                    # noqa: E402
+
+AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)
+_sys_g03.dont_write_bytecode = _G03_BYTECODE
+
+# `-I` deja FUERA de `sys.path` el directorio del guión —es lo que impide que un homónimo
+# vecino se cuele— y los puntos que importan módulos hermanos lo necesitan. Se reintroduce
+# por RUTA DERIVADA DE `__file__`, que no la escribe el lanzador.
+if _G03_PROPIA not in _sys_g03.path:
+    _sys_g03.path.insert(0, _G03_PROPIA)
+
+# ---------------------------------------------------------------------------
+#  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, `HALLAZGO 3` del gate del 2026-09-05: esta batería
+#  no llevaba el prólogo, y el inventario de `T330` la eximía por vivir en una zona de
+#  pruebas. Su salida se PUBLICA como evidencia; un `json.py` o un `hashlib.py` homónimos en
+#  el `PYTHONPATH` de quien la corre deciden qué dice esa evidencia, que es exactamente el
+#  daño que `H-01` midió sobre `huella.py`. La deuda ya no es de zona: la exclusión
+#  `motivo: "bateria"` se ha RETIRADO del inventario y esta batería es un punto ejecutable
+#  como cualquier otro.
+#
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      Es la decisión de `ADJ-B2`, sin cambio: `T330` exige que el mecanismo sea IDÉNTICO en
+#      todos los puntos ejecutables, y cada sede escribe qué se midió en ella.
+import sys as _sys
+import os as _os
+
+_RAIZ_DEL_APARATO = _os.path.dirname(_os.path.abspath(__file__))
+
+
+def _entradas_del_lanzador():
+    """Lo que el LANZADOR puede meter en la ruta de importación: `PYTHONPATH` y el `cwd`."""
+    sospechosas = set()
+    for entrada in (_os.environ.get("PYTHONPATH") or "").split(_os.pathsep):
+        if entrada:
+            sospechosas.add(_os.path.realpath(entrada))
+    try:
+        sospechosas.add(_os.path.realpath(_os.getcwd()))
+    except OSError:
+        # Un `cwd` borrado bajo los pies no es motivo para no purgar el resto.
+        pass
+    return sospechosas
+
+
+def _purgar_la_ruta_de_importacion():
+    """Retira de `sys.path` lo que venga del lanzador. Devuelve cuántas entradas retiró."""
+    del_lanzador = _entradas_del_lanzador()
+    propia = _os.path.realpath(_RAIZ_DEL_APARATO)
+    conservadas, retiradas = [], []
+    for entrada in _sys.path:
+        try:
+            real = _os.path.realpath(entrada or _os.getcwd())
+        except OSError:
+            conservadas.append(entrada)
+            continue
+        if real != propia and real in del_lanzador:
+            retiradas.append(real)
+        else:
+            conservadas.append(entrada)
+    _sys.path[:] = conservadas
+    return retiradas
+
+
+RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()
+
+# CONTROL DEL CONTROL de la purga: `os` se usa para poder purgar, así que si `os` mismo
+# viniera del lanzador la purga no probaría nada. No hay forma honesta de seguir: se dice y
+# se sale con el código de PROCEDENCIA.
+if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lanzador():
+    _sys.stderr.write(
+        "[PROCEDENCIA_NO_FIABLE] el módulo `os` procede de la ruta de importación del "
+        "lanzador: este punto ejecutable no puede garantizar de dónde salen sus módulos y "
+        "NO ejecuta\n")
+    raise SystemExit(5)
+
 import json
 import os
 import re
@@ -62,10 +201,12 @@ sys.path.insert(0, AQUI)
 import adaptadores                                                     # noqa: E402
 import catalogo_de_prueba                                              # noqa: E402
 import ciclo                                                           # noqa: E402
+import estado                                                          # noqa: E402
 import runtime as paquete_runtime                                      # noqa: E402
 from ciclo import agentes, equipos, errores                            # noqa: E402
 from estado.errores import RutaInvalida                                # noqa: E402
-from runtime import modelo, politica as politica_de_seleccion          # noqa: E402
+from runtime import estado_util, modelo, politica as politica_de_seleccion  # noqa: E402
+from runtime.errores import PrioridadInmutable                         # noqa: E402
 
 SEGUNDOS_DE_ESPERA = 300
 
@@ -1005,6 +1146,17 @@ class SeleccionEInanicion(unittest.TestCase):
             "SeleccionEInanicion.test_267_la_antiguedad_se_mide_con_el_reloj_LOGICO_y_no_con_el_de_pared",
         ),
         (
+            "`G-04` · `b.12`: DSP sube la prioridad al postergar. Es el sabotaje EXACTO que "
+            "el revisor 1 reprodujo y que pasaba DOCE baterías en verde",
+            "runtime/dispatcher.py",
+            "                nuevo = dict(actual)\n"
+            "                nuevo[\"seleccion\"] = normalizar_seleccion(",
+            "                nuevo = dict(actual)\n"
+            "                nuevo[\"prioridad\"] = int(actual[\"prioridad\"]) + 10\n"
+            "                nuevo[\"seleccion\"] = normalizar_seleccion(",
+            "PrioridadInmutableDeB12.test_400_la_prioridad_declarada_sobrevive_a_una_postergacion",
+        ),
+        (
             "`C4`: el reparto deja de REPLICARSE y tres agentes vuelven a ser uno",
             "ciclo/equipos.py",
             "    if plan is None or int(plan.get(\"agentes\") or 1) <= 1:",
@@ -1087,6 +1239,383 @@ class SeleccionEInanicion(unittest.TestCase):
             # RESTAURADA: vuelve a verde, o el rojo anterior no probaba nada del sabotaje.
             self.assertEqual(correr(caso).returncode, 0,
                              "la copia restaurada no vuelve a verde en " + caso)
+
+
+# =========================================================================
+#  `G-04` · T400…T409 y T419 · LA PRIORIDAD ES INMUTABLE, y ahora hay quien lo impida
+# =========================================================================
+#  HECHO REPRODUCIDO ANTES DE CORREGIR — `R1-H02` del gate del 2026-09-05, vuelto a medir
+#  aquí sobre este árbol antes de escribir una línea de invariante:
+#
+#      $ (en una copia) dispatcher.py, `construir` de `runtime.seleccion.postergada`
+#        +                 nuevo["prioridad"] = int(actual["prioridad"]) + 10
+#        test_cardinalidad_y_seleccion  EXIT=0 · Ran 20 tests · OK
+#        test_runtime                   EXIT=0 · Ran 54 tests · OK
+#        test_ciclo                     EXIT=0 · Ran 52 tests · OK
+#        test_continua                  EXIT=0 · Ran 24 tests · OK
+#        test_agentes · test_arboles · test_sesion_nueva · test_estado_durable · los tres
+#        escenarios extremo a extremo   EXIT=0
+#
+#  DOCE baterías en verde con la prioridad DURABLE mutando 50 → 60 → 70. `b.12` es
+#  terminante —«DSP informa de la inanición. No cambia la prioridad. Nunca»— y el árbol la
+#  cita LITERAL en tres sedes; era la única afirmación ABSOLUTA del contrato sin una sola
+#  prueba capaz de ponerse roja. Los otros ocho sabotajes del mismo eje ponen roja una
+#  prueba distinta cada uno.
+#
+#  DÓNDE ESTÁ AHORA LA RED, y por qué no está aquí. La red NO es esta clase: es la
+#  invariante de `runtime/estado_util.py`, interpuesta en la PUERTA por la que toda
+#  transición del runtime pasa antes de confirmarse, más el `AlmacenVigilado` que cubre la
+#  propiedad pública `rt.almacen`. Estas diez pruebas la EJERCEN por los diez caminos por
+#  los que alguien podría intentar mover la prioridad; si la comprobación viviera dentro de
+#  `_anotar_postergacion`, `T407` —la mutación escondida en OTRA transición— seguiría verde.
+class PrioridadInmutableDeB12(unittest.TestCase):
+    """Un control repo real y un estado durable real. Diez caminos, una sola invariante."""
+
+    def setUp(self):
+        self.repo = tempfile.mkdtemp(prefix="ads-prioridad-")
+        self.addCleanup(shutil.rmtree, self.repo, True)
+        self.espacio = os.path.join(self.repo, "espacio")
+        os.makedirs(self.espacio, exist_ok=True)
+
+    def abrir(self, instancia="planificador-A"):
+        registro = adaptadores.RegistroDeAdaptadores([
+            adaptadores.AdaptadorDeProcesoLocal(self.espacio)])
+        rt = paquete_runtime.Runtime(self.repo, instancia=instancia,
+                                     registro_de_adaptadores=registro).abrir()
+        self.addCleanup(rt.cerrar)
+        return rt
+
+    def alta(self, rt, paquetes, *, item="it-1"):
+        try:
+            rt.almacen.leer("items/" + item + ".json")
+        except RutaInvalida:
+            rt.crear_item(id=item, titulo="trabajo de prueba", motivo="alta de la batería")
+        for declarado in paquetes:
+            rt.crear_paquete(
+                id=declarado["id"], item=item,
+                capacidades_requeridas=["proceso-local"], orden=dict(ORDEN_DE_PRUEBA),
+                prioridad=declarado.get("prioridad", 50),
+                depende_de=declarado.get("depende_de", []))
+
+    def durable(self, rt, paquete):
+        return rt.almacen.leer("paquetes/" + paquete + ".json")
+
+    def escribir_a_mano(self, rt, paquete, cambios, *, tipo="prueba.edicion.directa"):
+        """Construye una `Transicion` A MANO y la aplica por `rt.almacen`. Sin dispatcher.
+
+        Es el camino que un `except` mal puesto o una función nueva tendrían disponible: la
+        propiedad `almacen` es pública porque «la verdad vive ahí y no aquí». Que este camino
+        también esté cerrado es lo que hace de la invariante una invariante y no una
+        comprobación local.
+        """
+        actual = self.durable(rt, paquete)
+        nuevo = dict(actual)
+        nuevo.update(cambios)
+        nuevo.pop("esquema", None)
+        revision = rt.almacen.revision()
+        return rt.almacen.aplicar(estado.Transicion(
+            tipo=tipo, base=revision["revision_id"],
+            operaciones=[estado.Escritura("paquetes/" + paquete + ".json", nuevo)],
+            autor="prueba-T40x", motivo="edición directa de la prioridad",
+            id="tx-t40x-" + paquete.replace("-", "")[:12]))
+
+    # --------------------------------------------------------------- T400
+    def test_400_la_prioridad_declarada_sobrevive_a_una_postergacion(self):
+        """T400 · Defecto que previene: el sabotaje de `R1-H02`, en su forma más simple.
+
+        UNA pasada de `seleccionar_siguiente`, que es exactamente lo que ejecuta el
+        `construir` de `runtime.seleccion.postergada`. Con la línea saboteada, la transición
+        no llega a confirmarse y esta prueba se pone roja por `PRIORIDAD_INMUTABLE`; sin
+        ella, la prioridad durable del postergado es la misma que declaró el Owner.
+        """
+        rt = self.abrir()
+        self.alta(rt, [{"id": "pq-cabeza", "prioridad": 90},
+                       {"id": "pq-espera", "prioridad": 50}])
+        antes = self.durable(rt, "pq-espera")["prioridad"]
+        rt.seleccionar_siguiente(cabida=1)
+        despues = self.durable(rt, "pq-espera")
+        self.assertEqual(antes, 50)
+        self.assertEqual(despues["prioridad"], 50,
+                         "la postergación movió la prioridad, y `b.12` lo prohíbe: «DSP "
+                         "informa de la inanición. No cambia la prioridad. Nunca»")
+        # Y la inanición SÍ se informó: la prohibición no puede haberse cumplido por la vía
+        # de no hacer nada.
+        self.assertEqual(despues["seleccion"]["postergaciones"], 1)
+        self.assertEqual(despues["seleccion"]["adelantado_por"], ["pq-cabeza"])
+
+    # --------------------------------------------------------------- T401
+    def test_401_la_prioridad_sobrevive_a_MUCHAS_postergaciones_seguidas(self):
+        """T401 · Defecto que previene: una deriva lenta que una sola pasada no vería.
+
+        La reproducción del revisor 1 medía 50 → 60 → 70: la mutación es ACUMULATIVA y
+        cambia el orden de las pasadas siguientes. Doce pasadas, y la prioridad de los tres
+        postergados sigue siendo la del alta, exacta.
+        """
+        rt = self.abrir()
+        self.alta(rt, [{"id": "pq-cabeza", "prioridad": 90},
+                       {"id": "pq-espera-1", "prioridad": 50},
+                       {"id": "pq-espera-2", "prioridad": 50},
+                       {"id": "pq-espera-3", "prioridad": 10}])
+        for _ in range(12):
+            rt.seleccionar_siguiente(cabida=1)
+        for paquete, esperada in (("pq-espera-1", 50), ("pq-espera-2", 50),
+                                  ("pq-espera-3", 10)):
+            durable = self.durable(rt, paquete)
+            self.assertEqual(durable["prioridad"], esperada,
+                             paquete + " derivó de prioridad tras doce postergaciones")
+            self.assertEqual(durable["seleccion"]["postergaciones"], 12,
+                             "las doce pasadas no se contaron: entonces esta prueba no "
+                             "está midiendo doce postergaciones")
+
+    # --------------------------------------------------------------- T402
+    def test_402_adelantar_por_antiguedad_no_altera_NINGUNA_prioridad(self):
+        """T402 · Defecto que previene: prevenir la inanición subiendo la prioridad.
+
+        Es la tentación que `b.12` prohíbe por su nombre: el veterano sale de la cola por el
+        criterio (c) —antigüedad entre IGUALES— y no porque nadie le haya subido nada. Se
+        comprueba lo primero —que de verdad adelanta— y lo segundo —que ni la suya ni la de
+        quien le adelantó se han movido—, porque sin lo primero lo segundo sería trivial.
+        """
+        rt = self.abrir()
+        self.alta(rt, [{"id": "pq-zzz-veterano", "prioridad": 50}])
+        declaradas = {"pq-zzz-veterano": 50}
+        for ronda in range(4):
+            nuevo = "pq-aaa-" + str(ronda)
+            self.alta(rt, [{"id": nuevo, "prioridad": 50}])
+            declaradas[nuevo] = 50
+            rt.seleccionar_siguiente(cabida=1)
+        orden = [e["paquete"] for e in rt.elegibles()]
+        self.assertEqual(orden[0], "pq-zzz-veterano",
+                         "el veterano no adelantó: el criterio (c) no está actuando y esta "
+                         "prueba no distingue «adelantó sin tocar la prioridad» de «no "
+                         "adelantó»")
+        for paquete, esperada in sorted(declaradas.items()):
+            self.assertEqual(self.durable(rt, paquete)["prioridad"], esperada, paquete)
+
+    # --------------------------------------------------------------- T403
+    def test_403_la_prioridad_sobrevive_a_la_caida_y_a_la_reanudacion(self):
+        """T403 · Defecto que previene: mover la prioridad en el camino de recuperación.
+
+        El runtime se cierra y se vuelve a abrir sobre el MISMO control repo, que es lo que
+        `abrir()` hace con su recuperación por delante. Si la invariante viviera sólo en el
+        camino de despacho, el barrido de reanudación sería una vía abierta.
+        """
+        rt = self.abrir(instancia="planificador-A")
+        self.alta(rt, [{"id": "pq-cabeza", "prioridad": 90},
+                       {"id": "pq-espera", "prioridad": 50}])
+        rt.seleccionar_siguiente(cabida=1)
+        rt.cerrar()
+
+        vuelto = self.abrir(instancia="planificador-B")
+        durable = self.durable(vuelto, "pq-espera")
+        self.assertEqual(durable["prioridad"], 50)
+        self.assertEqual(durable["seleccion"]["postergaciones"], 1,
+                         "la postergación no sobrevivió al reinicio: entonces esta prueba "
+                         "no está midiendo una reanudación")
+        vuelto.seleccionar_siguiente(cabida=1)
+        self.assertEqual(self.durable(vuelto, "pq-espera")["prioridad"], 50)
+
+    # --------------------------------------------------------------- T404
+    def test_404_dos_planificadores_a_la_vez_tampoco_mueven_la_prioridad(self):
+        """T404 · Defecto que previene: que la carrera entre dos DSP abra la puerta.
+
+        Dos instancias reales sobre el mismo almacén, alternando pasadas. La reconstrucción
+        por `RevisionObsoleta` vuelve a llamar a `construir` en cada vuelta, y la invariante
+        se reevalúa en cada vuelta contra el estado RELEÍDO: es lo que impide que la
+        comprobación se haga sobre bytes caducados.
+        """
+        uno = self.abrir(instancia="planificador-A")
+        self.alta(uno, [{"id": "pq-cabeza", "prioridad": 90},
+                        {"id": "pq-espera-1", "prioridad": 50},
+                        {"id": "pq-espera-2", "prioridad": 30}])
+        dos = self.abrir(instancia="planificador-B")
+        for _ in range(4):
+            uno.seleccionar_siguiente(cabida=1)
+            dos.seleccionar_siguiente(cabida=1)
+        for planificador in (uno, dos):
+            self.assertEqual(self.durable(planificador, "pq-espera-1")["prioridad"], 50)
+            self.assertEqual(self.durable(planificador, "pq-espera-2")["prioridad"], 30)
+        self.assertGreaterEqual(
+            self.durable(uno, "pq-espera-2")["seleccion"]["postergaciones"], 8,
+            "los dos planificadores no llegaron a postergar ocho veces: la carrera no "
+            "ocurrió y esta prueba no mide dos escritores")
+
+    # --------------------------------------------------------------- T405
+    def test_405_la_edicion_DIRECTA_de_50_a_60_no_se_puede_confirmar(self):
+        """T405 · Defecto que previene: esquivar la invariante escribiendo la transición.
+
+        `rt.almacen` es público. Con él se construye una `Transicion` a mano, con su tipo
+        propio, y se aplica sin pasar por el dispatcher. Tiene que caer, y caer por la
+        prohibición SEMÁNTICA: el error nombra el campo, los dos valores y la norma.
+        """
+        rt = self.abrir()
+        self.alta(rt, [{"id": "pq-unico", "prioridad": 50}])
+        with self.assertRaises(PrioridadInmutable) as capturado:
+            self.escribir_a_mano(rt, "pq-unico", {"prioridad": 60})
+        error = capturado.exception
+        self.assertEqual(error.codigo, "PRIORIDAD_INMUTABLE")
+        self.assertEqual(error.contexto["campo"], "prioridad")
+        self.assertEqual(error.contexto["anterior"], 50)
+        self.assertEqual(error.contexto["pretendido"], 60)
+        self.assertIn("No cambia la prioridad", str(error))
+        # Y el estado canónico NO se tocó: la invariante se interpone ANTES de confirmar.
+        self.assertEqual(self.durable(rt, "pq-unico")["prioridad"], 50)
+
+        # CONTROL SANO: la misma edición directa que NO toca la prioridad sí se confirma.
+        # Sin él, esta prueba sería compatible con «el almacén vigilado rechaza todo».
+        self.escribir_a_mano(rt, "pq-unico", {"max_intentos": 7})
+        self.assertEqual(self.durable(rt, "pq-unico")["max_intentos"], 7)
+        self.assertEqual(self.durable(rt, "pq-unico")["prioridad"], 50)
+
+    # --------------------------------------------------------------- T406
+    def test_406_la_secuencia_50_60_70_se_corta_en_el_PRIMER_paso(self):
+        """T406 · Defecto que previene: creer que el daño empieza en el segundo salto.
+
+        La reproducción publicó `50 -> 60 -> 70`. Aquí se intenta la secuencia entera y se
+        exige que muera en el primer escalón: una invariante que sólo detectase la deriva
+        acumulada dejaría escrito el primer valor falso, y el estado durable ya sería otro.
+        """
+        rt = self.abrir()
+        self.alta(rt, [{"id": "pq-secuencia", "prioridad": 50}])
+        for pretendida in (60, 70):
+            with self.assertRaises(PrioridadInmutable) as capturado:
+                self.escribir_a_mano(rt, "pq-secuencia", {"prioridad": pretendida},
+                                     tipo="prueba.edicion." + str(pretendida))
+            self.assertEqual(capturado.exception.contexto["anterior"], 50,
+                             "el escalón anterior llegó a escribirse: la secuencia no se "
+                             "cortó en el primer paso")
+            self.assertEqual(self.durable(rt, "pq-secuencia")["prioridad"], 50)
+
+    # --------------------------------------------------------------- T407
+    def test_407_la_mutacion_ESCONDIDA_dentro_de_otra_transicion_tampoco_pasa(self):
+        """T407 · Defecto que previene: mover la línea a otra transición y volver al verde.
+
+        Es la prueba que decide DÓNDE tenía que ir la invariante. Aquí la mutación no viaja
+        en una transición llamada `…edicion.directa` sino dentro de una que hace un cambio
+        legítimo —el estado del paquete— y con un tipo del vocabulario del runtime. Una
+        comprobación dentro de `_anotar_postergacion` no la vería; la de la puerta sí.
+        """
+        rt = self.abrir()
+        self.alta(rt, [{"id": "pq-escondido", "prioridad": 50}])
+        with self.assertRaises(PrioridadInmutable) as capturado:
+            self.escribir_a_mano(rt, "pq-escondido",
+                                 {"prioridad": 60, "max_intentos": 9},
+                                 tipo="runtime.paquete.despachado")
+        self.assertEqual(capturado.exception.contexto["transicion"],
+                         "runtime.paquete.despachado")
+        durable = self.durable(rt, "pq-escondido")
+        self.assertEqual(durable["prioridad"], 50)
+        self.assertNotEqual(durable["max_intentos"], 9,
+                            "la transición se aplicó a medias: el cambio legítimo entró y "
+                            "el prohibido no. Una transición es atómica o no es una "
+                            "transición")
+
+    # --------------------------------------------------------------- T408
+    def test_408_cambiar_la_prioridad_y_RESTAURARLA_despues_tampoco_cuela(self):
+        """T408 · Defecto que previene: lavar la mutación con un viaje de ida y vuelta.
+
+        Es el camino que una prueba escrita sobre el resultado FINAL no ve: subir a 60,
+        hacer lo que se quisiera hacer con la cola ya reordenada, y devolverla a 50 antes de
+        que nadie mire. La invariante compara contra el estado VIGENTE en cada transición, de
+        modo que el viaje muere en la ida y la vuelta nunca ocurre. Y se comprueba también
+        que el diario no registró ninguna de las dos.
+        """
+        rt = self.abrir()
+        self.alta(rt, [{"id": "pq-lavado", "prioridad": 50}])
+        revisiones_antes = rt.almacen.revision()["revision"]
+        with self.assertRaises(PrioridadInmutable):
+            self.escribir_a_mano(rt, "pq-lavado", {"prioridad": 60},
+                                 tipo="prueba.lavado.ida")
+        # La vuelta no puede ni intentarse sobre un valor que nunca se escribió: el estado
+        # sigue en 50 y devolverlo a 50 no es un cambio.
+        self.assertEqual(self.durable(rt, "pq-lavado")["prioridad"], 50)
+        self.assertEqual(rt.almacen.revision()["revision"], revisiones_antes,
+                         "la revisión avanzó: algo se confirmó, y no debía confirmarse nada")
+        tipos = [evento.get("tipo") for evento in rt.almacen.diario()]
+        self.assertNotIn("prueba.lavado.ida", tipos,
+                         "el diario registró la ida: la transición llegó a aplicarse")
+
+    # --------------------------------------------------------------- T409
+    def test_409_el_sabotaje_que_pasaba_DOCE_baterias_ya_no_pasa_ninguna(self):
+        """T409 · Defecto que previene: que el remedio sea una prueba y no una invariante.
+
+        El sabotaje EXACTO de `R1-H02`, aplicado en una COPIA REAL del kernel y ejecutado en
+        un PROCESO REAL. Se exige que caiga, y —esto es lo que se pedía— que caiga por la
+        PROHIBICIÓN SEMÁNTICA y no por la huella del kernel: la salida tiene que nombrar
+        `PRIORIDAD_INMUTABLE` y citar `b.12`. Un rojo por huella saltaría con cualquier
+        edición legítima y no probaría nada de `b.12`.
+
+        El control positivo va primero: la copia SIN sabotear pasa en verde.
+        """
+        base = tempfile.mkdtemp(prefix="ads-sabotaje-prioridad-")
+        self.addCleanup(shutil.rmtree, base, True)
+        copia = copiar_kernel(base)
+        prueba = os.path.join(copia, "runtime", "pruebas",
+                              "test_cardinalidad_y_seleccion.py")
+        caso = "PrioridadInmutableDeB12.test_401_la_prioridad_sobrevive_a_MUCHAS_postergaciones_seguidas"
+        entorno = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1"}
+
+        def correr():
+            return subprocess.run([sys.executable, prueba, caso], cwd=base,
+                                  capture_output=True, text=True,
+                                  timeout=SEGUNDOS_DE_ESPERA, env=entorno)
+
+        verde = correr()
+        self.assertEqual(verde.returncode, 0,
+                         "la copia SIN sabotear ya falla: " + verde.stderr[-2000:])
+
+        ruta = os.path.join(copia, "runtime", "runtime", "dispatcher.py")
+        with open(ruta, encoding="utf-8") as manejador:
+            original = manejador.read()
+        viejo = ('                nuevo = dict(actual)\n'
+                 '                nuevo["seleccion"] = normalizar_seleccion(')
+        nuevo = ('                nuevo = dict(actual)\n'
+                 '                nuevo["prioridad"] = int(actual["prioridad"]) + 10\n'
+                 '                nuevo["seleccion"] = normalizar_seleccion(')
+        self.assertIn(viejo, original,
+                      "el sabotaje de `R1-H02` no encuentra qué romper: sería un no-op")
+        with open(ruta, "w", encoding="utf-8") as manejador:
+            manejador.write(original.replace(viejo, nuevo, 1))
+        roja = correr()
+        salida = roja.stdout + roja.stderr
+        self.assertNotEqual(roja.returncode, 0,
+                            "SABOTAJE NO DETECTADO: sumar 10 a la prioridad al postergar "
+                            "sigue pasando en verde, que es exactamente `R1-H02`")
+        self.assertIn("PRIORIDAD_INMUTABLE", salida,
+                      "cayó, pero no por la prohibición de `b.12`: la salida no nombra "
+                      "`PRIORIDAD_INMUTABLE`. Un rojo por otra causa —la huella, por "
+                      "ejemplo— saltaría con cualquier edición legítima")
+        self.assertIn("No cambia la prioridad", salida,
+                      "el error no cita la norma que se violó")
+        self.assertNotIn("HUELLA", salida.upper().replace("PRIORIDAD_INMUTABLE", ""),
+                         "la salida menciona la huella del kernel: el rojo tiene que venir "
+                         "de la semántica, no de que el árbol haya cambiado")
+
+    # --------------------------------------------------------------- T419
+    def test_419_la_norma_se_cita_IGUAL_en_las_cuatro_sedes_y_una_de_ellas_la_EJECUTA(self):
+        """T419 · Defecto que previene: que la cita se quede en prosa en las cuatro.
+
+        `b.12` está citada literal en tres sedes —`ciclo/planificacion.py`,
+        `runtime/vistas.py` y el docstring de `politica.clave_de_orden`— y ninguna de las
+        tres la ejecutaba. La cuarta sede es `estado_util.CITA_DE_B12`, y ésa SÍ la ejecuta:
+        es el texto que viaja dentro del error. Se comprueba que las cuatro dicen lo mismo,
+        porque el día que una derive habrá dos normas.
+        """
+        self.assertEqual(estado_util.CITA_DE_B12,
+                         "DSP informa de la inanición. No cambia la prioridad. Nunca")
+        fuentes = {
+            "ciclo/planificacion.py": os.path.join(RUNTIME, "ciclo", "planificacion.py"),
+            "runtime/vistas.py": os.path.join(RUNTIME, "runtime", "vistas.py"),
+            "runtime/politica.py": os.path.join(RUNTIME, "runtime", "politica.py"),
+        }
+        for sede, ruta in sorted(fuentes.items()):
+            with self.subTest(sede=sede):
+                with open(ruta, encoding="utf-8") as manejador:
+                    texto = " ".join(manejador.read().split())
+                self.assertIn("No cambia la prioridad. Nunca", texto,
+                              sede + " ya no cita la norma que este eje ejecuta")
+        # Y el campo está declarado como inmutable, que es lo que la invariante recorre.
+        self.assertIn("prioridad", estado_util.CAMPOS_INMUTABLES_DEL_PAQUETE)
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):

@@ -52,6 +52,7 @@ DECISIÓN · se sabotea `contencion-salida.txt` y no un fichero inventado
 from __future__ import annotations
 
 import os
+import re
 
 from comprobar_negativos import Mutacion, _escribir, _sustituir
 
@@ -64,8 +65,22 @@ def m_e14_ok_con_saltos(raiz):
 
 
 def m_e14_contador_inflado(raiz):
-    """`E-14` · el contador publicado deja de describir la corrida que lo acompaña."""
-    _sustituir(raiz, EVIDENCIA, "Ran 20 tests", "Ran 99 tests")
+    """`E-14` · el contador publicado deja de describir la corrida que lo acompaña.
+
+    La cifra se LEE de la evidencia y no se escribe aquí. Estaba escrita —«Ran 20 tests»— y
+    caducó en cuanto la batería de contención creció a veinticinco casos: la mutación dejó
+    de encajar y el control negativo se apagó sin que su fallo dijera nada del corpus, sólo
+    de sí mismo. Un sabotaje que hay que mantener a mano cada vez que una batería crece es
+    un sabotaje que algún día no se mantendrá.
+    """
+    ruta = os.path.join(raiz, EVIDENCIA)
+    with open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    m = re.search(r"^Ran (\d+) tests", texto, re.M)
+    if not m:
+        raise RuntimeError("`%s` no publica ningún «Ran <n> tests»: sin contador no hay "
+                           "contador que inflar, y este sabotaje no mide nada" % EVIDENCIA)
+    _sustituir(raiz, EVIDENCIA, m.group(0), "Ran %d tests" % (int(m.group(1)) + 79))
 
 
 def m_e14_salida_recortada(raiz):
@@ -137,6 +152,41 @@ def m_g3_negacion_en_bloque(raiz):
                "> **ESTE DOCUMENTO ES UN PLAN.** Nada de lo que describe está implementado.")
 
 
+def m_g3_negacion_en_bloque_de_texto(raiz):
+    """La exención de `console` NO puede convertirse en una exención de toda cerca.
+
+    `T360` dejó de juzgar lo que se dice dentro de un bloque ```console, porque ahí el
+    texto lo escribió una EJECUCIÓN y no la sede —el registro del gate transcribe
+    literalmente el `printf` con el que un revisor comprobó que `T360` funciona—. La
+    tentación era eximir TODAS las cercas, y eso sí sería un agujero: el corpus escribe
+    afirmaciones normativas dentro de bloques ```text. Este sabotaje pone la frase en un
+    bloque ```text de una sede nueva y exige que `T360` la siga cazando.
+    """
+    _escribir(raiz, "docs/canonico/ZZ-NEGACION-EN-BLOQUE-DE-TEXTO.md",
+              "# sede nueva con la negacion dentro de una cerca\n\n"
+              "```text\n"
+              "Del verificador de admision no existe ninguno, y la raiz externa tampoco.\n"
+              "```\n")
+
+
+def m_g3_negacion_en_cerca_de_consola_vacia(raiz):
+    """El sabotaje del AUDITOR INDEPENDIENTE, mecanizado. `T360`, hallazgo 2.
+
+    La exención de las transcripciones de consola la concedía el RÓTULO: tres tildes
+    invertidas y la palabra `console`, escritas por el mismo autor cuya afirmación se está
+    juzgando. El auditor puso la misma frase dos veces en la misma sede —suelta salía
+    `T360 FALLIDA`; envuelta en una cerca `console` VACÍA de toda orden y de toda salida,
+    `T360 SUPERADA`— y con eso cualquier documento podía desactivar el guardián sobre sí
+    mismo. Aquí se reproduce ese gesto exacto: una cerca `console` sin una sola línea que
+    parezca transcripción de nada.
+    """
+    _escribir(raiz, "docs/canonico/ZZ-CERCA-DE-CONSOLA-VACIA.md",
+              "# sede nueva con la negacion dentro de una cerca console SIN transcripcion\n\n"
+              "```console\n"
+              "Del verificador de admision no existe ninguno, y la raiz externa tampoco.\n"
+              "```\n")
+
+
 def m_g3_sonda_desaparecida(raiz):
     """`ADJ-G3` · la sonda de una pieza construida desaparece: la tabla ha envejecido."""
     os.remove(os.path.join(raiz, "kernel/operativo/runtime/adaptadores/proceso.py"))
@@ -188,6 +238,16 @@ CATALOGO = [
              "construidas: la cobertura se descubre, no se enumera",
              m_g3_sede_nueva_que_niega,
              espera="ZZ-SEDE-QUE-NADIE-ENUMERO"),
+    Mutacion("NG3f", "ADJ-G3", "T360", "comprobar_recuentos",
+             "la negación se esconde dentro de un bloque ```text: la exención de las "
+             "transcripciones de consola no puede extenderse a toda cerca",
+             m_g3_negacion_en_bloque_de_texto,
+             espera="ZZ-NEGACION-EN-BLOQUE-DE-TEXTO"),
+    Mutacion("NG3g", "ADJ-G3", "T360", "comprobar_recuentos",
+             "la negación se esconde en una cerca ```console VACÍA de toda transcripción: "
+             "la exención se gana con la forma del bloque, no con su rótulo",
+             m_g3_negacion_en_cerca_de_consola_vacia,
+             espera="ZZ-CERCA-DE-CONSOLA-VACIA"),
     Mutacion("NM5a", "ADJ-M5", "T361", "comprobar_recuentos",
              "un prefijo de INCLUSIÓN del ámbito vivo se queda sin motivo escrito, que es "
              "la exclusión por omisión volviendo",

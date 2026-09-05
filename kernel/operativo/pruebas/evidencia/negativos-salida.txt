@@ -1,5 +1,6 @@
 # evidencia de: negativos
-# orden:        python3 kernel/operativo/validadores/comprobar_negativos.py
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_negativos.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
 OK   N136    A-06  T136  un veto levantable (DOM) se declara prevaleciente sobre otro (DIS)
@@ -27,9 +28,9 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 7196ce99457a77d4, calculada 50d850cd41b7dac1. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada 854dfa1b99be3824, calculada f0f8ac970f17354a. Algún fichero de la huella se
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 7196ce99457a77d4, calculada fe4557cb91fa22ff. Algún fichero de la huella se
+                          → detectada: el kernel DIVERGE de su release: almacenada 854dfa1b99be3824, calculada 7768cc11e79a7495. Algún fichero de la huella se
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
                           → detectada: kernel/operativo/validadores/ads_lint.py NO entra en la huella: un fork silencioso de ese fichero sería indetectable
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
@@ -47,7 +48,7 @@ OK   N144b   A-13  T144  el vínculo existe pero deja de decir quién juzga la e
 OK   N158    evidencia T158  se archiva una invocación SIN .py — el defecto exacto de la entrega anterior
                           → detectada: kernel/operativo/pruebas/evidencia/contratos-salida.txt: contiene error de invocación del intérprete. No es la salida de
 OK   N158b   evidencia T158  una evidencia afirma éxito sin la salida que lo respalda
-                          → detectada: kernel/operativo/pruebas/evidencia/packs-salida.txt: no contiene el resumen de éxito que su validador produce (/\d+ supe
+                          → detectada: kernel/operativo/pruebas/evidencia/packs-salida.txt: su cabecera no publica con qué AISLAMIENTO se lanzó el proceso que
 OK   N158c   evidencia T158  la evidencia de un validador ocupa el fichero de otro
                           → detectada: kernel/operativo/pruebas/evidencia/versiones-salida.txt: dice ser evidencia de 'recuentos' y ocupa el fichero de 'versio
 OK   N158d   evidencia T158  se publica una ejecución cuyo código no fue cero
@@ -57,7 +58,7 @@ OK   N158e   evidencia T158  falta un fichero de evidencia que el manifiesto exi
 OK   N158f   evidencia T158  un validador nuevo queda fuera del manifiesto y de la evidencia
                           → detectada: validadores/comprobar_algo_nuevo.py: existe y el manifiesto no lo declara. Quedaría fuera de la evidencia sin que nada l
 OK   N158g   evidencia T158  la cobertura publicada describe un corpus con dos ficheros menos que el vigente
-                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 509 y el corpus vigente da 5
+                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 516 y el corpus vigente da 5
 OK   N158h   evidencia T158  una vigencia declara un recuento que nadie implementa
                           → detectada: manifiesto: la vigencia 'T161-cobertura' de 'fuentes' declara el recuento 'fuentes.recuento_que_nadie_implementa', que n
 OK   N158i   evidencia T158  una entrada de vigencia no declara `patron` — el caso que reventaba con KeyError
@@ -82,6 +83,14 @@ OK   N153c   prompts T153  un prompt pierde el enlace a su método
                           → detectada: kernel/operativo/capacidades/ARQ/prompts/encaje.md: su cabecera no enlaza ninguno de sus métodos: ARQ/Encaje
 OK   N148    A-02  T148  la documentación vuelve a citar un pack derogado
                           → detectada: la documentación de arranque cita el pack 'pack-web-app', que no es instalable. Instalables: mobile-app, wear-os, web-ap
+OK   N168b   D-02  T168  el arranque no produce NADA y los veredictos derivados del montaje compartido no pueden salir verdes por no haberse llegado a mirar
+                          → detectada: [mobile-app] new-project.sh terminó con código 1: ['el arranque no produce nada']
+OK   N181b   D-02  T181  el montaje se aborta a media altura y un veredicto derivado no llega a ejercerse: no puede salir verde por no haberse llegado a mirar
+                          → detectada: el montaje compartido se abortó antes de llegar a ninguna comprobación de este escenario: NO SE EJERCIÓ. Un veredicto qu
+OK   N181    D-02  T181  la lista de la especificación normativa vuelve a escribirse a mano
+                          → detectada: [mobile-app] la enmienda nueva 'a-ENMIENDA-E9-SONDA-DE-DERIVACION.md' NO viajó al proyecto creado: la lista de copia del
+OK   N168    D-02  T168  el workspace vuelve a nacer siendo un repositorio Git
+                          → detectada: [mobile-app] se ha inicializado Git en el propio workspace. Sólo ads/ y las fuentes son repositorios; si no, las fuentes
 OK   N152    A-12  T152  el release cambia y ningún punto de entrada se entera
                           → detectada: kernel/VERSIONES.md no nombra la versión vigente del release (9.9.9): la política y el artefacto van por separado
 OK   N152b   A-12  T152  la línea histórica se sube al ritmo del release, que es otro contador
@@ -254,6 +263,10 @@ OK   NG3d    ADJ-G3 T360  la sonda de una pieza construida desaparece del árbol
                           → detectada: la sonda `kernel/operativo/runtime/adaptadores/proceso.py` de «adaptadores» no está en el árbol: la tabla de piezas cons
 OK   NG3e    ADJ-G3 T360  una sede NUEVA, que ninguna lista podría contener, niega dos piezas construidas: la cobertura se descubre, no se enumera
                           → detectada: docs/canonico/ZZ-SEDE-QUE-NADIE-ENUMERO.md:2: «no existe ninguno» dicho de «verificador de admisión», que SÍ está constr
+OK   NG3f    ADJ-G3 T360  la negación se esconde dentro de un bloque ```text: la exención de las transcripciones de consola no puede extenderse a toda cerca
+                          → detectada: docs/canonico/ZZ-NEGACION-EN-BLOQUE-DE-TEXTO.md:3: «no existe ninguno» dicho de «verificador de admisión», que SÍ está c
+OK   NG3g    ADJ-G3 T360  la negación se esconde en una cerca ```console VACÍA de toda transcripción: la exención se gana con la forma del bloque, no con su rótulo
+                          → detectada: docs/canonico/ZZ-CERCA-DE-CONSOLA-VACIA.md:3: «no existe ninguno» dicho de «verificador de admisión», que SÍ está constr
 OK   NM5a    ADJ-M5 T361  un prefijo de INCLUSIÓN del ámbito vivo se queda sin motivo escrito, que es la exclusión por omisión volviendo
                           → detectada: la inclusión «^docs/canonico/» no dice por qué barre —o deja de barrer— lo que abarca (`ADJ-M5`)
 OK   NM5b    ADJ-M5 T361  una zona nueva de documentos cae fuera de las dos mitades de la frontera, que es exactamente como `docs/f5/` quedó fuera del barrido
@@ -261,9 +274,9 @@ OK   NM5b    ADJ-M5 T361  una zona nueva de documentos cae fuera de las dos mita
 OK   NE14a   E-14  T158  la evidencia dice `OK (skipped=3)` y la firma `OK` la casaba igual
                           → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: la corrida SALTÓ 3 caso(s) y el manifiesto no declara ninguno.
 OK   NE14b   E-14  T158  el contador de casos se infla y nadie lo contrasta con la salida
-                          → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: declara `Ran 99 tests` y su salida contiene 20 desenlaces de c
+                          → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: declara `Ran 104 tests` y su salida contiene 25 desenlaces de
 OK   NE14c   E-14  T158  se recorta un caso de la salida y el contador sigue diciendo lo que decía
-                          → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: declara `Ran 20 tests` y su salida contiene 19 desenlaces de c
+                          → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: declara `Ran 25 tests` y su salida contiene 24 desenlaces de c
 OK   NE14d   E-14  T158  un `OK` que declara `failures` dentro del paréntesis
                           → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: el resultado declara `failures=1` y aun así dice OK. Un éxito
 OK   NE14e   E-14  T158  dos corridas pegadas en el mismo fichero de evidencia
@@ -314,9 +327,21 @@ OK   NH01    H-01  T330  `validadores/huella.py` pierde la purga `E-10` y la hue
                           → detectada: FAIL T330 · Defecto que previene: `ADJ-B2` y `H-03`, un inventario que no ve una zona. -------------------------------------- [corrida PARCIAL: PurgaEnLaRaizExterna.test_T330_el_inventario_se_DERIVA_del_arbol_ENTERO_y_es_coherente]
 OK   NH03    H-03  T330  el inventario vuelve a acotarse a una zona escrita a mano y deja de ver el resto del árbol
                           → detectada: FAIL T330 · Defecto que previene: `ADJ-B2` y `H-03`, un inventario que no ve una zona. -------------------------------------- [corrida PARCIAL: PurgaEnLaRaizExterna.test_T330_el_inventario_se_DERIVA_del_arbol_ENTERO_y_es_coherente]
+OK   NG03    G-03  T380  un punto ejecutable pierde la guarda de aislamiento y el `sitecustomize` vuelve a decidir con qué primitiva se firma
+                          → detectada: FAIL T380 · Defecto que previene: `G-03` cerrado en una lista y abierto en la clase. ---------------------------------------- [corrida PARCIAL: AislamientoDeArranque.test_T380_la_guarda_alcanza_a_TODO_punto_del_inventario_derivado]
+OK   ND01    D-01  T394  el runner de la evidencia vuelve a lanzar a sus hijos SIN `env=` y el veneno del padre llega a cada batería
+                          → detectada: FAIL T394 · Defecto que previene: `HALLAZGO 3`, `subprocess.run` sin `env=`. ------------------------------------------------ [corrida PARCIAL: AislamientoDeArranque.test_T394_el_runner_SANEA_el_entorno_de_sus_hijos_y_lo_PUBLICA]
 OK   NH08    H-08  T307  la cobertura del contraste vuelve a calcularse y a no publicarse
                           → detectada: FAIL T307 · Defecto que previene: `H-08`, una cifra que se calcula y no se publica. ----------------------------------------- [corrida PARCIAL: ResultadoExactoDeLaEvidencia.test_T307g_la_COBERTURA_DEL_CONTRASTE_va_publicada_en_la_evidencia]
 OK   N194    FD-3  T194  el motor de estado durable deja de viajar al proyecto instalado
                           → detectada: el proyecto instalado no lleva el motor de estado durable
+OK   NG04    G-04  T400  DSP vuelve a subir la prioridad al postergar, que es el sabotaje exacto de `R1-H02` y pasaba doce baterías en verde
+                          → detectada: ERROR T400 · Defecto que previene: el sabotaje de `R1-H02`, en su forma más simple. ------------------------------------------ [corrida PARCIAL: PrioridadInmutableDeB12.test_400_la_prioridad_declarada_sobrevive_a_una_postergacion]
+OK   NG04b   G-04  T419  la lista de campos inmutables deja de contener `prioridad` y la prohibición de `b.12` se desactiva sin que ninguna línea lo diga
+                          → detectada: FAIL T419 · Defecto que previene: que la cita se quede en prosa en las cuatro. ---------------------------------------------- [corrida PARCIAL: PrioridadInmutableDeB12.test_419_la_norma_se_cita_IGUAL_en_las_cuatro_sedes_y_una_de_ellas_la_EJECUTA]
+OK   NG08    G-08  T412  la raíz vuelve a esperar un plazo fijo en vez de observar los tres testigos, y `listo` vuelve a ser una suposición
+                          → detectada: FAIL T412 · Defecto que previene: cambiar una constante por otra constante mayor. ------------------------------------------- [corrida PARCIAL: ProtocoloDePreparacion.test_412_la_preparacion_es_una_condicion_OBSERVADA_y_no_una_espera]
+OK   ND02    D-02  T415  a un ejecutor se le RETIRA el veredicto nominal que aprendió a publicar, y la clase de `D-02` vuelve a crecer con el censo ya cerrado
+                          → detectada: FAIL T415 · Defecto que previene: que la clase de `D-02` vuelva a crecer en silencio. --------------------------------------- [corrida PARCIAL: EscenariosAtadosAUnaBateriaAjena.test_415_ningun_escenario_NUEVO_queda_atado_a_una_bateria_ajena]
 
-158 infracciones detectadas · 0 NO detectadas
+170 infracciones detectadas · 0 NO detectadas

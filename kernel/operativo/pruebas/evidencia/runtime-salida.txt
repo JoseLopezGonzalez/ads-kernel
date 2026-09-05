@@ -1,5 +1,6 @@
 # evidencia de: runtime-dispatcher
-# orden:        python3 kernel/operativo/runtime/pruebas/test_runtime.py
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/runtime/pruebas/test_runtime.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
 
@@ -74,6 +75,12 @@ test_09_no_hay_un_segundo_sistema_de_estado (__main__.CicloYDespacho.test_09_no_
 T182 · Defecto que previene: un diario paralelo o un fichero de trabajo propio. ... ok
 test_10_operar_sin_abrir_o_tras_cerrar_es_fallo_cerrado (__main__.CicloYDespacho.test_10_operar_sin_abrir_o_tras_cerrar_es_fallo_cerrado)
 T182 · Defecto que previene: despachar con un almacén que nadie ha recuperado. ... ok
+test_415_ningun_escenario_NUEVO_queda_atado_a_una_bateria_ajena (__main__.EscenariosAtadosAUnaBateriaAjena.test_415_ningun_escenario_NUEVO_queda_atado_a_una_bateria_ajena)
+T415 · Defecto que previene: que la clase de `D-02` vuelva a crecer en silencio. ... ok
+test_416_cada_atado_declara_QUE_ejecutable_tendria_que_nombrarlo (__main__.EscenariosAtadosAUnaBateriaAjena.test_416_cada_atado_declara_QUE_ejecutable_tendria_que_nombrarlo)
+T416 · Defecto que previene: una deuda con cifra y sin nombre. ... ok
+test_417_el_ascenso_lo_da_el_VEREDICTO_NOMINAL_y_no_la_bateria (__main__.EscenariosAtadosAUnaBateriaAjena.test_417_el_ascenso_lo_da_el_VEREDICTO_NOMINAL_y_no_la_bateria)
+T417 · Defecto que previene: creer que ejecutar una batería asciende un escenario. ... ok
 test_60_pausar_impide_el_despacho_y_reanudar_lo_devuelve (__main__.PausaCancelacionYReanudacion.test_60_pausar_impide_el_despacho_y_reanudar_lo_devuelve)
 T185 · Defecto que previene: seguir trabajando en lo que el Owner detuvo. ... ok
 test_61_cancelar_es_terminal_y_no_admite_reanudacion (__main__.PausaCancelacionYReanudacion.test_61_cancelar_es_terminal_y_no_admite_reanudacion)
@@ -116,6 +123,6 @@ test_48_la_ambiguedad_se_clasifica_aunque_la_politica_se_aplique_despues (__main
 T184 · Defecto que previene: confundir un ambiguo con un fallo definitivo. ... ok
 
 ----------------------------------------------------------------------
-Ran 54 tests  (duración no registrada: varía por ejecución)
+Ran 57 tests  (duración no registrada: varía por ejecución)
 
 OK

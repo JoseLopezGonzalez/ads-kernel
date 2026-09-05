@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """negativos_contratos19 — infracciones deliberadas de la corrección del 2026-09-04.
 
 POR QUÉ ESTE FICHERO EXISTE, Y NO UNA LÍNEA MÁS EN `comprobar_negativos.py`. La corrección
@@ -45,6 +46,124 @@ detectada porque falló, sin comprobar que falló POR ESO.
 # ---------------------------------------------------------------------------
 
 from __future__ import annotations
+
+# ---------------------------------------------------------------------------
+#  `G-03` · AISLAMIENTO DE ARRANQUE · lo PRIMERO que hace este punto
+# ---------------------------------------------------------------------------
+#  Este módulo registra su catálogo de mutaciones con `CATALOGO.extend(...)` en el NIVEL
+#  SUPERIOR: hace trabajo al importarse, y por tanto es un punto ejecutable, lo invoque
+#  alguien directamente o no. El auditor independiente señaló que de los dos ficheros de
+#  esta familia uno llevaba la guarda y el otro no, y que la asimetría no la medía nadie
+#  porque los dos quedaban fuera del inventario. Ahora los dos están dentro.
+
+import os as _os_g03
+import sys as _sys_g03
+
+# LA GUARDA NO DEJA RASTRO EN EL ÁRBOL QUE JUZGA. Medido: al importar la guarda, Python
+# escribía `validadores/__pycache__/aislamiento_de_arranque…pyc` en el árbol, y
+# `comprobar_arranque.py` empezó a publicar «el proyecto arrastra `__pycache__`» sobre
+# proyectos recién creados. Se desactiva la escritura de bytecode DURANTE la guarda y se
+# devuelve al estado que tenía: lo que el punto importe después sigue cacheándose como
+# siempre, y no se paga rendimiento por una comprobación que corre una vez.
+_G03_BYTECODE = _sys_g03.dont_write_bytecode
+_sys_g03.dont_write_bytecode = True
+_G03_PROPIA = _os_g03.path.dirname(_os_g03.path.realpath(__file__))
+_G03_SEDE = ""
+_G03_RAIZ = _G03_PROPIA
+while not _G03_SEDE:
+    for _G03_CANDIDATA in (_G03_PROPIA,
+                           _os_g03.path.join(_G03_RAIZ, "kernel", "operativo",
+                                             "validadores")):
+        if _os_g03.path.isfile(_os_g03.path.join(_G03_CANDIDATA,
+                                                 "aislamiento_de_arranque.py")):
+            _G03_SEDE = _G03_CANDIDATA
+            break
+    else:
+        _G03_PADRE = _os_g03.path.dirname(_G03_RAIZ)
+        if _G03_PADRE == _G03_RAIZ:
+            _sys_g03.stderr.write(
+                "[PROCEDENCIA_NO_FIABLE] no hay `aislamiento_de_arranque.py` ni junto a "
+                "este punto ejecutable ni en el `kernel/operativo/validadores/` de ning\u00fan "
+                "ancestro suyo: no se puede decidir si el arranque est\u00e1 aislado, y no se "
+                "sigue\n")
+            raise SystemExit(5)
+        _G03_RAIZ = _G03_PADRE
+_sys_g03.path.insert(0, _G03_SEDE)
+import aislamiento_de_arranque as _aislamiento_g03                    # noqa: E402
+
+AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)
+_sys_g03.dont_write_bytecode = _G03_BYTECODE
+
+# `-I` deja FUERA de `sys.path` el directorio del guión —es lo que impide que un homónimo
+# vecino se cuele— y los puntos que importan módulos hermanos lo necesitan. Se reintroduce
+# por RUTA DERIVADA DE `__file__`, que no la escribe el lanzador.
+if _G03_PROPIA not in _sys_g03.path:
+    _sys_g03.path.insert(0, _G03_PROPIA)
+
+
+# ---------------------------------------------------------------------------
+#  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
+# ---------------------------------------------------------------------------
+#  Este módulo entró en el inventario de puntos ejecutables al invertirse la carga —hace
+#  trabajo al importarse: registra su catálogo con `CATALOGO.extend(...)` en el nivel
+#  superior—, y a un punto ejecutable se le exige el mecanismo ENTERO y no medio: la guarda
+#  de `G-03` de arriba, que decide el aislamiento antes de que el intérprete arranque, y
+#  esta purga, que retira de `sys.path` lo que el LANZADOR pudo meter. Se copia byte a byte
+#  del resto de puntos, que es lo que `T330` comprueba: un mecanismo «adaptado» es un
+#  mecanismo que ya no se sabe si protege.
+
+import sys as _sys
+import os as _os
+
+_RAIZ_DEL_APARATO = _os.path.dirname(_os.path.abspath(__file__))
+
+
+def _entradas_del_lanzador():
+    """Lo que el LANZADOR puede meter en la ruta de importación: `PYTHONPATH` y el `cwd`."""
+    sospechosas = set()
+    for entrada in (_os.environ.get("PYTHONPATH") or "").split(_os.pathsep):
+        if entrada:
+            sospechosas.add(_os.path.realpath(entrada))
+    try:
+        sospechosas.add(_os.path.realpath(_os.getcwd()))
+    except OSError:
+        # Un `cwd` borrado bajo los pies no es motivo para no purgar el resto.
+        pass
+    return sospechosas
+
+
+def _purgar_la_ruta_de_importacion():
+    """Retira de `sys.path` lo que venga del lanzador. Devuelve cuántas entradas retiró."""
+    del_lanzador = _entradas_del_lanzador()
+    propia = _os.path.realpath(_RAIZ_DEL_APARATO)
+    conservadas, retiradas = [], []
+    for entrada in _sys.path:
+        try:
+            real = _os.path.realpath(entrada or _os.getcwd())
+        except OSError:
+            conservadas.append(entrada)
+            continue
+        if real != propia and real in del_lanzador:
+            retiradas.append(real)
+        else:
+            conservadas.append(entrada)
+    _sys.path[:] = conservadas
+    return retiradas
+
+
+RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()
+
+# CONTROL DEL CONTROL de la purga: `os` se usa para poder purgar, así que si `os` mismo
+# viniera del lanzador la purga no probaría nada. No hay forma honesta de seguir: se dice y
+# se sale con el código de PROCEDENCIA.
+if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lanzador():
+    _sys.stderr.write(
+        "[PROCEDENCIA_NO_FIABLE] el módulo `os` procede de la ruta de importación del "
+        "lanzador: este punto ejecutable no puede garantizar de dónde salen sus módulos y "
+        "NO ejecuta\n")
+    raise SystemExit(5)
+
+RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()
 
 CATALOGO = []
 
@@ -477,19 +596,23 @@ def m_h02_un_escenario_sube_de_estado_sin_contraste(raiz):
     DESCARTABA por marcar `contrastado=False`, de modo que catorce escenarios subían de
     estado por argumento con `T350` en verde.
 
-    `T162` es uno de esos catorce y hoy declara `prueba-ejecutada`, que es lo que
-    `evidencia/workspace-salida.txt` sostiene: `grep -c "T162"` sobre ella devuelve `0`. Se
-    le devuelve el `prueba-superada` que tenía. La distingue de `N350b` y `N350c` la CLASE
-    del defecto: allí la evidencia CONTRADICE o no existe; aquí la evidencia existe, la
-    ejecución consta y lo que falta es el veredicto de ESTE escenario.
+    ESTE SABOTAJE SE REESCRIBIÓ AL CERRARSE `D-02`, y se dice por qué. `T162` era uno de
+    esos catorce: declaraba `prueba-ejecutada` porque `evidencia/workspace-salida.txt` no
+    lo nombraba —`grep -c "T162"` devolvía `0`—, y la mutación consistía en devolverle el
+    `prueba-superada` que tuvo. Cerrada `D-02`, su ejecutor publica el veredicto nominal y
+    `T162` declara `prueba-superada` con todo el derecho: ya no hay ningún escenario en el
+    estado que este sabotaje reintroducía, y por eso dejó de encajar.
+
+    La CLASE es la misma y se reproduce por el otro lado: en vez de subir el estado
+    declarado hasta una evidencia que no lo nombra, se le quita a la evidencia el veredicto
+    que lo nombra y se deja el estado declarado donde está. El resultado es idéntico —un
+    `prueba-superada` que su evidencia no sostiene— y la distingue de `N350b` y `N350c` lo
+    mismo que antes: allí la evidencia CONTRADICE o no existe; aquí existe, la ejecución
+    consta, y lo que falta es el veredicto de ESTE escenario.
     """
-    _sustituir(raiz, "kernel/operativo/pruebas/T159-T170-multirepo.md",
-               "validador: tooling/tests/test_workspace.py\n"
-               "estado: prueba-ejecutada\n"
-               "evidencia: evidencia/workspace-salida.txt",
-               "validador: tooling/tests/test_workspace.py\n"
-               "estado: prueba-superada\n"
-               "evidencia: evidencia/workspace-salida.txt")
+    _sustituir(raiz, "kernel/operativo/pruebas/evidencia/workspace-salida.txt",
+               "T162 · una fuente ya clonada se reutiliza y no se vuelve a clonar. ... ok",
+               "una fuente ya clonada se reutiliza y no se vuelve a clonar. ... ok")
 
 
 CATALOGO.extend([

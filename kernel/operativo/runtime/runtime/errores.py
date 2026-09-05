@@ -158,6 +158,31 @@ class RuntimeInconsistente(ErrorDeRuntime):
     CODIGO = "RUNTIME_INCONSISTENTE"
 
 
+class PrioridadInmutable(RuntimeInconsistente):
+    """`b.12`: «DSP informa de la inanición. **No cambia la prioridad. Nunca**».
+
+    Es el único error de esta jerarquía que nombra una prohibición del contrato en vez de
+    un estado imposible, y por eso lleva código propio: la evidencia tiene que poder decir
+    QUÉ se prohibió, no sólo que algo salió mal.
+
+    DECISIÓN · HEREDA de `RuntimeInconsistente` en vez de colgar de `ErrorDeRuntime`
+        Alternativas: (a) una clase hermana directa de `ErrorDeRuntime`; (b) una
+        especialización de `RuntimeInconsistente`.
+        Se elige (b), y por dos razones que se pueden comprobar. La primera es que la
+        clase de fallo YA está decidida: intentar mover la prioridad es exactamente «un
+        estado que no casa con ninguna regla», y `ads_runtime.py` ya mapea
+        `RuntimeInconsistente` a su código de salida — con (a) habría que tocar la tabla de
+        la CLI, y una prohibición nueva no debería obligar a renumerar códigos de salida ya
+        publicados. La segunda es de contención del daño: todo `except RuntimeInconsistente`
+        que hoy existe sigue capturando esto, de modo que añadir la invariante no puede
+        dejar escapar una excepción por un camino que antes estaba cubierto. Lo que sí
+        cambia —y es lo que se quiere— es que `error.codigo` diga `PRIORIDAD_INMUTABLE` y
+        no `RUNTIME_INCONSISTENTE`: quien lea la evidencia lee la prohibición.
+    """
+
+    CODIGO = "PRIORIDAD_INMUTABLE"
+
+
 # Censo derivado, no escrito a mano dos veces: la CLI y las pruebas lo usan para comprobar
 # que todo código emitido pertenece a la lista cerrada del §4.1.
 CLASES = (
@@ -165,7 +190,7 @@ CLASES = (
     PaqueteDesconocido, EstadoDePaqueteInvalido, DependenciaNoResuelta,
     CapacidadNoSoportada, AdaptadorIncompatible, EjecucionFallida, EjecucionDefinitiva,
     EjecucionCancelada, EjecucionAmbigua, TiempoAgotado, EfectoYaAplicado,
-    RuntimeInconsistente,
+    RuntimeInconsistente, PrioridadInmutable,
 )
 
 CODIGOS = tuple(sorted(clase.CODIGO for clase in CLASES))

@@ -1,5 +1,6 @@
 # evidencia de: universo-obligatorio
-# orden:        python3 docs/evolucion/verificacion/derivar-universo-obligatorio.py --autopruebas
+# orden:        python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/derivar-universo-obligatorio.py --autopruebas
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
 META-PRUEBAS DEL UNIVERSO OBLIGATORIO
@@ -30,5 +31,13 @@ META-PRUEBAS DEL UNIVERSO OBLIGATORIO
        espera «no publica ninguna fila `F-nn`»
   ok   desaparece `C1-*.md`: una excepción del cliquet deja de sostenerse
        espera «ha dejado de ser cierto»
+  ok   la sede del universo deja de nombrar los contratos transversales
+       espera «no hay sede que derive el componente `C`»
+  ok   la sede del universo nombra un contrato transversal MÁS       
+       espera «C7»
+  ok   la sede que gobierna el universo sale del ENCARGO: gobernaría desde fuera
+       espera «no está DENTRO de ese universo»
+  ok   con el párrafo REPLEGADO, quitar un contrato sigue siendo `EL UNIVERSO HA ENCOGIDO` y no un ancla rota
+       espera «EL UNIVERSO HA ENCOGIDO»
 
-  12 sabotajes · 0 sin detectar
+  16 sabotajes · 0 sin detectar

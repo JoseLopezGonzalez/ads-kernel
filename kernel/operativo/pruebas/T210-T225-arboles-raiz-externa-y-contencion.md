@@ -390,6 +390,6 @@ falla_si:
   - "una ruta absoluta de la máquina entra en la evidencia publicada"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/escenario_e2e_f6.py
-estado: prueba-ejecutada
+estado: prueba-superada
 evidencia: evidencia/e2e-f6-salida.txt
 ```

@@ -23,6 +23,84 @@ Uso:
 from __future__ import annotations
 
 # ---------------------------------------------------------------------------
+#  `G-03` · AISLAMIENTO DE ARRANQUE · lo PRIMERO que hace este punto
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-05, sobre esta zona. Con seis líneas de
+#  veneno en un `sitecustomize.py` alcanzable desde `PYTHONPATH`:
+#
+#      $ cat veneno/sitecustomize.py
+#        import hashlib; hashlib.sha256 = lambda *a, **k: _Falso()   # digest 0000…
+#      $ PYTHONPATH=veneno python3.12 kernel/operativo/validadores/huella.py
+#        0000000000000000                     ← la huella FORJADA sobre un árbol mutado
+#      $ PYTHONPATH=veneno python3.12 kernel/operativo/validadores/comprobar_integridad.py
+#        T150  SUPERADA · EXIT=0              ← VERDE sobre un árbol MUTADO
+#
+#  El prólogo `E-10` de abajo purga `sys.path` en su primera sentencia, y eso llega TARDE:
+#  `site.py` importa `sitecustomize` mientras el intérprete arranca, antes de que la primera
+#  línea de este módulo exista. Lo que cambia no es un módulo —`hashlib` es el bueno— sino
+#  un atributo suyo, y el control del control de `E-10`, que mira la procedencia de `os`, no
+#  lo ve. Con la guarda, este punto se reejecuta con `-I -S -E` y `sitecustomize` no llega a
+#  importarse: medido en la tabla de los doce ataques de `T380`-`T399`.
+#
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      La misma disciplina que `E-10` sigue debajo y que `T330` comprueba: lo que protege
+#      está fijado y es idéntico en todos los puntos —`T380` lo exige con su digest—, y lo
+#      que se lee dice qué se midió en ESTA sede. Un recital común mentiría en la mitad de
+#      las sedes; un mecanismo por sede derivaría, y el que derive de menos es el que nadie
+#      mira.
+#
+#  DECISIÓN · la guarda va ANTES del prólogo `E-10`, y no lo sustituye
+#      Alternativas: (a) sustituir `E-10` por la guarda; (b) dejar `E-10` y añadir la
+#      guarda encima.
+#      Se elige (b). Cierran cosas distintas: `E-10` retira del `sys.path` lo que mete el
+#      lanzador —y sigue haciendo falta cuando el punto se IMPORTA, donde la guarda no
+#      reejecuta—; `G-03` impide que `sitecustomize` llegue siquiera a ejecutarse. Quitar
+#      `E-10` reabriría la contaminación de la ruta en el caso importado.
+import os as _os_g03
+import sys as _sys_g03
+
+# LA GUARDA NO DEJA RASTRO EN EL ÁRBOL QUE JUZGA. Medido: al importar la guarda, Python
+# escribía `validadores/__pycache__/aislamiento_de_arranque…pyc` en el árbol, y
+# `comprobar_arranque.py` empezó a publicar «el proyecto arrastra `__pycache__`» sobre
+# proyectos recién creados. Se desactiva la escritura de bytecode DURANTE la guarda y se
+# devuelve al estado que tenía: lo que el punto importe después sigue cacheándose como
+# siempre, y no se paga rendimiento por una comprobación que corre una vez.
+_G03_BYTECODE = _sys_g03.dont_write_bytecode
+_sys_g03.dont_write_bytecode = True
+_G03_PROPIA = _os_g03.path.dirname(_os_g03.path.realpath(__file__))
+_G03_SEDE = ""
+_G03_RAIZ = _G03_PROPIA
+while not _G03_SEDE:
+    for _G03_CANDIDATA in (_G03_PROPIA,
+                           _os_g03.path.join(_G03_RAIZ, "kernel", "operativo",
+                                             "validadores")):
+        if _os_g03.path.isfile(_os_g03.path.join(_G03_CANDIDATA,
+                                                 "aislamiento_de_arranque.py")):
+            _G03_SEDE = _G03_CANDIDATA
+            break
+    else:
+        _G03_PADRE = _os_g03.path.dirname(_G03_RAIZ)
+        if _G03_PADRE == _G03_RAIZ:
+            _sys_g03.stderr.write(
+                "[PROCEDENCIA_NO_FIABLE] no hay `aislamiento_de_arranque.py` ni junto a "
+                "este punto ejecutable ni en el `kernel/operativo/validadores/` de ning\u00fan "
+                "ancestro suyo: no se puede decidir si el arranque est\u00e1 aislado, y no se "
+                "sigue\n")
+            raise SystemExit(5)
+        _G03_RAIZ = _G03_PADRE
+_sys_g03.path.insert(0, _G03_SEDE)
+import aislamiento_de_arranque as _aislamiento_g03                    # noqa: E402
+
+AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)
+_sys_g03.dont_write_bytecode = _G03_BYTECODE
+
+# `-I` deja FUERA de `sys.path` el directorio del guión —es lo que impide que un homónimo
+# vecino se cuele— y los puntos que importan módulos hermanos lo necesitan. Se reintroduce
+# por RUTA DERIVADA DE `__file__`, que no la escribe el lanzador.
+if _G03_PROPIA not in _sys_g03.path:
+    _sys_g03.path.insert(0, _G03_PROPIA)
+
+# ---------------------------------------------------------------------------
 #  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
 # ---------------------------------------------------------------------------
 #  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-04, sobre `validadores/huella.py` —el
@@ -1016,6 +1094,108 @@ NEGACIONES_EN_BLOQUE = (
 _VENTANA = 120          # cuánto texto se mira a cada lado de una negación
 
 
+# `T360` NO JUZGA LAS TRANSCRIPCIONES DE CONSOLA, Y AQUÍ ESTÁ POR QUÉ
+#
+#     HECHO REPRODUCIDO. `docs/f6/gate-definitivo/00-REGISTRO-DEL-GATE.md` entró en el
+#     barrido al cerrarse `HALLAZGO 1` —que quitó el rótulo de «historia inmutable» a zonas
+#     con obligaciones vivas—, y `T360` dio ROJO en sus líneas 2328, 2331 y 2391. Las tres
+#     están DENTRO de un bloque ```console, y las tres son la MISMA cosa: el revisor
+#     transcribiendo el sabotaje con el que comprobó que `T360` funciona. La línea 2328 es
+#     literalmente `$ printf 'No existe ningun verificador de admision.' >> …`.
+#
+#     Es decir: `T360` estaba dando rojo por la evidencia de que `T360` da rojo. Y el
+#     registro del gate es APPEND-ONLY: la corrección no puede ser editar la sede.
+#
+# DECISIÓN · se excluyen los bloques ```console, y SÓLO ésos
+#     Alternativas: (a) excluir todos los bloques cercados; (b) excluir sólo `console`;
+#     (c) añadir el registro del gate a las zonas sin barrido.
+#     Se elige (b). (a) es demasiado ancha y abriría un agujero real: el corpus escribe
+#     afirmaciones NORMATIVAS dentro de bloques ```text —`g.18` dice ahí «NO CONSTRUYE
+#     ninguno de los tres contratos derivados»—, y eximirlas dejaría de mirar justo donde
+#     una negación de existencia pesa más. (c) es la lista escrita a mano que `ADJ-B2`
+#     prohibió, y volvería a tapar un fichero entero por su domicilio. (b) exime por lo que
+#     un bloque ES: una `console` reproduce una orden y su salida, de modo que su contenido
+#     lo escribió una EJECUCIÓN y no la sede. La misma frase fuera de la cerca sigue siendo
+#     roja, y eso es lo que separa esta exención de un agujero.
+#
+# CORRECCIÓN · LA EXENCIÓN SE GANA, NO SE DECLARA
+#     HECHO REPRODUCIDO POR EL AUDITOR INDEPENDIENTE. Tal y como se escribió arriba, la
+#     exención la concedía el RÓTULO, es decir tres tildes invertidas y la palabra
+#     `console` escritas por el mismo autor cuya afirmación se está juzgando. El auditor
+#     puso la misma frase dos veces en `00-ESTADO-DE-IMPLEMENTACION-F6.md`: suelta salía
+#     `T360 FALLIDA`; envuelta en una cerca `console` VACÍA de toda orden, `T360 SUPERADA`.
+#     El recital decía «su contenido lo escribió una EJECUCIÓN» y NADA lo comprobaba: es la
+#     clase que este mismo informe nombra —lo que la prosa promete no es lo que el código
+#     ejecuta—, y aquí convertía a `T360` en un guardián que cualquier documento podía
+#     desactivar sobre sí mismo.
+#
+#     Así que el bloque tiene que PARECER una transcripción para valer como transcripción:
+#     se exige que lleve o bien una línea de ORDEN —la que empieza por `$ ` o por `> `, que
+#     es como el corpus entero escribe sus consolas, o la cabecera `# orden:` de la
+#     evidencia— o bien una línea de SALIDA DE MÁQUINA reconocible: un `EXIT=<n>`, un
+#     veredicto `Tnnn SUPERADA|FALLIDA` o un cierre `N superadas · N fallidas`. Las dos
+#     familias hacen falta: el registro del gate transcribe tanto órdenes con su salida como
+#     TABLAS DE RESULTADO donde la orden se citó más arriba, y esas tablas son transcripción
+#     igual. Una cerca `console` sin ninguna de las dos cosas es prosa con un rótulo, y se
+#     juzga como prosa.
+#
+#     LO QUE ESTA REGLA NO HACE, dicho para que nadie se crea más de lo que hay. NO
+#     demuestra la procedencia: nada impide escribir `$ ` o `EXIT=0` a mano dentro de una
+#     cerca. Lo que hace es subir el precio de la exención de TRES TILDES INVERTIDAS a una
+#     transcripción falsificada, y dejarla CONTADA. La prueba de procedencia de verdad es
+#     otra cosa —una cabecera firmada por quien ejecutó, como la que `registrar_evidencia`
+#     publica— y no la tiene el Markdown de una sede. Se dice en vez de fingir que sí.
+#
+#     Y la exención DEJA RASTRO: `T360` publica cuántas líneas eximió y en qué ficheros. Una
+#     exención que no se cuenta es indistinguible de una comprobación que no se hizo, que es
+#     la misma lección que `E-08` dejó escrita en el contraste contra `HEAD`.
+_APERTURA_DE_CERCA = re.compile(r"(?m)^\s*```(\S*)")
+_ORDEN_DE_CONSOLA = re.compile(
+    r"^[ \t]*(?:\$ |> |# orden:)"
+    r"|\bEXIT=-?\d+"
+    r"|\bT\d+[ \t]+(?:SUPERADA|FALLIDA)\b"
+    r"|^[ \t]*\d+ superadas · \d+ fallidas[ \t]*$", re.M)
+
+
+def _lineas_de_consola(texto):
+    """Las líneas eximidas: las de un bloque ```console que DE VERDAD transcribe algo.
+
+    Se devuelven LÍNEAS y no desplazamientos porque es lo que los dos bucles de `T360`
+    manejan para citar el diagnóstico, y convertir dos veces invitaría a que las dos
+    conversiones dejaran de coincidir. Una cerca sin cerrar se considera abierta hasta el
+    final del fichero: es lo conservador —exime de más en un fichero mal formado— y un
+    fichero con una cerca sin cerrar lo caza `ads_lint`, que es de quien es esa
+    responsabilidad.
+
+    El bloque se recoge ENTERO antes de decidir, porque la condición —¿hay alguna línea de
+    orden?— es del bloque y no de la línea: mirando línea a línea habría que eximir antes de
+    saber si el bloque se lo ha ganado.
+    """
+    eximidas, bloque, abierta, es_consola = set(), [], False, False
+    for numero, linea in enumerate(texto.splitlines(), 1):
+        marca = linea.strip()
+        if marca.startswith("```"):
+            rotulo = marca[3:].strip().lower()
+            if not abierta:
+                abierta, es_consola, bloque = True, rotulo == "console", []
+                if es_consola:
+                    bloque.append((numero, linea))
+            else:
+                if es_consola:
+                    bloque.append((numero, linea))
+                    if _ORDEN_DE_CONSOLA.search("\n".join(l for _n, l in bloque)):
+                        eximidas.update(n for n, _l in bloque)
+                abierta, es_consola, bloque = False, False, []
+            continue
+        if es_consola:
+            bloque.append((numero, linea))
+    # Una cerca `console` sin cerrar: se decide con lo que hay, por la misma regla.
+    if es_consola and bloque and _ORDEN_DE_CONSOLA.search(
+            "\n".join(l for _n, l in bloque)):
+        eximidas.update(n for n, _l in bloque)
+    return eximidas
+
+
 def _parrafos(texto):
     """Bloques separados por línea en blanco. Una cabecera se une al bloque que encabeza."""
     bloques, actual, ini = [], [], 1
@@ -1177,14 +1357,22 @@ def t360_ninguna_sede_viva_niega_lo_construido(raiz=None):
                    salvo=sin_tildes(pieza["salvo"]) if pieza["salvo"] else pieza["salvo"])
               for pieza in vivas]
 
+    eximido = []
     for rel, ruta in sedes_vivas(base):
         with open(ruta, encoding="utf-8") as fh:
             texto = fh.read()
         llano = sin_tildes(texto)
         assert len(llano) == len(texto)
+        # Lo que se dice DENTRO de una transcripción de consola lo escribió una ejecución,
+        # no la sede. Ver la decisión junto a `_lineas_de_consola`.
+        consola = _lineas_de_consola(texto)
+        if consola:
+            eximido.append((rel, len(consola)))
         for patron, motivo in en_bloque:
             for m in patron.finditer(llano):
                 linea = texto[:m.start()].count("\n") + 1
+                if linea in consola:
+                    continue
                 r.fallo(f"{rel}:{linea}: «{texto[m.start():m.end()].strip()}» niega EN "
                         f"BLOQUE el estado "
                         f"de construcción. {motivo}. El estado actual tiene una sola sede: "
@@ -1208,11 +1396,26 @@ def t360_ninguna_sede_viva_niega_lo_construido(raiz=None):
                     elif not re.search(pieza["nombre"], cuerpo, re.I):
                         continue
                     linea = arranque + cuerpo[:m.start()].count("\n")
+                    if linea in consola:
+                        continue
                     r.fallo(f"{rel}:{linea}: «{cuerpo_original[m.start():m.end()].strip()}» "
                             f"dicho de "
                             f"«{pieza['clave']}», que SÍ está construida — {pieza['motivo']}. "
                             f"O se remite a `04-CONTRATOS-TECNICOS.md` §1, o se restringe la "
                             f"afirmación a lo que de verdad falta (`ADJ-G3`)")
+    # LA EXENCIÓN DEJA RASTRO. Sin esta línea, «no hay negaciones» y «no se miró donde las
+    # hay» producen exactamente la misma salida, que es el modo de fallo que `E-08` dejó
+    # descrito para el contraste contra `HEAD` y que aquí vale igual.
+    if eximido:
+        r.detalle = ("líneas eximidas por ser transcripción de consola: %d, en %d sede(s) — "
+                     "%s. Una cerca ```console SIN ninguna línea de orden (`$ `, `> `, "
+                     "`# orden:`) ni de salida de máquina (`EXIT=`, `Tnnn SUPERADA`, "
+                     "`N superadas · N fallidas`) NO se exime: se juzga como prosa. Esto "
+                     "NO demuestra la procedencia del bloque; sube su precio y la cuenta"
+                     % (sum(n for _r, n in eximido), len(eximido),
+                        ", ".join("%s (%d)" % fila for fila in sorted(eximido))))
+    else:
+        r.detalle = ("líneas eximidas por ser transcripción de consola: NINGUNA")
     return r
 
 
@@ -1264,10 +1467,13 @@ def main():
     if args.json:
         print(json.dumps([{"id": x.id, "nombre": x.nombre,
                            "estado": "prueba-superada" if x.superada else "prueba-fallida",
+                           "alcance": getattr(x, "detalle", ""),
                            "fallos": x.fallos} for x in resultados], ensure_ascii=False, indent=2))
     else:
         for x in resultados:
             print(f"{x.id}  {'SUPERADA' if x.superada else 'FALLIDA '}  {x.nombre}")
+            if getattr(x, "detalle", ""):
+                print(f"          alcance: {x.detalle}")
             for f in x.fallos:
                 print(f"          · {f}")
         fallidas = [x for x in resultados if not x.superada]

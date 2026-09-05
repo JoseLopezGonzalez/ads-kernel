@@ -1,5 +1,6 @@
 # evidencia de: contencion
-# orden:        python3 kernel/operativo/runtime/pruebas/test_contencion.py
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/runtime/pruebas/test_contencion.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
 
@@ -44,8 +45,18 @@ test_la_sonda_de_cgroup_ejerce_el_mismo_envoltorio_que_el_backend (__main__.Dete
 T214 · Defecto que previene: sondear una vía distinta de la que después se usa. ... ok
 test_se_sondean_todos_los_backends_del_orden_declarado (__main__.DeteccionDeCapacidades.test_se_sondean_todos_los_backends_del_orden_declarado)
 T214 · Defecto que previene: elegir un backend sin haber mirado los demás. ... ok
+test_410_las_cuatro_generaciones_CONFIRMAN_antes_de_que_se_mate_nada (__main__.ProtocoloDePreparacion.test_410_las_cuatro_generaciones_CONFIRMAN_antes_de_que_se_mate_nada)
+T410 · Defecto que previene: matar antes de saber qué había que matar. ... ok
+test_411_nunca_creado_y_muerto_por_contencion_son_veredictos_DISTINTOS (__main__.ProtocoloDePreparacion.test_411_nunca_creado_y_muerto_por_contencion_son_veredictos_DISTINTOS)
+T411 · Defecto que previene: leer «no existe» como «lo mató la contención». ... ok
+test_412_la_preparacion_es_una_condicion_OBSERVADA_y_no_una_espera (__main__.ProtocoloDePreparacion.test_412_la_preparacion_es_una_condicion_OBSERVADA_y_no_una_espera)
+T412 · Defecto que previene: cambiar una constante por otra constante mayor. ... ok
+test_413_repeticion_BAJO_CARGA_sin_intermitencia_debil_y_fuerte (__main__.ProtocoloDePreparacion.test_413_repeticion_BAJO_CARGA_sin_intermitencia_debil_y_fuerte)
+T413 · Defecto que previene: declarar determinismo midiendo en reposo. ... ok
+test_414_setsid_conservado_y_MEDIDO_generacion_a_generacion (__main__.ProtocoloDePreparacion.test_414_setsid_conservado_y_MEDIDO_generacion_a_generacion)
+T414 · Defecto que previene: que el montaje deje de probar lo que dice probar. ... ok
 
 ----------------------------------------------------------------------
-Ran 20 tests  (duración no registrada: varía por ejecución)
+Ran 25 tests  (duración no registrada: varía por ejecución)
 
 OK

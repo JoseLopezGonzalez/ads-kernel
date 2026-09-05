@@ -27,6 +27,84 @@ Uso:
 from __future__ import annotations
 
 # ---------------------------------------------------------------------------
+#  `G-03` · AISLAMIENTO DE ARRANQUE · lo PRIMERO que hace este punto
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-05, sobre esta zona. Con seis líneas de
+#  veneno en un `sitecustomize.py` alcanzable desde `PYTHONPATH`:
+#
+#      $ cat veneno/sitecustomize.py
+#        import hashlib; hashlib.sha256 = lambda *a, **k: _Falso()   # digest 0000…
+#      $ PYTHONPATH=veneno python3.12 kernel/operativo/validadores/huella.py
+#        0000000000000000                     ← la huella FORJADA sobre un árbol mutado
+#      $ PYTHONPATH=veneno python3.12 kernel/operativo/validadores/comprobar_integridad.py
+#        T150  SUPERADA · EXIT=0              ← VERDE sobre un árbol MUTADO
+#
+#  El prólogo `E-10` de abajo purga `sys.path` en su primera sentencia, y eso llega TARDE:
+#  `site.py` importa `sitecustomize` mientras el intérprete arranca, antes de que la primera
+#  línea de este módulo exista. Lo que cambia no es un módulo —`hashlib` es el bueno— sino
+#  un atributo suyo, y el control del control de `E-10`, que mira la procedencia de `os`, no
+#  lo ve. Con la guarda, este punto se reejecuta con `-I -S -E` y `sitecustomize` no llega a
+#  importarse: medido en la tabla de los doce ataques de `T380`-`T399`.
+#
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      La misma disciplina que `E-10` sigue debajo y que `T330` comprueba: lo que protege
+#      está fijado y es idéntico en todos los puntos —`T380` lo exige con su digest—, y lo
+#      que se lee dice qué se midió en ESTA sede. Un recital común mentiría en la mitad de
+#      las sedes; un mecanismo por sede derivaría, y el que derive de menos es el que nadie
+#      mira.
+#
+#  DECISIÓN · la guarda va ANTES del prólogo `E-10`, y no lo sustituye
+#      Alternativas: (a) sustituir `E-10` por la guarda; (b) dejar `E-10` y añadir la
+#      guarda encima.
+#      Se elige (b). Cierran cosas distintas: `E-10` retira del `sys.path` lo que mete el
+#      lanzador —y sigue haciendo falta cuando el punto se IMPORTA, donde la guarda no
+#      reejecuta—; `G-03` impide que `sitecustomize` llegue siquiera a ejecutarse. Quitar
+#      `E-10` reabriría la contaminación de la ruta en el caso importado.
+import os as _os_g03
+import sys as _sys_g03
+
+# LA GUARDA NO DEJA RASTRO EN EL ÁRBOL QUE JUZGA. Medido: al importar la guarda, Python
+# escribía `validadores/__pycache__/aislamiento_de_arranque…pyc` en el árbol, y
+# `comprobar_arranque.py` empezó a publicar «el proyecto arrastra `__pycache__`» sobre
+# proyectos recién creados. Se desactiva la escritura de bytecode DURANTE la guarda y se
+# devuelve al estado que tenía: lo que el punto importe después sigue cacheándose como
+# siempre, y no se paga rendimiento por una comprobación que corre una vez.
+_G03_BYTECODE = _sys_g03.dont_write_bytecode
+_sys_g03.dont_write_bytecode = True
+_G03_PROPIA = _os_g03.path.dirname(_os_g03.path.realpath(__file__))
+_G03_SEDE = ""
+_G03_RAIZ = _G03_PROPIA
+while not _G03_SEDE:
+    for _G03_CANDIDATA in (_G03_PROPIA,
+                           _os_g03.path.join(_G03_RAIZ, "kernel", "operativo",
+                                             "validadores")):
+        if _os_g03.path.isfile(_os_g03.path.join(_G03_CANDIDATA,
+                                                 "aislamiento_de_arranque.py")):
+            _G03_SEDE = _G03_CANDIDATA
+            break
+    else:
+        _G03_PADRE = _os_g03.path.dirname(_G03_RAIZ)
+        if _G03_PADRE == _G03_RAIZ:
+            _sys_g03.stderr.write(
+                "[PROCEDENCIA_NO_FIABLE] no hay `aislamiento_de_arranque.py` ni junto a "
+                "este punto ejecutable ni en el `kernel/operativo/validadores/` de ning\u00fan "
+                "ancestro suyo: no se puede decidir si el arranque est\u00e1 aislado, y no se "
+                "sigue\n")
+            raise SystemExit(5)
+        _G03_RAIZ = _G03_PADRE
+_sys_g03.path.insert(0, _G03_SEDE)
+import aislamiento_de_arranque as _aislamiento_g03                    # noqa: E402
+
+AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)
+_sys_g03.dont_write_bytecode = _G03_BYTECODE
+
+# `-I` deja FUERA de `sys.path` el directorio del guión —es lo que impide que un homónimo
+# vecino se cuele— y los puntos que importan módulos hermanos lo necesitan. Se reintroduce
+# por RUTA DERIVADA DE `__file__`, que no la escribe el lanzador.
+if _G03_PROPIA not in _sys_g03.path:
+    _sys_g03.path.insert(0, _G03_PROPIA)
+
+# ---------------------------------------------------------------------------
 #  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
 # ---------------------------------------------------------------------------
 #  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-04, sobre `validadores/huella.py` —el
@@ -123,6 +201,10 @@ import yaml
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import entorno  # noqa: E402
+# El mismo módulo que la guarda de arriba, con el nombre con el que se usa abajo. Se pide de
+# aquí —y no se reescriben las banderas ni la lista de variables— para que el runner y la
+# guarda pidan LO MISMO: dos listas separadas derivan, y la que miente es la que nadie mira.
+import aislamiento_de_arranque as aisl  # noqa: E402
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 DIR_VALIDADORES = "kernel/operativo/validadores"
@@ -165,10 +247,20 @@ class Ejecucion:
         self.codigo = None
         self.publicada = False
         self.motivo = ""
+        # `D-01` · con qué aislamiento se lanzó el hijo. Se rellena al ejecutar y se PUBLICA
+        # en la cabecera: una garantía que no se publica no la puede comprobar nadie.
+        self.aislamiento = ""
 
     @property
     def orden(self):
-        return " ".join([f"{self.dir}/{self.script}"] + self.args)
+        """La orden PUBLICABLE: la misma que se ejecuta, con la ruta relativa al árbol.
+
+        Las banderas no se escriben aquí: se derivan de la orden real que
+        `aislamiento_de_arranque` construye, para que la cabecera no pueda decir una cosa y
+        el proceso hacer otra —que es la clase entera de `HALLAZGO 3`—.
+        """
+        real = aisl.orden_aislada(f"{self.dir}/{self.script}", self.args)
+        return " ".join(aisl.banderas_de(real) + [f"{self.dir}/{self.script}"] + self.args)
 
 
 def cargar_manifiesto(base):
@@ -209,8 +301,36 @@ def ejecutar(base, ej, publicar=True):
         ej.codigo = -1
         ej.motivo = f"el script no existe: {script}"
         return
-    proc = subprocess.run([sys.executable, script, *ej.args],
-                          cwd=base, capture_output=True, text=True)
+    # `D-01` · EL RUNNER SANEA EL ENTORNO DE SUS HIJOS, Y LO PUBLICA
+    #
+    #  HECHO REPRODUCIDO ANTES DE CORREGIR — `HALLAZGO 3` del revisor 3, gate del
+    #  2026-09-05. Esta línea era:
+    #
+    #      proc = subprocess.run([sys.executable, script, *ej.args],
+    #                            cwd=base, capture_output=True, text=True)
+    #
+    #  SIN `env=`, de modo que `subprocess` copia el entorno del padre entero y el veneno
+    #  del lanzador —`PYTHONPATH`, y con él `sitecustomize`— llegaba intacto a CADA una de
+    #  las veintiuna baterías que este runner ejecuta. Este es el canal que PRODUCE la
+    #  evidencia: contaminarlo es contaminar todo lo que la evidencia afirma.
+    #
+    #  DECISIÓN · se hacen las DOS cosas que el revisor adjudicó, y no una
+    #      Alternativas: (a) meter el prólogo en las 21 baterías; (b) sanear aquí el entorno
+    #      de los hijos y publicarlo; (c) las dos.
+    #      Se elige (c). El revisor lo escribió así: «lo segundo cierra las 21 de una vez y
+    #      es más barato; lo primero cierra también la ejecución suelta». Una batería se
+    #      ejecuta a mano mientras se escribe, y ésa no pasa por aquí; y un runner limpio que
+    #      lanzara una batería sin guarda dependería de que nadie la invocara de otro modo.
+    #      Con las dos, ni el canal ni la pieza dependen de quien las llama.
+    #
+    #  DECISIÓN · el hijo se lanza AISLADO, y no sólo con el entorno limpio
+    #      Un `env=` sin `PYTHONPATH` no impide que `site.py` importe un `sitecustomize`
+    #      INSTALADO en `site-packages`. Las banderas `-I -S -E` sí, y son las mismas que
+    #      `aislamiento_de_arranque` exige: se piden desde ahí para que no haya dos listas.
+    orden = aisl.orden_aislada(script, ej.args)
+    entorno = aisl.entorno_saneado()
+    ej.aislamiento = aisl.linea_de_aislamiento_del_hijo(orden, entorno)
+    proc = subprocess.run(orden, cwd=base, capture_output=True, text=True, env=entorno)
     ej.codigo = proc.returncode
     if ej.codigo != 0:
         ej.motivo = (f"terminó con código {ej.codigo}; la evidencia anterior NO se ha "
@@ -222,8 +342,13 @@ def ejecutar(base, ej, publicar=True):
 
     # La evidencia lleva SU PROPIA cabecera: qué se ejecutó y con qué código. Sin ella,
     # un fichero de salida no dice de quién es ni si tuvo éxito.
+    #  Y la GARANTÍA se publica: la línea `aislamiento` dice con qué banderas y con qué
+    #  entorno se lanzó el hijo que produjo esta salida. Sin ella, quien lee la evidencia no
+    #  puede distinguir una corrida saneada de una heredada, que es la diferencia que
+    #  `HALLAZGO 3` midió. `comprobar_evidencia.py` la exige y la comprueba.
     cabecera = (f"# evidencia de: {ej.id}\n"
                 f"# orden:        python3 {ej.orden}\n"
+                f"# aislamiento:  {ej.aislamiento}\n"
                 f"# codigo:       {ej.codigo}\n"
                 f"# ---------------------------------------------------------------\n")
     cuerpo = proc.stdout

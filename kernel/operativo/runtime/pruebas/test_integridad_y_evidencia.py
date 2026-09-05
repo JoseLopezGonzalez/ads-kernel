@@ -25,25 +25,93 @@ con los PID reales del anfitrión sobre tres generaciones que hacen `setsid`.
 from __future__ import annotations
 
 # ---------------------------------------------------------------------------
-#  `E-10` en la BATERÍA · esta prueba purga su propia ruta de importación
+#  `G-03` · AISLAMIENTO DE ARRANQUE · lo PRIMERO que hace este punto
 # ---------------------------------------------------------------------------
-#  POR QUÉ AQUÍ, SI LAS BATERÍAS ESTÁN EXCLUIDAS DEL INVENTARIO. Precisamente por eso. La
-#  exclusión de las baterías es DEUDA DECLARADA y no una propiedad —no hay razón técnica
-#  para que una batería no purgue—, y una deuda declarada sin un solo caso que demuestre
-#  que se puede pagar es una excusa. Esta batería la paga: purga, y sigue funcionando
-#  —inserta `runtime/` en la ruta DESPUÉS de purgar, que es lo que la purga permite porque
-#  sólo retira lo que viene del lanzador—. `T330b` lo comprueba POR NOMBRE sobre este
-#  fichero, y ése es el CLIQUET: el día que alguien le quite la purga a esta batería, la
-#  deuda de las demás dejaría de ser «de zona» y pasaría a ser «de imposibilidad» sin que
-#  nadie lo hubiera decidido. Con esta prueba en rojo, hay que decidirlo.
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, `HALLAZGO 3` del revisor 3 en el gate del
+#  2026-09-05: veintiuna baterías de `runtime/pruebas/` y `tooling/tests/` no llevaban el
+#  prólogo `E-10`, y el inventario de `T330` las eximía POR SU ZONA con `motivo: "bateria"`
+#  —que es la lista escrita a mano que `ADJ-B2` prohibió, sólo que escrita por directorios—.
+#  Y el canal que PRODUCE la evidencia, `registrar_evidencia.py` L212, lanzaba a sus hijos
+#  con `subprocess.run` SIN `env=`: el veneno del padre llegaba entero a cada batería.
 #
-#  Y hay una razón propia, no prestada: esta batería PUBLICA evidencia
-#  —`evidencia/integridad-evidencia-salida.txt`— que sostiene el estado de once escenarios.
-#  Un `json.py` o un `hashlib.py` homónimos en el `PYTHONPATH` de quien la corre decidirían
-#  qué dice esa evidencia, que es exactamente el daño que `H-01` midió sobre `huella.py`.
+#  Lo que esto significa aquí: la salida de esta batería se PUBLICA como evidencia y
+#  sostiene el estado de escenarios. Un `hashlib` o un `json` sustituidos por quien la corre
+#  deciden qué dice esa evidencia. Se aplica el remedio ENTERO que el revisor adjudicó: el
+#  prólogo entra en la batería —lo que cierra también la ejecución suelta— y el runner
+#  sanea el entorno de sus hijos y lo publica en la cabecera de cada evidencia.
 #
-#  El MECANISMO es el de siempre, copiado byte a byte (digest `aa219465a6dd6a04`). El
-#  recital es de esta sede: ver la DECISIÓN escrita junto a `mecanismo_de_la_purga`.
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      La misma disciplina que `E-10` sigue debajo y que `T330` comprueba: lo que protege
+#      está fijado y es idéntico en todos los puntos —`T380` lo exige con su digest—, y lo
+#      que se lee dice qué se midió en ESTA sede. Un recital común mentiría en la mitad de
+#      las sedes; un mecanismo por sede derivaría, y el que derive de menos es el que nadie
+#      mira.
+#
+#  DECISIÓN · la guarda va ANTES del prólogo `E-10`, y no lo sustituye
+#      Alternativas: (a) sustituir `E-10` por la guarda; (b) dejar `E-10` y añadir la
+#      guarda encima.
+#      Se elige (b). Cierran cosas distintas: `E-10` retira del `sys.path` lo que mete el
+#      lanzador —y sigue haciendo falta cuando el punto se IMPORTA, donde la guarda no
+#      reejecuta—; `G-03` impide que `sitecustomize` llegue siquiera a ejecutarse. Quitar
+#      `E-10` reabriría la contaminación de la ruta en el caso importado.
+import os as _os_g03
+import sys as _sys_g03
+
+# LA GUARDA NO DEJA RASTRO EN EL ÁRBOL QUE JUZGA. Medido: al importar la guarda, Python
+# escribía `validadores/__pycache__/aislamiento_de_arranque…pyc` en el árbol, y
+# `comprobar_arranque.py` empezó a publicar «el proyecto arrastra `__pycache__`» sobre
+# proyectos recién creados. Se desactiva la escritura de bytecode DURANTE la guarda y se
+# devuelve al estado que tenía: lo que el punto importe después sigue cacheándose como
+# siempre, y no se paga rendimiento por una comprobación que corre una vez.
+_G03_BYTECODE = _sys_g03.dont_write_bytecode
+_sys_g03.dont_write_bytecode = True
+_G03_PROPIA = _os_g03.path.dirname(_os_g03.path.realpath(__file__))
+_G03_SEDE = ""
+_G03_RAIZ = _G03_PROPIA
+while not _G03_SEDE:
+    for _G03_CANDIDATA in (_G03_PROPIA,
+                           _os_g03.path.join(_G03_RAIZ, "kernel", "operativo",
+                                             "validadores")):
+        if _os_g03.path.isfile(_os_g03.path.join(_G03_CANDIDATA,
+                                                 "aislamiento_de_arranque.py")):
+            _G03_SEDE = _G03_CANDIDATA
+            break
+    else:
+        _G03_PADRE = _os_g03.path.dirname(_G03_RAIZ)
+        if _G03_PADRE == _G03_RAIZ:
+            _sys_g03.stderr.write(
+                "[PROCEDENCIA_NO_FIABLE] no hay `aislamiento_de_arranque.py` ni junto a "
+                "este punto ejecutable ni en el `kernel/operativo/validadores/` de ning\u00fan "
+                "ancestro suyo: no se puede decidir si el arranque est\u00e1 aislado, y no se "
+                "sigue\n")
+            raise SystemExit(5)
+        _G03_RAIZ = _G03_PADRE
+_sys_g03.path.insert(0, _G03_SEDE)
+import aislamiento_de_arranque as _aislamiento_g03                    # noqa: E402
+
+AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)
+_sys_g03.dont_write_bytecode = _G03_BYTECODE
+
+# `-I` deja FUERA de `sys.path` el directorio del guión —es lo que impide que un homónimo
+# vecino se cuele— y los puntos que importan módulos hermanos lo necesitan. Se reintroduce
+# por RUTA DERIVADA DE `__file__`, que no la escribe el lanzador.
+if _G03_PROPIA not in _sys_g03.path:
+    _sys_g03.path.insert(0, _G03_PROPIA)
+
+# ---------------------------------------------------------------------------
+#  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, `HALLAZGO 3` del gate del 2026-09-05: esta batería
+#  no llevaba el prólogo, y el inventario de `T330` la eximía por vivir en una zona de
+#  pruebas. Su salida se PUBLICA como evidencia; un `json.py` o un `hashlib.py` homónimos en
+#  el `PYTHONPATH` de quien la corre deciden qué dice esa evidencia, que es exactamente el
+#  daño que `H-01` midió sobre `huella.py`. La deuda ya no es de zona: la exclusión
+#  `motivo: "bateria"` se ha RETIRADO del inventario y esta batería es un punto ejecutable
+#  como cualquier otro.
+#
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      Es la decisión de `ADJ-B2`, sin cambio: `T330` exige que el mecanismo sea IDÉNTICO en
+#      todos los puntos ejecutables, y cada sede escribe qué se midió en ella.
 import sys as _sys
 import os as _os
 
@@ -94,7 +162,6 @@ if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lan
         "lanzador: este punto ejecutable no puede garantizar de dónde salen sus módulos y "
         "NO ejecuta\n")
     raise SystemExit(5)
-
 
 import ast
 import hashlib
@@ -202,13 +269,25 @@ _FINAL_DEL_MECANISMO = "    raise SystemExit(5)\n"
 # Las TRES clases de exclusión, cada una con su motivo y con el predicado que `T330b`
 # comprueba sobre el disco. Que un motivo esté escrito no lo hace cierto: cada uno se
 # verifica, y un `.py` que no case con ninguna clase pone la prueba en rojo.
+#  `D-01` · LA EXCLUSIÓN POR ZONA `bateria` SE HA RETIRADO, Y NO VUELVE
+#      HECHO REPRODUCIDO, `HALLAZGO 3` del revisor 3 en el gate del 2026-09-05: veintiún
+#      ficheros de `runtime/pruebas/` no llevaban la purga, y este inventario los eximía por
+#      su ZONA con `motivo: "bateria"`. La deuda estaba declarada —lo que es mejor que
+#      callarla— pero eximir por vivir en un directorio es EXACTAMENTE la lista escrita a
+#      mano que `ADJ-B2` prohibió, sólo que escrita por directorios en vez de por ficheros:
+#      una batería nueva quedaba fuera sin que nadie lo decidiera.
+#
+#      DECISIÓN · se paga la deuda entera y se retira la clase
+#          Alternativas: (a) conservar la exclusión y estrechar el cliquet; (b) sanear el
+#          entorno de los hijos en el runner, que cierra las 21 de una vez; (c) las dos: el
+#          prólogo y la guarda entran en las baterías Y el runner sanea y lo publica.
+#          Se elige (c), que es lo que el revisor adjudicó con estas palabras: «lo segundo
+#          cierra las 21 de una vez y es más barato; lo primero cierra también la ejecución
+#          suelta». Con (a) la deuda sobrevive a su propio pago. Con (b) una batería
+#          ejecutada A MANO —que es como se ejecutan mientras se escriben— sigue sin
+#          protección. Con (c) no queda ninguna zona exenta: las clases de exclusión que
+#          quedan son propiedades del fichero —no ser invocable—, no de su domicilio.
 MOTIVOS_DE_EXCLUSION = {
-    "bateria": (
-        "vive en una ZONA DE BATERÍAS derivada del disco. Es DEUDA DECLARADA y no una "
-        "propiedad: no hay razón técnica para que una batería no purgue —esta misma "
-        "batería lo hace—, pero `runtime/pruebas/` y `tooling/tests/` no son zona de la "
-        "pasada que escribe esto. El cliquet es que la batería que HOY lleva el mecanismo "
-        "no lo pierda, y `T330b` lo comprueba por nombre sobre este fichero"),
     "biblioteca-de-paquete": (
         "no es invocable y vive en un PAQUETE importable —su directorio tiene "
         "`__init__.py`—: se importa, no se ejecuta. Su línea de intérprete es RESIDUAL, y "
@@ -249,6 +328,106 @@ def _tiene_bloque_main(fuente):
                     and any(isinstance(c, ast.Constant) and c.value == "__main__"
                             for c in comparacion.comparators):
                 return True
+    return False
+
+
+# `G-03`, HALLAZGO 5 DEL AUDITOR INDEPENDIENTE · LA CARGA SE INVIERTE
+#
+#     HECHO REPRODUCIDO. `invocable` era `main or salida_de_nivel_superior`, y con eso el
+#     auditor coló en el árbol un fichero que se ejecuta y se envenena:
+#
+#         # tooling/punto_colado.py — sin shebang, sin `main`, sin `sys.exit`
+#         import hashlib
+#         def _trabajo():
+#             print("huella del corpus:", hashlib.sha256(b"corpus").hexdigest()[:16])
+#         _trabajo()
+#
+#         $ python3.12 …/punto_colado.py                       2d711642b726b044
+#         $ PYTHONPATH=…/veneno python3.12 …/punto_colado.py   0000000000000000
+#         $ cat …/TESTIGO                                      llego
+#
+#     El inventario lo clasificó `biblioteca-suelta`, `T380` siguió publicando «56 de 56» y
+#     nada se puso rojo. La señal `interprete` se MEDÍA y no se usaba para decidir nada.
+#
+#     Y la clase ya estaba poblada en el árbol real: de las nueve `biblioteca-suelta`, DOS
+#     tienen llamada en el nivel superior —`validadores/negativos_contratos19.py` y
+#     `validadores/negativos_runtime.py`—, una con guarda y otra sin ella, y esa asimetría
+#     no la medía nadie porque `T381` sólo recorre `puntos`.
+#
+# DECISIÓN · «ejecutable» deja de significar «termina el proceso» y pasa a significar
+# «HACE ALGO al cargarse»
+#     Alternativas: (a) añadir la señal `interprete` a `invocable`; (b) exigir la guarda a
+#     todo `.py` que no sea demostrablemente INERTE al importarse.
+#     Se elige (b). Con (a) el fichero del auditor —que no tiene shebang— seguiría fuera, y
+#     la frontera seguiría dependiendo de cómo escribió el fichero su autor en vez de lo que
+#     el fichero hace. Con (b) la frontera la pone una propiedad del código: un módulo cuyo
+#     nivel superior sólo declara —importa, define, asigna constantes— no ejecuta nada al
+#     cargarse y no puede ser el punto por el que entre un `sitecustomize`; cualquier otro
+#     sí, y por tanto la guarda le toca.
+#
+#     LO QUE ESTA REGLA CUENTA COMO INERTE, dicho entero: `import`, `def`, `class`, `if`
+#     de guardia, `try` de importación, asignaciones, docstrings, `pass`, y DOS familias de
+#     llamada, cada una con su motivo:
+#
+#       · las del PRÓLOGO de aislamiento y de purga, porque son precisamente el mecanismo
+#         que se está exigiendo y contarlas como defecto sería circular;
+#       · las que sólo tocan `sys.path`, porque son FONTANERÍA DE IMPORTACIÓN: declaran de
+#         dónde se importa y no hacen trabajo. Se midió: `python3.12 runtime/admision/
+#         errores.py` no imprime nada, no escribe nada y sale con 0. Un módulo que sólo
+#         ajusta la ruta no es un punto por el que entre un `sitecustomize`; y quien lo
+#         importa sí lo es, y lleva la guarda.
+#
+#     Todo lo demás en el nivel superior —una llamada suelta, un `for`, un `while`, un
+#     `with`— es TRABAJO, y trabajo al importar es lo que convierte a un fichero en un punto
+#     ejecutable, lo declare su autor o no. Eso mete en el inventario a
+#     `negativos_contratos19.py` y `negativos_runtime.py`, que registran su catálogo con
+#     `CATALOGO.extend(...)` en el nivel superior: el auditor señaló que uno llevaba la
+#     guarda y el otro no, y que esa asimetría no la medía nadie porque los dos estaban
+#     fuera. Ahora los dos están dentro y los dos la llevan.
+_NOMBRES_DEL_PROLOGO = ("_aislamiento_g03", "_sys_g03", "_purgar_la_ruta_de_importacion",
+                        "_sys", "_os", "exigir", "print_function")
+
+
+def _es_fontaneria_de_ruta(nodo):
+    """¿La llamada sólo toca `sys.path`? Declara de dónde se importa; no hace trabajo."""
+    objetivo = nodo.func
+    if not isinstance(objetivo, ast.Attribute):
+        return False
+    duenno = objetivo.value
+    return (isinstance(duenno, ast.Attribute) and duenno.attr == "path"
+            and isinstance(duenno.value, ast.Name)
+            and duenno.value.id in ("sys", "_sys", "_sys_g03"))
+
+
+def _llamada_del_prologo(nodo):
+    """¿Esa llamada del nivel superior es del prólogo de `E-10`/`G-03` y no trabajo propio?"""
+    if _es_fontaneria_de_ruta(nodo):
+        return True
+    objetivo = nodo.func
+    while isinstance(objetivo, ast.Attribute):
+        objetivo = objetivo.value
+    return isinstance(objetivo, ast.Name) and objetivo.id in _NOMBRES_DEL_PROLOGO
+
+
+def _trabaja_al_importarse(fuente):
+    """`True` si el nivel superior del módulo EJECUTA algo, y no sólo declara."""
+    arbol = _arbol_de(fuente)
+    if arbol is None:
+        return False
+    for nodo in arbol.body:
+        if isinstance(nodo, (ast.Import, ast.ImportFrom, ast.FunctionDef,
+                             ast.AsyncFunctionDef, ast.ClassDef, ast.Assign,
+                             ast.AnnAssign, ast.AugAssign, ast.Pass, ast.If, ast.Try,
+                             ast.Delete, ast.Global, ast.Nonlocal)):
+            # `If` y `Try` son las dos formas en que el corpus escribe guardias de
+            # importación y el `if __name__` final; el `main` lo detecta su propia señal.
+            continue
+        if isinstance(nodo, ast.Expr):
+            if isinstance(nodo.value, (ast.Constant, ast.JoinedStr)):
+                continue                      # docstring o cadena suelta: no hace nada
+            if isinstance(nodo.value, ast.Call) and _llamada_del_prologo(nodo.value):
+                continue                      # el propio mecanismo que se está exigiendo
+        return True
     return False
 
 
@@ -300,6 +479,46 @@ def _llama_a_la_purga(fuente):
     return False
 
 
+# El comienzo y el final del MECANISMO de la guarda `G-03`, que es lo que se exige idéntico
+# en todos los puntos. Igual que con `E-10`: el recital de encima es de cada sede.
+_INICIO_DE_LA_GUARDA = "import os as _os_g03\nimport sys as _sys_g03\n"
+_FINAL_DE_LA_GUARDA = "    _sys_g03.path.insert(0, _G03_PROPIA)\n"
+
+
+def _llama_a_la_guarda(fuente):
+    """`True` si el módulo EXIGE el aislamiento en su nivel superior. Se parsea, no se busca.
+
+    El mismo cuidado que con `_llama_a_la_purga`, y por la misma razón medida: el nombre de
+    la guarda aparece dentro de las cadenas de las mutaciones que la retiran, y un
+    inventario que buscara la subcadena daría por guardado justo al fichero saboteado.
+    """
+    arbol = _arbol_de(fuente)
+    if arbol is None:
+        return False
+    for nodo in arbol.body:
+        if not isinstance(nodo, ast.Assign) or not isinstance(nodo.value, ast.Call):
+            continue
+        objetivo = nodo.value.func
+        if isinstance(objetivo, ast.Attribute) and objetivo.attr == "exigir" \
+                and isinstance(objetivo.value, ast.Name) \
+                and objetivo.value.id == "_aislamiento_g03" \
+                and any(isinstance(t, ast.Name) and t.id == "AISLAMIENTO"
+                        for t in nodo.targets):
+            return True
+    return False
+
+
+def mecanismo_de_la_guarda(fuente):
+    """El MECANISMO `G-03` de un punto ejecutable, o `None`. El recital NO entra."""
+    inicio = fuente.find(_INICIO_DE_LA_GUARDA)
+    if inicio < 0:
+        return None
+    final = fuente.find(_FINAL_DE_LA_GUARDA, inicio)
+    if final < 0:
+        return None
+    return fuente[inicio:final + len(_FINAL_DE_LA_GUARDA)]
+
+
 def mecanismo_de_la_purga(fuente):
     """El MECANISMO `E-10` de un punto ejecutable, o `None`. El recital NO entra."""
     inicio = fuente.find(_INICIO_DEL_MECANISMO)
@@ -330,12 +549,10 @@ def inventariar_el_arbol(raiz=None):
     la clave `motivo` puesta a una de las de `MOTIVOS_DE_EXCLUSION`.
     """
     base = os.path.realpath(raiz or RAIZ_REPO)
-    zonas = zonas_de_baterias(base)
     puntos, excluidos = {}, {}
     for dirpath, dirnames, filenames in os.walk(base):
         dirnames[:] = sorted(d for d in dirnames if d not in DIRECTORIOS_QUE_NO_SON_CORPUS)
         es_paquete = os.path.isfile(os.path.join(dirpath, "__init__.py"))
-        en_bateria = os.path.realpath(dirpath) in zonas
         for nombre in sorted(filenames):
             if not nombre.endswith(".py"):
                 continue
@@ -355,13 +572,14 @@ def inventariar_el_arbol(raiz=None):
                 "paquete": es_paquete,
                 "purga": _llama_a_la_purga(fuente),
                 "mecanismo": mecanismo_de_la_purga(fuente),
+                "guarda": _llama_a_la_guarda(fuente),
+                "mecanismo_g03": mecanismo_de_la_guarda(fuente),
                 "fuente": fuente,
             }
-            senales["invocable"] = senales["main"] or senales["salida_de_nivel_superior"]
-            if en_bateria:
-                senales["motivo"] = "bateria"
-                excluidos[senales["ruta"]] = senales
-            elif senales["invocable"]:
+            senales["trabaja_al_importarse"] = _trabaja_al_importarse(fuente)
+            senales["invocable"] = (senales["main"] or senales["salida_de_nivel_superior"]
+                                    or senales["trabaja_al_importarse"])
+            if senales["invocable"]:
                 puntos[senales["ruta"]] = senales
             elif es_paquete:
                 senales["motivo"] = "biblioteca-de-paquete"
@@ -402,6 +620,15 @@ MOTIVO_DE_LA_EXCLUSION_DE_T308 = {
         "validador documental de una fase: 0 · 1 hallazgos · 2 uso",
     "docs/evolucion/verificacion":
         "instrumental del GATE, que no es del kernel y cuyo 0/1 es el del gate",
+    # `D-01` · las dos zonas de baterías entran en el inventario desde que se retiró la
+    # exención por domicilio, y por eso su motivo hay que ESCRIBIRLO aquí: son puntos
+    # ejecutables, pero su convenio de salida es el de `unittest` —0 todo bien, 1 hubo
+    # fallos— y no la tabla de seis códigos del kernel. Meterlas en `T308` obligaría a cada
+    # batería a publicar una tabla que no usa.
+    "kernel/operativo/runtime/pruebas":
+        "batería de `unittest`: su convenio de salida es 0 todo bien · 1 hubo fallos",
+    "tooling/tests":
+        "batería de `unittest`: su convenio de salida es 0 todo bien · 1 hubo fallos",
 }
 EJECUTABLES_DEL_KERNEL = tuple(sorted(
     ruta for ruta, senales in INVENTARIO.items() if senales["zona"] == ZONA_DEL_KERNEL))
@@ -646,8 +873,17 @@ class ProcedenciaDeLosModulos(SesionNueva):
         for origen in datos["modulos"].values():
             self.assertTrue(origen.startswith("aparato:"))
         self.assertFalse(os.path.exists(self.testigo))
-        self.assertGreaterEqual(datos["entradas_del_lanzador_retiradas"], 1,
-                                "no se retiró ninguna entrada del lanzador y había dos")
+        # `G-03` cambió lo que hay que exigir aquí, y por eso la afirmación es otra. Antes
+        # el punto arrancaba contaminado y la purga retiraba dos entradas; ahora se
+        # reejecuta aislado y las dos no llegan a entrar. Exigir «se retiró al menos una»
+        # sería exigir que el defecto se produzca para poder corregirlo. Lo que se exige es
+        # la propiedad, que es la misma en los dos mundos: ninguna entrada del lanzador
+        # está en la ruta de importación, y el arranque lo declara.
+        self.assertEqual(datos["entradas_del_lanzador_presentes"], 0,
+                         "quedaron entradas del lanzador en la ruta de importación")
+        for bandera in ("isolated", "no_site", "ignore_environment"):
+            self.assertTrue(datos["aislamiento_de_arranque"][bandera],
+                            "el punto no publicó `" + bandera + "`: se ejecutó sin aislar")
 
 
 # ===========================================================================
@@ -836,6 +1072,259 @@ class ResultadoExactoDeLaEvidencia(unittest.TestCase):
 # ===========================================================================
 #  T308 · `E-15` · NINGÚN ERROR TIPADO SALE COMO TRAZA
 # ===========================================================================
+
+# ===========================================================================
+#  `D-05` · EL CANAL «LA EVIDENCIA ES LA CONFIRMADA EN `HEAD`», SABOTEADO DE VERDAD
+# ===========================================================================
+#  HECHO REPRODUCIDO ANTES DE CORREGIR. `comprobar_evidencia._contrastar_contra_head`
+#  estaba implementado y no lo ponía rojo NADA: `comprobar_negativos.py` monta cada
+#  sabotaje sobre una COPIA DEL CORPUS SIN `.git`, y esa función abre con
+#
+#      if not os.path.isdir(os.path.join(base, ".git")): return "sin repositorio Git…"
+#
+#  es decir, en el único banco de pruebas que teníamos, el canal entero se saltaba por la
+#  primera línea. Medido: 164 mutaciones del catálogo, CERO sobre este camino. Un canal
+#  sin sabotaje mecanizado no está probado; está escrito.
+#
+#  Lo que esta clase hace: monta un repositorio Git REAL en un temporal —blob, commit,
+#  tree y `HEAD` de verdad, sin ningún mock—, y ejecuta contra él los OCHO ataques que el
+#  canal tiene que resistir, más el CONTROL SANO sin el que «todo da rojo» explicaría
+#  igual de bien los ocho verdes.
+#
+#  LO QUE ESTA CLASE NO AFIRMA. El canal juzga el DICTAMEN, no los bytes: una regeneración
+#  legítima difiere de `HEAD` y eso NO es rojo, y así lo mide el ataque 4. Que el contenido
+#  de la zona `EVIDENCIA` no mute sin declararlo lo juzga `V6-10` en el verificador de
+#  admisión, y reescribir la historia de Git —`amend`, mover la referencia— lo juzga la
+#  huella del kernel: los ataques 7 y 8 miden lo que ESTE canal hace ante ellos, que es
+#  quedarse sin base de contraste, y exigen que lo DIGA en vez de dar verde callando.
+
+class EvidenciaConfirmadaEnHead(unittest.TestCase):
+    """`T420`-`T428` · `D-05`. Los ocho ataques al contraste contra `HEAD`, mecanizados.
+
+    Cada caso construye su propio repositorio: `git init`, la evidencia escrita, `git add`
+    y `git commit`. A partir de ahí el ataque toca UNA cosa —el árbol de trabajo, el blob,
+    la referencia, el directorio `.git`— y se exige el veredicto exacto, por su motivo.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        if VALIDADORES not in sys.path:
+            sys.path.insert(0, VALIDADORES)
+        import comprobar_contratos                                    # noqa: PLC0415
+        import comprobar_evidencia                                    # noqa: PLC0415
+        cls.validador = comprobar_evidencia
+        cls.Resultado = comprobar_contratos.Resultado
+
+    # -- montaje ------------------------------------------------------------
+    ENTORNO_GIT = {
+        "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_SYSTEM": os.devnull,
+        "GIT_AUTHOR_NAME": "ads-d05", "GIT_AUTHOR_EMAIL": "d05@ads.local",
+        "GIT_COMMITTER_NAME": "ads-d05", "GIT_COMMITTER_EMAIL": "d05@ads.local",
+        "GIT_AUTHOR_DATE": "2026-01-01T00:00:00+00:00",
+        "GIT_COMMITTER_DATE": "2026-01-01T00:00:00+00:00",
+    }
+
+    def _git(self, base, *args):
+        entorno = dict(os.environ)
+        entorno.update(self.ENTORNO_GIT)
+        proc = subprocess.run(["git", "-C", base] + list(args),
+                              capture_output=True, text=True, env=entorno)
+        self.assertEqual(proc.returncode, 0,
+                         "git " + " ".join(args) + " falló: " + (proc.stderr or ""))
+        return proc.stdout
+
+    def salida_de_bateria(self, identificador, buenos, malos=0):
+        """Una salida de `unittest` con veredictos NOMBRADOS para ese escenario."""
+        lineas = []
+        for indice in range(buenos):
+            lineas.append(identificador + " · caso bueno " + str(indice) + " ... ok")
+        for indice in range(malos):
+            lineas.append(identificador + " · caso malo " + str(indice) + " ... FAIL")
+        lineas.append("")
+        lineas.append(str(buenos + malos) + " superadas · 0 fallidas")
+        return "\n".join(lineas) + "\n"
+
+    def montar(self, contenido, nombre="d05-salida.txt"):
+        """Un repositorio Git REAL con esa evidencia confirmada en `HEAD`."""
+        base = tempfile.mkdtemp(prefix="ads-d05-")
+        self.addCleanup(shutil.rmtree, base, True)
+        destino = os.path.join(base, self.validador.DIR_EVIDENCIA)
+        os.makedirs(destino)
+        ruta = os.path.join(destino, nombre)
+        with open(ruta, "w", encoding="utf-8") as fh:
+            fh.write(contenido)
+        self._git(base, "init", "-q", "-b", "principal")
+        self._git(base, "add", "-A")
+        self._git(base, "commit", "-q", "-m", "evidencia inicial")
+        return base, ruta
+
+    def contrastar(self, base, escenarios):
+        r = self.Resultado("T420", "contraste contra HEAD")
+        nota = self.validador._contrastar_contra_head(base, escenarios, r)
+        return r, nota
+
+    ESCENARIO = [{"id": "T900", "evidencia": "evidencia/d05-salida.txt"}]
+
+    # -- el control sano ----------------------------------------------------
+    def test_T420_control_sano_blob_commit_tree_digest_y_arbol_limpio(self):
+        """T420 · Control del CONTROL: sin él, «todo da rojo» explicaría los ocho verdes.
+
+        Y no basta con que pase: se comprueba que el montaje es un repositorio DE VERDAD
+        —hay un commit, hay un tree, el blob de la evidencia existe y su digest es el de
+        su contenido, y el árbol de trabajo está limpio—. Si algo de esto fuera de mentira,
+        los ocho ataques de abajo estarían atacando a un decorado.
+        """
+        contenido = self.salida_de_bateria("T900", buenos=6)
+        base, ruta = self.montar(contenido)
+
+        commit = self._git(base, "rev-parse", "HEAD").strip()
+        self.assertRegex(commit, r"^[0-9a-f]{40}$", "no hay commit: no hay `HEAD`")
+        tipo = self._git(base, "cat-file", "-t", commit).strip()
+        self.assertEqual(tipo, "commit")
+        tree = self._git(base, "rev-parse", "HEAD^{tree}").strip()
+        self.assertEqual(self._git(base, "cat-file", "-t", tree).strip(), "tree")
+        rel = os.path.join(self.validador.DIR_EVIDENCIA, "d05-salida.txt")
+        blob = self._git(base, "rev-parse", "HEAD:" + rel).strip()
+        self.assertEqual(self._git(base, "cat-file", "-t", blob).strip(), "blob")
+        # el digest del blob es el que Git calcula para ESTE contenido, no otro
+        with open(ruta, "rb") as fh:
+            crudo = fh.read()
+        cabecera = b"blob " + str(len(crudo)).encode("ascii") + b"\x00"
+        self.assertEqual(blob, hashlib.sha1(cabecera + crudo).hexdigest(),
+                         "el blob de `HEAD` no es el digest del contenido en disco")
+        self.assertEqual(self._git(base, "status", "--porcelain"), "",
+                         "el árbol de trabajo no está limpio: el contraste mediría otra cosa")
+
+        r, nota = self.contrastar(base, self.ESCENARIO)
+        self.assertEqual(r.fallos, [], "el control sano NO puede dar rojo")
+        self.assertIn("evidencia contrastada contra el blob de HEAD: 1", nota)
+
+    # -- los ocho ataques ---------------------------------------------------
+    def test_T421_un_veredicto_bueno_se_edita_a_malo(self):
+        """T421 · ataque 1 · `ok` reescrito como `FAIL` en el árbol de trabajo."""
+        base, ruta = self.montar(self.salida_de_bateria("T900", buenos=6))
+        with open(ruta, "w", encoding="utf-8") as fh:
+            fh.write(self.salida_de_bateria("T900", buenos=5, malos=1))
+        r, _ = self.contrastar(base, self.ESCENARIO)
+        self.assertTrue(r.fallos, "un `ok` convertido en `FAIL` pasó sin ser detectado")
+        self.assertIn("ha cambiado de DICTAMEN", " ".join(r.fallos))
+
+    def test_T422_un_veredicto_malo_se_edita_a_bueno(self):
+        """T422 · ataque 2 · el sentido contrario: un `FAIL` confirmado se borra del disco.
+
+        Es el ataque que de verdad importa —tapar un rojo—, y es distinto del anterior: el
+        conjunto de veredictos ENCOGE en vez de crecer, y la cuenta de malos baja.
+        """
+        base, ruta = self.montar(self.salida_de_bateria("T900", buenos=5, malos=1))
+        with open(ruta, "w", encoding="utf-8") as fh:
+            fh.write(self.salida_de_bateria("T900", buenos=6))
+        r, _ = self.contrastar(base, self.ESCENARIO)
+        self.assertTrue(r.fallos, "borrar un `FAIL` confirmado pasó sin ser detectado")
+        self.assertIn("ha cambiado de DICTAMEN", " ".join(r.fallos))
+
+    def test_T423_la_evidencia_encoge_en_silencio(self):
+        """T423 · ataque 3 · misma clase de veredictos, MENOS casos. El cliquet."""
+        base, ruta = self.montar(self.salida_de_bateria("T900", buenos=6))
+        with open(ruta, "w", encoding="utf-8") as fh:
+            fh.write(self.salida_de_bateria("T900", buenos=1))
+        r, _ = self.contrastar(base, self.ESCENARIO)
+        self.assertTrue(r.fallos, "la evidencia adelgazó de seis casos a uno sin rojo")
+        self.assertIn("ha ENCOGIDO", " ".join(r.fallos))
+
+    def test_T424_una_regeneracion_legitima_no_da_rojo(self):
+        """T424 · ataque 4 · el FALSO POSITIVO, que es el ataque contra el guardián.
+
+        Añadir un caso que pasa cambia los bytes y no cambia el dictamen. Si esto diera
+        rojo, el canal castigaría reforzar una batería y acabaría apagado, que es la forma
+        más barata de derrotarlo: no hace falta editar nada si el guardián ya está apagado.
+        """
+        base, ruta = self.montar(self.salida_de_bateria("T900", buenos=6))
+        with open(ruta, "w", encoding="utf-8") as fh:
+            fh.write(self.salida_de_bateria("T900", buenos=7))
+        r, nota = self.contrastar(base, self.ESCENARIO)
+        self.assertEqual(r.fallos, [], "una regeneración legítima dio ROJO")
+        self.assertIn("sin cambiar ningún dictamen", nota)
+
+    def test_T425_la_evidencia_se_vacia_entera(self):
+        """T425 · ataque 5 · el fichero se queda sin un solo veredicto.
+
+        Vaciar es la vía por la que se esquiva una comparación: sin veredictos que comparar,
+        el canal podría no tener nada que decir. Tiene que decir que ENCOGIÓ.
+        """
+        base, ruta = self.montar(self.salida_de_bateria("T900", buenos=6))
+        with open(ruta, "w", encoding="utf-8") as fh:
+            fh.write("")
+        r, _ = self.contrastar(base, self.ESCENARIO)
+        self.assertTrue(r.fallos, "vaciar la evidencia entera pasó sin ser detectado")
+        self.assertIn("NO PUBLICA NINGUNO", " ".join(r.fallos))
+
+    def test_T426_el_escenario_se_renombra_para_no_ser_contrastado(self):
+        """T426 · ataque 6 · el veredicto sigue ahí, pero deja de NOMBRAR al escenario.
+
+        Con el identificador cambiado, la versión del disco no publica ningún veredicto
+        para `T900`: si el canal exigiera que los hubiera en las dos versiones para
+        comparar, este ataque lo atravesaría sin ruido. Mide qué hace de verdad.
+        """
+        base, ruta = self.montar(self.salida_de_bateria("T900", buenos=5, malos=1))
+        with open(ruta, "w", encoding="utf-8") as fh:
+            fh.write(self.salida_de_bateria("T901", buenos=6))
+        r, nota = self.contrastar(base, self.ESCENARIO)
+        # Mecanizar este ataque encontró el hueco: con la guarda anterior —`if not (antes
+        # and despues): continue`— esto pasaba en VERDE, porque la versión del disco no
+        # publica ningún veredicto para `T900` y no había nada que comparar. Es la vía más
+        # limpia de retirar un rojo: no se edita el dictamen, se deja de emitirlo.
+        self.assertTrue(r.fallos, "renombrar el escenario retiró su dictamen sin rojo")
+        self.assertIn("NO PUBLICA NINGUNO", " ".join(r.fallos))
+        self.assertIn("difieren de HEAD", nota)
+
+    def test_T427_sin_repositorio_git_el_canal_lo_DICE(self):
+        """T427 · ataque 7 · se borra `.git`. El peligro no es el rojo: es el verde MUDO.
+
+        Es EXACTAMENTE la forma del defecto que `D-05` nombra: `comprobar_negativos` copia
+        el corpus sin `.git` y por eso el canal entero no se ejercía. Sin base de contraste
+        el canal no puede juzgar, y lo único que no puede hacer es callarse.
+        """
+        base, _ = self.montar(self.salida_de_bateria("T900", buenos=6))
+        shutil.rmtree(os.path.join(base, ".git"))
+        r, nota = self.contrastar(base, self.ESCENARIO)
+        self.assertEqual(r.fallos, [])
+        self.assertIn("NO se ha hecho", nota)
+        self.assertIn("no se da por hecho", nota)
+
+    def test_T429_borrar_la_evidencia_da_FALLIDA_igual_que_vaciarla(self):
+        """T429 · ataque 9 · el que el auditor independiente encontró abierto.
+
+        Vaciar el fichero era rojo (`T425`) y BORRARLO era verde: dos gestos con el mismo
+        efecto —el dictamen deja de existir— y veredictos opuestos. La guarda era
+        `if not os.path.isfile(ruta): continue`, y con ella el ataque más simple de los
+        nueve —`rm`— atravesaba el canal sin ruido. Se comprueba también que el canal lo
+        CUENTA, porque un fallo que no figura en el recuento no lo puede auditar nadie.
+        """
+        base, ruta = self.montar(self.salida_de_bateria("T900", buenos=5, malos=1))
+        os.remove(ruta)
+        r, nota = self.contrastar(base, self.ESCENARIO)
+        self.assertTrue(r.fallos, "borrar la evidencia confirmada pasó sin ser detectado")
+        self.assertIn("NO EXISTE", " ".join(r.fallos))
+        self.assertIn("AUSENTES del árbol de trabajo: 1", nota)
+
+    def test_T428_la_evidencia_no_esta_confirmada_en_HEAD(self):
+        """T428 · ataque 8 · el fichero existe en disco y NO está en `HEAD`.
+
+        Un fichero sin confirmar no tiene contra qué contrastarse. El canal tiene que
+        contarlo y NOMBRARLO, porque un fichero que nadie confirmó es exactamente donde se
+        escondería una evidencia fabricada.
+        """
+        base, _ = self.montar(self.salida_de_bateria("T900", buenos=6))
+        otra = os.path.join(base, self.validador.DIR_EVIDENCIA, "d05-nueva-salida.txt")
+        with open(otra, "w", encoding="utf-8") as fh:
+            fh.write(self.salida_de_bateria("T901", buenos=3))
+        escenarios = self.ESCENARIO + [{"id": "T901",
+                                        "evidencia": "evidencia/d05-nueva-salida.txt"}]
+        r, nota = self.contrastar(base, escenarios)
+        self.assertEqual(r.fallos, [])
+        self.assertIn("todavía NO confirmadas en HEAD: 1", nota)
+        self.assertIn("d05-nueva-salida.txt", nota)
+
 class ErroresTipadosDeLaCLI(SesionNueva):
     """`E-15`. Los cinco puntos ejecutables, y las jerarquías tipadas que los alcanzan.
 
@@ -1460,9 +1949,13 @@ class PurgaEnLaRaizExterna(SesionNueva):
         disfrace de ejecutable, también; y una zona nueva ya no puede ser invisible, porque
         el recorrido no conoce zonas: conoce el árbol.
 
-        SABOTAJE QUE LA PONE ROJA: retirar la purga de CUALQUIERA de los treinta y cinco
-        puntos —`raiz-externa/verificador.py` (`N330`) o `validadores/huella.py`
-        (`NH01`)—, o volver a acotar el recorrido a un par de zonas escritas (`NH03`).
+        SABOTAJE QUE LA PONE ROJA: retirar la purga de CUALQUIERA de los puntos
+        —`raiz-externa/verificador.py` (`N330`) o `validadores/huella.py` (`NH01`)—, o
+        volver a acotar el recorrido a un par de zonas escritas (`NH03`).
+
+        DESDE `D-01`, EL ALCANCE SON 56 Y NO 35. La exclusión por zona `motivo: "bateria"`
+        se ha retirado: las veintiuna baterías de `runtime/pruebas/` y `tooling/tests/` son
+        puntos ejecutables como cualquier otro y se les exige lo mismo.
         """
         puntos, excluidos = inventariar_el_arbol()
         self.assertTrue(puntos, "el inventario salió vacío: no estaría midiendo nada")
@@ -1514,14 +2007,32 @@ class PurgaEnLaRaizExterna(SesionNueva):
                         "tooling/workspace.py",
                         "docs/canonico/validar-fuentes-canonicas.py",
                         "docs/f5/validar-f5.py",
-                        "docs/evolucion/verificacion/derivar-universo-obligatorio.py"):
+                        "docs/evolucion/verificacion/derivar-universo-obligatorio.py",
+                        # `D-01`: las dos zonas de baterías, que estaban EXENTAS por su
+                        # domicilio y ahora son puntos ejecutables como los demás.
+                        "kernel/operativo/runtime/pruebas/test_admision.py",
+                        "tooling/tests/test_workspace.py"):
             self.assertIn(canario, puntos,
                           "el inventario no ve " + canario + ": el recorrido no alcanza su "
                           "zona, que es el defecto de `H-03`")
-        self.assertGreaterEqual(len(puntos), 30)
+        self.assertGreaterEqual(len(puntos), 50)
         self.assertGreaterEqual(
-            len({senales["zona"] for senales in puntos.values()}), 6,
-            "el inventario cubre menos de seis zonas: volvió a estrecharse")
+            len({senales["zona"] for senales in puntos.values()}), 8,
+            "el inventario cubre menos de ocho zonas: volvió a estrecharse")
+        # 5 · `D-01` · NINGUNA ZONA DE BATERÍAS QUEDA EXENTA. Se derivan del disco —igual
+        #     que antes— pero ya no para EXIMIR, sino para comprobar que todo lo invocable
+        #     que vive en ellas está DENTRO del inventario. La exclusión por domicilio era
+        #     la lista escrita a mano de `ADJ-B2`, sólo que escrita por directorios.
+        self.assertNotIn("bateria", MOTIVOS_DE_EXCLUSION,
+                         "ha vuelto la exclusión por zona que `D-01` retiró")
+        zonas = zonas_de_baterias(RAIZ_REPO)
+        self.assertTrue(zonas, "no se derivó ninguna zona de baterías del disco")
+        for zona in sorted(zonas):
+            de_la_zona = [ruta for ruta, senales in puntos.items()
+                          if os.path.realpath(os.path.dirname(senales["completa"])) == zona]
+            self.assertTrue(de_la_zona,
+                            "la zona de baterías " + zona + " no aporta ni un punto "
+                            "ejecutable al inventario: ha vuelto a quedar exenta")
 
     def test_T330b_cada_exclusion_esta_DECLARADA_con_su_motivo_y_SE_COMPRUEBA(self):
         """T330 · Defecto que previene: un alcance que se estrecha sin que se note.
@@ -1537,22 +2048,13 @@ class PurgaEnLaRaizExterna(SesionNueva):
         """
         puntos, excluidos = inventariar_el_arbol()
         self.assertTrue(excluidos, "no hay ninguna exclusión: no estaría midiendo nada")
-        zonas = zonas_de_baterias(RAIZ_REPO)
-        self.assertTrue(zonas, "no se derivó ninguna zona de baterías del disco")
-        residuales, sin_mecanismo = [], []
+        residuales = []
         for ruta, senales in sorted(excluidos.items()):
             motivo = senales["motivo"]
             with self.subTest(excluido=ruta, motivo=motivo):
                 self.assertIn(motivo, MOTIVOS_DE_EXCLUSION,
                               ruta + " está excluido por un motivo que nadie declara")
-                if motivo == "bateria":
-                    self.assertIn(os.path.realpath(os.path.dirname(senales["completa"])),
-                                  zonas,
-                                  ruta + " se excluyó como batería y no vive en una zona "
-                                         "de baterías derivada del disco")
-                    if senales["mecanismo"] is None:
-                        sin_mecanismo.append(ruta)
-                elif motivo == "biblioteca-de-paquete":
+                if motivo == "biblioteca-de-paquete":
                     self.assertFalse(senales["invocable"],
                                      ruta + " es invocable y está fuera como biblioteca")
                     self.assertTrue(
@@ -1571,24 +2073,19 @@ class PurgaEnLaRaizExterna(SesionNueva):
                                "intérprete: es la ambigüedad que `ADJ-B2` retiró de "
                                "`errores.py`, `firma.py`, `atestacion.py` y "
                                "`aislamiento.py`")
-        # EL CLIQUET de la DEUDA de las baterías. No hay razón técnica para que una batería
-        # no purgue —ésta lo hace— y la deuda está declarada en `MOTIVOS_DE_EXCLUSION`; lo
-        # que no puede pasar es que la batería que HOY purga deje de purgar, porque entonces
-        # la deuda crecería en silencio y nadie tendría delante el número.
+        # `D-01` · LA DEUDA DE LAS BATERÍAS ESTÁ PAGADA, Y ESTO ES SU CLIQUET. Donde antes
+        # se comprobaba que la ÚNICA batería con mecanismo no lo perdiera, ahora se
+        # comprueba que NINGUNA batería vuelva a estar excluida: esta misma es un punto
+        # ejecutable del inventario, con el mecanismo `E-10` y con la guarda `G-03`.
         yo = os.path.relpath(os.path.abspath(__file__), RAIZ_REPO).replace(os.sep, "/")
-        self.assertIn(yo, excluidos, "esta batería no aparece en la clasificación")
-        self.assertEqual(excluidos[yo]["motivo"], "bateria")
-        self.assertIsNotNone(
-            excluidos[yo]["mecanismo"],
-            "esta batería ha perdido el MECANISMO `E-10`: la deuda de las baterías se "
-            "declara con su cifra, y el cliquet es que la que lo lleva no lo pierda")
-        self.assertNotIn(yo, sin_mecanismo)
-        # Y la DEUDA se publica con su cifra y con sus nombres, para que se pueda cerrar.
-        self.assertTrue(
-            len(sin_mecanismo) <= len([r for r in excluidos
-                                       if excluidos[r]["motivo"] == "bateria"]) - 1,
-            "TODAS las baterías han perdido el mecanismo `E-10`: no queda ninguna que "
-            "sostenga que la deuda es de zona y no de imposibilidad")
+        self.assertNotIn(yo, excluidos,
+                         "esta batería ha vuelto a quedar EXCLUIDA del inventario: es la "
+                         "exención por domicilio que `D-01` retiró")
+        self.assertIn(yo, puntos, "esta batería no aparece como punto ejecutable")
+        self.assertIsNotNone(puntos[yo]["mecanismo"],
+                             "esta batería ha perdido el MECANISMO `E-10`")
+        self.assertIsNotNone(puntos[yo]["mecanismo_g03"],
+                             "esta batería ha perdido la GUARDA `G-03`")
         self.assertTrue(residuales, "ningún módulo de paquete conserva línea de intérprete "
                                     "residual: si de verdad se retiraron todas, este "
                                     "recuento sobra y esta rama hay que quitarla")
@@ -1620,8 +2117,8 @@ class PurgaEnLaRaizExterna(SesionNueva):
         self.assertNotIn(b"HOMONIMO MALICIOSO", envenenado.stderr)
         self.assertFalse(os.path.exists(self.testigo),
                          "la raíz externa importó un homónimo del entorno")
-        self.assertGreaterEqual(sucio["procedencia"]["entradas_del_lanzador_retiradas"], 1,
-                                "no se retiró ninguna entrada del lanzador y había dos")
+        self.assertEqual(sucio["procedencia"]["entradas_del_lanzador_presentes"], 0,
+                         "quedaron entradas del lanzador en la ruta de importación")
         for nombre, origen in sorted(sucio["procedencia"]["modulos"].items()):
             self.assertTrue(origen.startswith("instalacion:"),
                             nombre + " no vino de la instalación: " + origen)
@@ -1888,6 +2385,734 @@ class PurgaEnLaRaizExterna(SesionNueva):
         self.assertIn("PROCEDENCIA_NO_FIABLE", proceso.stderr.decode())
         self.assertEqual(proceso.stdout.decode().strip(), "",
                          "se publicó algo pese a no poder demostrar la procedencia")
+
+
+# ===========================================================================
+#  T380 – T397 · `G-03` y `D-01` · EL AISLAMIENTO DE ARRANQUE, ATACADO
+# ===========================================================================
+#  QUÉ CIERRAN Y POR QUÉ ESTÁN AQUÍ Y NO EN OTRA BATERÍA. `G-03` es de la misma clase que
+#  `E-10` —de dónde sale el código con el que se juzga— y se mide con el mismo inventario
+#  derivado, que vive en este fichero. `D-01` es el canal que PRODUCE la evidencia, y el
+#  comprobador de esa evidencia ya se ejercita aquí (`T307`). Partirlos habría dejado la
+#  propiedad en trozos que por separado no demuestran nada.
+#
+#  EL ATAQUE QUE SEPARA «LO ARREGLÉ» DE «CREO QUE LO ARREGLÉ». Un `sitecustomize.py` que
+#  sustituye `hashlib.sha256` y DEJA UN TESTIGO EN DISCO al ejecutarse. Se exige las dos
+#  mitades: que el testigo APAREZCA sobre la versión sin guarda —si no apareciera, la
+#  prueba no estaría midiendo nada— y que NO APAREZCA por la vía oficial. Mirar sólo el
+#  valor publicado no bastaría: un valor correcto es compatible con «el gancho corrió y no
+#  le tocó el turno».
+#
+#  `G-03` · LA GUARDA SE EXIGE A TODO PUNTO EJECUTABLE DEL INVENTARIO DERIVADO, SIN EXENCIÓN
+#      Aquí hubo una zona declarada: los cuatro ejecutables de `docs/evolucion/verificacion/`
+#      quedaban fuera porque `G-01`, `G-02` y `G-07` estaban abiertos sobre esos mismos
+#      ficheros y dos pasadas simultáneas sobre el mismo texto se pisan. La declaración
+#      llevaba cliquet y una caducidad, y las dos han hecho su trabajo: cerradas `G-01`,
+#      `G-02` y `G-07`, el coordinador aplicó la guarda a los cuatro y la declaración se
+#      RETIRA. El diccionario se queda vacío A PROPÓSITO —y no se borra— porque su prueba
+#      exige que toda zona con puntos sin guarda esté declarada Y que toda zona declarada
+#      tenga puntos sin guarda: vacío, las dos mitades siguen midiendo, y la primera zona
+#      que aparezca sin declarar pone `T380` en rojo sin que nadie tenga que acordarse.
+ZONA_SIN_GUARDA_POR_PROPIETARIO = {}
+PUNTOS_SIN_GUARDA_ADMITIDOS = 0
+
+
+class AislamientoDeArranque(SesionNueva):
+    """`G-03`. El aislamiento se decide ANTES de que el intérprete arranque, o no se decide.
+
+    HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-05, con la orden y la salida literales:
+
+        $ PYTHONPATH=veneno python3.12 <huella.py SIN la guarda> --raiz <repo>
+          0000000000000000                     ← la huella FORJADA sobre el árbol real
+          testigo en disco: `sitecustomize`    ← el gancho LLEGÓ a ejecutarse
+        $ PYTHONPATH=veneno python3.12 kernel/operativo/validadores/huella.py
+          078074dae8f687e8                     ← el valor SANO
+          testigo en disco: `sitecustomize`    ← llegó al LANZADOR, no al trabajo
+        $ PYTHONPATH=veneno python3.12 -I -S -E kernel/operativo/validadores/huella.py
+          078074dae8f687e8                     ← el valor SANO
+          testigo en disco: NINGUNO            ← el gancho NO LLEGÓ a existir
+    """
+
+    HUELLA = os.path.join(VALIDADORES, "huella.py")
+    GUARDA = os.path.join(VALIDADORES, "aislamiento_de_arranque.py")
+    VERIFICADOR = os.path.join(RAIZ_OPERATIVO, "raiz-externa", "verificador.py")
+    INSTALADOR = os.path.join(RAIZ_OPERATIVO, "raiz-externa", "instalar.py")
+
+    # ---------------------------------------------------------------- utillaje
+    def sede_del_testigo(self, nombre="TESTIGO-DEL-GANCHO"):
+        """El fichero donde el gancho deja constancia de haberse ejecutado.
+
+        No se llama `testigo` porque `unittest` recoge por prefijo `test` y se lo llevaba
+        por delante como si fuera un caso: la batería declaraba diecinueve pruebas donde
+        hay dieciocho. Medido en la primera corrida de esta tanda.
+        """
+        return os.path.join(self.taller, nombre)
+
+    def gancho(self, nombre_del_modulo, marca=None):
+        """Un `sitecustomize.py`/`usercustomize.py` que ENVENENA y DEJA TESTIGO.
+
+        La ruta del testigo va COMPILADA en el fichero y no en una variable de entorno: si
+        dependiera del entorno, el saneamiento que se está midiendo la borraría y «no hay
+        testigo» dejaría de distinguir «no corrió» de «corrió y no supo dónde escribir».
+        """
+        veneno = os.path.join(self.taller, "veneno-" + nombre_del_modulo)
+        os.makedirs(veneno, exist_ok=True)
+        marca = marca or nombre_del_modulo
+        cuerpo = (
+            "import hashlib, json\n"
+            "open(" + repr(self.sede_del_testigo()) + ", 'a').write(" + repr(marca + "\n") + ")\n"
+            "class _Falso:\n"
+            "    def update(self, *a, **k):\n        pass\n"
+            "    def hexdigest(self, *a, **k):\n        return '0' * 64\n"
+            "    def digest(self, *a, **k):\n        return b'\\x00' * 32\n"
+            "hashlib.sha256 = lambda *a, **k: _Falso()\n"
+            "json.dumps = lambda *a, **k: '{}'\n"
+        )
+        with open(os.path.join(veneno, nombre_del_modulo + ".py"), "w",
+                  encoding="utf-8") as manejador:
+            manejador.write(cuerpo)
+        return veneno
+
+    def sin_guarda(self, origen, nombre="punto_vulnerable.py"):
+        """Una copia del punto a la que se le ha RETIRADO el bloque de la guarda.
+
+        Es la VERSIÓN VULNERABLE contra la que se contrasta. Sin ella no habría control del
+        control: «el veneno no entró» se explicaría por un veneno que no funciona.
+        """
+        fuente = texto_de_fichero(origen)
+        if _FINAL_DE_LA_GUARDA in fuente:
+            inicio = fuente.rindex(
+                "# ---", 0, fuente.index("#  `G-03` · AISLAMIENTO DE ARRANQUE"))
+            final = fuente.index(_FINAL_DE_LA_GUARDA) + len(_FINAL_DE_LA_GUARDA)
+            fuente = fuente[:inicio] + fuente[final:]
+        # Y si el punto YA venía sin guarda, la copia es el punto tal cual. Lo que esta
+        # ayuda tiene que devolver es una versión SIN guarda, no la operación de recortarla:
+        # cuando la matriz de ataques sabotea el árbol quitándosela, exigir el recorte
+        # convertiría el ROJO esperado en un error del andamiaje, que dice otra cosa.
+        destino = os.path.join(self.taller, nombre)
+        with open(destino, "w", encoding="utf-8") as manejador:
+            manejador.write(fuente)
+        os.chmod(destino, 0o755)
+        return destino
+
+    def correr_ruta(self, ejecutable, argumentos, *, extra=None, cwd=None, espera=300,
+                    banderas=()):
+        return subprocess.run(
+            [sys.executable] + list(banderas) + [ejecutable] + [str(a) for a in argumentos],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            env=self.entorno(extra), cwd=cwd or self.taller, check=False, timeout=espera)
+
+    def lineas_del_testigo(self):
+        if not os.path.exists(self.sede_del_testigo()):
+            return []
+        return [l for l in texto_de_fichero(self.sede_del_testigo()).splitlines() if l.strip()]
+
+    # ------------------------------------------------------------------ T380
+    def test_T380_la_guarda_alcanza_a_TODO_punto_del_inventario_derivado(self):
+        """T380 · Defecto que previene: `G-03` cerrado en una lista y abierto en la clase.
+
+        SABOTAJE QUE LA PONE ROJA: retirar la guarda de cualquier punto ejecutable, o añadir
+        un punto nuevo sin ella en cualquier zona.
+        """
+        puntos, _excluidos = inventariar_el_arbol()
+        sin_guarda = sorted(ruta for ruta, senales in puntos.items()
+                            if not senales["guarda"])
+        zonas = {puntos[ruta]["zona"] for ruta in sin_guarda}
+        for zona in sorted(zonas):
+            self.assertIn(zona, ZONA_SIN_GUARDA_POR_PROPIETARIO,
+                          "hay puntos ejecutables sin la guarda `G-03` en `" + zona
+                          + "`, y esa zona no está declarada: " + repr(sin_guarda))
+        self.assertLessEqual(
+            len(sin_guarda), PUNTOS_SIN_GUARDA_ADMITIDOS,
+            "el número de puntos sin guarda ha SUBIDO: " + repr(sin_guarda))
+        # El motivo declarado no puede caducar en silencio: si la zona ya no tiene puntos
+        # sin guarda, lo que sobra es la declaración y hay que retirarla.
+        for zona in sorted(ZONA_SIN_GUARDA_POR_PROPIETARIO):
+            self.assertIn(zona, zonas,
+                          "se declara el motivo de eximir `" + zona + "` y ahí ya no queda "
+                          "ningún punto sin guarda: el motivo ha caducado")
+        # Y el CONTROL DEL CONTROL: la inmensa mayoría SÍ la lleva, en todas sus zonas.
+        con_guarda = [ruta for ruta, senales in puntos.items() if senales["guarda"]]
+        self.assertGreaterEqual(len(con_guarda), 50)
+        self.assertGreaterEqual(len({puntos[r]["zona"] for r in con_guarda}), 7)
+
+        # LA FRONTERA DEL INVENTARIO, EJERCIDA · hallazgo 5 del auditor independiente.
+        # No basta con que los puntos que hay lleven la guarda: hay que medir que la
+        # DEFINICIÓN de punto no deje fuera una clase entera. El fichero de abajo es el que
+        # el auditor coló —sin shebang, sin `main`, sin `sys.exit`, y con una llamada que
+        # imprime en el nivel superior—: se ejecuta y se envenena igual que cualquier otro,
+        # y con la definición anterior salía clasificado `biblioteca-suelta` mientras
+        # «56 de 56» se seguía publicando. Se ejerce sobre un temporal, no sobre el árbol.
+        with tempfile.TemporaryDirectory(prefix="ads-frontera-") as taller:
+            copia = os.path.join(taller, "arbol")
+            os.makedirs(os.path.join(copia, "tooling"))
+            with open(os.path.join(copia, "tooling", "colado.py"), "w",
+                      encoding="utf-8") as manejador:
+                manejador.write('"""Punto ejecutable que la definición anterior no veía."""\n'
+                                "import hashlib\n"
+                                "def _trabajo():\n"
+                                "    print(hashlib.sha256(b'corpus').hexdigest()[:16])\n"
+                                "_trabajo()\n")
+            # y su CONTROL: un módulo que sólo declara NO puede entrar, o la regla sería
+            # «todo `.py` es un punto» y la guarda acabaría exigida a las bibliotecas.
+            with open(os.path.join(copia, "tooling", "inerte.py"), "w",
+                      encoding="utf-8") as manejador:
+                manejador.write('"""Sólo declara: importa, define y asigna."""\n'
+                                "import os\n"
+                                "import sys\n"
+                                "sys.path.insert(0, os.path.dirname(__file__))\n"
+                                "CONSTANTE = 3\n"
+                                "def f():\n    return CONSTANTE\n"
+                                "class C:\n    pass\n")
+            colados, fuera = inventariar_el_arbol(copia)
+            self.assertIn(
+                "tooling/colado.py", colados,
+                "un `.py` que HACE TRABAJO al importarse queda fuera del inventario: la "
+                "guarda `G-03` se exige sobre una población que no incluye a todo lo que "
+                "se ejecuta, y «N de N» deja de significar lo que dice")
+            self.assertIn(
+                "tooling/inerte.py", fuera,
+                "un módulo que sólo declara ha entrado en el inventario: la regla se ha "
+                "vuelto «todo `.py` es un punto» y acabará exigiendo la guarda a las "
+                "bibliotecas, que es como una regla demasiado ancha se termina apagando")
+
+    # ------------------------------------------------------------------ T381
+    def test_T381_el_MECANISMO_de_la_guarda_es_identico_byte_a_byte(self):
+        """T381 · Defecto que previene: una guarda que se adapta y deja de proteger.
+
+        SABOTAJE QUE LA PONE ROJA: cambiar un byte del mecanismo en un solo punto.
+        """
+        puntos, _ = inventariar_el_arbol()
+        digests = {}
+        for ruta, senales in sorted(puntos.items()):
+            if not senales["guarda"]:
+                continue
+            self.assertIsNotNone(senales["mecanismo_g03"],
+                                 ruta + " exige el aislamiento y no lleva el MECANISMO")
+            digests.setdefault(
+                hashlib.sha256(senales["mecanismo_g03"].encode("utf-8")).hexdigest(),
+                []).append(ruta)
+        self.assertEqual(len(digests), 1,
+                         "los mecanismos `G-03` han divergido: "
+                         + repr({d[:12]: len(r) for d, r in digests.items()}))
+
+    # ------------------------------------------------------------------ T382
+    def test_T382_el_sitecustomize_LLEGA_sin_guarda_y_NO_LLEGA_por_la_via_oficial(self):
+        """T382 · Defecto que previene: `H-1`, la contaminación que produce VERDE FALSO.
+
+        Las TRES filas, con el testigo en disco como juez:
+          versión SIN guarda        → huella FORJADA  ·  el gancho LLEGA
+          versión con guarda        → huella SANA     ·  el gancho llega al LANZADOR
+          vía oficial `-I -S -E`    → huella SANA     ·  el gancho NO LLEGA
+
+        SABOTAJE QUE LA PONE ROJA: retirar la guarda de `huella.py`, o retirar `-S` de las
+        banderas de aislamiento.
+        """
+        veneno = self.gancho("sitecustomize")
+        entorno = {"PYTHONPATH": veneno}
+        sano = self.correr_ruta(self.HUELLA, ["--raiz", RAIZ_REPO])
+        self.assertEqual(sano.returncode, 0, sano.stderr.decode())
+        valor_sano = sano.stdout.decode().strip()
+        self.assertRegex(valor_sano, r"^[0-9a-f]{16}$")
+        self.assertNotEqual(valor_sano, "0" * 16)
+
+        # 1 · SIN GUARDA. El gancho llega y la huella sale FORJADA.
+        vulnerable = self.sin_guarda(self.HUELLA)
+        forjada = self.correr_ruta(vulnerable, ["--raiz", RAIZ_REPO], extra=entorno)
+        self.assertEqual(forjada.stdout.decode().strip(), "0" * 16,
+                         "la versión SIN guarda no se dejó falsificar: el veneno no "
+                         "funciona y esta prueba no estaría midiendo nada")
+        self.assertIn("sitecustomize", self.lineas_del_testigo(),
+                      "el gancho no llegó a ejecutarse ni sobre la versión vulnerable")
+
+        # 2 · CON GUARDA, invocada directamente. El valor es el SANO.
+        os.unlink(self.sede_del_testigo())
+        directa = self.correr_ruta(self.HUELLA, ["--raiz", RAIZ_REPO], extra=entorno)
+        self.assertEqual(directa.returncode, 0, directa.stderr.decode())
+        self.assertEqual(directa.stdout.decode().strip(), valor_sano,
+                         "la huella cambió bajo `sitecustomize` pese a la guarda")
+        self.assertEqual(self.lineas_del_testigo(), ["sitecustomize"],
+                         "el gancho tenía que llegar al proceso LANZADOR —eso no se puede "
+                         "impedir desde Python— y sólo a ése")
+
+        # 3 · POR LA VÍA OFICIAL. El gancho NO LLEGA A EXISTIR.
+        os.unlink(self.sede_del_testigo())
+        oficial = self.correr_ruta(self.HUELLA, ["--raiz", RAIZ_REPO], extra=entorno,
+                                   banderas=("-I", "-S", "-E"))
+        self.assertEqual(oficial.returncode, 0, oficial.stderr.decode())
+        self.assertEqual(oficial.stdout.decode().strip(), valor_sano)
+        self.assertEqual(self.lineas_del_testigo(), [],
+                         "el gancho se ejecutó por la vía oficial: " + repr(
+                             self.lineas_del_testigo()))
+
+    # ------------------------------------------------------------------ T383
+    def test_T383_el_usercustomize_tampoco_llega(self):
+        """T383 · Defecto que previene: cerrar `sitecustomize` y dejar abierto su gemelo.
+
+        SABOTAJE QUE LA PONE ROJA: retirar `-S` y quedarse con `-I -E`.
+        """
+        veneno = self.gancho("usercustomize")
+        entorno = {"PYTHONPATH": veneno}
+        vulnerable = self.sin_guarda(self.HUELLA)
+        forjada = self.correr_ruta(vulnerable, ["--raiz", RAIZ_REPO], extra=entorno)
+        self.assertEqual(forjada.stdout.decode().strip(), "0" * 16,
+                         "el `usercustomize` no envenena ni la versión vulnerable")
+        self.assertIn("usercustomize", self.lineas_del_testigo())
+
+        # LA INVOCACIÓN DIRECTA, que es la que mide la GUARDA. Sin esta fila la prueba no
+        # discriminaba: pasar `-I -S -E` a mano funciona igual sobre un punto SIN guarda, de
+        # modo que sólo con la fila oficial el sabotaje salía verde. Medido en la matriz de
+        # los doce ataques, y ésta es la corrección.
+        os.unlink(self.sede_del_testigo())
+        directa = self.correr_ruta(self.HUELLA, ["--raiz", RAIZ_REPO], extra=entorno)
+        self.assertEqual(directa.returncode, 0, directa.stderr.decode())
+        self.assertNotEqual(directa.stdout.decode().strip(), "0" * 16,
+                            "la huella se falsificó con `usercustomize` pese a la guarda")
+        self.assertEqual(self.lineas_del_testigo(), ["usercustomize"])
+
+        os.unlink(self.sede_del_testigo())
+        oficial = self.correr_ruta(self.HUELLA, ["--raiz", RAIZ_REPO], extra=entorno,
+                                   banderas=("-I", "-S", "-E"))
+        self.assertEqual(oficial.returncode, 0, oficial.stderr.decode())
+        self.assertNotEqual(oficial.stdout.decode().strip(), "0" * 16)
+        self.assertEqual(self.lineas_del_testigo(), [])
+
+    # ------------------------------------------------------------------ T384
+    def test_T384_el_PYTHONPATH_con_un_homonimo_no_decide_la_huella(self):
+        """T384 · Defecto que previene: `E-10` por la vía del módulo homónimo.
+
+        SABOTAJE QUE LA PONE ROJA: retirar la purga `E-10` y la guarda a la vez.
+        """
+        veneno = os.path.join(self.taller, "homonimo")
+        os.makedirs(veneno)
+        with open(os.path.join(veneno, "hashlib.py"), "w", encoding="utf-8") as manejador:
+            manejador.write(
+                "open(" + repr(self.sede_del_testigo()) + ", 'a').write('hashlib-homonimo\n')\n"
+                "class _F:\n"
+                "    def update(self, *a, **k):\n        pass\n"
+                "    def hexdigest(self, *a, **k):\n        return '0' * 64\n"
+                "def sha256(*a, **k):\n    return _F()\n")
+        salida = self.correr_ruta(self.HUELLA, ["--raiz", RAIZ_REPO],
+                                  extra={"PYTHONPATH": veneno}, cwd=veneno)
+        self.assertEqual(salida.returncode, 0, salida.stderr.decode())
+        self.assertNotEqual(salida.stdout.decode().strip(), "0" * 16)
+        self.assertEqual(self.lineas_del_testigo(), [],
+                         "se importó el `hashlib` homónimo del `PYTHONPATH`")
+
+    # ------------------------------------------------------------------ T385
+    def test_T385_un_PAQUETE_homonimo_no_entra_ni_desde_el_cwd(self):
+        """T385 · Defecto que previene: `capacidades` publicando `{}` con código 0.
+
+        SABOTAJE QUE LA PONE ROJA: retirar la guarda de `verificador.py`.
+        """
+        veneno = os.path.join(self.taller, "paquete-homonimo")
+        for paquete in ("json", "errores", "firma", "atestacion"):
+            carpeta = os.path.join(veneno, paquete)
+            os.makedirs(carpeta, exist_ok=True)
+            with open(os.path.join(carpeta, "__init__.py"), "w",
+                      encoding="utf-8") as manejador:
+                manejador.write("open(" + repr(self.sede_del_testigo()) + ", 'a').write("
+                                "'paquete-homonimo:' + __name__ + '\n')\n"
+                                "def dumps(*a, **k):\n    return '{}'\n")
+        salida = self.correr_ruta(self.VERIFICADOR, ["capacidades"],
+                                  extra={"PYTHONPATH": veneno + os.pathsep + "."},
+                                  cwd=veneno)
+        self.assertEqual(salida.returncode, 0, salida.stderr.decode())
+        datos = json.loads(salida.stdout.decode("utf-8"))
+        self.assertEqual(len(datos["condiciones_de_certificacion"]), 9,
+                         "`capacidades` volvió a publicar un conjunto encogido")
+        self.assertEqual(self.lineas_del_testigo(), [])
+
+    # ------------------------------------------------------------------ T386
+    def test_T386_un_PATH_con_interprete_falso_no_decide_el_resultado(self):
+        """T386 · Defecto que previene: colar el veneno por el intérprete que resuelve `PATH`.
+
+        El intérprete falso es un guion que reexporta `PYTHONPATH` hacia el veneno y llama
+        al real. Control del control: sobre un `python3` desnudo, el guion SÍ envenena.
+
+        SABOTAJE QUE LA PONE ROJA: retirar `-E` de las banderas de aislamiento.
+        """
+        veneno = self.gancho("sitecustomize", marca="por-el-PATH")
+        falso = os.path.join(self.taller, "bin-falso")
+        os.makedirs(falso)
+        atajo = os.path.join(falso, "python3")
+        with open(atajo, "w", encoding="utf-8") as manejador:
+            manejador.write("#!/bin/sh\n"
+                            "PYTHONPATH=" + veneno + " exec " + sys.executable + " \"$@\"\n")
+        os.chmod(atajo, 0o755)
+        camino = falso + os.pathsep + os.environ.get("PATH", "/usr/bin:/bin")
+
+        # CONTROL DEL CONTROL: el intérprete falso envenena de verdad a quien no se defiende.
+        control = subprocess.run([atajo, self.sin_guarda(self.HUELLA), "--raiz", RAIZ_REPO],
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                 env=self.entorno({"PATH": camino}), cwd=self.taller,
+                                 check=False, timeout=300)
+        self.assertEqual(control.stdout.decode().strip(), "0" * 16,
+                         "el intérprete falso no envenena ni a la versión vulnerable")
+        os.unlink(self.sede_del_testigo())
+
+        salida = subprocess.run([atajo, self.HUELLA, "--raiz", RAIZ_REPO],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                env=self.entorno({"PATH": camino}), cwd=self.taller,
+                                check=False, timeout=300)
+        self.assertEqual(salida.returncode, 0, salida.stderr.decode())
+        self.assertNotEqual(salida.stdout.decode().strip(), "0" * 16,
+                            "el intérprete del `PATH` decidió la huella")
+        self.assertEqual(self.lineas_del_testigo(), ["por-el-PATH"],
+                         "el gancho llegó a más procesos que al lanzador: "
+                         + repr(self.lineas_del_testigo()))
+
+    # ------------------------------------------------------------------ T387
+    def test_T387_un_punto_del_arbol_B_usa_la_guarda_de_B_y_no_la_de_A(self):
+        """T387 · Defecto que previene: el árbol juzgado aporta la guarda que lo protege.
+
+        SABOTAJE QUE LA PONE ROJA: buscar la guarda desde el `cwd` en vez de desde
+        `__file__`.
+        """
+        arbol_b = os.path.join(self.taller, "arbol-b", "kernel", "operativo", "validadores")
+        os.makedirs(arbol_b)
+        shutil.copy(self.HUELLA, arbol_b)
+        shutil.copy(self.GUARDA, arbol_b)
+
+        arbol_a = os.path.join(self.taller, "arbol-a", "kernel", "operativo", "validadores")
+        os.makedirs(arbol_a)
+        # La guarda del árbol A está SABOTEADA: no comprueba nada y lo grita.
+        with open(os.path.join(arbol_a, "aislamiento_de_arranque.py"), "w",
+                  encoding="utf-8") as manejador:
+            manejador.write(
+                "import sys\n"
+                "sys.stderr.write('GUARDA DEL ARBOL A\\n')\n"
+                "BANDERAS_DE_AISLAMIENTO = ()\n"
+                "def exigir(*a, **k):\n    return {'aislado': False}\n")
+        raiz_a = os.path.join(self.taller, "arbol-a")
+
+        salida = self.correr_ruta(os.path.join(arbol_b, "huella.py"),
+                                  ["--raiz", RAIZ_REPO],
+                                  extra={"PYTHONPATH": arbol_a}, cwd=raiz_a)
+        self.assertEqual(salida.returncode, 0, salida.stderr.decode())
+        self.assertNotIn("GUARDA DEL ARBOL A", salida.stderr.decode(),
+                         "el punto del árbol B cargó la guarda del árbol A")
+        self.assertRegex(salida.stdout.decode().strip(), r"^[0-9a-f]{16}$")
+
+    # ------------------------------------------------------------------ T388
+    def test_T388_un_modulo_importado_ANTES_de_la_purga_se_ve_y_falla_cerrado(self):
+        """T388 · Defecto que previene: lo que ya está en `sys.modules` cuando llega la purga.
+
+        SABOTAJE QUE LA PONE ROJA: dejar de mirar `sys.modules` en la guarda.
+        """
+        intruso = os.path.join(self.taller, "fuera-del-arbol")
+        os.makedirs(intruso)
+        with open(os.path.join(intruso, "colado.py"), "w", encoding="utf-8") as manejador:
+            manejador.write("VALOR = 1\n")
+        # El intruso NO se cuela por `sys.path`: se carga por RUTA ABSOLUTA, que es la forma
+        # que ni `-I` ni la purga pueden impedir —un `.pth`, un `sitecustomize` o un módulo
+        # del propio árbol manipulado hacen exactamente esto—. Cuando la guarda toma la
+        # palabra, el intruso YA ESTÁ en `sys.modules`, y ahí es donde se le ve.
+        programa = (
+            "import sys, importlib.util\n"
+            "_e = importlib.util.spec_from_file_location("
+            "'colado', " + repr(os.path.join(intruso, "colado.py")) + ")\n"
+            "_m = importlib.util.module_from_spec(_e)\n"
+            "_e.loader.exec_module(_m)\n"
+            "sys.modules['colado'] = _m\n"
+            "sys.path.insert(0, " + repr(VALIDADORES) + ")\n"
+            "import aislamiento_de_arranque as a\n"
+            "ajenos = a.modulos_de_procedencia_ajena()\n"
+            "sys.stderr.write('AJENOS=' + repr([n for n, _ in ajenos]) + chr(10))\n"
+            "a.exigir(" + repr(self.HUELLA) + ")\n"
+            "sys.stderr.write('NO DEBERIA LLEGAR AQUI' + chr(10))\n")
+        salida = subprocess.run([sys.executable, "-I", "-S", "-E", "-c", programa],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                env=self.entorno(), cwd=self.taller, check=False,
+                                timeout=120)
+        error = salida.stderr.decode()
+        self.assertIn("'colado'", error, "el módulo colado no se vio: " + error)
+        self.assertEqual(salida.returncode, 5,
+                         "un módulo de procedencia ajena no produjo fallo cerrado: " + error)
+        self.assertIn("PROCEDENCIA_NO_FIABLE", error)
+        self.assertNotIn("NO DEBERIA LLEGAR AQUI", error)
+
+    # ------------------------------------------------------------------ T389
+    def test_T389_el_lanzamiento_DIRECTO_no_evita_la_guarda(self):
+        """T389 · Defecto que previene: un aislamiento que sólo existe si se usa el envoltorio.
+
+        SABOTAJE QUE LA PONE ROJA: que la guarda se limite a avisar en vez de reejecutar.
+        """
+        veneno = self.gancho("sitecustomize", marca="lanzamiento-directo")
+        # Invocado A PELO, sin banderas y con el veneno puesto: tiene que reejecutarse solo.
+        salida = self.correr_ruta(self.HUELLA, ["--raiz", RAIZ_REPO],
+                                  extra={"PYTHONPATH": veneno})
+        self.assertEqual(salida.returncode, 0, salida.stderr.decode())
+        self.assertNotEqual(salida.stdout.decode().strip(), "0" * 16)
+        # Y el ADS_AISLADO del padre no viaja a los nietos: si viajara, un hijo NO aislado
+        # creería haberse reejecutado ya y fallaría cerrado. Se comprueba lanzando un punto
+        # desde dentro de un proceso que YA venía marcado.
+        conmarca = self.correr_ruta(self.HUELLA, ["--raiz", RAIZ_REPO],
+                                    extra={"ADS_AISLADO": "1"})
+        self.assertEqual(conmarca.returncode, 0,
+                         "una marca heredada impidió el aislamiento: "
+                         + conmarca.stderr.decode())
+
+    # ------------------------------------------------------------------ T390
+    def test_T390_el_manifiesto_de_la_instalacion_no_encoge_bajo_el_gancho(self):
+        """T390 · Defecto que previene: `{}` EXIT=0 y un manifiesto de TRES bytes.
+
+        SABOTAJE QUE LA PONE ROJA: retirar la guarda de `instalar.py`.
+        """
+        veneno = self.gancho("sitecustomize", marca="contra-el-instalador")
+        limpio = os.path.join(self.taller, "instalacion-limpia")
+        sano = self.correr_ruta(self.INSTALADOR, ["--destino", limpio, "--arbol", RAIZ_REPO])
+        self.assertEqual(sano.returncode, 0, sano.stderr.decode())
+        manifiesto_sano = json.loads(texto_de_fichero(
+            os.path.join(limpio, "MANIFIESTO-DE-INSTALACION.json")))
+        self.assertGreater(len(manifiesto_sano["ficheros"]), 10)
+
+        atacado = os.path.join(self.taller, "instalacion-atacada")
+        bajo_veneno = self.correr_ruta(self.INSTALADOR,
+                                       ["--destino", atacado, "--arbol", RAIZ_REPO],
+                                       extra={"PYTHONPATH": veneno})
+        self.assertEqual(bajo_veneno.returncode, 0, bajo_veneno.stderr.decode())
+        ruta = os.path.join(atacado, "MANIFIESTO-DE-INSTALACION.json")
+        self.assertGreater(os.path.getsize(ruta), 3,
+                           "el manifiesto volvió a tener tres bytes")
+        manifiesto = json.loads(texto_de_fichero(ruta))
+        self.assertEqual(len(manifiesto["ficheros"]), len(manifiesto_sano["ficheros"]))
+        self.assertEqual([f["sha256"] for f in manifiesto["ficheros"]],
+                         [f["sha256"] for f in manifiesto_sano["ficheros"]],
+                         "los digests del manifiesto se fabricaron desde el entorno")
+        self.assertEqual(self.lineas_del_testigo(), ["contra-el-instalador"])
+
+    # ------------------------------------------------------------------ T391
+    def test_T391_capacidades_no_publica_el_vacio_bajo_el_gancho(self):
+        """T391 · Defecto que previene: `capacidades` → `{}` con código 0 (`ADJ-B2`).
+
+        SABOTAJE QUE LA PONE ROJA: retirar la guarda de `verificador.py`.
+        """
+        veneno = self.gancho("sitecustomize", marca="contra-capacidades")
+        sano = self.correr_ruta(self.VERIFICADOR, ["capacidades"])
+        self.assertEqual(sano.returncode, 0, sano.stderr.decode())
+        limpio = json.loads(sano.stdout.decode("utf-8"))
+
+        atacado = self.correr_ruta(self.VERIFICADOR, ["capacidades"],
+                                   extra={"PYTHONPATH": veneno})
+        self.assertEqual(atacado.returncode, 0, atacado.stderr.decode())
+        sucio = json.loads(atacado.stdout.decode("utf-8"))
+        self.assertEqual(sucio["condiciones_de_certificacion"],
+                         limpio["condiciones_de_certificacion"])
+        self.assertEqual(len(sucio["condiciones_de_certificacion"]), 9)
+
+    # ------------------------------------------------------------------ T392
+    def test_T392_una_instalacion_a_la_que_le_falta_la_guarda_NO_ejecuta(self):
+        """T392 · Defecto que previene: una instalación parcial que corre igual.
+
+        La guarda viaja DENTRO de la instalación y entra en su manifiesto. Si falta, los
+        puntos de la raíz externa no se ejecutan sin protección: fallan cerrado.
+
+        SABOTAJE QUE LA PONE ROJA: que la guarda no falle cuando no encuentra su módulo.
+        """
+        destino = os.path.join(self.taller, "instalacion")
+        instalacion = self.correr_ruta(self.INSTALADOR,
+                                       ["--destino", destino, "--arbol", RAIZ_REPO])
+        self.assertEqual(instalacion.returncode, 0, instalacion.stderr.decode())
+        verificador = os.path.join(destino, "raiz-externa", "verificador.py")
+        guarda = os.path.join(destino, "raiz-externa", "aislamiento_de_arranque.py")
+        self.assertTrue(os.path.isfile(guarda),
+                        "la guarda no viajó con la instalación: los cuatro puntos de la "
+                        "raíz externa no podrían exigir el aislamiento")
+        manifiesto = json.loads(texto_de_fichero(
+            os.path.join(destino, "MANIFIESTO-DE-INSTALACION.json")))
+        self.assertIn("raiz-externa/aislamiento_de_arranque.py",
+                      [f["ruta"] for f in manifiesto["ficheros"]],
+                      "la guarda instalada no entra en el manifiesto: se podría cambiar "
+                      "sin que la verificación lo notara")
+
+        sano = self.correr_ruta(verificador, ["capacidades"])
+        self.assertEqual(sano.returncode, 0, sano.stderr.decode())
+
+        os.unlink(guarda)
+        mutilada = self.correr_ruta(verificador, ["capacidades"])
+        self.assertEqual(mutilada.returncode, 5,
+                         "una instalación sin la guarda ejecutó igual: "
+                         + mutilada.stdout.decode()[:200])
+        self.assertIn("PROCEDENCIA_NO_FIABLE", mutilada.stderr.decode())
+        self.assertEqual(mutilada.stdout.decode().strip(), "",
+                         "publicó algo pese a no poder decidir su aislamiento")
+
+    # ------------------------------------------------------------------ T393
+    def test_T393_una_bateria_NUEVA_ya_no_queda_exenta_por_su_zona(self):
+        """T393 · Defecto que previene: `D-01`, eximir por domicilio.
+
+        SABOTAJE QUE LA PONE ROJA: devolver la clase `bateria` a `MOTIVOS_DE_EXCLUSION`.
+        """
+        arbol = os.path.join(self.taller, "arbol-sintetico")
+        zona = os.path.join(arbol, "kernel", "operativo", "runtime", "pruebas")
+        os.makedirs(zona)
+        for nombre, cuerpo in (
+                ("test_ya_estaba.py", "#!/usr/bin/env python3\nimport sys\n"
+                                      "if __name__ == '__main__':\n    sys.exit(0)\n"),
+                ("test_NUEVA_sin_guarda.py", "#!/usr/bin/env python3\nimport sys\n"
+                                             "if __name__ == '__main__':\n"
+                                             "    sys.exit(0)\n")):
+            with open(os.path.join(zona, nombre), "w", encoding="utf-8") as manejador:
+                manejador.write(cuerpo)
+        puntos, excluidos = inventariar_el_arbol(arbol)
+        relativa = "kernel/operativo/runtime/pruebas/test_NUEVA_sin_guarda.py"
+        self.assertIn(relativa, puntos,
+                      "una batería nueva volvió a quedar fuera del inventario por su zona")
+        self.assertNotIn(relativa, excluidos)
+        self.assertFalse(puntos[relativa]["guarda"])
+        self.assertFalse(puntos[relativa]["purga"])
+        self.assertNotIn("bateria", MOTIVOS_DE_EXCLUSION)
+
+    # ------------------------------------------------------------------ T394
+    def test_T394_el_runner_SANEA_el_entorno_de_sus_hijos_y_lo_PUBLICA(self):
+        """T394 · Defecto que previene: `HALLAZGO 3`, `subprocess.run` sin `env=`.
+
+        SABOTAJE QUE LA PONE ROJA: quitar el `env=` de `registrar_evidencia.ejecutar`, o
+        dejar de escribir la línea `aislamiento` en la cabecera.
+        """
+        sys.path.insert(0, VALIDADORES)
+        import registrar_evidencia                                    # noqa: PLC0415
+
+        sonda = os.path.join(self.taller, "sonda")
+        os.makedirs(sonda)
+        with open(os.path.join(sonda, "sonda.py"), "w", encoding="utf-8") as manejador:
+            manejador.write("#!/usr/bin/env python3\n"
+                            "import os, sys\n"
+                            "print('VARIABLES ' + ' '.join(sorted(os.environ)))\n"
+                            "print('FLAGS %d%d%d' % (sys.flags.isolated, sys.flags.no_site,"
+                            " sys.flags.ignore_environment))\n"
+                            "print('1 superadas · 0 fallidas')\n"
+                            "sys.exit(0)\n")
+        ejecucion = registrar_evidencia.Ejecucion(
+            {"id": "sonda", "script": "sonda.py", "dir": "sonda", "tipo": "validador",
+             "evidencia": "sonda-salida.txt"})
+        veneno = self.gancho("sitecustomize", marca="contra-el-runner")
+        anterior = os.environ.get("PYTHONPATH")
+        os.environ["PYTHONPATH"] = veneno
+        try:
+            registrar_evidencia.ejecutar(self.taller, ejecucion)
+        finally:
+            if anterior is None:
+                os.environ.pop("PYTHONPATH", None)
+            else:
+                os.environ["PYTHONPATH"] = anterior
+        self.assertEqual(ejecucion.codigo, 0, ejecucion.motivo)
+        publicada = texto_de_fichero(os.path.join(
+            self.taller, "kernel", "operativo", "pruebas", "evidencia", "sonda-salida.txt"))
+        # 1 · el hijo no recibió el `PYTHONPATH` del padre
+        variables = [l for l in publicada.splitlines() if l.startswith("VARIABLES ")][0]
+        self.assertNotIn("PYTHONPATH", variables,
+                         "el entorno del padre llegó al hijo: " + variables)
+        # 2 · y arrancó AISLADO
+        self.assertIn("FLAGS 111", publicada, "el hijo no arrancó con `-I -S -E`")
+        # 3 · y la GARANTÍA está PUBLICADA en la cabecera
+        cabecera = [l for l in publicada.splitlines() if l.startswith("# aislamiento:")]
+        self.assertTrue(cabecera, "la cabecera no publica el aislamiento del hijo")
+        for bandera in ("-I", "-S", "-E"):
+            self.assertIn(bandera, cabecera[0])
+        self.assertIn("PYTHONPATH", cabecera[0],
+                      "la cabecera no dice que se retiró el `PYTHONPATH` del lanzador")
+        # 4 · el gancho NO llegó a ejecutarse en el hijo. Y el CONTROL DEL CONTROL: el
+        #     mismo hijo, lanzado como lo lanzaba el runner antes —heredando el entorno—,
+        #     SÍ lo ejecuta. Sin este control, «no hay testigo» se explicaría por un veneno
+        #     que no funciona.
+        self.assertEqual(self.lineas_del_testigo(), [],
+                         "el gancho llegó a un hijo del runner: "
+                         + repr(self.lineas_del_testigo()))
+        heredado = dict(os.environ)
+        heredado["PYTHONPATH"] = veneno
+        como_antes = subprocess.run(
+            [sys.executable, os.path.join(sonda, "sonda.py")],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=heredado, cwd=self.taller,
+            check=False, timeout=120)
+        self.assertEqual(como_antes.returncode, 0, como_antes.stderr.decode())
+        self.assertEqual(self.lineas_del_testigo(), ["contra-el-runner"],
+                         "sin el saneamiento el gancho tampoco llega: esta prueba no "
+                         "estaría midiendo el `env=`")
+        self.assertNotIn("FLAGS 111", como_antes.stdout.decode(),
+                         "el hijo heredado salió aislado sin que nadie lo aislara")
+
+    # ------------------------------------------------------------------ T395
+    def test_T395_comprobar_evidencia_EXIGE_la_garantia_publicada(self):
+        """T395 · Defecto que previene: publicar la garantía y que nadie la comprueba.
+
+        SABOTAJE QUE LA PONE ROJA: retirar la comprobación de `comprobar_evidencia.py`.
+        """
+        sys.path.insert(0, VALIDADORES)
+        import comprobar_evidencia                                    # noqa: PLC0415
+        import comprobar_contratos                                    # noqa: PLC0415
+
+        def juzgar(cabecera):
+            resultado = comprobar_contratos.Resultado("T158", "prueba")
+            comprobar_evidencia._comprobar_aislamiento_publicado(
+                "evidencia.txt", cabecera, resultado)
+            return resultado.fallos
+
+        buena = ("# aislamiento:  banderas -I -S -E · entorno CONSTRUIDO con 3 variables "
+                 "(HOME LANG PATH) · retiradas del lanzador: PYTHONPATH\n")
+        self.assertEqual(juzgar(buena), [], "una cabecera correcta salió con fallos")
+        self.assertTrue(juzgar("# evidencia de: x\n"),
+                        "una evidencia SIN la línea de aislamiento pasó")
+        self.assertTrue(juzgar("# aislamiento:  banderas -I · entorno CONSTRUIDO con 3 "
+                               "variables (HOME LANG PATH)\n"),
+                        "una cabecera que no nombra `-S` ni `-E` pasó")
+        self.assertTrue(juzgar("# aislamiento:  banderas -I -S -E · entorno CONSTRUIDO con "
+                               "4 variables (HOME LANG PATH PYTHONPATH)\n"),
+                        "una cabecera que declara haber entregado `PYTHONPATH` pasó")
+
+    # ------------------------------------------------------------------ T396
+    def test_T396_la_primitiva_sustituida_EN_SITIO_se_caza_con_el_vector_conocido(self):
+        """T396 · Defecto que previene: la mutación que no llega por `sitecustomize`.
+
+        SABOTAJE QUE LA PONE ROJA: retirar la autocomprobación contra el vector conocido.
+        """
+        programa = (
+            "import sys, hashlib\n"
+            "class _F:\n"
+            "    def hexdigest(self, *a, **k):\n        return '0' * 64\n"
+            "hashlib.sha256 = lambda *a, **k: _F()\n"
+            "sys.path.insert(0, " + repr(VALIDADORES) + ")\n"
+            "import aislamiento_de_arranque as a\n"
+            "a.exigir(" + repr(self.HUELLA) + ")\n"
+            "sys.stderr.write('NO DEBERIA LLEGAR AQUI' + chr(10))\n")
+        salida = subprocess.run([sys.executable, "-I", "-S", "-E", "-c", programa],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                env=self.entorno(), cwd=self.taller, check=False,
+                                timeout=120)
+        error = salida.stderr.decode()
+        self.assertEqual(salida.returncode, 5, error)
+        self.assertIn("PROCEDENCIA_NO_FIABLE", error)
+        self.assertIn("hashlib.sha256", error)
+        self.assertNotIn("NO DEBERIA LLEGAR AQUI", error)
+
+    # ------------------------------------------------------------------ T397
+    def test_T397_las_CUATRO_banderas_se_exigen_y_una_sola_que_falte_no_basta(self):
+        """T397 · Defecto que previene: declarar aislamiento con tres banderas de cuatro.
+
+        SABOTAJE QUE LA PONE ROJA: aceptar `-S -E` sin `-I`, que devolvería `sys.path[0]`.
+        """
+        programa = ("import sys\n"
+                    "sys.path.insert(0, " + repr(VALIDADORES) + ")\n"
+                    "import aislamiento_de_arranque as a\n"
+                    "print(int(a.esta_aislado()), a.flags_de_aislamiento())\n")
+        matriz = {(): 0, ("-S",): 0, ("-E",): 0, ("-S", "-E"): 0, ("-I",): 0,
+                  ("-I", "-S", "-E"): 1}
+        for banderas, esperado in sorted(matriz.items()):
+            with self.subTest(banderas=banderas):
+                salida = subprocess.run(
+                    [sys.executable] + list(banderas) + ["-c", programa],
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.entorno(),
+                    cwd=self.taller, check=False, timeout=120)
+                self.assertEqual(salida.returncode, 0, salida.stderr.decode())
+                obtenido = int(salida.stdout.decode().split()[0])
+                self.assertEqual(obtenido, esperado,
+                                 "con " + repr(banderas) + " el aislamiento se declaró "
+                                 + repr(bool(obtenido)) + ": " + salida.stdout.decode())
+        # Y la cuarta bandera se MIDE donde existe: en 3.11+ `-I` implica `-P`.
+        self.assertTrue(hasattr(sys.flags, "safe_path"),
+                        "este intérprete no expone `safe_path` y el aparato declara 3.12")
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2, testRunner=_RunnerDeterminista)

@@ -42,6 +42,145 @@ Sale con 0 si todo pasa. Se ejecuta desde cualquier directorio: la raíz se deri
 """
 from __future__ import annotations
 
+# ---------------------------------------------------------------------------
+#  `G-03` · AISLAMIENTO DE ARRANQUE · lo PRIMERO que hace este punto
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, `HALLAZGO 3` del revisor 3 en el gate del
+#  2026-09-05: veintiuna baterías de `runtime/pruebas/` y `tooling/tests/` no llevaban el
+#  prólogo `E-10`, y el inventario de `T330` las eximía POR SU ZONA con `motivo: "bateria"`
+#  —que es la lista escrita a mano que `ADJ-B2` prohibió, sólo que escrita por directorios—.
+#  Y el canal que PRODUCE la evidencia, `registrar_evidencia.py` L212, lanzaba a sus hijos
+#  con `subprocess.run` SIN `env=`: el veneno del padre llegaba entero a cada batería.
+#
+#  Lo que esto significa aquí: la salida de esta batería se PUBLICA como evidencia y
+#  sostiene el estado de escenarios. Un `hashlib` o un `json` sustituidos por quien la corre
+#  deciden qué dice esa evidencia. Se aplica el remedio ENTERO que el revisor adjudicó: el
+#  prólogo entra en la batería —lo que cierra también la ejecución suelta— y el runner
+#  sanea el entorno de sus hijos y lo publica en la cabecera de cada evidencia.
+#
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      La misma disciplina que `E-10` sigue debajo y que `T330` comprueba: lo que protege
+#      está fijado y es idéntico en todos los puntos —`T380` lo exige con su digest—, y lo
+#      que se lee dice qué se midió en ESTA sede. Un recital común mentiría en la mitad de
+#      las sedes; un mecanismo por sede derivaría, y el que derive de menos es el que nadie
+#      mira.
+#
+#  DECISIÓN · la guarda va ANTES del prólogo `E-10`, y no lo sustituye
+#      Alternativas: (a) sustituir `E-10` por la guarda; (b) dejar `E-10` y añadir la
+#      guarda encima.
+#      Se elige (b). Cierran cosas distintas: `E-10` retira del `sys.path` lo que mete el
+#      lanzador —y sigue haciendo falta cuando el punto se IMPORTA, donde la guarda no
+#      reejecuta—; `G-03` impide que `sitecustomize` llegue siquiera a ejecutarse. Quitar
+#      `E-10` reabriría la contaminación de la ruta en el caso importado.
+import os as _os_g03
+import sys as _sys_g03
+
+# LA GUARDA NO DEJA RASTRO EN EL ÁRBOL QUE JUZGA. Medido: al importar la guarda, Python
+# escribía `validadores/__pycache__/aislamiento_de_arranque…pyc` en el árbol, y
+# `comprobar_arranque.py` empezó a publicar «el proyecto arrastra `__pycache__`» sobre
+# proyectos recién creados. Se desactiva la escritura de bytecode DURANTE la guarda y se
+# devuelve al estado que tenía: lo que el punto importe después sigue cacheándose como
+# siempre, y no se paga rendimiento por una comprobación que corre una vez.
+_G03_BYTECODE = _sys_g03.dont_write_bytecode
+_sys_g03.dont_write_bytecode = True
+_G03_PROPIA = _os_g03.path.dirname(_os_g03.path.realpath(__file__))
+_G03_SEDE = ""
+_G03_RAIZ = _G03_PROPIA
+while not _G03_SEDE:
+    for _G03_CANDIDATA in (_G03_PROPIA,
+                           _os_g03.path.join(_G03_RAIZ, "kernel", "operativo",
+                                             "validadores")):
+        if _os_g03.path.isfile(_os_g03.path.join(_G03_CANDIDATA,
+                                                 "aislamiento_de_arranque.py")):
+            _G03_SEDE = _G03_CANDIDATA
+            break
+    else:
+        _G03_PADRE = _os_g03.path.dirname(_G03_RAIZ)
+        if _G03_PADRE == _G03_RAIZ:
+            _sys_g03.stderr.write(
+                "[PROCEDENCIA_NO_FIABLE] no hay `aislamiento_de_arranque.py` ni junto a "
+                "este punto ejecutable ni en el `kernel/operativo/validadores/` de ning\u00fan "
+                "ancestro suyo: no se puede decidir si el arranque est\u00e1 aislado, y no se "
+                "sigue\n")
+            raise SystemExit(5)
+        _G03_RAIZ = _G03_PADRE
+_sys_g03.path.insert(0, _G03_SEDE)
+import aislamiento_de_arranque as _aislamiento_g03                    # noqa: E402
+
+AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)
+_sys_g03.dont_write_bytecode = _G03_BYTECODE
+
+# `-I` deja FUERA de `sys.path` el directorio del guión —es lo que impide que un homónimo
+# vecino se cuele— y los puntos que importan módulos hermanos lo necesitan. Se reintroduce
+# por RUTA DERIVADA DE `__file__`, que no la escribe el lanzador.
+if _G03_PROPIA not in _sys_g03.path:
+    _sys_g03.path.insert(0, _G03_PROPIA)
+
+# ---------------------------------------------------------------------------
+#  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, `HALLAZGO 3` del gate del 2026-09-05: esta batería
+#  no llevaba el prólogo, y el inventario de `T330` la eximía por vivir en una zona de
+#  pruebas. Su salida se PUBLICA como evidencia; un `json.py` o un `hashlib.py` homónimos en
+#  el `PYTHONPATH` de quien la corre deciden qué dice esa evidencia, que es exactamente el
+#  daño que `H-01` midió sobre `huella.py`. La deuda ya no es de zona: la exclusión
+#  `motivo: "bateria"` se ha RETIRADO del inventario y esta batería es un punto ejecutable
+#  como cualquier otro.
+#
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      Es la decisión de `ADJ-B2`, sin cambio: `T330` exige que el mecanismo sea IDÉNTICO en
+#      todos los puntos ejecutables, y cada sede escribe qué se midió en ella.
+import sys as _sys
+import os as _os
+
+_RAIZ_DEL_APARATO = _os.path.dirname(_os.path.abspath(__file__))
+
+
+def _entradas_del_lanzador():
+    """Lo que el LANZADOR puede meter en la ruta de importación: `PYTHONPATH` y el `cwd`."""
+    sospechosas = set()
+    for entrada in (_os.environ.get("PYTHONPATH") or "").split(_os.pathsep):
+        if entrada:
+            sospechosas.add(_os.path.realpath(entrada))
+    try:
+        sospechosas.add(_os.path.realpath(_os.getcwd()))
+    except OSError:
+        # Un `cwd` borrado bajo los pies no es motivo para no purgar el resto.
+        pass
+    return sospechosas
+
+
+def _purgar_la_ruta_de_importacion():
+    """Retira de `sys.path` lo que venga del lanzador. Devuelve cuántas entradas retiró."""
+    del_lanzador = _entradas_del_lanzador()
+    propia = _os.path.realpath(_RAIZ_DEL_APARATO)
+    conservadas, retiradas = [], []
+    for entrada in _sys.path:
+        try:
+            real = _os.path.realpath(entrada or _os.getcwd())
+        except OSError:
+            conservadas.append(entrada)
+            continue
+        if real != propia and real in del_lanzador:
+            retiradas.append(real)
+        else:
+            conservadas.append(entrada)
+    _sys.path[:] = conservadas
+    return retiradas
+
+
+RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()
+
+# CONTROL DEL CONTROL de la purga: `os` se usa para poder purgar, así que si `os` mismo
+# viniera del lanzador la purga no probaría nada. No hay forma honesta de seguir: se dice y
+# se sale con el código de PROCEDENCIA.
+if _os.path.realpath(_os.path.dirname(_os.__file__ or ".")) in _entradas_del_lanzador():
+    _sys.stderr.write(
+        "[PROCEDENCIA_NO_FIABLE] el módulo `os` procede de la ruta de importación del "
+        "lanzador: este punto ejecutable no puede garantizar de dónde salen sus módulos y "
+        "NO ejecuta\n")
+    raise SystemExit(5)
+
 import ast
 import fcntl
 import json
@@ -1872,8 +2011,14 @@ class Piezas(unittest.TestCase):
         """T182 · Defecto que previene: una evidencia que depende del texto castellano.
 
         El contrato de la salida es el CÓDIGO, no el detalle. Se comprueba que los
-        dieciséis del §4.1 —los quince originales más `EJECUCION_AMBIGUA`— están, que
-        cada `str(error)` lleva el suyo entre corchetes y que `a_dict()` es determinista.
+        diecisiete del §4.1 —los quince originales, `EJECUCION_AMBIGUA` y el
+        `PRIORIDAD_INMUTABLE` de `G-04`— están, que cada `str(error)` lleva el suyo entre
+        corchetes y que `a_dict()` es determinista.
+
+        `PRIORIDAD_INMUTABLE` entra en el censo con su propio código y HEREDANDO de
+        `RuntimeInconsistente`: la clase de fallo no cambia —sigue siendo un estado que no
+        casa con ninguna regla, y la CLI lo mapea igual—, lo que cambia es que la evidencia
+        pueda nombrar la prohibición de `b.12` en vez de un genérico.
         """
         esperados = {
             "ERROR_DE_RUNTIME", "AUTORIDAD_NO_DISPONIBLE", "AUTORIDAD_PERDIDA",
@@ -1881,10 +2026,15 @@ class Piezas(unittest.TestCase):
             "DEPENDENCIA_NO_RESUELTA", "CAPACIDAD_NO_SOPORTADA", "ADAPTADOR_INCOMPATIBLE",
             "EJECUCION_FALLIDA", "EJECUCION_DEFINITIVA", "EJECUCION_CANCELADA",
             "TIEMPO_AGOTADO", "EFECTO_YA_APLICADO", "RUNTIME_INCONSISTENTE",
-            "EJECUCION_AMBIGUA",
+            "EJECUCION_AMBIGUA", "PRIORIDAD_INMUTABLE",
         }
         from runtime import errores as errores_runtime
         self.assertEqual(set(errores_runtime.CODIGOS), esperados)
+        self.assertTrue(issubclass(errores_runtime.PrioridadInmutable,
+                                   errores_runtime.RuntimeInconsistente),
+                        "`PrioridadInmutable` dejó de ser un `RuntimeInconsistente`: la "
+                        "tabla de clases de fallo de `ads_runtime.py` ya no lo cubre y la "
+                        "CLI perdería su código de salida")
         for clase in errores_runtime.CLASES:
             error = clase("un detalle", ruta="paquetes/pq-1.json", extra=1)
             self.assertIn("[" + clase.CODIGO + "]", str(error))
@@ -2041,6 +2191,396 @@ class Piezas(unittest.TestCase):
             "elegibles", "estado-paquete", "liberar", "observar", "pausar", "procedencia",
             "reanudar", "reclamar", "renovar", "vistas",
         ]))
+
+
+# ===================================================================================
+#  T415 - T417 · `D-02` · el CENSO de escenarios que sólo ascienden tocando una batería AJENA
+# ===================================================================================
+#  QUÉ CIERRA. `D-02` del cierre final de `F6`: hay escenarios cuyo `estado:` no puede subir
+#  a `prueba-superada` por nada que se escriba en su propio contrato, porque su evidencia NO
+#  LOS NOMBRA y quien tendría que nombrarlos es un ejecutable de otro propietario. El
+#  aparato de contraste de `registro_pruebas.py` ya los publica —«no contrastables»—, pero
+#  publicaba una CIFRA agregada; lo que faltaba era la prueba que impide que la CLASE
+#  vuelva a crecer.
+#
+#  LAS BATERÍAS OBSERVAN; NO SON EL MECANISMO. Un escenario asciende porque su ejecutor
+#  publica un VEREDICTO NOMINAL —`Tnnn SUPERADA` o `Tnnn · … ok`— en una evidencia con
+#  cabecera de procedencia, código 0 y resumen de cierre. Cuando ese veredicto nominal no
+#  existe, el escenario está atado a que alguien reescriba la SALIDA de una batería ajena, y
+#  eso no es una condición de ascenso: es una dependencia de otro encargo.
+#
+#  DECISIÓN · el censo se DERIVA del árbol y se CONFRONTA con la lista escrita, en los dos
+#  sentidos
+#      Alternativas: (a) sólo prohibir que aparezcan nuevos; (b) exigir igualdad.
+#      Se elige (b). Con (a), cerrar uno de los doce no obligaría a nadie a actualizar la
+#      lista, y una lista que sobra deja de leerse; con (b), cerrar uno pone la prueba roja
+#      con un mensaje que dice exactamente qué tachar, que es cómo un cliquet se apriera.
+#      Lo que la prueba NO hace es «arreglar» ninguno: los doce viven fuera de la zona de
+#      esta autoría y su remedio va como PETICIÓN, con nombre y con lo que le falta a cada
+#      uno.
+#
+#  DECISIÓN · esta prueba vive AQUÍ y su sede natural es `test_integridad_y_evidencia.py`
+#      Mide el corpus de escenarios y la evidencia publicada, que es el objeto de esa otra
+#      batería y no de ésta. Vive aquí porque `test_runtime.py` es la batería de esta
+#      autoría y la que no vive en ningún sitio no existe. Trasladarla —sin cambiarle una
+#      línea— queda como PETICIÓN al propietario de la evidencia.
+DIR_DE_PRUEBAS = os.path.join(RAIZ, "kernel", "operativo", "pruebas")
+
+# El censo MEDIDO sobre este árbol. Cada entrada es «escenario → ejecutable que tendría que
+# publicar su veredicto nominal para que pudiera ascender».
+#
+# ESTÁ VACÍO, Y ESO ES EL CIERRE DE `D-02`. Tenía DOCE entradas y el cliquet de arriba hizo
+# exactamente lo que se le pidió: en cuanto los doce ejecutores aprendieron a publicar el
+# veredicto nominal, `T415` y `T416` se pusieron ROJAS diciendo, escenario a escenario, «ya
+# no está atado: táchalo del censo». Se tachan los doce. El remedio, por ejecutor:
+#
+#     `test_workspace.py`              `T162`–`T167` · la primera línea del docstring de
+#                                      cada caso, que es lo que `unittest -v` imprime
+#                                      delante de `... ok`
+#     `comprobar_arranque.py`          `T168` y `T181` · `ResultadoRepartido`: UN montaje y
+#                                      TRES veredictos, porque los tres escenarios se
+#                                      demuestran sobre el mismo proyecto recién creado y
+#                                      montarlo tres veces no comprobaría nada nuevo
+#     los tres escenarios extremo a    `T180`, `T193`, `T225` y `T301` · una línea propia al
+#     extremo                          cierre, calculada aparte para que una excepción por
+#                                      el medio deje el veredicto en ROJO y no sin emitir
+#
+# El diccionario se deja vacío A PROPÓSITO, y no se borra con sus tres pruebas. `T415`
+# confronta el censo con el árbol EN LOS DOS SENTIDOS: vacío, sigue midiendo que no aparezca
+# ninguno nuevo, que es la mitad que impide que la clase vuelva a crecer. Y `T417` sigue
+# comprobando entera la afirmación de la que todo esto depende: que lo que asciende un
+# escenario es el veredicto nominal de su evidencia y no haber ejecutado una batería.
+CENSO_D02 = {}
+
+# LA FRONTERA, y por qué es un PREDICADO y no una lista.
+#
+#  Un escenario cuya evidencia no lo nombra puede estar en dos situaciones muy distintas, y
+#  confundirlas es lo que hacía que la cifra de `D-02` no se pudiera accionar:
+#
+#      RETRASO DEL REGISTRADOR   su ejecutor SÍ sabe publicar el veredicto nominal de ese
+#                                escenario —lo lleva escrito—, y lo único que falta es una
+#                                pasada de `registrar_evidencia.py`. No hay deuda: hay una
+#                                regeneración pendiente
+#      CLASE DE `D-02`           su ejecutor NO sabría publicarlo aunque se ejecutara mil
+#                                veces, porque su salida no tiene esa forma. Para que ese
+#                                escenario ascienda hay que REESCRIBIR la salida de una
+#                                batería ajena, y eso es otro encargo
+#
+#  Se decide con un predicado sobre la FUENTE del ejecutor y no con una lista escrita a mano,
+#  por la razón de `ADJ-B2`: una lista envejece en silencio y, sobre todo, obligaría a que
+#  cada autoría que añade escenarios viniera a editar esta batería —que es exactamente el
+#  acoplamiento que `D-02` denuncia—. El predicado se cumple solo.
+#
+#  Las dos formas vivas de publicar un veredicto nominal, que son las mismas que
+#  `registro_pruebas.py` reconoce al leer:
+#
+#      batería `unittest`   la PRIMERA línea del docstring del caso empieza por `Tnnn ·`, y
+#                           `unittest` la imprime seguida de ` ... ok`
+#      validador            el identificador viaja como literal EXACTO —`"Tnnn"`— hasta la
+#                           tabla que imprime `Tnnn  SUPERADA`
+#
+#  Medido sobre este árbol, el predicado separa los doce del censo de todo lo demás:
+#  `escenario_e2e_f6.py` escribe la línea `T225 · ciclo de §7.2…` y NO un veredicto —nombra
+#  sin dictaminar—, `test_workspace.py` no menciona `T162` en ninguna forma, y
+#  `comprobar_arranque.py` lleva `"T148"`, `"T171"` y `"T194"` como literales y no lleva
+#  `"T168"` ni `"T181"`.
+_DOCSTRING_DE_CASO = '"""%s ·'
+
+
+def publicaria_veredicto(ejecutable, identificador, evidencia=None):
+    """¿Ese ejecutable PUBLICA el veredicto nominal de ese escenario?
+
+    Devuelve `None` cuando no se puede decidir: eso no es «sí» ni «no», y quien llama
+    decide. Aquí se trata como «no sabría», que es el lado conservador: deja el escenario
+    dentro de la clase y obliga a mirarlo.
+
+    HALLAZGO 8 DE LA AUDITORÍA INDEPENDIENTE · LA PREGUNTA SE CONTESTA SOBRE LA SALIDA
+        Esto era una comprobación de SUBCADENA sobre el fichero fuente entero:
+
+            if _DOCSTRING_DE_CASO % identificador in fuente:  return True
+            return '"' + id + '"' in fuente or "'" + id + "'" in fuente
+
+        Es decir, un comentario, un docstring o una cadena muerta que contuviera `"T168"`
+        bastaba para sacar al escenario del censo de `D-02` sin que nada publicara jamás un
+        veredicto para él — incluida la propia explicación de por qué se vació el censo. El
+        cliquet que debía impedir que la clase reapareciera era un adorno textual.
+
+    DECISIÓN · se mira la EVIDENCIA PUBLICADA cuando la hay, y la fuente sólo si no
+        La evidencia de ese ejecutable es su salida REAL, así que donde exista la pregunta
+        se contesta con un HECHO y con la MISMA función que decide el ascenso. Los dos
+        sitios de esta batería que llaman aquí lo hacen DESPUÉS de comprobar que la
+        evidencia vigente NO nombra al escenario, de modo que allí no hay salida que mirar
+        y la respuesta es necesariamente una predicción sobre la fuente; el parámetro está
+        para quien sí tenga una salida contra la que decidir.
+
+    DECISIÓN · la predicción se hace sobre el ÁRBOL SINTÁCTICO, no sobre el texto
+        El identificador tiene que aparecer dentro de una CADENA del módulo, no en
+        cualquier byte del fichero. Es lo que cierra el caso que el auditor demostró
+        alcanzable —un COMENTARIO que nombra el escenario bastaba para sacarlo del censo—,
+        y de paso hace que el propio comentario que explica por qué se vació el censo deje
+        de vaciarlo.
+
+        LO QUE ESTA PREDICCIÓN NO PUEDE HACER, dicho: distinguir una cadena que se imprime
+        de una cadena muerta. Estáticamente no se distinguen, y fingir que sí sería peor que
+        decirlo. La respuesta firme la da la evidencia, que es un hecho; ésta es una
+        predicción y sólo se usa donde no hay hecho disponible.
+    """
+    if evidencia:
+        ruta_evidencia = os.path.join(DIR_DE_PRUEBAS, evidencia)
+        if os.path.isfile(ruta_evidencia):
+            with open(ruta_evidencia, encoding="utf-8", errors="replace") as manejador:
+                return bool(veredicto_nominal(manejador.read(), identificador))
+    ruta = os.path.join(RAIZ, ejecutable)
+    if not os.path.isfile(ruta):
+        return None
+    with open(ruta, encoding="utf-8", errors="replace") as manejador:
+        fuente = manejador.read()
+    try:
+        arbol = ast.parse(fuente)
+    except SyntaxError:
+        return None
+    for nodo in ast.walk(arbol):
+        if (isinstance(nodo, ast.Constant) and isinstance(nodo.value, str)
+                and re.search(r"\b" + re.escape(identificador) + r"\b", nodo.value)):
+            return True
+    return False
+
+
+_BLOQUE_DE_ESCENARIO = re.compile(r"```yaml ads:escenario\n(.*?)```", re.S)
+_CAMPO_DE_ESCENARIO = re.compile(r"(?m)^(id|validador|evidencia|estado):[ \t]*(.+?)[ \t]*$")
+# Las mismas tres formas de cierre y las mismas dos formas de veredicto nominal que
+# `registro_pruebas.py` declara. Se transcriben —no se importan— porque importar el módulo
+# de `validadores/` metería a esta batería a depender de otra zona; `T415` comprueba que la
+# transcripción sigue casando con el árbol, que es lo que puede caducar.
+_CIERRES = (
+    re.compile(r"(?m)^\d+ superadas · \d+ fallidas\s*$"),
+    re.compile(r"(?m)^(?:OK|OK \([^)]*\)|FAILED \([^)]*\))\s*$"),
+    re.compile(r"(?m)^\d+ de \d+ pasos CUMPLIDOS\s*$"),
+)
+_VEREDICTO_DE_VALIDADOR = r"(?m)^%s\s+(SUPERADA|FALLIDA)\b"
+_VEREDICTO_DE_BATERIA = (r"(?m)^%s\s+·[^\n]*?\.\.\.\s*"
+                         r"(ok|FAIL|ERROR|skipped[^\n]*|expected failure|unexpected success)"
+                         r"\s*$")
+
+
+def _sin_comillas(valor):
+    valor = (valor or "").strip()
+    if len(valor) >= 2 and valor[0] == valor[-1] and valor[0] in "\"'":
+        return valor[1:-1]
+    return valor
+
+
+def escenarios_del_arbol():
+    """Todo bloque `ads:escenario` de `kernel/operativo/` y `packs/`, con sus cuatro campos."""
+    salida = []
+    for base in ("kernel/operativo", "packs"):
+        for carpeta, _, ficheros in os.walk(os.path.join(RAIZ, base)):
+            for fichero in sorted(ficheros):
+                if not fichero.endswith(".md"):
+                    continue
+                completa = os.path.join(carpeta, fichero)
+                with open(completa, encoding="utf-8", errors="replace") as manejador:
+                    texto = manejador.read()
+                for cuerpo in _BLOQUE_DE_ESCENARIO.findall(texto):
+                    datos = {clave: _sin_comillas(valor)
+                             for clave, valor in _CAMPO_DE_ESCENARIO.findall(cuerpo)}
+                    if datos.get("id"):
+                        salida.append((datos, completa))
+    return salida
+
+
+def veredicto_nominal(texto, identificador):
+    """¿La salida publica un veredicto PARA ESE escenario? Es el mecanismo del ascenso."""
+    escapado = re.escape(identificador)
+    return (re.findall(_VEREDICTO_DE_VALIDADOR % escapado, texto)
+            + re.findall(_VEREDICTO_DE_BATERIA % escapado, texto))
+
+
+def atados_a_una_bateria_ajena():
+    """Los escenarios que NO pueden ascender sin que otro ejecutable cambie su salida.
+
+    La condición, entera y derivada del árbol: declaran evidencia · la evidencia EXISTE ·
+    tiene cabecera de procedencia · terminó con código 0 · la produjo el ejecutable que el
+    escenario declara · y esa salida NO los nombra en ninguna línea de veredicto.
+
+    Los cinco primeros puntos son lo que separa esta clase de las otras: un escenario sin
+    evidencia, o con una evidencia de otra cosa, no está atado a nadie — le falta ejecutarse.
+    Éstos SÍ se ejecutaron, y aun así no pueden ascender.
+    """
+    atados = {}
+    for datos, sede in escenarios_del_arbol():
+        evidencia = datos.get("evidencia") or ""
+        validador = datos.get("validador") or ""
+        if not evidencia or not validador:
+            continue
+        ruta = os.path.join(DIR_DE_PRUEBAS, evidencia)
+        if not os.path.isfile(ruta):
+            continue
+        with open(ruta, encoding="utf-8", errors="replace") as manejador:
+            texto = manejador.read()
+        codigo = re.search(r"^# codigo:\s*(-?\d+)", texto, re.M)
+        orden = re.search(r"^# orden:\s*(.+)$", texto, re.M)
+        if not (codigo and orden) or codigo.group(1) != "0":
+            continue
+        ejecutable = os.path.basename(validador.split()[0])
+        if ejecutable not in orden.group(1):
+            continue
+        if veredicto_nominal(texto, datos["id"]):
+            continue
+        if publicaria_veredicto(validador.split()[0], datos["id"]):
+            # RETRASO DEL REGISTRADOR, no deuda: su ejecutor lleva escrito el veredicto y
+            # sólo falta la pasada que regenera la evidencia.
+            continue
+        atados[datos["id"]] = {
+            "ejecutable": validador.split()[0],
+            "evidencia": evidencia,
+            "estado": datos.get("estado"),
+            "sede": os.path.relpath(sede, RAIZ).replace(os.sep, "/"),
+        }
+    return atados
+
+
+class EscenariosAtadosAUnaBateriaAjena(unittest.TestCase):
+    """`D-02`. No prueba el runtime: prueba que una clase de deuda no vuelva a crecer."""
+
+    def test_415_ningun_escenario_NUEVO_queda_atado_a_una_bateria_ajena(self):
+        """T415 · Defecto que previene: que la clase de `D-02` vuelva a crecer en silencio.
+
+        El censo se deriva del árbol y se confronta con la lista escrita. Un escenario NUEVO
+        en la clase pone la prueba roja y dice qué ejecutable tendría que nombrarlo; uno que
+        se cierre también, y dice que se tache del censo. Las dos direcciones importan: la
+        primera impide que la deuda crezca, la segunda impide que la lista se quede rancia.
+        """
+        atados = atados_a_una_bateria_ajena()
+        nuevos = sorted(set(atados) - set(CENSO_D02))
+        self.assertEqual(
+            nuevos, [],
+            "escenario(s) NUEVO(S) que sólo pueden ascender si otro reescribe la salida de "
+            "su ejecutor: " + str({i: atados[i]["ejecutable"] for i in nuevos})
+            + ". La clase de `D-02` ha vuelto a crecer. El mecanismo del ascenso es que el "
+              "ejecutor publique un veredicto NOMINAL del escenario; una batería que no lo "
+              "publica no lo está observando, lo está bloqueando")
+        cerrados = sorted(set(CENSO_D02) - set(atados))
+        self.assertEqual(
+            cerrados, [],
+            "estos escenarios YA no están atados —su evidencia los nombra— y siguen en "
+            "`CENSO_D02`: " + str(cerrados) + ". Táchalos del censo; un cliquet que no se "
+            "aprieta deja de medir")
+
+    def test_416_cada_atado_declara_QUE_ejecutable_tendria_que_nombrarlo(self):
+        """T416 · Defecto que previene: una deuda con cifra y sin nombre.
+
+        `D-02` pedía para cada escenario contrato, ejecutor, evidencia, transición de estado,
+        condición de ascenso, negativo, digest y vínculo al árbol. Lo que esta prueba fija es
+        la parte que se puede fijar desde aquí: que de cada uno consten el EJECUTOR real, la
+        EVIDENCIA que hoy no lo nombra y la CONDICIÓN DE ASCENSO —el veredicto nominal—, y
+        que el ejecutable exista en el árbol. Sin eso, «hay nueve escenarios bloqueados» es
+        una cifra que nadie puede accionar.
+        """
+        atados = atados_a_una_bateria_ajena()
+        for identificador in sorted(CENSO_D02):
+            with self.subTest(escenario=identificador):
+                self.assertIn(identificador, atados)
+                ficha = atados[identificador]
+                self.assertEqual(ficha["ejecutable"], CENSO_D02[identificador],
+                                 "el censo nombra otro ejecutable que el que el árbol dice")
+                self.assertTrue(
+                    os.path.isfile(os.path.join(RAIZ, ficha["ejecutable"])),
+                    "el ejecutable que este escenario declara no existe en el árbol")
+                self.assertTrue(os.path.isfile(
+                    os.path.join(DIR_DE_PRUEBAS, ficha["evidencia"])))
+                self.assertNotEqual(
+                    ficha["estado"], "prueba-superada",
+                    "declara `prueba-superada` con una evidencia que no lo nombra: eso es "
+                    "subir de estado por argumento, que `REGISTRO.md` prohíbe")
+
+        # LA FRONTERA, comprobada y no supuesta. Cada miembro del censo está en él porque
+        # su ejecutor NO sabría publicar su veredicto, y eso se vuelve a medir aquí en vez
+        # de heredarse de la clasificación: si algún día uno de los doce empezara a saberlo,
+        # dejaría de ser deuda de `D-02` y sería una regeneración pendiente.
+        for identificador in sorted(CENSO_D02):
+            with self.subTest(frontera=identificador):
+                self.assertFalse(
+                    publicaria_veredicto(CENSO_D02[identificador], identificador),
+                    identificador + ": su ejecutor `" + CENSO_D02[identificador] + "` YA "
+                    "sabe publicar su veredicto nominal. Entonces no le falta que nadie "
+                    "reescriba una batería: le falta una pasada de `registrar_evidencia.py`, "
+                    "y este escenario tiene que salir del censo de `D-02`")
+
+    def test_417_el_ascenso_lo_da_el_VEREDICTO_NOMINAL_y_no_la_bateria(self):
+        """T417 · Defecto que previene: creer que ejecutar una batería asciende un escenario.
+
+        El control sano de las dos anteriores. Si el mecanismo del ascenso no existiera, la
+        clase de `D-02` sería todo el corpus y el censo no mediría nada. Se comprueba lo
+        contrario sobre el árbol, y en tres tramos:
+
+          1 · hay MUCHOS escenarios que ascienden, y ascienden por el veredicto nominal de
+              su evidencia, con su resumen de cierre. Las baterías OBSERVAN —publican el
+              veredicto—; lo que cambia el estado es ese veredicto
+          2 · ninguno de los doce del censo declara `prueba-superada`: nadie sube de estado
+              por argumento en la clase que no puede subir
+          3 · si algún `prueba-superada` no está nombrado por su evidencia, su ejecutor TIENE
+              que saber nombrarlo. Eso es un retraso del registrador y es legítimo mientras
+              dure; lo que no puede existir es un `prueba-superada` que NADIE nombraría nunca
+
+        DECISIÓN · el tramo 3 comprueba la CAPACIDAD del ejecutor y no la frescura de la
+        evidencia
+            Alternativas: (a) exigir que TODO `prueba-superada` esté nombrado hoy por su
+            evidencia; (b) exigir que su ejecutor sepa nombrarlo.
+            Se elige (b). (a) es la regla correcta y ya tiene dueño —`comprobar_evidencia`
+            la ejecuta en `T350`, con la fórmula única de `registro_pruebas.py`—; repetirla
+            aquí no la haría más cierta y sí ataría una batería del runtime a la frescura de
+            TODA la evidencia del árbol, de modo que cualquier autoría que añada un escenario
+            pondría roja esta batería hasta que alguien regenerase. Ésa es la clase de rojo
+            que se aprende a ignorar. (b) mide lo que esta batería sí es dueña de medir: que
+            la afirmación sea SOSTENIBLE, es decir, que exista el mecanismo que la sostendrá.
+        """
+        superados, sin_nombrar = [], []
+        for datos, _ in escenarios_del_arbol():
+            if datos.get("estado") != "prueba-superada":
+                continue
+            evidencia = datos.get("evidencia") or ""
+            ruta = os.path.join(DIR_DE_PRUEBAS, evidencia)
+            self.assertTrue(os.path.isfile(ruta),
+                            datos["id"] + " declara `prueba-superada` sobre una evidencia "
+                            "que no existe")
+            with open(ruta, encoding="utf-8", errors="replace") as manejador:
+                texto = manejador.read()
+            veredictos = veredicto_nominal(texto, datos["id"])
+            if not veredictos:
+                sin_nombrar.append((datos["id"], (datos.get("validador") or "").split()[0],
+                                    evidencia))
+                continue
+            self.assertTrue([v for v in veredictos if v in ("SUPERADA", "ok")],
+                            datos["id"] + " está nombrado con un veredicto que no es bueno")
+            self.assertTrue(any(cierre.search(texto) for cierre in _CIERRES),
+                            evidencia + " no publica resumen de cierre: la salida está "
+                            "truncada y no sostiene un verde")
+            superados.append(datos["id"])
+
+        # 1 · el mecanismo existe y es el que asciende a la inmensa mayoría.
+        self.assertGreater(len(superados), 100,
+                           "casi ningún escenario está en `prueba-superada`: o el corpus "
+                           "cambió de forma, o la transcripción de las expresiones de "
+                           "veredicto caducó y esta prueba dejó de ver los ascensos")
+
+        # 2 · en la clase que NO puede subir, nadie ha subido.
+        for identificador in sorted(CENSO_D02):
+            datos = [d for d, _ in escenarios_del_arbol() if d["id"] == identificador]
+            self.assertTrue(datos, identificador + " desapareció del corpus")
+            self.assertNotEqual(
+                datos[0].get("estado"), "prueba-superada",
+                identificador + " declara `prueba-superada` y su ejecutor no sabe nombrarlo: "
+                "eso es subir de estado por argumento, que `REGISTRO.md` prohíbe")
+
+        # 3 · lo que hoy no está nombrado, su ejecutor TIENE que saber nombrarlo.
+        insostenibles = [fila for fila in sin_nombrar
+                         if not publicaria_veredicto(fila[1], fila[0])]
+        self.assertEqual(
+            insostenibles, [],
+            "escenario(s) que declaran `prueba-superada` y cuyo ejecutor NO sabría publicar "
+            "su veredicto ni ejecutándose: " + str(insostenibles) + ". No es un retraso del "
+            "registrador: es una afirmación que nada va a sostener")
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):

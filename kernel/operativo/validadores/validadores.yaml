@@ -10,6 +10,19 @@
 # `comprobar_evidencia.py`. Ninguna de las dos acepta un nombre sin `.py`, y ninguna
 # publica una ejecución con código distinto de cero.
 
+# `G-06` · UNA FIRMA CON `\d+` ADMITE EL CERO, Y CERO NO ES EXITO
+#
+#   El gate del 2026-09-05 lo midio: catorce componentes declaraban `firma_de_exito: '\d+ …'`,
+#   y `\d+` casa con `0`. Una evidencia que dijera «0 infracciones detectadas · 0 NO
+#   detectadas» pasaba la comprobacion, y `0 sabotajes · 0 sin detectar` tambien. El
+#   instrumento medía la FORMA del numero y no su minimo, de modo que «paso todo» y «no
+#   corrio nada» eran indistinguibles desde la evidencia.
+#
+#   Las catorce pasan a `[1-9]\d*`, que exige trabajo REAL. Lo que esto NO cubre —y se dice—
+#   es el caso del resultado legitimamente vacio: hoy ningun validador del manifiesto lo
+#   tiene, y el dia que lo tenga su firma tendra que declararlo expresamente en vez de
+#   heredar un patron permisivo.
+#
 # `tipo` decide qué se hace con cada fichero:
 #   validador   se ejecuta, se comprueba su código de salida y se publica su evidencia
 #   generador   se ejecuta para regenerar un artefacto derivado; no produce evidencia
@@ -29,14 +42,14 @@ componentes:
     script: comprobar_contratos.py
     tipo: validador
     evidencia: contratos-salida.txt
-    firma_de_exito: '\d+ superadas · 0 fallidas'
+    firma_de_exito: '[1-9]\d* superadas · 0 fallidas'
     debe_contener: ['T86', 'T90', 'T136', 'T140', 'T141', 'T146']
 
   - id: packs
     script: comprobar_packs.py
     tipo: validador
     evidencia: packs-salida.txt
-    firma_de_exito: '\d+ superadas · 0 fallidas'
+    firma_de_exito: '[1-9]\d* superadas · 0 fallidas'
     debe_contener: ['T131', 'T132', 'T149']
 
   - id: referencias
@@ -44,21 +57,21 @@ componentes:
     args: ['--exclusiones']
     tipo: validador
     evidencia: referencias-salida.txt
-    firma_de_exito: '\d+ superadas · 0 fallidas'
+    firma_de_exito: '[1-9]\d* superadas · 0 fallidas'
     debe_contener: ['T147', 'documentos analizados']
 
   - id: arranque
     script: comprobar_arranque.py
     tipo: validador
     evidencia: arranque-salida.txt
-    firma_de_exito: '\d+ superadas · 0 fallidas'
+    firma_de_exito: '[1-9]\d* superadas · 0 fallidas'
     debe_contener: ['T148', 'T171', 'cobertura ESTRUCTURAL']
 
   - id: versiones
     script: comprobar_versiones.py
     tipo: validador
     evidencia: versiones-salida.txt
-    firma_de_exito: '\d+ superadas · 0 fallidas'
+    firma_de_exito: '[1-9]\d* superadas · 0 fallidas'
     debe_contener: ['T152']
 
   # `11-ARQ` §19 `D104` MATERIALIZADO: los pares `<CAP>:revision` que el catalogo de `b.16`
@@ -68,21 +81,21 @@ componentes:
     script: comprobar_composicion_procesos.py
     tipo: validador
     evidencia: composicion-procesos-salida.txt
-    firma_de_exito: '\d+ superadas · 0 fallidas'
+    firma_de_exito: '[1-9]\d* superadas · 0 fallidas'
     debe_contener: ['T273', 'T274', 'T275', 'T276']
 
   - id: recuentos
     script: comprobar_recuentos.py
     tipo: validador
     evidencia: recuentos-salida.txt
-    firma_de_exito: '\d+ superadas · 0 fallidas'
+    firma_de_exito: '[1-9]\d* superadas · 0 fallidas'
     debe_contener: ['T151']
 
   - id: integridad
     script: comprobar_integridad.py
     tipo: validador
     evidencia: integridad-salida.txt
-    firma_de_exito: '\d+ superadas · 0 fallidas'
+    firma_de_exito: '[1-9]\d* superadas · 0 fallidas'
     debe_contener: ['T150']
 
   - id: prompts
@@ -90,14 +103,14 @@ componentes:
     args: ['--tabla']
     tipo: validador
     evidencia: prompts-salida.txt
-    firma_de_exito: '\d+ superadas · 0 fallidas'
+    firma_de_exito: '[1-9]\d* superadas · 0 fallidas'
     debe_contener: ['T153', 'unidades de instrucción revisadas']
 
   - id: negativos
     script: comprobar_negativos.py
     tipo: validador
     evidencia: negativos-salida.txt
-    firma_de_exito: '\d+ infracciones detectadas · 0 NO detectadas'
+    firma_de_exito: '[1-9]\d* infracciones detectadas · 0 NO detectadas'
     debe_contener: ['N136', 'N147', 'N150', 'N161', 'N171']
     # Su salida contiene por diseño el texto de los fallos que PROVOCA en una copia
     # temporal. Es la única evidencia donde «FALLIDA» o «NO detectada» pueden aparecer
@@ -108,7 +121,7 @@ componentes:
     script: comprobar_fuentes.py
     tipo: validador
     evidencia: fuentes-salida.txt
-    firma_de_exito: '\d+ superadas · 0 fallidas'
+    firma_de_exito: '[1-9]\d* superadas · 0 fallidas'
     # La cobertura del barrido de T161 se PUBLICA en la evidencia. Sin ella, «el corpus
     # está limpio» sería una afirmación sin alcance declarado.
     debe_contener: ['T159', 'T160', 'T161', 'ficheros recorridos']
@@ -137,7 +150,7 @@ componentes:
     script: comprobar_evidencia.py
     tipo: validador
     evidencia: evidencia-salida.txt
-    firma_de_exito: '\d+ superadas · 0 fallidas'
+    firma_de_exito: '[1-9]\d* superadas · 0 fallidas'
     # `H-08` · la COBERTURA DEL CONTRASTE va en la evidencia. Este componente NO se juzga a
     # sí mismo —cuando corre, su propia evidencia es la de la pasada anterior—, así que
     # este `debe_contener` queda como DECLARACIÓN de qué publica esta salida y no como
@@ -398,6 +411,14 @@ componentes:
     script: negativos_runtime.py
     tipo: biblioteca
 
+  # La guarda de arranque de `G-03`. Es BIBLIOTECA: la importan los puntos ejecutables del
+  # arbol y `registrar_evidencia.py` para construir el entorno de sus hijos. Se declara aqui
+  # por la misma razon que los cuatro `negativos_*`: un fichero de `validadores/` que el
+  # manifiesto no conoce queda fuera de la evidencia sin que nada lo diga.
+  - id: aislamiento-de-arranque
+    script: aislamiento_de_arranque.py
+    tipo: biblioteca
+
   # `ADJ-G1` · el derivador del universo obligatorio entra en la CORRIDA. Estaba fuera del
   # manifiesto, asi que sus autopruebas se ejecutaban y su evidencia no se publicaba: una
   # propiedad comprobada que nadie podia reejecutar desde la evidencia. `O26` §5 convierte
@@ -409,8 +430,32 @@ componentes:
     args: ['--autopruebas']
     tipo: validador
     evidencia: universo-obligatorio-salida.txt
-    firma_de_exito: '\d+ sabotajes · 0 sin detectar'
+    firma_de_exito: '[1-9]\d* sabotajes · 0 sin detectar'
     debe_contener: ['sabotajes']
+
+  # `G-05` · LOS MODOS PRODUCTIVOS ENTRAN EN LA EVIDENCIA, y no solo las autopruebas.
+  #   El gate del 2026-09-05 lo midio: `--rutas` y `--tabla` FALLABAN CERRADO con EXIT=2
+  #   sobre la propia candidata, y `36/36 validadores en verde` convivia con un derivador
+  #   muerto porque su unica evidencia era `--autopruebas`. Un instrumento cuyo autotest
+  #   pasa y cuyo producto no corre esta roto y sale verde, que es el modo de fallo que
+  #   este manifiesto existe para impedir.
+  - id: universo-obligaciones
+    script: derivar-universo-obligatorio.py
+    dir: docs/evolucion/verificacion
+    args: ['--obligaciones']
+    tipo: validador
+    evidencia: universo-obligaciones-salida.txt
+    firma_de_exito: 'TOTAL [1-9]\d* obligaciones'
+    debe_contener: ['A ·', 'B ·', 'C ·', 'criterio de pertenencia']
+
+  - id: universo-rutas
+    script: derivar-universo-obligatorio.py
+    dir: docs/evolucion/verificacion
+    args: ['--tabla']
+    tipo: validador
+    evidencia: universo-rutas-salida.txt
+    firma_de_exito: '[1-9]\d* fuentes obligatorias · [1-9]\d* líneas'
+    debe_contener: ['fuentes obligatorias', 'EXCLUIDOS por PERÍMETRO']
 
   # `ADJ-GT3` y `O27` §5 · la cobertura de un gate deja de ser DECLARATIVA. Entra en el
   # manifiesto por la misma razon: un instrumento que decide si un gate puede adjudicar no
@@ -421,7 +466,7 @@ componentes:
     args: ['--autopruebas']
     tipo: validador
     evidencia: cobertura-de-gate-salida.txt
-    firma_de_exito: '\d+ controles · 0 sin detectar'
+    firma_de_exito: '[1-9]\d* controles · 0 sin detectar'
     debe_contener: ['control POSITIVO', 'SIN ABRIR', 'COMPENSAR', 'NO CERRADO']
 
   - id: runner

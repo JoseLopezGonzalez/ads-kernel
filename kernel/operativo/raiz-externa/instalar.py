@@ -66,6 +66,80 @@ from __future__ import annotations
 #      prueba lo comprueba por digest: si alguien toca uno, tiene que tocarlos todos.
 
 # ---------------------------------------------------------------------------
+#  `G-03` · AISLAMIENTO DE ARRANQUE · lo PRIMERO que hace este punto
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE CORREGIR, el 2026-09-05, sobre esta zona. `H-1` del revisor 2
+#  lo midió aquí: con un gancho en `sitecustomize` que sustituye `hashlib.sha256`,
+#
+#      $ PYTHONPATH=veneno python3.12 kernel/operativo/raiz-externa/verificador.py instalacion
+#        {"ok": true, "alteradas": []}   CÓDIGO 0   ← sobre una instalación con código INYECTADO
+#
+#  y `instalar.py` escribía su manifiesto con la misma primitiva sustituida. La raíz externa
+#  es la sede que ATESTIGUA que una instalación no ha sido alterada: si su digest se puede
+#  sustituir desde el entorno del lanzador, la atestación no vale nada. El prólogo `E-10` de
+#  abajo no lo cierra —llega después del arranque del intérprete— y por eso va esta guarda
+#  encima. Los ataques `instalación parcial` y `manifiesto de tres bytes` de `T380`-`T399`
+#  se ejercen contra esta zona.
+#
+#  DECISIÓN · el MECANISMO se copia byte a byte; el recital, no
+#      La misma disciplina que `E-10` sigue debajo y que `T330` comprueba: lo que protege
+#      está fijado y es idéntico en todos los puntos —`T380` lo exige con su digest—, y lo
+#      que se lee dice qué se midió en ESTA sede. Un recital común mentiría en la mitad de
+#      las sedes; un mecanismo por sede derivaría, y el que derive de menos es el que nadie
+#      mira.
+#
+#  DECISIÓN · la guarda va ANTES del prólogo `E-10`, y no lo sustituye
+#      Alternativas: (a) sustituir `E-10` por la guarda; (b) dejar `E-10` y añadir la
+#      guarda encima.
+#      Se elige (b). Cierran cosas distintas: `E-10` retira del `sys.path` lo que mete el
+#      lanzador —y sigue haciendo falta cuando el punto se IMPORTA, donde la guarda no
+#      reejecuta—; `G-03` impide que `sitecustomize` llegue siquiera a ejecutarse. Quitar
+#      `E-10` reabriría la contaminación de la ruta en el caso importado.
+import os as _os_g03
+import sys as _sys_g03
+
+# LA GUARDA NO DEJA RASTRO EN EL ÁRBOL QUE JUZGA. Medido: al importar la guarda, Python
+# escribía `validadores/__pycache__/aislamiento_de_arranque…pyc` en el árbol, y
+# `comprobar_arranque.py` empezó a publicar «el proyecto arrastra `__pycache__`» sobre
+# proyectos recién creados. Se desactiva la escritura de bytecode DURANTE la guarda y se
+# devuelve al estado que tenía: lo que el punto importe después sigue cacheándose como
+# siempre, y no se paga rendimiento por una comprobación que corre una vez.
+_G03_BYTECODE = _sys_g03.dont_write_bytecode
+_sys_g03.dont_write_bytecode = True
+_G03_PROPIA = _os_g03.path.dirname(_os_g03.path.realpath(__file__))
+_G03_SEDE = ""
+_G03_RAIZ = _G03_PROPIA
+while not _G03_SEDE:
+    for _G03_CANDIDATA in (_G03_PROPIA,
+                           _os_g03.path.join(_G03_RAIZ, "kernel", "operativo",
+                                             "validadores")):
+        if _os_g03.path.isfile(_os_g03.path.join(_G03_CANDIDATA,
+                                                 "aislamiento_de_arranque.py")):
+            _G03_SEDE = _G03_CANDIDATA
+            break
+    else:
+        _G03_PADRE = _os_g03.path.dirname(_G03_RAIZ)
+        if _G03_PADRE == _G03_RAIZ:
+            _sys_g03.stderr.write(
+                "[PROCEDENCIA_NO_FIABLE] no hay `aislamiento_de_arranque.py` ni junto a "
+                "este punto ejecutable ni en el `kernel/operativo/validadores/` de ning\u00fan "
+                "ancestro suyo: no se puede decidir si el arranque est\u00e1 aislado, y no se "
+                "sigue\n")
+            raise SystemExit(5)
+        _G03_RAIZ = _G03_PADRE
+_sys_g03.path.insert(0, _G03_SEDE)
+import aislamiento_de_arranque as _aislamiento_g03                    # noqa: E402
+
+AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)
+_sys_g03.dont_write_bytecode = _G03_BYTECODE
+
+# `-I` deja FUERA de `sys.path` el directorio del guión —es lo que impide que un homónimo
+# vecino se cuele— y los puntos que importan módulos hermanos lo necesitan. Se reintroduce
+# por RUTA DERIVADA DE `__file__`, que no la escribe el lanzador.
+if _G03_PROPIA not in _sys_g03.path:
+    _sys_g03.path.insert(0, _G03_PROPIA)
+
+# ---------------------------------------------------------------------------
 #  `E-10` · PROCEDENCIA · la ruta de importación se PURGA ANTES de importar nada
 # ---------------------------------------------------------------------------
 #  HECHO REPRODUCIDO ANTES DE CORREGIR, sobre este mismo punto ejecutable: con
@@ -158,6 +232,11 @@ from errores import (                                                # noqa: E40
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 NOMBRE_DEL_PAQUETE = "raiz-externa"
+# El módulo que decide el aislamiento de arranque, en el árbol. Se DERIVA de dónde vive este
+# fichero, y no se escribe una ruta: es el mismo camino que usa la guarda de arriba.
+GUARDA_DE_ARRANQUE = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "validadores", "aislamiento_de_arranque.py")
 NOMBRE_DEL_RUNTIME = "runtime"
 MANIFIESTO = "MANIFIESTO-DE-INSTALACION.json"
 
@@ -287,6 +366,26 @@ def _construir(destino, *, runtime):
         _copiar_arbol(origen, os.path.join(destino_runtime, paquete))
 
     paquete_instalado = os.path.join(destino, NOMBRE_DEL_PAQUETE)
+
+    # `G-03` · LA GUARDA DE ARRANQUE VIAJA CON LA INSTALACIÓN
+    #
+    #  Los cuatro puntos ejecutables de este paquete exigen el aislamiento al entrar, y para
+    #  exigirlo tienen que poder CARGAR el módulo que lo decide. En el árbol lo encuentran
+    #  subiendo hasta `kernel/operativo/validadores/`; en una instalación —que por contrato
+    #  vive FUERA del árbol— ese camino no existe, y sin esta copia los cuatro saldrían con
+    #  el código de PROCEDENCIA en cuanto se les invocara. Medido antes de escribir esto.
+    #
+    #  DECISIÓN · se copia el módulo, y no se relaja la guarda
+    #      Alternativas: (a) que la guarda no falle cuando no encuentra su módulo; (b) que
+    #      la instalación lleve una ruta al árbol; (c) copiar el módulo dentro del paquete.
+    #      Se elige (c). Con (a) la guarda se apaga sola justo donde más falta hace —una
+    #      raíz externa instalada es la que atestigua instalaciones ajenas—. Con (b) la
+    #      instalación dependería del árbol que dice no necesitar, que es lo contrario de
+    #      ser externa. Con (c) el módulo entra en el manifiesto como un fichero más: su
+    #      digest queda anclado y `verificador.py instalacion` detecta que se le toque.
+    shutil.copy2(GUARDA_DE_ARRANQUE, os.path.join(paquete_instalado,
+                                                  os.path.basename(GUARDA_DE_ARRANQUE)))
+
     for nombre in sorted(os.listdir(paquete_instalado)):
         completa = os.path.join(paquete_instalado, nombre)
         if nombre.endswith(".py") and _publicable(completa):
@@ -465,6 +564,16 @@ def procedencia():
         "aparato": os.path.basename(_RAIZ_DEL_APARATO),
         "modulos": modulos,
         "entradas_del_lanzador_retiradas": len(RETIRADAS_DE_LA_RUTA),
+        # `G-03` · lo que de verdad importa no es cuántas se RETIRARON, sino cuántas QUEDAN.
+        #     Desde que el punto se reejecuta aislado, `PYTHONPATH` y el `cwd` no llegan a
+        #     entrar en `sys.path` y no hay nada que retirar: un cero en «retiradas» pasó de
+        #     significar «la purga no hizo nada» a significar «no hizo falta». La propiedad
+        #     que se publica y que las pruebas exigen es ésta, que es la misma en los dos
+        #     mundos: NINGUNA entrada del lanzador está en la ruta de importación.
+        "entradas_del_lanzador_presentes": len(
+            _entradas_del_lanzador()
+            & {_os.path.realpath(entrada) for entrada in _sys.path if entrada}),
+        "aislamiento_de_arranque": dict(AISLAMIENTO.get("flags") or {}),
     }
 
 

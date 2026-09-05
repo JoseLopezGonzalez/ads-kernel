@@ -105,6 +105,18 @@ def clave_de_orden(entrada):
     más paquetes desbloqueados, más tiempo esperando. El cuarto, ascendente, es el desempate
     determinista. Quitar cualquiera de los cuatro cambia el orden de una cola real, y en
     `test_cardinalidad_y_seleccion.py` cada uno tiene su prueba y su sabotaje.
+
+    Y `prioridad` entra aquí como DATO LEÍDO y nunca como dato escrito. `b.12` es terminante:
+
+        «DSP informa de la inanición. No cambia la prioridad. Nunca»
+
+    La prevención de la inanición es el criterio (c) —la antigüedad adelanta entre IGUALES en
+    prioridad— y no una corrección del valor. `G-04` del cierre de `F6` encontró que esta
+    sede decía tener la cita y no la tenía —la tenían `ciclo/planificacion.py` y
+    `runtime/vistas.py`, y el gate dio por citadas las tres—, de modo que la prohibición se
+    apoyaba en una sede menos de las que se creía. Se escribe LITERAL, y `T419` confronta las
+    cuatro sedes entre sí: las tres que la citan y `estado_util.CITA_DE_B12`, que es la que
+    la EJECUTA en la puerta por la que toda transición pasa antes de confirmarse.
     """
     return (-int(entrada["prioridad"]),
             -int(entrada["grado_de_salida"]),

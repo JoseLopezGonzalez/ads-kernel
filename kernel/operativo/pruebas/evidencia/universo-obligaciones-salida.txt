@@ -1,0 +1,146 @@
+# evidencia de: universo-obligaciones
+# orden:        python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/derivar-universo-obligatorio.py --obligaciones
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+UNIVERSO OBLIGATORIO DE `F6`, DERIVADO
+==============================================================================
+
+  (§19   )   5   las obligaciones de fase F6 de `11-ARQ` §19
+            criterio de pertenencia: por FASE declarada en el bloque del contrato (`FASE **F6**`)
+            CONTRATO 1, CONTRATO 1bis, CONTRATO 2, CONTRATO 3, D104
+  (F-nn  )   8   los hallazgos EXTERNOS con fase F6
+            criterio de pertenencia: por FASE declarada en la celda de la fila, leída por POSICIÓN y por CONTENIDO
+            F-01, F-02, F-04, F-05, F-06, F-07, F-10, F-11
+  (V6    )  19   los contratos `V6-01`…`V6-19` de §20
+            criterio de pertenencia: por ESTRUCTURA: toda fila `V6-nn` de §20 es obligación de `F6` por definición
+            V6-01, V6-02, V6-03, V6-04, V6-05, V6-06, V6-07, V6-08, V6-09, V6-10, V6-11, V6-12, V6-13, V6-14, V6-15, V6-16, V6-17, V6-18, V6-19
+  (g     )  16   las obligaciones `g.1`…`g.16` del estado durable
+            criterio de pertenencia: por ESTRUCTURA: cabecera `## `g.n`` dentro de la ventana 1..16 que la sede enumera
+            g.1, g.10, g.11, g.12, g.13, g.14, g.15, g.16, g.2, g.3, g.4, g.5, g.6, g.7, g.8, g.9
+  (C     )   3   los contratos transversales `C2`, `C4` y `C5`
+            criterio de pertenencia: los contratos transversales que la sede del universo NOMBRA (`01-MATRIZ-DE-COMPLETITUD-F6.md`, «Universo de la resta»); los demás contratos del directorio se publican como excluidos, con su motivo
+            C2, C4, C5
+  (deuda )   7   las deudas y límites externos vigentes
+            criterio de pertenencia: por FASE declarada en la celda de la fila, o en el campo `FASE` de la sección
+            A14, FD-1, FD-3, FD-5, FD-6, M-04, S1-02
+
+  TOTAL 58 obligaciones
+
+PROCEDENCIA DE CADA COMPONENTE — sede, digest y tamaño
+------------------------------------------------------------------------------
+  §19     docs/evolucion/11-ARQUITECTURA-INTEGRADA.md                616044e4827b18dc  12152 líneas
+  F-nn    docs/evolucion/11-ARQUITECTURA-INTEGRADA.md                616044e4827b18dc  12152 líneas
+  V6      docs/evolucion/11-ARQUITECTURA-INTEGRADA.md                616044e4827b18dc  12152 líneas
+  g       docs/rediseno/g-ESTADO-DURABLE-APROBADA.md                 c8ba0a933c387d73  381 líneas
+  C       kernel/operativo/contratos/                                directorio  8 ficheros
+  deuda   docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md          b9d2fa56a7c23090  535 líneas
+
+  CLIQUET · obligaciones que el corpus EJERCE: 63  ·  de ellas en el universo: 58
+  del universo, SIN cliquet que las proteja: ninguna
+  fuera del cliquet por declaración COMPROBADA: C1, C3, C6, C7, S1-01
+
+FUERA DEL UNIVERSO, Y POR QUÉ — no se calla ninguno
+------------------------------------------------------------------------------
+  excluidos por los componentes, CADA UNO CON SU MOTIVO (8)
+      F-nn    F-08       su fila de §19 no declara fase `F6`; el criterio de este componente es «por FASE declarada en la celda de la fila, leída por POSICIÓN y por CONTENIDO»
+      g       g.0        `g.0` es la frontera entre norma y mecanismo y `g.17`/`g.18` declaran lo derivado y lo que la sección NO hace: ninguna es una obligación de contenido
+      g       g.17       `g.0` es la frontera entre norma y mecanismo y `g.17`/`g.18` declaran lo derivado y lo que la sección NO hace: ninguna es una obligación de contenido
+      g       g.18       `g.0` es la frontera entre norma y mecanismo y `g.17`/`g.18` declaran lo derivado y lo que la sección NO hace: ninguna es una obligación de contenido
+      C       C1         el párrafo «Universo de la resta» de `docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md` nombra `C2`, `C4`, `C5` como los contratos transversales de `F6` «donde el ciclo los invoca», y éste no está entre ellos
+      C       C3         el párrafo «Universo de la resta» de `docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md` nombra `C2`, `C4`, `C5` como los contratos transversales de `F6` «donde el ciclo los invoca», y éste no está entre ellos
+      C       C6         el párrafo «Universo de la resta» de `docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md` nombra `C2`, `C4`, `C5` como los contratos transversales de `F6` «donde el ciclo los invoca», y éste no está entre ellos
+      C       C7         el párrafo «Universo de la resta» de `docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md` nombra `C2`, `C4`, `C5` como los contratos transversales de `F6` «donde el ciclo los invoca», y éste no está entre ellos
+  deuda registrada SIN fase `F6` (4)  ·  no es obligación interna de F6
+      E-17     fase declarada: (sin celda de fase)  ·  10 ter · `E-17` y `E-18` — lo que el gate del 2026-09-03 d
+      E-18     fase declarada: (sin celda de fase)  ·  10 ter · `E-17` y `E-18` — lo que el gate del 2026-09-03 d
+      FD-2     fase declarada: no consta       ·  10 bis · Deuda ABIERTA POR `O23` y por el primer corte de 
+      FD-4     fase declarada: no consta       ·  10 bis · Deuda ABIERTA POR `O23` y por el primer corte de 
+  condiciones de cierre `C-L` con fase `F6` (3)  ·  OTRO censo: `06-DEUDA` §2, heredado de `F4c` y `F5`
+      C-L.10   fase declarada: **`F6`**
+      C-L.13   fase declarada: **`F6`**
+      C-L.7    fase declarada: **`F5`** la especificación · **`F6`** el instrumento
+
+obligación       clase   pruebas                      sabotajes              evidencia
+A14              deuda   T172                         N172                   evidencia/estado-durable-salida.txt
+C2               C       T87,T92,T226,T227            N92                    evidencia/agentes-salida.txt
+C4               C       T87,T88,T90,T135             N145,N145b,N250        evidencia/agentes-salida.txt
+C5               C       T200,T204,T243               N243                   evidencia/ciclo-salida.txt
+CONTRATO 1       §19     T270,T277,T360,T361          N270c,NG3a,NG3b        evidencia/recuentos-salida.txt
+CONTRATO 1bis    §19     T271,T277                    N271                   evidencia/recuentos-salida.txt
+CONTRATO 2       §19     T272,T277                    N272b,N272d            evidencia/versiones-salida.txt
+CONTRATO 3       §19     T158,T350                    N158,N158b,N158c       evidencia/evidencia-salida.txt
+D104             §19     T273,T274,T275,T276          N273,N273b,N273c       evidencia/composicion-procesos-salida.txt
+F-01             F-nn    T240                         N240,N240b,N240c       evidencia/contratos-salida.txt
+F-02             F-nn    T240                         N240,N240b,N240c       evidencia/contratos-salida.txt
+F-04             F-nn    T244                         N244                   evidencia/contratos-salida.txt
+F-05             F-nn    T243                         N243                   evidencia/contratos-salida.txt
+F-06             F-nn    T241                         N241,N241b             evidencia/contratos-salida.txt
+F-07             F-nn    T242                         N242,N242b,N242c       evidencia/contratos-salida.txt
+F-10             F-nn    T245                         N245                   evidencia/recuentos-salida.txt
+F-11             F-nn    T246                         N246                   evidencia/recuentos-salida.txt
+FD-1             deuda   T192                         N192                   evidencia/identidad-salida.txt
+FD-3             deuda   T181,T194                    N181,N181b,N194        evidencia/arranque-salida.txt
+FD-5             deuda   T191,T214,T215,T216          N191,N216,NG08         evidencia/adaptadores-salida.txt
+FD-6             deuda   T191                         N191                   evidencia/adaptadores-salida.txt
+M-04             deuda   T275                         N275                   evidencia/composicion-procesos-salida.txt
+S1-02            deuda   T189,T302,T303               N189                   evidencia/admision-salida.txt
+V6-01            V6      T188,T212                    N188                   evidencia/admision-salida.txt
+V6-02            V6      T188                         N188                   evidencia/admision-salida.txt
+V6-03            V6      T188,T304,T305,T352          N188                   evidencia/admision-salida.txt
+V6-04            V6      T188,T306,T365               N188                   evidencia/admision-salida.txt
+V6-05            V6      T188,T212                    N188                   evidencia/admision-salida.txt
+V6-06            V6      T188,T212                    N188                   evidencia/admision-salida.txt
+V6-07            V6      T188                         N188                   evidencia/admision-salida.txt
+V6-08            V6      T188,T212                    N188                   evidencia/admision-salida.txt
+V6-09            V6      T188                         N188                   evidencia/admision-salida.txt
+V6-10            V6      T189,T193,T212               N189                   evidencia/admision-salida.txt
+V6-11            V6      T189,T306,T364               N189                   evidencia/admision-salida.txt
+V6-12            V6      T189,T242,T302,T303          N189,N242,N242b        evidencia/admision-salida.txt
+V6-13            V6      T190                         N190                   evidencia/admision-salida.txt
+V6-14            V6      T190                         N190                   evidencia/admision-salida.txt
+V6-15            V6      T210,T211,T212,T213          N211                   evidencia/arboles-salida.txt
+V6-16            V6      T217,T218,T219,T220          N217,N333              evidencia/e2e-f6-salida.txt
+V6-17            V6      T190,T220,T294               N190                   evidencia/admision-salida.txt
+V6-18            V6      T190,T213                    N190                   evidencia/admision-salida.txt
+V6-19            V6      T190,T363,T365               N190                   evidencia/admision-salida.txt
+g.1              g       T173,T312                    N173                   evidencia/estado-durable-salida.txt
+g.10             g       T179,T320,T325               N179,N320              evidencia/estado-durable-salida.txt
+g.11             g       T179,T320,T321,T322          N179,N320,N321         evidencia/estado-durable-salida.txt
+g.12             g       T174,T176,T182,T219          N174,N176              evidencia/agentes-salida.txt
+g.13             g       T177,T180,T313,T317          N177,NH08              evidencia/admision-salida.txt
+g.14             g       T187,T193,T221,T222          N187                   evidencia/e2e-f6-salida.txt
+g.15             g       T177,T319,T192,T217          N177,N192,N217         evidencia/e2e-f6-salida.txt
+g.16             g       T173,T174,T175,T176          N173,N174,N175         evidencia/e2e-f6-salida.txt
+g.2              g       T173,T178,T183,T408          N173,N178              evidencia/cardinalidad-salida.txt
+g.3              g       T174,T175,T180,T186          N174,N175              evidencia/estado-durable-salida.txt
+g.4              g       T174,T180,T314,T322          N174                   evidencia/e2e-f6-salida.txt
+g.5              g       T177,T180,T313,T319          N177                   evidencia/estado-durable-salida.txt
+g.6              g       T176,T180,T183,T209          N176                   evidencia/cardinalidad-salida.txt
+g.7              g       T173,T312,T313,T314          N173                   evidencia/estado-durable-salida.txt
+g.8              g       T175,T180,T314,T315          N175,N321              evidencia/e2e-f6-salida.txt
+g.9              g       T178,T180,T184,T193          N178                   evidencia/continua-salida.txt
+
+LAS TRES RESTAS, DERIVADAS — Y LO QUE UNA RESTA VACÍA NO DEMUESTRA
+------------------------------------------------------------------------------
+  A · sin COBERTURA DECLARADA: ningún `cubre` con validador la nombra 0
+      NO demuestra `O26` §5.1 —«no quedan obligaciones internas sin
+      implementar»—. Mide TRAZABILIDAD DECLARADA: que algún escenario nombre la
+      obligación en su `cubre` y declare un validador. Un `cubre` es una
+      declaración escrita, y este aparato no sabe si lo declarado está
+      construido
+
+  B · con cobertura y SIN NI UN SABOTAJE imputado que la ponga roja 0
+      NO demuestra `O26` §5.2 —«no quedan propiedades críticas sin una prueba
+      capaz de fallar»—. Mide EXISTENCIA DE AL MENOS UN SABOTAJE imputado a la
+      obligación, no que sus propiedades estén cubiertas una a una.
+      Contraejemplo medido y vivo: `V6-12` figuraba con `B=0` mientras el
+      append-only de la sede del Owner más allá del prefijo del nacimiento no
+      tenía sabotaje ninguno (`ADJ-B3`)
+
+  C · con cobertura y SIN FICHERO DE EVIDENCIA presente en el árbol 0
+      NO demuestra que la evidencia sea VIGENTE ni que describa el árbol de hoy.
+      Mide que exista un fichero de evidencia enlazado y presente en el árbol.
+      Que la evidencia demuestre lo que el informe afirma lo comprueba `T158`, y
+      que el ESTADO declarado de cada escenario se derive de ella, `T350`
+

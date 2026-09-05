@@ -1,5 +1,6 @@
 # evidencia de: cobertura-de-gate
-# orden:        python3 docs/evolucion/verificacion/comprobar-cobertura-de-gate.py --autopruebas
+# orden:        python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/comprobar-cobertura-de-gate.py --autopruebas
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
   ok   control POSITIVO · dos lotes leídos enteros
@@ -13,5 +14,20 @@
   ok   un revisor con el LOTE VACÍO
   ok   universo obligatorio VACÍO por construcción
   ok   un TRAMO fuera del fichero declarado como lectura
+  ok   `G-01` · un rango que llega a N+1, la línea que no existe
+  ok   `G-01` · un rango que empieza en 0
+  ok   `G-01` · un rango invertido, fin antes que inicio
+  ok   `G-01` · el arranque del fichero sin asignar se ve como líneas SIN LEER
+  ok   `G-02` · dos rangos y sólo el ÚLTIMO leído — el defecto que hundió el gate
+  ok   `G-02` · control POSITIVO · dos rangos y los DOS leídos
+  ok   `G-02` · el MISMO rango atribuido dos veces al mismo revisor
+  ok   `G-02` · rangos que SOLAPAN se miden los dos, no uno
+  ok   `G-02` · un hueco de UNA sola línea
+  ok   `G-07` · una fuente modificada OMITIDA del manifiesto
+  ok   `G-07` · sin `base` y `candidata` NO se puede derivar: falla cerrado
+  ok   `G-07` · control POSITIVO · git REAL: M, A, D, renombrado, copia, ruta no ASCII y ruta con salto de línea
+  ok   `G-07` · el manifiesto NO elige el repositorio: `repositorio` ajeno
+  ok   `G-07` · `base` == `candidata` derivaría el conjunto VACÍO: falla cerrado
+  ok   un manifiesto de lectura de OTRO gate, con un revisor desconocido
 
-  11 controles · 0 sin detectar
+  26 controles · 0 sin detectar

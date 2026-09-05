@@ -325,7 +325,7 @@ falla_si:
   - "la salida lleva reloj, duración, pid o ruta absoluta"
 ejecucion: validador-estructural
 validador: kernel/operativo/runtime/pruebas/escenario_e2e_runtime.py
-estado: prueba-ejecutada
+estado: prueba-superada
 evidencia: evidencia/e2e-runtime-salida.txt
 ```
 

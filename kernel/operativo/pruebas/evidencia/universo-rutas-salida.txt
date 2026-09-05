@@ -1,0 +1,122 @@
+# evidencia de: universo-rutas
+# orden:        python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/derivar-universo-obligatorio.py --tabla
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+v          337  e7cbe5c958f015ae…  docs/evolucion/00-INDICE.md
+iv         336  202ac1af8df5ca6e…  docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md
+iii      12152  616044e4827b18dc…  docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
+iv         764  c50e0aa6c1b9827c…  docs/evolucion/12-CRITICA-INDEPENDIENTE-F4.md
+iv         797  6804d134dfb66b53…  docs/evolucion/13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md
+iv         325  7f94e236f3cfb11e…  docs/evolucion/14-DEVOLUCION-TECNICA-PREVIA-F4C.md
+ii+iv      651  b0e015c118ceb916…  docs/evolucion/15-TERCERA-REVISION-INDEPENDIENTE-F4C.md
+i+iv      1257  8243034f286160cc…  docs/evolucion/16-GATE-FINAL-INDEPENDIENTE-F4C.md
+i+iv      1650  18f876d4cd47a2f7…  docs/evolucion/17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md
+i+iv      3665  1e71366b10d22938…  docs/evolucion/18-GATE-DE-CIERRE-INDEPENDIENTE-F4C.md
+iv        1152  48baaa1a8e69c6ef…  docs/evolucion/19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md
+iv         801  d7d2e4fa3f878e0c…  docs/evolucion/20-GATE-INDEPENDIENTE-DE-COBERTURA-Y-CIERRE-F4C.md
+iv+v      2679  9f869ffbdbdb834c…  docs/evolucion/21-GATE-INDEPENDIENTE-DE-CIERRE-F4C.md
+iv        3478  3e2bdece758e6b69…  docs/evolucion/22-GATE-INDEPENDIENTE-DE-CERTIFICACION-F4C.md
+iv        2913  0f81f13d8cb319d8…  docs/evolucion/23-SEGUNDO-GATE-DE-CERTIFICACION-F4C.md
+iv        2515  8df584529c857c07…  docs/evolucion/24-TERCER-GATE-DE-CERTIFICACION-F4C.md
+iv        2754  e8431c653cb7919e…  docs/evolucion/25-CUARTO-GATE-DE-CERTIFICACION-F4C.md
+iv        4526  e2c34215d92937fb…  docs/evolucion/26-QUINTO-GATE-DE-CERTIFICACION-F4C.md
+iv        3946  d81b56366e5062ff…  docs/evolucion/27-SEXTO-GATE-DE-CERTIFICACION-F4C.md
+iv        4275  4711738d2a5d6474…  docs/evolucion/28-SEPTIMO-GATE-DE-CERTIFICACION-F4C.md
+iv        4197  0b9064490c8dd68e…  docs/evolucion/29-OCTAVO-GATE-DE-CERTIFICACION-F4C.md
+iv        3084  712058b2467287d7…  docs/evolucion/30-GATE-ARQUITECTONICO-FINAL-F4C.md
+iv         783  d184e9528ce38356…  docs/evolucion/31-GATE-FINAL-O21-F4C.md
+iv         881  1237245e828546fa…  docs/evolucion/32-GATE-VERIFICACION-DOCE-HH2-F4C.md
+iv         408  88b3c274f6525e17…  docs/evolucion/33-CIERRE-DE-F4C-POR-COMPOSICION-O22.md
+iv         289  9a93febce75f1254…  docs/evolucion/34-RATIFICACION-DE-LA-CERTIFICACION-INCREMENTAL-O22.md
+i         2163  a88609167dbbea28…  docs/evolucion/ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md
+iii       6385  165ab8cc02aabab7…  docs/evolucion/CHECKPOINT-ADS-NEXT.md
+v          721  e20d6ec8a56b6e74…  docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md
+v          396  0e766e71cd1bfd06…  docs/evolucion/verificacion/README.md
+v         4513  bf1dea726fcd0ca8…  docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py
+v         2442  c69eb7098d19546b…  docs/evolucion/verificacion/derivar-universo-obligatorio.py
+v          924  bc4c50047b03f93f…  docs/evolucion/verificacion/emitir-sobre-de-ancla.py
+v          119  b1c29244dfedc139…  docs/evolucion/verificacion/manifiestos/F4C-ADDENDUM-1-GATE-CERTIFICACION-20260830.md
+v          256  ff4116703b648586…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-ARQUITECTONICO-FINAL-20260901.md
+v          240  c64a0ec4731e6d27…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-2-20260830.md
+v          316  fc4d1c2fdedbcb13…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-20260830.md
+v          210  ac9e0edd59cf3e1b…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-3-20260830.md
+v          221  fc4902591eff43bc…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-4B-20260830.md
+v          193  0f08b961c31f03bb…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-5-20260831.md
+v          278  528dd68fc81134c1…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-6-20260831.md
+v          292  41a4ff29d11c1edf…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-6B-20260831.md
+v          260  f3d7d0bf6d10eac0…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-7-20260831.md
+v          248  a82e74968e4ca31f…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-8-20260831.md
+v          140  c843b0c341183859…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CIERRE-20260829.md
+v          284  3dc69768487de794…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-FINAL-O21-20260901.md
+v          303  4a27b5ef2146753a…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-FINAL-O21-20260901B.md
+v          316  4b022c1be1d5e2e7…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-VERIFICACION-DOCE-20260901.md
+v          395  d61e83bd2b733b34…  docs/evolucion/verificacion/manifiestos/F6-ASIGNACION-GATE-CERTIFICACION-FINAL-20260904.md
+v          547  9d35f85bd1917a7d…  docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md
+v         3343  64d170f5acc15144…  docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md
+v          628  24e85cad856daf76…  docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md
+v         1054  b378b1f7ba1a7744…  docs/owner/ADS-OWNER-RESOLUCIONES.md
+v          195  d2131faa4aeddc6d…  docs/rediseno/CHECKPOINT-OPERATIVO.md
+iii       1651  712dbd4a935c53e3…  docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
+v         1150  235385da2471dec2…  docs/rediseno/a-CAPACIDADES-APROBADA.md
+ii+v       212  ade02566d1247e50…  docs/rediseno/a-ENMIENDA-E1-ENC.md
+ii+v       230  9d5a23806fc33fc1…  docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md
+v         1331  89023236f0a2a9f1…  docs/rediseno/b-RECORRIDO-APROBADA.md
+v         1590  aa635dff79e73fe1…  kernel/KERNEL.md
+ii          95  a870911530909584…  kernel/operativo/capacidades/APR/CAPACIDAD.md
+ii         104  6ca11b5f09883e24…  kernel/operativo/capacidades/ARQ/CAPACIDAD.md
+ii         107  e0f79e6c3a467302…  kernel/operativo/capacidades/CON/CAPACIDAD.md
+ii         147  06f019010d45771f…  kernel/operativo/capacidades/DIS/CAPACIDAD.md
+ii         135  926c7144cb098caa…  kernel/operativo/capacidades/DOM/CAPACIDAD.md
+ii         152  acb292f882e77d74…  kernel/operativo/capacidades/DSP/CAPACIDAD.md
+ii         174  f71b8e43f6e2d66f…  kernel/operativo/capacidades/ENC/CAPACIDAD.md
+ii         123  91a81d3cf1cbfa61…  kernel/operativo/capacidades/ENT/CAPACIDAD.md
+ii          96  47412638e7552da1…  kernel/operativo/capacidades/INV/CAPACIDAD.md
+ii         108  a5f87977c58ed1d0…  kernel/operativo/capacidades/PLT/CAPACIDAD.md
+ii         105  e83b0e08272e219d…  kernel/operativo/capacidades/PRD/CAPACIDAD.md
+ii         135  19bfd38a7a24b57f…  kernel/operativo/capacidades/SEG/CAPACIDAD.md
+ii         119  02089f36d1244356…  kernel/operativo/capacidades/SIS/CAPACIDAD.md
+ii          94  65f144e4a5c756ef…  kernel/operativo/capacidades/USO/CAPACIDAD.md
+ii         135  91a16b482629daf3…  kernel/operativo/capacidades/VER/CAPACIDAD.md
+v           29  48b66b4fa9daee8f…  kernel/operativo/contratos/00-INDICE.md
+v          161  825f15a914c10d6f…  kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md
+ii+v       539  3ee58ca4bc47988d…  kernel/operativo/contratos/C2-AGENTES-Y-MODELOS.md
+ii+v       150  d56bf6b81e0fe4a9…  kernel/operativo/contratos/C3-METODO-EJECUTABLE.md
+ii+v       170  670289180e59b176…  kernel/operativo/contratos/C4-MATERIALIZACION.md
+v          115  af6f1a4c4f5def8d…  kernel/operativo/contratos/C5-HANDOFF.md
+v          336  14805a79aeb07f31…  kernel/operativo/contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md
+v          250  83f82e2be4756a46…  kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md
+ii         141  08f4bea44594e026…  kernel/operativo/diseno/00-SISTEMA-DE-EXCELENCIA.md
+ii         352  dd323d1aa2f7ede3…  kernel/operativo/diseno/01-MEMORIA-DE-DISENO.md
+ii         343  8aa8fb18426eac21…  kernel/operativo/diseno/02-RUBRICAS.md
+ii         130  5d2f54535c1334c0…  kernel/operativo/diseno/04-CICLO-DE-CALIDAD.md
+ii         129  fdabb29f7592e603…  kernel/operativo/diseno/05-FIDELIDAD.md
+ii          28  315b2790cb66bb4c…  kernel/operativo/entrada/00-INDICE.md
+ii         145  750d39a29f05e7f2…  kernel/operativo/entrada/02-CIRCUITO.md
+ii         187  1716bd3d8b48107d…  kernel/operativo/entrada/04-INCERTIDUMBRE-Y-CONFIRMACION.md
+v           89  f4f016c011a82764…  kernel/operativo/esquemas/proceso.yaml
+v          130  f56e8fe4872e46b5…  kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md
+v          606  8a8aa174fa5244cb…  kernel/operativo/recorrido/01-PROCESOS.md
+
+94 fuentes obligatorias · 100020 líneas
+  (i  )   4   las fuentes de «QUÉ HAY QUE LEER ÍNTEGRO» de `C-L.5`
+  (ii )  29   las fuentes y las fichas de `C-0.1` / `C-0.2`
+  (iii)   3   documento 11 · registro de decisiones · checkpoint
+  (iv )  24   todo dictamen de gate anterior
+  (v  )  44   el objeto que ESTE gate juzga, según su encargo
+
+  (iv) EXCLUIDOS por voz de NO-DICTAMEN en su H1: 11
+        00-INDICE.md                                   # ADS NEXT — ÍNDICE DE LA INICIATIVA
+        01-BASELINE-ADS.md                             # BASELINE — QUÉ ES ADS HOY, COMPROBADO
+        02-MAPA-DIRECTIVA.md                           # MAPA — LA DIRECTIVA DEL OWNER CONTRA EL ADS QUE EXISTE
+        03-INVARIANTES.md                              # INVARIANTES — LO QUE NO SE MODIFICA EN SILENCIO
+        04-PLAN-DE-INVESTIGACION.md                    # PLAN DE INVESTIGACIÓN — QUÉ HAY QUE SABER ANTES DE CERRAR ARQUITECTURA
+        05-CANDIDATOS.md                               # INVENTARIO DE CANDIDATOS — MINERÍA DE PROYECTOS REALES
+        06-CONTRASTE.md                                # CONTRASTE — LOS 29 CANDIDATOS CONTRA EL CORPUS DE ADS
+        07-DECISION-MULTIREPO.md                       # LA DECISIÓN MULTI-REPO — QUÉ CAMBIA, Y LA CONTRADICCIÓN QUE NO PUEDO RESOLVER
+        08-EVIDENCIA-MULTIREPO.md                      # 08 — QUÉ ESTÁ DEMOSTRADO DE LA IMPLEMENTACIÓN MULTI-REPO
+        09-SINTESIS.md                                 # F3 — SÍNTESIS
+        11-ARQUITECTURA-INTEGRADA.md                   # F4 — ARQUITECTURA INTEGRADA
+
+  EXCLUIDOS por PERÍMETRO, con su RUTA COMPLETA: 1
+        .git/                                                        `.git` de la RAÍZ: almacén, no corpus

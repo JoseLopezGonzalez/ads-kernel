@@ -1,10 +1,11 @@
 # evidencia de: referencias
-# orden:        python3 kernel/operativo/validadores/comprobar_referencias.py --exclusiones
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_referencias.py --exclusiones
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
 T147  SUPERADA  Todo documento es alcanzable por ruta, y ninguna referencia es ambigua
 
-documentos analizados: 341
+documentos analizados: 347
 nombres base repetidos: 45 (resueltos por ruta, nunca por nombre)
 
 FUERA DEL ANÁLISIS

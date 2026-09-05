@@ -1,5 +1,6 @@
 # evidencia de: e2e-runtime
-# orden:        python3 kernel/operativo/runtime/pruebas/escenario_e2e_runtime.py
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/runtime/pruebas/escenario_e2e_runtime.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
 ESCENARIO EXTREMO A EXTREMO · RUNTIME, GIT, ADMISIÓN Y ADAPTADORES
@@ -88,3 +89,5 @@ T362 · corte 8-9: almacén cortado en `entre-el-paso-8-y-el-9` — testigo del 
 
 T301 · recuperabilidad  almacen-cortado-8-9: abierto, recuperado e íntegro
 T301 · recuperabilidad  ws/ads: abierto, recuperado e íntegro
+
+T193  SUPERADA  F6 · corte vertical 2 · veinticinco pasos del §12 del encargo

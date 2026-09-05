@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 4416939504443e6c -->
+<!-- source_revision: 923a61ff99568b94 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -12,10 +12,10 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 |---|---|
 | CONTRATO DEFINIDO | 56 |
 | VALIDADOR IMPLEMENTADO | 4 |
-| PRUEBA EJECUTADA | 12 |
-| PRUEBA SUPERADA | 195 |
+| PRUEBA EJECUTADA | 0 |
+| PRUEBA SUPERADA | 254 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **267** |
+| **total** | **314** |
 
 ## Detalle
 
@@ -106,13 +106,13 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T159](T159-T170-multirepo.md) | La plantilla de SOURCES.toml es válida y arranca sin fuentes | C6 fuente única de la composición · E2.0 | validador-estructural | **PRUEBA SUPERADA** | evidencia/fuentes-salida.txt |
 | [T160](T159-T170-multirepo.md) | El manifiesto de un ADS Project, cuando existe, es válido sin tocar el disco | C6 validación estática frente a disponibilidad · §62 | validador-estructural | **PRUEBA SUPERADA** | evidencia/fuentes-salida.txt |
 | [T161](T159-T170-multirepo.md) | El corpus no conserva la equivalencia proyecto igual a repositorio | E2.0 · E2.1 · E2.4 · 78 qué debe cambiar en el corpus | validador-estructural | **PRUEBA SUPERADA** | evidencia/fuentes-salida.txt |
-| [T162](T159-T170-multirepo.md) | Una fuente ya clonada se reutiliza y no se vuelve a clonar | C6 materialización · §12.1 · CA-3 | validador-estructural | **PRUEBA EJECUTADA** · SIN CONTRASTE: su evidencia no lo nombra | evidencia/workspace-salida.txt |
-| [T163](T159-T170-multirepo.md) | Un directorio ocupado por otro repositorio produce error y no se destruye | C6 lo que la materialización nunca hace · §63 · CA-5 · CA-6 | validador-estructural | **PRUEBA EJECUTADA** · SIN CONTRASTE: su evidencia no lo nombra | evidencia/workspace-salida.txt |
-| [T164](T159-T170-multirepo.md) | Ninguna ruta del manifiesto escapa del workspace | C6 identidad frente a materialización · §11.2 | validador-estructural | **PRUEBA EJECUTADA** · SIN CONTRASTE: su evidencia no lo nombra | evidencia/workspace-salida.txt |
-| [T165](T159-T170-multirepo.md) | La identidad de una fuente no depende de la forma de su URL | C6 identidad · 39 normalización de remotes · N9 | validador-estructural | **PRUEBA EJECUTADA** · SIN CONTRASTE: su evidencia no lo nombra | evidencia/workspace-salida.txt |
-| [T166](T159-T170-multirepo.md) | Un componente puede vivir dentro de una fuente, y dos componentes compartirla | C6 los tres conceptos · §9 · §10 · CA-7 · CA-8 · N7 | validador-estructural | **PRUEBA EJECUTADA** · SIN CONTRASTE: su evidencia no lo nombra | evidencia/workspace-salida.txt |
-| [T167](T159-T170-multirepo.md) | Una fuente ausente no bloquea el trabajo que no la necesita | C6 alcance mínimo · 63 source ausente · E2.2 regla 5 | validador-estructural | **PRUEBA EJECUTADA** · SIN CONTRASTE: su evidencia no lo nombra | evidencia/workspace-salida.txt |
-| [T168](T159-T170-multirepo.md) | El arranque crea un workspace con el control repo dentro, en la rama que documenta, y el workspace no es un repositorio | C6 topología · §45 · §46 · CA-1 · CA-9 | validador-estructural | **PRUEBA EJECUTADA** · SIN CONTRASTE: su evidencia no lo nombra | evidencia/arranque-salida.txt |
+| [T162](T159-T170-multirepo.md) | Una fuente ya clonada se reutiliza y no se vuelve a clonar | C6 materialización · §12.1 · CA-3 | validador-estructural | **PRUEBA SUPERADA** | evidencia/workspace-salida.txt |
+| [T163](T159-T170-multirepo.md) | Un directorio ocupado por otro repositorio produce error y no se destruye | C6 lo que la materialización nunca hace · §63 · CA-5 · CA-6 | validador-estructural | **PRUEBA SUPERADA** | evidencia/workspace-salida.txt |
+| [T164](T159-T170-multirepo.md) | Ninguna ruta del manifiesto escapa del workspace | C6 identidad frente a materialización · §11.2 | validador-estructural | **PRUEBA SUPERADA** | evidencia/workspace-salida.txt |
+| [T165](T159-T170-multirepo.md) | La identidad de una fuente no depende de la forma de su URL | C6 identidad · 39 normalización de remotes · N9 | validador-estructural | **PRUEBA SUPERADA** | evidencia/workspace-salida.txt |
+| [T166](T159-T170-multirepo.md) | Un componente puede vivir dentro de una fuente, y dos componentes compartirla | C6 los tres conceptos · §9 · §10 · CA-7 · CA-8 · N7 | validador-estructural | **PRUEBA SUPERADA** | evidencia/workspace-salida.txt |
+| [T167](T159-T170-multirepo.md) | Una fuente ausente no bloquea el trabajo que no la necesita | C6 alcance mínimo · 63 source ausente · E2.2 regla 5 | validador-estructural | **PRUEBA SUPERADA** | evidencia/workspace-salida.txt |
+| [T168](T159-T170-multirepo.md) | El arranque crea un workspace con el control repo dentro, en la rama que documenta, y el workspace no es un repositorio | C6 topología · §45 · §46 · CA-1 · CA-9 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
 | [T169](T159-T170-multirepo.md) | Un item que atraviesa dos fuentes no cierra con una sin integrar | E2.6 · C7 integración parcial · gate:convergencia-de-fuentes · §30 | requiere-runtime | **CONTRATO DEFINIDO** · SIN CONTRASTE: su evidencia no lo nombra | — |
 | [T170](T159-T170-multirepo.md) | Un agente nuevo reanuda un trabajo multi-fuente sin abrir ningún repositorio para adivinar | E2.3 · C7 recuperación · §34 · §35 · CA-12 | guion-manual | **CONTRATO DEFINIDO** · SIN CONTRASTE: su evidencia no lo nombra | — |
 | [T171](T159-T170-multirepo.md) | El proyecto recién creado declara dónde se lee cada criterio de descubrimiento del 100 | §100 · CA-1 · CA-9 · CA-10 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
@@ -124,8 +124,8 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T177](T172-T181-estado-durable.md) | La corrupción, el truncamiento y la evidencia manipulada fallan CERRADO | g.5 · g.13 · g.15 · g.16 G-A4 · g.16 G-A9 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
 | [T178](T172-T181-estado-durable.md) | La reconciliación pendiente se deduce del registro auxiliar y sólo se retira por transición explícita | g.9 · g.2 I-g7 · g.16 G-A5 · g.16 G-A6 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
 | [T179](T172-T181-estado-durable.md) | Una versión de esquema desconocida falla CERRADO, y subir de versión exige migración declarada | g.10 · g.11 · g.16 G-A7 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
-| [T180](T172-T181-estado-durable.md) | Los quince pasos del escenario extremo a extremo, sobre un control repo real | g.3 · g.4 · g.5 · g.6 · g.8 · g.9 · g.13 · g.16 | validador-estructural | **PRUEBA EJECUTADA** · SIN CONTRASTE: su evidencia no lo nombra | evidencia/estado-e2e-salida.txt |
-| [T181](T172-T181-estado-durable.md) | La especificación normativa vigente viaja al proyecto instalado, derivada y no escrita a mano | FD-3 · C6 · E2.0 | validador-estructural | **PRUEBA EJECUTADA** · SIN CONTRASTE: su evidencia no lo nombra | evidencia/arranque-salida.txt |
+| [T180](T172-T181-estado-durable.md) | Los quince pasos del escenario extremo a extremo, sobre un control repo real | g.3 · g.4 · g.5 · g.6 · g.8 · g.9 · g.13 · g.16 | validador-estructural | **PRUEBA SUPERADA** | evidencia/estado-e2e-salida.txt |
+| [T181](T172-T181-estado-durable.md) | La especificación normativa vigente viaja al proyecto instalado, derivada y no escrita a mano | FD-3 · C6 · E2.0 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
 | [T182](T182-T194-runtime-y-admision.md) | El dispatcher deriva el trabajo del estado y lo despacha por un adaptador | F6-D · 11-ARQ 7.2 · g.12 I-g4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/runtime-salida.txt |
 | [T183](T182-T194-runtime-y-admision.md) | La autoridad sobre un paquete es exclusiva, y expira por observaciones y no por reloj | g.6 · g.2 I-g3 · F6-D | validador-estructural | **PRUEBA SUPERADA** | evidencia/runtime-salida.txt |
 | [T184](T182-T194-runtime-y-admision.md) | Las cuatro clases de fallo se distinguen, y agotar los intentos abre reconciliación | 11-ARQ 7.3 · g.9 · g.16 G-A5 | validador-estructural | **PRUEBA SUPERADA** | evidencia/runtime-salida.txt |
@@ -137,7 +137,7 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T190](T182-T194-runtime-y-admision.md) | La matriz adversarial mide cero falsos verdes y cero falsos rojos, y cada fórmula tiene una sede | V6-13 · V6-14 · V6-17 · V6-18 · V6-19 | validador-estructural | **PRUEBA SUPERADA** | evidencia/admision-salida.txt |
 | [T191](T182-T194-runtime-y-admision.md) | El adaptador local ejecuta un proceso real, lo mata de verdad y no repite un efecto aplicado | V7 · 11-ARQ 6 · 11-ARQ 3.4 · FD-5 · FD-6 | validador-estructural | **PRUEBA SUPERADA** | evidencia/adaptadores-salida.txt |
 | [T192](T182-T194-runtime-y-admision.md) | La identidad de firma vive fuera del árbol, rota con solapamiento y no filtra secretos | O25 · g.15 · FD-1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/identidad-salida.txt |
-| [T193](T182-T194-runtime-y-admision.md) | Los veinticinco pasos del segundo escenario extremo a extremo, con dos runtimes y dos fuentes | F6-D · g.14 · V6-10 · V7 · g.9 · g.16 | validador-estructural | **PRUEBA EJECUTADA** · SIN CONTRASTE: su evidencia no lo nombra | evidencia/e2e-runtime-salida.txt |
+| [T193](T182-T194-runtime-y-admision.md) | Los veinticinco pasos del segundo escenario extremo a extremo, con dos runtimes y dos fuentes | F6-D · g.14 · V6-10 · V7 · g.9 · g.16 | validador-estructural | **PRUEBA SUPERADA** | evidencia/e2e-runtime-salida.txt |
 | [T194](T182-T194-runtime-y-admision.md) | Un control repo que ya existe se actualiza sin perder lo que el proyecto tiene | C6 · FD-3 · macrocircuito de actualizacion | validador-estructural | **PRUEBA SUPERADA** | evidencia/arranque-salida.txt |
 | [T195](T195-T209-ciclo-y-macrocircuitos.md) | El encuadre clasifica la entrada del Owner y sólo tres clases crean trabajo | 11-ARQ 7.2 · entrada 01-TAXONOMIA · C6 | validador-estructural | **PRUEBA SUPERADA** | evidencia/ciclo-salida.txt |
 | [T196](T195-T209-ciclo-y-macrocircuitos.md) | La ruta se compone desde b.16 por las cuatro vías, y el gate de composición no abre la fase | 11-ARQ 8.0 · b.16 · b.1 · a.6 | validador-estructural | **PRUEBA SUPERADA** | evidencia/ciclo-salida.txt |
@@ -169,7 +169,7 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T222](T210-T225-arboles-raiz-externa-y-contencion.md) | Caída, reconciliación, ref protegida, remoto manipulado y linaje completo | g.14 · g.8 · g.9 · g.16 G-A8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/multimaquina-salida.txt |
 | [T223](T210-T225-arboles-raiz-externa-y-contencion.md) | La prueba de humo abre una sesión REALMENTE nueva, y es idempotente | F6-G · 11-ARQ 6.4 · 11-ARQ 6.5 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/sesion-nueva-salida.txt |
 | [T224](T210-T225-arboles-raiz-externa-y-contencion.md) | La sesión abierta sobre una fuente localiza el control repo, con sus cuatro desenlaces | F6-G · 11-ARQ 6.4 · 11-ARQ 6.7 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/sesion-nueva-salida.txt |
-| [T225](T210-T225-arboles-raiz-externa-y-contencion.md) | El escenario extremo a extremo del macrobloque 3, con sus veintiún pasos | F6-D · F6-F · F6-G · V6-15 · V6-16 · g.14 · g.15 · g.16 G-A8 · g.16 G-A9 · 11-ARQ 7.2 · 11-ARQ 8 · 11-ARQ 9.6 | requiere-runtime | **PRUEBA EJECUTADA** · SIN CONTRASTE: su evidencia no lo nombra | evidencia/e2e-f6-salida.txt |
+| [T225](T210-T225-arboles-raiz-externa-y-contencion.md) | El escenario extremo a extremo del macrobloque 3, con sus veintiún pasos | F6-D · F6-F · F6-G · V6-15 · V6-16 · g.14 · g.15 · g.16 G-A8 · g.16 G-A9 · 11-ARQ 7.2 · 11-ARQ 8 · 11-ARQ 9.6 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/e2e-f6-salida.txt |
 | [T226](T226-T249-agentes-y-modelos.md) | C4 paso 4 asigna agente y modelo a cada rol de una composición con varios roles | C4 · C2 · C1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
 | [T227](T226-T249-agentes-y-modelos.md) | La selección de modelo es determinista y se repite byte a byte en otro proceso | C2 · C4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
 | [T228](T226-T249-agentes-y-modelos.md) | Un modelo que no cumple un eje se descarta con su motivo, y si es el único se bloquea | C2 · C4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
@@ -233,7 +233,7 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T298](T290-T311-integridad-evidencia-y-contencion.md) | Una mezcla parcial de objetos publicados no se convierte en vigente | E-08 · g.3 · g.14 · CONTRATO-ESTADO-DURABLE 3 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
 | [T299](T290-T311-integridad-evidencia-y-contencion.md) | El testigo del paso 8 se escribe con fsync de contenido y de directorio | E-08 · g.4 · CONTRATO-ESTADO-DURABLE 2 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
 | [T300](T290-T311-integridad-evidencia-y-contencion.md) | Una caída entre los pasos 8 y 9 se recupera y deja el almacén íntegro | E-08 · g.8 · g.4 · CONTRATO-ESTADO-DURABLE 4 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/estado-durable-salida.txt |
-| [T301](T290-T311-integridad-evidencia-y-contencion.md) | Los tres escenarios extremo a extremo no terminan sobre un almacén irrecuperable | E-08 · g.4 · g.8 · T175 · T182 | requiere-runtime | **PRUEBA EJECUTADA** · SIN CONTRASTE: su evidencia no lo nombra | evidencia/e2e-f6-salida.txt |
+| [T301](T290-T311-integridad-evidencia-y-contencion.md) | Los tres escenarios extremo a extremo no terminan sobre un almacén irrecuperable | E-08 · g.4 · g.8 · T175 · T182 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/e2e-f6-salida.txt |
 | [T302](T290-T311-integridad-evidencia-y-contencion.md) | Con nacimiento trazable, crecer una sede append-only sigue siendo legítimo | E-09 · V6-12 · O10 · S1-02 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/admision-salida.txt |
 | [T303](T290-T311-integridad-evidencia-y-contencion.md) | Sin commit de nacimiento trazable V6-12 falla cerrado y no compara contra la base | E-09 · V6-12 · S1-02 · g.13 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/admision-salida.txt |
 | [T304](T290-T311-integridad-evidencia-y-contencion.md) | Una historia truncada o injertada no sostiene el contraste de V6-12 | E-09 · V6-12 · V6-03 · g.13 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/admision-salida.txt |
@@ -288,12 +288,59 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T363](T360-T379-sedes-veraces.md) | La orden censo-formulas censa el mismo conjunto que el veredicto de V6-19 | ADJ-M1 · V6-19 · 11-ARQ 20.1 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/e2e-f6-salida.txt |
 | [T364](T360-T379-sedes-veraces.md) | Los cinco puntos ejecutables publican su procedencia con una orden propia | ADJ-M2 · E-10 · g.15 · V6-11 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/e2e-f6-salida.txt |
 | [T365](T360-T379-sedes-veraces.md) | arboles esta en los dos censos y sus dos sedes lo dicen | ADJ-M11 · V6-04 · V6-15 · V6-19 · S1-01 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/e2e-f6-salida.txt |
+| [T380](T380-T399-aislamiento.md) | La guarda de aislamiento alcanza a TODO punto ejecutable del inventario derivado | G-03 · H-1 · ADJ-B2 · O26 1.8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T381](T380-T399-aislamiento.md) | El mecanismo de la guarda es identico byte a byte en todos los puntos | G-03 · ADJ-B2 · T330 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T382](T380-T399-aislamiento.md) | El sitecustomize LLEGA en la version vulnerable y NO LLEGA por la via oficial | G-03 · H-1 · O26 1.8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T383](T380-T399-aislamiento.md) | El usercustomize tampoco llega, y por eso -S no se retira | G-03 · H-1 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T384](T380-T399-aislamiento.md) | Un hashlib homonimo en el PYTHONPATH no decide la huella | G-03 · E-10 · H-01 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T385](T380-T399-aislamiento.md) | Un paquete homonimo no entra ni desde el PYTHONPATH ni desde el cwd | G-03 · ADJ-B2 · E-10 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T386](T380-T399-aislamiento.md) | Un PATH con interprete falso no decide el resultado | G-03 · H-1 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T387](T380-T399-aislamiento.md) | Un punto del arbol B usa la guarda de B y no la del arbol desde el que se lanza | G-03 · E-10 · T306d | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T388](T380-T399-aislamiento.md) | Un modulo importado ANTES de que la guarda tome la palabra se ve y falla cerrado | G-03 · H-1 · O26 1.8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T389](T380-T399-aislamiento.md) | El lanzamiento directo no evita la guarda, y la marca de reejecucion no se puede forjar | G-03 · H-1 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T390](T380-T399-aislamiento.md) | El manifiesto de la instalacion no encoge bajo el gancho | G-03 · ADJ-B2 · H-1 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T391](T380-T399-aislamiento.md) | capacidades no publica el vacio bajo el gancho | G-03 · ADJ-B2 · H-1 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T392](T380-T399-aislamiento.md) | Una instalacion a la que le falta la guarda NO ejecuta | G-03 · ADJ-B2 · O25 2 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T393](T380-T399-aislamiento.md) | Una bateria NUEVA ya no queda exenta por su zona | D-01 · HALLAZGO 3 · ADJ-B2 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T394](T380-T399-aislamiento.md) | El runner sanea el entorno de sus hijos y lo PUBLICA en la cabecera | D-01 · HALLAZGO 3 · E-14 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T395](T380-T399-aislamiento.md) | El comprobador de evidencia EXIGE la garantia publicada | D-01 · HALLAZGO 3 · E-14 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T396](T380-T399-aislamiento.md) | La primitiva sustituida EN SITIO se caza con el vector conocido | G-03 · H-1 · O26 1.8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T397](T380-T399-aislamiento.md) | Las cuatro banderas se exigen y una sola que falte no basta | G-03 · O26 1.8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T400](T400-T419-prioridad-y-contencion.md) | La prioridad declarada sobrevive intacta a una postergación | G-04 · R1-H02 · b.12 paso 5 · b.12 inanición | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T401](T400-T419-prioridad-y-contencion.md) | La prioridad sobrevive a muchas postergaciones seguidas y no deriva | G-04 · R1-H02 · b.12 inanición | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T402](T400-T419-prioridad-y-contencion.md) | El veterano adelanta por antigüedad y ninguna prioridad se altera | G-04 · b.12 paso 5 c · prevención de inanición | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T403](T400-T419-prioridad-y-contencion.md) | La prioridad sobrevive a la caída del runtime y a su reanudación | G-04 · b.12 inanición · recuperación del §4.2 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T404](T400-T419-prioridad-y-contencion.md) | Dos planificadores compitiendo tampoco mueven la prioridad de nadie | G-04 · g.6 · b.12 inanición · comparación e intercambio | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T405](T400-T419-prioridad-y-contencion.md) | La edición directa de la prioridad de 50 a 60 no se puede confirmar | G-04 · b.12 · invariante en la puerta | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T406](T400-T419-prioridad-y-contencion.md) | La secuencia 50 a 60 a 70 se corta en el primer escalón | G-04 · R1-H02 · b.12 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T407](T400-T419-prioridad-y-contencion.md) | La mutación escondida dentro de otra transición tampoco se confirma | G-04 · b.12 · atomicidad de la transición | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T408](T400-T419-prioridad-y-contencion.md) | Cambiar la prioridad y restaurarla después no lava la mutación | G-04 · b.12 · g.2 diario canónico | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T409](T400-T419-prioridad-y-contencion.md) | El sabotaje que pasaba doce baterías cae ahora por la prohibición semántica | G-04 · R1-H02 · b.12 · T269 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T410](T400-T419-prioridad-y-contencion.md) | Las cuatro generaciones confirman que existen antes de que se mate nada | G-08 · FD-5 · T216 · determinismo byte a byte | requiere-runtime | **PRUEBA SUPERADA** | evidencia/contencion-salida.txt |
+| [T411](T400-T419-prioridad-y-contencion.md) | Nunca creado y muerto por contención son veredictos distintos | G-08 · FD-5 · T215 · T216 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/contencion-salida.txt |
+| [T412](T400-T419-prioridad-y-contencion.md) | La preparación es una condición observada y no una espera arbitraria | G-08 · FD-5 · determinismo byte a byte | requiere-runtime | **PRUEBA SUPERADA** | evidencia/contencion-salida.txt |
+| [T413](T400-T419-prioridad-y-contencion.md) | La contención se repite bajo carga sin intermitencia, con el backend débil y con el fuerte | G-08 · E-18 · FD-5 · determinismo byte a byte | requiere-runtime | **PRUEBA SUPERADA** | evidencia/contencion-salida.txt |
+| [T414](T400-T419-prioridad-y-contencion.md) | setsid se conserva y se mide generación a generación por su identificador de sesión | G-08 · FD-5 · T215 · T216 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/contencion-salida.txt |
+| [T415](T400-T419-prioridad-y-contencion.md) | Ningún escenario nuevo queda atado a que otro reescriba la salida de su ejecutor | D-02 · H-02 · ADJ-G2 · REGISTRO.md regla dura | requiere-runtime | **PRUEBA SUPERADA** | evidencia/runtime-salida.txt |
+| [T416](T400-T419-prioridad-y-contencion.md) | Cada escenario atado declara qué ejecutable tendría que nombrarlo | D-02 · H-02 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/runtime-salida.txt |
+| [T417](T400-T419-prioridad-y-contencion.md) | El ascenso lo da el veredicto nominal y no el hecho de ejecutar una batería | D-02 · H-02 · ADJ-G2 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/runtime-salida.txt |
+| [T419](T400-T419-prioridad-y-contencion.md) | La norma de b.12 se cita igual en las cuatro sedes y una de ellas la ejecuta | G-04 · b.12 · R1-H02 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
+| [T420](T420-T429-evidencia-en-head.md) | El banco del contraste es un repositorio Git de verdad, y se demuestra pieza a pieza | D-05 · control positivo | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T421](T420-T429-evidencia-en-head.md) | Un veredicto bueno reescrito como malo en el arbol de trabajo da FALLIDA | D-05 · ataque 1 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T422](T420-T429-evidencia-en-head.md) | Un veredicto malo confirmado que desaparece del disco da FALLIDA | D-05 · ataque 2 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T423](T420-T429-evidencia-en-head.md) | La evidencia que encoge en silencio da FALLIDA, aunque no cambie de clase de veredicto | D-05 · ataque 3 · cliquet de cobertura | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T424](T420-T429-evidencia-en-head.md) | Una regeneracion legitima difiere de HEAD y NO da rojo | D-05 · ataque 4 · falso positivo | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T425](T420-T429-evidencia-en-head.md) | Vaciar la evidencia entera da FALLIDA, y antes de este escenario NO lo daba | D-05 · ataque 5 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T426](T420-T429-evidencia-en-head.md) | Renombrar el escenario para que su evidencia deje de nombrarlo da FALLIDA | D-05 · ataque 6 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T427](T420-T429-evidencia-en-head.md) | Sin repositorio Git el canal no puede juzgar, y lo DICE en vez de dar verde mudo | D-05 · ataque 7 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T428](T420-T429-evidencia-en-head.md) | Una evidencia citada y no confirmada en HEAD se cuenta y se NOMBRA | D-05 · ataque 8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T429](T420-T429-evidencia-en-head.md) | Borrar la evidencia confirmada da FALLIDA igual que vaciarla | D-05 · ataque 9 · auditoria independiente | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
 
 ## Contraste del estado contra la evidencia
 
-Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **195** de **267**.
+Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **254** de **314**.
 
-No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **72**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
+No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **60**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
 
 Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada mezclaba a los que no afirman ninguna ejecución con los que afirmaban una que su evidencia no nombra, que es lo que `H-02` encontró—:
 
@@ -301,6 +348,5 @@ Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada
 |---|---|
 | contrato-definido | 56 |
 | validador-implementado | 4 |
-| prueba-ejecutada | 12 |
 
 Ninguna divergencia: todo `estado:` declarado coincide con el que su evidencia sostiene.

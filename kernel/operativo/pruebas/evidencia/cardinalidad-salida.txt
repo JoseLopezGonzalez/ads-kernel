@@ -1,5 +1,6 @@
 # evidencia de: cardinalidad-y-seleccion
-# orden:        python3 kernel/operativo/runtime/pruebas/test_cardinalidad_y_seleccion.py
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/runtime/pruebas/test_cardinalidad_y_seleccion.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
 
@@ -24,6 +25,28 @@ test_258_reanudar_no_puede_cambiar_el_reparto_en_silencio (__main__.Cardinalidad
 T258 · Defecto que previene: agentes trabajando sobre unidades que ya no existen. ... ok
 test_259_un_cardinal_ilegible_falla_cerrado_y_nunca_vale_uno_por_omision (__main__.Cardinalidad.test_259_un_cardinal_ilegible_falla_cerrado_y_nunca_vale_uno_por_omision)
 T259 · Defecto que previene: «lo que no entiendo, que sea uno». ... ok
+test_400_la_prioridad_declarada_sobrevive_a_una_postergacion (__main__.PrioridadInmutableDeB12.test_400_la_prioridad_declarada_sobrevive_a_una_postergacion)
+T400 · Defecto que previene: el sabotaje de `R1-H02`, en su forma más simple. ... ok
+test_401_la_prioridad_sobrevive_a_MUCHAS_postergaciones_seguidas (__main__.PrioridadInmutableDeB12.test_401_la_prioridad_sobrevive_a_MUCHAS_postergaciones_seguidas)
+T401 · Defecto que previene: una deriva lenta que una sola pasada no vería. ... ok
+test_402_adelantar_por_antiguedad_no_altera_NINGUNA_prioridad (__main__.PrioridadInmutableDeB12.test_402_adelantar_por_antiguedad_no_altera_NINGUNA_prioridad)
+T402 · Defecto que previene: prevenir la inanición subiendo la prioridad. ... ok
+test_403_la_prioridad_sobrevive_a_la_caida_y_a_la_reanudacion (__main__.PrioridadInmutableDeB12.test_403_la_prioridad_sobrevive_a_la_caida_y_a_la_reanudacion)
+T403 · Defecto que previene: mover la prioridad en el camino de recuperación. ... ok
+test_404_dos_planificadores_a_la_vez_tampoco_mueven_la_prioridad (__main__.PrioridadInmutableDeB12.test_404_dos_planificadores_a_la_vez_tampoco_mueven_la_prioridad)
+T404 · Defecto que previene: que la carrera entre dos DSP abra la puerta. ... ok
+test_405_la_edicion_DIRECTA_de_50_a_60_no_se_puede_confirmar (__main__.PrioridadInmutableDeB12.test_405_la_edicion_DIRECTA_de_50_a_60_no_se_puede_confirmar)
+T405 · Defecto que previene: esquivar la invariante escribiendo la transición. ... ok
+test_406_la_secuencia_50_60_70_se_corta_en_el_PRIMER_paso (__main__.PrioridadInmutableDeB12.test_406_la_secuencia_50_60_70_se_corta_en_el_PRIMER_paso)
+T406 · Defecto que previene: creer que el daño empieza en el segundo salto. ... ok
+test_407_la_mutacion_ESCONDIDA_dentro_de_otra_transicion_tampoco_pasa (__main__.PrioridadInmutableDeB12.test_407_la_mutacion_ESCONDIDA_dentro_de_otra_transicion_tampoco_pasa)
+T407 · Defecto que previene: mover la línea a otra transición y volver al verde. ... ok
+test_408_cambiar_la_prioridad_y_RESTAURARLA_despues_tampoco_cuela (__main__.PrioridadInmutableDeB12.test_408_cambiar_la_prioridad_y_RESTAURARLA_despues_tampoco_cuela)
+T408 · Defecto que previene: lavar la mutación con un viaje de ida y vuelta. ... ok
+test_409_el_sabotaje_que_pasaba_DOCE_baterias_ya_no_pasa_ninguna (__main__.PrioridadInmutableDeB12.test_409_el_sabotaje_que_pasaba_DOCE_baterias_ya_no_pasa_ninguna)
+T409 · Defecto que previene: que el remedio sea una prueba y no una invariante. ... ok
+test_419_la_norma_se_cita_IGUAL_en_las_cuatro_sedes_y_una_de_ellas_la_EJECUTA (__main__.PrioridadInmutableDeB12.test_419_la_norma_se_cita_IGUAL_en_las_cuatro_sedes_y_una_de_ellas_la_EJECUTA)
+T419 · Defecto que previene: que la cita se quede en prosa en las cuatro. ... ok
 test_260_criterio_a_la_prioridad_declarada_manda_sobre_todo_lo_demas (__main__.SeleccionEInanicion.test_260_criterio_a_la_prioridad_declarada_manda_sobre_todo_lo_demas)
 T260 · Defecto que previene: que la prioridad del Owner deje de mandar. ... ok
 test_261_criterio_b_desbloquear_a_mas_paquetes_decide_entre_iguales (__main__.SeleccionEInanicion.test_261_criterio_b_desbloquear_a_mas_paquetes_decide_entre_iguales)
@@ -46,6 +69,6 @@ test_269_cada_sabotaje_pone_roja_una_prueba_DISTINTA (__main__.SeleccionEInanici
 T269 · Defecto que previene: un criterio decorativo que nadie echaría de menos. ... ok
 
 ----------------------------------------------------------------------
-Ran 20 tests  (duración no registrada: varía por ejecución)
+Ran 31 tests  (duración no registrada: varía por ejecución)
 
 OK

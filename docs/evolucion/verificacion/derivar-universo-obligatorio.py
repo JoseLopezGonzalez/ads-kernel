@@ -90,6 +90,67 @@ USO
 """
 
 
+# ---------------------------------------------------------------------------
+#  `G-03` · AISLAMIENTO DE ARRANQUE · lo PRIMERO que hace este punto
+# ---------------------------------------------------------------------------
+#  El prólogo de `E-10` que sigue purga `sys.path` DESDE DENTRO del programa, y por eso
+#  llega tarde contra `sitecustomize`: `site.py` lo importa mientras el intérprete arranca,
+#  antes de que exista la primera sentencia de este fichero. La guarda cambia el MOMENTO
+#  —comprueba las banderas de aislamiento y, si no están, se reejecuta con `-I -S -E`—, y
+#  por eso las dos conviven: `G-03` impide que el gancho llegue a existir, y `E-10` sigue
+#  cubriendo la contaminación de la ruta en el caso importado.
+#
+#  POR QUÉ ESTE PUNTO. Hasta hoy los cuatro ejecutables de `docs/evolucion/verificacion/`
+#  eran los ÚNICOS del inventario sin guarda, declarados con motivo y con cliquet en `T380`
+#  porque el agente que hizo `G-03` tenía prohibido tocar esta zona. Son el instrumento con
+#  el que se mide si un gate cubre lo que dice cubrir y qué universo obligatorio existe: un
+#  `hashlib` o un `json` sustituidos por quien los corre deciden esas dos respuestas. La
+#  declaración se retira porque la excepción se ha cerrado, no porque haya caducado.
+
+import os as _os_g03
+import sys as _sys_g03
+
+# LA GUARDA NO DEJA RASTRO EN EL ÁRBOL QUE JUZGA. Medido: al importar la guarda, Python
+# escribía `validadores/__pycache__/aislamiento_de_arranque…pyc` en el árbol, y
+# `comprobar_arranque.py` empezó a publicar «el proyecto arrastra `__pycache__`» sobre
+# proyectos recién creados. Se desactiva la escritura de bytecode DURANTE la guarda y se
+# devuelve al estado que tenía: lo que el punto importe después sigue cacheándose como
+# siempre, y no se paga rendimiento por una comprobación que corre una vez.
+_G03_BYTECODE = _sys_g03.dont_write_bytecode
+_sys_g03.dont_write_bytecode = True
+_G03_PROPIA = _os_g03.path.dirname(_os_g03.path.realpath(__file__))
+_G03_SEDE = ""
+_G03_RAIZ = _G03_PROPIA
+while not _G03_SEDE:
+    for _G03_CANDIDATA in (_G03_PROPIA,
+                           _os_g03.path.join(_G03_RAIZ, "kernel", "operativo",
+                                             "validadores")):
+        if _os_g03.path.isfile(_os_g03.path.join(_G03_CANDIDATA,
+                                                 "aislamiento_de_arranque.py")):
+            _G03_SEDE = _G03_CANDIDATA
+            break
+    else:
+        _G03_PADRE = _os_g03.path.dirname(_G03_RAIZ)
+        if _G03_PADRE == _G03_RAIZ:
+            _sys_g03.stderr.write(
+                "[PROCEDENCIA_NO_FIABLE] no hay `aislamiento_de_arranque.py` ni junto a "
+                "este punto ejecutable ni en el `kernel/operativo/validadores/` de ning\u00fan "
+                "ancestro suyo: no se puede decidir si el arranque est\u00e1 aislado, y no se "
+                "sigue\n")
+            raise SystemExit(5)
+        _G03_RAIZ = _G03_PADRE
+_sys_g03.path.insert(0, _G03_SEDE)
+import aislamiento_de_arranque as _aislamiento_g03                    # noqa: E402
+
+AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)
+_sys_g03.dont_write_bytecode = _G03_BYTECODE
+
+# `-I` deja FUERA de `sys.path` el directorio del guión —es lo que impide que un homónimo
+# vecino se cuele— y los puntos que importan módulos hermanos lo necesitan. Se reintroduce
+# por RUTA DERIVADA DE `__file__`, que no la escribe el lanzador.
+if _G03_PROPIA not in _sys_g03.path:
+    _sys_g03.path.insert(0, _G03_PROPIA)
+
 # `E-10` · LA PROCEDENCIA DE LOS MÓDULOS, PURGADA ANTES DE NINGÚN `import` PROPIO
 #
 #  POR QUÉ ESTÁ AQUÍ, Y NO SÓLO EN `kernel/operativo/runtime/`. `H-01` de la auditoría del
@@ -178,6 +239,12 @@ RAIZ = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                     os.pardir, os.pardir, os.pardir))
 
 ARQ = "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md"
+
+# `D-04` · la sede que DECLARA el universo de la resta, y por tanto la única que puede decir
+# qué contratos transversales entran en él. Ver `contratos_transversales`. Se define AQUÍ,
+# junto a las otras sedes que este derivador lee, porque `ENCARGO` la nombra: la sede que
+# gobierna el universo tiene que estar DENTRO del universo (hallazgo 6 de la auditoría).
+UNIVERSO = "docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md"
 BATERIA = "docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py"
 DECISIONES = "docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md"
 CHECKPOINT = "docs/evolucion/CHECKPOINT-ADS-NEXT.md"
@@ -596,6 +663,25 @@ ENCARGO = [
      "lo que la batería declara de sí misma, frente a lo que hace"),
     ("docs/evolucion/verificacion/derivar-universo-obligatorio.py",
      "C-L.5 1bis · el comando auditable que deriva ESTE universo, juzgándose a sí mismo"),
+    # HALLAZGO 6 DEL AUDITOR INDEPENDIENTE · NINGUNA SEDE GOBIERNA EL UNIVERSO DESDE FUERA
+    #
+    #     Antes de `D-04`, la selección `C2`·`C4`·`C5` vivía en el patrón `^(C[245])-`
+    #     escrito DENTRO de este fichero, que es fuente obligatoria: va en el manifiesto,
+    #     algún revisor tiene que leerlo íntegro y su huella entra en el sobre de ancla.
+    #     `D-04` movió la decisión a `01-MATRIZ-DE-COMPLETITUD-F6.md` —correcto, porque el
+    #     instrumento que MIDE el universo no puede decidir también cuál es— y la dejó en un
+    #     documento que NADIE estaba obligado a leer, que no entraba en el manifiesto y que
+    #     no entraba en el sobre: `--rutas | grep -c "docs/f6"` devolvía `0`. Es la forma
+    #     exacta de `AA-01`, aplicada esta vez al documento que define el universo.
+    #
+    #     El cliquet acotaba el daño en una sola dirección —quitar un contrato ejercido
+    #     dispara `EXIT=2`— y no en la otra: AÑADIR contratos ampliaba el universo con
+    #     `EXIT=0` desde fuera del perímetro auditado. Entra aquí, y `_transversales_de_la_
+    #     sede` comprueba además que siga entrando.
+    (UNIVERSO,
+     "D-04 · la sede que DECLARA el universo de la resta, y por tanto la única que puede "
+     "decir qué contratos transversales entran en él. Gobierna el universo, luego está "
+     "DENTRO del universo"),
     ("docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md",
      "las entradas que acotan dictámenes que no se editan"),
     ("docs/evolucion/verificacion/emitir-sobre-de-ancla.py",
@@ -799,6 +885,50 @@ COMPONENTES = [
 _FILA_MANIFIESTO = re.compile(
     r"^\|\s*(?:\d+\s*\|\s*)?`([A-Za-z0-9][-A-Za-z0-9_./]*\.(?:md|py|ya?ml|txt))`\s*\|", re.M)
 
+# `R1-H01` · UN MANIFIESTO PUEDE PUBLICAR SU CENSO EN MÁS DE UNA FORMA, Y EL LECTOR SÓLO
+# CONOCÍA UNA. El manifiesto del gate del 2026-09-04 publica sus 239 rutas como censo
+# INDENTADO —`  kernel/operativo/runtime/estado/motor.py    1817`— y no como fila de tabla.
+# El lector no veía NI UNA, la guarda disparaba, y `--rutas` y `--tabla` FALLABAN CERRADO
+# sobre la propia candidata. `36/36 validadores en verde` convivía con un derivador muerto,
+# porque su evidencia sólo ejecutaba `--autopruebas`.
+#
+# DECISIÓN · se enseña al LECTOR las formas que existen, y NO se reescribe el manifiesto
+#     Alternativas: (a) reescribir el manifiesto antiguo como tabla; (b) relajar la guarda
+#     para que un manifiesto sin filas no dispare; (c) reconocer las dos formas.
+#     Se descarta (a) sin discusión: los manifiestos son INMUTABLES —lo fija `G-22`— y
+#     reescribir una sede publicada para que el lector la entienda es exactamente lo que el
+#     append-only existe para impedir. Se descarta (b) porque convierte el fallo cerrado en
+#     un verde por omisión, que es el defecto. Se elige (c): el censo se reconoce por lo que
+#     ES —una ruta del árbol con su cardinal al lado—, venga en tabla o en bloque indentado,
+#     y la guarda se conserva ENTERA para el manifiesto que no publique censo de ninguna
+#     de las dos formas.
+_CENSO_INDENTADO = re.compile(
+    r"^\s{2,}([A-Za-z0-9][-A-Za-z0-9_./]*\.(?:md|py|ya?ml|txt|toml|sh))\s+\d+\s*$", re.M)
+
+
+def _rutas_de_manifiesto(texto):
+    """Las rutas del censo de un manifiesto, y DE QUÉ UNIVERSO son.
+
+    Devuelve `(rutas, universo)`. `universo` es `"fuentes"` cuando el censo viene como FILA
+    DE TABLA —la forma de los quince manifiestos de `F4c`, que censaban el universo
+    DOCUMENTAL— y `"componentes"` cuando viene como bloque INDENTADO con su cardinal de
+    líneas, que es la forma del manifiesto del gate de `F6` y censa **otro universo**: los
+    componentes modificados de la candidata.
+
+    LA DISTINCIÓN NO ES COSMÉTICA, y por eso se hace aquí. El cliquet de `--rutas` protege
+    el universo DOCUMENTAL: comprueba que ninguna fuente que un gate anterior declaró
+    obligatoria haya desaparecido. Meterle las 223 rutas de un censo de COMPONENTES le
+    exigiría que `runtime/estado/motor.py` esté en el universo documental, que es una
+    exigencia que nadie hizo nunca y que ningún árbol satisface.
+    """
+    filas = set(_FILA_MANIFIESTO.findall(texto))
+    if filas:
+        return filas, "fuentes"
+    indentado = set(_CENSO_INDENTADO.findall(texto))
+    if indentado:
+        return indentado, "componentes"
+    return set(), None
+
 
 def universos_publicados():
     """{ruta: [manifiestos que la declararon obligatoria]}, de las sedes INMUTABLES."""
@@ -806,11 +936,19 @@ def universos_publicados():
     if not os.path.isdir(dir_man):
         raise SedeIlegible("no existe %s: sin manifiestos publicados no hay nada contra lo "
                            "que comprobar que el universo no ha encogido" % MANIFIESTOS)
-    publicadas, con_filas, sin_filas = {}, [], []
+    publicadas, con_filas, sin_filas, de_otro_universo = {}, [], [], []
     for nombre in sorted(os.listdir(dir_man)):
         if not nombre.endswith(".md"):
             continue
-        rutas = set(_FILA_MANIFIESTO.findall(_leer(MANIFIESTOS + "/" + nombre)))
+        rutas, universo = _rutas_de_manifiesto(_leer(MANIFIESTOS + "/" + nombre))
+        if universo == "componentes":
+            # `R1-H01` · el manifiesto censa OTRO universo. No aporta al cliquet documental,
+            # y eso NO es que el lector no lo vea: es que su censo habla de otra cosa. Se
+            # publica para que la exclusión conste, porque una exclusión callada es
+            # indistinguible de un lector roto —que es justo lo que este fichero acaba de
+            # descubrir de sí mismo—.
+            de_otro_universo.append((nombre, len(rutas)))
+            continue
         (con_filas if rutas else sin_filas).append(nombre)
         for r in rutas:
             publicadas.setdefault(r, []).append(nombre)
@@ -824,9 +962,17 @@ def universos_publicados():
             "manifiesto es la sede que declaró qué fuentes eran obligatorias en su gate; si "
             "el lector no las ve, esas rutas pueden desaparecer del universo sin que nada lo "
             "diga, y la guarda del total no lo nota mientras los demás manifiestos aporten "
-            "filas. O la tabla ha cambiado de forma, o el fichero no es un manifiesto: las "
-            "dos cosas se responden, no se callan" % (len(sin_filas), MANIFIESTOS, sin_filas))
+            "filas. Se reconocen DOS formas de censo —fila de tabla y bloque indentado—, "
+            "así que un manifiesto que no aporte nada por ninguna de las dos, o ha cambiado "
+            "de forma otra vez, o no es un manifiesto: las dos cosas se responden, no se "
+            "callan" % (len(sin_filas), MANIFIESTOS, sin_filas))
+    UNIVERSOS_AJENOS.clear()
+    UNIVERSOS_AJENOS.extend(sorted(de_otro_universo))
     return publicadas
+
+
+# Los manifiestos que censan OTRO universo, publicados. Se rellena en `universos_publicados`.
+UNIVERSOS_AJENOS = []
 
 
 def derivar():
@@ -993,14 +1139,13 @@ CRITERIOS_DE_PERTENENCIA = {
     "g": "por ESTRUCTURA: cabecera `## `g.n`` dentro de la ventana 1..16 que la sede enumera",
     # `ADJ-M10` · LA FRONTERA DEL COMPONENTE `C`, DICHA COMO LO QUE ES Y NO COMO LO QUE
     # PARECE. `kernel/operativo/contratos/` publica SIETE contratos —`C1`…`C7`— y este
-    # componente se queda con TRES. El criterio no es estructural: es una SELECCIÓN
-    # ESCRITA en el patrón `^(C[245])-`, y NINGUNA sede del corpus declara por qué esos
-    # tres son los de `F6` y los otros cuatro no. Se dice aquí en vez de dejar que el
-    # rótulo «por estructura» lo tape, y va como PETICIÓN al coordinador: mientras no
-    # exista sede que lo derive, este componente tiene una frontera que no se puede
-    # auditar contra nada.
-    "C": "SELECCIÓN ESCRITA `C2`, `C4`, `C5` — sin sede que la derive (PETICIÓN abierta); "
-         "los otros cuatro contratos del directorio se publican como excluidos",
+    # componente se queda con TRES. `D-04` del cierre final: el criterio NO era estructural
+    # y NO estaba en ninguna sede; era el patrón `^(C[245])-` escrito aquí, en el
+    # instrumento que mide. Ahora la selección la manda la sede que DECLARA el universo de
+    # la resta, y este código sólo la lee. Ver `contratos_transversales`.
+    "C": "los contratos transversales que la sede del universo NOMBRA "
+         "(`01-MATRIZ-DE-COMPLETITUD-F6.md`, «Universo de la resta»); los demás contratos "
+         "del directorio se publican como excluidos, con su motivo",
     "deuda": "por FASE declarada en la celda de la fila, o en el campo `FASE` de la sección",
 }
 
@@ -1212,15 +1357,32 @@ def procedencia_de_los_componentes():
 
 
 def _seccion_19():
-    """El cuerpo de §19, acotado por sus dos cabeceras. Falla cerrado si no está."""
-    texto = _leer(ARQ)
-    marca = "--- CONTRATO 1 · DERIVAR EL CENSO"
-    if marca not in texto:
+    """El cuerpo de §19, ACOTADO DE VERDAD a su sección. Falla cerrado si no está.
+
+    `HALLAZGO 2` del gate del 2026-09-05 · EL DOCSTRING DECÍA «acotado por sus dos cabeceras»
+    Y LA FUNCIÓN HACÍA `return texto`: devolvía el documento ENTERO, las 12 152 líneas. Con
+    eso, una mención de `CONTRATO n` en cualquier prosa del documento sostenía una obligación
+    que su sección ya no declaraba, y retirar el bloque real dejaba `TOTAL 57 · EXIT=0`. Es
+    la misma clase que `H-05` cerró para el componente `V6` —la frontera publicada no era la
+    real— dentro del mismo fichero y sin que nadie la mirara.
+
+    Ahora la sección se acota como se acota cualquier otra: desde su cabecera `# 19 ·` hasta
+    la cabecera `# N ` siguiente. Si §19 desaparece, esto falla cerrado en vez de derivar el
+    universo de la prosa del resto del documento.
+    """
+    seccion = _seccion_numerada(_leer(ARQ), 19)
+    # La sección puede existir y haber perdido su bloque de contratos, que es un PARSEO
+    # PARCIAL y no un encogimiento: se distingue, porque el remedio de cada uno es distinto.
+    # El cliquet del corpus también lo cazaría —lo comprobamos—, pero llegaría diciendo
+    # «una obligación desapareció» en vez de «la sede dejó de tener la forma que se lee», y
+    # un diagnóstico que nombra el síntoma en vez de la causa manda al lector al sitio
+    # equivocado.
+    if "--- CONTRATO 1 · DERIVAR EL CENSO" not in seccion:
         raise SedeIlegible(
-            "`%s` no contiene el bloque de contratos de §19: la sede de las cuatro "
-            "obligaciones de fase F6 no se puede leer, y sin ella el universo estaría "
-            "incompleto por construcción" % ARQ)
-    return texto
+            "`%s` §19 no contiene el bloque de contratos: la sede de las obligaciones de "
+            "fase F6 no se puede leer, y sin ella el universo estaría incompleto por "
+            "construcción" % ARQ)
+    return seccion
 
 
 def obligaciones_de_19():
@@ -1235,7 +1397,11 @@ def obligaciones_de_19():
     trozos = re.split(r"^--- (CONTRATO [^·]+?) ·", texto, flags=re.M)
     for i in range(1, len(trozos), 2):
         nombre = trozos[i].strip()
-        cuerpo = trozos[i + 1][:4000]
+        # `HALLAZGO 2` · el cuerpo se leía TRUNCADO a 4 000 caracteres, de modo que un
+        # contrato cuya declaración `FASE F6` cayera más allá desaparecía del universo sin
+        # que nada lo dijera. Se lee ENTERO: el cuerpo de un contrato es lo que hay entre su
+        # cabecera y la siguiente, y su longitud no es asunto del lector.
+        cuerpo = trozos[i + 1]
         if re.search(r"FASE\s+\*\*F6\*\*|FASE\s+\*\*F6\.|\bFASE\b[^\n]*\bF6\b", cuerpo):
             halladas[nombre] = "11-ARQ §19 · %s" % nombre
     # La ficha `D104`, que no es un `--- CONTRATO ---` pero es la cuarta obligación.
@@ -1420,23 +1586,108 @@ def obligaciones_g():
     return halladas
 
 
+# `D-04` · el párrafo de `01-MATRIZ-DE-COMPLETITUD-F6.md` que declara el universo de la
+# resta, y dentro de él el tramo que nombra los contratos transversales. Se ancla en las
+# DOS puntas —el rótulo del párrafo y la coletilla que cierra el tramo— para que un cambio
+# de redacción no pase por un cambio de universo: si el ancla no está, esto FALLA CERRADO
+# en vez de derivar un conjunto vacío o el que había ayer.
+_ROTULO_DEL_UNIVERSO = "**Universo de la resta.**"
+# HALLAZGO 7 DEL AUDITOR INDEPENDIENTE · EL ANCLA NO PUEDE DEPENDER DEL PLEGADO DE LÍNEAS
+#
+#     Esta expresión llevaba un `\n` LITERAL entre los contratos y la coletilla. El auditor
+#     movió el salto una palabra —«`C2`, `C4` y `C5` donde el ciclo\nlos invoca», el MISMO
+#     texto— y los tres validadores del universo se fueron a `EXIT=2`. Falla al lado seguro,
+#     pero acopla la derivación del universo al ajuste tipográfico del Markdown: cualquier
+#     edición anterior en el párrafo que corra el plegado, o cualquier reformateador, pone
+#     en rojo tres validadores por una razón que no existe. Y el arreglo barato que alguien
+#     con prisa aplicará es RELAJAR la expresión, que es el camino por el que la sede deja
+#     de estar anclada. Es la mecánica que apaga guardianes, ya escrita en este árbol.
+#
+#     Se ancla por CONTENIDO NORMALIZADO: el espacio en blanco se colapsa antes de buscar,
+#     de modo que dónde caiga el salto deja de importar y lo que ancla es lo que dice.
+_TRAMO_TRANSVERSAL = re.compile(
+    r"((?:`C\d+`(?:,\s+|\s+y\s+))*`C\d+`)\s+donde el ciclo los invoca")
+
+
+def _transversales_de_la_sede():
+    """Los contratos transversales que la SEDE del universo nombra. `D-04`.
+
+    HECHO REPRODUCIDO. Hasta hoy este componente se derivaba de `re.match(r"^(C[245])-")`
+    escrito en este mismo fichero: el instrumento que MIDE el universo decidía también
+    cuál es. `kernel/operativo/contratos/` publica siete contratos y entraban tres, y
+    ninguna sede decía por qué esos tres. Se buscó una: `11-ARQ` §15.7 recorre `C1`–`C7`
+    contrato a contrato, y lo que declara con ejecución pendiente de `F6` es `C2`, `C5`,
+    `C6` y `C7` —NO `C4`—, así que §15.7 no es la sede de esta selección y hacerla pasar
+    por tal habría cambiado el universo inventando el motivo.
+
+    Y ESA SEDE TIENE QUE ESTAR DENTRO DEL UNIVERSO, comprobado abajo y no supuesto. Es el
+    hallazgo 6 de la auditoría independiente: `D-04` movió la decisión del instrumento —que
+    es fuente obligatoria, va en el manifiesto y entra en el sobre— a un documento que
+    nadie estaba obligado a leer. Ninguna sede puede gobernar el universo obligatorio desde
+    fuera de él, y es mecánicamente comprobable, así que se comprueba.
+
+    La sede que sí lo declara es la que declara el universo entero: el párrafo «Universo
+    de la resta» de `01-MATRIZ-DE-COMPLETITUD-F6.md`, que dice «`C2`, `C4` y `C5` donde el
+    ciclo los invoca». Ahí es donde tiene que estar y ahí es donde se lee. El cliquet queda
+    en la sede: entrar o salir de este componente exige editarla, no editar este código.
+    """
+    if UNIVERSO not in [ruta for ruta, _clausula in ENCARGO]:
+        raise SedeIlegible(
+            "`%s` gobierna qué contratos transversales entran en el universo obligatorio y "
+            "NO figura en el `ENCARGO`, es decir, no está DENTRO de ese universo: nadie "
+            "está obligado a leerla, no entra en el manifiesto del gate y no entra en el "
+            "sobre de ancla. Una sede que decide el universo desde fuera del universo lo "
+            "puede AMPLIAR sin que ningún revisor lo vea — es la forma de `AA-01` aplicada "
+            "al documento que define el universo" % UNIVERSO)
+    texto = _leer(UNIVERSO)
+    if _ROTULO_DEL_UNIVERSO not in texto:
+        raise SedeIlegible(
+            "`%s` ya no contiene el rótulo %s: la sede que DECLARA el universo de la resta "
+            "ha cambiado de forma, y derivar el componente `C` de lo que quede sería "
+            "inventar el universo en vez de leerlo" % (UNIVERSO, _ROTULO_DEL_UNIVERSO))
+    parrafo = texto.split(_ROTULO_DEL_UNIVERSO, 1)[1].split("\n\n", 1)[0]
+    # El espacio en blanco se colapsa: el ancla es el CONTENIDO, no su disposición.
+    m = _TRAMO_TRANSVERSAL.search(re.sub(r"\s+", " ", parrafo))
+    if not m:
+        raise SedeIlegible(
+            "el párrafo «Universo de la resta» de `%s` ya no nombra los contratos "
+            "transversales con la forma «`Cn`, `Cn` y `Cn`\\ndonde el ciclo los invoca`»: "
+            "sin ese tramo no hay sede que derive el componente `C`, y `D-04` volvería a "
+            "estar abierto con el agravante de que nadie lo notaría" % UNIVERSO)
+    nombrados = re.findall(r"`(C\d+)`", m.group(1))
+    if not nombrados:
+        raise SedeIlegible(
+            "el tramo de contratos transversales de `%s` está vacío" % UNIVERSO)
+    return nombrados
+
+
 def contratos_transversales():
-    """`C2`, `C4` y `C5`, derivados de los ficheros del árbol y no de una lista."""
+    """Los contratos transversales que la sede del universo nombra. `D-04`."""
     base = os.path.join(RAIZ, "kernel/operativo/contratos")
+    nombrados = _transversales_de_la_sede()
     halladas = {}
     for nombre in sorted(os.listdir(base)) if os.path.isdir(base) else []:
-        m = re.match(r"^(C[245])-", nombre)
-        if m:
-            halladas[m.group(1)] = "kernel/operativo/contratos/" + nombre
-            continue
-        # `ADJ-M10` · lo que la selección deja fuera se PUBLICA con su motivo. Cuatro de
-        # los siete contratos del directorio no entran, y hasta hoy no lo decía nadie.
         otro = re.match(r"^(C\d+)-", nombre)
-        if otro:
-            _excluir_obligacion(
-                "C", otro.group(1),
-                "el componente selecciona `C2`, `C4` y `C5` por lista ESCRITA; este "
-                "contrato existe en el árbol y es de fase ANTERIOR")
+        if not otro:
+            continue
+        if otro.group(1) in nombrados:
+            halladas[otro.group(1)] = "kernel/operativo/contratos/" + nombre
+            continue
+        # `ADJ-M10` · lo que la selección deja fuera se PUBLICA con su motivo.
+        _excluir_obligacion(
+            "C", otro.group(1),
+            "el párrafo «Universo de la resta» de `%s` nombra %s como los contratos "
+            "transversales de `F6` «donde el ciclo los invoca», y éste no está entre "
+            "ellos" % (UNIVERSO, ", ".join("`%s`" % c for c in nombrados)))
+    # Lo que la sede nombra y el árbol NO tiene es un fallo cerrado, no una ausencia
+    # tolerable: significa que el universo declara una obligación cuyo contrato no existe.
+    faltan = [c for c in nombrados if c not in halladas]
+    if faltan:
+        raise SedeIlegible(
+            "el párrafo «Universo de la resta» de `%s` nombra %s, y en "
+            "`kernel/operativo/contratos/` no hay ningún fichero que empiece por %s"
+            % (UNIVERSO, ", ".join("`%s`" % c for c in faltan),
+               " ni ".join("`%s-`" % c for c in faltan)))
     # `ADJ-G1` · el `!= 3` era el último cardinal escrito. El suelo de este componente lo
     # pone el CLIQUET DEL CORPUS: `C2`, `C4` y `C5` están nombrados en el `cubre` de sus
     # escenarios, y retirar el fichero de uno los deja ejercidos y fuera del universo, que
@@ -1972,6 +2223,90 @@ def _s_excepcion_caducada(destino):
     for nombre in os.listdir(base):
         if nombre.startswith("C1-"):
             os.remove(os.path.join(base, nombre))
+
+
+@_sabotaje("la sede del universo deja de nombrar los contratos transversales",
+           "no hay sede que derive el componente `C`")
+def _s_universo_sin_transversales(destino):
+    """`D-04` · quien manda es la SEDE, y hay que poder medirlo.
+
+    Si el tramo «`C2`, `C4` y `C5` / donde el ciclo los invoca» desaparece del párrafo que
+    declara el universo, este componente no tiene de dónde derivarse. Antes de `D-04` eso
+    no cambiaba nada —el patrón estaba escrito en el código y la sede era decorativa—; con
+    la derivación puesta, tiene que ser un fallo cerrado. Este sabotaje es lo que separa
+    «lee la sede» de «dice que lee la sede».
+    """
+    ruta = os.path.join(destino, UNIVERSO)
+    with io.open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    texto = texto.replace("`C2`, `C4` y `C5`\ndonde el ciclo los invoca",
+                          "los contratos transversales que procedan")
+    with io.open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto)
+
+
+@_sabotaje("la sede del universo nombra un contrato transversal MÁS",
+           "C7")
+def _s_universo_con_un_transversal_mas(destino):
+    """`D-04` · y en el otro sentido: ampliar la sede AMPLIA el universo, sin tocar código.
+
+    El sabotaje anterior mide que la sede pueda romperlo; éste mide que la sede pueda
+    MOVERLO. Si añadir `C7` al párrafo no hace aparecer `C7` en el universo, la derivación
+    es un adorno y el patrón sigue mandando desde el código.
+    """
+    ruta = os.path.join(destino, UNIVERSO)
+    with io.open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    texto = texto.replace("`C2`, `C4` y `C5`\ndonde el ciclo los invoca",
+                          "`C2`, `C4`, `C5` y `C7`\ndonde el ciclo los invoca")
+    with io.open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto)
+
+
+@_sabotaje("la sede que gobierna el universo sale del ENCARGO: gobernaría desde fuera",
+           "no está DENTRO de ese universo")
+def _s_universo_gobernado_desde_fuera(destino):
+    """Hallazgo 6 de la auditoría · ninguna sede gobierna el universo desde fuera de él.
+
+    Se le quita al `ENCARGO` la fila de la sede del universo. El efecto que esto tenía
+    antes de la corrección: el documento que decide qué contratos transversales entran
+    seguía decidiendo, y ya no lo leía ningún revisor, no iba en el manifiesto y no entraba
+    en el sobre. Ampliarlo daba `EXIT=0` desde fuera del perímetro auditado.
+    """
+    ruta = os.path.join(destino, "docs/evolucion/verificacion",
+                        "derivar-universo-obligatorio.py")
+    with io.open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    inicio = texto.index("    (UNIVERSO,")
+    final = texto.index("DENTRO del universo\"),", inicio) + len("DENTRO del universo\"),\n")
+    with io.open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto[:inicio] + texto[final:])
+
+
+@_sabotaje("con el párrafo REPLEGADO, quitar un contrato sigue siendo `EL UNIVERSO HA "
+           "ENCOGIDO` y no un ancla rota",
+           "EL UNIVERSO HA ENCOGIDO")
+def _s_universo_replegado_y_encogido(destino):
+    """Hallazgo 7 de la auditoría · el ancla es el CONTENIDO, no su disposición.
+
+    El auditor movió el salto de línea una palabra —el MISMO texto, plegado de otra manera—
+    y los tres validadores del universo se fueron a `EXIT=2`. Falla al lado seguro, pero
+    castiga una edición inocua, y el arreglo barato ante eso es RELAJAR la expresión
+    regular, que es como se acaba desanclando una sede.
+
+    Este sabotaje mide las dos cosas a la vez, y por eso hacen falta las dos ediciones: se
+    repliega el párrafo Y se quita `C4`. El diagnóstico esperado es «EL UNIVERSO HA
+    ENCOGIDO», que sólo puede salir si el ancla SIGUIÓ LEYENDO el párrafo replegado. Si el
+    ancla volviera a depender de dónde cae el salto, el fallo sería otro —«ya no nombra los
+    contratos transversales»— y este control lo diría, porque el motivo se compara.
+    """
+    ruta = os.path.join(destino, UNIVERSO)
+    with io.open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    texto = texto.replace("`C2`, `C4` y `C5`\ndonde el ciclo los invoca",
+                          "`C2` y `C5` donde el ciclo\nlos invoca")
+    with io.open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(texto)
 
 
 def _derivar_en_la_copia(destino):

@@ -1,5 +1,6 @@
 # evidencia de: e2e-f6
-# orden:        python3 kernel/operativo/runtime/pruebas/escenario_e2e_f6.py
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/runtime/pruebas/escenario_e2e_f6.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
 ESCENARIO EXTREMO A EXTREMO DE `F6` · MACROBLOQUE 3
@@ -90,3 +91,6 @@ T365 · censo de `arboles/`: el paquete está en los dos censos, la vía histór
 T301 · recuperabilidad  almacen-cortado-8-9: abierto, recuperado e íntegro
 T301 · recuperabilidad  maquina-a/control: abierto, recuperado e íntegro
 T301 · recuperabilidad  maquina-b/control: abierto, recuperado e íntegro
+
+T225  SUPERADA  ciclo de §7.2, macrocircuito, Continúa, V6-15, V6-16 y dos máquinas
+T301  SUPERADA  el estado durable se vuelve a abrir, se recupera y queda íntegro

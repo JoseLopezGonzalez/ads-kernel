@@ -1,9 +1,10 @@
 # evidencia de: evidencia
-# orden:        python3 kernel/operativo/validadores/comprobar_evidencia.py
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_evidencia.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
 T158  SUPERADA  La evidencia publicada demuestra lo que el informe afirma
 T350  SUPERADA  El estado declarado de cada escenario lo sostiene su evidencia
-          cobertura del contraste: contrastados 195 · no contrastables 72 · divergencias 0 · no contrastables por estado declarado: contrato-definido=56 prueba-ejecutada=12 validador-implementado=4
+          cobertura del contraste: contrastados 254 · no contrastables 60 · divergencias 0 · contraste contra el blob de HEAD: EJERCIDO · no contrastables por estado declarado: contrato-definido=56 validador-implementado=4
 
 2 superadas · 0 fallidas

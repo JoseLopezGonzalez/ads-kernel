@@ -96,8 +96,24 @@ limitaciones_declaradas:
 
 estados_validos: [vigente, historico, evidencia, derivada]
 
+# `D-03` · LA CLASE `AUTORIDAD_SUPERIOR` METIA DOS REGIMENES EN EL MISMO SACO
+#
+#   El gate del 2026-09-05 lo midio y el propio codigo del verificador lo dejo escrito como
+#   peticion: aplicar el append-only permanente a toda la clase produce CUATRO ROJOS sobre un
+#   arbol INTACTO —`a-CAPACIDADES-APROBADA.md`, `a-ENMIENDA-E1-ENC.md`,
+#   `b-RECORRIDO-APROBADA.md` y `kernel/KERNEL.md`—. No era un fallo de la vigilancia: la sede
+#   del Owner es APPEND-ONLY y las especificaciones aprobadas «se cambian POR ENMIENDA», y el
+#   motivo de la propia zona ya lo decia. Contra su nacimiento, una especificacion enmendada
+#   NO es un prefijo y nunca lo sera.
+#
+#   Se parten en dos clases con regimen propio. `AUTORIDAD_SUPERIOR` queda para la sede
+#   append-only; `APROBADA_POR_ENMIENDA` para el material aprobado que solo cambia por
+#   enmienda. Ninguna de las dos abre un falso verde: la primera conserva el append-only por
+#   ENTRADA CERRADA de `O27` §3, y la segunda exige que toda mutacion vaya DECLARADA, que es
+#   lo que una enmienda es.
 clases_validas:
   - AUTORIDAD_SUPERIOR
+  - APROBADA_POR_ENMIENDA
   - CANONICA_OPERATIVA
   - CONTRATO_O_ESQUEMA_TECNICO
   - HISTORICA
@@ -120,12 +136,16 @@ zonas:
   - patron: '^docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO\.md$'
     clase: NO_APLICABLE_A_IMPLEMENTACION
     motivo: documento de trabajo del Owner; declara materia abierta y no autoriza a implementar
-  - patron: '^docs/rediseno/(a-CAPACIDADES-APROBADA|b-RECORRIDO-APROBADA|g-ESTADO-DURABLE-APROBADA|a-ENMIENDA-E1-ENC|a-ENMIENDA-E2-MULTIREPO|a-ENMIENDA-E[3-9]-[A-Z0-9-]+)\.md$'
-    clase: AUTORIDAD_SUPERIOR
+  - patron: '^docs/rediseno/(a-CAPACIDADES-APROBADA|b-RECORRIDO-APROBADA|g-ESTADO-DURABLE-APROBADA|a-ENMIENDA-E[0-9]+-[A-Z0-9-]+)\.md$'
+    clase: APROBADA_POR_ENMIENDA
     motivo: >
       especificacion normativa aprobada por el Owner; se cambia por enmienda. Incluye la
-      seccion (g), adoptada por la resolucion O23, y las enmiendas E3 en adelante que F5
-      emite bajo esa misma resolucion
+      seccion (g), adoptada por la resolucion O23, y TODAS las enmiendas que F5 emite bajo
+      esa misma resolucion. El rango era 'E1', 'E2' y 'E[3-9]' escrito a mano, y la
+      auditoria independiente midio que una enmienda 'E10' no casaria y caeria sola a
+      DERIVADA: un rango de identificadores escrito dentro del instrumento que clasifica es
+      el mismo defecto de clase que D-04 existe para abolir, y envejece en silencio. Ahora
+      es 'E[0-9]+', que no tiene tope, y quien decide que enmiendas hay es el arbol
   - patron: '^docs/rediseno/a-EQUIPOS-v[0-9]-(RECHAZADA|SUPERADA)\.md$'
     clase: HISTORICA
     motivo: versiones rechazadas o superadas, conservadas por trazabilidad
@@ -180,8 +200,12 @@ zonas:
     clase: DERIVADA
     motivo: artefactos regenerados desde el corpus
   - patron: '^kernel/KERNEL\.md$'
-    clase: AUTORIDAD_SUPERIOR
-    motivo: constitucion en prosa; solo su propia lista de derogaciones la deroga
+    clase: APROBADA_POR_ENMIENDA
+    motivo: >
+      constitucion en prosa; solo su propia lista de derogaciones la deroga. NO es
+      append-only: una derogacion REESCRIBE, y por eso `D-03` la saca de la clase de la
+      sede del Owner. Fue uno de los cuatro rojos falsos que el gate del 2026-09-05 midio
+      sobre un arbol intacto
   - patron: '^kernel/operativo/(esquemas|contratos)/'
     clase: CONTRATO_O_ESQUEMA_TECNICO
     motivo: la forma de cada tipo canonico y los contratos transversales

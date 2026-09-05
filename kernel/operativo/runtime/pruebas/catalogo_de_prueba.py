@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """catalogo_de_prueba — el CATÁLOGO DE MODELOS que un proyecto declararía en su `PROFILE.md`.
 
 NO es un mock: es material del PROYECTO. `C2` sitúa el adaptador entre perfiles y modelos

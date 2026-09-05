@@ -349,6 +349,13 @@ RESULTADO DE LA RESTA   ∅   (VACÍA)      ← REFUTADO. Ver el aviso inmediata
 > hallazgos, escrita ANTES de tocar nada y con la disposición declarada de cada uno:**
 > [`04-MATRIZ-DE-HALLAZGOS-DEL-GATE-20260904.md`](04-MATRIZ-DE-HALLAZGOS-DEL-GATE-20260904.md).
 >
+> **Y el gate del 2026-09-05 tampoco certificó.** Sus hallazgos `G-01`…`G-08` y las cinco
+> deudas internas `D-01`…`D-05` se clasificaron —de nuevo **ANTES** de tocar nada, con la
+> reproducción, la causa de clase, el remedio, el propietario y la prueba capaz de fallar de
+> cada fila— en
+> [`05-MATRIZ-CIERRE-G01-G08.md`](05-MATRIZ-CIERRE-G01-G08.md), que registra además el
+> **estado final** de las trece filas al cerrar la pasada de corrección.
+>
 > **Las tres restas SÍ estaban vacías esta vez, y el adjudicador las reprodujo** —`A=0 · B=0 ·
 > C=0`—, junto con la línea base entera: 34/34 validadores, 682 casos, los tres E2E, 133
 > infracciones detectadas y 0 no detectadas, cero saltos y determinismo byte a byte. **Y aun

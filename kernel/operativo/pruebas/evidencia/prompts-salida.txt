@@ -1,5 +1,6 @@
 # evidencia de: prompts
-# orden:        python3 kernel/operativo/validadores/comprobar_prompts.py --tabla
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_prompts.py --tabla
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
 T153  SUPERADA  Cada unidad de instrucción declara y enlaza las señales estructurales que su contrato exige

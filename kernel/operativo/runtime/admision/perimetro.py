@@ -90,7 +90,23 @@ INSTRUMENTO = "instrumento-inmutable-en-la-pasada"
 CONDICIONES_DE_ZONA = {
     "AUTORIDAD_SUPERIOR": {
         "condicion": APPEND_ONLY,
-        "motivo": "material aprobado y sede del Owner: se amplía, no se reescribe",
+        "motivo": "sede del Owner: se amplía por entradas cerradas, no se reescribe",
+    },
+    # `D-03` · LA CLASE ESTABA PARTIDA EN DOS REGÍMENES Y NO EN DOS CLASES.
+    #     La `DECISIÓN` de `vigilar_append_only`, más abajo, dejó escrito que aplicar el
+    #     append-only permanente a toda `AUTORIDAD_SUPERIOR` producía CUATRO ROJOS sobre un
+    #     árbol intacto, porque la clase metía en el mismo saco la sede del Owner —que se
+    #     amplía— y las especificaciones aprobadas —que «se cambian POR ENMIENDA», con esas
+    #     palabras en su propio motivo—. Contra su nacimiento, una especificación enmendada
+    #     NO es un prefijo y nunca lo será.
+    #
+    #     Ahora son dos clases. Y la nueva NO abre un falso verde: una enmienda es
+    #     exactamente una mutación DECLARADA, de modo que su régimen es el mismo que el del
+    #     corpus canónico vigente, con la declaración de admisión como puerta.
+    "APROBADA_POR_ENMIENDA": {
+        "condicion": DECLARADA,
+        "motivo": ("material aprobado que sólo cambia POR ENMIENDA: la enmienda es una "
+                   "mutación DECLARADA, y sin declaración la mutación es ROJA"),
     },
     "CANONICA_OPERATIVA": {
         "condicion": DECLARADA,

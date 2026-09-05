@@ -1,5 +1,6 @@
 # evidencia de: workspace
-# orden:        python3 tooling/tests/test_workspace.py
+# orden:        python3 -I -S -E -X ads_aislado=1 tooling/tests/test_workspace.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
 
@@ -30,34 +31,42 @@ test_02_una_source_valida (__main__.TestManifiesto.test_02_una_source_valida) ..
 test_03_varias_sources_validas (__main__.TestManifiesto.test_03_varias_sources_validas) ... ok
 test_06_path_duplicado (__main__.TestManifiesto.test_06_path_duplicado) ... ok
 test_07_id_duplicado (__main__.TestManifiesto.test_07_id_duplicado) ... ok
-test_08_escape_con_dos_puntos (__main__.TestManifiesto.test_08_escape_con_dos_puntos) ... ok
-test_09_ruta_absoluta (__main__.TestManifiesto.test_09_ruta_absoluta) ... ok
-test_10_ruta_ads_reservada (__main__.TestManifiesto.test_10_ruta_ads_reservada) ... ok
+test_08_escape_con_dos_puntos (__main__.TestManifiesto.test_08_escape_con_dos_puntos)
+T164 · una ruta que sube con dos puntos no escapa del workspace. ... ok
+test_09_ruta_absoluta (__main__.TestManifiesto.test_09_ruta_absoluta)
+T164 · una ruta absoluta no escapa del workspace. ... ok
+test_10_ruta_ads_reservada (__main__.TestManifiesto.test_10_ruta_ads_reservada)
+T164 · la ruta reservada `ads` no la puede ocupar una fuente. ... ok
 test_15_componente_con_source_inexistente (__main__.TestManifiesto.test_15_componente_con_source_inexistente) ... ok
-test_16_component_path_fuera_de_source (__main__.TestManifiesto.test_16_component_path_fuera_de_source) ... ok
+test_16_component_path_fuera_de_source (__main__.TestManifiesto.test_16_component_path_fuera_de_source)
+T166 · y un componente cuya ruta sale de su fuente es ERROR. ... ok
 test_credenciales_en_remoto (__main__.TestManifiesto.test_credenciales_en_remoto) ... ok
 test_dos_componentes_misma_source (__main__.TestManifiesto.test_dos_componentes_misma_source)
-CA-8: dos componentes pueden apuntar a la misma fuente. Monorepo. ... ok
+T166 · CA-8: dos componentes pueden apuntar a la misma fuente. Monorepo. ... ok
 test_layout_no_soportado (__main__.TestManifiesto.test_layout_no_soportado) ... ok
 test_schema_no_soportado (__main__.TestManifiesto.test_schema_no_soportado) ... ok
 test_04_clone_de_source_ausente (__main__.TestMaterializacion.test_04_clone_de_source_ausente) ... ok
-test_05_reutilizacion_de_source_existente (__main__.TestMaterializacion.test_05_reutilizacion_de_source_existente) ... ok
-test_11_remote_equivocado (__main__.TestMaterializacion.test_11_remote_equivocado) ... ok
+test_05_reutilizacion_de_source_existente (__main__.TestMaterializacion.test_05_reutilizacion_de_source_existente)
+T162 · una fuente ya clonada se reutiliza y no se vuelve a clonar. ... ok
+test_11_remote_equivocado (__main__.TestMaterializacion.test_11_remote_equivocado)
+T163 · un directorio con OTRO repositorio da error nombrando los dos remotos, y no se destruye. ... ok
 test_12_directorio_no_git (__main__.TestMaterializacion.test_12_directorio_no_git) ... ok
 test_13_repo_dirty_no_se_destruye (__main__.TestMaterializacion.test_13_repo_dirty_no_se_destruye) ... ok
 test_14_remoto_inexistente (__main__.TestMaterializacion.test_14_remoto_inexistente) ... ok
 test_19_seleccion_de_source_en_init (__main__.TestMaterializacion.test_19_seleccion_de_source_en_init) ... ok
 test_init_de_source_desconocida (__main__.TestMaterializacion.test_init_de_source_desconocida) ... ok
 test_source_ausente_no_bloquea_a_las_demas (__main__.TestMaterializacion.test_source_ausente_no_bloquea_a_las_demas)
-§63: un trabajo de frontend puro continúa aunque falte el backend. ... ok
+T167 · §63: un trabajo de frontend puro continúa aunque falte el backend. ... ok
 test_33_equivalencia_documentada_de_github (__main__.TestNormalizacionConservadora.test_33_equivalencia_documentada_de_github)
 Lo que §39 SÍ declara equivalente tiene que seguir siéndolo. ... ok
 test_34_no_iguala_puertos_distintos (__main__.TestNormalizacionConservadora.test_34_no_iguala_puertos_distintos) ... ok
 test_35_no_pliega_la_capitalizacion_de_la_ruta (__main__.TestNormalizacionConservadora.test_35_no_pliega_la_capitalizacion_de_la_ruta) ... ok
 test_36_no_iguala_rutas_locales_distintas (__main__.TestNormalizacionConservadora.test_36_no_iguala_rutas_locales_distintas) ... ok
 test_37_lo_ambiguo_solo_es_igual_a_si_mismo (__main__.TestNormalizacionConservadora.test_37_lo_ambiguo_solo_es_igual_a_si_mismo) ... ok
-test_38_repositorios_distintos_siguen_siendo_distintos (__main__.TestNormalizacionConservadora.test_38_repositorios_distintos_siguen_siendo_distintos) ... ok
-test_17_normalizacion_https_ssh (__main__.TestNormalizacionYSalida.test_17_normalizacion_https_ssh) ... ok
+test_38_repositorios_distintos_siguen_siendo_distintos (__main__.TestNormalizacionConservadora.test_38_repositorios_distintos_siguen_siendo_distintos)
+T165 · y la normalización no iguala repositorios que no lo son. ... ok
+test_17_normalizacion_https_ssh (__main__.TestNormalizacionYSalida.test_17_normalizacion_https_ssh)
+T165 · la identidad de una fuente no depende de la forma de su URL. ... ok
 test_18_status_json (__main__.TestNormalizacionYSalida.test_18_status_json) ... ok
 test_20_ejecucion_desde_subdirectorio (__main__.TestNormalizacionYSalida.test_20_ejecucion_desde_subdirectorio) ... ok
 test_sin_manifiesto_falla_con_codigo_2 (__main__.TestNormalizacionYSalida.test_sin_manifiesto_falla_con_codigo_2) ... ok

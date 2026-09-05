@@ -125,7 +125,7 @@ falla_si:
   - "se vuelve a clonar encima y el trabajo local desaparece"
 ejecucion: validador-estructural
 validador: tooling/tests/test_workspace.py
-estado: prueba-ejecutada
+estado: prueba-superada
 evidencia: evidencia/workspace-salida.txt
 ```
 
@@ -145,7 +145,7 @@ falla_si:
   - "se borra o se sobrescribe el directorio"
 ejecucion: validador-estructural
 validador: tooling/tests/test_workspace.py
-estado: prueba-ejecutada
+estado: prueba-superada
 evidencia: evidencia/workspace-salida.txt
 ```
 
@@ -164,7 +164,7 @@ falla_si:
   - "una fuente técnica puede ocupar la ruta del repositorio de control"
 ejecucion: validador-estructural
 validador: tooling/tests/test_workspace.py
-estado: prueba-ejecutada
+estado: prueba-superada
 evidencia: evidencia/workspace-salida.txt
 ```
 
@@ -184,7 +184,7 @@ falla_si:
   - "la normalización iguala repositorios que no lo son"
 ejecucion: validador-estructural
 validador: tooling/tests/test_workspace.py
-estado: prueba-ejecutada
+estado: prueba-superada
 evidencia: evidencia/workspace-salida.txt
 ```
 
@@ -203,7 +203,7 @@ falla_si:
   - "el modelo impone un componente por repositorio y no admite monorepo"
 ejecucion: validador-estructural
 validador: tooling/tests/test_workspace.py
-estado: prueba-ejecutada
+estado: prueba-superada
 evidencia: evidencia/workspace-salida.txt
 ```
 
@@ -222,7 +222,7 @@ falla_si:
   - "una fuente que nadie necesita todavía impide operar sobre las demás"
 ejecucion: validador-estructural
 validador: tooling/tests/test_workspace.py
-estado: prueba-ejecutada
+estado: prueba-superada
 evidencia: evidencia/workspace-salida.txt
 ```
 
@@ -249,7 +249,7 @@ falla_si:
   - "la rama creada y la documentada dejan de ser la misma sin que nada lo diga"
 ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_arranque.py
-estado: prueba-ejecutada
+estado: prueba-superada
 evidencia: evidencia/arranque-salida.txt
 ```
 
