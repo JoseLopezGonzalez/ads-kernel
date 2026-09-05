@@ -1,0 +1,714 @@
+{
+ "revisor": "REV-1",
+ "cerrado": true,
+ "leidas": [
+  {
+   "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+   "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+   "tramos": [
+    [
+     248,
+     395
+    ],
+    [
+     396,
+     3794
+    ],
+    [
+     4948,
+     5235
+    ],
+    [
+     6136,
+     6284
+    ],
+    [
+     6285,
+     7377
+    ],
+    [
+     9155,
+     9182
+    ],
+    [
+     9183,
+     9785
+    ],
+    [
+     10853,
+     10881
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/adaptadores/__init__.py",
+   "sha256": "22882a8044d32d079a4205c9a23225d8bc170997f1b1e0614c9455601c3e4fce",
+   "tramos": [
+    [
+     1,
+     75
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/adaptadores/contrato.py",
+   "sha256": "732d68a045d3c3fac2da1372995e89f47803bf77e0ee5fc17822ed80e74f693f",
+   "tramos": [
+    [
+     1,
+     185
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/adaptadores/proceso.py",
+   "sha256": "dbb1e5ef3bd551c7524f60981345a7dabf2907400ada637f531a50b49309e7e0",
+   "tramos": [
+    [
+     1,
+     583
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/adaptadores/proyeccion.py",
+   "sha256": "a4cd3aa3cb11d7c3e8b580e61c7f666acb6a14b3d860815d5dba4b93728afc49",
+   "tramos": [
+    [
+     1,
+     175
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/adaptadores/puntero.py",
+   "sha256": "6f1c7149ff3a5d2223a92640be71bc403ae28b2477a19a1319488b3c4233af8b",
+   "tramos": [
+    [
+     1,
+     184
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/adaptadores/registro.py",
+   "sha256": "19a2fce801a0398188fc7ea88221708129ebc8f994f2a9ce5808ec186d36a419",
+   "tramos": [
+    [
+     1,
+     105
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ads_ciclo.py",
+   "sha256": "a9e95ed4418855185f95eefdc91cd46cd20a98100888d91a41b0fac7113339af",
+   "tramos": [
+    [
+     1,
+     771
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ads_estado.py",
+   "sha256": "1de6f0bbeec9108ae7eb81b228d7f23f670bba90b507dc037b2f6fcf7367b84b",
+   "tramos": [
+    [
+     1,
+     711
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ads_runtime.py",
+   "sha256": "5bb5120d7b62b1988b672ba71c12d8f62e85bb4a40b09116aca1318daa3a0073",
+   "tramos": [
+    [
+     1,
+     738
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/__init__.py",
+   "sha256": "5459ca465d817f929844603d4030cd9f87f24dc287b02b2cd007cca798dc47fd",
+   "tramos": [
+    [
+     1,
+     161
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/agentes.py",
+   "sha256": "70fb7d5eb514e608cd9901d9a53a89ea328965f03b17311bc6872c66d060e47b",
+   "tramos": [
+    [
+     1,
+     702
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/cierre.py",
+   "sha256": "8623565762b197497f41c55dad491796fe2e25325c3f929572b46de6870b1139",
+   "tramos": [
+    [
+     1,
+     330
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/continuacion.py",
+   "sha256": "f0f3af64226cabdd77ea4a2a76ab9931b7c1d808fe38e6beba212b9f220e1910",
+   "tramos": [
+    [
+     1,
+     739
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/corpus.py",
+   "sha256": "1fef062bd5f66e99da06b660c1878a1c6c18ad0733e4680bfdb2cb54b9789494",
+   "tramos": [
+    [
+     1,
+     762
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/despacho.py",
+   "sha256": "8b6e586772a116ef5e3fb59a9994630fad20720c7c4c175e2714321c65ebf2e5",
+   "tramos": [
+    [
+     1,
+     107
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/durable.py",
+   "sha256": "5a4c742471c95e556b6e829b0f710f324fa7750d7378256e4deb9db3b7fdd826",
+   "tramos": [
+    [
+     1,
+     108
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/encuadre.py",
+   "sha256": "17272e2b71300a4f92713ecf19efff6f6741262ebef005ba0a55889a1aa9f2b9",
+   "tramos": [
+    [
+     1,
+     384
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/equipos.py",
+   "sha256": "e357f39534a4fa2bdda7e865039658797cc2e0b55848315d771a1e1ac437c82a",
+   "tramos": [
+    [
+     1,
+     1568
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/errores.py",
+   "sha256": "b760279a7145559eb6703aa3fccf9b7d64444b10df15610eb236cdf9cac61199",
+   "tramos": [
+    [
+     1,
+     436
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/gates.py",
+   "sha256": "f344b251d79d68676244314dcd5a4311c961ab7fb9c67ce11ca338edd8b9a6a3",
+   "tramos": [
+    [
+     1,
+     242
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/handoffs.py",
+   "sha256": "518edd29c5e596c52cdc3eae17afa574715227cdf74b2a9894fd1973b982de45",
+   "tramos": [
+    [
+     1,
+     442
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/paralelismo.py",
+   "sha256": "4605d638fb84325d5b34005a19027351d1b3d814b3940b7b5a583868d6d2da3d",
+   "tramos": [
+    [
+     1,
+     211
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/planificacion.py",
+   "sha256": "2a85d17e8a41b13bcf3f0c1ffa4ca11a92a05836a52db1ec6148c86560484be6",
+   "tramos": [
+    [
+     1,
+     400
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/procesos.py",
+   "sha256": "6155d1f8fea31c4b8778b69e797d6e881e35dd9d52934702443679fb5e8d585c",
+   "tramos": [
+    [
+     1,
+     284
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ciclo/rutas.py",
+   "sha256": "fde521c1f01ff4dd2178cf7a210bf7eb602f4dca4c104de53447ea0951e4c394",
+   "tramos": [
+    [
+     1,
+     385
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/contencion/__init__.py",
+   "sha256": "0bcd686312a35e926c37c089670dc0e561765c1fe9f6fc9864ab21e172e63a92",
+   "tramos": [
+    [
+     1,
+     65
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/contencion/backends.py",
+   "sha256": "332cef1db4ec402fb5d3eada2853dfcbb8b429b0ca0c39b933d2010ac1a9d319",
+   "tramos": [
+    [
+     1,
+     407
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/contencion/deteccion.py",
+   "sha256": "4340479e494a8f2c47f00f79df0d9bdd20c1126f2f145c7d1c91b1645148d5b1",
+   "tramos": [
+    [
+     1,
+     346
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/contencion/ejecutor.py",
+   "sha256": "247e7ce31ca20c5257560db3233fdafe5b767dda9a0aa0e7fe1109577015388d",
+   "tramos": [
+    [
+     1,
+     224
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/contencion/errores.py",
+   "sha256": "7ce37a9728d88bd8f5c9d919ddd1088a2108808f12d14b6e261cb42bd8afb5d3",
+   "tramos": [
+    [
+     1,
+     88
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/contencion/politica.py",
+   "sha256": "688a953c6f55284e6c9906baa258c2092f693d1c58ccd1e4acd2e246d33dab4f",
+   "tramos": [
+    [
+     1,
+     99
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/estado/__init__.py",
+   "sha256": "f5de8af7aec0f3c27a1d856dc59e27e6640936b7a8ca61daf168b63d98910d7b",
+   "tramos": [
+    [
+     1,
+     106
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/estado/atestacion.py",
+   "sha256": "7adbddb49c3e39b7cc28e1bbab83592d28148c7ebe9f5ab7d35219f5d180f27a",
+   "tramos": [
+    [
+     1,
+     267
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/estado/bloqueo.py",
+   "sha256": "b7fb332d09a124eb69fe75856fb20c26854ba2d46f1a7b73ba381d6c9846717d",
+   "tramos": [
+    [
+     1,
+     173
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/estado/diario.py",
+   "sha256": "d2a61a32f705596fa5b5f15d9808691a7de54df56c2bb066567192c5ff277d18",
+   "tramos": [
+    [
+     1,
+     1064
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/estado/errores.py",
+   "sha256": "998364bc25e5d6def1d7f5d86fcdefa5bc8fc7bcebd0345dcae52e39fa1cdf86",
+   "tramos": [
+    [
+     1,
+     271
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/estado/fallos.py",
+   "sha256": "69c8f5974183cb67ba3ef91030a3f6f947da63986a073dc8e34afee2868101c6",
+   "tramos": [
+    [
+     1,
+     123
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/estado/migracion.py",
+   "sha256": "9ce3c594bb9a94a011ce3eb51c91316cd56e2153d894285df67702d72e8095d1",
+   "tramos": [
+    [
+     1,
+     506
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/estado/motor.py",
+   "sha256": "3841295591609aff92151c9116dc9445c308c98ab8717b8916998e648ed8f4d2",
+   "tramos": [
+    [
+     1,
+     1817
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/estado/reconciliacion.py",
+   "sha256": "d77d09fa966a3b36ca7e391632f90b09937b496d3299bb6eb044ab0566df0152",
+   "tramos": [
+    [
+     1,
+     517
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/estado/rutas.py",
+   "sha256": "18e0add349e98a635ccbf121adf3e68511807c31f50782ac170cdb1591f364b2",
+   "tramos": [
+    [
+     1,
+     424
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/estado/serializacion.py",
+   "sha256": "77d8d727e85e2abbdd0108d909257b114e39c456a4d832b2de1cab931e57e957",
+   "tramos": [
+    [
+     1,
+     192
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/estado/transaccion.py",
+   "sha256": "d5061f91fae62a1d411b70b254a243b830ba1e4d0c4d13f33962cf8a07ec9d01",
+   "tramos": [
+    [
+     1,
+     365
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/macrocircuitos/__init__.py",
+   "sha256": "baf2ba9714e9f2f68ce2cd848a0fffc6c3bdc5ff7a8ef66e629d1aafbad7ac58",
+   "tramos": [
+    [
+     1,
+     93
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/macrocircuitos/definicion.py",
+   "sha256": "dac5af0cc668e66982d885307fc8046249e4d8f329f58029fa66ff129b8e4e87",
+   "tramos": [
+    [
+     1,
+     645
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/macrocircuitos/errores.py",
+   "sha256": "ea30a207589fc5bb9d3a1b5b36beda3be7cc2430d05e7c8c962c00f150e52dbb",
+   "tramos": [
+    [
+     1,
+     171
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/macrocircuitos/fase0.py",
+   "sha256": "25b7dc23ee08f6fabeab86181f7d56e4e39d0dcce653a1a4f2c5c23c305d634d",
+   "tramos": [
+    [
+     1,
+     575
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/macrocircuitos/motor.py",
+   "sha256": "05fabf57717920fd4d779a51295a6b28a103f433b68120e271dd7bf7ff03f949",
+   "tramos": [
+    [
+     1,
+     407
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/escenario_extremo_a_extremo.py",
+   "sha256": "602b5f5fd00692c04dc1a28fdae435f2c9bf9d01f9cc1254783d2777a53ae48f",
+   "tramos": [
+    [
+     1,
+     729
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_adaptadores.py",
+   "sha256": "3ab3961a175fe2cd87414237587f2b852c972f5181b9d6521b69aae747b99b6c",
+   "tramos": [
+    [
+     1,
+     743
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_cardinalidad_y_seleccion.py",
+   "sha256": "1dc4dbc77010d2303915f008deced964dfcdb8926574fd89fa15262aca2ab15d",
+   "tramos": [
+    [
+     1,
+     1115
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_ciclo.py",
+   "sha256": "f62b8a1fb7649cafd2748a7bb23cb83c8da5c857685094d4f06ab9884fc8d83a",
+   "tramos": [
+    [
+     1,
+     1602
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_contencion.py",
+   "sha256": "3ccd135a5da347b171eec11e6f178ab4c9f43987a87732d90909b353b521aba3",
+   "tramos": [
+    [
+     1,
+     379
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_continua.py",
+   "sha256": "4e1d065d6e88eb90fd4760ed1b6c3cc1101ad1d5464dd997807699003796220e",
+   "tramos": [
+    [
+     1,
+     849
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_estado_durable.py",
+   "sha256": "c2daaa0bc171f0e12580d10b12c192a26c7b657ae89f06e22803721fa5d2a018",
+   "tramos": [
+    [
+     1,
+     3173
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_macrocircuitos.py",
+   "sha256": "a9829744aa5912fee9c94620acebcfb4bf2dcb6a25bfae4cd6db5048c5bfd35d",
+   "tramos": [
+    [
+     1,
+     879
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_runtime.py",
+   "sha256": "904b131f1b7192f37d5a7c8b7e210fcc9c7ada46b933fd7d81c20e019b72d6f2",
+   "tramos": [
+    [
+     1,
+     2071
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/runtime/__init__.py",
+   "sha256": "33571dc2e2125860ca416736c5ef3886ef9fd2d6bddc83a91cac104fa50be129",
+   "tramos": [
+    [
+     1,
+     107
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/runtime/dispatcher.py",
+   "sha256": "9b0ea3170d64c4909dddd03203a3bc0177af0332fb647e4f5e165e190eebb024",
+   "tramos": [
+    [
+     1,
+     1495
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/runtime/ejecucion.py",
+   "sha256": "a5580ba3f1adf66184aeb4e3f9276509b78de51a8f848b39dba448adab2b855b",
+   "tramos": [
+    [
+     1,
+     344
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/runtime/errores.py",
+   "sha256": "135d7c762f130520a9569c08a650679ada3fa474f5cc05c92ec7de20ca939bd2",
+   "tramos": [
+    [
+     1,
+     171
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/runtime/estado_util.py",
+   "sha256": "65a8d32293ca163fd78d98ab6b4d41273f1e871768c36918fadfb832d4e34bcf",
+   "tramos": [
+    [
+     1,
+     92
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/runtime/fallos.py",
+   "sha256": "aa967873db34d37820d9cc8fb15e54e1d041b9422af094f0868fa4244313e83a",
+   "tramos": [
+    [
+     1,
+     108
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/runtime/lease.py",
+   "sha256": "a0907180674ce9378aacb670bfb7a8a4aafca49bb4ec0b0f3d035274fbab62b1",
+   "tramos": [
+    [
+     1,
+     390
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/runtime/modelo.py",
+   "sha256": "b4620fffaa0dda73253c8421fb37dcfedd452b81051c9530d0c05bb0cd6bb03a",
+   "tramos": [
+    [
+     1,
+     440
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/runtime/politica.py",
+   "sha256": "e88ca7d273df88e4c845c682a4cc59fff59b1c808226e0f20b81bf2a92b78ac3",
+   "tramos": [
+    [
+     1,
+     302
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/runtime/vistas.py",
+   "sha256": "d1614cd02e646592170ee2edcb3121e482cf7939b2dc9557670f88618e703956",
+   "tramos": [
+    [
+     1,
+     171
+    ]
+   ]
+  }
+ ]
+}

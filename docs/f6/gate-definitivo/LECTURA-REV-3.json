@@ -1,0 +1,780 @@
+{
+ "revisor": "REV-3",
+ "cerrado": true,
+ "leidas": [
+  {
+   "ruta": "docs/canonico/00-EMPEZAR-AQUI.md",
+   "sha256": "c49efb6ff28694db80e6951cde7d6c5af20aa2a2053a52e98e0f5b579f37c340",
+   "tramos": [
+    [
+     1,
+     162
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/canonico/03-GOBIERNO-Y-AUTORIDAD.md",
+   "sha256": "422f59bc9a4cb924d4ce2bc6136c58aa1b1087a87b6218f2486caef722bffcdc",
+   "tramos": [
+    [
+     1,
+     229
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/canonico/04-CONTRATOS-TECNICOS.md",
+   "sha256": "901985614611f689c595791615c3619440033c26e0a160c93b837f85ce5b464f",
+   "tramos": [
+    [
+     1,
+     513
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/canonico/05-PLAN-DE-IMPLEMENTACION-F5-F6.md",
+   "sha256": "873f02bcfbc8f84a93cad6694c7ebf2b6df15d2babaed796f6929657dcedd453",
+   "tramos": [
+    [
+     1,
+     266
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md",
+   "sha256": "b9d2fa56a7c23090f0a54d147b583947a8f17864f244da9a7c016781bab5085d",
+   "tramos": [
+    [
+     1,
+     535
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/canonico/FUENTES-CANONICAS.yml",
+   "sha256": "5bf8c624b7b9b482a47a4c3a34dfbe7e97605874018d4f91f30e28aa34eb8818",
+   "tramos": [
+    [
+     1,
+     782
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/00-INDICE.md",
+   "sha256": "b62cb2659c86a9ae8ced1559137d476e66d6a8fd9b67416b3955c185d5396c0b",
+   "tramos": [
+    [
+     1,
+     335
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/CHECKPOINT-ADS-NEXT.md",
+   "sha256": "165ab8cc02aabab7ed95345a805edcf000f8451b7027dbf01b27e1644b540a1c",
+   "tramos": [
+    [
+     1,
+     6385
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/derivar-universo-obligatorio.py",
+   "sha256": "377ede82af9b1c742a8c7c2e29bfa0d28f74da4ef8b3df70f6b541acb61b0312",
+   "tramos": [
+    [
+     1,
+     2107
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/f6/00-ESTADO-DE-IMPLEMENTACION-F6.md",
+   "sha256": "e2aad9a186131d9d5866be3d400e16e938aac7c10be950939f9cd86a489500b5",
+   "tramos": [
+    [
+     1,
+     322
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md",
+   "sha256": "b3fcac956856fbc5fbde50e232a0b78ffd18fff548a4a25f156afb4509ce95d5",
+   "tramos": [
+    [
+     1,
+     540
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/f6/02-GATE-DE-CERTIFICACION-FINAL-20260903.md",
+   "sha256": "aec9664573adaecb7a2d990f5360eeb3f57313399bdc3808d55c146dc0b144e3",
+   "tramos": [
+    [
+     1,
+     296
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/owner/ADS-OWNER-RESOLUCIONES.md",
+   "sha256": "b378b1f7ba1a7744f3ace0498e38c28a39d203ddf6565ba3cf43497204e96915",
+   "tramos": [
+    [
+     1,
+     1054
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/rediseno/b-RECORRIDO-APROBADA.md",
+   "sha256": "89023236f0a2a9f1fcbcb0f4a9e311cb465dd18709809485f70dd24c3fd97090",
+   "tramos": [
+    [
+     1,
+     1331
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/00-INDICE.md",
+   "sha256": "189dbc5f35b46ff0d0f653bfb37377e7c62a071df3dca9ee4d36a24daeb83dd5",
+   "tramos": [
+    [
+     1,
+     146
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/circuitos/00-CIRCUITOS.md",
+   "sha256": "16d3f2a826445ffef3b9bd0352edcd7eba4952d52623e3dd1e6755a63dbbd7f2",
+   "tramos": [
+    [
+     1,
+     243
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/circuitos/DIS-handoffs.md",
+   "sha256": "738d7d8b3a5489d1c45c3473676b20cee53ac0aca4a9b6101855e3282daca084",
+   "tramos": [
+    [
+     1,
+     249
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/circuitos/entregas-de-8-0.md",
+   "sha256": "9bd69716d904ad22a468eead8468511db18e9f1a06abab26491ddd4d4ac8eb2d",
+   "tramos": [
+    [
+     1,
+     128
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/circuitos/handoffs-generales.md",
+   "sha256": "b2a486ee08dcc0aba9cc5ed992211f2c408f2d611b9e3077109b5460b7178577",
+   "tramos": [
+    [
+     1,
+     305
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/contratos/00-INDICE.md",
+   "sha256": "48b66b4fa9daee8fff5889016f9c30e6273f46268dbad8885aaaac4fa9a46d41",
+   "tramos": [
+    [
+     1,
+     29
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md",
+   "sha256": "825f15a914c10d6f07f74e62967f93743efcf629a13379acb3947e70e2952ffa",
+   "tramos": [
+    [
+     1,
+     161
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/contratos/C2-AGENTES-Y-MODELOS.md",
+   "sha256": "3ee58ca4bc47988d4e6bdd652e2ea5de79ebcf8be79270664c0bd4b4cf391510",
+   "tramos": [
+    [
+     1,
+     539
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/contratos/C4-MATERIALIZACION.md",
+   "sha256": "670289180e59b176743571a22f22047d20792db266b6426c1c91bd2fd3c1ee81",
+   "tramos": [
+    [
+     1,
+     170
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/contratos/C5-HANDOFF.md",
+   "sha256": "af6f1a4c4f5def8da0dcecee8ea57c17516b41bbbd4abe963460c21024cc7b9e",
+   "tramos": [
+    [
+     1,
+     115
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/esquemas/proceso.yaml",
+   "sha256": "f4f016c011a82764366327fe4f8d838ce7a87540b719c5b89faaf18dcc648f5f",
+   "tramos": [
+    [
+     1,
+     89
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/RECUENTOS-generado.md",
+   "sha256": "295d7fcacf46a517af761ad07bec23aca6200a1456e057cfca00960342ad7a95",
+   "tramos": [
+    [
+     1,
+     40
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/REGISTRO-generado.md",
+   "sha256": "0e8468ab9352421e7c5b6150658287b631b408d6f4e86fad4797251a5f36d95e",
+   "tramos": [
+    [
+     1,
+     306
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/REGISTRO.md",
+   "sha256": "091735cb4bb914d2951c4dd4b120b4fd2b7a8f2e89b2349d417884a9031a7dbc",
+   "tramos": [
+    [
+     1,
+     147
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md",
+   "sha256": "f8b6878ef1ef4adddbf9dfc9bf89afd9164a068b3c6a5aa69cf4838da33ac12d",
+   "tramos": [
+    [
+     1,
+     243
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/recorrido/01-PROCESOS.md",
+   "sha256": "8a8aa174fa5244cbbe4629131f1e09856a4b065ae25746ac0956413706fe435c",
+   "tramos": [
+    [
+     1,
+     606
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/VERSION",
+   "sha256": "c9faae8e7e824ff79e29808f498f3eeb3f46ce37f479e8a1c77ffaba61bca7a1",
+   "tramos": [
+    [
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/.upstream-hash",
+   "sha256": "c20b5135019b59ddf56424559ae1f725391ce8d8e278d90059f723560bd89639",
+   "tramos": [
+    [
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/VERSIONES.md",
+   "sha256": "70ccaa9d4ab94f614f08712d0a9f95d45644eb4228dd63ae56ea9465db195a66",
+   "tramos": [
+    [
+     1,
+     74
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/CONTRATO-GOBIERNO-GIT-CONTROL.md",
+   "sha256": "3f820ba44848f2fb3b5dbc29a2673bd7b1a303846a851ba9ebb02c6992fb0f52",
+   "tramos": [
+    [
+     1,
+     99
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/00-RUNTIME.md",
+   "sha256": "a6ecc5f80696baad67a54dddc6c0482dc8e774de6b9e754e1f6024ffc900b424",
+   "tramos": [
+    [
+     1,
+     122
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/CONTRATO-ADAPTADOR.md",
+   "sha256": "ac5e12a1b37df297b8889c51719859c5af5a28b582ad79d33d849fe2919cb4b1",
+   "tramos": [
+    [
+     1,
+     131
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/CONTRATO-CONTENCION.md",
+   "sha256": "f8b2fc8ebd673211ac056f821713702c4cfacd3d868df2983f01fc495265c2d6",
+   "tramos": [
+    [
+     1,
+     136
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/CONTRATO-ARBOLES-ADVERSARIALES.md",
+   "sha256": "65a30d2610c71b7956546b825d88382241e4a5591b400a3ae75888d7ab8fda00",
+   "tramos": [
+    [
+     1,
+     150
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/CONTRATO-ADMISION.md",
+   "sha256": "dae17547b0707658cf8e219665f792c4b8c2903a5d661b8ae7d75a7a7a923faf",
+   "tramos": [
+    [
+     1,
+     177
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/CONTRATO-RUNTIME-Y-DISPATCHER.md",
+   "sha256": "141c88879e4d3452a54336fbb6d761f12d401284c0d7d15a18826c43545b8f32",
+   "tramos": [
+    [
+     1,
+     156
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/CONTRATO-RAIZ-EXTERNA.md",
+   "sha256": "bdcb49a611412aab023624ced51995457c0056321bb41977c6ede5a6cfa138b9",
+   "tramos": [
+    [
+     1,
+     262
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/CONTRATO-CICLO-Y-MACROCIRCUITOS.md",
+   "sha256": "e4c337905424a3da2d697d11af8d33524c6acb61bba9de29407d1f373044f2d4",
+   "tramos": [
+    [
+     1,
+     338
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/CONTRATO-ESTADO-DURABLE.md",
+   "sha256": "6e681b4d3bcf4e8bfcd93d0349946a8c31b8d5a1f2a1b3d0bd57516ba46188e6",
+   "tramos": [
+    [
+     1,
+     390
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/f6/04-MATRIZ-DE-HALLAZGOS-DEL-GATE-20260904.md",
+   "sha256": "ae96e53409cf30c99186c4bfa37a7ad36d63d467f27b5d9e985ba0e42be2135e",
+   "tramos": [
+    [
+     1,
+     91
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T086-T092-contratos.md",
+   "sha256": "65f4648fe4f55576e8673bd387227d651ef48a4b9f083f7174e5dc951d4da9b2",
+   "tramos": [
+    [
+     1,
+     165
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T100-T121-capacidades.md",
+   "sha256": "37ff430cd4e94007d392f6a66d1572c0f1902886f018de98a617eba94e380131",
+   "tramos": [
+    [
+     1,
+     359
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T159-T170-multirepo.md",
+   "sha256": "a84e6a252fb24283befa00ddabf1ca133de2930e68d5921fa5dfcbe2c5ecb55f",
+   "tramos": [
+    [
+     1,
+     314
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T136-T152-post-auditoria.md",
+   "sha256": "204174627cbdddab30b8ae0ef3fe0a304eb95085d7bccecbf4193f9c7c56cc36",
+   "tramos": [
+    [
+     1,
+     466
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T182-T194-runtime-y-admision.md",
+   "sha256": "391e228c4f304d5ca5a083e3c943d5f9ead827552e2a6d6b7ff916b6edcfb05d",
+   "tramos": [
+    [
+     1,
+     353
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T195-T209-ciclo-y-macrocircuitos.md",
+   "sha256": "a81861340cf183bb7256edea72e56a523e21ff799d50f7d758e178d92c242b3e",
+   "tramos": [
+    [
+     1,
+     342
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md",
+   "sha256": "6438e8ace5f7e69b9b04e6ab2186f2487c6da1a2c3b41377c894a67915cb4bdb",
+   "tramos": [
+    [
+     1,
+     395
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md",
+   "sha256": "07af6639fd48b8de9cb1b24d091f7f2723c15fc3815ba8a3534a5574a970d43e",
+   "tramos": [
+    [
+     1,
+     220
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md",
+   "sha256": "ece884dfe8842086891fcbc9b9a141e38d99e3698bfc9e3d1eeac12903561856",
+   "tramos": [
+    [
+     1,
+     367
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md",
+   "sha256": "ab29bccd9bcb2d2253f688b2f7d6d275dfdb94a11942f53a2d7dc0e8f829574e",
+   "tramos": [
+    [
+     1,
+     502
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T340-T359-append-only-y-universo.md",
+   "sha256": "aad6fa971ec4c977f03fbaaeef46eedd994778f339586af283b818f85c30f98a",
+   "tramos": [
+    [
+     1,
+     379
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T360-T379-sedes-veraces.md",
+   "sha256": "071eb9d36544487e68500b2f318c045367895e89f9fd8f25bec5d509f54b9910",
+   "tramos": [
+    [
+     1,
+     166
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T172-T181-estado-durable.md",
+   "sha256": "320938833e7579ba4a9b826e85c80b45f734d850054553d09173616c12ffef05",
+   "tramos": [
+    [
+     1,
+     691
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md",
+   "sha256": "757b2e2157316bbd3f31b321c344f2477bd4702689a1ddaf2fe5f37aa5942147",
+   "tramos": [
+    [
+     1,
+     739
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+   "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+   "tramos": [
+    [
+     7378,
+     8074
+    ],
+    [
+     10882,
+     11906
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/rediseno/g-ESTADO-DURABLE-APROBADA.md",
+   "sha256": "c8ba0a933c387d738ee5869e1d7994aa43cea95d83c8cef1a92bef696106d61a",
+   "tramos": [
+    [
+     1,
+     381
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/manifiestos/F6-ASIGNACION-GATE-CERTIFICACION-FINAL-20260904.md",
+   "sha256": "d61e83bd2b733b34f707fad8193f37e94ef8c72fca3391dbe9904ad72e1584e8",
+   "tramos": [
+    [
+     1,
+     395
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/README.md",
+   "sha256": "0e766e71cd1bfd06add740099c2c9912eb6e25d30f6dde55dbde52260ef631a1",
+   "tramos": [
+    [
+     1,
+     396
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/comprobar-cobertura-de-gate.py",
+   "sha256": "91bb13e94a8ef9fee88f7854ec365bfd624e0a16e6f9394d2d243379e21b66c8",
+   "tramos": [
+    [
+     1,
+     531
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/entrada/03-FORMAS.md",
+   "sha256": "821ad781633b067b9536faec9e6f4078033854e85a58c822e3f24c28b55696f1",
+   "tramos": [
+    [
+     1,
+     561
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/entrada/05-ESCENARIOS.md",
+   "sha256": "12703dd7fd51d66f9f9039b031c1a98c312c0b78f098f42ee4195452005dff4e",
+   "tramos": [
+    [
+     1,
+     649
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/KERNEL_CHANGELOG.md",
+   "sha256": "ec91f4e7c519d87149d26232f6bf70d9ad1b9da1f3f375176b43ff47247f29f1",
+   "tramos": [
+    [
+     1,
+     555
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md",
+   "sha256": "712dbd4a935c53e3826109ccff53962da377a598e8529be59405a0c0e6d337a3",
+   "tramos": [
+    [
+     1,
+     1651
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/f6/03-GATE-DE-CERTIFICACION-FINAL-20260904.md",
+   "sha256": "2d0cff0d49b26a78c3f84034b282b4e475996f0ca98d4985e542c2407eb1f546",
+   "tramos": [
+    [
+     1,
+     3237
+    ]
+   ]
+  },
+  {
+   "ruta": "tooling/new-project.sh",
+   "sha256": "5320a4f656220af7a952a1c85bac9124f8a94da7ad688dde189fd190e0703358",
+   "tramos": [
+    [
+     1,
+     220
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/canonico/validar-fuentes-canonicas.py",
+   "sha256": "c2cd007c8ff832ac8dff77e8bfc67ba29a90c78f9c1844ed4a669a387f06de31",
+   "tramos": [
+    [
+     1,
+     403
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/f5/validar-f5.py",
+   "sha256": "c8a3e7c439759741478d2e8d5b8c3d17968cf91521a8e383fa35e011745b6946",
+   "tramos": [
+    [
+     1,
+     691
+    ]
+   ]
+  },
+  {
+   "ruta": "tooling/workspace.py",
+   "sha256": "020998fc34fd4f805feacfecbc3165e8337b935a32859405c24c4d557ee2b59d",
+   "tramos": [
+    [
+     1,
+     916
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/emitir-sobre-de-ancla.py",
+   "sha256": "eb8bedbeb09dd1134740ab4e193304fdc4ab6cb02debe53496134069a9207b0f",
+   "tramos": [
+    [
+     1,
+     863
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/rediseno/a-CAPACIDADES-APROBADA.md",
+   "sha256": "235385da2471dec2cc00191bcbff184c7c4bbb536d54432a72f064356831d2ba",
+   "tramos": [
+    [
+     1,
+     1150
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_agentes.py",
+   "sha256": "1b288b178666dc4f96652d83357402cc138510f61bed68e20981ebb395f8a7bb",
+   "tramos": [
+    [
+     1,
+     1053
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/escenario_e2e_f6.py",
+   "sha256": "b70113b6915142c0f2806569677081fded25bb99889623fa4d107916118ae572",
+   "tramos": [
+    [
+     1,
+     1749
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py",
+   "sha256": "5ce35410f545be3e5d08c12c92654fc41a7d741f840d0373c1ca1eb056d02348",
+   "tramos": [
+    [
+     1,
+     4452
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,20 @@
+COBERTURA DEL GATE · candidata 2ae0a93888a425cf85ba38d0ac054d069bbbe7d6
+==============================================================================
+  REV-1    asignadas  68 · leídas sin hueco  68 · sin abrir   0 · con huecos   0
+           líneas asignadas  34922 · sin leer      0 · cerrado declarado: sí
+  REV-2    asignadas 104 · leídas sin hueco 103 · sin abrir   0 · con huecos   1
+           líneas asignadas  36270 · sin leer      1 · cerrado declarado: sí
+  REV-3    asignadas  77 · leídas sin hueco  77 · sin abrir   0 · con huecos   0
+           líneas asignadas  46649 · sin leer      0 · cerrado declarado: sí
+
+LAS CUATRO RESTAS
+------------------------------------------------------------------------------
+  OBLIGATORIO − ASIGNADO                 ∅
+  ASIGNADO − LEÍDO                       ∅
+  LÍNEAS ASIGNADAS − LÍNEAS LEÍDAS       1
+      REV-2 · docs/evolucion/11-ARQUITECTURA-INTEGRADA.md · faltan 1 líneas en 12153-12153
+  FUENTES MODIFICADAS − LEÍDAS ÍNTEGRAS  ∅
+
+  COBERTURA INCOMPLETA
+  El adjudicador NO puede crearse. `O27` §5: el lote no se cierra, no se
+  sustituye con búsquedas y no se compensa con lo leído por otro agente.

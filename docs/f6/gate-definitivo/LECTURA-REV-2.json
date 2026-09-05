@@ -1,0 +1,1136 @@
+{
+ "revisor": "REV-2",
+ "cerrado": true,
+ "leidas": [
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/adaptadores-salida.txt",
+   "sha256": "61413762896d3eae8fb01b4de890dc4d8326099a735c6e3a74d9e783045fef73",
+   "tramos": [
+    [
+     1,
+     85
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/admision-salida.txt",
+   "sha256": "61d850dde5adb37e6caf59fc568bdae68adca04bbf2e1801296bd2af4933163a",
+   "tramos": [
+    [
+     1,
+     199
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/agentes-salida.txt",
+   "sha256": "4aca40608352609b83d50c180b5f214cb3c5fa999cdf21554c6550e51e2cae08",
+   "tramos": [
+    [
+     1,
+     41
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/arboles-salida.txt",
+   "sha256": "54e186973ed2ad30d91150d28539c02be4b886fdabc5e0b519d114146a4d9e40",
+   "tramos": [
+    [
+     1,
+     87
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/arranque-salida.txt",
+   "sha256": "c230c158e8721c5e5ee78a6a62feca5b90908e389638c0dd7aa7116cce60b926",
+   "tramos": [
+    [
+     1,
+     10
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/cardinalidad-salida.txt",
+   "sha256": "c7fc4c208e88e26f56ceddf6cceb29515102baf7397946f99e86ce15b47df931",
+   "tramos": [
+    [
+     1,
+     51
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/ciclo-salida.txt",
+   "sha256": "f30cff1138e8fd0295886b3e023d97adc8c825777e6dfa8447203344d25cfc5a",
+   "tramos": [
+    [
+     1,
+     133
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/cobertura-de-gate-salida.txt",
+   "sha256": "5513424a461035f9ddf29bd2293d81b70f3c93781b71c85359870ba907f074a9",
+   "tramos": [
+    [
+     1,
+     17
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/composicion-procesos-salida.txt",
+   "sha256": "2ab67f7c7b5fd848fda89fd5b8f3261ea534bc886a51466f49dee493344e1069",
+   "tramos": [
+    [
+     1,
+     10
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/contencion-salida.txt",
+   "sha256": "11083c1dc97dda2abc659135607c960b099e898bf62480bcaa796a2041c72396",
+   "tramos": [
+    [
+     1,
+     51
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/continua-salida.txt",
+   "sha256": "6c0de76aed0f41c92c60831986b9104edad587981434c188445c7a977db9ecaf",
+   "tramos": [
+    [
+     1,
+     59
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/contratos-salida.txt",
+   "sha256": "9d45c739504cde79677c3e7cf73f10a72852b55061fd46ad165617d358127285",
+   "tramos": [
+    [
+     1,
+     29
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/e2e-f6-salida.txt",
+   "sha256": "eb035a2b1821e25dce65b0aa161a9fccfe8382af9d1d9813717434dffc176db5",
+   "tramos": [
+    [
+     1,
+     92
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/e2e-runtime-salida.txt",
+   "sha256": "dd248e3a8347179673a1e1683e9309a3e909aaedba27e9ca14a6b17e0e32100d",
+   "tramos": [
+    [
+     1,
+     90
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/estado-durable-salida.txt",
+   "sha256": "b86a60b6530da8bded9bc6c579284c137fff60f22c81f23441c4c9c2741e208a",
+   "tramos": [
+    [
+     1,
+     211
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/estado-e2e-salida.txt",
+   "sha256": "8ac0bb37775622ab19400846bef92a6619ff6247aea3833ad3d3f0827b4c33c8",
+   "tramos": [
+    [
+     1,
+     60
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/evidencia-salida.txt",
+   "sha256": "fbf18f87e1d8be3b0845e39f026534a244923e40ac8922c63e271ea1dc0b7140",
+   "tramos": [
+    [
+     1,
+     9
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/fuentes-salida.txt",
+   "sha256": "0ec558d48266680f118375a03553ca479bf6a4aac366abe256dd9692ba823795",
+   "tramos": [
+    [
+     1,
+     11
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/gobierno-git-salida.txt",
+   "sha256": "7cba1194ffb1bf53bcfd3b1818557903778747e23070855d52f10524021e2a06",
+   "tramos": [
+    [
+     1,
+     89
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/identidad-salida.txt",
+   "sha256": "c2bf7657a3398ebcbde4c9b78beef527f29f7d0980e2044e77795c8c8f10f388",
+   "tramos": [
+    [
+     1,
+     57
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/integridad-evidencia-salida.txt",
+   "sha256": "7dc1c9783462bfc8ab5eb38d3fea259ef26e65f81824646bcf2a0732c15a8bd8",
+   "tramos": [
+    [
+     1,
+     81
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/lint-salida.txt",
+   "sha256": "e05afa1ca8a0c587717200ca36132c7c60e042097e0d15b43af6926ac9bc6764",
+   "tramos": [
+    [
+     1,
+     6
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/macrocircuitos-salida.txt",
+   "sha256": "b768a5c91e3f36a97efeeb7af27843571048bebfcd78c7518b737c8840476a67",
+   "tramos": [
+    [
+     1,
+     71
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/multimaquina-salida.txt",
+   "sha256": "bcb806526604938823128aa6bc70f03ad51a70fa245b4874da07f6c13602a955",
+   "tramos": [
+    [
+     1,
+     39
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/negativos-salida.txt",
+   "sha256": "498ad171736b5cb90a5a85f9df6d7d4e112cbdd3af77061bda2d028db7e8c7f8",
+   "tramos": [
+    [
+     1,
+     322
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/raiz-externa-salida.txt",
+   "sha256": "9e70beddb18448bda3e97cae6c7b5c1a5e84a598045efbdf1349376a65ff9568",
+   "tramos": [
+    [
+     1,
+     117
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/recuentos-salida.txt",
+   "sha256": "f709244ef33d2723a6fffc8bda1bba459f85f210dc3031d51c1246fab9a3157c",
+   "tramos": [
+    [
+     1,
+     13
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/referencias-salida.txt",
+   "sha256": "4e002b5304ef3e62b03f82bacf7baa6679fa537905c570eeec2d1d4368c03cc4",
+   "tramos": [
+    [
+     1,
+     77
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/runtime-salida.txt",
+   "sha256": "68a5a2829853b5bf5b691ccde711fdb7489d1133327cbd53b3cde0d2b9e392a8",
+   "tramos": [
+    [
+     1,
+     121
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/sesion-nueva-salida.txt",
+   "sha256": "90575451daa1fd7ca22c31dc747e707346af7c534ffe57aea43b6ba9bcdd788a",
+   "tramos": [
+    [
+     1,
+     65
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/universo-obligatorio-salida.txt",
+   "sha256": "c9c714e1cde2f6b84488df6bdcac6ec8d77f98c794168683b1172e266b0e2174",
+   "tramos": [
+    [
+     1,
+     34
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/versiones-salida.txt",
+   "sha256": "4ad3d2371d4178ec6e9d57865430534c5b8ce9e7d7560649414a3a1e8cfc585c",
+   "tramos": [
+    [
+     1,
+     26
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/raiz-externa/README.md",
+   "sha256": "275341e9d145e2538b4b60f788d1549fa6c17da11a2e057df4fbd7c9736b91a3",
+   "tramos": [
+    [
+     1,
+     190
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/raiz-externa/aislamiento.py",
+   "sha256": "feadff20ab9846be11bad89ee78054a81e6b37e6986b998e2079c90a12d63967",
+   "tramos": [
+    [
+     1,
+     412
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/raiz-externa/anfitrion_firmante.py",
+   "sha256": "fc152e6122cadc1102658a175faced87b2cc3ca2859892fe8a3ac7cd3ff0fd27",
+   "tramos": [
+    [
+     1,
+     217
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/raiz-externa/anfitrion_verificador.py",
+   "sha256": "88ab95c5db86468c1a61146259b2d34d5d6cf0599da00a625d5e42d90618bcea",
+   "tramos": [
+    [
+     1,
+     219
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/raiz-externa/atestacion.py",
+   "sha256": "88920271c4f29f666a59363621a1720c0acc0d2be3e3882817999bb9f26ca0f2",
+   "tramos": [
+    [
+     1,
+     336
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/raiz-externa/errores.py",
+   "sha256": "d60c602c36b0a64cf402c4a8a1adbbeb036f4f8fbb55c75f959cb7b9140ea704",
+   "tramos": [
+    [
+     1,
+     192
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/raiz-externa/firma.py",
+   "sha256": "82840e2c54b27efc05f955dcf8ff21943c31b15bae716a19722e51d250adebab",
+   "tramos": [
+    [
+     1,
+     295
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/raiz-externa/instalar.py",
+   "sha256": "b7a3beba9d90abc1e85ffc92c8e79a2886ae3919383f9852daf674f35c45060b",
+   "tramos": [
+    [
+     1,
+     537
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/raiz-externa/verificador.py",
+   "sha256": "d73b3d58e5af7415b8a2290d4f838d3f389cd73e93a98ee5bf74814cb326c91e",
+   "tramos": [
+    [
+     1,
+     717
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/admision/__init__.py",
+   "sha256": "cd7538d3bf5cbf2844248112ef69d428e50bd209dab8c98ed36963b1c6c0bc1e",
+   "tramos": [
+    [
+     1,
+     319
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/admision/censo.py",
+   "sha256": "fded1e352061aa5cf4efe98b8bc079a0d8f23c4250f7a235083e789d43a7ea64",
+   "tramos": [
+    [
+     1,
+     429
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/admision/errores.py",
+   "sha256": "b3b7ca6f79e342eb831730ae2b7db0d86bc4f1f57b1e27bc0d9556b9efeec917",
+   "tramos": [
+    [
+     1,
+     154
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/admision/formulas.py",
+   "sha256": "d14f1bb4e08e804d5873cc42f003173d08320059e05ae4b3c72a9ec13a2bbc77",
+   "tramos": [
+    [
+     1,
+     524
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/admision/lectura.py",
+   "sha256": "afe2f55477585d5dbb84815ea1951d45d689f9fe16f82a1177eb0587ffae3f21",
+   "tramos": [
+    [
+     1,
+     310
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/admision/matriz.py",
+   "sha256": "080ed2af96a2c7c366d7a2f563a51b9b72a7161218e4e9b0e9ee34e47a3dee9a",
+   "tramos": [
+    [
+     1,
+     291
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/admision/mutacion.py",
+   "sha256": "1aec6f55a0e211a7b0953b5a6fb73ccdeb9054c7b4f154d57d5764623d861cec",
+   "tramos": [
+    [
+     1,
+     181
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/admision/perimetro.py",
+   "sha256": "67195acc651c4264ea46d124903fc07e64138f97a815d6e4994fd993b4eaf452",
+   "tramos": [
+    [
+     1,
+     542
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/admision/sede.py",
+   "sha256": "13b16bf0e992aa669d98ebed1bfc01f86c07c9b23935e599434b99b12d144daf",
+   "tramos": [
+    [
+     1,
+     589
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ads_admision.py",
+   "sha256": "559f2af29699a1d2dea5e528ae8f36115ba3c9691c900dfb129285d5bb158393",
+   "tramos": [
+    [
+     1,
+     532
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ads_arboles.py",
+   "sha256": "5e272b4f156728a5805d8c622a2fdb61d0e0b0f0ece3e20602cc456840fa5e9f",
+   "tramos": [
+    [
+     1,
+     440
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/arboles/__init__.py",
+   "sha256": "5fc15c67f41af99dfbcc7343f639d2c93d2d584495c3ff7f1550117c93803f32",
+   "tramos": [
+    [
+     1,
+     58
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/arboles/ataques.py",
+   "sha256": "9871135db142122620a4387608cb3ce011f96e98b36b880108f51b968e669e3d",
+   "tramos": [
+    [
+     1,
+     612
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/arboles/derivador.py",
+   "sha256": "2c2a8edb0bb07a198781c7a85f8c55d3c2701a9a273ce8eb8cd4640b468a7f07",
+   "tramos": [
+    [
+     1,
+     299
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/arboles/errores.py",
+   "sha256": "18a8805b182c15e8a7b72e7e28135c72b3dc245c867c0008f3afb1d828abc43c",
+   "tramos": [
+    [
+     1,
+     96
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/arboles/suite.py",
+   "sha256": "957bf8e41a036e86fc15195b6e6db93acc5e16260a9a275ed804fe2091160467",
+   "tramos": [
+    [
+     1,
+     265
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/arboles/versiones.py",
+   "sha256": "c9ba7335453129fa63b19d7c4d24997253f6380b15515273ad91f6a36b1f8791",
+   "tramos": [
+    [
+     1,
+     440
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/gobierno/POLITICA-CONTROL-REPO.yml",
+   "sha256": "bf854c079e5b8d16e047fd83861e220b1e7da2c5d2a3c82a5020b678ca713984",
+   "tramos": [
+    [
+     1,
+     163
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/gobierno/__init__.py",
+   "sha256": "2490d89513df56fcc17cb188dded3f881a62159cc88b7975424f7fbc9906d325",
+   "tramos": [
+    [
+     1,
+     65
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/gobierno/control.py",
+   "sha256": "0b5846289c160518c9308035d742d8e9b145a93d86ae27869cc62826c6b7c6db",
+   "tramos": [
+    [
+     1,
+     497
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/gobierno/errores.py",
+   "sha256": "5f7ce36fe899ee83fc7dc2d3f913c1f51f2d0a96550c2b6326d18e6111bf4179",
+   "tramos": [
+    [
+     1,
+     118
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/gobierno/git.py",
+   "sha256": "2c2c9d405058fe8cc98ca33a208f5b2a01b5bbcb6e9745d19b47f2af7ec9adf6",
+   "tramos": [
+    [
+     1,
+     332
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/gobierno/propiedad.py",
+   "sha256": "8315fe5703a9af65654bdee055a4da0752ac25f2816f745f7fa9ec8218d83466",
+   "tramos": [
+    [
+     1,
+     182
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/identidad/__init__.py",
+   "sha256": "3f630adff421f2779e7ab34ef6fe4c37d88424b6c046d4d769f9af82068a5cb8",
+   "tramos": [
+    [
+     1,
+     63
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/identidad/configuracion.py",
+   "sha256": "048cd2837d0f2d74349f7cb89ede8f9e448cb49637fb6e7b0584689d8c535c57",
+   "tramos": [
+    [
+     1,
+     206
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/identidad/errores.py",
+   "sha256": "ee295ac124dc3ce999394ba122be0fe2798362c4b715af4c68293282264ca305",
+   "tramos": [
+    [
+     1,
+     96
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/identidad/proveedor.py",
+   "sha256": "2df2a26357f322cc470df60ea09b5b78dcdfe985dc94aabd858477aab83b1d2e",
+   "tramos": [
+    [
+     1,
+     178
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/identidad/rotacion.py",
+   "sha256": "1ab7239989f499379af53b988a768f4f89612f508e04f7eb5abab403e5810cc6",
+   "tramos": [
+    [
+     1,
+     202
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/catalogo_de_prueba.py",
+   "sha256": "0116dcf6bede73b98e4b1def6bcc0bc6becdfd61ab39d379c282abba5dda8720",
+   "tramos": [
+    [
+     1,
+     143
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/escenario_e2e_runtime.py",
+   "sha256": "8ce3355445dea32ad7ed3712a0aa8ec73288c7b0cbbaed2b3e1b456e900210a6",
+   "tramos": [
+    [
+     1,
+     792
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_admision.py",
+   "sha256": "ae303172ab76d1d9f1c21f541d5a6a5c5a60ca78742c2953b98bf2c5a8614fc0",
+   "tramos": [
+    [
+     1,
+     1625
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_arboles.py",
+   "sha256": "ebf27123d7417c3013be86f31b2c4b93fa4f83abf4e013b06f7d310cf56a518e",
+   "tramos": [
+    [
+     1,
+     492
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_gobierno_git.py",
+   "sha256": "c7ee9c723c1ab54b7441c15e1e549f8abad694937210c10dfa16a338d2c426dc",
+   "tramos": [
+    [
+     1,
+     677
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_identidad.py",
+   "sha256": "3d01b287f476b7f967855f4a87dfb4b7f3106235cae09646f59ccdf7cf1de74d",
+   "tramos": [
+    [
+     1,
+     533
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py",
+   "sha256": "73fedd5d80ef52edc06d26bac03c0aa830213a215a460187daca70277b159924",
+   "tramos": [
+    [
+     1,
+     1893
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_multimaquina.py",
+   "sha256": "b3e4e22f901e43d949689500719b9aeea12ff7bdf576ba4b5e4edeca76106a03",
+   "tramos": [
+    [
+     1,
+     693
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_raiz_externa.py",
+   "sha256": "e6b6d23f2abfb6045f70ef876ad7f367217e7095d698e9b943f30e9cb4a711a1",
+   "tramos": [
+    [
+     1,
+     1158
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_sesion_nueva.py",
+   "sha256": "f67367d0da355c09a7567009637594113b76426929e3b1bcdd30be9da1588cb6",
+   "tramos": [
+    [
+     1,
+     894
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/ads_lint.py",
+   "sha256": "5ea0502ebd5382bcfa6df7f03746e3ff3ecb1ca071ad090af5f1f1bb6699ddd1",
+   "tramos": [
+    [
+     1,
+     741
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/composicion_packs.py",
+   "sha256": "ba5f37f66cc4cf6ae43b604232b5abc63d8a6556eb89e610111c644f82a6385f",
+   "tramos": [
+    [
+     1,
+     242
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_arranque.py",
+   "sha256": "6003578b0cdcd7e97278ff906714a9e7d2f70475091adc30718391a2c34c620f",
+   "tramos": [
+    [
+     1,
+     691
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_composicion_procesos.py",
+   "sha256": "0ae757fa1ec0f52f3e2ffc0732809cb822fcf22927ec5bfdab066bfb4b46c825",
+   "tramos": [
+    [
+     1,
+     902
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_contratos.py",
+   "sha256": "d7574cc6a23020b91408ef4f5ef24eb83bd844f048912b3291c90e3eb09f83ec",
+   "tramos": [
+    [
+     1,
+     1177
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_evidencia.py",
+   "sha256": "4e13e0d78cd2c0b95b693d96390b8574428617872f04c814066774adfe8dc0d8",
+   "tramos": [
+    [
+     1,
+     904
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_fuentes.py",
+   "sha256": "1028e9f37fa2c0da97308ef599b7ba1a317387d4ef56eda143cc5524992ec86d",
+   "tramos": [
+    [
+     1,
+     454
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_integridad.py",
+   "sha256": "01021d9e3e77c16eee5fb5ffbdff6448b1ec5d3d3ede1bb258b2c8b30da0ec89",
+   "tramos": [
+    [
+     1,
+     195
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_negativos.py",
+   "sha256": "2151c112d75b463a33ccde0efdac63333e53b1471446726f0890d3997307bd39",
+   "tramos": [
+    [
+     1,
+     1630
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_packs.py",
+   "sha256": "b9858d2a89a769e281547506c08139911af44ec546f79c2d78c872db3892abd7",
+   "tramos": [
+    [
+     1,
+     326
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_prompts.py",
+   "sha256": "d7fd857a0c75bc138e5fe6c9781963e7ba816dc57237c7acb281090a06f6a5dc",
+   "tramos": [
+    [
+     1,
+     290
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_recuentos.py",
+   "sha256": "2abe68340e44e530791166476bd0cf81ccdf1515fb5e43023297a64aa7f4623d",
+   "tramos": [
+    [
+     1,
+     1279
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_referencias.py",
+   "sha256": "4a8dc5344709d71ebc6d7f6eb90a6255a0ed6de6f3fb260d3d0ea4a86bb19f2f",
+   "tramos": [
+    [
+     1,
+     357
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_versiones.py",
+   "sha256": "eca300ace1f1efecc04ff7ed7f145e00879fb780bece30d8d0fdee5be552c9be",
+   "tramos": [
+    [
+     1,
+     542
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/entorno.py",
+   "sha256": "29ad84bb721011205be3e23a20ced30cfbf37b38c6bb69139326502e4915f1b8",
+   "tramos": [
+    [
+     1,
+     228
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/exclusiones.yaml",
+   "sha256": "71ca67abf25d5e5ec549a99df60857330cc8db8c91a0d0217a10b6a15eeaef36",
+   "tramos": [
+    [
+     1,
+     196
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/huella.py",
+   "sha256": "1f23ebb2153c2650d00f81c9807d92588cf1fd9fe9486ef7f96244f76e09c9f8",
+   "tramos": [
+    [
+     1,
+     186
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/negativos_cardinalidad.py",
+   "sha256": "a216ba3d0118bd4d9bf45a4cb6b886a84c151fa53c7b211c1dd0d735cbf95f79",
+   "tramos": [
+    [
+     1,
+     363
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/negativos_contratos19.py",
+   "sha256": "598d57179bc26b2fb55d05a5775f0dce570868a84131265aa5897e25f611d26f",
+   "tramos": [
+    [
+     1,
+     549
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/negativos_integridad.py",
+   "sha256": "1338990b041fc7381a3154147c587e651dc37a3061efd095ccca9c1ab139dca8",
+   "tramos": [
+    [
+     1,
+     221
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/negativos_runtime.py",
+   "sha256": "902feaa954f07ade8f1d914508cd79532764e4bdaf8a534ac83c1a5e71c68591",
+   "tramos": [
+    [
+     1,
+     696
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/registrar_evidencia.py",
+   "sha256": "1b1fe96f34bfcbd04481c11cf01adc9998a593a2aa65b3920e07126b9deba174",
+   "tramos": [
+    [
+     1,
+     314
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/registro_pruebas.py",
+   "sha256": "f4f1b11dcb7be4323765b472b0afef2a9212d49a8ff11125dcba95b2859dfd60",
+   "tramos": [
+    [
+     1,
+     550
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/validadores.yaml",
+   "sha256": "eed4dcef066705725b0082ffb8502c81debb9c2d7d9ba928097d51a1839424b9",
+   "tramos": [
+    [
+     1,
+     429
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+   "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+   "tramos": [
+    [
+     95,
+     247
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+   "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+   "tramos": [
+    [
+     3795,
+     4947
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+   "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+   "tramos": [
+    [
+     5236,
+     5811
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+   "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+   "tramos": [
+    [
+     5812,
+     6135
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+   "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+   "tramos": [
+    [
+     8075,
+     8128
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+   "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+   "tramos": [
+    [
+     8129,
+     9013
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+   "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+   "tramos": [
+    [
+     9014,
+     9092
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+   "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+   "tramos": [
+    [
+     9093,
+     9154
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+   "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+   "tramos": [
+    [
+     9786,
+     10852
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+   "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+   "tramos": [
+    [
+     11907,
+     12152
+    ]
+   ]
+  }
+ ]
+}
