@@ -1,0 +1,2000 @@
+{
+  "gate": "F6-CERTIFICACION-FINAL-20260905",
+  "base": "769a8b6dfd2dd71aab69f35893da46bf35356168",
+  "candidata": "c2437214c9353185d6b90b8fe86178302d4cf349",
+  "obligatorio": [
+    "docs/evolucion/00-INDICE.md",
+    "docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md",
+    "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+    "docs/evolucion/12-CRITICA-INDEPENDIENTE-F4.md",
+    "docs/evolucion/13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md",
+    "docs/evolucion/14-DEVOLUCION-TECNICA-PREVIA-F4C.md",
+    "docs/evolucion/15-TERCERA-REVISION-INDEPENDIENTE-F4C.md",
+    "docs/evolucion/16-GATE-FINAL-INDEPENDIENTE-F4C.md",
+    "docs/evolucion/17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md",
+    "docs/evolucion/18-GATE-DE-CIERRE-INDEPENDIENTE-F4C.md",
+    "docs/evolucion/19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md",
+    "docs/evolucion/20-GATE-INDEPENDIENTE-DE-COBERTURA-Y-CIERRE-F4C.md",
+    "docs/evolucion/21-GATE-INDEPENDIENTE-DE-CIERRE-F4C.md",
+    "docs/evolucion/22-GATE-INDEPENDIENTE-DE-CERTIFICACION-F4C.md",
+    "docs/evolucion/23-SEGUNDO-GATE-DE-CERTIFICACION-F4C.md",
+    "docs/evolucion/24-TERCER-GATE-DE-CERTIFICACION-F4C.md",
+    "docs/evolucion/25-CUARTO-GATE-DE-CERTIFICACION-F4C.md",
+    "docs/evolucion/26-QUINTO-GATE-DE-CERTIFICACION-F4C.md",
+    "docs/evolucion/27-SEXTO-GATE-DE-CERTIFICACION-F4C.md",
+    "docs/evolucion/28-SEPTIMO-GATE-DE-CERTIFICACION-F4C.md",
+    "docs/evolucion/29-OCTAVO-GATE-DE-CERTIFICACION-F4C.md",
+    "docs/evolucion/30-GATE-ARQUITECTONICO-FINAL-F4C.md",
+    "docs/evolucion/31-GATE-FINAL-O21-F4C.md",
+    "docs/evolucion/32-GATE-VERIFICACION-DOCE-HH2-F4C.md",
+    "docs/evolucion/33-CIERRE-DE-F4C-POR-COMPOSICION-O22.md",
+    "docs/evolucion/34-RATIFICACION-DE-LA-CERTIFICACION-INCREMENTAL-O22.md",
+    "docs/evolucion/ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md",
+    "docs/evolucion/CHECKPOINT-ADS-NEXT.md",
+    "docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md",
+    "docs/evolucion/verificacion/README.md",
+    "docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py",
+    "docs/evolucion/verificacion/derivar-universo-obligatorio.py",
+    "docs/evolucion/verificacion/emitir-sobre-de-ancla.py",
+    "docs/evolucion/verificacion/manifiestos/F4C-ADDENDUM-1-GATE-CERTIFICACION-20260830.md",
+    "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-ARQUITECTONICO-FINAL-20260901.md",
+    "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-2-20260830.md",
+    "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-20260830.md",
+    "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-3-20260830.md",
+    "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-4B-20260830.md",
+    "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-5-20260831.md",
+    "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-6-20260831.md",
+    "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-6B-20260831.md",
+    "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-7-20260831.md",
+    "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-8-20260831.md",
+    "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CIERRE-20260829.md",
+    "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-FINAL-O21-20260901.md",
+    "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-FINAL-O21-20260901B.md",
+    "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-VERIFICACION-DOCE-20260901.md",
+    "docs/evolucion/verificacion/manifiestos/F6-ASIGNACION-GATE-CERTIFICACION-FINAL-20260904.md",
+    "docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md",
+    "docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md",
+    "docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md",
+    "docs/owner/ADS-OWNER-RESOLUCIONES.md",
+    "docs/rediseno/CHECKPOINT-OPERATIVO.md",
+    "docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md",
+    "docs/rediseno/a-CAPACIDADES-APROBADA.md",
+    "docs/rediseno/a-ENMIENDA-E1-ENC.md",
+    "docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md",
+    "docs/rediseno/b-RECORRIDO-APROBADA.md",
+    "kernel/KERNEL.md",
+    "kernel/operativo/capacidades/APR/CAPACIDAD.md",
+    "kernel/operativo/capacidades/ARQ/CAPACIDAD.md",
+    "kernel/operativo/capacidades/CON/CAPACIDAD.md",
+    "kernel/operativo/capacidades/DIS/CAPACIDAD.md",
+    "kernel/operativo/capacidades/DOM/CAPACIDAD.md",
+    "kernel/operativo/capacidades/DSP/CAPACIDAD.md",
+    "kernel/operativo/capacidades/ENC/CAPACIDAD.md",
+    "kernel/operativo/capacidades/ENT/CAPACIDAD.md",
+    "kernel/operativo/capacidades/INV/CAPACIDAD.md",
+    "kernel/operativo/capacidades/PLT/CAPACIDAD.md",
+    "kernel/operativo/capacidades/PRD/CAPACIDAD.md",
+    "kernel/operativo/capacidades/SEG/CAPACIDAD.md",
+    "kernel/operativo/capacidades/SIS/CAPACIDAD.md",
+    "kernel/operativo/capacidades/USO/CAPACIDAD.md",
+    "kernel/operativo/capacidades/VER/CAPACIDAD.md",
+    "kernel/operativo/contratos/00-INDICE.md",
+    "kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md",
+    "kernel/operativo/contratos/C2-AGENTES-Y-MODELOS.md",
+    "kernel/operativo/contratos/C3-METODO-EJECUTABLE.md",
+    "kernel/operativo/contratos/C4-MATERIALIZACION.md",
+    "kernel/operativo/contratos/C5-HANDOFF.md",
+    "kernel/operativo/contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md",
+    "kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md",
+    "kernel/operativo/diseno/00-SISTEMA-DE-EXCELENCIA.md",
+    "kernel/operativo/diseno/01-MEMORIA-DE-DISENO.md",
+    "kernel/operativo/diseno/02-RUBRICAS.md",
+    "kernel/operativo/diseno/04-CICLO-DE-CALIDAD.md",
+    "kernel/operativo/diseno/05-FIDELIDAD.md",
+    "kernel/operativo/entrada/00-INDICE.md",
+    "kernel/operativo/entrada/02-CIRCUITO.md",
+    "kernel/operativo/entrada/04-INCERTIDUMBRE-Y-CONFIRMACION.md",
+    "kernel/operativo/esquemas/proceso.yaml",
+    "kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md",
+    "kernel/operativo/recorrido/01-PROCESOS.md"
+  ],
+  "modificadas": [
+    "docs/canonico/FUENTES-CANONICAS.yml",
+    "docs/canonico/validar-fuentes-canonicas.py",
+    "docs/evolucion/verificacion/comprobar-cobertura-de-gate.py",
+    "docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py",
+    "docs/evolucion/verificacion/derivar-universo-obligatorio.py",
+    "docs/evolucion/verificacion/emitir-sobre-de-ancla.py",
+    "docs/f5/validar-f5.py",
+    "docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md",
+    "docs/f6/05-MATRIZ-CIERRE-G01-G08.md",
+    "kernel/.upstream-hash",
+    "kernel/operativo/pruebas/RECUENTOS-generado.md",
+    "kernel/operativo/pruebas/REGISTRO-generado.md",
+    "kernel/operativo/pruebas/T159-T170-multirepo.md",
+    "kernel/operativo/pruebas/T172-T181-estado-durable.md",
+    "kernel/operativo/pruebas/T182-T194-runtime-y-admision.md",
+    "kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md",
+    "kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md",
+    "kernel/operativo/pruebas/T380-T399-aislamiento.md",
+    "kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md",
+    "kernel/operativo/pruebas/T420-T429-evidencia-en-head.md",
+    "kernel/operativo/pruebas/evidencia/adaptadores-salida.txt",
+    "kernel/operativo/pruebas/evidencia/admision-salida.txt",
+    "kernel/operativo/pruebas/evidencia/agentes-salida.txt",
+    "kernel/operativo/pruebas/evidencia/arboles-salida.txt",
+    "kernel/operativo/pruebas/evidencia/arranque-salida.txt",
+    "kernel/operativo/pruebas/evidencia/cardinalidad-salida.txt",
+    "kernel/operativo/pruebas/evidencia/ciclo-salida.txt",
+    "kernel/operativo/pruebas/evidencia/cobertura-de-gate-salida.txt",
+    "kernel/operativo/pruebas/evidencia/composicion-procesos-salida.txt",
+    "kernel/operativo/pruebas/evidencia/contencion-salida.txt",
+    "kernel/operativo/pruebas/evidencia/continua-salida.txt",
+    "kernel/operativo/pruebas/evidencia/contratos-salida.txt",
+    "kernel/operativo/pruebas/evidencia/e2e-f6-salida.txt",
+    "kernel/operativo/pruebas/evidencia/e2e-runtime-salida.txt",
+    "kernel/operativo/pruebas/evidencia/estado-durable-salida.txt",
+    "kernel/operativo/pruebas/evidencia/estado-e2e-salida.txt",
+    "kernel/operativo/pruebas/evidencia/evidencia-salida.txt",
+    "kernel/operativo/pruebas/evidencia/fuentes-salida.txt",
+    "kernel/operativo/pruebas/evidencia/gobierno-git-salida.txt",
+    "kernel/operativo/pruebas/evidencia/identidad-salida.txt",
+    "kernel/operativo/pruebas/evidencia/integridad-evidencia-salida.txt",
+    "kernel/operativo/pruebas/evidencia/integridad-salida.txt",
+    "kernel/operativo/pruebas/evidencia/lint-salida.txt",
+    "kernel/operativo/pruebas/evidencia/macrocircuitos-salida.txt",
+    "kernel/operativo/pruebas/evidencia/multimaquina-salida.txt",
+    "kernel/operativo/pruebas/evidencia/negativos-salida.txt",
+    "kernel/operativo/pruebas/evidencia/packs-salida.txt",
+    "kernel/operativo/pruebas/evidencia/prompts-salida.txt",
+    "kernel/operativo/pruebas/evidencia/raiz-externa-salida.txt",
+    "kernel/operativo/pruebas/evidencia/recuentos-salida.txt",
+    "kernel/operativo/pruebas/evidencia/referencias-salida.txt",
+    "kernel/operativo/pruebas/evidencia/runtime-salida.txt",
+    "kernel/operativo/pruebas/evidencia/sesion-nueva-salida.txt",
+    "kernel/operativo/pruebas/evidencia/universo-obligaciones-salida.txt",
+    "kernel/operativo/pruebas/evidencia/universo-obligatorio-salida.txt",
+    "kernel/operativo/pruebas/evidencia/universo-rutas-salida.txt",
+    "kernel/operativo/pruebas/evidencia/versiones-salida.txt",
+    "kernel/operativo/pruebas/evidencia/workspace-salida.txt",
+    "kernel/operativo/raiz-externa/anfitrion_firmante.py",
+    "kernel/operativo/raiz-externa/anfitrion_verificador.py",
+    "kernel/operativo/raiz-externa/instalar.py",
+    "kernel/operativo/raiz-externa/verificador.py",
+    "kernel/operativo/runtime/admision/perimetro.py",
+    "kernel/operativo/runtime/ads_admision.py",
+    "kernel/operativo/runtime/ads_arboles.py",
+    "kernel/operativo/runtime/ads_ciclo.py",
+    "kernel/operativo/runtime/ads_estado.py",
+    "kernel/operativo/runtime/ads_runtime.py",
+    "kernel/operativo/runtime/pruebas/catalogo_de_prueba.py",
+    "kernel/operativo/runtime/pruebas/escenario_e2e_f6.py",
+    "kernel/operativo/runtime/pruebas/escenario_e2e_runtime.py",
+    "kernel/operativo/runtime/pruebas/escenario_extremo_a_extremo.py",
+    "kernel/operativo/runtime/pruebas/test_adaptadores.py",
+    "kernel/operativo/runtime/pruebas/test_admision.py",
+    "kernel/operativo/runtime/pruebas/test_agentes.py",
+    "kernel/operativo/runtime/pruebas/test_arboles.py",
+    "kernel/operativo/runtime/pruebas/test_cardinalidad_y_seleccion.py",
+    "kernel/operativo/runtime/pruebas/test_ciclo.py",
+    "kernel/operativo/runtime/pruebas/test_contencion.py",
+    "kernel/operativo/runtime/pruebas/test_continua.py",
+    "kernel/operativo/runtime/pruebas/test_estado_durable.py",
+    "kernel/operativo/runtime/pruebas/test_gobierno_git.py",
+    "kernel/operativo/runtime/pruebas/test_identidad.py",
+    "kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py",
+    "kernel/operativo/runtime/pruebas/test_macrocircuitos.py",
+    "kernel/operativo/runtime/pruebas/test_multimaquina.py",
+    "kernel/operativo/runtime/pruebas/test_raiz_externa.py",
+    "kernel/operativo/runtime/pruebas/test_runtime.py",
+    "kernel/operativo/runtime/pruebas/test_sesion_nueva.py",
+    "kernel/operativo/runtime/runtime/dispatcher.py",
+    "kernel/operativo/runtime/runtime/errores.py",
+    "kernel/operativo/runtime/runtime/estado_util.py",
+    "kernel/operativo/runtime/runtime/politica.py",
+    "kernel/operativo/validadores/ads_lint.py",
+    "kernel/operativo/validadores/aislamiento_de_arranque.py",
+    "kernel/operativo/validadores/composicion_packs.py",
+    "kernel/operativo/validadores/comprobar_arranque.py",
+    "kernel/operativo/validadores/comprobar_composicion_procesos.py",
+    "kernel/operativo/validadores/comprobar_contratos.py",
+    "kernel/operativo/validadores/comprobar_evidencia.py",
+    "kernel/operativo/validadores/comprobar_fuentes.py",
+    "kernel/operativo/validadores/comprobar_integridad.py",
+    "kernel/operativo/validadores/comprobar_negativos.py",
+    "kernel/operativo/validadores/comprobar_packs.py",
+    "kernel/operativo/validadores/comprobar_prompts.py",
+    "kernel/operativo/validadores/comprobar_recuentos.py",
+    "kernel/operativo/validadores/comprobar_referencias.py",
+    "kernel/operativo/validadores/comprobar_versiones.py",
+    "kernel/operativo/validadores/entorno.py",
+    "kernel/operativo/validadores/huella.py",
+    "kernel/operativo/validadores/negativos_cardinalidad.py",
+    "kernel/operativo/validadores/negativos_contratos19.py",
+    "kernel/operativo/validadores/negativos_integridad.py",
+    "kernel/operativo/validadores/negativos_runtime.py",
+    "kernel/operativo/validadores/registrar_evidencia.py",
+    "kernel/operativo/validadores/registro_pruebas.py",
+    "kernel/operativo/validadores/validadores.yaml",
+    "tooling/tests/test_workspace.py",
+    "tooling/workspace.py"
+  ],
+  "revisores": {
+    "REV-1": {
+      "fuentes": [
+        {
+          "ruta": "docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md",
+          "lineas": 336,
+          "sha256": "202ac1af8df5ca6e032cb06f6566c63cf2656fb1a54d65a8c9a0f5d0ef5d41d9",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+          "lineas": 12152,
+          "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+          "lineas": 12152,
+          "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+          "rango": [
+            3601,
+            4800
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+          "lineas": 12152,
+          "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+          "rango": [
+            7201,
+            8400
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+          "lineas": 12152,
+          "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+          "rango": [
+            10801,
+            12000
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md",
+          "lineas": 1650,
+          "sha256": "18f876d4cd47a2f7cfde15594f98696cfacf750607cd23811dd40ffb36d6c29c",
+          "rango": [
+            1201,
+            1650
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/18-GATE-DE-CIERRE-INDEPENDIENTE-F4C.md",
+          "lineas": 3665,
+          "sha256": "1e71366b10d2293802db435de14953771ebd8fc13b426acedd7c0efe21cdb496",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/18-GATE-DE-CIERRE-INDEPENDIENTE-F4C.md",
+          "lineas": 3665,
+          "sha256": "1e71366b10d2293802db435de14953771ebd8fc13b426acedd7c0efe21cdb496",
+          "rango": [
+            3601,
+            3665
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md",
+          "lineas": 1152,
+          "sha256": "48baaa1a8e69c6ef3401eb7a0088dcf06849bd66fa3f238bf3e7b8c8fd14392d",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/21-GATE-INDEPENDIENTE-DE-CIERRE-F4C.md",
+          "lineas": 2679,
+          "sha256": "9f869ffbdbdb834ca872c03abc8826c125a47b4344ed32cd9b6266db08f8be03",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/22-GATE-INDEPENDIENTE-DE-CERTIFICACION-F4C.md",
+          "lineas": 3478,
+          "sha256": "3e2bdece758e6b69d6695bb52f20d21b910a123a27ac643845dbad75e8355f1c",
+          "rango": [
+            1201,
+            2400
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/24-TERCER-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 2515,
+          "sha256": "8df584529c857c071954b0d1b426faff82277e29a43556abe5dccfd93714fae1",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/24-TERCER-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 2515,
+          "sha256": "8df584529c857c071954b0d1b426faff82277e29a43556abe5dccfd93714fae1",
+          "rango": [
+            2401,
+            2515
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/25-CUARTO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 2754,
+          "sha256": "e8431c653cb7919e8d2ec82c5b4d3d11247a01aa61577bb8e5dd266916fb0e5d",
+          "rango": [
+            1201,
+            2400
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/26-QUINTO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 4526,
+          "sha256": "e2c34215d92937fb467b1ffdb4e6654f66198ead4dac8128c411469bf86c297e",
+          "rango": [
+            2401,
+            3600
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/27-SEXTO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 3946,
+          "sha256": "d81b56366e5062ffe0abcd55ba2ef52ddbc3fadf073ea5a280e6cfc15b87ef26",
+          "rango": [
+            2401,
+            3600
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/27-SEXTO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 3946,
+          "sha256": "d81b56366e5062ffe0abcd55ba2ef52ddbc3fadf073ea5a280e6cfc15b87ef26",
+          "rango": [
+            3601,
+            3946
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/28-SEPTIMO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 4275,
+          "sha256": "4711738d2a5d64740cc382d7808cf3b185686f80930b3f0d26ff3cf756506854",
+          "rango": [
+            2401,
+            3600
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/29-OCTAVO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 4197,
+          "sha256": "0b9064490c8dd68ec7c50ed87778d31ab8ab5360c966642113367a0eeba2e5ac",
+          "rango": [
+            2401,
+            3600
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/29-OCTAVO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 4197,
+          "sha256": "0b9064490c8dd68ec7c50ed87778d31ab8ab5360c966642113367a0eeba2e5ac",
+          "rango": [
+            3601,
+            4197
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/30-GATE-ARQUITECTONICO-FINAL-F4C.md",
+          "lineas": 3084,
+          "sha256": "712058b2467287d7ca51380cf305e84ac311f141d1c12ec0649c8b901aee6503",
+          "rango": [
+            2401,
+            3084
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/31-GATE-FINAL-O21-F4C.md",
+          "lineas": 783,
+          "sha256": "d184e9528ce38356235d726385eb4cb795d3a75daaaf0e19450fb33c57616eba",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/32-GATE-VERIFICACION-DOCE-HH2-F4C.md",
+          "lineas": 881,
+          "sha256": "1237245e828546fa3e641376651475196a265507060858bfeb7213f777ed5203",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md",
+          "lineas": 2163,
+          "sha256": "a88609167dbbea2818b7f2e68cbd4c6fc704cb7e2245ee0a2c873052486fd159",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/CHECKPOINT-ADS-NEXT.md",
+          "lineas": 6385,
+          "sha256": "165ab8cc02aabab7ed95345a805edcf000f8451b7027dbf01b27e1644b540a1c",
+          "rango": [
+            2401,
+            3600
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/comprobar-cobertura-de-gate.py",
+          "lineas": 999,
+          "sha256": "24ef5e2963589aa531f52a1f7644b2959c4e67b5cc7f26325aa612ec756bc564",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py",
+          "lineas": 4513,
+          "sha256": "bf1dea726fcd0ca8c165cbb581490e33148e3f90545daaec14ee974239ec54df",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/emitir-sobre-de-ancla.py",
+          "lineas": 924,
+          "sha256": "bc4c50047b03f93f42caf29b7bd777225a390e83509fc446731faf41b05433fa",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ADDENDUM-1-GATE-CERTIFICACION-20260830.md",
+          "lineas": 119,
+          "sha256": "b1c29244dfedc139ff7e80a6167d200803d054f25554c75f31303fea5687a434",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-3-20260830.md",
+          "lineas": 210,
+          "sha256": "ac9e0edd59cf3e1b783b42ce0fc052e1eb28af7d5d66e218709d76589f724988",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-7-20260831.md",
+          "lineas": 260,
+          "sha256": "f3d7d0bf6d10eac0d0d82c0842401d01f52a65403710a09b3aaba11ef07069ff",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-FINAL-O21-20260901B.md",
+          "lineas": 303,
+          "sha256": "4a27b5ef2146753afa5ab8c1c6fc95b195d97e493a28af642ebf97c5ef5090f8",
+          "rango": null
+        },
+        {
+          "ruta": "docs/f6/05-MATRIZ-CIERRE-G01-G08.md",
+          "lineas": 153,
+          "sha256": "5ee301a0c5b3a102771dec574862a4a5eb7552358abe23426b5d3a84ad7da8a5",
+          "rango": null
+        },
+        {
+          "ruta": "docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md",
+          "lineas": 3343,
+          "sha256": "64d170f5acc151445eff6f3f68a0bade91d00744dffa6bdf36c13cd2d366bd3e",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md",
+          "lineas": 3343,
+          "sha256": "64d170f5acc151445eff6f3f68a0bade91d00744dffa6bdf36c13cd2d366bd3e",
+          "rango": [
+            2401,
+            3343
+          ]
+        },
+        {
+          "ruta": "docs/rediseno/a-ENMIENDA-E1-ENC.md",
+          "lineas": 212,
+          "sha256": "ade02566d1247e5098cc4db866646ab19651449879c6d9304e068010a1c5a7d5",
+          "rango": null
+        },
+        {
+          "ruta": "docs/rediseno/b-RECORRIDO-APROBADA.md",
+          "lineas": 1331,
+          "sha256": "89023236f0a2a9f1fcbcb0f4a9e311cb465dd18709809485f70dd24c3fd97090",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "kernel/.upstream-hash",
+          "lineas": 1,
+          "sha256": "7b8d5514f335693ef8c8481a5e4f71bf830848c2ff17e5013cb3aab5c838f8a2",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/capacidades/INV/CAPACIDAD.md",
+          "lineas": 96,
+          "sha256": "47412638e7552da14b7bb89e590aea2f37cc61116c83b902e32952647380ed36",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/capacidades/PLT/CAPACIDAD.md",
+          "lineas": 108,
+          "sha256": "a5f87977c58ed1d0d4deb3504d664a47fc90382a9790986e5aa277f1dad130d2",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/capacidades/VER/CAPACIDAD.md",
+          "lineas": 135,
+          "sha256": "91a16b482629daf3455a3c6963a0568a7a68bcd2bd5553e7540d8c9edbfaf0e2",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md",
+          "lineas": 161,
+          "sha256": "825f15a914c10d6f07f74e62967f93743efcf629a13379acb3947e70e2952ffa",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/contratos/C3-METODO-EJECUTABLE.md",
+          "lineas": 150,
+          "sha256": "d56bf6b81e0fe4a9b3ba811f1adf57748cbae65692db557d15960c8506f84234",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md",
+          "lineas": 250,
+          "sha256": "83f82e2be4756a4651e61f1883d2a99f1d141954097a6e4176a3482a951fc69c",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/diseno/01-MEMORIA-DE-DISENO.md",
+          "lineas": 352,
+          "sha256": "dd323d1aa2f7ede3efa18ac01564b636fff8f0f77beac7db3abed667bbd429ec",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/diseno/04-CICLO-DE-CALIDAD.md",
+          "lineas": 130,
+          "sha256": "5d2f54535c1334c053e27bf99b6b81a15a33be7180adf58ddf884cf79ef3a9c1",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/entrada/00-INDICE.md",
+          "lineas": 28,
+          "sha256": "315b2790cb66bb4c2c84272468675c8e77fb5a26b8cc2b95ff56db7ee266ddb1",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/entrada/02-CIRCUITO.md",
+          "lineas": 145,
+          "sha256": "750d39a29f05e7f2b037f9c246c9869ba80edec493e104e206baadda19c09c70",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/entrada/04-INCERTIDUMBRE-Y-CONFIRMACION.md",
+          "lineas": 187,
+          "sha256": "1716bd3d8b48107d28a93e4297a6d93c0e6125107c0cc14811f092641e3d0cd2",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/T159-T170-multirepo.md",
+          "lineas": 314,
+          "sha256": "0d36d2801dd2efac86ce74809932eec52dc101db3aae294453862361a78ef122",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md",
+          "lineas": 395,
+          "sha256": "5261b170794ed96e22d6e53761e9dcdab8809be55fa8eb8fadfd310bd4682199",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md",
+          "lineas": 739,
+          "sha256": "05c53626eb9c12310b46208daa63b5158e9900aeb736f68f83d6bbfe7cd435c8",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md",
+          "lineas": 544,
+          "sha256": "52288e1704bfae07e804ad34398359e2e723cd74e8f03a075f6fd47aecef2dbe",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/T420-T429-evidencia-en-head.md",
+          "lineas": 241,
+          "sha256": "991053f62bb5ac94bcfd29e0e0c4402b16520af44ba2298ecfa52928b70600b9",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/adaptadores-salida.txt",
+          "lineas": 86,
+          "sha256": "29d15ce60720c241fc873b6ef9de221f33031a365b0cb0d58bd0674c218ebc57",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/arranque-salida.txt",
+          "lineas": 13,
+          "sha256": "444dcd53d8b4219b4f4052702096e5c48b5e258cb7269c8d5489436aa878bc8a",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/cobertura-de-gate-salida.txt",
+          "lineas": 33,
+          "sha256": "3ebdec947f0989efeddddc9eba578926d35e76cdbd19670f794f60f7653cd1f9",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/e2e-f6-salida.txt",
+          "lineas": 96,
+          "sha256": "94d35d70d491e501b328a83155c6f85e4265ef401a7e01a1fcca848e9973d67b",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/e2e-runtime-salida.txt",
+          "lineas": 93,
+          "sha256": "51d5689f72b96d03d681edd47e8f8f9390a1d7356a4b044ad4bde3647c94304d",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/evidencia-salida.txt",
+          "lineas": 10,
+          "sha256": "07a344ca7bec57831dd060b6386a44acdda2bbe49d56c2bda96abf255fa4fbd8",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/fuentes-salida.txt",
+          "lineas": 12,
+          "sha256": "24de19d1757f9985940a39014afaaafade67bfcd95173c4fd1f25290c10c3e6a",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/identidad-salida.txt",
+          "lineas": 58,
+          "sha256": "4a33097359a912698fc1c48395b4659cf756b218450dae30c49fbb190ceddb86",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/integridad-evidencia-salida.txt",
+          "lineas": 138,
+          "sha256": "9568f034d4cdb945e65f3ba9f7f4509e70e480251407db7775819bc6e60fbf8f",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/prompts-salida.txt",
+          "lineas": 53,
+          "sha256": "1d9dd3607a82371e5c3cc5e0017f1c22440e34e736881695770dc7eac976e07e",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/runtime-salida.txt",
+          "lineas": 128,
+          "sha256": "85b8abe3928652361ff5175ae034fb49bfabdf4563ad45c19449ff87aaf3745e",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/sesion-nueva-salida.txt",
+          "lineas": 66,
+          "sha256": "ab341386b567b3b7f5a617365f1fc31f20913609aec6d1c3dc544c14afd380f3",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/raiz-externa/anfitrion_firmante.py",
+          "lineas": 291,
+          "sha256": "78eaa3053dd5562fe4f9caead1db86f3f00744a536058dc0ad09983ba409e671",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/raiz-externa/verificador.py",
+          "lineas": 801,
+          "sha256": "f55e8e6c48820d339d11bf53a7380327ea346382b22428d06b1b1fd3097dde04",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/ads_arboles.py",
+          "lineas": 522,
+          "sha256": "74c267a7443128f497e4042bd795d37bd7ec74147df137b301b44e916f8cbf50",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/escenario_e2e_f6.py",
+          "lineas": 1905,
+          "sha256": "e31cfba56945a5897aa7fd7257b72403a17fe340ca43cd47ce178b286eafe0e4",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_arboles.py",
+          "lineas": 631,
+          "sha256": "6693b29ae6c18a8bf0c7f71d0150749d154314bd8fd4cbce512650140528b960",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_ciclo.py",
+          "lineas": 1741,
+          "sha256": "950060e79a364b8d6d391190076e2dd34503433da3f9a8b870dad4334f323b35",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_gobierno_git.py",
+          "lineas": 816,
+          "sha256": "4e29f86f318ff748b2571fbe3f055c1b93f3a2bc2973d98be3c18c33859cea6a",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_multimaquina.py",
+          "lineas": 832,
+          "sha256": "93d967b9ab3ee6ae110280e73a0206af9472cccc916918cba83fa94b0fbf3208",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_sesion_nueva.py",
+          "lineas": 1033,
+          "sha256": "eccf8ff031ece17545dd9c81e258ec8fdfed011231ee04c956e9d8faaca92813",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/runtime/estado_util.py",
+          "lineas": 274,
+          "sha256": "b5529235398ab60930410dd208efe43031d0d9611d7edf68523c3966839e6904",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/composicion_packs.py",
+          "lineas": 320,
+          "sha256": "15febc70a26c4ddf2e75aede1b642bf80f39ce72b41b386362285197e018effb",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/comprobar_evidencia.py",
+          "lineas": 1107,
+          "sha256": "c15c046d240be89382620bf522a4808df860b9dad8154e96f5943d8531445e97",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/comprobar_packs.py",
+          "lineas": 404,
+          "sha256": "c62e45df8357e458dc7f7e83d9e47d7cba44e50bcafe4d1067b5f53224f99590",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/comprobar_prompts.py",
+          "lineas": 368,
+          "sha256": "2689737fa39cf121babe69fe7423b7a11415ebdcc00bc9eefb9564c65e736a26",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/comprobar_recuentos.py",
+          "lineas": 1485,
+          "sha256": "240046227dc4a783c2d5652db740c31501e473882a9dbaafb3610fd66d1a5ddb",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/comprobar_referencias.py",
+          "lineas": 435,
+          "sha256": "f2910724a7a644430130df908e2e1f3939e4c5e1686bbba85fc445116a58b131",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/comprobar_versiones.py",
+          "lineas": 620,
+          "sha256": "ac34b6b7fc9470e88b09beaefea82bfbfc325793f80485c9239cdf2627c76547",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/negativos_contratos19.py",
+          "lineas": 672,
+          "sha256": "c106229e952771ac92dd9751c5d9a35fd7630434cf6a274b8a9d46c17acb613e",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/negativos_integridad.py",
+          "lineas": 281,
+          "sha256": "31963276d2df4b4b06a833dcea01f7a8aa1b6babafc8bb6415bf252eb89b1e15",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/validadores.yaml",
+          "lineas": 474,
+          "sha256": "789ffaa0faa1ad893709e626fcc486dd41f93f39be906f0e323cb1ce96a21399",
+          "rango": null
+        },
+        {
+          "ruta": "tooling/workspace.py",
+          "lineas": 985,
+          "sha256": "8c99f7fc905856291c39ef1e05b0505385447f39e6eb9217bfb63e0b9aaf7b7d",
+          "rango": null
+        }
+      ]
+    },
+    "REV-2": {
+      "fuentes": [
+        {
+          "ruta": "docs/canonico/FUENTES-CANONICAS.yml",
+          "lineas": 806,
+          "sha256": "a1aac47b0757950a43d4ae52c6e12e87477ddce69eaa7e8da3a5cbeb33eb0c32",
+          "rango": null
+        },
+        {
+          "ruta": "docs/canonico/validar-fuentes-canonicas.py",
+          "lineas": 472,
+          "sha256": "d9cc2ca998e8bc7f808f7af3cdb7cea85dea2a83339c7bd7ecb350568ce2969e",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/00-INDICE.md",
+          "lineas": 337,
+          "sha256": "e7cbe5c958f015ae654a5c4779463417ab5f5a5a37e330b1f1bdc413b94822a5",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+          "lineas": 12152,
+          "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+          "rango": [
+            2401,
+            3600
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+          "lineas": 12152,
+          "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+          "rango": [
+            6001,
+            7200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+          "lineas": 12152,
+          "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+          "rango": [
+            9601,
+            10800
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/12-CRITICA-INDEPENDIENTE-F4.md",
+          "lineas": 764,
+          "sha256": "c50e0aa6c1b9827c166171efee1737b2e091cc5518d78bad8c469c709c0dd56f",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/15-TERCERA-REVISION-INDEPENDIENTE-F4C.md",
+          "lineas": 651,
+          "sha256": "b0e015c118ceb916e58fc8191b2a5e40cf28c44dd426618fdd49d10e3ea495d6",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/16-GATE-FINAL-INDEPENDIENTE-F4C.md",
+          "lineas": 1257,
+          "sha256": "8243034f286160cc89330af95b49f558af0dd16d1b36a37ccbdf02f74a79d185",
+          "rango": [
+            1201,
+            1257
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md",
+          "lineas": 1650,
+          "sha256": "18f876d4cd47a2f7cfde15594f98696cfacf750607cd23811dd40ffb36d6c29c",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/18-GATE-DE-CIERRE-INDEPENDIENTE-F4C.md",
+          "lineas": 3665,
+          "sha256": "1e71366b10d2293802db435de14953771ebd8fc13b426acedd7c0efe21cdb496",
+          "rango": [
+            2401,
+            3600
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/22-GATE-INDEPENDIENTE-DE-CERTIFICACION-F4C.md",
+          "lineas": 3478,
+          "sha256": "3e2bdece758e6b69d6695bb52f20d21b910a123a27ac643845dbad75e8355f1c",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/23-SEGUNDO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 2913,
+          "sha256": "0f81f13d8cb319d8ccc5243d19bb26d7f71f57e860cde2eb2edefe33b6993dc2",
+          "rango": [
+            1201,
+            2400
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/25-CUARTO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 2754,
+          "sha256": "e8431c653cb7919e8d2ec82c5b4d3d11247a01aa61577bb8e5dd266916fb0e5d",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/25-CUARTO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 2754,
+          "sha256": "e8431c653cb7919e8d2ec82c5b4d3d11247a01aa61577bb8e5dd266916fb0e5d",
+          "rango": [
+            2401,
+            2754
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/26-QUINTO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 4526,
+          "sha256": "e2c34215d92937fb467b1ffdb4e6654f66198ead4dac8128c411469bf86c297e",
+          "rango": [
+            1201,
+            2400
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/27-SEXTO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 3946,
+          "sha256": "d81b56366e5062ffe0abcd55ba2ef52ddbc3fadf073ea5a280e6cfc15b87ef26",
+          "rango": [
+            1201,
+            2400
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/28-SEPTIMO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 4275,
+          "sha256": "4711738d2a5d64740cc382d7808cf3b185686f80930b3f0d26ff3cf756506854",
+          "rango": [
+            1201,
+            2400
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/28-SEPTIMO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 4275,
+          "sha256": "4711738d2a5d64740cc382d7808cf3b185686f80930b3f0d26ff3cf756506854",
+          "rango": [
+            3601,
+            4275
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/29-OCTAVO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 4197,
+          "sha256": "0b9064490c8dd68ec7c50ed87778d31ab8ab5360c966642113367a0eeba2e5ac",
+          "rango": [
+            1201,
+            2400
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/30-GATE-ARQUITECTONICO-FINAL-F4C.md",
+          "lineas": 3084,
+          "sha256": "712058b2467287d7ca51380cf305e84ac311f141d1c12ec0649c8b901aee6503",
+          "rango": [
+            1201,
+            2400
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/34-RATIFICACION-DE-LA-CERTIFICACION-INCREMENTAL-O22.md",
+          "lineas": 289,
+          "sha256": "9a93febce75f125458579f9d3987ff86379aea6b4b0453af174ac4b1260154a4",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md",
+          "lineas": 2163,
+          "sha256": "a88609167dbbea2818b7f2e68cbd4c6fc704cb7e2245ee0a2c873052486fd159",
+          "rango": [
+            1201,
+            2163
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/CHECKPOINT-ADS-NEXT.md",
+          "lineas": 6385,
+          "sha256": "165ab8cc02aabab7ed95345a805edcf000f8451b7027dbf01b27e1644b540a1c",
+          "rango": [
+            1201,
+            2400
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/CHECKPOINT-ADS-NEXT.md",
+          "lineas": 6385,
+          "sha256": "165ab8cc02aabab7ed95345a805edcf000f8451b7027dbf01b27e1644b540a1c",
+          "rango": [
+            4801,
+            6000
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/CHECKPOINT-ADS-NEXT.md",
+          "lineas": 6385,
+          "sha256": "165ab8cc02aabab7ed95345a805edcf000f8451b7027dbf01b27e1644b540a1c",
+          "rango": [
+            6001,
+            6385
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/derivar-universo-obligatorio.py",
+          "lineas": 2442,
+          "sha256": "c69eb7098d19546bf3a4a0c06e81a9c022396d1562c09424899a70a6ceefd8c1",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-ARQUITECTONICO-FINAL-20260901.md",
+          "lineas": 256,
+          "sha256": "ff4116703b648586bae866cd259f37f7800088e8fe2148b4f4224b466322fc13",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-4B-20260830.md",
+          "lineas": 221,
+          "sha256": "fc4902591eff43bc6736f626fdf2dd1bef7c4f193b1be31f3ddf26f436adb599",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-6-20260831.md",
+          "lineas": 278,
+          "sha256": "528dd68fc81134c16f874ab5803996ec50ee838241fd95470a9e07dd66770b2c",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-6B-20260831.md",
+          "lineas": 292,
+          "sha256": "41a4ff29d11c1edf26e6370ea7bcf8cf1ee24d75895336d991b6c12fa4251924",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-VERIFICACION-DOCE-20260901.md",
+          "lineas": 316,
+          "sha256": "4b022c1be1d5e2e73d13cde3d8d9e92effb55488dcf41fb90f71cc731b9ed88c",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F6-ASIGNACION-GATE-CERTIFICACION-FINAL-20260904.md",
+          "lineas": 395,
+          "sha256": "d61e83bd2b733b34f707fad8193f37e94ef8c72fca3391dbe9904ad72e1584e8",
+          "rango": null
+        },
+        {
+          "ruta": "docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md",
+          "lineas": 628,
+          "sha256": "24e85cad856daf76c25b98a27b2b40a0fd154ee30cf4cf12ab130da8b9a57e69",
+          "rango": null
+        },
+        {
+          "ruta": "docs/owner/ADS-OWNER-RESOLUCIONES.md",
+          "lineas": 1054,
+          "sha256": "b378b1f7ba1a7744f3ace0498e38c28a39d203ddf6565ba3cf43497204e96915",
+          "rango": null
+        },
+        {
+          "ruta": "docs/rediseno/CHECKPOINT-OPERATIVO.md",
+          "lineas": 195,
+          "sha256": "d2131faa4aeddc6d66e98f5eb88d6d9d172a8910b174a1866eecc969633818bb",
+          "rango": null
+        },
+        {
+          "ruta": "docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md",
+          "lineas": 1651,
+          "sha256": "712dbd4a935c53e3826109ccff53962da377a598e8529be59405a0c0e6d337a3",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/rediseno/a-ENMIENDA-E2-MULTIREPO.md",
+          "lineas": 230,
+          "sha256": "9d5a23806fc33fc1d76ba6be9b46ae3499c729c1f11203f80b32550c658ed2eb",
+          "rango": null
+        },
+        {
+          "ruta": "docs/rediseno/b-RECORRIDO-APROBADA.md",
+          "lineas": 1331,
+          "sha256": "89023236f0a2a9f1fcbcb0f4a9e311cb465dd18709809485f70dd24c3fd97090",
+          "rango": [
+            1201,
+            1331
+          ]
+        },
+        {
+          "ruta": "kernel/operativo/capacidades/APR/CAPACIDAD.md",
+          "lineas": 95,
+          "sha256": "a8709115309095849707e2d42290631dca6b3de95d49cc2c3c7ffa4e0546d708",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/capacidades/CON/CAPACIDAD.md",
+          "lineas": 107,
+          "sha256": "e0f79e6c3a467302c3d16aa5ee4ccb45583daf146d1676b2b06995419656c5d5",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/capacidades/DOM/CAPACIDAD.md",
+          "lineas": 135,
+          "sha256": "926c7144cb098caaa0b87cdebb5c49b955b74832bc238e66d501ecbb2a635bb3",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/capacidades/DSP/CAPACIDAD.md",
+          "lineas": 152,
+          "sha256": "acb292f882e77d74693caaab3e392a0d691e988cf875ca4394c59f859ebe7937",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/capacidades/ENC/CAPACIDAD.md",
+          "lineas": 174,
+          "sha256": "f71b8e43f6e2d66f0801d53ce6e018806d33ef9b5ad5b3300bf1d38fe834d946",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/capacidades/SEG/CAPACIDAD.md",
+          "lineas": 135,
+          "sha256": "19bfd38a7a24b57fbec8365327926f7e281092a9e33a06e59355cfda5a5e5a13",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/capacidades/SIS/CAPACIDAD.md",
+          "lineas": 119,
+          "sha256": "02089f36d124435669b7cf14cf46abd1365a860a4842b739663310b8ceb41628",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/contratos/C2-AGENTES-Y-MODELOS.md",
+          "lineas": 539,
+          "sha256": "3ee58ca4bc47988d4e6bdd652e2ea5de79ebcf8be79270664c0bd4b4cf391510",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/contratos/C5-HANDOFF.md",
+          "lineas": 115,
+          "sha256": "af6f1a4c4f5def8da0dcecee8ea57c17516b41bbbd4abe963460c21024cc7b9e",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md",
+          "lineas": 336,
+          "sha256": "14805a79aeb07f314a55913864ee7d359ead05a932d59b207b66b6279d3a41e9",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/diseno/00-SISTEMA-DE-EXCELENCIA.md",
+          "lineas": 141,
+          "sha256": "08f4bea44594e026aee24cdddc93765cba0fa5c197b26adee0a0cad00d2c366a",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/diseno/05-FIDELIDAD.md",
+          "lineas": 129,
+          "sha256": "fdabb29f7592e603e755c12f191d189755e795ecee104c9b5f583b1ead56e441",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/RECUENTOS-generado.md",
+          "lineas": 40,
+          "sha256": "3e021f587e225b20001084caafcc7480885ab11e16c2d9abf2d65d125d677746",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/REGISTRO-generado.md",
+          "lineas": 352,
+          "sha256": "5e6b853fbf1126a151858295c69e65aaaa6771ae3a29d9eef591b6c3c2ad973d",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/T172-T181-estado-durable.md",
+          "lineas": 691,
+          "sha256": "574b7ba83f67e64f593d888af28759197e55766ea03eda1f0554c4985d693a5a",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/T380-T399-aislamiento.md",
+          "lineas": 413,
+          "sha256": "2cfc0b394816bb4ccf10179b437b0e86bf3aed1984125e7648ef2f02e820b259",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/agentes-salida.txt",
+          "lineas": 42,
+          "sha256": "4d49e6bb7f269acb855e5f9c71e50bc1e7f0cae74b95f3f35648d062d7a553f2",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/arboles-salida.txt",
+          "lineas": 88,
+          "sha256": "135e85525a5d97f13035088b01297dc4cf3a82331764bbba76c592532582d6fa",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/composicion-procesos-salida.txt",
+          "lineas": 11,
+          "sha256": "1b6b30a29c1cc13ef69875fa404c76a97509addb2ecbb348ca521d1245e84247",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/contencion-salida.txt",
+          "lineas": 62,
+          "sha256": "f139242a2161f3308ea98f19b5c5a06ba7b860f715345d025544d01c295d726b",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/contratos-salida.txt",
+          "lineas": 30,
+          "sha256": "d2369e85529e25db912fc8d10c87730e4ddbf4b4e1f64037e3598bf20742d750",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/gobierno-git-salida.txt",
+          "lineas": 90,
+          "sha256": "950d3756724a5477c9704b5ce9e3c64a74ab98033a86122c474f88cd175e7d96",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/macrocircuitos-salida.txt",
+          "lineas": 72,
+          "sha256": "78b2718b6c9f773f4db34bfedf4fd6813c043939582e4178531e6de21d5fd0c2",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/packs-salida.txt",
+          "lineas": 10,
+          "sha256": "17559fa9c2b5201b9df867b550a2438836b8a97c3a85a9a84db55f58999364d0",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/recuentos-salida.txt",
+          "lineas": 15,
+          "sha256": "423db58b8835f8c1d6cb32eea9e0a10b81ca63ff838ac26e2a629fbd53f9d863",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/universo-obligaciones-salida.txt",
+          "lineas": 146,
+          "sha256": "f8771cff2f1484f4af39bb09c253244b48a5f11080cf717f8ba9d43a8fd5e74c",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/workspace-salida.txt",
+          "lineas": 98,
+          "sha256": "d219db924c72ec35b705b4b39d8fd6243aa058ccb963c7c0626577d6fce07d20",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/admision/perimetro.py",
+          "lineas": 558,
+          "sha256": "6f52930f6ede493dc1f854fb634ddd624458e42f982305b532811bd2f6d16beb",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/ads_admision.py",
+          "lineas": 614,
+          "sha256": "e55a4948674be7ace4e09de6b6765f6cbaf687e82f77e180dbdc8743917d3026",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/ads_estado.py",
+          "lineas": 793,
+          "sha256": "33bdc371a7023a2c76e415b6711347eb4e1d1efe79a717f5dfe348f3e8126ca4",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/escenario_e2e_runtime.py",
+          "lineas": 943,
+          "sha256": "9d2349733091db0af73177d1b45da9b178a26e7fe69ec1c55ba03bdb3ac6d252",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/escenario_extremo_a_extremo.py",
+          "lineas": 876,
+          "sha256": "4301a7bfd5407626f252240b127e1785da93cc461ea3e25526cd35eabc53f6c2",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_adaptadores.py",
+          "lineas": 882,
+          "sha256": "358fbf9c216b66a3f36289836f26d540650973069b4a91d4925c7a01a9173eea",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_admision.py",
+          "lineas": 1764,
+          "sha256": "9314c9ec03705e1a70ca065b3de1273126f14313e1c53de0785e36ee73754b48",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_agentes.py",
+          "lineas": 1192,
+          "sha256": "7f09a4fdc4db4cec53015328a286348482ade4712e87e466f155cef44a16a93f",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_cardinalidad_y_seleccion.py",
+          "lineas": 1644,
+          "sha256": "6be7444f190b07d87c18aa28a55c8b70cf0c796d11fccf58451ab19b061ce2b1",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_continua.py",
+          "lineas": 988,
+          "sha256": "a99d064c01c7922558a00d19bff7895311ca7dc1cee9b605bf90686238598f4e",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_estado_durable.py",
+          "lineas": 3312,
+          "sha256": "3b97c1fcae0a3aacf30192e04a08d3768a8372ad61366e39c6c30ab3985a16c4",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_macrocircuitos.py",
+          "lineas": 1018,
+          "sha256": "47a2a297b91339eb88a9277723a5d27b0ddd88cbb678bd011335f7a6960bc4c9",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/runtime/errores.py",
+          "lineas": 196,
+          "sha256": "4bcb6266480f861e024fc1dee88aed52388a7f2a31be5de9c4d6a9b968f4320f",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/ads_lint.py",
+          "lineas": 823,
+          "sha256": "c6d34419ddb5c189ad29fdcbb1952c3b2e6a4037f92a25cae01515ed839be0ad",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/aislamiento_de_arranque.py",
+          "lineas": 488,
+          "sha256": "b1df57acc4fe65c558a4c54287f68d20a25c7be3f32d699c635a09478f327fc2",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/comprobar_contratos.py",
+          "lineas": 1255,
+          "sha256": "ac1efb660427750786dd526a505452681e117af69546aa2564ad4cb43b1f59d6",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/entorno.py",
+          "lineas": 306,
+          "sha256": "ee068f109af7afbe722db7ebefee362df3df6c70ad84398b8ac43da4c5d40c3e",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/huella.py",
+          "lineas": 264,
+          "sha256": "e6fe2dd64a4e67531a43611a4256940e9298eb9370c367c7f847d5e415c8186a",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/registrar_evidencia.py",
+          "lineas": 439,
+          "sha256": "b2fbac054914d8d731e84541e2f412933f5b02b922568a29e6720ef6652b6d85",
+          "rango": null
+        },
+        {
+          "ruta": "tooling/tests/test_workspace.py",
+          "lineas": 1120,
+          "sha256": "d01abaee710b76df43317849f5f8f5d32a6f54bd86ebadfc1ee888e8ca8a4cbd",
+          "rango": null
+        }
+      ]
+    },
+    "REV-3": {
+      "fuentes": [
+        {
+          "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+          "lineas": 12152,
+          "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+          "rango": [
+            1201,
+            2400
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+          "lineas": 12152,
+          "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+          "rango": [
+            4801,
+            6000
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+          "lineas": 12152,
+          "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+          "rango": [
+            8401,
+            9600
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+          "lineas": 12152,
+          "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+          "rango": [
+            12001,
+            12152
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md",
+          "lineas": 797,
+          "sha256": "6804d134dfb66b5304ec9c539750559e578a2d5855785b5803189baac2da931f",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/14-DEVOLUCION-TECNICA-PREVIA-F4C.md",
+          "lineas": 325,
+          "sha256": "7f94e236f3cfb11e78762a301d9a3e94939ab47df34658710d1b8686ed7050fb",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/16-GATE-FINAL-INDEPENDIENTE-F4C.md",
+          "lineas": 1257,
+          "sha256": "8243034f286160cc89330af95b49f558af0dd16d1b36a37ccbdf02f74a79d185",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/18-GATE-DE-CIERRE-INDEPENDIENTE-F4C.md",
+          "lineas": 3665,
+          "sha256": "1e71366b10d2293802db435de14953771ebd8fc13b426acedd7c0efe21cdb496",
+          "rango": [
+            1201,
+            2400
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/20-GATE-INDEPENDIENTE-DE-COBERTURA-Y-CIERRE-F4C.md",
+          "lineas": 801,
+          "sha256": "d7d2e4fa3f878e0c010d979e89affdb63462cc6fdd6628ed885d3a760bde09d1",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/21-GATE-INDEPENDIENTE-DE-CIERRE-F4C.md",
+          "lineas": 2679,
+          "sha256": "9f869ffbdbdb834ca872c03abc8826c125a47b4344ed32cd9b6266db08f8be03",
+          "rango": [
+            1201,
+            2400
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/21-GATE-INDEPENDIENTE-DE-CIERRE-F4C.md",
+          "lineas": 2679,
+          "sha256": "9f869ffbdbdb834ca872c03abc8826c125a47b4344ed32cd9b6266db08f8be03",
+          "rango": [
+            2401,
+            2679
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/22-GATE-INDEPENDIENTE-DE-CERTIFICACION-F4C.md",
+          "lineas": 3478,
+          "sha256": "3e2bdece758e6b69d6695bb52f20d21b910a123a27ac643845dbad75e8355f1c",
+          "rango": [
+            2401,
+            3478
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/23-SEGUNDO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 2913,
+          "sha256": "0f81f13d8cb319d8ccc5243d19bb26d7f71f57e860cde2eb2edefe33b6993dc2",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/23-SEGUNDO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 2913,
+          "sha256": "0f81f13d8cb319d8ccc5243d19bb26d7f71f57e860cde2eb2edefe33b6993dc2",
+          "rango": [
+            2401,
+            2913
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/24-TERCER-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 2515,
+          "sha256": "8df584529c857c071954b0d1b426faff82277e29a43556abe5dccfd93714fae1",
+          "rango": [
+            1201,
+            2400
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/26-QUINTO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 4526,
+          "sha256": "e2c34215d92937fb467b1ffdb4e6654f66198ead4dac8128c411469bf86c297e",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/26-QUINTO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 4526,
+          "sha256": "e2c34215d92937fb467b1ffdb4e6654f66198ead4dac8128c411469bf86c297e",
+          "rango": [
+            3601,
+            4526
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/27-SEXTO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 3946,
+          "sha256": "d81b56366e5062ffe0abcd55ba2ef52ddbc3fadf073ea5a280e6cfc15b87ef26",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/28-SEPTIMO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 4275,
+          "sha256": "4711738d2a5d64740cc382d7808cf3b185686f80930b3f0d26ff3cf756506854",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/29-OCTAVO-GATE-DE-CERTIFICACION-F4C.md",
+          "lineas": 4197,
+          "sha256": "0b9064490c8dd68ec7c50ed87778d31ab8ab5360c966642113367a0eeba2e5ac",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/30-GATE-ARQUITECTONICO-FINAL-F4C.md",
+          "lineas": 3084,
+          "sha256": "712058b2467287d7ca51380cf305e84ac311f141d1c12ec0649c8b901aee6503",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/33-CIERRE-DE-F4C-POR-COMPOSICION-O22.md",
+          "lineas": 408,
+          "sha256": "88b3c274f6525e1781791968182a840a3ac08b7817146cb6401e9dd974828dc4",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/CHECKPOINT-ADS-NEXT.md",
+          "lineas": 6385,
+          "sha256": "165ab8cc02aabab7ed95345a805edcf000f8451b7027dbf01b27e1644b540a1c",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/CHECKPOINT-ADS-NEXT.md",
+          "lineas": 6385,
+          "sha256": "165ab8cc02aabab7ed95345a805edcf000f8451b7027dbf01b27e1644b540a1c",
+          "rango": [
+            3601,
+            4800
+          ]
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md",
+          "lineas": 721,
+          "sha256": "e20d6ec8a56b6e74808940336d571c3fea41510722c4a91f555da67b41017537",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/README.md",
+          "lineas": 396,
+          "sha256": "0e766e71cd1bfd06add740099c2c9912eb6e25d30f6dde55dbde52260ef631a1",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-2-20260830.md",
+          "lineas": 240,
+          "sha256": "c64a0ec4731e6d27751469e84cbcc33104bfe535c42efe4f98533f4d84a0b970",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-20260830.md",
+          "lineas": 316,
+          "sha256": "fc4d1c2fdedbcb13be512e88303e21eddbeb194f6cc38b8e50fa0612dad08bbc",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-5-20260831.md",
+          "lineas": 193,
+          "sha256": "0f08b961c31f03bbedbae700fa67029ac87b6b962067b39b3e504fe28e8d1939",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-8-20260831.md",
+          "lineas": 248,
+          "sha256": "a82e74968e4ca31fbae0825a43f295736af39e58a16b3adf8879d021688e3d76",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CIERRE-20260829.md",
+          "lineas": 140,
+          "sha256": "c843b0c341183859b7f0f07db78cc67eade7ef98c4a96ad3edee23c769d2a976",
+          "rango": null
+        },
+        {
+          "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-FINAL-O21-20260901.md",
+          "lineas": 284,
+          "sha256": "3dc69768487de794aae577df3468abd97cae30a87b867e3920bb46e02fc5a529",
+          "rango": null
+        },
+        {
+          "ruta": "docs/f5/validar-f5.py",
+          "lineas": 760,
+          "sha256": "72b1c55ea3ed19a7bb09cf4dbd95fa402adca23721b2718682b2ca6394962ef8",
+          "rango": null
+        },
+        {
+          "ruta": "docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md",
+          "lineas": 547,
+          "sha256": "9d35f85bd1917a7dbccd6d86d1763abf8e49e4c8e2b4f5bfe9dc25fa2447ce94",
+          "rango": null
+        },
+        {
+          "ruta": "docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md",
+          "lineas": 3343,
+          "sha256": "64d170f5acc151445eff6f3f68a0bade91d00744dffa6bdf36c13cd2d366bd3e",
+          "rango": [
+            1201,
+            2400
+          ]
+        },
+        {
+          "ruta": "docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md",
+          "lineas": 1651,
+          "sha256": "712dbd4a935c53e3826109ccff53962da377a598e8529be59405a0c0e6d337a3",
+          "rango": [
+            1201,
+            1651
+          ]
+        },
+        {
+          "ruta": "docs/rediseno/a-CAPACIDADES-APROBADA.md",
+          "lineas": 1150,
+          "sha256": "235385da2471dec2cc00191bcbff184c7c4bbb536d54432a72f064356831d2ba",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/KERNEL.md",
+          "lineas": 1590,
+          "sha256": "aa635dff79e73fe13e271cb115653ebc042dc834d32007c634c8ee1df07e3150",
+          "rango": [
+            1,
+            1200
+          ]
+        },
+        {
+          "ruta": "kernel/KERNEL.md",
+          "lineas": 1590,
+          "sha256": "aa635dff79e73fe13e271cb115653ebc042dc834d32007c634c8ee1df07e3150",
+          "rango": [
+            1201,
+            1590
+          ]
+        },
+        {
+          "ruta": "kernel/operativo/capacidades/ARQ/CAPACIDAD.md",
+          "lineas": 104,
+          "sha256": "6ca11b5f09883e24834f770e61963ae69ca738770ffb1de64f7be0afe4757a47",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/capacidades/DIS/CAPACIDAD.md",
+          "lineas": 147,
+          "sha256": "06f019010d45771fd2a125f9f08f88159b45f15e9f83fd2404c7f2a23f32ad06",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/capacidades/ENT/CAPACIDAD.md",
+          "lineas": 123,
+          "sha256": "91a81d3cf1cbfa619b7b69553a01810d7074b419fc7e2efb5f8ff2f8f9e7f9ed",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/capacidades/PRD/CAPACIDAD.md",
+          "lineas": 105,
+          "sha256": "e83b0e08272e219db0c5cc2e17b6d1a95dc4304a9f381d3acfe9c76ff528e3b3",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/capacidades/USO/CAPACIDAD.md",
+          "lineas": 94,
+          "sha256": "65f144e4a5c756ef97596a997673d7ad73c194ee6936e616bafd434302ff5d0d",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/contratos/00-INDICE.md",
+          "lineas": 29,
+          "sha256": "48b66b4fa9daee8fff5889016f9c30e6273f46268dbad8885aaaac4fa9a46d41",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/contratos/C4-MATERIALIZACION.md",
+          "lineas": 170,
+          "sha256": "670289180e59b176743571a22f22047d20792db266b6426c1c91bd2fd3c1ee81",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/diseno/02-RUBRICAS.md",
+          "lineas": 343,
+          "sha256": "8aa8fb18426eac219c275c102f757d50727da2e363d905529c8c061d6721d842",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/esquemas/proceso.yaml",
+          "lineas": 89,
+          "sha256": "f4f016c011a82764366327fe4f8d838ce7a87540b719c5b89faaf18dcc648f5f",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/T182-T194-runtime-y-admision.md",
+          "lineas": 353,
+          "sha256": "c4ab487efab688a49d6aedd5215b07d1bde0e9ab50437cfb1fe84bff3042fe0e",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/admision-salida.txt",
+          "lineas": 200,
+          "sha256": "a67cf876753cb47262a9e35f89297a91b10b9b342b4a601ef62536cacd89c4e3",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/cardinalidad-salida.txt",
+          "lineas": 74,
+          "sha256": "428921a04e901439ac973b242e639bb8736891435a693fe9b1b4a05aa4846bdf",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/ciclo-salida.txt",
+          "lineas": 134,
+          "sha256": "754ca8e7bf37052a2fdae79029f0560f9e0d34eda456b397045a3753d3f298a3",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/continua-salida.txt",
+          "lineas": 60,
+          "sha256": "8108914bcbd296152ef796f7b80635d6918b8264dd28cf8e778710f4965e9041",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/estado-durable-salida.txt",
+          "lineas": 212,
+          "sha256": "c4db25d7852db05091bfcb927d5b6662812f2aad16b514fcbbf04980e884bc45",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/estado-e2e-salida.txt",
+          "lineas": 63,
+          "sha256": "b0954d68bfa1018ad8c59bcf327594cc0bec5d164731ccab312aa549c558d6f8",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/integridad-salida.txt",
+          "lineas": 8,
+          "sha256": "ab07cc04b0e81c29ec6c34f8d7a2ba243e9b29d6990df5efee4c053d5f567d6c",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/lint-salida.txt",
+          "lineas": 7,
+          "sha256": "345eea084ac80bcf5dcddd97080850247a128de4cf9479b8a03b7185aa792870",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/multimaquina-salida.txt",
+          "lineas": 40,
+          "sha256": "5078a5a4b4d329e013f75bade0c149f62b292d77cd4d5066b2cf0dc133a6b9fa",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/negativos-salida.txt",
+          "lineas": 347,
+          "sha256": "32095b344e84092c117ce993c983c86206157170b9f680138f1ff5c3d29d2e94",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/raiz-externa-salida.txt",
+          "lineas": 118,
+          "sha256": "3fedbdfd884054525090c3965ea321f20bbf873d14e38d6f8e2edceed14e1a21",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/referencias-salida.txt",
+          "lineas": 78,
+          "sha256": "cdfd1f3f9639ab84b0e8a4410dba478ded982b233e998b2ae6dec209db6bc7fd",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/universo-obligatorio-salida.txt",
+          "lineas": 43,
+          "sha256": "08abe61c9fc74414722d2ac052ed0928fb38d7bfb0ff18c12688cfc2513664cb",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/universo-rutas-salida.txt",
+          "lineas": 122,
+          "sha256": "91d5c3bbebad092a1b23579ecc99f336e64e0619cce5bd26b915ef9996063044",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/pruebas/evidencia/versiones-salida.txt",
+          "lineas": 27,
+          "sha256": "0958257fbbb1be2315f9338cf4688bff648e57c46f120031be408c64346d4e43",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/raiz-externa/anfitrion_verificador.py",
+          "lineas": 293,
+          "sha256": "771bc411e9dcf52b6ea4e0794aad71bb63aeab8c657e9c711086042c5b5c785c",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/raiz-externa/instalar.py",
+          "lineas": 646,
+          "sha256": "9c0330b4a5dda4a6935a59c3edb655061158e1041f1d0c669bf1303db15fd157",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md",
+          "lineas": 130,
+          "sha256": "f56e8fe4872e46b5ccc8bd2b9531cdc9e53247aaec1e36ebcae131efbe3674ac",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/recorrido/01-PROCESOS.md",
+          "lineas": 606,
+          "sha256": "8a8aa174fa5244cbbe4629131f1e09856a4b065ae25746ac0956413706fe435c",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/ads_ciclo.py",
+          "lineas": 853,
+          "sha256": "87e6511d4fab37fa20910467acf93ab7ed4bf5376e01a5aabfa38e9e9fc7b3a5",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/ads_runtime.py",
+          "lineas": 820,
+          "sha256": "03e3260460ee4888f03d074639d0c0a433987afbc0b2fa4a9e45271932aec191",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/catalogo_de_prueba.py",
+          "lineas": 142,
+          "sha256": "3c7d2adf7c23a81fe1893b97fbde8a065ae9f779487845a65b1a8bce73a2fdf8",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_contencion.py",
+          "lineas": 1027,
+          "sha256": "6d1de0980d1e7f1e0cecd9c2b10117479df473a5e66f8cf760196f0412554c65",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_identidad.py",
+          "lineas": 672,
+          "sha256": "ec13a2b218a0f5f84ed4a0ee74c44889650cdf3c649c2b36c4e0e64137b44f4c",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py",
+          "lineas": 3118,
+          "sha256": "9b344d1a31fd4f2d6b94494208fda88778a10b937486683de1efc8e76603a107",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_raiz_externa.py",
+          "lineas": 1297,
+          "sha256": "87b4804622a36d6d3344bd54a4b0f5c2ab6c0dfbdaacd774d8aa4a892128b616",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/pruebas/test_runtime.py",
+          "lineas": 2611,
+          "sha256": "5b48e2184bd82d8ffdacf222bf3d73a0982ace31d3a3665a4e6c96f86fd57731",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/runtime/dispatcher.py",
+          "lineas": 1504,
+          "sha256": "e1eeb77d0505f9dcf00da1dd5ea113bfdbe06064e058113b211210ab1fb2360c",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/runtime/runtime/politica.py",
+          "lineas": 314,
+          "sha256": "c639f346607421c171daeb4e4d96758667eecb4bec5044c4e3a44c9336b04184",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/comprobar_arranque.py",
+          "lineas": 923,
+          "sha256": "58daf361306d0438b2a9f4c9839ed8339516eb3e10c50e6db87032d8fe83dbe5",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/comprobar_composicion_procesos.py",
+          "lineas": 980,
+          "sha256": "1b4a54703f05e533e427924dff8256db91d4441a927a2fdd65743f24e38a1049",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/comprobar_fuentes.py",
+          "lineas": 532,
+          "sha256": "42226c51ed931ef9eb0aea912ec23318d25c18125787337ac9e258a06ecbbfc6",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/comprobar_integridad.py",
+          "lineas": 273,
+          "sha256": "c7860210c906a797b2243760ef9495a24ade8149b2c61cec63b4925df2ffa55c",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/comprobar_negativos.py",
+          "lineas": 1797,
+          "sha256": "8b3fcad78eb144ef5299b2b853b162dc15e3a8846d2b97d5e7b27b55897e894d",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/negativos_cardinalidad.py",
+          "lineas": 441,
+          "sha256": "8d65ae6ecf08ba5febed879cbe5c269d396ec64945116ed72d8f5ebadda54665",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/negativos_runtime.py",
+          "lineas": 996,
+          "sha256": "0826ba40d8f6036c17a0c39007de4777e076d61900550efdbc93e9986a675e92",
+          "rango": null
+        },
+        {
+          "ruta": "kernel/operativo/validadores/registro_pruebas.py",
+          "lineas": 628,
+          "sha256": "eeb8661f7db9268b98cd4c6bba67216c534bb9f169209795b6b3a6c11c687ef8",
+          "rango": null
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "candidata": "c2437214c9353185d6b90b8fe86178302d4cf349",
+  "revisores": {
+    "REV-1": {
+      "asignadas": 87,
+      "leidas_sin_hueco": 87,
+      "sin_abrir": 0,
+      "con_huecos": 0,
+      "lineas_asignadas": 55204,
+      "lineas_sin_leer": 0,
+      "fuentes_ajenas_declaradas": [],
+      "cerrado_declarado": true
+    },
+    "REV-2": {
+      "asignadas": 86,
+      "leidas_sin_hueco": 86,
+      "sin_abrir": 0,
+      "con_huecos": 0,
+      "lineas_asignadas": 55203,
+      "lineas_sin_leer": 0,
+      "fuentes_ajenas_declaradas": [],
+      "cerrado_declarado": true
+    },
+    "REV-3": {
+      "asignadas": 86,
+      "leidas_sin_hueco": 86,
+      "sin_abrir": 0,
+      "con_huecos": 0,
+      "lineas_asignadas": 55208,
+      "lineas_sin_leer": 0,
+      "fuentes_ajenas_declaradas": [],
+      "cerrado_declarado": true
+    }
+  },
+  "restas": {
+    "obligatorio_menos_asignado": [],
+    "asignado_menos_leido": [],
+    "lineas_asignadas_menos_leidas": [],
+    "modificadas_menos_leidas_integras": []
+  },
+  "derivacion": {
+    "modo": "derivada-del-arbol",
+    "repositorio": "/tmp/claude-1000/-home-jose-ads-kernel/f950a505-4ab2-402f-a332-d1c02336312e/scratchpad/gate-congelado",
+    "base": "769a8b6dfd2dd71aab69f35893da46bf35356168",
+    "candidata": "c2437214c9353185d6b90b8fe86178302d4cf349",
+    "rutas_derivadas": 119
+  },
+  "revisores_sin_manifiesto_de_lectura": [],
+  "revisores_no_cerrados": [],
+  "sha_divergente": [],
+  "cobertura": "COMPLETA"
+}

@@ -1,0 +1,820 @@
+{
+ "revisor": "REV-1",
+ "cerrado": true,
+ "leidas": [
+  {
+   "ruta": "docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md",
+   "sha256": "202ac1af8df5ca6e032cb06f6566c63cf2656fb1a54d65a8c9a0f5d0ef5d41d9",
+   "tramos": [
+    [
+     1,
+     336
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+   "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+   "tramos": [
+    [
+     1,
+     1200
+    ],
+    [
+     3601,
+     4800
+    ],
+    [
+     7201,
+     8400
+    ],
+    [
+     10801,
+     12000
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/17-COMPLEMENTO-DE-COBERTURA-DEL-GATE-F4C.md",
+   "sha256": "18f876d4cd47a2f7cfde15594f98696cfacf750607cd23811dd40ffb36d6c29c",
+   "tramos": [
+    [
+     1201,
+     1650
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/18-GATE-DE-CIERRE-INDEPENDIENTE-F4C.md",
+   "sha256": "1e71366b10d2293802db435de14953771ebd8fc13b426acedd7c0efe21cdb496",
+   "tramos": [
+    [
+     1,
+     1200
+    ],
+    [
+     3601,
+     3665
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/19-GATE-DEFINITIVO-INDEPENDIENTE-F4C.md",
+   "sha256": "48baaa1a8e69c6ef3401eb7a0088dcf06849bd66fa3f238bf3e7b8c8fd14392d",
+   "tramos": [
+    [
+     1,
+     1152
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/21-GATE-INDEPENDIENTE-DE-CIERRE-F4C.md",
+   "sha256": "9f869ffbdbdb834ca872c03abc8826c125a47b4344ed32cd9b6266db08f8be03",
+   "tramos": [
+    [
+     1,
+     1200
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/22-GATE-INDEPENDIENTE-DE-CERTIFICACION-F4C.md",
+   "sha256": "3e2bdece758e6b69d6695bb52f20d21b910a123a27ac643845dbad75e8355f1c",
+   "tramos": [
+    [
+     1201,
+     2400
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/24-TERCER-GATE-DE-CERTIFICACION-F4C.md",
+   "sha256": "8df584529c857c071954b0d1b426faff82277e29a43556abe5dccfd93714fae1",
+   "tramos": [
+    [
+     1,
+     1200
+    ],
+    [
+     2401,
+     2515
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/25-CUARTO-GATE-DE-CERTIFICACION-F4C.md",
+   "sha256": "e8431c653cb7919e8d2ec82c5b4d3d11247a01aa61577bb8e5dd266916fb0e5d",
+   "tramos": [
+    [
+     1201,
+     2400
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/26-QUINTO-GATE-DE-CERTIFICACION-F4C.md",
+   "sha256": "e2c34215d92937fb467b1ffdb4e6654f66198ead4dac8128c411469bf86c297e",
+   "tramos": [
+    [
+     2401,
+     3600
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/27-SEXTO-GATE-DE-CERTIFICACION-F4C.md",
+   "sha256": "d81b56366e5062ffe0abcd55ba2ef52ddbc3fadf073ea5a280e6cfc15b87ef26",
+   "tramos": [
+    [
+     2401,
+     3946
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/28-SEPTIMO-GATE-DE-CERTIFICACION-F4C.md",
+   "sha256": "4711738d2a5d64740cc382d7808cf3b185686f80930b3f0d26ff3cf756506854",
+   "tramos": [
+    [
+     2401,
+     3600
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/29-OCTAVO-GATE-DE-CERTIFICACION-F4C.md",
+   "sha256": "0b9064490c8dd68ec7c50ed87778d31ab8ab5360c966642113367a0eeba2e5ac",
+   "tramos": [
+    [
+     2401,
+     4197
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/30-GATE-ARQUITECTONICO-FINAL-F4C.md",
+   "sha256": "712058b2467287d7ca51380cf305e84ac311f141d1c12ec0649c8b901aee6503",
+   "tramos": [
+    [
+     2401,
+     3084
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/31-GATE-FINAL-O21-F4C.md",
+   "sha256": "d184e9528ce38356235d726385eb4cb795d3a75daaaf0e19450fb33c57616eba",
+   "tramos": [
+    [
+     1,
+     783
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/32-GATE-VERIFICACION-DOCE-HH2-F4C.md",
+   "sha256": "1237245e828546fa3e641376651475196a265507060858bfeb7213f777ed5203",
+   "tramos": [
+    [
+     1,
+     881
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md",
+   "sha256": "a88609167dbbea2818b7f2e68cbd4c6fc704cb7e2245ee0a2c873052486fd159",
+   "tramos": [
+    [
+     1,
+     1200
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/CHECKPOINT-ADS-NEXT.md",
+   "sha256": "165ab8cc02aabab7ed95345a805edcf000f8451b7027dbf01b27e1644b540a1c",
+   "tramos": [
+    [
+     2401,
+     3600
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/comprobar-cobertura-de-gate.py",
+   "sha256": "24ef5e2963589aa531f52a1f7644b2959c4e67b5cc7f26325aa612ec756bc564",
+   "tramos": [
+    [
+     1,
+     999
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py",
+   "sha256": "bf1dea726fcd0ca8c165cbb581490e33148e3f90545daaec14ee974239ec54df",
+   "tramos": [
+    [
+     1,
+     4513
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/emitir-sobre-de-ancla.py",
+   "sha256": "bc4c50047b03f93f42caf29b7bd777225a390e83509fc446731faf41b05433fa",
+   "tramos": [
+    [
+     1,
+     924
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ADDENDUM-1-GATE-CERTIFICACION-20260830.md",
+   "sha256": "b1c29244dfedc139ff7e80a6167d200803d054f25554c75f31303fea5687a434",
+   "tramos": [
+    [
+     1,
+     119
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-3-20260830.md",
+   "sha256": "ac9e0edd59cf3e1b783b42ce0fc052e1eb28af7d5d66e218709d76589f724988",
+   "tramos": [
+    [
+     1,
+     210
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-7-20260831.md",
+   "sha256": "f3d7d0bf6d10eac0d0d82c0842401d01f52a65403710a09b3aaba11ef07069ff",
+   "tramos": [
+    [
+     1,
+     260
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-FINAL-O21-20260901B.md",
+   "sha256": "4a27b5ef2146753afa5ab8c1c6fc95b195d97e493a28af642ebf97c5ef5090f8",
+   "tramos": [
+    [
+     1,
+     303
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/f6/05-MATRIZ-CIERRE-G01-G08.md",
+   "sha256": "5ee301a0c5b3a102771dec574862a4a5eb7552358abe23426b5d3a84ad7da8a5",
+   "tramos": [
+    [
+     1,
+     153
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md",
+   "sha256": "64d170f5acc151445eff6f3f68a0bade91d00744dffa6bdf36c13cd2d366bd3e",
+   "tramos": [
+    [
+     1,
+     1200
+    ],
+    [
+     2401,
+     3343
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/rediseno/a-ENMIENDA-E1-ENC.md",
+   "sha256": "ade02566d1247e5098cc4db866646ab19651449879c6d9304e068010a1c5a7d5",
+   "tramos": [
+    [
+     1,
+     212
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/rediseno/b-RECORRIDO-APROBADA.md",
+   "sha256": "89023236f0a2a9f1fcbcb0f4a9e311cb465dd18709809485f70dd24c3fd97090",
+   "tramos": [
+    [
+     1,
+     1200
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/.upstream-hash",
+   "sha256": "7b8d5514f335693ef8c8481a5e4f71bf830848c2ff17e5013cb3aab5c838f8a2",
+   "tramos": [
+    [
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/capacidades/INV/CAPACIDAD.md",
+   "sha256": "47412638e7552da14b7bb89e590aea2f37cc61116c83b902e32952647380ed36",
+   "tramos": [
+    [
+     1,
+     96
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/capacidades/PLT/CAPACIDAD.md",
+   "sha256": "a5f87977c58ed1d0d4deb3504d664a47fc90382a9790986e5aa277f1dad130d2",
+   "tramos": [
+    [
+     1,
+     108
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/capacidades/VER/CAPACIDAD.md",
+   "sha256": "91a16b482629daf3455a3c6963a0568a7a68bcd2bd5553e7540d8c9edbfaf0e2",
+   "tramos": [
+    [
+     1,
+     135
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md",
+   "sha256": "825f15a914c10d6f07f74e62967f93743efcf629a13379acb3947e70e2952ffa",
+   "tramos": [
+    [
+     1,
+     161
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/contratos/C3-METODO-EJECUTABLE.md",
+   "sha256": "d56bf6b81e0fe4a9b3ba811f1adf57748cbae65692db557d15960c8506f84234",
+   "tramos": [
+    [
+     1,
+     150
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md",
+   "sha256": "83f82e2be4756a4651e61f1883d2a99f1d141954097a6e4176a3482a951fc69c",
+   "tramos": [
+    [
+     1,
+     250
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/diseno/01-MEMORIA-DE-DISENO.md",
+   "sha256": "dd323d1aa2f7ede3efa18ac01564b636fff8f0f77beac7db3abed667bbd429ec",
+   "tramos": [
+    [
+     1,
+     352
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/diseno/04-CICLO-DE-CALIDAD.md",
+   "sha256": "5d2f54535c1334c053e27bf99b6b81a15a33be7180adf58ddf884cf79ef3a9c1",
+   "tramos": [
+    [
+     1,
+     130
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/entrada/00-INDICE.md",
+   "sha256": "315b2790cb66bb4c2c84272468675c8e77fb5a26b8cc2b95ff56db7ee266ddb1",
+   "tramos": [
+    [
+     1,
+     28
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/entrada/02-CIRCUITO.md",
+   "sha256": "750d39a29f05e7f2b037f9c246c9869ba80edec493e104e206baadda19c09c70",
+   "tramos": [
+    [
+     1,
+     145
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/entrada/04-INCERTIDUMBRE-Y-CONFIRMACION.md",
+   "sha256": "1716bd3d8b48107d28a93e4297a6d93c0e6125107c0cc14811f092641e3d0cd2",
+   "tramos": [
+    [
+     1,
+     187
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T159-T170-multirepo.md",
+   "sha256": "0d36d2801dd2efac86ce74809932eec52dc101db3aae294453862361a78ef122",
+   "tramos": [
+    [
+     1,
+     314
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md",
+   "sha256": "5261b170794ed96e22d6e53761e9dcdab8809be55fa8eb8fadfd310bd4682199",
+   "tramos": [
+    [
+     1,
+     395
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md",
+   "sha256": "05c53626eb9c12310b46208daa63b5158e9900aeb736f68f83d6bbfe7cd435c8",
+   "tramos": [
+    [
+     1,
+     739
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md",
+   "sha256": "52288e1704bfae07e804ad34398359e2e723cd74e8f03a075f6fd47aecef2dbe",
+   "tramos": [
+    [
+     1,
+     544
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T420-T429-evidencia-en-head.md",
+   "sha256": "991053f62bb5ac94bcfd29e0e0c4402b16520af44ba2298ecfa52928b70600b9",
+   "tramos": [
+    [
+     1,
+     241
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/adaptadores-salida.txt",
+   "sha256": "29d15ce60720c241fc873b6ef9de221f33031a365b0cb0d58bd0674c218ebc57",
+   "tramos": [
+    [
+     1,
+     86
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/arranque-salida.txt",
+   "sha256": "444dcd53d8b4219b4f4052702096e5c48b5e258cb7269c8d5489436aa878bc8a",
+   "tramos": [
+    [
+     1,
+     13
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/cobertura-de-gate-salida.txt",
+   "sha256": "3ebdec947f0989efeddddc9eba578926d35e76cdbd19670f794f60f7653cd1f9",
+   "tramos": [
+    [
+     1,
+     33
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/e2e-f6-salida.txt",
+   "sha256": "94d35d70d491e501b328a83155c6f85e4265ef401a7e01a1fcca848e9973d67b",
+   "tramos": [
+    [
+     1,
+     96
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/e2e-runtime-salida.txt",
+   "sha256": "51d5689f72b96d03d681edd47e8f8f9390a1d7356a4b044ad4bde3647c94304d",
+   "tramos": [
+    [
+     1,
+     93
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/evidencia-salida.txt",
+   "sha256": "07a344ca7bec57831dd060b6386a44acdda2bbe49d56c2bda96abf255fa4fbd8",
+   "tramos": [
+    [
+     1,
+     10
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/fuentes-salida.txt",
+   "sha256": "24de19d1757f9985940a39014afaaafade67bfcd95173c4fd1f25290c10c3e6a",
+   "tramos": [
+    [
+     1,
+     12
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/identidad-salida.txt",
+   "sha256": "4a33097359a912698fc1c48395b4659cf756b218450dae30c49fbb190ceddb86",
+   "tramos": [
+    [
+     1,
+     58
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/integridad-evidencia-salida.txt",
+   "sha256": "9568f034d4cdb945e65f3ba9f7f4509e70e480251407db7775819bc6e60fbf8f",
+   "tramos": [
+    [
+     1,
+     138
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/prompts-salida.txt",
+   "sha256": "1d9dd3607a82371e5c3cc5e0017f1c22440e34e736881695770dc7eac976e07e",
+   "tramos": [
+    [
+     1,
+     53
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/runtime-salida.txt",
+   "sha256": "85b8abe3928652361ff5175ae034fb49bfabdf4563ad45c19449ff87aaf3745e",
+   "tramos": [
+    [
+     1,
+     128
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/sesion-nueva-salida.txt",
+   "sha256": "ab341386b567b3b7f5a617365f1fc31f20913609aec6d1c3dc544c14afd380f3",
+   "tramos": [
+    [
+     1,
+     66
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/raiz-externa/anfitrion_firmante.py",
+   "sha256": "78eaa3053dd5562fe4f9caead1db86f3f00744a536058dc0ad09983ba409e671",
+   "tramos": [
+    [
+     1,
+     291
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/raiz-externa/verificador.py",
+   "sha256": "f55e8e6c48820d339d11bf53a7380327ea346382b22428d06b1b1fd3097dde04",
+   "tramos": [
+    [
+     1,
+     801
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ads_arboles.py",
+   "sha256": "74c267a7443128f497e4042bd795d37bd7ec74147df137b301b44e916f8cbf50",
+   "tramos": [
+    [
+     1,
+     522
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/escenario_e2e_f6.py",
+   "sha256": "e31cfba56945a5897aa7fd7257b72403a17fe340ca43cd47ce178b286eafe0e4",
+   "tramos": [
+    [
+     1,
+     1905
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_arboles.py",
+   "sha256": "6693b29ae6c18a8bf0c7f71d0150749d154314bd8fd4cbce512650140528b960",
+   "tramos": [
+    [
+     1,
+     631
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_ciclo.py",
+   "sha256": "950060e79a364b8d6d391190076e2dd34503433da3f9a8b870dad4334f323b35",
+   "tramos": [
+    [
+     1,
+     1741
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_gobierno_git.py",
+   "sha256": "4e29f86f318ff748b2571fbe3f055c1b93f3a2bc2973d98be3c18c33859cea6a",
+   "tramos": [
+    [
+     1,
+     816
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_multimaquina.py",
+   "sha256": "93d967b9ab3ee6ae110280e73a0206af9472cccc916918cba83fa94b0fbf3208",
+   "tramos": [
+    [
+     1,
+     832
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_sesion_nueva.py",
+   "sha256": "eccf8ff031ece17545dd9c81e258ec8fdfed011231ee04c956e9d8faaca92813",
+   "tramos": [
+    [
+     1,
+     1033
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/runtime/estado_util.py",
+   "sha256": "b5529235398ab60930410dd208efe43031d0d9611d7edf68523c3966839e6904",
+   "tramos": [
+    [
+     1,
+     274
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/composicion_packs.py",
+   "sha256": "15febc70a26c4ddf2e75aede1b642bf80f39ce72b41b386362285197e018effb",
+   "tramos": [
+    [
+     1,
+     320
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_evidencia.py",
+   "sha256": "c15c046d240be89382620bf522a4808df860b9dad8154e96f5943d8531445e97",
+   "tramos": [
+    [
+     1,
+     1107
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_packs.py",
+   "sha256": "c62e45df8357e458dc7f7e83d9e47d7cba44e50bcafe4d1067b5f53224f99590",
+   "tramos": [
+    [
+     1,
+     404
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_prompts.py",
+   "sha256": "2689737fa39cf121babe69fe7423b7a11415ebdcc00bc9eefb9564c65e736a26",
+   "tramos": [
+    [
+     1,
+     368
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_recuentos.py",
+   "sha256": "240046227dc4a783c2d5652db740c31501e473882a9dbaafb3610fd66d1a5ddb",
+   "tramos": [
+    [
+     1,
+     1485
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_referencias.py",
+   "sha256": "f2910724a7a644430130df908e2e1f3939e4c5e1686bbba85fc445116a58b131",
+   "tramos": [
+    [
+     1,
+     435
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_versiones.py",
+   "sha256": "ac34b6b7fc9470e88b09beaefea82bfbfc325793f80485c9239cdf2627c76547",
+   "tramos": [
+    [
+     1,
+     620
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/negativos_contratos19.py",
+   "sha256": "c106229e952771ac92dd9751c5d9a35fd7630434cf6a274b8a9d46c17acb613e",
+   "tramos": [
+    [
+     1,
+     672
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/negativos_integridad.py",
+   "sha256": "31963276d2df4b4b06a833dcea01f7a8aa1b6babafc8bb6415bf252eb89b1e15",
+   "tramos": [
+    [
+     1,
+     281
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/validadores.yaml",
+   "sha256": "789ffaa0faa1ad893709e626fcc486dd41f93f39be906f0e323cb1ce96a21399",
+   "tramos": [
+    [
+     1,
+     474
+    ]
+   ]
+  },
+  {
+   "ruta": "tooling/workspace.py",
+   "sha256": "8c99f7fc905856291c39ef1e05b0505385447f39e6eb9217bfb63e0b9aaf7b7d",
+   "tramos": [
+    [
+     1,
+     985
+    ]
+   ]
+  }
+ ]
+}

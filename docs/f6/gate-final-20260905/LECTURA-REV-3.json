@@ -1,0 +1,818 @@
+{
+ "revisor": "REV-3",
+ "cerrado": true,
+ "leidas": [
+  {
+   "ruta": "docs/evolucion/11-ARQUITECTURA-INTEGRADA.md",
+   "sha256": "616044e4827b18dcd68fd1ad16e22f1630fc45f3e4152e0f155b6a0dd36a793f",
+   "tramos": [
+    [
+     1201,
+     2400
+    ],
+    [
+     4801,
+     6000
+    ],
+    [
+     8401,
+     9600
+    ],
+    [
+     12001,
+     12152
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/13-SEGUNDA-CRITICA-INDEPENDIENTE-F4.md",
+   "sha256": "6804d134dfb66b5304ec9c539750559e578a2d5855785b5803189baac2da931f",
+   "tramos": [
+    [
+     1,
+     797
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/14-DEVOLUCION-TECNICA-PREVIA-F4C.md",
+   "sha256": "7f94e236f3cfb11e78762a301d9a3e94939ab47df34658710d1b8686ed7050fb",
+   "tramos": [
+    [
+     1,
+     325
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/16-GATE-FINAL-INDEPENDIENTE-F4C.md",
+   "sha256": "8243034f286160cc89330af95b49f558af0dd16d1b36a37ccbdf02f74a79d185",
+   "tramos": [
+    [
+     1,
+     1200
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/18-GATE-DE-CIERRE-INDEPENDIENTE-F4C.md",
+   "sha256": "1e71366b10d2293802db435de14953771ebd8fc13b426acedd7c0efe21cdb496",
+   "tramos": [
+    [
+     1201,
+     2400
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/20-GATE-INDEPENDIENTE-DE-COBERTURA-Y-CIERRE-F4C.md",
+   "sha256": "d7d2e4fa3f878e0c010d979e89affdb63462cc6fdd6628ed885d3a760bde09d1",
+   "tramos": [
+    [
+     1,
+     801
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/21-GATE-INDEPENDIENTE-DE-CIERRE-F4C.md",
+   "sha256": "9f869ffbdbdb834ca872c03abc8826c125a47b4344ed32cd9b6266db08f8be03",
+   "tramos": [
+    [
+     1201,
+     2400
+    ],
+    [
+     2401,
+     2679
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/22-GATE-INDEPENDIENTE-DE-CERTIFICACION-F4C.md",
+   "sha256": "3e2bdece758e6b69d6695bb52f20d21b910a123a27ac643845dbad75e8355f1c",
+   "tramos": [
+    [
+     2401,
+     3478
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/23-SEGUNDO-GATE-DE-CERTIFICACION-F4C.md",
+   "sha256": "0f81f13d8cb319d8ccc5243d19bb26d7f71f57e860cde2eb2edefe33b6993dc2",
+   "tramos": [
+    [
+     1,
+     1200
+    ],
+    [
+     2401,
+     2913
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/24-TERCER-GATE-DE-CERTIFICACION-F4C.md",
+   "sha256": "8df584529c857c071954b0d1b426faff82277e29a43556abe5dccfd93714fae1",
+   "tramos": [
+    [
+     1201,
+     2400
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/26-QUINTO-GATE-DE-CERTIFICACION-F4C.md",
+   "sha256": "e2c34215d92937fb467b1ffdb4e6654f66198ead4dac8128c411469bf86c297e",
+   "tramos": [
+    [
+     1,
+     1200
+    ],
+    [
+     3601,
+     4526
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/27-SEXTO-GATE-DE-CERTIFICACION-F4C.md",
+   "sha256": "d81b56366e5062ffe0abcd55ba2ef52ddbc3fadf073ea5a280e6cfc15b87ef26",
+   "tramos": [
+    [
+     1,
+     1200
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/28-SEPTIMO-GATE-DE-CERTIFICACION-F4C.md",
+   "sha256": "4711738d2a5d64740cc382d7808cf3b185686f80930b3f0d26ff3cf756506854",
+   "tramos": [
+    [
+     1,
+     1200
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/29-OCTAVO-GATE-DE-CERTIFICACION-F4C.md",
+   "sha256": "0b9064490c8dd68ec7c50ed87778d31ab8ab5360c966642113367a0eeba2e5ac",
+   "tramos": [
+    [
+     1,
+     1200
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/30-GATE-ARQUITECTONICO-FINAL-F4C.md",
+   "sha256": "712058b2467287d7ca51380cf305e84ac311f141d1c12ec0649c8b901aee6503",
+   "tramos": [
+    [
+     1,
+     1200
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/33-CIERRE-DE-F4C-POR-COMPOSICION-O22.md",
+   "sha256": "88b3c274f6525e1781791968182a840a3ac08b7817146cb6401e9dd974828dc4",
+   "tramos": [
+    [
+     1,
+     408
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/CHECKPOINT-ADS-NEXT.md",
+   "sha256": "165ab8cc02aabab7ed95345a805edcf000f8451b7027dbf01b27e1644b540a1c",
+   "tramos": [
+    [
+     1,
+     1200
+    ],
+    [
+     3601,
+     4800
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md",
+   "sha256": "e20d6ec8a56b6e74808940336d571c3fea41510722c4a91f555da67b41017537",
+   "tramos": [
+    [
+     1,
+     721
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/README.md",
+   "sha256": "0e766e71cd1bfd06add740099c2c9912eb6e25d30f6dde55dbde52260ef631a1",
+   "tramos": [
+    [
+     1,
+     396
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-2-20260830.md",
+   "sha256": "c64a0ec4731e6d27751469e84cbcc33104bfe535c42efe4f98533f4d84a0b970",
+   "tramos": [
+    [
+     1,
+     240
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-20260830.md",
+   "sha256": "fc4d1c2fdedbcb13be512e88303e21eddbeb194f6cc38b8e50fa0612dad08bbc",
+   "tramos": [
+    [
+     1,
+     316
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-5-20260831.md",
+   "sha256": "0f08b961c31f03bbedbae700fa67029ac87b6b962067b39b3e504fe28e8d1939",
+   "tramos": [
+    [
+     1,
+     193
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-8-20260831.md",
+   "sha256": "a82e74968e4ca31fbae0825a43f295736af39e58a16b3adf8879d021688e3d76",
+   "tramos": [
+    [
+     1,
+     248
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CIERRE-20260829.md",
+   "sha256": "c843b0c341183859b7f0f07db78cc67eade7ef98c4a96ad3edee23c769d2a976",
+   "tramos": [
+    [
+     1,
+     140
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-FINAL-O21-20260901.md",
+   "sha256": "3dc69768487de794aae577df3468abd97cae30a87b867e3920bb46e02fc5a529",
+   "tramos": [
+    [
+     1,
+     284
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/f5/validar-f5.py",
+   "sha256": "72b1c55ea3ed19a7bb09cf4dbd95fa402adca23721b2718682b2ca6394962ef8",
+   "tramos": [
+    [
+     1,
+     760
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md",
+   "sha256": "9d35f85bd1917a7dbccd6d86d1763abf8e49e4c8e2b4f5bfe9dc25fa2447ce94",
+   "tramos": [
+    [
+     1,
+     547
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md",
+   "sha256": "64d170f5acc151445eff6f3f68a0bade91d00744dffa6bdf36c13cd2d366bd3e",
+   "tramos": [
+    [
+     1201,
+     2400
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md",
+   "sha256": "712dbd4a935c53e3826109ccff53962da377a598e8529be59405a0c0e6d337a3",
+   "tramos": [
+    [
+     1201,
+     1651
+    ]
+   ]
+  },
+  {
+   "ruta": "docs/rediseno/a-CAPACIDADES-APROBADA.md",
+   "sha256": "235385da2471dec2cc00191bcbff184c7c4bbb536d54432a72f064356831d2ba",
+   "tramos": [
+    [
+     1,
+     1150
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/KERNEL.md",
+   "sha256": "aa635dff79e73fe13e271cb115653ebc042dc834d32007c634c8ee1df07e3150",
+   "tramos": [
+    [
+     1,
+     1200
+    ],
+    [
+     1201,
+     1590
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/capacidades/ARQ/CAPACIDAD.md",
+   "sha256": "6ca11b5f09883e24834f770e61963ae69ca738770ffb1de64f7be0afe4757a47",
+   "tramos": [
+    [
+     1,
+     104
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/capacidades/DIS/CAPACIDAD.md",
+   "sha256": "06f019010d45771fd2a125f9f08f88159b45f15e9f83fd2404c7f2a23f32ad06",
+   "tramos": [
+    [
+     1,
+     147
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/capacidades/ENT/CAPACIDAD.md",
+   "sha256": "91a81d3cf1cbfa619b7b69553a01810d7074b419fc7e2efb5f8ff2f8f9e7f9ed",
+   "tramos": [
+    [
+     1,
+     123
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/capacidades/PRD/CAPACIDAD.md",
+   "sha256": "e83b0e08272e219db0c5cc2e17b6d1a95dc4304a9f381d3acfe9c76ff528e3b3",
+   "tramos": [
+    [
+     1,
+     105
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/capacidades/USO/CAPACIDAD.md",
+   "sha256": "65f144e4a5c756ef97596a997673d7ad73c194ee6936e616bafd434302ff5d0d",
+   "tramos": [
+    [
+     1,
+     94
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/contratos/00-INDICE.md",
+   "sha256": "48b66b4fa9daee8fff5889016f9c30e6273f46268dbad8885aaaac4fa9a46d41",
+   "tramos": [
+    [
+     1,
+     29
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/contratos/C4-MATERIALIZACION.md",
+   "sha256": "670289180e59b176743571a22f22047d20792db266b6426c1c91bd2fd3c1ee81",
+   "tramos": [
+    [
+     1,
+     170
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/diseno/02-RUBRICAS.md",
+   "sha256": "8aa8fb18426eac219c275c102f757d50727da2e363d905529c8c061d6721d842",
+   "tramos": [
+    [
+     1,
+     343
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/esquemas/proceso.yaml",
+   "sha256": "f4f016c011a82764366327fe4f8d838ce7a87540b719c5b89faaf18dcc648f5f",
+   "tramos": [
+    [
+     1,
+     89
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/T182-T194-runtime-y-admision.md",
+   "sha256": "c4ab487efab688a49d6aedd5215b07d1bde0e9ab50437cfb1fe84bff3042fe0e",
+   "tramos": [
+    [
+     1,
+     353
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/admision-salida.txt",
+   "sha256": "a67cf876753cb47262a9e35f89297a91b10b9b342b4a601ef62536cacd89c4e3",
+   "tramos": [
+    [
+     1,
+     200
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/cardinalidad-salida.txt",
+   "sha256": "428921a04e901439ac973b242e639bb8736891435a693fe9b1b4a05aa4846bdf",
+   "tramos": [
+    [
+     1,
+     74
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/ciclo-salida.txt",
+   "sha256": "754ca8e7bf37052a2fdae79029f0560f9e0d34eda456b397045a3753d3f298a3",
+   "tramos": [
+    [
+     1,
+     134
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/continua-salida.txt",
+   "sha256": "8108914bcbd296152ef796f7b80635d6918b8264dd28cf8e778710f4965e9041",
+   "tramos": [
+    [
+     1,
+     60
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/estado-durable-salida.txt",
+   "sha256": "c4db25d7852db05091bfcb927d5b6662812f2aad16b514fcbbf04980e884bc45",
+   "tramos": [
+    [
+     1,
+     212
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/estado-e2e-salida.txt",
+   "sha256": "b0954d68bfa1018ad8c59bcf327594cc0bec5d164731ccab312aa549c558d6f8",
+   "tramos": [
+    [
+     1,
+     63
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/integridad-salida.txt",
+   "sha256": "ab07cc04b0e81c29ec6c34f8d7a2ba243e9b29d6990df5efee4c053d5f567d6c",
+   "tramos": [
+    [
+     1,
+     8
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/lint-salida.txt",
+   "sha256": "345eea084ac80bcf5dcddd97080850247a128de4cf9479b8a03b7185aa792870",
+   "tramos": [
+    [
+     1,
+     7
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/multimaquina-salida.txt",
+   "sha256": "5078a5a4b4d329e013f75bade0c149f62b292d77cd4d5066b2cf0dc133a6b9fa",
+   "tramos": [
+    [
+     1,
+     40
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/negativos-salida.txt",
+   "sha256": "32095b344e84092c117ce993c983c86206157170b9f680138f1ff5c3d29d2e94",
+   "tramos": [
+    [
+     1,
+     347
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/raiz-externa-salida.txt",
+   "sha256": "3fedbdfd884054525090c3965ea321f20bbf873d14e38d6f8e2edceed14e1a21",
+   "tramos": [
+    [
+     1,
+     118
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/referencias-salida.txt",
+   "sha256": "cdfd1f3f9639ab84b0e8a4410dba478ded982b233e998b2ae6dec209db6bc7fd",
+   "tramos": [
+    [
+     1,
+     78
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/universo-obligatorio-salida.txt",
+   "sha256": "08abe61c9fc74414722d2ac052ed0928fb38d7bfb0ff18c12688cfc2513664cb",
+   "tramos": [
+    [
+     1,
+     43
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/universo-rutas-salida.txt",
+   "sha256": "91d5c3bbebad092a1b23579ecc99f336e64e0619cce5bd26b915ef9996063044",
+   "tramos": [
+    [
+     1,
+     122
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/pruebas/evidencia/versiones-salida.txt",
+   "sha256": "0958257fbbb1be2315f9338cf4688bff648e57c46f120031be408c64346d4e43",
+   "tramos": [
+    [
+     1,
+     27
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/raiz-externa/anfitrion_verificador.py",
+   "sha256": "771bc411e9dcf52b6ea4e0794aad71bb63aeab8c657e9c711086042c5b5c785c",
+   "tramos": [
+    [
+     1,
+     293
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/raiz-externa/instalar.py",
+   "sha256": "9c0330b4a5dda4a6935a59c3edb655061158e1041f1d0c669bf1303db15fd157",
+   "tramos": [
+    [
+     1,
+     646
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md",
+   "sha256": "f56e8fe4872e46b5ccc8bd2b9531cdc9e53247aaec1e36ebcae131efbe3674ac",
+   "tramos": [
+    [
+     1,
+     130
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/recorrido/01-PROCESOS.md",
+   "sha256": "8a8aa174fa5244cbbe4629131f1e09856a4b065ae25746ac0956413706fe435c",
+   "tramos": [
+    [
+     1,
+     606
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ads_ciclo.py",
+   "sha256": "87e6511d4fab37fa20910467acf93ab7ed4bf5376e01a5aabfa38e9e9fc7b3a5",
+   "tramos": [
+    [
+     1,
+     853
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/ads_runtime.py",
+   "sha256": "03e3260460ee4888f03d074639d0c0a433987afbc0b2fa4a9e45271932aec191",
+   "tramos": [
+    [
+     1,
+     820
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/catalogo_de_prueba.py",
+   "sha256": "3c7d2adf7c23a81fe1893b97fbde8a065ae9f779487845a65b1a8bce73a2fdf8",
+   "tramos": [
+    [
+     1,
+     142
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_contencion.py",
+   "sha256": "6d1de0980d1e7f1e0cecd9c2b10117479df473a5e66f8cf760196f0412554c65",
+   "tramos": [
+    [
+     1,
+     1027
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_identidad.py",
+   "sha256": "ec13a2b218a0f5f84ed4a0ee74c44889650cdf3c649c2b36c4e0e64137b44f4c",
+   "tramos": [
+    [
+     1,
+     672
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py",
+   "sha256": "9b344d1a31fd4f2d6b94494208fda88778a10b937486683de1efc8e76603a107",
+   "tramos": [
+    [
+     1,
+     3118
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_raiz_externa.py",
+   "sha256": "87b4804622a36d6d3344bd54a4b0f5c2ab6c0dfbdaacd774d8aa4a892128b616",
+   "tramos": [
+    [
+     1,
+     1297
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/pruebas/test_runtime.py",
+   "sha256": "5b48e2184bd82d8ffdacf222bf3d73a0982ace31d3a3665a4e6c96f86fd57731",
+   "tramos": [
+    [
+     1,
+     2611
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/runtime/dispatcher.py",
+   "sha256": "e1eeb77d0505f9dcf00da1dd5ea113bfdbe06064e058113b211210ab1fb2360c",
+   "tramos": [
+    [
+     1,
+     1504
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/runtime/runtime/politica.py",
+   "sha256": "c639f346607421c171daeb4e4d96758667eecb4bec5044c4e3a44c9336b04184",
+   "tramos": [
+    [
+     1,
+     314
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_arranque.py",
+   "sha256": "58daf361306d0438b2a9f4c9839ed8339516eb3e10c50e6db87032d8fe83dbe5",
+   "tramos": [
+    [
+     1,
+     923
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_composicion_procesos.py",
+   "sha256": "1b4a54703f05e533e427924dff8256db91d4441a927a2fdd65743f24e38a1049",
+   "tramos": [
+    [
+     1,
+     980
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_fuentes.py",
+   "sha256": "42226c51ed931ef9eb0aea912ec23318d25c18125787337ac9e258a06ecbbfc6",
+   "tramos": [
+    [
+     1,
+     532
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_integridad.py",
+   "sha256": "c7860210c906a797b2243760ef9495a24ade8149b2c61cec63b4925df2ffa55c",
+   "tramos": [
+    [
+     1,
+     273
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/comprobar_negativos.py",
+   "sha256": "8b3fcad78eb144ef5299b2b853b162dc15e3a8846d2b97d5e7b27b55897e894d",
+   "tramos": [
+    [
+     1,
+     1797
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/negativos_cardinalidad.py",
+   "sha256": "8d65ae6ecf08ba5febed879cbe5c269d396ec64945116ed72d8f5ebadda54665",
+   "tramos": [
+    [
+     1,
+     441
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/negativos_runtime.py",
+   "sha256": "0826ba40d8f6036c17a0c39007de4777e076d61900550efdbc93e9986a675e92",
+   "tramos": [
+    [
+     1,
+     996
+    ]
+   ]
+  },
+  {
+   "ruta": "kernel/operativo/validadores/registro_pruebas.py",
+   "sha256": "eeb8661f7db9268b98cd4c6bba67216c534bb9f169209795b6b3a6c11c687ef8",
+   "tramos": [
+    [
+     1,
+     628
+    ]
+   ]
+  }
+ ]
+}
