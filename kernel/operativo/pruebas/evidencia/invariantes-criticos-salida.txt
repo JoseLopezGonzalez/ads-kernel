@@ -1,0 +1,173 @@
+# evidencia de: invariantes-criticos
+# orden:        python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/comprobar-invariantes-criticos.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+`O30` §2 · CATÁLOGO CERRADO DE INVARIANTES CRÍTICOS, DERIVADO Y EJERCIDO
+==============================================================================
+
+  UNIVERSO derivado de `docs/owner/ADS-OWNER-RESOLUCIONES.md`, sección «2. Catálogo cerrado de invariantes críticos»
+  SEDE canónica del catálogo: `docs/canonico/08-INVARIANTES-CRITICOS-DE-F6.md`
+  ANCLA   commit 96c54a157474dca04fec6452fde66850cb70d7c9 · tree 3e21925ed595ab0d42de8f5f353ba5075748f497
+  CICLO   sano (evidencia ligada a HEAD) → SABOTAJE ejecutado → restaurado (el árbol juzgado no se toca: la mutación vive en una copia)
+
+EL UNIVERSO, DERIVADO Y LITERAL
+------------------------------------------------------------------------------
+  K01 · Una transición confirmada sobrevive a caída, reinicio y recuperación.
+  K02 · Una transición no confirmada nunca se publica como estado canónico.
+  K03 · La publicación del estado es atómica y conserva el orden contractual entre preparación, publicación y confirmación.
+  K04 · Recuperar o reanudar repetidamente es idempotente y no duplica efectos.
+  K05 · La concurrencia no permite dos confirmaciones para la misma revisión.
+  K06 · Diario, registro y cabezas durables detectan corrupción, truncamiento, sustitución y retirada de cola.
+  K07 · Una reconciliación sólo puede cerrarse mediante una transición autorizada y auditable.
+  K08 · Versiones y migraciones preservan integridad, usan errores tipados y fallan cerradas ante formatos desconocidos o estados imposibles.
+  K09 · Toda evidencia, atestación o certificación queda ligada conjuntamente al commit y al tree realmente juzgados.
+  K10 · Firma, verificación, rotación y revocación fallan cerradas y no confunden claves de prueba con custodia productiva.
+  K11 · Autoridad, productor, escritor y custodio permanecen separados conforme a sus contratos.
+  K12 · El entorno, la procedencia del código y las rutas de importación no permiten contaminación silenciosa del ejecutable juzgado.
+  K13 · La sede del Owner es append-only por ENTRADAS COMPLETAS y no puede aprobar una sustitución, truncamiento o reescritura de resoluciones.
+  K14 · El verificador de admisión juzga la mutación efectiva y falla cerrado ante cambios fuera del universo permitido.
+  K15 · El gobierno Git del control repo serializa correctamente escritores locales y entre máquinas, sin último-escritor-gana silencioso.
+  K16 · La contención fuerte alcanza al proceso y a sus descendientes, incluidos los que intenten escapar mediante `setsid` u otra nueva sesión.
+  K17 · La ausencia de aislamiento, firma, identidad, backend o capacidad requerida nunca se convierte en degradación silenciosa.
+  K18 · Enrutamiento, clasificación y selección se basan en datos estructurados y sedes canónicas, no en similitud de prosa.
+  K19 · La política C2/C4 respeta perfil, modelo, cardinalidad, combinaciones, integrador y `execution_slots`.
+  K20 · La prevención y observación de inanición no modifica la prioridad contractual, ni directamente ni mediante una secuencia de transiciones.
+  K21 · Entregas, acuses, reanudaciones y `Continúa` no pierden ni duplican trabajo confirmado.
+  K22 · La evidencia procede de la ejecución declarada, está vinculada al objeto juzgado y no admite saltos, omisiones o éxitos fabricados.
+  K23 · La huella del kernel y el sello del producto cubren sus ámbitos declarados, se calculan desde el árbol real y no se sustituyen entre sí.
+  K24 · Gates, estados de fase y autoridad impiden declarar éxito, certificación o adopción antes del acto competente.
+
+LOS INCUMPLIMIENTOS, UNO A UNO
+------------------------------------------------------------------------------
+  ninguno
+
+LO EJERCIDO, SABOTAJE A SABOTAJE
+------------------------------------------------------------------------------
+  N136     DETECTADO      veto:integridad-de-datos: declara que prevalece DOM, cuyo veto es LEVANTABLE. a.5 sólo admite prevalencia de u
+  N146     DETECTADO      CON/implementacion: DECIDE «la implementación exige una decisión de forma, alcance o dom», y CON declara eso m
+  N150     DETECTADO      [1] el kernel DIVERGE de su release: almacenada 13713d8d8322cf71, calculada d749c8c70b075fc9. Algún fichero de
+  N158     DETECTADO      kernel/operativo/pruebas/evidencia/contratos-salida.txt: contiene error de invocación del intérprete. No es la
+  N172     DETECTADO      FAIL T172 · Una guarda que se puede bajar por variable es un interruptor. ------------------------------------
+  N174     DETECTADO      FAIL T174 · Defecto que previene: publicar estado PARCIAL en la rama canónica (`g.14`). ----------------------
+  N175     DETECTADO      FAIL T175 · Punto 3/9 · `despues-de-escribir-temporal` (paso 5, ya en `operacional/tx/`). --------------------
+  N176     DETECTADO      FAIL T176 · Defecto que previene: quedarse esperando, o peor, escribir a la fuerza. --------------------------
+  N177     DETECTADO      FAIL T177 · Defecto que previene: servir como bueno un fichero canónico manipulado. --------------------------
+  N178     DETECTADO      FAIL T178 · Defecto que previene: cerrar una pendencia borrando su última línea. -----------------------------
+  N179     DETECTADO      FAIL T179 · Defecto que previene: abrir un almacén cuyo FORMATO no se entiende (§5). -------------------------
+  N187     DETECTADO      FAIL T187 · Defecto que previene: saltarse `G-A8` omitiendo un argumento. ------------------------------------
+  N188     DETECTADO      FAIL T188 · Defecto que previene: devolver una lista parcial como si fuera completa. -------------------------
+  N189     DETECTADO      FAIL T189 · Defecto que previene: que un prefijo del instrumento quede fuera. --------------------------------
+  N190     DETECTADO      ERROR T190 · Defecto que previene: emitir con una fórmula propia cuando la sede falla. -----------------------
+  N191     DETECTADO      FAIL T191 · Defecto que previene: aplicar DOS VECES un efecto tras morir a media pasada. ---------------------
+  N192     DETECTADO      FAIL T192 · Defecto que previene: resolver el `realpath` del DIRECTORIO y no del FICHERO. --------------------
+  N216     DETECTADO      FAIL T216 · Defecto que previene: cumplir una política fuerte con un backend débil. --------------------------
+  N217     DETECTADO      FAIL T217 · Defecto que previene: emitir veredicto desde un verificador manipulado. --------------------------
+  N240     DETECTADO      kernel/operativo/recorrido/01-PROCESOS.md: proceso:FEA·condicional nombra `DIS/Reconstruccion`, que es un MÉTO
+  N242     DETECTADO      `exclusiones.yaml` no declara `autoridad_de_documentos_del_owner`: la distinción aprobada/trabajo de `docs/own
+  N250     DETECTADO      composicion:dis-proyecto-nuevo · DIS/diseno-visual: declara 7 agentes y, en el mismo campo, que NO hay integra
+  N250b    DETECTADO      composicion:dis-proyecto-nuevo · DIS/investigacion-visual: materializa hasta 2 agentes y su composición no dec
+  N250c    DETECTADO      composicion:dis-proyecto-nuevo · DIS/diseno-visual: el campo `agentes` no encaja en ninguna forma declarada de
+  N250d    DETECTADO      el corpus declara formas plurales del campo `agentes` que el censo medido no contempla: `1 o 2 repartidos por 
+  N276     DETECTADO      §19 publica 2 pares por la vía 2 y el árbol deriva 1. Un total admite repartos que significan cosas distintas:
+  N320     DETECTADO      FAIL T320 · Defecto que previene: `ADJ-B1`, la migración 0->1 que reventaba con una --------------------------
+  N321     DETECTADO      FAIL T321 · Defecto que previene: el AGRAVANTE de `ADJ-B1` —que la corrección de la --------------------------
+  N330     DETECTADO      FAIL T330 · Defecto que previene: `ADJ-B2` y `H-03`, un inventario que no ve una zona. -----------------------
+  N340     DETECTADO      FAIL T342 · `ADJ-B3` literal: lo que el prefijo del nacimiento dejaba pasar. ---------------------------------
+  N343     DETECTADO      FAIL T343 · Defecto que previene: reescribir una condición y confirmarla. ------------------------------------
+  N350     DETECTADO      `registro_pruebas` no ofrece `contraste_de_estados`: la sede de la derivación del estado ha dejado de publicar
+  ND02     DETECTADO      FAIL T415 · Defecto que previene: que la clase de `D-02` vuelva a crecer en silencio. ------------------------
+  NG03     DETECTADO      FAIL T380 · Defecto que previene: `G-03` cerrado en una lista y abierto en la clase. -------------------------
+  NG04     DETECTADO      ERROR T400 · Defecto que previene: el sabotaje de `R1-H02`, en su forma más simple. --------------------------
+  NG04b    DETECTADO      FAIL T419 · Defecto que previene: que la cita se quede en prosa en las cuatro. -------------------------------
+  NG3a     DETECTADO      docs/canonico/04-CONTRATOS-TECNICOS.md:386: «Ninguno existe» dicho de «adaptadores», que SÍ está construida — 
+  NH02     DETECTADO      T162: declara `estado: prueba-superada` y su evidencia sostiene `prueba-ejecutada` — `evidencia/workspace-sali
+  NH08     DETECTADO      FAIL T307 · Defecto que previene: `H-08`, una cifra que se calcula y no se publica. --------------------------
+  NK01a    DETECTADO      FAIL T299 · Defecto que previene: un testigo que un corte de corriente se lleva. -----------------------------
+  NK02a    DETECTADO      FAIL T298 · Defecto que previene: publicar la revisión con parte de los objetos fuera. -----------------------
+  NK03a    DETECTADO      FAIL T300 · Defecto que previene: dar por recuperable lo que nadie ha recuperado. ----------------------------
+  NK03b    DETECTADO      FAIL T296 · Defecto que previene: publicar evidencia de lo que no se ha verificado. --------------------------
+  NK09a    DETECTADO      FAIL T220 · Defecto que previene: que el árbol se certifique a sí mismo. -------------------------------------
+  NK12a    DETECTADO      FAIL T306 · Defecto que previene: `E-10`, que el lanzador decida qué código juzga. ---------------------------
+  NK12b    DETECTADO      FAIL T337 · Defecto que previene: emitir veredicto sin poder demostrar la procedencia. -----------------------
+  NK12c    DETECTADO      sano VERDE · saboteado ROJO por «invalid choice: 'procedencia'»
+  NK13a    DETECTADO      FAIL T340 · Defecto que previene: un término de comparación sin procedencia. ---------------------------------
+  NK13b    DETECTADO      FAIL T344 · Defecto que previene: el truncamiento por la cola, que no rompe nada. ----------------------------
+  NK13c    DETECTADO      FAIL T345 · Defecto que previene: cambiar qué revisa a qué sin perder un solo byte. --------------------------
+  NK16a    DETECTADO      FAIL T215 · Defecto que previene: llamar contención a un `killpg` que `setsid` esquiva. ----------------------
+  NK16b    DETECTADO      FAIL T414 · Defecto que previene: que el montaje deje de probar lo que dice probar. --------------------------
+  NK20a    DETECTADO      ERROR T404 · Defecto que previene: que la carrera entre dos DSP abra la puerta. ------------------------------
+  NK20b    DETECTADO      FAIL T408 · Defecto que previene: lavar la mutación con un viaje de ida y vuelta. ----------------------------
+  NK21a    DETECTADO      FAIL T204 · escenario 4 · Defecto que previene: perder una entrega esperando acuse. --------------------------
+  NS21a    DETECTADO      [4] la clase `CANONICA_OPERATIVA` DIVERGE del libro anotado: 6024fed4c8d92d5e sobre 230 ficheros, ahora 14bbdd
+  NS23a    DETECTADO      [3] HUELLA DEL KERNEL: el MISMO contenido se mueve a `BOOTSTRAP_PROMPT-MOVIDO.md`, en la misma zona y con la m
+
+LO QUE ESTE VEREDICTO NO DEMUESTRA
+------------------------------------------------------------------------------
+  · no demuestra que un invariante sea INDERROTABLE: demuestra que el sabotaje
+    declarado lo alcanza y que su canal cae por el motivo declarado;
+  · no juzga si la adscripción de una propiedad a su `Knn` es la correcta: juzga
+    que el vínculo esté declarado y que la ejecución lo confirme;
+  · no mide las obligaciones funcionales no críticas de `O30` §4, ni las ocho
+    condiciones de `O26` §1, ni `M-04`, ni `C-L.7`;
+  · no certifica `F6`: `O30` §7 reserva eso a un verificador independiente.
+
+24 invariantes medidos · 24 SATISFECHOS · 0 INCUMPLIDOS · 57 sabotajes ejercidos · 0 sin detectar
+
+# --- stderr (código 0) ---
+  · K01 ejerciendo N175
+  · K01 ejerciendo NK01a
+  · K02 ejerciendo N174
+  · K02 ejerciendo NK02a
+  · K03 ejerciendo NK03a
+  · K03 ejerciendo NK03b
+  · K04 ejerciendo N191
+  · K05 ejerciendo N176
+  · K06 ejerciendo N177
+  · K07 ejerciendo N178
+  · K08 ejerciendo N179
+  · K08 ejerciendo N320
+  · K08 ejerciendo N321
+  · K09 ejerciendo NK09a
+  · K10 ejerciendo N192
+  · K10 ejerciendo N217
+  · K11 ejerciendo N136
+  · K11 ejerciendo N146
+  · K12 ejerciendo NK12a
+  · K12 ejerciendo NK12b
+  · K12 ejerciendo N330
+  · K12 ejerciendo NG03
+  · K13 ejerciendo NK13a
+  · K13 ejerciendo NK13b
+  · K13 ejerciendo NK13c
+  · K13 ejerciendo N340
+  · K13 ejerciendo N343
+  · K14 ejerciendo N188
+  · K14 ejerciendo N189
+  · K14 ejerciendo N190
+  · K15 ejerciendo N187
+  · K16 ejerciendo NK16a
+  · K16 ejerciendo NK16b
+  · K16 ejerciendo N216
+  · K17 ejerciendo N172
+  · K18 ejerciendo N240
+  · K18 ejerciendo N276
+  · K19 ejerciendo N250
+  · K19 ejerciendo N250b
+  · K19 ejerciendo N250c
+  · K19 ejerciendo N250d
+  · K20 ejerciendo NG04
+  · K20 ejerciendo NG04b
+  · K20 ejerciendo NK20a
+  · K20 ejerciendo NK20b
+  · K21 ejerciendo NK21a
+  · K22 ejerciendo N158
+  · K22 ejerciendo NH08
+  · K22 ejerciendo N350
+  · K22 ejerciendo NH02
+  · K22 ejerciendo ND02
+  · K23 ejerciendo N150
+  · K23 ejerciendo NS21a
+  · K23 ejerciendo NS23a
+  · K24 ejerciendo N242
+  · K24 ejerciendo NG3a
