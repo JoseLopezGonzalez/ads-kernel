@@ -649,8 +649,17 @@ def medir(ejecutar=True, solo=None):
                 if error:
                     malas.append("%s: %s" % (esc["id"], error))
                 elif rc != 0:
-                    malas.append("%s: `%s` terminó con EXIT=%s"
-                                 % (esc["id"], esc["validador"], rc))
+                    # EL MOTIVO, NO SÓLO EL CÓDIGO. Medido el 2026-09-06: `FD-5` figuraba
+                    # como «terminó con EXIT=1» y nada más, y hubo que reejecutar su canal
+                    # a mano para descubrir que aislado sale VERDE. Un faltante que no dice
+                    # por qué obliga a reproducirlo, y reproducirlo es lo que no se hace.
+                    # Se publican las últimas líneas NO vacías de la corrida, que es donde
+                    # `unittest` y los validadores de este corpus escriben la causa.
+                    cola = [l for l in (texto or "").splitlines() if l.strip()][-3:]
+                    malas.append("%s: `%s` terminó con EXIT=%s%s"
+                                 % (esc["id"], esc["validador"], rc,
+                                    (" · última salida: " + " ⏎ ".join(
+                                        l.strip()[:120] for l in cola)) if cola else ""))
                 elif not re.search(r"(?<![\w-])%s(?![\w-])" % re.escape(esc["id"]), texto):
                     malas.append("%s: `%s` pasó SIN NOMBRARLO en su salida — una batería "
                                  "ajena que pasa no ejecuta la condición de cierre"

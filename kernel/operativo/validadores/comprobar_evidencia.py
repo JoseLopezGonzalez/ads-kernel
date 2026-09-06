@@ -231,6 +231,55 @@ ERRORES_DE_INVOCACION = [
     (r"Traceback \(most recent call last\)", "traza de excepción"),
     (r"SyntaxError", "error de sintaxis"),
 ]
+# LO QUE UNA EVIDENCIA **CITA** NO ES LO QUE UNA EVIDENCIA **SUFRIÓ**
+#
+#  HECHO MEDIDO EL 2026-09-06, la primera vez que `o26-sab` llegó a publicar evidencia:
+#      · kernel/operativo/pruebas/evidencia/o26-sab-salida.txt: contiene error de
+#        invocación del intérprete. No es la salida de una ejecución correcta…
+#  Y la línea que lo disparaba era ésta, del propio fichero, con `codigo: 0` en su cabecera:
+#      T158/f1      S5  CONTRATO 3
+#           «una evidencia contiene «can't open file» y el informe sigue afirmando EXIT 0»
+#  Es la cláusula `falla_si` de `T158` CITADA LITERALMENTE por el instrumento que enumera
+#  las propiedades pendientes. O sea: la evidencia decía «este corpus vigila que no aparezca
+#  “can't open file”», y se la acusaba de contener «can't open file».
+#
+#  Es una colisión entre dos instrumentos correctos y no un defecto de ninguno: `T158` tiene
+#  que buscar esa cadena, y `O26-SAB` tiene que citar el texto literal de la cláusula —sin
+#  él, un pendiente no dice qué propiedad queda sin probar—.
+#
+#  SE RESUELVE POR LA MARCA DE CITA Y NO POR UNA EXENCIÓN. Alternativas: (a) eximir a
+#  `o26-sab` de esta comprobación con una bandera del manifiesto; (b) que `O26-SAB` deje de
+#  citar el texto; (c) distinguir la cita del suceso.
+#      (a) apagaría la comprobación entera para ese fichero, y entonces un «can't open file»
+#          DE VERDAD se escondería justo en la evidencia más larga del manifiesto.
+#      (b) degrada la evidencia histórica que `O30` §1 ordena conservar.
+#      (c) es lo que se hace. El corpus escribe sus citas entre «comillas latinas», y un
+#          mensaje del intérprete NUNCA viene envuelto en ellas: lo escribe Python en
+#          crudo. Se retira SÓLO lo que está entre « y » dentro de una misma línea, y sobre
+#          el resto se busca igual que antes. Lo que la evidencia sufrió sigue vigilado; lo
+#          que la evidencia cita, no se le imputa.
+#
+#  LA FRONTERA, MEDIDA Y DICHA, porque una excepción sin su límite escrito es una excepción
+#  que crece. Se probaron los tres casos sobre el fichero real:
+#      sano       la cita «…can't open file…» ya NO dispara            → correcto
+#      sabotaje   un `python3: can't open file …` en crudo SIGUE       → detectado
+#      frontera   el MISMO error envuelto a mano entre « y »           → se ocultaría
+#  La frontera es real y NO se cierra aquí, porque cerrarla aquí exigiría adivinar la
+#  intención de unas comillas. Se cierra en otro sitio y por otro camino: el runner escribe
+#  la evidencia desde el `stdout`/`stderr` del hijo, donde nadie envuelve nada, de modo que
+#  para explotarla hay que EDITAR A MANO el fichero de evidencia — y eso lo caza `T350`,
+#  que contrasta cada evidencia contra su blob confirmado en `HEAD` y falla en cuanto los
+#  bytes del árbol de trabajo se apartan. Dos controles distintos, y el segundo no depende
+#  de este.
+
+_CITA = re.compile(r"«[^«»\n]*»")
+
+
+def _sin_citas_del_corpus(texto):
+    """El texto sin sus citas «…», para no confundir lo citado con lo ocurrido."""
+    return _CITA.sub("«…»", texto)
+
+
 SENALES_DE_FALLO = [
     (r"\bFALLIDA\b", "una prueba fallida"),
     (r"\bNO detectada\b", "una infracción no detectada"),
@@ -494,6 +543,26 @@ def cargar_manifiesto(base):
 #  muere antes de leerlo; sin el prólogo, el hijo llega hasta aquí, ve el marcador y no
 #  lanza otra sonda. Sin él, un validador sin guardia se llamaría a sí mismo sin fin.
 
+#  EL CÓDIGO: EL CONTRATO DICE `2`, LA IMPLEMENTACIÓN USA `78`, Y NO ES UNA DESVIACIÓN
+#  SILENCIOSA. Se deja escrito aquí porque es lo primero que un verificador que lea
+#  `CONTRATO 3` va a encontrar y no se debe hacer deducir.
+#      El contrato pide «EXIT CODE **2** — reservado a “no se pudo ejecutar”, distinto del
+#      **1** de “se ejecutó y falló”. La distinción importa: hoy los dos casos son
+#      indistinguibles desde fuera». Lo que exige, y lo dice él mismo, es UN TERCER CÓDIGO
+#      que separe el entorno del producto.
+#      Al implementarlo se midió que el `2` YA ESTABA OCUPADO: es el que `argparse` devuelve
+#      ante una opción desconocida, y en este corpus es además el `FALLA CERRADO` de los
+#      instrumentos de `docs/evolucion/verificacion/`. Darle a «entorno insuficiente» el
+#      mismo número habría reabierto la confusión que el contrato cierra, sólo que con otra
+#      pareja. Se eligió `78` —`EX_CONFIG` de `sysexits(3)`—, declarado UNA sola vez en
+#      `entorno.CODIGO_ENTORNO_INSUFICIENTE` con ese motivo escrito al lado, y fijado por el
+#      escenario `T172` («los tres terminan con el código 78, que no es el 1 de “una
+#      comprobación no pasó” ni el 2 de “uso incorrecto”»).
+#      Se cumple, por tanto, el REQUISITO del contrato —un código propio, distinto del 1— y
+#      no su número literal. La comprobación de abajo no escribe ninguna cifra: importa
+#      `entorno.CODIGO_ENTORNO_INSUFICIENTE`, de modo que la sede del número sigue siendo
+#      una sola y esto no puede quedar desincronizado.
+
 MARCADOR_DE_SONDA = "ADS_ENTORNO_SONDA"
 
 # Los validadores que dependen de `tomllib`, DIRECTA o TRANSITIVAMENTE, y su cadena. No es
@@ -549,6 +618,251 @@ def _comprobar_la_guardia_de_entorno(base, r):
                     f"por qué. Un código sin mensaje no distingue un entorno de un fallo")
 
 
+# ---------------------------------------------------------------------------
+#  LA OBLIGACIÓN CIRCULAR · el ciclo que ningún número de pasadas rompe
+# ---------------------------------------------------------------------------
+#  HECHO REPRODUCIDO ANTES DE TOCAR NADA, el 2026-09-06, con `python3.12`:
+#
+#      $ python3.12 kernel/operativo/validadores/comprobar_evidencia.py
+#      T158  FALLIDA   La evidencia publicada demuestra lo que el informe afirma
+#                · …/o26-impl-salida.txt: falta la evidencia de 'o26-impl', …
+#                · …/o26-sab-salida.txt:  falta la evidencia de 'o26-sab', …
+#      1 superadas · 1 fallidas                                             → EXIT 1
+#
+#      $ python3.12 docs/evolucion/verificacion/comprobar-obligaciones-implementadas.py
+#      CONTRATO 3   R5  T158: `…/comprobar_evidencia.py` terminó con EXIT=1;
+#                       T350: `…/comprobar_evidencia.py` terminó con EXIT=1
+#      58 obligaciones medidas · 2 SIN IMPLEMENTAR                          → EXIT 1
+#
+#  LA SEGUNDA FILA DE AQUELLA CORRIDA ERA `FD-5`, Y NO SE OCULTA. Su canal
+#  —`test_contencion.py`— salía con `EXIT=1` sin decir por qué. Reejecutado AISLADO da
+#  «Ran 26 tests … OK · EXIT=0», y medido solo —`--solo FD-5`— sale `R1`…`R5` en verde y
+#  «pendientes: ∅». En la segunda corrida completa vuelve a salir verde y la resta se queda
+#  en `CONTRATO 3`. NO era una obligación sin implementar: era INTERMITENCIA BAJO CARGA de
+#  una batería que contiene, precisamente, pruebas de contención de procesos y una que se
+#  llama `T413 · repetición BAJO CARGA`. Queda registrado como hallazgo de OBSERVABILIDAD
+#  —no invalida objeto ni evidencia—, y lo que se corrigió por él está en `R5` de
+#  `comprobar-obligaciones-implementadas.py`: publicar el MOTIVO y no sólo el código, que
+#  es lo que obligó a reproducirlo a mano para saber qué pasaba.
+#
+#  Y LOS CUATRO ESLABONES, cada uno leído en su sede:
+#
+#    1 · `registrar_evidencia.ejecutar` (`:335`) — «si el código no es 0: la evidencia
+#        anterior NO se ha tocado; return». Un validador en rojo NUNCA obtiene fichero de
+#        evidencia. Es correcto y no se toca: publicar la salida de una corrida fallida
+#        como evidencia es el defecto que `T158` existe para impedir.
+#    2 · este validador (el bucle de abajo) — exige que TODO componente `tipo: validador`
+#        con `evidencia:` tenga su fichero. Falla por `o26-impl`.
+#    3 · `comprobar-obligaciones-implementadas.py`, `R5` — ejecuta el `validador:` de cada
+#        `ads:escenario` que cubre la obligación y exige `EXIT=0`.
+#    4 · `CONTRATO 3` lo cubren `T158` y `T350`, y las dos declaran
+#        `validador: kernel/operativo/validadores/comprobar_evidencia.py`. Derivado, no
+#        supuesto: `derivar-universo-obligatorio.py --obligaciones` publica
+#        «CONTRATO 3 · §19 · T158,T350 · evidencia/evidencia-salida.txt».
+#
+#  Cerrando el círculo: `o26-impl` sólo puede salir verde si ESTE validador sale verde;
+#  este validador sólo sale verde si existe la evidencia de `o26-impl`; y esa evidencia
+#  sólo la escribe el runner si `o26-impl` salió verde. NINGUNA PASADA CONVERGE, y no es
+#  una cuestión de orden: el eslabón 1 impide que exista un primer fichero, para siempre.
+#  Es literalmente lo que el encargo de cierre prohíbe crear: «una obligación circular cuyo
+#  único pendiente sea la evidencia del propio instrumento que la cuenta».
+#
+#  DÓNDE ESTÁ EL ESLABÓN FALSO, y por qué es éste y no otro
+#      El eslabón 1 es correcto. El 3 es correcto: sin él, una batería ajena que pasa
+#      cerraría cualquier obligación. El 4 es la sede y no se discute.
+#      El falso es el 2, y falso sólo en un caso muy estrecho: cuando el componente cuya
+#      evidencia se echa en falta es uno cuyo PROPIO VEREDICTO depende del código de salida
+#      de ESTE validador. Para ése, «falta tu evidencia» no es un hallazgo: es el eco de
+#      este mismo validador estando rojo. Reprocharlo aquí es contarse a sí mismo.
+#      El manifiesto ya reconoce esta figura para el caso más simple —el reflexivo directo—
+#      con `se_excluye_de_su_propia_comprobacion`, y su motivo escrito es el mismo: «cuando
+#      corre, su propia evidencia es todavía la de la ejecución anterior … su resultado real
+#      es el código de salida del runner». Lo que falta es el caso INDIRECTO, a un salto.
+#
+#  QUÉ **NO** SE HACE, y se dice para que se pueda comprobar que no se ha hecho
+#    · no se retira la fila `o26-impl` del manifiesto: sigue declarada, sigue ejecutándose
+#      y sigue teniendo que publicar su evidencia;
+#    · no se le baja la firma de éxito: sigue exigiendo `0 SIN IMPLEMENTAR · 0 faltantes`;
+#    · no se le perdona el rojo: si `o26-impl` falla, EL RUNNER lo publica —«validador
+#      o26-impl: terminó con código 1»— y SALE CON 1. El veredicto no se borra: se cobra
+#      donde puede cobrarse sin ciclo, que es lo mismo que ya se hace con `evidencia`;
+#    · la dispensa alcanza SÓLO a la AUSENCIA del fichero. En cuanto existe, se juzga
+#      entero —cabecera, código 0, firma, `debe_contener`, señales de fallo— sin excepción
+#      alguna. Es una dispensa de arranque, no un permiso permanente;
+#    · la dispensa NO se cree lo que le declaran: se DERIVA. Ver `_dispensa_reflexiva`.
+
+
+def _escenarios_que_me_declaran_canal(base):
+    """Los `ads:escenario` del corpus cuyo `validador:` es ESTE fichero, con lo que cubren.
+
+    Devuelve `{id_escenario: [obligaciones que cubre]}`. Es la mitad DERIVADA de la
+    dispensa: dice qué obligaciones tienen su CONDICIÓN DE CIERRE en este validador y, por
+    tanto, cuáles pueden crear el ciclo. Se lee del corpus, no del manifiesto: quien declara
+    la dispensa no escribe esto.
+    """
+    yo = os.path.basename(__file__)
+    encontrados = {}
+    for ambito in ("kernel/operativo", "packs"):
+        raiz = os.path.join(base, ambito)
+        if not os.path.isdir(raiz):
+            continue
+        for dirpath, dirnames, filenames in os.walk(raiz):
+            dirnames[:] = [d for d in dirnames if d not in (".git", "__pycache__")]
+            for nombre in sorted(filenames):
+                if not nombre.endswith(".md"):
+                    continue
+                with open(os.path.join(dirpath, nombre), encoding="utf-8") as fh:
+                    texto = fh.read()
+                for bloque in re.findall(r"```yaml ads:escenario\n(.*?)```", texto, re.S):
+                    m = re.search(r"^validador:\s*\"?([^\"\n]+)\"?\s*$", bloque, re.M)
+                    if not (m and os.path.basename(m.group(1).strip().strip('"')) == yo):
+                        continue
+                    eid = re.search(r"^id:\s*(\S+)", bloque, re.M)
+                    cubre = re.search(r"^cubre:\s*\[(.*?)\]", bloque, re.M | re.S)
+                    if eid:
+                        encontrados[eid.group(1)] = [
+                            c.strip().strip('"') for c in
+                            (cubre.group(1).split(",") if cubre else [])]
+    return encontrados
+
+
+def _el_declarante_mide_de_verdad(base, comp, obligacion):
+    """¿Es este componente REALMENTE el instrumento que mide esa obligación? Se le pregunta.
+
+    Ésta es la mitad EMPÍRICA de la dispensa, y existe porque la primera versión de esta
+    comprobación NO la tenía y se midió el agujero, el 2026-09-06, saboteando la propia
+    corrección: se le puso `evidencia_reflexiva` a `integridad` —que no participa en ningún
+    ciclo— y se le concedió la dispensa, porque lo único que se derivaba era que ALGÚN
+    escenario nombra este validador, y eso es cierto para cualquiera que lo escriba.
+
+    Lo que se hace ahora es preguntárselo a él, por su propio canal y sin ejecutar nada:
+    `--sin-ejecutar --solo <obligación>` cuesta un segundo y sólo responde bien un
+    instrumento que de verdad mide obligaciones contra los canales de cierre del corpus.
+    `comprobar_integridad.py` no tiene ese modo y la sonda lo caza.
+
+    Y NO SE MUERDE LA COLA: `--sin-ejecutar` es precisamente el modo en el que `R5` no se
+    ejecuta, de modo que el hijo NO vuelve a invocar este validador. La recursión no está
+    evitada por un marcador que alguien pueda quitar: está evitada porque el único camino
+    de vuelta es el que la opción apaga.
+    """
+    script = os.path.join(base, comp.get("dir") or "kernel/operativo/validadores",
+                          comp["script"])
+    if not os.path.isfile(script):
+        return False, "su script no existe"
+    import subprocess                                            # noqa: PLC0415
+    ambiente = {k: v for k, v in os.environ.items() if not k.startswith("PYTHON")}
+    ambiente["PYTHONDONTWRITEBYTECODE"] = "1"
+    try:
+        proc = subprocess.run([sys.executable, script, "--sin-ejecutar", "--solo", obligacion],
+                              capture_output=True, text=True, cwd=base, env=ambiente,
+                              timeout=120)
+    except (OSError, subprocess.SubprocessError) as e:
+        return False, f"no se le pudo preguntar: {type(e).__name__}: {e}"
+    # QUÉ CÓDIGO SE ACEPTA, Y POR QUÉ NO SÓLO EL 0. Medido: con `--sin-ejecutar`, `R5`
+    # queda SIN COMPROBAR por construcción y el instrumento sale con 1 —«1 SIN
+    # IMPLEMENTAR»—, que es la respuesta CORRECTA y no un fallo. Lo que la sonda distingue
+    # no es verde contra rojo: es «este programa mide obligaciones» contra «este programa no
+    # sabe de qué le hablas». Por eso se acepta `0` y `1`, y se rechaza todo lo demás: `2`
+    # es `argparse` no reconociendo la opción, o el propio instrumento fallando cerrado
+    # porque `--solo` no nombra ninguna obligación de su universo.
+    if proc.returncode not in (0, 1):
+        return False, (f"`--sin-ejecutar --solo {obligacion}` terminó con "
+                       f"{proc.returncode}: no reconoce el modo o no conoce esa obligación")
+    if not re.search(r"(?m)^\s*1 obligaciones medidas", proc.stdout):
+        return False, (f"`--sin-ejecutar --solo {obligacion}` no publica haber medido esa "
+                       f"obligación y sólo ésa")
+    if not re.search(r"(?<![\w-])%s(?![\w-])" % re.escape(obligacion), proc.stdout):
+        return False, (f"`--sin-ejecutar --solo {obligacion}` no la NOMBRA en su salida")
+    return True, ""
+
+
+# ---------------------------------------------------------------------------
+#  LA DISPENSA, Y LAS CINCO CONDICIONES QUE TIENE QUE PASAR
+# ---------------------------------------------------------------------------
+#  SABOTAJE DE LA PROPIA CORRECCIÓN, MEDIDO ANTES DE DARLA POR BUENA:
+#      $ # se le añade `evidencia_reflexiva: {del: evidencia, motivo: me eximo yo}` a
+#      $ # `integridad`, que no participa en ningún ciclo, y se retira su evidencia
+#      $ python3.12 kernel/operativo/validadores/comprobar_evidencia.py
+#        DISPENSA REFLEXIVA · 'integridad': evidencia AUSENTE y NO IMPUTADA a T158 …
+#  Concedida. La dispensa era FORJABLE escribiéndola, y con ella cualquier validador podía
+#  desaparecer de la cobertura de `T158` sin que nada lo dijera — que es exactamente el
+#  defecto que `T158` existe para impedir. Se cierra exigiendo `por:` y las condiciones 4
+#  y 5, que son las dos derivadas. Con ellas, el mismo sabotaje sale ROJO.
+
+
+def _dispensa_reflexiva(base, comp, componentes, canales, r):
+    """¿Puede este componente ser dispensado de la AUSENCIA de su evidencia? Falla cerrado.
+
+    Devuelve `(sí_o_no, motivo_publicable)`. Cualquier condición incumplida es un FALLO de
+    `T158`, no una dispensa denegada en silencio: una declaración de reflexividad mal
+    escrita tiene que doler, porque es el campo que alguien usaría para eximir a un
+    validador cualquiera.
+    """
+    decl = comp.get("evidencia_reflexiva")
+    if decl is None:
+        return False, ""
+    cid = comp.get("id")
+    yo = "evidencia"
+
+    # 1 · la declaración está bien formada
+    if not isinstance(decl, dict):
+        r.fallo(f"manifiesto: `evidencia_reflexiva` de '{cid}' es {type(decl).__name__} y "
+                f"tiene que ser un mapa con `del`, `por` y `motivo`")
+        return False, ""
+    for campo in ("del", "por", "motivo"):
+        if not (isinstance(decl.get(campo), str) and decl[campo].strip()):
+            r.fallo(f"manifiesto: `evidencia_reflexiva` de '{cid}' no declara `{campo}`. "
+                    f"Sin de quién depende, por qué obligación y con qué motivo, la "
+                    f"dispensa no se puede auditar")
+            return False, ""
+
+    objetivo, obligacion = decl["del"].strip(), decl["por"].strip()
+
+    # 2 · nombra un componente real, y es éste
+    if objetivo not in {c.get("id") for c in componentes}:
+        r.fallo(f"manifiesto: `evidencia_reflexiva` de '{cid}' dice depender de "
+                f"'{objetivo}', que no es ningún componente del manifiesto")
+        return False, ""
+    if objetivo != yo:
+        # Declara un ciclo con OTRO validador. Aquí no aplica y su ausencia se reprocha como
+        # la de cualquiera: si ese otro ciclo existe, se rompe en su sede.
+        return False, ""
+
+    # 3 · el runner lo ejecuta y publica su rojo. Es lo que hace que dispensar no esconda
+    #     nada: el veredicto no desaparece, se cobra donde no hay ciclo.
+    if comp.get("tipo") != "validador":
+        r.fallo(f"manifiesto: '{cid}' declara `evidencia_reflexiva` y no es "
+                f"`tipo: validador`. Sólo se dispensa a quien el runner ejecuta y cuyo rojo "
+                f"el runner publica: sin eso la dispensa sí escondería el veredicto")
+        return False, ""
+
+    # 4 · DERIVADO DEL CORPUS · esa obligación tiene su condición de cierre AQUÍ. Si no la
+    #     tuviera, ejecutarla no heredaría este código de salida y no habría ciclo.
+    suyos = sorted(e for e, cubre in canales.items() if obligacion in cubre)
+    if not suyos:
+        r.fallo(f"manifiesto: '{cid}' declara depender de '{yo}' por la obligación "
+                f"'{obligacion}', y NINGÚN `ads:escenario` del corpus que la cubra declara "
+                f"este validador como su `validador:`. Sin ese camino no hay ciclo, y sin "
+                f"ciclo no hay nada que dispensar")
+        return False, ""
+
+    # 5 · EMPÍRICO · y este componente es de verdad el instrumento que la mide. Se le
+    #     pregunta por su propio canal; escribirlo en el manifiesto no basta.
+    mide, por_que_no = _el_declarante_mide_de_verdad(base, comp, obligacion)
+    if not mide:
+        r.fallo(f"manifiesto: '{cid}' declara depender de '{yo}' por '{obligacion}' y no "
+                f"es el instrumento que la mide: {por_que_no}. La dispensa se DERIVA, no "
+                f"se escribe")
+        return False, ""
+
+    return True, (f"'{cid}': evidencia AUSENTE y NO IMPUTADA a T158. Mide '{obligacion}', "
+                  f"cuya condición de cierre son {', '.join(suyos)} —que declaran ESTE "
+                  f"validador—, luego su veredicto hereda el código de salida de '{yo}' y "
+                  f"exigírsela aquí es contarse a sí mismo. Su rojo, si lo hay, lo publica "
+                  f"el runner y sale con 1. En cuanto su evidencia exista se juzga entera, "
+                  f"sin dispensa. Motivo declarado: {decl['motivo'].strip()}")
+
+
 def t158_evidencia(raiz=None):
     base = os.path.abspath(raiz or RAIZ)
     r = Resultado("T158", "La evidencia publicada demuestra lo que el informe afirma")
@@ -557,6 +871,13 @@ def t158_evidencia(raiz=None):
     _comprobar_la_guardia_de_entorno(base, r)
     componentes = cargar_manifiesto(base)
     esperados = {}
+    # La parte DERIVADA de la dispensa reflexiva: qué escenarios del corpus declaran este
+    # validador como su condición de cierre. Barre el corpus, así que sólo se calcula si
+    # alguien declara la dispensa — que hoy es UN componente y mañana debería ser ninguno.
+    # Ver `_dispensa_reflexiva`.
+    canales = (_escenarios_que_me_declaran_canal(base)
+               if any(c.get("evidencia_reflexiva") for c in componentes) else {})
+    dispensadas = []
 
     for comp in componentes:
         if comp.get("tipo") != "validador" or not comp.get("evidencia"):
@@ -569,6 +890,12 @@ def t158_evidencia(raiz=None):
 
         # 1 · existe
         if not os.path.isfile(ruta):
+            # LA ÚNICA PUERTA DE LA DISPENSA REFLEXIVA, y es la ausencia. Se comprueba
+            # aquí y en ningún otro sitio: de la 2 a la 7 no hay excepción que valga.
+            dispensada, motivo = _dispensa_reflexiva(base, comp, componentes, canales, r)
+            if dispensada:
+                dispensadas.append(motivo)
+                continue
             r.fallo(f"{rel}: falta la evidencia de '{comp['id']}', que el manifiesto exige")
             continue
         with open(ruta, encoding="utf-8") as fh:
@@ -579,7 +906,7 @@ def t158_evidencia(raiz=None):
 
         # 2 · errores de invocación: la causa exacta del defecto anterior
         for patron, que in ERRORES_DE_INVOCACION:
-            if re.search(patron, texto):
+            if re.search(patron, _sin_citas_del_corpus(texto)):
                 r.fallo(f"{rel}: contiene {que}. No es la salida de una ejecución "
                         f"correcta: es el mensaje de que la ejecución no ocurrió")
 
@@ -667,6 +994,12 @@ def t158_evidencia(raiz=None):
     # mutación como su detalle: si esta comprobación se adelantara, una mutación que además
     # cambie el tamaño del corpus se registraría con el motivo equivocado.
     _vigencia(base, componentes, r)
+
+    # LA DISPENSA REFLEXIVA SE PUBLICA SIEMPRE, pase o falle `T158`, y por la misma razón
+    # por la que se publica la cobertura del contraste: una excepción que sólo se ve
+    # leyendo el código es una excepción que nadie audita. Se cuelga del resultado y la
+    # imprime `main`, con lo que entra en la evidencia que el runner escribe.
+    r.dispensas_reflexivas = dispensadas
     return r
 
 
@@ -1150,7 +1483,8 @@ def main():
         print(json.dumps([{"id": x.id, "nombre": x.nombre,
                            "estado": "prueba-superada" if x.superada else "prueba-fallida",
                            "fallos": x.fallos,
-                           "cobertura_del_contraste": getattr(x, "nota_cobertura", None)}
+                           "cobertura_del_contraste": getattr(x, "nota_cobertura", None),
+                           "dispensas_reflexivas": getattr(x, "dispensas_reflexivas", None)}
                           for x in resultados], ensure_ascii=False, indent=2))
     else:
         for x in resultados:
@@ -1161,6 +1495,8 @@ def main():
             # cifra que sólo sale cuando todo va bien no sirve para ver cuándo empeora.
             if getattr(x, "nota_cobertura", None):
                 print(f"          cobertura del contraste: {x.nota_cobertura}")
+            for nota in getattr(x, "dispensas_reflexivas", None) or []:
+                print(f"          DISPENSA REFLEXIVA · {nota}")
         fallidas = [x for x in resultados if not x.superada]
         print(f"\n{len(resultados) - len(fallidas)} superadas · {len(fallidas)} fallidas")
     return 1 if any(not x.superada for x in resultados) else 0

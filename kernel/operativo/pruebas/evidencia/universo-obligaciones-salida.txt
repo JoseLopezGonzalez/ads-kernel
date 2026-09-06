@@ -65,7 +65,7 @@ obligación       clase   pruebas                      sabotajes              ev
 A14              deuda   T172                         N172                   evidencia/estado-durable-salida.txt
 C2               C       T87,T92,T226,T227            N92                    evidencia/agentes-salida.txt
 C4               C       T87,T88,T90,T135             N145,N145b,N250        evidencia/agentes-salida.txt
-C5               C       T200,T204,T243               N243                   evidencia/ciclo-salida.txt
+C5               C       T200,T204,T243               N243,NK21a             evidencia/ciclo-salida.txt
 CONTRATO 1       §19     T270,T277,T360,T361          N270c,NG3a,NG3b        evidencia/recuentos-salida.txt
 CONTRATO 1bis    §19     T271,T277                    N271                   evidencia/recuentos-salida.txt
 CONTRATO 2       §19     T272,T277                    N272b,N272d            evidencia/versiones-salida.txt
@@ -88,37 +88,37 @@ S1-02            deuda   T189,T302,T303               N189                   evi
 V6-01            V6      T188,T212                    N188                   evidencia/admision-salida.txt
 V6-02            V6      T188                         N188                   evidencia/admision-salida.txt
 V6-03            V6      T188,T304,T305,T352          N188                   evidencia/admision-salida.txt
-V6-04            V6      T188,T306,T365               N188                   evidencia/admision-salida.txt
+V6-04            V6      T188,T306,T365               N188,NK12a             evidencia/admision-salida.txt
 V6-05            V6      T188,T212                    N188                   evidencia/admision-salida.txt
 V6-06            V6      T188,T212                    N188                   evidencia/admision-salida.txt
 V6-07            V6      T188                         N188                   evidencia/admision-salida.txt
 V6-08            V6      T188,T212                    N188                   evidencia/admision-salida.txt
 V6-09            V6      T188                         N188                   evidencia/admision-salida.txt
 V6-10            V6      T189,T193,T212               N189                   evidencia/admision-salida.txt
-V6-11            V6      T189,T306,T364               N189                   evidencia/admision-salida.txt
+V6-11            V6      T189,T306,T364               N189,NK12a             evidencia/admision-salida.txt
 V6-12            V6      T189,T242,T302,T303          N189,N242,N242b        evidencia/admision-salida.txt
 V6-13            V6      T190                         N190                   evidencia/admision-salida.txt
 V6-14            V6      T190                         N190                   evidencia/admision-salida.txt
 V6-15            V6      T210,T211,T212,T213          N211                   evidencia/arboles-salida.txt
-V6-16            V6      T217,T218,T219,T220          N217,N333              evidencia/e2e-f6-salida.txt
-V6-17            V6      T190,T220,T294               N190                   evidencia/admision-salida.txt
+V6-16            V6      T217,T218,T219,T220          N217,N333,NK09a        evidencia/e2e-f6-salida.txt
+V6-17            V6      T190,T220,T294               N190,NK09a             evidencia/admision-salida.txt
 V6-18            V6      T190,T213                    N190                   evidencia/admision-salida.txt
 V6-19            V6      T190,T363,T365               N190                   evidencia/admision-salida.txt
 g.1              g       T173,T312                    N173                   evidencia/estado-durable-salida.txt
 g.10             g       T179,T320,T325               N179,N320              evidencia/estado-durable-salida.txt
 g.11             g       T179,T320,T321,T322          N179,N320,N321         evidencia/estado-durable-salida.txt
 g.12             g       T174,T176,T182,T219          N174,N176              evidencia/agentes-salida.txt
-g.13             g       T177,T180,T313,T317          N177,NH08              evidencia/admision-salida.txt
-g.14             g       T187,T193,T221,T222          N187                   evidencia/e2e-f6-salida.txt
+g.13             g       T177,T180,T313,T317          N177,NH08,NK03b        evidencia/admision-salida.txt
+g.14             g       T187,T193,T221,T222          N187,NK02a             evidencia/e2e-f6-salida.txt
 g.15             g       T177,T319,T192,T217          N177,N192,N217         evidencia/e2e-f6-salida.txt
 g.16             g       T173,T174,T175,T176          N173,N174,N175         evidencia/e2e-f6-salida.txt
-g.2              g       T173,T178,T183,T408          N173,N178              evidencia/cardinalidad-salida.txt
-g.3              g       T174,T175,T180,T186          N174,N175              evidencia/estado-durable-salida.txt
-g.4              g       T174,T180,T314,T322          N174                   evidencia/e2e-f6-salida.txt
+g.2              g       T173,T178,T183,T408          N173,N178,NK20b        evidencia/cardinalidad-salida.txt
+g.3              g       T174,T175,T180,T186          N174,N175,NK02a        evidencia/estado-durable-salida.txt
+g.4              g       T174,T180,T314,T322          N174,NK01a,NK03a       evidencia/e2e-f6-salida.txt
 g.5              g       T177,T180,T313,T319          N177                   evidencia/estado-durable-salida.txt
-g.6              g       T176,T180,T183,T209          N176                   evidencia/cardinalidad-salida.txt
+g.6              g       T176,T180,T183,T209          N176,NK20a             evidencia/cardinalidad-salida.txt
 g.7              g       T173,T312,T313,T314          N173                   evidencia/estado-durable-salida.txt
-g.8              g       T175,T180,T314,T315          N175,N321              evidencia/e2e-f6-salida.txt
+g.8              g       T175,T180,T314,T315          N175,N321,NK03a        evidencia/e2e-f6-salida.txt
 g.9              g       T178,T180,T184,T193          N178                   evidencia/continua-salida.txt
 
 LAS TRES RESTAS, DERIVADAS — Y LO QUE UNA RESTA VACÍA NO DEMUESTRA

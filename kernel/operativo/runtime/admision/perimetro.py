@@ -498,9 +498,24 @@ class Perimetro:
                 "NACIMIENTO. Sin ese contraste no se emite verde",
             )
 
-        # `ADJ-B3` · `O27` §3 · el régimen FUERTE, cuando la historia declara entradas.
+        # LO QUE LOS DOS REGÍMENES COMPARTEN VA ANTES DE CUALQUIERA DE LOS DOS
+        #
+        #     `libro` decide QUÉ régimen gobierna y `capas` las usan LOS DOS. Estaban
+        #     escritos debajo del rótulo del régimen fuerte, y eso rompió el sabotaje
+        #     `N340` —el que retira el régimen de entradas cerradas para comprobar que el
+        #     prefijo por sí solo deja pasar un borrado—: al recortar desde ese rótulo se
+        #     llevaba por delante `capas`, y lo que salía era `NameError`, no el fallo que
+        #     el sabotaje persigue. **Una traza no es detección**, y el catálogo lo publicó
+        #     como NO DETECTADA. Lo cazó el instrumento de `K13`.
+        #
+        #     La causa fue la corrección del hallazgo `#20` de este mismo expediente —las
+        #     tres capas—, que introdujo `capas` dentro del tramo recortable sin advertir
+        #     que un sabotaje lo cortaba por ahí. Se sube lo compartido, y el sabotaje
+        #     vuelve a recortar SÓLO el régimen que dice recortar.
         libro = entrada[4] if len(entrada) > 4 else None
         capas = entrada[5] if len(entrada) > 5 else {"HEAD": actual}
+
+        # `ADJ-B3` · `O27` §3 · el régimen FUERTE, cuando la historia declara entradas.
         if libro is not None and sede.tiene_entradas_cerradas(libro):
             # SE JUZGAN LAS TRES CAPAS, Y NO SÓLO `HEAD` · hallazgo `#20` del primer gate
             # válido. Se recorren en orden de cercanía a la ejecución —lo que hay en disco

@@ -1,0 +1,33 @@
+# evidencia de: invariantes-criticos-autopruebas
+# orden:        python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/comprobar-invariantes-criticos.py --autopruebas
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+AUTOPRUEBAS · los modos de fallo cerrado, saboteados sobre el propio juez
+==============================================================================
+
+OK    sin fallos control POSITIVO · una ficha real pasa la estructura
+OK    C-01   falta un `K` del catálogo derivado
+OK    C-02   sobra un `K` que `O30` §2 no autoriza
+OK    C-03   la formulación no es la LITERAL de `O30` §2
+OK    C-04   un `K` sin fuente normativa
+OK    C-04   una fuente que NO dice lo que se le cita
+OK    C-05   un `K` sin implementación
+OK    C-05   una implementación que no está en el árbol
+OK    C-06   un `K` sin canal productivo
+OK    C-06   un canal que NO es el que ejercen sus sabotajes
+OK    C-07   un `K` sin prueba positiva
+OK    C-07   una positiva que su evidencia NO da por superada
+OK    C-08   un `K` sin prueba adversarial
+OK    C-08   un sabotaje que no está en el catálogo único
+OK    C-09   un `K` sin evidencia
+OK    C-09   una evidencia que no está en el árbol
+OK    C-10   una prueba compartida que no explica su vínculo
+OK    C-11   el resultado observado NO coincide con el esperado
+OK    C-12   el blob de la evidencia no es el de `HEAD`
+OK    SedeIlegible sin repositorio, el ancla NO se construye
+OK    C-13   una positiva SALTADA se ve como salto, no como éxito
+OK    C-13   la palabra `skipped` DENTRO del enunciado no es un salto
+OK    C-13   ningún ejecutable requerido llega a ejercerse
+
+23 controles · 0 sin detectar

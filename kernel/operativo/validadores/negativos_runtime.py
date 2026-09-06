@@ -1021,3 +1021,423 @@ CATALOGO.extend([
              casos=["EscenariosAtadosAUnaBateriaAjena."
                     "test_415_ningun_escenario_NUEVO_queda_atado_a_una_bateria_ajena"]),
 ])
+
+
+# ===========================================================================
+#  `O30` · LAS ANCLAS QUE `O29` DEJÓ SIN MUTANTE
+# ===========================================================================
+#  POR QUÉ EXISTE ESTE BLOQUE, Y QUÉ AGUJERO CIERRA. `O29` §2 seleccionó por riesgo un
+#  conjunto de anclas y `O30` §2 lo sustituyó por el catálogo cerrado `K01`–`K24`. Al
+#  imputar el catálogo de mutaciones contra ese catálogo se midió —importando
+#  `comprobar_negativos.CATALOGO`, no leyendo prosa— que quince anclas NO tenían ni un solo
+#  sabotaje que las nombrara: `T340` `T344` `T345` `T404` `T408` `T215` `T220` `T296` `T298`
+#  `T299` `T300` `T306` `T337` `T364` `T414`. Sus VECINAS de familia sí lo tenían —`T341`
+#  con `N341`, `T342` con `N340`/`N342`, `T343` con `N343`, `T350` con `N350…`, `T330` con
+#  `N330`—, de modo que el corpus sabía sabotear la ZONA y no la PROPIEDAD. Una propiedad
+#  vecina en rojo no acredita a la de al lado: es exactamente el defecto que `ADJ-B3`
+#  encontró vivo en `V6-12`.
+#
+#  DECISIÓN · cada sabotaje rompe la propiedad que el ancla NOMBRA, y no la de al lado
+#      Un mutante que pusiera roja el ancla por un camino ajeno —una traza de importación,
+#      la huella general del kernel, el enunciado de la propia prueba— acreditaría en falso.
+#      Por eso cada entrada de abajo (a) toca CÓDIGO PRODUCTIVO, no la sede de la prueba;
+#      (b) declara `espera` con el trozo de diagnóstico que SÓLO produce esa propiedad al
+#      caer; y (c) restringe `casos` al caso que la vigila, para que «cayó la batería» no se
+#      pueda confundir con «cayó esta propiedad».
+#
+#  DECISIÓN · lo que NO se cubre desde aquí, y se dice en vez de maquillarse
+#      `T364` vive en `escenario_e2e_f6.py`, que NO es una batería `unittest`: no imprime
+#      `Ran N tests` ni cabeceras `FAIL:`, que son las dos cosas que `_ejecutar_bateria`
+#      necesita para distinguir una detección de una traza. Registrarlo aquí con
+#      `clase="bateria"` publicaría «NO LLEGÓ A CORRER» en cada pasada, que es un rojo
+#      falso. Su mutación SE ESCRIBE igualmente —`m_o30_un_punto_pierde_la_orden_procedencia`,
+#      abajo— y la ejerce `comprobar-invariantes-criticos.py`, que sí sabe leer el veredicto
+#      por líneas de ese escenario. La función no entra en `CATALOGO`, y eso es una
+#      LIMITACIÓN DEL VEHÍCULO declarada, no una propiedad sin sabotaje.
+
+RAIZ_EXTERNA_PAQUETE = "kernel/operativo/raiz-externa/"
+MOTOR_DURABLE = "kernel/operativo/runtime/estado/motor.py"
+INVARIANTE_B12 = "kernel/operativo/runtime/runtime/estado_util.py"
+BACKENDS_DE_CONTENCION = "kernel/operativo/runtime/contencion/backends.py"
+
+
+# --- `K16` · la contención fuerte y el descendiente que hace `setsid` --------------------
+
+def m_o30_el_espacio_de_pid_deja_de_matar_al_hijo(raiz):
+    """`T215`, `falla_si`: «un descendiente que hace `setsid` sobrevive al backend fuerte».
+
+    EL ENVOLTORIO ES EL MECANISMO, y se comprobó cuál. Primero se probó retirando sólo
+    `--kill-child`: `T215` SIGUIÓ VERDE. El motivo, medido: el PID 1 del espacio SÍ está en
+    el grupo —el `setsid` lo hacen sus descendientes, no él—, de modo que el cinturón
+    `_senalar_grupo` lo alcanza igual, y matar al PID 1 de un espacio de nombres se lleva el
+    espacio entero. `--kill-child` es un cinturón del cinturón, no la contención. Ese
+    resultado se conserva escrito aquí porque es lo que distingue un sabotaje que mide de
+    uno que se lo cree.
+
+    Lo que SÍ es la contención es el espacio de nombres. Aquí el envoltorio desaparece y el
+    nivel declarado NO cambia: el backend sigue anunciándose como `arbol-de-procesos`, sigue
+    siendo elegible frente a una política fuerte, y contiene lo mismo que `simple`. Es la
+    degradación silenciosa EXACTA que `FD-5` prohíbe —presentar el débil como fuerte—, y el
+    bisnieto que hizo `setsid` sobrevive porque ya no hay espacio del que no pueda salir.
+    """
+    _sustituir(raiz, BACKENDS_DE_CONTENCION,
+               '        return ["unshare", "--user", "--map-root-user", "--pid", "--fork",\n'
+               '                "--kill-child", "--mount-proc"] + list(argumentos)',
+               '        return list(argumentos)')
+
+
+def m_o30_la_tarea_generacional_deja_de_hacer_setsid(raiz):
+    """`T414`, `falla_si`: «las generaciones dejan de salirse de la sesión y nadie lo nota».
+
+    `T414` es el CONTROL DEL CONTROL de `T215` y `T216`: su objeto es el montaje, no el
+    producto, y por eso su sabotaje se aplica al montaje —es la única sede donde vive lo que
+    mide—. Se declara así, en vez de disfrazarlo de sabotaje productivo: sin `setsid`, el
+    backend débil y el fuerte contienen lo mismo, `T215` y `T216` siguen VERDES y dejan de
+    distinguir un nivel del otro. Un ancla que sólo probara `T215` daría por probada una
+    contención que nadie está esquivando.
+    """
+    _sustituir(raiz, PRUEBAS_RUNTIME + "test_contencion.py",
+               'return "setsid sh -c " + shlex.quote(cuerpo) + " &\\n"',
+               'return "sh -c " + shlex.quote(cuerpo) + " &\\n"')
+
+
+# --- `K01` `K02` `K03` · el testigo durable del paso 8 y el orden 8 → 9 -------------------
+
+def m_o30_el_testigo_deja_de_cubrir_las_rutas_del_plan(raiz):
+    """`T298`, `falla_si`: «una MEZCLA PARCIAL de objetos publicados se convierte en vigente».
+
+    El paso 9 exige que el testigo del paso 8 cubra EXACTAMENTE las rutas del plan. Retirada
+    esa exigencia, el bucle que sigue sólo recorre las rutas QUE EL TESTIGO TRAE: un plan de
+    dos rutas con un testigo de una deja la segunda sin comprobar, y la revisión se publica
+    declarando un objeto que no está en `canonico/` —el almacén irrecuperable de `g.3`—.
+
+    LO QUE ESTE SABOTAJE ENSEÑA, Y SE DICE PORQUE SE MIDIÓ. En el caso de `T298` el hueco no
+    llega a producir un almacén roto: el testigo de la fixture anota un `cid` que el disco
+    desmiente, y el canal siguiente —el que contrasta `cid` a `cid`— lo detiene igualmente.
+    Lo que se pierde es la CAPACIDAD DE NOMBRARLO: el veredicto deja de decir «MEZCLA
+    PARCIAL» y pasa a hablar de un `cid` que no casa, que es otro hecho. `T298` no mira que
+    salte una excepción —seguiría saltando—: mira que la excepción NOMBRE la mezcla parcial,
+    y por eso cae por «`PARCIAL` not found in». Un plan cuya ruta sobrante tuviera el `cid`
+    ya correcto pasaría ENTERO, y ése es el agujero de verdad.
+    """
+    _sustituir(raiz, MOTOR_DURABLE,
+               '        if not isinstance(publicados, dict) \\\n'
+               '                or sorted(publicados) != sorted(o["ruta"] for o in plan):',
+               '        if not isinstance(publicados, dict):')
+
+
+def m_o30_el_testigo_pierde_el_fsync_del_directorio(raiz):
+    """`T299`, `falla_si`: «el testigo del paso 8 no sobrevive a un corte de corriente».
+
+    Se retira el `fsync` del DIRECTORIO y se deja el del contenido. Es la mitad exacta que
+    `g.4` obliga a cerrar: el testigo tendría bytes en disco y no tendría NOMBRE, de modo
+    que tras el corte el paso 9 no lo encontraría y la transición confirmada no se podría
+    completar. La otra mitad —el `fsync` del contenido— se deja intacta a propósito: si se
+    quitaran las dos, la prueba caería por la primera y este sabotaje no distinguiría cuál
+    de las dos garantías se perdió.
+    """
+    _sustituir(raiz, MOTOR_DURABLE,
+               "        publicar(temporal, self._d.testigo_de_publicacion(transaccion))\n"
+               "        sincronizar_directorio("
+               "os.path.dirname(self._d.testigo_de_publicacion(transaccion)))\n",
+               "        publicar(temporal, self._d.testigo_de_publicacion(transaccion))\n")
+
+
+def m_o30_el_corte_se_adelanta_al_testigo_del_paso_8(raiz):
+    """`T300`, `falla_si`: «el paso 8 no deja su testigo durable ANTES de que se pueda caer».
+
+    El testigo es la ÚLTIMA acción del paso 8 y la PRIMERA condición del 9 (`E-08`). Aquí el
+    punto de corte `entre-el-paso-8-y-el-9` se adelanta por delante del testigo: el orden
+    contractual preparación → publicación → confirmación se rompe y una caída en ese punto
+    deja los objetos publicados SIN constancia durable de que lo estén. La recuperación ya
+    no puede completar, que es lo que `T300` mide y `T301` presupone.
+    """
+    _sustituir(raiz, MOTOR_DURABLE,
+               "        self._escribir_testigo_de_publicacion(transicion.id, plan, resultado)\n"
+               '        fallos.punto("entre-el-paso-8-y-el-9")\n',
+               '        fallos.punto("entre-el-paso-8-y-el-9")\n'
+               "        self._escribir_testigo_de_publicacion(transicion.id, plan, resultado)\n")
+
+
+# --- `K03` `K22` · la evidencia de la raíz externa, sólo tras los siete pasos -------------
+
+def m_o30_la_evidencia_se_escribe_antes_de_exigir_el_testigo(raiz):
+    """`T296`, `falla_si`: «queda fichero de evidencia con la secuencia cortada».
+
+    `escribir_evidencia` es la ÚNICA puerta por la que la evidencia llega al disco, y su
+    orden INTERNO es la propiedad: primero se exige el testigo completo, y sólo después se
+    crea el directorio y se escribe. Invertido, la excepción sigue levantándose —una prueba
+    que sólo mirara `assertRaises` seguiría verde— y el fichero se queda en disco: un `ls`
+    diría que se publicó evidencia de siete pasos que no se dieron.
+    """
+    _sustituir(raiz, RAIZ_EXTERNA_PAQUETE + "atestacion.py",
+               "    secuencia.exigir_completa()\n"
+               "    directorio = os.path.dirname(os.path.abspath(ruta)) or \".\"\n"
+               "    os.makedirs(directorio, exist_ok=True)\n"
+               "    with open(ruta, \"w\", encoding=\"utf-8\") as manejador:\n"
+               "        manejador.write(sobre.serializar())\n",
+               "    directorio = os.path.dirname(os.path.abspath(ruta)) or \".\"\n"
+               "    os.makedirs(directorio, exist_ok=True)\n"
+               "    with open(ruta, \"w\", encoding=\"utf-8\") as manejador:\n"
+               "        manejador.write(sobre.serializar())\n"
+               "    secuencia.exigir_completa()\n")
+
+
+# --- `K09` `K11` · la atestación externa DESMIENTE al árbol que se autodeclara -----------
+
+def m_o30_la_comprobacion_deja_de_desmentir_la_autodeclaracion(raiz):
+    """`T220`, `falla_si`: «un veredicto falseado dentro del árbol no lo desmiente nadie».
+
+    `G-A9` es el careo: `comprobar` lee la AUTODECLARACIÓN que vive dentro del árbol y la
+    contrasta con el color ATESTADO desde fuera. Sin ese careo el árbol puede declararse
+    VERDE en su propio disco y la única señal sería el código de salida de la atestación,
+    que ya no nombra la contradicción. El sabotaje conserva el resto de `comprobar` —firma,
+    época, commit y tree siguen verificándose— para que lo único que se pierda sea el
+    desmentido, y la prueba caiga por él y no por otra cosa.
+    """
+    _sustituir(raiz, RAIZ_EXTERNA_PAQUETE + "verificador.py",
+               "    if autodeclarado and autodeclarado.get(\"color\") != atestado:",
+               "    if False and autodeclarado and autodeclarado.get(\"color\") != atestado:")
+
+
+# --- `K12` · la procedencia del código con el que se juzga --------------------------------
+
+def m_o30_un_punto_ejecutable_pierde_guarda_y_purga(raiz):
+    """`T306`, `falla_si`: «un punto ejecutable importa un homónimo del `PYTHONPATH`».
+
+    Se retiran LAS DOS defensas de `ads_admision.py` —la guarda `G-03`, que reejecuta con
+    `-I -S -E`, y la purga `E-10`, que limpia `sys.path` desde dentro—, porque cada una sola
+    tapa a la otra: con la guarda puesta, `-E` ya ignora el `PYTHONPATH` y retirar sólo la
+    purga no se notaría; con la purga puesta, retirar sólo la guarda tampoco. La propiedad
+    que `T306` nombra es que NINGÚN punto importe del lanzador, y ésta es la forma exacta de
+    romperla en uno.
+    """
+    ruta = "kernel/operativo/runtime/ads_admision.py"
+    _sustituir(raiz, ruta,
+               "AISLAMIENTO = _aislamiento_g03.exigir(__file__, __name__)",
+               "AISLAMIENTO = None")
+    _sustituir(raiz, ruta,
+               "RETIRADAS_DE_LA_RUTA = _purgar_la_ruta_de_importacion()",
+               "RETIRADAS_DE_LA_RUTA = []")
+
+
+def m_o30_la_procedencia_no_demostrable_deja_de_ser_fallo_cerrado(raiz):
+    """`T337`, `falla_si`: «se emite veredicto sin poder demostrar la procedencia».
+
+    `O26` §1.8. La purga no alcanza a un módulo que se importa desde FUERA de la instalación
+    sin pasar por el lanzador: eso sólo lo caza la comprobación de procedencia. Retirada la
+    llamada, el punto ejecutable sigue adelante con código ajeno dentro y publica. Un fallo
+    que se detecta DESPUÉS de publicar no es un fallo cerrado.
+    """
+    _sustituir(raiz, RAIZ_EXTERNA_PAQUETE + "verificador.py",
+               "def exigir_procedencia_del_aparato():",
+               "def exigir_procedencia_del_aparato():\n    return None\n\n\ndef _sin_uso():")
+
+
+def m_o30_un_punto_pierde_la_orden_procedencia(raiz):
+    """`T364`, `falla_si`: «un punto declara que publica su procedencia y no la publica».
+
+    NO ENTRA EN `CATALOGO`, y el motivo está escrito arriba: su prueba vive en
+    `escenario_e2e_f6.py`, que no es una batería `unittest` y no produce ni `Ran N tests` ni
+    cabeceras `FAIL:`. La ejerce `comprobar-invariantes-criticos.py`, que sí sabe leer el
+    veredicto por líneas de ese escenario y exige la línea «`T364` · procedencia: N de M …
+    y no la publican».
+
+    `ADJ-M2` midió que los cinco puntos ejecutables DECLARABAN «la procedencia se publica» y
+    que sólo uno tenía orden que la publicara. Este sabotaje devuelve a uno de ellos a aquel
+    estado: la orden deja de resolver y el punto vuelve a pedir que se le crea.
+    """
+    _sustituir(raiz, "kernel/operativo/runtime/ads_ciclo.py",
+               '    subordenes.add_parser("procedencia", parents=[comun])',
+               '    subordenes.add_parser("procedencia-retirada", parents=[comun])')
+
+
+# --- `K20` · la prioridad contractual, ni directamente ni en dos transiciones -------------
+
+def m_o30_la_invariante_sale_del_bucle_de_reintento(raiz):
+    """`T404`, `falla_si`: «la carrera entre dos planificadores abre la puerta a mover la
+    prioridad».
+
+    Dos cosas a la vez, y las dos hacen falta para que el defecto sea el de `T404` y no el
+    de `T400`:
+
+      1 · DSP vuelve a subir la prioridad al postergar —es la infracción de `b.12`—;
+      2 · la invariante deja de reevaluarse DENTRO del bucle de `aplicar_con_reintento` y
+          pasa a comprobarse una sola vez, sobre la primera transición construida.
+
+    LO QUE SE MIDIÓ, Y LO QUE NO. `T404` cae con `PRIORIDAD_INMUTABLE`, igual que `T400` con
+    `NG04`, y la OBSERVACIÓN es otra: aquí la invariante se ejerce sobre la transición que
+    DOS planificadores reales, alternando pasadas sobre el mismo almacén, reconstruyen tras
+    la carrera; `T400` corre con uno solo y sin `RevisionObsoleta`, de modo que su rojo no
+    dice nada sobre el camino concurrente. Lo que este sabotaje NO llega a discriminar —y se
+    escribe en vez de suponerse— es la mitad (2): el rojo se produce ya en la primera vuelta,
+    donde la puerta sigue estando aunque se saque del bucle, así que la muerte de la
+    reevaluación por vuelta queda cubierta por (1) y no por sí sola. Para separarlas haría
+    falta un planificador que sólo moviera la prioridad DESPUÉS de perder una carrera, y eso
+    es una prueba nueva, no un mutante.
+    """
+    _sustituir(raiz, "kernel/operativo/runtime/runtime/dispatcher.py",
+               '                nuevo = dict(actual)\n'
+               '                nuevo["seleccion"] = normalizar_seleccion(',
+               '                nuevo = dict(actual)\n'
+               '                nuevo["prioridad"] = int(actual["prioridad"]) + 10\n'
+               '                nuevo["seleccion"] = normalizar_seleccion(')
+    _sustituir(raiz, INVARIANTE_B12,
+               "        exigir_inmutables_del_paquete(almacen, transicion)\n"
+               "        try:\n"
+               "            return almacen.aplicar(transicion, intentos=intentos_de_bloqueo)",
+               "        if _vuelta == 0:\n"
+               "            exigir_inmutables_del_paquete(almacen, transicion)\n"
+               "        try:\n"
+               "            return almacen.aplicar(transicion, intentos=intentos_de_bloqueo)")
+
+
+def m_o30_la_invariante_se_comprueba_despues_de_aplicar(raiz):
+    """`T408`, `falla_si`: «la ida del lavado llega a aplicarse y el diario la registra».
+
+    El viaje de ida y vuelta —subir a 60, reordenar la cola, devolver a 50— sólo muere si la
+    puerta está ANTES de aplicar. Movida a después, la ida se confirma y se escribe en el
+    diario, y la excepción llega DESPUÉS de que el estado se haya movido.
+
+    LA FORMA EXACTA DEL SABOTAJE, y por qué no es la ingenua. Comprobar contra el almacén ya
+    aplicado no levanta NADA —el «anterior» que leería sería el valor nuevo, y `60 == 60`
+    pasa—: eso tumbaría también `T405` y por el motivo de `T405`, «`PrioridadInmutable` not
+    raised», que no es la propiedad de `T408`. Aquí se congela el estado PREVIO, se aplica, y
+    se juzga después contra el congelado: la excepción se levanta igual que antes —`T405`
+    sigue viendo lo que espera ver— y lo que cambia es que la IDA YA SE CONFIRMÓ. `T408` cae
+    en la línea siguiente, sobre `pq-lavado`, que es el paquete que sólo ella usa: el durable
+    dice 60 cuando la transición fue rechazada. Ésa es la propiedad —el viaje muere EN LA
+    IDA, no al volver— y ninguna otra prueba del eje la mira.
+    """
+    _sustituir(raiz, INVARIANTE_B12,
+               "    def aplicar(self, transicion, **resto):\n"
+               "        exigir_inmutables_del_paquete(self._almacen, transicion)\n"
+               "        return self._almacen.aplicar(transicion, **resto)",
+               "    def aplicar(self, transicion, **resto):\n"
+               "        previo = {}\n"
+               "        for operacion in getattr(transicion, 'operaciones', ()) or ():\n"
+               "            ruta = getattr(operacion, 'ruta', None)\n"
+               "            if isinstance(ruta, str):\n"
+               "                previo[ruta] = _vigente(self._almacen, ruta)\n"
+               "        aplicada = self._almacen.aplicar(transicion, **resto)\n"
+               "\n"
+               "        class _Congelado:\n"
+               "            def leer(self, ruta):\n"
+               "                if previo.get(ruta) is None:\n"
+               "                    raise RutaInvalida(ruta)\n"
+               "                return previo[ruta]\n"
+               "\n"
+               "        exigir_inmutables_del_paquete(_Congelado(), transicion)\n"
+               "        return aplicada")
+
+
+CONTINUA = PRUEBAS_RUNTIME + "test_continua.py"
+
+
+# --- `K21` · entregas, acuses y `Continúa` no pierden ni duplican trabajo confirmado ------
+
+def m_o30_el_acuse_vuelve_a_derivar_la_identidad_de_la_entrega(raiz):
+    """`T204` escenario 4, `falla_si`: «una entrega acusada se sigue reportando pendiente».
+
+    Es el defecto que la auditoría independiente encontró vivo, mecanizado. Cada transición
+    volvía a derivar el `id` del CONTENIDO, de modo que `acusar` escribía en una RUTA LÓGICA
+    NUEVA y el objeto `emitido` no quedaba superado nunca. Desde fuera se ve como lo que es:
+    `Continúa` barre el dominio buscando entregas en estado `emitido`, encuentra la vieja
+    PARA SIEMPRE, y publica un pendiente falso en cada ejecución. El trabajo confirmado se
+    DUPLICA —dos objetos para una entrega— y a la vez se PIERDE —el acuse no supera a nada—,
+    que son las dos mitades de `K21` a la vez.
+
+    Se toca sólo `acusar` y no `rechazar` ni `devolver`: la propiedad se demuestra en una
+    transición, y saboteando las tres el rojo no diría cuál de ellas la sostiene.
+    """
+    _sustituir(raiz, "kernel/operativo/runtime/ciclo/handoffs.py",
+               '    nueva["id"] = entrega["id"]          # la entrega es la MISMA; lo que '
+               'avanza es su estado',
+               '    nueva["id"] = _identificador(nueva)')
+
+
+CATALOGO.extend([
+    Mutacion("NK16a", "O30 · K16", "T215", CONTENCION,
+             "el backend de espacio de nombres de PID pierde `--kill-child` y el bisnieto "
+             "que hizo `setsid` sobrevive: el nivel fuerte degrada al débil en silencio",
+             m_o30_el_espacio_de_pid_deja_de_matar_al_hijo, clase=BATERIA,
+             espera="sobrevivió descendencia al backend",
+             casos=["ContencionFuerte."
+                    "test_el_bisnieto_con_setsid_no_escapa_al_backend_elegido"]),
+    Mutacion("NK16b", "O30 · K16", "T414", CONTENCION,
+             "el montaje generacional deja de hacer `setsid` y las cuatro generaciones "
+             "comparten sesión: `T215` y `T216` dejarían de distinguir los dos niveles",
+             m_o30_la_tarea_generacional_deja_de_hacer_setsid, clase=BATERIA,
+             espera="el `setsid` se ha perdido",
+             casos=["ProtocoloDePreparacion."
+                    "test_414_setsid_conservado_y_MEDIDO_generacion_a_generacion"]),
+    Mutacion("NK02a", "O30 · K02", "T298", ESTADO_DURABLE,
+             "el paso 9 deja de exigir que el testigo cubra EXACTAMENTE las rutas del plan "
+             "y una MEZCLA PARCIAL se publica como vigente",
+             m_o30_el_testigo_deja_de_cubrir_las_rutas_del_plan, clase=BATERIA,
+             espera="'PARCIAL' not found in",
+             casos=["OrdenDeLosPasos8y9.test_T298_una_MEZCLA_PARCIAL_no_se_publica"]),
+    Mutacion("NK01a", "O30 · K01", "T299", ESTADO_DURABLE,
+             "el testigo del paso 8 pierde el `fsync` del DIRECTORIO: tendría contenido en "
+             "disco y no tendría nombre tras un corte de corriente",
+             m_o30_el_testigo_pierde_el_fsync_del_directorio, clase=BATERIA,
+             espera="no se sincronizó el DIRECTORIO del testigo",
+             casos=["OrdenDeLosPasos8y9."
+                    "test_T299_el_testigo_se_escribe_con_fsync_de_CONTENIDO_y_de_DIRECTORIO"]),
+    Mutacion("NK03a", "O30 · K03", "T300", ESTADO_DURABLE,
+             "el punto de corte se adelanta por delante del testigo del paso 8 y el orden "
+             "contractual preparación → publicación → confirmación se rompe",
+             m_o30_el_corte_se_adelanta_al_testigo_del_paso_8, clase=BATERIA,
+             espera="el paso 8 no dejó su testigo durable antes de la caída",
+             casos=["OrdenDeLosPasos8y9."
+                    "test_T300_caida_ENTRE_los_pasos_8_y_9_y_RECUPERACION_posterior"]),
+    Mutacion("NK03b", "O30 · K03", "T296", RAIZ_EXTERNA,
+             "`escribir_evidencia` invierte su orden interno: escribe el fichero y DESPUÉS "
+             "exige el testigo, de modo que queda evidencia de una verificación cortada",
+             m_o30_la_evidencia_se_escribe_antes_de_exigir_el_testigo, clase=BATERIA,
+             espera="se escribió evidencia con la secuencia cortada en",
+             casos=["SecuenciaDeLosSietePasos."
+                    "test_T296_interrumpir_en_CADA_paso_deja_CERO_ficheros"]),
+    Mutacion("NK09a", "O30 · K09", "T220", RAIZ_EXTERNA,
+             "`comprobar` deja de carear la autodeclaración del árbol con el color atestado "
+             "desde fuera: el árbol vuelve a poder certificarse a sí mismo",
+             m_o30_la_comprobacion_deja_de_desmentir_la_autodeclaracion, clase=BATERIA,
+             espera="VEREDICTO_DESMENTIDO",
+             casos=["VeredictoDesmentidoYEvidencia."
+                    "test_G_A9_el_veredicto_falseado_desde_dentro_es_desmentido"]),
+    Mutacion("NK12a", "O30 · K12", "T306", INTEGRIDAD,
+             "`ads_admision.py` pierde a la vez la guarda `G-03` y la purga `E-10`, y vuelve "
+             "a importar el homónimo que el lanzador le pone en el `PYTHONPATH`",
+             m_o30_un_punto_ejecutable_pierde_guarda_y_purga, clase=BATERIA,
+             espera="importó un homónimo del PYTHONPATH",
+             casos=["ProcedenciaDeLosModulos."
+                    "test_T306_ningun_ejecutable_importa_un_homonimo_del_PYTHONPATH"]),
+    Mutacion("NK12b", "O30 · K12", "T337", INTEGRIDAD,
+             "la comprobación de procedencia del aparato deja de levantar y un módulo "
+             "traído de fuera de la instalación ya no impide emitir",
+             m_o30_la_procedencia_no_demostrable_deja_de_ser_fallo_cerrado, clase=BATERIA,
+             espera="una procedencia no demostrable no salió con su código propio",
+             casos=["PurgaEnLaRaizExterna."
+                    "test_T337_la_procedencia_no_fiable_es_FALLO_CERRADO"]),
+    Mutacion("NK20a", "O30 · K20", "T404", SELECCION,
+             "DSP vuelve a mover la prioridad al postergar Y la invariante deja de "
+             "reevaluarse en cada vuelta del reintento: la carrera abre la puerta",
+             m_o30_la_invariante_sale_del_bucle_de_reintento, clase=BATERIA,
+             espera="PRIORIDAD_INMUTABLE",
+             casos=["PrioridadInmutableDeB12."
+                    "test_404_dos_planificadores_a_la_vez_tampoco_mueven_la_prioridad"]),
+    Mutacion("NK21a", "O30 · K21", "T204", CONTINUA,
+             "el acuse vuelve a derivar la identidad de la entrega del contenido: escribe "
+             "en una ruta lógica NUEVA, no supera a la emisión y `Continúa` reporta un "
+             "pendiente falso para siempre",
+             m_o30_el_acuse_vuelve_a_derivar_la_identidad_de_la_entrega, clase=BATERIA,
+             espera="la entrega cambió de identidad al acusarse",
+             casos=["LosDiezEscenarios.test_23_handoff_pendiente"]),
+    Mutacion("NK20b", "O30 · K20", "T408", SELECCION,
+             "la invariante de `b.12` se comprueba DESPUÉS de aplicar: la ida del lavado se "
+             "confirma y el diario la registra antes de que la excepción llegue",
+             m_o30_la_invariante_se_comprueba_despues_de_aplicar, clase=BATERIA,
+             espera='self.durable(rt, "pq-lavado")["prioridad"], 50',
+             casos=["PrioridadInmutableDeB12."
+                    "test_408_cambiar_la_prioridad_y_RESTAURARLA_despues_tampoco_cuela"]),
+])

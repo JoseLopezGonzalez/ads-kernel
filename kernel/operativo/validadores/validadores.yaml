@@ -488,10 +488,16 @@ componentes:
   #
   # Entran los CUATRO modos y no solo las autopruebas: es la leccion `G-05` de este mismo
   # manifiesto —un instrumento cuyo autotest pasa y cuyo producto no corre esta roto y sale
-  # verde—. Las firmas exigen CERO pendientes: mientras `O26-IMPL` u `O26-SAB` publiquen
-  # faltantes, estos componentes salen ROJOS, que es exactamente lo que `O26` §5 dice del
-  # arbol. Una firma que admitiera pendientes seria la promesa de garantia superior a la
-  # entregada que `O18` prohibe.
+  # verde—. La firma de `O26-IMPL` exige CERO pendientes: mientras publique faltantes sale
+  # ROJO, que es exactamente lo que `O26` §5 dice del arbol, y lo que `O30` §4 repite
+  # («La resta de obligaciones internas sin implementar debe quedar vacia»). Una firma que
+  # admitiera pendientes seria la promesa de garantia superior a la entregada que `O18`
+  # prohibe.
+  #
+  # `O30` §1 · Y LA DE `O26-SAB` YA NO, porque el Owner retiro su UNIDAD de la condicion de
+  # certificacion el 2026-09-06. Ver la entrada `o26-sab` de mas abajo, donde esta escrito
+  # el cambio, su autoridad y lo que NO cambia. Las AUTOPRUEBAS de los dos siguen exigiendo
+  # `0 sin detectar`: `O30` retira una medida, no autoriza a que el medidor se rompa.
   - id: o26-impl-autopruebas
     script: comprobar-obligaciones-implementadas.py
     dir: docs/evolucion/verificacion
@@ -507,6 +513,28 @@ componentes:
     tipo: validador
     evidencia: o26-impl-salida.txt
     firma_de_exito: '[1-9]\d* obligaciones medidas · 0 SIN IMPLEMENTAR · 0 faltantes'
+    # LA OBLIGACION CIRCULAR, DECLARADA · reproducida el 2026-09-06 y rota en
+    # `comprobar_evidencia._dispensa_reflexiva`, donde estan los cuatro eslabones leidos uno
+    # a uno. En corto: `R5` de este instrumento ejecuta el `validador:` de cada escenario
+    # que cubre la obligacion; `CONTRATO 3` lo cubren `T158` y `T350`, y las dos declaran
+    # `comprobar_evidencia.py`; luego este componente HEREDA el codigo de salida de
+    # `evidencia`. Y `evidencia` exigia la evidencia de este componente, que el runner solo
+    # escribe si este componente salio verde. Ninguna pasada convergia.
+    #
+    # LO QUE ESTA DECLARACION **NO** CONCEDE: no baja la firma de arriba, no retira la fila,
+    # no dispensa de nada salvo de la AUSENCIA del fichero, y no oculta ningun rojo — si
+    # este componente falla, el runner lo publica y sale con 1. En cuanto su evidencia
+    # existe, `evidencia` la juzga entera. `comprobar_evidencia` ademas DERIVA la
+    # reflexividad del corpus antes de concederla, y publica cada dispensa en su salida.
+    evidencia_reflexiva:
+      del: evidencia
+      por: CONTRATO 3
+      motivo: >
+        `R5` ejecuta `comprobar_evidencia.py` como condicion de cierre de `CONTRATO 3`
+        (escenarios `T158` y `T350`), luego el veredicto de este componente hereda el
+        codigo de salida de `evidencia`. Exigirle aqui su evidencia es el ciclo que el
+        cierre ejecutivo de `F6` prohibe crear: una obligacion cuyo unico pendiente es la
+        evidencia del propio instrumento que la cuenta. Su rojo lo cobra el runner.
     debe_contener: ['FALTANTES, UNO A UNO', 'EVIDENCIA LIGADA AL SHA Y AL TREE',
                     'CONDICIÓN DE CIERRE EJECUTADA', 'LO QUE ESTE VEREDICTO NO DEMUESTRA']
 
@@ -520,14 +548,83 @@ componentes:
     debe_contener: ['CONTROL POSITIVO', 'catálogo de mutaciones está VACÍO',
                     'sólo toca la sede del enunciado']
 
+  # `O30` §1 (Owner, 2026-09-06) · ESTA MEDICION DEJA DE GOBERNAR LA CERTIFICACION.
+  #
+  # QUE SE DECIDIO Y POR QUE. La resolucion rechaza expresamente como condiciones de cierre
+  # «la obligacion de proporcionar un sabotaje distinto para cada clausula `falla_si`»
+  # (§1.1), «la clasificacion de criticidad derivada principalmente de coincidencias
+  # lexicas» (§1.2), «la multiplicacion de obligaciones cuando varias clausulas expresan el
+  # mismo invariante material» (§1.3) y «la exigencia de cientos de mutantes cuando el
+  # riesgo material esta cubierto por una prueba adversarial comun y trazable» (§1.5). Esas
+  # cuatro SON la unidad de este instrumento: `S1` es el sabotaje por clausula, `S5` y
+  # `--por-riesgo` anclan por lexico, y «una clausula = una propiedad» es la
+  # multiplicacion. Desde `O30` la certificacion la gobierna el catalogo `K01`-`K24` de su
+  # §2 con la evidencia de su §3.
+  #
+  # QUE SE HIZO CON LA FILA, Y QUE NO. Sigue siendo `tipo: validador`: se EJECUTA en cada
+  # pasada y PUBLICA su evidencia, porque `O30` §1 ordena conservarla —«Las mediciones
+  # anteriores de `O26-SAB` permanecen como evidencia historica de lo que aquel instrumento
+  # conto»—. No se retira la fila, no se pasa a `biblioteca` (dejaria de correr) ni a
+  # `generador` (dejaria de publicar evidencia), y no se declara satisfecha: `O30` §1 dice
+  # que la resolucion «no declara que aquellas clausulas sean falsas, prescindibles ni
+  # satisfechas». Lo unico que cambia es SU FIRMA, porque la firma era el mecanismo por el
+  # que la unidad retirada ponia roja la certificacion.
+  #
+  # LA FIRMA NUEVA, Y POR QUE NO ES UN MAQUILLAJE. Era
+  # `'[1-9]\d* propiedades criticas medidas · 0 PENDIENTES'`. Ya no exige `0 PENDIENTES`
+  # —eso es la unidad retirada—, pero exige DOS cosas que antes no exigia: que la medicion
+  # se haya hecho de verdad sobre un universo no vacio, y que la salida DECLARE su propia
+  # retirada. `debe_contener` fija esa declaracion literalmente: si alguien la borrase para
+  # que la salida pareciera un veredicto vigente, este componente se pone ROJO. La
+  # enumeracion individual de faltantes sigue exigida, para que los pendientes no puedan
+  # desaparecer de la evidencia. Y `o26-sab-autopruebas` sigue con su firma intacta: `O30`
+  # retira una medida, no autoriza a que el medidor se rompa.
   - id: o26-sab
     script: comprobar-propiedades-saboteadas.py
     dir: docs/evolucion/verificacion
     tipo: validador
     evidencia: o26-sab-salida.txt
-    firma_de_exito: '[1-9]\d* propiedades críticas medidas · 0 PENDIENTES'
-    debe_contener: ['FALTANTES, UNO A UNO', 'CICLO SANO / SABOTAJE / RESTAURADO',
+    firma_de_exito: '[1-9]\d* propiedades críticas medidas · \d+ PENDIENTES'
+    debe_contener: ['MEDICIÓN HISTÓRICA · NO GOBIERNA LA CERTIFICACIÓN DE `F6`',
+                    '`O30` §1 (Owner, 2026-09-06) RETIRA de la condición de cierre',
+                    'catálogo `K01`–`K24`',
+                    'declara que aquellas cláusulas sean falsas, prescindibles ni satisfechas',
+                    'FALTANTES, UNO A UNO', 'CICLO SANO / SABOTAJE / RESTAURADO',
                     'NO ES SÓLO LA HUELLA GENERAL', 'LO QUE ESTE VEREDICTO NO DEMUESTRA']
+
+  # `O30` §2 y §3 · EL CATÁLOGO CERRADO `K01`-`K24`, DERIVADO Y EJERCIDO.
+  #
+  # `O30` §1 rechaza la unidad con la que `O26-SAB` medía —una clausula `falla_si`
+  # clasificada por las palabras que contiene— y §2 la sustituye por veinticuatro
+  # invariantes nombrados. Cambiar la unidad no basta: mientras nadie la mida, el catalogo
+  # es prosa. Estos dos componentes lo miden, y entran los DOS por la leccion `G-05` de
+  # este mismo manifiesto: un instrumento cuyo autotest pasa y cuyo producto no corre esta
+  # roto y sale verde.
+  #
+  # El conjunto NO se escribe en ninguna sede: se DERIVA de `O30` §2 en
+  # `docs/owner/ADS-OWNER-RESOLUCIONES.md`, y por eso ninguna de las dos firmas lleva un
+  # cardinal. La firma del producto exige CERO incumplidos y CERO sabotajes sin detectar:
+  # mientras un `Knn` no tenga fuente, implementacion, canal, caso sano, prueba
+  # adversarial, resultado, evidencia ligada a commit y tree, y el ciclo ejecutado, este
+  # componente sale ROJO, que es lo que `O30` §3 dice del arbol.
+  - id: invariantes-criticos-autopruebas
+    script: comprobar-invariantes-criticos.py
+    dir: docs/evolucion/verificacion
+    args: ['--autopruebas']
+    tipo: validador
+    evidencia: invariantes-criticos-autopruebas-salida.txt
+    firma_de_exito: '[1-9]\d* controles · 0 sin detectar'
+    debe_contener: ['control POSITIVO', 'C-01', 'C-10', 'C-12',
+                    'sin repositorio, el ancla NO se construye']
+
+  - id: invariantes-criticos
+    script: comprobar-invariantes-criticos.py
+    dir: docs/evolucion/verificacion
+    tipo: validador
+    evidencia: invariantes-criticos-salida.txt
+    firma_de_exito: '[1-9]\d* invariantes medidos · [1-9]\d* SATISFECHOS · 0 INCUMPLIDOS · [1-9]\d* sabotajes ejercidos · 0 sin detectar'
+    debe_contener: ['EL UNIVERSO, DERIVADO Y LITERAL', 'LOS INCUMPLIMIENTOS, UNO A UNO',
+                    'LO EJERCIDO, SABOTAJE A SABOTAJE', 'LO QUE ESTE VEREDICTO NO DEMUESTRA']
 
   - id: runner
     script: registrar_evidencia.py

@@ -28,11 +28,11 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 854dfa1b99be3824, calculada f0f8ac970f17354a. Algún fichero de la huella se
+                          → detectada: [1] el kernel DIVERGE de su release: almacenada 3b93f082ebf3eb79, calculada d749c8c70b075fc9. Algún fichero de la huella
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: el kernel DIVERGE de su release: almacenada 854dfa1b99be3824, calculada 7768cc11e79a7495. Algún fichero de la huella se
+                          → detectada: [1] el kernel DIVERGE de su release: almacenada 3b93f082ebf3eb79, calculada bf4166d222ae2a8a. Algún fichero de la huella
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
-                          → detectada: kernel/operativo/validadores/ads_lint.py NO entra en la huella: un fork silencioso de ese fichero sería indetectable
+                          → detectada: [1] el kernel DIVERGE de su release: almacenada 3b93f082ebf3eb79, calculada d628fc81776f88a4. Algún fichero de la huella
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
                           → detectada: caso_restrictivo_gana: gana 44, y lo más restrictivo era 48
 OK   N149b   A-03  T149  la resolución deja de registrar por qué gana el valor elegido
@@ -56,9 +56,9 @@ OK   N158d   evidencia T158  se publica una ejecución cuyo código no fue cero
 OK   N158e   evidencia T158  falta un fichero de evidencia que el manifiesto exige
                           → detectada: kernel/operativo/pruebas/evidencia/referencias-salida.txt: falta la evidencia de 'referencias', que el manifiesto exige
 OK   N158f   evidencia T158  un validador nuevo queda fuera del manifiesto y de la evidencia
-                          → detectada: validadores/comprobar_algo_nuevo.py: existe y el manifiesto no lo declara. Quedaría fuera de la evidencia sin que nada l
+                          → detectada: manifiesto: 'o26-impl' declara depender de 'evidencia' por 'CONTRATO 3' y no es el instrumento que la mide: `--sin-ejecu
 OK   N158g   evidencia T158  la cobertura publicada describe un corpus con dos ficheros menos que el vigente
-                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 516 y el corpus vigente da 5
+                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 531 y el corpus vigente da 5
 OK   N158h   evidencia T158  una vigencia declara un recuento que nadie implementa
                           → detectada: manifiesto: la vigencia 'T161-cobertura' de 'fuentes' declara el recuento 'fuentes.recuento_que_nadie_implementa', que n
 OK   N158i   evidencia T158  una entrada de vigencia no declara `patron` — el caso que reventaba con KeyError
@@ -239,6 +239,8 @@ OK   N343    ADJ-B3 · O27 §3 T343  el canal ESTRUCTURAL deja de comparar cada 
                           → detectada: FAIL T343 · Defecto que previene: reescribir una condición y confirmarla. --------------------------------------------------- [corrida PARCIAL: AppendOnlyPorEntradaCerrada]
 OK   N342    ADJ-B3 · O27 §3 T342  se retira el canal de PRESENCIA LITERAL de las entradas cerradas
                           → detectada: FAIL T342 · EL ATAQUE, sobre los bytes reales: `hallazgos=0` no se puede repetir. ------------------------------------------- [corrida PARCIAL: AppendOnlyPorEntradaCerrada LaSedeRealDelOwner]
+OK   N435    #20 · V6-12 T435  la sede del Owner vuelve a juzgarse SÓLO contra `HEAD` y una edición en DISCO deja de verse: es el hallazgo `#20` del primer gate válido
+                          → detectada: FAIL T435 · el hallazgo, exactamente. Antes: verde. Ahora: rojo, nombrando la capa. ----------------------------------------- [corrida PARCIAL: SedeDelOwnerEnLasTresCapas]
 OK   N343b   ADJ-B3 · V6-12 T343  una alteración confirmada y luego revertida deja de constar
                           → detectada: FAIL T343 · El canal de la HISTORIA, discriminado, y una decisión que se declara. ------------------------------------------- [corrida PARCIAL: AppendOnlyPorEntradaCerrada]
 OK   N349    ADJ-B3 · O27 §3 T349  el régimen de entradas cerradas se decide por el fichero de HOY y no por la historia
@@ -253,6 +255,12 @@ OK   NH02    H-02  T350  un escenario vuelve a declarar `prueba-superada` sobre 
                           → detectada: T162: declara `estado: prueba-superada` y su evidencia sostiene `prueba-ejecutada` — `evidencia/workspace-salida.txt` no
 OK   N350d   ADJ-G2 T350  la evidencia publicada se edita a mano para que diga otra cosa
                           → detectada: T273: declara `estado: prueba-superada` y su evidencia sostiene `prueba-fallida` — `evidencia/composicion-procesos-salid
+OK   NK13a   O30 · K13 T340  el libro reancla cada entrada cerrada al ÚLTIMO commit de la ruta y la sede pierde la procedencia contra la que se compara
+                          → detectada: FAIL T340 · Defecto que previene: un término de comparación sin procedencia. ------------------------------------------------ [corrida PARCIAL: AppendOnlyPorEntradaCerrada.test_T340_cada_entrada_queda_anclada_al_commit_que_la_introdujo]
+OK   NK13b   O30 · K13 T344  una entrada cerrada que YA NO ESTÁ deja de anotarse como `ENTRADA_BORRADA`: el truncamiento por la cola no rompe nada y por eso no lo ve nadie
+                          → detectada: FAIL T344 · Defecto que previene: el truncamiento por la cola, que no rompe nada. ------------------------------------------- [corrida PARCIAL: AppendOnlyPorEntradaCerrada.test_T344_borrar_la_ULTIMA_resolucion_da_ROJO]
+OK   NK13c   O30 · K13 T345  el orden de las entradas cerradas se juzga como CONJUNTO y no como secuencia: «están todas» vuelve a valer por «están como estaban»
+                          → detectada: FAIL T345 · Defecto que previene: cambiar qué revisa a qué sin perder un solo byte. ----------------------------------------- [corrida PARCIAL: AppendOnlyPorEntradaCerrada.test_T345_reordenar_dos_resoluciones_da_ROJO]
 OK   NG3a    ADJ-G3 T360  §5.3 vuelve a declarar que no existe ningún adaptador, con el ejecutor local real en el árbol
                           → detectada: docs/canonico/04-CONTRATOS-TECNICOS.md:386: «Ninguno existe» dicho de «adaptadores», que SÍ está construida — el ADAPTAD
 OK   NG3b    ADJ-G3 T360  §5.4 vuelve a declarar inexistentes el verificador de admisión y la raíz externa, con los dos construidos y con evidencia publicada
@@ -274,13 +282,39 @@ OK   NM5b    ADJ-M5 T361  una zona nueva de documentos cae fuera de las dos mita
 OK   NE14a   E-14  T158  la evidencia dice `OK (skipped=3)` y la firma `OK` la casaba igual
                           → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: la corrida SALTÓ 3 caso(s) y el manifiesto no declara ninguno.
 OK   NE14b   E-14  T158  el contador de casos se infla y nadie lo contrasta con la salida
-                          → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: declara `Ran 104 tests` y su salida contiene 25 desenlaces de
+                          → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: declara `Ran 105 tests` y su salida contiene 26 desenlaces de
 OK   NE14c   E-14  T158  se recorta un caso de la salida y el contador sigue diciendo lo que decía
-                          → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: declara `Ran 25 tests` y su salida contiene 24 desenlaces de c
+                          → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: declara `Ran 26 tests` y su salida contiene 25 desenlaces de c
 OK   NE14d   E-14  T158  un `OK` que declara `failures` dentro del paréntesis
                           → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: el resultado declara `failures=1` y aun así dice OK. Un éxito
 OK   NE14e   E-14  T158  dos corridas pegadas en el mismo fichero de evidencia
                           → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: la salida no tiene EXACTAMENTE un `Ran N tests` y un resultado
+OK   NS21a   #21   T150  se altera una NORMA VIGENTE dentro de `docs/`, que es donde la prosa ES la norma, y el sello del producto tiene que moverse
+                          → detectada: [4] la clase `CANONICA_OPERATIVA` DIVERGE del libro anotado: 6024fed4c8d92d5e sobre 230 ficheros, ahora 14bbddf6b7b0b5bd
+OK   NS21b   #21   T150  se altera la SEDE DEL OWNER: es el gesto exacto que `REV-3` reprodujo y que no movía la huella
+                          → detectada: [4] la clase `AUTORIDAD_SUPERIOR` DIVERGE del libro anotado: f2f4f5ea06dd460e sobre 4 ficheros, ahora 79e4a85a65b93ac3 s
+OK   NS21c   #21   T150  se altera una PROYECCIÓN DERIVADA —la matriz donde la candidata reclama el cierre de `G-01`…`G-08`—, el segundo fichero del hecho reproducido
+                          → detectada: [4] la clase `DERIVADA` DIVERGE del libro anotado: 3c14a36f14fa68f4 sobre 45 ficheros, ahora da73e6ff73682dc0 sobre 45
+OK   NS21d   #21   T150  se altera SÓLO un GATE HISTÓRICO: una trazabilidad reescribible no traza, porque los actos siguientes se apoyan en el acto pasado
+                          → detectada: [4] la clase `EVIDENCIA` DIVERGE del libro anotado: 3a0b429884734a5e sobre 108 ficheros, ahora 070dadfddf3bb59f sobre 10
+OK   NS21e   #21   T150  se altera material HISTÓRICO conservado por trazabilidad, que es la otra clase que sólo existe para poder mirar atrás
+                          → detectada: [4] la clase `HISTORICA` DIVERGE del libro anotado: 6dbcd7f29b31be41 sobre 8 ficheros, ahora fa454b24ba28f224 sobre 8
+OK   NS21f   #21   T150  se AÑADE un borrador no aprobado junto a la norma: si añadirlo no moviera el sello, se leería como norma sin que nada lo hubiera aprobado
+                          → detectada: [4] la clase `NO_APLICABLE_A_IMPLEMENTACION` DIVERGE del libro anotado: 48a17019454c02c7 sobre 13 ficheros, ahora cf8902
+OK   NS21g   #21   T150  se BORRA una sede normativa vigente: retirar la sede retira la materia que gobernaba, y un sello que sólo suma contenidos no lo dice
+                          → detectada: [4] docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md: es la SEDE de `MAT-008` y NO EXISTE en el árbol. Borrar una sede
+OK   NS21h   #21   T150  se CAMBIA una exclusión del sello para sacar del alcance la sede del Owner: el alcance viaja pegado al número, y moverlo es un acto visible
+                          → detectada: [4] el ÁMBITO del sello CAMBIÓ: anotado bc9c85e05175be4c, derivado 4d0705815b889ffb. El alcance del sello —la política d
+OK   NS21i   #21   T150  se OMITE `docs/` ENTERO del sello, que es el defecto original escrito hoy: las clases normativas se quedan sin un solo fichero sellado
+                          → detectada: [4] el registro asigna la clase `AUTORIDAD_SUPERIOR` a alguna zona del árbol y el sello no cubre NI UN fichero suyo: esa
+OK   NS23a   #23   T150  la huella deja de mirar la RUTA: el mismo contenido en otro sitio produce el mismo número, que es la mitad de lo que la comprobación 3 declaraba y no escribía
+                          → detectada: [3] HUELLA DEL KERNEL: el MISMO contenido se mueve a `BOOTSTRAP_PROMPT-MOVIDO.md`, en la misma zona y con la misma exten
+OK   NS23b   #23   T150  el sello deja de mirar el CONTENIDO: reescribir una norma entera no lo mueve, y la comprobación 3 tiene que EJERCERLO, no declararlo
+                          → detectada: [3] SELLO DEL PRODUCTO: se ALTERA el contenido de `docs/canonico/00-EMPEZAR-AQUI.md` y el número no se mueve (ba829a68ef
+OK   NS23c   #23   T150  se estrecha `EXTENSIONES` hasta que los validadores en Python salen de la huella: el estrechamiento que la lista de nueve rutas veía, ahora derivado de `validadores.yaml`
+                          → detectada: [2] kernel/operativo/runtime/adaptadores/contrato.py NO entra en la huella del kernel, y es FUENTE TÉCNICA de `MAT-071`:
+OK   NS23d   #23   T150  una clase canónica se queda SIN POLÍTICA de sello escrita, y con ella caería fuera POR OMISIÓN, que es la exclusión que nadie escribe
+                          → detectada: [4] la clase canónica `HISTORICA` no tiene política de sello escrita: una clase sin política quedaría fuera POR OMISIÓN,
 OK   N172    A14   T172  la guarda de intérprete pasa a poder RELAJARSE por variable de entorno
                           → detectada: FAIL T172 · Una guarda que se puede bajar por variable es un interruptor. ---------------------------------------------------
 OK   N173    g.1   T173  cada evento del diario lleva el `pid` del proceso que lo escribió
@@ -335,6 +369,8 @@ OK   NH08    H-08  T307  la cobertura del contraste vuelve a calcularse y a no p
                           → detectada: FAIL T307 · Defecto que previene: `H-08`, una cifra que se calcula y no se publica. ----------------------------------------- [corrida PARCIAL: ResultadoExactoDeLaEvidencia.test_T307g_la_COBERTURA_DEL_CONTRASTE_va_publicada_en_la_evidencia]
 OK   N194    FD-3  T194  el motor de estado durable deja de viajar al proyecto instalado
                           → detectada: el proyecto instalado no lleva el motor de estado durable
+OK   NG04c   G-04  T432  vuelve el `continue` del campo ausente y la invariante se evade en DOS transiciones: borrar la prioridad y volver a escribirla
+                          → detectada: FAIL T432 · La reproducción LITERAL del gate, de punta a punta. ------------------------------------------------------------- [corrida PARCIAL: PrioridadInmutableDeB12.test_432_la_evasion_ENTERA_en_dos_transiciones_no_llega_a_999]
 OK   NG04    G-04  T400  DSP vuelve a subir la prioridad al postergar, que es el sabotaje exacto de `R1-H02` y pasaba doce baterías en verde
                           → detectada: ERROR T400 · Defecto que previene: el sabotaje de `R1-H02`, en su forma más simple. ------------------------------------------ [corrida PARCIAL: PrioridadInmutableDeB12.test_400_la_prioridad_declarada_sobrevive_a_una_postergacion]
 OK   NG04b   G-04  T419  la lista de campos inmutables deja de contener `prioridad` y la prohibición de `b.12` se desactiva sin que ninguna línea lo diga
@@ -343,5 +379,29 @@ OK   NG08    G-08  T412  la raíz vuelve a esperar un plazo fijo en vez de obser
                           → detectada: FAIL T412 · Defecto que previene: cambiar una constante por otra constante mayor. ------------------------------------------- [corrida PARCIAL: ProtocoloDePreparacion.test_412_la_preparacion_es_una_condicion_OBSERVADA_y_no_una_espera]
 OK   ND02    D-02  T415  a un ejecutor se le RETIRA el veredicto nominal que aprendió a publicar, y la clase de `D-02` vuelve a crecer con el censo ya cerrado
                           → detectada: FAIL T415 · Defecto que previene: que la clase de `D-02` vuelva a crecer en silencio. --------------------------------------- [corrida PARCIAL: EscenariosAtadosAUnaBateriaAjena.test_415_ningun_escenario_NUEVO_queda_atado_a_una_bateria_ajena]
+OK   NK16a   O30 · K16 T215  el backend de espacio de nombres de PID pierde `--kill-child` y el bisnieto que hizo `setsid` sobrevive: el nivel fuerte degrada al débil en silencio
+                          → detectada: FAIL T215 · Defecto que previene: llamar contención a un `killpg` que `setsid` esquiva. ------------------------------------- [corrida PARCIAL: ContencionFuerte.test_el_bisnieto_con_setsid_no_escapa_al_backend_elegido]
+OK   NK16b   O30 · K16 T414  el montaje generacional deja de hacer `setsid` y las cuatro generaciones comparten sesión: `T215` y `T216` dejarían de distinguir los dos niveles
+                          → detectada: FAIL T414 · Defecto que previene: que el montaje deje de probar lo que dice probar. ----------------------------------------- [corrida PARCIAL: ProtocoloDePreparacion.test_414_setsid_conservado_y_MEDIDO_generacion_a_generacion]
+OK   NK02a   O30 · K02 T298  el paso 9 deja de exigir que el testigo cubra EXACTAMENTE las rutas del plan y una MEZCLA PARCIAL se publica como vigente
+                          → detectada: FAIL T298 · Defecto que previene: publicar la revisión con parte de los objetos fuera. -------------------------------------- [corrida PARCIAL: OrdenDeLosPasos8y9.test_T298_una_MEZCLA_PARCIAL_no_se_publica]
+OK   NK01a   O30 · K01 T299  el testigo del paso 8 pierde el `fsync` del DIRECTORIO: tendría contenido en disco y no tendría nombre tras un corte de corriente
+                          → detectada: FAIL T299 · Defecto que previene: un testigo que un corte de corriente se lleva. -------------------------------------------- [corrida PARCIAL: OrdenDeLosPasos8y9.test_T299_el_testigo_se_escribe_con_fsync_de_CONTENIDO_y_de_DIRECTORIO]
+OK   NK03a   O30 · K03 T300  el punto de corte se adelanta por delante del testigo del paso 8 y el orden contractual preparación → publicación → confirmación se rompe
+                          → detectada: FAIL T300 · Defecto que previene: dar por recuperable lo que nadie ha recuperado. ------------------------------------------- [corrida PARCIAL: OrdenDeLosPasos8y9.test_T300_caida_ENTRE_los_pasos_8_y_9_y_RECUPERACION_posterior]
+OK   NK03b   O30 · K03 T296  `escribir_evidencia` invierte su orden interno: escribe el fichero y DESPUÉS exige el testigo, de modo que queda evidencia de una verificación cortada
+                          → detectada: FAIL T296 · Defecto que previene: publicar evidencia de lo que no se ha verificado. ----------------------------------------- [corrida PARCIAL: SecuenciaDeLosSietePasos.test_T296_interrumpir_en_CADA_paso_deja_CERO_ficheros]
+OK   NK09a   O30 · K09 T220  `comprobar` deja de carear la autodeclaración del árbol con el color atestado desde fuera: el árbol vuelve a poder certificarse a sí mismo
+                          → detectada: FAIL T220 · Defecto que previene: que el árbol se certifique a sí mismo. ---------------------------------------------------- [corrida PARCIAL: VeredictoDesmentidoYEvidencia.test_G_A9_el_veredicto_falseado_desde_dentro_es_desmentido]
+OK   NK12a   O30 · K12 T306  `ads_admision.py` pierde a la vez la guarda `G-03` y la purga `E-10`, y vuelve a importar el homónimo que el lanzador le pone en el `PYTHONPATH`
+                          → detectada: FAIL T306 · Defecto que previene: `E-10`, que el lanzador decida qué código juzga. ------------------------------------------ [corrida PARCIAL: ProcedenciaDeLosModulos.test_T306_ningun_ejecutable_importa_un_homonimo_del_PYTHONPATH]
+OK   NK12b   O30 · K12 T337  la comprobación de procedencia del aparato deja de levantar y un módulo traído de fuera de la instalación ya no impide emitir
+                          → detectada: FAIL T337 · Defecto que previene: emitir veredicto sin poder demostrar la procedencia. -------------------------------------- [corrida PARCIAL: PurgaEnLaRaizExterna.test_T337_la_procedencia_no_fiable_es_FALLO_CERRADO]
+OK   NK20a   O30 · K20 T404  DSP vuelve a mover la prioridad al postergar Y la invariante deja de reevaluarse en cada vuelta del reintento: la carrera abre la puerta
+                          → detectada: ERROR T404 · Defecto que previene: que la carrera entre dos DSP abra la puerta. ---------------------------------------------- [corrida PARCIAL: PrioridadInmutableDeB12.test_404_dos_planificadores_a_la_vez_tampoco_mueven_la_prioridad]
+OK   NK21a   O30 · K21 T204  el acuse vuelve a derivar la identidad de la entrega del contenido: escribe en una ruta lógica NUEVA, no supera a la emisión y `Continúa` reporta un pendiente falso para siempre
+                          → detectada: FAIL T204 · escenario 4 · Defecto que previene: perder una entrega esperando acuse. ----------------------------------------- [corrida PARCIAL: LosDiezEscenarios.test_23_handoff_pendiente]
+OK   NK20b   O30 · K20 T408  la invariante de `b.12` se comprueba DESPUÉS de aplicar: la ida del lavado se confirma y el diario la registra antes de que la excepción llegue
+                          → detectada: FAIL T408 · Defecto que previene: lavar la mutación con un viaje de ida y vuelta. ------------------------------------------- [corrida PARCIAL: PrioridadInmutableDeB12.test_408_cambiar_la_prioridad_y_RESTAURARLA_despues_tampoco_cuela]
 
-170 infracciones detectadas · 0 NO detectadas
+200 infracciones detectadas · 0 NO detectadas

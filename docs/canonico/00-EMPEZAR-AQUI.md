@@ -149,7 +149,10 @@ grep -cE '^# `O[0-9]+`' docs/owner/ADS-OWNER-RESOLUCIONES.md
 ## 7 · Qué hacer después de leer
 
 **Lo que viene ahora es CONSTRUIR**, y el orden de construcción está en
-[`05-PLAN-DE-IMPLEMENTACION-F5-F6.md`](05-PLAN-DE-IMPLEMENTACION-F5-F6.md). Antes de
+[`05-PLAN-DE-IMPLEMENTACION-F5-F6.md`](05-PLAN-DE-IMPLEMENTACION-F5-F6.md). **Si lo que vas a
+construir, ejecutar, validar o diagnosticar es `F6`**, la guía operativa vigente —y la única—
+es [`07-GUIA-OPERATIVA-DE-F6.md`](07-GUIA-OPERATIVA-DE-F6.md), que existe para que no haya que
+reconstruir el estado de `F6` leyendo la sucesión de gates. Antes de
 escribir una línea, dos lecturas obligadas: qué está ya construido, en
 [`04-CONTRATOS-TECNICOS.md`](04-CONTRATOS-TECNICOS.md) §1 —**completar lo que existe, no
 duplicarlo**—, y qué contratos quedan y qué los bloquea, en

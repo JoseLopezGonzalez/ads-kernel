@@ -1,0 +1,923 @@
+# evidencia de: o26-sab
+# orden:        python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/comprobar-propiedades-saboteadas.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+`O26-SAB` · PROPIEDADES CRÍTICAS CON UNA PRUEBA CAPAZ DE FALLAR
+==============================================================================
+
+  MEDICIÓN HISTÓRICA · NO GOBIERNA LA CERTIFICACIÓN DE `F6`
+  ------------------------------------------------------------------------
+  `O30` §1 (Owner, 2026-09-06) RETIRA de la condición de cierre la unidad con
+  la que mide este instrumento, y la nombra en cuatro de sus cinco puntos:
+    §1.1  un sabotaje distinto por cada cláusula `falla_si`   → es `S1`
+    §1.2  criticidad derivada de coincidencias léxicas        → es `S5` y
+                                                                `--por-riesgo`
+    §1.3  multiplicar obligaciones cuando varias cláusulas expresan el mismo
+          invariante material                                → es la unidad
+    §1.5  exigir cientos de mutantes habiendo prueba adversarial común
+  Desde `O30`, la certificación la gobierna el CATÁLOGO `K01`–`K24` de su §2
+  con la evidencia de su §3, donde UNA prueba adversarial puede cubrir varios
+  invariantes si declara el vínculo y cae por el motivo declarado.
+
+  LO QUE ESTO NO DICE, en palabras de la propia `O30` §1: «Esta resolución no
+  declara que aquellas cláusulas sean falsas, prescindibles ni satisfechas.
+  Corrige la unidad con la que se decide la certificación.» Los pendientes de
+  abajo siguen enumerados, uno a uno, y siguen sin sabotaje propio.
+
+  CÓDIGO DE SALIDA · `0` significa «la medición histórica se ejecutó y se
+  publicó íntegra», NO «no quedan pendientes». El recuento de pendientes es el
+  dato y está al pie. Si el instrumento no puede medir, sale con `2` y no
+  aprueba por ausencia de dato. Las autopruebas del medidor siguen siendo
+  normativas: la medida no gobierna, pero el medidor tiene que funcionar.
+
+  UNIDAD    la CLÁUSULA `falla_si`, no la obligación. `B` cuenta sabotajes por
+            obligación; ésta es la distancia exacta entre `B=0` y `O26` §5.2
+  CRITERIO  `O28` §3, las seis condiciones de §5.2, cada una por separado
+            S1  SABOTAJE IMPUTADO AL ESCENARIO
+            S2  MOTIVO DEL ROJO DECLARADO
+            S3  CANAL PRODUCTIVO, NO PRUEBA TEXTUAL
+            S4  NO ES SÓLO LA HUELLA GENERAL
+            S5  ALCANCE ESPECÍFICO DE ESTA CLÁUSULA
+            S6  CICLO SANO / SABOTAJE / RESTAURADO
+
+EL UNIVERSO DE PROPIEDADES, DERIVADO
+------------------------------------------------------------------------------
+  346 propiedades críticas · 156 escenarios · 58 obligaciones del universo
+  escenarios que cubren obligación y NO escriben `falla_si` —sedes mudas, no aportan propiedad y no se callan— (5): T135, T87, T88, T90, T92
+
+POR REQUISITO — dónde se rompe la cadena
+------------------------------------------------------------------------------
+  S1  SABOTAJE IMPUTADO AL ESCENARIO              primeras faltas: 174
+  S2  MOTIVO DEL ROJO DECLARADO                   primeras faltas: 2
+  S3  CANAL PRODUCTIVO, NO PRUEBA TEXTUAL         primeras faltas: 2
+  S4  NO ES SÓLO LA HUELLA GENERAL                primeras faltas: 0
+  S5  ALCANCE ESPECÍFICO DE ESTA CLÁUSULA         primeras faltas: 101
+  S6  CICLO SANO / SABOTAJE / RESTAURADO          primeras faltas: 4
+
+FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
+------------------------------------------------------------------------------
+  T145/f1      S2  C4
+       «un encuadre que empezó alto pasa el gate sin dictamen porque la conversación bajó el grado»
+       los 2 sabotajes de `T145` (N145, N145b) no declaran `espera`: sólo puede comprobarse que hay rojo, no por qué · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:268
+  T145/f2      S2  C4
+       «un rol materializado cuyo dictamen nadie exige queda como rol decorativo»
+       los 2 sabotajes de `T145` (N145, N145b) no declaran `espera`: sólo puede comprobarse que hay rojo, no por qué · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:268
+  T158/f1      S5  CONTRATO 3
+       «una evidencia contiene «can't open file» y el informe sigue afirmando EXIT 0»
+       ningún sabotaje de `T158` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N158g: el motivo no comparte ni un término distintivo con la cláusula; N158h: el motivo no comparte ni un término distintivo con l · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:383
+  T158/f2      S3  CONTRATO 3
+       «una evidencia afirma un éxito que su salida no respalda»
+       NE14b: sólo toca la sede del enunciado (kernel/operativo/pruebas/evidencia/contencion-salida.txt) · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:383
+  T158/f3      S5  CONTRATO 3
+       «se publica una ejecución cuyo código no fue cero»
+       ningún sabotaje de `T158` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N158g: el motivo no comparte ni un término distintivo con la cláusula; N158h: el motivo no comparte ni un término distintivo con l · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:383
+  T158/f4      S6  CONTRATO 3
+       «un validador nuevo queda fuera del manifiesto y de la evidencia»
+       N158z: sano → EXIT=1 · caen T158 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T158 en el árbol SIN sabotear · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:383
+  T158/f5      S6  CONTRATO 3
+       «una evidencia intacta y CADUCADA pasa por válida porque su cabecera, su código y su firma siguen siendo correctos»
+       N158l: sano → EXIT=1 · caen T158 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T158 en el árbol SIN sabotear · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:383
+  T158/f6      S6  CONTRATO 3
+       «una vigencia declara un recuento sin implementación registrada y la comprobación se da por superada»
+       N158h: sano → EXIT=1 · caen T158 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T158 en el árbol SIN sabotear; N158i: sano → EXIT=1 · caen T158 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T158 en el árbol SIN sabotear · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:383
+  T158/f7      S5  CONTRATO 3
+       «un contrato de vigencia mal escrito produce una traza en vez de un fallo explicativo»
+       ningún sabotaje de `T158` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N158g: el motivo no comparte ni un término distintivo con la cláusula; N158h: el motivo no comparte ni un término distintivo con l · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:383
+  T172/f2      S5  A14
+       «el entorno insuficiente sale con el mismo código que un producto defectuoso»
+       ningún sabotaje de `T172` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N172: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:85
+  T173/f1      S5  g.1,g.16,g.2,g.7
+       «leer el estado exige reconstruirlo desde los eventos»
+       ningún sabotaje de `T173` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N173: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:108
+  T173/f2      S5  g.1,g.16,g.2,g.7
+       «las tres materias comparten estructura: colapsarlas rompe I-g7»
+       ningún sabotaje de `T173` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N173: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:108
+  T174/f1      S5  g.12,g.16,g.3,g.4
+       «queda una mezcla parcial visible entre el primer fichero escrito y el último»
+       ningún sabotaje de `T174` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N174: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:129
+  T175/f1      S5  g.16,g.3,g.8
+       «una transición confirmada se pierde»
+       ningún sabotaje de `T175` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N175: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:152
+  T175/f2      S5  g.16,g.3,g.8
+       «una transición incompleta queda publicada»
+       ningún sabotaje de `T175` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N175: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:152
+  T175/f3      S5  g.16,g.3,g.8
+       «el runtime decide por su cuenta la salida de un conflicto que la autoridad debe resolver»
+       ningún sabotaje de `T175` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N175: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:152
+  T176/f1      S5  g.12,g.16,g.6
+       «los dos escritores tienen éxito para la misma revisión»
+       ningún sabotaje de `T176` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N176: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:176
+  T176/f2      S5  g.12,g.16,g.6
+       «agotar reintentos deja el estado canónico tocado»
+       ningún sabotaje de `T176` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N176: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:176
+  T177/f1      S5  g.13,g.15,g.16,g.5
+       «una corrupción se lee como estado válido»
+       ningún sabotaje de `T177` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N177: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:201
+  T177/f2      S5  g.13,g.15,g.16,g.5
+       «la evidencia de verificación se escribe DENTRO del árbol verificado»
+       ningún sabotaje de `T177` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N177: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:201
+  T177/f3      S5  g.13,g.15,g.16,g.5
+       «una clave efímera de prueba se presenta como custodia productiva»
+       ningún sabotaje de `T177` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N177: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:201
+  T178/f2      S5  g.16,g.2,g.9
+       «la pendencia desaparece sin una transición que la explique»
+       ningún sabotaje de `T178` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N178: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:226
+  T178/f3      S5  g.16,g.2,g.9
+       «quitarle la COLA al registro pasa desapercibido: una cadena de huellas no detecta que le quiten la última línea»
+       ningún sabotaje de `T178` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N178: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:226
+  T178/f4      S5  g.16,g.2,g.9
+       «la comprobación vive sólo en la verificación y no en el camino de lectura que deduce la pendencia»
+       ningún sabotaje de `T178` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N178: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:226
+  T178/f5      S5  g.16,g.2,g.9
+       «el registro modifica por sí mismo el estado canónico»
+       ningún sabotaje de `T178` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N178: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:226
+  T179/f2      S5  g.10,g.11,g.16
+       «existe migración implícita al leer»
+       ningún sabotaje de `T179` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N179: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:251
+  T180/f1      S1  g.13,g.16,g.3,g.4,g.5,g.6,g.8,g.9
+       «algún paso se simula en vez de ejecutarse»
+       ningún sabotaje del catálogo está imputado a `T180` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:272
+  T180/f2      S1  g.13,g.16,g.3,g.4,g.5,g.6,g.8,g.9
+       «la salida lleva reloj, duración, identidad de proceso o ruta absoluta, y deja de ser reproducible»
+       ningún sabotaje del catálogo está imputado a `T180` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:272
+  T181/f2      S5  FD-3
+       «el proyecto instalado queda con un enlace roto a una sede que el corpus operativo nombra»
+       ningún sabotaje de `T181` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N181b: el motivo no comparte ni un término distintivo con la cláusula; N181: el motivo ancla igual de bien en la cláusula f1: el e · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:293
+  T182/f1      S1  g.12
+       «existe una cola, un diario o una recuperación paralelos al motor de estado durable»
+       ningún sabotaje del catálogo está imputado a `T182` · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:55
+  T182/f2      S1  g.12
+       «una vista derivada se persiste y pasa a ser fuente de verdad»
+       ningún sabotaje del catálogo está imputado a `T182` · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:55
+  T183/f1      S1  g.2,g.6
+       «un fichero del plano operacional, que cualquiera puede fabricar, decide la autoridad»
+       ningún sabotaje del catálogo está imputado a `T183` · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:77
+  T183/f2      S1  g.2,g.6
+       «el lease lleva un plazo de reloj de pared en un artefacto durable»
+       ningún sabotaje del catálogo está imputado a `T183` · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:77
+  T184/f1      S1  g.16,g.9
+       «un reintento sin tope convierte el ciclo en un livelock»
+       ningún sabotaje del catálogo está imputado a `T184` · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:100
+  T184/f2      S1  g.16,g.9
+       «agotar los reintentos no deja pendencia, o la deja sin identificar el item»
+       ningún sabotaje del catálogo está imputado a `T184` · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:100
+  T186/f1      S1  g.3,g.8
+       «un resultado confirmado se aplica dos veces»
+       ningún sabotaje del catálogo está imputado a `T186` · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:144
+  T186/f2      S1  g.3,g.8
+       «la recuperación inventa un estado que nadie escribió»
+       ningún sabotaje del catálogo está imputado a `T186` · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:144
+  T187/f1      S5  g.14,g.16
+       «omitir el valor viejo —que Git hace opcional— salta la guarda»
+       ningún sabotaje de `T187` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N187: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:165
+  T187/f2      S5  g.14,g.16
+       «la prueba usa sólo la forma que el hook cubre, y confirma lo que el código hace en vez de lo que el contrato promete»
+       ningún sabotaje de `T187` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N187: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:165
+  T187/f3      S5  g.14,g.16
+       «`--force-with-lease` se usa como sustituto de una política explícita»
+       ningún sabotaje de `T187` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N187: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:165
+  T187/f4      S5  g.14,g.16
+       «la política puede eximirse a sí misma del perímetro»
+       ningún sabotaje de `T187` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N187: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:165
+  T188/f1      S5  V6-01,V6-02,V6-03,V6-04,V6-05,V6-06,V6-07,V6-08,V6-09
+       «una lectura usa un separador que una ruta puede contener»
+       ningún sabotaje de `T188` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N188: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:193
+  T188/f3      S5  V6-01,V6-02,V6-03,V6-04,V6-05,V6-06,V6-07,V6-08,V6-09
+       «el censo de lecturas se escribe a mano»
+       ningún sabotaje de `T188` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N188: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:193
+  T189/f1      S5  S1-02,V6-10,V6-11,V6-12
+       «una zona sin condición de contenido pasa por omisión en vez de dar ROJO»
+       ningún sabotaje de `T189` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N189: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:217
+  T189/f2      S5  S1-02,V6-10,V6-11,V6-12
+       «`S1-02` se declara cerrada por añadir una búsqueda de palabras»
+       ningún sabotaje de `T189` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N189: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:217
+  T189/f3      S5  S1-02,V6-10,V6-11,V6-12
+       «la regla anterior reproducida da ROJO siempre, y entonces no demuestra nada»
+       ningún sabotaje de `T189` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N189: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:217
+  T190/f1      S5  V6-13,V6-14,V6-17,V6-18,V6-19
+       «un control adversarial no puede ponerse rojo»
+       ningún sabotaje de `T190` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N190: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:243
+  T190/f2      S5  V6-13,V6-14,V6-17,V6-18,V6-19
+       «la integridad de un árbol se sostiene con un digest que ese mismo árbol calcula»
+       ningún sabotaje de `T190` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N190: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:243
+  T191/f1      S5  FD-5,FD-6
+       «el proceso hijo muere y el nieto queda huérfano ejecutándose»
+       ningún sabotaje de `T191` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N191: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:265
+  T191/f2      S5  FD-5,FD-6
+       «la ficha promete alcanzar a toda la descendencia y la medición lo desmiente»
+       ningún sabotaje de `T191` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N191: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:265
+  T191/f4      S5  FD-5,FD-6
+       «un mock hace de adaptador y la prueba lo da por ejecución real»
+       ningún sabotaje de `T191` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N191: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:265
+  T191/f5      S5  FD-5,FD-6
+       «el adaptador escribe en el estado canónico: sería un segundo escritor»
+       ningún sabotaje de `T191` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N191: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:265
+  T192/f1      S5  FD-1,g.15
+       «el repositorio verificado puede cambiar qué identidad se acepta»
+       ningún sabotaje de `T192` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N192: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:292
+  T192/f3      S5  FD-1,g.15
+       «se implementa una primitiva criptográfica propia»
+       ningún sabotaje de `T192` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N192: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:292
+  T193/f1      S1  V6-10,g.14,g.16,g.9
+       «algún paso se simula en vez de ejecutarse»
+       ningún sabotaje del catálogo está imputado a `T193` · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:317
+  T193/f2      S1  V6-10,g.14,g.16,g.9
+       «la salida lleva reloj, duración, pid o ruta absoluta»
+       ningún sabotaje del catálogo está imputado a `T193` · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:317
+  T194/f1      S5  FD-3
+       «la actualización pisa el perfil, el manifiesto o el estado del producto»
+       ningún sabotaje de `T194` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N194: el motivo ancla igual de bien en la cláusula f2: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:340
+  T194/f2      S5  FD-3
+       «el proyecto actualizado queda con enlaces rotos o con la huella divergente»
+       ningún sabotaje de `T194` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N194: el motivo ancla igual de bien en la cláusula f1: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:340
+  T197/f1      S1  C4
+       «el equipo se recorta para caber, o dos roles independientes comparten agente»
+       ningún sabotaje del catálogo está imputado a `T197` · sede kernel/operativo/pruebas/T195-T209-ciclo-y-macrocircuitos.md:68
+  T200/f1      S1  C5
+       «una entrega existe sólo en la conversación, o un rechazo gasta una devolución»
+       ningún sabotaje del catálogo está imputado a `T200` · sede kernel/operativo/pruebas/T195-T209-ciclo-y-macrocircuitos.md:131
+  T203/f1      S1  g.9
+       «Continúa despacha todo lo pendiente, o resuelve una reconciliación por su cuenta»
+       ningún sabotaje del catálogo está imputado a `T203` · sede kernel/operativo/pruebas/T195-T209-ciclo-y-macrocircuitos.md:194
+  T209/f1      S1  g.6
+       «existen cuatro implementaciones divergentes, o dos autoridades sobre un producto»
+       ningún sabotaje del catálogo está imputado a `T209` · sede kernel/operativo/pruebas/T195-T209-ciclo-y-macrocircuitos.md:323
+  T210/f1      S1  V6-15
+       «el conjunto se escribe a mano, o aparece un cardinal escrito al lado de la enumeración»
+       ningún sabotaje del catálogo está imputado a `T210` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:52
+  T210/f2      S1  V6-15
+       «un árbol citado por la entrada no está cubierto por la suite, o al revés»
+       ningún sabotaje del catálogo está imputado a `T210` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:52
+  T211/f1      S5  V6-15
+       «una prueba pasa porque el ataque no llegó a aplicarse»
+       ningún sabotaje de `T211` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N211: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:75
+  T212/f1      S1  V6-01,V6-05,V6-06,V6-08,V6-10,V6-15
+       «el rojo se acredita sólo por un código de salida distinto de cero»
+       ningún sabotaje del catálogo está imputado a `T212` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:96
+  T212/f2      S1  V6-01,V6-05,V6-06,V6-08,V6-10,V6-15
+       «la versión vulnerable y la vigente no se distinguen sobre el mismo árbol»
+       ningún sabotaje del catálogo está imputado a `T212` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:96
+  T213/f1      S1  V6-15,V6-18
+       «alguna de las dos restas es no vacía»
+       ningún sabotaje del catálogo está imputado a `T213` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:116
+  T213/f2      S1  V6-15,V6-18
+       «una fila se publica sin su control del ataque o sin su control del control»
+       ningún sabotaje del catálogo está imputado a `T213` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:116
+  T214/f1      S1  FD-5
+       «una sonda declara disponible un mecanismo que no puede contener nada»
+       ningún sabotaje del catálogo está imputado a `T214` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:137
+  T214/f2      S1  FD-5
+       «la detección se escribe a mano en vez de ejercerse»
+       ningún sabotaje del catálogo está imputado a `T214` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:137
+  T215/f2      S5  FD-5
+       «un descendiente sigue vivo después de la cancelación o del timeout»
+       ningún sabotaje de `T215` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK16a: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:158
+  T216/f2      S5  FD-5
+       «la limitación del `setsid` se oculta en vez de medirse»
+       ningún sabotaje de `T216` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N216: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:179
+  T217/f1      S5  V6-16,g.15
+       «la raíz externa se ejecuta dentro del mismo proceso que el runtime»
+       ningún sabotaje de `T217` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N217: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:200
+  T217/f2      S5  V6-16,g.15
+       «un cambio dentro del árbol altera la política que la raíz externa aplica»
+       ningún sabotaje de `T217` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N217: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:200
+  T218/f1      S1  V6-16,g.15
+       «se usa HMAC o cualquier clave simétrica como demostración de la raíz externa»
+       ningún sabotaje del catálogo está imputado a `T218` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:222
+  T218/f2      S1  V6-16,g.15
+       «se implementa criptografía propia en vez de delegar en la herramienta del anfitrión»
+       ningún sabotaje del catálogo está imputado a `T218` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:222
+  T218/f3      S1  V6-16,g.15
+       «una clave privada entra en cualquier repositorio o sobrevive al final de la prueba»
+       ningún sabotaje del catálogo está imputado a `T218` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:222
+  T219/f1      S1  V6-16,g.12,g.15
+       «la independencia se acredita sólo por ejecutar desde otro directorio»
+       ningún sabotaje del catálogo está imputado a `T219` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:245
+  T219/f2      S1  V6-16,g.12,g.15
+       «todos los intentos fallan porque el entorno no arrancó, y no por el aislamiento»
+       ningún sabotaje del catálogo está imputado a `T219` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:245
+  T220/f1      S5  V6-16,V6-17,g.16
+       «una autoridad interna puede sustituir a la raíz externa»
+       ningún sabotaje de `T220` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK09a: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:268
+  T221/f1      S1  g.14,g.16,g.6
+       «los dos confirman»
+       ningún sabotaje del catálogo está imputado a `T221` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:289
+  T221/f2      S1  g.14,g.16,g.6
+       «la serialización deja de funcionar cuando los cerrojos locales no se comparten»
+       ningún sabotaje del catálogo está imputado a `T221` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:289
+  T222/f1      S1  g.14,g.16,g.8,g.9
+       «se registra sólo la cabeza del linaje, y un forzado seguido de un commit legítimo lo borra»
+       ningún sabotaje del catálogo está imputado a `T222` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:311
+  T222/f2      S1  g.14,g.16,g.8,g.9
+       «una ausencia de acuse se lee como efecto no aplicado»
+       ningún sabotaje del catálogo está imputado a `T222` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:311
+  T225/f1      S1  V6-15,V6-16,g.14,g.15,g.16
+       «algún paso se cumple con un mock en lugar de con el proceso, el repositorio o la clave reales»
+       ningún sabotaje del catálogo está imputado a `T225` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:379
+  T225/f2      S1  V6-15,V6-16,g.14,g.15,g.16
+       «el escenario continúa tras un paso fallido, midiendo el estado equivocado en los siguientes»
+       ningún sabotaje del catálogo está imputado a `T225` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:379
+  T225/f3      S1  V6-15,V6-16,g.14,g.15,g.16
+       «una ruta absoluta de la máquina entra en la evidencia publicada»
+       ningún sabotaje del catálogo está imputado a `T225` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:379
+  T226/f1      S1  C2,C4
+       «el eje agente se declara en prosa en vez de asignarse y registrarse»
+       ningún sabotaje del catálogo está imputado a `T226` · sede kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md:41
+  T227/f1      S1  C2,C4
+       «la elección depende de quién la calculó, de dónde se ejecutó o del orden de lectura»
+       ningún sabotaje del catálogo está imputado a `T227` · sede kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md:63
+  T228/f1      S1  C2,C4
+       «un modelo que no cumple el perfil ocupa el rol, o el rol se ocupa a medias»
+       ningún sabotaje del catálogo está imputado a `T228` · sede kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md:83
+  T229/f1      S1  C2,C4
+       «un agente ocupa un rol cuya herramienta o cuyo contexto no puede sostener»
+       ningún sabotaje del catálogo está imputado a `T229` · sede kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md:104
+  T230/f1      S1  C4
+       «el corte separa un par que la composición declara combinable, o recorta la composición»
+       ningún sabotaje del catálogo está imputado a `T230` · sede kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md:125
+  T231/f1      S1  C2,C4
+       «un agente ocupa a la vez un rol productor y el rol que critica su producto»
+       ningún sabotaje del catálogo está imputado a `T231` · sede kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md:146
+  T232/f1      S1  C2,C4
+       «un descarte no tiene motivo, o su motivo no se sostiene contra el catálogo»
+       ningún sabotaje del catálogo está imputado a `T232` · sede kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md:168
+  T233/f1      S1  C2,C4,g.13
+       «una reasignación de agente pasa desapercibida dentro del mismo objeto durable»
+       ningún sabotaje del catálogo está imputado a `T233` · sede kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md:189
+  T234/f1      S1  C4,g.12
+       «dos agentes ocupan el mismo slot, o un rol acaba en dos agentes»
+       ningún sabotaje del catálogo está imputado a `T234` · sede kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md:210
+  T235/f1      S1  C2,C4
+       «una propiedad se puede borrar del producto sin que ninguna prueba parpadee»
+       ningún sabotaje del catálogo está imputado a `T235` · sede kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md:231
+  T236/f1      S1  C4
+       «el paso 1 transporta dos cadenas y se rotula como ejecutado»
+       ningún sabotaje del catálogo está imputado a `T236` · sede kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md:265
+  T237/f1      S1  C2,C4
+       «un agente sin vision ocupa un rol que declara vision requerida por haberse combinado»
+       ningún sabotaje del catálogo está imputado a `T237` · sede kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md:289
+  T238/f1      S1  C2,C4
+       «combinar un rol barato con uno caro hace desaparecer el techo del barato»
+       ningún sabotaje del catálogo está imputado a `T238` · sede kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md:310
+  T239/f1      S1  C2
+       «se publica como razón de la elección una regla que C2 no escribe»
+       ningún sabotaje del catálogo está imputado a `T239` · sede kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md:328
+  T240/f2      S5  F-01,F-02
+       «el esquema deja de tipar el campo y admite texto libre»
+       ningún sabotaje de `T240` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N240: el motivo no comparte ni un término distintivo con la cláusula; N240b: el motivo no comparte ni un término distintivo con la · sede kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md:30
+  T241/f1      S5  F-06
+       «el cuando vuelve a decir sólo que DIS cierra su capa»
+       ningún sabotaje de `T241` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N241: el motivo ancla igual de bien en la cláusula f2: el enlace sabotaje→propiedad no es inequívoco; N241b: el motivo no comparte · sede kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md:54
+  T241/f2      S5  F-06
+       «el cuando cita una estación que el ciclo no tiene»
+       ningún sabotaje de `T241` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N241: el motivo ancla igual de bien en la cláusula f1: el enlace sabotaje→propiedad no es inequívoco; N241b: el motivo no comparte · sede kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md:54
+  T243/f2      S5  C5,F-05
+       «una instancia deja vacío un campo que C5 exige»
+       ningún sabotaje de `T243` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N243: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md:97
+  T243/f3      S5  C5,F-05
+       «el documento declara un conjunto distinto del que el kernel lleva»
+       ningún sabotaje de `T243` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N243: el motivo ancla igual de bien en la cláusula f1: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md:97
+  T244/f1      S5  F-04
+       «grado_inicial difiere del grado global del paso 5»
+       ningún sabotaje de `T244` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N244: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md:118
+  T244/f3      S5  F-04
+       «el encuadre pierde grado o grado_inicial»
+       ningún sabotaje de `T244` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N244: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md:118
+  T245/f2      S5  F-10
+       «la comprobación se apoya en un cardinal escrito a mano en vez de derivarlo»
+       ningún sabotaje de `T245` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N245: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md:139
+  T246/f2      S5  F-11
+       «el fichero gana una prueba y la cabecera no la enumera»
+       ningún sabotaje de `T246` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N246: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md:160
+  T247/f1      S1  FD-5
+       «el adaptador deja de enchufar la política y vuelve a contener sólo por grupo de procesos»
+       ningún sabotaje del catálogo está imputado a `T247` · sede kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md:181
+  T247/f2      S1  FD-5
+       «una generación sobrevive al vencimiento con política fuerte»
+       ningún sabotaje del catálogo está imputado a `T247` · sede kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md:181
+  T247/f3      S1  FD-5
+       «se prueba un solo backend y se declara la clase entera»
+       ningún sabotaje del catálogo está imputado a `T247` · sede kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md:181
+  T248/f1      S1  FD-5
+       «la ausencia de contención fuerte produce ejecución con nivel inferior»
+       ningún sabotaje del catálogo está imputado a `T248` · sede kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md:203
+  T248/f2      S1  FD-5
+       «la degradación se resuelve con un aviso en vez de con una excepción»
+       ningún sabotaje del catálogo está imputado a `T248` · sede kernel/operativo/pruebas/T240-T248-hallazgos-externos-f6.md:203
+  T249/f1      S1  C2,C4
+       «el equipo escrito afirma a la vez que dos roles comparten agente y que no lo comparten»
+       ningún sabotaje del catálogo está imputado a `T249` · sede kernel/operativo/pruebas/T226-T249-agentes-y-modelos.md:348
+  T250/f1      S5  C4
+       «un rol que declara dos o tres materializa uno solo»
+       ningún sabotaje de `T250` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N250d: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:44
+  T250/f2      S5  C4
+       «el reparto de agentes sale vacío teniendo la composición un cardinal plural»
+       ningún sabotaje de `T250` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N250d: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:44
+  T250/f3      S5  C4
+       «los agentes de un rol repartido comparten identificador»
+       ningún sabotaje de `T250` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N250d: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:44
+  T251/f1      S1  C4
+       «un equipo publica un cardinal y un número distinto de agentes y nadie lo detecta»
+       ningún sabotaje del catálogo está imputado a `T251` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:72
+  T251/f2      S1  C4
+       «un rol plural se publica sin integrador»
+       ningún sabotaje del catálogo está imputado a `T251` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:72
+  T252/f1      S1  C4
+       «un reparto sin unidades declaradas se resuelve como un agente por omisión»
+       ningún sabotaje del catálogo está imputado a `T252` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:94
+  T252/f2      S1  C4
+       «el número de unidades declaradas puede salirse del cardinal que escribe la composición»
+       ningún sabotaje del catálogo está imputado a `T252` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:94
+  T253/f1      S1  C4
+       «se admite una competencia cuyo criterio se escribió después de ver las propuestas»
+       ningún sabotaje del catálogo está imputado a `T253` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:118
+  T253/f2      S1  C4
+       «se admite una competencia sin criterio o sin poder situarla en el tiempo»
+       ningún sabotaje del catálogo está imputado a `T253` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:118
+  T253/f3      S1  C4
+       «se admite competencia con un método que no declara fase divergente»
+       ningún sabotaje del catálogo está imputado a `T253` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:118
+  T254/f2      S5  C4
+       «el integrador se puede declarar por la firma en vez de leerse de la composición»
+       ningún sabotaje de `T254` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N250: el motivo ancla igual de bien en la cláusula f1: el enlace sabotaje→propiedad no es inequívoco; N250b: el motivo no comparte · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:142
+  T255/f1      S1  C4
+       «un integrador nombrado que no ocupa ningún rol se da por bueno»
+       ningún sabotaje del catálogo está imputado a `T255` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:164
+  T256/f1      S1  C2,C4
+       «un paquete que no cabe en un contexto se despacha sin reparto y sin aviso»
+       ningún sabotaje del catálogo está imputado a `T256` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:182
+  T256/f2      S1  C2,C4
+       «la capacidad de contexto se escribe a mano en vez de derivarse de la escala del esquema»
+       ningún sabotaje del catálogo está imputado a `T256` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:182
+  T257/f1      S1  C4
+       «un rol de tres agentes ocupa un solo slot»
+       ningún sabotaje del catálogo está imputado a `T257` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:205
+  T257/f2      S1  C4
+       «lo que no cabe se retira de la composición en vez de esperar»
+       ningún sabotaje del catálogo está imputado a `T257` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:205
+  T257/f3      S1  C4
+       «dos agentes comparten slot o unidad de reparto sin que nadie lo detecte»
+       ningún sabotaje del catálogo está imputado a `T257` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:205
+  T258/f1      S1  C4
+       «reanudar cambia el reparto y nadie lo dice»
+       ningún sabotaje del catálogo está imputado a `T258` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:230
+  T258/f2      S1  C4
+       «dos materializaciones del mismo estado producen equipos distintos»
+       ningún sabotaje del catálogo está imputado a `T258` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:230
+  T259/f1      S5  C4
+       «un valor que el lector no entiende se resuelve como un agente»
+       ningún sabotaje de `T259` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N250c: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:252
+  T259/f2      S5  C4
+       «aparece una forma nueva en el corpus y el censo no la denuncia»
+       ningún sabotaje de `T259` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N250c: el motivo ancla igual de bien en la cláusula f3: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:252
+  T259/f3      S5  C4
+       «el sabotaje de los siete agentes sólo se detecta por la huella del kernel»
+       ningún sabotaje de `T259` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N250c: el motivo ancla igual de bien en la cláusula f2: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:252
+  T269/f1      S1  C4
+       «algún sabotaje deja su prueba en verde: ese criterio o ese campo es decorativo»
+       ningún sabotaje del catálogo está imputado a `T269` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:481
+  T269/f2      S1  C4
+       «dos sabotajes apuntan a la misma prueba y uno de los dos no demuestra nada propio»
+       ningún sabotaje del catálogo está imputado a `T269` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:481
+  T269/f3      S1  C4
+       «la copia restaurada no vuelve a verde, con lo que el rojo no probaba el sabotaje»
+       ningún sabotaje del catálogo está imputado a `T269` · sede kernel/operativo/pruebas/T250-T269-cardinalidad-y-seleccion.md:481
+  T270/f2      S5  CONTRATO 1
+       «una sede nueva con una cifra falsa pasa en verde»
+       ningún sabotaje de `T270` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N270c: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:58
+  T270/f3      S5  CONTRATO 1
+       «el barrido denuncia también la cifra verdadera, con lo que no distinguiría nada»
+       ningún sabotaje de `T270` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N270c: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:58
+  T271/f1      S5  CONTRATO 1bis
+       «un tipo canónico nuevo queda sin censo»
+       ningún sabotaje de `T271` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N271: el motivo ancla igual de bien en la cláusula f3: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:81
+  T271/f2      S5  CONTRATO 1bis
+       «una cifra derivada no llega a la tabla publicada»
+       ningún sabotaje de `T271` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N271: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:81
+  T272/f2      S5  CONTRATO 2
+       «una sede con versión obsoleta se queda sin clase de remedio declarada»
+       ningún sabotaje de `T272` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N272d: el motivo no comparte ni un término distintivo con la cláusula; N272b: el motivo no comparte ni un término distintivo con l · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:103
+  T272/f3      S5  CONTRATO 2
+       «la sede única publica dos versiones distintas para el mismo artefacto»
+       ningún sabotaje de `T272` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N272d: el motivo no comparte ni un término distintivo con la cláusula; N272b: el motivo no comparte ni un término distintivo con l · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:103
+  T274/f1      S1  D104
+       «un proceso POR ITEM emite par estático sin el item delante»
+       ningún sabotaje del catálogo está imputado a `T274` · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:154
+  T274/f2      S1  D104
+       «se declara que un proceso pasa vacío sin resolver su item»
+       ningún sabotaje del catálogo está imputado a `T274` · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:154
+  T274/f3      S1  D104
+       «un item que activa dos condicionales vigilados exige uno solo»
+       ningún sabotaje del catálogo está imputado a `T274` · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:154
+  T275/f1      S5  D104,M-04
+       «un fixture deja de pasar»
+       ningún sabotaje de `T275` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N275: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:178
+  T276/f3      S5  D104
+       «el conjunto de las quince deja de derivarse de los directorios»
+       ningún sabotaje de `T276` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N276b: el motivo no comparte ni un término distintivo con la cláusula; N276c: el motivo no comparte ni un término distintivo con l · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:200
+  T277/f1      S1  CONTRATO 1,CONTRATO 1bis,CONTRATO 2,D104
+       «una obligación de fase F6 queda fuera del universo sin que nada lo diga»
+       ningún sabotaje del catálogo está imputado a `T277` · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:223
+  T277/f2      S1  CONTRATO 1,CONTRATO 1bis,CONTRATO 2,D104
+       «una resta se publica escrita a mano en vez de derivada»
+       ningún sabotaje del catálogo está imputado a `T277` · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:223
+  T277/f3      S1  CONTRATO 1,CONTRATO 1bis,CONTRATO 2,D104
+       «el universo encoge y el derivador sale con código cero»
+       ningún sabotaje del catálogo está imputado a `T277` · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:223
+  T290/f1      S1  V6-16,g.15
+       «el camino de comprobación deja de pasar sobre una atestación correcta»
+       ningún sabotaje del catálogo está imputado a `T290` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:69
+  T290/f2      S1  V6-16,g.15
+       «la secuencia publicada no enumera los siete pasos, con lo que el resto de pruebas medirían un camino roto»
+       ningún sabotaje del catálogo está imputado a `T290` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:69
+  T291/f1      S1  V6-16
+       «la mitad tree deja de comprobarse y la atestación se acepta»
+       ningún sabotaje del catálogo está imputado a `T291` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:89
+  T291/f2      S1  V6-16
+       «las dos mitades vuelven a compartir código de error y dejan de distinguirse»
+       ningún sabotaje del catálogo está imputado a `T291` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:89
+  T292/f1      S1  V6-16
+       «la mitad commit deja de comprobarse y la atestación se acepta»
+       ningún sabotaje del catálogo está imputado a `T292` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:110
+  T292/f2      S1  V6-16
+       «el rechazo se produce por cualquier otro motivo, que haría la prueba insensible al defecto»
+       ningún sabotaje del catálogo está imputado a `T292` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:110
+  T293/f1      S1  V6-16,g.15
+       «una firma válida se toma por una atestación aplicable»
+       ningún sabotaje del catálogo está imputado a `T293` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:130
+  T293/f2      S1  V6-16,g.15
+       «reutilizar una atestación buena sobre otro árbol produce veredicto favorable»
+       ningún sabotaje del catálogo está imputado a `T293` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:130
+  T294/f1      S1  V6-17
+       «la validez de una firma depende del reloj de la máquina que verifica y no de la época»
+       ningún sabotaje del catálogo está imputado a `T294` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:151
+  T294/f2      S1  V6-17
+       «una atestación puede atribuirse a quien no la firmó»
+       ningún sabotaje del catálogo está imputado a `T294` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:151
+  T294/f3      S1  V6-17
+       «un veredicto calculado bajo otra política se acepta como propio»
+       ningún sabotaje del catálogo está imputado a `T294` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:151
+  T295/f1      S1  V6-16,g.15
+       «la firma deja de cubrir todo el cuerpo que la atestación publica»
+       ningún sabotaje del catálogo está imputado a `T295` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:174
+  T295/f2      S1  V6-16,g.15
+       «el digest publicado sustituye a la firma como prueba de integridad»
+       ningún sabotaje del catálogo está imputado a `T295` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:174
+  T296/f1      S5  g.13,g.15
+       «la evidencia se escribe antes de completar los siete pasos»
+       ningún sabotaje de `T296` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK03b: el motivo ancla igual de bien en la cláusula f2: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:193
+  T296/f2      S5  g.13,g.15
+       «el orden depende sólo de que el código esté escrito en cierto orden»
+       ningún sabotaje de `T296` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK03b: el motivo ancla igual de bien en la cláusula f1: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:193
+  T297/f1      S1  g.3,g.4,g.8
+       «los pasos 8 y 9 se pueden invertir sin que nada observable lo note»
+       ningún sabotaje del catálogo está imputado a `T297` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:216
+  T297/f2      S1  g.3,g.4,g.8
+       «el testigo se puede fabricar antes de que los objetos estén en canonico»
+       ningún sabotaje del catálogo está imputado a `T297` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:216
+  T298/f1      S5  g.14,g.3
+       «una publicación a medias se convierte en vigente»
+       ningún sabotaje de `T298` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK02a: el motivo ancla igual de bien en la cláusula f2: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:236
+  T299/f2      S5  g.4
+       «se sincroniza el fichero y no su directorio, con lo que el contenido está y el nombre no»
+       ningún sabotaje de `T299` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK01a: el motivo ancla igual de bien en la cláusula f1: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:255
+  T300/f1      S5  g.4,g.8
+       «la recuperación publica la revisión sin el testigo que el paso 9 exige»
+       ningún sabotaje de `T300` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK03a: el motivo ancla igual de bien en la cláusula f2: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:274
+  T300/f2      S5  g.4,g.8
+       «la garantía del orden vale para el camino feliz y no para la recuperación»
+       ningún sabotaje de `T300` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK03a: el motivo ancla igual de bien en la cláusula f1: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:274
+  T301/f1      S1  g.4,g.8
+       «un escenario termina en verde dejando un REVISION.json que nombra objetos que no están publicados»
+       ningún sabotaje del catálogo está imputado a `T301` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:296
+  T301/f2      S1  g.4,g.8
+       «el descubrimiento no encuentra ningún almacén, con lo que la comprobación no habría podido fallar»
+       ningún sabotaje del catálogo está imputado a `T301` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:296
+  T302/f1      S1  S1-02,V6-12
+       «añadir una resolución produce rojo, con lo que la comprobación sería imposible de superar y no mediría nada»
+       ningún sabotaje del catálogo está imputado a `T302` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:316
+  T303/f1      S1  S1-02,V6-12,g.13
+       «un nacimiento desconocido se sustituye en silencio por el contenido de la base»
+       ningún sabotaje del catálogo está imputado a `T303` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:333
+  T303/f2      S1  S1-02,V6-12,g.13
+       «la comprobación se omite sin decirlo y el veredicto sale verde»
+       ningún sabotaje del catálogo está imputado a `T303` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:333
+  T303/f3      S1  S1-02,V6-12,g.13
+       «se acepta una sede sin nacimiento trazable»
+       ningún sabotaje del catálogo está imputado a `T303` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:333
+  T304/f1      S1  V6-03,V6-12,g.13
+       «el primer commit que la copia alcanza se toma por el nacimiento»
+       ningún sabotaje del catálogo está imputado a `T304` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:354
+  T304/f2      S1  V6-03,V6-12,g.13
+       «una historia reescrita produce un contraste que sale verde contra la alteración»
+       ningún sabotaje del catálogo está imputado a `T304` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:354
+  T305/f1      S1  V6-03,V6-12
+       «la ausencia de bytes con que comparar se resuelve dando por buena la sede»
+       ningún sabotaje del catálogo está imputado a `T305` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:375
+  T306/f2      S5  V6-04,V6-11,g.15
+       «la procedencia no es demostrable en la salida»
+       ningún sabotaje de `T306` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK12a: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:393
+  T306/f3      S5  V6-04,V6-11,g.15
+       «dos repositorios distintos se contaminan»
+       ningún sabotaje de `T306` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK12a: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:393
+  T307/f2      S5  g.13
+       «se permiten saltos sin declarar cuáles y por qué»
+       ningún sabotaje de `T307` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NH08: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:417
+  T307/f3      S5  g.13
+       «manipular el contador de casos no invalida la evidencia»
+       ningún sabotaje de `T307` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NH08: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:417
+  T308/f1      S1  g.15
+       «una jerarquía tipada esperable vuelve a escapar como traceback»
+       ningún sabotaje del catálogo está imputado a `T308` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:442
+  T308/f2      S1  g.15
+       «dos clases de fallo comparten código de salida y un guion no las puede distinguir»
+       ningún sabotaje del catálogo está imputado a `T308` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:442
+  T308/f3      S1  g.15
+       «el stderr publica el árbol de directorios de quien ejecuta»
+       ningún sabotaje del catálogo está imputado a `T308` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:442
+  T309/f1      S1  FD-5
+       «ningún punto ejecutable puede activar la política de contención»
+       ningún sabotaje del catálogo está imputado a `T309` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:467
+  T309/f2      S1  FD-5
+       «la ausencia de contención fuerte se resuelve cayendo al backend débil y siguiendo»
+       ningún sabotaje del catálogo está imputado a `T309` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:467
+  T309/f3      S1  FD-5
+       «un backend que no se puede ejercer se cuenta como ejercido, o su ausencia produce un falso rojo»
+       ningún sabotaje del catálogo está imputado a `T309` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:467
+  T309/f4      S1  FD-5
+       «una clave efímera de pruebas se presenta como custodia productiva»
+       ningún sabotaje del catálogo está imputado a `T309` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:467
+  T310/f1      S1  g.3,g.5
+       «el lector devuelve el objeto nuevo, publicando una transición reversible»
+       ningún sabotaje del catálogo está imputado a `T310` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:514
+  T310/f2      S1  g.3,g.5
+       «el lector lo llama ESTADO_CORRUPTO, que manda a buscar un fichero roto que no existe»
+       ningún sabotaje del catálogo está imputado a `T310` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:514
+  T311/f1      S1  g.5
+       «la tolerancia de la ventana se come la corrupción real y llama ventana a todo lo que no casa»
+       ningún sabotaje del catálogo está imputado a `T311` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:534
+  T312/f1      S1  g.1,g.7
+       «sellar no retira ni un byte: un sellado que no compacta no es el sellado que `g.7` escribe»
+       ningún sabotaje del catálogo está imputado a `T312` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:314
+  T312/f2      S1  g.1,g.7
+       «sellar retira LÍNEAS en vez de cuerpos, y con ellas la secuencia, el eslabón siguiente y el recuento que la revisión publicada exige»
+       ningún sabotaje del catálogo está imputado a `T312` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:314
+  T312/f3      S1  g.1,g.7
+       «se sella el punto de no retorno o el arranque del linaje, que la recuperación y la auditoría leen enteros»
+       ningún sabotaje del catálogo está imputado a `T312` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:314
+  T313/f1      S1  g.13,g.5,g.7
+       «sellar rompe la verificabilidad del eslabón, que es la restricción de diseño que manda»
+       ningún sabotaje del catálogo está imputado a `T313` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:337
+  T313/f2      S1  g.13,g.5,g.7
+       «la auditoría deja de reproducir la raíz porque el sellado se llevó lo que `g.13` necesita»
+       ningún sabotaje del catálogo está imputado a `T313` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:337
+  T314/f1      S1  g.4,g.7,g.8
+       «el sellado se lleva el cuerpo que la recuperación necesita y una de las dos ramas deja de poder cerrarse»
+       ningún sabotaje del catálogo está imputado a `T314` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:360
+  T314/f2      S1  g.4,g.7,g.8
+       «la recuperación sobre un diario sellado publica una transición que debía revertirse»
+       ningún sabotaje del catálogo está imputado a `T314` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:360
+  T315/f1      S1  g.7,g.8
+       «se compacta por encima de una ventana abierta, haciendo parecer cerrada una historia que no lo está»
+       ningún sabotaje del catálogo está imputado a `T315` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:382
+  T315/f2      S1  g.7,g.8
+       «lo único que protege la ventana es la cola del umbral, que es un parámetro y no una garantía»
+       ningún sabotaje del catálogo está imputado a `T315` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:382
+  T316/f1      S1  g.7
+       «el umbral es una constante del código con nombre en mayúsculas y el contrato sólo lo describe»
+       ningún sabotaje del catálogo está imputado a `T316` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:402
+  T316/f2      S1  g.7
+       «un umbral ausente o ilegible cae en un valor por omisión silencioso, y la sede queda de decorado»
+       ningún sabotaje del catálogo está imputado a `T316` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:402
+  T316/f3      S1  g.7
+       «el valor se valida al leer el contrato y no cuando entra por la llamada, que es la puerta de atrás»
+       ningún sabotaje del catálogo está imputado a `T316` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:402
+  T317/f1      S1  g.13,g.7
+       «se puede retirar un cuerpo sin dejar quién lo decidió ni por qué, que es un borrado y no una transición»
+       ningún sabotaje del catálogo está imputado a `T317` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:426
+  T317/f2      S1  g.13,g.7
+       «vaciar un cuerpo conservando la huella pasa desapercibido porque no rompe ningún eslabón»
+       ningún sabotaje del catálogo está imputado a `T317` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:426
+  T318/f1      S1  g.13,g.7,g.8
+       «la retirada dirigida se salta las comprobaciones de conservación por ser un acto de autoridad»
+       ningún sabotaje del catálogo está imputado a `T318` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:447
+  T318/f2      S1  g.13,g.7,g.8
+       «se retira un cuerpo sin dejar rastro de quién y por qué»
+       ningún sabotaje del catálogo está imputado a `T318` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:447
+  T318/f3      S1  g.13,g.7,g.8
+       «el sellado sólo existe en la API y no en el punto ejecutable del motor»
+       ningún sabotaje del catálogo está imputado a `T318` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:447
+  T319/f1      S1  g.15,g.5,g.7
+       «un talón se puede editar a mano con la cadena intacta, porque su huella no se recalcula»
+       ningún sabotaje del catálogo está imputado a `T319` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:471
+  T319/f2      S1  g.15,g.5,g.7
+       «la prueba del ancla sigue verde con la comprobación retirada, y entonces es decorado»
+       ningún sabotaje del catálogo está imputado a `T319` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:471
+  T320/f2      S5  g.10,g.11
+       «la migración se da por buena sobre un almacén que el propio motor había inicializado, que es el camino que el código productivo no recorre»
+       ningún sabotaje de `T320` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N320: el motivo ancla igual de bien en la cláusula f1: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:540
+  T321/f2      S5  g.11,g.8
+       «la reanudación funda otra vez el diario y parte el linaje en dos»
+       ningún sabotaje de `T321` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N321: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:562
+  T322/f1      S1  g.11,g.4,g.8
+       «algún punto de corte deja el almacén inmigrable, o lo lleva a un estado canónico distinto del de la migración sin cortes»
+       ningún sabotaje del catálogo está imputado a `T322` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:582
+  T322/f2      S1  g.11,g.4,g.8
+       «la expectativa de cada punto se decide después de mirar el resultado en vez de antes»
+       ningún sabotaje del catálogo está imputado a `T322` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:582
+  T323/f1      S1  g.11,g.8
+       «la migración publica una revisión que nombra objetos que el paso 8 no dejó en `canonico/`»
+       ningún sabotaje del catálogo está imputado a `T323` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:604
+  T323/f2      S1  g.11,g.8
+       «el testigo se comprueba sólo en el camino de transición corriente y no en el de migración»
+       ningún sabotaje del catálogo está imputado a `T323` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:604
+  T324/f1      S1  g.11
+       «una segunda migración anexa eventos, publica una revisión nueva o reescribe los objetos con el mismo contenido»
+       ningún sabotaje del catálogo está imputado a `T324` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:623
+  T325/f1      S1  g.10,g.11
+       «una versión de formato que este motor no entiende se abre «a lo que se pueda»»
+       ningún sabotaje del catálogo está imputado a `T325` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:641
+  T325/f2      S1  g.10,g.11
+       «bajar de versión se simula en vez de declararse inexistente»
+       ningún sabotaje del catálogo está imputado a `T325` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:641
+  T326/f1      S1  g.11,g.8
+       «la migración recompone una revisión vigente cualquiera para poder seguir»
+       ningún sabotaje del catálogo está imputado a `T326` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:661
+  T326/f2      S1  g.11,g.8
+       «la revisión 0 recompuesta se publica sin contrastarla con lo que el diario declara»
+       ningún sabotaje del catálogo está imputado a `T326` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:661
+  T327/f1      S1  g.11
+       «un error no tipado cruza `main()` y se publica como traza con las rutas de la máquina»
+       ningún sabotaje del catálogo está imputado a `T327` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:681
+  T327/f2      S1  g.11
+       «un fallo de la operación se confunde con un defecto de programación por compartir código de salida y forma»
+       ningún sabotaje del catálogo está imputado a `T327` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:681
+  T330/f2      S5  g.15
+       «el alcance del control se escribe a mano en vez de derivarse del disco»
+       ningún sabotaje de `T330` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N330: el motivo no comparte ni un término distintivo con la cláusula; NH01: el motivo no comparte ni un término distintivo con la  · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:592
+  T331/f1      S1  V6-16
+       «`capacidades` vuelve a publicar `{}` con código 0»
+       ningún sabotaje del catálogo está imputado a `T331` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:614
+  T331/f2      S1  V6-16
+       «el instalador escribe un manifiesto truncado sobre una instalación completa»
+       ningún sabotaje del catálogo está imputado a `T331` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:614
+  T332/f1      S1  V6-16,g.15
+       «un manifiesto que no cubre nada se trata como un defecto de programación del comprobador en vez de como la instalación alterada que es»
+       ningún sabotaje del catálogo está imputado a `T332` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:636
+  T334/f1      S1  V6-16,g.15
+       «quien pueda escribir el árbol verificado decide con qué código se le verifica»
+       ningún sabotaje del catálogo está imputado a `T334` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:673
+  T335/f1      S1  g.15
+       «la ausencia de `--repo` se resuelve con el directorio de trabajo, y el proceso juzga lo que haya»
+       ningún sabotaje del catálogo está imputado a `T335` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:693
+  T337/f2      S5  V6-16,g.15
+       «la garantía se apoya sólo en la purga, que cubre lo que viene del lanzador y no lo demás»
+       ningún sabotaje de `T337` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK12b: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:730
+  T340/f1      S5  V6-12
+       «las entradas se enumeran en una constante en vez de derivarse de la estructura»
+       ningún sabotaje de `T340` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK13a: el motivo ancla igual de bien en la cláusula f2: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:62
+  T340/f2      S5  V6-12
+       «el término de comparación se deriva del fichero de hoy, con lo que quien borra una entrada borra la lista de lo que había que conservar»
+       ningún sabotaje de `T340` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK13a: el motivo ancla igual de bien en la cláusula f1: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:62
+  T340/f3      S5  V6-12
+       «el veredicto emite verde sin decir con qué regla lo emitió»
+       ningún sabotaje de `T340` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK13a: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:62
+  T341/f2      S5  V6-12
+       «el guardián impide el acto que la sede existe para permitir»
+       ningún sabotaje de `T341` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N341: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:86
+  T342/f2      S5  V6-12
+       «una alteración confirmada antes de la revisión base queda sin juzgar por no aparecer en el diff»
+       ningún sabotaje de `T342` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N340: el motivo no comparte ni un término distintivo con la cláusula; N342: el motivo no comparte ni un término distintivo con la  · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:108
+  T343/f1      S5  V6-12
+       «la comparación byte a byte se retira y los otros canales tapan el hueco»
+       ningún sabotaje de `T343` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N343: el motivo ancla igual de bien en la cláusula f2: el enlace sabotaje→propiedad no es inequívoco; N343b: el motivo no comparte · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:132
+  T343/f3      S5  V6-12
+       «un cambio de metadatos se considera menor que un cambio de texto»
+       ningún sabotaje de `T343` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N343: el motivo no comparte ni un término distintivo con la cláusula; N343b: el motivo no comparte ni un término distintivo con la · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:132
+  T344/f2      S5  V6-12
+       «el juicio sólo mira las entradas que hoy están, con lo que lo borrado deja de existir para el guardián»
+       ningún sabotaje de `T344` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK13b: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:156
+  T345/f1      S5  V6-12
+       «el orden no se comprueba porque cada entrada sigue entera»
+       ningún sabotaje de `T345` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK13c: el motivo ancla igual de bien en la cláusula f2: el enlace sabotaje→propiedad no es inequívoco · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:177
+  T346/f1      S1  V6-12
+       «la derivación descarta duplicados en silencio quedándose con el primero»
+       ningún sabotaje del catálogo está imputado a `T346` · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:197
+  T346/f2      S1  V6-12
+       «un identificador repetido se trata como una excepción de lectura en vez de como un hallazgo»
+       ningún sabotaje del catálogo está imputado a `T346` · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:197
+  T347/f1      S1  V6-12
+       «un hueco de numeración pasa sin decir nada, con lo que falta una resolución o se ha renumerado una que estaba»
+       ningún sabotaje del catálogo está imputado a `T347` · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:217
+  T347/f2      S1  V6-12
+       «una familia nueva entra en la sede sin criterio que la ordene»
+       ningún sabotaje del catálogo está imputado a `T347` · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:217
+  T349/f2      S5  V6-12
+       «el hueco entre dos resoluciones admite prosa que nadie firma»
+       ningún sabotaje de `T349` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N349: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:260
+  T349/f3      S5  V6-12
+       «un commit posterior blanquea la alteración anterior»
+       ningún sabotaje de `T349` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N349: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:260
+  T350/f1      S3  CONTRATO 3
+       «el estado vuelve a copiarse verbatim sin contrastar nada»
+       N350b: sólo toca la sede del enunciado (kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md); NH02: sólo toca la sede del enunciado (kernel/operativo/pruebas/evidencia/workspace-salida.txt) · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:286
+  T350/f2      S6  CONTRATO 3
+       «la sede de la derivación deja de publicar la fórmula y este validador calcula una suya equivalente»
+       N350: sano → EXIT=1 · caen T158 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T158 en el árbol SIN sabotear · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:286
+  T350/f3      S5  CONTRATO 3
+       «lo no contrastable se cuenta como contrastado, con lo que la cobertura del contraste crece sin que nadie la mida»
+       ningún sabotaje de `T350` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N350: el motivo no comparte ni un término distintivo con la cláusula; N350b: el motivo no comparte ni un término distintivo con la · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:286
+  T352/f1      S1  V6-03
+       «una sede ilegible produce una lista parcial en vez de un fallo»
+       ningún sabotaje del catálogo está imputado a `T352` · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:335
+  T352/f2      S1  V6-03
+       «un identificador de familia desconocida entra en el universo porque venía de la sede»
+       ningún sabotaje del catálogo está imputado a `T352` · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:335
+  T352/f3      S1  V6-03
+       «un componente vacío se publica como cero sin decir que su sede sí tiene contenido»
+       ningún sabotaje del catálogo está imputado a `T352` · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:335
+  T362/f1      S1  g.4,g.8
+       «el corte no corta, o cae en otro sitio, con lo que el escenario terminaria sobre un almacen sano y no mediria nada»
+       ningún sabotaje del catálogo está imputado a `T362` · sede kernel/operativo/pruebas/T360-T379-sedes-veraces.md:87
+  T362/f2      S1  g.4,g.8
+       «la rama COMPLETAR deja de recuperar, o el almacen recuperado no verifica su integridad»
+       ningún sabotaje del catálogo está imputado a `T362` · sede kernel/operativo/pruebas/T360-T379-sedes-veraces.md:87
+  T363/f1      S1  V6-19
+       «la orden vuelve a censar un conjunto distinto del que mide el veredicto, con lo que una CLI de diagnostico contradiria al instrumento que diagnostica»
+       ningún sabotaje del catálogo está imputado a `T363` · sede kernel/operativo/pruebas/T360-T379-sedes-veraces.md:108
+  T363/f2      S1  V6-19
+       «el veredicto se ensancha al runtime entero y obliga al motor a importar su direccionamiento por contenido desde el verificador»
+       ningún sabotaje del catálogo está imputado a `T363` · sede kernel/operativo/pruebas/T360-T379-sedes-veraces.md:108
+  T364/f1      S1  V6-11,g.15
+       «un punto ejecutable declara que publica su procedencia y no tiene orden que la publique»
+       ningún sabotaje del catálogo está imputado a `T364` · sede kernel/operativo/pruebas/T360-T379-sedes-veraces.md:128
+  T364/f2      S1  V6-11,g.15
+       «un punto ejecutable nuevo entra en el runtime sin la orden, y el conjunto derivado del disco lo cuenta igual»
+       ningún sabotaje del catálogo está imputado a `T364` · sede kernel/operativo/pruebas/T360-T379-sedes-veraces.md:128
+  T365/f1      S1  V6-04,V6-15,V6-19
+       «arboles sale de cualquiera de los dos censos, con lo que una lectura insegura nueva en ese paquete seria invisible»
+       ningún sabotaje del catálogo está imputado a `T365` · sede kernel/operativo/pruebas/T360-T379-sedes-veraces.md:148
+  T365/f2      S1  V6-04,V6-15,V6-19
+       «una de las dos sedes vuelve a afirmar que el paquete no esta entre los del censo»
+       ningún sabotaje del catálogo está imputado a `T365` · sede kernel/operativo/pruebas/T360-T379-sedes-veraces.md:148
+  T404/f2      S5  g.6
+       «la comprobación se hace sobre bytes caducados en vez de sobre la revisión releída»
+       ningún sabotaje de `T404` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK20a: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:221
+  T408/f1      S5  g.2
+       «el par de transiciones deja el estado final igual y la cola reordenada por el camino»
+       ningún sabotaje de `T408` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK20b: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:306
+  T408/f2      S5  g.2
+       «la revisión avanza aunque la transición se rechazara»
+       ningún sabotaje de `T408` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK20b: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:306
+  T410/f1      S1  FD-5
+       «la raíz publica listo sin haber observado los tres testigos»
+       ningún sabotaje del catálogo está imputado a `T410` · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:350
+  T410/f2      S1  FD-5
+       «una generación se anuncia después de listo»
+       ningún sabotaje del catálogo está imputado a `T410` · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:350
+  T411/f1      S1  FD-5
+       «el protocolo no detecta a la generación amputada»
+       ningún sabotaje del catálogo está imputado a `T411` · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:372
+  T411/f2      S1  FD-5
+       «los dos veredictos son indistinguibles desde fuera»
+       ningún sabotaje del catálogo está imputado a `T411` · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:372
+  T412/f2      S5  FD-5
+       «una generación lenta rompe la captura»
+       ningún sabotaje de `T412` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NG08: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:394
+  T413/f1      S1  FD-5
+       «alguna pasada bajo carga deja una generación sin capturar»
+       ningún sabotaje del catálogo está imputado a `T413` · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:416
+  T413/f2      S1  FD-5
+       «la carga no se genera y la prueba mide en reposo»
+       ningún sabotaje del catálogo está imputado a `T413` · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:416
+  T413/f3      S1  FD-5
+       «el anfitrion ofrece contencion fuerte y ninguna pasada la ejerce, y la prueba sale verde llamandose debil y fuerte»
+       ningún sabotaje del catálogo está imputado a `T413` · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:416
+  T413/f4      S1  FD-5
+       «se cuenta como pasada fuerte un backend que la deteccion no declara fuerte»
+       ningún sabotaje del catálogo está imputado a `T413` · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:416
+  T414/f2      S5  FD-5
+       «la sesión se lee después de la muerte y no se puede leer»
+       ningún sabotaje de `T414` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK16b: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:462
+  T418/f1      S1  FD-5
+       «bajo carga el protocolo deja de detectar al que no nacio»
+       ningún sabotaje del catálogo está imputado a `T418` · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:441
+  T418/f2      S1  FD-5
+       «el veredicto de «nunca creado» menciona supervivencia, que es el otro fallo»
+       ningún sabotaje del catálogo está imputado a `T418` · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:441
+
+  346 propiedades críticas medidas · 283 PENDIENTES · 57 obligaciones afectadas
+  obligaciones con alguna propiedad pendiente: A14, C2, C4, C5, CONTRATO 1, CONTRATO 1bis, CONTRATO 2, CONTRATO 3, D104, F-01, F-02, F-04, F-05, F-06, F-10, F-11, FD-1, FD-3, FD-5, FD-6, M-04, S1-02, V6-01, V6-02, V6-03, V6-04, V6-05, V6-06, V6-07, V6-08, V6-09, V6-10, V6-11, V6-12, V6-13, V6-14, V6-15, V6-16, V6-17, V6-18, V6-19, g.1, g.10, g.11, g.12, g.13, g.14, g.15, g.16, g.2, g.3, g.4, g.5, g.6, g.7, g.8, g.9
+  pendientes de `O26-SAB`: 283 propiedades, enumeradas arriba
+  `O26` §5.2 · NO ACREDITADA por este instrumento
+
+LO QUE ESTE VEREDICTO NO DEMUESTRA
+------------------------------------------------------------------------------
+  · `S5` ancla por LÉXICO con guarda de ambigüedad; lo que falta en el
+    corpus es una declaración explícita del enlace sabotaje→propiedad
+  · un `S6` verde demuestra que ESE sabotaje alcanza la propiedad, no
+    que la propiedad sea inderrotable por otro camino (`ADJ-B3`)
+  · no dice nada de `O26` §5.1 —eso es `O26-IMPL`— ni de §5.3 a §5.5
+  · `O30` §1 · esta medición NO gobierna la certificación de `F6`; el
+    catálogo `K01`–`K24` de `O30` §2 la sustituye como unidad de cierre

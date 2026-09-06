@@ -701,3 +701,108 @@ CATALOGO.extend([
              m_g2_la_evidencia_se_edita_a_mano,
              espera="su evidencia sostiene `prueba-fallida`"),
 ])
+
+
+# ===========================================================================
+#  `O30` · LAS TRES ANCLAS DEL APPEND-ONLY QUE SE HABÍAN QUEDADO SIN MUTANTE
+# ===========================================================================
+#  MEDIDO, NO SUPUESTO. `T341`, `T342`, `T343` y `T349` tenían sabotaje imputado —`N341`,
+#  `N340`/`N342`, `N343`/`N343b`, `N349`— y `T340`, `T344` y `T345` NO tenían ninguno. Es la
+#  misma distancia que `ADJ-B3` midió en `V6-12`: la ZONA sabía enrojecer y la PROPIEDAD de
+#  al lado no. Las tres que faltaban son, además, las tres formas del ataque que no altera
+#  ningún byte visible —anclar mal, truncar por la cola, permutar—, y ninguna la cubre la
+#  comparación byte a byte de `T343`:
+#
+#    `T340`  el ANCLA. Cada entrada cerrada queda atada al commit que la introdujo. Sin
+#            ancla no hay término de comparación, y el libro se puede reescribir entero
+#            desde el último commit sin que nada lo contradiga.
+#    `T344`  el TRUNCAMIENTO. Borrar la última —o una intermedia— no rompe la estructura:
+#            el documento que queda es perfectamente legible y perfectamente falso.
+#    `T345`  la PERMUTACIÓN. No se pierde un solo byte y cambia qué revisa a qué. Es el
+#            ataque que una comprobación de conjunto —«están todas»— no ve por definición.
+
+def m_o30_el_libro_reancla_cada_entrada_al_ultimo_commit(raiz):
+    """`T340`, `falla_si`: «una entrada cerrada deja de estar anclada al commit que la
+    introdujo».
+
+    `derivar_libro` recorre la historia y se queda con la PRIMERA aparición de cada entrada:
+    ése es su commit de introducción y esos son sus bytes cerrados. Aquí se reancla en cada
+    vuelta, de modo que el libro pasa a decir que todas nacieron en el último commit que
+    tocó la ruta. El juicio byte a byte sigue funcionando —`T342` y `T343` siguen verdes—
+    y lo que se pierde es la PROCEDENCIA: la sede ya no puede decir desde cuándo está
+    cerrada cada entrada, que es lo que convierte «coincide» en «coincide con lo publicado».
+    """
+    _sustituir(raiz, "kernel/operativo/runtime/admision/sede.py",
+               '                    "commit": commit,',
+               '                    "commit": commits[-1],')
+
+
+def m_o30_una_entrada_ausente_deja_de_ser_una_entrada_BORRADA(raiz):
+    """`T344`, `falla_si`: «borrar una entrada cerrada no produce `ENTRADA_BORRADA`».
+
+    El canal ESTRUCTURAL deja de anotar la ausencia y pasa de largo. El canal 1 —presencia
+    literal— sólo habla cuando la estructura NO se puede leer, y un truncamiento por la cola
+    deja un documento perfectamente legible: por ahí no sale nada. El resultado es el
+    silencio exacto que `O27` §3 existe para impedir, y la sede se queda sin la mitad que no
+    depende de que el atacante rompa nada.
+    """
+    _sustituir(raiz, "kernel/operativo/runtime/admision/sede.py",
+               '        if bloque is None:\n'
+               '            anotar(BORRADA, identificador,\n'
+               '                   "la entrada `" + identificador + "`, introducida en el commit "',
+               '        if bloque is None:\n'
+               '            continue\n'
+               '        if False:\n'
+               '            anotar(BORRADA, identificador,\n'
+               '                   "la entrada `" + identificador + "`, introducida en el commit "')
+    # EL SEGUNDO CANAL, y por qué el sabotaje tiene que retirar los dos. Medido: con sólo el
+    # canal estructural retirado, `T344` SIGUE EN VERDE, porque la ausencia la vuelve a
+    # anotar el canal de presencia literal —«los bytes ya no aparecen y el canal estructural
+    # no lo ha señalado»—. Eso NO es un sabotaje que falla: es la propiedad defendida por
+    # dos vías independientes, y queda registrado como tal. Para derrotar la PROPIEDAD hay
+    # que retirar las dos, que es exactamente lo que hace este sabotaje y lo que ninguna
+    # mutación anterior del corpus hacía.
+    _sustituir(raiz, "kernel/operativo/runtime/admision/sede.py",
+               "    for identificador in literales:\n"
+               "        if identificador in nombradas:\n"
+               "            continue\n",
+               "    for identificador in []:\n"
+               "        if identificador in nombradas:\n"
+               "            continue\n")
+
+
+def m_o30_el_orden_se_juzga_como_conjunto_y_no_como_secuencia(raiz):
+    """`T345`, `falla_si`: «reordenar dos entradas cerradas no produce `ENTRADAS_REORDENADAS`».
+
+    La comparación pasa de SECUENCIA a CONJUNTO: `sorted(secuencia) != sorted(esperada)`.
+    Con ella «están todas» vuelve a valer por «están como estaban», que es literalmente el
+    razonamiento que hace invisible una permutación. Ni un byte se pierde, cada entrada sigue
+    coincidiendo consigo misma, y sin embargo `O3` pasa a revisar lo que antes revisaba `O2`.
+    """
+    _sustituir(raiz, "kernel/operativo/runtime/admision/sede.py",
+               "    if secuencia != esperada and len(secuencia) == len(set(secuencia)):",
+               "    if sorted(secuencia) != sorted(esperada) "
+               "and len(secuencia) == len(set(secuencia)):")
+
+
+CATALOGO.extend([
+    Mutacion("NK13a", "O30 · K13", "T340", ADMISION,
+             "el libro reancla cada entrada cerrada al ÚLTIMO commit de la ruta y la sede "
+             "pierde la procedencia contra la que se compara",
+             m_o30_el_libro_reancla_cada_entrada_al_ultimo_commit, clase=BATERIA,
+             espera='libro["entradas"]["O1"]["commit"], commits[0]',
+             casos=["AppendOnlyPorEntradaCerrada."
+                    "test_T340_cada_entrada_queda_anclada_al_commit_que_la_introdujo"]),
+    Mutacion("NK13b", "O30 · K13", "T344", ADMISION,
+             "una entrada cerrada que YA NO ESTÁ deja de anotarse como `ENTRADA_BORRADA`: "
+             "el truncamiento por la cola no rompe nada y por eso no lo ve nadie",
+             m_o30_una_entrada_ausente_deja_de_ser_una_entrada_BORRADA, clase=BATERIA,
+             espera="'ENTRADA_BORRADA' not found in",
+             casos=["AppendOnlyPorEntradaCerrada.test_T344_borrar_la_ULTIMA_resolucion_da_ROJO"]),
+    Mutacion("NK13c", "O30 · K13", "T345", ADMISION,
+             "el orden de las entradas cerradas se juzga como CONJUNTO y no como secuencia: "
+             "«están todas» vuelve a valer por «están como estaban»",
+             m_o30_el_orden_se_juzga_como_conjunto_y_no_como_secuencia, clase=BATERIA,
+             espera="'ENTRADAS_REORDENADAS' not found in",
+             casos=["AppendOnlyPorEntradaCerrada.test_T345_reordenar_dos_resoluciones_da_ROJO"]),
+])

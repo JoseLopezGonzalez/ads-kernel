@@ -29,6 +29,8 @@ kernel/operativo/  el CONTENIDO OPERATIVO construido sobre (a) y (b).
 | 4 | [`04-CONTRATOS-TECNICOS.md`](../canonico/04-CONTRATOS-TECNICOS.md) | inventario de contratos y esquemas, y qué está construido frente a qué está diseñado |
 | 5 | [`05-PLAN-DE-IMPLEMENTACION-F5-F6.md`](../canonico/05-PLAN-DE-IMPLEMENTACION-F5-F6.md) | qué significa cada fase, sus entregables, dependencias y cortes verticales |
 | 6 | [`06-DEUDA-Y-LIMITACIONES-VIGENTES.md`](../canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md) | la deuda VIVA, con sede, propietario, fase y condición de cierre |
+| 7 | [`07-GUIA-OPERATIVA-DE-F6.md`](../canonico/07-GUIA-OPERATIVA-DE-F6.md) | la guía operativa VIGENTE de `F6`: construir, ejecutar, validar y diagnosticar sin leer la sucesión de gates |
+| 8 | [`08-INVARIANTES-CRITICOS-DE-F6.md`](../canonico/08-INVARIANTES-CRITICOS-DE-F6.md) | el catálogo cerrado `K01`–`K24` de `O30` §2, con la fuente, el canal, la prueba y la evidencia de cada invariante |
 | — | [`FUENTES-CANONICAS.yml`](../canonico/FUENTES-CANONICAS.yml) | el registro: una sede por materia, con su autoridad y su clasificación |
 | — | [`validar-fuentes-canonicas.py`](../canonico/validar-fuentes-canonicas.py) | el validador de ese registro, con sus controles negativos |
 

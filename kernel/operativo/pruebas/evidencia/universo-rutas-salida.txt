@@ -3,7 +3,7 @@
 # aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
 # codigo:       0
 # ---------------------------------------------------------------
-v          337  e7cbe5c958f015ae…  docs/evolucion/00-INDICE.md
+v          339  3d1df4bac6e1c69f…  docs/evolucion/00-INDICE.md
 iv         336  202ac1af8df5ca6e…  docs/evolucion/10-CRITICA-INDEPENDIENTE-F3.md
 iii      12152  616044e4827b18dc…  docs/evolucion/11-ARQUITECTURA-INTEGRADA.md
 iv         764  c50e0aa6c1b9827c…  docs/evolucion/12-CRITICA-INDEPENDIENTE-F4.md
@@ -55,7 +55,7 @@ v          395  d61e83bd2b733b34…  docs/evolucion/verificacion/manifiestos/F6-
 v          558  f45c2390a6428e96…  docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md
 v         3343  64d170f5acc15144…  docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md
 v          628  24e85cad856daf76…  docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md
-v         1310  f440779d0d6d1127…  docs/owner/ADS-OWNER-RESOLUCIONES.md
+v         1534  5f8eea060cdb95fb…  docs/owner/ADS-OWNER-RESOLUCIONES.md
 v          195  d2131faa4aeddc6d…  docs/rediseno/CHECKPOINT-OPERATIVO.md
 iii       1651  712dbd4a935c53e3…  docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
 v         1150  235385da2471dec2…  docs/rediseno/a-CAPACIDADES-APROBADA.md
@@ -98,7 +98,7 @@ v           89  f4f016c011a82764…  kernel/operativo/esquemas/proceso.yaml
 v          130  f56e8fe4872e46b5…  kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md
 v          606  8a8aa174fa5244cb…  kernel/operativo/recorrido/01-PROCESOS.md
 
-94 fuentes obligatorias · 100397 líneas
+94 fuentes obligatorias · 100623 líneas
   (i  )   4   las fuentes de «QUÉ HAY QUE LEER ÍNTEGRO» de `C-L.5`
   (ii )  29   las fuentes y las fichas de `C-0.1` / `C-0.2`
   (iii)   3   documento 11 · registro de decisiones · checkpoint

@@ -4,6 +4,34 @@
 `O26-SAB` · ¿QUEDAN PROPIEDADES CRÍTICAS SIN UNA PRUEBA CAPAZ DE FALLAR?
 =======================================================================
 
+LÉASE PRIMERO · `O30` §1 RETIRÓ ESTA MEDICIÓN DE LA CONDICIÓN DE CERTIFICACIÓN
+------------------------------------------------------------------------------
+Este instrumento sigue vivo, sigue corriendo en cada pasada y sigue publicando su
+evidencia. Lo que ya NO hace es decidir si `F6` se certifica.
+
+`O30` (Owner, 2026-09-06) §1 rechaza expresamente como condiciones de cierre «la
+obligación de proporcionar un sabotaje distinto para cada cláusula `falla_si`», «la
+clasificación de criticidad derivada principalmente de coincidencias léxicas», «la
+multiplicación de obligaciones cuando varias cláusulas expresan el mismo invariante
+material» y «la exigencia de cientos de mutantes cuando el riesgo material está cubierto
+por una prueba adversarial común y trazable». Las cuatro son la unidad de este fichero:
+`S1` es el sabotaje por cláusula, `S5` y `--por-riesgo` anclan por léxico, y «una cláusula
+= una propiedad» es la multiplicación. Desde `O30`, la certificación la gobierna el
+catálogo `K01`–`K24` de su §2 con la evidencia de su §3.
+
+Y `O30` §1 dice también lo que esto NO significa, que es lo que se lee al revés: «Las
+mediciones anteriores de `O26-SAB` permanecen como evidencia histórica de lo que aquel
+instrumento contó» y «Esta resolución no declara que aquellas cláusulas sean falsas,
+prescindibles ni satisfechas. Corrige la unidad con la que se decide la certificación.»
+
+En consecuencia, y sólo en consecuencia, el CÓDIGO DE SALIDA de los modos publicables
+pasó de `1 if pendientes else 0` a `0` cuando la medición se ejecuta y se publica entera.
+El recuento de pendientes no desaparece: baja de veredicto a DATO, y sigue enumerado uno a
+uno. `--autopruebas` sigue siendo normativo. Ver `_declarar_la_retirada_de_o30`.
+
+Lo que sigue es la cabecera ORIGINAL del instrumento, que describe qué mide y con qué
+límites. Se conserva íntegra: es la sede de lo que aquel instrumento contó.
+
 POR QUÉ EXISTE ESTE FICHERO
 ---------------------------
 El gate válido del 2026-09-05 dejó `O26` §5.2 **NO DEMOSTRADA**, y con un contraejemplo
@@ -763,6 +791,90 @@ def faltantes(propiedades):
 #  publicación
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+#  `O30` §1 · LA RETIRADA DE ESTA MEDICIÓN DE LA CONDICIÓN DE CERTIFICACIÓN
+# ---------------------------------------------------------------------------
+#  QUÉ CAMBIA, Y BAJO QUÉ AUTORIDAD. `O30` del 2026-09-06, §1, del Owner:
+#
+#      «Quedan expresamente rechazadas como condiciones de cierre: 1. la obligación de
+#      proporcionar un sabotaje distinto para cada cláusula `falla_si`; 2. la clasificación
+#      de criticidad derivada principalmente de coincidencias léxicas; 3. la multiplicación
+#      de obligaciones cuando varias cláusulas expresan el mismo invariante material; […]
+#      5. la exigencia de cientos de mutantes cuando el riesgo material está cubierto por
+#      una prueba adversarial común y trazable.»
+#
+#  Esas cuatro son, una a una, LA UNIDAD DE ESTE FICHERO: `S1` es el sabotaje por cláusula,
+#  `S5` y `--por-riesgo` anclan por léxico —esta cabecera ya lo declaraba como su límite
+#  antes de que `O30` existiera—, y la unidad «una cláusula = una propiedad» es la
+#  multiplicación. No es una parte del instrumento la que se retira: es su medida.
+#
+#  QUÉ **NO** CAMBIA, y se dice antes que lo que cambia:
+#    · el instrumento NO se borra ni se descuenta. `O30` §1: «Las mediciones anteriores de
+#      `O26-SAB` permanecen como evidencia histórica de lo que aquel instrumento contó».
+#      Sigue midiendo, sigue enumerando sus pendientes UNO A UNO y sigue publicándolos;
+#    · sus pendientes NO se declaran satisfechos. `O30` §1: «Esta resolución no declara que
+#      aquellas cláusulas sean falsas, prescindibles ni satisfechas. Corrige la unidad con
+#      la que se decide la certificación»;
+#    · las autopruebas del medidor (`--autopruebas`) siguen siendo NORMATIVAS. Que la
+#      medida no gobierne no autoriza a que el medidor se rompa: una evidencia histórica
+#      producida por un instrumento averiado no es evidencia de nada.
+#
+#  QUÉ CAMBIA, ENTONCES: el CÓDIGO DE SALIDA, que es lo único de aquí que gobernaba. Era
+#  `1 if pendientes else 0` —el recuento de pendientes por la unidad retirada decidía el
+#  rojo—. Pasa a ser `0` si la medición se ejecutó y se publicó ÍNTEGRA, y `2` —`FALLA
+#  CERRADO`, por `SedeIlegible`— si no se pudo medir. El recuento de pendientes deja de ser
+#  el veredicto y pasa a ser EL DATO, que es exactamente lo que `O30` §1 dice que es.
+#
+#  DECISIÓN · por qué NO se hace de las otras tres maneras posibles
+#      Alternativas: (a) retirar la entrada `o26-sab` del manifiesto; (b) pasarla a
+#      `tipo: biblioteca` o `generador`; (c) dejar la firma pidiendo `0 PENDIENTES` y
+#      «arreglar» los pendientes; (d) esto.
+#      (a) la oculta, y `O30` §1 manda conservarla como evidencia; además el manifiesto
+#          exige que todo `.py` de su ámbito esté declarado, así que retirarla sólo mueve el
+#          rojo de sitio.
+#      (b) deja de EJECUTARSE —`biblioteca` no corre— o deja de PUBLICAR evidencia
+#          —`generador` corre con `publicar=False`—: las dos pierden la evidencia histórica
+#          que la resolución ordena conservar.
+#      (c) es fabricar centenares de mutantes por la unidad que `O30` §1.5 acaba de
+#          rechazar: sería obedecer lo retirado.
+#      (d) conserva el instrumento, la ejecución, la evidencia y la enumeración, y cambia
+#          sólo lo que `O30` cambia: quién decide la certificación.
+
+
+def _declarar_la_retirada_de_o30(destino):
+    """El encabezado que ninguna lectura de esta salida puede saltarse.
+
+    Va ARRIBA, antes de la unidad y del criterio, porque quien lea «N PENDIENTES» al pie
+    sin haber leído esto entenderá lo contrario de lo que el Owner resolvió.
+    """
+    destino.write(
+        "  MEDICIÓN HISTÓRICA · NO GOBIERNA LA CERTIFICACIÓN DE `F6`\n"
+        "  ------------------------------------------------------------------------\n"
+        "  `O30` §1 (Owner, 2026-09-06) RETIRA de la condición de cierre la unidad con\n"
+        "  la que mide este instrumento, y la nombra en cuatro de sus cinco puntos:\n"
+        "    §1.1  un sabotaje distinto por cada cláusula `falla_si`   → es `S1`\n"
+        "    §1.2  criticidad derivada de coincidencias léxicas        → es `S5` y\n"
+        "                                                                `--por-riesgo`\n"
+        "    §1.3  multiplicar obligaciones cuando varias cláusulas expresan el mismo\n"
+        "          invariante material                                → es la unidad\n"
+        "    §1.5  exigir cientos de mutantes habiendo prueba adversarial común\n"
+        "  Desde `O30`, la certificación la gobierna el CATÁLOGO `K01`–`K24` de su §2\n"
+        "  con la evidencia de su §3, donde UNA prueba adversarial puede cubrir varios\n"
+        "  invariantes si declara el vínculo y cae por el motivo declarado.\n"
+        "\n"
+        "  LO QUE ESTO NO DICE, en palabras de la propia `O30` §1: «Esta resolución no\n"
+        "  declara que aquellas cláusulas sean falsas, prescindibles ni satisfechas.\n"
+        "  Corrige la unidad con la que se decide la certificación.» Los pendientes de\n"
+        "  abajo siguen enumerados, uno a uno, y siguen sin sabotaje propio.\n"
+        "\n"
+        "  CÓDIGO DE SALIDA · `0` significa «la medición histórica se ejecutó y se\n"
+        "  publicó íntegra», NO «no quedan pendientes». El recuento de pendientes es el\n"
+        "  dato y está al pie. Si el instrumento no puede medir, sale con `2` y no\n"
+        "  aprueba por ausencia de dato. Las autopruebas del medidor siguen siendo\n"
+        "  normativas: la medida no gobierna, pero el medidor tiene que funcionar.\n"
+        "\n")
+
+
 def publicar(destino, ejecutar=True, solo=None, traza=False, filtro=None,
              ancla_relajada=False):
     propiedades, obligaciones, mudos = medir(
@@ -774,6 +886,7 @@ def publicar(destino, ejecutar=True, solo=None, traza=False, filtro=None,
 
     destino.write("`O26-SAB` · PROPIEDADES CRÍTICAS CON UNA PRUEBA CAPAZ DE FALLAR\n")
     destino.write("=" * 78 + "\n\n")
+    _declarar_la_retirada_de_o30(destino)
     destino.write("  UNIDAD    la CLÁUSULA `falla_si`, no la obligación. `B` cuenta "
                   "sabotajes por\n            obligación; ésta es la distancia exacta entre "
                   "`B=0` y `O26` §5.2\n")
@@ -828,7 +941,16 @@ def publicar(destino, ejecutar=True, solo=None, traza=False, filtro=None,
     if not ejecutar:
         destino.write("  · `S3` y `S6` NO se han comprobado en esta corrida: el veredicto\n"
                       "    es NO ACREDITADA por construcción, y no por lo medido\n")
-    return 1 if pendientes else 0
+    destino.write("  · `O30` §1 · esta medición NO gobierna la certificación de `F6`; el\n"
+                  "    catálogo `K01`–`K24` de `O30` §2 la sustituye como unidad de cierre\n")
+
+    # `O30` §1 · el código de salida deja de ser el recuento de pendientes por la unidad
+    # retirada. Era `return 1 if pendientes else 0`. Ahora dice si la MEDICIÓN HISTÓRICA se
+    # ha podido hacer y publicar entera, que es lo único que este instrumento sigue
+    # acreditando. Los pendientes están arriba, uno a uno, y siguen contados: lo que ya no
+    # hacen es poner roja una certificación por la unidad que el Owner retiró. Si no se
+    # puede medir, no se llega aquí: `SedeIlegible` sube y `main` sale con 2.
+    return 0
 
 
 # ---------------------------------------------------------------------------
@@ -1322,6 +1444,7 @@ def publicar_por_riesgo(destino, ejecutar=True, solo=None, traza=False):
     destino.write("`O29` · PROPIEDADES CLASIFICADAS POR RIESGO, Y LA PRUEBA QUE CADA "
                   "CLASE EXIGE\n")
     destino.write("=" * 78 + "\n\n")
+    _declarar_la_retirada_de_o30(destino)
     destino.write("  CORRECCIÓN  `O29` §1 · «una cláusula funcional no se convierte "
                   "automáticamente en\n              propiedad crítica por estar formulada "
                   "como condición de fallo»\n")
@@ -1493,7 +1616,16 @@ def publicar_por_riesgo(destino, ejecutar=True, solo=None, traza=False):
     if rotas:
         destino.write("  LOS CONTROLES DE ESTE INSTRUMENTO FALLAN (%d): el veredicto de "
                       "arriba no vale\n" % rotas)
-    return 1 if (sin_prueba or rotas) else 0
+    destino.write("  `O30` §1.2 · la clasificación de criticidad de este modo se deriva de "
+                  "coincidencias\n  léxicas y queda RETIRADA de la condición de cierre. Se "
+                  "publica como diagnóstico.\n")
+
+    # `O30` §1 · lo mismo que en `publicar`, y con una diferencia que sí se conserva: los
+    # CONTROLES DEL PROPIO INSTRUMENTO (`rotas`) siguen poniendo rojo. `O30` retira la
+    # medida, no autoriza a que el medidor mienta; un diagnóstico histórico producido por un
+    # clasificador averiado no es evidencia de nada. `sin_prueba` —el recuento por la unidad
+    # retirada— deja de decidir.
+    return 1 if rotas else 0
 
 
 # ---------------------------------------------------------------------------
