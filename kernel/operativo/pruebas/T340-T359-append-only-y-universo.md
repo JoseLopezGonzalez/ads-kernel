@@ -350,7 +350,7 @@ falla_si:
   - "un identificador de familia desconocida entra en el universo porque venía de la sede"
   - "un componente vacío se publica como cero sin decir que su sede sí tiene contenido"
 ejecucion: guion-manual
-validador: "docs/evolucion/verificacion/derivar-universo-obligatorio.py"
+validador: "docs/evolucion/verificacion/derivar-universo-obligatorio.py --obligaciones"
 estado: validador-implementado
 ```
 

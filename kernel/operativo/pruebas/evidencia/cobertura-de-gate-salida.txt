@@ -26,8 +26,10 @@
   ok   `G-07` · una fuente modificada OMITIDA del manifiesto
   ok   `G-07` · sin `base` y `candidata` NO se puede derivar: falla cerrado
   ok   `G-07` · control POSITIVO · git REAL: M, A, D, renombrado, copia, ruta no ASCII y ruta con salto de línea
+  ok   `#10` · `modificadas: []` y el árbol deriva siete: la resta NO puede salir vacía
+  ok   `#10` · control POSITIVO · leídas TODAS las derivadas: la resta SÍ sale vacía
   ok   `G-07` · el manifiesto NO elige el repositorio: `repositorio` ajeno
   ok   `G-07` · `base` == `candidata` derivaría el conjunto VACÍO: falla cerrado
   ok   un manifiesto de lectura de OTRO gate, con un revisor desconocido
 
-  26 controles · 0 sin detectar
+  28 controles · 0 sin detectar

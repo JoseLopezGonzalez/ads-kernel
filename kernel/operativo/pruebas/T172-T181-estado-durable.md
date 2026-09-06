@@ -4,8 +4,8 @@ Conformidad de la sección
 [`(g)`](../../../docs/rediseno/g-ESTADO-DURABLE-APROBADA.md) y de su contrato derivado
 [`CONTRATO-ESTADO-DURABLE.md`](../runtime/CONTRATO-ESTADO-DURABLE.md).
 
-> **`H-02` · `T180` y `T181` han BAJADO a `prueba-ejecutada`, y no es una degradación del
-> aparato: es el dato.** La auditoría independiente del 2026-09-04 midió que catorce
+> **`H-02` · `T180` y `T181` BAJARON en su día a `prueba-ejecutada`, y no fue una
+> degradación del aparato: era el dato.** La auditoría independiente del 2026-09-04 midió que catorce
 > escenarios del corpus declaraban `estado: prueba-superada` sobre una evidencia que **no
 > los nombra en ninguna línea de veredicto**. La derivación de
 > [`validadores/registro_pruebas.py`](../validadores/registro_pruebas.py) ya sacaba
@@ -15,10 +15,18 @@ Conformidad de la sección
 > [`REGISTRO.md`](REGISTRO.md) —«ninguna prueba sube de estado por argumento»— vale también
 > para lo que la evidencia **no sostiene**, y no sólo para lo que **contradice**.
 >
-> `prueba-ejecutada` es el estado exacto: `escenario_extremo_a_extremo.py` —quince pasos— y
-> `comprobar_arranque.py` se ejecutan, terminan con código 0 y su salida queda registrada; lo
-> que no consta es el veredicto **de este escenario** por separado. Subirlo otra vez exige que
-> la salida lo NOMBRE, no que alguien lo declare.
+> `prueba-ejecutada` ERA el estado exacto entonces: `escenario_extremo_a_extremo.py` y
+> `comprobar_arranque.py` se ejecutaban, terminaban con código 0 y su salida quedaba
+> registrada; lo que no constaba era el veredicto **de este escenario** por separado.
+>
+> Subirlo otra vez exigiría que la salida lo NOMBRARA, no que alguien lo declarase.
+>
+> **El estado vigente NO se copia aquí.** Es el que la derivación de
+> [`validadores/registro_pruebas.py`](../validadores/registro_pruebas.py) publica en
+> [`REGISTRO-generado.md`](REGISTRO-generado.md) a partir del `estado:` de cada bloque
+> y de su evidencia; se lee ahí, o con `grep -c '^estado: prueba-ejecutada'` sobre este
+> directorio. Escribirlo en prosa es lo que produjo esta misma corrección. Lo que esta
+> nota conserva es el MOTIVO por el que bajaron y la regla que lo produjo.
 
 **Estas pruebas EJECUTAN CÓDIGO.** No inspeccionan texto, no comprueban que un fichero
 exista y no simulan nada: crean almacenes reales en directorios temporales, escriben en

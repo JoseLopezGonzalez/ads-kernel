@@ -7,8 +7,8 @@ Conformidad de la **segunda mitad del macrobloque 3 de `F6`**. Sus contratos der
 [`CONTRATO-GOBIERNO-GIT-CONTROL.md`](../runtime/CONTRATO-GOBIERNO-GIT-CONTROL.md) ·
 [`CONTRATO-ADAPTADOR.md`](../runtime/CONTRATO-ADAPTADOR.md).
 
-> **`H-02` · `T225` ha BAJADO a `prueba-ejecutada`, y no es una degradación del
-> aparato: es el dato.** La auditoría independiente del 2026-09-04 midió que catorce
+> **`H-02` · `T225` BAJÓ en su día a `prueba-ejecutada`, y no fue una degradación del
+> aparato: era el dato.** La auditoría independiente del 2026-09-04 midió que catorce
 > escenarios del corpus declaraban `estado: prueba-superada` sobre una evidencia que **no
 > los nombra en ninguna línea de veredicto**. La derivación de
 > [`validadores/registro_pruebas.py`](../validadores/registro_pruebas.py) ya sacaba
@@ -18,10 +18,18 @@ Conformidad de la **segunda mitad del macrobloque 3 de `F6`**. Sus contratos der
 > [`REGISTRO.md`](REGISTRO.md) —«ninguna prueba sube de estado por argumento»— vale también
 > para lo que la evidencia **no sostiene**, y no sólo para lo que **contradice**.
 >
-> `prueba-ejecutada` es el estado exacto: `escenario_e2e_f6.py` —veintiún pasos— se ejecuta,
-> termina con código 0 y su salida queda registrada; lo que no consta es el veredicto **de
-> este escenario** por separado. Subirlo otra vez exige que la salida lo NOMBRE, no que
-> alguien lo declare.
+> `prueba-ejecutada` ERA el estado exacto entonces: `escenario_e2e_f6.py` se ejecutaba,
+> terminaba con código 0 y su salida quedaba registrada; lo que no constaba era el veredicto
+> **de este escenario** por separado.
+>
+> Subirlo otra vez exigiría que la salida lo NOMBRARA, no que alguien lo declarase.
+>
+> **El estado vigente NO se copia aquí.** Es el que la derivación de
+> [`validadores/registro_pruebas.py`](../validadores/registro_pruebas.py) publica en
+> [`REGISTRO-generado.md`](REGISTRO-generado.md) a partir del `estado:` de cada bloque
+> y de su evidencia; se lee ahí, o con `grep -c '^estado: prueba-ejecutada'` sobre este
+> directorio. Escribirlo en prosa es lo que produjo esta misma corrección. Lo que esta
+> nota conserva es el MOTIVO por el que bajaron y la regla que lo produjo.
 
 **Todo esto EJECUTA.** Repositorios Git temporales reales, un remoto bare con dos clones y
 dos procesos independientes, contenedores y espacios de nombres del anfitrión, claves
@@ -370,7 +378,7 @@ evidencia: evidencia/sesion-nueva-salida.txt
 
 ```yaml ads:escenario
 id: T225
-nombre: El escenario extremo a extremo del macrobloque 3, con sus veintiún pasos
+nombre: El escenario extremo a extremo del macrobloque 3, con TODOS los pasos que su ejecutable declara
 cubre: [F6-D, F6-F, F6-G, V6-15, V6-16, g.14, g.15, g.16 G-A8, g.16 G-A9, 11-ARQ 7.2, 11-ARQ 8, 11-ARQ 9.6]
 dado:
   - "un control repo, dos repositorios de producto, un remoto bare y dos clones que representan dos máquinas"

@@ -1,0 +1,25 @@
+# evidencia de: o26-impl-autopruebas
+# orden:        python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/comprobar-obligaciones-implementadas.py --autopruebas
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+META-PRUEBAS DE `O26-IMPL`
+==============================================================================
+
+  ok   CONTROL POSITIVO · la copia intacta mide y publica
+  ok   la EVIDENCIA de `g.13` se edita: el árbol de trabajo se aparta de `HEAD`
+       espera «DIFIERE del blob de `HEAD`»
+  ok   la evidencia de un escenario se RETIRA del árbol
+       espera «no está en el árbol»
+  ok   `T172` deja de declarar prueba y `A14` se queda sin traza hasta el código
+       espera «ningún escenario la cubre con una prueba declarada»
+  ok   la PRUEBA declarada por `T173` deja de existir
+       espera «no existe»
+  ok   el código productivo se hace AMBIGUO: un `estado_util.py` homónimo en la raíz de validadores
+       espera «NO es inequívoca»
+  ok   una obligación se cae del universo derivado — el cliquet tiene que hablar
+       espera «EL UNIVERSO HA ENCOGIDO»
+  ok   `T172` se ata a una batería AJENA que pasa sin nombrarlo — `R5` ejecutado
+       espera «SIN NOMBRARLO en su salida»
+
+  7 sabotajes · 0 sin detectar

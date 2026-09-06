@@ -1167,3 +1167,144 @@ Si la verificación incremental resulta insuficiente:
   · los pendientes se elevarán al Owner como una lista finita.
 
 Esta resolución no rebaja los contratos de F6 ni autoriza ignorar defectos críticos.
+
+---
+
+# `O29` · CRITERIO DE PRUEBA BASADO EN RIESGO PARA EL CIERRE DE `F6`
+
+**Fecha:** 2026-09-06  
+**Autoridad:** Owner
+
+## 1 · Corrección de `O28` §3
+
+`O28` §3 se interpretó como si cada cláusula textual `falla_si` tuviera que disponer
+de un sabotaje individual y exclusivo.
+
+Esa interpretación NO es la intención del Owner y queda sustituida por esta
+resolución.
+
+Una cláusula funcional no se convierte automáticamente en una propiedad crítica
+por estar formulada como condición de fallo.
+
+## 2 · Propiedades críticas
+
+Son críticas las propiedades cuya infracción puede producir:
+
+1. pérdida o corrupción silenciosa de estado;
+2. publicación parcial o inválida;
+3. doble efecto o doble confirmación;
+4. evasión de autoridad, permisos o gates;
+5. falsificación de evidencia, identidad, commit o tree;
+6. ejecución de código no autorizado;
+7. degradación silenciosa de un mecanismo de seguridad;
+8. incumplimiento de aislamiento;
+9. recuperación no idempotente;
+10. una declaración de éxito sobre una operación no ejecutada.
+
+Cada propiedad crítica debe tener al menos una prueba adversarial que:
+
+  · alcance el canal productivo;
+  · sea verde sobre el árbol sano;
+  · quede roja al sabotear la propiedad;
+  · falle por el motivo esperado;
+  · vuelva a verde tras restaurar.
+
+Varias cláusulas pueden quedar cubiertas por una misma prueba cuando comparten
+realmente la misma propiedad y el vínculo se declara.
+
+## 3 · Obligaciones funcionales no críticas
+
+Una obligación funcional no crítica queda probada mediante:
+
+  · caso positivo;
+  · caso negativo;
+  · caso límite cuando proceda;
+  · ejecución del camino productivo;
+  · trazabilidad hasta evidencia;
+  · vínculo al SHA y tree.
+
+No necesita un mutante artificial por cada frase del contrato.
+
+## 4 · Medición de `O26` §5.1
+
+Una obligación interna se considera implementada cuando:
+
+  · está en el universo normativo;
+  · tiene implementación productiva;
+  · su condición de cierre se ejecuta;
+  · tiene prueba adecuada a su riesgo;
+  · tiene evidencia ligada al candidato.
+
+## 5 · Medición de `O26` §5.2
+
+`O26` §5.2 se satisface cuando TODAS las propiedades críticas definidas en §2 tienen
+una prueba adversarial capaz de fallar.
+
+No exige un sabotaje para cada cláusula funcional de bajo riesgo.
+
+## 6 · Severidad y certificación
+
+Bloquean la certificación:
+
+  · los defectos críticos descritos en §2;
+  · obligaciones internas sin implementar;
+  · pruebas que no ejecutan aquello que afirman;
+  · falsos verdes materiales;
+  · falta de trazabilidad de una obligación interna.
+
+No bloquean por sí solos:
+
+  · cifras documentales caducadas sin efecto operativo;
+  · errores menores de redacción;
+  · ausencia de un mutante exclusivo para una condición funcional ya ejercida;
+  · limitaciones externas correctamente declaradas.
+
+Los defectos no bloqueantes deben registrarse con propietario y fase.
+
+## 7 · Entorno
+
+Una propiedad dependiente del anfitrión puede certificarse para un perfil concreto
+si se ejecuta realmente en ese perfil.
+
+La certificación debe declarar su alcance y no universalizarla.
+
+Puede utilizarse:
+
+  · contenedor;
+  · namespace;
+  · runner separado;
+  · identidad de servicio;
+  · backend fuerte disponible.
+
+No se exige ejercer un backend que el anfitrión demuestra no ofrecer.
+
+## 8 · Cierre por composición
+
+Autorizo una última verificación incremental sobre el trabajo ya realizado.
+
+Si:
+
+  · las obligaciones internas reales están implementadas;
+  · las propiedades críticas tienen pruebas adversariales;
+  · las ocho condiciones de O26 se ejercen;
+  · M-04 y C-L.7 son adjudicadas favorablemente;
+  · no queda ningún bloqueo material;
+
+el verificador independiente podrá declarar:
+
+  `F6 CERTIFICADA POR COMPOSICIÓN`
+  `F6 CERRADA`
+
+## 9 · PesquerApp
+
+El cierre de F6 no inicia PesquerApp.
+
+La deja técnicamente disponible para una adopción controlada que requerirá una orden
+posterior y expresa del Owner.
+
+## 10 · Fin del método
+
+Después de esta verificación no se abrirá otro ciclo automático.
+
+Si resulta insuficiente, se entregará una lista finita para decisión humana y se
+detendrá el método.

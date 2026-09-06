@@ -15,8 +15,8 @@ comprobar_arranque.py        T168 · T171 — el arranque produce la topología 
                              proyecto creado declara dónde se lee cada criterio del §100
 ```
 
-> **`H-02` · `T162`…`T168` han BAJADO a `prueba-ejecutada`, y no es una degradación del
-> aparato: es el dato.** La auditoría independiente del 2026-09-04 midió que catorce
+> **`H-02` · `T162`…`T168` BAJARON en su día a `prueba-ejecutada`, y no fue una
+> degradación del aparato: era el dato.** La auditoría independiente del 2026-09-04 midió que catorce
 > escenarios del corpus declaraban `estado: prueba-superada` sobre una evidencia que **no
 > los nombra en ninguna línea de veredicto**. La derivación de
 > [`validadores/registro_pruebas.py`](../validadores/registro_pruebas.py) ya sacaba
@@ -27,10 +27,18 @@ comprobar_arranque.py        T168 · T171 — el arranque produce la topología 
 > estado por argumento»— vale también para lo que la evidencia **no sostiene**, y no sólo
 > para lo que **contradice**.
 >
-> `prueba-ejecutada` es el estado exacto: la batería que los produce se ejecuta, termina con
-> código 0 y su salida queda registrada; lo que no consta es el veredicto **de este
-> escenario** por separado. Subirlo otra vez exige que la salida lo NOMBRE, no que alguien lo
-> declare.
+> `prueba-ejecutada` ERA el estado exacto entonces: la batería que los producía se ejecutaba,
+> terminaba con código 0 y su salida quedaba registrada; lo que no constaba era el veredicto
+> **de cada escenario** por separado.
+>
+> Subirlo otra vez exigiría que la salida lo NOMBRARA, no que alguien lo declarase.
+>
+> **El estado vigente NO se copia aquí.** Es el que la derivación de
+> [`validadores/registro_pruebas.py`](../validadores/registro_pruebas.py) publica en
+> [`REGISTRO-generado.md`](REGISTRO-generado.md) a partir del `estado:` de cada bloque
+> y de su evidencia; se lee ahí, o con `grep -c '^estado: prueba-ejecutada'` sobre este
+> directorio. Escribirlo en prosa es lo que produjo esta misma corrección. Lo que esta
+> nota conserva es el MOTIVO por el que bajaron y la regla que lo produjo.
 
 > **El nombre del fichero se conserva aunque ahora llegue hasta T171.** La enmienda `E2`
 > —documento aprobado, que no se reescribe— lo enlaza por esta ruta.

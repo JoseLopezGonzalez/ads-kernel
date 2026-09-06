@@ -356,6 +356,17 @@ RESULTADO DE LA RESTA   ∅   (VACÍA)      ← REFUTADO. Ver el aviso inmediata
 > [`05-MATRIZ-CIERRE-G01-G08.md`](05-MATRIZ-CIERRE-G01-G08.md), que registra además el
 > **estado final** de las trece filas al cerrar la pasada de corrección.
 >
+> **Y el PRIMER GATE VÁLIDO llegó el 2026-09-05**, por fin: cobertura COMPLETA —165 615
+> líneas, las cuatro restas vacías— y aun así `F6` NO CERTIFICADA, con 27 hallazgos
+> verificados. Su registro íntegro, con los tres dictámenes y la adjudicación y sus
+> `sha256`, está en
+> [`gate-final-20260905/00-REGISTRO-DEL-GATE.md`](gate-final-20260905/00-REGISTRO-DEL-GATE.md).
+>
+> **Y el cierre por delta que siguió**, con `O28` y la medición que lo detuvo —`O26-IMPL` y
+> `O26-SAB` bajo el criterio de `O28` §3—, está en
+> [`06-MATRIZ-DELTA-GATE-VALIDO.md`](06-MATRIZ-DELTA-GATE-VALIDO.md), que agrupa los 27
+> hallazgos en `P1`…`P7` sin perder ni un identificador.
+>
 > **Las tres restas SÍ estaban vacías esta vez, y el adjudicador las reprodujo** —`A=0 · B=0 ·
 > C=0`—, junto con la línea base entera: 34/34 validadores, 682 casos, los tres E2E, 133
 > infracciones detectadas y 0 no detectadas, cero saltos y determinismo byte a byte. **Y aun

@@ -84,6 +84,8 @@ USO
     …/comprobar-propiedades-saboteadas.py --sin-ejecutar   # sin `S3` ni `S6` (se dice)
     …/comprobar-propiedades-saboteadas.py --solo T173      # un escenario
     …/comprobar-propiedades-saboteadas.py --autopruebas    # sabotajes del medidor
+    …/comprobar-propiedades-saboteadas.py --por-riesgo     # `O29` §2: clasifica y mide
+    …/comprobar-propiedades-saboteadas.py --autopruebas-riesgo   # sabotajes del criterio
 """
 
 # ---------------------------------------------------------------------------
@@ -302,6 +304,8 @@ class Propiedad:
         self.sede = sede
         self.validador = validador
         self.obligaciones = []
+        self.clausulas = []          # TODAS las del escenario, para el ancla de `S5`
+        self.sabotaje_capaz = None
         self.req = {}
 
     @property
@@ -309,8 +313,14 @@ class Propiedad:
         return "%s/f%d" % (self.escenario, self.orden)
 
 
-def universo_de_propiedades(solo=None):
-    """`(propiedades, universo_de_obligaciones)`, derivado entero de sus sedes."""
+def universo_de_propiedades(solo=None, filtro=None):
+    """`(propiedades, universo_de_obligaciones)`, derivado entero de sus sedes.
+
+    `filtro` —`O29`— recorta el universo MEDIDO sin recortar el universo DERIVADO: se
+    deriva entero y después se retiene lo que el filtro acepta, de modo que quien filtra
+    no puede hacer desaparecer una propiedad de la derivación, sólo de su propia medida.
+    Sin filtro, esta función devuelve exactamente lo que devolvía antes de `O29`.
+    """
     deriv = _cargar(DERIVADOR, "universo_obligatorio")
     medidor = _cargar(MEDIDOR_IMPL, "obligaciones_implementadas")
     try:
@@ -344,8 +354,11 @@ def universo_de_propiedades(solo=None):
         for orden, texto in enumerate(esc["falla_si"], 1):
             prop = Propiedad(esc["id"], orden, texto, esc["sede"], esc["validador"])
             prop.obligaciones = mias
+            prop.clausulas = list(esc["falla_si"])
             propiedades[prop.id] = prop
     mudos = propiedades.pop("__mudos__", [])
+    if filtro is not None:
+        propiedades = {k: v for k, v in propiedades.items() if filtro(v)}
     if not propiedades:
         raise SedeIlegible("no se ha derivado ni una propiedad crítica: sin propiedades no "
                            "hay nada que medir y el cero sería vacío por construcción")
@@ -600,20 +613,28 @@ def _es_textual(rutas):
     return all(any(r.startswith(z) for z in ZONAS_DE_TEXTO) for r in rutas)
 
 
-def medir(ejecutar=True, solo=None, destino_traza=None):
-    propiedades, obligaciones, mudos = universo_de_propiedades(solo=solo)
+def medir(ejecutar=True, solo=None, destino_traza=None, filtro=None,
+          ancla_relajada=False):
+    """`ancla_relajada` es `O29` §2, y sólo `O29` §2.
+
+    `O28` §3 exigía que el sabotaje anclara en ESTA cláusula y en ninguna otra (`S5`).
+    `O29` §2 lo sustituye: «varias cláusulas pueden quedar cubiertas por una misma
+    prueba cuando comparten realmente la misma propiedad y el vínculo se declara», y §6
+    saca de los bloqueantes «la ausencia de un mutante exclusivo para una condición
+    funcional ya ejercida». Con la bandera puesta, `S5` SE SIGUE MIDIENDO Y PUBLICANDO
+    —no se retira, no se relaja y no se calla— y lo único que cambia es a qué sabotajes
+    se les corre el ciclo de `S3`/`S6`: a los que superaron `S4`, en vez de sólo a los
+    que además anclaron. Sin la bandera, `medir` hace exactamente lo que hacía.
+    """
+    propiedades, obligaciones, mudos = universo_de_propiedades(solo=solo, filtro=filtro)
     cn = catalogo()
     por_prueba = {}
     for mut in cn.CATALOGO:
         por_prueba.setdefault(mut.prueba, []).append(mut)
 
-    # Las cláusulas del escenario, para el ancla de `S5`. Se reconstruyen del propio
-    # universo de propiedades, que es de donde salieron.
-    clausulas = {}
-    for prop in propiedades.values():
-        clausulas.setdefault(prop.escenario, []).append((prop.orden, prop.texto))
-    for esc in clausulas:
-        clausulas[esc] = [t for _o, t in sorted(clausulas[esc])]
+    # Las cláusulas del escenario, para el ancla de `S5`, viajan EN la propiedad desde que
+    # se derivó: reconstruirlas aquí a partir de las propiedades MEDIDAS las hacía depender
+    # de que estuvieran todas, y con un filtro de `O29` el índice dejaba de corresponderse.
 
     import tempfile                                                # noqa: PLC0415
     tmp = tempfile.mkdtemp(prefix="ads-o26-sab-") if ejecutar else None
@@ -658,7 +679,7 @@ def medir(ejecutar=True, solo=None, destino_traza=None):
             elegidas, detalles = [], []
             indice = prop.orden - 1
             for mut in no_huella:
-                anclado, detalle = ancla(clausulas[prop.escenario], indice,
+                anclado, detalle = ancla(prop.clausulas, indice,
                                          "%s %s" % (mut.descripcion or "", mut.espera or ""))
                 if anclado:
                     elegidas.append((mut, detalle))
@@ -678,12 +699,16 @@ def medir(ejecutar=True, solo=None, destino_traza=None):
                 prop.req["S3"] = (None, "NO COMPROBADO (`--sin-ejecutar`)")
                 prop.req["S6"] = (None, "NO EJECUTADO (`--sin-ejecutar`)")
                 continue
-            if not elegidas:
+            del_ciclo = elegidas
+            if ancla_relajada and not elegidas:
+                del_ciclo = [(m, "sin ancla exclusiva declarada · `O29` §2 no la exige")
+                             for m in no_huella]
+            if not del_ciclo:
                 prop.req["S3"] = (False, "no hay sabotaje que aplicar")
                 prop.req["S6"] = (False, "no hay sabotaje que ejecutar")
                 continue
             aprobada_s3, aprobada_s6, quejas3, quejas6 = None, None, [], []
-            for mut, _detalle in elegidas:
+            for mut, _detalle in del_ciclo:
                 if destino_traza is not None:
                     destino_traza.write("    · ciclo de %s (%s) …\n" % (mut.id, prop.id))
                     destino_traza.flush()
@@ -700,6 +725,7 @@ def medir(ejecutar=True, solo=None, destino_traza=None):
                 else:
                     aprobada_s6 = (mut, paso)
                     break
+            prop.sabotaje_capaz = aprobada_s6[0].id if aprobada_s6 else None
             prop.req["S3"] = (bool(aprobada_s3),
                               "%s toca %s" % (aprobada_s3[0].id,
                                               ", ".join(aprobada_s3[1]["tocados"][:3]))
@@ -737,9 +763,11 @@ def faltantes(propiedades):
 #  publicación
 # ---------------------------------------------------------------------------
 
-def publicar(destino, ejecutar=True, solo=None, traza=False):
+def publicar(destino, ejecutar=True, solo=None, traza=False, filtro=None,
+             ancla_relajada=False):
     propiedades, obligaciones, mudos = medir(
-        ejecutar=ejecutar, solo=solo, destino_traza=destino if traza else None)
+        ejecutar=ejecutar, solo=solo, destino_traza=destino if traza else None,
+        filtro=filtro, ancla_relajada=ancla_relajada)
     faltas = faltantes(propiedades)
     pendientes = sorted({p.id for p, _r, _m in faltas})
     afectadas = sorted({o for p, _r, _m in faltas for o in p.obligaciones})
@@ -1088,10 +1116,548 @@ def autopruebas(destino_stdout):
     return 1 if fallidos else 0
 
 
+# ===========================================================================
+#  `O29` · LA CLASIFICACIÓN POR RIESGO, Y LA MEDICIÓN QUE SÓLO EXIGE A LAS CRÍTICAS
+# ===========================================================================
+#
+#  POR QUÉ ESTÁ AQUÍ Y NO EN UN EJECUTABLE NUEVO. `T330` deriva del disco el inventario de
+#  puntos ejecutables y le exige a cada uno la guarda `G-03` y el mecanismo `E-10` byte a
+#  byte. Un ejecutable nuevo en esta zona es un punto más al que exigirle lo mismo, y la
+#  medición de `O29` no necesita otro proceso: necesita otro CRITERIO sobre el mismo
+#  universo. Va donde vive el universo. La tabla de reglas sí es un fichero aparte
+#  —`clasificacion_por_riesgo.py`, `biblioteca-suelta` sin línea de intérprete— porque las
+#  reglas hay que poder SABOTEARLAS desde fuera, y una tabla dentro de un guion no se puede
+#  reescribir en una copia sin tocar el guion que la juzga.
+#
+#  QUÉ CAMBIA RESPECTO DE `O26-SAB`, DICHO SIN ADORNO
+#      `O26-SAB` mide 342 propiedades y 300 pendientes tomando cada cláusula `falla_si`
+#      como propiedad crítica. `O29` §1 corrige esa interpretación. Aquí NO se elimina ni
+#      una de las 342: se clasifican, y la exigencia de prueba adversarial de `O29` §2 se
+#      le aplica sólo a las CRÍTICAS, con dos diferencias más respecto de `O28` §3:
+#        · `S5` —ancla exclusiva por cláusula— deja de cortar la cadena: `O29` §2 admite
+#          que varias cláusulas compartan prueba, y §6 saca de los bloqueantes «la ausencia
+#          de un mutante exclusivo». Se sigue MIDIENDO y se sigue PUBLICANDO, porque el
+#          vínculo declarado que `O29` §2 exige a cambio NO EXISTE en el corpus, y eso hay
+#          que decirlo, no taparlo;
+#        · la capacidad se juzga por las cinco condiciones que `O29` §2 enumera —canal
+#          productivo, verde sano, rojo al sabotear, rojo POR EL MOTIVO, verde restaurado—,
+#          que aquí son `S1`·`S2`·`S3`·`S4`·`S6`.
+
+CLASIFICADOR = "docs/evolucion/verificacion/clasificacion_por_riesgo.py"
+
+# --- ANCLAS · LO QUE ESTE CLASIFICADOR TIENE QUE MARCAR CRÍTICO O ESTÁ ROTO --------------
+#  Esto NO es la fuente de la clasificación: es su CONTROL. Son los escenarios cuyas
+#  propiedades el gate válido y sus revisores nombraron una a una. Si el clasificador no
+#  las marca CRÍTICAS **por un efecto derivado** —no por residuo—, el clasificador está
+#  mal, y no la lista. Se escriben POR ESCENARIO y no por cláusula: atarlo a `T342/f3`
+#  ataría el control al ORDEN de las cláusulas, que cualquiera puede cambiar sin tocar
+#  ninguna propiedad.
+ANCLAS_CONOCIDAS = (                                       # <-- SEDE DE LAS ANCLAS
+    ("T340", "`V6-12` · append-only por ENTRADA CERRADA de la sede del Owner (`O27` §3)"),
+    ("T341", "`V6-12` · el delimitador entre entradas, hallazgo `ADJ-B3`"),
+    ("T342", "`V6-12` · contraste contra el NACIMIENTO, no contra un prefijo (`#25`)"),
+    ("T343", "`V6-12` · alteración confirmada y blanqueada restaurando el fichero"),
+    ("T344", "`V6-12` · truncamiento por la cola de la sede del Owner"),
+    ("T345", "`V6-12` · el ORDEN de las entradas, no sólo el conjunto"),
+    ("T349", "`V6-12` · el régimen no se decide con los bytes de hoy"),
+    ("T404", "`G-04` · la prioridad durable, hallazgo `#1` de la matriz del delta"),
+    ("T408", "`G-04` · el par de transiciones que mueve el estado por el camino"),
+    ("T158", "evidencia contra `HEAD` · hallazgo `#3`, seis evidencias descubiertas"),
+    ("T350", "evidencia contra `HEAD` · el estado copiado verbatim sin contrastar"),
+    ("T306", "aislamiento y procedencia · `E-10`, `H-01` y `G-03`"),
+    ("T330", "aislamiento · el inventario de puntos ejecutables, derivado del disco"),
+    ("T337", "aislamiento · veredicto con módulos de procedencia no demostrable"),
+    ("T364", "aislamiento · la orden que publica la procedencia"),
+    ("T217", "autoridad · la raíz externa fuera del proceso del runtime"),
+    ("T220", "autoridad · una autoridad interna no puede sustituir a la externa"),
+    ("T215", "aislamiento · la degradación silenciosa a `killpg`"),
+    ("T414", "aislamiento · dos generaciones que comparten sesión"),
+    ("T296", "publicación · la evidencia antes de completar los siete pasos"),
+    ("T298", "publicación · una publicación a medias que se vuelve vigente"),
+    ("T299", "publicación · el testigo sin `fsync`"),
+    ("T300", "publicación · la recuperación publica sin el testigo del paso 9"),
+)
+
+# La cláusula de control del RESIDUO. No existe en el corpus y no pretende existir: sirve
+# para comprobar, en cada corrida, que una propiedad de la que este clasificador no sabe
+# derivar nada SUBE a crítica en vez de caer a funcional.
+CLAUSULA_DEL_RESIDUO = ("el zurriburri del badulaque se entrefila sin alicatar la "
+                        "pesquisa del cuentagotas")
+
+REQUISITOS_DE_O29 = ("S1", "S2", "S3", "S4", "S6")
+
+
+def clasificador():
+    """La tabla de reglas, IMPORTADA de su sede. No se copia: se importa, como el catálogo.
+
+    Una segunda copia de las reglas sería una segunda sede del mismo criterio, que es lo
+    que `Q-04` castigó, y además haría que el sabotaje de las autopruebas tocara una tabla
+    y el veredicto usara la otra.
+    """
+    return _cargar(CLASIFICADOR, "clasificacion_por_riesgo")
+
+
+def _contexto_de_los_escenarios():
+    medidor = _cargar(MEDIDOR_IMPL, "obligaciones_implementadas")
+    return {e["id"]: e for e in medidor.escenarios()}
+
+
+def _contexto_de(fichas, escenario):
+    ficha = fichas.get(escenario, {})
+    return {"nombre": ficha.get("nombre"), "entonces": ficha.get("entonces")}
+
+
+def clasificar_universo(solo=None):
+    """`(propiedades, obligaciones, mudos, veredictos, fichas, clf)`, todo clasificado.
+
+    Ni una se elimina. El cardinal de cada clase se DERIVA de esta tabla; aquí no se
+    escribe ninguna cifra.
+    """
+    clf = clasificador()
+    propiedades, obligaciones, mudos = universo_de_propiedades(solo=solo)
+    fichas = _contexto_de_los_escenarios()
+    veredictos = {}
+    for clave, prop in propiedades.items():
+        veredictos[clave] = clf.clasificar(prop.texto, _contexto_de(fichas, prop.escenario))
+    return propiedades, obligaciones, mudos, veredictos, fichas, clf
+
+
+def _capaz(prop):
+    """¿Tiene esta propiedad una PRUEBA ADVERSARIAL CAPAZ en el sentido de `O29` §2?
+
+    Las cinco condiciones que `O29` §2 enumera, y sólo ésas: hay sabotaje imputado (`S1`),
+    declara el motivo del rojo (`S2`), toca el canal productivo y no el enunciado (`S3`),
+    no lo detecta sólo la huella general (`S4`), y el ciclo sano/sabotaje/restaurado se
+    EJECUTA y sale como debe (`S6`). `S5` —el ancla exclusiva por cláusula— NO entra:
+    `O29` §2 admite la prueba compartida y §6 saca del bloqueo al mutante no exclusivo.
+    """
+    return all(prop.req.get(r, (None, ""))[0] is True for r in REQUISITOS_DE_O29)
+
+
+def _primer_fallo_o29(prop):
+    for req in ORDEN_DE_DIAGNOSTICO:
+        if req not in REQUISITOS_DE_O29:
+            continue
+        cumple, motivo = prop.req.get(req, (None, "no medido"))
+        if cumple is not True:
+            return req, motivo
+    return None, ""
+
+
+def _control_de_las_anclas(destino, propiedades, veredictos, clf):
+    """Las ANCLAS, comprobadas. Devuelve cuántas fallan; publica cada una con su nombre."""
+    destino.write("\nCONTROL DE LAS ANCLAS — lo que este clasificador TIENE que marcar "
+                  "crítico\n")
+    destino.write("-" * 78 + "\n")
+    if not ANCLAS_CONOCIDAS:
+        destino.write("  SIN ANCLAS · la lista de control está VACÍA: sin ella este "
+                      "clasificador\n           no tiene control ninguno y su veredicto no "
+                      "vale nada\n")
+        return 1
+    rotas = 0
+    por_escenario = {}
+    for clave, prop in propiedades.items():
+        por_escenario.setdefault(prop.escenario, []).append(clave)
+    for escenario, quien in ANCLAS_CONOCIDAS:
+        claves = sorted(por_escenario.get(escenario, []))
+        if not claves:
+            rotas += 1
+            destino.write("  ANCLA AUSENTE  %-6s no aporta ni una propiedad al universo "
+                          "derivado: el\n                 control no se puede ejercer · %s\n"
+                          % (escenario, quien))
+            continue
+        malas = []
+        for clave in claves:
+            veredicto = veredictos[clave]
+            if veredicto.clase != clf.CRITICA:
+                malas.append("%s REBAJADA a %s" % (clave, veredicto.clase))
+            elif veredicto.por_residuo:
+                malas.append("%s CRÍTICA SIN EFECTO DERIVADO (por residuo)" % clave)
+        if malas:
+            rotas += 1
+            destino.write("  ANCLA REBAJADA %-6s %s\n" % (escenario, "; ".join(malas[:3])))
+            destino.write("                 la nombró: %s\n" % quien)
+        else:
+            destino.write("  ok             %-6s %d propiedades, todas CRÍTICAS por efecto "
+                          "derivado\n" % (escenario, len(claves)))
+    destino.write("  %d anclas · %d rotas\n" % (len(ANCLAS_CONOCIDAS), rotas))
+    return rotas
+
+
+def _control_del_residuo(destino, clf):
+    """Una cláusula de la que este clasificador no sabe nada tiene que SUBIR, no bajar."""
+    veredicto = clf.clasificar(CLAUSULA_DEL_RESIDUO, {})
+    bien = veredicto.clase == clf.CRITICA and veredicto.por_residuo
+    destino.write("\nCONTROL DEL RESIDUO — lo no derivable sube, no baja\n")
+    destino.write("-" * 78 + "\n")
+    destino.write("  %s · una cláusula sin ningún término conocido sale %s\n"
+                  % ("ok" if bien else "EL RESIDUO NO SUBE", veredicto.clase))
+    return 0 if bien else 1
+
+
+def _control_de_la_discriminacion(destino, veredictos, clf):
+    """Un clasificador que dice CRÍTICA a TODO pasa el control de las anclas sin medir nada.
+
+    Es el falso verde de este instrumento, y por eso tiene su propio control: sobre el
+    árbol sano tiene que quedar al menos una propiedad NO crítica, con su motivo escrito.
+    """
+    rebajadas = [c for c, v in veredictos.items() if v.clase != clf.CRITICA]
+    destino.write("\nCONTROL DE LA DISCRIMINACIÓN — un clasificador que dice CRÍTICA a "
+                  "todo no clasifica\n")
+    destino.write("-" * 78 + "\n")
+    if not rebajadas:
+        destino.write("  EL CLASIFICADOR NO DISCRIMINA · ni una sola de las %d propiedades "
+                      "sale de CRÍTICA:\n           el control de las anclas lo pasaría "
+                      "cualquier regla que dijese que sí a todo\n" % len(veredictos))
+        return 1
+    destino.write("  ok · %d propiedades salen de CRÍTICA, cada una con su motivo escrito\n"
+                  % len(rebajadas))
+    return 0
+
+
+def publicar_por_riesgo(destino, ejecutar=True, solo=None, traza=False):
+    """`O29` §2 y §3 sobre el universo derivado: clasificar, y exigir prueba a las críticas."""
+    propiedades, obligaciones, mudos, veredictos, fichas, clf = clasificar_universo(solo=solo)
+
+    destino.write("`O29` · PROPIEDADES CLASIFICADAS POR RIESGO, Y LA PRUEBA QUE CADA "
+                  "CLASE EXIGE\n")
+    destino.write("=" * 78 + "\n\n")
+    destino.write("  CORRECCIÓN  `O29` §1 · «una cláusula funcional no se convierte "
+                  "automáticamente en\n              propiedad crítica por estar formulada "
+                  "como condición de fallo»\n")
+    destino.write("  UNIDAD      la CLÁUSULA `falla_si`, la misma que mide `O26-SAB`. NO "
+                  "se elimina\n              ninguna de las medidas: se CLASIFICAN, y cada "
+                  "una dice por qué\n")
+    destino.write("  DERIVACIÓN  del EFECTO, por los diez apartados de `O29` §2. Subir es "
+                  "barato —basta\n              un efecto, en la cláusula o en su "
+                  "contexto—; bajar exige que no se\n              derive ninguno Y "
+                  "evidencia positiva de la clase EN LA CLÁUSULA\n")
+    destino.write("  RESIDUO     lo que no se deriva ni se puede rebajar se queda "
+                  "CRÍTICA: que sobre\n\n")
+
+    destino.write("LOS DIEZ EFECTOS DE `O29` §2, QUE SON EL CRITERIO\n")
+    destino.write("-" * 78 + "\n")
+    for efecto in clf.EFECTOS:
+        destino.write("  §2.%-2d %s\n" % (efecto.numero, efecto.titulo))
+
+    destino.write("\nLAS %d PROPIEDADES, POR CLASE — el cardinal se deriva de la tabla\n"
+                  % len(propiedades))
+    destino.write("-" * 78 + "\n")
+    por_clase = {}
+    for clave, veredicto in veredictos.items():
+        por_clase.setdefault(veredicto.clase, []).append(clave)
+    for clase in clf.CLASES:
+        destino.write("  %-24s %3d\n" % (clase, len(por_clase.get(clase, []))))
+    destino.write("  %-24s %3d   (suma comprobada contra el universo derivado)\n"
+                  % ("TOTAL", sum(len(v) for v in por_clase.values())))
+    if sum(len(v) for v in por_clase.values()) != len(propiedades):
+        raise SedeIlegible("la clasificación no reparte las propiedades derivadas: "
+                           "alguna cayó fuera de toda clase")
+
+    criticas = sorted(por_clase.get(clf.CRITICA, []))
+    residuo = sorted(c for c in criticas if veredictos[c].por_residuo)
+    destino.write("\n  de las CRÍTICAS, %d lo son por un efecto DERIVADO y %d por RESIDUO "
+                  "—sin efecto\n  derivado y sin motivo para rebajarlas—. Las de residuo "
+                  "no pueden decir cuál de\n  los diez efectos corren, y por eso se "
+                  "publican aparte: son el borde del criterio\n"
+                  % (len(criticas) - len(residuo), len(residuo)))
+
+    destino.write("\nCUÁNTAS CRÍTICAS POR CADA EFECTO — una propiedad puede correr varios\n")
+    destino.write("-" * 78 + "\n")
+    for efecto in clf.EFECTOS:
+        cuantas = sum(1 for c in criticas
+                      if any(n == efecto.numero for n, _t, _r, _c in veredictos[c].efectos))
+        destino.write("  §2.%-2d %-58s %3d\n" % (efecto.numero, efecto.titulo[:58], cuantas))
+    for marca in ("anfitrion", "externa"):
+        cuantas = sum(1 for c in criticas if marca in veredictos[c].marcas)
+        destino.write("  marca `%s`%s %3d críticas la llevan, y siguen siendo CRÍTICAS: "
+                      "`O29` §7\n           permite certificar por perfil, no dejar de "
+                      "considerar crítica\n"
+                      % (marca, " " * (14 - len(marca)), cuantas))
+
+    destino.write("\nLO QUE NO ES CRÍTICO, UNA A UNA — con el motivo, para poder atacarlo\n")
+    destino.write("-" * 78 + "\n")
+    rebajadas = sorted(c for c in veredictos if veredictos[c].clase != clf.CRITICA)
+    if not rebajadas:
+        destino.write("  ninguna\n")
+    for clave in rebajadas:
+        prop, veredicto = propiedades[clave], veredictos[clave]
+        destino.write("  %-12s %-22s %s\n" % (clave, veredicto.clase, prop.sede))
+        destino.write("       «%s»\n" % prop.texto[:150])
+        destino.write("       %s\n" % veredicto.motivo[:300])
+
+    destino.write("\nLAS CRÍTICAS POR RESIDUO — críticas, y sin poder decir cuál de los "
+                  "diez efectos\n")
+    destino.write("-" * 78 + "\n")
+    if not residuo:
+        destino.write("  ninguna\n")
+    for clave in residuo:
+        destino.write("  %-12s «%s»\n" % (clave, propiedades[clave].texto[:120]))
+
+    # --- la medición, que sólo se le exige a las CRÍTICAS -------------------------------
+    criticos = set(criticas)
+    medidas, _obl, _mudos = medir(
+        ejecutar=ejecutar, solo=solo, destino_traza=destino if traza else None,
+        filtro=lambda p: p.id in criticos, ancla_relajada=True)
+    if set(medidas) != criticos:
+        raise SedeIlegible("el filtro no midió exactamente las críticas clasificadas: "
+                           "%d medidas frente a %d críticas"
+                           % (len(medidas), len(criticos)))
+
+    capaces = sorted(c for c in medidas if _capaz(medidas[c]))
+    con_prueba = set(capaces)
+    sin_prueba = sorted(set(criticos) - con_prueba)
+
+    destino.write("\nCADA CRÍTICA, CON LO QUE `O29` §2 LE EXIGE\n")
+    destino.write("-" * 78 + "\n")
+    destino.write("  fuente · efecto peligroso · canal productivo · prueba adversarial · "
+                  "evidencia · resultado\n\n")
+    for clave in criticas:
+        prop, veredicto = medidas[clave], veredictos[clave]
+        ficha = fichas.get(prop.escenario, {})
+        destino.write("  %-12s %s\n" % (clave, ",".join(prop.obligaciones)))
+        destino.write("       fuente      %s · «%s»\n" % (prop.sede, prop.texto[:120]))
+        destino.write("       efecto      %s\n"
+                      % (veredicto.efectos_dichos() or
+                         "NO DERIVADO (residuo) · crítica por no poder rebajarla"))
+        # El RASTRO literal por el que se derivó. Sin él la clase es una afirmación: con
+        # él, cualquiera puede discutir la derivación palabra por palabra, que es lo único
+        # que hace auditable a un criterio léxico.
+        destino.write("       derivación  %s\n" % veredicto.motivo[:240])
+        destino.write("       canal       %s\n" % (prop.validador or "(sin validador)"))
+        destino.write("       sabotaje    %s\n"
+                      % (getattr(prop, "sabotaje_capaz", None) or
+                         "NINGUNO capaz · %s" % (_primer_fallo_o29(prop)[1] or "")[:150]))
+        destino.write("       evidencia   %s\n" % (ficha.get("evidencia") or "(no declarada)"))
+        destino.write("       resultado   %s\n"
+                      % ("PROBADA · prueba adversarial capaz de fallar"
+                         if clave in con_prueba else
+                         "SIN PRUEBA ADVERSARIAL CAPAZ · falta %s" % (_primer_fallo_o29(prop)[0] or "?")))
+
+    destino.write("\nLA RESTA QUE PIDE EL ENCARGO\n")
+    destino.write("-" * 78 + "\n")
+    destino.write("      propiedades críticas          %3d\n" % len(criticos))
+    destino.write("    − con prueba adversarial capaz  %3d\n" % len(capaces))
+    destino.write("    = %s\n" % ("∅" if not sin_prueba else
+                                  "%d propiedades, con nombre y apellido:" % len(sin_prueba)))
+    for clave in sin_prueba:
+        req, motivo = _primer_fallo_o29(medidas[clave])
+        destino.write("      %-12s %-3s %s\n" % (clave, req, motivo[:110]))
+
+    destino.write("\nPOR REQUISITO DE `O29` §2 — dónde se rompe la cadena de las CRÍTICAS\n")
+    destino.write("-" * 78 + "\n")
+    for clave, titulo in REQUISITOS:
+        if clave not in REQUISITOS_DE_O29:
+            destino.write("  %s  %-42s  NO ENTRA en `O29` §2 (ancla exclusiva por "
+                          "cláusula)\n" % (clave, titulo))
+            continue
+        cuantas = sum(1 for c in sin_prueba if _primer_fallo_o29(medidas[c])[0] == clave)
+        destino.write("  %s  %-42s  primeras faltas: %d\n" % (clave, titulo, cuantas))
+    sin_ancla = sorted(c for c in capaces if medidas[c].req["S5"][0] is not True)
+    destino.write("  S5  ALCANCE ESPECÍFICO DE ESTA CLÁUSULA      %d de las %d capaces lo "
+                  "son con una\n      prueba COMPARTIDA cuyo vínculo el corpus NO declara. "
+                  "`O29` §2 lo admite «cuando\n      el vínculo se declara»; aquí no se "
+                  "declara, y eso es deuda, no verde\n" % (len(sin_ancla), len(capaces)))
+
+    rotas = _control_de_las_anclas(destino, propiedades, veredictos, clf)
+    rotas += _control_del_residuo(destino, clf)
+    rotas += _control_de_la_discriminacion(destino, veredictos, clf)
+
+    destino.write("\nLO QUE ESTE CRITERIO NO CUBRE\n")
+    destino.write("-" * 78 + "\n")
+    destino.write("  · la derivación es LÉXICA: sale de las palabras de la cláusula y de "
+                  "su contexto,\n    no de la semántica del código. Un efecto descrito con "
+                  "vocabulario que ninguna\n    regla recoge cae al RESIDUO —que es "
+                  "CRÍTICA, el lado seguro— sin poder nombrarlo\n")
+    destino.write("  · el universo es el de `O26-SAB`: escenarios que cubren una obligación "
+                  "del universo\n    derivado. `T380`…`T399` (aislamiento, cubren `G-03`, "
+                  "`E-10`, `ADJ-B2`) y `T420`…`T429`\n    (evidencia contra `HEAD`, cubren "
+                  "`D-05`) NO están entre las %d y este criterio\n    tampoco las ve: es un "
+                  "agujero del UNIVERSO, no de la clasificación\n" % len(propiedades))
+    destino.write("  · `S5` se publica y no se exige: el vínculo sabotaje→propiedad que "
+                  "`O29` §2 pide a\n    cambio de admitir la prueba compartida NO EXISTE en "
+                  "el corpus\n")
+    destino.write("  · un `S6` verde demuestra que ESE sabotaje alcanza la propiedad, no "
+                  "que la propiedad\n    sea inderrotable por otro camino (`ADJ-B3`)\n")
+    destino.write("  · no dice nada de `O26` §5.1 —eso es `O26-IMPL`— ni de §5.3 a §5.5\n")
+    if not ejecutar:
+        destino.write("  · `S3` y `S6` NO se han comprobado en esta corrida: ninguna "
+                      "propiedad puede salir\n    PROBADA, y no por lo medido\n")
+
+    destino.write("\n  %d propiedades clasificadas · %d CRÍTICAS · %d con prueba adversarial "
+                  "capaz · %d SIN\n" % (len(propiedades), len(criticos), len(capaces),
+                                        len(sin_prueba)))
+    destino.write("  `O26` §5.2 por el criterio de `O29` §5 · %s\n"
+                  % ("ACREDITADA" if not sin_prueba and ejecutar and not rotas
+                     else "NO ACREDITADA"))
+    if rotas:
+        destino.write("  LOS CONTROLES DE ESTE INSTRUMENTO FALLAN (%d): el veredicto de "
+                      "arriba no vale\n" % rotas)
+    return 1 if (sin_prueba or rotas) else 0
+
+
+# ---------------------------------------------------------------------------
+#  autopruebas del CLASIFICADOR · se sabotean sus reglas, no el corpus
+# ---------------------------------------------------------------------------
+#  Un clasificador que sólo se comprueba a sí mismo diciendo «he clasificado 342» no mide
+#  nada: el número sale igual esté bien o mal la regla. Lo que se sabotea aquí es la REGLA,
+#  y lo que se exige es que uno de los tres controles publicados —anclas, residuo,
+#  discriminación— lo cace. Cada sabotaje ataca UNA de las decisiones que hacen que este
+#  criterio proteja, y todas se aplican APÉNDICE al módulo de reglas: reescribir un literal
+#  dentro de la tabla ataría el autotest a la POSICIÓN de un patrón, y un autotest que se
+#  rompe al reordenar la tabla mide la tabla, no el criterio.
+
+SABOTAJES_DEL_CLASIFICADOR = []
+
+
+def _sabotaje_riesgo(rotulo, espera, ataca):
+    def envoltorio(fn):
+        SABOTAJES_DEL_CLASIFICADOR.append((rotulo, espera, ataca, fn))
+        return fn
+    return envoltorio
+
+
+def _apendice_al_clasificador(destino, texto):
+    ruta = os.path.join(destino, CLASIFICADOR)
+    with io.open(ruta, "a", encoding="utf-8") as fh:
+        fh.write(texto)
+
+
+@_sabotaje_riesgo("las rebajas se consultan ANTES que los efectos: una regla léxica gana",
+                  "ANCLA REBAJADA", "el ORDEN de la decisión")
+def _sr_orden_invertido(destino):
+    """La rebaja deja de ser el último recurso y pasa a ser el primero. Es exactamente el
+    blanqueo: una cláusula de `V6-12` que además dice «el diagnóstico no dice» sale
+    OBSERVABILIDAD y el append-only del Owner deja de exigir prueba adversarial."""
+    _apendice_al_clasificador(destino, '\n\nORDEN = ("rebaja", "efecto")\n')
+
+
+@_sabotaje_riesgo("el residuo deja de subir: lo no derivable cae a FUNCIONAL",
+                  "EL RESIDUO NO SUBE", "el destino de lo que no se sabe derivar")
+def _sr_residuo_baja(destino):
+    """Rebajar por ignorancia del clasificador. Es el error que no se ve: no hay ninguna
+    regla equivocada que señalar, sólo una ausencia que se resuelve a favor del reo."""
+    _apendice_al_clasificador(destino, "\n\nCLASE_DEL_RESIDUO = FUNCIONAL\n")
+
+
+@_sabotaje_riesgo("se retira el efecto `O29` §2.5 —falsificación de evidencia—",
+                  "CRÍTICA SIN EFECTO DERIVADO", "una regla de efecto entera")
+def _sr_efecto_retirado(destino):
+    """Seis propiedades de las anclas son críticas ÚNICAMENTE por §2.5. Sin la regla caen
+    al residuo: siguen siendo CRÍTICAS —el residuo sube— pero ya no pueden decir cuál de
+    los diez efectos corren, y el control de las anclas exige EFECTO DERIVADO, no
+    criticidad por defecto. Sin esta distinción, retirar reglas no costaría nada."""
+    _apendice_al_clasificador(
+        destino, "\n\nEFECTOS = tuple(e for e in EFECTOS if e.numero != 5)\n")
+
+
+@_sabotaje_riesgo("la marca del anfitrión decide la clase: `O29` §7 leído como una salida",
+                  "ANCLA REBAJADA", "el significado de `O29` §7")
+def _sr_marca_decide(destino):
+    """`O29` §7 permite certificar una propiedad dependiente del anfitrión PARA UN PERFIL.
+    Leerlo como «entonces no es crítica» saca del riesgo la contención, el `setsid` y la
+    raíz externa de un plumazo, que son tres de las anclas."""
+    _apendice_al_clasificador(destino, "\n\nLA_MARCA_DECIDE_LA_CLASE = True\n")
+
+
+@_sabotaje_riesgo("un efecto pasa a casar con CUALQUIER texto: todo sale crítico",
+                  "EL CLASIFICADOR NO DISCRIMINA", "el falso verde de este instrumento")
+def _sr_todo_critico(destino):
+    """El control de las anclas lo pasa cualquier regla que diga CRÍTICA a todo. Ése es el
+    falso verde de este medidor y necesita su propio control: sobre el árbol sano tiene que
+    quedar al menos una propiedad rebajada, con su motivo escrito."""
+    _apendice_al_clasificador(
+        destino,
+        '\n\nEFECTOS = tuple(EFECTOS) + (Efecto(4, "casa con todo", (r".",)),)\n')
+
+
+@_sabotaje_riesgo("la lista de ANCLAS se vacía — control del control",
+                  "SIN ANCLAS", "el propio control")
+def _sr_sin_anclas(destino):
+    """Si el control se puede vaciar sin que nada lo diga, el control no es un control."""
+    ruta = os.path.join(destino, "docs/evolucion/verificacion",
+                        os.path.basename(os.path.abspath(__file__)))
+    with io.open(ruta, encoding="utf-8") as fh:
+        texto = fh.read()
+    marca = "ANCLAS_CONOCIDAS = (                                       # <-- SEDE DE LAS ANCLAS"
+    if marca not in texto:
+        raise AssertionError("no encuentro la sede de las anclas en la copia")
+    cabeza, cola = texto.split(marca, 1)
+    cierre = cola.find("\n)\n")
+    with io.open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(cabeza + "ANCLAS_CONOCIDAS = (" + cola[cierre:])
+
+
+def autopruebas_del_clasificador(destino_stdout):
+    import tempfile                                                # noqa: PLC0415
+
+    destino_stdout.write("META-PRUEBAS DEL CLASIFICADOR POR RIESGO (`O29` §2)\n")
+    destino_stdout.write("=" * 78 + "\n\n")
+    destino_stdout.write("  cada sabotaje cambia UNA regla del clasificador y exige que uno "
+                         "de los tres\n  controles publicados lo cace: ANCLAS · RESIDUO · "
+                         "DISCRIMINACIÓN\n\n")
+    fallidos = 0
+    raiz_tmp = tempfile.mkdtemp(prefix="ads-o29-riesgo-")
+    try:
+        limpio = os.path.join(raiz_tmp, "control")
+        _copiar(limpio)
+        rc, texto = _medir_en_la_copia(limpio, ("--por-riesgo", "--sin-ejecutar"))
+        m = re.search(r"(\d+) propiedades clasificadas · (\d+) CRÍTICAS", texto)
+        bien = (bool(m) and int(m.group(1)) > 0 and int(m.group(2)) > 0
+                and "SIN ANCLAS" not in texto and "ANCLA REBAJADA" not in texto
+                and "EL RESIDUO NO SUBE" not in texto
+                and "EL CLASIFICADOR NO DISCRIMINA" not in texto)
+        destino_stdout.write("  %-4s CONTROL POSITIVO · la copia intacta clasifica %s "
+                             "propiedades, %s críticas,\n       y los tres controles salen "
+                             "limpios\n"
+                             % ("ok" if bien else "FALLA",
+                                m.group(1) if m else "?", m.group(2) if m else "?"))
+        if not bien:
+            fallidos += 1
+            destino_stdout.write("       %s\n" % texto[-500:])
+
+        for indice, (rotulo, espera, ataca, aplicar) in enumerate(
+                SABOTAJES_DEL_CLASIFICADOR):
+            destino = os.path.join(raiz_tmp, "r%02d" % indice)
+            _copiar(destino)
+            try:
+                aplicar(destino)
+            except Exception as e:                                 # noqa: BLE001
+                fallidos += 1
+                destino_stdout.write("  %-4s %s\n" % ("ROTO", rotulo))
+                destino_stdout.write("       el sabotaje no se pudo aplicar: %s: %s\n"
+                                     % (type(e).__name__, e))
+                continue
+            rc, texto = _medir_en_la_copia(destino, ("--por-riesgo", "--sin-ejecutar"))
+            if "Traceback (most recent call last)" in texto:
+                resultado, detalle = "TRAZA", texto[-500:]
+            elif espera in texto:
+                resultado, detalle = "ok", ""
+            else:
+                resultado = "NO DETECTADO"
+                detalle = texto[-500:]
+            if resultado != "ok":
+                fallidos += 1
+            destino_stdout.write("  %-4s %s\n" % (resultado, rotulo))
+            destino_stdout.write("       ataca %s · espera «%s»%s\n"
+                                 % (ataca, espera, " · " + detalle if detalle else ""))
+    finally:
+        shutil.rmtree(raiz_tmp, ignore_errors=True)
+    destino_stdout.write("\n  %d sabotajes del clasificador · %d sin detectar\n"
+                         % (len(SABOTAJES_DEL_CLASIFICADOR), fallidos))
+    return 1 if fallidos else 0
+
+
 def main():
     ap = argparse.ArgumentParser(
         description="`O26-SAB` · las seis condiciones de `O28` §3 sobre cada propiedad")
     ap.add_argument("--autopruebas", action="store_true")
+    ap.add_argument("--por-riesgo", action="store_true",
+                    help="`O29` §2 · clasifica el universo por riesgo y exige prueba "
+                         "adversarial SÓLO a las críticas")
+    ap.add_argument("--autopruebas-riesgo", action="store_true",
+                    help="sabotea las reglas del clasificador y exige que los controles "
+                         "lo cacen")
     ap.add_argument("--sin-ejecutar", action="store_true",
                     help="no comprueba `S3` ni `S6`; el veredicto lo dice y no acredita")
     ap.add_argument("--solo", default=None, help="mide un solo escenario")
@@ -1099,7 +1665,12 @@ def main():
     args = ap.parse_args()
     if args.autopruebas:
         return autopruebas(sys.stdout)
+    if args.autopruebas_riesgo:
+        return autopruebas_del_clasificador(sys.stdout)
     try:
+        if args.por_riesgo:
+            return publicar_por_riesgo(sys.stdout, ejecutar=not args.sin_ejecutar,
+                                       solo=args.solo, traza=args.traza)
         return publicar(sys.stdout, ejecutar=not args.sin_ejecutar, solo=args.solo,
                         traza=args.traza)
     except SedeIlegible as e:

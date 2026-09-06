@@ -17,9 +17,9 @@ Bajo carga, el bisnieto puede no existir todavía: la captura sale vacía y `T21
 lado seguro —rojo, no verde—, pero **no es determinista**, y la línea base de `F6` declara
 determinismo byte a byte.
 
-`D-02` · **doce escenarios sólo pueden ascender si otro reescribe la salida de su ejecutor**.
-Su evidencia existe, tiene cabecera de procedencia, terminó con código 0 y la produjo el
-ejecutable que el escenario declara — y **no los nombra**. El aparato de contraste de
+`D-02` · **doce escenarios sólo podían ascender si otro reescribía la salida de su ejecutor**.
+Su evidencia existía, tenía cabecera de procedencia, terminaba con código 0 y la producía el
+ejecutable que el escenario declara — y **no los nombraba**. El aparato de contraste de
 `registro_pruebas.py` ya publicaba la cifra; lo que faltaba era la prueba que impide que la
 clase vuelva a crecer.
 
@@ -421,13 +421,38 @@ dado:
   - "la intermitencia se midió bajo carga y en reposo daba cero de quince"
   - "repetir en reposo no demuestra ausencia de intermitencia"
 cuando:
-  - "se generan quemadores de CPU reales y se repiten ocho pasadas por cada nivel de aislamiento disponible"
+  - "se generan quemadores de CPU reales y se repiten las pasadas declaradas por cada plan de aislamiento que el anfitrion ofrece"
 entonces:
-  - "todas las pasadas confirman las cuatro generaciones antes de matar"
-  - "el protocolo vale igual para el nivel grupo-de-procesos y para el nivel arbol-de-procesos"
+  - "cada pasada confirma las cuatro generaciones ANTES de matar, y el orden de la salida lo demuestra"
+  - "cada pasada corre sobre el backend y el nivel que dice, y una degradacion silenciosa la pone roja"
+  - "cada pasada vuelve a medir el setsid generacion a generacion: la repeticion no sustituye al protocolo"
+  - "si el anfitrion ofrece contencion fuerte, el plan fuerte se ejerce; si no la ofrece, queda NO EJERCIDO con su requisito exacto y nunca superado"
 falla_si:
   - "alguna pasada bajo carga deja una generación sin capturar"
   - "la carga no se genera y la prueba mide en reposo"
+  - "el anfitrion ofrece contencion fuerte y ninguna pasada la ejerce, y la prueba sale verde llamandose debil y fuerte"
+  - "se cuenta como pasada fuerte un backend que la deteccion no declara fuerte"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_contencion.py
+estado: prueba-superada
+evidencia: evidencia/contencion-salida.txt
+```
+
+```yaml ads:escenario
+id: T418
+nombre: Bajo carga, «nunca creado» y «muerto por contencion» siguen siendo veredictos distintos
+cubre: ["G-08", "E-18", "FD-5", "T411"]
+dado:
+  - "T411 separa los dos veredictos en reposo y sobre el backend debil"
+  - "bajo carga una generacion que tarda se parece a una que no nacio, y ahi es donde se confunden"
+cuando:
+  - "con los quemadores encendidos se corre la tarea amputada y la tarea entera, sobre el plan debil y sobre el fuerte"
+entonces:
+  - "con el bisnieto amputado la raiz publica sin-preparar y el veredicto dice NUNCA CREADO, no «sobrevivio»"
+  - "con la tarea entera la raiz se anuncia, se la captura viva y la contencion se la lleva"
+falla_si:
+  - "bajo carga el protocolo deja de detectar al que no nacio"
+  - "el veredicto de «nunca creado» menciona supervivencia, que es el otro fallo"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_contencion.py
 estado: prueba-superada

@@ -4,4 +4,4 @@
 # codigo:       0
 # ---------------------------------------------------------------
 
-bloques canónicos: 582 · identificadores: 582 · errores: 0 · avisos: 0 · enlaces a material no embarcado: 0
+bloques canónicos: 583 · identificadores: 583 · errores: 0 · avisos: 0 · enlaces a material no embarcado: 0

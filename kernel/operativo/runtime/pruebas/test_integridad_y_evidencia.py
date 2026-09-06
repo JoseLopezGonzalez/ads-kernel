@@ -251,7 +251,8 @@ from gobierno.git import CanalGit                                    # noqa: E40
 #      Se elige (b). Con (a) o el recital miente en veinte sedes —el hecho reproducido en
 #      `huella.py` no es el reproducido en `ads_admision.py`— o no se puede escribir dónde
 #      se midió cada cosa, que es la mitad del valor de estos bloques. Con (b) lo que
-#      protege está fijado —1 869 bytes, digest `aa219465a6dd6a04`, comprobado aquí sobre
+#      protege está fijado —su tamaño y su digest NO se escriben aquí: se derivan, y se
+#      comprueban aquí sobre
 #      todos los puntos a la vez— y lo que se lee es propio de cada sede. Una divergencia de
 #      un solo byte en el mecanismo pone esta prueba en rojo y nombra los grupos.
 DIRECTORIOS_QUE_NO_SON_CORPUS = ("__pycache__", ".git", ".pytest_cache")

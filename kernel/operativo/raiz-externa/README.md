@@ -188,3 +188,28 @@ CERTIFICACIÓN          LIMITADA AL BACKEND EJERCIDO. Lo que este anfitrión eje
 LIMITADA               en `contencion.capacidades()` y se comprueba en `T309`; lo que no
                        ejerce se declara con su motivo y no se presenta como demostrado
 ```
+
+### `G-08` BAJO CARGA · qué backend y qué identidad se ejercen de verdad
+
+**No se copia aquí ninguna cifra ni ningún nombre de backend**, por la misma razón por la
+que `E-18` no se adivina: se DERIVA, en el momento en que se lee, de la propia detección y
+del proceso que corre. La orden es una y su salida es el registro:
+
+```console
+$ python3.12 kernel/operativo/runtime/pruebas/test_contencion.py --alcance-g08
+```
+
+Publica la **identidad** —`uid`, `gid`, `euid` y usuario—, el **plan débil** y el **plan
+fuerte** que `T413` ejerce bajo carga, cuántas pasadas por plan, cuántos quemadores de CPU,
+qué backends fuertes ofrece el anfitrión y, de los que NO ofrece, **el requisito exacto que
+faltaría**, con las palabras de la sonda que lo midió.
+
+Sale por un canal APARTE y no por la salida de la batería a propósito: esa salida es
+evidencia y tiene que ser byte-idéntica entre corridas, y esto varía con el anfitrión.
+
+**Lo que esto NO dice.** No dice que la contención fuerte esté certificada para cualquier
+anfitrión. `O29` §7 permite certificar una propiedad dependiente del anfitrión **para el
+perfil en el que se ejecuta de verdad**, y obliga a declarar el alcance en vez de
+universalizarlo. Si un anfitrión no ofrece ningún backend fuerte, `T413` **no lo declara
+superado**: exige que el requisito exacto esté publicado, y el plan fuerte queda NO
+EJERCIDO.

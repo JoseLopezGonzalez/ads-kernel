@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 5d8c94f82c9bdff8 -->
+<!-- source_revision: fd09541d044fc053 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -13,9 +13,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | CONTRATO DEFINIDO | 56 |
 | VALIDADOR IMPLEMENTADO | 4 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 254 |
+| PRUEBA SUPERADA | 255 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **314** |
+| **total** | **315** |
 
 ## Detalle
 
@@ -169,7 +169,7 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T222](T210-T225-arboles-raiz-externa-y-contencion.md) | Caída, reconciliación, ref protegida, remoto manipulado y linaje completo | g.14 · g.8 · g.9 · g.16 G-A8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/multimaquina-salida.txt |
 | [T223](T210-T225-arboles-raiz-externa-y-contencion.md) | La prueba de humo abre una sesión REALMENTE nueva, y es idempotente | F6-G · 11-ARQ 6.4 · 11-ARQ 6.5 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/sesion-nueva-salida.txt |
 | [T224](T210-T225-arboles-raiz-externa-y-contencion.md) | La sesión abierta sobre una fuente localiza el control repo, con sus cuatro desenlaces | F6-G · 11-ARQ 6.4 · 11-ARQ 6.7 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/sesion-nueva-salida.txt |
-| [T225](T210-T225-arboles-raiz-externa-y-contencion.md) | El escenario extremo a extremo del macrobloque 3, con sus veintiún pasos | F6-D · F6-F · F6-G · V6-15 · V6-16 · g.14 · g.15 · g.16 G-A8 · g.16 G-A9 · 11-ARQ 7.2 · 11-ARQ 8 · 11-ARQ 9.6 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/e2e-f6-salida.txt |
+| [T225](T210-T225-arboles-raiz-externa-y-contencion.md) | El escenario extremo a extremo del macrobloque 3, con TODOS los pasos que su ejecutable declara | F6-D · F6-F · F6-G · V6-15 · V6-16 · g.14 · g.15 · g.16 G-A8 · g.16 G-A9 · 11-ARQ 7.2 · 11-ARQ 8 · 11-ARQ 9.6 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/e2e-f6-salida.txt |
 | [T226](T226-T249-agentes-y-modelos.md) | C4 paso 4 asigna agente y modelo a cada rol de una composición con varios roles | C4 · C2 · C1 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
 | [T227](T226-T249-agentes-y-modelos.md) | La selección de modelo es determinista y se repite byte a byte en otro proceso | C2 · C4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
 | [T228](T226-T249-agentes-y-modelos.md) | Un modelo que no cumple un eje se descarta con su motivo, y si es el único se bloquea | C2 · C4 | validador-estructural | **PRUEBA SUPERADA** | evidencia/agentes-salida.txt |
@@ -324,6 +324,7 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T415](T400-T419-prioridad-y-contencion.md) | Ningún escenario nuevo queda atado a que otro reescriba la salida de su ejecutor | D-02 · H-02 · ADJ-G2 · REGISTRO.md regla dura | requiere-runtime | **PRUEBA SUPERADA** | evidencia/runtime-salida.txt |
 | [T416](T400-T419-prioridad-y-contencion.md) | Cada escenario atado declara qué ejecutable tendría que nombrarlo | D-02 · H-02 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/runtime-salida.txt |
 | [T417](T400-T419-prioridad-y-contencion.md) | El ascenso lo da el veredicto nominal y no el hecho de ejecutar una batería | D-02 · H-02 · ADJ-G2 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/runtime-salida.txt |
+| [T418](T400-T419-prioridad-y-contencion.md) | Bajo carga, «nunca creado» y «muerto por contencion» siguen siendo veredictos distintos | G-08 · E-18 · FD-5 · T411 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/contencion-salida.txt |
 | [T419](T400-T419-prioridad-y-contencion.md) | La norma de b.12 se cita igual en las cuatro sedes y una de ellas la ejecuta | G-04 · b.12 · R1-H02 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
 | [T420](T420-T429-evidencia-en-head.md) | El banco del contraste es un repositorio Git de verdad, y se demuestra pieza a pieza | D-05 · control positivo | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
 | [T421](T420-T429-evidencia-en-head.md) | Un veredicto bueno reescrito como malo en el arbol de trabajo da FALLIDA | D-05 · ataque 1 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
@@ -338,7 +339,7 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 
 ## Contraste del estado contra la evidencia
 
-Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **254** de **314**.
+Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **255** de **315**.
 
 No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **60**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
 

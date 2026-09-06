@@ -11,6 +11,7 @@
     `T411`  «nunca creado» y «muerto por contención» son veredictos DISTINTOS
     `T412`  la preparación no es una espera: es una condición OBSERVADA
     `T413`  repetición BAJO CARGA, sin intermitencia, con el débil y con el fuerte
+    `T418`  bajo carga, «nunca creado» y «muerto por contención» siguen distintos
     `T414`  `setsid` conservado y MEDIDO: cada generación en su propia sesión
 
 **LA PAREJA `T215`/`T216` ES LA PRUEBA QUE IMPIDE PRESENTAR EL DÉBIL COMO FUERTE.** Con el
@@ -450,6 +451,49 @@ def generaciones(prefijo):
     }
 
 
+MARCA_DE = {"raiz": "-RAIZ", "hijo": "-HIJO", "nieto": "-NIETO",
+            "bisnieto": "-BISNIETO"}
+
+
+def orden_de(pid):
+    """La `cmdline` del PID, con los ceros a espacios. `""` si el proceso ya no está."""
+    try:
+        with open("/proc/" + str(int(pid)) + "/cmdline", "rb") as manejador:
+            return manejador.read().replace(b"\0", b" ").decode("utf-8", "replace")
+    except OSError:
+        return ""
+
+
+def sesion_confirmada(pid, marca):
+    """La sesión del PID, SÓLO si en el instante de leerla sigue siendo quien decimos.
+
+    HECHO REPRODUCIDO BAJO CARGA, y por eso existe. `generaciones()` identifica cada
+    generación con cuatro barridos de `/proc` hechos en instantes distintos, y bajo carga eso
+    tiene dos agujeros que en reposo no aparecen nunca:
+
+      · REUTILIZACIÓN DE PID. Entre el barrido que atribuye el PID a una generación y la
+        lectura de `/proc/<pid>/stat`, el proceso puede haber muerto y el número haberse
+        reasignado. Medido: con el backend fuerte y cuarenta quemadores, `2 de 24` pasadas
+        dieron colisión, y una de ellas se pudo fotografiar — el PID atribuido al hijo tenía
+        ya `cmdline` `sleep 90` y la sesión de la raíz.
+      · FORK ANTES DEL `exec`. Un hijo del intérprete arrastra un instante la `cmdline` del
+        padre; si el barrido lo pilla ahí, entra en el conjunto de otra generación.
+
+    Los dos se cierran con la misma comprobación, y es una comprobación, no una espera: se
+    RELEE la `cmdline` en el mismo instante que `stat` y se exige que siga llevando la marca
+    de su generación. Si no la lleva, ese PID ya no es esa generación y no dice nada sobre
+    su `setsid`. Y se descarta además el envoltorio `setsid` mismo: lleva la marca de la
+    generación que va a crear, pero todavía está en la sesión de quien lo lanzó, así que
+    contarlo sería medir la sesión del padre y llamarla del hijo.
+    """
+    orden = orden_de(pid)
+    if not orden or marca not in orden:
+        return None
+    if orden.lstrip().startswith("setsid "):
+        return None
+    return sesion_de(pid)
+
+
 def sesion_de(pid):
     """El identificador de SESIÓN de un PID del anfitrión, leído de `/proc/<pid>/stat`.
 
@@ -468,6 +512,81 @@ def sesion_de(pid):
     if len(cola) < 4:
         return None
     return cola[3]
+
+
+def alcance_de_g08(capacidades):
+    """QUÉ backend y QUÉ identidad se ejercen de verdad en ESTE anfitrión. `E-18`.
+
+    `E-18` es una limitación de anfitrión, y la matriz del delta exige que siga diciendo
+    «exactamente qué backend y qué identidad se ejercieron». Esto lo DERIVA de la detección
+    y del proceso que corre; no se escribe a mano en ninguna sede, y por eso no puede
+    caducar. Se publica con `--alcance-g08` y NO por la salida de la batería: esa salida es
+    evidencia y tiene que ser byte-idéntica entre corridas, y esto varía con el anfitrión.
+
+    `requisito` es lo que faltaría para ejercer cada backend fuerte que aquí no se puede.
+    Cuando está vacío es que el anfitrión los ofrece todos; cuando NO lo está, es el
+    registro que `O29` §7 pide en vez de declarar superado lo que no se ejerció.
+    """
+    ofrecidos = list(capacidades["fuertes_disponibles"])
+    elegido = None
+    if ofrecidos:
+        elegido, _ = modulo_politica.elegir(
+            contencion.Politica(deteccion.ARBOL_DE_PROCESOS), capacidades)
+    requisito = [
+        {"backend": fila["backend"], "nivel": fila["nivel"], "requisito": fila["motivo"]}
+        for fila in capacidades["backends"]
+        if not fila["disponible"]
+    ]
+    return {
+        "identidad": {"uid": os.getuid(), "gid": os.getgid(),
+                      "euid": os.geteuid(), "usuario": _nombre_de_usuario()},
+        "plan_debil": {"backend": "simple", "nivel": deteccion.GRUPO_DE_PROCESOS},
+        "plan_fuerte": ({"backend": elegido, "nivel": deteccion.ARBOL_DE_PROCESOS}
+                        if elegido else None),
+        "fuertes_ofrecidos": ofrecidos,
+        "repeticiones_por_plan": REPETICIONES_BAJO_CARGA,
+        "quemadores": max(2, (os.cpu_count() or 2) * QUEMADORES_POR_NUCLEO),
+        "requisito": requisito,
+    }
+
+
+def _nombre_de_usuario():
+    """El nombre, o el `uid` si no hay `passwd` que consultar. Nunca revienta por esto."""
+    try:
+        import pwd
+        return pwd.getpwuid(os.getuid()).pw_name
+    except Exception:
+        return str(os.getuid())
+
+
+def publicar_alcance_de_g08():
+    """Imprime el alcance de `G-08` en este anfitrión. Lo que `E-18` cita."""
+    alcance = alcance_de_g08(contencion.capacidades())
+    identidad = alcance["identidad"]
+    print("G-08 BAJO CARGA · ALCANCE EJERCIDO EN ESTE ANFITRIÓN")
+    print("  identidad ............. uid=%(uid)s gid=%(gid)s euid=%(euid)s usuario=%(usuario)s"
+          % identidad)
+    print("  quemadores de CPU ..... %d  (%d por núcleo)"
+          % (alcance["quemadores"], QUEMADORES_POR_NUCLEO))
+    print("  pasadas por plan ...... %d" % alcance["repeticiones_por_plan"])
+    print("  plan DÉBIL ............ %s / %s"
+          % (alcance["plan_debil"]["backend"], alcance["plan_debil"]["nivel"]))
+    if alcance["plan_fuerte"]:
+        print("  plan FUERTE ........... %s / %s"
+              % (alcance["plan_fuerte"]["backend"], alcance["plan_fuerte"]["nivel"]))
+    else:
+        print("  plan FUERTE ........... NO EJERCIDO · el anfitrión no ofrece ninguno")
+    print("  fuertes ofrecidos ..... %s"
+          % (", ".join(alcance["fuertes_ofrecidos"]) or "ninguno"))
+    if alcance["requisito"]:
+        print("  NO EJERCIBLES AQUÍ, con el requisito exacto que faltaría:")
+        for fila in alcance["requisito"]:
+            print("    · %s (%s)" % (fila["backend"], fila["nivel"]))
+            print("      %s" % fila["requisito"])
+    else:
+        print("  NO EJERCIBLES AQUÍ .... ninguno")
+    print("  NADA DE ESTO ES UNIVERSAL: vale para el anfitrión que lo imprime.")
+    return 0
 
 
 class BaseDeContencion(unittest.TestCase):
@@ -537,7 +656,9 @@ class BaseDeContencion(unittest.TestCase):
             # `/proc/<pid>/stat` que leer, y el resultado de `setsid` —que es lo que
             # distingue este montaje de uno que no probara nada— se habría perdido.
             self.sesiones = {
-                generacion: sorted({sesion_de(pid) for pid in pids} - {None})
+                generacion: sorted(
+                    {sesion_confirmada(pid, self.prefijo + MARCA_DE[generacion])
+                     for pid in pids} - {None})
                 for generacion, pids in capturadas.items()
             }
             if modo == "cancelacion":
@@ -577,6 +698,47 @@ class BaseDeContencion(unittest.TestCase):
                 "el " + generacion + " ANUNCIÓ que existía y no se le capturó ningún PID "
                 "del anfitrión en el instante de `" + LISTO + "`: no es contención, es que "
                 "la observación por `/proc` no le vio")
+
+    def exigir_orden_del_protocolo(self):
+        """Las CUATRO generaciones confirmaron ANTES de que se matara nada. `G-08`.
+
+        Es lo que `T410` mide en su corrida única, extraído aquí para que cada pasada de
+        `T413` lo vuelva a exigir: bajo carga, el `killpg` no puede adelantarse a la
+        confirmación, y la única forma de saberlo es el ORDEN de la salida, que la raíz
+        escribe desde dentro de cualquier backend.
+        """
+        posicion_listo = [i for i, t in enumerate(self.salida_de_la_tarea)
+                          if t.startswith(LISTO)]
+        self.assertTrue(posicion_listo, "la tarea no publicó `" + LISTO + "`")
+        for generacion in GENERACIONES:
+            posicion = [i for i, t in enumerate(self.salida_de_la_tarea)
+                        if t.startswith(ANUNCIO + " " + generacion)]
+            self.assertTrue(posicion, "no se anunció el " + generacion)
+            self.assertLess(
+                posicion[0], posicion_listo[0],
+                "el " + generacion + " se anunció DESPUÉS de `" + LISTO + "`: la raíz dio "
+                "por preparadas a las cuatro sin estarlo, y el `killpg` vuelve a ser una "
+                "carrera contra la creación")
+
+    def exigir_setsid_conservado(self):
+        """Cada generación en su PROPIA sesión, leído en el instante de la captura.
+
+        Lo que `T414` mide en reposo. Si el montaje dejara de hacer `setsid`, el backend
+        débil y el fuerte darían lo mismo y la repetición bajo carga no distinguiría nada:
+        estaría contando pasadas de una prueba que ya no prueba.
+        """
+        vistas = {}
+        for generacion in GENERACIONES:
+            sesiones = self.sesiones.get(generacion) or []
+            self.assertTrue(sesiones, "no se pudo leer la sesión del " + generacion)
+            for sesion in sesiones:
+                self.assertNotIn(
+                    sesion, vistas,
+                    "el " + generacion + " comparte sesión con el "
+                    + str(vistas.get(sesion)) + ": el `setsid` se ha perdido y esta pasada "
+                    "no distingue el nivel fuerte del débil")
+                vistas[sesion] = generacion
+        self.assertEqual(len(vistas), len(GENERACIONES))
 
     def _correr(self, backend, nivel, *, modo, limite=25.0, tarea=None):
         """Lanza la tarea generacional y devuelve `(resultado, generaciones capturadas)`.
@@ -862,19 +1024,10 @@ class ProtocoloDePreparacion(BaseDeContencion):
         self.exigir_preparacion(capturadas)
         self.assertTrue(self.linea_de_preparacion.startswith(LISTO),
                         self.linea_de_preparacion)
-        posicion_listo = [i for i, t in enumerate(self.salida_de_la_tarea)
-                          if t.startswith(LISTO)]
-        self.assertTrue(posicion_listo, "la tarea no publicó `" + LISTO + "`")
-        for generacion in GENERACIONES:
-            anuncio = ANUNCIO + " " + generacion
-            posicion = [i for i, t in enumerate(self.salida_de_la_tarea)
-                        if t.startswith(anuncio)]
-            self.assertTrue(posicion, "no se anunció el " + generacion)
-            self.assertLess(
-                posicion[0], posicion_listo[0],
-                "el " + generacion + " se anunció DESPUÉS de `" + LISTO + "`: la raíz dijo "
-                "que estaban los tres sin que estuvieran, y la captura vuelve a ser una "
-                "carrera")
+        # El orden vive en `exigir_orden_del_protocolo` y no aquí, porque `T413` lo vuelve
+        # a exigir en CADA pasada bajo carga: dos copias del mismo juicio acabarían
+        # divergiendo, y la que divergiera de menos sería la que nadie mira.
+        self.exigir_orden_del_protocolo()
 
     def test_411_nunca_creado_y_muerto_por_contencion_son_veredictos_DISTINTOS(self):
         """T411 · Defecto que previene: leer «no existe» como «lo mató la contención».
@@ -954,7 +1107,98 @@ class ProtocoloDePreparacion(BaseDeContencion):
         protocolo tiene que valer para los dos o no vale.
 
         LA REPETICIÓN NO SUSTITUYE AL PROTOCOLO: sin él, N pasadas verdes sólo dicen que la
-        carga N+1 no se probó. Lo que garantiza es `T410`.
+        carga N+1 no se probó. Lo que garantiza es `T410`. Por eso cada pasada vuelve a
+        exigir el protocolo ENTERO —el orden `preparado`···`listo` y el `setsid` de cada
+        generación—, y no sólo que la captura saliera llena.
+
+        HECHO REPRODUCIDO ANTES DE CORREGIR, y es de esta misma prueba. Su enunciado dice
+        «con el débil Y CON EL FUERTE», y su cuerpo metía el plan fuerte dentro de un `if`
+        sin nada detrás: en un anfitrión sin contención fuerte —o con la detección diciendo
+        que no la hay— salía VERDE habiendo ejercido SÓLO el débil, y nada en la evidencia
+        lo delataba. Medido, sobre este anfitrión, sustituyendo únicamente
+        `fuertes_disponibles` por `[]` y sin tocar una línea más:
+
+            planes REALMENTE ejercidos por T413: [('simple', 'grupo-de-procesos')]
+            pasadas: 8   ·   VEREDICTO DE T413: VERDE
+
+        Lo que se pone en su lugar NO es exigir el backend fuerte siempre —`O29` §7 no
+        obliga a ejercer lo que el anfitrión demuestra no ofrecer—: es que la prueba
+        COMPRUEBE lo que ejerció y no pueda salir verde afirmando de más. Si el anfitrión
+        ofrece contención fuerte, el plan fuerte TIENE que haberse ejercido y sobre un
+        backend de la lista de fuertes; si no la ofrece, esto queda NO EJERCIDO y con su
+        requisito exacto —lo publica `--alcance-g08`—, y nunca superado.
+        """
+        quemadores = self._encender_carga()
+        self.addCleanup(self._apagar_carga, quemadores)
+        ofrecidos = list(self.capacidades["fuertes_disponibles"])
+        planes = [("simple", deteccion.GRUPO_DE_PROCESOS)]
+        if ofrecidos:
+            elegido, _ = modulo_politica.elegir(
+                contencion.Politica(deteccion.ARBOL_DE_PROCESOS), self.capacidades)
+            planes.append((elegido, deteccion.ARBOL_DE_PROCESOS))
+        ejercidas = {}
+        for backend, nivel in planes:
+            for pasada in range(REPETICIONES_BAJO_CARGA):
+                with self.subTest(backend=backend, pasada=pasada):
+                    self.setUp()
+                    # LA CARGA, COMPROBADA EN CADA PASADA. `falla_si` declara «la carga no
+                    # se genera y la prueba mide en reposo», y hasta aquí nada lo medía: si
+                    # los quemadores hubieran muerto, esto volvería a ser una medición en
+                    # reposo con el nombre de una medición bajo carga.
+                    vivos = [q for q in quemadores if q.poll() is None]
+                    self.assertGreaterEqual(
+                        len(vivos), max(2, len(quemadores) // 2),
+                        "los quemadores se han apagado: quedan " + str(len(vivos))
+                        + " de " + str(len(quemadores)) + ", y esta pasada estaría "
+                        "midiendo EN REPOSO con el nombre de una medición bajo carga")
+                    resultado, capturadas = self._correr(backend, nivel,
+                                                         modo="cancelacion", limite=60.0)
+                    # LA PASADA EJERCIÓ EL BACKEND QUE DICE. Sin esto, una degradación
+                    # silenciosa a `simple` contaría como pasada del plan fuerte.
+                    self.assertEqual(resultado.backend, backend,
+                                     "la pasada pedía `" + backend + "` y corrió sobre `"
+                                     + str(resultado.backend) + "`")
+                    self.assertEqual(resultado.nivel_de_aislamiento, nivel)
+                    self.exigir_preparacion(capturadas)
+                    # EL PROTOCOLO, BAJO CARGA Y GENERACIÓN A GENERACIÓN. Es lo que `T410`
+                    # mide en reposo y sobre el débil; aquí se vuelve a medir en cada
+                    # pasada y sobre los dos backends, que es donde la carrera aparecía.
+                    self.exigir_orden_del_protocolo()
+                    self.exigir_setsid_conservado()
+                    ejercidas[(backend, nivel)] = ejercidas.get((backend, nivel), 0) + 1
+        # EL DÉBIL, ejercido entero.
+        self.assertEqual(ejercidas.get(("simple", deteccion.GRUPO_DE_PROCESOS)),
+                         REPETICIONES_BAJO_CARGA)
+        # EL FUERTE. Aquí estaba el falso verde: el `if` sin `else` dejaba que esta prueba
+        # se llamara «débil y fuerte» habiendo ejercido uno.
+        fuertes = [(b, n) for (b, n) in ejercidas if n == deteccion.ARBOL_DE_PROCESOS]
+        if ofrecidos:
+            self.assertTrue(
+                fuertes,
+                "el anfitrión OFRECE contención fuerte " + str(ofrecidos) + " y esta "
+                "prueba no ejerció ni una pasada con ella: no puede llamarse «bajo carga, "
+                "débil y fuerte»")
+            for backend, _nivel in fuertes:
+                self.assertIn(backend, ofrecidos,
+                              "se contó como pasada fuerte un backend que la detección no "
+                              "declara fuerte: " + str(backend))
+                self.assertEqual(ejercidas[(backend, deteccion.ARBOL_DE_PROCESOS)],
+                                 REPETICIONES_BAJO_CARGA)
+        else:
+            # `O29` §7: no se exige ejercer lo que el anfitrión demuestra no ofrecer. Lo que
+            # NO se permite es presentarlo como ejercido, ni aquí ni en la evidencia.
+            self.assertEqual(fuertes, [])
+            self.assertTrue(alcance_de_g08(self.capacidades)["requisito"],
+                            "no hay contención fuerte y el alcance no publica el requisito "
+                            "exacto que haría falta: eso es declarar el límite sin decirlo")
+
+    def test_418_bajo_carga_nunca_creado_y_muerto_por_contencion_siguen_DISTINTOS(self):
+        """T418 · Defecto que previene: que la carga borre la distinción que `T411` hace.
+
+        `T411` separa los dos veredictos en reposo y sobre el backend débil. Bajo carga es
+        donde se confunden: una generación que tarda se parece a una que no nació. Se ejerce
+        la amputación y la tarea entera CON los quemadores encendidos, y sobre los dos
+        backends —el débil y el fuerte, si el anfitrión lo ofrece—.
         """
         quemadores = self._encender_carga()
         self.addCleanup(self._apagar_carga, quemadores)
@@ -964,12 +1208,31 @@ class ProtocoloDePreparacion(BaseDeContencion):
                 contencion.Politica(deteccion.ARBOL_DE_PROCESOS), self.capacidades)
             planes.append((elegido, deteccion.ARBOL_DE_PROCESOS))
         for backend, nivel in planes:
-            for pasada in range(REPETICIONES_BAJO_CARGA):
-                with self.subTest(backend=backend, pasada=pasada):
-                    self.setUp()
-                    _, capturadas = self._correr(backend, nivel, modo="cancelacion",
-                                                 limite=60.0)
+            with self.subTest(backend=backend, caso="nunca creado"):
+                self.setUp()
+                _, capturadas = self._correr(
+                    backend, nivel, modo="cancelacion", limite=60.0,
+                    tarea=tarea_sin_una_generacion(self.prefijo, "bisnieto", segundos=20,
+                                                   sondeos=40))
+                self.assertTrue(
+                    (self.linea_de_preparacion or "").startswith(SIN_PREPARAR),
+                    "bajo carga y con el bisnieto amputado la raíz dijo `"
+                    + str(self.linea_de_preparacion) + "`: el protocolo dejó de detectar "
+                    "al que no nació justo donde importa")
+                self.assertNotIn("bisnieto", self.anunciadas)
+                with self.assertRaises(self.failureException) as capturado:
                     self.exigir_preparacion(capturadas)
+                self.assertIn("NUNCA CREADO", str(capturado.exception))
+                self.assertNotIn("sobrevivió", str(capturado.exception))
+            with self.subTest(backend=backend, caso="muerto por contencion"):
+                self.setUp()
+                _, enteras = self._correr(backend, nivel, modo="cancelacion", limite=60.0)
+                self.exigir_preparacion(enteras)
+                self.assertTrue((self.linea_de_preparacion or "").startswith(LISTO))
+                self.assertEqual(
+                    contencion.esperar_a_que_mueran(enteras["raiz"]), [],
+                    "la raíz sobrevivió a la contención bajo carga con `" + backend + "`: "
+                    "entonces los dos veredictos dejan de distinguirse")
 
     def test_414_setsid_conservado_y_MEDIDO_generacion_a_generacion(self):
         """T414 · Defecto que previene: que el montaje deje de probar lo que dice probar.
@@ -983,19 +1246,9 @@ class ProtocoloDePreparacion(BaseDeContencion):
         _, capturadas = self._correr("simple", deteccion.GRUPO_DE_PROCESOS,
                                      modo="cancelacion")
         self.exigir_preparacion(capturadas)
-        vistas = {}
-        for generacion in GENERACIONES:
-            sesiones = self.sesiones.get(generacion) or []
-            self.assertTrue(sesiones,
-                            "no se pudo leer la sesión del " + generacion)
-            for sesion in sesiones:
-                self.assertNotIn(
-                    sesion, vistas,
-                    "el " + generacion + " comparte sesión con el " + str(vistas.get(sesion))
-                    + ": no hizo `setsid`, y entonces `T215`/`T216` no distinguen los dos "
-                      "niveles de aislamiento")
-                vistas[sesion] = generacion
-        self.assertEqual(len(vistas), len(GENERACIONES))
+        # Igual que con el orden: el juicio vive en un solo sitio, porque `T413` lo repite
+        # bajo carga y sobre los dos backends.
+        self.exigir_setsid_conservado()
 
     # -------------------------------------------------------------- carga, encendida aquí
     def _encender_carga(self):
@@ -1024,4 +1277,9 @@ class ProtocoloDePreparacion(BaseDeContencion):
 
 
 if __name__ == "__main__":
+    # `--alcance-g08` NO entra en la evidencia: la salida de la batería es byte-idéntica
+    # entre corridas y esto varía con el anfitrión. Es el canal por el que `E-18` obtiene,
+    # derivado y no escrito a mano, qué backend y qué identidad se ejercen aquí.
+    if "--alcance-g08" in sys.argv[1:]:
+        raise SystemExit(publicar_alcance_de_g08())
     unittest.main(verbosity=2, testRunner=_RunnerDeterminista)

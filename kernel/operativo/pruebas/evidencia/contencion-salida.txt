@@ -55,8 +55,10 @@ test_413_repeticion_BAJO_CARGA_sin_intermitencia_debil_y_fuerte (__main__.Protoc
 T413 · Defecto que previene: declarar determinismo midiendo en reposo. ... ok
 test_414_setsid_conservado_y_MEDIDO_generacion_a_generacion (__main__.ProtocoloDePreparacion.test_414_setsid_conservado_y_MEDIDO_generacion_a_generacion)
 T414 · Defecto que previene: que el montaje deje de probar lo que dice probar. ... ok
+test_418_bajo_carga_nunca_creado_y_muerto_por_contencion_siguen_DISTINTOS (__main__.ProtocoloDePreparacion.test_418_bajo_carga_nunca_creado_y_muerto_por_contencion_siguen_DISTINTOS)
+T418 · Defecto que previene: que la carga borre la distinción que `T411` hace. ... ok
 
 ----------------------------------------------------------------------
-Ran 25 tests  (duración no registrada: varía por ejecución)
+Ran 26 tests  (duración no registrada: varía por ejecución)
 
 OK

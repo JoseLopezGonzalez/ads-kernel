@@ -460,6 +460,17 @@ componentes:
   # `ADJ-GT3` y `O27` §5 · la cobertura de un gate deja de ser DECLARATIVA. Entra en el
   # manifiesto por la misma razon: un instrumento que decide si un gate puede adjudicar no
   # puede vivir fuera de la evidencia. Sus autopruebas ejercen los seis modos de fallo.
+  # `O26` §5.4 · las OCHO condiciones de `O26` §1, EJERCIDAS sobre la candidata. El primer
+  # gate válido de `F6` las adjudicó NO ACREDITADAS porque nadie las ejerció: registrarlo
+  # aquí es lo que hace que se ejerzan en cada pasada y no por acordarse.
+  - id: o26-condiciones
+    script: ejercer-o26-condiciones.py
+    dir: docs/evolucion/verificacion
+    tipo: validador
+    evidencia: o26-condiciones-salida.txt
+    firma_de_exito: '8 de 8 condiciones SATISFECHAS · 0 no ejercibles · 0 no satisfechas'
+    debe_contener: ['PERFIL DEL ANFITRIÓN', 'CONTROL SANO', 'PARA ESTE PERFIL']
+
   - id: cobertura-de-gate
     script: comprobar-cobertura-de-gate.py
     dir: docs/evolucion/verificacion

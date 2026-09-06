@@ -33,9 +33,21 @@ compatible con «el gancho corrió y no le tocó el turno».
 a **todo punto ejecutable del inventario derivado del árbol** —el mismo inventario mecánico de
 `T330`, que no conoce zonas sino ficheros—, y la exención por domicilio `motivo: "bateria"`
 **se ha retirado**: eximir una batería por vivir en `pruebas/` es la lista escrita a mano que
-`ADJ-B2` prohibió, sólo que escrita por directorios. El inventario pasa de **35 puntos
-ejecutables y 110 exclusiones** a **56 y 89**, sobre los mismos 145 ficheros `.py`, y **nada
-queda sin clasificar**.
+`ADJ-B2` prohibió, sólo que escrita por directorios. El inventario **ensancha**: la
+población de puntos ejecutables crece y la de exclusiones mengua sobre el mismo árbol, y
+**nada queda sin clasificar**. **Los cardinales no se copian aquí** —el árbol gana y pierde
+ficheros `.py` y cualquier cifra escrita a mano caduca sola, que es la lección de `HALL.10`—:
+se derivan, en el momento en que se leen, con
+
+```console
+$ python3.12 -c "import sys; sys.path.insert(0, 'kernel/operativo/runtime/pruebas')
+> from test_integridad_y_evidencia import inventariar_el_arbol as inv
+> p, e = inv()
+> print('%d de %d con guarda · %d exclusiones · %d ficheros .py'
+>       % (len([r for r in p if p[r]['guarda']]), len(p), len(e), len(p) + len(e)))"
+```
+
+que es la MISMA función que `T380` ejerce, y no una segunda cuenta que pueda divergir de ella.
 
 **Y la exención por propietario se ha CERRADO, no ha caducado.** Los cuatro ejecutables de
 `docs/evolucion/verificacion/` quedaron fuera en la primera pasada porque `G-01`, `G-02` y
@@ -43,8 +55,10 @@ queda sin clasificar**.
 texto se pisan. Se declararon con motivo, con propietario y con cliquet —la cifra era **4** y
 no podía subir—, y con una caducidad que ponía `T380` en rojo el día que la zona dejara de
 tener puntos sin guarda. Cerrados `G-01`, `G-02` y `G-07`, el coordinador les aplicó el
-mecanismo **byte a byte idéntico** al de los otros 52 y retiró la declaración. Hoy son
-**56 de 56**, y los puntos sin guarda admitidos son **CERO**.
+mecanismo **byte a byte idéntico** al del resto y retiró la declaración. Hoy la guarda
+alcanza a **TODOS** los puntos ejecutables del inventario —el cardinal se deriva con la orden
+de arriba, no se escribe— y los puntos sin guarda admitidos son **CERO**, que es el invariante
+y no una cifra que caduque.
 
 **De `D-01` se hacen las DOS cosas que el revisor adjudicó**, con sus palabras: «o el prólogo
 entra en las baterías, o el runner sanea el entorno de sus hijos y lo publica en la cabecera de
@@ -74,11 +88,11 @@ id: T380
 nombre: La guarda de aislamiento alcanza a TODO punto ejecutable del inventario derivado
 cubre: ["G-03", "H-1", "ADJ-B2", "O26 1.8"]
 dado:
-  - "el inventario se deriva del arbol entero y clasifica los 145 ficheros .py sin dejar ninguno fuera"
+  - "el inventario se deriva del arbol entero y clasifica TODOS sus ficheros .py sin dejar ninguno fuera; el cardinal se deriva, no se escribe"
   - "no queda ninguna zona exenta, y la cifra de puntos sin guarda admitidos es CERO"
 cuando: ["se inventaria el arbol y se mide, fichero a fichero, si el punto exige el aislamiento al entrar"]
 entonces:
-  - "los 56 puntos ejecutables de las nueve zonas del kernel, tooling y docs llevan la guarda, sin una sola exencion"
+  - "TODO punto ejecutable del inventario derivado lleva la guarda, sin una sola exencion, y el cardinal se deriva del arbol en vez de escribirse"
   - "ninguna zona queda declarada: la exencion de docs/evolucion/verificacion se cerro y se retiro"
   - "si alguna zona volviera a declararse sin tener puntos sin guarda, la declaracion CADUCA y la prueba lo dice"
 falla_si:

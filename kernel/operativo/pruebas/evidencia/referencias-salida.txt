@@ -5,8 +5,8 @@
 # ---------------------------------------------------------------
 T147  SUPERADA  Todo documento es alcanzable por ruta, y ninguna referencia es ambigua
 
-documentos analizados: 347
-nombres base repetidos: 45 (resueltos por ruta, nunca por nombre)
+documentos analizados: 355
+nombres base repetidos: 46 (resueltos por ruta, nunca por nombre)
 
 FUERA DEL ANÁLISIS
   [no_analizados] packs/legacy-1.3.0
@@ -30,6 +30,7 @@ FUERA DEL ANÁLISIS
 
 NOMBRES BASE REPETIDOS
   00-INDICE.md  ×4
+  00-REGISTRO-DEL-GATE.md  ×2
   CAPACIDAD.md  ×15
   Condiciones.md  ×2
   Evolucion.md  ×2

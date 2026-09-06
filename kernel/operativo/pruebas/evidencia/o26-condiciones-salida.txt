@@ -1,0 +1,75 @@
+# evidencia de: o26-condiciones
+# orden:        python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/ejercer-o26-condiciones.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+`O26` §1 · LAS OCHO CONDICIONES, EJERCIDAS SOBRE LA CANDIDATA
+==============================================================================
+  PERFIL DEL ANFITRIÓN, medido y DECLARADO (`O29` §7)
+      cgroup                 cgroup2fs
+      docker                 29.1.3 · cgroup 2 · driver systemd
+      uid_del_coordinador    1000
+      unshare                uid 0 dentro
+      la certificación de estas condiciones vale PARA ESTE PERFIL y no
+      se universaliza: es lo que `O29` §7 exige decir
+
+  1 · SATISFECHA    la raíz y su evidencia viven fuera del árbol verificado
+        instalación y evidencia fuera del árbol, y el instalador RECHAZA ponerlas dentro (InstalacionDentroDelArbol). No es que hoy estén fuera: es que no pueden estar dentro
+        · realpath(instalacion) vs realpath(arbol) → instalacion=/tmp/ads-o26-_c5dozp4/instalacion · arbol=<raiz>
+        · instalar DENTRO del árbol → InstalacionDentroDelArbol: [INSTALACION_DENTRO_DEL_ARBOL] la raíz externa no se puede instalar dentro del árbol que verifica: la ruta declarada apunta dentro del árbol. Un verificador que vive donde vive lo verificado no es externo (instalacion-colada)
+
+  2 · SATISFECHA    la firma es asimétrica
+        Ed25519: la privada es `OPENSSH PRIVATE KEY`, la pública es `ssh-ed25519 …`, la firma sale de la privada y firmar con la pública FALLA
+        · ssh-keygen -Y sign → firma de 330 bytes
+        · directorio de la pública huérfana → ['ancla.pub']
+        · firmar con SÓLO la pública → ProveedorDeFirmaAusente
+
+  3 · SATISFECHA    la atestación queda ligada simultáneamente al SHA del commit y a su tree
+        el acta liga commit `420fece5b9cf` y tree `e6cc5c935ce1` a la vez, y cambiar CUALQUIERA de los dos —o los dos— hace fallar `exigir_vinculo`
+        · exigir_vinculo con los dos correctos → sin excepción
+        · exigir_vinculo · commit ajeno → VinculoDeCommitRoto
+        · exigir_vinculo · tree ajeno → VinculoDeTreeRoto
+        · exigir_vinculo · los dos ajenos → VinculoDeCommitRoto
+
+  4 · SATISFECHA    el firmante y el verificador son componentes separados
+        dos ejecutables distintos —sha256 78eaa3053dd5 y 771bc411e9dc—, instalados y ejecutados por separado; el firmante es el único que toca la clave privada y el verificador el único que emite veredicto
+        · anfitrion_firmante.py --ayuda → codigo=4
+        · anfitrion_verificador.py --ayuda → codigo=2
+
+  5 · SATISFECHA    el verificador no dispone de la clave privada
+        la verificación se completa con un anillo que SÓLO contiene material público (`ssh-ed25519 …`); la privada no está en el anfitrión del verificador y no hace falta para verificar
+        · ls del anfitrión del verificador → ['ancla.pub']
+        · firma.verificar con SOLO material público → valida=True Good "ads-atestacion-de-raiz-externa" signature for ancla@ad
+
+  6 · SATISFECHA    el ejecutor de la raíz no comparte capacidad de escritura sobre el repositorio de control con el runtime
+        ejecutor en CONTENEDOR con UID 4242 —distinto del runtime, que corre con UID 1000—, sin red, y con el control repo montado de SÓLO LECTURA: los OCHO intentos de escritura quedan IMPEDIDOS por el sistema de ficheros, no por una comprobación del programa. Perfil declarado: docker 29.1.3 · cgroup 2 · driver systemd · cgroup cgroup2fs
+        · docker run --user 4242:4242 -v <repo>:/control:ro → codigo=0
+        ·    → 4242
+        ·    → IMPEDIDO /control/.git/HEAD
+        ·    → IMPEDIDO /control/nuevo.txt
+        ·    → IMPEDIDO /control/kernel/VERSION
+        ·    → IMPEDIDO /control/.git/config
+        ·    → IMPEDIDO /control/docs/nuevo.md
+        ·    → IMPEDIDO /control/kernel/nuevo
+        ·    → IMPEDIDO /control/tooling/nuevo
+        ·    → IMPEDIDO /control/.git/index
+
+  7 · SATISFECHA    existen rotación, solapamiento, retirada y revocación
+        el anillo de identidades ofrece época vigente (rotación), verificación POR ÉPOCA —que es lo que permite el solapamiento—, `revocar` con motivo y `exigir_valida`, que es por donde una identidad retirada deja de servir
+        · aparato de rotación · exigir_valida → presente
+        · aparato de rotación · revocar → presente
+        · aparato de rotación · verifica_en (época) → presente
+
+  8 · SATISFECHA    clave desconocida, firma inválida, commit incorrecto, tree incorrecto, ausencia de proveedor y contaminación del entorno fallan cerrado
+        los SEIS ataques que `O26` §1.8 enumera fallan cerrado, y el control sano verifica: clave desconocida, firma inválida, commit incorrecto, tree incorrecto, ausencia de proveedor, contaminación del entorno
+        · CONTROL SANO · firma legítima → codigo=0
+        · sin `ssh-keygen` en el PATH → CIERRA ProveedorDeFirmaAusente
+        · verificador con `PYTHONPATH` envenenado → codigo=0
+        ·   ataque · clave desconocida → FALLA CERRADO
+        ·   ataque · firma inválida → FALLA CERRADO
+        ·   ataque · commit incorrecto → FALLA CERRADO
+        ·   ataque · tree incorrecto → FALLA CERRADO
+        ·   ataque · ausencia de proveedor → FALLA CERRADO
+        ·   ataque · contaminación del entorno → FALLA CERRADO
+
+8 de 8 condiciones SATISFECHAS · 0 no ejercibles · 0 no satisfechas

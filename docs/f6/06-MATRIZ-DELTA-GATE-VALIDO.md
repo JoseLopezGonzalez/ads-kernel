@@ -43,7 +43,7 @@ propiedad cuyo único sabotaje es el caso que no la derrota **no está probada**
 
 | id | sev | sede | reproducción | efecto posible | remedio adjudicado | prop. | prueba | inicial |
 |---|---|---|---|---|---|---|---|---|
-| **`#2`**=**`#22`** `REV-1` GRAVE 2 · `REV-3` H3 | GRAVE | `derivar-universo-obligatorio.py` · salida de `universo-obligaciones` | el propio instrumento publica, pegado a sus ceros, que `A=0` «NO demuestra `O26` §5.1» y `B=0` «NO demuestra §5.2», con contraejemplo vivo (`V6-12`/`ADJ-B3`). **Ninguna otra medición del árbol los acredita** | **obligación interna sin implementar** presentada como acreditada | `O28` §3 fija el significado operativo. Implementar **`O26-IMPL`** y **`O26-SAB`** como comprobaciones distintas, que no reutilicen `A`/`B`/`C` | `PLT` | pendientes de las dos = ∅, publicados individualmente | ABIERTO |
+| **`#2`**=**`#22`** `REV-1` GRAVE 2 · `REV-3` H3 | GRAVE | `derivar-universo-obligatorio.py` · salida de `universo-obligaciones` | el propio instrumento publica, pegado a sus ceros, que `A=0` «NO demuestra `O26` §5.1» y `B=0` «NO demuestra §5.2», con contraejemplo vivo (`V6-12`/`ADJ-B3`). **Ninguna otra medición del árbol los acredita** | **obligación interna de `F6` que NO está implementada**, presentada como acreditada | `O28` §3 fija el significado operativo. Implementar **`O26-IMPL`** y **`O26-SAB`** como comprobaciones distintas, que no reutilicen `A`/`B`/`C` | `PLT` | pendientes de las dos = ∅, publicados individualmente | ABIERTO |
 | **`#10`** `REV-1` MEN 10 | MENOR·LATENTE | `comprobar-cobertura-de-gate.py` | la cuarta resta es **amañable por construcción**: declarando `modificadas` de menos, la resta sale vacía. Reproducido en repositorio sintético. **En este gate NO se usó** — el adjudicador verificó 119 = 119 ruta a ruta | falso verde de cobertura en un gate futuro | el conjunto se deriva EXCLUSIVAMENTE de `git diff --name-status -M -C -z`; ni manifiesto ni coordinador lo proporcionan | `PLT` | los once casos del §10 del encargo | ABIERTO |
 | **`#11`** `REV-1` OBS 11 | OBSERVACIÓN | procedimiento del gate | **no se emitió sobre de ancla**: nada externo ancla el congelado ni el manifiesto. Es del **coordinador** | sin ancla externa, la línea base sólo se sostiene sobre sí misma | emitir el sobre ANTES de crear al verificador, firmado por la raíz externa | `coordinador` | verificación de firma antes de entregarlo | ABIERTO |
 
@@ -246,3 +246,101 @@ como prueba `derivar-universo-obligatorio.py` **sin modo**, de modo que corre, s
 los nombra**; una batería ajena que pasa no es una condición de cierre ejecutada.
 
 **Aun cerrando las nueve, `O26-SAB` seguiría en 300.** La parada no depende de ellas.
+
+---
+
+# §10 · EL CIERRE `O29` · LA SEGUNDA MEDICIÓN QUE DETIENE EL CICLO
+
+`O29` corrigió el criterio de `O28` §3 —«*una cláusula funcional no se convierte
+automáticamente en propiedad crítica por estar formulada como condición de fallo*»— y
+autorizó una última verificación por composición. Se hizo el trabajo y se midió. **No pasa.**
+
+## Lo que SÍ quedó cerrado
+
+| pieza | estado |
+|---|---|
+| **`O26` §1 · las OCHO condiciones** | **8 de 8 EJERCIDAS Y SATISFECHAS**, sobre la candidata y en el perfil declarado. La 6 —que el gate válido dejó NO ACREDITADA— en **contenedor real, UID 4242, sin red, control repo montado de sólo lectura**: los OCHO intentos de escritura IMPEDIDOS por el sistema de ficheros, no por una comprobación del programa. `E-18` estaba **CADUCADO**: se midió el anfitrión antes de creerlo —`cgroup2fs`, docker 29.1.3 con cgroup 2, `unshare` con UID 0 dentro— y sí ofrece el backend fuerte |
+| **`O26-IMPL`** | de **16 a 1**. Y las 16 no eran 9: **siete las causaba el fichero nuevo del propio coordinador**, que entró en el inventario sin la purga `E-10` y con la guarda `G-03` divergente en dos escapes (`ú` frente a `ú`). Copiado el mecanismo canónico byte a byte, se cerraron solas |
+| **`T277` y `T352`** | declaraban el derivador **sin modo**: corría, salía 0 y no los nombraba. Pasan a `--obligaciones`, que **ejerce** sus guardas y **los nombra**. Descartado `--autopruebas` pese a ser el complemento adversarial exacto: no los nombra, luego no puede ser condición de cierre |
+| **`G-08` bajo carga** | `T413` decía «con el débil **Y CON EL FUERTE**» y metía el plan fuerte en un `if` vacío: sustituyendo sólo `fuertes_disponibles` por `[]`, **8 pasadas y VERDE**. Falso verde de la clase que `O29` §6 declara bloqueante. Corregido, y la corrección encontró un SEGUNDO defecto: bajo carga la **observación** confundía generaciones por reutilización de PID. `sesion_confirmada()` lo cierra: 0 colisiones en 30 pasadas |
+| **cifras caducadas** | **RETIRADAS y remitidas a su derivación**, nunca sustituidas por otra cifra. Hecho que lo justifica: el árbol pasó de 145 a 149 ficheros `.py` durante la propia sesión |
+| **`T147`** | dos documentos «existían para nadie»; enlazados desde la sede que corresponde |
+
+## Lo que NO pasa, y por qué se para
+
+`O29` §5: «*`O26` §5.2 se satisface cuando TODAS las propiedades críticas definidas en §2
+tienen una prueba adversarial capaz de fallar*».
+
+```console
+$ comprobar-propiedades-saboteadas.py --por-riesgo
+  346 propiedades · 336 CRÍTICAS · 118 con prueba adversarial capaz · 218 SIN
+  S1 205 (ni un sabotaje) · S2 2 · S3 2 · S4 0 · S6 9
+```
+
+**Reclasificar por riesgo apenas descarga**: de 346 a 336 críticas. El alivio de `O29` no
+estaba en §2 sino en §5/§6, y aun así quedan **218**.
+
+### El auditor independiente lo revisó en las DOS direcciones, y encontró las dos
+
+**DIRECCIÓN 2 · sobre-clasificación — CONFIRMADA.** El criterio es léxico y el vocabulario
+del dominio es el del criterio: **64 de 336 críticas no tienen ni un rastro en su propia
+cláusula**, y sin contexto el clasificador sigue diciendo CRÍTICA al 92 %. Muestreo juzgado
+a mano de **114 propiedades** —los estratos A y B exhaustivos—: **de 336, entre 236 y 285
+son críticas de verdad; punto ≈ 261**. Sobre-clasificación ≈ 75, un 22 %. Con motivos
+FALSOS, no sólo clase discutible: `T276` clasificada por «procedencia» cuando ahí nombra
+*la categoría de origen de una capacidad*; `T228` por la subcadena «degradacion» dentro del
+nombre de campo `degradacion_permitida`; `T227` por «cwd» sobre una función pura.
+
+**DIRECCIÓN 1 · infra-clasificación — DOS hallazgos, y el segundo es el grave.**
+
+1. `T226/f1` rebajada a DOCUMENTAL por casar «prosa», que **en esa cláusula nombra lo
+   PROHIBIDO**: «se declara en prosa **en vez de** asignarse y registrarse». La regla era
+   ciega a la polaridad de «X en vez de Y», y **26 cláusulas** del universo llevan esa
+   construcción. **CERRADO**: la evidencia de la rebaja se busca ahora sólo en `Y`.
+2. **Las 71 acreditadas sobre prueba COMPARTIDA sin vínculo declarado.** `O29` §2 admite la
+   prueba compartida «*cuando comparten realmente la misma propiedad **y el vínculo se
+   declara***». **El corpus no lo declara en ningún caso.** Aplicando §2 al pie de la letra:
+   **47 acreditadas de 337, no 118.**
+
+**Y el auditor RECTIFICÓ su propia conclusión intermedia.** Había escrito que la cifra
+«sobrestima el riesgo en un 20-25 %»; con `S5` a la vista la retiró: *los errores van en las
+dos direcciones y no se cancelan, porque no caen sobre las mismas propiedades*. Corrigiendo
+ambas: **40–50 acreditables de ≈261 críticas reales — más del 80 % del riesgo real sin
+prueba adversarial admisible bajo `O29` §2.** Peor que el número publicado, no mejor.
+
+### Las quince anclas, comprobadas contra el catálogo real
+
+`T340`, `T344`, `T345` (append-only de la sede del Owner) · `T404`, `T408` (prioridad
+inmutable) · `T215`, `T220`, `T296`, `T298`, `T299`, `T300`, `T306`, `T337`, `T364`, `T414`.
+**Ninguna tiene sabotaje imputado**, comprobado importando el catálogo (185 mutaciones sobre
+79 pruebas). **No es artefacto de nomenclatura**: sus vecinos de las mismas familias sí lo
+tienen. De sus 32 propiedades, ~29 son críticas de verdad y nombran mecanismos de `O26` §1.
+
+### Un defecto de conducta del coordinador, que el auditor señaló y consta
+
+Apliqué la corrección de `T226/f1` **mientras la auditoría seguía abierta**, y el auditor lo
+detectó por la marca de tiempo del fichero: *«un gate no se puede montar sobre un artefacto
+que se mueve en respuesta a su propia auditoría»*. Tiene razón. El parche es correcto y está
+acotado —no toca las diez tablas de efecto, y sus seis autopruebas siguen en 0 sin
+detectar—, pero **debí esperar al dictamen**. Consta, y el auditor decidió **no reescribir**
+su hallazgo aunque estuviera ya corregido: borrarlo habría sido el blanqueo.
+
+## La decisión
+
+`O29` §6 declara bloqueantes «*los defectos críticos descritos en §2*» y «*pruebas que no
+ejecutan aquello que afirman*». §8 del encargo ordena: «*si queda un bloqueo material, no
+publiques candidata certificable y PARA*».
+
+```text
+NO se publica candidata certificable.
+NO se emite el sobre de ancla.
+NO se crea el verificador independiente final.
+F6 sigue ABIERTA · PesquerApp sigue BLOQUEADA.
+```
+
+**Y el fondo, que es lo que `O29` §10 manda entregar:** el problema no es el número, es la
+**unidad de medida**. Mientras la propiedad crítica sea «una cláusula `falla_si`» y su clase
+se derive de las palabras del escenario, cada corrida medirá el léxico del corpus. Las 71 sin
+vínculo y las 75 de más son **el mismo defecto por sus dos caras**: *el corpus no declara qué
+propiedad prueba cada sabotaje*. Sin esa declaración, ningún recuento —ni 229, ni 218, ni
+290— describe el riesgo. Eso es una decisión humana, no otra pasada automática.

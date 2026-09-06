@@ -238,6 +238,6 @@ falla_si:
   - "una resta se publica escrita a mano en vez de derivada"
   - "el universo encoge y el derivador sale con código cero"
 ejecucion: guion-manual
-validador: "docs/evolucion/verificacion/derivar-universo-obligatorio.py"
+validador: "docs/evolucion/verificacion/derivar-universo-obligatorio.py --obligaciones"
 estado: validador-implementado
 ```

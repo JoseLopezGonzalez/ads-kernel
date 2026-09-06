@@ -1,0 +1,25 @@
+# evidencia de: o26-sab-autopruebas
+# orden:        python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/comprobar-propiedades-saboteadas.py --autopruebas
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+META-PRUEBAS DE `O26-SAB`
+==============================================================================
+
+  ok   CONTROL POSITIVO · la copia intacta deriva 346 propiedades y publica
+  ok   una cláusula `falla_si` se BORRA: la propiedad desaparece del universo
+       espera «propiedades críticas medidas» · cardinal antes 346 · ahora 345
+  ok   el catálogo de mutaciones se VACÍA — un cero por catálogo vacío es falso verde
+       espera «el catálogo de mutaciones está VACÍO»
+  ok   el único sabotaje de la propiedad pierde su `espera`: hay rojo y no hay MOTIVO
+       espera «no declaran `espera`»
+  ok   el único sabotaje de la propiedad pasa a detectarlo SÓLO la huella general
+       espera «sólo los detecta la huella general»
+  ok   el sabotaje toca el producto y NO pone rojo: el ciclo tiene que decirlo
+       espera «siguió SUPERADA con la infracción introducida»
+  ok   dos cláusulas de un escenario se hacen INDISTINGUIBLES: el ancla deja de serlo
+       espera «no tiene ni un término que la distinga»
+  ok   el único sabotaje de la propiedad pasa a tocar SÓLO la sede del enunciado
+       espera «sólo toca la sede del enunciado»
+
+  7 sabotajes · 0 sin detectar

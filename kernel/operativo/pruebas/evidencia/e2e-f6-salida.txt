@@ -23,10 +23,10 @@ paso 05  materialización del equipo por C4, con su composición y lo que quedó
          · composición `composicion:sis-cambio` · roles: 2 · agentes: 2 · modelos: modelo:gamma · descartes registrados: 4 · fuera con motivo: 0 · manda el ORDEN ESCRITO · sin condición verdadera se ESCALA · método y capacidad se distinguen
          resultado: CUMPLIDO
 paso 06  creación de items y paquetes, por el runtime y en el estado canónico
-         · item `it-38de99c7cea8` · paquetes: 5 · obligaciones de la ruta: 3 · todo en el estado canónico, escrito por el motor
+         · item `it-aed6efff9c14` · paquetes: 5 · obligaciones de la ruta: 3 · todo en el estado canónico, escrito por el motor
          resultado: CUMPLIDO
 paso 07  despacho por el adaptador local, con un proceso real
-         · paquete `pq-0c5a0745f657` despachado por el adaptador local con un proceso real · desenlace `completado` · efecto `ef-be240c24455f` aplicado en disco y acusado
+         · paquete `pq-7ad6b4722996` despachado por el adaptador local con un proceso real · desenlace `completado` · efecto `ef-3ec931b2c0d9` aplicado en disco y acusado
          resultado: CUMPLIDO
 paso 08  progreso emitido por el proceso y recogido por el runtime
          · el proceso emitió sus líneas y el runtime recogió 3 avances; el conteo NO entra en lo durable

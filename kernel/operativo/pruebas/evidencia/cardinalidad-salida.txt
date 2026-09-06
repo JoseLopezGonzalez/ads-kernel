@@ -47,6 +47,16 @@ test_409_el_sabotaje_que_pasaba_DOCE_baterias_ya_no_pasa_ninguna (__main__.Prior
 T409 · Defecto que previene: que el remedio sea una prueba y no una invariante. ... ok
 test_419_la_norma_se_cita_IGUAL_en_las_cuatro_sedes_y_una_de_ellas_la_EJECUTA (__main__.PrioridadInmutableDeB12.test_419_la_norma_se_cita_IGUAL_en_las_cuatro_sedes_y_una_de_ellas_la_EJECUTA)
 T419 · Defecto que previene: que la cita se quede en prosa en las cuatro. ... ok
+test_430_BORRAR_la_prioridad_de_un_paquete_existente_falla_cerrado (__main__.PrioridadInmutableDeB12.test_430_BORRAR_la_prioridad_de_un_paquete_existente_falla_cerrado)
+T430 · Defecto que previene: el PASO 1 de la evasión en dos transiciones. ... ok
+test_431_REINTRODUCIR_la_prioridad_falla_cerrado_aunque_no_este_antes (__main__.PrioridadInmutableDeB12.test_431_REINTRODUCIR_la_prioridad_falla_cerrado_aunque_no_este_antes)
+T431 · Defecto que previene: el PASO 2, que es el que la mueve de verdad. ... ok
+test_432_la_evasion_ENTERA_en_dos_transiciones_no_llega_a_999 (__main__.PrioridadInmutableDeB12.test_432_la_evasion_ENTERA_en_dos_transiciones_no_llega_a_999)
+T432 · La reproducción LITERAL del gate, de punta a punta. ... ok
+test_433_los_CUATRO_cuadrantes_se_deciden_por_el_estado_y_no_por_el_tipo (__main__.PrioridadInmutableDeB12.test_433_los_CUATRO_cuadrantes_se_deciden_por_el_estado_y_no_por_el_tipo)
+T433 · La tabla entera, incluido el cuadrante que SÍ tiene que pasar. ... ok
+test_434_la_evasion_tampoco_pasa_con_DOS_instancias_ni_tras_reabrir (__main__.PrioridadInmutableDeB12.test_434_la_evasion_tampoco_pasa_con_DOS_instancias_ni_tras_reabrir)
+T434 · Concurrencia y recuperación, que son los dos caminos que quedaban. ... ok
 test_260_criterio_a_la_prioridad_declarada_manda_sobre_todo_lo_demas (__main__.SeleccionEInanicion.test_260_criterio_a_la_prioridad_declarada_manda_sobre_todo_lo_demas)
 T260 · Defecto que previene: que la prioridad del Owner deje de mandar. ... ok
 test_261_criterio_b_desbloquear_a_mas_paquetes_decide_entre_iguales (__main__.SeleccionEInanicion.test_261_criterio_b_desbloquear_a_mas_paquetes_decide_entre_iguales)
@@ -69,6 +79,6 @@ test_269_cada_sabotaje_pone_roja_una_prueba_DISTINTA (__main__.SeleccionEInanici
 T269 · Defecto que previene: un criterio decorativo que nadie echaría de menos. ... ok
 
 ----------------------------------------------------------------------
-Ran 31 tests  (duración no registrada: varía por ejecución)
+Ran 36 tests  (duración no registrada: varía por ejecución)
 
 OK

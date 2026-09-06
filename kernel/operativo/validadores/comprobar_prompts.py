@@ -139,7 +139,9 @@ if _G03_PROPIA not in _sys_g03.path:
 #      está protegiendo: una guardia que necesita importar ya ha perdido. Con (b) el recital
 #      mentiría, porque el hecho reproducido allí no es el de aquí. Con (c) `T330` exige
 #      —y comprueba— que el MECANISMO sea IDÉNTICO byte a byte en todos los puntos
-#      ejecutables del árbol (digest `aa219465a6dd6a04`, 1 869 bytes), mientras cada sede
+#      ejecutables del árbol —el digest y el tamaño del mecanismo NO se copian aquí: los
+#      deriva `T381` del propio árbol y cualquier cifra escrita a mano caduca sola—,
+#      mientras cada sede
 #      dice qué se midió en ella. Lo que protege es el mecanismo; lo que se lee, el recital.
 #
 #  DECISIÓN · se retira lo que viene del LANZADOR, y no «todo lo que no reconozco»

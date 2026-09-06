@@ -165,6 +165,8 @@ test_una_ruta_con_salto_de_linea_se_lee_entera (__main__.LecturaSegura.test_una_
 T188 · Defecto que previene: partir en dos una ruta que lleva un salto de línea. ... ok
 test_una_ruta_no_decodificable_del_arbol_real_se_denuncia (__main__.LecturaSegura.test_una_ruta_no_decodificable_del_arbol_real_se_denuncia)
 T188 · Defecto que previene: una ruta Latin-1 en el árbol que nadie vuelve a ver. ... ok
+test_T441_la_matriz_cubre_la_SUITE_COMPLETA_y_no_dos_familias (__main__.MatrizAdversarial.test_T441_la_matriz_cubre_la_SUITE_COMPLETA_y_no_dos_familias)
+T441 · `M-04` · Defecto que previene: un cero verdadero sobre 2 de 19 puntos. ... ok
 test_cada_control_declara_su_color_esperado_antes_de_ejecutarse (__main__.MatrizAdversarial.test_cada_control_declara_su_color_esperado_antes_de_ejecutarse)
 T190 · Defecto que previene: un control que decide si aprobó al ver el resultado. ... ok
 test_la_matriz_publica_sus_dos_columnas_y_las_dos_son_cero (__main__.MatrizAdversarial.test_la_matriz_publica_sus_dos_columnas_y_las_dos_son_cero)
@@ -193,8 +195,20 @@ test_borrar_la_sede_da_rojo (__main__.SedeDelOwner.test_borrar_la_sede_da_rojo)
 T189 · Defecto que previene: hacer desaparecer la sede en vez de alterarla. ... ok
 test_el_contraste_es_contra_el_nacimiento_y_no_contra_head (__main__.SedeDelOwner.test_el_contraste_es_contra_el_nacimiento_y_no_contra_head)
 T189 · Defecto que previene: contrastar contra `HEAD`, que es una tautología. ... ok
+test_T435_edicion_en_DISCO_sin_commit_da_ROJO (__main__.SedeDelOwnerEnLasTresCapas.test_T435_edicion_en_DISCO_sin_commit_da_ROJO)
+T435 · el hallazgo, exactamente. Antes: verde. Ahora: rojo, nombrando la capa. ... ok
+test_T436_edicion_STAGED_da_ROJO (__main__.SedeDelOwnerEnLasTresCapas.test_T436_edicion_STAGED_da_ROJO)
+T436 · el hueco intermedio: `git add`-eado y no confirmado. ... ok
+test_T437_indice_y_disco_DISTINTOS_dan_ROJO (__main__.SedeDelOwnerEnLasTresCapas.test_T437_indice_y_disco_DISTINTOS_dan_ROJO)
+T437 · las tres capas con TRES contenidos distintos. ... ok
+test_T438_truncar_la_sede_en_disco_da_ROJO (__main__.SedeDelOwnerEnLasTresCapas.test_T438_truncar_la_sede_en_disco_da_ROJO)
+T438 · truncamiento: lo publicado desaparece sin que nada se reescriba. ... ok
+test_T439_borrar_la_sede_en_DISCO_sin_commit_da_ROJO (__main__.SedeDelOwnerEnLasTresCapas.test_T439_borrar_la_sede_en_DISCO_sin_commit_da_ROJO)
+T439 · borrado sin confirmar. Un `rm` es una alteración como cualquier otra. ... ok
+test_T440_CONTROL_el_arbol_limpio_y_el_apendice_confirmado_pasan (__main__.SedeDelOwnerEnLasTresCapas.test_T440_CONTROL_el_arbol_limpio_y_el_apendice_confirmado_pasan)
+T440 · Control del CONTROL: sin él, «todo da rojo» explicaría los cinco de arriba. ... ok
 
 ----------------------------------------------------------------------
-Ran 94 tests  (duración no registrada: varía por ejecución)
+Ran 101 tests  (duración no registrada: varía por ejecución)
 
 OK
