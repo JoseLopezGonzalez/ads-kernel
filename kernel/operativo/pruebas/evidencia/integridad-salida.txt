@@ -4,5 +4,9 @@
 # codigo:       0
 # ---------------------------------------------------------------
 T150  SUPERADA  La huella de integridad cubre a los validadores y detecta su edición
+     VERDE  comprobación 1 · la huella del kernel almacenada coincide con la calculada
+     VERDE  comprobación 2 · la huella del kernel cubre lo que los censos canónicos le adjudican
+     VERDE  comprobación 3 · huella y sello son sensibles al CONTENIDO y a la RUTA, ejercido
+     VERDE  comprobación 4 · el SELLO DEL PRODUCTO, su ÁMBITO y la cobertura de la norma
 
 1 superadas · 0 fallidas
