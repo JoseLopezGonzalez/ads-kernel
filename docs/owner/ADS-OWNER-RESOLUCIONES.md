@@ -1308,3 +1308,227 @@ Después de esta verificación no se abrirá otro ciclo automático.
 
 Si resulta insuficiente, se entregará una lista finita para decisión humana y se
 detendrá el método.
+
+---
+
+# `O30` · CIERRE EJECUTIVO DE `F6` POR INVARIANTES ARQUITECTÓNICAS FINITAS
+
+**Fecha:** 2026-09-06  
+**Autoridad:** Owner
+
+## 1. Corrección de la unidad de medida
+
+La clasificación automática de cada cláusula `falla_si` mediante las palabras
+que contiene NO es una medida competente del riesgo arquitectónico.
+
+Quedan expresamente rechazadas como condiciones de cierre:
+
+1. la obligación de proporcionar un sabotaje distinto para cada cláusula
+   `falla_si`;
+2. la clasificación de criticidad derivada principalmente de coincidencias
+   léxicas;
+3. la multiplicación de obligaciones cuando varias cláusulas expresan el mismo
+   invariante material;
+4. el cierre obtenido rebajando, suprimiendo o renombrando cláusulas para reducir
+   un recuento;
+5. la exigencia de cientos de mutantes cuando el riesgo material está cubierto
+   por una prueba adversarial común y trazable.
+
+Las mediciones anteriores de `O26-SAB` permanecen como evidencia histórica de lo
+que aquel instrumento contó, pero NO gobiernan desde esta resolución la
+certificación de `F6`.
+
+Esta resolución no declara que aquellas cláusulas sean falsas, prescindibles ni
+satisfechas. Corrige la unidad con la que se decide la certificación.
+
+## 2. Catálogo cerrado de invariantes críticos
+
+Para la certificación de `F6`, el universo crítico está formado por los siguientes
+VEINTICUATRO invariantes arquitectónicos:
+
+- `K01` · Una transición confirmada sobrevive a caída, reinicio y recuperación.
+- `K02` · Una transición no confirmada nunca se publica como estado canónico.
+- `K03` · La publicación del estado es atómica y conserva el orden contractual
+  entre preparación, publicación y confirmación.
+- `K04` · Recuperar o reanudar repetidamente es idempotente y no duplica efectos.
+- `K05` · La concurrencia no permite dos confirmaciones para la misma revisión.
+- `K06` · Diario, registro y cabezas durables detectan corrupción, truncamiento,
+  sustitución y retirada de cola.
+- `K07` · Una reconciliación sólo puede cerrarse mediante una transición
+  autorizada y auditable.
+- `K08` · Versiones y migraciones preservan integridad, usan errores tipados y
+  fallan cerradas ante formatos desconocidos o estados imposibles.
+- `K09` · Toda evidencia, atestación o certificación queda ligada conjuntamente
+  al commit y al tree realmente juzgados.
+- `K10` · Firma, verificación, rotación y revocación fallan cerradas y no confunden
+  claves de prueba con custodia productiva.
+- `K11` · Autoridad, productor, escritor y custodio permanecen separados conforme
+  a sus contratos.
+- `K12` · El entorno, la procedencia del código y las rutas de importación no
+  permiten contaminación silenciosa del ejecutable juzgado.
+- `K13` · La sede del Owner es append-only por ENTRADAS COMPLETAS y no puede
+  aprobar una sustitución, truncamiento o reescritura de resoluciones.
+- `K14` · El verificador de admisión juzga la mutación efectiva y falla cerrado
+  ante cambios fuera del universo permitido.
+- `K15` · El gobierno Git del control repo serializa correctamente escritores
+  locales y entre máquinas, sin último-escritor-gana silencioso.
+- `K16` · La contención fuerte alcanza al proceso y a sus descendientes, incluidos
+  los que intenten escapar mediante `setsid` u otra nueva sesión.
+- `K17` · La ausencia de aislamiento, firma, identidad, backend o capacidad
+  requerida nunca se convierte en degradación silenciosa.
+- `K18` · Enrutamiento, clasificación y selección se basan en datos estructurados
+  y sedes canónicas, no en similitud de prosa.
+- `K19` · La política C2/C4 respeta perfil, modelo, cardinalidad, combinaciones,
+  integrador y `execution_slots`.
+- `K20` · La prevención y observación de inanición no modifica la prioridad
+  contractual, ni directamente ni mediante una secuencia de transiciones.
+- `K21` · Entregas, acuses, reanudaciones y `Continúa` no pierden ni duplican
+  trabajo confirmado.
+- `K22` · La evidencia procede de la ejecución declarada, está vinculada al objeto
+  juzgado y no admite saltos, omisiones o éxitos fabricados.
+- `K23` · La huella del kernel y el sello del producto cubren sus ámbitos
+  declarados, se calculan desde el árbol real y no se sustituyen entre sí.
+- `K24` · Gates, estados de fase y autoridad impiden declarar éxito,
+  certificación o adopción antes del acto competente.
+
+El catálogo `K01`–`K24` es cerrado para este ciclo.
+
+Un verificador sólo podrá proponer `K25` si demuestra un efecto material distinto
+que no pueda adscribirse honestamente a ninguno de los veinticuatro. Cambiar la
+redacción, la ruta, el nombre de una prueba o la instancia concreta no crea un
+invariante nuevo.
+
+## 3. Evidencia suficiente por invariante
+
+Cada `Knn` debe tener:
+
+1. fuente normativa;
+2. mecanismo implementado;
+3. canal productivo ejercido;
+4. al menos un caso sano;
+5. al menos una prueba adversarial capaz de poner rojo el mecanismo;
+6. resultado esperado del sabotaje;
+7. evidencia reproducible;
+8. vínculo al commit y al tree juzgados.
+
+Una misma prueba adversarial puede cubrir varios invariantes únicamente cuando:
+
+- ejecuta realmente el mecanismo compartido;
+- el vínculo prueba→invariante se declara de forma inequívoca;
+- se explica qué observación distinta demuestra para cada invariante;
+- al retirar la protección común, la prueba se pone roja por el motivo declarado.
+
+No se exige un mutante exclusivo por cláusula ni por invariante si una prueba
+compartida cumple estas condiciones.
+
+## 4. Obligaciones funcionales no críticas
+
+Las obligaciones internas de `F6` que no materialicen un invariante `Knn` no
+necesitan un sabotaje exclusivo.
+
+Para considerarlas implementadas deben tener:
+
+1. fuente y propietario;
+2. implementación real;
+3. caso positivo;
+4. caso negativo o de frontera cuando sea aplicable;
+5. evidencia ejecutada;
+6. trazabilidad hasta su condición exacta de cierre.
+
+La resta de obligaciones internas sin implementar debe quedar vacía.
+
+No se permite vaciarla cambiando una obligación de fase, declarándola externa sin
+fuente competente, haciendo pasar documentación por implementación o usando una
+batería ajena que no ejerza su condición de cierre.
+
+## 5. Condiciones de `O26`
+
+Las ocho condiciones de `O26` §1 deben ser ejercidas de nuevo sobre la candidata
+final mediante sus canales reales.
+
+Una limitación del anfitrión se registrará con exactitud y no se universalizará.
+Si existe un backend disponible capaz de ejercer la condición, deberá usarse.
+
+La custodia productiva de claves continúa siendo externa cuando así lo establezca
+la resolución competente. Una clave efímera de prueba no la sustituye.
+
+## 6. `M-04` y `C-L.7`
+
+`M-04` y `C-L.7` no se cierran por una etiqueta escrita por quien implementa.
+
+Si sus defectos productivos están corregidos, el verificador independiente final
+de este ciclo debe ejercer sus condiciones de cierre y emitir por separado:
+
+- `M-04 SUPERADA` o `M-04 NO SUPERADA`, con causa;
+- `C-L.7 CERRADA` o `C-L.7 NO CERRADA`, con causa.
+
+## 7. Certificación y cierre de `F6`
+
+Un único verificador independiente podrá declarar:
+
+- `F6 CERTIFICADA`;
+- `F6 CERRADA`;
+
+si, y sólo si, concurren todas estas condiciones:
+
+1. `K01`–`K24` satisfechas;
+2. ninguna obligación interna de `F6` sin implementar;
+3. las ocho condiciones de `O26` ejercidas y satisfechas;
+4. `M-04 SUPERADA`;
+5. `C-L.7 CERRADA`;
+6. ningún defecto interno BLOQUEANTE o GRAVE que invalide el objeto, la evidencia
+   o la certificación;
+7. identidad exacta del commit y tree juzgados;
+8. sobre de ancla emitido antes de crear al verificador.
+
+Un hallazgo MENOR o de observabilidad no impide el cierre salvo que falsee una de
+las ocho condiciones anteriores. Debe permanecer registrado con identificador,
+sede, remedio, propietario y fase, sin declararlo superado.
+
+Esta resolución no certifica `F6`. Define quién puede hacerlo y con qué prueba.
+
+## 8. Guía canónica vigente
+
+Antes de la certificación debe existir una única guía operativa vigente que permita
+construir, ejecutar, validar y diagnosticar `F6` sin reconstruir su estado leyendo
+la sucesión de gates.
+
+La guía:
+
+- referencia las fuentes normativas;
+- no copia estados variables que puedan derivarse;
+- distingue norma, implementación, evidencia e historia;
+- enlaza el catálogo `K01`–`K24`;
+- declara comandos reproducibles;
+- trata los gates anteriores como evidencia histórica, no como manual operativo.
+
+No se reescriben ni se fusionan los gates, dictámenes, manifiestos o resoluciones
+históricas. Su posible contradicción se resuelve en la guía mediante autoridad,
+vigencia y remisión, no modificando la historia.
+
+## 9. PesquerApp
+
+Si `F6` queda certificada y cerrada, desaparece exclusivamente el bloqueo técnico
+que dependía de completar y certificar `F6`.
+
+PesquerApp queda entonces:
+
+`HABILITADA TÉCNICAMENTE · NO AUTORIZADA · NO INICIADA`
+
+Su adopción, piloto, integración o ejecución necesita una orden posterior y
+separada del Owner. Este ciclo no puede iniciarla.
+
+Si `F6` no queda certificada, PesquerApp continúa BLOQUEADA.
+
+## 10. Fin de la recursión
+
+Este es el último ciclo automático de corrección y certificación de `F6`.
+
+Después del dictamen del verificador:
+
+- se registra y publica el resultado;
+- no se corrige la candidata en respuesta al dictamen;
+- no se abre otro gate;
+- no se propone otra tanda automática;
+- no se inicia PesquerApp;
+- se para cualquiera que sea el resultado.
