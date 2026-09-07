@@ -6,7 +6,7 @@
 `O31` §6 · `C-L.7` · COPIA MANUAL DE ESTADO EN SEDE VIVA, POR CLASE
 ==============================================================================
 
-  ANCLA   commit da7290f08a1b21283ec89f8553b4776a5e0ca90f · tree a882c6ae9d07db504dadaf77d1e00d684606b7b4
+  ANCLA   commit e29185a25c73387261afffd193153c959bda9412 · tree b45e535a45bd667f029f21a652b8610b265f7943
 
 LA CLASE QUE SE JUZGA
 ------------------------------------------------------------------------------
@@ -46,4 +46,4 @@ LO QUE ESTE VEREDICTO NO DEMUESTRA
   · no juzga si un cardinal es CIERTO: juzga si está COPIADO donde debería
     derivarse o remitirse.
 
-1 sedes vivas · 70 campos · 10 vigentes · 340 núcleos derivados por otra sede · 0 hallazgos de la clase
+1 sedes vivas · 70 campos · 10 vigentes · 341 núcleos derivados por otra sede · 0 hallazgos de la clase

@@ -8,7 +8,7 @@
 
   UNIVERSO derivado de `docs/owner/ADS-OWNER-RESOLUCIONES.md`, sección «2. Catálogo cerrado de invariantes críticos»
   SEDE canónica del catálogo: `docs/canonico/08-INVARIANTES-CRITICOS-DE-F6.md`
-  ANCLA   commit da7290f08a1b21283ec89f8553b4776a5e0ca90f · tree a882c6ae9d07db504dadaf77d1e00d684606b7b4
+  ANCLA   commit e29185a25c73387261afffd193153c959bda9412 · tree b45e535a45bd667f029f21a652b8610b265f7943
   CICLO   sano (evidencia ligada a HEAD) → SABOTAJE ejecutado → restaurado (el árbol juzgado no se toca: la mutación vive en una copia)
 
 EL UNIVERSO, DERIVADO Y LITERAL
@@ -46,7 +46,7 @@ LO EJERCIDO, SABOTAJE A SABOTAJE
 ------------------------------------------------------------------------------
   N136     DETECTADO      veto:integridad-de-datos: declara que prevalece DOM, cuyo veto es LEVANTABLE. a.5 sólo admite prevalencia de u
   N146     DETECTADO      CON/implementacion: DECIDE «la implementación exige una decisión de forma, alcance o dom», y CON declara eso m
-  N150     DETECTADO      [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada 7996590af1181da2. Algún fichero de
+  N150     DETECTADO      [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada 6c6287d710f51c9b. Algún fichero de
   N158     DETECTADO      kernel/operativo/pruebas/evidencia/contratos-salida.txt: contiene error de invocación del intérprete. No es la
   N172     DETECTADO      FAIL T172 · Una guarda que se puede bajar por variable es un interruptor. ------------------------------------
   N174     DETECTADO      FAIL T174 · Defecto que previene: publicar estado PARCIAL en la rama canónica (`g.14`). ----------------------

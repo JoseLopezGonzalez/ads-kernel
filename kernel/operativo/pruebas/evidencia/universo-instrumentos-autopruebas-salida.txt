@@ -1,0 +1,17 @@
+# evidencia de: universo-instrumentos-autopruebas
+# orden:        python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/comprobar-universo-de-instrumentos.py --autopruebas
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+`O31` · AUTOPRUEBAS DEL JUEZ DEL UNIVERSO
+==============================================================================
+
+OK    U-09   un instrumento retirado del manifiesto sigue en el árbol
+OK    U-02   un instrumento MOVIDO de ruta
+OK    U-02   un instrumento NUEVO en un directorio que no existía
+OK    U-02   se BORRA la declaración de exclusión de un punto
+OK    U-03   una fila apunta a un fichero que no existe
+OK    U-05   un validador sin condición de éxito
+OK    U-08   una evidencia que ninguna fila declara
+
+7 controles · 0 sin detectar
