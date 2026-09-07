@@ -15,7 +15,7 @@
 
   1 · SATISFECHA    la raíz y su evidencia viven fuera del árbol verificado
         instalación y evidencia fuera del árbol, y el instalador RECHAZA ponerlas dentro (InstalacionDentroDelArbol). No es que hoy estén fuera: es que no pueden estar dentro
-        · realpath(instalacion) vs realpath(arbol) → instalacion=/tmp/ads-o26-1raetr2w/instalacion · arbol=<raiz>
+        · realpath(instalacion) vs realpath(arbol) → instalacion=/tmp/ads-o26-kzzc2n6g/instalacion · arbol=<raiz>
         · instalar DENTRO del árbol → InstalacionDentroDelArbol: [INSTALACION_DENTRO_DEL_ARBOL] la raíz externa no se puede instalar dentro del árbol que verifica: la ruta declarada apunta dentro del árbol. Un verificador que vive donde vive lo verificado no es externo (instalacion-colada)
 
   2 · SATISFECHA    la firma es asimétrica
@@ -25,7 +25,7 @@
         · firmar con SÓLO la pública → ProveedorDeFirmaAusente
 
   3 · SATISFECHA    la atestación queda ligada simultáneamente al SHA del commit y a su tree
-        el acta liga commit `a35763b0a53f` y tree `36f7a1e7beeb` a la vez, y cambiar CUALQUIERA de los dos —o los dos— hace fallar `exigir_vinculo`
+        el acta liga commit `57fc58e2a1b6` y tree `86248048acef` a la vez, y cambiar CUALQUIERA de los dos —o los dos— hace fallar `exigir_vinculo`
         · exigir_vinculo con los dos correctos → sin excepción
         · exigir_vinculo · commit ajeno → VinculoDeCommitRoto
         · exigir_vinculo · tree ajeno → VinculoDeTreeRoto
