@@ -28,11 +28,11 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: [1] el kernel DIVERGE de su release: almacenada 13713d8d8322cf71, calculada 439f984a1fa4fc73. Algún fichero de la huella
+                          → detectada: [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada 722a595606643171. Algún fichero de la huella
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: [1] el kernel DIVERGE de su release: almacenada 13713d8d8322cf71, calculada 9b5440d59e8d184f. Algún fichero de la huella
+                          → detectada: [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada f79fe2e5720f4ee3. Algún fichero de la huella
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
-                          → detectada: [1] el kernel DIVERGE de su release: almacenada 13713d8d8322cf71, calculada d628fc81776f88a4. Algún fichero de la huella
+                          → detectada: [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada 9f6939c45f66ec89. Algún fichero de la huella
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
                           → detectada: caso_restrictivo_gana: gana 44, y lo más restrictivo era 48
 OK   N149b   A-03  T149  la resolución deja de registrar por qué gana el valor elegido
@@ -296,7 +296,7 @@ OK   NS21b   #21   T150  se altera la SEDE DEL OWNER: es el gesto exacto que `RE
 OK   NS21c   #21   T150  se altera una PROYECCIÓN DERIVADA —la matriz donde la candidata reclama el cierre de `G-01`…`G-08`—, el segundo fichero del hecho reproducido
                           → detectada: [4] la clase `DERIVADA` DIVERGE del libro anotado: 3c14a36f14fa68f4 sobre 45 ficheros, ahora da73e6ff73682dc0 sobre 45
 OK   NS21d   #21   T150  se altera SÓLO un GATE HISTÓRICO: una trazabilidad reescribible no traza, porque los actos siguientes se apoyan en el acto pasado
-                          → detectada: [4] la clase `EVIDENCIA` DIVERGE del libro anotado: e75ebc092457a920 sobre 109 ficheros, ahora 4dbd7c749ed5f950 sobre 10
+                          → detectada: [4] la clase `EVIDENCIA` DIVERGE del libro anotado: 15177e252b3804cb sobre 109 ficheros, ahora a128b717c68c5ad1 sobre 10
 OK   NS21e   #21   T150  se altera material HISTÓRICO conservado por trazabilidad, que es la otra clase que sólo existe para poder mirar atrás
                           → detectada: [4] la clase `HISTORICA` DIVERGE del libro anotado: 6dbcd7f29b31be41 sobre 8 ficheros, ahora fa454b24ba28f224 sobre 8
 OK   NS21f   #21   T150  se AÑADE un borrador no aprobado junto a la norma: si añadirlo no moviera el sello, se leería como norma sin que nada lo hubiera aprobado
