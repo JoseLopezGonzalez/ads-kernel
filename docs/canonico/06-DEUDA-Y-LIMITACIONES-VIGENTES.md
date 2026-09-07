@@ -507,6 +507,26 @@ siga NO CERRADA.
 
 **Ninguna de las siete es bloqueante, y ninguna se declara superada.** La auditoría que encontró las seis primeras está transcrita en el informe de esta consolidación, y su clasificación es suya. `CD-7` la encontró la validación de `O30` §10 al instalar el producto en un repositorio nuevo, que es el único sitio donde el defecto se ve.
 
+## 11 ter · Los hallazgos del verificador independiente final de `O30` — 2026-09-07
+
+> **Qué es.** El verificador independiente final de `O30` no certificó `F6`. Sus
+> hallazgos se registran aquí con identificador, sede, remedio, propietario y fase, y
+> **ninguno se declara superado**. `O30` §10 prohíbe corregir la candidata después del
+> dictamen, de modo que ninguno tiene remedio aplicado. Su clasificación es del
+> verificador, no del coordinador. El dictamen íntegro está en
+> [`docs/f6/07-VERIFICACION-FINAL-O30-20260907.md`](../f6/07-VERIFICACION-FINAL-O30-20260907.md).
+
+| id | grado | qué está mal | sede | remedio | propietario · fase |
+|---|---|---|---|---|---|
+| **`V-G1`** | **GRAVE** | la comprobación de completitud del manifiesto enumera sólo `kernel/operativo/validadores/*.py`, y **32 filas declaran `dir:` fuera de ahí**, incluidas las cinco que miden las condiciones de `O30`. `T350`, el otro guardián, sólo alcanza a la evidencia que algún `ads:escenario` declara, y esas cinco están declaradas por **cero** escenarios. Retirar del manifiesto el instrumento que mide `K01`–`K24` y borrar su evidencia deja la batería entera en verde | `comprobar_evidencia.py`, comprobación 8 del bucle de `T158`, y el alcance de `T350` | extender la completitud a todo `dir:` declarado, y exigir que la evidencia de todo `tipo: validador` esté cubierta por `T350` o guardián equivalente | `PLT` implementa · `SIS` propietario · **`F6`** |
+| **`V-G2`** | **GRAVE** | la dispensa reflexiva sigue siendo TRANSFERIBLE por un cuarto vector: la condición 5 sondea el **script** con argumentos fijos y **nunca mira los `args` declarados de la fila**. Con eso el verificador obtuvo la dispensa para una fila fabricada cuya invocación real es `--help`, dejando intacto al legítimo. La afirmación escrita «LA DISPENSA ES ÚNICA POR OBLIGACIÓN, Y ESTO ES LO QUE LA HACE INTRANSFERIBLE» es falsa como está redactada. `se_excluye_de_su_propia_comprobacion` se transfiere igual | `comprobar_evidencia._dispensa_reflexiva` | derivar la dispensa de la **invocación declarada de la fila** —`script` + `dir` + `args`— y no del script suelto | `PLT` implementa · `SIS` propietario · **`F6`** |
+| **`V-M1`** | menor | la firma de éxito de `invariantes-criticos` pone SUELO de 50 a los sabotajes: bajar de 57 a 53 pasa en verde | `validadores.yaml` | derivar el cardinal del catálogo en vez de un suelo | `SIS` · **`F6`** |
+| **`V-M2`** | menor | el sobre de ancla cita «`O30` §13» y «§15», que no existen: `O30` tiene §1–§10 | el emisor del sobre, fuera del repositorio | citar los campos del sobre, no secciones inexistentes | `VER` · **`F6`** |
+| **`V-M3`** | menor | confirma `CD-7` de §11 bis y añade la medida: instalado sin packs, `ads_lint` da 3 enlaces rotos, y el fichero es byte a byte idéntico en la base y en la candidata | ídem `CD-7` | ídem `CD-7` | `PLT`/`SIS` · **`F6`** |
+| **`V-M4`** | menor | observabilidad: la evidencia congelada ancla al commit ANTERIOR a la candidata. Estructural —ninguna evidencia puede contener el hash del commit que la contiene— | `kernel/operativo/pruebas/evidencia/` | ninguno posible dentro del ciclo; se resuelve reproduciendo la validación, como el verificador hizo | `VER` · **`F6`** |
+
+**Ninguno de los seis se declara superado, y las dos GRAVES siguen VIVAS.** `M-04` y `C-L.7` conservan el estado literal que el verificador emitió: **`M-04 NO SUPERADA`** y **`C-L.7 NO CERRADA`**, cada una con la causa material que él midió y que su dictamen razona.
+
 ## 12 · Qué NO es deuda, y se dice para que nadie lo cuente como tal
 
 ```text
