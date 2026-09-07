@@ -1,0 +1,139 @@
+# evidencia de: universo-instrumentos
+# orden:        python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/comprobar-universo-de-instrumentos.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+`O31` §3 y §5 · EL UNIVERSO DE INSTRUMENTOS, DERIVADO DEL ÁRBOL
+==============================================================================
+
+  ANCLA   commit 6ce736aa3ca2e04d87966c1f46971d6ea398caaf · tree 1cfb885245afe16308f00e383588039bc6018adc
+
+CÓMO SE DERIVA, Y POR QUÉ NO ES UNA LISTA
+------------------------------------------------------------------------------
+  Un PUNTO EJECUTABLE es cualquier `.py` del árbol cuyo árbol sintáctico
+  contenga la guarda `if __name__ == "__main__"`. Se usa `ast` y no `grep`:
+  la cadena dentro de un comentario o de un mensaje NO cuenta. No se enumera
+  ningún directorio, de modo que mover un instrumento, renombrarlo o crear un
+  directorio nuevo NO lo saca del universo. `O31` §3: rojo por ausencia
+  material, no por una lista manual de rutas.
+
+EL UNIVERSO
+------------------------------------------------------------------------------
+  puntos ejecutables en el árbol ....... 62
+  directorios que ocupan ............... 9
+      docs/canonico
+      docs/evolucion/verificacion
+      docs/f5
+      kernel/operativo/raiz-externa
+      kernel/operativo/runtime
+      kernel/operativo/runtime/pruebas
+      kernel/operativo/validadores
+      tooling
+      tooling/tests
+  filas del manifiesto ................. 61
+  puntos SIN fila ni exclusión ......... 0
+  exclusiones DECLARADAS en el fichero . 14
+
+LO QUE NO ES UN VALIDADOR, Y LO DICE ÉL MISMO
+------------------------------------------------------------------------------
+  docs/canonico/validar-fuentes-canonicas.py
+      valida el REGISTRO DE FUENTES CANONICAS, no el corpus de pruebas. Su ausencia del manifiesto de validadores esta registrada como `CD-3` en la deuda vigente, con propietario y fase, y meterlo alli es materia de esa deuda y no de `O31`
+  docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py
+      bateria mecanica de la correccion del gate de cierre de `F4c`, fase CERRADA. Su universo es el de aquel gate y su veredicto no gobierna `F6`. NUNCA fue fila de este manifiesto —`HEAD` no la declara—, de modo que esta marca EXPLICA lo que nunca estuvo en el aparato y no RETIRA nada de el, que es la unica cosa que `O31` §3 le permite hacer
+  docs/evolucion/verificacion/emitir-sobre-de-ancla.py
+      emite el SOBRE DE ANCLA FUERA del repositorio juzgado. Meterlo en el manifiesto lo convertiria en parte del objeto que el sobre ancla, que es justo lo que `O26` §1 separa
+  docs/f5/validar-f5.py
+      es el validador de `F5`, fase CERRADA. Su universo es otro y su veredicto no gobierna `F6`
+  kernel/operativo/raiz-externa/anfitrion_firmante.py
+      paquete SEPARADO de la raiz externa —`V6-16`—: se instala FUERA del arbol verificado y por contrato no comparte manifiesto con lo que verifica
+  kernel/operativo/raiz-externa/anfitrion_verificador.py
+      paquete SEPARADO de la raiz externa —`V6-16`—: el verificador NO tiene clave privada y vive fuera del arbol; compartir manifiesto seria compartir perimetro
+  kernel/operativo/raiz-externa/instalar.py
+      instala la raiz externa FUERA del arbol y RECHAZA hacerlo dentro. Es el punto que impone la separacion, no un validador del corpus
+  kernel/operativo/raiz-externa/verificador.py
+      paquete SEPARADO de la raiz externa —`V6-16`—: es el verificador externo, no un validador de este manifiesto
+  kernel/operativo/runtime/ads_admision.py
+      linea de ordenes del PRODUCTO: la ejerce el usuario del ADS instalado. Su conformidad la miden las baterias de `runtime/pruebas`, que si estan en el manifiesto
+  kernel/operativo/runtime/ads_arboles.py
+      linea de ordenes del PRODUCTO, igual que `ads_admision.py`
+  kernel/operativo/runtime/ads_ciclo.py
+      linea de ordenes del PRODUCTO, igual que `ads_admision.py`
+  kernel/operativo/runtime/ads_estado.py
+      linea de ordenes del PRODUCTO, igual que `ads_admision.py`
+  kernel/operativo/runtime/ads_runtime.py
+      linea de ordenes del PRODUCTO, igual que `ads_admision.py`
+  tooling/workspace.py
+      materializa repositorios del workspace: es utillaje de instalacion, no del corpus. Su conformidad la mide `tooling/tests`, que si esta en el manifiesto
+
+EL GUARDIÁN DE CADA EVIDENCIA
+------------------------------------------------------------------------------
+  `T350` alcanza a la evidencia que algún `ads:escenario` declara. Las
+  demás las sostiene el equivalente de `O31` §3, ejercido aquí: los
+  bytes del árbol de trabajo contra el blob de `HEAD`.
+  lint                               lint-salida.txt                              equivalente `O31` §3
+  contratos                          contratos-salida.txt                         T350 (23 escenarios)
+  packs                              packs-salida.txt                             T350 (3 escenarios)
+  referencias                        referencias-salida.txt                       T350 (1 escenarios)
+  arranque                           arranque-salida.txt                          T350 (5 escenarios)
+  versiones                          versiones-salida.txt                         T350 (2 escenarios)
+  composicion-procesos               composicion-procesos-salida.txt              T350 (4 escenarios)
+  recuentos                          recuentos-salida.txt                         T350 (7 escenarios)
+  integridad                         integridad-salida.txt                        T350 (1 escenarios)
+  prompts                            prompts-salida.txt                           T350 (1 escenarios)
+  negativos                          negativos-salida.txt                         equivalente `O31` §3
+  fuentes                            fuentes-salida.txt                           T350 (3 escenarios)
+  evidencia                          evidencia-salida.txt                         T350 (2 escenarios)
+  workspace                          workspace-salida.txt                         T350 (6 escenarios)
+  estado-durable                     estado-durable-salida.txt                    T350 (28 escenarios)
+  estado-e2e                         estado-e2e-salida.txt                        T350 (1 escenarios)
+  runtime-dispatcher                 runtime-salida.txt                           T350 (8 escenarios)
+  gobierno-git                       gobierno-git-salida.txt                      T350 (1 escenarios)
+  admision                           admision-salida.txt                          T350 (17 escenarios)
+  adaptadores                        adaptadores-salida.txt                       T350 (3 escenarios)
+  identidad                          identidad-salida.txt                         T350 (1 escenarios)
+  e2e-runtime                        e2e-runtime-salida.txt                       T350 (1 escenarios)
+  arboles-adversariales              arboles-salida.txt                           T350 (4 escenarios)
+  contencion                         contencion-salida.txt                        T350 (9 escenarios)
+  raiz-externa                       raiz-externa-salida.txt                      T350 (11 escenarios)
+  multimaquina                       multimaquina-salida.txt                      T350 (2 escenarios)
+  sesion-nueva                       sesion-nueva-salida.txt                      T350 (2 escenarios)
+  e2e-f6                             e2e-f6-salida.txt                            T350 (6 escenarios)
+  ciclo                              ciclo-salida.txt                             T350 (8 escenarios)
+  continua                           continua-salida.txt                          T350 (3 escenarios)
+  agentes                            agentes-salida.txt                           T350 (15 escenarios)
+  cardinalidad-y-seleccion           cardinalidad-salida.txt                      T350 (31 escenarios)
+  integridad-evidencia               integridad-evidencia-salida.txt              T350 (42 escenarios)
+  macrocircuitos                     macrocircuitos-salida.txt                    T350 (4 escenarios)
+  universo-obligatorio               universo-obligatorio-salida.txt              equivalente `O31` §3
+  universo-obligaciones              universo-obligaciones-salida.txt             equivalente `O31` §3
+  universo-rutas                     universo-rutas-salida.txt                    equivalente `O31` §3
+  o26-condiciones                    o26-condiciones-salida.txt                   equivalente `O31` §3
+  cobertura-de-gate                  cobertura-de-gate-salida.txt                 equivalente `O31` §3
+  o26-impl-autopruebas               o26-impl-autopruebas-salida.txt              equivalente `O31` §3
+  o26-impl                           o26-impl-salida.txt                          equivalente `O31` §3
+  o26-sab-autopruebas                o26-sab-autopruebas-salida.txt               equivalente `O31` §3
+  o26-sab                            o26-sab-salida.txt                           equivalente `O31` §3
+  cardinales-manuales-autopruebas    cardinales-manuales-autopruebas-salida.txt   equivalente `O31` §3
+  cardinales-manuales                cardinales-manuales-salida.txt               equivalente `O31` §3
+  universo-instrumentos-autopruebas  universo-instrumentos-autopruebas-salida.txt equivalente `O31` §3
+  universo-instrumentos              universo-instrumentos-salida.txt             equivalente `O31` §3
+  invariantes-criticos-autopruebas   invariantes-criticos-autopruebas-salida.txt  equivalente `O31` §3
+  invariantes-criticos               invariantes-criticos-salida.txt              equivalente `O31` §3
+
+OBSERVACIONES
+------------------------------------------------------------------------------
+  · guardián: 32 por `T350` · 17 por el equivalente de `O31` §3 · 0 sin guardián
+
+LOS INCUMPLIMIENTOS, UNO A UNO
+------------------------------------------------------------------------------
+  ninguno
+
+LO QUE ESTE VEREDICTO NO DEMUESTRA
+------------------------------------------------------------------------------
+  · no demuestra que cada instrumento MIDA BIEN lo suyo: demuestra que está
+    en el universo, que tiene fila, evidencia, condición de éxito y guardián;
+  · no cierra `M-04` ni `V-G1`: `O31` §5 y §7 reservan eso al verificador
+    independiente, y exigen que reproduzca el ataque él mismo;
+  · no juzga el contenido de la evidencia: eso es `T158` y `T350`.
+
+62 puntos ejecutables · 9 directorios · 0 sin fila ni exclusión · 14 exclusiones declaradas · 0 incumplimientos

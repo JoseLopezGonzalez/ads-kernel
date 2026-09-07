@@ -28,11 +28,11 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada 6c6287d710f51c9b. Algún fichero de la huella
+                          → detectada: [1] el kernel DIVERGE de su release: almacenada 378df943f857cb64, calculada 6c6287d710f51c9b. Algún fichero de la huella
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada 524f9c0af16ed73e. Algún fichero de la huella
+                          → detectada: [1] el kernel DIVERGE de su release: almacenada 378df943f857cb64, calculada 524f9c0af16ed73e. Algún fichero de la huella
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
-                          → detectada: [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada 8947540e187f973a. Algún fichero de la huella
+                          → detectada: [1] el kernel DIVERGE de su release: almacenada 378df943f857cb64, calculada 8947540e187f973a. Algún fichero de la huella
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
                           → detectada: caso_restrictivo_gana: gana 44, y lo más restrictivo era 48
 OK   N149b   A-03  T149  la resolución deja de registrar por qué gana el valor elegido
@@ -296,7 +296,7 @@ OK   NS21b   #21   T150  se altera la SEDE DEL OWNER: es el gesto exacto que `RE
 OK   NS21c   #21   T150  se altera una PROYECCIÓN DERIVADA —la matriz donde la candidata reclama el cierre de `G-01`…`G-08`—, el segundo fichero del hecho reproducido
                           → detectada: [4] la clase `DERIVADA` DIVERGE del libro anotado: cbc3636c8eb8dc38 sobre 47 ficheros, ahora b6533c5c9c54b4b9 sobre 47
 OK   NS21d   #21   T150  se altera SÓLO un GATE HISTÓRICO: una trazabilidad reescribible no traza, porque los actos siguientes se apoyan en el acto pasado
-                          → detectada: [4] la clase `EVIDENCIA` DIVERGE del libro anotado: 1104e600e6fa52ae sobre 113 ficheros, ahora f21ed41485319c4c sobre 11
+                          → detectada: [4] la clase `EVIDENCIA` DIVERGE del libro anotado: e226d07575c8b211 sobre 114 ficheros, ahora 070c87e77175d9ba sobre 11
 OK   NS21e   #21   T150  se altera material HISTÓRICO conservado por trazabilidad, que es la otra clase que sólo existe para poder mirar atrás
                           → detectada: [4] la clase `HISTORICA` DIVERGE del libro anotado: 6dbcd7f29b31be41 sobre 8 ficheros, ahora fa454b24ba28f224 sobre 8
 OK   NS21f   #21   T150  se AÑADE un borrador no aprobado junto a la norma: si añadirlo no moviera el sello, se leería como norma sin que nada lo hubiera aprobado
@@ -310,7 +310,7 @@ OK   NS21i   #21   T150  se OMITE `docs/` ENTERO del sello, que es el defecto or
 OK   NS23a   #23   T150  la huella deja de mirar la RUTA: el mismo contenido en otro sitio produce el mismo número, que es la mitad de lo que la comprobación 3 declaraba y no escribía
                           → detectada: [3] HUELLA DEL KERNEL: el MISMO contenido se mueve a `BOOTSTRAP_PROMPT-MOVIDO.md`, en la misma zona y con la misma exten
 OK   NS23b   #23   T150  el sello deja de mirar el CONTENIDO: reescribir una norma entera no lo mueve, y la comprobación 3 tiene que EJERCERLO, no declararlo
-                          → detectada: [3] SELLO DEL PRODUCTO: se ALTERA el contenido de `docs/canonico/00-EMPEZAR-AQUI.md` y el número no se mueve (902d8a0044
+                          → detectada: [3] SELLO DEL PRODUCTO: se ALTERA el contenido de `docs/canonico/00-EMPEZAR-AQUI.md` y el número no se mueve (fbb9d72cd8
 OK   NS23c   #23   T150  se estrecha `EXTENSIONES` hasta que los validadores en Python salen de la huella: el estrechamiento que la lista de nueve rutas veía, ahora derivado de `validadores.yaml`
                           → detectada: [2] kernel/operativo/runtime/adaptadores/contrato.py NO entra en la huella del kernel, y es FUENTE TÉCNICA de `MAT-071`:
 OK   NS23d   #23   T150  una clase canónica se queda SIN POLÍTICA de sello escrita, y con ella caería fuera POR OMISIÓN, que es la exclusión que nadie escribe

@@ -302,6 +302,21 @@ def juzgar(base):
         #     fila declara condición de éxito, y `T158` la contrasta contra la salida—. Una
         #     evidencia anclada y juzgada no se puede alterar en silencio, que es lo que el
         #     guardián existe para impedir.
+        # ESTE INSTRUMENTO NO SE JUZGA A SÍ MISMO EN ESTA CONDICIÓN, Y SE DICE POR QUÉ.
+        #
+        #     El runner publica la evidencia SÓLO cuando el instrumento sale con 0. Si esta
+        #     condición se aplicara al propio juez, su primera evidencia no existiría nunca:
+        #     saldría rojo por no estar anclada, el runner no la publicaría por salir rojo,
+        #     y no se anclaría por no publicarse. Es la autorreferencia imposible que `O31`
+        #     §6 manda no convertir en bloqueo.
+        #
+        #     Y NO QUEDA SIN GUARDIÁN: su contenido lo juzgan `T158` —contra su
+        #     `firma_de_exito`, que exige los dos cardinales de antitautología— y `T350`, y
+        #     su ausencia del manifiesto la caza `U-02`. Lo único que no hace es
+        #     certificarse a sí mismo el anclaje.
+        if os.path.basename(comp.get("script") or "") == os.path.basename(__file__):
+            por_equivalente.append(comp["id"] + " (no se juzga a sí mismo el anclaje)")
+            continue
         confirmado = _blob_de_head(base, rel)
         if confirmado is None:
             if comp.get("evidencia_reflexiva"):

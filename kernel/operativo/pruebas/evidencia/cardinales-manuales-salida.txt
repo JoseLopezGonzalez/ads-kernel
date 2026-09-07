@@ -6,7 +6,7 @@
 `O31` §6 · `C-L.7` · COPIA MANUAL DE ESTADO EN SEDE VIVA, POR CLASE
 ==============================================================================
 
-  ANCLA   commit e29185a25c73387261afffd193153c959bda9412 · tree b45e535a45bd667f029f21a652b8610b265f7943
+  ANCLA   commit 6ce736aa3ca2e04d87966c1f46971d6ea398caaf · tree 1cfb885245afe16308f00e383588039bc6018adc
 
 LA CLASE QUE SE JUZGA
 ------------------------------------------------------------------------------
