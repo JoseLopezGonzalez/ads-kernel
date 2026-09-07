@@ -1,0 +1,48 @@
+# evidencia de: cardinales-manuales-autopruebas
+# orden:        python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/comprobar-cardinales-manuales.py --autopruebas
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+`O31` §6 · AUTOPRUEBAS DEL CONTROL DE CLASE DE `C-L.7`
+==============================================================================
+
+POSITIVAS · tienen que salir ROJAS
+------------------------------------------------------------------------------
+OK    dígitos                        cardinal `14` cuantificando `hallazgos`
+OK    letras                         cardinal `catorce` cuantificando `hallazgos`
+OK    VERSALES                       cardinal `CATORCE` cuantificando `HALLAZGOS`
+OK    singular                       cardinal `1` cuantificando `hallazgo`
+OK    sustantivo desconocido         cardinal `24` cuantificando `invariantes`
+OK    sustantivo desconocido 2       cardinal `58` cuantificando `obligaciones`
+OK    puntuación alterada            cardinal `14` cuantificando `hallazgos`
+OK    cardinal posterior al control  cardinal `57` cuantificando `sabotajes`
+OK    salto de línea                 cardinal `catorce` cuantificando `hallazgos`
+OK    adjetivo intercalado           cardinal `14` cuantificando `nuevos`
+OK    marcado markdown               cardinal `14` cuantificando `hallazgos`
+OK    código en línea                cardinal `14` cuantificando `hallazgos`
+OK    espacio duro                   cardinal `14` cuantificando `hallazgos`
+OK    orden invertido                cardinal `14` cuantificando `hallazgos`
+OK    tabla                          cardinal `14` cuantificando `hallazgos`
+OK    enumeración sin cardinal       5 identificadores enumerados junto a una palabra que los presenta como
+OK    estado sin cifra               `todos` sobre `gates`: cuantifica por extensión un conjunto que otra s
+OK    numeral compuesto              cardinal `treinta y un` cuantificando `hallazgos`
+OK    numeral fuera de lista         cardinal `doscientos` cuantificando `contratos`
+OK    fracción                       cardinal `mitad` cuantificando `hallazgos`
+OK    dígitos fullwidth              cardinal `14` cuantificando `hallazgos`
+OK    romano                         cardinal `XIV` cuantificando `hallazgos`
+OK    colectivo                      cardinal `decena` cuantificando `larga`
+
+NEGATIVAS · tienen que salir LIMPIAS
+------------------------------------------------------------------------------
+OK    fecha rara                     limpia
+OK    versión                        limpia
+OK    identificadores normativos     limpia
+OK    SHA cortos                     limpia
+OK    ordinal referencial            limpia
+OK    cita histórica rotulada        limpia
+OK    comando de derivación          limpia
+OK    límite contractual constante   limpia
+OK    participio en -dos             limpia
+OK    sendos                         limpia
+
+33 controles · 0 sin detectar

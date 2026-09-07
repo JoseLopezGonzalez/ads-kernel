@@ -53,7 +53,7 @@ POR REQUISITO — dónde se rompe la cadena
   S3  CANAL PRODUCTIVO, NO PRUEBA TEXTUAL         primeras faltas: 2
   S4  NO ES SÓLO LA HUELLA GENERAL                primeras faltas: 0
   S5  ALCANCE ESPECÍFICO DE ESTA CLÁUSULA         primeras faltas: 101
-  S6  CICLO SANO / SABOTAJE / RESTAURADO          primeras faltas: 4
+  S6  CICLO SANO / SABOTAJE / RESTAURADO          primeras faltas: 5
 
 FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
 ------------------------------------------------------------------------------
@@ -753,6 +753,9 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
   T327/f2      S1  g.11
        «un fallo de la operación se confunde con un defecto de programación por compartir código de salida y forma»
        ningún sabotaje del catálogo está imputado a `T327` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:681
+  T330/f1      S6  g.15
+       «un punto ejecutable nuevo entra sin la purga y nadie se entera, que es lo que ocurrió con la raíz externa»
+       N330: sano → EXIT=1 · FAILED (failures=2); restaurado → EXIT=1 · FAILED (failures=2); NH01: sano → EXIT=1 · FAILED (failures=2); restaurado → EXIT=1 · FAILED (failures=2) · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:592
   T330/f2      S5  g.15
        «el alcance del control se escribe a mano en vez de derivarse del disco»
        ningún sabotaje de `T330` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N330: el motivo no comparte ni un término distintivo con la cláusula; NH01: el motivo no comparte ni un término distintivo con la  · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:592
@@ -907,9 +910,9 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
        «el veredicto de «nunca creado» menciona supervivencia, que es el otro fallo»
        ningún sabotaje del catálogo está imputado a `T418` · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:441
 
-  346 propiedades críticas medidas · 283 PENDIENTES · 57 obligaciones afectadas
+  346 propiedades críticas medidas · 284 PENDIENTES · 57 obligaciones afectadas
   obligaciones con alguna propiedad pendiente: A14, C2, C4, C5, CONTRATO 1, CONTRATO 1bis, CONTRATO 2, CONTRATO 3, D104, F-01, F-02, F-04, F-05, F-06, F-10, F-11, FD-1, FD-3, FD-5, FD-6, M-04, S1-02, V6-01, V6-02, V6-03, V6-04, V6-05, V6-06, V6-07, V6-08, V6-09, V6-10, V6-11, V6-12, V6-13, V6-14, V6-15, V6-16, V6-17, V6-18, V6-19, g.1, g.10, g.11, g.12, g.13, g.14, g.15, g.16, g.2, g.3, g.4, g.5, g.6, g.7, g.8, g.9
-  pendientes de `O26-SAB`: 283 propiedades, enumeradas arriba
+  pendientes de `O26-SAB`: 284 propiedades, enumeradas arriba
   `O26` §5.2 · NO ACREDITADA por este instrumento
 
 LO QUE ESTE VEREDICTO NO DEMUESTRA

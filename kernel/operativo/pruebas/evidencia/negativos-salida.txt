@@ -28,11 +28,11 @@ OK   N147c   A-05  T147  una exclusión se queda sin motivo escrito
 OK   N147d   A-05  T147  una exclusión apunta a algo que ya no existe
                           → detectada: exclusiones.yaml/no_analizados: 'packs/pack-que-ya-no-existe.md' ya no existe. Las exclusiones caducadas se borran, no s
 OK   N150    A-04  T150  un validador del kernel se edita localmente
-                          → detectada: [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada 722a595606643171. Algún fichero de la huella
+                          → detectada: [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada 7996590af1181da2. Algún fichero de la huella
 OK   N150b   A-04  T150  un script de tooling se edita localmente
-                          → detectada: [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada f79fe2e5720f4ee3. Algún fichero de la huella
+                          → detectada: [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada f2542e0cf5f5a4d1. Algún fichero de la huella
 OK   N150c   A-04  T150  la definición de la huella se estrecha hasta dejar fuera a los validadores
-                          → detectada: [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada 9f6939c45f66ec89. Algún fichero de la huella
+                          → detectada: [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada 8947540e187f973a. Algún fichero de la huella
 OK   N149    A-03  T149  la resolución se queda con el valor MENOS restrictivo
                           → detectada: caso_restrictivo_gana: gana 44, y lo más restrictivo era 48
 OK   N149b   A-03  T149  la resolución deja de registrar por qué gana el valor elegido
@@ -58,7 +58,7 @@ OK   N158e   evidencia T158  falta un fichero de evidencia que el manifiesto exi
 OK   N158f   evidencia T158  un validador nuevo queda fuera del manifiesto y de la evidencia
                           → detectada: manifiesto: 'o26-impl' declara depender de 'evidencia' por 'CONTRATO 3' y no es el instrumento que la mide: `--sin-ejecu
 OK   N158g   evidencia T158  la cobertura publicada describe un corpus con dos ficheros menos que el vigente
-                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 532 y el corpus vigente da 5
+                          → detectada: kernel/operativo/pruebas/evidencia/fuentes-salida.txt: la vigencia 'T161-cobertura' publica 536 y el corpus vigente da 5
 OK   N158h   evidencia T158  una vigencia declara un recuento que nadie implementa
                           → detectada: manifiesto: la vigencia 'T161-cobertura' de 'fuentes' declara el recuento 'fuentes.recuento_que_nadie_implementa', que n
 OK   N158i   evidencia T158  una entrada de vigencia no declara `patron` — el caso que reventaba con KeyError
@@ -290,13 +290,13 @@ OK   NE14d   E-14  T158  un `OK` que declara `failures` dentro del paréntesis
 OK   NE14e   E-14  T158  dos corridas pegadas en el mismo fichero de evidencia
                           → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: la salida no tiene EXACTAMENTE un `Ran N tests` y un resultado
 OK   NS21a   #21   T150  se altera una NORMA VIGENTE dentro de `docs/`, que es donde la prosa ES la norma, y el sello del producto tiene que moverse
-                          → detectada: [4] la clase `CANONICA_OPERATIVA` DIVERGE del libro anotado: 5755027e300e666e sobre 230 ficheros, ahora 5e88ca96d57af9ef
+                          → detectada: [4] la clase `CANONICA_OPERATIVA` DIVERGE del libro anotado: af0a340a17c37d03 sobre 230 ficheros, ahora 0aca5907b9d2be8f
 OK   NS21b   #21   T150  se altera la SEDE DEL OWNER: es el gesto exacto que `REV-3` reprodujo y que no movía la huella
-                          → detectada: [4] la clase `AUTORIDAD_SUPERIOR` DIVERGE del libro anotado: f2f4f5ea06dd460e sobre 4 ficheros, ahora 79e4a85a65b93ac3 s
+                          → detectada: [4] la clase `AUTORIDAD_SUPERIOR` DIVERGE del libro anotado: a102fcb07ed29890 sobre 4 ficheros, ahora d02b21cce9b65781 s
 OK   NS21c   #21   T150  se altera una PROYECCIÓN DERIVADA —la matriz donde la candidata reclama el cierre de `G-01`…`G-08`—, el segundo fichero del hecho reproducido
-                          → detectada: [4] la clase `DERIVADA` DIVERGE del libro anotado: ef6351e2cbf66525 sobre 46 ficheros, ahora 64b4dfebcc9fae83 sobre 46
+                          → detectada: [4] la clase `DERIVADA` DIVERGE del libro anotado: cbc3636c8eb8dc38 sobre 47 ficheros, ahora b6533c5c9c54b4b9 sobre 47
 OK   NS21d   #21   T150  se altera SÓLO un GATE HISTÓRICO: una trazabilidad reescribible no traza, porque los actos siguientes se apoyan en el acto pasado
-                          → detectada: [4] la clase `EVIDENCIA` DIVERGE del libro anotado: 6c0506d31efd617f sobre 109 ficheros, ahora 95f43041acbcdc33 sobre 10
+                          → detectada: [4] la clase `EVIDENCIA` DIVERGE del libro anotado: 60d23e8325f9fa7e sobre 111 ficheros, ahora 87797af6bf525e8e sobre 11
 OK   NS21e   #21   T150  se altera material HISTÓRICO conservado por trazabilidad, que es la otra clase que sólo existe para poder mirar atrás
                           → detectada: [4] la clase `HISTORICA` DIVERGE del libro anotado: 6dbcd7f29b31be41 sobre 8 ficheros, ahora fa454b24ba28f224 sobre 8
 OK   NS21f   #21   T150  se AÑADE un borrador no aprobado junto a la norma: si añadirlo no moviera el sello, se leería como norma sin que nada lo hubiera aprobado
@@ -310,7 +310,7 @@ OK   NS21i   #21   T150  se OMITE `docs/` ENTERO del sello, que es el defecto or
 OK   NS23a   #23   T150  la huella deja de mirar la RUTA: el mismo contenido en otro sitio produce el mismo número, que es la mitad de lo que la comprobación 3 declaraba y no escribía
                           → detectada: [3] HUELLA DEL KERNEL: el MISMO contenido se mueve a `BOOTSTRAP_PROMPT-MOVIDO.md`, en la misma zona y con la misma exten
 OK   NS23b   #23   T150  el sello deja de mirar el CONTENIDO: reescribir una norma entera no lo mueve, y la comprobación 3 tiene que EJERCERLO, no declararlo
-                          → detectada: [3] SELLO DEL PRODUCTO: se ALTERA el contenido de `docs/canonico/00-EMPEZAR-AQUI.md` y el número no se mueve (d3f9259058
+                          → detectada: [3] SELLO DEL PRODUCTO: se ALTERA el contenido de `docs/canonico/00-EMPEZAR-AQUI.md` y el número no se mueve (921cdb7946
 OK   NS23c   #23   T150  se estrecha `EXTENSIONES` hasta que los validadores en Python salen de la huella: el estrechamiento que la lista de nueve rutas veía, ahora derivado de `validadores.yaml`
                           → detectada: [2] kernel/operativo/runtime/adaptadores/contrato.py NO entra en la huella del kernel, y es FUENTE TÉCNICA de `MAT-071`:
 OK   NS23d   #23   T150  una clase canónica se queda SIN POLÍTICA de sello escrita, y con ella caería fuera POR OMISIÓN, que es la exclusión que nadie escribe

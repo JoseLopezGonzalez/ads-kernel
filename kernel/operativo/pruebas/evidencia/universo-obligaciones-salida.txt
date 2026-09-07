@@ -34,7 +34,7 @@ PROCEDENCIA DE CADA COMPONENTE — sede, digest y tamaño
   V6      docs/evolucion/11-ARQUITECTURA-INTEGRADA.md                616044e4827b18dc  12152 líneas
   g       docs/rediseno/g-ESTADO-DURABLE-APROBADA.md                 c8ba0a933c387d73  381 líneas
   C       kernel/operativo/contratos/                                directorio  8 ficheros
-  deuda   docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md          d8802e6295944c12  581 líneas
+  deuda   docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md          25d0b47c048f4f66  583 líneas
 
   CLIQUET · obligaciones que el corpus EJERCE: 63  ·  de ellas en el universo: 58
   del universo, SIN cliquet que las proteja: ninguna

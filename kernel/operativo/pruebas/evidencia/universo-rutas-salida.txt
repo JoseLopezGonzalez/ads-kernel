@@ -30,12 +30,12 @@ iv         881  1237245e828546fa…  docs/evolucion/32-GATE-VERIFICACION-DOCE-HH
 iv         408  88b3c274f6525e17…  docs/evolucion/33-CIERRE-DE-F4C-POR-COMPOSICION-O22.md
 iv         289  9a93febce75f1254…  docs/evolucion/34-RATIFICACION-DE-LA-CERTIFICACION-INCREMENTAL-O22.md
 i         2163  a88609167dbbea28…  docs/evolucion/ADS-PENDIENTES-DE-IMPLEMENTACION-Y-DISCUSION.md
-iii       6414  1cb58018b68d4c09…  docs/evolucion/CHECKPOINT-ADS-NEXT.md
+iii       6440  46365cb63925516e…  docs/evolucion/CHECKPOINT-ADS-NEXT.md
 v          721  e20d6ec8a56b6e74…  docs/evolucion/verificacion/CORRIGENDUM-DICTAMENES-INMUTABLES.md
 v          396  0e766e71cd1bfd06…  docs/evolucion/verificacion/README.md
-v         4594  b9f1f555cf34fa8e…  docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py
+v         4605  15cacbd3cb8101f6…  docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py
 v         2442  c69eb7098d19546b…  docs/evolucion/verificacion/derivar-universo-obligatorio.py
-v          924  bc4c50047b03f93f…  docs/evolucion/verificacion/emitir-sobre-de-ancla.py
+v          933  87268f9678de4180…  docs/evolucion/verificacion/emitir-sobre-de-ancla.py
 v          119  b1c29244dfedc139…  docs/evolucion/verificacion/manifiestos/F4C-ADDENDUM-1-GATE-CERTIFICACION-20260830.md
 v          256  ff4116703b648586…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-ARQUITECTONICO-FINAL-20260901.md
 v          240  c64a0ec4731e6d27…  docs/evolucion/verificacion/manifiestos/F4C-ASIGNACION-GATE-CERTIFICACION-2-20260830.md
@@ -55,7 +55,7 @@ v          395  d61e83bd2b733b34…  docs/evolucion/verificacion/manifiestos/F6-
 v          558  f45c2390a6428e96…  docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md
 v         3343  64d170f5acc15144…  docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md
 v          628  24e85cad856daf76…  docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md
-v         1534  5f8eea060cdb95fb…  docs/owner/ADS-OWNER-RESOLUCIONES.md
+v         1775  da7b28fab7286480…  docs/owner/ADS-OWNER-RESOLUCIONES.md
 v          195  d2131faa4aeddc6d…  docs/rediseno/CHECKPOINT-OPERATIVO.md
 iii       1651  712dbd4a935c53e3…  docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
 v         1150  235385da2471dec2…  docs/rediseno/a-CAPACIDADES-APROBADA.md
@@ -98,7 +98,7 @@ v           89  f4f016c011a82764…  kernel/operativo/esquemas/proceso.yaml
 v          130  f56e8fe4872e46b5…  kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md
 v          606  8a8aa174fa5244cb…  kernel/operativo/recorrido/01-PROCESOS.md
 
-94 fuentes obligatorias · 100623 líneas
+94 fuentes obligatorias · 100910 líneas
   (i  )   4   las fuentes de «QUÉ HAY QUE LEER ÍNTEGRO» de `C-L.5`
   (ii )  29   las fuentes y las fichas de `C-0.1` / `C-0.2`
   (iii)   3   documento 11 · registro de decisiones · checkpoint

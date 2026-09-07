@@ -8,7 +8,7 @@
 
   UNIVERSO derivado de `docs/owner/ADS-OWNER-RESOLUCIONES.md`, sección «2. Catálogo cerrado de invariantes críticos»
   SEDE canónica del catálogo: `docs/canonico/08-INVARIANTES-CRITICOS-DE-F6.md`
-  ANCLA   commit a35763b0a53fc64a64b7654059e22ba52bd28723 · tree 36f7a1e7beeb1790bcd3d62087cc940cd1dbbb54
+  ANCLA   commit da7290f08a1b21283ec89f8553b4776a5e0ca90f · tree a882c6ae9d07db504dadaf77d1e00d684606b7b4
   CICLO   sano (evidencia ligada a HEAD) → SABOTAJE ejecutado → restaurado (el árbol juzgado no se toca: la mutación vive en una copia)
 
 EL UNIVERSO, DERIVADO Y LITERAL
@@ -46,7 +46,7 @@ LO EJERCIDO, SABOTAJE A SABOTAJE
 ------------------------------------------------------------------------------
   N136     DETECTADO      veto:integridad-de-datos: declara que prevalece DOM, cuyo veto es LEVANTABLE. a.5 sólo admite prevalencia de u
   N146     DETECTADO      CON/implementacion: DECIDE «la implementación exige una decisión de forma, alcance o dom», y CON declara eso m
-  N150     DETECTADO      [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada 722a595606643171. Algún fichero de
+  N150     DETECTADO      [1] el kernel DIVERGE de su release: almacenada 6bfac55f1740f35b, calculada 7996590af1181da2. Algún fichero de
   N158     DETECTADO      kernel/operativo/pruebas/evidencia/contratos-salida.txt: contiene error de invocación del intérprete. No es la
   N172     DETECTADO      FAIL T172 · Una guarda que se puede bajar por variable es un interruptor. ------------------------------------
   N174     DETECTADO      FAIL T174 · Defecto que previene: publicar estado PARCIAL en la rama canónica (`g.14`). ----------------------
@@ -99,7 +99,7 @@ LO EJERCIDO, SABOTAJE A SABOTAJE
   NK20a    DETECTADO      ERROR T404 · Defecto que previene: que la carrera entre dos DSP abra la puerta. ------------------------------
   NK20b    DETECTADO      FAIL T408 · Defecto que previene: lavar la mutación con un viaje de ida y vuelta. ----------------------------
   NK21a    DETECTADO      FAIL T204 · escenario 4 · Defecto que previene: perder una entrega esperando acuse. --------------------------
-  NS21a    DETECTADO      [4] la clase `CANONICA_OPERATIVA` DIVERGE del libro anotado: 8019ed9de37d8fe2 sobre 230 ficheros, ahora e85286
+  NS21a    DETECTADO      [4] la clase `CANONICA_OPERATIVA` DIVERGE del libro anotado: af0a340a17c37d03 sobre 230 ficheros, ahora 0aca59
   NS23a    DETECTADO      [3] HUELLA DEL KERNEL: el MISMO contenido se mueve a `BOOTSTRAP_PROMPT-MOVIDO.md`, en la misma zona y con la m
 
 LO QUE ESTE VEREDICTO NO DEMUESTRA

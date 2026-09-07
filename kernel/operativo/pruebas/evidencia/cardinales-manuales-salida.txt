@@ -1,0 +1,49 @@
+# evidencia de: cardinales-manuales
+# orden:        python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/comprobar-cardinales-manuales.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+`O31` §6 · `C-L.7` · COPIA MANUAL DE ESTADO EN SEDE VIVA, POR CLASE
+==============================================================================
+
+  ANCLA   commit da7290f08a1b21283ec89f8553b4776a5e0ca90f · tree a882c6ae9d07db504dadaf77d1e00d684606b7b4
+
+LA CLASE QUE SE JUZGA
+------------------------------------------------------------------------------
+  copia manual de estado, cardinal o conjunto variable dentro de una
+  sede viva que debería derivarlo o remitir a su fuente competente.
+
+  NO se enumeran los sustantivos —clase ABIERTA que crece con el
+  corpus—: se enumeran las clases CERRADAS del español, palabras
+  función y numerales, y el núcleo cuantificado cae por DESCARTE. Un
+  sustantivo que este control no ha visto nunca no lo esquiva.
+
+LA POBLACIÓN, DERIVADA
+------------------------------------------------------------------------------
+  sede viva                                                campos vigentes   HEAD
+  docs/evolucion/CHECKPOINT-ADS-NEXT.md                        70       10     70
+
+LAS EXCEPCIONES, TIPADAS Y JUSTIFICADAS
+------------------------------------------------------------------------------
+  FECHA          una fecha no cuantifica nada que otra sede cuente
+  VERSION        una versión es identidad, no recuento
+  IDENTIFICADOR  `O31`, `T158`, `V6-18` o `§6` nombran, no cuentan
+  DIGEST         un SHA o un digest es identidad del objeto
+  COMANDO        una orden que DERIVA el valor es lo contrario de copiarlo
+  CONSTANTE      un límite que define esta misma sede y que ninguna otra cuenta, declarado con `[CONSTANTE CONTRACTUAL]`
+  HISTÓRICO      campo `_anterior`, o rótulo histórico EN POSICIÓN DE APERTURA —mencionarlo en medio de una frase ya no exime
+
+LO HALLADO
+------------------------------------------------------------------------------
+  ninguno
+
+LO QUE ESTE VEREDICTO NO DEMUESTRA
+------------------------------------------------------------------------------
+  · no demuestra que ninguna sede del corpus copie estado: juzga las SEDES
+    VIVAS, que son las que se declaran estado reanudable;
+  · no cierra `C-L.7`: `O31` §6 lo reserva al verificador independiente, y le
+    exige demostrarlo con variantes que el implementador no usó;
+  · no juzga si un cardinal es CIERTO: juzga si está COPIADO donde debería
+    derivarse o remitirse.
+
+1 sedes vivas · 70 campos · 10 vigentes · 340 núcleos derivados por otra sede · 0 hallazgos de la clase

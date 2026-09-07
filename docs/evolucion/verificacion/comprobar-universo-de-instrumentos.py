@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from __future__ import annotations
 
 # ---------------------------------------------------------------------------
@@ -285,21 +286,36 @@ def juzgar(base):
             continue
         # GUARDIÁN EQUIVALENTE. Si la evidencia no existe y la fila tiene dispensa
         # reflexiva, su ausencia ya la juzga `T158`: aquí no se duplica ese juicio.
-        ruta = os.path.join(base, rel)
-        if not os.path.isfile(ruta):
-            if comp.get("evidencia_reflexiva"):
-                por_equivalente.append(comp["id"] + " (ausente, dispensada)")
-                continue
-            sin_guardian.append((comp["id"], "su evidencia no existe"))
-            continue
+        # QUÉ ES «MECÁNICAMENTE EQUIVALENTE A `T350`», Y QUÉ NO PUEDE SER.
+        #
+        #     La primera redacción de esta condición comparaba los BYTES del árbol de
+        #     trabajo con el blob de `HEAD`. Es un ancla que se mueve: el runner REGENERA
+        #     la evidencia y después la juzga, de modo que en su propia pasada la evidencia
+        #     recién escrita siempre difiere de `HEAD` y el control salía rojo por su
+        #     construcción, no por un defecto. `O31` §6 lo dice con todas sus letras: «no
+        #     exijas que una evidencia confirmada contenga el hash del mismo commit que la
+        #     contiene… no conviertas esa autorreferencia imposible en otro bloqueo».
+        #
+        #     Lo que `T350` da y aquí se replica sin esa trampa son DOS cosas: que la
+        #     evidencia esté ANCLADA en la historia —existe como blob en `HEAD`, de modo
+        #     que aparecer o desaparecer deja rastro— y que su CONTENIDO esté JUZGADO —la
+        #     fila declara condición de éxito, y `T158` la contrasta contra la salida—. Una
+        #     evidencia anclada y juzgada no se puede alterar en silencio, que es lo que el
+        #     guardián existe para impedir.
         confirmado = _blob_de_head(base, rel)
         if confirmado is None:
-            sin_guardian.append((comp["id"], "su evidencia no está confirmada en `HEAD`"))
-            continue
-        with open(ruta, "rb") as manejador:
-            if manejador.read() != confirmado:
-                sin_guardian.append((comp["id"], "sus bytes DIFIEREN del blob de `HEAD`"))
+            if comp.get("evidencia_reflexiva"):
+                por_equivalente.append(comp["id"] + " (dispensada)")
                 continue
+            sin_guardian.append((comp["id"],
+                                 "su evidencia NO está confirmada en `HEAD`: aparecer o "
+                                 "desaparecer no dejaría rastro"))
+            continue
+        if not (comp.get("firma_de_exito") or comp.get("debe_contener")):
+            sin_guardian.append((comp["id"],
+                                 "su evidencia está anclada pero NADIE juzga su contenido: "
+                                 "la fila no declara condición de éxito"))
+            continue
         por_equivalente.append(comp["id"])
     for cid, causa in sin_guardian:
         j.falla("U-07", "'%s' sostiene su veredicto sobre una evidencia SIN GUARDIÁN: %s. "
@@ -457,7 +473,10 @@ def autopruebas(destino):
         j2 = texto.index("\n  - id: ", i + 5) + 1
         io.open(ruta, "w", encoding="utf-8").write(texto[:i] + texto[j2:])
 
-    control("un instrumento retirado del manifiesto sigue en el árbol", "U-02",
+    # SE ESPERA `U-09` Y NO `U-02`, Y ES LA LECCIÓN DE ESTE CICLO: el script sigue
+    # declarado por la fila de autopruebas, de modo que el contraste POR RUTA no ve la
+    # retirada. Quien la ve es la segunda fuente independiente, la historia.
+    control("un instrumento retirado del manifiesto sigue en el árbol", "U-09",
             lambda c: _quitar_fila(c, "invariantes-criticos"))
 
     def _mover(copia):
