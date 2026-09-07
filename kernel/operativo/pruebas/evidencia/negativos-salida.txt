@@ -290,13 +290,13 @@ OK   NE14d   E-14  T158  un `OK` que declara `failures` dentro del paréntesis
 OK   NE14e   E-14  T158  dos corridas pegadas en el mismo fichero de evidencia
                           → detectada: kernel/operativo/pruebas/evidencia/contencion-salida.txt: la salida no tiene EXACTAMENTE un `Ran N tests` y un resultado
 OK   NS21a   #21   T150  se altera una NORMA VIGENTE dentro de `docs/`, que es donde la prosa ES la norma, y el sello del producto tiene que moverse
-                          → detectada: [4] la clase `CANONICA_OPERATIVA` DIVERGE del libro anotado: b2379756f4345aff sobre 230 ficheros, ahora 8d3be4d26ff77135
+                          → detectada: [4] la clase `CANONICA_OPERATIVA` DIVERGE del libro anotado: 8019ed9de37d8fe2 sobre 230 ficheros, ahora e8528642bd8d5188
 OK   NS21b   #21   T150  se altera la SEDE DEL OWNER: es el gesto exacto que `REV-3` reprodujo y que no movía la huella
                           → detectada: [4] la clase `AUTORIDAD_SUPERIOR` DIVERGE del libro anotado: f2f4f5ea06dd460e sobre 4 ficheros, ahora 79e4a85a65b93ac3 s
 OK   NS21c   #21   T150  se altera una PROYECCIÓN DERIVADA —la matriz donde la candidata reclama el cierre de `G-01`…`G-08`—, el segundo fichero del hecho reproducido
                           → detectada: [4] la clase `DERIVADA` DIVERGE del libro anotado: 3c14a36f14fa68f4 sobre 45 ficheros, ahora da73e6ff73682dc0 sobre 45
 OK   NS21d   #21   T150  se altera SÓLO un GATE HISTÓRICO: una trazabilidad reescribible no traza, porque los actos siguientes se apoyan en el acto pasado
-                          → detectada: [4] la clase `EVIDENCIA` DIVERGE del libro anotado: 15177e252b3804cb sobre 109 ficheros, ahora a128b717c68c5ad1 sobre 10
+                          → detectada: [4] la clase `EVIDENCIA` DIVERGE del libro anotado: 372ac38ed061a1a7 sobre 109 ficheros, ahora 816b8454170795c0 sobre 10
 OK   NS21e   #21   T150  se altera material HISTÓRICO conservado por trazabilidad, que es la otra clase que sólo existe para poder mirar atrás
                           → detectada: [4] la clase `HISTORICA` DIVERGE del libro anotado: 6dbcd7f29b31be41 sobre 8 ficheros, ahora fa454b24ba28f224 sobre 8
 OK   NS21f   #21   T150  se AÑADE un borrador no aprobado junto a la norma: si añadirlo no moviera el sello, se leería como norma sin que nada lo hubiera aprobado
