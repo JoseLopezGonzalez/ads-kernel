@@ -1028,7 +1028,7 @@ regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histór
                   Para cada campo, tres preguntas: ¿copia un recuento, un ordinal, un estado
                   o una enumeración que otra sede publica? ¿queda algún FRAGMENTO de una
                   retirada anterior sin su frase? ¿lo histórico está ROTULADO como histórico?
-                  Y la PRIMERA pregunta tiene además un barrido mecánico, para que no dependa
+                  Y esa pregunta tiene además un barrido mecánico, para que no dependa
                   de que alguien lea con atención. Sobre los campos VIGENTES —los que no
                   terminan en `_anterior`— y fuera de las regiones rotuladas, no puede haber
                   un cardinal que cuantifique algo que otra sede cuenta:
@@ -1070,8 +1070,29 @@ regla_de_reanclaje: ESTE BLOQUE ES EL ESTADO REANUDABLE y va SIN rótulo histór
                   `comprobar_recuentos.py` documenta de su propio barrido—; y el alcance del
                   rótulo histórico que aplica es el del CAMPO, no el de la viñeta que la
                   regla 8 escribe, que es `JA-01` y no se cierra aquí.
-                  **NINGUNO DE LOS DOS COMANDOS CIERRA `C-L.7`.** Barrer no es certificar, y
-                  sólo un gate independiente posterior puede cerrarla.
+                  **ESTE BARRIDO QUEDA SUSTITUIDO POR UN CONTROL DE CLASE, y es `O31` §6.**
+                  El `awk` de arriba se conserva como HISTORIA de lo que se intentó, y NO se
+                  ejecuta ya como garantía: un verificador independiente midió que dejaba
+                  escapar la mayoría de las variantes de la clase, y que entre ellas estaban
+                  el cardinal separado de su sustantivo por un salto de línea y los
+                  cardinales que este mismo expediente deriva. Su lista de sustantivos estaba escrita a
+                  mano y su alcance era por línea: reconocía el vocabulario que conocía, que
+                  es juzgar instancias.
+                  Lo que gobierna ahora es
+                  `docs/evolucion/verificacion/comprobar-cardinales-manuales.py`, que NO
+                  enumera sustantivos: enumera las clases CERRADAS del español —palabras
+                  función y numerales— y deja que el núcleo cuantificado caiga por DESCARTE,
+                  de modo que un sustantivo que el control no ha visto nunca no lo esquiva.
+                  Aplica la regla 8 por anclas, distingue referencia de recuento, narración
+                  de estado, y tipa sus excepciones —fecha, versión, identificador, digest,
+                  comando de derivación, constante contractual y rótulo histórico—. Se
+                  ejecuta así, y su evidencia la publica el runner:
+                       python3.12 docs/evolucion/verificacion/comprobar-cardinales-manuales.py
+                       python3.12 docs/evolucion/verificacion/comprobar-cardinales-manuales.py --autopruebas
+                  **NINGUNO DE LOS COMANDOS CIERRA `C-L.7`.** Barrer no es certificar, y
+                  sólo un gate independiente posterior puede cerrarla — `O31` §6 lo reserva
+                  al verificador independiente y le exige demostrarlo con variantes que el
+                  implementador no utilizó.
                8  EL ALCANCE DE UN RÓTULO HISTÓRICO ES EL DE SU ANCLA, Y SÓLO HAY DOS, y es
                   `HH2-05`. Un `[HISTÓRICO …]` escrito DENTRO de una viñeta o de un párrafo
                   alcanza **hasta el final de esa viñeta o de ese párrafo**, y **no** alcanza
@@ -1494,7 +1515,7 @@ rama_de_trabajo: NO SE ESCRIBE AQUÍ, Y ES DELIBERADO. Este campo nombró durant
                `git branch --show-current`
                `git rev-parse HEAD`
                `git merge-base HEAD origin/main`
-             CUÁL ES LA RAMA DE ESTA TANDA TAMPOCO SE ESCRIBE: la dan los tres comandos de
+             CUÁL ES LA RAMA DE ESTA TANDA TAMPOCO SE ESCRIBE: la dan los comandos de
              arriba, y sólo ellos.
              **[HISTÓRICO · este renglón nombraba «la rama de propagación de O17 y de la
              clase A del documento 22» y la candidata 4d231ee de
@@ -1508,11 +1529,12 @@ freshness:   vigente. La cabecera separa ESTADO HISTÓRICO de ESTADO VIGENTE: lo
              queda marcado HISTÓRICO y SUPERADO, y no se borra
 last_meaningful_event: **EL OWNER CIERRA `F5`, INICIA `F6`, Y `F6` ENTREGA SU PRIMER CORTE
              VERTICAL EJECUTABLE.** `O23` §11 reservaba el cierre a un acto posterior y
-             expreso del Owner sobre cuatro cosas demostradas; el acto es `O24`, y está
+             expreso del Owner sobre las cosas que `O23` §11 daba por demostradas; el acto es
+             `O24`, y está
              inscrito LITERAL en la sede canónica append-only. Sobre él, `F6` construyó el
              contrato derivado que `g.17` nombraba y dejaba sin escribir: un motor de estado
-             durable con estado canónico, diario y registro auxiliar como TRES estructuras
-             separadas, protocolo transaccional atómico, recuperación con las dos ramas de
+             durable con estado canónico, diario y registro auxiliar como estructuras
+             separadas, protocolo transaccional atómico, recuperación con las ramas de
              `g.8`, concurrencia serializada sin doble éxito, integridad con fallo cerrado y
              migración explícita.
              LO QUE ESTO ESTRENA: **es la primera vez que este expediente entrega código que
@@ -1872,7 +1894,7 @@ last_meaningful_event_anterior: CORRECCIÓN TÉCNICA ACOTADA sobre la candidata 
              ALGORITMO —marcaba una participación como condicionante buscando «ANTES de
              construir» en TEXTO LIBRE—, y publicaba «seis procesos, diez pares exigidos»,
              cardinalidad que ningún árbol puede satisfacer. Derivado de campos
-             ESTRUCTURADOS, el catálogo da CINCO procesos y NUEVE pares, con (DEP, SEG) por
+             ESTRUCTURADOS, el catálogo deriva sus procesos y sus pares, con (DEP, SEG) por
              la obligatoria; y proceso:AUD NO tiene cardinalidad estática: su propietario es
              DERIVADO por item, luego cada item exige DOM:revision, SEG:revision o NINGUNA —
              cero o un par, NUNCA los dos—. D103 separa los dos niveles y no los suma.
@@ -2646,8 +2668,8 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
              subhallazgo contado como condición:
                CORREGIDAS EN F4c     8   C-L.1 C-L.3 C-L.4 C-L.6 C-L.7 C-L.8 C-L.9 C-L.11
                REGISTRADAS PARA F5   2   C-L.2 (PN-15, decide el Owner) · C-L.12
-               CONTRATADA PARA F6    1   C-L.10 — CERO líneas de código escritas
-               MIXTA POR DESGLOSE    1   C-L.13 — sus SEIS componentes son atributos
+               CONTRATADA PARA F6        C-L.10 — SIN líneas de código escritas
+               MIXTA POR DESGLOSE        C-L.13 — sus componentes son atributos
                                          SECUNDARIOS y no cuentan como condiciones:
                                          K-05 K-09 K-10 K-08 L-03 corregidos ahora ·
                                          J-11 contratado para F6, NO implementado
@@ -2665,40 +2687,42 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
                       **D103 la corrigió después**: D98 retiraba el barrido léxico del
                       criterio y lo reintroducía en su algoritmo —marcaba «condicionante»
                       buscando «ANTES de construir» en texto libre—, y publicaba «seis
-                      procesos, diez pares», cardinalidad que ningún árbol puede satisfacer.
+                      procesos, diez pares», cardinalidad que ningún árbol puede satisfacer. [CONSTANTE CONTRACTUAL] —cita
+                      literal del texto que se corrige, y por eso conserva sus cifras—
                       D103 deriva SÓLO de campos estructurados —`capacidad`,
                       `capacidad_productora`, `propietario_global`— y separa DOS NIVELES:
-                      CATÁLOGO ESTÁTICO = 5 procesos y 9 pares, con (DEP, SEG) por la
+                      CATÁLOGO ESTÁTICO: su cardinalidad la deriva el propio catálogo
+                      —no se copia aquí—, con (DEP, SEG) por la
                       obligatoria; y POR ITEM para AUD, que exige DOM:revision, SEG:revision
                       o NINGUNA según su propietario derivado — «cero o un par, nunca dos».
                       **[HISTÓRICO] Esa última regla de D103 está DEROGADA por D104**, que
                       M-01 obligó a rehacer: un item de AUD puede exigir NINGUNO, DOM, SEG
                       **o LOS DOS**, según su propietario efectivo y sus condicionales
-                      activas. Son CUATRO combinaciones, no dos.
+                      activas. Las combinaciones se derivan; este bloque no las cuenta.
                       Contrato F6 completo, y G-15 pasa a EJECUTAR la derivación
                C-L.4  CERRADA · procedencia de O16 registrada con fecha, formulación
                       presentada y respuesta literal del Owner. No se creó O17
                C-L.5  ABIERTA, Y NO LA CIERRA ESTA TANDA · es condición del gate siguiente,
                       escrita al final de §19 con sus requisitos exactos: lectura ÍNTEGRA de
-                      ADS-PENDIENTES con sus BLOQUES B y C y de los documentos 16, 17 y 18;
+                      ADS-PENDIENTES con sus BLOQUES B y C y de los documentos que ese bloque nombra;
                       manifiesto con ruta, líneas, SHA-256 y primera y última sección
                       sustantiva; declaración de cobertura REALMENTE LEÍDA; cualquier fuente
                       asignada y no leída impide la suficiencia; y el adjudicador no corrige
                       los hallazgos que encuentre
-               C-L.6  CERRADA · D99: las CINCO salidas verdes de M7, alineadas en las tres
+               C-L.6  CERRADA · D99: las salidas verdes de M7, alineadas en las
                       sedes de §8.3
                C-L.7  CERRADA · este fichero. Estado de las fases, pregunta_pendiente,
                       RESULTADO de la matriz, presiones y siguiente acción, reescritos
                C-L.8  CERRADA · D100: el `hash_previo` de la reparación es el
                       `hash_observado` del `deriva`, PARA LAS TRES CAUSAS. El ancla de la
                       restauración es `revision_base`, y es un dato distinto
-               C-L.9  CERRADA · 42→46 derivado en las seis sedes, reconciliación de externos
-                      corregida a 9 = 7 + F-01 + F-05, y G-26 ampliada a cuatro
+               C-L.9  CERRADA · 42→46 derivado en sus sedes, reconciliación de externos
+                      corregida a 9 = 7 + F-01 + F-05, y G-26 ampliada a más
                       comprobaciones sin ninguna cifra constante
-               C-L.10 CONTRATADA PARA F6 · única en este estado. D102: tres contratos —censo
+               C-L.10 CONTRATADA PARA F6 · única en este estado. D102: sus contratos —censo
                       AFIRMACIONES derivado, T152 sobre toda sede que publique versión, y la
                       guardia de intérprete con exit 2— y ocho casos de regresión.
-                      **CERO líneas implementadas.** T151 y T152 siguen pasando en verde
+                      **SIN líneas implementadas.** T151 y T152 siguen pasando en verde
                       sobre las sedes que el corpus desmiente. Contratar NO es implementar
                C-L.11 CERRADA · D101: §6.7 recibe fila propia X62. X51 conserva su escenario
                C-L.12 REGISTRADA PARA F5 · los dos restos de (b) —«(P7)» donde aplica P9 en
@@ -2706,7 +2730,7 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
                       verificable, con ruta, ubicación, corrección exacta y prueba. Sin PN
                       nueva: el contenido no cambia. **El texto de (b) sigue como estaba**
                C-L.13 MIXTA, SATISFECHA POR DESGLOSE · es la ÚNICA con estado compuesto,
-                      y sus seis componentes son atributos SECUNDARIOS que no cuentan como
+                      y sus componentes son atributos SECUNDARIOS que no cuentan como
                       condiciones: K-05, K-09, K-10, K-08 y L-03 CORREGIDOS ahora; J-11
                       CONTRATO COMPLETO PARA F6 en D102, NO implementado
 
@@ -2714,10 +2738,10 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
 
              ESTADO TRAS EL GATE INDEPENDIENTE DE COBERTURA Y CIERRE (documento 20), que
              adjudica las trece una a una y NO corrige ninguna:
-               CERRADAS                              7   C-L.1 C-L.6 C-L.7 C-L.8 C-L.9
+               CERRADAS                                  C-L.1 C-L.6 C-L.7 C-L.8 C-L.9
                                                          C-L.11 C-L.13
                REGISTRADAS PARA F5                   2   C-L.2 (con M-05 en su cuerpo) · C-L.12
-               CONTRATADA PARA F6                    1   C-L.10 — cero líneas, verificado
+               CONTRATADA PARA F6                        C-L.10 — sin líneas, verificado
                CERRADA EN LA FORMA, NO EN EL FONDO   1   C-L.4  (M-07: las fechas no cuadran)
                NO CERRADA                            1   C-L.3  ← una de las cinco que bloquean
                ABIERTA                               1   C-L.5  (núcleo satisfecho; regla de
@@ -2736,13 +2760,13 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
                CORREGIDAS EN F4c     7   C-L.1 C-L.3 C-L.4 C-L.6 C-L.8 C-L.9 C-L.11
                NO CERRADA            1   C-L.7 — la MUEVE aquí el documento 24, por X-04
                REGISTRADAS PARA F5   2   C-L.2 (PN-15, decide el Owner) · C-L.12
-               CONTRATADA PARA F6    1   C-L.10 — CERO líneas de código escritas
-               MIXTA POR DESGLOSE    1   C-L.13 — sus SEIS componentes son atributos
+               CONTRATADA PARA F6        C-L.10 — SIN líneas de código escritas
+               MIXTA POR DESGLOSE        C-L.13 — sus componentes son atributos
                                          SECUNDARIOS y no cuentan como condiciones:
                                          K-05 K-09 K-10 K-08 L-03 corregidos ·
                                          J-11 contratado para F6, NO implementado
                CERTIFICADA POR       1   C-L.5 — **la CERTIFICA el adjudicador del ÚLTIMO
-               COBERTURA, PARA EL            gate, midiendo las SEIS condiciones de `O21` §4
+               COBERTURA, PARA EL            gate, midiendo las condiciones de `O21` §4
                ÚLTIMO GATE Y SÓLO            una a una y declarándolas SATISFECHAS**, y lo hace
                PARA ÉL
                                          **MIENTRAS devuelve INSUFICIENCIA**. Es la primera
@@ -2771,29 +2795,29 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
                documento 24 la CERTIFICA por cuarta vez consecutiva». Dejó de serlo por la
                resta del CUARTO gate, y el renglón anterior no se borra: queda dicho aquí.]**
 
-             LAS TRECE FILAS DE DETALLE, que son la sede canónica de esta clasificación:
+             LAS FILAS DE DETALLE, que son la sede canónica de esta clasificación:
                C-L.1  CERRADA · D96: revision_base OBLIGATORIO en §3.6 y participante en tx
                C-L.2  REGISTRADA PARA F5 · D97 crea PN-15. La decisión sigue SIN TOMAR: es
                       del Owner. Registrar NO es corregir
                C-L.3  CERRADA · **por D104, y NO por D103**, que M-01 refutó. La regla
                       vigente: un item de proceso:AUD exige NINGUNO, DOM, SEG **o LOS DOS**,
-                      según su propietario efectivo y sus condicionales activas — CUATRO
-                      combinaciones, y las cuatro se derivan. El catálogo estático da CINCO
-                      procesos y NUEVE pares, con (DEP, SEG) por la obligatoria, y el
+                      según su propietario efectivo y sus condicionales activas — sus
+                      combinaciones se derivan todas. El catálogo estático deriva sus
+                      procesos y sus pares, con (DEP, SEG) por la obligatoria, y el
                       reparto por vía se publica y se contrasta (Q-03). D104 aparece ahora en
-                      TODAS las sedes vigentes de esta condición, que es lo que Q-14 pidió
+                      las sedes vigentes de esta condición, que es lo que Q-14 pidió
                C-L.4  CERRADA · D106 (iii): O16 gana su ADDENDUM DE CRONOLOGÍA, con las dos
                       fechas verificadas en git log por el adjudicador R
                C-L.5  CERTIFICADA · **POR COBERTURA, PARA EL ÚLTIMO GATE Y SÓLO PARA ÉL.**
-                      La certifica su adjudicador midiendo las SEIS condiciones de `O21` §4
+                      La certifica su adjudicador midiendo las condiciones de `O21` §4
                       una a una y declarándolas SATISFECHAS: corpus obligatorio DEFINIDO
                       —derivado por él con el derivador de cada commit— · manifiesto previo
                       de ASIGNACIÓN publicado ANTES de que existiera ningún revisor · los
-                      DOS manifiestos de LECTURA publicados con ruta, líneas, SHA-256
+                      manifiestos de LECTURA publicados con ruta, líneas, SHA-256
                       recalculado, alcance, primera y última sección sustantiva y dos anclas
                       · `OBLIGATORIO − ASIGNADO = ∅` en las dos direcciones sobre la
-                      candidata · `ASIGNADO − LEÍDO = ∅` en los tres lotes, con los rangos
-                      cubriendo sus dos ficheros grandes SIN HUECO · y revisores
+                      candidata · `ASIGNADO − LEÍDO = ∅` en sus lotes, con los rangos
+                      cubriendo sus ficheros grandes SIN HUECO · y revisores
                       independientes que declaran CONTRA SU PROPIO INTERÉS qué leyeron, qué
                       no, qué leyeron fuera de lote sin contarlo y qué no pueden comprobar.
                       **NO ES UN ACTO DISCRECIONAL, y él lo dice**: cumplidas las seis,
@@ -2807,7 +2831,7 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
                       invariante ante la otra.**
                       **LA TUPLA A LA QUE QUEDA LIGADA, y NO se transfiere** —`O21` §5 y
                       §6—: tree SHA candidato · commit candidato · SHA del manifiesto de
-                      asignación · SHA de los dos manifiestos de lectura · identificador del
+                      asignación · SHA de los manifiestos de lectura · identificador del
                       gate · identidad del adjudicador. **Los seis se publican en el
                       documento de ese gate, que es su única sede, y aquí NO se copian.**
                       **[HISTÓRICO · el motivo que este renglón dio entre el documento 31 y
@@ -2953,8 +2977,8 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
                       **LO QUE EL QUINTO GATE MIDIÓ, Y POR QUÉ ESTE RENGLÓN NO SE MUEVE.**
                       El QUINTO GATE —documento 26, §4— midió las DOS restas y las dos
                       dieron **∅**: `OBLIGATORIO − ASIGNADO = 0` contra el objeto que el
-                      manifiesto reparte, y `ASIGNADO − LEÍDO = 0`, con los cinco relevos
-                      entregando manifiesto de TODAS sus fuentes. `DD` resolvió **contra la
+                      manifiesto reparte, y `ASIGNADO − LEÍDO` VACÍO, con sus relevos
+                      entregando manifiesto de sus fuentes. `DD` resolvió **contra la
                       mayoría** —tres relevos sostuvieron que la resta era 1— y lo verificó
                       por tercera vez. Escribió: «`C-L.5` **no se reabre por cobertura**».
                       **Y NO escribió «CERTIFICADA», y este registro no lo escribe por él.**
@@ -3124,7 +3148,7 @@ falta_para_cerrar_la_capa:
   · LA COBERTURA SIGUE SIENDO UNA CONDICIÓN ABIERTA (C-L.5), y **esta tanda no la cierra ni
     puede cerrarla**: aplicar correcciones no es leer lo que no se leyó, y quien aplica no
     certifica su propia cobertura. Tres gates consecutivos han declarado lectura parcial del
-    mismo material —ADS-PENDIENTES bloques B y C, y los documentos 16, 17 y 18—. Mientras
+    mismo material —ADS-PENDIENTES bloques B y C, y los documentos que ese bloque nombra—. Mientras
     nadie los abra, ningún gate puede certificar que no contengan algo que refute o agrave lo
     escrito, y **L lo demostró con dos ejemplos en direcciones opuestas**: §12 reforzó K-06, y
     la cabecera L3–L6 le obligó a tumbar la base externa de K-03 y a retirar su propio
@@ -3135,12 +3159,13 @@ falta_para_cerrar_la_capa:
   · **[HISTÓRICO · estado posterior al GATE FINAL INDEPENDIENTE —documento 16— y anterior a
     todo lo que vino después. NO describe el estado vigente. Rótulo añadido por `HH2-05`.]**
     F4c ESTÁ ABIERTA, y con el GATE FINAL INDEPENDIENTE ejecutado y devuelto:
-    **INSUFICIENTE PARA F5**, por adjudicación de un tercer agente sobre dos dictámenes
+    **INSUFICIENTE PARA F5**, por adjudicación de un tercer agente sobre los dictámenes
     independientes. **Su recuento por severidad y su cobertura NO se copian aquí** —regla 2,
     y es lo que `HH2-05` corrige—: viven en ese documento, que es inmutable y es su única
     sede. **F5 NO queda autorizada.** Antes: un veredicto de insuficiencia de la tercera
-    revisión, dos devoluciones independientes y CINCO comprobaciones técnicas.
-    Antes: dos devoluciones independientes, la segunda con veredicto explícito de
+    revisión, devoluciones independientes y comprobaciones técnicas —su recuento lo
+    deriva el censo de gates, y este campo no lo copia—.
+    Antes: devoluciones independientes, con veredicto explícito de
     INSUFICIENCIA, y CUATRO comprobaciones técnicas más. Las correcciones de todas las aplicó
     QUIEN LAS RECIBIÓ, y eso no prueba que estén bien resueltas. LA EVIDENCIA DE QUE EL
     ENCADENAMIENTO IMPORTA: dos de los hallazgos BLOQUEANTES de la segunda son defectos que
@@ -3148,7 +3173,8 @@ falta_para_cerrar_la_capa:
     en texto que la corrección técnica ANTERIOR escribió, y así sucesivamente: **cada pasada
     ha encontrado defectos de la anterior, sin excepción**. **CUÁNTAS PASADAS SON NO SE
     ESCRIBE AQUÍ —`C-16` del OCTAVO GATE—**: este renglón llevaba el recuento copiado
-    —«SEIS pasadas encadenadas, siete con la sexta comprobación técnica»— **fuera de todo
+    —«SEIS pasadas encadenadas, siete con la sexta comprobación técnica»— [CONSTANTE CONTRACTUAL] cita
+    literal de un dictamen, con sus cifras— **fuera de todo
     campo `_anterior` y contra la regla 1 de `regla_de_reanclaje`**, que prohíbe copiar
     dentro de este bloque lo que otra sede deriva. Y la cláusula que eximía a las copias
     históricas la retiró la tanda anterior junto con la enumeración de `based_on`. El censo

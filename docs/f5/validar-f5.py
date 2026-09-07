@@ -812,5 +812,13 @@ def main():
     return 1 if r.fallos else 0
 
 
+# `O31` §3 · ESTE PUNTO EJECUTABLE NO ES UNA FILA DEL MANIFIESTO DE VALIDADORES, Y AQUI
+# SE DICE POR QUE. La declaracion vive EN EL FICHERO y no en una lista del juez: viaja con
+# el si se mueve, y retirarla lo devuelve al universo y lo pone rojo.
+FUERA_DEL_MANIFIESTO_DE_VALIDADORES = (
+    "es el validador de `F5`, fase CERRADA. Su universo es otro y su veredicto no "
+    "gobierna `F6`")
+
+
 if __name__ == "__main__":
     sys.exit(main())

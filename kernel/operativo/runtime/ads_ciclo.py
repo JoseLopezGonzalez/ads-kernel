@@ -849,5 +849,12 @@ def _fallo(argumentos, error):
     return FALLO
 
 
+# `O31` §3 · ESTE PUNTO EJECUTABLE NO ES UNA FILA DEL MANIFIESTO DE VALIDADORES, Y AQUI
+# SE DICE POR QUE. La declaracion vive EN EL FICHERO y no en una lista del juez: viaja con
+# el si se mueve, y retirarla lo devuelve al universo y lo pone rojo.
+FUERA_DEL_MANIFIESTO_DE_VALIDADORES = (
+    "linea de ordenes del PRODUCTO, igual que `ads_admision.py`")
+
+
 if __name__ == "__main__":
     sys.exit(main())

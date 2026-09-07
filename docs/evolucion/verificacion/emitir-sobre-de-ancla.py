@@ -920,5 +920,14 @@ def main():
     return 0
 
 
+# `O31` §3 · ESTE PUNTO EJECUTABLE NO ES UNA FILA DEL MANIFIESTO DE VALIDADORES, Y AQUI
+# SE DICE POR QUE. La declaracion vive EN EL FICHERO y no en una lista del juez: viaja con
+# el si se mueve, y retirarla lo devuelve al universo y lo pone rojo.
+FUERA_DEL_MANIFIESTO_DE_VALIDADORES = (
+    "emite el SOBRE DE ANCLA FUERA del repositorio juzgado. Meterlo en el "
+    "manifiesto lo convertiria en parte del objeto que el sobre ancla, que es "
+    "justo lo que `O26` §1 separa")
+
+
 if __name__ == "__main__":
     sys.exit(main())

@@ -470,5 +470,15 @@ def main():
     return 1 if (fallos or no_detectados) else 0
 
 
+# `O31` §3 · ESTE PUNTO EJECUTABLE NO ES UNA FILA DEL MANIFIESTO DE VALIDADORES, Y AQUI
+# SE DICE POR QUE. La declaracion vive EN EL FICHERO y no en una lista del juez: viaja con
+# el si se mueve, y retirarla lo devuelve al universo y lo pone rojo.
+FUERA_DEL_MANIFIESTO_DE_VALIDADORES = (
+    "valida el REGISTRO DE FUENTES CANONICAS, no el corpus de pruebas. Su "
+    "ausencia del manifiesto de validadores esta registrada como `CD-3` en la "
+    "deuda vigente, con propietario y fase, y meterlo alli es materia de esa "
+    "deuda y no de `O31`")
+
+
 if __name__ == "__main__":
     sys.exit(main())

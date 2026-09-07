@@ -4591,4 +4591,15 @@ check("G-33",
       f"NO tocan el árbol: NINGÚN árbol los pone en rojo, y por eso se cuentan aparte "
       f"(`W2`): " + " · ".join(n for n, _ in _FIXTURES_EVAL))
 
+# `O31` §3 · ESTE PUNTO EJECUTABLE NO ES UNA FILA DEL MANIFIESTO DE VALIDADORES, Y AQUI
+# SE DICE POR QUE. Lo encontro un critico adversarial: existia y ninguna fila lo
+# declaraba, que es `V-G1` materializado en el arbol y no en teoria.
+FUERA_DEL_MANIFIESTO_DE_VALIDADORES = (
+    "bateria mecanica de la correccion del gate de cierre de `F4c`, fase CERRADA. Su "
+    "universo es el de aquel gate y su veredicto no gobierna `F6`. NUNCA fue fila de "
+    "este manifiesto —`HEAD` no la declara—, de modo que esta marca EXPLICA lo que "
+    "nunca estuvo en el aparato y no RETIRA nada de el, que es la unica cosa que "
+    "`O31` §3 le permite hacer")
+
+
 sys.exit(_informe())

@@ -36,5 +36,5 @@ Cualquier documento que afirme una distinta hace fallar la prueba T151.
 | roles de dis | **11** |
 | rubricas | **2** |
 | secciones de memoria | **12** |
-| validadores | **23** |
+| validadores | **24** |
 | vetos | **4** |

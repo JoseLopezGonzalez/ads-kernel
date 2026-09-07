@@ -983,5 +983,13 @@ def main():
     return 1 if errores else 0
 
 
+# `O31` §3 · ESTE PUNTO EJECUTABLE NO ES UNA FILA DEL MANIFIESTO DE VALIDADORES, Y AQUI
+# SE DICE POR QUE. La declaracion vive EN EL FICHERO y no en una lista del juez: viaja con
+# el si se mueve, y retirarla lo devuelve al universo y lo pone rojo.
+FUERA_DEL_MANIFIESTO_DE_VALIDADORES = (
+    "materializa repositorios del workspace: es utillaje de instalacion, no del "
+    "corpus. Su conformidad la mide `tooling/tests`, que si esta en el manifiesto")
+
+
 if __name__ == "__main__":
     sys.exit(main())

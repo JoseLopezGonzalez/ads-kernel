@@ -797,5 +797,13 @@ def main(argv=None):
         return FALLO
 
 
+# `O31` §3 · ESTE PUNTO EJECUTABLE NO ES UNA FILA DEL MANIFIESTO DE VALIDADORES, Y AQUI
+# SE DICE POR QUE. La declaracion vive EN EL FICHERO y no en una lista del juez: viaja con
+# el si se mueve, y retirarla lo devuelve al universo y lo pone rojo.
+FUERA_DEL_MANIFIESTO_DE_VALIDADORES = (
+    "paquete SEPARADO de la raiz externa —`V6-16`—: es el verificador externo, no "
+    "un validador de este manifiesto")
+
+
 if __name__ == "__main__":
     sys.exit(main())

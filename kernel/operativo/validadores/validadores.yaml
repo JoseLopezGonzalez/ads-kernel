@@ -373,6 +373,14 @@ componentes:
     tipo: generador
     genera: ../pruebas/RECUENTOS-generado.md
 
+  - id: universo-de-instrumentos
+    script: universo_de_instrumentos.py
+    tipo: biblioteca
+    # `O31` §3 y §4 · deriva el universo de puntos ejecutables del ÁRBOL y la
+    # identidad canónica de una invocación. La usan el guardián de evidencia y el
+    # instrumento que publica el universo: `O31` §5 exige que los dos contrasten el
+    # MISMO universo, y por eso vive en una sola sede.
+
   - id: entorno
     script: entorno.py
     tipo: biblioteca
@@ -607,6 +615,59 @@ componentes:
   # mientras un `Knn` no tenga fuente, implementacion, canal, caso sano, prueba
   # adversarial, resultado, evidencia ligada a commit y tree, y el ciclo ejecutado, este
   # componente sale ROJO, que es lo que `O30` §3 dice del arbol.
+  - id: cardinales-manuales-autopruebas
+    script: comprobar-cardinales-manuales.py
+    dir: docs/evolucion/verificacion
+    args: ['--autopruebas']
+    tipo: validador
+    evidencia: cardinales-manuales-autopruebas-salida.txt
+    firma_de_exito: '[1-9]\d* controles · 0 sin detectar'
+    debe_contener: ['POSITIVAS · tienen que salir ROJAS',
+                    'NEGATIVAS · tienen que salir LIMPIAS',
+                    'enumeración sin cardinal', 'estado sin cifra',
+                    'comando de derivación']
+
+  - id: cardinales-manuales
+    script: comprobar-cardinales-manuales.py
+    dir: docs/evolucion/verificacion
+    tipo: validador
+    evidencia: cardinales-manuales-salida.txt
+    # LOS DOS CARDINALES DE LA FIRMA SON LA ANTITAUTOLOGÍA, Y SON DELIBERADOS.
+    # Sin sedes vivas o sin campos vigentes el control sale verde por construcción,
+    # que es el falso verde que el propio `CHECKPOINT` registró de su barrido
+    # anterior —«devolvía el CONJUNTO VACÍO»—. Se exige que mire al menos una sede y
+    # al menos un campo vigente; los números concretos NO se fijan, porque el corpus
+    # crece.
+    firma_de_exito: '[1-9]\d* sedes vivas · [1-9]\d* campos · [1-9]\d* vigentes · [1-9]\d* núcleos derivados por otra sede · 0 hallazgos de la clase'
+    debe_contener: ['LA CLASE QUE SE JUZGA', 'LA POBLACIÓN, DERIVADA',
+                    'LAS EXCEPCIONES, TIPADAS Y JUSTIFICADAS',
+                    'LO QUE ESTE VEREDICTO NO DEMUESTRA']
+
+  - id: universo-instrumentos-autopruebas
+    script: comprobar-universo-de-instrumentos.py
+    dir: docs/evolucion/verificacion
+    args: ['--autopruebas']
+    tipo: validador
+    evidencia: universo-instrumentos-autopruebas-salida.txt
+    firma_de_exito: '[1-9]\d* controles · 0 sin detectar'
+    debe_contener: ['U-02', 'U-03', 'U-05', 'U-08',
+                    'un instrumento MOVIDO de ruta']
+
+  - id: universo-instrumentos
+    script: comprobar-universo-de-instrumentos.py
+    dir: docs/evolucion/verificacion
+    tipo: validador
+    evidencia: universo-instrumentos-salida.txt
+    # EL CARDINAL DE DIRECTORIOS VA EN LA FIRMA, Y ES LA ANTITAUTOLOGÍA.
+    # `V-G1` era exactamente un universo de UN directorio. Que la firma exija DOS
+    # o más impide que el instrumento vuelva a esa forma sin que nada lo diga; el
+    # número de puntos NO se fija, porque el árbol crece.
+    firma_de_exito: '[1-9]\d* puntos ejecutables · (?:[2-9]|\d{2,}) directorios · 0 sin fila ni exclusión · [1-9]\d* exclusiones declaradas · 0 incumplimientos'
+    debe_contener: ['CÓMO SE DERIVA, Y POR QUÉ NO ES UNA LISTA',
+                    'EL UNIVERSO', 'LO QUE NO ES UN VALIDADOR, Y LO DICE ÉL MISMO',
+                    'EL GUARDIÁN DE CADA EVIDENCIA',
+                    'LO QUE ESTE VEREDICTO NO DEMUESTRA']
+
   - id: invariantes-criticos-autopruebas
     script: comprobar-invariantes-criticos.py
     dir: docs/evolucion/verificacion

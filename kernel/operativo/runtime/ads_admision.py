@@ -610,5 +610,14 @@ def main(argv=None):
         return _publicar_fallo(argumentos, error, clase)
 
 
+# `O31` §3 · ESTE PUNTO EJECUTABLE NO ES UNA FILA DEL MANIFIESTO DE VALIDADORES, Y AQUI
+# SE DICE POR QUE. La declaracion vive EN EL FICHERO y no en una lista del juez: viaja con
+# el si se mueve, y retirarla lo devuelve al universo y lo pone rojo.
+FUERA_DEL_MANIFIESTO_DE_VALIDADORES = (
+    "linea de ordenes del PRODUCTO: la ejerce el usuario del ADS instalado. Su "
+    "conformidad la miden las baterias de `runtime/pruebas`, que si estan en el "
+    "manifiesto")
+
+
 if __name__ == "__main__":
     sys.exit(main())

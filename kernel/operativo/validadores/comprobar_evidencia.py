@@ -752,10 +752,21 @@ def _el_declarante_mide_de_verdad(base, comp, obligacion):
     import subprocess                                            # noqa: PLC0415
     ambiente = {k: v for k, v in os.environ.items() if not k.startswith("PYTHON")}
     ambiente["PYTHONDONTWRITEBYTECODE"] = "1"
+    # `O31` §4 · SE LE PREGUNTA CON LOS ARGUMENTOS QUE LA FILA DECLARA, NO CON LOS QUE LE
+    #     VENDRÍAN BIEN AL JUEZ. Ésta era la grieta de `V-G2`: la sonda usaba argumentos
+    #     FIJOS y nunca miraba los `args:` de la fila, de modo que una fila cuya invocación
+    #     REAL era `--help` pasaba la sonda del instrumento legítimo. Ahora los argumentos
+    #     declarados van DELANTE: si la fila declara `--help`, `argparse` imprime la ayuda
+    #     y sale, y la sonda no encuentra ninguna medición.
+    import universo_de_instrumentos as _u                             # noqa: PLC0415
+    _bien, _porque = _u.argumentos_bien_formados(comp)
+    if not _bien:
+        return False, _porque
+    orden = ([sys.executable, script] + list(comp.get("args") or ())
+             + ["--sin-ejecutar", "--solo", obligacion])
     try:
-        proc = subprocess.run([sys.executable, script, "--sin-ejecutar", "--solo", obligacion],
-                              capture_output=True, text=True, cwd=base, env=ambiente,
-                              timeout=120)
+        proc = subprocess.run(orden, capture_output=True, text=True, cwd=base,
+                              env=ambiente, timeout=120)
     except (OSError, subprocess.SubprocessError) as e:
         return False, f"no se le pudo preguntar: {type(e).__name__}: {e}"
     # QUÉ CÓDIGO SE ACEPTA, Y POR QUÉ NO SÓLO EL 0. Medido: con `--sin-ejecutar`, `R5`
@@ -784,6 +795,41 @@ def _el_declarante_mide_de_verdad(base, comp, obligacion):
     #     obligaciones del corpus no puede medir una que no está en él, y tiene que fallar
     #     cerrado. Un `echo` disfrazado responde igual de bien a la obligación real que a la
     #     inventada, y ahí se separa.
+    # `O31` §4 · CONTENIDO DERIVADO Y RECOMPUTABLE POR FUERA · el ataque `D7` del crítico.
+    #
+    #     EL CONTROL DEL CONTROL NO BASTA, Y ESTÁ MEDIDO. Su razonamiento era «un repetidor
+    #     responde igual a una obligación real que a una inventada». Es falso: basta con
+    #     que el repetidor LEA el universo de obligaciones del corpus —está en el mismo
+    #     repositorio, en los `cubre:` de los `ads:escenario`— y se niegue con `rc=2` ante
+    #     lo que no esté en él. Un crítico adversarial lo escribió en veinte líneas y
+    #     obtuvo la dispensa.
+    #
+    #     LO QUE SE LE EXIGE AHORA es que su respuesta contenga algo que el juez pueda
+    #     RECALCULAR por su cuenta y contrastar: el ANCLA del árbol que dice haber leído
+    #     —commit y tree, que se comparan con los de `git`—. Repetir el argumento no
+    #     produce eso; leer el árbol, sí.
+    #
+    #     Y AQUÍ ESTÁ EL LÍMITE, DICHO Y NO ESCONDIDO: esto SUBE EL PRECIO, no lo hace
+    #     infalsificable. Todo lo que este instrumento deriva es público y está en el mismo
+    #     repositorio, de modo que una reimplementación suficientemente completa produciría
+    #     las mismas líneas. Lo que la sonda separa es «este programa lee el árbol» de
+    #     «este programa repite su argumento»; no separa un instrumento de otro
+    #     instrumento. Ninguna pregunta de sí/no sobre nombres puede hacerlo, y por eso no
+    #     se finge que lo haga.
+    _c_commit = subprocess.run(["git", "-C", base, "rev-parse", "HEAD"],
+                               capture_output=True, text=True)
+    _c_tree = subprocess.run(["git", "-C", base, "rev-parse", "HEAD^{tree}"],
+                             capture_output=True, text=True)
+    _commit, _tree = _c_commit.stdout.strip(), _c_tree.stdout.strip()
+    if _commit and _tree:
+        if _commit not in proc.stdout or _tree not in proc.stdout:
+            return False, ("no publica el ANCLA del árbol que dice haber leído —commit "
+                           "`%s` y tree `%s`, recalculados aquí con `git`—: quien no lee "
+                           "el árbol no puede medir nada de él" % (_commit[:12], _tree[:12]))
+    else:
+        return False, ("no se pudo recalcular el ancla con `git` para contrastarla con la "
+                       "que la sonda publica, y sin ese contraste la sonda no acredita")
+
     inventada = "OBLIGACION-INEXISTENTE-DE-CONTROL-%s" % obligacion.replace(" ", "-")
     try:
         control = subprocess.run([sys.executable, script, "--sin-ejecutar", "--solo", inventada],
@@ -913,16 +959,72 @@ def _dispensa_reflexiva(base, comp, componentes, canales, r):
     #     se concede a lo sumo a UNA fila por obligación, y si hay dos que la reclaman se
     #     FALLA CERRADO nombrando a las dos, en vez de elegir una por orden de aparición
     #     —que es como se cuela la segunda—.
-    invocacion = (comp.get("script"), comp.get("dir"), tuple(comp.get("args") or ()))
+    import universo_de_instrumentos as _u                             # noqa: PLC0415
+
+    # 6 bis · `O31` §4 · LOS `args` ESTÁN BIEN FORMADOS. Un escalar de YAML se recorre
+    #     carácter a carácter y produce una invocación que no coincide con ninguna otra:
+    #     la detección de gemelas se derrotaría con un par de corchetes de menos.
+    _bien, _porque = _u.argumentos_bien_formados(comp)
+    if not _bien:
+        r.fallo(f"manifiesto: '{cid}' pide la dispensa reflexiva y {_porque}")
+        return False, ""
+
+    # 7 · LA FILA, Y LO QUE DE VERDAD SE EJECUTA · `O31` §4.
+    #
+    #     LA COMPARACIÓN NO ES POR NOMBRE. Un crítico adversarial midió, antes de que esto
+    #     se publicara, que copiar el instrumento legítimo BYTE A BYTE con otro nombre,
+    #     colgarlo de un ENLACE de directorio y escribir argumentos `argparse`-equivalentes
+    #     —`--solo=X` por `--solo X`, y una bandera repetida— obtenía la dispensa. Ahora se
+    #     compara `(digest del contenido, cwd REAL, argumentos normalizados)`: `realpath`
+    #     deshace el enlace, el digest deshace la copia y la normalización deshace la
+    #     equivalencia de `argparse`.
+    #
+    #     Y NO SE COMPARA LA IDENTIDAD DE `O31` §4 ENTERA, que incluye el `id` de la fila:
+    #     los `id` son únicos por construcción, de modo que hacerlo aquí convertiría esta
+    #     condición en un adorno que no puede dispararse. La identidad completa se usa para
+    #     ATRIBUIR la dispensa —abajo— y se publica; ésta responde a otra pregunta.
+    ejecutada = _u.invocacion_ejecutada(base, comp)
     gemelas = sorted(
         otro.get("id") for otro in componentes
-        if otro is not comp
-        and (otro.get("script"), otro.get("dir"), tuple(otro.get("args") or ())) == invocacion)
+        if otro is not comp and _u.invocacion_ejecutada(base, otro) == ejecutada)
     if gemelas:
-        r.fallo(f"manifiesto: '{cid}' pide la dispensa reflexiva y su invocación es "
-                f"IDÉNTICA a la de {', '.join(gemelas)} —mismo script, mismo directorio, "
-                f"mismos argumentos—. Una fila que no se distingue de otra en nada de lo "
-                f"que se ejecuta no tiene un ciclo propio que dispensar: es una fila de más")
+        r.fallo(f"manifiesto: '{cid}' pide la dispensa reflexiva y LO QUE EJECUTA es "
+                f"idéntico a lo de {', '.join(gemelas)}: mismo contenido de script "
+                f"—digest a digest, resuelto el enlace—, mismo directorio real y mismos "
+                f"argumentos normalizados. Una fila que no se distingue de otra en nada de "
+                f"lo que se ejecuta no tiene un ciclo propio que dispensar")
+        return False, ""
+
+    # 8 · LA DISPENSA ES PARA ROMPER UN CICLO ESTABLECIDO, NO PARA ESTRENAR UNA FILA.
+    #
+    #     LOS DOS ATAQUES QUE SEGUÍAN COLÁNDOSE, MEDIDOS. Copiar el instrumento legítimo
+    #     BYTE A BYTE a otro directorio y declararlo desde allí —`O31` §4.3—, y hacerlo
+    #     además detrás de un enlace y con argumentos `argparse`-equivalentes —`O31` §4.6—.
+    #     Las dos filas MIDEN de verdad, porque son el instrumento de verdad copiado, de
+    #     modo que ninguna sonda de comportamiento puede rechazarlas: lo que las delata no
+    #     es lo que hacen, es que NADIE LAS HABÍA VISTO ANTES.
+    #
+    #     Se exige, por eso, que la ruta que la fila declara esté en el manifiesto
+    #     CONFIRMADO EN `HEAD`. La dispensa reconoce un ciclo que YA EXISTE en el aparato;
+    #     una fila que se estrena no tiene ciclo que romper todavía, y su evidencia se
+    #     publica como la de cualquiera.
+    #
+    #     LO QUE ESTO CUESTA, Y SE DICE: un instrumento NUEVO que de verdad necesitara la
+    #     dispensa en su primer commit la vería denegada, y tendría que publicar su
+    #     evidencia en una pasada previa. Es el precio, es pequeño, y es preferible a que
+    #     cualquier copia del instrumento legítimo herede su excepción.
+    _declaradas = _u.rutas_declaradas_en_head(base)
+    _mi_ruta = _u.normalizar_ruta(base, comp.get("dir"), comp.get("script"))
+    if _declaradas is None:
+        r.fallo(f"manifiesto: '{cid}' pide la dispensa reflexiva y no hay historia `git` "
+                f"con la que contrastar que su fila ya estuviera en el aparato. Sin ese "
+                f"contraste no se concede")
+        return False, ""
+    if _mi_ruta not in _declaradas:
+        r.fallo(f"manifiesto: '{cid}' pide la dispensa reflexiva y `{_mi_ruta}` NO figura "
+                f"en el manifiesto confirmado en `HEAD`. La dispensa rompe un ciclo que ya "
+                f"existe en el aparato; una fila que se estrena no tiene ciclo que romper, "
+                f"y su evidencia se publica como la de cualquiera")
         return False, ""
 
     reclamantes = sorted(
@@ -938,7 +1040,10 @@ def _dispensa_reflexiva(base, comp, componentes, canales, r):
                 f"una por orden de aparición: se falla cerrado")
         return False, ""
 
-    return True, (f"'{cid}': evidencia AUSENTE y NO IMPUTADA a T158. Mide '{obligacion}', "
+    _identidad = _u.identidad_de_invocacion(base, comp, obligacion)
+    _huella = _u.huella_de_identidad(_identidad)
+    return True, (f"'{cid}' [identidad {_huella[:16]}]: evidencia AUSENTE y NO IMPUTADA a "
+                  f"T158. Mide '{obligacion}', "
                   f"cuya condición de cierre son {', '.join(suyos)} —que declaran ESTE "
                   f"validador—, luego su veredicto hereda el código de salida de '{yo}' y "
                   f"exigírsela aquí es contarse a sí mismo. Su rojo, si lo hay, lo publica "
@@ -1040,28 +1145,55 @@ def t158_evidencia(raiz=None):
                     r.fallo(f"{rel}: contiene {que}, y su manifiesto no declara que su "
                             f"salida incluya el resultado interno de un fixture negativo")
 
-    # 8 · el manifiesto está completo: todo `.py` de validadores/ está declarado.
-    #     Un validador nuevo sin registrar quedaría fuera de la evidencia en silencio,
-    #     que es la forma callada del mismo defecto.
-    dir_val = os.path.join(base, "kernel/operativo/validadores")
-    # `dir` permite declarar un ejecutable que vive fuera de validadores/ —las pruebas de
-    # workspace prueban tooling, no el corpus—. Sólo los que SÍ viven aquí cuentan para la
-    # comprobación de «nada sobra en el directorio».
-    declarados = {c.get("script") for c in componentes
-                  if not c.get("dir") or c.get("dir") == "kernel/operativo/validadores"}
-    for f in sorted(os.listdir(dir_val)):
-        if f.endswith(".py") and f not in declarados:
-            r.fallo(f"validadores/{f}: existe y el manifiesto no lo declara. Quedaría "
-                    f"fuera de la evidencia sin que nada lo dijera")
+    # 8 · EL MANIFIESTO ESTÁ COMPLETO, Y LA COMPLETITUD SE DERIVA DEL ÁRBOL.
+    #
+    #     LO QUE HABÍA AQUÍ, Y POR QUÉ NO BASTABA. Esta comprobación recorría
+    #     `os.listdir("kernel/operativo/validadores")` y sólo contaba las filas que
+    #     vivieran ahí. El manifiesto reparte sus filas en CUATRO directorios, de modo que
+    #     todo lo que vivía fuera del glob no existía para el control. El verificador
+    #     independiente de `O30` lo registró como `V-G1`, GRAVE, y lo midió: retirar la
+    #     fila `invariantes-criticos` —el instrumento que mide `K01`–`K24`— y borrar su
+    #     evidencia dejaba esta batería en `2 superadas · 0 fallidas`, `rc=0`. Regenerando
+    #     además huella y sello, la batería ENTERA del corpus daba verde: el «duodécimo
+    #     árbol» con el que `M-04` quedó NO SUPERADA.
+    #
+    #     LO QUE HAY AHORA. `O31` §3 y §5: el universo se deriva del ÁRBOL —todo `.py`
+    #     cuyo árbol sintáctico tenga la guarda `if __name__ == "__main__"`—, el manifiesto
+    #     CONTRASTA en vez de definir, y el runner y este guardián contrastan el MISMO
+    #     universo porque los dos lo piden a la misma sede,
+    #     `universo_de_instrumentos.py`. No hay ningún directorio enumerado: mover un
+    #     instrumento, renombrarlo o crear un directorio nuevo no lo saca del universo.
+    #
+    #     LO QUE ESTA COMPROBACIÓN NO HACE, y lo hace `universo-instrumentos`: publicar el
+    #     universo entero con sus exclusiones declaradas y el guardián de cada evidencia.
+    #     Aquí se cobra la resta; allí se publica el censo. Los dos, sobre lo mismo.
+    import universo_de_instrumentos as _universo                      # noqa: PLC0415
+    _resta = _universo.universo_contra_manifiesto(base, componentes)
+    for _ruta in _resta["sin_fila"]:
+        r.fallo(f"{_ruta}: es un punto ejecutable del árbol y el manifiesto no lo declara, "
+                f"ni el fichero declara `{_universo.MARCA_DE_EXCLUSION}` con su motivo. "
+                f"Quedaría fuera de la evidencia sin que nada lo dijera")
+    for _ruta, _causa in _resta["exclusiones_ilegitimas"]:
+        r.fallo(f"{_ruta}: reclama `{_universo.MARCA_DE_EXCLUSION}` y no puede: {_causa}")
+    for _enlace in _universo.enlaces_a_directorio(base):
+        r.fallo(f"{_enlace}: es un ENLACE A DIRECTORIO dentro del corpus, y el recorrido "
+                f"no lo sigue: lo que cuelgue de él quedaría fuera del universo")
+    for _cid, _ruta in _resta["filas_sin_fichero"]:
+        r.fallo(f"manifiesto: '{_cid}' declara {_ruta}, que no existe")
+    for _cid, _ruta in _resta["validador_sin_main"]:
+        r.fallo(f"manifiesto: '{_cid}' se declara `tipo: validador` y {_ruta} no tiene "
+                f"guarda `if __name__ == \"__main__\"`: nadie puede ejecutarla")
+    _huerfanas, _motivo = _universo.evidencias_huerfanas_de_la_historia(base, componentes)
+    if _motivo:
+        r.fallo(f"{_motivo}, y eso NO cuenta como superado")
+    for _nombre in _huerfanas:
+        r.fallo(f"{_nombre}: está CONFIRMADA en `HEAD` y ninguna fila viva la declara. "
+                f"Alguien retiró del manifiesto el instrumento que la produce sin "
+                f"retirarla de la historia — es el gesto exacto del duodécimo árbol")
     for c in componentes:
         script = c.get("script", "")
         if not script.endswith(".py"):
             r.fallo(f"manifiesto: '{c.get('id')}' declara '{script}', que no termina en .py")
-        else:
-            directorio = c.get("dir") or "kernel/operativo/validadores"
-            if not os.path.isfile(os.path.join(base, directorio, script)):
-                r.fallo(f"manifiesto: '{c.get('id')}' declara {directorio}/{script}, "
-                        f"que no existe")
 
     # 9 · nada sobra en el directorio: una evidencia huérfana es una que nadie regenera
     dir_ev = os.path.join(base, DIR_EVIDENCIA)
