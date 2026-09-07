@@ -357,11 +357,13 @@ El registro completo, con propietario, fase y condición de cierre de cada uno, 
 
 **La sede del estado de las fases es
 [`03-GOBIERNO-Y-AUTORIDAD.md`](03-GOBIERNO-Y-AUTORIDAD.md) §6, y esta guía no la duplica.**
-Lo que sí dice, porque un implementador nuevo lo necesita antes de tocar nada:
+Un implementador nuevo necesita ese estado antes de tocar nada, y por eso esta guía dice
+CÓMO LEERLO, no cuál es: escribirlo aquí crearía una segunda sede mutable que ningún
+validador contrasta —el sello detectaría el cambio, pero no la contradicción—, que es
+justo lo que `O30` §8 prohíbe. Se deriva:
 
-```text
-F6            NO CERTIFICADA · ABIERTA · INICIADA · EN CURSO
-PesquerApp    BLOQUEADA · NO INICIADA
+```bash
+$ sed -n '/^## 6 /,/^## 7 /p' docs/canonico/03-GOBIERNO-Y-AUTORIDAD.md
 ```
 
 **Quién puede cambiarlo, y con qué prueba.** Sólo **un verificador independiente**, y sólo si
@@ -373,8 +375,9 @@ de crear al verificador.
 
 > **`M-04` y `C-L.7` no se cierran con una etiqueta escrita por quien implementa** —`O30`
 > §6—: el verificador independiente los juzga y emite su veredicto **por separado y con
-> causa**. Hoy siguen `NO SUPERADA` y `NO CERRADA`, y su sede es
-> [`06-DEUDA-Y-LIMITACIONES-VIGENTES.md`](06-DEUDA-Y-LIMITACIONES-VIGENTES.md).
+> causa**. Su estado vigente NO se escribe aquí por lo dicho arriba: su sede es
+> [`06-DEUDA-Y-LIMITACIONES-VIGENTES.md`](06-DEUDA-Y-LIMITACIONES-VIGENTES.md), y se lee
+> con `grep -n 'M-04\|C-L.7' docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md`.
 
 ## 15 · Qué habilita y qué NO habilita el cierre
 

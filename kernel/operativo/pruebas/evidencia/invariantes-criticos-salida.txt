@@ -8,7 +8,7 @@
 
   UNIVERSO derivado de `docs/owner/ADS-OWNER-RESOLUCIONES.md`, sección «2. Catálogo cerrado de invariantes críticos»
   SEDE canónica del catálogo: `docs/canonico/08-INVARIANTES-CRITICOS-DE-F6.md`
-  ANCLA   commit 96c54a157474dca04fec6452fde66850cb70d7c9 · tree 3e21925ed595ab0d42de8f5f353ba5075748f497
+  ANCLA   commit adb204bbdf8b5f1bbb7c6fed0bc2e80659d36838 · tree 97a641cf6699cd6553c309532a33ca7f263ea006
   CICLO   sano (evidencia ligada a HEAD) → SABOTAJE ejecutado → restaurado (el árbol juzgado no se toca: la mutación vive en una copia)
 
 EL UNIVERSO, DERIVADO Y LITERAL
@@ -46,7 +46,7 @@ LO EJERCIDO, SABOTAJE A SABOTAJE
 ------------------------------------------------------------------------------
   N136     DETECTADO      veto:integridad-de-datos: declara que prevalece DOM, cuyo veto es LEVANTABLE. a.5 sólo admite prevalencia de u
   N146     DETECTADO      CON/implementacion: DECIDE «la implementación exige una decisión de forma, alcance o dom», y CON declara eso m
-  N150     DETECTADO      [1] el kernel DIVERGE de su release: almacenada 13713d8d8322cf71, calculada d749c8c70b075fc9. Algún fichero de
+  N150     DETECTADO      [1] el kernel DIVERGE de su release: almacenada 13713d8d8322cf71, calculada 439f984a1fa4fc73. Algún fichero de
   N158     DETECTADO      kernel/operativo/pruebas/evidencia/contratos-salida.txt: contiene error de invocación del intérprete. No es la
   N172     DETECTADO      FAIL T172 · Una guarda que se puede bajar por variable es un interruptor. ------------------------------------
   N174     DETECTADO      FAIL T174 · Defecto que previene: publicar estado PARCIAL en la rama canónica (`g.14`). ----------------------
@@ -99,7 +99,7 @@ LO EJERCIDO, SABOTAJE A SABOTAJE
   NK20a    DETECTADO      ERROR T404 · Defecto que previene: que la carrera entre dos DSP abra la puerta. ------------------------------
   NK20b    DETECTADO      FAIL T408 · Defecto que previene: lavar la mutación con un viaje de ida y vuelta. ----------------------------
   NK21a    DETECTADO      FAIL T204 · escenario 4 · Defecto que previene: perder una entrega esperando acuse. --------------------------
-  NS21a    DETECTADO      [4] la clase `CANONICA_OPERATIVA` DIVERGE del libro anotado: 6024fed4c8d92d5e sobre 230 ficheros, ahora 14bbdd
+  NS21a    DETECTADO      [4] la clase `CANONICA_OPERATIVA` DIVERGE del libro anotado: b2379756f4345aff sobre 230 ficheros, ahora 8d3be4
   NS23a    DETECTADO      [3] HUELLA DEL KERNEL: el MISMO contenido se mueve a `BOOTSTRAP_PROMPT-MOVIDO.md`, en la misma zona y con la m
 
 LO QUE ESTE VEREDICTO NO DEMUESTRA
@@ -112,7 +112,23 @@ LO QUE ESTE VEREDICTO NO DEMUESTRA
     condiciones de `O26` §1, ni `M-04`, ni `C-L.7`;
   · no certifica `F6`: `O30` §7 reserva eso a un verificador independiente.
 
-24 invariantes medidos · 24 SATISFECHOS · 0 INCUMPLIDOS · 57 sabotajes ejercidos · 0 sin detectar
+COBERTURA ADVERSARIAL · LO DECLARADO Y LO QUE EL CATÁLOGO TIENE
+------------------------------------------------------------------------------
+  sabotajes DISTINTOS declarados .. 57
+  ocurrencias en las fichas ....... 58  (los compartidos, una por invariante que los declara)
+  ejercidos en esta corrida ....... 57
+  sin ejercer ..................... ninguno
+  catalogados sobre sus positivas . 115 distintos
+  K01   NO seleccionados: NK03a
+  K11   NO seleccionados: N136b N146b
+  K12   NO seleccionados: NH01 NH03
+  K13   NO seleccionados: N342 N343b N349
+  K18   NO seleccionados: N240b N240c N240d N240e N240f N276b N276c N276d
+  K22   NO seleccionados: N158b N158c N158d N158e N158f N158g N158h N158i N158j N158k N158l N158m N158n N158o N158z N350b N350c N350d NE14a NE14b NE14c NE14d NE14e
+  K23   NO seleccionados: N150b N150c NS21b NS21c NS21d NS21e NS21f NS21g NS21h NS21i NS23b NS23c NS23d
+  K24   NO seleccionados: N242b N242c NG3b NG3c NG3d NG3e NG3f NG3g
+
+24 invariantes medidos · 24 SATISFECHOS · 0 INCUMPLIDOS · 57 sabotajes declarados · 57 ejercidos · 115 catalogados · 59 no seleccionados · 0 sin detectar
 
 # --- stderr (código 0) ---
   · K01 ejerciendo N175

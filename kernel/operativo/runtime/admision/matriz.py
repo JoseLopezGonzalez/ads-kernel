@@ -312,6 +312,30 @@ PUNTOS_CUBIERTOS_POR_FAMILIA = {
 # Se declara en vez de fabricar un control que parezca cubrirlos. Sus baterías propias sí
 # los ejercen —`CensoDeLecturas` y el censo de fórmulas en `test_admision.py`—, y esta
 # matriz publica la frontera para que nadie lea sus dos ceros como más de lo que son.
+def censo_de_20_1(raiz):
+    """El censo de §20.1, DERIVADO del rango que declara `CONTRATO-ADMISION.md`.
+
+    `M5` del verificador independiente de `O30`: el comentario de arriba dice que esta
+    matriz «publica cuáles son y por qué» los puntos de §20.1 que no alcanza, y NO los
+    publicaba en ninguna parte de su salida. Un lector veía `puntos_sin_tratamiento: []`
+    sobre una población derivada de 13 y podía leer cobertura de 19.
+
+    El censo NO se escribe a mano —sería el mismo defecto de clase que este módulo corrige
+    en otros cinco sitios— y NO se lee de `11-ARQ`, que por diseño no viaja al proyecto
+    instalado. Se lee del contrato, que sí viaja y que declara el rango cerrado.
+    """
+    contrato = os.path.join(raiz, "kernel", "operativo", "runtime", "CONTRATO-ADMISION.md")
+    if not os.path.isfile(contrato):
+        return None
+    import re as _re                                                  # noqa: PLC0415
+    with open(contrato, encoding="utf-8") as fh:
+        texto = fh.read()
+    m = _re.search(r"`V6-(\d{2})`\s*…\s*`V6-(\d{2})`\s*de\s*`11-ARQ`\s*§20\.1", texto)
+    if not m:
+        return None
+    return ["V6-%02d" % i for i in range(int(m.group(1)), int(m.group(2)) + 1)]
+
+
 PUNTOS_NO_EJERCIBLES_AQUI = {
     "V6-04": "su sujeto es el aparato que EJECUTA (`RUNTIME`), no el árbol juzgado: un "
              "sabotaje en el árbol bajo prueba le es invisible, y sabotear el aparato "
@@ -505,6 +529,16 @@ def ejecutar(directorio, *, registro="docs/canonico/FUENTES-CANONICAS.yml"):
         "puntos_exigidos": sorted(CONTROLES_POR_PUNTO),
         "cubiertos_por_familia": sorted(PUNTOS_CUBIERTOS_POR_FAMILIA),
         "no_ejercibles_aqui": PUNTOS_NO_EJERCIBLES_AQUI,
+        # `M5` · LA FRONTERA CON §20.1, PUBLICADA Y NO SUPUESTA. El censo del contrato
+        # menos lo que el verificador sabe EMITIR. Estos puntos no tienen veredicto que
+        # contrastar aquí y los cubren sus baterías propias; se nombran para que
+        # `puntos_sin_tratamiento: []` no se lea como cobertura de todo §20.1.
+        "censo_20_1": censo_de_20_1(directorio),
+        "de_20_1_fuera_de_esta_matriz": sorted(
+            set(censo_de_20_1(directorio) or ()) - set(puntos_emitibles(directorio))),
+        "por_que_fuera": "el verificador no los emite como `Hallazgo(...)`, luego no hay "
+                         "veredicto suyo que contrastar con un adversarial; los ejercen "
+                         "sus baterías propias, y esta matriz sólo publica la frontera",
         # LA FRONTERA, DERIVADA: todo punto emitible tiene que estar cubierto por una
         # familia, por su adversarial propio, o declarado NO EJERCIBLE con su motivo.
         # Un punto que no esté en ninguno de los tres sitios pone `V6-18` en rojo.

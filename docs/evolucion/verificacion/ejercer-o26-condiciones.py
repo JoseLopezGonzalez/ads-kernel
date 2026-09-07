@@ -460,33 +460,99 @@ def condicion_6(taller, repo, montaje, cond, perfil):
 
 
 def condicion_7(taller, repo, montaje, cond):
-    """Rotación, solapamiento, retirada y revocación: las CUATRO, ejercidas."""
+    """Rotación, solapamiento, retirada y revocación: las CUATRO, EJERCIDAS de verdad.
+
+    HECHO REPRODUCIDO POR EL AUDITOR INDEPENDIENTE DE `O30`, y es el defecto BLOQUEANTE de
+    esta construcción. Esta función se titulaba «las CUATRO, ejercidas» y llevaba dentro
+    «se ejercen sobre el aparato real, no sobre una maqueta»: lo que hacía era construir un
+    anillo VACÍO y preguntar `hasattr` por tres nombres. El auditor dejó inertes `revocar`,
+    `exigir_valida` y `Identidad.verifica_en` —con lo que **una identidad revocada
+    verificaba** y **una fuera de solapamiento verificaba**— y esta condición siguió
+    publicando SATISFECHA con `EXIT 0`. En la misma corrida las otras siete SÍ se
+    ejercieron: el sabotaje fue invisible sólo para ésta.
+
+    Un `hasattr` comprueba que un nombre existe, no que haga lo que promete. `O30` §5 manda
+    ejercer las ocho «mediante sus canales reales» y `O30` §4 prohíbe expresamente «hacer
+    pasar documentación por implementación». Ahora se ejercen los CUATRO gestos sobre
+    identidades reales y se exige que el veredicto CAMBIE, que es lo único que un `hasattr`
+    no puede fingir.
+    """
     sys.path.insert(0, os.path.join(RAIZ, "kernel", "operativo", "runtime"))
     from identidad import rotacion                                    # noqa: PLC0415
-    faltan = []
+
+    fallos = []
+
+    def _exigir(nombre, condicion, detalle):
+        cond.anotar(nombre, "ok" if condicion else "NO — " + detalle)
+        if not condicion:
+            fallos.append(nombre + ": " + detalle)
+
+    # -- ALTA y ROTACIÓN: la época avanza y la identidad nueva entra en la que le toca
+    vieja = rotacion.Identidad(identificador="ancla-1", algoritmo="ed25519",
+                               huella_publica="h1", estado=rotacion.ACTIVA,
+                               epoca_de_alta=1)
+    anillo = rotacion.AnilloDeIdentidades([vieja], epoca_vigente=1)
+    _exigir("ROTACIÓN · la identidad de la época 1 verifica en la época 1",
+            vieja.verifica_en(1)[0], "no verifica en su propia época")
+    nueva = rotacion.Identidad(identificador="ancla-2", algoritmo="ed25519",
+                               huella_publica="h2", estado=rotacion.ACTIVA,
+                               epoca_de_alta=2)
+    anillo.inscribir(nueva)
+    anillo.epoca_vigente = 2
+    _exigir("ROTACIÓN · la identidad NUEVA no verifica firmas ANTERIORES a su alta",
+            not nueva.verifica_en(1)[0],
+            "una identidad dada de alta en la época 2 acepta una firma de la 1")
+
+    # -- SOLAPAMIENTO: la retirada sigue verificando dentro de su ventana y no fuera
+    retirada = rotacion.Identidad(identificador="ancla-3", algoritmo="ed25519",
+                                  huella_publica="h3", estado=rotacion.RETIRADA,
+                                  epoca_de_alta=1, epoca_de_retirada=2,
+                                  solapamiento=1)
+    dentro = retirada.verifica_en(2)[0]
+    fuera = retirada.verifica_en(2 + 1 + 1)[0]
+    _exigir("SOLAPAMIENTO · una RETIRADA verifica DENTRO de su ventana", dentro,
+            "una identidad retirada deja de verificar dentro de su solapamiento, y "
+            "entonces rotar rompería las firmas legítimas de la ventana")
+    _exigir("SOLAPAMIENTO · y NO verifica pasada la ventana", not fuera,
+            "una identidad retirada sigue verificando fuera de su solapamiento: la "
+            "retirada no retira nada")
+
+    # -- REVOCACIÓN: es inmediata y no tiene ventana. Se ejerce por el canal del anillo.
+    anillo.revocar("ancla-2", motivo="clave comprometida en el ejercicio de `O26` §1.7")
+    revocada = anillo.obtener("ancla-2")
+    _exigir("REVOCACIÓN · el estado cambia a `revocada` por el canal del anillo",
+            revocada.estado == rotacion.REVOCADA,
+            "`revocar` no dejó la identidad en estado revocada")
+    _exigir("REVOCACIÓN · una REVOCADA no verifica NI en su propia época",
+            not revocada.verifica_en(2)[0],
+            "una identidad revocada sigue verificando: la revocación no revoca nada")
     try:
-        anillo = rotacion.AnilloDeIdentidades(epoca_vigente=1)
+        anillo.exigir_valida("ancla-2", 2)
+        _exigir("REVOCACIÓN · `exigir_valida` FALLA CERRADO sobre una revocada", False,
+                "`exigir_valida` aceptó una identidad revocada")
     except Exception as error:                                        # noqa: BLE001
-        cond.falla("no se pudo construir el anillo de identidades: %s" % error)
-        return
-    for gesto in ("rotación", "solapamiento", "retirada", "revocación"):
-        pass
-    # Se ejercen sobre el aparato real, no sobre una maqueta.
-    metodos = {"revocar": hasattr(anillo, "revocar"),
-               "exigir_valida": hasattr(anillo, "exigir_valida"),
-               "verifica_en (época)": hasattr(rotacion.Identidad, "verifica_en")
-               if hasattr(rotacion, "Identidad") else False}
-    for nombre, hay in sorted(metodos.items()):
-        cond.anotar("aparato de rotación · " + nombre, "presente" if hay else "AUSENTE")
-        if not hay:
-            faltan.append(nombre)
-    if faltan:
-        cond.falla("el aparato de rotación no ofrece %s" % faltan)
+        cond.anotar("REVOCACIÓN · `exigir_valida` sobre una revocada",
+                    "falla cerrado: " + type(error).__name__)
+
+    # -- CONTROL DEL CONTROL: sin él, «todo falla» explicaría los seis verdes de arriba.
+    try:
+        anillo.exigir_valida("ancla-1", 1)
+        cond.anotar("CONTROL SANO · la identidad ACTIVA de la época sí pasa", "ok")
+    except Exception as error:                                        # noqa: BLE001
+        _exigir("CONTROL SANO · la identidad ACTIVA de la época sí pasa", False,
+                "una identidad activa y en época es rechazada (%s): el ejercicio estaría "
+                "midiendo que todo falla" % type(error).__name__)
+
+    if fallos:
+        cond.falla("los gestos de `O26` §1.7 no se comportan como su contrato dice: "
+                   + " · ".join(fallos))
         return
     cond.satisface(
-        "el anillo de identidades ofrece época vigente (rotación), verificación POR ÉPOCA "
-        "—que es lo que permite el solapamiento—, `revocar` con motivo y `exigir_valida`, "
-        "que es por donde una identidad retirada deja de servir")
+        "los CUATRO gestos EJERCIDOS sobre identidades reales, y el veredicto CAMBIA con "
+        "cada uno: rotación —una identidad nueva no acepta firmas anteriores a su alta—, "
+        "solapamiento —una retirada verifica dentro de su ventana y no fuera—, retirada y "
+        "revocación —inmediata, sin ventana, y `exigir_valida` falla cerrado—, con su "
+        "control sano. No se comprueba que los nombres existan: se comprueba qué hacen")
 
 
 def condicion_8(taller, repo, montaje, cond):

@@ -875,7 +875,8 @@ def juzgar(fichas, catalogo, negativos, ancla, *, ejercer=True, solo=None, raiz=
 # ===========================================================================
 #  7 · LA PUBLICACIÓN · el cardinal se DERIVA de la lista, y no al revés
 # ===========================================================================
-def publicar(destino, juicios, catalogo, ancla, ejercido):
+def publicar(destino, juicios, catalogo, ancla, ejercido, fichas=None,
+             negativos=None):
     destino.write("`O30` §2 · CATÁLOGO CERRADO DE INVARIANTES CRÍTICOS, DERIVADO Y EJERCIDO\n")
     destino.write("=" * 78 + "\n\n")
     destino.write("  UNIVERSO derivado de `%s`, sección «2. Catálogo cerrado de "
@@ -938,10 +939,66 @@ def publicar(destino, juicios, catalogo, ancla, ejercido):
         "    condiciones de `O26` §1, ni `M-04`, ni `C-L.7`;\n"
         "  · no certifica `F6`: `O30` §7 reserva eso a un verificador independiente.\n\n")
 
+    # `M2` DEL VERIFICADOR INDEPENDIENTE DE `O30` · LA COBERTURA ADVERSARIAL, CON CARDINAL.
+    #
+    #     El auditor dejó `K13` con 1 de sus 5 sabotajes y la corrida salió VERDE, porque la
+    #     firma de éxito era `[1-9]\d* sabotajes` —sin cardinal— y nada contrastaba lo
+    #     EJERCIDO contra lo que el catálogo de mutaciones tiene para las pruebas de cada
+    #     ficha. El corpus podía bajar de 57 a 24 sin que nada lo dijera.
+    #
+    #     Lo que se hace, y lo que NO. Se DERIVAN dos cardinales —los declarados por las
+    #     fichas y los que el catálogo único tiene para sus pruebas positivas— y se publican
+    #     junto a los no seleccionados, con nombre y por ficha. Una caída de cobertura deja
+    #     de ser invisible: aparece como un número que baja y una lista que crece.
+    #     NO se convierte en fallo que un invariante seleccione un subconjunto: decidir si
+    #     una ficha DEBE ejercer todo mutante catalogado de sus pruebas es una decisión
+    #     normativa que `O30` no contiene, y este instrumento no las inventa (§16). Queda
+    #     publicada la frontera para que la decida quien puede.
+    no_seleccionados = {}
+    declarados = set()
+    catalogados = set()
+    ocurrencias = 0
+    if fichas and negativos:
+        por_prueba = {}
+        for mut in negativos["por_id"].values():
+            por_prueba.setdefault(mut.prueba, set()).add(mut.id)
+        for kid, ficha in sorted(fichas.items()):
+            adv = set((ficha.get("adversariales") or "").split())
+            declarados |= adv
+            ocurrencias += len(adv)
+            suyos = set()
+            for prueba in (ficha.get("positivas") or "").split():
+                suyos |= por_prueba.get(prueba, set())
+            catalogados |= suyos
+            if suyos - adv:
+                no_seleccionados[kid] = sorted(suyos - adv)
+        destino.write("COBERTURA ADVERSARIAL · LO DECLARADO Y LO QUE EL CATÁLOGO TIENE\n")
+        destino.write("-" * 78 + "\n")
+        # DISTINTOS Y OCURRENCIAS SE PUBLICAN POR SEPARADO. Un sabotaje declarado por DOS
+        # invariantes se ejerce UNA vez —`C-10` exige que cada uno explique su vínculo—,
+        # de modo que «declarados» contado por ocurrencias sale mayor que «ejercidos» sin
+        # que falte ninguno. Se dan los dos números para que la resta no engañe.
+        destino.write("  sabotajes DISTINTOS declarados .. %d\n" % len(declarados))
+        destino.write("  ocurrencias en las fichas ....... %d  (los compartidos, una por "
+                      "invariante que los declara)\n" % ocurrencias)
+        destino.write("  ejercidos en esta corrida ....... %d\n" % len(corridas))
+        destino.write("  sin ejercer ..................... %s\n"
+                      % (" ".join(sorted(declarados - set(corridas))) or "ninguno"))
+        destino.write("  catalogados sobre sus positivas . %d distintos\n" % len(catalogados))
+        if no_seleccionados:
+            for kid, sueltos in sorted(no_seleccionados.items()):
+                destino.write("  %-5s NO seleccionados: %s\n" % (kid, " ".join(sueltos)))
+        else:
+            destino.write("  ninguna ficha deja fuera un mutante catalogado de sus pruebas\n")
+        destino.write("\n")
+
     destino.write("%d invariantes medidos · %d SATISFECHOS · %d INCUMPLIDOS · "
-                  "%d sabotajes ejercidos · %d sin detectar\n"
+                  "%d sabotajes declarados · %d ejercidos · %d catalogados · "
+                  "%d no seleccionados · %d sin detectar\n"
                   % (len(juicios), len(juicios) - len(incumplidos), len(incumplidos),
-                     len(corridas), len([h for h in corridas.values() if not h["ok"]])))
+                     len(declarados), len(corridas), len(catalogados),
+                     len(catalogados - declarados),
+                     len([h for h in corridas.values() if not h["ok"]])))
     return HAY_INCUMPLIDOS if incumplidos else TODOS_SATISFECHOS
 
 
@@ -1213,7 +1270,8 @@ def main(argv=None):
             ensure_ascii=False, indent=2))
         return HAY_INCUMPLIDOS if any(not j.satisfecho for j in juicios) else TODOS_SATISFECHOS
 
-    return publicar(sys.stdout, juicios, catalogo, ancla, not argumentos.sin_ejercer)
+    return publicar(sys.stdout, juicios, catalogo, ancla,
+                    not argumentos.sin_ejercer, fichas, negativos)
 
 
 if __name__ == "__main__":

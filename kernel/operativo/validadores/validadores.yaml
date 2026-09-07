@@ -622,9 +622,17 @@ componentes:
     dir: docs/evolucion/verificacion
     tipo: validador
     evidencia: invariantes-criticos-salida.txt
-    firma_de_exito: '[1-9]\d* invariantes medidos · [1-9]\d* SATISFECHOS · 0 INCUMPLIDOS · [1-9]\d* sabotajes ejercidos · 0 sin detectar'
+    # EL CARDINAL VA EN LA FIRMA, Y ES DELIBERADO · `M2` del verificador de `O30`.
+    # La firma anterior era `[1-9]\d* sabotajes`, y con ella el auditor dejó `K13`
+    # con 1 de sus 5 sabotajes y la corrida salió VERDE: el corpus podía caer de 57
+    # a 24 sin que nada lo dijera. Ahora se fija el 24 —el catálogo de `O30` §2 es
+    # CERRADO, no es un cardinal que envejezca— y se pone SUELO de 50 a los
+    # sabotajes declarados y ejercidos. Un suelo no es una lista escrita a mano:
+    # no dice CUÁLES, dice que la cobertura no puede desplomarse en silencio.
+    firma_de_exito: '24 invariantes medidos · 24 SATISFECHOS · 0 INCUMPLIDOS · (?:[5-9]\d|\d{3,}) sabotajes declarados · (?:[5-9]\d|\d{3,}) ejercidos · [1-9]\d* catalogados · \d+ no seleccionados · 0 sin detectar'
     debe_contener: ['EL UNIVERSO, DERIVADO Y LITERAL', 'LOS INCUMPLIMIENTOS, UNO A UNO',
-                    'LO EJERCIDO, SABOTAJE A SABOTAJE', 'LO QUE ESTE VEREDICTO NO DEMUESTRA']
+                    'LO EJERCIDO, SABOTAJE A SABOTAJE', 'LO QUE ESTE VEREDICTO NO DEMUESTRA',
+                    'COBERTURA ADVERSARIAL', 'sin ejercer']
 
   - id: runner
     script: registrar_evidencia.py

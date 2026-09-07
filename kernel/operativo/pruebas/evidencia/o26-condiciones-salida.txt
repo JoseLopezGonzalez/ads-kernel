@@ -15,7 +15,7 @@
 
   1 · SATISFECHA    la raíz y su evidencia viven fuera del árbol verificado
         instalación y evidencia fuera del árbol, y el instalador RECHAZA ponerlas dentro (InstalacionDentroDelArbol). No es que hoy estén fuera: es que no pueden estar dentro
-        · realpath(instalacion) vs realpath(arbol) → instalacion=/tmp/ads-o26-7r3zodex/instalacion · arbol=<raiz>
+        · realpath(instalacion) vs realpath(arbol) → instalacion=/tmp/ads-o26-4kppl8hj/instalacion · arbol=<raiz>
         · instalar DENTRO del árbol → InstalacionDentroDelArbol: [INSTALACION_DENTRO_DEL_ARBOL] la raíz externa no se puede instalar dentro del árbol que verifica: la ruta declarada apunta dentro del árbol. Un verificador que vive donde vive lo verificado no es externo (instalacion-colada)
 
   2 · SATISFECHA    la firma es asimétrica
@@ -25,7 +25,7 @@
         · firmar con SÓLO la pública → ProveedorDeFirmaAusente
 
   3 · SATISFECHA    la atestación queda ligada simultáneamente al SHA del commit y a su tree
-        el acta liga commit `96c54a157474` y tree `3e21925ed595` a la vez, y cambiar CUALQUIERA de los dos —o los dos— hace fallar `exigir_vinculo`
+        el acta liga commit `adb204bbdf8b` y tree `97a641cf6699` a la vez, y cambiar CUALQUIERA de los dos —o los dos— hace fallar `exigir_vinculo`
         · exigir_vinculo con los dos correctos → sin excepción
         · exigir_vinculo · commit ajeno → VinculoDeCommitRoto
         · exigir_vinculo · tree ajeno → VinculoDeTreeRoto
@@ -55,10 +55,15 @@
         ·    → IMPEDIDO /control/.git/index
 
   7 · SATISFECHA    existen rotación, solapamiento, retirada y revocación
-        el anillo de identidades ofrece época vigente (rotación), verificación POR ÉPOCA —que es lo que permite el solapamiento—, `revocar` con motivo y `exigir_valida`, que es por donde una identidad retirada deja de servir
-        · aparato de rotación · exigir_valida → presente
-        · aparato de rotación · revocar → presente
-        · aparato de rotación · verifica_en (época) → presente
+        los CUATRO gestos EJERCIDOS sobre identidades reales, y el veredicto CAMBIA con cada uno: rotación —una identidad nueva no acepta firmas anteriores a su alta—, solapamiento —una retirada verifica dentro de su ventana y no fuera—, retirada y revocación —inmediata, sin ventana, y `exigir_valida` falla cerrado—, con su control sano. No se comprueba que los nombres existan: se comprueba qué hacen
+        · ROTACIÓN · la identidad de la época 1 verifica en la época 1 → ok
+        · ROTACIÓN · la identidad NUEVA no verifica firmas ANTERIORES a su alta → ok
+        · SOLAPAMIENTO · una RETIRADA verifica DENTRO de su ventana → ok
+        · SOLAPAMIENTO · y NO verifica pasada la ventana → ok
+        · REVOCACIÓN · el estado cambia a `revocada` por el canal del anillo → ok
+        · REVOCACIÓN · una REVOCADA no verifica NI en su propia época → ok
+        · REVOCACIÓN · `exigir_valida` sobre una revocada → falla cerrado: IdentidadRevocada
+        · CONTROL SANO · la identidad ACTIVA de la época sí pasa → ok
 
   8 · SATISFECHA    clave desconocida, firma inválida, commit incorrecto, tree incorrecto, ausencia de proveedor y contaminación del entorno fallan cerrado
         los SEIS ataques que `O26` §1.8 enumera fallan cerrado, y el control sano verifica: clave desconocida, firma inválida, commit incorrecto, tree incorrecto, ausencia de proveedor, contaminación del entorno

@@ -773,11 +773,34 @@ def _el_declarante_mide_de_verdad(base, comp, obligacion):
                        f"obligación y sólo ésa")
     if not re.search(r"(?<![\w-])%s(?![\w-])" % re.escape(obligacion), proc.stdout):
         return False, (f"`--sin-ejecutar --solo {obligacion}` no la NOMBRA en su salida")
+
+    # CONTROL DEL CONTROL · y ahora se le pregunta por una obligación QUE NO EXISTE.
+    #
+    #     El auditor independiente de `O30` pasó esta sonda con `falso_medidor.py`, nueve
+    #     líneas que sólo saben imprimir `1 obligaciones medidas` y el nombre que se les
+    #     pase. Las tres comprobaciones de arriba —código de salida, recuento, mención— las
+    #     satisface cualquier programa que repita su argumento. Lo que NO satisface un
+    #     repetidor es NEGARSE: un instrumento que de verdad mide contra el universo de
+    #     obligaciones del corpus no puede medir una que no está en él, y tiene que fallar
+    #     cerrado. Un `echo` disfrazado responde igual de bien a la obligación real que a la
+    #     inventada, y ahí se separa.
+    inventada = "OBLIGACION-INEXISTENTE-DE-CONTROL-%s" % obligacion.replace(" ", "-")
+    try:
+        control = subprocess.run([sys.executable, script, "--sin-ejecutar", "--solo", inventada],
+                                 capture_output=True, text=True, cwd=base, env=ambiente,
+                                 timeout=120)
+    except (OSError, subprocess.SubprocessError) as e:
+        return False, f"no se le pudo hacer el control del control: {type(e).__name__}: {e}"
+    if control.returncode in (0, 1) and re.search(r"(?m)^\s*1 obligaciones medidas",
+                                                  control.stdout):
+        return False, (f"declara haber medido '{inventada}', que no existe en el corpus: "
+                       f"responde igual a una obligación real que a una inventada, luego no "
+                       f"mide contra el universo de obligaciones —repite su argumento—")
     return True, ""
 
 
 # ---------------------------------------------------------------------------
-#  LA DISPENSA, Y LAS CINCO CONDICIONES QUE TIENE QUE PASAR
+#  LA DISPENSA, Y LAS SIETE CONDICIONES QUE TIENE QUE PASAR
 # ---------------------------------------------------------------------------
 #  SABOTAJE DE LA PROPIA CORRECCIÓN, MEDIDO ANTES DE DARLA POR BUENA:
 #      $ # se le añade `evidencia_reflexiva: {del: evidencia, motivo: me eximo yo}` a
@@ -786,8 +809,27 @@ def _el_declarante_mide_de_verdad(base, comp, obligacion):
 #        DISPENSA REFLEXIVA · 'integridad': evidencia AUSENTE y NO IMPUTADA a T158 …
 #  Concedida. La dispensa era FORJABLE escribiéndola, y con ella cualquier validador podía
 #  desaparecer de la cobertura de `T158` sin que nada lo dijera — que es exactamente el
-#  defecto que `T158` existe para impedir. Se cierra exigiendo `por:` y las condiciones 4
+#  defecto que `T158` existe para impedir. Se estrecha exigiendo `por:` y las condiciones 4
 #  y 5, que son las dos derivadas. Con ellas, el mismo sabotaje sale ROJO.
+#
+#  Y NO BASTÓ. El verificador independiente de `O30` volvió sobre esto —`G1`— y ganó TRES
+#  veces, porque ninguna de las cinco comprueba que el componente que la pide sea el que
+#  tiene el ciclo: la 4 mira la OBLIGACIÓN y la 5 interroga al SCRIPT, y un script respalda
+#  varias filas del manifiesto. Los tres ataques, y la condición que hoy caza a cada uno:
+#
+#      1 · dispensa puesta a `o26-impl-autopruebas`, que no participa en ningún ciclo
+#          → 6 · UNICIDAD. Dos filas reclaman la misma obligación y se falla cerrado
+#            nombrando a las dos, en vez de elegir una por orden de aparición.
+#      2 · `falso_medidor.py`, nueve líneas que sólo imprimen `1 obligaciones medidas`
+#          → 5b · CONTROL DEL CONTROL. Se le pregunta por una obligación INVENTADA; el
+#            repetidor la mide igual de bien que la real y ahí se separa del instrumento.
+#      3 · fila NUEVA reutilizando un script existente, con evidencia que nunca existió
+#          → 7 · LA FILA. Una invocación idéntica a la de otra fila no es un segundo
+#            ciclo: es una fila de más. (Y la 6 también la caza, por el otro lado.)
+#
+#  Lo que la primera redacción llamó «cerrado» era «estrechado a cualquier componente que
+#  comparta script con un instrumento que mida obligaciones». Queda escrito aquí porque el
+#  error no fue el agujero: fue declararlo cerrado sin haberlo atacado desde la fila.
 
 
 def _dispensa_reflexiva(base, comp, componentes, canales, r):
@@ -853,6 +895,47 @@ def _dispensa_reflexiva(base, comp, componentes, canales, r):
         r.fallo(f"manifiesto: '{cid}' declara depender de '{yo}' por '{obligacion}' y no "
                 f"es el instrumento que la mide: {por_que_no}. La dispensa se DERIVA, no "
                 f"se escribe")
+        return False, ""
+
+    # LA DISPENSA ES ÚNICA POR OBLIGACIÓN, Y ESTO ES LO QUE LA HACE INTRANSFERIBLE
+    #
+    #     HECHO REPRODUCIDO POR EL AUDITOR INDEPENDIENTE DE `O30`. Las cinco condiciones
+    #     de arriba miran la OBLIGACIÓN y sondean el SCRIPT, y un script respalda VARIAS
+    #     filas del manifiesto. El auditor añadió una fila NUEVA —`coartada`— que reutiliza
+    #     `comprobar-obligaciones-implementadas.py` y declara una evidencia que NUNCA ha
+    #     existido, y la dispensa se la concedió: un `tipo: validador` que no publica
+    #     evidencia ninguna, invisible a la cobertura de `T158`, y todo en verde. Es
+    #     exactamente el defecto que `T158` existe para impedir.
+    #
+    #     El ciclo que la dispensa reconoce tiene UN instrumento, no varios: la obligación
+    #     tiene una condición de cierre y un componente que la mide. Que dos filas
+    #     compartan script no crea dos ciclos: crea una fila de más. Así que la dispensa
+    #     se concede a lo sumo a UNA fila por obligación, y si hay dos que la reclaman se
+    #     FALLA CERRADO nombrando a las dos, en vez de elegir una por orden de aparición
+    #     —que es como se cuela la segunda—.
+    invocacion = (comp.get("script"), comp.get("dir"), tuple(comp.get("args") or ()))
+    gemelas = sorted(
+        otro.get("id") for otro in componentes
+        if otro is not comp
+        and (otro.get("script"), otro.get("dir"), tuple(otro.get("args") or ())) == invocacion)
+    if gemelas:
+        r.fallo(f"manifiesto: '{cid}' pide la dispensa reflexiva y su invocación es "
+                f"IDÉNTICA a la de {', '.join(gemelas)} —mismo script, mismo directorio, "
+                f"mismos argumentos—. Una fila que no se distingue de otra en nada de lo "
+                f"que se ejecuta no tiene un ciclo propio que dispensar: es una fila de más")
+        return False, ""
+
+    reclamantes = sorted(
+        otro.get("id") for otro in cargar_manifiesto(base)
+        if isinstance(otro.get("evidencia_reflexiva"), dict)
+        and (otro["evidencia_reflexiva"].get("por") or "").strip() == obligacion)
+    if len(reclamantes) > 1:
+        r.fallo(f"manifiesto: {len(reclamantes)} componentes reclaman la dispensa reflexiva "
+                f"por la MISMA obligación '{obligacion}': {', '.join(reclamantes)}. El ciclo "
+                f"que esta dispensa reconoce tiene UN instrumento —la obligación tiene una "
+                f"condición de cierre y un componente que la mide—, y que dos filas "
+                f"compartan script no crea dos ciclos: crea una fila de más. No se elige "
+                f"una por orden de aparición: se falla cerrado")
         return False, ""
 
     return True, (f"'{cid}': evidencia AUSENTE y NO IMPUTADA a T158. Mide '{obligacion}', "
