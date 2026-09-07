@@ -530,6 +530,29 @@ siga NO CERRADA.
 
 **Ninguno de los seis se declara superado, y las dos GRAVES siguen VIVAS.** `M-04` y `C-L.7` conservan el estado literal que el verificador emitió: **`M-04 NO SUPERADA`** y **`C-L.7 NO CERRADA`**, cada una con la causa material que él midió y que su dictamen razona.
 
+## 11 quater · Los hallazgos del verificador por composición de `O31` — 2026-09-07
+
+> **Qué es.** El verificador independiente de `O31` no certificó `F6` por composición.
+> Sus hallazgos se registran aquí con identificador, sede, remedio, propietario y
+> fase, y **ninguno se declara superado**. `O31` §9 prohíbe corregirlos en respuesta
+> al dictamen, de modo que ninguno tiene remedio aplicado. Su clasificación es del
+> verificador. **Ninguno es regresión del delta**: son puertas abiertas del aparato
+> que este ciclo construyó. El dictamen íntegro está en
+> [`docs/f6/09-VERIFICACION-POR-COMPOSICION-O31-20260907.md`](../f6/09-VERIFICACION-POR-COMPOSICION-O31-20260907.md).
+
+| id | grado | qué está mal | sede | remedio | propietario · fase |
+|---|---|---|---|---|---|
+| **`B-01`** | **BLOQUEANTE** | la dispensa reflexiva sigue siendo transferible **por los argumentos de la fila**: la sonda concatena los `args:` declarados DELANTE de los suyos y `argparse` se queda con el último `--solo`, de modo que los argumentos de la fila quedan neutralizados justo donde tenían que decidir. Medido: `args: ['--solo', 'CONTRATO 1']` obtiene la dispensa y deja `T158` y `T350` en verde sobre una evidencia que mide UNA obligación de las 58. La identidad de siete elementos de `O31` §4 se calcula y se publica, pero **no se compara con nada**: es decorativa | `comprobar_evidencia._el_declarante_mide_de_verdad` · `firma_de_exito` de `o26-impl` | comparar la identidad de invocación ANTES de conceder, y derivar el cardinal de la firma en vez de `[1-9]\d*` | `PLT` implementa · `SIS` propietario · **`F6`** |
+| **`B-02`** | **BLOQUEANTE** | el control de `C-L.7` juzga instancias y no la clase. Once variantes NUEVAS escapan, con cinco mecanismos aislados por pares mínimos: una palabra terminada en `-ia` exime la línea entera —y ése es el vocabulario del corpus: *evidencia, vigencia, referencia, historia*—; un sustantivo SINGULAR delante del cardinal lo exime; un `=` delante lo exime; el romano en minúsculas escapa mientras el de versales cae; y el separador de millar exime todo cardinal ≥ 1000 | `comprobar-cardinales-manuales.py` | anclar la narración a verbos reales y no a un sufijo; retirar la exención por singular; acotar `VERSION`; plegar la caja antes de los romanos; y probar cada excepción contra el FALSO NEGATIVO, no sólo contra el falso positivo | `PLT` implementa · `SIS` propietario · **`F6`** |
+| **`B-03`** | **BLOQUEANTE** | la marca `FUERA_DEL_MANIFIESTO_DE_VALIDADORES` **sí puede retirar** del universo el instrumento que mide `K01`–`K24`: basta un commit corriente. Su defensa contrasta contra el manifiesto de `HEAD` —el mismo cuya completitud se juzga, un commit antes— y el módulo escribe que vaciarlo «exigiría reescribir la historia», lo que es falso y él mismo desmiente doce líneas más abajo. Medido: con la retirada confirmada, **ocho de ocho controles en verde**. La lista manual no desapareció: se mudó del juez al juzgado | `universo_de_instrumentos.py`, rama `declaradas_en_head` | derivar la legitimidad de una exclusión de una sede INDEPENDIENTE del manifiesto, o exigir que toda retirada del aparato quede refrendada por un acto separado y firmado | `PLT` implementa · `SIS` propietario · **`F6`** |
+| **`G-01`** | **GRAVE** | el contraste de **argumentos** que `O31` §3 enumera no existe: siete de los ocho contrastes por fila se comprueban y `args` no se contrasta con nada. Es justamente el campo que `B-01` explota | `comprobar-universo-de-instrumentos.py` | contrastar los `args:` declarados con la orden real que la evidencia publica | `PLT`/`SIS` · **`F6`** |
+| **`G-02`** | **GRAVE** | el guardián «mecánicamente equivalente» detecta una edición a mano pero **no que lo publicado haya dejado de ser cierto**. Medido: dos evidencias publican cifras que el árbol desmiente —un digest y un recuento de líneas en `universo-obligaciones`, y `341` frente a `344` en `cardinales-manuales`— con `T158` y `T350` en verde. Es la clase de `H-08` y `N158g` sin regla de `vigencia` que la cubra | `comprobar-universo-de-instrumentos.py`, `U-07` | declarar `vigencia` para esos cardinales, o exigir que la evidencia se regenere en el commit que la contiene | `PLT`/`SIS` · **`F6`** |
+| **`m-01`** | menor | el comentario de `universo_de_instrumentos.py` afirma que vaciar el universo exigiría reescribir la historia; es falso | ídem | corregir la afirmación | `SIS` · **`F6`** |
+| **`m-03`** | menor | `07-GUIA` §14 enumera las ocho condiciones de `O30` §7 y no las nueve de `O31` §7. No crea segunda sede —remite correctamente—: es desactualización | `07-GUIA-OPERATIVA-DE-F6.md` | actualizar la remisión | `SIS` · **`F6`** |
+| **`m-02`, `m-04`** | menores | dos inexactitudes del SOBRE DE ANCLA, que vive fuera del repositorio: cita secciones que no amparan lo que invoca, transcribe un cardinal desactualizado, y atribuye a `U-09` un rojo que el verificador reprodujo por `U-02` | el emisor del sobre, fuera del árbol | corregir las citas y no transcribir cardinales | `VER` · **`F6`** |
+
+**Ninguno de los ocho se declara superado, y los tres BLOQUEANTES siguen VIVOS.** `V-G1`, `V-G2`, `M-04` y `C-L.7` conservan el estado literal que el verificador emitió: **`V-G1 NO CERRADA`**, **`V-G2 NO CERRADA`**, **`M-04 NO SUPERADA`** y **`C-L.7 NO CERRADA`**, cada una con la causa material que él midió y que su dictamen razona.
+
 ## 12 · Qué NO es deuda, y se dice para que nadie lo cuente como tal
 
 ```text
