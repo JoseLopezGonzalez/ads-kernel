@@ -1532,3 +1532,244 @@ Después del dictamen del verificador:
 - no se propone otra tanda automática;
 - no se inicia PesquerApp;
 - se para cualquiera que sea el resultado.
+
+---
+
+# `O31` · INTERVENCIÓN HUMANA FINAL SOBRE LOS CUATRO CONTROLES PENDIENTES DE `F6`
+
+**Fecha:** 2026-09-07  
+**Autoridad:** Owner
+
+## 1. Naturaleza de esta intervención
+
+La parada ordenada por `O30` §10 se cumplió.
+
+Esta resolución no reabre aquella recursión automática. Constituye la decisión humana
+posterior que `O30` dejó expresamente fuera de su ciclo.
+
+Se autoriza una única intervención incremental, con alcance cerrado, sobre:
+
+- `V-G1`;
+- `V-G2`;
+- la condición incumplida de `M-04`;
+- la condición incumplida de `C-L.7`.
+
+No se autoriza otra auditoría general de `F6`, otra reclasificación de su universo ni
+otra expansión automática de hallazgos.
+
+## 2. Hechos conservados de `O30`
+
+Para esta intervención se conservan como hechos que deben reproducirse, pero no volver
+a rediseñarse:
+
+1. `K01`–`K24` satisfechas;
+2. las obligaciones internas de `F6` completas;
+3. las ocho condiciones de `O26` satisfechas;
+4. la candidata de `O30` identificada por commit y tree;
+5. PesquerApp no iniciada;
+6. los hallazgos menores registrados y no declarados superados.
+
+La verificación incremental debe comprobar que estos hechos no sufren regresión.
+
+No necesita reconstruir la historia completa de gates anteriores.
+
+## 3. Cierre de `V-G1`
+
+El universo de instrumentos y evidencias no puede derivarse únicamente de:
+
+`kernel/operativo/validadores/*.py`
+
+Debe derivarse de todas las filas vivas que declaren un instrumento ejecutable o
+`tipo: validador`, cualquiera que sea su directorio.
+
+Para cada fila deben quedar contrastados:
+
+- identificador;
+- ejecutable;
+- directorio de trabajo;
+- argumentos;
+- evidencia;
+- condición de éxito;
+- inclusión en el runner;
+- inclusión en el guardián de evidencia.
+
+Añadir, mover u omitir un instrumento debe producir rojo por su ausencia material, no
+por una lista manual de rutas.
+
+Todo instrumento que sostenga una condición de certificación debe estar protegido por
+`T350` o por un guardián mecánicamente equivalente.
+
+## 4. Cierre de `V-G2`
+
+Toda dispensa reflexiva debe quedar ligada a la invocación declarada completa:
+
+- obligación;
+- identificador de fila;
+- script;
+- directorio de trabajo;
+- argumentos normalizados;
+- evidencia;
+- condición de cierre.
+
+Una dispensa concedida al script suelto es transferible y no es válida.
+
+Deben fallar, como mínimo:
+
+1. cambiar `--obligaciones` por `--help`;
+2. conservar el script y cambiar sus argumentos;
+3. conservar los argumentos y cambiar el directorio;
+4. fabricar una segunda fila que intente reutilizar la dispensa;
+5. duplicar la dispensa para otra obligación;
+6. invocar una ruta equivalente pero no idéntica a la declarada.
+
+La fila legítima debe seguir funcionando y la dispensa debe ser única.
+
+## 5. Cierre de `M-04`
+
+El universo esperado de instrumentos no puede depender exclusivamente del manifiesto
+cuya completitud se está juzgando.
+
+Debe existir una derivación independiente desde las sedes vivas del árbol.
+
+El siguiente ataque debe producir rojo:
+
+1. retirar del manifiesto el instrumento de `K01`–`K24`;
+2. retirar también su evidencia;
+3. regenerar huella y sello;
+4. ejecutar la batería completa.
+
+La ausencia debe ser detectada por el universo independiente.
+
+No se considera cerrado `M-04` mediante una etiqueta. Su condición se acreditará
+únicamente si el verificador independiente reproduce este ataque y el árbol falla
+cerrado por el motivo correcto.
+
+## 6. Cierre de `C-L.7`
+
+El control debe juzgar la clase:
+
+> copia manual de estado, cardinal o conjunto variable dentro de una sede viva que
+> debería derivarlo o remitir a su fuente competente.
+
+No puede depender de una lista cerrada de sustantivos como “hallazgos”, “invariantes”,
+“obligaciones” o “sabotajes”.
+
+Debe reconocer, al menos:
+
+- cifras escritas con dígitos;
+- cifras escritas con palabras;
+- mayúsculas y minúsculas;
+- singular y plural;
+- puntuación diferente;
+- sustantivos desconocidos;
+- cardinales introducidos después de escribir el control.
+
+Debe distinguirlos de:
+
+- fechas;
+- versiones;
+- identificadores normativos;
+- SHA y digests;
+- citas históricas rotuladas;
+- límites contractuales realmente constantes;
+- salidas generadas;
+- comandos que derivan el valor.
+
+Preferentemente, las sedes vivas no copiarán el cardinal: remitirán a la fuente o
+publicarán el comando que lo deriva.
+
+`C-L.7` sólo podrá cerrarse cuando el verificador independiente demuestre la clase con
+variantes que el implementador no utilizó para construir el control.
+
+## 7. Verificación por composición
+
+Después de congelar la candidata se creará un único verificador independiente nuevo.
+
+Debe leer íntegramente:
+
+- todos los ficheros modificados desde la candidata de `O30`;
+- todos los ficheros modificados por `O30` que sostengan `K01`–`K24`, obligaciones,
+  `O26`, `M-04`, `C-L.7`, V-G1 o V-G2;
+- O30 y O31;
+- los registros finales de O30;
+- la guía canónica vigente.
+
+La resta:
+
+`FICHEROS MODIFICADOS O30+O31 − FICHEROS LEÍDOS ÍNTEGRAMENTE`
+
+debe quedar vacía.
+
+La certificación por composición procede si:
+
+1. `V-G1` queda cerrada;
+2. `V-G2` queda cerrada;
+3. `M-04` queda superada;
+4. `C-L.7` queda cerrada;
+5. `K01`–`K24` continúan satisfechas;
+6. las obligaciones internas continúan completas;
+7. las ocho condiciones de `O26` continúan satisfechas;
+8. no existe una regresión BLOQUEANTE o GRAVE introducida por el delta;
+9. commit, tree, evidencia y sobre corresponden al mismo objeto.
+
+Los hallazgos menores anteriores permanecen registrados. No bloquean salvo que falseen
+una de las nueve condiciones anteriores.
+
+## 8. Resultado competente
+
+Si las nueve condiciones de §7 se satisfacen, el verificador independiente queda
+autorizado a emitir:
+
+- `V-G1 CERRADA`;
+- `V-G2 CERRADA`;
+- `M-04 SUPERADA`;
+- `C-L.7 CERRADA`;
+- `F6 CERTIFICADA POR COMPOSICIÓN`;
+- `F6 CERRADA`.
+
+En ese caso, PesquerApp queda:
+
+`HABILITADA TÉCNICAMENTE · NO AUTORIZADA · NO INICIADA`
+
+La creación del repositorio ADS definitivo de PesquerApp necesitará una orden posterior
+y separada del Owner.
+
+No habrá repositorio piloto ni copia temporal. Cuando se autorice, se creará
+directamente el repositorio global ADS definitivo de PesquerApp como instancia
+reproducible del ADS genérico.
+
+Si posteriormente se descubre un defecto estructural del sistema ADS:
+
+1. se corregirá en el repositorio genérico;
+2. no se convertirá la instancia de PesquerApp en un fork divergente;
+3. el repositorio ADS de PesquerApp podrá eliminarse y recrearse desde el genérico,
+   preservando previamente cualquier información propia que no sea regenerable;
+4. los repositorios reales de producto seguirán siendo independientes.
+
+## 9. Fallo de la composición
+
+Si cualquiera de las nueve condiciones de §7 falla:
+
+- `F6` continúa no certificada y abierta;
+- PesquerApp continúa bloqueada;
+- se registra la causa material;
+- no se corrige en respuesta al dictamen;
+- no se abre otro gate;
+- no se inicia otro ciclo automático.
+
+La decisión posterior será estrictamente humana: aceptar el riesgo, intervenir
+manualmente o detener el desarrollo del sistema.
+
+## 10. Parada definitiva
+
+Esta intervención permite:
+
+- una implementación;
+- una comprobación adversarial previa de alcance cerrado;
+- una única pasada de corrección;
+- una candidata;
+- un sobre;
+- un verificador independiente;
+- un resultado.
+
+Después del resultado se publica y se para.

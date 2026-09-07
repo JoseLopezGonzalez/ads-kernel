@@ -525,6 +525,8 @@ siga NO CERRADA.
 | **`V-M3`** | menor | confirma `CD-7` de §11 bis y añade la medida: instalado sin packs, `ads_lint` da 3 enlaces rotos, y el fichero es byte a byte idéntico en la base y en la candidata | ídem `CD-7` | ídem `CD-7` | `PLT`/`SIS` · **`F6`** |
 | **`V-M4`** | menor | observabilidad: la evidencia congelada ancla al commit ANTERIOR a la candidata. Estructural —ninguna evidencia puede contener el hash del commit que la contiene— | `kernel/operativo/pruebas/evidencia/` | ninguno posible dentro del ciclo; se resuelve reproduciendo la validación, como el verificador hizo | `VER` · **`F6`** |
 
+**`O31` toma `V-G1`, `V-G2`, `M-04` y `C-L.7` —y sólo esos cuatro— como alcance cerrado de una intervención humana.** Su matriz previa, con la reproducción medida de cada uno, vive en [`docs/f6/08-MATRIZ-DE-LOS-CUATRO-CONTROLES-O31.md`](../f6/08-MATRIZ-DE-LOS-CUATRO-CONTROLES-O31.md). Los cinco MENORES —`V-M1`, `V-M2`, `V-M3`, `V-M4` y `CD-7`— quedan **fuera del delta** por mandato de `O31` §1 y siguen aquí sin declararse superados.
+
 **Ninguno de los seis se declara superado, y las dos GRAVES siguen VIVAS.** `M-04` y `C-L.7` conservan el estado literal que el verificador emitió: **`M-04 NO SUPERADA`** y **`C-L.7 NO CERRADA`**, cada una con la causa material que él midió y que su dictamen razona.
 
 ## 12 · Qué NO es deuda, y se dice para que nadie lo cuente como tal
