@@ -8,7 +8,7 @@
 
   UNIVERSO derivado de `docs/owner/ADS-OWNER-RESOLUCIONES.md`, sección «2. Catálogo cerrado de invariantes críticos»
   SEDE canónica del catálogo: `docs/canonico/08-INVARIANTES-CRITICOS-DE-F6.md`
-  ANCLA   commit 6ce736aa3ca2e04d87966c1f46971d6ea398caaf · tree 1cfb885245afe16308f00e383588039bc6018adc
+  ANCLA   commit c21d221b617e8fa6fedc4c5874714ea74ea91123 · tree bd13239e95816800579b1e6159687cd6de2c26c5
   CICLO   sano (evidencia ligada a HEAD) → SABOTAJE ejecutado → restaurado (el árbol juzgado no se toca: la mutación vive en una copia)
 
 EL UNIVERSO, DERIVADO Y LITERAL
@@ -99,7 +99,7 @@ LO EJERCIDO, SABOTAJE A SABOTAJE
   NK20a    DETECTADO      ERROR T404 · Defecto que previene: que la carrera entre dos DSP abra la puerta. ------------------------------
   NK20b    DETECTADO      FAIL T408 · Defecto que previene: lavar la mutación con un viaje de ida y vuelta. ----------------------------
   NK21a    DETECTADO      FAIL T204 · escenario 4 · Defecto que previene: perder una entrega esperando acuse. --------------------------
-  NS21a    DETECTADO      [4] la clase `CANONICA_OPERATIVA` DIVERGE del libro anotado: af0a340a17c37d03 sobre 230 ficheros, ahora 0aca59
+  NS21a    DETECTADO      [4] la clase `CANONICA_OPERATIVA` DIVERGE del libro anotado: 4f8ea12742d8836a sobre 230 ficheros, ahora 458190
   NS23a    DETECTADO      [3] HUELLA DEL KERNEL: el MISMO contenido se mueve a `BOOTSTRAP_PROMPT-MOVIDO.md`, en la misma zona y con la m
 
 LO QUE ESTE VEREDICTO NO DEMUESTRA

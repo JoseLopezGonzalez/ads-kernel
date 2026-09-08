@@ -55,7 +55,7 @@ v          395  d61e83bd2b733b34…  docs/evolucion/verificacion/manifiestos/F6-
 v          558  f45c2390a6428e96…  docs/f6/01-MATRIZ-DE-COMPLETITUD-F6.md
 v         3343  64d170f5acc15144…  docs/owner/ADS-ARQUITECTURA-MULTIREPO-APROBADA.md
 v          628  24e85cad856daf76…  docs/owner/ADS-IDEAS-PENDIENTES-MULTIREPO.md
-v         1775  da7b28fab7286480…  docs/owner/ADS-OWNER-RESOLUCIONES.md
+v         1991  7bc57020b93e1a75…  docs/owner/ADS-OWNER-RESOLUCIONES.md
 v          195  d2131faa4aeddc6d…  docs/rediseno/CHECKPOINT-OPERATIVO.md
 iii       1651  712dbd4a935c53e3…  docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
 v         1150  235385da2471dec2…  docs/rediseno/a-CAPACIDADES-APROBADA.md
@@ -98,7 +98,7 @@ v           89  f4f016c011a82764…  kernel/operativo/esquemas/proceso.yaml
 v          130  f56e8fe4872e46b5…  kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md
 v          606  8a8aa174fa5244cb…  kernel/operativo/recorrido/01-PROCESOS.md
 
-94 fuentes obligatorias · 100910 líneas
+94 fuentes obligatorias · 101126 líneas
   (i  )   4   las fuentes de «QUÉ HAY QUE LEER ÍNTEGRO» de `C-L.5`
   (ii )  29   las fuentes y las fichas de `C-0.1` / `C-0.2`
   (iii)   3   documento 11 · registro de decisiones · checkpoint
