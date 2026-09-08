@@ -1773,3 +1773,219 @@ Esta intervención permite:
 - un resultado.
 
 Después del resultado se publica y se para.
+
+---
+
+# `O32` · ACEPTACIÓN EXPRESA DEL RIESGO RESIDUAL Y CIERRE DE `F6`
+
+**Fecha:** 2026-09-08  
+**Autoridad:** Owner
+
+## 1. Hechos técnicos aceptados
+
+El Owner acepta como demostrados sobre la candidata juzgada en `O31` los siguientes
+hechos:
+
+1. `K01`–`K24` están satisfechas;
+2. las obligaciones internas de `F6` están completas;
+3. la resta de obligaciones internas sin implementar está vacía;
+4. las ocho condiciones de `O26` están ejercidas y satisfechas;
+5. las baterías funcionales, adversariales, de concurrencia, recuperación,
+   aislamiento, firma, integridad, instalación y extremo a extremo se ejecutan;
+6. el verificador independiente de `O31` alcanzó cobertura integral de los ficheros
+   modificados;
+7. no se observó una regresión del runtime ni de los mecanismos del producto;
+8. PesquerApp no fue iniciada.
+
+Estos hechos no se vuelven a someter a otro gate.
+
+## 2. Resultado técnico de `O31`
+
+El Owner reconoce sin modificarlo el resultado literal de `O31`:
+
+- `V-G1 NO CERRADA`;
+- `V-G2 NO CERRADA`;
+- `M-04 NO SUPERADA`;
+- `C-L.7 NO CERRADA`;
+- `F6 NO CERTIFICADA`;
+- `F6 ABIERTA`.
+
+No se reconstruye ese resultado ni se declara que aquellas condiciones hayan sido
+superadas.
+
+## 3. Naturaleza del riesgo residual
+
+Los defectos pendientes afectan a la capacidad del aparato para garantizar por sí
+solo que sus instrumentos futuros no puedan ser retirados, excluidos, transferidos
+o eludidos.
+
+Los defectos son reales y permanecen registrados:
+
+- la completitud del universo de instrumentos admite una exclusión controlada por
+  material interno al propio árbol;
+- la dispensa reflexiva puede transferirse manipulando la invocación declarada;
+- `M-04` demuestra que el aparato puede perder un instrumento y su evidencia si
+  también se altera la declaración que define su pertenencia;
+- `C-L.7` continúa detectando instancias lingüísticas y no toda la clase semántica;
+- existen limitaciones menores de vigencia, referencias, instalación y observabilidad.
+
+Estos defectos debilitan el endurecimiento futuro del sistema de control, pero el
+verificador de `O31` declaró expresamente que no falsifican la evidencia de la
+candidata juzgada ni demuestran un fallo del runtime implementado.
+
+## 4. Límite de la autorreferencia
+
+Ningún repositorio puede demostrar únicamente desde su propio contenido que todas
+las reglas capaces de juzgarlo son imposibles de modificar por un commit autorizado
+a modificar ese mismo repositorio.
+
+Exigir al aparato que garantice internamente la inmutabilidad absoluta de su propio
+juez produce una recursión sin punto final:
+
+- un control necesita otro control;
+- el nuevo control necesita un guardián;
+- el guardián necesita una sede de pertenencia;
+- esa sede necesita otro control que garantice que no será modificada.
+
+La raíz final de confianza debe descansar en una combinación de:
+
+1. revisión humana;
+2. protección externa del repositorio;
+3. permisos;
+4. reglas de rama;
+5. firmas;
+6. revisión independiente;
+7. responsabilidad explícita del Owner.
+
+No se exigirá al kernel resolver enteramente desde dentro una propiedad que depende
+de autoridad externa.
+
+## 5. Aceptación expresa del riesgo
+
+El Owner acepta conscientemente el riesgo residual descrito en §3.
+
+Esta aceptación:
+
+- no elimina los hallazgos;
+- no los declara superados;
+- no cambia su reproducción;
+- no modifica el dictamen del verificador;
+- no convierte un rojo histórico en verde;
+- no afirma que la certificación técnica de `O31` se obtuviera;
+- no autoriza a ocultar fallos futuros;
+- no impide corregir posteriormente el sistema genérico.
+
+Los hallazgos pasan a deuda de endurecimiento del ADS genérico y deben conservar:
+
+- identificador;
+- sede;
+- reproducción;
+- consecuencia;
+- remedio;
+- propietario;
+- estado;
+- criterio de cierre.
+
+## 6. Estado de `F6`
+
+Por decisión expresa y competente del Owner:
+
+`F6 IMPLEMENTADA`
+
+`F6 ACEPTADA PARA USO CON RIESGO RESIDUAL DECLARADO`
+
+`F6 CERRADA POR ACEPTACIÓN EXPRESA DEL OWNER`
+
+El cierre no se presenta como certificación técnica obtenida en `O31`.
+
+La formulación completa del estado será:
+
+`F6 CERRADA · IMPLEMENTADA · ACEPTADA POR EL OWNER · CERTIFICACIÓN TÉCNICA O31 NO OBTENIDA · RIESGO RESIDUAL DECLARADO`
+
+No se abrirán nuevos gates de F6.
+
+Las mejoras posteriores de V-G1, V-G2, M-04 y C-L.7 serán mantenimiento del ADS
+genérico, no condición previa para comenzar su utilización.
+
+## 7. Estado de PesquerApp
+
+Al quedar F6 cerrada por aceptación expresa del Owner, desaparece el bloqueo previo
+que impedía comenzar la adopción.
+
+PesquerApp queda:
+
+`AUTORIZADA PARA CREAR SU REPOSITORIO ADS DEFINITIVO`
+
+`REPOSITORIO ADS DE PESQUERAPP TODAVÍA NO CREADO`
+
+`PESQUERAPP TODAVÍA NO INICIADA BAJO ADS`
+
+Esta resolución no ordena crear el repositorio dentro de este mismo encargo.
+
+La creación se realizará mediante una orden posterior y separada.
+
+## 8. Modelo de repositorio para PesquerApp
+
+Cuando se ejecute la orden posterior:
+
+1. se creará directamente el repositorio global ADS definitivo de PesquerApp;
+2. no se creará copia piloto;
+3. no se creará repositorio temporal;
+4. no se hará una adopción paralela desechable;
+5. el repositorio ADS será independiente de los repositorios reales de frontend,
+   backend, aplicación móvil e infraestructura;
+6. el repositorio ADS servirá exclusivamente para gobernar y orquestar el equipo;
+7. el ADS genérico será la fuente del sistema base;
+8. la instancia de PesquerApp no se convertirá en un fork divergente del ADS
+   genérico.
+
+Si durante el uso aparece un defecto estructural importante:
+
+1. se corregirá en el repositorio ADS genérico;
+2. se publicará una nueva versión del genérico;
+3. se preservará cualquier información propia y no regenerable de PesquerApp;
+4. el repositorio ADS de PesquerApp podrá eliminarse y recrearse desde el genérico;
+5. los repositorios reales del producto no se eliminarán ni perderán autoridad;
+6. el código o los datos reales de PesquerApp no dependerán exclusivamente del
+   repositorio de orquestación.
+
+## 9. Deuda de endurecimiento
+
+Se abre una única familia de deuda no bloqueante:
+
+`ADS-HARDENING`
+
+Debe incorporar, como mínimo:
+
+- `ADS-HARDENING-01` · universo externo o firmado de instrumentos;
+- `ADS-HARDENING-02` · identidad completa y efectiva de invocaciones y dispensas;
+- `ADS-HARDENING-03` · cierre futuro de M-04 mediante raíz externa;
+- `ADS-HARDENING-04` · sustitución del detector lingüístico de C-L.7 por un modelo
+  estructural;
+- `ADS-HARDENING-05` · enlaces del producto instalado;
+- `ADS-HARDENING-06` · vigencia y observabilidad de evidencias;
+- `ADS-HARDENING-07` · custodia productiva de claves;
+- `ADS-HARDENING-08` · capacidades de contención dependientes del anfitrión.
+
+Esta deuda no bloquea la creación ni el uso del repositorio ADS de PesquerApp.
+
+Sólo bloqueará una operación concreta cuando la operación dependa materialmente del
+mecanismo pendiente.
+
+## 10. Cierre del expediente F6
+
+Con esta resolución termina el expediente de construcción y certificación de F6.
+
+No se autoriza:
+
+- otro gate de F6;
+- otra resolución destinada a intentar certificar retrospectivamente la misma
+  candidata;
+- otra clasificación de cláusulas;
+- otro universo de invariantes;
+- otra tanda automática;
+- otra corrección previa a la adopción;
+- iniciar PesquerApp dentro de este encargo.
+
+El siguiente encargo será la creación directa del repositorio ADS definitivo de
+PesquerApp.

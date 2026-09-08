@@ -366,37 +366,119 @@ justo lo que `O30` §8 prohíbe. Se deriva:
 $ sed -n '/^## 6 /,/^## 7 /p' docs/canonico/03-GOBIERNO-Y-AUTORIDAD.md
 ```
 
-**Quién puede cambiarlo, y con qué prueba.** Sólo **un verificador independiente**, y sólo si
-concurren TODAS las condiciones de `O30` §7: `K01`–`K24` satisfechas, ninguna obligación
-interna de `F6` sin implementar, las ocho condiciones de `O26` ejercidas y satisfechas,
-`M-04 SUPERADA`, `C-L.7 CERRADA`, ningún defecto BLOQUEANTE o GRAVE que invalide el objeto o
-su evidencia, identidad exacta del commit y el tree juzgados, y sobre de ancla emitido antes
-de crear al verificador.
+**CÓMO SE CERRÓ `F6`, Y CÓMO NO.** `F6` está **CERRADA POR ACEPTACIÓN EXPRESA DEL OWNER**,
+en `O32`. **No** está cerrada por certificación técnica: la verificación por composición de
+`O31` **NO CERTIFICÓ**, y su resultado se conserva literal y sin reinterpretar. Las dos
+cosas son ciertas a la vez y se dicen juntas siempre, porque separarlas sería mentir en
+cualquiera de los dos sentidos.
 
-> **`M-04` y `C-L.7` no se cierran con una etiqueta escrita por quien implementa** —`O30`
-> §6—: el verificador independiente los juzga y emite su veredicto **por separado y con
-> causa**. Su estado vigente NO se escribe aquí por lo dicho arriba: su sede es
-> [`06-DEUDA-Y-LIMITACIONES-VIGENTES.md`](06-DEUDA-Y-LIMITACIONES-VIGENTES.md), y se lee
-> con `grep -n 'M-04\|C-L.7' docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md`.
+Lo que el verificador de `O31` **sí** acreditó, reproduciéndolo él mismo sobre la candidata:
+`K01`–`K24` satisfechas; obligaciones internas de `F6` completas y su resta vacía; las ocho
+condiciones de `O26` ejercidas y satisfechas; las baterías funcionales, adversariales, de
+concurrencia, recuperación, aislamiento, firma, integridad, instalación y extremo a extremo
+ejecutándose; **cobertura integral** de los ficheros modificados —la primera del
+expediente—; ninguna regresión del runtime; y PesquerApp no iniciada.
+
+Lo que **no** acreditó, y `O32` §2 conserva sin tocar: `V-G1 NO CERRADA`, `V-G2 NO CERRADA`,
+`M-04 NO SUPERADA`, `C-L.7 NO CERRADA`, `F6 NO CERTIFICADA`, `F6 ABIERTA`. Su dictamen
+íntegro está en
+[`docs/f6/09-VERIFICACION-POR-COMPOSICION-O31-20260907.md`](../f6/09-VERIFICACION-POR-COMPOSICION-O31-20260907.md).
+
+**NO HABRÁ MÁS GATES DE `F6`.** `O32` §10 lo prohíbe expresamente, y prohíbe también otra
+resolución que intente certificar retrospectivamente la misma candidata, otra clasificación
+de cláusulas, otro universo de invariantes y otra tanda automática. Las mejoras de `V-G1`,
+`V-G2`, `M-04` y `C-L.7` son **mantenimiento del ADS genérico**, no condición previa de su
+uso.
+
+### 14.1 · Los riesgos residuales, y por qué no bloquean el uso
+
+`O32` §5 los acepta expresamente. Aceptar **no es** cerrar: no elimina los hallazgos, no los
+declara superados, no cambia su reproducción, no modifica el dictamen y no convierte un rojo
+histórico en verde. Los cinco, en una línea cada uno:
+
+- la completitud del universo de instrumentos admite una exclusión controlada por material
+  **interno al propio árbol**;
+- la dispensa reflexiva puede transferirse manipulando la invocación declarada;
+- `M-04`: el aparato puede perder un instrumento y su evidencia si además se altera la
+  declaración que define su pertenencia;
+- `C-L.7` detecta instancias lingüísticas y no toda la clase semántica;
+- quedan límites menores de vigencia, referencias, instalación y observabilidad.
+
+**Por qué no bloquean.** Los cinco afectan a la capacidad del aparato para garantizar **por
+sí solo** que sus instrumentos futuros no puedan ser retirados, excluidos, transferidos o
+eludidos. El verificador de `O31` declaró expresamente que **no falsifican la evidencia de
+la candidata juzgada ni demuestran un fallo del runtime implementado**. Y `O32` §4 dice por
+qué la exigencia era imposible de satisfacer desde dentro: ningún repositorio puede
+demostrar sólo desde su contenido que las reglas capaces de juzgarlo sean inmodificables por
+un commit autorizado a modificarlo. Exigirlo produce una recursión sin punto final. La raíz
+de confianza descansa fuera del árbol: revisión humana, protección externa del repositorio,
+permisos, reglas de rama, firmas, revisión independiente y responsabilidad explícita del
+Owner.
+
+**Cuándo SÍ bloquearían una operación concreta.** Sólo cuando esa operación **dependa
+materialmente del mecanismo pendiente**. Cada entrada de `ADS-HARDENING` publica su propio
+criterio, y ahí se leen; los ejemplos que ese registro da son: aceptar una candidata de un
+tercero sin revisión humana del diff; delegar la adjudicación a un proceso automático sin
+autoridad externa; incorporar filas nuevas al aparato de forma automática; usar el verde de
+la batería como **única** prueba frente a un tercero; tomar una cifra de una evidencia
+congelada como dato vigente; firmar algo con valor frente a terceros sin custodia productiva
+de claves; y ejecutar cargas en un anfitrión de producción distinto del medido.
+
+La familia entera, con origen, hallazgos relacionados, riesgo, alcance, propietario,
+mecanismo de cierre y criterio de bloqueo:
+
+```bash
+$ sed -n '/^## 11 quinquies /,/^## 12 /p' docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md
+```
 
 ## 15 · Qué habilita y qué NO habilita el cierre
 
 ```text
-SI F6 QUEDA CERTIFICADA Y CERRADA
-  desaparece EXCLUSIVAMENTE el bloqueo técnico que dependía de completar y certificar F6
-  PesquerApp queda:  HABILITADA TÉCNICAMENTE · NO AUTORIZADA · NO INICIADA
+LO QUE EL CIERRE DE O32 HABILITA
+  desaparece el bloqueo previo que impedía comenzar la adopción, y eso es TODO lo que
+  desaparece
+  PesquerApp queda:  AUTORIZADA PARA CREAR SU REPOSITORIO ADS DEFINITIVO
+                     REPOSITORIO ADS DE PESQUERAPP NO CREADO
+                     PESQUERAPP NO INICIADA BAJO ADS
 
 LO QUE NO HABILITA
-  su adopción, su piloto, su integración y su ejecución necesitan una orden POSTERIOR y
-  SEPARADA del Owner. Este ciclo no puede iniciarla
-
-SI F6 NO QUEDA CERTIFICADA
-  PesquerApp continúa BLOQUEADA
+  O32 §7 NO ordena crear el repositorio. La creación se hará por una orden POSTERIOR y
+  SEPARADA del Owner, y ése es el siguiente encargo
 ```
 
-Fuente: `O30` §9. Y `O30` §10 cierra el método: tras el dictamen se registra y se publica el
-resultado, **no se corrige la candidata en respuesta al dictamen**, no se abre otro gate, no
-se propone otra tanda automática y no se inicia PesquerApp.
+**El siguiente paso, exacto: crear el repositorio ADS DEFINITIVO de PesquerApp.** Directo y
+global. **No habrá piloto, ni copia temporal, ni adopción paralela desechable** —`O32` §8—.
+
+### 15.1 · Cómo se mantiene la relación genérico → instancia
+
+El **ADS genérico es la fuente** del sistema base, y la instancia de PesquerApp **no se
+convierte en un fork divergente**. El repositorio ADS de PesquerApp existe para **gobernar y
+orquestar el equipo**, y nada más.
+
+Si durante el uso aparece un defecto estructural importante, el orden es éste y no otro:
+
+1. se corrige **en el repositorio ADS genérico**, no en la instancia;
+2. se publica una nueva versión del genérico;
+3. se **preserva** cualquier información propia y no regenerable de PesquerApp;
+4. el repositorio ADS de PesquerApp **puede eliminarse y recrearse** desde el genérico.
+
+**Qué se preserva antes de recrear una instancia.** Todo lo que la instancia haya producido
+y el genérico no pueda regenerar: su estado durable, su diario, sus decisiones registradas,
+sus manifiestos propios y cualquier material que nombre hechos de ese equipo. Recrear es
+barato **porque** lo propio se salva primero; sin ese paso, recrear sería perder.
+
+### 15.2 · Los repositorios reales del producto permanecen independientes
+
+El repositorio ADS de PesquerApp es **independiente** de los repositorios reales de
+frontend, backend, aplicación móvil e infraestructura. Al recrear la instancia:
+
+- los repositorios reales **no se eliminan** y **no pierden autoridad**;
+- el código y los datos reales de PesquerApp **no dependen** del repositorio de
+  orquestación.
+
+Fuente: `O32` §7 y §8. Y `O32` §10 cierra el expediente: no se abre otro gate de `F6`, no se
+intenta certificar retrospectivamente la misma candidata, y **no se inicia PesquerApp dentro
+del encargo que cerró `F6`**.
 
 ## 16 · La historia: los gates como evidencia, y las contradicciones resueltas
 

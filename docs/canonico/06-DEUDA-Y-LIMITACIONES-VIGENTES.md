@@ -553,6 +553,151 @@ siga NO CERRADA.
 
 **Ninguno de los ocho se declara superado, y los tres BLOQUEANTES siguen VIVOS.** `V-G1`, `V-G2`, `M-04` y `C-L.7` conservan el estado literal que el verificador emitió: **`V-G1 NO CERRADA`**, **`V-G2 NO CERRADA`**, **`M-04 NO SUPERADA`** y **`C-L.7 NO CERRADA`**, cada una con la causa material que él midió y que su dictamen razona.
 
+## 11 quinquies · `ADS-HARDENING` — la deuda de endurecimiento abierta por `O32`
+
+> **Qué es.** `O32` §9 abre una única familia de deuda **no bloqueante** que recoge el
+> riesgo residual que el Owner aceptó expresamente al cerrar `F6`. No sustituye a ningún
+> hallazgo: los relaciona. Los identificadores anteriores —`V-G1`, `V-G2`, `M-04`,
+> `C-L.7`, `V-M1`…`V-M4`, `CD-7`, `CD-8`, `B-01`…`B-03`, `G-01`, `G-02` y los menores de
+> `O31`— **siguen vivos, con su reproducción, y ninguno se declara superado**.
+>
+> **Qué NO es.** No es una certificación diferida ni un plan de gates. `O32` §10 prohíbe
+> abrir otro gate de `F6`. Estas ocho entradas son mantenimiento del **ADS genérico**, y
+> `O32` §6 dice con esas palabras que su cierre **no es condición previa** para empezar a
+> usar el sistema.
+>
+> **Por qué el riesgo se acepta y no se cierra.** `O32` §4: ningún repositorio puede
+> demostrar sólo desde su contenido que las reglas capaces de juzgarlo sean inmodificables
+> por un commit autorizado a modificarlo. Exigirlo produce una recursión sin punto final
+> —un control necesita otro control, que necesita un guardián, que necesita una sede de
+> pertenencia, que necesita otro control—. La raíz de confianza descansa fuera: revisión
+> humana, protección externa del repositorio, permisos, reglas de rama, firmas, revisión
+> independiente y responsabilidad explícita del Owner.
+
+**Estado de las ocho, sin excepción: `ABIERTO · NO BLOQUEA LA ADOPCIÓN INICIAL`.**
+
+### `ADS-HARDENING-01` · universo externo o firmado de instrumentos
+
+| campo | contenido |
+|---|---|
+| **origen** | `O31` §3 · el verificador por composición de `O31` |
+| **hallazgos relacionados** | `V-G1` · `B-03` · `m-01` |
+| **riesgo real** | la completitud del universo de instrumentos se contrasta contra material **interno al propio árbol**: la marca `FUERA_DEL_MANIFIESTO_DE_VALIDADORES` y el manifiesto confirmado en `HEAD`. Un commit corriente basta para retirar un instrumento del aparato y que la retirada quede aceptada. Reproducido y medido por el verificador |
+| **alcance** | `kernel/operativo/validadores/universo_de_instrumentos.py` · `comprobar_evidencia.py`, comprobación 8 |
+| **propietario** | `PLT` implementa · `SIS` propietario |
+| **mecanismo de cierre futuro** | derivar la pertenencia al aparato de una sede **independiente del repositorio juzgado** —una raíz externa firmada, un censo con firma asimétrica—, o exigir que toda retirada del aparato quede refrendada por un acto separado y firmado |
+| **criterio que lo haría bloqueante** | una operación que **dependa de que el universo de instrumentos sea inalterable desde dentro del repositorio**: por ejemplo, aceptar una candidata de un tercero sin revisión humana del diff, o delegar la adjudicación de un gate a un proceso automático sin autoridad externa |
+| **estado** | `ABIERTO · NO BLOQUEA LA ADOPCIÓN INICIAL` |
+
+### `ADS-HARDENING-02` · identidad completa y efectiva de invocaciones y dispensas
+
+| campo | contenido |
+|---|---|
+| **origen** | `O31` §4 · el verificador por composición de `O31` |
+| **hallazgos relacionados** | `V-G2` · `B-01` · `G-01` |
+| **riesgo real** | la dispensa reflexiva se transfiere manipulando los `args:` declarados de la fila: la sonda los concatena delante de los suyos y `argparse` se queda con el último, de modo que quedan neutralizados justo donde tenían que decidir. La identidad de siete elementos se calcula y se publica pero **no se compara con nada**. Y el contraste de `argumentos` que `O31` §3 enumera **no existe** |
+| **alcance** | `comprobar_evidencia._el_declarante_mide_de_verdad` · `comprobar-universo-de-instrumentos.py` · la `firma_de_exito` de las filas con `evidencia_reflexiva` |
+| **propietario** | `PLT` implementa · `SIS` propietario |
+| **mecanismo de cierre futuro** | comparar la identidad de invocación **antes** de conceder la dispensa y no después de decidir; contrastar los `args:` declarados con la orden real que la evidencia publica; y derivar el cardinal de la firma de éxito en vez de admitir cualquiera |
+| **criterio que lo haría bloqueante** | una operación que **conceda o herede dispensas sin revisión del manifiesto**: aceptar un manifiesto de un tercero, o automatizar la incorporación de filas nuevas al aparato |
+| **estado** | `ABIERTO · NO BLOQUEA LA ADOPCIÓN INICIAL` |
+
+### `ADS-HARDENING-03` · cierre futuro de `M-04` mediante raíz externa
+
+| campo | contenido |
+|---|---|
+| **origen** | `O31` §5 · el verificador por composición de `O31` |
+| **hallazgos relacionados** | `M-04` · `B-03` |
+| **riesgo real** | el aparato puede perder un instrumento **y su evidencia** si además se altera la declaración que define su pertenencia, y quedar entero en verde. Es el «duodécimo árbol», reproducido por el verificador con un paso más que el que `O31` §5 enumera. El ataque **literal** de §5 sí produce rojo por el motivo correcto; el ataque con la declaración añadida, no |
+| **alcance** | el aparato de validadores completo, y su relación con `huella.py` y el sello |
+| **propietario** | `SIS` |
+| **mecanismo de cierre futuro** | anclar el universo esperado en la **raíz externa** que `O26` §1 ya instala fuera del árbol verificado: un censo firmado, con firmante y verificador separados y el verificador sin clave privada, contra el que el árbol se contrasta en vez de contrastarse consigo mismo |
+| **criterio que lo haría bloqueante** | una operación que **use el verde de la batería como única prueba** frente a un tercero, sin revisión humana del diff ni atestación externa: por ejemplo, publicar una certificación a un cliente o a un auditor apoyándose sólo en la salida del runner |
+| **estado** | `ABIERTO · NO BLOQUEA LA ADOPCIÓN INICIAL` |
+
+### `ADS-HARDENING-04` · sustituir el detector lingüístico de `C-L.7` por un modelo estructural
+
+| campo | contenido |
+|---|---|
+| **origen** | `O31` §6 · el verificador por composición de `O31` |
+| **hallazgos relacionados** | `C-L.7` · `B-02` |
+| **riesgo real** | el control detecta **instancias lingüísticas y no toda la clase semántica**. Once variantes nuevas escapan, con cinco mecanismos aislados por pares mínimos: una palabra terminada en `-ia` exime la línea entera —y ése es el vocabulario del corpus—; un sustantivo singular delante del cardinal lo exime; un `=` delante lo exime; el romano en minúsculas escapa; el separador de millar exime todo cardinal grande |
+| **alcance** | `docs/evolucion/verificacion/comprobar-cardinales-manuales.py` |
+| **propietario** | `SIS` la especificación · `PLT` el instrumento |
+| **mecanismo de cierre futuro** | rehacer las excepciones como **principios** y no como parches: anclar la narración a verbos reales y no a un sufijo, retirar la exención por singular, acotar la excepción de versión, plegar la caja antes de reconocer numerales, y **probar cada excepción contra el falso negativo** y no sólo contra el falso positivo que estorbaba |
+| **criterio que lo haría bloqueante** | una operación que **dependa de que una sede viva no copie estado**: por ejemplo, derivar decisiones automáticas del contenido de un bloque reanudable, o usarlo como fuente de verdad de un recuento en vez de remitir |
+| **estado** | `ABIERTO · NO BLOQUEA LA ADOPCIÓN INICIAL` |
+
+### `ADS-HARDENING-05` · enlaces del producto instalado
+
+| campo | contenido |
+|---|---|
+| **origen** | la validación de `O30` §10 y de `O31` §6 al instalar el producto en un repositorio nuevo |
+| **hallazgos relacionados** | `CD-7` · `CD-8` · `V-M3` |
+| **riesgo real** | instalado, el índice del kernel enlaza a dos documentos de `packs/` que el instalador no embarca, y `exclusiones.yaml` conserva entradas que apuntan a material no embarcado. En desarrollo el lint sale en verde; **instalado da errores que el desarrollo no ve**. Medido: los ficheros implicados son byte a byte idénticos en la base y en la candidata, luego el defecto no lo introduce ningún ciclo reciente |
+| **alcance** | `kernel/operativo/00-INDICE.md` · `kernel/operativo/validadores/exclusiones.yaml` · `tooling/new-project.sh` |
+| **propietario** | `PLT` implementa · `SIS` propietario |
+| **mecanismo de cierre futuro** | embarcar los documentos enlazados, o cambiar el enlace por una remisión; y hacer que el censo de exclusiones distinga lo que viaja de lo que no |
+| **criterio que lo haría bloqueante** | una operación que **exija el lint en verde sobre el producto instalado** como puerta: por ejemplo, una comprobación de arranque de una instancia nueva que rechace el árbol si el lint falla |
+| **estado** | `ABIERTO · NO BLOQUEA LA ADOPCIÓN INICIAL` |
+
+### `ADS-HARDENING-06` · vigencia y observabilidad de evidencias
+
+| campo | contenido |
+|---|---|
+| **origen** | `O31` §3 · el verificador por composición de `O31` |
+| **hallazgos relacionados** | `G-02` · `V-M4` · `m-02` · `m-04` |
+| **riesgo real** | el guardián «mecánicamente equivalente» detecta una edición a mano pero **no detecta que lo publicado haya dejado de ser cierto**: dos evidencias publican cifras que el árbol desmiente y las dos quedan en verde. Y persiste la asimetría estructural declarada: ninguna evidencia puede contener el hash del commit que la contiene, de modo que la evidencia derivada ancla siempre al commit anterior |
+| **alcance** | `comprobar-universo-de-instrumentos.py`, condición `U-07` · el contrato `vigencia` del manifiesto · el emisor del sobre de ancla, que vive fuera del árbol |
+| **propietario** | `PLT` implementa · `SIS` propietario |
+| **mecanismo de cierre futuro** | declarar `vigencia` para los cardinales que esas evidencias publican, o exigir que toda evidencia se regenere en el commit que la contiene; y que el emisor del sobre no transcriba cardinales ni cite secciones que no amparan lo que invoca |
+| **criterio que lo haría bloqueante** | una operación que **tome una cifra de una evidencia como dato vigente** sin regenerarla: por ejemplo, publicar un informe a terceros citando recuentos de la evidencia congelada |
+| **estado** | `ABIERTO · NO BLOQUEA LA ADOPCIÓN INICIAL` |
+
+### `ADS-HARDENING-07` · custodia productiva de claves
+
+| campo | contenido |
+|---|---|
+| **origen** | `O26` §1 y el perfil de anfitrión declarado por `O29` §7; recogido en los límites de los verificadores de `O30` y `O31` |
+| **hallazgos relacionados** | los límites declarados de `O30` §7.4 y `O31` §9 |
+| **riesgo real** | las ocho condiciones de `O26` se ejercen con un **par efímero** generado fuera del árbol y destruido tras firmar. Eso demuestra el mecanismo; **no demuestra una custodia productiva**: rotación real, hardware, separación de deberes y procedimiento de revocación operado por personas |
+| **alcance** | `kernel/operativo/raiz-externa/` · el procedimiento de operación, que es externo al repositorio |
+| **propietario** | `SIS` la política · el Owner la autoridad |
+| **mecanismo de cierre futuro** | una política de custodia escrita y operada fuera del repositorio, con su procedimiento de rotación, retirada y revocación, y su prueba de ejercicio periódico |
+| **criterio que lo haría bloqueante** | cualquier operación que **firme algo con valor frente a un tercero**: una atestación externa, una entrega contractual, una publicación firmada del producto |
+| **estado** | `ABIERTO · NO BLOQUEA LA ADOPCIÓN INICIAL` |
+
+### `ADS-HARDENING-08` · capacidades de contención dependientes del anfitrión
+
+| campo | contenido |
+|---|---|
+| **origen** | `O29` §7 · el perfil del anfitrión, declarado y **no universalizado** |
+| **hallazgos relacionados** | los límites declarados de `O30` §7.4 y `O31` §9 |
+| **riesgo real** | lo que la contención demuestra depende del anfitrión donde se ejerce. `cgroup v2` está montado y **no es ejercitable** en el anfitrión medido, y las baterías lo dicen en vez de universalizarlo. Un anfitrión distinto puede ofrecer más o menos, y el corpus no lo sabe hasta ejercerlo allí |
+| **alcance** | `kernel/operativo/runtime/contencion/` y sus baterías |
+| **propietario** | `PLT` implementa · `SIS` propietario |
+| **mecanismo de cierre futuro** | un perfil de anfitrión **medido en el anfitrión de producción**, con su declaración de lo que allí sí es ejercitable, y una puerta que rechace ejecutar lo que ese perfil no soporte |
+| **criterio que lo haría bloqueante** | ejecutar cargas **en un anfitrión de producción distinto del medido**, o depender de la contención como frontera de seguridad frente a código no confiable |
+| **estado** | `ABIERTO · NO BLOQUEA LA ADOPCIÓN INICIAL` |
+
+### Trazabilidad · de dónde viene cada entrada, y qué sigue vivo
+
+| `ADS-HARDENING` | hallazgos que recoge | dónde viven, con su reproducción |
+|---|---|---|
+| **`-01`** | `V-G1` · `B-03` · `m-01` | §11 ter y §11 quater de este documento |
+| **`-02`** | `V-G2` · `B-01` · `G-01` | ídem |
+| **`-03`** | `M-04` · `B-03` | §3 y §11 quater |
+| **`-04`** | `C-L.7` · `B-02` | §2 y §11 quater |
+| **`-05`** | `CD-7` · `CD-8` · `V-M3` | §11 bis y §11 ter |
+| **`-06`** | `G-02` · `V-M4` · `m-02` · `m-04` | §11 ter y §11 quater |
+| **`-07`** | límites de custodia declarados por `O30` y `O31` | los dos registros finales de `docs/f6/` |
+| **`-08`** | límites de anfitrión declarados por `O29` §7 | ídem |
+
+**Ninguno de los hallazgos anteriores se declara superado ni se borra.** `V-M1` y `V-M2`
+siguen en §11 ter sin familia asignada porque son de observabilidad del propio expediente y
+no del sistema genérico; se conservan igual. La reproducción de cada uno está en el
+dictamen que lo encontró, y los dictámenes son material protegido.
+
 ## 12 · Qué NO es deuda, y se dice para que nadie lo cuente como tal
 
 ```text
