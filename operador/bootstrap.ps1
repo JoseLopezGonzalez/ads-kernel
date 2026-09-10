@@ -280,7 +280,7 @@ $perfil  = if ($env:USERPROFILE) { $env:USERPROFILE } else { $HOME }
 $cifrado = Join-Path $perfil '.config/ads-pesquerapp/github.dpapi'
 if (-not (Test-Path $cifrado)) { exit 0 }
 try {
-    $segura  = ConvertTo-SecureString (Get-Content -Path $cifrado -Raw)
+    $segura  = ConvertTo-SecureString ((Get-Content -Path $cifrado -Raw).Trim())
     $puntero = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($segura)
     try {
         Write-Output "username=x-access-token"

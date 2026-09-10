@@ -53,6 +53,19 @@ guion— y clona con `-c credential.useHttpPath=true`, de modo que la restriccio
 verdad. Se comprueba invocando el ayudante como lo invoca `git`: responde al repositorio
 autorizado, y se calla ante `store`, ante `erase`, ante otro host y ante otro repositorio.
 
+**Y esa comprobacion, la primera vez que se ejecuto, salio roja por otra cosa.** El
+ayudante no respondia NUNCA, ni al repositorio autorizado. La causa: el fichero de la
+custodia se lee con `Get-Content -Raw`, que devuelve tambien el salto de linea final que
+`Set-Content` dejo; `ConvertTo-SecureString` espera hexadecimal y con ese salto lanza
+excepcion; y el `catch` la convertia en un `exit 0` mudo, indistinguible de una negativa
+legitima. Es decir: la custodia entera —capturar la credencial, cifrarla, instalarla y
+usarla— estaba rota de punta a punta y ningun rojo lo decia, porque lo unico que se habia
+comprobado hasta entonces era que el fichero existia y no estaba en claro. Se corrige con
+un `.Trim()` en los tres cuerpos del ayudante, y se le pone una valvula: con la variable
+`ADS_AYUDANTE_DIAGNOSTICO` puesta, publica por el flujo de error el TIPO de la excepcion
+—nunca su mensaje, que podria describir el material—, para que un fallo al descifrar deje
+de ser indistinguible del silencio correcto.
+
 **Y este kernel estrena CI.** Se validaba a mano, en la maquina de quien tocara, y eso
 explica que `UP-00` y `UP-04` —los dos invisibles desde Linux— vivieran aqui tanto tiempo.
 `.github/workflows/kernel.yml` corre en Linux, Windows y macOS; invoca validadores
