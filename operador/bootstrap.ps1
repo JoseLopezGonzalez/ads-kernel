@@ -52,6 +52,11 @@ param(
     [string[]]$Alcance,
     # Recorrido COMPLETO sin pedir ni guardar nada. Es lo que corre la CI.
     [switch]$Simular,
+    # Argumentos para el asistente al entregarle el control. Existe para que la
+    # ENTREGA se pueda probar de verdad —clonando un repositorio de laboratorio y
+    # llamando al asistente en modo repaso— en vez de comprobar que el fichero
+    # existe y llamar a eso una prueba.
+    [string[]]$ArgumentosDelAsistente,
     # Muestra esta cabecera y sale.
     [switch]$Ayuda
 )
@@ -260,8 +265,10 @@ if ($Simular) {
 } elseif (Test-Path $asistente) {
     Ok "entregando el control a $asistente"
     Write-Host ''
-    & $asistente
+    if ($ArgumentosDelAsistente) { & $asistente @ArgumentosDelAsistente }
+    else                         { & $asistente }
     $codigo = $LASTEXITCODE
+    if ($codigo -ne 0) { Falla "el asistente termino con codigo $codigo" }
 } else {
     Falla "el repositorio no trae operador\arrancar.ps1: no hay a quien entregar el control"
 }

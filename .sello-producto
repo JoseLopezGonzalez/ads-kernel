@@ -1,12 +1,12 @@
 # SELLO DEL PRODUCTO ADS. Lo escribe `huella.py --anotar-sello`; no se
 # edita a mano. `sello` es el digest del material sellado; `ambito` el de
 # su ALCANCE; cada `clase` reparte el mismo digest por clase canónica.
-sello   06fcec826e828cae
+sello   92d523d5d4a21fd2
 ambito  e6358b89a3369846
 clase   APROBADA_POR_ENMIENDA          df6be7fc5b6e2c49  10
 clase   AUTORIDAD_SUPERIOR             679bafe781d1e7ec  4
 clase   CANONICA_OPERATIVA             d1c5a6f1514558f1  230
-clase   CONTRATO_O_ESQUEMA_TECNICO     e65475f6f64f89d8  187
+clase   CONTRATO_O_ESQUEMA_TECNICO     dcfa3328c458e118  187
 clase   DERIVADA                       e51fbe3c8f4cdc14  49
 clase   EVIDENCIA                      c3ba639ffc2e7c4e  116
 clase   HISTORICA                      7291cdcbd8707577  8
