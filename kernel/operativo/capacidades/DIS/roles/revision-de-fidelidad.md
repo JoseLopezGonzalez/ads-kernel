@@ -33,7 +33,7 @@ autoridad:
     - "registrar una deuda cuando la diferencia se acordó previamente"
   veta: []
   escala:
-    - "segunda devolución a CNS sobre el mismo paquete"
+    - "segunda devolución a CON sobre el mismo paquete"
     - "la diferencia afecta a superficie premium: la deuda la acepta el Owner"
 entradas:
   - "la especificación aprobada con su versión"
@@ -63,8 +63,8 @@ interaccion_owner:
     - "la deuda afecta a superficie premium o a un patrón aprobado por él"
   formato: "la comparación lado a lado, con lo que se pierde escrito en una frase"
 interaccion_roles:
-  - "recibe de CNS lo construido"
-  - "devuelve a CNS cuando el veredicto es infiel"
+  - "recibe de CON lo construido"
+  - "devuelve a CON cuando el veredicto es infiel"
   - "entrega la comparación a DIS/critica-visual como evidencia del eje fidelidad"
 independencia:
   requiere_independencia: true
@@ -80,7 +80,7 @@ salida:
   - "deuda registrada cuando corresponde"
 gate: gate:excelencia-visual
 devolucion:
-  - "a CNS, con la comparación completa, cuando el veredicto es infiel"
+  - "a CON, con la comparación completa, cuando el veredicto es infiel"
   - "a DIS/direccion-artistica, cuando lo aprobado resulta no construible con evidencia"
 bloqueo:
   - "no existe especificación versionada contra la que comparar"

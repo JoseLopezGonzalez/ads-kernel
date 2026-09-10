@@ -447,7 +447,7 @@ se puede exigir una sola grafía en ningún sitio.
 
 | | opción | qué implica |
 |---|---|---|
-| **A** | **Manda la fuente aprobada: CNS TILDE** ← recomendada | **No se enmienda `(b)`.** `F6` alinea todo lo derivado y el kernel construido a la grafía con tilde. |
+| **A** | **Manda la fuente aprobada: CON TILDE** ← recomendada | **No se enmienda `(b)`.** `F6` alinea todo lo derivado y el kernel construido a la grafía con tilde. |
 | **B** | **Manda la grafía SIN TILDE** | Se enmienda `(b)` en las apariciones afectadas, y `F6` alinea lo poco que quede desalineado. |
 
 ```text
@@ -653,7 +653,7 @@ lo corrija o lo sustituya por su propio texto — **no para aplicarlo sin usted*
 - **Fuente:** el hallazgo externo con propietario «el Owner» y fase `F5`.
 - **Borrador preparado:** [`borradores/B-10-NOTA-DE-VIGENCIA.md`](borradores/B-10-NOTA-DE-VIGENCIA.md)
 
-**RESPUESTA MÍNIMA:** `R-03: APRUEBO` · `APRUEBO CNS CAMBIOS` (con su texto) · o `NO APRUEBO`.
+**RESPUESTA MÍNIMA:** `R-03: APRUEBO` · `APRUEBO CON CAMBIOS` (con su texto) · o `NO APRUEBO`.
 
 ---
 
@@ -764,7 +764,7 @@ D-10: _   (A derivado · B escrito y mantenido)
 
 R-01: APRUEBO / NO APRUEBO      si NO → nombre cuál de las cuatro reabre
 R-02: APRUEBO / NO APRUEBO
-R-03: APRUEBO / APRUEBO CNS CAMBIOS / NO APRUEBO
+R-03: APRUEBO / APRUEBO CON CAMBIOS / NO APRUEBO
 R-04: _   (A el texto se le prepara · B usted escribe)
 R-05: _   (A acto del Owner · B composición de juicios independientes)
 ```

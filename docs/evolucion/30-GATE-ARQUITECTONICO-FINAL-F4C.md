@@ -677,7 +677,7 @@ verificacion/README.md:7-9   «**Qué NO es.** No es un gate, y no certifica nad
                              quien aplica la corrección, que es exactamente lo que `F4c`
                              lleva doce tandas sin poder aceptar como prueba»
 README.md:53-78              acota qué certifica un «N/N en verde» y qué NO: nueve de las
-                             comprobaciones exigen repositorio CNS HISTORIA y **fallan
+                             comprobaciones exigen repositorio CON HISTORIA y **fallan
                              CERRADO** sobre la materialización que la receta del sobre
                              prescribe. «**Un verde sobre el árbol desnudo NO es el verde que
                              un gate certifica**»
@@ -848,7 +848,7 @@ RAZÓN               implementado. Esa ausencia es ESPERADA, está DECLARADA y n
 NO HE MODIFICADO EL REPOSITORIO        `git status --porcelain` VACÍO al abrir y al cerrar
 NI UN COMMIT, NI UNA REFERENCIA        cero commits, cero ramas, cero tags, cero pushes
 NO PROPONGO CORRECCIONES               ninguna, y el encargo lo prohíbe
-TODA AFIRMACIÓN CNS FICHERO Y LÍNEA    y toda cifra con el comando que la deriva
+TODA AFIRMACIÓN CON FICHERO Y LÍNEA    y toda cifra con el comando que la deriva
 NINGUNA HUELLA ABREVIADA A MANO        las que aparecen son salida de `sha256sum`
 `ASIGNADO − LEÍDO`                     ∅, declarado contra mi propio interés en §1.2
 NO HE VISTO EL DICTAMEN DE `U2`        ni él el mío
@@ -2096,7 +2096,7 @@ y **una** frase entrecomillada. **Eso es lo que hay, y no es lo que `O19` L315 o
 entregar.** `U1` lo rebajó en su `RF-2` a «entrega su DIGEST y su RESUMEN donde la resolución
 exige su TEXTO», y **esa redacción es la exacta: la adopto.**
 
-**(d) LO QUE LA MATRIZ HACE CNS ÉL, chk L4076** — leído de la tabla, no de la narración:
+**(d) LO QUE LA MATRIZ HACE CON ÉL, chk L4076** — leído de la tabla, no de la narración:
 
 ```text
 | `C-20` | CONTRATO_COMPLETO_PARA_F6 | sí | sí | no | SÍ | SÍ | `PLT` implementa · Owner
@@ -2478,7 +2478,7 @@ inequívoca. **No lo cuento como defecto** — y por eso `U2-10` cae en §2.9.
 
 ```text
 CON LOS ONCE CAMPOS                       18 de 18
-CNS CRITERIO DE CIERRE EXACTO Y MEDIBLE   17 de 18   — falla `V6-15`
+CON CRITERIO DE CIERRE EXACTO Y MEDIBLE   17 de 18   — falla `V6-15`
 CONSTRUIBLES SIN VOLVER A DECIDIR         16 de 18   — fallan `V6-15` y `V6-16`
 CON UNA OBLIGACIÓN AJENA COLGADA ENCIMA    2 de 18   — `V6-04` (`H-05`) y `V6-17` (`H-01`)
 ```

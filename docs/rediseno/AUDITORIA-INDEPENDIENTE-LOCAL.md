@@ -602,7 +602,7 @@ Todas las vinculaciones existentes son de DIS: `DIS/roles/{investigacion-ux, dis
 prototipado, validacion-de-uso}`, `DIS/metodos/ValidacionDeUso` y `packs/mobile-app/roles/
 interaccion-tactil.md` (que es `mob:DIS/...`, capacidad DIS). El gate de `CNS` es
 `gate:implementacion-completa`, cuyas siete comprobaciones no incluyen ningún eje de
-usabilidad, y ningún rol de CNS —ni del kernel (`CNS/implementacion`, `CNS/experimental`) ni
+usabilidad, y ningún rol de CON —ni del kernel (`CNS/implementacion`, `CNS/experimental`) ni
 de pack (`web:CNS/estados-de-red`, `mob:CNS/ciclo-de-vida`, `wear:CNS/energia-y-estados`)—
 declara `gate: gate:usabilidad`.
 
@@ -776,7 +776,7 @@ El disparador es el **cierre del item** (b.10), no la capa de USO; y `USO` es co
 (`C-USO`), de modo que en `DEF`, `DEU`, `SIS` o `INV` sin fuente de uso real el handoff
 declarado no tiene emisor. Además **no existe `handoff:con-a-ver`**, pese a que `CNS → VER`
 aparece en las diez rutas de b.16 y `00-CIRCUITOS.md` le dedica una fila explícita («CNS → VER
-· diferencias declaradas antes de la revisión · infiel: vuelve a CNS con la comparación»). C5
+· diferencias declaradas antes de la revisión · infiel: vuelve a CON con la comparación»). C5
 permite que un par no tenga handoff declarado, pero `00-CIRCUITOS.md` dice que los declarados
 son «aquellos donde hace falta precisión extra», y este es el tránsito más frecuente del
 sistema. **Corrección:** retipar el emisor de `cierre-a-apr` y declarar `handoff:con-a-ver`.
@@ -1074,7 +1074,7 @@ A-06  DIS y DOM se arbitran un veto que a.5 reserva al Owner
         texto de un campo.
 
 A-11  el encuadre no puede declarar `esperando-owner`
-A-13  gate:usabilidad se declara aplicable a CNS y nada lo vincula
+A-13  gate:usabilidad se declara aplicable a CON y nada lo vincula
 A-15  ENC/Critica no está en la ficha de su capacidad
 A-16  C4 invoca composicion:dis-fundacion, que no existe
 A-22  handoff mal tipado, y falta el handoff CNS→VER

@@ -302,7 +302,7 @@ M6→M7→M6 indefinido.
 Tres hechos, en orden:
 
 ```text
-1  EL OWNER CITA `C7` CNS     con una sola fuente escrita, el gate APLICA y su comprobación
+1  EL OWNER CITA `C7` CON     con una sola fuente escrita, el gate APLICA y su comprobación
    EXACTITUD                  `existe-integration-set` EXIGE un Integration Set
 
 2  `C7` EXTRALIMITA A `E2.6`  `E2.6` dice «VARIAS sources»; `C7` dice «UNA O MÁS». `C7`
@@ -448,7 +448,7 @@ Los cinco puntos del Owner, más un sexto que el revisor añade:
 4  FALLO DEL PUSH         sin tope de reintentos —§7.3 lo exige—, sin evento `fallo`, sin
                           estado resultante
 
-5  NO ENCAJA CNS `C7`, Y  la tabla de `C7` gobierna las operaciones Git DE LAS FUENTES.
+5  NO ENCAJA CON `C7`, Y  la tabla de `C7` gobierna las operaciones Git DE LAS FUENTES.
    EL PROBLEMA ES MÁS     NINGUNA fila cubre el repositorio de control. Y `W9`/`W10` son
    PROFUNDO               commits y pushes DEL CONTROL REPO. Luego §7.6 —«C7 declara quién
                           pide, ejecuta, bloquea y verifica cada una»— es FALSA exactamente
@@ -725,7 +725,7 @@ lleve al Owner:
                                     hacer HOY es REGISTRARLO
 
 las cuatro extensiones de ficha     verificado contra b.16: PLT es propietario global de
-de §5.2                             DEP y `SEG:condiciones ⊳ CNS` es OBLIGATORIO por G28.
+de §5.2                             DEP y `SEG:condiciones ⊳ CON` es OBLIGATORIO por G28.
                                     Extender fichas con materia que ya está en su alcance
                                     es trabajo de F6, no presión
 ```

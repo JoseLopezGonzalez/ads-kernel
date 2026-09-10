@@ -1441,7 +1441,7 @@ sha256: deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef
 modulo json desde: .../veneno/json.py            ← el veneno FUNCIONA
 ```
 
-**Contra los puntos ejecutables CNS prólogo `E-10`, el veneno no entra:**
+**Contra los puntos ejecutables CON prólogo `E-10`, el veneno no entra:**
 
 ```
 $ PYTHONPATH=veneno python3.12 raiz-externa/verificador.py capacidades
@@ -1555,7 +1555,7 @@ La cadena, medida en tres pasos:
       hashlib.__file__ = .../veneno2/hashlib.py
       hashlib.sha256(b'x').hexdigest() = c0ffeec0ffee…
 
-3 · el punto ejecutable CNS prólogo, en el mismo entorno, resiste:
+3 · el punto ejecutable CON prólogo, en el mismo entorno, resiste:
     $ PYTHONPATH=veneno2 python3.12 validadores/huella.py
       7196ce99457a77d4
 ```

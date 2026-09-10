@@ -263,7 +263,7 @@ cuando:
 entonces:
   - "cada forma desconocida levanta cardinal de agentes ilegible"
   - "las veintidós formas del corpus se leen enteras"
-  - "el valor de CNS se lee como un agente por paquete, con paralelismo de paquetes marcado"
+  - "el valor de CON se lee como un agente por paquete, con paralelismo de paquetes marcado"
   - "el sabotaje se LEE como cardinal siete con reparto por artefacto e integrador negado"
   - "y la materialización cae por varios agentes sin integrador, que es una prohibición de C4, y no por ilegibilidad ni por la huella del kernel"
 falla_si:

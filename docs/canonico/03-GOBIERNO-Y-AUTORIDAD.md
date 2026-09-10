@@ -73,7 +73,7 @@ HISTÓRICO    describe un estado ANTERIOR. Puede contener frases que hoy son fal
              NO es un defecto mientras su carácter histórico sea inequívoco y quede fuera
              del camino de implementación. No se edita para «arreglarlo»: se rotula.
 
-EVIDENCIA    registra QUÉ SE COMPROBÓ, POR QUIÉN y CNS QUÉ RESULTADO, en una fecha, sobre
+EVIDENCIA    registra QUÉ SE COMPROBÓ, POR QUIÉN y CON QUÉ RESULTADO, en una fecha, sobre
              un árbol concreto. Es inmutable por diseño. **No dice qué hay que construir.**
 
 DERIVADA     se REGENERA desde una fuente canónica. Editarla a mano es el defecto.

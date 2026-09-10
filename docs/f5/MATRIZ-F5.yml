@@ -382,7 +382,7 @@ filas:
     artefacto: docs/rediseno/a-ENMIENDA-E4-COMPOSICION-DE-RUTAS.md
     borrador_de_origen: docs/f5/borradores/B-06-RUTAS-DE-b16.md
     criterio_aceptacion: [A1, A2]
-    prueba_prevista: que una celda de cobertura alcance «verificado» CNS EVIDENCIA
+    prueba_prevista: que una celda de cobertura alcance «verificado» CON EVIDENCIA
 
   - id: F5-OB-12
     entregable: F5-A

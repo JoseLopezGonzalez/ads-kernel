@@ -6,7 +6,7 @@ nombre: Condiciones
 capacidad: DOM
 disparador:
   - "un item cumple C-DOM y ARQ ha depositado su plan, o el item no cumple C-ARQ"
-  - "CNS pregunta en modo consulta antes de tocar datos"
+  - "CON pregunta en modo consulta antes de tocar datos"
 carga:
   - "el plan de ARQ o la especificación de lo que se va a construir"
   - "docs/dominio/VOCABULARIO.md e INVARIANTES.md"

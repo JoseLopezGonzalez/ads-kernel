@@ -79,9 +79,9 @@ dado:
 cuando:
   - "se compone su ruta"
 entonces:
-  - "las condiciones de DOM se entregan ANTES del paquete de CNS, no después"
+  - "las condiciones de DOM se entregan ANTES del paquete de CON, no después"
 falla_si:
-  - "DOM recibe la primera noticia en paralelo con CNS, o después"
+  - "DOM recibe la primera noticia en paralelo con CON, o después"
 ejecucion: guion-manual
 estado: contrato-definido
 ```
@@ -105,7 +105,7 @@ estado: contrato-definido
 ```yaml ads:escenario
 id: T106
 nombre: Construcción devuelve en vez de redecidir
-cubre: ["CNS/Implementacion", "a.3 CNS no redecide"]
+cubre: ["CNS/Implementacion", "a.3 CON no redecide"]
 dado:
   - "una capa anterior insuficiente detectada al leer, antes de construir"
 cuando:
@@ -251,7 +251,7 @@ id: T115
 nombre: Una dependencia no se incorpora sin veredicto fechado
 cubre: ["SEG/Dependencia", "G28"]
 dado:
-  - "una dependencia nueva propuesta por CNS"
+  - "una dependencia nueva propuesta por CON"
 cuando:
   - "se ejecuta SEG/Dependencia"
 entonces:

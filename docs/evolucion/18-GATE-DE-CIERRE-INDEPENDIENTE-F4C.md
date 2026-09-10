@@ -580,7 +580,7 @@ en el punto 6 y en el hallazgo `M-3`.
     SÍ. L1738-1739 lo dice expresamente, y §3.6 L3801 lo mantiene entre los campos
     OBLIGATORIOS de `preparada`. Las dos sedes son compatibles.
 
-2 · ¿LOS CANÓNICOS RESTAURADOS CASAN CNS `hash_previo` / la revisión base?
+2 · ¿LOS CANÓNICOS RESTAURADOS CASAN CON `hash_previo` / la revisión base?
     SÍ. Paso C (L1703-1709) restaura desde `revision_base` EXACTA, incluidos los que ya
     habían alcanzado su hash posterior; paso D verifica byte a byte; y el commit lleva «el
     estado canónico RESTAURADO A LA BASE — idéntico, byte a byte, al del commit anterior en
@@ -1026,7 +1026,7 @@ de inmutabilidad se respetó. **SUPERADA.**
 
 ---
 
-**Recuento de mis trece filas: DIEZ SUPERADAS · DOS FALLIDAS (`A7`, `A8`) · UNA SUPERADA CNS
+**Recuento de mis trece filas: DIEZ SUPERADAS · DOS FALLIDAS (`A7`, `A8`) · UNA SUPERADA CON
 RESERVA DECLARADA (`A2`). NINGUNA no aplicable.**
 
 ---
@@ -1418,7 +1418,7 @@ que `D50` eliminó.**
 fichero y su línea para que se verifique una a una.
 
 ```text
-FILAS DE MI MATERIA        13 · 10 SUPERADAS · 2 FALLIDAS (`A7`, `A8`) · 1 SUPERADA CNS
+FILAS DE MI MATERIA        13 · 10 SUPERADAS · 2 FALLIDAS (`A7`, `A8`) · 1 SUPERADA CON
                            RESERVA DECLARADA (`A2`) · 0 no aplicables
 
 HALLAZGOS NUEVOS           10 · 0 BLOQUEANTES · 3 GRAVES (`G-1` `G-2` `G-3`) ·
@@ -1541,7 +1541,7 @@ SHA-256 (16 primeros) y líneas, calculados sobre el árbol en `HEAD`.
 adorno. Sus SHA-16 y líneas:
 
 ```text
-APR a870911530909584/95   ARQ 6ca11b5f09883e24/104  CNS e0f79e6c3a467302/107
+APR a870911530909584/95   ARQ 6ca11b5f09883e24/104  CON e0f79e6c3a467302/107
 DIS 06f019010d45771f/147  DOM 926c7144cb098caa/135  DSP acb292f882e77d74/152
 ENC f71b8e43f6e2d66f/174  ENT 91a81d3cf1cbfa61/123  INV 47412638e7552da1/96
 PLT a5f87977c58ed1d0/108  PRD e83b0e08272e219d/105  SEG 19bfd38a7a24b57f/135
@@ -1797,7 +1797,7 @@ Comprobaciones semánticas, no de recuento:
   defecto. Coherente.
 
 **Un hueco semántico que nadie ha registrado.** `b.16` L834–836 declara que `DOM` y `SEG`
-participan **DOS veces**: `<CAP>:condiciones ⊳ CNS` antes de construir, y
+participan **DOS veces**: `<CAP>:condiciones ⊳ CON` antes de construir, y
 `<CAP>:revisión tras VER` después. `01-PROCESOS.md` **no instancia `:revisión` en ninguno
 de los diez procesos** (`grep` sobre el fichero entero: cero apariciones), ni aparece en
 `circuitos/`. Consecuencia: en `A8`, `M6`–`M7` y `U5b` —los tres tramos que escriben en las
@@ -2232,7 +2232,7 @@ invoque la «simetría exacta con `A3`».
 **`H-5` · `b.16` da a `DOM` y a `SEG` una segunda participación —revisar lo construido— que
 ningún proceso instancia, y el gate de composición de §8.0 no puede verlo.**
 `b-RECORRIDO-APROBADA.md` **L834–836**: *«DOM y SEG participan dos veces … `<CAP>:condiciones
-⊳ CNS` RESTRICCIONES ANTES de construir · **`<CAP>:revisión` tras VER revisan lo
+⊳ CON` RESTRICCIONES ANTES de construir · **`<CAP>:revisión` tras VER revisan lo
 construido**»*. `grep` sobre `01-PROCESOS.md` (564 líneas) y sobre `circuitos/`: **cero
 apariciones de `:revisión`**. Los diez procesos instancian sólo `:condiciones`. F4 compone
 `A8`, `M6`–`M7` y `U5b` con `DOM:condiciones` y `SEG:condiciones` y nada más (§8.2, §8.3,
@@ -3043,11 +3043,11 @@ construido— que ningún proceso instancia, y el gate de composición de §8.0 
 *(procede de `H-5`; **CONFIRMADO**, con la reserva declarada en D-5·2.)*
 
 > `b-RECORRIDO-APROBADA.md:832-836` · «### DOM y SEG participan dos veces, y nunca a la vez
-> que CNS — `<CAP>:condiciones ⊳ CNS` RESTRICCIONES ANTES de construir. Consulta. ·
+> que CON — `<CAP>:condiciones ⊳ CON` RESTRICCIONES ANTES de construir. Consulta. ·
 > **`<CAP>:revisión` tras VER revisan lo construido.** Consulta o gate conjunto.»
 >
 > `a-CAPACIDADES-APROBADA.md:504-505` · «DOM y SEG aportan **condiciones antes de construir y
-> revisan después**, no reciben la primera noticia en paralelo con CNS»
+> revisan después**, no reciben la primera noticia en paralelo con CON»
 >
 > `grep -rn ':revisi' kernel/operativo/` → **vacío**, verificado por mí
 

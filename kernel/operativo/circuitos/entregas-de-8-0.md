@@ -48,7 +48,7 @@ rechaza_si:
   - "el paquete no declara `lee_fuentes` ni `escribe_fuentes` y toca código"
 devolucion: >
   CNS devuelve a SIS cuando lo declarado por SIS no se puede construir sin ampliar el alcance.
-  La devolución cuenta para el freno de `a.7` sólo si CNS ya había tomado custodia.
+  La devolución cuenta para el freno de `a.7` sólo si CON ya había tomado custodia.
 evidencia_de_devolucion:
   - "qué parte de la capa de SIS no es construible y qué alcance haría falta"
 owner: "la autorización de retirada POR FUENTE, cuando el cambio retira algo heredado (`A8`, `M6`)."
@@ -96,7 +96,7 @@ rechaza_si:
   - "falta el resultado de alguna fuente del alcance"
   - "hay una fuente con CI en rojo y sin motivo escrito"
 devolucion: >
-  ENT devuelve a CNS nombrando la fuente sin resultado o con CI en rojo.
+  ENT devuelve a CON nombrando la fuente sin resultado o con CI en rojo.
   Mientras no converjan todas, ENT sostiene el estado INTEGRACIÓN PARCIAL, que no es un fallo: es un estado declarado.
 evidencia_de_devolucion:
   - "el `id` de la fuente, su revisión y la salida de CI que lo sostiene"

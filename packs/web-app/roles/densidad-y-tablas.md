@@ -59,7 +59,7 @@ interaccion_owner:
   formato: "las dos opciones con datos reales delante, no descritas"
 interaccion_roles:
   - "recibe dirección de DIS/direccion-artistica y datos de DIS/investigacion-ux"
-  - "entrega la especificación a DIS/critica-visual y a CNS"
+  - "entrega la especificación a DIS/critica-visual y a CON"
 independencia:
   requiere_independencia: true
   de_quien: [DIS/critica-visual]

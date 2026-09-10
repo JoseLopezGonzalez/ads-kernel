@@ -256,7 +256,7 @@ def _num(txt):
 # el repositorio no responde, devuelve None — y las comprobaciones que dependen de él
 # fallan CERRADO, con diagnóstico.
 # `EE-17` · **EL ALCANCE SE DERIVA DE LA PROPIEDAD, NO DE LA REDACCIÓN DEL TÍTULO.**
-# El informe publicaba qué comprobaciones exigen un repositorio CNS HISTORIA filtrando sus
+# El informe publicaba qué comprobaciones exigen un repositorio CON HISTORIA filtrando sus
 # TÍTULOS por la cadena «sin git». Es una convención de redacción, y caduca en cuanto
 # alguien no la sigue: `G-34` empezó a usar git y no reescribió su título, con lo que el
 # censo derivado daba OCHO y la medición NUEVE — que es `DD-21`, nacido de esta misma
@@ -527,7 +527,7 @@ def _informe(codigo_normal=None):
         if det: print(f"{'':13s}└─ {det}")
     verde = sum(1 for _, _, ok, _ in RES if ok)
     # `DD-21` · **QUÉ CERTIFICA ESTE «N/N», Y QUÉ NO.** Nueve de las comprobaciones no son
-    # propiedades del COMMIT sino de **un repositorio CNS HISTORIA**: contrastan contra
+    # propiedades del COMMIT sino de **un repositorio CON HISTORIA**: contrastan contra
     # `HEAD` y contra la revisión base con `git`. Sobre la materialización que la RECETA
     # del sobre prescribe —árbol desplegado SIN `.git`— esas nueve fallan CERRADO, que es
     # lo correcto, y la batería da menos que su total. **No es un defecto: era que ninguna
@@ -543,7 +543,7 @@ def _informe(codigo_normal=None):
     _titulan = {i for i, t, _, _ in RES if "sin git" in t}
     _desajuste = sorted(_titulan ^ set(_con_git)) + sorted(_EXIGEN_HISTORIA - set(_ids))
     print(f"\n{verde}/{len(RES)} comprobaciones en verde")
-    print(f"ALCANCE (`DD-21`): {len(_con_git)} de las {len(RES)} exigen un repositorio CNS "
+    print(f"ALCANCE (`DD-21`): {len(_con_git)} de las {len(RES)} exigen un repositorio CON "
           f"HISTORIA y fallan CERRADO sin `.git` — {', '.join(_con_git)}. "
           f"Las otras {len(RES) - len(_con_git)} son propiedades del ÁRBOL DESNUDO. "
           f"Un «{len(RES)}/{len(RES)}» certifica el commit CON su historia; sobre la "
@@ -1584,7 +1584,7 @@ if ("DEP", "SEG") in _efix or len(_efix) >= len(_est):
 # Éstos alimentan TEXTO SINTÉTICO al derivador y exigen resultados distintos entre sí.
 _FX_FICHA_OK = ('roles: [XX/uno]\n'
                 'deriva_de:\n'
-                '  - "b.16 · XX participa dos veces: condiciones antes de CNS"\n'
+                '  - "b.16 · XX participa dos veces: condiciones antes de CON"\n'
                 'materializacion: >\n  cualquier cosa\n')
 _FX_FICHA_PROSA = ('roles: [XX/uno]\n'
                    'deriva_de:\n'
@@ -2349,7 +2349,7 @@ _INMUTABLES = _inmutables()
 # mientras imprime `OK`. Es `M-12` —«interpretaban el vacío como “nada cambió”»—
 # sobreviviendo en la comprobación cuyo título dice «falla CERRADO sin git».
 def _base_vacia(bruto, comando, para_que):
-    """El diagnóstico si `bruto` vino VACÍO CNS ÉXITO, o None. `G-11b`, generalizada."""
+    """El diagnóstico si `bruto` vino VACÍO CON ÉXITO, o None. `G-11b`, generalizada."""
     if bruto is not None and not bruto.strip():
         return (f"`{comando}` responde con ÉXITO y VACÍO: {para_que}. Comparar contra nada "
                 f"da verde siempre, y eso no es comparar")

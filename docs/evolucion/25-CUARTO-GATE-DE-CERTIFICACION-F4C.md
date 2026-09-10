@@ -396,7 +396,7 @@ Los CUATRO SHA-256 que recalculé coinciden con las filas 1, 3, 4 y 15 del manif
 ```
 LA RESTA
   FUENTES ASIGNADAS AL REVISOR `Y`                     7   ·  22 351 líneas
-  CNS DECLARACIÓN VÁLIDA DE LECTURA ÍNTEGRA            5   ·  17 339 líneas
+  CON DECLARACIÓN VÁLIDA DE LECTURA ÍNTEGRA            5   ·  17 339 líneas
   ─────────────────────────────────────────────────────────
   ASIGNADAS − LEÍDAS  =  **2**   ·  5 012 líneas
                          CHECKPOINT-ADS-NEXT.md (3 816) · DECISIONES-Y-CONTRADICCIONES.md (1 196)
@@ -995,7 +995,7 @@ fichero con otro nombre da `FALLO G-29`.
 Es, palabra por palabra, el patrón `T-05`/`R-A` que este corpus lleva tres gates castigando: **la
 comprobación escrita para verlo lo enumera en su detalle y da verde.**
 
-**`Z1` afirma que esa línea la introdujo ESTA MISMA TANDA. LO VERIFIQUÉ CNS `git` Y ES CIERTO:**
+**`Z1` afirma que esa línea la introdujo ESTA MISMA TANDA. LO VERIFIQUÉ CON `git` Y ES CIERTO:**
 ```
 $ git log --oneline -S'rel.split("/")[-1] in _ENLAZADOS_INDICE_OWNER' -- …/comprobar-…py
   1d3b5d4 feat(owner): crear la sede canonica de resoluciones y registrar O19
@@ -1118,7 +1118,7 @@ POR CLASE, que es lo que `O18` manda separar
   A + B  (los dos a la vez)        3   Z-02 Z-03 Z-08
   C  (actor privilegiado)          0   NO reporto NINGUNO como defecto de esta tanda
 
-REPRODUCIDOS POR MÍ CNS SALIDA PEGADA   14 de 16   (`Z-01` es un hecho de procedimiento;
+REPRODUCIDOS POR MÍ CON SALIDA PEGADA   14 de 16   (`Z-01` es un hecho de procedimiento;
                                                     `Z-16` es lectura declarada)
 HALLAZGOS QUE NINGÚN RELEVO TRAJO        5   Z-01 (adjudicación) · Z-05 (la variante
                                              COMMITEADA) · Z-06 (la regresión medida) ·
@@ -1201,7 +1201,7 @@ adjudico y no los presumo ni cerrados ni abiertos.** De los 43, mi foco alcanza 
 | **`W-08`** MEDIO | el README que se desmentía sobre `G-34` | **CERRADO.** El README L132 dice hoy «*ninguna protección interna nueva» — pero la tanda anterior **sí escribió una**: `G-34`*» | **CERRADO** |
 | **`W-09`** MENOR | que algo ejecute la regla del corrigendum | **NO CERRADO.** `grep -ci corrigendum` sobre la batería → **0** | **NO CERRADO** (`Z-15`) |
 | **`W-10`** GRAVE `B` | que el emisor lea del commit y compruebe `git status` | **CERRADO.** Toda lectura de contenido pasa por `git show <commit>:<ruta>` o `git archive <commit>`; el árbol sucio y el fichero sin rastrear dan **rc=2**. Lo verifiqué por lectura y ejecutando el emisor | **CERRADO** |
-| **`W-11`** GRAVE `B` | que el sobre no yuxtaponga dos árboles | **CERRADO CNS MECANISMO.** El sobre publica **los dos árboles, cada uno con su derivador, sus cifras y su digest**, más **las cuatro rutas en que difieren**. Recalculé los seis campos y los seis reproducen | **CERRADO** |
+| **`W-11`** GRAVE `B` | que el sobre no yuxtaponga dos árboles | **CERRADO CON MECANISMO.** El sobre publica **los dos árboles, cada uno con su derivador, sus cifras y su digest**, más **las cuatro rutas en que difieren**. Recalculé los seis campos y los seis reproducen | **CERRADO** |
 | **`W-12`** GRAVE `B` | que la receta reproduzca el digest | **CERRADO.** **Reproduje los dos digest byte a byte**, sin ejecutar el emisor, con la receta publicada | **CERRADO** |
 | **`W-13`** MEDIO `B` | el ordinal del cliquet | **CERRADO Y GENERALIZA.** El ordinal es hoy opcional (`(?:\d+\s*\|\s*)?`) y **un manifiesto que aporte CERO filas hace fallar cerrado**, no sólo cuando fallan todos. **Pero la sede del cliquet sigue sin fijarse** (`Z-03`) | **CERRADO** *(el residuo es `Z-03`, que es otra cosa)* |
 | **`W-14`** MEDIO `B` | la voz equivocada del H1 en el componente (iv) | **CERRADO A MEDIAS.** La guarda de `W2-06` cierra el **retitulado** de un documento existente —el nombre manda sobre el H1—; **no cierra el dictamen NUEVO**, y lo reproduje: `25-SINTESIS-DEL-CIERRE.md` con «SUFICIENTE PARA F5» dentro → **70 rutas, sin él, `rc=0`**. El código lo declara con honradez | **NO CERRADO** (`Z-08`) |
@@ -1847,7 +1847,7 @@ una de las dos, que es lo que `V4` hizo en el gate 3 y `X` en el suyo.**
 ```text
 LA RESTA
   FUENTES ASIGNADAS A LECTURA              16   ·  28 515 líneas
-  CNS DECLARACIÓN VÁLIDA DE LECTURA ÍNTEGRA 15   ·  27 319 líneas
+  CON DECLARACIÓN VÁLIDA DE LECTURA ÍNTEGRA 15   ·  27 319 líneas
   ─────────────────────────────────────────────────────────────
   ASIGNADO − LEÍDO  =  **1**  ·  1 196 líneas
                        docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md
@@ -2290,7 +2290,7 @@ cuenta **veintitrés** de sus adjudicaciones, con fichero y línea o con ejecuci
 
 | id | mi adjudicación | evidencia con la que lo cierro o lo dejo abierto — **V = verificado por mí** |
 |---|---|---|
-| `V-01`≡`W-11` el sobre yuxtapone dos árboles | **CERRADO CNS MECANISMO** | **V** · el sobre publica LOS DOS árboles, cada uno con su derivador y sus cifras, y las 4 rutas en que difieren. Rederivé los dos: 69/58 576/`d9e46d75` y 70/58 796/`7b3c0ede`. Ninguna insatisfacibilidad |
+| `V-01`≡`W-11` el sobre yuxtapone dos árboles | **CERRADO CON MECANISMO** | **V** · el sobre publica LOS DOS árboles, cada uno con su derivador y sus cifras, y las 4 rutas en que difieren. Rederivé los dos: 69/58 576/`d9e46d75` y 70/58 796/`7b3c0ede`. Ninguna insatisfacibilidad |
 | `V-02` la propagación excede en dos condiciones | **CERRADO POR EL OWNER** | **V** · la sede L178-182 contiene las TRES condiciones, RATIFICADAS. `O19` resolvió que la omisión estaba en la transcripción |
 | `V-03` rótulo «LITERAL DE `O18`» | **CERRADO EN EL RÓTULO · RESIDUO VIVO** | **V** · L8578 dice hoy «LITERAL DE LA SEDE CANÓNICA … RATIFICADO MEDIANTE `O19`». **Pero L8497 y L10243 conservan la cita atribuida a `O18`: es `Y-05`, y lo confirmé contra doc 23 §13·B** |
 | `V-04` «`D1`–`D106` … texto ÍNTEGRO» | **CERRADO** | **V** · `DECISIONES` L498 dice hoy «texto **RESOLUTIVO** … sólo reciben punteros» |
@@ -2419,7 +2419,7 @@ con `git` sobre el rango `f2e4d58..82d8783` (seis commits):
 Los `Y-07`, `Y-14`…`Y-18` y los `V-09`…`V-21` que sobreviven son DEUDA ANTERIOR que la regla
 de titulares de §0 no ha barrido nunca, porque **no tiene guardián**.
 
-REPRODUCIDOS POR MÍ CNS SALIDA PEGADA        11   (seis árboles en verde + seis refutaciones
+REPRODUCIDOS POR MÍ CON SALIDA PEGADA        11   (seis árboles en verde + seis refutaciones
                                                    que no cayeron + las dos restas)
 HALLAZGOS QUE NINGÚN DICTAMEN TRAJO           4   AA-01 · AA-02 · AA-03 · AA-05
 ADJUDICACIONES QUE CORRIJO A LOS DICTÁMENES   5   R-1 · R-2 · R-3 · R-4 · R-5
@@ -2637,7 +2637,7 @@ mi lote.** §8 del manifiesto: «*CUALQUIER FUENTE ASIGNADA Y NO LEÍDA ÍNTEGRA
 SUFICIENCIA*». `C-L.5` pasa de CERTIFICADA a **ABIERTA**, por primera vez en cuatro gates.
 **Esto basta por sí solo, y se mide en vez de interpretarse.**
 
-**3 · `A` NO SE SOSTIENE, Y LO REPRODUJE YO CNS MIS MANOS.** **SEIS árboles defectuosos en
+**3 · `A` NO SE SOSTIENE, Y LO REPRODUJE YO CON MIS MANOS.** **SEIS árboles defectuosos en
 `38/38` verde con `EXIT=0`**, ninguno requiere commitear, ninguno toca la batería, su README,
 `HEAD`, las refs, la base ni el runner, y cuatro llevan su control positivo en rojo. **CINCO de
 los seis están en `docs/owner/`, la zona que esta misma tanda abrió.** Y el peor es mío y nadie
@@ -2705,7 +2705,7 @@ nace en `5343260`. **Quinta vez consecutiva que el remedio abre la puerta contig
    entran en el inventario de integridad y una puerta trasera sin commitear los pone en rojo.
    **La tanda hizo lo que se le mandó.**
 2. **`V-01`≡`W-11` y `V-05`≡`W-12` —los dos defectos que hundieron el gate anterior— CERRADOS
-   CNS MECANISMO.** La receta reproduce los dos digest **byte a byte**, y lo ejecuté yo.
+   CON MECANISMO.** La receta reproduce los dos digest **byte a byte**, y lo ejecuté yo.
 3. **`X-01` CERRADO Y GENERALIZA**: el inventario de integridad **se deriva del directorio**,
    exige enumeración en el README y contrasta contra `HEAD`, con una declaración de corrección
    que **caduca sola**.

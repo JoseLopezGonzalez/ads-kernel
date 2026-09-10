@@ -48,7 +48,7 @@ owner:
 roles: [DOM/modelo, DOM/migracion]
 deriva_de:
   - "a.3 · DOM: modelo, vocabulario, contratos, reversibilidad; veto sobre el modelo y la recuperabilidad"
-  - "b.16 · DOM participa dos veces: condiciones antes de CNS, revisión después de VER"
+  - "b.16 · DOM participa dos veces: condiciones antes de CON, revisión después de VER"
 materializacion: >
   Se materializa cuando un item cumple C-DOM. En modo consulta no toma custodia; en modo
   trabajo propio recibe paquete con custodia, gate y checkpoint.

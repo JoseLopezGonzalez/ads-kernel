@@ -426,7 +426,7 @@ representa —o si hace falta uno más— es materia de la síntesis»*. Ya no h
 | produjo una conclusión sobre objetos existentes para que alguien decidiera | *«producir una CONCLUSIÓN sobre un objeto ya existente, para que alguien decida con ella»* |
 | `INV` recorrió ocho lentes y produjo 29 fichas con procedencia | obligatoria `conclusion-fundada`, `capacidad_productora: INV` |
 | el consumidor fue `SIS`, que decide qué entra al kernel | *«propietario_global DERIVADO del encargo: la capacidad responsable de la decisión que la consumirá»* |
-| no se escribió una línea en los proyectos minados | *«AUD no activa CNS»* |
+| no se escribió una línea en los proyectos minados | *«AUD no activa CON»* |
 | terminó en candidatos, no en producto | *«PUEDE cerrar en APR sin pasar por PRD»* |
 
 **La minería es un `AUD` con `SIS` como consumidor declarado. No hace falta un proceso

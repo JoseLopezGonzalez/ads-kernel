@@ -60,7 +60,7 @@ interaccion_owner:
     - "no habla con el Owner"
   formato: "diagnóstico escrito con su reproducción"
 interaccion_roles:
-  - "entrega el diagnóstico a CNS, que corrige"
+  - "entrega el diagnóstico a CON, que corrige"
   - "entrega la reproducción a VER, que comprueba la corrección"
   - "consulta a DOM o SEG cuando la causa toca datos o autorización"
 independencia:

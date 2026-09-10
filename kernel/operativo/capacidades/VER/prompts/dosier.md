@@ -86,7 +86,7 @@ Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el
 Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
 
 ```text
-  · a CNS, cuando la evidencia muestra que un criterio no se cumple
+  · a CON, cuando la evidencia muestra que un criterio no se cumple
   · a DIS, cuando la regresión visual rompe una superficie fuera del alcance
   · a PRD, cuando el criterio de éxito no es verificable tal como está escrito
 ```

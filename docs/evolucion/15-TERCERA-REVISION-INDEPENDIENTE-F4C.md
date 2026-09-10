@@ -302,7 +302,7 @@ No afirmo que la ruta larga sea incorrecta; afirmo que **F4 no demuestra qué ca
 **Citas:**
 
 > L3213 (contrato por fase): «`fallo` | **ninguna: NO tiene `tx` ni `fase`** | `operacion` · `diagnostico` · `intentos` | `fase` · `afecta` | — | ninguna»
-> L3162: «`deriva` o `fallo` CNS `fase` o CNS `tx` → ESQUEMA ESTRUCTURAL»
+> L3162: «`deriva` o `fallo` CON `fase` o CON `tx` → ESQUEMA ESTRUCTURAL»
 > L1083 (garantía 6): «se emite un evento **`fallo`** de publicación, **nombrando `tx` y commit**, y se escala»
 > L1225–1229: «MARCADOR EN UN ÁRBOL CLONADO → Evento **`fallo`**, con `operacion: publicacion`, **el `tx` y el commit culpable nombrados**»
 > L1307 (`X15`) y L1319 (`X28`): «nombrando `tx` y commit»

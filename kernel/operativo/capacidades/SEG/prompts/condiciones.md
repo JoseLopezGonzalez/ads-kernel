@@ -85,7 +85,7 @@ Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el
 Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
 
 ```text
-  · a CNS, cuando lo construido expone algo que las condiciones prohibían
+  · a CON, cuando lo construido expone algo que las condiciones prohibían
   · a ARQ, cuando el plan abre una superficie que no puede mitigarse
 ```
 

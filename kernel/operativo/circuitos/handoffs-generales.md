@@ -74,7 +74,7 @@ comprueba_al_recibir:
   - "el plan no exige decidir nada de otra capa para poder ejecutarlo"
   - "las dependencias del paquete están cerradas con capa vigente"
 rechaza_si:
-  - "el plan deja huecos que obligarían a CNS a decidir alcance, forma o modelo"
+  - "el plan deja huecos que obligarían a CON a decidir alcance, forma o modelo"
 devolucion: >
   CNS devuelve a ARQ cuando el plan no es ejecutable como está descrito, con qué parte
   concreta no lo es.
@@ -211,7 +211,7 @@ checkpoint: "APR lee del item: su traza de ruta completa, para localizar dónde 
 id: handoff:con-a-ver
 de: CNS
 a: VER
-cuando: "CNS deposita su capa y el paquete continúa hacia verificación"
+cuando: "CON deposita su capa y el paquete continúa hacia verificación"
 entrega:
   - "el commit identificado y la salida de la suite de tests"
   - "las DIFERENCIAS conocidas respecto a la especificación, declaradas ANTES de la revisión"
@@ -227,9 +227,9 @@ rechaza_si:
   - "la capa cambia una decisión de PRD, DIS o ARQ sin haberla devuelto"
   - "falta la evidencia de usabilidad de una superficie que la capa modificó"
 devolucion: >
-  VER devuelve a CNS con la evidencia concreta: qué criterio no se cumple, con qué salida o
+  VER devuelve a CON con la evidencia concreta: qué criterio no se cumple, con qué salida o
   medición se demuestra, y qué lo cerraría. Si lo que falla es una capa anterior y no la
-  construcción, VER devuelve a la capacidad propietaria de esa capa, no a CNS.
+  construcción, VER devuelve a la capacidad propietaria de esa capa, no a CON.
 evidencia_de_devolucion:
   - "el criterio concreto que no se cumple, citado de la capa de PRD"
   - "la salida, captura o medición que lo demuestra"

@@ -20,7 +20,7 @@ CINCO REGLAS QUE ESTA BATERÍA SE IMPONE, Y POR QUÉ:
   3. LAS ONCE FILAS ADVERSARIALES SE EJECUTAN. Cada `X-S` tiene su prueba, cada prueba
      comprueba el CÓDIGO del error —no su texto— y cada error declara la fila que instancia.
 
-  4. LA EXCLUSIÓN DE AUTORIDAD SE PRUEBA CNS DOS PROCESOS REALES. Dos objetos en el mismo
+  4. LA EXCLUSIÓN DE AUTORIDAD SE PRUEBA CON DOS PROCESOS REALES. Dos objetos en el mismo
      intérprete comparten memoria y comparten el `flock` del proceso: una prueba así no
      distingue una autoridad durable de una variable compartida.
 
@@ -932,7 +932,7 @@ class ExtremoAExtremo(BaseDeMacrocircuitos):
     def test_64_dos_macrocircuitos_no_adquieren_autoridad_incompatible(self):
         """T209 · Defecto que previene: instalar y adoptar el mismo producto a la vez.
 
-        CNS DOS PROCESOS REALES, no dos objetos en el mismo intérprete: dos hilos comparten
+        CON DOS PROCESOS REALES, no dos objetos en el mismo intérprete: dos hilos comparten
         el `flock` del proceso y comparten memoria, así que no distinguirían una autoridad
         durable de una variable compartida. Exactamente uno gana; el otro recibe
         `AUTORIDAD_INCOMPATIBLE` y no muta nada.

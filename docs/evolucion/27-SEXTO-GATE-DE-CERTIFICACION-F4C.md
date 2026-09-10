@@ -2926,7 +2926,7 @@ El argumento de `DD-19` —«un manifiesto no puede contener su propio SHA-256»
 **no al `-6-`**. Consecuencia material: **una fuente obligatoria de 278 líneas del árbol del
 gate no está asignada a nadie, y ninguna sede lo dice.**
 
-Agravante que sostengo con la cita: el §16 del propio `CORRIGENDUM` ordena «TODA CIFRA VA CNS
+Agravante que sostengo con la cita: el §16 del propio `CORRIGENDUM` ordena «TODA CIFRA VA CON
 SU COMANDO … Ninguna se copia», y este cardinal se copió de la entrada §15 —donde ERA correcto,
 porque el quinto gate publicó UN manifiesto—. **Es el apartado que `DD-19` creó para dejar de
 mentir sobre el árbol del gate, y es erróneo en su primer uso.**
@@ -3514,7 +3514,7 @@ documentos 25 y 26, y de ellas **10 tienen el remedio literalmente escrito por u
 anterior**. Sólo cuatro no lo son (`EE-11`, `EE-16`, `EE-17` como fragilidad, `EE-19`).
 
 ```text
-REINCIDENCIA CNS IDENTIFICADOR, una por línea
+REINCIDENCIA CON IDENTIFICADOR, una por línea
   EE-01  DD-02                          — cerrado como instancia (`docs/owner/`)
   EE-02  DD-18 · DD-19                  — su regla nueva falla en su PRIMER uso
   EE-03  S-18≡T-14 → Y-03≡Z-09          — CUARTA recurrencia

@@ -939,7 +939,7 @@ def publicar(destino, juicios, catalogo, ancla, ejercido, fichas=None,
         "    condiciones de `O26` §1, ni `M-04`, ni `C-L.7`;\n"
         "  · no certifica `F6`: `O30` §7 reserva eso a un verificador independiente.\n\n")
 
-    # `M2` DEL VERIFICADOR INDEPENDIENTE DE `O30` · LA COBERTURA ADVERSARIAL, CNS CARDINAL.
+    # `M2` DEL VERIFICADOR INDEPENDIENTE DE `O30` · LA COBERTURA ADVERSARIAL, CON CARDINAL.
     #
     #     El auditor dejó `K13` con 1 de sus 5 sabotajes y la corrida salió VERDE, porque la
     #     firma de éxito era `[1-9]\d* sabotajes` —sin cardinal— y nada contrastaba lo
@@ -1005,7 +1005,7 @@ def publicar(destino, juicios, catalogo, ancla, ejercido, fichas=None,
 # ===========================================================================
 #  8 · LAS AUTOPRUEBAS · trece modos de fallo, saboteados sobre el propio juez
 # ===========================================================================
-#  POR QUÉ EXISTEN, Y POR QUÉ NO BASTA CNS QUE EL PRODUCTO SALGA VERDE. La lección `G-05`
+#  POR QUÉ EXISTEN, Y POR QUÉ NO BASTA CON QUE EL PRODUCTO SALGA VERDE. La lección `G-05`
 #  del manifiesto de validadores: un instrumento cuyo autotest pasa y cuyo producto no corre
 #  está roto y sale verde. Aquí se ejerce la mitad contraria: se comprueba que el juez SABE
 #  DECIR QUE NO. Cada control monta una sede sintética con UN defecto y exige que el juez

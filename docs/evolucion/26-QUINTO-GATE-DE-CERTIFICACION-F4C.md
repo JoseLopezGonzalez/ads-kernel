@@ -803,7 +803,7 @@ amplificación en la proyección*». Sobre este árbol y para la proyección de 
 **Citas literales, del árbol auditado:**
 
 > **L11368:** `## \`C-L.5\` · La condición de COBERTURA del próximo gate — **CERTIFICADA por el documento 21**, y vigente para todo gate posterior`
-> **L11493:** `**Estado: CERTIFICADA por el GATE INDEPENDIENTE DE CIERRE CNS MANIFIESTOS VERIFICABLES**`
+> **L11493:** `**Estado: CERTIFICADA por el GATE INDEPENDIENTE DE CIERRE CON MANIFIESTOS VERIFICABLES**`
 > **L8230:** `**SEDE ÚNICA.** Ésta es la sede del SOBRE DE ANCLA: \`C-L.5\` —la condición de cobertura, **certificada y vigente para todo gate posterior**—`
 
 **Contra tres sedes vigentes del mismo árbol, verificadas por mí:**
@@ -2259,7 +2259,7 @@ completa frente a un actor privilegiado*»— y qué **sí** garantiza la bater�
 contradicciones entre fuentes · cambios respecto a referencias recibidas · cumplimiento de
 contratos documentales*».
 
-> ### **ESTO ES LO QUE ORDENA MI DICTAMEN, Y LO DIGO CNS TODAS LAS LETRAS.**
+> ### **ESTO ES LO QUE ORDENA MI DICTAMEN, Y LO DIGO CON TODAS LAS LETRAS.**
 >
 > El Owner **excluyó** la resistencia al actor privilegiado —clase `C`— y **convirtió en
 > condición de cierre** que no haya «**ninguna promesa de seguridad superior a la realmente
@@ -2627,7 +2627,7 @@ corrección que es falsa en el fichero que la escribe.**
 | **MENOR** | **2** | `CC-05` · `CC-06` |
 | | **6** | clase `A` 6 · clase `B` 0 · clase `C` 0 |
 
-**REPRODUCIDOS POR MÍ CNS SALIDA PEGADA: 6 de 6.** No sostengo nada que no haya ejecutado.
+**REPRODUCIDOS POR MÍ CON SALIDA PEGADA: 6 de 6.** No sostengo nada que no haya ejecutado.
 **CUÁNTOS LOS INTRODUJO ESTA TANDA: dos** — `CC-04` nace del remedio de `Z2-02` de esta misma
 tanda, y `CC-06` del commit que vació la tabla. Los otros cuatro son perímetro y promesa que la
 tanda **no tocó**.
@@ -3096,7 +3096,7 @@ porque un dictaminador que sólo confirma a sus relevos no está dictaminando.
       irreproducible; pero quitar cinco caracteres los devolvería al camino auditable (`CC2-03`).
     · **El derivador ejecutado EN SITIO cuenta ficheros no versionados** (`CC2-05`). Es diseño
       declarado y la receta lo neutraliza. **Hago mía la recomendación de método de `CC2`: toda
-      cifra debe decir CNS QUÉ INVOCACIÓN se obtuvo.**
+      cifra debe decir CON QUÉ INVOCACIÓN se obtuvo.**
 
 12. **Reproducibilidad en otra máquina.** Todo se midió con Python 3.12.14 y git 2.34.1 sobre
     WSL2. **No probé otro intérprete ni otro sistema de ficheros** — y el comportamiento de
@@ -3608,7 +3608,7 @@ Diagnóstico literal de `T147` sobre el árbol del gate, copiado de mi salida:
 ### 3.3 · La batería adversarial · `comprobar-correccion-gate-de-cierre.py`
 
 ```text
-EN UN CLON CNS HISTORIA (git checkout <commit>)
+EN UN CLON CON HISTORIA (git checkout <commit>)
   candidata 8c9ca9c…   **38/38 en verde · EXIT=0**
   gate      5ed7a3b…   **38/38 en verde · EXIT=0**
 
@@ -3784,7 +3784,7 @@ segunda sede plantada en esa zona, al lado o en un subdirectorio, **sin ese enla
 `AA-01` (segundo doc del Owner) `AA` midió que el universo NO crecía. Pero su fichero era
                                 `.md`, y **hoy `docs/owner/` se barre entero**: el universo
                                 SÍ crece a 75 y el DIGEST DEL SOBRE CAMBIA. El ancla lo caza.
-                                → **CNS MI EXTENSIÓN EL DIGEST NO CAMBIA NI UN BIT**
+                                → **CON MI EXTENSIÓN EL DIGEST NO CAMBIA NI UN BIT**
 `Z-E7` (`export-ignore`)        cerrado: la receta pasó de `git archive` a
                                 `read-tree`+`checkout-index`. Lo verifiqué: rc=0 y materializa
 `Z-E8` (H1 de no-dictamen)      declarado ABIERTO por el propio derivador, y **VISIBLE**:
@@ -3943,7 +3943,7 @@ resistencia completa frente a un actor privilegiado*»— y qué sí garantiza l
 contradicciones entre fuentes · cambios respecto a referencias recibidas · cumplimiento de
 contratos documentales*».
 
-> ### **ESTO ORDENA MI CLASIFICACIÓN, Y LO DIGO CNS TODAS LAS LETRAS.**
+> ### **ESTO ORDENA MI CLASIFICACIÓN, Y LO DIGO CON TODAS LAS LETRAS.**
 > **Prometer de más NO es una objeción de estilo: es una de las SEIS condiciones que el propio
 > Owner impone para cerrar `M-04` dentro de `F4c`.** `CC3` es el único de los siete que la
 > citó, y es la pieza que más pesa en este gate.

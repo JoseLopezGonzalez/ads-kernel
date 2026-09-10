@@ -67,7 +67,7 @@ FIEL CON DEUDA ACEPTADA existe una diferencia, está REGISTRADA en memoria:deuda
                         suyo; DIS/direccion-artistica en los demás casos.
 
 INFIEL                  hay diferencia y no está registrada.
-                        → DEVOLUCIÓN a CNS con la comparación como evidencia.
+                        → DEVOLUCIÓN a CON con la comparación como evidencia.
                         → NO se acepta como deuda a posteriori para evitar la devolución:
                           la deuda se acuerda ANTES de construir distinto, no después.
 ```
@@ -81,7 +81,7 @@ INFIEL                  hay diferencia y no está registrada.
 El camino es este, y no admite atajos por ninguna de las dos partes:
 
 ```text
-1  CNS DEMUESTRA LA IMPOSIBILIDAD
+1  CON DEMUESTRA LA IMPOSIBILIDAD
    no basta con afirmarla. La evidencia exigida es una de estas:
      · medición que muestra que el presupuesto declarado por el pack se incumple
      · limitación documentada de la plataforma, con enlace y versión
@@ -108,9 +108,9 @@ El camino es este, y no admite atajos por ninguna de las dos partes:
 ## Quién puede decir qué
 
 ```text
-CNS PUEDE       demostrar que algo no es viable, con la evidencia exigida
-CNS NO PUEDE    decidir qué se sacrifica cuando algo no es viable
-CNS NO PUEDE    construir una versión reducida y presentarla como terminada
+CON PUEDE       demostrar que algo no es viable, con la evidencia exigida
+CON NO PUEDE    decidir qué se sacrifica cuando algo no es viable
+CON NO PUEDE    construir una versión reducida y presentarla como terminada
 
 DIS PUEDE       rechazar una imposibilidad afirmada sin evidencia
 DIS PUEDE       vetar una solución técnica que degrada la forma SIN haber explorado

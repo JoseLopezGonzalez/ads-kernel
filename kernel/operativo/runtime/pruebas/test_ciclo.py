@@ -562,7 +562,7 @@ class Composicion(BaseDelCiclo):
     def test_18_el_propietario_de_DEF_se_deriva_de_C_ARQ_y_no_de_la_prosa(self):
         """T196 · Defecto que previene: leer la prosa de `b.16` para decidir autoridad.
 
-        `proceso:DEF` declara «ARQ cuando C-ARQ es verdadera; CNS en caso contrario». La
+        `proceso:DEF` declara «ARQ cuando C-ARQ es verdadera; CON en caso contrario». La
         derivación es un DATO con su condición del vocabulario cerrado, y se comprueba en
         los dos sentidos.
         """

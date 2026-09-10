@@ -684,7 +684,7 @@ def _comprobar_la_guardia_de_entorno(base, r):
 #      y sigue teniendo que publicar su evidencia;
 #    · no se le baja la firma de éxito: sigue exigiendo `0 SIN IMPLEMENTAR · 0 faltantes`;
 #    · no se le perdona el rojo: si `o26-impl` falla, EL RUNNER lo publica —«validador
-#      o26-impl: terminó con código 1»— y SALE CNS 1. El veredicto no se borra: se cobra
+#      o26-impl: terminó con código 1»— y SALE CON 1. El veredicto no se borra: se cobra
 #      donde puede cobrarse sin ciclo, que es lo mismo que ya se hace con `evidencia`;
 #    · la dispensa alcanza SÓLO a la AUSENCIA del fichero. En cuanto existe, se juzga
 #      entero —cabecera, código 0, firma, `debe_contener`, señales de fallo— sin excepción

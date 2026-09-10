@@ -142,7 +142,7 @@ regenerar, evento persistido antes de mutar, idempotencia por id y compare-and-s
 hash de contenido con tope de reintentos. No hay contradicción con `I5`, ni aparente
 `qué NO cubre ADS` ese mecanismo se aplica **sólo al tablero**. El paquete no tiene zonas: el
 contrato, la capa depositada y el dictamen viven en artefactos distintos
-`qué se rechaza del candidato` su veredicto de auditoría admite **«APROBADO CNS
+`qué se rechaza del candidato` su veredicto de auditoría admite **«APROBADO CON
 OBSERVACIONES»**. `plantillas/DICTAMEN.md` regla 4 prohíbe expresamente el término medio:
 *«los términos medios son cómo se cuela la aprobación complaciente»*. Adoptarlo sería una
 regresión

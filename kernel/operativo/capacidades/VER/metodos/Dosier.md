@@ -5,10 +5,10 @@ id: VER/Dosier
 nombre: Dosier
 capacidad: VER
 disparador:
-  - "una capa de CNS queda depositada"
+  - "una capa de CON queda depositada"
 carga:
   - "los criterios de éxito de PRD y la definición de fracaso"
-  - "la capa de CNS con su commit y sus diferencias declaradas"
+  - "la capa de CON con su commit y sus diferencias declaradas"
   - "los dictámenes de DIS cuando hay superficie"
   - "docs/verificacion/REGRESIONES.md y los presupuestos del pack"
 preguntas_iniciales:

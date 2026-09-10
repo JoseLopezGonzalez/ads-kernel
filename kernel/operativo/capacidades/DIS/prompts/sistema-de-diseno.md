@@ -84,7 +84,7 @@ Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la ev
 
 ```text
   · a DIS/diseno-visual, cuando una superficie usa valores fuera del sistema sin proponerlo
-  · a CNS, cuando el código de un componente ha divergido del sistema declarado
+  · a CON, cuando el código de un componente ha divergido del sistema declarado
 ```
 
 Te bloquea, y entonces **nombras qué lo desbloquearía**:

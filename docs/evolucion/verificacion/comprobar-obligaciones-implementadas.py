@@ -29,7 +29,7 @@ separado y cada una publicada con nombre y apellido cuando falta:
        la obligación sale de un universo derivado de las fuentes normativas —no de una
        lista escrita a mano— y el cliquet de los manifiestos inmutables la protege. Sede:
        `derivar-universo-obligatorio.py`, que se IMPORTA y no se copia.
-  `R2` CÓDIGO PRODUCTIVO, CNS TRAZABILIDAD INEQUÍVOCA
+  `R2` CÓDIGO PRODUCTIVO, CON TRAZABILIDAD INEQUÍVOCA
        desde la obligación hasta ficheros de código que NO son prueba ni evidencia,
        siguiendo la cadena `obligación → escenario que la cubre → prueba declarada →
        módulos que esa prueba importa o invoca`. «Inequívoca» se ejecuta: un nombre que
@@ -505,7 +505,7 @@ class Corridas:
 
 REQUISITOS = (
     ("R1", "PERTENENCIA DERIVADA Y PROTEGIDA POR EL CLIQUET"),
-    ("R2", "CÓDIGO PRODUCTIVO CNS TRAZA INEQUÍVOCA"),
+    ("R2", "CÓDIGO PRODUCTIVO CON TRAZA INEQUÍVOCA"),
     ("R3", "PRUEBA EJECUTABLE"),
     ("R4", "EVIDENCIA LIGADA AL SHA Y AL TREE"),
     ("R5", "CONDICIÓN DE CIERRE EJECUTADA"),

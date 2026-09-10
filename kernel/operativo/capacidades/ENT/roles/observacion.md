@@ -75,7 +75,7 @@ salida:
   - "confirmación de funcionamiento, o contención ejecutada"
 gate: gate:entrega-observada
 devolucion:
-  - "a CNS o a la capacidad propietaria de la capa, cuando la señal en rojo la origina"
+  - "a CON o a la capacidad propietaria de la capa, cuando la señal en rojo la origina"
 bloqueo:
   - "no hay señales declaradas ni telemetría que mirar"
 veto: ""

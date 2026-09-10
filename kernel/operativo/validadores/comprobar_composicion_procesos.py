@@ -450,7 +450,7 @@ def t273_catalogo_estatico_materializado(raiz=None):
     `DEP` en una copia vuelve a ponerla FALLIDA nombrando exactamente eso, y sigue fallando
     si alguien la añade a los otros cuatro procesos del catálogo y no a `DEP`. Una prueba
     que hoy pasara en verde SIN la materialización estaría mal construida; una que siguiera
-    en rojo CNS ella estaría comprobando el árbol de ayer.
+    en rojo CON ella estaría comprobando el árbol de ayer.
     """
     base = os.path.abspath(raiz or RAIZ)
     r = Resultado("T273", "Todo par del catálogo estático de D104 tiene su <CAP>:revision")
@@ -670,7 +670,7 @@ def fixtures():
             return ("un propietario en prosa SIN la palabra «DERIVADO» no se clasifica "
                     "POR ITEM: la partición depende de una palabra (`N-02`)")
 
-    @f("prosa CNS ASPECTO DE CAMPO en `propietario_global`")
+    @f("prosa CON ASPECTO DE CAMPO en `propietario_global`")
     def _():
         p = _proceso("proceso:F9", "DOM: cuando C-DOM; SEG en caso contrario",
                      [_ob("ev", "VER")])
@@ -797,7 +797,7 @@ def fixtures():
     def _():
         ficha = {"capacidad": [
             ({"id": "DOM", "deriva_de": ["b.16 · DOM participa dos veces: condiciones antes "
-                                         "de CNS, revisión después de VER"]}, ""),
+                                         "de CON, revisión después de VER"]}, ""),
             ({"id": "ARQ", "deriva_de": ["b.16 · ARQ es propietario global de DEU"]}, "")]}
         derivado = conjunto_vigilado(ficha)
         if derivado != {"DOM"}:

@@ -226,7 +226,7 @@ ANÁLISIS Y EXTRACCIÓN
           ↓
 CONOCIMIENTO CANDIDATO
           ↓
-COMPARACIÓN CNS ADS
+COMPARACIÓN CON ADS
           ↓
 CLASIFICACIÓN / CRÍTICA / EVIDENCIA
           ↓
@@ -1067,7 +1067,7 @@ Ejemplos:
 - INV para investigar otras soluciones;
 - ARQ para cambios estructurales;
 - PLT para runtime/tooling;
-- CNS para implementación;
+- CON para implementación;
 - SEG para límites de seguridad;
 - VER para evidencia independiente;
 - ENT cuando cambie un runtime operativo;

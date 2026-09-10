@@ -653,7 +653,7 @@ def t139_ningun_nivel_omite_un_gate(b):
 
 
 def t144_usabilidad_tiene_portador_en_con(b):
-    """A-13 · gate:usabilidad dice aplicarse a las capas de CNS, y nada lo vinculaba."""
+    """A-13 · gate:usabilidad dice aplicarse a las capas de CON, y nada lo vinculaba."""
     r = Resultado("T144", "El gate de usabilidad tiene portador computable en Construcción")
     gates = {d["id"]: d for d, _, _ in b.get("gate", [])}
     usab = gates.get("gate:usabilidad")
@@ -662,13 +662,13 @@ def t144_usabilidad_tiene_portador_en_con(b):
         r.fallo("falta gate:usabilidad o gate:implementacion-completa")
         return r
     if "CNS" not in (usab.get("aplica_a") or ""):
-        return r      # si deja de aplicarse a CNS, no hay nada que vincular
+        return r      # si deja de aplicarse a CON, no hay nada que vincular
     ids = {c.get("id") for c in impl.get("comprobaciones") or []}
     textos = " ".join(str(c.get("comprueba", "")) + str(c.get("como", ""))
                       for c in impl.get("comprobaciones") or [])
     if "superficie-usable" not in ids:
         r.fallo("gate:implementacion-completa no comprueba la usabilidad de lo construido, "
-                "y gate:usabilidad declara aplicarse a las capas de CNS")
+                "y gate:usabilidad declara aplicarse a las capas de CON")
     if "gate:usabilidad" not in textos:
         r.fallo("la comprobación de superficie usable no cita gate:usabilidad: el vínculo "
                 "no es rastreable")
@@ -975,7 +975,7 @@ def t146_autoridad_de_decision(b):
 
 
 # ===========================================================================
-#  LOS HALLAZGOS EXTERNOS CNS PROPIETARIO Y FASE `F6` — `11-ARQ` §19 · `F6-H`
+#  LOS HALLAZGOS EXTERNOS CON PROPIETARIO Y FASE `F6` — `11-ARQ` §19 · `F6-H`
 # ===========================================================================
 #  Cada una de estas pruebas cierra UNA fila de la tabla «Lo que esta fase NO puede
 #  corregir». No comprueban que el texto esté escrito: comprueban la PROPIEDAD, de modo

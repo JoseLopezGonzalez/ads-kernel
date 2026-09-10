@@ -10,7 +10,7 @@
 # `comprobar_evidencia.py`. Ninguna de las dos acepta un nombre sin `.py`, y ninguna
 # publica una ejecución con código distinto de cero.
 
-# `G-06` · UNA FIRMA CNS `\d+` ADMITE EL CERO, Y CERO NO ES EXITO
+# `G-06` · UNA FIRMA CON `\d+` ADMITE EL CERO, Y CERO NO ES EXITO
 #
 #   El gate del 2026-09-05 lo midio: catorce componentes declaraban `firma_de_exito: '\d+ …'`,
 #   y `\d+` casa con `0`. Una evidencia que dijera «0 infracciones detectadas · 0 NO

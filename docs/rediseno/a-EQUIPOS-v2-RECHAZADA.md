@@ -255,7 +255,7 @@ El enrutador puede apartarse de ella dejando el motivo.
        SIS → CNS → VER → APR
 
 Nótese: DEF no activa PRD ni DIS. DEP no activa ninguna de las dos. AUD no activa
-CNS. Ninguna ruta es la de otra. Eso es la corrección.
+CON. Ninguna ruta es la de otra. Eso es la corrección.
 
 ### Traza obligatoria — sustituye a "sombreros, no saltos"
 El enrutador escribe en la ficha del item, al componer y en cada recomposición:
@@ -375,7 +375,7 @@ sin `|` en el contenido (usar `·`) · vacío = `—` · fechas ISO · prefijo t
     | [GAP-014](../items/GAP-014.md) | aparcado | normal | owner | 2026-08-19 | aparcado por: atención en FEA-021 · reactiva: "retoma el gap" |
     | [FEA-021](../items/FEA-021.md) | en curso | urgente | dis/critico | 2026-08-25 | 2ª dirección explorada y comparada |
     | [FEA-009](../items/FEA-009.md) | bloqueado | normal | inv | 2026-08-22 | bloqueo: latencia real sin medir · desbloquea: SPIKE-03 |
-    | [DEF-102](../items/DEF-102.md) | consulta | normal | dis | 2026-08-24 | opinión sobre estado vacío · custodia: CNS |
+    | [DEF-102](../items/DEF-102.md) | consulta | normal | dis | 2026-08-24 | opinión sobre estado vacío · custodia: CON |
 
 Micro-gramática de la última columna, tipada:
   `bloqueo: <qué falta> · desbloquea: <item o decisión>`

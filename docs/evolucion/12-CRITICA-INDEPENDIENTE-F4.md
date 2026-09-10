@@ -113,7 +113,7 @@ Los ocho defectos concretos que el revisor enumera:
                                 commit de Git. Ninguno es raro.
 
 6  DURABILIDAD CONFUNDIDA       §2.6 usa la atomicidad de `rename` como si fuera
-   CNS ATOMICIDAD               durabilidad. Un `rename` atómico puede perderse entero en un
+   CON ATOMICIDAD               durabilidad. Un `rename` atómico puede perderse entero en un
                                 corte de corriente si nadie sincronizó el directorio.
                                 Atomicidad, caída de proceso, caída de máquina, commit
                                 local, push y clon nuevo son SEIS garantías distintas, y el
@@ -162,7 +162,7 @@ es el resumen de qué cambió, hallazgo a hallazgo.
 
 6  ONCE VENTANAS DE CAÍDA, incluidas las de derivados y las de Git.
 
-7  SELLADO CNS SEMÁNTICA COMPLETA: qué se conserva, qué puede retirarse, cómo se verifica
+7  SELLADO CON SEMÁNTICA COMPLETA: qué se conserva, qué puede retirarse, cómo se verifica
    la cadena y por qué sigue siendo append-only.
 
 8  TABLA ADVERSARIAL DE RECUPERACIÓN de diecisiete filas, escrita para convertirse en
@@ -329,7 +329,7 @@ conversación, que es exactamente lo que el apartado 19 de la directiva prohíbe
 ## `D.2` · Lo que se ha corregido
 
 ```text
-FUNCIÓN TOTAL CNS            diez reglas `Q0`–`Q9` evaluadas en orden, con la misma forma
+FUNCIÓN TOTAL CON            diez reglas `Q0`–`Q9` evaluadas en orden, con la misma forma
 PRECEDENCIA MECÁNICA         que `b.4`. Gana la primera que se cumple, y por construcción
                              ninguna combinación produce dos resultados ni ninguno. La
                              totalidad se demuestra recorriendo los diez estados globales
@@ -516,7 +516,7 @@ LÍMITE DECLARADO             que un entorno concreto HONRE el puntero es exacta
    Las dos son necesarias y responden a preguntas distintas: M5 prueba que lo nuevo
    funciona; M7 prueba que lo viejo ya no hacía falta. Es `D33`.
 
-2  ROLLBACK CNS REMOTO SEPARADO DE LOCAL, y sin eliminación automática:
+2  ROLLBACK CON REMOTO SEPARADO DE LOCAL, y sin eliminación automática:
        LOCAL      borrar el workspace deshace lo local y NADA MÁS
        REMOTO     un control repo publicado NO se revierte borrando el local
        COMMITS    permanecen. Un rollback NO reescribe historia publicada
@@ -541,7 +541,7 @@ LÍMITE DECLARADO             que un entorno concreto HONRE el puntero es exacta
        CANDIDATA MAYOR    migración hacia delante. U3 NO se aprueba sin migrador inverso o
                           sin instantánea previa del estado
        CANDIDATA MENOR    NO se aplica: es un downgrade de esquema, y §2.8 lo declara error
-       ROLLBACK CNS       ejecuta el migrador inverso, o restaura la instantánea, y VERIFICA
+       ROLLBACK CON       ejecuta el migrador inverso, o restaura la instantánea, y VERIFICA
        MIGRACIÓN          equivalencia con el mismo rigor que M3
        PUNTO DE NO        se declara en U3: desde qué paso el rollback deja de ser
        RETORNO            automático y pasa a ser decisión del Owner

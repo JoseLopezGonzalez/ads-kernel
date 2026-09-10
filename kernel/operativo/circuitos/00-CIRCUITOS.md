@@ -43,8 +43,8 @@ propietario global: PRD
 | PRD → DIS | fuera de alcance escrito; superficie identificada | devuelve a PRD con las dos formas que cumplen igual |
 | PRD → ARQ | alcance cerrado; contratos previsibles | devuelve a PRD si el alcance excluye contratos necesarios |
 | DIS ∥ ARQ | **pueden ir en paralelo** si sus paquetes cumplen las seis condiciones de a.5 | DSP secuencia si falla alguna |
-| DOM/SEG:condiciones ⊳ CNS | condiciones comprobables antes de construir | devuelve al plan que las hace incompatibles |
-| CNS → VER | diferencias declaradas antes de la revisión | infiel: vuelve a CNS con la comparación |
+| DOM/SEG:condiciones ⊳ CON | condiciones comprobables antes de construir | devuelve al plan que las hace incompatibles |
+| CNS → VER | diferencias declaradas antes de la revisión | infiel: vuelve a CON con la comparación |
 | VER → ENT | dosier sin evidencia en rojo | veto de VER: no pasa |
 | ENT → USO | señales declaradas y ventana abierta | devuelve a la capa que origina el rojo |
 
@@ -168,7 +168,7 @@ INV ──┬─► [DOM si C-DOM]
 propietario global: DERIVADO del encargo, nunca asignado a mano
 ```
 
-**AUD no activa CNS** y **puede cerrar en APR sin pasar por PRD**: su resultado legítimo es
+**AUD no activa CON** y **puede cerrar en APR sin pasar por PRD**: su resultado legítimo es
 conocimiento e items nuevos.
 
 ---

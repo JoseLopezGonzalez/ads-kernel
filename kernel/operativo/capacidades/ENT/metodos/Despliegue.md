@@ -75,7 +75,7 @@ gate: gate:entrega-observada
 salida:
   - "cambio desplegado, con smoke tests pasados y ventana abierta"
 devolucion:
-  - "a CNS, cuando el artefacto no arranca"
+  - "a CON, cuando el artefacto no arranca"
   - "a DOM, cuando la migración falla sobre datos reales"
 bloqueo:
   - "no existe reversión probada"

@@ -81,7 +81,7 @@ artefactos:
 puntos_owner:
   - "aceptación de deuda en superficie premium o sobre un patrón aprobado por él"
 consultas:
-  - "CNS: ¿qué evidencia sostiene esta diferencia? Responde con medición, limitación documentada, prototipo fallido o coste medido"
+  - "CON: ¿qué evidencia sostiene esta diferencia? Responde con medición, limitación documentada, prototipo fallido o coste medido"
 checkpoints:
   - "tras los pasos 1, 2, 3, 5 y 6"
 critica:
@@ -93,8 +93,8 @@ salida:
   - "artefacto de comparación con veredicto"
   - "deuda registrada cuando se acordó previamente"
 devolucion:
-  - "a CNS, con la comparación completa, cuando el veredicto es infiel"
-  - "a DIS/direccion-artistica, cuando CNS demuestra imposibilidad con la evidencia exigida"
+  - "a CON, con la comparación completa, cuando el veredicto es infiel"
+  - "a DIS/direccion-artistica, cuando CON demuestra imposibilidad con la evidencia exigida"
 bloqueo:
   - "no existe especificación versionada contra la que comparar"
   - "el pack exige dispositivo real y no hay ninguno disponible"

@@ -710,7 +710,7 @@ El mismo patrón se repite en `A5` y `A9` (§8.2 L5201, L5210) y en `M0`–`M5` 
 
 **Por qué es defecto.** `SEG` **no aparece** entre los participantes de `U5b` ni en §8.4 ni en §18; `CNS` tampoco. Un item de `proceso:DEP` genera las tres obligaciones —`condiciones-de-seguridad`, `cambio-construido`, `evidencia-suficiente`— y `gate:cierre-de-item` (`00-OBLIGACIONES-Y-CIERRE.md` L83) exige **«cero obligaciones huérfanas»**. La primera de ellas tiene `autoridad_de_retirada: nadie`. Sin `SEG`, la obligación queda **huérfana de forma permanente e irremediable**, y el `fallo` del gate (L111–116) es terminante: *«Un item con todos sus paquetes cancelados y ninguna retirada aprobada no puede cerrar nunca»*. **El `CIERRE` que §8.4 L5476 declara —`U6` superado— es inalcanzable tal como está escrito.**
 
-Agrava que **F4 conoce esta regla y la cita ella misma**: §5.2 **L4275** dice *«`b.16` ya declara `SEG:condiciones ⊳ CNS` OBLIGATORIO en `DEP` por `G28`»*. Y `G28` existe literalmente en `kernel/KERNEL.md` L986 («Supply chain de dependencias»), con procedencia declarada «obligatorio, no delegable».
+Agrava que **F4 conoce esta regla y la cita ella misma**: §5.2 **L4275** dice *«`b.16` ya declara `SEG:condiciones ⊳ CON` OBLIGATORIO en `DEP` por `G28`»*. Y `G28` existe literalmente en `kernel/KERNEL.md` L986 («Supply chain de dependencias»), con procedencia declarada «obligatorio, no delegable».
 
 **Qué exigiría cerrarlo.** Añadir `SEG` y `CNS` a los participantes de `U5b` en §8.4 y en §18 —lo cual está **completamente determinado** por `G28`, no es una decisión nueva—, o justificar por qué propagar un fichero puntero no es «incorporar o actualizar una dependencia externa» y reasignar el proceso.
 

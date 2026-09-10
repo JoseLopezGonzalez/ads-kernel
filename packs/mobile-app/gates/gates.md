@@ -91,6 +91,6 @@ evidencia:
   - "lista de trabajos en segundo plano con su frecuencia"
   - "mediciones de consumo en dispositivo real"
 fallo: >
-  Vuelve a CNS con la medición. Si el consumo es inherente al alcance, vuelve a PRD: reducir
+  Vuelve a CON con la medición. Si el consumo es inherente al alcance, vuelve a PRD: reducir
   la frecuencia o el alcance de la sincronización es una decisión de producto.
 ```

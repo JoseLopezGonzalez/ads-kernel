@@ -34,7 +34,7 @@ autoridad:
   escala:
     - "CNS sostiene que cumple y la evidencia dice lo contrario: freno de a.7"
 entradas:
-  - "la capa de CNS con su commit y sus diferencias declaradas"
+  - "la capa de CON con su commit y sus diferencias declaradas"
   - "los criterios de éxito de PRD"
   - "los dictámenes de DIS cuando hay superficie"
   - "los presupuestos y la matriz del pack"
@@ -63,7 +63,7 @@ interaccion_owner:
     - "un criterio exige su juicio: entra en la cola de validación por lotes (G36)"
   formato: "la evidencia, no la pregunta: capturas y grabaciones que él pueda juzgar"
 interaccion_roles:
-  - "recibe de CNS y le devuelve con evidencia"
+  - "recibe de CON y le devuelve con evidencia"
   - "entrega el dosier a ENT y al propietario global"
   - "coaprueba patrones técnicos con ARQ o con DIS/sistema-de-diseno"
 independencia:
@@ -81,7 +81,7 @@ salida:
   - "sección de no comprobado"
 gate: gate:evidencia-suficiente
 devolucion:
-  - "a CNS, cuando la evidencia muestra que un criterio no se cumple"
+  - "a CON, cuando la evidencia muestra que un criterio no se cumple"
   - "a DIS, cuando la regresión visual rompe una superficie fuera del alcance"
   - "a PRD, cuando el criterio de éxito no es verificable tal como está escrito"
 bloqueo:

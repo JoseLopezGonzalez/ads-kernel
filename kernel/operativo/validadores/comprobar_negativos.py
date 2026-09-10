@@ -409,7 +409,7 @@ def m_exclusion_caducada(raiz):
 
 
 def m_con_sin_usabilidad(raiz):
-    """A-13 · se rompe el vínculo entre CNS y gate:usabilidad.
+    """A-13 · se rompe el vínculo entre CON y gate:usabilidad.
 
     Era el único hallazgo grave sin infracción deliberada, y por tanto el único cuya
     prueba nunca se había visto fallar.
@@ -1301,7 +1301,7 @@ CATALOGO = [
              "una composición no comparable se resuelve en silencio en vez de fallar",
              m_composicion_incompatible_silenciosa),
     Mutacion("N144", "A-13", "T144", "comprobar_contratos",
-             "se rompe el vínculo entre CNS y gate:usabilidad",
+             "se rompe el vínculo entre CON y gate:usabilidad",
              m_con_sin_usabilidad),
     Mutacion("N144b", "A-13", "T144", "comprobar_contratos",
              "el vínculo existe pero deja de decir quién juzga la evidencia",

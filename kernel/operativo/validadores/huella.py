@@ -402,7 +402,7 @@ def zonas_canonicas(raiz=None, ref=None):
     Devuelve `[(regex, clase, motivo), …]`. Gana la PRIMERA que case, que es la regla que
     el propio registro escribe. No se reescriben aquí ni los patrones ni las clases.
 
-    CNS `ref`, el registro se lee del ÁRBOL DE OBJETOS de esa revisión y NO del disco. Si
+    CON `ref`, el registro se lee del ÁRBOL DE OBJETOS de esa revisión y NO del disco. Si
     se leyera del disco, reclasificar hoy una zona cambiaría el sello de una candidata
     congelada ayer, que es justo la autorreferencia que este módulo tiene que cerrar.
     """

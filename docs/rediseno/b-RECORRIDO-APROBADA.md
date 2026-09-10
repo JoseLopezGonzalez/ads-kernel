@@ -875,7 +875,7 @@ C-VER   la auditoría debe producir una celda de cobertura VERIFICADA, es decir 
 ### DOM y SEG participan dos veces, y nunca a la vez que CNS
 
 ```text
-<CAP>:condiciones   ⊳ CNS     RESTRICCIONES ANTES de construir. Consulta.
+<CAP>:condiciones   ⊳ CON     RESTRICCIONES ANTES de construir. Consulta.
 <CAP>:revisión      tras VER  revisan lo construido. Consulta o gate conjunto.
 ```
 
@@ -1117,7 +1117,7 @@ DEF  activa DIS por C-DIS, sin volverse FEA · no activa PRD salvo cambio de pro
 DEP  no activa PRD ni DIS; SEG va ANTES de construir
 INV  activa CNS:experimental sin dejar de ser INV, y PUEDE cerrar sin segundo item
 DEU  PUEDE activar USO sin cambiar de proceso
-AUD  no activa CNS, y puede cerrar en APR sin pasar por PRD
+AUD  no activa CON, y puede cerrar en APR sin pasar por PRD
 INC  es el único con APR obligatorio
 DIR  el propietario global NUNCA lo elige DSP · DECIDE, no implementa: la ejecución va
      en items enlazados · su DECISIÓN sí se verifica, con `VER:decisión`

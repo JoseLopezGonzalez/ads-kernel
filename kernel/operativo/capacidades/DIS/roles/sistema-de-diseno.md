@@ -88,7 +88,7 @@ salida:
 gate: gate:excelencia-visual
 devolucion:
   - "a DIS/diseno-visual, cuando una superficie usa valores fuera del sistema sin proponerlo"
-  - "a CNS, cuando el código de un componente ha divergido del sistema declarado"
+  - "a CON, cuando el código de un componente ha divergido del sistema declarado"
 bloqueo:
   - "no hay dirección elegida que formalizar"
 veto: ""

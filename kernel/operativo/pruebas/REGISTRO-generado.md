@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: ffab7f82e046e383 -->
+<!-- source_revision: 9a1f96f3a09f8073 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -52,7 +52,7 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T103](T100-T121-capacidades.md) | Reanudación de un diagnóstico sin repetir hipótesis descartadas | ARQ/Diagnostico | guion-manual | **CONTRATO DEFINIDO** · SIN CONTRASTE: su evidencia no lo nombra | — |
 | [T104](T100-T121-capacidades.md) | Las condiciones de dominio llegan antes de construir | DOM/Condiciones · b.16 DOM dos veces | guion-manual | **CONTRATO DEFINIDO** · SIN CONTRASTE: su evidencia no lo nombra | — |
 | [T105](T100-T121-capacidades.md) | Una migración no se declara reversible sin haber revertido | DOM/Migracion · veto:integridad-de-datos | guion-manual | **CONTRATO DEFINIDO** · SIN CONTRASTE: su evidencia no lo nombra | — |
-| [T106](T100-T121-capacidades.md) | Construcción devuelve en vez de redecidir | CNS/Implementacion · a.3 CNS no redecide | guion-manual | **CONTRATO DEFINIDO** · SIN CONTRASTE: su evidencia no lo nombra | — |
+| [T106](T100-T121-capacidades.md) | Construcción devuelve en vez de redecidir | CNS/Implementacion · a.3 CON no redecide | guion-manual | **CONTRATO DEFINIDO** · SIN CONTRASTE: su evidencia no lo nombra | — |
 | [T107](T100-T121-capacidades.md) | Un experimento no se reanuda sin criterio de descarte previo | CNS/Experimental · b.16 CNS:experimental | guion-manual | **CONTRATO DEFINIDO** · SIN CONTRASTE: su evidencia no lo nombra | — |
 | [T108](T100-T121-capacidades.md) | Reanudación de un dosier sin repetir mediciones | VER/Dosier · gate:evidencia-suficiente | guion-manual | **CONTRATO DEFINIDO** · SIN CONTRASTE: su evidencia no lo nombra | — |
 | [T109](T100-T121-capacidades.md) | VER:decision detecta un impacto sin item derivado | VER/Decision · b.16 VER:decision · T71 | guion-manual | **CONTRATO DEFINIDO** · SIN CONTRASTE: su evidencia no lo nombra | — |

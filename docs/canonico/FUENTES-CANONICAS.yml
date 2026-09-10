@@ -239,6 +239,26 @@ zonas:
   - patron: '^\.gitignore$'
     clase: NO_APLICABLE_A_IMPLEMENTACION
     motivo: configuracion de herramienta
+  # --- lo que NACIO con UP-00 y UP-04, y por eso no estaba clasificado ------
+  #
+  # El sello lo delato: aparecieron como `SIN_CLASE`, que es exactamente para lo
+  # que esa clase existe —una zona nueva no puede nacer sin que nadie lo note—.
+  # No se clasifican para callar la alarma: se clasifican porque ya se sabe que
+  # son y de que regimen.
+  - patron: '^\.github/'
+    clase: CONTRATO_O_ESQUEMA_TECNICO
+    motivo: >
+      integracion continua del propio kernel, estrenada con UP-04. Es CONTRATO porque
+      declara que se comprueba y donde —los tres sistemas, la invocacion directa de
+      validadores en las dos consolas de Windows, y la sexta condicion de O26 dentro de un
+      contenedor—; no crea autoridad, la ejerce sobre lo que otras sedes ya mandan.
+  - patron: '^operador/'
+    clase: CONTRATO_O_ESQUEMA_TECNICO
+    motivo: >
+      el bootstrap ANTERIOR al clon, que resuelve el hueco de que el asistente de
+      incorporacion viva dentro del repositorio privado al que aun no se puede acceder. Es
+      CONTRATO porque fija un procedimiento operativo comprobable —entorno, permisos
+      exactos, captura oculta, custodia, clon y entrega— y no una doctrina.
   - patron: '^\.sello-producto$'
     clase: DERIVADA
     motivo: >

@@ -125,7 +125,7 @@ ENTREGAS_DECLARADAS_EN_8_0 = {
         ],
         "devolucion": "CNS devuelve a SIS cuando lo declarado por SIS no se puede construir "
                       "sin ampliar el alcance. La devolución cuenta para el freno de `a.7` "
-                      "sólo si CNS ya había tomado custodia.",
+                      "sólo si CON ya había tomado custodia.",
         "evidencia_de_devolucion": [
             "qué parte de la capa de SIS no es construible y qué alcance haría falta",
         ],
@@ -182,7 +182,7 @@ ENTREGAS_DECLARADAS_EN_8_0 = {
             "falta el resultado de alguna fuente del alcance",
             "hay una fuente con CI en rojo y sin motivo escrito",
         ],
-        "devolucion": "ENT devuelve a CNS nombrando la fuente sin resultado o con CI en "
+        "devolucion": "ENT devuelve a CON nombrando la fuente sin resultado o con CI en "
                       "rojo. Mientras no converjan todas, ENT sostiene el estado "
                       "INTEGRACIÓN PARCIAL, que no es un fallo: es un estado declarado.",
         "evidencia_de_devolucion": [

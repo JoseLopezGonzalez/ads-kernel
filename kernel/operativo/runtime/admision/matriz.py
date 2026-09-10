@@ -529,7 +529,7 @@ def ejecutar(directorio, *, registro="docs/canonico/FUENTES-CANONICAS.yml"):
         "puntos_exigidos": sorted(CONTROLES_POR_PUNTO),
         "cubiertos_por_familia": sorted(PUNTOS_CUBIERTOS_POR_FAMILIA),
         "no_ejercibles_aqui": PUNTOS_NO_EJERCIBLES_AQUI,
-        # `M5` · LA FRONTERA CNS §20.1, PUBLICADA Y NO SUPUESTA. El censo del contrato
+        # `M5` · LA FRONTERA CON §20.1, PUBLICADA Y NO SUPUESTA. El censo del contrato
         # menos lo que el verificador sabe EMITIR. Estos puntos no tienen veredicto que
         # contrastar aquí y los cubren sus baterías propias; se nombran para que
         # `puntos_sin_tratamiento: []` no se lea como cobertura de todo §20.1.

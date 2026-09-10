@@ -15,7 +15,7 @@ capa_de_valor: >
   Añade evidencia juzgable: tests, regresión incluida la visual, seguridad cuando aplica,
   presupuestos medidos, y capturas y grabaciones de los estados extremos.
 entrada:
-  - "una capa de CNS depositada, con su commit y sus diferencias declaradas"
+  - "una capa de CON depositada, con su commit y sus diferencias declaradas"
   - "los criterios de éxito de PRD y los dictámenes de DIS cuando existen"
   - "una decisión de un item DIR, para VER:decision"
 salida:

@@ -29,7 +29,7 @@ capa_de_valor: >
   que se descartó y por qué.
 entrada:
   - "un encuadre o un paquete cuyo item cumple C-DIS de b.16"
-  - "una devolución de CNS con evidencia de imposibilidad demostrada"
+  - "una devolución de CON con evidencia de imposibilidad demostrada"
   - "una consulta en modo consulta desde ENC, PRD, ARQ o USO"
   - "un item DIR que sustituye la dirección visual aprobada"
 salida:
@@ -52,7 +52,7 @@ autoridad:
     - "qué patrón cubre un caso y con qué alcance"
     - "los valores del sistema de diseño: escala, ritmo, roles de color, elevación"
     - "qué movimiento acompaña a cada estado y con qué curva y duración"
-    - "si una imposibilidad afirmada por CNS está demostrada o sólo afirmada"
+    - "si una imposibilidad afirmada por CON está demostrada o sólo afirmada"
     - "aceptar deuda de diseño en superficies no premium"
   escala:
     - "primera dirección visual del producto: la aprueba el Owner (a.8)"
@@ -114,17 +114,17 @@ evidencia_minima:
   - "la lista de alternativas que DIS ha explorado o propone explorar, con al menos una concreta"
 levantable: si
 efecto: >
-  El paquete no pasa el gate de excelencia visual y vuelve a CNS con la comparación. El
-  trabajo de CNS no se borra: la capa queda vigente y se corrige la parte degradada.
+  El paquete no pasa el gate de excelencia visual y vuelve a CON con la comparación. El
+  trabajo de CON no se borra: la capa queda vigente y se corrige la parte degradada.
 levantamiento: >
-  LEVANTABLE. Lo levanta DIS/direccion-artistica cuando CNS aporta la evidencia de
+  LEVANTABLE. Lo levanta DIS/direccion-artistica cuando CON aporta la evidencia de
   imposibilidad que exige 05-FIDELIDAD. Cuando el conflicto es de DIRECCIÓN y no de
   viabilidad, sólo el Owner lo levanta, y queda registrado con su alcance y su fecha.
   NO es no levantable por regla dura, y por tanto NUNCA prevalece sobre otro veto.
 apelacion: >
-  CNS apela devolviendo con la evidencia de imposibilidad. Si DIS la rechaza y CNS insiste,
+  CNS apela devolviendo con la evidencia de imposibilidad. Si DIS la rechaza y CON insiste,
   se agota el freno de dos devoluciones y DSP escala con las dos posturas escritas: qué
-  intención sostiene DIS y qué obstáculo demuestra CNS.
+  intención sostiene DIS y qué obstáculo demuestra CON.
 colision: >
   REGLA GENERAL (a.5): dos vetos incompatibles NO se arbitran entre las capacidades. Ambos
   DETIENEN el tránsito, cada uno conserva su postura, su evidencia, su alcance y su

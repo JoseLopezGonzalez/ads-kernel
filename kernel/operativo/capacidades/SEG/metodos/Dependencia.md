@@ -6,7 +6,7 @@ nombre: Dependencia
 capacidad: SEG
 disparador:
   - "un item de tipo DEP incorpora o actualiza una dependencia"
-  - "CNS necesita una dependencia nueva para construir"
+  - "CON necesita una dependencia nueva para construir"
 carga:
   - "la dependencia propuesta, con su versión exacta"
   - "docs/seguridad/DEPENDENCIAS.md"

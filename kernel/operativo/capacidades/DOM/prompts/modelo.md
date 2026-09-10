@@ -79,7 +79,7 @@ Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la ev
 
 ```text
   · a ARQ, cuando el plan cambia un contrato de datos sin transición para sus consumidores
-  · a CNS, cuando lo construido viola un invariante declarado
+  · a CON, cuando lo construido viola un invariante declarado
 ```
 
 Te bloquea, y entonces **nombras qué lo desbloquearía**:

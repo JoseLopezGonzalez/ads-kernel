@@ -693,7 +693,7 @@ UN DICTAMEN NO SE EDITA. Si contiene un error de hecho, se registra en este corr
 su sede, la cifra derivada del árbol y lo que se sigue. Añadir una entrada aquí NO cambia
 ningún veredicto y NO reabre ninguna adjudicación.
 
-UNA FRASE DE UN DICTAMEN CNS ENTRADA EN ESTE CORRIGENDUM NO PUEDE CITARSE como fundamento
+UNA FRASE DE UN DICTAMEN CON ENTRADA EN ESTE CORRIGENDUM NO PUEDE CITARSE como fundamento
 de otra afirmación sin citar también la entrada que la acota.
 
 CUANDO SE ACOTA UN TITULAR DERIVADO DE UNA TABLA, SE ACOTA TAMBIÉN LA FILA de la que viene

@@ -105,7 +105,7 @@ salida:
   - "toda la evidencia enlazada"
 devolucion:
   - "a DIS/diseno-interaccion, cuando el eje en rechazo es de flujo"
-  - "a CNS, cuando el fallo está en la construcción y no en la especificación"
+  - "a CON, cuando el fallo está en la construcción y no en la especificación"
 bloqueo:
   - "no hay fuente de uso real aplicable y la superficie es premium"
   - "no hay dispositivo real y el pack lo exige"

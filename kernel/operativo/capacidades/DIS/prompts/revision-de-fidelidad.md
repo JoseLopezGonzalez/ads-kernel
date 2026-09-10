@@ -81,7 +81,7 @@ Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el
 Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
 
 ```text
-  · a CNS, con la comparación completa, cuando el veredicto es infiel
+  · a CON, con la comparación completa, cuando el veredicto es infiel
   · a DIS/direccion-artistica, cuando lo aprobado resulta no construible con evidencia
 ```
 
@@ -95,6 +95,6 @@ Te bloquea, y entonces **nombras qué lo desbloquearía**:
 Escalas, sin decidirlo tú:
 
 ```text
-  · segunda devolución a CNS sobre el mismo paquete
+  · segunda devolución a CON sobre el mismo paquete
   · la diferencia afecta a superficie premium: la deuda la acepta el Owner
 ```

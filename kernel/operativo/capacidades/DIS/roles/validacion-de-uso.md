@@ -62,7 +62,7 @@ interaccion_owner:
     - "el Owner es la fuente de uso real; se le convoca por lotes, no por item (G36)"
   formato: "una tarea concreta que hacer, sin explicación previa de cómo se hace"
 interaccion_roles:
-  - "recibe el prototipo de DIS/prototipado o lo construido de CNS"
+  - "recibe el prototipo de DIS/prototipado o lo construido de CON"
   - "entrega el dictamen de usabilidad al equipo y a VER"
   - "coordina con USO cuando la evidencia procede de fuera del equipo"
 independencia:
@@ -80,7 +80,7 @@ salida:
 gate: gate:usabilidad
 devolucion:
   - "a DIS/diseno-interaccion, cuando un eje está en rechazo por el flujo"
-  - "a CNS, cuando el fallo está en la construcción y no en la especificación"
+  - "a CON, cuando el fallo está en la construcción y no en la especificación"
 bloqueo:
   - "no hay fuente de uso real aplicable, ni dispositivo, ni telemetría"
 veto: ""

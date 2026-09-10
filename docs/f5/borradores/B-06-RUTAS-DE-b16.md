@@ -77,7 +77,7 @@ ENMIENDA E<n> A LAS SECCIONES (a) Y (b) · composición de rutas
 
 | presión | fila | decisión | qué desbloquea |
 |---|---|---|---|
-| `PN-8` | `F5-OB-11` | `D-06` | que una casilla de cobertura alcance «verificado» CNS EVIDENCIA |
+| `PN-8` | `F5-OB-11` | `D-06` | que una casilla de cobertura alcance «verificado» CON EVIDENCIA |
 | `PN-13` | `F5-OB-12` | `D-07` | que el paso de descubrimiento abra con dominio y diseño, y que el arranque incorpore el dictamen de seguridad |
 | `PN-14` | `F5-OB-13` | `D-09` | que la composición de esa ruta sea verificable mecánicamente contra la fuente |
 

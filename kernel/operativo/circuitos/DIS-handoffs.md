@@ -96,7 +96,7 @@ rechaza_si:
 devolucion: >
   CNS devuelve a DIS cuando demuestra imposibilidad con la evidencia que exige 05-FIDELIDAD:
   medición contra presupuesto, limitación documentada con enlace y versión, prototipo que
-  lo intenta y falla con grabación, o coste medido que excede lo autorizado. CNS NO decide
+  lo intenta y falla con grabación, o coste medido que excede lo autorizado. CON NO decide
   qué se sacrifica.
 evidencia_de_devolucion:
   - "una de las cuatro formas de evidencia de imposibilidad de 05-FIDELIDAD"
@@ -108,7 +108,7 @@ checkpoint: "CNS lee de DIS: qué se descartó y por qué, para no reintroducirl
 id: handoff:con-a-dis
 de: CNS
 a: DIS
-cuando: "CNS ha construido una capa que implementa una especificación de DIS"
+cuando: "CON ha construido una capa que implementa una especificación de DIS"
 entrega:
   - "el artefacto construido con su commit exacto"
   - "el entorno donde se puede ejecutar y cómo"

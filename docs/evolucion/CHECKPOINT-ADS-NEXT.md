@@ -451,7 +451,7 @@
 >
 > **Y lo que SÍ quedó cerrado.** **`C-L.5` CERTIFICADA por tercera vez consecutiva**, sobre
 > universo derivado, con `OBLIGATORIO − ASIGNADO = ∅`, `ASIGNADO − LEÍDO = ∅` y los **52
-> agotamientos** pasando las dos reglas. **`R-04` CERRADO CNS MECANISMO** tras dos gates sin
+> agotamientos** pasando las dos reglas. **`R-04` CERRADO CON MECANISMO** tras dos gates sin
 > lograrlo. La propagación de `O17` es, en palabras del dictamen de `S`, **«la más disciplinada
 > del expediente»**: 9 de las 12 reglas sin reserva, sede única y cuatro invocaciones
 > byte-idénticas. **`D107` NO excede a `O17`.** `PN-17` y `PN-18` **registran sin elegir**.
@@ -576,7 +576,7 @@
 
 > **[ESTADO ANTERIOR · antes del GATE DE CERTIFICACIÓN, documento 22]**
 
-> **Los 24 hallazgos del GATE INDEPENDIENTE DE CIERRE CNS MANIFIESTOS están APLICADOS — NO
+> **Los 24 hallazgos del GATE INDEPENDIENTE DE CIERRE CON MANIFIESTOS están APLICADOS — NO
 > CERTIFICADOS. `F4c` sigue ABIERTA y `F5` sigue NO AUTORIZADA.**
 >
 > **`C-L.5` quedó CERTIFICADA por ese gate, y sigue certificada.** Es la única de las trece
@@ -636,8 +636,8 @@
 > con la regla `1bis` de `C-L.5`: de qué sede sale el universo obligatorio y con qué comando
 > auditable— y los manifiestos de LECTURA.
 
-> **[ESTADO ANTERIOR · el veredicto del GATE DE CIERRE CNS MANIFIESTOS, documento 21]**
-> **El GATE INDEPENDIENTE DE CIERRE CNS MANIFIESTOS VERIFICABLES devolvió INSUFICIENTE PARA
+> **[ESTADO ANTERIOR · el veredicto del GATE DE CIERRE CON MANIFIESTOS, documento 21]**
+> **El GATE INDEPENDIENTE DE CIERRE CON MANIFIESTOS VERIFICABLES devolvió INSUFICIENTE PARA
 > F5 sobre la candidata `7764cca`, y NO por cobertura. `F4c` sigue ABIERTA, `F5` NO queda
 > autorizada, y NINGÚN hallazgo se ha corregido en esta pasada.**
 >
@@ -1270,7 +1270,7 @@ metodo_anterior: SIS/Evolucion · RESOLUCIÓN `O21` DEL OWNER REGISTRADA EN LA S
              mano —lo que `J-07` prohíbe— dentro del bloque cuya regla 2 dice que el último
              gate y su documento se DERIVAN. Ni el ordinal ni el documento se escriben:
                  ls docs/evolucion/[0-9][0-9]-*.md | sort | tail -1
-             EL ORDINAL DEL GATE NO SE DERIVA CNS NINGÚN COMANDO DE ESTE BLOQUE, y es
+             EL ORDINAL DEL GATE NO SE DERIVA CON NINGÚN COMANDO DE ESTE BLOQUE, y es
              `C-09` del OCTAVO GATE: aquí se publicaba
              `ls docs/evolucion/[0-9][0-9]-*GATE*.md | wc -l`, que **cuenta TODOS los
              documentos de gate del expediente y da 13 donde el ordinal es 7**. La tanda
@@ -1432,11 +1432,11 @@ metodo_anterior: SIS/Evolucion · RESOLUCIÓN O17 DEL OWNER RECIBIDA Y EN PROPAG
              bloques de §15.8 para D96–D107 · PN-17 y PN-18 nuevas · se aplican los 68
              hallazgos de clase A · O1–O16 y D1–D106 intactas, nada renumerado ·
              APLICADA, NO CERTIFICADA · F4c ABIERTA · F5 NO AUTORIZADA
-metodo_anterior: SIS/Evolucion · GATE INDEPENDIENTE DE CERTIFICACIÓN CNS UNIVERSO DERIVADO
+metodo_anterior: SIS/Evolucion · GATE INDEPENDIENTE DE CERTIFICACIÓN CON UNIVERSO DERIVADO
              EJECUTADO SOBRE 4d231ee · diez agentes de contexto limpio, cadenas P y Q en
              paralelo sin verse y adjudicador R · VEREDICTO INSUFICIENTE PARA F5 ·
              69 hallazgos: A 68 · B 1 · C 0
-metodo_anterior: SIS/Evolucion · TANDA DE CORRECCIÓN DEL GATE DE CIERRE CNS MANIFIESTOS
+metodo_anterior: SIS/Evolucion · TANDA DE CORRECCIÓN DEL GATE DE CIERRE CON MANIFIESTOS
              APLICADA · 24 hallazgos del documento 21 · SIN añadir ninguna D ·
              APLICADA, NO CERTIFICADA
 metodo_anterior: SIS/Evolucion · TANDA DE CORRECCIÓN DEL GATE DE COBERTURA APLICADA ·
@@ -1549,7 +1549,7 @@ last_meaningful_event: **EL OWNER CIERRA `F5`, INICIA `F6`, Y `F6` ENTREGA SU PR
              declara CERTIFICADO.
              REANCLADO EN EL MISMO COMMIT QUE REGISTRA EL EVENTO —regla 4—, y lo anterior NO
              se borra: baja íntegro a `last_meaningful_event_anterior` —regla 5—.
-last_meaningful_event_anterior: **UNA VERIFICACIÓN SUSTITUTIVA CNS LECTURA INTEGRAL COMPLETA
+last_meaningful_event_anterior: **UNA VERIFICACIÓN SUSTITUTIVA CON LECTURA INTEGRAL COMPLETA
              RATIFICA LA CERTIFICACIÓN INCREMENTAL.** La anterior no bastaba: su verificador
              había leído sólo en parte, lo declaró él mismo, y `O22` §3 no admite lectura
              parcial. **Sustituir no es complementar**, y el verificador nuevo derivó todo por
@@ -1845,7 +1845,7 @@ last_meaningful_event_anterior: EL OWNER RESPONDE la única decisión de clase B
              O1–O16 y D1–D106 conservan su texto; nada se renumera; NINGÚN hallazgo se
              declara SUPERADO. **APLICADA NO ES CERTIFICADA**: F4c sigue ABIERTA y F5 sigue
              NO AUTORIZADA (2026-08-30)
-last_meaningful_event_anterior: el GATE INDEPENDIENTE DE CERTIFICACIÓN CNS UNIVERSO DERIVADO
+last_meaningful_event_anterior: el GATE INDEPENDIENTE DE CERTIFICACIÓN CON UNIVERSO DERIVADO
              —diez agentes de contexto limpio sobre 4d231ee— devuelve INSUFICIENTE PARA F5
              por SEIS razones y NO por cobertura. 69 hallazgos: A 68 · B 1 · C 0. C-L.5
              sigue CERTIFICADA. Ningún hallazgo se corrigió en esa pasada, y fue
@@ -2024,7 +2024,7 @@ devuelto_por_el_GATE_FINAL_INDEPENDIENTE:
   · GRAVES CONFIRMADOS · SEIS: A3 (§7.4 declara retirado el ramal de reversión que D69
     exige) · A4 (D64–D68 y la tercera revisión NO constan en §15.8 ni en la cabecera) ·
     G-1 (U5b sin SEG ni CNS: obligación con autoridad_de_retirada «nadie», y U6 es
-    inalcanzable) · G-2 (A8 y M6–M7 con propietario ARQ ausente de participantes, y sin CNS) ·
+    inalcanzable) · G-2 (A8 y M6–M7 con propietario ARQ ausente de participantes, y sin CON) ·
     G-3 (N7 = O12 sin producir dos de sus tres términos) · G-4 (las doce áreas documentales
     sin identificador declarado, y el único ejemplo usa la mitad que D68 retira)
   · MEDIOS CONFIRMADOS · TRECE, incluidos A5 y A13 que C RECLASIFICÓ desde otra severidad
@@ -2213,7 +2213,7 @@ resuelto_en_la_SEXTA_COMPROBACION_TECNICA:
     desaparece: niveles 1 y 2 siguen, el 3 NO, y el sistema REFLEJA la degradación. NO se
     afirma que Git conserve eternamente: se declara la dependencia de retención de historia
     o de archivo externo
-  · 4 · APPEND-ONLY, DICHO CNS PRECISIÓN. Sustituir un cuerpo SÍ edita físicamente un fichero
+  · 4 · APPEND-ONLY, DICHO CON PRECISIÓN. Sustituir un cuerpo SÍ edita físicamente un fichero
     existente, luego el diario FÍSICO no es estrictamente append-only. Regla real: eventos y
     cabeceras lógicas INMUTABLES · se añaden eventos nuevos · UNA única mutación física
     autorizada y transaccional, la lápida · cualquier otra prohibida. Se retira «sustituir no
@@ -2750,7 +2750,7 @@ siguiente:   NO SE ESCRIBE AQUÍ, Y ES DELIBERADO — regla 1 de `regla_de_reanc
                                                     13   cada id exactamente una vez
 
              CÓMO QUEDA CADA CONDICIÓN — **CLASIFICACIÓN VIGENTE**, tras el GATE
-             INDEPENDIENTE DE CIERRE CNS MANIFIESTOS (documento 21), las tandas que lo
+             INDEPENDIENTE DE CIERRE CON MANIFIESTOS (documento 21), las tandas que lo
              siguen, **la ACTUALIZACIÓN que impuso el TERCER GATE DE CERTIFICACIÓN
              (documento 24) sobre C-L.7** y **la que impone el CUARTO (documento 25) sobre
              C-L.5**. Los estados primarios son los que ROTULA el bloque de abajo, uno por
@@ -5631,7 +5631,7 @@ awk '/^## 5 · MATRIZ CONSOLIDADA/,/^## 6 /' docs/evolucion/32-*.md \
                                `redesign/kernel-2.0` ni se ha movido esa rama. **APLICAR NO
                                ES CERTIFICAR.**
 
-10 EL RUNNER, Y CNS QUÉ         el runner de `kernel/operativo/validadores/` da **13/13 en
+10 EL RUNNER, Y CON QUÉ         el runner de `kernel/operativo/validadores/` da **13/13 en
    INTÉRPRETE SE CORRE         verde, 13 evidencias publicadas, 0 problemas**, y
                                `git status` queda **limpio bajo `kernel/`**: la evidencia
                                derivada es byte a byte la publicada, que es lo que `P-27`≡
@@ -5644,7 +5644,7 @@ awk '/^## 5 · MATRIZ CONSOLIDADA/,/^## 6 /' docs/evolucion/32-*.md \
                                `A14`, LIMITACIÓN ACEPTADA con procedencia aprobada,
                                propietario `PLT` y fase `F6`.
                                **CONSECUENCIA OPERATIVA, y el gate siguiente la hereda:** un
-                               «13/13» sólo significa algo si se dice CNS QUÉ INTÉRPRETE se
+                               «13/13» sólo significa algo si se dice CON QUÉ INTÉRPRETE se
                                obtuvo. Quien publique evidencia declara su
                                `python3 --version`, y `A14` sigue siendo lo que cierra esto
                                de verdad: comprobar la versión ANTES de correr, para que
@@ -6110,7 +6110,7 @@ awk '/^## 5 · MATRIZ CONSOLIDADA/,/^## 6 /' docs/evolucion/32-*.md \
                                  curso**, agrupados POR CAUSA y no por línea.
                                  **Y consta lo que quedó cerrado**: `C-L.5` CERTIFICADA por
                                  tercera vez consecutiva sobre universo derivado, y `R-04`
-                                 CERRADO CNS MECANISMO tras dos gates sin lograrlo.
+                                 CERRADO CON MECANISMO tras dos gates sin lograrlo.
 
 2  LA ÚNICA CLASE `B`,           **NO es un hallazgo: es LA RAÍZ, y está ABIERTA.** `M-04`
    Y ES LA RAÍZ                  —«se puede construir un árbol defectuoso que pase la batería
@@ -6212,7 +6212,7 @@ awk '/^## 5 · MATRIZ CONSOLIDADA/,/^## 6 /' docs/evolucion/32-*.md \
 0  DÓNDE ESTAMOS, EXACTO         la candidata `4d231ee` está publicada en
                                  `review/f4c-post-gate-manifiestos-candidate-20260830`.
                                  Sobre ella se ejecutó el **GATE INDEPENDIENTE DE
-                                 CERTIFICACIÓN CNS UNIVERSO DERIVADO** —diez agentes de
+                                 CERTIFICACIÓN CON UNIVERSO DERIVADO** —diez agentes de
                                  contexto limpio: cadenas `P1`–`P4` y `Q1`·`Q2`·`Q3`·`Q5`·`Q4`
                                  en paralelo sin verse, y el adjudicador `R`—, y su documento
                                  es el 22.
@@ -6351,7 +6351,7 @@ awk '/^## 5 · MATRIZ CONSOLIDADA/,/^## 6 /' docs/evolucion/32-*.md \
 
 0  DÓNDE ESTAMOS, EXACTO         la candidata `7764cca` **está publicada** en
                                  `review/f4c-post-gate-cobertura-candidate-20260829`.
-                                 Sobre ella se ejecutó el **GATE INDEPENDIENTE DE CIERRE CNS
+                                 Sobre ella se ejecutó el **GATE INDEPENDIENTE DE CIERRE CON
                                  MANIFIESTOS VERIFICABLES** —revisores `P` y `Q` en paralelo
                                  sin verse, adjudicador `R`—, **publicado** en
                                  `review/f4c-gate-cierre-manifiestos-20260829` = `f2c4348`,

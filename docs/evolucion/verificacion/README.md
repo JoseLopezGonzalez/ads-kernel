@@ -62,7 +62,7 @@ por esta vía: los fija `G-22`.
 
 ## Qué certifica un «N/N en verde», y qué NO — el ALCANCE, `DD-21`
 
-**Nueve de las comprobaciones no son propiedades del COMMIT, sino de un repositorio CNS
+**Nueve de las comprobaciones no son propiedades del COMMIT, sino de un repositorio CON
 HISTORIA**: contrastan contra `HEAD` y contra la revisión base con `git`. Sobre la
 materialización que la RECETA DEL SOBRE prescribe —el árbol desplegado con
 `git read-tree` + `git checkout-index`, **sin `.git`**— esas nueve **fallan CERRADO**, que

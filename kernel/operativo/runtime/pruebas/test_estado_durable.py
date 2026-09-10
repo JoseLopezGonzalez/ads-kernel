@@ -2890,7 +2890,7 @@ class MigracionHeredadaReal(Caso):
 
     POR QUÉ ESTA CLASE EXISTE Y NO BASTABA `test_09`. `test_09` fabrica el «heredado» con
     `self.inicializar()` y un `os.remove(FORMATO.json)` a continuación: ese almacén tiene
-    diario CNS `almacen.inicializado` y tiene `REVISION.json`, así que la rama rota **no se
+    diario CON `almacen.inicializado` y tiene `REVISION.json`, así que la rama rota **no se
     entra**. Pasaba sobre un camino que el código productivo no recorre. Aquí el heredado se
     construye desde la ESPECIFICACIÓN del §7 —«`FORMATO.json` versiona el ALMACÉN; su
     ausencia es la versión 0 heredada»— con la disposición del §1 y nada más.

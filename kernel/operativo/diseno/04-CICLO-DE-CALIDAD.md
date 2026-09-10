@@ -60,7 +60,7 @@ devolución no es un fracaso del ciclo, es el ciclo funcionando.
 | 9 validación visual | 7 prototipo | rechazo por **acabado**, **sistema** o **respuesta** | qué valor está fuera del sistema, con la extracción |
 | 9 validación visual | 10 construcción | rechazo por **fidelidad** | la comparación intención/resultado |
 | 11 fidelidad | 10 construcción | lo construido simplificó lo aprobado sin devolverlo | comparación intención/resultado |
-| 11 fidelidad | 6 convergencia | lo aprobado no es construible y la limitación es física o técnica | la evidencia de imposibilidad de CNS |
+| 11 fidelidad | 6 convergencia | lo aprobado no es construible y la limitación es física o técnica | la evidencia de imposibilidad de CON |
 | 12 dispositivo real | 7 prototipo | el movimiento o la densidad no funcionan en el hardware real | la grabación en el dispositivo |
 
 > **Un rechazo por «personalidad, actualidad o alma» no vuelve al prototipo.** Vuelve a la
