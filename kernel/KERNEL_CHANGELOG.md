@@ -2,6 +2,51 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.13 — la guarda de arranque vuelve a hablar en Windows
+
+**UP-04.** Todo punto ejecutable de este kernel lleva el prologo `G-03`, que exige arrancar
+con `-I -S -E -X ads_aislado=1` y, si no las lleva, **se reejecuta solo**. Lo hacia siempre
+con `os.execve`. En POSIX eso SUSTITUYE la imagen del proceso —mismo PID, misma consola,
+mismas senales, y el codigo de salida es el del punto— y no se nota. **En Windows esa
+primitiva no existe.** La emulacion de la CRT lanza un proceso NUEVO y termina el padre en
+el acto, sin esperarlo:
+
+```text
+PS> python kernel\operativo\validadores\comprobar_rutas_portables.py
+PS> $LASTEXITCODE
+1                              <- un codigo, y NI UNA LINEA de salida
+```
+
+Quien llamaba recogia el codigo del PADRE —no el del punto—, la consola volvia al
+interprete mientras el hijo aun escribia, y su salida se perdia o llegaba desordenada. El
+efecto se veia como «el validador falla»; era «el validador no llego a hablar», que es
+peor: un rojo que miente sobre su causa manda a buscar donde no esta.
+
+No era de un validador. Lo tenian **los cincuenta y dos puntos** que importan la guarda, en
+una plataforma entera.
+
+**Que cambia.** `exigir()` deja de llamar a `os.execve` directamente y pasa por
+`_reejecutar()`, que usa la primitiva que cada sistema TIENE: `execve` en POSIX, donde es
+correcta y gratuita; y en Windows un hijo lanzado con `subprocess.Popen` que **hereda los
+tres flujos** —no se capturan, para no decodificar en el padre sobre una consola cp1252 ni
+romper el entrelazado de stdout y stderr—, al que se **espera** —ni huerfanos ni salida
+despues del final— y cuyo codigo se propaga tal cual. La marca `-X ads_aislado=1` garantiza
+que la cadena tiene dos eslabones y nunca tres.
+
+**Como se comprueba.** `T398` invoca puntos reales sin banderas, con exito y con fallo,
+desde rutas con espacios y caracteres no ASCII, y exige codigo correcto, salida no vacia en
+stdout Y en stderr, y ejecucion unica. `T399` FUERZA la rama de Windows en un anfitrion
+POSIX —declarando `os.name` igual a `nt` antes de que la guarda decida— para que la
+correccion se pueda ejercer donde se desarrolla y no solo donde fallaba. Las dos se ponen
+rojas con los dos sabotajes evidentes: devolver 0 en vez del codigo del hijo, y capturar
+los flujos en lugar de heredarlos.
+
+**Y este kernel estrena CI.** Se validaba a mano, en la maquina de quien tocara, y eso
+explica que `UP-00` y `UP-04` —los dos invisibles desde Linux— vivieran aqui tanto tiempo.
+`.github/workflows/kernel.yml` corre en Linux, Windows y macOS; invoca validadores
+DIRECTAMENTE en pwsh 7 y en Windows PowerShell 5.1; y ejerce la sexta condicion de `O26`
+dentro de un contenedor, que es la que faltaba para pasar de 7 de 8 a 8 de 8.
+
 ## 2.0.0-alpha.12 — la capacidad de Construccion deja de usar un nombre imposible en Windows
 
 **UP-00.** La capacidad de Construccion vivia en un directorio cuyo nombre —tres letras,

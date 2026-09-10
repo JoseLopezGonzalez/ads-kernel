@@ -2659,7 +2659,7 @@ $ git diff --name-only d050836..HEAD -- kernel/ | wc -l          → 188
 ```
 
 Entre esos 188 está el macrobloque 3 entero, las correcciones `E-07`…`E-18` y los tres
-bloqueantes `ADJ-B1`, `ADJ-B2`, `ADJ-B3`. `kernel/VERSION` sigue en `2.0.0-alpha.12` y la
+bloqueantes `ADJ-B1`, `ADJ-B2`, `ADJ-B3`. `kernel/VERSION` sigue en `2.0.0-alpha.13` y la
 entrada más reciente del CHANGELOG describe **sólo el segundo corte**. `VERSIONES.md` regla 3
 dice «Si no coinciden, o falta la entrada **o falta el cambio de versión**»; `T152` compara
 los dos entre sí —ambos congelados— y **ninguno contra el contenido del kernel**, de modo que

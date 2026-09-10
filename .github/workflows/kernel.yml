@@ -1,0 +1,154 @@
+name: kernel
+
+# LA PRIMERA CI DE ESTE REPOSITORIO, Y LLEGA TARDE.
+#
+# El kernel generico se validaba a mano, en la maquina de quien tocara. Eso explica los
+# dos defectos que UP-00 y UP-04 destaparon: los dos eran INVISIBLES desde Linux —un
+# nombre de fichero imposible en Windows, y una guarda que en Windows no reejecuta— y
+# ninguno se vio hasta que un Windows de verdad intento ejecutar algo.
+#
+# Aqui se comprueba lo que una maquina sola no puede: los TRES sistemas, y la condicion
+# que exige un contenedor.
+#
+# NO despliega nada. NO necesita credencial ninguna, y NO se introduce ninguna.
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  # ===========================================================================
+  linux:
+    name: Bateria del kernel (Linux, con Docker)
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # la evidencia se contrasta contra el blob de HEAD
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Requisitos
+        run: python3 -m pip install --quiet pyyaml
+
+      # LA OCTAVA CONDICION DE `O26`, EJERCIDA DE VERDAD.
+      #
+      # `condicion_6` exige un ejecutor con identidad de sistema distinta y el control repo
+      # montado de SOLO LECTURA. Sin contenedor se declaraba «no ejercible» y el veredicto
+      # se quedaba en 7 de 8 — que es una forma honrada de no demostrarlo, pero no es
+      # demostrarlo. El runner de Actions trae Docker, asi que aqui SI se ejerce.
+      #
+      # El laboratorio es desechable y no toca nada: `--rm` lo borra al salir, `--network
+      # none` lo deja sin red, `--user 4242:4242` le da un UID que no es el del runtime, y
+      # el repositorio entra montado `:ro`. No hay credenciales en ninguna parte y no hay
+      # acceso a produccion: el contenedor no puede salir a la red.
+      - name: Docker disponible, y que se vea
+        run: |
+          docker info --format 'servidor {{.ServerVersion}} · cgroup {{.CgroupVersion}} · driver {{.CgroupDriver}}'
+          docker pull --quiet alpine:latest
+
+      - name: "O26 · las OCHO condiciones, la sexta dentro de un contenedor"
+        run: |
+          set -e
+          python3 docs/evolucion/verificacion/ejercer-o26-condiciones.py | tee /tmp/o26.txt
+          if ! grep -q '8 de 8 condiciones SATISFECHAS · 0 no ejercibles · 0 no satisfechas' /tmp/o26.txt; then
+            echo "FALLA: no son 8 de 8. Lo que dice el ejercitador:"
+            tail -5 /tmp/o26.txt
+            exit 1
+          fi
+          echo "OK: 8 de 8 condiciones SATISFECHAS"
+
+      - name: Limpieza del laboratorio
+        if: always()
+        run: |
+          docker ps -aq | xargs -r docker rm -f
+          rm -rf /tmp/ads-* || true
+          echo "contenedores restantes: $(docker ps -aq | wc -l)"
+
+      - name: Rutas portables
+        run: python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_rutas_portables.py
+
+      - name: Integridad, evidencia y registro de pruebas
+        run: |
+          set -e
+          ./tooling/kernel-status.sh
+          python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_integridad.py
+          python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_evidencia.py
+
+      - name: "El aislamiento de arranque, incluida la rama de Windows (T398 y T399)"
+        run: python3 -I -S -E -X ads_aislado=1 kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py
+
+  # ===========================================================================
+  windows:
+    name: Validadores invocados DIRECTAMENTE en Windows
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Requisitos
+        shell: pwsh
+        run: python -m pip install --quiet pyyaml
+
+      # `UP-04` · LO QUE ESTE TRABAJO EXISTE PARA IMPEDIR.
+      #
+      # La guarda `G-03` reejecutaba con `os.execve`. En Windows esa primitiva no existe:
+      # la emulacion lanza un proceso NUEVO y mata el padre en el acto, asi que quien
+      # llamaba recogia un codigo de salida y NI UNA LINEA de salida. Lo tenian los 52
+      # puntos que importan la guarda, en la plataforma declarada prioritaria.
+      #
+      # Aqui se invocan validadores REALES, sin banderas —que es como los invoca una
+      # persona— y se exige lo que antes no se cumplia: salida NO VACIA y codigo correcto,
+      # tanto en exito como en fallo, en pwsh 7 y en Windows PowerShell 5.1, y tambien
+      # desde una ruta con espacios y caracteres no ASCII.
+      - name: "UP-04 · pwsh 7"
+        shell: pwsh
+        run: .\.github\comprobar-up04.ps1
+
+      - name: "UP-04 · Windows PowerShell 5.1"
+        shell: powershell
+        run: .\.github\comprobar-up04.ps1
+
+  # ===========================================================================
+  macos:
+    name: Bateria minima (macOS)
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Requisitos
+        run: python3 -m pip install --quiet pyyaml
+
+      - name: Rutas portables e integridad
+        run: |
+          set -e
+          python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_rutas_portables.py
+          ./tooling/kernel-status.sh
+
+      - name: "La reejecucion por execve sigue intacta en POSIX"
+        run: |
+          set -e
+          salida=$(python3 kernel/operativo/validadores/comprobar_rutas_portables.py)
+          codigo=$?
+          echo "$salida" | tail -2
+          test $codigo -eq 0
+          echo "$salida" | grep -q "T153" || { echo "FALLA: salida vacia o sin T153"; exit 1; }
+          echo "OK: reejecuta, habla y devuelve 0"

@@ -303,6 +303,76 @@ def _salir(nombre_del_punto, causa):
     raise SystemExit(CODIGO_DE_PROCEDENCIA)
 
 
+# ── LA REEJECUCIÓN, Y POR QUÉ NO ES LA MISMA EN LOS TRES SISTEMAS ────────────────────
+#
+#  `UP-04` · HECHO REPRODUCIDO EN UN RUNNER DE WINDOWS REAL, el 2026-09-10. Esta guarda
+#  reejecutaba SIEMPRE con `os.execve`, y en Windows eso no reejecuta:
+#
+#      PS> python kernel\operativo\validadores\comprobar_rutas_portables.py
+#      PS> $LASTEXITCODE
+#      1                                   ← un código, y NI UNA LÍNEA de salida
+#
+#  En POSIX `execve` SUSTITUYE la imagen del proceso: mismo PID, misma consola, mismas
+#  señales, y el código de salida es el del punto. En Windows no existe esa primitiva. La
+#  emulación de la CRT lanza un proceso NUEVO y termina el padre EN EL ACTO, sin esperarlo:
+#  quien llamó recoge el código del padre —no el del hijo—, la consola vuelve al intérprete
+#  mientras el hijo aún escribe, y su salida se pierde o llega desordenada.
+#
+#  El efecto se veía como «el validador falla». Era «el validador no llegó a hablar», que
+#  es peor: un rojo que miente sobre su causa manda a buscar donde no está. Y no era de un
+#  validador: lo tenían los CINCUENTA Y DOS puntos que importan esta guarda, en la
+#  plataforma declarada prioritaria.
+#
+#  DECISIÓN · se conserva `execve` donde es correcto y se usa un hijo esperado donde no
+#      Alternativas: (a) `subprocess` en los tres sistemas, por uniformidad; (b) `execve`
+#      en POSIX y `subprocess` en Windows; (c) `os.spawnve(P_WAIT, …)` en Windows.
+#      Se elige (b). Con (a) se pierde en POSIX lo que `execve` da gratis —un solo proceso,
+#      señales directas, sin envoltorio que traduzca códigos—, y se paga en todas partes un
+#      problema que solo tiene una. Con (c) se hereda la misma familia de la CRT y su
+#      tratamiento de comillas, que es justo lo que se quiere dejar atrás.
+#      Con (b) cada sistema usa la primitiva que de verdad tiene.
+#
+#  LO QUE EL HIJO DE WINDOWS HEREDA, Y POR QUÉ NO SE CAPTURA
+#      Se le pasan `stdin`, `stdout` y `stderr` TAL CUAL. No se capturan y se reemiten: eso
+#      obligaría a decodificar en el padre —y la consola de Windows escribe en cp1252, de
+#      modo que un simple «→» reventaría el envoltorio con un `UnicodeDecodeError` que no
+#      tiene nada que ver con lo que el punto mide—, y además rompería el entrelazado real
+#      de los dos flujos. Heredando los descriptores, los bytes del hijo van al mismo sitio
+#      al que habrían ido, en el mismo orden, con la misma codificación.
+#
+#  NI HUÉRFANOS NI EJECUCIÓN DOBLE
+#      El padre ESPERA al hijo —`wait()`— y sólo entonces sale con SU código: no queda un
+#      proceso escribiendo después de que quien llamó crea que todo terminó. Y el hijo lleva
+#      `-X ads_aislado=1`, así que `ya_se_reejecuto()` le dice que no vuelva a reejecutar:
+#      la cadena tiene exactamente dos eslabones, aquí y allí, nunca tres.
+#
+#  LA INTERRUPCIÓN NO SE COME
+#      `Ctrl-C` llega al grupo entero, hijo incluido. El padre espera igualmente a que el
+#      hijo termine de morirse y propaga su código, en vez de salir por delante y dejarlo
+#      escribiendo sobre una consola que ya no es suya.
+def _reejecutar(orden, entorno):
+    """Reejecuta el punto AISLADO. No vuelve: sale con el código del punto."""
+    if _os.name != "nt":
+        _os.execve(orden[0], orden, entorno)            # POSIX: sustituye la imagen
+        raise SystemExit(CODIGO_DE_PROCEDENCIA)         # inalcanzable; sólo si execve falla
+
+    import subprocess                                   # sólo en Windows, y sólo aquí
+    try:
+        hijo = subprocess.Popen(orden, env=entorno)     # hereda los tres flujos
+    except OSError as error:
+        _sys.stderr.write("[PROCEDENCIA_NO_FIABLE] no se pudo reejecutar aislado: %s\n"
+                          % error)
+        raise SystemExit(CODIGO_DE_PROCEDENCIA)
+    while True:
+        try:
+            codigo = hijo.wait()
+            break
+        except KeyboardInterrupt:
+            # La señal ya la recibió el hijo: se le deja terminar y se publica SU código.
+            continue
+    raise SystemExit(codigo)
+
+
 def exigir(nombre_del_punto, nombre_del_modulo="__main__"):
     """Se llama al ENTRAR en un punto ejecutable. Reejecuta aislado, o falla cerrado.
 
@@ -388,7 +458,7 @@ def exigir(nombre_del_punto, nombre_del_modulo="__main__"):
     if guion != punto and _os.path.isfile(punto):
         guion = punto
     orden = orden_aislada(guion, _sys.argv[1:])
-    _os.execve(orden[0], orden, entorno_saneado())      # no vuelve
+    _reejecutar(orden, entorno_saneado())               # no vuelve
 
 
 # ── LA BIBLIOTECA DE TERCEROS, BAJO AISLAMIENTO ──────────────────────────────────────

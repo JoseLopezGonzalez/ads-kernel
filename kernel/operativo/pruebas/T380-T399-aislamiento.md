@@ -425,3 +425,45 @@ validador: "kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py"
 estado: prueba-superada
 evidencia: "evidencia/integridad-evidencia-salida.txt"
 ```
+
+```yaml ads:escenario
+id: T398
+nombre: Un punto invocado SIN banderas conserva su salida, su stderr y su codigo
+cubre: ["G-03", "UP-04"]
+dado:
+  - "en POSIX execve SUSTITUYE la imagen del proceso y no se nota; en Windows esa primitiva no existe"
+  - "la emulacion de la CRT lanza un proceso nuevo y mata el padre EN EL ACTO, sin esperarlo"
+cuando: ["se invoca un punto ejecutable real sin las banderas de aislamiento, con exito y con fallo, desde rutas con espacios y con caracteres no ASCII"]
+entonces:
+  - "el codigo de salida es el del punto y no el del envoltorio"
+  - "stdout y stderr del punto llegan intactos, incluidos los caracteres no ASCII"
+  - "el punto se ejecuta UNA sola vez y declara haber sido reejecutado"
+falla_si:
+  - "el padre no espera al hijo, con lo que quien llama recoge un codigo sin una sola linea de salida"
+ejecucion: requiere-runtime
+validador: "kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py"
+estado: prueba-superada
+evidencia: "evidencia/integridad-evidencia-salida.txt"
+```
+
+```yaml ads:escenario
+id: T399
+nombre: La rama de Windows de la reejecucion se ejerce fuera de Windows y conserva todo
+cubre: ["G-03", "UP-04"]
+dado:
+  - "la rama de Windows no se ejecuta en un anfitrion POSIX, asi que se FUERZA declarando os.name igual a nt antes de que la guarda decida"
+  - "sin esto, la correccion de UP-04 solo se podria comprobar en la plataforma donde el defecto ya habia pasado inadvertido"
+cuando: ["se ejerce el camino de subprocess con un punto que sale con 0 y con uno que sale con 7"]
+entonces:
+  - "el codigo del hijo se propaga tal cual"
+  - "stdout y stderr se heredan y llegan al llamante sin pasar por el padre"
+  - "el punto se ejecuta exactamente una vez"
+falla_si:
+  - "se devuelve 0 en vez del codigo del hijo"
+  - "se capturan los flujos en el padre en lugar de heredarlos"
+ejecucion: requiere-runtime
+validador: "kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py"
+estado: prueba-superada
+evidencia: "evidencia/integridad-evidencia-salida.txt"
+```
+

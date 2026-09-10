@@ -3114,6 +3114,94 @@ class AislamientoDeArranque(SesionNueva):
         self.assertTrue(hasattr(sys.flags, "safe_path"),
                         "este intérprete no expone `safe_path` y el aparato declara 3.12")
 
+    # ------------------------------------------------------------------ T398
+    def _punto_de_prueba(self, carpeta, codigo_de_salida, texto):
+        """Un punto ejecutable REAL, con el prólogo `G-03` completo, en `carpeta`."""
+        os.makedirs(carpeta, exist_ok=True)
+        shutil.copy(os.path.join(VALIDADORES, "aislamiento_de_arranque.py"), carpeta)
+        punto = os.path.join(carpeta, "punto.py")
+        with open(punto, "w", encoding="utf-8") as fh:
+            fh.write("import os, sys\n"
+                     "sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))\n"
+                     "import aislamiento_de_arranque as a\n"
+                     "INFORME = a.exigir(__file__, __name__)\n"
+                     "sys.stdout.write(" + repr(texto) + " + '\\n')\n"
+                     "sys.stderr.write('por el error: ' + " + repr(texto) + " + '\\n')\n"
+                     "sys.stdout.write('pid=%d reejecutado=%d\\n'"
+                     "                 % (os.getpid(), int(a.ya_se_reejecuto())))\n"
+                     "sys.exit(" + str(codigo_de_salida) + ")\n")
+        return punto
+
+    def test_T398_un_punto_invocado_SIN_banderas_conserva_salida_y_codigo(self):
+        """T398 · Defecto que previene: `UP-04`, un validador que sale mudo en Windows.
+
+        SABOTAJE QUE LA PONE ROJA: reejecutar sin esperar al hijo, que es lo que hacía
+        `os.execve` bajo la emulación de Windows: el padre moría antes y quien llamaba
+        recogía un código sin una sola línea de salida.
+        """
+        for codigo in (0, 3):
+            for nombre in ("sencillo", "con espacios y acentos ñ á 漁"):
+                with self.subTest(codigo=codigo, carpeta=nombre):
+                    carpeta = os.path.join(self.taller, nombre)
+                    punto = self._punto_de_prueba(carpeta, codigo, "salida ñ á → 漁")
+                    salida = subprocess.run(
+                        [sys.executable, punto],          # SIN banderas: se reejecuta
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                        env=self.entorno(), cwd=self.taller, check=False, timeout=120)
+                    fuera = salida.stdout.decode("utf-8")
+                    error = salida.stderr.decode("utf-8")
+                    self.assertEqual(salida.returncode, codigo, error)
+                    self.assertIn("salida ñ á → 漁", fuera,
+                                  "la salida del punto NO llegó: " + repr(fuera))
+                    self.assertIn("por el error: salida ñ á → 漁", error,
+                                  "el stderr del punto NO llegó: " + repr(error))
+                    self.assertIn("reejecutado=1", fuera,
+                                  "el punto no corrió reejecutado: " + repr(fuera))
+                    # Ni ejecución doble: la línea del informe aparece UNA vez.
+                    self.assertEqual(fuera.count("reejecutado="), 1,
+                                     "el punto se ejecutó más de una vez: " + repr(fuera))
+
+    # ------------------------------------------------------------------ T399
+    def test_T399_la_rama_de_WINDOWS_se_ejerce_aqui_y_conserva_todo(self):
+        """T399 · Defecto que previene: corregir `UP-04` y no poder probarlo fuera de Windows.
+
+        La rama de Windows no se ejecuta en este anfitrión, así que se FUERZA: se le dice
+        a la guarda que `os.name` es `nt` y se comprueba que el camino de `subprocess`
+        —el que de verdad correrá allí— conserva stdout, stderr y código, ejecuta UNA sola
+        vez y no deja huérfanos.
+
+        SABOTAJE QUE LA PONE ROJA: devolver 0 en vez del código del hijo, o capturar los
+        flujos en el padre en lugar de heredarlos.
+        """
+        for codigo in (0, 7):
+            with self.subTest(codigo=codigo):
+                carpeta = os.path.join(self.taller, "nt-%d" % codigo)
+                punto = self._punto_de_prueba(carpeta, codigo, "por la rama de Windows")
+                # El lanzador finge ser Windows ANTES de que la guarda decida.
+                lanzador = os.path.join(carpeta, "lanzador.py")
+                with open(lanzador, "w", encoding="utf-8") as fh:
+                    fh.write("import os, runpy, sys\n"
+                             "os.name = 'nt'\n"      # la guarda leerá esto
+                             "sys.argv = [" + repr(punto) + "]\n"
+                             "runpy.run_path(" + repr(punto) + ", run_name='__main__')\n")
+                salida = subprocess.run(
+                    [sys.executable, lanzador],
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    env=self.entorno(), cwd=self.taller, check=False, timeout=120)
+                fuera = salida.stdout.decode("utf-8")
+                error = salida.stderr.decode("utf-8")
+                self.assertEqual(salida.returncode, codigo,
+                                 "la rama de Windows NO propagó el código del hijo. "
+                                 "stdout=%r stderr=%r" % (fuera, error))
+                self.assertIn("por la rama de Windows", fuera,
+                              "la rama de Windows perdió el stdout: " + repr(fuera))
+                self.assertIn("por el error: por la rama de Windows", error,
+                              "la rama de Windows perdió el stderr: " + repr(error))
+                self.assertEqual(fuera.count("reejecutado="), 1,
+                                 "la rama de Windows ejecutó el punto dos veces: "
+                                 + repr(fuera))
+                self.assertIn("reejecutado=1", fuera)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2, testRunner=_RunnerDeterminista)

@@ -1,6 +1,6 @@
 # evidencia de: integridad-evidencia
 # orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py
-# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 3 variables (HOME LC_CTYPE PATH) · retiradas del lanzador: PYTHONUNBUFFERED
 # codigo:       0
 # ---------------------------------------------------------------
 
@@ -41,6 +41,10 @@ test_T396_la_primitiva_sustituida_EN_SITIO_se_caza_con_el_vector_conocido (__mai
 T396 · Defecto que previene: la mutación que no llega por `sitecustomize`. ... ok
 test_T397_las_CUATRO_banderas_se_exigen_y_una_sola_que_falte_no_basta (__main__.AislamientoDeArranque.test_T397_las_CUATRO_banderas_se_exigen_y_una_sola_que_falte_no_basta)
 T397 · Defecto que previene: declarar aislamiento con tres banderas de cuatro. ... ok
+test_T398_un_punto_invocado_SIN_banderas_conserva_salida_y_codigo (__main__.AislamientoDeArranque.test_T398_un_punto_invocado_SIN_banderas_conserva_salida_y_codigo)
+T398 · Defecto que previene: `UP-04`, un validador que sale mudo en Windows. ... ok
+test_T399_la_rama_de_WINDOWS_se_ejerce_aqui_y_conserva_todo (__main__.AislamientoDeArranque.test_T399_la_rama_de_WINDOWS_se_ejerce_aqui_y_conserva_todo)
+T399 · Defecto que previene: corregir `UP-04` y no poder probarlo fuera de Windows. ... ok
 test_T309_el_punto_ejecutable_ACTIVA_la_politica_y_contiene_al_bisnieto (__main__.ContencionEnElCaminoProductivo.test_T309_el_punto_ejecutable_ACTIVA_la_politica_y_contiene_al_bisnieto)
 T309 · Defecto que previene: `E-16`, una política que nadie puede activar. ... ok
 test_T309b_sin_backend_fuerte_el_punto_ejecutable_FALLA_CERRADO (__main__.ContencionEnElCaminoProductivo.test_T309b_sin_backend_fuerte_el_punto_ejecutable_FALLA_CERRADO)
@@ -133,6 +137,6 @@ test_T307g_la_COBERTURA_DEL_CONTRASTE_va_publicada_en_la_evidencia (__main__.Res
 T307 · Defecto que previene: `H-08`, una cifra que se calcula y no se publica. ... ok
 
 ----------------------------------------------------------------------
-Ran 63 tests  (duración no registrada: varía por ejecución)
+Ran 65 tests  (duración no registrada: varía por ejecución)
 
 OK

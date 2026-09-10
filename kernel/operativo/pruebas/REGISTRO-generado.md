@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 60a65c375c93f1b6 -->
+<!-- source_revision: ffab7f82e046e383 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -12,10 +12,10 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 |---|---|
 | CONTRATO DEFINIDO | 56 |
 | VALIDADOR IMPLEMENTADO | 4 |
-| PRUEBA EJECUTADA | 0 |
+| PRUEBA EJECUTADA | 2 |
 | PRUEBA SUPERADA | 255 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **315** |
+| **total** | **317** |
 
 ## Detalle
 
@@ -306,6 +306,8 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T395](T380-T399-aislamiento.md) | El comprobador de evidencia EXIGE la garantia publicada | D-01 · HALLAZGO 3 · E-14 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
 | [T396](T380-T399-aislamiento.md) | La primitiva sustituida EN SITIO se caza con el vector conocido | G-03 · H-1 · O26 1.8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
 | [T397](T380-T399-aislamiento.md) | Las cuatro banderas se exigen y una sola que falte no basta | G-03 · O26 1.8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T398](T380-T399-aislamiento.md) | Un punto invocado SIN banderas conserva su salida, su stderr y su codigo | G-03 · UP-04 | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/integridad-evidencia-salida.txt |
+| [T399](T380-T399-aislamiento.md) | La rama de Windows de la reejecucion se ejerce fuera de Windows y conserva todo | G-03 · UP-04 | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/integridad-evidencia-salida.txt |
 | [T400](T400-T419-prioridad-y-contencion.md) | La prioridad declarada sobrevive intacta a una postergación | G-04 · R1-H02 · b.12 paso 5 · b.12 inanición | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
 | [T401](T400-T419-prioridad-y-contencion.md) | La prioridad sobrevive a muchas postergaciones seguidas y no deriva | G-04 · R1-H02 · b.12 inanición | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
 | [T402](T400-T419-prioridad-y-contencion.md) | El veterano adelanta por antigüedad y ninguna prioridad se altera | G-04 · b.12 paso 5 c · prevención de inanición | requiere-runtime | **PRUEBA SUPERADA** | evidencia/cardinalidad-salida.txt |
@@ -339,9 +341,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 
 ## Contraste del estado contra la evidencia
 
-Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **255** de **315**.
+Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **255** de **317**.
 
-No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **60**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
+No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **62**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
 
 Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada mezclaba a los que no afirman ninguna ejecución con los que afirmaban una que su evidencia no nombra, que es lo que `H-02` encontró—:
 
@@ -349,5 +351,9 @@ Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada
 |---|---|
 | contrato-definido | 56 |
 | validador-implementado | 4 |
+| prueba-superada | 2 |
 
-Ninguna divergencia: todo `estado:` declarado coincide con el que su evidencia sostiene.
+| id | declarado a mano | derivado de la evidencia | motivo |
+|---|---|---|---|
+| T398 | prueba-superada | prueba-ejecutada | `evidencia/integridad-evidencia-salida.txt` no nombra a `T398` en ninguna línea de veredicto: la ejecución consta, el resultado DE ESTE escenario no · declara `prueba-superada` sobre una evidencia que NO lo nombra y que sólo sostiene `prueba-ejecutada`: eso es subir de estado por argumento, y la regla dura de `REGISTRO.md` lo prohíbe con o sin contraste |
+| T399 | prueba-superada | prueba-ejecutada | `evidencia/integridad-evidencia-salida.txt` no nombra a `T399` en ninguna línea de veredicto: la ejecución consta, el resultado DE ESTE escenario no · declara `prueba-superada` sobre una evidencia que NO lo nombra y que sólo sostiene `prueba-ejecutada`: eso es subir de estado por argumento, y la regla dura de `REGISTRO.md` lo prohíbe con o sin contraste |
