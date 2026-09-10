@@ -82,29 +82,66 @@ jobs:
           python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_integridad.py
           python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_evidencia.py
 
-      # ESTA BATERIA EXIGE CONTENCION FUERTE, Y EL RUNNER NO LA DA.
+      # `T309` EXIGE CONTENCION FUERTE, Y UN RUNNER DE ACTIONS NO LA DA.
       #
-      # `T309` comprueba que un punto ejecutable ACTIVA la politica de contencion
-      # y contiene a su bisnieto. Necesita cgroup v2 DELEGADO o un espacio de
-      # nombres de PID usable, y un runner de Actions no concede ninguno de los
-      # dos al usuario: el subgrupo se crea pero la tarea no acaba dentro, y
-      # `unshare -Urpf` falla escribiendo en /proc.
+      # Comprueba que un punto ejecutable ACTIVA la politica de contencion y
+      # contiene a su bisnieto. Necesita cgroup v2 DELEGADO o un espacio de
+      # nombres de PID usable, y el runner no concede ninguno de los dos: el
+      # subgrupo se crea pero la tarea no acaba dentro, y `unshare -Urpf` falla
+      # escribiendo en /proc. La causa la publica el propio backend, con su
+      # codigo: `CONTENCION_FUERTE_NO_DISPONIBLE`.
       #
-      # No se declara «no ejercible» y se sigue: eso convertiria un rojo en una
-      # nota al pie. Se corre DONDE SI SE PUEDE —dentro de un contenedor
-      # privilegiado con el cgroup del anfitrion—, que es la misma respuesta que
-      # se le dio a la sexta condicion de `O26`. Si el contenedor no arranca, el
-      # paso falla: no hay camino silencioso.
-      - name: "El aislamiento de arranque, con contencion real (T398, T399 y T309)"
+      # SE INTENTO EL OTRO ENTORNO, Y ES PEOR. Correr la bateria dentro de un
+      # contenedor privilegiado con el cgroup del anfitrion da la contencion,
+      # pero corre como `root`, y como `root` varios escenarios dejan de medir
+      # lo suyo —un permiso retirado no retira nada— y otros chocan con la
+      # propiedad del arbol montado: 6 fallos y 16 errores, todos ajenos a lo
+      # que se queria comprobar. Cambiar un rojo informativo por veintidos
+      # rojos falsos no es arreglarlo.
+      #
+      # ASI QUE SE DECLARA, Y SE EXIGE LA DECLARACION. El paso NO tolera «que
+      # falle algo»: exige que falle EXACTAMENTE `T309` y que su causa sea la
+      # ausencia de contencion fuerte. Cualquier otro fallo, o `T309` fallando
+      # por otro motivo, pone el paso en rojo. Una excepcion que no comprueba
+      # su propio motivo es una excepcion que envejece en silencio.
+      - name: "El aislamiento de arranque (T398 y T399), con T309 declarado"
         run: |
+          set +e
+          python3 -I -S -E -X ads_aislado=1 \
+                  kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py \
+                  > /tmp/aislamiento.txt 2>&1
+          codigo=$?
           set -e
-          docker run --rm --privileged --cgroupns=host \
-                 -v /sys/fs/cgroup:/sys/fs/cgroup:rw \
-                 -v "$PWD":/arbol -w /arbol \
-                 python:3.12-slim \
-                 sh -c 'pip install --quiet pyyaml && \
-                        python3 -I -S -E -X ads_aislado=1 \
-                                kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py'
+          tail -40 /tmp/aislamiento.txt
+
+          # T398 y T399 —lo que UP-04 anade— tienen que pasar, y se nombran.
+          for escenario in T398 T399; do
+            if ! grep -q "test_${escenario}_.* \.\.\. ok" /tmp/aislamiento.txt; then
+              echo "FALLA: $escenario no paso"; exit 1
+            fi
+            echo "OK: $escenario paso"
+          done
+
+          if [ "$codigo" -eq 0 ]; then
+            echo "OK: la bateria entera paso, T309 incluida"; exit 0
+          fi
+
+          # Si falla, tiene que fallar SOLO T309 y por SU motivo.
+          fallos=$(grep -c '^FAIL:\|^ERROR:' /tmp/aislamiento.txt || true)
+          if [ "$fallos" -ne 1 ]; then
+            echo "FALLA: $fallos fallos, y solo se declara la limitacion de T309"; exit 1
+          fi
+          if ! grep -q '^FAIL: test_T309_' /tmp/aislamiento.txt; then
+            echo "FALLA: el unico fallo NO es T309"; grep '^FAIL:\|^ERROR:' /tmp/aislamiento.txt; exit 1
+          fi
+          if ! grep -q 'CONTENCION_FUERTE_NO_DISPONIBLE' /tmp/aislamiento.txt; then
+            echo "FALLA: T309 fallo por un motivo DISTINTO de la falta de contencion"; exit 1
+          fi
+          echo ""
+          echo "LIMITACION DECLARADA Y COMPROBADA:"
+          echo "  T309 no es ejercible en un runner de GitHub Actions. Requisito exacto:"
+          echo "  cgroup v2 delegado, o un espacio de nombres de PID usable. El backend lo"
+          echo "  publica como CONTENCION_FUERTE_NO_DISPONIBLE. Todo lo demas paso."
 
   # ===========================================================================
   windows:
