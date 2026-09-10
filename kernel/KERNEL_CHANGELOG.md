@@ -41,6 +41,18 @@ correccion se pueda ejercer donde se desarrolla y no solo donde fallaba. Las dos
 rojas con los dos sabotajes evidentes: devolver 0 en vez del codigo del hijo, y capturar
 los flujos en lugar de heredarlos.
 
+**El ayudante de credencial del bootstrap ya no atiende a cualquiera.** `operador/bootstrap.ps1`
+instala un ayudante minimo para poder clonar el repositorio de control privado. Comprobaba el
+HOST, pero no el REPOSITORIO, y sobre todo: la lista de repositorios autorizados que el
+ayudante versionado de una instancia si comprueba **no se ejercia nunca**, porque `git` no
+manda el camino al ayudante a menos que se le pida con `credential.useHttpPath`. Una
+comprobacion escrita que no llega a ejecutarse no es una comprobacion: es un comentario. Ahora
+el bootstrap hornea en el ayudante los caminos de `-Alcance` mas el repositorio que clona
+—solo los que tienen forma `duenno/repositorio`, para no hornear texto arbitrario dentro de un
+guion— y clona con `-c credential.useHttpPath=true`, de modo que la restriccion se ejerce de
+verdad. Se comprueba invocando el ayudante como lo invoca `git`: responde al repositorio
+autorizado, y se calla ante `store`, ante `erase`, ante otro host y ante otro repositorio.
+
 **Y este kernel estrena CI.** Se validaba a mano, en la maquina de quien tocara, y eso
 explica que `UP-00` y `UP-04` —los dos invisibles desde Linux— vivieran aqui tanto tiempo.
 `.github/workflows/kernel.yml` corre en Linux, Windows y macOS; invoca validadores
@@ -69,10 +81,21 @@ significado —ConStruccion—, respeta la convencion de tres letras de sus cato
 es valida en Windows, Linux y macOS. El contenido de sus ocho ficheros no cambia: es un
 renombrado, comprobado con `git mv` y con cero inserciones y cero borrados.
 
-**Que NO cambia.** La preposicion castellana homografa aparece 184 veces en el corpus
-—«CON EVIDENCIA», «CON SU MOTIVO», «CON CUSTODIA»— y no se ha tocado ninguna. El
-renombrado distingue el identificador de la preposicion por su contexto: el identificador
-va seguido de un verbo, un signo o nada; la preposicion, siempre de un sintagma nominal.
+**Que NO cambia.** La preposicion castellana homografa —«CON EVIDENCIA», «CON SU MOTIVO»,
+«CON CUSTODIA»— no queda tocada en el arbol publicado. El renombrado distingue el
+identificador de la preposicion por su contexto: el identificador va seguido de un verbo,
+un signo o nada; la preposicion, siempre de un sintagma nominal.
+
+**Correccion de este parrafo, y de como se llego a el.** La primera redaccion afirmaba que
+la preposicion aparecia 184 veces y que «no se ha tocado ninguna», y que esas 184 se habian
+revisado una a una. Las dos cosas eran FALSAS cuando se escribieron. Las sustituciones
+fueron **785**, de las cuales **349 eran la preposicion**, repartidas por **119 ficheros**
+—«POR QUIEN y CNS QUE RESULTADO», «APROBADO CNS», «ROLLBACK CNS MIGRACION»—. Lo destapo el
+SELLO DEL PRODUCTO al ponerse rojo, no la revision que se decia hecha. Se reparo comparando
+contra el arbol previo al renombrado: 307 revertidas automaticamente, 42 dudosas leidas una
+a una —12 eran preposicion y 30 identificador— y 431 verificadas como legitimas. El arbol
+publicado es correcto; el parrafo que lo describia no lo era, y una afirmacion de haber
+comprobado algo que no se comprobo es peor que el defecto que oculta.
 
 **Lo que impide que vuelva a pasar.** `validadores/comprobar_rutas_portables.py`, con dos
 comprobaciones nuevas:

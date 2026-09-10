@@ -24,7 +24,8 @@
         2  explica que credencial hace falta y que permisos NO conceder
         3  abre la pagina de creacion y ESPERA
         4  la captura OCULTA y la cifra con DPAPI en la custodia del sistema
-        5  instala el ayudante de credencial de Git
+        5  instala el ayudante de credencial de Git, que responde SOLO a `get`,
+           SOLO a github.com y SOLO a los repositorios del alcance
         6  clona el ADS privado usando ese ayudante
         7  entrega el control al asistente completo
         8  borra todo temporal
@@ -247,16 +248,34 @@ Paso '4 · AYUDANTE DE CREDENCIAL'
 # ============================================================================
 # Se escribe en la CUSTODIA, no en el arbol: el arbol todavia no existe, y
 # cuando exista traera su propia copia versionada. Este es el minimo para clonar.
+#
+# EL ALCANCE SE HORNEA AQUI, Y NO ES DECORATIVO. El ayudante recibe la lista de
+# caminos que puede atender —los de `-Alcance`, mas el repositorio que se clona—
+# y se calla ante cualquier otro. Un ayudante que entrega la credencial a quien
+# la pida es una credencial global con pasos extra.
+# Solo entran caminos con forma de `duenno/repositorio`. Lo demas se descarta:
+# esta lista se HORNEA dentro de un guion, y hornear texto arbitrario en codigo
+# es como se fabrica una inyeccion. Un laboratorio local no tiene esa forma y
+# por eso no aparece, que es exactamente lo que debe pasar.
+$caminos = @($Alcance + ($Repositorio -replace '^https://github\.com/', '' -replace '\.git$', '')) |
+           ForEach-Object { ($_ -replace '^https://github\.com/', '' -replace '\.git$', '').ToLower().Trim('/') } |
+           Where-Object { $_ -match '^[a-z0-9._-]+/[a-z0-9._-]+$' } | Select-Object -Unique
+$listaDeCaminos = ($caminos | ForEach-Object { "'" + $_ + "'" }) -join ', '
+
 $fuenteAyudante = @'
 param([Parameter(Position = 0)][string]$Operacion = "get")
 $ErrorActionPreference = 'Stop'
 if ($Operacion -ne 'get') { exit 0 }
+$autorizados = @(__CAMINOS__)
 $peticion = @{}
 while ($null -ne ($linea = [Console]::In.ReadLine())) {
     if ($linea -eq '') { break }
     $t = $linea.Split('=', 2); if ($t.Count -eq 2) { $peticion[$t[0]] = $t[1] }
 }
 if ("$($peticion['host'])".ToLower() -notin @('', 'github.com')) { exit 0 }
+$camino = "$($peticion['path'])".ToLower() -replace '\.git$', ''
+$camino = $camino.Trim('/')
+if ($camino -and ($autorizados -notcontains $camino)) { exit 0 }
 $perfil  = if ($env:USERPROFILE) { $env:USERPROFILE } else { $HOME }
 $cifrado = Join-Path $perfil '.config/ads-pesquerapp/github.dpapi'
 if (-not (Test-Path $cifrado)) { exit 0 }
@@ -275,7 +294,7 @@ if ($Simular) {
     Aviso 'SIMULACION: el ayudante no se instala'
 } else {
     New-Item -ItemType Directory -Force -Path $Custodia | Out-Null
-    Set-Content -Path $Ayudante -Value $fuenteAyudante -Encoding UTF8
+    Set-Content -Path $Ayudante -Value ($fuenteAyudante -replace '__CAMINOS__', $listaDeCaminos) -Encoding UTF8
     Ok "ayudante de credencial instalado en la custodia"
 }
 
@@ -285,7 +304,12 @@ Paso '5 · CLON'
 # El token viaja por la TUBERIA entre el ayudante y git. No entra en la URL
 # —que acabaria en .git/config y en `git remote -v`—, ni en argv, ni en el
 # historial. `-c` afecta SOLO a esta invocacion: no toca la configuracion.
+# `useHttpPath` NO es un detalle: sin el, git manda `protocol` y `host` y NADA
+# mas, de modo que el ayudante no puede saber QUE repositorio se le esta
+# pidiendo y su lista de autorizados no se ejerce jamas. Una comprobacion que
+# nunca se ejecuta no es una comprobacion: es un comentario.
 $ordenClon = @('-c', "credential.helper=!powershell -NoProfile -File `"$Ayudante`"",
+               '-c', 'credential.useHttpPath=true',
                'clone', $Repositorio, $Destino)
 if ($Simular) {
     Aviso 'SIMULACION: no se clona nada'
