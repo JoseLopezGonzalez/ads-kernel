@@ -6,6 +6,6 @@
 T158  SUPERADA  La evidencia publicada demuestra lo que el informe afirma
           DISPENSA REFLEXIVA · 'o26-impl' [identidad 95f8394771dfa238]: evidencia AUSENTE y NO IMPUTADA a T158. Mide 'CONTRATO 3', cuya condición de cierre son T158, T350 —que declaran ESTE validador—, luego su veredicto hereda el código de salida de 'evidencia' y exigírsela aquí es contarse a sí mismo. Su rojo, si lo hay, lo publica el runner y sale con 1. En cuanto su evidencia exista se juzga entera, sin dispensa. Motivo declarado: `R5` ejecuta `comprobar_evidencia.py` como condicion de cierre de `CONTRATO 3` (escenarios `T158` y `T350`), luego el veredicto de este componente hereda el codigo de salida de `evidencia`. Exigirle aqui su evidencia es el ciclo que el cierre ejecutivo de `F6` prohibe crear: una obligacion cuyo unico pendiente es la evidencia del propio instrumento que la cuenta. Su rojo lo cobra el runner.
 T350  SUPERADA  El estado declarado de cada escenario lo sostiene su evidencia
-          cobertura del contraste: contrastados 255 · no contrastables 60 · divergencias 0 · contraste contra el blob de HEAD: EJERCIDO · no contrastables por estado declarado: contrato-definido=56 validador-implementado=4
+          cobertura del contraste: contrastados 257 · no contrastables 60 · divergencias 0 · contraste contra el blob de HEAD: EJERCIDO · no contrastables por estado declarado: contrato-definido=56 validador-implementado=4
 
 2 superadas · 0 fallidas

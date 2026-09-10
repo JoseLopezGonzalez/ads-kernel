@@ -267,18 +267,28 @@ if ($Simular) {
 }
 
 # ============================================================================
-Paso '7 · LIMPIEZA'
+Paso '7 · TEMPORALES'
 # ============================================================================
-# El propio bootstrap se descargo a un temporal. Se borra: un guion con
-# instrucciones de credencial no tiene por que quedarse en %TEMP%.
+# El bootstrap NO se borra a si mismo. Se intento, con un proceso desatendido
+# que esperaba dos segundos y lo borraba, y estaba mal por dos motivos: deja
+# algo vivo DESPUES de que quien llamo crea que todo termino —justo lo que este
+# aparato reprocha en otras partes—, y `Start-Process -WindowStyle` no existe
+# fuera de Windows, de modo que la linea reventaba en el unico sitio donde este
+# recorrido se puede ensayar antes de entregarlo.
+#
+# Lo borra QUIEN LO CREO: la orden que lo descargo, en su `finally`. Es la regla
+# corriente —quien abre, cierra— y ademas se cumple aunque esto falle a mitad.
 $propio = $MyInvocation.MyCommand.Path
-if ($propio -and $propio.StartsWith($env:TEMP)) {
-    Ok 'el bootstrap se borrara al salir'
-    Start-Process powershell -WindowStyle Hidden -ArgumentList `
-        '-NoProfile', '-Command', "Start-Sleep 2; Remove-Item -Force '$propio'" `
-        -ErrorAction SilentlyContinue | Out-Null
+if ($propio -and $env:TEMP -and $propio.StartsWith($env:TEMP)) {
+    Ok 'este guion vive en un temporal; lo borra la orden que lo descargo'
 } else {
-    Ok 'el bootstrap no esta en un temporal; no hay nada que borrar'
+    Ok 'este guion no esta en un temporal; no hay nada que borrar'
+}
+
+# La credencial NO deja rastro fuera de la custodia: ni fichero suelto, ni
+# variable de entorno, ni argumento. Se comprueba, no se afirma.
+foreach ($sospechoso in @($env:GITHUB_TOKEN, $env:GH_TOKEN)) {
+    if ($sospechoso) { Aviso 'hay un token en el entorno de esta sesion; el ADS no lo usa' }
 }
 
 Titulo 'BOOTSTRAP TERMINADO'
