@@ -76,6 +76,38 @@ function Ok     { param([string]$t) Write-Host "   OK     $t" }
 function Aviso  { param([string]$t) Write-Host "   aviso  $t" }
 function Falla  { param([string]$t) Write-Host "   FALLA  $t"; exit 1 }
 
+# GIT ESCRIBE EN `stderr` CUANDO NO PASA NADA MALO, Y 5.1 SE LO CREE
+#
+#  HECHO REPRODUCIDO EN UN RUNNER DE WINDOWS REAL. `git clone` publica su
+#  progreso —«Cloning into '...'»— por `stderr`. Windows PowerShell 5.1, con
+#  `$ErrorActionPreference = 'Stop'`, convierte CUALQUIER linea de `stderr` de un
+#  programa nativo en un error TERMINANTE:
+#
+#      git.exe : Cloning into 'D:\...\ads-clonado'...
+#          + FullyQualifiedErrorId : NativeCommandError
+#
+#  El clon habia funcionado. El guion moria de todas formas. pwsh 7 no hace eso,
+#  de modo que el defecto solo aparece en la consola que Windows trae de fabrica
+#  —justo la que va a usar quien ejecute esto—.
+#
+#  Aqui se ejecuta git con la preferencia RELAJADA y se juzga por su CODIGO DE
+#  SALIDA, que es lo unico que de verdad dice si fue bien.
+#  Y NO SE LLAMA `Git`. Se llamo asi durante diez minutos, y PowerShell no
+#  distingue mayusculas en los nombres de comando: dentro de la funcion, `& git`
+#  se resolvia a LA PROPIA FUNCION. Recursion infinita, y el guion colgado sin
+#  un solo mensaje. Se invoca ademas el EJECUTABLE resuelto, no el nombre.
+function CorrerGit {
+    param([string[]]$Argumentos)
+    $ejecutable = (Get-Command git -CommandType Application -ErrorAction SilentlyContinue |
+                   Select-Object -First 1)
+    if (-not $ejecutable) { return 127 }
+    $anterior = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try   { & $ejecutable.Source @Argumentos 2>&1 | ForEach-Object { Write-Host "   $_" } }
+    finally { $ErrorActionPreference = $anterior }
+    return $LASTEXITCODE
+}
+
 if ($Ayuda) {
     $propio = $MyInvocation.MyCommand.Path
     if ($propio) {
@@ -123,9 +155,13 @@ if (-not $git) {
     if ($Simular) { Aviso 'en simulacion se continua para recorrer el resto'; }
     else { exit 1 }
 } else {
-    Ok "git $(& git --version 2>&1 | Select-Object -First 1)"
+    $anterior = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    $version = (& git --version 2>&1 | Select-Object -First 1)
     # El gestor de credenciales viene con Git para Windows. Se comprueba, no se supone.
-    $gestor = & git config --get credential.helper 2>$null
+    $gestor = (& git config --get credential.helper 2>$null)
+    $ErrorActionPreference = $anterior
+    Ok "git $version"
     if ($gestor) { Ok "gestor de credenciales de Git: $gestor" }
     else { Aviso 'Git no declara gestor de credenciales; el ADS usara el suyo propio' }
 }
@@ -257,8 +293,8 @@ if ($Simular) {
 } elseif (Test-Path (Join-Path $Destino '.git')) {
     Ok 'ya estaba clonado; se deja como esta'
 } else {
-    & git @ordenClon
-    if ($LASTEXITCODE -ne 0) { Falla "el clon fallo con codigo $LASTEXITCODE" }
+    $codigoClon = CorrerGit $ordenClon
+    if ($codigoClon -ne 0) { Falla "el clon fallo con codigo $codigoClon" }
     Ok "clonado en $Destino"
 }
 
