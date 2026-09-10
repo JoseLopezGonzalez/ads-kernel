@@ -82,8 +82,28 @@ jobs:
           python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_integridad.py
           python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_evidencia.py
 
-      - name: "El aislamiento de arranque, incluida la rama de Windows (T398 y T399)"
-        run: python3 -I -S -E -X ads_aislado=1 kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py
+      # ESTA BATERIA EXIGE CONTENCION FUERTE, Y EL RUNNER NO LA DA.
+      #
+      # `T309` comprueba que un punto ejecutable ACTIVA la politica de contencion
+      # y contiene a su bisnieto. Necesita cgroup v2 DELEGADO o un espacio de
+      # nombres de PID usable, y un runner de Actions no concede ninguno de los
+      # dos al usuario: el subgrupo se crea pero la tarea no acaba dentro, y
+      # `unshare -Urpf` falla escribiendo en /proc.
+      #
+      # No se declara «no ejercible» y se sigue: eso convertiria un rojo en una
+      # nota al pie. Se corre DONDE SI SE PUEDE —dentro de un contenedor
+      # privilegiado con el cgroup del anfitrion—, que es la misma respuesta que
+      # se le dio a la sexta condicion de `O26`. Si el contenedor no arranca, el
+      # paso falla: no hay camino silencioso.
+      - name: "El aislamiento de arranque, con contencion real (T398, T399 y T309)"
+        run: |
+          set -e
+          docker run --rm --privileged --cgroupns=host \
+                 -v /sys/fs/cgroup:/sys/fs/cgroup:rw \
+                 -v "$PWD":/arbol -w /arbol \
+                 python:3.12-slim \
+                 python3 -I -S -E -X ads_aislado=1 \
+                         kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py
 
   # ===========================================================================
   windows:
