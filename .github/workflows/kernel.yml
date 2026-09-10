@@ -186,6 +186,26 @@ jobs:
         shell: powershell
         run: .\.github\comprobar-up04.ps1
 
+      # `UP-08` Y `UP-09` · EL AYUDANTE DE CREDENCIAL, EJERCIDO AQUI Y NO SOLO
+      # AGUAS ABAJO.
+      #
+      # El bootstrap instala un ayudante de credencial y nada lo ejecutaba: se
+      # comprobaba que el fichero existia. Eso dejo pasar dos defectos seguidos
+      # —una lista de repositorios autorizados que no se ejercia NUNCA porque
+      # `git` no manda el camino sin `credential.useHttpPath`, y un descifrado
+      # que fallaba SIEMPRE por un salto de linea y se callaba en su `catch`—.
+      # Los dos se descubrieron en la CI de una instancia, no aqui, que es donde
+      # vive el defecto. Esto lo corrige: se instala con un alcance conocido, se
+      # le pone una credencial de LABORATORIO y se le pregunta como le pregunta
+      # `git`. Sin red, sin credencial real.
+      - name: "Ayudante de credencial · pwsh 7"
+        shell: pwsh
+        run: .\.github\comprobar-ayudante.ps1
+
+      - name: "Ayudante de credencial · Windows PowerShell 5.1"
+        shell: powershell
+        run: .\.github\comprobar-ayudante.ps1
+
   # ===========================================================================
   macos:
     name: Bateria minima (macOS)
