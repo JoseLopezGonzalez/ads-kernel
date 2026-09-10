@@ -114,12 +114,20 @@ jobs:
           set -e
           tail -40 /tmp/aislamiento.txt
 
-          # T398 y T399 —lo que UP-04 anade— tienen que pasar, y se nombran.
+          # T398 y T399 —lo que UP-04 anade— tienen que HABER CORRIDO y NO estar
+          # entre los fallos. Se comprueban las dos cosas: que se ejecutaron
+          # —su nombre aparece— y que ninguna linea de FAIL o ERROR los nombra.
+          # No se busca «... ok» en la linea del nombre: unittest lo escribe en
+          # la linea del docstring, y buscarlo donde no esta puso este paso en
+          # rojo con la bateria entera correcta menos la limitacion declarada.
           for escenario in T398 T399; do
-            if ! grep -q "test_${escenario}_.* \.\.\. ok" /tmp/aislamiento.txt; then
-              echo "FALLA: $escenario no paso"; exit 1
+            if ! grep -q "test_${escenario}_" /tmp/aislamiento.txt; then
+              echo "FALLA: $escenario ni siquiera se ejecuto"; exit 1
             fi
-            echo "OK: $escenario paso"
+            if grep -qE "^(FAIL|ERROR): test_${escenario}_" /tmp/aislamiento.txt; then
+              echo "FALLA: $escenario se ejecuto y NO paso"; exit 1
+            fi
+            echo "OK: $escenario se ejecuto y no esta entre los fallos"
           done
 
           if [ "$codigo" -eq 0 ]; then
