@@ -52,11 +52,17 @@ param(
     [string[]]$Alcance,
     # Recorrido COMPLETO sin pedir ni guardar nada. Es lo que corre la CI.
     [switch]$Simular,
-    # Argumentos para el asistente al entregarle el control. Existe para que la
-    # ENTREGA se pueda probar de verdad —clonando un repositorio de laboratorio y
-    # llamando al asistente en modo repaso— en vez de comprobar que el fichero
-    # existe y llamar a eso una prueba.
-    [string[]]$ArgumentosDelAsistente,
+    # Argumentos para el asistente al entregarle el control, como TABLA HASH.
+    # Existe para que la ENTREGA se pueda probar de verdad —clonando un
+    # repositorio de laboratorio y llamando al asistente en modo repaso— en vez
+    # de comprobar que el fichero existe y llamar a eso una prueba.
+    #
+    # Es una tabla y no una lista por una razon concreta: `@lista` hace
+    # splatting POSICIONAL, de modo que `-Repasar` llegaria como valor del
+    # primer parametro posicional del asistente y `-SinRed` se quedaria sin
+    # sitio. Solo una tabla hash splatea parametros CON NOMBRE, que es lo que
+    # hace falta para pasar interruptores.
+    [hashtable]$ArgumentosDelAsistente,
     # Muestra esta cabecera y sale.
     [switch]$Ayuda
 )
