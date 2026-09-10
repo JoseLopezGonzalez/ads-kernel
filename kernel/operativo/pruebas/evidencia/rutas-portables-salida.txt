@@ -1,0 +1,9 @@
+# evidencia de: rutas-portables
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_rutas_portables.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 3 variables (HOME LC_CTYPE PATH) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+T153  SUPERADA  Ninguna ruta del arbol es imposible en Windows
+T154  SUPERADA  Ninguna pareja de rutas colisiona al ignorar mayusculas
+
+2 superadas · 0 fallidas
