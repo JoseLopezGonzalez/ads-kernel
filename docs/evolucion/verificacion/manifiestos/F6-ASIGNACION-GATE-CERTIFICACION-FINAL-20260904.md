@@ -260,7 +260,7 @@ RANGOS DE `docs/evolucion/11-ARQUITECTURA-INTEGRADA.md`, ÍNTEGROS Y OBLIGATORIO
 RANGOS DE `docs/evolucion/11-ARQUITECTURA-INTEGRADA.md`, ÍNTEGROS Y OBLIGATORIOS
   §7  · runtime y dispatcher                   L6136-L6284     149
   §8  · los cuatro macrocircuitos              L6285-L7377    1093
-  §9  · certificación, CON §9.6 ENTERA         L7378-L8074     697
+  §9  · certificación, CNS §9.6 ENTERA         L7378-L8074     697
   §10 · Git y multi-repositorio                L8075-L8128      54
   §18 · orden de construcción para `F6`        L10882-L11069   188
   §19 · límites de esta fase                   L11070-L11906   837

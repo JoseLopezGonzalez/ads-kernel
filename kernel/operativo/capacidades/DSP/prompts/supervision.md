@@ -18,7 +18,7 @@ DEVOLUCIONES = 2   entre el MISMO PAR de capacidades, sobre el MISMO paquete
                    1ª información · 2ª desacuerdo · 3ª NO SE EJECUTA
 
 CICLO         ≥3   una secuencia de tres o más capacidades que se repite
-                   DIS → ARQ → CON → DIS  ·  ARQ → DOM → PRD → ARQ
+                   DIS → ARQ → CNS → DIS  ·  ARQ → DOM → PRD → ARQ
                    Mismo tratamiento que el freno de dos: detener y escalar.
 
 RACHA SIS    = 2   items SIS completados consecutivamente, SI hay item de producto listo

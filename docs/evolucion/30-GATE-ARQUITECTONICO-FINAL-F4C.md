@@ -420,7 +420,7 @@ git diff --name-only 7aeed6aa3a3eae1133f57a08d757020e62197b3d ebd52d9125fb740c1c
 
 **Y asumo la limitación que el propio sobre declara y que `Z-11` midió:** que estas huellas coincidan prueba que el emisor y el derivador PUBLICADOS son los que están EN LOS COMMITS. **NO prueba que sean los que se EJECUTARON.** `git update-index --skip-worktree` vacía `git status` con el fichero modificado en disco. La retirada de la frase «un sobre existente es, por construcción, un sobre limpio» es correcta y este informe no la resucita.
 
-**OBLIGACIÓN 6 · RECALCULAR LOS DIGEST DE LA SEDE CANÓNICA Y CONTRASTARLOS CON TODA SEDE DERIVADA.** Cumplida. Sobre los DOS commits, con la receta `awk` del sobre:
+**OBLIGACIÓN 6 · RECALCULAR LOS DIGEST DE LA SEDE CANÓNICA Y CONTRASTARLOS CNS TODA SEDE DERIVADA.** Cumplida. Sobre los DOS commits, con la receta `awk` del sobre:
 
 | | CANDIDATA | GATE | sobre | ¿reproduce? | líneas derivadas |
 |---|---|---|---|---|---|
@@ -677,7 +677,7 @@ verificacion/README.md:7-9   «**Qué NO es.** No es un gate, y no certifica nad
                              quien aplica la corrección, que es exactamente lo que `F4c`
                              lleva doce tandas sin poder aceptar como prueba»
 README.md:53-78              acota qué certifica un «N/N en verde» y qué NO: nueve de las
-                             comprobaciones exigen repositorio CON HISTORIA y **fallan
+                             comprobaciones exigen repositorio CNS HISTORIA y **fallan
                              CERRADO** sobre la materialización que la receta del sobre
                              prescribe. «**Un verde sobre el árbol desnudo NO es el verde que
                              un gate certifica**»
@@ -848,7 +848,7 @@ RAZÓN               implementado. Esa ausencia es ESPERADA, está DECLARADA y n
 NO HE MODIFICADO EL REPOSITORIO        `git status --porcelain` VACÍO al abrir y al cerrar
 NI UN COMMIT, NI UNA REFERENCIA        cero commits, cero ramas, cero tags, cero pushes
 NO PROPONGO CORRECCIONES               ninguna, y el encargo lo prohíbe
-TODA AFIRMACIÓN CON FICHERO Y LÍNEA    y toda cifra con el comando que la deriva
+TODA AFIRMACIÓN CNS FICHERO Y LÍNEA    y toda cifra con el comando que la deriva
 NINGUNA HUELLA ABREVIADA A MANO        las que aparecen son salida de `sha256sum`
 `ASIGNADO − LEÍDO`                     ∅, declarado contra mi propio interés en §1.2
 NO HE VISTO EL DICTAMEN DE `U2`        ni él el mío
@@ -2096,7 +2096,7 @@ y **una** frase entrecomillada. **Eso es lo que hay, y no es lo que `O19` L315 o
 entregar.** `U1` lo rebajó en su `RF-2` a «entrega su DIGEST y su RESUMEN donde la resolución
 exige su TEXTO», y **esa redacción es la exacta: la adopto.**
 
-**(d) LO QUE LA MATRIZ HACE CON ÉL, chk L4076** — leído de la tabla, no de la narración:
+**(d) LO QUE LA MATRIZ HACE CNS ÉL, chk L4076** — leído de la tabla, no de la narración:
 
 ```text
 | `C-20` | CONTRATO_COMPLETO_PARA_F6 | sí | sí | no | SÍ | SÍ | `PLT` implementa · Owner
@@ -2478,7 +2478,7 @@ inequívoca. **No lo cuento como defecto** — y por eso `U2-10` cae en §2.9.
 
 ```text
 CON LOS ONCE CAMPOS                       18 de 18
-CON CRITERIO DE CIERRE EXACTO Y MEDIBLE   17 de 18   — falla `V6-15`
+CNS CRITERIO DE CIERRE EXACTO Y MEDIBLE   17 de 18   — falla `V6-15`
 CONSTRUIBLES SIN VOLVER A DECIDIR         16 de 18   — fallan `V6-15` y `V6-16`
 CON UNA OBLIGACIÓN AJENA COLGADA ENCIMA    2 de 18   — `V6-04` (`H-05`) y `V6-17` (`H-01`)
 ```
@@ -2554,7 +2554,7 @@ LO QUE `C-20` ES        `T2-11` del octavo gate: el SOBRE no lleva el TEXTO de l
                         del Owner, que `O19` L315 ordena y §11.6 L8454 repite como el PRIMERO
                         de «la lista entera». Clase `A`, SOSTENIDO, y su adjudicador lo
                         verificó «contra mi propio sobre» (doc29:3394)
-QUÉ SE HIZO CON ÉL      estado `CONTRATO_COMPLETO_PARA_F6` · fase `F6` · bloquea_f5 **no** ·
+QUÉ SE HIZO CNS ÉL      estado `CONTRATO_COMPLETO_PARA_F6` · fase `F6` · bloquea_f5 **no** ·
                         prueba de cierre `V6-16` · `V6-17`
 POR QUÉ ES SUAVIZAR     (i) `V6-16` y `V6-17` **no lo contienen**: `F6` los cierra enteros y
                         `C-20` sigue vivo · (ii) `O20` §6 sólo manda a `F6` los defectos de

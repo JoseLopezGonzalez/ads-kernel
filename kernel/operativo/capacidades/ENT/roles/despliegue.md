@@ -78,7 +78,7 @@ salida:
   - "salida de smoke tests"
 gate: gate:entrega-observada
 devolucion:
-  - "a CON, cuando el artefacto no arranca en el entorno"
+  - "a CNS, cuando el artefacto no arranca en el entorno"
   - "a DOM, cuando la migración falla sobre datos reales pese a haber pasado en copia"
 bloqueo:
   - "el entorno no está disponible"

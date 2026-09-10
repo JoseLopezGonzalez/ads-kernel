@@ -259,7 +259,7 @@ localizando la decisión anterior en la memoria de diseño.
 ```text
 ENC-001 → FEA-014 «Dirección visual del producto»
           propietario global: PRD   (el resultado define alcance de producto)
-          ruta r1:  PRD → DIS/Fundacion → [ARQ si C-ARQ] → CON → VER → ENT → USO → APR
+          ruta r1:  PRD → DIS/Fundacion → [ARQ si C-ARQ] → CNS → VER → ENT → USO → APR
           no activadas:
             DOM — no toca modelo de dominio ni contratos de datos
             SEG — no toca autenticación, datos personales, red ni dependencias

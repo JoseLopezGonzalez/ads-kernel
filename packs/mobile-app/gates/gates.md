@@ -63,7 +63,7 @@ evidencia:
   - "grabaciones de suspensión y de terminación forzada"
   - "recorrido con cada estado de permiso"
 fallo: >
-  Vuelve a mob:CON/ciclo-de-vida. Si lo que falta es qué comunicar, vuelve a
+  Vuelve a mob:CNS/ciclo-de-vida. Si lo que falta es qué comunicar, vuelve a
   DIS/diseno-interaccion.
 ```
 
@@ -91,6 +91,6 @@ evidencia:
   - "lista de trabajos en segundo plano con su frecuencia"
   - "mediciones de consumo en dispositivo real"
 fallo: >
-  Vuelve a CON con la medición. Si el consumo es inherente al alcance, vuelve a PRD: reducir
+  Vuelve a CNS con la medición. Si el consumo es inherente al alcance, vuelve a PRD: reducir
   la frecuencia o el alcance de la sincronización es una decisión de producto.
 ```

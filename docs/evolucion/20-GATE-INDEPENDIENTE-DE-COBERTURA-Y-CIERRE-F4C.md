@@ -409,12 +409,12 @@ mismo significado                          9 pares ·             dinámicos {AU
 
 Es la misma clase de defecto que `K-02` demostró y que `D98`→`D103` declara retirada. El barrido léxico no volvió a `capa_exigida` ni a `condicion` —eso es cierto y lo verifiqué—: **migró a `propietario_global`**, que §19 presenta como campo estructurado y que en tres de los diez procesos es prosa libre.
 
-**Por qué es GRAVE y no BLOQUEANTE.** El NIVEL A —los nueve pares— **es correcto y lo reproduje independientemente**. El error no cambia ninguna cifra del árbol de hoy. Pero el contrato se entrega a F6 con la afirmación de que no queda nada por decidir, y quedan dos cosas: qué revisa una `DOM:revision` en un proceso sin `VER` y sin `CON`, y si `DIR` está dentro o fuera.
+**Por qué es GRAVE y no BLOQUEANTE.** El NIVEL A —los nueve pares— **es correcto y lo reproduje independientemente**. El error no cambia ninguna cifra del árbol de hoy. Pero el contrato se entrega a F6 con la afirmación de que no queda nada por decidir, y quedan dos cosas: qué revisa una `DOM:revision` en un proceso sin `VER` y sin `CNS`, y si `DIR` está dentro o fuera.
 
 **¿Bloquea F5? Sí.** No por su tamaño, sino porque **esconde una decisión arquitectónica todavía abierta bajo una declaración de que no la hay**, y es la tercera vez que la misma cláusula se corrige y la tercera vez que el remedio no alcanza.
 
 **Qué lo cerraría** — cualquiera de las tres, y ninguna exige decidir arquitectura nueva:
-1. **Retirar el NIVEL B** y declarar que `AUD` y `DIR` pasan vacíos **por la misma razón**, que existe y está escrita: ninguno de los dos activa `CON`, luego no hay «lo construido» que revisar. El contrato queda en un solo nivel y **derivable sin mirar prosa**.
+1. **Retirar el NIVEL B** y declarar que `AUD` y `DIR` pasan vacíos **por la misma razón**, que existe y está escrita: ninguno de los dos activa `CNS`, luego no hay «lo construido» que revisar. El contrato queda en un solo nivel y **derivable sin mirar prosa**.
 2. **Conservar el NIVEL B** condicionando su aplicabilidad en `AUD` a la resolución de `PN-8`, y **añadir `DIR`**.
 3. **Sustituir el discriminante léxico** por uno estructural.
 

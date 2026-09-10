@@ -56,7 +56,7 @@ interaccion_owner:
     - "un término del dominio significa algo distinto de lo que el equipo creía"
   formato: "el término, lo que el equipo creía y lo que significa en su negocio"
 interaccion_roles:
-  - "entrega condiciones a CON antes de construir"
+  - "entrega condiciones a CNS antes de construir"
   - "revisa lo construido tras VER"
   - "consulta con ARQ el radio de los contratos de datos"
 independencia:
@@ -75,7 +75,7 @@ salida:
 gate: gate:dominio-conforme
 devolucion:
   - "a ARQ, cuando el plan cambia un contrato de datos sin transición para sus consumidores"
-  - "a CON, cuando lo construido viola un invariante declarado"
+  - "a CNS, cuando lo construido viola un invariante declarado"
 bloqueo:
   - "no hay acceso al esquema real ni a datos representativos"
 veto: "veto:integridad-de-datos"

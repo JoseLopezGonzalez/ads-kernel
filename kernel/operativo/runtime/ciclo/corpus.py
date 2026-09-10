@@ -57,7 +57,7 @@ CIERRE = re.compile(r"^```\s*$")
 # `capacidades/`, no para sustituirlo: `Corpus.capacidades()` lee el árbol y
 # `exigir_quince()` comprueba que coinciden. Dos sedes que se contrastan, no una copia.
 CAPACIDADES = (
-    "APR", "ARQ", "CON", "DIS", "DOM", "DSP", "ENC", "ENT", "INV", "PLT", "PRD", "SEG",
+    "APR", "ARQ", "CNS", "DIS", "DOM", "DSP", "ENC", "ENT", "INV", "PLT", "PRD", "SEG",
     "SIS", "USO", "VER",
 )
 

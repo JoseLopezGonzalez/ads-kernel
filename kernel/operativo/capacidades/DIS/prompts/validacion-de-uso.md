@@ -86,7 +86,7 @@ Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la ev
 
 ```text
   · a DIS/diseno-interaccion, cuando un eje está en rechazo por el flujo
-  · a CON, cuando el fallo está en la construcción y no en la especificación
+  · a CNS, cuando el fallo está en la construcción y no en la especificación
 ```
 
 Te bloquea, y entonces **nombras qué lo desbloquearía**:

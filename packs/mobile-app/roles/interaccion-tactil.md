@@ -57,7 +57,7 @@ interaccion_owner:
 interaccion_roles:
   - "recibe perfil de uso de DIS/investigacion-ux"
   - "entrega a DIS/movimiento los estados que la transición conecta"
-  - "entrega a DIS/critica-visual y a CON"
+  - "entrega a DIS/critica-visual y a CNS"
 independencia:
   requiere_independencia: true
   de_quien: [DIS/validacion-de-uso]

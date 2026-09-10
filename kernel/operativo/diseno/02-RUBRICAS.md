@@ -75,7 +75,7 @@ no_automatizable:
 
 ```yaml ads:gate
 id: gate:usabilidad
-aplica_a: "toda capa de DIS o de CON que produce o modifica una superficie usable"
+aplica_a: "toda capa de DIS o de CNS que produce o modifica una superficie usable"
 comprobaciones:
   - id: seis-ejes-evaluados
     comprueba: "los seis ejes de rubrica:usabilidad tienen nivel asignado y evidencia enlazada"
@@ -108,7 +108,7 @@ evidencia:
   - "la salida de accesibilidad y las mediciones de respuesta"
 fallo: >
   El paquete no pasa a la siguiente capacidad. Si el fallo es de la capa de DIS, vuelve a
-  DIS; si es de la construcción de una capa aprobada, vuelve a CON con la evidencia. VER
+  DIS; si es de la construcción de una capa aprobada, vuelve a CNS con la evidencia. VER
   mantiene su veto sobre el tránsito mientras haya un eje en rechazo.
 ```
 
@@ -260,7 +260,7 @@ evidencia:
   - "la aprobación del Owner cuando fue exigible"
 fallo: >
   El paquete no pasa. Si el rechazo es de la capa de diseño, el paquete vuelve a DIS con
-  el eje y su evidencia. Si el rechazo es de fidelidad, vuelve a CON. Un rechazo por
+  el eje y su evidencia. Si el rechazo es de fidelidad, vuelve a CNS. Un rechazo por
   personalidad, actualidad o alma NO se cierra con retoques: exige volver a la fase
   divergente del método correspondiente, porque el problema es de dirección, no de acabado.
 ```
@@ -290,21 +290,21 @@ es el tránsito a Construcción, no la entrega.
 
 ## Quién produce la evidencia de usabilidad de una capa construida
 
-`gate:usabilidad` se aplica a las capas de `DIS` **y de `CON`**, y esa segunda mitad no
+`gate:usabilidad` se aplica a las capas de `DIS` **y de `CNS`**, y esa segunda mitad no
 tenía portador: ningún rol ni método de Construcción lo vinculaba, de modo que una capa que
 modificaba una superficie usable cerraba por `gate:implementacion-completa` sin que los seis
 ejes se evaluaran nunca sobre lo construido (hallazgo **A-13**). El reparto es:
 
 ```text
-QUÉ PAQUETE LO ACTIVA   todo paquete de CON cuyo objetivo declara `afecta_superficie`
+QUÉ PAQUETE LO ACTIVA   todo paquete de CNS cuyo objetivo declara `afecta_superficie`
 QUÉ EVIDENCIA NECESITA  los cinco estados capturados sobre lo CONSTRUIDO · un recorrido por
                         cada medio de entrada que declare el pack · las mediciones de
                         respuesta frente al presupuesto del pack
-QUIÉN LA PRODUCE        CON, y la declara en su salida antes de la revisión
+QUIÉN LA PRODUCE        CNS, y la declara en su salida antes de la revisión
 QUIÉN LA JUZGA          DIS/validacion-de-uso, que emite el dictamen de los seis ejes.
                         No la juzga quien la produjo.
 QUÉ OCURRE SI FALLA     un eje en rechazo detiene el tránsito. Si el fallo es de la
-                        implementación de una capa aprobada, vuelve a CON con la evidencia;
+                        implementación de una capa aprobada, vuelve a CNS con la evidencia;
                         si el fallo es de la capa de diseño, vuelve a DIS.
 A QUÉ ETAPA DEVUELVE    estación 10 (construcción) o estación 6 (convergencia), según de
                         quién sea la capa que falla

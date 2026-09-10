@@ -16,10 +16,10 @@ FILAS DE LA MATRIZ: F5-OB-16 · F5-OB-17
 ## 1 · Los dos casos, y por qué son distintos entre sí
 
 ```text
-CASO 1 · PN-16   la fuente aprobada escribe el identificador CON TILDE en su única
+CASO 1 · PN-16   la fuente aprobada escribe el identificador CNS TILDE en su única
                  aparición normativa, y TODO el aparato derivado lo escribe SIN TILDE.
                  Instancias construidas en el kernel: CERO
-CASO 2 · PN-18   la fuente aprobada lo escribe CON TILDE en sus doce apariciones
+CASO 2 · PN-18   la fuente aprobada lo escribe CNS TILDE en sus doce apariciones
                  normativas, y el KERNEL YA CONSTRUIDO usa LAS DOS a la vez
 ```
 
@@ -36,7 +36,7 @@ comprobación de grafía única sin poder exigir nada.
 <!-- ads-lint-ignore-start: marcadores estructurales de decisión pendiente -->
 
 ```text
-SI D-08 = A · manda la fuente aprobada, CON TILDE              ← recomendada
+SI D-08 = A · manda la fuente aprobada, CNS TILDE              ← recomendada
    NO SE ENMIENDA la especificación de recorrido. Las dos presiones quedan RESUELTAS en
    vez de retiradas, que es la salida que su propia sede describe.
    TRABAJO POSTERIOR, y es de F6, NO de F5:

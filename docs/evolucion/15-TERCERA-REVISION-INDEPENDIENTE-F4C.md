@@ -302,7 +302,7 @@ No afirmo que la ruta larga sea incorrecta; afirmo que **F4 no demuestra qué ca
 **Citas:**
 
 > L3213 (contrato por fase): «`fallo` | **ninguna: NO tiene `tx` ni `fase`** | `operacion` · `diagnostico` · `intentos` | `fase` · `afecta` | — | ninguna»
-> L3162: «`deriva` o `fallo` CON `fase` o CON `tx` → ESQUEMA ESTRUCTURAL»
+> L3162: «`deriva` o `fallo` CNS `fase` o CNS `tx` → ESQUEMA ESTRUCTURAL»
 > L1083 (garantía 6): «se emite un evento **`fallo`** de publicación, **nombrando `tx` y commit**, y se escala»
 > L1225–1229: «MARCADOR EN UN ÁRBOL CLONADO → Evento **`fallo`**, con `operacion: publicacion`, **el `tx` y el commit culpable nombrados**»
 > L1307 (`X15`) y L1319 (`X28`): «nombrando `tx` y commit»
@@ -321,7 +321,7 @@ Es el mismo modo de fallo que `D54` corrigió para el contrato genérico —«no
 **Citas:**
 
 > L4525–4527 (§8.0): «PROPIO disparador · precondiciones · fases · participantes · **lecturas y escrituras** · estados persistidos · evidencias · gates · certificación · rollback · reanudación · condición de cierre.»
-> L4719–4744 (§8.3): el bloque contiene `DISPARADOR`, `PRECONDICIONES`, `FASES`, `PARTICIPANTES`, `DIFERENCIA CON A`, `ESTADO`, `EVIDENCIA`, `GATES`, `CERTIFICACIÓN`, `ROLLBACK`, `REANUDACIÓN`, `CIERRE`. **No contiene `LEE` ni `ESCRIBE`.**
+> L4719–4744 (§8.3): el bloque contiene `DISPARADOR`, `PRECONDICIONES`, `FASES`, `PARTICIPANTES`, `DIFERENCIA CNS A`, `ESTADO`, `EVIDENCIA`, `GATES`, `CERTIFICACIÓN`, `ROLLBACK`, `REANUDACIÓN`, `CIERRE`. **No contiene `LEE` ni `ESCRIBE`.**
 > L4728: «M6 RETIRAR del **repositorio técnico** kernel, packs y organización»
 > L4813: «M6 revertir es RESTAURAR lo retirado desde la historia del **repositorio técnico**»
 

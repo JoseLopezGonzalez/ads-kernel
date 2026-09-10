@@ -505,7 +505,7 @@ def componente_ii():
 
 # ── (iii) · documento 11, registro de decisiones y checkpoint ────────────────────
 def componente_iii():
-    """El documento 11, el registro de decisiones y el checkpoint — CON GUARDA.
+    """El documento 11, el registro de decisiones y el checkpoint — CNS GUARDA.
 
     Este componente devolvía tres constantes y no comprobaba nada: si una de las tres rutas
     cambiaba de sitio, el universo encogía en silencio, que es exactamente lo que `P-08`
@@ -798,7 +798,7 @@ def zonas_del_encargo():
 
 
 def componente_v():
-    """El objeto que ESTE gate juzga — CON GUARDA sobre su propia declaración.
+    """El objeto que ESTE gate juzga — CNS GUARDA sobre su propia declaración.
 
     `Z2-07`≡`Z-14`. Aquí decía «`ENCARGO` es **lo único** escrito a mano de todo el
     derivador», y era falso: `VOCES_DE_DICTAMEN` (16) y `VOCES_DE_NO_DICTAMEN` (15) son
@@ -1088,7 +1088,7 @@ ESTADO_DURABLE = "docs/rediseno/g-ESTADO-DURABLE-APROBADA.md"
 #  `ADJ-G1` · LAS GUARDAS DEL UNIVERSO DE OBLIGACIONES
 # ===========================================================================
 #  EL HECHO, reproducido por el adjudicador del gate del 2026-09-04 y vuelto a reproducir
-#  aquí antes de tocar una línea. `--obligaciones` ENCOGÍA CON `exit 0` por TRES vías:
+#  aquí antes de tocar una línea. `--obligaciones` ENCOGÍA CNS `exit 0` por TRES vías:
 #
 #      10a  cambiar la FASE de la fila `F-07` de `**F6**` a `**F5**`
 #           EXIT=0 · (F-nn) 7 · TOTAL 57 · `grep F-07` en la salida → 0

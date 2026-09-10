@@ -1,9 +1,9 @@
-# web:CON/estados-de-red — Estados de red
+# web:CNS/estados-de-red — Estados de red
 
 ```yaml ads:rol
-id: web:CON/estados-de-red
+id: web:CNS/estados-de-red
 nombre: Estados de red
-capacidad: CON
+capacidad: CNS
 mision: >
   Construir el comportamiento de la aplicación cuando la red es lenta, intermitente, se cae
   a mitad de una operación o vuelve, de modo que nunca se pierda lo que el usuario escribió.
@@ -29,7 +29,7 @@ autoridad:
 entradas:
   - "la especificación de estados de DIS/diseno-interaccion"
   - "las condiciones de DOM sobre operaciones no idempotentes"
-metodo: [CON/Implementacion]
+metodo: [CNS/Implementacion]
 herramientas:
   - "escritura y ejecución de código"
   - "simulación de red lenta, intermitente y caída"
@@ -55,7 +55,7 @@ interaccion_roles:
 independencia:
   requiere_independencia: true
   de_quien: ["el rol de VER que verifica este paquete"]
-  motivo: "es un rol de construcción: G13 aplica igual que a CON/implementacion"
+  motivo: "es un rol de construcción: G13 aplica igual que a CNS/implementacion"
 checkpoint:
   - "tras implementar cada estado de red"
 salida:

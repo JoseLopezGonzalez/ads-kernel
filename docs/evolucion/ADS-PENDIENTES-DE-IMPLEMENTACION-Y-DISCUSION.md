@@ -485,7 +485,7 @@ composición coordinada; cada fase puede ejecutar procesos ADS existentes median
 - **USO:** contrasta el comportamiento con uso real cuando sea posible.
 - **VER independiente:** prueba evidencias y certificación sin confiar sólo en quien instaló.
 - **APR:** promueve a conocimiento reusable los aprendizajes demostrados.
-- **CON:** no debería modificar producto durante la fase de observación, salvo tooling o
+- **CNS:** no debería modificar producto durante la fase de observación, salvo tooling o
   experimentos expresamente autorizados; la construcción normal comienza tras el gate.
 
 ### 5.5. Clasificación obligatoria de la documentación
@@ -1192,7 +1192,7 @@ gobierne:
 - reauditoría.
 
 No se aprueba automáticamente una capacidad nueva. La solución candidata compone SIS, DSP, ENC,
-AUD, especialistas, CON, VER y APR, integrada con runtime, CI, documentación, items, paquetes,
+AUD, especialistas, CNS, VER y APR, integrada con runtime, CI, documentación, items, paquetes,
 dossiers y gates.
 
 ### 20.2. Problema que debe eliminar
@@ -1480,7 +1480,7 @@ para no crear otra memoria manual obsoleta.
 | DOM | Dominio, reglas y datos |
 | SEG | Seguridad, privacidad y cumplimiento |
 | PLT/ENT | Tooling, CI/CD, infraestructura, despliegue y operación |
-| CON | Reparaciones autorizadas |
+| CNS | Reparaciones autorizadas |
 | VER independiente | Confirmación de corrección, alcance y evidencia |
 | APR | Conversión de recurrencias en prevención reusable |
 | Owner | Política, riesgo, excepciones y direcciones importantes |
@@ -1517,7 +1517,7 @@ responsable, motivo y fecha de revisión.
 6. se encuentran alturas distintas en inputs;
 7. se identifica el componente compartido como causa raíz;
 8. ENC genera una corrección agrupada;
-9. CON corrige componente y usos;
+9. CNS corrige componente y usos;
 10. VER revisa todos los formularios afectados;
 11. se añade regresión visual o regla preventiva;
 12. se actualizan sistema de diseño, findings y cobertura;

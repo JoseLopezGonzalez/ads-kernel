@@ -2626,7 +2626,7 @@ class AislamientoDeArranque(SesionNueva):
         self.assertIn("sitecustomize", self.lineas_del_testigo(),
                       "el gancho no llegó a ejecutarse ni sobre la versión vulnerable")
 
-        # 2 · CON GUARDA, invocada directamente. El valor es el SANO.
+        # 2 · CNS GUARDA, invocada directamente. El valor es el SANO.
         os.unlink(self.sede_del_testigo())
         directa = self.correr_ruta(self.HUELLA, ["--raiz", RAIZ_REPO], extra=entorno)
         self.assertEqual(directa.returncode, 0, directa.stderr.decode())

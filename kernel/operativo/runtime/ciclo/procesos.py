@@ -258,7 +258,7 @@ def comprobar_condicion(condicion, *, capacidad):
 
 # ------------------------------------------------------ capacidad y método
 def capacidad_de(participante):
-    """`DOM:condiciones` → `DOM`; `DIS/Reconstruccion` → `DIS`; `CON` → `CON`.
+    """`DOM:condiciones` → `DOM`; `DIS/Reconstruccion` → `DIS`; `CNS` → `CNS`.
 
     El corpus escribe los participantes condicionales como `CAPACIDAD:metodo` o
     `CAPACIDAD/Metodo` cuando la condición activa un método concreto. Lo que entra en la

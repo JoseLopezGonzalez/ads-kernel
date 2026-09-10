@@ -142,7 +142,7 @@ regenerar, evento persistido antes de mutar, idempotencia por id y compare-and-s
 hash de contenido con tope de reintentos. No hay contradicción con `I5`, ni aparente
 `qué NO cubre ADS` ese mecanismo se aplica **sólo al tablero**. El paquete no tiene zonas: el
 contrato, la capa depositada y el dictamen viven en artefactos distintos
-`qué se rechaza del candidato` su veredicto de auditoría admite **«APROBADO CON
+`qué se rechaza del candidato` su veredicto de auditoría admite **«APROBADO CNS
 OBSERVACIONES»**. `plantillas/DICTAMEN.md` regla 4 prohíbe expresamente el término medio:
 *«los términos medios son cómo se cuela la aprobación complaciente»*. Adoptarlo sería una
 regresión
@@ -300,7 +300,7 @@ punto de convergencia, CI como autoridad automática, **cuatro niveles de autori
 graduados por riesgo, `merge ≠ release`, tags y rollback, y la regla de que el Owner no es
 operador de Git. `G30` añade contención, diagnóstico y recuperación
 `el hallazgo real` **ninguna capacidad de la línea 2.0 lo ha recogido.** Un barrido de
-`kernel/operativo/` y `packs/` encuentra git sólo de pasada, en `ENT`, `CON` y `DIS`. Ninguna
+`kernel/operativo/` y `packs/` encuentra git sólo de pasada, en `ENT`, `CNS` y `DIS`. Ninguna
 ficha de capacidad lo declara en su autoridad, ningún gate lo comprueba, ningún método lo
 ejecuta y ningún handoff lo transporta
 `qué aporta el candidato` poco por sí mismo: prefijo de rama por proveedor. Su valor es la
@@ -428,7 +428,7 @@ Y FALTA ENTERO  el apartado 8.3: Git como memoria operativa. Qué commits ejecut
 
 RIESGO          es el candidato más fácil de resolver mal, escribiendo una capacidad nueva
                 de Git. La directiva avisa en su 8.2 de que el reparto ambiguo entre PLT,
-                ENT, DSP y CON es precisamente el problema.
+                ENT, DSP y CNS es precisamente el problema.
 ```
 
 ### P-05 · Sin evidencia independiente no puede demostrarse si falta una capa entre PACK y PROFILE

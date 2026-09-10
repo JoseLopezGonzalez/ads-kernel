@@ -99,7 +99,7 @@ id: T243
 nombre: Las cinco entregas que 11-ARQ 8.0 declara existen como instancias en circuitos
 cubre: ["F-05", "11-ARQ 8.0", "C5", "circuitos/entregas-de-8-0.md"]
 dado:
-  - "11-ARQ 8.0 declara qué viaja de SIS a PLT, de SIS a CON, de SIS a VER, de CON a ENT y de ENT a VER"
+  - "11-ARQ 8.0 declara qué viaja de SIS a PLT, de SIS a CNS, de SIS a VER, de CNS a ENT y de ENT a VER"
   - "el documento no viaja al proyecto instalado, y por eso el conjunto se lleva como dato derivado"
 cuando: ["se recorren las instancias de handoff declaradas en circuitos/"]
 entonces:

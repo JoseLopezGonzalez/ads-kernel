@@ -18,7 +18,7 @@ DECISIÓN · el paquete conserva el vocabulario CERRADO del runtime, y el plan l
 
 DECISIÓN · `capacidades_requeridas` del paquete son CAPACIDADES DE ADAPTADOR, no de ADS
     Es una colisión de nombres real y conviene decirla: en `runtime/`, `capacidades_requeridas`
-    selecciona el ADAPTADOR (`proceso-local`), y en `b.16` una «capacidad» es `PRD`, `CON`
+    selecciona el ADAPTADOR (`proceso-local`), y en `b.16` una «capacidad» es `PRD`, `CNS`
     o `VER`. No son lo mismo y no se mezclan: el plan declara la capacidad ADS de cada
     paquete y el paquete declara las del adaptador que lo ejecutará.
 

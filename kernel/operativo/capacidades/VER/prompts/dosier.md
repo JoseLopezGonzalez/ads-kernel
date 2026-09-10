@@ -86,7 +86,7 @@ Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el
 Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
 
 ```text
-  · a CON, cuando la evidencia muestra que un criterio no se cumple
+  · a CNS, cuando la evidencia muestra que un criterio no se cumple
   · a DIS, cuando la regresión visual rompe una superficie fuera del alcance
   · a PRD, cuando el criterio de éxito no es verificable tal como está escrito
 ```
@@ -101,5 +101,5 @@ Te bloquea, y entonces **nombras qué lo desbloquearía**:
 Escalas, sin decidirlo tú:
 
 ```text
-  · CON sostiene que cumple y la evidencia dice lo contrario: freno de a.7
+  · CNS sostiene que cumple y la evidencia dice lo contrario: freno de a.7
 ```

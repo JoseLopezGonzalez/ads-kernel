@@ -45,7 +45,7 @@ LOS INCUMPLIMIENTOS, UNO A UNO
 LO EJERCIDO, SABOTAJE A SABOTAJE
 ------------------------------------------------------------------------------
   N136     DETECTADO      veto:integridad-de-datos: declara que prevalece DOM, cuyo veto es LEVANTABLE. a.5 sólo admite prevalencia de u
-  N146     DETECTADO      CON/implementacion: DECIDE «la implementación exige una decisión de forma, alcance o dom», y CON declara eso m
+  N146     DETECTADO      CNS/implementacion: DECIDE «la implementación exige una decisión de forma, alcance o dom», y CNS declara eso m
   N150     DETECTADO      [1] el kernel DIVERGE de su release: almacenada 378df943f857cb64, calculada 6c6287d710f51c9b. Algún fichero de
   N158     DETECTADO      kernel/operativo/pruebas/evidencia/contratos-salida.txt: contiene error de invocación del intérprete. No es la
   N172     DETECTADO      FAIL T172 · Una guarda que se puede bajar por variable es un interruptor. ------------------------------------

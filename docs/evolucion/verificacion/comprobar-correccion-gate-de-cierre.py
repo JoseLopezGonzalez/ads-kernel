@@ -256,7 +256,7 @@ def _num(txt):
 # el repositorio no responde, devuelve None — y las comprobaciones que dependen de él
 # fallan CERRADO, con diagnóstico.
 # `EE-17` · **EL ALCANCE SE DERIVA DE LA PROPIEDAD, NO DE LA REDACCIÓN DEL TÍTULO.**
-# El informe publicaba qué comprobaciones exigen un repositorio CON HISTORIA filtrando sus
+# El informe publicaba qué comprobaciones exigen un repositorio CNS HISTORIA filtrando sus
 # TÍTULOS por la cadena «sin git». Es una convención de redacción, y caduca en cuanto
 # alguien no la sigue: `G-34` empezó a usar git y no reescribió su título, con lo que el
 # censo derivado daba OCHO y la medición NUEVE — que es `DD-21`, nacido de esta misma
@@ -527,7 +527,7 @@ def _informe(codigo_normal=None):
         if det: print(f"{'':13s}└─ {det}")
     verde = sum(1 for _, _, ok, _ in RES if ok)
     # `DD-21` · **QUÉ CERTIFICA ESTE «N/N», Y QUÉ NO.** Nueve de las comprobaciones no son
-    # propiedades del COMMIT sino de **un repositorio CON HISTORIA**: contrastan contra
+    # propiedades del COMMIT sino de **un repositorio CNS HISTORIA**: contrastan contra
     # `HEAD` y contra la revisión base con `git`. Sobre la materialización que la RECETA
     # del sobre prescribe —árbol desplegado SIN `.git`— esas nueve fallan CERRADO, que es
     # lo correcto, y la batería da menos que su total. **No es un defecto: era que ninguna
@@ -543,7 +543,7 @@ def _informe(codigo_normal=None):
     _titulan = {i for i, t, _, _ in RES if "sin git" in t}
     _desajuste = sorted(_titulan ^ set(_con_git)) + sorted(_EXIGEN_HISTORIA - set(_ids))
     print(f"\n{verde}/{len(RES)} comprobaciones en verde")
-    print(f"ALCANCE (`DD-21`): {len(_con_git)} de las {len(RES)} exigen un repositorio CON "
+    print(f"ALCANCE (`DD-21`): {len(_con_git)} de las {len(RES)} exigen un repositorio CNS "
           f"HISTORIA y fallan CERRADO sin `.git` — {', '.join(_con_git)}. "
           f"Las otras {len(RES) - len(_con_git)} son propiedades del ÁRBOL DESNUDO. "
           f"Un «{len(RES)}/{len(RES)}» certifica el commit CON su historia; sobre la "
@@ -1413,7 +1413,7 @@ condicionales:
 
 # vía 1 · PROPIETARIA — el fixture que `O-01` demostró que la versión anterior no veía
 _FIXTURES.append("vía 1 · propietaria")
-_e1, _, _, _ = _derivar(_FX % ("DOM", "CON", "APR"))
+_e1, _, _, _ = _derivar(_FX % ("DOM", "CNS", "APR"))
 if _e1.get(("FX", "DOM")) != (1, "propietaria"):
     _g15.append("fixture VÍA 1: un `propietario_global: \"DOM\"` no emite par propietario")
 
@@ -1427,13 +1427,13 @@ if _e2.get(("FX", "DOM")) != (4, "condicionales"):
 
 # vía 3 sobre el fixture, con la capacidad BASE desnuda
 _FIXTURES.append("vía 3 · condicional desnuda")
-_e3, _, _, _ = _derivar(_FX % ("PRD", "CON", "SEG"))
+_e3, _, _, _ = _derivar(_FX % ("PRD", "CNS", "SEG"))
 if _e3.get(("FX", "SEG")) != (3, "condicionales"):
     _g15.append("fixture VÍA 3: `capacidad: \"SEG\"` desnuda no emite par condicional")
 
 # y el discriminante: un propietario que NO es uno de los quince cae en dinámico
 _FIXTURES.append("discriminante estructural")
-_, _d4, _, _ = _derivar(_FX % ("la capacidad que decida el encargo", "CON", "APR"))
+_, _d4, _, _ = _derivar(_FX % ("la capacidad que decida el encargo", "CNS", "APR"))
 if "FX" not in _d4:
     _g15.append("el discriminante no clasifica como dinámico un propietario que no es "
                 "uno de los quince")
@@ -1451,9 +1451,9 @@ if _aud.get("DOM") != 3 or _aud.get("SEG") != 3:
 
 # 3bis · el ANCLA no se deja desplazar por una referencia TIPADA legítima (`Q-02`)
 _FIXTURES.append("ancla ante `VER:dosier`")
-_, _, _a5, _ = _derivar(_FX % ("PRD", "CON", "APR"))
+_, _, _a5, _ = _derivar(_FX % ("PRD", "CNS", "APR"))
 _FXVER = _FX.replace('capacidad_productora: "VER"', 'capacidad_productora: "VER:dosier"')
-_, _, _a6, _ = _derivar(_FXVER % ("PRD", "CON", "APR"))
+_, _, _a6, _ = _derivar(_FXVER % ("PRD", "CNS", "APR"))
 if _a5.get("FX") != "VER" or _a6.get("FX") != "VER":
     _g15.append(f"fixture ANCLA TIPADA: `VER` da {_a5.get('FX')} y `VER:dosier` da "
                 f"{_a6.get('FX')}; una referencia tipada legítima desplaza el ancla")
@@ -1465,7 +1465,7 @@ id: proceso:FY
 propietario_global: "PRD"
 obligatorias:
   - id: uno
-    capacidad_productora: "CON"
+    capacidad_productora: "CNS"
     criterio_de_satisfaccion: >
       el criterio menciona, sin ser un campo,
       capacidad_productora: "DOM"
@@ -1490,7 +1490,7 @@ id: proceso:FI
 propietario_global: "PRD"
 obligatorias:
   - id: uno
-    capacidad_productora: "CON"
+    capacidad_productora: "CNS"
     notas_internas:
       comentario: algo
       capacidad_productora: "DOM"
@@ -1584,7 +1584,7 @@ if ("DEP", "SEG") in _efix or len(_efix) >= len(_est):
 # Éstos alimentan TEXTO SINTÉTICO al derivador y exigen resultados distintos entre sí.
 _FX_FICHA_OK = ('roles: [XX/uno]\n'
                 'deriva_de:\n'
-                '  - "b.16 · XX participa dos veces: condiciones antes de CON"\n'
+                '  - "b.16 · XX participa dos veces: condiciones antes de CNS"\n'
                 'materializacion: >\n  cualquier cosa\n')
 _FX_FICHA_PROSA = ('roles: [XX/uno]\n'
                    'deriva_de:\n'
@@ -2258,7 +2258,7 @@ def _es_bytecode(ruta_abs):
 
 
 def _en_zona(rel):
-    """¿`rel` cae dentro del corpus gobernado? Todo, salvo lo excluido CON MOTIVO y CON RUTA."""
+    """¿`rel` cae dentro del corpus gobernado? Todo, salvo lo excluido CON MOTIVO y CNS RUTA."""
     if _EXCLUIDO_RAIZ.match(rel):
         motivo = "`.git` de la RAÍZ: almacén, no corpus"
     elif _es_bytecode(os.path.join(RAIZ, rel)):
@@ -2349,7 +2349,7 @@ _INMUTABLES = _inmutables()
 # mientras imprime `OK`. Es `M-12` —«interpretaban el vacío como “nada cambió”»—
 # sobreviviendo en la comprobación cuyo título dice «falla CERRADO sin git».
 def _base_vacia(bruto, comando, para_que):
-    """El diagnóstico si `bruto` vino VACÍO CON ÉXITO, o None. `G-11b`, generalizada."""
+    """El diagnóstico si `bruto` vino VACÍO CNS ÉXITO, o None. `G-11b`, generalizada."""
     if bruto is not None and not bruto.strip():
         return (f"`{comando}` responde con ÉXITO y VACÍO: {para_que}. Comparar contra nada "
                 f"da verde siempre, y eso no es comparar")
@@ -2650,7 +2650,7 @@ docs/evolucion/15-TERCERA-REVISION-INDEPENDIENTE-F4C.md""".split("\n")
 # una ficha sustituida por otra, renombrada o ilegible pasaba en verde, y quince
 # directorios cualesquiera contaban como el catálogo. Aquí se comparan los NOMBRES exactos
 # y se ABRE cada fichero en UTF-8.
-CAPACIDADES = ["APR", "ARQ", "CON", "DIS", "DOM", "DSP", "ENC", "ENT",
+CAPACIDADES = ["APR", "ARQ", "CNS", "DIS", "DOM", "DSP", "ENC", "ENT",
                "INV", "PLT", "PRD", "SEG", "SIS", "USO", "VER"]
 
 # `T-19`. Aquí vivía `_ilegible()`, que era `_motivo_ilegible()` escrita por segunda vez y

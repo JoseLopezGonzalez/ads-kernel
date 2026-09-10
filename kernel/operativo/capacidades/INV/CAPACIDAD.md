@@ -46,7 +46,7 @@ owner:
 roles: [INV/investigacion]
 deriva_de:
   - "a.3 · INV: spikes contra entorno real, freshness (G22+G33), puede declarar que no se puede decidir"
-  - "b.16 · INV es propietario global de los items INV y activa CON:experimental"
+  - "b.16 · INV es propietario global de los items INV y activa CNS:experimental"
 materializacion: >
   Se materializa cuando existe una pregunta acotada con consumidor declarado. Sin consumidor
   declarado no se materializa: produciría conocimiento que nadie usa.

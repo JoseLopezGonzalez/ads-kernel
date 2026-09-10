@@ -92,10 +92,10 @@ FILA `SIS`   DECÍA          condicionales: ENT obligatorio si modifica el runti
                                            DOM:condiciones `C-DOM` · SEG:condiciones
                                            `C-SEG` · DIS `C-DIS`
 
-FILA `INV`   DECÍA          condicionales: CON:experimental cuando la evidencia exija
+FILA `INV`   DECÍA          condicionales: CNS:experimental cuando la evidencia exija
                                            construir · PRD o ARQ según destino declarado ·
                                            APR `C-APR`
-             PASA A DECIR   condicionales: CON:experimental cuando la evidencia exija
+             PASA A DECIR   condicionales: CNS:experimental cuando la evidencia exija
                                            construir · PRD o ARQ según destino declarado ·
                                            APR `C-APR` ·
                                            DOM `C-DOM` · SEG `C-SEG` · DIS `C-DIS`

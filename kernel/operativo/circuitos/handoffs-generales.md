@@ -64,7 +64,7 @@ checkpoint: "ARQ lee de PRD: qué quedó fuera de alcance, para no planificarlo.
 ```yaml ads:handoff
 id: handoff:arq-a-con
 de: ARQ
-a: CON
+a: CNS
 cuando: "el plan está depositado y DSP ha creado los paquetes de construcción"
 entrega:
   - "el radio medido con su traza"
@@ -74,20 +74,20 @@ comprueba_al_recibir:
   - "el plan no exige decidir nada de otra capa para poder ejecutarlo"
   - "las dependencias del paquete están cerradas con capa vigente"
 rechaza_si:
-  - "el plan deja huecos que obligarían a CON a decidir alcance, forma o modelo"
+  - "el plan deja huecos que obligarían a CNS a decidir alcance, forma o modelo"
 devolucion: >
-  CON devuelve a ARQ cuando el plan no es ejecutable como está descrito, con qué parte
+  CNS devuelve a ARQ cuando el plan no es ejecutable como está descrito, con qué parte
   concreta no lo es.
 evidencia_de_devolucion:
   - "el paso del plan que no se puede ejecutar y por qué"
 owner: "ninguna: en este tramo no hay materia de decisión del Owner."
-checkpoint: "CON lee de ARQ: qué alternativas se descartaron, para no reintroducirlas."
+checkpoint: "CNS lee de ARQ: qué alternativas se descartaron, para no reintroducirlas."
 ```
 
 ```yaml ads:handoff
 id: handoff:dom-a-con
 de: DOM
-a: CON
+a: CNS
 cuando: "el item cumple C-DOM y las condiciones se entregan ANTES de construir"
 entrega:
   - "los invariantes que conservar, con la consulta que comprueba cada uno"
@@ -100,18 +100,18 @@ rechaza_si:
   - "una condición es una advertencia y no una comprobación"
   - "la migración se declara reversible sin salida de reversión ejecutada"
 devolucion: >
-  CON devuelve a DOM cuando dos condiciones son incompatibles entre sí, o cuando la de
+  CNS devuelve a DOM cuando dos condiciones son incompatibles entre sí, o cuando la de
   seguridad y la de dominio se contradicen.
 evidencia_de_devolucion:
   - "las dos condiciones y el caso en que no pueden cumplirse a la vez"
 owner: "sólo cuando la única salida implica pérdida de datos: decide él, no DOM."
-checkpoint: "CON lee de DOM: qué consultas debe ejecutar y guardar como evidencia."
+checkpoint: "CNS lee de DOM: qué consultas debe ejecutar y guardar como evidencia."
 ```
 
 ```yaml ads:handoff
 id: handoff:seg-a-con
 de: SEG
-a: CON
+a: CNS
 cuando: "el item cumple C-SEG, y siempre en items DEP antes de construir"
 entrega:
   - "las condiciones de seguridad, comprobables una a una"
@@ -123,12 +123,12 @@ comprueba_al_recibir:
 rechaza_si:
   - "una condición no se puede comprobar sobre el código o la configuración"
 devolucion: >
-  CON devuelve a SEG cuando cumplir una condición exige una decisión de producto o de
+  CNS devuelve a SEG cuando cumplir una condición exige una decisión de producto o de
   arquitectura que no le corresponde.
 evidencia_de_devolucion:
   - "la condición y qué decisión ajena exigiría para cumplirse"
 owner: "sólo cuando el riesgo es real y aceptable: lo presenta SEG, decide el Owner."
-checkpoint: "CON lee de SEG: qué superficie no debe abrir, y qué comprobar antes de entregar."
+checkpoint: "CNS lee de SEG: qué superficie no debe abrir, y qué comprobar antes de entregar."
 ```
 
 ```yaml ads:handoff
@@ -209,9 +209,9 @@ checkpoint: "APR lee del item: su traza de ruta completa, para localizar dónde 
 
 ```yaml ads:handoff
 id: handoff:con-a-ver
-de: CON
+de: CNS
 a: VER
-cuando: "CON deposita su capa y el paquete continúa hacia verificación"
+cuando: "CNS deposita su capa y el paquete continúa hacia verificación"
 entrega:
   - "el commit identificado y la salida de la suite de tests"
   - "las DIFERENCIAS conocidas respecto a la especificación, declaradas ANTES de la revisión"
@@ -227,16 +227,16 @@ rechaza_si:
   - "la capa cambia una decisión de PRD, DIS o ARQ sin haberla devuelto"
   - "falta la evidencia de usabilidad de una superficie que la capa modificó"
 devolucion: >
-  VER devuelve a CON con la evidencia concreta: qué criterio no se cumple, con qué salida o
+  VER devuelve a CNS con la evidencia concreta: qué criterio no se cumple, con qué salida o
   medición se demuestra, y qué lo cerraría. Si lo que falla es una capa anterior y no la
-  construcción, VER devuelve a la capacidad propietaria de esa capa, no a CON.
+  construcción, VER devuelve a la capacidad propietaria de esa capa, no a CNS.
 evidencia_de_devolucion:
   - "el criterio concreto que no se cumple, citado de la capa de PRD"
   - "la salida, captura o medición que lo demuestra"
   - "la comparación con el estado anterior cuando se alega regresión"
-owner: "ninguna. Entre CON y VER no hay un humano validando el traspaso."
+owner: "ninguna. Entre CNS y VER no hay un humano validando el traspaso."
 checkpoint: >
-  VER lee de CON: qué está construido, qué diferencias se declararon y con qué fecha, y qué
+  VER lee de CNS: qué está construido, qué diferencias se declararon y con qué fecha, y qué
   consultas quedaron ejecutadas. Sin eso no puede recoger evidencia sin volver a preguntar.
 ```
 

@@ -62,7 +62,7 @@ interaccion_owner:
   formato: "qué dice hoy la sección, qué exige el trabajo real, y la frase concreta que habría que cambiar"
 interaccion_roles:
   - "recibe aprendizajes promovidos de APR"
-  - "entrega el cambio a CON y VER cuando exige construcción"
+  - "entrega el cambio a CNS y VER cuando exige construcción"
   - "entrega a ENT cuando modifica el runtime, para su activación segura"
 independencia:
   requiere_independencia: false

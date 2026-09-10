@@ -37,7 +37,7 @@ evidencia:
   - "salida de la comprobación automática"
 fallo: >
   El paquete no pasa. Un fallo de teclado o de foco vuelve a DIS/diseno-interaccion; uno de
-  contraste o de texto ampliado, a DIS/diseno-visual; uno de implementación, a CON.
+  contraste o de texto ampliado, a DIS/diseno-visual; uno de implementación, a CNS.
 ```
 
 ```yaml ads:gate
@@ -68,7 +68,7 @@ evidencia:
   - "las mediciones con su entorno y su red declarados"
   - "la grabación de la carga completa"
 fallo: >
-  Vuelve a CON con la medición. Si el presupuesto es inalcanzable por diseño, vuelve a DIS o
+  Vuelve a CNS con la medición. Si el presupuesto es inalcanzable por diseño, vuelve a DIS o
   a ARQ con la evidencia, y no se rebaja el presupuesto sin decisión escrita.
 ```
 
@@ -97,6 +97,6 @@ evidencia:
   - "la prueba de que lo escrito sobrevive"
   - "las consultas a DOM por operación reintentada"
 fallo: >
-  Vuelve a web:CON/estados-de-red. Si lo que falta es qué comunicar en un estado, vuelve a
+  Vuelve a web:CNS/estados-de-red. Si lo que falta es qué comunicar en un estado, vuelve a
   DIS/diseno-interaccion.
 ```

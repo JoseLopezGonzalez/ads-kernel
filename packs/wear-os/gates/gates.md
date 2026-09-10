@@ -63,7 +63,7 @@ evidencia:
   - "grabación de la vuelta del ambiental"
   - "medición de consumo del ambiental"
 fallo: >
-  Vuelve a wear:CON/energia-y-estados. Si lo que falta es qué mostrar, vuelve a
+  Vuelve a wear:CNS/energia-y-estados. Si lo que falta es qué mostrar, vuelve a
   wear:DIS/lectura-de-un-vistazo.
 ```
 
@@ -96,6 +96,6 @@ evidencia:
   - "traza del ciclo de sensores"
   - "recorrido sin teléfono y prueba de reconexión"
 fallo: >
-  Vuelve a wear:CON/energia-y-estados. Si el consumo es inherente al alcance, vuelve a PRD:
+  Vuelve a wear:CNS/energia-y-estados. Si el consumo es inherente al alcance, vuelve a PRD:
   reducir la función o su frecuencia es decisión de producto y del Owner.
 ```

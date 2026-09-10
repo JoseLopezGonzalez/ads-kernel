@@ -65,7 +65,7 @@ Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el
 Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
 
 ```text
-  · a CON, cuando el artefacto no arranca en el entorno
+  · a CNS, cuando el artefacto no arranca en el entorno
   · a DOM, cuando la migración falla sobre datos reales pese a haber pasado en copia
 ```
 

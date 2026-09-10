@@ -516,8 +516,8 @@ class Escenario:
         exigir(1 in vias.get("SIS", set()),
                "`SIS` no entra por la vía 1 en `proceso:SIS`; vías vistas: "
                + str(sorted(vias.get("SIS", set()))))
-        exigir(2 in vias.get("CON", set()),
-               "`CON` no entra por la vía 2 pese a producir `cambio-construido`")
+        exigir(2 in vias.get("CNS", set()),
+               "`CNS` no entra por la vía 2 pese a producir `cambio-construido`")
         exigir(3 in vias.get("APR", set()),
                "`APR` no entra por la vía 3 con `C-APR` declarada verdadera")
         exigir(all(entrada.get("motivo") for entrada in self.composicion["no_activadas"]),
@@ -824,7 +824,7 @@ class Escenario:
         evidencia = list(declarado.get("evidencia") or [])
         entrada = {"item": self.plan["item"], "ruta": self.composicion["id"]}
         positivo = ciclo.aplicar_gate(
-            nombre, entrada=entrada, evidencia=evidencia, revisor="VER", autor="CON",
+            nombre, entrada=entrada, evidencia=evidencia, revisor="VER", autor="CNS",
             corpus=self.corpus, comprobaciones_superadas=comprobaciones,
             salida="el item puede cerrar")
         exigir(positivo["dictamen"] == "superado",
@@ -832,7 +832,7 @@ class Escenario:
         # NEGATIVO: falta UNA comprobación y el gate FALLA CERRADO, con su dictamen dentro.
         try:
             ciclo.aplicar_gate(
-                nombre, entrada=entrada, evidencia=evidencia, revisor="VER", autor="CON",
+                nombre, entrada=entrada, evidencia=evidencia, revisor="VER", autor="CNS",
                 corpus=self.corpus, comprobaciones_superadas=comprobaciones[:-1])
         except ciclo.GateFallido as error:
             cerrado = getattr(error, "dictamen", {}).get("dictamen") == "no-superado"
@@ -845,7 +845,7 @@ class Escenario:
         # el corpus no le da se rechaza.
         try:
             ciclo.aplicar_gate(
-                nombre, entrada=entrada, evidencia=evidencia, revisor="VER", autor="CON",
+                nombre, entrada=entrada, evidencia=evidencia, revisor="VER", autor="CNS",
                 corpus=self.corpus,
                 comprobaciones_superadas=list(comprobaciones) + ["comprobacion-inventada"])
         except ciclo.GateNormativo:
@@ -856,7 +856,7 @@ class Escenario:
         # EL AUTOR ES OBLIGATORIO: omitirlo era la vía para revisarse a sí mismo.
         try:
             ciclo.aplicar_gate(nombre, entrada=entrada, evidencia=evidencia,
-                               revisor="CON", corpus=self.corpus,
+                               revisor="CNS", corpus=self.corpus,
                                comprobaciones_superadas=comprobaciones)
         except TypeError:
             exige_autor = True

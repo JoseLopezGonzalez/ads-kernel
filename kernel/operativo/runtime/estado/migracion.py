@@ -278,7 +278,7 @@ def _asegurar_revision_cero(motor, almacen, disposicion, eventos):
                                                 corte de `ADJ-B1` dejaba, y el que antes
                                                 era terminal
         fundación anexada   · con revisión   →  no toca nada
-        diario CON HISTORIA · sin revisión   →  falla cerrado: no hay de dónde deducir cuál
+        diario CNS HISTORIA · sin revisión   →  falla cerrado: no hay de dónde deducir cuál
                                                 era la revisión vigente
 
     Devuelve `True` si publicó la revisión 0, para que quien llame pueda decirlo.

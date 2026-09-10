@@ -153,11 +153,11 @@ BARRIDO                 una prueba toma el cuerpo de la clave y lo busca en TODA
 1 · USUARIO DEL SISTEMA   NO ES POSIBLE en este anfitrión, y se COMPRUEBA en vez de
     DISTINTO              suponerlo: `sudo -n true` responde «a password is required», y no
                           se puede crear un usuario del sistema. Queda REGISTRADO
-2 · CONTENEDOR CON        SÍ. `docker run --user 65534:65534 --network none -v <repo>:/repo:ro`
+2 · CONTENEDOR CNS        SÍ. `docker run --user 65534:65534 --network none -v <repo>:/repo:ro`
     IDENTIDAD DISTINTA    La identidad del verificador es `65534` y la del runtime `1000`
     Y MONTAJE `ro`
 3 · ESPACIO DE NOMBRES    disponible como RESPALDO, con su límite declarado: `unshare -Urm`
-    CON MONTAJE `ro`      da el montaje de sólo lectura, y el `root` de dentro se mapea al
+    CNS MONTAJE `ro`      da el montaje de sólo lectura, y el `root` de dentro se mapea al
                           MISMO usuario del anfitrión, luego NO da identidad distinta
 ```
 
@@ -252,7 +252,7 @@ PRODUCTIVO DE CLAVES     fichero `0600` fuera de los repositorios. Un HSM, un ll
 
 LA IDENTIDAD SIN         se demuestra con contenedor o con espacio de nombres. Un USUARIO DEL
 ESCRITURA SE DEMUESTRA   SISTEMA dedicado, que es la opción 1, exige aprovisionamiento del
-CON AISLAMIENTO          anfitrión: `sudo` sin contraseña o una cuenta de servicio creada por
+CNS AISLAMIENTO          anfitrión: `sudo` sin contraseña o una cuenta de servicio creada por
                          quien administre la máquina. Queda como REQUISITO DE
                          INFRAESTRUCTURA, no como deuda de este código
 

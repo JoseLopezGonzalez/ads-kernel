@@ -1,9 +1,9 @@
-# CON/Implementacion — construir sin redecidir
+# CNS/Implementacion — construir sin redecidir
 
 ```yaml ads:metodo
-id: CON/Implementacion
+id: CNS/Implementacion
 nombre: Implementacion
-capacidad: CON
+capacidad: CNS
 disparador:
   - "DSP despacha un paquete de construcción con sus capas anteriores depositadas"
 carga:

@@ -59,12 +59,12 @@ interaccion_owner:
     - "la única forma de conseguir lo pedido tiene una consecuencia de seguridad real y aceptable"
   formato: "qué queda expuesto, a quién, qué podría pasar, y qué alternativa hay con su coste"
 interaccion_roles:
-  - "entrega condiciones a CON antes de construir"
+  - "entrega condiciones a CNS antes de construir"
   - "revisa lo construido tras VER"
   - "activa contención con ENT cuando la exposición ya está en producción"
 independencia:
   requiere_independencia: true
-  de_quien: [CON/implementacion]
+  de_quien: [CNS/implementacion]
   motivo: >
     Quien construyó no encuentra la superficie que abrió sin darse cuenta: revisa el modelo
     de amenaza que tenía en la cabeza, no el que produjo.
@@ -77,7 +77,7 @@ salida:
   - "entradas en DEPENDENCIAS.md"
 gate: gate:seguridad-conforme
 devolucion:
-  - "a CON, cuando lo construido expone algo que las condiciones prohibían"
+  - "a CNS, cuando lo construido expone algo que las condiciones prohibían"
   - "a ARQ, cuando el plan abre una superficie que no puede mitigarse"
 bloqueo:
   - "no hay acceso a la configuración real donde viven los secretos"

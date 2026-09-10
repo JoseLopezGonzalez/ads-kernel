@@ -5,10 +5,10 @@ id: VER/Dosier
 nombre: Dosier
 capacidad: VER
 disparador:
-  - "una capa de CON queda depositada"
+  - "una capa de CNS queda depositada"
 carga:
   - "los criterios de éxito de PRD y la definición de fracaso"
-  - "la capa de CON con su commit y sus diferencias declaradas"
+  - "la capa de CNS con su commit y sus diferencias declaradas"
   - "los dictámenes de DIS cuando hay superficie"
   - "docs/verificacion/REGRESIONES.md y los presupuestos del pack"
 preguntas_iniciales:
@@ -78,7 +78,7 @@ gate: gate:evidencia-suficiente
 salida:
   - "dosier emitido, que viaja hacia adelante"
 devolucion:
-  - "a CON, a DIS o a PRD según de quién sea la capa que falla, con la evidencia"
+  - "a CNS, a DIS o a PRD según de quién sea la capa que falla, con la evidencia"
 bloqueo:
   - "no hay entorno donde ejecutar la regresión"
   - "no hay datos representativos para los estados extremos"

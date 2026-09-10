@@ -108,7 +108,7 @@ E-3.6  PUBLICA su cobertura: cuántos campos vigentes recorrió. Un barrido que 
 **PRUEBA QUE `F6` DEBE SUPERAR:** un cardinal nuevo insertado en un campo vigente **en
 versales** debe dar ROJO. Hoy escaparía.
 
-> **Y LO QUE NI `F6` PUEDE HACER CON ÉSTA:** implementar el instrumento y verlo en verde
+> **Y LO QUE NI `F6` PUEDE HACER CNS ÉSTA:** implementar el instrumento y verlo en verde
 > **no cierra la clase**. Su sede lo dice sin matices: **sólo un gate independiente
 > posterior puede cerrarla**, y barrer no es certificar. `F5` escribe la regla; `F6`
 > construye el barrido; **un tercero decide si la clase está cerrada.**

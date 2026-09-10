@@ -34,7 +34,7 @@ QUE COMPRUEBA, y nada mas:
       identificador D-01..D-10 y R-01..R-05 tiene fila en la matriz con su acto
   F15 LITERALIDAD DE O23: su texto conserva las frases que fijan cada decision. Alterar una
       palabra de las declaradas hace ROJO
-  F16 COBERTURA DE PRESIONES CON ACTO: el censo VIGENTE se deriva del arbol y toda presion
+  F16 COBERTURA DE PRESIONES CNS ACTO: el censo VIGENTE se deriva del arbol y toda presion
       tiene fila en el acta de disposicion, con disposicion y acto que la cierra
   F17 NINGUNA sede afirma que F5 este CERRADA MIENTRAS EL OWNER NO LO HAYA DECLARADO. El
       control NO se retira cuando la fase se cierra: se ANCLA al acto. Se busca en la SEDE

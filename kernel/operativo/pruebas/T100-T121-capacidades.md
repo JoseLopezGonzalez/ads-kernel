@@ -79,9 +79,9 @@ dado:
 cuando:
   - "se compone su ruta"
 entonces:
-  - "las condiciones de DOM se entregan ANTES del paquete de CON, no después"
+  - "las condiciones de DOM se entregan ANTES del paquete de CNS, no después"
 falla_si:
-  - "DOM recibe la primera noticia en paralelo con CON, o después"
+  - "DOM recibe la primera noticia en paralelo con CNS, o después"
 ejecucion: guion-manual
 estado: contrato-definido
 ```
@@ -105,11 +105,11 @@ estado: contrato-definido
 ```yaml ads:escenario
 id: T106
 nombre: Construcción devuelve en vez de redecidir
-cubre: ["CON/Implementacion", "a.3 CON no redecide"]
+cubre: ["CNS/Implementacion", "a.3 CNS no redecide"]
 dado:
   - "una capa anterior insuficiente detectada al leer, antes de construir"
 cuando:
-  - "CON ejecuta su paso 1"
+  - "CNS ejecuta su paso 1"
 entonces:
   - "devuelve a la capacidad propietaria antes de construir nada"
 falla_si:
@@ -121,7 +121,7 @@ estado: contrato-definido
 ```yaml ads:escenario
 id: T107
 nombre: Un experimento no se reanuda sin criterio de descarte previo
-cubre: ["CON/Experimental", "b.16 CON:experimental"]
+cubre: ["CNS/Experimental", "b.16 CNS:experimental"]
 dado:
   - "un experimento interrumpido sin criterio de descarte declarado"
 cuando:
@@ -219,7 +219,7 @@ id: T113
 nombre: Un INV cierra sin generar un segundo item
 cubre: ["INV/Investigacion", "T39", "b.16 INV"]
 dado:
-  - "una investigación que usa CON:experimental y produce evidencia"
+  - "una investigación que usa CNS:experimental y produce evidencia"
 cuando:
   - "la evidencia contesta la pregunta"
 entonces:
@@ -251,7 +251,7 @@ id: T115
 nombre: Una dependencia no se incorpora sin veredicto fechado
 cubre: ["SEG/Dependencia", "G28"]
 dado:
-  - "una dependencia nueva propuesta por CON"
+  - "una dependencia nueva propuesta por CNS"
 cuando:
   - "se ejecuta SEG/Dependencia"
 entonces:

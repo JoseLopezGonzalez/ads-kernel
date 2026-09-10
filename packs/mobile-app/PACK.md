@@ -22,12 +22,12 @@ restricciones:
   - "el uso es interrumpido: llamadas, notificaciones, cambiar de aplicación y volver"
   - "el tamaño de pantalla y la densidad varían mucho entre dispositivos reales"
 capacidades_nuevas: []
-roles_nuevos: [mob:DIS/interaccion-tactil, mob:CON/ciclo-de-vida]
+roles_nuevos: [mob:DIS/interaccion-tactil, mob:CNS/ciclo-de-vida]
 extensiones_de_metodo:
   - "DIS/Evolucion paso 1: comprobar además si la superficie recibe el teclado, que cambia la composición a la mitad"
   - "DIS/ValidacionDeUso paso 2: el recorrido se hace SIEMPRE en dispositivo real, no en emulador"
   - "DIS/RevisionDeFidelidad paso 5: la prueba en dispositivo real es OBLIGATORIA, sin excepción"
-  - "CON/Implementacion paso 4: comprobar además el comportamiento con permiso denegado y revocado"
+  - "CNS/Implementacion paso 4: comprobar además el comportamiento con permiso denegado y revocado"
   - "VER/Dosier paso 3: los estados extremos incluyen sin conexión, sin permiso y tras suspensión"
   - "ENT/Despliegue: la distribución pasa por una tienda con sus tiempos, y eso condiciona la reversión"
 gates_adicionales: [gate:mob-dispositivo-real, gate:mob-ciclo-y-permisos, gate:mob-consumo]
@@ -158,7 +158,7 @@ Lo escrito por el usuario NO SE PIERDE en ninguno de los cuatro.
 ### Ciclo de vida
 
 Es la materia que más fallos silenciosos produce, y por eso tiene rol propio:
-`mob:CON/ciclo-de-vida`.
+`mob:CNS/ciclo-de-vida`.
 
 ```text
 [ ] la aplicación suspendida y reanudada vuelve al mismo estado

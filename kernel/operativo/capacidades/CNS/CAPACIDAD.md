@@ -1,10 +1,10 @@
-# CON · CONSTRUCCIÓN — la implementación y sus tests
+# CNS · CONSTRUCCIÓN — la implementación y sus tests
 
 Su regla dominante es negativa y es la que define la capacidad: **no redecide capas
 anteriores**. Implementar sobre una capa que sabe mal es su fallo característico.
 
 ```yaml ads:capacidad
-id: CON
+id: CNS
 nombre: Construcción
 clase: estacion
 mision: >
@@ -27,8 +27,8 @@ resultados: [capa-anadida, devolucion, bloqueo, cancelacion]
 memoria_propia:
   - "CONVENTIONS.md — patrones técnicos vigentes, compartido con ARQ y VER"
   - "docs/construccion/DECISIONES.md — decisiones de implementación con su motivo"
-tablero: "estado/tableros/CON.md — paquetes en construcción"
-metodos: [CON/Implementacion, CON/Experimental]
+tablero: "estado/tableros/CNS.md — paquetes en construcción"
+metodos: [CNS/Implementacion, CNS/Experimental]
 checkpoint: "en el paquete, con qué está construido, qué falta y qué diferencias se han declarado"
 autoridad:
   decide_sola:
@@ -42,17 +42,17 @@ autoridad:
 owner:
   nivel: ninguna
   criterio: >
-    CON no tiene interacción con el Owner. Todo lo que necesitaría su juicio va por la
+    CNS no tiene interacción con el Owner. Todo lo que necesitaría su juicio va por la
     capacidad propietaria de esa materia. Un agente de construcción que conversa con el
     Owner sobre alcance o forma está ocupando una autoridad que no tiene.
-roles: [CON/implementacion, CON/experimental]
+roles: [CNS/implementacion, CNS/experimental]
 deriva_de:
-  - "a.3 · CON: no redecide capas anteriores; sin autoridad sobre forma ni intención"
-  - "b.16 · CON:experimental dentro de INV y de DIR"
-  - "diseno/02-RUBRICAS · gate:usabilidad se aplica también a las capas de CON: CON produce la evidencia, DIS/validacion-de-uso la juzga"
+  - "a.3 · CNS: no redecide capas anteriores; sin autoridad sobre forma ni intención"
+  - "b.16 · CNS:experimental dentro de INV y de DIR"
+  - "diseno/02-RUBRICAS · gate:usabilidad se aplica también a las capas de CNS: CNS produce la evidencia, DIS/validacion-de-uso la juzga"
 materializacion: >
   Se materializa en casi todos los items de producto. En AUD y DIR sólo entra como
-  CON:experimental, y nunca como construcción productiva (b.16).
+  CNS:experimental, y nunca como construcción productiva (b.16).
 retirada: >
   Los roles se retiran al depositar la capa y quedar aceptada por VER. CONVENTIONS.md
   persiste, compartido con ARQ y VER.
@@ -60,7 +60,7 @@ retirada: >
 
 ```yaml ads:gate
 id: gate:implementacion-completa
-aplica_a: "la capa de CON antes de pasar a verificación"
+aplica_a: "la capa de CNS antes de pasar a verificación"
 comprobaciones:
   - id: comportamiento-existe
     comprueba: "cada criterio de éxito de PRD tiene comportamiento construido que lo satisface"
@@ -100,7 +100,7 @@ evidencia:
   - "las diferencias declaradas con su fecha"
 fallo: >
   El paquete no pasa a VER. Si el fallo es que se redecidió una capa anterior, el paquete
-  vuelve a CON con la decisión ajena señalada: corregirla desde aquí sería repetir el fallo.
+  vuelve a CNS con la decisión ajena señalada: corregirla desde aquí sería repetir el fallo.
 ```
 
 Roles, métodos, prompts y composición: [`roles/`](roles/) · [`metodos/`](metodos/) ·

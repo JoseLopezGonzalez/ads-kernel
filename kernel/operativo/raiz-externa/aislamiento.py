@@ -14,12 +14,12 @@ ORDEN DE PREFERENCIA, y por qué el primero NO se usa aquí:
     1 · USUARIO DEL SISTEMA    lo mejor, y en este anfitrión NO ES POSIBLE: no hay `sudo` sin
         DISTINTO               contraseña y no se puede crear un usuario. La sonda lo
                                comprueba —no lo supone— y lo deja registrado como tal
-    2 · CONTENEDOR CON         SÍ es posible: `docker run --user <uid distinto> --network none
+    2 · CONTENEDOR CNS         SÍ es posible: `docker run --user <uid distinto> --network none
         IDENTIDAD DISTINTA Y   -v <repo>:/repo:ro`. La identidad del proceso verificador es
         MONTAJE DE SÓLO        otra —`65534`, y no la del runtime— y el árbol está montado de
         LECTURA                SÓLO LECTURA
     3 · ESPACIO DE NOMBRES     `unshare -Urm` con `mount --bind` y `mount -o remount,ro,bind`.
-        CON MONTAJE `ro`       Da el montaje de sólo lectura, y su LÍMITE se declara: el
+        CNS MONTAJE `ro`       Da el montaje de sólo lectura, y su LÍMITE se declara: el
                                usuario dentro del espacio se mapea al MISMO usuario del
                                anfitrión, luego demuestra la falta de permiso de ESCRITURA
                                pero NO una identidad distinta. Se conserva como RESPALDO

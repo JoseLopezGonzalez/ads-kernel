@@ -6,7 +6,7 @@ nombre: Dependencia
 capacidad: SEG
 disparador:
   - "un item de tipo DEP incorpora o actualiza una dependencia"
-  - "CON necesita una dependencia nueva para construir"
+  - "CNS necesita una dependencia nueva para construir"
 carga:
   - "la dependencia propuesta, con su versión exacta"
   - "docs/seguridad/DEPENDENCIAS.md"
@@ -69,7 +69,7 @@ gate: gate:seguridad-conforme
 salida:
   - "veredicto sobre la dependencia y entrada registrada"
 devolucion:
-  - "a CON o a ARQ, cuando existe alternativa dentro del sistema"
+  - "a CNS o a ARQ, cuando existe alternativa dentro del sistema"
 bloqueo:
   - "no hay forma de consultar avisos publicados para esa dependencia"
 cancelacion:

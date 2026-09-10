@@ -671,7 +671,7 @@ class LosDiezEscenarios(BaseDeContinua):
         self.assertIn("handoff:con-a-ver", continuado["2_verificar"]["handoffs_pendientes"])
         leida = rt.almacen.leer(handoffs.ruta_de(entrega["id"]))
         reanudacion = ciclo.reanudacion(leida)
-        self.assertEqual(reanudacion["custodia"], "CON")
+        self.assertEqual(reanudacion["custodia"], "CNS")
         self.assertIn("VER", reanudacion["siguiente_accion"])
 
         # Y DEJA DE ESTAR PENDIENTE EN CUANTO SE ACUSA. Sin esta mitad, la de arriba
@@ -714,7 +714,7 @@ class LosDiezEscenarios(BaseDeContinua):
         with self.assertRaises(ciclo.GateFallido) as capturado:
             ciclo.aplicar_gate(
                 "gate:evidencia-suficiente", corpus=self.corpus,
-                entrada={"paquete": paquete}, evidencia=[], revisor="VER", autor="CON",
+                entrada={"paquete": paquete}, evidencia=[], revisor="VER", autor="CNS",
                 comprobaciones_superadas=[],
             )
         dictamen = capturado.exception.dictamen

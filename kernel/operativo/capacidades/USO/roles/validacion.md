@@ -64,7 +64,7 @@ interaccion_roles:
   - "coordina con DIS/validacion-de-uso cuando la validación es de forma"
 independencia:
   requiere_independencia: true
-  de_quien: [CON/implementacion, DIS/diseno-interaccion]
+  de_quien: [CNS/implementacion, DIS/diseno-interaccion]
   motivo: >
     Quien construyó o diseñó el flujo lo recorre sin dudar y valida su memoria, no el
     producto.

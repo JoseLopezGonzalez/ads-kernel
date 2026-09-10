@@ -7,7 +7,7 @@ equipo. Este módulo lo ejecuta sobre las composiciones REALES del corpus.
 
 DECISIÓN · se derivan CAPACIDADES, y un MÉTODO nunca se usa como capacidad
     `C1` separa equipo, rol, agente y método. El corpus escribe participantes condicionales
-    como `DOM:condiciones`, `ARQ:diagnostico`, `DIS/Reconstruccion` o `CON:experimental`:
+    como `DOM:condiciones`, `ARQ:diagnostico`, `DIS/Reconstruccion` o `CNS:experimental`:
     la parte de la izquierda es una CAPACIDAD y la de la derecha un MÉTODO del directorio
     `capacidades/<CAP>/metodos/`. Materializar `DOM:condiciones` como si fuera una
     capacidad produciría un equipo de una capacidad inexistente; ignorar el método perdería
@@ -284,7 +284,7 @@ REPARTOS_DE_CLAUSULA = {
 # está prohibido» son dos diagnósticos distintos, y el segundo es el que hace falta.
 CLAUSULA_SIN_INTEGRADOR = "sin integrador"
 
-# La cláusula de `CON`: paralelismo de PAQUETES del mismo item, que remite a `a.5`.
+# La cláusula de `CNS`: paralelismo de PAQUETES del mismo item, que remite a `a.5`.
 CLAUSULA_DE_PARALELISMO_DE_PAQUETES = (
     "varios paquetes del mismo item pueden ir en paralelo si cumplen las seis condiciones "
     "de a.5")

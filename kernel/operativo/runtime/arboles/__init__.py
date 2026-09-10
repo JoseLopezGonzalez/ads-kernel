@@ -4,7 +4,7 @@
 Sede del punto: `docs/evolucion/11-ARQUITECTURA-INTEGRADA.md` §20.1, fila `V6-15`, y §20.5,
 que fija de dónde sale el conjunto y por qué NO se enumera a mano.
 
-    ENTRADA      los árboles adversariales que un gate publicó CON CABECERA PROPIA en su
+    ENTRADA      los árboles adversariales que un gate publicó CNS CABECERA PROPIA en su
                  documento inmutable, cada uno identificado por esa cabecera y por el
                  documento que la contiene. **Se DERIVA**, no se escribe
     SALIDA       la suite de regresión, con la procedencia —documento y cabecera— de cada

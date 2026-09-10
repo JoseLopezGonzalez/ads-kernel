@@ -31,7 +31,7 @@ DECISIÓN · `SEG` en la `FASE 0` entra SIN VÍA y CONSERVA su bloqueo
     con su bloqueo declarado, y NO como participante.
 
 DECISIÓN · `AUD` y `DEU` y `DEP` son PROCESOS y nunca aparecen como capacidades
-    Las quince son `APR ARQ CON DIS DOM DSP ENC ENT INV PLT PRD SEG SIS USO VER`. Confundir
+    Las quince son `APR ARQ CNS DIS DOM DSP ENC ENT INV PLT PRD SEG SIS USO VER`. Confundir
     el nombre de un proceso con el de una capacidad es el modo de fallo que `G1` corrigió, y
     `comprobar()` lo verifica fila a fila contra el censo del corpus.
 """
@@ -113,7 +113,7 @@ MACROCIRCUITOS = {
                 "propietario_global": "SIS",
                 "propietario_via": VIA_PROPIETARIA,
                 "participantes": [
-                    {"capacidad": "CON", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
+                    {"capacidad": "CNS", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                     {"capacidad": "VER", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                     {"capacidad": "APR", "via": VIA_CONDICIONAL, "condicion": "C-APR",
                      "motivo": "vía 3 de `§18`"},
@@ -149,7 +149,7 @@ MACROCIRCUITOS = {
                 "propietario_global": "SIS",
                 "propietario_via": VIA_PROPIETARIA,
                 "participantes": [
-                    {"capacidad": "CON", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
+                    {"capacidad": "CNS", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                     {"capacidad": "VER", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                     {"capacidad": "ENT", "via": VIA_CONDICIONAL,
                      "condicion": "el cambio modifica el runtime: activación segura y reversible",
@@ -158,7 +158,7 @@ MACROCIRCUITOS = {
                 "presencias": [
                     {"forma": PRESENCIA_EJECUTOR, "quien": "PLT",
                      "motivo": "MATERIALIZA (`C7:82`)"},
-                    {"forma": PRESENCIA_EJECUTOR, "quien": "CON",
+                    {"forma": PRESENCIA_EJECUTOR, "quien": "CNS",
                      "motivo": "con custodia hace rama, commit, push y PR (`C7:83`–`C7:86`)"},
                     {"forma": PRESENCIA_AUTORIDAD, "quien": "SEG",
                      "motivo": "puede bloquear el push (`C7:85`)"},
@@ -190,7 +190,7 @@ MACROCIRCUITOS = {
                 "propietario_global": "SIS",
                 "propietario_via": VIA_PROPIETARIA,
                 "participantes": [
-                    {"capacidad": "CON", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
+                    {"capacidad": "CNS", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                     {"capacidad": "VER", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                 ],
                 "presencias": [
@@ -249,7 +249,7 @@ MACROCIRCUITOS = {
                 "propietario_global": "ARQ",
                 "propietario_via": VIA_PROPIETARIA,
                 "participantes": [
-                    {"capacidad": "CON", "via": VIA_OBLIGATORIA,
+                    {"capacidad": "CNS", "via": VIA_OBLIGATORIA,
                      "motivo": "vía 2 por `cambio-construido`"},
                     {"capacidad": "VER", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                     {"capacidad": "DOM", "via": VIA_CONDICIONAL, "condicion": "C-DOM",
@@ -266,7 +266,7 @@ MACROCIRCUITOS = {
                 "presencias": [
                     {"forma": PRESENCIA_EJECUTOR, "quien": "PLT",
                      "motivo": "MATERIALIZA (`C7:82`)"},
-                    {"forma": PRESENCIA_EJECUTOR, "quien": "CON",
+                    {"forma": PRESENCIA_EJECUTOR, "quien": "CNS",
                      "motivo": "con custodia hace rama, commit, push y PR"},
                     {"forma": PRESENCIA_AUTORIDAD, "quien": "SEG",
                      "motivo": "puede bloquear el push"},
@@ -289,7 +289,7 @@ MACROCIRCUITOS = {
                 "propietario_global": "SIS",
                 "propietario_via": VIA_PROPIETARIA,
                 "participantes": [
-                    {"capacidad": "CON", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
+                    {"capacidad": "CNS", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                     {"capacidad": "VER", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                 ],
                 "presencias": [
@@ -321,7 +321,7 @@ MACROCIRCUITOS = {
                 "propietario_global": "SIS",
                 "propietario_via": VIA_PROPIETARIA,
                 "participantes": [
-                    {"capacidad": "CON", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
+                    {"capacidad": "CNS", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                     {"capacidad": "VER", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                     {"capacidad": "ENT", "via": VIA_CONDICIONAL,
                      "condicion": "el cambio modifica el runtime: activación segura y reversible",
@@ -346,7 +346,7 @@ MACROCIRCUITOS = {
                 "propietario_global": "ARQ",
                 "propietario_via": VIA_PROPIETARIA,
                 "participantes": [
-                    {"capacidad": "CON", "via": VIA_OBLIGATORIA,
+                    {"capacidad": "CNS", "via": VIA_OBLIGATORIA,
                      "motivo": "vía 2 por `cambio-construido`"},
                     {"capacidad": "VER", "via": VIA_OBLIGATORIA,
                      "motivo": "vía 2 de `§18`, y verifica `M7`"},
@@ -364,7 +364,7 @@ MACROCIRCUITOS = {
                 "presencias": [
                     {"forma": PRESENCIA_EJECUTOR, "quien": "PLT",
                      "motivo": "MATERIALIZA (`C7:82`)"},
-                    {"forma": PRESENCIA_EJECUTOR, "quien": "CON",
+                    {"forma": PRESENCIA_EJECUTOR, "quien": "CNS",
                      "motivo": "con custodia hace rama, commit, push y PR"},
                     {"forma": PRESENCIA_AUTORIDAD, "quien": "SEG",
                      "motivo": "puede bloquear el push"},
@@ -397,7 +397,7 @@ MACROCIRCUITOS = {
                 "propietario_global": "SIS",
                 "propietario_via": VIA_PROPIETARIA,
                 "participantes": [
-                    {"capacidad": "CON", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
+                    {"capacidad": "CNS", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                     {"capacidad": "VER", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                     {"capacidad": "ENT", "via": VIA_CONDICIONAL,
                      "condicion": "el cambio modifica el runtime: activación segura y reversible",
@@ -423,7 +423,7 @@ MACROCIRCUITOS = {
                 "propietario_global": "SIS",
                 "propietario_via": VIA_PROPIETARIA,
                 "participantes": [
-                    {"capacidad": "CON", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
+                    {"capacidad": "CNS", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                     {"capacidad": "VER", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                 ],
                 "presencias": [
@@ -447,7 +447,7 @@ MACROCIRCUITOS = {
                     {"capacidad": "SEG", "via": VIA_OBLIGATORIA,
                      "motivo": "vía 2 por `condiciones-de-seguridad`, ANTES de construir; "
                                "`G28` la hace irretirable"},
-                    {"capacidad": "CON", "via": VIA_OBLIGATORIA,
+                    {"capacidad": "CNS", "via": VIA_OBLIGATORIA,
                      "motivo": "vía 2 por `cambio-construido`"},
                     {"capacidad": "VER", "via": VIA_OBLIGATORIA, "motivo": "vía 2 de `§18`"},
                     {"capacidad": "DOM", "via": VIA_CONDICIONAL, "condicion": "C-DOM",
@@ -461,7 +461,7 @@ MACROCIRCUITOS = {
                 "presencias": [
                     {"forma": PRESENCIA_EJECUTOR, "quien": "PLT",
                      "motivo": "MATERIALIZA (`C7:82`) y participa además por la vía 1"},
-                    {"forma": PRESENCIA_EJECUTOR, "quien": "CON",
+                    {"forma": PRESENCIA_EJECUTOR, "quien": "CNS",
                      "motivo": "con custodia hace rama, commit, push y PR"},
                     {"forma": PRESENCIA_EJECUTOR, "quien": "ENT",
                      "motivo": "merge y convergencia"},
@@ -487,14 +487,14 @@ MACROCIRCUITOS = {
                 # HALLAZGO, declarado en vez de callado. La columna de participantes de
                 # `§18` para `U6` nombra sólo a `VER`, y el proceso que la MISMA fila mapea
                 # —`proceso:SIS`— declara `cambio-construido` entre sus `obligatorias`, con
-                # `CON` como capacidad productora. `§8.0` dice de la vía 2 que «entra
+                # `CNS` como capacidad productora. `§8.0` dice de la vía 2 que «entra
                 # SIEMPRE, y su obligación tiene que quedar SATISFECHA para cerrar», así que
-                # `CON` entra en `U6` la nombre `§18` o no: no es una elección de F6, es lo
+                # `CNS` entra en `U6` la nombre `§18` o no: no es una elección de F6, es lo
                 # que `b.16` obliga. No se toca `§18` —es norma y no es de esta zona— y no se
                 # esconde la diferencia: se declara aquí, y `test_macrocircuitos.py` la
                 # comprueba fila a fila para que deje de ser cierta el día que `§18` la
                 # recoja.
-                "participantes_obligatorios_derivados": ["CON"],
+                "participantes_obligatorios_derivados": ["CNS"],
                 "presencias": [
                     {"forma": PRESENCIA_AUTORIDAD, "quien": "OWNER",
                      "motivo": "autoridad si la revalidación baja el nivel"},

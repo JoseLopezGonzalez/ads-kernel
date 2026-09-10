@@ -24,7 +24,7 @@ hora de pared que `a.9` prohíbe en el estado canónico.
 enlace roto allí es el defecto que `E5` destapó: `kernel/operativo/contratos/C4-MATERIALIZACION.md`,
 sección «Cuántos agentes por rol»; `docs/rediseno/b-RECORRIDO-APROBADA.md`, sección
 «b.12 — Selección del siguiente trabajo, e inanición»; `kernel/operativo/capacidades/DIS/composicion.md`
-y `kernel/operativo/capacidades/CON/composicion.md` como corpus de datos.
+y `kernel/operativo/capacidades/CNS/composicion.md` como corpus de datos.
 
 **Ninguna de las veinte mira texto.** Todas mueven el código sobre el corpus real del
 kernel, sobre un control repo real con su catálogo de modelos y sobre un estado durable real
@@ -255,7 +255,7 @@ nombre: Un cardinal ilegible falla cerrado y nunca vale uno por omisión
 cubre: ["E-01", "C4 cuántos agentes por rol", "vocabulario cerrado del campo agentes"]
 dado:
   - "el vocabulario del campo agentes está enumerado y cerrado, derivado del censo del corpus"
-  - "el valor de CON declara paralelismo de paquetes del mismo item, no pluralidad de agentes"
+  - "el valor de CNS declara paralelismo de paquetes del mismo item, no pluralidad de agentes"
 cuando:
   - "se leen nueve formas que el lector no conoce"
   - "se recorre el censo completo del corpus real"
@@ -263,7 +263,7 @@ cuando:
 entonces:
   - "cada forma desconocida levanta cardinal de agentes ilegible"
   - "las veintidós formas del corpus se leen enteras"
-  - "el valor de CON se lee como un agente por paquete, con paralelismo de paquetes marcado"
+  - "el valor de CNS se lee como un agente por paquete, con paralelismo de paquetes marcado"
   - "el sabotaje se LEE como cardinal siete con reparto por artefacto e integrador negado"
   - "y la materialización cae por varios agentes sin integrador, que es una prohibición de C4, y no por ilegibilidad ni por la huella del kernel"
 falla_si:

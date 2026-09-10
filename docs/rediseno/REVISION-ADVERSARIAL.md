@@ -42,7 +42,7 @@ HECHO         la revisión la ejecutó el mismo agente que escribió el corpus, 
 
 ### H1 · Una composición se contradecía a sí misma *(grave)*
 
-`composicion:inv-con-experimento` declaraba `INV/investigacion` y `CON/experimental`
+`composicion:inv-con-experimento` declaraba `INV/investigacion` y `CNS/experimental`
 **combinables bajo condición** y **independientes** a la vez. C4 dice que ante conflicto
 manda `independientes`, con lo que la condición era letra muerta: había una combinación
 declarada que nunca podía ejecutarse, y quien la leyera creería que sí.

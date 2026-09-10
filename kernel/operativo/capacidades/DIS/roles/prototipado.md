@@ -43,7 +43,7 @@ herramientas:
   - "ejecución en dispositivo real"
   - "aislamiento del entorno respecto al producto"
 conocimientos:
-  - "las restricciones de CON:experimental de b.16"
+  - "las restricciones de CNS:experimental de b.16"
   - "el medio del pack y sus límites reales"
   - "cómo simular sin engañar a quien valida"
 perfil_agente: perfil:prototipado

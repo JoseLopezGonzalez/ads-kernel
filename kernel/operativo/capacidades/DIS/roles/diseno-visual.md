@@ -68,7 +68,7 @@ interaccion_roles:
   - "recibe dirección de DIS/direccion-artistica y material de las dos investigaciones"
   - "entrega la exploración a DIS/critica-visual antes de converger"
   - "coordina con DIS/sistema-de-diseno cuando propone ampliar el sistema"
-  - "entrega la especificación a DIS/prototipado y a CON"
+  - "entrega la especificación a DIS/prototipado y a CNS"
 independencia:
   requiere_independencia: true
   de_quien: [DIS/critica-visual]

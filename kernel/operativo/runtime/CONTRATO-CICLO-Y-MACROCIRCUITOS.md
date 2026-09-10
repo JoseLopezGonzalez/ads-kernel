@@ -166,7 +166,7 @@ POR QUÉ       el contador del freno dependería de un booleano que alguien pued
               mientras el estado es `emitido` y `devolver` sólo después del acuse
 ```
 
-**Las CINCO entregas que §8.0 declara** —`SIS`→`PLT`, `SIS`→`CON`, `SIS`→`VER`, `CON`→`ENT`,
+**Las CINCO entregas que §8.0 declara** —`SIS`→`PLT`, `SIS`→`CNS`, `SIS`→`VER`, `CNS`→`ENT`,
 `ENT`→`VER`— están materializadas con sus once campos y validadas contra el mismo esquema que
 las diecisiete de [`../circuitos/`](../circuitos/00-CIRCUITOS.md). Su sede definitiva es ese
 directorio; mientras no estén allí viven en el paquete, y el catálogo funde las dos fuentes

@@ -46,7 +46,7 @@ SÍ DEVUELVES  si el registro está INCOMPLETO
 cubrir se enumera, con lo que ese item debería cubrir. «Se hará luego» no es un item.
 
 **La construcción escondida.** Un DIR decide; no implementa. Comprueba que ningún paquete
-del DIR construyó funcionalidad productiva. Sólo `CON:experimental` es admisible, y sólo
+del DIR construyó funcionalidad productiva. Sólo `CNS:experimental` es admisible, y sólo
 antes de la decisión, para poder decidir.
 
 ---

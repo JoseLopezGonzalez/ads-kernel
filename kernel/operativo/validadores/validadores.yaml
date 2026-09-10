@@ -10,7 +10,7 @@
 # `comprobar_evidencia.py`. Ninguna de las dos acepta un nombre sin `.py`, y ninguna
 # publica una ejecución con código distinto de cero.
 
-# `G-06` · UNA FIRMA CON `\d+` ADMITE EL CERO, Y CERO NO ES EXITO
+# `G-06` · UNA FIRMA CNS `\d+` ADMITE EL CERO, Y CERO NO ES EXITO
 #
 #   El gate del 2026-09-05 lo midio: catorce componentes declaraban `firma_de_exito: '\d+ …'`,
 #   y `\d+` casa con `0`. Una evidencia que dijera «0 infracciones detectadas · 0 NO
@@ -44,6 +44,19 @@ componentes:
     evidencia: contratos-salida.txt
     firma_de_exito: '[1-9]\d* superadas · 0 fallidas'
     debe_contener: ['T86', 'T90', 'T136', 'T140', 'T141', 'T146']
+
+  - id: rutas-portables
+    script: comprobar_rutas_portables.py
+    tipo: validador
+    evidencia: rutas-portables-salida.txt
+    # Existe por UP-00. La capacidad de Construccion se llamaba antes con el
+    # nombre de dispositivo que Windows tiene reservado desde MS-DOS, y por eso
+    # `git clone` fallaba ENTERO alli: no fallaba un guion, no se podia obtener
+    # el repositorio. Nadie lo vio porque nadie habia ejecutado nada en
+    # Windows. Este validador corre en cualquier sistema: no hace falta un
+    # Windows para detectarlo, que fue justo lo que lo mantuvo escondido.
+    firma_de_exito: '\d+ superadas · 0 fallidas'
+    debe_contener: ['T153', 'T154']
 
   - id: packs
     script: comprobar_packs.py

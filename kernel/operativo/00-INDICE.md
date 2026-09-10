@@ -95,7 +95,7 @@ cuando aparece se resuelve **borrando la copia**, nunca sincronizando las dos.
 | | | | |
 |---|---|---|---|
 | [`ENC`](capacidades/ENC/CAPACIDAD.md) Encuadre | [`PRD`](capacidades/PRD/CAPACIDAD.md) Producto | [`DIS`](capacidades/DIS/CAPACIDAD.md) Diseño | [`ARQ`](capacidades/ARQ/CAPACIDAD.md) Arquitectura |
-| [`DOM`](capacidades/DOM/CAPACIDAD.md) Dominio | [`CON`](capacidades/CON/CAPACIDAD.md) Construcción | [`VER`](capacidades/VER/CAPACIDAD.md) Verificación | [`ENT`](capacidades/ENT/CAPACIDAD.md) Entrega |
+| [`DOM`](capacidades/DOM/CAPACIDAD.md) Dominio | [`CNS`](capacidades/CNS/CAPACIDAD.md) Construcción | [`VER`](capacidades/VER/CAPACIDAD.md) Verificación | [`ENT`](capacidades/ENT/CAPACIDAD.md) Entrega |
 | [`USO`](capacidades/USO/CAPACIDAD.md) Uso real | [`INV`](capacidades/INV/CAPACIDAD.md) Investigación | [`SEG`](capacidades/SEG/CAPACIDAD.md) Seguridad | [`PLT`](capacidades/PLT/CAPACIDAD.md) Plataforma |
 | [`APR`](capacidades/APR/CAPACIDAD.md) Aprendizaje | [`DSP`](capacidades/DSP/CAPACIDAD.md) Despacho | [`SIS`](capacidades/SIS/CAPACIDAD.md) Sistema | |
 

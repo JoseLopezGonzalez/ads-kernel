@@ -426,7 +426,7 @@ representa —o si hace falta uno más— es materia de la síntesis»*. Ya no h
 | produjo una conclusión sobre objetos existentes para que alguien decidiera | *«producir una CONCLUSIÓN sobre un objeto ya existente, para que alguien decida con ella»* |
 | `INV` recorrió ocho lentes y produjo 29 fichas con procedencia | obligatoria `conclusion-fundada`, `capacidad_productora: INV` |
 | el consumidor fue `SIS`, que decide qué entra al kernel | *«propietario_global DERIVADO del encargo: la capacidad responsable de la decisión que la consumirá»* |
-| no se escribió una línea en los proyectos minados | *«AUD no activa CON»* |
+| no se escribió una línea en los proyectos minados | *«AUD no activa CNS»* |
 | terminó en candidatos, no en producto | *«PUEDE cerrar en APR sin pasar por PRD»* |
 
 **La minería es un `AUD` con `SIS` como consumidor declarado. No hace falta un proceso
@@ -695,7 +695,7 @@ partida de F3.
 | § | propuesta | veredicto | destino y traza |
 |---|---|---|---|
 | 26.1 · 26.2 | calidad profesional no negociable; el presupuesto no rebaja el gate | **ACEPTADA, y en buena parte YA EXPRESABLE** | [`esquemas/rubrica.yaml`](../../kernel/operativo/esquemas/rubrica.yaml) existe *«para no reducir el juicio a una nota»*; `DICTAMEN` prohíbe el término medio; [`03-ESCALA-DE-NOVEDAD`](../../kernel/operativo/diseno/03-ESCALA-DE-NOVEDAD.md) escribe *«N0 no significa trabajo barato, acabado inferior ni verificación reducida»*. Lo que falta es extenderlo fuera de diseño |
-| 26.2 | spike, prototipo e implementación profesional son cosas distintas | **YA EXPRESABLE** | [`CON/Experimental`](../../kernel/operativo/capacidades/CON/metodos/Experimental.md) es *«construir para saber, no para entregar»*, y exige el criterio de descarte **antes de la primera línea**. Es más estricto que la tabla del §26.2 |
+| 26.2 | spike, prototipo e implementación profesional son cosas distintas | **YA EXPRESABLE** | [`CNS/Experimental`](../../kernel/operativo/capacidades/CNS/metodos/Experimental.md) es *«construir para saber, no para entregar»*, y exige el criterio de descarte **antes de la primera línea**. Es más estricto que la tabla del §26.2 |
 | 26.3 | coste por resultado aceptado y verificado | **ACEPTADA** | cambia la unidad de medida, y sin ella toda comparativa de modelos miente |
 | 26.4 | auditoría empírica del propio ADS | **ACEPTADA** | y es un `AUD` con `SIS` como consumidor: el mismo molde que `X4` |
 | 26.5 | prueba de utilidad de cada pieza | **ACEPTADA** | esta tabla es su primera aplicación |

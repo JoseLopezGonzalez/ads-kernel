@@ -32,9 +32,9 @@ autoridad:
   veta:
     - "el tránsito mientras haya evidencia en rojo"
   escala:
-    - "CON sostiene que cumple y la evidencia dice lo contrario: freno de a.7"
+    - "CNS sostiene que cumple y la evidencia dice lo contrario: freno de a.7"
 entradas:
-  - "la capa de CON con su commit y sus diferencias declaradas"
+  - "la capa de CNS con su commit y sus diferencias declaradas"
   - "los criterios de éxito de PRD"
   - "los dictámenes de DIS cuando hay superficie"
   - "los presupuestos y la matriz del pack"
@@ -56,19 +56,19 @@ memoria_consulta:
 memoria_actualiza:
   - "docs/verificacion/COBERTURA.md"
   - "docs/verificacion/REGRESIONES.md"
-  - "CONVENTIONS.md — patrones técnicos, con ARQ y CON"
+  - "CONVENTIONS.md — patrones técnicos, con ARQ y CNS"
 interaccion_owner:
   nivel: opcional-acumulada
   cuando:
     - "un criterio exige su juicio: entra en la cola de validación por lotes (G36)"
   formato: "la evidencia, no la pregunta: capturas y grabaciones que él pueda juzgar"
 interaccion_roles:
-  - "recibe de CON y le devuelve con evidencia"
+  - "recibe de CNS y le devuelve con evidencia"
   - "entrega el dosier a ENT y al propietario global"
   - "coaprueba patrones técnicos con ARQ o con DIS/sistema-de-diseno"
 independencia:
   requiere_independencia: true
-  de_quien: [CON/implementacion]
+  de_quien: [CNS/implementacion]
   motivo: >
     G13 deja de ser proporcional al riesgo y pasa a ser estructura por defecto de esta
     capacidad: quien construyó verifica lo que evitó, no lo que cometió.
@@ -81,7 +81,7 @@ salida:
   - "sección de no comprobado"
 gate: gate:evidencia-suficiente
 devolucion:
-  - "a CON, cuando la evidencia muestra que un criterio no se cumple"
+  - "a CNS, cuando la evidencia muestra que un criterio no se cumple"
   - "a DIS, cuando la regresión visual rompe una superficie fuera del alcance"
   - "a PRD, cuando el criterio de éxito no es verificable tal como está escrito"
 bloqueo:

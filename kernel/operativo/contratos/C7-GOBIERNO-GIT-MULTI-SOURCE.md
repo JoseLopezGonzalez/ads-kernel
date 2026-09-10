@@ -75,7 +75,7 @@ la misma política de nombres, que no es una propiedad que ADS pueda garantizar.
 ## Propiedad de cada operación
 
 Sin esta tabla, la responsabilidad se reparte de forma ambigua entre `PLT`, `ENT`, `DSP` y
-`CON`, que es exactamente el defecto que este contrato existe para cerrar.
+`CNS`, que es exactamente el defecto que este contrato existe para cerrar.
 
 | operación | la solicita | la ejecuta | puede bloquearla | la verifica | evidencia |
 |---|---|---|---|---|---|

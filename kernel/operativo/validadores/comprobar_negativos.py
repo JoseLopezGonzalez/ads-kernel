@@ -323,14 +323,14 @@ def m_dsp_decide_cancelar(raiz):
 
 def m_rol_decide_de_mas(raiz):
     """A-18 · un rol se concede lo que su capacidad ESCALA."""
-    _sustituir(raiz, "kernel/operativo/capacidades/CON/roles/implementacion.md",
+    _sustituir(raiz, "kernel/operativo/capacidades/CNS/roles/implementacion.md",
                "  decide:",
                '  decide:\n    - "la implementación exige una decisión de forma, alcance o dominio"')
 
 
 def m_rol_decide_materia_ajena(raiz):
     """A-18 · un rol se concede la materia declarada por otra capacidad."""
-    _sustituir(raiz, "kernel/operativo/capacidades/CON/roles/implementacion.md",
+    _sustituir(raiz, "kernel/operativo/capacidades/CNS/roles/implementacion.md",
                "  decide:",
                '  decide:\n    - "los valores del sistema de diseño: escala, ritmo, roles de color, elevación"')
 
@@ -409,18 +409,18 @@ def m_exclusion_caducada(raiz):
 
 
 def m_con_sin_usabilidad(raiz):
-    """A-13 · se rompe el vínculo entre CON y gate:usabilidad.
+    """A-13 · se rompe el vínculo entre CNS y gate:usabilidad.
 
     Era el único hallazgo grave sin infracción deliberada, y por tanto el único cuya
     prueba nunca se había visto fallar.
     """
-    _sustituir(raiz, "kernel/operativo/capacidades/CON/CAPACIDAD.md",
+    _sustituir(raiz, "kernel/operativo/capacidades/CNS/CAPACIDAD.md",
                "  - id: superficie-usable", "  - id: superficie-construida")
 
 
 def m_con_usabilidad_sin_juez(raiz):
     """A-13 · el vínculo existe pero no dice QUIÉN juzga: lo juzgaría quien la produjo."""
-    _sustituir(raiz, "kernel/operativo/capacidades/CON/CAPACIDAD.md",
+    _sustituir(raiz, "kernel/operativo/capacidades/CNS/CAPACIDAD.md",
                "el dictamen de los seis ejes lo emite DIS/validacion-de-uso, que no la produjo",
                "el dictamen de los seis ejes se emite al cerrar")
 
@@ -613,7 +613,7 @@ def m_prompt_sin_gate(raiz):
 
 def m_prompt_habla_con_owner(raiz):
     """Revisión de prompts · un prompt instruye conversar con el Owner sin autoridad."""
-    _sustituir(raiz, "kernel/operativo/capacidades/CON/prompts/implementacion.md",
+    _sustituir(raiz, "kernel/operativo/capacidades/CNS/prompts/implementacion.md",
                "## Cómo cierras",
                "Si dudas del alcance, pregunta al Owner qué prefiere.\n\n## Cómo cierras")
 
@@ -1301,7 +1301,7 @@ CATALOGO = [
              "una composición no comparable se resuelve en silencio en vez de fallar",
              m_composicion_incompatible_silenciosa),
     Mutacion("N144", "A-13", "T144", "comprobar_contratos",
-             "se rompe el vínculo entre CON y gate:usabilidad",
+             "se rompe el vínculo entre CNS y gate:usabilidad",
              m_con_sin_usabilidad),
     Mutacion("N144b", "A-13", "T144", "comprobar_contratos",
              "el vínculo existe pero deja de decir quién juzga la evidencia",

@@ -51,7 +51,7 @@ LEÍDOS ÍNTEGROS
   kernel/operativo/entrada/00-INDICE · 02-CIRCUITO · 04-INCERTIDUMBRE · 05-ESCENARIOS (parcial)
   kernel/operativo/diseno/00 · 02 · 03 · 04 · 05
   kernel/operativo/circuitos/00-CIRCUITOS.md
-  kernel/operativo/capacidades/{ENC,DSP,DIS,CON,APR}/CAPACIDAD.md
+  kernel/operativo/capacidades/{ENC,DSP,DIS,CNS,APR}/CAPACIDAD.md
   kernel/operativo/capacidades/DIS/metodos/Fundacion.md · DSP/metodos/{Continua,Enrutamiento}.md
   kernel/operativo/capacidades/DIS/roles/critica-visual.md · DSP/roles/estado.md
   kernel/operativo/capacidades/DIS/prompts/critica-visual.md
@@ -589,21 +589,21 @@ por defecto de `ads_lint` a la raíz del repositorio para enlaces y vocabulario.
 
 ---
 
-#### A-13 · DEFECTO — `gate:usabilidad` declara aplicarse a las capas de `CON`, y ninguna ficha, rol o método de `CON` lo vincula
+#### A-13 · DEFECTO — `gate:usabilidad` declara aplicarse a las capas de `CNS`, y ninguna ficha, rol o método de `CNS` lo vincula
 
 **Evidencia.** `diseno/02-RUBRICAS.md`:
 
 ```yaml
 id: gate:usabilidad
-aplica_a: "toda capa de DIS o de CON que produce o modifica una superficie usable"
+aplica_a: "toda capa de DIS o de CNS que produce o modifica una superficie usable"
 ```
 
 Todas las vinculaciones existentes son de DIS: `DIS/roles/{investigacion-ux, diseno-interaccion,
 prototipado, validacion-de-uso}`, `DIS/metodos/ValidacionDeUso` y `packs/mobile-app/roles/
-interaccion-tactil.md` (que es `mob:DIS/...`, capacidad DIS). El gate de `CON` es
+interaccion-tactil.md` (que es `mob:DIS/...`, capacidad DIS). El gate de `CNS` es
 `gate:implementacion-completa`, cuyas siete comprobaciones no incluyen ningún eje de
-usabilidad, y ningún rol de CON —ni del kernel (`CON/implementacion`, `CON/experimental`) ni
-de pack (`web:CON/estados-de-red`, `mob:CON/ciclo-de-vida`, `wear:CON/energia-y-estados`)—
+usabilidad, y ningún rol de CNS —ni del kernel (`CNS/implementacion`, `CNS/experimental`) ni
+de pack (`web:CNS/estados-de-red`, `mob:CNS/ciclo-de-vida`, `wear:CNS/energia-y-estados`)—
 declara `gate: gate:usabilidad`.
 
 **Consecuencia práctica.** La mitad del `aplica_a` de un gate obligatorio no tiene ningún
@@ -774,9 +774,9 @@ cuando: "un item cierra con learning_candidate != none, o ha habido un incidente
 
 El disparador es el **cierre del item** (b.10), no la capa de USO; y `USO` es condicional
 (`C-USO`), de modo que en `DEF`, `DEU`, `SIS` o `INV` sin fuente de uso real el handoff
-declarado no tiene emisor. Además **no existe `handoff:con-a-ver`**, pese a que `CON → VER`
-aparece en las diez rutas de b.16 y `00-CIRCUITOS.md` le dedica una fila explícita («CON → VER
-· diferencias declaradas antes de la revisión · infiel: vuelve a CON con la comparación»). C5
+declarado no tiene emisor. Además **no existe `handoff:con-a-ver`**, pese a que `CNS → VER`
+aparece en las diez rutas de b.16 y `00-CIRCUITOS.md` le dedica una fila explícita («CNS → VER
+· diferencias declaradas antes de la revisión · infiel: vuelve a CNS con la comparación»). C5
 permite que un par no tenga handoff declarado, pero `00-CIRCUITOS.md` dice que los declarados
 son «aquellos donde hace falta precisión extra», y este es el tránsito más frecuente del
 sistema. **Corrección:** retipar el emisor de `cierre-a-apr` y declarar `handoff:con-a-ver`.
@@ -1074,10 +1074,10 @@ A-06  DIS y DOM se arbitran un veto que a.5 reserva al Owner
         texto de un campo.
 
 A-11  el encuadre no puede declarar `esperando-owner`
-A-13  gate:usabilidad se declara aplicable a CON y nada lo vincula
+A-13  gate:usabilidad se declara aplicable a CNS y nada lo vincula
 A-15  ENC/Critica no está en la ficha de su capacidad
 A-16  C4 invoca composicion:dis-fundacion, que no existe
-A-22  handoff mal tipado, y falta el handoff CON→VER
+A-22  handoff mal tipado, y falta el handoff CNS→VER
       → CINCO DEFECTOS DE REFERENCIA CRUZADA que ningún validador cubre: ads_lint resuelve
         las refs declaradas y los enlaces markdown, pero no la coherencia entre lo que un
         esquema PERMITE y lo que la prosa EXIGE, ni los identificadores citados dentro de
@@ -1214,7 +1214,7 @@ A-23  DSP/estado DECIDE UNA CANCELACIÓN
       introducido el kernel operativo. Si es así, la corrección es una frase en (b), no en
       el rol, y es materia del Owner.
 
-A-13  gate:usabilidad Y LAS CAPAS DE CON
+A-13  gate:usabilidad Y LAS CAPAS DE CNS
       Cabe que la intención sea que sobre lo construido la usabilidad la compruebe VER a
       través de su dosier, y que el `aplica_a` esté simplemente mal redactado. No he
       encontrado nada que lo diga, pero es una lectura razonable.

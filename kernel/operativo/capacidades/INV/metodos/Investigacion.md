@@ -37,7 +37,7 @@ pasos:
     nombre: MEDIR CONTRA LO REAL
     modo: lineal
     hace: >
-      Cuando la pregunta lo exige, encargar a CON/experimental un spike contra el entorno
+      Cuando la pregunta lo exige, encargar a CNS/experimental un spike contra el entorno
       real, con la evidencia declarada antes de construirlo.
     produce: "medición o experimento con su evidencia"
     termina_cuando: "la medición existe, o está escrito que no era necesaria y por qué"
@@ -59,7 +59,7 @@ artefactos:
 puntos_owner:
   - "ninguno: la evidencia la presenta la capacidad propietaria de la materia"
 consultas:
-  - "CON/experimental: construir el spike declarado, con la evidencia que debe producir"
+  - "CNS/experimental: construir el spike declarado, con la evidencia que debe producir"
   - "la capacidad que preguntó: ¿esta reformulación sigue sirviendo para tu decisión? Responde sí o no"
 checkpoints:
   - "tras cada paso"

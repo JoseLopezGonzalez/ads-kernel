@@ -17,7 +17,7 @@ independientes:
     de: ["ninguno en esta composición: no hay experimento que sesgar"]
     motivo: "se declara expresamente para que la ausencia de separación sea una decisión y no un olvido"
 ampliacion: >
-  Si contestar exige medir contra el entorno real, se añade CON/experimental y la
+  Si contestar exige medir contra el entorno real, se añade CNS/experimental y la
   composición pasa a inv-con-experimento.
 reduccion: "no admite reducción."
 retirada: "al entregar el informe al consumidor declarado."
@@ -34,12 +34,12 @@ roles:
   - rol: INV/investigacion
     obligatorio: true
     agentes: "1"
-  - rol: CON/experimental
+  - rol: CNS/experimental
     obligatorio: true
     agentes: "1"
 combinables: []
 independientes:
-  - rol: CON/experimental
+  - rol: CNS/experimental
     de: [INV/investigacion]
     motivo: >
       quien formula la hipótesis tiende a construir el experimento que la confirma, y la
@@ -48,7 +48,7 @@ ampliacion: >
   Dos experimentos alternativos en paralelo cuando hay que comparar dos caminos, con el
   criterio de comparación escrito antes de empezar.
 reduccion: >
-  CON/experimental se retira si al acotar la pregunta resulta que puede contestarse con
+  CNS/experimental se retira si al acotar la pregunta resulta que puede contestarse con
   fuentes; entonces la composición vuelve a inv-documental.
 retirada: "al entregar el informe y ejecutar el criterio de descarte del experimento."
 ```
@@ -64,11 +64,11 @@ roles:
   - rol: INV/investigacion
     obligatorio: true
     agentes: "1"
-  - rol: CON/experimental
+  - rol: CNS/experimental
     obligatorio: true
     agentes: "el mismo agente que investigacion"
 combinables:
-  - roles: [INV/investigacion, CON/experimental]
+  - roles: [INV/investigacion, CNS/experimental]
     motivo: "en un experimento corto y reversible, formular y medir son el mismo trabajo y separarlos es ceremonia"
 independientes:
   - rol: INV/investigacion
@@ -79,7 +79,7 @@ independientes:
       excede al del error
 ampliacion: >
   Si al trabajar resulta que la decisión NO es reversible, la composición pasa a
-  inv-con-experimento y CON/experimental se separa en otro agente ANTES de medir.
+  inv-con-experimento y CNS/experimental se separa en otro agente ANTES de medir.
 reduccion: "no admite reducción."
 retirada: "al entregar el informe y ejecutar el criterio de descarte."
 ```

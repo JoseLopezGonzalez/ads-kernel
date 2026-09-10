@@ -84,7 +84,7 @@ Hace falta un resultado DISTINTO    → nace un ITEM NUEVO, enlazado al original
 ```
 
 Nunca dos procesos sobre el mismo item. Pero esto **no** limita qué capacidades puede
-activar una ruta: ver `CON:experimental` en b.16.
+activar una ruta: ver `CNS:experimental` en b.16.
 
 ---
 
@@ -872,17 +872,17 @@ C-VER   la auditoría debe producir una celda de cobertura VERIFICADA, es decir 
         activan                                                              [E4]
 ```
 
-### DOM y SEG participan dos veces, y nunca a la vez que CON
+### DOM y SEG participan dos veces, y nunca a la vez que CNS
 
 ```text
-<CAP>:condiciones   ⊳ CON     RESTRICCIONES ANTES de construir. Consulta.
+<CAP>:condiciones   ⊳ CNS     RESTRICCIONES ANTES de construir. Consulta.
 <CAP>:revisión      tras VER  revisan lo construido. Consulta o gate conjunto.
 ```
 
 Construir primero y consultar después es cómo se producen las migraciones que hay que
 rehacer y los fallos de autorización que se descubren en revisión.
 
-### `CON:experimental` — Construcción dentro de una investigación
+### `CNS:experimental` — Construcción dentro de una investigación
 
 El proceso lo determina el **resultado perseguido** (b.1), no las capacidades usadas. Una
 ruta `INV` **PUEDE** activar Construcción para producir un spike, un prototipo desechable,
@@ -890,7 +890,7 @@ un simulador, un banco de pruebas, instrumentación o código experimental neces
 obtener evidencia. **El item sigue siendo INV**, porque su salida comprometida es
 conocimiento.
 
-`CON:experimental` opera con custodia, gate y checkpoint normales, y estas restricciones:
+`CNS:experimental` opera con custodia, gate y checkpoint normales, y estas restricciones:
 
 ```text
 [ ] el artefacto queda IDENTIFICADO como experimental
@@ -928,16 +928,16 @@ DSP **no tiene autoridad semántica**. Regla, en orden:
 
 | tipo | propietario global | obligatorias | condicionales |
 |---|---|---|---|
-| **FEA** capacidad nueva | PRD | PRD · CON · VER | DIS `C-DIS` · ARQ `C-ARQ` · DOM/SEG:condiciones `C-DOM`/`C-SEG` · ENT `C-ENT` · USO `C-USO` · APR `C-APR` |
-| **GAP** expectativa o calidad ausente respecto a algo existente | PRD | PRD · CON · VER | idénticas a FEA. **Misma plantilla de ruta, proceso distinto** — ver abajo |
-| **DEF** defecto | ARQ si `C-ARQ`, si no CON | CON · VER | **DIS `C-DIS`** · ARQ `C-ARQ` · ENT `C-ENT` · USO `C-USO` · APR `C-APR` · PRD sólo si el diagnóstico revela `C-PRD` → cambia el proceso (b.1) |
-| **INC** incidente en uso real | ENT | ENT(contención) · ARQ(diagnóstico) · CON · VER · ENT(reentrega) · **APR obligatorio** | SEG:condiciones `C-SEG` · USO `C-USO`. *Único tipo con APR obligatorio: un incidente sin aprendizaje registrado se repite* |
-| **INV** investigación | INV | INV | **CON:experimental** cuando la evidencia exija construir · PRD o ARQ según destino declarado · APR `C-APR` · **DOM `C-DOM` · SEG `C-SEG` · DIS `C-DIS`, cuando la materia del descubrimiento lo requiera** `[E4]` |
-| **DEU** deuda técnica | ARQ | ARQ · CON · VER | DOM/SEG:condiciones · ENT `C-ENT` · **USO `C-USO`** · APR `C-APR` |
-| **DEP** dependencia | PLT | **SEG:condiciones ⊳ CON** · VER | DOM:condiciones `C-DOM` · ENT `C-ENT` · ARQ si el cambio de versión altera contratos. *SEG antes de construir es obligatorio aquí (G28)* |
+| **FEA** capacidad nueva | PRD | PRD · CNS · VER | DIS `C-DIS` · ARQ `C-ARQ` · DOM/SEG:condiciones `C-DOM`/`C-SEG` · ENT `C-ENT` · USO `C-USO` · APR `C-APR` |
+| **GAP** expectativa o calidad ausente respecto a algo existente | PRD | PRD · CNS · VER | idénticas a FEA. **Misma plantilla de ruta, proceso distinto** — ver abajo |
+| **DEF** defecto | ARQ si `C-ARQ`, si no CNS | CNS · VER | **DIS `C-DIS`** · ARQ `C-ARQ` · ENT `C-ENT` · USO `C-USO` · APR `C-APR` · PRD sólo si el diagnóstico revela `C-PRD` → cambia el proceso (b.1) |
+| **INC** incidente en uso real | ENT | ENT(contención) · ARQ(diagnóstico) · CNS · VER · ENT(reentrega) · **APR obligatorio** | SEG:condiciones `C-SEG` · USO `C-USO`. *Único tipo con APR obligatorio: un incidente sin aprendizaje registrado se repite* |
+| **INV** investigación | INV | INV | **CNS:experimental** cuando la evidencia exija construir · PRD o ARQ según destino declarado · APR `C-APR` · **DOM `C-DOM` · SEG `C-SEG` · DIS `C-DIS`, cuando la materia del descubrimiento lo requiera** `[E4]` |
+| **DEU** deuda técnica | ARQ | ARQ · CNS · VER | DOM/SEG:condiciones · ENT `C-ENT` · **USO `C-USO`** · APR `C-APR` |
+| **DEP** dependencia | PLT | **SEG:condiciones ⊳ CNS** · VER | DOM:condiciones `C-DOM` · ENT `C-ENT` · ARQ si el cambio de versión altera contratos. *SEG antes de construir es obligatorio aquí (G28)* |
 | **AUD** auditoría de proyecto existente | derivado del encargo — ver abajo | INV | DOM `C-DOM` · SEG `C-SEG` · **DIS `C-DIS`** `[E4]` · **VER `C-VER`, productora del DICTAMEN** `[E4]` · PRD **sólo si produce una decisión de producto**. *Puede cerrar en APR sin pasar por PRD: su resultado legítimo es conocimiento e items nuevos* |
-| **DIR** cambio de dirección (G51) | según la regla de arriba | ARQ(radio de impacto) · capacidades propietarias de las decisiones afectadas · **OWNER en el punto de decisión** · registro de decisiones sustituidas · criterio de éxito · **creación de los items derivados** · **`VER:decisión`** | DIS `C-DIS` · `CON:experimental` sólo si hace falta un prototipo PARA DECIDIR · APR `C-APR`. **CON, VER, ENT y USO productivos NO son obligatorios** — ver abajo |
-| **SIS** evolución del sistema | SIS | SIS · CON · VER | **ENT obligatorio si modifica el runtime** (activación segura y reversible) · APR `C-APR` · **DOM:condiciones `C-DOM` · SEG:condiciones `C-SEG` · DIS `C-DIS`, cuando la materia del descubrimiento lo requiera** `[E4]`. Sujeto al freno de racha SIS (a.7) |
+| **DIR** cambio de dirección (G51) | según la regla de arriba | ARQ(radio de impacto) · capacidades propietarias de las decisiones afectadas · **OWNER en el punto de decisión** · registro de decisiones sustituidas · criterio de éxito · **creación de los items derivados** · **`VER:decisión`** | DIS `C-DIS` · `CNS:experimental` sólo si hace falta un prototipo PARA DECIDIR · APR `C-APR`. **CNS, VER, ENT y USO productivos NO son obligatorios** — ver abajo |
+| **SIS** evolución del sistema | SIS | SIS · CNS · VER | **ENT obligatorio si modifica el runtime** (activación segura y reversible) · APR `C-APR` · **DOM:condiciones `C-DOM` · SEG:condiciones `C-SEG` · DIS `C-DIS`, cuando la materia del descubrimiento lo requiera** `[E4]`. Sujeto al freno de racha SIS (a.7) |
 
 ### `AUD` — el propietario global se deriva del encargo
 
@@ -1027,7 +1027,7 @@ estaciones artificiales para diferenciarlos.
 
 El resultado perseguido de un DIR es **decidir y registrar una nueva dirección con
 conocimiento de su impacto**. No es implementar todo lo que se deriva de ella. Aplicando
-b.1 —el proceso lo determina el resultado perseguido— `CON` y `VER` **productivos dejan de
+b.1 —el proceso lo determina el resultado perseguido— `CNS` y `VER` **productivos dejan de
 ser obligatorios**.
 
 **Obligatorio en DIR:**
@@ -1050,7 +1050,7 @@ Uso real. La ejecución de la dirección aprobada se materializa mediante **item
 enlazados** —FEA, GAP, DEU, SIS o el que corresponda— que continúan de forma independiente
 y **paralelizable**.
 
-`CON` sólo entra en un DIR como **`CON:experimental`**, cuando el propio proceso declara
+`CNS` sólo entra en un DIR como **`CNS:experimental`**, cuando el propio proceso declara
 que necesita un prototipo **para poder decidir**: produce evidencia, no implementación
 productiva. **Ninguna construcción productiva puede vivir dentro de un DIR.**
 
@@ -1099,7 +1099,7 @@ radio de impacto
 → cierre de DIR
 ```
 
-`CON:experimental` puede existir **antes** de la decisión, cuando haga falta evidencia para
+`CNS:experimental` puede existir **antes** de la decisión, cuando haga falta evidencia para
 decidir.
 
 > **DIR no es un macro-item que decide, construye y despliega una transformación
@@ -1115,9 +1115,9 @@ recorrido, de forma independiente y paralelizable.
 ```text
 DEF  activa DIS por C-DIS, sin volverse FEA · no activa PRD salvo cambio de proceso
 DEP  no activa PRD ni DIS; SEG va ANTES de construir
-INV  activa CON:experimental sin dejar de ser INV, y PUEDE cerrar sin segundo item
+INV  activa CNS:experimental sin dejar de ser INV, y PUEDE cerrar sin segundo item
 DEU  PUEDE activar USO sin cambiar de proceso
-AUD  no activa CON, y puede cerrar en APR sin pasar por PRD
+AUD  no activa CNS, y puede cerrar en APR sin pasar por PRD
 INC  es el único con APR obligatorio
 DIR  el propietario global NUNCA lo elige DSP · DECIDE, no implementa: la ejecución va
      en items enlazados · su DECISIÓN sí se verifica, con `VER:decisión`
@@ -1133,7 +1133,7 @@ GAP  comparte grafo con FEA y es un proceso distinto por intención, entrada, en
 forma nueva) · `C-ARQ` falso · `C-USO` falso:
 
 ```text
-DEF · errata:   CON → VER  [→ ENT si C-ENT]
+DEF · errata:   CNS → VER  [→ ENT si C-ENT]
 ```
 
 La misma regla de derivación aplicada a un item pequeño, con la misma traza de
@@ -1184,7 +1184,7 @@ T37 COLA VACÍA         Con la cola vacía el sistema NO inventó trabajo: recor
 T38 RECOMPOSICIÓN      Ninguna recomposición borró una capa. Ninguna reinició un paquete
                        `en curso` que sobrevivía en la ruta nueva.
 
-T39 INV AUTOSUFICIENTE Un INV usa `CON:experimental`, produce evidencia y CIERRA SIN
+T39 INV AUTOSUFICIENTE Un INV usa `CNS:experimental`, produce evidencia y CIERRA SIN
                        generar un segundo item.                                  [nueva]
 
 T40 PROTOTIPO NO       Un artefacto experimental sólo entra en el producto mediante un
@@ -1311,7 +1311,7 @@ T73 ENLACE DERIVADO    Cada item derivado de un DIR enlaza la DECISIÓN CONCRETA
                        ejecuta, y el propio DIR.                                  [nueva]
 
 T74 DIR SIN            Una implementación PRODUCTIVA introducida dentro de un DIR hace
-    CONSTRUCCIÓN       FALLAR la conformidad. Sólo `CON:experimental` es admisible, y
+    CONSTRUCCIÓN       FALLAR la conformidad. Sólo `CNS:experimental` es admisible, y
     PRODUCTIVA         sólo antes de la decisión.                                 [nueva]
 ```
 

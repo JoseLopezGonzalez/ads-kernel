@@ -63,7 +63,7 @@ interaccion_owner:
   formato: "la grabación, nunca la descripción escrita"
 interaccion_roles:
   - "recibe estados y flujo de DIS/diseno-interaccion"
-  - "entrega la especificación grabada a CON"
+  - "entrega la especificación grabada a CNS"
   - "aporta las grabaciones a DIS/revision-de-fidelidad"
 independencia:
   requiere_independencia: false
@@ -81,7 +81,7 @@ salida:
 gate: gate:excelencia-visual
 devolucion:
   - "a DIS/diseno-interaccion, cuando faltan estados que la transición necesita conectar"
-  - "a CON, cuando lo construido cambia duración o curva sin evidencia de imposibilidad"
+  - "a CNS, cuando lo construido cambia duración o curva sin evidencia de imposibilidad"
 bloqueo:
   - "no hay dispositivo real disponible y el pack exige medición en hardware"
 veto: ""

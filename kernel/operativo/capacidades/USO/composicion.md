@@ -14,7 +14,7 @@ roles:
 combinables: []
 independientes:
   - rol: USO/validacion
-    de: [CON/implementacion]
+    de: [CNS/implementacion]
     motivo: "quien construyó interpreta la telemetría a favor de que su cambio ha funcionado"
 ampliacion: >
   Si la evidencia no basta para el criterio, se añade un plan de validación humana y la
@@ -37,7 +37,7 @@ roles:
 combinables: []
 independientes:
   - rol: USO/validacion
-    de: [CON/implementacion, DIS/diseno-interaccion]
+    de: [CNS/implementacion, DIS/diseno-interaccion]
     motivo: >
       quien construyó o diseñó el flujo lo recorre sin dudar: validaría su memoria, no el
       producto

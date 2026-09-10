@@ -109,7 +109,7 @@ adjudicación.**
 | 16 | `kernel/operativo/00-INDICE.md` | `fa3affa7b2bebc00` | 140 | H |
 | 17 | `kernel/operativo/capacidades/APR/CAPACIDAD.md` | `a870911530909584` | 96 | H |
 | 18 | `kernel/operativo/capacidades/ARQ/CAPACIDAD.md` | `6ca11b5f09883e24` | 105 | H |
-| 19 | `kernel/operativo/capacidades/CON/CAPACIDAD.md` | `e0f79e6c3a467302` | 108 | H |
+| 19 | `kernel/operativo/capacidades/CNS/CAPACIDAD.md` | `e0f79e6c3a467302` | 108 | H |
 | 20 | `kernel/operativo/capacidades/DIS/CAPACIDAD.md` | `06f019010d45771f` | 148 | H |
 | 21 | `kernel/operativo/capacidades/DOM/CAPACIDAD.md` | `926c7144cb098caa` | 136 | H |
 | 22 | `kernel/operativo/capacidades/DSP/CAPACIDAD.md` | `acb292f882e77d74` | 153 | H |
@@ -580,7 +580,7 @@ en el punto 6 y en el hallazgo `M-3`.
     SÍ. L1738-1739 lo dice expresamente, y §3.6 L3801 lo mantiene entre los campos
     OBLIGATORIOS de `preparada`. Las dos sedes son compatibles.
 
-2 · ¿LOS CANÓNICOS RESTAURADOS CASAN CON `hash_previo` / la revisión base?
+2 · ¿LOS CANÓNICOS RESTAURADOS CASAN CNS `hash_previo` / la revisión base?
     SÍ. Paso C (L1703-1709) restaura desde `revision_base` EXACTA, incluidos los que ya
     habían alcanzado su hash posterior; paso D verifica byte a byte; y el commit lleva «el
     estado canónico RESTAURADO A LA BASE — idéntico, byte a byte, al del commit anterior en
@@ -1026,7 +1026,7 @@ de inmutabilidad se respetó. **SUPERADA.**
 
 ---
 
-**Recuento de mis trece filas: DIEZ SUPERADAS · DOS FALLIDAS (`A7`, `A8`) · UNA SUPERADA CON
+**Recuento de mis trece filas: DIEZ SUPERADAS · DOS FALLIDAS (`A7`, `A8`) · UNA SUPERADA CNS
 RESERVA DECLARADA (`A2`). NINGUNA no aplicable.**
 
 ---
@@ -1418,7 +1418,7 @@ que `D50` eliminó.**
 fichero y su línea para que se verifique una a una.
 
 ```text
-FILAS DE MI MATERIA        13 · 10 SUPERADAS · 2 FALLIDAS (`A7`, `A8`) · 1 SUPERADA CON
+FILAS DE MI MATERIA        13 · 10 SUPERADAS · 2 FALLIDAS (`A7`, `A8`) · 1 SUPERADA CNS
                            RESERVA DECLARADA (`A2`) · 0 no aplicables
 
 HALLAZGOS NUEVOS           10 · 0 BLOQUEANTES · 3 GRAVES (`G-1` `G-2` `G-3`) ·
@@ -1541,7 +1541,7 @@ SHA-256 (16 primeros) y líneas, calculados sobre el árbol en `HEAD`.
 adorno. Sus SHA-16 y líneas:
 
 ```text
-APR a870911530909584/95   ARQ 6ca11b5f09883e24/104  CON e0f79e6c3a467302/107
+APR a870911530909584/95   ARQ 6ca11b5f09883e24/104  CNS e0f79e6c3a467302/107
 DIS 06f019010d45771f/147  DOM 926c7144cb098caa/135  DSP acb292f882e77d74/152
 ENC f71b8e43f6e2d66f/174  ENT 91a81d3cf1cbfa61/123  INV 47412638e7552da1/96
 PLT a5f87977c58ed1d0/108  PRD e83b0e08272e219d/105  SEG 19bfd38a7a24b57f/135
@@ -1592,14 +1592,14 @@ grep -rho 'memoria:[a-z0-9-]*' kernel/ docs/ | sort -u
 
 | magnitud | declarado por F4 / el checkpoint | derivado por mí | veredicto |
 |---|---|---|---|
-| capacidades | quince: `APR ARQ CON DIS DOM DSP ENC ENT INV PLT PRD SEG SIS USO VER` (§18 L7666) | quince directorios, quince `CAPACIDAD.md`, quince `id:` | **COINCIDE** |
+| capacidades | quince: `APR ARQ CNS DIS DOM DSP ENC ENT INV PLT PRD SEG SIS USO VER` (§18 L7666) | quince directorios, quince `CAPACIDAD.md`, quince `id:` | **COINCIDE** |
 | procesos | diez, «ninguno nuevo» (§8.0 L5313, §17 L7589) | `FEA GAP DEF INC INV DEU DEP AUD DIR SIS` | **COINCIDE** |
 | propietarios globales | `SIS→SIS`, `INV→INV`, `DEU→ARQ`, `DEP→PLT`, `AUD` derivado (§18 L7684) | idéntico, contra L527/L275/L312/L368/L419 | **COINCIDE** |
 | `AUD`: única obligatoria | `INV` (§8.2, §18) | `conclusion-fundada`, `capacidad_productora: INV` (L423–427) | **COINCIDE** |
 | `AUD`: propietario a mano | prohibido, `01-PROCESOS.md` L419 | L419 literal: «DERIVADO del encargo … NUNCA se asigna a mano» | **COINCIDE** |
 | `DEP`: `SEG` irretirable | `G28`, «nadie» (§18 L7682) | L369–374: `autoridad_de_retirada: nadie: G28 …` | **COINCIDE** |
 | `SIS`: condicionales | dos, `ENT` y `APR` (`PN-13`) | dos, exactamente | **COINCIDE** |
-| `INV`: condicionales | `CON:experimental`, `PRD`, `ARQ`, `APR` (`PN-13`) | los cuatro, y **ni `DOM` ni `SEG` ni `DIS`** | **COINCIDE — `PN-13` es un hecho, no una opinión** |
+| `INV`: condicionales | `CNS:experimental`, `PRD`, `ARQ`, `APR` (`PN-13`) | los cuatro, y **ni `DOM` ni `SEG` ni `DIS`** | **COINCIDE — `PN-13` es un hecho, no una opinión** |
 | instancias de handoff | diecisiete (§8.0 L5325, §15.7) | diecisiete pares `de`/`a` | **COINCIDE** |
 | `SIS`/`PLT` en handoffs | cero instancias (§8.0 L5467) | cero, por enumeración completa | **COINCIDE** |
 | clases de entrada | nueve (§5.3 L4527) | nueve `^id: entrada:` | **COINCIDE** |
@@ -1650,7 +1650,7 @@ mantiene el total en 25 y el rango no lo toca (`git diff` no muestra cambio en �
 | macrocircuito · tramo | vía declarada | comprobación mía |
 |---|---|---|
 | `INS-0`–`INS-5` `SIS` | vía 1 | `propietario_global: "SIS"` L527 ✔ y `a.5`: «Para items de tipo `SIS`, es SIS» ✔ |
-| `INS-*` `CON` `VER` | vía 2 | obligatorias `cambio-construido`/`evidencia-suficiente` L537/L545 ✔ |
+| `INS-*` `CNS` `VER` | vía 2 | obligatorias `cambio-construido`/`evidencia-suficiente` L537/L545 ✔ |
 | `INS-6` `ENT` | vía 3 | condicional «el cambio modifica el runtime» L554 ✔ |
 | `INS-*` `APR` | vía 3 | condicional `C-APR` L556 ✔ |
 | `INS-1`/`INS-5` `PRD` `ARQ` | vía 4, items `INV` enlazados | `INV` condicionales L288–293: `PRD` «el destino declarado es una decisión de producto», `ARQ` «…técnica» ✔ |
@@ -1659,11 +1659,11 @@ mantiene el total en 25 y el rango no lo toca (`git diff` no muestra cambio en �
 | `A2`–`A7` `INV` | vía 2, única obligatoria | L423–427 ✔ |
 | `A2`–`A7` `DOM` `SEG` `DIS` `PRD` `APR` | vía 3 | `AUD` condicionales L429–439 ✔ (con la salvedad `DIS/Reconstruccion`, punto 11) |
 | `A8` `ARQ` | vía 1 | `DEU` propietario `ARQ` L312 ✔ |
-| `A8` `CON` `VER` | vía 2 | `plan-tecnico`/`cambio-construido`/`evidencia-suficiente` ✔ |
+| `A8` `CNS` `VER` | vía 2 | `plan-tecnico`/`cambio-construido`/`evidencia-suficiente` ✔ |
 | `A9`–`A10` `SEG` | **sin vía → `PN-13`**, entretanto item `AUD` enlazado | correcto contra `SIS` ✔ |
 | `M0`–`M5` | idéntico a `INS` | ✔ |
 | `M6`–`M7` | idéntico a `A8` | ✔ |
-| `U5b` `PLT` vía 1 · `SEG` `CON` `VER` vía 2 · `DOM:condiciones` `ARQ` `ENT` vía 3 | `DEP` L362–399 | **coincidencia exacta, campo a campo** ✔ |
+| `U5b` `PLT` vía 1 · `SEG` `CNS` `VER` vía 2 · `DOM:condiciones` `ARQ` `ENT` vía 3 | `DEP` L362–399 | **coincidencia exacta, campo a campo** ✔ |
 
 **Criterios `C-<CAP>`: CONFIRMADOS.** `b.16` L815–830 declara siete (`C-PRD C-DIS C-ARQ
 C-DOM C-SEG C-ENT C-USO`) más `C-APR`; §8.0 L5360 los enumera correctamente. La prohibición
@@ -1680,7 +1680,7 @@ dos veces, para `AUD` y para `DIR`, tal como §8.0 L5366 afirma.
 **cada source change —rama, commit, push, PR y CI POR FUENTE**—, y no es participante de la
 ruta por hacerlo»*. **`C7` dice lo contrario, en la tabla que existe precisamente para
 cerrar esa ambigüedad** (`C7` L76–77: *«Sin esta tabla, la responsabilidad se reparte de
-forma ambigua entre `PLT`, `ENT`, `DSP` y `CON`, que es exactamente el defecto que este
+forma ambigua entre `PLT`, `ENT`, `DSP` y `CNS`, que es exactamente el defecto que este
 contrato existe para cerrar»*):
 
 ```text
@@ -1713,7 +1713,7 @@ introduce la corrección.** Es `H-1`, GRAVE.
 (doc 17 §5: *«`PLT` no tiene vehículo para `N0`/`N2`/`N6` por ninguna de las tres vías»*).
 Como la atribución es falsa para `INS-6`, `A8`, `M6`–`M7`, esa mitad **queda abierta**. Su
 remedio, eso sí, está completamente determinado y no exige decisión de nadie: la capacidad
-con custodia es `CON`, que es obligatoria en `SIS`, `DEU` y `DEP`; la convergencia es de
+con custodia es `CNS`, que es obligatoria en `SIS`, `DEU` y `DEP`; la convergencia es de
 `ENT`. Por eso lo gradúo GRAVE y no BLOQUEANTE.
 
 **`PLT` frente a `a.5`.** Aquí F4 acierta en el principio: `a.5` L328–330 separa
@@ -1777,7 +1777,7 @@ Derivé las quince y los diez **del corpus**, no de §17 ni de §18: quince dire
 
 Comprobaciones semánticas, no de recuento:
 
-- **Toda capacidad nombrada en §8 y §18 existe**: `SIS CON VER ENT APR PRD ARQ DOM DIS SEG
+- **Toda capacidad nombrada en §8 y §18 existe**: `SIS CNS VER ENT APR PRD ARQ DOM DIS SEG
   PLT INV ENC USO` en §8; `DSP` aparece en §8.0 L5461 como consumidor de la composición y
   en L5454 como quien para y escala. **Las quince quedan cubiertas.**
 - **Todo proceso usado existe**: `SIS`, `AUD`, `DEU`, `DEP`. Los otros seis no se usan, y
@@ -1797,7 +1797,7 @@ Comprobaciones semánticas, no de recuento:
   defecto. Coherente.
 
 **Un hueco semántico que nadie ha registrado.** `b.16` L834–836 declara que `DOM` y `SEG`
-participan **DOS veces**: `<CAP>:condiciones ⊳ CON` antes de construir, y
+participan **DOS veces**: `<CAP>:condiciones ⊳ CNS` antes de construir, y
 `<CAP>:revisión tras VER` después. `01-PROCESOS.md` **no instancia `:revisión` en ninguno
 de los diez procesos** (`grep` sobre el fichero entero: cero apariciones), ni aparece en
 `circuitos/`. Consecuencia: en `A8`, `M6`–`M7` y `U5b` —los tres tramos que escriben en las
@@ -1920,7 +1920,7 @@ Retirada y fusionada, comprobadas en su cuerpo y no en el resumen:
 
 - **Fuente exacta**: `b.16`, filas `SIS` e `INV`. **Verificada contra `01-PROCESOS.md`
   L518–563 y L266–300, y contra `b.16` L896–897.** `SIS` tiene dos condicionales (`ENT`,
-  `APR`); `INV` tiene cuatro (`CON:experimental`, `PRD`, `ARQ`, `APR`). **`DOM`, `SEG` y
+  `APR`); `INV` tiene cuatro (`CNS:experimental`, `PRD`, `ARQ`, `APR`). **`DOM`, `SEG` y
   `DIS` no figuran en ninguna de las dos, ni como obligatorias ni como condicionales.**
   El hecho es exacto.
 - **Contradicción que registra**: `INS-5` es «discovery de producto, dominio y diseño» antes
@@ -2052,7 +2052,7 @@ F-06 F-07 F-10 F-11` = once. ✔ Coincide.
 - **`F-02` — SÍ, y es un defecto.** Su remedio declarado (§19 L7795) es tipar `capacidad` y
   `capacidad_productora` como `ref_a: capacidad`. Derivé los valores realmente usados en
   `01-PROCESOS.md`: además de las quince, aparecen `DOM:condiciones`, `SEG:condiciones`,
-  `CON:experimental`, `ARQ:diagnostico`, `DIS/Reconstruccion` y `OWNER`. **F4 usa
+  `CNS:experimental`, `ARQ:diagnostico`, `DIS/Reconstruccion` y `OWNER`. **F4 usa
   `DOM:condiciones` y `SEG:condiciones` como participantes en §8.2, §8.3, §8.4 y §18.**
   Bajo `ref_a: capacidad` estricto, la notación de la propia F4 deja de validar. El
   documento 17 `E-3` **sí** había escrito la salida (*«con sufijo `:` opcional para la
@@ -2132,8 +2132,8 @@ que lo que F6 corrige es la forma del derivado. F4 no dice ni lo uno ni lo otro.
 |---|---|---|---|---|---|---|---|---|
 | `B-1` | procesos incompatibles en §8.2 y §18 | §18 L6993 asignaba `proceso:INV` a `A2`–`A7`; §8.2 L5208 apoyaba `DOM/SEG/DIS` en `AUD` | `proceso:AUD` en items enlazados, uno por conclusión, propietario derivado | `D75` | §8.2 L5652 · §18 L7676 | las dos sedes coinciden y `AUD` admite los condicionales | **sí**, verificado contra L410–448 | **SUPERADA** |
 | `B-2` | participantes sin vehículo | §8.1 L5090 «ARQ DOM DIS SEG según discovery», sin vía | cuatro vías + `PN-13`; ejecutor y autoridad separados | `D74`+`PN-13` | §8.0 L5322–5482 | vía declarada para cada participante | **no del todo**: la mitad `PLT` se cierra con una atribución que `C7` L83–86 y la propia §1.3 L224/§7.2/§7.6 desmienten | **FALLIDA** |
-| `G-1` | `U5b` sin `SEG` ni `CON` | §18 L6999 «`ENT`, `VER`» | `SEG` y `CON` obligatorias de `DEP`; `G28` irretirable | `D75` | §18 L7682 · §8.4 | figuran como obligatorias | **sí**, coincidencia exacta con `DEP` L369–392 | **SUPERADA** |
-| `G-2` | `ARQ` ausente, `CON` sin nombrar | §18, filas `A8` y `M6`–`M7` | `ARQ` vía 1 por `plan-tecnico`; `cambio-construido` de `CON` | `D75` | §18 L7678/L7679 | ambas presentes | **sí**, contra `DEU` L306–352 | **SUPERADA** |
+| `G-1` | `U5b` sin `SEG` ni `CNS` | §18 L6999 «`ENT`, `VER`» | `SEG` y `CNS` obligatorias de `DEP`; `G28` irretirable | `D75` | §18 L7682 · §8.4 | figuran como obligatorias | **sí**, coincidencia exacta con `DEP` L369–392 | **SUPERADA** |
+| `G-2` | `ARQ` ausente, `CNS` sin nombrar | §18, filas `A8` y `M6`–`M7` | `ARQ` vía 1 por `plan-tecnico`; `cambio-construido` de `CNS` | `D75` | §18 L7678/L7679 | ambas presentes | **sí**, contra `DEU` L306–352 | **SUPERADA** |
 | `G-3` | `O12` invocado y no satisfacible | §8.1 no producía baseline ni clasificación | `INS-5` los produce; el Owner aprueba | `D76` | §8.1 L5521 y su nota | el gate es satisfacible | **no en la sede canónica**: §18 L7672 no lleva ni el gate `INS-5` ni su salida, y §14 L6801 tampoco. §8.0 L5338 dice que manda §18 | **FALLIDA** |
 | `G-4` | doce áreas sin identificador | §4.3 sin ids | doce `aspecto:documental/<area>` | `D77` | §4.3 | doce identificadores distintos, derivados del patrón existente | **sí**, doce derivados y únicos; patrón verificado | **SUPERADA** |
 | `A4` | trazabilidad de las correcciones | §15.8 saltaba de `D63` a `D69`; cabecera «CORREGIDO DOS VECES» | bloques `D64`–`D68` y `D71`–`D86`; «nueve veces»; la tercera revisión ya no consta pendiente | §15.8 + cabecera | L7103, L7133, L12 | los bloques existen y la cifra se deriva | **parcialmente**: los bloques ✔ y «pendiente» ✔; la cifra **no** se deriva ni de su propia aposición (10–11) ni de §15.8 (12 bloques) | **FALLIDA** |
@@ -2177,7 +2177,7 @@ custodia la maquinaria y **cada source change —rama, commit, push, PR y CI POR
 `C7-GOBIERNO-GIT-MULTI-SOURCE.md` **L83–86**: rama, commit, push y PR los solicita y los
 ejecuta **«la capacidad con custodia, ella misma»**; **L88–89** dan merge y convergencia a
 `ENT`. `C7` **L76–77** dice que esta tabla existe justamente *«porque la responsabilidad se
-reparte de forma ambigua entre `PLT`, `ENT`, `DSP` y `CON`»*. Y F4 se desmiente a sí misma:
+reparte de forma ambigua entre `PLT`, `ENT`, `DSP` y `CNS`»*. Y F4 se desmiente a sí misma:
 §1.3 **L224** da el `integration-set` a `ENT`; §7.2 **L5203** escribe *«`ENT` declara
 convergencia con un INTEGRATION SET»*; §7.6 **L5296** remite a `C7` sin más.
 **Por qué importa materialmente.** Es el dispositivo con el que `D74` cierra la mitad `PLT`
@@ -2232,7 +2232,7 @@ invoque la «simetría exacta con `A3`».
 **`H-5` · `b.16` da a `DOM` y a `SEG` una segunda participación —revisar lo construido— que
 ningún proceso instancia, y el gate de composición de §8.0 no puede verlo.**
 `b-RECORRIDO-APROBADA.md` **L834–836**: *«DOM y SEG participan dos veces … `<CAP>:condiciones
-⊳ CON` RESTRICCIONES ANTES de construir · **`<CAP>:revisión` tras VER revisan lo
+⊳ CNS` RESTRICCIONES ANTES de construir · **`<CAP>:revisión` tras VER revisan lo
 construido**»*. `grep` sobre `01-PROCESOS.md` (564 líneas) y sobre `circuitos/`: **cero
 apariciones de `:revisión`**. Los diez procesos instancian sólo `:condiciones`. F4 compone
 `A8`, `M6`–`M7` y `U5b` con `DOM:condiciones` y `SEG:condiciones` y nada más (§8.2, §8.3,
@@ -2266,7 +2266,7 @@ sobre el registro de decisiones.**
 propia F4 usa.**
 §19 **L7795** pide tipar `capacidad` y `capacidad_productora` como `ref_a: capacidad`.
 Derivé los valores usados: además de las quince, `DOM:condiciones`, `SEG:condiciones`,
-`CON:experimental`, `ARQ:diagnostico`, `DIS/Reconstruccion` y `OWNER`. F4 usa
+`CNS:experimental`, `ARQ:diagnostico`, `DIS/Reconstruccion` y `OWNER`. F4 usa
 `DOM:condiciones` y `SEG:condiciones` como participantes en §8.2, §8.3, §8.4 y en §18
 L7678/L7679/L7682. El documento 17 `E-3` **ya había escrito la salida** —*«con sufijo `:`
 opcional para la variante declarada»*— y F4 no la recoge. F6 tendría que decidir el
@@ -2617,7 +2617,7 @@ Derivados por `H` de `01-PROCESOS.md` y reproducidos por mí:
 
 ```text
 grep -n 'propietario_global' kernel/operativo/recorrido/01-PROCESOS.md   → 10 bloques
-L35 PRD · L95 PRD · L154 «ARQ cuando C-ARQ … CON en caso contrario» · L202 ENT ·
+L35 PRD · L95 PRD · L154 «ARQ cuando C-ARQ … CNS en caso contrario» · L202 ENT ·
 L275 INV · L312 ARQ · L368 PLT · L419 DERIVADO … NUNCA se asigna a mano ·
 L458 «la capacidad PROPIETARIA de la decisión … NUNCA lo elige DSP» · L527 SIS
 ```
@@ -2710,8 +2710,8 @@ Leyenda de la columna «antes»: **G**/**H** = quién la adjudicó, seguido de s
 | `A13` | MEDIO | `CORREGIDO_EN_F4` | **SUPERADA** | §3.6 L3801 usa «los CINCO CAMPOS de procedencia», los enumera y explica por qué el quinto concepto no es campo | G SUPERADA `=` |
 | `B-1` | BLOQ | `CORREGIDO_EN_F4` | **SUPERADA** | `01-PROCESOS.md` L415-440: `proceso:AUD` tiene `INV` como **única obligatoria** (`conclusion-fundada`), condicionales `DOM`·`SEG`·`DIS/Reconstruccion`·`PRD`·`APR`, y `propietario_global: "DERIVADO del encargo … NUNCA se asigna a mano"`. §18 L7676 lo reproduce. Verificado por mí en el kernel | H SUPERADA `=` |
 | `B-2` | BLOQ | `PRESION_LISTA_PARA_F5` | **FALLIDA** | la mitad `DOM`/`SEG`/`DIS` está correctamente registrada como `PN-13` y es honesta. **La mitad `PLT` se cierra con el dispositivo `EJECUTOR`, que `C7:83-86` desmiente**: rama, commit, push y PR los ejecuta «la capacidad con custodia, ella misma», no `PLT`. Y F4 se contradice: §1.3 L224 da el `integration-set` a `ENT`; §7.2 L5208 «`ENT` declara convergencia con un INTEGRATION SET»; §7.6 L5292 remite a `C7` «DE LAS FUENTES». Ver `I-04` | H FALLIDA `=` |
-| `G-1` | GRAVE | `CORREGIDO_EN_F4` | **SUPERADA** | `01-PROCESOS.md` `proceso:DEP`: `condiciones-de-seguridad` con `capacidad_productora: "SEG"` y `cambio-construido` con `"CON"`, las dos **obligatorias**, con su `autoridad_de_retirada`. Verificado por mí | H SUPERADA `=` |
-| `G-2` | GRAVE | `CORREGIDO_EN_F4` | **SUPERADA** | `01-PROCESOS.md` L312: `proceso:DEU` → `propietario_global: "ARQ"`; `cambio-construido` producido por `CON`. §18 L7678-7679 lo reproduce | H SUPERADA `=` |
+| `G-1` | GRAVE | `CORREGIDO_EN_F4` | **SUPERADA** | `01-PROCESOS.md` `proceso:DEP`: `condiciones-de-seguridad` con `capacidad_productora: "SEG"` y `cambio-construido` con `"CNS"`, las dos **obligatorias**, con su `autoridad_de_retirada`. Verificado por mí | H SUPERADA `=` |
+| `G-2` | GRAVE | `CORREGIDO_EN_F4` | **SUPERADA** | `01-PROCESOS.md` L312: `proceso:DEU` → `propietario_global: "ARQ"`; `cambio-construido` producido por `CNS`. §18 L7678-7679 lo reproduce | H SUPERADA `=` |
 | `G-3` | GRAVE | `CORREGIDO_EN_F4` | **FALLIDA** | §8.1 L5521 declara el gate «`INS-5` baseline aprobado por el Owner». **§18 L7672, que §8.0 L5338 declara SEDE CANÓNICA con «si alguna vez difieren, MANDA §18», no lo lleva**: su columna gate dice sólo «`INS-4` Operativa» y su columna salida «control repo, topología, especialización y adaptadores», sin baseline ni clasificación de desconocidos. §14 L6801 repite la omisión. Y la asimetría es visible: el gate `A3` **sí** está en §18 L7676 | H FALLIDA `=` |
 | `G-4` | GRAVE | `CORREGIDO_EN_F4` | **SUPERADA** | derivé `grep -o 'aspecto:documental/[a-z-]*' | sort -u` → **doce identificadores distintos**, todos dentro del patrón `^memoria:[a-z0-9-]+$` de `esquemas/memoria.yaml` L7. Coinciden uno a uno con las doce obligatorias de `§5.18` L775-786, contadas por mí | H SUPERADA `=` |
 | `M-1` | MEDIO | `CORREGIDO_EN_F4` | **SUPERADA** | conté las condicionales de `§5.18` L788-790: **trece**. Las tres sedes de doc 11 dicen TRECE (L4320, L4353, tabla de §4.3). El residuo del registro es hallazgo mío aparte (`I-15`) | H SUPERADA `=` |
@@ -2728,7 +2728,7 @@ Leyenda de la columna «antes»: **G**/**H** = quién la adjudicó, seguido de s
 | `m-3` | MENOR | `HISTORICO_NO_APLICABLE` | **NO APLICABLE con causa demostrada** | §5.2 L4448 registra el hecho —la misión de `PLT` nombra la observabilidad, verificado en `PLT/CAPACIDAD.md` L3, L13, L98— y declina el juicio: «convertirlo en defecto sería una preferencia de diseño, y esta fase no la toma». El propio documento 16 **L973** lo dice: *«`m-3` es un juicio, no un hecho … dejo el juicio al adjudicador»*. **No lo asumo**: la vía de dos responsables con `lider` existe y es del Owner o de F6 | H NO APLICABLE `=` |
 | `m-4` | MENOR | `CORREGIDO_EN_F4` | **SUPERADA** | §18 L7681/L7682: `U5a` y `U5b` son filas propias con proceso, propietario y gate distintos | H SUPERADA `=` |
 | `F-01` | MEDIO | `EXTERNO_CON_PROPIETARIO` | **FALLIDA** | la sede del remedio (§19 L7794) nombra `01-PROCESOS.md` y `00-CIRCUITOS.md`. **Omite `b-RECORRIDO-APROBADA.md:895` y `a-CAPACIDADES-APROBADA.md:495`**, que llevan la misma cadena `DIS/Reconstrucción` y que §17 L7585 declara «intactas. F4 no las toca». El propio checkpoint dice que el motivo del remedio es que «la composición de `A2`–`A7` **no es verificable mecánicamente contra la fuente** hasta que F6 los reconcilie» — y **la fuente es (a) y (b)**. Ejecutado tal como está escrito, el remedio no alcanza su fin declarado | H FALLIDA `=` |
-| `F-02` | MEDIO | `EXTERNO_CON_PROPIETARIO` | **FALLIDA** | §19 L7795 ordena tipar como `ref_a: capacidad` y «fijar el vocabulario», **sin decir cuál**. Derivé los valores realmente usados en `01-PROCESOS.md`: además de las quince, `DOM:condiciones`, `SEG:condiciones`, `CON:experimental`, `ARQ:diagnostico`, `DIS/Reconstruccion` y `OWNER`. **F4 usa `DOM:condiciones` y `SEG:condiciones` como participantes en §8.2, §8.3, §8.4 y en §18 L7678/L7679/L7682**: bajo `ref_a` estricto, la notación de la propia F4 deja de validar | H FALLIDA `=` |
+| `F-02` | MEDIO | `EXTERNO_CON_PROPIETARIO` | **FALLIDA** | §19 L7795 ordena tipar como `ref_a: capacidad` y «fijar el vocabulario», **sin decir cuál**. Derivé los valores realmente usados en `01-PROCESOS.md`: además de las quince, `DOM:condiciones`, `SEG:condiciones`, `CNS:experimental`, `ARQ:diagnostico`, `DIS/Reconstruccion` y `OWNER`. **F4 usa `DOM:condiciones` y `SEG:condiciones` como participantes en §8.2, §8.3, §8.4 y en §18 L7678/L7679/L7682**: bajo `ref_a` estricto, la notación de la propia F4 deja de validar | H FALLIDA `=` |
 | `F-03` | MEDIO | `CORREGIDO_EN_F4` | **SUPERADA** | `grep -on '\`N[0-7]\`'` sobre doc 11 → **cinco**: L300 (la nota de `D83`), L5041 (`C6 N7`), L6266, L7004 y L7309 (`C6 N4`). **Las cinco son citas de `C6`**, verificadas contra `C6:32` y `C6:35`. Ninguna fase de instalación se nombra ya con `N<n>` | G SUPERADA `=` |
 | `F-04` | MEDIO | `EXTERNO_CON_PROPIETARIO` | **SUPERADA** | registro completo: fichero, cambio, propietario, fase, condición. Cita verificada: `05-ESCENARIOS.md:180-181` dice `grado: media` / `grado_inicial: media` | H SUPERADA `=` |
 | `F-05` | MENOR | `CORREGIDO_EN_F4` | **SUPERADA** | §15.7 registra la excepción de `C5`; el mapa de fuente única de `kernel/operativo/00-INDICE.md` asigna «entregas entre capacidades» a `circuitos/` y `00-CIRCUITOS` L238 desactiva la obligación. La columna del checkpoint L1230 es imprecisa: `I-24`, MENOR | H SUPERADA `=` |
@@ -2945,7 +2945,7 @@ procedencia.)*
 > retirar rama abandonada  | PLT                       | PLT              ← F4 acierta
 > ```
 > `C7:76-77` · «Sin esta tabla, la responsabilidad se reparte de forma ambigua entre `PLT`,
-> `ENT`, `DSP` y `CON`, que es exactamente el defecto que este contrato existe para cerrar.»
+> `ENT`, `DSP` y `CNS`, que es exactamente el defecto que este contrato existe para cerrar.»
 
 De las siete operaciones que F4 atribuye a `PLT`, **`C7` le da dos**. Y no es sólo
 divergencia con el contrato: §1.3 **L224** asigna el `integration-set` a `ENT` como autoridad
@@ -3043,11 +3043,11 @@ construido— que ningún proceso instancia, y el gate de composición de §8.0 
 *(procede de `H-5`; **CONFIRMADO**, con la reserva declarada en D-5·2.)*
 
 > `b-RECORRIDO-APROBADA.md:832-836` · «### DOM y SEG participan dos veces, y nunca a la vez
-> que CON — `<CAP>:condiciones ⊳ CON` RESTRICCIONES ANTES de construir. Consulta. ·
+> que CNS — `<CAP>:condiciones ⊳ CNS` RESTRICCIONES ANTES de construir. Consulta. ·
 > **`<CAP>:revisión` tras VER revisan lo construido.** Consulta o gate conjunto.»
 >
 > `a-CAPACIDADES-APROBADA.md:504-505` · «DOM y SEG aportan **condiciones antes de construir y
-> revisan después**, no reciben la primera noticia en paralelo con CON»
+> revisan después**, no reciben la primera noticia en paralelo con CNS»
 >
 > `grep -rn ':revisi' kernel/operativo/` → **vacío**, verificado por mí
 
@@ -3150,7 +3150,7 @@ la propia F4 usa.** *(de `H-8`; **CONFIRMADO, reformulado a la baja en su consec
 > `capacidad_productora`, como **`ref_a: capacidad`**»
 
 Derivé los valores reales de `01-PROCESOS.md`: además de las quince, `DOM:condiciones`,
-`SEG:condiciones`, `CON:experimental`, `ARQ:diagnostico`, `DIS/Reconstruccion` y `OWNER`. Y
+`SEG:condiciones`, `CNS:experimental`, `ARQ:diagnostico`, `DIS/Reconstruccion` y `OWNER`. Y
 F4 usa `DOM:condiciones` y `SEG:condiciones` **como participantes** en §8.2, §8.3, §8.4 y en
 §18 L7678/L7679/L7682. Bajo `ref_a` estricto, §18 deja de validar.
 
@@ -3507,7 +3507,7 @@ fallando**. Por eso la fila es FALLIDA y la arquitectura no lo es.
 **¿Está `B-2` completamente determinado para `PN-13`?** **La mitad `DOM`/`SEG`/`DIS`, sí, y
 está bien hecha.** La mitad `PLT`, **no**: se cierra con una atribución que `C7` y tres
 secciones de la propia F4 desmienten (`I-04`). El remedio está determinado —la capacidad con
-custodia es `CON`, obligatoria en `SIS`, `DEU` y `DEP`; la convergencia es de `ENT` por
+custodia es `CNS`, obligatoria en `SIS`, `DEU` y `DEP`; la convergencia es de `ENT` por
 `C7:89`— y por eso no es BLOQUEANTE, pero no está hecho.
 
 ---

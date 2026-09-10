@@ -108,7 +108,7 @@ ARQ · ARQUITECTURA — encaje y plan técnico
   con orden y dependencias. También hace el diagnóstico en rutas de defecto.
   Devuelve a DIS sólo trayendo alternativas de forma, nunca sólo la negativa.
 
-CON · CONSTRUCCIÓN — la implementación y sus tests
+CNS · CONSTRUCCIÓN — la implementación y sus tests
   NO redecide capas anteriores. Si descubre que una está mal, DEVUELVE.
   Implementar sobre una capa que sabe mal es el fallo característico de esta
   estación. Sin autoridad sobre forma ni intención.
@@ -234,35 +234,35 @@ La composición por defecto es un punto de partida del kernel/pack, no una oblig
 El enrutador puede apartarse de ella dejando el motivo.
 
   FEA  feature / capacidad nueva
-       PRD → DIS → ARQ → CON ∥[DOM,SEG si tocan] → VER → ENT → USO → APR
+       PRD → DIS → ARQ → CNS ∥[DOM,SEG si tocan] → VER → ENT → USO → APR
   GAP  hueco entre lo implementado y lo pretendido
-       PRD → [DIS si tiene superficie] → ARQ → CON → VER → ENT → [USO si observable] → APR
+       PRD → [DIS si tiene superficie] → ARQ → CNS → VER → ENT → [USO si observable] → APR
   DEF  defecto / bug
-       ARQ(diagnóstico) → CON → VER → ENT → [USO si lo reportó el Owner] → [APR si revela criterio]
+       ARQ(diagnóstico) → CNS → VER → ENT → [USO si lo reportó el Owner] → [APR si revela criterio]
   INC  incidente en uso real
-       ENT(contención/rollback) → ARQ(diagnóstico) → CON → VER → ENT → APR (obligatorio)
+       ENT(contención/rollback) → ARQ(diagnóstico) → CNS → VER → ENT → APR (obligatorio)
   INV  investigación / pregunta abierta
        INV → [PRD o ARQ según destino] → APR
   DEU  deuda técnica / refactor
-       ARQ → CON → VER → ENT → APR
+       ARQ → CNS → VER → ENT → APR
   DEP  actualización de dependencia
-       SEG ∥ PLT → CON → VER → ENT
+       SEG ∥ PLT → CNS → VER → ENT
   AUD  auditoría de proyecto existente
        INV ∥ DOM ∥ SEG ∥ DIS/Reconstrucción → PRD → APR
   DIR  cambio de dirección (G51)
-       PRD ∥ DIS → ARQ(radio de impacto) → OWNER OBLIGATORIO → CON → VER → ENT → USO → APR
+       PRD ∥ DIS → ARQ(radio de impacto) → OWNER OBLIGATORIO → CNS → VER → ENT → USO → APR
   SIS  evolución del propio sistema o del kernel
-       SIS → CON → VER → APR
+       SIS → CNS → VER → APR
 
 Nótese: DEF no activa PRD ni DIS. DEP no activa ninguna de las dos. AUD no activa
-CON. Ninguna ruta es la de otra. Eso es la corrección.
+CNS. Ninguna ruta es la de otra. Eso es la corrección.
 
 ### Traza obligatoria — sustituye a "sombreros, no saltos"
 El enrutador escribe en la ficha del item, al componer y en cada recomposición:
 
   RUTA
   compuesta: <fecha> por DSP · tipo: DEF
-  activadas:     ARQ(diagnóstico) → CON → VER → ENT
+  activadas:     ARQ(diagnóstico) → CNS → VER → ENT
   no activadas:
     PRD — no altera alcance ni criterio de éxito: corrige comportamiento ya
           especificado en FEA-009
@@ -375,7 +375,7 @@ sin `|` en el contenido (usar `·`) · vacío = `—` · fechas ISO · prefijo t
     | [GAP-014](../items/GAP-014.md) | aparcado | normal | owner | 2026-08-19 | aparcado por: atención en FEA-021 · reactiva: "retoma el gap" |
     | [FEA-021](../items/FEA-021.md) | en curso | urgente | dis/critico | 2026-08-25 | 2ª dirección explorada y comparada |
     | [FEA-009](../items/FEA-009.md) | bloqueado | normal | inv | 2026-08-22 | bloqueo: latencia real sin medir · desbloquea: SPIKE-03 |
-    | [DEF-102](../items/DEF-102.md) | consulta | normal | dis | 2026-08-24 | opinión sobre estado vacío · custodia: CON |
+    | [DEF-102](../items/DEF-102.md) | consulta | normal | dis | 2026-08-24 | opinión sobre estado vacío · custodia: CNS |
 
 Micro-gramática de la última columna, tipada:
   `bloqueo: <qué falta> · desbloquea: <item o decisión>`
@@ -492,7 +492,7 @@ el control a esa capacidad en su paso. No es un comando ni requiere sintaxis.
   PREVISTAS   G24 · G34 vía rápida · G53 → secciones (e), (f), (h)
 
 NOTA SOBRE (e): esta corrección resuelve DE FACTO buena parte de la pregunta de la
-vía rápida — una errata es un DEF con ruta `CON → VER`, compuesta por el mismo
+vía rápida — una errata es un DEF con ruta `CNS → VER`, compuesta por el mismo
 enrutador y con la misma traza. No es un carril aparte. NO lo doy por cerrado: lo
 confirmo contigo en la sección (e).
 

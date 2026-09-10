@@ -12,7 +12,7 @@ roles:
 combinables: []
 independientes:
   - rol: SEG/condiciones
-    de: [CON/implementacion]
+    de: [CNS/implementacion]
     motivo: >
       quien construyó revisa el modelo de amenaza que tenía en la cabeza, no la superficie
       que produjo
@@ -35,7 +35,7 @@ roles:
 combinables: []
 independientes:
   - rol: SEG/condiciones
-    de: [CON/implementacion]
+    de: [CNS/implementacion]
     motivo: "quien necesita la dependencia para avanzar tiende a encontrarla aceptable"
 ampliacion: >
   Con un árbol de dependencias grande, se reparte la enumeración entre varios agentes por

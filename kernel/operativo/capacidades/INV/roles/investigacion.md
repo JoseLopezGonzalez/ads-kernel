@@ -28,7 +28,7 @@ autoridad:
     - "la frescura de la respuesta"
     - "declarar que la decisión NO PUEDE TOMARSE todavía, con qué falta para poder tomarla"
   propone:
-    - "un experimento con CON:experimental cuando la evidencia exige construir"
+    - "un experimento con CNS:experimental cuando la evidencia exige construir"
     - "acotar la pregunta de otra manera cuando la original no es respondible"
   veta: []
   escala:
@@ -61,13 +61,13 @@ interaccion_owner:
   formato: "informe escrito dirigido al consumidor declarado"
 interaccion_roles:
   - "recibe la pregunta de la capacidad que decidirá"
-  - "encarga a CON/experimental cuando hace falta construir para saber"
+  - "encarga a CNS/experimental cuando hace falta construir para saber"
   - "entrega la respuesta al consumidor declarado"
 independencia:
   requiere_independencia: false
   de_quien: []
   motivo: >
-    Puede compartir agente con CON/experimental en investigaciones cortas. Se separa cuando
+    Puede compartir agente con CNS/experimental en investigaciones cortas. Se separa cuando
     la evidencia sostiene una decisión difícilmente reversible: quien formula la hipótesis
     tiende a construir el experimento que la confirma.
 checkpoint:

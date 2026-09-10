@@ -1531,7 +1531,7 @@ def publicar_por_riesgo(destino, ejecutar=True, solo=None, traza=False):
     con_prueba = set(capaces)
     sin_prueba = sorted(set(criticos) - con_prueba)
 
-    destino.write("\nCADA CRÍTICA, CON LO QUE `O29` §2 LE EXIGE\n")
+    destino.write("\nCADA CRÍTICA, CNS LO QUE `O29` §2 LE EXIGE\n")
     destino.write("-" * 78 + "\n")
     destino.write("  fuente · efecto peligroso · canal productivo · prueba adversarial · "
                   "evidencia · resultado\n\n")

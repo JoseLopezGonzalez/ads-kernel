@@ -22,7 +22,7 @@ independientes:
       quien escribió el contrato no detecta que ha duplicado una verdad ni que ha dejado un
       enlace apuntando a lo que él tenía en la cabeza
 ampliacion: >
-  Si el cambio modifica el runtime, se añaden paquetes de CON, VER y ENT: la activación
+  Si el cambio modifica el runtime, se añaden paquetes de CNS, VER y ENT: la activación
   segura y reversible es obligatoria (b.16).
 reduccion: >
   SIS/coherencia se retira cuando el cambio afecta a un solo fichero y no introduce ninguna

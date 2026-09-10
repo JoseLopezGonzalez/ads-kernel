@@ -117,7 +117,7 @@ Escribes checkpoint:
   · tras cada respuesta del Owner que cambie el entendimiento de la visión
   · al descartar una dirección, con el motivo escrito antes de seguir
   · antes de entrar en la fase convergente
-  · antes de responder a una devolución de CON
+  · antes de responder a una devolución de CNS
 ```
 
 Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el corte llega justo tras la pregunta, lo comprendido ya está a salvo.
@@ -127,7 +127,7 @@ Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la ev
 ```text
   · a DIS/investigacion-visual, cuando el material no permite explorar direcciones distintas
   · a DIS/diseno-visual, cuando las direcciones no difieren en dos dimensiones de las cinco
-  · a CON, cuando lo construido degrada la dirección sin evidencia de imposibilidad
+  · a CNS, cuando lo construido degrada la dirección sin evidencia de imposibilidad
 ```
 
 Te bloquea, y entonces **nombras qué lo desbloquearía**:
@@ -143,5 +143,5 @@ Escalas, sin decidirlo tú:
   · primera dirección visual del producto
   · primera instancia de un patrón visual, artístico o de interacción
   · deuda de diseño en superficie premium
-  · segunda devolución con CON sobre el mismo paquete
+  · segunda devolución con CNS sobre el mismo paquete
 ```

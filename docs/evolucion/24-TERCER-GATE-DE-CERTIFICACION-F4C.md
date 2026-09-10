@@ -216,7 +216,7 @@ Esa declaración debe escribirse.
 ```text
 · `C-L.5` CERTIFICADA por CUARTA vez consecutiva, y el manifiesto cuadra AL DÍGITO:
   13 + 54 = 67 filas · 23 491 + 30 281 = 53 772 líneas, iguales al titular y a la salida
-  del derivador. `T-10` del documento 23 CERRADO CON MECANISMO
+  del derivador. `T-10` del documento 23 CERRADO CNS MECANISMO
 · los 54 agotamientos pasan las DOS reglas, verificados uno a uno contra los tres árboles
 · `T-20` CERRADO Y GENERALIZA: amputar una comprobación ya no es invisible
 · `T-05` CERRADO Y GENERALIZA: un `git` que sale 0 con stdout vacío ya no pasa
@@ -509,7 +509,7 @@ Los cinco SHA-256 los recalculé yo con `sha256sum` y **los cinco coinciden** co
 ```
 LA RESTA
   ASIGNADAS A `V`                          5   ·  18 599 líneas
-  LEÍDAS ÍNTEGRAS CON DECLARACIÓN EXPRESA  5
+  LEÍDAS ÍNTEGRAS CNS DECLARACIÓN EXPRESA  5
   ─────────────────────────────────────────────
   ASIGNADAS − LEÍDAS  =  0
 ```
@@ -664,7 +664,7 @@ trabajo futuro*». **El documento sabe cuál es la conducta correcta. En §11.8 
 
 ---
 
-## 5 · LA DISCIPLINA DEL REGISTRO — `V3-02` y `V3-03`, VERIFICADOS CON `git`
+## 5 · LA DISCIPLINA DEL REGISTRO — `V3-02` y `V3-03`, VERIFICADOS CNS `git`
 
 **Confirmo el hecho y CORRIJO la imputación de mi relevo.** `V3` acusó a dos commits. El
 defecto real es **UNA frase, y está VIVA en el documento hoy.**
@@ -827,7 +827,7 @@ y NO los adjudico.** `U-02` es el manifiesto: **tampoco.**
 | `S-06` | cifras del addendum de `D97` | **CERRADO** | `DECISIONES` L389: «*documento 11 — **RETIRADA**. Aquí NO va ninguna cifra, y es deliberado*» |
 | `S-07` | nivel `completo` sin productor | **CERRADO, y ejemplarmente** | L7302-7311: «*SIN PRODUCTOR DECLARADO, **y se dice en vez de taparlo** … resolverlo aquí sería **ampliar una resolución del Owner: no se amplía**, y queda como trabajo futuro*». **Es la conducta que §11.8 debió tener: lo uso como prueba en §4.4** |
 | `S-08` | §14 sin la propagación de `D107` | **CERRADO** | `FASE 0` presente hoy en las filas de §14 (L8680-8683) |
-| `S-09` | dos reglas de precedencia solapadas | **CERRADO CON MECANISMO** | L7527-7538: jerarquía explícita —«**§18 manda sobre el MAPEO … ESTA SEDE manda sobre el CONTENIDO DEL CONTRATO** … y no hay tercera cosa»—, con la divergencia de `S-01` resuelta por la regla y la frase replicada en §8.0 |
+| `S-09` | dos reglas de precedencia solapadas | **CERRADO CNS MECANISMO** | L7527-7538: jerarquía explícita —«**§18 manda sobre el MAPEO … ESTA SEDE manda sobre el CONTENIDO DEL CONTRATO** … y no hay tercera cosa»—, con la divergencia de `S-01` resuelta por la regla y la frase replicada en §8.0 |
 | `S-10` | «Las siete secuencias» sobre ocho | **CERRADO** | L2350: «*Las secuencias completas, **una por rótulo del bloque de abajo***» — cardinal retirado |
 | `S-11` | «Los CUATRO puntos anteriores» sobre cinco | **CERRADO** | la frase ya no existe en el documento |
 | `S-12` | «Los cuatro casos» sobre seis | **CERRADO** | L4130: «*Los casos que la prueba obligó a separar … **todos los que el bloque de abajo***» |
@@ -1140,7 +1140,7 @@ repositorio sano**, en el unico mecanismo que `O18` estrena. Y lo peor no es el 
 es que la receta es *la* via por la que el sobre deja de exigir confianza. Publicada rota,
 enseña al revisor a desconfiar de la unica herramienta que tenia para no fiarse.
 
-### 2.3 · `W-11` · el sobre YUXTAPONE DOS ARBOLES — CONFIRMADO POR MI CON `git archive`
+### 2.3 · `W-11` · el sobre YUXTAPONE DOS ARBOLES — CONFIRMADO POR MI CNS `git archive`
 
 Desplegue los dos commits fuera del repositorio y ejecute **el derivador de cada arbol sobre su
 propio arbol**:
@@ -1513,7 +1513,7 @@ Parrafo insertado en el documento 11, junto a la sede de la retirada:
 
 ```text
 MUTANTE (redaccion FUERA de `_REINSTALA`)
-    OK G-01 └─ 5 menciones en 2 parrafos, TODOS CON POLARIDAD RETIRADO, y `D87` lo ancla
+    OK G-01 └─ 5 menciones en 2 parrafos, TODOS CNS POLARIDAD RETIRADO, y `D87` lo ancla
     38/38 comprobaciones en verde · EXIT=0                                VERDE (defecto)
 
 CONTROL (la MISMA reinstalacion con una redaccion DE la lista blanca:
@@ -1691,7 +1691,7 @@ POR CLASE, que es lo que `O18` manda separar
   C  (actor privilegiado)    0   NO reporto ninguno como defecto de esta tanda: `T-01` y
                                  `T-02` del documento 23 siguen vivos y los dejo en `C`
 
-REPRODUCIDOS POR MI CON SALIDA PEGADA          16 de 17   (`W-17` es de procedimiento)
+REPRODUCIDOS POR MI CNS SALIDA PEGADA          16 de 17   (`W-17` es de procedimiento)
 HALLAZGOS MIOS QUE NINGUN RELEVO TRAJO          4   W-02 · W-14 · W-16 · W-17
                                                     (+ la EJECUCION de W-01: `W1` lo midio y
                                                      ningun `W3` anterior lo habia ejecutado)
@@ -1764,7 +1764,7 @@ de clase `A` y 1 de clase `B`— mi foco alcanza los `T-01`…`T-22`, `U-01` y `
 | **`T-10`** GRAVE | que el titular de lineas del manifiesto derive | **CERRADO, y con mecanismo.** Manifiesto 3: 13+54 = 67 filas y 23 491+30 281 = 53 772 lineas, **iguales a su titular y a la salida del derivador**, con 0 discrepancias contra el arbol. **Lo recalcule yo entero** | **CERRADO** |
 | **`T-11`** MEDIO | el reparto que pide una verificacion sin dar la fuente | **REINCIDE** en la forma acotada de `W-17` | **NO CERRADO** |
 | **`T-12`** MEDIO | el rango `BLOQUE C §13–§15` vivo en la norma que el derivador parsea | **CERRADO.** El documento 11 L11081 dice hoy «**BLOQUE C (§13–§17, iniciativa y dosier vivo)**», y las secciones reales entre `# BLOQUE C` y `# BLOQUE D` son §13, §14, §15, §16 y §17. **Coinciden** | **CERRADO** |
-| **`T-13`** MEDIO | el campo `espera` en las mutaciones del kernel | **NO CERRADO, y DECLARADO CON CIFRA DERIVADA**: `G-30` imprime «*LIMITACION DECLARADA: **51 de esas 62 mutaciones** no llevan campo `espera` y son VACUAS EN POTENCIA (`T-13`); el remedio vive en `kernel/`, que esta bateria no escribe*». **Es la conducta correcta para algo que no es suyo** | **NO CERRADO · DECLARADO** |
+| **`T-13`** MEDIO | el campo `espera` en las mutaciones del kernel | **NO CERRADO, y DECLARADO CNS CIFRA DERIVADA**: `G-30` imprime «*LIMITACION DECLARADA: **51 de esas 62 mutaciones** no llevan campo `espera` y son VACUAS EN POTENCIA (`T-13`); el remedio vive en `kernel/`, que esta bateria no escribe*». **Es la conducta correcta para algo que no es suyo** | **NO CERRADO · DECLARADO** |
 | **`T-14`** ≡ `S-18` MEDIO | enlazar el manifiesto **en el mismo commit** que lo crea | **REINCIDE IDENTICO.** 10 ficheros en `verificacion/`, 9 enlazados, falta el de ESTE gate; `T147 FALLIDA · EXIT REAL = 1` sobre el arbol bajo juicio | **NO CERRADO** (`W-16`) |
 | **`T-15`** MEDIO | que el universo no encoja en silencio | **PARCIALMENTE CERRADO.** El **cliquet existe y funciona**: borrar una fila del `ENCARGO` da `rc=2` nombrando ruta y manifiesto —lo ejecute—. Y la clasificacion del componente (iv) **falla cerrado** ante un documento sin H1. **Pero quedan dos grietas**: el ordinal del cliquet (`W-13`) y la voz equivocada del H1 (`W-14`) | **PARCIALMENTE CERRADO** |
 | **`T-16`** MEDIO | que `G-24` deje de recomputar `_CAPS` | **CERRADO.** L1843 `_dir_cap = _DIR_CAPS` y L1844 `presentes = list(_CAPS_DIRS)`: una sola sede, y el comentario L1842 lo registra | **CERRADO** |
@@ -2293,7 +2293,7 @@ EL COSTE MARGINAL DE ENCONTRAR LA PUERTA SIGUIENTE SIGUE SIN SUBIR.
 
 ### Lo que SÍ ha quedado cerrado, y no es cortesía
 
-1. **`C-L.5` CERTIFICADA por cuarta vez consecutiva**, y el manifiesto **cuadra al dígito**. **`T-10` del documento 23 CERRADO CON MECANISMO.**
+1. **`C-L.5` CERTIFICADA por cuarta vez consecutiva**, y el manifiesto **cuadra al dígito**. **`T-10` del documento 23 CERRADO CNS MECANISMO.**
 2. **Los 54 agotamientos pasan las DOS reglas**, verificados uno a uno contra los tres árboles que citan.
 3. **`T-20` CERRADO Y GENERALIZA**: amputar una comprobación ya no es invisible.
 4. **`T-05` CERRADO Y GENERALIZA**: un `git` que sale 0 con stdout vacío ya no pasa.

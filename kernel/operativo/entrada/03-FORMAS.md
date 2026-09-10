@@ -70,7 +70,7 @@ preguntas:
 muestra_referencias: "no muestra referencias"
 brainstorming: "no procede: no hay nada que explorar, hay algo que reparar"
 consulta_especialista: >
-  no consulta durante el encuadre. El diagnóstico pertenece a ARQ o a CON dentro de la ruta
+  no consulta durante el encuadre. El diagnóstico pertenece a ARQ o a CNS dentro de la ruta
   DEF, no a la puerta de entrada
 confirmacion: "no se pide: reparar lo que está roto no es una decisión del Owner"
 crea_item: "sí, tipo DEF, directamente"

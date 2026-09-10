@@ -99,7 +99,7 @@ cambian; alternativas con coste; ADR cuando proceda; descomposición en paquetes
 orden y dependencias. También diagnóstico en rutas de defecto. Devuelve a DIS sólo
 trayendo alternativas de forma, nunca sólo la negativa.
 
-**CON · CONSTRUCCIÓN** — *la implementación y sus tests*
+**CNS · CONSTRUCCIÓN** — *la implementación y sus tests*
 **No redecide capas anteriores.** Si descubre que una está mal, devuelve. Implementar
 sobre una capa que sabe mal es el fallo característico de esta estación. Sin autoridad
 sobre forma ni intención.
@@ -313,7 +313,7 @@ integra y responde por la coherencia del conjunto.
 
 ```text
 RUTA   compuesta: <fecha> por DSP · tipo: DEF · propietario global: ARQ
-activadas:   ARQ(diagnóstico) → CON → VER → ENT
+activadas:   ARQ(diagnóstico) → CNS → VER → ENT
 no activadas:
   PRD — no altera alcance ni criterio de éxito: corrige comportamiento ya
         especificado en FEA-009
@@ -333,23 +333,23 @@ automático" de G34 en forma trazable.
 > **No se consolidan aquí. Se cierran en la sección (b).**
 
 ```text
-FEA  PRD → [DIS si hay superficie o experiencia afectada] → ARQ → CON → VER → ENT
+FEA  PRD → [DIS si hay superficie o experiencia afectada] → ARQ → CNS → VER → ENT
          → [USO si hay fuente de uso real aplicable] → APR
-GAP  PRD → [DIS] → ARQ → CON → VER → ENT → [USO] → APR
-DEF  [ARQ si el diagnóstico no es evidente] → CON → VER → ENT → [USO] → [APR]
-INC  ENT(contención) → ARQ(diagnóstico) → CON → VER → ENT → APR (obligatorio)
+GAP  PRD → [DIS] → ARQ → CNS → VER → ENT → [USO] → APR
+DEF  [ARQ si el diagnóstico no es evidente] → CNS → VER → ENT → [USO] → [APR]
+INC  ENT(contención) → ARQ(diagnóstico) → CNS → VER → ENT → APR (obligatorio)
 INV  INV → [PRD o ARQ según destino] → APR
-DEU  ARQ → CON → VER → ENT → APR
-DEP  SEG ∥ PLT (condiciones) ⊳ CON → VER → ENT
+DEU  ARQ → CNS → VER → ENT → APR
+DEP  SEG ∥ PLT (condiciones) ⊳ CNS → VER → ENT
 AUD  INV ∥ DOM ∥ SEG ∥ DIS/Reconstrucción → [PRD si hay decisión de producto] → APR
-DIR  PRD ∥ DIS → ARQ(radio de impacto) → OWNER → CON → VER → ENT → USO → APR
-SIS  SIS → CON → VER → ENT(activación segura del runtime) → APR
+DIR  PRD ∥ DIS → ARQ(radio de impacto) → OWNER → CNS → VER → ENT → USO → APR
+SIS  SIS → CNS → VER → ENT(activación segura del runtime) → APR
 ```
 
 Correcciones pendientes de aplicar al cerrarlas en (b), ya registradas:
 DIS no se activa en toda feature · USO no es obligatorio en toda feature · APR puede
 emitir `sin aprendizaje promovible` · DOM y SEG aportan **condiciones antes de construir**
-y revisan después, no reciben la primera noticia en paralelo con CON · ARQ no es
+y revisan después, no reciben la primera noticia en paralelo con CNS · ARQ no es
 obligatoria para todo bug trivial · una auditoría no tiene por qué terminar en PRD · los
 cambios de SIS que modifican el runtime necesitan entrega y activación segura.
 
@@ -391,7 +391,7 @@ PROHIBIDO: una tercera revisión muda, o que una capacidad ceda en silencio.
 **FRENO 2 — DETECCIÓN DE CICLOS MULTIPARTE**
 El freno no puede evitarse porque el rebote atraviese tres equipos en vez de dos. El
 runtime **DEBE** detectar ciclos de ruta repetidos con más de dos capacidades
-(`DIS → ARQ → CON → DIS`, `ARQ → DOM → PRD → ARQ`) y aplicarles el mismo tratamiento:
+(`DIS → ARQ → CNS → DIS`, `ARQ → DOM → PRD → ARQ`) y aplicarles el mismo tratamiento:
 detención y escalado con las posturas escritas.
 *El algoritmo concreto no se cierra aquí; la obligación de detectarlos, sí.*
 
@@ -577,7 +577,7 @@ Los dos casos residuales, nombrados y resueltos:
 | [GAP-014/01](../items/GAP-014/paq/01-DIS.md) | aparcado | normal | owner | 2026-08-19 | aparcado por: atención en FEA-021 · reactiva: "retoma el gap" | 7 |
 | [FEA-021/02](../items/FEA-021/paq/02-DIS.md) | en curso | urgente | dis/critico | 2026-08-25 | 2ª dirección explorada y comparada | 3 |
 | [FEA-009/04](../items/FEA-009/paq/04-DIS.md) | bloqueado | normal | inv | 2026-08-22 | bloqueo: latencia real sin medir · desbloquea: SPIKE-03 | 2 |
-| [DEF-102](../items/DEF-102/paq/03-CON.md) | consulta | normal | dis | 2026-08-24 | opinión sobre estado vacío · custodia: CON | 5 |
+| [DEF-102](../items/DEF-102/paq/03-CON.md) | consulta | normal | dis | 2026-08-24 | opinión sobre estado vacío · custodia: CNS | 5 |
 ```
 
 Reglas de forma para que sea parseable sin ambigüedad: orden de columnas fijo · sin `|`

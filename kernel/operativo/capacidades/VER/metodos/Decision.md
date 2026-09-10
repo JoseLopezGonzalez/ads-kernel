@@ -39,7 +39,7 @@ pasos:
     modo: lineal
     hace: >
       Comprobar que ningún paquete del DIR ha construido funcionalidad productiva. Sólo
-      CON:experimental es admisible, y sólo antes de la decisión.
+      CNS:experimental es admisible, y sólo antes de la decisión.
     produce: "veredicto sobre construcción productiva"
     termina_cuando: "está comprobado que no hay implementación productiva dentro del DIR"
     checkpoint: true

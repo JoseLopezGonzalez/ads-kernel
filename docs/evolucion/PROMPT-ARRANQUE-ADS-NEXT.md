@@ -6,7 +6,7 @@ Usa este prompt desde la raíz del repositorio `ads-kernel`, proporcionando acce
 
 Lee íntegramente `ADS-NEXT-OWNER-BRIEF.md` —o la ruta donde se haya incorporado dentro del repositorio— y trata su contenido como una **directiva del Owner**, no como una especificación técnica cerrada ni como una lista de features para implementar literalmente.
 
-Tu misión es evolucionar ADS hacia esa visión utilizando, en la medida que el propio estado actual lo permita, **ADS para trabajar sobre ADS**. El propietario global de esta evolución es SIS; activa ENC, INV, ARQ, PLT, CON, VER, ENT, APR y cualquier otra capacidad cuando sus contratos lo requieran. No concentres artificialmente todo el trabajo en un único agente o rol si el sistema exige separación de autoridad o crítica independiente.
+Tu misión es evolucionar ADS hacia esa visión utilizando, en la medida que el propio estado actual lo permita, **ADS para trabajar sobre ADS**. El propietario global de esta evolución es SIS; activa ENC, INV, ARQ, PLT, CNS, VER, ENT, APR y cualquier otra capacidad cuando sus contratos lo requieran. No concentres artificialmente todo el trabajo en un único agente o rol si el sistema exige separación de autoridad o crítica independiente.
 
 No empieces construyendo features aisladas. Primero crea una representación persistente y trazable de:
 

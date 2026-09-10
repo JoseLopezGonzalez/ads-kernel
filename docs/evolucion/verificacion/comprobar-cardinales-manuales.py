@@ -820,7 +820,7 @@ def juzgar(base):
                            "publica %d. Truncar el bloque deja el control mirando menos de "
                            "lo que debe, y un censo menor no es un censo vacío: la "
                            "salvaguarda del cero no lo veía" % (antes, len(vivos)), ""))
-        # `L-03` · NINGUNA LÍNEA A COLUMNA 0 CON FORMA DE CAMPO SE QUEDA SIN RECONOCER.
+        # `L-03` · NINGUNA LÍNEA A COLUMNA 0 CNS FORMA DE CAMPO SE QUEDA SIN RECONOCER.
         for nombre, texto, _v in campos:
             if nombre == "__CAMPO_NO_RECONOCIDO__":
                 fallos.append(("L-03", rel, texto, "-",

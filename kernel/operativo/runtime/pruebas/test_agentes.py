@@ -828,7 +828,7 @@ class LoQueLaAuditoriaEncontro(BaseDeAgentes):
             equipos.materializar("DIS", inicio=-1, **comun)
 
         # Y las dos materias NUEVAS del paso 1 se leen igual que las otras cinco: declaradas
-        # llegan al equipo con su valor, ausentes llegan como ausencia CON motivo. Sin ellas,
+        # llegan al equipo con su valor, ausentes llegan como ausencia CNS motivo. Sin ellas,
         # `C4` condición (c) —volumen contra contexto— y el «ANTES de empezar» del criterio
         # de comparación serían dos reglas sin insumo, que es como estaban.
         con_volumen = equipos.materializar("DIS", volumen=2, inicio=7, **comun)

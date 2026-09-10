@@ -83,7 +83,7 @@ levantamiento: >
   LEVANTABLE por regla dura de G27 no lo levanta nadie, tampoco el Owner: el paquete se
   recompone hasta que la vulneración desaparece.
 apelacion: >
-  ARQ o CON apelan demostrando que la superficie descrita no existe, o que la mitigación ya
+  ARQ o CNS apelan demostrando que la superficie descrita no existe, o que la mitigación ya
   está. Si SEG lo rechaza y ambos sostienen su postura, DSP escala con las dos posturas.
 colision: >
   El veto de SEG declarado NO LEVANTABLE por regla dura de G27 PREVALECE sobre cualquier

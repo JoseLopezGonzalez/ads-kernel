@@ -15,7 +15,7 @@ catálogo no podía alcanzarlas, **36 de sus 37 filas estaban ahí POR CONSTRUCC
 criterio `F6` sería incertificable por construcción, y eso no puede ser lo que `O26` §5.2
 quiso decir. No se baja el listón: se sube el ALCANCE DEL INSTRUMENTO, y después se puebla.
 
-QUÉ HAY AQUÍ, Y CON QUÉ EXIGENCIA. Veintidós infracciones —dieciocho, más las CUATRO que
+QUÉ HAY AQUÍ, Y CNS QUÉ EXIGENCIA. Veintidós infracciones —dieciocho, más las CUATRO que
 añaden `ADJ-B1` y `ADJ-B2` del gate del 2026-09-04—. Veintiuna son de clase
 `bateria` —copian el corpus, meten el defecto, ejecutan la batería DECLARADA con el
 intérprete en curso sobre la copia y exigen TRES cosas, no una: que la batería termine en

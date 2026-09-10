@@ -136,7 +136,7 @@ No se escribe una regla más estricta que la que se ejecuta: eso fue `EE-08`.
 | 33 | `kernel/KERNEL.md` | 1590 | `aa635dff79e73fe13e271cb115653ebc042dc834d32007c634c8ee1df07e3150` | v | manifiesto `6B` del documento **27** · árbol `b27a761` |
 | 34 | `kernel/operativo/capacidades/APR/CAPACIDAD.md` | 95 | `a8709115309095849707e2d42290631dca6b3de95d49cc2c3c7ffa4e0546d708` | ii | manifiesto `6B` del documento **27** · árbol `b27a761` |
 | 35 | `kernel/operativo/capacidades/ARQ/CAPACIDAD.md` | 104 | `6ca11b5f09883e24834f770e61963ae69ca738770ffb1de64f7be0afe4757a47` | ii | manifiesto `6B` del documento **27** · árbol `b27a761` |
-| 36 | `kernel/operativo/capacidades/CON/CAPACIDAD.md` | 107 | `e0f79e6c3a467302c3d16aa5ee4ccb45583daf146d1676b2b06995419656c5d5` | ii | manifiesto `6B` del documento **27** · árbol `b27a761` |
+| 36 | `kernel/operativo/capacidades/CNS/CAPACIDAD.md` | 107 | `e0f79e6c3a467302c3d16aa5ee4ccb45583daf146d1676b2b06995419656c5d5` | ii | manifiesto `6B` del documento **27** · árbol `b27a761` |
 | 37 | `kernel/operativo/capacidades/DIS/CAPACIDAD.md` | 147 | `06f019010d45771fd2a125f9f08f88159b45f15e9f83fd2404c7f2a23f32ad06` | ii | manifiesto `6B` del documento **27** · árbol `b27a761` |
 | 38 | `kernel/operativo/capacidades/DOM/CAPACIDAD.md` | 135 | `926c7144cb098caaa0b87cdebb5c49b955b74832bc238e66d501ecbb2a635bb3` | ii | manifiesto `6B` del documento **27** · árbol `b27a761` |
 | 39 | `kernel/operativo/capacidades/DSP/CAPACIDAD.md` | 152 | `acb292f882e77d74693caaab3e392a0d691e988cf875ca4394c59f859ebe7937` | ii | manifiesto `6B` del documento **27** · árbol `b27a761` |

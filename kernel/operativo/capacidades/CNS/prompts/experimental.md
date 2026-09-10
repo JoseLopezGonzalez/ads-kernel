@@ -1,7 +1,7 @@
-# PROMPT OPERATIVO — CON/experimental
+# PROMPT OPERATIVO — CNS/experimental
 
 > Contrato: [`../roles/experimental.md`](../roles/experimental.md) ·
-> Método: [`CON/Experimental`](../metodos/Experimental.md)
+> Método: [`CNS/Experimental`](../metodos/Experimental.md)
 
 ---
 

@@ -1,19 +1,19 @@
-# CON — composición del equipo
+# CNS — composición del equipo
 
 ```yaml ads:composicion
 id: composicion:con-implementacion
-capacidad: CON
+capacidad: CNS
 clase_de_trabajo: "construcción productiva de un paquete"
 condicion: >
   El paquete es de construcción productiva: sus capas anteriores están depositadas y el
   item no es INV ni DIR.
 roles:
-  - rol: CON/implementacion
+  - rol: CNS/implementacion
     obligatorio: true
     agentes: "1 por paquete; varios paquetes del mismo item pueden ir en paralelo si cumplen las seis condiciones de a.5"
 combinables: []
 independientes:
-  - rol: CON/implementacion
+  - rol: CNS/implementacion
     de: ["el rol de VER que verifica este paquete", "DIS/revision-de-fidelidad"]
     motivo: "G13 como estructura por defecto: quien construyó no verifica ni compara su propio resultado"
 ampliacion: >
@@ -25,18 +25,18 @@ retirada: "al depositar la capa y ser aceptada por VER."
 
 ```yaml ads:composicion
 id: composicion:con-experimental
-capacidad: CON
+capacidad: CNS
 clase_de_trabajo: "construcción para obtener evidencia dentro de un INV o un DIR"
 condicion: >
   El item es de tipo INV y necesita construir para obtener evidencia, o es de tipo DIR y
   necesita un prototipo para poder decidir.
 roles:
-  - rol: CON/experimental
+  - rol: CNS/experimental
     obligatorio: true
     agentes: "1"
 combinables: []
 independientes:
-  - rol: CON/experimental
+  - rol: CNS/experimental
     de: ["el rol de INV que formuló la hipótesis, cuando la evidencia sostiene una decisión difícilmente reversible"]
     motivo: "quien formula la hipótesis tiende a construir el experimento que la confirma"
 ampliacion: >

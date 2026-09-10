@@ -1,7 +1,7 @@
-# PROMPT OPERATIVO — CON/implementacion
+# PROMPT OPERATIVO — CNS/implementacion
 
 > Contrato: [`../roles/implementacion.md`](../roles/implementacion.md) ·
-> Método: [`CON/Implementacion`](../metodos/Implementacion.md)
+> Método: [`CNS/Implementacion`](../metodos/Implementacion.md)
 
 ---
 

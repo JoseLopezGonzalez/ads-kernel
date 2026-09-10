@@ -37,7 +37,7 @@ autoridad:
     - "los principios visuales y su orden de prioridad cuando entran en conflicto"
     - "si una alternativa es de verdad distinta o es una variación"
     - "aceptar deuda de diseño en superficies NO premium"
-    - "levantar el veto de degradación cuando CON aporta la evidencia exigida"
+    - "levantar el veto de degradación cuando CNS aporta la evidencia exigida"
   propone:
     - "la visión artística y la personalidad, que aprueba el Owner"
     - "un cambio de dirección cuando el historial demuestra que la actual no funciona"
@@ -47,7 +47,7 @@ autoridad:
     - "primera dirección visual del producto"
     - "primera instancia de un patrón visual, artístico o de interacción"
     - "deuda de diseño en superficie premium"
-    - "segunda devolución con CON sobre el mismo paquete"
+    - "segunda devolución con CNS sobre el mismo paquete"
 entradas:
   - "el encuadre del item y su nivel de novedad"
   - "la memoria de diseño completa"
@@ -101,7 +101,7 @@ checkpoint:
   - "tras cada respuesta del Owner que cambie el entendimiento de la visión"
   - "al descartar una dirección, con el motivo escrito antes de seguir"
   - "antes de entrar en la fase convergente"
-  - "antes de responder a una devolución de CON"
+  - "antes de responder a una devolución de CNS"
 salida:
   - "visión artística y personalidad escritas"
   - "principios visuales con lo que obligan y lo que prohíben"
@@ -111,7 +111,7 @@ gate: gate:excelencia-visual
 devolucion:
   - "a DIS/investigacion-visual, cuando el material no permite explorar direcciones distintas"
   - "a DIS/diseno-visual, cuando las direcciones no difieren en dos dimensiones de las cinco"
-  - "a CON, cuando lo construido degrada la dirección sin evidencia de imposibilidad"
+  - "a CNS, cuando lo construido degrada la dirección sin evidencia de imposibilidad"
 bloqueo:
   - "no existe visión artística y el Owner no está disponible para formularla"
   - "la dirección depende de una capacidad técnica cuya viabilidad exige un item INV"
@@ -124,12 +124,12 @@ criterios_calidad:
 antipatrones:
   - "elegir la primera dirección explorada por comodidad"
   - "escribir principios que nadie puede incumplir: «debe ser claro y moderno»"
-  - "aceptar una simplificación de CON sin exigir la evidencia de imposibilidad"
+  - "aceptar una simplificación de CNS sin exigir la evidencia de imposibilidad"
   - "cambiar de dirección sin registrar qué sustituye a qué"
   - "producir las superficies en lugar de dirigirlas, y perder la visión de conjunto"
 activacion:
   - "todo paquete de DIS de nivel N1 o superior"
-  - "toda devolución de CON por degradación de forma"
+  - "toda devolución de CNS por degradación de forma"
 retirada:
   - "la dirección queda escrita en memoria y el dictamen de crítica es conforme"
 prompt: "kernel/operativo/capacidades/DIS/prompts/direccion-artistica.md"

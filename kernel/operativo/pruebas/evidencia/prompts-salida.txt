@@ -10,8 +10,8 @@ T153  SUPERADA  Cada unidad de instrucción declara y enlaza las señales estruc
 OK  prompt   APR/promocion                      kernel/operativo/capacidades/APR/prompts/promocion.md
 OK  prompt   ARQ/diagnostico                    kernel/operativo/capacidades/ARQ/prompts/diagnostico.md
 OK  prompt   ARQ/encaje                         kernel/operativo/capacidades/ARQ/prompts/encaje.md
-OK  prompt   CON/experimental                   kernel/operativo/capacidades/CON/prompts/experimental.md
-OK  prompt   CON/implementacion                 kernel/operativo/capacidades/CON/prompts/implementacion.md
+OK  prompt   CNS/experimental                   kernel/operativo/capacidades/CNS/prompts/experimental.md
+OK  prompt   CNS/implementacion                 kernel/operativo/capacidades/CNS/prompts/implementacion.md
 OK  prompt   DIS/critica-visual                 kernel/operativo/capacidades/DIS/prompts/critica-visual.md
 OK  prompt   DIS/direccion-artistica            kernel/operativo/capacidades/DIS/prompts/direccion-artistica.md
 OK  prompt   DIS/diseno-interaccion             kernel/operativo/capacidades/DIS/prompts/diseno-interaccion.md
@@ -43,11 +43,11 @@ OK  prompt   SIS/evolucion                      kernel/operativo/capacidades/SIS
 OK  prompt   USO/validacion                     kernel/operativo/capacidades/USO/prompts/validacion.md
 OK  prompt   VER/decision                       kernel/operativo/capacidades/VER/prompts/decision.md
 OK  prompt   VER/dosier                         kernel/operativo/capacidades/VER/prompts/dosier.md
-OK  embebida mob:CON/ciclo-de-vida              packs/mobile-app/roles/ciclo-de-vida.md
+OK  embebida mob:CNS/ciclo-de-vida              packs/mobile-app/roles/ciclo-de-vida.md
 OK  embebida mob:DIS/interaccion-tactil         packs/mobile-app/roles/interaccion-tactil.md
-OK  embebida wear:CON/energia-y-estados         packs/wear-os/roles/energia-y-estados.md
+OK  embebida wear:CNS/energia-y-estados         packs/wear-os/roles/energia-y-estados.md
 OK  embebida wear:DIS/lectura-de-un-vistazo     packs/wear-os/roles/lectura-de-un-vistazo.md
 OK  embebida web:DIS/densidad-y-tablas          packs/web-app/roles/densidad-y-tablas.md
-OK  embebida web:CON/estados-de-red             packs/web-app/roles/estados-de-red.md
+OK  embebida web:CNS/estados-de-red             packs/web-app/roles/estados-de-red.md
 
 1 superadas · 0 fallidas

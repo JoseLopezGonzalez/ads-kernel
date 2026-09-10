@@ -479,7 +479,7 @@ if orden["modo"] == "fuente":
     paso("02-resolucion", {clave: resolucion[clave] for clave in sorted(resolucion)
                            if clave != "control_repo"})
     if resolucion["desenlace"] == ENCONTRADO:
-        # OPERA CON ÉL COMO CONTEXTO PRINCIPAL: lo abre y lee su cabeza.
+        # OPERA CNS ÉL COMO CONTEXTO PRINCIPAL: lo abre y lee su cabeza.
         proceso = subprocess.run(
             ["git", "-C", resolucion["control_repo"], "rev-parse", "--verify", "HEAD"],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE,

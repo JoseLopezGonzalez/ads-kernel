@@ -10,9 +10,9 @@ OK   N136b   A-06  T136  una cláusula de colisión resuelve el conflicto sin es
 OK   N137    A-23  T137  DSP/estado vuelve a DECIDIR una cancelación
                           → detectada: DSP/estado: DECIDE «cancelar el paquete cuando la espera deja de ser viable». b.7: la cancelación se propone y se ejecut
 OK   N146    A-18  T146  un rol se concede lo que su capacidad ESCALA
-                          → detectada: CON/implementacion: DECIDE «la implementación exige una decisión de forma, alcance o dom», y CON declara eso mismo en `e
+                          → detectada: CNS/implementacion: DECIDE «la implementación exige una decisión de forma, alcance o dom», y CNS declara eso mismo en `e
 OK   N146b   A-18  T146  un rol se concede la materia declarada por otra capacidad
-                          → detectada: CON/implementacion: DECIDE «los valores del sistema de diseño: escala, ritmo, roles de c», que es materia declarada por
+                          → detectada: CNS/implementacion: DECIDE «los valores del sistema de diseño: escala, ritmo, roles de c», que es materia declarada por
 OK   N90     A-15  T90   un método deja de estar declarado por su capacidad, como ENC/Critica
                           → detectada: ENC/Critica: dice pertenecer a ENC, que no lo lista entre sus métodos. La ficha de la capacidad es la fuente única: un m
 OK   N92     —     T92   una marca comercial entra por un esquema, que antes no se miraba
@@ -41,7 +41,7 @@ OK   N149c   A-03  T149  la resolución pasa a depender del orden de los packs d
                           → detectada: caso_empate_determinista: el resultado depende del ORDEN de los packs de entrada
 OK   N149d   A-03  T149  una composición no comparable se resuelve en silencio en vez de fallar
                           → detectada: caso_incompatible_por_direccion: una composición NO comparable se resolvió en silencio en vez de fallar explícitamente
-OK   N144    A-13  T144  se rompe el vínculo entre CON y gate:usabilidad
+OK   N144    A-13  T144  se rompe el vínculo entre CNS y gate:usabilidad
                           → detectada: gate:implementacion-completa no comprueba la usabilidad de lo construido, y gate:usabilidad declara aplicarse a las capa
 OK   N144b   A-13  T144  el vínculo existe pero deja de decir quién juzga la evidencia
                           → detectada: no se declara QUIÉN juzga la evidencia de usabilidad de lo construido: sin eso, la juzga quien la produjo
@@ -78,7 +78,7 @@ OK   N158o   evidencia T158  dos entradas de vigencia comparten identificador
 OK   N153    prompts T153  un prompt deja de nombrar el gate contra el que cierra
                           → detectada: kernel/operativo/capacidades/ARQ/prompts/encaje.md: no dice nada sobre gate
 OK   N153b   prompts T153  un prompt instruye hablar con el Owner sin que su rol pueda
-                          → detectada: kernel/operativo/capacidades/CON/prompts/implementacion.md: instruye hablar con el Owner («pregunta al Owner») y su cont
+                          → detectada: kernel/operativo/capacidades/CNS/prompts/implementacion.md: instruye hablar con el Owner («pregunta al Owner») y su cont
 OK   N153c   prompts T153  un prompt pierde el enlace a su método
                           → detectada: kernel/operativo/capacidades/ARQ/prompts/encaje.md: su cabecera no enlaza ninguno de sus métodos: ARQ/Encaje
 OK   N148    A-02  T148  la documentación vuelve a citar un pack derogado

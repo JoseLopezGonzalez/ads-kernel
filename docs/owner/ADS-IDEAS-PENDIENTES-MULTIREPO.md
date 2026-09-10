@@ -343,9 +343,9 @@ Cada componente puede necesitar especialización técnica distinta.
 Ejemplo:
 
 ```text
-CON/frontend
-CON/backend
-CON/mobile
+CNS/frontend
+CNS/backend
+CNS/mobile
 ```
 
 o cualquier diseño mejor que se determine posteriormente.

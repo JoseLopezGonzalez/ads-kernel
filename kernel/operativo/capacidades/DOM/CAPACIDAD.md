@@ -48,7 +48,7 @@ owner:
 roles: [DOM/modelo, DOM/migracion]
 deriva_de:
   - "a.3 · DOM: modelo, vocabulario, contratos, reversibilidad; veto sobre el modelo y la recuperabilidad"
-  - "b.16 · DOM participa dos veces: condiciones antes de CON, revisión después de VER"
+  - "b.16 · DOM participa dos veces: condiciones antes de CNS, revisión después de VER"
 materializacion: >
   Se materializa cuando un item cumple C-DOM. En modo consulta no toma custodia; en modo
   trabajo propio recibe paquete con custodia, gate y checkpoint.
@@ -83,7 +83,7 @@ levantamiento: >
   El Owner puede decidir asumir una pérdida concreta, y entonces queda registrada con su
   alcance y su fecha: DOM no la levanta por él, la ejecuta con su decisión escrita.
 apelacion: >
-  ARQ o CON apelan aportando el plan de transición o la prueba de reversión ejecutada. Si
+  ARQ o CNS apelan aportando el plan de transición o la prueba de reversión ejecutada. Si
   DOM lo rechaza y ambos sostienen su postura, se agota el freno de dos y DSP escala.
 colision: >
   REGLA GENERAL (a.5): dos vetos incompatibles NO se arbitran entre las capacidades. Ambos

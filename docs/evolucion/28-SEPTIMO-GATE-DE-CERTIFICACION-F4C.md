@@ -728,7 +728,7 @@ $ cd <atk> && git checkout -q -B atk 08f6da6e655d19eb9078fbd7284594162e727d3f
 $ git status --porcelain                                        (vacío)
 $ python3 docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py | tail -3
 38/38 comprobaciones en verde
-ALCANCE (`DD-21`): 9 de las 38 exigen un repositorio CON HISTORIA y fallan CERRADO sin `.git` —
+ALCANCE (`DD-21`): 9 de las 38 exigen un repositorio CNS HISTORIA y fallan CERRADO sin `.git` —
 G-11, G-11b, G-21, G-22, G-23, G-28, G-29, G-30, G-34. … el máximo alcanzable es 29.
 $ python3 docs/evolucion/verificacion/derivar-universo-obligatorio.py --rutas | wc -l   → 80
 $ (RECETA DEL SOBRE)  1674c65dccace92df5ba4721b81e0541247e855ad3b60570b1c0c86b9ce8fb3b  = el ANCLADO
@@ -2233,7 +2233,7 @@ Y LO QUE NO PUEDO DECIR  **no sé si hay un DÉCIMO ÁRBOL.** No lo busqué: es 
 
 **Pesa tanto como lo que cayó, y va con su comando y su salida.**
 
-### 4.1 · EL SOBRE, Y CON ÉL LA VALIDEZ DEL GATE
+### 4.1 · EL SOBRE, Y CNS ÉL LA VALIDEZ DEL GATE
 
 ```text
 · LOS DOS DIGEST DE UNIVERSO reproducen BYTE A BYTE con la receta publicada, recalculados
@@ -2404,7 +2404,7 @@ sigue viva**; **`F4c` siempre ABIERTA**; **`F5` siempre NO AUTORIZADA**; el PART
 de veredictos ajenos y van atribuidos a ellos. **`M-04` no la mido: no construí ningún árbol
 defectuoso, es dominio de `S1`, y mi silencio no es evidencia en ninguna dirección.**
 
-### 4.8 · `C-L.5` · **NO ES UNA EVASIÓN, Y LO DIGO CON CLARIDAD**
+### 4.8 · `C-L.5` · **NO ES UNA EVASIÓN, Y LO DIGO CNS CLARIDAD**
 
 El manifiesto me pide resolverlo expresamente. **Mi respuesta: dejarla ABIERTA es CORRECTO, y
 la de este gate es la SEGUNDA vez que lo es por la misma razón, no una evasión que se perpetúa.**
@@ -3015,7 +3015,7 @@ $ (RECETA DEL SOBRE)  1674c65dccace92df5ba4721b81e0541247e855ad3b60570b1c0c86b9c
 1921  tocados = _tocados_raw.split() if _tocados_raw is not None else []
 1922  # `EE-11` · **LA SALIDA DE GIT NO SE PARTE POR BLANCOS.** Esto hacía `.split()` sobre
 1923  # `git ls-tree --name-only` y sobre `git diff --name-only`, y las dos cosas fallaban a la
-1924  # vez: una ruta CON ESPACIO se troceaba … y una ruta NO-ASCII salía CITADA por
+1924  # vez: una ruta CNS ESPACIO se troceaba … y una ruta NO-ASCII salía CITADA por
 1925  # `core.quotePath` … Con `-z` y `\0` desaparecen los dos …
 1930  def _rutas_z(*args): …
 1937  _mod_head    = _rutas_z("diff", "--name-only", "HEAD")        ← con -z
@@ -3061,7 +3061,7 @@ rojo es un carácter no-ASCII en el nombre.**
 
 **Y AÑADO EVIDENCIA QUE `S1` NO TRAE, y agrava el hallazgo.** El comentario de `EE-11` y la
 fila del `CHECKPOINT`:3790 afirman que `-z` hace desaparecer **LAS DOS** formas de fallo. Medí
-la otra —la ruta CON ESPACIO— sobre `_tocados_raw`:
+la otra —la ruta CNS ESPACIO— sobre `_tocados_raw`:
 
 ```console
 $ cat > "kernel/operativo/pruebas/evidencia/SENTENCIA FINAL.txt" <<'X' … X
@@ -3870,7 +3870,7 @@ CUATRO de las seis promesas falsas de hoy son promesas que ESTA TANDA escribió 
 ### §5.1 · El recuento, derivado de la tabla de §3.2
 
 ```text
-REINCIDENCIAS CON IDENTIFICADOR EN LOS DOCUMENTOS 25 · 26 · 27      13 de 14
+REINCIDENCIAS CNS IDENTIFICADOR EN LOS DOCUMENTOS 25 · 26 · 27      13 de 14
 DENTRO DE UN REMEDIO DE LA TANDA QUE ESTE GATE JUZGA                 9 de 14
 
   S1-01  EE-11                          — su comentario dice haber cerrado DOS modos de
@@ -3954,7 +3954,7 @@ y digo qué cambió cada una.
 (ii) **el instrumento no fija ni comprueba esa variable en ninguna parte** —lo que significa que
 la corrección de la batería depende hoy de una variable de entorno que ninguna comprobación
 ancla, y eso es en sí un defecto de clase `A`—; y (iii) **la otra forma de fallo de la misma
-línea, la ruta CON ESPACIO, NO es contingente de nada**, y produce un **diagnóstico FALSO** que
+línea, la ruta CNS ESPACIO, NO es contingente de nada**, y produce un **diagnóstico FALSO** que
 nombra un fichero inexistente, medido por mí. **CAMBIÓ MI INFORME:** añadí la medición con
 `quotePath false` y la del espacio a `S1-01`, y la contingencia queda publicada. **Severidad
 mantenida: BLOQUEANTE — y sobre todo porque el veredicto NO cuelga de este hallazgo, sino de

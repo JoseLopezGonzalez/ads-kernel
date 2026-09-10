@@ -15,7 +15,7 @@ capa_de_valor: >
   Añade evidencia juzgable: tests, regresión incluida la visual, seguridad cuando aplica,
   presupuestos medidos, y capturas y grabaciones de los estados extremos.
 entrada:
-  - "una capa de CON depositada, con su commit y sus diferencias declaradas"
+  - "una capa de CNS depositada, con su commit y sus diferencias declaradas"
   - "los criterios de éxito de PRD y los dictámenes de DIS cuando existen"
   - "una decisión de un item DIR, para VER:decision"
 salida:
@@ -27,7 +27,7 @@ resultados: [capa-anadida, devolucion, bloqueo, cancelacion]
 memoria_propia:
   - "docs/verificacion/COBERTURA.md — qué está cubierto por tests y qué no, con fecha"
   - "docs/verificacion/REGRESIONES.md — qué se rompió alguna vez y qué lo vigila ahora"
-  - "CONVENTIONS.md — patrones técnicos, con ARQ y CON"
+  - "CONVENTIONS.md — patrones técnicos, con ARQ y CNS"
 tablero: "estado/tableros/VER.md — paquetes en verificación y dosieres emitidos"
 metodos: [VER/Dosier, VER/Decision]
 checkpoint: "en el paquete, con qué criterios están comprobados y con qué evidencia"
@@ -37,7 +37,7 @@ autoridad:
     - "si un criterio de éxito está satisfecho por la evidencia disponible"
     - "declarar que un criterio NO se pudo comprobar, y decirlo en el dosier"
   escala:
-    - "la evidencia contradice el criterio de éxito y CON sostiene que cumple: freno de a.7"
+    - "la evidencia contradice el criterio de éxito y CNS sostiene que cumple: freno de a.7"
   veta:
     - "el tránsito de un paquete mientras haya evidencia en rojo"
 owner:
@@ -83,8 +83,8 @@ levantamiento: >
   no existe la excepción por urgencia: si el Owner decide entregar con evidencia en rojo,
   eso queda registrado como decisión suya con su alcance, y VER lo hace constar en el dosier.
 apelacion: >
-  CON apela demostrando que la evidencia se recogió mal o que el criterio se interpretó
-  distinto de como lo escribió PRD. En el segundo caso decide PRD, no VER ni CON.
+  CNS apela demostrando que la evidencia se recogió mal o que el criterio se interpretó
+  distinto de como lo escribió PRD. En el segundo caso decide PRD, no VER ni CNS.
 colision: >
   Regla general de a.5: ambos detienen, conservan sus dos posturas y evidencias, y escalan
   al Owner. VER no arbitra a nadie y nadie le arbitra a él, salvo un veto declarado NO

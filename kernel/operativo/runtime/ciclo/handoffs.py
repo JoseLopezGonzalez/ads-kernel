@@ -28,7 +28,7 @@ DECISIÓN · una DEVOLUCIÓN sin los CUATRO campos NO es una devolución
     instancia con `DevolucionSinEvidencia`, y el paquete NO cambia de custodia.
 
 DECISIÓN · las CINCO entregas que `§8.0` declara y `circuitos/` no tiene viven aquí, como DATO
-    `§8.0` las escribe una a una —`SIS`→`PLT`, `SIS`→`CON`, `SIS`→`VER`, `CON`→`ENT`,
+    `§8.0` las escribe una a una —`SIS`→`PLT`, `SIS`→`CNS`, `SIS`→`VER`, `CNS`→`ENT`,
     `ENT`→`VER`— y dice que «las instancias las crea `F6`» en `kernel/operativo/circuitos/`.
     Ese directorio es NORMA y no está en la zona de escritura de este corte, así que se
     materializan aquí en `ENTREGAS_DECLARADAS_EN_8_0`, con sus ONCE campos, validadas
@@ -106,7 +106,7 @@ ENTREGAS_DECLARADAS_EN_8_0 = {
     "handoff:sis-a-con": {
         "id": "handoff:sis-a-con",
         "de": "SIS",
-        "a": "CON",
+        "a": "CNS",
         "cuando": "un paquete declara `escribe_fuentes` y la obligación `cambio-construido` "
                   "del proceso está sin satisfacer",
         "entrega": [
@@ -123,15 +123,15 @@ ENTREGAS_DECLARADAS_EN_8_0 = {
             "hay una fuente en `escribe_fuentes` que el objetivo del paquete no justifica",
             "el paquete no declara `lee_fuentes` ni `escribe_fuentes` y toca código",
         ],
-        "devolucion": "CON devuelve a SIS cuando lo declarado por SIS no se puede construir "
+        "devolucion": "CNS devuelve a SIS cuando lo declarado por SIS no se puede construir "
                       "sin ampliar el alcance. La devolución cuenta para el freno de `a.7` "
-                      "sólo si CON ya había tomado custodia.",
+                      "sólo si CNS ya había tomado custodia.",
         "evidencia_de_devolucion": [
             "qué parte de la capa de SIS no es construible y qué alcance haría falta",
         ],
         "owner": "la autorización de retirada POR FUENTE, cuando el cambio retira algo "
                  "heredado (`A8`, `M6`).",
-        "checkpoint": "CON lee de SIS: la justificación de producto enlazada y las "
+        "checkpoint": "CNS lee de SIS: la justificación de producto enlazada y las "
                       "decisiones del Owner captadas, para no volver a preguntarlas.",
     },
     "handoff:sis-a-ver": {
@@ -165,7 +165,7 @@ ENTREGAS_DECLARADAS_EN_8_0 = {
     },
     "handoff:con-a-ent": {
         "id": "handoff:con-a-ent",
-        "de": "CON",
+        "de": "CNS",
         "a": "ENT",
         "cuando": "el cambio está construido en una o varias fuentes y hay que declarar "
                   "convergencia (`C7:88`-`C7:89`)",
@@ -182,7 +182,7 @@ ENTREGAS_DECLARADAS_EN_8_0 = {
             "falta el resultado de alguna fuente del alcance",
             "hay una fuente con CI en rojo y sin motivo escrito",
         ],
-        "devolucion": "ENT devuelve a CON nombrando la fuente sin resultado o con CI en "
+        "devolucion": "ENT devuelve a CNS nombrando la fuente sin resultado o con CI en "
                       "rojo. Mientras no converjan todas, ENT sostiene el estado "
                       "INTEGRACIÓN PARCIAL, que no es un fallo: es un estado declarado.",
         "evidencia_de_devolucion": [
@@ -190,7 +190,7 @@ ENTREGAS_DECLARADAS_EN_8_0 = {
         ],
         "owner": "materia reservada en el merge, el release y el rollback irreversible, "
                  "donde `C7` la exige.",
-        "checkpoint": "ENT lee de CON: la revisión exacta de cada fuente, nunca una copia "
+        "checkpoint": "ENT lee de CNS: la revisión exacta de cada fuente, nunca una copia "
                       "de su contenido (`C5`).",
     },
     "handoff:ent-a-ver": {

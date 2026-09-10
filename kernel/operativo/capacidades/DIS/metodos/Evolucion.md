@@ -135,7 +135,7 @@ salida:
   - "memoria con decisiones y descartes"
 devolucion:
   - "a ENC, cuando el encuadre no permite determinar el nivel de novedad"
-  - "a CON, cuando la revisión de fidelidad devuelve infiel"
+  - "a CNS, cuando la revisión de fidelidad devuelve infiel"
 bloqueo:
   - "el patrón que cubriría el caso está caducado y actualizarlo cambia superficies aprobadas"
 cancelacion:

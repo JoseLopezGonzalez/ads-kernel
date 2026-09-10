@@ -20,7 +20,7 @@ combinables:
     motivo: "en una zona acotada, encontrar la causa y planificar la corrección son el mismo acto de lectura"
 independientes:
   - rol: ARQ/diagnostico
-    de: ["el rol de CON que construyó el código donde está la causa, cuando el defecto es reciente"]
+    de: ["el rol de CNS que construyó el código donde está la causa, cuando el defecto es reciente"]
     motivo: "quien escribió el código busca la causa donde cree que está, no donde está"
 ampliacion: >
   Si el diagnóstico revela que la causa está en una decisión de producto o de forma, el item

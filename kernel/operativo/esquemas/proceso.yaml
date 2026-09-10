@@ -35,7 +35,7 @@ obligatorios:
 # aparato ya fijo: «`F6` MATERIALIZA; no elige la forma». Sin esta linea los cuatro pares
 # `DOM:revision` que `D104` deriva son ininstanciables, y `D104` no puede cerrarse.
 variantes_de_capacidad:
-  [DOM:condiciones, DOM:revision, SEG:condiciones, SEG:revision, CON:experimental,
+  [DOM:condiciones, DOM:revision, SEG:condiciones, SEG:revision, CNS:experimental,
    ARQ:diagnostico]
 campos:
   id: {tipo: texto, patron: '^proceso:[A-Z]{3}$'}

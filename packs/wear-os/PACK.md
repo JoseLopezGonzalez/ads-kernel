@@ -36,13 +36,13 @@ restricciones:
   - "no hay teclado utilizable: la entrada de texto es la excepción, no la norma"
   - "la corona y los botones físicos son medios de entrada de primera clase"
 capacidades_nuevas: []
-roles_nuevos: [wear:DIS/lectura-de-un-vistazo, wear:CON/energia-y-estados]
+roles_nuevos: [wear:DIS/lectura-de-un-vistazo, wear:CNS/energia-y-estados]
 extensiones_de_metodo:
   - "DIS/Evolucion paso 1: comprobar cuántos SEGUNDOS dura el uso previsto de esta superficie"
   - "DIS/Fundacion paso 6: cada dirección se explora directamente en el tamaño del reloj, nunca escalada desde una pantalla grande"
   - "DIS/ValidacionDeUso paso 2: el recorrido se ejecuta EN MOVIMIENTO, no sentado"
   - "DIS/RevisionDeFidelidad paso 5: en reloj real, obligatorio y sin excepción"
-  - "CON/Implementacion paso 4: comprobar además el estado ambiental y el comportamiento sin teléfono"
+  - "CNS/Implementacion paso 4: comprobar además el estado ambiental y el comportamiento sin teléfono"
   - "VER/Dosier paso 3: los estados extremos incluyen ambiental, sin teléfono y batería baja"
 gates_adicionales: [gate:wear-vistazo, gate:wear-ambiental, gate:wear-consumo]
 artefactos:

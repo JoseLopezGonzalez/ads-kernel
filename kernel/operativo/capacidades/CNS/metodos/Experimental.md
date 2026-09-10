@@ -1,9 +1,9 @@
-# CON/Experimental — construir para saber, no para entregar
+# CNS/Experimental — construir para saber, no para entregar
 
 ```yaml ads:metodo
-id: CON/Experimental
+id: CNS/Experimental
 nombre: Experimental
-capacidad: CON
+capacidad: CNS
 disparador:
   - "un item INV necesita construir para obtener evidencia"
   - "un item DIR necesita un prototipo PARA DECIDIR"

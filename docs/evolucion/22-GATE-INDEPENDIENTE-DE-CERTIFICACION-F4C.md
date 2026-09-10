@@ -1,4 +1,4 @@
-# GATE INDEPENDIENTE DE CERTIFICACIÓN DE F4c — CON UNIVERSO DERIVADO
+# GATE INDEPENDIENTE DE CERTIFICACIÓN DE F4c — CNS UNIVERSO DERIVADO
 
 > **Veredicto del adjudicador `R`: `INSUFICIENTE PARA F5`.**
 > **`F4c` NO se cierra y sigue ABIERTA. `F5` NO queda autorizada. Ningún hallazgo se ha
@@ -271,7 +271,7 @@ el árbol de HEAD; los de `P1`, `P2` y `P3` recalculados además por ellos, y co
 
 | # | ruta | líneas | SHA-256 | leyó | cobertura | primera y última sección sustantiva | dos anclas de regiones separadas |
 |---|---|---|---|---|---|---|---|
-| 1 | `docs/evolucion/11-ARQUITECTURA-INTEGRADA.md` | 9494 | `ebbd3311f1016c05f5f96ab1673144feecc0f1de3a55e5ac7731ce0ddab2def0` | **P1** L1-L4800 · **P2** L4801-L9494 | **LEÍDO ÍNTEGRO por la cadena.** Ningún tramo sin abrir. **Reserva declarada: ningún ojo único recorrió las 9 494 líneas seguidas** | primera `# 0 · Resumen ejecutivo` L92 · última `## C-L.5 · La condición de COBERTURA…` L9390 | L664 `` abierta(tx) ≡ ∃ `preparada` DURABLE con ese `tx` `` · L9483 `**Estado: CERTIFICADA por el GATE INDEPENDIENTE DE CIERRE CON MANIFIESTOS VERIFICABLES**` |
+| 1 | `docs/evolucion/11-ARQUITECTURA-INTEGRADA.md` | 9494 | `ebbd3311f1016c05f5f96ab1673144feecc0f1de3a55e5ac7731ce0ddab2def0` | **P1** L1-L4800 · **P2** L4801-L9494 | **LEÍDO ÍNTEGRO por la cadena.** Ningún tramo sin abrir. **Reserva declarada: ningún ojo único recorrió las 9 494 líneas seguidas** | primera `# 0 · Resumen ejecutivo` L92 · última `## C-L.5 · La condición de COBERTURA…` L9390 | L664 `` abierta(tx) ≡ ∃ `preparada` DURABLE con ese `tx` `` · L9483 `**Estado: CERTIFICADA por el GATE INDEPENDIENTE DE CIERRE CNS MANIFIESTOS VERIFICABLES**` |
 | 2 | `docs/evolucion/21-GATE-INDEPENDIENTE-DE-CIERRE-F4C.md` | 2679 | `9f869ffbdbdb834ca872c03abc8826c125a47b4344ed32cd9b6266db08f8be03` | **P4** | **LEÍDO ÍNTEGRO**, y **DESPUÉS** del resto del lote de la cadena | primera `## 1 · Identidad y procedencia` L9 · última `## 14 · Ningún hallazgo se ha corregido, y es deliberado` L2663 | L2137 `` `R-04` · MENOR · la sub-ventana del marcador que `W17` nombra queda fuera de su propia condición de detección `` · L2590 `# INSUFICIENTE PARA F5` |
 | 3 | `docs/rediseno/DECISIONES-Y-CONTRADICCIONES.md` | 725 | `3be45994f4d00e82d4a136a2140c738b926a3baee4811e757d523125e4239959` | **P3** | **LEÍDO ÍNTEGRO**, quince tramos consecutivos sin salto | primera `## 1 · Decisiones tomadas sin consultar` L11 · última `## 4 · Límites declarados de esta iteración` L707 | L18 fila `D1` · L723 «La coherencia PROSA↔BLOQUE dentro de un mismo fichero no» |
 | 4 | `docs/rediseno/a-CAPACIDADES-APROBADA.md` | 1132 | `10cafb5ceee44f576d327ce614c14c86eb7b22ff43c3dfb82918b785eb36fb04` | **P3** | **LEÍDO ÍNTEGRO**, once tramos consecutivos sin salto | primera `## a.0 — Tres niveles` L22 · última `## a.12 — Pruebas de conformidad derivables` L1032 | L36 «**Regla de categoría** (deroga "sombreros, no saltos")» · L1110 prueba `T22` |
@@ -762,7 +762,7 @@ $ grep -n 'aplica_a' kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md
 170: aplica_a: "todo item cuyos paquetes escribieron en **una o más** fuentes"
 ```
 
-**Sigue diciendo «una o más».** §15.7 y §9.5 también declaran `C5` y `C6` «REUTILIZADOS CON
+**Sigue diciendo «una o más».** §15.7 y §9.5 también declaran `C5` y `C6` «REUTILIZADOS CNS
 EXCEPCIÓN NOMBRADA». §17 es la sede que F6 usará como lista de trabajo, y nombra un solo cambio
 (`C2`), luego se leerá como exhaustiva. No lo es.
 
@@ -929,7 +929,7 @@ correcta. Es una cifra caduca en una frase que se desautoriza a sí misma, no un
 
 > **L9390:** «## `C-L.5` · La condición de COBERTURA del próximo gate — **abierta, y no la cierra
 > esta tanda**»
-> **L9483:** «**Estado: CERTIFICADA por el GATE INDEPENDIENTE DE CIERRE CON MANIFIESTOS
+> **L9483:** «**Estado: CERTIFICADA por el GATE INDEPENDIENTE DE CIERRE CNS MANIFIESTOS
 > VERIFICABLES** —documento 21—, y es la primera vez.»
 
 **Por qué la BAJO.** Leí el cierre entero (L9483-L9494) y **reconcilia expresamente las dos
@@ -1136,7 +1136,7 @@ sin rodeos, y en cada caso digo **por qué** la fuente no es mía.
 | **`P-04`** MEDIO | el CHECKPOINT cuenta nueve ventanas `RC-1`–`RC-9` retiradas y omite las ocho `X-A`–`X-H` | reanclar el inventario | **FUERA DE MI LOTE.** La sede es `docs/evolucion/CHECKPOINT-ADS-NEXT.md`, fila 10 del manifiesto, asignada a **`Q`+`R`** (relevo `Q1`), no a `P`. **No lo adjudico y no lo presumo** | **FUERA DE MI LOTE** |
 | **`P-05`≡`Q-08`** **GRAVE** | «Siguiente acción exacta» del CHECKPOINT: cinco afirmaciones falsas, sin marca de histórica, en la sede que se autodesigna punto de entrada | reanclar o marcar histórica la sección | **FUERA DE MI LOTE.** Misma sede, mismo motivo. **No lo adjudico.** *(Era el único GRAVE del gate anterior, y quien lo adjudique debe saber que `P` no puede.)* | **FUERA DE MI LOTE** |
 | **`P-06`** MEDIO | el bloque de evidencia de `PN-15` declaraba «cero apariciones de `G20`/`G21`/`G23` en el documento 11», donde las hay | acotar el barrido a (a), (b) y `E2` —el material que puede DEROGAR— y contrastarlo con `G-13` | **CORREGIDO EN UNA SEDE Y NO EN LA OTRA.** El documento 11 **L8400** dice hoy «*Esta sede decía «cero apariciones en el documento 11», y **era falsa***», y el bloque `TEXTO VIGENTE` de `PN-15` cita `KERNEL.md`:687/690/694-712 y `START_HERE.md`:141-147, que verifiqué **una a una contra mi propio lote y las cuatro casan**. **Pero `DECISIONES-Y-CONTRADICCIONES.md` L346, la justificación de `D97`, sigue diciendo literalmente «`G20`, `G21` y `G23` tienen **cero** apariciones en el documento 11»**, y hoy hay 12·10·13. Es mi `P-05` | **NO SUPERADO** *(mitad aplicada)* |
-| **`P-07`** MENOR | `E5-3` merecía presión, porque una de sus dos ramas enmienda material APROBADO, y el bloque `E5` la excluía con un argumento válido sólo para `E5-1` y `E5-2` | crear `PN-16` | **L8489:** `## PN-16 · NUEVA · la grafía canónica de <CAP>:revisión vive en material APROBADO`, «*Registrada por `P-07` del GATE INDEPENDIENTE DE CIERRE CON MANIFIESTOS*», y **no elige la grafía**: registra que hay que elegir y que la elección es del Owner. Es exactamente lo que se pedía | **SUPERADO** *(y ver `P-08` de mi §3: la corrección se detuvo en la instancia nombrada y dejó fuera `VER:decisión`, que ya está construida con dos grafías dentro del kernel. Eso es hallazgo nuevo, no incumplimiento de `P-07`)* |
+| **`P-07`** MENOR | `E5-3` merecía presión, porque una de sus dos ramas enmienda material APROBADO, y el bloque `E5` la excluía con un argumento válido sólo para `E5-1` y `E5-2` | crear `PN-16` | **L8489:** `## PN-16 · NUEVA · la grafía canónica de <CAP>:revisión vive en material APROBADO`, «*Registrada por `P-07` del GATE INDEPENDIENTE DE CIERRE CNS MANIFIESTOS*», y **no elige la grafía**: registra que hay que elegir y que la elección es del Owner. Es exactamente lo que se pedía | **SUPERADO** *(y ver `P-08` de mi §3: la corrección se detuvo en la instancia nombrada y dejó fuera `VER:decisión`, que ya está construida con dos grafías dentro del kernel. Eso es hallazgo nuevo, no incumplimiento de `P-07`)* |
 | **`P-08`** MENOR | `D106` no fija de dónde se deriva «fuentes obligatorias» | publicar la REGLA y el COMANDO auditables | **NO LO ADJUDICO POR CONFLICTO DE MATERIA.** El remedio es `derivar-universo-obligatorio.py` y el manifiesto de **este** gate, que son el aparato bajo el que yo trabajo. Un revisor no certifica el instrumento que lo reparte. Sí dejo el dato: el `ADDENDUM 1` demuestra que la regla 1 del propio manifiesto **no se aplicó a 21 de 33 fuentes**, luego el remedio de `P-08` no estaba consolidado al emitirse | **FUERA DE MI LOTE** *(por conflicto de materia, declarado)* |
 | **`Q-01`** MEDIO | `G-11b` no falla cerrado sin Git; faltan cinco caracteres | `_base_raw is not None and` | **FUERA DE MI LOTE.** Sede: `comprobar-correccion-gate-de-cierre.py`, fila 12 del manifiesto, asignada a **`Q`** (relevo `Q2`) | **FUERA DE MI LOTE** |
 | **`Q-02`** MEDIO | el ancla de posición no normaliza, contra el pilar (iv) de `D104` | envolver el ancla en `_base()` | **FUERA DE MI LOTE** (misma sede) | **FUERA DE MI LOTE** |
@@ -1587,7 +1587,7 @@ $ sed -n '135,160p' .../F4C-ASIGNACION-GATE-CERTIFICACION-20260830.md \
 | 16 | `docs/evolucion/15-TERCERA-REVISION-INDEPENDIENTE-F4C.md` | 651 | `b0e015c118ceb916e58fc8191b2a5e40cf28c44dd426618fdd49d10e3ea495d6` | `Q5` | **LEÍDO ÍNTEGRO** |
 | 17 | `kernel/operativo/capacidades/APR/CAPACIDAD.md` | 95 | `a8709115309095849707e2d42290631dca6b3de95d49cc2c3c7ffa4e0546d708` | `Q5` | **LEÍDO ÍNTEGRO** |
 | 18 | `kernel/operativo/capacidades/ARQ/CAPACIDAD.md` | 104 | `6ca11b5f09883e24834f770e61963ae69ca738770ffb1de64f7be0afe4757a47` | `Q5` | **LEÍDO ÍNTEGRO** |
-| 19 | `kernel/operativo/capacidades/CON/CAPACIDAD.md` | 107 | `e0f79e6c3a467302c3d16aa5ee4ccb45583daf146d1676b2b06995419656c5d5` | `Q5` | **LEÍDO ÍNTEGRO** |
+| 19 | `kernel/operativo/capacidades/CNS/CAPACIDAD.md` | 107 | `e0f79e6c3a467302c3d16aa5ee4ccb45583daf146d1676b2b06995419656c5d5` | `Q5` | **LEÍDO ÍNTEGRO** |
 | 20 | `kernel/operativo/capacidades/DIS/CAPACIDAD.md` | 147 | `06f019010d45771fd2a125f9f08f88159b45f15e9f83fd2404c7f2a23f32ad06` | `Q5` | **LEÍDO ÍNTEGRO** |
 | 21 | `kernel/operativo/capacidades/DOM/CAPACIDAD.md` | 135 | `926c7144cb098caaa0b87cdebb5c49b955b74832bc238e66d501ecbb2a635bb3` | `Q5` | **LEÍDO ÍNTEGRO** |
 | 22 | `kernel/operativo/capacidades/DSP/CAPACIDAD.md` | 152 | `acb292f882e77d74693caaab3e392a0d691e988cf875ca4394c59f859ebe7937` | `Q5` | **LEÍDO ÍNTEGRO** |
@@ -2091,7 +2091,7 @@ RECUENTO DERIVADO DE LAS FILAS DE ARRIBA, no copiado
 
   SUPERADO                     11   P-01 · P-08 · Q-01 · Q-02 · Q-03 · Q-07 · Q-10 · Q-11
                                     Q-14 · Q-15 · R-02
-  SUPERADO CON RESERVA          3   P-05≡Q-08 (el texto sí, la comprobación no) ·
+  SUPERADO CNS RESERVA          3   P-05≡Q-08 (el texto sí, la comprobación no) ·
                                     Q-09 (letra sí, fondo no) · Q-12 (cifra sí, fixture no)
   NO SUPERADO                   2   Q-04 (sólo bajo kernel/) · Q-05 (sólo escalares)
   FUERA DE MI LOTE              8   P-02≡Q-06 · P-03 · P-04 · P-06 · P-07 · R-01 · R-03 · R-04
@@ -2603,7 +2603,7 @@ Extraje mecánicamente las 80 filas con `ruta · líneas · SHA-256` del manifie
 —59 rutas distintas, algunas con fila en los dos— y recalculé las dos métricas contra el árbol:
 
 ```text
-FILAS CON ruta+líneas+SHA-256      80
+FILAS CNS ruta+líneas+SHA-256      80
 RUTAS DISTINTAS                    59
 DISCREPANCIAS EN LÍNEAS O SHA-256   0
 FICHEROS AUSENTES DEL ÁRBOL         0

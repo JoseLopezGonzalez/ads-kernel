@@ -1,4 +1,4 @@
-# GATE INDEPENDIENTE DE CIERRE DE F4c CON MANIFIESTOS VERIFICABLES
+# GATE INDEPENDIENTE DE CIERRE DE F4c CNS MANIFIESTOS VERIFICABLES
 
 > **Veredicto, en una línea:**
 > # INSUFICIENTE PARA F5
@@ -71,7 +71,7 @@ SHA-256   c843b0c341183859b7f0f07db78cc67eade7ef98c4a96ad3edee23c769d2a976
 COMMIT    18cbfb57fe2286bb68011a31a8f3d07556d7aea9   2026-08-29 22:15:07 +0200
           1 fichero · 140 inserciones · 0 supresiones — el commit contiene ESO Y NADA MÁS
 
-ORDEN VERIFICADO POR EL REVISOR P CON `git log`: el commit del manifiesto es ANTERIOR a la
+ORDEN VERIFICADO POR EL REVISOR P CNS `git log`: el commit del manifiesto es ANTERIOR a la
 creación de los revisores. No se repartió nada antes de publicarlo, y no se ha modificado
 después. No hubo ADDENDUM: ninguno de los tres pidió una fuente fuera de su asignación.
 ```
@@ -160,7 +160,7 @@ Ruta · líneas · SHA-256 · a quién se asigna. Todo derivado del árbol `0311
 | `kernel/operativo/esquemas/proceso.yaml` | 49 | `bd391d5acddff1342ce307829dfb8494df535dbd1924d44948d1e17176440dcc` | **Q** |
 | `kernel/operativo/capacidades/APR/CAPACIDAD.md` | 95 | `a8709115309095849707e2d42290631dca6b3de95d49cc2c3c7ffa4e0546d708` | **Q** |
 | `kernel/operativo/capacidades/ARQ/CAPACIDAD.md` | 104 | `6ca11b5f09883e24834f770e61963ae69ca738770ffb1de64f7be0afe4757a47` | **Q** |
-| `kernel/operativo/capacidades/CON/CAPACIDAD.md` | 107 | `e0f79e6c3a467302c3d16aa5ee4ccb45583daf146d1676b2b06995419656c5d5` | **Q** |
+| `kernel/operativo/capacidades/CNS/CAPACIDAD.md` | 107 | `e0f79e6c3a467302c3d16aa5ee4ccb45583daf146d1676b2b06995419656c5d5` | **Q** |
 | `kernel/operativo/capacidades/DIS/CAPACIDAD.md` | 147 | `06f019010d45771fd2a125f9f08f88159b45f15e9f83fd2404c7f2a23f32ad06` | **Q** |
 | `kernel/operativo/capacidades/DOM/CAPACIDAD.md` | 135 | `926c7144cb098caaa0b87cdebb5c49b955b74832bc238e66d501ecbb2a635bb3` | **Q** |
 | `kernel/operativo/capacidades/DSP/CAPACIDAD.md` | 152 | `acb292f882e77d74693caaab3e392a0d691e988cf875ca4394c59f859ebe7937` | **Q** |
@@ -1113,9 +1113,9 @@ idéntico al manifiesto. Dos anclas por ficha, de regiones separadas (cabecera y
 |---|---|---|---|---|
 | `APR` | 95 | `a870911530909584` | L3 «**No es un trámite universal.**» | L51 «a.3 · APR: no es trámite universal; se materializa ante señal real» |
 | `ARQ` | 104 | `6ca11b5f09883e24` | L3 «es **medir el radio de impacto**» | L55 «b.16 · ARQ es propietario global de DEU y de DEF cuando C-ARQ» |
-| `CON` | 107 | `e0f79e6c3a467302` | L3 «**no redecide capas anteriores**» | L51 «b.16 · CON:experimental dentro de INV y de DIR» |
+| `CNS` | 107 | `e0f79e6c3a467302` | L3 «**no redecide capas anteriores**» | L51 «b.16 · CNS:experimental dentro de INV y de DIR» |
 | `DIS` | 147 | `06f019010d45771f` | L3 «la primera capacidad desarrollada hasta nivel operativo» | L87 «b.16 · C-DIS y el papel de DIS en FEA, GAP, DEF y DIR» |
-| `DOM` | 135 | `926c7144cb098caa` | L3 «**veto duro sobre la integridad y la recuperabilidad**» | **L51 «b.16 · DOM participa dos veces: condiciones antes de CON, revisión después de VER»** |
+| `DOM` | 135 | `926c7144cb098caa` | L3 «**veto duro sobre la integridad y la recuperabilidad**» | **L51 «b.16 · DOM participa dos veces: condiciones antes de CNS, revisión después de VER»** |
 | `DSP` | 152 | `acb292f882e77d74` | L3 «**total sobre el orden y la ruta, y ninguna sobre el contenido**» | L68 «a.3 + enmienda E1.1 · DSP: … autoridad sobre orden y ruta, ninguna sobre contenido» |
 | `ENC` | 174 | `f71b8e43f6e2d66f` | L3 «`ENC` es la **decimoquinta capacidad base**» | L78 «enmienda E1 · ENC como decimoquinta capacidad base» |
 | `ENT` | 123 | `91a81d3cf1cbfa61` | L3 «existe **fuera del entorno de desarrollo**» | L52 «b.16 · ENT es propietario global de INC» |
@@ -1161,7 +1161,7 @@ publicado** de `11-ARQUITECTURA-INTEGRADA.md`.
 DISCRIMINANTE      propietario_global ∈ {las quince nombres de directorio}, por igualdad
                    exacta de cadena. No por subcadena y no por la palabra «DERIVADO».
 ESTÁTICOS  (7)     FEA · GAP · INC · INV · DEU · DEP · SIS
-POR ITEM   (3)     DEF ("ARQ cuando C-ARQ…; CON en caso contrario")
+POR ITEM   (3)     DEF ("ARQ cuando C-ARQ…; CNS en caso contrario")
                    AUD ("DERIVADO del encargo… NUNCA se asigna a mano", L419)
                    DIR ("la capacidad PROPIETARIA de la decisión que se sustituye", L458)
 
@@ -1185,7 +1185,7 @@ POR ITEM
    AUD  condicionales DESNUDOS `DOM` (C-DOM) y `SEG` (C-SEG), independientes
         → puede producir ∅ · {DOM} · {SEG} · {DOM,SEG}. Las CUATRO son alcanzables.
    DIR  sin DOM/SEG en condicionales → sólo por vía propietaria, con el item delante.
-   DEF  propietario resuelve a ARQ o CON, condicionales sin DOM/SEG → hoy nunca exige par.
+   DEF  propietario resuelve a ARQ o CNS, condicionales sin DOM/SEG → hoy nunca exige par.
 
 NO HAY DÉCIMO PAR ESTÁTICO.
 ```

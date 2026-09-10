@@ -6,7 +6,7 @@
 La escala devuelve N2 → composicion:dis-feature-visual
 
 ROLES DEL KERNEL          los nueve de dis-feature-visual
-ROLES DEL PACK            mob:DIS/interaccion-tactil · mob:CON/ciclo-de-vida
+ROLES DEL PACK            mob:DIS/interaccion-tactil · mob:CNS/ciclo-de-vida
 CONSULTA OBLIGATORIA      SEG: qué se hace con la imagen y cuánto se conserva
 INDEPENDENCIA             DIS/validacion-de-uso de mob:DIS/interaccion-tactil
 GATES                     los dos del kernel + gate:mob-dispositivo-real +
@@ -20,8 +20,8 @@ EVIDENCIA                 grabación en el dispositivo más lento · los tres es
 ```text
 Sin superficie nueva: la escala devuelve N0 para diseño
 
-ROLES DEL KERNEL          ARQ/encaje · CON/implementacion · VER/dosier · DOM/modelo
-ROL DEL PACK              mob:CON/ciclo-de-vida
+ROLES DEL KERNEL          ARQ/encaje · CNS/implementacion · VER/dosier · DOM/modelo
+ROL DEL PACK              mob:CNS/ciclo-de-vida
 CONSULTA OBLIGATORIA      DOM: ¿la sincronización es idempotente? Sin esa respuesta no se reintenta
 GATES                     gate:implementacion-completa + gate:mob-consumo
 EVIDENCIA                 consumo medido en dispositivo desconectado de la corriente

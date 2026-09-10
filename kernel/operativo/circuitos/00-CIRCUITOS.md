@@ -31,7 +31,7 @@ Y una séptima, transversal: **cuándo interviene el Owner** — sólo donde a.8
 ```text
 ENC ──► PRD ──┬─► [DIS si C-DIS] ──┐
               └─► [ARQ si C-ARQ] ──┤
-                                   ├─► [DOM:condiciones] ⊳ CON ──► VER ──► [ENT si C-ENT]
+                                   ├─► [DOM:condiciones] ⊳ CNS ──► VER ──► [ENT si C-ENT]
                                    └─► [SEG:condiciones] ⊳        │
                                                                    └─► [USO si C-USO] ──► [APR si C-APR]
 propietario global: PRD
@@ -43,8 +43,8 @@ propietario global: PRD
 | PRD → DIS | fuera de alcance escrito; superficie identificada | devuelve a PRD con las dos formas que cumplen igual |
 | PRD → ARQ | alcance cerrado; contratos previsibles | devuelve a PRD si el alcance excluye contratos necesarios |
 | DIS ∥ ARQ | **pueden ir en paralelo** si sus paquetes cumplen las seis condiciones de a.5 | DSP secuencia si falla alguna |
-| DOM/SEG:condiciones ⊳ CON | condiciones comprobables antes de construir | devuelve al plan que las hace incompatibles |
-| CON → VER | diferencias declaradas antes de la revisión | infiel: vuelve a CON con la comparación |
+| DOM/SEG:condiciones ⊳ CNS | condiciones comprobables antes de construir | devuelve al plan que las hace incompatibles |
+| CNS → VER | diferencias declaradas antes de la revisión | infiel: vuelve a CNS con la comparación |
 | VER → ENT | dosier sin evidencia en rojo | veto de VER: no pasa |
 | ENT → USO | señales declaradas y ventana abierta | devuelve a la capa que origina el rojo |
 
@@ -73,10 +73,10 @@ naturaleza: amplía el alcance, y eso es materia del Owner (b.1).
 ## DEF · defecto
 
 ```text
-[ARQ:diagnóstico si el diagnóstico no es evidente] ──► CON ──► VER ──► [ENT] ──► [USO] ──► [APR]
+[ARQ:diagnóstico si el diagnóstico no es evidente] ──► CNS ──► VER ──► [ENT] ──► [USO] ──► [APR]
                     │
                     └─► [DIS si C-DIS: patrón incumplido, caso no cubierto, o restaurar intención]
-propietario global: ARQ si C-ARQ, si no CON
+propietario global: ARQ si C-ARQ, si no CNS
 ```
 
 ```text
@@ -93,7 +93,7 @@ SI EL DIAGNÓSTICO REVELA C-PRD, el item CAMBIA DE PROCESO (b.1): no se amplía 
 ## INC · incidente en uso real
 
 ```text
-ENT(contención) ──► ARQ(diagnóstico) ──► CON ──► VER ──► ENT(reentrega) ──► APR OBLIGATORIO
+ENT(contención) ──► ARQ(diagnóstico) ──► CNS ──► VER ──► ENT(reentrega) ──► APR OBLIGATORIO
      │                                                                        ▲
      └─► [SEG:condiciones si C-SEG]                                          │
      └─► toda contención que no pueda detenerse ──► ITEM ENLAZADO ACTIVO ────┘
@@ -113,7 +113,7 @@ propietario global: ENT
 ## INV · investigación
 
 ```text
-INV ──┬─► [CON:experimental cuando la evidencia exige construir]
+INV ──┬─► [CNS:experimental cuando la evidencia exige construir]
       └─► [PRD o ARQ según el destino declarado] ──► [APR si C-APR]
 propietario global: INV
 ```
@@ -129,7 +129,7 @@ Sólo nace un item nuevo cuando se decide FABRICAR o INTEGRAR algo con la eviden
 ## DEU · deuda técnica
 
 ```text
-ARQ ──► CON ──► VER ──► [ENT si C-ENT] ──► [USO si C-USO] ──► [APR si C-APR]
+ARQ ──► CNS ──► VER ──► [ENT si C-ENT] ──► [USO si C-USO] ──► [APR si C-APR]
 propietario global: ARQ
 ```
 
@@ -143,7 +143,7 @@ perseguido sigue siendo reducir riesgo interno.
 ## DEP · dependencia
 
 ```text
-SEG:condiciones ⊳ CON ──► VER ──► [ENT si C-ENT]
+SEG:condiciones ⊳ CNS ──► VER ──► [ENT si C-ENT]
      ∥ [DOM:condiciones si C-DOM]
      ∥ [ARQ si el cambio de versión altera contratos]
 propietario global: PLT
@@ -168,7 +168,7 @@ INV ──┬─► [DOM si C-DOM]
 propietario global: DERIVADO del encargo, nunca asignado a mano
 ```
 
-**AUD no activa CON** y **puede cerrar en APR sin pasar por PRD**: su resultado legítimo es
+**AUD no activa CNS** y **puede cerrar en APR sin pasar por PRD**: su resultado legítimo es
 conocimiento e items nuevos.
 
 ---
@@ -178,7 +178,7 @@ conocimiento e items nuevos.
 ```text
 ARQ(radio de impacto)
   ──► capacidades PROPIETARIAS de las decisiones afectadas
-  ──► [CON:experimental sólo si hace falta prototipo PARA DECIDIR]
+  ──► [CNS:experimental sólo si hace falta prototipo PARA DECIDIR]
   ──► OWNER en el punto de decisión
   ──► registro de decisiones sustituidas + criterio de éxito
   ──► creación de los ITEMS DERIVADOS
@@ -189,7 +189,7 @@ propietario global: la capacidad propietaria de la decisión que se sustituye. N
 
 ```text
 DIR DECIDE, NO IMPLEMENTA.
-CON, VER, ENT y USO PRODUCTIVOS NO son obligatorios.
+CNS, VER, ENT y USO PRODUCTIVOS NO son obligatorios.
 Ninguna construcción productiva puede vivir dentro de un DIR: VER:decision lo comprueba.
 La ejecución continúa en ITEMS ENLAZADOS, independientes y paralelizables.
 ```
@@ -202,7 +202,7 @@ las decisiones son inseparables.
 ## SIS · evolución del sistema
 
 ```text
-SIS ──► CON ──► VER ──► [ENT OBLIGATORIO si modifica el runtime] ──► [APR si C-APR]
+SIS ──► CNS ──► VER ──► [ENT OBLIGATORIO si modifica el runtime] ──► [APR si C-APR]
 propietario global: SIS · sujeto al FRENO DE RACHA de a.7
 ```
 
@@ -232,7 +232,7 @@ Es un item **SIS**, no un AUD: su objeto es la fábrica, no el producto. Lo ejec
 
 | par | fichero |
 |---|---|
-| DIS con PRD, ARQ, CON, VER, USO, INV y ENT | [`DIS-handoffs.md`](DIS-handoffs.md) |
+| DIS con PRD, ARQ, CNS, VER, USO, INV y ENT | [`DIS-handoffs.md`](DIS-handoffs.md) |
 | el resto de pares | [`handoffs-generales.md`](handoffs-generales.md) |
 
 Un par de capacidades sin handoff declarado **no está prohibido**: significa que su entrega

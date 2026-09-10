@@ -91,7 +91,7 @@ líneas y dejó las líneas `1-94` sin asignar a nadie. **Ninguna de las dos cos
 $ (por cada una de las 209 filas de MANIFIESTO.json: wc -l y sha256sum contra el árbol congelado;
    y por cada fuente obligatoria, las líneas que ningún revisor tiene asignadas)
 PROBLEMAS DE FORMA DEL MANIFIESTO: 0
-FUENTES OBLIGATORIAS CON LINEAS SIN ASIGNAR: 0
+FUENTES OBLIGATORIAS CNS LINEAS SIN ASIGNAR: 0
 OBLIGATORIO − ASIGNADO (fuentes): []
 ASIGNADO − (obligatorio ∪ modificadas): []
 (obligatorio ∪ modificadas) − ASIGNADO: []
@@ -509,7 +509,7 @@ FALLO G-23 · FALLO G-29 · FALLO G-30
 ```
 
 **Acoto lo que sostengo, y lo que NO.** `G-23`, `G-29` y `G-30` fallan **CERRADO por falta de
-`.git`** en mi copia —la propia batería lo declara: «9 de las 38 exigen un repositorio CON
+`.git`** en mi copia —la propia batería lo declara: «9 de las 38 exigen un repositorio CNS
 HISTORIA»—, y **no los cuento**. `G-13` y `G-15` **no** están en esa lista y fallan por
 divergencia de cardinales derivados. `G-21` corre y falla por FORMA: verifiqué que `O23`…`O27`
 **sí están proyectadas**, como filas `D112`–`D116` de la sección 1 del registro, cada una
@@ -646,7 +646,7 @@ FICHEROS DE CUALQUIER ÁRBOL DEL REPOSITORIO EDITADOS, CREADOS O BORRADOS POR M�
 `redesign/kernel-2.0`                                                             NO TOCADA
 `fd633383…`                                                                       NO usado, NO leído, NO publicado
 PesquerApp                                                                        NO arrancada
-COMUNICACIÓN CON `REV-2` O `REV-3`                                                NINGUNA
+COMUNICACIÓN CNS `REV-2` O `REV-3`                                                NINGUNA
                        sus dictámenes existen en el scratchpad y NO los he abierto
 LABORATORIO            …/scratchpad/rev1-work/ — copias mías: `arbol/` (corrida de los 38),
                        `puerta/repo` (repositorio sintético de la resta 4), `d05/` (dos

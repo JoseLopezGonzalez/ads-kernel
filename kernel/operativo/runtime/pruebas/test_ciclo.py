@@ -210,7 +210,7 @@ SEGUNDOS_DE_ESPERA = 180
 
 # Las QUINCE capacidades y las CUATRO vías, transcritas del `§18` y del `§8.0` para
 # CONFRONTAR el dato del paquete, no para sustituirlo.
-QUINCE = ("APR", "ARQ", "CON", "DIS", "DOM", "DSP", "ENC", "ENT", "INV", "PLT", "PRD",
+QUINCE = ("APR", "ARQ", "CNS", "DIS", "DOM", "DSP", "ENC", "ENT", "INV", "PLT", "PRD",
           "SEG", "SIS", "USO", "VER")
 CUATRO_VIAS = (1, 2, 3, 4)
 TRES_PRESENCIAS = ("autoridad", "ejecutor", "encuadre")
@@ -520,7 +520,7 @@ class Composicion(BaseDelCiclo):
         marco = ciclo.encuadrar(self.repo, entrada_base(), corpus=self.corpus)
         with self.assertRaises(ciclo.ComposicionIncompleta) as capturado:
             ciclo.componer(marco, corpus=self.corpus, fase="INS-0",
-                           capacidades_de_la_fase=["PRD", "CON", "VER", "SEG"])
+                           capacidades_de_la_fase=["PRD", "CNS", "VER", "SEG"])
         error = capturado.exception
         self.assertEqual(error.codigo, "COMPOSICION_INCOMPLETA")
         self.assertEqual(error.contexto["capacidad"], "SEG")
@@ -562,7 +562,7 @@ class Composicion(BaseDelCiclo):
     def test_18_el_propietario_de_DEF_se_deriva_de_C_ARQ_y_no_de_la_prosa(self):
         """T196 · Defecto que previene: leer la prosa de `b.16` para decidir autoridad.
 
-        `proceso:DEF` declara «ARQ cuando C-ARQ es verdadera; CON en caso contrario». La
+        `proceso:DEF` declara «ARQ cuando C-ARQ es verdadera; CNS en caso contrario». La
         derivación es un DATO con su condición del vocabulario cerrado, y se comprueba en
         los dos sentidos.
         """
@@ -571,7 +571,7 @@ class Composicion(BaseDelCiclo):
         ), corpus=self.corpus)
         sin = ciclo.componer(marco, corpus=self.corpus)
         con = ciclo.componer(marco, corpus=self.corpus, condiciones_verdaderas=["C-ARQ"])
-        self.assertEqual(sin["propietario_global"], "CON")
+        self.assertEqual(sin["propietario_global"], "CNS")
         self.assertEqual(con["propietario_global"], "ARQ")
 
     def test_19_la_materia_y_el_estado_deciden_la_ruta_y_el_par_se_comprueba(self):
@@ -625,8 +625,8 @@ class Equipos(BaseDelCiclo):
         self.assertEqual(procesos.metodo_de("DOM:condiciones"), "condiciones")
         self.assertEqual(procesos.capacidad_de("DIS/Reconstruccion"), "DIS")
         self.assertEqual(procesos.metodo_de("DIS/Reconstruccion"), "Reconstruccion")
-        self.assertEqual(procesos.capacidad_de("CON"), "CON")
-        self.assertIsNone(procesos.metodo_de("CON"))
+        self.assertEqual(procesos.capacidad_de("CNS"), "CNS")
+        self.assertIsNone(procesos.metodo_de("CNS"))
         for metodo in ("DOM:condiciones", "Fundacion", "Continua", "Encaje"):
             with self.assertRaises(ciclo.MetodoNoEsCapacidad, msg=metodo):
                 ciclo.exigir_capacidad(metodo, corpus=self.corpus)
@@ -1156,7 +1156,7 @@ class Gates(BaseDelCiclo):
         self.assertIn("gate:sistema-conforme", derivado)
         with self.assertRaises(ciclo.GateDesconocido):
             ciclo.aplicar_gate("gate:inventado", entrada={}, evidencia=[], revisor="VER",
-                               autor="CON", corpus=self.corpus)
+                               autor="CNS", corpus=self.corpus)
 
     def test_46_un_gate_falla_cerrado_y_el_dictamen_negativo_es_evidencia(self):
         """T199 · Defecto que previene: un gate que aprueba «con reparos».
@@ -1168,7 +1168,7 @@ class Gates(BaseDelCiclo):
         with self.assertRaises(ciclo.GateFallido) as capturado:
             ciclo.aplicar_gate(
                 "gate:cierre-de-item", corpus=self.corpus, entrada={"item": "it-1"},
-                evidencia=declarado["evidencia"], revisor="VER", autor="CON",
+                evidencia=declarado["evidencia"], revisor="VER", autor="CNS",
                 comprobaciones_superadas=[declarado["comprobaciones"][0]["id"]],
             )
         error = capturado.exception
@@ -1178,7 +1178,7 @@ class Gates(BaseDelCiclo):
         self.assertTrue(error.dictamen["fallo_declarado"])
         superado = ciclo.aplicar_gate(
             "gate:cierre-de-item", corpus=self.corpus, entrada={"item": "it-1"},
-            evidencia=declarado["evidencia"], revisor="VER", autor="CON",
+            evidencia=declarado["evidencia"], revisor="VER", autor="CNS",
             comprobaciones_superadas=[c["id"] for c in declarado["comprobaciones"]],
             salida="el item cierra",
         )
@@ -1224,27 +1224,27 @@ class Gates(BaseDelCiclo):
             "comprobaciones_superadas": [c["id"] for c in declarado["comprobaciones"]],
         }
         with self.assertRaises(ciclo.GateFallido):
-            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="CON", autor="CON",
+            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="CNS", autor="CNS",
                                **argumentos)
         with self.assertRaises(ciclo.GateFallido):
-            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="", autor="CON",
+            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="", autor="CNS",
                                **argumentos)
         with self.assertRaises(ciclo.GateFallido):
             ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="el sistema",
-                               autor="CON", **argumentos)
+                               autor="CNS", **argumentos)
         # EL AUTOR ES OBLIGATORIO, y omitirlo NO es la vía para revisarse a sí mismo.
         # Defecto que previene, medido por la auditoría independiente: con `autor`
         # opcional, los VEINTIDÓS gates del censo se superaban firmándolos uno mismo.
         with self.assertRaises(TypeError):
-            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="CON", **argumentos)
+            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="CNS", **argumentos)
         with self.assertRaises(ciclo.GateFallido):
-            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="CON", autor="",
+            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="CNS", autor="",
                                **argumentos)
         with self.assertRaises(ciclo.GateFallido):
-            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="CON",
+            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="CNS",
                                autor="el sistema", **argumentos)
         self.assertEqual(
-            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="VER", autor="CON",
+            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="VER", autor="CNS",
                                **argumentos)["dictamen"],
             gates.SUPERADO,
         )
@@ -1274,14 +1274,14 @@ class Handoffs(BaseDelCiclo):
     def test_56_las_cinco_entregas_de_8_0_estan_materializadas(self):
         """T200 · Defecto que previene: una composición completa que no puede entregar nada.
 
-        `§8.0` declara cinco entregas que `circuitos/` no tenía: `SIS`→`PLT`, `SIS`→`CON`,
-        `SIS`→`VER`, `CON`→`ENT` y `ENT`→`VER`. Se comprueban una a una, por sus extremos.
+        `§8.0` declara cinco entregas que `circuitos/` no tenía: `SIS`→`PLT`, `SIS`→`CNS`,
+        `SIS`→`VER`, `CNS`→`ENT` y `ENT`→`VER`. Se comprueban una a una, por sus extremos.
         """
         esperadas = {
             "handoff:sis-a-plt": ("SIS", "PLT"),
-            "handoff:sis-a-con": ("SIS", "CON"),
+            "handoff:sis-a-con": ("SIS", "CNS"),
             "handoff:sis-a-ver": ("SIS", "VER"),
-            "handoff:con-a-ent": ("CON", "ENT"),
+            "handoff:con-a-ent": ("CNS", "ENT"),
             "handoff:ent-a-ver": ("ENT", "VER"),
         }
         catalogado = ciclo.catalogo(self.corpus)
@@ -1308,10 +1308,10 @@ class Handoffs(BaseDelCiclo):
             artefactos=["la rama con el cambio construido"],
             checkpoint="el estado del paquete y su base", trazabilidad=trazabilidad,
         )
-        self.assertEqual(entrega["custodia"], "CON")
+        self.assertEqual(entrega["custodia"], "CNS")
         rechazada = ciclo.rechazar(entrega, receptor="VER",
                                    motivo="faltan las diferencias declaradas")
-        self.assertEqual(rechazada["custodia"], "CON")
+        self.assertEqual(rechazada["custodia"], "CNS")
         self.assertFalse(rechazada["cuenta_para_el_freno"])
         with self.assertRaises(ciclo.HandoffRechazado):
             ciclo.acusar(rechazada, comprobaciones_superadas=[], receptor="VER")
@@ -1327,7 +1327,7 @@ class Handoffs(BaseDelCiclo):
             "evidencia": ["la captura del estado actual"],
         })
         self.assertTrue(devuelta["cuenta_para_el_freno"])
-        self.assertEqual(devuelta["custodia"], "CON")
+        self.assertEqual(devuelta["custodia"], "CNS")
 
     def test_58_una_devolucion_sin_los_cuatro_campos_no_es_una_devolucion(self):
         """T200 · Defecto que previene: una devolución que es una opinión.

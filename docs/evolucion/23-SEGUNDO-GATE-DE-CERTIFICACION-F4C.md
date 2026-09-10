@@ -142,7 +142,7 @@ puerta diecisiete, y tendría razón».
 ## 5 · Lo que este gate SÍ ha cerrado
 
 ```text
-· `R-04`, que dos gates consecutivos no habían cerrado, queda CERRADO CON MECANISMO:
+· `R-04`, que dos gates consecutivos no habían cerrado, queda CERRADO CNS MECANISMO:
   `[1,2)`→`W11`, `[2,4)`→`W17`, `[4,6)`→`W8`, sin hueco ni solape, las tres sedes de acuerdo
 · la clase `B` del documento 22 quedó RESUELTA por `O17`, y su propagación es —en palabras
   del dictamen de `S`— «la más disciplinada del expediente»: 9 de las 12 reglas sin reserva,
@@ -307,7 +307,7 @@ Abrí `DECISIONES-Y-CONTRADICCIONES.md` **L452**, la fila `D107`, entera. Dice l
 **Y es imposible, por tres vías independientes que verifiqué una a una:**
 
 1. **La definición de vía 3** (§8.0 L5985-5992): «*3 CONDICIONAL — **figura en las `condicionales` del proceso** CON SU CONDICIÓN ESCRITA Y COMPROBABLE*». Las cuatro filas declaran `proceso:SIS`.
-2. **`proceso:SIS` no declara a `SEG` ni como obligatoria ni como condicional.** `PN-13` (L8759-8763) lo cita de `b.16`, que es material APROBADO: «*SIS: obligatorias SIS·CON·VER, condicionales ENT y APR … **`DOM`, `SEG` y `DIS` no figuran en ninguna de las dos***». Y §8.0 L6161-6164 **prohíbe expresamente ensanchar un proceso por conveniencia**.
+2. **`proceso:SIS` no declara a `SEG` ni como obligatoria ni como condicional.** `PN-13` (L8759-8763) lo cita de `b.16`, que es material APROBADO: «*SIS: obligatorias SIS·CNS·VER, condicionales ENT y APR … **`DOM`, `SEG` y `DIS` no figuran en ninguna de las dos***». Y §8.0 L6161-6164 **prohíbe expresamente ensanchar un proceso por conveniencia**.
 3. **La misma tabla se desmiente cuatro filas más abajo.** L9449, fila `A9`–`A10`, también `proceso:SIS`: «**`SEG` sin vía si hay superficie: `PN-13`**». Y L9443, fila `INS-0`–`INS-5`, también `proceso:SIS`: «**`DOM` `DIS` `SEG` sin vía: `PN-13`**». **Mismo proceso, misma tabla, tres filas que dicen que sí y dos que dicen que no.**
 
 Además, la condición escrita es «**cuando hay superficie**» — que es *exactamente* el antecedente que `PN-13` declara sin vehículo.
@@ -1198,7 +1198,7 @@ BLOQUEANTES y ocho GRAVES, sobre evidencia estrictamente más débil que la que 
 | **`T-02`** | **GRAVE** | **L1520-1531** (`G-22`) y **L2091-2116** (`G-28`) | `if rel in _base_arbol and rel in tocados:` | **Ocho de los veintisiete inmutables no existen en `05f71b7`** —docs 19, 20, 21, 22 y los cuatro manifiestos, derivados por mí— luego su segundo brazo es inalcanzable, en silencio. `G-28` contrasta sólo contra `git show HEAD:`. Es `Q-26`/`R-N1` con el inventario ampliado y **la comparación sin tocar** | `T1` (`T1-01`) | **SÍ · R-C.** 15 volteos `INSUFICIENTE`→`SUFICIENTE` en el doc 21 + un manifiesto, confirmados → **`37/37` verde**, con `OK G-22 … intactos` y `OK G-28 … sin una sola inversión` |
 | **`T-03`** | **GRAVE** | **L2183-2196** (`_ampliacion_admitida`) | `if re.match(r"^docs/evolucion/\d\d-.*\.md$", rel): return True   # el documento que un gate nuevo publica` | Todo fichero `NN-*.md` bajo `docs/evolucion/`, rastreado o no, se admite **sin mirar su contenido**. La comparación de conjuntos se extendió de 1 a 3 zonas y se abrió un `return True` en blanco dentro de la zona nueva | `T1` (`T1-03`) | **SÍ · R-A.** `23-SEGUNDA-SEDE-NORMATIVA.md` («CONTRADICE `C4` y `C7` y PREVALECE» + copia del material APROBADO) y `24-REGISTRO-ALTERNATIVO.md` (registro con `D87` alterada) → **`37/37` verde**, y `G-22` y `G-29` **los nombran en su detalle mientras imprimen `OK`** |
 | **`T-04`** | **GRAVE** | **L2172-2181** (`G-29`) | `_INSTRUMENTAL = set(re.findall(r"`(docs/evolucion/verificacion/[A-Za-z0-9_.-]+)`", _t_readme))` | La sede que autoriza las ampliaciones de `verificacion/` es el README, y **el README no está en ningún inventario de integridad**: no es inmutable, no está en `_EN_CORRECCION`, su contenido no se contrasta. Autorización circular: el guardado escribe su propia autorización | `T1` (`T1-04`) | **SÍ · R-B.** Añadí `` `…/bateria-2.py` `` al README, planté esa segunda batería (imprime «37/37 en verde», `exit 0`) y **renombré `G-30` a `G-30-ANULADA` en toda la tabla** → **`37/37` verde** |
-| **`T-05`** | **GRAVE** | **L1521-1523** y **L2099-2100** | `if rel not in _head_arbol: _sin_base.append(rel); continue` | `G-22` y `G-28` llevan «**falla CERRADO sin git**» en su título y **no fallan cerrado ante una salida VACÍA CON ÉXITO**: `_git()` sólo devuelve `None` si el comando falla. Con `_head_arbol` vacío los dos bucles se saltan entero su cuerpo y las dos imprimen `OK`. Es `M-12` —«*interpretaban el vacío como «nada cambió»*»— sobreviviendo en las dos comprobaciones escritas para cerrar esa clase; `G-11b` **sí** tiene la guarda | `T1` (`T1-19`) | **SÍ · R-E.** `git` falso en el `PATH` (`exit 0`, sin stdout) → **31/37**; fallan `G-11`, `G-11b`, `G-21`, `G-23`, `G-29`, `G-30`; **`G-22` y `G-28` en `OK`**, con `G-28` verde sobre **cero** documentos |
+| **`T-05`** | **GRAVE** | **L1521-1523** y **L2099-2100** | `if rel not in _head_arbol: _sin_base.append(rel); continue` | `G-22` y `G-28` llevan «**falla CERRADO sin git**» en su título y **no fallan cerrado ante una salida VACÍA CNS ÉXITO**: `_git()` sólo devuelve `None` si el comando falla. Con `_head_arbol` vacío los dos bucles se saltan entero su cuerpo y las dos imprimen `OK`. Es `M-12` —«*interpretaban el vacío como «nada cambió»*»— sobreviviendo en las dos comprobaciones escritas para cerrar esa clase; `G-11b` **sí** tiene la guarda | `T1` (`T1-19`) | **SÍ · R-E.** `git` falso en el `PATH` (`exit 0`, sin stdout) → **31/37**; fallan `G-11`, `G-11b`, `G-21`, `G-23`, `G-29`, `G-30`; **`G-22` y `G-28` en `OK`**, con `G-28` verde sobre **cero** documentos |
 | **`T-06`** | **GRAVE** | **L1784-1845** (`_regiones_historicas`) | `_CIERRA_REGION = re.compile(r"^#{1,6} ")` | La protección 2 sustituyó un interruptor de PALABRA por uno de ETIQUETA, y la región que la etiqueta abre sólo cierra en un encabezado en **columna 0** — que dentro de una cita `>` nunca llega. Una línea exime un bloque entero de todo control de cifra. Y **`G-31` certifica que el interruptor funciona** | `T1` (`T1-05`) | **SÍ · P2a/P2b.** Cifra viva falsa en doc 11 L1541 → `FALLO G-26`, 36/37. La misma cifra con **una línea** `> **[ESTADO ANTERIOR · …]**` encima → **`37/37` verde** |
 | **`T-07`** | **GRAVE** | **L779-780** (`G-15`) | `b19 = t11[i19:t11.index("**Y dos más, que no son defectos de F4", i19)]` | La «unicidad de proyección por tres caminos» que el README L63 promete se evalúa **sobre una ventana delimitada por dos cadenas literales**. El remedio del doc 22 —«comparar cifras derivadas, no un patrón de un carácter»— se aplicó **dentro** de la ventana y la ventana no se tocó | `T1` (`T1-06`) | **SÍ.** Control: la segunda proyección «SEIS procesos y en total DIEZ pares, y es la vigente» **dentro** del bloque → `FALLO G-15`, 36/37. Ataque: la MISMA frase **una línea después** de L10130 → **`37/37` verde** |
 | **`T-08`** | **GRAVE** | **L2458-2670** (`G-32`, `G-33`) contra `DECISIONES-Y-CONTRADICCIONES.md` **L674** | «*Protecciones 12, 13, 14 y 15, todas derivadas de `O17` y de su propagación `D107`*» (L2519) | **Ninguna línea de código lee la fila `| O17 |`**: `grep -n 'O17'` da cinco golpes y los cinco son comentario o diagnóstico. `G-21` protege `O1`-`O16` y se detiene justo antes. La resolución del Owner que **este gate existe para certificar** puede negarse entera sin que nada se mueva | `T1` (`T1-08`) | **SÍ · R-H.** Fila `O17` sustituida por su negación exacta + fila `D107` borrada → **`37/37` verde**. Borrar `D107` no deja hueco en `G-20` (es la última) y apaga el contraste de `G-33`: verde por omisión |
@@ -1227,7 +1227,7 @@ RECUENTO DERIVADO DE LAS FILAS, no copiado
                ──
                22
 
-DE ELLOS, REPRODUCIDOS POR MÍ CON SALIDA PEGADA   17
+DE ELLOS, REPRODUCIDOS POR MÍ CNS SALIDA PEGADA   17
 ACEPTADOS DE UN RELEVO SIN REPRODUCIR, DECLARADOS  4   T-20 · T-21 · T-22 · (T-15 parcial)
 HALLAZGOS MÍOS, QUE NINGÚN RELEVO TRAJO            2   T-10 (GRAVE) · T-11 (MEDIO)
 ```
@@ -1981,7 +1981,7 @@ MI DERIVACION SOBRE HEAD c36d2ba, con las tres variantes de barrido posibles
 
 ### `D-5` · `S3-04` / `T2-07` · `T147` en rojo y runner 12/13 — ¿culpa de la TANDA o del GATE?
 
-> **RESUELVO CON MEDICION PROPIA, Y ES CONCLUYENTE. LA CULPA ES DEL GATE.**
+> **RESUELVO CNS MEDICION PROPIA, Y ES CONCLUYENTE. LA CULPA ES DEL GATE.**
 
 ```text
 $ python3 kernel/operativo/validadores/comprobar_referencias.py --exclusiones   (sobre HEAD)
@@ -2298,7 +2298,7 @@ Y el checkpoint lo repite en su inventario de lo pendiente (**L1613-1614**):
    el gate del documento 21 midio 3 falsos verdes, el del 22 midio 8, este midio 7 de `T` mas 6
    mios **por puertas nuevas**, y **el coste marginal de encontrar la siguiente no esta subiendo**.
 
-> ### MI JUICIO, CON TODAS LAS LETRAS
+> ### MI JUICIO, CNS TODAS LAS LETRAS
 >
 > **`M-04`, enunciada como PROPOSICION UNIVERSAL —«no existe arbol defectuoso que pase la bateria
 > en verde»—, NO ES SATISFACIBLE DENTRO DE F4, y no lo es por una razon estructural que el propio

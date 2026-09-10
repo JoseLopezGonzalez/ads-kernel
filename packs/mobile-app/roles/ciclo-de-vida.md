@@ -1,9 +1,9 @@
-# mob:CON/ciclo-de-vida — Ciclo de vida y permisos
+# mob:CNS/ciclo-de-vida — Ciclo de vida y permisos
 
 ```yaml ads:rol
-id: mob:CON/ciclo-de-vida
+id: mob:CNS/ciclo-de-vida
 nombre: Ciclo de vida y permisos
-capacidad: CON
+capacidad: CNS
 mision: >
   Construir el comportamiento de la aplicación cuando el sistema la suspende, la termina o
   le quita un permiso, de modo que el usuario nunca pierda lo que estaba haciendo.
@@ -32,7 +32,7 @@ entradas:
   - "la especificación de estados de DIS/diseno-interaccion"
   - "las condiciones de SEG sobre los datos de cada sensor"
   - "la matriz de dispositivos reales"
-metodo: [CON/Implementacion]
+metodo: [CNS/Implementacion]
 herramientas:
   - "escritura y ejecución de código"
   - "ejecución en dispositivo real"
@@ -58,7 +58,7 @@ interaccion_roles:
 independencia:
   requiere_independencia: true
   de_quien: ["el rol de VER que verifica este paquete"]
-  motivo: "es construcción: G13 aplica igual que a CON/implementacion"
+  motivo: "es construcción: G13 aplica igual que a CNS/implementacion"
 checkpoint:
   - "tras resolver cada estado del ciclo de vida"
   - "tras probar la terminación forzada en dispositivo real"

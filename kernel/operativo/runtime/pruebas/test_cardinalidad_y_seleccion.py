@@ -223,7 +223,7 @@ PLURALES = {
         "1 o 2 en competencia declarada",
 }
 
-# El campo `agentes` de `CON/implementacion`. NO es pluralidad de agentes: es paralelismo de
+# El campo `agentes` de `CNS/implementacion`. NO es pluralidad de agentes: es paralelismo de
 # PAQUETES del mismo item, que gobierna la condición compuesta de `a.5`. Se prueba aparte
 # para que nadie lo cuente como una cuarta composición plural.
 CON_PARALELISMO = ("1 por paquete; varios paquetes del mismo item pueden ir en paralelo si "
@@ -660,14 +660,14 @@ class Cardinalidad(unittest.TestCase):
         # Las VEINTIDÓS formas del corpus sí se leen, y el censo lo comprueba entero.
         self.assertTrue(equipos.exigir_censo_legible(self.corpus))
         # `1 por paquete; …` es paralelismo de PAQUETES y NO pluralidad de agentes.
-        lectura = equipos.leer_cardinal(CON_PARALELISMO, roles=["CON/implementacion"])
+        lectura = equipos.leer_cardinal(CON_PARALELISMO, roles=["CNS/implementacion"])
         self.assertEqual((lectura["minimo"], lectura["maximo"]), (1, 1))
         self.assertEqual(lectura["modo"], equipos.MODO_PAQUETE)
         self.assertTrue(lectura["paralelismo_de_paquetes"])
         equipo_con = equipos.materializar(
-            "CON", corpus=self.corpus, control_repo=self.repo,
+            "CNS", corpus=self.corpus, control_repo=self.repo,
             composiciones_verdaderas=["composicion:con-implementacion"], slots=99)
-        self.assertEqual(self.plan(equipo_con, "CON/implementacion")["agentes"], 1)
+        self.assertEqual(self.plan(equipo_con, "CNS/implementacion")["agentes"], 1)
 
         # EL SABOTAJE DE `E-01`, sobre una COPIA del corpus.
         base = tempfile.mkdtemp(prefix="ads-siete-agentes-")

@@ -162,7 +162,7 @@ estando.**
 la que la certificación queda ligada por `O21` §5 y `O22` §5, y `O22` §7 no deja otro ciclo.
 **Quedan vivos, con sede, prueba y severidad adjudicada.**
 
-## 6 · POR QUÉ, CON TODO ESO EN CONTRA, LA DECLARACIÓN ES POSITIVA — en palabras de `LE`
+## 6 · POR QUÉ, CNS TODO ESO EN CONTRA, LA DECLARACIÓN ES POSITIVA — en palabras de `LE`
 
 > *«Porque la vara del §7 es un BLOQUEO, y en el vocabulario que este expediente ha sostenido
 > doce gates seguidos un bloqueo es un GRAVE de clase A que funda insuficiencia. Los cuatro

@@ -29,9 +29,9 @@ La escala devuelve N1 → composicion:dis-caso-nuevo, más construcción
 
 ROLES DEL KERNEL          DIS/diseno-interaccion · DIS/diseno-visual ·
                           DIS/sistema-de-diseno · DIS/critica-visual ·
-                          CON/implementacion · VER/dosier
-ROL AÑADIDO POR EL PACK   web:CON/estados-de-red
-INDEPENDENCIA             VER/dosier de CON/implementacion Y de web:CON/estados-de-red
+                          CNS/implementacion · VER/dosier
+ROL AÑADIDO POR EL PACK   web:CNS/estados-de-red
+INDEPENDENCIA             VER/dosier de CNS/implementacion Y de web:CNS/estados-de-red
 GATES QUE DEBE PASAR      los dos del kernel + gate:web-accesibilidad +
                           gate:web-estados-de-red
 CONSULTA OBLIGATORIA      DOM: ¿el envío es idempotente? Sin esa respuesta no se reintenta

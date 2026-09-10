@@ -672,7 +672,7 @@ $ cd clonT1 && git checkout -q -B atacar 61492c1a474f2d3ddfced2a9b358e700c980bc2
 $ git status --porcelain                                            (vacío)
 $ python3 docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py | tail -2
 38/38 comprobaciones en verde
-ALCANCE (`DD-21`): 9 de las 38 exigen un repositorio CON HISTORIA … el máximo alcanzable es 29.
+ALCANCE (`DD-21`): 9 de las 38 exigen un repositorio CNS HISTORIA … el máximo alcanzable es 29.
 $ echo $?                                                            0
 $ python3 docs/evolucion/verificacion/derivar-universo-obligatorio.py --rutas | wc -l   81
 $ (RECETA DEL SOBRE)  70fae997006bf89688668aafb94e9edb1433190afe008a1cc1ffe477e798d0a1  = ANCLADO
@@ -2268,7 +2268,7 @@ REGRESIÓN MEDIDA
 
 **Pesa tanto como lo que cayó, y va con su comando y su salida.**
 
-### 4.1 · EL SOBRE, Y CON ÉL LA VALIDEZ DEL GATE
+### 4.1 · EL SOBRE, Y CNS ÉL LA VALIDEZ DEL GATE
 
 ```text
 · LOS DOS DIGEST DE UNIVERSO reproducen BYTE A BYTE, recalculados ANTES de leer nada:
@@ -2345,7 +2345,7 @@ python3 …/comprobar-correccion-gate-de-cierre.py (clon con historia)  → 38/3
 python3 …/comprobar-correccion-gate-de-cierre.py (árbol sin `.git`)   → 29/38, las 9 exactas
 ```
 
-**LAS DIECIOCHO CUADRAN CON LO QUE SU SEDE DECLARA.** El censo de `PN` (19 cabeceras − `PN-4`
+**LAS DIECIOCHO CUADRAN CNS LO QUE SU SEDE DECLARA.** El censo de `PN` (19 cabeceras − `PN-4`
 RETIRADA − `PN-5` FUSIONADA = 17) coincide con el «VIGENTES · DIECISIETE» que §16 escribe **y
 que `G-13` deriva**. Los 18 bloques de §15.8 son `D23`…`D108`, uno por tanda que escribió
 decisiones — y esta tanda **no escribió ninguna**, luego no le corresponde bloque.
@@ -2905,7 +2905,7 @@ $ git checkout -q -B atacar 61492c1a474f2d3ddfced2a9b358e700c980bc29 ; git statu
 (vacío)
 $ python3 docs/evolucion/verificacion/comprobar-correccion-gate-de-cierre.py | tail -2 ; echo $?
 38/38 comprobaciones en verde
-ALCANCE (`DD-21`): 9 de las 38 exigen un repositorio CON HISTORIA … el máximo alcanzable es 29.
+ALCANCE (`DD-21`): 9 de las 38 exigen un repositorio CNS HISTORIA … el máximo alcanzable es 29.
 0
 $ python3 …/derivar-universo-obligatorio.py --rutas | wc -l      81
 ```

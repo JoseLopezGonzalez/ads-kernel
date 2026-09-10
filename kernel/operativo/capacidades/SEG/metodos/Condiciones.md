@@ -52,7 +52,7 @@ pasos:
     nombre: ENTREGAR CONDICIONES
     modo: convergente
     hace: >
-      Escribir las condiciones que CON debe cumplir, comprobables una a una, antes de
+      Escribir las condiciones que CNS debe cumplir, comprobables una a una, antes de
       construir.
     produce: "condiciones de seguridad"
     termina_cuando: "cada condición se puede comprobar con una prueba o una lectura concreta"
@@ -87,14 +87,14 @@ gate: gate:seguridad-conforme
 salida:
   - "condiciones antes de construir y revisión después"
 devolucion:
-  - "a CON o a ARQ, según de quién sea lo que expone"
+  - "a CNS o a ARQ, según de quién sea lo que expone"
 bloqueo:
   - "no hay acceso a la configuración real"
 cancelacion:
   - "el item se cancela: las condiciones se conservan para el siguiente que toque esa superficie"
 aprendizaje:
   - "toda exposición encontrada entra en SUPERFICIE.md aunque se corrigiera en el acto"
-  - "una condición que CON incumple dos veces señala una condición mal escrita"
+  - "una condición que CNS incumple dos veces señala una condición mal escrita"
 prueba_de_reanudacion: >
   Un agente nuevo lee qué superficies están revisadas y continúa por las que faltan. Un veto
   emitido sigue vigente aunque cambie el agente: vive en el paquete, no en quien lo emitió.

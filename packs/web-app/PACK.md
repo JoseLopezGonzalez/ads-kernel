@@ -19,7 +19,7 @@ restricciones:
   - "el historial del navegador es parte de la navegación: atrás y adelante deben funcionar"
   - "el contenido puede imprimirse o exportarse, y eso es otra superficie"
 capacidades_nuevas: []
-roles_nuevos: [web:DIS/densidad-y-tablas, web:CON/estados-de-red]
+roles_nuevos: [web:DIS/densidad-y-tablas, web:CNS/estados-de-red]
 extensiones_de_metodo:
   - "DIS/Evolucion paso 1: comprobar además si la superficie tiene tabla o formulario, que tienen sus propios patrones"
   - "DIS/ValidacionDeUso paso 2: el recorrido por medio de entrada incluye SIEMPRE teclado solo, sin puntero"

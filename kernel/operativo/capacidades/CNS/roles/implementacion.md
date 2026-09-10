@@ -1,9 +1,9 @@
-# CON/implementacion — Implementación
+# CNS/implementacion — Implementación
 
 ```yaml ads:rol
-id: CON/implementacion
+id: CNS/implementacion
 nombre: Implementación
-capacidad: CON
+capacidad: CNS
 mision: >
   Construir lo que las capas anteriores decidieron, con sus tests, devolviendo en vez de
   corregir cuando alguna de esas capas está mal.
@@ -37,7 +37,7 @@ entradas:
   - "las capas de PRD, DIS y ARQ cuando existen"
   - "las condiciones de DOM y SEG"
   - "CONVENTIONS.md, que vive en el control repo, y las fuentes que el paquete declara en lee_fuentes y escribe_fuentes"
-metodo: [CON/Implementacion]
+metodo: [CNS/Implementacion]
 herramientas:
   - "escritura y ejecución de código"
   - "ejecución de la suite de tests"
@@ -101,5 +101,5 @@ activacion:
   - "todo paquete de construcción productiva"
 retirada:
   - "la capa queda depositada y VER la acepta"
-prompt: "kernel/operativo/capacidades/CON/prompts/implementacion.md"
+prompt: "kernel/operativo/capacidades/CNS/prompts/implementacion.md"
 ```

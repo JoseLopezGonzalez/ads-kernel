@@ -85,7 +85,7 @@ Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la ev
 
 ```text
   · a DIS/diseno-interaccion, cuando faltan estados que la transición necesita conectar
-  · a CON, cuando lo construido cambia duración o curva sin evidencia de imposibilidad
+  · a CNS, cuando lo construido cambia duración o curva sin evidencia de imposibilidad
 ```
 
 Te bloquea, y entonces **nombras qué lo desbloquearía**:

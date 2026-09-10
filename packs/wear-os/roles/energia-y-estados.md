@@ -1,9 +1,9 @@
-# wear:CON/energia-y-estados — Energía y estados del reloj
+# wear:CNS/energia-y-estados — Energía y estados del reloj
 
 ```yaml ads:rol
-id: wear:CON/energia-y-estados
+id: wear:CNS/energia-y-estados
 nombre: Energía y estados del reloj
-capacidad: CON
+capacidad: CNS
 mision: >
   Construir la superficie del reloj de modo que sobreviva al estado ambiental, a la ausencia
   del teléfono y a la batería escasa, sin consumir de más ni perder el trabajo del usuario.
@@ -34,7 +34,7 @@ entradas:
   - "la especificación de estados de wear:DIS/lectura-de-un-vistazo"
   - "la decisión de independencia del producto"
   - "el presupuesto de consumo declarado por el proyecto"
-metodo: [CON/Implementacion]
+metodo: [CNS/Implementacion]
 herramientas:
   - "escritura y ejecución de código"
   - "ejecución y medición en reloj real"
@@ -61,7 +61,7 @@ interaccion_roles:
 independencia:
   requiere_independencia: true
   de_quien: ["el rol de VER que verifica este paquete"]
-  motivo: "es construcción: G13 aplica igual que a CON/implementacion"
+  motivo: "es construcción: G13 aplica igual que a CNS/implementacion"
 checkpoint:
   - "tras implementar cada estado"
   - "tras cada medición de consumo"

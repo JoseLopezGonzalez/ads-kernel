@@ -83,7 +83,7 @@ Estado: **corregido** · **aceptado-como-deuda** · **sustituido** · **abierto*
 | **A-10** | grave | los frenos de a.7 y b.9 sin ejecutor; la Supervisión de DSP sin materializar | se citaron en prosa y nadie los contaba | `DSP/supervision` y `DSP/Supervision`, independientes de quien recompone; tres comprobaciones nuevas en `gate:despacho-coherente` | **T141** | N141 · N141b · N141c · N141d | **corregido** |
 | **A-11** | grave | el encuadre no podía declarar `esperando-owner`, y tenía `aparcado` como estado propio | un vocabulario de estados paralelo al de b.2 | dos campos: `estado` (madurez) y `estado_paquete` (b.2); las cuatro distinciones escritas | **T142** | N142 · N142b | **corregido** |
 | **A-12** | grave | tres versiones para el mismo artefacto; el árbol del README era el de 1.3.0 | no había política de versiones, y ads_lint no miraba la portada | `kernel/VERSIONES.md` distingue cuatro versiones de cosas distintas; release a 2.0.0-alpha.2 | **T152** | N152 · N152b | **corregido** |
-| **A-13** | grave | `gate:usabilidad` decía aplicarse a CON y nada lo vinculaba | el `aplica_a` se escribió sin portador | `gate:implementacion-completa` gana `superficie-usable`, con quién produce y quién juzga | **T144** | — | **corregido** |
+| **A-13** | grave | `gate:usabilidad` decía aplicarse a CNS y nada lo vinculaba | el `aplica_a` se escribió sin portador | `gate:implementacion-completa` gana `superficie-usable`, con quién produce y quién juzga | **T144** | — | **corregido** |
 | **A-14** | grave | la crítica de encuadre obligatoria podía evaporarse al bajar el grado | el gate miraba el grado FINAL | se persiste `grado_inicial`; el gate exige el dictamen por grado inicial, nivel de Owner o materialización | **T145** | N145 · N145b | **corregido** |
 | **A-15** | medio | `ENC/Critica` existía, se usaba y se probaba, y su ficha no lo declaraba | T90 sólo cruzaba capacidades con roles | declarado en la ficha; **T90 pasa a cruzar también los métodos** | T90 | N90 | **corregido** |
 | **A-16** | medio | C4 invocaba `composicion:dis-fundacion`, que no existe | el ejemplo se escribió antes que las composiciones | el ejemplo recorre las diez composiciones reales en su orden real | T147 *(enlaces)* | — | **corregido** |
@@ -226,7 +226,7 @@ kernel/operativo/  recorrido/ NUEVO — obligaciones, cierre y los diez procesos
                      encuadre gana `estado_paquete` y `grado_inicial`; pack gana
                      `propiedades_medibles`; ads_lint gana el tipo `numero`
                    capacidades/ — ENC (E1, ENC/Critica) · DSP (supervisión, cancelación)
-                     · DIS (crítica en dos pasadas y modo reutilización) · CON (usabilidad)
+                     · DIS (crítica en dos pasadas y modo reutilización) · CNS (usabilidad)
                      · DIS/DOM/SEG/VER (colisión de vetos)
                    diseno/ — escala de novedad formal · gates por nivel · dos pasadas ·
                      retornos de los nueve ejes · estación 12 declarada
@@ -306,8 +306,8 @@ completa en `pruebas/evidencia/prompts-salida.txt`.
 | `ARQ/diagnostico` | reproduce antes de explicar; la causa cubre TODOS los síntomas; distingue defecto de gap | **conforme** |
 | `DOM/modelo` | condiciones antes de construir; busca consumidores en el repositorio; veto con evidencia mínima; **la pérdida la decide el Owner** | **conforme** |
 | `DOM/migracion` | una reversión no ejecutada no es una reversión; datos reales; ventana de incompatibilidad declarada | **conforme** |
-| `CON/implementacion` | no redecide: devuelve; lee buscando huecos de autoridad | **conforme** |
-| `CON/experimental` | criterio de descarte **antes**; no integra: propone item nuevo | **conforme** |
+| `CNS/implementacion` | no redecide: devuelve; lee buscando huecos de autoridad | **conforme** |
+| `CNS/experimental` | criterio de descarte **antes**; no integra: propone item nuevo | **conforme** |
 | `VER/dosier` · `VER/decision` | evidencia que viaja, no un sí/no; `VER:decisión` no sustituye la preferencia del Owner | **conforme** |
 | `ENT/despliegue` | comprobar la vuelta antes de ir; la publicación es materia reservada, sin excepción por contexto | **conforme** |
 | `ENT/observacion` | los cinco requisitos del rollback, uno a uno; atribuye antes de revertir | **conforme** |
@@ -332,9 +332,9 @@ completa en `pruebas/evidencia/prompts-salida.txt`.
 | `DIS/sistema-de-diseno` | un sistema gobierna, no describe; forma completa de declarar un patrón | **conforme** |
 | `DIS/revision-de-fidelidad` | las ocho cosas que se simplifican en silencio; duración medida sobre la grabación | **conforme** |
 | `DIS/validacion-de-uso` | no lee la especificación antes de recorrer, para no validar su memoria | **conforme** |
-| `web:DIS/densidad-y-tablas` · `web:CON/estados-de-red` | densidad sin perder legibilidad; los cinco estados de red | **conforme** |
-| `mob:DIS/interaccion-tactil` · `mob:CON/ciclo-de-vida` | pulgar y alcance; terminación forzada sin perder trabajo | **conforme** |
-| `wear:DIS/lectura-de-un-vistazo` · `wear:CON/energia-y-estados` | un dato, una acción; el ambiental es superficie, no apagado | **conforme** |
+| `web:DIS/densidad-y-tablas` · `web:CNS/estados-de-red` | densidad sin perder legibilidad; los cinco estados de red | **conforme** |
+| `mob:DIS/interaccion-tactil` · `mob:CNS/ciclo-de-vida` | pulgar y alcance; terminación forzada sin perder trabajo | **conforme** |
+| `wear:DIS/lectura-de-un-vistazo` · `wear:CNS/energia-y-estados` | un dato, una acción; el ambiental es superficie, no apagado | **conforme** |
 
 **Resultado:** 42 unidades revisadas —36 prompts canónicos y 6 embebidas— · 39 conformes
 tras añadirles el bloque de cierre · **2 corregidas por contenido** (`DSP/estado` y
@@ -428,7 +428,7 @@ A-15  1   método que su capacidad deja de declarar
 A-18  2   decide lo que su capacidad escala · decide materia ajena
 A-23  1   DSP vuelve a decidir una cancelación
 A-24  1   cifra escrita a mano que ya no cuadra
-A-13  2   vínculo CON↔gate:usabilidad roto · vínculo sin declarar quién juzga
+A-13  2   vínculo CNS↔gate:usabilidad roto · vínculo sin declarar quién juzga
 T158  6   invocación archivada sin .py · éxito sin salida que lo respalde · evidencia de
           otro validador · código no cero publicado · evidencia que falta · validador
           fuera del manifiesto

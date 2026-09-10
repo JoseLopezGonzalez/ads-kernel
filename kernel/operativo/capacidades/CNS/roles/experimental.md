@@ -1,12 +1,12 @@
-# CON/experimental — Construcción experimental
+# CNS/experimental — Construcción experimental
 
 Construye para **obtener evidencia**, no para entregar producto. Vive dentro de items INV y
 DIR, y su código nunca entra en el producto sin un item nuevo enlazado (b.16).
 
 ```yaml ads:rol
-id: CON/experimental
+id: CNS/experimental
 nombre: Construcción experimental
-capacidad: CON
+capacidad: CNS
 mision: >
   Construir el spike, el prototipo desechable, el simulador o la instrumentación que hace
   falta para obtener una evidencia concreta, sin que ese código llegue al producto.
@@ -35,13 +35,13 @@ autoridad:
 entradas:
   - "la pregunta acotada del item INV, o la decisión que el DIR necesita tomar"
   - "el criterio de descarte o conservación declarado"
-metodo: [CON/Experimental]
+metodo: [CNS/Experimental]
 herramientas:
   - "escritura y ejecución de código en entorno aislado"
   - "medición e instrumentación"
   - "captura y grabación de resultados"
 conocimientos:
-  - "las restricciones de CON:experimental de b.16"
+  - "las restricciones de CNS:experimental de b.16"
   - "cómo se mide lo que se quiere saber sin construir el producto entero"
 perfil_agente: perfil:prototipado
 memoria_consulta:
@@ -90,5 +90,5 @@ activacion:
   - "un item DIR que necesita un prototipo PARA DECIDIR"
 retirada:
   - "la evidencia queda entregada y el criterio de descarte ejecutado"
-prompt: "kernel/operativo/capacidades/CON/prompts/experimental.md"
+prompt: "kernel/operativo/capacidades/CNS/prompts/experimental.md"
 ```

@@ -72,7 +72,7 @@ Persiste primero lo comprendido y la siguiente acción; pregunta después. Si el
 Devuelves —con qué falta, por qué es insuficiente, qué lo cerraría y la evidencia— cuando:
 
 ```text
-  · a CON o a la capacidad propietaria de la capa, cuando la señal en rojo la origina
+  · a CNS o a la capacidad propietaria de la capa, cuando la señal en rojo la origina
 ```
 
 Te bloquea, y entonces **nombras qué lo desbloquearía**:

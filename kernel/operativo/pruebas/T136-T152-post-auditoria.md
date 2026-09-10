@@ -182,13 +182,13 @@ evidencia: "evidencia/contratos-salida.txt"
 id: T144
 nombre: El gate de usabilidad tiene portador computable en Construcción
 cubre: ["A-13", "gate:usabilidad", "gate:implementacion-completa", "DIS/validacion-de-uso"]
-dado: ["gate:usabilidad declara aplicarse a las capas de DIS y de CON"]
-cuando: ["se busca qué comprobación de CON activa ese gate sobre lo construido"]
+dado: ["gate:usabilidad declara aplicarse a las capas de DIS y de CNS"]
+cuando: ["se busca qué comprobación de CNS activa ese gate sobre lo construido"]
 entonces:
   - "gate:implementacion-completa comprueba la usabilidad de la superficie construida"
   - "la comprobación cita gate:usabilidad, de modo que el vínculo es rastreable"
   - "declara que el dictamen lo emite DIS/validacion-de-uso, no quien produjo la evidencia"
-falla_si: ["el aplica_a menciona CON y ninguna comprobación de CON lo activa"]
+falla_si: ["el aplica_a menciona CNS y ninguna comprobación de CNS lo activa"]
 ejecucion: validador-estructural
 validador: "kernel/operativo/validadores/comprobar_contratos.py"
 estado: prueba-superada

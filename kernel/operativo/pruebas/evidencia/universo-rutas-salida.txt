@@ -65,7 +65,7 @@ v         1331  89023236f0a2a9f1…  docs/rediseno/b-RECORRIDO-APROBADA.md
 v         1590  aa635dff79e73fe1…  kernel/KERNEL.md
 ii          95  a870911530909584…  kernel/operativo/capacidades/APR/CAPACIDAD.md
 ii         104  6ca11b5f09883e24…  kernel/operativo/capacidades/ARQ/CAPACIDAD.md
-ii         107  e0f79e6c3a467302…  kernel/operativo/capacidades/CON/CAPACIDAD.md
+ii         107  e0f79e6c3a467302…  kernel/operativo/capacidades/CNS/CAPACIDAD.md
 ii         147  06f019010d45771f…  kernel/operativo/capacidades/DIS/CAPACIDAD.md
 ii         135  926c7144cb098caa…  kernel/operativo/capacidades/DOM/CAPACIDAD.md
 ii         152  acb292f882e77d74…  kernel/operativo/capacidades/DSP/CAPACIDAD.md

@@ -63,7 +63,7 @@ interaccion_owner:
   formato: "las dos versiones en el reloj real, no descritas"
 interaccion_roles:
   - "recibe la dirección de DIS/direccion-artistica, común con el móvil"
-  - "entrega a wear:CON/energia-y-estados los estados que hay que construir"
+  - "entrega a wear:CNS/energia-y-estados los estados que hay que construir"
   - "entrega a DIS/critica-visual y a DIS/validacion-de-uso"
 independencia:
   requiere_independencia: true

@@ -226,7 +226,7 @@ ANÁLISIS Y EXTRACCIÓN
           ↓
 CONOCIMIENTO CANDIDATO
           ↓
-COMPARACIÓN CON ADS
+COMPARACIÓN CNS ADS
           ↓
 CLASIFICACIÓN / CRÍTICA / EVIDENCIA
           ↓
@@ -600,7 +600,7 @@ El diseño debe definir claramente responsabilidades, autoridad, métodos, gates
 
 ## 8.2 Propiedad clara
 
-La solución no debe repartir estas responsabilidades de forma ambigua entre PLT, ENT, DSP, CON u otras capacidades.
+La solución no debe repartir estas responsabilidades de forma ambigua entre PLT, ENT, DSP, CNS u otras capacidades.
 
 Puede existir un contrato transversal o una distribución explícita de responsabilidades, pero debe haber una respuesta inequívoca para cada operación Git:
 
@@ -1067,7 +1067,7 @@ Ejemplos:
 - INV para investigar otras soluciones;
 - ARQ para cambios estructurales;
 - PLT para runtime/tooling;
-- CON para implementación;
+- CNS para implementación;
 - SEG para límites de seguridad;
 - VER para evidencia independiente;
 - ENT cuando cambie un runtime operativo;

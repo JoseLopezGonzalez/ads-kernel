@@ -249,7 +249,7 @@ id: composicion:dis-revision-implementacion
 capacidad: DIS
 clase_de_trabajo: "comprobar lo que Construcción ha entregado"
 condicion: >
-  CON entrega una capa que implementa una especificación de DIS, y el paquete de DIS es de
+  CNS entrega una capa que implementa una especificación de DIS, y el paquete de DIS es de
   revisión, no de producción.
 roles:
   - rol: DIS/revision-de-fidelidad

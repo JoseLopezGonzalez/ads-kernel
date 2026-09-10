@@ -8,7 +8,7 @@ La escala devuelve N4 → composicion:dis-proyecto-nuevo
 CLAVE                     la dirección visual es COMÚN con el móvil si existe. Lo que el
                           reloj define es su propia escala, densidad y componentes.
 ROLES DEL KERNEL          los once de dis-proyecto-nuevo
-ROLES DEL PACK            wear:DIS/lectura-de-un-vistazo · wear:CON/energia-y-estados
+ROLES DEL PACK            wear:DIS/lectura-de-un-vistazo · wear:CNS/energia-y-estados
 EXPLORACIÓN               las tres direcciones se exploran AL TAMAÑO DEL RELOJ, nunca
                           escaladas desde una pantalla grande
 GATES                     los dos del kernel + gate:wear-vistazo + gate:wear-ambiental +
@@ -23,7 +23,7 @@ Es una superficie propia, no un fragmento de otra. La escala devuelve N1 o N2.
 
 ROLES DEL KERNEL          DIS/diseno-visual · DIS/sistema-de-diseno · DIS/critica-visual ·
                           DIS/revision-de-fidelidad
-ROLES DEL PACK            wear:DIS/lectura-de-un-vistazo · wear:CON/energia-y-estados
+ROLES DEL PACK            wear:DIS/lectura-de-un-vistazo · wear:CNS/energia-y-estados
 DECISIÓN PREVIA           qué muestra, con qué frecuencia se actualiza y a dónde lleva
 GATES                     gate:wear-vistazo + gate:wear-consumo
 ESTADOS OBLIGATORIOS      sin datos · sin conexión · error, además de los cinco del kernel

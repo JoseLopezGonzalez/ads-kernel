@@ -89,7 +89,7 @@ Los códigos son:
 
 ```text
 ENC encuadre      PRD producto     DIS diseño        ARQ arquitectura
-DOM dominio       CON construcción VER verificación  ENT entrega
+DOM dominio       CNS construcción VER verificación  ENT entrega
 USO uso real      INV investigación SEG seguridad    PLT plataforma
 APR aprendizaje   DSP despacho     SIS sistema
 ```

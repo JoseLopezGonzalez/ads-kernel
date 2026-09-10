@@ -84,7 +84,7 @@ NUNCA_PARTICIPA = ("ENC",)
 # condición y qué dos capacidades— porque leerlo del texto sería adivinar prosa, y una
 # prueba comprueba que las dos capacidades siguen nombradas en el corpus.
 PROPIETARIO_POR_CONDICION = {
-    "proceso:DEF": {"condicion": "C-ARQ", "si": "ARQ", "si_no": "CON"},
+    "proceso:DEF": {"condicion": "C-ARQ", "si": "ARQ", "si_no": "CNS"},
 }
 
 # Procesos cuyo propietario `b.16` NO fija y PROHÍBE asignar a mano: lo DERIVA el encargo.

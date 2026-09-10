@@ -60,8 +60,8 @@ obligatorias:
       PRD, y el Owner cuando el alcance retirado es materia suya (a.8)
   - id: comportamiento-construido
     capa_exigida: >
-      la capa de CON: el comportamiento existe y está probado en su nivel
-    capacidad_productora: "CON"
+      la capa de CNS: el comportamiento existe y está probado en su nivel
+    capacidad_productora: "CNS"
     criterio_de_satisfaccion: >
       cada criterio de éxito de PRD tiene comportamiento construido que lo satisface, y la suite pasa
     autoridad_de_retirada: >
@@ -124,8 +124,8 @@ obligatorias:
       PRD, y el Owner si la expectativa retirada era suya
   - id: hueco-cerrado
     capa_exigida: >
-      la capa de CON que elimina la distancia medida
-    capacidad_productora: "CON"
+      la capa de CNS que elimina la distancia medida
+    capacidad_productora: "CNS"
     criterio_de_satisfaccion: >
       la distancia medida en la capa de PRD ha desaparecido, comprobado con el mismo caso
     autoridad_de_retirada: >
@@ -175,12 +175,12 @@ intencion: >
   Restaurar un comportamiento esperado que ha dejado de cumplirse.
 condicion_de_entrada: >
   Algo especificado no hace lo que su especificación dice.
-propietario_global: "ARQ cuando C-ARQ es verdadera; CON en caso contrario"
+propietario_global: "ARQ cuando C-ARQ es verdadera; CNS en caso contrario"
 obligatorias:
   - id: correccion-construida
     capa_exigida: >
-      la capa de CON que restaura el comportamiento esperado
-    capacidad_productora: "CON"
+      la capa de CNS que restaura el comportamiento esperado
+    capacidad_productora: "CNS"
     criterio_de_satisfaccion: >
       el caso que reproducía el defecto ya no lo reproduce, y existe test que lo fija
     autoridad_de_retirada: >
@@ -243,8 +243,8 @@ obligatorias:
       el Owner, si decide cerrar sin causa: queda registrado como riesgo asumido
   - id: correccion-construida
     capa_exigida: >
-      la capa de CON que elimina la causa
-    capacidad_productora: "CON"
+      la capa de CNS que elimina la causa
+    capacidad_productora: "CNS"
     criterio_de_satisfaccion: >
       la causa diagnosticada ya no puede producirse, con test que lo fija
     autoridad_de_retirada: >
@@ -309,7 +309,7 @@ obligatorias:
     autoridad_de_retirada: >
       el Owner, si retira la pregunta
 condicionales:
-  - capacidad: "CON:experimental"
+  - capacidad: "CNS:experimental"
     condicion: "la evidencia exige construir un spike, prototipo o banco de pruebas"
   - capacidad: "PRD"
     condicion: "el destino declarado es una decisión de producto"
@@ -347,8 +347,8 @@ obligatorias:
       ARQ, y el Owner si el coste retirado cambia una prioridad suya
   - id: cambio-construido
     capa_exigida: >
-      la capa de CON que ejecuta el plan
-    capacidad_productora: "CON"
+      la capa de CNS que ejecuta el plan
+    capacidad_productora: "CNS"
     criterio_de_satisfaccion: >
       lo construido corresponde al plan, sin cambio de comportamiento observable no declarado
     autoridad_de_retirada: >
@@ -407,8 +407,8 @@ obligatorias:
       nadie: G28 lo hace obligatorio en este proceso y no se retira
   - id: cambio-construido
     capa_exigida: >
-      la capa de CON que incorpora o retira la dependencia
-    capacidad_productora: "CON"
+      la capa de CNS que incorpora o retira la dependencia
+    capacidad_productora: "CNS"
     criterio_de_satisfaccion: >
       la dependencia está en la versión declarada y el proyecto construye y pasa su suite
     autoridad_de_retirada: >
@@ -481,7 +481,7 @@ condicionales:
 evidencia_necesaria:
   - "la evidencia mínima declarada en los siete campos del encargo"
 criterio_de_cierre: >
-  La conclusión existe, su consumidor la ha recibido y los items nuevos que genera están creados. AUD no activa CON y PUEDE cerrar en APR sin pasar por PRD.
+  La conclusión existe, su consumidor la ha recibido y los items nuevos que genera están creados. AUD no activa CNS y PUEDE cerrar en APR sin pasar por PRD.
 aprendizaje: >
   Qué reveló la auditoría sobre cómo se llegó hasta ahí.
 ```
@@ -542,7 +542,7 @@ obligatorias:
 condicionales:
   - capacidad: "DIS"
     condicion: "C-DIS"
-  - capacidad: "CON:experimental"
+  - capacidad: "CNS:experimental"
     condicion: "hace falta un prototipo PARA PODER DECIDIR"
   - capacidad: "APR"
     condicion: "C-APR"
@@ -551,7 +551,7 @@ evidencia_necesaria:
   - "el registro de sustituciones"
   - "los items derivados con sus enlaces"
 criterio_de_cierre: >
-  La decisión está tomada, registrada, descompuesta en items ejecutables y verificada por VER:decisión. CON, VER, ENT y USO PRODUCTIVOS no son obligatorios: ninguna construcción productiva puede vivir dentro de un DIR.
+  La decisión está tomada, registrada, descompuesta en items ejecutables y verificada por VER:decisión. CNS, VER, ENT y USO PRODUCTIVOS no son obligatorios: ninguna construcción productiva puede vivir dentro de un DIR.
 aprendizaje: >
   Qué hizo falta para decidir, y qué se supo tarde.
 ```
@@ -578,8 +578,8 @@ obligatorias:
       el Owner: renunciar a la evidencia de verificación es una decisión suya, y queda registrada con su alcance y su fecha
   - id: cambio-construido
     capa_exigida: >
-      la capa de CON que implementa el cambio del sistema
-    capacidad_productora: "CON"
+      la capa de CNS que implementa el cambio del sistema
+    capacidad_productora: "CNS"
     criterio_de_satisfaccion: >
       lo construido corresponde a lo declarado por SIS y sus validadores pasan
     autoridad_de_retirada: >

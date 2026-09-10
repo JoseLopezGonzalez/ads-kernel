@@ -4,7 +4,7 @@
 id: composicion:ver-dosier
 capacidad: VER
 clase_de_trabajo: "verificación de una capa de construcción"
-condicion: "existe una capa de CON depositada y el item no es de tipo DIR."
+condicion: "existe una capa de CNS depositada y el item no es de tipo DIR."
 roles:
   - rol: VER/dosier
     obligatorio: true
@@ -12,7 +12,7 @@ roles:
 combinables: []
 independientes:
   - rol: VER/dosier
-    de: [CON/implementacion]
+    de: [CNS/implementacion]
     motivo: >
       G13 como estructura por defecto de esta capacidad: quien construyó verifica lo que
       evitó, no lo que cometió

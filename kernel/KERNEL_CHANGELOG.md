@@ -2,6 +2,51 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.12 — la capacidad de Construccion deja de usar un nombre imposible en Windows
+
+**UP-00.** La capacidad de Construccion vivia en un directorio cuyo nombre —tres letras,
+las de la palabra castellana que Windows reservo como dispositivo de consola en MS-DOS—
+**hace fallar `git clone` entero en Windows**:
+
+```text
+error: invalid path '.../CAPACIDAD.md'
+fatal: ... exit code 128
+```
+
+No fallaba un guion ni una prueba: **no se podia obtener el repositorio**. Cualquier
+proyecto que instalara este kernel en Windows se estrellaba en el primer paso, antes de
+llegar a nada. Se detecto en el primer proyecto que ejecuto algo en un Windows de verdad,
+y no antes, porque el defecto es invisible desde Linux y desde macOS: alli ese nombre de
+directorio es perfectamente corriente.
+
+**Que cambia.** La capacidad pasa a identificarse como `CNS`, que conserva el mismo
+significado —ConStruccion—, respeta la convencion de tres letras de sus catorce hermanas y
+es valida en Windows, Linux y macOS. El contenido de sus ocho ficheros no cambia: es un
+renombrado, comprobado con `git mv` y con cero inserciones y cero borrados.
+
+**Que NO cambia.** La preposicion castellana homografa aparece 184 veces en el corpus
+—«CON EVIDENCIA», «CON SU MOTIVO», «CON CUSTODIA»— y no se ha tocado ninguna. El
+renombrado distingue el identificador de la preposicion por su contexto: el identificador
+va seguido de un verbo, un signo o nada; la preposicion, siempre de un sintagma nominal.
+
+**Lo que impide que vuelva a pasar.** `validadores/comprobar_rutas_portables.py`, con dos
+comprobaciones nuevas:
+
+- **T153** ninguna ruta del arbol usa un nombre de dispositivo reservado —CON, PRN, AUX,
+  NUL, CLOCK$, COM1..9, LPT1..9, con cualquier extension y sin importar mayusculas—, ni
+  los caracteres `< > : " | ? *`, ni termina en espacio o punto
+- **T154** ninguna pareja de rutas colisiona al ignorar mayusculas, que es lo que pasa en
+  NTFS y en APFS aunque en Linux se vean como dos ficheros distintos
+
+Corre en cualquier sistema. **No hace falta un Windows para detectarlo**, que es
+exactamente lo que permitio que este defecto sobreviviera a todas las auditorias.
+
+**Nota sobre `main`.** En el momento de publicar esto, `main` estaba 231 commits POR
+DETRAS de esta linea —es ancestro estricto suyo, sin divergencia— y por tanto tambien
+contenia el defecto. No se ha corregido alli por separado a proposito: un commit sobre
+`main` lo dejaria de ser ancestro y cerraria la posibilidad de avanzarlo por avance
+rapido. Moverlo es decision del Owner.
+
 ## 2.0.0-alpha.11 — el kernel deja de administrar sólo su estado y empieza a despachar trabajo
 
 **Segundo corte vertical de `F6`.** El primero construyó el ESTADO DURABLE; éste construye lo
@@ -278,7 +323,7 @@ comprueba **con `GIT_CONFIG_GLOBAL` a `/dev/null`**, que es donde el defecto apa
 
 **Barrido semántico.** `E2` tenía precedencia, pero el corpus activo seguía enseñando el
 modelo anterior en `K0.6`, `K0.8`, `G04`, `G12`, `G26`, `G27`, `G38`, `G39`, los entregables
-del Circuito 0, `G46` y `G48`, y en `ARQ`, `ENC`, `DSP`, `SEG`, `CON`, `C2`, `C5` y
+del Circuito 0, `G46` y `G48`, y en `ARQ`, `ENC`, `DSP`, `SEG`, `CNS`, `C2`, `C5` y
 `C6`. Se clasificó cada aparición: referencia legítima a un repositorio Git concreto, al
 control repo, a una fuente, al conjunto de fuentes necesarias, o resto real. Sólo se tocaron
 los restos. La línea histórica sube a **1.5.0**.

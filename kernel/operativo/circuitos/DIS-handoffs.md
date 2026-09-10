@@ -5,7 +5,7 @@ Forma del handoff y de la devolución: [`C5`](../contratos/C5-HANDOFF.md). Aquí
 quién puede devolver · con qué evidencia · qué pertenece al Owner · qué checkpoint viaja.
 
 ```text
-                      PRD ──────► DIS ──────► ARQ ──────► CON
+                      PRD ──────► DIS ──────► ARQ ──────► CNS
                        ▲           │  ▲                    │
                        │           ▼  └────────────────────┘
                       INV        DIS/critica          devolución por fidelidad
@@ -76,7 +76,7 @@ checkpoint: "ARQ lee de DIS: nivel de novedad, direcciones descartadas y por qu�
 ```yaml ads:handoff
 id: handoff:dis-a-con
 de: DIS
-a: CON
+a: CNS
 cuando: "la especificación está aprobada y ARQ ha depositado su plan, o el item no cumple C-ARQ"
 entrega:
   - "la especificación con los cinco estados y los valores del sistema"
@@ -94,21 +94,21 @@ rechaza_si:
   - "falta el estado reducido de algún movimiento"
   - "la adaptación no cubre algún entorno de la matriz del pack"
 devolucion: >
-  CON devuelve a DIS cuando demuestra imposibilidad con la evidencia que exige 05-FIDELIDAD:
+  CNS devuelve a DIS cuando demuestra imposibilidad con la evidencia que exige 05-FIDELIDAD:
   medición contra presupuesto, limitación documentada con enlace y versión, prototipo que
-  lo intenta y falla con grabación, o coste medido que excede lo autorizado. CON NO decide
+  lo intenta y falla con grabación, o coste medido que excede lo autorizado. CNS NO decide
   qué se sacrifica.
 evidencia_de_devolucion:
   - "una de las cuatro formas de evidencia de imposibilidad de 05-FIDELIDAD"
 owner: "ninguna, salvo aceptación de deuda sobre superficie premium o patrón suyo."
-checkpoint: "CON lee de DIS: qué se descartó y por qué, para no reintroducirlo como simplificación."
+checkpoint: "CNS lee de DIS: qué se descartó y por qué, para no reintroducirlo como simplificación."
 ```
 
 ```yaml ads:handoff
 id: handoff:con-a-dis
-de: CON
+de: CNS
 a: DIS
-cuando: "CON ha construido una capa que implementa una especificación de DIS"
+cuando: "CNS ha construido una capa que implementa una especificación de DIS"
 entrega:
   - "el artefacto construido con su commit exacto"
   - "el entorno donde se puede ejecutar y cómo"
@@ -127,7 +127,7 @@ devolucion: >
 evidencia_de_devolucion:
   - "el artefacto de comparación de 05-FIDELIDAD, con estático, estados, movimiento y valores"
 owner: "acepta la deuda cuando la superficie es premium o el patrón es suyo."
-checkpoint: "DIS lee de CON: qué diferencias declaró antes de construir, para distinguirlas de las descubiertas."
+checkpoint: "DIS lee de CNS: qué diferencias declaró antes de construir, para distinguirlas de las descubiertas."
 ```
 
 ```yaml ads:handoff
@@ -238,7 +238,7 @@ checkpoint: "ENT lee de DIS: qué mirar y qué contaría como empeoramiento."
 1  DIS NUNCA entrega una especificación que exija decidir forma para poder ejecutarla.
    Si el receptor tiene que decidir algo de forma, la capa de DIS está incompleta.
 
-2  NADIE devuelve a DIS sólo con la negativa. ARQ y CON devuelven con evidencia y, ARQ
+2  NADIE devuelve a DIS sólo con la negativa. ARQ y CNS devuelven con evidencia y, ARQ
    además, con al menos una alternativa de forma.
 
 3  UNA DIFERENCIA DESCUBIERTA NO SE CONVIERTE EN DEUDA. La deuda se acuerda antes de
