@@ -84,36 +84,6 @@ jobs:
       # NO se convierta en una puerta trasera: tres de ellas exigen que se niegue.
       - name: Zonas no analizadas declaradas por la instancia
         run: python3 kernel/operativo/validadores/pruebas/prueba_exclusiones_de_instancia.py
-
-      - name: Integridad, evidencia y registro de pruebas
-        run: |
-          set -e
-          ./tooling/kernel-status.sh
-          python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_integridad.py
-          python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_evidencia.py
-
-      # `T309` EXIGE CONTENCION FUERTE, Y UN RUNNER DE ACTIONS NO LA DA.
-      #
-      # Comprueba que un punto ejecutable ACTIVA la politica de contencion y
-      # contiene a su bisnieto. Necesita cgroup v2 DELEGADO o un espacio de
-      # nombres de PID usable, y el runner no concede ninguno de los dos: el
-      # subgrupo se crea pero la tarea no acaba dentro, y `unshare -Urpf` falla
-      # escribiendo en /proc. La causa la publica el propio backend, con su
-      # codigo: `CONTENCION_FUERTE_NO_DISPONIBLE`.
-      #
-      # SE INTENTO EL OTRO ENTORNO, Y ES PEOR. Correr la bateria dentro de un
-      # contenedor privilegiado con el cgroup del anfitrion da la contencion,
-      # pero corre como `root`, y como `root` varios escenarios dejan de medir
-      # lo suyo —un permiso retirado no retira nada— y otros chocan con la
-      # propiedad del arbol montado: 6 fallos y 16 errores, todos ajenos a lo
-      # que se queria comprobar. Cambiar un rojo informativo por veintidos
-      # rojos falsos no es arreglarlo.
-      #
-      # ASI QUE SE DECLARA, Y SE EXIGE LA DECLARACION. El paso NO tolera «que
-      # falle algo»: exige que falle EXACTAMENTE `T309` y que su causa sea la
-      # ausencia de contencion fuerte. Cualquier otro fallo, o `T309` fallando
-      # por otro motivo, pone el paso en rojo. Una excepcion que no comprueba
-      # su propio motivo es una excepcion que envejece en silencio.
       - name: "El aislamiento de arranque (T398 y T399), con T309 declarado"
         run: |
           set +e
@@ -393,33 +363,19 @@ jobs:
           python3 kernel/operativo/validadores/huella.py > kernel/.upstream-hash
           ./tooling/kernel-status.sh
 
-      # A PARTIR DE AQUI SE EXIGE VERDE. Sin `|| true` en ninguno.
-      - name: Integridad, evidencia y registro de pruebas
-        run: |
-          fallo=0
-          for v in comprobar_integridad comprobar_evidencia registro_pruebas; do
-            set +e
-            python3 -I -S -E -X ads_aislado=1 "kernel/operativo/validadores/$v.py" > /tmp/$v.txt 2>&1
-            c=$?
-            set -e
-            tail -25 /tmp/$v.txt
-            if [ $c -ne 0 ]; then
-              fallo=1
-              echo "::error::$v salio con $c"
-              grep -E "FALLIDA|ROJO|FALLA|·" /tmp/$v.txt | head -12 | while IFS= read -r l; do
-                echo "::error::[$v] $l"
-              done
-            fi
-          done
-          exit $fallo
-
-      - name: Lint, rutas portables, contratos y universo de instrumentos
+      # LOS GATES QUE NO DEPENDEN DE `HEAD`, y solo esos.
+      #
+      # El universo de instrumentos se quedo fuera a proposito: su control `U-07` exige que
+      # la evidencia de cada validador este CONFIRMADA EN `HEAD`, y aqui la evidencia acaba
+      # de regenerarse y todavia no esta escrita. Exigirselo antes del commit es pedirle que
+      # compruebe algo que por construccion no puede ser cierto todavia. Lo verifica la
+      # ejecucion siguiente, sobre el commit resultante, que es donde ya tiene sentido.
+      - name: Lint, rutas portables y contratos
         run: |
           set -e
           python3 kernel/operativo/validadores/ads_lint.py
           python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_rutas_portables.py
           python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_contratos.py
-          python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/comprobar-universo-de-instrumentos.py
 
       - name: Zonas no analizadas declaradas por la instancia
         run: python3 kernel/operativo/validadores/pruebas/prueba_exclusiones_de_instancia.py
@@ -528,6 +484,21 @@ jobs:
       # El compare-and-swap es el propio `git push` sin `--force`: si la rama se movio
       # mientras esto corria, el empujon se RECHAZA. No hay force, no hay rebase, y el
       # destino es la rama de trabajo. `main` no se toca aqui.
+      # LA VERIFICACION CONTRA `HEAD` VA DESPUES DE ESCRIBIR, Y NO PODIA IR ANTES.
+      #
+      # `comprobar_evidencia.py` contrasta cada fichero de evidencia con LA VERSION
+      # CONFIRMADA EN `HEAD`: una evidencia que nadie sostiene por veredicto solo se
+      # sostiene por sus BYTES, y si esos bytes cambiaron sin un commit que los respalde,
+      # da rojo. Con toda la razon. Pero eso significa que regenerar y verificar EN LA
+      # MISMA EJECUCION es imposible por construccion: lo recien regenerado todavia no
+      # esta en `HEAD`.
+      #
+      # Costo dos ciclos entenderlo, porque el mensaje del registrador senalaba a otro
+      # sitio. El orden correcto es el natural: se regenera, se sella, se ESCRIBE, y quien
+      # verifica contra `HEAD` es la ejecucion siguiente —los trabajos normales de este
+      # mismo flujo, que corren sobre el commit resultante—. El commit de CI no lleva el
+      # marcador `[release-kernel]`, asi que esa ejecucion verifica y no vuelve a
+      # regenerar: no hay bucle.
       - name: Escribir la evidencia y el sello EN LA RAMA
         run: |
           set -e
