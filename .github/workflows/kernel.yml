@@ -313,6 +313,36 @@ jobs:
           echo "RAMA=${GITHUB_REF#refs/heads/}" >> "$GITHUB_ENV"
           git rev-parse HEAD
 
+      # DIAGNOSTICO BARATO, Y ANTES DE GASTAR TRES HORAS.
+      #
+      # La bateria de integridad fallo en un release anterior por `T380` -«hay puntos
+      # ejecutables sin la guarda G-03»- y en la maquina que dirige esto pasa en verde. Un
+      # fallo que solo aparece aqui hay que verlo AQUI, y verlo PRONTO: si ya falla sobre el
+      # arbol recien clonado, no tiene sentido gastar dos pasadas de evidencia para
+      # descubrirlo al final. La salida se publica como anotaciones porque el almacenamiento
+      # de registros esta cerrado para quien lee esto.
+      - name: "Diagnostico · la bateria de integridad sobre el arbol RECIEN CLONADO"
+        run: |
+          set +e
+          python3 -I -S -E -X ads_aislado=1 \
+                  kernel/operativo/runtime/pruebas/test_integridad_y_evidencia.py \
+                  > /tmp/diag.txt 2>&1
+          codigo=$?
+          set -e
+          echo "arbol recien clonado · codigo $codigo"
+          echo "--- ficheros no rastreados, por si alguno es un punto ejecutable:"
+          git status --porcelain | head -20
+          if [ $codigo -ne 0 ]; then
+            grep -E "^(FAIL|ERROR): test" /tmp/diag.txt | while IFS= read -r l; do
+              echo "::error::[arbol limpio] $l"
+            done
+            grep -A 6 "^FAIL: test_T380" /tmp/diag.txt | while IFS= read -r l; do
+              [ -n "$l" ] && echo "::error::[T380] $l"
+            done
+          else
+            echo "el arbol recien clonado pasa la bateria entera"
+          fi
+
       # PRIMERA PASADA. Aqui `integridad` fallara: la huella almacenada todavia es la de
       # antes de editar el kernel. Es lo esperado, y por eso NO se exige verde todavia.
       - name: "Evidencia · primera pasada"
@@ -366,10 +396,22 @@ jobs:
       # A PARTIR DE AQUI SE EXIGE VERDE. Sin `|| true` en ninguno.
       - name: Integridad, evidencia y registro de pruebas
         run: |
-          set -e
-          python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_integridad.py
-          python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_evidencia.py
-          python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/registro_pruebas.py
+          fallo=0
+          for v in comprobar_integridad comprobar_evidencia registro_pruebas; do
+            set +e
+            python3 -I -S -E -X ads_aislado=1 "kernel/operativo/validadores/$v.py" > /tmp/$v.txt 2>&1
+            c=$?
+            set -e
+            tail -25 /tmp/$v.txt
+            if [ $c -ne 0 ]; then
+              fallo=1
+              echo "::error::$v salio con $c"
+              grep -E "FALLIDA|ROJO|FALLA|·" /tmp/$v.txt | head -12 | while IFS= read -r l; do
+                echo "::error::[$v] $l"
+              done
+            fi
+          done
+          exit $fallo
 
       - name: Lint, rutas portables, contratos y universo de instrumentos
         run: |
