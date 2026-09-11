@@ -297,6 +297,36 @@ def comprobar_manifiesto(base, componentes, problemas):
                          f"quedaría fuera de la evidencia sin que nada lo dijera")
 
 
+def lo_que_fallo(stderr, tope=400):
+    """De `stderr`, LO QUE FALLO. No sus primeros caracteres, que es otra cosa.
+
+    ESTO COSTO DOS CICLOS DE RELEASE DE TRES HORAS CADA UNO, y merece quedar escrito.
+    Aqui ponia `proc.stderr.strip()[:200]`. Parece razonable hasta que el hijo es una
+    bateria de `unittest`: en modo verboso escribe el NOMBRE DE CADA CASO a `stderr` segun
+    lo ejecuta, y los fallos los resume AL FINAL. Cortar por los primeros 200 caracteres
+    devuelve entonces, garantizado, el nombre del PRIMER caso —haya fallado o no— y nunca
+    el del que fallo.
+
+    El efecto no es que falte informacion: es que la informacion que aparece MIENTE. El
+    diagnostico decia `T380` con toda naturalidad, y `T380` estaba en verde; el fallo real
+    era otro, mas abajo. Un mensaje de error que senala al inocente es peor que un mensaje
+    vacio, porque a uno vacio se le busca la causa y a este se le cree.
+
+    Asi que se extraen las lineas que un fallo DE VERDAD produce —`FAIL:`, `ERROR:`, el
+    resumen de `unittest`, y las que este corpus usa en sus validadores documentales— y si
+    no hay ninguna se devuelve la COLA, que es donde termina de hablar cualquier programa.
+    """
+    texto = (stderr or "").strip()
+    if not texto:
+        return "stderr: (vacío)"
+    marcas = ("FAIL:", "ERROR:", "FAILED", "Traceback", "AssertionError",
+              "FALLIDA", "FALLA", "ROJO")
+    lineas = [l for l in texto.splitlines() if any(m in l for m in marcas)]
+    if lineas:
+        return "falló: " + " · ".join(l.strip() for l in lineas)[:tope]
+    return "final de stderr: …" + texto[-tope:]
+
+
 def ejecutar(base, ej, publicar=True):
     script = os.path.join(base, ej.dir, ej.script)
     if not os.path.isfile(script):
@@ -336,7 +366,7 @@ def ejecutar(base, ej, publicar=True):
     ej.codigo = proc.returncode
     if ej.codigo != 0:
         ej.motivo = (f"terminó con código {ej.codigo}; la evidencia anterior NO se ha "
-                     f"tocado. stderr: {proc.stderr.strip()[:200] or '(vacío)'}")
+                     f"tocado. {lo_que_fallo(proc.stderr)}")
         return
     if not publicar or not ej.evidencia:
         ej.motivo = "ejecutado" if not ej.evidencia else "no se pidió publicar"

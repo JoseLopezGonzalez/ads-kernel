@@ -190,6 +190,7 @@ def monta(exclusiones: str | None) -> str:
     # defecto, asi que el laboratorio ve los esquemas —que se abren por ruta— y NO se
     # pone a recorrer el kernel entero buscando enlaces. Lo que se mide aqui es la zona
     # heredada, no el corpus del kernel.
+    LABORATORIOS.append(raiz)
     os.symlink(os.path.join(RAIZ, "kernel"), os.path.join(raiz, "kernel"))
     os.makedirs(os.path.join(raiz, "zona-archivada"))
     with open(os.path.join(raiz, "zona-archivada", "heredado.md"), "w",
@@ -204,6 +205,23 @@ def monta(exclusiones: str | None) -> str:
                   encoding="utf-8") as fh:
             fh.write(exclusiones)
     return raiz
+
+
+LABORATORIOS: list[str] = []
+
+
+def limpiar() -> None:
+    """Ningun laboratorio sobrevive a esta prueba.
+
+    `mkdtemp` no borra nada por su cuenta: cada ejecucion dejaba cinco directorios en el
+    temporal, y uno de ellos con un enlace al `kernel` del arbol real. En una maquina de
+    trabajo eso es basura; en un runner que ademas comprueba que no quedan temporales, es
+    un rojo con toda la razon.
+    """
+    import shutil
+    for d in LABORATORIOS:
+        shutil.rmtree(d, ignore_errors=True)
+    LABORATORIOS.clear()
 
 
 def corre(raiz: str) -> tuple[int, str]:
@@ -284,4 +302,7 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    finally:
+        limpiar()
