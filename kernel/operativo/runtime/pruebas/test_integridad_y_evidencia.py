@@ -628,6 +628,12 @@ MOTIVO_DE_LA_EXCLUSION_DE_T308 = {
     # batería a publicar una tabla que no usa.
     "kernel/operativo/runtime/pruebas":
         "batería de `unittest`: su convenio de salida es 0 todo bien · 1 hubo fallos",
+    # UP-11 anade una TERCERA zona de baterías, junto a los validadores que prueba. Misma
+    # razón que las dos anteriores, y la misma exigencia: su motivo se ESCRIBE aquí. Una
+    # zona de baterías que entra sin declararse es exactamente el estrechamiento en
+    # silencio que `T308` existe para impedir.
+    "kernel/operativo/validadores/pruebas":
+        "batería propia: su convenio de salida es 0 todo bien · 1 hubo fallos",
     "tooling/tests":
         "batería de `unittest`: su convenio de salida es 0 todo bien · 1 hubo fallos",
 }

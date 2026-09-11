@@ -1,0 +1,14 @@
+# evidencia de: exclusiones-de-instancia
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/pruebas/prueba_exclusiones_de_instancia.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 3 variables (HOME LC_CTYPE PATH) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+ZONAS NO ANALIZADAS DECLARADAS POR LA INSTANCIA
+==========================================================================
+T430  SUPERADA  sin sede de instancia, el enlace heredado sale en ROJO
+T431  SUPERADA  con la zona declarada, sale en VERDE
+T432  SUPERADA  ...y la ejecucion PUBLICA la zona excluida
+T433  SUPERADA  una exclusion SIN MOTIVO se rechaza
+T434  SUPERADA  una exclusion HUERFANA se rechaza
+==========================================================================
+5 superadas · 0 fallidas

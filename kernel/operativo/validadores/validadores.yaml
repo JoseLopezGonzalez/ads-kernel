@@ -314,6 +314,21 @@ componentes:
   # El MACROBLOQUE 3 de F6: el ciclo de 7.2, Continua de 7.4 y los cuatro macrocircuitos.
   # Tres baterias mas, por la misma razon que las ocho anteriores: un validador fuera del
   # manifiesto queda fuera de la evidencia sin que nada lo diga.
+  # UP-11. La sede de instancia para declarar zonas no analizadas, fuera de `kernel/` y
+  # por tanto fuera de la huella de FORK. Entra en el manifiesto por la misma razon que
+  # las anteriores: un validador fuera del manifiesto queda fuera de la evidencia sin que
+  # nada lo diga. Tres de sus cinco casos exigen que el mecanismo se NIEGUE — es lo que
+  # impide que la sede de instancia se convierta en una puerta trasera.
+  - id: exclusiones-de-instancia
+    script: prueba_exclusiones_de_instancia.py
+    dir: kernel/operativo/validadores/pruebas
+    tipo: validador
+    evidencia: exclusiones-de-instancia-salida.txt
+    firma_de_exito: '5 superadas · 0 fallidas'
+    debe_contener: ['T430', 'T431', 'T432', 'T433', 'T434',
+                    'sale en ROJO', 'sale en VERDE', 'PUBLICA la zona excluida',
+                    'SIN MOTIVO se rechaza', 'HUERFANA se rechaza']
+
   - id: ciclo
     script: test_ciclo.py
     dir: kernel/operativo/runtime/pruebas

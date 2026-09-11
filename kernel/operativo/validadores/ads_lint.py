@@ -353,6 +353,9 @@ class Lint:
         self.exentos_vocabulario = []
         self.no_analizados = []
         self.no_embarcados = []
+        # zonas que declaró la INSTANCIA, para poder publicarlas al final: una exclusión
+        # que no se ve en cada ejecución deja de ser una decisión y pasa a ser un hábito
+        self.zonas_de_instancia = []
         self.enlaces_aguas_arriba = 0
         self.hallazgos = []
         self.esquemas = {}
@@ -386,6 +389,56 @@ class Lint:
         # este repositorio.
         self.no_embarcados = [i["ruta"] for i in (datos.get("enlaces_no_embarcados") or [])
                               if isinstance(i, dict) and i.get("ruta") and i.get("motivo")]
+        self.cargar_exclusiones_de_instancia()
+
+    # -------------------------------------------------- zonas propias de la instancia
+    SEDE_DE_INSTANCIA = "docs/canonico/exclusiones-de-instancia.yaml"
+
+    def cargar_exclusiones_de_instancia(self):
+        """Zonas que declara LA INSTANCIA, fuera del kernel. Por qué hace falta.
+
+        `exclusiones.yaml` vive dentro de `kernel/`, y `kernel/` entra en la huella que
+        dice si una instalación es un FORK. Así que una instancia que gana legítimamente
+        una zona propia no tenía dónde declararla: editar el fichero del kernel la
+        convertía en divergente y ponía en rojo su propia comprobación de integridad, que
+        es justo la alarma que esa huella existe para dar.
+
+        Y ganar una zona propia no es raro, es el caso NORMAL. Un ADS gobierna unas
+        fuentes, y acaba archivando material de esas fuentes: documentos que llegan con
+        enlaces relativos a SU árbol de origen, apuntando a hermanos que no vinieron.
+        No son corpus —son evidencia, y la evidencia describe—, pero el validador los leía
+        como corpus y denunciaba cada enlace. La instancia de La Pesquerapp llegó así a
+        442 errores en material archivado, con la CI muriendo en su primer paso.
+
+        La disciplina es la MISMA que la del fichero del kernel, y eso es lo que impide
+        que esto sea una puerta trasera: toda entrada lleva `motivo`, se publica en cada
+        ejecución, y una entrada cuyo objetivo ya no existe es un ERROR —no se acumulan
+        restos, ni se excluye preventivamente «por si acaso»—.
+        """
+        ruta = os.path.join(self.raiz, self.SEDE_DE_INSTANCIA)
+        if not os.path.exists(ruta):
+            return
+        with open(ruta, encoding="utf-8") as fh:
+            datos = yaml.safe_load(fh) or {}
+        for clave, destino in (("no_analizados", self.no_analizados),
+                               ("vocabulario_exento", self.exentos_vocabulario)):
+            for entrada in (datos.get(clave) or []):
+                if not isinstance(entrada, dict) or not entrada.get("ruta"):
+                    self.err(self.SEDE_DE_INSTANCIA, None, "exclusion-de-instancia",
+                             f"una entrada de `{clave}` sin `ruta`")
+                    continue
+                if not entrada.get("motivo"):
+                    self.err(self.SEDE_DE_INSTANCIA, None, "exclusion-de-instancia",
+                             f"`{entrada['ruta']}` se excluye sin `motivo`: una exclusión "
+                             f"sin motivo es indistinguible de un descuido")
+                    continue
+                if not os.path.exists(os.path.join(self.raiz, entrada["ruta"])):
+                    self.err(self.SEDE_DE_INSTANCIA, None, "exclusion-de-instancia",
+                             f"`{entrada['ruta']}` ya no existe: una exclusión huérfana "
+                             f"tapa la zona que ocupe mañana ese nombre")
+                    continue
+                destino.append(entrada["ruta"])
+                self.zonas_de_instancia.append(entrada["ruta"])
 
     def _resolver_listas_del_esquema(self, datos, ruta):
         """`variantes_desde: <clave>` se resuelve contra la RAÍZ del esquema.
@@ -818,6 +871,11 @@ def main():
         print(f"\nbloques canónicos: {len(lint.bloques)} · identificadores: {len(lint.ids)}"
               f" · errores: {len(errores)} · avisos: {len(avisos)}"
               f" · enlaces a material no embarcado: {lint.enlaces_aguas_arriba}")
+        # SIEMPRE a la vista, incluso en verde. Una zona excluida que sólo aparece en un
+        # fichero de configuración se olvida, y lo que se olvida deja de estar decidido.
+        if lint.zonas_de_instancia:
+            print(f"zonas que esta instancia declara NO analizadas "
+                  f"({lint.SEDE_DE_INSTANCIA}): " + " · ".join(sorted(lint.zonas_de_instancia)))
     return 1 if errores else 0
 
 

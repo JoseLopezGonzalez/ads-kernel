@@ -75,6 +75,16 @@ jobs:
       - name: Rutas portables
         run: python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_rutas_portables.py
 
+      # UNA INSTANCIA PUEDE DECLARAR SUS PROPIAS ZONAS NO ANALIZADAS, Y SOLO ASI.
+      #
+      # `exclusiones.yaml` vive dentro de `kernel/`, que entra en la huella de FORK:
+      # una instancia con una zona propia legitima —material archivado de sus fuentes,
+      # que es evidencia y no corpus— no tenia donde declararla sin volverse divergente.
+      # La sede de instancia lo resuelve, y estas cinco comprobaciones existen para que
+      # NO se convierta en una puerta trasera: tres de ellas exigen que se niegue.
+      - name: Zonas no analizadas declaradas por la instancia
+        run: python3 kernel/operativo/validadores/pruebas/prueba_exclusiones_de_instancia.py
+
       - name: Integridad, evidencia y registro de pruebas
         run: |
           set -e

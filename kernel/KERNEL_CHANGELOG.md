@@ -2,6 +2,46 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.14 — una instancia puede declarar sus propias zonas no analizadas
+
+**UP-11.** `exclusiones.yaml` es el sitio donde se declara lo que el validador NO analiza,
+con su motivo, y publicandolo en cada ejecucion. Vive en
+`kernel/operativo/validadores/`, es decir **dentro de la huella que decide si una
+instalacion es un FORK**. Consecuencia: una instancia que ganaba una zona propia no tenia
+donde declararla. Las dos salidas eran malas:
+
+```text
+editar el fichero del kernel  -> huella DIVERGENTE, y `kernel-status.sh` en rojo.
+                                 Se dispara justo la alarma que la huella existe para dar
+no declarar nada              -> el validador lee como corpus material que no lo es,
+                                 y la CI muere en su primer paso sin ejecutar nada mas
+```
+
+Y ganar una zona propia **no es el caso raro: es el normal**. Un ADS gobierna unas fuentes
+y acaba archivando material de esas fuentes — documentos que llegan con enlaces relativos
+a SU arbol de origen, apuntando a hermanos que deliberadamente no vinieron. No son corpus:
+son evidencia, y la evidencia describe. La instancia de La Pesquerapp llego asi a **442
+errores** en material archivado, con su flujo de CI muriendo en el paso uno de dieciseis.
+
+**Que cambia.** `ads_lint.py` lee ademas
+`docs/canonico/exclusiones-de-instancia.yaml` —fuera de `kernel/`, y por tanto fuera de la
+huella— y fusiona sus `no_analizados` y `vocabulario_exento` con los del kernel.
+
+**Y con la MISMA disciplina, que es lo que impide que sea una puerta trasera:**
+
+```text
+sin `motivo`            ERROR. Una exclusion sin motivo no se distingue de un descuido
+ruta que no existe      ERROR. Una exclusion huerfana tapa la zona que ocupe manana
+                        ese nombre, y en silencio
+siempre, en verde       la ejecucion PUBLICA las zonas declaradas. Una exclusion que
+                        solo se ve en un fichero de configuracion deja de ser una
+                        decision y pasa a ser una costumbre
+```
+
+**Comprobado, no afirmado.** `kernel/operativo/validadores/pruebas/prueba_exclusiones_de_instancia.py`
+monta arboles de laboratorio reales y ejerce cinco casos; **tres de los cinco exigen que el
+mecanismo se NIEGUE**. Corre en la CI del kernel en cada empujon.
+
 ## 2.0.0-alpha.13 — la guarda de arranque vuelve a hablar en Windows
 
 **UP-04.** Todo punto ejecutable de este kernel lleva el prologo `G-03`, que exige arrancar
