@@ -16,12 +16,6 @@ on:
   push:
     branches: ['**']
   pull_request:
-  workflow_dispatch:
-    inputs:
-      publicar_evidencia:
-        description: "escribir la evidencia y el sello regenerados EN LA RAMA (no en main)"
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -274,7 +268,15 @@ jobs:
   release:
     name: Evidencia y sello del release (sin root, con Docker)
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    # POR QUE NO ES UN DISPARADOR MANUAL. Lo era, y no se pudo usar: el token que dirige
+    # esto no puede crear un `workflow_dispatch` -403 «Resource not accessible by
+    # integration»-. Asi que el release se pide como se pide todo lo demas aqui: con un
+    # commit. El marcador `[release-kernel]` en el mensaje es la peticion explicita, y sin
+    # el este trabajo ni siquiera arranca, de modo que un empujon normal a la rama no gasta
+    # cinco horas de bateria por accidente.
+    if: |
+      startsWith(github.ref, 'refs/heads/claude/') &&
+      contains(github.event.head_commit.message, '[release-kernel]')
     timeout-minutes: 330
     permissions:
       contents: write
@@ -461,7 +463,6 @@ jobs:
       # mientras esto corria, el empujon se RECHAZA. No hay force, no hay rebase, y el
       # destino es la rama de trabajo. `main` no se toca aqui.
       - name: Escribir la evidencia y el sello EN LA RAMA
-        if: inputs.publicar_evidencia
         run: |
           set -e
           if [ "${GITHUB_REF#refs/heads/}" = "main" ]; then
