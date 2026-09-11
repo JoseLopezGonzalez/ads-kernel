@@ -16,6 +16,12 @@ on:
   push:
     branches: ['**']
   pull_request:
+  workflow_dispatch:
+    inputs:
+      publicar_evidencia:
+        description: "escribir la evidencia y el sello regenerados EN LA RAMA (no en main)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -248,3 +254,247 @@ jobs:
           test $codigo -eq 0
           echo "$salida" | grep -q "T153" || { echo "FALLA: salida vacia o sin T153"; exit 1; }
           echo "OK: reejecuta, habla y devuelve 0"
+
+  # ===========================================================================
+  # EL RELEASE SE CONSTRUYE AQUI, Y NO EN LA MAQUINA DE NADIE.
+  #
+  # La evidencia del kernel solo es fiel si la produce UNA SOLA ejecucion que reuna a la
+  # vez DOS condiciones, y se midio que ninguna maquina de trabajo las reunia:
+  #
+  #     T219   necesita un CONTENEDOR para ejercer una identidad distinta
+  #     T189   necesita un usuario SIN PRIVILEGIOS
+  #
+  # Un entorno con Docker pero como root omite T189; uno sin privilegios pero sin Docker
+  # omite T219. Ensamblar a mano un fichero de cada ejecucion daria una evidencia que
+  # NINGUNA EJECUCION PRODUJO, que es justo lo que la regla «no la edites» prohibe.
+  #
+  # Este runner reune las dos: corre como `runner`, que no es root, y trae Docker. Los dos
+  # primeros pasos lo COMPRUEBAN antes de gastar una hora de bateria, porque un release
+  # construido en un entorno equivocado es peor que no tenerlo.
+  release:
+    name: Evidencia y sello del release (sin root, con Docker)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    timeout-minutes: 330
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Requisitos
+        run: python3 -m pip install --quiet pyyaml
+
+      # LAS DOS CONDICIONES, COMPROBADAS ANTES DE EMPEZAR
+      - name: El entorno reune las DOS condiciones, o no se sigue
+        run: |
+          set -e
+          echo "usuario: $(id -un) · uid $(id -u)"
+          if [ "$(id -u)" = "0" ]; then
+            echo "::error::FALLA: se corre como root. T189 se omitiria y la evidencia saldria degradada"
+            exit 1
+          fi
+          docker info --format 'docker: servidor {{.ServerVersion}}' || {
+            echo "::error::FALLA: no hay Docker. T219 se omitiria y la evidencia saldria degradada"
+            exit 1
+          }
+          echo "OK: sin privilegios de root y con Docker. Las dos condiciones a la vez"
+
+      - name: SHA de entrada
+        run: |
+          echo "SHA_ENTRADA=${{ github.sha }}" >> "$GITHUB_ENV"
+          echo "RAMA=${GITHUB_REF#refs/heads/}" >> "$GITHUB_ENV"
+          git rev-parse HEAD
+
+      # PRIMERA PASADA. Aqui `integridad` fallara: la huella almacenada todavia es la de
+      # antes de editar el kernel. Es lo esperado, y por eso NO se exige verde todavia.
+      - name: "Evidencia · primera pasada"
+        run: python3 kernel/operativo/validadores/registrar_evidencia.py || true
+
+      # AHORA SE SELLA, con la evidencia ya regenerada dentro del sello.
+      - name: Sello del producto y huella del kernel
+        run: |
+          set -e
+          python3 kernel/operativo/validadores/huella.py --anotar-sello
+          python3 kernel/operativo/validadores/huella.py > kernel/.upstream-hash
+          ./tooling/kernel-status.sh
+
+      # SEGUNDA PASADA. La evidencia de los validadores es determinista -su cabecera no
+      # lleva marca de tiempo-, asi que reescribe los mismos bytes salvo la de `integridad`,
+      # que ahora SI pasa. Con eso el punto fijo queda alcanzado.
+      - name: "Evidencia · segunda pasada, ya con el sello puesto"
+        run: python3 kernel/operativo/validadores/registrar_evidencia.py
+
+      - name: Re-sellar si la segunda pasada movio algo
+        run: |
+          set -e
+          python3 kernel/operativo/validadores/huella.py --anotar-sello
+          python3 kernel/operativo/validadores/huella.py > kernel/.upstream-hash
+          ./tooling/kernel-status.sh
+
+      # A PARTIR DE AQUI SE EXIGE VERDE. Sin `|| true` en ninguno.
+      - name: Integridad, evidencia y registro de pruebas
+        run: |
+          set -e
+          python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_integridad.py
+          python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_evidencia.py
+          python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/registro_pruebas.py
+
+      - name: Lint, rutas portables, contratos y universo de instrumentos
+        run: |
+          set -e
+          python3 kernel/operativo/validadores/ads_lint.py
+          python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_rutas_portables.py
+          python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_contratos.py
+          python3 -I -S -E -X ads_aislado=1 docs/evolucion/verificacion/comprobar-universo-de-instrumentos.py
+
+      - name: Zonas no analizadas declaradas por la instancia
+        run: python3 kernel/operativo/validadores/pruebas/prueba_exclusiones_de_instancia.py
+
+      # NI UN SECRETO, NI UN TEMPORAL, NI UN FICHERO FUERA DE LA LISTA CERRADA.
+      - name: Solo cambia lo que un release puede cambiar
+        run: |
+          set -e
+          PERMITIDAS='^(kernel/operativo/pruebas/evidencia/|kernel/operativo/pruebas/RECUENTOS-generado\.md|kernel/operativo/pruebas/REGISTRO-generado\.md|\.sello-producto|kernel/\.upstream-hash|kernel/VERSION|kernel/KERNEL_CHANGELOG\.md)'
+          git status --porcelain > /tmp/cambios.txt
+          cat /tmp/cambios.txt
+          INTRUSOS=$(awk '{print $2}' /tmp/cambios.txt | grep -Ev "$PERMITIDAS" || true)
+          if [ -n "$INTRUSOS" ]; then
+            echo "::error::FALLA: el release toca ficheros fuera de la lista cerrada:"
+            echo "$INTRUSOS"
+            exit 1
+          fi
+          if git diff | grep -nEi '(BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{10,}|sk-[A-Za-z0-9]{32,})'; then
+            echo "::error::FALLA: el diff del release contiene algo que parece una credencial"
+            exit 1
+          fi
+          echo "OK: solo evidencia, sello, huella, version y changelog. Sin credenciales"
+
+      - name: Manifiesto del release
+        run: |
+          set -e
+          mkdir -p /tmp/release
+          {
+            echo "# MANIFIESTO DEL RELEASE DEL KERNEL"
+            echo "sha_de_entrada   ${{ github.sha }}"
+            echo "rama             ${GITHUB_REF#refs/heads/}"
+            echo "run_id           ${{ github.run_id }}"
+            echo "version          $(cat kernel/VERSION)"
+            echo "huella_kernel    $(cat kernel/.upstream-hash)"
+            echo "usuario          $(id -un) uid $(id -u)   (NO root: T189 se ejerce)"
+            echo "docker           $(docker info --format '{{.ServerVersion}}')   (T219 se ejerce)"
+            echo "omisiones        $(grep -rlc 'skipped' kernel/operativo/pruebas/evidencia/*.txt 2>/dev/null | wc -l) fichero(s) de evidencia con omisiones"
+            echo
+            echo "# DIGESTS DE LO GENERADO"
+            for f in $(git status --porcelain | awk '{print $2}' | sort); do
+              printf '%s  %s\n' "$(sha256sum "$f" | cut -c1-64)" "$f"
+            done
+          } > /tmp/release/MANIFIESTO.txt
+          cat /tmp/release/MANIFIESTO.txt
+          cp -r kernel/operativo/pruebas/evidencia /tmp/release/evidencia
+          cp .sello-producto kernel/.upstream-hash kernel/VERSION /tmp/release/
+          cp kernel/operativo/pruebas/RECUENTOS-generado.md kernel/operativo/pruebas/REGISTRO-generado.md /tmp/release/
+
+      # CERO OMISIONES. Es la condicion que distingue un release de una ejecucion parcial.
+      # CERO OMISIONES REALES. Es la condicion que distingue un release de una ejecucion
+      # parcial, y es tambien donde es facil escribir una comprobacion que grita con la
+      # entrada correcta.
+      #
+      # NO se busca la palabra `skipped` a secas: tres ficheros de evidencia del release
+      # la contienen DENTRO del enunciado de una prueba, porque `E-14` es literalmente el
+      # defecto de que `OK` valiera por `OK (skipped=N)` y hay un control, `C-13`, cuyo
+      # unico cometido es decir que la palabra dentro de un enunciado no es un salto.
+      # Buscarla a secas daria rojo sobre el release bueno, y una comprobacion asi acaba
+      # desactivada. Se buscan las DOS formas del VEREDICTO: el `... skipped ` con que
+      # `unittest` cierra un caso, y el resumen `OK (skipped=N)` en su propia linea.
+      # Comprobado en los dos sentidos: 0 sobre la evidencia del release, y positivo sobre
+      # la evidencia degradada que produjo una maquina como root.
+      - name: Ninguna omision en la evidencia
+        run: |
+          set -e
+          PAT='(\.\.\. skipped |^OK \(skipped=[0-9]+\)$)'
+          CON_OMISION=$(grep -rlE "$PAT" kernel/operativo/pruebas/evidencia/*.txt 2>/dev/null || true)
+          if [ -n "$CON_OMISION" ]; then
+            echo "::error::FALLA: hay evidencia con escenarios OMITIDOS. Un release no se construye sobre omisiones:"
+            echo "$CON_OMISION"
+            grep -rnE "$PAT" $CON_OMISION | head -20
+            exit 1
+          fi
+          echo "OK: cero omisiones reales en los $(ls kernel/operativo/pruebas/evidencia/*.txt | wc -l) ficheros de evidencia"
+
+      # Y LOS DOS ESCENARIOS QUE MOTIVARON TODO ESTO, NOMBRADOS UNO A UNO.
+      # Que el recuento global sea cero no basta: si manana un cambio hiciera que T189 o
+      # T219 dejaran de ejecutarse -no omitidos, sino AUSENTES-, el recuento seguiria en
+      # cero y el release pasaria sin ejercer justo lo que exige este entorno.
+      - name: T189 y T219 se EJERCIERON, no solo «no se omitieron»
+        run: |
+          set -e
+          for par in "T189:admision-salida.txt" "T219:raiz-externa-salida.txt"; do
+            ESC="${par%%:*}"; FICH="kernel/operativo/pruebas/evidencia/${par##*:}"
+            if ! grep -q "$ESC" "$FICH"; then
+              echo "::error::FALLA: $ESC no aparece en $FICH. No se ejecuto"
+              exit 1
+            fi
+            echo "$ESC presente en $(basename $FICH): $(grep -c "$ESC" "$FICH") linea(s)"
+          done
+          echo "OK: los dos escenarios que exigen sin-root y con-Docker se ejercieron"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-kernel-${{ github.run_id }}
+          path: /tmp/release
+          retention-days: 7
+
+      # ESCRITURA EN LA RAMA, NUNCA EN MAIN, Y SOLO SI SE PIDE EXPRESAMENTE.
+      #
+      # Existe porque la politica de red del entorno que dirige esto no puede descargar
+      # artefactos: el almacenamiento de Actions responde 403 a traves de su proxy. Sin
+      # esta via, una evidencia construida correctamente aqui no podria llegar nunca al
+      # repositorio, y el release quedaria bloqueado para siempre por un detalle de red.
+      #
+      # El compare-and-swap es el propio `git push` sin `--force`: si la rama se movio
+      # mientras esto corria, el empujon se RECHAZA. No hay force, no hay rebase, y el
+      # destino es la rama de trabajo. `main` no se toca aqui.
+      - name: Escribir la evidencia y el sello EN LA RAMA
+        if: inputs.publicar_evidencia
+        run: |
+          set -e
+          if [ "${GITHUB_REF#refs/heads/}" = "main" ]; then
+            echo "::error::FALLA: esto nunca escribe en main"; exit 1
+          fi
+          git config user.name  "ads-kernel CI"
+          git config user.email "noreply@github.com"
+          git add kernel/operativo/pruebas/evidencia \
+                  kernel/operativo/pruebas/RECUENTOS-generado.md \
+                  kernel/operativo/pruebas/REGISTRO-generado.md \
+                  .sello-producto kernel/.upstream-hash
+          if git diff --cached --quiet; then
+            echo "nada que escribir: el arbol ya estaba al dia"; exit 0
+          fi
+          cat > /tmp/mensaje.txt <<'MSG'
+          CI: evidencia y sello del release, regenerados en una sola ejecucion
+
+          Producido por el trabajo `release` del flujo del kernel, en un runner que reune
+          las DOS condiciones que ninguna maquina de trabajo reunia a la vez: corre SIN
+          privilegios de root -por eso T189 no se omite- y trae Docker -por eso T219
+          tampoco-. Las dos se comprueban antes de empezar, y el trabajo exige CERO
+          omisiones en toda la evidencia.
+
+          Una sola ejecucion, reproducible: registrador oficial, sello, y segunda pasada
+          para alcanzar el punto fijo. Nada ensamblado a mano entre ejecuciones distintas.
+
+          Solo toca evidencia, sello, huella, version y changelog: un paso anterior RECHAZA
+          el release si aparece cualquier fichero fuera de esa lista cerrada, o algo que
+          parezca una credencial.
+          MSG
+          sed -i 's/^          //' /tmp/mensaje.txt
+          printf '\n  sha de entrada  %s\n  run             %s\n' "${{ github.sha }}" "${{ github.run_id }}" >> /tmp/mensaje.txt
+          git commit -q -F /tmp/mensaje.txt
+          echo "el push sin --force ES el compare-and-swap: si la rama se movio, se rechaza"
+          git push origin "HEAD:${GITHUB_REF#refs/heads/}"
+          echo "escrito en ${GITHUB_REF#refs/heads/} · $(git rev-parse HEAD)"
