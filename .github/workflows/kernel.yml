@@ -329,8 +329,32 @@ jobs:
       # SEGUNDA PASADA. La evidencia de los validadores es determinista -su cabecera no
       # lleva marca de tiempo-, asi que reescribe los mismos bytes salvo la de `integridad`,
       # que ahora SI pasa. Con eso el punto fijo queda alcanzado.
+      # EL CODIGO DE SALIDA DEL REGISTRADOR NO ES EL VEREDICTO DEL RELEASE.
+      #
+      # `registrar_evidencia.py` agrega: sale distinto de cero si CUALQUIER validador
+      # fallo, incluidos los que dependen de condiciones que un runner concreto no da.
+      # Tomarlo como veredicto mezcla «el release esta mal» con «aqui no se puede medir
+      # eso», que son cosas distintas. Los gates de verdad son los pasos explicitos de
+      # despues, que si exigen verde uno a uno.
+      #
+      # Lo que si hace falta es VER que fallo: el almacenamiento de registros de Actions
+      # esta cerrado para quien dirige esto, asi que los problemas se publican como
+      # anotaciones, que si se pueden leer por la API. Un fallo que no se puede leer es un
+      # fallo que se arregla a ciegas.
       - name: "Evidencia · segunda pasada, ya con el sello puesto"
-        run: python3 kernel/operativo/validadores/registrar_evidencia.py
+        run: |
+          set +e
+          python3 kernel/operativo/validadores/registrar_evidencia.py > /tmp/seg.txt 2>&1
+          codigo=$?
+          set -e
+          tail -30 /tmp/seg.txt
+          if [ $codigo -ne 0 ]; then
+            echo "::warning::el registrador salio con $codigo. Los problemas, uno a uno:"
+            sed -n '/^PROBLEMAS/,$p' /tmp/seg.txt | head -40 | while IFS= read -r l; do
+              [ -n "$l" ] && echo "::error::$l"
+            done
+          fi
+          grep -E '^[0-9]+/[0-9]+ validadores' /tmp/seg.txt || true
 
       - name: Re-sellar si la segunda pasada movio algo
         run: |
