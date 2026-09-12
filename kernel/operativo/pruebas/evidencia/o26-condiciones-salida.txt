@@ -7,15 +7,15 @@
 ==============================================================================
   PERFIL DEL ANFITRIÓN, medido y DECLARADO (`O29` §7)
       cgroup                 cgroup2fs
-      docker                 29.1.3 · cgroup 2 · driver systemd
-      uid_del_coordinador    1000
-      unshare                uid 0 dentro
+      docker                 28.0.4 · cgroup 2 · driver systemd
+      uid_del_coordinador    1001
+      unshare                no admitido
       la certificación de estas condiciones vale PARA ESTE PERFIL y no
       se universaliza: es lo que `O29` §7 exige decir
 
   1 · SATISFECHA    la raíz y su evidencia viven fuera del árbol verificado
         instalación y evidencia fuera del árbol, y el instalador RECHAZA ponerlas dentro (InstalacionDentroDelArbol). No es que hoy estén fuera: es que no pueden estar dentro
-        · realpath(instalacion) vs realpath(arbol) → instalacion=/tmp/ads-o26-abl0sjis/instalacion · arbol=<raiz>
+        · realpath(instalacion) vs realpath(arbol) → instalacion=/tmp/ads-o26-zg_m1rs8/instalacion · arbol=<raiz>
         · instalar DENTRO del árbol → InstalacionDentroDelArbol: [INSTALACION_DENTRO_DEL_ARBOL] la raíz externa no se puede instalar dentro del árbol que verifica: la ruta declarada apunta dentro del árbol. Un verificador que vive donde vive lo verificado no es externo (instalacion-colada)
 
   2 · SATISFECHA    la firma es asimétrica
@@ -25,7 +25,7 @@
         · firmar con SÓLO la pública → ProveedorDeFirmaAusente
 
   3 · SATISFECHA    la atestación queda ligada simultáneamente al SHA del commit y a su tree
-        el acta liga commit `c21d221b617e` y tree `bd13239e9581` a la vez, y cambiar CUALQUIERA de los dos —o los dos— hace fallar `exigir_vinculo`
+        el acta liga commit `660ab07cde50` y tree `c6d8282031ab` a la vez, y cambiar CUALQUIERA de los dos —o los dos— hace fallar `exigir_vinculo`
         · exigir_vinculo con los dos correctos → sin excepción
         · exigir_vinculo · commit ajeno → VinculoDeCommitRoto
         · exigir_vinculo · tree ajeno → VinculoDeTreeRoto
@@ -42,7 +42,7 @@
         · firma.verificar con SOLO material público → valida=True Good "ads-atestacion-de-raiz-externa" signature for ancla@ad
 
   6 · SATISFECHA    el ejecutor de la raíz no comparte capacidad de escritura sobre el repositorio de control con el runtime
-        ejecutor en CONTENEDOR con UID 4242 —distinto del runtime, que corre con UID 1000—, sin red, y con el control repo montado de SÓLO LECTURA: los OCHO intentos de escritura quedan IMPEDIDOS por el sistema de ficheros, no por una comprobación del programa. Perfil declarado: docker 29.1.3 · cgroup 2 · driver systemd · cgroup cgroup2fs
+        ejecutor en CONTENEDOR con UID 4242 —distinto del runtime, que corre con UID 1001—, sin red, y con el control repo montado de SÓLO LECTURA: los OCHO intentos de escritura quedan IMPEDIDOS por el sistema de ficheros, no por una comprobación del programa. Perfil declarado: docker 28.0.4 · cgroup 2 · driver systemd · cgroup cgroup2fs
         · docker run --user 4242:4242 -v <repo>:/control:ro → codigo=0
         ·    → 4242
         ·    → IMPEDIDO /control/.git/HEAD

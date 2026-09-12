@@ -53,7 +53,7 @@ POR REQUISITO — dónde se rompe la cadena
   S3  CANAL PRODUCTIVO, NO PRUEBA TEXTUAL         primeras faltas: 2
   S4  NO ES SÓLO LA HUELLA GENERAL                primeras faltas: 0
   S5  ALCANCE ESPECÍFICO DE ESTA CLÁUSULA         primeras faltas: 101
-  S6  CICLO SANO / SABOTAJE / RESTAURADO          primeras faltas: 4
+  S6  CICLO SANO / SABOTAJE / RESTAURADO          primeras faltas: 6
 
 FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
 ------------------------------------------------------------------------------
@@ -270,6 +270,9 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
   T214/f2      S1  FD-5
        «la detección se escribe a mano en vez de ejercerse»
        ningún sabotaje del catálogo está imputado a `T214` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:137
+  T215/f1      S6  FD-5
+       «se degrada en silencio a `killpg`»
+       NK16a: sabotaje → NO DETECTADA: kernel/operativo/runtime/pruebas/test_contencion.py siguió pasando [corrida PARCIAL: ContencionFuerte.test_el_bisnieto_con_setsid_no_escapa_al_backend_elegido] con la infracción introducida (exit 0) · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:158
   T215/f2      S5  FD-5
        «un descendiente sigue vivo después de la cancelación o del timeout»
        ningún sabotaje de `T215` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK16a: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:158
@@ -495,6 +498,9 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
   T271/f2      S5  CONTRATO 1bis
        «una cifra derivada no llega a la tabla publicada»
        ningún sabotaje de `T271` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N271: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:81
+  T272/f1      S6  CONTRATO 2
+       «el alcance vuelve a ser los dos ficheros escritos a mano»
+       N272d: sano → EXIT=1 · caen T152 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T152 en el árbol SIN sabotear; N272b: sano → EXIT=1 · caen T152 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T152 en el árbol SIN sabotear · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:103
   T272/f2      S5  CONTRATO 2
        «una sede con versión obsoleta se queda sin clase de remedio declarada»
        ningún sabotaje de `T272` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N272d: el motivo no comparte ni un término distintivo con la cláusula; N272b: el motivo no comparte ni un término distintivo con l · sede kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md:103
@@ -907,9 +913,9 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
        «el veredicto de «nunca creado» menciona supervivencia, que es el otro fallo»
        ningún sabotaje del catálogo está imputado a `T418` · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:441
 
-  346 propiedades críticas medidas · 283 PENDIENTES · 57 obligaciones afectadas
+  346 propiedades críticas medidas · 285 PENDIENTES · 57 obligaciones afectadas
   obligaciones con alguna propiedad pendiente: A14, C2, C4, C5, CONTRATO 1, CONTRATO 1bis, CONTRATO 2, CONTRATO 3, D104, F-01, F-02, F-04, F-05, F-06, F-10, F-11, FD-1, FD-3, FD-5, FD-6, M-04, S1-02, V6-01, V6-02, V6-03, V6-04, V6-05, V6-06, V6-07, V6-08, V6-09, V6-10, V6-11, V6-12, V6-13, V6-14, V6-15, V6-16, V6-17, V6-18, V6-19, g.1, g.10, g.11, g.12, g.13, g.14, g.15, g.16, g.2, g.3, g.4, g.5, g.6, g.7, g.8, g.9
-  pendientes de `O26-SAB`: 283 propiedades, enumeradas arriba
+  pendientes de `O26-SAB`: 285 propiedades, enumeradas arriba
   `O26` §5.2 · NO ACREDITADA por este instrumento
 
 LO QUE ESTE VEREDICTO NO DEMUESTRA

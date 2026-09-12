@@ -29,9 +29,9 @@ UNIVERSO OBLIGATORIO DE `F6`, DERIVADO
 
 PROCEDENCIA DE CADA COMPONENTE — sede, digest y tamaño
 ------------------------------------------------------------------------------
-  §19     docs/evolucion/11-ARQUITECTURA-INTEGRADA.md                616044e4827b18dc  12152 líneas
-  F-nn    docs/evolucion/11-ARQUITECTURA-INTEGRADA.md                616044e4827b18dc  12152 líneas
-  V6      docs/evolucion/11-ARQUITECTURA-INTEGRADA.md                616044e4827b18dc  12152 líneas
+  §19     docs/evolucion/11-ARQUITECTURA-INTEGRADA.md                d45516cc2a79e16c  12152 líneas
+  F-nn    docs/evolucion/11-ARQUITECTURA-INTEGRADA.md                d45516cc2a79e16c  12152 líneas
+  V6      docs/evolucion/11-ARQUITECTURA-INTEGRADA.md                d45516cc2a79e16c  12152 líneas
   g       docs/rediseno/g-ESTADO-DURABLE-APROBADA.md                 c8ba0a933c387d73  381 líneas
   C       kernel/operativo/contratos/                                directorio  8 ficheros
   deuda   docs/canonico/06-DEUDA-Y-LIMITACIONES-VIGENTES.md          0d595ce48bf06985  752 líneas

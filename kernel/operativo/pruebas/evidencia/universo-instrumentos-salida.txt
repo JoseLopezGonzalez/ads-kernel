@@ -6,7 +6,7 @@
 `O31` §3 y §5 · EL UNIVERSO DE INSTRUMENTOS, DERIVADO DEL ÁRBOL
 ==============================================================================
 
-  ANCLA   commit c21d221b617e8fa6fedc4c5874714ea74ea91123 · tree bd13239e95816800579b1e6159687cd6de2c26c5
+  ANCLA   commit 660ab07cde50ab2451c411186996e08d71780359 · tree c6d8282031abcc45a1aabd5881176b4708c09b2c
 
 CÓMO SE DERIVA, Y POR QUÉ NO ES UNA LISTA
 ------------------------------------------------------------------------------
@@ -19,8 +19,8 @@ CÓMO SE DERIVA, Y POR QUÉ NO ES UNA LISTA
 
 EL UNIVERSO
 ------------------------------------------------------------------------------
-  puntos ejecutables en el árbol ....... 62
-  directorios que ocupan ............... 9
+  puntos ejecutables en el árbol ....... 64
+  directorios que ocupan ............... 10
       docs/canonico
       docs/evolucion/verificacion
       docs/f5
@@ -28,9 +28,10 @@ EL UNIVERSO
       kernel/operativo/runtime
       kernel/operativo/runtime/pruebas
       kernel/operativo/validadores
+      kernel/operativo/validadores/pruebas
       tooling
       tooling/tests
-  filas del manifiesto ................. 61
+  filas del manifiesto ................. 63
   puntos SIN fila ni exclusión ......... 0
   exclusiones DECLARADAS en el fichero . 14
 
@@ -72,6 +73,7 @@ EL GUARDIÁN DE CADA EVIDENCIA
   bytes del árbol de trabajo contra el blob de `HEAD`.
   lint                               lint-salida.txt                              equivalente `O31` §3
   contratos                          contratos-salida.txt                         T350 (23 escenarios)
+  rutas-portables                    rutas-portables-salida.txt                   equivalente `O31` §3
   packs                              packs-salida.txt                             T350 (3 escenarios)
   referencias                        referencias-salida.txt                       T350 (1 escenarios)
   arranque                           arranque-salida.txt                          T350 (5 escenarios)
@@ -98,11 +100,12 @@ EL GUARDIÁN DE CADA EVIDENCIA
   multimaquina                       multimaquina-salida.txt                      T350 (2 escenarios)
   sesion-nueva                       sesion-nueva-salida.txt                      T350 (2 escenarios)
   e2e-f6                             e2e-f6-salida.txt                            T350 (6 escenarios)
+  exclusiones-de-instancia           exclusiones-de-instancia-salida.txt          T350 (5 escenarios)
   ciclo                              ciclo-salida.txt                             T350 (8 escenarios)
   continua                           continua-salida.txt                          T350 (3 escenarios)
   agentes                            agentes-salida.txt                           T350 (15 escenarios)
   cardinalidad-y-seleccion           cardinalidad-salida.txt                      T350 (31 escenarios)
-  integridad-evidencia               integridad-evidencia-salida.txt              T350 (42 escenarios)
+  integridad-evidencia               integridad-evidencia-salida.txt              T350 (44 escenarios)
   macrocircuitos                     macrocircuitos-salida.txt                    T350 (4 escenarios)
   universo-obligatorio               universo-obligatorio-salida.txt              equivalente `O31` §3
   universo-obligaciones              universo-obligaciones-salida.txt             equivalente `O31` §3
@@ -122,7 +125,7 @@ EL GUARDIÁN DE CADA EVIDENCIA
 
 OBSERVACIONES
 ------------------------------------------------------------------------------
-  · guardián: 32 por `T350` · 17 por el equivalente de `O31` §3 · 0 sin guardián
+  · guardián: 33 por `T350` · 18 por el equivalente de `O31` §3 · 0 sin guardián
 
 LOS INCUMPLIMIENTOS, UNO A UNO
 ------------------------------------------------------------------------------
@@ -136,4 +139,4 @@ LO QUE ESTE VEREDICTO NO DEMUESTRA
     independiente, y exigen que reproduzca el ataque él mismo;
   · no juzga el contenido de la evidencia: eso es `T158` y `T350`.
 
-62 puntos ejecutables · 9 directorios · 0 sin fila ni exclusión · 14 exclusiones declaradas · 0 incumplimientos
+64 puntos ejecutables · 10 directorios · 0 sin fila ni exclusión · 14 exclusiones declaradas · 0 incumplimientos

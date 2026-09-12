@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 9a1f96f3a09f8073 -->
+<!-- source_revision: 6a92a494e2405fd4 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -13,9 +13,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | CONTRATO DEFINIDO | 56 |
 | VALIDADOR IMPLEMENTADO | 4 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 257 |
+| PRUEBA SUPERADA | 262 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **317** |
+| **total** | **322** |
 
 ## Detalle
 
@@ -338,10 +338,15 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T427](T420-T429-evidencia-en-head.md) | Sin repositorio Git el canal no puede juzgar, y lo DICE en vez de dar verde mudo | D-05 · ataque 7 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
 | [T428](T420-T429-evidencia-en-head.md) | Una evidencia citada y no confirmada en HEAD se cuenta y se NOMBRA | D-05 · ataque 8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
 | [T429](T420-T429-evidencia-en-head.md) | Borrar la evidencia confirmada da FALLIDA igual que vaciarla | D-05 · ataque 9 · auditoria independiente | requiere-runtime | **PRUEBA SUPERADA** | evidencia/integridad-evidencia-salida.txt |
+| [T430](T430-T434-exclusiones-de-instancia.md) | Sin sede de instancia, un enlace heredado sigue saliendo en rojo | UP-11 · linea base | validador-estructural | **PRUEBA SUPERADA** | evidencia/exclusiones-de-instancia-salida.txt |
+| [T431](T430-T434-exclusiones-de-instancia.md) | Una zona declarada por la instancia se salta de verdad | UP-11 | validador-estructural | **PRUEBA SUPERADA** | evidencia/exclusiones-de-instancia-salida.txt |
+| [T432](T430-T434-exclusiones-de-instancia.md) | La ejecucion PUBLICA las zonas excluidas, tambien en verde | UP-11 · visibilidad | validador-estructural | **PRUEBA SUPERADA** | evidencia/exclusiones-de-instancia-salida.txt |
+| [T433](T430-T434-exclusiones-de-instancia.md) | Una exclusion SIN MOTIVO se rechaza | UP-11 · puerta trasera | validador-estructural | **PRUEBA SUPERADA** | evidencia/exclusiones-de-instancia-salida.txt |
+| [T434](T430-T434-exclusiones-de-instancia.md) | Una exclusion HUERFANA se rechaza | UP-11 · no se acumulan restos | validador-estructural | **PRUEBA SUPERADA** | evidencia/exclusiones-de-instancia-salida.txt |
 
 ## Contraste del estado contra la evidencia
 
-Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **257** de **317**.
+Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **262** de **322**.
 
 No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **60**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
 
