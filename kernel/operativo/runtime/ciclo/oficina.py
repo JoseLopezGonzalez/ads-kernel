@@ -440,6 +440,14 @@ def entregar(runtime, *, corpus=None, paquete, entrega, circuito=None, hechos=No
     if plan is None or fila is None or not fila.get("rol"):
         raise CicloInconsistente("el paquete `" + paquete + "` no tiene fila con rol en un "
                                  "plan vigente", ruta=paquete)
+    # LA AUTORIDAD, ANTES DE ESCRIBIR NADA. Entregar son varias transacciones —dictamen,
+    # devolución, corrección, publicación, registro, handoffs— y sólo la publicación (4)
+    # exigía titularidad. MEDIDO (sexto dogfood): un supervisor reclamó el lease de un
+    # worker vivo pero lento; el worker ya había escrito el dictamen, la devolución y la
+    # corrección cuando la publicación le dijo AUTORIDAD_PERDIDA. Lo escrito a medias era
+    # idempotente, pero a medias. Sin lease no se escribe ni la primera.
+    from runtime.lease import exigir_titularidad                       # noqa: PLC0415
+    exigir_titularidad(runtime._leer_lease(paquete), runtime.instancia, None, paquete=paquete)
     if entrega.get("paquete") != paquete:
         raise EntregaInvalida("la entrega dice ser de `" + str(entrega.get("paquete"))
                               + "` y se entrega sobre `" + paquete + "`", paquete=paquete)

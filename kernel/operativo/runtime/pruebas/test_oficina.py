@@ -737,6 +737,39 @@ class Entregas(Laboratorio):
             self.assertEqual(A.almacen.revision()["revision"], revision, nombre)
         self.assertEqual(A._leer_paquete(impl)["estado"], "ejecutando")
 
+    def test_07b_sin_lease_no_se_escribe_ni_el_primer_paso_de_la_entrega(self):
+        """T461 · Defecto que previene: media entrega escrita por quien ya no tiene la autoridad.
+
+        Medido en el sexto dogfood: el supervisor reclamó el lease de un worker vivo pero lento
+        (el latido se paró al acabar el ejecutable y la entrega tardó más que la paciencia);
+        el worker escribió dictamen, devolución y corrección antes de que la publicación le
+        dijera AUTORIDAD_PERDIDA.
+        """
+        A, plan, impl = self._hasta_impl()
+        rev = self.paquete_de(plan, "CNS/revision-de-construccion")
+        self.tomar_y_acusar(A, impl)
+        self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
+        B = self.rt("w-B")
+        self.tomar_y_acusar(B, rev)
+        S = self.rt("supervisor")
+        for _ in range(S.paciencia):                      # B no late: el supervisor lo reclama
+            S.observar(rev)
+        S.reclamar(rev)
+        S.soltar(rev)
+        self.assertIsNone(S._leer_lease(rev))
+        antes = sorted(B.almacen.listar("paquetes")), sorted(B.almacen.listar("dictamenes")), sorted(B.almacen.listar("handoffs"))
+        entrega = self.entrega(rev, "CNS/revision-de-construccion", "devuelto")
+        entrega["dictamenes"] = [self.dictamen("gate:revision-de-construccion", impl, "no-superado")]
+        entrega["devolucion"] = {"que_falta": "la prueba del conflicto no muerde",
+                                 "por_que_es_insuficiente": "no protege el cambio",
+                                 "que_la_cerraria": "una prueba roja al revertir",
+                                 "evidencia": ["tabla de reversión"]}
+        from runtime.errores import AutoridadPerdida                   # noqa: PLC0415
+        with self.assertRaises(AutoridadPerdida):
+            oficina.entregar(B, corpus=self.corpus, paquete=rev, entrega=entrega, circuito=self.circuito)
+        despues = sorted(B.almacen.listar("paquetes")), sorted(B.almacen.listar("dictamenes")), sorted(B.almacen.listar("handoffs"))
+        self.assertEqual(antes, despues)                  # ni dictamen, ni devolución, ni corrección
+
     def test_08_la_autocertificacion_se_rechaza_por_trabajador_y_por_rol(self):
         """T465 · Defecto que previene: el implementador como único verificador de su trabajo."""
         A, plan, impl = self._hasta_impl()
