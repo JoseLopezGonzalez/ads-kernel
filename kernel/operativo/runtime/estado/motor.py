@@ -414,6 +414,14 @@ class Almacen:
             # Sólo se reintenta mientras haya testimonio de que es la ventana.
             transaccion = self._testigo_que_publico(ruta, encontrado)
             if transaccion is None:
+                # LECTOR DETRÁS DE UN ESCRITOR (medido con workers reales como procesos):
+                # entre leer `REVISION.json` y leer el objeto, OTRO proceso publicó los dos.
+                # El objeto en disco es de una revisión MÁS NUEVA que la que este lector
+                # tiene en la mano, y eso no es corrupción: se vuelve a leer la revisión y,
+                # si avanzó, se juzga contra ella. Sólo si no avanzó es corrupción.
+                vigente = self._leer_revision()
+                if vigente["revision"] != revision["revision"] and intento < self.REINTENTOS_DE_VENTANA:
+                    continue
                 break
             if intento == self.REINTENTOS_DE_VENTANA:
                 raise PublicacionEnVuelo(

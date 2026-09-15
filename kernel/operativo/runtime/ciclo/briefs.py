@@ -105,6 +105,10 @@ def componer(*, corpus=None, paquete, item, fila_del_plan, rol, equipo=None, int
             # rellenar. Medido con un modelo real: sin plantilla escribio prosa donde el
             # esquema exige `si|no|no-aplica`, y la oficina rechazo la entrega.
             "plantilla": _plantilla_de_entrega(str(paquete), rol, gate, contrato_operativo, esquema_entrega),
+            # la forma de cada elemento de lista y de cada objeto opcional, DERIVADA del
+            # esquema: un modelo real escribió `evidencias` con otros campos y la oficina la
+            # rechazó a la tercera vez; lo que el esquema exige se enseña, no se adivina
+            "elementos": _formas_de_los_elementos(esquema_entrega),
         },
         "ordenes": dict(ordenes or {}),
         "prohibiciones": _prohibiciones(contrato_de_rol, contrato_operativo),
@@ -151,6 +155,39 @@ def _plantilla_de_entrega(paquete, rol, gate, contrato, esquema):
                           for c in (contrato or {}).get("checklist") or []],
         },
     }
+
+
+def _ejemplar(spec):
+    """Un ejemplar de un objeto del esquema: sus campos obligatorios con pistas de valor."""
+    campos = spec.get("campos") or {}
+    salida = {}
+    for nombre in spec.get("obligatorios") or []:
+        sub = campos.get(nombre) or {}
+        tipo = sub.get("tipo", "texto")
+        if tipo == "enum":
+            salida[nombre] = "<" + "|".join(formas_enum(v) for v in sub.get("valores") or []) + ">"
+        elif tipo == "lista":
+            salida[nombre] = ["<" + str(sub.get("de", "texto")) + ">"]
+        elif tipo == "booleano":
+            salida[nombre] = "<true|false>"
+        elif tipo == "entero":
+            salida[nombre] = 0
+        elif tipo == "objeto":
+            salida[nombre] = _ejemplar(sub)
+        else:
+            salida[nombre] = "<texto>"
+    return salida
+
+
+def _formas_de_los_elementos(esquema):
+    """Para cada lista de objetos y cada objeto opcional de la entrega, su ejemplar."""
+    salida = {}
+    for nombre, spec in (esquema.get("campos") or {}).items():
+        if spec.get("tipo") == "lista" and spec.get("de") == "objeto":
+            salida[nombre] = _ejemplar(spec)
+        elif spec.get("tipo") == "objeto" and not spec.get("esquema") and nombre != "autoevaluacion":
+            salida[nombre] = _ejemplar(spec)
+    return salida
 
 
 def _prohibiciones(rol, contrato):
@@ -332,7 +369,9 @@ def como_markdown(brief):
         lineas += ["autoevaluacion.checklist contesta: " + ", ".join(forma["checklist"])]
     if forma["artefactos_obligatorios"]:
         lineas += ["", "PLANTILLA (rellena lo que va entre <>; los valores cerrados sólo admiten lo que se lista):",
-               "```json", json.dumps(forma.get("plantilla") or {}, ensure_ascii=False, indent=1), "```"]
+               "```json", json.dumps(forma.get("plantilla") or {}, ensure_ascii=False, indent=1), "```",
+               "", "FORMA DE CADA ELEMENTO (si añades uno a estas listas u objetos, lleva EXACTAMENTE estos campos):",
+               "```json", json.dumps(forma.get("elementos") or {}, ensure_ascii=False, indent=1), "```"]
     lineas += _lista("artefactos obligatorios:", [
             a["tipo"] + " · " + a["nombre"] for a in forma["artefactos_obligatorios"]])
     lineas += ["`devuelto` exige devolucion.{que_falta, por_que_es_insuficiente, que_la_cerraria, evidencia}",

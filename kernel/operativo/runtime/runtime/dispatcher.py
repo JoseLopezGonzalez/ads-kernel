@@ -1440,9 +1440,15 @@ class Runtime:
                 reanudables.append(paquete["id"])
                 continue
             epoca_previa = lease["epoca"]
-            if self._pretender_autoridad_ajena(paquete["id"]):
+            try:
+                pretendida = self._pretender_autoridad_ajena(paquete["id"])
+            except RuntimeInconsistente:
+                # la misma carrera que en los externos: el otro terminó entre dos lecturas
+                continue
+            if pretendida:
                 reanudables.append(paquete["id"])
-                if self._leer_lease(paquete["id"])["epoca"] != epoca_previa:
+                lease_ahora = self._leer_lease(paquete["id"])
+                if lease_ahora is not None and lease_ahora["epoca"] != epoca_previa:
                     informe["reclamados"].append(paquete["id"])
             else:
                 informe["observados"].append(paquete["id"])

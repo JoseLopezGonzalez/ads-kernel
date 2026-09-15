@@ -494,6 +494,40 @@ class MuerteDelTrabajador(Laboratorio):
                 break
         self.assertEqual(reofrecido, S.paciencia)
 
+    def test_03c_un_lector_detras_de_un_escritor_no_ve_corrupcion(self):
+        """T474 · Defecto que previene: un worker que lee mientras otro publica muere por «estado corrupto».
+
+        Medido con tres workers reales: entre leer REVISION.json y leer el objeto, otro
+        proceso publicó los dos; el lector juzgaba el objeto nuevo contra la revisión vieja y
+        levantaba ESTADO_CORRUPTO. Se reproduce sirviéndole al lector una revisión rancia.
+        """
+        A = self.rt("w-A")
+        A.crear_item(id="it-1", titulo="primero", motivo="alta")
+        A.crear_paquete(id="pq-1", item="it-1", capacidades_requeridas=["worker"],
+                        orden=paquete_runtime.orden_externa())
+        L = self.rt("lector")
+        almacen = L.almacen
+        rancia = almacen._leer_revision()
+        A.tomar("pq-1")                                    # el escritor publica: el objeto cambia
+        original = almacen._leer_revision
+        servida = {"veces": 0}
+
+        def primero_rancia():
+            servida["veces"] += 1
+            return rancia if servida["veces"] == 1 else original()
+
+        almacen._leer_revision = primero_rancia
+        objeto = almacen.leer("paquetes/pq-1.json")       # no levanta: la revisión avanzó
+        self.assertEqual(objeto["estado"], "ejecutando")
+        almacen._leer_revision = original
+        # y un objeto de verdad corrupto sigue siendo corrupción: fallo cerrado
+        ruta = os.path.join(self.repo, "estado", "canonico", "paquetes", "pq-1.json")
+        with open(ruta, "a", encoding="utf-8") as fichero:
+            fichero.write(" ")
+        with self.assertRaises(Exception) as cm:
+            almacen.leer("paquetes/pq-1.json")
+        self.assertIn("ESTADO_CORRUPTO", str(cm.exception))
+
     def test_04_dos_procesos_compiten_por_el_mismo_paquete_y_exactamente_uno_lo_toma(self):
         """T462 · Defecto que previene: doble despacho entre dos sesiones."""
         A = self.rt("w-A")
