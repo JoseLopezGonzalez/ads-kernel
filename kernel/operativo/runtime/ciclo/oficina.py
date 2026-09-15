@@ -353,6 +353,27 @@ def _exigir_que_no_juzgue_lo_suyo(runtime, corpus, paquete, fila, circuito=None)
                 "sea quien juzga. Otra instancia tiene que tomarlo",
                 paquete=paquete, titular=runtime.instancia,
             )
+    # Y no sólo lo que llega por handoff: TODO lo que esta instancia entregó para el item en
+    # un rol del que hay que ser independiente. DEFECTO MEDIDO (quinto dogfood, tres
+    # workers): quien hizo la CORRECCIÓN de la implementación pasaba la puerta de VER/dosier
+    # —el handoff a VER venía de la implementación original, de otro— y la entrega se le
+    # rechazaba después por dictaminar lo suyo, consumiendo un intento del paquete.
+    plan, _fila = plan_de_paquete(runtime.almacen, paquete)
+    for fila_del_plan in (plan or {}).get("correspondencia") or []:
+        otro = str(fila_del_plan.get("paquete") or "")
+        if not otro or otro == paquete:
+            continue
+        entrega = modulo_entregas.ultima(runtime.almacen, otro)
+        if entrega is None or entrega.get("titular") != runtime.instancia:
+            continue
+        if entrega.get("rol") in independiente_de:
+            raise AutocertificacionRechazada(
+                "`" + runtime.instancia + "` entregó `" + otro + "` como "
+                + str(entrega.get("rol")) + " para este item y quiere tomar `" + paquete
+                + "` como " + rol + ", que exige independencia de ese rol: G13 no admite que "
+                "quien construye sea quien juzga. Otra instancia tiene que tomarlo",
+                paquete=paquete, titular=runtime.instancia,
+            )
 
 
 # ===========================================================================

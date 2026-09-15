@@ -528,6 +528,43 @@ class MuerteDelTrabajador(Laboratorio):
             almacen.leer("paquetes/pq-1.json")
         self.assertIn("ESTADO_CORRUPTO", str(cm.exception))
 
+    def test_03d_un_lease_que_otro_libero_entre_dos_lecturas_no_es_corrupcion(self):
+        """T474 · Defecto que previene: el supervisor muere por «el fichero no existe» cuando un worker suelta.
+
+        Medido con un supervisor y tres workers como procesos: la revisión leída nombraba el
+        lease, el titular lo liberó y publicó, y el lector encontraba el fichero ausente.
+        """
+        A = self.rt("w-A")
+        A.crear_item(id="it-1", titulo="primero", motivo="alta")
+        A.crear_paquete(id="pq-1", item="it-1", capacidades_requeridas=["worker"],
+                        orden=paquete_runtime.orden_externa())
+        A.tomar("pq-1")
+        L = self.rt("lector")
+        almacen = L.almacen
+        rancia = almacen._leer_revision()                  # nombra leases/pq-1.json
+        A.soltar("pq-1")                                   # el titular lo retira y publica
+        original = almacen._leer_revision
+        servida = {"veces": 0}
+
+        def primero_rancia():
+            servida["veces"] += 1
+            return rancia if servida["veces"] == 1 else original()
+
+        almacen._leer_revision = primero_rancia
+        with self.assertRaises(Exception) as cm:
+            almacen.leer("leases/pq-1.json")
+        self.assertIn("RUTA_INVALIDA", str(cm.exception))   # «no existe», no «corrupto»
+        almacen._leer_revision = primero_rancia
+        servida["veces"] = 0
+        self.assertIsNone(L._leer_lease("pq-1"))            # y el lector opcional lo lee como «sin lease»
+        almacen._leer_revision = original
+        # un fichero que falta SIN que la revisión avance sigue siendo corrupción
+        ruta = os.path.join(self.repo, "estado", "canonico", "paquetes", "pq-1.json")
+        os.remove(ruta)
+        with self.assertRaises(Exception) as cm:
+            almacen.leer("paquetes/pq-1.json")
+        self.assertIn("ESTADO_CORRUPTO", str(cm.exception))
+
     def test_04_dos_procesos_compiten_por_el_mismo_paquete_y_exactamente_uno_lo_toma(self):
         """T462 · Defecto que previene: doble despacho entre dos sesiones."""
         A = self.rt("w-A")
@@ -788,6 +825,42 @@ class Entregas(Laboratorio):
         vista = tablero.derivar(A, corpus=self.corpus)
         self.assertEqual(len(vista["devoluciones"]), 3)       # la tercera se registra, y frena
         self.assertEqual(len(vista["escalados"]), 1)
+
+    def test_09b_quien_corrigio_la_implementacion_tampoco_pasa_la_puerta_del_juez(self):
+        """T465 · Defecto que previene: el autor de la CORRECCIÓN toma VER/dosier y su entrega se rechaza después.
+
+        Medido en el quinto dogfood: el handoff a VER venía de la implementación original
+        (de otro worker), la puerta sólo miraba handoffs, y quien corrigió consumió un intento.
+        """
+        C = self.rt("w-C")
+        plan = self.planificar(C)["plan"]
+        impl = self.paquete_de(plan, "CNS/implementacion")
+        self.avanzar_prd(C, plan, impl)
+        rev = self.paquete_de(plan, "CNS/revision-de-construccion")
+        ver = self.paquete_de(plan, "VER/dosier")
+        self.tomar_y_acusar(C, impl)
+        self.entregar(C, impl, self.entrega(impl, "CNS/implementacion"))
+        B = self.rt("w-B")
+        self.tomar_y_acusar(B, rev)
+        entrega = self.entrega(rev, "CNS/revision-de-construccion", "devuelto")
+        entrega["dictamenes"] = [self.dictamen("gate:revision-de-construccion", impl, "no-superado")]
+        entrega["devolucion"] = {"que_falta": "la prueba del conflicto no muerde",
+                                 "por_que_es_insuficiente": "no protege el cambio",
+                                 "que_la_cerraria": "una prueba roja al revertir",
+                                 "evidencia": ["tabla de reversión"]}
+        res = self.entregar(B, rev, entrega)
+        correccion = res["correccion"]["correccion"]
+        A = self.rt("w-A")                                  # OTRO worker corrige
+        self.tomar_y_acusar(A, correccion)
+        self.entregar(A, correccion, self.entrega(correccion, "CNS/implementacion"))
+        for juez in (A, C):                                 # ni el que corrigió ni el que construyó
+            with self.assertRaises(ciclo.AutocertificacionRechazada):
+                oficina.tomar(juez, corpus=self.corpus, paquete=ver, circuito=self.circuito)
+            self.assertIsNone(juez._leer_lease(ver))        # y no queda lease detrás
+        F = self.rt("w-F")
+        with self.assertRaises(Exception) as cm:            # F pasa la puerta: lo que le frena es la dependencia
+            oficina.tomar(F, corpus=self.corpus, paquete=ver, circuito=self.circuito)
+        self.assertNotIsInstance(cm.exception, ciclo.AutocertificacionRechazada)
 
     def test_10_un_rechazo_al_recibir_no_cuenta_para_el_freno_y_cancela_el_receptor(self):
         """T466 · Defecto que previene: aceptar por cortesía y devolver después."""

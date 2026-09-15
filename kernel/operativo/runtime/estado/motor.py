@@ -273,6 +273,10 @@ def abrir(ruta_control_repo, *, recuperar=True):
 # ===========================================================================
 #  el almacén
 # ===========================================================================
+class _FicheroAusente(EstadoCorrupto):
+    """Sólo para distinguir «no está» de «no casa» dentro de `Almacen.leer`."""
+
+
 class Almacen:
     """El almacén de estado durable de un control repo. Único ejecutor de mutaciones."""
 
@@ -404,7 +408,34 @@ class Almacen:
                     "la ruta no existe en la revisión vigente "
                     + str(revision["revision"]), ruta=ruta,
                 )
-            datos = leer_bytes(destino, error=EstadoCorrupto)
+            try:
+                datos = leer_bytes(destino, error=_FicheroAusente)
+            except _FicheroAusente as ausencia:
+                # RETIRADO POR OTRO PROCESO (medido con un supervisor y tres workers como
+                # procesos): la revisión leída nombraba el lease, y entre esa lectura y ésta
+                # el titular lo LIBERÓ —paso 8 de su transacción— y publicó la suya. No es
+                # corrupción: se relee la revisión. Si avanzó y ya no nombra la ruta, la
+                # ruta no existe, que es lo que `RutaInvalida` significa y lo que un lector
+                # opcional traduce a «no hay lease». Si no avanzó, el escritor está entre su
+                # paso 8 y su paso 9: se espera y se vuelve a mirar. Sólo agotada la espera
+                # sin que la revisión avance es corrupción de verdad.
+                vigente = self._leer_revision()
+                if vigente["revision"] != revision["revision"]:
+                    if vigente["raiz"].get(ruta) is None:
+                        raise RutaInvalida(
+                            "la ruta ya no existe en la revisión vigente "
+                            + str(vigente["revision"]) + ": otro proceso la retiró",
+                            ruta=ruta,
+                        ) from ausencia
+                    if intento < self.REINTENTOS_DE_VENTANA:
+                        continue
+                elif intento < self.REINTENTOS_DE_VENTANA:
+                    time.sleep(self.ESPERA_DE_VENTANA)
+                    continue
+                raise EstadoCorrupto(
+                    "el fichero no existe y `REVISION.json` lo nombra: fue retirado fuera "
+                    "del diario", ruta=ruta,
+                ) from ausencia
             encontrado = cid(datos)
             if encontrado == esperado:
                 objeto = deserializar(datos, ruta=ruta)

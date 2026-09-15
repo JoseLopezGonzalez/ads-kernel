@@ -1515,7 +1515,14 @@ class Runtime:
         atiende. `adquirir` no roba, así que sin ese camino el paquete de una instancia que
         desapareció se quedaría en `fallido` para siempre.
         """
-        if not self._pretender_autoridad_ajena(paquete):
+        try:
+            if not self._pretender_autoridad_ajena(paquete):
+                return None
+        except RuntimeInconsistente:
+            # la misma carrera que en el barrido: el titular SOLTÓ entre dos lecturas (un
+            # worker cuya entrega se rechazó libera el lease en ese instante). Medido con
+            # el supervisor como proceso: el barrido entero moría aquí. En la siguiente
+            # pasada el paquete se ve sin lease y se atiende.
             return None
         try:
             lease = self.adquirir(paquete)
