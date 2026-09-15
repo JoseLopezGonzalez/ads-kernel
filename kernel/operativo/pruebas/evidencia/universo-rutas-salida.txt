@@ -65,12 +65,12 @@ v         1331  df887429241680a2…  docs/rediseno/b-RECORRIDO-APROBADA.md
 v         1590  aa635dff79e73fe1…  kernel/KERNEL.md
 ii          95  a870911530909584…  kernel/operativo/capacidades/APR/CAPACIDAD.md
 ii         104  6ca11b5f09883e24…  kernel/operativo/capacidades/ARQ/CAPACIDAD.md
-ii         107  7d73eb4a0de6c7b1…  kernel/operativo/capacidades/CNS/CAPACIDAD.md
+ii         107  2a37b519611dad1a…  kernel/operativo/capacidades/CNS/CAPACIDAD.md
 ii         147  07fd796faf0b64f3…  kernel/operativo/capacidades/DIS/CAPACIDAD.md
 ii         135  1f02ec15edb5747f…  kernel/operativo/capacidades/DOM/CAPACIDAD.md
 ii         152  acb292f882e77d74…  kernel/operativo/capacidades/DSP/CAPACIDAD.md
 ii         174  f71b8e43f6e2d66f…  kernel/operativo/capacidades/ENC/CAPACIDAD.md
-ii         123  91a81d3cf1cbfa61…  kernel/operativo/capacidades/ENT/CAPACIDAD.md
+ii         123  3190b5cf0db8689d…  kernel/operativo/capacidades/ENT/CAPACIDAD.md
 ii          96  e01a1440b6a49bb7…  kernel/operativo/capacidades/INV/CAPACIDAD.md
 ii         108  a5f87977c58ed1d0…  kernel/operativo/capacidades/PLT/CAPACIDAD.md
 ii         105  e83b0e08272e219d…  kernel/operativo/capacidades/PRD/CAPACIDAD.md
@@ -95,10 +95,10 @@ ii          28  315b2790cb66bb4c…  kernel/operativo/entrada/00-INDICE.md
 ii         145  750d39a29f05e7f2…  kernel/operativo/entrada/02-CIRCUITO.md
 ii         187  1716bd3d8b48107d…  kernel/operativo/entrada/04-INCERTIDUMBRE-Y-CONFIRMACION.md
 v           89  586653398b298e4e…  kernel/operativo/esquemas/proceso.yaml
-v          130  f56e8fe4872e46b5…  kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md
+v          134  9052fbf249413730…  kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md
 v          606  c5415442c236a92e…  kernel/operativo/recorrido/01-PROCESOS.md
 
-94 fuentes obligatorias · 101126 líneas
+94 fuentes obligatorias · 101130 líneas
   (i  )   4   las fuentes de «QUÉ HAY QUE LEER ÍNTEGRO» de `C-L.5`
   (ii )  29   las fuentes y las fichas de `C-0.1` / `C-0.2`
   (iii)   3   documento 11 · registro de decisiones · checkpoint
@@ -118,5 +118,4 @@ v          606  c5415442c236a92e…  kernel/operativo/recorrido/01-PROCESOS.md
         09-SINTESIS.md                                 # F3 — SÍNTESIS
         11-ARQUITECTURA-INTEGRADA.md                   # F4 — ARQUITECTURA INTEGRADA
 
-  EXCLUIDOS por PERÍMETRO, con su RUTA COMPLETA: 1
-        .git/                                                        `.git` de la RAÍZ: almacén, no corpus
+  EXCLUIDOS por PERÍMETRO, con su RUTA COMPLETA: 0

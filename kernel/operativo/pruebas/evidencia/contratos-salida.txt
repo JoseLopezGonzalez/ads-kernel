@@ -26,5 +26,9 @@ T241  SUPERADA  La entrega de DIS a VER está anclada a una estación del ciclo 
 T242  SUPERADA  Todo documento de docs/owner/ declara su autoridad, y no la elige: la deriva
 T243  SUPERADA  Las cinco entregas que 11-ARQ §8.0 declara existen como instancias en circuitos/
 T244  SUPERADA  El grado inicial del escenario coincide con el grado que midió su paso 5
+T476  SUPERADA  Todo rol materializable tiene contrato operativo efectivo y suficiente
+          cobertura: roles: conceptual 3 · consultivo 3 · materializable 32 · conceptuales (no los materializa ningún proceso): ENC/anclaje, ENC/critica-de-encuadre, ENC/interlocutor
+T477  SUPERADA  Las bases de contrato son coherentes y ningún rol hereda de dos
+          cobertura: bases: 7 · roles cubiertos: 35 · contratos completos: 7 · especializaciones: 1
 
-23 superadas · 0 fallidas
+25 superadas · 0 fallidas

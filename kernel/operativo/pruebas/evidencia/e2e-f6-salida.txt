@@ -23,10 +23,10 @@ paso 05  materialización del equipo por C4, con su composición y lo que quedó
          · composición `composicion:sis-cambio` · roles: 2 · agentes: 2 · modelos: modelo:gamma · descartes registrados: 4 · fuera con motivo: 0 · manda el ORDEN ESCRITO · sin condición verdadera se ESCALA · método y capacidad se distinguen
          resultado: CUMPLIDO
 paso 06  creación de items y paquetes, por el runtime y en el estado canónico
-         · item `it-de411ab700e9` · paquetes: 5 · obligaciones de la ruta: 3 · todo en el estado canónico, escrito por el motor
+         · item `it-80aecf808547` · paquetes: 5 · obligaciones de la ruta: 3 · todo en el estado canónico, escrito por el motor
          resultado: CUMPLIDO
 paso 07  despacho por el adaptador local, con un proceso real
-         · paquete `pq-69c2be6cd125` despachado por el adaptador local con un proceso real · desenlace `completado` · efecto `ef-0cbf105e7afc` aplicado en disco y acusado
+         · paquete `pq-e34107058860` despachado por el adaptador local con un proceso real · desenlace `completado` · efecto `ef-ef78dc626152` aplicado en disco y acusado
          resultado: CUMPLIDO
 paso 08  progreso emitido por el proceso y recogido por el runtime
          · el proceso emitió sus líneas y el runtime recogió 3 avances; el conteo NO entra en lo durable
@@ -59,7 +59,7 @@ paso 17  recuperación por la OTRA instancia, sin inventar estado
          · la OTRA instancia abre, RECUPERA y deja el paquete en `ejecutando`, dentro del vocabulario cerrado · el efecto está aplicado y su acuse NO, y la ventana es DETECTABLE en vez de inventarse un desenlace · integridad OK
          resultado: CUMPLIDO
 paso 18  `Continúa`: plan reproducible, y dos ejecuciones seguidas idénticas
-         · plan de continuación reproducible: dos ejecuciones seguidas dan el MISMO resultado byte a byte (2808 bytes) y NO modifican el estado; la revisión sigue siendo 32
+         · plan de continuación reproducible: dos ejecuciones seguidas dan el MISMO resultado byte a byte (2815 bytes) y NO modifican el estado; la revisión sigue siendo 32
          resultado: CUMPLIDO
 paso 19  no repetición del efecto: lo confirmado no se vuelve a aplicar
          · repetir la orden sobre un paquete ya completado no vuelve a ejecutar (EstadoDePaqueteInvalido): el efecto en disco sigue teniendo 2 línea(s), MEDIDO EN EL EFECTO y no en el estado, y su acuse durable sigue en pie
@@ -84,7 +84,7 @@ paso 24  controles negativos: sabotear asignación, modelo, límites y vínculo 
 
 T362 · corte 8-9: almacén cortado en `entre-el-paso-8-y-el-9` — testigo del paso 8 en disco y revisión SIN publicar. La comprobación de recuperabilidad tiene que encontrarlo y COMPLETARLO ... ok
 
-T363 · censo de fórmulas: la orden y el veredicto censan el MISMO conjunto de 25 módulos del aparato de verificación, y sale limpio (`V6-19`) ... ok
+T363 · censo de fórmulas: la orden y el veredicto censan el MISMO conjunto de 26 módulos del aparato de verificación, y sale limpio (`V6-19`) ... ok
 T364 · procedencia: los 5 puntos ejecutables publican su procedencia con una orden propia (`E-10`, `g.15`) ... ok
 T365 · censo de `arboles/`: el paquete está en los dos censos, la vía histórica está ACOTADA y publicada en `SEDES_DE_REPRODUCCION_HISTORICA`, y sus dos sedes lo dicen así ... ok
 

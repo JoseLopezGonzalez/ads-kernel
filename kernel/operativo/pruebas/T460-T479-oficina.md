@@ -61,7 +61,7 @@ falla_si:
   - "el checkpoint del intento anterior no llega al siguiente titular"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -83,7 +83,7 @@ falla_si:
   - "la reoferta consume un intento o pierde el checkpoint"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -104,7 +104,7 @@ falla_si:
   - "una toma rechazada por la oficina deja el lease puesto"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -128,7 +128,7 @@ falla_si:
   - "un rol sin agente declarado se planifica igual"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -147,7 +147,7 @@ falla_si:
   - "alguna de las siete mutaciones se registra como entrega"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -167,7 +167,7 @@ falla_si:
   - "el mismo titular firma la construcción y su revisión"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -189,7 +189,7 @@ falla_si:
   - "las devoluciones se recomponen sin tope"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -209,7 +209,7 @@ falla_si:
   - "el bloqueo acaba en agotado o en una reconciliación de g.9"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -229,7 +229,7 @@ falla_si:
   - "un item cierra como producto con un nivel obligatorio pendiente"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -249,7 +249,7 @@ falla_si:
   - "dos derivaciones del mismo estado difieren"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -270,7 +270,7 @@ falla_si:
   - "un completado durable se apoya en una entrega que no existe"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -289,7 +289,7 @@ falla_si:
   - "la espera circular queda en silencio"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -308,7 +308,7 @@ falla_si:
   - "un handoff sin artefactos se emite"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -327,7 +327,7 @@ falla_si:
   - "una decisión pendiente para la oficina entera"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -347,7 +347,7 @@ falla_si:
   - "algo del estado de la oficina sólo se reconstruye desde la conversación"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -366,7 +366,7 @@ falla_si:
   - "un documento que dice dos cosas se acepta por la primera"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
 ```
 
@@ -387,7 +387,7 @@ falla_si:
   - "un contrato efectivo insuficiente se entrega en un brief como si bastara"
 ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_contratos.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/contratos-salida.txt
 ```
 
@@ -405,6 +405,6 @@ falla_si:
   - "un rol hereda de dos familias y el contrato efectivo depende del orden de lectura"
 ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_contratos.py
-estado: validador-implementado
+estado: prueba-superada
 evidencia: evidencia/contratos-salida.txt
 ```

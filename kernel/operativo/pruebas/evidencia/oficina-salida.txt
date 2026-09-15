@@ -1,0 +1,70 @@
+# evidencia de: oficina
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/runtime/pruebas/test_oficina.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+test_16_una_dependencia_circular_no_se_toma_y_el_tablero_la_nombra (__main__.Adversarial.test_16_una_dependencia_circular_no_se_toma_y_el_tablero_la_nombra)
+T471 · Defecto que previene: dos paquetes esperándose para siempre en silencio. ... ok
+test_17_un_handoff_incompleto_no_se_emite_y_un_acuse_a_medias_no_toma_custodia (__main__.Adversarial.test_17_un_handoff_incompleto_no_se_emite_y_un_acuse_a_medias_no_toma_custodia)
+T472 · Defecto que previene: «el trabajo hecho» como entrega. ... ok
+test_18_con_el_owner_ausente_el_trabajo_independiente_continua (__main__.Adversarial.test_18_con_el_owner_ausente_el_trabajo_independiente_continua)
+T473 · Defecto que previene: parar la oficina entera por una decisión pendiente. ... ok
+test_19_un_reinicio_completo_reconstruye_exactamente_lo_mismo (__main__.Adversarial.test_19_un_reinicio_completo_reconstruye_exactamente_lo_mismo)
+T474 · Defecto que previene: continuidad que vive en la conversación. ... ok
+test_20_los_documentos_inconsistentes_se_rechazan_con_su_nombre (__main__.Adversarial.test_20_los_documentos_inconsistentes_se_rechazan_con_su_nombre)
+T475 · Defecto que previene: un circuito, una entrega o un PROFILE que dicen dos cosas. ... ok
+test_11_un_bloqueo_no_consume_intento_y_deja_el_desbloqueador_nombrado (__main__.BloqueoYCierre.test_11_un_bloqueo_no_consume_intento_y_deja_el_desbloqueador_nombrado)
+T467 · Defecto que previene: un bloqueo que acaba en `agotado` y en g.9. ... ok
+test_12_el_item_no_cierra_como_producto_hasta_alcanzar_los_niveles_exigidos (__main__.BloqueoYCierre.test_12_el_item_no_cierra_como_producto_hasta_alcanzar_los_niveles_exigidos)
+T468 · Defecto que previene: «cerrado» mientras nadie abrió la pantalla. ... ok
+test_21_un_rol_sin_contrato_completo_tiene_contrato_efectivo_que_manda_en_el_brief (__main__.ContratosEfectivos.test_21_un_rol_sin_contrato_completo_tiene_contrato_efectivo_que_manda_en_el_brief)
+T476 · Defecto que previene: treinta roles trabajando con prosa y criterio propio. ... ok
+test_23_la_cronica_dice_quien_tomo_que_y_que_entrego_en_el_orden_del_diario (__main__.Cronica.test_23_la_cronica_dice_quien_tomo_que_y_que_entrego_en_el_orden_del_diario)
+T474 · Defecto que previene: una secuencia que sólo existe en la memoria del que la vio. ... ok
+test_07_una_entrega_incompleta_se_rechaza_y_no_toca_el_estado (__main__.Entregas.test_07_una_entrega_incompleta_se_rechaza_y_no_toca_el_estado)
+T464 · Defecto que previene: «PR #14 sin fusionar» como evidencia de cierre. ... ok
+test_07b_sin_lease_no_se_escribe_ni_el_primer_paso_de_la_entrega (__main__.Entregas.test_07b_sin_lease_no_se_escribe_ni_el_primer_paso_de_la_entrega)
+T461 · Defecto que previene: media entrega escrita por quien ya no tiene la autoridad. ... ok
+test_08_la_autocertificacion_se_rechaza_por_trabajador_y_por_rol (__main__.Entregas.test_08_la_autocertificacion_se_rechaza_por_trabajador_y_por_rol)
+T465 · Defecto que previene: el implementador como único verificador de su trabajo. ... ok
+test_09_devolucion_corrige_reapunta_y_a_la_tercera_frena (__main__.Entregas.test_09_devolucion_corrige_reapunta_y_a_la_tercera_frena)
+T466 · Defecto que previene: una capa devuelta que sigue adelante, o un rebote sin fin. ... ok
+test_09b_quien_corrigio_la_implementacion_tampoco_pasa_la_puerta_del_juez (__main__.Entregas.test_09b_quien_corrigio_la_implementacion_tampoco_pasa_la_puerta_del_juez)
+T465 · Defecto que previene: el autor de la CORRECCIÓN toma VER/dosier y su entrega se rechaza después. ... ok
+test_10_un_rechazo_al_recibir_no_cuenta_para_el_freno_y_cancela_el_receptor (__main__.Entregas.test_10_un_rechazo_al_recibir_no_cuenta_para_el_freno_y_cancela_el_receptor)
+T466 · Defecto que previene: aceptar por cortesía y devolver después. ... ok
+test_22_integrado_solo_con_un_conjunto_exacto_que_nombra_todas_las_fuentes_escritas (__main__.Integrado.test_22_integrado_solo_con_un_conjunto_exacto_que_nombra_todas_las_fuentes_escritas)
+T468 · Defecto que previene: «integrado» como palabra, o dos ramas que nadie probó juntas. ... ok
+test_03_un_trabajador_que_muere_con_el_lease_es_reofrecido_tras_paciencia (__main__.MuerteDelTrabajador.test_03_un_trabajador_que_muere_con_el_lease_es_reofrecido_tras_paciencia)
+T461 · Defecto que previene: un paquete secuestrado por un trabajador muerto. ... ok
+test_03b_un_trabajador_que_entrega_mientras_el_supervisor_observa_no_tumba_el_barrido (__main__.MuerteDelTrabajador.test_03b_un_trabajador_que_entrega_mientras_el_supervisor_observa_no_tumba_el_barrido)
+T461 · Defecto que previene: el supervisor muerto por una carrera, y nadie reofreciendo. ... ok
+test_03c_un_lector_detras_de_un_escritor_no_ve_corrupcion (__main__.MuerteDelTrabajador.test_03c_un_lector_detras_de_un_escritor_no_ve_corrupcion)
+T474 · Defecto que previene: un worker que lee mientras otro publica muere por «estado corrupto». ... ok
+test_03d_un_lease_que_otro_libero_entre_dos_lecturas_no_es_corrupcion (__main__.MuerteDelTrabajador.test_03d_un_lease_que_otro_libero_entre_dos_lecturas_no_es_corrupcion)
+T474 · Defecto que previene: el supervisor muere por «el fichero no existe» cuando un worker suelta. ... ok
+test_04_dos_procesos_compiten_por_el_mismo_paquete_y_exactamente_uno_lo_toma (__main__.MuerteDelTrabajador.test_04_dos_procesos_compiten_por_el_mismo_paquete_y_exactamente_uno_lo_toma)
+T462 · Defecto que previene: doble despacho entre dos sesiones. ... ok
+test_05_un_paquete_por_rol_y_la_revision_espera_a_la_implementacion (__main__.PlanificacionPorRol.test_05_un_paquete_por_rol_y_la_revision_espera_a_la_implementacion)
+T463 · Defecto que previene: un equipo materializado sin trabajo por rol. ... ok
+test_05b_una_revision_de_diseno_va_despues_de_construir_y_replanificar_es_otra_generacion (__main__.PlanificacionPorRol.test_05b_una_revision_de_diseno_va_despues_de_construir_y_replanificar_es_otra_generacion)
+T463 · Defecto que previene: diseñar después de verificar, o un ciclo silencioso al replanificar. ... ok
+test_06_el_brief_se_deriva_y_dice_lo_que_el_rol_tiene_que_hacer (__main__.PlanificacionPorRol.test_06_el_brief_se_deriva_y_dice_lo_que_el_rol_tiene_que_hacer)
+T463 · Defecto que previene: un agente que trabaja con criterio general. ... ok
+test_01_tomar_checkpoint_entregar_y_reintento_entre_dos_trabajadores (__main__.ProtocoloDeTrabajadores.test_01_tomar_checkpoint_entregar_y_reintento_entre_dos_trabajadores)
+T460 · Defecto que previene: una ejecución que sólo existe en un chat. ... ok
+test_02_un_paquete_no_externo_no_se_toma_y_una_entrega_mal_formada_no_toca_el_estado (__main__.ProtocoloDeTrabajadores.test_02_un_paquete_no_externo_no_se_toma_y_una_entrega_mal_formada_no_toca_el_estado)
+T460 · Defecto que previene: entregar lo que el dispatcher ejecuta, o entregar basura. ... ok
+test_13_el_tablero_es_determinista_y_dice_que_hara_el_sistema (__main__.TableroYSupervisor.test_13_el_tablero_es_determinista_y_dice_que_hara_el_sistema)
+T469 · Defecto que previene: reconstruir la organización leyendo veinte JSON. ... ok
+test_14_un_agente_sin_chat_ejecuta_un_paquete_con_su_brief_y_el_supervisor_cierra_la_oficina (__main__.TableroYSupervisor.test_14_un_agente_sin_chat_ejecuta_un_paquete_con_su_brief_y_el_supervisor_cierra_la_oficina)
+T470 · Defecto que previene: «no existe ningún adaptador de proveedor». ... ok
+test_15_sin_entrega_valida_el_agente_no_completa_y_sin_ejecutor_falla_cerrado (__main__.TableroYSupervisor.test_15_sin_entrega_valida_el_agente_no_completa_y_sin_ejecutor_falla_cerrado)
+T470 · Defecto que previene: un `completado` durable sobre una entrega que no existe. ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests  (duración no registrada: varía por ejecución)
+
+OK
