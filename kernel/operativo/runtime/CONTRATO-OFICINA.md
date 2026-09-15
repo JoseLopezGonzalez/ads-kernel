@@ -250,7 +250,18 @@ instancia con su dogfood, sobre su producto, y publica su evidencia. Un escenari
 laboratorio que lo imitara diría lo mismo que `T460`–`T475` con otras palabras.
 
 Órdenes: `ads_ciclo.py tomar · soltar · checkpoint · entregar · acusar · brief · tablero ·
-terminacion · aceptar · cerrar-item · supervisar`.
+cronica · terminacion · aceptar · cerrar-item · supervisar`.
+
+**Lo que los workers como PROCESOS enseñaron** (dogfood de certificación de La Pesquerapp,
+2026-09-15), corregido y medido en esta misma batería: el barrido del supervisor sobrevive
+a un trabajador que entrega entre la lectura de su lease y la observación (`T461`); un
+lector que cae detrás de un escritor —revisión avanzada, o `replace` hecho y testigo aún
+no escrito— espera y vuelve a mirar antes de declarar corrupción, y la corrupción real
+sigue siendo fallo cerrado (`T474`); el brief lleva la `plantilla` de la entrega y la
+forma exacta de cada elemento (`elementos`), porque un modelo real escribió prosa donde el
+esquema exige un valor cerrado; y `no` sin comillas es False para el analizador YAML, así
+que los valores cerrados se comparan como texto. `cronica` deriva la secuencia del diario:
+quién tomó qué, qué entregó, qué handoff, qué dictamen, qué reoferta.
 
 ## 10 · Lo que este contrato NO cubre
 
