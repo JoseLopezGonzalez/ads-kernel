@@ -180,6 +180,28 @@ import catalogo_de_prueba                                            # noqa: E40
 ENTORNO = {k: v for k, v in os.environ.items()
            if k not in ("ADS_RUNTIME_FALLO", "ADS_ESTADO_FALLO", "ADS_ADAPTADOR_FALLO")}
 
+CIRCUITO_INTERFAZ = '''
+```yaml ads:circuito-base
+id: circuito:cambio-con-interfaz
+nombre: Cambio con interfaz
+clase_de_trabajo: cambio-con-interfaz
+cuando_aplica: el item escribe en una fuente con pantalla y el usuario ve algo distinto
+materia: capacidad-ausente
+estado_del_objeto: no-existe
+condiciones_de_ruta: [C-DIS]
+composiciones: [composicion:prd-alcance-rutinario, composicion:dis-extension-de-patron, composicion:con-implementacion, composicion:ver-dosier]
+niveles_obligatorios: [implementado, revisado, verificado, validado-visual, aceptado]
+inaplicabilidad: []
+roles_minimos: [DIS/diseno-visual, DIS/revision-de-fidelidad, CNS/implementacion, CNS/revision-de-construccion, VER/dosier]
+independencias:
+  - rol: CNS/revision-de-construccion
+    de: [CNS/implementacion]
+  - rol: DIS/revision-de-fidelidad
+    de: [CNS/implementacion, DIS/diseno-visual]
+gates_de_cierre: [gate:cierre-de-item]
+```
+'''
+
 CIRCUITO_BACKEND = '''
 ```yaml ads:circuito-base
 id: circuito:cambio-de-backend
@@ -248,12 +270,13 @@ class Laboratorio(unittest.TestCase):
     def setUp(self):
         self.repo = tempfile.mkdtemp(prefix="ads-oficina-")
         self.addCleanup(shutil.rmtree, self.repo, True)
-        perfil = catalogo_de_prueba.texto(self.politica, self.corpus) + CIRCUITO_BACKEND
+        perfil = catalogo_de_prueba.texto(self.politica, self.corpus) + CIRCUITO_BACKEND + CIRCUITO_INTERFAZ
         for modelo in ("modelo:alfa", "modelo:beta", "modelo:gamma", "modelo:delta", "modelo:epsilon"):
             perfil += _ejecutor(modelo)
         with open(os.path.join(self.repo, "PROFILE.md"), "w", encoding="utf-8") as manejador:
             manejador.write(perfil)
-        self.circuito = terminacion.cargar_circuitos_base(self.repo, corpus=self.corpus)["cambio-de-backend"]
+        self.circuitos = terminacion.cargar_circuitos_base(self.repo, corpus=self.corpus)
+        self.circuito = self.circuitos["cambio-de-backend"]
         self.abiertos = []
 
     def tearDown(self):
@@ -498,6 +521,51 @@ class PlanificacionPorRol(Laboratorio):
         with self.assertRaises(ciclo.RolSinAgente):
             self.planificar(A, item="enc-y")
 
+    def test_05b_una_revision_de_diseno_va_despues_de_construir_y_replanificar_es_otra_generacion(self):
+        """T463 · Defecto que previene: diseñar después de verificar, o un ciclo silencioso al replanificar.
+
+        Medido en La Pesquerapp con `cambio-con-interfaz`: `DIS` es condicional (`C-DIS`) y las
+        obligatorias iban todas antes que cualquier condicional, así que el diseño quedaba
+        detrás de `VER`; y al corregir el orden y replanificar, los paquetes viejos —mismo id—
+        se reutilizaron con sus dependencias viejas, con un ciclo dentro.
+        """
+        A = self.rt("dsp")
+        circuito = self.circuitos["cambio-con-interfaz"]
+        plan = oficina.planificar(A, corpus=self.corpus, entrada=self.entrada(), circuito=circuito,
+                                  control_repo=self.repo, item="enc-ui", titulo="Con pantalla")["plan"]
+        filas = self.filas(plan)
+        rol_de = {f["paquete"]: f.get("rol") for f in plan["correspondencia"]}
+        pos = {f.get("rol"): n for n, f in enumerate(plan["correspondencia"])}
+        self.assertLess(pos["PRD/criterio-de-exito"], pos["DIS/diseno-visual"])
+        self.assertLess(pos["DIS/diseno-visual"], pos["CNS/implementacion"])
+        self.assertLess(pos["CNS/implementacion"], pos["DIS/revision-de-fidelidad"])
+        self.assertLess(pos["DIS/revision-de-fidelidad"], pos["VER/dosier"])
+        impl = self.paquete_de(plan, "CNS/implementacion")
+        rev_dis = self.paquete_de(plan, "DIS/revision-de-fidelidad")
+        self.assertIn(impl, filas[rev_dis]["depende_de"])
+        self.assertNotIn(rev_dis, filas[impl]["depende_de"])
+        self.assertEqual(tablero.derivar(A, corpus=self.corpus)["dependencias_circulares"], [])
+        del rol_de
+        # planificar OTRA VEZ el mismo item con el mismo circuito es idempotente (mismos ids)
+        segundo = oficina.planificar(A, corpus=self.corpus, entrada=self.entrada(), circuito=circuito,
+                                     control_repo=self.repo, item="enc-ui", titulo="Con pantalla")["plan"]
+        self.assertEqual(sorted(segundo["paquetes"]), sorted(plan["paquetes"]))
+        # un paquete que ya existe con OTRAS dependencias no se reutiliza en silencio
+        from ciclo import durable
+        objeto = A._leer_paquete(impl)
+        objeto["depende_de"] = sorted(set(objeto["depende_de"]) | {rev_dis})
+        durable.escribir(A.almacen, clase="prueba.deps", motivo="dependencias viejas a propósito",
+                         objetos={"paquetes/" + impl + ".json": objeto})
+        with self.assertRaises(ciclo.PlanificacionInvalida):
+            oficina.planificar(A, corpus=self.corpus, entrada=self.entrada(), circuito=circuito,
+                               control_repo=self.repo, item="enc-ui", titulo="Con pantalla")
+        # y una generación nueva nace con identidades propias, conservando la anterior
+        tercero = oficina.planificar(A, corpus=self.corpus, entrada=self.entrada(), circuito=circuito,
+                                     control_repo=self.repo, item="enc-ui", titulo="Con pantalla",
+                                     generacion=1)["plan"]
+        self.assertFalse(set(tercero["paquetes"]) & set(plan["paquetes"]))
+        self.assertIsNotNone(A._leer_paquete(impl))
+
     def test_06_el_brief_se_deriva_y_dice_lo_que_el_rol_tiene_que_hacer(self):
         """T463 · Defecto que previene: un agente que trabaja con criterio general."""
         A = self.rt("dsp")
@@ -559,7 +627,16 @@ class Entregas(Laboratorio):
         rev = self.paquete_de(plan, "CNS/revision-de-construccion")
         self.tomar_y_acusar(A, impl)
         self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
-        self.tomar_y_acusar(A, rev)
+        # G13 en la PUERTA: quien construyó no llega ni a tomar la revisión, y no deja lease
+        with self.assertRaises(ciclo.AutocertificacionRechazada):
+            self.tomar_y_acusar(A, rev)
+        self.assertIsNone(A._leer_lease(rev))
+        self.assertEqual(A._leer_paquete(rev)["estado"], "listo")
+        # y aunque tomara por la vía cruda del runtime, la entrega con dictamen se rechaza
+        A.tomar(rev)
+        for h in oficina.handoffs_pendientes_para(A.almacen, rev):
+            oficina.acusar(A, corpus=self.corpus, handoff=h["id"],
+                           comprobaciones_superadas=h["comprueba_al_recibir"])
         entrega = self.entrega(rev, "CNS/revision-de-construccion")
         entrega["dictamenes"] = [self.dictamen("gate:implementacion-completa", impl),
                                  self.dictamen("gate:revision-de-construccion", impl)]

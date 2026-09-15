@@ -135,6 +135,16 @@ escrito) y, para las condicionales, el de las estaciones que los circuitos dibuj
 `rutas.componer` ordenaba por (vía, capacidad) —alfabético— y la construcción quedaba
 antes que la definición de producto.
 
+**El orden entre estaciones lo manda la estación, y entre obligatorias el proceso.** Un
+participante condicional —`DIS` por `C-DIS`— va donde su estación dice, no detrás de todas
+las obligatorias; y un rol que exige independencia de otro —del circuito base o del corpus,
+dentro de su capacidad— va DESPUÉS de ese otro. **Replanificar es una generación nueva**:
+los paquetes anteriores se conservan, y un paquete que ya existe con otras dependencias
+nunca se reutiliza en silencio (`T463`).
+
+**G13 en la puerta.** Quien produjo la entrega que un paquete va a juzgar no puede tomar ese
+paquete: se rechaza ANTES del lease, y no queda lease detrás (`T465`).
+
 ## 6 · Los niveles de terminación y el circuito base
 
 La escalera vive en [`../recorrido/02-NIVELES-DE-TERMINACION.md`](../recorrido/02-NIVELES-DE-TERMINACION.md).

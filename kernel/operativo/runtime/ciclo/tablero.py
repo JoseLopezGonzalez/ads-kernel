@@ -161,9 +161,17 @@ def derivar(runtime, *, corpus=None):
     rechazados = [h for h in handoffs_todos if h.get("estado") == handoffs.RECHAZADO]
 
     items_vista = []
+    sin_plan = []
     for identificador, item in sorted(items.items()):
         plan = vigentes.get(identificador)
         propios = [d for d in descritos.values() if d["item"] == identificador]
+        if plan is None and not propios:
+            # Un item que la oficina no ha planificado no tiene nada que decir aquí: se
+            # cuenta y se nombra, para que se vea que existe SIN plan, y no se detalla.
+            # Medido en La Pesquerapp: 78 items en el estado y uno planificado; el tablero
+            # enterraba ese uno bajo 77 fichas vacías.
+            sin_plan.append(identificador)
+            continue
         cierres_item = [c for c in cierres if c.get("item") == identificador]
         dictamenes_item = [d for d in dictamenes if (d.get("entrada") or {}).get("item") == identificador]
         items_vista.append({
@@ -215,6 +223,7 @@ def derivar(runtime, *, corpus=None):
         "revision_id": revision["revision_id"],
         "instancia": runtime.instancia,
         "items": items_vista,
+        "items_sin_plan": sin_plan,
         "paquetes": descritos,
         "por_estado": por_estado,
         "tomables": [t["paquete"] for t in tomables["tomables"]],
@@ -274,6 +283,12 @@ def _dependencias_circulares(paquetes):
 def como_texto(vista):
     """El tablero legible. Determinista."""
     lineas = ["TABLERO DE LA OFICINA · revisión " + str(vista["revision"]), "=" * 78]
+    if not vista["items"]:
+        lineas.append("(ningún item planificado por la oficina)")
+    if vista.get("items_sin_plan"):
+        lineas += ["", "SIN PLAN DE OFICINA: " + str(len(vista["items_sin_plan"])) + " item(s) del estado — "
+                   + ", ".join(vista["items_sin_plan"][:8])
+                   + (" …" if len(vista["items_sin_plan"]) > 8 else "")]
     for item in vista["items"]:
         lineas.append("")
         lineas.append("ITEM " + item["item"] + " — " + str(item.get("titulo") or ""))

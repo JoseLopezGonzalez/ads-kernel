@@ -141,16 +141,31 @@ class Planificador:
         )
         return ruta
 
-    def _independencias_de(self, roles_por_capacidad):
-        """`{rol: [roles de la MISMA capacidad de los que exige independencia]}`."""
+    def _independencias_de(self, roles_por_capacidad, declaradas=None):
+        """`{rol: [roles PRESENTES en el plan de los que exige independencia]}`.
+
+        Las del ROL salen del corpus (`independencia.de_quien`); las que DECLARA el circuito
+        base del proyecto (`independencias`) se suman. Ya no se limitan a la misma
+        capacidad: `DIS/revision-de-fidelidad` es independiente de `CNS/implementacion`, y
+        eso es lo que la coloca DESPUÉS de la construcción y no antes.
+        """
+        presentes = [rol for roles in roles_por_capacidad.values() for rol in roles]
+        capacidad_de = {rol: cap for cap, roles in roles_por_capacidad.items() for rol in roles}
+        declaradas = dict(declaradas or {})
         salida = {}
-        for capacidad, roles in roles_por_capacidad.items():
-            for rol in roles:
-                independencia = self.corpus.rol(rol).get("independencia") or {}
-                if not independencia.get("requiere_independencia"):
-                    continue
-                salida[rol] = [otro for otro in roles
-                               if otro != rol and otro in (independencia.get("de_quien") or [])]
+        for rol in presentes:
+            independencia = self.corpus.rol(rol).get("independencia") or {}
+            de_quien = set(declaradas.get(rol) or [])
+            if independencia.get("requiere_independencia"):
+                # Del corpus sólo cuenta, PARA EL ORDEN, la independencia dentro de la misma
+                # capacidad: `de_quien` entre capacidades dice quién no puede ser el mismo
+                # trabajador —y a veces lo declaran los dos lados—, no quién va antes. El
+                # orden entre capacidades lo declara el circuito base del proyecto.
+                de_quien.update(otro for otro in (independencia.get("de_quien") or [])
+                                if capacidad_de.get(otro) == capacidad_de.get(rol))
+            ajenos = sorted(otro for otro in de_quien if otro != rol and otro in presentes)
+            if ajenos:
+                salida[rol] = ajenos
         return salida
 
     def registrar_equipos(self, equipos):
@@ -163,7 +178,8 @@ class Planificador:
         return equipos
 
     # ---------------------------------------------------------- planificar
-    def planificar(self, encuadre, ruta, *, equipos=(), titulo=None,
+    def planificar(self, encuadre, ruta, *, equipos=(), titulo=None, independencias_declaradas=None,
+                   generacion=0,
                    capacidades_de_adaptador=CAPACIDADES_DE_ADAPTADOR_POR_DEFECTO,
                    orden_por_capacidad=None, slots=0,
                    intervencion=INTERVENCION_NINGUNA, alcance_autorizado=None,
@@ -213,7 +229,7 @@ class Planificador:
         roles_por_capacidad = {k: list(v) for k, v in (roles_por_capacidad or {}).items()}
         orden_por_rol = dict(orden_por_rol or {})
         adaptador_por_rol = dict(capacidades_de_adaptador_por_rol or {})
-        independencias = self._independencias_de(roles_por_capacidad)
+        independencias = self._independencias_de(roles_por_capacidad, independencias_declaradas)
 
         ordenes = dict(orden_por_capacidad or {})
         acoplamientos = dict(acoplamiento_por_capacidad or {})
@@ -253,24 +269,31 @@ class Planificador:
                 }
                 if rol is not None:
                     semilla["rol"] = rol
+                if generacion:
+                    # REPLANIFICAR es una generación nueva: los paquetes de la anterior se
+                    # conservan con su historia y los nuevos nacen con identidad propia.
+                    # Con `generacion=0` los identificadores son los de siempre, y repetir
+                    # la planificación tras un corte sigue siendo idempotente.
+                    semilla["generacion"] = int(generacion)
                 unidades.append({
                     "id": "pq-" + cid_de_objeto(semilla).split(":", 1)[-1][:12],
                     "participante": participante,
                     "rol": rol,
                     "integracion": es_integracion,
                 })
-        por_rol_y_cap = {(u["participante"]["capacidad"], u["rol"]): u["id"]
-                         for u in unidades if not u["integracion"]}
+        unidades = _ordenar_por_estacion_de_rol(unidades, ruta, independencias)
+        por_rol = {u["rol"]: u["id"] for u in unidades if not u["integracion"] and u["rol"]}
         proyectados = []
         for unidad in unidades:
             participante = unidad["participante"]
-            # Dependencia INTRA-capacidad por independencia declarada: el rol que exige
-            # independencia de otro de la misma composición espera a ese otro.
+            # Dependencia por independencia declarada: el rol que exige independencia de
+            # otro —de su capacidad o de otra— espera a ese otro. Quien revisa espera a
+            # quien produce lo revisado.
             previos = []
             if unidad["integracion"]:
                 previos = [u["id"] for u in unidades if u["id"] != unidad["id"]]
             for de_quien in independencias.get(unidad["rol"], ()):
-                previo = por_rol_y_cap.get((participante["capacidad"], de_quien))
+                previo = por_rol.get(de_quien)
                 if previo and previo != unidad["id"]:
                     previos.append(previo)
             proyectados.append({
@@ -320,7 +343,20 @@ class Planificador:
                 requeridas = [str(orden.get("adaptador") or "")]
             if requeridas is None:
                 requeridas = capacidades_de_adaptador
-            if durable.leer(self.almacen, "paquetes/" + identificador + ".json") is None:
+            existente = durable.leer(self.almacen, "paquetes/" + identificador + ".json")
+            if existente is not None and sorted(existente.get("depende_de") or []) != depende_de:
+                # DEFECTO MEDIDO (La Pesquerapp, replanificación tras corregir el orden de
+                # estaciones): el paquete ya existía con OTRAS dependencias y se reutilizó
+                # en silencio, con un ciclo dentro. Un paquete no cambia de dependencias
+                # por debajo de un plan nuevo: se replanifica con una generación nueva.
+                raise PlanificacionInvalida(
+                    "el paquete `" + identificador + "` ya existe con dependencias distintas "
+                    "(" + ", ".join(sorted(existente.get("depende_de") or [])) + " frente a "
+                    + ", ".join(depende_de) + "): replanificar exige una generación nueva "
+                    "(`generacion` > 0); los paquetes anteriores se conservan",
+                    paquete=identificador,
+                )
+            if existente is None:
                 self.runtime.crear_paquete(
                     id=identificador, item=item,
                     capacidades_requeridas=list(requeridas),
@@ -456,8 +492,14 @@ class Planificador:
         return {"plan": nuevo, "paquete": identificador}
 
 
-def _orden_de_estacion(ruta, participante):
-    """La posición del participante en la ruta: obligación de `b.16` primero, estación después."""
+def _rango_de_estacion(ruta, participante):
+    """El RANGO del participante en la ruta: su estación, y entre obligatorias, el proceso.
+
+    DEFECTO MEDIDO (La Pesquerapp, `cambio-con-interfaz`): las obligatorias iban TODAS
+    antes que cualquier condicional, y `DIS` —condicional por `C-DIS`— quedaba detrás de
+    `VER`: se diseñaba después de verificar. Ahora manda la ESTACIÓN; entre dos obligatorias
+    el orden del proceso se conserva forzando que sus rangos sean crecientes.
+    """
     obligaciones = [o["id"] for o in ruta.get("obligaciones") or []]
     capacidad = participante["capacidad"]
     posicion = ORDEN_DE_ESTACIONES.index(capacidad) if capacidad in ORDEN_DE_ESTACIONES else 99
@@ -465,12 +507,51 @@ def _orden_de_estacion(ruta, participante):
             and "VER" in ORDEN_DE_ESTACIONES:
         posicion = ORDEN_DE_ESTACIONES.index("VER") + 0.5
     if participante.get("obligacion") in obligaciones:
-        # Entre dos obligatorias manda el orden del proceso; la estación sólo desempata.
-        return (0, obligaciones.index(participante["obligacion"]), posicion, participante["via"])
-    # La propietaria global sin obligación cierra: va la última (integración semántica).
+        # Rangos crecientes con el orden del proceso: la obligación n-ésima nunca queda
+        # antes que la anterior aunque su estación sea menor.
+        rango = posicion
+        for anterior in ruta["participantes"]:
+            if anterior.get("obligacion") in obligaciones and \
+                    obligaciones.index(anterior["obligacion"]) < obligaciones.index(participante["obligacion"]):
+                previa = ORDEN_DE_ESTACIONES.index(anterior["capacidad"]) \
+                    if anterior["capacidad"] in ORDEN_DE_ESTACIONES else 99
+                rango = max(rango, previa + 0.001)
+        return rango
+    return posicion
+
+
+def _orden_de_estacion(ruta, participante):
+    """La clave de orden: integración semántica la última; el resto por rango y vía."""
     if participante["via"] == VIA_PROPIETARIA and not participante.get("obligacion"):
-        return (2, 0, posicion, participante["via"])
-    return (1, posicion, 0, participante["via"])
+        return (2, 0, 0, participante["via"])
+    return (1, _rango_de_estacion(ruta, participante), 0, participante["via"])
+
+
+def _ordenar_por_estacion_de_rol(unidades, ruta, independencias):
+    """Las unidades por rango de ROL: quien exige independencia de otro va DESPUÉS de él.
+
+    El rango parte del de la capacidad; un rol independiente de roles de rango mayor toma
+    ese rango más medio escalón. Se relaja hasta el punto fijo, con tope, y el orden
+    resultante es estable: mismo plan, mismos bytes.
+    """
+    rango = {}
+    for posicion, unidad in enumerate(unidades):
+        rango[unidad["id"]] = [_rango_de_estacion(ruta, unidad["participante"]), posicion]
+    por_rol = {u["rol"]: u["id"] for u in unidades if u["rol"] and not u["integracion"]}
+    for _ in range(len(unidades) + 1):
+        cambiado = False
+        for unidad in unidades:
+            if unidad["integracion"]:
+                continue
+            for de_quien in independencias.get(unidad["rol"], ()):
+                otro = por_rol.get(de_quien)
+                if otro and otro != unidad["id"] and rango[unidad["id"]][0] <= rango[otro][0]:
+                    rango[unidad["id"]][0] = rango[otro][0] + 0.5
+                    cambiado = True
+        if not cambiado:
+            break
+    return sorted(unidades, key=lambda u: (2 if u["integracion"] else 1, rango[u["id"]][0],
+                                           rango[u["id"]][1]))
 
 
 def _metodo_del_rol(corpus, rol, por_defecto):

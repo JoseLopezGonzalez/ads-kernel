@@ -172,7 +172,7 @@ def _item_de_entrega(almacen, entrega):
 def planificar(runtime, *, corpus=None, entrada, circuito, control_repo, fase="unica",
                item=None, titulo=None, acoplamiento_por_capacidad=None, slots=4,
                ordenes=None, capacidades_de_adaptador_por_rol=None, degradaciones=None,
-               secuencial=None, precondiciones=()):
+               secuencial=None, precondiciones=(), generacion=0):
     """Encuadra, compone, materializa y planifica POR ROL. Fallo cerrado en cada etapa.
 
     `ordenes(capacidad, rol)` devuelve la orden de adaptador de cada paquete: la instancia
@@ -186,6 +186,10 @@ def planificar(runtime, *, corpus=None, entrada, circuito, control_repo, fase="u
         return orden_externa(argumentos=[capacidad, rol or ""])
 
     ordenes = ordenes or orden_por_defecto
+    independencias_declaradas = {
+        str(regla["rol"]): [str(d) for d in (regla.get("de") or [])]
+        for regla in (circuito.get("independencias") or [])
+    }
     entrada = dict(entrada)
     entrada.setdefault("materia", circuito["materia"])
     entrada.setdefault("estado_del_objeto", circuito["estado_del_objeto"])
@@ -236,7 +240,8 @@ def planificar(runtime, *, corpus=None, entrada, circuito, control_repo, fase="u
         capacidades_de_adaptador=(CAPACIDAD_EXTERNA,),
         capacidades_de_adaptador_por_rol=capacidades_de_adaptador_por_rol,
         acoplamiento_por_capacidad=acoplamiento_por_capacidad, slots=slots,
-        secuencial=secuencial,
+        secuencial=secuencial, independencias_declaradas=independencias_declaradas,
+        generacion=generacion,
     )
     return {"encuadre": marco, "ruta": ruta, "equipos": equipos, "plan": plan}
 
@@ -300,6 +305,8 @@ def tomar(runtime, *, corpus=None, paquete, **opciones_del_brief):
             "el paquete `" + paquete + "` no está en ningún plan vigente: no se toma lo que "
             "no tiene rol ni gate", ruta=paquete,
         )
+    _exigir_que_no_juzgue_lo_suyo(runtime, corpus or Corpus(), paquete, fila,
+                                  opciones_del_brief.get("circuito"))
     toma = runtime.tomar(paquete)
     try:
         brief = brief_de(runtime, corpus=corpus, paquete=paquete, **opciones_del_brief)
@@ -307,6 +314,45 @@ def tomar(runtime, *, corpus=None, paquete, **opciones_del_brief):
         runtime.soltar(paquete)
         raise
     return {"toma": toma, "brief": brief, "brief_md": briefs.como_markdown(brief)}
+
+
+def _exigir_que_no_juzgue_lo_suyo(runtime, corpus, paquete, fila, circuito=None):
+    """G13 en la PUERTA: quien produjo lo que este paquete va a juzgar no lo toma.
+
+    DEFECTO MEDIDO (dogfood de La Pesquerapp, evidencia 23-24): la autocertificación se
+    rechazaba al ENTREGAR, y para entonces el lease ya era del que no podía juzgar; el
+    revisor legítimo recibía AUTORIDAD_NO_DISPONIBLE hasta que aquél soltara. Ahora se
+    rechaza antes de tomar, y no queda lease detrás.
+    """
+    from . import entregas as modulo_entregas                          # noqa: PLC0415
+    rol = fila.get("rol")
+    if not rol:
+        return
+    independiente_de = set((corpus.rol(rol).get("independencia") or {}).get("de_quien") or [])
+    for regla in (circuito or {}).get("independencias") or []:
+        if str(regla.get("rol")) == rol:
+            independiente_de.update(str(d) for d in (regla.get("de") or []))
+    if not independiente_de:
+        return
+    objeto = runtime._leer_paquete(paquete) or {}
+    recibidos = [h for h in handoffs_del_item(runtime.almacen, str(objeto.get("item") or ""))
+                 if (h.get("trazabilidad") or {}).get("destino") == paquete
+                 and h.get("estado") in (handoffs.EMITIDO, handoffs.ACUSADO)]
+    for pendiente in recibidos:
+        emisor = str((pendiente.get("trazabilidad") or {}).get("paquete") or "")
+        if not emisor:
+            continue
+        entrega = modulo_entregas.ultima(runtime.almacen, emisor)
+        if entrega is None or entrega.get("titular") != runtime.instancia:
+            continue
+        if entrega.get("rol") in independiente_de:
+            raise AutocertificacionRechazada(
+                "`" + runtime.instancia + "` produjo la entrega de `" + emisor + "` como "
+                + str(entrega.get("rol")) + " y quiere tomar `" + paquete + "` como " + rol
+                + ", que exige independencia de ese rol: G13 no admite que quien construye "
+                "sea quien juzga. Otra instancia tiene que tomarlo",
+                paquete=paquete, titular=runtime.instancia,
+            )
 
 
 # ===========================================================================
