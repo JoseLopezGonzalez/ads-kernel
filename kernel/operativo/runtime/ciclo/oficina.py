@@ -31,7 +31,7 @@ from __future__ import annotations
 
 from estado.serializacion import cid_de_objeto
 
-from . import briefs, cierre as modulo_cierre, durable, entregas, gates, handoffs
+from . import briefs, cierre as modulo_cierre, durable, entregas, formas, gates, handoffs
 from . import encuadre as modulo_encuadre, equipos as modulo_equipos, paralelismo
 from . import planificacion, rutas as modulo_rutas, terminacion
 from .corpus import CAPACIDADES, Corpus
@@ -435,6 +435,8 @@ def entregar(runtime, *, corpus=None, paquete, entrega, circuito=None, hechos=No
     #     invalida la entrega entera.
     dictamenes_emitidos = []
     declarados = list(entrega.get("dictamenes") or [])
+    if any(d.get("gate") == GATE_DE_CONVERGENCIA for d in declarados):
+        _exigir_integration_set(corpus, entrega, hechos or {}, paquete)
     if entrega.get("dictamen"):
         declarados.append(entrega["dictamen"])
     for datos in declarados:
@@ -502,6 +504,46 @@ def entregar(runtime, *, corpus=None, paquete, entrega, circuito=None, hechos=No
 def _autor_de(almacen, paquete_juzgado):
     ultima = entregas.ultima(almacen, paquete_juzgado)
     return str(ultima.get("titular") or "") if ultima else ""
+
+
+GATE_DE_CONVERGENCIA = "gate:convergencia-de-fuentes"
+ESTADOS_CONVERGENTES = ("verificado", "integrado")
+
+
+def _exigir_integration_set(corpus, entrega, hechos, paquete):
+    """Un dictamen de convergencia sólo entra con un Integration Set EXACTO y COMPLETO.
+
+    `C7`: la convergencia se declara con la revisión exacta de cada fuente, probada
+    conjuntamente. Aquí se comprueba mecánicamente lo que el gate declara: la forma
+    canónica, que nombra todas las fuentes que el item escribe (`hechos.fuentes_escritas`),
+    que ninguna entra dos veces, que la verificación no tiene pendientes ni fallos y que el
+    estado no es parcial. Sin eso, `integrado` sería una palabra.
+    """
+    conjunto = entrega.get("integration_set")
+    if not isinstance(conjunto, dict):
+        raise EntregaInvalida(
+            "un dictamen de `" + GATE_DE_CONVERGENCIA + "` exige el Integration Set ENTERO en "
+            "`integration_set`; sin conjunto no hay convergencia que dictaminar", paquete=paquete,
+        )
+    fallos = list(formas.validar(conjunto, corpus.esquema("integration-set"), corpus=corpus,
+                                 camino="integration_set"))
+    fuentes = [str(f.get("source")) for f in (conjunto.get("fuentes") or []) if isinstance(f, dict)]
+    if len(set(fuentes)) != len(fuentes):
+        fallos.append("integration_set.fuentes: una fuente entra dos veces")
+    escritas = [str(f) for f in (hechos.get("fuentes_escritas") or [])]
+    faltan = [f for f in escritas if f not in fuentes]
+    if faltan:
+        fallos.append("integration_set.fuentes: el item escribe " + ", ".join(faltan)
+                      + " y el conjunto no las nombra: integración PARCIAL, que no es terminado")
+    if conjunto.get("estado") not in ESTADOS_CONVERGENTES:
+        fallos.append("integration_set.estado: `" + str(conjunto.get("estado")) + "` no es un estado "
+                      "convergente (" + ", ".join(ESTADOS_CONVERGENTES) + ")")
+    for fila in conjunto.get("verificacion") or []:
+        if isinstance(fila, dict) and fila.get("resultado") not in ("pasa", "no-aplica"):
+            fallos.append("integration_set.verificacion: el ámbito `" + str(fila.get("ambito"))
+                          + "` está `" + str(fila.get("resultado")) + "`: no está probado conjuntamente")
+    if fallos:
+        raise EntregaInvalida("la convergencia no es admisible: " + "; ".join(fallos), paquete=paquete)
 
 
 def _dictaminar(runtime, corpus, plan, fila, paquete, datos):

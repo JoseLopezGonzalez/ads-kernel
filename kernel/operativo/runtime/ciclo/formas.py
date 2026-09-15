@@ -134,6 +134,13 @@ def _validar_valor(valor, spec, camino, corpus, fallos):
             sub["tipo"] = de
             _validar_valor(elemento, sub, camino + "[" + str(indice) + "]", corpus, fallos)
     elif tipo == "objeto":
+        if spec.get("esquema") and corpus is not None:
+            # Un objeto con la forma de OTRO tipo canónico: se valida contra su esquema, en
+            # su sede, en vez de copiar aquí sus campos (que es lo que divergiría).
+            anidado = corpus.esquema(str(spec["esquema"]))
+            _validar_objeto(valor, anidado.get("campos") or {}, anidado.get("obligatorios") or [],
+                            anidado.get("obligatorios_alternativos") or [], camino, corpus, fallos)
+            return
         _validar_objeto(valor, spec.get("campos") or {}, spec.get("obligatorios") or [],
                         spec.get("obligatorios_alternativos") or [], camino, corpus, fallos)
     else:

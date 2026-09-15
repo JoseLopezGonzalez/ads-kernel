@@ -29,7 +29,7 @@ memoria_propia:
   - "docs/entrega/HISTORIAL.md — qué se desplegó, cuándo, qué se observó y qué se revirtió"
   - "docs/entrega/SENALES.md — qué se mira tras cada tipo de cambio, y qué es rojo"
 tablero: "estado/tableros/ENT.md — despliegues en curso y ventanas de observación abiertas"
-metodos: [ENT/Despliegue, ENT/Contencion]
+metodos: [ENT/Despliegue, ENT/Contencion, ENT/Convergencia]
 checkpoint: "en el paquete, con qué se ha desplegado, en qué entorno y qué se está observando"
 autoridad:
   decide_sola:
@@ -46,7 +46,7 @@ owner:
     Obligatorio para publicar: la publicación es materia reservada (G05). Ninguna para
     desplegar a entornos no productivos, para ejecutar smoke tests y para revertir cuando se
     cumplen los cinco requisitos de rollback autónomo de a.3.
-roles: [ENT/despliegue, ENT/observacion]
+roles: [ENT/despliegue, ENT/observacion, ENT/convergencia]
 deriva_de:
   - "a.3 · ENT: operar la maquinaria, ventana de observación, rollback autónomo con cinco requisitos"
   - "b.16 · ENT es propietario global de INC y obligatorio en SIS que modifica el runtime"

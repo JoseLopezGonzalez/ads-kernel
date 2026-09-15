@@ -16,7 +16,7 @@ implementado          gate:implementacion-completa       lo juzga quien revisa; 
                                                          sólo se AUTOEVALÚA en su entrega
 revisado              gate:revision-de-construccion      CNS/revision-de-construccion, que no
                                                          comparte agente con quien construyó
-integrado             gate:convergencia-de-fuentes       ENT, con Integration Set de revisiones
+integrado             gate:convergencia-de-fuentes       ENT/convergencia, con el Integration Set ENTERO en su entrega
                                                          exactas
 verificado            gate:evidencia-suficiente          VER/dosier
 validado-funcional    gate:uso-comprobado                USO/validacion

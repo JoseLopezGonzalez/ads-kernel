@@ -191,6 +191,17 @@ gramática cerrada (`<hecho> <op> [<valor>]`, unidas por ` y ` / ` o `). Un hech
 hace falso el término, y se dice. `cerrar_item` evalúa la escalera y FALLA CERRADO si un
 nivel exigido no está alcanzado ni es inaplicable, antes de aplicar `gate:cierre-de-item`.
 
+**El nivel `integrado` tiene rol, gate y comprobación mecánica.** `ENT/convergencia`
+(composición `ent-convergencia`, condición de ruta `C-ENT`) declara el Integration Set
+ENTERO dentro de su entrega y emite `gate:convergencia-de-fuentes` sobre la capa de
+construcción; la oficina no admite ese dictamen sin un conjunto que valide contra
+`integration-set`, nombre TODAS las fuentes que el item escribe (`hechos.fuentes_escritas`),
+entre por SHA, no tenga ámbitos pendientes ni en fallo y no esté parcial. Es la frontera
+entre «hay commits en ramas» (implementado, revisado) y «existe una combinación exacta
+probada junta desde la que se puede volver» (integrado); `verificado` juzga comportamiento
+sobre revisiones, `aceptado` es el Owner. Una clase que no escribe fuentes lo declara
+inaplicable con `fuentes_escritas_cuenta == 0`, y sólo así.
+
 ## 7 · El agente sin chat, y el supervisor
 
 `adaptadores/agente.py` lanza el ejecutor que el PROYECTO declara (`ads:ejecutor`, con

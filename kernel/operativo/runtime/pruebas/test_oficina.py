@@ -188,16 +188,21 @@ clase_de_trabajo: cambio-con-interfaz
 cuando_aplica: el item escribe en una fuente con pantalla y el usuario ve algo distinto
 materia: capacidad-ausente
 estado_del_objeto: no-existe
-condiciones_de_ruta: [C-DIS]
-composiciones: [composicion:prd-alcance-rutinario, composicion:dis-extension-de-patron, composicion:con-implementacion, composicion:ver-dosier]
-niveles_obligatorios: [implementado, revisado, verificado, validado-visual, aceptado]
-inaplicabilidad: []
-roles_minimos: [DIS/diseno-visual, DIS/revision-de-fidelidad, CNS/implementacion, CNS/revision-de-construccion, VER/dosier]
+condiciones_de_ruta: [C-DIS, C-ENT]
+composiciones: [composicion:prd-alcance-rutinario, composicion:dis-extension-de-patron, composicion:con-implementacion, composicion:ver-dosier, composicion:ent-convergencia]
+niveles_obligatorios: [implementado, revisado, integrado, verificado, validado-visual, aceptado]
+inaplicabilidad:
+  - nivel: integrado
+    condicion: fuentes_escritas_cuenta == 0
+    quien_lo_declara: la instancia, derivándolo de las fuentes que el item escribe
+roles_minimos: [DIS/diseno-visual, DIS/revision-de-fidelidad, CNS/implementacion, CNS/revision-de-construccion, VER/dosier, ENT/convergencia]
 independencias:
   - rol: CNS/revision-de-construccion
     de: [CNS/implementacion]
   - rol: DIS/revision-de-fidelidad
     de: [CNS/implementacion, DIS/diseno-visual]
+  - rol: ENT/convergencia
+    de: [CNS/implementacion]
 gates_de_cierre: [gate:cierre-de-item]
 ```
 '''
@@ -319,7 +324,8 @@ class Laboratorio(unittest.TestCase):
         gate = self.corpus.rol(rol)["gate"]
         return {"paquete": paquete, "rol": rol, "veredicto": veredicto,
                 "artefactos": [{"tipo": t, "referencia": "ref-" + t, "descripcion": "artefacto " + t}
-                               for t in ("commit", "rama", "salida-de-orden", "dosier", "medicion", "documento")],
+                               for t in ("commit", "rama", "pr", "salida-de-orden", "dosier", "medicion",
+                                         "documento", "captura")],
                 "evidencias": [], "autoevaluacion": self.autoevaluacion(gate, rol),
                 "diferencias_declaradas": [], "decisiones_asumidas": [], "riesgos": [],
                 "deuda_aceptada": [], "no_hecho": [], "siguiente": "al siguiente rol"}
@@ -540,6 +546,7 @@ class PlanificacionPorRol(Laboratorio):
         self.assertLess(pos["DIS/diseno-visual"], pos["CNS/implementacion"])
         self.assertLess(pos["CNS/implementacion"], pos["DIS/revision-de-fidelidad"])
         self.assertLess(pos["DIS/revision-de-fidelidad"], pos["VER/dosier"])
+        self.assertLess(pos["VER/dosier"], pos["ENT/convergencia"])
         impl = self.paquete_de(plan, "CNS/implementacion")
         rev_dis = self.paquete_de(plan, "DIS/revision-de-fidelidad")
         self.assertIn(impl, filas[rev_dis]["depende_de"])
@@ -1105,6 +1112,88 @@ class ContratosEfectivos(Laboratorio):
         with self.assertRaises(ciclo.EntregaInvalida) as cm:
             self.entregar(A, impl, entrega)
         self.assertIn("no_autocertifica", str(cm.exception))
+
+
+# =========================================================================
+# T468 bis · el nivel integrado exige un Integration Set exacto y completo
+# =========================================================================
+class Integrado(Laboratorio):
+
+    def conjunto(self, item, fuentes, estado="verificado", pendiente=False):
+        return {"id": "IS-001", "item": item, "estado": estado,
+                "fuentes": [{"source": f, "commit": "0123456789ab" + str(n), "rama": "ads/" + f}
+                            for n, f in enumerate(fuentes)],
+                "verificacion": [{"ambito": "regresion", "resultado": "pendiente" if pendiente else "pasa",
+                                  "evidencia": "dosier de VER pq-x-1"}],
+                "restaura_a": "IS-000, la combinación anterior"}
+
+    def test_22_integrado_solo_con_un_conjunto_exacto_que_nombra_todas_las_fuentes_escritas(self):
+        """T468 · Defecto que previene: «integrado» como palabra, o dos ramas que nadie probó juntas."""
+        A = self.rt("w-A")
+        B = self.rt("w-B")
+        circuito = self.circuitos["cambio-con-interfaz"]
+        plan = oficina.planificar(A, corpus=self.corpus, entrada=self.entrada(), circuito=circuito,
+                                  control_repo=self.repo, item="enc-int", titulo="Con pantalla")["plan"]
+        filas = self.filas(plan)
+        impl = self.paquete_de(plan, "CNS/implementacion")
+        conv = self.paquete_de(plan, "ENT/convergencia")
+        hechos = {"afecta_superficie": True, "fuentes_escritas": ["backend", "frontend"], "fuentes_escritas_cuenta": 2}
+        # hasta que la convergencia sea tomable, entregando cada paquete anterior
+        for _ in range(10):
+            pendientes, _inv = A._dependencias_pendientes(A._leer_paquete(conv))
+            if not pendientes:
+                break
+            pq = [t["paquete"] for t in A.tomables()["tomables"] if t["paquete"] != conv][0]
+            rol = filas[pq]["rol"]
+            trabajador = A if rol in ("PRD/definicion", "PRD/criterio-de-exito", "DIS/diseno-visual", "CNS/implementacion") else B
+            self.tomar_y_acusar(trabajador, pq)
+            entrega = self.entrega(pq, rol)
+            if rol == "DIS/revision-de-fidelidad":
+                entrega["dictamenes"] = [self.dictamen("gate:excelencia-visual", impl)]
+            if rol == "CNS/revision-de-construccion":
+                entrega["dictamenes"] = [self.dictamen("gate:implementacion-completa", impl),
+                                         self.dictamen("gate:revision-de-construccion", impl)]
+            if rol == "VER/dosier":
+                entrega["dictamenes"] = [self.dictamen("gate:evidencia-suficiente", impl)]
+            oficina.entregar(trabajador, corpus=self.corpus, paquete=pq, entrega=entrega, circuito=circuito, hechos=hechos)
+        ev = oficina.evaluar_terminacion(A, corpus=self.corpus, item="enc-int", circuito=circuito, hechos=hechos)
+        self.assertIn("integrado", ev["faltan"])
+        # el CONSTRUCTOR no puede declarar la convergencia de lo suyo
+        with self.assertRaises(ciclo.AutocertificacionRechazada):
+            self.tomar_y_acusar(A, conv)
+        self.tomar_y_acusar(B, conv)
+        base = self.entrega(conv, "ENT/convergencia")
+        base["artefactos"].append({"tipo": "integration-set", "referencia": "IS-001", "descripcion": "el conjunto"})
+        base["dictamenes"] = [self.dictamen("gate:convergencia-de-fuentes", impl)]
+        revision = B.almacen.revision()["revision"]
+        # sin conjunto · con una fuente de menos · por rama · pendiente · parcial: cinco rechazos
+        for nombre, conjunto in (
+            ("sin conjunto", None),
+            ("fuente de menos", self.conjunto("enc-int", ["backend"])),
+            ("pendiente", self.conjunto("enc-int", ["backend", "frontend"], pendiente=True)),
+            ("parcial", self.conjunto("enc-int", ["backend", "frontend"], estado="parcial")),
+            ("por rama", dict(self.conjunto("enc-int", ["backend", "frontend"]),
+                              fuentes=[{"source": "backend", "commit": "0123456789ab0"},
+                                       {"source": "frontend", "commit": "feature/rama"}])),
+        ):
+            entrega = dict(base)
+            if conjunto is not None:
+                entrega["integration_set"] = conjunto
+            with self.assertRaises(ciclo.EntregaInvalida, msg=nombre):
+                oficina.entregar(B, corpus=self.corpus, paquete=conv, entrega=entrega, circuito=circuito, hechos=hechos)
+            self.assertEqual(B.almacen.revision()["revision"], revision, nombre)
+        entrega = dict(base)
+        entrega["integration_set"] = self.conjunto("enc-int", ["backend", "frontend"])
+        res = oficina.entregar(B, corpus=self.corpus, paquete=conv, entrega=entrega, circuito=circuito, hechos=hechos)
+        self.assertEqual([d["dictamen"] for d in res["dictamenes"]], ["superado"])
+        ev = oficina.evaluar_terminacion(A, corpus=self.corpus, item="enc-int", circuito=circuito, hechos=hechos)
+        estados = {f["nivel"]: f["estado"] for f in ev["niveles"]}
+        self.assertEqual(estados["integrado"], "alcanzado")
+        self.assertEqual(ev["faltan"], ["aceptado", "cerrado"])
+        # y un item que no escribe fuentes lo declara inaplicable, sólo por su condición
+        ev = terminacion.evaluar(circuito, item="enc-int", paquetes_del_item=plan["paquetes"], dictamenes=[],
+                                 hechos={"fuentes_escritas_cuenta": 0, "afecta_superficie": True})
+        self.assertEqual({f["nivel"]: f["estado"] for f in ev["niveles"]}["integrado"], "inaplicable")
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):

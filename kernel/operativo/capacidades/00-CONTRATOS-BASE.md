@@ -406,6 +406,7 @@ familia: operador
 roles:
   - ENT/despliegue
   - ENT/observacion
+  - ENT/convergencia
 conocimientos_exigibles:
   - "qué entorno es cada uno, qué autoridad exige cada despliegue, y cómo se revierte"
 entradas_obligatorias:

@@ -19,6 +19,10 @@ campos:
   # bloqueado   no se puede seguir sin algo que no depende del rol; nombra que lo desbloquea
   # escalado    hay una decision que no es del rol; nombra la autoridad y las posturas
   veredicto: {tipo: enum, valores: [entregado, devuelto, bloqueado, escalado]}
+  # el Integration Set que ENT/convergencia declara: viaja ENTERO en la entrega y la oficina
+  # lo valida contra `integration-set` y contra las fuentes escritas del item antes de
+  # admitir un dictamen de gate:convergencia-de-fuentes
+  integration_set: {tipo: objeto, esquema: integration-set}
   artefactos:
     tipo: lista
     de: objeto
