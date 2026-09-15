@@ -1415,12 +1415,26 @@ class Runtime:
                 elif es_titular(lease, self.instancia):
                     self._soltar_si_es_mio(paquete["id"])
                     informe["reofrecidos"].append(paquete["id"])
-                elif self._pretender_autoridad_ajena(paquete["id"]):
-                    informe["reclamados"].append(paquete["id"])
-                    self._soltar_si_es_mio(paquete["id"])
-                    informe["reofrecidos"].append(paquete["id"])
                 else:
-                    informe["observados"].append(paquete["id"])
+                    # CARRERA MEDIDA en el dogfood con workers reales: el lease existía al
+                    # leerlo y el trabajador ENTREGÓ antes de que el barrido lo observara.
+                    # `observar` no encuentra autoridad que observar y levanta; el barrido
+                    # entero moría y nadie reofrecía nada. Un lease que desaparece entre dos
+                    # lecturas no es una inconsistencia del estado: es un trabajador rápido.
+                    try:
+                        pretendida = self._pretender_autoridad_ajena(paquete["id"])
+                    except RuntimeInconsistente:
+                        actual = self._leer_paquete_opcional(paquete["id"])
+                        if actual is not None and actual["estado"] in ESTADOS_EN_CURSO \
+                                and self._leer_lease(paquete["id"]) is None:
+                            informe["reofrecidos"].append(paquete["id"])
+                        continue
+                    if pretendida:
+                        informe["reclamados"].append(paquete["id"])
+                        self._soltar_si_es_mio(paquete["id"])
+                        informe["reofrecidos"].append(paquete["id"])
+                    else:
+                        informe["observados"].append(paquete["id"])
                 continue
             if lease is None or es_titular(lease, self.instancia):
                 reanudables.append(paquete["id"])

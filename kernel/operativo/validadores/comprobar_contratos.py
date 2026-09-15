@@ -1230,22 +1230,24 @@ def t476_todo_rol_materializable_tiene_contrato(_b):
     `no_autocertifica` y su independencia cubierta. La clasificación se PUBLICA entera:
     materializable, consultivo, conceptual, huérfano, sin-base."""
     r = Resultado("T476", "Todo rol materializable tiene contrato operativo efectivo y suficiente")
+    # Un corpus ilegible —dos bloques con el mismo id, una base que nombra dos veces un
+    # rol— es un FALLO EXPLICATIVO de esta prueba, nunca una traza: `N242` lo sabotea.
     try:
         corpus, contratos = _corpus_del_ciclo()
         clases = contratos.clasificar(corpus)
+        cuenta = {}
+        for rol, clase in sorted(clases.items()):
+            cuenta[clase] = cuenta.get(clase, 0) + 1
+            if clase == "huerfano":
+                r.fallo(f"{rol}: no figura en ninguna composición (huérfano): o se retira o se compone")
+            elif clase == "sin-base":
+                r.fallo(f"{rol}: lo materializa un proceso y NINGUNA base de contrato lo cubre")
+            elif clase in ("materializable", "consultivo"):
+                for fallo in contratos.fallos_del_contrato(corpus, rol):
+                    r.fallo(f"{rol}: {fallo}")
     except Exception as exc:                                              # noqa: BLE001
-        r.fallo(f"no se pudo clasificar los roles: {exc}")
+        r.fallo(f"el corpus no permite derivar los contratos efectivos: {type(exc).__name__}: {exc}")
         return r
-    cuenta = {}
-    for rol, clase in sorted(clases.items()):
-        cuenta[clase] = cuenta.get(clase, 0) + 1
-        if clase == "huerfano":
-            r.fallo(f"{rol}: no figura en ninguna composición (huérfano): o se retira o se compone")
-        elif clase == "sin-base":
-            r.fallo(f"{rol}: lo materializa un proceso y NINGUNA base de contrato lo cubre")
-        elif clase in ("materializable", "consultivo"):
-            for fallo in contratos.fallos_del_contrato(corpus, rol):
-                r.fallo(f"{rol}: {fallo}")
     r.cobertura = ("roles: " + " · ".join(f"{k} {v}" for k, v in sorted(cuenta.items()))
                    + " · conceptuales (no los materializa ningún proceso): "
                    + ", ".join(sorted(k for k, v in clases.items() if v == "conceptual")))

@@ -1655,7 +1655,7 @@ class CorpusYDeterminismo(BaseDelCiclo):
             "ciclo", "componer", "continuar", "encuadrar", "macrocircuito",
             "materializar", "planificar", "procedencia",
             # la OFICINA, `CONTRATO-OFICINA.md`
-            "tomar", "soltar", "checkpoint", "entregar", "acusar", "brief", "tablero",
+            "tomar", "soltar", "checkpoint", "entregar", "acusar", "brief", "cronica", "tablero",
             "terminacion", "aceptar", "cerrar-item", "supervisar",
         ]))
         self.assertEqual(modulo.main(["encuadrar"]), modulo.USO)

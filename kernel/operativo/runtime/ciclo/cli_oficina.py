@@ -162,6 +162,14 @@ def orden_brief(argumentos, *, abrir, corpus, emitir):
     return emitir(argumentos, brief, texto.splitlines())
 
 
+def orden_cronica(argumentos, *, abrir, corpus, emitir):
+    from ciclo import cronica                                          # noqa: PLC0415
+    with abrir(argumentos) as rt:
+        filas = cronica.derivar(rt.almacen, item=getattr(argumentos, "item", None) or None)
+    return emitir(argumentos, {"sucesos": filas, "por_trabajador": cronica.por_trabajador(filas)},
+                  cronica.como_texto(filas).splitlines())
+
+
 def orden_tablero(argumentos, *, abrir, corpus, emitir):
     from ciclo import tablero                                         # noqa: PLC0415
     with abrir(argumentos) as rt:

@@ -36,6 +36,14 @@ RESOLUTORES = {
 }
 
 
+def _enum(valor):
+    if valor is True:
+        return "si"
+    if valor is False:
+        return "no"
+    return str(valor)
+
+
 def _existe_metodo(corpus, valor):
     try:
         corpus.metodo(valor)
@@ -110,8 +118,11 @@ def _validar_valor(valor, spec, camino, corpus, fallos):
             fallos.append(camino + ": se esperaba true/false")
     elif tipo == "enum":
         valores = spec.get("valores") or []
-        if valor not in valores:
-            fallos.append(camino + ": '" + str(valor) + "' no está en " + str(valores))
+        # `no` sin comillas es False en el analizador (YAML 1.1) y `si` es texto: un `"no"`
+        # escrito en un JSON de entrega tiene que casar con el `no` del esquema. Medido con
+        # un modelo real: su checklist con `respuesta: "no"` habría sido rechazada.
+        if _enum(valor) not in [_enum(v) for v in valores]:
+            fallos.append(camino + ": '" + str(valor) + "' no está en " + str([_enum(v) for v in valores]))
     elif tipo == "ref":
         if not isinstance(valor, str) or not valor.strip():
             fallos.append(camino + ": una ref es texto no vacío")

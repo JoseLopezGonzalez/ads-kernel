@@ -26,6 +26,10 @@ DECISIÓN · el brief NO lleva rutas absolutas ni identidad de proceso
 """
 from __future__ import annotations
 
+import json
+
+from .formas import _enum as formas_enum
+
 from estado.serializacion import cid_de_objeto
 
 from .corpus import Corpus
@@ -97,6 +101,10 @@ def componer(*, corpus=None, paquete, item, fila_del_plan, rol, equipo=None, int
                 a for a in (contrato_operativo or {}).get("artefactos") or []
                 if a.get("obligatorio")
             ],
+            # LA PLANTILLA: un JSON que ya valida salvo por lo que el trabajador tiene que
+            # rellenar. Medido con un modelo real: sin plantilla escribio prosa donde el
+            # esquema exige `si|no|no-aplica`, y la oficina rechazo la entrega.
+            "plantilla": _plantilla_de_entrega(str(paquete), rol, gate, contrato_operativo, esquema_entrega),
         },
         "ordenes": dict(ordenes or {}),
         "prohibiciones": _prohibiciones(contrato_de_rol, contrato_operativo),
@@ -104,6 +112,45 @@ def componer(*, corpus=None, paquete, item, fila_del_plan, rol, equipo=None, int
     }
     brief["huella"] = cid_de_objeto({k: v for k, v in brief.items() if k != "huella"})
     return brief
+
+
+def _plantilla_de_entrega(paquete, rol, gate, contrato, esquema):
+    """Una entrega MINIMA que valida contra el esquema salvo lo que hay que rellenar."""
+    campos = esquema.get("campos") or {}
+
+    def valores(camino):
+        actual = campos
+        for parte in camino:
+            actual = (actual.get(parte) or {}) if isinstance(actual, dict) else {}
+            if "campos" in actual:
+                actual = actual["campos"]
+        return list((actual or {}).get("valores") or [])
+
+    resultados = [formas_enum(v) for v in valores(["autoevaluacion", "comprobaciones", "resultado"])] or ["si", "no", "no-aplica"]
+    respuestas = [formas_enum(v) for v in valores(["autoevaluacion", "checklist", "respuesta"])] or ["si", "no", "no-aplica"]
+    return {
+        "paquete": paquete,
+        "rol": rol,
+        "veredicto": "entregado",
+        "artefactos": [
+            {"tipo": a["tipo"], "referencia": "<referencia real: ruta, commit, PR, fichero>",
+             "descripcion": "<qué es: " + str(a["nombre"]) + ">"}
+            for a in (contrato or {}).get("artefactos") or [] if a.get("obligatorio")
+        ] or [{"tipo": "documento", "referencia": "<referencia real>", "descripcion": "<qué es>"}],
+        "evidencias": [],
+        "diferencias_declaradas": [],
+        "decisiones_asumidas": [],
+        "riesgos": [],
+        "deuda_aceptada": [],
+        "no_hecho": [],
+        "siguiente": "<qué toca después, en una frase>",
+        "autoevaluacion": {
+            "gate": gate["id"],
+            "comprobaciones": [{"id": c["id"], "resultado": "<" + "|".join(resultados) + ">"} for c in gate["comprobaciones"]],
+            "checklist": [{"id": c["id"], "respuesta": "<" + "|".join(respuestas) + ">"}
+                          for c in (contrato or {}).get("checklist") or []],
+        },
+    }
 
 
 def _prohibiciones(rol, contrato):
@@ -284,7 +331,9 @@ def como_markdown(brief):
     if forma["checklist"]:
         lineas += ["autoevaluacion.checklist contesta: " + ", ".join(forma["checklist"])]
     if forma["artefactos_obligatorios"]:
-        lineas += _lista("artefactos obligatorios:", [
+        lineas += ["", "PLANTILLA (rellena lo que va entre <>; los valores cerrados sólo admiten lo que se lista):",
+               "```json", json.dumps(forma.get("plantilla") or {}, ensure_ascii=False, indent=1), "```"]
+    lineas += _lista("artefactos obligatorios:", [
             a["tipo"] + " · " + a["nombre"] for a in forma["artefactos_obligatorios"]])
     lineas += ["`devuelto` exige devolucion.{que_falta, por_que_es_insuficiente, que_la_cerraria, evidencia}",
                "`bloqueado`/`escalado` exigen bloqueo.{que_lo_impide, que_lo_desbloquearia, autoridad[, posturas]}"]

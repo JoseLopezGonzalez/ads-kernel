@@ -456,6 +456,44 @@ class MuerteDelTrabajador(Laboratorio):
         self.assertEqual(toma["checkpoint"]["contenido"], {"nota": "a mitad"})
         self.assertEqual(toma["checkpoint"]["titular"], "w-muerto")
 
+    def test_03b_un_trabajador_que_entrega_mientras_el_supervisor_observa_no_tumba_el_barrido(self):
+        """T461 · Defecto que previene: el supervisor muerto por una carrera, y nadie reofreciendo.
+
+        Medido en el dogfood con workers reales: el lease existía al listar, el trabajador
+        entregó antes de observarlo, `observar` levantó RUNTIME_INCONSISTENTE y el
+        supervisor murió en su primera pasada; todo quedó esperando a un lease muerto.
+        """
+        A = self.rt("w-A")
+        A.crear_item(id="it-1", titulo="primero", motivo="alta")
+        A.crear_paquete(id="pq-1", item="it-1", capacidades_requeridas=["worker"],
+                        orden=paquete_runtime.orden_externa())
+        A.tomar("pq-1")
+        S = self.rt("supervisor")
+        original = S.observar
+
+        def carrera(paquete):
+            # el trabajador entrega JUSTO antes de que el supervisor observe su lease
+            A.entregar("pq-1", {"estado": "completado", "codigo": 0, "salida": "ok", "detalle": "",
+                                "reintentable": False})
+            return original(paquete)
+
+        S.observar = carrera
+        informe = S.ciclo()
+        self.assertEqual(S._leer_paquete("pq-1")["estado"], "completado")
+        self.assertNotIn("pq-1", informe["reofrecidos"])
+        self.assertEqual(informe["atendidos"], [])
+        # y sin carrera, el mismo barrido sigue observando y reofreciendo como siempre
+        S.observar = original
+        A.crear_paquete(id="pq-2", item="it-1", capacidades_requeridas=["worker"],
+                        orden=paquete_runtime.orden_externa())
+        A.tomar("pq-2")
+        reofrecido = None
+        for pasada in range(S.paciencia + 1):
+            if "pq-2" in S.ciclo()["reofrecidos"]:
+                reofrecido = pasada
+                break
+        self.assertEqual(reofrecido, S.paciencia)
+
     def test_04_dos_procesos_compiten_por_el_mismo_paquete_y_exactamente_uno_lo_toma(self):
         """T462 · Defecto que previene: doble despacho entre dos sesiones."""
         A = self.rt("w-A")
@@ -1096,6 +1134,27 @@ class ContratosEfectivos(Laboratorio):
         self.assertIn("Acusar o rechazar", contrato["secuencia"][0]["hace"])
         self.assertEqual(contrato["entrega_a"], ["segun-el-plan"])
         self.assertTrue(contrato["decisiones_propias"])
+        # un `no` de verdad en la checklist casa con el `no` del esquema (YAML 1.1 lo lee como False)
+        from ciclo import entregas as modulo_entregas, formas as modulo_formas
+        esquema = self.corpus.esquema("entrega")
+        entrega = {"paquete": "pq-x", "rol": "CNS/implementacion", "veredicto": "entregado",
+                   "artefactos": [{"tipo": "commit", "referencia": "abc1234", "descripcion": "el commit"}],
+                   "evidencias": [], "diferencias_declaradas": [], "decisiones_asumidas": [], "riesgos": [],
+                   "deuda_aceptada": [], "no_hecho": [], "siguiente": "a revisión",
+                   "autoevaluacion": {"gate": "gate:implementacion-completa",
+                                      "comprobaciones": [{"id": "x", "resultado": "no"}],
+                                      "checklist": [{"id": "y", "respuesta": "no-aplica"}, {"id": "z", "respuesta": "no"}]}}
+        fallos = modulo_formas.validar(entrega, esquema, corpus=self.corpus, camino="entrega")
+        self.assertEqual([f for f in fallos if "respuesta" in f or "resultado" in f], [])
+        del modulo_entregas
+        # y la plantilla del brief lista los valores cerrados como texto, nunca como booleanos
+        brief = oficina.brief_de(self.rt("w-P"), corpus=self.corpus, paquete=self.paquete_de(
+            self.planificar(self.rt("w-Q"), item="enc-p")["plan"], "CNS/implementacion"), circuito=self.circuito)
+        plantilla = brief["forma_de_la_entrega"]["plantilla"]
+        self.assertEqual(plantilla["rol"], "CNS/implementacion")
+        self.assertIn("no-aplica", plantilla["autoevaluacion"]["checklist"][0]["respuesta"])
+        self.assertNotIn("False", json.dumps(plantilla))
+        self.assertTrue(all(a["tipo"] for a in plantilla["artefactos"]))
         # el mismo rol con contrato completo devuelve el completo, no la fusión
         completo = self.corpus.contrato_operativo_de("CNS/implementacion")
         self.assertEqual(completo["id"], "contrato:con-implementacion")
@@ -1194,6 +1253,43 @@ class Integrado(Laboratorio):
         ev = terminacion.evaluar(circuito, item="enc-int", paquetes_del_item=plan["paquetes"], dictamenes=[],
                                  hechos={"fuentes_escritas_cuenta": 0, "afecta_superficie": True})
         self.assertEqual({f["nivel"]: f["estado"] for f in ev["niveles"]}["integrado"], "inaplicable")
+
+
+# =========================================================================
+# T474 bis · la crónica: la secuencia se deriva del diario, no de un registro aparte
+# =========================================================================
+class Cronica(Laboratorio):
+
+    def test_23_la_cronica_dice_quien_tomo_que_y_que_entrego_en_el_orden_del_diario(self):
+        """T474 · Defecto que previene: una secuencia que sólo existe en la memoria del que la vio."""
+        from ciclo import cronica
+        A = self.rt("w-A")
+        B = self.rt("w-B")
+        plan = self.planificar(A)["plan"]
+        filas = self.filas(plan)
+        primero = A.tomables()["tomables"][0]["paquete"]
+        self.tomar_y_acusar(A, primero)
+        A.checkpoint(primero, {"paso": 1})
+        self.entregar(A, primero, self.entrega(primero, filas[primero]["rol"]))
+        segundo = A.tomables()["tomables"][0]["paquete"]
+        self.tomar_y_acusar(B, segundo)
+        sucesos = cronica.derivar(A.almacen, item="enc-x")
+        secuencias = [s["secuencia"] for s in sucesos]
+        self.assertEqual(secuencias, sorted(secuencias))
+        clases_de_a = [s["clase"] for s in sucesos if s["autor"] == "w-A" and s["paquete"] == primero]
+        self.assertIn("runtime.lease.adquirido", clases_de_a)
+        self.assertTrue(any(c.startswith("ciclo.entrega") for c in clases_de_a))
+        self.assertLess(clases_de_a.index("runtime.lease.adquirido"),
+                        [i for i, c in enumerate(clases_de_a) if c.startswith("ciclo.entrega")][0])
+        por = cronica.por_trabajador(sucesos)
+        self.assertIn("w-A", por)
+        self.assertIn("w-B", por)
+        self.assertTrue(any(s["paquete"] == segundo and s["clase"] == "runtime.lease.adquirido" for s in por["w-B"]))
+        # determinista: dos derivaciones, los mismos bytes
+        self.assertEqual(json.dumps(sucesos, sort_keys=True), json.dumps(cronica.derivar(A.almacen, item="enc-x"), sort_keys=True))
+        texto = cronica.como_texto(sucesos)
+        self.assertIn("CRÓNICA DE LA OFICINA", texto)
+        self.assertNotIn(self.repo, texto)
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):

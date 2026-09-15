@@ -380,7 +380,7 @@ ORDENES = ("encuadrar", "componer", "materializar", "planificar", "ciclo", "cont
            "macrocircuito", "procedencia",
            # LA OFICINA (`CONTRATO-OFICINA.md`): el protocolo de trabajadores, el tablero, la
            # escalera de terminación y el supervisor. Viven en `ciclo/cli_oficina.py`.
-           "tomar", "soltar", "checkpoint", "entregar", "acusar", "brief", "tablero",
+           "tomar", "soltar", "checkpoint", "entregar", "acusar", "brief", "tablero", "cronica",
            "terminacion", "aceptar", "cerrar-item", "supervisar")
 
 # Las órdenes que NO necesitan `--repo`. Ver `orden_procedencia`.
@@ -727,6 +727,7 @@ DESPACHADOR = {
     "acusar": _oficina("acusar"),
     "brief": _oficina("brief"),
     "tablero": _oficina("tablero"),
+    "cronica": _oficina("cronica"),
     "terminacion": _oficina("terminacion"),
     "aceptar": _oficina("aceptar"),
     "cerrar-item": _oficina("cerrar_item"),
@@ -882,6 +883,8 @@ def construir_analizador():
     clase(b_); brief_a(b_)
 
     subordenes.add_parser("tablero", parents=[comun])
+    cr = subordenes.add_parser("cronica", parents=[comun])
+    cr.add_argument("--item", default=None, help="sólo los sucesos de ese item")
 
     n_ = subordenes.add_parser("terminacion", parents=[comun])
     n_.add_argument("--item", required=True)
