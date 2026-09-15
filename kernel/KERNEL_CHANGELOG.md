@@ -42,6 +42,16 @@ nada exigia NIVELES              un item cerraba como producto sin que nadie hub
   `completado`. El kernel sigue sin nombrar ningun proveedor (`K0.8`).
 - `runtime/supervisor.py` · pasadas sobre el estado hasta una parada legitima:
   `sin-trabajo`, `bloqueado`, `marcado`; nunca infinito. Sin reloj dentro del paquete.
+- **Certificacion con procesos** (La Pesquerapp, 2026-09-15): contrato operativo efectivo
+  para TODO rol materializable —`ads:contrato-base` por familia, derivacion del rol y
+  `ads:contrato-de-rol`; validadores `T476` y `T477`—; nivel `integrado` con rol
+  `ENT/convergencia`, gate de `C7` e Integration Set exacto dentro de la entrega;
+  `ciclo/cronica.py`, la secuencia derivada del diario. Y siete carreras que solo se ven
+  con una oficina entera escribiendo a la vez, cada una con su prueba: el lector detras del
+  escritor y el lease retirado entre dos lecturas (`Almacen.leer`), el supervisor ante un
+  titular que suelta (barrido y `_atender_fallido`), la contencion del `flock`
+  (`INTENTOS_DE_BLOQUEO` 80 → 600), la puerta de G13 para quien corrigio, y
+  `oficina.entregar` exigiendo titularidad antes de escribir su primer paso.
 - `ads_ciclo.py` · ordenes `tomar`, `soltar`, `checkpoint`, `entregar`, `acusar`, `brief`,
   `tablero`, `terminacion`, `aceptar`, `cerrar-item`, `supervisar`.
 - `ciclo/continuacion.py` · el frente ordena detras a los paquetes que esperan a otros:

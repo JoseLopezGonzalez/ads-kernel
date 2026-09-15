@@ -233,7 +233,7 @@ nada**. No se persiste.
 ## 9 · Qué demuestra, y dónde
 
 ```text
-T460–T475   pruebas/test_oficina.py         tomar/checkpoint/entregar y reintento entre dos
+T460–T477   pruebas/test_oficina.py         tomar/checkpoint/entregar y reintento entre dos
                                             trabajadores · muerte con lease y reoferta ·
                                             carrera de dos procesos · paquetes por rol ·
                                             entregas inválidas · autocertificación ·
@@ -261,7 +261,21 @@ sigue siendo fallo cerrado (`T474`); el brief lleva la `plantilla` de la entrega
 forma exacta de cada elemento (`elementos`), porque un modelo real escribió prosa donde el
 esquema exige un valor cerrado; y `no` sin comillas es False para el analizador YAML, así
 que los valores cerrados se comparan como texto. `cronica` deriva la secuencia del diario:
-quién tomó qué, qué entregó, qué handoff, qué dictamen, qué reoferta.
+quién tomó qué, qué entregó, qué handoff, qué dictamen, qué reoferta —una fila por
+transacción CONFIRMADA, porque el diario guarda tres fases por transacción—.
+
+**Y lo que enseñó una oficina entera escribiendo a la vez** (un supervisor y seis workers
+como procesos, dogfoods 4 a 6 de la certificación): el `flock` del escritor no hace cola, y
+80 sondeos de 50 ms no bastan cuando dos procesos reencadenan diez transacciones por entrega
+—`INTENTOS_DE_BLOQUEO` son ahora 600, con la misma espera fija—; un lease que el titular
+retira entre la lectura de `REVISION.json` y la del objeto no es corrupción sino
+`RutaInvalida`, y `_atender_fallido` tolera al titular que suelta (`T474`); la puerta de G13
+mira TODA entrega de la instancia para el item, no sólo los handoffs, porque quien corrigió
+la implementación pasaba la puerta de VER/dosier (`T465`); y `oficina.entregar` exige
+titularidad ANTES de escribir su primer paso, porque un supervisor puede reclamar el lease de
+un worker vivo pero lento y la entrega son varias transacciones (`T461`). La regla de
+explotación que sale de ahí: la espera del supervisor es al menos tres veces el latido del
+worker, y el latido dura hasta que la entrega está escrita.
 
 ## 10 · Lo que este contrato NO cubre
 
