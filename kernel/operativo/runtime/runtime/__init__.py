@@ -74,6 +74,15 @@ from .errores import (
     RuntimeInconsistente,
     TiempoAgotado,
 )
+from .externo import (
+    ADAPTADOR_EXTERNO,
+    CAPACIDAD_EXTERNA,
+    DOMINIO_CHECKPOINTS,
+    comprobar_entrega_externa,
+    es_externo,
+    orden_externa,
+    ruta_checkpoint,
+)
 from .lease import PACIENCIA_POR_DEFECTO, TestigoDeVida
 from .modelo import (
     ESTADOS,
@@ -93,6 +102,8 @@ __all__ = [
     "Runtime", "Cancelacion",
     "PACIENCIA_POR_DEFECTO", "MAX_INTENTOS_POR_DEFECTO", "VERSION_DE_CONTRATO",
     "TestigoDeVida",
+    "ADAPTADOR_EXTERNO", "CAPACIDAD_EXTERNA", "DOMINIO_CHECKPOINTS", "es_externo",
+    "orden_externa", "ruta_checkpoint", "comprobar_entrega_externa",
     "Adaptador", "RegistroDeAdaptadores", "comprobar_adaptador",
     "AdaptadorEnPruebas", "RegistroEnPruebas", "exigir_efecto_no_aplicado",
     "ESTADOS", "ESTADOS_TERMINALES", "TRANSICIONES",

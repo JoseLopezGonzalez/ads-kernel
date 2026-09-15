@@ -244,7 +244,7 @@ VOCABULARIO_DEL_CONTRATO = [
 TABLA_DEL_CONTRATO = {
     "listo": {"despachado", "pausado", "cancelado", "bloqueado", "esperando-dependencia"},
     "despachado": {"ejecutando", "listo", "fallido", "cancelado"},
-    "ejecutando": {"completado", "fallido", "cancelado"},
+    "ejecutando": {"completado", "fallido", "cancelado", "bloqueado"},
     "fallido": {"listo", "agotado"},
     "agotado": {"listo"},
     "pausado": {"listo", "cancelado"},

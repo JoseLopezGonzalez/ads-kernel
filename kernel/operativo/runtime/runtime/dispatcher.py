@@ -67,7 +67,7 @@ from estado.errores import DiarioCorrupto, RutaInvalida
 from estado.rutas import SEGMENTO_VALIDO
 from estado.serializacion import cid_de_objeto
 
-from . import fallos, politica, vistas
+from . import externo, fallos, politica, vistas
 from .ejecucion import comprobar_adaptador
 from .errores import (
     AdaptadorIncompatible,
@@ -1396,10 +1396,32 @@ class Runtime:
         reanudables = []
         informe["reclamados"] = []
         informe["observados"] = []
+        # PAQUETES EXTERNOS (`externo.py`): los ejecuta un TRABAJADOR que reclama, no este
+        # barrido. Aquí no se despachan; lo único que el barrido hace con ellos es recuperar
+        # la autoridad de un trabajador que murió —observar `PACIENCIA` veces y reclamar,
+        # por la única puerta— y SOLTARLA en el acto, para que el siguiente trabajador
+        # pueda reclamar el paquete y reanudarlo desde su checkpoint. Se publican como
+        # `reofrecidos`; nunca como `atendidos`, porque nadie los ejecutó.
+        informe["externos"] = []
+        informe["reofrecidos"] = []
         for paquete in self._todos_los_paquetes():
             if paquete["estado"] not in ESTADOS_EN_CURSO:
                 continue
             lease = self._leer_lease(paquete["id"])
+            if externo.es_externo(paquete):
+                informe["externos"].append(paquete["id"])
+                if lease is None:
+                    informe["reofrecidos"].append(paquete["id"])
+                elif es_titular(lease, self.instancia):
+                    self._soltar_si_es_mio(paquete["id"])
+                    informe["reofrecidos"].append(paquete["id"])
+                elif self._pretender_autoridad_ajena(paquete["id"]):
+                    informe["reclamados"].append(paquete["id"])
+                    self._soltar_si_es_mio(paquete["id"])
+                    informe["reofrecidos"].append(paquete["id"])
+                else:
+                    informe["observados"].append(paquete["id"])
+                continue
             if lease is None or es_titular(lease, self.instancia):
                 reanudables.append(paquete["id"])
                 continue
@@ -1413,7 +1435,16 @@ class Runtime:
         informe["reanudados"] = list(reanudables)
 
         cola = self.elegibles()
-        elegibles = [entrada["paquete"] for entrada in cola]
+        elegibles = []
+        for entrada in cola:
+            objeto = self._leer_paquete_opcional(entrada["paquete"])
+            if objeto is not None and externo.es_externo(objeto):
+                # Elegible y EXTERNO: espera a un trabajador. No se despacha aquí y NO se
+                # cuenta como postergado: no lo adelantó nadie, lo reclama quien pueda.
+                if entrada["paquete"] not in informe["externos"]:
+                    informe["externos"].append(entrada["paquete"])
+                continue
+            elegibles.append(entrada["paquete"])
         informe["elegibles"] = list(elegibles)
         # `b.12` paso 7, ESCRITO: quién entra en el frente de esta pasada y quién se queda
         # fuera, con su motivo. Sin `maximo` entra todo y no hay nadie a quien postergar, y
@@ -1429,7 +1460,11 @@ class Runtime:
         orden = reanudables + [p for p in elegibles if p not in reanudables]
         if maximo:
             orden = orden[:int(maximo)]
-        informe["postergados"] = self._anotar_postergacion(cola, orden) if cola else []
+        # Los externos elegibles entran en el FRENTE de la postergación: no fueron
+        # adelantados por nadie, y contarlos como postergados en cada barrido inventaría una
+        # inanición que no existe.
+        frente = list(orden) + [p for p in informe["externos"] if p not in orden]
+        informe["postergados"] = self._anotar_postergacion(cola, frente) if cola else []
         for identificador in orden:
             informe["atendidos"].append(self._despachar_anotando(identificador))
 
@@ -1484,6 +1519,35 @@ class Runtime:
         derivadas["instancia"] = self.instancia
         derivadas["marcado"] = self.marcado
         return derivadas
+
+    # =====================================================================
+    #  ejecución EXTERNA · el protocolo de trabajadores (`externo.py`)
+    # =====================================================================
+    def tomar(self, paquete):
+        """TOMAR un paquete externo: lease, intento y `ejecutando`, sin ejecutar nada aquí.
+
+        No es `reclamar`: tomar pide autoridad sobre trabajo LIBRE por `adquirir`, que nunca
+        roba; reclamar es la puerta de `PACIENCIA` observaciones para el lease de un muerto.
+        """
+        return externo.tomar(self, paquete)
+
+    def checkpoint(self, paquete, contenido):
+        """Checkpoint durable del trabajador, bajo titularidad y latiendo."""
+        return externo.checkpoint(self, paquete, contenido)
+
+    def entregar(self, paquete, entrega):
+        """ENTREGAR el resultado de un paquete externo por la máquina del dispatcher."""
+        return externo.entregar(self, paquete, entrega)
+
+    def soltar(self, paquete):
+        """Soltar la autoridad sin entregar: el paquete queda donde estaba, sin lease."""
+        return externo.soltar(self, paquete)
+
+    def externos(self):
+        return externo.externos(self)
+
+    def tomables(self):
+        return externo.tomables(self)
 
     def estado_de_paquete(self, paquete):
         """El paquete y su lease, leídos del estado canónico. Sin caché y sin adornos."""

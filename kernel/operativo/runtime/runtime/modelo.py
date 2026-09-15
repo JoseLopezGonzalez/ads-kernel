@@ -66,7 +66,13 @@ ESTADOS_EN_CURSO = ("despachado", "ejecutando")
 TRANSICIONES = {
     "listo": ("despachado", "pausado", "cancelado", "bloqueado", "esperando-dependencia"),
     "despachado": ("ejecutando", "listo", "fallido", "cancelado"),
-    "ejecutando": ("completado", "fallido", "cancelado"),
+    # `ejecutando` → `bloqueado` entra con la ejecución EXTERNA (`externo.py`): un
+    # trabajador descubre a mitad que no puede seguir sin algo que no depende de él —una
+    # decisión ajena, una dependencia externa— y lo dice. Antes no cabía: la ejecución de
+    # un adaptador era atómica y un bloqueo a mitad era un `fallido` que consumía intento y
+    # acababa en `agotado`, es decir, en la reconciliación de `g.9` por algo que no era un
+    # fallo. Sale de `bloqueado` como siempre: `listo` por un desbloqueador, o `cancelado`.
+    "ejecutando": ("completado", "fallido", "cancelado", "bloqueado"),
     "fallido": ("listo", "agotado"),
     "agotado": ("listo",),
     "pausado": ("listo", "cancelado"),
