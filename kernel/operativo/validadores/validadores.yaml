@@ -345,6 +345,19 @@ componentes:
     firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T203', 'T204', 'T205']
 
+  # La OFICINA (CONTRATO-OFICINA.md): el protocolo de trabajadores sobre el runtime, la
+  # entrega verificable, los niveles de terminacion, el adaptador de agente y el supervisor.
+  # Trabajadores que son PROCESOS reales donde la propiedad lo exige: muerte con lease y
+  # carrera por el mismo paquete.
+  - id: oficina
+    script: test_oficina.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: oficina-salida.txt
+    firma_de_exito: '(?m)^OK$'
+    debe_contener: ['Ran ', 'duración no registrada', 'T460', 'T461', 'T462', 'T465', 'T466',
+                    'T468', 'T470', 'T474']
+
   # El PASO 4 de `C4` -asignacion de agentes por la politica de `C2`- y el corte por
   # `execution_slots`, cuya unidad es el AGENTE. Bateria propia porque mide una capa propia:
   # perfiles del corpus contra el catalogo de modelos que el PROYECTO declara en su PROFILE.

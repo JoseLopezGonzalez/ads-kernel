@@ -129,3 +129,11 @@ abrir un entorno de agente real. Por eso este corte **no declara ningún nivel a
 ningún adaptador, y no existe ningún adaptador de proveedor comercial: `§6.5` separa
 compatibilidad DECLARADA de capacidad OBSERVADA y de nivel CERTIFICADO, y aquí sólo hay lo
 primero. **Nada está CERTIFICADO.**
+
+**Desde `2.0.0-alpha.15` existe un adaptador de AGENTE** (`adaptadores/agente.py`): lanza el
+ejecutable sin chat que el PROYECTO declara en su `PROFILE.md` como bloque `ads:ejecutor`
+—el kernel no nombra ningún proveedor— con el brief del paquete, espera, mata y lee la
+entrega. Se compone sobre el adaptador de proceso local y no cambia lo que este contrato
+dice: sigue sin haber adaptador de proveedor EN el kernel, sigue sin haber nada certificado,
+y `§6.5` sigue separando lo declarado de lo observado. Lo que añade y cómo se mide vive en
+[`CONTRATO-OFICINA.md`](CONTRATO-OFICINA.md) `§7` y en `T470`.

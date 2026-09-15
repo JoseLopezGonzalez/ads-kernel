@@ -30,13 +30,14 @@ batería**, registrada en el mismo manifiesto canónico y con su propia evidenci
 | [`CONTRATO-CICLO-Y-MACROCIRCUITOS.md`](CONTRATO-CICLO-Y-MACROCIRCUITOS.md) | el macrobloque 3: el ciclo de `§7.2`, `Continúa` de `§7.4` y los cuatro macrocircuitos con su `FASE 0` |
 | [`CONTRATO-ARBOLES-ADVERSARIALES.md`](CONTRATO-ARBOLES-ADVERSARIALES.md) | `V6-15`: el derivador del conjunto de `§20.5`, su suite de regresión y su matriz |
 | [`CONTRATO-CONTENCION.md`](CONTRATO-CONTENCION.md) | `FD-5`: los contenedores de recursos del anfitrión, su detección y su fallo cerrado |
+| [`CONTRATO-OFICINA.md`](CONTRATO-OFICINA.md) | la oficina: el protocolo de trabajadores sobre el runtime, la entrega verificable, los niveles de terminación, el adaptador de agente y el supervisor |
 | `ads_estado.py` | el punto ejecutable del motor. Sin él no habría forma de demostrar una interrupción real: el escenario extremo a extremo **mata procesos**, y para eso hacen falta procesos |
 | `ads_runtime.py` · `ads_admision.py` · `ads_ciclo.py` · `ads_arboles.py` | los puntos ejecutables del runtime, del verificador de admisión, del ciclo y del derivador de árboles |
 | `estado/` | el motor: transacción, diario, reconciliación, migración, bloqueo, serialización, rutas, errores, atestación y puntos de fallo |
 | `runtime/` · `gobierno/` · `admision/` · `adaptadores/` · `identidad/` | los cinco paquetes del segundo corte |
 | `ciclo/` · `macrocircuitos/` | las ocho etapas del ciclo, `Continúa`, y los cuatro macrocircuitos como composiciones del mismo motor |
 | `arboles/` · `contencion/` | `V6-15` —los árboles adversariales derivados, con sus versiones históricas vulnerables— y `FD-5` —la contención del anfitrión, con su detección y sus niveles— |
-| `pruebas/` | las once baterías y los tres escenarios extremo a extremo |
+| `pruebas/` | las doce baterías y los tres escenarios extremo a extremo |
 
 **El censo no se escribe: se deriva.**
 
@@ -71,6 +72,7 @@ python3 kernel/operativo/runtime/pruebas/escenario_extremo_a_extremo.py
 python3 kernel/operativo/runtime/pruebas/escenario_e2e_runtime.py
 python3 kernel/operativo/runtime/pruebas/test_ciclo.py
 python3 kernel/operativo/runtime/pruebas/test_continua.py
+python3 kernel/operativo/runtime/pruebas/test_oficina.py
 python3 kernel/operativo/runtime/pruebas/test_macrocircuitos.py
 python3 kernel/operativo/runtime/pruebas/test_arboles.py
 python3 kernel/operativo/runtime/pruebas/test_contencion.py
