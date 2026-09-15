@@ -1189,7 +1189,7 @@ class Integrado(Laboratorio):
         ev = oficina.evaluar_terminacion(A, corpus=self.corpus, item="enc-int", circuito=circuito, hechos=hechos)
         estados = {f["nivel"]: f["estado"] for f in ev["niveles"]}
         self.assertEqual(estados["integrado"], "alcanzado")
-        self.assertEqual(ev["faltan"], ["aceptado", "cerrado"])
+        self.assertEqual(ev["faltan"], ["aceptado"])
         # y un item que no escribe fuentes lo declara inaplicable, sólo por su condición
         ev = terminacion.evaluar(circuito, item="enc-int", paquetes_del_item=plan["paquetes"], dictamenes=[],
                                  hechos={"fuentes_escritas_cuenta": 0, "afecta_superficie": True})
