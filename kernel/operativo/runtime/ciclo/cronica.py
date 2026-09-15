@@ -38,7 +38,13 @@ def derivar(almacen, *, item=None, paquetes=None):
         if objeto:
             items_por_paquete[objeto["id"]] = objeto.get("item")
     for evento in almacen.diario():
-        clase = str(evento.get("clase") or evento.get("tipo") or "")
+        # el diario guarda TRES fases por transacción (abierta, preparada, confirmada); un
+        # suceso de la oficina es la transacción CONFIRMADA, y sólo ésa. Contar las tres
+        # triplicaba cada fila (medido en el cuarto dogfood: 492 rachas de tres iguales)
+        tipo = str(evento.get("tipo") or "")
+        if tipo and tipo != "transicion.confirmada":
+            continue
+        clase = str(evento.get("clase") or "")
         if not any(clase.startswith(prefijo) for prefijo in CLASES_DE_LA_OFICINA):
             continue
         motivo = str(evento.get("motivo") or "")
@@ -58,6 +64,7 @@ def derivar(almacen, *, item=None, paquetes=None):
             continue
         filas.append({
             "secuencia": evento.get("secuencia"),
+            "transaccion": str(evento.get("transaccion") or ""),
             "autor": str(evento.get("autor") or ""),
             "clase": clase,
             "motivo": motivo,

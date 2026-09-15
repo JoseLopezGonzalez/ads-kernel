@@ -115,8 +115,18 @@ from .modelo import DOMINIO_PAQUETES
 # defecto, que es la peor clase de alarma —la que se aprende a ignorar—.
 VUELTAS_POR_REVISION_OBSOLETA = 12
 
-# Pasadas no bloqueantes sobre el `flock` de escritor del motor, a 50 ms cada una: 4 s.
-INTENTOS_DE_BLOQUEO = 80
+# Pasadas no bloqueantes sobre el `flock` de escritor del motor, a 50 ms cada una: 30 s.
+#
+# Eran 80 (4 s), calibradas para DOS dispatchers. Con una OFICINA —tres workers externos y
+# un supervisor escribiendo a la vez, y una entrega que son diez transacciones seguidas—
+# se midió (cuarto dogfood de certificación, 2026-09-15) que un tercer worker agotó las 80
+# pasadas al TOMAR: el `flock` no hace cola, y quien sondea cada 50 ms pierde contra dos
+# procesos que reencadenan transacciones. El motor abrió `rec-0001` por CONTENCIÓN, el
+# supervisor paró por `g.9` (correcto: es su regla) y el worker murió sin haber tocado el
+# estado. La espera sigue siendo FIJA —la evidencia da los mismos bytes—; lo que cambia es
+# el margen para serializar, que es lo que `g.6` pide. Treinta segundos sin conseguir el
+# bloqueo ya no son contención: son un escritor que no suelta, y eso sí es de `g.9`.
+INTENTOS_DE_BLOQUEO = 600
 
 # ===========================================================================
 #  LA INVARIANTE DE `b.12` · la prioridad de un paquete existente NO se mueve

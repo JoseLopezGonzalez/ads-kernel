@@ -1310,6 +1310,9 @@ class Cronica(Laboratorio):
         sucesos = cronica.derivar(A.almacen, item="enc-x")
         secuencias = [s["secuencia"] for s in sucesos]
         self.assertEqual(secuencias, sorted(secuencias))
+        # una fila por transacción CONFIRMADA: ni la fase abierta ni la preparada cuentan
+        self.assertEqual(len(set(s["transaccion"] for s in sucesos)), len(sucesos))
+        self.assertEqual([s["clase"] for s in sucesos if s["paquete"] == primero].count("runtime.lease.adquirido"), 1)
         clases_de_a = [s["clase"] for s in sucesos if s["autor"] == "w-A" and s["paquete"] == primero]
         self.assertIn("runtime.lease.adquirido", clases_de_a)
         self.assertTrue(any(c.startswith("ciclo.entrega") for c in clases_de_a))
