@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 6a92a494e2405fd4 -->
+<!-- source_revision: 43d55f769616502a -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -11,11 +11,11 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | estado | pruebas |
 |---|---|
 | CONTRATO DEFINIDO | 56 |
-| VALIDADOR IMPLEMENTADO | 4 |
+| VALIDADOR IMPLEMENTADO | 6 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 262 |
+| PRUEBA SUPERADA | 278 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **322** |
+| **total** | **340** |
 
 ## Detalle
 
@@ -343,18 +343,53 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T432](T430-T434-exclusiones-de-instancia.md) | La ejecucion PUBLICA las zonas excluidas, tambien en verde | UP-11 · visibilidad | validador-estructural | **PRUEBA SUPERADA** | evidencia/exclusiones-de-instancia-salida.txt |
 | [T433](T430-T434-exclusiones-de-instancia.md) | Una exclusion SIN MOTIVO se rechaza | UP-11 · puerta trasera | validador-estructural | **PRUEBA SUPERADA** | evidencia/exclusiones-de-instancia-salida.txt |
 | [T434](T430-T434-exclusiones-de-instancia.md) | Una exclusion HUERFANA se rechaza | UP-11 · no se acumulan restos | validador-estructural | **PRUEBA SUPERADA** | evidencia/exclusiones-de-instancia-salida.txt |
+| [T460](T460-T479-oficina.md) | Tomar, checkpoint, entregar y reintento entre dos trabajadores | CONTRATO-OFICINA §2 · worker protocol · lease · checkpoint | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T461](T460-T479-oficina.md) | Un trabajador que muere con el lease es reofrecido tras PACIENCIA | CONTRATO-OFICINA §2 · lease · PACIENCIA · checkpoint · a.10 | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T462](T460-T479-oficina.md) | Dos procesos compiten por el mismo paquete y exactamente uno lo toma | CONTRATO-OFICINA §2 · lease · CAS · doble despacho | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T463](T460-T479-oficina.md) | Planificación por rol, orden por obligación y brief derivado | CONTRATO-OFICINA §5 · C4 · b.16 · ORDEN_DE_ESTACIONES · brief | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T464](T460-T479-oficina.md) | Una entrega incompleta se rechaza y no toca el estado | CONTRATO-OFICINA §3 · esquema entrega · artefactos obligatorios · checklist | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T465](T460-T479-oficina.md) | La autocertificación se rechaza, por trabajador y por rol | CONTRATO-OFICINA §3 · G13 · independencia · dictamen | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T466](T460-T479-oficina.md) | Devolución con corrección y nuevo receptor; rechazo al recibir; freno a la tercera | CONTRATO-OFICINA §4 · C5 · a.7 · sustituye_a · cuenta_para_el_freno | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T467](T460-T479-oficina.md) | Un bloqueo no consume intento y deja nombrado quién lo desbloquea | CONTRATO-OFICINA §4 · bloqueado · ejecutando→bloqueado · g.9 | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T468](T460-T479-oficina.md) | El item no cierra como producto hasta alcanzar los niveles del circuito base | CONTRATO-OFICINA §6 · 02-NIVELES-DE-TERMINACION · circuito-base · gate:aceptacion-del-owner | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T469](T460-T479-oficina.md) | El tablero es determinista y dice qué hará el sistema si nadie dice nada | CONTRATO-OFICINA §8 · tablero · derivado del estado | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T470](T460-T479-oficina.md) | Un agente sin chat ejecuta un paquete con su brief; sin entrega válida no completa | CONTRATO-OFICINA §7 · adaptador de agente · ads:ejecutor · supervisor | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T471](T460-T479-oficina.md) | Una dependencia circular no se toma y el tablero la nombra | CONTRATO-OFICINA §8 · dependencias_circulares · supervisor parada bloqueado | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T472](T460-T479-oficina.md) | Un handoff incompleto no se emite y un acuse a medias no toma custodia | C5 · handoff · acuse · handoff genérico | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T473](T460-T479-oficina.md) | Con el Owner ausente el trabajo independiente continúa | CONTRATO-OFICINA §7 · escalado · trabajo independiente | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T474](T460-T479-oficina.md) | Un reinicio completo reconstruye exactamente lo mismo | CONTRATO-OFICINA §8 · reanudación · b.14 · brief huella | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T475](T460-T479-oficina.md) | Los documentos inconsistentes se rechazan con su nombre | esquema circuito-base · esquema entrega · fallo cerrado | requiere-runtime | **PRUEBA SUPERADA** · DECLARA `validador-implementado`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T476](T460-T479-oficina.md) | Todo rol materializable tiene contrato operativo efectivo y suficiente | contrato-base · contrato-de-rol · contrato-operativo · ciclo/contratos.py · G13 | validador-estructural | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | evidencia/contratos-salida.txt |
+| [T477](T460-T479-oficina.md) | Las bases de contrato son coherentes y ningún rol hereda de dos | contrato-base · contrato-de-rol | validador-estructural | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | evidencia/contratos-salida.txt |
 
 ## Contraste del estado contra la evidencia
 
-Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **262** de **322**.
+Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **278** de **340**.
 
-No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **60**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
+No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **62**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
 
 Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada mezclaba a los que no afirman ninguna ejecución con los que afirmaban una que su evidencia no nombra, que es lo que `H-02` encontró—:
 
 | estado declarado | escenarios |
 |---|---|
 | contrato-definido | 56 |
-| validador-implementado | 4 |
+| validador-implementado | 6 |
 
-Ninguna divergencia: todo `estado:` declarado coincide con el que su evidencia sostiene.
+| id | declarado a mano | derivado de la evidencia | motivo |
+|---|---|---|---|
+| T460 | validador-implementado | prueba-superada | — |
+| T461 | validador-implementado | prueba-superada | — |
+| T462 | validador-implementado | prueba-superada | — |
+| T463 | validador-implementado | prueba-superada | — |
+| T464 | validador-implementado | prueba-superada | — |
+| T465 | validador-implementado | prueba-superada | — |
+| T466 | validador-implementado | prueba-superada | — |
+| T467 | validador-implementado | prueba-superada | — |
+| T468 | validador-implementado | prueba-superada | — |
+| T469 | validador-implementado | prueba-superada | — |
+| T470 | validador-implementado | prueba-superada | — |
+| T471 | validador-implementado | prueba-superada | — |
+| T472 | validador-implementado | prueba-superada | — |
+| T473 | validador-implementado | prueba-superada | — |
+| T474 | validador-implementado | prueba-superada | — |
+| T475 | validador-implementado | prueba-superada | — |
