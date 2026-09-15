@@ -727,6 +727,88 @@ class Corpus:
             raise CorpusIncompleto("el corpus no declara ninguna clase de entrada")
         return salida
 
+    # ---------------------------------------------------------------- roles
+    def roles(self):
+        """Todos los roles del corpus —kernel y packs— por su `id`, con sus veintinueve campos."""
+        salida = {}
+        obligatorios = self.obligatorios_de("rol")
+        for datos in self.de_tipo("rol"):
+            identificador = datos.get("id")
+            if not isinstance(identificador, str):
+                raise CorpusIlegible("un bloque `ads:rol` sin `id`")
+            if identificador in salida:
+                raise CorpusIlegible("dos bloques declaran el rol `" + identificador + "`")
+            self._exigir_campos(datos, obligatorios, identificador, "rol")
+            salida[identificador] = datos
+        return salida
+
+    def rol(self, identificador):
+        roles = self.roles()
+        if identificador not in roles:
+            raise CorpusIncompleto(
+                "el corpus no declara el rol `" + str(identificador) + "`; declarados: "
+                + ", ".join(sorted(roles)), ruta=str(identificador),
+            )
+        return roles[identificador]
+
+    def prompt_de(self, identificador):
+        """El texto del prompt operativo de un rol, leído de la ruta que el rol declara."""
+        rol = self.rol(identificador)
+        relativa = str(rol.get("prompt") or "")
+        if "#" in relativa:
+            relativa = relativa.split("#", 1)[0]
+        prefijo = "kernel/operativo/"
+        if relativa.startswith(prefijo):
+            relativa = relativa[len(prefijo):]
+        if not relativa:
+            return ""
+        return self._texto(relativa)
+
+    def metodo(self, identificador):
+        """Un método por su `id` (`<CAP>/<Slug>`), con sus diecisiete elementos."""
+        capacidad, _, slug = str(identificador).partition("/")
+        if capacidad not in CAPACIDADES or not slug:
+            raise CorpusIncompleto(
+                "`" + str(identificador) + "` no es un identificador de método `<CAP>/<Slug>`",
+                ruta=str(identificador),
+            )
+        relativa = "capacidades/" + capacidad + "/metodos/" + slug + ".md"
+        if not os.path.isfile(os.path.join(self.raiz, relativa)):
+            raise CorpusIncompleto(
+                "el corpus no declara el método `" + identificador + "`", ruta=relativa,
+            )
+        for clase, datos, _ruta, _linea in bloques(self._texto(relativa), relativa):
+            if clase == "metodo" and datos.get("id") == identificador:
+                return datos
+        raise CorpusIncompleto(
+            "no hay bloque `ads:metodo` `" + identificador + "` en su fichero", ruta=relativa,
+        )
+
+    def perfiles(self):
+        return {d["id"]: d for d in self.de_tipo("perfil-agente") if isinstance(d.get("id"), str)}
+
+    # ---------------------------------------------------- contratos operativos
+    def contratos_operativos(self):
+        """Los bloques `ads:contrato-operativo`, por el `id` del ROL al que contratan."""
+        salida = {}
+        obligatorios = self.obligatorios_de("contrato-operativo")
+        for datos in self.de_tipo("contrato-operativo"):
+            identificador = datos.get("id")
+            rol = datos.get("rol")
+            if not isinstance(identificador, str) or not isinstance(rol, str):
+                raise CorpusIlegible("un bloque `ads:contrato-operativo` sin `id` o sin `rol`")
+            if rol in salida:
+                raise CorpusIlegible(
+                    "dos contratos operativos para el rol `" + rol + "`: dos verdades",
+                )
+            self._exigir_campos(datos, obligatorios, identificador, "contrato-operativo")
+            salida[rol] = datos
+        return salida
+
+    def contrato_operativo_de(self, rol):
+        """El contrato operativo del rol, o `None`. La ausencia se publica, no se inventa."""
+        return self.contratos_operativos().get(rol)
+
     # ------------------------------------------------------------- huella
     def huella(self):
         """`sha256` del corpus leído. Es el identificador nº 3 y nº 4 del sujeto de `§9.6`.

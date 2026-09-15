@@ -1654,6 +1654,9 @@ class CorpusYDeterminismo(BaseDelCiclo):
         self.assertEqual(sorted(modulo.ORDENES), sorted([
             "ciclo", "componer", "continuar", "encuadrar", "macrocircuito",
             "materializar", "planificar", "procedencia",
+            # la OFICINA, `CONTRATO-OFICINA.md`
+            "tomar", "soltar", "checkpoint", "entregar", "acusar", "brief", "tablero",
+            "terminacion", "aceptar", "cerrar-item", "supervisar",
         ]))
         self.assertEqual(modulo.main(["encuadrar"]), modulo.USO)
         self.assertEqual(modulo.main([]), modulo.USO)

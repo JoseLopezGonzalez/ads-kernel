@@ -551,6 +551,17 @@ class Continuacion:
                                             "`b.14.3` manda parar y escalar",
                     "descartados": [], "ambiguo": False}
         elegibles = self.runtime.elegibles()
+        # `elegibles()` publica los `listo` sin mirar sus dependencias —las resuelve el
+        # despacho—. El FRENTE no es eso: un paquete que espera a otros no se retoma, se
+        # espera. Medido cuando la unidad de integración semántica de la vía 1 —que depende
+        # de TODAS las demás y lleva la prioridad más alta— pasó a encabezar la lista.
+        # No se descartan —siguen siendo trabajo elegible y se publican—: se ORDENAN detrás
+        # de los que no esperan a nadie, sin tocar su prioridad (`b.12`).
+        def espera_a_alguien(elegible):
+            objeto = durable.leer(self.almacen, "paquetes/" + elegible["paquete"] + ".json")
+            return any(self.runtime._dependencias_pendientes(objeto))
+        elegibles = ([e for e in elegibles if not espera_a_alguien(e)]
+                     + [e for e in elegibles if espera_a_alguien(e)])
         if not elegibles:
             return {"retoma": [], "motivo": "no hay trabajo elegible: «no hay trabajo "
                                             "listo» es una respuesta correcta y completa "

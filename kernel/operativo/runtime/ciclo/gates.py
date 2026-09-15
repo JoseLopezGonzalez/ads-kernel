@@ -137,7 +137,21 @@ def aplicar(identificador, *, entrada, evidencia, revisor, autor, corpus=None,
     return cuerpo
 
 
+def _es_rol(valor):
+    """`<CAP>/<slug>`: un ROL, que es la granularidad a la que la oficina juzga."""
+    return isinstance(valor, str) and "/" in valor and valor.split("/", 1)[0] in CAPACIDADES
+
+
 def _exigir_revisor(revisor, *, autor, gate):
+    """Revisor y autor son una capacidad, un ROL o el Owner, y NUNCA el mismo.
+
+    La revisión de construcción (`recorrido/02-NIVELES-DE-TERMINACION.md`) juzga dentro
+    de la MISMA capacidad —`CNS/revision-de-construccion` sobre `CNS/implementacion`—, y
+    con revisor y autor expresados sólo como capacidad esa revisión era imposible: `CNS`
+    juzgaba a `CNS`. Con ROLES la separación se conserva donde importa —dos roles distintos
+    que sus contratos declaran independientes— y `terminacion` la exige además por
+    TRABAJADOR.
+    """
     if not isinstance(revisor, str) or not revisor.strip():
         raise GateFallido(
             "el gate `" + str(gate) + "` se aplica sin revisor; un dictamen sin quien lo "
@@ -145,10 +159,10 @@ def _exigir_revisor(revisor, *, autor, gate):
             gate=str(gate),
         )
     limpio = revisor.strip()
-    if limpio != REVISOR_OWNER and limpio not in CAPACIDADES:
+    if limpio != REVISOR_OWNER and limpio not in CAPACIDADES and not _es_rol(limpio):
         raise GateFallido(
-            "el revisor de `" + str(gate) + "` es una de las quince capacidades o el "
-            "Owner; se recibió " + repr(revisor),
+            "el revisor de `" + str(gate) + "` es una de las quince capacidades, un rol "
+            "`<CAP>/<slug>` o el Owner; se recibió " + repr(revisor),
             gate=str(gate), revisor=limpio,
         )
     # EL AUTOR ES OBLIGATORIO, y no es una formalidad.
@@ -167,9 +181,10 @@ def _exigir_revisor(revisor, *, autor, gate):
             gate=str(gate), revisor=limpio,
         )
     limpio_autor = str(autor).strip()
-    if limpio_autor != REVISOR_OWNER and limpio_autor not in CAPACIDADES:
+    if limpio_autor != REVISOR_OWNER and limpio_autor not in CAPACIDADES \
+            and not _es_rol(limpio_autor):
         raise GateFallido(
-            "el autor de `" + str(gate) + "` es una de las quince capacidades o el "
+            "el autor de `" + str(gate) + "` es una de las quince capacidades, un rol o el "
             "Owner; se recibió " + repr(autor),
             gate=str(gate), autor=limpio_autor,
         )

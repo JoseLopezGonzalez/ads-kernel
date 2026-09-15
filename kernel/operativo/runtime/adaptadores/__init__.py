@@ -36,6 +36,11 @@ from .contrato import (
     ProyeccionObsoleta,
     comprobar_resultado,
 )
+from .agente import (
+    AdaptadorDeAgente,
+    cargar_ejecutores,
+    ejecutores_desde_texto,
+)
 from .proceso import (
     PUNTOS_DE_FALLO,
     VARIABLE_DE_FALLO,
@@ -66,6 +71,7 @@ __all__ = [
     "PUNTOS_DE_FALLO", "VARIABLE_DE_FALLO", "puntos_de_fallo",
     "Adaptador", "FichaDeAdaptador", "Cancelacion", "comprobar_resultado",
     "RegistroDeAdaptadores", "AdaptadorDeProcesoLocal",
+    "AdaptadorDeAgente", "cargar_ejecutores", "ejecutores_desde_texto",
     "DESENLACES", "DESENLACES_DECLARADOS", "leer_puntero", "normalizar_remoto",
     "resolver_control_repo",
     "compilar", "validar_deriva", "exigir_al_dia", "huella_de_entradas",

@@ -377,7 +377,11 @@ def _publicar_fallo(argumentos, error, clase):
 # dos baterías están fuera de la zona de esta corrección; la petición al coordinador es
 # añadir el nombre, y mejor aún derivar la lista en vez de escribirla.
 ORDENES = ("encuadrar", "componer", "materializar", "planificar", "ciclo", "continuar",
-           "macrocircuito", "procedencia")
+           "macrocircuito", "procedencia",
+           # LA OFICINA (`CONTRATO-OFICINA.md`): el protocolo de trabajadores, el tablero, la
+           # escalera de terminación y el supervisor. Viven en `ciclo/cli_oficina.py`.
+           "tomar", "soltar", "checkpoint", "entregar", "acusar", "brief", "tablero",
+           "terminacion", "aceptar", "cerrar-item", "supervisar")
 
 # Las órdenes que NO necesitan `--repo`. Ver `orden_procedencia`.
 ORDENES_SIN_REPO = ("procedencia",)
@@ -435,14 +439,23 @@ def _politica_de_contencion(argumentos):
     return contencion.Politica(nivel or contencion.ARBOL_DE_PROCESOS, backend=backend)
 
 def _registro(argumentos):
+    import adaptadores
+    lista = []
     if getattr(argumentos, "adaptador_local", None):
-        import adaptadores
-        return adaptadores.RegistroDeAdaptadores([
-            adaptadores.AdaptadorDeProcesoLocal(
-                argumentos.adaptador_local,
-                politica_de_contencion=_politica_de_contencion(argumentos)),
-        ])
-    return None
+        lista.append(adaptadores.AdaptadorDeProcesoLocal(
+            argumentos.adaptador_local,
+            politica_de_contencion=_politica_de_contencion(argumentos)))
+    if getattr(argumentos, "adaptador_agente", None):
+        # El adaptador de AGENTE SIN CHAT: sus ejecutores los declara el PROFILE del
+        # control repo (`ads:ejecutor`), nunca el kernel.
+        lista.append(adaptadores.AdaptadorDeAgente(
+            argumentos.adaptador_agente,
+            adaptadores.cargar_ejecutores(argumentos.repo, corpus=_corpus(argumentos)),
+            repo=argumentos.repo,
+            politica_de_contencion=_politica_de_contencion(argumentos)))
+    if not lista:
+        return None
+    return adaptadores.RegistroDeAdaptadores(lista)
 
 
 def _abrir(argumentos):
@@ -689,8 +702,35 @@ def orden_procedencia(argumentos):
     ] + ["  modulo  " + m + "  " + datos["modulos"][m] for m in sorted(datos["modulos"])])
 
 
+from ciclo import cli_oficina                                        # noqa: E402
+
+
+def _oficina(nombre):
+    def orden(argumentos):
+        funcion = getattr(cli_oficina, "orden_" + nombre)
+        extra = {"registro": _registro} if nombre == "supervisar" else {}
+        try:
+            return funcion(argumentos, abrir=_abrir, corpus=_corpus(argumentos), emitir=_emitir,
+                           **extra)
+        except (ValueError, OSError) as error:
+            print(str(error), file=sys.stderr)
+            return USO
+    return orden
+
+
 DESPACHADOR = {
     "procedencia": orden_procedencia,
+    "tomar": _oficina("tomar"),
+    "soltar": _oficina("soltar"),
+    "checkpoint": _oficina("checkpoint"),
+    "entregar": _oficina("entregar"),
+    "acusar": _oficina("acusar"),
+    "brief": _oficina("brief"),
+    "tablero": _oficina("tablero"),
+    "terminacion": _oficina("terminacion"),
+    "aceptar": _oficina("aceptar"),
+    "cerrar-item": _oficina("cerrar_item"),
+    "supervisar": _oficina("supervisar"),
     "encuadrar": orden_encuadrar,
     "componer": orden_componer,
     "materializar": orden_materializar,
@@ -802,6 +842,77 @@ def construir_analizador():
                       default=None, help="pedir un backend concreto de contención. Es legítimo y queda registrado; si su nivel es inferior al exigido, FALLO CERRADO")
 
     subordenes.add_parser("procedencia", parents=[comun])
+
+    # ------------------------------------------------------------- la OFICINA
+    def clase(sub):
+        sub.add_argument("--clase-de-trabajo", dest="clase_de_trabajo", default=None,
+                         help="la clase del circuito base del PROFILE que rige este item")
+
+    def brief_a(sub):
+        sub.add_argument("--brief-a", dest="brief_a", default=None,
+                         help="escribir el brief en este fichero en vez de imprimirlo")
+
+    t_ = subordenes.add_parser("tomar", parents=[comun])
+    t_.add_argument("--paquete", default=None, help="sin él, lista lo tomable")
+    clase(t_); brief_a(t_)
+
+    s_ = subordenes.add_parser("soltar", parents=[comun])
+    s_.add_argument("--paquete", required=True)
+
+    c_ = subordenes.add_parser("checkpoint", parents=[comun])
+    c_.add_argument("--paquete", required=True)
+    c_.add_argument("--contenido", default=None, help="fichero JSON con el checkpoint")
+    c_.add_argument("--nota", default=None)
+
+    e_ = subordenes.add_parser("entregar", parents=[comun])
+    e_.add_argument("--paquete", required=True)
+    e_.add_argument("--entrega", required=True, help="fichero JSON con la entrega")
+    clase(e_)
+
+    a_ = subordenes.add_parser("acusar", parents=[comun])
+    a_.add_argument("--handoff", required=True)
+    a_.add_argument("--comprobacion", action="append")
+    a_.add_argument("--todas", action="store_true", help="declara superadas todas las comprobaciones al recibir")
+    a_.add_argument("--rechazar", action="store_true")
+    a_.add_argument("--motivo", default=None)
+    a_.add_argument("--paquete", default=None, help="el paquete receptor, al rechazar")
+
+    b_ = subordenes.add_parser("brief", parents=[comun])
+    b_.add_argument("--paquete", required=True)
+    clase(b_); brief_a(b_)
+
+    subordenes.add_parser("tablero", parents=[comun])
+
+    n_ = subordenes.add_parser("terminacion", parents=[comun])
+    n_.add_argument("--item", required=True)
+    n_.add_argument("--hecho", action="append", help="nombre=valor; listas con comas; true/false")
+    clase(n_)
+
+    ac = subordenes.add_parser("aceptar", parents=[comun])
+    ac.add_argument("--item", required=True)
+    ac.add_argument("--comprobacion", action="append")
+    ac.add_argument("--evidencia", action="append")
+    ac.add_argument("--hallazgo", action="append")
+
+    ci = subordenes.add_parser("cerrar-item", parents=[comun])
+    ci.add_argument("--item", required=True)
+    ci.add_argument("--propietario", required=True, help="la capacidad propietaria global que declara la integración")
+    ci.add_argument("--declaracion", default=None)
+    ci.add_argument("--aprendizaje", default="none")
+    ci.add_argument("--hecho", action="append")
+    clase(ci)
+
+    su = subordenes.add_parser("supervisar", parents=[comun])
+    su.add_argument("--pasadas", type=int, default=1)
+    su.add_argument("--maximo", type=int, default=0)
+    su.add_argument("--espera", type=float, default=2.0)
+    su.add_argument("--adaptador-local", dest="adaptador_local")
+    su.add_argument("--adaptador-agente", dest="adaptador_agente",
+                    help="espacio de trabajo del adaptador de agente; sus ejecutores salen del PROFILE")
+    su.add_argument("--contencion", dest="contencion", default=None,
+                    choices=("grupo-de-procesos", "arbol-de-procesos"))
+    su.add_argument("--contencion-backend", dest="contencion_backend", default=None)
+    clase(su)
     return analizador
 
 

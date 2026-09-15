@@ -78,6 +78,21 @@ from .rutas import (
 DOMINIO = "planes"
 ESQUEMA = "ads.estado/1"
 
+# EL ORDEN DE LAS ESTACIONES de una ruta, como DATO. `rutas.componer` ordena los
+# participantes por (vía, capacidad) —un orden de LECTURA, alfabético—, y
+# `paralelismo.secuenciar` hace que cada paquete espere a los ANTERIORES con los que no es
+# paralelizable: con ese orden, `CNS` (C) quedaba antes que `PRD` (P) y la construcción
+# esperaba a nada mientras la definición de producto esperaba a la construcción. Lo que
+# manda es el orden de las OBLIGACIONES del proceso (`b.16`, campo `obligatorias`, en el
+# orden en que están escritas) y, para las capacidades condicionales, el orden de las
+# estaciones que los diez circuitos de `circuitos/00-CIRCUITOS.md` dibujan: las
+# condiciones de DOM y SEG ANTES de construir, ENT, USO y APR DESPUÉS de verificar, y las
+# revisiones de DOM y SEG tras VER. Se declara aquí una vez, con su fuente, y se contrasta
+# en la batería contra los diagramas.
+ORDEN_DE_ESTACIONES = ("ENC", "PRD", "INV", "ARQ", "DIS", "DOM", "SEG", "PLT", "CNS", "VER",
+                       "ENT", "USO", "APR", "SIS", "DSP")
+METODOS_POSTERIORES_A_VER = ("revision",)
+
 PRIORIDAD_POR_VIA = {
     VIA_PROPIETARIA: 90,
     VIA_OBLIGATORIA: 70,
@@ -126,6 +141,18 @@ class Planificador:
         )
         return ruta
 
+    def _independencias_de(self, roles_por_capacidad):
+        """`{rol: [roles de la MISMA capacidad de los que exige independencia]}`."""
+        salida = {}
+        for capacidad, roles in roles_por_capacidad.items():
+            for rol in roles:
+                independencia = self.corpus.rol(rol).get("independencia") or {}
+                if not independencia.get("requiere_independencia"):
+                    continue
+                salida[rol] = [otro for otro in roles
+                               if otro != rol and otro in (independencia.get("de_quien") or [])]
+        return salida
+
     def registrar_equipos(self, equipos):
         objetos = {ruta_de_equipo(e["id"]): e for e in equipos}
         durable.escribir(
@@ -140,8 +167,24 @@ class Planificador:
                    capacidades_de_adaptador=CAPACIDADES_DE_ADAPTADOR_POR_DEFECTO,
                    orden_por_capacidad=None, slots=0,
                    intervencion=INTERVENCION_NINGUNA, alcance_autorizado=None,
-                   secuencial=None, acoplamiento_por_capacidad=None):
-        """Crea el item y sus paquetes, y escribe el plan. Idempotente por contenido."""
+                   secuencial=None, acoplamiento_por_capacidad=None,
+                   roles_por_capacidad=None, orden_por_rol=None, item=None,
+                   capacidades_de_adaptador_por_rol=None):
+        """Crea el item y sus paquetes, y escribe el plan. Idempotente por contenido.
+
+        PAQUETES POR ROL (`CONTRATO-OFICINA.md`). Cuando `roles_por_capacidad` declara los
+        roles que el equipo materializó para una capacidad, se crea UN paquete por
+        (participante, rol) en vez de uno por participante, y dentro de la misma capacidad
+        un rol que se declara INDEPENDIENTE de otro de la composición ESPERA a ese otro:
+        la revisión de construcción espera a la implementación porque su contrato dice que
+        no puede compartir agente con ella, y esa es la única fuente del orden. Sin
+        `roles_por_capacidad` el comportamiento es EXACTAMENTE el de antes.
+
+        `item` permite planificar sobre un item que YA EXISTE en el estado —el de la
+        instancia que gobierna el producto—, en vez de acuñar uno nuevo desde el encuadre.
+        `orden_por_rol` y `capacidades_de_adaptador_por_rol` afinan la orden por rol; si no
+        están, manda la de la capacidad.
+        """
         if intervencion not in NIVELES_DE_INTERVENCION:
             raise PlanificacionInvalida(
                 "nivel de intervención del Owner fuera de los TRES de `a.8`: "
@@ -157,8 +200,9 @@ class Planificador:
         if equipos:
             self.registrar_equipos(equipos)
 
-        item = "it-" + cid_de_objeto({"encuadre": encuadre["id"], "ruta": ruta["id"]}
-                                     ).split(":", 1)[-1][:12]
+        if item is None:
+            item = "it-" + cid_de_objeto({"encuadre": encuadre["id"], "ruta": ruta["id"]}
+                                         ).split(":", 1)[-1][:12]
         titulo_real = titulo or (encuadre["resultado_perseguido"]
                                  or encuadre["expresion_literal"])[:120]
         if durable.leer(self.almacen, "items/" + item + ".json") is None:
@@ -166,6 +210,10 @@ class Planificador:
                 id=item, titulo=titulo_real,
                 motivo="alta del item desde el encuadre " + encuadre["id"],
             )
+        roles_por_capacidad = {k: list(v) for k, v in (roles_por_capacidad or {}).items()}
+        orden_por_rol = dict(orden_por_rol or {})
+        adaptador_por_rol = dict(capacidades_de_adaptador_por_rol or {})
+        independencias = self._independencias_de(roles_por_capacidad)
 
         ordenes = dict(orden_por_capacidad or {})
         acoplamientos = dict(acoplamiento_por_capacidad or {})
@@ -173,16 +221,61 @@ class Planificador:
         # acoplamiento, para poder evaluar entre ellos la condición compuesta de `a.5`.
         # Sin la declaración no hay nada que evaluar, y por eso la etapa 4 va antes que la 5
         # en el `§7.2` y también aquí.
-        proyectados = []
-        for participante in ruta["participantes"]:
-            proyectados.append({
-                "id": "pq-" + cid_de_objeto({
+        # Cada UNIDAD es (participante, rol) cuando hay roles declarados, o el participante a
+        # secas. El identificador entra el rol para que dos roles de la misma capacidad no
+        # colisionen, y NO lo entra cuando no hay rol, para que ningún plan ya escrito
+        # cambie de identidad.
+        unidades = []
+        capacidades_con_obligacion = {p["capacidad"] for p in ruta["participantes"]
+                                      if p.get("obligacion")}
+        participantes = sorted(ruta["participantes"],
+                               key=lambda p: _orden_de_estacion(ruta, p))
+        for participante in participantes:
+            roles = roles_por_capacidad.get(participante["capacidad"]) or [None]
+            # LA PROPIETARIA GLOBAL (vía 1) sin obligación propia. `b.10`: «la integración
+            # la declara el propietario global, y sólo él». Cuando esa capacidad además
+            # participa con obligación, su vía 1 NO repite el trabajo de sus roles: produce
+            # UN paquete de INTEGRACIÓN SEMÁNTICA, que espera a todos los demás del item.
+            # Sin roles declarados el comportamiento es exactamente el de antes.
+            es_integracion = (
+                roles != [None] and participante["via"] == VIA_PROPIETARIA
+                and not participante.get("obligacion")
+                and participante["capacidad"] in capacidades_con_obligacion
+            )
+            if es_integracion:
+                roles = [roles[0]]
+            for rol in roles:
+                semilla = {
                     "item": item,
                     "capacidad": participante["capacidad"],
                     "via": participante["via"],
                     "obligacion": participante["obligacion"],
-                }).split(":", 1)[-1][:12],
-                "depende_de": [],
+                }
+                if rol is not None:
+                    semilla["rol"] = rol
+                unidades.append({
+                    "id": "pq-" + cid_de_objeto(semilla).split(":", 1)[-1][:12],
+                    "participante": participante,
+                    "rol": rol,
+                    "integracion": es_integracion,
+                })
+        por_rol_y_cap = {(u["participante"]["capacidad"], u["rol"]): u["id"]
+                         for u in unidades if not u["integracion"]}
+        proyectados = []
+        for unidad in unidades:
+            participante = unidad["participante"]
+            # Dependencia INTRA-capacidad por independencia declarada: el rol que exige
+            # independencia de otro de la misma composición espera a ese otro.
+            previos = []
+            if unidad["integracion"]:
+                previos = [u["id"] for u in unidades if u["id"] != unidad["id"]]
+            for de_quien in independencias.get(unidad["rol"], ()):
+                previo = por_rol_y_cap.get((participante["capacidad"], de_quien))
+                if previo and previo != unidad["id"]:
+                    previos.append(previo)
+            proyectados.append({
+                "id": unidad["id"],
+                "depende_de": sorted(set(previos)),
                 "acoplamiento": modelo.normalizar_acoplamiento(
                     acoplamientos.get(participante["capacidad"])),
             })
@@ -204,30 +297,33 @@ class Planificador:
             espera, traza_de_paralelismo = paralelismo.secuenciar(proyectados)
 
         paquetes, correspondencia, anterior = [], [], None
-        for participante in ruta["participantes"]:
-            identificador = "pq-" + cid_de_objeto({
-                "item": item,
-                "capacidad": participante["capacidad"],
-                "via": participante["via"],
-                "obligacion": participante["obligacion"],
-            }).split(":", 1)[-1][:12]
-            depende_de = list(espera.get("pq-" + cid_de_objeto({
-                "item": item,
-                "capacidad": participante["capacidad"],
-                "via": participante["via"],
-                "obligacion": participante["obligacion"],
-            }).split(":", 1)[-1][:12], []))
-            orden = ordenes.get(participante["capacidad"])
+        previos_declarados = {p["id"]: p["depende_de"] for p in proyectados}
+        for unidad in unidades:
+            participante = unidad["participante"]
+            identificador = unidad["id"]
+            depende_de = sorted(set(espera.get(identificador, []))
+                                | set(previos_declarados.get(identificador, [])))
+            orden = orden_por_rol.get(unidad["rol"]) if unidad["rol"] else None
+            if orden is None:
+                orden = ordenes.get(participante["capacidad"])
             if orden is None:
                 raise PlanificacionInvalida(
                     "no hay orden declarada para la capacidad `" + participante["capacidad"]
                     + "`; un paquete sin orden no es despachable y no se inventa una",
                     capacidad=participante["capacidad"],
                 )
+            requeridas = adaptador_por_rol.get(unidad["rol"]) if unidad["rol"] else None
+            if requeridas is None and orden_por_rol.get(unidad["rol"]) is not None:
+                # Una orden afinada POR ROL nombra su adaptador: el paquete exige la
+                # capacidad de ESE adaptador, no la genérica. Medido en `T470`: un paquete de
+                # agente con `capacidades_requeridas: [worker]` no lo atendía nadie.
+                requeridas = [str(orden.get("adaptador") or "")]
+            if requeridas is None:
+                requeridas = capacidades_de_adaptador
             if durable.leer(self.almacen, "paquetes/" + identificador + ".json") is None:
                 self.runtime.crear_paquete(
                     id=identificador, item=item,
-                    capacidades_requeridas=list(capacidades_de_adaptador),
+                    capacidades_requeridas=list(requeridas),
                     orden=orden,
                     prioridad=PRIORIDAD_POR_VIA[participante["via"]],
                     max_intentos=MAX_INTENTOS_POR_DEFECTO,
@@ -235,7 +331,7 @@ class Planificador:
                     acoplamiento=acoplamientos.get(participante["capacidad"]),
                 )
             paquetes.append(identificador)
-            correspondencia.append({
+            fila = {
                 "paquete": identificador,
                 "capacidad": participante["capacidad"],
                 "metodo": participante["metodo"],
@@ -246,7 +342,20 @@ class Planificador:
                 "criterio_de_satisfaccion": participante["criterio_de_satisfaccion"],
                 "prioridad": PRIORIDAD_POR_VIA[participante["via"]],
                 "depende_de": depende_de,
-            })
+            }
+            if unidad["rol"] is not None:
+                fila["rol"] = unidad["rol"]
+                fila["metodo"] = _metodo_del_rol(self.corpus, unidad["rol"], fila["metodo"])
+                fila["gate"] = _gate_del_rol(self.corpus, unidad["rol"], fila["gate"])
+            if unidad["integracion"]:
+                fila["obligacion"] = "integracion-semantica"
+                fila["salida"] = ("la declaración de integración semántica del propietario "
+                                  "global, sobre todas las capas depositadas del item")
+                fila["criterio_de_satisfaccion"] = (
+                    "el propietario global declara, con las entregas del item delante, que "
+                    "el resultado perseguido está integrado y nombra lo que no")
+                fila["integracion_semantica"] = True
+            correspondencia.append(fila)
             anterior = identificador
 
         plan = {
@@ -345,6 +454,36 @@ class Planificador:
             semilla={"plan": nuevo["id"]},
         )
         return {"plan": nuevo, "paquete": identificador}
+
+
+def _orden_de_estacion(ruta, participante):
+    """La posición del participante en la ruta: obligación de `b.16` primero, estación después."""
+    obligaciones = [o["id"] for o in ruta.get("obligaciones") or []]
+    capacidad = participante["capacidad"]
+    posicion = ORDEN_DE_ESTACIONES.index(capacidad) if capacidad in ORDEN_DE_ESTACIONES else 99
+    if str(participante.get("metodo") or "") in METODOS_POSTERIORES_A_VER \
+            and "VER" in ORDEN_DE_ESTACIONES:
+        posicion = ORDEN_DE_ESTACIONES.index("VER") + 0.5
+    if participante.get("obligacion") in obligaciones:
+        # Entre dos obligatorias manda el orden del proceso; la estación sólo desempata.
+        return (0, obligaciones.index(participante["obligacion"]), posicion, participante["via"])
+    # La propietaria global sin obligación cierra: va la última (integración semántica).
+    if participante["via"] == VIA_PROPIETARIA and not participante.get("obligacion"):
+        return (2, 0, posicion, participante["via"])
+    return (1, posicion, 0, participante["via"])
+
+
+def _metodo_del_rol(corpus, rol, por_defecto):
+    """El PRIMER método que el rol declara, salvo que la ruta ya fije uno de ese rol."""
+    declarados = list(corpus.rol(rol).get("metodo") or [])
+    if por_defecto in declarados:
+        return por_defecto
+    return declarados[0] if declarados else por_defecto
+
+
+def _gate_del_rol(corpus, rol, por_defecto):
+    """El gate del ROL manda sobre el de la capacidad: es contra lo que ese rol cierra."""
+    return corpus.rol(rol).get("gate") or por_defecto
 
 
 def _puntos_de_intervencion(ruta, intervencion):
