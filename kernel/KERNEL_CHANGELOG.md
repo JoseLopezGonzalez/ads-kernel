@@ -2,6 +2,63 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.15 — la oficina: el runtime se puede TRABAJAR desde fuera de un chat
+
+**Hecho medido antes de construir** (auditoria forense de La Pesquerapp, 2026-09-14). El
+kernel tenia escrito el runtime completo —paquetes, leases, dispatcher, ciclo, gates,
+handoffs, freno de `a.7`— y la instancia **nunca lo invocaba**: setenta y ocho items, cero
+paquetes, cero leases, cero equipos. El trabajo ocurria en un chat, el estado se anotaba
+despues, y «cerrado» significaba «alguien lo escribio». Habia tres huecos, no uno:
+
+```text
+nadie podia TOMAR un paquete     el unico adaptador ejecutaba un subproceso; un agente
+                                 en un chat no tenia forma de sostener un lease
+nada verificaba una ENTREGA      «PR #14 sin fusionar» valia como evidencia de cierre
+nada exigia NIVELES              un item cerraba como producto sin que nadie hubiera
+                                 revisado, verificado ni aceptado nada
+```
+
+**Que cambia.** Todo sobre el runtime que ya existia; ninguna segunda maquina de estados.
+
+- `runtime/externo.py` · **protocolo de trabajadores**: `tomar`, `checkpoint`, `entregar`,
+  `soltar`, `tomables`. Un paquete con `orden.adaptador: worker` lo ejecuta alguien de
+  fuera —una sesion de agente, una persona— con el MISMO lease, la misma paciencia y la
+  misma reoferta que un paquete despachado. El dispatcher no los despacha ni los posterga.
+- `modelo.py` · transicion nueva `ejecutando → bloqueado`: un bloqueo no consume intento
+  ni acaba en `agotado`.
+- `esquemas/entrega.yaml`, `contrato-operativo.yaml`, `circuito-base.yaml`,
+  `ejecutor.yaml` · cuatro tipos nuevos. La entrega se valida contra el gate del rol, los
+  artefactos obligatorios de su contrato y su checklist; una entrega mal formada no toca el
+  estado.
+- `ciclo/oficina.py`, `entregas.py`, `terminacion.py`, `briefs.py`, `tablero.py` · un
+  paquete POR ROL con orden derivado de la obligacion del proceso, brief derivado del
+  estado, gates por rol con autocertificacion rechazada por trabajador y por rol,
+  devolucion → correccion → nuevo receptor (`sustituye_a`), freno de `a.7` a la tercera,
+  **niveles de terminacion** (`recorrido/02-NIVELES-DE-TERMINACION.md`) exigidos por el
+  circuito base que el PROYECTO declara, y un tablero determinista que dice que hara el
+  sistema si nadie dice nada.
+- `adaptadores/agente.py` · adaptador de AGENTE SIN CHAT: lanza el `argv` que el PROFILE
+  declara en `ads:ejecutor` con el brief y lee la entrega. Sin entrega valida no hay
+  `completado`. El kernel sigue sin nombrar ningun proveedor (`K0.8`).
+- `runtime/supervisor.py` · pasadas sobre el estado hasta una parada legitima:
+  `sin-trabajo`, `bloqueado`, `marcado`; nunca infinito. Sin reloj dentro del paquete.
+- `ads_ciclo.py` · ordenes `tomar`, `soltar`, `checkpoint`, `entregar`, `acusar`, `brief`,
+  `tablero`, `terminacion`, `aceptar`, `cerrar-item`, `supervisar`.
+- `ciclo/continuacion.py` · el frente ordena detras a los paquetes que esperan a otros:
+  la unidad de integracion semantica —que depende de todas— encabezaba la lista.
+- Corpus: rol `CNS/revision-de-construccion` con su metodo, su prompt y su contrato
+  operativo; contratos operativos de `CNS/implementacion` y `VER/dosier`; handoff
+  `con-a-con`.
+
+**Comprobado, no afirmado.** `runtime/pruebas/test_oficina.py`, `T460`–`T475`
+(`pruebas/T460-T479-oficina.md`): veinte casos sobre control repos reales, con trabajadores
+que son PROCESOS reales donde la propiedad lo exige —muerte con lease, carrera por el mismo
+paquete— y un agente sin chat que es un ejecutable de verdad. Contrato:
+`runtime/CONTRATO-OFICINA.md`.
+
+**Lo que NO afirma.** Nada esta certificado. Que la oficina se sostenga sobre encargos
+reales de un producto real lo mide cada instancia con su propio dogfood.
+
 ## 2.0.0-alpha.14 — una instancia puede declarar sus propias zonas no analizadas
 
 **UP-11.** `exclusiones.yaml` es el sitio donde se declara lo que el validador NO analiza,
