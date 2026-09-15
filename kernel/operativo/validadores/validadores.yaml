@@ -43,7 +43,7 @@ componentes:
     tipo: validador
     evidencia: contratos-salida.txt
     firma_de_exito: '[1-9]\d* superadas · 0 fallidas'
-    debe_contener: ['T86', 'T90', 'T136', 'T140', 'T141', 'T146']
+    debe_contener: ['T86', 'T90', 'T136', 'T140', 'T141', 'T146', 'T476', 'T477']
 
   - id: rutas-portables
     script: comprobar_rutas_portables.py

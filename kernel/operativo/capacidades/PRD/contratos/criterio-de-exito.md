@@ -101,6 +101,17 @@ ejemplo_bueno: >
 ejemplo_malo: >
   «La exportación funciona correctamente y es rápida.» Nadie sabe qué mirar, dónde, ni
   cuánto es rápido, y VER inventa el criterio al verificar.
+entrega_a:
+  - segun-el-plan
+decisiones_propias:
+  - "la formulación de cada criterio de éxito"
+  - "la definición de fracaso"
+  - "qué evidencia se considerará suficiente para cada criterio"
+metodos:
+  - PRD/Definicion
+  - PRD/Gap
+no_autocertifica:
+  - gate:intencion-definida
 checklist:
   - id: que-donde-que-se-ve
     pregunta: "¿Cada criterio dice qué se mira, dónde y qué se espera ver?"

@@ -134,6 +134,15 @@ ejemplo_malo: >
   tres ficheros que el encargo nombraba, escribe «LGTM, buen trabajo» y emite superado. Ni
   los ficheros fuera de alcance ni la prueba que no muerde existen para él, y VER
   verificará comportamiento sobre una capa que ya venía rota.
+entrega_a:
+  - segun-el-plan
+decisiones_propias:
+  - "el dictamen: superado o no-superado, comprobación a comprobación"
+  - "qué hallazgos bloquean y cuáles se registran sin detener"
+metodos:
+  - CNS/RevisionDeConstruccion
+no_autocertifica:
+  - gate:revision-de-construccion
 checklist:
   - id: acuse-antes
     pregunta: "¿He acusado o rechazado el handoff recorriendo sus comprobaciones antes de empezar?"

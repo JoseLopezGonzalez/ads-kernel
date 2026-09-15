@@ -1,4 +1,4 @@
-# T460–T475 — la oficina: trabajadores, entregas, niveles y supervisor
+# T460–T477 — la oficina: trabajadores, entregas, niveles, supervisor y contratos de rol
 
 **Qué cierran.** El hallazgo de la auditoría forense de La Pesquerapp del 2026-09-14: el
 kernel tenía escrito el runtime completo —paquetes, leases, dispatcher, ciclo, gates,
@@ -35,6 +35,8 @@ T472  un handoff incompleto no se emite; un acuse a medias no toma custodia
 T473  con el Owner ausente el trabajo independiente continúa
 T474  un reinicio completo reconstruye exactamente lo mismo
 T475  los documentos inconsistentes se rechazan con su nombre
+T476  todo rol materializable tiene contrato operativo efectivo y suficiente
+T477  las bases de contrato son coherentes y ningún rol hereda de dos
 ```
 
 ---
@@ -365,4 +367,43 @@ ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
 estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T476
+nombre: Todo rol materializable tiene contrato operativo efectivo y suficiente
+cubre: ["contrato-base", "contrato-de-rol", "contrato-operativo", "ciclo/contratos.py", "G13"]
+dado:
+  - "los roles del corpus, sus composiciones, los procesos que nombran capacidades y las bases de contrato por familia"
+cuando:
+  - "se clasifica cada rol —materializable, consultivo, conceptual, huérfano, sin-base— y se fusiona base + derivación + especialización"
+entonces:
+  - "cada rol materializable o consultivo tiene un contrato efectivo que cumple el esquema contrato-operativo"
+  - "sus métodos están entre los del rol, su gate está en no_autocertifica y su independencia está en incompatibilidades"
+  - "los conceptuales se publican por su nombre; un huérfano o un sin-base es un fallo"
+falla_si:
+  - "un rol que un proceso materializa queda sin base y el validador sale en verde"
+  - "un contrato efectivo insuficiente se entrega en un brief como si bastara"
+ejecucion: validador-estructural
+validador: kernel/operativo/validadores/comprobar_contratos.py
+estado: prueba-superada
+evidencia: evidencia/contratos-salida.txt
+```
+
+```yaml ads:escenario
+id: T477
+nombre: Las bases de contrato son coherentes y ningún rol hereda de dos
+cubre: ["contrato-base", "contrato-de-rol"]
+dado:
+  - "las bases de contrato, las especializaciones y los contratos completos del corpus"
+cuando:
+  - "se cruzan los roles que cada base nombra, la base que cada especialización hereda y los contratos completos"
+entonces:
+  - "toda base nombra roles que existen, ningún rol está en dos bases, cada especialización hereda de la base de su rol, y ningún rol tiene contrato completo y especialización a la vez"
+falla_si:
+  - "un rol hereda de dos familias y el contrato efectivo depende del orden de lectura"
+ejecucion: validador-estructural
+validador: kernel/operativo/validadores/comprobar_contratos.py
+estado: prueba-superada
+evidencia: evidencia/contratos-salida.txt
 ```

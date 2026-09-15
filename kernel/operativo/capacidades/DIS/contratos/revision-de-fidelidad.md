@@ -131,6 +131,15 @@ ejemplo_malo: >
   El revisor abre la captura que le pasó Construcción, la compara de memoria con lo que
   recuerda de la especificación, ve que «se parece bastante», anota como deuda aceptada que
   falta el estado de error y emite fiel con deuda.
+entrega_a:
+  - segun-el-plan
+decisiones_propias:
+  - "el veredicto: fiel, fiel con deuda aceptada, o infiel"
+  - "si una diferencia incumple un eje de la rúbrica o es irrelevante"
+metodos:
+  - DIS/RevisionDeFidelidad
+no_autocertifica:
+  - gate:excelencia-visual
 checklist:
   - id: acuse-antes
     pregunta: "¿He acusado o rechazado el handoff recorriendo sus comprobaciones?"

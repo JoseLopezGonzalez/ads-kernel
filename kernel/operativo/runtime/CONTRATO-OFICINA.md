@@ -145,6 +145,37 @@ nunca se reutiliza en silencio (`T463`).
 **G13 en la puerta.** Quien produjo la entrega que un paquete va a juzgar no puede tomar ese
 paquete: se rechaza ANTES del lease, y no queda lease detrás (`T465`).
 
+## 5 bis · El contrato operativo efectivo de cada rol
+
+Un rol materializable —uno que la oficina puede convertir en paquete— tiene SIEMPRE
+contrato operativo, y no hace falta escribirlo treinta veces. El contrato efectivo se
+compone de tres capas (`ciclo/contratos.py`):
+
+```text
+BASE            ads:contrato-base, una por FAMILIA (productor · revisor · consultor ·
+                investigador · operador · aprendizaje · orquestador): comprobaciones
+                previas, apertura y cierre de la secuencia, prohibiciones, checklist,
+                escalados, incompatibilidad de familia, gates que nunca se autocertifican
+DERIVACIÓN      lo que los veintinueve campos del ROL ya dicen de forma estructurada:
+                misión, entradas, decisiones propias, escalados, artefactos, devoluciones,
+                prohibiciones, criterios, fuentes, incompatibilidades, métodos, gate
+ESPECIALIZACIÓN ads:contrato-de-rol, corta y opcional: las listas se suman; misión,
+                secuencia, artefactos y ejemplos sustituyen
+```
+
+La fusión se valida contra `esquemas/contrato-operativo.yaml`; un contrato escrito entero
+como `ads:contrato-operativo` es la forma larga de lo mismo. El contrato dice, de forma
+comprobable: qué entradas necesita (`entradas_obligatorias`), qué puede hacer
+(`decisiones_propias`, `secuencia`), qué no (`actuaciones_prohibidas`), qué artefactos
+produce (`artefactos`), qué evidencia adjunta (`evidencias_requeridas`), cuándo termina
+(`condiciones_de_aceptacion`), a quién entrega (`entrega_a`: `segun-el-plan` es el
+mecanismo real), qué provoca devolución (`condiciones_de_devolucion`), qué escala
+(`reglas_de_escalado`), de quién es independiente (`incompatibilidades`), qué métodos usa
+(`metodos`) y qué gates no puede autocertificar (`no_autocertifica`, que la entrega
+comprueba). `comprobar_contratos` clasifica cada rol —materializable, consultivo,
+conceptual, huérfano, sin-base— y FALLA si un rol materializable queda sin contrato
+suficiente (`T476`, `T477`).
+
 ## 6 · Los niveles de terminación y el circuito base
 
 La escalera vive en [`../recorrido/02-NIVELES-DE-TERMINACION.md`](../recorrido/02-NIVELES-DE-TERMINACION.md).

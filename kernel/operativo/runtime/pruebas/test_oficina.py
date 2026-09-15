@@ -642,9 +642,10 @@ class Entregas(Laboratorio):
                                  self.dictamen("gate:revision-de-construccion", impl)]
         with self.assertRaises(ciclo.AutocertificacionRechazada):
             self.entregar(A, rev, entrega)
-        # y un dictamen sobre uno mismo tampoco
+        # y un dictamen sobre uno mismo tampoco: lo para el contrato (no_autocertifica) ANTES
+        # de que el mecanismo de titulares tenga que intervenir
         entrega["dictamenes"] = [self.dictamen("gate:revision-de-construccion", rev)]
-        with self.assertRaises(ciclo.AutocertificacionRechazada):
+        with self.assertRaises(ciclo.EntregaInvalida):
             self.entregar(A, rev, entrega)
         A.soltar(rev)
         B = self.rt("w-B")
@@ -1062,6 +1063,48 @@ class Adversarial(Laboratorio):
         with self.assertRaises(ciclo.EntregaInvalida):
             self.entregar(B, rev, entrega)
         self.assertEqual(B._leer_paquete(rev)["estado"], "ejecutando")
+
+
+# =========================================================================
+# T476 · el contrato efectivo de un rol sin contrato completo
+# =========================================================================
+class ContratosEfectivos(Laboratorio):
+
+    def test_21_un_rol_sin_contrato_completo_tiene_contrato_efectivo_que_manda_en_el_brief(self):
+        """T476 · Defecto que previene: treinta roles trabajando con prosa y criterio propio."""
+        from ciclo import contratos
+        clases = contratos.clasificar(self.corpus)
+        self.assertEqual({c for c in clases.values()} - {"materializable", "consultivo", "conceptual"}, set())
+        for rol, clase in clases.items():
+            if clase != "conceptual":
+                self.assertEqual(contratos.fallos_del_contrato(self.corpus, rol), [], rol)
+        # ARQ/diagnostico no tiene contrato completo: el efectivo es base + derivación
+        contrato = self.corpus.contrato_operativo_de("ARQ/diagnostico")
+        self.assertEqual(contrato["rol"], "ARQ/diagnostico")
+        self.assertIn("gate:plan-tecnico", contrato["no_autocertifica"])
+        self.assertEqual(contrato["metodos"], ["ARQ/Diagnostico"])
+        self.assertTrue(any(c["id"] == "acuse-antes" for c in contrato["checklist"]))
+        self.assertTrue(any(c["id"] == "entradas-localizables" for c in contrato["comprobaciones_previas"]))
+        self.assertEqual(contrato["secuencia"][0]["n"], 1)
+        self.assertIn("Acusar o rechazar", contrato["secuencia"][0]["hace"])
+        self.assertEqual(contrato["entrega_a"], ["segun-el-plan"])
+        self.assertTrue(contrato["decisiones_propias"])
+        # el mismo rol con contrato completo devuelve el completo, no la fusión
+        completo = self.corpus.contrato_operativo_de("CNS/implementacion")
+        self.assertEqual(completo["id"], "contrato:con-implementacion")
+        # y ningún rol conceptual se inventa un contrato
+        self.assertIsNone(self.corpus.contrato_operativo_de("ENC/interlocutor"))
+        # no_autocertifica MUERDE en la entrega: un dictamen del gate propio sobre el propio paquete
+        A = self.rt("w-A")
+        plan = self.planificar(A)["plan"]
+        impl = self.paquete_de(plan, "CNS/implementacion")
+        self.avanzar_prd(A, plan, impl)
+        self.tomar_y_acusar(A, impl)
+        entrega = self.entrega(impl, "CNS/implementacion")
+        entrega["dictamenes"] = [self.dictamen("gate:implementacion-completa", impl)]
+        with self.assertRaises(ciclo.EntregaInvalida) as cm:
+            self.entregar(A, impl, entrega)
+        self.assertIn("no_autocertifica", str(cm.exception))
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):

@@ -1,28 +1,23 @@
 kind: esquema
-esquema: contrato-operativo
+esquema: contrato-de-rol
 version: 1
 descripcion: >
-  el CONTRATO OPERATIVO de un rol: lo que convierte los veintinueve campos del rol en algo
-  que dos agentes competentes ejecutan igual. Un rol dice que hace y con que autoridad; este
-  contrato dice que lee antes, que comprueba antes de empezar, en que orden trabaja, que
-  artefactos produce y con que estructura minima, que evidencia deja, con que criterio se
-  acepta o se devuelve, cuando escala y a quien, que tiene prohibido, y un ejemplo bueno y
-  uno malo. Todo lo que aqui es lista se convierte en checklist del brief y en validacion de
-  la entrega: no es literatura, es mecanismo.
-obligatorios:
-  [id, rol, mision_operativa, conocimientos_exigibles, entradas_obligatorias,
-   comprobaciones_previas, secuencia, fuentes_a_consultar, artefactos, evidencias_requeridas,
-   criterios_de_calidad_medibles, condiciones_de_aceptacion, condiciones_de_devolucion,
-   reglas_de_escalado, incompatibilidades, actuaciones_prohibidas, ejemplo_bueno,
-   ejemplo_malo, checklist, entrega_a, decisiones_propias, metodos, no_autocertifica]
+  la ESPECIALIZACION del contrato operativo de un rol: lo que ni su base de familia ni sus
+  veintinueve campos de rol pueden decir por el. Es un bloque CORTO y opcional: un rol
+  materializable sin especializacion tiene contrato igualmente —base + derivacion—, y
+  `comprobar_contratos` dice si esa fusion es suficiente o si al rol le falta declarar
+  algo. Lo que aqui se declara SE SUMA a la base y a la derivacion; `secuencia`,
+  `artefactos`, `mision_operativa`, `ejemplo_bueno` y `ejemplo_malo` SUSTITUYEN a lo
+  derivado, porque un rol que los escribe sabe mas que la formula.
+obligatorios: [id, rol, hereda]
 campos:
   id: {tipo: texto, patron: '^contrato:[a-z0-9-]+$'}
   rol: {tipo: ref, ref_a: rol}
+  hereda: {tipo: ref, ref_a: contrato-base}
   mision_operativa: {tipo: texto, min: 40}
-  conocimientos_exigibles: {tipo: lista, de: texto, min: 3}
+  conocimientos_exigibles: {tipo: lista, de: texto}
   entradas_obligatorias:
     tipo: lista
-    min: 1
     de: objeto
     obligatorios: [que, donde, si_falta]
     campos:
@@ -31,7 +26,6 @@ campos:
       si_falta: {tipo: enum, valores: [bloquear, devolver, escalar]}
   comprobaciones_previas:
     tipo: lista
-    min: 2
     de: objeto
     obligatorios: [id, comprueba, como, si_falla]
     campos:
@@ -39,21 +33,19 @@ campos:
       comprueba: {tipo: texto, min: 10}
       como: {tipo: texto, min: 10}
       si_falla: {tipo: enum, valores: [bloquear, devolver, escalar, continuar-declarando]}
+  # los pasos PROPIOS del rol, entre la apertura y el cierre que pone la base
   secuencia:
     tipo: lista
-    min: 3
     de: objeto
-    obligatorios: [n, hace, produce, termina_cuando]
+    obligatorios: [hace, produce, termina_cuando]
     campos:
-      n: {tipo: entero, min: 1}
       hace: {tipo: texto, min: 15}
       produce: {tipo: texto, min: 5}
       termina_cuando: {tipo: texto, min: 10}
       checkpoint: {tipo: booleano}
-  fuentes_a_consultar: {tipo: lista, de: texto, min: 1}
+  fuentes_a_consultar: {tipo: lista, de: texto}
   artefactos:
     tipo: lista
-    min: 1
     de: objeto
     obligatorios: [tipo, nombre, estructura_minima, obligatorio]
     campos:
@@ -63,7 +55,6 @@ campos:
       obligatorio: {tipo: booleano}
   evidencias_requeridas:
     tipo: lista
-    min: 1
     de: objeto
     obligatorios: [que, forma, quien_la_puede_juzgar]
     campos:
@@ -72,39 +63,31 @@ campos:
       quien_la_puede_juzgar: {tipo: texto, min: 3}
   criterios_de_calidad_medibles:
     tipo: lista
-    min: 2
     de: objeto
     obligatorios: [criterio, como_se_mide]
     campos:
       criterio: {tipo: texto, min: 10}
       como_se_mide: {tipo: texto, min: 10}
-  condiciones_de_aceptacion: {tipo: lista, de: texto, min: 2}
-  condiciones_de_devolucion: {tipo: lista, de: texto, min: 2}
+  condiciones_de_aceptacion: {tipo: lista, de: texto}
+  condiciones_de_devolucion: {tipo: lista, de: texto}
   reglas_de_escalado:
     tipo: lista
-    min: 1
     de: objeto
     obligatorios: [cuando, a_quien, con_que]
     campos:
       cuando: {tipo: texto, min: 10}
       a_quien: {tipo: texto, min: 3}
       con_que: {tipo: texto, min: 10}
-  incompatibilidades: {tipo: lista, de: texto, min: 1}
-  actuaciones_prohibidas: {tipo: lista, de: texto, min: 3}
+  incompatibilidades: {tipo: lista, de: texto}
+  actuaciones_prohibidas: {tipo: lista, de: texto}
+  entrega_a: {tipo: lista, de: texto}
+  decisiones_propias: {tipo: lista, de: texto}
+  metodos: {tipo: lista, de: ref, ref_a: metodo}
+  no_autocertifica: {tipo: lista, de: ref, ref_a: gate}
   ejemplo_bueno: {tipo: texto, min: 80}
   ejemplo_malo: {tipo: texto, min: 80}
-  # A QUIEN entrega. `segun-el-plan` es el mecanismo real —la oficina emite los handoffs a
-  # los roles que el plan pone despues—; un rol puede ademas nombrar receptores fijos.
-  entrega_a: {tipo: lista, de: texto, min: 1}
-  # las decisiones que el rol toma SOLO, derivadas de `autoridad.decide` del rol
-  decisiones_propias: {tipo: lista, de: texto, min: 1}
-  # los metodos que el rol ejecuta, subconjunto de `metodo` del rol
-  metodos: {tipo: lista, de: ref, ref_a: metodo, min: 1}
-  # los gates que el rol NUNCA dictamina sobre su propio paquete: su gate, y los de su base
-  no_autocertifica: {tipo: lista, de: ref, ref_a: gate, min: 1}
   checklist:
     tipo: lista
-    min: 5
     de: objeto
     obligatorios: [id, pregunta, automatizable]
     campos:

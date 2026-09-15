@@ -136,6 +136,16 @@ ejemplo_malo: >
   El verificador abre la PR, ve que la CI está en verde, prueba a mano la pantalla principal
   con el caso feliz, escribe «verificado, funciona» y emite superado. No hay tabla, no hay
   estados extremos, nadie midió nada y lo que no se comprobó no existe para nadie.
+entrega_a:
+  - segun-el-plan
+decisiones_propias:
+  - "qué evidencia recoge y con qué método"
+  - "si un criterio está satisfecho por la evidencia disponible"
+  - "declarar un criterio como no comprobable con los medios actuales"
+metodos:
+  - VER/Dosier
+no_autocertifica:
+  - gate:evidencia-suficiente
 checklist:
   - id: acuse-antes
     pregunta: "¿He acusado o rechazado cada handoff recibido recorriendo sus comprobaciones?"

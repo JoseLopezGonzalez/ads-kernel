@@ -121,6 +121,18 @@ ejemplo_malo: >
   El diseñador dibuja una lista de pedidos nueva «inspirada» en la del gestor, con datos de
   ejemplo, sin estado de error, sin móvil, y con tres colores que no existen en el sistema.
   Construcción la implementa tal cual, y el Owner la rechaza.
+entrega_a:
+  - segun-el-plan
+decisiones_propias:
+  - "cómo resuelve cada dirección dentro de los principios vigentes"
+  - "qué datos reales usa como caso de prueba de la forma"
+  - "la composición concreta de una superficie dentro del patrón que la cubre"
+metodos:
+  - DIS/Fundacion
+  - DIS/Reconstruccion
+  - DIS/Evolucion
+no_autocertifica:
+  - gate:excelencia-visual
 checklist:
   - id: busque-antes
     pregunta: "¿He buscado y anotado el componente existente antes de dibujar nada?"

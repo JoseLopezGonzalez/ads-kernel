@@ -805,9 +805,16 @@ class Corpus:
             salida[rol] = datos
         return salida
 
+    def contratos_operativos_completos(self):
+        """Alias con nombre exacto: los contratos escritos ENTEROS como `ads:contrato-operativo`."""
+        return self.contratos_operativos()
+
     def contrato_operativo_de(self, rol):
-        """El contrato operativo del rol, o `None`. La ausencia se publica, no se inventa."""
-        return self.contratos_operativos().get(rol)
+        """El contrato operativo EFECTIVO del rol: el completo si lo tiene, o la fusión de su
+        base de familia, lo derivado del rol y su especialización (`ciclo/contratos.py`).
+        `None` cuando el rol no tiene base: la ausencia se publica, no se inventa."""
+        from . import contratos                                               # noqa: PLC0415
+        return contratos.contrato_efectivo(self, rol)
 
     # ------------------------------------------------------------- huella
     def huella(self):

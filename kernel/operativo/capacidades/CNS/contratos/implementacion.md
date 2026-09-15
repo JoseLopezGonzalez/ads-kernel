@@ -167,6 +167,16 @@ ejemplo_malo: >
   construye, deja las pruebas del camino feliz, comenta en el PR que «faltaría el caso de
   conflicto» y entrega como terminado. La decisión no está en ninguna capa, la prueba que
   falta es la única que importaba, y la diferencia la encontrará la revisión, no la entrega.
+entrega_a:
+  - segun-el-plan
+decisiones_propias:
+  - "la estructura interna del código"
+  - "qué tests escribe y a qué nivel"
+  - "cómo implementar, dentro de lo que las capas anteriores fijaron"
+metodos:
+  - CNS/Implementacion
+no_autocertifica:
+  - gate:implementacion-completa
 checklist:
   - id: lei-huecos
     pregunta: "¿He buscado qué tendría que decidir yo que no me corresponde, y lo he devuelto ANTES de construir?"

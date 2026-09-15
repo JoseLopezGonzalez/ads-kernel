@@ -107,6 +107,17 @@ ejemplo_malo: >
   El definidor escribe «exportar la tabla en los formatos habituales» sin decir quién,
   cuándo ni qué queda fuera; Construcción elige Excel, el Owner quería CSV, y el fuera de
   alcance se descubre en la aceptación.
+entrega_a:
+  - segun-el-plan
+decisiones_propias:
+  - "alcance rutinario dentro de una dirección de producto ya aprobada"
+  - "partir un item que persigue dos resultados distintos"
+  - "cancelar un item interno cuyo problema se disolvió"
+metodos:
+  - PRD/Definicion
+  - PRD/Gap
+no_autocertifica:
+  - gate:intencion-definida
 checklist:
   - id: para-quien-y-cuando
     pregunta: "¿He nombrado para quién es y en qué momento de uso entra?"

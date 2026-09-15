@@ -223,6 +223,10 @@ def como_markdown(brief):
             r["cuando"] + " → " + r["a_quien"] + " → " + r["con_que"]
             for r in contrato["reglas_de_escalado"]])
         lineas += _lista("incompatibilidades:", contrato["incompatibilidades"])
+        lineas += _lista("entregas a:", contrato.get("entrega_a"))
+        lineas += _lista("decides tú, sin preguntar:", contrato.get("decisiones_propias"))
+        lineas += _lista("métodos que ejecutas:", contrato.get("metodos"))
+        lineas += _lista("gates que NUNCA dictaminas sobre tu propio paquete:", contrato.get("no_autocertifica"))
         lineas += ["", "ejemplo BUENO: " + str(contrato["ejemplo_bueno"]).strip(),
                    "", "ejemplo MALO: " + str(contrato["ejemplo_malo"]).strip()]
 

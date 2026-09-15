@@ -97,6 +97,13 @@ def comprobar_forma(entrega, *, corpus=None, contrato=None, gate=None):
                                   + artefacto["nombre"] + "` (tipo " + artefacto["tipo"]
                                   + ") que exige el contrato operativo")
             del tipos_entregados
+        # Los gates que el contrato dice que el rol NUNCA dictamina sobre su propio paquete.
+        vedados = set(contrato.get("no_autocertifica") or [])
+        for dictamen in list(entrega.get("dictamenes") or []) + ([entrega["dictamen"]] if entrega.get("dictamen") else []):
+            if dictamen.get("sobre_paquete") == entrega["paquete"] and dictamen.get("gate") in vedados:
+                fallos.append("entrega.dictamenes: el contrato operativo de `" + entrega["rol"]
+                              + "` prohíbe dictaminar `" + str(dictamen.get("gate"))
+                              + "` sobre su propio paquete (no_autocertifica)")
     return fallos
 
 

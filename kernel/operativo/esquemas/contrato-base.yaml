@@ -1,0 +1,112 @@
+kind: esquema
+esquema: contrato-base
+version: 1
+descripcion: >
+  la BASE de contrato operativo de una FAMILIA de roles: lo que comparten todos los roles
+  que producen, o todos los que revisan, o todos los que consultan, y que no tiene sentido
+  escribir treinta veces. Un rol materializable pertenece a EXACTAMENTE una base, por su id
+  en la lista `roles`; su contrato efectivo es la fusion de esta base, de lo que se DERIVA
+  de sus veintinueve campos de rol (mision, entradas, autoridad, salida, devolucion,
+  limites, antipatrones, criterios, independencia, metodo, gate) y de su especializacion
+  `contrato-de-rol` cuando la tiene. La fusion se valida contra `contrato-operativo`, que
+  es la forma que el brief entrega y la entrega comprueba. Aqui no hay prosa libre que
+  mande: cada lista entra en el checklist del brief y en la validacion de la entrega.
+obligatorios:
+  [id, familia, roles, comprobaciones_previas, secuencia_inicial, secuencia_final,
+   condiciones_de_aceptacion, condiciones_de_devolucion, reglas_de_escalado,
+   actuaciones_prohibidas, incompatibilidades, checklist, no_autocertifica_ademas]
+campos:
+  id: {tipo: texto, patron: '^contrato-base:[a-z0-9-]+$'}
+  familia: {tipo: enum, valores: [productor, revisor, consultor, investigador, operador, aprendizaje, orquestador]}
+  # los roles que heredan esta base. Un rol en dos bases es una contradiccion; un rol
+  # materializable en ninguna es un fallo de `comprobar_contratos`.
+  roles: {tipo: lista, de: ref, ref_a: rol, min: 1}
+  conocimientos_exigibles: {tipo: lista, de: texto}
+  entradas_obligatorias:
+    tipo: lista
+    de: objeto
+    obligatorios: [que, donde, si_falta]
+    campos:
+      que: {tipo: texto, min: 5}
+      donde: {tipo: texto, min: 5}
+      si_falta: {tipo: enum, valores: [bloquear, devolver, escalar]}
+  comprobaciones_previas:
+    tipo: lista
+    min: 1
+    de: objeto
+    obligatorios: [id, comprueba, como, si_falla]
+    campos:
+      id: {tipo: texto, patron: '^[a-z0-9-]+$'}
+      comprueba: {tipo: texto, min: 10}
+      como: {tipo: texto, min: 10}
+      si_falla: {tipo: enum, valores: [bloquear, devolver, escalar, continuar-declarando]}
+  # los pasos que abren y cierran la secuencia de TODO rol de la familia; los del medio
+  # los pone el rol (derivados de sus responsabilidades, o su especializacion)
+  secuencia_inicial:
+    tipo: lista
+    min: 1
+    de: objeto
+    obligatorios: [hace, produce, termina_cuando]
+    campos:
+      hace: {tipo: texto, min: 15}
+      produce: {tipo: texto, min: 5}
+      termina_cuando: {tipo: texto, min: 10}
+      checkpoint: {tipo: booleano}
+  secuencia_final:
+    tipo: lista
+    min: 1
+    de: objeto
+    obligatorios: [hace, produce, termina_cuando]
+    campos:
+      hace: {tipo: texto, min: 15}
+      produce: {tipo: texto, min: 5}
+      termina_cuando: {tipo: texto, min: 10}
+      checkpoint: {tipo: booleano}
+  fuentes_a_consultar: {tipo: lista, de: texto}
+  evidencias_requeridas:
+    tipo: lista
+    de: objeto
+    obligatorios: [que, forma, quien_la_puede_juzgar]
+    campos:
+      que: {tipo: texto, min: 5}
+      forma: {tipo: texto, min: 5}
+      quien_la_puede_juzgar: {tipo: texto, min: 3}
+  criterios_de_calidad_medibles:
+    tipo: lista
+    de: objeto
+    obligatorios: [criterio, como_se_mide]
+    campos:
+      criterio: {tipo: texto, min: 10}
+      como_se_mide: {tipo: texto, min: 10}
+  condiciones_de_aceptacion: {tipo: lista, de: texto, min: 1}
+  condiciones_de_devolucion: {tipo: lista, de: texto, min: 1}
+  reglas_de_escalado:
+    tipo: lista
+    min: 1
+    de: objeto
+    obligatorios: [cuando, a_quien, con_que]
+    campos:
+      cuando: {tipo: texto, min: 10}
+      a_quien: {tipo: texto, min: 3}
+      con_que: {tipo: texto, min: 10}
+  actuaciones_prohibidas: {tipo: lista, de: texto, min: 1}
+  # la incompatibilidad que TODA la familia arrastra: quien produce no comparte trabajador
+  # con quien dictamina su gate, y así con cada familia
+  incompatibilidades: {tipo: lista, de: texto, min: 1}
+  # a quien entrega la familia por defecto; `segun-el-plan` es el mecanismo real: los
+  # handoffs los emite la oficina a los roles que el plan pone despues
+  entrega_a: {tipo: lista, de: texto}
+  checklist:
+    tipo: lista
+    min: 3
+    de: objeto
+    obligatorios: [id, pregunta, automatizable]
+    campos:
+      id: {tipo: texto, patron: '^[a-z0-9-]+$'}
+      pregunta: {tipo: texto, min: 10}
+      automatizable: {tipo: enum, valores: [si, no, parcial]}
+  # gates que NINGUN rol de la familia puede dictaminar sobre su propio paquete, ademas
+  # del gate propio del rol, que nunca se autocertifica
+  no_autocertifica_ademas: {tipo: lista, de: ref, ref_a: gate}
+  ejemplo_bueno: {tipo: texto}
+  ejemplo_malo: {tipo: texto}

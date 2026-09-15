@@ -31,6 +31,8 @@ RESOLUTORES = {
     "metodo": lambda corpus, valor: _existe_metodo(corpus, valor),
     "perfil-agente": lambda corpus, valor: valor in corpus.perfiles(),
     "entrada": lambda corpus, valor: valor in corpus.entradas(),
+    "contrato-base": lambda corpus, valor: any(
+        d.get("id") == valor for d in corpus.de_tipo("contrato-base")),
 }
 
 

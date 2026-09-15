@@ -1211,6 +1211,73 @@ def t244_grado_inicial_coincide_con_el_paso_5(b):
     return r
 
 
+
+# ===========================================================================
+#  T476 · T477 · los contratos operativos EFECTIVOS de los roles materializables
+# ===========================================================================
+def _corpus_del_ciclo():
+    runtime = os.path.join(RAIZ, "kernel", "operativo", "runtime")
+    if runtime not in sys.path:
+        sys.path.insert(0, runtime)
+    import ciclo                                                          # noqa: PLC0415
+    from ciclo import contratos                                           # noqa: PLC0415
+    return ciclo.Corpus(os.path.join(RAIZ, "kernel", "operativo")), contratos
+
+
+def t476_todo_rol_materializable_tiene_contrato(_b):
+    """Un rol que la oficina puede convertir en paquete tiene contrato operativo efectivo
+    que cumple `contrato-operativo`, con sus métodos dentro de los del rol, su gate en
+    `no_autocertifica` y su independencia cubierta. La clasificación se PUBLICA entera:
+    materializable, consultivo, conceptual, huérfano, sin-base."""
+    r = Resultado("T476", "Todo rol materializable tiene contrato operativo efectivo y suficiente")
+    try:
+        corpus, contratos = _corpus_del_ciclo()
+        clases = contratos.clasificar(corpus)
+    except Exception as exc:                                              # noqa: BLE001
+        r.fallo(f"no se pudo clasificar los roles: {exc}")
+        return r
+    cuenta = {}
+    for rol, clase in sorted(clases.items()):
+        cuenta[clase] = cuenta.get(clase, 0) + 1
+        if clase == "huerfano":
+            r.fallo(f"{rol}: no figura en ninguna composición (huérfano): o se retira o se compone")
+        elif clase == "sin-base":
+            r.fallo(f"{rol}: lo materializa un proceso y NINGUNA base de contrato lo cubre")
+        elif clase in ("materializable", "consultivo"):
+            for fallo in contratos.fallos_del_contrato(corpus, rol):
+                r.fallo(f"{rol}: {fallo}")
+    r.cobertura = ("roles: " + " · ".join(f"{k} {v}" for k, v in sorted(cuenta.items()))
+                   + " · conceptuales (no los materializa ningún proceso): "
+                   + ", ".join(sorted(k for k, v in clases.items() if v == "conceptual")))
+    return r
+
+
+def t477_bases_de_contrato_coherentes(b):
+    """Cada base nombra roles que existen, ningún rol hereda de dos bases, cada
+    especialización hereda de la base de su rol, y los contratos completos no duplican una
+    especialización."""
+    r = Resultado("T477", "Las bases de contrato son coherentes y ningún rol hereda de dos")
+    roles = {d["id"] for d, _, _ in b.get("rol", [])}
+    vistos = {}
+    for datos, ruta, linea in b.get("contrato-base", []):
+        for rol in datos.get("roles") or []:
+            if rol not in roles:
+                r.fallo(f"{ruta}:{linea}: la base {datos.get('id')} nombra el rol `{rol}`, que no existe")
+            if rol in vistos:
+                r.fallo(f"{ruta}:{linea}: el rol `{rol}` hereda de {vistos[rol]} y de {datos.get('id')}")
+            vistos[rol] = datos.get("id")
+    completos = {d["rol"] for d, _, _ in b.get("contrato-operativo", [])}
+    for datos, ruta, linea in b.get("contrato-de-rol", []):
+        rol = datos.get("rol")
+        if rol in completos:
+            r.fallo(f"{ruta}:{linea}: `{rol}` tiene contrato completo Y especialización: dos verdades")
+        if vistos.get(rol) != datos.get("hereda"):
+            r.fallo(f"{ruta}:{linea}: `{rol}` hereda de {datos.get('hereda')} y su base es {vistos.get(rol)}")
+    r.cobertura = (f"bases: {len(b.get('contrato-base', []))} · roles cubiertos: {len(vistos)} · "
+                   f"contratos completos: {len(completos)} · especializaciones: {len(b.get('contrato-de-rol', []))}")
+    return r
+
+
 PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t89_reanudacion_con_prueba, t90_roles_coherentes, t91_metodos_con_gate_y_pasos,
            t92_sin_marca, t135_composicion_respeta_el_contrato,
@@ -1223,7 +1290,7 @@ PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t240_capacidad_tipada_sin_metodos, t241_dis_a_ver_anclado_al_ciclo,
            t242_autoridad_de_los_documentos_del_owner,
            t243_entregas_de_8_0_materializadas,
-           t244_grado_inicial_coincide_con_el_paso_5]
+           t244_grado_inicial_coincide_con_el_paso_5, t476_todo_rol_materializable_tiene_contrato, t477_bases_de_contrato_coherentes]
 
 
 def main():
@@ -1246,6 +1313,8 @@ def main():
         for r in resultados:
             estado = "SUPERADA" if r.superada else "FALLIDA "
             print(f"{r.id}  {estado}  {r.nombre}")
+            if getattr(r, "cobertura", None):
+                print(f"          cobertura: {r.cobertura}")
             for f in r.fallos:
                 print(f"          · {f}")
         fallidas = [r for r in resultados if not r.superada]

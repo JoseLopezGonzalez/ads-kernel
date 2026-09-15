@@ -78,11 +78,12 @@ cuando aparece se resuelve **borrando la copia**, nunca sincronizando las dos.
 
 | directorio | contenido | entrada |
 |---|---|---|
-| `esquemas/` | el lenguaje canónico y los veintitrés tipos | [`00-LENGUAJE.md`](esquemas/00-LENGUAJE.md) |
+| `esquemas/` | el lenguaje canónico y los veinticinco tipos | [`00-LENGUAJE.md`](esquemas/00-LENGUAJE.md) |
 | `contratos/` | los siete contratos transversales | [`00-INDICE.md`](contratos/00-INDICE.md) |
 | `entrada/` | PASO 1 — de la frase del Owner al item | [`00-INDICE.md`](entrada/00-INDICE.md) |
 | `diseno/` | PASO 3 — el sistema de excelencia | [`00-SISTEMA-DE-EXCELENCIA.md`](diseno/00-SISTEMA-DE-EXCELENCIA.md) |
 | `capacidades/` | PASOS 4 y 5 — las quince capacidades | tabla de abajo |
+| `capacidades/00-CONTRATOS-BASE.md` | las bases de contrato operativo, una por familia de roles; el contrato efectivo de un rol es base + derivación + especialización | [`00-CONTRATOS-BASE.md`](capacidades/00-CONTRATOS-BASE.md) |
 | `recorrido/` | obligaciones del proceso, cierre del item y los diez procesos | [`00-OBLIGACIONES-Y-CIERRE.md`](recorrido/00-OBLIGACIONES-Y-CIERRE.md) |
 | `circuitos/` | los circuitos y los handoffs | [`00-CIRCUITOS.md`](circuitos/00-CIRCUITOS.md) |
 | `plantillas/` | artefactos rellenables | tabla de abajo |
