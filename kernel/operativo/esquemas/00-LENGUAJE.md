@@ -53,6 +53,10 @@ id: DIS/direccion-artistica
 | `escenario` | una prueba de conformidad ejecutable a mano o por script | `esquemas/escenario.yaml` |
 | `pack` | la declaración de un pack | `esquemas/pack.yaml` |
 | `integration-set` | una combinación exacta de revisiones de fuentes, probada conjuntamente | `esquemas/integration-set.yaml` |
+| `entrega` | lo que un trabajador entrega al terminar un paquete, verificable | `esquemas/entrega.yaml` |
+| `contrato-operativo` | el contrato operativo de un rol: entradas, comprobaciones, secuencia, artefactos, checklist | `esquemas/contrato-operativo.yaml` |
+| `circuito-base` | el circuito profesional base de una clase de trabajo, declarado por el proyecto | `esquemas/circuito-base.yaml` |
+| `ejecutor` | cómo lanza el proyecto un agente sin chat para un paquete | `esquemas/ejecutor.yaml` |
 
 ## Tipos de campo
 

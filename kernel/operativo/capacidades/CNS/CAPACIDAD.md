@@ -28,7 +28,7 @@ memoria_propia:
   - "CONVENTIONS.md — patrones técnicos vigentes, compartido con ARQ y VER"
   - "docs/construccion/DECISIONES.md — decisiones de implementación con su motivo"
 tablero: "estado/tableros/CNS.md — paquetes en construcción"
-metodos: [CNS/Implementacion, CNS/Experimental]
+metodos: [CNS/Implementacion, CNS/RevisionDeConstruccion, CNS/Experimental]
 checkpoint: "en el paquete, con qué está construido, qué falta y qué diferencias se han declarado"
 autoridad:
   decide_sola:
@@ -45,7 +45,7 @@ owner:
     CNS no tiene interacción con el Owner. Todo lo que necesitaría su juicio va por la
     capacidad propietaria de esa materia. Un agente de construcción que conversa con el
     Owner sobre alcance o forma está ocupando una autoridad que no tiene.
-roles: [CNS/implementacion, CNS/experimental]
+roles: [CNS/implementacion, CNS/revision-de-construccion, CNS/experimental]
 deriva_de:
   - "a.3 · CNS: no redecide capas anteriores; sin autoridad sobre forma ni intención"
   - "b.16 · CNS:experimental dentro de INV y de DIR"

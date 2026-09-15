@@ -1,0 +1,104 @@
+kind: esquema
+esquema: contrato-operativo
+version: 1
+descripcion: >
+  el CONTRATO OPERATIVO de un rol: lo que convierte los veintinueve campos del rol en algo
+  que dos agentes competentes ejecutan igual. Un rol dice que hace y con que autoridad; este
+  contrato dice que lee antes, que comprueba antes de empezar, en que orden trabaja, que
+  artefactos produce y con que estructura minima, que evidencia deja, con que criterio se
+  acepta o se devuelve, cuando escala y a quien, que tiene prohibido, y un ejemplo bueno y
+  uno malo. Todo lo que aqui es lista se convierte en checklist del brief y en validacion de
+  la entrega: no es literatura, es mecanismo.
+obligatorios:
+  [id, rol, mision_operativa, conocimientos_exigibles, entradas_obligatorias,
+   comprobaciones_previas, secuencia, fuentes_a_consultar, artefactos, evidencias_requeridas,
+   criterios_de_calidad_medibles, condiciones_de_aceptacion, condiciones_de_devolucion,
+   reglas_de_escalado, incompatibilidades, actuaciones_prohibidas, ejemplo_bueno,
+   ejemplo_malo, checklist]
+campos:
+  id: {tipo: texto, patron: '^contrato:[a-z0-9-]+$'}
+  rol: {tipo: ref, ref_a: rol}
+  mision_operativa: {tipo: texto, min: 40}
+  conocimientos_exigibles: {tipo: lista, de: texto, min: 3}
+  entradas_obligatorias:
+    tipo: lista
+    min: 1
+    de: objeto
+    obligatorios: [que, donde, si_falta]
+    campos:
+      que: {tipo: texto, min: 5}
+      donde: {tipo: texto, min: 5}
+      si_falta: {tipo: enum, valores: [bloquear, devolver, escalar]}
+  comprobaciones_previas:
+    tipo: lista
+    min: 2
+    de: objeto
+    obligatorios: [id, comprueba, como, si_falla]
+    campos:
+      id: {tipo: texto, patron: '^[a-z0-9-]+$'}
+      comprueba: {tipo: texto, min: 10}
+      como: {tipo: texto, min: 10}
+      si_falla: {tipo: enum, valores: [bloquear, devolver, escalar, continuar-declarando]}
+  secuencia:
+    tipo: lista
+    min: 3
+    de: objeto
+    obligatorios: [n, hace, produce, termina_cuando]
+    campos:
+      n: {tipo: entero, min: 1}
+      hace: {tipo: texto, min: 15}
+      produce: {tipo: texto, min: 5}
+      termina_cuando: {tipo: texto, min: 10}
+      checkpoint: {tipo: booleano}
+  fuentes_a_consultar: {tipo: lista, de: texto, min: 1}
+  artefactos:
+    tipo: lista
+    min: 1
+    de: objeto
+    obligatorios: [tipo, nombre, estructura_minima, obligatorio]
+    campos:
+      tipo: {tipo: enum, valores: [rama, commit, pr, fichero, dosier, captura, grabacion, medicion, documento, integration-set, salida-de-orden, otro]}
+      nombre: {tipo: texto, min: 3}
+      estructura_minima: {tipo: lista, de: texto, min: 1}
+      obligatorio: {tipo: booleano}
+  evidencias_requeridas:
+    tipo: lista
+    min: 1
+    de: objeto
+    obligatorios: [que, forma, quien_la_puede_juzgar]
+    campos:
+      que: {tipo: texto, min: 5}
+      forma: {tipo: texto, min: 5}
+      quien_la_puede_juzgar: {tipo: texto, min: 3}
+  criterios_de_calidad_medibles:
+    tipo: lista
+    min: 2
+    de: objeto
+    obligatorios: [criterio, como_se_mide]
+    campos:
+      criterio: {tipo: texto, min: 10}
+      como_se_mide: {tipo: texto, min: 10}
+  condiciones_de_aceptacion: {tipo: lista, de: texto, min: 2}
+  condiciones_de_devolucion: {tipo: lista, de: texto, min: 2}
+  reglas_de_escalado:
+    tipo: lista
+    min: 1
+    de: objeto
+    obligatorios: [cuando, a_quien, con_que]
+    campos:
+      cuando: {tipo: texto, min: 10}
+      a_quien: {tipo: texto, min: 3}
+      con_que: {tipo: texto, min: 10}
+  incompatibilidades: {tipo: lista, de: texto, min: 1}
+  actuaciones_prohibidas: {tipo: lista, de: texto, min: 3}
+  ejemplo_bueno: {tipo: texto, min: 80}
+  ejemplo_malo: {tipo: texto, min: 80}
+  checklist:
+    tipo: lista
+    min: 5
+    de: objeto
+    obligatorios: [id, pregunta, automatizable]
+    campos:
+      id: {tipo: texto, patron: '^[a-z0-9-]+$'}
+      pregunta: {tipo: texto, min: 10}
+      automatizable: {tipo: enum, valores: [si, no, parcial]}

@@ -128,3 +128,7 @@ marcada obligatoria en b.16 genera una, y aquí quedan en forma canónica para q
 runtime las cree y el gate las compruebe.
 
 Los procesos están en [`01-PROCESOS.md`](01-PROCESOS.md).
+
+> **Terminar la ejecución tampoco es haber alcanzado un nivel de terminación.** La escalera
+> —implementado, revisado, integrado, verificado, validado, aceptado, cerrado— y sus gates
+> viven en [`02-NIVELES-DE-TERMINACION.md`](02-NIVELES-DE-TERMINACION.md).

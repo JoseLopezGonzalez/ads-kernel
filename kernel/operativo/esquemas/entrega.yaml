@@ -1,0 +1,120 @@
+kind: esquema
+esquema: entrega
+version: 1
+descripcion: >
+  lo que un trabajador —agente sin chat, sesion de agente o persona— ENTREGA al terminar un
+  paquete. Es el objeto durable que hace verificable un handoff: no viaja «el trabajo
+  hecho», viajan artefactos localizables, evidencias juzgables, la autoevaluacion del gate
+  comprobacion a comprobacion, y lo que NO se hizo. Sin este objeto el receptor tendria que
+  reconstruir la entrega leyendo una conversacion, que es lo que el protocolo de trabajadores
+  existe para impedir.
+obligatorios:
+  [paquete, rol, veredicto, artefactos, evidencias, autoevaluacion, diferencias_declaradas,
+   decisiones_asumidas, riesgos, deuda_aceptada, no_hecho, siguiente]
+campos:
+  paquete: {tipo: texto, min: 3}
+  rol: {tipo: ref, ref_a: rol}
+  # entregado   la capa queda depositada y el receptor puede comprobarla
+  # devuelto    el rol es RECEPTOR de una capa anterior y la devuelve con los cuatro campos
+  # bloqueado   no se puede seguir sin algo que no depende del rol; nombra que lo desbloquea
+  # escalado    hay una decision que no es del rol; nombra la autoridad y las posturas
+  veredicto: {tipo: enum, valores: [entregado, devuelto, bloqueado, escalado]}
+  artefactos:
+    tipo: lista
+    de: objeto
+    obligatorios: [tipo, referencia, descripcion]
+    campos:
+      tipo: {tipo: enum, valores: [rama, commit, pr, fichero, dosier, captura, grabacion, medicion, documento, integration-set, salida-de-orden, otro]}
+      referencia: {tipo: texto, min: 3}
+      fuente: {tipo: texto}
+      revision: {tipo: texto}
+      descripcion: {tipo: texto, min: 5}
+  evidencias:
+    tipo: lista
+    de: objeto
+    obligatorios: [comprobacion, resultado, referencia]
+    campos:
+      comprobacion: {tipo: texto, min: 5}
+      resultado: {tipo: enum, valores: [pasa, falla, no-aplica, no-comprobado]}
+      referencia: {tipo: texto, min: 1}
+      salida: {tipo: texto}
+  autoevaluacion:
+    tipo: objeto
+    obligatorios: [gate, comprobaciones]
+    campos:
+      gate: {tipo: ref, ref_a: gate}
+      comprobaciones:
+        tipo: lista
+        min: 1
+        de: objeto
+        obligatorios: [id, resultado]
+        campos:
+          id: {tipo: texto, min: 2}
+          resultado: {tipo: enum, valores: [si, no, no-aplica]}
+          nota: {tipo: texto}
+      checklist:
+        tipo: lista
+        de: objeto
+        obligatorios: [id, respuesta]
+        campos:
+          id: {tipo: texto, min: 2}
+          respuesta: {tipo: enum, valores: [si, no, no-aplica]}
+          nota: {tipo: texto}
+  diferencias_declaradas: {tipo: lista, de: texto}
+  decisiones_asumidas: {tipo: lista, de: texto}
+  riesgos: {tipo: lista, de: texto}
+  deuda_aceptada:
+    tipo: lista
+    de: objeto
+    obligatorios: [que, por_que, quien_la_acepta, condicion_de_revision]
+    campos:
+      que: {tipo: texto, min: 5}
+      por_que: {tipo: texto, min: 5}
+      quien_la_acepta: {tipo: texto, min: 3}
+      condicion_de_revision: {tipo: texto, min: 5}
+  no_hecho: {tipo: lista, de: texto}
+  siguiente: {tipo: texto, min: 5}
+  # Solo cuando `veredicto: devuelto`. Los CUATRO campos de C5, y sin ellos no es devolucion.
+  devolucion:
+    tipo: objeto
+    obligatorios: [que_falta, por_que_es_insuficiente, que_la_cerraria, evidencia]
+    campos:
+      que_falta: {tipo: texto, min: 10}
+      por_que_es_insuficiente: {tipo: texto, min: 10}
+      que_la_cerraria: {tipo: texto, min: 10}
+      evidencia: {tipo: lista, de: texto, min: 1}
+  # Solo en roles que JUZGAN una capa ajena: el dictamen de su gate sobre el paquete que
+  # revisan. El revisor NUNCA es el autor: lo comprueba `gates.aplicar`, no este esquema.
+  dictamen:
+    tipo: objeto
+    obligatorios: [gate, sobre_paquete, comprobaciones_superadas, dictamen]
+    campos:
+      gate: {tipo: ref, ref_a: gate}
+      sobre_paquete: {tipo: texto, min: 3}
+      comprobaciones_superadas: {tipo: lista, de: texto}
+      hallazgos: {tipo: lista, de: texto}
+      evidencia: {tipo: lista, de: texto}
+      dictamen: {tipo: enum, valores: [superado, no-superado]}
+  # Un rol que juzga puede emitir VARIOS dictamenes en una entrega: la revision de
+  # construccion dictamina `gate:implementacion-completa` sobre la autoevaluacion del
+  # productor Y `gate:revision-de-construccion` sobre el diff. Misma forma que `dictamen`.
+  dictamenes:
+    tipo: lista
+    de: objeto
+    obligatorios: [gate, sobre_paquete, comprobaciones_superadas, dictamen]
+    campos:
+      gate: {tipo: ref, ref_a: gate}
+      sobre_paquete: {tipo: texto, min: 3}
+      comprobaciones_superadas: {tipo: lista, de: texto}
+      hallazgos: {tipo: lista, de: texto}
+      evidencia: {tipo: lista, de: texto}
+      dictamen: {tipo: enum, valores: [superado, no-superado]}
+  # Solo cuando `veredicto: bloqueado` o `escalado`.
+  bloqueo:
+    tipo: objeto
+    obligatorios: [que_lo_impide, que_lo_desbloquearia, autoridad]
+    campos:
+      que_lo_impide: {tipo: texto, min: 10}
+      que_lo_desbloquearia: {tipo: texto, min: 10}
+      autoridad: {tipo: texto, min: 3}
+      posturas: {tipo: lista, de: texto}

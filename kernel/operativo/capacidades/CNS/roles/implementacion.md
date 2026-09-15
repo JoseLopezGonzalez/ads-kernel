@@ -1,5 +1,8 @@
 # CNS/implementacion — Implementación
 
+Su contrato operativo —entradas obligatorias, comprobaciones previas, secuencia, artefactos
+con estructura mínima y checklist— vive en [`../contratos/implementacion.md`](../contratos/implementacion.md).
+
 ```yaml ads:rol
 id: CNS/implementacion
 nombre: Implementación

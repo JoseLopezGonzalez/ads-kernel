@@ -1,0 +1,59 @@
+kind: esquema
+esquema: circuito-base
+version: 1
+descripcion: >
+  el CIRCUITO PROFESIONAL BASE de una clase de trabajo: lo que NO se puede reducir para
+  ahorrar tiempo, contexto o tokens. Lo declara el PROYECTO en su PROFILE.md —no el kernel:
+  que clases de trabajo hay y que exige cada una depende del producto— y el kernel lo hace
+  cumplir: fija la materia y el estado del objeto con que se encuadra, las condiciones de
+  ruta que se declaran verdaderas, las composiciones de equipo, los NIVELES DE TERMINACION
+  que hay que alcanzar antes de que un item pueda cerrarse como producto, y las UNICAS
+  condiciones bajo las que un nivel es inaplicable. Un nivel que no esta en `inaplicabilidad`
+  con una condicion comprobable no puede saltarse: ni por criterio del agente, ni por prisa.
+obligatorios:
+  [id, nombre, clase_de_trabajo, cuando_aplica, materia, estado_del_objeto,
+   condiciones_de_ruta, composiciones, niveles_obligatorios, inaplicabilidad, roles_minimos,
+   independencias, gates_de_cierre]
+campos:
+  id: {tipo: texto, patron: '^circuito:[a-z0-9-]+$'}
+  nombre: {tipo: texto, min: 5}
+  clase_de_trabajo: {tipo: texto, patron: '^[a-z0-9-]+$'}
+  # Como decide el proyecto que un item pertenece a esta clase. Prosa dirigida a quien
+  # declara la clase del item; el runtime NO la interpreta: la clase se DECLARA en el item.
+  cuando_aplica: {tipo: texto, min: 20}
+  materia:
+    tipo: enum
+    valores: [capacidad-ausente, expectativa-no-alcanzada, comportamiento-especificado-roto,
+              incidente-en-uso-real, conocimiento-ausente, forma-interna-costosa,
+              dependencia-externa, conclusion-sobre-lo-existente, direccion-ya-decidida,
+              la-propia-fabrica]
+  estado_del_objeto: {tipo: enum, valores: [no-existe, existe, en-uso-real]}
+  # Las condiciones de la via 3 de `b.16` que esta clase declara VERDADERAS siempre.
+  condiciones_de_ruta: {tipo: lista, de: texto}
+  # Las composiciones de equipo (`ads:composicion`) que se declaran verdaderas, por capacidad.
+  composiciones: {tipo: lista, de: texto, min: 1}
+  niveles_obligatorios:
+    tipo: lista
+    min: 1
+    de: enum
+    valores: [implementado, revisado, integrado, verificado, validado-funcional,
+              validado-visual, aceptado]
+  # La UNICA forma de saltarse un nivel: una condicion sobre DATOS del item, declarada aqui,
+  # y quien puede declararla verdadera. Nunca «si no hace falta».
+  inaplicabilidad:
+    tipo: lista
+    de: objeto
+    obligatorios: [nivel, condicion, quien_lo_declara]
+    campos:
+      nivel: {tipo: enum, valores: [implementado, revisado, integrado, verificado, validado-funcional, validado-visual, aceptado]}
+      condicion: {tipo: texto, min: 10}
+      quien_lo_declara: {tipo: texto, min: 3}
+  roles_minimos: {tipo: lista, de: ref, ref_a: rol, min: 1}
+  independencias:
+    tipo: lista
+    de: objeto
+    obligatorios: [rol, de]
+    campos:
+      rol: {tipo: ref, ref_a: rol}
+      de: {tipo: lista, de: texto, min: 1}
+  gates_de_cierre: {tipo: lista, de: ref, ref_a: gate, min: 1}

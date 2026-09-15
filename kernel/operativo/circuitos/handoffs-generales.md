@@ -303,3 +303,30 @@ evidencia_de_devolucion:
 owner: "obligatorio cuando la única salida implica pérdida de datos o indisponibilidad: esa elección es del Owner y DOM sólo la presenta con sus consecuencias."
 checkpoint: "DOM lee de VER: qué se construyó de verdad, para revisar el modelo vivo y no el previsto."
 ```
+
+```yaml ads:handoff
+id: handoff:con-a-con
+de: CNS
+a: CNS
+cuando: "CNS/implementacion deposita su capa y el siguiente paquete del item es la revisión de construcción, CNS/revision-de-construccion"
+entrega:
+  - "el commit identificado y la salida de la suite de tests"
+  - "las DIFERENCIAS conocidas respecto a la especificación, declaradas ANTES de la revisión"
+  - "la autoevaluación de gate:implementacion-completa, comprobación a comprobación"
+comprueba_al_recibir:
+  - "el commit existe y es el que la entrega nombra, no otro más nuevo sin declarar"
+  - "la autoevaluación del gate no deja ninguna comprobación sin anotar"
+  - "las diferencias declaradas llevan fecha ANTERIOR a la entrega"
+rechaza_si:
+  - "el commit no es localizable o no coincide con el nombrado"
+  - "la autoevaluación deja comprobaciones sin anotar"
+devolucion: >
+  CNS/revision-de-construccion devuelve a CNS/implementacion con los hallazgos bloqueantes:
+  fichero, línea, por qué bloquea y el arreglo exacto. La corrección entra como paquete
+  nuevo y la revisión se repite sobre él; a la tercera devolución se aplica el freno de a.7.
+evidencia_de_devolucion:
+  - "cada hallazgo bloqueante con fichero y línea"
+  - "la tabla de reversión que muestra qué prueba no muerde, cuando es el caso"
+owner: "ninguna. Entre construir y revisar no hay un humano validando el traspaso."
+checkpoint: "el revisor lee del productor: el commit, las diferencias declaradas y la autoevaluación, para no volver a pedirlas."
+```
