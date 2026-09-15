@@ -1,5 +1,7 @@
 # PRD/criterio-de-exito — Criterio de éxito y de fracaso
 
+Su contrato operativo vive en [`../contratos/criterio-de-exito.md`](../contratos/criterio-de-exito.md).
+
 Escribe **contra qué se va a verificar** este item. Sin este rol, Verificación llega al
 final y no tiene nada contra lo que comparar salvo su propia impresión.
 

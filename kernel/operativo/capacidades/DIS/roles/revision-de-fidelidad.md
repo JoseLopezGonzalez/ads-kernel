@@ -1,5 +1,7 @@
 # DIS/revision-de-fidelidad — Revisión de fidelidad
 
+Su contrato operativo vive en [`../contratos/revision-de-fidelidad.md`](../contratos/revision-de-fidelidad.md).
+
 Compara **lo aprobado con lo construido**. Sin este rol, todo el trabajo anterior es
 decorativo: se construyó otra cosa y nadie lo miró.
 

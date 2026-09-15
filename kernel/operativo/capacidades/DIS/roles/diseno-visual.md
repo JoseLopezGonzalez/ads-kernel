@@ -1,5 +1,7 @@
 # DIS/diseno-visual — Diseño visual
 
+Su contrato operativo vive en [`../contratos/diseno-visual.md`](../contratos/diseno-visual.md).
+
 Produce las direcciones y las superficies. Es quien **hace**, dentro de lo que la dirección
 artística decide y el sistema de diseño permite.
 
