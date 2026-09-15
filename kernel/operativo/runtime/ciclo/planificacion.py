@@ -501,11 +501,13 @@ def _rango_de_estacion(ruta, participante):
     el orden del proceso se conserva forzando que sus rangos sean crecientes.
     """
     obligaciones = [o["id"] for o in ruta.get("obligaciones") or []]
-    capacidad = participante["capacidad"]
-    posicion = ORDEN_DE_ESTACIONES.index(capacidad) if capacidad in ORDEN_DE_ESTACIONES else 99
-    if str(participante.get("metodo") or "") in METODOS_POSTERIORES_A_VER \
-            and "VER" in ORDEN_DE_ESTACIONES:
-        posicion = ORDEN_DE_ESTACIONES.index("VER") + 0.5
+    posicion = _posicion_de_estacion(participante)
+    if participante["via"] == VIA_PROPIETARIA and not participante.get("obligacion"):
+        # La propietaria global SIN obligación propia abre la ruta (era el orden de
+        # `ruta["participantes"]` desde siempre, y `T225` lo despacha la primera); cuando hay
+        # roles y su capacidad además tiene obligación, es la integración semántica y el
+        # llamador la manda la última.
+        return -1
     if participante.get("obligacion") in obligaciones:
         # Rangos crecientes con el orden del proceso: la obligación n-ésima nunca queda
         # antes que la anterior aunque su estación sea menor.
@@ -513,10 +515,24 @@ def _rango_de_estacion(ruta, participante):
         for anterior in ruta["participantes"]:
             if anterior.get("obligacion") in obligaciones and \
                     obligaciones.index(anterior["obligacion"]) < obligaciones.index(participante["obligacion"]):
-                previa = ORDEN_DE_ESTACIONES.index(anterior["capacidad"]) \
-                    if anterior["capacidad"] in ORDEN_DE_ESTACIONES else 99
-                rango = max(rango, previa + 0.001)
+                rango = max(rango, _posicion_de_estacion(anterior) + 0.001)
         return rango
+    # CONDICIONAL: va donde su estación dice, pero nunca antes que una obligatoria cuya
+    # estación le precede. Medido en `T225` (proceso SIS): `APR`, estación 12, se colaba
+    # delante de `SIS → CNS → VER`, que arrancan en la 13 por el orden del proceso.
+    rango = posicion
+    for obligatoria in ruta["participantes"]:
+        if obligatoria.get("obligacion") in obligaciones and _posicion_de_estacion(obligatoria) < posicion:
+            rango = max(rango, _rango_de_estacion(ruta, obligatoria) + 0.0005)
+    return rango
+
+
+def _posicion_de_estacion(participante):
+    capacidad = participante["capacidad"]
+    posicion = ORDEN_DE_ESTACIONES.index(capacidad) if capacidad in ORDEN_DE_ESTACIONES else 99
+    if str(participante.get("metodo") or "") in METODOS_POSTERIORES_A_VER \
+            and "VER" in ORDEN_DE_ESTACIONES:
+        posicion = ORDEN_DE_ESTACIONES.index("VER") + 0.5
     return posicion
 
 
