@@ -367,7 +367,7 @@ class Almacen:
     #      escritor murió dentro de la ventana y el remedio es RECUPERAR, no reparar un
     #      fichero. Los dos casos siguen siendo fallo CERRADO: aquí no se devuelve contenido.
     REINTENTOS_DE_VENTANA = 40
-    ESPERA_DE_VENTANA = 0.01
+    ESPERA_DE_VENTANA = 0.05
 
     def _testigo_que_publico(self, ruta, cid_en_disco):
         """La transacción cuyo TESTIGO dice haber publicado ese `cid` en esa ruta, o `None`."""
@@ -420,7 +420,13 @@ class Almacen:
                 # tiene en la mano, y eso no es corrupción: se vuelve a leer la revisión y,
                 # si avanzó, se juzga contra ella. Sólo si no avanzó es corrupción.
                 vigente = self._leer_revision()
-                if vigente["revision"] != revision["revision"] and intento < self.REINTENTOS_DE_VENTANA:
+                if intento < self.REINTENTOS_DE_VENTANA:
+                    if vigente["revision"] == revision["revision"]:
+                        # Ni testigo ni avance: puede ser un escritor ENTRE el `replace`
+                        # del paso 8 y la escritura de su testigo —que va DESPUÉS, porque
+                        # anota lo que encuentra publicado—. Se espera un poco y se vuelve
+                        # a mirar; sólo agotada la espera sin testigo ni avance es corrupción.
+                        time.sleep(self.ESPERA_DE_VENTANA)
                     continue
                 break
             if intento == self.REINTENTOS_DE_VENTANA:
