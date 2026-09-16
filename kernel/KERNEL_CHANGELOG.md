@@ -25,6 +25,11 @@ release; lo propio del Owner se queda en su instancia.
   enlace simbólico en el camino» sin que lo hubiera (la base se resolvía como `abspath` y
   el destino como `realpath`). Las dos rutas se resuelven ahora por el antecesor existente
   más próximo; un enlace bajo `canonico/` sigue siendo `RUTA_INVALIDA` (`T482`).
+- `validadores/huella.py` · **defecto corregido**: en un `git worktree`, `.git` es un
+  FICHERO (el puntero al gitdir) y el sello lo contaba como `SIN_CLASE`, con lo que
+  `comprobar_integridad` (comprobación 4) salía en rojo en cualquier worktree aunque el
+  sello, calculado desde un clon limpio, fuera correcto. Los artefactos de ejecución
+  (`.git`, `__pycache__`, `.pytest_cache`) se excluyen por nombre, sean directorio o fichero.
 
 ## 2.0.0-alpha.15 — la oficina: el runtime se puede TRABAJAR desde fuera de un chat
 

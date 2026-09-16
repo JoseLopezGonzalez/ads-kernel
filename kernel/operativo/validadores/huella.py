@@ -471,6 +471,12 @@ def ficheros_del_sello(raiz=None):
             ruta = os.path.join(dirpath, nombre)
             if os.path.islink(ruta):
                 continue
+            # En un `git worktree`, `.git` es un FICHERO (el puntero al gitdir), no un
+            # directorio: la exclusión por nombre de directorio no lo veía y el sello lo
+            # contaba como SIN_CLASE. Un artefacto de ejecución se excluye por su nombre,
+            # sea directorio o fichero (medido en el worktree de la campaña de la Directiva).
+            if _excluida_del_sello(None, nombre):
+                continue
             rel = os.path.relpath(ruta, base).replace(os.sep, "/")
             if _excluida_del_sello(rel):
                 continue
