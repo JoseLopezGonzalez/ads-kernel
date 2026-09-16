@@ -59,7 +59,7 @@ import time
 
 from . import fallos, migracion as _migracion
 from .bloqueo import BloqueoExclusivo
-from .diario import Diario, umbral_de_sellado
+from .diario import Diario, umbral_de_sellado, linaje_de
 from .errores import (
     AlmacenNoInicializado,
     AlmacenYaInicializado,
@@ -1030,16 +1030,9 @@ class Almacen:
     def _linaje(self, eventos=None):
         """La sucesión de `revision_id`, de la revisión 0 a la vigente, según el diario."""
         eventos = self._diario.eventos() if eventos is None else eventos
-        agrupados = self._diario.por_transaccion(eventos)
-        linaje = []
-        for evento in eventos:
-            if evento["tipo"] == "almacen.inicializado":
-                linaje.append(evento["resultado"])
-            elif evento["tipo"] == "transicion.preparada":
-                tipos = {e["tipo"] for e in agrupados.get(evento["transaccion"], ())}
-                if "transicion.confirmada" in tipos:
-                    linaje.append(evento["resultado"])
-        return linaje
+        # UNA regla, en `diario.linaje_de`: la misma que aplica `estado/ramas.py` sobre el
+        # diario de otra referencia Git. Aquí no se reescribe.
+        return linaje_de(eventos)
 
     def _numero_de_revision(self, revision_id, eventos=None):
         linaje = self._linaje(eventos)

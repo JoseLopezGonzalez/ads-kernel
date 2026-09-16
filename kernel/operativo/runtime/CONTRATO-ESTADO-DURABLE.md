@@ -139,6 +139,33 @@ especulativo local, y se verifica byte a byte antes de emitirse.
   aquí, y `g.6` la deja declarada como materia calibrable
 ```
 
+## 6 bis · Dos ramas del mismo repositorio de control
+
+`g.6` cubre dos ALMACENES vivos: `detectar_bifurcacion` compara linajes y NO resuelve. Lo
+que ocurre de verdad en un repositorio gobernado por Git es otra cosa: **dos ramas** que,
+desde un antepasado común, anexan transacciones distintas al mismo diario. Ninguna está
+corrupta, las dos verifican, y la divergencia se descubría en el conflicto de `git merge`
+sobre el diario y `REVISION.json` (La Pesquerapp, 2026-09-15: dos ramas en la misma
+revisión 269, y ninguna advertencia posible antes de escribir).
+
+`estado/ramas.py` —`ads_estado.py divergencia --ref-a X --ref-b Y`— lo mide ANTES y sin
+tocar nada: lee revisión y diario de cada referencia como blobs, exige la cadena de §2.4
+sobre lo leído, deriva el linaje con **la misma regla** que el motor (`diario.linaje_de`) y
+clasifica con un vocabulario CERRADO:
+
+```text
+SIN INTERFERENCIA    misma revisión publicada
+COMPATIBLE           una referencia es antepasada de la otra: el diario de una es prefijo
+RIESGO DE CONFLICTO  bifurcadas sin objeto canónico común: el diario chocará igual
+CONFLICTO DIRECTO    bifurcadas y con objetos canónicos comunes, que se nombran
+BLOQUEO              no juzgable: referencia inexistente, sin antepasado común, sin estado,
+                     diario no encadenado, o ventana de publicación abierta
+```
+
+**No resuelve.** Igual que `g.6`: publica la clase, los objetos y qué habría que hacer
+—re-aplicar las transacciones de una rama sobre la otra POR EL MOTOR, nunca fusionar el
+diario a mano—, y la resolución es de quien integra. Lo mide `T480`–`T481`.
+
 ## 6 · Reconciliación
 
 El registro auxiliar es **append-only y encadenado por hash**. Una **apertura** identifica

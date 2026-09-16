@@ -461,6 +461,14 @@ def orden_transicion(argumentos):
     ])
 
 
+def orden_divergencia(argumentos):
+    """El estado durable de DOS referencias Git de este control repo, clasificado. No muta."""
+    from estado import ramas
+    resultado = ramas.comparar(argumentos.repo, argumentos.ref_a, argumentos.ref_b)
+    codigo = _emitir(argumentos, resultado, ramas.como_lineas(resultado))
+    return codigo
+
+
 def orden_recuperar(argumentos):
     # `recuperar=False` al abrir: la recuperación la hace la orden, explícitamente, y no el
     # acto de abrir. Así el informe describe UNA pasada y no dos encadenadas.
@@ -666,6 +674,7 @@ ORDENES = {
     "listar": orden_listar,
     "transicion": orden_transicion,
     "recuperar": orden_recuperar,
+    "divergencia": orden_divergencia,
     "sellar": orden_sellar,
     "verificar": orden_verificar,
     "auditar": orden_auditar,
@@ -706,6 +715,9 @@ def construir_analizador():
     ordenes.add_parser("inicializar", parents=[comun])
     ordenes.add_parser("revision", parents=[comun])
     ordenes.add_parser("recuperar", parents=[comun])
+    divergencia = ordenes.add_parser("divergencia", parents=[comun])
+    divergencia.add_argument("--ref-a", required=True, help="una referencia Git del control repo")
+    divergencia.add_argument("--ref-b", required=True, help="la otra referencia")
     ordenes.add_parser("verificar", parents=[comun])
     ordenes.add_parser("auditar", parents=[comun])
 

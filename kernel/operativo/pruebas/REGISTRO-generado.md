@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 46da3025304c092c -->
+<!-- source_revision: f31cca9de930bef0 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -11,11 +11,11 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | estado | pruebas |
 |---|---|
 | CONTRATO DEFINIDO | 56 |
-| VALIDADOR IMPLEMENTADO | 4 |
+| VALIDADOR IMPLEMENTADO | 7 |
 | PRUEBA EJECUTADA | 0 |
 | PRUEBA SUPERADA | 280 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **340** |
+| **total** | **343** |
 
 ## Detalle
 
@@ -361,18 +361,21 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T475](T460-T479-oficina.md) | Los documentos inconsistentes se rechazan con su nombre | esquema circuito-base · esquema entrega · fallo cerrado | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
 | [T476](T460-T479-oficina.md) | Todo rol materializable tiene contrato operativo efectivo y suficiente | contrato-base · contrato-de-rol · contrato-operativo · ciclo/contratos.py · G13 | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
 | [T477](T460-T479-oficina.md) | Las bases de contrato son coherentes y ningún rol hereda de dos | contrato-base · contrato-de-rol | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T480](T480-T489-estado-entre-ramas.md) | El estado durable de dos ramas se clasifica con el vocabulario cerrado de colisiones | CONTRATO-ESTADO-DURABLE §6 bis · g.6 · OWN-ADS-0226 · OWN-ADS-0224 | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
+| [T481](T480-T489-estado-entre-ramas.md) | La CLI publica la divergencia y no resuelve; lo injuzgable es BLOQUEO | CONTRATO-ESTADO-DURABLE §6 bis · §2.4 · g.8 · OWN-ADS-0223 | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
+| [T482](T480-T489-estado-entre-ramas.md) | Sin canonico/ en disco el motor escribe; con un enlace simbólico debajo, no | CONTRATO-ESTADO-DURABLE §2 · g.13 · rutas.ruta_canonica | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
 
 ## Contraste del estado contra la evidencia
 
-Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **280** de **340**.
+Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **280** de **343**.
 
-No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **60**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
+No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **63**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
 
 Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada mezclaba a los que no afirman ninguna ejecución con los que afirmaban una que su evidencia no nombra, que es lo que `H-02` encontró—:
 
 | estado declarado | escenarios |
 |---|---|
 | contrato-definido | 56 |
-| validador-implementado | 4 |
+| validador-implementado | 7 |
 
 Ninguna divergencia: todo `estado:` declarado coincide con el que su evidencia sostiene.

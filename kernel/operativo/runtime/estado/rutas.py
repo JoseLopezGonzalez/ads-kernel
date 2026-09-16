@@ -142,6 +142,22 @@ def dominio_de(ruta):
 
 
 # ------------------------------------------------------------------ disposición
+def _resuelta_por_el_antecesor_existente(ruta):
+    """`realpath` del antecesor EXISTENTE más próximo de `ruta`, con el resto añadido tal cual.
+
+    Sirve para comparar dos rutas de las que una puede no existir todavía sin que la
+    comparación dependa de si existe: lo que hay en disco se resuelve (enlaces incluidos) y
+    lo que no hay se añade literal. Dos rutas bajo el mismo antecesor existente resuelven
+    igual; una que atraviese un enlace por debajo de ese antecesor, no."""
+    ruta = os.path.abspath(ruta)
+    resto = []
+    sonda = ruta
+    while not os.path.exists(sonda) and os.path.dirname(sonda) != sonda:
+        resto.insert(0, os.path.basename(sonda))
+        sonda = os.path.dirname(sonda)
+    return os.path.join(os.path.realpath(sonda), *resto)
+
+
 class Disposicion:
     """Las rutas físicas de un almacén concreto. Sólo compone; no toca el disco."""
 
@@ -239,12 +255,18 @@ class Disposicion:
         """
         comprobar_ruta_logica(ruta_logica)
         destino = os.path.join(self.canonico, *ruta_logica.split("/"))
-        base = os.path.realpath(self.canonico) if os.path.exists(self.canonico) else \
-            os.path.abspath(self.canonico)
-        sonda = destino
-        while not os.path.exists(sonda) and os.path.dirname(sonda) != sonda:
-            sonda = os.path.dirname(sonda)
-        resuelto = os.path.realpath(sonda)
+        # HECHO REPRODUCIDO (T482, 2026-09-15): tras un `git checkout` a un commit en el que
+        # `canonico/` no tenía objetos, Git no deja el directorio, y la primera escritura
+        # se rechazaba como «hay un enlace simbólico en el camino». No lo había: la base se
+        # tomaba como `abspath` (porque `canonico/` no existía) y el destino como `realpath`
+        # de su antecesor existente, y las dos formas no coinciden en cuanto el temporal, el
+        # home o cualquier tramo del camino sea un enlace. Las DOS se resuelven ahora con
+        # la misma regla —realpath del antecesor existente más próximo, más el resto—, de
+        # modo que un enlace ENCIMA de `canonico/` afecta igual a las dos y no se acusa, y
+        # un enlace DEBAJO —el que la guarda existe para detectar— sigue sacando el
+        # destino fuera de la base y sigue siendo `RUTA_INVALIDA`.
+        base = _resuelta_por_el_antecesor_existente(self.canonico)
+        resuelto = _resuelta_por_el_antecesor_existente(destino)
         if resuelto != base and not resuelto.startswith(base + os.sep):
             raise RutaInvalida(
                 "la ruta lógica se resuelve FUERA de `canonico/`; hay un enlace simbólico "

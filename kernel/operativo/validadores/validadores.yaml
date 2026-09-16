@@ -198,6 +198,14 @@ componentes:
     firma_de_exito: '(?m)^OK$'
     debe_contener: ['Ran ', 'duración no registrada', 'T173', 'T175', 'T176', 'T178']
 
+  - id: estado-entre-ramas
+    script: test_estado_entre_ramas.py
+    dir: kernel/operativo/runtime/pruebas
+    tipo: validador
+    evidencia: estado-entre-ramas-salida.txt
+    firma_de_exito: '(?m)^OK$'
+    debe_contener: ['Ran ', 'duración no registrada', 'T480', 'T481', 'T482']
+
   - id: estado-e2e
     script: escenario_extremo_a_extremo.py
     dir: kernel/operativo/runtime/pruebas

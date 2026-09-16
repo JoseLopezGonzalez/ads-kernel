@@ -5,7 +5,7 @@
 # ---------------------------------------------------------------
 T147  SUPERADA  Todo documento es alcanzable por ruta, y ninguna referencia es ambigua
 
-documentos analizados: 379
+documentos analizados: 380
 nombres base repetidos: 48 (resueltos por ruta, nunca por nombre)
 
 FUERA DEL ANÁLISIS

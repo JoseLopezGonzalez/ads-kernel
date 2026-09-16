@@ -43,17 +43,17 @@
 
 EL UNIVERSO DE PROPIEDADES, DERIVADO
 ------------------------------------------------------------------------------
-  352 propiedades críticas · 160 escenarios · 58 obligaciones del universo
+  358 propiedades críticas · 163 escenarios · 58 obligaciones del universo
   escenarios que cubren obligación y NO escriben `falla_si` —sedes mudas, no aportan propiedad y no se callan— (5): T135, T87, T88, T90, T92
 
 POR REQUISITO — dónde se rompe la cadena
 ------------------------------------------------------------------------------
-  S1  SABOTAJE IMPUTADO AL ESCENARIO              primeras faltas: 180
+  S1  SABOTAJE IMPUTADO AL ESCENARIO              primeras faltas: 186
   S2  MOTIVO DEL ROJO DECLARADO                   primeras faltas: 2
   S3  CANAL PRODUCTIVO, NO PRUEBA TEXTUAL         primeras faltas: 2
   S4  NO ES SÓLO LA HUELLA GENERAL                primeras faltas: 0
   S5  ALCANCE ESPECÍFICO DE ESTA CLÁUSULA         primeras faltas: 101
-  S6  CICLO SANO / SABOTAJE / RESTAURADO          primeras faltas: 5
+  S6  CICLO SANO / SABOTAJE / RESTAURADO          primeras faltas: 7
 
 FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
 ------------------------------------------------------------------------------
@@ -618,6 +618,9 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
   T305/f1      S1  V6-03,V6-12
        «la ausencia de bytes con que comparar se resuelve dando por buena la sede»
        ningún sabotaje del catálogo está imputado a `T305` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:375
+  T306/f1      S6  V6-04,V6-11,g.15
+       «el sys.path, el cwd o el PYTHONPATH del lanzador sustituyen a un módulo del aparato»
+       NK12a: sano → EXIT=1 · FAILED (failures=2); restaurado → EXIT=1 · FAILED (failures=2) · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:393
   T306/f2      S5  V6-04,V6-11,g.15
        «la procedencia no es demostrable en la salida»
        ningún sabotaje de `T306` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK12a: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:393
@@ -756,6 +759,9 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
   T327/f2      S1  g.11
        «un fallo de la operación se confunde con un defecto de programación por compartir código de salida y forma»
        ningún sabotaje del catálogo está imputado a `T327` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:681
+  T330/f1      S6  g.15
+       «un punto ejecutable nuevo entra sin la purga y nadie se entera, que es lo que ocurrió con la raíz externa»
+       N330: sano → EXIT=1 · FAILED (failures=1, errors=1); restaurado → EXIT=1 · FAILED (failures=1, errors=1); NH01: sano → EXIT=1 · FAILED (failures=1, errors=1); restaurado → EXIT=1 · FAILED (failures=1, errors=1) · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:592
   T330/f2      S5  g.15
        «el alcance del control se escribe a mano en vez de derivarse del disco»
        ningún sabotaje de `T330` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N330: el motivo no comparte ni un término distintivo con la cláusula; NH01: el motivo no comparte ni un término distintivo con la  · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:592
@@ -927,10 +933,28 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
   T472/f1      S1  C5
        «un handoff sin artefactos se emite»
        ningún sabotaje del catálogo está imputado a `T472` · sede kernel/operativo/pruebas/T460-T479-oficina.md:296
+  T480/f1      S1  g.6
+       «una bifurcación con objetos comunes se publica como RIESGO en vez de CONFLICTO DIRECTO»
+       ningún sabotaje del catálogo está imputado a `T480` · sede kernel/operativo/pruebas/T480-T489-estado-entre-ramas.md:33
+  T480/f2      S1  g.6
+       «comparar deja el árbol de trabajo en otra rama o con el estado modificado»
+       ningún sabotaje del catálogo está imputado a `T480` · sede kernel/operativo/pruebas/T480-T489-estado-entre-ramas.md:33
+  T481/f1      S1  g.8
+       «la CLI escribe algo en el estado o cambia de rama»
+       ningún sabotaje del catálogo está imputado a `T481` · sede kernel/operativo/pruebas/T480-T489-estado-entre-ramas.md:57
+  T481/f2      S1  g.8
+       «un diario manipulado se clasifica como si estuviera sano»
+       ningún sabotaje del catálogo está imputado a `T481` · sede kernel/operativo/pruebas/T480-T489-estado-entre-ramas.md:57
+  T482/f1      S1  g.13
+       «un almacén sin `canonico/` en disco rechaza escrituras legítimas»
+       ningún sabotaje del catálogo está imputado a `T482` · sede kernel/operativo/pruebas/T480-T489-estado-entre-ramas.md:79
+  T482/f2      S1  g.13
+       «un enlace simbólico bajo `canonico/` deja escribir fuera del árbol»
+       ningún sabotaje del catálogo está imputado a `T482` · sede kernel/operativo/pruebas/T480-T489-estado-entre-ramas.md:79
 
-  352 propiedades críticas medidas · 290 PENDIENTES · 57 obligaciones afectadas
+  358 propiedades críticas medidas · 298 PENDIENTES · 57 obligaciones afectadas
   obligaciones con alguna propiedad pendiente: A14, C2, C4, C5, CONTRATO 1, CONTRATO 1bis, CONTRATO 2, CONTRATO 3, D104, F-01, F-02, F-04, F-05, F-06, F-10, F-11, FD-1, FD-3, FD-5, FD-6, M-04, S1-02, V6-01, V6-02, V6-03, V6-04, V6-05, V6-06, V6-07, V6-08, V6-09, V6-10, V6-11, V6-12, V6-13, V6-14, V6-15, V6-16, V6-17, V6-18, V6-19, g.1, g.10, g.11, g.12, g.13, g.14, g.15, g.16, g.2, g.3, g.4, g.5, g.6, g.7, g.8, g.9
-  pendientes de `O26-SAB`: 290 propiedades, enumeradas arriba
+  pendientes de `O26-SAB`: 298 propiedades, enumeradas arriba
   `O26` §5.2 · NO ACREDITADA por este instrumento
 
 LO QUE ESTE VEREDICTO NO DEMUESTRA

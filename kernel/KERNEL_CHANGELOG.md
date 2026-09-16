@@ -2,6 +2,30 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.16 — la oficina profesional, bajo la Directiva del Owner (en construcción)
+
+**Hecho medido antes de construir** (campaña de la Directiva del Owner de La Pesquerapp,
+2026-09-15): la Directiva Canónica del Owner exige circuitos cerrados por clase de trabajo,
+Diseño como línea de producción, un chat ejecutor sin estado, conciencia global de
+concurrencia, integración con bandeja para el Owner y trazabilidad requisito a requisito.
+La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
+`2.0.0-alpha.15` contra ellos: NO CONFORME, con la mitad de casi todo. Lo que de esa
+distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
+release; lo propio del Owner se queda en su instancia.
+
+- `estado/ramas.py` · `ads_estado.py divergencia` · **el estado durable entre dos ramas
+  del mismo control repo**, clasificado ANTES de fusionar y sin mutar nada: SIN
+  INTERFERENCIA · COMPATIBLE · RIESGO DE CONFLICTO · CONFLICTO DIRECTO · BLOQUEO. Lee
+  revisión y diario como blobs, exige la cadena de §2.4 y deriva el linaje con la regla
+  única `diario.linaje_de`, que `Almacen._linaje` ahora también usa. No resuelve (`g.6`).
+  Contrato §6 bis; `T480`–`T481`. Cierra `OWN-ADS-0226`, `0223`, `0224`.
+- `estado/rutas.py` · **defecto reproducido por la batería nueva y corregido**: tras un
+  `git checkout` a un commit sin objetos canónicos, Git deja el almacén sin `canonico/` en
+  disco y la guarda anti-enlace de `ruta_canonica` rechazaba TODA escritura como «hay un
+  enlace simbólico en el camino» sin que lo hubiera (la base se resolvía como `abspath` y
+  el destino como `realpath`). Las dos rutas se resuelven ahora por el antecesor existente
+  más próximo; un enlace bajo `canonico/` sigue siendo `RUTA_INVALIDA` (`T482`).
+
 ## 2.0.0-alpha.15 — la oficina: el runtime se puede TRABAJAR desde fuera de un chat
 
 **Hecho medido antes de construir** (auditoria forense de La Pesquerapp, 2026-09-14). El

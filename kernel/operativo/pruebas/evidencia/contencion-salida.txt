@@ -42,7 +42,7 @@ T214 · Defecto que previene: inventar un nivel intermedio que no significa nada
 test_la_deteccion_no_descarga_imagenes_de_contenedor (__main__.DeteccionDeCapacidades.test_la_deteccion_no_descarga_imagenes_de_contenedor)
 T214 · Defecto que previene: que la disponibilidad dependa de la red. ... ok
 test_la_sonda_de_cgroup_ejerce_el_mismo_envoltorio_que_el_backend (__main__.DeteccionDeCapacidades.test_la_sonda_de_cgroup_ejerce_el_mismo_envoltorio_que_el_backend)
-T214 · Defecto que previene: sondear una vía distinta de la que después se usa. ... ok
+T214 · Defecto que previene: sondear una vía distinta de la que después se usa. ... skipped 'este anfitrión no delega ningún subárbol de `cgroup2`'
 test_se_sondean_todos_los_backends_del_orden_declarado (__main__.DeteccionDeCapacidades.test_se_sondean_todos_los_backends_del_orden_declarado)
 T214 · Defecto que previene: elegir un backend sin haber mirado los demás. ... ok
 test_410_las_cuatro_generaciones_CONFIRMAN_antes_de_que_se_mate_nada (__main__.ProtocoloDePreparacion.test_410_las_cuatro_generaciones_CONFIRMAN_antes_de_que_se_mate_nada)
@@ -61,4 +61,4 @@ T418 · Defecto que previene: que la carga borre la distinción que `T411` hace.
 ----------------------------------------------------------------------
 Ran 26 tests  (duración no registrada: varía por ejecución)
 
-OK
+OK (skipped=1)

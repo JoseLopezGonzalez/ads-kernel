@@ -67,6 +67,12 @@ barrido no lo despacha ni lo cuenta como postergado. `tomables()` publica lo que
 trabajador puede tomar AHORA —sin dependencia pendiente y sin lease ajeno— y, aparte, lo
 que espera y a qué.
 
+**Un trabajador posee UN paquete a la vez, y ninguno por adelantado.** No existe reserva
+ni prefetch: lo único que un trabajador tiene es el lease del paquete que está ejecutando,
+adquirido al tomar y devuelto al entregar o soltar. «Lo haré después» no es un estado del
+runtime. Un paquete que nadie está ejecutando es tomable por cualquiera, y eso es lo que
+hace fungibles a los trabajadores y posible la batería (`T460`, `T462`; OWN-ADS-0241 a 0243).
+
 **El latido es obligación del trabajador.** `PACIENCIA` barridos de un supervisor sin latido
 es lo que hace reclamable un lease, y el brief lo dice: escribir checkpoint al terminar
 cada paso es lo que separa a un trabajador vivo de uno muerto.
