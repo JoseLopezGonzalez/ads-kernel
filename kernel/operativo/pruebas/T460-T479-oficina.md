@@ -1,4 +1,4 @@
-# T460–T477 — la oficina: trabajadores, entregas, niveles, supervisor y contratos de rol
+# T460–T486 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78 y fronteras de §77
 
 **Qué cierran.** El hallazgo de la auditoría forense de La Pesquerapp del 2026-09-14: el
 kernel tenía escrito el runtime completo —paquetes, leases, dispatcher, ciclo, gates,
@@ -38,6 +38,10 @@ T474  un reinicio completo reconstruye exactamente lo mismo
 T475  los documentos inconsistentes se rechazan con su nombre
 T476  todo rol materializable tiene contrato operativo efectivo y suficiente
 T477  las bases de contrato son coherentes y ningún rol hereda de dos
+T483  entregar con un handoff recibido sin acusar se rechaza: no existe «seguimos» (§78)
+T484  el handoff emitido lleva los catorce campos de §78, derivados de la entrega y del plan
+T485  escalar exige una materia que la capacidad ESCALA; una que decide sola se rechaza (§20, §41, §76)
+T486  las fronteras previas a la construcción se distinguen: investigada · diseñada · aprobada · especificada (§77)
 ```
 
 ---
@@ -407,4 +411,80 @@ ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_contratos.py
 estado: prueba-superada
 evidencia: evidencia/contratos-salida.txt
+```
+
+```yaml ads:escenario
+id: T483
+nombre: Entregar con un handoff recibido sin acusar se rechaza
+cubre: ["CONTRATO-OFICINA §3", "acuse", "Directiva del Owner §78", "OWN-ADS-0280"]
+dado:
+  - "un paquete de CNS/implementacion tomado con dos handoffs de PRD en `emitido`"
+cuando:
+  - "el trabajador entrega sin haber acusado ni rechazado lo recibido"
+entonces:
+  - "ENTREGA_INVALIDA que nombra los handoffs sin acusar; el paquete sigue `ejecutando` y nada se escribe"
+  - "acusados los dos, la misma entrega se admite"
+falla_si:
+  - "una entrega con un handoff recibido en `emitido` toca el estado"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T484
+nombre: El handoff emitido lleva los catorce campos de §78
+cubre: ["CONTRATO-OFICINA §4", "handoff", "Directiva del Owner §78", "OWN-ADS-0278"]
+dado:
+  - "una entrega de CNS/implementacion con riesgos, decisiones asumidas y algo no hecho"
+cuando:
+  - "se entrega y se emiten los handoffs a los sucesores"
+entonces:
+  - "cada handoff trae `contenido` con exactamente los catorce campos: origen, destino, paquete, objetivo, entrada recibida, trabajo realizado, entregables, decisiones, riesgos, evidencia, criterios de aceptación, deuda, cuestiones abiertas y qué puede devolver el receptor"
+  - "entrada recibida son los handoffs que este paquete acusó; riesgos, decisiones y no hecho son los de la entrega"
+  - "un contenido a medias no se emite (HandoffIncompleto)"
+falla_si:
+  - "un handoff se emite sin alguno de los catorce campos"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T485
+nombre: Escalar exige una materia que la capacidad ESCALA, y una que decide sola se rechaza
+cubre: ["CONTRATO-OFICINA §3", "escalado", "Directiva del Owner §20 §41 §76", "OWN-ADS-0074", "OWN-ADS-0161", "OWN-ADS-0271"]
+dado:
+  - "un paquete de PRD/criterio-de-exito tomado; la ficha de PRD declara decide_sola y escala"
+cuando:
+  - "se entrega `escalado` sin materia, con una materia de decide_sola, con una inventada y con una de escala"
+entonces:
+  - "las tres primeras son ENTREGA_INVALIDA y no tocan el estado; la cuarta deja el cierre `escalado` con la autoridad"
+falla_si:
+  - "un escalado al Owner con una materia que el equipo decide solo se admite"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T486
+nombre: Las fronteras previas a la construcción se distinguen
+cubre: ["CONTRATO-OFICINA §6", "fronteras", "Directiva del Owner §77", "OWN-ADS-0275", "OWN-ADS-0276"]
+dado:
+  - "un item planificado con el circuito cambio-con-interfaz (DIS antes que CNS)"
+cuando:
+  - "se evalúa la terminación antes y después de entregar DIS/diseno-visual"
+entonces:
+  - "antes: admitida y encuadrada alcanzadas, investigada no-exigida, diseñada pendiente, aprobada sin-mecanismo"
+  - "después: diseñada alcanzada, y los niveles (implementado…) siguen faltando: las fronteras no son niveles"
+falla_si:
+  - "diseñada se da por alcanzada sin que ningún paquete de diseño haya entregado"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
 ```

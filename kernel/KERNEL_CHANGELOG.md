@@ -25,6 +25,18 @@ release; lo propio del Owner se queda en su instancia.
   enlace simbólico en el camino» sin que lo hubiera (la base se resolvía como `abspath` y
   el destino como `realpath`). Las dos rutas se resuelven ahora por el antecesor existente
   más próximo; un enlace bajo `canonico/` sigue siendo `RUTA_INVALIDA` (`T482`).
+- `ciclo/oficina.py` · `ciclo/handoffs.py` · **acuse obligatorio antes de entregar** (`T483`;
+  cierra `OWN-ADS-0280`) y **los catorce campos de §78 en cada handoff**, derivados de la
+  entrega, del plan y del item en `contenido`, con la correspondencia escrita en
+  CONTRATO-OFICINA §4 (`T484`; `OWN-ADS-0278`).
+- `ciclo/entregas.py` · `esquemas/entrega.yaml` · **escalar exige la materia**, una de las
+  que la capacidad del rol declara que ESCALA; una de `decide_sola` se rechaza (`T485`;
+  `OWN-ADS-0074`, `0161`, `0271`). El brief lo dice en su sección 8.
+- `ciclo/terminacion.py` · **fronteras previas a la construcción** (§77): `admitida ·
+  encuadrada · investigada · disenada · aprobada · especificada`, derivadas de qué paquetes
+  del plan entregaron y publicadas en `evaluar_terminacion` y en `terminacion` del CLI;
+  `aprobada` se declara sin mecanismo hasta la línea de Diseño (`T486`; `OWN-ADS-0275`,
+  `0276`).
 - `validadores/huella.py` · **defecto corregido**: en un `git worktree`, `.git` es un
   FICHERO (el puntero al gitdir) y el sello lo contaba como `SIN_CLASE`, con lo que
   `comprobar_integridad` (comprobación 4) salía en rojo en cualquier worktree aunque el

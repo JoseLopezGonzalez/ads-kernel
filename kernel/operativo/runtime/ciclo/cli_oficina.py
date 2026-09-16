@@ -186,7 +186,9 @@ def orden_terminacion(argumentos, *, abrir, corpus, emitir):
         evaluacion = oficina.evaluar_terminacion(rt, corpus=corpus, item=argumentos.item,
                                                  circuito=circuito, hechos=_hechos(argumentos))
     return emitir(argumentos, evaluacion, ["item          " + argumentos.item + " · circuito "
-                                           + evaluacion["circuito"]] + [
+                                           + evaluacion["circuito"], "fronteras previas (§77):"] + [
+        "  " + f["frontera"].ljust(20) + f["estado"].ljust(14) + f["motivo"] for f in evaluacion.get("fronteras") or []
+    ] + ["niveles:"] + [
         "  " + f["nivel"].ljust(20) + f["estado"].ljust(12) + f["motivo"] for f in evaluacion["niveles"]
     ] + ["nivel         " + str(evaluacion["nivel_mas_alto"]) + " · puede cerrar: "
          + ("sí" if evaluacion["puede_cerrar"] else "NO: faltan " + ", ".join(evaluacion["faltan"]))])

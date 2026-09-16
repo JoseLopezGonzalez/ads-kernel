@@ -66,6 +66,14 @@ ESTADOS = (EMITIDO, ACUSADO, RECHAZADO, DEVUELTO)
 # Los CUATRO campos que `C5` exige a toda devolución, sin excepción.
 CAMPOS_DE_DEVOLUCION = ("que_falta", "por_que_es_insuficiente", "que_la_cerraria", "evidencia")
 
+# Los CATORCE campos que la Directiva del Owner de La Pesquerapp exige a todo handoff (§78;
+# OWN-ADS-0278). Viajan en `contenido`, DERIVADOS de la entrega registrada, del plan y del
+# item al emitir: el receptor no reconstruye nada leyendo una conversación. La
+# correspondencia con la entrega está escrita en CONTRATO-OFICINA §4.
+CAMPOS_DE_78 = ("origen", "destino", "paquete", "objetivo", "entrada_recibida", "trabajo_realizado",
+                "entregables", "decisiones", "riesgos", "evidencia", "criterios_de_aceptacion",
+                "deuda", "cuestiones_abiertas", "que_puede_devolver_el_receptor")
+
 
 # ===========================================================================
 #  las CINCO entregas que `§8.0` declara y `circuitos/` todavía no tiene
@@ -305,14 +313,24 @@ def generica(de, a, *, corpus=None):
 
 
 def emitir(identificador, *, artefactos, checkpoint, trazabilidad, corpus=None,
-           declarada=None):
+           declarada=None, contenido=None):
     """El productor entrega. La custodia NO cambia todavía: cambia con el ACUSE.
 
     `declarada` permite emitir una entrega GENÉRICA (`generica()`) o una instancia ya
-    resuelta; sin ella se busca `identificador` en el catálogo, como siempre.
+    resuelta; sin ella se busca `identificador` en el catálogo, como siempre. `contenido`,
+    si viene, trae los CATORCE campos de §78 (`CAMPOS_DE_78`), todos: un handoff con
+    contenido a medias no se emite.
     """
     if declarada is None:
         declarada = instancia(identificador, corpus=corpus)
+    if contenido is not None:
+        faltan = [c for c in CAMPOS_DE_78 if c not in contenido]
+        if faltan:
+            raise HandoffIncompleto(
+                "el contenido del handoff no trae " + ", ".join(faltan) + ": §78 exige los "
+                "catorce campos, y sin ellos el receptor tendría que reconstruirlos",
+                handoff=identificador, faltan=faltan,
+            )
     if not artefactos:
         raise HandoffIncompleto(
             "un handoff sin artefactos concretos no es una entrega: `C5` dice «artefactos "
@@ -348,6 +366,7 @@ def emitir(identificador, *, artefactos, checkpoint, trazabilidad, corpus=None,
             "destino": str(trazabilidad.get("destino") or ""),
             "entrega": str(trazabilidad.get("entrega") or ""),
         },
+        "contenido": dict(contenido) if contenido is not None else None,
         "estado": EMITIDO,
         "custodia": declarada["de"],
         "acuse": None,

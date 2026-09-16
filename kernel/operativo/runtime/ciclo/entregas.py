@@ -55,6 +55,12 @@ def comprobar_forma(entrega, *, corpus=None, contrato=None, gate=None):
     if veredicto == "escalado" and not (entrega.get("bloqueo") or {}).get("posturas"):
         fallos.append("entrega.bloqueo.posturas: escalar exige las posturas enfrentadas "
                       "escritas (a.7): sin material no se le pide a nadie que arbitre")
+    if veredicto == "escalado" and entrega.get("bloqueo"):
+        # Directiva §20, §41, §76 (OWN-ADS-0074, 0161, 0271): no se escala lo que la
+        # capacidad DECIDE SOLA. La materia se nombra entre las que su ficha declara que
+        # ESCALA; una de `decide_sola` se rechaza, y una que no está en ninguna lista también:
+        # escalar no es una opinión libre, es una cláusula de autoridad.
+        fallos.extend(_materia_escalable(entrega, corpus))
     if veredicto == "entregado" and not entrega.get("artefactos"):
         fallos.append("entrega.artefactos: una entrega sin artefactos no es una entrega; "
                       "C5 dice «artefactos concretos, localizables»")
@@ -105,6 +111,27 @@ def comprobar_forma(entrega, *, corpus=None, contrato=None, gate=None):
                               + "` prohíbe dictaminar `" + str(dictamen.get("gate"))
                               + "` sobre su propio paquete (no_autocertifica)")
     return fallos
+
+
+def _materia_escalable(entrega, corpus):
+    capacidad = str(entrega.get("rol") or "").split("/", 1)[0]
+    try:
+        autoridad = (corpus.capacidad(capacidad) or {}).get("autoridad") or {}
+    except Exception:                                                  # noqa: BLE001
+        return []
+    escala = [str(x) for x in autoridad.get("escala") or []]
+    decide = [str(x) for x in autoridad.get("decide_sola") or []]
+    materia = str((entrega.get("bloqueo") or {}).get("materia") or "").strip()
+    if not materia:
+        return ["entrega.bloqueo.materia: escalar exige nombrar la materia, una de las que `"
+                + capacidad + "` ESCALA según su ficha: " + " · ".join(escala)]
+    if materia in decide:
+        return ["entrega.bloqueo.materia: «" + materia + "» la decide sola `" + capacidad
+                + "` (decide_sola): no se escala al Owner lo que el equipo resuelve (Directiva §20, §41, §76)"]
+    if materia not in escala:
+        return ["entrega.bloqueo.materia: «" + materia + "» no es una de las materias que `"
+                + capacidad + "` escala según su ficha: " + " · ".join(escala)]
+    return []
 
 
 def exigir_forma(entrega, **opciones):

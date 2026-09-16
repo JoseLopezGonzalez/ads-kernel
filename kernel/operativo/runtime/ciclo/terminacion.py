@@ -62,6 +62,18 @@ GATE_DEL_NIVEL = {
     "aceptado": "gate:aceptacion-del-owner",
 }
 
+# Las FRONTERAS previas a la construcción (Directiva §77; OWN-ADS-0275, 0276): estados
+# distinguibles del item ANTES de `implementado`, derivados de qué paquetes del plan han
+# entregado. No son niveles con gate: son hechos del plan. `aprobada` (la dirección
+# aprobada por el Owner) no tiene mecanismo hasta la línea de Diseño (enc-dir-diseno) y se
+# publica como tal, no se finge.
+FRONTERAS = ("admitida", "encuadrada", "investigada", "disenada", "aprobada", "especificada")
+ROLES_DE_FRONTERA = {
+    "investigada": ("INV/",),
+    "disenada": ("DIS/direccion-artistica", "DIS/diseno-visual", "DIS/diseno-interaccion"),
+    "especificada": ("DIS/sistema-de-diseno", "DIS/prototipado"),
+}
+
 ALCANZADO = "alcanzado"
 PENDIENTE = "pendiente"
 INAPLICABLE = "inaplicable"
@@ -298,6 +310,38 @@ def evaluar(circuito, *, item, paquetes_del_item, dictamenes, hechos, cierre=Non
         "puede_cerrar": not faltan,
         "nivel_mas_alto": _mas_alto(filas),
     }
+
+
+def evaluar_fronteras(plan, estados_por_paquete):
+    """Las fronteras de §77 para un item con plan: alcanzada · pendiente · no-exigida ·
+    sin-mecanismo. `estados_por_paquete` es {paquete: estado del runtime}."""
+    filas = {f["paquete"]: f for f in (plan or {}).get("correspondencia") or []}
+    salida = []
+    for frontera in FRONTERAS:
+        if frontera == "admitida":
+            salida.append({"frontera": frontera, "estado": ALCANZADO if plan else PENDIENTE,
+                           "motivo": "el item tiene plan de oficina" if plan else "sin plan"})
+            continue
+        if frontera == "encuadrada":
+            ok = bool((plan or {}).get("encuadre"))
+            salida.append({"frontera": frontera, "estado": ALCANZADO if ok else PENDIENTE,
+                           "motivo": "encuadre " + str((plan or {}).get("encuadre")) if ok else "sin encuadre"})
+            continue
+        if frontera == "aprobada":
+            salida.append({"frontera": frontera, "estado": "sin-mecanismo",
+                           "motivo": "la aprobación de la dirección por el Owner no tiene gate todavía (enc-dir-diseno)"})
+            continue
+        prefijos = ROLES_DE_FRONTERA[frontera]
+        propios = [p for p, f in filas.items() if any(str(f.get("rol") or "").startswith(x) for x in prefijos)]
+        if not propios:
+            salida.append({"frontera": frontera, "estado": NO_EXIGIDO,
+                           "motivo": "el circuito no materializa " + ", ".join(prefijos)})
+            continue
+        hechos = [p for p in propios if estados_por_paquete.get(p) == "completado"]
+        salida.append({"frontera": frontera, "estado": ALCANZADO if hechos else PENDIENTE,
+                       "motivo": ("entregado por " + ", ".join(filas[p].get("rol") for p in hechos)) if hechos
+                       else ("esperan " + ", ".join(propios))})
+    return salida
 
 
 def _mas_alto(filas):

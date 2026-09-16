@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""test_oficina — `T460`–`T475`: el protocolo de trabajadores, la entrega, los niveles y el supervisor.
+"""test_oficina — `T460`–`T486`: el protocolo de trabajadores, la entrega, los niveles, el supervisor, los handoffs de §78 y las fronteras de §77.
 
 Contrato: `CONTRATO-OFICINA.md`. Todo esto EJECUTA sobre control repos reales en directorios
 temporales, con trabajadores que son PROCESOS reales cuando la propiedad lo exige —una
@@ -1171,7 +1171,8 @@ class Adversarial(Laboratorio):
         entrega = self.entrega(impl_x, "CNS/implementacion", "escalado")
         entrega["bloqueo"] = {"que_lo_impide": "el criterio de éxito exige una decisión de alcance",
                               "que_lo_desbloquearia": "que el Owner elija entre las dos opciones",
-                              "autoridad": "OWNER", "posturas": ["A: exportar todo", "B: exportar filtrado"]}
+                              "autoridad": "OWNER", "posturas": ["A: exportar todo", "B: exportar filtrado"],
+                              "materia": self.corpus.capacidad("CNS")["autoridad"]["escala"][1]}
         self.entregar(A, impl_x, entrega)
         vista = tablero.derivar(A, corpus=self.corpus)
         self.assertEqual([e["item"] for e in vista["escalados"]], ["enc-x"])
@@ -1433,6 +1434,132 @@ class Cronica(Laboratorio):
         texto = cronica.como_texto(sucesos)
         self.assertIn("CRÓNICA DE LA OFICINA", texto)
         self.assertNotIn(self.repo, texto)
+
+
+# =========================================================================
+# T483–T486 · handoffs con los catorce campos de §78, acuse obligatorio, materia del
+# escalado y fronteras previas a la construcción (Directiva del Owner de La Pesquerapp)
+# =========================================================================
+class HandoffsYFronteras(Laboratorio):
+
+    def test_24_entregar_con_un_handoff_recibido_sin_acusar_se_rechaza(self):
+        """T483 · Defecto que previene: «seguimos» como transferencia implícita (§78)."""
+        from ciclo import handoffs
+        A = self.rt("w-A")
+        plan = self.planificar(A)["plan"]
+        impl = self.paquete_de(plan, "CNS/implementacion")
+        self.avanzar_prd(A, plan, impl)
+        # tomar SIN acusar: el brief lista lo recibido, y se entrega sin haberlo acusado
+        toma = oficina.tomar(A, corpus=self.corpus, paquete=impl, circuito=self.circuito)
+        self.assertTrue(toma["brief"]["recibes"])
+        with self.assertRaises(ciclo.EntregaInvalida) as cm:
+            self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
+        self.assertIn("sin acusar", str(cm.exception))
+        self.assertEqual(A._leer_paquete(impl)["estado"], "ejecutando")   # no tocó el estado
+        for h in toma["brief"]["recibes"]:
+            oficina.acusar(A, corpus=self.corpus, handoff=h["id"], comprobaciones_superadas=h["comprueba_al_recibir"])
+        res = self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
+        self.assertEqual(res["veredicto"], "entregado")
+        self.assertTrue(all(h["estado"] == handoffs.ACUSADO for h in oficina.handoffs_del_item(A.almacen, "enc-x")
+                            if (h.get("trazabilidad") or {}).get("destino") == impl))
+
+    def test_25_el_handoff_emitido_lleva_los_catorce_campos_de_la_directiva(self):
+        """T484 · Defecto que previene: un receptor que reconstruye la entrega leyendo un chat."""
+        from ciclo import handoffs
+        A = self.rt("w-A")
+        plan = self.planificar(A)["plan"]
+        impl = self.paquete_de(plan, "CNS/implementacion")
+        self.avanzar_prd(A, plan, impl)
+        self.tomar_y_acusar(A, impl)
+        e = self.entrega(impl, "CNS/implementacion")
+        e["riesgos"] = ["la migración toca una tabla caliente"]
+        e["decisiones_asumidas"] = ["índice compuesto en vez de dos simples"]
+        e["no_hecho"] = ["la exportación a XLSX"]
+        res = self.entregar(A, impl, e)
+        self.assertTrue(res["handoffs_emitidos"])
+        emitido = [h for h in oficina.handoffs_del_item(A.almacen, "enc-x") if h["id"] in res["handoffs_emitidos"]][0]
+        contenido = emitido["contenido"]
+        self.assertEqual(sorted(contenido), sorted(handoffs.CAMPOS_DE_78))
+        self.assertEqual(contenido["paquete"], impl)
+        self.assertEqual(contenido["origen"]["rol"], "CNS/implementacion")
+        self.assertTrue(contenido["destino"]["paquete"])
+        self.assertTrue(contenido["entrada_recibida"])                 # lo que impl acusó de PRD
+        self.assertEqual(contenido["riesgos"], ["la migración toca una tabla caliente"])
+        self.assertEqual(contenido["decisiones"], ["índice compuesto en vez de dos simples"])
+        self.assertIn("la exportación a XLSX", contenido["cuestiones_abiertas"])
+        self.assertTrue(contenido["que_puede_devolver_el_receptor"]["rechaza_si"])
+        self.assertEqual(len(contenido["entregables"]), len(e["artefactos"]))
+        # un contenido a medias no se emite
+        with self.assertRaises(ciclo.HandoffIncompleto):
+            handoffs.emitir("handoff:con-a-ver", artefactos=["commit:abc"], checkpoint="x",
+                            trazabilidad={"item": "i", "paquete": "p", "ruta": "r"}, corpus=self.corpus,
+                            contenido={"origen": "x"})
+
+    def test_26_escalar_exige_una_materia_que_la_capacidad_escala_y_no_una_que_decide_sola(self):
+        """T485 · Defecto que previene: el Owner arbitrando spacing (Directiva §20, §41, §76)."""
+        A = self.rt("w-A")
+        plan = self.planificar(A)["plan"]
+        crit = self.paquete_de(plan, "PRD/criterio-de-exito")
+        defin = self.paquete_de(plan, "PRD/definicion")
+        self.tomar_y_acusar(A, defin)
+        self.entregar(A, defin, self.entrega(defin, "PRD/definicion"))
+        self.tomar_y_acusar(A, crit)
+        autoridad = self.corpus.capacidad("PRD")["autoridad"]
+        base = {"que_lo_impide": "el criterio exige una decisión de alcance", "que_lo_desbloquearia": "que el Owner elija",
+                "autoridad": "OWNER", "posturas": ["A: exportar todo", "B: exportar sólo lo filtrado"]}
+        # sin materia: no
+        e = self.entrega(crit, "PRD/criterio-de-exito", "escalado"); e["bloqueo"] = dict(base)
+        with self.assertRaises(ciclo.EntregaInvalida) as cm:
+            self.entregar(A, crit, e)
+        self.assertIn("materia", str(cm.exception))
+        # una materia que PRD decide sola: no
+        e["bloqueo"] = dict(base, materia=autoridad["decide_sola"][0])
+        with self.assertRaises(ciclo.EntregaInvalida) as cm:
+            self.entregar(A, crit, e)
+        self.assertIn("decide sola", str(cm.exception))
+        # una materia inventada: no
+        e["bloqueo"] = dict(base, materia="el color del botón de exportar")
+        with self.assertRaises(ciclo.EntregaInvalida):
+            self.entregar(A, crit, e)
+        self.assertEqual(A._leer_paquete(crit)["estado"], "ejecutando")   # nada tocó el estado
+        # una de las que ESCALA: sí, y el cierre queda escalado con su autoridad
+        e["bloqueo"] = dict(base, materia=autoridad["escala"][0])
+        res = self.entregar(A, crit, e)
+        self.assertEqual(res["cierre"]["salida"], "escalado")
+        self.assertEqual(res["cierre"]["autoridad"], "OWNER")
+
+    def test_27_las_fronteras_previas_a_la_construccion_se_distinguen(self):
+        """T486 · Defecto que previene: «cerrado» como sinónimo de «implementado», y un item del
+        que nadie sabe si está diseñado (Directiva §77)."""
+        A = self.rt("w-A")
+        circuito = self.circuitos["cambio-con-interfaz"]
+        plan = oficina.planificar(A, corpus=self.corpus, entrada=self.entrada(), circuito=circuito,
+                                  control_repo=self.repo, item="enc-ui", titulo="Diálogo nuevo")["plan"]
+        hechos = {"afecta_superficie": True}
+        ev = oficina.evaluar_terminacion(A, corpus=self.corpus, item="enc-ui", circuito=circuito, hechos=hechos)
+        fr = {f["frontera"]: f["estado"] for f in ev["fronteras"]}
+        self.assertEqual(fr["admitida"], "alcanzado")
+        self.assertEqual(fr["encuadrada"], "alcanzado")
+        self.assertEqual(fr["investigada"], "no-exigido")          # el circuito no trae INV
+        self.assertEqual(fr["disenada"], "pendiente")
+        self.assertEqual(fr["aprobada"], "sin-mecanismo")          # se dice, no se finge
+        # se entrega el diseño visual: la frontera diseñada queda alcanzada, sin tocar los niveles
+        dis = self.paquete_de(plan, "DIS/diseno-visual")
+        filas = self.filas(plan)
+        for _ in range(6):
+            pendientes, inviables = A._dependencias_pendientes(A._leer_paquete(dis))
+            if not pendientes and not inviables:
+                break
+            pq = [t["paquete"] for t in A.tomables()["tomables"] if t["paquete"] != dis and t["paquete"] in filas][0]
+            self.tomar_y_acusar(A, pq)
+            self.entregar(A, pq, self.entrega(pq, filas[pq]["rol"]))
+        self.tomar_y_acusar(A, dis)
+        res = oficina.entregar(A, corpus=self.corpus, paquete=dis, entrega=self.entrega(dis, "DIS/diseno-visual"), circuito=circuito)
+        self.assertEqual(res["veredicto"], "entregado")
+        ev = oficina.evaluar_terminacion(A, corpus=self.corpus, item="enc-ui", circuito=circuito, hechos=hechos)
+        fr = {f["frontera"]: f["estado"] for f in ev["fronteras"]}
+        self.assertEqual(fr["disenada"], "alcanzado")
+        self.assertIn("implementado", ev["faltan"])                # las fronteras no son niveles
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):

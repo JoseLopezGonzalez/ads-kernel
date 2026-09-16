@@ -375,7 +375,9 @@ def como_markdown(brief):
     lineas += _lista("artefactos obligatorios:", [
             a["tipo"] + " · " + a["nombre"] for a in forma["artefactos_obligatorios"]])
     lineas += ["`devuelto` exige devolucion.{que_falta, por_que_es_insuficiente, que_la_cerraria, evidencia}",
-               "`bloqueado`/`escalado` exigen bloqueo.{que_lo_impide, que_lo_desbloquearia, autoridad[, posturas]}"]
+               "`bloqueado`/`escalado` exigen bloqueo.{que_lo_impide, que_lo_desbloquearia, autoridad[, posturas]}",
+               "`escalado` exige además bloqueo.materia, UNA de las que tu capacidad ESCALA (sección 3): lo que "
+               "decide sola no se escala"]
     if brief["ordenes"]:
         lineas += [""] + _lista("órdenes:", [k + ": " + str(v) for k, v in sorted(brief["ordenes"].items())])
     lineas += ["", "## 9 · Prohibiciones"] + [""] + ["· " + p for p in brief["prohibiciones"]]

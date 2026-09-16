@@ -89,7 +89,13 @@ CHECKLIST          contesta ENTERO el del contrato operativo del rol, cuando lo 
 ARTEFACTOS         los obligatorios del contrato operativo están, por tipo
 DEVUELTO           trae los CUATRO campos de C5; sin ellos no es una devolución
 BLOQUEADO/ESCALADO trae qué lo impide, qué lo desbloquearía y la autoridad; escalar exige
-                   además las posturas enfrentadas (a.7)
+                   además las posturas enfrentadas (a.7) y la MATERIA: una de las que la
+                   capacidad del rol declara que ESCALA en su ficha (`autoridad.escala`).
+                   Una materia de `decide_sola` se rechaza: lo que el equipo resuelve no
+                   se escala al Owner (Directiva del Owner §20, §41, §76; `T485`)
+ACUSE PREVIO       lo que el paquete RECIBIÓ está acusado o rechazado ANTES de entregar; un
+                   handoff recibido en `emitido` invalida la entrega. No existe «seguimos»
+                   como transferencia implícita (Directiva §78; `T483`)
 DICTÁMENES         un rol que juzga trae su dictamen, y el dictamen lo aplica
                    `gates.aplicar` con revisor ≠ autor POR ROL; la autoevaluación del
                    productor NUNCA es el dictamen
@@ -114,6 +120,30 @@ bloqueado   se registra la entrega · checkpoint con el bloqueo · `ejecutando �
             el trabajo de reemplazo nombrado
 escalado    igual, con la autoridad y las posturas, y el cierre del item en `escalado`
 ```
+
+**Lo que viaja en cada handoff (los catorce campos de §78, `T484`).** Además de la
+declaración de `C5` (once campos) y de la trazabilidad, todo handoff emitido lleva
+`contenido`, DERIVADO al emitir de la entrega registrada, del plan y del item —el receptor
+no reconstruye nada leyendo una conversación—, con esta correspondencia:
+
+```text
+origen                          capacidad, rol y paquete emisor
+destino                         capacidad, rol y paquete receptor
+paquete                         el paquete emisor
+objetivo                        `objetivo` del item (vacío si el item no lo declara)
+entrada_recibida                los handoffs que el emisor ACUSÓ
+trabajo_realizado               la entrega registrada: id, veredicto, siguiente
+entregables                     `artefactos` de la entrega
+decisiones                      `decisiones_asumidas`
+riesgos                         `riesgos`
+evidencia                       `evidencias`
+criterios_de_aceptacion         `comprueba_al_recibir` de la declaración + el gate autoevaluado
+deuda                           `deuda_aceptada`
+cuestiones_abiertas             `no_hecho` + `diferencias_declaradas`
+que_puede_devolver_el_receptor  `rechaza_si` + `devolucion` de la declaración
+```
+
+Un contenido con un campo de menos no se emite (`HandoffIncompleto`).
 
 **Por qué la corrección va ANTES de cerrar el paquete que devuelve.** Un sucesor del
 receptor —VER espera a la revisión de construcción— se volvería elegible en el instante en
@@ -207,6 +237,17 @@ entre «hay commits en ramas» (implementado, revisado) y «existe una combinaci
 probada junta desde la que se puede volver» (integrado); `verificado` juzga comportamiento
 sobre revisiones, `aceptado` es el Owner. Una clase que no escribe fuentes lo declara
 inaplicable con `fuentes_escritas_cuenta == 0`, y sólo así.
+
+**Las fronteras previas a la construcción (Directiva §77, `T486`).** Antes de
+`implementado` un item pasa por estados que el sistema distingue y publica en
+`evaluar_terminacion` como `fronteras`: `admitida` (tiene plan), `encuadrada` (el plan
+tiene encuadre), `investigada` (un paquete `INV/*` entregó), `disenada` (`DIS/direccion-
+artistica`, `DIS/diseno-visual` o `DIS/diseno-interaccion` entregó), `especificada`
+(`DIS/sistema-de-diseno` o `DIS/prototipado` entregó), `aprobada` (la dirección aprobada
+por el Owner: **sin mecanismo** hasta la línea de Diseño; se publica así, no se finge).
+Una frontera es un hecho del plan —`alcanzado · pendiente · no-exigido · sin-mecanismo`—,
+no un nivel con gate: no entra en `puede_cerrar`. «Cerrado» no es sinónimo de
+«implementado», y «en curso» no es sinónimo de «diseñado».
 
 ## 7 · El agente sin chat, y el supervisor
 

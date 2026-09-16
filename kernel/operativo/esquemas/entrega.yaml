@@ -114,10 +114,14 @@ campos:
       evidencia: {tipo: lista, de: texto}
       dictamen: {tipo: enum, valores: [superado, no-superado]}
   # Solo cuando `veredicto: bloqueado` o `escalado`.
+  # `escalado` exige ademas `materia`: UNA de las que la capacidad del rol declara que ESCALA
+  # en `autoridad.escala` de su ficha; una de `decide_sola` se rechaza (Directiva §20, §41,
+  # §76). La comprueba `entregas.comprobar_forma`, no este esquema.
   bloqueo:
     tipo: objeto
     obligatorios: [que_lo_impide, que_lo_desbloquearia, autoridad]
     campos:
+      materia: {tipo: texto, min: 5}
       que_lo_impide: {tipo: texto, min: 10}
       que_lo_desbloquearia: {tipo: texto, min: 10}
       autoridad: {tipo: texto, min: 3}

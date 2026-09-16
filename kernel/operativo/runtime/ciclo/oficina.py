@@ -448,6 +448,16 @@ def entregar(runtime, *, corpus=None, paquete, entrega, circuito=None, hechos=No
     # idempotente, pero a medias. Sin lease no se escribe ni la primera.
     from runtime.lease import exigir_titularidad                       # noqa: PLC0415
     exigir_titularidad(runtime._leer_lease(paquete), runtime.instancia, None, paquete=paquete)
+    # NO EXISTE «seguimos» como transferencia implícita (Directiva §78; OWN-ADS-0280): lo que
+    # este paquete recibió se acusa —o se rechaza— ANTES de entregar. Un receptor que entrega
+    # con un handoff en `emitido` nunca tomó custodia de lo que dice haber usado.
+    sin_acusar = handoffs_pendientes_para(almacen, paquete)
+    if sin_acusar:
+        raise EntregaInvalida(
+            "hay " + str(len(sin_acusar)) + " handoff(s) recibido(s) sin acusar ni rechazar ("
+            + ", ".join(h["id"] for h in sin_acusar) + "): se acusa o se rechaza ANTES de "
+            "entregar; no existe «seguimos» como transferencia implícita", paquete=paquete,
+        )
     if entrega.get("paquete") != paquete:
         raise EntregaInvalida("la entrega dice ser de `" + str(entrega.get("paquete"))
                               + "` y se entrega sobre `" + paquete + "`", paquete=paquete)
@@ -652,12 +662,41 @@ def _emitir_a_sucesores(runtime, corpus, plan, fila, paquete, registrada):
                           "encuadre": plan["encuadre"], "destino": sucesor["paquete"],
                           "entrega": registrada["id"]},
             corpus=corpus, declarada=declarada,
+            contenido=_contenido_de_78(almacen, plan, fila, paquete, sucesor, registrada, declarada),
         )
         _escribir_handoff(almacen, cuerpo, autor=runtime.instancia,
                           clase="ciclo.handoff.emitido",
                           motivo="entrega de " + paquete + " a " + sucesor["paquete"])
         emitidos.append(cuerpo["id"])
     return emitidos
+
+
+def _contenido_de_78(almacen, plan, fila, paquete, sucesor, registrada, declarada):
+    """Los CATORCE campos de §78, DERIVADOS: de la entrega registrada, del plan, del item y de
+    lo que este paquete acusó. La correspondencia está escrita en CONTRATO-OFICINA §4."""
+    item = durable.leer(almacen, "items/" + str(plan["item"]) + ".json") or {}
+    acusados = [h["id"] for h in handoffs_del_item(almacen, str(plan["item"]))
+                if (h.get("trazabilidad") or {}).get("destino") == paquete and h.get("estado") == handoffs.ACUSADO]
+    receptor_rol = str(sucesor.get("rol") or sucesor.get("capacidad") or "")
+    return {
+        "origen": {"capacidad": fila["capacidad"], "rol": fila.get("rol"), "paquete": paquete},
+        "destino": {"capacidad": sucesor["capacidad"], "rol": receptor_rol, "paquete": sucesor["paquete"]},
+        "paquete": paquete,
+        "objetivo": str(item.get("objetivo") or ""),
+        "entrada_recibida": acusados,
+        "trabajo_realizado": {"entrega": registrada["id"], "veredicto": registrada["veredicto"],
+                              "siguiente": registrada.get("siguiente")},
+        "entregables": [dict(a) for a in registrada["artefactos"]],
+        "decisiones": list(registrada.get("decisiones_asumidas") or []),
+        "riesgos": list(registrada.get("riesgos") or []),
+        "evidencia": [dict(e) for e in registrada.get("evidencias") or []],
+        "criterios_de_aceptacion": {"comprueba_al_recibir": list(declarada["comprueba_al_recibir"]),
+                                    "gate_del_emisor": (registrada.get("autoevaluacion") or {}).get("gate")},
+        "deuda": [dict(d) for d in registrada.get("deuda_aceptada") or []],
+        "cuestiones_abiertas": list(registrada.get("no_hecho") or []) + list(registrada.get("diferencias_declaradas") or []),
+        "que_puede_devolver_el_receptor": {"rechaza_si": list(declarada["rechaza_si"]),
+                                           "devolucion": str(declarada["devolucion"])},
+    }
 
 
 # ===========================================================================
@@ -959,11 +998,18 @@ def evaluar_terminacion(runtime, *, corpus=None, item, circuito, hechos):
     plan = plan_vigente_de_item(almacen, item)
     paquetes = list(plan["paquetes"]) if plan else []
     cierres = [c for c in cierres_de_item(almacen, item) if c.get("salida") == "completado"]
-    return terminacion.evaluar(
+    evaluacion = terminacion.evaluar(
         circuito, item=item, paquetes_del_item=paquetes,
         dictamenes=dictamenes_de_item(almacen, item), hechos=hechos,
         cierre=cierres[-1] if cierres else None,
     )
+    # Las fronteras previas a la construcción (§77), derivadas de qué paquetes entregaron.
+    estados = {}
+    for pq in paquetes:
+        objeto = durable.leer(almacen, "paquetes/" + str(pq) + ".json") or {}
+        estados[str(pq)] = objeto.get("estado")
+    evaluacion["fronteras"] = terminacion.evaluar_fronteras(plan, estados)
+    return evaluacion
 
 
 def obligaciones_satisfechas(almacen, plan):
