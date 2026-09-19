@@ -49,7 +49,12 @@ from . import externo
 from .errores import RuntimeInconsistente
 
 PARADAS = ("sin-trabajo", "todo-en-manos-ajenas", "bloqueado", "marcado", "pasadas-agotadas",
-           "hay-trabajo")
+           "hay-trabajo", "riesgo-extraordinario", "barrera-externa")
+# Directiva §36: el ejecutor solo interrumpe al Owner por (2) una decision que solo el puede
+# tomar, (3) un riesgo extraordinario o (4) una barrera externa. Las dos ultimas son paradas
+# PROPIAS, derivadas de la clase del bloqueo que la entrega declaro; `bloqueado` sigue
+# cubriendo la decision y la dependencia interna.
+PARADAS_QUE_NECESITAN_AL_OWNER = ("riesgo-extraordinario", "barrera-externa")
 
 PASADAS_POR_DEFECTO = 1
 ESPERA_ENTRE_PASADAS_SEGUNDOS = 2.0
@@ -134,6 +139,13 @@ class Supervisor:
         if en_curso:
             return "todo-en-manos-ajenas", ", ".join(p["id"] for p in en_curso) + " en manos de otros"
         bloqueados = [p for p in abiertos if p["estado"] in ("bloqueado", "agotado", "pausado")]
+        for clase in PARADAS_QUE_NECESITAN_AL_OWNER:
+            propios = [p for p in bloqueados if p.get("clase_de_bloqueo") == clase]
+            if propios:
+                return clase, (clase + ": " + ", ".join(p["id"] + " (" + str(p.get("motivo_de_bloqueo") or p.get("motivo") or "") + ")"
+                                                         for p in propios)
+                               + ("; lo escala el Owner (§36.3)" if clase == "riesgo-extraordinario"
+                                  else "; no se resuelve autónomamente (§36.4)"))
         if bloqueados:
             return "bloqueado", ("bloqueados: " + ", ".join(p["id"] for p in bloqueados)
                                  + "; hace falta un desbloqueador o una decisión")
@@ -142,7 +154,8 @@ class Supervisor:
 
     # ------------------------------------------------------------------ el bucle
     def bucle(self, *, pasadas=PASADAS_POR_DEFECTO, maximo=0, hasta=("sin-trabajo", "bloqueado",
-                                                                    "marcado")):
+                                                                    "marcado", "riesgo-extraordinario",
+                                                                    "barrera-externa")):
         """Repite pasadas hasta una parada legítima o hasta agotar `pasadas`. NUNCA infinito."""
         if not isinstance(pasadas, int) or isinstance(pasadas, bool) or pasadas < 1:
             raise RuntimeInconsistente("`pasadas` es un entero >= 1: un bucle sin tope no se "

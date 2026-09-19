@@ -312,6 +312,15 @@ un sucesor ya es elegible; con varios supervisores otro podría despacharlo ante
 devolución lo reapunte. Cerrarla exige registrar la entrega en la MISMA transición que el
 acuse, y es de otro corte. Con un supervisor por control repo no tiene testigo.
 
+**Las paradas del supervisor, y cuáles necesitan al Owner (Directiva §36).** El bucle para por
+`sin-trabajo` (no queda paquete abierto), `todo-en-manos-ajenas`, `bloqueado` (una dependencia
+interna o una decisión: un desbloqueador o un Decision Packet), `marcado` (reconciliaciones
+abiertas), `pasadas-agotadas`, y por dos paradas con nombre que la entrega `bloqueado` decide
+con `bloqueo.clase`: `riesgo-extraordinario` (§36.3: lo escala el Owner; manda sobre cualquier
+otra) y `barrera-externa` (§36.4: no se resuelve autónomamente). Sin clase, un bloqueo es una
+dependencia interna. La clase la escribe el runtime en el paquete (`clase_de_bloqueo`) y el
+supervisor la lee de ahí, no de la prosa del motivo (`T492`).
+
 ## 8 · El tablero
 
 `tablero.derivar` responde, del estado y de nada más: items y su ruta con el estado de cada

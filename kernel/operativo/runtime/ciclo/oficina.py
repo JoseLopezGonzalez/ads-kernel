@@ -533,7 +533,8 @@ def entregar(runtime, *, corpus=None, paquete, entrega, circuito=None, hechos=No
                                         contrato=contrato)
         runtime.checkpoint(paquete, {"bloqueo": entrega["bloqueo"], "entrega": registrada["id"]})
         runtime.bloquear(paquete, motivo=entrega["bloqueo"]["que_lo_impide"],
-                         autoridad=fila["capacidad"])
+                         autoridad=fila["capacidad"],
+                         clase_de_bloqueo=(entrega["bloqueo"].get("clase") if veredicto == "bloqueado" else "decision"))
         runtime._soltar_si_es_mio(paquete)
         cierre = modulo_cierre.Cierre(runtime, corpus=corpus)
         if veredicto == "bloqueado":

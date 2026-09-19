@@ -1172,7 +1172,7 @@ class Runtime:
     # =====================================================================
     #  11 · pausar · 12 · cancelar · 13 · reanudar
     # =====================================================================
-    def _mover(self, paquete, destino, *, motivo, autoridad, clase):
+    def _mover(self, paquete, destino, *, motivo, autoridad, clase, **cambios):
         if not isinstance(motivo, str) or not motivo.strip():
             raise RuntimeInconsistente("una decisión de autoridad sin `motivo` no es auditable")
         if not isinstance(autoridad, str) or not autoridad.strip():
@@ -1183,7 +1183,7 @@ class Runtime:
         def construir(revision):
             actual = self._leer_paquete(paquete)
             comprobar_transicion(actual["estado"], destino, paquete=paquete)
-            nuevo = con_estado(actual, destino, reloj=revision["revision"] + 1)
+            nuevo = con_estado(actual, destino, reloj=revision["revision"] + 1, **cambios)
             escrito["paquete"] = nuevo
             return estado.Transicion(
                 tipo=clase, base=revision["revision_id"],
@@ -1209,7 +1209,7 @@ class Runtime:
         return self._mover(paquete, "cancelado", motivo=motivo, autoridad=autoridad,
                            clase="runtime.paquete.cancelado")
 
-    def bloquear(self, paquete, *, motivo, autoridad):
+    def bloquear(self, paquete, *, motivo, autoridad, clase_de_bloqueo=None):
         """`b.8`: una espera que dejó de ser viable DEBE convertirse en bloqueo.
 
         Existía el camino y no existía la puerta: `_resolver_dependencias` bloquea por
@@ -1218,8 +1218,9 @@ class Runtime:
         tenía que usar `_mover`. Una segunda máquina de estados del paquete sería peor:
         ésta reutiliza la tabla del §4.2 como las otras tres.
         """
+        cambios = {"clase_de_bloqueo": clase_de_bloqueo} if clase_de_bloqueo else {}
         return self._mover(paquete, "bloqueado", motivo=motivo, autoridad=autoridad,
-                           clase="runtime.paquete.bloqueado")
+                           clase="runtime.paquete.bloqueado", **cambios)
 
     # =====================================================================
     #  alta de trabajo

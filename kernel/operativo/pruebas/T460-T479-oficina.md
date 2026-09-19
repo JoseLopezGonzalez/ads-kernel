@@ -1,4 +1,4 @@
-# T460–T491 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77, el catálogo de clases y la estación de impacto de §5
+# T460–T492 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77, el catálogo de clases, la estación de impacto de §5 y las paradas de §36
 
 **Qué cierran.** El hallazgo de la auditoría forense de La Pesquerapp del 2026-09-14: el
 kernel tenía escrito el runtime completo —paquetes, leases, dispatcher, ciclo, gates,
@@ -47,6 +47,7 @@ T488  un cambio de dirección (DIR) deriva su propietario global y las productor
 T489  un impacto declarado que el circuito cubre no marca nada y el item sigue (§5)
 T490  un impacto que el circuito no cubre marca el plan, ningún otro paquete se toma, y replanificar con una generación nueva sustituye al plan marcado (§5, §62, b.1)
 T491  un disparador fuera de los dieciséis de §5 es una entrega inválida
+T492  una barrera externa y un riesgo extraordinario son paradas del supervisor con nombre (§36.3, §36.4); sin clase sigue siendo bloqueado; una clase inventada no entra
 ```
 
 ---
@@ -590,6 +591,25 @@ entonces:
   - "ENTREGA_INVALIDA nombrando los dieciséis, sin tocar el estado; el vocabulario tiene exactamente dieciséis disparadores"
 falla_si:
   - "«impacto» es prosa libre que nadie puede contrastar con el circuito"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T492
+nombre: Una barrera externa y un riesgo extraordinario son paradas con nombre
+cubre: ["CONTRATO-OFICINA §7", "supervisor.PARADAS", "Directiva del Owner §36", "OWN-ADS-0146", "OWN-ADS-0147"]
+dado:
+  - "un paquete tomado cuya entrega es `bloqueado` con bloqueo.clase barrera-externa; otro con riesgo-extraordinario; otro sin clase; otro con una clase inventada"
+cuando:
+  - "el supervisor da dos pasadas sobre cada laboratorio"
+entonces:
+  - "para con `barrera-externa` nombrando el paquete; con `riesgo-extraordinario` nombrando el suyo y no la barrera (el riesgo manda); sin clase, `bloqueado`; la clase inventada es ENTREGA_INVALIDA"
+  - "el paquete lleva `clase_de_bloqueo` escrita por el runtime"
+falla_si:
+  - "una barrera externa o un riesgo extraordinario paran como `bloqueado` genérico y TRABAJA los trata como algo que un desbloqueador resuelve"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
 estado: prueba-superada

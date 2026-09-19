@@ -1776,6 +1776,62 @@ class EstacionDeImpacto(Laboratorio):
         self.assertEqual(A.almacen.revision()["revision"], revision)
         from ciclo import impacto as modulo_impacto
         self.assertEqual(len(modulo_impacto.DISPARADORES), 16)
+        self.assertEqual(modulo_impacto.comprobar_vocabulario(), [])
+
+
+class ParadasTipadas(Laboratorio):
+    """Directiva §36: el supervisor para por riesgo extraordinario o barrera externa con NOMBRE,
+    porque son las dos condiciones (3 y 4) que necesitan al Owner y que `bloqueado` confundía
+    con una dependencia interna."""
+
+    def _bloquear(self, clase, instancia="w-A", item="enc-x"):
+        A = self.rt(instancia)
+        plan = self.planificar(A, item=item)["plan"]
+        defin = self.paquete_de(plan, "PRD/definicion")
+        self.tomar_y_acusar(A, defin)
+        e = self.entrega(defin, "PRD/definicion", "bloqueado")
+        e["bloqueo"] = {"que_lo_impide": "algo que este rol no puede resolver", "que_lo_desbloquearia": "lo que haga falta",
+                        "autoridad": "PRD"}
+        if clase:
+            e["bloqueo"]["clase"] = clase
+        res = oficina.entregar(A, corpus=self.corpus, paquete=defin, entrega=e, circuito=self.circuito)
+        self.assertEqual(res["veredicto"], "bloqueado")
+        return A, defin
+
+    def test_33a_una_barrera_externa_es_una_parada_con_nombre(self):
+        """T492 · Defecto que previene: una barrera externa parada como «bloqueado» genérico,
+        que TRABAJA trata como algo que un desbloqueador resuelve (§36.4)."""
+        A, defin = self._bloquear("barrera-externa")
+        self.assertEqual(A._leer_paquete(defin)["clase_de_bloqueo"], "barrera-externa")
+        res = modulo_supervisor.Supervisor(A, corpus=self.corpus, reloj=lambda s: None).bucle(pasadas=2)
+        self.assertEqual(res["parada"], "barrera-externa")
+        self.assertIn(defin, res["motivo"])
+
+    def test_33b_un_riesgo_extraordinario_es_una_parada_con_nombre_y_manda_sobre_los_demas(self):
+        """T492 · el riesgo extraordinario (§36.3) se nombra, y con una barrera al lado gana."""
+        A, defin = self._bloquear("barrera-externa", item="enc-b")
+        B, defin2 = self._bloquear("riesgo-extraordinario", instancia="w-B", item="enc-r")
+        self.assertEqual(B._leer_paquete(defin2)["clase_de_bloqueo"], "riesgo-extraordinario")
+        res = modulo_supervisor.Supervisor(B, corpus=self.corpus, reloj=lambda s: None).bucle(pasadas=2)
+        self.assertEqual(res["parada"], "riesgo-extraordinario")
+        self.assertIn(defin2, res["motivo"])
+        self.assertNotIn(defin, res["motivo"])
+
+    def test_33c_sin_clase_sigue_siendo_bloqueado_y_una_clase_inventada_no_entra(self):
+        """T492 · sin clase, `bloqueado` (dependencia interna o decisión); una clase fuera de las
+        tres es una entrega inválida."""
+        A, defin = self._bloquear(None)
+        self.assertNotIn("clase_de_bloqueo", A._leer_paquete(defin))
+        self.assertEqual(modulo_supervisor.Supervisor(A, corpus=self.corpus, reloj=lambda s: None).bucle(pasadas=2)["parada"], "bloqueado")
+        B = self.rt("w-B")
+        plan = self.planificar(B, item="enc-y")["plan"]
+        defin = self.paquete_de(plan, "PRD/definicion")
+        self.tomar_y_acusar(B, defin)
+        e = self.entrega(defin, "PRD/definicion", "bloqueado")
+        e["bloqueo"] = {"que_lo_impide": "algo que este rol no puede resolver", "que_lo_desbloquearia": "lo que haga falta",
+                        "autoridad": "PRD", "clase": "pereza"}
+        with self.assertRaises(ciclo.EntregaInvalida):
+            oficina.entregar(B, corpus=self.corpus, paquete=defin, entrega=e, circuito=self.circuito)
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):

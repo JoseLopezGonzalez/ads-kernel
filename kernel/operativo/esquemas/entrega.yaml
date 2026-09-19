@@ -130,6 +130,10 @@ campos:
     tipo: objeto
     obligatorios: [que_lo_impide, que_lo_desbloquearia, autoridad]
     campos:
+      # la CLASE del bloqueo decide la parada del supervisor (Directiva §36): una barrera
+      # externa o un riesgo extraordinario necesitan al Owner; una dependencia interna, a un
+      # desbloqueador o a una decision de equipo
+      clase: {tipo: enum, valores: [dependencia-interna, barrera-externa, riesgo-extraordinario]}
       materia: {tipo: texto, min: 5}
       que_lo_impide: {tipo: texto, min: 10}
       que_lo_desbloquearia: {tipo: texto, min: 10}

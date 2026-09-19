@@ -71,6 +71,15 @@ release; lo propio del Owner se queda en su instancia.
   fuera del vocabulario es `ENTREGA_INVALIDA`. Es la reacción automática que §62 exige y el
   mecanismo con el que un `NO APLICA` deja de ser silencio (`T489`–`T491`; `OWN-ADS-0030`,
   `0031`, `0032`, `0033`, `0112`).
+- `runtime/supervisor.py` · `runtime/dispatcher.py` · `esquemas/entrega.yaml` · **las paradas de
+  §36 con nombre**: `bloqueo.clase` (`dependencia-interna` · `barrera-externa` ·
+  `riesgo-extraordinario`) viaja en la entrega `bloqueado`, el runtime la escribe en el
+  paquete (`clase_de_bloqueo`) y el supervisor para con `riesgo-extraordinario` (manda sobre
+  todo lo demás) o `barrera-externa` en vez de un `bloqueado` genérico; las dos entran en el
+  `hasta` por defecto del bucle porque necesitan al Owner (`T492`; `OWN-ADS-0146`, `0147`).
+- `ciclo/impacto.py` · **defecto corregido antes de vendorizar**: dos `assert` de nivel
+  superior lo hacían punto ejecutable para `T330` (la misma lección de `ramas.py`); ahora es
+  `comprobar_vocabulario()`, que `T491` ejecuta.
 - `validadores/huella.py` · **defecto corregido**: en un `git worktree`, `.git` es un
   FICHERO (el puntero al gitdir) y el sello lo contaba como `SIN_CLASE`, con lo que
   `comprobar_integridad` (comprobación 4) salía en rojo en cualquier worktree aunque el

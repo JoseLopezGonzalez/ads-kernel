@@ -51,8 +51,20 @@ GRUPOS = {
     "fix-visual": ("patron-roto", "inconsistencia-entre-pantallas", "problema-de-accesibilidad",
                    "deuda-del-sistema-de-diseno"),
 }
-assert all(c in CONDICIONES_DE_B16 for cs in DISPARADORES.values() for c in cs)
-assert sum(len(v) for v in GRUPOS.values()) == len(DISPARADORES) == 16
+
+
+def comprobar_vocabulario():
+    """Los dieciséis, en tres grupos, y toda condición derivada es una de `b.16`. Es una
+    función y no un `assert` de nivel superior: un módulo que trabaja al importarse es un
+    punto ejecutable para el inventario de `T330` (medido con `estado/ramas.py`)."""
+    fallos = []
+    for d, cs in DISPARADORES.items():
+        for c in cs:
+            if c not in CONDICIONES_DE_B16:
+                fallos.append(d + " dispara " + c + ", que no es una condición de b.16")
+    if sum(len(v) for v in GRUPOS.values()) != len(DISPARADORES) or len(DISPARADORES) != 16:
+        fallos.append("los grupos no suman los dieciséis disparadores de §5")
+    return fallos
 
 
 def evaluar(circuito, declaracion, *, paquete=None):

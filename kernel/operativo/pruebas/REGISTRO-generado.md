@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: b703214fbb36dea2 -->
+<!-- source_revision: 4ff48a9cfd75ad7f -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -12,10 +12,10 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 |---|---|
 | CONTRATO DEFINIDO | 56 |
 | VALIDADOR IMPLEMENTADO | 7 |
-| PRUEBA EJECUTADA | 9 |
+| PRUEBA EJECUTADA | 10 |
 | PRUEBA SUPERADA | 279 |
 | PRUEBA FALLIDA | 1 |
-| **total** | **352** |
+| **total** | **353** |
 
 ## Detalle
 
@@ -373,12 +373,13 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T489](T460-T479-oficina.md) | Un impacto que el circuito cubre no marca nada | CONTRATO-OFICINA §5 ter · impacto · Directiva del Owner §5 · OWN-ADS-0030 · OWN-ADS-0031 | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
 | [T490](T460-T479-oficina.md) | Un impacto que el circuito no cubre marca el plan y para el item | CONTRATO-OFICINA §5 ter · impacto · Directiva del Owner §5 · Directiva del Owner §62 · b.1 · OWN-ADS-0030 · OWN-ADS-0032 · OWN-ADS-0033 | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
 | [T491](T460-T479-oficina.md) | Un disparador fuera de los dieciséis es una entrega inválida | CONTRATO-OFICINA §5 ter · impacto · Directiva del Owner §5 · OWN-ADS-0032 | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T492](T460-T479-oficina.md) | Una barrera externa y un riesgo extraordinario son paradas con nombre | CONTRATO-OFICINA §7 · supervisor.PARADAS · Directiva del Owner §36 · OWN-ADS-0146 · OWN-ADS-0147 | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
 
 ## Contraste del estado contra la evidencia
 
-Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **280** de **352**.
+Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **280** de **353**.
 
-No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **72**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
+No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **73**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
 
 Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada mezclaba a los que no afirman ninguna ejecución con los que afirmaban una que su evidencia no nombra, que es lo que `H-02` encontró—:
 
@@ -386,7 +387,7 @@ Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada
 |---|---|
 | contrato-definido | 56 |
 | validador-implementado | 7 |
-| prueba-superada | 9 |
+| prueba-superada | 10 |
 
 | id | declarado a mano | derivado de la evidencia | motivo |
 |---|---|---|---|
@@ -400,3 +401,4 @@ Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada
 | T489 | prueba-superada | prueba-ejecutada | `evidencia/oficina-salida.txt` no nombra a `T489` en ninguna línea de veredicto: la ejecución consta, el resultado DE ESTE escenario no · declara `prueba-superada` sobre una evidencia que NO lo nombra y que sólo sostiene `prueba-ejecutada`: eso es subir de estado por argumento, y la regla dura de `REGISTRO.md` lo prohíbe con o sin contraste |
 | T490 | prueba-superada | prueba-ejecutada | `evidencia/oficina-salida.txt` no nombra a `T490` en ninguna línea de veredicto: la ejecución consta, el resultado DE ESTE escenario no · declara `prueba-superada` sobre una evidencia que NO lo nombra y que sólo sostiene `prueba-ejecutada`: eso es subir de estado por argumento, y la regla dura de `REGISTRO.md` lo prohíbe con o sin contraste |
 | T491 | prueba-superada | prueba-ejecutada | `evidencia/oficina-salida.txt` no nombra a `T491` en ninguna línea de veredicto: la ejecución consta, el resultado DE ESTE escenario no · declara `prueba-superada` sobre una evidencia que NO lo nombra y que sólo sostiene `prueba-ejecutada`: eso es subir de estado por argumento, y la regla dura de `REGISTRO.md` lo prohíbe con o sin contraste |
+| T492 | prueba-superada | prueba-ejecutada | `evidencia/oficina-salida.txt` no nombra a `T492` en ninguna línea de veredicto: la ejecución consta, el resultado DE ESTE escenario no · declara `prueba-superada` sobre una evidencia que NO lo nombra y que sólo sostiene `prueba-ejecutada`: eso es subir de estado por argumento, y la regla dura de `REGISTRO.md` lo prohíbe con o sin contraste |
