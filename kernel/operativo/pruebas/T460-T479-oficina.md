@@ -1,4 +1,4 @@
-# T460–T496 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77, el catálogo de clases, la estación de impacto de §5, las paradas de §36, los artefactos de Diseño y la base de partida de §63
+# T460–T498 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77, el catálogo de clases, la estación de impacto de §5, las paradas de §36, los artefactos de Diseño, la base de partida de §63, el Integration Set de §71 y la exclusión por recurso de §68
 
 **Qué cierran.** El hallazgo de la auditoría forense de La Pesquerapp del 2026-09-14: el
 kernel tenía escrito el runtime completo —paquetes, leases, dispatcher, ciclo, gates,
@@ -52,6 +52,8 @@ T493  los contratos de la línea de Diseño exigen los artefactos que la Directi
 T494  al tomar nace la base (rama, commit, base por repo) en el checkpoint 0; un avance compatible de la base se registra y el trabajo sigue (§61, §63)
 T495  un avance de la base que toca lo mismo es contradicción: se ve en el checkpoint, `entregado` es BASE_CONTRADICHA sin escribir nada, y tras reconciliar en la rama se entrega
 T496  un control repo sin Git no se mide y nada cambia
+T497  con varias fuentes el Integration Set define orden de merge, compatibilidad, despliegue y dependencias; sin ellos, o con una fuente de menos o ajena, la convergencia no es admisible (§71)
+T498  un recurso exclusivo —derivado del acoplamiento de a.5— en manos de otra ejecución hace al paquete temporalmente incompatible: no elegible, no tomable, publicado con quién lo posee; el de ámbito independiente sigue en paralelo (§68)
 ```
 
 ---
@@ -692,6 +694,44 @@ entonces:
   - "tomar no escribe checkpoint 0 ni devuelve base; el checkpoint conserva exactamente el contenido del trabajador; la entrega vale"
 falla_si:
   - "una medida que no existe frena un control repo sin Git, o los laboratorios de la batería cambian de comportamiento"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T497
+nombre: Con varias fuentes el Integration Set define orden de merge, compatibilidad y despliegue
+cubre: ["CONTRATO-OFICINA §3", "esquemas/integration-set.yaml", "Directiva del Owner §71", "OWN-ADS-0255"]
+dado:
+  - "un item que escribe backend y frontend, y un Integration Set completo con orden_de_merge, compatibilidad, despliegue y dependencias"
+cuando:
+  - "se exige el conjunto completo; el de una sola fuente sin esos campos; y nueve variantes: sin orden, sin despliegue, sin compatibilidad, orden con una fuente de menos, orden con una ajena, despliegue incompleto, dos fuentes con el mismo orden, compatibilidad entre una fuente ajena, despliegue mal formado"
+entonces:
+  - "el completo y el de una fuente valen; las nueve variantes son ENTREGA_INVALIDA nombrando el campo y el motivo"
+falla_si:
+  - "varias PRs llegan al Owner como trabajos inconexos, sin orden de merge ni despliegue"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T498
+nombre: Un recurso exclusivo en manos ajenas hace al paquete temporalmente incompatible
+cubre: ["CONTRATO-OFICINA §2", "runtime/politica.py", "runtime/dispatcher.py", "runtime/externo.py", "Directiva del Owner §68", "OWN-ADS-0244", "OWN-ADS-0245", "OWN-ADS-0246"]
+dado:
+  - "tres paquetes externos: pq-a y pq-b afectan al mismo contrato api/v2/pedidos y escriben ficheros distintos; pq-c escribe otro fichero y sólo lee backend"
+cuando:
+  - "w-A toma pq-a; w-B intenta tomar pq-b y toma pq-c; w-A entrega pq-a y toma pq-b"
+entonces:
+  - "con pq-a en ejecución, pq-b sale de `elegibles` y de `tomables`, aparece en `esperando` con incompatible_por (contrato:api/v2/pedidos, lo posee pq-a) y en `incompatibles_por_recurso`; pq-c sigue tomable"
+  - "tomar pq-b es RECURSO_OCUPADO nombrando el contrato, sin retener el lease y sin mover el paquete"
+  - "al entregar pq-a no queda ningún incompatible y pq-b se toma; la integridad se sostiene"
+falla_si:
+  - "dos workers escriben el mismo contrato a la vez y el Owner arbitra a mano"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
 estado: prueba-superada

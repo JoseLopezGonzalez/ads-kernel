@@ -38,3 +38,28 @@ campos:
   # a que combinacion se vuelve si hay que revertir el producto. Sin esto, revertir es
   # una arqueologia por varios historiales que nadie hace bajo presion.
   restaura_a: {tipo: texto, min: 5}
+  # Directiva §71: cuando el bloque toca VARIAS fuentes, el conjunto define ademas el orden
+  # de merge, la compatibilidad entre revisiones, el despliegue y las dependencias; el Owner
+  # abre un unico informe de integracion y lo encuentra todo. Con una sola fuente son
+  # triviales y se omiten. Lo exige `oficina._exigir_integration_set` (T497).
+  # los `source` del conjunto, TODOS y UNA vez, en el orden en que se fusionan
+  orden_de_merge: {tipo: lista, de: texto}
+  compatibilidad:
+    tipo: lista
+    de: objeto
+    obligatorios: [entre, condicion]
+    campos:
+      entre: {tipo: lista, de: texto, min: 2}
+      # p. ej. "el frontend tolera la API anterior y la nueva: el backend puede ir antes"
+      condicion: {tipo: texto, min: 5}
+      comprobado_por: {tipo: texto}
+  despliegue:
+    tipo: lista
+    de: objeto
+    obligatorios: [source, orden]
+    campos:
+      source: {tipo: texto, min: 1}
+      orden: {tipo: entero, min: 1}
+      como: {tipo: texto}
+      condicion: {tipo: texto}
+  dependencias: {tipo: lista, de: texto}

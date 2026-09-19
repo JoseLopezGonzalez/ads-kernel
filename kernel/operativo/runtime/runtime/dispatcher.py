@@ -671,6 +671,40 @@ class Runtime:
                 pendientes.append(dependencia)
         return pendientes, inviables
 
+    def _recursos_ocupados(self, paquetes, *, salvo=None):
+        """Directiva §68 · qué recurso exclusivo posee qué ejecución. Sólo `despachado` y
+        `ejecutando` poseen: un `listo` no ha tomado nada todavía."""
+        ocupados = {}
+        for paquete in paquetes:
+            if paquete["estado"] not in ("despachado", "ejecutando") or paquete["id"] == salvo:
+                continue
+            for recurso in sorted(politica.recursos_exclusivos_de(paquete)):
+                ocupados.setdefault(recurso, paquete["id"])
+        return ocupados
+
+    @staticmethod
+    def _conflicto_de_recursos(paquete, ocupados):
+        """`[{"recurso", "lo_posee"}]` — vacío si el paquete es paralelizable por ámbito."""
+        return [{"recurso": recurso, "lo_posee": ocupados[recurso]}
+                for recurso in sorted(politica.recursos_exclusivos_de(paquete))
+                if recurso in ocupados and ocupados[recurso] != paquete["id"]]
+
+    def incompatibles_por_recurso(self):
+        """Directiva §68 · lo que está `listo` y no se toma ni se despacha porque otra
+        ejecución posee un recurso que también escribe. DERIVADO; no se persiste."""
+        self._exigir_operable()
+        todos = self._todos_los_paquetes()
+        ocupados = self._recursos_ocupados(todos)
+        salida = []
+        for paquete in todos:
+            if paquete["estado"] not in ("listo", "esperando-dependencia"):
+                continue
+            conflicto = self._conflicto_de_recursos(paquete, ocupados)
+            if conflicto:
+                salida.append({"paquete": paquete["id"], "item": paquete["item"],
+                               "estado": paquete["estado"], "incompatible_por": conflicto})
+        return salida
+
     def _grado_de_salida(self, paquetes):
         """`b.12` paso 5 (b) · a cuántos paquetes DESBLOQUEA cada uno. Grado de salida.
 
@@ -712,6 +746,10 @@ class Runtime:
         self._exigir_operable()
         todos = self._todos_los_paquetes()
         desbloquea = self._grado_de_salida(todos)
+        # Directiva §68: un paquete listo funcionalmente pero cuyo recurso exclusivo posee
+        # otra ejecución NO es elegible; `incompatibles_por_recurso()` lo publica con el
+        # recurso y quién lo posee. Uno de ámbito independiente sigue siendo elegible.
+        ocupados = self._recursos_ocupados(todos)
         ahora = self._almacen.revision()["revision"]
         salida = []
         for paquete in todos:
@@ -720,6 +758,8 @@ class Runtime:
                 if pendientes and not inviables:
                     continue
             elif paquete["estado"] != "listo":
+                continue
+            if self._conflicto_de_recursos(paquete, ocupados):
                 continue
             lease = self._leer_lease(paquete["id"])
             seleccion = paquete["seleccion"]

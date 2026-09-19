@@ -1362,13 +1362,53 @@ class ContratosEfectivos(Laboratorio):
 # =========================================================================
 class Integrado(Laboratorio):
 
-    def conjunto(self, item, fuentes, estado="verificado", pendiente=False):
-        return {"id": "IS-001", "item": item, "estado": estado,
+    def conjunto(self, item, fuentes, estado="verificado", pendiente=False, con_71=True):
+        base = {"id": "IS-001", "item": item, "estado": estado,
                 "fuentes": [{"source": f, "commit": "0123456789ab" + str(n), "rama": "ads/" + f}
                             for n, f in enumerate(fuentes)],
                 "verificacion": [{"ambito": "regresion", "resultado": "pendiente" if pendiente else "pasa",
                                   "evidencia": "dosier de VER pq-x-1"}],
                 "restaura_a": "IS-000, la combinación anterior"}
+        if con_71 and len(fuentes) > 1:
+            base.update({
+                "orden_de_merge": list(fuentes),
+                "compatibilidad": [{"entre": list(fuentes),
+                                    "condicion": "el frontend tolera la API anterior y la nueva: el backend va antes"}],
+                "despliegue": [{"source": f, "orden": n + 1, "como": "PR fusionado y despliegue de " + f}
+                               for n, f in enumerate(fuentes)],
+                "dependencias": [fuentes[1] + " depende de " + fuentes[0]],
+            })
+        return base
+
+    def test_22b_con_varias_fuentes_el_conjunto_define_orden_compatibilidad_y_despliegue(self):
+        """T497 · Defecto que previene: varias PRs presentadas al Owner como trabajos inconexos (§71)."""
+        hechos = {"fuentes_escritas": ["backend", "frontend"]}
+        entrega = {"integration_set": self.conjunto("enc-int", ["backend", "frontend"])}
+        oficina._exigir_integration_set(self.corpus, entrega, hechos, "pq-conv")     # completo: vale
+        uno = {"integration_set": self.conjunto("enc-int", ["backend"], con_71=False)}
+        oficina._exigir_integration_set(self.corpus, uno, {"fuentes_escritas": ["backend"]}, "pq-conv")  # una fuente: trivial
+        def rechaza(nombre, **cambios):
+            conjunto = self.conjunto("enc-int", ["backend", "frontend"])
+            for clave, valor in cambios.items():
+                if valor is None:
+                    conjunto.pop(clave, None)
+                else:
+                    conjunto[clave] = valor
+            with self.assertRaises(ciclo.EntregaInvalida, msg=nombre) as cm:
+                oficina._exigir_integration_set(self.corpus, {"integration_set": conjunto}, hechos, "pq-conv")
+            return str(cm.exception)
+        self.assertIn("orden_de_merge", rechaza("sin orden", orden_de_merge=None))
+        self.assertIn("despliegue", rechaza("sin despliegue", despliegue=None))
+        self.assertIn("compatibilidad", rechaza("sin compatibilidad", compatibilidad=None))
+        self.assertIn("cada una UNA vez", rechaza("orden con una fuente de menos", orden_de_merge=["backend"]))
+        self.assertIn("ninguna ajena", rechaza("orden con una fuente ajena", orden_de_merge=["backend", "frontend", "mobile"]))
+        self.assertIn("no dice cómo se despliega frontend",
+                      rechaza("despliegue incompleto", despliegue=[{"source": "backend", "orden": 1}]))
+        self.assertIn("mismo `orden`", rechaza("despliegue sin secuencia",
+                                               despliegue=[{"source": "backend", "orden": 1}, {"source": "frontend", "orden": 1}]))
+        self.assertIn("fuentes que el conjunto no tiene",
+                      rechaza("compatibilidad ajena", compatibilidad=[{"entre": ["backend", "mobile"], "condicion": "tolera la API"}]))
+        self.assertIn("integration_set.despliegue", rechaza("despliegue mal formado", despliegue=[{"source": "backend"}]))
 
     def test_22_integrado_solo_con_un_conjunto_exacto_que_nombra_todas_las_fuentes_escritas(self):
         """T468 · Defecto que previene: «integrado» como palabra, o dos ramas que nadie probó juntas."""
@@ -1952,6 +1992,51 @@ class BaseDePartida(Laboratorio):
         res = self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
         self.assertEqual(res["veredicto"], "entregado")
         self.assertEqual(leer_checkpoint(A, impl)["contenido"], {"paso": 1})
+
+
+# =========================================================================
+# T498 · exclusión segura entre workers por recurso exclusivo (Directiva §68)
+# =========================================================================
+class ExclusionPorRecurso(Laboratorio):
+
+    def _tres(self, A):
+        A.crear_item(id="it-1", titulo="primero", motivo="alta")
+        orden = paquete_runtime.orden_externa(argumentos=["CNS", "CNS/implementacion"])
+        A.crear_paquete(id="pq-a", item="it-1", capacidades_requeridas=["worker"], orden=orden,
+                        acoplamiento={"escribe_ficheros": ["src/a.php"], "afecta_contratos": ["api/v2/pedidos"]})
+        A.crear_paquete(id="pq-b", item="it-1", capacidades_requeridas=["worker"], orden=orden,
+                        acoplamiento={"escribe_ficheros": ["src/b.php"], "afecta_contratos": ["api/v2/pedidos"]})
+        A.crear_paquete(id="pq-c", item="it-1", capacidades_requeridas=["worker"], orden=orden,
+                        acoplamiento={"escribe_ficheros": ["src/c.php"], "lee_fuentes": ["backend"]})
+
+    def test_37_un_recurso_exclusivo_en_manos_ajenas_hace_al_paquete_temporalmente_incompatible(self):
+        """T498 · Defecto que previene: dos workers sobre el mismo contrato a la vez, y el Owner arbitrando."""
+        A = self.rt("w-A")
+        self._tres(A)
+        self.assertEqual([t["paquete"] for t in A.tomables()["tomables"]], ["pq-a", "pq-b", "pq-c"])
+        A.tomar("pq-a")
+        tomables = A.tomables()
+        self.assertEqual([t["paquete"] for t in tomables["tomables"]], ["pq-a", "pq-c"])
+        esperando = {t["paquete"]: t for t in tomables["esperando"]}
+        self.assertEqual(esperando["pq-b"]["incompatible_por"],
+                         [{"recurso": "contrato:api/v2/pedidos", "lo_posee": "pq-a"}])
+        self.assertEqual(esperando["pq-b"]["espera_a"], ["pq-a"])
+        self.assertEqual([e["paquete"] for e in A.elegibles()], ["pq-c"])
+        self.assertEqual([i["paquete"] for i in A.incompatibles_por_recurso()], ["pq-b"])
+        B = self.rt("w-B")
+        with self.assertRaises(paquete_runtime.RecursoOcupado) as cm:
+            B.tomar("pq-b")
+        self.assertIn("api/v2/pedidos", str(cm.exception))
+        self.assertIsNone(B._leer_lease("pq-b"))                 # no retiene el lease
+        self.assertEqual(B._leer_paquete("pq-b")["estado"], "listo")
+        B.tomar("pq-c")                                          # ámbito independiente: en paralelo
+        A.entregar("pq-a", {"estado": "completado", "codigo": 0, "salida": "ok", "detalle": "",
+                            "reintentable": False})
+        self.assertEqual(A.incompatibles_por_recurso(), [])
+        self.assertIn("pq-b", [t["paquete"] for t in A.tomables()["tomables"]])
+        toma = A.tomar("pq-b")                                   # el recurso quedó libre al entregar
+        self.assertEqual(toma["estado"], "ejecutando")
+        self.assertTrue(A.almacen.verificar_integridad().a_dict()["ok"])
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):

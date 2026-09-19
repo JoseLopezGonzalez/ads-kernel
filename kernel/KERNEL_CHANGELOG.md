@@ -111,6 +111,18 @@ release; lo propio del Owner se queda en su instancia.
   un `BASE_CONTRADICHA` sin escribir nada, hasta reconciliar en la rama o entregar
   `bloqueado`. Sólo refs locales; un directorio sin Git es `no-medible` y no frena. CONTRATO
   §2 bis (`T494`–`T496`; `OWN-ADS-0220`, `0221`, `0227`, `0229`, `0230`, `0231`).
+- `esquemas/integration-set.yaml` · `ciclo/oficina.py` · **el Integration Set de §71**: con
+  varias fuentes el conjunto define además `orden_de_merge` (cada fuente una vez, ninguna
+  ajena), `compatibilidad`, `despliegue` (cada fuente con su orden, sin dos iguales) y
+  `dependencias`; sin ellos la convergencia no es admisible. Con una fuente son triviales
+  (`T497`; `OWN-ADS-0255`).
+- `runtime/politica.py` · `runtime/dispatcher.py` · `runtime/externo.py` · **exclusión segura
+  entre workers** (Directiva §68): los recursos exclusivos de un paquete se DERIVAN de su
+  acoplamiento de `a.5` (`escribe_ficheros`, `afecta_contratos`, `afecta_decisiones`); un
+  `listo` cuyo recurso posee otra ejecución no es elegible ni tomable —`tomables()` lo publica
+  en `esperando` con `incompatible_por`, `tomar` es `RECURSO_OCUPADO` sin retener el lease,
+  `incompatibles_por_recurso()` lo lista—, y el de ámbito independiente sigue en paralelo
+  (`T498`; `OWN-ADS-0244`, `0245`, `0246`).
 
 ## 2.0.0-alpha.15 — la oficina: el runtime se puede TRABAJAR desde fuera de un chat
 

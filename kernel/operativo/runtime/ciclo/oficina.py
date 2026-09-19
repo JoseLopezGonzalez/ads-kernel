@@ -685,8 +685,53 @@ def _exigir_integration_set(corpus, entrega, hechos, paquete):
         if isinstance(fila, dict) and fila.get("resultado") not in ("pasa", "no-aplica"):
             fallos.append("integration_set.verificacion: el ámbito `" + str(fila.get("ambito"))
                           + "` está `" + str(fila.get("resultado")) + "`: no está probado conjuntamente")
+    fallos.extend(_fallos_de_71(conjunto, fuentes))
     if fallos:
         raise EntregaInvalida("la convergencia no es admisible: " + "; ".join(fallos), paquete=paquete)
+
+
+def _fallos_de_71(conjunto, fuentes):
+    """Directiva §71: con VARIAS fuentes, el conjunto define el orden de merge, la
+    compatibilidad, el despliegue y las dependencias; con una, son triviales."""
+    fallos = []
+    conocidas = set(fuentes)
+    orden = conjunto.get("orden_de_merge")
+    despliegue = conjunto.get("despliegue")
+    compatibilidad = conjunto.get("compatibilidad")
+    if len(conocidas) > 1:
+        if not orden:
+            fallos.append("integration_set.orden_de_merge: el bloque toca " + ", ".join(sorted(conocidas))
+                          + " y el conjunto no dice en qué orden se fusionan (§71)")
+        if not despliegue:
+            fallos.append("integration_set.despliegue: el bloque toca varias fuentes y el conjunto no "
+                          "dice cómo ni en qué orden se despliegan (§71)")
+        if not compatibilidad:
+            fallos.append("integration_set.compatibilidad: el bloque toca varias fuentes y el conjunto no "
+                          "dice qué combinación de revisiones es compatible (§71)")
+    if orden:
+        nombrados = [str(f) for f in orden]
+        if sorted(nombrados) != sorted(fuentes):
+            fallos.append("integration_set.orden_de_merge: nombra " + ", ".join(nombrados) + " y las fuentes "
+                          "del conjunto son " + ", ".join(fuentes) + ": cada una UNA vez, y ninguna ajena")
+    if despliegue:
+        desplegadas = [str(f.get("source")) for f in despliegue if isinstance(f, dict)]
+        faltan = sorted(conocidas - set(desplegadas))
+        ajenas = sorted(set(desplegadas) - conocidas)
+        if faltan:
+            fallos.append("integration_set.despliegue: no dice cómo se despliega " + ", ".join(faltan))
+        if ajenas:
+            fallos.append("integration_set.despliegue: nombra fuentes que el conjunto no tiene: " + ", ".join(ajenas))
+        ordenes = [f.get("orden") for f in despliegue if isinstance(f, dict)]
+        if len(set(ordenes)) != len(ordenes):
+            fallos.append("integration_set.despliegue: dos fuentes con el mismo `orden`: el despliegue no es una secuencia")
+    for fila in compatibilidad or []:
+        if not isinstance(fila, dict):
+            continue
+        ajenas = sorted(set(str(x) for x in (fila.get("entre") or [])) - conocidas)
+        if ajenas:
+            fallos.append("integration_set.compatibilidad: `entre` nombra fuentes que el conjunto no tiene: "
+                          + ", ".join(ajenas))
+    return fallos
 
 
 def _dictaminar(runtime, corpus, plan, fila, paquete, datos):

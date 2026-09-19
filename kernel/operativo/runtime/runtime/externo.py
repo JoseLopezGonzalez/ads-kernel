@@ -69,7 +69,7 @@ from __future__ import annotations
 import estado
 
 from . import politica
-from .errores import EstadoDePaqueteInvalido, RuntimeInconsistente
+from .errores import EstadoDePaqueteInvalido, RecursoOcupado, RuntimeInconsistente
 from .lease import con_latido, exigir_titularidad
 from .modelo import ESQUEMA, ruta_lease, ruta_paquete
 
@@ -151,6 +151,16 @@ def tomar(runtime, paquete):
         )
     lease = runtime.adquirir(paquete)
     try:
+        # Directiva §68: listo funcionalmente, pero otra ejecución posee un recurso que este
+        # paquete también escribe. No se toma; se publica quién lo posee.
+        conflicto = runtime._conflicto_de_recursos(
+            actual, runtime._recursos_ocupados(runtime._todos_los_paquetes(), salvo=paquete))
+        if conflicto:
+            raise RecursoOcupado(
+                "el paquete `" + paquete + "` es temporalmente incompatible: "
+                + "; ".join(c["recurso"] + " lo posee `" + c["lo_posee"] + "`" for c in conflicto)
+                + " (§68). Se toma cuando el otro entregue", ruta=paquete,
+            )
         actual = runtime._resolver_dependencias(paquete, actual, lease)
         if actual["estado"] == "listo":
             actual = runtime._abrir_intento(paquete, lease)
@@ -319,8 +329,15 @@ def tomables(runtime):
     """
     runtime._exigir_operable()
     elegibles = {e["paquete"] for e in runtime.elegibles()}
+    incompatibles = {i["paquete"]: i["incompatible_por"] for i in runtime.incompatibles_por_recurso()}
     libres, ajenos = [], []
     for fila in externos(runtime):
+        if fila["paquete"] in incompatibles:
+            # Directiva §68: listo, y temporalmente incompatible por un recurso exclusivo
+            fila["incompatible_por"] = incompatibles[fila["paquete"]]
+            fila["espera_a"] = sorted({c["lo_posee"] for c in incompatibles[fila["paquete"]]})
+            ajenos.append(fila)
+            continue
         if fila["estado"] in ("listo", "esperando-dependencia") and fila["paquete"] in elegibles:
             # `elegibles()` publica los `listo` sin mirar sus dependencias —las resuelve el
             # despacho—, pero un trabajador que tome uno con dependencias pendientes sólo

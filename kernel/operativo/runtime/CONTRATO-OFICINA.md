@@ -67,6 +67,14 @@ barrido no lo despacha ni lo cuenta como postergado. `tomables()` publica lo que
 trabajador puede tomar AHORA —sin dependencia pendiente y sin lease ajeno— y, aparte, lo
 que espera y a qué.
 
+**Exclusión segura entre workers (Directiva §68).** Los recursos que un paquete posee en
+exclusiva mientras se ejecuta se DERIVAN de su acoplamiento de `a.5` —`escribe_ficheros`,
+`afecta_contratos`, `afecta_decisiones`; leer no excluye—. Un paquete `listo` cuyo recurso
+posee otra ejecución (`despachado` · `ejecutando`) no es elegible ni tomable: `tomables()` lo
+publica en `esperando` con `incompatible_por` (recurso y quién lo posee), `tomar` lo rechaza
+con `RECURSO_OCUPADO` sin retener el lease, y `incompatibles_por_recurso()` lo lista. Uno de
+ámbito independiente sigue en paralelo. Nadie lo decide a mano (`T498`; OWN-ADS-0244–0246).
+
 **Un trabajador posee UN paquete a la vez, y ninguno por adelantado.** No existe reserva
 ni prefetch: lo único que un trabajador tiene es el lease del paquete que está ejecutando,
 adquirido al tomar y devuelto al entregar o soltar. «Lo haré después» no es un estado del
@@ -136,6 +144,13 @@ DICTÁMENES         un rol que juzga trae su dictamen, y el dictamen lo aplica
 
 Una entrega que no cumple es `ENTREGA_INVALIDA` y **no toca el estado**: ni el paquete, ni
 el lease, ni nada. Se escribe una por INTENTO, y el reintento conserva la anterior.
+
+**El Integration Set de §71.** Cuando el bloque toca VARIAS fuentes, el conjunto que
+`ENT/convergencia` entrega define además `orden_de_merge` (cada fuente una vez, ninguna
+ajena), `compatibilidad` (qué combinación de revisiones es compatible y por qué),
+`despliegue` (cada fuente con su orden, sin dos iguales) y `dependencias`; con una sola
+fuente son triviales y se omiten. Sin ellos la convergencia no es admisible (`T497`;
+OWN-ADS-0255): varias PRs no se presentan al Owner como trabajos inconexos.
 
 ## 4 · Qué pasa después de entregar, por veredicto
 
