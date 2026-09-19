@@ -1,4 +1,4 @@
-# T460–T493 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77, el catálogo de clases, la estación de impacto de §5, las paradas de §36 y los artefactos de Diseño
+# T460–T496 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77, el catálogo de clases, la estación de impacto de §5, las paradas de §36, los artefactos de Diseño y la base de partida de §63
 
 **Qué cierran.** El hallazgo de la auditoría forense de La Pesquerapp del 2026-09-14: el
 kernel tenía escrito el runtime completo —paquetes, leases, dispatcher, ciclo, gates,
@@ -49,6 +49,9 @@ T490  un impacto que el circuito no cubre marca el plan, ningún otro paquete se
 T491  un disparador fuera de los dieciséis de §5 es una entrega inválida
 T492  una barrera externa y un riesgo extraordinario son paradas del supervisor con nombre (§36.3, §36.4); sin clase sigue siendo bloqueado; una clase inventada no entra
 T493  los contratos de la línea de Diseño exigen los artefactos que la Directiva nombra por fase (§12–§26): informe de realidad, análisis de uso, síntesis, auditoría con sus cinco salidas, alternativas de diez campos, recomendación, prototipo mirable, crítica por trece criterios, síntesis de ocho secciones, sesión de uso y especificación construible
+T494  al tomar nace la base (rama, commit, base por repo) en el checkpoint 0; un avance compatible de la base se registra y el trabajo sigue (§61, §63)
+T495  un avance de la base que toca lo mismo es contradicción: se ve en el checkpoint, `entregado` es BASE_CONTRADICHA sin escribir nada, y tras reconciliar en la rama se entrega
+T496  un control repo sin Git no se mide y nada cambia
 ```
 
 ---
@@ -635,4 +638,62 @@ ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_contratos.py
 estado: prueba-superada
 evidencia: evidencia/contratos-salida.txt
+```
+
+```yaml ads:escenario
+id: T494
+nombre: Al tomar nace la base y un avance compatible se registra
+cubre: ["CONTRATO-OFICINA §2 bis", "ciclo/base.py", "Directiva del Owner §61", "Directiva del Owner §63", "OWN-ADS-0220", "OWN-ADS-0227", "OWN-ADS-0230"]
+dado:
+  - "un control repo que es un repositorio Git con `main` y una rama `trabajo`; la implementación se toma por la oficina"
+cuando:
+  - "el trabajador cambia src/a.php en su rama y otro agente avanza `main` desde un worktree aparte tocando docs/otro.md; el trabajador escribe un checkpoint y entrega"
+entonces:
+  - "el checkpoint 0 conserva por repo la rama `trabajo`, `nacio_de` = main de partida y la base que había"
+  - "el checkpoint clasifica `compatible`, registra la base nueva, cuenta 1 commit de la base que no tiene y NO reescribe el nacimiento"
+  - "la entrega vale y deja el veredicto en el último checkpoint; la integridad del estado se sostiene"
+falla_si:
+  - "un trabajo no sabe de qué commit nació ni en qué rama está, y la base avanza sin que nadie lo registre"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T495
+nombre: Un avance que toca lo mismo contradice y no se entrega hasta reconciliar
+cubre: ["CONTRATO-OFICINA §2 bis", "ciclo/base.py", "Directiva del Owner §63", "OWN-ADS-0229", "OWN-ADS-0231"]
+dado:
+  - "el mismo laboratorio Git; el trabajador cambió la primera línea de src/a.php y `main` avanzó añadiendo una tercera línea al mismo fichero"
+cuando:
+  - "el trabajador escribe un checkpoint, intenta entregar `entregado`, fusiona `main` en su rama, vuelve a escribir checkpoint y entrega"
+entonces:
+  - "el checkpoint dice `contradiccion` con el conflicto (control-repo, 1 commit, src/a.php) y no registra base nueva"
+  - "`entregado` es BASE_CONTRADICHA nombrando el fichero; la revisión del estado no cambia y el paquete sigue `ejecutando`"
+  - "tras reconciliar, el checkpoint dice `sin-cambio` con la base registrada, y la entrega vale"
+falla_si:
+  - "se entrega «terminado» sobre una base que ya cambió lo mismo, y Git descubre el conflicto al final"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T496
+nombre: Un control repo sin Git no se mide y nada cambia
+cubre: ["CONTRATO-OFICINA §2 bis", "ciclo/base.py"]
+dado:
+  - "un laboratorio corriente, que no es un repositorio Git"
+cuando:
+  - "se toma la implementación, se escribe un checkpoint y se entrega"
+entonces:
+  - "tomar no escribe checkpoint 0 ni devuelve base; el checkpoint conserva exactamente el contenido del trabajador; la entrega vale"
+falla_si:
+  - "una medida que no existe frena un control repo sin Git, o los laboratorios de la batería cambian de comportamiento"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
 ```

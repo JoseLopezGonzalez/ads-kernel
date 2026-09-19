@@ -102,6 +102,15 @@ release; lo propio del Owner se queda en su instancia.
   la base de su familia y podían entregar «diseñado» sin ningún artefacto de su fase
   (`T493`; `OWN-ADS-0049`, `0051`, `0052`, `0054`, `0055`–`0059`, `0061`, `0062`, `0064`,
   `0066`–`0068`, `0070`, `0071`, `0075`, `0077`, `0078`, `0082`, `0085`, `0087`, `0089`).
+- `ciclo/base.py` · `ciclo/oficina.py` · `ciclo/cli_oficina.py` · **la base de partida y el
+  mundo que cambia debajo** (Directiva §61, §63): al tomar, la oficina escribe el checkpoint
+  0 con la rama, de qué commit nace y qué base hay, por repositorio —el control repo y cada
+  fuente de `SOURCES.toml` en disco—; cada checkpoint mide otra vez y clasifica
+  `sin-cambio · compatible · contradiccion` (la base avanzó sobre lo mismo que el trabajo
+  cambió, o las dos ramas escriben `estado/`); una contradicción vigente hace de `entregado`
+  un `BASE_CONTRADICHA` sin escribir nada, hasta reconciliar en la rama o entregar
+  `bloqueado`. Sólo refs locales; un directorio sin Git es `no-medible` y no frena. CONTRATO
+  §2 bis (`T494`–`T496`; `OWN-ADS-0220`, `0221`, `0227`, `0229`, `0230`, `0231`).
 
 ## 2.0.0-alpha.15 — la oficina: el runtime se puede TRABAJAR desde fuera de un chat
 

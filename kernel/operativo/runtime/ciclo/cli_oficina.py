@@ -77,7 +77,7 @@ def orden_tomar(argumentos, *, abrir, corpus, emitir):
         "rol           " + str(resultado["brief"]["rol"]["id"]),
         "recibes       " + (", ".join(h["id"] for h in resultado["brief"]["recibes"]) or "(nada que acusar)"),
         "brief         " + (argumentos.brief_a or "(no escrito: usa --brief-a <fichero>)"),
-    ] + ([] if argumentos.brief_a else resultado["brief_md"].splitlines()))
+    ] + _lineas_de_base(resultado.get("base")) + ([] if argumentos.brief_a else resultado["brief_md"].splitlines()))
 
 
 def _ordenes_del_brief(argumentos):
@@ -99,12 +99,28 @@ def orden_soltar(argumentos, *, abrir, corpus, emitir):
 
 
 def orden_checkpoint(argumentos, *, abrir, corpus, emitir):
+    from ciclo import oficina                                         # noqa: PLC0415
     contenido = _leer_json(argumentos.contenido) if argumentos.contenido else {
         "nota": argumentos.nota or ""}
     with abrir(argumentos) as rt:
-        cuerpo = rt.checkpoint(argumentos.paquete, contenido)
+        cuerpo = oficina.checkpoint(rt, paquete=argumentos.paquete, contenido=contenido, corpus=corpus)
     return emitir(argumentos, cuerpo, ["checkpoint    " + argumentos.paquete + " · intento "
-                                       + str(cuerpo["intento"]) + " · titular " + cuerpo["titular"]])
+                                       + str(cuerpo["intento"]) + " · titular " + cuerpo["titular"]]
+                  + _lineas_de_base((cuerpo.get("contenido") or {}).get("base")))
+
+
+def _lineas_de_base(base):
+    """La base (§63), si se midió: veredicto, ramas y conflictos."""
+    if not base:
+        return []
+    lineas = ["base          " + str(base.get("veredicto"))]
+    for repo, medida in sorted((base.get("ahora") or {}).items()):
+        lineas.append("  " + repo.ljust(12) + " rama " + str(medida.get("rama")) + " · base "
+                      + str(medida.get("base_ahora")) + " · " + str(medida.get("commits_de_la_base_que_no_tengo"))
+                      + " commit(s) de la base que no tengo")
+    for conflicto in base.get("conflictos") or []:
+        lineas.append("  CONFLICTO    " + conflicto["repo"] + ": " + ", ".join(conflicto["ficheros"]))
+    return lineas
 
 
 def orden_entregar(argumentos, *, abrir, corpus, emitir):

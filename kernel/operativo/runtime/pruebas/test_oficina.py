@@ -1834,6 +1834,126 @@ class ParadasTipadas(Laboratorio):
             oficina.entregar(B, corpus=self.corpus, paquete=defin, entrega=e, circuito=self.circuito)
 
 
+# =========================================================================
+# T494–T496 · la base de partida y el mundo que cambia debajo (Directiva §61, §63)
+# =========================================================================
+class BaseDePartida(Laboratorio):
+    """El control repo del laboratorio se convierte en un repositorio Git con `main` y una
+    rama de trabajo; `main` avanza desde un worktree aparte, como lo haría otro agente."""
+
+    def _git(self, *args, cwd=None):
+        return subprocess.run(["git", "-c", "user.name=lab", "-c", "user.email=lab@ads.invalid",
+                               "-c", "commit.gpgsign=false", *args], cwd=cwd or self.repo,
+                              capture_output=True, text=True, check=True, env=ENTORNO).stdout.strip()
+
+    def _escribir(self, ruta, texto, cwd=None):
+        completa = os.path.join(cwd or self.repo, ruta)
+        os.makedirs(os.path.dirname(completa), exist_ok=True)
+        with open(completa, "w", encoding="utf-8") as manejador:
+            manejador.write(texto)
+
+    def _repo_git(self):
+        self._git("init", "-q", "-b", "main")
+        self._escribir("src/a.php", "uno\ndos\n")
+        self._git("add", "PROFILE.md", "src/a.php")
+        self._git("commit", "-q", "-m", "base")
+        self._git("checkout", "-q", "-b", "trabajo")
+        return self._git("rev-parse", "main")[:12]
+
+    def _avanzar_main(self, ruta, texto):
+        """Otro agente avanza `main` desde un worktree aparte; el laboratorio sigue en `trabajo`."""
+        aparte = tempfile.mkdtemp(prefix="ads-main-")
+        self._git("worktree", "add", "-q", aparte, "main")
+        try:
+            self._escribir(ruta, texto, cwd=aparte)
+            self._git("add", ruta, cwd=aparte)
+            self._git("commit", "-q", "-m", "avance de la base", cwd=aparte)
+        finally:
+            self._git("worktree", "remove", "--force", aparte)
+        return self._git("rev-parse", "main")[:12]
+
+    def _commit_mio(self, ruta, texto):
+        self._escribir(ruta, texto)
+        self._git("add", ruta)
+        self._git("commit", "-q", "-m", "mi trabajo")
+
+    @staticmethod
+    def _base_del_checkpoint(rt, paquete):
+        from runtime.externo import leer_checkpoint                     # noqa: PLC0415
+        return (leer_checkpoint(rt, paquete)["contenido"]).get("base")
+
+    def _implementacion_tomada(self, rt):
+        plan = self.planificar(rt)["plan"]
+        impl = self.paquete_de(plan, "CNS/implementacion")
+        self.avanzar_prd(rt, plan, impl)
+        return impl, self.tomar_y_acusar(rt, impl)
+
+    def test_34_al_tomar_nace_la_base_y_un_avance_compatible_se_registra(self):
+        """T494 · Defecto que previene: un trabajo que no sabe de qué commit nació ni en qué rama está."""
+        main0 = self._repo_git()
+        A = self.rt("w-A")
+        impl, toma = self._implementacion_tomada(A)
+        base = toma["base"]
+        self.assertEqual(base["veredicto"], "sin-cambio")
+        self.assertEqual(base["nacimiento"]["control-repo"]["rama"], "trabajo")
+        self.assertEqual(base["nacimiento"]["control-repo"]["nacio_de"], main0)
+        self.assertEqual(self._base_del_checkpoint(A, impl)["nacimiento"]["control-repo"]["base_ahora"], main0)
+        self._commit_mio("src/a.php", "uno-mio\ndos\n")
+        main1 = self._avanzar_main("docs/otro.md", "otra cosa\n")
+        cp = oficina.checkpoint(A, paquete=impl, contenido={"paso": 1})
+        base = cp["contenido"]["base"]
+        self.assertEqual(base["veredicto"], "compatible")
+        self.assertEqual(base["registrada"]["control-repo"], main1)
+        self.assertEqual(base["nacimiento"]["control-repo"]["nacio_de"], main0)
+        self.assertEqual(base["ahora"]["control-repo"]["commits_de_la_base_que_no_tengo"], 1)
+        self.assertEqual(base["ahora"]["control-repo"]["rama"], "trabajo")
+        self.assertEqual(cp["contenido"]["paso"], 1)
+        res = self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
+        self.assertEqual(res["veredicto"], "entregado")
+        self.assertEqual(self._base_del_checkpoint(A, impl)["veredicto"], "compatible")
+        self.assertTrue(A.almacen.verificar_integridad().a_dict()["ok"])
+
+    def test_35_un_avance_que_toca_lo_mismo_contradice_y_no_se_entrega_hasta_reconciliar(self):
+        """T495 · Defecto que previene: entregar «terminado» sobre una base que ya cambió lo mismo."""
+        self._repo_git()
+        A = self.rt("w-A")
+        impl, _ = self._implementacion_tomada(A)
+        self._commit_mio("src/a.php", "uno-mio\ndos\n")
+        main1 = self._avanzar_main("src/a.php", "uno\ndos\ntres\n")
+        cp = oficina.checkpoint(A, paquete=impl, contenido={"paso": 1})
+        base = cp["contenido"]["base"]
+        self.assertEqual(base["veredicto"], "contradiccion")
+        self.assertEqual(base["conflictos"], [{"repo": "control-repo", "commits_nuevos": 1,
+                                               "ficheros": ["src/a.php"]}])
+        self.assertNotIn("control-repo", base["registrada"])
+        revision = A.almacen.revision()["revision"]
+        with self.assertRaises(ciclo.BaseContradicha) as contexto:
+            self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
+        self.assertIn("src/a.php", str(contexto.exception))
+        self.assertEqual(A.almacen.revision()["revision"], revision)
+        self.assertEqual(A._leer_paquete(impl)["estado"], "ejecutando")
+        # el trabajador reconcilia EN SU RAMA (hunks distintos: la fusión es limpia) y vuelve a entregar
+        self._git("merge", "-q", "--no-edit", "main")
+        cp = oficina.checkpoint(A, paquete=impl, contenido={"paso": 2})
+        self.assertEqual(cp["contenido"]["base"]["veredicto"], "sin-cambio")
+        self.assertEqual(cp["contenido"]["base"]["registrada"]["control-repo"], main1)
+        res = self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
+        self.assertEqual(res["veredicto"], "entregado")
+
+    def test_36_sin_git_no_se_mide_y_nada_cambia(self):
+        """T496 · Defecto que previene: un control repo sin Git frenado por una medida que no existe."""
+        A = self.rt("w-A")
+        impl, toma = self._implementacion_tomada(A)
+        self.assertIsNone(toma["base"])
+        from runtime.externo import leer_checkpoint                     # noqa: PLC0415
+        self.assertIsNone(leer_checkpoint(A, impl))
+        cp = oficina.checkpoint(A, paquete=impl, contenido={"paso": 1})
+        self.assertEqual(cp["contenido"], {"paso": 1})
+        res = self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
+        self.assertEqual(res["veredicto"], "entregado")
+        self.assertEqual(leer_checkpoint(A, impl)["contenido"], {"paso": 1})
+
+
 class _RunnerDeterminista(unittest.TextTestRunner):
     """Igual que el corriente, pero sin la duración en el resumen (salida publicada)."""
 

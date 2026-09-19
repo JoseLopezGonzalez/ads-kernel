@@ -453,6 +453,13 @@ class AutocertificacionRechazada(ErrorDeCiclo):
     CODIGO = "AUTOCERTIFICACION_RECHAZADA"
 
 
+class BaseContradicha(ErrorDeCiclo):
+    """La base avanzó sobre lo mismo que este paquete cambió (Directiva §63): no se entrega
+    como si el mundo no hubiera cambiado. Se reconcilia en la rama, o se entrega `bloqueado`."""
+
+    CODIGO = "BASE_CONTRADICHA"
+
+
 class BriefIncomponible(ErrorDeCiclo):
     """Falta una pieza sin la cual el brief no dice lo que el trabajador tiene que hacer."""
 
@@ -475,7 +482,7 @@ CLASES = (
     ObligacionHuerfana, RetiradaSinAutoridad, CierreBloqueado,
     DecisionDelOwnerPendiente, TrabajoAmbiguo, DerivaNoTransaccional, CicloInconsistente,
     EntregaInvalida, CircuitoBaseIncumplido, CircuitoBaseIlegible, FrenoDisparado,
-    AutocertificacionRechazada, BriefIncomponible,
+    AutocertificacionRechazada, BriefIncomponible, ImpactoNoCubierto, BaseContradicha,
 )
 
 CODIGOS = tuple(sorted(clase.CODIGO for clase in CLASES))

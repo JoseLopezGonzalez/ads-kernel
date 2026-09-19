@@ -77,6 +77,39 @@ hace fungibles a los trabajadores y posible la batería (`T460`, `T462`; OWN-ADS
 es lo que hace reclamable un lease, y el brief lo dice: escribir checkpoint al terminar
 cada paso es lo que separa a un trabajador vivo de uno muerto.
 
+## 2 bis · La base de partida, y el mundo que cambia debajo (Directiva §61, §63)
+
+Un trabajador que sigue horas sobre una realidad obsoleta descubre al final que Git no
+puede fusionar lo suyo. `ciclo/base.py` mide, por repositorio —el control repo y cada
+fuente de `SOURCES.toml` que exista en disco—, la rama, de qué commit nació el trabajo, qué
+base hay ahora, cuántos commits de la base faltan y qué ficheros cambian a cada lado; sólo
+refs locales, sin red, y un directorio sin Git es `no-medible` y no frena nada.
+
+```text
+TOMAR        `oficina.tomar` escribe el CHECKPOINT 0 con `base.nacimiento`: por repo, la
+             rama, `nacio_de` y la base que había (§61: la rama del ADS y la de cada
+             fuente constan por paquete, en la visión durable). Al retomar, el
+             nacimiento se conserva
+CHECKPOINT   `oficina.checkpoint` mide otra vez y clasifica contra el nacimiento:
+               sin-cambio       la base no avanzó (o ya está fusionada en la rama)
+               compatible       avanzó sobre OTRA cosa: se registra la base nueva
+                                (`base.registrada`) y se continúa (§63)
+               contradiccion    avanzó sobre lo MISMO que este trabajo cambió, o las
+                                dos ramas escriben `estado/` (§62): el checkpoint se
+                                escribe igual —el latido no se pierde— con los ficheros
+                                en conflicto
+ENTREGAR     `entregado` con una contradicción vigente es `BASE_CONTRADICHA`, sin escribir
+             nada: se reconcilia en la rama y se vuelve a entregar, o se entrega
+             `bloqueado` (dependencia interna: espera). `devuelto`, `bloqueado` y
+             `escalado` no se frenan. Cuando se mide, la entrega deja un último
+             checkpoint con el veredicto
+```
+
+Cada checkpoint mira la base: ése es el latido que §63 pide para que nadie trabaje horas
+sobre un mundo que ya cambió (`T494`–`T496`; OWN-ADS-0220, 0221, 0227, 0229, 0230, 0231).
+Reconciliar —fusionar o rebasar— es del trabajador, en su rama; la oficina no toca ningún
+árbol.
+
 ## 3 · La entrega — verificable, o no se escribe
 
 Una entrega cumple [`esquemas/entrega.yaml`](../esquemas/entrega.yaml) y ADEMÁS:

@@ -31,11 +31,12 @@ from __future__ import annotations
 
 from estado.serializacion import cid_de_objeto
 
-from . import briefs, cierre as modulo_cierre, durable, entregas, formas, gates, handoffs, impacto as modulo_impacto
+from . import base as modulo_base, briefs, cierre as modulo_cierre, durable, entregas, formas, gates, handoffs, impacto as modulo_impacto
 from . import encuadre as modulo_encuadre, equipos as modulo_equipos, paralelismo
 from . import planificacion, rutas as modulo_rutas, terminacion
 from .corpus import CAPACIDADES, Corpus
 from .errores import (
+    BaseContradicha,
     ImpactoNoCubierto,
     AutocertificacionRechazada,
     CicloInconsistente,
@@ -339,7 +340,44 @@ def tomar(runtime, *, corpus=None, paquete, **opciones_del_brief):
     except Exception:
         runtime.soltar(paquete)
         raise
-    return {"toma": toma, "brief": brief, "brief_md": briefs.como_markdown(brief)}
+    # LA BASE DE PARTIDA (Directiva §61, §63; OWN-ADS-0220, 0227): al nacer el trabajo se
+    # conserva, por repo medible, la rama, de qué commit nace y qué base hay. Es el
+    # checkpoint 0, bajo el lease recién adquirido; en un laboratorio sin Git no se escribe.
+    base = None
+    if toma.get("checkpoint") is None:
+        evaluacion = modulo_base.evaluar(runtime.ruta)
+        if evaluacion["veredicto"] != modulo_base.NO_MEDIBLE:
+            nacimiento = modulo_base.nacimiento_de(evaluacion["medidas"])
+            base = modulo_base.resumen(evaluacion, nacimiento)
+            runtime.checkpoint(paquete, {"paso": 0, "base": base})
+    else:
+        base = (toma["checkpoint"].get("contenido") or {}).get("base")
+    return {"toma": toma, "brief": brief, "brief_md": briefs.como_markdown(brief), "base": base}
+
+
+def _nacimiento_de(runtime, paquete):
+    from runtime.externo import leer_checkpoint                        # noqa: PLC0415
+    previo = leer_checkpoint(runtime, paquete)
+    return (((previo or {}).get("contenido") or {}).get("base") or {}).get("nacimiento")
+
+
+def checkpoint(runtime, *, paquete, contenido, corpus=None):
+    """`Runtime.checkpoint` MIRANDO LA BASE (Directiva §63; OWN-ADS-0227, 0229, 0230).
+
+    Cada checkpoint mide otra vez el control repo y las fuentes: si la base avanzó sobre
+    otra cosa, `compatible` y la base nueva queda registrada; si avanzó sobre lo mismo que
+    este trabajo cambió, `contradiccion`, y el checkpoint se escribe igual —el latido no se
+    pierde— con los ficheros en conflicto, para que el trabajador reconcilie en su rama o
+    entregue `bloqueado`. `entregar` no admite `entregado` con una contradicción vigente.
+    """
+    del corpus
+    contenido = dict(contenido or {})
+    nacimiento = _nacimiento_de(runtime, paquete)
+    evaluacion = modulo_base.evaluar(runtime.ruta, nacimiento=nacimiento)
+    if evaluacion["veredicto"] != modulo_base.NO_MEDIBLE or nacimiento:
+        contenido["base"] = modulo_base.resumen(
+            evaluacion, nacimiento or modulo_base.nacimiento_de(evaluacion["medidas"]))
+    return runtime.checkpoint(paquete, contenido)
 
 
 def _exigir_que_no_juzgue_lo_suyo(runtime, corpus, paquete, fila, circuito=None):
@@ -525,6 +563,25 @@ def entregar(runtime, *, corpus=None, paquete, entrega, circuito=None, hechos=No
     impacto = None
     if entrega.get("impacto"):
         impacto = modulo_impacto.evaluar(circuito, entrega["impacto"], paquete=paquete)
+
+    # 1 ter · LA BASE (Directiva §63; OWN-ADS-0231): antes de escribir nada, si el mundo
+    #         cambió debajo sobre lo mismo que este paquete tocó, no se entrega `entregado`
+    #         como si no hubiera pasado. Se reconcilia en la rama, o se entrega `bloqueado`
+    #         (dependencia interna: espera). Un laboratorio sin Git no mide y no frena.
+    if veredicto == "entregado":
+        nacimiento = _nacimiento_de(runtime, paquete)
+        evaluacion_de_base = modulo_base.evaluar(runtime.ruta, nacimiento=nacimiento)
+        if evaluacion_de_base["veredicto"] == modulo_base.CONTRADICCION:
+            raise BaseContradicha(
+                "la base avanzó sobre lo mismo que este paquete cambió —"
+                + modulo_base.frase(evaluacion_de_base["conflictos"]) + "—: no se entrega "
+                "`entregado` sobre una realidad obsoleta (§63). Reconcilia la rama con la base "
+                "y vuelve a entregar, o entrega `bloqueado` con clase dependencia-interna",
+                paquete=paquete,
+            )
+        if evaluacion_de_base["veredicto"] != modulo_base.NO_MEDIBLE or nacimiento:
+            runtime.checkpoint(paquete, {"paso": "entrega", "base": modulo_base.resumen(
+                evaluacion_de_base, nacimiento or modulo_base.nacimiento_de(evaluacion_de_base["medidas"]))})
 
     # 2 · BLOQUEADO / ESCALADO: el paquete queda `bloqueado`, no consume intento.
     if veredicto in ("bloqueado", "escalado"):
