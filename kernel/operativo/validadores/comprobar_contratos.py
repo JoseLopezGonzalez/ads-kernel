@@ -1280,6 +1280,89 @@ def t477_bases_de_contrato_coherentes(b):
     return r
 
 
+# ---- T493 · los contratos de la línea de Diseño exigen los artefactos de la Directiva ------
+#  La Directiva del Owner nombra un entregable por fase (§12 informe de realidad actual,
+#  §13 síntesis de investigación, §14 análisis de uso, §15 auditoría de reutilización con
+#  sus cinco salidas, §16 alternativas de diez campos, §17 recomendación, §18 prototipo,
+#  §19/§24 crítica por trece criterios, §20 síntesis de ocho secciones, §21 especificación
+#  construible, §25 sesión de uso). Un rol cuyo contrato no exija ese artefacto como
+#  obligatorio, con su estructura, puede entregar «he diseñado» sin que nada lo devuelva.
+ARTEFACTOS_DE_DISENO = {
+    "DIS/investigacion-ux": {
+        "informe de realidad actual": ["qué existe", "no funciona", "patrones", "equivalentes", "restricciones"],
+        "análisis de uso": ["quién usa", "tarea primaria", "salir mal", "comparar", "permisos", "estados y extremos"]},
+    "DIS/investigacion-visual": {
+        "síntesis de investigación": ["patrones encontrados", "principios", "errores frecuentes",
+                                      "aplicable", "no es aplicable", "riesgos"]},
+    "DIS/sistema-de-diseno": {
+        "auditoría de reutilización": ["equivalentes", "cinco", "crear patrón nuevo", "deuda de unificación", "token"]},
+    "DIS/direccion-artistica": {
+        "alternativas": ["principio", "ventajas", "inconvenientes", "coste", "escalabilidad", "impacto móvil",
+                         "consistencia", "riesgos", "reutiliza", "introduce"],
+        "recomendación": ["por qué"],
+        "síntesis para el owner": ["problema", "realidad actual", "alternativas estudiadas", "recomendación",
+                                   "reutilizamos", "riesgos", "prototipo", "necesitamos del owner"]},
+    "DIS/prototipado": {
+        "prototipo": ["contenido real", "estados", "extremos", "responsive", "errores", "vacíos", "loading"]},
+    "DIS/critica-visual": {
+        "crítica por criterio": ["claridad", "jerarquía", "carga cognitiva", "coherencia", "densidad",
+                                 "profesionalidad", "accesibilidad", "consistencia", "simplificación",
+                                 "reutilización", "responsive", "estados extremos", "patrón innecesario", "dictamen"]},
+    "DIS/validacion-de-uso": {
+        "sesión de uso": ["pasos", "tiempo", "errores"],
+        "evaluación de uso": ["descubribilidad", "comprensión", "pasos", "feedback", "recuperación",
+                              "velocidad", "ambigüedad", "coherencia", "viable"]},
+    "DIS/diseno-interaccion": {
+        "especificación de interacción": ["flujo", "comportamiento", "errores", "permisos"]},
+    "DIS/movimiento": {"tabla de movimiento": ["curva", "duración", "token"]},
+    "DIS/diseno-visual": {
+        "especificación construible": ["prototipo aprobado", "componentes", "estructura y comportamiento",
+                                       "estados", "navegación", "responsive", "acciones y permisos",
+                                       "accesibilidad", "animación", "datos extremos", "textos", "errores",
+                                       "criterios de aceptación"]},
+}
+SALIDAS_DE_15 = ("REUTILIZAR SIN CAMBIOS", "REUTILIZAR AMPLIANDO", "UNIFICAR IMPLEMENTACIONES EXISTENTES",
+                 "REFACTORIZAR PATRÓN EXISTENTE", "CREAR PATRÓN NUEVO")
+TIPOS_MIRABLES = {"captura", "grabacion", "medicion"}
+
+
+def t493_diseno_exige_los_artefactos_de_la_directiva(b):
+    """Cada rol de la línea de Diseño exige en su contrato completo, como artefacto
+    obligatorio, el entregable que la Directiva del Owner nombra para su fase, con la
+    estructura mínima que ella enumera; la auditoría de reutilización nombra las cinco
+    salidas de §15; y los roles que miran el producto (investigación, prototipo, crítica,
+    validación) dejan un artefacto mirable, no sólo prosa."""
+    r = Resultado("T493", "Los contratos de Diseño exigen los artefactos que la Directiva nombra por fase")
+    contratos = {d["rol"]: (d, ruta, linea) for d, ruta, linea in b.get("contrato-operativo", [])}
+    cubiertos = 0
+    for rol, exigidos in ARTEFACTOS_DE_DISENO.items():
+        if rol not in contratos:
+            r.fallo(f"{rol}: no tiene contrato completo (contrato-operativo); la Directiva exige sus artefactos")
+            continue
+        datos, ruta, linea = contratos[rol]
+        obligatorios = [a for a in datos.get("artefactos") or [] if a.get("obligatorio")]
+        for nombre, piezas in exigidos.items():
+            arte = next((a for a in obligatorios if nombre in str(a.get("nombre", "")).lower()), None)
+            if arte is None:
+                r.fallo(f"{ruta}:{linea}: {rol} no exige como obligatorio un artefacto «{nombre}»")
+                continue
+            texto = " ".join(str(x) for x in arte.get("estructura_minima") or []).lower()
+            faltan = [pz for pz in piezas if pz not in texto]
+            if faltan:
+                r.fallo(f"{ruta}:{linea}: {rol} · «{nombre}» no exige en su estructura: {', '.join(faltan)}")
+            cubiertos += 1
+        if rol == "DIS/sistema-de-diseno":
+            plano = json.dumps(datos, ensure_ascii=False)
+            for salida in SALIDAS_DE_15:
+                if salida not in plano:
+                    r.fallo(f"{ruta}:{linea}: {rol} no nombra la salida «{salida}» de §15")
+        if rol in ("DIS/investigacion-ux", "DIS/prototipado", "DIS/critica-visual", "DIS/validacion-de-uso"):
+            if not any(a.get("tipo") in TIPOS_MIRABLES for a in obligatorios):
+                r.fallo(f"{ruta}:{linea}: {rol} no deja ningún artefacto mirable (captura · grabacion · medicion)")
+    r.cobertura = f"roles de Diseño: {len(ARTEFACTOS_DE_DISENO)} · artefactos exigidos: {cubiertos} · salidas de §15: {len(SALIDAS_DE_15)}"
+    return r
+
+
 PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t89_reanudacion_con_prueba, t90_roles_coherentes, t91_metodos_con_gate_y_pasos,
            t92_sin_marca, t135_composicion_respeta_el_contrato,
@@ -1292,7 +1375,8 @@ PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t240_capacidad_tipada_sin_metodos, t241_dis_a_ver_anclado_al_ciclo,
            t242_autoridad_de_los_documentos_del_owner,
            t243_entregas_de_8_0_materializadas,
-           t244_grado_inicial_coincide_con_el_paso_5, t476_todo_rol_materializable_tiene_contrato, t477_bases_de_contrato_coherentes]
+           t244_grado_inicial_coincide_con_el_paso_5, t476_todo_rol_materializable_tiene_contrato, t477_bases_de_contrato_coherentes,
+           t493_diseno_exige_los_artefactos_de_la_directiva]
 
 
 def main():

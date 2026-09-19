@@ -10,7 +10,7 @@ Cualquier documento que afirme una distinta hace fallar la prueba T151.
 | bloques circuito base | **0** |
 | bloques contrato base | **7** |
 | bloques contrato de rol | **1** |
-| bloques contrato operativo | **7** |
+| bloques contrato operativo | **16** |
 | bloques de esquema | **0** |
 | bloques ejecutor | **0** |
 | bloques entrega | **0** |
@@ -24,7 +24,7 @@ Cualquier documento que afirme una distinta hace fallar la prueba T151.
 | composiciones de dis | **10** |
 | contratos transversales | **7** |
 | encuadres | **2** |
-| escenarios | **353** |
+| escenarios | **354** |
 | esquemas | **25** |
 | estaciones de entrada | **14** |
 | formas de conversacion | **14** |

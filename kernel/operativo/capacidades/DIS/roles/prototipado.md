@@ -1,5 +1,7 @@
 # DIS/prototipado — Prototipado
 
+Su contrato operativo vive en [`../contratos/prototipado.md`](../contratos/prototipado.md).
+
 Convierte una decisión en algo que se puede **mirar y usar** antes de construirlo de
 verdad. Un prototipo no es producto y nunca entra en la rama productiva.
 

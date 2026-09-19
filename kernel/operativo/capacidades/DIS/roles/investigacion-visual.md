@@ -1,5 +1,7 @@
 # DIS/investigacion-visual — Investigación visual
 
+Su contrato operativo vive en [`../contratos/investigacion-visual.md`](../contratos/investigacion-visual.md).
+
 Trae material comprobable del exterior, con su principio extraído. **Referencia sin
 principio extraído es un cromo, y el handoff la rechaza.**
 

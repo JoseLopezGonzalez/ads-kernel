@@ -1,4 +1,4 @@
-# T460–T492 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77, el catálogo de clases, la estación de impacto de §5 y las paradas de §36
+# T460–T493 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77, el catálogo de clases, la estación de impacto de §5, las paradas de §36 y los artefactos de Diseño
 
 **Qué cierran.** El hallazgo de la auditoría forense de La Pesquerapp del 2026-09-14: el
 kernel tenía escrito el runtime completo —paquetes, leases, dispatcher, ciclo, gates,
@@ -48,6 +48,7 @@ T489  un impacto declarado que el circuito cubre no marca nada y el item sigue (
 T490  un impacto que el circuito no cubre marca el plan, ningún otro paquete se toma, y replanificar con una generación nueva sustituye al plan marcado (§5, §62, b.1)
 T491  un disparador fuera de los dieciséis de §5 es una entrega inválida
 T492  una barrera externa y un riesgo extraordinario son paradas del supervisor con nombre (§36.3, §36.4); sin clase sigue siendo bloqueado; una clase inventada no entra
+T493  los contratos de la línea de Diseño exigen los artefactos que la Directiva nombra por fase (§12–§26): informe de realidad, análisis de uso, síntesis, auditoría con sus cinco salidas, alternativas de diez campos, recomendación, prototipo mirable, crítica por trece criterios, síntesis de ocho secciones, sesión de uso y especificación construible
 ```
 
 ---
@@ -614,4 +615,24 @@ ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
 estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T493
+nombre: Los contratos de Diseño exigen los artefactos que la Directiva nombra por fase
+cubre: ["contrato-operativo", "DIS/contratos/*", "Directiva del Owner §12–§26", "OWN-ADS-0051", "OWN-ADS-0054", "OWN-ADS-0055", "OWN-ADS-0058", "OWN-ADS-0064", "OWN-ADS-0068", "OWN-ADS-0071", "OWN-ADS-0077", "OWN-ADS-0087"]
+dado:
+  - "los diez roles de la línea de Diseño con contrato completo: investigacion-ux, investigacion-visual, sistema-de-diseno, direccion-artistica, prototipado, critica-visual, validacion-de-uso, diseno-interaccion, movimiento y diseno-visual"
+cuando:
+  - "se lee el contrato de cada uno y sus artefactos obligatorios"
+entonces:
+  - "cada rol exige como obligatorio el entregable de su fase con la estructura que la Directiva enumera: los siete apartados del informe de realidad (§12), los seis de la síntesis (§13), las preguntas y los estados del análisis de uso (§14), la auditoría con equivalentes, deuda de unificación y las cinco salidas nombradas (§15), los diez campos de cada alternativa (§16), la recomendación con su por qué (§17), el prototipo con estados, extremos, responsive, errores, vacíos y loading (§18), la crítica por los trece criterios con dictamen (§19, §24), la síntesis con las ocho secciones (§20), la especificación construible con los puntos de §21 y la sesión de uso con los ocho criterios y la viabilidad motivada (§25)"
+  - "investigación UX, prototipado, crítica y validación dejan un artefacto mirable (captura · grabación · medición), no sólo prosa"
+falla_si:
+  - "un rol de Diseño puede entregar «diseñado» sin el artefacto de su fase y ningún validador lo devuelve"
+  - "la auditoría de reutilización admite una salida fuera de las cinco de §15"
+ejecucion: validador-estructural
+validador: kernel/operativo/validadores/comprobar_contratos.py
+estado: prueba-superada
+evidencia: evidencia/contratos-salida.txt
 ```

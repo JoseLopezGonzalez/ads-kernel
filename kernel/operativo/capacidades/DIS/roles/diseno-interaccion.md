@@ -1,5 +1,7 @@
 # DIS/diseno-interaccion — Diseño de interacción
 
+Su contrato operativo vive en [`../contratos/diseno-interaccion.md`](../contratos/diseno-interaccion.md).
+
 Decide **cómo se usa**: el flujo, los estados, qué información aparece cuándo y qué pasa
 cuando algo va mal.
 

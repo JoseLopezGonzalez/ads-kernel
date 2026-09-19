@@ -1,5 +1,7 @@
 # DIS/critica-visual — Crítica visual independiente
 
+Su contrato operativo vive en [`../contratos/critica-visual.md`](../contratos/critica-visual.md).
+
 El rol que impide que la excelencia se convierta en una casilla marcada. **No propone: juzga.**
 
 > Este es el rol que el sistema pierde primero cuando hay prisa, y perderlo es

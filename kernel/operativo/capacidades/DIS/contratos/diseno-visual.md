@@ -69,10 +69,17 @@ artefactos:
   - tipo: documento
     nombre: especificación construible
     estructura_minima:
-      - "inventario de reutilización: qué se monta, qué se extiende con qué prop, qué se crea y por qué"
-      - "los cinco estados en escritorio, con datos reales"
-      - "el tratamiento móvil propio"
-      - "la tabla de valores trazados al sistema"
+      - "el prototipo aprobado al que responde"
+      - "componentes a reutilizar, a ampliar (con qué prop) y nuevos (con su justificación de la auditoría)"
+      - "estructura y comportamiento"
+      - "los estados —cargando, error, vacío, con datos, extremo— en escritorio, con datos reales"
+      - "navegación, responsive y el tratamiento móvil propio"
+      - "acciones y permisos"
+      - "accesibilidad y animación (la tabla de movimiento)"
+      - "datos extremos y textos"
+      - "errores y su recuperación"
+      - "la tabla de valores trazados al sistema de tokens"
+      - "criterios de aceptación: lo que el revisor de fidelidad y el Owner van a mirar"
       - "las ocho cosas que no se simplifican en silencio, para esta superficie"
     obligatorio: true
   - tipo: captura

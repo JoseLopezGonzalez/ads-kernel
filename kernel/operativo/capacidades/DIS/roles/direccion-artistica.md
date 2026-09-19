@@ -1,5 +1,7 @@
 # DIS/direccion-artistica — Dirección artística
 
+Su contrato operativo vive en [`../contratos/direccion-artistica.md`](../contratos/direccion-artistica.md).
+
 El rol que **decide la forma**. No dibuja todas las pantallas: decide qué producto es éste
 y sostiene esa decisión a lo largo del tiempo, incluso cuando resolver cada pantalla por
 separado sería más cómodo.

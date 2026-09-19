@@ -85,6 +85,23 @@ release; lo propio del Owner se queda en su instancia.
   `comprobar_integridad` (comprobación 4) salía en rojo en cualquier worktree aunque el
   sello, calculado desde un clon limpio, fuera correcto. Los artefactos de ejecución
   (`.git`, `__pycache__`, `.pytest_cache`) se excluyen por nombre, sean directorio o fichero.
+- `capacidades/DIS/contratos/` · **la línea de Diseño tiene contrato completo en sus diez
+  roles productores y críticos**: `investigacion-ux` (informe de realidad actual de §12 y
+  análisis de uso de §14, con los estados y extremos), `investigacion-visual` (síntesis de
+  §13), `sistema-de-diseno` (auditoría de reutilización con las cinco salidas de §15, la
+  deuda de unificación y los valores trazados a tokens), `direccion-artistica` (alternativas
+  de diez campos de §16, recomendación de §17 y la síntesis de ocho secciones de §20, con
+  NECESITAMOS DEL OWNER limitado a lo que es suyo), `prototipado` (prototipo mirable de §18),
+  `critica-visual` (los trece criterios de §19 antes del Owner y sobre la implementación,
+  §24), `validacion-de-uso` (sesión con tareas reales y los ocho criterios de §25, viabilidad
+  con motivo), `diseno-interaccion`, `movimiento`, y `diseno-visual` amplía su especificación
+  construible a los puntos de §21. Cada uno con sus entradas, comprobaciones previas,
+  secuencia, artefactos obligatorios, criterios medibles, devoluciones, escalado,
+  incompatibilidades que cubren la independencia que su rol declara, y checklist. Hasta
+  ahora sólo `diseno-visual` y `revision-de-fidelidad` tenían contrato: los demás heredaban
+  la base de su familia y podían entregar «diseñado» sin ningún artefacto de su fase
+  (`T493`; `OWN-ADS-0049`, `0051`, `0052`, `0054`, `0055`–`0059`, `0061`, `0062`, `0064`,
+  `0066`–`0068`, `0070`, `0071`, `0075`, `0077`, `0078`, `0082`, `0085`, `0087`, `0089`).
 
 ## 2.0.0-alpha.15 — la oficina: el runtime se puede TRABAJAR desde fuera de un chat
 
