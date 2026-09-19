@@ -19,6 +19,10 @@ test_11_un_bloqueo_no_consume_intento_y_deja_el_desbloqueador_nombrado (__main__
 T467 · Defecto que previene: un bloqueo que acaba en `agotado` y en g.9. ... ok
 test_12_el_item_no_cierra_como_producto_hasta_alcanzar_los_niveles_exigidos (__main__.BloqueoYCierre.test_12_el_item_no_cierra_como_producto_hasta_alcanzar_los_niveles_exigidos)
 T468 · Defecto que previene: «cerrado» mientras nadie abrió la pantalla. ... ok
+test_28_una_capacidad_que_participa_dos_veces_acuna_paquetes_distintos (__main__.CatalogoDeClases.test_28_una_capacidad_que_participa_dos_veces_acuna_paquetes_distintos)
+T487 · Defecto que previene: ninguna clase con C-DOM o C-SEG se podía planificar ... ok
+test_29_el_cambio_de_direccion_deriva_su_propietario_del_encargo (__main__.CatalogoDeClases.test_29_el_cambio_de_direccion_deriva_su_propietario_del_encargo)
+T488 · Defecto que previene: `DIR` no se podía planificar desde la oficina porque el ... ok
 test_21_un_rol_sin_contrato_completo_tiene_contrato_efectivo_que_manda_en_el_brief (__main__.ContratosEfectivos.test_21_un_rol_sin_contrato_completo_tiene_contrato_efectivo_que_manda_en_el_brief)
 T476 · Defecto que previene: treinta roles trabajando con prosa y criterio propio. ... ok
 test_23_la_cronica_dice_quien_tomo_que_y_que_entrego_en_el_orden_del_diario (__main__.Cronica.test_23_la_cronica_dice_quien_tomo_que_y_que_entrego_en_el_orden_del_diario)
@@ -35,6 +39,16 @@ test_09b_quien_corrigio_la_implementacion_tampoco_pasa_la_puerta_del_juez (__mai
 T465 · Defecto que previene: el autor de la CORRECCIÓN toma VER/dosier y su entrega se rechaza después. ... ok
 test_10_un_rechazo_al_recibir_no_cuenta_para_el_freno_y_cancela_el_receptor (__main__.Entregas.test_10_un_rechazo_al_recibir_no_cuenta_para_el_freno_y_cancela_el_receptor)
 T466 · Defecto que previene: aceptar por cortesía y devolver después. ... ok
+test_24_entregar_con_un_handoff_recibido_sin_acusar_se_rechaza (__main__.HandoffsYFronteras.test_24_entregar_con_un_handoff_recibido_sin_acusar_se_rechaza)
+T483 · Defecto que previene: «seguimos» como transferencia implícita (§78). ... ok
+test_25_el_handoff_emitido_lleva_los_catorce_campos_de_la_directiva (__main__.HandoffsYFronteras.test_25_el_handoff_emitido_lleva_los_catorce_campos_de_la_directiva)
+T484 · Defecto que previene: un receptor que reconstruye la entrega leyendo un chat. ... ok
+test_26_escalar_exige_una_materia_que_la_capacidad_escala_y_no_una_que_decide_sola (__main__.HandoffsYFronteras.test_26_escalar_exige_una_materia_que_la_capacidad_escala_y_no_una_que_decide_sola)
+T485 · Defecto que previene: el Owner arbitrando spacing (Directiva §20, §41, §76). ... ok
+test_26b_un_corpus_sin_autoridad_no_autoriza_un_escalado (__main__.HandoffsYFronteras.test_26b_un_corpus_sin_autoridad_no_autoriza_un_escalado)
+T485 · Defecto que previene: que una ficha ilegible autorice cualquier materia. ... ok
+test_27_las_fronteras_previas_a_la_construccion_se_distinguen (__main__.HandoffsYFronteras.test_27_las_fronteras_previas_a_la_construccion_se_distinguen)
+T486 · Defecto que previene: «cerrado» como sinónimo de «implementado», y un item del ... ok
 test_22_integrado_solo_con_un_conjunto_exacto_que_nombra_todas_las_fuentes_escritas (__main__.Integrado.test_22_integrado_solo_con_un_conjunto_exacto_que_nombra_todas_las_fuentes_escritas)
 T468 · Defecto que previene: «integrado» como palabra, o dos ramas que nadie probó juntas. ... ok
 test_03_un_trabajador_que_muere_con_el_lease_es_reofrecido_tras_paciencia (__main__.MuerteDelTrabajador.test_03_un_trabajador_que_muere_con_el_lease_es_reofrecido_tras_paciencia)
@@ -65,6 +79,6 @@ test_15_sin_entrega_valida_el_agente_no_completa_y_sin_ejecutor_falla_cerrado (_
 T470 · Defecto que previene: un `completado` durable sobre una entrega que no existe. ... ok
 
 ----------------------------------------------------------------------
-Ran 29 tests  (duración no registrada: varía por ejecución)
+Ran 36 tests  (duración no registrada: varía por ejecución)
 
 OK

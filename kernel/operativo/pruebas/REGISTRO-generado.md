@@ -12,9 +12,9 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 |---|---|
 | CONTRATO DEFINIDO | 56 |
 | VALIDADOR IMPLEMENTADO | 7 |
-| PRUEBA EJECUTADA | 2 |
-| PRUEBA SUPERADA | 283 |
-| PRUEBA FALLIDA | 1 |
+| PRUEBA EJECUTADA | 0 |
+| PRUEBA SUPERADA | 286 |
+| PRUEBA FALLIDA | 0 |
 | **total** | **349** |
 
 ## Detalle
@@ -158,7 +158,7 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T211](T210-T225-arboles-raiz-externa-y-contencion.md) | Cada ataque se aplica de verdad, y la versión vulnerable lo acepta | V6-15 · 11-ARQ 20.5 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arboles-salida.txt |
 | [T212](T210-T225-arboles-raiz-externa-y-contencion.md) | La implementación vigente rechaza cada árbol POR LA PROPIEDAD que le toca | V6-15 · V6-01 · V6-05 · V6-06 · V6-08 · V6-10 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arboles-salida.txt |
 | [T213](T210-T225-arboles-raiz-externa-y-contencion.md) | La matriz de cuatro columnas cierra con las dos restas vacías | V6-15 · V6-18 | validador-estructural | **PRUEBA SUPERADA** | evidencia/arboles-salida.txt |
-| [T214](T210-T225-arboles-raiz-externa-y-contencion.md) | Las capacidades de contención del anfitrión se DETECTAN ejerciéndolas | FD-5 · 11-ARQ 6.5 | requiere-runtime | **PRUEBA FALLIDA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/contencion-salida.txt |
+| [T214](T210-T225-arboles-raiz-externa-y-contencion.md) | Las capacidades de contención del anfitrión se DETECTAN ejerciéndolas | FD-5 · 11-ARQ 6.5 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/contencion-salida.txt |
 | [T215](T210-T225-arboles-raiz-externa-y-contencion.md) | Con contención fuerte, un descendiente que hace `setsid` NO escapa | FD-5 · 11-ARQ 6.5 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/contencion-salida.txt |
 | [T216](T210-T225-arboles-raiz-externa-y-contencion.md) | El backend simple conserva su nivel INFERIOR declarado, y su límite se mide | FD-5 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/contencion-salida.txt |
 | [T217](T210-T225-arboles-raiz-externa-y-contencion.md) | La raíz externa es un paquete y un proceso SEPARADOS, con su confianza fuera del árbol | V6-16 · g.15 · O18 · O25 · 11-ARQ 11.8 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/raiz-externa-salida.txt |
@@ -368,14 +368,14 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T484](T460-T479-oficina.md) | El handoff emitido lleva los catorce campos de §78 | CONTRATO-OFICINA §4 · handoff · Directiva del Owner §78 · OWN-ADS-0278 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
 | [T485](T460-T479-oficina.md) | Escalar exige una materia que la capacidad ESCALA, y una que decide sola se rechaza | CONTRATO-OFICINA §3 · escalado · Directiva del Owner §20 §41 §76 · OWN-ADS-0074 · OWN-ADS-0161 · OWN-ADS-0271 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
 | [T486](T460-T479-oficina.md) | Las fronteras previas a la construcción se distinguen | CONTRATO-OFICINA §6 · fronteras · Directiva del Owner §77 · OWN-ADS-0275 · OWN-ADS-0276 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
-| [T487](T460-T479-oficina.md) | Una capacidad que participa dos veces acuña paquetes distintos | CONTRATO-OFICINA §5 · planificacion · a.5 · 01-PROCESOS (revisión posterior de DOM y SEG) · OWN-ADS-0022 · OWN-ADS-0112 | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
-| [T488](T460-T479-oficina.md) | Un cambio de dirección deriva su propietario del encargo | CONTRATO-OFICINA §5 · rutas.propietario_global · b.16 · proceso:DIR · OWN-ADS-0022 · OWN-ADS-0117 | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
+| [T487](T460-T479-oficina.md) | Una capacidad que participa dos veces acuña paquetes distintos | CONTRATO-OFICINA §5 · planificacion · a.5 · 01-PROCESOS (revisión posterior de DOM y SEG) · OWN-ADS-0022 · OWN-ADS-0112 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T488](T460-T479-oficina.md) | Un cambio de dirección deriva su propietario del encargo | CONTRATO-OFICINA §5 · rutas.propietario_global · b.16 · proceso:DIR · OWN-ADS-0022 · OWN-ADS-0117 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
 
 ## Contraste del estado contra la evidencia
 
-Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **284** de **349**.
+Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **286** de **349**.
 
-No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **65**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
+No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **63**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
 
 Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada mezclaba a los que no afirman ninguna ejecución con los que afirmaban una que su evidencia no nombra, que es lo que `H-02` encontró—:
 
@@ -383,10 +383,5 @@ Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada
 |---|---|
 | contrato-definido | 56 |
 | validador-implementado | 7 |
-| prueba-superada | 2 |
 
-| id | declarado a mano | derivado de la evidencia | motivo |
-|---|---|---|---|
-| T214 | prueba-superada | prueba-fallida | `evidencia/contencion-salida.txt` publica para `T214` el/los veredicto(s) skipped 'este anfitrión no delega ningún subárbol de `cgroup2`' |
-| T487 | prueba-superada | prueba-ejecutada | `evidencia/oficina-salida.txt` no nombra a `T487` en ninguna línea de veredicto: la ejecución consta, el resultado DE ESTE escenario no · declara `prueba-superada` sobre una evidencia que NO lo nombra y que sólo sostiene `prueba-ejecutada`: eso es subir de estado por argumento, y la regla dura de `REGISTRO.md` lo prohíbe con o sin contraste |
-| T488 | prueba-superada | prueba-ejecutada | `evidencia/oficina-salida.txt` no nombra a `T488` en ninguna línea de veredicto: la ejecución consta, el resultado DE ESTE escenario no · declara `prueba-superada` sobre una evidencia que NO lo nombra y que sólo sostiene `prueba-ejecutada`: eso es subir de estado por argumento, y la regla dura de `REGISTRO.md` lo prohíbe con o sin contraste |
+Ninguna divergencia: todo `estado:` declarado coincide con el que su evidencia sostiene.
