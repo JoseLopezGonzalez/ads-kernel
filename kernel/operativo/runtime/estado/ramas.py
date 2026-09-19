@@ -292,5 +292,6 @@ __all__ = [
     "diario_en", "exigir_encadenado", "ventana_abierta", "objetos_distintos",
 ]
 
-# Este módulo no es un punto ejecutable: lo invoca `ads_estado.py divergencia`.
-assert os.path.basename(__file__).startswith("ramas")
+# Este módulo NO es un punto ejecutable: lo invoca `ads_estado.py divergencia`. Un `assert`
+# de nivel superior lo convertía en uno para el inventario de `T330` (trabaja al importarse)
+# y ponía en rojo T306, T308, T330 y T380 en la CI del kernel (run 35060285337).

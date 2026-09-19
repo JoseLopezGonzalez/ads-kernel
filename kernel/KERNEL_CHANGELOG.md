@@ -57,6 +57,10 @@ release; lo propio del Owner se queda en su instancia.
   la entrada transporta `propietario_global` y `productores_declarados` y `planificar` los
   entrega a la composición; `proceso:DIR` deriva su propietario del encargo (`b.16`) y sin
   ellos la fase no abre, con el error que lo dice (`T488`; `OWN-ADS-0022`, `0117`).
+- `estado/ramas.py` · **defecto corregido**: un `assert` de nivel superior hacía que el
+  inventario de puntos ejecutables (`T330`) lo tratara como invocable, y con él se ponían en
+  rojo T306, T308, T330 y T380 en la batería de la CI del kernel (run 35060285337). Es una
+  biblioteca que invoca `ads_estado.py divergencia`; ya no ejecuta nada al importarse.
 - `validadores/huella.py` · **defecto corregido**: en un `git worktree`, `.git` es un
   FICHERO (el puntero al gitdir) y el sello lo contaba como `SIN_CLASE`, con lo que
   `comprobar_integridad` (comprobación 4) salía en rojo en cualquier worktree aunque el
