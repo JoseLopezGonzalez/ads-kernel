@@ -31,11 +31,12 @@ from __future__ import annotations
 
 from estado.serializacion import cid_de_objeto
 
-from . import briefs, cierre as modulo_cierre, durable, entregas, formas, gates, handoffs
+from . import briefs, cierre as modulo_cierre, durable, entregas, formas, gates, handoffs, impacto as modulo_impacto
 from . import encuadre as modulo_encuadre, equipos as modulo_equipos, paralelismo
 from . import planificacion, rutas as modulo_rutas, terminacion
 from .corpus import CAPACIDADES, Corpus
 from .errores import (
+    ImpactoNoCubierto,
     AutocertificacionRechazada,
     CicloInconsistente,
     EntregaInvalida,
@@ -190,6 +191,7 @@ def planificar(runtime, *, corpus=None, entrada, circuito, control_repo, fase="u
         str(regla["rol"]): [str(d) for d in (regla.get("de") or [])]
         for regla in (circuito.get("independencias") or [])
     }
+    anterior = plan_vigente_de_item(runtime.almacen, item) if item else None
     entrada = dict(entrada)
     entrada.setdefault("materia", circuito["materia"])
     entrada.setdefault("estado_del_objeto", circuito["estado_del_objeto"])
@@ -250,6 +252,16 @@ def planificar(runtime, *, corpus=None, entrada, circuito, control_repo, fase="u
         secuencial=secuencial, independencias_declaradas=independencias_declaradas,
         generacion=generacion,
     )
+    if generacion and anterior is not None and anterior["id"] != plan["id"]:
+        # REPLANIFICAR: el plan nuevo sustituye al vigente —con su marca de impacto, si la
+        # tenía— y desde aquí el vigente es el nuevo (`plan_vigente_de_item`).
+        sustituto = dict(plan, sustituye_a=anterior["id"])
+        durable.escribir(
+            runtime.almacen, clase="ciclo.plan.sustituido",
+            motivo="el plan " + plan["id"] + " (generación " + str(generacion) + ") sustituye a " + anterior["id"],
+            objetos={planificacion.ruta_de(plan["id"]): sustituto},
+        )
+        plan = sustituto
     return {"encuadre": marco, "ruta": ruta, "equipos": equipos, "plan": plan}
 
 
@@ -314,6 +326,13 @@ def tomar(runtime, *, corpus=None, paquete, **opciones_del_brief):
         )
     _exigir_que_no_juzgue_lo_suyo(runtime, corpus or Corpus(), paquete, fila,
                                   opciones_del_brief.get("circuito"))
+    marca = modulo_impacto.pendiente(plan)
+    if marca and marca.get("paquete") != paquete:
+        raise ImpactoNoCubierto(
+            "el item `" + str(plan.get("item")) + "` tiene impacto sin cubrir: " + marca["rol"] + " declaró "
+            + ", ".join(marca["disparadores"]) + " y el circuito no cubre " + ", ".join(marca["condiciones_no_cubiertas"])
+            + ". No se toma ningún otro paquete hasta replanificar (§5, b.1)", ruta=paquete,
+        )
     toma = runtime.tomar(paquete)
     try:
         brief = brief_de(runtime, corpus=corpus, paquete=paquete, **opciones_del_brief)
@@ -501,6 +520,12 @@ def entregar(runtime, *, corpus=None, paquete, entrega, circuito=None, hechos=No
         )
     dictamen = dictamenes_emitidos[-1] if dictamenes_emitidos else None
 
+    # 1 bis · el impacto declarado se contrasta con el circuito ANTES de escribir nada: un
+    #         disparador fuera de los dieciséis de §5 es una entrega inválida sin efecto.
+    impacto = None
+    if entrega.get("impacto"):
+        impacto = modulo_impacto.evaluar(circuito, entrega["impacto"], paquete=paquete)
+
     # 2 · BLOQUEADO / ESCALADO: el paquete queda `bloqueado`, no consume intento.
     if veredicto in ("bloqueado", "escalado"):
         registrada = entregas.registrar(almacen, entrega, intento=intento,
@@ -538,11 +563,25 @@ def entregar(runtime, *, corpus=None, paquete, entrega, circuito=None, hechos=No
                                     titular=runtime.instancia, corpus=corpus,
                                     contrato=contrato)
 
+    # 4 bis · LA ESTACIÓN DE IMPACTO (§5): lo que este rol vio y el circuito no preveía
+    #         marca el plan; el resto del item se para hasta replanificar (b.1). El
+    #         vocabulario se comprobó ANTES de escribir nada (arriba).
+    if impacto is not None:
+        if impacto["no_cubiertas"]:
+            marcado = dict(plan)
+            marcado["impacto"] = modulo_impacto.marca_del_plan(impacto, paquete=paquete, rol=fila["rol"],
+                                                              entrega=registrada["id"])
+            durable.escribir(
+                almacen, clase="ciclo.plan.impacto",
+                motivo="impacto sin cubrir declarado por " + fila["rol"] + " en " + paquete + ": "
+                       + ", ".join(impacto["no_cubiertas"]),
+                objetos={planificacion.ruta_de(plan["id"]): marcado},
+            )
     # 5 · ENTREGADO: handoffs a los sucesores.
     emitidos = []
     if veredicto == "entregado":
         emitidos = _emitir_a_sucesores(runtime, corpus, plan, fila, paquete, registrada)
-    return {"veredicto": veredicto, "entrega": registrada, "paquete": paquete,
+    return {"veredicto": veredicto, "entrega": registrada, "paquete": paquete, "impacto": impacto,
             "resumen": resumen, "dictamen": dictamen, "dictamenes": dictamenes_emitidos,
             "handoffs_emitidos": emitidos, "correccion": correccion}
 
@@ -1016,6 +1055,7 @@ def evaluar_terminacion(runtime, *, corpus=None, item, circuito, hechos):
         objeto = durable.leer(almacen, "paquetes/" + str(pq) + ".json") or {}
         estados[str(pq)] = objeto.get("estado")
     evaluacion["fronteras"] = terminacion.evaluar_fronteras(plan, estados)
+    evaluacion["impacto"] = modulo_impacto.pendiente(plan)
     return evaluacion
 
 

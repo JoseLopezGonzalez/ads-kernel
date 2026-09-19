@@ -61,6 +61,16 @@ release; lo propio del Owner se queda en su instancia.
   inventario de puntos ejecutables (`T330`) lo tratara como invocable, y con él se ponían en
   rojo T306, T308, T330 y T380 en la batería de la CI del kernel (run 35060285337). Es una
   biblioteca que invoca `ads_estado.py divergencia`; ya no ejecuta nada al importarse.
+- `ciclo/impacto.py` · `esquemas/entrega.yaml` · `ciclo/oficina.py` · **la estación de análisis
+  de impacto** (Directiva §5, §32, §62): la entrega admite `impacto.disparadores` con el
+  vocabulario cerrado de los dieciséis disparadores de §5, cada uno con las condiciones de
+  ruta que dispara; si una no está entre las que el circuito declaró, el plan queda MARCADO
+  (durable, con el rol, los disparadores y qué hacer), `tomar` rechaza cualquier otro paquete
+  del item (`IMPACTO_NO_CUBIERTO`) y `evaluar_terminacion` lo publica; `planificar` con
+  `generacion > 0` sustituye al plan vigente (`sustituye_a`) y limpia la marca. Un disparador
+  fuera del vocabulario es `ENTREGA_INVALIDA`. Es la reacción automática que §62 exige y el
+  mecanismo con el que un `NO APLICA` deja de ser silencio (`T489`–`T491`; `OWN-ADS-0030`,
+  `0031`, `0032`, `0033`, `0112`).
 - `validadores/huella.py` · **defecto corregido**: en un `git worktree`, `.git` es un
   FICHERO (el puntero al gitdir) y el sello lo contaba como `SIN_CLASE`, con lo que
   `comprobar_integridad` (comprobación 4) salía en rojo en cualquier worktree aunque el

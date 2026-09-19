@@ -1,4 +1,4 @@
-# T460–T488 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77 y el catálogo de clases
+# T460–T491 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77, el catálogo de clases y la estación de impacto de §5
 
 **Qué cierran.** El hallazgo de la auditoría forense de La Pesquerapp del 2026-09-14: el
 kernel tenía escrito el runtime completo —paquetes, leases, dispatcher, ciclo, gates,
@@ -44,6 +44,9 @@ T485  escalar exige una materia que la capacidad ESCALA; una que decide sola se 
 T486  las fronteras previas a la construcción se distinguen: investigada · diseñada · aprobada · especificada (§77)
 T487  una capacidad que participa DOS veces (DOM:condiciones y DOM:revision) acuña paquetes distintos, y la dependencia se resuelve dentro de la misma participación
 T488  un cambio de dirección (DIR) deriva su propietario global y las productoras derivadas del encargo; sin ellas la fase no abre
+T489  un impacto declarado que el circuito cubre no marca nada y el item sigue (§5)
+T490  un impacto que el circuito no cubre marca el plan, ningún otro paquete se toma, y replanificar con una generación nueva sustituye al plan marcado (§5, §62, b.1)
+T491  un disparador fuera de los dieciséis de §5 es una entrega inválida
 ```
 
 ---
@@ -530,6 +533,63 @@ entonces:
 falla_si:
   - "la oficina planifica un DIR eligiendo ella el propietario (b.16: NUNCA lo elige DSP)"
   - "la entrada del item no transporta lo que el encargo declara y ningún DIR se puede planificar desde la oficina"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T489
+nombre: Un impacto que el circuito cubre no marca nada
+cubre: ["CONTRATO-OFICINA §5 ter", "impacto", "Directiva del Owner §5", "OWN-ADS-0030", "OWN-ADS-0031"]
+dado:
+  - "un item planificado con cambio-con-interfaz (declara C-DIS) y su PRD/definicion tomado"
+cuando:
+  - "la entrega declara impacto.disparadores nuevo-estado-visible y nueva-accion"
+entonces:
+  - "la entrega vale, las condiciones derivadas son C-DIS, no hay ninguna sin cubrir, el plan no lleva marca y el siguiente paquete se toma"
+falla_si:
+  - "toda declaración de impacto se trata como alarma, o la declaración se ignora"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T490
+nombre: Un impacto que el circuito no cubre marca el plan y para el item
+cubre: ["CONTRATO-OFICINA §5 ter", "impacto", "Directiva del Owner §5", "Directiva del Owner §62", "b.1", "OWN-ADS-0030", "OWN-ADS-0032", "OWN-ADS-0033"]
+dado:
+  - "un item planificado con cambio-de-backend (sin C-DIS) y su PRD/definicion tomado"
+cuando:
+  - "la entrega declara nuevo-estado-visible y nuevo-permiso; después otra instancia intenta tomar PRD/criterio-de-exito; después se replanifica con cambio-con-interfaz y generación 1"
+entonces:
+  - "la entrega vale y el plan queda marcado con C-DIS y C-SEG sin cubrir, el rol que lo vio y qué hacer"
+  - "tomar cualquier otro paquete del item es IMPACTO_NO_CUBIERTO y no deja lease; evaluar_terminacion publica la marca"
+  - "el plan nuevo sustituye al marcado, es el vigente, no lleva marca y el item vuelve a andar"
+falla_si:
+  - "se sigue construyendo sobre una clasificación que ya se sabe incompleta"
+  - "la replanificación deja dos planes vigentes o conserva la marca"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T491
+nombre: Un disparador fuera de los dieciséis es una entrega inválida
+cubre: ["CONTRATO-OFICINA §5 ter", "impacto", "Directiva del Owner §5", "OWN-ADS-0032"]
+dado:
+  - "un paquete tomado"
+cuando:
+  - "la entrega declara impacto.disparadores con un nombre fuera del vocabulario"
+entonces:
+  - "ENTREGA_INVALIDA nombrando los dieciséis, sin tocar el estado; el vocabulario tiene exactamente dieciséis disparadores"
+falla_si:
+  - "«impacto» es prosa libre que nadie puede contrastar con el circuito"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
 estado: prueba-superada

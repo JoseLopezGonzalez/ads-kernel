@@ -1705,6 +1705,79 @@ class CatalogoDeClases(Laboratorio):
                                control_repo=self.repo, item="enc-dir2", titulo="Nuevo lenguaje")
 
 
+class EstacionDeImpacto(Laboratorio):
+    """Directiva §5: la clasificación inicial no conoce todo el impacto; el trabajo lo revela y
+    el circuito reacciona solo (§62), sin esperar a que alguien lo note."""
+
+    def test_30_un_impacto_que_el_circuito_cubre_no_marca_nada(self):
+        """T489 · Defecto que previene: tratar toda declaración de impacto como alarma."""
+        A = self.rt("w-A")
+        circuito = self.circuitos["cambio-con-interfaz"]
+        plan = oficina.planificar(A, corpus=self.corpus, entrada=self.entrada(), circuito=circuito,
+                                  control_repo=self.repo, item="enc-ui", titulo="Diálogo nuevo")["plan"]
+        defin = self.paquete_de(plan, "PRD/definicion")
+        self.tomar_y_acusar(A, defin)
+        e = self.entrega(defin, "PRD/definicion")
+        e["impacto"] = {"disparadores": ["nuevo-estado-visible", "nueva-accion"], "nota": "un estado y una acción nuevos"}
+        res = oficina.entregar(A, corpus=self.corpus, paquete=defin, entrega=e, circuito=circuito)
+        self.assertEqual(res["veredicto"], "entregado")
+        self.assertEqual(res["impacto"]["condiciones_derivadas"], ["C-DIS"])
+        self.assertEqual(res["impacto"]["no_cubiertas"], [])
+        self.assertIsNone(oficina.plan_vigente_de_item(A.almacen, "enc-ui").get("impacto"))
+        criterio = self.paquete_de(plan, "PRD/criterio-de-exito")
+        self.tomar_y_acusar(A, criterio)                          # el item sigue
+
+    def test_31_un_impacto_que_el_circuito_no_cubre_marca_el_plan_y_para_el_item(self):
+        """T490 · Defecto que previene: seguir construyendo sobre una clasificación que ya se
+        sabe incompleta (§5: «los circuitos no deben asumir…»; §62: reacción automática)."""
+        A = self.rt("w-A")
+        B = self.rt("w-B")
+        plan = self.planificar(A, item="enc-back")["plan"]          # cambio-de-backend: sin C-DIS
+        defin = self.paquete_de(plan, "PRD/definicion")
+        self.tomar_y_acusar(A, defin)
+        e = self.entrega(defin, "PRD/definicion")
+        e["impacto"] = {"disparadores": ["nuevo-estado-visible", "nuevo-permiso"]}
+        res = oficina.entregar(A, corpus=self.corpus, paquete=defin, entrega=e, circuito=self.circuito)
+        self.assertEqual(res["veredicto"], "entregado")             # la entrega vale: lo que vio, cuenta
+        self.assertEqual(res["impacto"]["no_cubiertas"], ["C-DIS", "C-SEG"])
+        marca = oficina.plan_vigente_de_item(A.almacen, "enc-back")["impacto"]
+        self.assertEqual(marca["condiciones_no_cubiertas"], ["C-DIS", "C-SEG"])
+        self.assertEqual(marca["rol"], "PRD/definicion")
+        self.assertIn("replanificar", marca["que_hacer"])
+        criterio = self.paquete_de(plan, "PRD/criterio-de-exito")
+        with self.assertRaises(ciclo.ImpactoNoCubierto):
+            oficina.tomar(B, corpus=self.corpus, paquete=criterio, circuito=self.circuito)
+        self.assertIsNone(B._leer_lease(criterio))                  # no quedó lease colgado
+        ev = oficina.evaluar_terminacion(A, corpus=self.corpus, item="enc-back", circuito=self.circuito,
+                                         hechos={"afecta_superficie": False})
+        self.assertEqual(ev["impacto"]["condiciones_no_cubiertas"], ["C-DIS", "C-SEG"])
+        # REPLANIFICAR con un circuito que cubre C-DIS (generación nueva) sustituye al plan marcado
+        nuevo = oficina.planificar(A, corpus=self.corpus, entrada=self.entrada(), circuito=self.circuitos["cambio-con-interfaz"],
+                                   control_repo=self.repo, item="enc-back", titulo="Exportar CSV", generacion=1)["plan"]
+        self.assertEqual(nuevo["sustituye_a"], plan["id"])
+        vigente = oficina.plan_vigente_de_item(A.almacen, "enc-back")
+        self.assertEqual(vigente["id"], nuevo["id"])
+        self.assertIsNone(vigente.get("impacto"))
+        definicion2 = self.paquete_de(nuevo, "PRD/definicion")
+        self.tomar_y_acusar(B, definicion2)                         # el item vuelve a andar
+
+    def test_32_un_disparador_fuera_de_los_dieciseis_es_una_entrega_invalida(self):
+        """T491 · Defecto que previene: «impacto» como prosa libre."""
+        A = self.rt("w-A")
+        plan = self.planificar(A)["plan"]
+        defin = self.paquete_de(plan, "PRD/definicion")
+        self.tomar_y_acusar(A, defin)
+        e = self.entrega(defin, "PRD/definicion")
+        e["impacto"] = {"disparadores": ["cosa-rara"]}
+        revision = A.almacen.revision()["revision"]
+        with self.assertRaises(ciclo.EntregaInvalida) as cm:
+            oficina.entregar(A, corpus=self.corpus, paquete=defin, entrega=e, circuito=self.circuito)
+        self.assertIn("dieciséis", str(cm.exception))
+        self.assertEqual(A.almacen.revision()["revision"], revision)
+        from ciclo import impacto as modulo_impacto
+        self.assertEqual(len(modulo_impacto.DISPARADORES), 16)
+
+
 class _RunnerDeterminista(unittest.TextTestRunner):
     """Igual que el corriente, pero sin la duración en el resumen (salida publicada)."""
 

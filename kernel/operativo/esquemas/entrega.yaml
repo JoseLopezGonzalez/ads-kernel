@@ -117,6 +117,15 @@ campos:
   # `escalado` exige ademas `materia`: UNA de las que la capacidad del rol declara que ESCALA
   # en `autoridad.escala` de su ficha; una de `decide_sola` se rechaza (Directiva §20, §41,
   # §76). La comprueba `entregas.comprobar_forma`, no este esquema.
+  # la ESTACION DE IMPACTO (Directiva §5): los disparadores que este rol ha visto, del
+  # vocabulario cerrado de `ciclo/impacto.py`. Si uno exige una condicion de ruta que el
+  # circuito no declaro, el plan queda marcado y el item no sigue hasta replanificarse (b.1).
+  impacto:
+    tipo: objeto
+    obligatorios: [disparadores]
+    campos:
+      disparadores: {tipo: lista, de: texto}
+      nota: {tipo: texto}
   bloqueo:
     tipo: objeto
     obligatorios: [que_lo_impide, que_lo_desbloquearia, autoridad]

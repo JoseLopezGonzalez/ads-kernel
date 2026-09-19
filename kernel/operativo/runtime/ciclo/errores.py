@@ -121,6 +121,13 @@ class EstadoDeMateriaInvalido(ErrorDeCiclo):
     CODIGO = "ESTADO_DE_MATERIA_INVALIDO"
 
 
+class ImpactoNoCubierto(ErrorDeCiclo):
+    """Un rol declaró disparadores de §5 que exigen condiciones que el circuito no cubre: el
+    item no sigue hasta replanificarse (`b.1`)."""
+
+    CODIGO = "IMPACTO_NO_CUBIERTO"
+
+
 class PropietarioNoDerivable(ErrorDeCiclo):
     """`AUD` y `DIR` DERIVAN su propietario del encargo, y el encargo no lo trae."""
 

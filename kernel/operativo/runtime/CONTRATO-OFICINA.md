@@ -196,6 +196,34 @@ lleva `propietario_global` (la capacidad propietaria de la decisión que se sust
 DERIVADA, como `sustituciones-registradas`). Sin ellos la fase NO abre, con
 `PROPIETARIO_NO_DERIVABLE` o `COMPOSICION_INCOMPLETA` (`T488`).
 
+## 5 ter · La estación de análisis de impacto (Directiva §5, §32, §62)
+
+La clase con la que se abrió un encargo fijó qué condiciones de ruta eran verdaderas; el
+trabajo puede revelar otras. Cualquier rol declara en su entrega lo que vio con el
+vocabulario CERRADO de `ciclo/impacto.py`:
+
+```text
+un cambio en backend puede introducir     nuevo-estado-visible · nueva-restriccion · nueva-accion ·
+                                          nuevo-error · nuevo-permiso · nuevo-flujo · nueva-forma-de-presentar
+un cambio de interfaz puede requerir      nuevo-dato · agregacion · endpoint · cambio-de-modelo ·
+                                          nueva-semantica-de-dominio
+un fix visual puede revelar               patron-roto · inconsistencia-entre-pantallas ·
+                                          problema-de-accesibilidad · deuda-del-sistema-de-diseno
+```
+
+Cada disparador nombra la condición de ruta que dispara (`C-DIS`, `C-SEG`, `C-USO`, `C-DOM`,
+`C-ARQ`). Si el circuito ya la declaró, no pasa nada: la entrega vale y el item sigue. Si NO
+la declaró, la entrega vale igual —lo que un rol vio, cuenta— pero el plan queda MARCADO con
+el rol, los disparadores, las condiciones sin cubrir y qué hacer; `tomar` rechaza cualquier
+otro paquete del item (`IMPACTO_NO_CUBIERTO`) y `evaluar_terminacion` publica la marca. La
+salida es replanificar el encargo con un circuito que cubra esas condiciones (`b.1`):
+`planificar` con `generacion > 0` escribe el plan nuevo con `sustituye_a` y el vigente pasa a
+ser el nuevo, sin marca. Un disparador fuera del vocabulario es `ENTREGA_INVALIDA`.
+
+Así un `NO APLICA` deja de ser silencio (§32): la ruta registra qué capacidades no se
+activaron y por qué condición, y la única manera de contradecirlo es un disparador
+declarado, que el sistema atiende solo (`T489`–`T491`).
+
 ## 5 bis · El contrato operativo efectivo de cada rol
 
 Un rol materializable —uno que la oficina puede convertir en paquete— tiene SIEMPRE
