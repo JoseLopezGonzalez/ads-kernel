@@ -625,7 +625,7 @@ evidencia: evidencia/oficina-salida.txt
 ```yaml ads:escenario
 id: T493
 nombre: Los contratos de Diseño exigen los artefactos que la Directiva nombra por fase
-cubre: ["contrato-operativo", "DIS/contratos/*", "Directiva del Owner §12–§26", "OWN-ADS-0051", "OWN-ADS-0054", "OWN-ADS-0055", "OWN-ADS-0058", "OWN-ADS-0064", "OWN-ADS-0068", "OWN-ADS-0071", "OWN-ADS-0077", "OWN-ADS-0087"]
+cubre: ["contrato-operativo", "DIS/contratos/*", "Directiva del Owner §12–§26", "Directiva del Owner §28", "OWN-ADS-0097", "OWN-ADS-0051", "OWN-ADS-0054", "OWN-ADS-0055", "OWN-ADS-0058", "OWN-ADS-0064", "OWN-ADS-0068", "OWN-ADS-0071", "OWN-ADS-0077", "OWN-ADS-0087"]
 dado:
   - "los diez roles de la línea de Diseño con contrato completo: investigacion-ux, investigacion-visual, sistema-de-diseno, direccion-artistica, prototipado, critica-visual, validacion-de-uso, diseno-interaccion, movimiento y diseno-visual"
 cuando:
@@ -633,6 +633,7 @@ cuando:
 entonces:
   - "cada rol exige como obligatorio el entregable de su fase con la estructura que la Directiva enumera: los siete apartados del informe de realidad (§12), los seis de la síntesis (§13), las preguntas y los estados del análisis de uso (§14), la auditoría con equivalentes, deuda de unificación y las cinco salidas nombradas (§15), los diez campos de cada alternativa (§16), la recomendación con su por qué (§17), el prototipo con estados, extremos, responsive, errores, vacíos y loading (§18), la crítica por los trece criterios con dictamen (§19, §24), la síntesis con las ocho secciones (§20), la especificación construible con los puntos de §21 y la sesión de uso con los ocho criterios y la viabilidad motivada (§25)"
   - "investigación UX, prototipado, crítica y validación dejan un artefacto mirable (captura · grabación · medición), no sólo prosa"
+  - "DIS/direccion-artistica, que sostiene la función de Product Interface Lead, pregunta en su checklist las seis preguntas permanentes de §28: encaja con el producto completo, ya existe otra manera, variante innecesaria, unificar otras pantallas, deuda cercana, más coherente después"
 falla_si:
   - "un rol de Diseño puede entregar «diseñado» sin el artefacto de su fase y ningún validador lo devuelve"
   - "la auditoría de reutilización admite una salida fuera de las cinco de §15"

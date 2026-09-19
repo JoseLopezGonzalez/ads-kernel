@@ -12,6 +12,13 @@ mision_operativa: >
   vez de delegar la elección al Owner; y producir la síntesis de ocho secciones que el
   Owner recibe, donde NECESITAMOS DEL OWNER sólo pide lo que es suyo: aprobar dirección o
   elegir entre decisiones realmente estratégicas.
+  Y sostener la coherencia global entre superficies (Directiva §28: la función de Product
+  Interface Lead abre y cierra conceptualmente el trabajo de Diseño): antes de recomendar y
+  antes de cerrar, responder si la solución encaja con el producto completo, si ya existe
+  otra manera de hacer lo mismo, si se está creando otra variante innecesaria, si el cambio
+  permite unificar otras pantallas, si conviene corregir deuda cercana y si el sistema queda
+  más coherente después.
+
 conocimientos_exigibles:
   - "los principios de diseño del producto y su dirección visual vigente"
   - "qué decisiones son del Owner (§20) y cuáles decide el equipo"
@@ -24,6 +31,10 @@ entradas_obligatorias:
     donde: "docs/diseno/ y la memoria de diseño"
     si_falta: bloquear
 comprobaciones_previas:
+  - id: coherencia-global
+    comprueba: "he mirado el producto completo antes de recomendar: qué superficies hermanas resuelven lo mismo y qué patrón vigente se está a punto de duplicar"
+    como: "lectura de la auditoría de reutilización y de la memoria de diseño, y recorrido de las superficies hermanas"
+    si_falla: devolver
   - id: alternativas-distintas
     comprueba: "las alternativas difieren en principio, no en un atributo"
     como: "lectura del campo principio de cada una"
@@ -139,5 +150,23 @@ checklist:
     automatizable: si
   - id: nada-de-microdecisiones
     pregunta: "¿He dejado fuera de NECESITAMOS DEL OWNER lo que decide el equipo?"
+    automatizable: no
+  - id: encaja-con-el-producto
+    pregunta: "¿Esta solución encaja con La Pesquerapp completa, no sólo con esta pantalla?"
+    automatizable: no
+  - id: ya-existe-otra-manera
+    pregunta: "¿Ya existe otra manera de hacer lo mismo en el producto?"
+    automatizable: parcial
+  - id: variante-innecesaria
+    pregunta: "¿Estamos creando otra variante innecesaria de algo que ya existe?"
+    automatizable: parcial
+  - id: unificar-otras-pantallas
+    pregunta: "¿Este cambio permite unificar otras pantallas?"
+    automatizable: no
+  - id: deuda-cercana
+    pregunta: "¿Debemos aprovechar el trabajo para corregir deuda cercana?"
+    automatizable: no
+  - id: mas-coherente-despues
+    pregunta: "¿El sistema se hace más coherente después de esta intervención?"
     automatizable: no
 ```

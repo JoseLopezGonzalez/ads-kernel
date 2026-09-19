@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: f194fe585e23495d -->
+<!-- source_revision: 8d5ec6c90ac5ce9e -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -374,7 +374,7 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T490](T460-T479-oficina.md) | Un impacto que el circuito no cubre marca el plan y para el item | CONTRATO-OFICINA §5 ter · impacto · Directiva del Owner §5 · Directiva del Owner §62 · b.1 · OWN-ADS-0030 · OWN-ADS-0032 · OWN-ADS-0033 | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
 | [T491](T460-T479-oficina.md) | Un disparador fuera de los dieciséis es una entrega inválida | CONTRATO-OFICINA §5 ter · impacto · Directiva del Owner §5 · OWN-ADS-0032 | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
 | [T492](T460-T479-oficina.md) | Una barrera externa y un riesgo extraordinario son paradas con nombre | CONTRATO-OFICINA §7 · supervisor.PARADAS · Directiva del Owner §36 · OWN-ADS-0146 · OWN-ADS-0147 | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
-| [T493](T460-T479-oficina.md) | Los contratos de Diseño exigen los artefactos que la Directiva nombra por fase | contrato-operativo · DIS/contratos/* · Directiva del Owner §12–§26 · OWN-ADS-0051 · OWN-ADS-0054 · OWN-ADS-0055 · OWN-ADS-0058 · OWN-ADS-0064 · OWN-ADS-0068 · OWN-ADS-0071 · OWN-ADS-0077 · OWN-ADS-0087 | validador-estructural | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/contratos-salida.txt |
+| [T493](T460-T479-oficina.md) | Los contratos de Diseño exigen los artefactos que la Directiva nombra por fase | contrato-operativo · DIS/contratos/* · Directiva del Owner §12–§26 · Directiva del Owner §28 · OWN-ADS-0097 · OWN-ADS-0051 · OWN-ADS-0054 · OWN-ADS-0055 · OWN-ADS-0058 · OWN-ADS-0064 · OWN-ADS-0068 · OWN-ADS-0071 · OWN-ADS-0077 · OWN-ADS-0087 | validador-estructural | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/contratos-salida.txt |
 | [T494](T460-T479-oficina.md) | Al tomar nace la base y un avance compatible se registra | CONTRATO-OFICINA §2 bis · ciclo/base.py · Directiva del Owner §61 · Directiva del Owner §63 · OWN-ADS-0220 · OWN-ADS-0227 · OWN-ADS-0230 | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
 | [T495](T460-T479-oficina.md) | Un avance que toca lo mismo contradice y no se entrega hasta reconciliar | CONTRATO-OFICINA §2 bis · ciclo/base.py · Directiva del Owner §63 · OWN-ADS-0229 · OWN-ADS-0231 | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
 | [T496](T460-T479-oficina.md) | Un control repo sin Git no se mide y nada cambia | CONTRATO-OFICINA §2 bis · ciclo/base.py | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |

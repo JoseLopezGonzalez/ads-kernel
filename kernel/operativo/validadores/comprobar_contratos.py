@@ -1324,6 +1324,10 @@ ARTEFACTOS_DE_DISENO = {
 SALIDAS_DE_15 = ("REUTILIZAR SIN CAMBIOS", "REUTILIZAR AMPLIANDO", "UNIFICAR IMPLEMENTACIONES EXISTENTES",
                  "REFACTORIZAR PATRÓN EXISTENTE", "CREAR PATRÓN NUEVO")
 TIPOS_MIRABLES = {"captura", "grabacion", "medicion"}
+# Directiva §28 · las seis preguntas permanentes del Product Interface Lead, que en este
+# kernel sostiene DIS/direccion-artistica (abre y cierra el trabajo de Diseño)
+PREGUNTAS_DE_28 = ("encaja", "ya existe otra manera", "variante innecesaria", "unificar otras pantallas",
+                   "deuda cercana", "más coherente")
 
 
 def t493_diseno_exige_los_artefactos_de_la_directiva(b):
@@ -1359,7 +1363,14 @@ def t493_diseno_exige_los_artefactos_de_la_directiva(b):
         if rol in ("DIS/investigacion-ux", "DIS/prototipado", "DIS/critica-visual", "DIS/validacion-de-uso"):
             if not any(a.get("tipo") in TIPOS_MIRABLES for a in obligatorios):
                 r.fallo(f"{ruta}:{linea}: {rol} no deja ningún artefacto mirable (captura · grabacion · medicion)")
-    r.cobertura = f"roles de Diseño: {len(ARTEFACTOS_DE_DISENO)} · artefactos exigidos: {cubiertos} · salidas de §15: {len(SALIDAS_DE_15)}"
+    if "DIS/direccion-artistica" in contratos:
+        datos, ruta, linea = contratos["DIS/direccion-artistica"]
+        preguntas = " ".join(str(c.get("pregunta", "")) for c in datos.get("checklist") or []).lower()
+        faltan = [q for q in PREGUNTAS_DE_28 if q not in preguntas]
+        if faltan:
+            r.fallo(f"{ruta}:{linea}: DIS/direccion-artistica no pregunta en su checklist (§28): {', '.join(faltan)}")
+    r.cobertura = (f"roles de Diseño: {len(ARTEFACTOS_DE_DISENO)} · artefactos exigidos: {cubiertos} · "
+                   f"salidas de §15: {len(SALIDAS_DE_15)} · preguntas de §28: {len(PREGUNTAS_DE_28)}")
     return r
 
 

@@ -123,6 +123,13 @@ release; lo propio del Owner se queda en su instancia.
   en `esperando` con `incompatible_por`, `tomar` es `RECURSO_OCUPADO` sin retener el lease,
   `incompatibles_por_recurso()` lo lista—, y el de ámbito independiente sigue en paralelo
   (`T498`; `OWN-ADS-0244`, `0245`, `0246`).
+- `capacidades/DIS/contratos/direccion-artistica.md` · **la función de Product Interface Lead**
+  (Directiva §28): la dirección artística sostiene la coherencia global entre superficies —abre
+  y cierra el trabajo de Diseño— con la comprobación previa `coherencia-global` y las seis
+  preguntas permanentes en su checklist (encaja con el producto completo · ya existe otra
+  manera · variante innecesaria · unificar otras pantallas · deuda cercana · más coherente
+  después); `T493` las exige. Crear un rol aparte queda para cuando la medida lo pida (estudio
+  formal en la instancia; `OWN-ADS-0020`, `0096`, `0097`).
 
 ## 2.0.0-alpha.15 — la oficina: el runtime se puede TRABAJAR desde fuera de un chat
 
