@@ -246,6 +246,17 @@ class Planificador:
                                       if p.get("obligacion")}
         participantes = sorted(ruta["participantes"],
                                key=lambda p: _orden_de_estacion(ruta, p))
+        # DEFECTO MEDIDO (La Pesquerapp, catálogo de clases): `DOM` y `SEG` participan DOS
+        # veces en FEA/GAP/DEU —`DOM:condiciones` antes de construir y `DOM:revision`
+        # después—, con la misma vía y sin obligación propia. La semilla no entraba el
+        # método y las dos participaciones acuñaban EL MISMO identificador para cada rol:
+        # `a.5` se pedía comparar un paquete consigo mismo y ninguna clase con C-DOM o
+        # C-SEG se podía planificar. El método entra en la semilla SÓLO cuando la
+        # participación se repite, para que ningún plan ya escrito cambie de identidad.
+        repetidas = {}
+        for participante in participantes:
+            clave = (participante["capacidad"], participante["via"], participante.get("obligacion"))
+            repetidas[clave] = repetidas.get(clave, 0) + 1
         for participante in participantes:
             roles = roles_por_capacidad.get(participante["capacidad"]) or [None]
             # LA PROPIETARIA GLOBAL (vía 1) sin obligación propia. `b.10`: «la integración
@@ -269,6 +280,9 @@ class Planificador:
                 }
                 if rol is not None:
                     semilla["rol"] = rol
+                clave = (participante["capacidad"], participante["via"], participante.get("obligacion"))
+                if repetidas.get(clave, 0) > 1 and participante.get("metodo"):
+                    semilla["metodo"] = str(participante["metodo"])
                 if generacion:
                     # REPLANIFICAR es una generación nueva: los paquetes de la anterior se
                     # conservan con su historia y los nuevos nacen con identidad propia.
@@ -281,8 +295,13 @@ class Planificador:
                     "rol": rol,
                     "integracion": es_integracion,
                 })
+        repetidos = sorted({u["id"] for u in unidades if sum(1 for v in unidades if v["id"] == u["id"]) > 1})
+        if repetidos:
+            raise PlanificacionInvalida(
+                "dos participaciones indistinguibles acuñan el mismo paquete: " + ", ".join(repetidos)
+                + "; la ruta repite una capacidad con la misma vía, obligación, rol y método",
+            )
         unidades = _ordenar_por_estacion_de_rol(unidades, ruta, independencias)
-        por_rol = {u["rol"]: u["id"] for u in unidades if not u["integracion"] and u["rol"]}
         proyectados = []
         for unidad in unidades:
             participante = unidad["participante"]
@@ -293,7 +312,7 @@ class Planificador:
             if unidad["integracion"]:
                 previos = [u["id"] for u in unidades if u["id"] != unidad["id"]]
             for de_quien in independencias.get(unidad["rol"], ()):
-                previo = por_rol.get(de_quien)
+                previo = _unidad_del_rol(unidades, de_quien, unidad)
                 if previo and previo != unidad["id"]:
                     previos.append(previo)
             proyectados.append({
@@ -543,6 +562,18 @@ def _orden_de_estacion(ruta, participante):
     return (1, _rango_de_estacion(ruta, participante), 0, participante["via"])
 
 
+def _unidad_del_rol(unidades, rol, desde):
+    """El paquete del rol `rol` del que `desde` depende. Con una capacidad que participa DOS
+    veces (`DOM:condiciones` y `DOM:revision`), el rol existe en las dos participaciones y la
+    dependencia se resuelve DENTRO de la misma: la migración que se planifica antes de
+    construir espera al modelo de antes de construir, no al de la revisión posterior."""
+    candidatos = [u for u in unidades if u["rol"] == rol and not u["integracion"]]
+    metodo = (desde.get("participante") or {}).get("metodo")
+    mismos = [u for u in candidatos if (u.get("participante") or {}).get("metodo") == metodo]
+    elegido = (mismos or candidatos)[:1]
+    return elegido[0]["id"] if elegido else None
+
+
 def _ordenar_por_estacion_de_rol(unidades, ruta, independencias):
     """Las unidades por rango de ROL: quien exige independencia de otro va DESPUÉS de él.
 
@@ -553,14 +584,13 @@ def _ordenar_por_estacion_de_rol(unidades, ruta, independencias):
     rango = {}
     for posicion, unidad in enumerate(unidades):
         rango[unidad["id"]] = [_rango_de_estacion(ruta, unidad["participante"]), posicion]
-    por_rol = {u["rol"]: u["id"] for u in unidades if u["rol"] and not u["integracion"]}
     for _ in range(len(unidades) + 1):
         cambiado = False
         for unidad in unidades:
             if unidad["integracion"]:
                 continue
             for de_quien in independencias.get(unidad["rol"], ()):
-                otro = por_rol.get(de_quien)
+                otro = _unidad_del_rol(unidades, de_quien, unidad)
                 if otro and otro != unidad["id"] and rango[unidad["id"]][0] <= rango[otro][0]:
                     rango[unidad["id"]][0] = rango[otro][0] + 0.5
                     cambiado = True

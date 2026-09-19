@@ -161,6 +161,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.abspath(os.path.join(AQUI, "..", "..", "..", ".."))
@@ -230,6 +231,48 @@ gates_de_cierre: [gate:cierre-de-item]
 ```
 '''
 
+CIRCUITO_DOMINIO = '''
+```yaml ads:circuito-base
+id: circuito:cambio-de-dominio
+nombre: Cambio de dominio
+clase_de_trabajo: cambio-de-dominio
+cuando_aplica: el modelo de dominio cambia y hay migración de datos
+materia: capacidad-ausente
+estado_del_objeto: no-existe
+condiciones_de_ruta: [C-DOM]
+composiciones: [composicion:prd-alcance-rutinario, composicion:dom-migracion, composicion:con-implementacion, composicion:ver-dosier]
+niveles_obligatorios: [implementado, revisado, verificado, aceptado]
+inaplicabilidad: []
+roles_minimos: [DOM/modelo, DOM/migracion, CNS/implementacion, CNS/revision-de-construccion, VER/dosier]
+independencias:
+  - rol: CNS/revision-de-construccion
+    de: [CNS/implementacion]
+  - rol: DOM/migracion
+    de: [DOM/modelo]
+gates_de_cierre: [gate:cierre-de-item]
+```
+'''
+
+CIRCUITO_DIRECCION = '''
+```yaml ads:circuito-base
+id: circuito:cambio-de-direccion
+nombre: Cambio de dirección
+clase_de_trabajo: cambio-de-direccion
+cuando_aplica: el Owner sustituye una dirección ya decidida; no se construye nada
+materia: direccion-ya-decidida
+estado_del_objeto: existe
+condiciones_de_ruta: []
+composiciones: [composicion:prd-direccion-nueva, composicion:arq-plan-completo, composicion:ver-decision, composicion:dsp-supervisor]
+niveles_obligatorios: [aceptado]
+inaplicabilidad: []
+roles_minimos: [PRD/definicion, ARQ/encaje, VER/decision, DSP/enrutamiento]
+independencias:
+  - rol: VER/decision
+    de: [ARQ/encaje]
+gates_de_cierre: [gate:cierre-de-item]
+```
+'''
+
 # El AGENTE SIN CHAT de estas pruebas: un ejecutable real que lee el brief JSON y escribe
 # una entrega válida. Es un `python -c` para no añadir un punto ejecutable al inventario.
 AGENTE_STUB = r'''
@@ -275,7 +318,7 @@ class Laboratorio(unittest.TestCase):
     def setUp(self):
         self.repo = tempfile.mkdtemp(prefix="ads-oficina-")
         self.addCleanup(shutil.rmtree, self.repo, True)
-        perfil = catalogo_de_prueba.texto(self.politica, self.corpus) + CIRCUITO_BACKEND + CIRCUITO_INTERFAZ
+        perfil = catalogo_de_prueba.texto(self.politica, self.corpus) + CIRCUITO_BACKEND + CIRCUITO_INTERFAZ + CIRCUITO_DOMINIO + CIRCUITO_DIRECCION
         for modelo in ("modelo:alfa", "modelo:beta", "modelo:gamma", "modelo:delta", "modelo:epsilon"):
             perfil += _ejecutor(modelo)
         with open(os.path.join(self.repo, "PROFILE.md"), "w", encoding="utf-8") as manejador:
@@ -1528,6 +1571,26 @@ class HandoffsYFronteras(Laboratorio):
         self.assertEqual(res["cierre"]["salida"], "escalado")
         self.assertEqual(res["cierre"]["autoridad"], "OWNER")
 
+    def test_26b_un_corpus_sin_autoridad_no_autoriza_un_escalado(self):
+        """T485 · Defecto que previene: que una ficha ilegible autorice cualquier materia."""
+        from ciclo.errores import CorpusIlegible, CorpusIncompleto
+        A = self.rt("w-A")
+        plan = self.planificar(A)["plan"]
+        defin = self.paquete_de(plan, "PRD/definicion")
+        self.tomar_y_acusar(A, defin)
+        e = self.entrega(defin, "PRD/definicion", "escalado")
+        e["bloqueo"] = {"que_lo_impide": "materia inventada", "que_lo_desbloquearia": "decisión del Owner",
+                        "autoridad": "OWNER", "posturas": ["A", "B"], "materia": "inventada"}
+        revision = A.almacen.revision()["revision"]
+        for error in (CorpusIlegible, CorpusIncompleto):
+            with self.subTest(error=error.__name__):
+                with patch.object(self.corpus, "capacidad", side_effect=error("ficha ausente")):
+                    with self.assertRaises(ciclo.EntregaInvalida) as cm:
+                        self.entregar(A, defin, e)
+                self.assertIn("autoridad", str(cm.exception))
+                self.assertEqual(A.almacen.revision()["revision"], revision)
+                self.assertEqual(A._leer_paquete(defin)["estado"], "ejecutando")
+
     def test_27_las_fronteras_previas_a_la_construccion_se_distinguen(self):
         """T486 · Defecto que previene: «cerrado» como sinónimo de «implementado», y un item del
         que nadie sabe si está diseñado (Directiva §77)."""
@@ -1543,7 +1606,8 @@ class HandoffsYFronteras(Laboratorio):
         self.assertEqual(fr["investigada"], "no-exigido")          # el circuito no trae INV
         self.assertEqual(fr["disenada"], "pendiente")
         self.assertEqual(fr["aprobada"], "sin-mecanismo")          # se dice, no se finge
-        # se entrega el diseño visual: la frontera diseñada queda alcanzada, sin tocar los niveles
+        # se entrega el diseño visual —el único paquete de la frontera en este circuito—: la
+        # frontera diseñada queda alcanzada, sin tocar los niveles
         dis = self.paquete_de(plan, "DIS/diseno-visual")
         filas = self.filas(plan)
         for _ in range(6):
@@ -1559,7 +1623,86 @@ class HandoffsYFronteras(Laboratorio):
         ev = oficina.evaluar_terminacion(A, corpus=self.corpus, item="enc-ui", circuito=circuito, hechos=hechos)
         fr = {f["frontera"]: f["estado"] for f in ev["fronteras"]}
         self.assertEqual(fr["disenada"], "alcanzado")
+        # y cuando la frontera tiene MAS de un paquete, uno entregado no la alcanza: la frontera
+        # nombra lo que espera, y solo con todos entregados queda alcanzada
+        from ciclo import terminacion
+        plan_dos = {"encuadre": "enc-x", "correspondencia": [
+            {"paquete": "pq-visual", "rol": "DIS/diseno-visual"},
+            {"paquete": "pq-interaccion", "rol": "DIS/diseno-interaccion"},
+            {"paquete": "pq-cns", "rol": "CNS/implementacion"}]}
+        fr_dos = {f["frontera"]: f for f in terminacion.evaluar_fronteras(plan_dos, {"pq-visual": "completado"})}
+        self.assertEqual(fr_dos["disenada"]["estado"], "pendiente")
+        self.assertIn("pq-interaccion", fr_dos["disenada"]["motivo"])
+        self.assertNotIn("pq-visual", fr_dos["disenada"]["motivo"])
+        fr_dos = {f["frontera"]: f for f in terminacion.evaluar_fronteras(
+            plan_dos, {"pq-visual": "completado", "pq-interaccion": "completado"})}
+        self.assertEqual(fr_dos["disenada"]["estado"], "alcanzado")
         self.assertIn("implementado", ev["faltan"])                # las fronteras no son niveles
+
+
+class CatalogoDeClases(Laboratorio):
+    """Las clases de trabajo que el catálogo profesional de una instancia declara y que el
+    kernel nunca había planificado: participaciones DOBLES de una capacidad (`DOM`, `SEG`) y
+    el proceso que deriva su propietario del encargo (`DIR`)."""
+
+    def test_28_una_capacidad_que_participa_dos_veces_acuna_paquetes_distintos(self):
+        """T487 · Defecto que previene: ninguna clase con C-DOM o C-SEG se podía planificar
+        (`a.5` comparaba un paquete consigo mismo), medido en el catálogo de La Pesquerapp."""
+        A = self.rt("w-A")
+        circuito = self.circuitos["cambio-de-dominio"]
+        plan = oficina.planificar(A, corpus=self.corpus, entrada=self.entrada(), circuito=circuito,
+                                  control_repo=self.repo, item="enc-dom", titulo="Entidad nueva")["plan"]
+        filas = plan["correspondencia"]
+        ids = [f["paquete"] for f in filas]
+        self.assertEqual(len(ids), len(set(ids)), "dos filas del plan comparten paquete")
+        dom = [f["paquete"] for f in filas if str(f.get("rol") or "").startswith("DOM/")]
+        self.assertEqual(len(dom), 4, "DOM participa dos veces con dos roles: cuatro paquetes")
+        orden = {f["paquete"]: i for i, f in enumerate(filas)}
+        cns = self.paquete_de(plan, "CNS/implementacion")
+        ver = self.paquete_de(plan, "VER/dosier")
+        antes = [p for p in dom if orden[p] < orden[cns]]
+        despues = [p for p in dom if orden[p] > orden[ver]]
+        self.assertEqual(len(antes), 2, "modelo y migración se planifican ANTES de construir")
+        self.assertEqual(len(despues), 2, "y la revisión posterior de DOM va DESPUÉS de verificar")
+        # la dependencia por independencia se resuelve DENTRO de la misma participación
+        modelo_antes = [p for p in antes if self.filas(plan)[p]["rol"] == "DOM/modelo"][0]
+        migracion_antes = [p for p in antes if self.filas(plan)[p]["rol"] == "DOM/migracion"][0]
+        depende = set(A._leer_paquete(migracion_antes).get("depende_de") or [])
+        self.assertIn(modelo_antes, depende)
+        self.assertFalse(depende & set(despues), "la migración previa no espera a la revisión posterior")
+        # replanificar es idempotente por contenido: mismos identificadores
+        plan2 = oficina.planificar(A, corpus=self.corpus, entrada=self.entrada(), circuito=circuito,
+                                   control_repo=self.repo, item="enc-dom", titulo="Entidad nueva")["plan"]
+        self.assertEqual(ids, [f["paquete"] for f in plan2["correspondencia"]])
+
+    def test_29_el_cambio_de_direccion_deriva_su_propietario_del_encargo(self):
+        """T488 · Defecto que previene: `DIR` no se podía planificar desde la oficina porque el
+        propietario que el encargo declara nunca llegaba a la composición (`b.16`)."""
+        A = self.rt("w-A")
+        circuito = self.circuitos["cambio-de-direccion"]
+        with self.assertRaises(ciclo.PropietarioNoDerivable):
+            oficina.planificar(A, corpus=self.corpus, entrada=self.entrada(), circuito=circuito,
+                               control_repo=self.repo, item="enc-dir", titulo="Nuevo lenguaje")
+        # el propietario que el encargo declara, sin decir quién produce las sustituciones:
+        # la obligación con productora DERIVADA sigue sin productora y la fase no abre
+        entrada = dict(self.entrada(), propietario_global="PRD")
+        with self.assertRaises(ciclo.ComposicionIncompleta):
+            oficina.planificar(A, corpus=self.corpus, entrada=entrada, circuito=circuito,
+                               control_repo=self.repo, item="enc-dir", titulo="Nuevo lenguaje")
+        entrada["productores_declarados"] = {"sustituciones-registradas": "PRD"}
+        plan = oficina.planificar(A, corpus=self.corpus, entrada=entrada, circuito=circuito,
+                                  control_repo=self.repo, item="enc-dir", titulo="Nuevo lenguaje")["plan"]
+        self.assertEqual(plan["propietario_global"], "PRD")
+        self.assertEqual(plan["proceso"], "proceso:DIR")
+        roles = [f.get("rol") for f in plan["correspondencia"]]
+        self.assertIn("ARQ/encaje", roles)
+        self.assertIn("VER/decision", roles)
+        self.assertNotIn("CNS/implementacion", roles)                # un DIR no construye
+        entrada = dict(self.entrada(), propietario_global="ZZZ",
+                       productores_declarados={"sustituciones-registradas": "PRD"})
+        with self.assertRaises(ciclo.PropietarioNoDerivable):
+            oficina.planificar(A, corpus=self.corpus, entrada=entrada, circuito=circuito,
+                               control_repo=self.repo, item="enc-dir2", titulo="Nuevo lenguaje")
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):

@@ -196,9 +196,16 @@ def planificar(runtime, *, corpus=None, entrada, circuito, control_repo, fase="u
     marco = modulo_encuadre.encuadrar(control_repo, entrada, corpus=corpus,
                                       precondiciones=precondiciones)
     modulo_encuadre.exigir_que_crea_trabajo(marco)
+    # `proceso:DIR` DERIVA su propietario global del encargo (`01-PROCESOS.md`, `b.16`): la
+    # entrada lo trae en `propietario_global` y aquí se entrega a la composición. Antes no
+    # se pasaba y ningún cambio de dirección se podía planificar desde la oficina.
     ruta = modulo_rutas.componer(
         marco, corpus=corpus, fase=fase,
         condiciones_verdaderas=list(circuito.get("condiciones_de_ruta") or []),
+        propietario_declarado=(str(entrada.get("propietario_global")).strip()
+                               if entrada.get("propietario_global") else None),
+        productores_declarados={str(k): str(v) for k, v in
+                                (entrada.get("productores_declarados") or {}).items()},
     )
     equipos, roles_por_capacidad = [], {}
     for capacidad in sorted({p["capacidad"] for p in ruta["participantes"]}):

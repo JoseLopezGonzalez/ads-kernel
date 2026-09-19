@@ -1,4 +1,4 @@
-# T460–T486 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78 y fronteras de §77
+# T460–T488 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77 y el catálogo de clases
 
 **Qué cierran.** El hallazgo de la auditoría forense de La Pesquerapp del 2026-09-14: el
 kernel tenía escrito el runtime completo —paquetes, leases, dispatcher, ciclo, gates,
@@ -42,6 +42,8 @@ T483  entregar con un handoff recibido sin acusar se rechaza: no existe «seguim
 T484  el handoff emitido lleva los catorce campos de §78, derivados de la entrega y del plan
 T485  escalar exige una materia que la capacidad ESCALA; una que decide sola se rechaza (§20, §41, §76)
 T486  las fronteras previas a la construcción se distinguen: investigada · diseñada · aprobada · especificada (§77)
+T487  una capacidad que participa DOS veces (DOM:condiciones y DOM:revision) acuña paquetes distintos, y la dependencia se resuelve dentro de la misma participación
+T488  un cambio de dirección (DIR) deriva su propietario global y las productoras derivadas del encargo; sin ellas la fase no abre
 ```
 
 ---
@@ -460,10 +462,13 @@ dado:
   - "un paquete de PRD/criterio-de-exito tomado; la ficha de PRD declara decide_sola y escala"
 cuando:
   - "se entrega `escalado` sin materia, con una materia de decide_sola, con una inventada y con una de escala"
+  - "se intenta escalar cuando la ficha de autoridad es ilegible o está incompleta"
 entonces:
   - "las tres primeras son ENTREGA_INVALIDA y no tocan el estado; la cuarta deja el cierre `escalado` con la autoridad"
+  - "sin ficha de autoridad verificable, la entrega se rechaza antes de escribir estado"
 falla_si:
   - "un escalado al Owner con una materia que el equipo decide solo se admite"
+  - "un error al leer el corpus autoriza una materia inventada"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
 estado: prueba-superada
@@ -477,12 +482,54 @@ cubre: ["CONTRATO-OFICINA §6", "fronteras", "Directiva del Owner §77", "OWN-AD
 dado:
   - "un item planificado con el circuito cambio-con-interfaz (DIS antes que CNS)"
 cuando:
-  - "se evalúa la terminación antes y después de entregar DIS/diseno-visual"
+  - "se evalúa la terminación antes y después de entregar DIS/diseno-visual, y sobre un plan con dos paquetes de diseño con uno solo entregado"
 entonces:
   - "antes: admitida y encuadrada alcanzadas, investigada no-exigida, diseñada pendiente, aprobada sin-mecanismo"
-  - "después: diseñada alcanzada, y los niveles (implementado…) siguen faltando: las fronteras no son niveles"
+  - "después: diseñada alcanzada —era el único paquete de la frontera—, y los niveles (implementado…) siguen faltando: las fronteras no son niveles"
+  - "con dos paquetes de diseño y uno entregado, diseñada sigue pendiente y nombra sólo el que falta; con los dos, alcanzada"
 falla_si:
-  - "diseñada se da por alcanzada sin que ningún paquete de diseño haya entregado"
+  - "diseñada se da por alcanzada mientras algún paquete de diseño del plan sigue pendiente"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T487
+nombre: Una capacidad que participa dos veces acuña paquetes distintos
+cubre: ["CONTRATO-OFICINA §5", "planificacion", "a.5", "01-PROCESOS (revisión posterior de DOM y SEG)", "OWN-ADS-0022", "OWN-ADS-0112"]
+dado:
+  - "un circuito base con C-DOM y la composición dom-migracion (DOM/modelo y DOM/migracion) sobre FEA, donde DOM participa como DOM:condiciones y como DOM:revision"
+cuando:
+  - "se planifica el item, y se vuelve a planificar"
+entonces:
+  - "el plan tiene cuatro paquetes de DOM con identificadores distintos: dos antes de CNS/implementacion y dos después de VER/dosier"
+  - "la migración previa depende del modelo previo, no del de la revisión posterior"
+  - "replanificar produce los mismos identificadores: la semilla sólo entra el método cuando la participación se repite"
+falla_si:
+  - "`a.5` compara un paquete consigo mismo, que es lo que pasaba con TODA clase con C-DOM o C-SEG (medido en el catálogo de La Pesquerapp)"
+  - "la migración previa espera a la revisión posterior y el plan se bloquea a sí mismo"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T488
+nombre: Un cambio de dirección deriva su propietario del encargo
+cubre: ["CONTRATO-OFICINA §5", "rutas.propietario_global", "b.16", "proceso:DIR", "OWN-ADS-0022", "OWN-ADS-0117"]
+dado:
+  - "un circuito base de materia direccion-ya-decidida (proceso DIR) con prd-direccion-nueva, arq-plan-completo, ver-decision y dsp-supervisor"
+cuando:
+  - "se planifica sin `propietario_global`; con propietario y sin `productores_declarados`; con los dos; y con un propietario que no es una capacidad"
+entonces:
+  - "sin propietario: PROPIETARIO_NO_DERIVABLE; con propietario y sin productoras: COMPOSICION_INCOMPLETA (sustituciones-registradas); con los dos: plan con proceso:DIR y propietario PRD, con ARQ/encaje y VER/decision y sin CNS/implementacion"
+  - "con `ZZZ`: PROPIETARIO_NO_DERIVABLE"
+falla_si:
+  - "la oficina planifica un DIR eligiendo ella el propietario (b.16: NUNCA lo elige DSP)"
+  - "la entrada del item no transporta lo que el encargo declara y ningún DIR se puede planificar desde la oficina"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
 estado: prueba-superada

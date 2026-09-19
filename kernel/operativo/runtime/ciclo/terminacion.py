@@ -338,9 +338,10 @@ def evaluar_fronteras(plan, estados_por_paquete):
                            "motivo": "el circuito no materializa " + ", ".join(prefijos)})
             continue
         hechos = [p for p in propios if estados_por_paquete.get(p) == "completado"]
-        salida.append({"frontera": frontera, "estado": ALCANZADO if hechos else PENDIENTE,
-                       "motivo": ("entregado por " + ", ".join(filas[p].get("rol") for p in hechos)) if hechos
-                       else ("esperan " + ", ".join(propios))})
+        pendientes = [p for p in propios if p not in hechos]
+        salida.append({"frontera": frontera, "estado": PENDIENTE if pendientes else ALCANZADO,
+                       "motivo": ("esperan " + ", ".join(pendientes)) if pendientes
+                       else ("entregado por " + ", ".join(filas[p].get("rol") for p in hechos))})
     return salida
 
 

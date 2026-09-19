@@ -37,6 +37,26 @@ release; lo propio del Owner se queda en su instancia.
   del plan entregaron y publicadas en `evaluar_terminacion` y en `terminacion` del CLI;
   `aprobada` se declara sin mecanismo hasta la línea de Diseño (`T486`; `OWN-ADS-0275`,
   `0276`).
+- `ciclo/entregas.py` · **el escalado falla CERRADO**: si la ficha de autoridad de la
+  capacidad no se puede leer, la entrega se rechaza; antes cualquier error al leer el
+  corpus autorizaba cualquier materia (`T485`, ampliada). `ciclo/terminacion.py`: una
+  frontera con VARIOS paquetes sólo está alcanzada cuando todos entregaron, y nombra los
+  que esperan (`T486`, ampliada). Ambos hallazgos los aportó un agente de Codex el
+  2026-09-16 sobre el worktree de la campaña; la prueba de la frontera se rehízo porque
+  pedía un paquete que el circuito de prueba no tiene.
+- `ciclo/planificacion.py` · **defecto medido y corregido**: `DOM` y `SEG` participan DOS
+  veces en FEA/GAP/DEU (`DOM:condiciones` antes de construir, `DOM:revision` después) y la
+  semilla del paquete no entraba el método: las dos participaciones acuñaban EL MISMO
+  identificador por rol, `a.5` se pedía comparar un paquete consigo mismo y NINGUNA clase
+  con C-DOM o C-SEG se podía planificar (medido en el catálogo de clases de La Pesquerapp:
+  cambio-de-dominio, migracion, seguridad, nueva-area-de-producto). El método entra en la
+  semilla sólo cuando la participación se repite —ningún plan ya escrito cambia de
+  identidad— y una dependencia por independencia se resuelve dentro de la misma
+  participación (`T487`; `OWN-ADS-0022`, `0112`).
+- `ciclo/oficina.py` · **un cambio de dirección se puede planificar desde la oficina**:
+  la entrada transporta `propietario_global` y `productores_declarados` y `planificar` los
+  entrega a la composición; `proceso:DIR` deriva su propietario del encargo (`b.16`) y sin
+  ellos la fase no abre, con el error que lo dice (`T488`; `OWN-ADS-0022`, `0117`).
 - `validadores/huella.py` · **defecto corregido**: en un `git worktree`, `.git` es un
   FICHERO (el puntero al gitdir) y el sello lo contaba como `SIN_CLASE`, con lo que
   `comprobar_integridad` (comprobación 4) salía en rojo en cualquier worktree aunque el

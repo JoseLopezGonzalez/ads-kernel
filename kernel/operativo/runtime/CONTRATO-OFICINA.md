@@ -181,6 +181,21 @@ nunca se reutiliza en silencio (`T463`).
 **G13 en la puerta.** Quien produjo la entrega que un paquete va a juzgar no puede tomar ese
 paquete: se rechaza ANTES del lease, y no queda lease detrás (`T465`).
 
+**Participaciones dobles.** `DOM` y `SEG` participan dos veces en FEA, GAP y DEU: como
+`DOM:condiciones` antes de construir y como `DOM:revision` después (`01-PROCESOS.md`). Cada
+participación acuña sus propios paquetes por rol —la semilla entra el método cuando la
+participación se repite, y sólo entonces, para que ningún plan ya escrito cambie de
+identidad— y una dependencia por independencia (`DOM/migracion` de `DOM/modelo`) se resuelve
+dentro de la misma participación: la migración previa espera al modelo previo, no al de la
+revisión posterior (`T487`).
+
+**Lo que el encargo declara y la oficina sólo transporta.** `proceso:DIR` deriva su
+propietario global del encargo y `b.16` prohíbe que DSP lo elija: la entrada de `planificar`
+lleva `propietario_global` (la capacidad propietaria de la decisión que se sustituye) y
+`productores_declarados` (`{obligación: capacidad}` para las obligaciones con productora
+DERIVADA, como `sustituciones-registradas`). Sin ellos la fase NO abre, con
+`PROPIETARIO_NO_DERIVABLE` o `COMPOSICION_INCOMPLETA` (`T488`).
+
 ## 5 bis · El contrato operativo efectivo de cada rol
 
 Un rol materializable —uno que la oficina puede convertir en paquete— tiene SIEMPRE

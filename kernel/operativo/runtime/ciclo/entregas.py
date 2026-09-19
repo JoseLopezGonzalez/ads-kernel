@@ -30,7 +30,7 @@ from estado.serializacion import cid_de_objeto
 
 from . import durable, formas
 from .corpus import Corpus
-from .errores import EntregaInvalida
+from .errores import CorpusIlegible, CorpusIncompleto, EntregaInvalida
 
 DOMINIO = "entregas"
 ESQUEMA = "ads.estado/1"
@@ -117,8 +117,9 @@ def _materia_escalable(entrega, corpus):
     capacidad = str(entrega.get("rol") or "").split("/", 1)[0]
     try:
         autoridad = (corpus.capacidad(capacidad) or {}).get("autoridad") or {}
-    except Exception:                                                  # noqa: BLE001
-        return []
+    except (CorpusIlegible, CorpusIncompleto) as exc:
+        return ["entrega.bloqueo.materia: no se pudo comprobar la autoridad de `"
+                + capacidad + "`: " + str(exc)]
     escala = [str(x) for x in autoridad.get("escala") or []]
     decide = [str(x) for x in autoridad.get("decide_sola") or []]
     materia = str((entrega.get("bloqueo") or {}).get("materia") or "").strip()
