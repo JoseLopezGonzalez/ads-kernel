@@ -6,7 +6,7 @@
 `O31` §3 y §5 · EL UNIVERSO DE INSTRUMENTOS, DERIVADO DEL ÁRBOL
 ==============================================================================
 
-  ANCLA   commit dcc71052a2c56dd9519e56712ef19df1fc2ec607 · tree 28d2ec37b3f5af50e9715aff0b5755942c4d4956
+  ANCLA   commit 7f911e89babe76fb9219e4783f52e86e1f81b1a3 · tree 7224d70d4f64aaee1854a51b2a42db085fd381d1
 
 CÓMO SE DERIVA, Y POR QUÉ NO ES UNA LISTA
 ------------------------------------------------------------------------------
@@ -19,7 +19,7 @@ CÓMO SE DERIVA, Y POR QUÉ NO ES UNA LISTA
 
 EL UNIVERSO
 ------------------------------------------------------------------------------
-  puntos ejecutables en el árbol ....... 65
+  puntos ejecutables en el árbol ....... 66
   directorios que ocupan ............... 10
       docs/canonico
       docs/evolucion/verificacion
@@ -31,7 +31,7 @@ EL UNIVERSO
       kernel/operativo/validadores/pruebas
       tooling
       tooling/tests
-  filas del manifiesto ................. 64
+  filas del manifiesto ................. 65
   puntos SIN fila ni exclusión ......... 0
   exclusiones DECLARADAS en el fichero . 14
 
@@ -72,7 +72,7 @@ EL GUARDIÁN DE CADA EVIDENCIA
   demás las sostiene el equivalente de `O31` §3, ejercido aquí: los
   bytes del árbol de trabajo contra el blob de `HEAD`.
   lint                               lint-salida.txt                              equivalente `O31` §3
-  contratos                          contratos-salida.txt                         T350 (25 escenarios)
+  contratos                          contratos-salida.txt                         T350 (27 escenarios)
   rutas-portables                    rutas-portables-salida.txt                   equivalente `O31` §3
   packs                              packs-salida.txt                             T350 (3 escenarios)
   referencias                        referencias-salida.txt                       T350 (1 escenarios)
@@ -87,6 +87,7 @@ EL GUARDIÁN DE CADA EVIDENCIA
   evidencia                          evidencia-salida.txt                         T350 (2 escenarios)
   workspace                          workspace-salida.txt                         T350 (6 escenarios)
   estado-durable                     estado-durable-salida.txt                    T350 (28 escenarios)
+  estado-entre-ramas                 estado-entre-ramas-salida.txt                equivalente `O31` §3
   estado-e2e                         estado-e2e-salida.txt                        T350 (1 escenarios)
   runtime-dispatcher                 runtime-salida.txt                           T350 (8 escenarios)
   gobierno-git                       gobierno-git-salida.txt                      T350 (1 escenarios)
@@ -103,7 +104,7 @@ EL GUARDIÁN DE CADA EVIDENCIA
   exclusiones-de-instancia           exclusiones-de-instancia-salida.txt          T350 (5 escenarios)
   ciclo                              ciclo-salida.txt                             T350 (8 escenarios)
   continua                           continua-salida.txt                          T350 (3 escenarios)
-  oficina                            oficina-salida.txt                           T350 (16 escenarios)
+  oficina                            oficina-salida.txt                           T350 (33 escenarios)
   agentes                            agentes-salida.txt                           T350 (15 escenarios)
   cardinalidad-y-seleccion           cardinalidad-salida.txt                      T350 (31 escenarios)
   integridad-evidencia               integridad-evidencia-salida.txt              T350 (44 escenarios)
@@ -126,7 +127,7 @@ EL GUARDIÁN DE CADA EVIDENCIA
 
 OBSERVACIONES
 ------------------------------------------------------------------------------
-  · guardián: 34 por `T350` · 18 por el equivalente de `O31` §3 · 0 sin guardián
+  · guardián: 34 por `T350` · 19 por el equivalente de `O31` §3 · 0 sin guardián
 
 LOS INCUMPLIMIENTOS, UNO A UNO
 ------------------------------------------------------------------------------
@@ -140,4 +141,4 @@ LO QUE ESTE VEREDICTO NO DEMUESTRA
     independiente, y exigen que reproduzca el ataque él mismo;
   · no juzga el contenido de la evidencia: eso es `T158` y `T350`.
 
-65 puntos ejecutables · 10 directorios · 0 sin fila ni exclusión · 14 exclusiones declaradas · 0 incumplimientos
+66 puntos ejecutables · 10 directorios · 0 sin fila ni exclusión · 14 exclusiones declaradas · 0 incumplimientos
