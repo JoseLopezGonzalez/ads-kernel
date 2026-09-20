@@ -5,6 +5,8 @@
 # ---------------------------------------------------------------
 
 # --- stderr (código 0) ---
+test_38_la_llave_por_capacidad_no_puede_paralelizar_dos_roles_de_la_misma (__main__.AcoplamientoPorRol.test_38_la_llave_por_capacidad_no_puede_paralelizar_dos_roles_de_la_misma)
+T500 · Defecto que previene: declarar el acoplamiento y que no sirva de nada. ... ok
 test_16_una_dependencia_circular_no_se_toma_y_el_tablero_la_nombra (__main__.Adversarial.test_16_una_dependencia_circular_no_se_toma_y_el_tablero_la_nombra)
 T471 · Defecto que previene: dos paquetes esperándose para siempre en silencio. ... ok
 test_17_un_handoff_incompleto_no_se_emite_y_un_acuse_a_medias_no_toma_custodia (__main__.Adversarial.test_17_un_handoff_incompleto_no_se_emite_y_un_acuse_a_medias_no_toma_custodia)
@@ -15,10 +17,20 @@ test_19_un_reinicio_completo_reconstruye_exactamente_lo_mismo (__main__.Adversar
 T474 · Defecto que previene: continuidad que vive en la conversación. ... ok
 test_20_los_documentos_inconsistentes_se_rechazan_con_su_nombre (__main__.Adversarial.test_20_los_documentos_inconsistentes_se_rechazan_con_su_nombre)
 T475 · Defecto que previene: un circuito, una entrega o un PROFILE que dicen dos cosas. ... ok
+test_34_al_tomar_nace_la_base_y_un_avance_compatible_se_registra (__main__.BaseDePartida.test_34_al_tomar_nace_la_base_y_un_avance_compatible_se_registra)
+T494 · Defecto que previene: un trabajo que no sabe de qué commit nació ni en qué rama está. ... ok
+test_35_un_avance_que_toca_lo_mismo_contradice_y_no_se_entrega_hasta_reconciliar (__main__.BaseDePartida.test_35_un_avance_que_toca_lo_mismo_contradice_y_no_se_entrega_hasta_reconciliar)
+T495 · Defecto que previene: entregar «terminado» sobre una base que ya cambió lo mismo. ... ok
+test_36_sin_git_no_se_mide_y_nada_cambia (__main__.BaseDePartida.test_36_sin_git_no_se_mide_y_nada_cambia)
+T496 · Defecto que previene: un control repo sin Git frenado por una medida que no existe. ... ok
 test_11_un_bloqueo_no_consume_intento_y_deja_el_desbloqueador_nombrado (__main__.BloqueoYCierre.test_11_un_bloqueo_no_consume_intento_y_deja_el_desbloqueador_nombrado)
 T467 · Defecto que previene: un bloqueo que acaba en `agotado` y en g.9. ... ok
 test_12_el_item_no_cierra_como_producto_hasta_alcanzar_los_niveles_exigidos (__main__.BloqueoYCierre.test_12_el_item_no_cierra_como_producto_hasta_alcanzar_los_niveles_exigidos)
 T468 · Defecto que previene: «cerrado» mientras nadie abrió la pantalla. ... ok
+test_28_una_capacidad_que_participa_dos_veces_acuna_paquetes_distintos (__main__.CatalogoDeClases.test_28_una_capacidad_que_participa_dos_veces_acuna_paquetes_distintos)
+T487 · Defecto que previene: ninguna clase con C-DOM o C-SEG se podía planificar ... ok
+test_29_el_cambio_de_direccion_deriva_su_propietario_del_encargo (__main__.CatalogoDeClases.test_29_el_cambio_de_direccion_deriva_su_propietario_del_encargo)
+T488 · Defecto que previene: `DIR` no se podía planificar desde la oficina porque el ... ok
 test_21_un_rol_sin_contrato_completo_tiene_contrato_efectivo_que_manda_en_el_brief (__main__.ContratosEfectivos.test_21_un_rol_sin_contrato_completo_tiene_contrato_efectivo_que_manda_en_el_brief)
 T476 · Defecto que previene: treinta roles trabajando con prosa y criterio propio. ... ok
 test_23_la_cronica_dice_quien_tomo_que_y_que_entrego_en_el_orden_del_diario (__main__.Cronica.test_23_la_cronica_dice_quien_tomo_que_y_que_entrego_en_el_orden_del_diario)
@@ -35,8 +47,28 @@ test_09b_quien_corrigio_la_implementacion_tampoco_pasa_la_puerta_del_juez (__mai
 T465 · Defecto que previene: el autor de la CORRECCIÓN toma VER/dosier y su entrega se rechaza después. ... ok
 test_10_un_rechazo_al_recibir_no_cuenta_para_el_freno_y_cancela_el_receptor (__main__.Entregas.test_10_un_rechazo_al_recibir_no_cuenta_para_el_freno_y_cancela_el_receptor)
 T466 · Defecto que previene: aceptar por cortesía y devolver después. ... ok
+test_30_un_impacto_que_el_circuito_cubre_no_marca_nada (__main__.EstacionDeImpacto.test_30_un_impacto_que_el_circuito_cubre_no_marca_nada)
+T489 · Defecto que previene: tratar toda declaración de impacto como alarma. ... ok
+test_31_un_impacto_que_el_circuito_no_cubre_marca_el_plan_y_para_el_item (__main__.EstacionDeImpacto.test_31_un_impacto_que_el_circuito_no_cubre_marca_el_plan_y_para_el_item)
+T490 · Defecto que previene: seguir construyendo sobre una clasificación que ya se ... ok
+test_32_un_disparador_fuera_de_los_dieciseis_es_una_entrega_invalida (__main__.EstacionDeImpacto.test_32_un_disparador_fuera_de_los_dieciseis_es_una_entrega_invalida)
+T491 · Defecto que previene: «impacto» como prosa libre. ... ok
+test_37_un_recurso_exclusivo_en_manos_ajenas_hace_al_paquete_temporalmente_incompatible (__main__.ExclusionPorRecurso.test_37_un_recurso_exclusivo_en_manos_ajenas_hace_al_paquete_temporalmente_incompatible)
+T498 · Defecto que previene: dos workers sobre el mismo contrato a la vez, y el Owner arbitrando. ... ok
+test_24_entregar_con_un_handoff_recibido_sin_acusar_se_rechaza (__main__.HandoffsYFronteras.test_24_entregar_con_un_handoff_recibido_sin_acusar_se_rechaza)
+T483 · Defecto que previene: «seguimos» como transferencia implícita (§78). ... ok
+test_25_el_handoff_emitido_lleva_los_catorce_campos_de_la_directiva (__main__.HandoffsYFronteras.test_25_el_handoff_emitido_lleva_los_catorce_campos_de_la_directiva)
+T484 · Defecto que previene: un receptor que reconstruye la entrega leyendo un chat. ... ok
+test_26_escalar_exige_una_materia_que_la_capacidad_escala_y_no_una_que_decide_sola (__main__.HandoffsYFronteras.test_26_escalar_exige_una_materia_que_la_capacidad_escala_y_no_una_que_decide_sola)
+T485 · Defecto que previene: el Owner arbitrando spacing (Directiva §20, §41, §76). ... ok
+test_26b_un_corpus_sin_autoridad_no_autoriza_un_escalado (__main__.HandoffsYFronteras.test_26b_un_corpus_sin_autoridad_no_autoriza_un_escalado)
+T485 · Defecto que previene: que una ficha ilegible autorice cualquier materia. ... ok
+test_27_las_fronteras_previas_a_la_construccion_se_distinguen (__main__.HandoffsYFronteras.test_27_las_fronteras_previas_a_la_construccion_se_distinguen)
+T486 · Defecto que previene: «cerrado» como sinónimo de «implementado», y un item del ... ok
 test_22_integrado_solo_con_un_conjunto_exacto_que_nombra_todas_las_fuentes_escritas (__main__.Integrado.test_22_integrado_solo_con_un_conjunto_exacto_que_nombra_todas_las_fuentes_escritas)
 T468 · Defecto que previene: «integrado» como palabra, o dos ramas que nadie probó juntas. ... ok
+test_22b_con_varias_fuentes_el_conjunto_define_orden_compatibilidad_y_despliegue (__main__.Integrado.test_22b_con_varias_fuentes_el_conjunto_define_orden_compatibilidad_y_despliegue)
+T497 · Defecto que previene: varias PRs presentadas al Owner como trabajos inconexos (§71). ... ok
 test_03_un_trabajador_que_muere_con_el_lease_es_reofrecido_tras_paciencia (__main__.MuerteDelTrabajador.test_03_un_trabajador_que_muere_con_el_lease_es_reofrecido_tras_paciencia)
 T461 · Defecto que previene: un paquete secuestrado por un trabajador muerto. ... ok
 test_03b_un_trabajador_que_entrega_mientras_el_supervisor_observa_no_tumba_el_barrido (__main__.MuerteDelTrabajador.test_03b_un_trabajador_que_entrega_mientras_el_supervisor_observa_no_tumba_el_barrido)
@@ -47,6 +79,12 @@ test_03d_un_lease_que_otro_libero_entre_dos_lecturas_no_es_corrupcion (__main__.
 T474 · Defecto que previene: el supervisor muere por «el fichero no existe» cuando un worker suelta. ... ok
 test_04_dos_procesos_compiten_por_el_mismo_paquete_y_exactamente_uno_lo_toma (__main__.MuerteDelTrabajador.test_04_dos_procesos_compiten_por_el_mismo_paquete_y_exactamente_uno_lo_toma)
 T462 · Defecto que previene: doble despacho entre dos sesiones. ... ok
+test_33a_una_barrera_externa_es_una_parada_con_nombre (__main__.ParadasTipadas.test_33a_una_barrera_externa_es_una_parada_con_nombre)
+T492 · Defecto que previene: una barrera externa parada como «bloqueado» genérico, ... ok
+test_33b_un_riesgo_extraordinario_es_una_parada_con_nombre_y_manda_sobre_los_demas (__main__.ParadasTipadas.test_33b_un_riesgo_extraordinario_es_una_parada_con_nombre_y_manda_sobre_los_demas)
+T492 · el riesgo extraordinario (§36.3) se nombra, y con una barrera al lado gana. ... ok
+test_33c_sin_clase_sigue_siendo_bloqueado_y_una_clase_inventada_no_entra (__main__.ParadasTipadas.test_33c_sin_clase_sigue_siendo_bloqueado_y_una_clase_inventada_no_entra)
+T492 · sin clase, `bloqueado` (dependencia interna o decisión); una clase fuera de las ... ok
 test_05_un_paquete_por_rol_y_la_revision_espera_a_la_implementacion (__main__.PlanificacionPorRol.test_05_un_paquete_por_rol_y_la_revision_espera_a_la_implementacion)
 T463 · Defecto que previene: un equipo materializado sin trabajo por rol. ... ok
 test_05b_una_revision_de_diseno_va_despues_de_construir_y_replanificar_es_otra_generacion (__main__.PlanificacionPorRol.test_05b_una_revision_de_diseno_va_despues_de_construir_y_replanificar_es_otra_generacion)
@@ -65,6 +103,6 @@ test_15_sin_entrega_valida_el_agente_no_completa_y_sin_ejecutor_falla_cerrado (_
 T470 · Defecto que previene: un `completado` durable sobre una entrega que no existe. ... ok
 
 ----------------------------------------------------------------------
-Ran 29 tests  (duración no registrada: varía por ejecución)
+Ran 48 tests  (duración no registrada: varía por ejecución)
 
 OK
