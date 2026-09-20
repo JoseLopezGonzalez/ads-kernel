@@ -1,4 +1,4 @@
-# T460–T499 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77, el catálogo de clases, la estación de impacto de §5, las paradas de §36, los artefactos de Diseño, la base de partida de §63, el Integration Set de §71, la exclusión por recurso de §68 y el sentido único de la independencia de §81
+# T460–T500 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77, el catálogo de clases, la estación de impacto de §5, las paradas de §36, los artefactos de Diseño, la base de partida de §63, el Integration Set de §71, la exclusión por recurso de §68 el sentido único de la independencia de §81 y el acoplamiento por rol de §62/§68
 
 **Qué cierran.** El hallazgo de la auditoría forense de La Pesquerapp del 2026-09-14: el
 kernel tenía escrito el runtime completo —paquetes, leases, dispatcher, ciclo, gates,
@@ -55,6 +55,7 @@ T496  un control repo sin Git no se mide y nada cambia
 T497  con varias fuentes el Integration Set define orden de merge, compatibilidad, despliegue y dependencias; sin ellos, o con una fuente de menos o ajena, la convergencia no es admisible (§71)
 T498  un recurso exclusivo —derivado del acoplamiento de a.5— en manos de otra ejecución hace al paquete temporalmente incompatible: no elegible, no tomable, publicado con quién lo posee; el de ámbito independiente sigue en paralelo (§68)
 T499  la independencia de un rol se declara en UN solo sentido —la exige quien REVISA de quien PRODUCE—: declararla también en el productor la convierte en un ciclo que no ordena y empuja a los dos al final del plan, detrás de la construcción (§81)
+T500  el acoplamiento se declara por ROL, y no solo por capacidad: con la llave por capacidad dos paquetes de la misma capacidad reciben la MISMA declaracion, las condiciones 2, 3 y 4 de `a.5` se evaluan por interseccion y la pareja no puede salir paralela NUNCA (§62, §68, §81)
 ```
 
 ---
@@ -759,4 +760,26 @@ ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_contratos.py
 estado: prueba-superada
 evidencia: evidencia/contratos-salida.txt
+```
+
+```yaml ads:escenario
+id: T500
+nombre: El acoplamiento se declara por rol, o la misma capacidad nunca se paraleliza
+cubre: ["ciclo/planificacion.py", "ciclo/oficina.py", "ciclo/paralelismo.py", "Directiva del Owner §62", "Directiva del Owner §68", "Directiva del Owner §81", "OWN-ADS-0224", "OWN-ADS-0287"]
+dado:
+  - "un circuito donde una capacidad participa DOS veces con dos roles (`cambio-de-dominio`: DOM/modelo y DOM/migracion)"
+  - "las condiciones 2, 3 y 4 de `a.5` se evaluan por INTERSECCION de los conjuntos declarados"
+cuando:
+  - "se planifica declarando el acoplamiento por CAPACIDAD, despues por ROL, y por ultimo por rol pero sin `integra_en`"
+entonces:
+  - "por capacidad los dos roles reciben la MISMA declaracion, la interseccion nunca es vacia y la migracion espera al modelo: la pareja no puede salir paralela declare la instancia lo que declare"
+  - "por rol, cada paquete se queda con la declaracion de SU rol y las escrituras son de verdad disjuntas"
+  - "por rol pero SIN `integra_en`, la sexta condicion vuelve a fallar y `b.11` secuencia: declarar por rol NO es una autorizacion de paralelismo"
+falla_si:
+  - "la resolucion ignora el rol: entonces esta prueba se pone roja, y es el UNICO fallo de la bateria (ejercido el 2026-09-20 con el fix revertido en una copia)"
+  - "alguien afloja la sexta condicion para «arreglar» el paralelismo, en vez de declarar la verdad"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
 ```

@@ -172,7 +172,8 @@ def _item_de_entrega(almacen, entrega):
 #  PLANIFICAR: de una entrada a paquetes por rol
 # ===========================================================================
 def planificar(runtime, *, corpus=None, entrada, circuito, control_repo, fase="unica",
-               item=None, titulo=None, acoplamiento_por_capacidad=None, slots=4,
+               item=None, titulo=None, acoplamiento_por_capacidad=None,
+               acoplamiento_por_rol=None, slots=4,
                ordenes=None, capacidades_de_adaptador_por_rol=None, degradaciones=None,
                secuencial=None, precondiciones=(), generacion=0):
     """Encuadra, compone, materializa y planifica POR ROL. Fallo cerrado en cada etapa.
@@ -249,7 +250,8 @@ def planificar(runtime, *, corpus=None, entrada, circuito, control_repo, fase="u
         roles_por_capacidad=roles_por_capacidad,
         capacidades_de_adaptador=(CAPACIDAD_EXTERNA,),
         capacidades_de_adaptador_por_rol=capacidades_de_adaptador_por_rol,
-        acoplamiento_por_capacidad=acoplamiento_por_capacidad, slots=slots,
+        acoplamiento_por_capacidad=acoplamiento_por_capacidad,
+        acoplamiento_por_rol=acoplamiento_por_rol, slots=slots,
         secuencial=secuencial, independencias_declaradas=independencias_declaradas,
         generacion=generacion,
     )

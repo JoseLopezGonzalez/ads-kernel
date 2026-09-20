@@ -185,6 +185,7 @@ class Planificador:
                    intervencion=INTERVENCION_NINGUNA, alcance_autorizado=None,
                    secuencial=None, acoplamiento_por_capacidad=None,
                    roles_por_capacidad=None, orden_por_rol=None, item=None,
+                   acoplamiento_por_rol=None,
                    capacidades_de_adaptador_por_rol=None):
         """Crea el item y sus paquetes, y escribe el plan. Idempotente por contenido.
 
@@ -199,7 +200,9 @@ class Planificador:
         `item` permite planificar sobre un item que YA EXISTE en el estado —el de la
         instancia que gobierna el producto—, en vez de acuñar uno nuevo desde el encuadre.
         `orden_por_rol` y `capacidades_de_adaptador_por_rol` afinan la orden por rol; si no
-        están, manda la de la capacidad.
+        están, manda la de la capacidad. `acoplamiento_por_rol` hace lo mismo con la
+        declaración de acoplamiento, y por el motivo que `_acoplamiento_de` explica: con la
+        llave por capacidad, dos paquetes de la misma capacidad NUNCA son paralelizables.
         """
         if intervencion not in NIVELES_DE_INTERVENCION:
             raise PlanificacionInvalida(
@@ -233,6 +236,27 @@ class Planificador:
 
         ordenes = dict(orden_por_capacidad or {})
         acoplamientos = dict(acoplamiento_por_capacidad or {})
+        acoplamiento_por_rol = dict(acoplamiento_por_rol or {})
+
+        def _acoplamiento_de(unidad, participante):
+            """El acoplamiento del paquete: el del ROL si se declara, si no el de su capacidad.
+
+            DECISIÓN · la llave por CAPACIDAD no basta, y por eso existe ésta. Las condiciones
+                2, 3 y 4 de `a.5` se evalúan por INTERSECCIÓN de conjuntos declarados. Dos
+                paquetes de la misma capacidad comparten, con la llave por capacidad, una
+                declaración IDÉNTICA: la intersección es entonces el propio conjunto, nunca
+                vacía, y NINGUNA pareja de la misma capacidad puede salir paralela, declare la
+                instancia lo que declare. Medido el 2026-09-20 en el plan `ui-2-nueva-superficie`
+                de La Pesquerapp, donde once de diecisiete paquetes son `DIS`: con la dirección
+                artística escalada al Owner, la organización no continuaba con NADA, y §81 pide
+                lo contrario. Declarar por rol no afloja ninguna condición —la sexta sigue
+                exigiendo `integra_en`, y el FALLBACK SEGURO de `b.11` sigue secuenciando cuando
+                no se puede demostrar compatibilidad—: lo que hace es permitir decir la VERDAD,
+                que los artefactos de dos roles distintos son de hecho disjuntos.
+            """
+            if unidad.get("rol") and unidad["rol"] in acoplamiento_por_rol:
+                return acoplamiento_por_rol[unidad["rol"]]
+            return acoplamientos.get(participante["capacidad"])
         # PRIMERA PASADA: se construyen los paquetes en memoria, CON su declaración de
         # acoplamiento, para poder evaluar entre ellos la condición compuesta de `a.5`.
         # Sin la declaración no hay nada que evaluar, y por eso la etapa 4 va antes que la 5
@@ -319,7 +343,7 @@ class Planificador:
                 "id": unidad["id"],
                 "depende_de": sorted(set(previos)),
                 "acoplamiento": modelo.normalizar_acoplamiento(
-                    acoplamientos.get(participante["capacidad"])),
+                    _acoplamiento_de(unidad, participante)),
             })
         if secuencial is True:
             # Secuenciar SIN evaluar sigue estando permitido —es el fallback seguro—, pero
@@ -383,7 +407,7 @@ class Planificador:
                     prioridad=PRIORIDAD_POR_VIA[participante["via"]],
                     max_intentos=MAX_INTENTOS_POR_DEFECTO,
                     depende_de=depende_de,
-                    acoplamiento=acoplamientos.get(participante["capacidad"]),
+                    acoplamiento=_acoplamiento_de(unidad, participante),
                 )
             paquetes.append(identificador)
             fila = {

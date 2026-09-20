@@ -2039,6 +2039,82 @@ class ExclusionPorRecurso(Laboratorio):
         self.assertTrue(A.almacen.verificar_integridad().a_dict()["ok"])
 
 
+# =========================================================================
+# T500 · el acoplamiento se declara por ROL, o dos paquetes de la misma capacidad
+#        no pueden ser paralelos NUNCA (Directiva §62, §68, §81)
+# =========================================================================
+class AcoplamientoPorRol(Laboratorio):
+    """La llave por CAPACIDAD no basta, y esto lo mide ejecutando.
+
+    Las condiciones 2, 3 y 4 de `a.5` se evalúan por INTERSECCIÓN de los conjuntos
+    declarados. Con la llave por capacidad, dos paquetes de la misma capacidad reciben una
+    declaración IDÉNTICA: la intersección es el propio conjunto, nunca vacía, y la pareja
+    queda secuenciada declare la instancia lo que declare.
+
+    HECHO MEDIDO ANTES DE CORREGIR (2026-09-20, instancia de La Pesquerapp): en el plan de
+    `ui-2-nueva-superficie`, once de diecisiete paquetes son `DIS`. Con la dirección
+    artística escalada al Owner, la organización no continuaba con NADA —de diecisiete
+    paquetes, UNO tomable—, y §81 pide exactamente lo contrario: que el trabajo no bloqueado
+    siga mientras el Owner decide.
+    """
+
+    def _plan_con(self, A, item, **afinado):
+        circuito = self.circuitos["cambio-de-dominio"]        # DOM participa DOS veces
+        return oficina.planificar(A, corpus=self.corpus, entrada=self.entrada(),
+                                  circuito=circuito, control_repo=self.repo,
+                                  item=item, titulo="Entidad nueva", **afinado)["plan"]
+
+    def test_38_la_llave_por_capacidad_no_puede_paralelizar_dos_roles_de_la_misma(self):
+        """T500 · Defecto que previene: declarar el acoplamiento y que no sirva de nada."""
+        A = self.rt("w-A")
+        # CONTROL NEGATIVO · por capacidad, los dos roles de DOM reciben lo MISMO
+        por_capacidad = {"DOM": {"escribe_ficheros": ["docs/dominio/entidad.md"],
+                                 "integra_en": "rama de trabajo del encargo"}}
+        plan = self._plan_con(A, "enc-cap", acoplamiento_por_capacidad=por_capacidad)
+        filas = {f["paquete"]: f for f in plan["correspondencia"]}
+        dom = [p for p, f in filas.items() if str(f.get("rol") or "").startswith("DOM/")]
+        modelo = [p for p in dom if filas[p]["rol"] == "DOM/modelo"][0]
+        migracion = [p for p in dom if filas[p]["rol"] == "DOM/migracion"][0]
+        depende = set(A._leer_paquete(migracion).get("depende_de") or [])
+        self.assertIn(modelo, depende,
+                      "con la llave por capacidad la pareja NO puede salir paralela: "
+                      "escriben el mismo fichero porque la declaración es la misma")
+
+        # CONTROL POSITIVO · por rol, cada uno declara lo que de verdad escribe
+        B = self.rt("w-B")
+        por_rol = {
+            "DOM/modelo": {"escribe_ficheros": ["docs/dominio/modelo.md"],
+                           "integra_en": "rama de trabajo del encargo"},
+            "DOM/migracion": {"escribe_ficheros": ["docs/dominio/migracion.md"],
+                              "integra_en": "rama de trabajo del encargo"},
+        }
+        plan2 = self._plan_con(B, "enc-rol", acoplamiento_por_capacidad=por_capacidad,
+                               acoplamiento_por_rol=por_rol)
+        filas2 = {f["paquete"]: f for f in plan2["correspondencia"]}
+        dom2 = [p for p, f in filas2.items() if str(f.get("rol") or "").startswith("DOM/")]
+        modelo2 = [p for p in dom2 if filas2[p]["rol"] == "DOM/modelo"][0]
+        migracion2 = [p for p in dom2 if filas2[p]["rol"] == "DOM/migracion"][0]
+        self.assertEqual(B._leer_paquete(modelo2)["acoplamiento"]["escribe_ficheros"],
+                         ["docs/dominio/modelo.md"],
+                         "el paquete se queda con la declaración de SU rol, no la de la capacidad")
+        self.assertEqual(B._leer_paquete(migracion2)["acoplamiento"]["escribe_ficheros"],
+                         ["docs/dominio/migracion.md"])
+
+        # y la sexta condición SIGUE mandando: sin `integra_en` se vuelve a secuenciar,
+        # porque declarar por rol no afloja `b.11` — sólo permite decir la verdad
+        C = self.rt("w-C")
+        sin_estrategia = {k: {"escribe_ficheros": v["escribe_ficheros"]}
+                          for k, v in por_rol.items()}
+        plan3 = self._plan_con(C, "enc-sin", acoplamiento_por_rol=sin_estrategia)
+        filas3 = {f["paquete"]: f for f in plan3["correspondencia"]}
+        dom3 = [p for p, f in filas3.items() if str(f.get("rol") or "").startswith("DOM/")]
+        migracion3 = [p for p in dom3 if filas3[p]["rol"] == "DOM/migracion"][0]
+        modelo3 = [p for p in dom3 if filas3[p]["rol"] == "DOM/modelo"][0]
+        self.assertIn(modelo3, set(C._leer_paquete(migracion3).get("depende_de") or []),
+                      "sin `integra_en` la sexta condición falla y `b.11` secuencia: "
+                      "declarar por rol NO es una autorización de paralelismo")
+
+
 class _RunnerDeterminista(unittest.TextTestRunner):
     """Igual que el corriente, pero sin la duración en el resumen (salida publicada)."""
 
