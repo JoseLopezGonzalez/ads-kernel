@@ -1,4 +1,4 @@
-# T460–T498 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77, el catálogo de clases, la estación de impacto de §5, las paradas de §36, los artefactos de Diseño, la base de partida de §63, el Integration Set de §71 y la exclusión por recurso de §68
+# T460–T499 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77, el catálogo de clases, la estación de impacto de §5, las paradas de §36, los artefactos de Diseño, la base de partida de §63, el Integration Set de §71, la exclusión por recurso de §68 y el sentido único de la independencia de §81
 
 **Qué cierran.** El hallazgo de la auditoría forense de La Pesquerapp del 2026-09-14: el
 kernel tenía escrito el runtime completo —paquetes, leases, dispatcher, ciclo, gates,
@@ -54,6 +54,7 @@ T495  un avance de la base que toca lo mismo es contradicción: se ve en el chec
 T496  un control repo sin Git no se mide y nada cambia
 T497  con varias fuentes el Integration Set define orden de merge, compatibilidad, despliegue y dependencias; sin ellos, o con una fuente de menos o ajena, la convergencia no es admisible (§71)
 T498  un recurso exclusivo —derivado del acoplamiento de a.5— en manos de otra ejecución hace al paquete temporalmente incompatible: no elegible, no tomable, publicado con quién lo posee; el de ámbito independiente sigue en paralelo (§68)
+T499  la independencia de un rol se declara en UN solo sentido —la exige quien REVISA de quien PRODUCE—: declararla también en el productor la convierte en un ciclo que no ordena y empuja a los dos al final del plan, detrás de la construcción (§81)
 ```
 
 ---
@@ -737,4 +738,25 @@ ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
 estado: prueba-superada
 evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T499
+nombre: La independencia se declara en un solo sentido, y la declara quien revisa
+cubre: ["rol", "ciclo/planificacion.py", "Directiva del Owner §81", "OWN-ADS-0097"]
+dado:
+  - "`requiere_independencia` no es una marca simétrica: ORDENA. `_ordenar_por_estacion_de_rol` coloca a quien la exige DESPUÉS de aquel de quien la exige, porque quien revisa espera a quien produce lo revisado"
+  - "todos los roles del corpus con su bloque `independencia`"
+cuando:
+  - "se buscan los pares A/B en los que A exige independencia de B y B la exige de A"
+entonces:
+  - "no existe ninguno: la separación la declara UNA vez el rol que REVISA, y el que produce la explica en su `motivo` con `requiere_independencia: false`, como ya hacía DIS/prototipado"
+  - "con el ciclo roto, el plan de `dis-feature-visual` ordena investigación → sistema → dirección artística → producción → crítica, validación y fidelidad: la dirección se aprueba ANTES de construir, que es lo que §81 exige"
+falla_si:
+  - "dos roles se exigen independencia mutuamente: la relajación no tiene punto fijo, sube a los dos medio escalón por vuelta hasta el tope y los deja a ambos al final del plan"
+  - "DIS/direccion-artistica cae detrás de CNS/implementacion y el Owner aprueba la dirección cuando ya está construida"
+ejecucion: validador-estructural
+validador: kernel/operativo/validadores/comprobar_contratos.py
+estado: prueba-superada
+evidencia: evidencia/contratos-salida.txt
 ```

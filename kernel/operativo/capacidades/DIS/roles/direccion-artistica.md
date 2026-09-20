@@ -94,11 +94,17 @@ interaccion_roles:
   - "entrega el sistema a DIS/sistema-de-diseno para que lo formalice"
   - "recibe de DIS/revision-de-fidelidad la comparación de lo construido"
 independencia:
-  requiere_independencia: true
-  de_quien: [DIS/critica-visual]
+  requiere_independencia: false
+  de_quien: []
   motivo: >
-    Quien elige la dirección no puede dictaminar si esa dirección es genérica: es el
-    juicio sobre su propio trabajo, y la rúbrica visual dejaría de detener nada.
+    Se separa de DIS/critica-visual, que juzga lo que él produce: quien elige la dirección
+    no puede dictaminar si esa dirección es genérica, porque sería el juicio sobre su
+    propio trabajo y la rúbrica visual dejaría de detener nada. Esa separación la declara
+    DIS/critica-visual, que es quien revisa, como la declaran DIS/validacion-de-uso y
+    DIS/revision-de-fidelidad sobre lo que revisan. Declararla TAMBIÉN aquí la convertía en
+    un ciclo: `requiere_independencia` ordena —quien la exige va DESPUÉS de aquel de quien
+    la exige—, así que la dirección esperaba a su propio crítico y el plan la empujaba al
+    final, detrás de la construcción. §81 exige aprobar la dirección ANTES de construir.
 checkpoint:
   - "tras cada respuesta del Owner que cambie el entendimiento de la visión"
   - "al descartar una dirección, con el motivo escrito antes de seguir"

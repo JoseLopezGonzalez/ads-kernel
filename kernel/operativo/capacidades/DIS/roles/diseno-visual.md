@@ -72,11 +72,14 @@ interaccion_roles:
   - "coordina con DIS/sistema-de-diseno cuando propone ampliar el sistema"
   - "entrega la especificación a DIS/prototipado y a CON"
 independencia:
-  requiere_independencia: true
-  de_quien: [DIS/critica-visual]
+  requiere_independencia: false
+  de_quien: []
   motivo: >
-    Es el productor principal del artefacto que la crítica juzga. Compartir agente
-    convierte el dictamen en una revisión del autor sobre sí mismo.
+    Se separa de DIS/critica-visual: es el productor principal del artefacto que la crítica
+    juzga, y compartir agente convertiría el dictamen en una revisión del autor sobre sí
+    mismo. Esa separación la declara DIS/critica-visual, que es quien revisa. Declararla
+    TAMBIÉN aquí la convertía en un ciclo —`requiere_independencia` ORDENA— y empujaba al
+    productor detrás de su propio crítico, al final del plan.
 checkpoint:
   - "al terminar cada dirección de la fase divergente"
   - "antes de entrar en convergencia"

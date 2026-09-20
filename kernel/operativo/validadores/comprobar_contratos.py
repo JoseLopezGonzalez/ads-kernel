@@ -1374,6 +1374,49 @@ def t493_diseno_exige_los_artefactos_de_la_directiva(b):
     return r
 
 
+def t499_la_independencia_no_se_declara_en_los_dos_sentidos(b):
+    """§81 · dos roles que se declaran independientes EL UNO DEL OTRO no se pueden ordenar.
+
+    `requiere_independencia` no es simétrico: ORDENA. `planificacion._ordenar_por_estacion_de_rol`
+    coloca a quien la exige DESPUÉS de aquel de quien la exige, porque quien revisa espera a
+    quien produce lo revisado. Si A la exige de B y B la exige de A, la relajación no tiene
+    punto fijo: sube a los dos medio escalón por vuelta hasta el tope y los deja a ambos al
+    FINAL del plan, detrás de la construcción.
+
+    El defecto que previene, medido el 2026-09-20: `DIS/direccion-artistica` declaraba
+    independencia de `DIS/critica-visual`, que ya la declaraba de ella. En el plan de
+    `dis-feature-visual` la dirección artística caía en el puesto 10 de 11 —detrás de
+    `DIS/prototipado`, `DIS/validacion-de-uso` y `DIS/revision-de-fidelidad`—, de modo que
+    el Owner habría aprobado la dirección DESPUÉS de construirla. La Directiva §81 exige lo
+    contrario: «Necesitamos del Owner: aprobar la dirección propuesta» y sólo «tras la
+    aprobación: Diseño especifica, Construcción implementa».
+
+    La separación se declara UNA vez, y la declara quien REVISA.
+    """
+    r = Resultado("T499", "La independencia se declara en un solo sentido: quien revisa la exige de quien produce")
+    exige = {}
+    roles = {d["id"]: d for d, _, _ in b.get("rol", [])}
+    for rol, datos in sorted(roles.items()):
+        ind = (datos or {}).get("independencia") or {}
+        if ind.get("requiere_independencia"):
+            exige[rol] = [o for o in (ind.get("de_quien") or []) if isinstance(o, str)]
+    vistos = set()
+    for rol, otros in sorted(exige.items()):
+        for otro in otros:
+            if otro in exige and rol in exige.get(otro, []):
+                par = frozenset((rol, otro))
+                if par in vistos:
+                    continue
+                vistos.add(par)
+                r.fallo(f"`{rol}` y `{otro}` se exigen independencia MUTUAMENTE: eso no ordena, "
+                        f"empuja a los dos al final del plan (detrás de la construcción). "
+                        f"La declara sólo quien revisa; el otro la explica en su `motivo` con "
+                        f"`requiere_independencia: false`")
+    r.cobertura = (f"roles con independencia exigida: {len(exige)} · "
+                   f"pares mutuos: {len(vistos)}")
+    return r
+
+
 PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t89_reanudacion_con_prueba, t90_roles_coherentes, t91_metodos_con_gate_y_pasos,
            t92_sin_marca, t135_composicion_respeta_el_contrato,
@@ -1387,7 +1430,8 @@ PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t242_autoridad_de_los_documentos_del_owner,
            t243_entregas_de_8_0_materializadas,
            t244_grado_inicial_coincide_con_el_paso_5, t476_todo_rol_materializable_tiene_contrato, t477_bases_de_contrato_coherentes,
-           t493_diseno_exige_los_artefactos_de_la_directiva]
+           t493_diseno_exige_los_artefactos_de_la_directiva,
+           t499_la_independencia_no_se_declara_en_los_dos_sentidos]
 
 
 def main():
