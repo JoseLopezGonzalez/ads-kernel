@@ -13,6 +13,32 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `capacidades/DIS/roles/*.md` · `validadores/comprobar_contratos.py` · **la independencia se
+  declara en UN solo sentido**, y la declara quien REVISA. `requiere_independencia` no es una
+  marca simétrica: ORDENA, porque quien la exige va DESPUÉS de aquel de quien la exige. Dos
+  roles la declaraban en los dos sentidos —`DIS/direccion-artistica` y `DIS/diseno-visual` con
+  `DIS/critica-visual`— y el ciclo no tiene punto fijo: la relajación los empujaba a AMBOS al
+  final del plan. Medido en `dis-feature-visual`: la dirección artística caía la 10ª de 11,
+  detrás de la construcción, de modo que el Owner habría aprobado la dirección DESPUÉS de
+  construirla, contra §81. Corregido, va la 4ª. `T499` lo convierte en regla y, escrita por el
+  primer caso, encontró SOLA el segundo. Cierra parte de `OWN-ADS-0287`.
+- `ciclo/planificacion.py` · `ciclo/oficina.py` · **el acoplamiento se declara por ROL**, no
+  sólo por capacidad. Las condiciones 2, 3 y 4 de `a.5` se evalúan por INTERSECCIÓN, así que
+  dos paquetes de la misma capacidad, con la declaración idéntica que la llave por capacidad
+  les da, NO pueden salir paralelos jamás. Medido en la instancia: de diecisiete paquetes de
+  un `ui-2`, UNO tomable, y con la dirección escalada al Owner la organización no continuaba
+  con nada. `T500` lo mide con tres controles —por capacidad sigue secuenciado, por rol no, y
+  SIN `integra_en` vuelve a secuenciarse: declarar por rol NO es un permiso de paralelismo—.
+  Cierra parte de `OWN-ADS-0224`, `0287`.
+- `ciclo/oficina.py` · **los roles CONDICIONALES se pueden activar**: `planificar` expone
+  `condiciones_de_rol` y se lo pasa a `materializar`. Sin ese parámetro, los NUEVE roles
+  condicionales del corpus —`ARQ/encaje`, `ARQ/diagnostico`, `DIS/movimiento`,
+  `DIS/investigacion-visual`, `DIS/investigacion-ux`, `DIS/sistema-de-diseno`,
+  `DIS/critica-visual`, `DIS/revision-de-fidelidad`, `SIS/evolucion`— quedaban SIEMPRE fuera
+  de todo plan, con el motivo «condición no consta verdadera». El primer diagnóstico fue hacer
+  obligatorio el rol que faltaba; leer su composición lo desmintió —es CONDICIONAL, y su
+  condición es sensata—, y hacerlo obligatorio habría forzado investigación redundante.
+  `T501`, saboteada. Cierra parte de `OWN-ADS-0287`.
 - `estado/ramas.py` · `ads_estado.py divergencia` · **el estado durable entre dos ramas
   del mismo control repo**, clasificado ANTES de fusionar y sin mutar nada: SIN
   INTERFERENCIA · COMPATIBLE · RIESGO DE CONFLICTO · CONFLICTO DIRECTO · BLOQUEO. Lee
