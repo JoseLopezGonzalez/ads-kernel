@@ -175,7 +175,8 @@ def planificar(runtime, *, corpus=None, entrada, circuito, control_repo, fase="u
                item=None, titulo=None, acoplamiento_por_capacidad=None,
                acoplamiento_por_rol=None, slots=4,
                ordenes=None, capacidades_de_adaptador_por_rol=None, degradaciones=None,
-               secuencial=None, precondiciones=(), generacion=0):
+               secuencial=None, precondiciones=(), generacion=0,
+               condiciones_de_rol=None):
     """Encuadra, compone, materializa y planifica POR ROL. Fallo cerrado en cada etapa.
 
     `ordenes(capacidad, rol)` devuelve la orden de adaptador de cada paquete: la instancia
@@ -213,9 +214,23 @@ def planificar(runtime, *, corpus=None, entrada, circuito, control_repo, fase="u
     )
     equipos, roles_por_capacidad = [], {}
     for capacidad in sorted({p["capacidad"] for p in ruta["participantes"]}):
+        # `condiciones_de_rol` faltaba, y con ella NINGÚN rol condicional del corpus podía
+        # activarse desde la oficina. Son NUEVE —ARQ/encaje, ARQ/diagnostico, DIS/movimiento,
+        # DIS/investigacion-visual, DIS/investigacion-ux, DIS/sistema-de-diseno,
+        # DIS/critica-visual, DIS/revision-de-fidelidad y SIS/evolucion—: el kernel sabía
+        # materializarlos y la oficina nunca le decía qué condición era verdadera, así que
+        # todos quedaban fuera del plan con el motivo «condición no consta verdadera».
+        #
+        # HECHO MEDIDO (2026-09-20): §81 exige que la síntesis diga «Investigamos patrones
+        # internos y externos», y ese material lo produce DIS/investigacion-visual. El plan de
+        # ui-2 materializaba dieciséis roles y ése no estaba —no porque la composición lo
+        # excluya, que lo admite con su condición, sino porque nadie podía declararla—.
+        # Es la misma forma que el hallazgo del acoplamiento del mismo día: el mecanismo
+        # escrito en el kernel y la instancia sin alimentarlo.
         equipo = modulo_equipos.materializar(
             capacidad, corpus=corpus,
             composiciones_verdaderas=list(circuito.get("composiciones") or []),
+            condiciones_de_rol=list(condiciones_de_rol or []),
             slots=slots, control_repo=control_repo, degradaciones=degradaciones,
             paquete=item,
         )

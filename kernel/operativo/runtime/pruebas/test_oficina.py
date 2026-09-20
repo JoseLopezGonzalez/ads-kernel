@@ -2115,6 +2115,89 @@ class AcoplamientoPorRol(Laboratorio):
                       "declarar por rol NO es una autorización de paralelismo")
 
 
+# =========================================================================
+# T501 · los roles CONDICIONALES se pueden activar desde la oficina (§5, §81)
+# =========================================================================
+class CondicionesDeRol(Laboratorio):
+    """Nueve roles del corpus son condicionales y NINGUNO podía entrar en un plan.
+
+    `equipos.materializar` acepta `condiciones_de_rol` y deja fuera, con su motivo, al rol
+    «condicional cuya condición no consta verdadera». Pero `oficina.planificar` no exponía el
+    parámetro: nadie podía declarar ninguna condición, así que los nueve quedaban SIEMPRE
+    fuera —`ARQ/encaje`, `ARQ/diagnostico`, `DIS/movimiento`, `DIS/investigacion-visual`,
+    `DIS/investigacion-ux`, `DIS/sistema-de-diseno`, `DIS/critica-visual`,
+    `DIS/revision-de-fidelidad` y `SIS/evolucion`—.
+
+    HECHO MEDIDO (2026-09-20, instancia de La Pesquerapp). §81 pide que la síntesis diga
+    «Investigamos patrones internos y externos», y ese material lo produce
+    `DIS/investigacion-visual`. El plan de `ui-2-nueva-superficie` materializaba dieciséis
+    roles y ése no estaba, y no porque la composición lo excluya —lo admite con su condición,
+    «el material registrado en 02-REFERENCIAS no cubre la materia de esta superficie»— sino
+    porque no había forma de declararla. El diagnóstico inicial fue que la composición estaba
+    mal y había que hacer el rol obligatorio; leerla a fondo mostró que lo que faltaba era el
+    parámetro, y que hacerlo obligatorio habría forzado investigación redundante cuando el
+    material ya existe.
+    """
+
+    def test_39_un_rol_condicional_entra_solo_si_su_condicion_se_declara(self):
+        """T501 · Defecto que previene: un corpus con roles condicionales que no se activan nunca."""
+        # El circuito NO se elige a mano: se busca el primero del PROFILE cuya composicion
+        # declare un rol condicional. Escribir aqui un nombre concreto ataria la prueba a un
+        # catalogo que cada instancia define a su manera.
+        comps = {c["id"]: c for c in self.corpus.de_tipo("composicion")}
+        candidatos = []
+        for nombre, circ in sorted(self.circuitos.items()):
+            for cid in (circ.get("composiciones") or []):
+                for entrada in ((comps.get(cid) or {}).get("roles") or []):
+                    cond = str(entrada.get("condicion") or "").strip()
+                    if cond and not entrada.get("obligatorio"):
+                        candidatos.append((nombre, circ, entrada["rol"], cond))
+        self.assertTrue(candidatos, "ningun circuito del PROFILE declara un rol condicional")
+
+        # Y de los candidatos se usa el primero que de hecho PLANIFIQUE: algunos circuitos
+        # —los de cambio de direccion— exigen un propietario global declarado en la entrada,
+        # y eso es otra prueba (T488), no esta.
+        # Algunos circuitos —los de cambio de direccion— exigen propietario global y
+        # productoras declaradas en la ENTRADA (eso lo cubre T488). Se prueba con la entrada
+        # simple y, si no compone, con la enriquecida; lo que esta prueba mide es otra cosa.
+        def _entradas():
+            yield self.entrada()
+            yield dict(self.entrada(), propietario_global="PRD",
+                       productores_declarados={"sustituciones-registradas": "PRD"})
+
+        elegido = None
+        for nombre, circuito, rol, condicion in candidatos:
+            for n_entrada, datos in enumerate(_entradas()):
+                A = self.rt("w-A-%s-%d" % (nombre[:6], n_entrada))
+                try:
+                    sin = oficina.planificar(A, corpus=self.corpus, entrada=datos,
+                                             circuito=circuito, control_repo=self.repo,
+                                             item="enc-sin-%s-%d" % (nombre[:6], n_entrada),
+                                             titulo="Sin condicion")["plan"]
+                except Exception:                                        # noqa: BLE001
+                    continue
+                elegido = (nombre, circuito, rol, condicion, sin, datos)
+                break
+            if elegido:
+                break
+        self.assertIsNotNone(elegido, "ningun circuito con rol condicional se pudo planificar")
+        nombre, circuito, rol, condicion, sin, datos = elegido
+        roles_sin = {f.get("rol") for f in sin["correspondencia"]}
+        self.assertNotIn(rol, roles_sin,
+                         "sin declarar su condicion, un rol condicional NO entra en el plan")
+
+        B = self.rt("w-B")
+        con = oficina.planificar(B, corpus=self.corpus, entrada=datos, circuito=circuito,
+                                 control_repo=self.repo, item="enc-con-" + nombre[:8],
+                                 titulo="Con condicion", condiciones_de_rol=[condicion])["plan"]
+        roles_con = {f.get("rol") for f in con["correspondencia"]}
+        self.assertIn(rol, roles_con,
+                      "declarada su condicion, el rol condicional SI entra: sin esto los nueve "
+                      "roles condicionales del corpus eran inalcanzables desde la oficina")
+        self.assertTrue(roles_sin < roles_con,
+                        "declarar una condicion solo AÑADE: no cambia los roles que ya estaban")
+
+
 class _RunnerDeterminista(unittest.TextTestRunner):
     """Igual que el corriente, pero sin la duración en el resumen (salida publicada)."""
 

@@ -1,4 +1,4 @@
-# T460–T500 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77, el catálogo de clases, la estación de impacto de §5, las paradas de §36, los artefactos de Diseño, la base de partida de §63, el Integration Set de §71, la exclusión por recurso de §68 el sentido único de la independencia de §81 y el acoplamiento por rol de §62/§68
+# T460–T501 — la oficina: trabajadores, entregas, niveles, supervisor, contratos de rol, handoffs de §78, fronteras de §77, el catálogo de clases, la estación de impacto de §5, las paradas de §36, los artefactos de Diseño, la base de partida de §63, el Integration Set de §71, la exclusión por recurso de §68 el sentido único de la independencia de §81 y el acoplamiento por rol de §62/§68
 
 **Qué cierran.** El hallazgo de la auditoría forense de La Pesquerapp del 2026-09-14: el
 kernel tenía escrito el runtime completo —paquetes, leases, dispatcher, ciclo, gates,
@@ -56,6 +56,7 @@ T497  con varias fuentes el Integration Set define orden de merge, compatibilida
 T498  un recurso exclusivo —derivado del acoplamiento de a.5— en manos de otra ejecución hace al paquete temporalmente incompatible: no elegible, no tomable, publicado con quién lo posee; el de ámbito independiente sigue en paralelo (§68)
 T499  la independencia de un rol se declara en UN solo sentido —la exige quien REVISA de quien PRODUCE—: declararla también en el productor la convierte en un ciclo que no ordena y empuja a los dos al final del plan, detrás de la construcción (§81)
 T500  el acoplamiento se declara por ROL, y no solo por capacidad: con la llave por capacidad dos paquetes de la misma capacidad reciben la MISMA declaracion, las condiciones 2, 3 y 4 de `a.5` se evaluan por interseccion y la pareja no puede salir paralela NUNCA (§62, §68, §81)
+T501  los NUEVE roles condicionales del corpus se pueden activar: `oficina.planificar` expone `condiciones_de_rol` y sin ese parámetro ninguno entraba jamás en un plan, aunque su composición los admita con su condición (§5, §81)
 ```
 
 ---
@@ -778,6 +779,27 @@ entonces:
 falla_si:
   - "la resolucion ignora el rol: entonces esta prueba se pone roja, y es el UNICO fallo de la bateria (ejercido el 2026-09-20 con el fix revertido en una copia)"
   - "alguien afloja la sexta condicion para «arreglar» el paralelismo, en vez de declarar la verdad"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
+```
+
+```yaml ads:escenario
+id: T501
+nombre: Un rol condicional entra en el plan solo si su condicion se declara
+cubre: ["ciclo/oficina.py", "ciclo/equipos.py", "composicion", "Directiva del Owner §5", "Directiva del Owner §81", "OWN-ADS-0287"]
+dado:
+  - "nueve roles del corpus son CONDICIONALES: ARQ/encaje, ARQ/diagnostico, DIS/movimiento, DIS/investigacion-visual, DIS/investigacion-ux, DIS/sistema-de-diseno, DIS/critica-visual, DIS/revision-de-fidelidad y SIS/evolucion"
+  - "`equipos.materializar` acepta `condiciones_de_rol` y deja fuera al rol cuya condicion no consta verdadera, con su motivo"
+cuando:
+  - "se planifica por la oficina el primer circuito del PROFILE que declare un rol condicional, primero SIN declarar la condicion y despues declarandola"
+entonces:
+  - "sin declararla, el rol NO esta en el plan"
+  - "declarandola, el rol SI esta, y el conjunto de roles solo CRECE: declarar una condicion no cambia los que ya estaban"
+falla_si:
+  - "`oficina.planificar` no pasa `condiciones_de_rol` a `materializar`: entonces esta prueba se pone roja y es el UNICO fallo de la bateria (ejercido el 2026-09-20 quitando la linea en una copia)"
+  - "alguien hace obligatorio un rol condicional para que aparezca, en vez de permitir declarar su condicion: eso fuerza trabajo redundante cuando el material ya existe"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_oficina.py
 estado: prueba-superada
