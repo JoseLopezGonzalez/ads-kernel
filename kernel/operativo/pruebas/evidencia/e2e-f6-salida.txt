@@ -17,16 +17,16 @@ paso 03  encuadre: producto, control repo, fuentes, perfil, política y capacida
          · clase `entrada:candidato` · proceso `proceso:SIS` · dos fuentes descubiertas de `SOURCES.toml` · perfil y política cargados · capacidades necesarias: 5
          resultado: CUMPLIDO
 paso 04  composición de rutas por b.16, con las cuatro vías y la traza de lo no activado
-         · participantes con su vía: APR vía 3 · CNS vía 2 · SIS vía 1,2 · VER vía 2 · no activadas con motivo: 1 · renombrar la expresión NO mueve la ruta
+         · participantes con su vía: APR vía 3 · CNS vía 2 · SIS vía 1,2 · VER vía 2 · no activadas con motivo: 10 · renombrar la expresión NO mueve la ruta
          resultado: CUMPLIDO
 paso 05  materialización del equipo por C4, con su composición y lo que quedó fuera
          · composición `composicion:sis-cambio` · roles: 2 · agentes: 2 · modelos: modelo:gamma · descartes registrados: 4 · fuera con motivo: 0 · manda el ORDEN ESCRITO · sin condición verdadera se ESCALA · método y capacidad se distinguen
          resultado: CUMPLIDO
 paso 06  creación de items y paquetes, por el runtime y en el estado canónico
-         · item `it-80aecf808547` · paquetes: 5 · obligaciones de la ruta: 3 · todo en el estado canónico, escrito por el motor
+         · item `it-f647f1dcc2a3` · paquetes: 5 · obligaciones de la ruta: 3 · todo en el estado canónico, escrito por el motor
          resultado: CUMPLIDO
 paso 07  despacho por el adaptador local, con un proceso real
-         · paquete `pq-e34107058860` despachado por el adaptador local con un proceso real · desenlace `completado` · efecto `ef-ef78dc626152` aplicado en disco y acusado
+         · paquete `pq-ec98c13c96b3` despachado por el adaptador local con un proceso real · desenlace `completado` · efecto `ef-db9f843c1356` aplicado en disco y acusado
          resultado: CUMPLIDO
 paso 08  progreso emitido por el proceso y recogido por el runtime
          · el proceso emitió sus líneas y el runtime recogió 3 avances; el conteo NO entra en lo durable

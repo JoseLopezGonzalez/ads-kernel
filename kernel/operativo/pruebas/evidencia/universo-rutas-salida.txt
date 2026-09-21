@@ -118,4 +118,5 @@ v          606  c5415442c236a92e…  kernel/operativo/recorrido/01-PROCESOS.md
         09-SINTESIS.md                                 # F3 — SÍNTESIS
         11-ARQUITECTURA-INTEGRADA.md                   # F4 — ARQUITECTURA INTEGRADA
 
-  EXCLUIDOS por PERÍMETRO, con su RUTA COMPLETA: 0
+  EXCLUIDOS por PERÍMETRO, con su RUTA COMPLETA: 1
+        .git/                                                        `.git` de la RAÍZ: almacén, no corpus

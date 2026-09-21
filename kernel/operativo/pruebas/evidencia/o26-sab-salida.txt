@@ -74,13 +74,13 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
        ningún sabotaje de `T158` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N158g: el motivo no comparte ni un término distintivo con la cláusula; N158h: el motivo no comparte ni un término distintivo con l · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:383
   T158/f4      S6  CONTRATO 3
        «un validador nuevo queda fuera del manifiesto y de la evidencia»
-       N158z: sano → EXIT=1 · caen T158, T350 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T158, T350 en el árbol SIN sabotear · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:383
+       N158z: sano → EXIT=1 · caen T158 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T158 en el árbol SIN sabotear · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:383
   T158/f5      S6  CONTRATO 3
        «una evidencia intacta y CADUCADA pasa por válida porque su cabecera, su código y su firma siguen siendo correctos»
-       N158l: sano → EXIT=1 · caen T158, T350 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T158, T350 en el árbol SIN sabotear · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:383
+       N158l: sano → EXIT=1 · caen T158 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T158 en el árbol SIN sabotear · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:383
   T158/f6      S6  CONTRATO 3
        «una vigencia declara un recuento sin implementación registrada y la comprobación se da por superada»
-       N158h: sano → EXIT=1 · caen T158, T350 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T158, T350 en el árbol SIN sabotear; N158i: sano → EXIT=1 · caen T158, T350 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T158, T350 en el árbol SIN sabotear · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:383
+       N158h: sano → EXIT=1 · caen T158 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T158 en el árbol SIN sabotear; N158i: sano → EXIT=1 · caen T158 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T158 en el árbol SIN sabotear · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:383
   T158/f7      S5  CONTRATO 3
        «un contrato de vigencia mal escrito produce una traza en vez de un fallo explicativo»
        ningún sabotaje de `T158` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N158g: el motivo no comparte ni un término distintivo con la cláusula; N158h: el motivo no comparte ni un término distintivo con l · sede kernel/operativo/pruebas/T136-T152-post-auditoria.md:383
@@ -183,6 +183,9 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
   T188/f1      S5  V6-01,V6-02,V6-03,V6-04,V6-05,V6-06,V6-07,V6-08,V6-09
        «una lectura usa un separador que una ruta puede contener»
        ningún sabotaje de `T188` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N188: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:193
+  T188/f2      S6  V6-01,V6-02,V6-03,V6-04,V6-05,V6-06,V6-07,V6-08,V6-09
+       «una salida truncada devuelve lista vacía con éxito»
+       N188: sano → EXIT=1 · FAILED (failures=1); restaurado → EXIT=1 · FAILED (failures=1) · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:193
   T188/f3      S5  V6-01,V6-02,V6-03,V6-04,V6-05,V6-06,V6-07,V6-08,V6-09
        «el censo de lecturas se escribe a mano»
        ningún sabotaje de `T188` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N188: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T182-T194-runtime-y-admision.md:193
@@ -270,6 +273,9 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
   T214/f2      S1  FD-5
        «la detección se escribe a mano en vez de ejercerse»
        ningún sabotaje del catálogo está imputado a `T214` · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:137
+  T215/f1      S6  FD-5
+       «se degrada en silencio a `killpg`»
+       NK16a: sabotaje → NO DETECTADA: kernel/operativo/runtime/pruebas/test_contencion.py siguió pasando [corrida PARCIAL: ContencionFuerte.test_el_bisnieto_con_setsid_no_escapa_al_backend_elegido] con la infracción introducida (exit 0) · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:158
   T215/f2      S5  FD-5
        «un descendiente sigue vivo después de la cancelación o del timeout»
        ningún sabotaje de `T215` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK16a: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T210-T225-arboles-raiz-externa-y-contencion.md:158
@@ -618,9 +624,6 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
   T305/f1      S1  V6-03,V6-12
        «la ausencia de bytes con que comparar se resuelve dando por buena la sede»
        ningún sabotaje del catálogo está imputado a `T305` · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:375
-  T306/f1      S6  V6-04,V6-11,g.15
-       «el sys.path, el cwd o el PYTHONPATH del lanzador sustituyen a un módulo del aparato»
-       NK12a: sano → EXIT=1 · FAILED (failures=2); restaurado → EXIT=1 · FAILED (failures=2) · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:393
   T306/f2      S5  V6-04,V6-11,g.15
        «la procedencia no es demostrable en la salida»
        ningún sabotaje de `T306` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: NK12a: el motivo no comparte ni un término distintivo con la cláusula · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:393
@@ -759,9 +762,6 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
   T327/f2      S1  g.11
        «un fallo de la operación se confunde con un defecto de programación por compartir código de salida y forma»
        ningún sabotaje del catálogo está imputado a `T327` · sede kernel/operativo/pruebas/T172-T181-estado-durable.md:681
-  T330/f1      S6  g.15
-       «un punto ejecutable nuevo entra sin la purga y nadie se entera, que es lo que ocurrió con la raíz externa»
-       N330: sano → EXIT=1 · FAILED (failures=1, errors=1); restaurado → EXIT=1 · FAILED (failures=1, errors=1); NH01: sano → EXIT=1 · FAILED (failures=1, errors=1); restaurado → EXIT=1 · FAILED (failures=1, errors=1) · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:592
   T330/f2      S5  g.15
        «el alcance del control se escribe a mano en vez de derivarse del disco»
        ningún sabotaje de `T330` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N330: el motivo no comparte ni un término distintivo con la cláusula; NH01: el motivo no comparte ni un término distintivo con la  · sede kernel/operativo/pruebas/T290-T311-integridad-evidencia-y-contencion.md:592
@@ -833,7 +833,7 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
        N350b: sólo toca la sede del enunciado (kernel/operativo/pruebas/T270-T289-contratos-19-y-composicion.md); NH02: sólo toca la sede del enunciado (kernel/operativo/pruebas/evidencia/workspace-salida.txt) · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:286
   T350/f2      S6  CONTRATO 3
        «la sede de la derivación deja de publicar la fórmula y este validador calcula una suya equivalente»
-       N350: sano → EXIT=1 · caen T158, T350 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T158, T350 en el árbol SIN sabotear · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:286
+       N350: sano → EXIT=1 · caen T158 en el árbol SIN sabotear; restaurado → EXIT=1 · caen T158 en el árbol SIN sabotear · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:286
   T350/f3      S5  CONTRATO 3
        «lo no contrastable se cuenta como contrastado, con lo que la cobertura del contraste crece sin que nadie la mida»
        ningún sabotaje de `T350` se puede imputar a ESTA cláusula y a ninguna otra — falta la declaración del enlace sabotaje→propiedad: N350: el motivo no comparte ni un término distintivo con la cláusula; N350b: el motivo no comparte ni un término distintivo con la · sede kernel/operativo/pruebas/T340-T359-append-only-y-universo.md:286
@@ -917,22 +917,22 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
        ningún sabotaje del catálogo está imputado a `T418` · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:441
   T463/f1      S1  C4
        «el orden de los paquetes sale del alfabeto y no de la obligación del proceso»
-       ningún sabotaje del catálogo está imputado a `T463` · sede kernel/operativo/pruebas/T460-T479-oficina.md:111
+       ningún sabotaje del catálogo está imputado a `T463` · sede kernel/operativo/pruebas/T460-T479-oficina.md:133
   T463/f2      S1  C4
        «un rol sin agente declarado se planifica igual»
-       ningún sabotaje del catálogo está imputado a `T463` · sede kernel/operativo/pruebas/T460-T479-oficina.md:111
+       ningún sabotaje del catálogo está imputado a `T463` · sede kernel/operativo/pruebas/T460-T479-oficina.md:133
   T466/f1      S1  C5
        «la capa devuelta sigue adelante hacia VER»
-       ningún sabotaje del catálogo está imputado a `T466` · sede kernel/operativo/pruebas/T460-T479-oficina.md:174
+       ningún sabotaje del catálogo está imputado a `T466` · sede kernel/operativo/pruebas/T460-T479-oficina.md:196
   T466/f2      S1  C5
        «las devoluciones se recomponen sin tope»
-       ningún sabotaje del catálogo está imputado a `T466` · sede kernel/operativo/pruebas/T460-T479-oficina.md:174
+       ningún sabotaje del catálogo está imputado a `T466` · sede kernel/operativo/pruebas/T460-T479-oficina.md:196
   T467/f1      S1  g.9
        «el bloqueo acaba en agotado o en una reconciliación de g.9»
-       ningún sabotaje del catálogo está imputado a `T467` · sede kernel/operativo/pruebas/T460-T479-oficina.md:196
+       ningún sabotaje del catálogo está imputado a `T467` · sede kernel/operativo/pruebas/T460-T479-oficina.md:218
   T472/f1      S1  C5
        «un handoff sin artefactos se emite»
-       ningún sabotaje del catálogo está imputado a `T472` · sede kernel/operativo/pruebas/T460-T479-oficina.md:296
+       ningún sabotaje del catálogo está imputado a `T472` · sede kernel/operativo/pruebas/T460-T479-oficina.md:318
   T480/f1      S1  g.6
        «una bifurcación con objetos comunes se publica como RIESGO en vez de CONFLICTO DIRECTO»
        ningún sabotaje del catálogo está imputado a `T480` · sede kernel/operativo/pruebas/T480-T489-estado-entre-ramas.md:33
