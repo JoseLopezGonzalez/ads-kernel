@@ -57,6 +57,7 @@ T498  un recurso exclusivo —derivado del acoplamiento de a.5— en manos de ot
 T499  la independencia de un rol se declara en UN solo sentido —la exige quien REVISA de quien PRODUCE—: declararla también en el productor la convierte en un ciclo que no ordena y empuja a los dos al final del plan, detrás de la construcción (§81)
 T502  el contrato de quien CONSTRUYE prohibe completar una especificacion de interfaz por su cuenta: simplificar y corregir no lo cubren, porque quien anade lo que falta no hace ninguna de las dos (§10, §21, §29 regla 6)
 T503  los contratos de prototipado, fidelidad y validacion de uso PROHIBEN validar con lorem ipsum, y fidelidad exige ademas la aplicacion ejecutandose o el motivo de por que no se pudo (§23, §29 regla 5)
+T504  ninguna capacidad del corpus queda CALLADA en una ruta: o participa, o consta fuera con motivo, o esta en NUNCA_PARTICIPA; no contemplarla tambien es una respuesta (§32)
 T500  el acoplamiento se declara por ROL, y no solo por capacidad: con la llave por capacidad dos paquetes de la misma capacidad reciben la MISMA declaracion, las condiciones 2, 3 y 4 de `a.5` se evaluan por interseccion y la pareja no puede salir paralela NUNCA (§62, §68, §81)
 T501  los NUEVE roles condicionales del corpus se pueden activar: `oficina.planificar` expone `condiciones_de_rol` y sin ese parámetro ninguno entraba jamás en un plan, aunque su composición los admita con su condición (§5, §81)
 ```
@@ -763,6 +764,27 @@ ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_contratos.py
 estado: prueba-superada
 evidencia: evidencia/contratos-salida.txt
+```
+
+```yaml ads:escenario
+id: T504
+nombre: Ninguna capacidad del corpus queda CALLADA en una ruta
+cubre: ["ciclo/rutas.py", "Directiva del Owner §32", "OWN-ADS-0126", "OWN-ADS-0128"]
+dado:
+  - "`a.6` exige que lo no activado deje motivo, y eso se cumplia solo para las capacidades que el proceso contempla con una condicion"
+  - "las quince capacidades del corpus, y ENC declarada en NUNCA_PARTICIPA"
+cuando:
+  - "se compone la ruta de un encuadre por la misma puerta que usa la oficina"
+entonces:
+  - "toda capacidad aparece como participante, o como no activada CON MOTIVO, o esta declarada en NUNCA_PARTICIPA"
+  - "una capacidad que el proceso no contempla sale con ese motivo: no contemplarla TAMBIEN es una respuesta, y quien lea la ruta puede discutirla"
+falla_si:
+  - "una capacidad no aparece por ninguna via: medido el 2026-09-21 sobre proceso:FEA en un encargo ui-2 real, la ruta nombraba TRECE de quince y DSP, INV, PLT y SIS eran cuatro silencios"
+  - "una no activada se queda sin motivo"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
 ```
 
 ```yaml ads:escenario

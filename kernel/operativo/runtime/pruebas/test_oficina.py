@@ -2198,6 +2198,54 @@ class CondicionesDeRol(Laboratorio):
                         "declarar una condicion solo AÑADE: no cambia los roles que ya estaban")
 
 
+# =========================================================================
+# T504 · ninguna capacidad del corpus queda CALLADA en una ruta (§32)
+# =========================================================================
+class NingunaCapacidadCallada(Laboratorio):
+    """«No se permite silencio» (§32), y cuatro capacidades lo guardaban.
+
+    `a.6` exige que lo no activado deje motivo, y eso se cumplía sólo para las capacidades que
+    el proceso contempla con una condición: aparecían en `no_activadas` con «la condición
+    `C-X` no consta verdadera». Las demás no aparecían de ninguna forma.
+
+    HECHO MEDIDO (2026-09-21, instancia de La Pesquerapp, encargo `ui-2` real): de las QUINCE
+    capacidades del corpus, la ruta nombraba TRECE. `ENC` está declarada en `NUNCA_PARTICIPA`
+    y por eso su ausencia es una respuesta; `DSP`, `INV`, `PLT` y `SIS` no estaban ni como
+    participantes, ni como no activadas, ni como nunca-participa. Cuatro silencios, del tipo
+    exacto que §32 prohíbe con esas palabras.
+
+    Lo encontró la prueba que se escribió para PUBLICAR la ruta: el objeto llevaba el dato
+    desde siempre y ninguna orden lo sacaba, así que nadie podía ver lo que faltaba.
+    """
+
+    def test_40_toda_capacidad_aparece_o_participando_o_con_su_motivo(self):
+        """T504 · Defecto que previene: una capacidad que nunca se evalúa y nadie lo nota."""
+        # El encuadre se compone como lo compone la oficina, no a mano: si se inventara aquí
+        # la prueba mediría su propia invención. `encuadrar` es la misma puerta que usa
+        # `oficina.planificar`.
+        from ciclo import encuadre as modulo_encuadre, rutas  # noqa: PLC0415
+        circuito = self.circuito
+        entrada = dict(self.entrada("que ninguna capacidad se quede callada"))
+        entrada.setdefault("materia", circuito["materia"])
+        entrada.setdefault("estado_del_objeto", circuito["estado_del_objeto"])
+        marco = modulo_encuadre.encuadrar(self.repo, entrada, corpus=self.corpus)
+        ruta = rutas.componer(
+            marco, corpus=self.corpus,
+            condiciones_verdaderas=list(circuito.get("condiciones_de_ruta") or []))
+        dichas = {p["capacidad"] for p in ruta["participantes"]}
+        dichas |= {p["capacidad"] for p in ruta["no_activadas"]}
+        calladas = sorted(c for c in rutas.CAPACIDADES
+                          if c not in dichas and c not in rutas.NUNCA_PARTICIPA)
+        self.assertEqual(calladas, [],
+                         "capacidades sin decir nada de ellas: " + ", ".join(calladas)
+                         + ". §32 no permite silencio: o participa, o consta fuera con motivo, "
+                           "o está declarada en NUNCA_PARTICIPA")
+        sin_motivo = [p["capacidad"] for p in ruta["no_activadas"]
+                      if not str(p.get("motivo") or "").strip()]
+        self.assertEqual(sin_motivo, [],
+                         "no activadas sin motivo: " + ", ".join(sin_motivo))
+
+
 class _RunnerDeterminista(unittest.TextTestRunner):
     """Igual que el corriente, pero sin la duración en el resumen (salida publicada)."""
 

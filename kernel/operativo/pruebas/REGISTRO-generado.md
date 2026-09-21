@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 10d6ec02ed272dcb -->
+<!-- source_revision: ef5ddc9d85149300 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -12,10 +12,10 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 |---|---|
 | CONTRATO DEFINIDO | 56 |
 | VALIDADOR IMPLEMENTADO | 7 |
-| PRUEBA EJECUTADA | 21 |
+| PRUEBA EJECUTADA | 22 |
 | PRUEBA SUPERADA | 279 |
 | PRUEBA FALLIDA | 1 |
-| **total** | **364** |
+| **total** | **365** |
 
 ## Detalle
 
@@ -385,12 +385,13 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T501](T460-T479-oficina.md) | Un rol condicional entra en el plan solo si su condicion se declara | ciclo/oficina.py · ciclo/equipos.py · composicion · Directiva del Owner §5 · Directiva del Owner §81 · OWN-ADS-0287 | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
 | [T502](T460-T479-oficina.md) | El contrato de Construccion prohibe COMPLETAR una especificacion de interfaz | rol · contrato-operativo · Directiva del Owner §10 · Directiva del Owner §21 · Directiva del Owner §29 · OWN-ADS-0046 · OWN-ADS-0079 · OWN-ADS-0103 | validador-estructural | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/contratos-salida.txt |
 | [T503](T460-T479-oficina.md) | La interfaz se prueba sobre la aplicacion real y con datos reales, y el contrato lo exige | contrato-operativo · Directiva del Owner §23 · Directiva del Owner §29 · OWN-ADS-0083 · OWN-ADS-0102 · OWN-ADS-0105 | validador-estructural | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/contratos-salida.txt |
+| [T504](T460-T479-oficina.md) | Ninguna capacidad del corpus queda CALLADA en una ruta | ciclo/rutas.py · Directiva del Owner §32 · OWN-ADS-0126 · OWN-ADS-0128 | requiere-runtime | **PRUEBA EJECUTADA** · DECLARA `prueba-superada`, que su evidencia NO sostiene | evidencia/oficina-salida.txt |
 
 ## Contraste del estado contra la evidencia
 
-Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **280** de **364**.
+Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **280** de **365**.
 
-No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **84**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
+No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **85**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
 
 Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada mezclaba a los que no afirman ninguna ejecución con los que afirmaban una que su evidencia no nombra, que es lo que `H-02` encontró—:
 
@@ -398,7 +399,7 @@ Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada
 |---|---|
 | contrato-definido | 56 |
 | validador-implementado | 7 |
-| prueba-superada | 21 |
+| prueba-superada | 22 |
 
 | id | declarado a mano | derivado de la evidencia | motivo |
 |---|---|---|---|
@@ -424,3 +425,4 @@ Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada
 | T501 | prueba-superada | prueba-ejecutada | `evidencia/oficina-salida.txt` no nombra a `T501` en ninguna línea de veredicto: la ejecución consta, el resultado DE ESTE escenario no · declara `prueba-superada` sobre una evidencia que NO lo nombra y que sólo sostiene `prueba-ejecutada`: eso es subir de estado por argumento, y la regla dura de `REGISTRO.md` lo prohíbe con o sin contraste |
 | T502 | prueba-superada | prueba-ejecutada | `evidencia/contratos-salida.txt` no nombra a `T502` en ninguna línea de veredicto: la ejecución consta, el resultado DE ESTE escenario no · declara `prueba-superada` sobre una evidencia que NO lo nombra y que sólo sostiene `prueba-ejecutada`: eso es subir de estado por argumento, y la regla dura de `REGISTRO.md` lo prohíbe con o sin contraste |
 | T503 | prueba-superada | prueba-ejecutada | `evidencia/contratos-salida.txt` no nombra a `T503` en ninguna línea de veredicto: la ejecución consta, el resultado DE ESTE escenario no · declara `prueba-superada` sobre una evidencia que NO lo nombra y que sólo sostiene `prueba-ejecutada`: eso es subir de estado por argumento, y la regla dura de `REGISTRO.md` lo prohíbe con o sin contraste |
+| T504 | prueba-superada | prueba-ejecutada | `evidencia/oficina-salida.txt` no nombra a `T504` en ninguna línea de veredicto: la ejecución consta, el resultado DE ESTE escenario no · declara `prueba-superada` sobre una evidencia que NO lo nombra y que sólo sostiene `prueba-ejecutada`: eso es subir de estado por argumento, y la regla dura de `REGISTRO.md` lo prohíbe con o sin contraste |

@@ -13,6 +13,17 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `ciclo/rutas.py` · **ninguna capacidad del corpus queda CALLADA en una ruta**. `a.6` exige
+  que lo no activado deje motivo, y eso se cumplía sólo para las capacidades que el proceso
+  contempla con una condición: las demás no salían ni como participantes, ni como no activadas,
+  ni en `NUNCA_PARTICIPA`. Medido sobre `proceso:FEA` en un encargo `ui-2` real de la instancia:
+  de las QUINCE del corpus la ruta nombraba TRECE, y `DSP`, `INV`, `PLT` y `SIS` eran cuatro
+  silencios —del tipo exacto que §32 prohíbe con esas palabras—. Ahora salen con el motivo «el
+  proceso no la contempla», porque **no contemplarla TAMBIÉN es una respuesta**: quien lea la
+  ruta puede discutirla, y antes no había nada que discutir porque no había nada escrito. Lo
+  encontró la prueba que se escribió para PUBLICAR la ruta en la instancia: el dato llevaba ahí
+  desde siempre y ninguna orden lo sacaba. `T504`. Cierra parte de `OWN-ADS-0126` y
+  `OWN-ADS-0128`.
 - `capacidades/DIS/contratos/revision-de-fidelidad.md` ·
   `capacidades/DIS/contratos/validacion-de-uso.md` · `validadores/comprobar_contratos.py` · **la
   interfaz se prueba sobre la aplicación REAL y con DATOS reales, y el contrato lo rechaza si
