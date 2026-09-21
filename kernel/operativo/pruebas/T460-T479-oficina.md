@@ -55,6 +55,7 @@ T496  un control repo sin Git no se mide y nada cambia
 T497  con varias fuentes el Integration Set define orden de merge, compatibilidad, despliegue y dependencias; sin ellos, o con una fuente de menos o ajena, la convergencia no es admisible (§71)
 T498  un recurso exclusivo —derivado del acoplamiento de a.5— en manos de otra ejecución hace al paquete temporalmente incompatible: no elegible, no tomable, publicado con quién lo posee; el de ámbito independiente sigue en paralelo (§68)
 T499  la independencia de un rol se declara en UN solo sentido —la exige quien REVISA de quien PRODUCE—: declararla también en el productor la convierte en un ciclo que no ordena y empuja a los dos al final del plan, detrás de la construcción (§81)
+T502  el contrato de quien CONSTRUYE prohibe completar una especificacion de interfaz por su cuenta: simplificar y corregir no lo cubren, porque quien anade lo que falta no hace ninguna de las dos (§10, §21, §29 regla 6)
 T500  el acoplamiento se declara por ROL, y no solo por capacidad: con la llave por capacidad dos paquetes de la misma capacidad reciben la MISMA declaracion, las condiciones 2, 3 y 4 de `a.5` se evaluan por interseccion y la pareja no puede salir paralela NUNCA (§62, §68, §81)
 T501  los NUEVE roles condicionales del corpus se pueden activar: `oficina.planificar` expone `condiciones_de_rol` y sin ese parámetro ninguno entraba jamás en un plan, aunque su composición los admita con su condición (§5, §81)
 ```
@@ -757,6 +758,27 @@ entonces:
 falla_si:
   - "dos roles se exigen independencia mutuamente: la relajación no tiene punto fijo, sube a los dos medio escalón por vuelta hasta el tope y los deja a ambos al final del plan"
   - "DIS/direccion-artistica cae detrás de CNS/implementacion y el Owner aprueba la dirección cuando ya está construida"
+ejecucion: validador-estructural
+validador: kernel/operativo/validadores/comprobar_contratos.py
+estado: prueba-superada
+evidencia: evidencia/contratos-salida.txt
+```
+
+```yaml ads:escenario
+id: T502
+nombre: El contrato de Construccion prohibe COMPLETAR una especificacion de interfaz
+cubre: ["rol", "contrato-operativo", "Directiva del Owner §10", "Directiva del Owner §21", "Directiva del Owner §29", "OWN-ADS-0046", "OWN-ADS-0079", "OWN-ADS-0103"]
+dado:
+  - "la Directiva lo dice tres veces: §10 «no puede descubrir durante la implementacion que hace falta poner un boton y decidir por si sola donde y como», §21 «Construccion nunca completa una especificacion de interfaz por su cuenta» y §29 regla 6"
+  - "el contrato de CNS/implementacion prohibia simplificar sin declararlo y corregir una capa anterior en vez de devolverla, y NO nombraba completar"
+cuando:
+  - "se buscan los roles de CNS que reciben capa de DIS y que ESCRIBEN el artefacto que la especificacion describe"
+entonces:
+  - "sus `actuaciones_prohibidas` nombran completar o corregir una especificacion de INTERFAZ, sus `limites` lo repiten donde el rol lo lee, y su `devolucion` nombra a DIS: una prohibicion sin salida deja al rol parado o desobedeciendo"
+  - "los roles de CNS que NO escriben ese artefacto quedan fuera, y la cobertura los NOMBRA en vez de callarlos"
+falla_si:
+  - "se quita la linea del contrato: ejercido el 2026-09-21 sobre una copia, T502 es el unico fallo del validador"
+  - "alguien confia en que «no simplifica» y «no corrige» ya lo cubren: quien AÑADE lo que falta no esta haciendo ninguna de las dos cosas, y ese fue el hueco real"
 ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_contratos.py
 estado: prueba-superada

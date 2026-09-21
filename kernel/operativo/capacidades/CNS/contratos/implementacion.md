@@ -150,6 +150,7 @@ actuaciones_prohibidas:
   - "escribir en la rama principal de una fuente, o fusionar una petición de integración"
   - "simplificar una de las ocho cosas y entregarla como terminada sin declararlo"
   - "corregir una capa anterior en vez de devolverla"
+  - "COMPLETAR una especificación de interfaz por su cuenta: descubrir construyendo que falta un botón, un estado, un vacío o un mensaje y decidir dónde va y cómo se ve. Eso es trabajo de Diseño, y se devuelve"
   - "declarar una diferencia después de que la revisión la encuentre"
   - "hablar con el Owner"
   - "cerrar el item o declararlo terminado en cualquier nivel"

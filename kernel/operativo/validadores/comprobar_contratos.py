@@ -1374,6 +1374,82 @@ def t493_diseno_exige_los_artefactos_de_la_directiva(b):
     return r
 
 
+def t502_la_especificacion_de_interfaz_no_se_completa_fuera_de_diseno(b):
+    """§10, §21 y §29 regla 6 · Construcción nunca completa una especificación de interfaz.
+
+    La Directiva lo dice tres veces y con tres formulaciones: «Construcción no puede descubrir
+    durante la implementación que hace falta poner un botón y decidir por sí sola dónde y
+    cómo» (§10); «Regla: Construcción nunca completa una especificación de interfaz por su
+    cuenta» (§21); y «Regla 6: Construcción no improvisa decisiones importantes de interfaz»
+    (§29). Son `OWN-ADS-0046`, `0079` y `0103`.
+
+    EL DEFECTO QUE PREVIENE, medido el 2026-09-21 sobre el corpus de la campaña: el contrato
+    de `CNS/implementacion` prohibía simplificar sin declararlo y corregir una capa anterior
+    en vez de devolverla, pero **no nombraba completar**. Un implementador que encuentra un
+    hueco en la especificación —falta el vacío, falta el mensaje de error, falta el botón—
+    no estaba simplificando nada ni corrigiendo nada: estaba AÑADIENDO, y ninguna línea del
+    contrato se lo impedía. El hueco que la doctrina cubría tres veces en prosa no estaba en
+    el único sitio donde un rol lo lee.
+
+    POR QUÉ ESTA PRUEBA ES LITERAL Y NO ESTRUCTURAL. Se intentó como invariante general
+    —«todo rol que puede devolver una capa tiene prohibido completarla»— y no se sostiene:
+    doce de los veintiséis roles con devolución la expresan con otras palabras
+    (`ARQ/encaje` dice «no decide forma», `VER/dosier` dice «no redefine»), de modo que la
+    regla o bien pide doce cambios que nadie ha justificado, o bien afloja el vocabulario
+    hasta que la pasa cualquiera —incluido el contrato defectuoso de antes, que ya decía «no
+    cambia» y «no decide»—. Una prueba que el defecto original habría pasado no prueba nada.
+    Así que esto comprueba lo que la Directiva exige, donde lo exige, con la palabra que usa.
+    """
+    r = Resultado("T502", "El contrato de Construcción prohíbe COMPLETAR una especificación de interfaz")
+    contratos = {d["rol"]: (d, ruta, linea) for d, ruta, linea in b.get("contrato-operativo", [])}
+    roles = {d["id"]: d for d, _, _ in b.get("rol", [])}
+    # QUIÉN entra: el que ESCRIBE lo que la especificación describe. Completar una
+    # especificación sólo lo puede hacer quien produce el artefacto; el revisor de
+    # construcción recibe la misma capa de DIS y ya tiene prohibido «corregir lo que
+    # encuentra: lo nombra y lo devuelve», que es su forma de lo mismo. Se declara aquí
+    # para que la exclusión se vea, en vez de quedarse en el filtro.
+    def recibe_diseno(datos):
+        return "DIS" in " ".join(str(x) for x in (datos.get("entradas") or []))
+
+    def escribe_codigo(datos):
+        return "código" in " ".join(str(x) for x in (datos.get("salida") or [])).lower()
+
+    de_cns = sorted(rid for rid in roles if rid.startswith("CNS/"))
+    constructores = [rid for rid in de_cns if recibe_diseno(roles[rid]) and escribe_codigo(roles[rid])]
+    fuera = [rid for rid in de_cns if rid not in constructores]
+    if not constructores:
+        r.fallo("ningún rol de CNS declara recibir la capa de DIS: o el corpus cambió de forma, "
+                "o Construcción dejó de recibir Diseño, y las dos cosas hay que mirarlas")
+    for rid in constructores:
+        datos = roles[rid]
+        contrato, ruta, linea = contratos.get(rid, ({}, "(sin contrato)", 0))
+        prohibidas = [str(x) for x in (contrato.get("actuaciones_prohibidas") or [])]
+        limites = [str(x) for x in (datos.get("limites") or [])]
+        def nombra(textos):
+            for x in textos:
+                minus = x.lower()
+                if "interfaz" in minus and ("complet" in minus or "corrige" in minus or "corregir" in minus):
+                    return x
+            return None
+        if not nombra(prohibidas):
+            r.fallo(f"{ruta}:{linea}: `{rid}` recibe la capa de DIS y sus `actuaciones_prohibidas` "
+                    f"NO nombran completar una especificación de interfaz (§21). Simplificar y "
+                    f"corregir no lo cubren: quien AÑADE lo que falta no está haciendo ninguna "
+                    f"de las dos cosas")
+        if not nombra(limites):
+            r.fallo(f"`{rid}`: sus `limites` no dicen que no completa una especificación de "
+                    f"interfaz. El contrato lo prohíbe y el rol tiene que leerlo en su límite")
+        devuelve = " ".join(str(x) for x in (datos.get("devolucion") or []))
+        if "DIS" not in devuelve:
+            r.fallo(f"`{rid}` tiene prohibido completar la especificación y NO declara devolución "
+                    f"a DIS: una prohibición sin salida deja al rol parado o desobedeciendo")
+    r.cobertura = ("de CNS, ESCRIBEN código con capa de DIS delante: " + ", ".join(constructores)
+                   + " · fuera, porque no escriben el artefacto que la especificación describe: "
+                   + (", ".join(fuera) or "(ninguno)")
+                   + f" · contratos operativos leídos: {len(contratos)}")
+    return r
+
+
 def t499_la_independencia_no_se_declara_en_los_dos_sentidos(b):
     """§81 · dos roles que se declaran independientes EL UNO DEL OTRO no se pueden ordenar.
 
@@ -1431,7 +1507,8 @@ PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t243_entregas_de_8_0_materializadas,
            t244_grado_inicial_coincide_con_el_paso_5, t476_todo_rol_materializable_tiene_contrato, t477_bases_de_contrato_coherentes,
            t493_diseno_exige_los_artefactos_de_la_directiva,
-           t499_la_independencia_no_se_declara_en_los_dos_sentidos]
+           t499_la_independencia_no_se_declara_en_los_dos_sentidos,
+           t502_la_especificacion_de_interfaz_no_se_completa_fuera_de_diseno]
 
 
 def main():

@@ -13,6 +13,22 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `capacidades/CNS/roles/implementacion.md` · `capacidades/CNS/contratos/implementacion.md` ·
+  `validadores/comprobar_contratos.py` · **quien construye no COMPLETA una especificación de
+  interfaz**. La Directiva lo dice tres veces —§10 «no puede descubrir durante la implementación
+  que hace falta poner un botón y decidir por sí sola dónde y cómo», §21 «Construcción nunca
+  completa una especificación de interfaz por su cuenta», §29 regla 6— y el contrato de
+  `CNS/implementacion` no lo nombraba: prohibía SIMPLIFICAR sin declararlo y CORREGIR una capa
+  anterior en vez de devolverla. Quien encuentra un hueco y lo rellena no está haciendo ninguna
+  de las dos cosas: está AÑADIENDO, y ninguna línea se lo impedía. Ahora está en
+  `actuaciones_prohibidas`, en `limites` —que es donde el rol lo lee— y con su devolución a DIS,
+  porque una prohibición sin salida deja al rol parado o desobedeciendo. `T502` lo comprueba
+  donde la Directiva lo exige y con la palabra que usa: se intentó como invariante general
+  —«todo rol que puede devolver una capa tiene prohibido completarla»— y no se sostiene, porque
+  doce de veintiséis roles la expresan con otras palabras y aflojar el vocabulario hasta que
+  pasen la haría pasar también al contrato defectuoso de antes, que ya decía «no cambia» y «no
+  decide». Una prueba que el defecto original habría pasado no prueba nada. Cierra
+  `OWN-ADS-0046`, `OWN-ADS-0079` y `OWN-ADS-0103`.
 - `capacidades/DIS/roles/*.md` · `validadores/comprobar_contratos.py` · **la independencia se
   declara en UN solo sentido**, y la declara quien REVISA. `requiere_independencia` no es una
   marca simétrica: ORDENA, porque quien la exige va DESPUÉS de aquel de quien la exige. Dos

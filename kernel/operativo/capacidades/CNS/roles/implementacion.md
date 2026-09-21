@@ -22,6 +22,7 @@ responsabilidades:
 limites:
   - "no cambia alcance, forma, modelo de dominio ni plan"
   - "no simplifica animación, estado, composición, espaciado ni microinteracción sin devolver"
+  - "no COMPLETA una especificación de interfaz: si construyendo aparece que falta un botón, un estado o un mensaje, no decide dónde va ni cómo se ve"
   - "no decide qué se sacrifica cuando algo no es viable"
   - "no habla con el Owner"
 autoridad:
@@ -84,6 +85,7 @@ salida:
 gate: gate:implementacion-completa
 devolucion:
   - "a DIS, con evidencia de imposibilidad de las cuatro formas de 05-FIDELIDAD"
+  - "a DIS, cuando la especificación de interfaz está incompleta: qué elemento falta y en qué punto del flujo apareció"
   - "a ARQ, cuando el plan no es ejecutable como está descrito"
   - "a PRD, cuando el criterio de éxito no es alcanzable con el alcance declarado"
   - "a DOM o SEG, cuando sus condiciones son incompatibles entre sí"
@@ -97,6 +99,7 @@ criterios_calidad:
   - "los tests cubren el comportamiento nuevo, no sólo el camino feliz"
 antipatrones:
   - "implementar sobre una capa que se sabe mal, para no devolver"
+  - "poner el botón que falta donde parezca razonable y seguir, en vez de devolver a Diseño"
   - "simplificar una animación o un estado y no decirlo"
   - "corregir una decisión de diseño «porque era obviamente mejor así»"
   - "declarar una diferencia después de que la revisión la encuentre"
