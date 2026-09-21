@@ -13,6 +13,49 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `ciclo/tablero.py` · **lo que el tablero OFRECE, la oficina lo ENTREGA**. Reproducido en un
+  clon real de la instancia: se planifica un encargo, se REPLANIFICA, y `TOMABLES AHORA` sigue
+  listando el primer paquete del plan viejo; quien obedece al tablero —tomar el primero de la
+  lista— recibe `CICLO_INCONSISTENTE: el paquete no está en ningún plan vigente: no se toma lo
+  que no tiene rol ni gate`. No es un adorno de la vista: el tablero es la sede que le dice a
+  una sesión nueva qué puede tomar (`§45`), y si miente el relevo se estrella en la primera
+  orden. La causa son DOS nociones de «tomable» sin nadie que las case: `runtime.tomables()`
+  mira el plano operacional —dependencias, leases, recursos— y no sabe qué es un plan vigente;
+  `oficina.tomar` exige el plan vigente y no sabe qué publicó la vista. Ahora `derivar` filtra
+  la oferta por el plan vigente —el dato ya lo tenía calculado— y **publica lo retirado con su
+  motivo** en `tomables_de_plan_superado`, también en la vista de texto: filtrar en silencio
+  convierte un defecto ruidoso en uno mudo, y quien replanificó tiene derecho a ver que su
+  generación anterior sigue ahí. `T509` fija la propiedad y no la implementación —cada paquete
+  ofrecido se TOMA de hecho, no basta con mirar la lista— y se escribió antes del arreglo,
+  roja, nombrando el paquete huérfano. Es un defecto del kernel, no de un requisito.
+- `diseno/02-RUBRICAS.md` · `recorrido/02-NIVELES-DE-TERMINACION.md` ·
+  `capacidades/USO/CAPACIDAD.md` · `capacidades/VER/CAPACIDAD.md` ·
+  `contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md` · `circuitos/DIS-handoffs.md` ·
+  `esquemas/gate.yaml` · `runtime/ciclo/gates.py` · **Construcción no certifica Diseño, y ahora
+  hay mecanismo que lo impide**. La tabla de `02-NIVELES-DE-TERMINACION.md` asigna cada gate de
+  nivel a un rol concreto —`gate:excelencia-visual` a `DIS/revision-de-fidelidad`— y esa
+  asignación vivía SÓLO en la prosa: los veinticuatro bloques `ads:gate` del corpus no tenían
+  campo para decirlo, y `gates.aplicar` comprobaba dos cosas, revisor ≠ autor y revisor ∈
+  capacidades ∪ roles ∪ {OWNER}. Con eso `CNS/revision-de-construccion` firmaba el gate visual
+  sin que nada se quejara: no es el autor, y es un rol real. Una asignación que sólo vive en la
+  prosa no la aplica nadie. Los seis gates que la tabla nombra declaran ahora `dictamina`, el
+  esquema lo conoce, y `_exigir_quien_dictamina` lo exige **sólo cuando el gate lo declara**: un
+  gate sin él se comporta exactamente como antes. Igualdad exacta, sin comodín —`DIS` entero no
+  vale por `DIS/revision-de-fidelidad`, porque entonces cualquier rol de DIS lo firmaría—.
+  `T508` LEE la tabla en vez de copiarla, y está verificada por sabotaje en las dos direcciones.
+  Cierra `OWN-ADS-0081`.
+- `circuitos/DIS-handoffs.md` · `validadores/comprobar_contratos.py` · **el handoff de Diseño a
+  Construcción rechaza la decisión de interfaz SIN ESPECIFICAR**. Construcción ya tenía prohibido
+  completar una especificación (`T502`), pero nada comprobaba AL RECIBIR que no quedara ninguna
+  decisión sin especificar: la prohibición existía y el paquete incompleto entraba igual, de
+  modo que el defecto se descubría con Construcción ya dentro. `handoff:dis-a-con` gana una
+  quinta comprobación al recibir y una cuarta causa de rechazo: Construcción DEVUELVE el
+  paquete, y no la inventa. `T507`. Cierra parte de `OWN-ADS-0078`.
+- `esquemas/rol.yaml` · **el esquema del rol conoce la espera que `T505` introdujo**. Deuda del
+  corte anterior: `DIS/prototipado` declaraba `espera_a` y `motivo_de_la_espera` y el esquema no
+  los conocía, así que `ads_lint` los avisaba como campo extra. Un campo que el esquema no
+  declara es un campo que nadie valida y que la próxima limpieza puede borrar creyendo que es
+  basura. Es una corrección de defecto propio, no de un requisito.
 - `ciclo/planificacion.py` · `capacidades/DIS/roles/prototipado.md` ·
   `validadores/comprobar_contratos.py` · **la ENTRADA OBLIGATORIA ordena, y hasta ahora sólo
   ordenaba la independencia**. Son cosas distintas: la independencia dice QUIÉN —otro
