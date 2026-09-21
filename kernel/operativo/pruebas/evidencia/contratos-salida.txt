@@ -29,6 +29,12 @@ T244  SUPERADA  El grado inicial del escenario coincide con el grado que midió 
 T476  SUPERADA  Todo rol materializable tiene contrato operativo efectivo y suficiente
           cobertura: roles: conceptual 3 · consultivo 3 · materializable 32 · conceptuales (no los materializa ningún proceso): ENC/anclaje, ENC/critica-de-encuadre, ENC/interlocutor
 T477  SUPERADA  Las bases de contrato son coherentes y ningún rol hereda de dos
-          cobertura: bases: 7 · roles cubiertos: 35 · contratos completos: 7 · especializaciones: 1
+          cobertura: bases: 7 · roles cubiertos: 35 · contratos completos: 16 · especializaciones: 1
+T493  SUPERADA  Los contratos de Diseño exigen los artefactos que la Directiva nombra por fase
+          cobertura: roles de Diseño: 10 · artefactos exigidos: 14 · salidas de §15: 5 · preguntas de §28: 6
+T499  SUPERADA  La independencia se declara en un solo sentido: quien revisa la exige de quien produce
+          cobertura: roles con independencia exigida: 22 · pares mutuos: 0
+T502  SUPERADA  El contrato de Construcción prohíbe COMPLETAR una especificación de interfaz
+          cobertura: de CNS, ESCRIBEN código con capa de DIS delante: CNS/implementacion · fuera, porque no escriben el artefacto que la especificación describe: CNS/experimental, CNS/revision-de-construccion · contratos operativos leídos: 16
 
-25 superadas · 0 fallidas
+28 superadas · 0 fallidas
