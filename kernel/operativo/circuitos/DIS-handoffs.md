@@ -89,10 +89,12 @@ comprueba_al_recibir:
   - "cada transición tiene grabación, duración y curva"
   - "los estados están especificados con datos reales, no con contenido de ejemplo"
   - "existe estado reducido para cada movimiento"
+  - "no queda NINGUNA DECISIÓN DE INTERFAZ SIN ESPECIFICAR que haya que tomar para poder construir: ni un botón, ni un estado, ni un vacío, ni un mensaje"
 rechaza_si:
   - "hay un valor sin correspondencia en el sistema y sin excepción declarada"
   - "falta el estado reducido de algún movimiento"
   - "la adaptación no cubre algún entorno de la matriz del pack"
+  - "queda una decisión de interfaz sin especificar: Construcción DEVUELVE el paquete, y no la inventa (§21, §29 regla 6)"
 devolucion: >
   CNS devuelve a DIS cuando demuestra imposibilidad con la evidencia que exige 05-FIDELIDAD:
   medición contra presupuesto, limitación documentada con enlace y versión, prototipo que

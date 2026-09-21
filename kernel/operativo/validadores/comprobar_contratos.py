@@ -1374,6 +1374,39 @@ def t493_diseno_exige_los_artefactos_de_la_directiva(b):
     return r
 
 
+def t507_el_handoff_de_diseno_rechaza_la_decision_sin_especificar(b):
+    """§21 · si Construcción tiene que inventar una decisión de interfaz, DEVUELVE el paquete.
+
+    `OWN-ADS-0078`. El octavo corte puso la prohibición en el lado de quien construye (`T502`):
+    `CNS/implementacion` no completa una especificación de interfaz. Faltaba el otro lado, que
+    es el que lo hace exigible al RECIBIR: el handoff `dis-a-con` comprobaba valores, curvas,
+    datos reales y estado reducido, y NO nombraba la decisión sin especificar como causa de
+    rechazo. Una prohibición que sólo vive en el contrato del emisor se cumple si el receptor
+    se acuerda; nombrada en el handoff, el receptor tiene la causa escrita y con nombre.
+    """
+    r = Resultado("T507", "El handoff de Diseño a Construcción rechaza la decisión de interfaz sin especificar")
+    handoffs = {d["id"]: (d, ruta, linea) for d, ruta, linea in b.get("handoff", [])}
+    datos, ruta, linea = handoffs.get("handoff:dis-a-con", ({}, "(sin handoff)", 0))
+    if not datos:
+        r.fallo("no existe `handoff:dis-a-con`: sin él, la capa de Diseño llega a Construcción "
+                "sin comprobación de recepción")
+        return r
+    comprueba = " ".join(str(x) for x in (datos.get("comprueba_al_recibir") or [])).lower()
+    rechaza = " ".join(str(x) for x in (datos.get("rechaza_si") or [])).lower()
+    if "decisión de interfaz" not in comprueba and "decision de interfaz" not in comprueba:
+        r.fallo(f"{ruta}:{linea}: `handoff:dis-a-con` no COMPRUEBA al recibir que no quede "
+                f"ninguna decisión de interfaz sin especificar (§21)")
+    if "decisión de interfaz" not in rechaza and "decision de interfaz" not in rechaza:
+        r.fallo(f"{ruta}:{linea}: `handoff:dis-a-con` no RECHAZA por una decisión de interfaz "
+                f"sin especificar. Comprobar sin rechazar deja al receptor sin causa que citar")
+    if "devuelve" not in rechaza:
+        r.fallo(f"{ruta}:{linea}: el rechazo no dice que Construcción DEVUELVA el paquete, que "
+                f"es lo que §21 ordena hacer en vez de inventar la decisión")
+    r.cobertura = ("handoff:dis-a-con · %d comprobaciones al recibir · %d causas de rechazo"
+                   % (len(datos.get("comprueba_al_recibir") or []), len(datos.get("rechaza_si") or [])))
+    return r
+
+
 def t505_la_espera_por_entrada_obligatoria_no_tiene_ciclos(b):
     """§32, §81 · `espera_a` ORDENA, y un ciclo de esperas no se puede ordenar.
 
@@ -1599,7 +1632,8 @@ PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t499_la_independencia_no_se_declara_en_los_dos_sentidos,
            t502_la_especificacion_de_interfaz_no_se_completa_fuera_de_diseno,
            t503_la_interfaz_se_prueba_sobre_lo_real_y_con_datos_reales,
-           t505_la_espera_por_entrada_obligatoria_no_tiene_ciclos]
+           t505_la_espera_por_entrada_obligatoria_no_tiene_ciclos,
+           t507_el_handoff_de_diseno_rechaza_la_decision_sin_especificar]
 
 
 def main():
