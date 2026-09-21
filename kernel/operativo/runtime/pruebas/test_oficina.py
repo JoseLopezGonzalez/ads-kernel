@@ -174,7 +174,7 @@ sys.path.insert(0, AQUI)
 import adaptadores                                                   # noqa: E402
 import ciclo                                                         # noqa: E402
 import runtime as paquete_runtime                                    # noqa: E402
-from ciclo import agentes, briefs, entregas, oficina, tablero, terminacion  # noqa: E402
+from ciclo import agentes, briefs, entregas, gates, oficina, tablero, terminacion  # noqa: E402
 from runtime import supervisor as modulo_supervisor                  # noqa: E402
 import catalogo_de_prueba                                            # noqa: E402
 
@@ -2318,6 +2318,118 @@ class EsperaPorEntradaObligatoria(Laboratorio):
         self.assertIn(visual["paquete"], espera,
                       "el paquete de prototipado tiene que ESPERAR al de diseño visual: "
                       "declararon que pueden compartir agente, no que puedan ir a la vez")
+
+
+# =========================================================================
+# T508 · el gate de una materia lo dictamina quien tiene esa materia
+# =========================================================================
+class QuienDictaminaCadaGate(Laboratorio):
+    """`02-NIVELES-DE-TERMINACION.md` asigna cada gate de nivel a un rol. Nadie lo aplicaba.
+
+    HECHO MEDIDO (2026-09-21, `OWN-ADS-0081`, §22 «Construcción no certifica Diseño»). Los
+    VEINTICUATRO bloques `ads:gate` del corpus carecían de campo que dijera quién los
+    dictamina, y `gates.aplicar` comprobaba dos cosas: revisor ≠ autor, y revisor ∈
+    capacidades ∪ roles ∪ {OWNER}. Con eso, `CNS/revision-de-construccion` firmaba
+    `gate:excelencia-visual` sin que nada se quejara —no es el autor, y es un rol válido—:
+    Construcción certificaba a Diseño. La asignación existía, escrita en la prosa de la
+    tabla de niveles, y una asignación que sólo vive en la prosa no la aplica nadie.
+
+    La tabla es la SEDE, y por eso esta prueba la LEE en vez de copiarla: si mañana la tabla
+    cambia de dictaminador y el bloque `ads:gate` no, la prueba lo dice con los dos nombres
+    delante.
+    """
+
+    ROL = re.compile(r"^[A-Z]{3}/[a-z0-9-]+$")
+
+    def asignaciones_de_la_tabla(self):
+        """gate -> quien lo dictamina, LEÍDO de `recorrido/02-NIVELES-DE-TERMINACION.md`."""
+        ruta = os.path.join(KERNEL, "recorrido", "02-NIVELES-DE-TERMINACION.md")
+        with open(ruta, encoding="utf-8") as manejador:
+            texto = manejador.read()
+        asignaciones = {}
+        for linea in texto.split("\n"):
+            if "gate:" not in linea:
+                continue
+            piezas = linea.split()
+            for indice, pieza in enumerate(piezas):
+                if not pieza.startswith("gate:") or indice + 1 >= len(piezas):
+                    continue
+                siguiente = piezas[indice + 1].rstrip(",.")
+                if self.ROL.match(siguiente):
+                    asignaciones[pieza] = siguiente
+                elif siguiente == gates.REVISOR_OWNER:
+                    asignaciones[pieza] = gates.REVISOR_OWNER
+        return asignaciones
+
+    def test_42_cada_gate_de_nivel_declara_el_rol_que_la_tabla_le_asigna(self):
+        """T508 · Defecto que previene: una asignación que sólo vive en la prosa."""
+        asignaciones = self.asignaciones_de_la_tabla()
+        self.assertGreaterEqual(
+            len(asignaciones), 5,
+            "la tabla de niveles dejó de nombrar dictaminadores reconocibles; esta prueba "
+            "mide contra ELLA, así que sin filas no mide nada: " + repr(asignaciones))
+        censo = gates.censo(self.corpus)
+        discrepancias = []
+        for identificador, esperado in sorted(asignaciones.items()):
+            if identificador not in censo:
+                discrepancias.append(identificador + ": la tabla lo nombra y el censo no lo tiene")
+                continue
+            declarado = str(censo[identificador].get("dictamina") or "")
+            if declarado != esperado:
+                discrepancias.append(
+                    identificador + ": la tabla dice `" + esperado + "` y el bloque declara `"
+                    + (declarado or "(nada)") + "`")
+        self.assertEqual(discrepancias, [], "; ".join(discrepancias))
+
+    def test_43_construccion_no_puede_firmar_el_gate_visual_de_diseno(self):
+        """T508 · Defecto que previene: un revisor competente en OTRA materia certificando ésta."""
+        identificador = "gate:excelencia-visual"
+        declarado = gates.gate(identificador, corpus=self.corpus)
+        self.assertEqual(declarado.get("dictamina"), "DIS/revision-de-fidelidad")
+        comun = {
+            "corpus": self.corpus,
+            "entrada": {"item": "enc-dictamina", "sobre_item": "enc-dictamina"},
+            "evidencia": [str(pieza) for pieza in (declarado.get("evidencia") or [])],
+            "comprobaciones_superadas": list(gates.comprobaciones_de(identificador,
+                                                                     corpus=self.corpus)),
+            "salida": "el nivel validado-visual",
+        }
+
+        # EL DEFECTO, tal cual pasaba antes: un rol VÁLIDO, que NO es el autor, de otra
+        # capacidad. El mecanismo viejo lo daba por bueno.
+        with self.assertRaises(gates.GateFallido) as capturado:
+            gates.aplicar(identificador, revisor="CNS/revision-de-construccion",
+                          autor="DIS/diseno-visual", **comun)
+        self.assertIn("DIS/revision-de-fidelidad", str(capturado.exception))
+
+        # Y la capacidad entera TAMPOCO vale por el rol: `DIS` no es `DIS/revision-de-fidelidad`.
+        with self.assertRaises(gates.GateFallido):
+            gates.aplicar(identificador, revisor="DIS", autor="CNS", **comun)
+
+        # Control POSITIVO: con el rol que la tabla asigna, el gate se supera. Sin esto la
+        # prueba pasaría igual con un mecanismo que rechazara a TODO el mundo.
+        dictamen = gates.aplicar(identificador, revisor="DIS/revision-de-fidelidad",
+                                 autor="DIS/diseno-visual", **comun)
+        self.assertEqual(dictamen["dictamen"], gates.SUPERADO)
+
+    def test_44_el_gate_que_no_declara_dictaminador_se_comporta_como_siempre(self):
+        """T508 · Defecto que previene: endurecer de tapadillo los gates que nadie asignó."""
+        censo = gates.censo(self.corpus)
+        sin_declarar = [i for i, g in sorted(censo.items()) if not g.get("dictamina")]
+        self.assertTrue(sin_declarar, "si TODOS declaran dictaminador, este caso no existe")
+        identificador = sin_declarar[0]
+        declarado = censo[identificador]
+        dictamen = gates.aplicar(
+            identificador, corpus=self.corpus,
+            entrada={"item": "enc-sin-dictamina"},
+            evidencia=[str(pieza) for pieza in (declarado.get("evidencia") or [])],
+            revisor="VER", autor="CNS",
+            comprobaciones_superadas=list(gates.comprobaciones_de(identificador,
+                                                                  corpus=self.corpus)),
+            salida="lo de siempre")
+        self.assertEqual(dictamen["dictamen"], gates.SUPERADO,
+                         "`" + identificador + "` no declara dictaminador: tiene que seguir "
+                         "comportándose EXACTAMENTE como antes de T508")
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):

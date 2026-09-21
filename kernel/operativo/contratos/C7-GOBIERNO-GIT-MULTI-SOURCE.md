@@ -167,6 +167,7 @@ compensación o revertir. Lo que **no** puede es declarar el item cerrado: la en
 
 ```yaml ads:gate
 id: gate:convergencia-de-fuentes
+dictamina: ENT/convergencia
 aplica_a: "todo item cuyos paquetes escribieron en una o más fuentes"
 comprobaciones:
   - id: existe-integration-set

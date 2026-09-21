@@ -1244,8 +1244,8 @@ class Gates(BaseDelCiclo):
             ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="CNS",
                                autor="el sistema", **argumentos)
         self.assertEqual(
-            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="VER", autor="CNS",
-                               **argumentos)["dictamen"],
+            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="VER/dosier",
+                               autor="CNS", **argumentos)["dictamen"],
             gates.SUPERADO,
         )
 

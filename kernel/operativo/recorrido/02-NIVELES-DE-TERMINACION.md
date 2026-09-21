@@ -38,6 +38,15 @@ CAPACIDAD; `terminacion.evaluar` exige además que el TRABAJADOR que firma el di
 el que entregó lo juzgado. Un dictamen del mismo trabajador se publica como `rechazado`, con
 su nombre, y el nivel no se alcanza.
 
+**Y la columna de la derecha es NORMA, no comentario.** Cada gate de esta tabla lo DECLARA en
+su propio bloque, en el campo `dictamina`, y `gates.aplicar` rechaza a cualquier otro firmante
+aunque sea un revisor perfectamente válido que no es el autor. Hizo falta decirlo por
+mecanismo: mientras la asignación vivió sólo aquí, `CNS/revision-de-construccion` podía firmar
+`gate:excelencia-visual` —no era el autor, y era un rol real— y Construcción certificaba a
+Diseño. Que el revisor no sea el autor **no** basta: un revisor competente en otra materia
+certificaría una que no es la suya. Un gate que no declara `dictamina` se comporta como
+siempre; el que la tabla nombra, no puede dejar de declararlo.
+
 Mecanismo: [`runtime/ciclo/terminacion.py`](../runtime/ciclo/terminacion.py) ·
 [`runtime/ciclo/oficina.py`](../runtime/ciclo/oficina.py) · contrato
 [`runtime/CONTRATO-OFICINA.md`](../runtime/CONTRATO-OFICINA.md).
@@ -50,6 +59,7 @@ diseño interno mal tomada, una convención rota, una prueba que no muerde— lo
 
 ```yaml ads:gate
 id: gate:revision-de-construccion
+dictamina: CNS/revision-de-construccion
 aplica_a: "la capa de CNS/implementacion antes de pasar a VER; la emite CNS/revision-de-construccion"
 comprobaciones:
   - id: diff-entero-leido
@@ -98,6 +108,7 @@ se le convoca por lotes, con una tarea concreta, no con una pregunta abierta.
 
 ```yaml ads:gate
 id: gate:aceptacion-del-owner
+dictamina: OWNER
 aplica_a: "todo item cuyo circuito base declara `aceptado` como nivel obligatorio"
 comprobaciones:
   - id: lo-que-pidio

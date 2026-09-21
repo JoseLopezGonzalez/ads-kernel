@@ -94,6 +94,7 @@ colision: >
 
 ```yaml ads:gate
 id: gate:evidencia-suficiente
+dictamina: VER/dosier
 aplica_a: "el dosier de VER antes de que el paquete pase a entrega o a integración"
 comprobaciones:
   - id: criterio-por-criterio

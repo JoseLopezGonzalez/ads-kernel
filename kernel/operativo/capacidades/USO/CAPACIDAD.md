@@ -58,6 +58,7 @@ retirada: >
 
 ```yaml ads:gate
 id: gate:uso-comprobado
+dictamina: USO/validacion
 aplica_a: "la capa de USO antes de cerrar el item"
 comprobaciones:
   - id: fuente-declarada

@@ -201,6 +201,7 @@ no_automatizable:
 
 ```yaml ads:gate
 id: gate:excelencia-visual
+dictamina: DIS/revision-de-fidelidad
 aplica_a: "toda capa que produce o modifica superficie visible, y todo cambio del sistema de diseño. Se evalúa en DOS pasadas declaradas: la de DISEÑO en la estación 9 del ciclo, y la de FIDELIDAD en la estación 11, cuando ya existe construcción que comparar"
 comprobaciones:
   - id: dictamen-existe

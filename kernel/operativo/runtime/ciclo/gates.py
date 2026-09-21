@@ -82,7 +82,8 @@ def aplicar(identificador, *, entrada, evidencia, revisor, autor, corpus=None,
     """Aplica un gate del censo y devuelve su DICTAMEN. Fallo CERRADO si no lo supera."""
     corpus = corpus or Corpus()
     declarado = gate(identificador, corpus=corpus)
-    _exigir_revisor(revisor, autor=autor, gate=identificador)
+    _exigir_revisor(revisor, autor=autor, gate=identificador,
+                    dictamina=declarado.get("dictamina"))
 
     exigidas = [c["id"] for c in declarado["comprobaciones"]]
     superadas = {str(c) for c in comprobaciones_superadas}
@@ -142,7 +143,7 @@ def _es_rol(valor):
     return isinstance(valor, str) and "/" in valor and valor.split("/", 1)[0] in CAPACIDADES
 
 
-def _exigir_revisor(revisor, *, autor, gate):
+def _exigir_revisor(revisor, *, autor, gate, dictamina=None):
     """Revisor y autor son una capacidad, un ROL o el Owner, y NUNCA el mismo.
 
     La revisión de construcción (`recorrido/02-NIVELES-DE-TERMINACION.md`) juzga dentro
@@ -194,7 +195,48 @@ def _exigir_revisor(revisor, *, autor, gate):
             "independiente de quien construyó es criterio de satisfacción escrito en `b.16`",
             gate=str(gate), revisor=limpio,
         )
+    _exigir_quien_dictamina(limpio, gate=gate, dictamina=dictamina)
     return limpio
+
+
+def _exigir_quien_dictamina(revisor, *, gate, dictamina):
+    """Si el gate DECLARA quién lo dictamina, sólo ése lo firma. Si no lo declara, nada cambia.
+
+    DEFECTO QUE CIERRA · `recorrido/02-NIVELES-DE-TERMINACION.md` asigna cada gate de nivel
+    a un rol concreto —`gate:excelencia-visual` a `DIS/revision-de-fidelidad`— y esa
+    asignación vivía SÓLO en la prosa de esa tabla. El mecanismo comprobaba dos cosas,
+    revisor ≠ autor y revisor ∈ capacidades ∪ roles, de modo que `CNS/revision-de-construccion`
+    podía firmar el gate visual de Diseño sin que nada se quejara: Construcción certificaba
+    a Diseño. Una asignación que sólo vive en la prosa no la aplica nadie.
+
+    DECISIÓN · se DECLARA, no se infiere
+        Alternativa (a): deducir el dictaminador del `aplica_a` del gate o de una tabla en
+        este módulo. Alternativa (b): un campo `dictamina` en el propio bloque `ads:gate`,
+        y exigirlo SÓLO cuando está.
+        Se elige (b). Con (a) habría una segunda sede de la asignación —la tabla de
+        `02-NIVELES` y este módulo— y volveríamos al problema que esto cierra. Con (b) el
+        gate que no declara dictaminador se comporta EXACTAMENTE como antes: nada se mueve
+        sin declararse, y añadir la exigencia a un gate es escribir una línea donde ese gate
+        vive.
+
+    DECISIÓN · igualdad exacta, sin comodín de capacidad ni del Owner
+        `DIS` entero NO vale por `DIS/revision-de-fidelidad`: la tabla nombra un rol, y
+        aceptar la capacidad reabriría la puerta —cualquier rol de DIS firmaría—. Y el Owner
+        tampoco: `gate:aceptacion-del-owner` es el único que le corresponde, y es el único
+        que lo declara.
+    """
+    if not dictamina:
+        return revisor
+    esperado = str(dictamina).strip()
+    if revisor == esperado:
+        return revisor
+    raise GateFallido(
+        "`" + str(gate) + "` lo dictamina `" + esperado + "`, y lo firma `" + revisor
+        + "`. El nivel de terminación asigna cada gate a quien tiene la competencia para "
+        "juzgarlo: que el revisor no sea el autor NO basta, porque un revisor competente "
+        "en otra materia certificaría una que no es la suya",
+        gate=str(gate), revisor=revisor, dictamina=esperado,
+    )
 
 
 # ===========================================================================
