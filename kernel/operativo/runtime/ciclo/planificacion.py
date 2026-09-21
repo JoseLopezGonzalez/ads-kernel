@@ -168,6 +168,35 @@ class Planificador:
                 salida[rol] = ajenos
         return salida
 
+    def _esperas_declaradas(self, roles_por_capacidad):
+        """`{rol: [roles PRESENTES que tienen que entregar ANTES]}`, del campo `espera_a`.
+
+        INDEPENDENCIA Y ENTRADA OBLIGATORIA NO SON LO MISMO, y hasta el 2026-09-21 el orden
+        sólo conocía la primera. La independencia dice QUIÉN —otro trabajador— y la entrada
+        obligatoria dice CUÁNDO —después de que exista la salida—. Dos roles pueden ser la
+        misma persona y aun así uno va después: `DIS/prototipado` declara
+        `requiere_independencia: false` con `DIS/diseno-visual` —pueden compartir agente— y su
+        contrato exige «la especificación de DIS/diseno-visual» como ENTRADA.
+
+        LO ENCONTRÓ UN MODELO REAL negándose a trabajar. En un encargo `ui-2` de La
+        Pesquerapp, el plan ofreció `DIS/prototipado` en paralelo con `diseno-visual`, y el
+        modelo lo DEVOLVIÓ: «hace ejecutable una dirección ya elegida; no decide forma, la
+        ejecuta». Tenía razón y el plan se lo permitió.
+
+        SE DECLARA, NO SE INFIERE. Derivarlo del texto de `entradas` se midió y no se sostiene:
+        catorce roles nombran a otro ahí, y la inferencia produce ciclos inmediatos —
+        `DIS/direccion-artistica` nombra a `DIS/critica-visual`, que va después de ella—. Un
+        rol que no declara `espera_a` se queda exactamente donde estaba.
+        """
+        presentes = {rol for roles in roles_por_capacidad.values() for rol in roles}
+        salida = {}
+        for rol in sorted(presentes):
+            espera = self.corpus.rol(rol).get("espera_a") or []
+            antes = sorted({str(o) for o in espera if str(o) != rol and str(o) in presentes})
+            if antes:
+                salida[rol] = antes
+        return salida
+
     def registrar_equipos(self, equipos):
         objetos = {ruta_de_equipo(e["id"]): e for e in equipos}
         durable.escribir(
@@ -325,7 +354,8 @@ class Planificador:
                 "dos participaciones indistinguibles acuñan el mismo paquete: " + ", ".join(repetidos)
                 + "; la ruta repite una capacidad con la misma vía, obligación, rol y método",
             )
-        unidades = _ordenar_por_estacion_de_rol(unidades, ruta, independencias)
+        esperas = self._esperas_declaradas(roles_por_capacidad)
+        unidades = _ordenar_por_estacion_de_rol(unidades, ruta, independencias, esperas)
         proyectados = []
         for unidad in unidades:
             participante = unidad["participante"]
@@ -336,6 +366,12 @@ class Planificador:
             if unidad["integracion"]:
                 previos = [u["id"] for u in unidades if u["id"] != unidad["id"]]
             for de_quien in independencias.get(unidad["rol"], ()):
+                previo = _unidad_del_rol(unidades, de_quien, unidad)
+                if previo and previo != unidad["id"]:
+                    previos.append(previo)
+            # Y por ENTRADA OBLIGATORIA: quien necesita la salida de otro espera a que exista,
+            # comparta agente con él o no.
+            for de_quien in esperas.get(unidad["rol"], ()):
                 previo = _unidad_del_rol(unidades, de_quien, unidad)
                 if previo and previo != unidad["id"]:
                     previos.append(previo)
@@ -598,12 +634,17 @@ def _unidad_del_rol(unidades, rol, desde):
     return elegido[0]["id"] if elegido else None
 
 
-def _ordenar_por_estacion_de_rol(unidades, ruta, independencias):
-    """Las unidades por rango de ROL: quien exige independencia de otro va DESPUÉS de él.
+def _ordenar_por_estacion_de_rol(unidades, ruta, independencias, esperas=None):
+    """Las unidades por rango de ROL: quien exige independencia de otro, o necesita su salida
+    como entrada obligatoria, va DESPUÉS de él.
 
-    El rango parte del de la capacidad; un rol independiente de roles de rango mayor toma
-    ese rango más medio escalón. Se relaja hasta el punto fijo, con tope, y el orden
+    El rango parte del de la capacidad; un rol independiente —o que espera— de roles de rango
+    mayor toma ese rango más medio escalón. Se relaja hasta el punto fijo, con tope, y el orden
     resultante es estable: mismo plan, mismos bytes.
+
+    Las DOS fuentes del orden son distintas y hacen falta las dos: `independencia` dice QUIÉN
+    (otro trabajador) y `espera_a` dice CUÁNDO (después de que exista la salida). Dos roles que
+    pueden compartir agente pueden tener orden entre ellos, y eso es lo que faltaba.
     """
     rango = {}
     for posicion, unidad in enumerate(unidades):
@@ -613,7 +654,7 @@ def _ordenar_por_estacion_de_rol(unidades, ruta, independencias):
         for unidad in unidades:
             if unidad["integracion"]:
                 continue
-            for de_quien in independencias.get(unidad["rol"], ()):
+            for de_quien in list(independencias.get(unidad["rol"], ())) + list((esperas or {}).get(unidad["rol"], ())):
                 otro = _unidad_del_rol(unidades, de_quien, unidad)
                 if otro and otro != unidad["id"] and rango[unidad["id"]][0] <= rango[otro][0]:
                     rango[unidad["id"]][0] = rango[otro][0] + 0.5

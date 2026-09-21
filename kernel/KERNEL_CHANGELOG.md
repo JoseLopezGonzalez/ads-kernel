@@ -13,6 +13,21 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `ciclo/planificacion.py` · `capacidades/DIS/roles/prototipado.md` ·
+  `validadores/comprobar_contratos.py` · **la ENTRADA OBLIGATORIA ordena, y hasta ahora sólo
+  ordenaba la independencia**. Son cosas distintas: la independencia dice QUIÉN —otro
+  trabajador— y la entrada obligatoria dice CUÁNDO —después de que exista la salida—. Dos roles
+  pueden ser la misma persona y aun así uno ir después. **Lo encontró un modelo real negándose
+  a trabajar**: en un encargo `ui-2` de La Pesquerapp el plan ofreció `DIS/prototipado` en
+  paralelo con `DIS/diseno-visual`, y el modelo lo DEVOLVIÓ citando su contrato —«hace
+  ejecutable una dirección ya elegida; no decide forma, la ejecuta»—. Tenía razón, y el plan se
+  lo permitía porque `prototipado` declara `requiere_independencia: false`: pueden compartir
+  agente, así que no había arista. Ahora el campo `espera_a` del rol produce arista de orden, y
+  se DECLARA en vez de inferirse: derivarlo del texto de `entradas` se midió y no se sostiene
+  —catorce roles nombran a otro ahí y la inferencia produce ciclos inmediatos, la trampa de
+  `T499`—. Un rol que no lo declara se queda exactamente donde estaba. `T505` vigila los ciclos
+  y exige `motivo_de_la_espera`; `T506` comprueba sobre un plan real que el paquete espera, y
+  saboteada —quitando el campo— vuelve a salir en paralelo. Cierra parte de `OWN-ADS-0287`.
 - `ciclo/rutas.py` · **ninguna capacidad del corpus queda CALLADA en una ruta**. `a.6` exige
   que lo no activado deje motivo, y eso se cumplía sólo para las capacidades que el proceso
   contempla con una condición: las demás no salían ni como participantes, ni como no activadas,

@@ -62,6 +62,18 @@ interaccion_owner:
 interaccion_roles:
   - "recibe especificación de DIS/diseno-visual y DIS/movimiento"
   - "entrega el prototipo a DIS/validacion-de-uso y a DIS/critica-visual"
+espera_a:
+  - DIS/diseno-visual
+  - DIS/movimiento
+  - DIS/investigacion-ux
+motivo_de_la_espera: >
+  Sus `entradas` declaran la especificación de DIS/diseno-visual y de DIS/movimiento y los
+  datos reales de DIS/investigacion-ux: sin esas tres salidas no hay dirección que hacer
+  ejecutable, y prototipar antes obliga a este rol a inventar composición, jerarquía y
+  patrones, que es justo lo que sus límites le prohíben. NO es independencia —puede compartir
+  agente con diseño visual y con movimiento, y así lo declara abajo—: es ORDEN. Lo midió un
+  modelo real el 2026-09-21, devolviendo un paquete que el plan le había ofrecido en paralelo
+  con los tres.
 independencia:
   requiere_independencia: false
   de_quien: []

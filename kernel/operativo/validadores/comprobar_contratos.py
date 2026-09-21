@@ -1374,6 +1374,55 @@ def t493_diseno_exige_los_artefactos_de_la_directiva(b):
     return r
 
 
+def t505_la_espera_por_entrada_obligatoria_no_tiene_ciclos(b):
+    """§32, §81 · `espera_a` ORDENA, y un ciclo de esperas no se puede ordenar.
+
+    INDEPENDENCIA Y ENTRADA OBLIGATORIA NO SON LO MISMO, y hasta el 2026-09-21 el kernel sólo
+    conocía la primera: la independencia dice QUIÉN —otro trabajador— y la entrada obligatoria
+    dice CUÁNDO —después de que exista la salida—. `DIS/prototipado` declara
+    `requiere_independencia: false` con `DIS/diseno-visual`, porque pueden compartir agente, y
+    su contrato exige «la especificación de DIS/diseno-visual» como entrada. El plan lo ofrecía
+    en paralelo, y **un modelo real lo devolvió** citando su propio contrato.
+
+    Esta prueba vigila la misma trampa que `T499`: si A espera a B y B espera a A, la relajación
+    no tiene punto fijo y el orden deja de existir. Por eso `espera_a` se DECLARA y no se
+    infiere —catorce roles nombran a otro en sus `entradas` y la inferencia produce ciclos
+    inmediatos—, y por eso lo declarado se comprueba aquí.
+    """
+    r = Resultado("T505", "La espera por entrada obligatoria no tiene ciclos, y quien la declara dice por qué")
+    roles = {d["id"]: (d, ruta, linea) for d, ruta, linea in b.get("rol", [])}
+    espera = {}
+    for rid, (datos, ruta, linea) in sorted(roles.items()):
+        declarados = [str(x) for x in (datos.get("espera_a") or [])]
+        if not declarados:
+            continue
+        espera[rid] = declarados
+        if not str(datos.get("motivo_de_la_espera") or "").strip():
+            r.fallo(f"{ruta}:{linea}: `{rid}` declara `espera_a` sin `motivo_de_la_espera`: una "
+                    f"arista de orden sin motivo no se puede discutir ni retirar")
+        for otro in declarados:
+            if otro == rid:
+                r.fallo(f"{ruta}:{linea}: `{rid}` se espera a sí mismo")
+            elif otro not in roles:
+                r.fallo(f"{ruta}:{linea}: `{rid}` espera a `{otro}`, que no es un rol del corpus")
+    # ciclos, por recorrido: A→B→…→A
+    for inicio in sorted(espera):
+        pila, vistos = [(inicio, [inicio])], set()
+        while pila:
+            actual, camino = pila.pop()
+            for siguiente in espera.get(actual, ()):
+                if siguiente == inicio:
+                    r.fallo("ciclo de espera: " + " → ".join(camino + [siguiente])
+                            + ". Si cada uno espera al otro, ninguno puede ir primero y el "
+                              "orden deja de existir (misma trampa que T499)")
+                elif siguiente not in vistos:
+                    vistos.add(siguiente)
+                    pila.append((siguiente, camino + [siguiente]))
+    r.cobertura = ("roles que declaran espera: " + (", ".join(sorted(espera)) or "(ninguno)")
+                   + f" · roles del corpus: {len(roles)}")
+    return r
+
+
 def t503_la_interfaz_se_prueba_sobre_lo_real_y_con_datos_reales(b):
     """§23 y §29 regla 5 · ni una captura sustituye a la aplicación, ni lorem ipsum a los datos.
 
@@ -1549,7 +1598,8 @@ PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t493_diseno_exige_los_artefactos_de_la_directiva,
            t499_la_independencia_no_se_declara_en_los_dos_sentidos,
            t502_la_especificacion_de_interfaz_no_se_completa_fuera_de_diseno,
-           t503_la_interfaz_se_prueba_sobre_lo_real_y_con_datos_reales]
+           t503_la_interfaz_se_prueba_sobre_lo_real_y_con_datos_reales,
+           t505_la_espera_por_entrada_obligatoria_no_tiene_ciclos]
 
 
 def main():

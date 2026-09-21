@@ -58,6 +58,8 @@ T499  la independencia de un rol se declara en UN solo sentido —la exige quien
 T502  el contrato de quien CONSTRUYE prohibe completar una especificacion de interfaz por su cuenta: simplificar y corregir no lo cubren, porque quien anade lo que falta no hace ninguna de las dos (§10, §21, §29 regla 6)
 T503  los contratos de prototipado, fidelidad y validacion de uso PROHIBEN validar con lorem ipsum, y fidelidad exige ademas la aplicacion ejecutandose o el motivo de por que no se pudo (§23, §29 regla 5)
 T504  ninguna capacidad del corpus queda CALLADA en una ruta: o participa, o consta fuera con motivo, o esta en NUNCA_PARTICIPA; no contemplarla tambien es una respuesta (§32)
+T505  la espera por entrada obligatoria no tiene ciclos, y quien la declara dice por que (§32, §81)
+T506  la ENTRADA OBLIGATORIA ordena aunque los dos roles puedan compartir agente: independencia dice QUIEN y espera_a dice CUANDO (§81)
 T500  el acoplamiento se declara por ROL, y no solo por capacidad: con la llave por capacidad dos paquetes de la misma capacidad reciben la MISMA declaracion, las condiciones 2, 3 y 4 de `a.5` se evaluan por interseccion y la pareja no puede salir paralela NUNCA (§62, §68, §81)
 T501  los NUEVE roles condicionales del corpus se pueden activar: `oficina.planificar` expone `condiciones_de_rol` y sin ese parámetro ninguno entraba jamás en un plan, aunque su composición los admita con su condición (§5, §81)
 ```
@@ -764,6 +766,48 @@ ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_contratos.py
 estado: prueba-superada
 evidencia: evidencia/contratos-salida.txt
+```
+
+```yaml ads:escenario
+id: T505
+nombre: La espera por entrada obligatoria no tiene ciclos, y quien la declara dice por que
+cubre: ["rol", "ciclo/planificacion.py", "Directiva del Owner §32", "Directiva del Owner §81", "OWN-ADS-0287"]
+dado:
+  - "`espera_a` ORDENA: quien necesita la salida de otro como entrada obligatoria va despues de el, comparta agente con el o no"
+  - "si A espera a B y B espera a A, la relajacion no tiene punto fijo y el orden deja de existir (misma trampa que T499)"
+cuando:
+  - "se recorren las esperas declaradas por todos los roles del corpus"
+entonces:
+  - "no hay ciclos, ningun rol se espera a si mismo, y todo rol esperado existe"
+  - "todo rol que declara espera_a declara tambien motivo_de_la_espera: una arista de orden sin motivo no se puede discutir ni retirar"
+falla_si:
+  - "se declara la espera reciproca: ejercido el 2026-09-21 anadiendo DIS/diseno-visual espera_a DIS/prototipado, y el validador lo nombra por los dos lados"
+  - "alguien intenta DERIVAR la espera del texto de `entradas`: catorce roles nombran a otro ahi y la inferencia produce ciclos inmediatos"
+ejecucion: validador-estructural
+validador: kernel/operativo/validadores/comprobar_contratos.py
+estado: prueba-superada
+evidencia: evidencia/contratos-salida.txt
+```
+
+```yaml ads:escenario
+id: T506
+nombre: La entrada obligatoria ordena aunque los dos roles puedan compartir agente
+cubre: ["ciclo/planificacion.py", "rol", "Directiva del Owner §81", "OWN-ADS-0287"]
+dado:
+  - "DIS/prototipado declara requiere_independencia FALSE con DIS/diseno-visual —pueden compartir agente— y su contrato exige «la especificacion de DIS/diseno-visual» como ENTRADA"
+  - "el orden se derivaba SOLO de requiere_independencia, asi que no habia arista y los dos salian en paralelo"
+cuando:
+  - "se planifica un circuito que materializa los dos roles"
+entonces:
+  - "el paquete de prototipado ESPERA al de diseno visual"
+  - "independencia dice QUIEN (otro trabajador) y espera_a dice CUANDO (despues de que exista la salida): dos roles pueden ser la misma persona y aun asi uno va despues"
+falla_si:
+  - "se quita `espera_a` del contrato: ejercido el 2026-09-21, el plan vuelve a ponerlos en paralelo y la prueba se pone roja"
+  - "alguien resuelve esto convirtiendo la entrada en independencia: eso diria que no pueden compartir agente, que es falso y ademas gasta un trabajador de mas"
+ejecucion: requiere-runtime
+validador: kernel/operativo/runtime/pruebas/test_oficina.py
+estado: prueba-superada
+evidencia: evidencia/oficina-salida.txt
 ```
 
 ```yaml ads:escenario

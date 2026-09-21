@@ -181,6 +181,29 @@ import catalogo_de_prueba                                            # noqa: E40
 ENTORNO = {k: v for k, v in os.environ.items()
            if k not in ("ADS_RUNTIME_FALLO", "ADS_ESTADO_FALLO", "ADS_ADAPTADOR_FALLO")}
 
+CIRCUITO_FUNDACION_VISUAL = '''
+```yaml ads:circuito-base
+id: circuito:fundacion-visual
+nombre: Fundación visual (laboratorio de T506)
+clase_de_trabajo: fundacion-visual
+cuando_aplica: laboratorio para medir el orden entre roles de Diseño que pueden compartir agente
+materia: capacidad-ausente
+estado_del_objeto: no-existe
+condiciones_de_ruta: [C-DIS, C-ENT]
+composiciones: [composicion:prd-alcance-rutinario, composicion:dis-feature-visual, composicion:con-implementacion, composicion:ver-dosier, composicion:ent-convergencia]
+niveles_obligatorios: [implementado, revisado, integrado, verificado, validado-visual, aceptado]
+inaplicabilidad:
+  - nivel: integrado
+    condicion: fuentes_escritas_cuenta == 0
+    quien_lo_declara: la instancia, derivándolo de las fuentes que el item escribe
+roles_minimos: [DIS/diseno-visual, DIS/prototipado, CNS/implementacion, VER/dosier, ENT/convergencia]
+independencias:
+  - rol: CNS/revision-de-construccion
+    de: [CNS/implementacion]
+gates_de_cierre: [gate:cierre-de-item]
+```
+'''
+
 CIRCUITO_INTERFAZ = '''
 ```yaml ads:circuito-base
 id: circuito:cambio-con-interfaz
@@ -318,7 +341,7 @@ class Laboratorio(unittest.TestCase):
     def setUp(self):
         self.repo = tempfile.mkdtemp(prefix="ads-oficina-")
         self.addCleanup(shutil.rmtree, self.repo, True)
-        perfil = catalogo_de_prueba.texto(self.politica, self.corpus) + CIRCUITO_BACKEND + CIRCUITO_INTERFAZ + CIRCUITO_DOMINIO + CIRCUITO_DIRECCION
+        perfil = catalogo_de_prueba.texto(self.politica, self.corpus) + CIRCUITO_BACKEND + CIRCUITO_INTERFAZ + CIRCUITO_DOMINIO + CIRCUITO_DIRECCION + CIRCUITO_FUNDACION_VISUAL
         for modelo in ("modelo:alfa", "modelo:beta", "modelo:gamma", "modelo:delta", "modelo:epsilon"):
             perfil += _ejecutor(modelo)
         with open(os.path.join(self.repo, "PROFILE.md"), "w", encoding="utf-8") as manejador:
@@ -2244,6 +2267,57 @@ class NingunaCapacidadCallada(Laboratorio):
                       if not str(p.get("motivo") or "").strip()]
         self.assertEqual(sin_motivo, [],
                          "no activadas sin motivo: " + ", ".join(sin_motivo))
+
+
+# =========================================================================
+# T506 · la ENTRADA OBLIGATORIA ordena, aunque los dos puedan compartir agente
+# =========================================================================
+class EsperaPorEntradaObligatoria(Laboratorio):
+    """Independencia dice QUIÉN; entrada obligatoria dice CUÁNDO. No son lo mismo.
+
+    HECHO MEDIDO (2026-09-21, La Pesquerapp, encargo `ui-2` real con modelo real). El plan
+    ofreció `DIS/prototipado` EN PARALELO con `DIS/diseno-visual`, y el modelo lo DEVOLVIÓ
+    citando su propio contrato: «hace ejecutable una dirección ya elegida; no decide forma, la
+    ejecuta». Tenía razón. El orden se derivaba sólo de `requiere_independencia`, y
+    `DIS/prototipado` la declara **false** —puede compartir agente con diseño visual—, así que
+    no había arista.
+
+    Dos roles pueden ser la misma persona y aun así uno va después. Eso es lo que `espera_a`
+    añade, y por eso se DECLARA: inferirlo del texto de `entradas` produce ciclos inmediatos
+    (catorce roles nombran a otro ahí), que es la trampa de `T499`.
+    """
+
+    def test_41_quien_declara_espera_va_despues_aunque_no_exija_independencia(self):
+        """T506 · Defecto que previene: prototipar antes de que exista lo que se prototipa."""
+        rol = self.corpus.rol("DIS/prototipado")
+        self.assertFalse((rol.get("independencia") or {}).get("requiere_independencia"),
+                         "esta prueba mide el caso en que NO hay independencia; si el corpus "
+                         "cambia y empieza a exigirla, el caso deja de ser el medido")
+        espera = [str(x) for x in (rol.get("espera_a") or [])]
+        self.assertIn("DIS/diseno-visual", espera,
+                      "el contrato de prototipado exige la especificación de diseño visual como "
+                      "ENTRADA: sin `espera_a` el plan los pone en paralelo")
+
+        rt = self.rt("w-espera")
+        entrada = dict(self.entrada("fundar la dirección visual de la superficie"))
+        resultado = oficina.planificar(
+            rt, corpus=self.corpus, entrada=entrada,
+            circuito=self.circuitos["fundacion-visual"],
+            control_repo=self.repo, item="enc-espera", titulo="Espera declarada")
+        plan = resultado["plan"] if isinstance(resultado, dict) and "plan" in resultado else resultado
+        filas = plan.get("correspondencia") or []
+        por_rol = {f.get("rol"): f for f in filas}
+        if "DIS/prototipado" not in por_rol or "DIS/diseno-visual" not in por_rol:
+            self.skipTest("el circuito de laboratorio no materializa los dos roles: "
+                          + ", ".join(sorted(str(f.get("rol")) for f in filas)))
+        prototipo = por_rol["DIS/prototipado"]
+        visual = por_rol["DIS/diseno-visual"]
+        paquetes = {p["id"]: p for p in (plan.get("paquetes") or []) if isinstance(p, dict)}
+        espera = (paquetes.get(prototipo["paquete"], {}).get("depende_de")
+                  or prototipo.get("depende_de") or [])
+        self.assertIn(visual["paquete"], espera,
+                      "el paquete de prototipado tiene que ESPERAR al de diseño visual: "
+                      "declararon que pueden compartir agente, no que puedan ir a la vez")
 
 
 class _RunnerDeterminista(unittest.TextTestRunner):
