@@ -2505,6 +2505,75 @@ class ElTableroNoOfreceLoQueNoDa(Laboratorio):
                       "y el que lee el tablero en texto tiene que verlo, no sólo el que lee el JSON")
 
 
+# =========================================================================
+# T510 · una entrega dice QUIÉN la produjo, o no sostiene «ejecución real por modelo»
+# =========================================================================
+class LaEntregaDiceQuienLaProdujo(Laboratorio):
+    """`titular` es el NOMBRE que eligió quien lanzó el worker. No es un hecho del despacho.
+
+    HECHO MEDIDO (2026-09-21, dogfood de `CNS/implementacion` con `claude -p`). Se midió el
+    rol que faltaba, salió `entregado`, y al abrir el objeto durable no había forma de saber
+    si lo había hecho un modelo o el guion de laboratorio: el paquete traía `agente: null` y
+    la entrega sólo un `titular` con el nombre que se le dio al proceso —`w-real-cns`—.
+    La consecuencia es de certificación: `OWN-ADS-0174` afirma que «cada rol del circuito lo
+    ejecuta un modelo real bajo su contrato», y eso NO se podía derivar del estado. Había que
+    creerse una línea de terminal que no queda en ninguna parte.
+
+    DECISIÓN · lo escribe QUIEN LANZA, no quien entrega
+        Un trabajador que rellena su propia entrega puede escribir lo que quiera, incluido
+        `clase: modelo`. El adaptador que construye el `argv` y arranca el proceso sabe qué
+        ejecutor del PROFILE está moviendo, y es ahí donde se pone.
+
+    DECISIÓN · opcional en el esquema, y por eso no se puede afirmar nada cuando falta
+        Una entrega escrita a mano por una persona no tiene ejecutable que declarar, y
+        hacerlo obligatorio convertiría el campo en un trámite que se rellena por rellenar.
+        Ausente significa **desconocido**, no «humano» ni «real»: un informe que cuente
+        ejecuciones por modelo cuenta las que lo DECLARAN.
+    """
+
+    def test_47_el_esquema_conoce_el_ejecutor_y_acota_su_clase(self):
+        """T510 · Defecto que previene: un campo que nadie valida, o una clase inventada."""
+        esquema = self.corpus.esquema("entrega")
+        campo = (esquema.get("campos") or {}).get("ejecutor")
+        self.assertIsNotNone(campo, "el esquema de la entrega tiene que conocer `ejecutor`: "
+                                    "un campo que el esquema no declara la entrega lo RECHAZA")
+        self.assertNotIn("ejecutor", esquema.get("obligatorios") or [],
+                         "opcional: una entrega escrita a mano no tiene ejecutable que declarar")
+        valores = ((campo.get("campos") or {}).get("clase") or {}).get("valores") or []
+        self.assertEqual(sorted(valores), ["guion", "modelo", "persona"],
+                         "las clases son cerradas: si `guion` no fuese una de ellas, el "
+                         "laboratorio no podría declararse como lo que es")
+
+    def test_48_una_entrega_que_declara_su_ejecutor_se_admite_y_lo_conserva(self):
+        """T510 · Defecto que previene: declararlo y que el estado lo pierda."""
+        rt = self.rt("w-ejecutor")
+        plan = self.planificar(rt, item="enc-ejecutor")["plan"]
+        primera = plan["correspondencia"][0]
+        paquete, rol = primera["paquete"], primera["rol"]
+        self.tomar_y_acusar(rt, paquete)
+        entrega = self.entrega(paquete, rol)
+        entrega["ejecutor"] = {"clase": "modelo", "id": "modelo:sonnet", "orden": "claude"}
+        oficina.entregar(rt, corpus=self.corpus, paquete=paquete, entrega=entrega,
+                         circuito=self.circuito)
+        registrada = entregas.ultima(rt.almacen, paquete)
+        self.assertEqual((registrada.get("ejecutor") or {}).get("clase"), "modelo")
+        self.assertEqual((registrada.get("ejecutor") or {}).get("id"), "modelo:sonnet")
+
+    def test_49_una_clase_inventada_de_ejecutor_se_rechaza(self):
+        """T510 · Defecto que previene: `clase: real` y a correr."""
+        rt = self.rt("w-ejecutor-malo")
+        plan = self.planificar(rt, item="enc-ejecutor-malo")["plan"]
+        primera = plan["correspondencia"][0]
+        paquete, rol = primera["paquete"], primera["rol"]
+        self.tomar_y_acusar(rt, paquete)
+        entrega = self.entrega(paquete, rol)
+        entrega["ejecutor"] = {"clase": "real-de-verdad", "id": "modelo:sonnet"}
+        with self.assertRaises(ciclo.EntregaInvalida) as capturado:
+            oficina.entregar(rt, corpus=self.corpus, paquete=paquete, entrega=entrega,
+                             circuito=self.circuito)
+        self.assertIn("ejecutor", str(capturado.exception))
+
+
 class _RunnerDeterminista(unittest.TextTestRunner):
     """Igual que el corriente, pero sin la duración en el resumen (salida publicada)."""
 

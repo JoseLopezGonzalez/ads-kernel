@@ -215,6 +215,12 @@ class AdaptadorDeAgente(Adaptador):
         if not isinstance(datos, dict):
             return self._fallo(efecto, CODIGO_ENTREGA_ILEGIBLE, reintentable=True,
                                detalle="la entrega no es un mapa JSON")
+        # QUIÉN la produjo viaja CON la entrega, y lo pone quien lanzó el ejecutable, no
+        # quien entrega. Un trabajador puede llamarse como quiera; el ejecutor que lo movió
+        # es un hecho del despacho, y sin él la afirmación «ejecución real por modelo» no se
+        # puede derivar del estado: hay que creerse una línea de terminal.
+        datos["ejecutor"] = {"clase": "modelo", "id": modelo,
+                             "orden": os.path.basename(str(argv[0])) if argv else ""}
         return {
             "estado": "completado", "codigo": 0,
             "salida": json.dumps(datos, sort_keys=True, ensure_ascii=False),

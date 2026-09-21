@@ -14,6 +14,19 @@ obligatorios:
 campos:
   paquete: {tipo: texto, min: 3}
   rol: {tipo: ref, ref_a: rol}
+  # QUIEN la produjo, y de que clase. `titular` es el NOMBRE que eligio quien lanzo el
+  # worker —puede llamarse `w-real-loquesea` y ser un guion de laboratorio—, asi que no
+  # sirve para sostener «ejecucion real por modelo». Esto si: lo escribe el que lanza el
+  # ejecutable, no el que entrega. Opcional, porque una entrega escrita a mano por una
+  # persona no tiene ejecutable que declarar; cuando falta, no se puede afirmar nada.
+  ejecutor:
+    tipo: objeto
+    obligatorios: [clase, id]
+    campos:
+      clase: {tipo: enum, valores: [modelo, guion, persona]}
+      id: {tipo: texto, min: 3}
+      orden: {tipo: texto}
+      nota: {tipo: texto}
   # entregado   la capa queda depositada y el receptor puede comprobarla
   # devuelto    el rol es RECEPTOR de una capa anterior y la devuelve con los cuatro campos
   # bloqueado   no se puede seguir sin algo que no depende del rol; nombra que lo desbloquea
