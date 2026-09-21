@@ -198,8 +198,32 @@ def derivar(runtime, *, corpus=None):
 
     circulares = _dependencias_circulares(paquetes)
 
+    # LO QUE SE OFRECE, SE ENTREGA. `runtime.tomables()` mira el plano operacional
+    # —dependencias y leases— y no sabe qué es un plan vigente; `oficina.tomar` exige el plan
+    # vigente y no sabe qué publicó esta vista. Con las dos nociones sueltas, replanificar un
+    # item dejaba en `TOMABLES AHORA` los paquetes de la generación anterior, y el trabajador
+    # que obedecía al tablero —tomar el primero de la lista— recibía `CICLO_INCONSISTENTE: no
+    # está en ningún plan vigente`. El tablero es la sede que le dice a una sesión nueva qué
+    # puede tomar (`§45`): si miente, el relevo se estrella en la primera orden.
+    #
+    # DECISIÓN · se retira de la oferta, y se PUBLICA la retirada con su motivo
+    #     Alternativas: (a) filtrar en silencio; (b) publicar aparte lo retirado y por qué.
+    #     Se elige (b), la misma disciplina que `rutas.no_activadas`: un paquete que
+    #     desaparece de la lista sin explicación convierte un defecto ruidoso en uno mudo, y
+    #     quien replanificó tiene derecho a ver que su generación anterior sigue ahí.
+    ofrecibles, retirados = [], []
+    for fila in tomables["tomables"]:
+        if fila["paquete"] in fila_de_paquete:
+            ofrecibles.append(fila)
+        else:
+            retirados.append({
+                "paquete": fila["paquete"], "item": fila.get("item"),
+                "motivo": "de un plan superado: su item tiene otro plan vigente y `tomar` lo "
+                          "rechazaría; no se ofrece lo que la oficina no entregaría",
+            })
+
     siguiente = [{"paquete": t["paquete"], "rol": descritos.get(t["paquete"], {}).get("rol"),
-                  "item": t["item"]} for t in tomables["tomables"]]
+                  "item": t["item"]} for t in ofrecibles]
     if circulares and not siguiente:
         que_hara = ("nada: hay una dependencia circular entre " + ", ".join(circulares)
                     + " y ninguna pasada puede moverla; hace falta replanificar el item")
@@ -226,7 +250,8 @@ def derivar(runtime, *, corpus=None):
         "items_sin_plan": sin_plan,
         "paquetes": descritos,
         "por_estado": por_estado,
-        "tomables": [t["paquete"] for t in tomables["tomables"]],
+        "tomables": [t["paquete"] for t in ofrecibles],
+        "tomables_de_plan_superado": retirados,
         "en_ejecucion": [{"paquete": d["paquete"], "rol": d["rol"], "titular": d["titular"],
                           "latido": d["latido"]} for d in en_ejecucion],
         "esperando": esperando,
@@ -311,6 +336,8 @@ def como_texto(vista):
     if not vista["en_ejecucion"]:
         lineas.append("  (nada)")
     lineas += ["", "TOMABLES AHORA: " + (", ".join(vista["tomables"]) or "(nada)")]
+    for fila in vista.get("tomables_de_plan_superado") or []:
+        lineas.append("  NO se ofrece " + fila["paquete"] + ": " + fila["motivo"])
     lineas += ["", "ESPERANDO"]
     for fila in vista["esperando"] or []:
         lineas.append("  " + fila["paquete"] + "  " + str(fila["rol"]) + "  " + fila["por_que"])

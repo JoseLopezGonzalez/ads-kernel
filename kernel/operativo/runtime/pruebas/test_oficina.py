@@ -2432,6 +2432,79 @@ class QuienDictaminaCadaGate(Laboratorio):
                          "comportándose EXACTAMENTE como antes de T508")
 
 
+# =========================================================================
+# T509 · lo que el tablero OFRECE, la oficina lo ENTREGA
+# =========================================================================
+class ElTableroNoOfreceLoQueNoDa(Laboratorio):
+    """El tablero publicaba paquetes de un plan SUPERADO, y `tomar` los rechazaba.
+
+    HECHO REPRODUCIDO (2026-09-21, sobre un clon real de la instancia). Se planifica un
+    encargo, se REPLANIFICA, y el tablero sigue ofreciendo en `TOMABLES AHORA` el primer
+    paquete del plan viejo. Un trabajador que haga lo que el tablero dice —tomar el primero
+    de la lista— recibe `CICLO_INCONSISTENTE: el paquete no está en ningún plan vigente: no
+    se toma lo que no tiene rol ni gate`.
+
+    No es un adorno de la vista. El tablero es la sede que le dice a una sesión nueva qué
+    puede tomar (`§45`), y el relevo se apoya en ella: si miente, el relevo se estrella en la
+    primera orden. Y la causa es la de siempre en este sistema: DOS nociones de «tomable» sin
+    nadie que las case. `runtime.tomables()` mira el plano operacional —dependencias y
+    leases— y no sabe qué es un plan vigente; `oficina.tomar` exige el plan vigente y no sabe
+    qué publicó la vista.
+
+    Lo que esta prueba fija es la propiedad, no la implementación: **lo que el tablero ofrece,
+    la oficina lo entrega**. Cómo se consiga es asunto del tablero.
+    """
+
+    def test_45_todo_lo_que_el_tablero_ofrece_se_puede_tomar(self):
+        """T509 · Defecto que previene: una lista de trabajo que revienta al obedecerla."""
+        rt = self.rt("w-tablero")
+        primera = oficina.planificar(
+            rt, corpus=self.corpus, entrada=self.entrada(), circuito=self.circuito,
+            control_repo=self.repo, item="enc-replan", titulo="Exportar CSV")["plan"]
+        segunda = oficina.planificar(
+            rt, corpus=self.corpus, entrada=self.entrada(), circuito=self.circuito,
+            control_repo=self.repo, item="enc-replan", titulo="Exportar CSV",
+            generacion=1)["plan"]
+        viejos = set(primera["paquetes"]) - set(segunda["paquetes"])
+        self.assertTrue(viejos, "sin paquetes que la replanificación deje atrás no hay caso")
+
+        vista = tablero.derivar(rt, corpus=self.corpus)
+        ofrecidos = list(vista["tomables"])
+        self.assertTrue(ofrecidos, "el tablero tiene que ofrecer algo para que esto mida algo")
+        self.assertEqual(
+            sorted(set(ofrecidos) & viejos), [],
+            "el tablero ofrece paquetes de un plan SUPERADO: " + ", ".join(sorted(set(ofrecidos) & viejos)))
+
+        # Y el control que de verdad importa, porque es el que sufre el trabajador: cada
+        # paquete ofrecido se toma de hecho. Comprobar sólo la lista dejaría pasar cualquier
+        # otra razón por la que `tomar` se niegue.
+        for paquete in ofrecidos:
+            with self.subTest(paquete=paquete):
+                otro = self.rt("w-toma-" + paquete[-4:])
+                toma = oficina.tomar(otro, corpus=self.corpus, paquete=paquete,
+                                     circuito=self.circuito)
+                self.assertEqual(toma["brief"]["paquete"], paquete)
+
+    def test_46_lo_que_el_tablero_retira_lo_dice_con_su_motivo(self):
+        """T509 · Defecto que previene: arreglar la mentira callándose."""
+        rt = self.rt("w-tablero-motivo")
+        oficina.planificar(rt, corpus=self.corpus, entrada=self.entrada(), circuito=self.circuito,
+                           control_repo=self.repo, item="enc-motivo", titulo="Exportar CSV")
+        oficina.planificar(rt, corpus=self.corpus, entrada=self.entrada(), circuito=self.circuito,
+                           control_repo=self.repo, item="enc-motivo", titulo="Exportar CSV",
+                           generacion=1)
+        vista = tablero.derivar(rt, corpus=self.corpus)
+        retirados = vista.get("tomables_de_plan_superado") or []
+        self.assertTrue(retirados,
+                        "un paquete que deja de ofrecerse no desaparece en silencio: se publica "
+                        "con su motivo, como las capacidades no activadas de la ruta")
+        sin_motivo = [r["paquete"] for r in retirados if not str(r.get("motivo") or "").strip()]
+        self.assertEqual(sin_motivo, [], "retirados sin motivo: " + ", ".join(sin_motivo))
+        texto = tablero.como_texto(vista)
+        self.assertIn("plan superado", texto.lower(),
+                      "y el que lee el tablero en texto tiene que verlo, no sólo el que lee el JSON")
+
+
 class _RunnerDeterminista(unittest.TextTestRunner):
     """Igual que el corriente, pero sin la duración en el resumen (salida publicada)."""
 
