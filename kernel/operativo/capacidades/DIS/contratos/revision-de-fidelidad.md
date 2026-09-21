@@ -83,6 +83,9 @@ artefactos:
       - "una imagen por superficie, tamaño y estado con las dos columnas"
     obligatorio: true
 evidencias_requeridas:
+  - que: "la comparación se hizo sobre la aplicación EJECUTÁNDOSE, o consta por qué no era técnicamente posible"
+    forma: "el arranque del commit entregado en el entorno declarado; o el motivo de imposibilidad, nombrado"
+    quien_la_puede_juzgar: "DIS/critica-visual, y el Owner en superficie premium"
   - que: "cada diferencia nombrada es visible"
     forma: "el par lado a lado con la diferencia marcada"
     quien_la_puede_juzgar: "DIS/critica-visual, y el Owner en superficie premium"
@@ -116,6 +119,8 @@ reglas_de_escalado:
 incompatibilidades:
   - "no comparte trabajador con DIS/diseno-visual, DIS/prototipado, DIS/movimiento ni CNS/implementacion en el mismo item"
 actuaciones_prohibidas:
+  - "sustituir la prueba sobre la aplicación REAL por una captura o por una lectura del código cuando arrancarla era técnicamente posible; si no lo era, el motivo va declarado en la entrega"
+  - "dar por validada una superficie con contenido cómodo o lorem ipsum: se prueban los datos reales de la superficie y sus extremos (el más largo, el vacío, el que desborda)"
   - "aceptar a posteriori como deuda una simplificación descubierta al comparar"
   - "rechazar por preferencia: sólo por diferencia con lo aprobado"
   - "proponer la corrección: se nombra la diferencia"

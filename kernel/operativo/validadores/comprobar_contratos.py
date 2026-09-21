@@ -1374,6 +1374,46 @@ def t493_diseno_exige_los_artefactos_de_la_directiva(b):
     return r
 
 
+def t503_la_interfaz_se_prueba_sobre_lo_real_y_con_datos_reales(b):
+    """§23 y §29 regla 5 · ni una captura sustituye a la aplicación, ni lorem ipsum a los datos.
+
+    §23: «la revisión de fidelidad se hace sobre la aplicación real SIEMPRE QUE SEA TÉCNICAMENTE
+    POSIBLE; una captura o una lectura de código no sustituye automáticamente la prueba en
+    navegador». §29 regla 5: «no se valida usando sólo contenido cómodo o lorem ipsum». Son
+    `OWN-ADS-0083`, `OWN-ADS-0102` y `OWN-ADS-0105`.
+
+    EL DEFECTO QUE PREVIENE, medido el 2026-09-21: el contrato de `DIS/revision-de-fidelidad`
+    exigía arrancar el commit entregado «cuando el pack lo exige» —condicional— y §23 lo pide
+    SIEMPRE que sea posible, con el motivo declarado cuando no lo es. Y de los tres roles que
+    §29 regla 5 alcanza, sólo `DIS/prototipado` nombraba el lorem ipsum: fidelidad y validación
+    de uso podían dar por buena una pantalla probada con contenido cómodo sin que nada lo
+    rechazara. Un contrato que no nombra el defecto no lo rechaza; lo deja a la vista de quien
+    lo lea con buena voluntad.
+    """
+    r = Resultado("T503", "La interfaz se prueba sobre la aplicación real y con datos reales, y el contrato lo exige")
+    contratos = {d["rol"]: (d, ruta, linea) for d, ruta, linea in b.get("contrato-operativo", [])}
+    for rol in ("DIS/prototipado", "DIS/revision-de-fidelidad", "DIS/validacion-de-uso"):
+        contrato, ruta, linea = contratos.get(rol, ({}, "(sin contrato)", 0))
+        texto = " ".join(str(x) for x in (contrato.get("actuaciones_prohibidas") or [])).lower()
+        if "lorem ipsum" not in texto:
+            r.fallo(f"{ruta}:{linea}: `{rol}` no tiene prohibido validar con lorem ipsum o contenido "
+                    f"cómodo (§29 regla 5). Los métodos dicen «datos reales»; una actuación "
+                    f"prohibida es lo que RECHAZA una entrega")
+    contrato, ruta, linea = contratos.get("DIS/revision-de-fidelidad", ({}, "(sin contrato)", 0))
+    prohibidas = " ".join(str(x) for x in (contrato.get("actuaciones_prohibidas") or [])).lower()
+    if "técnicamente posible" not in prohibidas:
+        r.fallo(f"{ruta}:{linea}: `DIS/revision-de-fidelidad` no prohíbe sustituir la prueba sobre la "
+                f"aplicación real por una captura o una lectura de código CUANDO ERA TÉCNICAMENTE "
+                f"POSIBLE arrancarla (§23). Exigirlo «cuando el pack lo pide» es condicional, y §23 no")
+    evidencias = " ".join(str(e.get("que") or "") for e in (contrato.get("evidencias_requeridas") or [])).lower()
+    if "ejecutándose" not in evidencias and "ejecutandose" not in evidencias:
+        r.fallo(f"{ruta}:{linea}: `DIS/revision-de-fidelidad` no exige como EVIDENCIA que la comparación "
+                f"se hiciera sobre la aplicación ejecutándose, o el motivo de por qué no se pudo (§23)")
+    r.cobertura = ("contratos mirados: DIS/prototipado, DIS/revision-de-fidelidad, DIS/validacion-de-uso"
+                   f" · contratos operativos leídos: {len(contratos)}")
+    return r
+
+
 def t502_la_especificacion_de_interfaz_no_se_completa_fuera_de_diseno(b):
     """§10, §21 y §29 regla 6 · Construcción nunca completa una especificación de interfaz.
 
@@ -1508,7 +1548,8 @@ PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t244_grado_inicial_coincide_con_el_paso_5, t476_todo_rol_materializable_tiene_contrato, t477_bases_de_contrato_coherentes,
            t493_diseno_exige_los_artefactos_de_la_directiva,
            t499_la_independencia_no_se_declara_en_los_dos_sentidos,
-           t502_la_especificacion_de_interfaz_no_se_completa_fuera_de_diseno]
+           t502_la_especificacion_de_interfaz_no_se_completa_fuera_de_diseno,
+           t503_la_interfaz_se_prueba_sobre_lo_real_y_con_datos_reales]
 
 
 def main():

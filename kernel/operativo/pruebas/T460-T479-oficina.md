@@ -56,6 +56,7 @@ T497  con varias fuentes el Integration Set define orden de merge, compatibilida
 T498  un recurso exclusivo —derivado del acoplamiento de a.5— en manos de otra ejecución hace al paquete temporalmente incompatible: no elegible, no tomable, publicado con quién lo posee; el de ámbito independiente sigue en paralelo (§68)
 T499  la independencia de un rol se declara en UN solo sentido —la exige quien REVISA de quien PRODUCE—: declararla también en el productor la convierte en un ciclo que no ordena y empuja a los dos al final del plan, detrás de la construcción (§81)
 T502  el contrato de quien CONSTRUYE prohibe completar una especificacion de interfaz por su cuenta: simplificar y corregir no lo cubren, porque quien anade lo que falta no hace ninguna de las dos (§10, §21, §29 regla 6)
+T503  los contratos de prototipado, fidelidad y validacion de uso PROHIBEN validar con lorem ipsum, y fidelidad exige ademas la aplicacion ejecutandose o el motivo de por que no se pudo (§23, §29 regla 5)
 T500  el acoplamiento se declara por ROL, y no solo por capacidad: con la llave por capacidad dos paquetes de la misma capacidad reciben la MISMA declaracion, las condiciones 2, 3 y 4 de `a.5` se evaluan por interseccion y la pareja no puede salir paralela NUNCA (§62, §68, §81)
 T501  los NUEVE roles condicionales del corpus se pueden activar: `oficina.planificar` expone `condiciones_de_rol` y sin ese parámetro ninguno entraba jamás en un plan, aunque su composición los admita con su condición (§5, §81)
 ```
@@ -758,6 +759,27 @@ entonces:
 falla_si:
   - "dos roles se exigen independencia mutuamente: la relajación no tiene punto fijo, sube a los dos medio escalón por vuelta hasta el tope y los deja a ambos al final del plan"
   - "DIS/direccion-artistica cae detrás de CNS/implementacion y el Owner aprueba la dirección cuando ya está construida"
+ejecucion: validador-estructural
+validador: kernel/operativo/validadores/comprobar_contratos.py
+estado: prueba-superada
+evidencia: evidencia/contratos-salida.txt
+```
+
+```yaml ads:escenario
+id: T503
+nombre: La interfaz se prueba sobre la aplicacion real y con datos reales, y el contrato lo exige
+cubre: ["contrato-operativo", "Directiva del Owner §23", "Directiva del Owner §29", "OWN-ADS-0083", "OWN-ADS-0102", "OWN-ADS-0105"]
+dado:
+  - "§23 pide la prueba sobre la aplicacion real SIEMPRE QUE SEA TECNICAMENTE POSIBLE, y el contrato de DIS/revision-de-fidelidad la exigia «cuando el pack lo exige», que es condicional"
+  - "§29 regla 5 prohibe validar con lorem ipsum, y de los tres roles a los que alcanza solo DIS/prototipado lo nombraba"
+cuando:
+  - "se leen los contratos operativos de DIS/prototipado, DIS/revision-de-fidelidad y DIS/validacion-de-uso"
+entonces:
+  - "los tres tienen PROHIBIDO validar con lorem ipsum o contenido comodo: los metodos dicen «datos reales», pero lo que RECHAZA una entrega es una actuacion prohibida"
+  - "revision-de-fidelidad prohibe ademas sustituir la aplicacion real por una captura o una lectura de codigo cuando arrancarla era tecnicamente posible, y exige como EVIDENCIA que la comparacion se hiciera sobre la aplicacion ejecutandose o el motivo de por que no"
+falla_si:
+  - "se quita la prohibicion de uno de los tres: ejercido el 2026-09-21 sobre DIS/validacion-de-uso, T503 es el unico fallo del validador y nombra el rol y el fichero"
+  - "alguien confia en que «los metodos cargan datos reales» ya lo cubre: un metodo describe lo que se hace bien, no lo que rechaza una entrega"
 ejecucion: validador-estructural
 validador: kernel/operativo/validadores/comprobar_contratos.py
 estado: prueba-superada

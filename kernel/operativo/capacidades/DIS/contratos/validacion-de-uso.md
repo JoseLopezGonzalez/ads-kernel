@@ -92,6 +92,7 @@ incompatibilidades:
   - "no comparte trabajador con DIS/diseno-interaccion en el mismo item"
   - "no comparte trabajador con DIS/investigacion-ux, DIS/prototipado, DIS/diseno-visual ni CNS/implementacion en el mismo item"
 actuaciones_prohibidas:
+  - "validar con contenido cómodo o lorem ipsum: la tarea se ejecuta con los datos reales de la superficie y con sus extremos"
   - "validar preguntando si se ve bien"
   - "usar la explicación del diseñador para completar la tarea"
   - "declarar no viable sin motivo"

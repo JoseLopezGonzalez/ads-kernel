@@ -13,6 +13,19 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `capacidades/DIS/contratos/revision-de-fidelidad.md` ·
+  `capacidades/DIS/contratos/validacion-de-uso.md` · `validadores/comprobar_contratos.py` · **la
+  interfaz se prueba sobre la aplicación REAL y con DATOS reales, y el contrato lo rechaza si
+  no**. §23 pide la prueba sobre la aplicación real «siempre que sea técnicamente posible» y el
+  contrato la exigía «cuando el pack lo exige», que es condicional; ahora está como actuación
+  prohibida —sustituirla por una captura o una lectura de código cuando arrancarla era posible—
+  y como evidencia requerida, con el motivo declarado cuando no lo era. Y §29 regla 5 prohíbe
+  validar con lorem ipsum: de los tres roles a los que alcanza, sólo `DIS/prototipado` lo
+  nombraba, así que fidelidad y validación de uso podían dar por buena una pantalla probada con
+  contenido cómodo sin que nada la rechazara. **Un método describe lo que se hace bien; lo que
+  RECHAZA una entrega es una actuación prohibida**, y esa distinción es la que faltaba. `T503`,
+  saboteada: quitando la prohibición de uno de los tres, es el único fallo del validador y
+  nombra el rol y el fichero. Cierra `OWN-ADS-0083`, `OWN-ADS-0102` y `OWN-ADS-0105`.
 - `capacidades/CNS/roles/implementacion.md` · `capacidades/CNS/contratos/implementacion.md` ·
   `validadores/comprobar_contratos.py` · **quien construye no COMPLETA una especificación de
   interfaz**. La Directiva lo dice tres veces —§10 «no puede descubrir durante la implementación
