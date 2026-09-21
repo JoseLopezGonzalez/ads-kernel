@@ -13,6 +13,22 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `esquemas/integration-set.yaml` · `ciclo/oficina.py` · **las nueve salvaguardas de §74 se
+  RESPONDEN antes de converger, y hasta hoy cinco no tenían dónde**. §74 enumera nueve cosas
+  «mientras se valide en producción»; cuatro ya vivían en su sitio —PRs integrables y
+  reversibles en `fuentes` y `restaura_a`, migraciones en `migraciones`, plan de rollback en
+  `restaura_a`, y no mezclar cambios no relacionados en que el conjunto es de UN item—. Las
+  otras cinco —migraciones backward-compatible, rollout incremental, feature flags,
+  observabilidad y comprobación post-deploy, más la estrategia de recuperación de datos— no
+  eran campo ni checklist de nada, de modo que un Integration Set podía declararse convergente
+  sin que nadie hubiera dicho jamás qué pasa si hay que volver. Ahora son una lista de
+  respuestas con universo CERRADO —la misma forma que la autoevaluación de la entrega, para
+  que añadir una no obligue a migrar los conjuntos escritos— y se exigen al CONVERGER, no al
+  crear el conjunto: un `candidato` es material de trabajo y puede estar a medias. `no-aplica`
+  es una respuesta legítima y por eso lleva motivo obligatorio; un `no` con su motivo también
+  converge, porque queda escrito para quien decida la fusión, y convertir esto en un gate de
+  calidad sería otra cosa. `T511`, con su control positivo y saboteada. Cierra parte de
+  `OWN-ADS-0264`.
 - `esquemas/entrega.yaml` · `runtime/adaptadores/agente.py` · **una entrega dice QUIÉN la
   produjo, o no sostiene «ejecución real por modelo»**. Se fue a medir con un ejecutable sin
   chat el rol que faltaba en el dogfood de una instancia —`CNS/implementacion`—, entregó, y al

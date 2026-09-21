@@ -1385,13 +1385,28 @@ class ContratosEfectivos(Laboratorio):
 # =========================================================================
 class Integrado(Laboratorio):
 
-    def conjunto(self, item, fuentes, estado="verificado", pendiente=False, con_71=True):
+    def conjunto(self, item, fuentes, estado="verificado", pendiente=False, con_71=True,
+                 con_74=True):
         base = {"id": "IS-001", "item": item, "estado": estado,
                 "fuentes": [{"source": f, "commit": "0123456789ab" + str(n), "rama": "ads/" + f}
                             for n, f in enumerate(fuentes)],
                 "verificacion": [{"ambito": "regresion", "resultado": "pendiente" if pendiente else "pasa",
                                   "evidencia": "dosier de VER pq-x-1"}],
                 "restaura_a": "IS-000, la combinación anterior"}
+        if con_74:
+            base["salvaguardas"] = [
+                {"id": "migraciones-backward-compatible", "respuesta": "si",
+                 "evidencia": "la columna nueva admite nulos y el código anterior la ignora"},
+                {"id": "rollout-incremental", "respuesta": "si",
+                 "evidencia": "primero backend, luego frontend, con la API anterior viva"},
+                {"id": "feature-flags", "respuesta": "no-aplica",
+                 "motivo": "el cambio no es visible hasta que las dos fuentes están fusionadas"},
+                {"id": "observabilidad", "respuesta": "si", "evidencia": "log de la ruta nueva"},
+                {"id": "comprobacion-post-deploy", "respuesta": "si",
+                 "evidencia": "la regresión se repite contra el entorno ya desplegado"},
+                {"id": "estrategia-de-recuperacion-de-datos", "respuesta": "no-aplica",
+                 "motivo": "el bloque no cambia datos: sólo añade una lectura"},
+            ]
         if con_71 and len(fuentes) > 1:
             base.update({
                 "orden_de_merge": list(fuentes),
@@ -1402,6 +1417,54 @@ class Integrado(Laboratorio):
                 "dependencias": [fuentes[1] + " depende de " + fuentes[0]],
             })
         return base
+
+    def test_22e_las_nueve_salvaguardas_de_74_se_responden_antes_de_converger(self):
+        """T511 · Defecto que previene: converger sin haber mirado qué pasa si hay que volver.
+
+        §74 enumera NUEVE salvaguardas «mientras se valide en producción». Cuatro ya tenían
+        sitio en el conjunto —PRs integrables y reversibles en `fuentes` y `restaura_a`,
+        migraciones en `migraciones`, plan de rollback en `restaura_a`, y no mezclar cambios
+        no relacionados en que el conjunto es de UN item—. Las otras cinco no eran campo ni
+        checklist de nada: un Integration Set podía declararse convergente sin que nadie
+        hubiera dicho jamás si había rollout incremental, observabilidad, comprobación
+        post-deploy, feature flags o qué pasa si los datos se corrompen.
+
+        `no-aplica` es una respuesta legítima y por eso hay que escribirla CON MOTIVO. Lo que
+        no se admite es el silencio, que es lo que había.
+        """
+        hechos = {"fuentes_escritas": ["backend"]}
+        # SIN responderlas: la convergencia se rechaza nombrando las seis
+        sin = {"integration_set": self.conjunto("enc-74", ["backend"], con_71=False, con_74=False)}
+        with self.assertRaises(ciclo.EntregaInvalida) as capturado:
+            oficina._exigir_integration_set(self.corpus, sin, hechos, "pq-74")
+        texto = str(capturado.exception)
+        self.assertIn("salvaguardas", texto)
+        for salvaguarda in ("rollout-incremental", "observabilidad", "comprobacion-post-deploy",
+                            "estrategia-de-recuperacion-de-datos"):
+            self.assertIn(salvaguarda, texto,
+                          "el rechazo nombra cuál falta, no dice «faltan salvaguardas»")
+
+        # Respondidas: el mismo conjunto converge. Control POSITIVO, sin el cual bastaría
+        # con un mecanismo que rechazara siempre.
+        con = {"integration_set": self.conjunto("enc-74", ["backend"], con_71=False)}
+        oficina._exigir_integration_set(self.corpus, con, hechos, "pq-74")
+
+        # Un `no-aplica` SIN motivo es un silencio con otro nombre, y se rechaza igual.
+        mudo = {"integration_set": self.conjunto("enc-74", ["backend"], con_71=False)}
+        for fila in mudo["integration_set"]["salvaguardas"]:
+            if fila["id"] == "observabilidad":
+                fila["respuesta"], fila["motivo"] = "no-aplica", ""
+        with self.assertRaises(ciclo.EntregaInvalida) as capturado:
+            oficina._exigir_integration_set(self.corpus, mudo, hechos, "pq-74")
+        self.assertIn("sin motivo", str(capturado.exception))
+
+        # Y un `no` con su motivo SÍ converge: es una respuesta, y queda escrita para quien
+        # decida la fusión. Convertirlo en un gate de calidad sería otra cosa, y no es ésta.
+        dice_no = {"integration_set": self.conjunto("enc-74", ["backend"], con_71=False)}
+        for fila in dice_no["integration_set"]["salvaguardas"]:
+            if fila["id"] == "rollout-incremental":
+                fila["respuesta"], fila["motivo"] = "no", "el bloque es atómico: o entra entero o no entra"
+        oficina._exigir_integration_set(self.corpus, dice_no, hechos, "pq-74")
 
     def test_22b_con_varias_fuentes_el_conjunto_define_orden_compatibilidad_y_despliegue(self):
         """T497 · Defecto que previene: varias PRs presentadas al Owner como trabajos inconexos (§71)."""

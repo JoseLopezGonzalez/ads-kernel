@@ -703,8 +703,47 @@ def _exigir_integration_set(corpus, entrega, hechos, paquete):
             fallos.append("integration_set.verificacion: el ámbito `" + str(fila.get("ambito"))
                           + "` está `" + str(fila.get("resultado")) + "`: no está probado conjuntamente")
     fallos.extend(_fallos_de_71(conjunto, fuentes))
+    fallos.extend(_fallos_de_74(conjunto))
     if fallos:
         raise EntregaInvalida("la convergencia no es admisible: " + "; ".join(fallos), paquete=paquete)
+
+
+# Directiva §74 · las salvaguardas que el conjunto NO tenía dónde responder. Cuatro de las
+# nueve ya vivían en su sitio —PRs integrables y reversibles en `fuentes` y `restaura_a`,
+# migraciones en `migraciones`, plan de rollback en `restaura_a`, no mezclar cambios no
+# relacionados en que el conjunto es de UN item—. Las otras cinco no eran campo de nada, así
+# que un conjunto podía declararse convergente sin haberlas mirado nunca.
+SALVAGUARDAS_DE_74 = (
+    "migraciones-backward-compatible", "rollout-incremental", "feature-flags",
+    "observabilidad", "comprobacion-post-deploy", "estrategia-de-recuperacion-de-datos",
+)
+
+
+def _fallos_de_74(conjunto):
+    """Las seis salvaguardas se RESPONDEN —incluso con `no-aplica`— antes de converger.
+
+    DECISIÓN · se exigen al CONVERGER, no al crear el conjunto
+        Un conjunto `candidato` es material de trabajo y puede estar a medias. Lo que no
+        puede es llegar a `verificado` o `integrado` sin que alguien haya dicho, con su
+        nombre, si hay rollout incremental y qué pasa si los datos se corrompen.
+
+    DECISIÓN · `no-aplica` vale, y el silencio no
+        Un bloque de una sola fuente sin datos no necesita estrategia de recuperación, y
+        obligar a un `si` falso sería peor que no preguntar. Un `no` tampoco se rechaza: es
+        una respuesta, y queda escrita para quien decida la fusión.
+    """
+    respuestas = {str(s.get("id")): s for s in (conjunto.get("salvaguardas") or [])
+                  if isinstance(s, dict)}
+    faltan = [s for s in SALVAGUARDAS_DE_74 if s not in respuestas]
+    if faltan:
+        return ["integration_set.salvaguardas: sin responder " + ", ".join(faltan)
+                + " (§74). `no-aplica` con su motivo es una respuesta; no decir nada, no"]
+    mudas = sorted(i for i, s in respuestas.items()
+                   if s.get("respuesta") == "no-aplica" and not str(s.get("motivo") or "").strip())
+    if mudas:
+        return ["integration_set.salvaguardas: " + ", ".join(mudas) + " dicen `no-aplica` sin "
+                "motivo: un `no-aplica` sin por qué es un silencio con otro nombre (§74)"]
+    return []
 
 
 def _fallos_de_71(conjunto, fuentes):

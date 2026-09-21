@@ -63,3 +63,32 @@ campos:
       como: {tipo: texto}
       condicion: {tipo: texto}
   dependencias: {tipo: lista, de: texto}
+  # Directiva §74 · LAS NUEVE SALVAGUARDAS «mientras se valide en produccion». Cuatro ya
+  # tenian sitio —PRs integrables y reversibles en `fuentes`+`restaura_a`, migraciones en
+  # `migraciones`, no mezclar cambios no relacionados en `item`, plan de rollback en
+  # `restaura_a`—. Las otras CINCO no eran campo ni checklist de ningun sitio, asi que el
+  # conjunto podia declararse completo sin haberlas respondido nunca.
+  #
+  # DECISION · una LISTA de respuestas, no cinco campos sueltos
+  #   Alternativas: (a) un campo por salvaguarda; (b) una lista con `id` y `respuesta`.
+  #   Se elige (b), la misma forma que la `autoevaluacion` de la entrega. Con (a) anadir una
+  #   salvaguarda seria cambiar el esquema y migrar los conjuntos escritos; con (b) el
+  #   universo de ids es cerrado y lo comprueba el validador, que es donde tiene que estar.
+  #
+  # DECISION · `no-aplica` EXISTE, y por eso hay que escribirlo
+  #   Un conjunto de una sola fuente sin datos no necesita estrategia de recuperacion, y
+  #   obligar a un `si` falso seria peor que no preguntar. Lo que NO se admite es el
+  #   silencio: responder `no-aplica` deja a alguien diciendolo con su nombre.
+  salvaguardas:
+    tipo: lista
+    de: objeto
+    obligatorios: [id, respuesta]
+    campos:
+      id:
+        tipo: enum
+        valores: [migraciones-backward-compatible, rollout-incremental, feature-flags,
+                  observabilidad, comprobacion-post-deploy, estrategia-de-recuperacion-de-datos]
+      respuesta: {tipo: enum, valores: [si, no, no-aplica]}
+      # por que. Un `no-aplica` sin motivo es un silencio con otro nombre.
+      motivo: {tipo: texto}
+      evidencia: {tipo: texto}
