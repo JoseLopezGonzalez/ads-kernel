@@ -13,6 +13,21 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `esquemas/entrega.yaml` · `runtime/adaptadores/agente.py` · **una entrega dice QUIÉN la
+  produjo, o no sostiene «ejecución real por modelo»**. Se fue a medir con un ejecutable sin
+  chat el rol que faltaba en el dogfood de una instancia —`CNS/implementacion`—, entregó, y al
+  abrir el objeto durable no había forma de saber si lo había hecho un modelo o un guion de
+  laboratorio: el paquete traía `agente: null` y la entrega sólo un `titular`, que es el NOMBRE
+  que elige quien lanza el worker y puede llamarse como quiera ejecutando un guion. No es un
+  hecho del despacho: es una etiqueta. La consecuencia es de certificación —afirmar que cada
+  rol lo ejecuta un modelo real bajo su contrato exigía creerse una línea de terminal que no
+  queda en ninguna parte—. Ahora el esquema declara `ejecutor` con clases CERRADAS —`modelo`,
+  `guion`, `persona`— y lo escribe **quien lanza el ejecutable**, no quien entrega: un
+  trabajador que rellena su propia entrega escribiría lo que quisiera. Opcional a propósito,
+  porque una entrega escrita a mano por una persona no tiene ejecutable que declarar, y por eso
+  **ausente significa DESCONOCIDO**, no «humano» ni «real». `T510`, en tres partes: el esquema
+  lo conoce y acota su clase; una entrega que lo declara se admite y el estado lo conserva; y
+  una clase inventada se rechaza. Cierra parte de `OWN-ADS-0174`.
 - `ciclo/tablero.py` · **lo que el tablero OFRECE, la oficina lo ENTREGA**. Reproducido en un
   clon real de la instancia: se planifica un encargo, se REPLANIFICA, y `TOMABLES AHORA` sigue
   listando el primer paquete del plan viejo; quien obedece al tablero —tomar el primero de la
