@@ -2511,7 +2511,8 @@ class ElTableroNoOfreceLoQueNoDa(Laboratorio):
 class LaEntregaDiceQuienLaProdujo(Laboratorio):
     """`titular` es el NOMBRE que eligió quien lanzó el worker. No es un hecho del despacho.
 
-    HECHO MEDIDO (2026-09-21, dogfood de `CNS/implementacion` con `claude -p`). Se midió el
+    HECHO MEDIDO (2026-09-21, dogfood de `CNS/implementacion` con el ejecutable sin chat
+    que el PROFILE de la instancia declara como `ads:ejecutor`). Se midió el
     rol que faltaba, salió `entregado`, y al abrir el objeto durable no había forma de saber
     si lo había hecho un modelo o el guion de laboratorio: el paquete traía `agente: null` y
     la entrega sólo un `titular` con el nombre que se le dio al proceso —`w-real-cns`—.
@@ -2552,7 +2553,11 @@ class LaEntregaDiceQuienLaProdujo(Laboratorio):
         paquete, rol = primera["paquete"], primera["rol"]
         self.tomar_y_acusar(rt, paquete)
         entrega = self.entrega(paquete, rol)
-        entrega["ejecutor"] = {"clase": "modelo", "id": "modelo:sonnet", "orden": "claude"}
+        # El valor de `orden` es NEUTRAL de proveedor a propósito: `T92` prohíbe que un
+        # contrato, un esquema o un validador del kernel nombre una marca, y lo comprobó
+        # sobre esta misma prueba en cuanto se escribió con el nombre de un producto dentro.
+        entrega["ejecutor"] = {"clase": "modelo", "id": "modelo:sonnet",
+                               "orden": "ejecutable-del-proveedor"}
         oficina.entregar(rt, corpus=self.corpus, paquete=paquete, entrega=entrega,
                          circuito=self.circuito)
         registrada = entregas.ultima(rt.almacen, paquete)
