@@ -42,17 +42,44 @@ TIEMPO_GIT = 20
 
 
 def _git(args, cwd, tiempo=TIEMPO_GIT):
-    """`git <args>` en `cwd`; None si falla, no está o tarda. Nunca pide credenciales."""
-    entorno = {"PATH": os.environ.get("PATH", ""), "HOME": os.environ.get("HOME", ""),
-               "GIT_TERMINAL_PROMPT": "0", "LC_ALL": "C"}
+    """`git <args>` en `cwd`; None si falla, no está o tarda. Nunca pide credenciales.
+
+    DEFECTO QUE CIERRA: este módulo nació con su PROPIO `subprocess.run` sobre Git, que es
+    exactamente la via paralela que `T188` existe para impedir —«el canal UNICO de
+    invocacion de Git»—. El censo del aparato lo denunciaba desde el primer dia y nadie lo
+    vio, porque la CI del kernel no corre `test_admision.py`. No se declara una sede nueva
+    en `SEDES_DE_PROCESO`: eso seria indultar el defecto en vez de corregirlo. Se pasa por
+    el canal, que ademas trae entorno hermetico —sin configuracion de la maquina, sin red,
+    sin prompt—, que es mas de lo que este `_git` conseguia a mano.
+    """
+    from gobierno.git import CanalGit, GitInvocacionProhibida                # noqa: PLC0415
     try:
-        salida = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True,
-                                timeout=tiempo, env=entorno, check=False)
-    except (OSError, subprocess.SubprocessError):
+        codigo, salida, _error = CanalGit(cwd).ejecutar(
+            *args, exigir_exito=False, tiempo=tiempo)
+    except (OSError, subprocess.SubprocessError, GitInvocacionProhibida):
         return None
-    if salida.returncode != 0:
+    if codigo != 0:
         return None
-    return salida.stdout.strip()
+    return salida.decode("utf-8", "replace").strip()
+
+
+def _rutas_tocadas(desde, hasta, cwd):
+    """Las rutas que cambiaron entre dos revisiones, POR EL CANAL DE LECTURA.
+
+    Una lista de rutas de Git no se lee con `--name-only`: se lee con `-z`, porque un
+    nombre con salto de linea parte la lista en dos y el aparato cuenta mal. Eso es lo que
+    `admision/lectura.py` es, y lo que `T188` comprueba con `separador_seguro`.
+
+    NO se traga ninguna excepcion. La primera version de esto devolvia `[]` ante cualquier
+    fallo «para no romper el ciclo», y el efecto se midio en el acto: `test_oficina` paso a
+    declarar `compatible` un avance que CONTRADICE, porque una lista vacia no solapa con
+    nada. Un error convertido en lista vacia no es prudencia: es un veredicto inventado.
+    """
+    from admision.lectura import CanalDeLecturaGit                           # noqa: PLC0415
+    # `referencia` es el vocabulario CERRADO de `V6-07` —contra que ESTADO se juzga—, no la
+    # revision: aqui siempre se juzga contra la base de la que nacio el trabajo.
+    filas = CanalDeLecturaGit(cwd).diferencia(str(desde), str(hasta), referencia="base")
+    return sorted({str(fila["ruta"]) for fila in filas if fila.get("ruta")})
 
 
 def es_repo(ruta):
@@ -92,8 +119,8 @@ def medir(ruta, *, id):
     base_ahora = _git(["rev-parse", ref], ruta) or ""
     faltan = int(_git(["rev-list", "--count", "HEAD.." + ref], ruta) or 0)
     mios = int(_git(["rev-list", "--count", ref + "..HEAD"], ruta) or 0)
-    de_la_base = (_git(["diff", "--name-only", nacio, base_ahora], ruta) or "").splitlines() if (faltan and nacio) else []
-    de_los_mios = (_git(["diff", "--name-only", nacio, "HEAD"], ruta) or "").splitlines() if (mios and nacio) else []
+    de_la_base = _rutas_tocadas(nacio, base_ahora, ruta) if (faltan and nacio) else []
+    de_los_mios = _rutas_tocadas(nacio, "HEAD", ruta) if (mios and nacio) else []
     return {
         "id": id, "medible": True, "rama": rama, "cabeza": cabeza[:12], "ref_base": ref,
         "nacio_de": nacio[:12], "base_ahora": base_ahora[:12],
