@@ -13,6 +13,29 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `ciclo/briefs.py` · **la estación de análisis de impacto de §5 no podía dispararse nunca,
+  porque nadie le decía al trabajador que existía**. El kernel traía el mecanismo ENTERO:
+  `ciclo/impacto.py` con los dieciséis disparadores de §5, la condición de ruta que activa
+  cada uno, y la marca automática del plan cuando aparece una que el circuito no declaró
+  —`b.1`: cambiar de proceso cuando el diagnóstico revela materia nueva—. El esquema de la
+  entrega admite `impacto.disparadores` desde entonces, y la oficina sabe leer y publicar la
+  marca. Faltaba lo único que hacía falta para que ocurriera: **decírselo a quien entrega**.
+  Se midió, y el vocabulario cerrado aparecía SÓLO en `ciclo/impacto.py`, en sus pruebas y en
+  `CONTRATO-OFICINA.md`: ni el brief, ni el contrato operativo del rol, ni el prompt lo
+  nombraban. Un ejecutor —guion o modelo— no puede declarar un disparador que no sabe que
+  existe, así que una estación que la Directiva EXIGE no se disparaba jamás, y el silencio era
+  indistinguible de «no he visto ninguno». Ahora el brief lleva `estacion_de_impacto`: los
+  dieciséis con el grupo al que pertenecen y las condiciones que cada uno activa, **qué
+  condiciones declaró verdaderas ESTE circuito** —que es contra lo que se comparan— y la
+  consecuencia de declarar uno, que es lo que hace que declararlo importe. Va dentro de «Cómo
+  entregas» y no como sección nueva: §5 es parte de lo que se entrega, y renumerar el brief
+  habría roto las pruebas que afirman su forma, que es contractual. Es la misma decisión que
+  la plantilla de la entrega y la forma de sus elementos, tomada por el mismo motivo medido
+  con un modelo real: **lo que el esquema exige se enseña, no se adivina**. `T512`, con sus
+  dos sabotajes —resumir el vocabulario en vez de traerlo entero, y no pintarlo en el brief
+  legible— y ambos rojos. Cierra parte de `OWN-ADS-0003` (§5) y da a `OWN-ADS-0030`–`0033`
+  la vía por la que se ejercen.
+
 - `esquemas/integration-set.yaml` · `ciclo/oficina.py` · **las nueve salvaguardas de §74 se
   RESPONDEN antes de converger, y hasta hoy cinco no tenían dónde**. §74 enumera nueve cosas
   «mientras se valide en producción»; cuatro ya vivían en su sitio —PRs integrables y

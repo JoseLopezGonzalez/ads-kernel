@@ -34,6 +34,7 @@ from estado.serializacion import cid_de_objeto
 
 from .corpus import Corpus
 from .errores import BriefIncomponible
+from .impacto import DISPARADORES, GRUPOS
 
 VERSION_DEL_BRIEF = 1
 
@@ -111,11 +112,47 @@ def componer(*, corpus=None, paquete, item, fila_del_plan, rol, equipo=None, int
             "elementos": _formas_de_los_elementos(esquema_entrega),
         },
         "ordenes": dict(ordenes or {}),
+        # LA ESTACION DE IMPACTO (§5). El kernel trae el mecanismo entero —los dieciseis
+        # disparadores, la condicion de ruta que dispara cada uno, y la marca automatica del
+        # plan cuando aparece una que el circuito no declaro— y NADIE se lo decia al
+        # trabajador: el vocabulario cerrado vivia solo en `impacto.py` y en sus pruebas. Ni
+        # el brief, ni el contrato del rol, ni el prompt lo nombraban, asi que ningun
+        # ejecutor —guion o modelo— podia declarar un disparador que no sabia que existia, y
+        # una estacion que §5 exige no podia dispararse NUNCA. Es la misma forma que la
+        # plantilla de la entrega: lo que el esquema exige se ENSENA, no se adivina.
+        "estacion_de_impacto": _estacion_de_impacto(circuito),
         "prohibiciones": _prohibiciones(contrato_de_rol, contrato_operativo),
         "prompt": corpus.prompt_de(rol),
     }
     brief["huella"] = cid_de_objeto({k: v for k, v in brief.items() if k != "huella"})
     return brief
+
+
+def _estacion_de_impacto(circuito):
+    """Lo que el trabajador necesita para poder declarar un disparador de §5.
+
+    No basta con que el esquema de la entrega admita `impacto.disparadores`: si nadie
+    ensena el vocabulario CERRADO y que verlo obliga a declararlo, la estacion no se
+    dispara. Se dice ademas que condiciones de ruta declaro VERDADERAS el circuito, porque
+    un disparador solo marca el plan cuando exige una que NO esta entre ellas.
+    """
+    declaradas = sorted(str(c) for c in ((circuito or {}).get("condiciones_de_ruta") or []))
+    return {
+        "por_que": "§5: la clase con la que se abrio el encargo fijo que condiciones de ruta "
+                   "eran verdaderas. Si tu trabajo revela otras, el circuito que se esta "
+                   "recorriendo YA NO ES el de este trabajo.",
+        "que_hacer": "si has visto alguno de los disparadores, declaralo en "
+                     "`impacto.disparadores` de tu entrega, con el nombre EXACTO de la lista. "
+                     "Si no has visto ninguno, esa tambien es una respuesta: no inventes.",
+        "consecuencia": "un disparador que exige una condicion de ruta que este circuito NO "
+                        "declaro deja el plan MARCADO, y ningun otro paquete del encargo se "
+                        "toma hasta que se replanifique con un circuito que la cubra.",
+        "condiciones_que_este_circuito_declaro": declaradas,
+        "vocabulario": {
+            grupo: [{"disparador": d, "activa": list(DISPARADORES[d])} for d in nombres]
+            for grupo, nombres in GRUPOS.items()
+        },
+    }
 
 
 def _plantilla_de_entrega(paquete, rol, gate, contrato, esquema):
@@ -380,6 +417,23 @@ def como_markdown(brief):
                "decide sola no se escala"]
     if brief["ordenes"]:
         lineas += [""] + _lista("órdenes:", [k + ": " + str(v) for k, v in sorted(brief["ordenes"].items())])
+    # §5 es parte de LO QUE SE ENTREGA, asi que va dentro de «Como entregas» y no como
+    # seccion propia: renumerar el brief romperia las pruebas que afirman su forma, y la
+    # forma del brief es contractual.
+    estacion = brief.get("estacion_de_impacto") or {}
+    if estacion:
+        lineas += ["", "### Estación de análisis de impacto (§5)", "",
+                   str(estacion.get("por_que") or ""), "",
+                   "QUÉ HACER   " + str(estacion.get("que_hacer") or ""),
+                   "SI APARECE  " + str(estacion.get("consecuencia") or ""), ""]
+        declaradas = estacion.get("condiciones_que_este_circuito_declaro") or []
+        lineas += ["este circuito declaró verdaderas: "
+                   + (", ".join(declaradas) if declaradas else "ninguna condición de ruta")]
+        for grupo, entradas in sorted((estacion.get("vocabulario") or {}).items()):
+            lineas += ["", "  " + grupo + ":"]
+            for entrada in entradas:
+                lineas.append("    · " + str(entrada.get("disparador"))
+                              + "  → activa " + ", ".join(entrada.get("activa") or []))
     lineas += ["", "## 9 · Prohibiciones"] + [""] + ["· " + p for p in brief["prohibiciones"]]
     if brief["instrucciones_del_proyecto"]:
         lineas += ["", "## 10 · Instrucciones del proyecto"] + [""] + [

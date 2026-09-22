@@ -764,6 +764,42 @@ class PlanificacionPorRol(Laboratorio):
         otra = oficina.brief_de(A, corpus=self.corpus, paquete=impl, circuito=self.circuito)
         self.assertEqual(brief["huella"], otra["huella"])
 
+    def test_07_el_brief_ensena_la_estacion_de_impacto_de_5(self):
+        """T512 · Defecto que cierra: una estación que §5 exige y que no podía dispararse.
+
+        El kernel traía el mecanismo ENTERO —los dieciséis disparadores, la condición de ruta
+        que activa cada uno, y la marca automática del plan cuando aparece una que el circuito
+        no declaró— y NADIE se lo decía al trabajador: el vocabulario cerrado vivía sólo en
+        `ciclo/impacto.py` y en sus pruebas. Ni el brief, ni el contrato del rol, ni el prompt
+        lo nombraban. Un ejecutor —guion o modelo— no puede declarar un disparador que no sabe
+        que existe, así que la estación no se disparaba nunca. Es la misma forma que la
+        plantilla de la entrega: lo que el esquema exige se ENSEÑA, no se adivina.
+        """
+        from ciclo.impacto import DISPARADORES, GRUPOS
+        A = self.rt("dsp")
+        plan = self.planificar(A)["plan"]
+        impl = self.paquete_de(plan, "CNS/implementacion")
+        brief = oficina.brief_de(A, corpus=self.corpus, paquete=impl, circuito=self.circuito)
+        estacion = brief["estacion_de_impacto"]
+        # los DIECISÉIS, y cada uno con las condiciones que activa: el brief no resume
+        nombrados = {e["disparador"] for entradas in estacion["vocabulario"].values() for e in entradas}
+        self.assertEqual(nombrados, set(DISPARADORES))
+        self.assertEqual(set(estacion["vocabulario"]), set(GRUPOS))
+        for entradas in estacion["vocabulario"].values():
+            for entrada in entradas:
+                self.assertEqual(tuple(entrada["activa"]), DISPARADORES[entrada["disparador"]])
+        # y dice contra QUÉ se compara: lo que este circuito declaró verdadero
+        self.assertEqual(estacion["condiciones_que_este_circuito_declaro"],
+                         sorted(self.circuito.get("condiciones_de_ruta") or []))
+        # el brief LEGIBLE, que es lo que el trabajador lee de verdad, lo lleva entero
+        texto = briefs.como_markdown(brief)
+        self.assertIn("Estación de análisis de impacto (§5)", texto)
+        self.assertIn("impacto.disparadores", texto)
+        for disparador in DISPARADORES:
+            self.assertIn(disparador, texto)
+        # y dice la consecuencia, que es lo que hace que declararlo importe
+        self.assertIn("MARCADO", texto)
+
 
 # =========================================================================
 # T464–T466 · entregas, autocertificación, devolución y freno
