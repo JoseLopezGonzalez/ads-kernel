@@ -294,6 +294,18 @@ jobs:
   release:
     name: Evidencia y sello del release (sin root, con Docker)
     runs-on: ubuntu-latest
+    # EL ROJO DE LA BATERIA DETIENE EL CORTE, y hasta hoy no lo detenia.
+    #
+    # Medido el 2026-09-22: este trabajo NO dependia de `linux`, asi que cortaba con la
+    # bateria del kernel en ROJO. `r11` y `r12` se publicaron asi. Eso es peor que si
+    # bloqueara: un rojo que no detiene nada deja de mirarse, y de hecho llevaba cortes sin
+    # que nadie lo mirara —tres baterias estaban rotas y dos las habia roto la campana—.
+    # §88 de la Directiva del Owner pide que la release valide tambien el sistema
+    # organizativo; una release que se publica sobre su propia bateria en rojo no lo hace.
+    #
+    # Se ata DESPUES de comprobar que `linux` se pone verde con las 19 baterias dentro, y
+    # no antes: ponerlo sobre un trabajo rojo habria dejado al proyecto sin poder cortar.
+    needs: linux
     # POR QUE NO ES UN DISPARADOR MANUAL. Lo era, y no se pudo usar: el token que dirige
     # esto no puede crear un `workflow_dispatch` -403 «Resource not accessible by
     # integration»-. Asi que el release se pide como se pide todo lo demas aqui: con un
