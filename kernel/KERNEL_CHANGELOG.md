@@ -13,6 +13,40 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `ciclo/base.py` · `gobierno/git.py` · **este módulo nació con su propio `subprocess.run`
+  sobre Git, que es la vía paralela que `T188` existe para impedir**. `base.py` se añadió para
+  medir §61 y §63 —de qué commit nació el trabajo y si el mundo cambió debajo— y trajo su
+  `_git` a mano. El censo del aparato lo denunciaba desde el primer día: «el canal ÚNICO de
+  invocación de Git» es `gobierno/git.py`, y `SEDES_DE_PROCESO` enumera las excepciones con su
+  motivo, una a una. No se declara una sede nueva, que era lo cómodo: **se pasa por el canal**,
+  que además trae entorno hermético —sin configuración de la máquina, sin red, sin prompt— que
+  es más de lo que aquel `_git` conseguía. Y sus dos lecturas de lista pasan por
+  `admision/lectura.py` con `-z`, porque un nombre con salto de línea parte la lista en dos y
+  el aparato cuenta mal. `CanalGit.ejecutar` admite ahora un tope de `tiempo`, que es lo único
+  que aquel `_git` tenía y el canal no: el canal también lee repositorios **ajenos** —las
+  fuentes de producto, que ni son nuestras ni sabemos cómo de grandes son— y leerlos sin tope
+  es un cuelgue esperando a ocurrir; sin `tiempo` no hay tope, que es el comportamiento de
+  siempre. **Y el primer arreglo estuvo mal**: devolvía `[]` ante cualquier excepción «para no
+  romper el ciclo», y el efecto se midió en el acto —`test_oficina` pasó a declarar
+  **compatible** un avance que **contradice**, porque una lista vacía no solapa con nada—. Un
+  error convertido en lista vacía no es prudencia: es un veredicto inventado.
+
+- `.github/workflows/kernel.yml` · **la CI no ejecutaba sus propias baterías, y su rojo no
+  detenía el corte**. Medido: 19 ficheros `test_*.py` en `runtime/pruebas/` y el flujo nombraba
+  **uno**, con `set +e`. `test_oficina.py` —los 61 casos de la propia oficina— no la corría el
+  release jamás. Al ejecutarlas a mano salieron **tres rojas**, dos de ellas rotas por la
+  campaña de la Directiva y una tercera que no era código sino **flujo**: la evidencia que
+  regenera cada release se commitea en la rama del corte y **no volvía a la rama de trabajo**,
+  que se quedaba con la de una máquina sin `cgroup2`; esa batería estaba roja ahí de forma
+  permanente, y un rojo permanente deja de mirarse. Ahora el flujo corre las 19 —dos
+  **declaradas** como dependientes del anfitrión, con su motivo: se ejecutan, su resultado se
+  publica como aviso y no tumban el job; excluirlas en silencio habría convertido el paso en un
+  adorno— y **el trabajo del release depende de esa batería** (`needs: linux`), atado DESPUÉS de
+  comprobar que se pone verde y no antes. `§88` pide que la release valide también el sistema
+  organizativo; una release que se publica sobre su propia batería en rojo no lo hace.
+  `test_continua` se pone al día con el décimo corte: `gate:evidencia-suficiente` exige el ROL
+  `VER/dosier` desde que existe `dictamina`, y la prueba seguía pasando la capacidad `VER`.
+
 - `ciclo/briefs.py` · **la estación de análisis de impacto de §5 no podía dispararse nunca,
   porque nadie le decía al trabajador que existía**. El kernel traía el mecanismo ENTERO:
   `ciclo/impacto.py` con los dieciséis disparadores de §5, la condición de ruta que activa
