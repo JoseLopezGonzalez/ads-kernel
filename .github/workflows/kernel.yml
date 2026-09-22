@@ -84,6 +84,41 @@ jobs:
       # NO se convierta en una puerta trasera: tres de ellas exigen que se niegue.
       - name: Zonas no analizadas declaradas por la instancia
         run: python3 kernel/operativo/validadores/pruebas/prueba_exclusiones_de_instancia.py
+      # LAS BATERIAS DEL RUNTIME, TODAS, Y SU ROJO DETIENE EL CORTE.
+      #
+      # DEFECTO QUE CIERRA, medido el 2026-09-22 ejecutandolas a mano antes del duodecimo
+      # corte -algo que, resulto, no hacia nadie-. Hay 19 ficheros `test_*.py` en
+      # `kernel/operativo/runtime/pruebas/` y este flujo NOMBRABA UNO,
+      # `test_integridad_y_evidencia.py`, y ademas con `set +e`. `test_oficina.py` -los 61
+      # casos de la propia oficina, donde viven T460-T512- no la corria el release jamas.
+      #
+      # La consecuencia se midio: TRES estaban en rojo. Dos las habia roto la campana de la
+      # Directiva -el decimo corte dejo `test_continua` pidiendo una capacidad donde el gate
+      # ya exige un rol, y `ciclo/base.py` nacio con su propio `subprocess.run` sobre Git, que
+      # es la via paralela que `T188` existe para impedir-. La tercera era evidencia vieja: la
+      # que REGENERA cada release se quedaba en la rama del release y no volvia a la de
+      # trabajo, asi que esa bateria estaba roja ahi de forma permanente.
+      #
+      # `test_integridad_y_evidencia.py` NO se repite aqui: tiene su paso propio, con su
+      # `set +e` y su expectativa declarada de T309.
+      - name: Las baterias del runtime (todas menos la que tiene paso propio)
+        run: |
+          set -e
+          fallidas=0
+          for f in kernel/operativo/runtime/pruebas/test_*.py; do
+            case "$f" in *test_integridad_y_evidencia.py) continue ;; esac
+            echo "── $f"
+            if ! python3 "$f" > /tmp/bateria.txt 2>&1; then
+              fallidas=$((fallidas + 1))
+              tail -30 /tmp/bateria.txt
+              echo "::error::bateria en ROJO: $f"
+            else
+              tail -1 /tmp/bateria.txt
+            fi
+          done
+          echo "baterias en rojo: $fallidas"
+          test "$fallidas" -eq 0
+
       - name: "El aislamiento de arranque (T398 y T399), con T309 declarado"
         run: |
           set +e

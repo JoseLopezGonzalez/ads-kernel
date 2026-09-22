@@ -76,8 +76,8 @@ ii         108  a5f87977c58ed1d0…  kernel/operativo/capacidades/PLT/CAPACIDAD.
 ii         105  e83b0e08272e219d…  kernel/operativo/capacidades/PRD/CAPACIDAD.md
 ii         135  0fb11990dbba67d7…  kernel/operativo/capacidades/SEG/CAPACIDAD.md
 ii         119  02089f36d1244356…  kernel/operativo/capacidades/SIS/CAPACIDAD.md
-ii          94  65f144e4a5c756ef…  kernel/operativo/capacidades/USO/CAPACIDAD.md
-ii         135  a915ed60c92feac0…  kernel/operativo/capacidades/VER/CAPACIDAD.md
+ii          95  c320d160bf042294…  kernel/operativo/capacidades/USO/CAPACIDAD.md
+ii         136  fe58b38dd1df7da6…  kernel/operativo/capacidades/VER/CAPACIDAD.md
 v           29  48b66b4fa9daee8f…  kernel/operativo/contratos/00-INDICE.md
 v          161  825f15a914c10d6f…  kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md
 ii+v       539  3ee58ca4bc47988d…  kernel/operativo/contratos/C2-AGENTES-Y-MODELOS.md
@@ -85,10 +85,10 @@ ii+v       150  d56bf6b81e0fe4a9…  kernel/operativo/contratos/C3-METODO-EJECUT
 ii+v       170  670289180e59b176…  kernel/operativo/contratos/C4-MATERIALIZACION.md
 v          115  af6f1a4c4f5def8d…  kernel/operativo/contratos/C5-HANDOFF.md
 v          336  14805a79aeb07f31…  kernel/operativo/contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md
-v          250  752519c533168ce8…  kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md
+v          251  29de75ca8c982ef8…  kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md
 ii         141  08f4bea44594e026…  kernel/operativo/diseno/00-SISTEMA-DE-EXCELENCIA.md
 ii         352  dd323d1aa2f7ede3…  kernel/operativo/diseno/01-MEMORIA-DE-DISENO.md
-ii         343  404666aa260d4ef0…  kernel/operativo/diseno/02-RUBRICAS.md
+ii         344  ee4777c3da668c13…  kernel/operativo/diseno/02-RUBRICAS.md
 ii         130  ebcfae8e9111dbbf…  kernel/operativo/diseno/04-CICLO-DE-CALIDAD.md
 ii         129  f4c81e4ce3f99ef5…  kernel/operativo/diseno/05-FIDELIDAD.md
 ii          28  315b2790cb66bb4c…  kernel/operativo/entrada/00-INDICE.md
@@ -98,7 +98,7 @@ v           89  586653398b298e4e…  kernel/operativo/esquemas/proceso.yaml
 v          134  9052fbf249413730…  kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md
 v          606  c5415442c236a92e…  kernel/operativo/recorrido/01-PROCESOS.md
 
-94 fuentes obligatorias · 101130 líneas
+94 fuentes obligatorias · 101134 líneas
   (i  )   4   las fuentes de «QUÉ HAY QUE LEER ÍNTEGRO» de `C-L.5`
   (ii )  29   las fuentes y las fichas de `C-0.1` / `C-0.2`
   (iii)   3   documento 11 · registro de decisiones · checkpoint
@@ -118,4 +118,5 @@ v          606  c5415442c236a92e…  kernel/operativo/recorrido/01-PROCESOS.md
         09-SINTESIS.md                                 # F3 — SÍNTESIS
         11-ARQUITECTURA-INTEGRADA.md                   # F4 — ARQUITECTURA INTEGRADA
 
-  EXCLUIDOS por PERÍMETRO, con su RUTA COMPLETA: 0
+  EXCLUIDOS por PERÍMETRO, con su RUTA COMPLETA: 1
+        .git/                                                        `.git` de la RAÍZ: almacén, no corpus
