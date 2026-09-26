@@ -6,7 +6,7 @@
 `O31` §3 y §5 · EL UNIVERSO DE INSTRUMENTOS, DERIVADO DEL ÁRBOL
 ==============================================================================
 
-  ANCLA   commit f5fa072b775f4915b33bd30a34808c19aea5aa70 · tree f6aea7b835bd59004a07f6d180a98930e45c9624
+  ANCLA   commit 09eb32cd8c09d29d71b010650abe32fb813e296c · tree 1244e43729f7f4044d81a07a637eefd1a56c2552
 
 CÓMO SE DERIVA, Y POR QUÉ NO ES UNA LISTA
 ------------------------------------------------------------------------------

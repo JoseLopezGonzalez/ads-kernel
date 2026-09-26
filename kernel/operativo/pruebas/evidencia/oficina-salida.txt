@@ -45,6 +45,8 @@ test_07_una_entrega_incompleta_se_rechaza_y_no_toca_el_estado (__main__.Entregas
 T464 · Defecto que previene: «PR #14 sin fusionar» como evidencia de cierre. ... ok
 test_07b_sin_lease_no_se_escribe_ni_el_primer_paso_de_la_entrega (__main__.Entregas.test_07b_sin_lease_no_se_escribe_ni_el_primer_paso_de_la_entrega)
 T461 · Defecto que previene: media entrega escrita por quien ya no tiene la autoridad. ... ok
+test_07c_cada_artefacto_obligatorio_tiene_el_suyo_y_su_estructura_entera (__main__.Entregas.test_07c_cada_artefacto_obligatorio_tiene_el_suyo_y_su_estructura_entera)
+T513 · Defecto que cierra: la forma sólo miraba que hubiera UN artefacto de cada TIPO. ... ok
 test_08_la_autocertificacion_se_rechaza_por_trabajador_y_por_rol (__main__.Entregas.test_08_la_autocertificacion_se_rechaza_por_trabajador_y_por_rol)
 T465 · Defecto que previene: el implementador como único verificador de su trabajo. ... ok
 test_09_devolucion_corrige_reapunta_y_a_la_tercera_frena (__main__.Entregas.test_09_devolucion_corrige_reapunta_y_a_la_tercera_frena)
@@ -129,6 +131,6 @@ test_15_sin_entrega_valida_el_agente_no_completa_y_sin_ejecutor_falla_cerrado (_
 T470 · Defecto que previene: un `completado` durable sobre una entrega que no existe. ... ok
 
 ----------------------------------------------------------------------
-Ran 61 tests  (duración no registrada: varía por ejecución)
+Ran 62 tests  (duración no registrada: varía por ejecución)
 
 OK
