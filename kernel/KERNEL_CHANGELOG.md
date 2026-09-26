@@ -29,7 +29,9 @@ release; lo propio del Owner se queda en su instancia.
   siempre. **Y el primer arreglo estuvo mal**: devolvía `[]` ante cualquier excepción «para no
   romper el ciclo», y el efecto se midió en el acto —`test_oficina` pasó a declarar
   **compatible** un avance que **contradice**, porque una lista vacía no solapa con nada—. Un
-  error convertido en lista vacía no es prudencia: es un veredicto inventado.
+  error convertido en lista vacía no es prudencia: es un veredicto inventado. Es un DEFECTO
+  encontrado construyendo, no un requisito nuevo; lo que el módulo sostiene es OWN-ADS-0220,
+  OWN-ADS-0227 y OWN-ADS-0229 (§61, §63).
 
 - `.github/workflows/kernel.yml` · **la CI no ejecutaba sus propias baterías, y su rojo no
   detenía el corte**. Medido: 19 ficheros `test_*.py` en `runtime/pruebas/` y el flujo nombraba
@@ -46,6 +48,12 @@ release; lo propio del Owner se queda en su instancia.
   organizativo; una release que se publica sobre su propia batería en rojo no lo hace.
   `test_continua` se pone al día con el décimo corte: `gate:evidencia-suficiente` exige el ROL
   `VER/dosier` desde que existe `dictamina`, y la prueba seguía pasando la capacidad `VER`.
+  Es un DEFECTO encontrado construyendo, medido contra lo que exigen OWN-ADS-0312 y
+  OWN-ADS-0315 (§88).
+  **La trazabilidad de estas dos entradas la corrigió el corte siguiente** (2026-09-26): al
+  vendorizar r13, la instancia las rechazó por §89 (`OWN-ADS-0319`, T-D22) porque no citaban
+  requisito ni se declaraban defecto. El validador de la instancia vio lo que el release no
+  comprobaba.
 
 - `ciclo/briefs.py` · **la estación de análisis de impacto de §5 no podía dispararse nunca,
   porque nadie le decía al trabajador que existía**. El kernel traía el mecanismo ENTERO:
