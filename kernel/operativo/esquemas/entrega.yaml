@@ -46,6 +46,19 @@ campos:
       fuente: {tipo: texto}
       revision: {tipo: texto}
       descripcion: {tipo: texto, min: 5}
+      # QUÉ artefacto obligatorio del contrato operativo cumple éste, por su `nombre`: cada
+      # obligatorio exige el suyo, y uno entregado no vale por varios
+      cumple: {tipo: texto}
+      # la estructura mínima que el contrato fija a ese artefacto, apartado a apartado, con
+      # DÓNDE está cada uno (sección, línea, ancla): que no falte ninguno lo comprueba la
+      # oficina; que diga lo que promete, quien revisa
+      estructura:
+        tipo: lista
+        de: objeto
+        obligatorios: [apartado, donde]
+        campos:
+          apartado: {tipo: texto, min: 3}
+          donde: {tipo: texto, min: 1}
   evidencias:
     tipo: lista
     de: objeto

@@ -13,6 +13,24 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `ciclo/entregas.py` · `esquemas/entrega.yaml` · `ciclo/briefs.py` · **la forma de la entrega
+  sólo miraba que hubiera UN artefacto de cada TIPO obligatorio**. Es un DEFECTO encontrado por
+  la revisión independiente (G13) del ledger de La Pesquerapp el 2026-09-26, y deja sin sostén
+  mecánico lo que exigen OWN-ADS-0051, OWN-ADS-0054, OWN-ADS-0056, OWN-ADS-0058, OWN-ADS-0064,
+  OWN-ADS-0077 y OWN-ADS-0095 (§12–§27) y la promesa de §82. Un solo `documento` cumplía los dos
+  obligatorios de `DIS/investigacion-ux` y los tres de `DIS/direccion-artistica`; la
+  `estructura_minima` no se miraba nunca; el conjunto (tipo, descripción) se calculaba y se
+  borraba sin usarse, y el docstring del módulo afirmaba «por su tipo y nombre». Los fixtures de
+  las baterías entregaban un artefacto de cada tipo, que es exactamente el atajo, y el
+  2026-09-21 se admitió con un modelo real una entrega de CNS con ocho artefactos «de
+  laboratorio». Ahora cada artefacto entregado declara `cumple: <nombre del artefacto del
+  contrato>` —cada obligatorio exige el SUYO, y uno no vale por varios— y, si el contrato le fija
+  estructura mínima, la declara entera en `estructura`, apartado a apartado con `donde` está; un
+  apartado ausente o que sigue siendo la pista de la plantilla se rechaza nombrándolo. Que el
+  apartado diga lo que promete sigue siendo juicio de quien revisa. La plantilla del brief enseña
+  los dos campos rellenos, y los fixtures de `test_oficina` construyen sus artefactos desde el
+  contrato. `T513`, verificada por sabotaje: devolviendo la comprobación a «sólo el tipo», cae.
+
 - `ciclo/base.py` · `gobierno/git.py` · **este módulo nació con su propio `subprocess.run`
   sobre Git, que es la vía paralela que `T188` existe para impedir**. `base.py` se añadió para
   medir §61 y §63 —de qué commit nació el trabajo y si el mundo cambió debajo— y trajo su

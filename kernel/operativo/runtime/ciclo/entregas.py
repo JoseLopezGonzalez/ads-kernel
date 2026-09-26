@@ -12,7 +12,9 @@ se valida ANTES de escribirse, y lo que se valida no es sólo la forma:
       menos —una comprobación sin anotar es una comprobación no hecha— ni una de más —un
       gate no crece por conveniencia—
     · el CHECKLIST del contrato operativo, cuando el rol lo tiene, se contesta ENTERO
-    · los ARTEFACTOS OBLIGATORIOS del contrato operativo están, por su tipo y nombre
+    · los ARTEFACTOS OBLIGATORIOS del contrato operativo están, cada uno con el SUYO —por su
+      tipo y por el nombre que declara `cumple`— y con su estructura mínima entera
+      (`_artefactos_del_contrato`; hasta el 2026-09-26 sólo se miraba el tipo)
     · un veredicto `devuelto` trae los CUATRO campos de `C5`; uno `bloqueado` o `escalado`,
       qué lo impide, qué lo desbloquearía y quién tiene la autoridad
     · un rol que JUZGA trae su dictamen, y el dictamen lo aplica `gates.aplicar` con
@@ -95,14 +97,7 @@ def comprobar_forma(entrega, *, corpus=None, contrato=None, gate=None):
             fallos.append("entrega.autoevaluacion.checklist: el contrato operativo de `"
                           + entrega["rol"] + "` exige contestar " + ", ".join(faltan))
         if veredicto == "entregado":
-            tipos_entregados = {(a["tipo"], a.get("descripcion", "")) for a in entrega["artefactos"]}
-            tipos = {a["tipo"] for a in entrega["artefactos"]}
-            for artefacto in contrato["artefactos"]:
-                if artefacto.get("obligatorio") and artefacto["tipo"] not in tipos:
-                    fallos.append("entrega.artefactos: falta el artefacto obligatorio `"
-                                  + artefacto["nombre"] + "` (tipo " + artefacto["tipo"]
-                                  + ") que exige el contrato operativo")
-            del tipos_entregados
+            fallos.extend(_artefactos_del_contrato(entrega, contrato))
         # Los gates que el contrato dice que el rol NUNCA dictamina sobre su propio paquete.
         vedados = set(contrato.get("no_autocertifica") or [])
         for dictamen in list(entrega.get("dictamenes") or []) + ([entrega["dictamen"]] if entrega.get("dictamen") else []):
@@ -110,6 +105,71 @@ def comprobar_forma(entrega, *, corpus=None, contrato=None, gate=None):
                 fallos.append("entrega.dictamenes: el contrato operativo de `" + entrega["rol"]
                               + "` prohíbe dictaminar `" + str(dictamen.get("gate"))
                               + "` sobre su propio paquete (no_autocertifica)")
+    return fallos
+
+
+def _normal(texto):
+    """Minúsculas, sin tildes y sin espacios repetidos: la misma pieza escrita igual."""
+    import unicodedata  # noqa: PLC0415
+    plano = unicodedata.normalize("NFKD", str(texto or "")).encode("ascii", "ignore").decode("ascii")
+    return " ".join(plano.lower().split())
+
+
+def _es_hueco(texto):
+    """Un valor que todavía es la pista de la plantilla, o nada."""
+    t = str(texto or "").strip()
+    return not t or (t.startswith("<") and t.endswith(">"))
+
+
+def _artefactos_del_contrato(entrega, contrato):
+    """Cada artefacto obligatorio del contrato tiene SU artefacto entregado, y entero.
+
+    HALLAZGO del 2026-09-26 (revisión independiente G13 del ledger de La Pesquerapp): esta
+    comprobación miraba sólo que hubiera ALGÚN artefacto de cada TIPO obligatorio. Un único
+    `documento` cumplía los dos obligatorios de `DIS/investigacion-ux` y los tres de
+    `DIS/direccion-artistica`; la estructura mínima de cada uno no se miraba nunca; y el
+    conjunto que calculaba tipo y descripción se construía y se borraba sin usarse. Los
+    fixtures de las baterías entregaban un artefacto de cada tipo, que es exactamente el
+    atajo, y una entrega con commits «de laboratorio» se admitió con un modelo real.
+
+    Ahora, para cada artefacto obligatorio del contrato:
+      · hay un artefacto entregado de su TIPO que declara `cumple: <su nombre>`; cada
+        artefacto entregado cumple uno solo, así que tres obligatorios son tres entregados
+      · si el contrato le fija `estructura_minima`, el entregado la declara ENTERA en
+        `estructura`: cada apartado con `donde` está (sección, línea, ancla) y sin pistas
+        de plantilla por rellenar
+    Que el apartado diga de verdad lo que promete lo juzga quien revisa (G13), no esto: el
+    mecanismo exige que no falte ninguno y que cada uno se pueda ir a mirar.
+    """
+    fallos = []
+    entregados = list(entrega.get("artefactos") or [])
+    for artefacto in contrato.get("artefactos") or []:
+        if not artefacto.get("obligatorio"):
+            continue
+        nombre = str(artefacto["nombre"])
+        suyos = [a for a in entregados
+                 if a.get("tipo") == artefacto["tipo"] and _normal(a.get("cumple")) == _normal(nombre)]
+        if not suyos:
+            del_tipo = [a for a in entregados if a.get("tipo") == artefacto["tipo"]]
+            fallos.append("entrega.artefactos: falta el artefacto obligatorio `" + nombre + "` (tipo "
+                          + artefacto["tipo"] + ") que exige el contrato operativo"
+                          + (": hay " + str(len(del_tipo)) + " de ese tipo, pero ninguno declara "
+                             "`cumple: " + nombre + "` (un artefacto no vale por varios)"
+                             if del_tipo else ""))
+            continue
+        exigida = [str(x) for x in artefacto.get("estructura_minima") or []]
+        if not exigida:
+            continue
+        declarados = {}
+        for a in suyos:
+            for e in a.get("estructura") or []:
+                if isinstance(e, dict) and not _es_hueco(e.get("donde")):
+                    declarados[_normal(e.get("apartado"))] = e.get("donde")
+        faltan = [x for x in exigida if _normal(x) not in declarados]
+        if faltan:
+            fallos.append("entrega.artefactos: `" + nombre + "` no declara dónde está "
+                          + str(len(faltan)) + " apartado(s) de su estructura mínima: "
+                          + " · ".join("«" + x + "»" for x in faltan))
     return fallos
 
 

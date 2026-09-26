@@ -306,7 +306,11 @@ rol = brief["rol"]["id"]
 entrega = {
   "paquete": brief["paquete"], "rol": rol, "veredicto": "entregado",
   "artefactos": [{"tipo": t, "referencia": "ref-" + t, "descripcion": "artefacto " + t}
-                 for t in ["commit", "rama", "salida-de-orden", "dosier", "medicion", "documento"]],
+                 for t in ["commit", "rama", "salida-de-orden", "dosier", "medicion", "documento"]]
+               + [dict(a, referencia="ref-" + a["tipo"], descripcion="el artefacto " + a["cumple"],
+                       **({"estructura": [dict(e, donde="seccion " + str(i + 1)) for i, e in enumerate(a["estructura"])]}
+                          if a.get("estructura") else {}))
+                  for a in (forma.get("plantilla") or {}).get("artefactos") or [] if a.get("cumple")],
   "evidencias": [], "diferencias_declaradas": [], "decisiones_asumidas": [], "riesgos": [],
   "deuda_aceptada": [], "no_hecho": [], "siguiente": "al siguiente rol",
   "autoevaluacion": {"gate": brief["gate"]["id"],
@@ -386,12 +390,22 @@ class Laboratorio(unittest.TestCase):
                                    for c in self.corpus.gates()[gate]["comprobaciones"]],
                 "checklist": [{"id": c["id"], "respuesta": "si"} for c in contrato.get("checklist", [])]}
 
+    def artefactos_del_contrato(self, rol):
+        """Un artefacto por cada obligatorio del contrato del rol, con `cumple` y su estructura."""
+        contrato = self.corpus.contrato_operativo_de(rol) or {}
+        return [dict({"tipo": a["tipo"], "referencia": "ref-" + a["tipo"],
+                      "descripcion": "el artefacto " + a["nombre"], "cumple": a["nombre"]},
+                     **({"estructura": [{"apartado": x, "donde": "§" + str(i + 1)}
+                                        for i, x in enumerate(a["estructura_minima"])]}
+                        if a.get("estructura_minima") else {}))
+                for a in contrato.get("artefactos") or [] if a.get("obligatorio")]
+
     def entrega(self, paquete, rol, veredicto="entregado"):
         gate = self.corpus.rol(rol)["gate"]
         return {"paquete": paquete, "rol": rol, "veredicto": veredicto,
                 "artefactos": [{"tipo": t, "referencia": "ref-" + t, "descripcion": "artefacto " + t}
                                for t in ("commit", "rama", "pr", "salida-de-orden", "dosier", "medicion",
-                                         "documento", "captura")],
+                                         "documento", "captura")] + self.artefactos_del_contrato(rol),
                 "evidencias": [], "autoevaluacion": self.autoevaluacion(gate, rol),
                 "diferencias_declaradas": [], "decisiones_asumidas": [], "riesgos": [],
                 "deuda_aceptada": [], "no_hecho": [], "siguiente": "al siguiente rol"}
@@ -838,6 +852,52 @@ class Entregas(Laboratorio):
                 self.entregar(A, impl, entrega)
             self.assertEqual(A.almacen.revision()["revision"], revision, nombre)
         self.assertEqual(A._leer_paquete(impl)["estado"], "ejecutando")
+
+    def test_07c_cada_artefacto_obligatorio_tiene_el_suyo_y_su_estructura_entera(self):
+        """T513 · Defecto que cierra: la forma sólo miraba que hubiera UN artefacto de cada TIPO.
+
+        Medido el 2026-09-26 por la revisión independiente del ledger de La Pesquerapp: un solo
+        `documento` cumplía los dos obligatorios de DIS/investigacion-ux, la estructura mínima
+        no se miraba nunca, y el conjunto (tipo, descripción) se calculaba y se borraba sin
+        usarse. Se comprueba contra el contrato REAL del kernel, sin oficina: es la forma."""
+        rol = "DIS/investigacion-ux"
+        contrato = self.corpus.contrato_operativo_de(rol)
+        obligatorios = [a for a in contrato["artefactos"] if a.get("obligatorio")]
+        con_estructura = [a for a in obligatorios if a.get("estructura_minima")]
+        self.assertGreaterEqual(len([a for a in obligatorios if a["tipo"] == "documento"]), 2)
+        buena = self.entrega("pq-x", rol)
+        buena["artefactos"] = self.artefactos_del_contrato(rol)
+        self.assertEqual(ciclo.entregas.comprobar_forma(buena, corpus=self.corpus), [])
+
+        # 1 · un documento que no dice cuál cumple no vale por los dos
+        genericos = dict(buena, artefactos=[{"tipo": a["tipo"], "referencia": "ref", "descripcion": "un documento"}
+                                             for a in obligatorios])
+        fallos = ciclo.entregas.comprobar_forma(genericos, corpus=self.corpus)
+        self.assertTrue(any("ninguno declara `cumple:" in f for f in fallos), fallos)
+
+        # 2 · uno solo que declara cumplir el primero deja sin el suyo al segundo del mismo tipo
+        docs = [a for a in obligatorios if a["tipo"] == "documento"]
+        solo_uno = dict(buena, artefactos=[x for x in buena["artefactos"] if x["cumple"] != docs[1]["nombre"]])
+        fallos = ciclo.entregas.comprobar_forma(solo_uno, corpus=self.corpus)
+        self.assertTrue(any(docs[1]["nombre"] in f for f in fallos), fallos)
+
+        # 3 · la estructura mínima: un apartado que falta, o que sigue siendo la pista, se nombra
+        objetivo = con_estructura[0]["nombre"]
+        apartado = con_estructura[0]["estructura_minima"][-1]
+        for nombre, cambia in (("apartado ausente", lambda e: [x for x in e if x["apartado"] != apartado]),
+                               ("apartado sin rellenar", lambda e: [dict(x, donde="<sección, línea o ancla donde está>")
+                                                                  if x["apartado"] == apartado else x for x in e])):
+            mutada = dict(buena, artefactos=[dict(x, estructura=cambia(x["estructura"])) if x["cumple"] == objetivo else x
+                                             for x in buena["artefactos"]])
+            fallos = ciclo.entregas.comprobar_forma(mutada, corpus=self.corpus)
+            self.assertTrue(any(apartado in f and objetivo in f for f in fallos), (nombre, fallos))
+
+        # 4 · y la plantilla del brief enseña cumple y estructura, para que el ejecutor no adivine
+        plantilla = ciclo.briefs._plantilla_de_entrega("pq-x", rol, self.corpus.gates()[self.corpus.rol(rol)["gate"]],
+                                                       contrato, self.corpus.esquema("entrega"))
+        self.assertEqual({a.get("cumple") for a in plantilla["artefactos"]}, {a["nombre"] for a in obligatorios})
+        self.assertTrue(all(len(a.get("estructura") or []) == len(c.get("estructura_minima") or [])
+                            for a in plantilla["artefactos"] for c in obligatorios if c["nombre"] == a["cumple"]))
 
     def test_07b_sin_lease_no_se_escribe_ni_el_primer_paso_de_la_entrega(self):
         """T461 · Defecto que previene: media entrega escrita por quien ya no tiene la autoridad.

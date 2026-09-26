@@ -174,8 +174,11 @@ def _plantilla_de_entrega(paquete, rol, gate, contrato, esquema):
         "rol": rol,
         "veredicto": "entregado",
         "artefactos": [
-            {"tipo": a["tipo"], "referencia": "<referencia real: ruta, commit, PR, fichero>",
-             "descripcion": "<qué es: " + str(a["nombre"]) + ">"}
+            dict({"tipo": a["tipo"], "referencia": "<referencia real: ruta, commit, PR, fichero>",
+                  "descripcion": "<qué es: " + str(a["nombre"]) + ">", "cumple": str(a["nombre"])},
+                 **({"estructura": [{"apartado": str(x), "donde": "<sección, línea o ancla donde está>"}
+                                    for x in a.get("estructura_minima") or []]}
+                    if a.get("estructura_minima") else {}))
             for a in (contrato or {}).get("artefactos") or [] if a.get("obligatorio")
         ] or [{"tipo": "documento", "referencia": "<referencia real>", "descripcion": "<qué es>"}],
         "evidencias": [],
