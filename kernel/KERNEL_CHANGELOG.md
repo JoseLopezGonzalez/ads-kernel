@@ -13,6 +13,17 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `ciclo/entregas.py` · **un rol que dictamina un gate podía entregar `entregado` sin su
+  dictamen**. Es un DEFECTO medido con un modelo real (La Pesquerapp, 2026-09-27): VER/dosier
+  entregó un dosier impecable sin dictaminar `gate:evidencia-suficiente`, porque su brief le
+  decía que nunca dictamina su gate sobre su propio paquete y entendió que lo firmaba otro. Ese
+  gate declara `dictamina: VER/dosier` y nadie más puede emitirlo, así que el nivel `verificado`
+  se quedó sin quien lo alcanzara. Rompía lo que exigen OWN-ADS-0010 (niveles alcanzados con
+  dictámenes de quien no construyó) y OWN-ADS-0024 (el encargo cierra por la oficina). Ahora la
+  forma rechaza el `entregado` de un rol sin el dictamen de cada gate que dictamina, y dice que
+  es sobre el paquete que juzga. Si no se supera, el veredicto es `devuelto`. T515 le enseña el
+  esqueleto. `T516`, verificada por sabotaje.
+
 - `ciclo/briefs.py` · `capacidades/CNS/CAPACIDAD.md` · **un revisor real tuvo que adivinar la
   evidencia de su dictamen**. Es un DEFECTO medido con un modelo real (La Pesquerapp,
   2026-09-27), y lo nombró el propio modelo en sus riesgos: `CNS/revision-de-construccion`

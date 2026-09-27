@@ -878,6 +878,24 @@ class Entregas(Laboratorio):
             plan, "CNS/implementacion"), circuito=self.circuito)
         self.assertNotIn("dictamenes", brief_impl["forma_de_la_entrega"]["plantilla"])
 
+    def test_07e_un_rol_que_dictamina_no_entrega_sin_su_dictamen(self):
+        """T516 · Defecto que cierra: VER entregó un dosier sin dictaminar, y la oficina lo admitió.
+
+        Medido con un modelo real el 2026-09-27: VER/dosier entendió que el dictamen de
+        `gate:evidencia-suficiente` «lo firma otro trabajador» y entregó sin él. Ese gate declara
+        `dictamina: VER/dosier`, así que el nivel `verificado` se quedó sin quien lo alcanzara."""
+        rol = "VER/dosier"
+        entrega = self.entrega("pq-dosier", rol)
+        entrega.pop("dictamenes", None)
+        fallos = ciclo.entregas.comprobar_forma(entrega, corpus=self.corpus)
+        self.assertTrue(any("T516" in f and "gate:evidencia-suficiente" in f for f in fallos), fallos)
+        # con su dictamen SOBRE el paquete que juzga, esa pieza de la forma ya no falla
+        entrega["dictamenes"] = [self.dictamen("gate:evidencia-suficiente", "pq-construccion")]
+        self.assertFalse([f for f in ciclo.entregas.comprobar_forma(entrega, corpus=self.corpus) if "T516" in f])
+        # y quien no dictamina nada no necesita dictamen
+        construye = self.entrega("pq-impl", "CNS/implementacion")
+        self.assertFalse([f for f in ciclo.entregas.comprobar_forma(construye, corpus=self.corpus) if "T516" in f])
+
     def test_07c_cada_artefacto_obligatorio_tiene_el_suyo_y_su_estructura_entera(self):
         """T513 · Defecto que cierra: la forma sólo miraba que hubiera UN artefacto de cada TIPO.
 

@@ -98,6 +98,8 @@ def comprobar_forma(entrega, *, corpus=None, contrato=None, gate=None):
                           + entrega["rol"] + "` exige contestar " + ", ".join(faltan))
         if veredicto == "entregado":
             fallos.extend(_artefactos_del_contrato(entrega, contrato))
+    if veredicto == "entregado" and corpus is not None:
+        fallos.extend(_dictamenes_del_rol(entrega, corpus))
         # Los gates que el contrato dice que el rol NUNCA dictamina sobre su propio paquete.
         vedados = set(contrato.get("no_autocertifica") or [])
         for dictamen in list(entrega.get("dictamenes") or []) + ([entrega["dictamen"]] if entrega.get("dictamen") else []):
@@ -105,6 +107,31 @@ def comprobar_forma(entrega, *, corpus=None, contrato=None, gate=None):
                 fallos.append("entrega.dictamenes: el contrato operativo de `" + entrega["rol"]
                               + "` prohíbe dictaminar `" + str(dictamen.get("gate"))
                               + "` sobre su propio paquete (no_autocertifica)")
+    return fallos
+
+
+def _dictamenes_del_rol(entrega, corpus):
+    """T516 · Un rol que DICTAMINA un gate no entrega `entregado` sin su dictamen.
+
+    DEFECTO MEDIDO con un modelo real (La Pesquerapp, 2026-09-27): VER/dosier entregó
+    `entregado` con un dosier impecable y SIN dictamen de `gate:evidencia-suficiente`, porque
+    su brief le decía que nunca dictamina su gate sobre su propio paquete y entendió que lo
+    firmaba otro. Ese gate declara `dictamina: VER/dosier`: nadie más puede dictaminarlo, y la
+    oficina lo admitió, así que el nivel `verificado` se quedó sin quien lo alcanzara. El
+    dictamen es SOBRE el paquete que el rol juzga, no sobre el suyo; y no cabe `entregado` sin
+    él: si no se supera, el veredicto es `devuelto` con el dictamen `no-superado`.
+    """
+    rol = entrega["rol"]
+    emitidos = {str(d.get("gate")) for d in (entrega.get("dictamenes") or [])
+                if isinstance(d, dict)} | ({str(entrega["dictamen"].get("gate"))}
+                                           if isinstance(entrega.get("dictamen"), dict) else set())
+    fallos = []
+    for gate in corpus.gates().values():
+        if str(gate.get("dictamina") or "") == rol and gate["id"] not in emitidos:
+            fallos.append("entrega.dictamenes: `" + rol + "` dictamina `" + gate["id"] + "` y entrega "
+                          "sin su dictamen. Es SOBRE el paquete que juzgas (no el tuyo), nadie más "
+                          "puede emitirlo y sin él el nivel no se alcanza nunca; si no se supera, "
+                          "el veredicto es `devuelto` con el dictamen `no-superado` (T516)")
     return fallos
 
 
