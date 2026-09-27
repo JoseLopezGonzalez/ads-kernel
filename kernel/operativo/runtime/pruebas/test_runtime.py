@@ -1406,6 +1406,31 @@ class ReintentosYReconciliacion(Caso):
             self.assertEqual(self.paquete(identificador)["estado"], estado_final,
                              identificador)
 
+    def test_47_reanudar_no_saca_un_agotado_con_los_intentos_consumidos(self):
+        """T514 · Defecto que previene: un paquete en `listo` con 3 de 3 intentos gastados.
+
+        Medido en La Pesquerapp el 2026-09-27: tras resolver la reconciliación, `reanudar`
+        devolvió un `agotado` a `listo` sin reponer intentos; la toma siguiente lo dejó en 4
+        de 3 y el runtime lo declaró imposible, hasta el punto de no poder cancelarlo. La
+        expectativa: `reanudar` y `pausar` sobre `agotado` dan `ESTADO_DE_PAQUETE_INVALIDO`,
+        el paquete sigue `agotado` con sus intentos, y una pasada más no ejecuta nada. La
+        salida es de la autoridad por `resolver_reconciliacion` (`g.9`).
+        """
+        self.alta([{"id": "pq-0001", "argumentos": ["fallo-definitivo"]}])
+        self.cli(["ciclo"])
+        antes = self.paquete("pq-0001")
+        self.assertEqual(antes["estado"], "agotado")
+        for orden in (["reanudar", "pq-0001"], ["pausar", "pq-0001"]):
+            proceso = self.cli(orden + ["--motivo", "reintentarlo", "--autoridad", "owner"])
+            self.assertEqual(proceso.returncode, 1, " ".join(orden))
+            self.assertEqual(codigo_de_error(proceso), "ESTADO_DE_PAQUETE_INVALIDO", " ".join(orden))
+        despues = self.paquete("pq-0001")
+        self.assertEqual((despues["estado"], despues["intentos"]), ("agotado", antes["intentos"]))
+        ejecuciones = len(self.ejecuciones())
+        self.cli(["ciclo"])
+        self.assertEqual(len(self.ejecuciones()), ejecuciones, "un agotado no vuelve a ejecutarse")
+        self.assertEqual(len(self.pendencias()), 1, "la reconciliación sigue abierta: es la vía")
+
     def test_46_un_paquete_agotado_no_vuelve_a_adquirirse(self):
         """T184 · Defecto que previene: reservar autoridad sobre trabajo que nadie moverá.
 

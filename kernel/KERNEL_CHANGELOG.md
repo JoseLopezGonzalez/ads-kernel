@@ -13,6 +13,19 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `runtime/dispatcher.py` · **`reanudar` sacaba un paquete `agotado` a `listo` con los intentos
+  consumidos**. Es un DEFECTO medido en ejecución real (La Pesquerapp, 2026-09-27, certificación
+  con modelos reales), y rompía lo que exigen OWN-ADS-0175 (TRABAJA ejecuta sin que nadie lo
+  empuje) y OWN-ADS-0149 (la tarea sobrevive a los reinicios): tras resolver la reconciliación
+  de `g.9`, `reanudar` devolvió el paquete a `listo` con 3 de 3 intentos, la toma siguiente lo
+  dejó en 4 de 3 y `comprobar_paquete` lo declaró imposible, tanto que ni se podía leer ni
+  cancelar, y hubo que devolver el estado a la revisión anterior por Git. La tabla del §4.2
+  dice QUÉ transición existe; `g.9` y el propio `_exigir_adquirible` dicen QUIÉN la recorre:
+  sólo la autoridad, por `resolver_reconciliacion`, con las escrituras que decida (entre ellas
+  el presupuesto nuevo). Ahora `_mover` —la vía de `pausar`, `reanudar` y `cancelar`— se niega
+  ante un `agotado` con `ESTADO_DE_PAQUETE_INVALIDO` y nombra la vía. `T514`, verificada por
+  sabotaje: quitando la guarda, cae.
+
 - `ciclo/entregas.py` · `esquemas/entrega.yaml` · `ciclo/briefs.py` · **la forma de la entrega
   sólo miraba que hubiera UN artefacto de cada TIPO obligatorio**. Es un DEFECTO encontrado por
   la revisión independiente (G13) del ledger de La Pesquerapp el 2026-09-26, y deja sin sostén

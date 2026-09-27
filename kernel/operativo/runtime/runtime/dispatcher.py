@@ -1222,6 +1222,22 @@ class Runtime:
 
         def construir(revision):
             actual = self._leer_paquete(paquete)
+            if actual["estado"] == "agotado":
+                # T514 · DEFECTO MEDIDO (La Pesquerapp, 2026-09-27, con modelos reales): la
+                # tabla del §4.2 admite `agotado` → `listo`, y por eso `reanudar` lo movía.
+                # Pero lo movía con los intentos CONSUMIDOS: 3 de 3 en `listo`, la toma
+                # siguiente lo dejaba en 4 de 3 y `comprobar_paquete` declaraba el paquete
+                # imposible —ni el runtime podía ya leerlo, ni cancelarlo—. La tabla dice
+                # QUÉ transición existe; `g.9` dice QUIÉN la recorre: sólo la autoridad, por
+                # `resolver_reconciliacion`, con las escrituras que decida (entre ellas el
+                # presupuesto nuevo de intentos). Una decisión genérica no es esa vía.
+                raise EstadoDePaqueteInvalido(
+                    "un paquete `agotado` no se mueve por `" + clase + "`: su salida es de la "
+                    "autoridad por `resolver_reconciliacion` (g.9), que decide también el "
+                    "presupuesto de intentos; reabrirlo aquí dejaría " + str(actual["intentos"])
+                    + " de " + str(actual["max_intentos"]) + " intentos consumidos en `listo`",
+                    ruta=paquete, estado=actual["estado"],
+                )
             comprobar_transicion(actual["estado"], destino, paquete=paquete)
             nuevo = con_estado(actual, destino, reloj=revision["revision"] + 1, **cambios)
             escrito["paquete"] = nuevo
