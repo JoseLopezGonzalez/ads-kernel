@@ -13,6 +13,23 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `.github/workflows/kernel.yml` · `tooling/huella_en_su_momento.py` · **la batería de macOS era
+  un rojo permanente que no decía nada de macOS**. Es un DEFECTO de la CI (deuda señalada por el
+  Owner el 2026-09-27 y reproducida): el job ejecutaba `kernel-status.sh` con `set -e` y exigía
+  LIMPIO, pero la huella sólo coincide con `.upstream-hash` después del SELLO del job de release,
+  así que todo commit que edita `kernel/` antes de él sale DIVERGENTE por construcción. Rojo en
+  r13, r15, r18 y r19 con T153 y T154 en verde, y el `set -e` impedía llegar a la comprobación
+  de `execve` en POSIX, que no se ejecutó en ninguno. Rompía lo que exigen OWN-ADS-0312 y
+  OWN-ADS-0315 (una release/CI que valide de verdad): un rojo que siempre está no detiene
+  nada. Ahora las rutas, `execve` y `kernel-status` son tres pasos que corren aunque falle el
+  anterior, y la huella la juzga `huella_en_su_momento.py`. Sólo acepta la divergencia previa al
+  sello; es rojo en `main`, rojo si nada de la huella cambió desde el último sello y rojo si
+  `kernel-status` no da veredicto (eso sí es portabilidad). La integridad se sigue exigiendo
+  donde es válida: al re-sellar en el job de release, en `main` y al vendorizar. Se corrige
+  también el comentario que prometía una «ejecución siguiente» sobre el commit sellado: los
+  pushes con GITHUB_TOKEN no disparan flujos, y los sellos de r13 a r19 no tienen ningún run.
+  `T519` (siete casos) falla contra el workflow anterior y pasa con éste.
+
 - `ciclo/base.py` · **una rama que ya divergía de su base no podía entregar nada**. Es un DEFECTO
   medido en la primera ejecución de producto por la oficina (La Pesquerapp, 2026-09-27): la rama
   de la campaña llevaba dos commits de `main` que tocan `estado/` sin incorporar desde ANTES de

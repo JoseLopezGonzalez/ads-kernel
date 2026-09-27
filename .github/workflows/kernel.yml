@@ -259,13 +259,23 @@ jobs:
       - name: Requisitos
         run: python3 -m pip install --quiet pyyaml
 
-      - name: Rutas portables e integridad
-        run: |
-          set -e
-          python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_rutas_portables.py
-          ./tooling/kernel-status.sh
+      # T519 · CADA PROPIEDAD EN SU PASO, Y CADA UNA SE JUZGA EN SU MOMENTO.
+      #
+      # Este job existe para PORTABILIDAD. Hasta r19 ejecutaba aqui `kernel-status.sh` con
+      # `set -e` y exigia LIMPIO; pero la huella solo coincide con `.upstream-hash` despues del
+      # SELLO, que produce el job de release, y todo commit que edita `kernel/` antes de el
+      # diverge por construccion. El job salia rojo siempre —r13, r15, r18 y r19— sin decir
+      # nada de macOS, y el `set -e` impedia llegar a la comprobacion de `execve`, que no se
+      # ejecuto en ninguno. Ahora: las rutas, `execve` y `kernel-status` son tres pasos que
+      # corren aunque falle el anterior, y la huella la juzga `huella_en_su_momento.py`, que
+      # solo acepta la divergencia previa al sello (rojo en `main`, rojo si nada cambio desde
+      # el ultimo sello, rojo si kernel-status no responde). La integridad se sigue exigiendo
+      # donde es valida: al sellar, abajo, y al vendorizar.
+      - name: Rutas portables (T153, T154)
+        run: python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_rutas_portables.py
 
       - name: "La reejecucion por execve sigue intacta en POSIX"
+        if: success() || failure()
         run: |
           set -e
           salida=$(python3 kernel/operativo/validadores/comprobar_rutas_portables.py)
@@ -274,6 +284,23 @@ jobs:
           test $codigo -eq 0
           echo "$salida" | grep -q "T153" || { echo "FALLA: salida vacia o sin T153"; exit 1; }
           echo "OK: reejecuta, habla y devuelve 0"
+
+      - name: "kernel-status funciona en macOS, y la huella se juzga en su momento del ciclo (T519)"
+        if: success() || failure()
+        run: |
+          set +e
+          ./tooling/kernel-status.sh > /tmp/estado.txt 2>&1
+          codigo=$?
+          set -e
+          cat /tmp/estado.txt
+          sello=$(git log -1 --format=%H --grep='^CI: evidencia y sello del release' HEAD || true)
+          if [ -n "$sello" ]; then
+            cambios=$(git diff --name-only "$sello" HEAD -- kernel packs tooling | grep -v '^kernel/\.upstream-hash$' | wc -l | tr -d ' ')
+          else
+            cambios=desconocido
+          fi
+          python3 tooling/huella_en_su_momento.py --codigo "$codigo" \
+            --salida /tmp/estado.txt --ref "${GITHUB_REF#refs/heads/}" --cambios-desde-el-sello "$cambios"
 
   # ===========================================================================
   # EL RELEASE SE CONSTRUYE AQUI, Y NO EN LA MAQUINA DE NADIE.
@@ -567,6 +594,13 @@ jobs:
       # mismo flujo, que corren sobre el commit resultante—. El commit de CI no lleva el
       # marcador `[release-kernel]`, asi que esa ejecucion verifica y no vuelve a
       # regenerar: no hay bucle.
+      #
+      # CORRECCION MEDIDA (T519, 2026-09-27): esa «ejecucion siguiente» NO existe en las ramas
+      # `claude/*`. El push de abajo se hace con el GITHUB_TOKEN, y GitHub no dispara flujos
+      # por pushes de ese token: los commits de sello de r13, r15, r18 y r19 no tienen ningun
+      # run. La huella sellada se verifica en tres sitios reales: el `kernel-status.sh` de
+      # «Re-sellar» (arriba, estricto), `main` cuando recibe el corte (T519 exige LIMPIO) y la
+      # vendorizacion en la instancia (`actualizar_kernel` exige LIMPIO).
       - name: Escribir la evidencia y el sello EN LA RAMA
         run: |
           set -e
