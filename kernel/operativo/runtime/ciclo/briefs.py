@@ -105,7 +105,9 @@ def componer(*, corpus=None, paquete, item, fila_del_plan, rol, equipo=None, int
             # LA PLANTILLA: un JSON que ya valida salvo por lo que el trabajador tiene que
             # rellenar. Medido con un modelo real: sin plantilla escribio prosa donde el
             # esquema exige `si|no|no-aplica`, y la oficina rechazo la entrega.
-            "plantilla": _plantilla_de_entrega(str(paquete), rol, gate, contrato_operativo, esquema_entrega),
+            "plantilla": _plantilla_de_entrega(str(paquete), rol, gate, contrato_operativo, esquema_entrega,
+                                               dictamina=[g for g in corpus.gates().values()
+                                                          if str(g.get("dictamina") or "") == rol]),
             # la forma de cada elemento de lista y de cada objeto opcional, DERIVADA del
             # esquema: un modelo real escribió `evidencias` con otros campos y la oficina la
             # rechazó a la tercera vez; lo que el esquema exige se enseña, no se adivina
@@ -155,8 +157,16 @@ def _estacion_de_impacto(circuito):
     }
 
 
-def _plantilla_de_entrega(paquete, rol, gate, contrato, esquema):
-    """Una entrega MINIMA que valida contra el esquema salvo lo que hay que rellenar."""
+def _plantilla_de_entrega(paquete, rol, gate, contrato, esquema, dictamina=()):
+    """Una entrega MINIMA que valida contra el esquema salvo lo que hay que rellenar.
+
+    `dictamina`: los gates que ESTE rol dictamina (`dictamina: <rol>` en su declaración). T515 ·
+    DEFECTO MEDIDO con un modelo real (La Pesquerapp, 2026-09-27): `CNS/revision-de-construccion`
+    entregó `superado` y se le rechazó porque la evidencia del dictamen se compara por IGUALDAD
+    de cadena con la que el gate exige, y el brief la enseñaba como prosa. Lo dijo el propio
+    modelo en sus riesgos. La plantilla lleva ahora el esqueleto de cada dictamen con la
+    evidencia EXACTA; decidir si se supera sigue siendo del revisor.
+    """
     campos = esquema.get("campos") or {}
 
     def valores(camino):
@@ -188,6 +198,12 @@ def _plantilla_de_entrega(paquete, rol, gate, contrato, esquema):
         "deuda_aceptada": [],
         "no_hecho": [],
         "siguiente": "<qué toca después, en una frase>",
+        **({"dictamenes": [
+            {"gate": g["id"], "sobre_paquete": "<el paquete que juzgas: el que te entregó lo que revisas>",
+             "comprobaciones_superadas": [c["id"] for c in g.get("comprobaciones") or []],
+             "evidencia": [str(e) for e in g.get("evidencia") or []],
+             "dictamen": "<superado|no-superado>"}
+            for g in dictamina]} if dictamina else {}),
         "autoevaluacion": {
             "gate": gate["id"],
             "comprobaciones": [{"id": c["id"], "resultado": "<" + "|".join(resultados) + ">"} for c in gate["comprobaciones"]],

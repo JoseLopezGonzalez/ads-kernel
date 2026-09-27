@@ -13,6 +13,18 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `ciclo/briefs.py` · `capacidades/CNS/CAPACIDAD.md` · **un revisor real tuvo que adivinar la
+  evidencia de su dictamen**. Es un DEFECTO medido con un modelo real (La Pesquerapp,
+  2026-09-27), y lo nombró el propio modelo en sus riesgos: `CNS/revision-de-construccion`
+  entregó `superado` y se le rechazó, porque la evidencia del dictamen se compara por IGUALDAD
+  de cadena con la que exige el gate y el brief sólo la enseñaba como prosa. Afecta a lo que
+  exigen OWN-ADS-0010 (dictámenes de quien no construyó) y OWN-ADS-0289 (entregas rechazadas y
+  admitidas por mecanismo, no por azar). La plantilla de la entrega lleva ahora un esqueleto por
+  cada gate que el rol dictamina, con TODAS las comprobaciones y la evidencia EXACTA. Si se
+  supera lo sigue decidiendo el revisor. Y `gate:implementacion-completa` declara por fin
+  `dictamina: CNS/revision-de-construccion`, que es lo que `terminacion.py` ya decía («lo juzga
+  quien revisa»). `T515`, verificada por sabotaje.
+
 - `runtime/dispatcher.py` · **`reanudar` sacaba un paquete `agotado` a `listo` con los intentos
   consumidos**. Es un DEFECTO medido en ejecución real (La Pesquerapp, 2026-09-27, certificación
   con modelos reales), y rompía lo que exigen OWN-ADS-0175 (TRABAJA ejecuta sin que nadie lo

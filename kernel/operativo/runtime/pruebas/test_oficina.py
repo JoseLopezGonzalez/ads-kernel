@@ -853,6 +853,31 @@ class Entregas(Laboratorio):
             self.assertEqual(A.almacen.revision()["revision"], revision, nombre)
         self.assertEqual(A._leer_paquete(impl)["estado"], "ejecutando")
 
+    def test_07d_la_plantilla_lleva_los_dictamenes_del_rol_con_la_evidencia_exacta(self):
+        """T515 · Defecto que cierra: un revisor real tuvo que ADIVINAR la evidencia de su dictamen.
+
+        Medido con un modelo real el 2026-09-27 (La Pesquerapp): CNS/revision-de-construccion
+        entregó `superado` y se le rechazó, porque la evidencia del dictamen se compara por
+        igualdad de cadena con la que el gate exige y el brief sólo la enseñaba como prosa. La
+        plantilla lleva ahora el esqueleto de cada dictamen que el rol emite —sus gates con
+        `dictamina: <rol>`, entre ellos `gate:implementacion-completa`, que «lo juzga quien
+        revisa» y no lo declaraba—, con TODAS las comprobaciones y la evidencia EXACTA."""
+        plan = self.planificar(self.rt("w-Q"), item="enc-p")["plan"]
+        P = self.rt("w-P")
+        brief = oficina.brief_de(P, corpus=self.corpus, paquete=self.paquete_de(
+            plan, "CNS/revision-de-construccion"), circuito=self.circuito)
+        dictamenes = {d["gate"]: d for d in brief["forma_de_la_entrega"]["plantilla"].get("dictamenes") or []}
+        self.assertEqual(set(dictamenes), {"gate:implementacion-completa", "gate:revision-de-construccion"})
+        for gate, d in dictamenes.items():
+            declarado = self.corpus.gates()[gate]
+            self.assertEqual(d["evidencia"], [str(e) for e in declarado["evidencia"]], gate)
+            self.assertEqual(d["comprobaciones_superadas"], [c["id"] for c in declarado["comprobaciones"]], gate)
+            self.assertIn("<", d["sobre_paquete"])  # lo decide el revisor: no se le rellena
+        # quien construye no dictamina: su plantilla no trae dictamenes que no le tocan
+        brief_impl = oficina.brief_de(P, corpus=self.corpus, paquete=self.paquete_de(
+            plan, "CNS/implementacion"), circuito=self.circuito)
+        self.assertNotIn("dictamenes", brief_impl["forma_de_la_entrega"]["plantilla"])
+
     def test_07c_cada_artefacto_obligatorio_tiene_el_suyo_y_su_estructura_entera(self):
         """T513 · Defecto que cierra: la forma sólo miraba que hubiera UN artefacto de cada TIPO.
 

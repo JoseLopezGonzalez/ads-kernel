@@ -61,6 +61,7 @@ retirada: >
 ```yaml ads:gate
 id: gate:implementacion-completa
 aplica_a: "la capa de CNS antes de pasar a verificación"
+dictamina: CNS/revision-de-construccion
 comprobaciones:
   - id: comportamiento-existe
     comprueba: "cada criterio de éxito de PRD tiene comportamiento construido que lo satisface"
