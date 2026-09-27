@@ -1044,14 +1044,43 @@ def _bloquear_con_reemplazo(runtime, corpus, plan, fila, paquete, entrega):
 # ===========================================================================
 #  DEVOLVER: corrección + nuevo receptor + freno
 # ===========================================================================
+def handoffs_acusados_por(almacen, paquete):
+    """TODOS los handoffs que `paquete` acusó, en orden de nombre (T517)."""
+    return [objeto for objeto in (almacen.leer(r) for r in sorted(almacen.listar(handoffs.DOMINIO)))
+            if (objeto.get("trazabilidad") or {}).get("destino") == paquete
+            and objeto.get("estado") == handoffs.ACUSADO]
+
+
 def _devolver(runtime, corpus, plan, fila, paquete, entrega):
+    """T517 · DEFECTO MEDIDO sobre una ejecución real (La Pesquerapp, 2026-09-27): la unidad
+    de integración semántica acusa CINCO handoffs y la devolución no podía decir a cuál iba:
+    `handoff_acusado_por` devolvía el primero por nombre de fichero, así que devolver la
+    entrega de VER habría abierto la corrección sobre el primer SIS. Ahora `devolucion.a`
+    nombra el paquete devuelto; con varias entradas es obligatorio, y tiene que ser una de
+    las acusadas. Un dictamen `no-superado` sigue mandando cuando lo hay."""
     almacen = runtime.almacen
-    recibido = handoff_acusado_por(almacen, paquete)
+    acusados = handoffs_acusados_por(almacen, paquete)
+    por_origen = {str((h.get("trazabilidad") or {}).get("paquete") or ""): h for h in acusados}
+    nombrado = str((entrega.get("devolucion") or {}).get("a") or "").strip()
     candidatos = list(entrega.get("dictamenes") or []) + (
         [entrega["dictamen"]] if entrega.get("dictamen") else [])
     fallidos = [d for d in candidatos if d.get("dictamen") == gates.NO_SUPERADO]
-    juzgado = str((fallidos[0] if fallidos else (candidatos[0] if candidatos else {})).get(
-        "sobre_paquete") or (recibido["trazabilidad"]["paquete"] if recibido else ""))
+    del_dictamen = str((fallidos[0] if fallidos else (candidatos[0] if candidatos else {})).get(
+        "sobre_paquete") or "")
+    if nombrado and nombrado not in por_origen:
+        raise EntregaInvalida(
+            "la devolución se dirige a `" + nombrado + "`, que no entregó a `" + paquete + "`: "
+            "sólo se devuelve a quien entregó (" + (", ".join(sorted(por_origen)) or "nadie") + ")",
+            paquete=paquete)
+    if not (del_dictamen or nombrado) and len(por_origen) > 1:
+        raise EntregaInvalida(
+            "`" + paquete + "` recibió de " + str(len(por_origen)) + " paquetes y la devolución no "
+            "dice a cuál va: nómbralo en `devolucion.a` (" + ", ".join(sorted(por_origen)) + ")",
+            paquete=paquete)
+    juzgado = del_dictamen or nombrado or (next(iter(por_origen)) if por_origen else "")
+    # el handoff que se devuelve es EXACTAMENTE el del paquete juzgado; antes era el primero
+    # por nombre aunque el dictamen señalara otro, que es la otra cara del mismo defecto
+    recibido = por_origen.get(juzgado)
     if not juzgado:
         raise EntregaInvalida(
             "una devolución tiene que decir QUÉ paquete devuelve: no hay handoff acusado "

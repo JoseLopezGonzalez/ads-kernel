@@ -113,6 +113,9 @@ campos:
       por_que_es_insuficiente: {tipo: texto, min: 10}
       que_la_cerraria: {tipo: texto, min: 10}
       evidencia: {tipo: lista, de: texto, min: 1}
+      # T517 · a QUÉ paquete se devuelve: uno de los que entregaron a este (sus handoffs
+      # acusados). Obligatorio cuando hay más de uno; con uno solo se deduce.
+      a: {tipo: texto, min: 4}
   # Solo en roles que JUZGAN una capa ajena: el dictamen de su gate sobre el paquete que
   # revisan. El revisor NUNCA es el autor: lo comprueba `gates.aplicar`, no este esquema.
   dictamen:

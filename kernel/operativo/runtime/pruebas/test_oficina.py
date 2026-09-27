@@ -1100,6 +1100,41 @@ class Entregas(Laboratorio):
             oficina.tomar(F, corpus=self.corpus, paquete=ver, circuito=self.circuito)
         self.assertNotIsInstance(cm.exception, ciclo.AutocertificacionRechazada)
 
+    def test_09b_con_varias_entradas_la_devolucion_dice_a_cual_va(self):
+        """T517 · Defecto que cierra: una devolución sin dictamen iba al PRIMER handoff por nombre.
+
+        Medido sobre una ejecución real (La Pesquerapp, 2026-09-27): la unidad de integración
+        semántica acusa cinco handoffs, y devolver la entrega de VER habría abierto la
+        corrección sobre el primer SIS. Con varias entradas, `devolucion.a` es obligatoria y tiene
+        que ser una de ellas; nombrándola, la corrección es para ESE paquete."""
+        A, plan, impl = self._hasta_impl()
+        rev = self.paquete_de(plan, "CNS/revision-de-construccion")
+        self.tomar_y_acusar(A, impl)
+        self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
+        B = self.rt("w-B")
+        self.tomar_y_acusar(B, rev)
+        origenes = sorted({h["trazabilidad"]["paquete"] for h in oficina.handoffs_acusados_por(B.almacen, rev)})
+        self.assertIn(impl, origenes)
+        self.assertGreater(len(origenes), 1, "la prueba necesita un receptor con varias entradas")
+        devolucion = {"que_falta": "la prueba del conflicto no muerde", "por_que_es_insuficiente": "no protege el cambio",
+                      "que_la_cerraria": "una prueba roja al revertir", "evidencia": ["tabla de reversión"]}
+
+        def devolver(**extra):
+            e = self.entrega(rev, "CNS/revision-de-construccion", "devuelto")
+            e.pop("dictamenes", None)
+            e["devolucion"] = dict(devolucion, **extra)
+            return oficina.entregar(B, corpus=self.corpus, paquete=rev, entrega=e, circuito=self.circuito)
+        with self.assertRaises(ciclo.EntregaInvalida) as cm:        # a quien no le entregó nada
+            devolver(a="pq-inventado")
+        self.assertIn("sólo se devuelve a quien entregó", str(cm.exception))
+        with self.assertRaises(ciclo.EntregaInvalida) as cm:        # varias entradas y sin nombrar
+            devolver()
+        self.assertIn("devolucion.a", str(cm.exception))
+        salida = devolver(a=impl)                                   # nombrada: la corrección es de ESE
+        filas = {f["paquete"]: f for f in oficina.plan_vigente_de_item(B.almacen, plan["item"])["correspondencia"]}
+        correccion = [f for f in filas.values() if f.get("correccion_de")]
+        self.assertEqual([f["correccion_de"] for f in correccion], [impl], salida)
+
     def test_10_un_rechazo_al_recibir_no_cuenta_para_el_freno_y_cancela_el_receptor(self):
         """T466 · Defecto que previene: aceptar por cortesía y devolver después."""
         A, plan, impl = self._hasta_impl()

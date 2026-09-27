@@ -13,6 +13,18 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `ciclo/oficina.py` · `esquemas/entrega.yaml` · **con varias entradas, una devolución no podía
+  decir a cuál iba**. Es un DEFECTO que puso a la vista una ejecución real (La Pesquerapp,
+  2026-09-27): la unidad de integración semántica acusa cinco handoffs, y para rehacer sólo la
+  entrega de VER —que no dictaminó, T516— había que devolvérsela; `_devolver` tomaba el
+  PRIMER handoff acusado por nombre de fichero, que era de SIS, así que la corrección se habría
+  abierto sobre el paquete equivocado y el circuito habría gastado modelos en rehacer lo que no
+  estaba mal. Pasaba igual con un dictamen `no-superado` que señalaba otro paquete: se
+  devolvía el primer handoff igualmente. Afecta a lo que exigen OWN-ADS-0149 (el trabajo sigue
+  sin conversación) y OWN-ADS-0289 (rechazos por mecanismo). Ahora `devolucion.a` nombra el
+  paquete devuelto; con varias entradas es obligatoria y tiene que ser una de ellas, y el handoff
+  devuelto es exactamente el del paquete juzgado. `T517`, verificada por sabotaje.
+
 - `ciclo/entregas.py` · **un rol que dictamina un gate podía entregar `entregado` sin su
   dictamen**. Es un DEFECTO medido con un modelo real (La Pesquerapp, 2026-09-27): VER/dosier
   entregó un dosier impecable sin dictaminar `gate:evidencia-suficiente`, porque su brief le
