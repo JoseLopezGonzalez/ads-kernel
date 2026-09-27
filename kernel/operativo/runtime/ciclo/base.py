@@ -130,6 +130,37 @@ def medir(ruta, *, id):
     }
 
 
+def desde_el_nacimiento(ahora, nacimiento, ruta):
+    """T518 · La base se juzga contra la que había cuando NACIÓ el trabajo, no contra el punto
+    en que la rama se separó de ella.
+
+    DEFECTO MEDIDO en la primera ejecución de producto por la oficina (La Pesquerapp,
+    2026-09-27): la rama de la campaña ya divergía de `main` en dos commits que tocan `estado/`
+    ANTES de que se tomara ningún paquete. `medir` cuenta la base desde el `merge-base`, así
+    que todo paquete del control repo —y todos escriben el estado— salía `contradiccion` al
+    entregar, aunque la base no se hubiera movido ni un commit durante su trabajo. Ninguna
+    entrega era posible en esa rama; cada intento gastaba un modelo para ser rechazado.
+
+    Con nacimiento: si la base es la misma que al nacer, no avanzó —la divergencia previa se
+    anota y no se juzga, es de la rama y no del paquete—; si avanzó, cuentan sólo los commits y
+    ficheros de la base DESDE su nacimiento."""
+    if not ahora.get("medible") or not nacimiento or not nacimiento.get("base_ahora"):
+        return ahora
+    nacida = str(nacimiento["base_ahora"])
+    salida = dict(ahora, divergencia_previa=ahora.get("commits_de_la_base_que_no_tengo", 0))
+    if str(ahora.get("base_ahora") or "")[:12] == nacida[:12]:
+        salida.update(commits_de_la_base_que_no_tengo=0, ficheros_de_la_base=[])
+        return salida
+    completo = _git(["rev-parse", ahora["ref_base"]], ruta) or ""
+    # desde el nacimiento, o desde lo que el trabajo YA incorporó si reconcilió después
+    comun = _git(["merge-base", "HEAD", completo], ruta) or ""
+    desde = comun if comun and _git(["merge-base", "--is-ancestor", nacida, comun], ruta) is not None else nacida
+    nuevos = int(_git(["rev-list", "--count", desde + ".." + completo], ruta) or 0)
+    salida.update(commits_de_la_base_que_no_tengo=nuevos,
+                  ficheros_de_la_base=sorted(f for f in _rutas_tocadas(desde, completo, ruta) if f) if nuevos else [])
+    return salida
+
+
 def comparar(nacimiento, ahora):
     """Clasifica el cambio de base de UN repositorio desde su nacimiento hasta ahora."""
     if not ahora.get("medible"):
@@ -182,7 +213,10 @@ def nacimiento_de(medidas):
 def evaluar(control_repo, nacimiento=None):
     """Mide todos los repos y, si hay nacimiento, clasifica el cambio de cada uno. El
     veredicto global es el peor de los medibles."""
-    medidas = {id: medir(ruta, id=id) for id, ruta in repos_de(control_repo)}
+    rutas = dict(repos_de(control_repo))
+    medidas = {id: medir(ruta, id=id) for id, ruta in rutas.items()}
+    for id, m in medidas.items():
+        medidas[id] = desde_el_nacimiento(m, (nacimiento or {}).get(id), rutas[id])
     cambios = {id: comparar((nacimiento or {}).get(id), m) for id, m in medidas.items()}
     medibles = [c for c in cambios.values() if c["veredicto"] != NO_MEDIBLE]
     veredicto = max((c["veredicto"] for c in medibles), key=VEREDICTOS.index) if medibles else NO_MEDIBLE

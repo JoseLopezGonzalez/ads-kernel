@@ -2240,6 +2240,34 @@ class BaseDePartida(Laboratorio):
         res = self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
         self.assertEqual(res["veredicto"], "entregado")
 
+    def test_35b_la_divergencia_anterior_al_trabajo_no_lo_contradice(self):
+        """T518 · Defecto que cierra: una rama que YA divergía de la base no podía entregar nada.
+
+        Medido en la primera ejecución de producto por la oficina (2026-09-27): la base llevaba
+        commits que tocaban lo mismo que la rama ANTES de tomar el paquete, y todo paquete salía
+        `contradiccion` aunque la base no se moviera durante su trabajo. Lo que se juzga es lo
+        que la base hizo DESDE que nació el trabajo."""
+        self._repo_git()
+        self._commit_mio("src/a.php", "uno-rama\ndos\n")          # la rama ya divergía...
+        self._avanzar_main("src/a.php", "uno\ndos\ntres\n")      # ...de una base que tocó lo mismo
+        A = self.rt("w-A")
+        impl, toma = self._implementacion_tomada(A)                 # el paquete nace AQUÍ
+        cp = oficina.checkpoint(A, paquete=impl, contenido={"paso": 1})
+        base = cp["contenido"]["base"]
+        self.assertEqual(base["veredicto"], "sin-cambio", base)     # la base no se movió desde que nació
+        res = self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
+        self.assertEqual(res["veredicto"], "entregado")
+        # y si la base se MUEVE durante el trabajo sobre lo mismo, sigue siendo contradicción
+        B = self.rt("w-B")
+        plan = self.planificar(B, item="enc-q")["plan"]
+        impl2 = self.paquete_de(plan, "CNS/implementacion")
+        self.avanzar_prd(B, plan, impl2)
+        self.tomar_y_acusar(B, impl2)
+        self._avanzar_main("src/a.php", "uno\ndos\ntres\ncuatro\n")
+        cp = oficina.checkpoint(B, paquete=impl2, contenido={"paso": 1})
+        self.assertEqual(cp["contenido"]["base"]["veredicto"], "contradiccion")
+        self.assertEqual(cp["contenido"]["base"]["conflictos"][0]["commits_nuevos"], 1)
+
     def test_36_sin_git_no_se_mide_y_nada_cambia(self):
         """T496 · Defecto que previene: un control repo sin Git frenado por una medida que no existe."""
         A = self.rt("w-A")

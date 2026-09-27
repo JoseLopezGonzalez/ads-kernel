@@ -13,6 +13,19 @@ La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
 distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
 release; lo propio del Owner se queda en su instancia.
 
+- `ciclo/base.py` · **una rama que ya divergía de su base no podía entregar nada**. Es un DEFECTO
+  medido en la primera ejecución de producto por la oficina (La Pesquerapp, 2026-09-27): la rama
+  de la campaña llevaba dos commits de `main` que tocan `estado/` sin incorporar desde ANTES de
+  tomar ningún paquete, y como `medir` cuenta la base desde el `merge-base`, toda entrega del
+  control repo —todas escriben el estado— salía `BASE_CONTRADICHA` aunque la base no se hubiera
+  movido ni un commit durante el trabajo; cada intento gastaba un modelo para ser rechazado.
+  Rompía lo que exigen OWN-ADS-0227 y OWN-ADS-0229 (mirar si el mundo cambió MIENTRAS se
+  trabaja) y OWN-ADS-0175 (TRABAJA avanza solo). Ahora `desde_el_nacimiento` juzga la base
+  contra la que había cuando nació el trabajo —o contra lo que el trabajo ya incorporó si
+  reconcilió después—: la divergencia previa se anota (`divergencia_previa`) y no se juzga; un
+  avance durante el trabajo sobre lo mismo sigue siendo contradicción. `T518`, verificada por
+  sabotaje; `T495` (reconciliar y volver a entregar) sigue verde.
+
 - `ciclo/oficina.py` · `esquemas/entrega.yaml` · **con varias entradas, una devolución no podía
   decir a cuál iba**. Es un DEFECTO que puso a la vista una ejecución real (La Pesquerapp,
   2026-09-27): la unidad de integración semántica acusa cinco handoffs, y para rehacer sólo la
