@@ -360,15 +360,26 @@ def tomar(runtime, *, corpus=None, paquete, **opciones_del_brief):
     # LA BASE DE PARTIDA (Directiva §61, §63; OWN-ADS-0220, 0227): al nacer el trabajo se
     # conserva, por repo medible, la rama, de qué commit nace y qué base hay. Es el
     # checkpoint 0, bajo el lease recién adquirido; en un laboratorio sin Git no se escribe.
+    # T520: se miden las fuentes que el brief declara, con su ruta —el árbol donde se trabaja—,
+    # y el nacimiento guarda esas rutas. Un nacimiento anterior que midió OTROS repos (los clones
+    # principales y el control repo) se rehace al retomar, conservando el resto del checkpoint.
     base = None
-    if toma.get("checkpoint") is None:
-        evaluacion = modulo_base.evaluar(runtime.ruta)
+    fuentes = brief.get("fuentes") or ()
+    previo = (toma.get("checkpoint") or {}).get("contenido") or {}
+    nacimiento_previo = (previo.get("base") or {}).get("nacimiento")
+    if toma.get("checkpoint") is None or modulo_base.mide_otros_repos(nacimiento_previo, fuentes):
+        evaluacion = modulo_base.evaluar(runtime.ruta, fuentes=fuentes)
         if evaluacion["veredicto"] != modulo_base.NO_MEDIBLE:
-            nacimiento = modulo_base.nacimiento_de(evaluacion["medidas"])
+            nacimiento = modulo_base.nacimiento_de(evaluacion["medidas"], evaluacion["rutas"])
             base = modulo_base.resumen(evaluacion, nacimiento)
-            runtime.checkpoint(paquete, {"paso": 0, "base": base})
+            contenido = dict(previo, base=base)
+            contenido.setdefault("paso", 0)
+            if nacimiento_previo:
+                contenido["base_rehecha"] = {"antes": sorted(nacimiento_previo), "ahora": sorted(nacimiento),
+                                             "motivo": "T520: el nacimiento anterior medía repos que no son las fuentes del paquete"}
+            runtime.checkpoint(paquete, contenido)
     else:
-        base = (toma["checkpoint"].get("contenido") or {}).get("base")
+        base = previo.get("base")
     return {"toma": toma, "brief": brief, "brief_md": briefs.como_markdown(brief), "base": base}
 
 
@@ -393,7 +404,7 @@ def checkpoint(runtime, *, paquete, contenido, corpus=None):
     evaluacion = modulo_base.evaluar(runtime.ruta, nacimiento=nacimiento)
     if evaluacion["veredicto"] != modulo_base.NO_MEDIBLE or nacimiento:
         contenido["base"] = modulo_base.resumen(
-            evaluacion, nacimiento or modulo_base.nacimiento_de(evaluacion["medidas"]))
+            evaluacion, nacimiento or modulo_base.nacimiento_de(evaluacion["medidas"], evaluacion["rutas"]))
     return runtime.checkpoint(paquete, contenido)
 
 
@@ -598,7 +609,7 @@ def entregar(runtime, *, corpus=None, paquete, entrega, circuito=None, hechos=No
             )
         if evaluacion_de_base["veredicto"] != modulo_base.NO_MEDIBLE or nacimiento:
             runtime.checkpoint(paquete, {"paso": "entrega", "base": modulo_base.resumen(
-                evaluacion_de_base, nacimiento or modulo_base.nacimiento_de(evaluacion_de_base["medidas"]))})
+                evaluacion_de_base, nacimiento or modulo_base.nacimiento_de(evaluacion_de_base["medidas"], evaluacion_de_base["rutas"]))})
 
     # 2 · BLOQUEADO / ESCALADO: el paquete queda `bloqueado`, no consume intento.
     if veredicto in ("bloqueado", "escalado"):

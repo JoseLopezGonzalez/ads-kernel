@@ -203,24 +203,68 @@ def repos_de(control_repo):
     return repos
 
 
-def nacimiento_de(medidas):
-    """Lo que se conserva del nacimiento: por repo, rama, de qué commit nació y qué base había."""
-    return {id: {"rama": m.get("rama"), "nacio_de": m.get("nacio_de"), "base_ahora": m.get("base_ahora"),
-                 "ref_base": m.get("ref_base")}
+def repos_del_trabajo(control_repo, fuentes=None, nacimiento=None):
+    """T520 · Los repos que se miden son LOS DEL PAQUETE, no todos los hermanos del control repo.
+
+    DEFECTO MEDIDO en la primera ejecución de producto por la oficina (La Pesquerapp,
+    2026-09-28): `repos_de` medía el control repo y los clones PRINCIPALES de `SOURCES.toml`,
+    no el árbol donde el paquete trabaja (un worktree por encargo). En el control repo, además,
+    «lo mío» es todo lo que hizo la rama de la campaña —el estado que escribe el runtime en cada
+    transición y el diario del coordinador—, así que un push a `main` desde otra sesión, sobre
+    `estado/` y `docs/JOURNAL.md`, declaró `contradiccion` todo paquete vivo aunque su trabajo
+    estuviera entero en el frontend. La divergencia del control repo es DE LA RAMA: la vigila
+    `ads_estado.py divergencia` (§62) y se resuelve al integrar, no paquete a paquete.
+
+    DECISIÓN · por orden: (1) lo que midió el nacimiento, si guardó sus rutas —lo que se juzga
+    es lo que se midió al nacer—; (2) las fuentes que el brief declara con ruta en disco —el
+    control repo NO entra: es donde corre la oficina, no donde trabaja el paquete—; (3) sin
+    fuentes declaradas, el control repo y los hermanos de `SOURCES.toml`, que es el caso en que
+    el control repo ES el lugar del trabajo (los laboratorios, y los encargos de reconstrucción
+    del propio ADS)."""
+    guardadas = [(id, n.get("ruta")) for id, n in (nacimiento or {}).items() if isinstance(n, dict) and n.get("ruta")]
+    if guardadas and len(guardadas) == len(nacimiento or {}):
+        return guardadas
+    declaradas = _declaradas(fuentes)
+    if declaradas:
+        return declaradas
+    return repos_de(control_repo)
+
+
+def _declaradas(fuentes):
+    """Las fuentes del brief con ruta en disco: `(id, ruta)`."""
+    return [(str(f.get("id")), str(f["path"])) for f in (fuentes or ())
+            if isinstance(f, dict) and f.get("path") and not f.get("ausente") and os.path.isdir(str(f["path"]))]
+
+
+def nacimiento_de(medidas, rutas=None):
+    """Lo que se conserva del nacimiento: por repo, rama, de qué commit nació, qué base había y
+    —desde T520— QUÉ RUTA se midió, para que cada medida posterior mire el mismo árbol."""
+    return {id: dict({"rama": m.get("rama"), "nacio_de": m.get("nacio_de"), "base_ahora": m.get("base_ahora"),
+                      "ref_base": m.get("ref_base")}, **({"ruta": rutas[id]} if rutas and id in rutas else {}))
             for id, m in medidas.items() if m.get("medible")}
 
 
-def evaluar(control_repo, nacimiento=None):
-    """Mide todos los repos y, si hay nacimiento, clasifica el cambio de cada uno. El
-    veredicto global es el peor de los medibles."""
-    rutas = dict(repos_de(control_repo))
+def mide_otros_repos(nacimiento, fuentes):
+    """¿El nacimiento guardado midió repos que no son las fuentes del paquete? (T520: los
+    nacimientos anteriores no guardaban ruta y medían los clones principales)."""
+    rutas = dict(_declaradas(fuentes))
+    if not nacimiento or not rutas:
+        return False
+    return any(not (isinstance(n, dict) and n.get("ruta") == rutas.get(id)) for id, n in nacimiento.items()) \
+        or set(nacimiento) != set(rutas)
+
+
+def evaluar(control_repo, nacimiento=None, fuentes=None):
+    """Mide los repos del trabajo (T520) y, si hay nacimiento, clasifica el cambio de cada uno.
+    El veredicto global es el peor de los medibles."""
+    rutas = dict(repos_del_trabajo(control_repo, fuentes=fuentes, nacimiento=nacimiento))
     medidas = {id: medir(ruta, id=id) for id, ruta in rutas.items()}
     for id, m in medidas.items():
         medidas[id] = desde_el_nacimiento(m, (nacimiento or {}).get(id), rutas[id])
     cambios = {id: comparar((nacimiento or {}).get(id), m) for id, m in medidas.items()}
     medibles = [c for c in cambios.values() if c["veredicto"] != NO_MEDIBLE]
     veredicto = max((c["veredicto"] for c in medibles), key=VEREDICTOS.index) if medibles else NO_MEDIBLE
-    return {"veredicto": veredicto, "medidas": medidas, "cambios": cambios,
+    return {"veredicto": veredicto, "medidas": medidas, "cambios": cambios, "rutas": rutas,
             "conflictos": [c for c in medibles if c["veredicto"] == CONTRADICCION]}
 
 

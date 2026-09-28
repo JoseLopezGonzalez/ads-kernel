@@ -2268,6 +2268,78 @@ class BaseDePartida(Laboratorio):
         self.assertEqual(cp["contenido"]["base"]["veredicto"], "contradiccion")
         self.assertEqual(cp["contenido"]["base"]["conflictos"][0]["commits_nuevos"], 1)
 
+    def _fuente_git(self):
+        """Una fuente de producto aparte, con su `main` y la rama del encargo donde se trabaja."""
+        fuente = tempfile.mkdtemp(prefix="ads-fuente-")
+        self.addCleanup(shutil.rmtree, fuente, True)
+        self._git("init", "-q", "-b", "main", cwd=fuente)
+        self._escribir("src/pedidos.tsx", "uno\n", cwd=fuente)
+        self._git("add", "src/pedidos.tsx", cwd=fuente)
+        self._git("commit", "-q", "-m", "base de la fuente", cwd=fuente)
+        self._git("checkout", "-q", "-b", "ads/enc-p", cwd=fuente)
+        return fuente
+
+    def _avanzar_main_de(self, fuente, ruta, texto):
+        self._git("checkout", "-q", "main", cwd=fuente)
+        self._escribir(ruta, texto, cwd=fuente)
+        self._git("add", ruta, cwd=fuente)
+        self._git("commit", "-q", "-m", "avance de la base de la fuente", cwd=fuente)
+        self._git("checkout", "-q", "ads/enc-p", cwd=fuente)
+
+    def test_35c_se_miden_las_fuentes_del_paquete_no_la_rama_del_control_repo(self):
+        """T520 · Defecto que cierra: un push a `main` del control repo rechazaba toda entrega viva.
+
+        Medido en la primera ejecución de producto por la oficina (2026-09-28): otra sesión fusionó
+        en `main` un cambio que tocaba `estado/` y `docs/JOURNAL.md`; la base medía el control repo,
+        donde «lo mío» es todo lo que escribió la rama (el runtime escribe `estado/` en cada
+        transición), y declaró `contradiccion` una corrección cuyo trabajo estaba entero en el
+        frontend. Ahora se miden las fuentes que el brief declara, en su ruta; el control repo sólo
+        cuando el paquete no declara ninguna (el caso de T495 y T518, que siguen igual)."""
+        self._repo_git()
+        fuente = self._fuente_git()
+        fuentes = [{"id": "frontend", "path": fuente, "acceso": "escribe"}]
+        A = self.rt("w-A")
+        plan = self.planificar(A)["plan"]
+        impl = self.paquete_de(plan, "CNS/implementacion")
+        self.avanzar_prd(A, plan, impl)
+        toma = oficina.tomar(A, corpus=self.corpus, paquete=impl, circuito=self.circuito, fuentes=fuentes)
+        for h in toma["brief"]["recibes"]:
+            oficina.acusar(A, corpus=self.corpus, handoff=h["id"], comprobaciones_superadas=h["comprueba_al_recibir"])
+        nacimiento = toma["base"]["nacimiento"]
+        self.assertEqual(sorted(nacimiento), ["frontend"], nacimiento)       # el control repo no se mide
+        self.assertEqual(nacimiento["frontend"]["ruta"], fuente)
+        self.assertEqual(nacimiento["frontend"]["rama"], "ads/enc-p")
+        # la rama de la campaña y otra sesión en `main` escriben lo mismo en el control repo...
+        self._commit_mio("src/a.php", "uno-rama\ndos\n")
+        self._avanzar_main("src/a.php", "uno\ndos\ntres\n")
+        self._avanzar_main("estado/REVISION.json", "{}\n")
+        # ...y el paquete, que trabaja en su fuente, entrega
+        self._escribir("src/pedidos.tsx", "uno-mio\n", cwd=fuente)
+        self._git("commit", "-qam", "mi trabajo", cwd=fuente)
+        cp = oficina.checkpoint(A, paquete=impl, contenido={"paso": 1})
+        self.assertEqual(cp["contenido"]["base"]["veredicto"], "sin-cambio", cp["contenido"]["base"])
+        res = self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
+        self.assertEqual(res["veredicto"], "entregado")
+        # y la base DE LA FUENTE sí se juzga: si avanza sobre lo mismo durante el trabajo, contradice
+        B = self.rt("w-B")
+        plan = self.planificar(B, item="enc-q")["plan"]
+        impl2 = self.paquete_de(plan, "CNS/implementacion")
+        self.avanzar_prd(B, plan, impl2)
+        oficina.tomar(B, corpus=self.corpus, paquete=impl2, circuito=self.circuito, fuentes=fuentes)
+        self._escribir("src/pedidos.tsx", "uno-mio-otra-vez\n", cwd=fuente)
+        self._git("commit", "-qam", "mas trabajo", cwd=fuente)
+        self._avanzar_main_de(fuente, "src/pedidos.tsx", "uno\nde-main\n")
+        cp = oficina.checkpoint(B, paquete=impl2, contenido={"paso": 1})
+        base = cp["contenido"]["base"]
+        self.assertEqual(base["veredicto"], "contradiccion", base)
+        self.assertEqual(base["conflictos"], [{"repo": "frontend", "commits_nuevos": 1, "ficheros": ["src/pedidos.tsx"]}])
+        # un nacimiento de antes de T520 (sin ruta, midiendo el control repo) se reconoce para rehacerlo
+        from ciclo import base as modulo_base                              # noqa: PLC0415
+        antiguo = {"control-repo": {"rama": "trabajo", "nacio_de": "x", "base_ahora": "x", "ref_base": "main"}}
+        self.assertTrue(modulo_base.mide_otros_repos(antiguo, fuentes))
+        self.assertFalse(modulo_base.mide_otros_repos(nacimiento, fuentes))
+        self.assertFalse(modulo_base.mide_otros_repos(antiguo, []))       # sin fuentes: nada que rehacer
+
     def test_36_sin_git_no_se_mide_y_nada_cambia(self):
         """T496 · Defecto que previene: un control repo sin Git frenado por una medida que no existe."""
         A = self.rt("w-A")
