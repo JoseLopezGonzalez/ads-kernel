@@ -172,7 +172,7 @@ class Decision(unittest.TestCase):
     def test_01_la_divergencia_previa_al_sello_no_es_un_fallo_de_macos(self):
         pasa, _, motivo = H.decidir(1, DIVERGENTE, "oficina/directiva-profesional", 3)
         self.assertTrue(pasa, motivo)
-        pasa, _, motivo = H.decidir(1, DIVERGENTE, "claude/directiva-oficina-profesional-r19", None)
+        pasa, _, motivo = H.decidir(1, DIVERGENTE, "release/corte-r19", None)
         self.assertTrue(pasa, motivo)
 
     def test_02_limpio_pasa(self):
