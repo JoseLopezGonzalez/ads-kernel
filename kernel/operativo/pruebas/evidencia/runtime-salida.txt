@@ -117,12 +117,14 @@ test_45_agotar_no_reintenta_pero_la_autoridad_se_suelta (__main__.ReintentosYRec
 T184 · Defecto que previene: un lease huérfano sobre trabajo ya cerrado. ... ok
 test_46_un_paquete_agotado_no_vuelve_a_adquirirse (__main__.ReintentosYReconciliacion.test_46_un_paquete_agotado_no_vuelve_a_adquirirse)
 T184 · Defecto que previene: reservar autoridad sobre trabajo que nadie moverá. ... ok
+test_47_reanudar_no_saca_un_agotado_con_los_intentos_consumidos (__main__.ReintentosYReconciliacion.test_47_reanudar_no_saca_un_agotado_con_los_intentos_consumidos)
+T514 · Defecto que previene: un paquete en `listo` con 3 de 3 intentos gastados. ... ok
 test_47_un_resultado_AMBIGUO_ni_se_reintenta_ni_se_da_por_bueno (__main__.ReintentosYReconciliacion.test_47_un_resultado_AMBIGUO_ni_se_reintenta_ni_se_da_por_bueno)
 T184 · Defecto que previene: duplicar un efecto en silencio, o inventar un éxito. ... ok
 test_48_la_ambiguedad_se_clasifica_aunque_la_politica_se_aplique_despues (__main__.ReintentosYReconciliacion.test_48_la_ambiguedad_se_clasifica_aunque_la_politica_se_aplique_despues)
 T184 · Defecto que previene: confundir un ambiguo con un fallo definitivo. ... ok
 
 ----------------------------------------------------------------------
-Ran 57 tests  (duración no registrada: varía por ejecución)
+Ran 58 tests  (duración no registrada: varía por ejecución)
 
 OK
