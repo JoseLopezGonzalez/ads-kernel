@@ -65,7 +65,7 @@ v         1331  df887429241680a2…  docs/rediseno/b-RECORRIDO-APROBADA.md
 v         1590  aa635dff79e73fe1…  kernel/KERNEL.md
 ii          95  a870911530909584…  kernel/operativo/capacidades/APR/CAPACIDAD.md
 ii         104  6ca11b5f09883e24…  kernel/operativo/capacidades/ARQ/CAPACIDAD.md
-ii         107  2a37b519611dad1a…  kernel/operativo/capacidades/CNS/CAPACIDAD.md
+ii         108  f69804af822d91a2…  kernel/operativo/capacidades/CNS/CAPACIDAD.md
 ii         147  07fd796faf0b64f3…  kernel/operativo/capacidades/DIS/CAPACIDAD.md
 ii         135  1f02ec15edb5747f…  kernel/operativo/capacidades/DOM/CAPACIDAD.md
 ii         152  acb292f882e77d74…  kernel/operativo/capacidades/DSP/CAPACIDAD.md
@@ -98,7 +98,7 @@ v           89  586653398b298e4e…  kernel/operativo/esquemas/proceso.yaml
 v          134  9052fbf249413730…  kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md
 v          606  c5415442c236a92e…  kernel/operativo/recorrido/01-PROCESOS.md
 
-94 fuentes obligatorias · 101134 líneas
+94 fuentes obligatorias · 101135 líneas
   (i  )   4   las fuentes de «QUÉ HAY QUE LEER ÍNTEGRO» de `C-L.5`
   (ii )  29   las fuentes y las fichas de `C-0.1` / `C-0.2`
   (iii)   3   documento 11 · registro de decisiones · checkpoint

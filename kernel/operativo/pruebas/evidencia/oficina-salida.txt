@@ -21,6 +21,12 @@ test_34_al_tomar_nace_la_base_y_un_avance_compatible_se_registra (__main__.BaseD
 T494 · Defecto que previene: un trabajo que no sabe de qué commit nació ni en qué rama está. ... ok
 test_35_un_avance_que_toca_lo_mismo_contradice_y_no_se_entrega_hasta_reconciliar (__main__.BaseDePartida.test_35_un_avance_que_toca_lo_mismo_contradice_y_no_se_entrega_hasta_reconciliar)
 T495 · Defecto que previene: entregar «terminado» sobre una base que ya cambió lo mismo. ... ok
+test_35b_la_divergencia_anterior_al_trabajo_no_lo_contradice (__main__.BaseDePartida.test_35b_la_divergencia_anterior_al_trabajo_no_lo_contradice)
+T518 · Defecto que cierra: una rama que YA divergía de la base no podía entregar nada. ... ok
+test_35c_se_miden_las_fuentes_del_paquete_no_la_rama_del_control_repo (__main__.BaseDePartida.test_35c_se_miden_las_fuentes_del_paquete_no_la_rama_del_control_repo)
+T520 · Defecto que cierra: un push a `main` del control repo rechazaba toda entrega viva. ... ok
+test_35d_un_bloqueo_no_borra_la_base_y_sin_nacimiento_se_mide_al_retomar (__main__.BaseDePartida.test_35d_un_bloqueo_no_borra_la_base_y_sin_nacimiento_se_mide_al_retomar)
+T521 · Defecto que cierra: T520 no alcanzaba a un paquete que se había bloqueado. ... ok
 test_36_sin_git_no_se_mide_y_nada_cambia (__main__.BaseDePartida.test_36_sin_git_no_se_mide_y_nada_cambia)
 T496 · Defecto que previene: un control repo sin Git frenado por una medida que no existe. ... ok
 test_11_un_bloqueo_no_consume_intento_y_deja_el_desbloqueador_nombrado (__main__.BloqueoYCierre.test_11_un_bloqueo_no_consume_intento_y_deja_el_desbloqueador_nombrado)
@@ -45,10 +51,18 @@ test_07_una_entrega_incompleta_se_rechaza_y_no_toca_el_estado (__main__.Entregas
 T464 · Defecto que previene: «PR #14 sin fusionar» como evidencia de cierre. ... ok
 test_07b_sin_lease_no_se_escribe_ni_el_primer_paso_de_la_entrega (__main__.Entregas.test_07b_sin_lease_no_se_escribe_ni_el_primer_paso_de_la_entrega)
 T461 · Defecto que previene: media entrega escrita por quien ya no tiene la autoridad. ... ok
+test_07c_cada_artefacto_obligatorio_tiene_el_suyo_y_su_estructura_entera (__main__.Entregas.test_07c_cada_artefacto_obligatorio_tiene_el_suyo_y_su_estructura_entera)
+T513 · Defecto que cierra: la forma sólo miraba que hubiera UN artefacto de cada TIPO. ... ok
+test_07d_la_plantilla_lleva_los_dictamenes_del_rol_con_la_evidencia_exacta (__main__.Entregas.test_07d_la_plantilla_lleva_los_dictamenes_del_rol_con_la_evidencia_exacta)
+T515 · Defecto que cierra: un revisor real tuvo que ADIVINAR la evidencia de su dictamen. ... ok
+test_07e_un_rol_que_dictamina_no_entrega_sin_su_dictamen (__main__.Entregas.test_07e_un_rol_que_dictamina_no_entrega_sin_su_dictamen)
+T516 · Defecto que cierra: VER entregó un dosier sin dictaminar, y la oficina lo admitió. ... ok
 test_08_la_autocertificacion_se_rechaza_por_trabajador_y_por_rol (__main__.Entregas.test_08_la_autocertificacion_se_rechaza_por_trabajador_y_por_rol)
 T465 · Defecto que previene: el implementador como único verificador de su trabajo. ... ok
 test_09_devolucion_corrige_reapunta_y_a_la_tercera_frena (__main__.Entregas.test_09_devolucion_corrige_reapunta_y_a_la_tercera_frena)
 T466 · Defecto que previene: una capa devuelta que sigue adelante, o un rebote sin fin. ... ok
+test_09b_con_varias_entradas_la_devolucion_dice_a_cual_va (__main__.Entregas.test_09b_con_varias_entradas_la_devolucion_dice_a_cual_va)
+T517 · Defecto que cierra: una devolución sin dictamen iba al PRIMER handoff por nombre. ... ok
 test_09b_quien_corrigio_la_implementacion_tampoco_pasa_la_puerta_del_juez (__main__.Entregas.test_09b_quien_corrigio_la_implementacion_tampoco_pasa_la_puerta_del_juez)
 T465 · Defecto que previene: el autor de la CORRECCIÓN toma VER/dosier y su entrega se rechaza después. ... ok
 test_10_un_rechazo_al_recibir_no_cuenta_para_el_freno_y_cancela_el_receptor (__main__.Entregas.test_10_un_rechazo_al_recibir_no_cuenta_para_el_freno_y_cancela_el_receptor)
@@ -129,6 +143,6 @@ test_15_sin_entrega_valida_el_agente_no_completa_y_sin_ejecutor_falla_cerrado (_
 T470 · Defecto que previene: un `completado` durable sobre una entrega que no existe. ... ok
 
 ----------------------------------------------------------------------
-Ran 61 tests  (duración no registrada: varía por ejecución)
+Ran 68 tests  (duración no registrada: varía por ejecución)
 
 OK
