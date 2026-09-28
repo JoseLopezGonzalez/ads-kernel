@@ -245,11 +245,18 @@ def nacimiento_de(medidas, rutas=None):
 
 
 def mide_otros_repos(nacimiento, fuentes):
-    """¿El nacimiento guardado midió repos que no son las fuentes del paquete? (T520: los
-    nacimientos anteriores no guardaban ruta y medían los clones principales)."""
+    """¿El nacimiento guardado NO es la medida de las fuentes del paquete? (T520: los
+    nacimientos anteriores no guardaban ruta y medían los clones principales).
+
+    T521 · Sin nacimiento y con fuentes declaradas, también: no hay medida de las fuentes.
+    MEDIDO al vendorizar T520 (2026-09-28): un paquete que se entregó `bloqueado` perdía su
+    nacimiento, al retomarlo esta función devolvía False —«no hay nacimiento que comparar»—,
+    `tomar` no medía, y `entregar` volvía a medir la rama del control repo."""
     rutas = dict(_declaradas(fuentes))
-    if not nacimiento or not rutas:
+    if not rutas:
         return False
+    if not nacimiento:
+        return True
     return any(not (isinstance(n, dict) and n.get("ruta") == rutas.get(id)) for id, n in nacimiento.items()) \
         or set(nacimiento) != set(rutas)
 

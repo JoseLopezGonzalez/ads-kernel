@@ -2340,6 +2340,45 @@ class BaseDePartida(Laboratorio):
         self.assertFalse(modulo_base.mide_otros_repos(nacimiento, fuentes))
         self.assertFalse(modulo_base.mide_otros_repos(antiguo, []))       # sin fuentes: nada que rehacer
 
+    def test_35d_un_bloqueo_no_borra_la_base_y_sin_nacimiento_se_mide_al_retomar(self):
+        """T521 · Defecto que cierra: T520 no alcanzaba a un paquete que se había bloqueado.
+
+        Medido al vendorizar T520 (2026-09-28), con la corrección de pedidos de O41: la entrega
+        `bloqueado` sobrescribía el checkpoint con `{bloqueo, entrega}` y borraba la base; al
+        retomarlo, `mide_otros_repos(None, fuentes)` decía False, `tomar` no medía, y `entregar`
+        volvía a medir la rama del control repo. Se reproduce el recorrido entero."""
+        self._repo_git()
+        fuente = self._fuente_git()
+        fuentes = [{"id": "frontend", "path": fuente, "acceso": "escribe"}]
+        A = self.rt("w-A")
+        plan = self.planificar(A)["plan"]
+        impl = self.paquete_de(plan, "CNS/implementacion")
+        self.avanzar_prd(A, plan, impl)
+        toma = oficina.tomar(A, corpus=self.corpus, paquete=impl, circuito=self.circuito, fuentes=fuentes)
+        for h in toma["brief"]["recibes"]:
+            oficina.acusar(A, corpus=self.corpus, handoff=h["id"], comprobaciones_superadas=h["comprueba_al_recibir"])
+        entrega = self.entrega(impl, "CNS/implementacion", "bloqueado")
+        entrega["bloqueo"] = {"que_lo_impide": "la medida de base rechaza la entrega",
+                              "que_lo_desbloquearia": "corregir la medida de base en el kernel", "autoridad": "PLT"}
+        self.entregar(A, impl, entrega)
+        tras_el_bloqueo = self._base_del_checkpoint(A, impl)
+        self.assertIsNotNone(tras_el_bloqueo, "el bloqueo borró la base del checkpoint")
+        self.assertEqual(sorted(tras_el_bloqueo["nacimiento"]), ["frontend"])
+        # mientras espera, otra sesión escribe `main` del control repo sobre lo que la rama tocó
+        self._commit_mio("src/a.php", "uno-rama\ndos\n")
+        self._avanzar_main("src/a.php", "uno\ndos\ntres\n")
+        A.reanudar(impl, motivo="desbloqueado", autoridad="PLT")
+        oficina.tomar(A, corpus=self.corpus, paquete=impl, circuito=self.circuito, fuentes=fuentes)
+        self._escribir("src/pedidos.tsx", "uno-mio\n", cwd=fuente)
+        self._git("commit", "-qam", "mi trabajo", cwd=fuente)
+        res = self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
+        self.assertEqual(res["veredicto"], "entregado")
+        # y un checkpoint que ya se escribió sin base (el caso real) se mide al retomar
+        from ciclo import base as modulo_base                              # noqa: PLC0415
+        self.assertTrue(modulo_base.mide_otros_repos(None, fuentes))
+        self.assertTrue(modulo_base.mide_otros_repos({}, fuentes))
+        self.assertFalse(modulo_base.mide_otros_repos(None, []))
+
     def test_36_sin_git_no_se_mide_y_nada_cambia(self):
         """T496 · Defecto que previene: un control repo sin Git frenado por una medida que no existe."""
         A = self.rt("w-A")

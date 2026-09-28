@@ -383,9 +383,13 @@ def tomar(runtime, *, corpus=None, paquete, **opciones_del_brief):
     return {"toma": toma, "brief": brief, "brief_md": briefs.como_markdown(brief), "base": base}
 
 
-def _nacimiento_de(runtime, paquete):
+def _checkpoint_de(runtime, paquete):
     from runtime.externo import leer_checkpoint                        # noqa: PLC0415
-    previo = leer_checkpoint(runtime, paquete)
+    return leer_checkpoint(runtime, paquete)
+
+
+def _nacimiento_de(runtime, paquete):
+    previo = _checkpoint_de(runtime, paquete)
     return (((previo or {}).get("contenido") or {}).get("base") or {}).get("nacimiento")
 
 
@@ -616,7 +620,13 @@ def entregar(runtime, *, corpus=None, paquete, entrega, circuito=None, hechos=No
         registrada = entregas.registrar(almacen, entrega, intento=intento,
                                         titular=runtime.instancia, corpus=corpus,
                                         contrato=contrato)
-        runtime.checkpoint(paquete, {"bloqueo": entrega["bloqueo"], "entrega": registrada["id"]})
+        # T521: el bloqueo NO borra la base del checkpoint. Se escribía sólo {bloqueo, entrega}, y
+        # el paquete, al reanudarse, se retomaba sin nacimiento: la entrega siguiente medía otra cosa.
+        contenido_del_bloqueo = {"bloqueo": entrega["bloqueo"], "entrega": registrada["id"]}
+        base_previa = ((_checkpoint_de(runtime, paquete) or {}).get("contenido") or {}).get("base")
+        if base_previa:
+            contenido_del_bloqueo["base"] = base_previa
+        runtime.checkpoint(paquete, contenido_del_bloqueo)
         runtime.bloquear(paquete, motivo=entrega["bloqueo"]["que_lo_impide"],
                          autoridad=fila["capacidad"],
                          clase_de_bloqueo=(entrega["bloqueo"].get("clase") if veredicto == "bloqueado" else "decision"))
