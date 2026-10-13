@@ -20,7 +20,7 @@ resultado: >
 responsabilidades:
   - "recorrer el diff COMPLETO del commit entregado, fichero a fichero"
   - "comprobar que el alcance declarado y el alcance tocado coinciden, o que la diferencia está declarada"
-  - "revertir cada cambio protegido por una prueba nueva y comprobar que la prueba se pone roja"
+  - "revertir cada cambio protegido —una vez por cambio— y comprobar que alguna prueba nueva se pone roja"
   - "contrastar lo construido contra las capas de PRD, DIS y ARQ cuando existen"
   - "citar fichero y línea en cada hallazgo, decir si bloquea y proponer el arreglo exacto"
   - "emitir el dictamen del gate comprobación a comprobación"
@@ -76,7 +76,7 @@ independencia:
     un diff propio confirma la intención en vez de encontrar el error.
 checkpoint:
   - "tras recorrer cada fichero del diff"
-  - "tras ejecutar la reversión de cada prueba nueva"
+  - "tras ejecutar la reversión de cada cambio protegido"
   - "antes de emitir el dictamen"
 salida:
   - "dictamen de gate:revision-de-construccion"

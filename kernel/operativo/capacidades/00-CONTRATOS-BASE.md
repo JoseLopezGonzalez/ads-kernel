@@ -153,6 +153,8 @@ roles:
 conocimientos_exigibles:
   - "la diferencia entre un hallazgo que bloquea y una preferencia propia"
   - "los cuatro campos de una devolución de C5: qué falta, por qué es insuficiente, qué la cerraría, evidencia"
+  - "el vocabulario cerrado de materialidad de `runtime/ciclo/proporcion.py`: qué causas bloquean y cuáles son observación"
+  - "el modo de evidencia del brief, y que el derivado es un suelo que se amplía con motivo y nunca se reduce"
 entradas_obligatorias:
   - que: "la entrega que se juzga, con sus artefactos localizables y su autoevaluación"
     donde: "el handoff emitido a este paquete y la entrega previa que nombra"
@@ -197,8 +199,10 @@ condiciones_de_aceptacion:
   - "las comprobaciones del gate juzgado anotadas y el dictamen emitido"
   - "cada hallazgo bloqueante localizado, y la devolución con sus cuatro campos cuando la hay"
 condiciones_de_devolucion:
-  - "un hallazgo bloqueante: se devuelve al productor con los cuatro campos, y la corrección entra como paquete nuevo"
+  - "un hallazgo bloqueante: se devuelve al productor con los cuatro campos y su `materialidad`, y la corrección entra como paquete nuevo"
   - "lo que se juzga no es localizable o su autoevaluación está incompleta: se rechaza al recibir"
+  - "lo NO material —editorial, preferencia, evidencia redundante, perfeccionamiento— no se devuelve: va a `hallazgos` y el dictamen puede ser superado"
+  - "lo material que es de OTRA capa no se anota y se sigue: va a `riesgos_materiales_abiertos`, y entonces el dictamen no puede ser superado; se devuelve a quien entregó o se escala a la propietaria"
 reglas_de_escalado:
   - cuando: "resulto ser el autor de lo que juzgo"
     a_quien: "DSP, para reasignar el rol"
@@ -210,7 +214,9 @@ actuaciones_prohibidas:
   - "corregir lo que juzga"
   - "aprobar sin haber abierto lo que juzga"
   - "juzgar lo que uno mismo produjo"
-  - "devolver por preferencia: sólo por diferencia con lo exigido"
+  - "devolver por preferencia: sólo por diferencia MATERIAL con lo exigido"
+  - "aprobar con un riesgo material abierto, aunque su causa sea otra capa"
+  - "en una re-revisión tras una corrección, rehacer lo que la corrección no tocó: se cita el dictamen anterior y se re-juzga el hallazgo devuelto y lo que el diff de la corrección altera"
   - "hablar con el Owner"
 incompatibilidades:
   - "no comparte trabajador con el rol que produjo lo que juzga en el mismo item"

@@ -80,7 +80,7 @@ comprobaciones:
     como: "recorrido de las condiciones declaradas por SEG, con su evidencia"
     automatizable: parcial
   - id: superficie-usable
-    comprueba: "si la capa produce o modifica una superficie usable, existe sobre LO CONSTRUIDO la evidencia que exige gate:usabilidad: los cinco estados, un recorrido por cada medio de entrada del pack y las mediciones de respuesta"
+    comprueba: "si la capa produce o modifica una superficie usable, existe sobre LO CONSTRUIDO la evidencia que exige gate:usabilidad EN EL MODO DE EVIDENCIA del circuito: entera en matriz-completa y perimetro-completo; en focal, los estados, medios de entrada y medidas que el cambio altera, y el resto enlazado a la evidencia vigente"
     como: "el paquete declara afecta_superficie y enlaza esa evidencia; el dictamen de los seis ejes lo emite DIS/validacion-de-uso, que no la produjo"
     automatizable: parcial
   - id: diferencias-declaradas

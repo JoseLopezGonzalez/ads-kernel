@@ -23,7 +23,7 @@ roles_nuevos: [web:DIS/densidad-y-tablas, web:CNS/estados-de-red]
 extensiones_de_metodo:
   - "DIS/Evolucion paso 1: comprobar además si la superficie tiene tabla o formulario, que tienen sus propios patrones"
   - "DIS/ValidacionDeUso paso 2: el recorrido por medio de entrada incluye SIEMPRE teclado solo, sin puntero"
-  - "VER/Dosier paso 2: la regresión visual se ejecuta en cada navegador de la matriz declarada"
+  - "VER/Dosier paso 2: la regresión visual se ejecuta en cada navegador de la matriz declarada cuando el modo de evidencia es matriz-completa o perimetro-completo; en focal, en el motor principal"
   - "VER/Dosier paso 4: las mediciones incluyen los presupuestos de rendimiento percibido de este pack"
   - "ENT/Despliegue paso 2: las señales incluyen errores de cliente por versión de navegador"
 gates_adicionales: [gate:web-accesibilidad, gate:web-rendimiento-percibido, gate:web-estados-de-red]
@@ -41,7 +41,10 @@ herramientas:
 matriz_entornos: >
   El proyecto declara la matriz: qué navegadores, qué versiones mínimas y qué tamaños. El
   pack exige que existan al menos dos motores distintos y dos tamaños extremos —el más
-  estrecho soportado y uno amplio—, y que toda captura de evidencia cubra la matriz entera.
+  estrecho soportado y uno amplio—, y que la evidencia de una superficie nueva o de un
+  cambio de composición cubra la matriz entera. Una corrección focal (05-FIDELIDAD, modo
+  focal) cubre los dos tamaños extremos en el motor principal, y el segundo motor cuando el
+  diff toca composición, CSS o tokens.
 propiedades_medibles:
   - id: objetivo-tactil-minimo
     nombre: tamaño mínimo del objetivo táctil
@@ -98,8 +101,10 @@ y en el punto intermedio donde la composición cambia.
 
 ### Navegadores
 
-Al menos **dos motores distintos** en la matriz. La regresión visual se ejecuta en todos, y
-las diferencias aceptadas se declaran; no se descubren en producción.
+Al menos **dos motores distintos** en la matriz. La regresión visual de una superficie nueva
+o de un cambio de composición se ejecuta en todos, y las diferencias aceptadas se declaran;
+no se descubren en producción. Una corrección focal la ejecuta en el motor principal salvo
+que el diff toque composición, CSS o tokens.
 
 ### Teclado y ratón
 

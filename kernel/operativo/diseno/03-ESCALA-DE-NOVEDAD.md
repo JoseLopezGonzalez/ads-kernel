@@ -248,6 +248,15 @@ N0 NO SIGNIFICA trabajo barato, acabado inferior ni verificación reducida.
    Y los ejes `acabado` y `fidelidad` NUNCA se reutilizan: son de esta superficie.
 ```
 
+## Producir no es revisar
+
+La escala mide cuánto hay que EXPLORAR para producir diseño. Un paquete que REVISA lo
+construido contra un patrón —`DIS/revision-de-fidelidad` en una corrección, una retirada o
+un defecto con pantalla— no produce dirección: su alcance lo fija la composición de DIS del
+circuito (05-FIDELIDAD, «El alcance de la comparación»). Declarar N3 en esa revisión porque
+la memoria del producto no está vigente es medir el producto en vez del cambio; la deuda de
+memoria se registra, y no se paga dentro de cada corrección.
+
 ## Registro obligatorio
 
 Todo paquete de DIS declara en su checkpoint:

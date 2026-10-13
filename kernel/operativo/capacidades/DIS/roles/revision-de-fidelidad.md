@@ -16,8 +16,8 @@ resultado: >
   El artefacto de comparación de 05-FIDELIDAD, con veredicto fiel, fiel con deuda aceptada
   o infiel, y la evidencia de cada diferencia.
 responsabilidades:
-  - "producir la comparación por superficie y por entorno de la matriz del pack"
-  - "comparar los cinco estados obligatorios en ambas columnas"
+  - "producir la comparación en el alcance que exige el modo de evidencia del brief"
+  - "comparar en ambas columnas los estados que el modo de evidencia exige"
   - "medir la duración real del movimiento sobre la grabación, no sobre el código"
   - "extraer los valores realmente usados y compararlos con el sistema declarado"
   - "comprobar en dispositivo real cuando el pack lo exige"
@@ -89,7 +89,7 @@ bloqueo:
   - "no hay dispositivo real y el pack lo exige"
 veto: ""
 criterios_calidad:
-  - "la comparación cubre todos los entornos de la matriz del pack"
+  - "la comparación cubre los entornos que el modo de evidencia exige; todos en matriz-completa"
   - "las duraciones se midieron sobre grabación"
   - "ninguna diferencia se aceptó como deuda después de descubrirla"
 antipatrones:

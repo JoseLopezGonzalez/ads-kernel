@@ -46,12 +46,12 @@ secuencia:
     termina_cuando: "el handoff está acusado o rechazado"
     checkpoint: true
   - n: 2
-    hace: "Comparar cada superficie en estático, lado a lado, en escritorio y en móvil"
+    hace: "Comparar en estático, lado a lado, lo que exige el modo de evidencia del brief: en focal, los elementos que el diff toca en el tamaño más estrecho y el más amplio; en matriz-completa, cada superficie en cada entorno"
     produce: "comparación estática por superficie y tamaño"
     termina_cuando: "cada superficie tiene su par especificación/construido con las diferencias marcadas"
     checkpoint: true
   - n: 3
-    hace: "Comparar los cinco estados obligatorios con datos reales, en ambas columnas"
+    hace: "Comparar con datos reales, en ambas columnas, los estados que exige el modo: en focal, los que dependen del código cambiado; en perimetro-completo y matriz-completa, los cinco obligatorios y los propios"
     produce: "comparación por estado"
     termina_cuando: "cada estado está comparado o consta por qué no se pudo provocar"
     checkpoint: true
@@ -94,7 +94,7 @@ evidencias_requeridas:
     quien_la_puede_juzgar: "cualquiera con acceso a la fuente"
 criterios_de_calidad_medibles:
   - criterio: "cobertura de estados"
-    como_se_mide: "cinco estados por superficie comparados o justificados"
+    como_se_mide: "los estados que exige el modo de evidencia, comparados o justificados"
   - criterio: "diferencias con evidencia"
     como_se_mide: "cien por cien de las diferencias tienen su par lado a lado"
   - criterio: "sin deuda a posteriori"
@@ -125,7 +125,8 @@ actuaciones_prohibidas:
   - "rechazar por preferencia: sólo por diferencia con lo aprobado"
   - "proponer la corrección: se nombra la diferencia"
   - "comparar sobre una revisión distinta de la entregada"
-  - "dar por fiel una superficie sin haber provocado sus cinco estados"
+  - "dar por fiel una superficie sin haber provocado los estados que su modo de evidencia exige"
+  - "reducir el modo de evidencia derivado, o ampliarlo sin motivo escrito"
 ejemplo_bueno: >
   El revisor arranca el commit entregado, compara la lista de pedidos del portal en
   escritorio y móvil, provoca el error de permisos y ve que la pantalla dice «no hay nada»:
@@ -153,7 +154,7 @@ checklist:
     pregunta: "¿No he especificado ni construido nada de lo que comparo?"
     automatizable: si
   - id: cinco-estados-comparados
-    pregunta: "¿He provocado y comparado los cinco estados, o consta por qué no?"
+    pregunta: "¿He provocado y comparado los estados que exige el modo de evidencia, o consta por qué no?"
     automatizable: parcial
   - id: diferencias-con-par
     pregunta: "¿Cada diferencia tiene su par lado a lado?"

@@ -29,8 +29,12 @@ con más cuidado, no con menos.
 ## Mide si las pruebas muerden
 
 ```text
-Por cada prueba nueva: revierte en una copia el cambio que dice proteger, y ejecútala.
-VERDE con el cambio revertido  →  no protege nada. Hallazgo BLOQUEANTE.
+Por cada CAMBIO protegido: revierte el cambio en una copia y ejecuta TODAS las pruebas
+nuevas (una reversión por cambio, no por prueba; si veinte pruebas protegen la misma
+línea, se revierte una vez).
+NINGUNA prueba en rojo con el cambio revertido  →  el cambio no está protegido. BLOQUEANTE.
+Una prueba que no se pone roja con ninguna reversión  →  decorativa. Si el cambio ya tiene
+otra que muerde, es OBSERVACIÓN (retirarla), no devolución.
 ROJA con el cambio revertido   →  muerde. Anótalo.
 ```
 
@@ -74,7 +78,7 @@ Escribes checkpoint:
 
 ```text
   · tras recorrer cada fichero del diff
-  · tras ejecutar la reversión de cada prueba nueva
+  · tras ejecutar la reversión de cada cambio protegido
   · antes de emitir el dictamen
 ```
 

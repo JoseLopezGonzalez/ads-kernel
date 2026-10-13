@@ -298,9 +298,12 @@ ejes se evaluaran nunca sobre lo construido (hallazgo **A-13**). El reparto es:
 
 ```text
 QUÉ PAQUETE LO ACTIVA   todo paquete de CON cuyo objetivo declara `afecta_superficie`
-QUÉ EVIDENCIA NECESITA  los cinco estados capturados sobre lo CONSTRUIDO · un recorrido por
-                        cada medio de entrada que declare el pack · las mediciones de
-                        respuesta frente al presupuesto del pack
+QUÉ EVIDENCIA NECESITA  la que exige el MODO DE EVIDENCIA del circuito (05-FIDELIDAD):
+                        en matriz-completa y perimetro-completo, los cinco estados sobre lo
+                        CONSTRUIDO, un recorrido por cada medio de entrada del pack y las
+                        mediciones de respuesta; en focal, sólo los estados, medios y
+                        medidas que el cambio altera, y el resto se ENLAZA a la evidencia
+                        vigente del patrón (03-ESCALA, ejes reutilizables de N0)
 QUIÉN LA PRODUCE        CON, y la declara en su salida antes de la revisión
 QUIÉN LA JUZGA          DIS/validacion-de-uso, que emite el dictamen de los seis ejes.
                         No la juzga quien la produjo.

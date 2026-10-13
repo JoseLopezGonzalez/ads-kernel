@@ -59,9 +59,9 @@ secuencia:
     termina_cuando: "el comportamiento especificado existe y cada diferencia está declarada con fecha"
     checkpoint: true
   - n: 3
-    hace: "Escribir las pruebas del comportamiento nuevo: camino feliz, vacío, error y límite; y comprobar que cada una se pone roja si se revierte lo que protege"
+    hace: "Escribir las pruebas del comportamiento que el diff CAMBIA —una por invariante cambiado; vacío, error y límite cuando el código cambiado tiene esas ramas—, y comprobar que cada cambio protegido tiene al menos una que se pone roja si se revierte. No se escriben pruebas de lo que el diff no toca"
     produce: "pruebas y su salida, con la comprobación de que muerden"
-    termina_cuando: "la suite pasa, cubre el comportamiento nuevo y cada prueba nueva muerde"
+    termina_cuando: "la suite pasa, cada cambio de comportamiento tiene una prueba que muerde y ninguna prueba nueva es decorativa"
     checkpoint: true
   - n: 4
     hace: "Ejecutar las consultas de comprobación de DOM y recorrer las condiciones de SEG, guardando la salida de cada una"
@@ -109,8 +109,8 @@ evidencias_requeridas:
   - que: "la suite pasa en el commit entregado"
     forma: "salida literal de la orden, con el SHA en el que se ejecutó"
     quien_la_puede_juzgar: "el revisor de construcción, ejecutándola sobre el mismo commit"
-  - que: "cada prueba nueva muerde"
-    forma: "tabla prueba → cambio revertido → resultado rojo"
+  - que: "cada cambio protegido tiene una prueba que muerde"
+    forma: "tabla cambio revertido → pruebas que lo protegen → resultado (una reversión por cambio, no por prueba)"
     quien_la_puede_juzgar: "el revisor de construcción, repitiendo la reversión"
   - que: "las diferencias respecto a la especificación están declaradas antes de la entrega"
     forma: "lista con fecha en la entrega"
@@ -119,7 +119,7 @@ criterios_de_calidad_medibles:
   - criterio: "ninguna decisión de otra capa cambiada en silencio"
     como_se_mide: "el revisor no encuentra en el diff ninguna decisión de PRD, DIS o ARQ distinta de la aprobada que no esté en diferencias_declaradas"
   - criterio: "pruebas que protegen, no que decoran"
-    como_se_mide: "cien por cien de las pruebas nuevas se ponen rojas al revertir su cambio"
+    como_se_mide: "cada cambio protegido, revertido, pone en rojo al menos una prueba nueva; una prueba que no se pone roja con ninguna reversión es decorativa y se retira o se declara"
   - criterio: "alcance respetado"
     como_se_mide: "el diff toca sólo ficheros de las fuentes declaradas en escribe_fuentes, o la excepción está declarada"
 condiciones_de_aceptacion:
@@ -129,7 +129,7 @@ condiciones_de_aceptacion:
   - "ninguna fusión en la rama principal de ninguna fuente"
 condiciones_de_devolucion:
   - "el diff cambia una decisión de una capa anterior sin haberla devuelto"
-  - "una prueba nueva sigue verde al revertir el cambio que dice proteger"
+  - "un cambio de comportamiento no tiene ninguna prueba que se ponga roja al revertirlo"
   - "el commit entregado no es localizable o no coincide con el nombrado"
   - "hay una diferencia respecto a la especificación que la revisión encuentra y la entrega no declara"
 reglas_de_escalado:
@@ -186,7 +186,7 @@ checklist:
     pregunta: "¿Cada fuente escrita tiene su rama nueva y ninguna escritura fue a la principal?"
     automatizable: si
   - id: pruebas-muerden
-    pregunta: "¿He revertido cada cambio protegido por una prueba nueva y he visto la prueba en rojo?"
+    pregunta: "¿He revertido cada cambio protegido y he visto en rojo al menos una prueba que lo protege?"
     automatizable: si
   - id: diferencias-antes
     pregunta: "¿Toda diferencia respecto a la especificación está en la entrega, con fecha, antes de que nadie la busque?"

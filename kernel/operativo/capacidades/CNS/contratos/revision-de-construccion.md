@@ -50,9 +50,9 @@ secuencia:
     termina_cuando: "cada fichero del diff tiene veredicto"
     checkpoint: true
   - n: 3
-    hace: "Revertir en una copia cada cambio protegido por una prueba nueva y ejecutar la prueba"
-    produce: "tabla prueba → cambio revertido → resultado"
-    termina_cuando: "cada prueba nueva tiene su resultado de reversión"
+    hace: "Revertir en una copia cada CAMBIO protegido —una reversión por cambio, no por prueba— y ejecutar todas las pruebas nuevas contra cada reversión"
+    produce: "tabla cambio revertido → pruebas que se ponen rojas → pruebas que siguen verdes"
+    termina_cuando: "cada cambio tiene su reversión ejecutada y cada prueba nueva consta roja en alguna, o decorativa"
     checkpoint: true
   - n: 4
     hace: "Contrastar el diff con las capas de PRD, DIS y ARQ buscando decisiones cambiadas sin devolver"
@@ -77,7 +77,7 @@ artefactos:
   - tipo: medicion
     nombre: tabla de reversión de pruebas
     estructura_minima:
-      - "una fila por prueba nueva: prueba, cambio revertido, resultado"
+      - "una fila por cambio revertido: cambio, pruebas en rojo, pruebas en verde"
     obligatorio: true
   - tipo: documento
     nombre: hallazgos
@@ -86,7 +86,7 @@ artefactos:
     obligatorio: true
 evidencias_requeridas:
   - que: "las pruebas nuevas muerden"
-    forma: "la tabla de reversión con su salida"
+    forma: "la tabla de reversión por cambio, con su salida"
     quien_la_puede_juzgar: "VER, repitiendo una reversión al azar"
   - que: "el diff se leyó entero"
     forma: "la lista de ficheros tocados coincide con git diff --name-only del commit"
@@ -103,7 +103,8 @@ condiciones_de_aceptacion:
   - "lista de ficheros tocados completa y tabla de reversión completa"
   - "hallazgos con fichero, línea, si bloquea y arreglo"
 condiciones_de_devolucion:
-  - "un hallazgo bloqueante: prueba que no muerde, decisión ajena cambiada, alcance excedido sin declarar"
+  - "un hallazgo bloqueante, con su materialidad (`devolucion.materialidad`): un cambio de comportamiento sin ninguna prueba que muerda, decisión ajena cambiada, alcance excedido sin declarar, criterio o seguridad en riesgo"
+  - "NO bloquea —va a hallazgos como observación—: una prueba decorativa ADICIONAL cuando el cambio ya tiene otra que muerde, una anotación de forma sin efecto en el producto, una preferencia de estilo"
   - "el commit no es localizable o la autoevaluación está incompleta: se rechaza al recibir, no se devuelve"
 reglas_de_escalado:
   - cuando: "el diff cambia una decisión de PRD, DIS o ARQ"
@@ -119,7 +120,9 @@ incompatibilidades:
   - "no comparte trabajador con CNS/implementacion en el mismo item"
 actuaciones_prohibidas:
   - "corregir el hallazgo en la rama revisada"
-  - "aprobar sin haber ejecutado la reversión de cada prueba nueva"
+  - "aprobar sin haber revertido cada cambio protegido"
+  - "aprobar con un riesgo material abierto —aunque su causa sea otra capa—: se devuelve o se escala, no se anota"
+  - "devolver por una diferencia no material"
   - "revisar sólo los ficheros que el encargo nombraba"
   - "emitir un hallazgo bloqueante sin fichero y línea"
   - "hablar con el Owner"
@@ -151,7 +154,7 @@ checklist:
     pregunta: "¿Mi lista de ficheros coincide con git diff --name-only del commit?"
     automatizable: si
   - id: reversion-ejecutada
-    pregunta: "¿He revertido cada cambio protegido por una prueba nueva y ejecutado la prueba?"
+    pregunta: "¿He revertido cada cambio protegido (una vez por cambio) y ejecutado todas las pruebas nuevas contra cada reversión?"
     automatizable: si
   - id: capas-anteriores
     pregunta: "¿He contrastado el diff con PRD, DIS y ARQ cuando existen?"
