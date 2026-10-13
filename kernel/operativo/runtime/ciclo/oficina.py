@@ -29,6 +29,8 @@ Lo que este módulo garantiza, y una prueba ejerce cada garantía:
 """
 from __future__ import annotations
 
+import re
+
 from estado.serializacion import cid_de_objeto
 
 from . import base as modulo_base, briefs, cierre as modulo_cierre, durable, entregas, formas, gates, handoffs, impacto as modulo_impacto
@@ -280,7 +282,44 @@ def planificar(runtime, *, corpus=None, entrada, circuito, control_repo, fase="u
             objetos={planificacion.ruta_de(plan["id"]): sustituto},
         )
         plan = sustituto
-    return {"encuadre": marco, "ruta": ruta, "equipos": equipos, "plan": plan}
+        retirados = _retirar_paquetes_sustituidos(runtime, anterior, plan)
+    else:
+        retirados = {"cancelados": [], "en_vuelo": []}
+    return {"encuadre": marco, "ruta": ruta, "equipos": equipos, "plan": plan,
+            "plan_sustituido": retirados}
+
+
+# Los estados de un paquete que NADIE está trabajando: se pueden cancelar sin quitarle el
+# trabajo a un worker vivo. `despachado` y `ejecutando` tienen titular y se dejan.
+ESTADOS_SIN_TITULAR = ("listo", "pausado", "bloqueado", "esperando-dependencia")
+
+
+def _retirar_paquetes_sustituidos(runtime, anterior, plan):
+    """Al replanificar, los paquetes del plan sustituido que el plan nuevo no conserva y
+    nadie está trabajando se CANCELAN; los que están en vuelo se publican.
+
+    DEFECTO MEDIDO (La Pesquerapp, `enc-stk-a1`, 2026-10-12): dos generaciones seguidas
+    dejaron doce paquetes del plan muerto en `listo`. El worker los saltaba porque no tenían
+    fila en el plan vigente, pero el runtime los seguía ofreciendo, un segundo
+    `ARQ/diagnostico` corrió 504 s sobre un plan sustituido y su entrega se rechazó con
+    CICLO_INCONSISTENTE, y DSP canceló veinticuatro paquetes a mano. Sustituir un plan es la
+    decisión de que esos paquetes ya no son el trabajo: cancelarlos es su consecuencia, no
+    una segunda decisión.
+    """
+    conservados = set(plan.get("paquetes") or [])
+    salida = {"cancelados": [], "en_vuelo": []}
+    for paquete in sorted(set(anterior.get("paquetes") or []) - conservados):
+        objeto = durable.leer(runtime.almacen, "paquetes/" + paquete + ".json")
+        if objeto is None:
+            continue
+        if objeto["estado"] in ESTADOS_SIN_TITULAR:
+            runtime.cancelar(paquete, autoridad="DSP",
+                             motivo="su plan " + anterior["id"] + " fue sustituido por " + plan["id"]
+                                    + ": el paquete ya no es trabajo del encargo")
+            salida["cancelados"].append(paquete)
+        elif objeto["estado"] in ("despachado", "ejecutando"):
+            salida["en_vuelo"].append(paquete)
+    return salida
 
 
 def _orden_de_roles(corpus, capacidad, composicion_id):
@@ -412,6 +451,36 @@ def checkpoint(runtime, *, paquete, contenido, corpus=None):
     return runtime.checkpoint(paquete, contenido)
 
 
+ROL_EN_TEXTO = re.compile(r"\b(?:[A-Z]{3})/[a-z][a-z-]*[a-z]\b")
+FORMA_INCONDICIONAL = re.compile(r"^no comparte trabajador con .+ en el mismo item$")
+
+
+def incompatibles_por_contrato(corpus, rol):
+    """Los roles que el CONTRATO OPERATIVO de `rol` declara incompatibles en el mismo item.
+
+    DEFECTO MEDIDO (La Pesquerapp, 2026-10-12/13): `VER/dosier` declara en `incompatibilidades`
+    que «no comparte trabajador con CNS/implementacion ni con CNS/revision-de-construccion»,
+    pero la puerta sólo leía `independencia.de_quien` del rol y las independencias del
+    circuito. Quien había hecho la revisión de construcción tomaba el VER, lo leía en su
+    brief y se BLOQUEABA él mismo: tres intentos quemados así entre `enc-stk-contencion-
+    reorganizar` (VER agotado sin un solo fallo de verificación) y dos encargos de Pedidos.
+    La incompatibilidad estaba escrita; lo que faltaba era que la puerta la leyera.
+    """
+    try:
+        contrato = corpus.contrato_operativo_de(rol) or {}
+    except Exception:  # noqa: BLE001 — un rol sin contrato operativo no declara incompatibilidades
+        return set()
+    salida = set()
+    for texto in contrato.get("incompatibilidades") or []:
+        # SÓLO la forma incondicional. «… en items de primera dirección de producto» (PRD) es
+        # una condición que la puerta no sabe evaluar, y una sin ámbito declarado tampoco se
+        # adivina: endurecer la puerta con lo que el contrato no dice sería otra regla.
+        if not FORMA_INCONDICIONAL.match(str(texto).strip()):
+            continue
+        salida.update(m for m in ROL_EN_TEXTO.findall(str(texto)) if m != rol)
+    return salida
+
+
 def _exigir_que_no_juzgue_lo_suyo(runtime, corpus, paquete, fila, circuito=None):
     """G13 en la PUERTA: quien produjo lo que este paquete va a juzgar no lo toma.
 
@@ -428,6 +497,7 @@ def _exigir_que_no_juzgue_lo_suyo(runtime, corpus, paquete, fila, circuito=None)
     for regla in (circuito or {}).get("independencias") or []:
         if str(regla.get("rol")) == rol:
             independiente_de.update(str(d) for d in (regla.get("de") or []))
+    independiente_de.update(incompatibles_por_contrato(corpus, rol))
     if not independiente_de:
         return
     objeto = runtime._leer_paquete(paquete) or {}
@@ -1189,7 +1259,10 @@ def _abrir_correccion(runtime, corpus, plan, *, emisor, receptor, motivo, cuenta
                    "cuenta_para_el_freno": bool(cuenta_para_el_freno)})
     fila_r = dict(fila_receptor)
     fila_r.update({"paquete": id_receptor, "prioridad": PRIORIDAD_DE_CORRECCION,
-                   "depende_de": [id_correccion], "reemplaza_a": receptor, "vuelta": vuelta})
+                   "depende_de": [id_correccion], "reemplaza_a": receptor, "vuelta": vuelta,
+                   # lo que el receptor nuevo re-juzga: el brief lo convierte en una revisión
+                   # DIFERENCIAL (`proporcion.revision_diferencial`)
+                   "motivo_devuelto": str(motivo)})
     for fila_nueva in (fila_c, fila_r):
         filas = [f for f in filas if f["paquete"] != fila_nueva["paquete"]] + [fila_nueva]
     for fila_s in filas:

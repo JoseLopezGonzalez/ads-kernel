@@ -1674,6 +1674,7 @@ class Integrado(Laboratorio):
         """T468 · Defecto que previene: «integrado» como palabra, o dos ramas que nadie probó juntas."""
         A = self.rt("w-A")
         B = self.rt("w-B")
+        C = self.rt("w-C")
         circuito = self.circuitos["cambio-con-interfaz"]
         plan = oficina.planificar(A, corpus=self.corpus, entrada=self.entrada(), circuito=circuito,
                                   control_repo=self.repo, item="enc-int", titulo="Con pantalla")["plan"]
@@ -1688,7 +1689,11 @@ class Integrado(Laboratorio):
                 break
             pq = [t["paquete"] for t in A.tomables()["tomables"] if t["paquete"] != conv][0]
             rol = filas[pq]["rol"]
-            trabajador = A if rol in ("PRD/definicion", "PRD/criterio-de-exito", "DIS/diseno-visual", "CNS/implementacion") else B
+            # VER/dosier «no comparte trabajador con CNS/implementacion ni con
+            # CNS/revision-de-construccion» (su contrato operativo); desde T526 la puerta lo
+            # hace cumplir al tomar, así que el dosier lo hace un TERCER trabajador.
+            trabajador = A if rol in ("PRD/definicion", "PRD/criterio-de-exito", "DIS/diseno-visual", "CNS/implementacion") \
+                else (C if rol == "VER/dosier" else B)
             self.tomar_y_acusar(trabajador, pq)
             entrega = self.entrega(pq, rol)
             if rol == "DIS/revision-de-fidelidad":
@@ -2864,11 +2869,23 @@ class ElTableroNoOfreceLoQueNoDa(Laboratorio):
     def test_46_lo_que_el_tablero_retira_lo_dice_con_su_motivo(self):
         """T509 · Defecto que previene: arreglar la mentira callándose."""
         rt = self.rt("w-tablero-motivo")
-        oficina.planificar(rt, corpus=self.corpus, entrada=self.entrada(), circuito=self.circuito,
-                           control_repo=self.repo, item="enc-motivo", titulo="Exportar CSV")
-        oficina.planificar(rt, corpus=self.corpus, entrada=self.entrada(), circuito=self.circuito,
-                           control_repo=self.repo, item="enc-motivo", titulo="Exportar CSV",
-                           generacion=1)
+        primero = oficina.planificar(rt, corpus=self.corpus, entrada=self.entrada(), circuito=self.circuito,
+                                     control_repo=self.repo, item="enc-motivo", titulo="Exportar CSV")["plan"]
+        # Desde T525 replanificar CANCELA lo que nadie trabaja del plan sustituido, con su
+        # motivo; lo que sigue pudiendo quedar atrás es lo que estaba EN VUELO y se suelta
+        # después. Ése es el caso que el tablero tiene que retirar y explicar.
+        en_vuelo = rt.tomables()["tomables"][0]["paquete"]
+        trabajador = self.rt("w-en-vuelo")
+        oficina.tomar(trabajador, corpus=self.corpus, paquete=en_vuelo, circuito=self.circuito)
+        nuevo = oficina.planificar(rt, corpus=self.corpus, entrada=self.entrada(), circuito=self.circuito,
+                                   control_repo=self.repo, item="enc-motivo", titulo="Exportar CSV",
+                                   generacion=1)
+        self.assertEqual(nuevo["plan_sustituido"]["en_vuelo"], [en_vuelo])
+        for p in nuevo["plan_sustituido"]["cancelados"]:
+            self.assertEqual(rt._leer_paquete(p)["estado"], "cancelado")
+        self.assertEqual(sorted(nuevo["plan_sustituido"]["cancelados"] + [en_vuelo]),
+                         sorted(set(primero["paquetes"]) - set(nuevo["plan"]["paquetes"])))
+        trabajador.soltar(en_vuelo)
         vista = tablero.derivar(rt, corpus=self.corpus)
         retirados = vista.get("tomables_de_plan_superado") or []
         self.assertTrue(retirados,
@@ -2969,6 +2986,181 @@ class _RunnerDeterminista(unittest.TextTestRunner):
                           r"Ran \1 tests  (duración no registrada: varía por ejecución)",
                           buffer.getvalue()))
         return resultado
+
+
+# =========================================================================
+# T522–T526 · proporcionalidad: alcance de la evidencia, materialidad, revisión diferencial,
+# plan sustituido y la puerta G13 con las incompatibilidades del contrato
+# =========================================================================
+class Proporcionalidad(Laboratorio):
+
+    DEVOLUCION = {"que_falta": "la prueba del conflicto no muerde",
+                  "por_que_es_insuficiente": "no protege el cambio",
+                  "que_la_cerraria": "una prueba roja al revertir",
+                  "evidencia": ["tabla de reversión"]}
+
+    def _devolver_revision(self, materialidad=None, item="enc-x"):
+        sufijo = "" if item == "enc-x" else "-" + item
+        A = self.rt("w-A" + sufijo)
+        plan = self.planificar(A, item=item)["plan"]
+        impl = self.paquete_de(plan, "CNS/implementacion")
+        self.avanzar_prd(A, plan, impl)
+        rev = self.paquete_de(plan, "CNS/revision-de-construccion")
+        self.tomar_y_acusar(A, impl)
+        self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
+        B = self.rt("w-B" + sufijo)
+        self.tomar_y_acusar(B, rev)
+        entrega = self.entrega(rev, "CNS/revision-de-construccion", "devuelto")
+        entrega["dictamenes"] = [self.dictamen("gate:revision-de-construccion", impl, "no-superado")]
+        entrega["devolucion"] = dict(self.DEVOLUCION, **({"materialidad": materialidad} if materialidad else {}))
+        return A, B, plan, impl, rev, entrega
+
+    def test_38_el_alcance_de_la_evidencia_se_deriva_de_la_composicion_de_dis(self):
+        """T522 · Defecto que previene: la matriz entera de 05-FIDELIDAD para retirar un botón.
+
+        Medido (`enc-stk-contencion-reorganizar`, 2026-10-13): 144 capturas principales, dos
+        motores, tres tamaños y la grabación del movimiento para una constante y dos
+        condiciones. El modo sale de la composición de DIS del circuito; un circuito que
+        decide forma sigue exigiendo la matriz entera, y uno sin Diseño no pide capturas.
+        """
+        from ciclo import proporcion, briefs as modulo_briefs
+        correccion = {"composiciones": ["composicion:dis-revision-implementacion", "composicion:con-implementacion"]}
+        superficie = {"composiciones": ["composicion:prd-alcance-rutinario", "composicion:dis-feature-visual"]}
+        mezcla = {"composiciones": ["composicion:dis-bug-visual", "composicion:dis-caso-nuevo"]}
+        self.assertEqual(proporcion.alcance_de_la_evidencia(correccion)["modo"], proporcion.MODO_FOCAL)
+        self.assertEqual(proporcion.alcance_de_la_evidencia(superficie)["modo"], proporcion.MODO_MATRIZ)
+        self.assertEqual(proporcion.alcance_de_la_evidencia(mezcla)["modo"], proporcion.MODO_PERIMETRO)
+        self.assertEqual(proporcion.alcance_de_la_evidencia(self.circuito)["modo"], proporcion.MODO_SIN_SUPERFICIE)
+        self.assertEqual(proporcion.alcance_de_la_evidencia(superficie)["amplian"], [])
+        # cada composición de DIS del corpus tiene modo: una nueva no puede quedar sin alcance
+        de_dis = {c["id"] for c in self.corpus.de_tipo("composicion") if c.get("capacidad") == "DIS"}
+        self.assertEqual(sorted(de_dis - set(proporcion.MODO_POR_COMPOSICION)), [])
+        # y el brief lo dice, con la regla de que el derivado es un suelo
+        A = self.rt("w-A")
+        circuito = self.circuitos["cambio-con-interfaz"]
+        plan = oficina.planificar(A, corpus=self.corpus, entrada=self.entrada(), circuito=circuito,
+                                  control_repo=self.repo, item="enc-ui", titulo="Con pantalla")["plan"]
+        pq = self.paquete_de(plan, "PRD/definicion") if any(f.get("rol") == "PRD/definicion" for f in plan["correspondencia"]) \
+            else plan["correspondencia"][0]["paquete"]
+        toma = oficina.tomar(A, corpus=self.corpus, paquete=pq, circuito=circuito)
+        self.assertEqual(toma["brief"]["alcance_de_la_evidencia"]["modo"], proporcion.MODO_FOCAL)
+        self.assertIn("6 bis", toma["brief_md"])
+        self.assertIn("SUELO", toma["brief_md"])
+        self.assertIsNone(toma["brief"]["revision_diferencial"])
+        del modulo_briefs
+
+    def test_39_una_devolucion_no_material_se_rechaza_y_una_material_corrige(self):
+        """T523 · Defecto que previene: devolver por forma; y aprobar dejando pasar lo material.
+
+        Medido (`enc-ped-def-*`): cinco devoluciones sobre cuatro arreglos cuyo código no
+        volvió a cambiar; una era `no-aplica` en vez de `no`. Y (`enc-stk-a1`, H8) una pérdida
+        de coste vista por cuatro capas, anotada y pasada aguas abajo con dictamen superado.
+        """
+        A, B, plan, impl, rev, entrega = self._devolver_revision(materialidad="editorial")
+        antes = sorted(os.listdir(os.path.join(self.repo, "estado", "canonico", "paquetes")))
+        with self.assertRaises(ciclo.EntregaInvalida) as cm:
+            self.entregar(B, rev, entrega)
+        self.assertIn("no es material", str(cm.exception))
+        self.assertEqual(sorted(os.listdir(os.path.join(self.repo, "estado", "canonico", "paquetes"))), antes)
+        entrega["devolucion"]["materialidad"] = "me-parece-mal"
+        with self.assertRaises(ciclo.EntregaInvalida) as cm:
+            self.entregar(B, rev, entrega)
+        self.assertIn("vocabulario cerrado", str(cm.exception))
+        # lo material de OTRA capa no pasa con un `superado`
+        aprobada = self.entrega(rev, "CNS/revision-de-construccion")
+        dictamen = self.dictamen("gate:revision-de-construccion", impl)
+        dictamen["riesgos_materiales_abiertos"] = ["el coste de la materia prima queda null: la premisa de PRD es falsa"]
+        aprobada["dictamenes"] = [dictamen]
+        with self.assertRaises(ciclo.EntregaInvalida) as cm:
+            self.entregar(B, rev, aprobada)
+        self.assertIn("aguas abajo", str(cm.exception))
+        # una devolución MATERIAL sigue su camino de siempre: corrección y receptor nuevo
+        entrega["devolucion"]["materialidad"] = "prueba-relevante-fallida"
+        res = self.entregar(B, rev, entrega)
+        self.assertTrue(res["correccion"]["correccion"])
+        # y sin materialidad declarada (entrega escrita con un brief anterior) también: compatibilidad
+        _A, B2, _p, _i, rev2, sin = self._devolver_revision(item="enc-y")
+        self.assertNotIn("materialidad", sin["devolucion"])
+        self.assertTrue(self.entregar(B2, rev2, sin)["correccion"]["correccion"])
+
+    def test_40_el_receptor_nuevo_revisa_en_diferencial(self):
+        """T524 · Defecto que previene: rehacer entera la revisión anterior tras cada corrección.
+
+        Medido (`enc-ped-def-importes`): las mismas 21 pruebas revertidas en cuatro tablas.
+        """
+        A, B, plan, impl, rev, entrega = self._devolver_revision(materialidad="prueba-relevante-fallida")
+        res = self.entregar(B, rev, entrega)
+        correccion, nuevo = res["correccion"]["correccion"], res["correccion"]["receptor"]
+        C = self.rt("w-C")
+        self.tomar_y_acusar(C, correccion)
+        self.entregar(C, correccion, self.entrega(correccion, "CNS/implementacion"))
+        D = self.rt("w-D")
+        toma = self.tomar_y_acusar(D, nuevo)
+        diferencial = toma["brief"]["revision_diferencial"]
+        self.assertEqual(diferencial["reemplaza_a"], rev)
+        self.assertEqual(diferencial["motivo_devuelto"], self.DEVOLUCION["que_falta"])
+        self.assertEqual(diferencial["correccion"], correccion)
+        self.assertIn("DIFERENCIAL", toma["brief_md"])
+        self.assertIn(self.DEVOLUCION["que_falta"], toma["brief_md"])
+
+    def test_41_replanificar_cancela_lo_que_nadie_trabaja_del_plan_sustituido(self):
+        """T525 · Defecto que previene: paquetes de un plan muerto que se siguen ofreciendo.
+
+        Medido (`enc-stk-a1`, 2026-10-12): doce paquetes de dos generaciones sustituidas en
+        `listo`, un ARQ/diagnostico de 504 s sobre un plan muerto y veinticuatro
+        cancelaciones a mano.
+        """
+        A = self.rt("dsp")
+        primero = self.planificar(A)
+        self.assertEqual(primero["plan_sustituido"], {"cancelados": [], "en_vuelo": []})
+        viejo = primero["plan"]
+        impl = self.paquete_de(viejo, "CNS/implementacion")
+        self.avanzar_prd(A, viejo, impl)
+        completados = {p for p in viejo["paquetes"] if A._leer_paquete(p)["estado"] == "completado"}
+        self.assertTrue(completados)
+        B = self.rt("w-B")
+        oficina.tomar(B, corpus=self.corpus, paquete=impl, circuito=self.circuito)   # en vuelo
+        nuevo = oficina.planificar(A, corpus=self.corpus, entrada=self.entrada(), circuito=self.circuito,
+                                   control_repo=self.repo, item="enc-x", titulo="Exportar CSV", generacion=1)
+        retirados = nuevo["plan_sustituido"]
+        self.assertEqual(retirados["en_vuelo"], [impl])
+        esperados = sorted(p for p in viejo["paquetes"] if p not in completados and p != impl)
+        self.assertEqual(sorted(retirados["cancelados"]), esperados)
+        for p in esperados:
+            self.assertEqual(A._leer_paquete(p)["estado"], "cancelado")
+        for p in completados:                                   # lo acreditado no se toca
+            self.assertEqual(A._leer_paquete(p)["estado"], "completado")
+        ofrecidos = {t["paquete"] for t in A.tomables()["tomables"]}
+        self.assertFalse(ofrecidos & set(viejo["paquetes"]))
+
+    def test_42_la_puerta_g13_lee_las_incompatibilidades_del_contrato(self):
+        """T526 · Defecto que previene: quien revisó la construcción toma VER y se bloquea él mismo.
+
+        Medido (`enc-stk-contencion-reorganizar`): VER agotado sin un fallo de verificación,
+        dos intentos por reparto de titulares. El contrato de VER/dosier ya decía «no
+        comparte trabajador con CNS/revision-de-construccion»; la puerta no lo leía.
+        """
+        A = self.rt("w-A")
+        plan = self.planificar(A)["plan"]
+        impl = self.paquete_de(plan, "CNS/implementacion")
+        self.avanzar_prd(A, plan, impl)
+        rev = self.paquete_de(plan, "CNS/revision-de-construccion")
+        ver = self.paquete_de(plan, "VER/dosier")
+        self.tomar_y_acusar(A, impl)
+        self.entregar(A, impl, self.entrega(impl, "CNS/implementacion"))
+        B = self.rt("w-B")
+        self.tomar_y_acusar(B, rev)
+        aprobada = self.entrega(rev, "CNS/revision-de-construccion")
+        aprobada["dictamenes"] = [self.dictamen("gate:revision-de-construccion", impl),
+                                  self.dictamen("gate:implementacion-completa", impl)]
+        self.entregar(B, rev, aprobada)
+        with self.assertRaises(ciclo.AutocertificacionRechazada) as cm:
+            oficina.tomar(B, corpus=self.corpus, paquete=ver, circuito=self.circuito)
+        self.assertIn("CNS/revision-de-construccion", str(cm.exception))
+        self.assertIsNone(B._leer_lease(ver))
+        F = self.rt("w-F")
+        toma = oficina.tomar(F, corpus=self.corpus, paquete=ver, circuito=self.circuito)
+        self.assertEqual(toma["brief"]["rol"]["id"], "VER/dosier")
 
 
 if __name__ == "__main__":

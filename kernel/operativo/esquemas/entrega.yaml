@@ -116,6 +116,10 @@ campos:
       # T517 · a QUÉ paquete se devuelve: uno de los que entregaron a este (sus handoffs
       # acusados). Obligatorio cuando hay más de uno; con uno solo se deduce.
       a: {tipo: texto, min: 4}
+      # PROPORCIONALIDAD · por qué esto BLOQUEA: una causa material del vocabulario cerrado de
+      # `ciclo/proporcion.py`. Una no material (editorial, preferencia, evidencia-redundante,
+      # perfeccionamiento) se rechaza como devolución: va a `hallazgos` y no abre corrección.
+      materialidad: {tipo: texto, min: 4}
   # Solo en roles que JUZGAN una capa ajena: el dictamen de su gate sobre el paquete que
   # revisan. El revisor NUNCA es el autor: lo comprueba `gates.aplicar`, no este esquema.
   dictamen:
@@ -128,6 +132,9 @@ campos:
       hallazgos: {tipo: lista, de: texto}
       evidencia: {tipo: lista, de: texto}
       dictamen: {tipo: enum, valores: [superado, no-superado]}
+      # lo MATERIAL que el revisor ve y no se cierra aquí (aunque sea de otra capa): con un
+      # dictamen `superado` tiene que estar vacío. No se pasa aguas abajo (`enc-stk-a1`, H8).
+      riesgos_materiales_abiertos: {tipo: lista, de: texto}
   # Un rol que juzga puede emitir VARIOS dictamenes en una entrega: la revision de
   # construccion dictamina `gate:implementacion-completa` sobre la autoevaluacion del
   # productor Y `gate:revision-de-construccion` sobre el diff. Misma forma que `dictamen`.
@@ -142,6 +149,9 @@ campos:
       hallazgos: {tipo: lista, de: texto}
       evidencia: {tipo: lista, de: texto}
       dictamen: {tipo: enum, valores: [superado, no-superado]}
+      # lo MATERIAL que el revisor ve y no se cierra aquí (aunque sea de otra capa): con un
+      # dictamen `superado` tiene que estar vacío. No se pasa aguas abajo (`enc-stk-a1`, H8).
+      riesgos_materiales_abiertos: {tipo: lista, de: texto}
   # Solo cuando `veredicto: bloqueado` o `escalado`.
   # `escalado` exige ademas `materia`: UNA de las que la capacidad del rol declara que ESCALA
   # en `autoridad.escala` de su ficha; una de `decide_sola` se rechaza (Directiva §20, §41,

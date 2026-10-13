@@ -35,6 +35,7 @@ from estado.serializacion import cid_de_objeto
 from .corpus import Corpus
 from .errores import BriefIncomponible
 from .impacto import DISPARADORES, GRUPOS
+from . import proporcion
 
 VERSION_DEL_BRIEF = 1
 
@@ -123,11 +124,47 @@ def componer(*, corpus=None, paquete, item, fila_del_plan, rol, equipo=None, int
         # una estacion que §5 exige no podia dispararse NUNCA. Es la misma forma que la
         # plantilla de la entrega: lo que el esquema exige se ENSENA, no se adivina.
         "estacion_de_impacto": _estacion_de_impacto(circuito),
+        # PROPORCIONALIDAD (`proporcion.py`): cuánta evidencia exige ESTE circuito, derivado de
+        # su composición de DIS, y —si este paquete sustituye a otro tras una devolución— que
+        # su revisión es DIFERENCIAL. Las dos cosas se decían en ninguna parte, y cada revisor
+        # rehacía la matriz entera y la revisión anterior entera.
+        "alcance_de_la_evidencia": proporcion.alcance_de_la_evidencia(circuito),
+        "revision_diferencial": proporcion.revision_diferencial(fila_del_plan),
         "prohibiciones": _prohibiciones(contrato_de_rol, contrato_operativo),
         "prompt": corpus.prompt_de(rol),
     }
     brief["huella"] = cid_de_objeto({k: v for k, v in brief.items() if k != "huella"})
     return brief
+
+
+def _alcance_como_markdown(alcance, diferencial):
+    """La sección del brief sobre cuánta evidencia se exige y qué bloquea. Vacía sin dato."""
+    if not alcance:
+        return []
+    lineas = ["", "## 6 bis · Cuánta evidencia exige este trabajo, y qué bloquea", "",
+              "modo de evidencia: **" + alcance["modo"] + "** (derivado de "
+              + str(alcance["derivado_de"]) + ")"]
+    lineas += _lista("exige:", alcance.get("exige"))
+    if alcance.get("amplian"):
+        lineas += _lista("AMPLÍAS el modo, con motivo escrito, si:", alcance["amplian"])
+    lineas += ["", alcance["regla"] + "."]
+    lineas += ["", "QUÉ BLOQUEA. Una devolución exige `devolucion.materialidad` con una de: "
+               + ", ".join(sorted(proporcion.MATERIALIDADES)) + ". Lo "
+               + ", ".join(sorted(proporcion.NO_MATERIALES))
+               + " NO se devuelve: va a `hallazgos` como observación y el dictamen puede ser superado.",
+               "",
+               "LO MATERIAL NO PASA AGUAS ABAJO. Si ves una pérdida de datos, de coste o de "
+               "trazabilidad, un riesgo de seguridad o un criterio incumplido —aunque la causa sea "
+               "otra capa (PRD, ARQ, DOM)—, NO lo anotes y sigas: devuélvelo si es de quien te entregó, o "
+               "escala a la capa propietaria. Un dictamen `superado` con `riesgos_materiales_abiertos` no vacío se rechaza."]
+    if diferencial:
+        lineas += ["", "### Re-revisión DIFERENCIAL (vuelta " + str(diferencial.get("vuelta")) + ")", "",
+                   "Sustituyes a `" + str(diferencial["reemplaza_a"]) + "`, que devolvió: "
+                   + (diferencial.get("motivo_devuelto") or "(sin motivo registrado)"),
+                   "", "re-juzgas: " + diferencial["que_rejuzgas"],
+                   "reutilizas: " + diferencial["que_reutilizas"],
+                   "no puedes: " + diferencial["no_puedes"]]
+    return lineas
 
 
 def _estacion_de_impacto(circuito):
@@ -407,6 +444,8 @@ def como_markdown(brief):
         lineas += [""] + _lista("entregas previas del item:", [
             str(e["id"]) + " · " + str(e["rol"]) + " · " + str(e["veredicto"]) + " · siguiente: "
             + str(e["siguiente"]) for e in brief["entregas_previas"]])
+    lineas += _alcance_como_markdown(brief.get("alcance_de_la_evidencia"),
+                                     brief.get("revision_diferencial"))
     if brief["checkpoint"]:
         lineas += ["", "## 7 · Reanudas desde un checkpoint", "",
                    "intento " + str(brief["checkpoint"].get("intento")) + " · titular anterior "
