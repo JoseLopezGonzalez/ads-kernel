@@ -500,7 +500,7 @@ def incompatibles_por_contrato(corpus, rol):
     return salida
 
 
-def comprobar_independencia(runtime, *, corpus=None, paquete, circuito=None):
+def comprobar_independencia(runtime, *, corpus=None, paquete, circuito=None, titular=None):
     """G13 SIN efectos: lanza `AutocertificacionRechazada` si esta instancia no puede tomar el
     paquete. No toma lease, no escribe y no materializa nada.
 
@@ -509,14 +509,18 @@ def comprobar_independencia(runtime, *, corpus=None, paquete, circuito=None):
     fuentes (minutos con `npm ci`) ANTES de que `tomar` le dijera que no podía juzgar lo suyo;
     con un techo de dos plazas, una identidad excluida de todo ocupaba una mientras la que sí
     podía trabajar esperaba «sin cupo».
+
+    Con `titular`, la pregunta es por OTRA identidad: si ella podría tomarlo. Lo usa el
+    trabajador para CEDER una re-revisión o una corrección a quien ya hizo ese rol en el
+    encargo, en vez de gastar una identidad limpia que VER o ENT necesitarán después.
     """
     plan, fila = plan_de_paquete(runtime.almacen, paquete)
     if plan is None or fila is None:
         raise CicloInconsistente("el paquete `" + paquete + "` no está en ningún plan vigente", ruta=paquete)
-    _exigir_que_no_juzgue_lo_suyo(runtime, corpus or Corpus(), paquete, fila, circuito)
+    _exigir_que_no_juzgue_lo_suyo(runtime, corpus or Corpus(), paquete, fila, circuito, titular=titular)
 
 
-def _exigir_que_no_juzgue_lo_suyo(runtime, corpus, paquete, fila, circuito=None):
+def _exigir_que_no_juzgue_lo_suyo(runtime, corpus, paquete, fila, circuito=None, titular=None):
     """G13 en la PUERTA: quien produjo lo que este paquete va a juzgar no lo toma.
 
     DEFECTO MEDIDO (dogfood de La Pesquerapp, evidencia 23-24): la autocertificación se
@@ -525,6 +529,7 @@ def _exigir_que_no_juzgue_lo_suyo(runtime, corpus, paquete, fila, circuito=None)
     rechaza antes de tomar, y no queda lease detrás.
     """
     from . import entregas as modulo_entregas                          # noqa: PLC0415
+    quien = titular or runtime.instancia
     rol = fila.get("rol")
     if not rol:
         return
@@ -544,15 +549,15 @@ def _exigir_que_no_juzgue_lo_suyo(runtime, corpus, paquete, fila, circuito=None)
         if not emisor:
             continue
         entrega = modulo_entregas.ultima(runtime.almacen, emisor)
-        if entrega is None or entrega.get("titular") != runtime.instancia:
+        if entrega is None or entrega.get("titular") != quien:
             continue
         if entrega.get("rol") in independiente_de:
             raise AutocertificacionRechazada(
-                "`" + runtime.instancia + "` produjo la entrega de `" + emisor + "` como "
+                "`" + quien + "` produjo la entrega de `" + emisor + "` como "
                 + str(entrega.get("rol")) + " y quiere tomar `" + paquete + "` como " + rol
                 + ", que exige independencia de ese rol: G13 no admite que quien construye "
                 "sea quien juzga. Otra instancia tiene que tomarlo",
-                paquete=paquete, titular=runtime.instancia,
+                paquete=paquete, titular=quien,
             )
     # Y no sólo lo que llega por handoff: TODO lo que esta instancia entregó para el item en
     # un rol del que hay que ser independiente. DEFECTO MEDIDO (quinto dogfood, tres
@@ -565,15 +570,15 @@ def _exigir_que_no_juzgue_lo_suyo(runtime, corpus, paquete, fila, circuito=None)
         if not otro or otro == paquete:
             continue
         entrega = modulo_entregas.ultima(runtime.almacen, otro)
-        if entrega is None or entrega.get("titular") != runtime.instancia:
+        if entrega is None or entrega.get("titular") != quien:
             continue
         if entrega.get("rol") in independiente_de:
             raise AutocertificacionRechazada(
-                "`" + runtime.instancia + "` entregó `" + otro + "` como "
+                "`" + quien + "` entregó `" + otro + "` como "
                 + str(entrega.get("rol")) + " para este item y quiere tomar `" + paquete
                 + "` como " + rol + ", que exige independencia de ese rol: G13 no admite que "
                 "quien construye sea quien juzga. Otra instancia tiene que tomarlo",
-                paquete=paquete, titular=runtime.instancia,
+                paquete=paquete, titular=quien,
             )
 
 
