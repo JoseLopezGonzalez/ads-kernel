@@ -34,6 +34,7 @@ import re
 from estado.serializacion import cid_de_objeto
 
 from . import base as modulo_base, briefs, cierre as modulo_cierre, durable, entregas, formas, gates, handoffs, impacto as modulo_impacto
+from . import proporcion as modulo_proporcion
 from . import encuadre as modulo_encuadre, equipos as modulo_equipos, paralelismo
 from . import planificacion, rutas as modulo_rutas, terminacion
 from .corpus import CAPACIDADES, Corpus
@@ -272,6 +273,18 @@ def planificar(runtime, *, corpus=None, entrada, circuito, control_repo, fase="u
         secuencial=secuencial, independencias_declaradas=independencias_declaradas,
         generacion=generacion,
     )
+    if anterior is not None and anterior["id"] == plan["id"] and anterior != plan:
+        # Replanificar LO MISMO es idempotente, y la idempotencia no puede borrar lo que el plan
+        # vigente lleva: `Planificador.planificar` reescribe siempre el plan recalculado, y
+        # eso quitaba `sustituye_a` (el plan sustituido volvía a parecer vigente y el
+        # desempate de `plan_vigente_de_item` elegía uno u otro), la marca de impacto y el
+        # alcance ampliado. DEFECTO encontrado por T527.
+        durable.escribir(
+            runtime.almacen, clase="ciclo.plan.conservado",
+            motivo="replanificar " + plan["id"] + " otra vez no borra su sustitución, su impacto ni su alcance",
+            objetos={planificacion.ruta_de(plan["id"]): anterior},
+        )
+        plan = anterior
     if generacion and anterior is not None and anterior["id"] != plan["id"]:
         # REPLANIFICAR: el plan nuevo sustituye al vigente —con su marca de impacto, si la
         # tenía— y desde aquí el vigente es el nuevo (`plan_vigente_de_item`).
@@ -312,10 +325,16 @@ def _retirar_paquetes_sustituidos(runtime, anterior, plan):
         objeto = durable.leer(runtime.almacen, "paquetes/" + paquete + ".json")
         if objeto is None:
             continue
-        if objeto["estado"] in ESTADOS_SIN_TITULAR:
+        # EN VUELO es tener LEASE, no un estado: `soltar` deja un paquete `ejecutando` sin
+        # titular («queda donde estaba, sin lease»), y ése no lo trabaja nadie. Con lease —
+        # aunque esté caducado— no se cancela: puede haber un worker vivo, y lo resuelve el
+        # supervisor; queda publicado y el tablero lo retira de la oferta con su motivo.
+        sin_lease = runtime._leer_lease(paquete) is None
+        if objeto["estado"] in ESTADOS_SIN_TITULAR or (
+                objeto["estado"] in ("despachado", "ejecutando") and sin_lease):
             runtime.cancelar(paquete, autoridad="DSP",
                              motivo="su plan " + anterior["id"] + " fue sustituido por " + plan["id"]
-                                    + ": el paquete ya no es trabajo del encargo")
+                                    + ": el paquete ya no es trabajo del encargo (su checkpoint se conserva)")
             salida["cancelados"].append(paquete)
         elif objeto["estado"] in ("despachado", "ejecutando"):
             salida["en_vuelo"].append(paquete)
@@ -356,7 +375,7 @@ def brief_de(runtime, *, corpus=None, paquete, item_datos=None, circuito=None, o
     item_completo.update(item_datos or {})
     from runtime.externo import leer_checkpoint                        # noqa: PLC0415
     brief = briefs.componer(
-        corpus=corpus, paquete=paquete, item=item_completo, fila_del_plan=fila,
+        corpus=corpus, paquete=paquete, item=item_completo, fila_del_plan=fila, plan=plan,
         rol=fila["rol"], equipo=agente_del_rol(equipo, fila["rol"]),
         intento=int(objeto.get("intentos") or 0) or 1, efecto=objeto.get("efecto"),
         handoffs_pendientes=handoffs_pendientes_para(almacen, paquete),
@@ -479,6 +498,22 @@ def incompatibles_por_contrato(corpus, rol):
             continue
         salida.update(m for m in ROL_EN_TEXTO.findall(str(texto)) if m != rol)
     return salida
+
+
+def comprobar_independencia(runtime, *, corpus=None, paquete, circuito=None):
+    """G13 SIN efectos: lanza `AutocertificacionRechazada` si esta instancia no puede tomar el
+    paquete. No toma lease, no escribe y no materializa nada.
+
+    Para que un trabajador DESCARTE un candidato antes de gastar nada en él. MEDIDO (La
+    Pesquerapp, 2026-10-13): el trabajador pedía la plaza de su proveedor y materializaba las
+    fuentes (minutos con `npm ci`) ANTES de que `tomar` le dijera que no podía juzgar lo suyo;
+    con un techo de dos plazas, una identidad excluida de todo ocupaba una mientras la que sí
+    podía trabajar esperaba «sin cupo».
+    """
+    plan, fila = plan_de_paquete(runtime.almacen, paquete)
+    if plan is None or fila is None:
+        raise CicloInconsistente("el paquete `" + paquete + "` no está en ningún plan vigente", ruta=paquete)
+    _exigir_que_no_juzgue_lo_suyo(runtime, corpus or Corpus(), paquete, fila, circuito)
 
 
 def _exigir_que_no_juzgue_lo_suyo(runtime, corpus, paquete, fila, circuito=None):
@@ -632,6 +667,7 @@ def entregar(runtime, *, corpus=None, paquete, entrega, circuito=None, hechos=No
                               + "` y el paquete es de `" + fila["rol"] + "`", paquete=paquete)
     contrato = corpus.contrato_operativo_de(fila["rol"])
     entregas.exigir_forma(entrega, corpus=corpus, contrato=contrato, gate=fila.get("gate"))
+    _exigir_materialidad_de_la_fila(entrega, fila, paquete)
     veredicto = entrega["veredicto"]
     intento = int(objeto.get("intentos") or 1)
     item = objeto["item"]
@@ -665,6 +701,7 @@ def entregar(runtime, *, corpus=None, paquete, entrega, circuito=None, hechos=No
     impacto = None
     if entrega.get("impacto"):
         impacto = modulo_impacto.evaluar(circuito, entrega["impacto"], paquete=paquete)
+    ampliacion = _ampliacion_del_alcance(circuito, plan, fila, paquete, entrega, impacto)
 
     # 1 ter · LA BASE (Directiva §63; OWN-ADS-0231): antes de escribir nada, si el mundo
     #         cambió debajo sobre lo mismo que este paquete tocó, no se entrega `entregado`
@@ -732,6 +769,16 @@ def entregar(runtime, *, corpus=None, paquete, entrega, circuito=None, hechos=No
     # 4 bis · LA ESTACIÓN DE IMPACTO (§5): lo que este rol vio y el circuito no preveía
     #         marca el plan; el resto del item se para hasta replanificar (b.1). El
     #         vocabulario se comprobó ANTES de escribir nada (arriba).
+    if ampliacion is not None:
+        ampliado = dict(plan)
+        ampliado["alcance_ampliado"] = ampliacion
+        durable.escribir(
+            almacen, clase="ciclo.plan.alcance-ampliado",
+            motivo="el modo de evidencia de " + str(plan.get("item")) + " sube a " + ampliacion["modo"]
+                   + " por " + fila["rol"] + ": " + ampliacion["motivo"],
+            objetos={planificacion.ruta_de(plan["id"]): ampliado},
+        )
+        plan = ampliado
     if impacto is not None:
         if impacto["no_cubiertas"]:
             marcado = dict(plan)
@@ -1039,6 +1086,7 @@ def registrar_entrega_de_agente(runtime, *, corpus=None, paquete, circuito=None)
     entrega.setdefault("rol", fila["rol"])
     contrato = corpus.contrato_operativo_de(fila["rol"])
     entregas.exigir_forma(entrega, corpus=corpus, contrato=contrato, gate=fila.get("gate"))
+    _exigir_materialidad_de_la_fila(entrega, fila, paquete)
     veredicto = entrega["veredicto"]
     titular = str((objeto.get("resultado") or {}).get("detalle") or "")  # informativo
     dictamenes_emitidos = []
@@ -1140,6 +1188,42 @@ def handoffs_acusados_por(almacen, paquete):
     return [objeto for objeto in (almacen.leer(r) for r in sorted(almacen.listar(handoffs.DOMINIO)))
             if (objeto.get("trazabilidad") or {}).get("destino") == paquete
             and objeto.get("estado") == handoffs.ACUSADO]
+
+
+def _ampliacion_del_alcance(circuito, plan, fila, paquete, entrega, impacto):
+    """El modo de evidencia AMPLIADO que esta entrega deja en el plan, o None.
+
+    Sube por los disparadores declarados (`proporcion.modo_por_impacto`) o por
+    `alcance_ampliado`; un `alcance_ampliado` por debajo del modo vigente es una entrega
+    inválida: el modo derivado es un suelo y lo ampliado también. Sin Diseño en el circuito no
+    hay evidencia visual que ampliar: lo que falta lo dice la estación de impacto (replanificar).
+    """
+    vigente = modulo_proporcion.alcance_de_la_evidencia(circuito, plan)["modo"]
+    declarado = entrega.get("alcance_ampliado") or {}
+    if declarado and modulo_proporcion.mas_exigente(vigente, declarado.get("modo")) == vigente \
+            and declarado.get("modo") != vigente:
+        raise EntregaInvalida(
+            "entrega.alcance_ampliado: `" + str(declarado.get("modo")) + "` está por debajo del modo vigente `"
+            + vigente + "`: el modo de evidencia se amplía, nunca se reduce", paquete=paquete)
+    if vigente == modulo_proporcion.MODO_SIN_SUPERFICIE:
+        return None
+    por_impacto = modulo_proporcion.modo_por_impacto((impacto or {}).get("disparadores"))
+    nuevo = modulo_proporcion.mas_exigente(vigente, por_impacto, declarado.get("modo"))
+    if nuevo == vigente:
+        return None
+    motivo = declarado.get("motivo") if declarado.get("modo") == nuevo else (
+        "disparadores declarados: " + ", ".join((impacto or {}).get("disparadores") or []))
+    return {"modo": nuevo, "motivo": str(motivo), "paquete": paquete, "rol": fila["rol"]}
+
+
+def _exigir_materialidad_de_la_fila(entrega, fila, paquete):
+    """Una devolución de un paquete de un plan de este corte declara su materialidad."""
+    if (entrega.get("veredicto") == "devuelto" and modulo_proporcion.materialidad_obligatoria(fila)
+            and not (entrega.get("devolucion") or {}).get("materialidad")):
+        raise EntregaInvalida(
+            "entrega.devolucion.materialidad: este paquete es de un plan de este corte y su devolución "
+            "dice POR QUÉ bloquea, con una de: " + ", ".join(sorted(modulo_proporcion.MATERIALIDADES))
+            + ". Si lo que ves no es material, no es devolución: va a `hallazgos`", paquete=paquete)
 
 
 def _devolver(runtime, corpus, plan, fila, paquete, entrega):

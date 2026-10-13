@@ -159,6 +159,14 @@ campos:
   # la ESTACION DE IMPACTO (Directiva §5): los disparadores que este rol ha visto, del
   # vocabulario cerrado de `ciclo/impacto.py`. Si uno exige una condicion de ruta que el
   # circuito no declaro, el plan queda marcado y el item no sigue hasta replanificarse (b.1).
+  # PROPORCIONALIDAD · subir el modo de evidencia del plan (nunca bajarlo), con uno de los
+  # motivos de `proporcion.AMPLIAN`: los briefs siguientes del item lo reciben.
+  alcance_ampliado:
+    tipo: objeto
+    obligatorios: [modo, motivo]
+    campos:
+      modo: {tipo: enum, valores: [perimetro-completo, matriz-completa]}
+      motivo: {tipo: texto, min: 10}
   impacto:
     tipo: objeto
     obligatorios: [disparadores]

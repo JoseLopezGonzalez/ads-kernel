@@ -40,7 +40,7 @@ from . import proporcion
 VERSION_DEL_BRIEF = 1
 
 
-def componer(*, corpus=None, paquete, item, fila_del_plan, rol, equipo=None, intento=1,
+def componer(*, corpus=None, paquete, item, fila_del_plan, rol, equipo=None, intento=1, plan=None,
              efecto=None, handoffs_pendientes=(), entregas_previas=(), checkpoint=None,
              circuito=None, instrucciones_del_proyecto=(), ordenes=None, fuentes=()):
     """El brief como DATO. `como_markdown` lo vuelve legible; el dato es lo que se firma."""
@@ -128,8 +128,9 @@ def componer(*, corpus=None, paquete, item, fila_del_plan, rol, equipo=None, int
         # su composición de DIS, y —si este paquete sustituye a otro tras una devolución— que
         # su revisión es DIFERENCIAL. Las dos cosas se decían en ninguna parte, y cada revisor
         # rehacía la matriz entera y la revisión anterior entera.
-        "alcance_de_la_evidencia": proporcion.alcance_de_la_evidencia(circuito),
+        "alcance_de_la_evidencia": proporcion.alcance_de_la_evidencia(circuito, plan),
         "revision_diferencial": proporcion.revision_diferencial(fila_del_plan),
+        "materialidad_obligatoria": proporcion.materialidad_obligatoria(fila_del_plan),
         "prohibiciones": _prohibiciones(contrato_de_rol, contrato_operativo),
         "prompt": corpus.prompt_de(rol),
     }
@@ -146,7 +147,9 @@ def _alcance_como_markdown(alcance, diferencial):
               + str(alcance["derivado_de"]) + ")"]
     lineas += _lista("exige:", alcance.get("exige"))
     if alcance.get("amplian"):
-        lineas += _lista("AMPLÍAS el modo, con motivo escrito, si:", alcance["amplian"])
+        lineas += _lista("AMPLÍAS el modo —`alcance_ampliado: {modo, motivo}` en tu entrega— si:", alcance["amplian"])
+        lineas += ["Y declarar un disparador de impacto (sección 8) SUBE el modo del plan por sí solo: "
+                   "lo que crea forma nueva, a matriz-completa; el resto, a perimetro-completo."]
     lineas += ["", alcance["regla"] + "."]
     lineas += ["", "QUÉ BLOQUEA. Una devolución exige `devolucion.materialidad` con una de: "
                + ", ".join(sorted(proporcion.MATERIALIDADES)) + ". Lo "
@@ -469,7 +472,8 @@ def como_markdown(brief):
                "```json", json.dumps(forma.get("elementos") or {}, ensure_ascii=False, indent=1), "```"]
     lineas += _lista("artefactos obligatorios:", [
             a["tipo"] + " · " + a["nombre"] for a in forma["artefactos_obligatorios"]])
-    lineas += ["`devuelto` exige devolucion.{que_falta, por_que_es_insuficiente, que_la_cerraria, evidencia}",
+    lineas += ["`devuelto` exige devolucion.{que_falta, por_que_es_insuficiente, que_la_cerraria, evidencia"
+               + (", materialidad}  (OBLIGATORIA en este paquete: sección 6 bis)" if brief.get("materialidad_obligatoria") else "}"),
                "`bloqueado`/`escalado` exigen bloqueo.{que_lo_impide, que_lo_desbloquearia, autoridad[, posturas]}",
                "`escalado` exige además bloqueo.materia, UNA de las que tu capacidad ESCALA (sección 3): lo que "
                "decide sola no se escala"]

@@ -156,7 +156,12 @@ def derivar(runtime, *, corpus=None):
         if descrito["titular"] and descrito["estado"] in ("despachado", "ejecutando"):
             workers.setdefault(descrito["titular"], []).append(descrito["paquete"])
 
-    pendientes_de_acuse = [h for h in handoffs_todos if h.get("estado") == handoffs.EMITIDO]
+    # Un handoff emitido a un paquete CANCELADO (su plan se sustituyó, T525) ya no espera a
+    # nadie: listarlo como «pendiente de acuse» sería un pendiente eterno. Se publica aparte.
+    emitidos = [h for h in handoffs_todos if h.get("estado") == handoffs.EMITIDO]
+    cancelado = {p for p, d in paquetes.items() if d.get("estado") == "cancelado"}
+    pendientes_de_acuse = [h for h in emitidos if (h.get("trazabilidad") or {}).get("destino") not in cancelado]
+    a_cancelados = [h for h in emitidos if (h.get("trazabilidad") or {}).get("destino") in cancelado]
     devueltos = [h for h in handoffs_todos if h.get("estado") == handoffs.DEVUELTO]
     rechazados = [h for h in handoffs_todos if h.get("estado") == handoffs.RECHAZADO]
 
@@ -260,6 +265,9 @@ def derivar(runtime, *, corpus=None):
         "handoffs_pendientes_de_acuse": [
             {"id": h["id"], "de": h["de"], "a": h["a"], "destino": h["trazabilidad"].get("destino")}
             for h in pendientes_de_acuse],
+        "handoffs_a_paquetes_cancelados": [
+            {"id": h["id"], "de": h["de"], "a": h["a"], "destino": h["trazabilidad"].get("destino")}
+            for h in a_cancelados],
         "devoluciones": [{"id": h["id"], "de": h["de"], "a": h["a"],
                           "que_falta": (h.get("devolucion") or {}).get("que_falta")}
                          for h in devueltos],

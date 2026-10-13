@@ -95,6 +95,25 @@ AMPLIAN = (
 )
 
 
+# Una MALA CLASIFICACIÓN no puede aprobar con evidencia corta. Cualquier rol que declare un
+# disparador de §5 (`impacto.py`) sube el modo del plan; los que crean forma nueva, a la matriz
+# entera. Y un rol puede subirlo a mano (`alcance_ampliado`) con uno de `AMPLIAN`. El plan
+# guarda el modo AMPLIADO y los briefs siguientes lo reciben; nadie lo baja.
+DISPARADORES_DE_MATRIZ = ("nuevo-flujo", "nueva-forma-de-presentar")
+
+
+def modo_por_impacto(disparadores):
+    disparadores = set(disparadores or ())
+    if not disparadores:
+        return None
+    return MODO_MATRIZ if disparadores & set(DISPARADORES_DE_MATRIZ) else MODO_PERIMETRO
+
+
+def mas_exigente(*modos):
+    validos = [m for m in modos if m in ORDEN_DE_MODOS]
+    return max(validos, key=ORDEN_DE_MODOS.index) if validos else MODO_SIN_SUPERFICIE
+
+
 def modo_de_circuito(circuito):
     """El modo de evidencia que el circuito base exige, y de qué composición sale.
 
@@ -109,9 +128,16 @@ def modo_de_circuito(circuito):
     return modo, origen
 
 
-def alcance_de_la_evidencia(circuito):
-    """El alcance de la evidencia que un paquete de este circuito debe producir o juzgar."""
+def alcance_de_la_evidencia(circuito, plan=None):
+    """El alcance de la evidencia que un paquete de este circuito debe producir o juzgar.
+
+    Con `plan`, el modo AMPLIADO que algún rol dejó en él manda si es más exigente."""
     modo, origen = modo_de_circuito(circuito)
+    ampliado = (plan or {}).get("alcance_ampliado") or {}
+    if modo != MODO_SIN_SUPERFICIE and ampliado.get("modo") and mas_exigente(modo, ampliado["modo"]) != modo:
+        modo = ampliado["modo"]
+        origen = ("AMPLIADO por " + str(ampliado.get("rol")) + " en " + str(ampliado.get("paquete"))
+                  + ": " + str(ampliado.get("motivo")))
     return {
         "modo": modo,
         "derivado_de": origen or "el circuito no declara ninguna composición de DIS",
@@ -145,6 +171,18 @@ NO_MATERIALES = {
     "evidencia-redundante": "evidencia que repite otra vigente sobre la misma revisión, o que el alcance no exige",
     "perfeccionamiento": "una mejora deseable que ningún criterio exige",
 }
+
+
+# La TRANSICIÓN a materialidad obligatoria, sin invalidar nada retroactivamente: la exige
+# sólo la fila de plan que lleva esta marca, y la marca la escribe el planificador de este
+# corte (planes nuevos, replanificaciones y desbloqueadores). Los planes vivos anteriores no
+# la tienen, no cambian de identidad y sus paquetes —en vuelo o no— siguen con la
+# materialidad opcional; una corrección hereda la marca de la fila que corrige.
+MARCA_DE_MATERIALIDAD = "materialidad_obligatoria"
+
+
+def materialidad_obligatoria(fila_del_plan):
+    return bool((fila_del_plan or {}).get(MARCA_DE_MATERIALIDAD))
 
 
 def materialidad_valida(valor):

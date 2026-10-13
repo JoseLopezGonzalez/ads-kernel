@@ -60,7 +60,7 @@ from estado.serializacion import cid_de_objeto
 from runtime import modelo
 from runtime.politica import MAX_INTENTOS_POR_DEFECTO
 
-from . import durable, paralelismo
+from . import durable, paralelismo, proporcion
 from .corpus import Corpus
 from .encuadre import DOMINIO as DOMINIO_ENCUADRES, ruta_de as ruta_de_encuadre
 from .equipos import DOMINIO as DOMINIO_EQUIPOS, ruta_de as ruta_de_equipo
@@ -457,6 +457,8 @@ class Planificador:
                 "criterio_de_satisfaccion": participante["criterio_de_satisfaccion"],
                 "prioridad": PRIORIDAD_POR_VIA[participante["via"]],
                 "depende_de": depende_de,
+                # trabajo NUEVO: sus devoluciones declaran su materialidad (`proporcion.py`)
+                proporcion.MARCA_DE_MATERIALIDAD: True,
             }
             if unidad["rol"] is not None:
                 fila["rol"] = unidad["rol"]
@@ -560,6 +562,7 @@ class Planificador:
             "depende_de": [],
             "desbloquea": paquete_bloqueado,
             "abierto_por": "b.15.1",
+            proporcion.MARCA_DE_MATERIALIDAD: True,
         }]
         nuevo["id"] = _identificador(nuevo)
         durable.escribir(
