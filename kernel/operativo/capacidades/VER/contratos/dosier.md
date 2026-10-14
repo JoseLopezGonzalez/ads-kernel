@@ -51,12 +51,12 @@ secuencia:
     termina_cuando: "cada criterio tiene su veredicto propio, sin agregar"
     checkpoint: true
   - n: 3
-    hace: "Ejecutar la regresión completa, y la visual cuando hay superficie"
+    hace: "Ejecutar la regresión automática completa de la fuente, y la visual en el alcance que exige el modo de evidencia del brief"
     produce: "salida de la regresión con su resultado"
     termina_cuando: "la regresión terminó y su salida está leída entera"
     checkpoint: true
   - n: 4
-    hace: "Capturar los estados extremos con datos reales y medir los presupuestos del pack"
+    hace: "Capturar con datos reales los estados extremos que el modo de evidencia exige y medir los presupuestos del pack que el cambio puede alterar; la evidencia vigente de capas anteriores sobre la MISMA revisión se cita, no se repite"
     produce: "capturas de los estados extremos y tabla de presupuestos medidos"
     termina_cuando: "cada estado extremo tiene captura o consta por qué no la tiene, y cada presupuesto su medida"
     checkpoint: true
@@ -105,7 +105,8 @@ condiciones_de_aceptacion:
   - "tabla de criterios completa, regresión ejecutada y presupuestos medidos"
   - "sección de no comprobado presente"
 condiciones_de_devolucion:
-  - "un criterio en rojo con evidencia: se devuelve a CNS con los cuatro campos"
+  - "un criterio en rojo con evidencia: se devuelve a CNS con los cuatro campos y su materialidad"
+  - "NO es devolución: una evidencia que el modo no exige, o una diferencia de forma de una capa anterior sin efecto en ningún criterio"
   - "un criterio no verificable tal como está escrito: se devuelve a PRD"
   - "la capa entregada no es la que la revisión dictaminó: se rechaza al recibir"
 reglas_de_escalado:

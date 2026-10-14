@@ -55,6 +55,42 @@ VALORES
 VEREDICTO   fiel | fiel con deuda aceptada | infiel
 ```
 
+## El alcance de la comparación es el del CAMBIO, no el de la pantalla
+
+El artefacto de arriba es la comparación ENTERA, y es la que se exige cuando el trabajo
+decide forma: una superficie nueva, un rediseño, una interacción o un movimiento nuevos
+(composiciones de DIS en N2 o más). Cuando el trabajo APLICA un patrón vigente o RESTAURA lo
+especificado —una corrección, una retirada, un defecto con pantalla—, la comparación cubre
+lo que el cambio toca y lo que puede alterar, y nada más. El modo lo DERIVA el runtime de la
+composición de DIS del circuito (`runtime/ciclo/proporcion.py`) y llega en el brief:
+
+```text
+MODO                QUÉ SE COMPARA
+focal (N0)          los elementos que el diff toca y los estados cuyo render depende del
+                    código cambiado · el tamaño más estrecho y el más amplio de la matriz,
+                    en el motor principal · un segundo motor sólo si el diff toca
+                    composición, CSS o tokens · sin grabación si el cambio no mueve nada
+perimetro-completo  los COMPONENTES tocados con todos sus estados, en los tamaños extremos y
+(N1)                en todos los motores de la matriz
+matriz-completa     el artefacto entero de arriba
+(N2 o más)
+```
+
+Tres reglas sostienen la proporción sin abrir una puerta trasera:
+
+```text
+1  EL MODO DERIVADO ES UN SUELO. Quien revisa lo AMPLÍA con motivo escrito cuando el diff
+   toca layout, puntos de adaptación, CSS global, tokens o un componente compartido, o
+   cuando lo construido excede el perímetro que CNS declaró. Nadie lo reduce.
+2  LA REDUCCIÓN ES DE ALCANCE, NO DE GATE. Ningún modo omite la comparación, el eje
+   `fidelidad` ni `gate:excelencia-visual`: en `focal` el veredicto es sobre lo cambiado.
+3  EL NIVEL DE LA REVISIÓN ES EL DEL CAMBIO. Que la memoria de diseño del producto no esté
+   vigente hace N3 el trabajo que PRODUCE dirección (03-ESCALA-DE-NOVEDAD); no convierte en
+   reconstrucción la revisión de una corrección. Medido (La Pesquerapp, 2026-10-13): una
+   revisión se declaró N3 para retirar una acción y produjo 144 capturas principales, dos
+   motores, tres tamaños y la grabación del movimiento, para una constante y dos condiciones.
+```
+
 ## Los tres veredictos
 
 ```text

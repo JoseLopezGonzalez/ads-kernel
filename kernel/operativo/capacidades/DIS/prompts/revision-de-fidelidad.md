@@ -19,6 +19,15 @@ fe: se simplifican porque cuestan y porque nadie las mira después.
 
 ## Cómo comparas
 
+Primero lee el MODO DE EVIDENCIA de tu brief (§6 bis). Lo de abajo es la comparación
+ENTERA, la de `matriz-completa`. En `focal` comparas los elementos que el diff toca y los
+estados que dependen del código cambiado, en el tamaño más estrecho y el más amplio, en el
+motor principal; en `perimetro-completo`, los componentes tocados con todos sus estados en
+toda la matriz. AMPLÍAS el modo, con motivo, si el diff toca layout, CSS global, tokens o un
+componente compartido, o si lo construido excede lo que CNS declaró. NUNCA lo reduces, y
+nunca declaras N3 en una revisión porque la memoria del producto no esté vigente: eso mide
+el producto, no el cambio.
+
 ```text
 ESTÁTICO     captura de la intención | captura de lo construido | diferencia señalada
              en CADA entorno de la matriz del pack, a tamaño real, con zoom en las juntas

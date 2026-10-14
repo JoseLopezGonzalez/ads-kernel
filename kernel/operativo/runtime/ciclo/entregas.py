@@ -30,7 +30,7 @@ from __future__ import annotations
 
 from estado.serializacion import cid_de_objeto
 
-from . import durable, formas
+from . import durable, formas, proporcion
 from .corpus import Corpus
 from .errores import CorpusIlegible, CorpusIncompleto, EntregaInvalida
 
@@ -51,6 +51,7 @@ def comprobar_forma(entrega, *, corpus=None, contrato=None, gate=None):
     if veredicto == "devuelto" and not entrega.get("devolucion"):
         fallos.append("entrega.devolucion: un veredicto `devuelto` exige los cuatro campos "
                       "de C5; sin ellos no es una devolución")
+    fallos.extend(_materialidad(entrega))
     if veredicto in ("bloqueado", "escalado") and not entrega.get("bloqueo"):
         fallos.append("entrega.bloqueo: un veredicto `" + veredicto + "` nombra qué lo impide, "
                       "qué lo desbloquearía y la autoridad")
@@ -107,6 +108,39 @@ def comprobar_forma(entrega, *, corpus=None, contrato=None, gate=None):
                 fallos.append("entrega.dictamenes: el contrato operativo de `" + entrega["rol"]
                               + "` prohíbe dictaminar `" + str(dictamen.get("gate"))
                               + "` sobre su propio paquete (no_autocertifica)")
+    return fallos
+
+
+def _materialidad(entrega):
+    """Una devolución bloquea por una causa MATERIAL; lo material no pasa con un `superado`.
+
+    Las dos caras del mismo defecto, medidas en La Pesquerapp (`ciclo/proporcion.py`): cinco
+    devoluciones de `enc-ped-def-*` sin un solo fallo funcional, y una pérdida de coste y de
+    liquidación (`enc-stk-a1`, H8) que cuatro capas anotaron y dejaron pasar con su dictamen
+    superado. `materialidad` es todavía OPCIONAL —una entrega escrita con un brief anterior no
+    la conoce—; cuando se declara, manda. Volverla obligatoria es el segundo paso de la
+    adopción (ver el procedimiento de la instancia), no un cambio silencioso.
+    """
+    fallos = []
+    devolucion = entrega.get("devolucion") or {}
+    materialidad = devolucion.get("materialidad")
+    if entrega.get("veredicto") == "devuelto" and materialidad is not None:
+        if proporcion.es_no_material(materialidad):
+            fallos.append("entrega.devolucion.materialidad: `" + str(materialidad) + "` no es material ("
+                          + proporcion.NO_MATERIALES[str(materialidad)] + "): no se devuelve. Va a "
+                          "`hallazgos` como observación y el dictamen puede ser `superado`")
+        elif not proporcion.materialidad_valida(materialidad):
+            fallos.append("entrega.devolucion.materialidad: `" + str(materialidad) + "` no está en el "
+                          "vocabulario cerrado: " + ", ".join(sorted(proporcion.MATERIALIDADES)))
+    dictamenes = list(entrega.get("dictamenes") or []) + (
+        [entrega["dictamen"]] if isinstance(entrega.get("dictamen"), dict) else [])
+    for dictamen in dictamenes:
+        abiertos = [r for r in (dictamen.get("riesgos_materiales_abiertos") or []) if str(r).strip()]
+        if abiertos and dictamen.get("dictamen") == "superado":
+            fallos.append("entrega.dictamenes: `" + str(dictamen.get("gate")) + "` sale `superado` con "
+                          + str(len(abiertos)) + " riesgo(s) material(es) abierto(s): " + "; ".join(abiertos)[:300]
+                          + ". Lo material no se pasa aguas abajo: si es de quien te entregó, devuélvelo "
+                          "(`devolucion.a`); si es de otra capa (PRD, ARQ, DOM), escala a su propietaria")
     return fallos
 
 

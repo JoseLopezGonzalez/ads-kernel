@@ -39,11 +39,13 @@ pasos:
     nombre: MEDIR SI LAS PRUEBAS MUERDEN
     modo: lineal
     hace: >
-      Por cada prueba nueva, revertir en una copia el cambio que dice proteger y ejecutarla.
-      Una prueba que sigue verde con el cambio revertido no protege nada, y es hallazgo
-      bloqueante.
-    produce: "tabla prueba → cambio revertido → resultado"
-    termina_cuando: "cada prueba nueva tiene su resultado de reversión anotado"
+      Por cada CAMBIO protegido, revertirlo en una copia y ejecutar TODAS las pruebas nuevas:
+      una reversión por cambio, no por prueba. Un cambio de comportamiento que ninguna prueba
+      pone en rojo no está protegido, y es hallazgo bloqueante (prueba-relevante-fallida).
+      Una prueba que no se pone roja con ninguna reversión es decorativa: si el cambio ya
+      tiene otra que muerde, es una observación —retirarla—, no una devolución.
+    produce: "tabla cambio revertido → pruebas en rojo → pruebas en verde"
+    termina_cuando: "cada cambio tiene su reversión ejecutada y anotada"
     checkpoint: true
   - n: 4
     nombre: CONTRASTAR CON LAS CAPAS ANTERIORES
@@ -79,7 +81,9 @@ checkpoints:
   - "tras cada paso con checkpoint"
 critica:
   - "¿he leído el diff entero o he mirado sólo lo que el encargo nombraba?"
-  - "¿he ejecutado la reversión de cada prueba, o he dado por bueno que muerden?"
+  - "¿he revertido cada cambio, o he dado por bueno que sus pruebas muerden?"
+  - "¿lo que devuelvo es material, o es forma, preferencia o evidencia que el alcance no exige?"
+  - "¿he visto algo material de OTRA capa y lo he anotado en vez de escalarlo?"
   - "¿cada hallazgo bloqueante tiene fichero y línea, o es una impresión?"
   - "¿he corregido algo en vez de devolverlo?"
 gate: gate:revision-de-construccion
