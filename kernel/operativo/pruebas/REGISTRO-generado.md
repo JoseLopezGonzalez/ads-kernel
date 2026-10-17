@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 6a92a494e2405fd4 -->
+<!-- source_revision: 65c911588937fed5 -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -11,11 +11,11 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | estado | pruebas |
 |---|---|
 | CONTRATO DEFINIDO | 56 |
-| VALIDADOR IMPLEMENTADO | 4 |
+| VALIDADOR IMPLEMENTADO | 7 |
 | PRUEBA EJECUTADA | 0 |
-| PRUEBA SUPERADA | 262 |
+| PRUEBA SUPERADA | 304 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **322** |
+| **total** | **367** |
 
 ## Detalle
 
@@ -343,18 +343,63 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T432](T430-T434-exclusiones-de-instancia.md) | La ejecucion PUBLICA las zonas excluidas, tambien en verde | UP-11 · visibilidad | validador-estructural | **PRUEBA SUPERADA** | evidencia/exclusiones-de-instancia-salida.txt |
 | [T433](T430-T434-exclusiones-de-instancia.md) | Una exclusion SIN MOTIVO se rechaza | UP-11 · puerta trasera | validador-estructural | **PRUEBA SUPERADA** | evidencia/exclusiones-de-instancia-salida.txt |
 | [T434](T430-T434-exclusiones-de-instancia.md) | Una exclusion HUERFANA se rechaza | UP-11 · no se acumulan restos | validador-estructural | **PRUEBA SUPERADA** | evidencia/exclusiones-de-instancia-salida.txt |
+| [T460](T460-T479-oficina.md) | Tomar, checkpoint, entregar y reintento entre dos trabajadores | CONTRATO-OFICINA §2 · worker protocol · lease · checkpoint | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T461](T460-T479-oficina.md) | Un trabajador que muere con el lease es reofrecido tras PACIENCIA | CONTRATO-OFICINA §2 · lease · PACIENCIA · checkpoint · a.10 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T462](T460-T479-oficina.md) | Dos procesos compiten por el mismo paquete y exactamente uno lo toma | CONTRATO-OFICINA §2 · lease · CAS · doble despacho | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T463](T460-T479-oficina.md) | Planificación por rol, orden por obligación y brief derivado | CONTRATO-OFICINA §5 · C4 · b.16 · ORDEN_DE_ESTACIONES · brief | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T464](T460-T479-oficina.md) | Una entrega incompleta se rechaza y no toca el estado | CONTRATO-OFICINA §3 · esquema entrega · artefactos obligatorios · checklist | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T465](T460-T479-oficina.md) | La autocertificación se rechaza, por trabajador y por rol | CONTRATO-OFICINA §3 · G13 · independencia · dictamen | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T466](T460-T479-oficina.md) | Devolución con corrección y nuevo receptor; rechazo al recibir; freno a la tercera | CONTRATO-OFICINA §4 · C5 · a.7 · sustituye_a · cuenta_para_el_freno | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T467](T460-T479-oficina.md) | Un bloqueo no consume intento y deja nombrado quién lo desbloquea | CONTRATO-OFICINA §4 · bloqueado · ejecutando→bloqueado · g.9 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T468](T460-T479-oficina.md) | El item no cierra como producto hasta alcanzar los niveles del circuito base | CONTRATO-OFICINA §6 · 02-NIVELES-DE-TERMINACION · circuito-base · gate:aceptacion-del-owner | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T469](T460-T479-oficina.md) | El tablero es determinista y dice qué hará el sistema si nadie dice nada | CONTRATO-OFICINA §8 · tablero · derivado del estado | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T470](T460-T479-oficina.md) | Un agente sin chat ejecuta un paquete con su brief; sin entrega válida no completa | CONTRATO-OFICINA §7 · adaptador de agente · ads:ejecutor · supervisor | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T471](T460-T479-oficina.md) | Una dependencia circular no se toma y el tablero la nombra | CONTRATO-OFICINA §8 · dependencias_circulares · supervisor parada bloqueado | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T472](T460-T479-oficina.md) | Un handoff incompleto no se emite y un acuse a medias no toma custodia | C5 · handoff · acuse · handoff genérico | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T473](T460-T479-oficina.md) | Con el Owner ausente el trabajo independiente continúa | CONTRATO-OFICINA §7 · escalado · trabajo independiente | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T474](T460-T479-oficina.md) | Un reinicio completo reconstruye exactamente lo mismo | CONTRATO-OFICINA §8 · reanudación · b.14 · brief huella | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T475](T460-T479-oficina.md) | Los documentos inconsistentes se rechazan con su nombre | esquema circuito-base · esquema entrega · fallo cerrado | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T476](T460-T479-oficina.md) | Todo rol materializable tiene contrato operativo efectivo y suficiente | contrato-base · contrato-de-rol · contrato-operativo · ciclo/contratos.py · G13 | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T477](T460-T479-oficina.md) | Las bases de contrato son coherentes y ningún rol hereda de dos | contrato-base · contrato-de-rol | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T480](T480-T489-estado-entre-ramas.md) | El estado durable de dos ramas se clasifica con el vocabulario cerrado de colisiones | CONTRATO-ESTADO-DURABLE §6 bis · g.6 · OWN-ADS-0226 · OWN-ADS-0224 | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
+| [T481](T480-T489-estado-entre-ramas.md) | La CLI publica la divergencia y no resuelve; lo injuzgable es BLOQUEO | CONTRATO-ESTADO-DURABLE §6 bis · §2.4 · g.8 · OWN-ADS-0223 | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
+| [T482](T480-T489-estado-entre-ramas.md) | Sin canonico/ en disco el motor escribe; con un enlace simbólico debajo, no | CONTRATO-ESTADO-DURABLE §2 · g.13 · rutas.ruta_canonica | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
+| [T483](T460-T479-oficina.md) | Entregar con un handoff recibido sin acusar se rechaza | CONTRATO-OFICINA §3 · acuse · Directiva del Owner §78 · OWN-ADS-0280 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T484](T460-T479-oficina.md) | El handoff emitido lleva los catorce campos de §78 | CONTRATO-OFICINA §4 · handoff · Directiva del Owner §78 · OWN-ADS-0278 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T485](T460-T479-oficina.md) | Escalar exige una materia que la capacidad ESCALA, y una que decide sola se rechaza | CONTRATO-OFICINA §3 · escalado · Directiva del Owner §20 §41 §76 · OWN-ADS-0074 · OWN-ADS-0161 · OWN-ADS-0271 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T486](T460-T479-oficina.md) | Las fronteras previas a la construcción se distinguen | CONTRATO-OFICINA §6 · fronteras · Directiva del Owner §77 · OWN-ADS-0275 · OWN-ADS-0276 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T487](T460-T479-oficina.md) | Una capacidad que participa dos veces acuña paquetes distintos | CONTRATO-OFICINA §5 · planificacion · a.5 · 01-PROCESOS (revisión posterior de DOM y SEG) · OWN-ADS-0022 · OWN-ADS-0112 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T488](T460-T479-oficina.md) | Un cambio de dirección deriva su propietario del encargo | CONTRATO-OFICINA §5 · rutas.propietario_global · b.16 · proceso:DIR · OWN-ADS-0022 · OWN-ADS-0117 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T489](T460-T479-oficina.md) | Un impacto que el circuito cubre no marca nada | CONTRATO-OFICINA §5 ter · impacto · Directiva del Owner §5 · OWN-ADS-0030 · OWN-ADS-0031 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T490](T460-T479-oficina.md) | Un impacto que el circuito no cubre marca el plan y para el item | CONTRATO-OFICINA §5 ter · impacto · Directiva del Owner §5 · Directiva del Owner §62 · b.1 · OWN-ADS-0030 · OWN-ADS-0032 · OWN-ADS-0033 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T491](T460-T479-oficina.md) | Un disparador fuera de los dieciséis es una entrega inválida | CONTRATO-OFICINA §5 ter · impacto · Directiva del Owner §5 · OWN-ADS-0032 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T492](T460-T479-oficina.md) | Una barrera externa y un riesgo extraordinario son paradas con nombre | CONTRATO-OFICINA §7 · supervisor.PARADAS · Directiva del Owner §36 · OWN-ADS-0146 · OWN-ADS-0147 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T493](T460-T479-oficina.md) | Los contratos de Diseño exigen los artefactos que la Directiva nombra por fase | contrato-operativo · DIS/contratos/* · Directiva del Owner §12–§26 · Directiva del Owner §28 · OWN-ADS-0097 · OWN-ADS-0051 · OWN-ADS-0054 · OWN-ADS-0055 · OWN-ADS-0058 · OWN-ADS-0064 · OWN-ADS-0068 · OWN-ADS-0071 · OWN-ADS-0077 · OWN-ADS-0087 | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T494](T460-T479-oficina.md) | Al tomar nace la base y un avance compatible se registra | CONTRATO-OFICINA §2 bis · ciclo/base.py · Directiva del Owner §61 · Directiva del Owner §63 · OWN-ADS-0220 · OWN-ADS-0227 · OWN-ADS-0230 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T495](T460-T479-oficina.md) | Un avance que toca lo mismo contradice y no se entrega hasta reconciliar | CONTRATO-OFICINA §2 bis · ciclo/base.py · Directiva del Owner §63 · OWN-ADS-0229 · OWN-ADS-0231 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T496](T460-T479-oficina.md) | Un control repo sin Git no se mide y nada cambia | CONTRATO-OFICINA §2 bis · ciclo/base.py | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T497](T460-T479-oficina.md) | Con varias fuentes el Integration Set define orden de merge, compatibilidad y despliegue | CONTRATO-OFICINA §3 · esquemas/integration-set.yaml · Directiva del Owner §71 · OWN-ADS-0255 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T498](T460-T479-oficina.md) | Un recurso exclusivo en manos ajenas hace al paquete temporalmente incompatible | CONTRATO-OFICINA §2 · runtime/politica.py · runtime/dispatcher.py · runtime/externo.py · Directiva del Owner §68 · OWN-ADS-0244 · OWN-ADS-0245 · OWN-ADS-0246 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T499](T460-T479-oficina.md) | La independencia se declara en un solo sentido, y la declara quien revisa | rol · ciclo/planificacion.py · Directiva del Owner §81 · OWN-ADS-0097 | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T500](T460-T479-oficina.md) | El acoplamiento se declara por rol, o la misma capacidad nunca se paraleliza | ciclo/planificacion.py · ciclo/oficina.py · ciclo/paralelismo.py · Directiva del Owner §62 · Directiva del Owner §68 · Directiva del Owner §81 · OWN-ADS-0224 · OWN-ADS-0287 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T501](T460-T479-oficina.md) | Un rol condicional entra en el plan solo si su condicion se declara | ciclo/oficina.py · ciclo/equipos.py · composicion · Directiva del Owner §5 · Directiva del Owner §81 · OWN-ADS-0287 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T502](T460-T479-oficina.md) | El contrato de Construccion prohibe COMPLETAR una especificacion de interfaz | rol · contrato-operativo · Directiva del Owner §10 · Directiva del Owner §21 · Directiva del Owner §29 · OWN-ADS-0046 · OWN-ADS-0079 · OWN-ADS-0103 | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T503](T460-T479-oficina.md) | La interfaz se prueba sobre la aplicacion real y con datos reales, y el contrato lo exige | contrato-operativo · Directiva del Owner §23 · Directiva del Owner §29 · OWN-ADS-0083 · OWN-ADS-0102 · OWN-ADS-0105 | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T504](T460-T479-oficina.md) | Ninguna capacidad del corpus queda CALLADA en una ruta | ciclo/rutas.py · Directiva del Owner §32 · OWN-ADS-0126 · OWN-ADS-0128 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T505](T460-T479-oficina.md) | La espera por entrada obligatoria no tiene ciclos, y quien la declara dice por que | rol · ciclo/planificacion.py · Directiva del Owner §32 · Directiva del Owner §81 · OWN-ADS-0287 | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
+| [T506](T460-T479-oficina.md) | La entrada obligatoria ordena aunque los dos roles puedan compartir agente | ciclo/planificacion.py · rol · Directiva del Owner §81 · OWN-ADS-0287 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
 
 ## Contraste del estado contra la evidencia
 
-Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **262** de **322**.
+Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **304** de **367**.
 
-No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **60**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
+No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **63**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
 
 Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada mezclaba a los que no afirman ninguna ejecución con los que afirmaban una que su evidencia no nombra, que es lo que `H-02` encontró—:
 
 | estado declarado | escenarios |
 |---|---|
 | contrato-definido | 56 |
-| validador-implementado | 4 |
+| validador-implementado | 7 |
 
 Ninguna divergencia: todo `estado:` declarado coincide con el que su evidencia sostiene.

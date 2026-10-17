@@ -11,15 +11,21 @@ roles:
   - rol: CNS/implementacion
     obligatorio: true
     agentes: "1 por paquete; varios paquetes del mismo item pueden ir en paralelo si cumplen las seis condiciones de a.5"
+  - rol: CNS/revision-de-construccion
+    obligatorio: true
+    agentes: "1"
 combinables: []
 independientes:
   - rol: CNS/implementacion
-    de: ["el rol de VER que verifica este paquete", "DIS/revision-de-fidelidad"]
+    de: ["el rol de VER que verifica este paquete", "DIS/revision-de-fidelidad", "CNS/revision-de-construccion"]
     motivo: "G13 como estructura por defecto: quien construyó no verifica ni compara su propio resultado"
+  - rol: CNS/revision-de-construccion
+    de: [CNS/implementacion]
+    motivo: "quien escribió el cambio lee lo que quiso escribir, no lo que escribió: la revisión de un diff propio confirma la intención"
 ampliacion: >
   Un paquete grande NO se reparte entre dos agentes del mismo rol sobre el mismo código: se
   parte en dos paquetes con la condición de paralelismo comprobada, y DSP los despacha.
-reduccion: "no admite reducción."
+reduccion: "no admite reducción: la revisión de construcción no se retira para ahorrar una lectura, es el primer escalón de la escalera de terminación."
 retirada: "al depositar la capa y ser aceptada por VER."
 ```
 

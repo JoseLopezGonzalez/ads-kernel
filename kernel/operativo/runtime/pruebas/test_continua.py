@@ -714,7 +714,11 @@ class LosDiezEscenarios(BaseDeContinua):
         with self.assertRaises(ciclo.GateFallido) as capturado:
             ciclo.aplicar_gate(
                 "gate:evidencia-suficiente", corpus=self.corpus,
-                entrada={"paquete": paquete}, evidencia=[], revisor="VER", autor="CNS",
+                # `VER`, la capacidad, ya no basta: el DECIMO corte de esta campana anadio
+                # `dictamina` a los gates y `gate:evidencia-suficiente` lo asigna al ROL
+                # `VER/dosier`. La prueba encodificaba el contrato anterior y nadie lo vio
+                # porque la CI del kernel NO corre esta bateria.
+                entrada={"paquete": paquete}, evidencia=[], revisor="VER/dosier", autor="CNS",
                 comprobaciones_superadas=[],
             )
         dictamen = capturado.exception.dictamen

@@ -1,5 +1,7 @@
 # DIS/movimiento — Movimiento y microinteracciones
 
+Su contrato operativo vive en [`../contratos/movimiento.md`](../contratos/movimiento.md).
+
 El movimiento es lo primero que se simplifica en silencio y lo que más distingue un
 producto vivo de una maqueta que funciona.
 

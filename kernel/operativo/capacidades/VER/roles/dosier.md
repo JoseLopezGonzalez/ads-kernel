@@ -1,5 +1,7 @@
 # VER/dosier — Dosier de evidencia
 
+Su contrato operativo vive en [`../contratos/dosier.md`](../contratos/dosier.md).
+
 ```yaml ads:rol
 id: VER/dosier
 nombre: Dosier de evidencia

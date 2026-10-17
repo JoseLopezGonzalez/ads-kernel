@@ -5,8 +5,8 @@
 # ---------------------------------------------------------------
 T147  SUPERADA  Todo documento es alcanzable por ruta, y ninguna referencia es ambigua
 
-documentos analizados: 362
-nombres base repetidos: 46 (resueltos por ruta, nunca por nombre)
+documentos analizados: 389
+nombres base repetidos: 48 (resueltos por ruta, nunca por nombre)
 
 FUERA DEL ANÁLISIS
   [no_analizados] packs/legacy-1.3.0
@@ -40,17 +40,18 @@ NOMBRES BASE REPETIDOS
   coherencia.md  ×2
   composicion.md  ×18
   condiciones.md  ×2
-  criterio-de-exito.md  ×2
+  convergencia.md  ×2
+  criterio-de-exito.md  ×3
   critica-de-encuadre.md  ×2
-  critica-visual.md  ×2
+  critica-visual.md  ×3
   decision.md  ×2
-  definicion.md  ×2
+  definicion.md  ×3
   despliegue.md  ×2
   diagnostico.md  ×2
-  direccion-artistica.md  ×2
-  diseno-interaccion.md  ×2
-  diseno-visual.md  ×2
-  dosier.md  ×2
+  direccion-artistica.md  ×3
+  diseno-interaccion.md  ×3
+  diseno-visual.md  ×3
+  dosier.md  ×3
   encaje.md  ×2
   enrutamiento.md  ×2
   especializacion.md  ×3
@@ -58,22 +59,23 @@ NOMBRES BASE REPETIDOS
   evolucion.md  ×2
   experimental.md  ×2
   gates.md  ×3
-  implementacion.md  ×2
+  implementacion.md  ×3
   interlocutor.md  ×2
-  investigacion-ux.md  ×2
-  investigacion-visual.md  ×2
+  investigacion-ux.md  ×3
+  investigacion-visual.md  ×3
   investigacion.md  ×2
   maquinaria.md  ×2
   migracion.md  ×2
   modelo.md  ×2
-  movimiento.md  ×2
+  movimiento.md  ×3
   observacion.md  ×2
   promocion.md  ×2
-  prototipado.md  ×2
-  revision-de-fidelidad.md  ×2
-  sistema-de-diseno.md  ×2
+  prototipado.md  ×3
+  revision-de-construccion.md  ×3
+  revision-de-fidelidad.md  ×3
+  sistema-de-diseno.md  ×3
   supervision.md  ×2
-  validacion-de-uso.md  ×2
+  validacion-de-uso.md  ×3
   validacion.md  ×2
 
 1 superadas · 0 fallidas

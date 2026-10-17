@@ -66,6 +66,14 @@ ESTADOS = (EMITIDO, ACUSADO, RECHAZADO, DEVUELTO)
 # Los CUATRO campos que `C5` exige a toda devolución, sin excepción.
 CAMPOS_DE_DEVOLUCION = ("que_falta", "por_que_es_insuficiente", "que_la_cerraria", "evidencia")
 
+# Los CATORCE campos que la Directiva del Owner de La Pesquerapp exige a todo handoff (§78;
+# OWN-ADS-0278). Viajan en `contenido`, DERIVADOS de la entrega registrada, del plan y del
+# item al emitir: el receptor no reconstruye nada leyendo una conversación. La
+# correspondencia con la entrega está escrita en CONTRATO-OFICINA §4.
+CAMPOS_DE_78 = ("origen", "destino", "paquete", "objetivo", "entrada_recibida", "trabajo_realizado",
+                "entregables", "decisiones", "riesgos", "evidencia", "criterios_de_aceptacion",
+                "deuda", "cuestiones_abiertas", "que_puede_devolver_el_receptor")
+
 
 # ===========================================================================
 #  las CINCO entregas que `§8.0` declara y `circuitos/` todavía no tiene
@@ -264,9 +272,65 @@ def instancia(identificador, *, corpus=None):
 # ===========================================================================
 #  la entrega, como objeto DURABLE
 # ===========================================================================
-def emitir(identificador, *, artefactos, checkpoint, trazabilidad, corpus=None):
-    """El productor entrega. La custodia NO cambia todavía: cambia con el ACUSE."""
-    declarada = instancia(identificador, corpus=corpus)
+def generica(de, a, *, corpus=None):
+    """Una entrega entre un par SIN instancia declarada, regida por las reglas comunes de C5.
+
+    `circuitos/00-CIRCUITOS.md` lo dice: «Un par de capacidades sin handoff declarado NO
+    está prohibido: significa que su entrega se rige por las reglas comunes de C5». Aquí las
+    reglas comunes se instancian como DATO —los once campos del esquema, derivados de las
+    fichas de las dos capacidades—, para que una entrega genérica sea tan comprobable como
+    una declarada, y para que el receptor tenga algo que acusar o rechazar.
+    """
+    corpus = corpus or Corpus()
+    if de not in CAPACIDADES or a not in CAPACIDADES:
+        raise HandoffIncompleto("una entrega genérica va entre dos de las quince capacidades",
+                                de=str(de), a=str(a))
+    emisora, receptora = corpus.capacidad(de), corpus.capacidad(a)
+    return {
+        "id": "handoff:generico-" + de.lower() + "-a-" + a.lower(),
+        "de": de,
+        "a": a,
+        "cuando": de + " deposita su capa y el siguiente paquete del item es de " + a,
+        "entrega": [str(s) for s in (emisora.get("salida") or [])],
+        "comprueba_al_recibir": [
+            "los artefactos entregados son localizables por su referencia y su revisión",
+            "la entrega declara su gate autoevaluado comprobación a comprobación",
+            "las diferencias, lo no hecho y la deuda aceptada están declarados, aunque vacíos",
+        ] + [str(e) for e in (receptora.get("entrada") or [])[:2]],
+        "rechaza_si": [
+            "falta un artefacto obligatorio del contrato operativo del rol emisor",
+            "la autoevaluación del gate deja una comprobación sin anotar",
+            "la entrega cambia una decisión de una capa anterior sin haberla devuelto",
+        ],
+        "devolucion": (a + " devuelve a " + de + " con los cuatro campos de C5: qué falta, por "
+                       "qué es insuficiente, qué la cerraría y la evidencia."),
+        "evidencia_de_devolucion": ["el criterio concreto que no se cumple, con su salida, "
+                                    "captura o medición"],
+        "owner": "ninguna: entre dos capacidades no hay un humano validando el traspaso.",
+        "checkpoint": (a + " lee de " + de + ": la entrega registrada, con sus artefactos, "
+                       "diferencias y siguiente acción."),
+    }
+
+
+def emitir(identificador, *, artefactos, checkpoint, trazabilidad, corpus=None,
+           declarada=None, contenido=None):
+    """El productor entrega. La custodia NO cambia todavía: cambia con el ACUSE.
+
+    `declarada` permite emitir una entrega GENÉRICA (`generica()`) o una instancia ya
+    resuelta; sin ella se busca `identificador` en el catálogo, como siempre. `contenido`,
+    si viene, trae los CATORCE campos de §78 (`CAMPOS_DE_78`), todos: un handoff con
+    contenido a medias no se emite.
+    """
+    if declarada is None:
+        declarada = instancia(identificador, corpus=corpus)
+    if contenido is not None:
+        faltan = [c for c in CAMPOS_DE_78 if c not in contenido]
+        if faltan:
+            raise HandoffIncompleto(
+                "el contenido del handoff no trae " + ", ".join(faltan) + ": §78 exige los "
+                "catorce campos, y sin ellos el receptor tendría que reconstruirlos",
+                handoff=identificador, faltan=faltan,
+            )
     if not artefactos:
         raise HandoffIncompleto(
             "un handoff sin artefactos concretos no es una entrega: `C5` dice «artefactos "
@@ -297,7 +361,12 @@ def emitir(identificador, *, artefactos, checkpoint, trazabilidad, corpus=None):
             "paquete": str(trazabilidad["paquete"]),
             "ruta": str(trazabilidad["ruta"]),
             "encuadre": str(trazabilidad.get("encuadre") or ""),
+            # El paquete RECEPTOR, cuando la entrega es entre paquetes de un plan: es lo que
+            # permite que el brief del receptor liste exactamente lo que le espera.
+            "destino": str(trazabilidad.get("destino") or ""),
+            "entrega": str(trazabilidad.get("entrega") or ""),
         },
+        "contenido": dict(contenido) if contenido is not None else None,
         "estado": EMITIDO,
         "custodia": declarada["de"],
         "acuse": None,

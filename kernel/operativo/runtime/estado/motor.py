@@ -59,7 +59,7 @@ import time
 
 from . import fallos, migracion as _migracion
 from .bloqueo import BloqueoExclusivo
-from .diario import Diario, umbral_de_sellado
+from .diario import Diario, umbral_de_sellado, linaje_de
 from .errores import (
     AlmacenNoInicializado,
     AlmacenYaInicializado,
@@ -273,6 +273,10 @@ def abrir(ruta_control_repo, *, recuperar=True):
 # ===========================================================================
 #  el almacén
 # ===========================================================================
+class _FicheroAusente(EstadoCorrupto):
+    """Sólo para distinguir «no está» de «no casa» dentro de `Almacen.leer`."""
+
+
 class Almacen:
     """El almacén de estado durable de un control repo. Único ejecutor de mutaciones."""
 
@@ -367,7 +371,7 @@ class Almacen:
     #      escritor murió dentro de la ventana y el remedio es RECUPERAR, no reparar un
     #      fichero. Los dos casos siguen siendo fallo CERRADO: aquí no se devuelve contenido.
     REINTENTOS_DE_VENTANA = 40
-    ESPERA_DE_VENTANA = 0.01
+    ESPERA_DE_VENTANA = 0.05
 
     def _testigo_que_publico(self, ruta, cid_en_disco):
         """La transacción cuyo TESTIGO dice haber publicado ese `cid` en esa ruta, o `None`."""
@@ -404,7 +408,34 @@ class Almacen:
                     "la ruta no existe en la revisión vigente "
                     + str(revision["revision"]), ruta=ruta,
                 )
-            datos = leer_bytes(destino, error=EstadoCorrupto)
+            try:
+                datos = leer_bytes(destino, error=_FicheroAusente)
+            except _FicheroAusente as ausencia:
+                # RETIRADO POR OTRO PROCESO (medido con un supervisor y tres workers como
+                # procesos): la revisión leída nombraba el lease, y entre esa lectura y ésta
+                # el titular lo LIBERÓ —paso 8 de su transacción— y publicó la suya. No es
+                # corrupción: se relee la revisión. Si avanzó y ya no nombra la ruta, la
+                # ruta no existe, que es lo que `RutaInvalida` significa y lo que un lector
+                # opcional traduce a «no hay lease». Si no avanzó, el escritor está entre su
+                # paso 8 y su paso 9: se espera y se vuelve a mirar. Sólo agotada la espera
+                # sin que la revisión avance es corrupción de verdad.
+                vigente = self._leer_revision()
+                if vigente["revision"] != revision["revision"]:
+                    if vigente["raiz"].get(ruta) is None:
+                        raise RutaInvalida(
+                            "la ruta ya no existe en la revisión vigente "
+                            + str(vigente["revision"]) + ": otro proceso la retiró",
+                            ruta=ruta,
+                        ) from ausencia
+                    if intento < self.REINTENTOS_DE_VENTANA:
+                        continue
+                elif intento < self.REINTENTOS_DE_VENTANA:
+                    time.sleep(self.ESPERA_DE_VENTANA)
+                    continue
+                raise EstadoCorrupto(
+                    "el fichero no existe y `REVISION.json` lo nombra: fue retirado fuera "
+                    "del diario", ruta=ruta,
+                ) from ausencia
             encontrado = cid(datos)
             if encontrado == esperado:
                 objeto = deserializar(datos, ruta=ruta)
@@ -414,6 +445,20 @@ class Almacen:
             # Sólo se reintenta mientras haya testimonio de que es la ventana.
             transaccion = self._testigo_que_publico(ruta, encontrado)
             if transaccion is None:
+                # LECTOR DETRÁS DE UN ESCRITOR (medido con workers reales como procesos):
+                # entre leer `REVISION.json` y leer el objeto, OTRO proceso publicó los dos.
+                # El objeto en disco es de una revisión MÁS NUEVA que la que este lector
+                # tiene en la mano, y eso no es corrupción: se vuelve a leer la revisión y,
+                # si avanzó, se juzga contra ella. Sólo si no avanzó es corrupción.
+                vigente = self._leer_revision()
+                if intento < self.REINTENTOS_DE_VENTANA:
+                    if vigente["revision"] == revision["revision"]:
+                        # Ni testigo ni avance: puede ser un escritor ENTRE el `replace`
+                        # del paso 8 y la escritura de su testigo —que va DESPUÉS, porque
+                        # anota lo que encuentra publicado—. Se espera un poco y se vuelve
+                        # a mirar; sólo agotada la espera sin testigo ni avance es corrupción.
+                        time.sleep(self.ESPERA_DE_VENTANA)
+                    continue
                 break
             if intento == self.REINTENTOS_DE_VENTANA:
                 raise PublicacionEnVuelo(
@@ -985,16 +1030,9 @@ class Almacen:
     def _linaje(self, eventos=None):
         """La sucesión de `revision_id`, de la revisión 0 a la vigente, según el diario."""
         eventos = self._diario.eventos() if eventos is None else eventos
-        agrupados = self._diario.por_transaccion(eventos)
-        linaje = []
-        for evento in eventos:
-            if evento["tipo"] == "almacen.inicializado":
-                linaje.append(evento["resultado"])
-            elif evento["tipo"] == "transicion.preparada":
-                tipos = {e["tipo"] for e in agrupados.get(evento["transaccion"], ())}
-                if "transicion.confirmada" in tipos:
-                    linaje.append(evento["resultado"])
-        return linaje
+        # UNA regla, en `diario.linaje_de`: la misma que aplica `estado/ramas.py` sobre el
+        # diario de otra referencia Git. Aquí no se reescribe.
+        return linaje_de(eventos)
 
     def _numero_de_revision(self, revision_id, eventos=None):
         linaje = self._linaje(eventos)

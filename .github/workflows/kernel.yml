@@ -84,6 +84,62 @@ jobs:
       # NO se convierta en una puerta trasera: tres de ellas exigen que se niegue.
       - name: Zonas no analizadas declaradas por la instancia
         run: python3 kernel/operativo/validadores/pruebas/prueba_exclusiones_de_instancia.py
+      # LAS BATERIAS DEL RUNTIME, TODAS, Y SU ROJO DETIENE EL CORTE.
+      #
+      # DEFECTO QUE CIERRA, medido el 2026-09-22 ejecutandolas a mano antes del duodecimo
+      # corte -algo que, resulto, no hacia nadie-. Hay 19 ficheros `test_*.py` en
+      # `kernel/operativo/runtime/pruebas/` y este flujo NOMBRABA UNO,
+      # `test_integridad_y_evidencia.py`, y ademas con `set +e`. `test_oficina.py` -los 61
+      # casos de la propia oficina, donde viven T460-T512- no la corria el release jamas.
+      #
+      # La consecuencia se midio: TRES estaban en rojo. Dos las habia roto la campana de la
+      # Directiva -el decimo corte dejo `test_continua` pidiendo una capacidad donde el gate
+      # ya exige un rol, y `ciclo/base.py` nacio con su propio `subprocess.run` sobre Git, que
+      # es la via paralela que `T188` existe para impedir-. La tercera era evidencia vieja: la
+      # que REGENERA cada release se quedaba en la rama del release y no volvia a la de
+      # trabajo, asi que esa bateria estaba roja ahi de forma permanente.
+      #
+      # `test_integridad_y_evidencia.py` NO se repite aqui: tiene su paso propio, con su
+      # `set +e` y su expectativa declarada de T309.
+      # DOS BATERIAS DEPENDEN DEL ANFITRION, Y SE DECLARAN CON SU MOTIVO.
+      #
+      # No se excluyen en silencio: se ejecutan, se publica su resultado, y NO tumban el
+      # job. Medido en este runner: `test_raiz_externa` elige `usuario-del-sistema` como
+      # aislamiento -el runner tiene sudo- y T219 exige `contenedor` o
+      # `espacio-de-nombres`; y `test_el_usuario_del_sistema_distinto_NO_es_posible_aqui`
+      # afirma como universal una propiedad del anfitrion que en un runner con sudo es
+      # falsa. `test_multimaquina` falla por lo mismo en su prueba de linaje del remoto.
+      #
+      # EL DEFECTO REAL, y queda dicho: una prueba condicionada al anfitrion tiene que
+      # SALTARSE con su motivo -como hace T214 con `cgroup2`-, no FALLAR. Mientras no lo
+      # haga, declararlas aqui es lo honesto; excluirlas sin decirlo no lo seria.
+      - name: Las baterias del runtime (todas menos la que tiene paso propio)
+        run: |
+          set -e
+          CONDICIONADAS="test_raiz_externa.py test_multimaquina.py"
+          fallidas=0
+          for f in kernel/operativo/runtime/pruebas/test_*.py; do
+            case "$f" in *test_integridad_y_evidencia.py) continue ;; esac
+            base=$(basename "$f")
+            echo "── $f"
+            if python3 "$f" > /tmp/bateria.txt 2>&1; then
+              tail -1 /tmp/bateria.txt
+              continue
+            fi
+            tail -30 /tmp/bateria.txt
+            case " $CONDICIONADAS " in
+              *" $base "*)
+                echo "::warning::bateria CONDICIONADA AL ANFITRION en rojo (declarada): $base"
+                ;;
+              *)
+                fallidas=$((fallidas + 1))
+                echo "::error::bateria en ROJO: $f"
+                ;;
+            esac
+          done
+          echo "baterias en rojo (sin contar las declaradas): $fallidas"
+          test "$fallidas" -eq 0
+
       - name: "El aislamiento de arranque (T398 y T399), con T309 declarado"
         run: |
           set +e
@@ -203,13 +259,23 @@ jobs:
       - name: Requisitos
         run: python3 -m pip install --quiet pyyaml
 
-      - name: Rutas portables e integridad
-        run: |
-          set -e
-          python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_rutas_portables.py
-          ./tooling/kernel-status.sh
+      # T519 · CADA PROPIEDAD EN SU PASO, Y CADA UNA SE JUZGA EN SU MOMENTO.
+      #
+      # Este job existe para PORTABILIDAD. Hasta r19 ejecutaba aqui `kernel-status.sh` con
+      # `set -e` y exigia LIMPIO; pero la huella solo coincide con `.upstream-hash` despues del
+      # SELLO, que produce el job de release, y todo commit que edita `kernel/` antes de el
+      # diverge por construccion. El job salia rojo siempre —r13, r15, r18 y r19— sin decir
+      # nada de macOS, y el `set -e` impedia llegar a la comprobacion de `execve`, que no se
+      # ejecuto en ninguno. Ahora: las rutas, `execve` y `kernel-status` son tres pasos que
+      # corren aunque falle el anterior, y la huella la juzga `huella_en_su_momento.py`, que
+      # solo acepta la divergencia previa al sello (rojo en `main`, rojo si nada cambio desde
+      # el ultimo sello, rojo si kernel-status no responde). La integridad se sigue exigiendo
+      # donde es valida: al sellar, abajo, y al vendorizar.
+      - name: Rutas portables (T153, T154)
+        run: python3 -I -S -E -X ads_aislado=1 kernel/operativo/validadores/comprobar_rutas_portables.py
 
       - name: "La reejecucion por execve sigue intacta en POSIX"
+        if: success() || failure()
         run: |
           set -e
           salida=$(python3 kernel/operativo/validadores/comprobar_rutas_portables.py)
@@ -218,6 +284,23 @@ jobs:
           test $codigo -eq 0
           echo "$salida" | grep -q "T153" || { echo "FALLA: salida vacia o sin T153"; exit 1; }
           echo "OK: reejecuta, habla y devuelve 0"
+
+      - name: "kernel-status funciona en macOS, y la huella se juzga en su momento del ciclo (T519)"
+        if: success() || failure()
+        run: |
+          set +e
+          ./tooling/kernel-status.sh > /tmp/estado.txt 2>&1
+          codigo=$?
+          set -e
+          cat /tmp/estado.txt
+          sello=$(git log -1 --format=%H --grep='^CI: evidencia y sello del release' HEAD || true)
+          if [ -n "$sello" ]; then
+            cambios=$(git diff --name-only "$sello" HEAD -- kernel packs tooling | grep -v '^kernel/\.upstream-hash$' | wc -l | tr -d ' ')
+          else
+            cambios=desconocido
+          fi
+          python3 tooling/huella_en_su_momento.py --codigo "$codigo" \
+            --salida /tmp/estado.txt --ref "${GITHUB_REF#refs/heads/}" --cambios-desde-el-sello "$cambios"
 
   # ===========================================================================
   # EL RELEASE SE CONSTRUYE AQUI, Y NO EN LA MAQUINA DE NADIE.
@@ -238,6 +321,18 @@ jobs:
   release:
     name: Evidencia y sello del release (sin root, con Docker)
     runs-on: ubuntu-latest
+    # EL ROJO DE LA BATERIA DETIENE EL CORTE, y hasta hoy no lo detenia.
+    #
+    # Medido el 2026-09-22: este trabajo NO dependia de `linux`, asi que cortaba con la
+    # bateria del kernel en ROJO. `r11` y `r12` se publicaron asi. Eso es peor que si
+    # bloqueara: un rojo que no detiene nada deja de mirarse, y de hecho llevaba cortes sin
+    # que nadie lo mirara —tres baterias estaban rotas y dos las habia roto la campana—.
+    # §88 de la Directiva del Owner pide que la release valide tambien el sistema
+    # organizativo; una release que se publica sobre su propia bateria en rojo no lo hace.
+    #
+    # Se ata DESPUES de comprobar que `linux` se pone verde con las 19 baterias dentro, y
+    # no antes: ponerlo sobre un trabajo rojo habria dejado al proyecto sin poder cortar.
+    needs: linux
     # POR QUE NO ES UN DISPARADOR MANUAL. Lo era, y no se pudo usar: el token que dirige
     # esto no puede crear un `workflow_dispatch` -403 «Resource not accessible by
     # integration»-. Asi que el release se pide como se pide todo lo demas aqui: con un
@@ -499,6 +594,13 @@ jobs:
       # mismo flujo, que corren sobre el commit resultante—. El commit de CI no lleva el
       # marcador `[release-kernel]`, asi que esa ejecucion verifica y no vuelve a
       # regenerar: no hay bucle.
+      #
+      # CORRECCION MEDIDA (T519, 2026-09-27): esa «ejecucion siguiente» NO existe en las ramas
+      # `claude/*`. El push de abajo se hace con el GITHUB_TOKEN, y GitHub no dispara flujos
+      # por pushes de ese token: los commits de sello de r13, r15, r18 y r19 no tienen ningun
+      # run. La huella sellada se verifica en tres sitios reales: el `kernel-status.sh` de
+      # «Re-sellar» (arriba, estricto), `main` cuando recibe el corte (T519 exige LIMPIO) y la
+      # vendorizacion en la instancia (`actualizar_kernel` exige LIMPIO).
       - name: Escribir la evidencia y el sello EN LA RAMA
         run: |
           set -e

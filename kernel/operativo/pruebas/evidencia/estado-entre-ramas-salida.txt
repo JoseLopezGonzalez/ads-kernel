@@ -1,0 +1,28 @@
+# evidencia de: estado-entre-ramas
+# orden:        python3 -I -S -E -X ads_aislado=1 kernel/operativo/runtime/pruebas/test_estado_entre_ramas.py
+# aislamiento:  banderas -I -S -E -X ads_aislado=1 · entorno CONSTRUIDO con 6 variables (HOME LANG LOGNAME PATH USER XDG_RUNTIME_DIR) · retiradas del lanzador: ninguna de la familia PYTHON*
+# codigo:       0
+# ---------------------------------------------------------------
+
+# --- stderr (código 0) ---
+test_01_sin_interferencia_y_compatible (__main__.T480.test_01_sin_interferencia_y_compatible)
+T480 · Defecto que previene: descubrir en el merge que dos ramas comparten estado. ... ok
+test_02_riesgo_de_conflicto_y_conflicto_directo (__main__.T480.test_02_riesgo_de_conflicto_y_conflicto_directo)
+T480 · Defecto que previene: dos diarios con las mismas secuencias y distinto contenido. ... ok
+test_03_bloqueo_por_referencia_o_estado_ausentes (__main__.T480.test_03_bloqueo_por_referencia_o_estado_ausentes)
+T480 · Defecto que previene: adivinar una relación donde no hay estado que comparar. ... ok
+test_04_la_cli_publica_la_clase_en_texto_y_en_json (__main__.T481.test_04_la_cli_publica_la_clase_en_texto_y_en_json)
+T481 · Defecto que previene: una comparación que sólo existe como API. ... ok
+test_05_un_diario_manipulado_es_bloqueo (__main__.T481.test_05_un_diario_manipulado_es_bloqueo)
+T481 · Defecto que previene: clasificar con tranquilidad un diario que alguien editó. ... ok
+test_06_una_ventana_abierta_es_bloqueo (__main__.T481.test_06_una_ventana_abierta_es_bloqueo)
+T481 · Defecto que previene: comparar un estado a medio publicar como si estuviera cerrado. ... ok
+test_07_escribir_tras_un_checkout_que_dejo_canonico_sin_directorio (__main__.T482.test_07_escribir_tras_un_checkout_que_dejo_canonico_sin_directorio)
+T482 · Defecto que previene (reproducido): «hay un enlace simbólico» donde no lo hay. ... ok
+test_08_un_enlace_simbolico_bajo_canonico_sigue_siendo_ruta_invalida (__main__.T482.test_08_un_enlace_simbolico_bajo_canonico_sigue_siendo_ruta_invalida)
+T482 · Control del control: la guarda que la corrección conserva. ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests  (duración no registrada: varía por ejecución)
+
+OK

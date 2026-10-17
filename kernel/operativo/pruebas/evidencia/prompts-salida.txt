@@ -5,13 +5,14 @@
 # ---------------------------------------------------------------
 T153  SUPERADA  Cada unidad de instrucción declara y enlaza las señales estructurales que su contrato exige
 
-42 unidades de instrucción revisadas mecánicamente: 36 prompts con fichero propio · 6 embebidas en roles de packs
+44 unidades de instrucción revisadas mecánicamente: 38 prompts con fichero propio · 6 embebidas en roles de packs
 
 OK  prompt   APR/promocion                      kernel/operativo/capacidades/APR/prompts/promocion.md
 OK  prompt   ARQ/diagnostico                    kernel/operativo/capacidades/ARQ/prompts/diagnostico.md
 OK  prompt   ARQ/encaje                         kernel/operativo/capacidades/ARQ/prompts/encaje.md
 OK  prompt   CNS/experimental                   kernel/operativo/capacidades/CNS/prompts/experimental.md
 OK  prompt   CNS/implementacion                 kernel/operativo/capacidades/CNS/prompts/implementacion.md
+OK  prompt   CNS/revision-de-construccion       kernel/operativo/capacidades/CNS/prompts/revision-de-construccion.md
 OK  prompt   DIS/critica-visual                 kernel/operativo/capacidades/DIS/prompts/critica-visual.md
 OK  prompt   DIS/direccion-artistica            kernel/operativo/capacidades/DIS/prompts/direccion-artistica.md
 OK  prompt   DIS/diseno-interaccion             kernel/operativo/capacidades/DIS/prompts/diseno-interaccion.md
@@ -31,6 +32,7 @@ OK  prompt   DSP/supervision                    kernel/operativo/capacidades/DSP
 OK  prompt   ENC/anclaje                        kernel/operativo/capacidades/ENC/prompts/anclaje.md
 OK  prompt   ENC/critica-de-encuadre            kernel/operativo/capacidades/ENC/prompts/critica-de-encuadre.md
 OK  prompt   ENC/interlocutor                   kernel/operativo/capacidades/ENC/prompts/interlocutor.md
+OK  prompt   ENT/convergencia                   kernel/operativo/capacidades/ENT/prompts/convergencia.md
 OK  prompt   ENT/despliegue                     kernel/operativo/capacidades/ENT/prompts/despliegue.md
 OK  prompt   ENT/observacion                    kernel/operativo/capacidades/ENT/prompts/observacion.md
 OK  prompt   INV/investigacion                  kernel/operativo/capacidades/INV/prompts/investigacion.md

@@ -175,6 +175,35 @@ TIPOS = (
 )
 
 TERMINALES = ("transicion.confirmada", "transicion.revertida", "transicion.marcada")
+TIPO_INICIALIZADO = "almacen.inicializado"
+TIPO_PREPARADA = "transicion.preparada"
+TIPO_CONFIRMADA = "transicion.confirmada"
+# Los tipos que CIERRAN una transacción, por su nombre de contrato. Es `TERMINALES`.
+TIPOS_QUE_CIERRAN = TERMINALES
+
+
+def linaje_de(eventos):
+    """La sucesión de `revision_id`, de la revisión 0 a la vigente, según UNA lista de eventos.
+
+    Es LA regla del linaje —la que `Almacen._linaje` aplica sobre su propio diario y la que
+    `estado/ramas.py` aplica sobre el diario de otra referencia Git—. Vive aquí, una vez:
+    dos definiciones de «qué revisiones ha publicado este diario» serían dos verdades, y la
+    segunda sería la que nadie mira. Cuenta la inicialización y cada `preparada` que tenga
+    su `confirmada` en la misma transacción; una preparada sin confirmar no publicó nada."""
+    agrupados = {}
+    for evento in eventos:
+        transaccion = evento.get("transaccion")
+        if transaccion is not None:
+            agrupados.setdefault(transaccion, []).append(evento)
+    linaje = []
+    for evento in eventos:
+        if evento.get("tipo") == TIPO_INICIALIZADO:
+            linaje.append(evento["resultado"])
+        elif evento.get("tipo") == TIPO_PREPARADA:
+            tipos = {e.get("tipo") for e in agrupados.get(evento.get("transaccion"), ())}
+            if TIPO_CONFIRMADA in tipos:
+                linaje.append(evento["resultado"])
+    return linaje
 
 CLAVE_HUELLA = "huella"
 CLAVE_PREVIO = "previo"

@@ -43,12 +43,12 @@
 
 EL UNIVERSO DE PROPIEDADES, DERIVADO
 ------------------------------------------------------------------------------
-  346 propiedades críticas · 156 escenarios · 58 obligaciones del universo
+  358 propiedades críticas · 163 escenarios · 58 obligaciones del universo
   escenarios que cubren obligación y NO escriben `falla_si` —sedes mudas, no aportan propiedad y no se callan— (5): T135, T87, T88, T90, T92
 
 POR REQUISITO — dónde se rompe la cadena
 ------------------------------------------------------------------------------
-  S1  SABOTAJE IMPUTADO AL ESCENARIO              primeras faltas: 174
+  S1  SABOTAJE IMPUTADO AL ESCENARIO              primeras faltas: 186
   S2  MOTIVO DEL ROJO DECLARADO                   primeras faltas: 2
   S3  CANAL PRODUCTIVO, NO PRUEBA TEXTUAL         primeras faltas: 2
   S4  NO ES SÓLO LA HUELLA GENERAL                primeras faltas: 0
@@ -912,10 +912,46 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
   T418/f2      S1  FD-5
        «el veredicto de «nunca creado» menciona supervivencia, que es el otro fallo»
        ningún sabotaje del catálogo está imputado a `T418` · sede kernel/operativo/pruebas/T400-T419-prioridad-y-contencion.md:441
+  T463/f1      S1  C4
+       «el orden de los paquetes sale del alfabeto y no de la obligación del proceso»
+       ningún sabotaje del catálogo está imputado a `T463` · sede kernel/operativo/pruebas/T460-T479-oficina.md:135
+  T463/f2      S1  C4
+       «un rol sin agente declarado se planifica igual»
+       ningún sabotaje del catálogo está imputado a `T463` · sede kernel/operativo/pruebas/T460-T479-oficina.md:135
+  T466/f1      S1  C5
+       «la capa devuelta sigue adelante hacia VER»
+       ningún sabotaje del catálogo está imputado a `T466` · sede kernel/operativo/pruebas/T460-T479-oficina.md:198
+  T466/f2      S1  C5
+       «las devoluciones se recomponen sin tope»
+       ningún sabotaje del catálogo está imputado a `T466` · sede kernel/operativo/pruebas/T460-T479-oficina.md:198
+  T467/f1      S1  g.9
+       «el bloqueo acaba en agotado o en una reconciliación de g.9»
+       ningún sabotaje del catálogo está imputado a `T467` · sede kernel/operativo/pruebas/T460-T479-oficina.md:220
+  T472/f1      S1  C5
+       «un handoff sin artefactos se emite»
+       ningún sabotaje del catálogo está imputado a `T472` · sede kernel/operativo/pruebas/T460-T479-oficina.md:320
+  T480/f1      S1  g.6
+       «una bifurcación con objetos comunes se publica como RIESGO en vez de CONFLICTO DIRECTO»
+       ningún sabotaje del catálogo está imputado a `T480` · sede kernel/operativo/pruebas/T480-T489-estado-entre-ramas.md:33
+  T480/f2      S1  g.6
+       «comparar deja el árbol de trabajo en otra rama o con el estado modificado»
+       ningún sabotaje del catálogo está imputado a `T480` · sede kernel/operativo/pruebas/T480-T489-estado-entre-ramas.md:33
+  T481/f1      S1  g.8
+       «la CLI escribe algo en el estado o cambia de rama»
+       ningún sabotaje del catálogo está imputado a `T481` · sede kernel/operativo/pruebas/T480-T489-estado-entre-ramas.md:57
+  T481/f2      S1  g.8
+       «un diario manipulado se clasifica como si estuviera sano»
+       ningún sabotaje del catálogo está imputado a `T481` · sede kernel/operativo/pruebas/T480-T489-estado-entre-ramas.md:57
+  T482/f1      S1  g.13
+       «un almacén sin `canonico/` en disco rechaza escrituras legítimas»
+       ningún sabotaje del catálogo está imputado a `T482` · sede kernel/operativo/pruebas/T480-T489-estado-entre-ramas.md:79
+  T482/f2      S1  g.13
+       «un enlace simbólico bajo `canonico/` deja escribir fuera del árbol»
+       ningún sabotaje del catálogo está imputado a `T482` · sede kernel/operativo/pruebas/T480-T489-estado-entre-ramas.md:79
 
-  346 propiedades críticas medidas · 285 PENDIENTES · 57 obligaciones afectadas
+  358 propiedades críticas medidas · 297 PENDIENTES · 57 obligaciones afectadas
   obligaciones con alguna propiedad pendiente: A14, C2, C4, C5, CONTRATO 1, CONTRATO 1bis, CONTRATO 2, CONTRATO 3, D104, F-01, F-02, F-04, F-05, F-06, F-10, F-11, FD-1, FD-3, FD-5, FD-6, M-04, S1-02, V6-01, V6-02, V6-03, V6-04, V6-05, V6-06, V6-07, V6-08, V6-09, V6-10, V6-11, V6-12, V6-13, V6-14, V6-15, V6-16, V6-17, V6-18, V6-19, g.1, g.10, g.11, g.12, g.13, g.14, g.15, g.16, g.2, g.3, g.4, g.5, g.6, g.7, g.8, g.9
-  pendientes de `O26-SAB`: 285 propiedades, enumeradas arriba
+  pendientes de `O26-SAB`: 297 propiedades, enumeradas arriba
   `O26` §5.2 · NO ACREDITADA por este instrumento
 
 LO QUE ESTE VEREDICTO NO DEMUESTRA

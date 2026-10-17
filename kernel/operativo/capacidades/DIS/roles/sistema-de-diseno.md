@@ -1,5 +1,7 @@
 # DIS/sistema-de-diseno — Sistema de diseño
 
+Su contrato operativo vive en [`../contratos/sistema-de-diseno.md`](../contratos/sistema-de-diseno.md).
+
 El rol que hace que el producto sea **uno**. Detecta la inconsistencia, que es lo que nadie
 ve mientras trabaja en una sola pantalla.
 

@@ -51,3 +51,27 @@ ampliacion: >
 reduccion: "ninguna: la separación es la razón de ser de esta composición."
 retirada: "al cerrar la ventana con su registro completo de señales."
 ```
+
+```yaml ads:composicion
+id: composicion:ent-convergencia
+capacidad: ENT
+clase_de_trabajo: "declaración de convergencia de un item que escribe fuentes, sin despliegue en su alcance"
+condicion: "el item escribe al menos una fuente y el circuito base exige el nivel integrado; no hay entorno que desplegar."
+roles:
+  - rol: ENT/convergencia
+    obligatorio: true
+    agentes: "1"
+combinables: []
+independientes:
+  - rol: ENT/convergencia
+    de: [CNS/implementacion]
+    motivo: >
+      quien construyó una de las revisiones tiende a declarar el conjunto sobre lo que
+      recuerda haber probado; la convergencia la declara quien las prueba juntas sin haber
+      escrito ninguna
+ampliacion: >
+  Si el item además se despliega, la composición pasa a ent-entorno-no-productivo o
+  ent-produccion, y ENT/convergencia sigue declarando el conjunto antes del despliegue.
+reduccion: "no admite reducción: sin conjunto exacto no hay nivel integrado."
+retirada: "al quedar el Integration Set declarado con su dictamen."
+```

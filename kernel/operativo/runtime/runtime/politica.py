@@ -124,6 +124,25 @@ def clave_de_orden(entrada):
             str(entrada["paquete"]))
 
 
+# Directiva §68 · EXCLUSIÓN SEGURA ENTRE WORKERS. Los recursos que un paquete posee en
+# EXCLUSIVA mientras se ejecuta se DERIVAN de su declaración de acoplamiento de `a.5`: lo
+# que escribe (ficheros), los contratos que toca y las decisiones sobre las que ejerce
+# autoridad. Leer una fuente o partir de ella no excluye a nadie. No hay un segundo
+# vocabulario: el que ya declara el paquete es el que decide.
+RECURSOS_EXCLUSIVOS = (("fichero", "escribe_ficheros"), ("contrato", "afecta_contratos"),
+                       ("decision", "afecta_decisiones"))
+
+
+def recursos_exclusivos_de(paquete):
+    """`{"fichero:src/a.php", "contrato:api/v2/pedidos", ...}` de un paquete durable."""
+    acoplamiento = paquete.get("acoplamiento") or {}
+    salida = set()
+    for clase, campo in RECURSOS_EXCLUSIVOS:
+        for recurso in acoplamiento.get(campo) or []:
+            salida.add(clase + ":" + str(recurso))
+    return salida
+
+
 def motivo_de_postergacion(entrada, cabeza):
     """POR QUÉ este paquete no fue el elegido. Es el `impedimento` de `b.12`.
 

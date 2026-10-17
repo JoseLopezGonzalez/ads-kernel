@@ -1,0 +1,188 @@
+kind: esquema
+esquema: entrega
+version: 1
+descripcion: >
+  lo que un trabajador —agente sin chat, sesion de agente o persona— ENTREGA al terminar un
+  paquete. Es el objeto durable que hace verificable un handoff: no viaja «el trabajo
+  hecho», viajan artefactos localizables, evidencias juzgables, la autoevaluacion del gate
+  comprobacion a comprobacion, y lo que NO se hizo. Sin este objeto el receptor tendria que
+  reconstruir la entrega leyendo una conversacion, que es lo que el protocolo de trabajadores
+  existe para impedir.
+obligatorios:
+  [paquete, rol, veredicto, artefactos, evidencias, autoevaluacion, diferencias_declaradas,
+   decisiones_asumidas, riesgos, deuda_aceptada, no_hecho, siguiente]
+campos:
+  paquete: {tipo: texto, min: 3}
+  rol: {tipo: ref, ref_a: rol}
+  # QUIEN la produjo, y de que clase. `titular` es el NOMBRE que eligio quien lanzo el
+  # worker —puede llamarse `w-real-loquesea` y ser un guion de laboratorio—, asi que no
+  # sirve para sostener «ejecucion real por modelo». Esto si: lo escribe el que lanza el
+  # ejecutable, no el que entrega. Opcional, porque una entrega escrita a mano por una
+  # persona no tiene ejecutable que declarar; cuando falta, no se puede afirmar nada.
+  ejecutor:
+    tipo: objeto
+    obligatorios: [clase, id]
+    campos:
+      clase: {tipo: enum, valores: [modelo, guion, persona]}
+      id: {tipo: texto, min: 3}
+      orden: {tipo: texto}
+      nota: {tipo: texto}
+  # entregado   la capa queda depositada y el receptor puede comprobarla
+  # devuelto    el rol es RECEPTOR de una capa anterior y la devuelve con los cuatro campos
+  # bloqueado   no se puede seguir sin algo que no depende del rol; nombra que lo desbloquea
+  # escalado    hay una decision que no es del rol; nombra la autoridad y las posturas
+  veredicto: {tipo: enum, valores: [entregado, devuelto, bloqueado, escalado]}
+  # el Integration Set que ENT/convergencia declara: viaja ENTERO en la entrega y la oficina
+  # lo valida contra `integration-set` y contra las fuentes escritas del item antes de
+  # admitir un dictamen de gate:convergencia-de-fuentes
+  integration_set: {tipo: objeto, esquema: integration-set}
+  artefactos:
+    tipo: lista
+    de: objeto
+    obligatorios: [tipo, referencia, descripcion]
+    campos:
+      tipo: {tipo: enum, valores: [rama, commit, pr, fichero, dosier, captura, grabacion, medicion, documento, integration-set, salida-de-orden, otro]}
+      referencia: {tipo: texto, min: 3}
+      fuente: {tipo: texto}
+      revision: {tipo: texto}
+      descripcion: {tipo: texto, min: 5}
+      # QUÉ artefacto obligatorio del contrato operativo cumple éste, por su `nombre`: cada
+      # obligatorio exige el suyo, y uno entregado no vale por varios
+      cumple: {tipo: texto}
+      # la estructura mínima que el contrato fija a ese artefacto, apartado a apartado, con
+      # DÓNDE está cada uno (sección, línea, ancla): que no falte ninguno lo comprueba la
+      # oficina; que diga lo que promete, quien revisa
+      estructura:
+        tipo: lista
+        de: objeto
+        obligatorios: [apartado, donde]
+        campos:
+          apartado: {tipo: texto, min: 3}
+          donde: {tipo: texto, min: 1}
+  evidencias:
+    tipo: lista
+    de: objeto
+    obligatorios: [comprobacion, resultado, referencia]
+    campos:
+      comprobacion: {tipo: texto, min: 5}
+      resultado: {tipo: enum, valores: [pasa, falla, no-aplica, no-comprobado]}
+      referencia: {tipo: texto, min: 1}
+      salida: {tipo: texto}
+  autoevaluacion:
+    tipo: objeto
+    obligatorios: [gate, comprobaciones]
+    campos:
+      gate: {tipo: ref, ref_a: gate}
+      comprobaciones:
+        tipo: lista
+        min: 1
+        de: objeto
+        obligatorios: [id, resultado]
+        campos:
+          id: {tipo: texto, min: 2}
+          resultado: {tipo: enum, valores: [si, no, no-aplica]}
+          nota: {tipo: texto}
+      checklist:
+        tipo: lista
+        de: objeto
+        obligatorios: [id, respuesta]
+        campos:
+          id: {tipo: texto, min: 2}
+          respuesta: {tipo: enum, valores: [si, no, no-aplica]}
+          nota: {tipo: texto}
+  diferencias_declaradas: {tipo: lista, de: texto}
+  decisiones_asumidas: {tipo: lista, de: texto}
+  riesgos: {tipo: lista, de: texto}
+  deuda_aceptada:
+    tipo: lista
+    de: objeto
+    obligatorios: [que, por_que, quien_la_acepta, condicion_de_revision]
+    campos:
+      que: {tipo: texto, min: 5}
+      por_que: {tipo: texto, min: 5}
+      quien_la_acepta: {tipo: texto, min: 3}
+      condicion_de_revision: {tipo: texto, min: 5}
+  no_hecho: {tipo: lista, de: texto}
+  siguiente: {tipo: texto, min: 5}
+  # Solo cuando `veredicto: devuelto`. Los CUATRO campos de C5, y sin ellos no es devolucion.
+  devolucion:
+    tipo: objeto
+    obligatorios: [que_falta, por_que_es_insuficiente, que_la_cerraria, evidencia]
+    campos:
+      que_falta: {tipo: texto, min: 10}
+      por_que_es_insuficiente: {tipo: texto, min: 10}
+      que_la_cerraria: {tipo: texto, min: 10}
+      evidencia: {tipo: lista, de: texto, min: 1}
+      # T517 · a QUÉ paquete se devuelve: uno de los que entregaron a este (sus handoffs
+      # acusados). Obligatorio cuando hay más de uno; con uno solo se deduce.
+      a: {tipo: texto, min: 4}
+      # PROPORCIONALIDAD · por qué esto BLOQUEA: una causa material del vocabulario cerrado de
+      # `ciclo/proporcion.py`. Una no material (editorial, preferencia, evidencia-redundante,
+      # perfeccionamiento) se rechaza como devolución: va a `hallazgos` y no abre corrección.
+      materialidad: {tipo: texto, min: 4}
+  # Solo en roles que JUZGAN una capa ajena: el dictamen de su gate sobre el paquete que
+  # revisan. El revisor NUNCA es el autor: lo comprueba `gates.aplicar`, no este esquema.
+  dictamen:
+    tipo: objeto
+    obligatorios: [gate, sobre_paquete, comprobaciones_superadas, dictamen]
+    campos:
+      gate: {tipo: ref, ref_a: gate}
+      sobre_paquete: {tipo: texto, min: 3}
+      comprobaciones_superadas: {tipo: lista, de: texto}
+      hallazgos: {tipo: lista, de: texto}
+      evidencia: {tipo: lista, de: texto}
+      dictamen: {tipo: enum, valores: [superado, no-superado]}
+      # lo MATERIAL que el revisor ve y no se cierra aquí (aunque sea de otra capa): con un
+      # dictamen `superado` tiene que estar vacío. No se pasa aguas abajo (`enc-stk-a1`, H8).
+      riesgos_materiales_abiertos: {tipo: lista, de: texto}
+  # Un rol que juzga puede emitir VARIOS dictamenes en una entrega: la revision de
+  # construccion dictamina `gate:implementacion-completa` sobre la autoevaluacion del
+  # productor Y `gate:revision-de-construccion` sobre el diff. Misma forma que `dictamen`.
+  dictamenes:
+    tipo: lista
+    de: objeto
+    obligatorios: [gate, sobre_paquete, comprobaciones_superadas, dictamen]
+    campos:
+      gate: {tipo: ref, ref_a: gate}
+      sobre_paquete: {tipo: texto, min: 3}
+      comprobaciones_superadas: {tipo: lista, de: texto}
+      hallazgos: {tipo: lista, de: texto}
+      evidencia: {tipo: lista, de: texto}
+      dictamen: {tipo: enum, valores: [superado, no-superado]}
+      # lo MATERIAL que el revisor ve y no se cierra aquí (aunque sea de otra capa): con un
+      # dictamen `superado` tiene que estar vacío. No se pasa aguas abajo (`enc-stk-a1`, H8).
+      riesgos_materiales_abiertos: {tipo: lista, de: texto}
+  # Solo cuando `veredicto: bloqueado` o `escalado`.
+  # `escalado` exige ademas `materia`: UNA de las que la capacidad del rol declara que ESCALA
+  # en `autoridad.escala` de su ficha; una de `decide_sola` se rechaza (Directiva §20, §41,
+  # §76). La comprueba `entregas.comprobar_forma`, no este esquema.
+  # la ESTACION DE IMPACTO (Directiva §5): los disparadores que este rol ha visto, del
+  # vocabulario cerrado de `ciclo/impacto.py`. Si uno exige una condicion de ruta que el
+  # circuito no declaro, el plan queda marcado y el item no sigue hasta replanificarse (b.1).
+  # PROPORCIONALIDAD · subir el modo de evidencia del plan (nunca bajarlo), con uno de los
+  # motivos de `proporcion.AMPLIAN`: los briefs siguientes del item lo reciben.
+  alcance_ampliado:
+    tipo: objeto
+    obligatorios: [modo, motivo]
+    campos:
+      modo: {tipo: enum, valores: [perimetro-completo, matriz-completa]}
+      motivo: {tipo: texto, min: 10}
+  impacto:
+    tipo: objeto
+    obligatorios: [disparadores]
+    campos:
+      disparadores: {tipo: lista, de: texto}
+      nota: {tipo: texto}
+  bloqueo:
+    tipo: objeto
+    obligatorios: [que_lo_impide, que_lo_desbloquearia, autoridad]
+    campos:
+      # la CLASE del bloqueo decide la parada del supervisor (Directiva §36): una barrera
+      # externa o un riesgo extraordinario necesitan al Owner; una dependencia interna, a un
+      # desbloqueador o a una decision de equipo
+      clase: {tipo: enum, valores: [dependencia-interna, barrera-externa, riesgo-extraordinario]}
+      materia: {tipo: texto, min: 5}
+      que_lo_impide: {tipo: texto, min: 10}
+      que_lo_desbloquearia: {tipo: texto, min: 10}
+      autoridad: {tipo: texto, min: 3}
+      posturas: {tipo: lista, de: texto}

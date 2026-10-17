@@ -21,17 +21,20 @@ pasos:
     nombre: COMPARAR ESTÁTICO
     modo: lineal
     hace: >
-      Capturar lo construido en cada entorno de la matriz, a tamaño real y con zoom en las
-      juntas, y ponerlo al lado de la intención.
+      Capturar lo construido, a tamaño real y con zoom en las juntas, y ponerlo al lado de
+      la intención, en los entornos que exige el modo de evidencia del brief: todos los de
+      la matriz en matriz-completa y perimetro-completo; el más estrecho y el más amplio, en
+      el motor principal, en focal (05-FIDELIDAD, «El alcance de la comparación»).
     produce: "comparación estática por entorno"
-    termina_cuando: "todos los entornos de la matriz tienen su par de capturas y su diferencia señalada"
+    termina_cuando: "cada entorno que el modo exige tiene su par de capturas y su diferencia señalada"
     checkpoint: true
   - n: 2
     nombre: COMPARAR ESTADOS
     modo: lineal
     hace: >
-      Comparar los cinco estados obligatorios más los propios del componente, en ambas
-      columnas, con datos reales.
+      Comparar, en ambas columnas y con datos reales, los estados que el modo exige: los
+      cinco obligatorios más los propios del componente en perimetro-completo y
+      matriz-completa; en focal, los que dependen del código cambiado.
     produce: "comparación de estados"
     termina_cuando: "todos los estados alcanzables están comparados, y los no alcanzables están declarados como tales"
     checkpoint: true
@@ -85,7 +88,8 @@ consultas:
 checkpoints:
   - "tras los pasos 1, 2, 3, 5 y 6"
 critica:
-  - "¿he comparado todos los entornos, o sólo el más cómodo?"
+  - "¿he comparado todos los entornos que el modo exige, o sólo el más cómodo?"
+  - "¿he recapturado lo que el cambio no toca, o declarado un nivel de novedad que mide el producto y no el cambio?"
   - "¿he medido las duraciones o las he leído del código?"
   - "¿estoy aceptando como deuda algo que acabo de descubrir?"
 gate: gate:excelencia-visual

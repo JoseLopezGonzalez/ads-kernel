@@ -1,0 +1,22 @@
+kind: esquema
+esquema: ejecutor
+version: 1
+descripcion: >
+  como se LANZA un agente sin chat para ejecutar un paquete. Lo declara el PROYECTO en su
+  PROFILE.md, al lado del catalogo de modelos, porque nombra un ejecutable concreto de un
+  proveedor concreto y `K0.8` prohibe que eso viva en el kernel. El adaptador de agente lee
+  estos bloques, elige el ejecutor del modelo que el equipo asigno al rol, y lanza la orden
+  con el brief como entrada y una ruta de entrega como salida. Los marcadores se sustituyen
+  literalmente: {brief} {entrega} {espacio} {modelo} {paquete} {repo}.
+obligatorios: [id, modelo, argv, limite_segundos]
+campos:
+  id: {tipo: texto, patron: '^ejecutor:[a-z0-9-]+$'}
+  # El identificador del `ads:modelo` que este ejecutor pone a trabajar.
+  modelo: {tipo: texto, patron: '^modelo:[a-z0-9-]+$'}
+  argv: {tipo: lista, de: texto, min: 1}
+  limite_segundos: {tipo: entero, min: 1}
+  cwd: {tipo: texto}
+  descripcion: {tipo: texto}
+  # Variables de entorno que el ejecutor NECESITA ademas de las conservadas por la guarda.
+  # Nunca un valor de credencial: solo nombres, y el valor se toma del entorno del anfitrion.
+  entorno_requerido: {tipo: lista, de: texto}

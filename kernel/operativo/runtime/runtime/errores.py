@@ -91,6 +91,14 @@ class EstadoDePaqueteInvalido(ErrorDeRuntime):
     CODIGO = "ESTADO_DE_PAQUETE_INVALIDO"
 
 
+class RecursoOcupado(ErrorDeRuntime):
+    """Otra ejecución posee un recurso exclusivo que este paquete también escribe (Directiva
+    §68): está listo funcionalmente, y temporalmente incompatible. No se toma ni se despacha
+    hasta que el otro entregue."""
+
+    CODIGO = "RECURSO_OCUPADO"
+
+
 class DependenciaNoResuelta(ErrorDeRuntime):
     CODIGO = "DEPENDENCIA_NO_RESUELTA"
 

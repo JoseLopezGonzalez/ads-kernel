@@ -1211,6 +1211,410 @@ def t244_grado_inicial_coincide_con_el_paso_5(b):
     return r
 
 
+
+# ===========================================================================
+#  T476 · T477 · los contratos operativos EFECTIVOS de los roles materializables
+# ===========================================================================
+def _corpus_del_ciclo():
+    runtime = os.path.join(RAIZ, "kernel", "operativo", "runtime")
+    if runtime not in sys.path:
+        sys.path.insert(0, runtime)
+    import ciclo                                                          # noqa: PLC0415
+    from ciclo import contratos                                           # noqa: PLC0415
+    return ciclo.Corpus(os.path.join(RAIZ, "kernel", "operativo")), contratos
+
+
+def t476_todo_rol_materializable_tiene_contrato(_b):
+    """Un rol que la oficina puede convertir en paquete tiene contrato operativo efectivo
+    que cumple `contrato-operativo`, con sus métodos dentro de los del rol, su gate en
+    `no_autocertifica` y su independencia cubierta. La clasificación se PUBLICA entera:
+    materializable, consultivo, conceptual, huérfano, sin-base."""
+    r = Resultado("T476", "Todo rol materializable tiene contrato operativo efectivo y suficiente")
+    # Un corpus ilegible —dos bloques con el mismo id, una base que nombra dos veces un
+    # rol— es un FALLO EXPLICATIVO de esta prueba, nunca una traza: `N242` lo sabotea.
+    try:
+        corpus, contratos = _corpus_del_ciclo()
+        clases = contratos.clasificar(corpus)
+        cuenta = {}
+        for rol, clase in sorted(clases.items()):
+            cuenta[clase] = cuenta.get(clase, 0) + 1
+            if clase == "huerfano":
+                r.fallo(f"{rol}: no figura en ninguna composición (huérfano): o se retira o se compone")
+            elif clase == "sin-base":
+                r.fallo(f"{rol}: lo materializa un proceso y NINGUNA base de contrato lo cubre")
+            elif clase in ("materializable", "consultivo"):
+                for fallo in contratos.fallos_del_contrato(corpus, rol):
+                    r.fallo(f"{rol}: {fallo}")
+    except Exception as exc:                                              # noqa: BLE001
+        r.fallo(f"el corpus no permite derivar los contratos efectivos: {type(exc).__name__}: {exc}")
+        return r
+    r.cobertura = ("roles: " + " · ".join(f"{k} {v}" for k, v in sorted(cuenta.items()))
+                   + " · conceptuales (no los materializa ningún proceso): "
+                   + ", ".join(sorted(k for k, v in clases.items() if v == "conceptual")))
+    return r
+
+
+def t477_bases_de_contrato_coherentes(b):
+    """Cada base nombra roles que existen, ningún rol hereda de dos bases, cada
+    especialización hereda de la base de su rol, y los contratos completos no duplican una
+    especialización."""
+    r = Resultado("T477", "Las bases de contrato son coherentes y ningún rol hereda de dos")
+    roles = {d["id"] for d, _, _ in b.get("rol", [])}
+    vistos = {}
+    for datos, ruta, linea in b.get("contrato-base", []):
+        for rol in datos.get("roles") or []:
+            if rol not in roles:
+                r.fallo(f"{ruta}:{linea}: la base {datos.get('id')} nombra el rol `{rol}`, que no existe")
+            if rol in vistos:
+                r.fallo(f"{ruta}:{linea}: el rol `{rol}` hereda de {vistos[rol]} y de {datos.get('id')}")
+            vistos[rol] = datos.get("id")
+    completos = {d["rol"] for d, _, _ in b.get("contrato-operativo", [])}
+    for datos, ruta, linea in b.get("contrato-de-rol", []):
+        rol = datos.get("rol")
+        if rol in completos:
+            r.fallo(f"{ruta}:{linea}: `{rol}` tiene contrato completo Y especialización: dos verdades")
+        if vistos.get(rol) != datos.get("hereda"):
+            r.fallo(f"{ruta}:{linea}: `{rol}` hereda de {datos.get('hereda')} y su base es {vistos.get(rol)}")
+    r.cobertura = (f"bases: {len(b.get('contrato-base', []))} · roles cubiertos: {len(vistos)} · "
+                   f"contratos completos: {len(completos)} · especializaciones: {len(b.get('contrato-de-rol', []))}")
+    return r
+
+
+# ---- T493 · los contratos de la línea de Diseño exigen los artefactos de la Directiva ------
+#  La Directiva del Owner nombra un entregable por fase (§12 informe de realidad actual,
+#  §13 síntesis de investigación, §14 análisis de uso, §15 auditoría de reutilización con
+#  sus cinco salidas, §16 alternativas de diez campos, §17 recomendación, §18 prototipo,
+#  §19/§24 crítica por trece criterios, §20 síntesis de ocho secciones, §21 especificación
+#  construible, §25 sesión de uso). Un rol cuyo contrato no exija ese artefacto como
+#  obligatorio, con su estructura, puede entregar «he diseñado» sin que nada lo devuelva.
+ARTEFACTOS_DE_DISENO = {
+    "DIS/investigacion-ux": {
+        "informe de realidad actual": ["qué existe", "no funciona", "patrones", "equivalentes", "restricciones"],
+        "análisis de uso": ["quién usa", "tarea primaria", "salir mal", "comparar", "permisos", "estados y extremos"]},
+    "DIS/investigacion-visual": {
+        "síntesis de investigación": ["patrones encontrados", "principios", "errores frecuentes",
+                                      "aplicable", "no es aplicable", "riesgos"]},
+    "DIS/sistema-de-diseno": {
+        "auditoría de reutilización": ["equivalentes", "cinco", "crear patrón nuevo", "deuda de unificación", "token"]},
+    "DIS/direccion-artistica": {
+        "alternativas": ["principio", "ventajas", "inconvenientes", "coste", "escalabilidad", "impacto móvil",
+                         "consistencia", "riesgos", "reutiliza", "introduce"],
+        "recomendación": ["por qué"],
+        "síntesis para el owner": ["problema", "realidad actual", "alternativas estudiadas", "recomendación",
+                                   "reutilizamos", "riesgos", "prototipo", "necesitamos del owner"]},
+    "DIS/prototipado": {
+        "prototipo": ["contenido real", "estados", "extremos", "responsive", "errores", "vacíos", "loading"]},
+    "DIS/critica-visual": {
+        "crítica por criterio": ["claridad", "jerarquía", "carga cognitiva", "coherencia", "densidad",
+                                 "profesionalidad", "accesibilidad", "consistencia", "simplificación",
+                                 "reutilización", "responsive", "estados extremos", "patrón innecesario", "dictamen"]},
+    "DIS/validacion-de-uso": {
+        "sesión de uso": ["pasos", "tiempo", "errores"],
+        "evaluación de uso": ["descubribilidad", "comprensión", "pasos", "feedback", "recuperación",
+                              "velocidad", "ambigüedad", "coherencia", "viable"]},
+    "DIS/diseno-interaccion": {
+        "especificación de interacción": ["flujo", "comportamiento", "errores", "permisos"]},
+    "DIS/movimiento": {"tabla de movimiento": ["curva", "duración", "token"]},
+    "DIS/diseno-visual": {
+        "especificación construible": ["prototipo aprobado", "componentes", "estructura y comportamiento",
+                                       "estados", "navegación", "responsive", "acciones y permisos",
+                                       "accesibilidad", "animación", "datos extremos", "textos", "errores",
+                                       "criterios de aceptación"]},
+}
+SALIDAS_DE_15 = ("REUTILIZAR SIN CAMBIOS", "REUTILIZAR AMPLIANDO", "UNIFICAR IMPLEMENTACIONES EXISTENTES",
+                 "REFACTORIZAR PATRÓN EXISTENTE", "CREAR PATRÓN NUEVO")
+TIPOS_MIRABLES = {"captura", "grabacion", "medicion"}
+# Directiva §28 · las seis preguntas permanentes del Product Interface Lead, que en este
+# kernel sostiene DIS/direccion-artistica (abre y cierra el trabajo de Diseño)
+PREGUNTAS_DE_28 = ("encaja", "ya existe otra manera", "variante innecesaria", "unificar otras pantallas",
+                   "deuda cercana", "más coherente")
+
+
+def t493_diseno_exige_los_artefactos_de_la_directiva(b):
+    """Cada rol de la línea de Diseño exige en su contrato completo, como artefacto
+    obligatorio, el entregable que la Directiva del Owner nombra para su fase, con la
+    estructura mínima que ella enumera; la auditoría de reutilización nombra las cinco
+    salidas de §15; y los roles que miran el producto (investigación, prototipo, crítica,
+    validación) dejan un artefacto mirable, no sólo prosa."""
+    r = Resultado("T493", "Los contratos de Diseño exigen los artefactos que la Directiva nombra por fase")
+    contratos = {d["rol"]: (d, ruta, linea) for d, ruta, linea in b.get("contrato-operativo", [])}
+    cubiertos = 0
+    for rol, exigidos in ARTEFACTOS_DE_DISENO.items():
+        if rol not in contratos:
+            r.fallo(f"{rol}: no tiene contrato completo (contrato-operativo); la Directiva exige sus artefactos")
+            continue
+        datos, ruta, linea = contratos[rol]
+        obligatorios = [a for a in datos.get("artefactos") or [] if a.get("obligatorio")]
+        for nombre, piezas in exigidos.items():
+            arte = next((a for a in obligatorios if nombre in str(a.get("nombre", "")).lower()), None)
+            if arte is None:
+                r.fallo(f"{ruta}:{linea}: {rol} no exige como obligatorio un artefacto «{nombre}»")
+                continue
+            texto = " ".join(str(x) for x in arte.get("estructura_minima") or []).lower()
+            faltan = [pz for pz in piezas if pz not in texto]
+            if faltan:
+                r.fallo(f"{ruta}:{linea}: {rol} · «{nombre}» no exige en su estructura: {', '.join(faltan)}")
+            cubiertos += 1
+        if rol == "DIS/sistema-de-diseno":
+            plano = json.dumps(datos, ensure_ascii=False)
+            for salida in SALIDAS_DE_15:
+                if salida not in plano:
+                    r.fallo(f"{ruta}:{linea}: {rol} no nombra la salida «{salida}» de §15")
+        if rol in ("DIS/investigacion-ux", "DIS/prototipado", "DIS/critica-visual", "DIS/validacion-de-uso"):
+            if not any(a.get("tipo") in TIPOS_MIRABLES for a in obligatorios):
+                r.fallo(f"{ruta}:{linea}: {rol} no deja ningún artefacto mirable (captura · grabacion · medicion)")
+    if "DIS/direccion-artistica" in contratos:
+        datos, ruta, linea = contratos["DIS/direccion-artistica"]
+        preguntas = " ".join(str(c.get("pregunta", "")) for c in datos.get("checklist") or []).lower()
+        faltan = [q for q in PREGUNTAS_DE_28 if q not in preguntas]
+        if faltan:
+            r.fallo(f"{ruta}:{linea}: DIS/direccion-artistica no pregunta en su checklist (§28): {', '.join(faltan)}")
+    r.cobertura = (f"roles de Diseño: {len(ARTEFACTOS_DE_DISENO)} · artefactos exigidos: {cubiertos} · "
+                   f"salidas de §15: {len(SALIDAS_DE_15)} · preguntas de §28: {len(PREGUNTAS_DE_28)}")
+    return r
+
+
+def t507_el_handoff_de_diseno_rechaza_la_decision_sin_especificar(b):
+    """§21 · si Construcción tiene que inventar una decisión de interfaz, DEVUELVE el paquete.
+
+    `OWN-ADS-0078`. El octavo corte puso la prohibición en el lado de quien construye (`T502`):
+    `CNS/implementacion` no completa una especificación de interfaz. Faltaba el otro lado, que
+    es el que lo hace exigible al RECIBIR: el handoff `dis-a-con` comprobaba valores, curvas,
+    datos reales y estado reducido, y NO nombraba la decisión sin especificar como causa de
+    rechazo. Una prohibición que sólo vive en el contrato del emisor se cumple si el receptor
+    se acuerda; nombrada en el handoff, el receptor tiene la causa escrita y con nombre.
+    """
+    r = Resultado("T507", "El handoff de Diseño a Construcción rechaza la decisión de interfaz sin especificar")
+    handoffs = {d["id"]: (d, ruta, linea) for d, ruta, linea in b.get("handoff", [])}
+    datos, ruta, linea = handoffs.get("handoff:dis-a-con", ({}, "(sin handoff)", 0))
+    if not datos:
+        r.fallo("no existe `handoff:dis-a-con`: sin él, la capa de Diseño llega a Construcción "
+                "sin comprobación de recepción")
+        return r
+    comprueba = " ".join(str(x) for x in (datos.get("comprueba_al_recibir") or [])).lower()
+    rechaza = " ".join(str(x) for x in (datos.get("rechaza_si") or [])).lower()
+    if "decisión de interfaz" not in comprueba and "decision de interfaz" not in comprueba:
+        r.fallo(f"{ruta}:{linea}: `handoff:dis-a-con` no COMPRUEBA al recibir que no quede "
+                f"ninguna decisión de interfaz sin especificar (§21)")
+    if "decisión de interfaz" not in rechaza and "decision de interfaz" not in rechaza:
+        r.fallo(f"{ruta}:{linea}: `handoff:dis-a-con` no RECHAZA por una decisión de interfaz "
+                f"sin especificar. Comprobar sin rechazar deja al receptor sin causa que citar")
+    if "devuelve" not in rechaza:
+        r.fallo(f"{ruta}:{linea}: el rechazo no dice que Construcción DEVUELVA el paquete, que "
+                f"es lo que §21 ordena hacer en vez de inventar la decisión")
+    r.cobertura = ("handoff:dis-a-con · %d comprobaciones al recibir · %d causas de rechazo"
+                   % (len(datos.get("comprueba_al_recibir") or []), len(datos.get("rechaza_si") or [])))
+    return r
+
+
+def t505_la_espera_por_entrada_obligatoria_no_tiene_ciclos(b):
+    """§32, §81 · `espera_a` ORDENA, y un ciclo de esperas no se puede ordenar.
+
+    INDEPENDENCIA Y ENTRADA OBLIGATORIA NO SON LO MISMO, y hasta el 2026-09-21 el kernel sólo
+    conocía la primera: la independencia dice QUIÉN —otro trabajador— y la entrada obligatoria
+    dice CUÁNDO —después de que exista la salida—. `DIS/prototipado` declara
+    `requiere_independencia: false` con `DIS/diseno-visual`, porque pueden compartir agente, y
+    su contrato exige «la especificación de DIS/diseno-visual» como entrada. El plan lo ofrecía
+    en paralelo, y **un modelo real lo devolvió** citando su propio contrato.
+
+    Esta prueba vigila la misma trampa que `T499`: si A espera a B y B espera a A, la relajación
+    no tiene punto fijo y el orden deja de existir. Por eso `espera_a` se DECLARA y no se
+    infiere —catorce roles nombran a otro en sus `entradas` y la inferencia produce ciclos
+    inmediatos—, y por eso lo declarado se comprueba aquí.
+    """
+    r = Resultado("T505", "La espera por entrada obligatoria no tiene ciclos, y quien la declara dice por qué")
+    roles = {d["id"]: (d, ruta, linea) for d, ruta, linea in b.get("rol", [])}
+    espera = {}
+    for rid, (datos, ruta, linea) in sorted(roles.items()):
+        declarados = [str(x) for x in (datos.get("espera_a") or [])]
+        if not declarados:
+            continue
+        espera[rid] = declarados
+        if not str(datos.get("motivo_de_la_espera") or "").strip():
+            r.fallo(f"{ruta}:{linea}: `{rid}` declara `espera_a` sin `motivo_de_la_espera`: una "
+                    f"arista de orden sin motivo no se puede discutir ni retirar")
+        for otro in declarados:
+            if otro == rid:
+                r.fallo(f"{ruta}:{linea}: `{rid}` se espera a sí mismo")
+            elif otro not in roles:
+                r.fallo(f"{ruta}:{linea}: `{rid}` espera a `{otro}`, que no es un rol del corpus")
+    # ciclos, por recorrido: A→B→…→A
+    for inicio in sorted(espera):
+        pila, vistos = [(inicio, [inicio])], set()
+        while pila:
+            actual, camino = pila.pop()
+            for siguiente in espera.get(actual, ()):
+                if siguiente == inicio:
+                    r.fallo("ciclo de espera: " + " → ".join(camino + [siguiente])
+                            + ". Si cada uno espera al otro, ninguno puede ir primero y el "
+                              "orden deja de existir (misma trampa que T499)")
+                elif siguiente not in vistos:
+                    vistos.add(siguiente)
+                    pila.append((siguiente, camino + [siguiente]))
+    r.cobertura = ("roles que declaran espera: " + (", ".join(sorted(espera)) or "(ninguno)")
+                   + f" · roles del corpus: {len(roles)}")
+    return r
+
+
+def t503_la_interfaz_se_prueba_sobre_lo_real_y_con_datos_reales(b):
+    """§23 y §29 regla 5 · ni una captura sustituye a la aplicación, ni lorem ipsum a los datos.
+
+    §23: «la revisión de fidelidad se hace sobre la aplicación real SIEMPRE QUE SEA TÉCNICAMENTE
+    POSIBLE; una captura o una lectura de código no sustituye automáticamente la prueba en
+    navegador». §29 regla 5: «no se valida usando sólo contenido cómodo o lorem ipsum». Son
+    `OWN-ADS-0083`, `OWN-ADS-0102` y `OWN-ADS-0105`.
+
+    EL DEFECTO QUE PREVIENE, medido el 2026-09-21: el contrato de `DIS/revision-de-fidelidad`
+    exigía arrancar el commit entregado «cuando el pack lo exige» —condicional— y §23 lo pide
+    SIEMPRE que sea posible, con el motivo declarado cuando no lo es. Y de los tres roles que
+    §29 regla 5 alcanza, sólo `DIS/prototipado` nombraba el lorem ipsum: fidelidad y validación
+    de uso podían dar por buena una pantalla probada con contenido cómodo sin que nada lo
+    rechazara. Un contrato que no nombra el defecto no lo rechaza; lo deja a la vista de quien
+    lo lea con buena voluntad.
+    """
+    r = Resultado("T503", "La interfaz se prueba sobre la aplicación real y con datos reales, y el contrato lo exige")
+    contratos = {d["rol"]: (d, ruta, linea) for d, ruta, linea in b.get("contrato-operativo", [])}
+    for rol in ("DIS/prototipado", "DIS/revision-de-fidelidad", "DIS/validacion-de-uso"):
+        contrato, ruta, linea = contratos.get(rol, ({}, "(sin contrato)", 0))
+        texto = " ".join(str(x) for x in (contrato.get("actuaciones_prohibidas") or [])).lower()
+        if "lorem ipsum" not in texto:
+            r.fallo(f"{ruta}:{linea}: `{rol}` no tiene prohibido validar con lorem ipsum o contenido "
+                    f"cómodo (§29 regla 5). Los métodos dicen «datos reales»; una actuación "
+                    f"prohibida es lo que RECHAZA una entrega")
+    contrato, ruta, linea = contratos.get("DIS/revision-de-fidelidad", ({}, "(sin contrato)", 0))
+    prohibidas = " ".join(str(x) for x in (contrato.get("actuaciones_prohibidas") or [])).lower()
+    if "técnicamente posible" not in prohibidas:
+        r.fallo(f"{ruta}:{linea}: `DIS/revision-de-fidelidad` no prohíbe sustituir la prueba sobre la "
+                f"aplicación real por una captura o una lectura de código CUANDO ERA TÉCNICAMENTE "
+                f"POSIBLE arrancarla (§23). Exigirlo «cuando el pack lo pide» es condicional, y §23 no")
+    evidencias = " ".join(str(e.get("que") or "") for e in (contrato.get("evidencias_requeridas") or [])).lower()
+    if "ejecutándose" not in evidencias and "ejecutandose" not in evidencias:
+        r.fallo(f"{ruta}:{linea}: `DIS/revision-de-fidelidad` no exige como EVIDENCIA que la comparación "
+                f"se hiciera sobre la aplicación ejecutándose, o el motivo de por qué no se pudo (§23)")
+    r.cobertura = ("contratos mirados: DIS/prototipado, DIS/revision-de-fidelidad, DIS/validacion-de-uso"
+                   f" · contratos operativos leídos: {len(contratos)}")
+    return r
+
+
+def t502_la_especificacion_de_interfaz_no_se_completa_fuera_de_diseno(b):
+    """§10, §21 y §29 regla 6 · Construcción nunca completa una especificación de interfaz.
+
+    La Directiva lo dice tres veces y con tres formulaciones: «Construcción no puede descubrir
+    durante la implementación que hace falta poner un botón y decidir por sí sola dónde y
+    cómo» (§10); «Regla: Construcción nunca completa una especificación de interfaz por su
+    cuenta» (§21); y «Regla 6: Construcción no improvisa decisiones importantes de interfaz»
+    (§29). Son `OWN-ADS-0046`, `0079` y `0103`.
+
+    EL DEFECTO QUE PREVIENE, medido el 2026-09-21 sobre el corpus de la campaña: el contrato
+    de `CNS/implementacion` prohibía simplificar sin declararlo y corregir una capa anterior
+    en vez de devolverla, pero **no nombraba completar**. Un implementador que encuentra un
+    hueco en la especificación —falta el vacío, falta el mensaje de error, falta el botón—
+    no estaba simplificando nada ni corrigiendo nada: estaba AÑADIENDO, y ninguna línea del
+    contrato se lo impedía. El hueco que la doctrina cubría tres veces en prosa no estaba en
+    el único sitio donde un rol lo lee.
+
+    POR QUÉ ESTA PRUEBA ES LITERAL Y NO ESTRUCTURAL. Se intentó como invariante general
+    —«todo rol que puede devolver una capa tiene prohibido completarla»— y no se sostiene:
+    doce de los veintiséis roles con devolución la expresan con otras palabras
+    (`ARQ/encaje` dice «no decide forma», `VER/dosier` dice «no redefine»), de modo que la
+    regla o bien pide doce cambios que nadie ha justificado, o bien afloja el vocabulario
+    hasta que la pasa cualquiera —incluido el contrato defectuoso de antes, que ya decía «no
+    cambia» y «no decide»—. Una prueba que el defecto original habría pasado no prueba nada.
+    Así que esto comprueba lo que la Directiva exige, donde lo exige, con la palabra que usa.
+    """
+    r = Resultado("T502", "El contrato de Construcción prohíbe COMPLETAR una especificación de interfaz")
+    contratos = {d["rol"]: (d, ruta, linea) for d, ruta, linea in b.get("contrato-operativo", [])}
+    roles = {d["id"]: d for d, _, _ in b.get("rol", [])}
+    # QUIÉN entra: el que ESCRIBE lo que la especificación describe. Completar una
+    # especificación sólo lo puede hacer quien produce el artefacto; el revisor de
+    # construcción recibe la misma capa de DIS y ya tiene prohibido «corregir lo que
+    # encuentra: lo nombra y lo devuelve», que es su forma de lo mismo. Se declara aquí
+    # para que la exclusión se vea, en vez de quedarse en el filtro.
+    def recibe_diseno(datos):
+        return "DIS" in " ".join(str(x) for x in (datos.get("entradas") or []))
+
+    def escribe_codigo(datos):
+        return "código" in " ".join(str(x) for x in (datos.get("salida") or [])).lower()
+
+    de_cns = sorted(rid for rid in roles if rid.startswith("CNS/"))
+    constructores = [rid for rid in de_cns if recibe_diseno(roles[rid]) and escribe_codigo(roles[rid])]
+    fuera = [rid for rid in de_cns if rid not in constructores]
+    if not constructores:
+        r.fallo("ningún rol de CNS declara recibir la capa de DIS: o el corpus cambió de forma, "
+                "o Construcción dejó de recibir Diseño, y las dos cosas hay que mirarlas")
+    for rid in constructores:
+        datos = roles[rid]
+        contrato, ruta, linea = contratos.get(rid, ({}, "(sin contrato)", 0))
+        prohibidas = [str(x) for x in (contrato.get("actuaciones_prohibidas") or [])]
+        limites = [str(x) for x in (datos.get("limites") or [])]
+        def nombra(textos):
+            for x in textos:
+                minus = x.lower()
+                if "interfaz" in minus and ("complet" in minus or "corrige" in minus or "corregir" in minus):
+                    return x
+            return None
+        if not nombra(prohibidas):
+            r.fallo(f"{ruta}:{linea}: `{rid}` recibe la capa de DIS y sus `actuaciones_prohibidas` "
+                    f"NO nombran completar una especificación de interfaz (§21). Simplificar y "
+                    f"corregir no lo cubren: quien AÑADE lo que falta no está haciendo ninguna "
+                    f"de las dos cosas")
+        if not nombra(limites):
+            r.fallo(f"`{rid}`: sus `limites` no dicen que no completa una especificación de "
+                    f"interfaz. El contrato lo prohíbe y el rol tiene que leerlo en su límite")
+        devuelve = " ".join(str(x) for x in (datos.get("devolucion") or []))
+        if "DIS" not in devuelve:
+            r.fallo(f"`{rid}` tiene prohibido completar la especificación y NO declara devolución "
+                    f"a DIS: una prohibición sin salida deja al rol parado o desobedeciendo")
+    r.cobertura = ("de CNS, ESCRIBEN código con capa de DIS delante: " + ", ".join(constructores)
+                   + " · fuera, porque no escriben el artefacto que la especificación describe: "
+                   + (", ".join(fuera) or "(ninguno)")
+                   + f" · contratos operativos leídos: {len(contratos)}")
+    return r
+
+
+def t499_la_independencia_no_se_declara_en_los_dos_sentidos(b):
+    """§81 · dos roles que se declaran independientes EL UNO DEL OTRO no se pueden ordenar.
+
+    `requiere_independencia` no es simétrico: ORDENA. `planificacion._ordenar_por_estacion_de_rol`
+    coloca a quien la exige DESPUÉS de aquel de quien la exige, porque quien revisa espera a
+    quien produce lo revisado. Si A la exige de B y B la exige de A, la relajación no tiene
+    punto fijo: sube a los dos medio escalón por vuelta hasta el tope y los deja a ambos al
+    FINAL del plan, detrás de la construcción.
+
+    El defecto que previene, medido el 2026-09-20: `DIS/direccion-artistica` declaraba
+    independencia de `DIS/critica-visual`, que ya la declaraba de ella. En el plan de
+    `dis-feature-visual` la dirección artística caía en el puesto 10 de 11 —detrás de
+    `DIS/prototipado`, `DIS/validacion-de-uso` y `DIS/revision-de-fidelidad`—, de modo que
+    el Owner habría aprobado la dirección DESPUÉS de construirla. La Directiva §81 exige lo
+    contrario: «Necesitamos del Owner: aprobar la dirección propuesta» y sólo «tras la
+    aprobación: Diseño especifica, Construcción implementa».
+
+    La separación se declara UNA vez, y la declara quien REVISA.
+    """
+    r = Resultado("T499", "La independencia se declara en un solo sentido: quien revisa la exige de quien produce")
+    exige = {}
+    roles = {d["id"]: d for d, _, _ in b.get("rol", [])}
+    for rol, datos in sorted(roles.items()):
+        ind = (datos or {}).get("independencia") or {}
+        if ind.get("requiere_independencia"):
+            exige[rol] = [o for o in (ind.get("de_quien") or []) if isinstance(o, str)]
+    vistos = set()
+    for rol, otros in sorted(exige.items()):
+        for otro in otros:
+            if otro in exige and rol in exige.get(otro, []):
+                par = frozenset((rol, otro))
+                if par in vistos:
+                    continue
+                vistos.add(par)
+                r.fallo(f"`{rol}` y `{otro}` se exigen independencia MUTUAMENTE: eso no ordena, "
+                        f"empuja a los dos al final del plan (detrás de la construcción). "
+                        f"La declara sólo quien revisa; el otro la explica en su `motivo` con "
+                        f"`requiere_independencia: false`")
+    r.cobertura = (f"roles con independencia exigida: {len(exige)} · "
+                   f"pares mutuos: {len(vistos)}")
+    return r
+
+
 PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t89_reanudacion_con_prueba, t90_roles_coherentes, t91_metodos_con_gate_y_pasos,
            t92_sin_marca, t135_composicion_respeta_el_contrato,
@@ -1223,7 +1627,13 @@ PRUEBAS = [t86_autoridad_subconjunto, t87_independencia_gana, t88_prompt_existe,
            t240_capacidad_tipada_sin_metodos, t241_dis_a_ver_anclado_al_ciclo,
            t242_autoridad_de_los_documentos_del_owner,
            t243_entregas_de_8_0_materializadas,
-           t244_grado_inicial_coincide_con_el_paso_5]
+           t244_grado_inicial_coincide_con_el_paso_5, t476_todo_rol_materializable_tiene_contrato, t477_bases_de_contrato_coherentes,
+           t493_diseno_exige_los_artefactos_de_la_directiva,
+           t499_la_independencia_no_se_declara_en_los_dos_sentidos,
+           t502_la_especificacion_de_interfaz_no_se_completa_fuera_de_diseno,
+           t503_la_interfaz_se_prueba_sobre_lo_real_y_con_datos_reales,
+           t505_la_espera_por_entrada_obligatoria_no_tiene_ciclos,
+           t507_el_handoff_de_diseno_rechaza_la_decision_sin_especificar]
 
 
 def main():
@@ -1246,6 +1656,8 @@ def main():
         for r in resultados:
             estado = "SUPERADA" if r.superada else "FALLIDA "
             print(f"{r.id}  {estado}  {r.nombre}")
+            if getattr(r, "cobertura", None):
+                print(f"          cobertura: {r.cobertura}")
             for f in r.fallos:
                 print(f"          · {f}")
         fallidas = [r for r in resultados if not r.superada]

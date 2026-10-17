@@ -1,5 +1,7 @@
 # PRD/definicion — Definición de alcance
 
+Su contrato operativo vive en [`../contratos/definicion.md`](../contratos/definicion.md).
+
 ```yaml ads:rol
 id: PRD/definicion
 nombre: Definición de alcance

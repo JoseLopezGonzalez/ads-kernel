@@ -1,0 +1,96 @@
+kind: esquema
+esquema: contrato-de-rol
+version: 1
+descripcion: >
+  la ESPECIALIZACION del contrato operativo de un rol: lo que ni su base de familia ni sus
+  veintinueve campos de rol pueden decir por el. Es un bloque CORTO y opcional: un rol
+  materializable sin especializacion tiene contrato igualmente —base + derivacion—, y
+  `comprobar_contratos` dice si esa fusion es suficiente o si al rol le falta declarar
+  algo. Lo que aqui se declara SE SUMA a la base y a la derivacion; `secuencia`,
+  `artefactos`, `mision_operativa`, `ejemplo_bueno` y `ejemplo_malo` SUSTITUYEN a lo
+  derivado, porque un rol que los escribe sabe mas que la formula.
+obligatorios: [id, rol, hereda]
+campos:
+  id: {tipo: texto, patron: '^contrato:[a-z0-9-]+$'}
+  rol: {tipo: ref, ref_a: rol}
+  hereda: {tipo: ref, ref_a: contrato-base}
+  mision_operativa: {tipo: texto, min: 40}
+  conocimientos_exigibles: {tipo: lista, de: texto}
+  entradas_obligatorias:
+    tipo: lista
+    de: objeto
+    obligatorios: [que, donde, si_falta]
+    campos:
+      que: {tipo: texto, min: 5}
+      donde: {tipo: texto, min: 5}
+      si_falta: {tipo: enum, valores: [bloquear, devolver, escalar]}
+  comprobaciones_previas:
+    tipo: lista
+    de: objeto
+    obligatorios: [id, comprueba, como, si_falla]
+    campos:
+      id: {tipo: texto, patron: '^[a-z0-9-]+$'}
+      comprueba: {tipo: texto, min: 10}
+      como: {tipo: texto, min: 10}
+      si_falla: {tipo: enum, valores: [bloquear, devolver, escalar, continuar-declarando]}
+  # los pasos PROPIOS del rol, entre la apertura y el cierre que pone la base
+  secuencia:
+    tipo: lista
+    de: objeto
+    obligatorios: [hace, produce, termina_cuando]
+    campos:
+      hace: {tipo: texto, min: 15}
+      produce: {tipo: texto, min: 5}
+      termina_cuando: {tipo: texto, min: 10}
+      checkpoint: {tipo: booleano}
+  fuentes_a_consultar: {tipo: lista, de: texto}
+  artefactos:
+    tipo: lista
+    de: objeto
+    obligatorios: [tipo, nombre, estructura_minima, obligatorio]
+    campos:
+      tipo: {tipo: enum, valores: [rama, commit, pr, fichero, dosier, captura, grabacion, medicion, documento, integration-set, salida-de-orden, otro]}
+      nombre: {tipo: texto, min: 3}
+      estructura_minima: {tipo: lista, de: texto, min: 1}
+      obligatorio: {tipo: booleano}
+  evidencias_requeridas:
+    tipo: lista
+    de: objeto
+    obligatorios: [que, forma, quien_la_puede_juzgar]
+    campos:
+      que: {tipo: texto, min: 5}
+      forma: {tipo: texto, min: 5}
+      quien_la_puede_juzgar: {tipo: texto, min: 3}
+  criterios_de_calidad_medibles:
+    tipo: lista
+    de: objeto
+    obligatorios: [criterio, como_se_mide]
+    campos:
+      criterio: {tipo: texto, min: 10}
+      como_se_mide: {tipo: texto, min: 10}
+  condiciones_de_aceptacion: {tipo: lista, de: texto}
+  condiciones_de_devolucion: {tipo: lista, de: texto}
+  reglas_de_escalado:
+    tipo: lista
+    de: objeto
+    obligatorios: [cuando, a_quien, con_que]
+    campos:
+      cuando: {tipo: texto, min: 10}
+      a_quien: {tipo: texto, min: 3}
+      con_que: {tipo: texto, min: 10}
+  incompatibilidades: {tipo: lista, de: texto}
+  actuaciones_prohibidas: {tipo: lista, de: texto}
+  entrega_a: {tipo: lista, de: texto}
+  decisiones_propias: {tipo: lista, de: texto}
+  metodos: {tipo: lista, de: ref, ref_a: metodo}
+  no_autocertifica: {tipo: lista, de: ref, ref_a: gate}
+  ejemplo_bueno: {tipo: texto, min: 80}
+  ejemplo_malo: {tipo: texto, min: 80}
+  checklist:
+    tipo: lista
+    de: objeto
+    obligatorios: [id, pregunta, automatizable]
+    campos:
+      id: {tipo: texto, patron: '^[a-z0-9-]+$'}
+      pregunta: {tipo: texto, min: 10}
+      automatizable: {tipo: enum, valores: [si, no, parcial]}

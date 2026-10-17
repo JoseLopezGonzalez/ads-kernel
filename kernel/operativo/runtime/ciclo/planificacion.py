@@ -60,7 +60,7 @@ from estado.serializacion import cid_de_objeto
 from runtime import modelo
 from runtime.politica import MAX_INTENTOS_POR_DEFECTO
 
-from . import durable, paralelismo
+from . import durable, paralelismo, proporcion
 from .corpus import Corpus
 from .encuadre import DOMINIO as DOMINIO_ENCUADRES, ruta_de as ruta_de_encuadre
 from .equipos import DOMINIO as DOMINIO_EQUIPOS, ruta_de as ruta_de_equipo
@@ -77,6 +77,21 @@ from .rutas import (
 
 DOMINIO = "planes"
 ESQUEMA = "ads.estado/1"
+
+# EL ORDEN DE LAS ESTACIONES de una ruta, como DATO. `rutas.componer` ordena los
+# participantes por (vía, capacidad) —un orden de LECTURA, alfabético—, y
+# `paralelismo.secuenciar` hace que cada paquete espere a los ANTERIORES con los que no es
+# paralelizable: con ese orden, `CNS` (C) quedaba antes que `PRD` (P) y la construcción
+# esperaba a nada mientras la definición de producto esperaba a la construcción. Lo que
+# manda es el orden de las OBLIGACIONES del proceso (`b.16`, campo `obligatorias`, en el
+# orden en que están escritas) y, para las capacidades condicionales, el orden de las
+# estaciones que los diez circuitos de `circuitos/00-CIRCUITOS.md` dibujan: las
+# condiciones de DOM y SEG ANTES de construir, ENT, USO y APR DESPUÉS de verificar, y las
+# revisiones de DOM y SEG tras VER. Se declara aquí una vez, con su fuente, y se contrasta
+# en la batería contra los diagramas.
+ORDEN_DE_ESTACIONES = ("ENC", "PRD", "INV", "ARQ", "DIS", "DOM", "SEG", "PLT", "CNS", "VER",
+                       "ENT", "USO", "APR", "SIS", "DSP")
+METODOS_POSTERIORES_A_VER = ("revision",)
 
 PRIORIDAD_POR_VIA = {
     VIA_PROPIETARIA: 90,
@@ -126,6 +141,62 @@ class Planificador:
         )
         return ruta
 
+    def _independencias_de(self, roles_por_capacidad, declaradas=None):
+        """`{rol: [roles PRESENTES en el plan de los que exige independencia]}`.
+
+        Las del ROL salen del corpus (`independencia.de_quien`); las que DECLARA el circuito
+        base del proyecto (`independencias`) se suman. Ya no se limitan a la misma
+        capacidad: `DIS/revision-de-fidelidad` es independiente de `CNS/implementacion`, y
+        eso es lo que la coloca DESPUÉS de la construcción y no antes.
+        """
+        presentes = [rol for roles in roles_por_capacidad.values() for rol in roles]
+        capacidad_de = {rol: cap for cap, roles in roles_por_capacidad.items() for rol in roles}
+        declaradas = dict(declaradas or {})
+        salida = {}
+        for rol in presentes:
+            independencia = self.corpus.rol(rol).get("independencia") or {}
+            de_quien = set(declaradas.get(rol) or [])
+            if independencia.get("requiere_independencia"):
+                # Del corpus sólo cuenta, PARA EL ORDEN, la independencia dentro de la misma
+                # capacidad: `de_quien` entre capacidades dice quién no puede ser el mismo
+                # trabajador —y a veces lo declaran los dos lados—, no quién va antes. El
+                # orden entre capacidades lo declara el circuito base del proyecto.
+                de_quien.update(otro for otro in (independencia.get("de_quien") or [])
+                                if capacidad_de.get(otro) == capacidad_de.get(rol))
+            ajenos = sorted(otro for otro in de_quien if otro != rol and otro in presentes)
+            if ajenos:
+                salida[rol] = ajenos
+        return salida
+
+    def _esperas_declaradas(self, roles_por_capacidad):
+        """`{rol: [roles PRESENTES que tienen que entregar ANTES]}`, del campo `espera_a`.
+
+        INDEPENDENCIA Y ENTRADA OBLIGATORIA NO SON LO MISMO, y hasta el 2026-09-21 el orden
+        sólo conocía la primera. La independencia dice QUIÉN —otro trabajador— y la entrada
+        obligatoria dice CUÁNDO —después de que exista la salida—. Dos roles pueden ser la
+        misma persona y aun así uno va después: `DIS/prototipado` declara
+        `requiere_independencia: false` con `DIS/diseno-visual` —pueden compartir agente— y su
+        contrato exige «la especificación de DIS/diseno-visual» como ENTRADA.
+
+        LO ENCONTRÓ UN MODELO REAL negándose a trabajar. En un encargo `ui-2` de La
+        Pesquerapp, el plan ofreció `DIS/prototipado` en paralelo con `diseno-visual`, y el
+        modelo lo DEVOLVIÓ: «hace ejecutable una dirección ya elegida; no decide forma, la
+        ejecuta». Tenía razón y el plan se lo permitió.
+
+        SE DECLARA, NO SE INFIERE. Derivarlo del texto de `entradas` se midió y no se sostiene:
+        catorce roles nombran a otro ahí, y la inferencia produce ciclos inmediatos —
+        `DIS/direccion-artistica` nombra a `DIS/critica-visual`, que va después de ella—. Un
+        rol que no declara `espera_a` se queda exactamente donde estaba.
+        """
+        presentes = {rol for roles in roles_por_capacidad.values() for rol in roles}
+        salida = {}
+        for rol in sorted(presentes):
+            espera = self.corpus.rol(rol).get("espera_a") or []
+            antes = sorted({str(o) for o in espera if str(o) != rol and str(o) in presentes})
+            if antes:
+                salida[rol] = antes
+        return salida
+
     def registrar_equipos(self, equipos):
         objetos = {ruta_de_equipo(e["id"]): e for e in equipos}
         durable.escribir(
@@ -136,12 +207,32 @@ class Planificador:
         return equipos
 
     # ---------------------------------------------------------- planificar
-    def planificar(self, encuadre, ruta, *, equipos=(), titulo=None,
+    def planificar(self, encuadre, ruta, *, equipos=(), titulo=None, independencias_declaradas=None,
+                   generacion=0,
                    capacidades_de_adaptador=CAPACIDADES_DE_ADAPTADOR_POR_DEFECTO,
                    orden_por_capacidad=None, slots=0,
                    intervencion=INTERVENCION_NINGUNA, alcance_autorizado=None,
-                   secuencial=None, acoplamiento_por_capacidad=None):
-        """Crea el item y sus paquetes, y escribe el plan. Idempotente por contenido."""
+                   secuencial=None, acoplamiento_por_capacidad=None,
+                   roles_por_capacidad=None, orden_por_rol=None, item=None,
+                   acoplamiento_por_rol=None,
+                   capacidades_de_adaptador_por_rol=None):
+        """Crea el item y sus paquetes, y escribe el plan. Idempotente por contenido.
+
+        PAQUETES POR ROL (`CONTRATO-OFICINA.md`). Cuando `roles_por_capacidad` declara los
+        roles que el equipo materializó para una capacidad, se crea UN paquete por
+        (participante, rol) en vez de uno por participante, y dentro de la misma capacidad
+        un rol que se declara INDEPENDIENTE de otro de la composición ESPERA a ese otro:
+        la revisión de construcción espera a la implementación porque su contrato dice que
+        no puede compartir agente con ella, y esa es la única fuente del orden. Sin
+        `roles_por_capacidad` el comportamiento es EXACTAMENTE el de antes.
+
+        `item` permite planificar sobre un item que YA EXISTE en el estado —el de la
+        instancia que gobierna el producto—, en vez de acuñar uno nuevo desde el encuadre.
+        `orden_por_rol` y `capacidades_de_adaptador_por_rol` afinan la orden por rol; si no
+        están, manda la de la capacidad. `acoplamiento_por_rol` hace lo mismo con la
+        declaración de acoplamiento, y por el motivo que `_acoplamiento_de` explica: con la
+        llave por capacidad, dos paquetes de la misma capacidad NUNCA son paralelizables.
+        """
         if intervencion not in NIVELES_DE_INTERVENCION:
             raise PlanificacionInvalida(
                 "nivel de intervención del Owner fuera de los TRES de `a.8`: "
@@ -157,8 +248,9 @@ class Planificador:
         if equipos:
             self.registrar_equipos(equipos)
 
-        item = "it-" + cid_de_objeto({"encuadre": encuadre["id"], "ruta": ruta["id"]}
-                                     ).split(":", 1)[-1][:12]
+        if item is None:
+            item = "it-" + cid_de_objeto({"encuadre": encuadre["id"], "ruta": ruta["id"]}
+                                         ).split(":", 1)[-1][:12]
         titulo_real = titulo or (encuadre["resultado_perseguido"]
                                  or encuadre["expresion_literal"])[:120]
         if durable.leer(self.almacen, "items/" + item + ".json") is None:
@@ -166,25 +258,128 @@ class Planificador:
                 id=item, titulo=titulo_real,
                 motivo="alta del item desde el encuadre " + encuadre["id"],
             )
+        roles_por_capacidad = {k: list(v) for k, v in (roles_por_capacidad or {}).items()}
+        orden_por_rol = dict(orden_por_rol or {})
+        adaptador_por_rol = dict(capacidades_de_adaptador_por_rol or {})
+        independencias = self._independencias_de(roles_por_capacidad, independencias_declaradas)
 
         ordenes = dict(orden_por_capacidad or {})
         acoplamientos = dict(acoplamiento_por_capacidad or {})
+        acoplamiento_por_rol = dict(acoplamiento_por_rol or {})
+
+        def _acoplamiento_de(unidad, participante):
+            """El acoplamiento del paquete: el del ROL si se declara, si no el de su capacidad.
+
+            DECISIÓN · la llave por CAPACIDAD no basta, y por eso existe ésta. Las condiciones
+                2, 3 y 4 de `a.5` se evalúan por INTERSECCIÓN de conjuntos declarados. Dos
+                paquetes de la misma capacidad comparten, con la llave por capacidad, una
+                declaración IDÉNTICA: la intersección es entonces el propio conjunto, nunca
+                vacía, y NINGUNA pareja de la misma capacidad puede salir paralela, declare la
+                instancia lo que declare. Medido el 2026-09-20 en el plan `ui-2-nueva-superficie`
+                de La Pesquerapp, donde once de diecisiete paquetes son `DIS`: con la dirección
+                artística escalada al Owner, la organización no continuaba con NADA, y §81 pide
+                lo contrario. Declarar por rol no afloja ninguna condición —la sexta sigue
+                exigiendo `integra_en`, y el FALLBACK SEGURO de `b.11` sigue secuenciando cuando
+                no se puede demostrar compatibilidad—: lo que hace es permitir decir la VERDAD,
+                que los artefactos de dos roles distintos son de hecho disjuntos.
+            """
+            if unidad.get("rol") and unidad["rol"] in acoplamiento_por_rol:
+                return acoplamiento_por_rol[unidad["rol"]]
+            return acoplamientos.get(participante["capacidad"])
         # PRIMERA PASADA: se construyen los paquetes en memoria, CON su declaración de
         # acoplamiento, para poder evaluar entre ellos la condición compuesta de `a.5`.
         # Sin la declaración no hay nada que evaluar, y por eso la etapa 4 va antes que la 5
         # en el `§7.2` y también aquí.
-        proyectados = []
-        for participante in ruta["participantes"]:
-            proyectados.append({
-                "id": "pq-" + cid_de_objeto({
+        # Cada UNIDAD es (participante, rol) cuando hay roles declarados, o el participante a
+        # secas. El identificador entra el rol para que dos roles de la misma capacidad no
+        # colisionen, y NO lo entra cuando no hay rol, para que ningún plan ya escrito
+        # cambie de identidad.
+        unidades = []
+        capacidades_con_obligacion = {p["capacidad"] for p in ruta["participantes"]
+                                      if p.get("obligacion")}
+        participantes = sorted(ruta["participantes"],
+                               key=lambda p: _orden_de_estacion(ruta, p))
+        # DEFECTO MEDIDO (La Pesquerapp, catálogo de clases): `DOM` y `SEG` participan DOS
+        # veces en FEA/GAP/DEU —`DOM:condiciones` antes de construir y `DOM:revision`
+        # después—, con la misma vía y sin obligación propia. La semilla no entraba el
+        # método y las dos participaciones acuñaban EL MISMO identificador para cada rol:
+        # `a.5` se pedía comparar un paquete consigo mismo y ninguna clase con C-DOM o
+        # C-SEG se podía planificar. El método entra en la semilla SÓLO cuando la
+        # participación se repite, para que ningún plan ya escrito cambie de identidad.
+        repetidas = {}
+        for participante in participantes:
+            clave = (participante["capacidad"], participante["via"], participante.get("obligacion"))
+            repetidas[clave] = repetidas.get(clave, 0) + 1
+        for participante in participantes:
+            roles = roles_por_capacidad.get(participante["capacidad"]) or [None]
+            # LA PROPIETARIA GLOBAL (vía 1) sin obligación propia. `b.10`: «la integración
+            # la declara el propietario global, y sólo él». Cuando esa capacidad además
+            # participa con obligación, su vía 1 NO repite el trabajo de sus roles: produce
+            # UN paquete de INTEGRACIÓN SEMÁNTICA, que espera a todos los demás del item.
+            # Sin roles declarados el comportamiento es exactamente el de antes.
+            es_integracion = (
+                roles != [None] and participante["via"] == VIA_PROPIETARIA
+                and not participante.get("obligacion")
+                and participante["capacidad"] in capacidades_con_obligacion
+            )
+            if es_integracion:
+                roles = [roles[0]]
+            for rol in roles:
+                semilla = {
                     "item": item,
                     "capacidad": participante["capacidad"],
                     "via": participante["via"],
                     "obligacion": participante["obligacion"],
-                }).split(":", 1)[-1][:12],
-                "depende_de": [],
+                }
+                if rol is not None:
+                    semilla["rol"] = rol
+                clave = (participante["capacidad"], participante["via"], participante.get("obligacion"))
+                if repetidas.get(clave, 0) > 1 and participante.get("metodo"):
+                    semilla["metodo"] = str(participante["metodo"])
+                if generacion:
+                    # REPLANIFICAR es una generación nueva: los paquetes de la anterior se
+                    # conservan con su historia y los nuevos nacen con identidad propia.
+                    # Con `generacion=0` los identificadores son los de siempre, y repetir
+                    # la planificación tras un corte sigue siendo idempotente.
+                    semilla["generacion"] = int(generacion)
+                unidades.append({
+                    "id": "pq-" + cid_de_objeto(semilla).split(":", 1)[-1][:12],
+                    "participante": participante,
+                    "rol": rol,
+                    "integracion": es_integracion,
+                })
+        repetidos = sorted({u["id"] for u in unidades if sum(1 for v in unidades if v["id"] == u["id"]) > 1})
+        if repetidos:
+            raise PlanificacionInvalida(
+                "dos participaciones indistinguibles acuñan el mismo paquete: " + ", ".join(repetidos)
+                + "; la ruta repite una capacidad con la misma vía, obligación, rol y método",
+            )
+        esperas = self._esperas_declaradas(roles_por_capacidad)
+        unidades = _ordenar_por_estacion_de_rol(unidades, ruta, independencias, esperas)
+        proyectados = []
+        for unidad in unidades:
+            participante = unidad["participante"]
+            # Dependencia por independencia declarada: el rol que exige independencia de
+            # otro —de su capacidad o de otra— espera a ese otro. Quien revisa espera a
+            # quien produce lo revisado.
+            previos = []
+            if unidad["integracion"]:
+                previos = [u["id"] for u in unidades if u["id"] != unidad["id"]]
+            for de_quien in independencias.get(unidad["rol"], ()):
+                previo = _unidad_del_rol(unidades, de_quien, unidad)
+                if previo and previo != unidad["id"]:
+                    previos.append(previo)
+            # Y por ENTRADA OBLIGATORIA: quien necesita la salida de otro espera a que exista,
+            # comparta agente con él o no.
+            for de_quien in esperas.get(unidad["rol"], ()):
+                previo = _unidad_del_rol(unidades, de_quien, unidad)
+                if previo and previo != unidad["id"]:
+                    previos.append(previo)
+            proyectados.append({
+                "id": unidad["id"],
+                "depende_de": sorted(set(previos)),
                 "acoplamiento": modelo.normalizar_acoplamiento(
-                    acoplamientos.get(participante["capacidad"])),
+                    _acoplamiento_de(unidad, participante)),
             })
         if secuencial is True:
             # Secuenciar SIN evaluar sigue estando permitido —es el fallback seguro—, pero
@@ -204,38 +399,54 @@ class Planificador:
             espera, traza_de_paralelismo = paralelismo.secuenciar(proyectados)
 
         paquetes, correspondencia, anterior = [], [], None
-        for participante in ruta["participantes"]:
-            identificador = "pq-" + cid_de_objeto({
-                "item": item,
-                "capacidad": participante["capacidad"],
-                "via": participante["via"],
-                "obligacion": participante["obligacion"],
-            }).split(":", 1)[-1][:12]
-            depende_de = list(espera.get("pq-" + cid_de_objeto({
-                "item": item,
-                "capacidad": participante["capacidad"],
-                "via": participante["via"],
-                "obligacion": participante["obligacion"],
-            }).split(":", 1)[-1][:12], []))
-            orden = ordenes.get(participante["capacidad"])
+        previos_declarados = {p["id"]: p["depende_de"] for p in proyectados}
+        for unidad in unidades:
+            participante = unidad["participante"]
+            identificador = unidad["id"]
+            depende_de = sorted(set(espera.get(identificador, []))
+                                | set(previos_declarados.get(identificador, [])))
+            orden = orden_por_rol.get(unidad["rol"]) if unidad["rol"] else None
+            if orden is None:
+                orden = ordenes.get(participante["capacidad"])
             if orden is None:
                 raise PlanificacionInvalida(
                     "no hay orden declarada para la capacidad `" + participante["capacidad"]
                     + "`; un paquete sin orden no es despachable y no se inventa una",
                     capacidad=participante["capacidad"],
                 )
-            if durable.leer(self.almacen, "paquetes/" + identificador + ".json") is None:
+            requeridas = adaptador_por_rol.get(unidad["rol"]) if unidad["rol"] else None
+            if requeridas is None and orden_por_rol.get(unidad["rol"]) is not None:
+                # Una orden afinada POR ROL nombra su adaptador: el paquete exige la
+                # capacidad de ESE adaptador, no la genérica. Medido en `T470`: un paquete de
+                # agente con `capacidades_requeridas: [worker]` no lo atendía nadie.
+                requeridas = [str(orden.get("adaptador") or "")]
+            if requeridas is None:
+                requeridas = capacidades_de_adaptador
+            existente = durable.leer(self.almacen, "paquetes/" + identificador + ".json")
+            if existente is not None and sorted(existente.get("depende_de") or []) != depende_de:
+                # DEFECTO MEDIDO (La Pesquerapp, replanificación tras corregir el orden de
+                # estaciones): el paquete ya existía con OTRAS dependencias y se reutilizó
+                # en silencio, con un ciclo dentro. Un paquete no cambia de dependencias
+                # por debajo de un plan nuevo: se replanifica con una generación nueva.
+                raise PlanificacionInvalida(
+                    "el paquete `" + identificador + "` ya existe con dependencias distintas "
+                    "(" + ", ".join(sorted(existente.get("depende_de") or [])) + " frente a "
+                    + ", ".join(depende_de) + "): replanificar exige una generación nueva "
+                    "(`generacion` > 0); los paquetes anteriores se conservan",
+                    paquete=identificador,
+                )
+            if existente is None:
                 self.runtime.crear_paquete(
                     id=identificador, item=item,
-                    capacidades_requeridas=list(capacidades_de_adaptador),
+                    capacidades_requeridas=list(requeridas),
                     orden=orden,
                     prioridad=PRIORIDAD_POR_VIA[participante["via"]],
                     max_intentos=MAX_INTENTOS_POR_DEFECTO,
                     depende_de=depende_de,
-                    acoplamiento=acoplamientos.get(participante["capacidad"]),
+                    acoplamiento=_acoplamiento_de(unidad, participante),
                 )
             paquetes.append(identificador)
-            correspondencia.append({
+            fila = {
                 "paquete": identificador,
                 "capacidad": participante["capacidad"],
                 "metodo": participante["metodo"],
@@ -246,7 +457,22 @@ class Planificador:
                 "criterio_de_satisfaccion": participante["criterio_de_satisfaccion"],
                 "prioridad": PRIORIDAD_POR_VIA[participante["via"]],
                 "depende_de": depende_de,
-            })
+                # trabajo NUEVO: sus devoluciones declaran su materialidad (`proporcion.py`)
+                proporcion.MARCA_DE_MATERIALIDAD: True,
+            }
+            if unidad["rol"] is not None:
+                fila["rol"] = unidad["rol"]
+                fila["metodo"] = _metodo_del_rol(self.corpus, unidad["rol"], fila["metodo"])
+                fila["gate"] = _gate_del_rol(self.corpus, unidad["rol"], fila["gate"])
+            if unidad["integracion"]:
+                fila["obligacion"] = "integracion-semantica"
+                fila["salida"] = ("la declaración de integración semántica del propietario "
+                                  "global, sobre todas las capas depositadas del item")
+                fila["criterio_de_satisfaccion"] = (
+                    "el propietario global declara, con las entregas del item delante, que "
+                    "el resultado perseguido está integrado y nombra lo que no")
+                fila["integracion_semantica"] = True
+            correspondencia.append(fila)
             anterior = identificador
 
         plan = {
@@ -336,6 +562,7 @@ class Planificador:
             "depende_de": [],
             "desbloquea": paquete_bloqueado,
             "abierto_por": "b.15.1",
+            proporcion.MARCA_DE_MATERIALIDAD: True,
         }]
         nuevo["id"] = _identificador(nuevo)
         durable.escribir(
@@ -345,6 +572,113 @@ class Planificador:
             semilla={"plan": nuevo["id"]},
         )
         return {"plan": nuevo, "paquete": identificador}
+
+
+def _rango_de_estacion(ruta, participante):
+    """El RANGO del participante en la ruta: su estación, y entre obligatorias, el proceso.
+
+    DEFECTO MEDIDO (La Pesquerapp, `cambio-con-interfaz`): las obligatorias iban TODAS
+    antes que cualquier condicional, y `DIS` —condicional por `C-DIS`— quedaba detrás de
+    `VER`: se diseñaba después de verificar. Ahora manda la ESTACIÓN; entre dos obligatorias
+    el orden del proceso se conserva forzando que sus rangos sean crecientes.
+    """
+    obligaciones = [o["id"] for o in ruta.get("obligaciones") or []]
+    posicion = _posicion_de_estacion(participante)
+    if participante["via"] == VIA_PROPIETARIA and not participante.get("obligacion"):
+        # La propietaria global SIN obligación propia abre la ruta (era el orden de
+        # `ruta["participantes"]` desde siempre, y `T225` lo despacha la primera); cuando hay
+        # roles y su capacidad además tiene obligación, es la integración semántica y el
+        # llamador la manda la última.
+        return -1
+    if participante.get("obligacion") in obligaciones:
+        # Rangos crecientes con el orden del proceso: la obligación n-ésima nunca queda
+        # antes que la anterior aunque su estación sea menor.
+        rango = posicion
+        for anterior in ruta["participantes"]:
+            if anterior.get("obligacion") in obligaciones and \
+                    obligaciones.index(anterior["obligacion"]) < obligaciones.index(participante["obligacion"]):
+                rango = max(rango, _posicion_de_estacion(anterior) + 0.001)
+        return rango
+    # CONDICIONAL: va donde su estación dice, pero nunca antes que una obligatoria cuya
+    # estación le precede. Medido en `T225` (proceso SIS): `APR`, estación 12, se colaba
+    # delante de `SIS → CNS → VER`, que arrancan en la 13 por el orden del proceso.
+    rango = posicion
+    for obligatoria in ruta["participantes"]:
+        if obligatoria.get("obligacion") in obligaciones and _posicion_de_estacion(obligatoria) < posicion:
+            rango = max(rango, _rango_de_estacion(ruta, obligatoria) + 0.0005)
+    return rango
+
+
+def _posicion_de_estacion(participante):
+    capacidad = participante["capacidad"]
+    posicion = ORDEN_DE_ESTACIONES.index(capacidad) if capacidad in ORDEN_DE_ESTACIONES else 99
+    if str(participante.get("metodo") or "") in METODOS_POSTERIORES_A_VER \
+            and "VER" in ORDEN_DE_ESTACIONES:
+        posicion = ORDEN_DE_ESTACIONES.index("VER") + 0.5
+    return posicion
+
+
+def _orden_de_estacion(ruta, participante):
+    """La clave de orden: integración semántica la última; el resto por rango y vía."""
+    if participante["via"] == VIA_PROPIETARIA and not participante.get("obligacion"):
+        return (2, 0, 0, participante["via"])
+    return (1, _rango_de_estacion(ruta, participante), 0, participante["via"])
+
+
+def _unidad_del_rol(unidades, rol, desde):
+    """El paquete del rol `rol` del que `desde` depende. Con una capacidad que participa DOS
+    veces (`DOM:condiciones` y `DOM:revision`), el rol existe en las dos participaciones y la
+    dependencia se resuelve DENTRO de la misma: la migración que se planifica antes de
+    construir espera al modelo de antes de construir, no al de la revisión posterior."""
+    candidatos = [u for u in unidades if u["rol"] == rol and not u["integracion"]]
+    metodo = (desde.get("participante") or {}).get("metodo")
+    mismos = [u for u in candidatos if (u.get("participante") or {}).get("metodo") == metodo]
+    elegido = (mismos or candidatos)[:1]
+    return elegido[0]["id"] if elegido else None
+
+
+def _ordenar_por_estacion_de_rol(unidades, ruta, independencias, esperas=None):
+    """Las unidades por rango de ROL: quien exige independencia de otro, o necesita su salida
+    como entrada obligatoria, va DESPUÉS de él.
+
+    El rango parte del de la capacidad; un rol independiente —o que espera— de roles de rango
+    mayor toma ese rango más medio escalón. Se relaja hasta el punto fijo, con tope, y el orden
+    resultante es estable: mismo plan, mismos bytes.
+
+    Las DOS fuentes del orden son distintas y hacen falta las dos: `independencia` dice QUIÉN
+    (otro trabajador) y `espera_a` dice CUÁNDO (después de que exista la salida). Dos roles que
+    pueden compartir agente pueden tener orden entre ellos, y eso es lo que faltaba.
+    """
+    rango = {}
+    for posicion, unidad in enumerate(unidades):
+        rango[unidad["id"]] = [_rango_de_estacion(ruta, unidad["participante"]), posicion]
+    for _ in range(len(unidades) + 1):
+        cambiado = False
+        for unidad in unidades:
+            if unidad["integracion"]:
+                continue
+            for de_quien in list(independencias.get(unidad["rol"], ())) + list((esperas or {}).get(unidad["rol"], ())):
+                otro = _unidad_del_rol(unidades, de_quien, unidad)
+                if otro and otro != unidad["id"] and rango[unidad["id"]][0] <= rango[otro][0]:
+                    rango[unidad["id"]][0] = rango[otro][0] + 0.5
+                    cambiado = True
+        if not cambiado:
+            break
+    return sorted(unidades, key=lambda u: (2 if u["integracion"] else 1, rango[u["id"]][0],
+                                           rango[u["id"]][1]))
+
+
+def _metodo_del_rol(corpus, rol, por_defecto):
+    """El PRIMER método que el rol declara, salvo que la ruta ya fije uno de ese rol."""
+    declarados = list(corpus.rol(rol).get("metodo") or [])
+    if por_defecto in declarados:
+        return por_defecto
+    return declarados[0] if declarados else por_defecto
+
+
+def _gate_del_rol(corpus, rol, por_defecto):
+    """El gate del ROL manda sobre el de la capacidad: es contra lo que ese rol cierra."""
+    return corpus.rol(rol).get("gate") or por_defecto
 
 
 def _puntos_de_intervencion(ruta, intervencion):

@@ -121,6 +121,13 @@ class EstadoDeMateriaInvalido(ErrorDeCiclo):
     CODIGO = "ESTADO_DE_MATERIA_INVALIDO"
 
 
+class ImpactoNoCubierto(ErrorDeCiclo):
+    """Un rol declaró disparadores de §5 que exigen condiciones que el circuito no cubre: el
+    item no sigue hasta replanificarse (`b.1`)."""
+
+    CODIGO = "IMPACTO_NO_CUBIERTO"
+
+
 class PropietarioNoDerivable(ErrorDeCiclo):
     """`AUD` y `DIR` DERIVAN su propietario del encargo, y el encargo no lo trae."""
 
@@ -415,6 +422,49 @@ class ObligacionSinProductora(ErrorDeCiclo):
 
 # Censo derivado, no escrito a mano dos veces: la CLI y las pruebas lo usan para comprobar
 # que todo código emitido pertenece a esta lista cerrada.
+
+class EntregaInvalida(ErrorDeCiclo):
+    """Una entrega que no cumple su esquema, su gate o su contrato operativo. No se escribe."""
+
+    CODIGO = "ENTREGA_INVALIDA"
+
+
+class CircuitoBaseIncumplido(ErrorDeCiclo):
+    """Un nivel de terminación obligatorio no está alcanzado ni declarado inaplicable."""
+
+    CODIGO = "CIRCUITO_BASE_INCUMPLIDO"
+
+
+class CircuitoBaseIlegible(ErrorDeCiclo):
+    """El PROFILE del proyecto no declara circuitos base, o los declara mal."""
+
+    CODIGO = "CIRCUITO_BASE_ILEGIBLE"
+
+
+class FrenoDisparado(ErrorDeCiclo):
+    """El freno de `a.7`: dos devoluciones entre el mismo par, y a la tercera se para."""
+
+    CODIGO = "FRENO_DISPARADO"
+
+
+class AutocertificacionRechazada(ErrorDeCiclo):
+    """El mismo trabajador produjo y quiso juzgar la misma capa. G13 no lo admite."""
+
+    CODIGO = "AUTOCERTIFICACION_RECHAZADA"
+
+
+class BaseContradicha(ErrorDeCiclo):
+    """La base avanzó sobre lo mismo que este paquete cambió (Directiva §63): no se entrega
+    como si el mundo no hubiera cambiado. Se reconcilia en la rama, o se entrega `bloqueado`."""
+
+    CODIGO = "BASE_CONTRADICHA"
+
+
+class BriefIncomponible(ErrorDeCiclo):
+    """Falta una pieza sin la cual el brief no dice lo que el trabajador tiene que hacer."""
+
+    CODIGO = "BRIEF_INCOMPONIBLE"
+
 CLASES = (
     ObligacionSinProductora, PaqueteIlegible, VariosAgentesSinIntegrador,
     CardinalDeAgentesIlegible, RepartoSinUnidades, CriterioDeComparacionAusente,
@@ -431,6 +481,8 @@ CLASES = (
     HandoffDesconocido, HandoffIncompleto, HandoffRechazado, DevolucionSinEvidencia,
     ObligacionHuerfana, RetiradaSinAutoridad, CierreBloqueado,
     DecisionDelOwnerPendiente, TrabajoAmbiguo, DerivaNoTransaccional, CicloInconsistente,
+    EntregaInvalida, CircuitoBaseIncumplido, CircuitoBaseIlegible, FrenoDisparado,
+    AutocertificacionRechazada, BriefIncomponible, ImpactoNoCubierto, BaseContradicha,
 )
 
 CODIGOS = tuple(sorted(clase.CODIGO for clase in CLASES))

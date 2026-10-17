@@ -67,7 +67,7 @@ from estado.errores import DiarioCorrupto, RutaInvalida
 from estado.rutas import SEGMENTO_VALIDO
 from estado.serializacion import cid_de_objeto
 
-from . import fallos, politica, vistas
+from . import externo, fallos, politica, vistas
 from .ejecucion import comprobar_adaptador
 from .errores import (
     AdaptadorIncompatible,
@@ -671,6 +671,40 @@ class Runtime:
                 pendientes.append(dependencia)
         return pendientes, inviables
 
+    def _recursos_ocupados(self, paquetes, *, salvo=None):
+        """Directiva §68 · qué recurso exclusivo posee qué ejecución. Sólo `despachado` y
+        `ejecutando` poseen: un `listo` no ha tomado nada todavía."""
+        ocupados = {}
+        for paquete in paquetes:
+            if paquete["estado"] not in ("despachado", "ejecutando") or paquete["id"] == salvo:
+                continue
+            for recurso in sorted(politica.recursos_exclusivos_de(paquete)):
+                ocupados.setdefault(recurso, paquete["id"])
+        return ocupados
+
+    @staticmethod
+    def _conflicto_de_recursos(paquete, ocupados):
+        """`[{"recurso", "lo_posee"}]` — vacío si el paquete es paralelizable por ámbito."""
+        return [{"recurso": recurso, "lo_posee": ocupados[recurso]}
+                for recurso in sorted(politica.recursos_exclusivos_de(paquete))
+                if recurso in ocupados and ocupados[recurso] != paquete["id"]]
+
+    def incompatibles_por_recurso(self):
+        """Directiva §68 · lo que está `listo` y no se toma ni se despacha porque otra
+        ejecución posee un recurso que también escribe. DERIVADO; no se persiste."""
+        self._exigir_operable()
+        todos = self._todos_los_paquetes()
+        ocupados = self._recursos_ocupados(todos)
+        salida = []
+        for paquete in todos:
+            if paquete["estado"] not in ("listo", "esperando-dependencia"):
+                continue
+            conflicto = self._conflicto_de_recursos(paquete, ocupados)
+            if conflicto:
+                salida.append({"paquete": paquete["id"], "item": paquete["item"],
+                               "estado": paquete["estado"], "incompatible_por": conflicto})
+        return salida
+
     def _grado_de_salida(self, paquetes):
         """`b.12` paso 5 (b) · a cuántos paquetes DESBLOQUEA cada uno. Grado de salida.
 
@@ -712,6 +746,10 @@ class Runtime:
         self._exigir_operable()
         todos = self._todos_los_paquetes()
         desbloquea = self._grado_de_salida(todos)
+        # Directiva §68: un paquete listo funcionalmente pero cuyo recurso exclusivo posee
+        # otra ejecución NO es elegible; `incompatibles_por_recurso()` lo publica con el
+        # recurso y quién lo posee. Uno de ámbito independiente sigue siendo elegible.
+        ocupados = self._recursos_ocupados(todos)
         ahora = self._almacen.revision()["revision"]
         salida = []
         for paquete in todos:
@@ -720,6 +758,8 @@ class Runtime:
                 if pendientes and not inviables:
                     continue
             elif paquete["estado"] != "listo":
+                continue
+            if self._conflicto_de_recursos(paquete, ocupados):
                 continue
             lease = self._leer_lease(paquete["id"])
             seleccion = paquete["seleccion"]
@@ -1172,7 +1212,7 @@ class Runtime:
     # =====================================================================
     #  11 · pausar · 12 · cancelar · 13 · reanudar
     # =====================================================================
-    def _mover(self, paquete, destino, *, motivo, autoridad, clase):
+    def _mover(self, paquete, destino, *, motivo, autoridad, clase, **cambios):
         if not isinstance(motivo, str) or not motivo.strip():
             raise RuntimeInconsistente("una decisión de autoridad sin `motivo` no es auditable")
         if not isinstance(autoridad, str) or not autoridad.strip():
@@ -1182,8 +1222,24 @@ class Runtime:
 
         def construir(revision):
             actual = self._leer_paquete(paquete)
+            if actual["estado"] == "agotado":
+                # T514 · DEFECTO MEDIDO (La Pesquerapp, 2026-09-27, con modelos reales): la
+                # tabla del §4.2 admite `agotado` → `listo`, y por eso `reanudar` lo movía.
+                # Pero lo movía con los intentos CONSUMIDOS: 3 de 3 en `listo`, la toma
+                # siguiente lo dejaba en 4 de 3 y `comprobar_paquete` declaraba el paquete
+                # imposible —ni el runtime podía ya leerlo, ni cancelarlo—. La tabla dice
+                # QUÉ transición existe; `g.9` dice QUIÉN la recorre: sólo la autoridad, por
+                # `resolver_reconciliacion`, con las escrituras que decida (entre ellas el
+                # presupuesto nuevo de intentos). Una decisión genérica no es esa vía.
+                raise EstadoDePaqueteInvalido(
+                    "un paquete `agotado` no se mueve por `" + clase + "`: su salida es de la "
+                    "autoridad por `resolver_reconciliacion` (g.9), que decide también el "
+                    "presupuesto de intentos; reabrirlo aquí dejaría " + str(actual["intentos"])
+                    + " de " + str(actual["max_intentos"]) + " intentos consumidos en `listo`",
+                    ruta=paquete, estado=actual["estado"],
+                )
             comprobar_transicion(actual["estado"], destino, paquete=paquete)
-            nuevo = con_estado(actual, destino, reloj=revision["revision"] + 1)
+            nuevo = con_estado(actual, destino, reloj=revision["revision"] + 1, **cambios)
             escrito["paquete"] = nuevo
             return estado.Transicion(
                 tipo=clase, base=revision["revision_id"],
@@ -1209,7 +1265,7 @@ class Runtime:
         return self._mover(paquete, "cancelado", motivo=motivo, autoridad=autoridad,
                            clase="runtime.paquete.cancelado")
 
-    def bloquear(self, paquete, *, motivo, autoridad):
+    def bloquear(self, paquete, *, motivo, autoridad, clase_de_bloqueo=None):
         """`b.8`: una espera que dejó de ser viable DEBE convertirse en bloqueo.
 
         Existía el camino y no existía la puerta: `_resolver_dependencias` bloquea por
@@ -1218,8 +1274,9 @@ class Runtime:
         tenía que usar `_mover`. Una segunda máquina de estados del paquete sería peor:
         ésta reutiliza la tabla del §4.2 como las otras tres.
         """
+        cambios = {"clase_de_bloqueo": clase_de_bloqueo} if clase_de_bloqueo else {}
         return self._mover(paquete, "bloqueado", motivo=motivo, autoridad=autoridad,
-                           clase="runtime.paquete.bloqueado")
+                           clase="runtime.paquete.bloqueado", **cambios)
 
     # =====================================================================
     #  alta de trabajo
@@ -1396,24 +1453,75 @@ class Runtime:
         reanudables = []
         informe["reclamados"] = []
         informe["observados"] = []
+        # PAQUETES EXTERNOS (`externo.py`): los ejecuta un TRABAJADOR que reclama, no este
+        # barrido. Aquí no se despachan; lo único que el barrido hace con ellos es recuperar
+        # la autoridad de un trabajador que murió —observar `PACIENCIA` veces y reclamar,
+        # por la única puerta— y SOLTARLA en el acto, para que el siguiente trabajador
+        # pueda reclamar el paquete y reanudarlo desde su checkpoint. Se publican como
+        # `reofrecidos`; nunca como `atendidos`, porque nadie los ejecutó.
+        informe["externos"] = []
+        informe["reofrecidos"] = []
         for paquete in self._todos_los_paquetes():
             if paquete["estado"] not in ESTADOS_EN_CURSO:
                 continue
             lease = self._leer_lease(paquete["id"])
+            if externo.es_externo(paquete):
+                informe["externos"].append(paquete["id"])
+                if lease is None:
+                    informe["reofrecidos"].append(paquete["id"])
+                elif es_titular(lease, self.instancia):
+                    self._soltar_si_es_mio(paquete["id"])
+                    informe["reofrecidos"].append(paquete["id"])
+                else:
+                    # CARRERA MEDIDA en el dogfood con workers reales: el lease existía al
+                    # leerlo y el trabajador ENTREGÓ antes de que el barrido lo observara.
+                    # `observar` no encuentra autoridad que observar y levanta; el barrido
+                    # entero moría y nadie reofrecía nada. Un lease que desaparece entre dos
+                    # lecturas no es una inconsistencia del estado: es un trabajador rápido.
+                    try:
+                        pretendida = self._pretender_autoridad_ajena(paquete["id"])
+                    except RuntimeInconsistente:
+                        actual = self._leer_paquete_opcional(paquete["id"])
+                        if actual is not None and actual["estado"] in ESTADOS_EN_CURSO \
+                                and self._leer_lease(paquete["id"]) is None:
+                            informe["reofrecidos"].append(paquete["id"])
+                        continue
+                    if pretendida:
+                        informe["reclamados"].append(paquete["id"])
+                        self._soltar_si_es_mio(paquete["id"])
+                        informe["reofrecidos"].append(paquete["id"])
+                    else:
+                        informe["observados"].append(paquete["id"])
+                continue
             if lease is None or es_titular(lease, self.instancia):
                 reanudables.append(paquete["id"])
                 continue
             epoca_previa = lease["epoca"]
-            if self._pretender_autoridad_ajena(paquete["id"]):
+            try:
+                pretendida = self._pretender_autoridad_ajena(paquete["id"])
+            except RuntimeInconsistente:
+                # la misma carrera que en los externos: el otro terminó entre dos lecturas
+                continue
+            if pretendida:
                 reanudables.append(paquete["id"])
-                if self._leer_lease(paquete["id"])["epoca"] != epoca_previa:
+                lease_ahora = self._leer_lease(paquete["id"])
+                if lease_ahora is not None and lease_ahora["epoca"] != epoca_previa:
                     informe["reclamados"].append(paquete["id"])
             else:
                 informe["observados"].append(paquete["id"])
         informe["reanudados"] = list(reanudables)
 
         cola = self.elegibles()
-        elegibles = [entrada["paquete"] for entrada in cola]
+        elegibles = []
+        for entrada in cola:
+            objeto = self._leer_paquete_opcional(entrada["paquete"])
+            if objeto is not None and externo.es_externo(objeto):
+                # Elegible y EXTERNO: espera a un trabajador. No se despacha aquí y NO se
+                # cuenta como postergado: no lo adelantó nadie, lo reclama quien pueda.
+                if entrada["paquete"] not in informe["externos"]:
+                    informe["externos"].append(entrada["paquete"])
+                continue
+            elegibles.append(entrada["paquete"])
         informe["elegibles"] = list(elegibles)
         # `b.12` paso 7, ESCRITO: quién entra en el frente de esta pasada y quién se queda
         # fuera, con su motivo. Sin `maximo` entra todo y no hay nadie a quien postergar, y
@@ -1429,7 +1537,11 @@ class Runtime:
         orden = reanudables + [p for p in elegibles if p not in reanudables]
         if maximo:
             orden = orden[:int(maximo)]
-        informe["postergados"] = self._anotar_postergacion(cola, orden) if cola else []
+        # Los externos elegibles entran en el FRENTE de la postergación: no fueron
+        # adelantados por nadie, y contarlos como postergados en cada barrido inventaría una
+        # inanición que no existe.
+        frente = list(orden) + [p for p in informe["externos"] if p not in orden]
+        informe["postergados"] = self._anotar_postergacion(cola, frente) if cola else []
         for identificador in orden:
             informe["atendidos"].append(self._despachar_anotando(identificador))
 
@@ -1460,7 +1572,14 @@ class Runtime:
         atiende. `adquirir` no roba, así que sin ese camino el paquete de una instancia que
         desapareció se quedaría en `fallido` para siempre.
         """
-        if not self._pretender_autoridad_ajena(paquete):
+        try:
+            if not self._pretender_autoridad_ajena(paquete):
+                return None
+        except RuntimeInconsistente:
+            # la misma carrera que en el barrido: el titular SOLTÓ entre dos lecturas (un
+            # worker cuya entrega se rechazó libera el lease en ese instante). Medido con
+            # el supervisor como proceso: el barrido entero moría aquí. En la siguiente
+            # pasada el paquete se ve sin lease y se atiende.
             return None
         try:
             lease = self.adquirir(paquete)
@@ -1484,6 +1603,35 @@ class Runtime:
         derivadas["instancia"] = self.instancia
         derivadas["marcado"] = self.marcado
         return derivadas
+
+    # =====================================================================
+    #  ejecución EXTERNA · el protocolo de trabajadores (`externo.py`)
+    # =====================================================================
+    def tomar(self, paquete):
+        """TOMAR un paquete externo: lease, intento y `ejecutando`, sin ejecutar nada aquí.
+
+        No es `reclamar`: tomar pide autoridad sobre trabajo LIBRE por `adquirir`, que nunca
+        roba; reclamar es la puerta de `PACIENCIA` observaciones para el lease de un muerto.
+        """
+        return externo.tomar(self, paquete)
+
+    def checkpoint(self, paquete, contenido):
+        """Checkpoint durable del trabajador, bajo titularidad y latiendo."""
+        return externo.checkpoint(self, paquete, contenido)
+
+    def entregar(self, paquete, entrega):
+        """ENTREGAR el resultado de un paquete externo por la máquina del dispatcher."""
+        return externo.entregar(self, paquete, entrega)
+
+    def soltar(self, paquete):
+        """Soltar la autoridad sin entregar: el paquete queda donde estaba, sin lease."""
+        return externo.soltar(self, paquete)
+
+    def externos(self):
+        return externo.externos(self)
+
+    def tomables(self):
+        return externo.tomables(self)
 
     def estado_de_paquete(self, paquete):
         """El paquete y su lease, leídos del estado canónico. Sin caché y sin adornos."""

@@ -2,6 +2,518 @@
 
 Formato: semver (K0.11). MAJOR cambia el contrato con el PROFILE o el sentido de una regla DEBE.
 
+## 2.0.0-alpha.16 — la oficina profesional, bajo la Directiva del Owner (en construcción)
+
+**Hecho medido antes de construir** (campaña de la Directiva del Owner de La Pesquerapp,
+2026-09-15): la Directiva Canónica del Owner exige circuitos cerrados por clase de trabajo,
+Diseño como línea de producción, un chat ejecutor sin estado, conciencia global de
+concurrencia, integración con bandeja para el Owner y trazabilidad requisito a requisito.
+La instancia la descompuso en 324 requisitos `OWN-ADS-*` y midió el corte
+`2.0.0-alpha.15` contra ellos: NO CONFORME, con la mitad de casi todo. Lo que de esa
+distancia es GENERAL del ADS entra aquí, cita el requisito que cierra y se vendoriza por
+release; lo propio del Owner se queda en su instancia.
+
+- `.github/workflows/kernel.yml` · `tooling/huella_en_su_momento.py` · **la batería de macOS era
+  un rojo permanente que no decía nada de macOS**. Es un DEFECTO de la CI (deuda señalada por el
+  Owner el 2026-09-27 y reproducida): el job ejecutaba `kernel-status.sh` con `set -e` y exigía
+  LIMPIO, pero la huella sólo coincide con `.upstream-hash` después del SELLO del job de release,
+  así que todo commit que edita `kernel/` antes de él sale DIVERGENTE por construcción. Rojo en
+  r13, r15, r18 y r19 con T153 y T154 en verde, y el `set -e` impedía llegar a la comprobación
+  de `execve` en POSIX, que no se ejecutó en ninguno. Rompía lo que exigen OWN-ADS-0312 y
+  OWN-ADS-0315 (una release/CI que valide de verdad): un rojo que siempre está no detiene
+  nada. Ahora las rutas, `execve` y `kernel-status` son tres pasos que corren aunque falle el
+  anterior, y la huella la juzga `huella_en_su_momento.py`. Sólo acepta la divergencia previa al
+  sello; es rojo en `main`, rojo si nada de la huella cambió desde el último sello y rojo si
+  `kernel-status` no da veredicto (eso sí es portabilidad). La integridad se sigue exigiendo
+  donde es válida: al re-sellar en el job de release, en `main` y al vendorizar. Se corrige
+  también el comentario que prometía una «ejecución siguiente» sobre el commit sellado: los
+  pushes con GITHUB_TOKEN no disparan flujos, y los sellos de r13 a r19 no tienen ningún run.
+  `T519` (siete casos) falla contra el workflow anterior y pasa con éste.
+
+- `ciclo/base.py` · **una rama que ya divergía de su base no podía entregar nada**. Es un DEFECTO
+  medido en la primera ejecución de producto por la oficina (La Pesquerapp, 2026-09-27): la rama
+  de la campaña llevaba dos commits de `main` que tocan `estado/` sin incorporar desde ANTES de
+  tomar ningún paquete, y como `medir` cuenta la base desde el `merge-base`, toda entrega del
+  control repo —todas escriben el estado— salía `BASE_CONTRADICHA` aunque la base no se hubiera
+  movido ni un commit durante el trabajo; cada intento gastaba un modelo para ser rechazado.
+  Rompía lo que exigen OWN-ADS-0227 y OWN-ADS-0229 (mirar si el mundo cambió MIENTRAS se
+  trabaja) y OWN-ADS-0175 (TRABAJA avanza solo). Ahora `desde_el_nacimiento` juzga la base
+  contra la que había cuando nació el trabajo —o contra lo que el trabajo ya incorporó si
+  reconcilió después—: la divergencia previa se anota (`divergencia_previa`) y no se juzga; un
+  avance durante el trabajo sobre lo mismo sigue siendo contradicción. `T518`, verificada por
+  sabotaje; `T495` (reconciliar y volver a entregar) sigue verde.
+
+- `ciclo/oficina.py` · `esquemas/entrega.yaml` · **con varias entradas, una devolución no podía
+  decir a cuál iba**. Es un DEFECTO que puso a la vista una ejecución real (La Pesquerapp,
+  2026-09-27): la unidad de integración semántica acusa cinco handoffs, y para rehacer sólo la
+  entrega de VER —que no dictaminó, T516— había que devolvérsela; `_devolver` tomaba el
+  PRIMER handoff acusado por nombre de fichero, que era de SIS, así que la corrección se habría
+  abierto sobre el paquete equivocado y el circuito habría gastado modelos en rehacer lo que no
+  estaba mal. Pasaba igual con un dictamen `no-superado` que señalaba otro paquete: se
+  devolvía el primer handoff igualmente. Afecta a lo que exigen OWN-ADS-0149 (el trabajo sigue
+  sin conversación) y OWN-ADS-0289 (rechazos por mecanismo). Ahora `devolucion.a` nombra el
+  paquete devuelto; con varias entradas es obligatoria y tiene que ser una de ellas, y el handoff
+  devuelto es exactamente el del paquete juzgado. `T517`, verificada por sabotaje.
+
+- `ciclo/entregas.py` · **un rol que dictamina un gate podía entregar `entregado` sin su
+  dictamen**. Es un DEFECTO medido con un modelo real (La Pesquerapp, 2026-09-27): VER/dosier
+  entregó un dosier impecable sin dictaminar `gate:evidencia-suficiente`, porque su brief le
+  decía que nunca dictamina su gate sobre su propio paquete y entendió que lo firmaba otro. Ese
+  gate declara `dictamina: VER/dosier` y nadie más puede emitirlo, así que el nivel `verificado`
+  se quedó sin quien lo alcanzara. Rompía lo que exigen OWN-ADS-0010 (niveles alcanzados con
+  dictámenes de quien no construyó) y OWN-ADS-0024 (el encargo cierra por la oficina). Ahora la
+  forma rechaza el `entregado` de un rol sin el dictamen de cada gate que dictamina, y dice que
+  es sobre el paquete que juzga. Si no se supera, el veredicto es `devuelto`. T515 le enseña el
+  esqueleto. `T516`, verificada por sabotaje.
+
+- `ciclo/briefs.py` · `capacidades/CNS/CAPACIDAD.md` · **un revisor real tuvo que adivinar la
+  evidencia de su dictamen**. Es un DEFECTO medido con un modelo real (La Pesquerapp,
+  2026-09-27), y lo nombró el propio modelo en sus riesgos: `CNS/revision-de-construccion`
+  entregó `superado` y se le rechazó, porque la evidencia del dictamen se compara por IGUALDAD
+  de cadena con la que exige el gate y el brief sólo la enseñaba como prosa. Afecta a lo que
+  exigen OWN-ADS-0010 (dictámenes de quien no construyó) y OWN-ADS-0289 (entregas rechazadas y
+  admitidas por mecanismo, no por azar). La plantilla de la entrega lleva ahora un esqueleto por
+  cada gate que el rol dictamina, con TODAS las comprobaciones y la evidencia EXACTA. Si se
+  supera lo sigue decidiendo el revisor. Y `gate:implementacion-completa` declara por fin
+  `dictamina: CNS/revision-de-construccion`, que es lo que `terminacion.py` ya decía («lo juzga
+  quien revisa»). `T515`, verificada por sabotaje.
+
+- `runtime/dispatcher.py` · **`reanudar` sacaba un paquete `agotado` a `listo` con los intentos
+  consumidos**. Es un DEFECTO medido en ejecución real (La Pesquerapp, 2026-09-27, certificación
+  con modelos reales), y rompía lo que exigen OWN-ADS-0175 (TRABAJA ejecuta sin que nadie lo
+  empuje) y OWN-ADS-0149 (la tarea sobrevive a los reinicios): tras resolver la reconciliación
+  de `g.9`, `reanudar` devolvió el paquete a `listo` con 3 de 3 intentos, la toma siguiente lo
+  dejó en 4 de 3 y `comprobar_paquete` lo declaró imposible, tanto que ni se podía leer ni
+  cancelar, y hubo que devolver el estado a la revisión anterior por Git. La tabla del §4.2
+  dice QUÉ transición existe; `g.9` y el propio `_exigir_adquirible` dicen QUIÉN la recorre:
+  sólo la autoridad, por `resolver_reconciliacion`, con las escrituras que decida (entre ellas
+  el presupuesto nuevo). Ahora `_mover` —la vía de `pausar`, `reanudar` y `cancelar`— se niega
+  ante un `agotado` con `ESTADO_DE_PAQUETE_INVALIDO` y nombra la vía. `T514`, verificada por
+  sabotaje: quitando la guarda, cae.
+
+- `ciclo/entregas.py` · `esquemas/entrega.yaml` · `ciclo/briefs.py` · **la forma de la entrega
+  sólo miraba que hubiera UN artefacto de cada TIPO obligatorio**. Es un DEFECTO encontrado por
+  la revisión independiente (G13) del ledger de La Pesquerapp el 2026-09-26, y deja sin sostén
+  mecánico lo que exigen OWN-ADS-0051, OWN-ADS-0054, OWN-ADS-0056, OWN-ADS-0058, OWN-ADS-0064,
+  OWN-ADS-0077 y OWN-ADS-0095 (§12–§27) y la promesa de §82. Un solo `documento` cumplía los dos
+  obligatorios de `DIS/investigacion-ux` y los tres de `DIS/direccion-artistica`; la
+  `estructura_minima` no se miraba nunca; el conjunto (tipo, descripción) se calculaba y se
+  borraba sin usarse, y el docstring del módulo afirmaba «por su tipo y nombre». Los fixtures de
+  las baterías entregaban un artefacto de cada tipo, que es exactamente el atajo, y el
+  2026-09-21 se admitió con un modelo real una entrega de CNS con ocho artefactos «de
+  laboratorio». Ahora cada artefacto entregado declara `cumple: <nombre del artefacto del
+  contrato>` —cada obligatorio exige el SUYO, y uno no vale por varios— y, si el contrato le fija
+  estructura mínima, la declara entera en `estructura`, apartado a apartado con `donde` está; un
+  apartado ausente o que sigue siendo la pista de la plantilla se rechaza nombrándolo. Que el
+  apartado diga lo que promete sigue siendo juicio de quien revisa. La plantilla del brief enseña
+  los dos campos rellenos, y los fixtures de `test_oficina` construyen sus artefactos desde el
+  contrato. `T513`, verificada por sabotaje: devolviendo la comprobación a «sólo el tipo», cae.
+
+- `ciclo/base.py` · `gobierno/git.py` · **este módulo nació con su propio `subprocess.run`
+  sobre Git, que es la vía paralela que `T188` existe para impedir**. `base.py` se añadió para
+  medir §61 y §63 —de qué commit nació el trabajo y si el mundo cambió debajo— y trajo su
+  `_git` a mano. El censo del aparato lo denunciaba desde el primer día: «el canal ÚNICO de
+  invocación de Git» es `gobierno/git.py`, y `SEDES_DE_PROCESO` enumera las excepciones con su
+  motivo, una a una. No se declara una sede nueva, que era lo cómodo: **se pasa por el canal**,
+  que además trae entorno hermético —sin configuración de la máquina, sin red, sin prompt— que
+  es más de lo que aquel `_git` conseguía. Y sus dos lecturas de lista pasan por
+  `admision/lectura.py` con `-z`, porque un nombre con salto de línea parte la lista en dos y
+  el aparato cuenta mal. `CanalGit.ejecutar` admite ahora un tope de `tiempo`, que es lo único
+  que aquel `_git` tenía y el canal no: el canal también lee repositorios **ajenos** —las
+  fuentes de producto, que ni son nuestras ni sabemos cómo de grandes son— y leerlos sin tope
+  es un cuelgue esperando a ocurrir; sin `tiempo` no hay tope, que es el comportamiento de
+  siempre. **Y el primer arreglo estuvo mal**: devolvía `[]` ante cualquier excepción «para no
+  romper el ciclo», y el efecto se midió en el acto —`test_oficina` pasó a declarar
+  **compatible** un avance que **contradice**, porque una lista vacía no solapa con nada—. Un
+  error convertido en lista vacía no es prudencia: es un veredicto inventado. Es un DEFECTO
+  encontrado construyendo, no un requisito nuevo; lo que el módulo sostiene es OWN-ADS-0220,
+  OWN-ADS-0227 y OWN-ADS-0229 (§61, §63).
+
+- `.github/workflows/kernel.yml` · **la CI no ejecutaba sus propias baterías, y su rojo no
+  detenía el corte**. Medido: 19 ficheros `test_*.py` en `runtime/pruebas/` y el flujo nombraba
+  **uno**, con `set +e`. `test_oficina.py` —los 61 casos de la propia oficina— no la corría el
+  release jamás. Al ejecutarlas a mano salieron **tres rojas**, dos de ellas rotas por la
+  campaña de la Directiva y una tercera que no era código sino **flujo**: la evidencia que
+  regenera cada release se commitea en la rama del corte y **no volvía a la rama de trabajo**,
+  que se quedaba con la de una máquina sin `cgroup2`; esa batería estaba roja ahí de forma
+  permanente, y un rojo permanente deja de mirarse. Ahora el flujo corre las 19 —dos
+  **declaradas** como dependientes del anfitrión, con su motivo: se ejecutan, su resultado se
+  publica como aviso y no tumban el job; excluirlas en silencio habría convertido el paso en un
+  adorno— y **el trabajo del release depende de esa batería** (`needs: linux`), atado DESPUÉS de
+  comprobar que se pone verde y no antes. `§88` pide que la release valide también el sistema
+  organizativo; una release que se publica sobre su propia batería en rojo no lo hace.
+  `test_continua` se pone al día con el décimo corte: `gate:evidencia-suficiente` exige el ROL
+  `VER/dosier` desde que existe `dictamina`, y la prueba seguía pasando la capacidad `VER`.
+  Es un DEFECTO encontrado construyendo, medido contra lo que exigen OWN-ADS-0312 y
+  OWN-ADS-0315 (§88).
+  **La trazabilidad de estas dos entradas la corrigió el corte siguiente** (2026-09-26): al
+  vendorizar r13, la instancia las rechazó por §89 (`OWN-ADS-0319`, T-D22) porque no citaban
+  requisito ni se declaraban defecto. El validador de la instancia vio lo que el release no
+  comprobaba.
+
+- `ciclo/briefs.py` · **la estación de análisis de impacto de §5 no podía dispararse nunca,
+  porque nadie le decía al trabajador que existía**. El kernel traía el mecanismo ENTERO:
+  `ciclo/impacto.py` con los dieciséis disparadores de §5, la condición de ruta que activa
+  cada uno, y la marca automática del plan cuando aparece una que el circuito no declaró
+  —`b.1`: cambiar de proceso cuando el diagnóstico revela materia nueva—. El esquema de la
+  entrega admite `impacto.disparadores` desde entonces, y la oficina sabe leer y publicar la
+  marca. Faltaba lo único que hacía falta para que ocurriera: **decírselo a quien entrega**.
+  Se midió, y el vocabulario cerrado aparecía SÓLO en `ciclo/impacto.py`, en sus pruebas y en
+  `CONTRATO-OFICINA.md`: ni el brief, ni el contrato operativo del rol, ni el prompt lo
+  nombraban. Un ejecutor —guion o modelo— no puede declarar un disparador que no sabe que
+  existe, así que una estación que la Directiva EXIGE no se disparaba jamás, y el silencio era
+  indistinguible de «no he visto ninguno». Ahora el brief lleva `estacion_de_impacto`: los
+  dieciséis con el grupo al que pertenecen y las condiciones que cada uno activa, **qué
+  condiciones declaró verdaderas ESTE circuito** —que es contra lo que se comparan— y la
+  consecuencia de declarar uno, que es lo que hace que declararlo importe. Va dentro de «Cómo
+  entregas» y no como sección nueva: §5 es parte de lo que se entrega, y renumerar el brief
+  habría roto las pruebas que afirman su forma, que es contractual. Es la misma decisión que
+  la plantilla de la entrega y la forma de sus elementos, tomada por el mismo motivo medido
+  con un modelo real: **lo que el esquema exige se enseña, no se adivina**. `T512`, con sus
+  dos sabotajes —resumir el vocabulario en vez de traerlo entero, y no pintarlo en el brief
+  legible— y ambos rojos. Cierra parte de `OWN-ADS-0003` (§5) y da a `OWN-ADS-0030`–`0033`
+  la vía por la que se ejercen.
+
+- `esquemas/integration-set.yaml` · `ciclo/oficina.py` · **las nueve salvaguardas de §74 se
+  RESPONDEN antes de converger, y hasta hoy cinco no tenían dónde**. §74 enumera nueve cosas
+  «mientras se valide en producción»; cuatro ya vivían en su sitio —PRs integrables y
+  reversibles en `fuentes` y `restaura_a`, migraciones en `migraciones`, plan de rollback en
+  `restaura_a`, y no mezclar cambios no relacionados en que el conjunto es de UN item—. Las
+  otras cinco —migraciones backward-compatible, rollout incremental, feature flags,
+  observabilidad y comprobación post-deploy, más la estrategia de recuperación de datos— no
+  eran campo ni checklist de nada, de modo que un Integration Set podía declararse convergente
+  sin que nadie hubiera dicho jamás qué pasa si hay que volver. Ahora son una lista de
+  respuestas con universo CERRADO —la misma forma que la autoevaluación de la entrega, para
+  que añadir una no obligue a migrar los conjuntos escritos— y se exigen al CONVERGER, no al
+  crear el conjunto: un `candidato` es material de trabajo y puede estar a medias. `no-aplica`
+  es una respuesta legítima y por eso lleva motivo obligatorio; un `no` con su motivo también
+  converge, porque queda escrito para quien decida la fusión, y convertir esto en un gate de
+  calidad sería otra cosa. `T511`, con su control positivo y saboteada. Cierra parte de
+  `OWN-ADS-0264`.
+- `esquemas/entrega.yaml` · `runtime/adaptadores/agente.py` · **una entrega dice QUIÉN la
+  produjo, o no sostiene «ejecución real por modelo»**. Se fue a medir con un ejecutable sin
+  chat el rol que faltaba en el dogfood de una instancia —`CNS/implementacion`—, entregó, y al
+  abrir el objeto durable no había forma de saber si lo había hecho un modelo o un guion de
+  laboratorio: el paquete traía `agente: null` y la entrega sólo un `titular`, que es el NOMBRE
+  que elige quien lanza el worker y puede llamarse como quiera ejecutando un guion. No es un
+  hecho del despacho: es una etiqueta. La consecuencia es de certificación —afirmar que cada
+  rol lo ejecuta un modelo real bajo su contrato exigía creerse una línea de terminal que no
+  queda en ninguna parte—. Ahora el esquema declara `ejecutor` con clases CERRADAS —`modelo`,
+  `guion`, `persona`— y lo escribe **quien lanza el ejecutable**, no quien entrega: un
+  trabajador que rellena su propia entrega escribiría lo que quisiera. Opcional a propósito,
+  porque una entrega escrita a mano por una persona no tiene ejecutable que declarar, y por eso
+  **ausente significa DESCONOCIDO**, no «humano» ni «real». `T510`, en tres partes: el esquema
+  lo conoce y acota su clase; una entrega que lo declara se admite y el estado lo conserva; y
+  una clase inventada se rechaza. Cierra parte de `OWN-ADS-0174`.
+- `ciclo/tablero.py` · **lo que el tablero OFRECE, la oficina lo ENTREGA**. Reproducido en un
+  clon real de la instancia: se planifica un encargo, se REPLANIFICA, y `TOMABLES AHORA` sigue
+  listando el primer paquete del plan viejo; quien obedece al tablero —tomar el primero de la
+  lista— recibe `CICLO_INCONSISTENTE: el paquete no está en ningún plan vigente: no se toma lo
+  que no tiene rol ni gate`. No es un adorno de la vista: el tablero es la sede que le dice a
+  una sesión nueva qué puede tomar (`§45`), y si miente el relevo se estrella en la primera
+  orden. La causa son DOS nociones de «tomable» sin nadie que las case: `runtime.tomables()`
+  mira el plano operacional —dependencias, leases, recursos— y no sabe qué es un plan vigente;
+  `oficina.tomar` exige el plan vigente y no sabe qué publicó la vista. Ahora `derivar` filtra
+  la oferta por el plan vigente —el dato ya lo tenía calculado— y **publica lo retirado con su
+  motivo** en `tomables_de_plan_superado`, también en la vista de texto: filtrar en silencio
+  convierte un defecto ruidoso en uno mudo, y quien replanificó tiene derecho a ver que su
+  generación anterior sigue ahí. `T509` fija la propiedad y no la implementación —cada paquete
+  ofrecido se TOMA de hecho, no basta con mirar la lista— y se escribió antes del arreglo,
+  roja, nombrando el paquete huérfano. Es un defecto del kernel, no de un requisito.
+- `diseno/02-RUBRICAS.md` · `recorrido/02-NIVELES-DE-TERMINACION.md` ·
+  `capacidades/USO/CAPACIDAD.md` · `capacidades/VER/CAPACIDAD.md` ·
+  `contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md` · `circuitos/DIS-handoffs.md` ·
+  `esquemas/gate.yaml` · `runtime/ciclo/gates.py` · **Construcción no certifica Diseño, y ahora
+  hay mecanismo que lo impide**. La tabla de `02-NIVELES-DE-TERMINACION.md` asigna cada gate de
+  nivel a un rol concreto —`gate:excelencia-visual` a `DIS/revision-de-fidelidad`— y esa
+  asignación vivía SÓLO en la prosa: los veinticuatro bloques `ads:gate` del corpus no tenían
+  campo para decirlo, y `gates.aplicar` comprobaba dos cosas, revisor ≠ autor y revisor ∈
+  capacidades ∪ roles ∪ {OWNER}. Con eso `CNS/revision-de-construccion` firmaba el gate visual
+  sin que nada se quejara: no es el autor, y es un rol real. Una asignación que sólo vive en la
+  prosa no la aplica nadie. Los seis gates que la tabla nombra declaran ahora `dictamina`, el
+  esquema lo conoce, y `_exigir_quien_dictamina` lo exige **sólo cuando el gate lo declara**: un
+  gate sin él se comporta exactamente como antes. Igualdad exacta, sin comodín —`DIS` entero no
+  vale por `DIS/revision-de-fidelidad`, porque entonces cualquier rol de DIS lo firmaría—.
+  `T508` LEE la tabla en vez de copiarla, y está verificada por sabotaje en las dos direcciones.
+  Cierra `OWN-ADS-0081`.
+- `circuitos/DIS-handoffs.md` · `validadores/comprobar_contratos.py` · **el handoff de Diseño a
+  Construcción rechaza la decisión de interfaz SIN ESPECIFICAR**. Construcción ya tenía prohibido
+  completar una especificación (`T502`), pero nada comprobaba AL RECIBIR que no quedara ninguna
+  decisión sin especificar: la prohibición existía y el paquete incompleto entraba igual, de
+  modo que el defecto se descubría con Construcción ya dentro. `handoff:dis-a-con` gana una
+  quinta comprobación al recibir y una cuarta causa de rechazo: Construcción DEVUELVE el
+  paquete, y no la inventa. `T507`. Cierra parte de `OWN-ADS-0078`.
+- `esquemas/rol.yaml` · **el esquema del rol conoce la espera que `T505` introdujo**. Deuda del
+  corte anterior: `DIS/prototipado` declaraba `espera_a` y `motivo_de_la_espera` y el esquema no
+  los conocía, así que `ads_lint` los avisaba como campo extra. Un campo que el esquema no
+  declara es un campo que nadie valida y que la próxima limpieza puede borrar creyendo que es
+  basura. Es una corrección de defecto propio, no de un requisito.
+- `ciclo/planificacion.py` · `capacidades/DIS/roles/prototipado.md` ·
+  `validadores/comprobar_contratos.py` · **la ENTRADA OBLIGATORIA ordena, y hasta ahora sólo
+  ordenaba la independencia**. Son cosas distintas: la independencia dice QUIÉN —otro
+  trabajador— y la entrada obligatoria dice CUÁNDO —después de que exista la salida—. Dos roles
+  pueden ser la misma persona y aun así uno ir después. **Lo encontró un modelo real negándose
+  a trabajar**: en un encargo `ui-2` de La Pesquerapp el plan ofreció `DIS/prototipado` en
+  paralelo con `DIS/diseno-visual`, y el modelo lo DEVOLVIÓ citando su contrato —«hace
+  ejecutable una dirección ya elegida; no decide forma, la ejecuta»—. Tenía razón, y el plan se
+  lo permitía porque `prototipado` declara `requiere_independencia: false`: pueden compartir
+  agente, así que no había arista. Ahora el campo `espera_a` del rol produce arista de orden, y
+  se DECLARA en vez de inferirse: derivarlo del texto de `entradas` se midió y no se sostiene
+  —catorce roles nombran a otro ahí y la inferencia produce ciclos inmediatos, la trampa de
+  `T499`—. Un rol que no lo declara se queda exactamente donde estaba. `T505` vigila los ciclos
+  y exige `motivo_de_la_espera`; `T506` comprueba sobre un plan real que el paquete espera, y
+  saboteada —quitando el campo— vuelve a salir en paralelo. Cierra parte de `OWN-ADS-0287`.
+- `ciclo/rutas.py` · **ninguna capacidad del corpus queda CALLADA en una ruta**. `a.6` exige
+  que lo no activado deje motivo, y eso se cumplía sólo para las capacidades que el proceso
+  contempla con una condición: las demás no salían ni como participantes, ni como no activadas,
+  ni en `NUNCA_PARTICIPA`. Medido sobre `proceso:FEA` en un encargo `ui-2` real de la instancia:
+  de las QUINCE del corpus la ruta nombraba TRECE, y `DSP`, `INV`, `PLT` y `SIS` eran cuatro
+  silencios —del tipo exacto que §32 prohíbe con esas palabras—. Ahora salen con el motivo «el
+  proceso no la contempla», porque **no contemplarla TAMBIÉN es una respuesta**: quien lea la
+  ruta puede discutirla, y antes no había nada que discutir porque no había nada escrito. Lo
+  encontró la prueba que se escribió para PUBLICAR la ruta en la instancia: el dato llevaba ahí
+  desde siempre y ninguna orden lo sacaba. `T504`. Cierra parte de `OWN-ADS-0126` y
+  `OWN-ADS-0128`.
+- `capacidades/DIS/contratos/revision-de-fidelidad.md` ·
+  `capacidades/DIS/contratos/validacion-de-uso.md` · `validadores/comprobar_contratos.py` · **la
+  interfaz se prueba sobre la aplicación REAL y con DATOS reales, y el contrato lo rechaza si
+  no**. §23 pide la prueba sobre la aplicación real «siempre que sea técnicamente posible» y el
+  contrato la exigía «cuando el pack lo exige», que es condicional; ahora está como actuación
+  prohibida —sustituirla por una captura o una lectura de código cuando arrancarla era posible—
+  y como evidencia requerida, con el motivo declarado cuando no lo era. Y §29 regla 5 prohíbe
+  validar con lorem ipsum: de los tres roles a los que alcanza, sólo `DIS/prototipado` lo
+  nombraba, así que fidelidad y validación de uso podían dar por buena una pantalla probada con
+  contenido cómodo sin que nada la rechazara. **Un método describe lo que se hace bien; lo que
+  RECHAZA una entrega es una actuación prohibida**, y esa distinción es la que faltaba. `T503`,
+  saboteada: quitando la prohibición de uno de los tres, es el único fallo del validador y
+  nombra el rol y el fichero. Cierra `OWN-ADS-0083`, `OWN-ADS-0102` y `OWN-ADS-0105`.
+- `capacidades/CNS/roles/implementacion.md` · `capacidades/CNS/contratos/implementacion.md` ·
+  `validadores/comprobar_contratos.py` · **quien construye no COMPLETA una especificación de
+  interfaz**. La Directiva lo dice tres veces —§10 «no puede descubrir durante la implementación
+  que hace falta poner un botón y decidir por sí sola dónde y cómo», §21 «Construcción nunca
+  completa una especificación de interfaz por su cuenta», §29 regla 6— y el contrato de
+  `CNS/implementacion` no lo nombraba: prohibía SIMPLIFICAR sin declararlo y CORREGIR una capa
+  anterior en vez de devolverla. Quien encuentra un hueco y lo rellena no está haciendo ninguna
+  de las dos cosas: está AÑADIENDO, y ninguna línea se lo impedía. Ahora está en
+  `actuaciones_prohibidas`, en `limites` —que es donde el rol lo lee— y con su devolución a DIS,
+  porque una prohibición sin salida deja al rol parado o desobedeciendo. `T502` lo comprueba
+  donde la Directiva lo exige y con la palabra que usa: se intentó como invariante general
+  —«todo rol que puede devolver una capa tiene prohibido completarla»— y no se sostiene, porque
+  doce de veintiséis roles la expresan con otras palabras y aflojar el vocabulario hasta que
+  pasen la haría pasar también al contrato defectuoso de antes, que ya decía «no cambia» y «no
+  decide». Una prueba que el defecto original habría pasado no prueba nada. Cierra
+  `OWN-ADS-0046`, `OWN-ADS-0079` y `OWN-ADS-0103`.
+- `capacidades/DIS/roles/*.md` · `validadores/comprobar_contratos.py` · **la independencia se
+  declara en UN solo sentido**, y la declara quien REVISA. `requiere_independencia` no es una
+  marca simétrica: ORDENA, porque quien la exige va DESPUÉS de aquel de quien la exige. Dos
+  roles la declaraban en los dos sentidos —`DIS/direccion-artistica` y `DIS/diseno-visual` con
+  `DIS/critica-visual`— y el ciclo no tiene punto fijo: la relajación los empujaba a AMBOS al
+  final del plan. Medido en `dis-feature-visual`: la dirección artística caía la 10ª de 11,
+  detrás de la construcción, de modo que el Owner habría aprobado la dirección DESPUÉS de
+  construirla, contra §81. Corregido, va la 4ª. `T499` lo convierte en regla y, escrita por el
+  primer caso, encontró SOLA el segundo. Cierra parte de `OWN-ADS-0287`.
+- `ciclo/planificacion.py` · `ciclo/oficina.py` · **el acoplamiento se declara por ROL**, no
+  sólo por capacidad. Las condiciones 2, 3 y 4 de `a.5` se evalúan por INTERSECCIÓN, así que
+  dos paquetes de la misma capacidad, con la declaración idéntica que la llave por capacidad
+  les da, NO pueden salir paralelos jamás. Medido en la instancia: de diecisiete paquetes de
+  un `ui-2`, UNO tomable, y con la dirección escalada al Owner la organización no continuaba
+  con nada. `T500` lo mide con tres controles —por capacidad sigue secuenciado, por rol no, y
+  SIN `integra_en` vuelve a secuenciarse: declarar por rol NO es un permiso de paralelismo—.
+  Cierra parte de `OWN-ADS-0224`, `0287`.
+- `ciclo/oficina.py` · **los roles CONDICIONALES se pueden activar**: `planificar` expone
+  `condiciones_de_rol` y se lo pasa a `materializar`. Sin ese parámetro, los NUEVE roles
+  condicionales del corpus —`ARQ/encaje`, `ARQ/diagnostico`, `DIS/movimiento`,
+  `DIS/investigacion-visual`, `DIS/investigacion-ux`, `DIS/sistema-de-diseno`,
+  `DIS/critica-visual`, `DIS/revision-de-fidelidad`, `SIS/evolucion`— quedaban SIEMPRE fuera
+  de todo plan, con el motivo «condición no consta verdadera». El primer diagnóstico fue hacer
+  obligatorio el rol que faltaba; leer su composición lo desmintió —es CONDICIONAL, y su
+  condición es sensata—, y hacerlo obligatorio habría forzado investigación redundante.
+  `T501`, saboteada. Cierra parte de `OWN-ADS-0287`.
+- `estado/ramas.py` · `ads_estado.py divergencia` · **el estado durable entre dos ramas
+  del mismo control repo**, clasificado ANTES de fusionar y sin mutar nada: SIN
+  INTERFERENCIA · COMPATIBLE · RIESGO DE CONFLICTO · CONFLICTO DIRECTO · BLOQUEO. Lee
+  revisión y diario como blobs, exige la cadena de §2.4 y deriva el linaje con la regla
+  única `diario.linaje_de`, que `Almacen._linaje` ahora también usa. No resuelve (`g.6`).
+  Contrato §6 bis; `T480`–`T481`. Cierra `OWN-ADS-0226`, `0223`, `0224`.
+- `estado/rutas.py` · **defecto reproducido por la batería nueva y corregido**: tras un
+  `git checkout` a un commit sin objetos canónicos, Git deja el almacén sin `canonico/` en
+  disco y la guarda anti-enlace de `ruta_canonica` rechazaba TODA escritura como «hay un
+  enlace simbólico en el camino» sin que lo hubiera (la base se resolvía como `abspath` y
+  el destino como `realpath`). Las dos rutas se resuelven ahora por el antecesor existente
+  más próximo; un enlace bajo `canonico/` sigue siendo `RUTA_INVALIDA` (`T482`).
+- `ciclo/oficina.py` · `ciclo/handoffs.py` · **acuse obligatorio antes de entregar** (`T483`;
+  cierra `OWN-ADS-0280`) y **los catorce campos de §78 en cada handoff**, derivados de la
+  entrega, del plan y del item en `contenido`, con la correspondencia escrita en
+  CONTRATO-OFICINA §4 (`T484`; `OWN-ADS-0278`).
+- `ciclo/entregas.py` · `esquemas/entrega.yaml` · **escalar exige la materia**, una de las
+  que la capacidad del rol declara que ESCALA; una de `decide_sola` se rechaza (`T485`;
+  `OWN-ADS-0074`, `0161`, `0271`). El brief lo dice en su sección 8.
+- `ciclo/terminacion.py` · **fronteras previas a la construcción** (§77): `admitida ·
+  encuadrada · investigada · disenada · aprobada · especificada`, derivadas de qué paquetes
+  del plan entregaron y publicadas en `evaluar_terminacion` y en `terminacion` del CLI;
+  `aprobada` se declara sin mecanismo hasta la línea de Diseño (`T486`; `OWN-ADS-0275`,
+  `0276`).
+- `ciclo/entregas.py` · **el escalado falla CERRADO**: si la ficha de autoridad de la
+  capacidad no se puede leer, la entrega se rechaza; antes cualquier error al leer el
+  corpus autorizaba cualquier materia (`T485`, ampliada). `ciclo/terminacion.py`: una
+  frontera con VARIOS paquetes sólo está alcanzada cuando todos entregaron, y nombra los
+  que esperan (`T486`, ampliada). Ambos hallazgos los aportó un agente de Codex el
+  2026-09-16 sobre el worktree de la campaña; la prueba de la frontera se rehízo porque
+  pedía un paquete que el circuito de prueba no tiene.
+- `ciclo/planificacion.py` · **defecto medido y corregido**: `DOM` y `SEG` participan DOS
+  veces en FEA/GAP/DEU (`DOM:condiciones` antes de construir, `DOM:revision` después) y la
+  semilla del paquete no entraba el método: las dos participaciones acuñaban EL MISMO
+  identificador por rol, `a.5` se pedía comparar un paquete consigo mismo y NINGUNA clase
+  con C-DOM o C-SEG se podía planificar (medido en el catálogo de clases de La Pesquerapp:
+  cambio-de-dominio, migracion, seguridad, nueva-area-de-producto). El método entra en la
+  semilla sólo cuando la participación se repite —ningún plan ya escrito cambia de
+  identidad— y una dependencia por independencia se resuelve dentro de la misma
+  participación (`T487`; `OWN-ADS-0022`, `0112`).
+- `ciclo/oficina.py` · **un cambio de dirección se puede planificar desde la oficina**:
+  la entrada transporta `propietario_global` y `productores_declarados` y `planificar` los
+  entrega a la composición; `proceso:DIR` deriva su propietario del encargo (`b.16`) y sin
+  ellos la fase no abre, con el error que lo dice (`T488`; `OWN-ADS-0022`, `0117`).
+- `estado/ramas.py` · **defecto corregido**: un `assert` de nivel superior hacía que el
+  inventario de puntos ejecutables (`T330`) lo tratara como invocable, y con él se ponían en
+  rojo T306, T308, T330 y T380 en la batería de la CI del kernel (run 35060285337). Es una
+  biblioteca que invoca `ads_estado.py divergencia`; ya no ejecuta nada al importarse.
+- `ciclo/impacto.py` · `esquemas/entrega.yaml` · `ciclo/oficina.py` · **la estación de análisis
+  de impacto** (Directiva §5, §32, §62): la entrega admite `impacto.disparadores` con el
+  vocabulario cerrado de los dieciséis disparadores de §5, cada uno con las condiciones de
+  ruta que dispara; si una no está entre las que el circuito declaró, el plan queda MARCADO
+  (durable, con el rol, los disparadores y qué hacer), `tomar` rechaza cualquier otro paquete
+  del item (`IMPACTO_NO_CUBIERTO`) y `evaluar_terminacion` lo publica; `planificar` con
+  `generacion > 0` sustituye al plan vigente (`sustituye_a`) y limpia la marca. Un disparador
+  fuera del vocabulario es `ENTREGA_INVALIDA`. Es la reacción automática que §62 exige y el
+  mecanismo con el que un `NO APLICA` deja de ser silencio (`T489`–`T491`; `OWN-ADS-0030`,
+  `0031`, `0032`, `0033`, `0112`).
+- `runtime/supervisor.py` · `runtime/dispatcher.py` · `esquemas/entrega.yaml` · **las paradas de
+  §36 con nombre**: `bloqueo.clase` (`dependencia-interna` · `barrera-externa` ·
+  `riesgo-extraordinario`) viaja en la entrega `bloqueado`, el runtime la escribe en el
+  paquete (`clase_de_bloqueo`) y el supervisor para con `riesgo-extraordinario` (manda sobre
+  todo lo demás) o `barrera-externa` en vez de un `bloqueado` genérico; las dos entran en el
+  `hasta` por defecto del bucle porque necesitan al Owner (`T492`; `OWN-ADS-0146`, `0147`).
+- `ciclo/impacto.py` · **defecto corregido antes de vendorizar**: dos `assert` de nivel
+  superior lo hacían punto ejecutable para `T330` (la misma lección de `ramas.py`); ahora es
+  `comprobar_vocabulario()`, que `T491` ejecuta.
+- `validadores/huella.py` · **defecto corregido**: en un `git worktree`, `.git` es un
+  FICHERO (el puntero al gitdir) y el sello lo contaba como `SIN_CLASE`, con lo que
+  `comprobar_integridad` (comprobación 4) salía en rojo en cualquier worktree aunque el
+  sello, calculado desde un clon limpio, fuera correcto. Los artefactos de ejecución
+  (`.git`, `__pycache__`, `.pytest_cache`) se excluyen por nombre, sean directorio o fichero.
+- `capacidades/DIS/contratos/` · **la línea de Diseño tiene contrato completo en sus diez
+  roles productores y críticos**: `investigacion-ux` (informe de realidad actual de §12 y
+  análisis de uso de §14, con los estados y extremos), `investigacion-visual` (síntesis de
+  §13), `sistema-de-diseno` (auditoría de reutilización con las cinco salidas de §15, la
+  deuda de unificación y los valores trazados a tokens), `direccion-artistica` (alternativas
+  de diez campos de §16, recomendación de §17 y la síntesis de ocho secciones de §20, con
+  NECESITAMOS DEL OWNER limitado a lo que es suyo), `prototipado` (prototipo mirable de §18),
+  `critica-visual` (los trece criterios de §19 antes del Owner y sobre la implementación,
+  §24), `validacion-de-uso` (sesión con tareas reales y los ocho criterios de §25, viabilidad
+  con motivo), `diseno-interaccion`, `movimiento`, y `diseno-visual` amplía su especificación
+  construible a los puntos de §21. Cada uno con sus entradas, comprobaciones previas,
+  secuencia, artefactos obligatorios, criterios medibles, devoluciones, escalado,
+  incompatibilidades que cubren la independencia que su rol declara, y checklist. Hasta
+  ahora sólo `diseno-visual` y `revision-de-fidelidad` tenían contrato: los demás heredaban
+  la base de su familia y podían entregar «diseñado» sin ningún artefacto de su fase
+  (`T493`; `OWN-ADS-0049`, `0051`, `0052`, `0054`, `0055`–`0059`, `0061`, `0062`, `0064`,
+  `0066`–`0068`, `0070`, `0071`, `0075`, `0077`, `0078`, `0082`, `0085`, `0087`, `0089`).
+- `ciclo/base.py` · `ciclo/oficina.py` · `ciclo/cli_oficina.py` · **la base de partida y el
+  mundo que cambia debajo** (Directiva §61, §63): al tomar, la oficina escribe el checkpoint
+  0 con la rama, de qué commit nace y qué base hay, por repositorio —el control repo y cada
+  fuente de `SOURCES.toml` en disco—; cada checkpoint mide otra vez y clasifica
+  `sin-cambio · compatible · contradiccion` (la base avanzó sobre lo mismo que el trabajo
+  cambió, o las dos ramas escriben `estado/`); una contradicción vigente hace de `entregado`
+  un `BASE_CONTRADICHA` sin escribir nada, hasta reconciliar en la rama o entregar
+  `bloqueado`. Sólo refs locales; un directorio sin Git es `no-medible` y no frena. CONTRATO
+  §2 bis (`T494`–`T496`; `OWN-ADS-0220`, `0221`, `0227`, `0229`, `0230`, `0231`).
+- `esquemas/integration-set.yaml` · `ciclo/oficina.py` · **el Integration Set de §71**: con
+  varias fuentes el conjunto define además `orden_de_merge` (cada fuente una vez, ninguna
+  ajena), `compatibilidad`, `despliegue` (cada fuente con su orden, sin dos iguales) y
+  `dependencias`; sin ellos la convergencia no es admisible. Con una fuente son triviales
+  (`T497`; `OWN-ADS-0255`).
+- `runtime/politica.py` · `runtime/dispatcher.py` · `runtime/externo.py` · **exclusión segura
+  entre workers** (Directiva §68): los recursos exclusivos de un paquete se DERIVAN de su
+  acoplamiento de `a.5` (`escribe_ficheros`, `afecta_contratos`, `afecta_decisiones`); un
+  `listo` cuyo recurso posee otra ejecución no es elegible ni tomable —`tomables()` lo publica
+  en `esperando` con `incompatible_por`, `tomar` es `RECURSO_OCUPADO` sin retener el lease,
+  `incompatibles_por_recurso()` lo lista—, y el de ámbito independiente sigue en paralelo
+  (`T498`; `OWN-ADS-0244`, `0245`, `0246`).
+- `capacidades/DIS/contratos/direccion-artistica.md` · **la función de Product Interface Lead**
+  (Directiva §28): la dirección artística sostiene la coherencia global entre superficies —abre
+  y cierra el trabajo de Diseño— con la comprobación previa `coherencia-global` y las seis
+  preguntas permanentes en su checklist (encaja con el producto completo · ya existe otra
+  manera · variante innecesaria · unificar otras pantallas · deuda cercana · más coherente
+  después); `T493` las exige. Crear un rol aparte queda para cuando la medida lo pida (estudio
+  formal en la instancia; `OWN-ADS-0020`, `0096`, `0097`).
+
+## 2.0.0-alpha.15 — la oficina: el runtime se puede TRABAJAR desde fuera de un chat
+
+**Hecho medido antes de construir** (auditoria forense de La Pesquerapp, 2026-09-14). El
+kernel tenia escrito el runtime completo —paquetes, leases, dispatcher, ciclo, gates,
+handoffs, freno de `a.7`— y la instancia **nunca lo invocaba**: setenta y ocho items, cero
+paquetes, cero leases, cero equipos. El trabajo ocurria en un chat, el estado se anotaba
+despues, y «cerrado» significaba «alguien lo escribio». Habia tres huecos, no uno:
+
+```text
+nadie podia TOMAR un paquete     el unico adaptador ejecutaba un subproceso; un agente
+                                 en un chat no tenia forma de sostener un lease
+nada verificaba una ENTREGA      «PR #14 sin fusionar» valia como evidencia de cierre
+nada exigia NIVELES              un item cerraba como producto sin que nadie hubiera
+                                 revisado, verificado ni aceptado nada
+```
+
+**Que cambia.** Todo sobre el runtime que ya existia; ninguna segunda maquina de estados.
+
+- `runtime/externo.py` · **protocolo de trabajadores**: `tomar`, `checkpoint`, `entregar`,
+  `soltar`, `tomables`. Un paquete con `orden.adaptador: worker` lo ejecuta alguien de
+  fuera —una sesion de agente, una persona— con el MISMO lease, la misma paciencia y la
+  misma reoferta que un paquete despachado. El dispatcher no los despacha ni los posterga.
+- `modelo.py` · transicion nueva `ejecutando → bloqueado`: un bloqueo no consume intento
+  ni acaba en `agotado`.
+- `esquemas/entrega.yaml`, `contrato-operativo.yaml`, `circuito-base.yaml`,
+  `ejecutor.yaml` · cuatro tipos nuevos. La entrega se valida contra el gate del rol, los
+  artefactos obligatorios de su contrato y su checklist; una entrega mal formada no toca el
+  estado.
+- `ciclo/oficina.py`, `entregas.py`, `terminacion.py`, `briefs.py`, `tablero.py` · un
+  paquete POR ROL con orden derivado de la obligacion del proceso, brief derivado del
+  estado, gates por rol con autocertificacion rechazada por trabajador y por rol,
+  devolucion → correccion → nuevo receptor (`sustituye_a`), freno de `a.7` a la tercera,
+  **niveles de terminacion** (`recorrido/02-NIVELES-DE-TERMINACION.md`) exigidos por el
+  circuito base que el PROYECTO declara, y un tablero determinista que dice que hara el
+  sistema si nadie dice nada.
+- `adaptadores/agente.py` · adaptador de AGENTE SIN CHAT: lanza el `argv` que el PROFILE
+  declara en `ads:ejecutor` con el brief y lee la entrega. Sin entrega valida no hay
+  `completado`. El kernel sigue sin nombrar ningun proveedor (`K0.8`).
+- `runtime/supervisor.py` · pasadas sobre el estado hasta una parada legitima:
+  `sin-trabajo`, `bloqueado`, `marcado`; nunca infinito. Sin reloj dentro del paquete.
+- **Certificacion con procesos** (La Pesquerapp, 2026-09-15): contrato operativo efectivo
+  para TODO rol materializable —`ads:contrato-base` por familia, derivacion del rol y
+  `ads:contrato-de-rol`; validadores `T476` y `T477`—; nivel `integrado` con rol
+  `ENT/convergencia`, gate de `C7` e Integration Set exacto dentro de la entrega;
+  `ciclo/cronica.py`, la secuencia derivada del diario. Y siete carreras que solo se ven
+  con una oficina entera escribiendo a la vez, cada una con su prueba: el lector detras del
+  escritor y el lease retirado entre dos lecturas (`Almacen.leer`), el supervisor ante un
+  titular que suelta (barrido y `_atender_fallido`), la contencion del `flock`
+  (`INTENTOS_DE_BLOQUEO` 80 → 600), la puerta de G13 para quien corrigio, y
+  `oficina.entregar` exigiendo titularidad antes de escribir su primer paso.
+- `ads_ciclo.py` · ordenes `tomar`, `soltar`, `checkpoint`, `entregar`, `acusar`, `brief`,
+  `tablero`, `terminacion`, `aceptar`, `cerrar-item`, `supervisar`.
+- `ciclo/continuacion.py` · el frente ordena detras a los paquetes que esperan a otros:
+  la unidad de integracion semantica —que depende de todas— encabezaba la lista.
+- Corpus: rol `CNS/revision-de-construccion` con su metodo, su prompt y su contrato
+  operativo; contratos operativos de `CNS/implementacion` y `VER/dosier`; handoff
+  `con-a-con`.
+
+**Comprobado, no afirmado.** `runtime/pruebas/test_oficina.py`, `T460`–`T475`
+(`pruebas/T460-T479-oficina.md`): veinte casos sobre control repos reales, con trabajadores
+que son PROCESOS reales donde la propiedad lo exige —muerte con lease, carrera por el mismo
+paquete— y un agente sin chat que es un ejecutable de verdad. Contrato:
+`runtime/CONTRATO-OFICINA.md`.
+
+**Lo que NO afirma.** Nada esta certificado. Que la oficina se sostenga sobre encargos
+reales de un producto real lo mide cada instancia con su propio dogfood.
+
 ## 2.0.0-alpha.14 — una instancia puede declarar sus propias zonas no analizadas
 
 **UP-11.** `exclusiones.yaml` es el sitio donde se declara lo que el validador NO analiza,

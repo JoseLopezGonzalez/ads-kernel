@@ -130,6 +130,36 @@ def propietario_global(proceso, *, condiciones_verdaderas=(), propietario_declar
 # ===========================================================================
 #  composición
 # ===========================================================================
+def _las_que_el_proceso_no_contempla(participantes, no_activadas, proceso):
+    """Las capacidades que NO aparecen por ninguna vía, dichas en vez de calladas (§32).
+
+    `a.6` exige que lo no activado deje motivo, y hasta el 2026-09-21 eso se cumplía sólo para
+    las que el proceso contempla con una condición. Las demás no salían: ni participantes, ni
+    no activadas, ni `NUNCA_PARTICIPA`. Medido sobre `proceso:FEA` en un encargo `ui-2` real:
+    de las quince capacidades del corpus, la ruta nombraba TRECE, y `DSP`, `INV`, `PLT` y `SIS`
+    eran cuatro silencios — del tipo exacto que §32 prohíbe con esas palabras.
+
+    No se activan: se DICEN. Una capacidad que este proceso no contempla queda fuera con ese
+    motivo, que es una respuesta, y quien lea la ruta puede discutirla. Antes no había nada que
+    discutir porque no había nada escrito.
+    """
+    dichas = {p["capacidad"] for p in participantes} | {p["capacidad"] for p in no_activadas}
+    calladas = []
+    for capacidad in CAPACIDADES:
+        if capacidad in dichas or capacidad in NUNCA_PARTICIPA:
+            continue
+        calladas.append({
+            "capacidad": capacidad,
+            "participante": capacidad,
+            "via": None,
+            "condicion": None,
+            "motivo": "el proceso `" + str(proceso) + "` no la contempla: no es productora de "
+                      "ninguna capa obligatoria ni tiene condición declarada en él; `a.6` exige "
+                      "que lo no activado deje motivo, y no contemplarla TAMBIÉN es un motivo",
+        })
+    return calladas
+
+
 def componer(encuadre, *, corpus=None, fase="unica", condiciones_verdaderas=(),
              productores_declarados=None, items_enlazados=(), presencias=(),
              propietario_declarado=None, capacidades_de_la_fase=None):
@@ -243,7 +273,8 @@ def componer(encuadre, *, corpus=None, fase="unica", condiciones_verdaderas=(),
         "propietario_global": duenio["capacidad"],
         "origen_del_propietario": duenio["origen"],
         "participantes": sorted(participantes, key=lambda p: (p["via"], p["capacidad"])),
-        "no_activadas": sorted(no_activadas, key=lambda p: p["capacidad"]),
+        "no_activadas": sorted(no_activadas + _las_que_el_proceso_no_contempla(
+            participantes, no_activadas, proceso["id"]), key=lambda p: p["capacidad"]),
         "presencias": presencias_normalizadas,
         "condiciones_verdaderas": list(condiciones),
         "obligaciones": obligaciones_de(proceso),

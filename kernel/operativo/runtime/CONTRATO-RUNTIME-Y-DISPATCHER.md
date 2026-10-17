@@ -27,6 +27,9 @@ operacional/runtime/<inst>.vivo el testigo de vida. NO es durable y está fuera 
 `listo` · `despachado` · `ejecutando` · `completado` · `fallido` · `agotado` · `pausado` ·
 `cancelado` · `bloqueado` · `esperando-dependencia`. Las transiciones permitidas están
 declaradas como dato en `runtime/modelo.py`, y cualquier otra es `EstadoDePaqueteInvalido`.
+Desde la ejecución EXTERNA —[`CONTRATO-OFICINA.md`](CONTRATO-OFICINA.md)— la tabla admite
+además `ejecutando` → `bloqueado`: un trabajador que descubre a mitad que no puede seguir sin
+algo ajeno lo dice, y eso no es un fallo que consuma intento.
 
 ## 2 · El tiempo lógico es la REVISIÓN, no el reloj
 

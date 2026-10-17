@@ -65,19 +65,19 @@ v         1331  df887429241680a2…  docs/rediseno/b-RECORRIDO-APROBADA.md
 v         1590  aa635dff79e73fe1…  kernel/KERNEL.md
 ii          95  a870911530909584…  kernel/operativo/capacidades/APR/CAPACIDAD.md
 ii         104  6ca11b5f09883e24…  kernel/operativo/capacidades/ARQ/CAPACIDAD.md
-ii         107  7d73eb4a0de6c7b1…  kernel/operativo/capacidades/CNS/CAPACIDAD.md
+ii         108  f5d0540eef55a77a…  kernel/operativo/capacidades/CNS/CAPACIDAD.md
 ii         147  07fd796faf0b64f3…  kernel/operativo/capacidades/DIS/CAPACIDAD.md
 ii         135  1f02ec15edb5747f…  kernel/operativo/capacidades/DOM/CAPACIDAD.md
 ii         152  acb292f882e77d74…  kernel/operativo/capacidades/DSP/CAPACIDAD.md
 ii         174  f71b8e43f6e2d66f…  kernel/operativo/capacidades/ENC/CAPACIDAD.md
-ii         123  91a81d3cf1cbfa61…  kernel/operativo/capacidades/ENT/CAPACIDAD.md
+ii         123  3190b5cf0db8689d…  kernel/operativo/capacidades/ENT/CAPACIDAD.md
 ii          96  e01a1440b6a49bb7…  kernel/operativo/capacidades/INV/CAPACIDAD.md
 ii         108  a5f87977c58ed1d0…  kernel/operativo/capacidades/PLT/CAPACIDAD.md
 ii         105  e83b0e08272e219d…  kernel/operativo/capacidades/PRD/CAPACIDAD.md
 ii         135  0fb11990dbba67d7…  kernel/operativo/capacidades/SEG/CAPACIDAD.md
 ii         119  02089f36d1244356…  kernel/operativo/capacidades/SIS/CAPACIDAD.md
-ii          94  65f144e4a5c756ef…  kernel/operativo/capacidades/USO/CAPACIDAD.md
-ii         135  a915ed60c92feac0…  kernel/operativo/capacidades/VER/CAPACIDAD.md
+ii          95  c320d160bf042294…  kernel/operativo/capacidades/USO/CAPACIDAD.md
+ii         136  fe58b38dd1df7da6…  kernel/operativo/capacidades/VER/CAPACIDAD.md
 v           29  48b66b4fa9daee8f…  kernel/operativo/contratos/00-INDICE.md
 v          161  825f15a914c10d6f…  kernel/operativo/contratos/C1-EQUIPO-ROL-AGENTE-METODO.md
 ii+v       539  3ee58ca4bc47988d…  kernel/operativo/contratos/C2-AGENTES-Y-MODELOS.md
@@ -85,20 +85,20 @@ ii+v       150  d56bf6b81e0fe4a9…  kernel/operativo/contratos/C3-METODO-EJECUT
 ii+v       170  670289180e59b176…  kernel/operativo/contratos/C4-MATERIALIZACION.md
 v          115  af6f1a4c4f5def8d…  kernel/operativo/contratos/C5-HANDOFF.md
 v          336  14805a79aeb07f31…  kernel/operativo/contratos/C6-PRODUCTO-FUENTES-Y-WORKSPACE.md
-v          250  752519c533168ce8…  kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md
+v          251  29de75ca8c982ef8…  kernel/operativo/contratos/C7-GOBIERNO-GIT-MULTI-SOURCE.md
 ii         141  08f4bea44594e026…  kernel/operativo/diseno/00-SISTEMA-DE-EXCELENCIA.md
 ii         352  dd323d1aa2f7ede3…  kernel/operativo/diseno/01-MEMORIA-DE-DISENO.md
-ii         343  404666aa260d4ef0…  kernel/operativo/diseno/02-RUBRICAS.md
+ii         347  8daf773ea8edd69a…  kernel/operativo/diseno/02-RUBRICAS.md
 ii         130  ebcfae8e9111dbbf…  kernel/operativo/diseno/04-CICLO-DE-CALIDAD.md
-ii         129  f4c81e4ce3f99ef5…  kernel/operativo/diseno/05-FIDELIDAD.md
+ii         165  d446f6eb42ee0d69…  kernel/operativo/diseno/05-FIDELIDAD.md
 ii          28  315b2790cb66bb4c…  kernel/operativo/entrada/00-INDICE.md
 ii         145  750d39a29f05e7f2…  kernel/operativo/entrada/02-CIRCUITO.md
 ii         187  1716bd3d8b48107d…  kernel/operativo/entrada/04-INCERTIDUMBRE-Y-CONFIRMACION.md
 v           89  586653398b298e4e…  kernel/operativo/esquemas/proceso.yaml
-v          130  f56e8fe4872e46b5…  kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md
+v          134  9052fbf249413730…  kernel/operativo/recorrido/00-OBLIGACIONES-Y-CIERRE.md
 v          606  c5415442c236a92e…  kernel/operativo/recorrido/01-PROCESOS.md
 
-94 fuentes obligatorias · 101126 líneas
+94 fuentes obligatorias · 101174 líneas
   (i  )   4   las fuentes de «QUÉ HAY QUE LEER ÍNTEGRO» de `C-L.5`
   (ii )  29   las fuentes y las fichas de `C-0.1` / `C-0.2`
   (iii)   3   documento 11 · registro de decisiones · checkpoint

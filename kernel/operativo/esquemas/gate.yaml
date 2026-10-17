@@ -17,4 +17,5 @@ campos:
       automatizable: {tipo: enum, valores: [si, no, parcial]}
     obligatorios: [id, comprueba, como, automatizable]
   evidencia: {tipo: lista, de: texto, min: 1}
+  dictamina: {tipo: texto, patron: '^(OWNER|[A-Z]{3}(/[a-z0-9-]+)?)$'}
   fallo: {tipo: texto, min: 15}

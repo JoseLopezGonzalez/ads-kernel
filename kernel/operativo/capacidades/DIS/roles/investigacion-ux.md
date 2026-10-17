@@ -1,5 +1,7 @@
 # DIS/investigacion-ux — Investigación de uso
 
+Su contrato operativo vive en [`../contratos/investigacion-ux.md`](../contratos/investigacion-ux.md).
+
 Averigua **quién usa esto, para qué y en qué condiciones**. Sin este rol, el diseño
 resuelve un problema imaginado.
 

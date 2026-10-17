@@ -119,8 +119,15 @@ class CanalGit:
                         "refspec forzada en `push`: " + argumento
                     )
 
-    def ejecutar(self, *argumentos, entrada=None, exigir_exito=True, entorno_extra=None):
+    def ejecutar(self, *argumentos, entrada=None, exigir_exito=True, entorno_extra=None,
+                 tiempo=None):
         """Invoca Git y devuelve `(codigo, salida, error)` con las salidas en BYTES.
+
+        `tiempo` es el tope en segundos, y existe porque el canal tambien lee repositorios
+        AJENOS —las fuentes de producto, que ni son nuestras ni sabemos como de grandes
+        son—: leerlos sin tope es un cuelgue esperando a ocurrir. Sin `tiempo` no hay tope,
+        que es el comportamiento de siempre. Al vencer se propaga `TimeoutExpired`: quien
+        lee decide si eso es un fallo o un «no se pudo medir».
 
         Devuelve bytes a propósito: decodificar aquí obligaría a elegir una política de
         errores para todo el aparato, y `V6-02` exige que la decodificación sea ESTRICTA
@@ -140,6 +147,7 @@ class CanalGit:
             stderr=subprocess.PIPE,
             env=entorno,
             check=False,
+            timeout=tiempo,
         )
         if exigir_exito and proceso.returncode != 0:
             lineas = proceso.stderr.decode("utf-8", "replace").strip().splitlines()

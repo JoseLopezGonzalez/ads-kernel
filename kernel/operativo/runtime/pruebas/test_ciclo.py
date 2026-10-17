@@ -1244,8 +1244,8 @@ class Gates(BaseDelCiclo):
             ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="CNS",
                                autor="el sistema", **argumentos)
         self.assertEqual(
-            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="VER", autor="CNS",
-                               **argumentos)["dictamen"],
+            ciclo.aplicar_gate("gate:evidencia-suficiente", revisor="VER/dosier",
+                               autor="CNS", **argumentos)["dictamen"],
             gates.SUPERADO,
         )
 
@@ -1654,6 +1654,9 @@ class CorpusYDeterminismo(BaseDelCiclo):
         self.assertEqual(sorted(modulo.ORDENES), sorted([
             "ciclo", "componer", "continuar", "encuadrar", "macrocircuito",
             "materializar", "planificar", "procedencia",
+            # la OFICINA, `CONTRATO-OFICINA.md`
+            "tomar", "soltar", "checkpoint", "entregar", "acusar", "brief", "cronica", "tablero",
+            "terminacion", "aceptar", "cerrar-item", "supervisar",
         ]))
         self.assertEqual(modulo.main(["encuadrar"]), modulo.USO)
         self.assertEqual(modulo.main([]), modulo.USO)

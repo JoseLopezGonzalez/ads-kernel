@@ -8,13 +8,13 @@
 falta `--repo <dir>`: sin control repo no hay nada que encuadrar
 usage: ads_ciclo [-h] [--repo REPO] [--instancia INSTANCIA] [--kernel KERNEL]
                  [--json]
-                 {encuadrar,componer,materializar,planificar,ciclo,continuar,macrocircuito,procedencia}
+                 {encuadrar,componer,materializar,planificar,ciclo,continuar,macrocircuito,procedencia,tomar,soltar,checkpoint,entregar,acusar,brief,tablero,cronica,terminacion,aceptar,cerrar-item,supervisar}
                  ...
 
 el ciclo de `§7.2`, `Continúa` y los macrocircuitos
 
 positional arguments:
-  {encuadrar,componer,materializar,planificar,ciclo,continuar,macrocircuito,procedencia}
+  {encuadrar,componer,materializar,planificar,ciclo,continuar,macrocircuito,procedencia,tomar,soltar,checkpoint,entregar,acusar,brief,tablero,cronica,terminacion,aceptar,cerrar-item,supervisar}
 
 options:
   -h, --help            show this help message and exit

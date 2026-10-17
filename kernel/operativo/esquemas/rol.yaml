@@ -46,6 +46,8 @@ campos:
       requiere_independencia: {tipo: booleano}
       de_quien: {tipo: lista, de: texto}
       motivo: {tipo: texto, min: 15}
+  espera_a: {tipo: lista, de: texto}
+  motivo_de_la_espera: {tipo: texto, min: 15}
   checkpoint: {tipo: lista, de: texto, min: 1}
   salida: {tipo: lista, de: texto, min: 1}
   gate: {tipo: ref, ref_a: gate}

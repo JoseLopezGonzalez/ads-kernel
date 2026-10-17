@@ -1,5 +1,7 @@
 # DIS/validacion-de-uso — Validación de uso real
 
+Su contrato operativo vive en [`../contratos/validacion-de-uso.md`](../contratos/validacion-de-uso.md).
+
 Comprueba que la forma **funciona con personas y con datos reales**, no en la cabeza de
 quien la diseñó.
 

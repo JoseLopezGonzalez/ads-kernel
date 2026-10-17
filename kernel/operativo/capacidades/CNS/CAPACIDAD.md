@@ -28,7 +28,7 @@ memoria_propia:
   - "CONVENTIONS.md — patrones técnicos vigentes, compartido con ARQ y VER"
   - "docs/construccion/DECISIONES.md — decisiones de implementación con su motivo"
 tablero: "estado/tableros/CNS.md — paquetes en construcción"
-metodos: [CNS/Implementacion, CNS/Experimental]
+metodos: [CNS/Implementacion, CNS/RevisionDeConstruccion, CNS/Experimental]
 checkpoint: "en el paquete, con qué está construido, qué falta y qué diferencias se han declarado"
 autoridad:
   decide_sola:
@@ -45,7 +45,7 @@ owner:
     CNS no tiene interacción con el Owner. Todo lo que necesitaría su juicio va por la
     capacidad propietaria de esa materia. Un agente de construcción que conversa con el
     Owner sobre alcance o forma está ocupando una autoridad que no tiene.
-roles: [CNS/implementacion, CNS/experimental]
+roles: [CNS/implementacion, CNS/revision-de-construccion, CNS/experimental]
 deriva_de:
   - "a.3 · CNS: no redecide capas anteriores; sin autoridad sobre forma ni intención"
   - "b.16 · CNS:experimental dentro de INV y de DIR"
@@ -61,6 +61,7 @@ retirada: >
 ```yaml ads:gate
 id: gate:implementacion-completa
 aplica_a: "la capa de CNS antes de pasar a verificación"
+dictamina: CNS/revision-de-construccion
 comprobaciones:
   - id: comportamiento-existe
     comprueba: "cada criterio de éxito de PRD tiene comportamiento construido que lo satisface"
@@ -79,7 +80,7 @@ comprobaciones:
     como: "recorrido de las condiciones declaradas por SEG, con su evidencia"
     automatizable: parcial
   - id: superficie-usable
-    comprueba: "si la capa produce o modifica una superficie usable, existe sobre LO CONSTRUIDO la evidencia que exige gate:usabilidad: los cinco estados, un recorrido por cada medio de entrada del pack y las mediciones de respuesta"
+    comprueba: "si la capa produce o modifica una superficie usable, existe sobre LO CONSTRUIDO la evidencia que exige gate:usabilidad EN EL MODO DE EVIDENCIA del circuito: entera en matriz-completa y perimetro-completo; en focal, los estados, medios de entrada y medidas que el cambio altera, y el resto enlazado a la evidencia vigente"
     como: "el paquete declara afecta_superficie y enlaza esa evidencia; el dictamen de los seis ejes lo emite DIS/validacion-de-uso, que no la produjo"
     automatizable: parcial
   - id: diferencias-declaradas

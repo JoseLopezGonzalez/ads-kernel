@@ -69,10 +69,20 @@ from .errores import (
     EjecucionFallida,
     ErrorDeRuntime,
     EstadoDePaqueteInvalido,
+    RecursoOcupado,
     PaqueteDesconocido,
     ReclamacionPrematura,
     RuntimeInconsistente,
     TiempoAgotado,
+)
+from .externo import (
+    ADAPTADOR_EXTERNO,
+    CAPACIDAD_EXTERNA,
+    DOMINIO_CHECKPOINTS,
+    comprobar_entrega_externa,
+    es_externo,
+    orden_externa,
+    ruta_checkpoint,
 )
 from .lease import PACIENCIA_POR_DEFECTO, TestigoDeVida
 from .modelo import (
@@ -93,13 +103,15 @@ __all__ = [
     "Runtime", "Cancelacion",
     "PACIENCIA_POR_DEFECTO", "MAX_INTENTOS_POR_DEFECTO", "VERSION_DE_CONTRATO",
     "TestigoDeVida",
+    "ADAPTADOR_EXTERNO", "CAPACIDAD_EXTERNA", "DOMINIO_CHECKPOINTS", "es_externo",
+    "orden_externa", "ruta_checkpoint", "comprobar_entrega_externa",
     "Adaptador", "RegistroDeAdaptadores", "comprobar_adaptador",
     "AdaptadorEnPruebas", "RegistroEnPruebas", "exigir_efecto_no_aplicado",
     "ESTADOS", "ESTADOS_TERMINALES", "TRANSICIONES",
     "comprobar_paquete", "comprobar_transicion", "derivar_efecto",
     "ruta_item", "ruta_paquete", "ruta_lease", "ruta_efecto",
     "ErrorDeRuntime", "AutoridadNoDisponible", "AutoridadPerdida",
-    "ReclamacionPrematura", "PaqueteDesconocido", "EstadoDePaqueteInvalido",
+    "ReclamacionPrematura", "PaqueteDesconocido", "EstadoDePaqueteInvalido", "RecursoOcupado",
     "DependenciaNoResuelta", "CapacidadNoSoportada", "AdaptadorIncompatible",
     "EjecucionFallida", "EjecucionDefinitiva", "EjecucionCancelada",
     "EjecucionAmbigua", "TiempoAgotado",

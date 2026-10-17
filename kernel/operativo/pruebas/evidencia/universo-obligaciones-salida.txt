@@ -65,7 +65,7 @@ obligación       clase   pruebas                      sabotajes              ev
 A14              deuda   T172                         N172                   evidencia/estado-durable-salida.txt
 C2               C       T87,T92,T226,T227            N92                    evidencia/agentes-salida.txt
 C4               C       T87,T88,T90,T135             N145,N145b,N250        evidencia/agentes-salida.txt
-C5               C       T200,T204,T243               N243,NK21a             evidencia/ciclo-salida.txt
+C5               C       T200,T204,T243,T466          N243,NK21a             evidencia/ciclo-salida.txt
 CONTRATO 1       §19     T270,T277,T360,T361          N270c,NG3a,NG3b        evidencia/recuentos-salida.txt
 CONTRATO 1bis    §19     T271,T277                    N271                   evidencia/recuentos-salida.txt
 CONTRATO 2       §19     T272,T277                    N272b,N272d            evidencia/versiones-salida.txt
