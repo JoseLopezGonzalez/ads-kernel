@@ -335,8 +335,12 @@ segmento. `diario/segmentos/INDICE.json` (`ads.estado.segmentos/1`) registra por
 composición vive en UNA función (`diario.componer_lineas`) que usan el motor y `ramas.py`, de
 modo que la verificación de la cadena, el ancla del sellado, `exigir_coherente` frente a
 `diario_secuencia`, la ventana y el linaje leen la misma lista que con un solo fichero. El
-lector toma el vivo ANTES que el índice: así nunca compone una combinación que el diario no
-haya tenido.
+lector toma el vivo antes que el índice y el listado, y compara la FIRMA de los tres (inodo,
+tamaño y fecha del vivo y del índice; nombres de `segmentos/`) antes y después de leer: si un
+escritor movió algo mientras leía, repite la lectura (hasta 50 veces; después
+`ESCRITOR_CONCURRENTE`). Así sólo compone lo que el diario era en un instante sin escritores.
+Desde otra referencia Git (`ramas.diario_en`), un diario que no empieza en la secuencia 1 sin
+`previo`, que salta una secuencia o que no llega a la `diario_secuencia` publicada es BLOQUEO.
 
 **Fallo cerrado (`DIARIO_CORRUPTO`).** Un segmento cuyas bytes o `sha256` no son las del
 índice; un segmento que falta; un índice ilegible, con rangos no contiguos o con un nombre que
@@ -359,7 +363,8 @@ CORTE TRAS EL ÍNDICE    el vivo tiene las MISMAS bytes que el último segmento:
 **Lo que segmentar NO hace.** No se ejecuta solo. No publica revisión ni toca `canonico/`. Toma
 el bloqueo de escritor y se **niega** con `SEGMENTACION_IMPOSIBLE` si hay una transacción sin
 cerrar, una cola desgarrada o falta la firma (`autor` y `motivo`). Con un diario segmentado,
-`sellar` se niega (`SELLADO_IMPOSIBLE`): los segmentos son inmutables. Y `reparar_cola` trunca
+`sellar` se niega (`SELLADO_IMPOSIBLE`): los segmentos son inmutables. Antes de sellar, y antes
+de anexar o reparar, se completa cualquier rotación cortada. Y `reparar_cola` trunca
 sólo el vivo. Un almacén que nunca se segmentó no tiene `segmentos/` y se lee como siempre.
 
 Escenarios: [`../pruebas/T530-T539-diario-segmentado.md`](../pruebas/T530-T539-diario-segmentado.md).

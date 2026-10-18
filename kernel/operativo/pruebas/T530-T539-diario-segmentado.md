@@ -23,15 +23,15 @@ rotación, y repositorios Git reales para la lectura desde otra rama.
 
 ```text
 T530  la rotación conserva cada byte y la cadena; la revisión publicada no se mueve
-T531  tras rotar, la historia sigue creciendo encadenada, dos rotaciones, y la CLI la verifica
+T531  tras rotar, la historia sigue creciendo encadenada; un lector que coincide con una rotación lee la historia real
 T532  un diario sin segmentar se lee, escribe y recupera como siempre; un umbral no alcanzado no deja rastro
-T533  un corte REAL tras publicar el segmento no pierde ni duplica, y la siguiente escritura limpia el huérfano
+T533  un corte REAL tras publicar el segmento no pierde ni duplica; la siguiente escritura —o un sellado— limpia el huérfano
 T534  un corte REAL tras publicar el índice no duplica, `recuperar` completa, y la cadena continúa
 T535  ni una transacción sin cerrar ni una rotación sin autor y motivo se segmentan
 T536  un segmento alterado en un byte es DIARIO_CORRUPTO al abrir y al verificar
 T537  lo que falta o sobra entre segmentos —segmento, rango, índice, fichero ajeno, anexado sobre una rotación a medias— es DIARIO_CORRUPTO
 T538  con segmentos el sellado se niega, y una cola rota sólo trunca el vivo
-T539  un diario segmentado se compone igual desde los blobs de Git, y un segmento alterado en otra rama es BLOQUEO
+T539  un diario segmentado se compone igual desde Git; un segmento alterado o un commit sin sus segmentos es BLOQUEO
 ```
 
 ---
@@ -68,8 +68,10 @@ entonces:
   - "el primer evento del vivo lleva como `previo` la huella del último del segmento, y la secuencia siguiente"
   - "las secuencias son contiguas desde 1 a través de los dos segmentos y el vivo"
   - "`verificar` y `auditar` de la CLI, en otro proceso, salen con 0"
+  - "un lector sin bloqueo al que, entre leer el vivo y el índice, un escritor anexa y rota —o anexa y deja una rotación cortada tras el paso 1— devuelve la historia real"
 falla_si:
   - "la cadena o la secuencia se rompen en un corte entre ficheros"
+  - "un lector compone el vivo viejo detrás del segmento nuevo, o da DIARIO_CORRUPTO sobre un almacén sano (revisión independiente, H3)"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
 estado: validador-implementado
@@ -105,6 +107,7 @@ entonces:
   - "queda un segmento huérfano que ningún índice nombra, y el diario sigue siendo el vivo"
   - "la historia y la revisión son las de antes del corte"
   - "la siguiente escritura retira el huérfano y la rotación repetida termina sin duplicados"
+  - "sellar sobre el huérfano completa antes la rotación y el almacén sigue utilizable (revisión independiente, H1)"
 falla_si:
   - "el huérfano se cuenta como historia, o bloquea el almacén"
 ejecucion: requiere-runtime
@@ -212,6 +215,7 @@ cuando:
 entonces:
   - "los eventos compuestos desde Git son los que el motor lee del disco"
   - "la comparación es COMPATIBLE, y con un segmento alterado en otra rama es BLOQUEO"
+  - "un commit que lleva el vivo y no sus segmentos es BLOQUEO: `diario_en` exige empezar en la secuencia 1 sin `previo` y sin saltos (revisión independiente, H2)"
 falla_si:
   - "una rama segmentada parece truncada o manipulada, o una alterada parece sana"
 ejecucion: requiere-runtime

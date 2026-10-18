@@ -2965,6 +2965,64 @@ class SegmentacionDelDiario(Caso):
             self.assertEqual(proceso.returncode, 0, proceso.stderr)
         self.sano()
 
+    def _lector_con_intercalacion(self, metodo, accion):
+        """Un lector SIN bloqueo al que `accion` (un escritor) le ocurre justo antes de `metodo`."""
+        lector = diario_mod.Diario(self.ruta_diario())
+        original = getattr(lector, metodo)
+        hecho = []
+
+        def envuelto(*args, **kw):
+            if not hecho:
+                hecho.append(True)
+                accion()
+            return original(*args, **kw)
+        setattr(lector, metodo, envuelto)
+        return lector
+
+    def test_T531b_un_lector_que_coincide_con_una_rotacion_lee_la_historia_real(self):
+        """T531 · Defecto que previene (revisión independiente, H3, reproducido): un lector sin
+        bloqueo que lee el vivo, y antes de leer el índice o el listado un escritor ANEXA y ROTA.
+
+        La intercalación es determinista: el escritor actúa DENTRO de la lectura, entre el vivo
+        y el índice (caso B) o entre el índice y el listado de huérfanos, con la rotación cortada
+        tras el paso 1 (caso A). En los dos casos el lector tiene que devolver la historia real
+        —ni eventos de más, ni `DIARIO_CORRUPTO` sobre un almacén sano—.
+        """
+        self.inicializar()
+        self.poblar(2)
+
+        def anexa_y_rota():
+            self.poblar(1, desde=50)
+            self.segmentar()
+        lector = self._lector_con_intercalacion("_leer_indice", anexa_y_rota)
+        eventos = lector.eventos()
+        reales, _ = self.historia()
+        self.assertEqual(eventos, reales, "caso B: el lector compuso una historia que el diario no tuvo")
+
+        class Corte(Exception):
+            pass
+
+        def anexa_y_corta_tras_el_segmento():
+            self.poblar(1, desde=60)
+            original = diario_mod.fallos.punto
+
+            def corta(nombre):
+                if nombre == "segmentacion-tras-el-segmento":
+                    raise Corte()
+                return original(nombre)
+            diario_mod.fallos.punto = corta
+            try:
+                self.segmentar()
+            except Corte:
+                pass
+            finally:
+                diario_mod.fallos.punto = original
+        lector = self._lector_con_intercalacion("_huerfanos", anexa_y_corta_tras_el_segmento)
+        eventos = lector.eventos()
+        reales, _ = self.historia()
+        self.assertEqual(eventos, reales, "caso A: DIARIO_CORRUPTO o eventos de menos con un huérfano legítimo")
+        self.sano()
+
     # -- T532 ----------------------------------------------------------------------
     def test_T532_un_diario_sin_segmentar_se_lee_como_siempre(self):
         """T532 · Defecto que previene: que el código nuevo exija segmentos para leer.
@@ -3012,6 +3070,23 @@ class SegmentacionDelDiario(Caso):
         eventos, _ = self.historia()
         self.assertEqual(len(eventos), len(eventos_antes) + 3)
         self.assertEqual(len({e["secuencia"] for e in eventos}), len(eventos), "hay duplicados")
+        self.sano()
+
+    def test_T533b_sellar_tras_un_corte_en_el_paso_1_no_inutiliza_el_almacen(self):
+        """T533 · Defecto que previene (revisión independiente, H1, reproducido): sellar sobre el
+        huérfano de una rotación cortada reescribía el vivo, el huérfano dejaba de ser su prefijo
+        y el almacén quedaba DIARIO_CORRUPTO para siempre. El sellado completa antes la rotación.
+        """
+        self.inicializar()
+        self.poblar(8)
+        proceso = self.segmentar_por_cli(fallo="segmentacion-tras-el-segmento")
+        self.assertEqual(proceso.returncode, CODIGO_SALIDA_CAIDA, proceso.stderr)
+        with self.almacen() as alm:
+            informe = alm.sellar(autor="OWNER", motivo="compactar en la prueba", umbral=6)
+        self.assertGreater(informe.sellados, 0)
+        self.assertEqual([n for n in os.listdir(self.ruta_segmentos()) if n.startswith("DIARIO-")], [])
+        self.sano()
+        self.transicion_ok("tx-tras-sellar", "items/tras-sellar.json", {"esquema": "ads.estado/1", "n": 3})
         self.sano()
 
     # -- T534 ----------------------------------------------------------------------

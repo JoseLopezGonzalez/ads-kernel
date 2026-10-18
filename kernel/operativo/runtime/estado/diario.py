@@ -168,13 +168,14 @@ DECISIÓN · el ÍNDICE es el punto de no retorno de la rotación
     que empiece igual que el último segmento sin serlo entero, es manipulación: FALLO
     CERRADO.
 
-DECISIÓN · el lector toma el VIVO primero y el índice después
-    Un rotador y un lector pueden coincidir. Leyendo primero el vivo, la combinación que el
-    lector obtiene es siempre una que el diario tuvo: vivo lleno con el índice viejo (antes
-    del paso 2), vivo lleno con el índice nuevo (entre 2 y 3, que se reconoce por las bytes
-    y no duplica) o vivo vacío o nuevo con el índice nuevo. Leyendo el índice primero, un
-    lector podría quedarse con el índice viejo y el vivo ya vacío: le faltarían eventos y
-    `exigir_coherente` lo daría por corrupto sin estarlo.
+DECISIÓN · el lector toma el VIVO primero, y repite si algo se movió mientras leía
+    Un rotador y un lector pueden coincidir. Leyendo primero el vivo se evita la peor mezcla
+    —índice viejo con el vivo ya vacío, que perdería eventos—, pero NO basta: si entre las dos
+    lecturas un escritor anexa Y rota, el vivo leído ya no es ni el último segmento ni vacío
+    (revisión independiente, H3, reproducido). Por eso `_partes` toma la FIRMA del vivo, del
+    índice y del listado de `segmentos/` antes y después de leer, y repite hasta que no cambie:
+    lo compuesto es lo que el diario era en un instante sin escritores. Los escritores leen
+    bajo el bloqueo, así que para ellos la firma no cambia nunca.
 
 RESIDUO, dicho: un segmento cerrado se verifica por su `sha256` del índice y por la cadena;
 alterar A LA VEZ un segmento, su `sha256` y la cadena entera hasta el final del vivo no es
@@ -193,6 +194,7 @@ from .errores import (
     DiarioCorrupto,
     RetiradaNoAdmisible,
     RetiradaSinTransicion,
+    EscritorConcurrente,
     SegmentacionImposible,
     SelladoImposible,
     UmbralDeSelladoInvalido,
@@ -327,6 +329,8 @@ DIRECTORIO_DE_SEGMENTOS = "segmentos"
 FICHERO_INDICE = "INDICE.json"
 ESQUEMA_DEL_INDICE = "ads.estado.segmentos/1"
 PATRON_DE_SEGMENTO = re.compile(r"^DIARIO-(\d{7,})-(\d{7,})\.jsonl$")
+# Lecturas de una vez antes de rendirse ante un escritor que no para (`_partes`).
+INTENTOS_DE_LECTURA_ESTABLE = 50
 CLAVES_DE_UN_SEGMENTO = ("fichero", "desde", "hasta", "bytes", "sha256", "huella_ultima",
                          "autor", "motivo")
 
@@ -405,21 +409,20 @@ def componer_lineas(vivo, entradas, lineas_de_segmento, ruta=None):
     """`(lineas_de_segmentos, datos_del_vivo, pendiente)` — la ÚNICA regla de composición.
 
     La usan `Diario` sobre el disco y `ramas.py` sobre los blobs de otra referencia: dos
-    reglas serían dos historias. `vivo` son los bytes del vivo LEÍDOS ANTES que el índice
-    (ver la DECISIÓN del módulo). `lineas_de_segmento(entrada)` devuelve `(lineas, datos)`
-    de un segmento ya comprobado contra su entrada. `pendiente` dice que una rotación se
-    cortó tras publicar el índice: el vivo tiene las mismas bytes que el último segmento y
-    se lee como vacío, sin duplicar nada.
+    reglas serían dos historias. `lineas_de_segmento(entrada)` devuelve las líneas de un
+    segmento ya comprobado contra su entrada. El vivo se compara con el ÚLTIMO segmento por su
+    tamaño y su `sha256` del índice, sin retener sus bytes: `pendiente` dice que una rotación
+    se cortó tras publicar el índice (el vivo ES el último segmento, y se lee como vacío).
     """
-    lineas, ultimo = [], None
+    lineas = []
     for entrada in entradas:
-        propias, ultimo = lineas_de_segmento(entrada)
-        lineas.extend(propias)
+        lineas.extend(lineas_de_segmento(entrada))
     pendiente = False
     if entradas and vivo:
-        if vivo == ultimo:
+        ultimo = entradas[-1]
+        if len(vivo) == ultimo["bytes"] and sha256_de(vivo) == ultimo["sha256"]:
             pendiente, vivo = True, b""
-        elif vivo.startswith(ultimo):
+        elif len(vivo) > ultimo["bytes"] and sha256_de(vivo[:ultimo["bytes"]]) == ultimo["sha256"]:
             raise DiarioCorrupto(
                 "el diario vivo empieza con las líneas del último segmento y sigue después: "
                 "una rotación no deja ese estado; alguien anexó sobre una rotación a medias",
@@ -728,7 +731,11 @@ class Diario:
             raise traducir_error_de_sistema(exc, ruta, "leer un segmento del diario") from exc
 
     def _lineas_de_segmento(self, entrada):
-        """`(lineas, datos)` de un segmento, verificado UNA vez por identidad de fichero."""
+        """Las líneas de un segmento, verificado UNA vez por identidad de fichero.
+
+        Se cachean las líneas y no las bytes: comparar el vivo con el último segmento se hace
+        por el `sha256` del índice, así que retener las bytes duplicaría el historial en memoria.
+        """
         ruta = os.path.join(self.directorio_de_segmentos, entrada["fichero"])
         try:
             info = os.stat(ruta)
@@ -737,11 +744,10 @@ class Diario:
             clave = None
         if clave is not None and clave in self._segmentos_verificados:
             return self._segmentos_verificados[clave]
-        datos = self._leer_segmento(entrada["fichero"])
-        resultado = (lineas_de_un_segmento(datos, entrada, ruta=ruta), datos)
+        lineas = lineas_de_un_segmento(self._leer_segmento(entrada["fichero"]), entrada, ruta=ruta)
         if clave is not None:
-            self._segmentos_verificados[clave] = resultado
-        return resultado
+            self._segmentos_verificados[clave] = lineas
+        return lineas
 
     def _huerfanos(self, entradas, vivo):
         """Los ficheros de `segmentos/` que ningún índice nombra, y si son explicables.
@@ -765,6 +771,8 @@ class Diario:
                 continue
             encaje = PATRON_DE_SEGMENTO.match(nombre)
             datos = self._leer_segmento(nombre) if encaje else None
+            # Si desapareció entre el listado y la lectura, lo retiró un escritor al completar
+            # una rotación: la firma de `_partes` lo detecta y la lectura se repite.
             if not encaje or int(encaje.group(1)) != siguiente or not datos \
                     or not vivo.startswith(datos):
                 raise DiarioCorrupto(
@@ -774,12 +782,49 @@ class Diario:
             tolerados.append(ruta)
         return tolerados, temporales
 
-    def _partes(self):
-        """`(lineas_de_segmentos, lineas_del_vivo, cola, pendiente)`.
+    def _firma_de_lectura(self):
+        """Lo que cambia si un escritor toca el diario mientras se lee: vivo, índice y listado."""
+        def identidad(ruta):
+            try:
+                info = os.stat(ruta)
+            except FileNotFoundError:
+                return None
+            return (info.st_ino, info.st_size, info.st_mtime_ns)
+        try:
+            listado = tuple(sorted(os.listdir(self.directorio_de_segmentos)))
+        except FileNotFoundError:
+            listado = None
+        return identidad(self.ruta), identidad(self.ruta_del_indice), listado
 
-        El VIVO se lee ANTES que el índice: ver la DECISIÓN del módulo sobre lectores que
-        coinciden con un rotador.
+    def _partes(self):
+        """`(lineas_de_segmentos, lineas_del_vivo, cola, pendiente)`, de una lectura ESTABLE.
+
+        DEFECTO QUE CIERRA (revisión independiente de la segmentación, H3, reproducido con una
+        intercalación determinista): leer el vivo y después el índice NO basta cuando entre las
+        dos lecturas un escritor anexa y además rota. El lector componía el vivo VIEJO detrás
+        del segmento nuevo —contaba eventos dos veces, o daba `DIARIO_CORRUPTO` sobre un almacén
+        sano—, o veía un huérfano que ya no era prefijo del vivo que había leído. Ahora se toma
+        la firma del vivo, del índice y del listado de `segmentos/` ANTES y DESPUÉS de leer, y si
+        cambió se vuelve a leer: el resultado es siempre el de un instante en que nada se movía.
+        Un `DIARIO_CORRUPTO` con la firma estable es corrupción de verdad y se propaga.
         """
+        for intento in range(INTENTOS_DE_LECTURA_ESTABLE):
+            antes = self._firma_de_lectura()
+            try:
+                resultado = self._partes_una_vez()
+            except DiarioCorrupto:
+                if self._firma_de_lectura() != antes:
+                    continue
+                raise
+            if self._firma_de_lectura() == antes:
+                return resultado
+        raise EscritorConcurrente(
+            "el diario cambió durante " + str(INTENTOS_DE_LECTURA_ESTABLE) + " lecturas "
+            "seguidas: no se obtuvo una lectura estable. Reintente; si persiste, hay un escritor "
+            "que no respeta el bloqueo", ruta=self.ruta)
+
+    def _partes_una_vez(self):
+        """El VIVO se lee ANTES que el índice y que el listado; la firma de `_partes` hace el resto."""
         crudo = self._bytes()
         entradas = self._leer_indice()
         segmentos, vivo, pendiente = componer_lineas(crudo, entradas, self._lineas_de_segmento,
@@ -1192,7 +1237,12 @@ class Diario:
             "huella_ultima": ultimo[CLAVE_HUELLA], "autor": autor, "motivo": motivo,
         }
         # 1 · el segmento, publicado y durable
+        nuevo_directorio = not os.path.isdir(self.directorio_de_segmentos)
         asegurar_directorio(self.directorio_de_segmentos)
+        if nuevo_directorio:
+            # El NOMBRE de `segmentos/` tiene que ser durable antes de que el índice dependa de
+            # él (revisión independiente, H4): se sincroniza `diario/`.
+            sincronizar_directorio(os.path.dirname(self.ruta))
         destino = os.path.join(self.directorio_de_segmentos, entrada["fichero"])
         escribir_y_sincronizar(destino + SUFIJO_TEMPORAL, datos)
         publicar(destino + SUFIJO_TEMPORAL, destino)
@@ -1403,6 +1453,10 @@ class Diario:
         es una cortesía, es lo que impide convertir una corrupción detectable en una
         definitiva.
         """
+        # Revisión independiente, H1 (reproducido): un corte tras el paso 1 deja un huérfano,
+        # y sellar sobre él reescribía el vivo, dejaba de ser su prefijo y el almacén quedaba
+        # DIARIO_CORRUPTO para siempre. Se completa la rotación cortada ANTES de nada.
+        self.completar_rotacion()
         if self._leer_indice():
             raise SelladoImposible(
                 "el diario está SEGMENTADO: los segmentos cerrados son inmutables y el sellado "
