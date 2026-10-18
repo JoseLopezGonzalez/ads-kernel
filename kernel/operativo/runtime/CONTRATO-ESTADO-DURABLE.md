@@ -336,9 +336,11 @@ composición vive en UNA función (`diario.componer_lineas`) que usan el motor y
 modo que la verificación de la cadena, el ancla del sellado, `exigir_coherente` frente a
 `diario_secuencia`, la ventana y el linaje leen la misma lista que con un solo fichero. El
 lector toma el vivo antes que el índice y el listado, y compara la FIRMA de los tres (inodo,
-tamaño y fecha del vivo y del índice; nombres de `segmentos/`) antes y después de leer: si un
-escritor movió algo mientras leía, repite la lectura (hasta 50 veces; después
-`ESCRITOR_CONCURRENTE`). Así sólo compone lo que el diario era en un instante sin escritores.
+tamaño y fecha del vivo y del índice; nombres de `segmentos/`) antes y después de leer. Si el
+vivo se sustituyó o encogió, o cambió el índice o el listado, repite la lectura (hasta 50 veces;
+después `ESCRITOR_CONCURRENTE`). Un vivo que sólo CRECIÓ —un anexado— no obliga a repetir: lo
+leído es un prefijo válido, como con un solo fichero. Así sólo compone lo que el diario era en
+un instante.
 Desde otra referencia Git (`ramas.diario_en`), un diario que no empieza en la secuencia 1 sin
 `previo`, que salta una secuencia o que no llega a la `diario_secuencia` publicada es BLOQUEO.
 

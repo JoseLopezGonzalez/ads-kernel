@@ -72,6 +72,7 @@ entonces:
 falla_si:
   - "la cadena o la secuencia se rompen en un corte entre ficheros"
   - "un lector compone el vivo viejo detrás del segmento nuevo, o da DIARIO_CORRUPTO sobre un almacén sano (revisión independiente, H3)"
+  - "un anexado durante la lectura obliga a repetirla, o con escritura sostenida el lector agota sus intentos sin rotación (re-revisión independiente, N1)"
 ejecucion: requiere-runtime
 validador: kernel/operativo/runtime/pruebas/test_estado_durable.py
 estado: validador-implementado

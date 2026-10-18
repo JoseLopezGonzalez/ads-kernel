@@ -3023,6 +3023,37 @@ class SegmentacionDelDiario(Caso):
         self.assertEqual(eventos, reales, "caso A: DIARIO_CORRUPTO o eventos de menos con un huérfano legítimo")
         self.sano()
 
+    def test_T531c_un_anexado_durante_la_lectura_no_obliga_a_repetirla(self):
+        """T531 · Defecto que previene (re-revisión independiente, N1, reproducido): exigir la
+        firma idéntica hacía repetir la lectura ante CADA anexado, también sin segmentar, y con
+        escritura sostenida el lector agotaba sus intentos con `ESCRITOR_CONCURRENTE`.
+
+        Un escritor anexa en CADA intento de lectura, justo después de que el lector haya leído
+        el vivo y antes del índice. El lector tiene que terminar a la primera, con la historia de
+        ese instante —un prefijo de la real—, sin agotar intentos.
+        """
+        self.inicializar()
+        self.poblar(2)
+        self.segmentar()
+        self.poblar(1, desde=2)
+        lector = diario_mod.Diario(self.ruta_diario())
+        original = lector._leer_indice
+        lecturas = []
+        contador = [100]
+
+        def con_un_anexado(*args, **kw):
+            lecturas.append(True)
+            contador[0] += 1
+            self.poblar(1, desde=contador[0])
+            return original(*args, **kw)
+        lector._leer_indice = con_un_anexado
+        eventos = lector.eventos()
+        reales, _ = self.historia()
+        self.assertEqual(len(lecturas), 1, "un anexado durante la lectura obligó a repetirla")
+        self.assertEqual(eventos, reales[:len(eventos)], "lo leído no es un prefijo de la historia real")
+        self.assertLess(len(eventos), len(reales))
+        self.sano()
+
     # -- T532 ----------------------------------------------------------------------
     def test_T532_un_diario_sin_segmentar_se_lee_como_siempre(self):
         """T532 · Defecto que previene: que el código nuevo exija segmentos para leer.

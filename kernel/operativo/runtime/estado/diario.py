@@ -796,6 +796,25 @@ class Diario:
             listado = None
         return identidad(self.ruta), identidad(self.ruta_del_indice), listado
 
+    @staticmethod
+    def _sigue_estable(antes, despues):
+        """¿Lo leído entre las dos firmas es un instante del diario? Un ANEXADO no lo impide.
+
+        Re-revisión independiente, N1 (reproducido): exigir la firma IDÉNTICA hacía repetir la
+        lectura ante cualquier anexado, incluso en un diario sin segmentar, y con escritura
+        sostenida el lector agotaba los intentos (`ESCRITOR_CONCURRENTE`) sin rotación alguna. Un
+        vivo que sólo CRECIÓ —mismo inodo, tamaño no menor— deja leído un prefijo válido, que es
+        lo que garantizaba un solo fichero. Sólo se repite si el vivo se sustituyó o encogió
+        (vaciado, truncado de la cola) o si cambió el índice o el listado de `segmentos/`.
+        """
+        vivo_antes, indice_antes, listado_antes = antes
+        vivo_despues, indice_despues, listado_despues = despues
+        if indice_antes != indice_despues or listado_antes != listado_despues:
+            return False
+        if vivo_antes is None or vivo_despues is None:
+            return vivo_antes == vivo_despues
+        return vivo_antes[0] == vivo_despues[0] and vivo_despues[1] >= vivo_antes[1]
+
     def _partes(self):
         """`(lineas_de_segmentos, lineas_del_vivo, cola, pendiente)`, de una lectura ESTABLE.
 
@@ -805,7 +824,8 @@ class Diario:
         del segmento nuevo —contaba eventos dos veces, o daba `DIARIO_CORRUPTO` sobre un almacén
         sano—, o veía un huérfano que ya no era prefijo del vivo que había leído. Ahora se toma
         la firma del vivo, del índice y del listado de `segmentos/` ANTES y DESPUÉS de leer, y si
-        cambió se vuelve a leer: el resultado es siempre el de un instante en que nada se movía.
+        algo se sustituyó o encogió se vuelve a leer (`_sigue_estable`: un vivo que sólo creció
+        sigue siendo un prefijo válido): el resultado es siempre un instante del diario.
         Un `DIARIO_CORRUPTO` con la firma estable es corrupción de verdad y se propaga.
         """
         for intento in range(INTENTOS_DE_LECTURA_ESTABLE):
@@ -813,10 +833,10 @@ class Diario:
             try:
                 resultado = self._partes_una_vez()
             except DiarioCorrupto:
-                if self._firma_de_lectura() != antes:
+                if not self._sigue_estable(antes, self._firma_de_lectura()):
                     continue
                 raise
-            if self._firma_de_lectura() == antes:
+            if self._sigue_estable(antes, self._firma_de_lectura()):
                 return resultado
         raise EscritorConcurrente(
             "el diario cambió durante " + str(INTENTOS_DE_LECTURA_ESTABLE) + " lecturas "
