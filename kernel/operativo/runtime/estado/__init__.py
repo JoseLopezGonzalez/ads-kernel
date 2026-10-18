@@ -64,13 +64,14 @@ from .errores import (
     RetiradaSinTransicion,
     RevisionObsoleta,
     RutaInvalida,
+    SegmentacionImposible,
     SelladoImposible,
     SinProveedorDeAtestacion,
     TransicionInvalida,
     UmbralDeSelladoInvalido,
     VersionDesconocida,
 )
-from .diario import InformeSellado, umbral_de_sellado
+from .diario import InformeSegmentacion, InformeSellado, umbral_de_sellado
 from .migracion import registradas as migraciones_registradas
 from .motor import VERSION_DE_FORMATO, Almacen, abrir, inicializar
 from .serializacion import VERSION_DE_ESQUEMA, cid, cid_de_objeto
@@ -102,5 +103,5 @@ __all__ = [
     "PermisoInsuficiente", "SinProveedorDeAtestacion", "AtestacionInvalida",
     "EvidenciaDentroDelArbol",
     "UmbralDeSelladoInvalido", "SelladoImposible", "RetiradaSinTransicion",
-    "RetiradaNoAdmisible",
+    "RetiradaNoAdmisible", "SegmentacionImposible", "InformeSegmentacion",
 ]

@@ -254,6 +254,16 @@ class RetiradaNoAdmisible(ErrorDeEstado):
     CODIGO = "RETIRADA_NO_ADMISIBLE"
 
 
+class SegmentacionImposible(ErrorDeEstado):
+    """No se puede cerrar el diario vivo como segmento sin poner en riesgo su historia.
+
+    Sus causas tienen el mismo remedio —cerrar primero lo que está abierto—: una transacción
+    sin evento terminal, una cola desgarrada, o una transición sin `autor` ni `motivo`.
+    """
+
+    CODIGO = "SEGMENTACION_IMPOSIBLE"
+
+
 # Censo derivado, no escrito a mano dos veces: la CLI y las pruebas lo usan para comprobar
 # que todo código emitido pertenece a la lista cerrada del §8.
 CLASES = (
@@ -266,6 +276,7 @@ CLASES = (
     MigracionNoRecuperable, PermisoInsuficiente, SinProveedorDeAtestacion,
     AtestacionInvalida, EvidenciaDentroDelArbol,
     UmbralDeSelladoInvalido, SelladoImposible, RetiradaSinTransicion, RetiradaNoAdmisible,
+    SegmentacionImposible,
 )
 
 CODIGOS = tuple(sorted(clase.CODIGO for clase in CLASES))

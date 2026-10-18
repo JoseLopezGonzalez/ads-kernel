@@ -4,7 +4,7 @@
     python3 kernel/operativo/runtime/ads_estado.py --repo <dir> <orden> [...]
 
 Órdenes: `inicializar` · `revision` · `leer` · `listar` · `transicion` · `recuperar` ·
-`sellar` · `verificar` · `auditar` · `reconciliacion` · `abrir-reconciliacion` ·
+`sellar` · `segmentar` · `verificar` · `auditar` · `reconciliacion` · `abrir-reconciliacion` ·
 `resolver` · `migrar` · `atestar`.
 
 Códigos de salida:  0 éxito · 1 fallo de la operación (error tipado) · 2 uso incorrecto.
@@ -604,6 +604,27 @@ def orden_sellar(argumentos):
     ])
 
 
+def orden_segmentar(argumentos):
+    """Cierra el diario vivo como segmento inmutable. Ninguna línea del diario cambia.
+
+    Abre con `recuperar=False` por la misma razón que `sellar`: la negativa ante una
+    transacción sin cerrar tiene que poder verse.
+    """
+    with estado.abrir(argumentos.repo, recuperar=False) as almacen:
+        informe = almacen.segmentar(autor=argumentos.autor, motivo=argumentos.motivo,
+                                    umbral_bytes=argumentos.umbral_bytes).a_dict()
+    entrada = informe["entrada"] or {}
+    return _emitir(argumentos, informe, [
+        "segmentado         " + ("sí" if informe["segmentado"] else "no · " + informe["razon"]),
+        "segmento           " + str(entrada.get("fichero", "(ninguno)")),
+        "rango              " + ("%s-%s" % (entrada["desde"], entrada["hasta"]) if entrada else "-"),
+        "sha256             " + str(entrada.get("sha256", "-")),
+        "segmentos          " + str(informe["segmentos"]),
+        "bytes_vivo_antes   " + str(informe["bytes_vivo_antes"]),
+        "bytes_vivo_despues " + str(informe["bytes_vivo_despues"]),
+    ])
+
+
 def orden_migrar(argumentos):
     with estado.abrir(argumentos.repo, recuperar=False) as almacen:
         informe = almacen.migrar(argumentos.a).a_dict()
@@ -676,6 +697,7 @@ ORDENES = {
     "recuperar": orden_recuperar,
     "divergencia": orden_divergencia,
     "sellar": orden_sellar,
+    "segmentar": orden_segmentar,
     "verificar": orden_verificar,
     "auditar": orden_auditar,
     "reconciliacion": orden_reconciliacion,
@@ -762,6 +784,12 @@ def construir_analizador():
                         help="retirada DIRIGIDA del cuerpo de ese evento (repetible)")
     sellar.add_argument("--contrato", default=None,
                         help="sede alternativa del contrato derivado del que se lee el umbral")
+
+    segmentar = ordenes.add_parser("segmentar", parents=[comun])
+    segmentar.add_argument("--autor", required=True)
+    segmentar.add_argument("--motivo", required=True)
+    segmentar.add_argument("--umbral-bytes", dest="umbral_bytes", type=int, default=None,
+                           help="no cierra un diario vivo más pequeño que esto")
 
     migrar = ordenes.add_parser("migrar", parents=[comun])
     migrar.add_argument("--a", type=int, default=estado.VERSION_DE_FORMATO)

@@ -31,7 +31,8 @@ estado/
   FORMATO.json                    versión del ALMACÉN. Un lector que no la entienda para
   REVISION.json                   el ÚNICO punto de publicación atómica de una transición
   canonico/<dominio>/<id>.json    ESTADO CANÓNICO — se lee con `cat`, sin reproyectar
-  diario/DIARIO.jsonl             DIARIO CANÓNICO — append-only, encadenado por hash
+  diario/DIARIO.jsonl             DIARIO CANÓNICO — append-only, encadenado por hash; el VIVO
+  diario/segmentos/               segmentos CERRADOS del diario y su INDICE.json (§6 ter)
   reconciliacion/REGISTRO.jsonl   REGISTRO OPERATIVO AUXILIAR — append-only, encadenado
   reconciliacion/conflictos/<tx>/ copia ÍNTEGRA de lo divergente cuando la recuperación MARCA
   operacional/                    NO es estado durable: bloqueo y zona de preparación
@@ -314,6 +315,54 @@ no se ejecuta solo: no hay compactación automática al abrir ni al aplicar. Tom
 de escritor** —el mismo que `aplicar` y `recuperar`, porque reescribe el fichero en el que
 `anexar` escribe— y se **niega** si hay una transacción sin cerrar, aunque la regla de la
 ventana ya la protegería evento a evento: `g.8` reserva esa salida a la autoridad.
+
+## 6 ter · Segmentación del diario — el mismo diario, en varios ficheros
+
+**Qué resuelve.** Un diario en un solo fichero crece sin límite, y un repositorio Git que lo
+versiona choca con el tamaño máximo de fichero de su proveedor (100 MiB en GitHub). Medido en
+una instancia: 59 MiB y de 2 a 5 MiB al día. El sellado no es la respuesta cuando no se
+autoriza retirar contenido.
+
+**Qué hace.** `Almacen.segmentar(autor=, motivo=, umbral_bytes=None)` —y `ads_estado.py
+segmentar --autor A --motivo M [--umbral-bytes N]`— cierra el diario VIVO entero como segmento
+`diario/segmentos/DIARIO-<desde>-<hasta>.jsonl` y deja un vivo vacío. El segmento son **las
+mismas bytes** que tenía el vivo: ningún evento cambia de contenido, de secuencia, de huella
+ni de `previo`, y el primer evento del vivo nuevo encadena con la huella del último del
+segmento. `diario/segmentos/INDICE.json` (`ads.estado.segmentos/1`) registra por segmento
+`desde`, `hasta`, `bytes`, `sha256`, `huella_ultima`, `autor` y `motivo`.
+
+**Cómo se lee.** El diario son los segmentos del índice, en orden, seguidos del vivo. Esa
+composición vive en UNA función (`diario.componer_lineas`) que usan el motor y `ramas.py`, de
+modo que la verificación de la cadena, el ancla del sellado, `exigir_coherente` frente a
+`diario_secuencia`, la ventana y el linaje leen la misma lista que con un solo fichero. El
+lector toma el vivo ANTES que el índice: así nunca compone una combinación que el diario no
+haya tenido.
+
+**Fallo cerrado (`DIARIO_CORRUPTO`).** Un segmento cuyas bytes o `sha256` no son las del
+índice; un segmento que falta; un índice ilegible, con rangos no contiguos o con un nombre que
+no dice su rango; un fichero en `segmentos/` que ningún índice nombra y no es el rastro de una
+rotación cortada; un vivo que empieza con el último segmento y sigue.
+
+**La rotación y sus dos cortes.** Tres pasos atómicos: publicar el segmento, publicar el
+índice —el punto de no retorno— y vaciar el vivo. Los puntos de fallo
+`segmentacion-tras-el-segmento` y `segmentacion-tras-el-indice` se inyectan en las dos
+fronteras (§10):
+
+```text
+CORTE TRAS EL SEGMENTO  el segmento es un HUÉRFANO cuyas bytes son un prefijo del vivo: el
+                        diario sigue siendo el vivo, y la siguiente escritura o `recuperar`
+                        retira el huérfano
+CORTE TRAS EL ÍNDICE    el vivo tiene las MISMAS bytes que el último segmento: se lee como
+                        vacío, sin duplicar nada, y la siguiente escritura o `recuperar` lo vacía
+```
+
+**Lo que segmentar NO hace.** No se ejecuta solo. No publica revisión ni toca `canonico/`. Toma
+el bloqueo de escritor y se **niega** con `SEGMENTACION_IMPOSIBLE` si hay una transacción sin
+cerrar, una cola desgarrada o falta la firma (`autor` y `motivo`). Con un diario segmentado,
+`sellar` se niega (`SELLADO_IMPOSIBLE`): los segmentos son inmutables. Y `reparar_cola` trunca
+sólo el vivo. Un almacén que nunca se segmentó no tiene `segmentos/` y se lee como siempre.
+
+Escenarios: [`../pruebas/T530-T539-diario-segmentado.md`](../pruebas/T530-T539-diario-segmentado.md).
 
 ## 7 · Versionado y migración
 

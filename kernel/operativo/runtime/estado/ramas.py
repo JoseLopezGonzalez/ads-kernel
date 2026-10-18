@@ -59,13 +59,15 @@ import posixpath
 
 from gobierno.git import CanalGit, GitFallo
 from .diario import (
-    CLAVE_HUELLA, CLAVE_PREVIO, TIPO_INICIALIZADO, TIPOS_QUE_CIERRAN, TIPO_PREPARADA,
-    calcular_huella, linaje_de,
+    CLAVE_HUELLA, CLAVE_PREVIO, DIRECTORIO_DE_SEGMENTOS, FICHERO_INDICE, TIPO_INICIALIZADO,
+    TIPOS_QUE_CIERRAN, TIPO_PREPARADA, DiarioCorrupto, calcular_huella, componer_lineas,
+    interpretar_indice, linaje_de, lineas_de_un_segmento,
 )
 
 RUTA_ESTADO = "estado"
 FICHERO_REVISION = "REVISION.json"
 FICHERO_DIARIO = posixpath.join("diario", "DIARIO.jsonl")
+FICHERO_INDICE_DE_SEGMENTOS = posixpath.join("diario", DIRECTORIO_DE_SEGMENTOS, FICHERO_INDICE)
 
 # El vocabulario CERRADO. Ninguna otra palabra vale, y la CLI lo publica tal cual.
 SIN_INTERFERENCIA = "SIN INTERFERENCIA"
@@ -107,6 +109,21 @@ def diario_en(canal, ref, *, ruta_estado=RUTA_ESTADO):
     crudo = canal.contenido_de_blob(ref, _ruta(ruta_estado, FICHERO_DIARIO))
     if crudo is None:
         return None
+    # Un diario SEGMENTADO son sus segmentos cerrados seguidos del vivo, y se compone con la
+    # MISMA regla que el motor (`diario.componer_lineas`): dos reglas serían dos historias.
+    try:
+        entradas = interpretar_indice(
+            canal.contenido_de_blob(ref, _ruta(ruta_estado, FICHERO_INDICE_DE_SEGMENTOS)))
+
+        def de_un_segmento(entrada):
+            datos = canal.contenido_de_blob(ref, _ruta(ruta_estado, posixpath.join(
+                "diario", DIRECTORIO_DE_SEGMENTOS, entrada["fichero"])))
+            return lineas_de_un_segmento(datos, entrada), datos
+
+        segmentos, vivo, _pendiente = componer_lineas(crudo, entradas, de_un_segmento)
+    except DiarioCorrupto as exc:
+        raise RamaSinEstado("diario de `%s`: %s" % (ref, exc))
+    crudo = b"".join(linea + b"\n" for linea in segmentos) + vivo
     eventos = []
     for numero, linea in enumerate(crudo.decode("utf-8").splitlines(), start=1):
         if not linea.strip():
