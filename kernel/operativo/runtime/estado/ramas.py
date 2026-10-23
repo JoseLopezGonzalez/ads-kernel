@@ -59,13 +59,15 @@ import posixpath
 
 from gobierno.git import CanalGit, GitFallo
 from .diario import (
-    CLAVE_HUELLA, CLAVE_PREVIO, TIPO_INICIALIZADO, TIPOS_QUE_CIERRAN, TIPO_PREPARADA,
-    calcular_huella, linaje_de,
+    CLAVE_HUELLA, CLAVE_PREVIO, DIRECTORIO_DE_SEGMENTOS, FICHERO_INDICE, TIPO_INICIALIZADO,
+    TIPOS_QUE_CIERRAN, TIPO_PREPARADA, DiarioCorrupto, calcular_huella, componer_lineas,
+    interpretar_indice, linaje_de, lineas_de_un_segmento,
 )
 
 RUTA_ESTADO = "estado"
 FICHERO_REVISION = "REVISION.json"
 FICHERO_DIARIO = posixpath.join("diario", "DIARIO.jsonl")
+FICHERO_INDICE_DE_SEGMENTOS = posixpath.join("diario", DIRECTORIO_DE_SEGMENTOS, FICHERO_INDICE)
 
 # El vocabulario CERRADO. Ninguna otra palabra vale, y la CLI lo publica tal cual.
 SIN_INTERFERENCIA = "SIN INTERFERENCIA"
@@ -107,6 +109,21 @@ def diario_en(canal, ref, *, ruta_estado=RUTA_ESTADO):
     crudo = canal.contenido_de_blob(ref, _ruta(ruta_estado, FICHERO_DIARIO))
     if crudo is None:
         return None
+    # Un diario SEGMENTADO son sus segmentos cerrados seguidos del vivo, y se compone con la
+    # MISMA regla que el motor (`diario.componer_lineas`): dos reglas serían dos historias.
+    try:
+        entradas = interpretar_indice(
+            canal.contenido_de_blob(ref, _ruta(ruta_estado, FICHERO_INDICE_DE_SEGMENTOS)))
+
+        def de_un_segmento(entrada):
+            datos = canal.contenido_de_blob(ref, _ruta(ruta_estado, posixpath.join(
+                "diario", DIRECTORIO_DE_SEGMENTOS, entrada["fichero"])))
+            return lineas_de_un_segmento(datos, entrada)
+
+        segmentos, vivo, _pendiente = componer_lineas(crudo, entradas, de_un_segmento)
+    except DiarioCorrupto as exc:
+        raise RamaSinEstado("diario de `%s`: %s" % (ref, exc))
+    crudo = b"".join(linea + b"\n" for linea in segmentos) + vivo
     eventos = []
     for numero, linea in enumerate(crudo.decode("utf-8").splitlines(), start=1):
         if not linea.strip():
@@ -127,8 +144,18 @@ def exigir_encadenado(eventos, ref):
 
     Es la comprobación de §2.4 del contrato, hecha sobre eventos leídos de un blob. Un
     diario que no la pasa no clasifica nada: es BLOQUEO con su línea."""
+    # Revisión independiente de la segmentación, H2 (reproducido): un commit que lleva el vivo y
+    # no sus segmentos componía una historia sin su prefijo y se daba por encadenada. La cadena
+    # tiene que EMPEZAR: secuencia 1, sin `previo`, y seguir sin saltos.
+    if eventos and (eventos[0].get("secuencia") != 1 or eventos[0].get(CLAVE_PREVIO) is not None):
+        raise RamaSinEstado("diario de `%s`: no empieza en la secuencia 1 sin `previo` (empieza en la "
+                            "%s): le falta su principio, p. ej. segmentos que no se confirmaron"
+                            % (ref, eventos[0].get("secuencia")))
     anterior = None
-    for evento in eventos:
+    for indice, evento in enumerate(eventos, start=1):
+        if evento.get("secuencia") != indice:
+            raise RamaSinEstado("diario de `%s`: la secuencia salta: se esperaba %d y se lee %s"
+                                % (ref, indice, evento.get("secuencia")))
         huella = evento.get(CLAVE_HUELLA)
         if huella != calcular_huella(evento):
             raise RamaSinEstado("diario de `%s`: la huella de la secuencia %s no es la de su "
@@ -208,6 +235,11 @@ def comparar(ruta_control_repo, ref_a, ref_b, *, ruta_estado=RUTA_ESTADO):
     for nombre, ref in (("a", ref_a), ("b", ref_b)):
         if revisiones[nombre] is None or diarios[nombre] is None:
             return _bloqueo(ref_a, ref_b, "`%s` no lleva estado durable (%s)" % (ref, nombre),
+                            commits=commits)
+        if len(diarios[nombre]) < revisiones[nombre]["diario_secuencia"]:
+            return _bloqueo(ref_a, ref_b, "`%s` publica la revisión explicada por el evento %d y su diario "
+                            "sólo llega al %d: le faltan eventos (%s)" % (
+                                ref, revisiones[nombre]["diario_secuencia"], len(diarios[nombre]), nombre),
                             commits=commits)
         abiertas = ventana_abierta(diarios[nombre])
         if abiertas:

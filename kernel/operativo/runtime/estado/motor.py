@@ -75,6 +75,7 @@ from .errores import (
     ReintentosAgotados,
     RevisionObsoleta,
     RutaInvalida,
+    SegmentacionImposible,
     SelladoImposible,
     TransicionInvalida,
     VersionDesconocida,
@@ -1775,6 +1776,28 @@ class Almacen:
                 autor=autor, motivo=motivo, umbral=umbral,
                 secuencia_publicada=self._leer_revision()["diario_secuencia"],
             )
+        finally:
+            bloqueo.liberar()
+
+    def segmentar(self, *, autor, motivo, umbral_bytes=None):
+        """Cierra el diario vivo como segmento inmutable (ver `diario.py`, LA SEGMENTACIÓN).
+
+        Ninguna línea cambia: el segmento son las mismas bytes, y la cadena continúa en el vivo
+        nuevo. Se niega con una transacción sin cerrar, por la misma razón que `sellar`: abrir
+        con `recuperar=True` la cerraría por su cuenta y nadie sabría si la negativa existe.
+        """
+        self._exigir_operable()
+        bloqueo = BloqueoExclusivo(self._d.bloqueo_escritor, "escritor")
+        bloqueo.adquirir(intentos=3)
+        try:
+            if self._hay_ventana_que_cerrar():
+                raise SegmentacionImposible(
+                    "hay una transacción sin cerrar: `g.8` reserva su salida a la autoridad, y "
+                    "cerrar un segmento por encima de una ventana abierta la partiría entre dos "
+                    "ficheros. Llame a `recuperar()` y vuelva a segmentar",
+                    ruta=self._d.relativa(self._d.diario),
+                )
+            return self._diario.rotar(autor=autor, motivo=motivo, umbral_bytes=umbral_bytes)
         finally:
             bloqueo.liberar()
 

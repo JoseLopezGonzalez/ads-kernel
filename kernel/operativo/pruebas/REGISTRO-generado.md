@@ -1,7 +1,7 @@
 # REGISTRO DE PRUEBAS — generado
 
 <!-- GENERADO por validadores/registro_pruebas.py. No editar a mano. -->
-<!-- source_revision: 65c911588937fed5 -->
+<!-- source_revision: f2d5c040e15b621e -->
 
 Fuente: los bloques `ads:escenario` de `kernel/operativo/` y `packs/`.
 Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md).
@@ -11,11 +11,11 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | estado | pruebas |
 |---|---|
 | CONTRATO DEFINIDO | 56 |
-| VALIDADOR IMPLEMENTADO | 7 |
+| VALIDADOR IMPLEMENTADO | 17 |
 | PRUEBA EJECUTADA | 0 |
 | PRUEBA SUPERADA | 304 |
 | PRUEBA FALLIDA | 0 |
-| **total** | **367** |
+| **total** | **377** |
 
 ## Detalle
 
@@ -388,18 +388,28 @@ Los cuatro estados y qué autoriza a decir cada uno: [`REGISTRO.md`](REGISTRO.md
 | [T504](T460-T479-oficina.md) | Ninguna capacidad del corpus queda CALLADA en una ruta | ciclo/rutas.py · Directiva del Owner §32 · OWN-ADS-0126 · OWN-ADS-0128 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
 | [T505](T460-T479-oficina.md) | La espera por entrada obligatoria no tiene ciclos, y quien la declara dice por que | rol · ciclo/planificacion.py · Directiva del Owner §32 · Directiva del Owner §81 · OWN-ADS-0287 | validador-estructural | **PRUEBA SUPERADA** | evidencia/contratos-salida.txt |
 | [T506](T460-T479-oficina.md) | La entrada obligatoria ordena aunque los dos roles puedan compartir agente | ciclo/planificacion.py · rol · Directiva del Owner §81 · OWN-ADS-0287 | requiere-runtime | **PRUEBA SUPERADA** | evidencia/oficina-salida.txt |
+| [T530](T530-T539-diario-segmentado.md) | La rotación cierra el vivo como segmento sin cambiar un byte ni la cadena | CONTRATO-ESTADO-DURABLE §6 ter · g.7 · g.13 | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
+| [T531](T530-T539-diario-segmentado.md) | Tras rotar, el vivo nuevo encadena con el último segmento | CONTRATO-ESTADO-DURABLE §6 ter · §2.4 | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
+| [T532](T530-T539-diario-segmentado.md) | Un diario que nunca se segmentó se lee como siempre | CONTRATO-ESTADO-DURABLE §6 ter · compatibilidad | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
+| [T533](T530-T539-diario-segmentado.md) | Un corte tras publicar el segmento no pierde ni duplica eventos | CONTRATO-ESTADO-DURABLE §6 ter · §10 · g.4 · g.8 | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
+| [T534](T530-T539-diario-segmentado.md) | Un corte tras publicar el índice no duplica y se completa al recuperar | CONTRATO-ESTADO-DURABLE §6 ter · §10 · g.4 · g.8 | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
+| [T535](T530-T539-diario-segmentado.md) | No se segmenta una ventana abierta ni una rotación sin firma | CONTRATO-ESTADO-DURABLE §6 ter · g.8 | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
+| [T536](T530-T539-diario-segmentado.md) | Un segmento alterado es diario corrupto | CONTRATO-ESTADO-DURABLE §6 ter · g.5 | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
+| [T537](T530-T539-diario-segmentado.md) | Lo que falta o sobra entre segmentos es diario corrupto | CONTRATO-ESTADO-DURABLE §6 ter · g.5 · g.13 | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
+| [T538](T530-T539-diario-segmentado.md) | Con segmentos el sellado se niega y una cola rota sólo trunca el vivo | CONTRATO-ESTADO-DURABLE §6 ter · g.7 · g.8 | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
+| [T539](T530-T539-diario-segmentado.md) | Un diario segmentado se lee igual desde Git | CONTRATO-ESTADO-DURABLE §6 bis · §6 ter | requiere-runtime | **VALIDADOR IMPLEMENTADO** · SIN CONTRASTE: su evidencia no lo nombra | — |
 
 ## Contraste del estado contra la evidencia
 
-Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **304** de **367**.
+Escenarios cuya evidencia los NOMBRA y por tanto se contrastan: **304** de **377**.
 
-No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **63**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
+No contrastables —su evidencia no publica una línea de veredicto con su identificador—: **73**. Para éstos el estado derivado es el que la evidencia SÍ sostiene, y no se sube por omisión.
 
 Desglose de los NO contrastables por el estado que DECLARAN —la cifra agregada mezclaba a los que no afirman ninguna ejecución con los que afirmaban una que su evidencia no nombra, que es lo que `H-02` encontró—:
 
 | estado declarado | escenarios |
 |---|---|
 | contrato-definido | 56 |
-| validador-implementado | 7 |
+| validador-implementado | 17 |
 
 Ninguna divergencia: todo `estado:` declarado coincide con el que su evidencia sostiene.

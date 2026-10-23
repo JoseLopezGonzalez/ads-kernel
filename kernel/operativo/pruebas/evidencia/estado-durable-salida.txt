@@ -169,6 +169,30 @@ test_18_detectar_bifurcacion_distingue_el_mismo_linaje_del_ajeno (__main__.Posit
 T176 · Defecto que previene: dos máquinas divergiendo sin que nadie lo note (`g.6`). ... ok
 test_19_abrir_y_resolver_una_reconciliacion_por_la_CLI (__main__.Positivos.test_19_abrir_y_resolver_una_reconciliacion_por_la_CLI)
 T178 · Defecto que previene: un camino del motor que sólo existe en la API. ... ok
+test_T530_la_rotacion_conserva_cada_byte_y_la_cadena (__main__.SegmentacionDelDiario.test_T530_la_rotacion_conserva_cada_byte_y_la_cadena)
+T530 · Defecto que previene: «segmentar» reescribiendo, reordenando o perdiendo líneas. ... ok
+test_T531_tras_segmentar_la_historia_sigue_creciendo_encadenada (__main__.SegmentacionDelDiario.test_T531_tras_segmentar_la_historia_sigue_creciendo_encadenada)
+T531 · Defecto que previene: un vivo nuevo que no encadena con el segmento. ... ok
+test_T531b_un_lector_que_coincide_con_una_rotacion_lee_la_historia_real (__main__.SegmentacionDelDiario.test_T531b_un_lector_que_coincide_con_una_rotacion_lee_la_historia_real)
+T531 · Defecto que previene (revisión independiente, H3, reproducido): un lector sin ... ok
+test_T531c_un_anexado_durante_la_lectura_no_obliga_a_repetirla (__main__.SegmentacionDelDiario.test_T531c_un_anexado_durante_la_lectura_no_obliga_a_repetirla)
+T531 · Defecto que previene (re-revisión independiente, N1, reproducido): exigir la ... ok
+test_T532_un_diario_sin_segmentar_se_lee_como_siempre (__main__.SegmentacionDelDiario.test_T532_un_diario_sin_segmentar_se_lee_como_siempre)
+T532 · Defecto que previene: que el código nuevo exija segmentos para leer. ... ok
+test_T533_un_corte_tras_publicar_el_segmento_no_pierde_ni_duplica (__main__.SegmentacionDelDiario.test_T533_un_corte_tras_publicar_el_segmento_no_pierde_ni_duplica)
+T533 · Defecto que previene: perder o duplicar eventos si la luz se va en el paso 1. ... ok
+test_T533b_sellar_tras_un_corte_en_el_paso_1_no_inutiliza_el_almacen (__main__.SegmentacionDelDiario.test_T533b_sellar_tras_un_corte_en_el_paso_1_no_inutiliza_el_almacen)
+T533 · Defecto que previene (revisión independiente, H1, reproducido): sellar sobre el ... ok
+test_T534_un_corte_tras_publicar_el_indice_no_duplica_y_se_completa (__main__.SegmentacionDelDiario.test_T534_un_corte_tras_publicar_el_indice_no_duplica_y_se_completa)
+T534 · Defecto que previene: leer dos veces los mismos eventos tras el paso 2. ... ok
+test_T535_ni_una_ventana_abierta_ni_una_rotacion_sin_firma (__main__.SegmentacionDelDiario.test_T535_ni_una_ventana_abierta_ni_una_rotacion_sin_firma)
+T535 · Defecto que previene: partir una transacción viva entre dos ficheros. ... ok
+test_T536_un_segmento_alterado_es_diario_corrupto (__main__.SegmentacionDelDiario.test_T536_un_segmento_alterado_es_diario_corrupto)
+T536 · Defecto que previene: aceptar un segmento editado después de cerrarse. ... ok
+test_T537_lo_que_falta_o_sobra_entre_segmentos_es_diario_corrupto (__main__.SegmentacionDelDiario.test_T537_lo_que_falta_o_sobra_entre_segmentos_es_diario_corrupto)
+T537 · Defecto que previene: componer una historia con huecos o con añadidos. ... ok
+test_T538_sellar_se_niega_y_una_cola_rota_solo_trunca_el_vivo (__main__.SegmentacionDelDiario.test_T538_sellar_se_niega_y_una_cola_rota_solo_trunca_el_vivo)
+T538 · Defecto que previene: que el sellado o la reparación toquen un segmento. ... ok
 test_T312_el_sellado_compacta_el_diario_y_se_mide (__main__.SelladoDelDiario.test_T312_el_sellado_compacta_el_diario_y_se_mide)
 T312 · Defecto que previene: un «sellado» que no retira ni un byte. ... ok
 test_T312b_la_cola_del_umbral_queda_intacta_y_lo_no_sellable_tambien (__main__.SelladoDelDiario.test_T312b_la_cola_del_umbral_queda_intacta_y_lo_no_sellable_tambien)
@@ -207,6 +231,6 @@ test_T319c_control_del_control_del_ancla_del_sellado (__main__.SelladoDelDiario.
 T319 · CONTROL DEL CONTROL: se retira la comprobación y se mira qué se pone rojo. ... ok
 
 ----------------------------------------------------------------------
-Ran 100 tests  (duración no registrada: varía por ejecución)
+Ran 112 tests  (duración no registrada: varía por ejecución)
 
 OK

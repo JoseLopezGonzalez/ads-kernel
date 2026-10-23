@@ -196,7 +196,8 @@ componentes:
     tipo: validador
     evidencia: estado-durable-salida.txt
     firma_de_exito: '(?m)^OK$'
-    debe_contener: ['Ran ', 'duración no registrada', 'T173', 'T175', 'T176', 'T178']
+    debe_contener: ['Ran ', 'duración no registrada', 'T173', 'T175', 'T176', 'T178',
+                    'T530', 'T533', 'T534', 'T536', 'T537', 'T538']
 
   - id: estado-entre-ramas
     script: test_estado_entre_ramas.py
@@ -204,7 +205,7 @@ componentes:
     tipo: validador
     evidencia: estado-entre-ramas-salida.txt
     firma_de_exito: '(?m)^OK$'
-    debe_contener: ['Ran ', 'duración no registrada', 'T480', 'T481', 'T482']
+    debe_contener: ['Ran ', 'duración no registrada', 'T480', 'T481', 'T482', 'T539']
 
   - id: estado-e2e
     script: escenario_extremo_a_extremo.py

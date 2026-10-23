@@ -43,12 +43,12 @@
 
 EL UNIVERSO DE PROPIEDADES, DERIVADO
 ------------------------------------------------------------------------------
-  358 propiedades críticas · 163 escenarios · 58 obligaciones del universo
+  365 propiedades críticas · 170 escenarios · 58 obligaciones del universo
   escenarios que cubren obligación y NO escriben `falla_si` —sedes mudas, no aportan propiedad y no se callan— (5): T135, T87, T88, T90, T92
 
 POR REQUISITO — dónde se rompe la cadena
 ------------------------------------------------------------------------------
-  S1  SABOTAJE IMPUTADO AL ESCENARIO              primeras faltas: 186
+  S1  SABOTAJE IMPUTADO AL ESCENARIO              primeras faltas: 193
   S2  MOTIVO DEL ROJO DECLARADO                   primeras faltas: 2
   S3  CANAL PRODUCTIVO, NO PRUEBA TEXTUAL         primeras faltas: 2
   S4  NO ES SÓLO LA HUELLA GENERAL                primeras faltas: 0
@@ -948,10 +948,31 @@ FALTANTES, UNO A UNO — propiedad, obligaciones, requisito y motivo
   T482/f2      S1  g.13
        «un enlace simbólico bajo `canonico/` deja escribir fuera del árbol»
        ningún sabotaje del catálogo está imputado a `T482` · sede kernel/operativo/pruebas/T480-T489-estado-entre-ramas.md:79
+  T530/f1      S1  g.13,g.7
+       «una línea cambia, se reordena, se pierde o se duplica»
+       ningún sabotaje del catálogo está imputado a `T530` · sede kernel/operativo/pruebas/T530-T539-diario-segmentado.md:39
+  T533/f1      S1  g.4,g.8
+       «el huérfano se cuenta como historia, o bloquea el almacén»
+       ningún sabotaje del catálogo está imputado a `T533` · sede kernel/operativo/pruebas/T530-T539-diario-segmentado.md:99
+  T534/f1      S1  g.4,g.8
+       «los eventos del último segmento se leen dos veces»
+       ningún sabotaje del catálogo está imputado a `T534` · sede kernel/operativo/pruebas/T530-T539-diario-segmentado.md:119
+  T535/f1      S1  g.8
+       «una transacción sin evento terminal queda partida entre dos ficheros»
+       ningún sabotaje del catálogo está imputado a `T535` · sede kernel/operativo/pruebas/T530-T539-diario-segmentado.md:138
+  T536/f1      S1  g.5
+       «el almacén se abre con un segmento que no es el que el índice registró»
+       ningún sabotaje del catálogo está imputado a `T536` · sede kernel/operativo/pruebas/T530-T539-diario-segmentado.md:156
+  T537/f1      S1  g.13,g.5
+       «se compone una historia con un hueco o con un añadido»
+       ningún sabotaje del catálogo está imputado a `T537` · sede kernel/operativo/pruebas/T530-T539-diario-segmentado.md:173
+  T538/f1      S1  g.7,g.8
+       «el sellado o la reparación reescriben un segmento»
+       ningún sabotaje del catálogo está imputado a `T538` · sede kernel/operativo/pruebas/T530-T539-diario-segmentado.md:190
 
-  358 propiedades críticas medidas · 297 PENDIENTES · 57 obligaciones afectadas
+  365 propiedades críticas medidas · 304 PENDIENTES · 57 obligaciones afectadas
   obligaciones con alguna propiedad pendiente: A14, C2, C4, C5, CONTRATO 1, CONTRATO 1bis, CONTRATO 2, CONTRATO 3, D104, F-01, F-02, F-04, F-05, F-06, F-10, F-11, FD-1, FD-3, FD-5, FD-6, M-04, S1-02, V6-01, V6-02, V6-03, V6-04, V6-05, V6-06, V6-07, V6-08, V6-09, V6-10, V6-11, V6-12, V6-13, V6-14, V6-15, V6-16, V6-17, V6-18, V6-19, g.1, g.10, g.11, g.12, g.13, g.14, g.15, g.16, g.2, g.3, g.4, g.5, g.6, g.7, g.8, g.9
-  pendientes de `O26-SAB`: 297 propiedades, enumeradas arriba
+  pendientes de `O26-SAB`: 304 propiedades, enumeradas arriba
   `O26` §5.2 · NO ACREDITADA por este instrumento
 
 LO QUE ESTE VEREDICTO NO DEMUESTRA

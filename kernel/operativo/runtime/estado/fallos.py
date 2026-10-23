@@ -67,6 +67,11 @@ PUNTOS = (
     "durante-el-diario",
     "durante-el-registro-auxiliar",
     "antes-de-devolver-exito",
+    # Las dos fronteras de la SEGMENTACIÓN del diario (`diario.rotar`): el segmento ya está
+    # publicado y el índice todavía no lo nombra; el índice ya lo nombra y el diario vivo
+    # todavía conserva sus líneas. Fuera de ellas la rotación no deja estado intermedio.
+    "segmentacion-tras-el-segmento",
+    "segmentacion-tras-el-indice",
 )
 
 CODIGO_DE_SALIDA = 70

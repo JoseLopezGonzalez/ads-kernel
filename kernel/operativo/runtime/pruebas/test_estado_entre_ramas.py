@@ -399,6 +399,70 @@ class T482(Caso):
         self.assertEqual(os.listdir(fuera), [], "se escribió fuera de canonico/ a través del enlace")
 
 
+class T539(Caso):
+    """T539 · un diario SEGMENTADO se lee desde Git como desde el disco, y se clasifica igual."""
+
+    def test_09_un_diario_segmentado_se_compone_igual_desde_los_blobs(self):
+        """T539 · Defecto que previene: que otra rama segmentada parezca truncada o manipulada.
+
+        `ramas.diario_en` lee el diario de una referencia como BLOBS. Tras segmentar en una
+        rama, los eventos que compone desde Git tienen que ser exactamente los que el motor lee
+        del disco, y la comparación con la rama sin segmentar tiene que ser `COMPATIBLE`
+        (una avanza sobre la otra), no `BLOQUEO`.
+        """
+        lab = self.lab
+        lab.escribir("tx-1", "items/a.json", 1)
+        lab.escribir("tx-2", "items/b.json", 2)
+        lab.rama("sin-segmentar")
+        proceso = cli(lab.repo, ["segmentar", "--autor", "OWNER", "--motivo", "prueba"])
+        self.assertEqual(proceso.returncode, 0, proceso.stderr)
+        lab.confirmar("diario segmentado")
+        lab.escribir("tx-3", "items/c.json", 3)
+        with estado.abrir(lab.repo) as almacen:
+            del_disco = almacen.diario()
+        desde_git = ramas.diario_en(lab.canal, "HEAD")
+        self.assertEqual(desde_git, del_disco, "la composición desde Git no es la del motor")
+        r = ramas.comparar(lab.repo, "main", "sin-segmentar")
+        self.assertEqual(r["clase"], ramas.COMPATIBLE, r)
+        self.assertEqual(r["relacion"], "a-avanza-sobre-b")
+        # y un segmento alterado en la rama es BLOQUEO, como un diario editado
+        lab.rama("danada")
+        lab.ir_a("danada")
+        segmentos = os.path.join(lab.repo, "estado", "diario", "segmentos")
+        nombre = sorted(n for n in os.listdir(segmentos) if n.startswith("DIARIO-"))[0]
+        with open(os.path.join(segmentos, nombre), "ab") as f:
+            f.write(b" ")
+        lab.confirmar("segmento alterado")
+        r = ramas.comparar(lab.repo, "sin-segmentar", "danada")
+        self.assertEqual(r["clase"], ramas.BLOQUEO, r)
+
+
+class T539b(Caso):
+    """T539 · un commit que lleva el vivo y NO sus segmentos es BLOQUEO, no un diario sano."""
+
+    def test_10_un_diario_sin_su_prefijo_no_se_da_por_encadenado(self):
+        """T539 · Defecto que previene (revisión independiente, H2, reproducido): con
+        `estado/diario/segmentos/` fuera del commit, `diario_en` componía sólo el vivo
+        —empieza en la secuencia N con `previo`— y lo daba por verificado.
+        """
+        lab = self.lab
+        lab.escribir("tx-1", "items/a.json", 1)
+        lab.escribir("tx-2", "items/b.json", 2)
+        lab.rama("completa")
+        lab.ir_a("completa")
+        proceso = cli(lab.repo, ["segmentar", "--autor", "OWNER", "--motivo", "prueba"])
+        self.assertEqual(proceso.returncode, 0, proceso.stderr)
+        lab.escribir("tx-3", "items/c.json", 3)
+        lab.canal.ejecutar("checkout", "-q", "-b", "sin-segmentos")
+        lab.canal.ejecutar("rm", "-r", "-q", "--cached", "estado/diario/segmentos")
+        lab.canal.ejecutar("commit", "-q", "-m", "el vivo sin sus segmentos")
+        with self.assertRaises(ramas.RamaSinEstado):
+            ramas.diario_en(lab.canal, "sin-segmentos")
+        r = ramas.comparar(lab.repo, "completa", "sin-segmentos")
+        self.assertEqual(r["clase"], ramas.BLOQUEO, r)
+        self.assertEqual(ramas.comparar(lab.repo, "main", "completa")["clase"], ramas.COMPATIBLE)
+
+
 class _RunnerDeterminista(unittest.TextTestRunner):
     """Igual que el corriente, pero sin la duración en el resumen (salida publicada)."""
 

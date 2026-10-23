@@ -225,6 +225,9 @@ PUNTOS_DEL_CONTRATO = [
     "durante-el-diario",
     "durante-el-registro-auxiliar",
     "antes-de-devolver-exito",
+    # Las dos fronteras de la segmentación del diario (`T533`, `T534`).
+    "segmentacion-tras-el-segmento",
+    "segmentacion-tras-el-indice",
 ]
 
 CODIGO_SALIDA_CAIDA = 70          # `os._exit(70)` del §10
@@ -2862,6 +2865,423 @@ class SelladoDelDiario(Caso):
 # ===================================================================================
 #  T320 · T327 — `ADJ-B1` · LA MIGRACIÓN 0->1 SOBRE UN ALMACÉN HEREDADO **REAL**
 # ===================================================================================
+class SegmentacionDelDiario(Caso):
+    """T530-T538 · el diario se reparte en segmentos cerrados y NI UNA LÍNEA cambia.
+
+    Lo que se exige es lo que el Owner puso como condición: conservar íntegramente todos los
+    eventos, su contenido, su secuencia y su cadena; recuperarse de un corte en mitad de una
+    rotación sin pérdidas ni duplicados; leer igual un diario sin segmentar; y detectar la
+    corrupción de un segmento, del índice o de lo que sobre o falte entre ellos.
+    """
+
+    def ruta_diario(self):
+        return self.ruta_estado("diario", "DIARIO.jsonl")
+
+    def ruta_segmentos(self, *partes):
+        return self.ruta_estado("diario", "segmentos", *partes)
+
+    def poblar(self, cuantas=4, desde=0):
+        with self.almacen() as alm:
+            for numero in range(desde, desde + cuantas):
+                alm.aplicar(estado.Transicion(
+                    tipo="alta", base=alm.revision()["revision_id"],
+                    operaciones=[estado.Escritura("items/seg-%02d.json" % numero,
+                                                  {"esquema": "ads.estado/1", "n": numero})],
+                    autor="agente-s", motivo="alta %d" % numero, id="tx-seg-%02d" % numero))
+
+    def segmentar(self, **kw):
+        with self.almacen() as alm:
+            return alm.segmentar(autor=kw.pop("autor", "OWNER"),
+                                 motivo=kw.pop("motivo", "mantenimiento preventivo"), **kw)
+
+    def historia(self):
+        """Todos los eventos, verificados, y la revisión publicada: lo que no puede cambiar."""
+        with self.almacen(recuperar=False) as alm:
+            return alm.diario(), solo_durables(alm.revision())
+
+    def sano(self):
+        with self.almacen(recuperar=False) as alm:
+            self.assertTrue(alm.verificar_integridad().ok)
+            self.assertTrue(alm.auditar().ok)
+
+    def segmentar_por_cli(self, *, fallo=None):
+        return cli(self.repo, ["segmentar", "--autor", "OWNER", "--motivo", "prueba"], fallo=fallo)
+
+    # -- T530 ----------------------------------------------------------------------
+    def test_T530_la_rotacion_conserva_cada_byte_y_la_cadena(self):
+        """T530 · Defecto que previene: «segmentar» reescribiendo, reordenando o perdiendo líneas.
+
+        El segmento tiene que ser BYTE A BYTE el vivo que había, el vivo nuevo vacío, y la
+        lista de eventos que el motor lee, idéntica a la de antes: mismo número, mismas
+        secuencias, mismas huellas y mismos `previo`. La revisión publicada no se mueve.
+        """
+        self.inicializar()
+        self.poblar()
+        vivo_antes = bytes_de(self.ruta_diario())
+        eventos_antes, revision_antes = self.historia()
+
+        informe = self.segmentar()
+
+        self.assertTrue(informe.segmentado)
+        entrada = informe.entrada
+        self.assertEqual(bytes_de(self.ruta_segmentos(entrada["fichero"])), vivo_antes,
+                         "el segmento no son las bytes que tenía el vivo")
+        self.assertEqual(bytes_de(self.ruta_diario()), b"", "el vivo no quedó vacío")
+        self.assertEqual((entrada["desde"], entrada["hasta"]), (1, len(eventos_antes)))
+        self.assertEqual(entrada["huella_ultima"], eventos_antes[-1]["huella"])
+        indice = json.loads(texto_de(self.ruta_segmentos("INDICE.json")))
+        self.assertEqual(indice["segmentos"], [entrada])
+        eventos_despues, revision_despues = self.historia()
+        self.assertEqual(eventos_despues, eventos_antes, "la historia cambió al segmentar")
+        self.assertEqual(revision_despues, revision_antes, "segmentar movió la revisión")
+        self.sano()
+
+    # -- T531 ----------------------------------------------------------------------
+    def test_T531_tras_segmentar_la_historia_sigue_creciendo_encadenada(self):
+        """T531 · Defecto que previene: un vivo nuevo que no encadena con el segmento.
+
+        Tras rotar, la primera transacción nueva lleva como `previo` la huella del último
+        evento del segmento. Se rota DOS veces, con transacciones entre medias, y otro
+        proceso (la CLI) abre, verifica y audita el almacén resultante.
+        """
+        self.inicializar()
+        self.poblar(3)
+        self.segmentar()
+        ultimo = json.loads(texto_de(self.ruta_segmentos("INDICE.json")))["segmentos"][-1]
+        self.poblar(2, desde=3)
+        primero_del_vivo = json.loads(texto_de(self.ruta_diario()).splitlines()[0])
+        self.assertEqual(primero_del_vivo["previo"], ultimo["huella_ultima"])
+        self.assertEqual(primero_del_vivo["secuencia"], ultimo["hasta"] + 1)
+        segundo = self.segmentar()
+        self.assertEqual(segundo.entrada["desde"], ultimo["hasta"] + 1)
+        self.poblar(1, desde=5)
+        eventos, revision = self.historia()
+        self.assertEqual([e["secuencia"] for e in eventos], list(range(1, len(eventos) + 1)))
+        self.assertEqual(revision["diario_secuencia"], eventos[-2]["secuencia"],
+                         "la revisión publicada no la explica la preparada de la última")
+        self.assertEqual(len(os.listdir(self.ruta_segmentos())), 3)    # dos + el índice
+        for orden in (["verificar", "--json"], ["auditar", "--json"]):
+            proceso = cli(self.repo, orden)
+            self.assertEqual(proceso.returncode, 0, proceso.stderr)
+        self.sano()
+
+    def _lector_con_intercalacion(self, metodo, accion):
+        """Un lector SIN bloqueo al que `accion` (un escritor) le ocurre justo antes de `metodo`."""
+        lector = diario_mod.Diario(self.ruta_diario())
+        original = getattr(lector, metodo)
+        hecho = []
+
+        def envuelto(*args, **kw):
+            if not hecho:
+                hecho.append(True)
+                accion()
+            return original(*args, **kw)
+        setattr(lector, metodo, envuelto)
+        return lector
+
+    def test_T531b_un_lector_que_coincide_con_una_rotacion_lee_la_historia_real(self):
+        """T531 · Defecto que previene (revisión independiente, H3, reproducido): un lector sin
+        bloqueo que lee el vivo, y antes de leer el índice o el listado un escritor ANEXA y ROTA.
+
+        La intercalación es determinista: el escritor actúa DENTRO de la lectura, entre el vivo
+        y el índice (caso B) o entre el índice y el listado de huérfanos, con la rotación cortada
+        tras el paso 1 (caso A). En los dos casos el lector tiene que devolver la historia real
+        —ni eventos de más, ni `DIARIO_CORRUPTO` sobre un almacén sano—.
+        """
+        self.inicializar()
+        self.poblar(2)
+
+        def anexa_y_rota():
+            self.poblar(1, desde=50)
+            self.segmentar()
+        lector = self._lector_con_intercalacion("_leer_indice", anexa_y_rota)
+        eventos = lector.eventos()
+        reales, _ = self.historia()
+        self.assertEqual(eventos, reales, "caso B: el lector compuso una historia que el diario no tuvo")
+
+        class Corte(Exception):
+            pass
+
+        def anexa_y_corta_tras_el_segmento():
+            self.poblar(1, desde=60)
+            original = diario_mod.fallos.punto
+
+            def corta(nombre):
+                if nombre == "segmentacion-tras-el-segmento":
+                    raise Corte()
+                return original(nombre)
+            diario_mod.fallos.punto = corta
+            try:
+                self.segmentar()
+            except Corte:
+                pass
+            finally:
+                diario_mod.fallos.punto = original
+        lector = self._lector_con_intercalacion("_huerfanos", anexa_y_corta_tras_el_segmento)
+        eventos = lector.eventos()
+        reales, _ = self.historia()
+        self.assertEqual(eventos, reales, "caso A: DIARIO_CORRUPTO o eventos de menos con un huérfano legítimo")
+        self.sano()
+
+    def test_T531c_un_anexado_durante_la_lectura_no_obliga_a_repetirla(self):
+        """T531 · Defecto que previene (re-revisión independiente, N1, reproducido): exigir la
+        firma idéntica hacía repetir la lectura ante CADA anexado, también sin segmentar, y con
+        escritura sostenida el lector agotaba sus intentos con `ESCRITOR_CONCURRENTE`.
+
+        Un escritor anexa en CADA intento de lectura, justo después de que el lector haya leído
+        el vivo y antes del índice. El lector tiene que terminar a la primera, con la historia de
+        ese instante —un prefijo de la real—, sin agotar intentos.
+        """
+        self.inicializar()
+        self.poblar(2)
+        self.segmentar()
+        self.poblar(1, desde=2)
+        lector = diario_mod.Diario(self.ruta_diario())
+        original = lector._leer_indice
+        lecturas = []
+        contador = [100]
+
+        def con_un_anexado(*args, **kw):
+            lecturas.append(True)
+            contador[0] += 1
+            self.poblar(1, desde=contador[0])
+            return original(*args, **kw)
+        lector._leer_indice = con_un_anexado
+        eventos = lector.eventos()
+        reales, _ = self.historia()
+        self.assertEqual(len(lecturas), 1, "un anexado durante la lectura obligó a repetirla")
+        self.assertEqual(eventos, reales[:len(eventos)], "lo leído no es un prefijo de la historia real")
+        self.assertLess(len(eventos), len(reales))
+        self.sano()
+
+    # -- T532 ----------------------------------------------------------------------
+    def test_T532_un_diario_sin_segmentar_se_lee_como_siempre(self):
+        """T532 · Defecto que previene: que el código nuevo exija segmentos para leer.
+
+        Un almacén que nunca se segmentó no tiene `segmentos/`, y leerlo, escribir en él y
+        recuperarlo no crea ese directorio. Con `umbral_bytes` por encima del tamaño del vivo
+        no se rota nada y tampoco aparece.
+        """
+        self.inicializar()
+        self.poblar(2)
+        self.sano()
+        self.assertFalse(os.path.exists(self.ruta_segmentos()))
+        informe = self.segmentar(umbral_bytes=10 ** 9)
+        self.assertFalse(informe.segmentado)
+        self.assertIn("umbral", informe.razon)
+        self.assertFalse(os.path.exists(self.ruta_segmentos()),
+                         "una rotación que no rota no debe dejar rastro")
+
+    # -- T533 ----------------------------------------------------------------------
+    def test_T533_un_corte_tras_publicar_el_segmento_no_pierde_ni_duplica(self):
+        """T533 · Defecto que previene: perder o duplicar eventos si la luz se va en el paso 1.
+
+        Corte REAL (`os._exit(70)`) con el segmento ya publicado y el índice sin nombrarlo.
+        EXPECTATIVA declarada: el diario sigue siendo el vivo —la misma historia, ni un evento
+        de más—, el huérfano es tolerable hasta completar, la siguiente escritura lo retira, y
+        la rotación se puede repetir con el mismo resultado.
+        """
+        self.inicializar()
+        self.poblar(3)
+        eventos_antes, revision_antes = self.historia()
+        proceso = self.segmentar_por_cli(fallo="segmentacion-tras-el-segmento")
+        self.assertEqual(proceso.returncode, CODIGO_SALIDA_CAIDA, proceso.stderr)
+        huerfanos = [n for n in os.listdir(self.ruta_segmentos()) if n.startswith("DIARIO-")]
+        self.assertEqual(len(huerfanos), 1)
+        self.assertFalse(os.path.exists(self.ruta_segmentos("INDICE.json")))
+        eventos, revision = self.historia()
+        self.assertEqual(eventos, eventos_antes, "tras el corte la historia no es la misma")
+        self.assertEqual(revision, revision_antes)
+        self.sano()
+        self.transicion_ok("tx-tras-el-corte", "items/tras.json", {"esquema": "ads.estado/1", "n": 1})
+        self.assertEqual([n for n in os.listdir(self.ruta_segmentos()) if n.startswith("DIARIO-")], [],
+                         "el huérfano de la rotación cortada no se retiró al escribir")
+        informe = self.segmentar()
+        self.assertTrue(informe.segmentado)
+        eventos, _ = self.historia()
+        self.assertEqual(len(eventos), len(eventos_antes) + 3)
+        self.assertEqual(len({e["secuencia"] for e in eventos}), len(eventos), "hay duplicados")
+        self.sano()
+
+    def test_T533b_sellar_tras_un_corte_en_el_paso_1_no_inutiliza_el_almacen(self):
+        """T533 · Defecto que previene (revisión independiente, H1, reproducido): sellar sobre el
+        huérfano de una rotación cortada reescribía el vivo, el huérfano dejaba de ser su prefijo
+        y el almacén quedaba DIARIO_CORRUPTO para siempre. El sellado completa antes la rotación.
+        """
+        self.inicializar()
+        self.poblar(8)
+        proceso = self.segmentar_por_cli(fallo="segmentacion-tras-el-segmento")
+        self.assertEqual(proceso.returncode, CODIGO_SALIDA_CAIDA, proceso.stderr)
+        with self.almacen() as alm:
+            informe = alm.sellar(autor="OWNER", motivo="compactar en la prueba", umbral=6)
+        self.assertGreater(informe.sellados, 0)
+        self.assertEqual([n for n in os.listdir(self.ruta_segmentos()) if n.startswith("DIARIO-")], [])
+        self.sano()
+        self.transicion_ok("tx-tras-sellar", "items/tras-sellar.json", {"esquema": "ads.estado/1", "n": 3})
+        self.sano()
+
+    # -- T534 ----------------------------------------------------------------------
+    def test_T534_un_corte_tras_publicar_el_indice_no_duplica_y_se_completa(self):
+        """T534 · Defecto que previene: leer dos veces los mismos eventos tras el paso 2.
+
+        Corte REAL con el índice ya publicado y el vivo todavía lleno. EXPECTATIVA declarada:
+        el vivo tiene las MISMAS bytes que el último segmento y se lee como vacío; la historia
+        es la misma; `recuperar` (CLI) completa la rotación vaciando el vivo; y la siguiente
+        transacción encadena con la huella del último evento del segmento.
+        """
+        self.inicializar()
+        self.poblar(3)
+        eventos_antes, revision_antes = self.historia()
+        proceso = self.segmentar_por_cli(fallo="segmentacion-tras-el-indice")
+        self.assertEqual(proceso.returncode, CODIGO_SALIDA_CAIDA, proceso.stderr)
+        entrada = json.loads(texto_de(self.ruta_segmentos("INDICE.json")))["segmentos"][-1]
+        self.assertEqual(bytes_de(self.ruta_diario()), bytes_de(self.ruta_segmentos(entrada["fichero"])))
+        eventos, revision = self.historia()
+        self.assertEqual(eventos, eventos_antes, "el corte tras el índice duplicó o perdió eventos")
+        self.assertEqual(revision, revision_antes)
+        recuperar = cli(self.repo, ["recuperar", "--json"])
+        self.assertEqual(recuperar.returncode, 0, recuperar.stderr)
+        self.assertEqual(bytes_de(self.ruta_diario()), b"", "recuperar no completó la rotación")
+        self.transicion_ok("tx-tras-el-indice", "items/tras.json", {"esquema": "ads.estado/1", "n": 2})
+        primero = json.loads(texto_de(self.ruta_diario()).splitlines()[0])
+        self.assertEqual(primero["previo"], entrada["huella_ultima"])
+        eventos, _ = self.historia()
+        self.assertEqual(eventos[:len(eventos_antes)], eventos_antes)
+        self.sano()
+
+    # -- T535 ----------------------------------------------------------------------
+    def test_T535_ni_una_ventana_abierta_ni_una_rotacion_sin_firma(self):
+        """T535 · Defecto que previene: partir una transacción viva entre dos ficheros.
+
+        Con una transacción muerta a mitad (sin evento terminal), `segmentar` se NIEGA con
+        `SEGMENTACION_IMPOSIBLE` y no deja ni el directorio. Sin `autor` o `motivo`, también.
+        Tras `recuperar`, la misma orden segmenta.
+        """
+        self.inicializar()
+        self.poblar(2)
+        caida = self.transicion("tx-muere", "items/m.json", {"esquema": "ads.estado/1", "n": 9},
+                                fallo="entre-el-paso-8-y-el-9")
+        self.assertEqual(caida.returncode, CODIGO_SALIDA_CAIDA)
+        proceso = self.segmentar_por_cli()
+        self.assertEqual(proceso.returncode, 1)
+        self.assertEqual(codigo_de_error(proceso), "SEGMENTACION_IMPOSIBLE")
+        self.assertFalse(os.path.exists(self.ruta_segmentos()))
+        with self.almacen() as alm:                                    # recupera al abrir
+            for autor, motivo in (("", "m"), ("OWNER", "  ")):
+                self.assertFalloCerrado(errores.SegmentacionImposible, alm.segmentar,
+                                        autor=autor, motivo=motivo)
+        self.assertTrue(self.segmentar().segmentado)
+        self.sano()
+
+    # -- T536 ----------------------------------------------------------------------
+    def test_T536_un_segmento_alterado_es_diario_corrupto(self):
+        """T536 · Defecto que previene: aceptar un segmento editado después de cerrarse.
+
+        Se cambia UN byte de un segmento cerrado. Abrir para leer, abrir para escribir y
+        verificar por la CLI fallan CERRADO con `DIARIO_CORRUPTO`, por el `sha256` del índice
+        aunque la cadena no se tocara.
+        """
+        self.inicializar()
+        self.poblar(2)
+        entrada = self.segmentar().entrada
+        ruta = self.ruta_segmentos(entrada["fichero"])
+        datos = bytearray(bytes_de(ruta))
+        posicion = datos.index(b"alta 0")
+        datos[posicion:posicion + 6] = b"alta X"
+        with open(ruta, "wb") as fh:
+            fh.write(bytes(datos))
+        # Falla ya al ABRIR: `exigir_coherente` compone el diario y comprueba cada segmento
+        # contra su `sha256`, así que ni siquiera se llega a leer un evento del segmento malo.
+        self.assertFalloCerrado(errores.DiarioCorrupto, self.almacen, recuperar=False)
+        self.assertFalloCerrado(errores.DiarioCorrupto, self.almacen, recuperar=True)
+        proceso = cli(self.repo, ["verificar", "--json"])
+        self.assertNotEqual(proceso.returncode, 0)
+        self.assertEqual(codigo_de_error(proceso), "DIARIO_CORRUPTO")
+
+    # -- T537 ----------------------------------------------------------------------
+    def test_T537_lo_que_falta_o_sobra_entre_segmentos_es_diario_corrupto(self):
+        """T537 · Defecto que previene: componer una historia con huecos o con añadidos.
+
+        Cinco daños, cada uno sobre una copia: falta un segmento; el índice salta un rango;
+        el índice no es JSON; aparece en `segmentos/` un fichero que no es el rastro de una
+        rotación cortada; y el vivo empieza con el último segmento y sigue (alguien anexó
+        sobre una rotación a medias). Los cinco son `DIARIO_CORRUPTO`.
+        """
+        self.inicializar()
+        self.poblar(2)
+        primero = self.segmentar().entrada
+        self.poblar(2, desde=2)
+        segundo = self.segmentar().entrada
+        self.poblar(1, desde=4)
+        origen = self.repo
+
+        def danar(nombre, accion):
+            copia = os.path.join(self.tmp, "copia-" + nombre)
+            shutil.copytree(origen, copia)
+            accion(os.path.join(copia, "estado", "diario"))
+            return copia
+
+        def indice_de(directorio):
+            return os.path.join(directorio, "segmentos", "INDICE.json")
+
+        def sin_segmento(d):
+            os.remove(os.path.join(d, "segmentos", primero["fichero"]))
+
+        def salto(d):
+            indice = json.loads(texto_de(indice_de(d)))
+            indice["segmentos"] = indice["segmentos"][1:]
+            with open(indice_de(d), "w", encoding="utf-8") as fh:
+                json.dump(indice, fh)
+
+        def ilegible(d):
+            with open(indice_de(d), "w", encoding="utf-8") as fh:
+                fh.write("{no es json")
+
+        def ajeno(d):
+            with open(os.path.join(d, "segmentos", "DIARIO-0000099-0000100.jsonl"), "wb") as fh:
+                fh.write(b"{}\n")
+
+        def anexado_sobre_rotacion(d):
+            ultimo = bytes_de(os.path.join(d, "segmentos", segundo["fichero"]))
+            with open(os.path.join(d, "DIARIO.jsonl"), "wb") as fh:
+                fh.write(ultimo + bytes_de(os.path.join(origen, "estado", "diario", "DIARIO.jsonl")))
+
+        for nombre, accion in (("sin-segmento", sin_segmento), ("salto", salto),
+                               ("ilegible", ilegible), ("ajeno", ajeno),
+                               ("anexado", anexado_sobre_rotacion)):
+            with self.subTest(dano=nombre):
+                copia = danar(nombre, accion)
+                with self.assertRaises(errores.DiarioCorrupto):
+                    with estado.abrir(copia, recuperar=False) as alm:
+                        alm.diario()
+
+    # -- T538 ----------------------------------------------------------------------
+    def test_T538_sellar_se_niega_y_una_cola_rota_solo_trunca_el_vivo(self):
+        """T538 · Defecto que previene: que el sellado o la reparación toquen un segmento.
+
+        Con segmentos, el sellado se NIEGA (`SELLADO_IMPOSIBLE`): reescribiría el diario
+        entero dentro del vivo. Y una cola desgarrada en el vivo se repara truncando SÓLO el
+        vivo: los segmentos conservan sus bytes y la historia completa sigue verificando.
+        """
+        self.inicializar()
+        self.poblar(2)
+        entrada = self.segmentar().entrada
+        segmento_antes = bytes_de(self.ruta_segmentos(entrada["fichero"]))
+        self.poblar(1, desde=2)
+        with self.almacen() as alm:
+            self.assertFalloCerrado(errores.SelladoImposible, alm.sellar,
+                                    autor="OWNER", motivo="compactar", umbral=6)
+        eventos_antes, _ = self.historia()
+        with open(self.ruta_diario(), "ab") as fh:
+            fh.write(b'{"esquema":"ads.estado/1","secuencia":')      # anexado desgarrado
+        with self.almacen(recuperar=True) as alm:
+            alm.recuperar()
+        self.assertEqual(bytes_de(self.ruta_segmentos(entrada["fichero"])), segmento_antes)
+        eventos, _ = self.historia()
+        self.assertEqual(eventos, eventos_antes)
+        self.sano()
+
+
 class MigracionHeredadaReal(Caso):
     """`ADJ-B1`. La migración del formato heredado, sobre el formato heredado de verdad.
 

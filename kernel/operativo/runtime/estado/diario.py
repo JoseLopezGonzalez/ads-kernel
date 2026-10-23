@@ -123,9 +123,68 @@ DECISIÓN · el UMBRAL se lee del CONTRATO DERIVADO, no de una constante de este
     material que el motor LEE, y por eso su ausencia, su ilegibilidad y un valor absurdo son
     FALLO CERRADO y no un valor por omisión: un motor que se inventa el umbral cuando no lo
     encuentra convierte la sede en decorado.
+
+===========================================================================================
+LA SEGMENTACIÓN — el diario se reparte en ficheros, y NI UNA LÍNEA cambia
+===========================================================================================
+
+MEDIDO el 2026-10-17 en una instancia real: 81.860 eventos, 59 MiB en un solo fichero que
+crece de 2 a 5 MiB al día, y GitHub RECHAZA el push de un fichero de más de 100 MiB. El
+sellado no lo resuelve: retira cuerpos —el Owner no autoriza retirarlos— y `preparada`, un
+tercio del fichero, no se sella nunca.
+
+DECISIÓN · se cierra el diario VIVO entero como segmento inmutable; no se reescribe nada
+    Alternativas: (a) sellar; (b) comprimir; (c) mover las líneas, tal cual, a un fichero
+    cerrado y seguir anexando en uno vacío.
+    Se elige (c). Con (a) se pierde contenido del fichero de trabajo. Con (b) el diario deja
+    de leerse con `tail` y cambia su formato. Con (c) cada línea conserva sus bytes, su
+    `secuencia`, su `huella` y su `previo`: la cadena atraviesa el corte porque el primer
+    evento del vivo nuevo lleva como `previo` la huella del último del segmento, que es
+    exactamente lo que `anexar` ya calcula sobre la lista completa.
+
+    estado/diario/DIARIO.jsonl                    el VIVO: el único que se anexa
+    estado/diario/segmentos/DIARIO-<d>-<h>.jsonl  cerrados, con sus bytes, para siempre
+    estado/diario/segmentos/INDICE.json           por segmento: desde, hasta, bytes,
+                                                  sha256, huella del último, autor, motivo
+
+DECISIÓN · la lista de líneas se COMPONE en un solo sitio, y todo lo demás no cambia
+    `_lineas()` devuelve segmentos + vivo. Así la verificación eslabón a eslabón, el ancla
+    del sellado, `exigir_coherente` frente a `REVISION.diario_secuencia`, `anexar`,
+    `siguiente_secuencia`, la ventana y el linaje leen la MISMA lista que leían con un solo
+    fichero. Sólo dos operaciones escriben sobre el vivo por su longitud y se acotan a él:
+    `reparar_cola`, que trunca únicamente el vivo, y el sellado, que con segmentos se NIEGA
+    (los segmentos son inmutables y el Owner no autoriza retirar cuerpos).
+
+DECISIÓN · el ÍNDICE es el punto de no retorno de la rotación
+    Tres pasos, cada uno atómico (`escribir_y_sincronizar` + `os.replace` + `fsync` del
+    directorio):
+        1 · publicar el segmento                  → punto `segmentacion-tras-el-segmento`
+        2 · publicar el índice que lo nombra      → punto `segmentacion-tras-el-indice`
+        3 · vaciar el vivo
+    Un corte tras 1 deja un segmento HUÉRFANO —ningún índice lo nombra— cuyos bytes son un
+    prefijo del vivo: el diario sigue siendo el vivo y el huérfano se retira al completar.
+    Un corte tras 2 deja el vivo con las MISMAS bytes que el último segmento: se lee como
+    vacío (no hay duplicados) y se vacía al completar. Cualquier otro huérfano, o un vivo
+    que empiece igual que el último segmento sin serlo entero, es manipulación: FALLO
+    CERRADO.
+
+DECISIÓN · el lector toma el VIVO primero, y repite si algo se movió mientras leía
+    Un rotador y un lector pueden coincidir. Leyendo primero el vivo se evita la peor mezcla
+    —índice viejo con el vivo ya vacío, que perdería eventos—, pero NO basta: si entre las dos
+    lecturas un escritor anexa Y rota, el vivo leído ya no es ni el último segmento ni vacío
+    (revisión independiente, H3, reproducido). Por eso `_partes` toma la FIRMA del vivo, del
+    índice y del listado de `segmentos/` antes y después de leer, y repite hasta que no cambie:
+    lo compuesto es lo que el diario era en un instante sin escritores. Los escritores leen
+    bajo el bloqueo, así que para ellos la firma no cambia nunca.
+
+RESIDUO, dicho: un segmento cerrado se verifica por su `sha256` del índice y por la cadena;
+alterar A LA VEZ un segmento, su `sha256` y la cadena entera hasta el final del vivo no es
+detectable desde dentro del árbol, igual que el residuo del sellado: es lo que `g.15`
+reserva a la raíz externa.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -135,12 +194,15 @@ from .errores import (
     DiarioCorrupto,
     RetiradaNoAdmisible,
     RetiradaSinTransicion,
+    EscritorConcurrente,
+    SegmentacionImposible,
     SelladoImposible,
     UmbralDeSelladoInvalido,
 )
 from .rutas import (
     SUFIJO_TEMPORAL,
     asegurar_directorio,
+    borrar_si_existe,
     escribir_y_sincronizar,
     publicar,
     sincronizar_directorio,
@@ -260,6 +322,112 @@ RUTA_DEL_CONTRATO_DERIVADO = os.path.join(
 # propio, que es el analizador que no hay que escribir ni mantener.
 BLOQUE_JSON = re.compile(r"^```json\s*$")
 FIN_DE_BLOQUE = re.compile(r"^```\s*$")
+
+
+# ------------------------------------------------------------------ la segmentación
+DIRECTORIO_DE_SEGMENTOS = "segmentos"
+FICHERO_INDICE = "INDICE.json"
+ESQUEMA_DEL_INDICE = "ads.estado.segmentos/1"
+PATRON_DE_SEGMENTO = re.compile(r"^DIARIO-(\d{7,})-(\d{7,})\.jsonl$")
+# Lecturas de una vez antes de rendirse ante un escritor que no para (`_partes`).
+INTENTOS_DE_LECTURA_ESTABLE = 50
+CLAVES_DE_UN_SEGMENTO = ("fichero", "desde", "hasta", "bytes", "sha256", "huella_ultima",
+                         "autor", "motivo")
+
+
+def nombre_de_segmento(desde, hasta):
+    """`DIARIO-0000001-0081860.jsonl`: el rango en el nombre, y ordenable como texto."""
+    return "DIARIO-%07d-%07d.jsonl" % (desde, hasta)
+
+
+def sha256_de(datos):
+    return "sha256:" + hashlib.sha256(datos).hexdigest()
+
+
+def interpretar_indice(crudo, ruta=None):
+    """Las entradas de `INDICE.json`, VALIDADAS. `crudo` ausente → ningún segmento.
+
+    Lo que se exige es lo que hace falta para que la composición sea la historia y no otra:
+    rangos contiguos desde la secuencia 1, nombre que dice su rango, y las claves con su
+    tipo. Un índice que no cumple es FALLO CERRADO: componer «lo que se pueda» es inventar
+    historia.
+    """
+    if crudo is None:
+        return []
+    try:
+        indice = json.loads(crudo.decode("utf-8") if isinstance(crudo, bytes) else crudo)
+    except (ValueError, UnicodeDecodeError) as exc:
+        raise DiarioCorrupto("el índice de segmentos no es JSON legible: " + str(exc), ruta=ruta)
+    if not isinstance(indice, dict) or indice.get("esquema") != ESQUEMA_DEL_INDICE \
+            or not isinstance(indice.get("segmentos"), list):
+        raise DiarioCorrupto("el índice de segmentos no declara `" + ESQUEMA_DEL_INDICE
+                             + "` con su lista de segmentos", ruta=ruta)
+    esperado = 1
+    for posicion, entrada in enumerate(indice["segmentos"], start=1):
+        if not isinstance(entrada, dict) or any(clave not in entrada for clave in CLAVES_DE_UN_SEGMENTO):
+            raise DiarioCorrupto("la entrada " + str(posicion) + " del índice de segmentos no "
+                                 "tiene sus claves", ruta=ruta, posicion=posicion)
+        desde, hasta = entrada["desde"], entrada["hasta"]
+        if any(isinstance(v, bool) or not isinstance(v, int) for v in (desde, hasta, entrada["bytes"])):
+            raise DiarioCorrupto("la entrada " + str(posicion) + " del índice de segmentos "
+                                 "no da su rango y su tamaño como enteros", ruta=ruta, posicion=posicion)
+        if desde != esperado or hasta < desde or entrada["bytes"] <= 0:
+            raise DiarioCorrupto(
+                "los segmentos no son contiguos: la entrada " + str(posicion) + " empieza en "
+                + str(desde) + " y se esperaba " + str(esperado) + ". Falta o sobra un segmento",
+                ruta=ruta, posicion=posicion, esperado=esperado, encontrado=desde)
+        if entrada["fichero"] != nombre_de_segmento(desde, hasta):
+            raise DiarioCorrupto("el segmento " + str(posicion) + " se llama `"
+                                 + str(entrada["fichero"]) + "` y su rango dice otro nombre",
+                                 ruta=ruta, posicion=posicion)
+        esperado = hasta + 1
+    return indice["segmentos"]
+
+
+def lineas_de_un_segmento(datos, entrada, ruta=None):
+    """Las líneas de un segmento CERRADO, comprobado contra su entrada del índice."""
+    if datos is None:
+        raise DiarioCorrupto("falta el segmento `" + entrada["fichero"] + "` que el índice "
+                             "nombra: se han perdido eventos completos", ruta=ruta,
+                             desde=entrada["desde"], hasta=entrada["hasta"])
+    if len(datos) != entrada["bytes"] or sha256_de(datos) != entrada["sha256"]:
+        raise DiarioCorrupto("el segmento `" + entrada["fichero"] + "` no es el que el índice "
+                             "registró: sus bytes cambiaron después de cerrarse", ruta=ruta,
+                             desde=entrada["desde"], hasta=entrada["hasta"])
+    if not datos.endswith(b"\n") or datos.count(b"\n") != entrada["hasta"] - entrada["desde"] + 1:
+        raise DiarioCorrupto("el segmento `" + entrada["fichero"] + "` no tiene una línea "
+                             "completa por evento de su rango", ruta=ruta)
+    lineas = datos[:-1].split(b"\n")
+    ultimo = deserializar(lineas[-1], ruta=ruta, error=DiarioCorrupto)
+    if not isinstance(ultimo, dict) or ultimo.get(CLAVE_HUELLA) != entrada["huella_ultima"]:
+        raise DiarioCorrupto("el último evento del segmento `" + entrada["fichero"] + "` no "
+                             "es el que el índice registró", ruta=ruta)
+    return lineas
+
+
+def componer_lineas(vivo, entradas, lineas_de_segmento, ruta=None):
+    """`(lineas_de_segmentos, datos_del_vivo, pendiente)` — la ÚNICA regla de composición.
+
+    La usan `Diario` sobre el disco y `ramas.py` sobre los blobs de otra referencia: dos
+    reglas serían dos historias. `lineas_de_segmento(entrada)` devuelve las líneas de un
+    segmento ya comprobado contra su entrada. El vivo se compara con el ÚLTIMO segmento por su
+    tamaño y su `sha256` del índice, sin retener sus bytes: `pendiente` dice que una rotación
+    se cortó tras publicar el índice (el vivo ES el último segmento, y se lee como vacío).
+    """
+    lineas = []
+    for entrada in entradas:
+        lineas.extend(lineas_de_segmento(entrada))
+    pendiente = False
+    if entradas and vivo:
+        ultimo = entradas[-1]
+        if len(vivo) == ultimo["bytes"] and sha256_de(vivo) == ultimo["sha256"]:
+            pendiente, vivo = True, b""
+        elif len(vivo) > ultimo["bytes"] and sha256_de(vivo[:ultimo["bytes"]]) == ultimo["sha256"]:
+            raise DiarioCorrupto(
+                "el diario vivo empieza con las líneas del último segmento y sigue después: "
+                "una rotación no deja ese estado; alguien anexó sobre una rotación a medias",
+                ruta=ruta)
+    return lineas, vivo, pendiente
 
 
 def calcular_huella(evento):
@@ -471,11 +639,40 @@ class InformeSellado:
         }
 
 
+class InformeSegmentacion:
+    """Qué cerró una rotación del diario, o por qué no cerró nada. Determinista (`I-g3`)."""
+
+    def __init__(self, *, autor, motivo, segmentado, razon="", entrada=None, segmentos=0,
+                 bytes_vivo_antes=0, bytes_vivo_despues=0):
+        self.autor = autor
+        self.motivo = motivo
+        self.segmentado = segmentado
+        self.razon = razon
+        self.entrada = dict(entrada) if entrada else None
+        self.segmentos = segmentos
+        self.bytes_vivo_antes = bytes_vivo_antes
+        self.bytes_vivo_despues = bytes_vivo_despues
+
+    def a_dict(self):
+        return {
+            "autor": self.autor, "motivo": self.motivo, "segmentado": self.segmentado,
+            "razon": self.razon, "entrada": self.entrada, "segmentos": self.segmentos,
+            "bytes_vivo_antes": self.bytes_vivo_antes,
+            "bytes_vivo_despues": self.bytes_vivo_despues,
+        }
+
+
 class Diario:
     """El diario canónico de un almacén. Append-only y verificable de principio a fin."""
 
     def __init__(self, ruta):
         self.ruta = ruta
+        self.directorio_de_segmentos = os.path.join(os.path.dirname(ruta), DIRECTORIO_DE_SEGMENTOS)
+        self.ruta_del_indice = os.path.join(self.directorio_de_segmentos, FICHERO_INDICE)
+        # Un segmento cerrado no cambia: se verifica una vez por proceso y por identidad de
+        # fichero (inodo, tamaño, mtime) y su lista de líneas se reutiliza. Cambiar el fichero
+        # cambia la clave y obliga a verificarlo otra vez.
+        self._segmentos_verificados = {}
 
     # ------------------------------------------------------------------ lectura
     def existe(self):
@@ -503,20 +700,173 @@ class Diario:
         except OSError as exc:
             raise traducir_error_de_sistema(exc, self.ruta, "leer el diario") from exc
 
-    def _lineas(self):
-        """Devuelve `(lineas_completas, bytes_de_cola_desgarrada)`.
-
-        Una línea es completa cuando termina en `\\n`. Lo que quede detrás del último salto
-        es, por construcción, un anexado que no llegó a terminar.
-        """
-        datos = self._bytes()
+    @staticmethod
+    def _partir(datos):
+        """`(lineas_completas, cola)` de unos bytes de diario. Una línea acaba en `\\n`."""
         if not datos:
             return [], b""
         corte = datos.rfind(b"\n")
         if corte == -1:
             return [], datos
-        completas = datos[: corte + 1].split(b"\n")[:-1]
-        return completas, datos[corte + 1:]
+        return datos[: corte + 1].split(b"\n")[:-1], datos[corte + 1:]
+
+    def _leer_indice(self):
+        if not os.path.exists(self.ruta_del_indice):
+            return []
+        try:
+            with open(self.ruta_del_indice, "rb") as fichero:
+                crudo = fichero.read()
+        except OSError as exc:
+            raise traducir_error_de_sistema(exc, self.ruta_del_indice, "leer el índice de segmentos") from exc
+        return interpretar_indice(crudo, ruta=self.ruta_del_indice)
+
+    def _leer_segmento(self, nombre):
+        ruta = os.path.join(self.directorio_de_segmentos, nombre)
+        try:
+            with open(ruta, "rb") as fichero:
+                return fichero.read()
+        except FileNotFoundError:
+            return None
+        except OSError as exc:
+            raise traducir_error_de_sistema(exc, ruta, "leer un segmento del diario") from exc
+
+    def _lineas_de_segmento(self, entrada):
+        """Las líneas de un segmento, verificado UNA vez por identidad de fichero.
+
+        Se cachean las líneas y no las bytes: comparar el vivo con el último segmento se hace
+        por el `sha256` del índice, así que retener las bytes duplicaría el historial en memoria.
+        """
+        ruta = os.path.join(self.directorio_de_segmentos, entrada["fichero"])
+        try:
+            info = os.stat(ruta)
+            clave = (entrada["fichero"], entrada["sha256"], info.st_ino, info.st_size, info.st_mtime_ns)
+        except FileNotFoundError:
+            clave = None
+        if clave is not None and clave in self._segmentos_verificados:
+            return self._segmentos_verificados[clave]
+        lineas = lineas_de_un_segmento(self._leer_segmento(entrada["fichero"]), entrada, ruta=ruta)
+        if clave is not None:
+            self._segmentos_verificados[clave] = lineas
+        return lineas
+
+    def _huerfanos(self, entradas, vivo):
+        """Los ficheros de `segmentos/` que ningún índice nombra, y si son explicables.
+
+        Devuelve `(huerfanos_tolerados, temporales)`. Un huérfano es tolerable sólo si es el
+        segmento SIGUIENTE y sus bytes son un prefijo del vivo: es el rastro de una rotación
+        cortada tras el paso 1, y no contiene nada que el vivo no tenga. Cualquier otro
+        fichero ahí es inexplicable, y por eso FALLO CERRADO.
+        """
+        if not os.path.isdir(self.directorio_de_segmentos):
+            return [], []
+        nombrados = {entrada["fichero"] for entrada in entradas}
+        siguiente = (entradas[-1]["hasta"] + 1) if entradas else 1
+        tolerados, temporales = [], []
+        for nombre in sorted(os.listdir(self.directorio_de_segmentos)):
+            if nombre == FICHERO_INDICE or nombre in nombrados:
+                continue
+            ruta = os.path.join(self.directorio_de_segmentos, nombre)
+            if nombre.endswith(SUFIJO_TEMPORAL):
+                temporales.append(ruta)
+                continue
+            encaje = PATRON_DE_SEGMENTO.match(nombre)
+            datos = self._leer_segmento(nombre) if encaje else None
+            # Si desapareció entre el listado y la lectura, lo retiró un escritor al completar
+            # una rotación: la firma de `_partes` lo detecta y la lectura se repite.
+            if not encaje or int(encaje.group(1)) != siguiente or not datos \
+                    or not vivo.startswith(datos):
+                raise DiarioCorrupto(
+                    "hay en los segmentos del diario un fichero que ningún índice nombra y que "
+                    "no es el rastro de una rotación cortada: `" + nombre + "`",
+                    ruta=ruta)
+            tolerados.append(ruta)
+        return tolerados, temporales
+
+    def _firma_de_lectura(self):
+        """Lo que cambia si un escritor toca el diario mientras se lee: vivo, índice y listado."""
+        def identidad(ruta):
+            try:
+                info = os.stat(ruta)
+            except FileNotFoundError:
+                return None
+            return (info.st_ino, info.st_size, info.st_mtime_ns)
+        try:
+            listado = tuple(sorted(os.listdir(self.directorio_de_segmentos)))
+        except FileNotFoundError:
+            listado = None
+        return identidad(self.ruta), identidad(self.ruta_del_indice), listado
+
+    @staticmethod
+    def _sigue_estable(antes, despues):
+        """¿Lo leído entre las dos firmas es un instante del diario? Un ANEXADO no lo impide.
+
+        Re-revisión independiente, N1 (reproducido): exigir la firma IDÉNTICA hacía repetir la
+        lectura ante cualquier anexado, incluso en un diario sin segmentar, y con escritura
+        sostenida el lector agotaba los intentos (`ESCRITOR_CONCURRENTE`) sin rotación alguna. Un
+        vivo que sólo CRECIÓ —mismo inodo, tamaño no menor— deja leído un prefijo válido, que es
+        lo que garantizaba un solo fichero. Sólo se repite si el vivo se sustituyó o encogió
+        (vaciado, truncado de la cola) o si cambió el índice o el listado de `segmentos/`.
+        """
+        vivo_antes, indice_antes, listado_antes = antes
+        vivo_despues, indice_despues, listado_despues = despues
+        if indice_antes != indice_despues or listado_antes != listado_despues:
+            return False
+        if vivo_antes is None or vivo_despues is None:
+            return vivo_antes == vivo_despues
+        return vivo_antes[0] == vivo_despues[0] and vivo_despues[1] >= vivo_antes[1]
+
+    def _partes(self):
+        """`(lineas_de_segmentos, lineas_del_vivo, cola, pendiente)`, de una lectura ESTABLE.
+
+        DEFECTO QUE CIERRA (revisión independiente de la segmentación, H3, reproducido con una
+        intercalación determinista): leer el vivo y después el índice NO basta cuando entre las
+        dos lecturas un escritor anexa y además rota. El lector componía el vivo VIEJO detrás
+        del segmento nuevo —contaba eventos dos veces, o daba `DIARIO_CORRUPTO` sobre un almacén
+        sano—, o veía un huérfano que ya no era prefijo del vivo que había leído. Ahora se toma
+        la firma del vivo, del índice y del listado de `segmentos/` ANTES y DESPUÉS de leer, y si
+        algo se sustituyó o encogió se vuelve a leer (`_sigue_estable`: un vivo que sólo creció
+        sigue siendo un prefijo válido): el resultado es siempre un instante del diario.
+        Un `DIARIO_CORRUPTO` con la firma estable es corrupción de verdad y se propaga.
+        """
+        for intento in range(INTENTOS_DE_LECTURA_ESTABLE):
+            antes = self._firma_de_lectura()
+            try:
+                resultado = self._partes_una_vez()
+            except DiarioCorrupto:
+                if not self._sigue_estable(antes, self._firma_de_lectura()):
+                    continue
+                raise
+            if self._sigue_estable(antes, self._firma_de_lectura()):
+                return resultado
+        raise EscritorConcurrente(
+            "el diario cambió durante " + str(INTENTOS_DE_LECTURA_ESTABLE) + " lecturas "
+            "seguidas: no se obtuvo una lectura estable. Reintente; si persiste, hay un escritor "
+            "que no respeta el bloqueo", ruta=self.ruta)
+
+    def _partes_una_vez(self):
+        """El VIVO se lee ANTES que el índice y que el listado; la firma de `_partes` hace el resto."""
+        crudo = self._bytes()
+        entradas = self._leer_indice()
+        segmentos, vivo, pendiente = componer_lineas(crudo, entradas, self._lineas_de_segmento,
+                                                     ruta=self.ruta)
+        self._huerfanos(entradas, crudo)
+        completas, cola = self._partir(vivo)
+        return segmentos, completas, cola, pendiente
+
+    def _lineas(self):
+        """Devuelve `(lineas_completas, bytes_de_cola_desgarrada)`, de TODO el diario.
+
+        Las completas son las de los segmentos cerrados seguidas de las del vivo; la cola,
+        si la hay, sólo puede estar en el vivo, que es el único que se anexa. Una línea es
+        completa cuando termina en `\\n`; lo que quede detrás del último salto es un
+        anexado que no llegó a terminar.
+        """
+        segmentos, vivo, cola, _pendiente = self._partes()
+        return segmentos + vivo, cola
+
+    def segmentos(self):
+        """Las entradas del índice de segmentos, validadas. Lista vacía sin segmentar."""
+        return self._leer_indice()
 
     def cola_desgarrada(self):
         return bool(self._lineas()[1])
@@ -750,9 +1100,12 @@ class Diario:
         no toca el fichero, que es lo que `recuperar()` necesita para poder invocarse N
         veces sin efectos.
         """
-        completas, cola = self._lineas()
+        self.completar_rotacion()
+        _segmentos, completas, cola, _pendiente = self._partes()
         if not cola:
             return 0
+        # Sólo el VIVO: es el único fichero que se anexa y el único que se trunca. Medir la
+        # longitud sobre todo el diario cortaría el vivo por un sitio que no es el suyo.
         longitud = sum(len(linea) + 1 for linea in completas)
         try:
             descriptor = os.open(self.ruta, os.O_WRONLY)
@@ -779,6 +1132,9 @@ class Diario:
             raise DiarioCorrupto(
                 "tipo de evento no declarado en el §2.4: " + repr(tipo), ruta=self.ruta
             )
+        # Anexar sobre una rotación cortada tras el índice duplicaría el último segmento en el
+        # vivo. Se completa ANTES: es idempotente y se hace bajo el mismo bloqueo de escritor.
+        self.completar_rotacion()
         completas, cola = self._lineas()
         if cola:
             raise DiarioCorrupto(
@@ -819,6 +1175,111 @@ class Diario:
         finally:
             os.close(descriptor)
         return evento
+
+    # ------------------------------------------------------------ segmentación
+    def completar_rotacion(self):
+        """Termina una rotación que un corte dejó a medias. Idempotente; con el bloqueo tomado.
+
+        Devuelve qué hizo: `vivo_vaciado` si el corte fue tras publicar el índice (el vivo
+        tenía las mismas bytes que el último segmento) y los huérfanos o temporales retirados
+        si fue antes. Sin rotación a medias no toca nada.
+        """
+        hecho = {"vivo_vaciado": False, "retirados": []}
+        crudo = self._bytes()
+        entradas = self._leer_indice()
+        _segmentos, _vivo, pendiente = componer_lineas(crudo, entradas, self._lineas_de_segmento,
+                                                       ruta=self.ruta)
+        if pendiente:
+            self._vaciar_vivo()
+            hecho["vivo_vaciado"] = True
+            crudo = b""
+        tolerados, temporales = self._huerfanos(entradas, crudo)
+        for ruta in tolerados + temporales:
+            if borrar_si_existe(ruta):
+                hecho["retirados"].append(os.path.basename(ruta))
+        if hecho["retirados"]:
+            sincronizar_directorio(self.directorio_de_segmentos)
+        return hecho
+
+    def _vaciar_vivo(self):
+        temporal = self.ruta + SUFIJO_TEMPORAL
+        escribir_y_sincronizar(temporal, b"")
+        publicar(temporal, self.ruta)
+        sincronizar_directorio(os.path.dirname(self.ruta))
+
+    def rotar(self, *, autor, motivo, umbral_bytes=None):
+        """Cierra el diario VIVO entero como segmento y deja uno vacío que continúa la cadena.
+
+        Se llama con el bloqueo de ESCRITOR tomado, como `anexar` y `sellar`. Ninguna línea
+        se reescribe: el segmento son las mismas bytes que el vivo tenía. Falla CERRADO si
+        hay cola desgarrada o una transacción sin evento terminal —su ventana se recupera
+        leyendo el vivo y no se parte entre dos ficheros— y si la transición no se firma.
+        Con `umbral_bytes`, no cierra un vivo más pequeño.
+        """
+        if not isinstance(autor, str) or not autor.strip() \
+                or not isinstance(motivo, str) or not motivo.strip():
+            raise SegmentacionImposible(
+                "cerrar un segmento del diario es una transición EXPLÍCITA Y AUDITABLE: sin "
+                "`autor` y sin `motivo` no se sabría quién lo decidió ni por qué",
+                ruta=self.ruta)
+        self.completar_rotacion()
+        segmentos, vivo, cola, _pendiente = self._partes()
+        datos = self._bytes()
+        entradas = self._leer_indice()
+        informe = dict(autor=autor, motivo=motivo, segmentos=len(entradas),
+                       bytes_vivo_antes=len(datos), bytes_vivo_despues=len(datos))
+        if cola:
+            raise SegmentacionImposible(
+                "el diario vivo termina en una línea incompleta de " + str(len(cola))
+                + " byte(s): primero `recuperar()`, que es quien puede cerrar esa ventana",
+                ruta=self.ruta, bytes_sueltos=len(cola))
+        if not vivo:
+            return InformeSegmentacion(segmentado=False, razon="el diario vivo está vacío",
+                                       **informe)
+        if umbral_bytes is not None and len(datos) < umbral_bytes:
+            return InformeSegmentacion(
+                segmentado=False,
+                razon="el diario vivo ocupa %d bytes, por debajo del umbral de %d" % (
+                    len(datos), umbral_bytes),
+                **informe)
+        eventos = self._interpretar(segmentos + vivo, True)      # la cadena ENTERA, antes
+        if self.transaccion_sin_cerrar(eventos) is not None:
+            raise SegmentacionImposible(
+                "hay una transacción sin evento terminal: `g.8` la recupera leyendo el diario "
+                "vivo, y partirla entre dos ficheros no se hace. Llame a `recuperar()` y "
+                "vuelva a segmentar",
+                ruta=self.ruta)
+        primero, ultimo = eventos[len(segmentos)], eventos[-1]
+        entrada = {
+            "fichero": nombre_de_segmento(primero["secuencia"], ultimo["secuencia"]),
+            "desde": primero["secuencia"], "hasta": ultimo["secuencia"],
+            "bytes": len(datos), "sha256": sha256_de(datos),
+            "huella_ultima": ultimo[CLAVE_HUELLA], "autor": autor, "motivo": motivo,
+        }
+        # 1 · el segmento, publicado y durable
+        nuevo_directorio = not os.path.isdir(self.directorio_de_segmentos)
+        asegurar_directorio(self.directorio_de_segmentos)
+        if nuevo_directorio:
+            # El NOMBRE de `segmentos/` tiene que ser durable antes de que el índice dependa de
+            # él (revisión independiente, H4): se sincroniza `diario/`.
+            sincronizar_directorio(os.path.dirname(self.ruta))
+        destino = os.path.join(self.directorio_de_segmentos, entrada["fichero"])
+        escribir_y_sincronizar(destino + SUFIJO_TEMPORAL, datos)
+        publicar(destino + SUFIJO_TEMPORAL, destino)
+        sincronizar_directorio(self.directorio_de_segmentos)
+        fallos.punto("segmentacion-tras-el-segmento")
+        # 2 · el índice que lo nombra: el PUNTO DE NO RETORNO
+        indice = {"esquema": ESQUEMA_DEL_INDICE, "segmentos": list(entradas) + [entrada]}
+        escribir_y_sincronizar(self.ruta_del_indice + SUFIJO_TEMPORAL,
+                               (json.dumps(indice, ensure_ascii=False, sort_keys=True, indent=2)
+                                + "\n").encode("utf-8"))
+        publicar(self.ruta_del_indice + SUFIJO_TEMPORAL, self.ruta_del_indice)
+        sincronizar_directorio(self.directorio_de_segmentos)
+        fallos.punto("segmentacion-tras-el-indice")
+        # 3 · el vivo, vacío: el siguiente evento encadena con `huella_ultima`
+        self._vaciar_vivo()
+        informe.update(segmentos=len(indice["segmentos"]), bytes_vivo_despues=self._tamano())
+        return InformeSegmentacion(segmentado=True, entrada=entrada, **informe)
 
     # -------------------------------------------------------------- agregaciones
     def por_transaccion(self, eventos=None):
@@ -1012,6 +1473,17 @@ class Diario:
         es una cortesía, es lo que impide convertir una corrupción detectable en una
         definitiva.
         """
+        # Revisión independiente, H1 (reproducido): un corte tras el paso 1 deja un huérfano,
+        # y sellar sobre él reescribía el vivo, dejaba de ser su prefijo y el almacén quedaba
+        # DIARIO_CORRUPTO para siempre. Se completa la rotación cortada ANTES de nada.
+        self.completar_rotacion()
+        if self._leer_indice():
+            raise SelladoImposible(
+                "el diario está SEGMENTADO: los segmentos cerrados son inmutables y el sellado "
+                "reescribiría el diario entero dentro del vivo. Sellar un diario segmentado no "
+                "está definido, y por eso no se hace",
+                ruta=self.ruta,
+            )
         completas, cola = self._lineas()
         if cola:
             raise SelladoImposible(
